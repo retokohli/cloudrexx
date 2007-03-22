@@ -1,0 +1,45 @@
+<!-- start module_podcast_settings.html -->
+<script type="text/javascript">
+// <[![CDATA
+function SetUrl(url, width, height, alt) {
+	document.getElementById('podcast_settings_feed_image').value = url;
+}
+// ]]>
+</script>
+<form action="index.php?cmd=podcast&amp;act=settings" method="post">
+	<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+		<thead>
+			<tr>
+				<th colspan="2">{TXT_PODCAST_SETTINGS}</th>
+			</tr>
+		</thead>
+		<tbody style="vertical-align:top;">
+			<tr class="row1">
+				<td width="15%">{TXT_PODCAST_STANDARD_DIMENSIONS}</td>
+				<td width="85%">
+					<input type="text" name="podcast_settings_default_width" value="{PODCAST_SETTINGS_DEFAULT_WIDTH}" style="width:50px; margin-bottom:1px;" /> {TXT_PODCAST_PIXEL_WIDTH}<br />
+					<input type="text" name="podcast_settings_default_height" value="{PODCAST_SETTINGS_DEFAULT_HEIGHT}" style="width:50px; margin-bottom:1px;" />	{TXT_PODCAST_PIXEL_HEIGHT}
+				</td>
+			</tr>
+			<tr class="row2">
+				<td>{TXT_PODCAST_FEED_TITLE}</td>
+				<td><input type="text" name="podcast_settings_feed_title" value="{PODCAST_SETTINGS_FEED_TITLE}" style="width:400px;" /></td>
+			</tr>
+			<tr class="row1">
+				<td>{TXT_PODCAST_FEED_DESCRIPTION}</td>
+				<td><input type="text" name="podcast_settings_feed_description" value="{PODCAST_SETTINGS_FEED_DESCRIPTION}" style="width:400px;" /></td>
+			</tr>
+			<tr class="row2">
+				<td>{TXT_PODCAST_FEED_IMAGE}</td>
+				<td><input type="text" name="podcast_settings_feed_image" id="podcast_settings_feed_image" value="{PODCAST_SETTINGS_FEED_IMAGE}" style="width:287px;" /> <input type="button" value="{TXT_PODCAST_BROWSE}" onclick="fileBrowserPopup = window.open('?cmd=fileBrowser&amp;standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');fileBrowserPopup.focus()" style="width:110px;" /></td>
+			</tr>
+			<tr class="row1">
+				<td>{TXT_PODCAST_FEED_LINK}</td>
+				<td><a href="{PODCAST_SETTINGS_FEED_URL}" title="{TXT_PODCAST_FEED_LINK}">{PODCAST_SETTINGS_FEED_URL}</a></td>
+			</tr>
+		</tbody>
+	</table>
+	<br />
+	<input type="submit" value="{TXT_PODCAST_SAVE}" name="podcast_save_settings" />
+</form>
+<!-- end module_podcast_settings.html -->

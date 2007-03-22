@@ -1,0 +1,1240 @@
+<?php
+/**
+ * Install Wizard Controller
+ * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @author        Astalavista Development Team <thun@astalavista.ch>
+ * @version       $Id:     Exp $
+ * @package     contrexx
+ * @subpackage  installer
+ * @todo        Edit PHP DocBlocks!
+ */
+
+/**
+ * Install Wizard Controller
+ *
+ * The Install Wizard
+ *
+ * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @author        Astalavista Development Team <thun@astalavista.ch>
+ * @version       $Id:     Exp $
+ * @package     contrexx
+ * @subpackage  installer
+ */
+class CommonFunctions
+{
+	var $defaultLanguage;
+	var $detectedLanguage;
+	var $adoDbPath;
+	var $ftpTimeout;
+	var $ftpPort;
+	var $newestVersion;
+	var $_ftpFileWinPCRE = '#^(?:[0-9\-]+)\s+(?:[0-9]{2}:[0-9]{2}(?:AM|PM|))\s+(?:\<DIR\>|[0-9]+|)\s+(.*)$#';
+	var $_ftpFileUnixPCRE = '#^(?:[bcdlsp-][rwxtTsS-]{9})\s+(?:[0-9]+)\s+(?:\S+)\s+(?:\S+)\s+(?:[0-9]+)\s+(?:[A-Z][a-z]+\s+[0-9]{1,2}\s+(?:[0-9]{4}|[0-9]{2}:[0-9]{2}|))\s+(.*)$#';
+
+	function CommonFunctions()
+	{
+	    $this->__construct();
+	}
+
+	function __construct() {
+		global $defaultLanguage, $arrLanguages;
+
+	    $this->defaultLanguage = $defaultLanguage;
+	    $this->adoDbPath = '..'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'adodb'.DIRECTORY_SEPARATOR.'adodb.inc.php';
+	    $this->ftpTimeout = 5;
+	    $this->ftpPort = 21;
+
+	    // set language
+	    if (isset($_GET['langId']) && array_key_exists($_GET['langId'], $arrLanguages)) {
+			$_SESSION['installer']['langId'] = $_GET['langId'];
+		}
+	}
+
+	/**
+	* init language
+	*
+	* initialize language array
+	*
+	* @access	public
+	* @global	array	$_ARRLANG
+	* @global	string	$basePath
+	* @global	string	$language
+	*/
+	function initLanguage() {
+		global $_ARRLANG, $basePath, $language;
+
+		$language = $this->_getLanguage();
+
+		require_once($basePath.DIRECTORY_SEPARATOR.'lang'.DIRECTORY_SEPARATOR.$language.'.lang.php');
+	}
+
+	/**
+	* check language existence
+	*
+	* check if the language file of the langauge $language exists
+	*
+	* @access	private
+	* @param	string	$language
+	* @global	string	$basePath
+	* @return	boolean	true if exists, false if not
+	*/
+	function _checkLanguageExistence($language) {
+		global $basePath;
+
+		if (file_exists($basePath.DIRECTORY_SEPARATOR.'lang'.DIRECTORY_SEPARATOR.$language.'.lang.php')) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	* get language
+	*
+	* get the language to use
+	*
+	* @access	private
+	* @global	string	$basePath
+	* @global	array	$arrLanguages
+	* @return	string	language to use
+	*/
+	function _getLanguage() {
+		global $basePath, $arrLanguages;
+
+		$language = $this->defaultLanguage;
+
+		if (isset($_SESSION['installer']['langId'])) {
+			$language = $arrLanguages[$_SESSION['installer']['langId']]['lang'];
+		} elseif (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+		    $language = substr(strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']),0,2);
+		}
+
+		if ($this->_checkLanguageExistence($language)) {
+			return $language;
+		} else {
+			return $this->defaultLanguage;
+		}
+	}
+
+	/**
+	* get database object
+	*
+	* return an database connection object. if not already a connection has established, then it will do it
+	*
+	* @access	private
+	* @param	string	$statusMsgError message
+	* @global	object	$objDb
+	* @global	array	$_ARRLANG
+	* @global	string	$dbType
+	* @return	mixed	object $objDb on success, false on failure
+	*/
+	function _getDbObject(&$statusMsg) {
+		global $objDb, $_ARRLANG, $dbType;
+
+		if (isset($objDb)) {
+			return $objDb;
+		} else {
+			// open db connection
+			require_once $this->adoDbPath;
+
+			$objDb = ADONewConnection($dbType);
+			@$objDb->Connect($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'], $_SESSION['installer']['config']['dbDatabaseName']);
+
+			$errorNo = $objDb->ErrorNo();
+			if ($errorNo != 0) {
+				if ($errorNo == 1049) {
+					$statusMsg = str_replace("[DATABASE]", $_SESSION['installer']['config']['dbDatabaseName'], $_ARRLANG['TXT_DATABASE_DOES_NOT_EXISTS']."<br />");
+				} else {
+					$statusMsg =  $objDb->ErrorMsg();
+				}
+				unset($objDb);
+				return false;
+			}
+
+			if ($objDb) {
+				return $objDb;
+			} else {
+				unset($objDb);
+				$statusMsg = $_ARRLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER']."<i>&nbsp;(".$objDb->ErrorMsg().")</i><br />";
+			}
+			return false;
+		}
+	}
+
+	/**
+	* close Db connection
+	*
+	* close database connection
+	*
+	* @access	public
+	* @global	object	$objDb
+	*/
+	function closeDbConnection() {
+		global $objDb;
+
+		if (isset($objDb)) {
+			@$objDb->Close();
+		}
+	}
+
+	/**
+	* get FTP object
+	*
+	* return an FTP connection object. if not already a connection has established, then it will do it
+	*
+	* @access	private
+	* @param	string	$statusMsgError message
+	* @global	object	$objFtp
+	* @global	array	$_ARRLANG
+	* @return	mixed	object $objFtp on success, false on failure
+	*/
+	function _getFtpObject(&$statusMsg) {
+		global $objFtp, $_ARRLANG;
+
+		if (isset($objFtp)) {
+			return $objFtp;
+		} else {
+			if (isset($_SESSION['installer']['config']['ftpPort'])) {
+				$this->ftpPort = $_SESSION['installer']['config']['ftpPort'];
+			}
+
+			// open ftp conneciton
+			$objFtp = @ftp_connect($_SESSION['installer']['config']['ftpHostname'], $this->ftpPort, $this->ftpTimeout);
+			if ($objFtp) {
+				// login to ftp server
+				if (@ftp_login($objFtp, $_SESSION['installer']['config']['ftpUsername'], $_SESSION['installer']['config']['ftpPassword'])) {
+					if ($_SESSION['installer']['config']['ftpPasv']) {
+						if (@ftp_pasv($objFtp, true)) {
+							return $objFtp;
+						} else {
+							@ftp_close($objFtp);
+							$statusMsg = $_ARRLANG['TXT_FTP_PASSIVE_MODE_FAILED'];
+						}
+					} else {
+						return $objFtp;
+					}
+				} else {
+					@ftp_close($objFtp);
+					unset($objFtp);
+					$statusMsg = $_ARRLANG['TXT_FTP_AUTH_FAILED']."<br />";
+				}
+			} else {
+				unset($objFtp);
+				$statusMsg = $_ARRLANG['TXT_CANNOT_CONNECT_TO_FTP_HOST']."<br />";
+			}
+			return false;
+		}
+	}
+
+	/**
+	* Close FTP connection
+	*
+	* Close the FTP connection of the object $objFtp
+	*
+	* @access	public
+	* @global	object	$objFtp
+	*/
+	function closeFtpConnection() {
+		global $objFtp;
+
+		if (isset($objFtp)) {
+			@ftp_close($objFtp);
+		}
+	}
+
+
+
+	function getPHPVersion() {
+		return phpversion();
+	}
+
+	function getMysqlVersion() {
+		if (extension_loaded('mysql')) {
+			return mysql_get_client_info();
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	* check FTP support
+	*
+	* check if the ftp extension is loaded
+	*
+	* @access	public
+	* @return	boolean
+	*/
+	function checkFTPSupport() {
+		if (extension_loaded("ftp")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	* check installation status
+	*
+	* check if the system is already installed
+	*
+	* @access	public
+	* @global	string	$configFile
+	* @return	boolean
+	*/
+	function checkInstallationStatus() {
+		global $configFile;
+
+		$result = @include_once'..'.$configFile;
+		if ($result === false) {
+			return false;
+		} else {
+			return (defined('CONTEXX_INSTALLED') && CONTEXX_INSTALLED);
+		}
+	}
+
+	/**
+	* check gd support
+	*
+	* check for the gd(graphics draw) extension.
+	* if it is supported check also if the version is equal or higher to version 2
+	*
+	* @access	public
+	* @return	mixed
+	*/
+	function checkGDSupport() {
+		if (extension_loaded("gd")) {
+			$arrGdInfo = gd_info();
+
+			preg_match("/[\d\.]+/", $arrGdInfo['GD Version'], $matches);
+			if (!empty($matches[0])) {
+				return $matches[0];
+			}
+		}
+		return false;
+	}
+
+	/**
+	* check rss support
+	*
+	* check if the rss function can be used
+	*
+	* @access	public
+	* @return	boolean
+	*/
+	function checkRSSSupport() {
+		if (ini_get('allow_url_fopen') != "1") {
+			@ini_set('allow_url_fopen', "1");
+			if (ini_get('allow_url_fopen') != "1") {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	* check CMS path
+	*
+	* check if the cms could be found in the specified path
+	*
+	* @access	public
+	* @global	array	$_ARRLANG
+	* @global	array	$arrFiles
+	* @return	mixed	true on success, $statusMsg on failure
+	*/
+	function checkCMSPath() {
+		global $_ARRLANG, $arrFiles;
+
+		$statusMsg = "";
+
+		if (!ini_get('safe_mode')) {
+			if (!file_exists($_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].'/index.php')) {
+				return str_replace("[PATH]", $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'], $_ARRLANG['TXT_PATH_DOES_NOT_EXIST']);
+			} else {
+				foreach (array_keys($arrFiles) as $file) {
+					if (!file_exists($_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$file)) {
+						$statusMsg .= str_replace("[FILE]", $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$file, $_ARRLANG['TXT_CANNOT_FIND_FIlE']);
+					}
+				}
+				if (empty($statusMsg)) {
+					return true;
+				} else {
+					return $statusMsg;
+				}
+			}
+		} else {
+			return true;
+		}
+	}
+
+	function checkDbConnection($host, $user, $password) {
+		global $_ARRLANG, $dbType;
+
+		require_once $this->adoDbPath;
+
+		$db = ADONewConnection($dbType);
+		@$db->Connect($host, $user, $password);
+
+		$errorNr = $db->ErrorNo();
+		$db->Close();
+		if ($errorNr == 0) {
+			return true;
+		} else {
+			return $_ARRLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER']."<i>&nbsp;(".$db->ErrorMsg().")</i><br />";
+		}
+	}
+
+	function existDatabase($host, $user, $password, $database) {
+		global $_ARRLANG, $dbType;
+
+		require_once $this->adoDbPath;
+
+		$db = ADONewConnection($dbType);
+		@$db->Connect($host, $user, $password, $database);
+
+		$errorNr = $db->ErrorNo();
+
+		if ($db->IsConnected()) {
+			$db->Close();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	function checkFTPConnection() {
+		global $_ARRLANG;
+
+		$statusMsg = "";
+
+		$objFtp = $this->_getFtpObject($statusMsg);
+		if ($objFtp === false) {
+			return $statusMsg;
+		} else {
+			return true;
+		}
+	}
+
+	function checkFtpPath() {
+		global $_ARRLANG, $arrFiles;
+
+		$statusMsg = "";
+
+		$objFtp = $this->_getFtpObject($statusMsg);
+		if ($objFtp === false) {
+			return $statusMsg;
+		} else {
+			if (empty($_SESSION['installer']['config']['ftpPath'])) {
+				$_SESSION['installer']['config']['ftpPath'] = @ftp_pwd($objFtp);
+			}
+
+			if (!@ftp_chdir($objFtp, $_SESSION['installer']['config']['ftpPath'].$_SESSION['installer']['config']['offsetPath'])) {
+				return $_ARRLANG['TXT_FTP_PATH_DOES_NOT_EXISTS']."<br />";
+			} else {
+				foreach (array_keys($arrFiles) as $file) {
+					if (!@ftp_chdir($objFtp, dirname($_SESSION['installer']['config']['ftpPath'].$_SESSION['installer']['config']['offsetPath'].$file))) {
+						$statusMsg .= str_replace("[DIRECTORY]", dirname($_SESSION['installer']['config']['ftpPath'].$_SESSION['installer']['config']['offsetPath'].$file), $_ARRLANG['TXT_DIRECTORY_ON_FTP_DOES_NOT_EXIST']."<br />");
+					} else {
+						$arrFTPFiles = $this->_getFilesOfFtpDirectory($objFtp);
+						preg_match("/.*\/([\d\D]+)$/", $file, $arrMatches);
+						$checkFile = $arrMatches[1];
+						if (!is_array($arrFTPFiles) || !in_array($checkFile, $arrFTPFiles)) {
+							$statusMsg .= str_replace("[FILE]", $_SESSION['installer']['config']['ftpPath'].$_SESSION['installer']['config']['offsetPath'].$file, $_ARRLANG['TXT_FILE_ON_FTP_DOES_NOT_EXIST']."<br />");
+						}
+					}
+				}
+				if (empty($statusMsg)) {
+					return true;
+				} else {
+					return $statusMsg;
+				}
+			}
+		}
+	}
+
+	function _getFilesOfFtpDirectory(&$objFtp)
+	{
+		$arrDirectories = array();
+		$fileList = @ftp_rawlist($objFtp, ".");
+
+		if (count($fileList) > 0) {
+			if ($this->isWindowsFtp($objFtp)) {
+				$pcre = $this->_ftpFileWinPCRE;
+			} else {
+				$pcre = $this->_ftpFileUnixPCRE;
+			}
+
+			foreach ($fileList as $fileDescription) {
+				if (preg_match($pcre, $fileDescription, $arrFile)) {
+					if ($arrFile[1] != '.' && $arrFile[1] != '..') {
+						array_push($arrDirectories, $arrFile[1]);
+					}
+				}
+			}
+		}
+		return $arrDirectories;
+	}
+
+	/**
+	* is windows ftp
+	*
+	* checks if the system of the ftp server is windows or unix
+	*
+	* @access public
+	* @param object &$objFtp
+	* @return boolean true if is windows, false if not
+	*/
+	function isWindowsFtp(&$objFtp)
+	{
+		$hostType = @ftp_systype($objFtp);
+		if ($hostType !== false) {
+			if (eregi('win', $hostType)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return $this->isWindows();
+		}
+	}
+
+	/**
+	* is windows
+	*
+	* check if the system on which php is runnis is a windows system
+	*
+	* @access	public
+	* @return	boolean
+	*/
+	function isWindows() {
+		if (substr(PHP_OS,0,3) == "WIN") {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	function _isNewestVersion($thisVersion, $newestVersion)
+	{
+		$arrInstalledVersion = explode('.', $thisVersion);
+		$arrNewVersion = explode('.', $newestVersion);
+
+		$maxSubVersion = count($arrInstalledVersion) > count($arrNewVersion) ? count($arrInstalledVersion) : count($arrNewVersion);
+		for ($nr = 0; $nr < $maxSubVersion; $nr++) {
+			if (!isset($arrInstalledVersion[$nr])) {
+				return false;
+			} elseif (!isset($arrNewVersion[$nr])) {
+				return true;
+			} elseif ($arrNewVersion[$nr] > $arrInstalledVersion[$nr]) {
+				return false;
+			} elseif ($arrNewVersion[$nr] < $arrInstalledVersion[$nr]) {
+				return true;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	* Check permisssions
+	*
+	* Check if the files of the array $arrFiles are writable
+	*
+	* @access public
+	* @param array	$arrFiles
+	* @return mixed	true on success, string with error message on faiure
+	*/
+	function checkPermissions($arrFiles) {
+		global $_ARRLANG;
+
+		$statusMessage = "";
+		$path = $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'];
+
+		foreach ($arrFiles as $file => $arrAttributes) {
+			$arrAllFiles = array();
+			$arrSubDirs = array();
+
+			if (isset($arrAttributes['sub_dirs']) && $arrAttributes['sub_dirs']) {
+				$arrSubDirs = $this->_getSubDirs($file);
+				$arrAllFiles = array_merge(array($file), $arrSubDirs);
+			} else {
+				$arrAllFiles = array($file);
+			}
+
+			foreach ($arrAllFiles as $checkFile) {
+				if (!is_writable($path.$checkFile)) {
+					if ($this->isWindows()) {
+						if (empty($statusMessage)) {
+							$statusMessage = $_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES']."<br />";
+						}
+						$statusMessage .= $path.$checkFile."<br />";
+					} else {
+						$result = $this->_chmod($checkFile, $arrAttributes);
+						if ($result !== true) {
+							$statusMessage .= $result;
+						}
+					}
+				}
+			}
+		}
+		if (empty($statusMessage)) {
+			return true;
+		} else {
+			return $statusMessage;
+		}
+	}
+
+	/**
+	* chmod
+	*
+	* Change file access permissions
+	*
+	* @access priavte
+	* @param string	$file	File to change permissions
+	* @param integer	$mode	Mode to set on file
+	* @return	boolean	true on success, false on failure
+	*/
+	function _chmod($file, $arrAttributes) {
+		global $_ARRLANG;
+
+		if (!$this->isWindows() && $_SESSION['installer']['config']['useFtp']) {
+			$objFtp = $this->_getFtpObject($statusMsg);
+			if ($objFtp === false) {
+				return $statusMsg;
+			} else {
+				if (phpversion()>=5) {
+					// if system supports php5
+					if (@ftp_chmod($objFtp, $arrAttributes['mode_oct'], $_SESSION['installer']['config']['ftpPath'].$_SESSION['installer']['config']['offsetPath'].$file)) {
+						return true;
+					} else {
+						return $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'].' '.$file."<br />";
+					}
+				} else {
+					// if system don't support php5 yet
+					$chmodCmd = "CHMOD ".$arrAttributes['mode']." ".$_SESSION['installer']['config']['ftpPath'].$_SESSION['installer']['config']['offsetPath'].$file;
+					if (@ftp_site($objFtp, $chmodCmd)) {
+						return true;
+					} else {
+						return $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'].' '.$file."<br />";
+					}
+				}
+			}
+		} else {
+			if (@chmod($_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$file, $arrAttributes['mode_oct'])) {
+				return true;
+			} else {
+				return $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'].' '.$file."<br />";;
+			}
+		}
+	}
+
+	/**
+	* get sub directories
+	*
+	* get sub directories of the directory $directory
+	*
+	* @access private
+	* @param string	$directoryDirectory to scan
+	* @return array	$arrDirectories Subdirectories
+	*/
+	function _getSubDirs($directory) {
+		$arrDirectories = array();
+
+		$directoryPath = $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$directory;
+
+		$fp = @opendir($directoryPath);
+		if ($fp) {
+			while ($file = readdir($fp)) {
+				$path = $directoryPath.DIRECTORY_SEPARATOR.$file;
+
+				if ($file != "." && $file != "..") {
+					array_push($arrDirectories, $directory.DIRECTORY_SEPARATOR.$file);
+
+					if (is_dir(realpath($path))) {
+						$arrDirectoriesRec = $this->_getSubDirs($directory.DIRECTORY_SEPARATOR.$file);
+						if (count($arrDirectoriesRec)>0) {
+							$arrDirectories = array_merge($arrDirectories, $arrDirectoriesRec);
+						}
+					}
+				}
+			}
+			closedir($fp);
+		}
+		return $arrDirectories;
+	}
+
+	function _getConfigFileTemplate(&$statusMsg) {
+		global $configTemplateFile, $_ARRLANG;
+
+		$str = "";
+
+	    $str = @file_get_contents($configTemplateFile);
+
+	    if (empty($str)) {
+	    	$statusMsg = str_replace("[FILENAME]", $configTemplateFile, $_ARRLANG['TXT_CANNOT_OPEN_FILE']."<br />");
+	    }
+
+	    //PATHS
+	 	$str = str_replace("%PATH_ROOT%", $_SESSION['installer']['config']['documentRoot'], $str);
+	    $str = str_replace("%PATH_ROOT_OFFSET%", $_SESSION['installer']['config']['offsetPath'], $str);
+
+	    //MySQL
+	    $str = str_replace("%DB_HOST%", $_SESSION['installer']['config']['dbHostname'], $str);
+	    $str = str_replace("%DB_NAME%", $_SESSION['installer']['config']['dbDatabaseName'], $str);
+	    $str = str_replace("%DB_USER%", $_SESSION['installer']['config']['dbUsername'], $str);
+	    $str = str_replace("%DB_PASSWORD%", $_SESSION['installer']['config']['dbPassword'], $str);
+	  	$str=  str_replace("%DB_TABLE_PREFIX%" , $_SESSION['installer']['config']['dbTablePrefix'], $str);
+
+	    //FTP
+	    if ($_SESSION['installer']['config']['useFtp']) {
+	    	$str = str_replace("%FTP_STATUS%", "true", $str);
+	    	$str = str_replace("%FTP_PASSIVE%", ($_SESSION['installer']['config']['ftpPasv'] ? "true" : "false"), $str);
+		 	$str = str_replace("%FTP_HOST%", $_SESSION['installer']['config']['ftpHostname'], $str);
+		 	$str = str_replace("%FTP_PORT%", (isset($_SESSION['installer']['config']['ftpPort']) ? $_SESSION['installer']['config']['ftpPort'] : $this->ftpPort), $str);
+			$str = str_replace("%FTP_USER%", $_SESSION['installer']['config']['ftpUsername'], $str);
+		 	$str = str_replace("%FTP_PASSWORD%", $_SESSION['installer']['config']['ftpPassword'], $str);
+		 	$str = str_replace("%FTP_PATH%", $_SESSION['installer']['config']['ftpPath'], $str);
+	    } else {
+	    	$str = str_replace("%FTP_STATUS%", "false", $str);
+	    	$str = str_replace("%FTP_PASSIVE%", "false", $str);
+		 	$str = str_replace("%FTP_HOST%", "", $str);
+			$str = str_replace("%FTP_PORT%", $this->ftpPort, $str);
+			$str = str_replace("%FTP_USER%", "", $str);
+		 	$str = str_replace("%FTP_PASSWORD%", "", $str);
+		 	$str = str_replace("%FTP_PATH%", "", $str);
+	    }
+		return $str;
+	}
+
+	/**
+	* get version template file
+	*
+	* get the version template file, set the values and return it
+	*
+	* @access private
+	* @return string	$str	parsed version template file
+	*/
+	function _getVersionTemplateFile() {
+		global $versionTemplateFile, $_CONFIG;
+
+		$str = @file_get_contents($versionTemplateFile);
+
+		$str = str_replace("%CMS_NAME%", $_CONFIG['coreCmsName'], $str);
+		$str = str_replace("%CMS_VERSION%", $_CONFIG['coreCmsVersion'], $str);
+		$str = str_replace("%CMS_STATUS%", $_CONFIG['coreCmsStatus'], $str);
+		$str = str_replace("%CMS_EDITION%", $_CONFIG['coreCmsEdition'], $str);
+		$str = str_replace("%CMS_CODE_NAME%", $_CONFIG['coreCmsCodeName'], $str);
+		$str = str_replace("%CMS_RELEASE_DATE%", $_CONFIG['coreCmsReleaseDate'], $str);
+
+		return $str;
+	}
+
+	function createDatabase() {
+		global $_ARRLANG, $dbType;
+
+		require_once $this->adoDbPath;
+
+		$result = "";
+
+		$db = ADONewConnection($dbType);
+		@$db->Connect($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword']);
+
+		// create database
+		$result = @$db->Execute("CREATE DATABASE `".$_SESSION['installer']['config']['dbDatabaseName']."`");
+
+		if ($result === false) {
+			return $_ARRLANG['TXT_COULD_NOT_CREATE_DATABASE']."<br />";;
+		} else {
+			@$db->Close();
+			return true;
+		}
+	}
+
+	function createDatabaseTables() {
+		global $_ARRLANG, $sqlDumpFile, $dbType, $dbPrefix, $_CONFIG;
+
+		$sqlQuery = "";
+		$buffer = "";
+		$result = "";
+		$statusMsg = "";
+
+		$objDb = $this->_getDbObject($statusMsg);
+		if ($objDb === false) {
+			return $statusMsg;
+		} else {
+			// insert sql dump file
+			$fp = @fopen ($_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$sqlDumpFile.'_'.strtolower($_CONFIG['coreCmsEdition']).'.sql', "r");
+			if ($fp !== false) {
+				while (!feof($fp)) {
+					$buffer = fgets($fp);
+					if ((substr($buffer,0,1) != "#") && (substr($buffer,0,2) != "--")) {
+						$sqlQuery .= chop(str_replace($dbPrefix, $_SESSION['installer']['config']['dbTablePrefix'], $buffer));
+						if (preg_match("/;[ \t\r\n]*$/", $buffer)) {
+							$result = @$objDb->Execute($sqlQuery);
+							if ($result === false) {
+								$statusMsg .= "<br />".$sqlQuery."<br /> (".$objDb->ErrorMsg().")<br />";
+							}
+							$sqlQuery = "";
+						}
+					}
+				}
+			} else {
+				return str_replace("[FILENAME]", $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$sqlDumpFile.'_'.strtolower($_CONFIG['coreCmsEdition']).'.sql', $_ARRLANG['TXT_COULD_NOT_READ_SQL_DUMP_FILE']."<br />");
+			}
+			if (empty($statusMsg)) {
+				return true;
+			} else {
+				return $_ARRLANG['TXT_SQL_QUERY_ERROR'].$statusMsg;
+			}
+		}
+	}
+
+	function checkDatabaseTables() {
+		global $arrDatabaseTables, $arrDatabaseTablesModulesStandard, $arrDatabaseTablesModulesECommerce, $_ARRLANG, $sqlDumpFile, $dbType, $_CONFIG;
+
+		$statusMsg = "";
+		$arrTables = array();
+
+		$objDb = $this->_getDbObject($statusMsg);
+		if ($objDb === false) {
+			return $statusMsg;
+		} else {
+			$result = $objDb->Execute($objDb->metaTablesSQL);
+			if ($result) {
+				while ($arrResult = $result->FetchRow()) {
+					array_push($arrTables, $arrResult[0]);
+				}
+			}
+		}
+
+		if ($_CONFIG['coreCmsEdition'] == "Standard" || $_CONFIG['coreCmsEdition'] == "Premium") {
+			$arrDatabaseTables = array_Merge($arrDatabaseTables, $arrDatabaseTablesModulesStandard);
+		}
+		if ($_CONFIG['coreCmsEdition'] == "eCommerce" || $_CONFIG['coreCmsEdition'] == "Premium") {
+			$arrDatabaseTables = array_merge($arrDatabaseTables, $arrDatabaseTablesModulesECommerce);
+		}
+
+		foreach ($arrDatabaseTables as $table) {
+			if (!in_array($_SESSION['installer']['config']['dbTablePrefix'].$table, $arrTables)) {
+				$statusMsg .= str_replace("[TABLE]", $table, $_ARRLANG['TXT_TABLE_NOT_AVAILABLE'])."<br />";
+			}
+		}
+
+		if (empty($statusMsg)) {
+			return true;
+		} else {
+			$statusMsg .= str_replace("[FILEPATH]", $_SESSION['installer']['config']['offsetPath'].$sqlDumpFile.'_'.strtolower($_CONFIG['coreCmsEdition']).'.sql', $_ARRLANG['TXT_CREATE_DATABAES_TABLE_MANUALLY'])."<br />";
+			$statusMsg .= $_ARRLANG['TXT_PRESS_REFRESH_TO_CONTINUE_INSTALLATION'];
+			return $statusMsg;
+		}
+	}
+
+	function createConfigFile() {
+		global $configFile, $_ARRLANG;
+
+		$statusMsg = "";
+
+		$configFileContent = $this->_getConfigFileTemplate($statusMsg);
+		if (!empty($statusMsg)) {
+			return $statusMsg;
+		}
+
+		$configFilePath = $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$configFile;
+
+		if (!$fp = @fopen($configFilePath, "w")) {
+			return str_replace("[FILENAME]", $configFilePath, $_ARRLANG['TXT_CANNOT_OPEN_FILE']."<br />");
+		} else {
+			if (!@fwrite($fp, $configFileContent)) {
+				@fclose($fp);
+				return str_replace("[FILENAME]", $configFilePath, $_ARRLANG['TXT_CANNOT_WRITE_TO_FILE']."<br />");
+			}
+			@fclose($fp);
+			return true;
+		}
+	}
+
+	function createVersionFile() {
+		global $versionFile, $_ARRLANG;
+
+		$versionFileContent = $this->_getVersionTemplateFile();
+		$versionFilePath = $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$versionFile;
+
+		if (!$fp = @fopen($versionFilePath, "w")) {
+			return str_replace("[FILENAME]", $versionFilePath, $_ARRLANG['TXT_CANNOT_OPEN_FILE']."<br />");
+		} else {
+			if (!@fwrite($fp, $versionFileContent)) {
+				@fclose($fp);
+				return str_replace("[FILENAME]", $versionFileContent, $_ARRLANG['TXT_CANNOT_WRITE_TO_FILE']."<br />");
+			}
+			@fclose($fp);
+			return true;
+		}
+	}
+
+	function getSystemLanguages() {
+		global $dbType;
+
+		$statusMsg = "";
+		$arrLanguages = array();
+
+		$objDb = $this->_getDbObject($statusMsg);
+		if ($objDb !== false) {
+			$query = "SELECT `id`, `lang`, `name`, `is_default` FROM `".$_SESSION['installer']['config']['dbTablePrefix']."languages` ORDER BY `name` DESC";
+			$result = $objDb->Execute($query);
+		}
+
+		if ($result) {
+			while ($arrLanguage = $result->FetchRow()) {
+				array_push($arrLanguages, $arrLanguage);
+			}
+		}
+		return $arrLanguages;
+	}
+
+	function createAdminAccount() {
+		global $dbType, $arrLanguages, $language, $_ARRLANG;
+
+		$statusMsg = "";
+		$userLangId = "";
+
+		foreach ($arrLanguages as $langId => $arrLanguage) {
+			if ($language == $arrLanguage['lang']) {
+				$userLangId = $langId;
+				break;
+			}
+		}
+
+		$objDb = $this->_getDbObject($statusMsg);
+		if ($objDb !== false) {
+			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."access_users`
+						 SET `username` = '".$_SESSION['installer']['account']['username']."',
+							 `password` = '".md5($_SESSION['installer']['account']['password'])."',
+							 `regdate` = '".date('Y-m-d',time())."',
+							 `email` = '".$_SESSION['installer']['account']['email']."',
+							 `langId` = '".$userLangId."',
+							 `active` = 1
+					   WHERE `id` = 1";
+			if ($objDb->Execute($query) !== false) {
+				return true;
+			}
+		}
+		return $_ARRLANG['TXT_COULD_NOT_CREATE_ADMIN_ACCOUNT'];
+	}
+
+	/**
+	* Validate an E-mail address
+	*
+	* @param  string  unvalidated email string
+	* @return boolean
+	* @access public
+	*/
+	function isEmail($email) {
+		if( eregi( "^" . "[a-z0-9]+([_\\.-][a-z0-9]+)*" .	//user
+			"@" . "([a-z0-9]+([\.-][a-z0-9]+)*)+" .			//domain
+			"\\.[a-z]{2,4}" . 								//sld, tld
+			"$", $email)
+		) {
+	        return true;
+		} else {
+		    return false;
+		}
+	}
+
+	function isValidDbPrefix($prefix)
+	{
+		return preg_match('#^[a-z0-9_]+$#i', $prefix);
+	}
+
+	/**
+	* set system configuration
+	*
+	* configure the system
+	*
+	* @access	public
+	*/
+	function setSystemConfig() {
+		global $_ARRLANG, $_CONFIG;
+
+		$statusMsg = "";
+
+		$objDb = $this->_getDbObject($statusMsg);
+		if ($objDb === false) {
+			return $statusMsg;
+		} else {
+			// set admin email
+			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."settings`
+						 SET `setvalue` = '".$_SESSION['installer']['sysConfig']['adminEmail']."'
+					   WHERE `setname` = 'coreAdminEmail'";
+			if (!@$objDb->Execute($query)) {
+				$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_ADMIN_EMAIL']."<br />";
+			}
+
+			// set admin name
+			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."settings`
+						 SET `setvalue` = '".$_SESSION['installer']['sysConfig']['adminName']."'
+					   WHERE `setname` = 'coreAdminName'";
+			if (!@$objDb->Execute($query)) {
+				$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_ADMIN_NAME']."<br />";
+			}
+
+			if (($arrTables = $objDb->MetaTables('TABLES')) === false) {
+				$statusMsg .= $_ARRLANG['TXT_COULD_NOT_GATHER_ALL_DATABASE_TABLES']."<br />";
+				return $statusMsg;
+			}
+
+			// set newsletter emails
+			if (in_array($_SESSION['installer']['config']['dbTablePrefix']."module_newsletter_settings", $arrTables)) {
+				$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."module_newsletter_settings`
+							 SET `setvalue` = '".$_SESSION['installer']['sysConfig']['adminEmail']."'
+						   WHERE `setname` = 'sender_mail' OR `setname` = 'reply_mail' OR `setname` = 'test_mail'";
+				if (!@$objDb->Execute($query)) {
+					$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_NEWSLETTER_EMAILS']."<br />";
+				}
+
+				// set newsletter name
+				$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."module_newsletter_settings`
+							 SET `setvalue` = '".$_SESSION['installer']['sysConfig']['adminName']."'
+						   WHERE `setname` = 'sender_name'";
+				if (!@$objDb->Execute($query)) {
+					$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_NEWSLETTER_SENDER']."<br />";
+				}
+			}
+
+			// set contact email
+			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."settings`
+						 SET `setvalue` = '".$_SESSION['installer']['sysConfig']['contactEmail']."'
+					   WHERE `setname` = 'contactFormEmail'";
+			if (!@$objDb->Execute($query)) {
+				$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL']."<br />";
+			}
+
+			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."module_contact_form`
+						 SET `mails` = '".$_SESSION['installer']['sysConfig']['contactEmail']."'
+					   WHERE `id` = 1";
+			if (!@$objDb->Execute($query)) {
+				$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL']."<br />";
+			}
+
+			// set domain url
+			if (strpos($_SESSION['installer']['sysConfig']['domainURL'], 'http://') === false) {
+				if (substr($_SESSION['installer']['sysConfig']['domainURL'], -1) == '/') {
+					$_SESSION['installer']['sysConfig']['domainURL'] = substr($_SESSION['installer']['sysConfig']['domainURL'], 0, -1);
+				}
+
+				$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."settings`
+							SET `setvalue` = '".$_SESSION['installer']['sysConfig']['domainURL']."'
+							WHERE `setname` = 'domainUrl'";
+				if (!@$objDb->Execute($query)) {
+					$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_DOMAIN_URL']."<br />";
+				}
+			} else {
+				 $statusMsg .= $_ARRLANG['TXT_SET_VALID_DOMAIN_URL'];
+			}
+
+			if (in_array($_SESSION['installer']['config']['dbTablePrefix']."module_shop_config", $arrTables)) {
+				// set shop email
+				$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."module_shop_config`
+							 SET `value` = '".$_SESSION['installer']['sysConfig']['adminEmail']."'
+						   WHERE `name` = 'email' OR `name` = 'confirmation_emails'";
+				if (!@$objDb->Execute($query)) {
+					$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL']."<br />";
+				}
+			}
+
+
+			/*
+			// set rss title
+			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."module_news_settings`
+						 SET `value` = '".$_SESSION['installer']['sysConfig']['rssTitle']."'
+					   WHERE `name` = 'news_feed_title'";
+			if (!@$objDb->Execute($query)) {
+				$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_RSS_TITLE']."<br />";
+			}
+
+			// set rss description
+			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."module_news_settings`
+						 SET `value` = '".$_SESSION['installer']['sysConfig']['rssDescription']."'
+					   WHERE `name` = 'news_feed_description'";
+			if (!@$objDb->Execute($query)) {
+				$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_RSS_DESCRIPTION']."<br />";
+			}
+			*/
+		}
+
+		if (empty($statusMsg)) {
+			return $this->_createSettingsFile();
+		} else {
+			return $statusMsg;
+		}
+	}
+
+	/**
+	 * Write all settings into the config-file
+	 *
+	 */
+	function _createSettingsFile()
+	{
+		global $_ARRLANG;
+
+		$objDb = $this->_getDbObject($statusMsg);
+		if ($objDb === false) {
+			return $statusMsg;
+		} else {
+			$strSettingsFile = $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].'/config/settings.php';
+			if (is_writable($strSettingsFile)) {
+				$handleFile = fopen($strSettingsFile,'w+');
+				if ($handleFile) {
+				//Header & Footer
+					$strHeader	= "<?php\n";
+					$strHeader .= "/**\n";
+					$strHeader .= "* This file is generated by the \"settings\"-menu in your CMS.\n";
+					$strHeader .= "* Do not try to edit it manually!\n";
+					$strHeader .= "*/\n\n";
+
+					$strFooter .= "?>";
+
+				//Get module-names
+					$objResult = $objDb->Execute("SELECT id, name FROM `".$_SESSION['installer']['config']['dbTablePrefix']."modules`");
+					if ($objResult->RecordCount() > 0) {
+						while (!$objResult->EOF) {
+							$arrModules[$objResult->fields['id']] = $objResult->fields['name'];
+							$objResult->MoveNext();
+						}
+					}
+
+				//Get values
+					$objResult = $objDb->Execute("SELECT setname, setmodule, setvalue FROM `".$_SESSION['installer']['config']['dbTablePrefix']."settings` ORDER BY	setmodule ASC, setname ASC");
+					$intMaxLen = 0;
+					if ($objResult->RecordCount() > 0) {
+						while (!$objResult->EOF) {
+							$intMaxLen = (strlen($objResult->fields['setname']) > $intMaxLen) ? strlen($objResult->fields['setname']) : $intMaxLen;
+							$arrValues[$objResult->fields['setmodule']][$objResult->fields['setname']] = $objResult->fields['setvalue'];
+							$objResult->MoveNext();
+						}
+					}
+					$intMaxLen += strlen('$_CONFIG[\'\']') + 1; //needed for formatted output
+
+				//Write values
+					flock($handleFile, LOCK_EX); //set semaphore
+					@fwrite($handleFile,$strHeader);
+
+					foreach ($arrValues as $intModule => $arrInner) {
+						@fwrite($handleFile,"/**\n");
+						@fwrite($handleFile,"* -------------------------------------------------------------------------\n");
+						@fwrite($handleFile,"* ".ucfirst($arrModules[$intModule])."\n");
+						@fwrite($handleFile,"* -------------------------------------------------------------------------\n");
+						@fwrite($handleFile,"*/\n");
+
+						foreach($arrInner as $strName => $strValue) {
+							@fwrite($handleFile,sprintf("%-".$intMaxLen."s",'$_CONFIG[\''.$strName.'\']'));
+							@fwrite($handleFile,"= ");
+							@fwrite($handleFile,((intval($strValue) > 0) ? $strValue : '"'.$strValue.'"').";\n");
+						}
+						@fwrite($handleFile,"\n");
+					}
+
+					@fwrite($handleFile,$strFooter);
+					flock($handleFile, LOCK_UN);
+
+					fclose($handleFile);
+
+					return true;
+				} else {
+					return sprintf($_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'], $strSettingsFile);
+				}
+			} else {
+				return sprintf($_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'], $strSettingsFile);
+			}
+		}
+	}
+
+	function getFtpDirectoryTree($path) {
+		$statusMsg = "";
+		$arrDirectories = array();
+		$directoryPath = "";
+
+		$arrPaths = explode("/", $path);
+
+		$objFtp = $this->_getFtpObject($statusMsg);
+		if ($objFtp === false) {
+			return $statusMsg;
+		} else {
+			for ($directoryId = 0; $directoryId < count($arrPaths); $directoryId++) {
+				$arrDirectories[$directoryId] = array();
+				$arrDirectoryTree = array();
+
+				if ($directoryId != 0) {
+					@ftp_chdir($objFtp, $arrPaths[$directoryId]);
+				}
+				$directoryPath .= $arrPaths[$directoryId].'/';
+
+				$arrDirectoryTree = $this->_getFilesOfFtpDirectory($objFtp);
+
+				foreach ($arrDirectoryTree as $file) {
+					if (@ftp_chdir($objFtp, $file)) {
+						$arrDirectory = array(
+							'name'	=> $file,
+							'path'	=> $directoryPath,
+							'style'	=> "padding-left: ".($directoryId*15)."px;"
+						);
+						array_push($arrDirectories[$directoryId], $arrDirectory);
+						@ftp_chdir($objFtp, '..');
+					}
+				}
+			}
+		}
+		return $arrDirectories;
+	}
+
+	function updateCheck() {
+		global $_CONFIG;
+
+        $version = "";
+        $ip = "";
+        $serverName = "";
+
+        if (!isset($_SESSION['installer']['updateCheck']) || !$_SESSION['installer']['updateCheck']) {
+	        if (isset($_SERVER['SERVER_NAME'])) {
+	        	$serverName = $_SERVER['SERVER_NAME'];
+	        }
+	        if (isset($_SERVER['SERVER_ADDR'])) {
+	        	$ip = $_SERVER['SERVER_ADDR'];
+	        }
+
+	        $url = base64_decode('aHR0cDovL3d3dy5jb250cmV4eC5jb20vdXBkYXRlY2VudGVyL2luZGV4LnBocA==').'?host='.$serverName.$_SESSION['installer']['config']['offsetPath'].'&ip='.$ip.'&version='.$_CONFIG['coreCmsVersion'].'&edition='.$_CONFIG['coreCmsEdition'];
+	        if($this->checkRSSSupport()) {
+	            @file($url);
+	            $_SESSION['installer']['updateCheckImage']="";
+	        } else {
+	        	$_SESSION['installer']['updateCheckImage']="<img src='".$url."' width='1' height='1' />";
+	        }
+	        $_SESSION['installer']['updateCheck'] = true;
+        }
+	}
+
+	function getNewestVersion() {
+		$xml_parser = @xml_parser_create();
+		@xml_set_object($xml_parser,$this);
+		@xml_set_element_handler($xml_parser,"_xmlVersionStartTag","_xmlVersionEndTag");
+		@xml_set_character_data_handler($xml_parser, "_xmlVersionCharacterData");
+		@xml_parse($xml_parser,file_get_contents(base64_decode('aHR0cDovL3d3dy5jb250cmV4eC5jb20vdXBkYXRlY2VudGVyL3ZlcnNpb24ueG1s')));
+		return $this->newestVersion;
+	}
+
+	function _xmlVersionStartTag($parser,$name,$attrs) {
+		global $xmlVersionTag;
+
+		$xmlVersionTag = $name;
+	}
+
+	function _xmlVersionCharacterData($parser, $data) {
+		global $xmlVersionTag;
+
+		if (empty($this->newestVersion) && $xmlVersionTag == "VERSION") {
+			$this->newestVersion = $data;
+		}
+	}
+
+	function _xmlVersionEndTag($parser,$name) {
+	}
+}
+?>

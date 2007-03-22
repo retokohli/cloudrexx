@@ -1,0 +1,119 @@
+/*
+   Navigation Style Sheet for the ASTALAVISTA secure CMS backend console.
+
+   Copyright 2004 ASTALAVISTA IT Engineering. 
+   All Rights Reserved.
+
+*/
+
+
+#subnavbar_level1 {
+	padding: 2px 0px 0px 0px;
+	WIDTH: 100%;
+	BACKGROUND-COLOR: #C9CED4;
+	BORDER-TOP: 1px solid #ffffff;
+}
+
+#subnavbar_level1 th{
+	COLOR: black; 
+	vertical-align: middle;
+	TEXT-DECORATION: none;
+	height: 27px;
+}
+
+#subnavbar_level1 a{
+	color:           black;
+	font-weight:     normal;
+	font-family:     Arial, Helvetica, sans-serif;
+	font-style:      normal;
+	font-size: 11px;
+	text-decoration: none;
+	padding: 1px 4px 1px 3px;
+	border-top: 1px solid #8B9191;
+	border-bottom: 1px solid #8B9191;
+	border-left: 1px solid #8B9191;
+	border-right: 1px solid #8B9191;
+	background-color: #D9DCE1;
+}
+
+#subnavbar_level1 a:hover{
+	color:           #000000;
+	font-weight:     normal;
+	font-family:     Arial, Helvetica, sans-serif;
+	font-style:      normal;
+	font-size: 11px;
+	text-decoration: none;
+	background: #B0BCC8; 
+	padding: 1px 4px 1px 3px;
+	border-top: 1px solid #617886;
+	border-bottom: 1px solid #617886;
+	border-left: 1px solid #617886;
+	border-right: 1px solid #617886;	
+}
+
+
+table.subnavbar_level1 td{
+	COLOR: black; 
+	vertical-align: middle;
+}
+
+#subnavbar_level2 {
+    LIST-STYLE-TYPE: none
+	color: black;
+	margin: 0px 0px 0px 0px;
+	padding: 3px 2px 2px 0px;
+	z-index: 1;
+	padding-left: 0px 
+	padding-top: 0px 
+	padding-right: 0px 
+	padding-bottom: 0px 
+}
+
+#subnavbar_level2 ul{
+    LIST-STYLE-TYPE: none
+	color: black;
+	margin: 0px 0px 0px 0px;
+	padding: 5px 2px 5px 2px;
+	z-index: 1;
+	border-top: 0px solid #999999;
+	border-bottom: 0px solid #999999;
+	border-left: 0px solid #999999;
+	border-right: 0px solid #999999;
+	background: #ffffff;
+}
+	
+#subnavbar_level2 li {
+	display: inline;
+	overflow: hidden;
+	padding: 0px 0px 0px 0px;
+	list-style-type: none; 
+}	
+	
+#subnavbar_level2 a{
+	background: #ffffff;
+	FONT-WEIGHT: normal;
+	border-top: 0px solid #999999;
+	border-bottom: 0px solid #999999;
+	border-left: 0px solid #999999;
+	border-right: 0px solid #999999;
+	padding: 2px 5px 2px 5px;
+	margin:  0px 0px 0px 0px;
+	text-decoration: none; 
+}
+	
+#subnavbar_level2 a.active {
+	background: #ffffff; 
+	color: #0A50A1;
+	border-bottom: 0px solid #cccccc;
+}
+	
+#subnavbar_level2 a:hover {
+	color: #000000;
+	TEXT-DECORATION: underline;
+	background: #ffffff; 
+}	
+	
+#subnavbar_level2 a.active:hover {
+	background: #ffffff;
+	color: #000000;
+}

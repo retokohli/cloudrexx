@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE theme SYSTEM "http://www.contrexx.com/themes/theme-1.0">
+<theme version="1.0">
+	<name>
+		Themename
+	</name>	
+	<version>
+		0.1.4
+	</version>
+	<description>
+		this is only a placeholder
+	</description>	
+	<authors>
+		<author>
+			<user>
+				asdgasdfgh
+			</user>
+			<email>
+				creator@domain.tld
+			</email>
+		</author>
+	</authors>
+	<filelist>
+		<file>
+			file1.html
+		</file>
+		<file>
+			file2.html
+		</file>
+	</filelist>
+	<changelog>
+		<change date="2006-29-04">
+			<comment>
+				test comment
+			</comment>
+		</change>
+		<change date="2006-03-06">
+			<comment>
+				test comment2
+			</comment>
+		</change>
+	</changelog>
+</theme>

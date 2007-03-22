@@ -1,0 +1,52 @@
+<!-- start module_podcast_select_medium_source.html -->
+<script type="text/javascript">
+//<![CDATA[
+function podcast_change_source()
+{
+	if (document.getElementById('podcast_medium_source_remote').checked == true) {
+		document.getElementById('podcast_medium_local_source_box').style.display = 'none';
+		document.getElementById('podcast_medium_remote_source_box').style.display = 'block';
+	} else {
+		document.getElementById('podcast_medium_remote_source_box').style.display = 'none';
+		document.getElementById('podcast_medium_local_source_box').style.display = 'block';
+	}
+}
+
+function podcast_get_fileBrowser()
+{
+	podcastPopup = window.open('?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+	podcastPopup.focus();
+}
+
+function SetUrl(url, width, height, alt)
+{
+	document.getElementById('podcast_medium_local_source').value = url;
+}
+//]]>
+</script>
+<form action="index.php?cmd=podcast&amp;act=selectSource" method="post">
+	<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+		<thead>
+			<tr>
+				<th>{TXT_PODCAST_ADD_MEDIUM} ({TXT_PODCAST_STEP} 1: {TXT_PODCAST_SELECT_SOURCE})</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr class="row1" style="font-weight:normal;">
+				<td>{TXT_PODCAST_SELECT_SOURCE_TXT}</td>
+			</tr>
+			<tr class="row2">
+				<td>
+					<input type="radio" name="podcast_medium_source_type" id="podcast_medium_source_local" value="local" onchange="podcast_change_source()" {PODCAST_SELECT_LOCAL_MEDIUM} /><label for="podcast_medium_source_local">{TXT_PODCAST_LOCAL}</label>
+					<input type="radio" name="podcast_medium_source_type" id="podcast_medium_source_remote" value="remote" onchange="podcast_change_source()" {PODCAST_SELECT_REMOTE_MEDIUM} /><label for="podcast_medium_source_remote">{TXT_PODCAST_REMOTE}</label>
+					<br /><br />
+					<div id="podcast_medium_local_source_box" style="display:{PODCAST_SELECT_LOCAL_MEDIUM_BOX};"><input type="text" value="{PODCAST_LOCAL_SOURCE}" name="podcast_medium_local_source" id="podcast_medium_local_source" style="width:350px;" /> <input type="button" value="{TXT_PODCAST_BROWSE}" onclick="podcast_get_fileBrowser()" /></div>
+					<div id="podcast_medium_remote_source_box" style="display:{PODCAST_SELECT_REMOTE_MEDIUM_BOX};"><input type="text" value="{PODCAST_REMOTE_SOURCE}" name="podcast_medium_remote_source" style="width:435px;" /></div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<br />
+	<input type="submit" name="podcast_select_source" value="{TXT_PODCAST_NEXT}" />
+</form>
+<!-- end module_podcast_select_medium_source.html -->

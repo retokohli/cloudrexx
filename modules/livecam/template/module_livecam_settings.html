@@ -1,0 +1,23 @@
+<!-- START module_livecam_settings.html -->
+<form action="index.php?cmd=livecam&amp;act=settings" method="post" name="guestbook">
+	<table cellspacing="0" cellpadding="2" width="100%" border="0" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_SETTINGS}</th>
+		</tr>
+		<tr class="row1">
+			<td width="15%" style="vertical-align: top;">{TXT_CURRENT_IMAGE_URL}:</td>
+			<td><input type="text" name="currentImageUrl" value="{CURRENT_IMAGE_URL}" /></td>
+		</tr>
+		<tr class="row2">
+			<td width="15%" nowrap="nowrap">{TXT_ARCHIVE_PATH}</td>
+			<td width="85%" nowrap="nowrap"><input name="archivePath" type="text" value="{ARCHIVE_PATH}" /></td>
+		</tr>
+		<tr class="row1">
+			<td width="15%" nowrap="nowrap">{TXT_THUMBNAIL_PATH}</td>
+			<td width="85%" nowrap="nowrap"><input name="thumbnailPath" type="text" value="{THUMBNAIL_PATH}" /></td>
+		</tr>
+	</table>
+	<br />
+	<input type="submit" name="store" value="{TXT_SAVE}" />
+</form>
+<!-- END module_livecam_settings.html -->

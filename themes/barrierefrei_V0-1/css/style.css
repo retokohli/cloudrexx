@@ -1,0 +1,114 @@
+body {
+       font-family: verdana, arial, helvetica, sans-serif;
+	   font-size:100.1%; /*** Don't change this setting. Make all other font-sizes in % (preferred) or ems ***/
+	   color:#000000;
+	 }
+a {
+	text-decoration: none;
+	font-weight: bold;
+	outline: none;
+  }
+a:visited {
+	      }
+a:active {
+	     }
+a:hover {
+	      text-decoration: underline;
+	    }
+strong, b {
+	        font-weight: bold;
+	      }
+hr {
+	 margin: 0px; /* fixes xhtml N6 bug where the hr sits to the left*/
+	 color: #ccc; /* for ie */
+	 background-color: #ccc; /* for everyone else */
+	 height: 1px;
+   }
+p {
+	font-size: 90%;
+	line-height: 1.1em;
+	margin-top: 1.5em;
+	margin-bottom: 1.5em; 
+  }
+li {
+	 font-size: 90%;
+	 line-height: 1.1em;
+	 margin-top: 0.3em;
+	 margin-bottom: 0.2em; 
+  }
+ul {
+	 margin-top: 1.0em;
+	 margin-bottom: 1.0em; 
+   }
+td {
+	 font-size: 90%;
+   }
+hr {
+	 margin-top: 2.0em;
+	 margin-bottom: 2.0em;
+   }
+img {
+	  border: 0;
+	}
+div,p{
+       margin:0
+	 }
+address {
+          text-decoration:none;
+		  display: inline;
+		}		 
+acronym, abbr {
+	            letter-spacing: .07em;
+	            border-bottom: 1px dashed #c00;
+	            cursor: help;
+              }
+.suchen fieldset {
+	margin: 5px; 				/* Abstand fürs Formular in alle Richtungen */
+	border: 1px solid #FF9933; 	/* gepunkteter Rahmen (wird in den Browsern unterschiedlich angezeigt) */
+	font-size: 70%;
+	width: 285px;
+	cursor: help;
+      background:#FFCC88;
+	}	
+
+.suchen legend {
+	border: 1px solid #FF9933;
+	padding: 1px;
+	text-align: center;
+	margin-right: 5px;
+	font-size: 10px;
+	cursor: help;
+      background:#FFCC88;
+	}
+	
+.suchen label {
+	float: left; 				/* label floaten damit immer links */
+	text-align: right;			/* rechts anordnen sieht besser aus */		
+	cursor: help;
+	margin-right: 5px;
+	background:#FFE7AA;
+	border: 1px solid #FF9933;
+      }
+
+.suchen input {
+        font-size: 89%;
+		cursor: help;
+		background:#ffffff;
+		border: 1px solid #FF9933;
+	  }
+
+.titel { 
+         text-align:left;
+		 font-size: 250%;
+		 font-weight: bolder;
+		 float: left;
+		 margin: 10px;
+	   }
+.suchen {
+          float: right;
+		}
+.datecrum {
+			font-size: 80%;
+		    font-weight: bold;
+    	    text-decoration: none;
+		 }

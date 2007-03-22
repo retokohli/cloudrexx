@@ -1,0 +1,6 @@
+ALTER TABLE `contrexx_access_users` 
+ADD `company` INT( 6 ) NOT NULL AFTER `webpage` ,
+ADD `zip` INT( 6 ) NOT NULL AFTER `company` ,
+ADD `phone` VARCHAR( 20 ) NOT NULL AFTER `zip` ,
+ADD `mobile` VARCHAR( 20 ) NOT NULL AFTER `phone` ,
+ADD `street` VARCHAR( 100 ) NOT NULL AFTER `mobile` ;

@@ -1,0 +1,98 @@
+<!-- START gallery_new_category.html -->
+<script language="JavaScript" type="text/javascript">
+function disableCategorySelection()
+{
+	document.newcat.select_category_id.disabled = true;
+}
+
+function enableCategorySelection()
+{
+	document.newcat.select_category_id.disabled = false;
+}
+function showOrHide(strElement) {
+	if (document.getElementById(strElement).style.display == 'none') {
+		document.getElementById(strElement).style.display = 'block';
+	} else {
+		document.getElementById(strElement).style.display = 'none';
+	}
+}
+function copyText(strType) {
+	for (var h=0; h < document.forms.length;h++) {
+		for (var i=0; i < document.forms[h].elements.length;i++) {
+			//read out all form-elements with the loop
+			if(document.forms[h].elements[i].name.search(strType) != -1) {
+				if (strType == 'category_name_') {
+					document.forms[h].elements[i].value = document.newcat.category_name.value;
+				} else {
+					document.forms[h].elements[i].value = document.newcat.category_desc.value;
+				}
+			}
+		}
+	}	
+}
+</script>
+<form name="newcat" method="post" action="?cmd=gallery&amp;act=update_category&amp;id={VALUE_ID}">
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+		<tr>
+			<th colspan="2" align="left">{TXT_TITLE}</th>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap" width="10%" valign="top">{TXT_NAME}</td>
+			<td>
+				<input type="text" name="category_name" onchange="copyText('category_name_');" value="{VALUE_NAME}" style="width:30%;" />&nbsp;<a href="javascript:showOrHide('divLang_Name');">{TXT_EXTENDED}</a>
+				<div id="divLang_Name" style="display: none;">
+					<!-- BEGIN showNameFields -->
+					<input name="category_name_{NAMEFIELDS_LID}" value="{NAMEFIELDS_VALUE}" style="margin-top:1px; width:30%;">&nbsp;<label for="category_name_{NAMEFIELDS_LID}">{NAMEFIELDS_LANGUAGE}</label> <br />
+					<!-- END showNameFields -->			
+				</div>
+			</td>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap" valign="top">{TXT_DESCRIPTION}</td>
+			<td>
+				<textarea name="category_desc" onchange="copyText('category_desc_');" rows="3" style="width:30%;">{VALUE_DESC}</textarea>&nbsp;<a href="javascript:showOrHide('divLang_Desc');">{TXT_EXTENDED}</a>
+				<div id="divLang_Desc" style="display: none;">
+					<!-- BEGIN showDescFields -->
+					<textarea name="category_desc_{DESCFIELDS_LID}" rows="3" style="margin-top:1px; width:30%;">{DESCFIELDS_VALUE}</textarea>&nbsp;<label for="category_name_{DESCFIELDS_LID}">{DESCFIELDS_LANGUAGE}</label> <br />
+					<!-- END showDescFields -->
+				</div>
+			</td>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap">{TXT_CATEGORYTYPE}</td>
+			<td>
+				<input type="radio" name="category_type" value="main" onclick="disableCategorySelection()" {VALUE_TYPE_MAIN} />&nbsp;{TXT_CATEGORYTYPE_NEW}<br />
+				<input type="radio" name="category_type" value="sub" onclick="enableCategorySelection()" {VALUE_TYPE_SUB} />&nbsp;{TXT_CATEGORYTYPE_SUB}
+				<select name="select_category_id" {VALUE_MAINCAT_SELECTION}>
+					<!-- BEGIN showCategories -->
+					<option value="{NEW_CATEGORY_ID}" {VALUE_SELECTED}>{NEW_CATEGORY_NAME}</option>
+					<!-- END showCategories -->
+				</select>
+			</td>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap">{TXT_STATUS}</td>
+			<td>
+				<input type="radio" name="category_status" value="1" {VALUE_STATE_ON} />&nbsp;{TXT_STATUS_ON}
+				<input type="radio" name="category_status" value="0" {VALUE_STATE_OFF} />&nbsp;{TXT_STATUS_OFF}
+			</td>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap">{TXT_COMMENT}</td>
+			<td>
+				<input type="radio" name="category_comment" value="1" {VALUE_COMMENT_ON} />&nbsp;{TXT_STATUS_ON}
+				<input type="radio" name="category_comment" value="0" {VALUE_COMMENT_OFF} />&nbsp;{TXT_STATUS_OFF}
+			</td>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap">{TXT_VOTING}</td>
+			<td>
+				<input type="radio" name="category_voting" value="1" {VALUE_VOTING_ON} />&nbsp;{TXT_STATUS_ON}
+				<input type="radio" name="category_voting" value="0" {VALUE_VOTING_OFF} />&nbsp;{TXT_STATUS_OFF}
+			</td>
+		</tr>
+	</table>
+	<br />
+	<input type="submit" value="{TXT_BUTTON_SUBMIT}" />
+</form>
+<!-- END gallery_edit_category.html -->

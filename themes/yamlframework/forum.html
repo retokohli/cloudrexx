@@ -1,0 +1,23 @@
+<div id="forum">
+         <div class="div_board">
+	        <div class="div_title">{TXT_FORUM_LATEST_ENTRIES}</div>
+		<table summary="{TXT_FORUM_LATEST_ENTRIES}" cellspacing="0" cellpadding="0" style="border-bottom: solid 1px #7390AF;">
+			<tr class="row3">
+				<th width="55%" style="text-align: left;">{TXT_FORUM_THREAD}</th>
+				<th width="25%" style="text-align: left;">{TXT_FORUM_OVERVIEW_FORUM}</th>		
+			    <!--<th width="15%" style="text-align: left;">{TXT_FORUM_THREAD_STRATER}</th>-->		
+				<th width="1%"  style="text-align: left;">{TXT_FORUM_POST_COUNT}</th>		
+				<th width="4%"  style="text-align: left;">{TXT_FORUM_THREAD_CREATE_DATE}</th>
+			</tr>
+			<!-- BEGIN latestPosts -->
+			<tr class="row_{FORUM_ROWCLASS}">
+				<td>{FORUM_THREAD}</td>
+				<td>{FORUM_FORUM_NAME}</td>
+			    <!--<td>{FORUM_THREAD_STARTER}</td>-->
+				<td>{FORUM_POST_COUNT}</td>
+				<td>{FORUM_THREAD_CREATE_DATE}</td>
+			</tr>	
+			<!-- END latestPosts -->	
+		</table>
+	</div>
+</div>

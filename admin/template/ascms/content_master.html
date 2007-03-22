@@ -1,0 +1,34 @@
+<!-- START content_master.html -->
+<script language="JavaScript" type="text/javascript">
+<!-- //
+function logout() {
+	Check = confirm("{TXT_LOGOUT_WARNING}")
+	if(Check == true) {
+		location.href = "index.php?cmd=logout";
+	}
+}
+// -->
+</script>
+<table cellspacing="0" cellpadding="3" width="100%" border="0">
+<tr>
+<td height="18" nowrap="nowrap" valign="top">
+<div align="left" style="padding-bottom: 10px;"><a href="./"><b>Home</b></a>&nbsp;&raquo;&nbsp;<b>{SUB_MENU_TITLE}</b>&nbsp;&raquo;&nbsp;<b>{CONTENT_TITLE}</b></div>
+</td>
+</tr>
+</table>
+<table class="subnavbar_level1" cellspacing="0" cellpadding="3" width="100%" border="0">
+<tr>
+<td width="83%">&nbsp;{CONTENT_NAVIGATION}</td>
+<td width="17%"><div align="right">{FRONTEND_LANG_MENU}</div>
+</td>
+</tr>
+</table>
+<table cellspacing="0" cellpadding="0" width="100%" border="0">
+<tr>
+<td height="10"><img src="images/icons/pixel.gif" height="1" alt="" width="1" /></td>
+</tr>
+</table>
+{CONTENT_STATUS_MESSAGE}
+{ADMIN_CONTENT}<br />
+<br />
+<!-- END content_master.html -->

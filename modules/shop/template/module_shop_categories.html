@@ -1,0 +1,93 @@
+<!-- START shop_categories.html -->
+<script language="javascript" type="text/javascript">
+<!--
+function deleteCategory(catId)
+{
+	if(confirm('{TXT_CONFIRM_DELETE_SHOP_CATEGORIES}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+		window.location.replace("index.php?cmd=shop&act=delcat&id="+catId);
+}
+
+function shopCatDoAction(strForm,strCheckbox,objSelect,strAct)
+{
+	if(checkboxIsChecked(strForm,strCheckbox) == true){
+		switch(strAct){
+			case 'del':
+				if(confirm('{TXT_CONFIRM_DELETE_SHOP_CATEGORIES}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
+					document.forms[strForm].action = "index.php?cmd=shop&act=delcat";
+					document.forms[strForm].submit();
+				}
+				break;
+		}
+	} else {
+		alert("{TXT_MAKE_SELECTION}");
+	}
+	objSelect.value = 0;
+}
+// -->
+</script>
+<form name="shopForm1" method="post" action="?cmd=shop&amp;act=newcat">
+	<table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
+		<tr>
+			<th>{TXT_ADD_NEW_SHOP_GROUP}</th>
+		</tr>
+		<tr class="row1">
+			<td>
+				{TXT_NAME}:&nbsp;<input type="text" name="newCatName" size="40" maxlength="255" value="{SHOP_SELECTED_CAT_NAME}" />
+				&nbsp;<select name="catParentId" size="1">
+					<option value="0">{TXT_NEW_MAIN_ARTICLE_GROUP}</option>
+					{SHOP_CAT_MENU}
+				</select>
+				&nbsp;{TXT_ACTIVE}
+				<input type="checkbox" name="catStatus" value="1" checked="checked" />
+				&nbsp;&nbsp;
+				<input type="hidden" name="modCatId" value="{SHOP_MOD_CAT_ID}" />
+				<input type="submit" name="submit" value="{TXT_STORE}" />
+			</td>
+		</tr>
+	</table>
+</form>
+<br />
+<form name="shopSelectCat" method="post" action="?cmd=shop&amp;act=modAllCategories">
+	<table width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
+		<tr>
+			<th colspan="5">{TXT_ARTICLEGROUPS}:&nbsp;(&nbsp;{TXT_TOTAL}&nbsp;{SHOP_TOTAL_CATEGORIES}&nbsp;)</th>
+		</tr>
+		<tr class="row1">
+			<td width="1%" nowrap="nowrap"><div style="text-align:center;"><b>#</b></div></td>
+			<td width="3%" nowrap="nowrap"><b>{TXT_ID}</b></td>
+			<td width="92%" nowrap="nowrap"><b>{TXT_NAME}&nbsp;&nbsp;&nbsp;</b></td>
+			<td width="3%" nowrap="nowrap"><b>{TXT_STATUS}</b></td>
+			<td width="1%" nowrap="nowrap"><div style="text-align:right;"><b>{TXT_ACTION}</b></div></td>
+		</tr>
+		<!-- BEGIN catRow -->
+			<tr class="{SHOP_ROWCLASS}">
+				<td nowrap="nowrap"><input type="checkbox" name="selectedCatId[]" value="{SHOP_CAT_ID}" /></td>
+				<td nowrap="nowrap">{SHOP_CAT_ID}</td>
+				<td nowrap="nowrap">
+					<img src="images/icons/{SHOP_CAT_STATUS_PICTURE}" alt="{TXT_STATUS}" title="{TXT_STATUS}" />&nbsp;&nbsp;{SHOP_CAT_LEVELSPACE}
+					<input type="text" name="catSorting[{SHOP_CAT_ID}]" value="{SHOP_CAT_SORTING}" size="3" maxlength="4" />
+					&nbsp;<b><a href="?cmd=shop&amp;act=cat&amp;modCatId={SHOP_CAT_ID}" title="{SHOP_CAT_NAME}">{SHOP_CAT_NAME}</a></b>
+					&nbsp;<a href="?cmd=shop&amp;act=products&amp;catId={SHOP_CAT_ID}" title="{TXT_PREVIEW}"><img src="images/icons/details.gif" width="14" height="16" border="0" alt="{TXT_PREVIEW}" /></a>
+					<input type="hidden" value="{SHOP_CAT_SORTING}" name="catSorting_old[{SHOP_CAT_ID}]" />
+					<input type="hidden" value="{SHOP_CAT_ID}" name="catId[{SHOP_CAT_ID}]" />
+				</td>
+				<td nowrap="nowrap"><input type="checkbox" name="catStatus[{SHOP_CAT_ID}]" value="1" {SHOP_CAT_STATUS} /><input type="hidden" value="{SHOP_CAT_STATUS}" name="catStatus_old[{SHOP_CAT_ID}]" /></td>
+				<td nowrap="nowrap"><div style="text-align:right;">
+					<a href="?cmd=shop&amp;act=cat&amp;modCatId={SHOP_CAT_ID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a>
+					<a href="javascript:deleteCategory('{SHOP_CAT_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a>
+				</div></td>
+			</tr>
+		<!-- END catRow -->
+	</table>
+	<img src="images/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
+	<a href="javascript:{}" onclick="changeCheckboxes('shopSelectCat','selectedCatId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
+	<a href="javascript:{}" onclick="changeCheckboxes('shopSelectCat','selectedCatId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
+	<select name="selectAction" onchange="shopCatDoAction('shopSelectCat','selectedCatId[]',this,this.value)">
+		<option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
+		<option value="del">{TXT_DELETE_MARKED}</option>
+	</select>
+	<br />
+	<br />
+	<input type="submit" name="store" value="{TXT_ACCEPT_CHANGES}" />
+</form>
+<!-- END shop_categories.html -->

@@ -1,0 +1,113 @@
+#mainMenu {
+position: relative;
+text-align: left;
+width: 694px;
+color: #ffffff;
+margin: 0px;
+padding-bottom: 6px;
+padding-top: 5px;
+padding-left:0px;
+padding-right: 4px;
+font-size: 10px;
+}
+
+
+#menuList {
+margin: 0px;
+padding: 0px;
+}
+
+#menuList ul {
+margin: 0px;
+padding: 0px;
+}
+
+#menuList li {
+display:inline;
+list-style: none;
+}
+
+#menuList li a.starter_active, #menuList li a.starter_active:link {
+color: #ffffff;
+font-size: 11px;
+margin: 0px;
+padding-left:11px;
+padding-right: 11px;
+padding-bottom: 6px;
+padding-top: 5px;
+text-decoration: none;
+border-right: 1px solid #FFC96A;
+border-left: 1px solid #FFCF75;
+background-image: url(images/navbg_on.gif);
+font-weight: bold;
+}
+
+#menuList li a.starter_normal, #menuList li a.starter_normal:link {
+color: #ffffff;
+margin: 0px;
+font-size: 11px;
+padding-left:11px;
+padding-right: 11px;
+padding-bottom: 6px;
+padding-top: 5px;
+text-decoration: none;
+background-color: #cccccc;
+border-right: 1px solid #FFC96A;
+border-left: 1px solid #FFCF75;
+background-image: url(images/navbg.gif);
+font-weight: bold;
+}
+
+#menuList li a.starter_normal:hover, #menuList li a.starter_normal:active, #menuList li a.starter_active:hover {
+color: #ffffff;
+font-size: 11px;
+background-color: #004A9C;
+border-right: 1px solid #FFC96A;
+border-left: 1px solid #FFCF75;
+background-image: url(images/navbg_on.gif);
+}
+
+.menu {
+text-align: left;
+font-size: 11px;
+color: #ffffff;
+background-color: #dddddd;
+position: absolute;
+width: 160px;
+visibility: hidden;
+border: 0px solid #ffffff;
+}
+
+.menu li a, .menu li a:link  {
+background-color: transparent;
+color: #ffffff;
+font-size: 11px;
+display: block;
+border-bottom: 1px solid #ffffff;
+margin: 0px;
+padding-left:11px;
+padding-right: 11px;
+padding-bottom: 3px;
+padding-top: 3px;
+text-decoration: none;
+}
+
+.menu li a:hover, .menu li a:active {
+background-color: #ffffff;
+color: #000000;
+}
+
+#menubuilder { 
+width: 160px; 
+z-index:100; 
+}
+
+#menubuilder a, {
+background-color: #dddddd;
+color: #ffffff;
+}
+
+#menubuilder a:hover {
+background-color: #ffffff;
+color: #000000;
+}

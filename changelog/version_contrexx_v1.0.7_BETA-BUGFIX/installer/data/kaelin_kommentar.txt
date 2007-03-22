@@ -1,0 +1,6 @@
+Achtung: Im SQL-File sind für folgende Tabellen noch überflüssige Testeinträge vorhanden:
+
+-- Daten für Tabelle `contrexx_module_calendar`
+-- Daten für Tabelle `contrexx_module_calendar_categories`
+
+Im File in diesem Ordner sind diese Einträge schon entfernt worden.

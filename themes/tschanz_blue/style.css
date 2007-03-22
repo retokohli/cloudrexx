@@ -1,0 +1,269 @@
+html {
+}
+
+#accesskeys{
+    display:none;
+}
+
+body { 
+	background: #ffffff;
+	background-repeat: repeat-y;
+	background-position: center center;
+	margin: 0px;
+	font-family: Arial;
+    color: #000000;
+}
+
+form { 
+	padding: 0px;
+	margin: 0px;
+}
+
+a{
+	font-family:Arial;
+	font-weight: regular;
+	text-decoration: none;
+        color: #004A9C;
+}
+
+
+a:hover{
+	font-family: Arial;
+	font-weight: regular;
+        color: #004A9C;
+	text-decoration: underline;
+}
+
+input, textarea, select, radio {
+	font-family: Arial;
+	font-size: 11px;
+	border: 1px solid #E5E5E5;
+	background-color: #F9F9F9;
+	padding: 1px;
+	color: #000000;
+	overflow: auto;
+}
+
+
+h1 {
+	font-family: Arial;
+	color: #004A9C;
+	text-decoration: none;
+	font-size: 16px;
+	font-weight: bold;
+	margin: 0px;
+	padding: 0px;
+}
+
+h2 {
+	font-family: Arial;
+	color: #487BBD;
+	text-decoration: none;
+	font-size: 11px;
+        font-weight: bold;
+	margin: 0px;
+	padding: 0px;
+}
+
+
+#site {
+	float: left;
+	width: 900px;
+	padding: 0px 0px 0px 0px;
+	border: 0px solid #000000;
+        position: absolute;
+	left: 50%;
+	margin-left: -450px;
+}
+
+#header {
+	float: left;
+	height: 17px;
+	width: 890px;
+	padding: 63px 10px 0px 0px;
+	border: 0px solid #000000;
+	background-image: url(images/header.gif);
+	font-size: 11px;
+	color: #ffffff;
+	text-align: right;
+}
+
+#header a{
+	font-size: 11px;
+	color: #ffffff;
+	text-align: center;
+	text-decoration: none;
+}
+
+#header a:hover{
+	font-size: 11px;
+	color: #ffffff;
+	text-align: center;
+	text-decoration: underline;
+}
+
+
+#navigation {
+	float: left;
+	height: 20px;
+	width: 900px;
+	padding: 0px 0px 0px 0px;
+	border: 0px solid #000000;
+	background-color: #cccccc;
+        font-size: 11px;
+}
+
+
+#navtree {
+	float: left;
+	height: 15px;
+	width: 900px;
+	padding: 0px 0px 0px 0px;
+	border-top: 1px solid #ffffff;
+	background-color: #487BBD;
+        font-size: 11px;
+        background-image: url(images/header2.gif);
+}
+
+
+#frame{
+    float: left;
+    width: 900px;
+    min-height: 500px;
+	height:auto !important;
+ 	height: 500px;
+ 	border: 0px solid #000000;
+ 	background-color: #487BBD;
+}
+
+
+#sidebar {
+	float: left;
+	height: 100%;
+	width: 150px;
+	padding: 0px 0px 0px 0px;
+	border: 0px solid #000000;
+	background-color: #487BBD;
+	min-height: 500px;
+ 	height:auto !important;
+ 	height: 500px;
+ 	color: #ffffff;
+}
+
+.sidebarText{
+ 	font-family: Arial;
+	font-weight: regular;
+	color: #ffffff;
+	text-decoration: none;
+	font-size: 10px;
+	padding: 20px 0px 20px 15px;
+	font-weight: regular;
+}
+
+.sidebarText a{
+ 	font-weight: regular;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.sidebarText a:hover{
+	font-weight: regular;
+	color: #ffffff;
+	text-decoration: underline;
+}
+
+#yellowTitle{
+ 	font-family: Arial;
+	color: #ffffff;
+	text-decoration: none;
+	font-size: 14px;
+	background-color: #004A9C;
+	padding: 3px 0px 0px 0px;
+	height: 18px;
+	width: 100%;
+	text-align: center;
+	font-weight: bold;
+}
+
+#yellowTitle a{
+ 	font-family: Arial;
+	color: #ffffff;
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+#yellowTitle a:hover{
+ 	font-family: Arial;
+	color: #ffffff;
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+#content {
+	float: left;
+	height: 100%;
+	width: 730px;
+	padding: 20px 0px 20px 20px;
+	border: 0px solid #000000;
+	background-color: #ffffff;
+	min-height: 460px;
+ 	height:auto !important;
+ 	height: 460px;
+        font-family: Arial;
+	color: #000000;
+	text-decoration: none;
+	font-size: 11px;
+}
+
+
+#contentLeft {
+	float: left;
+	height: 100%;
+	width: 546px;
+	padding: 0px 0px 0px 0px;
+	border: 0px solid #000000;
+	background-color: #ffffff;
+	min-height: 460px;
+ 	height:auto !important;
+ 	height: 460px;
+}
+
+
+#contentSpacer {
+	float: left;
+	height: 100%;
+	width: 20px;
+	padding: 0px 0px 0px 0px;
+	border: 0px solid #000000;
+	background-color: #ffffff;
+	min-height: 460px;
+ 	height:auto !important;
+ 	height: 460px;
+}
+
+
+#contentBox {
+	float: left;
+	width: 160px;
+	padding: 0px 0px 0px 0px;
+	border: 2px solid #cccccc;
+	background-color: #ffffff;
+        font-family: Arial;
+	color: #000000;
+	text-decoration: none;
+	font-size: 11px;
+}
+
+#boxTitle {
+        font-family: Arial;
+	color: #ffffff;
+	text-decoration: none;
+	font-size: 14px;
+	background-color: #006600;
+	padding: 3px 0px 0px 10px;
+	height: 18px;
+	width: 176;
+	font-weight: bold;
+}

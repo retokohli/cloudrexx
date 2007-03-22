@@ -1,0 +1,156 @@
+News
+- Der Platzhalter [[NEWS_CAT_DROPDOWNMENU]] bei der Frontend-Seite News (?section=news) repräsentiert nun das ganze Newskategorien Menu und ersetzt somit auch den Platzhalter [[NEWS_NO_CATEGORY]]
+- Bei einer Newsmeldung kann neu definiert werden, ob beim dazugehörigen Newsteaser, der Link zur Newsmeldung angezeigt werden soll.
+- Beim Headlines-/Teasertext können neu Links über den Dateibrowser eingefügt werden.
+- Newsmeldungen können nun mittels Klick auf das Statussymbol aktiviert / deaktiviert werden
+- Bei den RSS-Feeds kann neu ein Channel Image definiert werden.
+
+Kontakte
+- Die Seite "section=contact&cmd=thanks" gibt es nicht mehr. Diese Seite wird jetzt durch die Seite "section=contact" dargestellt.
+- Die Einträge eines Formulars können in eine CSV Datei exportiert werden.
+- Es kann neu ein Text definiert werden, welcher angezeigt wird, nachdem das Formular abgeschickt wurde.
+- Den Betreff Titel für die Email Benachrichtigung kann definiert werden.
+- Aus dem Kontaktemanager kann direkt eine neue Content Seite, basierend auf einem Formular, erstellt werden.
+- Man kann nun angeben, ob gewisse Felder Pflichtfelder sind und/oder welchen Typ von Daten sie enthalten sollen (E-Mail, Text, ...). Ein Javascript überprüft dies interaktiv und zeigt Fehler an.
+- In den Einstellungen des Kontaktemanagers kann eine Spam-Schutz Wortliste definiert werden.
+- Beim Kopieren oder bei Auftreten eines Fehlers beim Speichern eines Formulars werden nun auch die Eigenschaften E-Mail Betreff, Formulartext und Rückmeldung übernommen.
+- Der Formulartext, welcher oberhalb des eigentlichen Formulares angezeigt wird, kann mit mit dem WYSIWYG-Editor erstellt und bearbeitet werden.
+- Bei der Quelltext Ansicht, wird nun zuerst der Reiter "Vorschau" angezeigt und der Reiter "Quelltext" ist im hintergrund.
+- Es ist nun möglich Anzugeben, welche Metainformationen bei den Einträgen exportiert werden sollen.
+- Die Eigenschaft "Rückmeldung" enthält neu einen Standardtext beim Erstellen eines neuen Formulars.
+
+Admin:
+- Grüne Statusvariable hinzugefügt. Kann verwendet werden wie die normale, mit dem Platzhalter CONTENT_OK_MESSAGE.
+- Grüne highliht-Row
+
+Systemeinstellungen
+- Systemeinstellungen gruppiert
+- Die Systemeinstellungen werden nun aus der Datei config/settings.php gelesen, weniger DB-Zugriffe nötig
+
+Layout und Design
+- Es gibt nun eine neue Variable für einen globalen Seitentitel ([[GLOBAL_TITLE]]). Dieser kann in den Systemeinstellungen festgelegt werden.
+
+Caching-System
+- Contrexx wurde um eine Caching-Funktion erweitert. Hierdurch werden bestimmte Seiten beim ersten Aufruf im Dateisystem des Servers zwischengespeichert. Beim nächsten Aufruf wird das File nicht mehr aus der Datenbank erzeugt, sondern direkt aus dem Speicher gelesen. Hierdurch verringert sich die Ladezeit der Seite um ein vielfaches.
+
+Google-Sitemaps
+- Es werden nun automatisch Google-Sitemaps vom bestehenden Seiteninhalt erzeugt. Mehr Infos zu dem Sitemaps gibt es unter folgendem Link: https://www.google.com/webmasters/sitemaps/docs/de/about.html
+
+Gallery
+- Das Vorschaubild für die Kategorienübersicht kann nun manuell festgelegt werden. Bis anhin wurde hierfür jeweils das neueste Bild der Galerie verwendet.
+- Paging für die Gallery eingebaut (Template-Variable: [[GALLERY_PAGING]]). Anzahl Bilder pro Seite kann in den Gallery-Einstellungen angepasst werden.
+
+Kalender
+- Zusätzliche Platzhalter für die Zeit und das Datum: CALENDAR_STARTTIME CALENDAR_ENDTIME CALENDAR_STARTDATE CALENDAR_ENDDATE
+- Neue Version des Activecalendars
+
+Shop
+- Falls der Platzhalter [[SHOP_AGB]] bei der Content Seite "shop payment" nicht vorhanden ist, müssen die AGB nicht akzeptiert werden.
+- Falls die Content Seite "shop payment" deaktiviert ist, oder nicht existiert, wird dieser Schritt übersprungen.
+- Mit der Seite "shop sendpass" kann man sich ein neues Kennwort für den Shop-Account zuschicken lassen.
+- Mit der Seite "shop changepass" kann man sein Kennwort für den Shop-Account ändern.
+- Bei der Email Vorlage "Logindaten" stehen neu auch die Platzhaler "<CUSTOMER_PREFIX>" und "<CUSTOMER_LASTNAME>" zur Verfügung. (Aber nur bei der Content Seite "shop sendpass", nicht aber in der Administration)
+- Bei der Email Vorlage "Bestellungsbestätigung" wurden die Platzhalter "<CUSTOMER_ADDRESS>" und "<SHIPPING_ADDRESS>" durch einzelne Platzhalter ersetzt. Siehe dazu den Reiter "Platzhaler Verzeichnis" in der Email-Vorlagen Administration /admin/index.php?cmd=shop&act=settings&tpl=mail
+- Bei der Email Vorlage "Bestellungsbestätigung" gibt es den neuen Platzhalter "<ORDER_TIME>", welcher die Bestellungszeit enthält.
+- Der Shop ist nun Session-free!
+
+Adressverzeichnis
+- Neues Modul
+
+ImportExport Klasse
+- Import Klasse
+- CSV Unterstützung
+
+Neue Activecalendar Klasse unter /lib/activecalendar. Der Kalender benutzt jedoch eine leicht modifizierte Version.
+
+Netzwerk Tools
+- Die Top-Level-Domain .eu wird neu auch unterstützt.
+
+Newsletter
+- Die Verwaltung der Kategorien (neu Listen) wurde erneuert.
+
+Block System
+- Ein bestehender Block kann neu kopiert werden.
+- Bei jedem Block kann neu definiert werden, bei welchen Frontend-Sprachen der Block verfügbar ist.
+
+Podcast
+- Text fehlt nocht!
+
+Filebrowser
+- Im Filebrowser können nun auch die Mediaarchive 1-3 angesprochen werden
+
+-----------------------------------------------
+Bugs behoben:
+
+Newsletter
+- Die Postleizahl wird nun auch korrekt übernommen beim Importieren eines Benutzers.
+- Ein Problem mit der URL-Generierung im Bestätigungsmail wurde behoben
+
+News
+- Die JavaScript RSS Newsfeeds werden nun für alle Sprachen erstellt.
+- Die Einträge im JavaScript RSS Newsfeed sind nun UTF-8 kompatibel.
+- Die Werte des Datumsfeldes werden nun auch bei abgeänderter set_constants.php-Datei übernommen
+- Das Platzhalterverzeichnis beim Bearbeiten der Teaser Box Verlagen wurde korrigiert
+
+Kalender
+- Es werden nun die inaktiven Beiträge nicht mehr aufgelistet
+- Die Variablen für die Headlines sind nun gefüllt (geändertes SQL statement)
+- Fehler bei Dateieinbindung auf einigen Servern behoben
+- Auf der Startseite ([[EVENTS_FILE]]) werden jetzt nur noch Termine der aktuellen Systemsprache aufgelistet
+
+Volltextsuche
+- Newsmeldungen und Dokumente aus dem Dokumentensystem, welche nicht aktiv sind, werden nicht mehr im Suchergebnis angezeigt
+- Das Podcast Modul wurde in die Volltextsuche aufgenommen
+- Module die nicht installiert sind, werden nicht mehr durchsucht.
+
+Gallery
+- Nach dem Uploaden von Bildern wird nun auf alle Bilder die Berechtigungen 644 gesetzt. Einige Server weisen standardmässig allen heraufgeladene Bilder die Berechtigung 600 zu. Dadurch konnten die Bilder in der Galerie nicht geladen werden (fehlende Berechtigung).
+- In den Einstellungen wurden die Qualitäts-Werte nicht gespeichert.
+- Die Bilder wurden nicht nach der definierten Reihenfolge sortiert.
+
+Layout & Design
+- Dropdown-Menu: Menupunkte funktionieren nun auch, wenn eine Content Unterseite angezeigt wird, welche unsichtbar in der Navigation ist.
+- Die Variable [[SHOPNAVBAR_FILE]] kann nun auch innerhalb von navbar.html und subnavbar.html verwenden werden. Bisher war dies nur in index.html möglich.
+
+Sitemap
+- Deaktivierte Seiten wurden versehentlich in der Sitemap angezeigt
+
+Kontakte
+- Der CSV-Export erkennt nun auch Zeilenumbrüche in den Kontakteinträge und behandelt diese korrekt.
+- Das Formularfeld "Kontrollkästchen Gruppe" wird nun richtig gehandhabt vom JavaScript Validator.
+- Fehler beim Löschen behoben
+- Seite wird von Anfang an Aktiv im Content Manager
+- Der Beschreibungstext hat etwas Abstand zum Formular
+- Das Formular wird nun abgeschickt, wenn ein E-Mail-Feld leer ausgefühlt und nicht als Plichtfeld definiert wurde.
+
+Community
+- 4 neue Eingabefelder (Adresse, PLZ, Phone, Mobile). Zudem sind PLZ und Ort neu Pflichfelder bei der Registration. In den Contentseiten sind daher neue Platzhalter vorhanden.
+
+FileBrowser
+- Der Scrollbalken wird nun auch beim Internet Explorer angezeigt.
+- Die Gliederung der Webseiten wird nun auch im Firefox graphisch dargestellt.
+
+WebInstaller
+- Beim Schritt "System Anforderungen" wird nun auch bei der opensource-Version eine Warnung ausgegeben, falls die Systemkonfiguration den Betrieb das News-Syndication Moduls nicht erlaubt.
+
+Shop
+- Das Akzeptieren der AGB wird nun in der Session gespeichert, so das diese nur einmal akzeptiert werden muss.
+- Tritt beim aktualisieren der Optionen eines Produkt im Warenkorb ein Fehler auf, so wird das Produkt aus dem Warenkorb gelöscht, weil es ansonnsten möglich ist, dass der Gesamtpreis nicht mehr stimmt.
+
+Content Verlauf
+- Ein Fehler beim Wiederherstellen von alten Versionen wurde behoben
+
+Content Manager
+- Beim Kopieren des gesamten Inhalts wird jetzt auch der CSS Name mitkopiert
+
+Administrationskonsole
+- Die Sortierung der Hauptnavigation erfolgt nicht mehr zufällig.
+
+Framework
+- Heraufgeladene Dateien haben neu keine Ausführungsrechte mehr.
+
+Sonstiges
+- Sonstige Bugs wurden behoben.
+
+
+	

@@ -1,0 +1,18 @@
+Die folgenden Dateien wurden erneuert:
+
+/modules/guestbook/*
+/modules/gallery/*
+/core_modules/media/*
+/modules/calendar/index.class.php
+/modules/calendar/calendarLib.class.php
+/admin/index.php
+/index.php
+/core/permission.class.php
+/core_modules/nettools/*
+/core_modules/stats/*
+/lib/FRAMEWORK/NetToolsLib.class.php
+/modules/shop/admin.class.php
+/modules/guestbook/admin.class.php
+/admin/template/xhtml/content_editor.html
+/modules/shop/template/module_shop_product_manage.html
+/core_modules/news/template/module_news_modify.html

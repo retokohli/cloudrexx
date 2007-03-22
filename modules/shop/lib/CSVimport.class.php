@@ -1,0 +1,196 @@
+<?php
+
+class CSVimport {
+
+    var $arrImportImg = array();
+    var $separator = ';';
+    var $delimiter = '"';
+    var $escapor   = '"';
+
+    function CSVimport()
+    {
+        global $objDatabase;
+
+        $query =
+            "SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db ".
+            "FROM ".DBPREFIX."module_shop_importimg ORDER BY img_id";
+        $objResult = $objDatabase->Execute($query);
+        $ArrayCounter = 0;
+        while(!$objResult->EOF) {
+            $this->arrImportImg[$ArrayCounter] = array(
+                'id'          => $objResult->fields['img_id'],
+                'name'        => $objResult->fields['img_name'],
+                'cat'         => $objResult->fields['img_cats'],
+                'fields_file' => $objResult->fields['img_fields_file'],
+                'fields_db'   => $objResult->fields['img_fields_db']
+            );
+            $ArrayCounter++;
+            $objResult->MoveNext();
+        }
+    }
+
+    function GetImportImg()
+    {
+        return $this->arrImportImg;
+    }
+
+    function InitArray()
+    {
+        global $objDatabase;
+
+        $query =
+            "SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db ".
+            "FROM ".DBPREFIX."module_shop_importimg ORDER BY img_id";
+        $objResult = $objDatabase->Execute($query);
+        $ArrayCounter = 0;
+        while(!$objResult->EOF) {
+            $this->arrImportImg[$ArrayCounter] = array(
+                'id'          => $objResult->fields['img_id'],
+                'name'        => $objResult->fields['img_name'],
+                'cat'         => $objResult->fields['img_cats'],
+                'fields_file' => $objResult->fields['img_fields_file'],
+                'fields_db'   => $objResult->fields['img_fields_db']
+            );
+            $ArrayCounter++;
+            $objResult->MoveNext();
+        }
+    }
+
+    function GetImgListDelete($DeleteText)
+    {
+        $content = '';
+        for ($x=0; $x<count($this->arrImportImg); $x++) {
+            $content .= ''.$this->arrImportImg[$x]["name"].'</b> <a href="javascript:DeleteImg('.$this->arrImportImg[$x]["id"].');">'.$DeleteText.'</a><br />';
+        }
+        return $content;
+    }
+
+    function GetFileFields()
+    {
+        $csv_source = &new csv_bv($_FILES["CSVfile"]["tmp_name"], $this->separator, $this->delimiter, $this->escapor);
+        $csv_source->SkipEmptyRows(TRUE);
+        $csv_source->TrimFields(TRUE);
+        $FileContent = $csv_source->csv2Array();
+        $FileFields = '';
+        $SelectedText = " selected='selected'";
+        for ($x=0; $x<count($FileContent[0]); $x++) {
+            $FileFields .= "<option name='$x'$SelectedText>".$FileContent[0][$x]."</option>\n";
+            $SelectedText = '';
+        }
+        return $FileFields;
+    }
+
+    function GetDBFields()
+    {
+        $DBarray = array(
+             1 => 'PRODUCT ID',
+             2 => 'TITLE',
+             3 => 'HANDLER',
+             4 => 'NORMALPRICE',
+             5 => 'RESELLERPRICE',
+             6 => 'DISCOUNTPRICE',
+             7 => 'ISSPECIALOFFER',
+             8 => 'SHORTDESC',
+             9 => 'DESCRIPTION',
+            10 => 'STOCK',
+            11 => 'B2B',
+            12 => 'B2C',
+            13 => 'PICTURE',
+            14 => 'WEIGHT',
+        );
+        $DbFields = '';
+        $SelectedText = " selected='selected'";
+        for ($x=1; $x<=count($DBarray); $x++) {
+            $DbFields .= "<option value='".$DBarray[$x]."'$SelectedText>".$DBarray[$x]."</option>\n";
+            $SelectedText = '';
+        }
+        return $DbFields;
+    }
+
+    function GetFileContent()
+    {
+        $csv_source = &new csv_bv($_FILES["importfile"]["tmp_name"], $this->separator, $this->delimiter, $this->escapor);
+        $csv_source->SkipEmptyRows(true);
+        $csv_source->TrimFields(true);
+        $FileContent = $csv_source->csv2Array();
+        return $FileContent;
+    }
+
+    function GetImageChoice($Noimg)
+    {
+        $content = '<select name="ImportImage">';
+        if ($Noimg == '') {
+            for ($x=0; $x<count($this->arrImportImg); $x++) {
+                $content .= '<option value="'.$this->arrImportImg[$x]["id"].'">'.$this->arrImportImg[$x]["name"].'</option>';
+            }
+        } else {
+            $content .= '<option value="">'.$Noimg.'';
+        }
+        $content .= '</select>';
+        return $content;
+    }
+
+    function DBfieldsName($FieldDesc)
+    {
+        $FieldName = array();
+        $FieldName['PRODUCT ID']       = 'product_id';
+        $FieldName['PICTURE']          = 'picture';
+        $FieldName['TITLE']            = 'title';
+        $FieldName['HANDLER']          = 'handler';
+        $FieldName['NORMALPRICE']      = 'normalprice';
+        $FieldName['RESELLERPRICE']    = 'resellerprice';
+        $FieldName['DISCOUNTPRICE']    = 'discountprice';
+        $FieldName['ISSPECIALOFFER']   = 'is_special_offer';
+        $FieldName['SHORTDESC']        = 'shortdesc';
+        $FieldName['DESCRIPTION']      = 'description';
+        $FieldName['STOCK']            = 'stock';
+        $FieldName['B2B']              = 'b2b';
+        $FieldName['B2C']              = 'b2c';
+        $FieldName['WEIGHT']           = 'weight';
+        return $FieldName[$FieldDesc];
+    }
+
+    function GetCatID($CatName, $CatParent)
+    {
+        global $objDatabase;
+        $query =
+            "SELECT catid FROM ".DBPREFIX."module_shop_categories ".
+            "WHERE catname='".$CatName."' AND parentid=".$CatParent."";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult) {
+            if ($objResult->RecordCount() > 0) {
+                return $objResult->fields['catid'];
+            } else {
+                return $this->InsertNewCat($CatName, $CatParent);
+            }
+        } else {
+            return 0;
+        }
+    }
+
+    function GetFirstCat()
+    {
+        global $objDatabase;
+        $query = "SELECT catid FROM ".DBPREFIX."module_shop_categories LIMIT 0,1";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult->RecordCount() > 0) {
+            return $objResult->fields["catid"];
+        } else {
+            return 0;
+        }
+    }
+
+    function InsertNewCat($CatName, $CatParent)
+    {
+        global $objDatabase;
+        $query =
+            "INSERT INTO ".DBPREFIX."module_shop_categories ".
+            "(catname, parentid) VALUES ('".$CatName."','".$CatParent."')";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult) {
+            return $objDatabase->Insert_Id();
+        }
+    }
+}
+
+?>

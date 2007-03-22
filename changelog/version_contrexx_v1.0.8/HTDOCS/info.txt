@@ -1,0 +1,39 @@
+Gallery
+- Es wurde eine Anpassung vorgenommen, dass die Gallery nun auch auf "alten" Deep-Hostings funktionieren sollte (touch())
+- Es werden extern nun die leeren Kategorien wieder angezeigt ("Empty"-Bild)
+- Die Bildbeschreibungen werden nun auch im Popup unter dem Bild angezeigt
+- Bug in der "Bilder bestätigen"-Seite behoben (Kategorienauswahl)
+
+Newsletter
+Gesendet Newsletter können nun auch wieder bearbeitet und versendet werden.
+Email Adressen mit einem Punkt im Host Teil werden nun auch akzeptiert.
+Bilder im Newsletter werden nun richtig angezeigt.
+SQL-Bugfix
+Verwendung der Antwort Adresse funktioniert nun.
+
+Contentmanager
+- Der Metatitle wurde nicht sauber gespeichert. Dieser Bug ist nun behoben.
+- Zirkelbezüge in der Kategorienwahl sind nicht länger möglich
+- Kleiner Bug behoben (Content-Verlauf)
+- Es gibt nun ein "Multiselect"-Dropdown
+- Wenn eine Seite gelöscht wird, welche Unterseiten enthält, werden diese Unterseiten nun auch gelöscht
+
+Contentverlauf
+- Gelöschte Seiten können nun für alle Sprachen wiederhergestellt werden
+- Im Content-Verlauf (Übersicht) werden nun die Module angezeigt
+
+Kalender
+- Bugfixes
+
+Gästebuch
+- Einbauen des Captcha-Spamschutzes
+- Änderung der Überprüfung der Variablen durch PHP
+
+Captcha Spamschutz
+- Allgemeine Klasse für Captchas
+
+Layout & Design
+- Javascript Bug beim Einbinden eines Skins behoben
+
+Bannermodul
+- Bug in den Bannereinstellungen behoben

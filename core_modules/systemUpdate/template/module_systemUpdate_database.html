@@ -1,0 +1,33 @@
+<!-- start module_systemUpdate_database.html -->
+<script type="text/javascript">
+// <[CDATA[
+function executeSQLQueries(objEvent)
+{
+	if (objEvent.shiftKey && objEvent.keyCode == 13) {
+		document.getElementById('executeQuery').type = 'hidden';
+		document.getElementById('systemUpdateDbForm').submit();
+		return true;
+	}
+}
+
+// ]]>
+</script>
+<form action="?cmd=systemUpdate&amp;act=database" id="systemUpdateDbForm" method="post">
+	<table border="0" cellpadding="0" cellspacing="0" width="100%" class="adminlist">
+		<tr>
+			<th height="20">{TXT_EXECUTE_SQL_QUERY}</th>
+		</tr>
+		<tr class="row1">
+			<td><textarea name="sql_query" cols="80" rows="7" onkeypress="executeSQLQueries(event)">{SQL_QUERY}</textarea></td>
+		</tr>
+		<tr class="row1">
+			<td height="20">{TXT_OR_FILE} ({TXT_MAX_FILESIZE}: {SYSEM_UPDATE_MAX_FILESIZE})</td>
+		</tr>
+		<tr class="row1">
+			<td height="20"><input type="text" name="sql_file" /></td>
+		</tr>
+	</table>
+	<br />
+	<input type="submit" name="executeQuery" id="executeQuery" value="{TXT_EXECUTE}" />
+</form>
+<!-- end module_systemUpdate_database.html -->

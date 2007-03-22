@@ -1,0 +1,36 @@
+Erneuerungen im CMS:
+---------------------
+
+
+Shop Modul:
+------------
+Ein neuer Platzhalter wurde hinzugefügt.
+[[SHOP_PRODUCT_DETAILDESCRIPTION]] // Detaillierte Produktebeschreibung einzeln einsetzbar.
+
+Erweiterung bei den Produkte Optionen: Bei den Optionen Typen Menu und Radiobutton wird überprüft ob ein Auswahl getroffen worden ist
+Betroffene Dateien:
+"index.class.php" und die frontend templates "shop" und "shop details"
+
+
+Gästebuch Modul:
+----------------
+Bei jedem neuen Eintrag wird dem Administrator eine Email Nachricht zugestellt. Dies dient zum Schutz von Gästebuch-Spammer.
+
+
+Galerie Modul:
+----------------
+Fehler beim Einschreiben eines Bildnamens behoben.
+PNP und GIF Unterstützung hinzugefügt.
+
+
+Kalender Modul:
+----------------
+Fehler bei der Monatsansicht behoben.
+Fehler bei der Detailansicht eines Termines behoben.
+Content Seite: calendar note Neue Variable!
+
+
+Content Management:
+----------------
+Redirekt Link und Zielfenster Fehler behoben.
+

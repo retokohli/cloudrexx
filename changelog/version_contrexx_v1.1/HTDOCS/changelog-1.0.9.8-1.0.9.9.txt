@@ -1,0 +1,50 @@
+////////////////////////////////////////
+// CHANGELOG 1.0.9.8-1.0.9.9 ///////////
+////////////////////////////////////////
+
+****************************************
+* Changes ******************************
+****************************************
+Block
+- Blöcke können neu einzelnen Seiten und Sprachen zugeordnet werden. Zudem gibt es einen neuen globalen Platzhalter, welcher alle Blöcke beinhaltet.
+
+****************************************
+* New Features *************************
+****************************************
+News
+- Es können nun mehrere Newstickers erstellt werden.
+- Der Zeichensatz in dem ein Newsticker gespeichert werden soll, kann nun definiert werden.
+- Ein Newsticker kann nach RFC 1738 URL-Kodiert abgespeichert werden.
+
+Kontaktmanager
+- Bei den Formularfelder gibt es neu ein Datumsfeld. Dieses beinhaltet ein integrierter Kalender zur einfachen Datumsauswahl.
+
+****************************************
+* Bugfixes *****************************
+****************************************
+Allgemeines
+- Die Administrationskonsole funktioniert nun auch auf einem System, welches den folgenden MySQL-Bug aufweist: http://bugs.mysql.com/bug.php?id=16546
+
+Media Manager
+- Preview-Bilder werden nicht mehr schwarz dargestellt.
+- Beim Bild bearbeiten wird die Bildgrösse wieder lesbar dargestellt.
+
+News Syndication
+- Komische Symbole werden duch die entsprechenden Zeichen ersetzt.
+
+Newsletter
+- Empfängerprofil bearbeiten: Inaktive Listen werden nun auch angezeigt.
+
+Bildergallerie
+- Im Safari Browser werden nun die Bilder auch dargestellt, wenn diese in einem seperaten Fenster (popup) angezeigt werden.
+- Es kann nun mehr als nur ein Bild bewertet werden.
+- Der Platzhalter [[GALLERY_IMAGE_LINK]] wird nun korrekt generiert, wenn die Bilder direkt auf der Seite angezeigt werden (nicht in einem Seperaten PopUp).
+
+Framework
+- Die RSSWriter Klasse produzierte ein ungültiges XML-Dokument, wenn einem RSS Channel Item eine GUID zugewiesen wurde.
+
+WYSIWYG Editor
+- Neue Version 2.3.1 des FCKeditors eingebunden. Weitere Informationen unter: http://www.fckeditor.net/whatsnew/
+
+Kontaktmanager
+- Die Stylebehandlung bei der Formularfeldüberprüfung funktioniert nun auch im Internet Explorer.

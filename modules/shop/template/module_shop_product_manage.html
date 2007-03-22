@@ -1,0 +1,350 @@
+<!-- START shop_product_manage.html -->
+<script language="javascript" type="text/javascript">
+<!-- //
+
+var fieldID;
+var langID;
+var langcount=2
+var elInputID;
+var elinputid;
+var value;
+var popUp;
+var browserPopup;
+var notDefined = new Array();
+var ltype;
+var elName;
+var par;
+
+function reloadPage()
+{
+    //save_in_textarea_all(); // needed for wysiwyg
+    document.shop_article.submit();
+}
+
+function setDateToday(txtValue)
+{
+    with(document.shop_article) {
+        if(txtValue.value==""){
+            txtValue.value=date.value;
+        }
+    }
+}
+
+function openWindow(theURL,winName,features)
+{
+    window.open(theURL,winName,features);
+}
+
+var openBrowser = function openBrowser(url, id, attrs)
+{
+        fieldID=id;
+        try{
+            if(!browserPopup.closed){
+                return browserPopup.focus();
+            }
+        }catch(e){}
+        if (!window.focus){
+            return true;
+        }
+          browserPopup = window.open(url, "", attrs);
+          browserPopup.focus();
+          return false;
+}
+
+var SetUrl = function(url, width, height, alt) {
+    notDefined[fieldID] = true;
+    elInput = document.getElementById("hi_"+fieldID);
+    elInput.setAttribute('type', 'hidden');
+    elInput.setAttribute('name', 'productImage'+fieldID);
+    elInput.setAttribute('id', 'hi_'+fieldID);
+    elInput.setAttribute('value', url);
+
+    if(document.getElementById('lnk_'+fieldID) == null){
+        notDefined[fieldID] = true;
+    }else{
+        notDefined[fieldID] = false;
+    }
+
+    url = url.substring(1);
+
+    fileRegExp = /.+\/(.+)$/;
+    fileRegExp.exec(url);
+
+//    if(notDefined[fieldID]){
+        elTxt = document.createTextNode(RegExp.$1);
+//    }
+    img = document.getElementById("img"+fieldID);
+    img.src = '/'+url;
+    if (width > height) {
+        fact = 60 / width;
+        img.style.width  = width*fact+'px';
+        img.style.height = height*fact+'px';
+    } else {
+        fact = 60 / height;
+        img.style.height = height*fact+'px';
+        img.style.width  = width*fact+'px';
+    }
+
+    //set resized width and height in hidden fields
+    elInput_w = document.getElementById('hi_'+fieldID+'_w');
+    elInput_w.setAttribute('type', 'hidden');
+    elInput_w.setAttribute('name', 'productImage'+fieldID+'_width');
+    elInput_w.setAttribute('value', width);
+
+    elInput_h = document.getElementById('hi_'+fieldID+'_h');
+    elInput_h.setAttribute('type', 'hidden');
+    elInput_h.setAttribute('name', 'productImage'+fieldID+'_height');
+    elInput_h.setAttribute('value', height);
+
+    if (notDefined[fieldID]) {
+        elALink = document.createElement('a');
+    } else {
+        elALink = document.getElementById("lnk_"+fieldID);
+    }
+    elALink.setAttribute('href', url);
+    elALink.setAttribute('target', '_blank');
+    elALink.setAttribute('id', 'lnk_'+fieldID);
+    elALink.setAttribute('title', 'product Image');
+
+    if (notDefined[fieldID]) {
+        elALink.appendChild(elTxt);
+        img.parentNode.appendChild(elALink);
+//        img.parentNode.appendChild(elInput);
+        img.parentNode.insertBefore(document.createElement('br'), elALink);
+    } else {
+        elALink = document.getElementById("lnk_"+fieldID);
+        elALink.removeChild(elALink.childNodes[0]);
+        fileRegExp = /.+\/(.+)$/;
+        fileRegExp.exec(url);
+        elTxt = document.createTextNode(RegExp.$1);
+        elALink.appendChild(elTxt);
+        img.parentNode.appendChild(elALink);
+//        img.parentNode.appendChild(elInput);
+    }
+}
+
+function toggleOptions (checkboxId)
+{
+    if (document.getElementById('productOptions'+checkboxId).checked == true) {
+        document.getElementById('subOptionsProductOptions'+checkboxId).style.display = 'block';
+        for(i=0;i<document.getElementById('subOptionsProductOptions'+checkboxId).getElementsByTagName('input').length;i++) {
+            objInput = document.getElementById('subOptionsProductOptions'+checkboxId).getElementsByTagName('input')[i];
+            if (objInput.getAttribute('type') == "checkbox") {
+                objInput.checked = true;
+            }
+        }
+    } else {
+        document.getElementById('subOptionsProductOptions'+checkboxId).style.display = 'none';
+        for(i=0;i<document.getElementById('subOptionsProductOptions'+checkboxId).getElementsByTagName('input').length;i++) {
+            objInput = document.getElementById('subOptionsProductOptions'+checkboxId).getElementsByTagName('input')[i];
+            if (objInput.getAttribute('type') == "checkbox") {
+                objInput.checked = false;
+            }
+        }
+    }
+}
+// -->
+</script>
+<ul id="tabmenu">
+<li><a id="productManageTab_shopContent1" class="active" href="javascript:{}" onclick="selectTab('shopContent1')" title="{TXT_PRODUCT_INFORMATIONS}">{TXT_PRODUCT_INFORMATIONS}</a></li>
+<li><a id="productManageTab_shopContent2" href="javascript:{}" onclick="selectTab('shopContent2')" title="{TXT_PRODUCT_OPTIONS}">{TXT_PRODUCT_OPTIONS}</a></li>
+<li><a id="productManageTab_shopContent3" href="javascript:{}" onclick="selectTab('shopContent3')" title="{TXT_PRODUCT_IMAGE}">{TXT_PRODUCT_IMAGE}</a></li>
+<li><a id="productManageTab_shopContent4" href="javascript:{}" onclick="selectTab('shopContent4')" title="{TXT_PRODUCT_STATUS}">{TXT_PRODUCT_STATUS}</a></li>
+</ul>
+<!-- start shopContent1 div -->
+<form name="shop_article" action="index.php?cmd=shop&amp;act=products&amp;tpl=manage" method="post">
+<div id="shopContent1" class="productManageTab" style="display:block">
+  <input type="hidden" name="date" value="{SHOP_DATE}" />
+  <input type="hidden" name="id" value="{SHOP_PRODUCT_ID}" />
+  <input type="hidden" name="shopTempThumbnail" value="{SHOP_TEMP_THUMBNAIL}" />
+  <input type="hidden" name="edit" value="1" />
+  <input type="hidden" name="shopImageName" value="{SHOP_IMAGE_NAME}" />
+  <table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
+    <tr valign="top">
+      <th nowrap colspan="2">
+        <div align="left">{TXT_PRODUCT_INFORMATIONS}</div>
+      </th>
+    </tr>
+    {SHOP_ID_COMMENT_START}
+    <tr valign="top"  class="row1">
+      <td nowrap width="17%">{TXT_ID}</td>
+      <td nowrap width="83%">{SHOP_ID}</td>
+    </tr>
+    {SHOP_ID_COMMENT_END}
+    <tr valign="top" class="row1">
+      <td nowrap width="17%">{TXT_PRODUCT_NAME}</td>
+      <td nowrap width="83%">
+        <input maxlength=255 name="shopProductName" size="40" value="{SHOP_PRODUCT_NAME}" />
+        {TXT_CATEGORY}
+        <select name="shopCatMenu">
+        {SHOP_CAT_MENU}
+        </select>
+        &nbsp; </td>
+    </tr>
+    <tr valign="top" class="row1">
+      <td nowrap width="17%">{TXT_PRODUCT_ID}</td>
+      <td nowrap width="83%">
+        <input maxlength=255 name="shopProductIdentifier" size="40" value="{SHOP_PRODUCT_IDENTIFIER}" />
+      </td>
+    </tr>
+    <tr valign="top" class="row1">
+      <td nowrap width="17%">{TXT_CUSTOMER_PRICE}&nbsp;<span class="status">&nbsp;</span></td>
+      <td width="83%">
+        <input maxlength=255 name="shopCustomerPrice" size="40" value="{SHOP_CUSTOMER_PRICE}" />
+      </td>
+    </tr>
+    <tr valign="top" class="row1">
+      <td nowrap width="17%">{TXT_RESELLER_PRICE}</td>
+      <td width="83%">
+        <input maxlength=255 name="shopResellerPrice" size="40" value="{SHOP_RESELLER_PRICE}" />
+      </td>
+    </tr>
+    <tr class="row1">
+      <td nowrap width="17%">{TXT_SPECIAL_OFFER}</td>
+      <td width="83%">
+        <input maxlength=10 name="shopDiscount" size="40" value="{SHOP_DISCOUNT}" />
+        <input type="checkbox" name="shopSpecialOffer" value="1" {SHOP_SPECIAL_OFFER} />
+      </td>
+    </tr>
+    <tr class="row1">
+      <td nowrap width="17%">{TXT_TAX_RATE}</td>
+      <td width="83%">
+        {SHOP_TAX}
+      </td>
+    </tr>
+    <tr class="row1">
+      <td nowrap width="17%">{TXT_WEIGHT}</td>
+      <td width="83%">
+        <input maxlength=10 name="shopWeight" size="40" value="{SHOP_WEIGHT}" />
+      </td>
+    </tr>
+    <tr class="row2">
+      <td nowrap width="17%">{TXT_DISTRIBUTION}</td>
+      <td width="83%">
+        {SHOP_DISTRIBUTION_MENU}
+      </td>
+    </tr>
+
+    <tr valign="top" class="row1">
+      <td colspan="2">{TXT_SHORT_DESCRIPTION}<br />{SHOP_SHORT_DESCRIPTION}</td>
+    </tr>
+    <tr valign="top" class="row1">
+      <td colspan="2"><br />{TXT_DESCRIPTION}<br />{SHOP_DESCRIPTION}</td>
+    </tr>
+    <tr valign="top" class="row1">
+      <td nowrap width="17%">{TXT_MANUFACTURER_URL}</td>
+      <td width="83%">
+        <input maxlength="255" name="shopManufacturerUrl" size="40" value="{SHOP_MANUFACTURER_URL}" />
+        ( {TXT_WITH_HTTP} )
+      </td>
+    </tr>
+    <tr valign="top" class="row1">
+      <td nowrap width="17%">{TXT_STOCK}</td>
+      <td width="83%">
+        <input maxlength=10 name="shopStock" size="10" value="{SHOP_STOCK}" />
+        {TXT_ACTIVE}
+        <input type="checkbox" name="shopStockVisibility" value="1" {SHOP_STOCK_VISIBILITY} />
+      </td>
+    </tr>
+  </table>
+</div>
+<!-- end shopContent1 div -->
+<!-- start shopContent2 div -->
+<div id="shopContent2" class="productManageTab" style="display:none">
+  <table class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
+    <tr valign="top">
+      <th nowrap  colspan="2"> <div align="left">{TXT_PRODUCT_OPTIONS}</div></th>
+    </tr>
+    <tr class="row1">
+        <td nowrap="nowrap" width="5%"><b>Reihenfolge</b></td>
+        <td nowrap="nowrap" width="95%"><b>Option</b></td>
+    </tr>
+    <!-- BEGIN attributeList -->
+        <tr valign="top" class="{SHOP_PRODUCTS_ATTRIBUTE_ROW_CLASS}">
+               <td nowrap="nowrap" width="5%"><input style="width:25px;" type="text" name="productOptionsSortId[{SHOP_PRODUCTS_ATTRIBUTE_ID}]" value="{SHOP_PRODUCTS_ATTRIBUTE_SORTID}" /></td>
+              <td nowrap="nowrap">
+                <label for="productOptions{SHOP_PRODUCTS_ATTRIBUTE_ID}"><input id="productOptions{SHOP_PRODUCTS_ATTRIBUTE_ID}" onclick="toggleOptions({SHOP_PRODUCTS_ATTRIBUTE_ID})" type="checkbox" value="{SHOP_PRODUCTS_ATTRIBUTE_ID}" {SHOP_PRODUCTS_ATTRIBUTE_SELECTED} />&nbsp;{SHOP_PRODUCTS_ATTRIBUTE_NAME}</label><br />
+                <div style="display:{SHOP_PRODUCTS_ATTRIBUTE_DISPLAY_TYPE}; margin-left: 50px" id="subOptionsProductOptions{SHOP_PRODUCTS_ATTRIBUTE_ID}">
+                    <!-- BEGIN attributeValueList -->
+                        <label for="productOptionsValues{SHOP_PRODUCTS_ATTRIBUTE_VALUE_ID}"><input type="checkbox" id="productOptionsValues{SHOP_PRODUCTS_ATTRIBUTE_VALUE_ID}" name="productOptionsValues[{SHOP_PRODUCTS_ATTRIBUTE_VALUE_ID}]" value="{SHOP_PRODUCTS_ATTRIBUTE_ID}" {SHOP_PRODUCTS_ATTRIBUTE_VALUE_SELECTED} />&nbsp;{SHOP_PRODUCTS_ATTRIBUTE_VALUE_TEXT}</label><br />
+                    <!-- END attributeValueList -->
+                </div>
+            </td>
+        </tr>
+    <!-- END attributeList -->
+  </table>
+</div>
+<!-- end shopContent2 div -->
+<!-- start shopContent3 div -->
+<div id="shopContent3" class="productManageTab" style="display:none">
+  <table class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
+    <tr>
+      <th nowrap="nowrap" colspan="4">
+        <div align="left">{TXT_PRODUCT_IMAGE}</div>
+      </th>
+    </tr>
+    <tr  class="row1">
+      <td nowrap width="17%" valign="top"> {TXT_SHOP_EDIT_OR_ADD_IMAGE}</td>
+      <td width="27%">
+            <a href="javascript:void(0);" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" onclick="openBrowser('?cmd=fileBrowser&amp;standalone=true&amp;type=shop', '1', 'width=800,height=640,resizable=yes,status=no,scrollbars=yes', 'img', '');" >{TXT_SHOP_EDIT_OR_ADD_IMAGE}<br /> <img id="img1"  style="width: {SHOP_IMG1_WIDTH}px; height: {SHOP_IMG1_HEIGHT}px; border: none;" src="{SHOP_PICTURE1_IMG_SRC}" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" alt="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" /></a>
+
+            <input type="hidden" id="hi_1" name="productImage1" value="{SHOP_PICTURE1_IMG_SRC_NO_THUMB}" />
+            <input type="hidden" id="hi_1_w" name="productImage1_width" value="{SHOP_PICTURE1_IMG_WIDTH}" />
+            <input type="hidden" id="hi_1_h" name="productImage1_height" value="{SHOP_PICTURE1_IMG_HEIGHT}" />
+      </td>
+      <td width="27%">
+            <a href="javascript:void(0);" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" onclick="openBrowser('?cmd=fileBrowser&amp;standalone=true&amp;type=shop', '2','width=800,height=640,resizable=yes,status=no,scrollbars=yes', 'img', '');" >{TXT_SHOP_EDIT_OR_ADD_IMAGE}<br /> <img id="img2"  style="width: {SHOP_IMG2_WIDTH}px; height: {SHOP_IMG2_HEIGHT}px; border: none;" src="{SHOP_PICTURE2_IMG_SRC}" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" alt="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" /></a>
+
+            <input type="hidden" id="hi_2" name="productImage2" value="{SHOP_PICTURE2_IMG_SRC_NO_THUMB}" />
+            <input type="hidden" id="hi_2_w" name="productImage2_width" value="{SHOP_PICTURE2_IMG_WIDTH}" />
+            <input type="hidden" id="hi_2_h" name="productImage2_height" value="{SHOP_PICTURE2_IMG_HEIGHT}" />
+
+      </td>
+      <td width="27%">
+            <a href="javascript:void(0);" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" onclick="openBrowser('?cmd=fileBrowser&amp;standalone=true&amp;type=shop', '3','width=800,height=640,resizable=yes,status=no,scrollbars=yes', 'img', '');" >{TXT_SHOP_EDIT_OR_ADD_IMAGE}<br /> <img id="img3"  style="width: {SHOP_IMG3_WIDTH}px; height: {SHOP_IMG3_HEIGHT}px; border: none;" src="{SHOP_PICTURE3_IMG_SRC}" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" alt="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" /></a>
+
+            <input type="hidden" id="hi_3" name="productImage3" value="{SHOP_PICTURE3_IMG_SRC_NO_THUMB}" />
+            <input type="hidden" id="hi_3_w" name="productImage3_width" value="{SHOP_PICTURE3_IMG_WIDTH}" />
+            <input type="hidden" id="hi_3_h" name="productImage3_height" value="{SHOP_PICTURE3_IMG_HEIGHT}" />
+      </td>
+    </tr>
+  </table>
+</div>
+<!-- end shopContent3 div -->
+<!-- start shopContent4 div -->
+<div id="shopContent4" class="productManageTab" style="display:none">
+  <table class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
+    <tr valign="top">
+      <th nowrap  colspan="2">
+        <div align="left">{TXT_PRODUCT_STATUS}</div>
+      </th>
+    </tr>
+    <tr valign="top" class="row1">
+      <td nowrap colspan="2">{TXT_ACTIVE}
+        <input type="checkbox" name="shopArticleActive" value="1" {SHOP_ARTICLE_ACTIVE} />
+        B2B
+        <input type="checkbox" name="shopB2B" value="1" {SHOP_B2B} />
+        B2C
+        <input type="checkbox" name="shopB2C" value="1" {SHOP_B2C} />
+        <!-- // unused
+        {TXT_START_DATE}:
+        <input type="text" name="shopStartdate" size="20" maxlength="20" onClick="setDateToday(shopStartdate)" value="{SHOP_STARTDATE}" />
+        {TXT_END_DATE}:
+        <input type="text" name="shopEnddate" size="20" maxlength="20" onClick="setDateToday(shopEnddate)" value="{SHOP_ENDDATE}" />
+         -->
+      </td>
+    </tr>
+  </table>
+</div>
+<!-- end shopContent4 div -->
+ <br />
+    <input type=submit value="{TXT_RESET}" name="shopResetForm" />
+    <input type=submit value="{TXT_STORE}" name="shopStoreProduct" />
+  {TXT_ACTION_AFTER_SAVEING}
+  <select name="shopAfterStoreAction">
+    <option value="catalog" selected="selected">{TXT_PRODUCT_CATALOG}</option>
+    <option value="newEmpty">{TXT_ADD_PRODUCTS}</option>
+    <option value="newTemplate">{TXT_ADD_PRODUCTS} ({TXT_FROM_TEMPLATE})</option>
+  </select>
+</form>
+<!-- END shop_product_manage.html-->

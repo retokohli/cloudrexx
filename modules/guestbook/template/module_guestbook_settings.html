@@ -1,0 +1,23 @@
+<!-- START module_guestbook_settings.html -->
+<form action="index.php?cmd=guestbook&amp;act=settings" method="post" name="guestbook">
+	<table cellspacing="0" cellpadding="2" width="100%" border="0" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_SETTINGS}</th>
+		</tr>
+		<tr class="row1">
+			<td width="15%" style="vertical-align: top;">{TXT_AUTO_ACTIVATE_NEW_ENTRIES}</td>
+			<td><input type="checkbox" name="guestbook_activate_submitted_entries" id="guestbook_activate_submitted_entries" value="1" {GUESTBOOK_ACTIVATE_SUBMITTED_ENTRIES} /></td>
+		</tr>
+		<tr class="row2">
+			<td width="15%" nowrap="nowrap">{TXT_SEND_NOTIFICATION_MESSAGE}</td>
+			<td width="85%" nowrap="nowrap"><input name="guestbook_send_notification_email" type="checkbox" id="guestbook_send_notification_email" value="1" {GUESTBOOK_SEND_NOTIFICATION_EMAIL} /></td>
+		</tr>
+		<tr class="row1">
+			<td width="15%" nowrap="nowrap">{TXT_REPLACE_AT}</td>
+			<td width="85%" nowrap="nowrap"><input name="guestbook_replace_at" type="checkbox" id="guestbook_send_notification_email" value="1" {GUESTBOOK_REPLACE_AT} /></td>
+		</tr>
+	</table>
+	<br />
+	<input type="submit" name="store" value="{TXT_STORE}" />
+</form>
+<!-- END module_guestbook_settings.html -->	

@@ -1,0 +1,13 @@
+modules/gallery/*
+core/language.class.php
+
+modules/shop/*
+modules/guestbook/admin.class.php
+modules/gestbook/template/module_guestbook_show.html
+modules/directory/redirect_inactive.php
+modules/feed/admin.class.php
+
+core_modules/news/*
+core_modules/stats/graph.php
+core_modules/stats/lib/statsLib.class.php
+core_modules/stats/index.php

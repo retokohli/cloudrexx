@@ -1,0 +1,252 @@
+<!-- START module_directory_entry_add.html -->
+<script language="JavaScript">
+function add(from,dest,add,remove) 
+{
+    if ( from.selectedIndex < 0)
+	{
+		if (from.options[0] != null)
+			from.options[0].selected = true;
+		from.focus();
+		return false;
+	}
+	else
+	{	
+		for (var i=0; i<from.length; i++) 
+		{	    
+			if (from.options[i].selected) 
+			{
+		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);				
+   			}			
+		}
+	    for (var i=from.length-1; i>=0; i--) 
+		{	    
+			if (from.options[i].selected) 
+			{
+		       from.options[i] = null;				
+   			}			
+		}		
+	}
+    disableButtons(from,dest,add,remove);
+}	
+
+
+function remove(from,dest,add,remove) 
+{
+	if ( dest.selectedIndex < 0)
+	{
+		if (dest.options[0] != null)
+			dest.options[0].selected = true;
+		dest.focus();
+		return false;
+	}
+	else
+	{	
+		for (var i=0; i<dest.options.length; i++) 
+		{	    
+			if (dest.options[i].selected) 
+			{
+		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);				
+   			}			
+		}
+	    for (var i=dest.options.length-1; i>=0; i--) 
+		{	    
+			if (dest.options[i].selected) 
+			{
+		       dest.options[i] = null;				
+   			}			
+		}		
+	}	
+	disableButtons(from,dest,add,remove);
+}
+
+function disableButtons(from,dest,add,remove)
+{
+	if (from.options.length > 0 )
+	{		
+		add.disabled = 0;		
+	}
+	else
+		add.disabled = 1;
+
+	if (dest.options.length > 0)
+		remove.disabled = 0;
+	else
+		remove.disabled = 1;
+}
+
+function selectAll(CONTROL)
+{
+	for(var i = 0;i < CONTROL.length;i++)
+    {
+		CONTROL.options[i].selected = true;
+	}
+}
+
+function deselectAll(CONTROL)
+{
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = false;
+	}
+}
+
+
+function hideRow(type)
+{ 
+	if (type=='file')
+	{
+		document.getElementById('hiddenfile').style.display = 'block';
+		document.getElementById('hiddenlink').style.display = 'none';
+		document.getElementById('hiddenrss').style.display = 'none';
+		document.getElementById('hiddenPlaceholder').style.display = 'none';
+		document.addForm.linkname.value = 'http://';
+		document.addForm.rssname.value = 'http://';
+		return true;
+	}
+	else if (type=='rss')
+	{
+		document.getElementById('hiddenlink').style.display = 'none';
+		document.getElementById('hiddenfile').style.display = 'none';
+		document.getElementById('hiddenrss').style.display = 'block';
+		document.getElementById('hiddenPlaceholder').style.display = 'none';
+		document.addForm.linkname.value = 'http://';
+		document.addForm.fileName.value = '';
+		return true;
+	}
+	else
+	{
+		document.getElementById('hiddenlink').style.display = 'block';
+		document.getElementById('hiddenfile').style.display = 'none';
+		document.getElementById('hiddenrss').style.display = 'none';
+		document.getElementById('hiddenPlaceholder').style.display = 'none';
+		document.addForm.rssname.value = 'http://';
+		document.addForm.fileName.value = '';
+		return true;
+	}
+}
+
+
+{DIRECTORY_JAVASCRIPT}
+
+
+</script>
+<form name="addForm" enctype="multipart/form-data" method="post" action="?cmd=directory&act=editfile" onSubmit="{DIRECTORY_FORM_ONSUBMIT}">
+  <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%"  class="adminlist">
+    <tr> 
+      <th colspan="2">{TXT_EDIT_ENTREE}</th>
+    </tr>
+    <tr class="row2"> 
+      <td width="150">{TXT_FILETYPE}:<font color="red">*</font></td>
+      <td> 
+         <input type="radio" name="type" value="rss" onClick="javascript:hideRow('rss')" {TYP_RSS}>
+        {TXT_RSSLINK}
+        <input type="radio" name="type" value="file" onClick="javascript:hideRow('file')" {TYP_FILE}>
+        {TXT_FILE} 
+        <input type="radio" name="type" value="link" onClick="javascript:hideRow('link')" {TYP_LINK}>
+        {TXT_LINK}</td>
+    </tr>
+    </table>
+    
+    <input type="hidden" name="edit_size" size="10" value="{SIZE}">
+    <input type="hidden" name="edit_id" size="10" value="{ID}">
+    <input type="hidden" name="edit_fileName" size="10" value="{FILE}">
+    <input type="hidden" name="edit_linkName" size="10" value="{LINK}">
+
+    <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%" class="adminlist">
+	   <tr class="row1" > 
+	      <td width="150" height="26" valign="top">{TXT_ATTACHMENT}:<font color="red">*</font></td>
+	      <td>
+	      	{ATTACHMENT}
+	      	<div id="hiddenlink" style="display:{DISPLAY_LINK};"><br /><input name="linkname" style="width:300px;" value="http://"></div> 
+	      	<div id="hiddenrss" style="display:{DISPLAY_RSS};"><br /><input name="rssname" style="width:300px;" value="http://"></div>
+	      	 <div id="hiddenfile" style="display:{DISPLAY_FILE};"><br /><input type="file" name="fileName" size="37" style="width:300px;" value=""></div>
+	      </td>
+	    </tr>
+	</table>
+	<table border="0" cellpadding="3" cellspacing="0" align="center" width="100%" class="adminlist">
+    <tr class="row2"> 
+      <td width="150" valign="top">{TXT_CATEGORY}:<font color="red">*</font></td>
+      <td>
+        <table width="100%" border="0">
+		  <tr> 
+		    <td width="210">
+		      <select name="notSelectedCat[]" size="12" style="width:200px;" multiple="multiple">
+		          {CATEGORY_DESELECTED}
+		      </select>
+		    </td>
+		    <td width="50"> 
+		      <div align="center"> 
+		        <input type="button" value=" &gt;&gt; " name="addCat" onclick="add(document.addForm.elements['notSelectedCat[]'],document.addForm.elements['selectedCat[]'],addCat,removeCat);" />
+		        <br />
+		        <input type="button" value=" &lt;&lt; " name="removeCat" onclick="remove(document.addForm.elements['notSelectedCat[]'],document.addForm.elements['selectedCat[]'],addCat,removeCat);" />
+		        <br /><br />
+		      </div>
+		    </td>
+		    <td> 
+		      <div align="left">
+		        <select name="selectedCat[]" size="12" style="width:200px;" multiple="multiple">
+		        	{CATEGORY_SELECTED}
+		        </select>
+		      </div>
+		    </td>
+		  </tr>
+		</table>
+      </td>
+    </tr>
+    <!-- BEGIN levels -->
+    <tr class="row1"> 
+      <td width="150" valign="top">{TXT_LEVEL}:<font color="red">*</font></td>
+      <td>
+        <table width="100%" border="0">
+		  <tr> 
+		    <td width="210">
+		      <select name="notSelectedLevel[]" size="12" style="width:200px;" multiple="multiple">
+		          {LEVEL_DESELECTED}
+		      </select>
+		    </td>
+		    <td width="50"> 
+		      <div align="center"> 
+		        <input type="button" value=" &gt;&gt; " name="addLevel" onclick="add(document.addForm.elements['notSelectedLevel[]'],document.addForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
+		        <br />
+		        <input type="button" value=" &lt;&lt; " name="removeLevel" onclick="remove(document.addForm.elements['notSelectedLevel[]'],document.addForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
+		        <br /><br />
+		      </div>
+		    </td>
+		    <td> 
+		      <div align="left">
+		        <select name="selectedLevel[]" size="12" style="width:200px;" multiple="multiple">
+		        	{LEVEL_SELECTED}
+		        </select>
+		      </div>
+		    </td>
+		  </tr>
+		</table>
+      </td>
+    </tr>
+    <!-- END levels -->
+  </table> 
+
+   <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%"  class="adminlist">
+   	<!-- BEGIN inputfieldsOutput -->
+    <tr class="{FIELD_ROW}"> 
+      <td width="150" valign="top">{FIELD_NAME}:{FIELD_REQUIRED}</td>
+      <td >{FIELD_VALUE}</td>
+    </tr>
+    <!-- END inputfieldsOutput -->
+    <tr class="row3"> 
+      <td valign="top" colspan="2"><b>{TXT_DIRECTORY_SPEZ_SORT}</b></td>
+    </tr>
+    <tr class="row2"> 
+      <td width="150" valign="top">{TXT_DIRECTORY_SORT}:</td>
+      <td ><input type="text" name="inputValue[spezial]" value="{DIRECTORY_SORT}" style="width:300px;" maxlength="4"></td>
+    </tr>
+     <tr class="row1"> 
+      <td width="150" valign="top">{TXT_DIRECTORY_PREMIUM}:</td>
+      <td ><input type="checkbox" name="premium" value="1" {DIRECTORY_PREMIUM}></td>
+    </tr>
+</table>
+<br />
+<input type="submit" name="edit_submit" value="{TXT_UPDATE}">&nbsp;<font color="red">*</font> = {TXT_REQUIRED_FIELDS}
+</form>
+<br />
+<!-- END module_directory_entry_add.html -->

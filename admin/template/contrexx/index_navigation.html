@@ -1,0 +1,30 @@
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+function swapNavigation( div )
+{
+	displayType = ( document.getElementById( div ).style.display == 'none' ) ? 'block' : 'none';
+	document.getElementById( div ).style.display = displayType;
+	document.cookie = div + "=" + displayType;
+}
+// ]]>
+</script>
+<!-- BEGIN navigationRow -->
+<table cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<th style="cursor:hand; cursor:pointer;" onclick="swapNavigation('navigation_{NAVIGATION_ID}'); return false;" height="24">
+<div align="left"><ul class="navbar"><li><a href="#"><img src="template/contrexx/images/arnav.gif" border="0" alt="" />&nbsp;{NAVIGATION_GROUP_NAME}</a></li></ul></div>
+</th>
+</tr>
+</table>
+<div id="navigation_{NAVIGATION_ID}" style="DISPLAY: {NAVIGATION_STYLE}">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td>
+<ul class="navigation">
+{NAVIGATION_MENU}
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<!-- END navigationRow -->

@@ -1,0 +1,98 @@
+#mainMenu {
+font-family: Verdana, Helvetica, Arial, sans-serif, 'Trebuchet MS';
+font-size: 90%;
+font-size: 11px;
+font-weight: bold;
+position: relative;
+text-align: left;
+width: 800px;
+background-color: #9A0000;
+color: white;
+margin: 0px;
+padding-bottom: 4px;
+padding-top: 4px;
+padding-left:0px;
+padding-right: 0px;
+border-top: 1px solid white;
+}
+
+
+#menuList {
+margin: 0px;
+padding: 0px;
+}
+
+#menuList ul {
+margin: 0px;
+padding: 0px;
+}
+
+#menuList li {
+display:inline;
+list-style: none;
+}
+
+#menuList li a.starter_active, #menuList li a.starter_active:link {
+background-color: white;
+color: black;
+margin: 0px;
+padding-left:4px;
+padding-right: 4px;
+padding-bottom: 4px;
+padding-top: 4px;
+text-decoration: none;
+}
+
+#menuList li a.starter_normal, #menuList li a.starter_normal:link {
+background-color: #9A0000;
+color: white;
+margin: 0px;
+padding-left:4px;
+padding-right: 4px;
+padding-bottom: 4px;
+padding-top: 4px;
+text-decoration: none;
+}
+
+#menuList li a.starter_normal:hover, #menuList li a.starter_normal:active {
+background-color: white;
+color: black;
+}
+
+.menu {
+text-align: left;
+color: black;
+background-color: white;
+position: absolute;
+width: 160px;
+visibility: hidden;
+}
+
+.menu li a, .menu li a:link  {
+background-color: transparent;
+color: black;
+display: block;
+border-bottom: 1px solid #9A0000;
+margin: 0px;
+padding: 5px;
+}
+
+.menu li a:hover, .menu li a:active {
+background-color: #e6e6e6;
+color: black;
+}
+
+#menubuilder { 
+width: 160px; 
+z-index:100; 
+}
+
+#menubuilder a, {
+background-color: white;
+color: black;
+}
+
+#menubuilder a:hover {
+background-color: #e6e6e6;
+color: black;
+}

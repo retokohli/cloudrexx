@@ -1,0 +1,194 @@
+****************************************
+* Changes ******************************
+News
+- Der Platzhalter TXT_NEWS_CONTENT heisst nun TXT_NEWS_NEWS_CONTENT. (dies wird bei den content seiten im update script geändert)
+
+Statistiken
+- Ein Besucher wird neu als neuer Besucher gezählt, wenn die Zeitspanne zwischen den letzten zwei Anforderung mehr als eine halbe Stunde beträgt. Dies betrifft nur neuinstallationen. Bei aktualisierten Systemen muss diese Option eigenständig in den Einstellungen der Statistiken geändert werden.
+
+Sicherheitssystem
+- Das Intrusion Detection Reporting System (IDRS) ist neu standardmässig deaktiviert.
+
+Directory
+- Es wird empfohlen das Modul mittels Modulmanager neu zu installieren, damit die Contentseiten mit der neuen Version übereinstimmen. Falls dies nicht möglich ist, sind folgend die Änderungen aufgelistet.
+- Neuer Platzhalter im Header bei den Contentseiten "Eintrag erstellen" und "Eintrag editieren":
+  	[[DIRECTORY_JAVASCRIPT]]
+- Bei den Contentseiten "Eintrag erstellen" und "Eintrag editieren" muss in der Form im "onsubmit" folgendes am angepasst werden:
+	onsubmit="[[DIRECTORY_FORM_ONSUBMIT]]"
+- Bei den Contentseiten "Eintrag erstellen" und "Eintrag editieren" muss nach der Kategorieauswahl folgendes eingefügt werden:
+	<!-- BEGIN directoryLevels -->
+	<tr>
+		<td width="120" valign="top">[[TXT_DIRECTORY_LEVEL]]:<font color="red">*</font></td>
+		<td>
+			<table width="100%" border="0">
+				<tr>
+					<td width="210">
+						<select name="notSelectedLevel[]" size="12" style="width:170px;" multiple="multiple">
+						[[DIRECTORY_LEVELS_DESELECTED]]
+						</select>
+					</td>
+					<td width="50">
+						<div align="center">
+						<input type="button" value=" &gt;&gt; " name="addLevel" onclick="add(document.addForm.elements['notSelectedLevel[]'],document.addForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
+						<br />
+						<input type="button" value=" &lt;&lt; " name="removeLevel" onclick="remove(document.addForm.elements['notSelectedLevel[]'],document.addForm.elements['selectedLevel[]'],addLeve,removeLevel);" />
+						<br /><br />
+						</div>
+					</td>
+					<td>
+						<div align="left">
+						<select name="selectedLevel[]" size="12" style="width:170px;" multiple="multiple">
+						[[DIRECTORY_LEVELS_SELECTED]]
+						</select>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<!-- END directoryLevels -->
+- Umbenennung von Platzhalter
+	[[DIRECTORY_CATEGORY_TITLE]] 										-> [[DIRECTORY_TITLE]]
+	[[DIRECTORY_CATEGORY_NAVI]] 										-> [[DIRECTORY_TREE]]
+	[[DIRECTORY_CATEGORY_DESCRIPTION]] 									-> [[DIRECTORY_DESCRIPTION]]
+	[[DIRECTORY_CATEGORY_ROW_WIDTH]] 									-> [[DIRECTORY_ROW_WIDTH]]
+	[[DIRECTORY_CATEGORY_ROW1]] 										-> [[DIRECTORY_ROW1]]
+	<!-- BEGIN showCategoriesTitle -->									-> <!-- BEGIN showTitle -->
+	<a href="javascript:history.back()">[[TXT_DIRECTORY_BACK]]</a>		-> [[DIRECTORY_BACK]]
+
+	im "Eintag editieren":
+	[[DIRECTORY_FILE]] 													-> [[DIRECTORY_EDIT_FILE]]
+
+- Die Suche wurde neu gestalltet, folgendes muss auf allen Seite (wo Suche vorhanden ist) angepasst werden.
+	Vorher:
+	<script language="JavaScript">
+	<!--
+	function toggle(target){
+	    obj = document.getElementById(target);
+	    obj.style.display = (obj.style.display=='none') ? 'inline' : 'none';
+	    if (obj.style.display=='none' && target == 'hiddenSearch'){
+	         document.getElementById('searchCheck').value = 'norm';
+	    }else if(obj.style.display=='inline' && target == 'hiddenSearch'){
+	         document.getElementById('searchCheck').value = 'exp';
+	    }
+	}
+	-->
+	</script>
+	<table width="100%" cellspacing="5" cellpadding="0" border="0" id="directory">
+		<tbody>
+			<tr>
+				<td class="description">
+					<form action="index.php?" method="get" name="directorySearch" id="directorySearch">
+					<input name="term" value="[[TXT_DIRECTORY_SEARCHTERM]]" size="25" maxlength="100" /><input id="searchCheck" type="hidden" name="check" value="norm" size="10" /><input type="hidden" name="section" value="directory" size="10" /><input type="hidden" name="cmd" value="search" size="10" />&nbsp;<input type="submit" value="[[TXT_DIRECTORY_SEARCH]]" name="search" />                  &nbsp;&raquo;&nbsp;<a onclick="javascript:toggle('hiddenSearch')" href="javascript:{}">[[TXT_DIRECTORY_SEARCH_EXP]]</a><br />
+					<div style="display: none;" id="hiddenSearch">                  <br />
+						<table width="100%" cellspacing="0" cellpadding="0" border="0">
+                        <!-- BEGIN expSearch -->
+                        	[[DIRECTORY_EXP_SEARCH_FIELD]]
+                        <!-- END expSearch -->
+						</table>
+					</div>
+					</form>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	Nachher:
+	[[DIRECTORY_SEARCH]]
+
+
+****************************************
+* New Features *************************
+****************************************
+Webinstaller
+- Der Webinstaller ist nun komplett in English verfügbar.
+
+Allgemein
+- Die Contrexx Edition wird neu auf der Startseite in der Administrationskonsole angezeigt.
+
+Kontakte Manager
+- Ein Formular kann nun wahlweise, nachdem es abgeschickt wurde, ausgeblendet werden.
+
+News
+- Auf den Seiten "news" und "news details" existiert nun ein Platzhalter [[NEWS_AUTHOR]], der den Namen des Artikelverfassers ausgibt.
+- Teaser-ID wird in den News-Feeds beim Link angegeben. (Vorbereitung fürs Werbebanner-Modul)
+
+Fehlerbehandlung
+- Wird eine Seite angefordert, die nicht vorhanden ist, wird neu die 404-Seite (section=error) angezeigt.
+
+Mitglieder- / Adressverwaltung
+- Die Auflistung der Einträge einer Kategorie kann neu auch benutzerdefiniert sortiert werden.
+
+Shop
+- Bei der Zahlungsmethode PayPal wird nun automatisch in eine von PayPal akzeptierte Währung gewechselt, falls nicht schon eine solche vom Käufer gewählt wird.
+- Drei Bilder pro Produkt möglich
+- Bilder werden nun über fileBrowser/media eingebunden.
+- Bei den Produkteoptionen gibt es neu den zusätzlichen Anzeige-Typ "Menu (Auswahl zwingend)", bei welchem eine Auswahl zwingend ist.
+
+System Update
+- Das Ergebnis einer Abfrage wird nun ausgegeben.
+
+Framework
+- Die Domain "localhost" wird bei E-Mail Adressen nun auch akzeptiert.
+
+Volltextsuche
+- Das Mitglieder- und Adressverzeichnis wird nun auch durchsucht.
+
+Newsletter
+- Die HTML-Vorlagen können neu mit dem WYSIWYG-Editor bearbeitet werden.
+
+News Syndication
+- Neu kann ein Feed auch angezeigt werden, ohne Kategorien Auflistung.
+
+
+****************************************
+* Bugfixes *****************************
+****************************************
+Kalender (events.html)
+- In der Datei events.html (Designverwaltung) wurden die Variablen [[CALENDAR_EVENTS_ENDDATE]] und [[CALENDAR_EVENTS_ENDTIME]] mit falschen Werten gefüllt.
+
+System Konfiguration
+- Caching System
+- Änderungen an der Systemkonfiguration werden nun wieder erfolgreich übernommen (betraff nur Version 1.0.9.7)
+
+Volltextsuche
+- Wenn die Option "Nur in sichtbaren Inhaltsseiten suchen" in den Grundeinstellungen deaktiviert ist, werden nun die sichtbaren und unsichtbaren Seiten durchsucht.
+
+Community
+- Aktivierungslink im aktivierungs E-Mail stimmt nun.
+
+Shop
+- Der Detaillink zu einem Artikel wird nur noch angezeigt, sofern auch eine detaillierte Beschreibung des Artikels vorhanden ist.
+
+Mitglieder- / Adressverwaltung
+- Verbesserungen in der Code-Struktur
+
+Content Manager
+- Das Erstellen einer neuen Seite funktioniert nun auch unter IIS 6 korrekt.
+- Das Schützen einer Seite beeinflusst keine andere geschützte Seite mehr.
+
+Import/Export
+- Verbesserungen in der Code-Struktur
+
+Navigation
+- Automatisches Zuklappen der Top-Level Navigationen funktioniert nun. (Unique IDs werden vergeben)
+
+Gästebuch
+- Ein Fehler beim Eintragen von Texten mit Hochkommas (') wurde behoben
+
+Umfrage
+- Das Anzeigen einer gewünschten Umfrage in der Administrationskonsole funktioniert wieder.
+
+Kontaktmanager
+- Die Überprüfung von Auswahlfeldern funktioniert nun richtig.
+- Es werden nun alle Einträge beim CSV-Export exporiert.
+
+Bilder Galerie
+- Der Image-Tag wird nun richtig geparst.
+
+Newsletter
+- Das Abarbeiten der eingegebenen Daten beim Bearbeiten eines E-Mails funktioniert nun auf jedem System korrekt.
+- Das Löschen von mehreren Empfängern funktioniert nun auch noch, nachdem die Empfängerliste sortiert wurde.
+
+Spamschutz
+- Die bestehende Spamschutzlösung wurde verbessert.

@@ -1,0 +1,106 @@
+#mainMenu {
+position: relative;
+text-align: left;
+width: 100%;
+color: #ffffff;
+margin: 0px;
+padding-bottom: 5px;
+padding-top: 8px;
+padding-left:0px;
+padding-right: 0px;
+}
+
+
+#menuList {
+margin: 0px;
+padding: 0px;
+}
+
+#menuList ul {
+margin: 0px;
+padding: 0px;
+}
+
+#menuList li {
+display:inline;
+list-style: none;
+}
+
+#menuList li a.starter_active, #menuList li a.starter_active:link {
+color: #ffffff;
+margin: 0px;
+padding-left:10px;
+padding-right: 10px;
+padding-bottom: 7px;
+padding-top: 8px;
+text-decoration: none;
+background-color: #BF0202;
+border-right: 1px solid #ffffff;
+}
+
+#menuList li a.starter_normal, #menuList li a.starter_normal:link {
+color: #ffffff;
+margin: 0px;
+padding-left:10px;
+padding-right: 10px;
+padding-bottom: 7px;
+padding-top: 8px;
+text-decoration: none;
+border-right: 1px solid #ffffff;
+}
+
+#menuList li a.starter_normal:hover, #menuList li a.starter_normal:active {
+color: #ffffff;
+background-color: #BF0202;
+border-right: 1px solid #ffffff;
+}
+
+.menu {
+text-align: left;
+color: #ffffff;
+position: absolute;
+width: 130px;
+visibility: hidden;
+font-size: 11px;
+background-color: #FF0303;
+}
+
+.menu li a, .menu li a:link  {
+background-color: transparent;
+color: #ffffff;
+display: block;
+border-bottom: 1px solid #FF8181;
+border-left: 1px solid #ffffff;
+border-right: 1px solid #ffffff;
+margin: 0px;
+padding-left:8px;
+padding-right: 8px;
+padding-bottom: 5px;
+padding-top: 5px;
+text-decoration: none;
+font-size: 11px;
+}
+
+.menu li a:hover, .menu li a:active {
+background-color: #FF0303;
+color: #ffffff;
+font-size: 11px;
+}
+
+#menubuilder { 
+width: 160px; 
+z-index:100; 
+font-size: 11px;
+}
+
+#menubuilder a, {
+background-color: #transparent;
+color: #ffffff;
+font-size: 11px;
+}
+
+#menubuilder a:hover {
+background-color: #BF0202;
+color: #ffffff;
+font-size: 11px;
+}

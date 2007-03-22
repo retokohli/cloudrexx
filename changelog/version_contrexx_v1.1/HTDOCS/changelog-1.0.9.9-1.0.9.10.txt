@@ -1,0 +1,102 @@
+////////////////////////////////////////
+// CHANGELOG 1.0.9.9-1.0.9.10 //////////
+////////////////////////////////////////
+
+****************************************
+* Changes ******************************
+****************************************
+Inserate Markt
+- Kategorien können in Index-Ansicht angezeigt werden
+
+Links Verzeichnis
+- 17 zusätzliche Felder, welche selber definiert werden können. 5 Inputfelder, 5 Textareas, 5 Buldupload und 2 Dropdownmenus.
+
+WYSIWYG
+- Neu wird nun im Internet Explorer auch, gleich wie im Firefox, ein Zeilenumbruch (<br />) als bisher ein Absatz (<p></p>) generiert, wenn die ENTER-Taste betätigt wird. Die Zugehörige Konfigurationsvariable (UseBROnCarriageReturn) befindet sich in der Datei editor/FCKeditorConfig.js
+- Beim Einfügen eines Links wird nun automatisch der Bereich "Webseiten" im File Browser angezeigt.
+
+News Syndication
+- Die Sortierung der NewsML Dokumente erfolgt nun primär nach dem Änderungsdatum.
+
+Shop
+- Adresse des Saferpay Gateways auf den neusten Stand gebracht.
+
+News
+- Sofern bei einem Newsticker die Option "URL-Kodierung" aktiviert ist, wird neu der Tickerinhalt zuerst in den angegebenen Zeichensatz umgewandelt und danach erst URL-kodiert.
+
+
+****************************************
+* New Modules **************************
+****************************************
+Forum
+- Das neue Forenmodul bietet eine Platform für Diskussionen in der Community.
+- Es können Frontend-Gruppen definiert und individuelle Rechte vergeben werden. Auch anonyme Beiträge können erlaubt werden.
+- Threads können abonniert werden, so dass man eine Benachrichtigung bei neuen Beiträgen erhält.
+- Es wird einfacher BB-Code unterstützt.
+
+Onlineschalter (engl. Online Desk)
+- Mit dem Onlineschalter ist es möglich unterschiedliche Geschäftsfälle einfach und rund um die Uhr per Internet zur Verfügung zu stellen. Dabei können auch elektronische Produkte mittels E-Mail Anhänge versendet werden.
+
+Anwendung als eGovernment Onlineschalter Applikation
+Mit dem Onlineschalter werden Gemeinden eine kostengünstige eGovernment-Applikation zur Verfügung gestellt, welche es den BürgerInnen ermöglicht, Geschäftsfälle mit der Einwohnergemeinde einfach und rund um dieUhr per Internet zu erledigen. Selbstverständlich lässt sich der Onlineschalter individualisieren und an die gemeindespezifischen Verhältnisse anpassen und ist vollständig im Web Content Management System integriert.
+
+
+****************************************
+* New Features *************************
+****************************************
+Allgemein
+- Bei mehreren aktiven Frontend-Sprachen wird nun automatisch die für den Besucher best passende Sprache ausgewählt.
+
+ContentManager
+- Seiten, welche als Redirekt eingesetzt werden, sind in der Übersicht des ContentManagers nun mit einem Symbol speziell gekennzeichnet.
+- Im ContentManager wurde das Erstellen von Redirekt-Seiten vereinfacht. Ausserdem können nun auch relative Links angegeben werden.
+
+Shop
+- Die Zahlungsabwicklung PayPal unterstützt nun zusätzlich die folgenden Währungen: Australische Dollar (AUD), Schweizer Franken (CHF), Tschechische Kronen (CZK), Dänische Kronen (DKK), Hong Kong Dollar (HKD), Ungarische Forint (HUF), Norwegische Kronen (NOK), New Zealand Dollar (NZD), Polnische Zloty (PLN), Schwedische Kronen (SEK), Singapur Dollar (SGD), Thai Baht (THB)
+
+WYSIWYG Editor
+- Neue Version 2.3.2 des FCKeditors eingebunden. Weitere Informationen unter: http://www.fckeditor.net/whatsnew/
+
+Newsletter
+- Beim Datei-Import für Empfänger kann neu auch die Anrede importiert werden.
+
+News
+- Auf der News-Übersicht und der Detail-Seite existiert nun eine Variable [[NEWS_IMAGE]] welche das Teaser-Bild ausgibt.
+- Es können nun Umleitungen auf externe Newsmeldungen gesetzt werden. Beim Aufruf der betreffenden Meldung öffnet sich ein Link auf die externe Seite.
+
+Media
+- Neu gibt es 4 Medien Archive.
+- Ein und dasselbe Media Archiv kann neu mehrfach verwendet werden, in dem zusätzlich zur Media Archiv zuweisung bei einer Seite auch noch ein CMD angegeben wird.
+
+Gallery
+- Es existieren nun 2 Variablen [[GALLERY_RANDOM]] und [[GALLERY_LATEST]], welche im Content Manager, Blocksystem und der Designverwaltung verwendet werden können. Diese geben ein zufälliges, bzw. das neueste Bild der Galerie aus.
+
+System Update
+- Die Ausführung der eingegebenen SQL-Abfragen können neu mit der Tastenkombination [Shift]+[Enter] ausgelöst werden.
+
+
+****************************************
+* Bugfixes *****************************
+****************************************
+Kontaktformular
+- Uploadfelder können nun auch als Pflichtfelder definiert werden
+
+Newsletter
+- Optimierung der SQL-Abfragen
+
+Inserate Markt
+- Sprachvariablen sind nun vollständig in die Language-Files extrahiert
+
+Bildergalerie
+- Die Einstellung "Maximale Bildbreite (in Pixel)" wurde bisher ignoriert. Nun wird beim Upload / Importieren die Grösse der Bilder überprüft.
+
+File Browser
+- Der File Browser hängt sich jetzt nicht mehr auf, wenn ein Bild ausgewählt wird (trat bei einigen Internet Explorer Versionen auf).
+
+News
+- Die Teaserzuweisung funktioniert nun auch, wenn die Newsmeldung inaktiv ist.
+
+Content Manager
+- Beim Kopieren einer ganzen Seitenstruktur in eine andere Sprache, wird der Meta Seitentitel der Webseiten nun auch übernommen.
+
+FS#80 - A page with a redirect cannot be protected (http://www.contrexx.com/bugtracker/task/80)

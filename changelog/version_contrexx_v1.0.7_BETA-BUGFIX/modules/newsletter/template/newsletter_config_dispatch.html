@@ -1,0 +1,155 @@
+<!-- START newsletter_config_dispatch.html -->
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+	function Update(){
+		if(document.adduser.sender_email.value=="" || document.adduser.sender_name.value=="" || document.adduser.return_path.value=="" || document.adduser.mails_per_run.value=="" || document.adduser.profile_setup_html.value=="" || document.adduser.profile_setup_text.value=="" || document.adduser.unsubscribe_html.value=="" || document.adduser.unsubscribe_text.value=="" || document.adduser.template_html.value=="" || document.adduser.template_text.value==""){
+			alert('{TXT_FILL_OUT_ALL_REQUIRED_FIELDS}');
+		}else{
+			document.adduser.submit();
+		}
+	}
+// ]]>
+</script>
+<div id="subnavbar_level2">
+<ul>
+<li><a href="index.php?cmd=newsletter&act=dispatch" title="{TXT_DISPATCH_SETINGS}">{TXT_DISPATCH_SETINGS}</a></li>
+<li><a href="index.php?cmd=newsletter&act=confightml" title="{TXT_GENERATE_HTML}">{TXT_GENERATE_HTML}</a></li>
+</ul>
+</div><br/>
+<ul id="tabmenu">
+<li><a id="zoneTab_Content1" class="active" href="javascript:{}" onclick="selectTab('Content1')" title="{TXT_TITLE}">{TXT_TITLE}</a></li>
+<li><a id="zoneTab_Content2" href="javascript:{}" onclick="selectTab('Content2')" title="{TXT_WILDCART_INFOS}">{TXT_WILDCART_INFOS}</a></li>
+</ul>
+<div id="Content1" class="zoneTab" style="display:block">
+<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+	<tr>
+		<th>{TXT_TITLE}</th>
+	</tr>
+</table>
+<form name="adduser" action="index.php?cmd=newsletter&act=dispatch" method="POST">
+<input type="hidden" name="update" value="exe" />
+<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+	<tr class="row1">
+		<td width="20%">{TXT_SENDER} E-Mail</td>
+		<td width="80%"><input type="text" name="sender_email" size="40" maxlength="200" value="{SENDERMAIL_VALUE}" /></td>
+	</tr>
+	<tr class="row1">
+		<td width="20%">{TXT_SENDER} {TXT_LASTNAME}</td>
+		<td width="80%"><input type="text" name="sender_name" size="40" maxlength="200" value="{SENDERNAME_VALUE}" /></td>
+	</tr>
+	<tr class="row1">
+		<td width="20%">{TXT_RETURN_PATH} (E-Mail)</td>
+		<td width="80%"><input type="text" name="return_path" size="40" maxlength="200" value="{RETURNPATH_VALUE}" /></td>
+	</tr>
+	<tr class="row1">
+		<td width="20%">{TXT_SEND_LIMIT}</td>
+		<td width="80%"><input type="text" name="mails_per_run" size="40" maxlength="200" value="{MAILSPERRUN_VALUE}" /></td>
+	</tr>
+</table>
+<br/>
+<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+	<tr>
+		<th>HTML/TEXT {TXT_SETTINGS}</th>
+	</tr>
+</table>
+<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+	<tr class="row1">
+		<td width="20%">{TXT_PROFILE_SETUP} (HTML)</td>
+		<td width="80%"><input type="text" name="profile_setup_html" size="40" maxlength="200" value="{PROFILEHTML_VALUE}" /></td>
+	</tr>
+	<tr class="row1">
+		<td width="20%">{TXT_PROFILE_SETUP} (TEXT)</td>
+		<td width="80%"><input type="text" name="profile_setup_text" size="40" maxlength="200" value="{PROFILETEXT_VALUE}" /></td>
+	</tr>
+	<tr class="row1">
+		<td width="20%">{TXT_UNSUBSCRIBE} (HTML)</td>
+		<td width="80%"><input type="text" name="unsubscribe_html" size="40" maxlength="200" value="{UNSUBSCRIBEHTML_VALUE}" /></td>
+	</tr>
+	<tr class="row1">
+		<td width="20%">{TXT_UNSUBSCRIBE} (TEXT)</td>
+		<td width="80%"><input type="text" name="unsubscribe_text" size="40" maxlength="200" value="{UNSUBSCRIBETEXT_VALUE}" /></td>
+	</tr>
+	<tr class="row1">
+		<td width="20%" valign="top">HTML-Template</td>
+		<td width="80%"><textarea name="template_html" style="width: 100%; height: 150px;">{TEMPLATEHTML_VALUE}</textarea></td>
+	</tr>
+	<tr class="row1">
+		<td width="20%" valign="top">TEXT-Template</td>
+		<td width="80%"><textarea name="template_text" style="width: 100%; height: 150px;">{TEMPLATETEXT_VALUE}</textarea></td>
+	</tr>
+</table>
+<br/>
+<input type="button" onclick="Update();" value="{TXT_SAVE}" />
+</form>
+
+<br/>
+</div>
+<div id="Content2" class="zoneTab" style="display:none">
+<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+	<tr>
+		<th>{TXT_WILDCART_INFOS}</th>
+	</tr>
+</table>
+<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+	<tr class="row1">
+		<td colspan="2"><b>{TXT_USER_DATA}</b></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%">{TXT_EMAIL_ADDRESS}</td>
+		<td width="88%"><-- email --></td>
+	</tr>
+	<tr class="row1">
+		<td width="12%">{TXT_LASTNAME}</td>
+		<td width="88%"><-- lastname --></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%">{TXT_FIRSTNAME}</td>
+		<td width="88%"><-- firstname --></td>
+	</tr>
+	<tr class="row1">
+		<td width="12%">{TXT_STREET}</td>
+		<td width="88%"><-- street --></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%">{TXT_ZIP}</td>
+		<td width="88%"><-- zip --></td>
+	</tr>
+	<tr class="row1">
+		<td width="12%">{TXT_CITY}</td>
+		<td width="88%"><-- city --></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%">{TXT_COUNTRY}</td>
+		<td width="88%"><-- country --></td>
+	</tr>
+	<tr class="row1">
+		<td width="12%">{TXT_PHONE}</td>
+		<td width="88%"><-- phone --></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%">{TXT_BIRTHDAY}</td>
+		<td width="88%"><-- birthday --></td>
+	</tr>
+	<tr class="row1">
+		<td width="12%" colspan="2"><b>{TXT_GENERALLY}</b></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%" nowrap>{TXT_NEWSLETTER_CONTENT}</td>
+		<td width="88%"><-- content --></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%" nowrap>{TXT_PROFILE_SETUP} (Link)</td>
+		<td width="88%"><-- profile_setup --></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%" nowrap>{TXT_UNSUBSCRIBE} (Link)</td>
+		<td width="88%"><-- unsubscribe --></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%" nowrap>{TXT_DATE}</td>
+		<td width="88%"><-- date --></td>
+	</tr>
+</table>
+</div>
+
+<!-- END newsletter_config_dispatch.html -->

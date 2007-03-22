@@ -1,0 +1,123 @@
+/* CSS Document */
+
+body,td,th {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333333;
+}
+body {
+	background-color: #EAEAEA;
+	background-image: url(spring/site_bg.jpg);
+	background-position:top;
+	background-repeat:repeat-x;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+.title {
+	color: #002FA7;
+	font-weight: bold;
+}
+.ort {
+	color: #EBEBEB;
+	font-weight: bold;
+}
+
+
+a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #838383;
+}
+a:link {
+	text-decoration: none;
+}
+.Subtitle {
+	color: #002FA7;
+	font-weight: bold;
+}
+.footer {color: #FFFFFF}
+a:visited {
+	text-decoration: none;
+	color: #838383;
+}
+a:hover {
+	text-decoration: none;
+	color: #002FA7;
+}
+a:active {
+	text-decoration: none;
+	color: #3BD1D6;
+}
+h1,h2,h3,h4,h5,h6 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+h1 {
+	font-size: 11px;
+	color: #002FA7;
+}input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color: #666666;
+	text-decoration: none;
+	background-image: url(spring/input_search_bg.gif);
+	height: 10px;
+	width: 111px;
+	border: 1px solid;
+}
+
+ #navcontainer { margin-left: 0px; }
+
+#navcontainer ul
+{
+margin: 0;
+padding: 0;
+list-style-type: none;
+font-family: verdana, arial, Helvetica, sans-serif;
+}
+
+#navcontainer li { margin: 0; }
+
+#navcontainer a
+{
+display: block;
+padding: 9px 0px 6px 32px;
+width: 100%;
+color: #000;
+text-decoration: none;
+font-weight: bold;
+font-size: 11px;
+background-image: url(winter/subnav_a.gif);
+background-repeat: no-repeat;
+background-position: 0 0;
+}
+
+#navcontainer a:hover
+{
+color: #FFFFFF;
+text-decoration: none;
+background-image: url(winter/subnav_h.gif);
+background-repeat: no-repeat;
+background-position: 0 0;
+}
+
+#navcontainer ul ul li { margin: 0; }
+
+#navcontainer ul ul a
+{
+display: block;
+padding: 9px 0px 6px 48px;
+width: 100%;
+color: #000;
+background-image: url(winter/subnav_s_a.gif);
+text-decoration: none;
+font-weight: normal;
+}
+
+#navcontainer ul ul a:hover
+{
+color: #FFFFFF;
+background-image: url(winter/subnav_s_h.gif);
+text-decoration: none;
+}
