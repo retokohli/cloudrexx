@@ -1,0 +1,27 @@
+Readme
+------------------
+
+Fehler die behoben wurden:
+---------------------------
+- Shop Modul: Pagging Fehler bei der Produkteansicht behoben.
+- Shop Modul: Produktbeschreibungsfehler beim Upload eines Bildes behoben.
+- Gallery Module Bug behoben: Bilder Upload bei falschen Einstellungen nicht möglich
+- Newsletter Backend Link Fehler behoben
+- Navigation Bug behoben: Alle Seiten wurden angezeigt, auch wenn diese durch eine Zeitbegrenzung nicht aktuell waren.
+- Logout Fehler behoben.
+- Fehler behoben, dass man sich mittels einer Gruppe anmelden konnte, die deaktiviert war.
+- Statistiken: Fehler behoben, der auftrat wenn ein Spider die Seite Indexierte.
+- News bearbeiten: Fehler behoben beim Anzeigen des News Titels mit Anführungszeichen.
+
+
+Neue Eigenschaften/Verbesserungen:
+----------------------------------
+- DHTML Menüs dynamisch integriert. Betrifft die Navbar und Subnavbar
+- Backend Navigation an Benutzerrechte angepasst
+- Sitemap Modul: Der Block wurde aus technischen Gründen von "row" in "sitemap" unbenannt.
+- Sitemap Modul: Neue möglichkeit zur Verschachtelung der Links mit dem PLatzhalter [[SUB_MENU]]
+- Benutzerverwaltung: Bei der Verwaltung der Frontend-Gruppen wurde die Seitenstruktur der Sprache des angemeldeten Benutzers anstatt der ausgewählten Frontend-Sprache angezeigt.
+- Das Zugriff- und Rechtesystem wurde erneuert.
+- Einer Frontent-Gruppe kann nun auch das Recht erteilt werden, eine Funktion eines Modules auszuführen.
+- Content Manager: Seiten können geschützt werden, damit sie nur von definierten Gruppen bearbeitet werden können
+- Nettools: Neue Funktion MX-Lookup zum Abfragen der Mail Server einer Domain

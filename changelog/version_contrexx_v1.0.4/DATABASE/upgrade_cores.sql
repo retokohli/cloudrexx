@@ -1,0 +1,2 @@
+INSERT INTO `contrexx_backend_areas` ( `area_id` , `parent_area_id` , `type` , `area_name` , `is_active` , `uri` , `target` , `module_id` , `order_id` , `access_id` )VALUES ('32', '1', 'navigation', 'TXT_IMAGE_ADMINISTRATION', '1', 'index.php?cmd=media&archive=content', '_self', '1', '3', '32');
+UPDATE `contrexx_backend_areas` SET `uri` = 'index.php?cmd=media&archive=archive1' WHERE `area_id` =7 LIMIT 1 ;

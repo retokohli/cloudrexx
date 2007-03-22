@@ -1,0 +1,21 @@
+v1.7 RC1
++-----------+-----------+-----------+-----------------------------------+-----------------------------------------------------------+
+| DATE	    | NAME      | TYPE	    | FILENAME / DBNAME		            | DESCRIPTION												|
++-----------+-----------+-----------+-----------------------------------+-----------------------------------------------------------+
++ 26.07.04  | Ivan      | FILE      | */*.php                           | removed all $dbprefix variables                           |
++ 23.07.04  | Ivan      | BUG       | modules/shop/*                    | fixed pdf bug                                             |
++ 21.07.04  | Ivan      | FILE      | admin/index.php                   | changed Init object                                       |
++ 21.07.04  | Ivan      | FILE      | index.php                         | changed Init object                                       |
++ 21.07.04  | Ivan      | FILE      | core/Init.class.php               | added customized ThemesId change                          |
++ 15.07.04  | Paulo     | DB        | module_calendar_style             | changed                                                   |
++ 15.07.04  | Paulo     | DB        | module_calendar                   | changed                                                   |
++ 15.07.04  | Paulo     | FILE      | modules/calendar/*                | changed                                                   |
++ 15.07.04  | Paulo     | FILE      | admin/tpl/module_calendar_*       | changed                                                   |
++ 13.07.04  | Ivan      | FILE      | admin/tpl/*                       | improvements                                              |
++ 13.07.04  | Ivan      | FILE      | core/*                            | fixed errors                                              |
++ 13.07.04  | Paulo     | FILE      | modules/feed/admin.class.php      | changed (set allow_url_fopen to 1)                        |
++ 08.07.04  | Ivan      | FILE      | core/wysiwyg.class.php            | changed                                                   |
++ 08.07.04  | Ivan      | FILE      | wysiwyg/*                         | changed                                                   |
++ 04.07.04  | Ivan      | FILE      | wysiwyg/RE/ -> removed            | changed                                                   |
++ 04.07.04  | Ivan      | FILE      | wysiwyg/richeditor19 -> added     | changed                                                   |
++-----------+-----------+-----------+-----------------------------------+-----------------------------------------------------------+

@@ -1,0 +1,62 @@
+<!-- START module_calendar_categories_edit.html -->
+<script language="JavaScript" type="text/javascript">
+	function formCheck()
+	{
+        if(document.form.name.value == "")
+        {
+            alert("{TXT_CALENDAR_FORMCHECK_NAME}");
+	        document.form.name.focus();
+            return false;
+        }
+        if(document.form.status.value == "")
+        {
+            alert("{TXT_CALENDAR_FORMCHECK_STATUS}");
+	        document.form.status.focus();
+            return false;
+        }
+        if(document.form.lang.value == "")
+        {
+        	alert("{TXT_CALENDAR_FORMCHECK_LANG}");
+        	document.form.lang.focus();
+        	return false;
+        	}
+    }
+</script>
+
+<form action="?cmd=calendar&amp;act=catedit&amp;id={CALENDAR_CAT_ID}&amp;set=1" name="form" method="post" style="padding:0px; margin:0px;" onsubmit="return formCheck();">
+	<input type="hidden" name="id" value="{CALENDAR_CAT_ID}" />
+	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+	    <tr>
+	    	<th colspan="2">{TXT_CALENDAR_EDIT_CAT}</th>
+	    </tr>
+	    <tr class="row1">
+	    	<td width="100">{TXT_CALENDAR_CATEGORY_NAME}:</td>
+	    	<td><input type="text" name="name" size="30" value="{CALENDAR_CAT_NAME}" /></td>
+	    </tr>
+		<tr class="row1">
+			<td width="100">{TXT_CALENDAR_STATUS}:</td>
+			<td>
+				<select name="status">
+		            <option value="0"{CALENDAR_STATUS0}>{TXT_CALENDAR_INACTIVE}</option>
+		            <option value="1"{CALENDAR_STATUS1}>{TXT_CALENDAR_ACTIVE}</option>
+                </select>
+            </td>
+        </tr>
+        <tr class="row1">
+        	<td width="100">{TXT_CALENDAR_LANG}:</td>
+        	<td>
+        		<select name="lang">
+        			<!-- BEGIN calendar_lang -->
+        			<option value="{CALENDAR_LANG_ID}"{CALENDAR_LANG_SELECTED}>{CALENDAR_LANG_NAME}</option>
+        			<!-- END calendar_lang -->
+        		</select>
+        	</td>
+        </tr>
+        <tr class="row1">
+        	<td width="100">&nbsp;</td>
+        	<td><input type="reset" value="{TXT_CALENDAR_RESET}" /> <input type="submit" value="{TXT_CALENDAR_SAVE}" /></td>
+	    </tr>
+	</table>
+</form>
+<!-- END module_feed_categories_edit.html -->
+

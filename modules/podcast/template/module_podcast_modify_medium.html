@@ -1,0 +1,70 @@
+<!-- start module_podcast_modify_medium.html -->
+<form action="index.php?cmd=podcast&amp;act=modifyMedium&amp;id={PODCAST_MEDIUM_ID}" method="post">
+	<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+		<tbody>
+			<tr>
+				<th colspan="4">{PODCAST_MODIFY_TITLE}</th>
+			</tr>
+			<tr class="row1">
+				<td width="15%">{TXT_PODCAST_TITLE}</td>
+				<td width="85%" colspan="3"><input type="text" value="{PODCAST_MEDIUM_TITLE}" name="podcast_medium_title" maxlength="255" style="width:450px;" /></td>
+			</tr>
+			<tr class="row2">
+				<td>{TXT_PODCAST_AUTHOR}</td>
+				<td><input type="text" value="{PODCAST_MEDIUM_AUTHOR}" name="podcast_medium_author" maxlength="255" style="width:450px;" /></td>
+			</tr>
+			<tr class="row1" style="vertical-align:top;">
+				<td>{TXT_PODCAST_DESCRIPTION}</td>
+				<td colspan="3"><textarea name="podcast_medium_description" cols="150" rows="10" style="width:450px; height:100px;">{PODCAST_MEDIUM_DESCRIPTION}</textarea></td>
+			</tr>
+			<tr class="row2">
+				<td>{TXT_PODCAST_SOURCE}</td>
+				<td colspan="3"><input type="hidden" value="{PODCAST_MEDIUM_SOURCE_URL}" name="podcast_medium_source" /><a href="{PODCAST_MEDIUM_SOURCE}" target="_blank">{PODCAST_MEDIUM_SOURCE}</a></td>
+			</tr>
+			<tr class="row1">
+				<td>{TXT_PODCAST_TEMPLATE}</td>
+				<td colspan="3">{PODCAST_MEDIUM_TEMPLATE_MENU}</td>
+			</tr>
+			<tr class="row2" style="vertical-align:top;">
+				<td>{TXT_PODCAST_DIMENSIONS}</td>
+				<td colspan="3">
+					<input type="text" value="{PODCAST_MEDIUM_WIDTH}" name="podcast_medium_width" style="width:50px; text-align:right; margin-bottom:1px;" /> {TXT_PODCAST_PIXEL_WIDTH}<br />
+					<input type="text" value="{PODCAST_MEDIUM_HEIGHT}" name="podcast_medium_height" style="width:50px; text-align:right;" /> {TXT_PODCAST_PIXEL_HEIGHT}
+				</td>
+			</tr>
+			<tr class="row1">
+				<td>{TXT_PODCAST_PLAYLENGHT}</td>
+				<td colspan="3"><input type="text" value="{PODCAST_MEDIUM_PLAYLENGHT}" name="podcast_medium_playlenght" style="width:50px; text-align:right;" /> {TXT_PODCAST_PLAYLENGHT_FORMAT}</td>
+			</tr>
+			<tr class="row2">
+				<td>{TXT_PODCAST_FILESIZE}</td>
+				<td colspan="3"><input type="text" value="{PODCAST_MEDIUM_FILESIZE}" name="podcast_medium_filesize" style="width:50px; text-align:right;" /> {TXT_PODCAST_BYTES}</td>
+			</tr>
+			<tr class="row1" style="vertical-align:top;">
+				<td width="15%">{TXT_PODCAST_CATEGORIES}</td>
+				<td width="20%">
+					<!-- BEGIN podcast_medium_associated_category_0 -->
+						<input type="checkbox" name="podcast_medium_associated_category[{PODCAST_CATEGORY_ID}]" id="podcast_medium_associated_category_{PODCAST_CATEGORY_ID}" value="1" {PODCAST_CATEGORY_ASSOCIATED} /> <a href="index.php?cmd=podcast&amp;categoryId={PODCAST_CATEGORY_ID}" target="_blank" title="{PODCAST_SHOW_MEDIA_OF_CATEGORY_TXT}">{PODCAST_CATEGORY_NAME}</a><br />
+					<!-- END podcast_medium_associated_category_0 -->
+				</td>
+				<td width="20%">
+					<!-- BEGIN podcast_medium_associated_category_1 -->
+						<input type="checkbox" name="podcast_medium_associated_category[{PODCAST_CATEGORY_ID}]" id="podcast_medium_associated_category_{PODCAST_CATEGORY_ID}" value="1" {PODCAST_CATEGORY_ASSOCIATED} /> <a href="index.php?cmd=podcast&amp;categoryId={PODCAST_CATEGORY_ID}" target="_blank" title="{PODCAST_SHOW_MEDIA_OF_CATEGORY_TXT}">{PODCAST_CATEGORY_NAME}</a><br />
+					<!-- END podcast_medium_associated_category_1 -->
+				</td>
+				<td width="45%">
+					<!-- BEGIN podcast_medium_associated_category_2 -->
+						<input type="checkbox" name="podcast_medium_associated_category[{PODCAST_CATEGORY_ID}]" id="podcast_medium_associated_category_{PODCAST_CATEGORY_ID}" value="1" {PODCAST_CATEGORY_ASSOCIATED} /> <a href="index.php?cmd=podcast&amp;categoryId={PODCAST_CATEGORY_ID}" target="_blank" title="{PODCAST_SHOW_MEDIA_OF_CATEGORY_TXT}">{PODCAST_CATEGORY_NAME}</a><br />
+					<!-- END podcast_medium_associated_category_2 -->
+				</td>
+			</tr>
+			<tr class="row2">
+				<td>{TXT_PODCAST_STATUS}</td>
+				<td colspan="3"><input type="checkbox" value="1" name="podcast_medium_status" id="podcast_medium_status" {PODCAST_MEDIUM_STATUS} /><label for="podcast_medium_status">{TXT_PODCAST_ACTIVE}</label></td>
+			</tr>
+		</tbody>
+	</table>
+	<br />
+	<input type="submit" name="podcast_medium_save" value="{TXT_PODCAST_SAVE}" />
+</form>
+<!-- end module_podcast_modify_medium.html -->

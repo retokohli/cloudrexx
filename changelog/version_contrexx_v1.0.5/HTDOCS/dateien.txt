@@ -1,0 +1,9 @@
+index.php
+
+modules/newsletter/templates/newsletter_news.html
+modules/newsletter/admin.class.php
+
+modules/calendar/*
+modules/calendar/*
+
+modules/docsys/templates/*

@@ -1,0 +1,62 @@
+<!-- START log.html -->
+<<script language="JavaScript" type="text/javascript">>
+function deleteLog(id)
+{
+    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+        window.location.replace("index.php?cmd=log&act=del&logId="+id);
+}
+</script>
+<form name="form1" method="post" action="?cmd=log">
+<table class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
+  <tr valign=top>
+      <td width="91%"> {LOG_PAGING}</td>
+      <td nowrap="nowrap" width="9%"> 
+        <div align="right"> 
+          <input type="text" name="term" value="{LOG_SEARCHTERM}" />
+          <input type="submit" name="submit" value="{TXT_SEARCH}" />
+        </div>
+      </td>
+  </tr>
+</table>
+</form>
+<table class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
+  <tr valign=top> 
+    <th nowrap="nowrap" width="10%"> 
+      <div align="left">{TXT_LOGTIME}</div>
+    </th>
+    <th nowrap="nowrap" width="8%"> 
+      <div align="left">{TXT_USERNAME}</div>
+    </th>
+    <th width="12%"> 
+      <div align="left">{TXT_HOSTNAME}</div>
+    </th>
+    <th width="10%"> 
+      <div align="left">{TXT_USERAGENT}</div>
+    </th>
+    <th width="5%"> 
+      <div align="left">{TXT_BROWSERLANGUAGE}</div>
+    </th>
+    <th nowrap="nowrap" width="6"> 
+      <div align="left">{TXT_ACTION}</div>
+    </th>
+  </tr>
+  <!-- BEGIN logRow -->
+  <tr valign="top" class="{LOG_ROWCLASS}"> 
+    <td nowrap="nowrap">{LOG_TIME}</td>
+    <td nowrap="nowrap"><a href="index.php?cmd=log&act=stats&amp;logId={LOG_USERID}"><img src="images/icons/logged_as.gif" alt="User Stats" border="0" /></a>&nbsp;<a href="index.php?cmd=log&amp;act=stats&amp;logId={LOG_USERID}">{LOG_USERNAME}</a></td>
+    <td nowrap="nowrap">{LOG_REMOTE_HOST}</td>
+    <td nowrap="nowrap">{LOG_USERAGENT}</td>
+    <td nowrap="nowrap">{LOG_USERLANGUAGE}</td>
+    <td nowrap="nowrap"> 
+      <div align="right"> <a href="index.php?cmd=log&amp;act=details&amp;logId={LOG_ID}"><img src="images/icons/details.gif" alt="Detail" border="0" /></a>&nbsp; 
+        <a href="javascript:deleteLog('{LOG_ID}')"><img src="images/icons/delete.gif" alt="Delete" border="0" /></a> 
+      </div>
+    </td>
+  </tr>
+  <!-- END logRow -->
+</table>
+<br />
+<table class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
+  <tr valign="top"><td>{LOG_PAGING}</td></tr>
+</table>
+<!-- END log.html -->

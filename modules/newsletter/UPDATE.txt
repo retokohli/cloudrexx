@@ -1,0 +1,25 @@
+CREATE TABLE `contrexx_module_newsletter_title` (
+`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`title` VARCHAR( 255 ) NOT NULL ,
+UNIQUE (
+`title`
+)
+) TYPE = MYISAM ;
+
+
+
+INSERT INTO `contrexx_module_newsletter_title` ( `id` , `title` )
+VALUES (
+NULL , 'Frau'
+), (
+NULL , 'Herr'
+);
+
+
+
+
+remove: (pages: newsletter profile; newsletter subscribe)
+<input type="radio" id="female" name="title" value="f" [[NEWSLETTER_TITLE_F]] /> <label for="female"> [[TXT_NEWSLETTER_FEMALE]] </label>
+					<input type="radio" id="male" name="title" value="m" [[NEWSLETTER_TITLE_M]] /> <label for="male">[[TXT_NEWSLETTER_MALE]] </label>
+
+add [[NEWSLETTER_TITLE]]

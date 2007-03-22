@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet href="http://www.w3.org/2000/08/w3c-synd/style.css" type="text/css"?>
+<rdf:RDF 
+xmlns:h="http://www.w3.org/1999/xhtml" 
+xmlns:hr="http://www.w3.org/2000/08/w3c-synd/#" 
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+xmlns:dc="http://purl.org/dc/elements/1.1/"
+xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" 
+xmlns:content="http://purl.org/rss/1.0/modules/content/"
+xmlns="http://purl.org/rss/1.0/">
+<channel rdf:about="http://www.golem.de">
+<title>Golem.de</title>
+<description>IT-News fuer Profis</description>
+<link>http://www.golem.de/</link>
+<image rdf:resource="http://corp.golem.de/golemlogo_70.png" /> 
+<items>
+<rdf:Seq>
+<rdf:li rdf:resource="http://www.golem.de/0602/43125.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43124.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43123.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43122.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43121.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43120.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43119.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43118.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43117.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43116.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43111.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43115.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43114.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43113.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43112.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43110.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43109.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43108.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43107.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43106.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43105.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43104.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43103.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43102.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0602/43101.html"/>
+
+</rdf:Seq>
+</items>
+</channel>
+
+
+<item rdf:about="http://www.golem.de/0602/43125.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T19:21:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Online-Spiele: Neues von DAOC, RF Online und Online-Fu&#223;ball</title>
+<description>Es gibt wieder einiges Neues aus der Welt der Online-(Rollen-)Spiele zu berichten: Mit &quot;Darkness Rising&quot; ist eine neue Erweitertung von Dark Age of Camelot gestartet, gleiches gilt f&#252;r den Betatest des aus dem asiatischen Raum importierten Science-Fantasy-Spiels &quot;RF Online&quot; und Electronic Arts entwickelt derzeit an einem FIFA-Soccer-Online-Spiel.</description>
+<link>http://www.golem.de/0602/43125.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43124.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T18:02:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Gartner: Deutscher Notebook-Markt legt deutlich zu</title>
+<description>Der deutsche PC-Markt hat mit 3,1 Millionen verkauften PCs im vierten Quartal 2005 um 4,4 Prozent gegen&#252;ber dem Vorjahr eher moderat zugelegt. Das Notebook-Segment verbuchte dabei einen starken Zuwachs von 25 Prozent im Jahresvergleich, der Bereich Desktops ging um 9 Prozent zur&#252;ck, so eine aktuelle Studie von Gartner.</description>
+<link>http://www.golem.de/0602/43124.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43123.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T16:07:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Tron: Noch keine Entscheidung &#252;ber einstweilige Verf&#252;gung</title>
+<description>Eigentlich wollte das Amtsgericht Charlottenburg heute seine Entscheidung &#252;ber die gegen den Verein Wikimedia Deutschland erwirkte einstweilige Verf&#252;gung verk&#252;nden. Zweifel am Mandat von Rechtsanwalt Thorsten Feldmann, der den Verein vertritt, sorgen nun aber erneut f&#252;r eine Verz&#246;gerung.</description>
+<link>http://www.golem.de/0602/43123.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43122.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T15:33:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>GeForce 7800 GS - Mehr Grafikleistung f&#252;r AGP-Systeme</title>
+<description>Wer einen schnellen Spiele-PC mit AGP-Steckplatz hat, f&#252;r den bieten Nvidia und Partner nun mit dem GeForce 7800 GS endlich eine zeitgem&#228;&#223;ere High-End-L&#246;sung an. ATI h&#228;lt sich hingegen noch zur&#252;ck, nur ATI-Partner Sapphire hat sich hier mit einer Radeon-X1600-Pro-Karte f&#252;r AGP hervorgetan, kann damit aber auch keine Spieler hinter dem Sofa hervorlocken.</description>
+<link>http://www.golem.de/0602/43122.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43121.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T15:21:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>StarForce sieht Beweis f&#252;r Fehlerfreiheit des Kopierschutzes</title>
+<description>Mitte Dezember 2005 rief StarForce einen Wettbewerb aus, bei dem Kunden m&#246;gliche Probleme mit dem StarForce-Kopierschutz belegen konnten. Da niemand der Aufforderung nachgekommen ist, daf&#252;r nach Moskau zu reisen, sieht der Hersteller den Beleg erbracht, dass der Kopierschutz einwandfrei arbeite. Damit d&#252;rften die Boykott-Aktionen im Internet aber kaum zu bes&#228;nftigen sein. </description>
+<link>http://www.golem.de/0602/43121.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43120.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T14:33:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Flybook - Tablet-PC-Subnotebook wird aufgewertet</title>
+<description>Das vom italienischen Design-Notebook-Hersteller Holbe Dialogue stammende Flybook - ein zum Tablet-PC umklappbares Subnotebook mit WLAN und GPRS - erscheint bald in einer neuen Version. Auf der CeBIT 2006 soll das neue Flybook V33iG-Pro in Aktion zu sehen sein. Es basiert nicht mehr auf einem Transmeta-, sondern auf einem Intel-Prozessor und soll dank mehr Grafikspeicher mehr Grafikleistung bieten.</description>
+<link>http://www.golem.de/0602/43120.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43119.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T13:22:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>H+BEDV hei&#223;t bald Avira</title>
+<description>Die H+BEDV Datentechnik GmbH &#228;ndert in K&#252;rze den Firmennamen und hei&#223;t dann Avira. Die Umbenennung soll einen neuen Abschnitt in der Unternehmensgeschichte kennzeichnen. Das Unternehmen will die Sicherheitsl&#246;sung AntiVir st&#228;rker international vermarkten.</description>
+<link>http://www.golem.de/0602/43119.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43118.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T13:19:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>vzbv: TKG-Entwurf schw&#228;cht Verbraucherschutz</title>
+<description>Der Verbraucherzentrale Bundesverband e.V. (vzbv) geht mit dem Entwurf des Bundeswirtschaftsministeriums f&#252;r eine Neufassung des Telekommunikationsgesetzes (TKG) hart ins Gericht: Der Entwurf schw&#228;che die Rechte der Verbraucher deutlich, hei&#223;t es von Seiten der Verbrauchersch&#252;tzer. Im Koalitionsvertrag sei genau das Gegenteil vereinbart worden.</description>
+<link>http://www.golem.de/0602/43118.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43117.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T13:07:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Opera 9 mit Webseitenvorschau und Widget-Unterst&#252;tzung?</title>
+<description>Nach Berichten des Opera-Fan-Blogs OperaWatch wird die kommende Version des norwegischen Browsers zwei grundlegende Neuerungen bieten. So wird es eine Vorschau auf ge&#246;ffnete Webseiten geben und der Browser unterst&#252;tzt dann auch Widgets, wobei noch unklar ist, wie dies realisiert ist. </description>
+<link>http://www.golem.de/0602/43117.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43116.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T12:07:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Corsair: DDR-Speicherkit mit Display jetzt auch mit 2 GByte</title>
+<description>Corsairs neues &quot;XMS-3200C2 XPERT 2GB Kit&quot; besteht aus zwei 1-GByte-PC3200-DDR-RAM-Modulen. Wie Corsairs bisherige XPERT-Speicherriegel mit geringerer Kapazit&#228;t, verf&#252;gen sie &#252;ber eingebaute 10-Zeichen-LED-Display, die den Anwender &#252;ber m&#246;gliche Probleme beim &#220;bertakten informieren sollen.</description>
+<link>http://www.golem.de/0602/43116.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43111.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T12:07:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Interview: .berlin - Top-Level-Domain f&#252;r die Hauptstadt</title>
+<description>Die Internet Corporation for Assigned Names and Numbers (ICANN) soll demn&#228;chst entscheiden, ob Berlin eine eigene Top-Level-Domain bekommt. Die Netzeitung sprach mit Dirk Krischenowski, dem Gr&#252;nder der &quot;Dotberlin-Initiative&quot;.</description>
+<link>http://www.golem.de/0602/43111.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43115.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T11:46:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Microsofts M&#228;use und Tastaturen im Preis gesenkt</title>
+<description>Microsoft senkt die Preise vieler seiner Eingabeger&#228;te; bei den meisten M&#228;usen und Tastaturen sind dies zwar nur wenige Euro. Doch bei den teureren Produkten wie den Maus-Tastatur-Paketen &quot;Optical Desktop Elite for Bluetooth&quot;, &quot;Wireless Optical Desktop Elite&quot;, &quot;Wireless Optical Desktop 3.0 Comfort Edition&quot; und dem Fingerabdrucksensor &quot;Finger Print Reader&quot; macht sich die Preissenkung deutlicher bemerkbar.</description>
+<link>http://www.golem.de/0602/43115.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43114.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T11:34:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Internet Explorer 7: RSS-Funktion wird Windows-Bestandteil</title>
+<description>Bekanntlich unterst&#252;tzt die neue Version des Internet Explorer endlich RSS-Feeds, um diese zu verwalten und anzuzeigen. Wie Microsoft nun enth&#252;llt, wird diese Funktion nach Einspielung des Internet Explorer 7 systemweit in Windows zur Verf&#252;gung stehen. </description>
+<link>http://www.golem.de/0602/43114.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43113.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T11:01:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>NEC, Sony und Toshiba entwickeln 45-nm-LSI-Fertigungstechnik</title>
+<description>Die asiatischen Elektronik-Riesen NEC, Sony und Toshiba haben die Entwicklung von LSI-Fertigungstechnik der 45-nm-Generation gemeinsam in Angriff genommen, da die Minaturisierung immer wichtiger und komplexer wird. Ziel ist es, damit letztlich stromsparendere und leistungsf&#228;higere Chips f&#252;r Unterhaltungselektronik, mobile Endger&#228;te und Netzwerkhardware fertigen zu k&#246;nnen.</description>
+<link>http://www.golem.de/0602/43113.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43112.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T10:59:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>RIM erringt Teilsieg im BlackBerry-Patentstreit (Update)</title>
+<description>Das US-Patentamt hat ein weiteres Patent abschlie&#223;end f&#252;r ung&#252;ltig erkl&#228;rt, das von NTP gehalten wurde und eine zentrale Rolle bei der einstweiligen Verf&#252;gung gegen Research In Motion (RIM) aus dem Jahr 2003 gespielt hatte. NTP wirft RIM vor, mit dem BlackBerry-Dienst gegen NTP-Patente zu versto&#223;en. </description>
+<link>http://www.golem.de/0602/43112.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43110.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T10:52:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>1&amp;1: Virtuelle Server auch mit Windows</title>
+<description>Mit 1&amp;1 startet der n&#228;chste gro&#223;e Webhosting-Anbieter mit virtuellen Servern. Erst in der letzten Woche hatte 1&amp;1-Konkurrenz Strato sein Angebot an virtuellen Servern vorgestellt. Dabei kommt neben Linux auch Windows als Betriebssystem auf den virtuellen Server zum Einsatz.</description>
+<link>http://www.golem.de/0602/43110.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43109.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T10:00:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Dateil&#246;sch-Wurm schl&#228;gt morgen zu</title>
+<description>Am morgigen 3. Februar 2006 schl&#228;gt der seit Januar 2006 in Umlauf befindliche E-Mail-Wurm Nyxem.E zu und l&#246;scht diverse Dateien auf infizierten Windows-Rechnern. Trotz der stetigen Zunahme von E-Mail-W&#252;rmern f&#228;llt diese Variante dadurch auf, dass entsprechend zerst&#246;rerische Schadroutinen in dem Unhold stecken, der zu unliebsamen Datenverlusten f&#252;hren kann.</description>
+<link>http://www.golem.de/0602/43109.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43108.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T10:00:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Resident Evil 4 und weitere Capcom-Hits f&#252;r den PC</title>
+<description>Ubisoft hat nun offiziell best&#228;tigt, Capcoms PC-Umsetzungen von &quot;Resident Evil 4&quot;, &quot;Onimusha 3: Demon Siege&quot; und &quot;Devil May Cry 3: Dante's Awakening&quot; nach Nordamerika und Europa bringen zu wollen. Vor allem auf den bisher nur f&#252;r Konsolen erh&#228;ltliche Grusel-Hit Resident Evil 4 d&#252;rfen PC-Spieler gespannt sein.</description>
+<link>http://www.golem.de/0602/43108.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43107.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T09:58:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Telekom: VDSL kommt, T-Mobile mit Datenflatrate</title>
+<description>Schon Mitte 2006 will die Telekom in 10 St&#228;dten ihr mit ihrem neuen Glasfasernetz Bandbreiten von bis zu 50 MBit/s bieten. Ab M&#228;rz will die Tochter T-Mobile zudem mit einer Datenflatrate an den Start gehen und Fernsehen per Internet soll ab Mitte 2006 mit 100 Fernsehsender sowie der Bundesliga starten, auch in HDTV-Aufl&#246;sung.</description>
+<link>http://www.golem.de/0602/43107.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43106.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T09:56:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Fraunhofer-Studie zu Open-Source-Software</title>
+<description>Das Stuttgarter Fraunhofer-Institut (IAO) hat in der Studie &quot;Open Source Software: Einsatzpotenziale und Wirtschaftlichkeit&quot; freie Software mit propriet&#228;ren Anwendungen verglichen und deren Vor- und Nachteile aus Sicht von Anwendern und Entwicklern aufgelistet. Der Einsatz freier Software wurde dabei am Beispiel eines gro&#223;en Unternehmens untersucht.</description>
+<link>http://www.golem.de/0602/43106.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43105.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T09:37:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Bericht: Entlassungen bei EA</title>
+<description>Die zum Teil noch bevorstehende neue Konsolengeneration sorgt f&#252;r Einschnitte auf Seiten der Spiele-Entwickler. Das Wall Street Journal berichtet, der weltweit gr&#246;&#223;te Spielehersteller Electronic Arts (EA) plane vor diesem Hintergrund einige hundert Entlassungen.</description>
+<link>http://www.golem.de/0602/43105.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43104.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T09:22:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Gericht schr&#228;nkt Handel mit gebrauchter Software ein</title>
+<description>In einem Urteil entschied das Landgericht M&#252;nchen I, dass ein Anbieter von Software in seinen Lizenzbestimmungen festlegen kann, dass an einer &#252;berlassenen Software nur einfache, nicht weiter abtretbare Nutzungsrechte einger&#228;umt werden. Im Zuge dessen darf der Weiterverkauf einer Softwarelizenz untersagt werden, wie das Gericht in einem Rechtsstreit zwischen Oracle und dem Anbieter gebrauchter Software befand.</description>
+<link>http://www.golem.de/0602/43104.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43103.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T08:18:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Firefox 1.5.0.1 erschienen</title>
+<description>F&#252;r den Web-Browser Firefox 1.5 gibt es jetzt nach einem bei manchen Anwendern auf etwas ungl&#252;ckseelige Art und Weise angekommenen Release-Candidate das offizielle Update: Die neue Version 1.5.0.1 kann per inkrementellen Update herunter geladen und installiert werden. Sie soll einige Stabilit&#228;ts- und Sicherheitsprobleme l&#246;sen.</description>
+<link>http://www.golem.de/0602/43103.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43102.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T08:13:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Universal-Fernbedienung mit Farbdisplay und WLAN</title>
+<description>Die Fernbedienung SimpleRemote von OpenPeak ist wie viele Vertreter ihrer Art in der Lage, Infrarot-Codes f&#252;r die verschiedensten Ger&#228;te zu senden. Im Gegensatz zu ihren Artgenossen, die per USB oder per Tastencode programmiert werden m&#252;ssen, ist die SimpleRemote mit einem WLAN-Anschluss ausger&#252;stet, so dass sie direkt aus dem Internet die Bediencodes und auch RSS-Feeds, MP3-Dateien, Podcasts und EPG-Informationen herunter laden kann.</description>
+<link>http://www.golem.de/0602/43102.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0602/43101.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-02-02T08:09:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>50 Meter: LED-Display auf dem Axel-Springer-Haus in Berlin</title>
+<description>Auf dem Dach des Axel-Springer-Hauses in Berlin-Kreuzberg wurde am 1. Februar 2006 das nach Angaben des Verlages gr&#246;&#223;te LED-Display Europas in Betrieb genommen. Es wiegt 16,7 Tonnen und besteht aus 9.676.800 einzelnen LEDs.</description>
+<link>http://www.golem.de/0602/43101.html</link>
+</item>
+
+
+</rdf:RDF>
+

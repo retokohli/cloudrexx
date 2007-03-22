@@ -1,0 +1,91 @@
+<!-- START module_newsletter_overview.html -->
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+function selectMultiAction()
+{
+	with (document.catupdate) {
+		switch (categories_MultiAction.value) {
+			case 'update':
+				action='?cmd=newsletter&act=categorys';
+				submit();
+			break;
+			case 'delete':
+				if (confirm('{TXT_DELETE_MARKED}')) {
+					action='?cmd=newsletter&act=categorys';
+					updateaction.value = 'delete';
+					submit();
+				}
+			break;
+			default: 	
+		}
+	}
+}
+// ]]>
+</script>
+<ul id="tabmenu">
+<li><a id="zoneTab_catContent1" class="active" href="javascript:{}" onclick="selectTab('catContent1')" title="{TXT_EDIT}">{TXT_EDIT}</a></li>
+<li><a id="zoneTab_catContent2" href="javascript:{}" onclick="selectTab('catContent2')" title="{TXT_TITLE}">{TXT_TITLE}</a></li>
+</ul>
+<div id="catContent1" class="zoneTab" style="display:block">
+<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+	<tr>
+		<th colspan="2">{TXT_EDIT}</th>
+	</tr>
+</table>
+<form name="catupdate" action="index.php?cmd=newsletter&act=categorys" method="POST">
+	<input type="hidden" name="updateaction" value="update" />
+	<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+		<tr class="row1"> 
+			<td width="1%"><strong>#</strong></td>
+			<td width="1%"><strong>{TXT_NEWSLETTER_VISIBLE}</strong></td>
+			<td width="99%"><strong>{TXT_CATEGORY_NAME}</strong></td>
+		</tr>
+		<!-- BEGIN categorys_row -->
+		<tr class="{ROW_CLASS}"> 
+			<td valign="top"><input type="checkbox" name="selectedId[]" id="selectedId" value="{CATEGORY_ID}" /></td>     
+			<td width="1%"><div align="center"><input type="checkbox" name="Stat_{CATEGORY_ID}" id="Stat_{CATEGORY_ID}" value="1" {STATUS_CHECKED} /></div></td>
+			<td valign="top"><input type="text" name="cat_{CATEGORY_ID}" value="{CATEGORY_NAME}" size="40" maxlength="200" /></td>
+		</tr>
+		<!-- END categorys_row -->
+	</table>
+	{TXT_NO_CATEGORIES}
+
+	<table cellpadding="2" cellspacing="0" border="0">
+	<tr>
+		<td>
+			<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+			<a href="#" onClick="changeCheckboxes('catupdate','selectedId[]',true); return false;">{TXT_SELECT_ALL}</a> / 
+			<a href="#" onClick="changeCheckboxes('catupdate','selectedId[]',false); return false;">{TXT_DESELECT_ALL}</a>
+			<img src="images/icons/strike.gif">
+			<select name="categories_MultiAction" onchange="selectMultiAction();">
+				<option value="0">{TXT_SUBMIT_SELECT}</option>
+				<option value="delete">{TXT_SUBMIT_DELETE}</option>
+				<option value="update">{TXT_SUBMIT_UPDATE}</option>
+			</select>
+		</td>
+	</tr>
+</table>
+</form>
+</div>
+<div id="catContent2" class="zoneTab" style="display:none">
+<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+	<tr>
+		<th colspan="2">{TXT_TITLE}</th>
+	</tr>
+</table>
+<form name="cat" action="index.php?cmd=newsletter&act=categorys" method="POST">
+	<input type="hidden" name="insert" value="exe" />
+	<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+		<tr class="row1">
+			<td width="12%">{TXT_CATEGORY_NAME}</td>
+			<td width="88%"><input type="text" name="name" size="40" maxlength="200" /></td>
+		</tr>
+	</table>
+	<br/>
+	<input type="submit" value="{TXT_SAVE}" />
+</form>
+</div>
+
+
+
+<!-- END module_newsletter_overview.html -->

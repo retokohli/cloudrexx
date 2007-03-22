@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rss version="2.0">
+	<channel>
+		<title>Contrexx® Open Source CMS</title>
+		<link>http://dev.contrexx.org/index.php?section=news</link>
+		<description>Informationen rund um das Contrexx® Open Source CMS</description>
+		<language>en</language>
+		<copyright>Copyright 2006, http://dev.contrexx.org</copyright>
+		<webMaster>thomas.daeppen@astalavista.ch</webMaster>
+		<lastBuildDate>Thu, 23 Feb 2006 20:39:12 +0100</lastBuildDate>
+		<generator>Contrexx® Web Content Management System</generator>
+		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+		<image>
+			<url>http://dev.contrexx.org/images/content/Sonnenuntergang.jpg</url>
+			<title>Contrexx® Open Source CMS</title>
+			<link>http://dev.contrexx.org/index.php?section=news</link>
+		</image>
+		<item>
+			<title>news1</title>
+			<link>http://dev.contrexx.org/index.php?section=news&amp;cmd=details&amp;newsid=213&amp;teaserId=23</link>
+			<description>Heute d&amp;uuml;rfen wir Ihnen, liebe Kunden, unseren neuen Internetauftritt samt neuem Kunden-System pr&amp;auml;sentieren. Wir hoffen, dass wir von nun an noch mehr unseren Kundenw&amp;uuml;nschen entsprechen k&amp;ouml;nnen und vor allem</description>
+			<category domain="http://dev.contrexx.org/index.php?section=news&amp;category=10">Test</category>
+			<pubDate>Thu, 23 Feb 2006 20:39:12 +0100</pubDate>
+		</item>
+		<item>
+			<title>news2</title>
+			<link>http://dev.contrexx.org/index.php?section=news&amp;cmd=details&amp;newsid=212&amp;teaserId=24</link>
+			<description>Heute d&amp;uuml;rfen wir Ihnen, liebe Kunden, unseren neuen Internetauftritt samt neuem Kunden-System pr&amp;auml;sentieren. Wir hoffen, dass wir von nun an noch mehr unseren Kundenw&amp;uuml;nschen entsprechen k&amp;ouml;nnen und vor allem</description>
+			<category domain="http://dev.contrexx.org/index.php?section=news&amp;category=10">Test</category>
+			<pubDate>Thu, 23 Feb 2006 20:38:58 +0100</pubDate>
+		</item>
+		<item>
+			<title>news3</title>
+			<link>http://dev.contrexx.org/index.php?section=news&amp;cmd=details&amp;newsid=211&amp;teaserId=25</link>
+			<description>Heute d&amp;uuml;rfen wir Ihnen, liebe Kunden, unseren neuen Internetauftritt samt neuem Kunden-System pr&amp;auml;sentieren. Wir hoffen, dass wir von nun an noch mehr unseren Kundenw&amp;uuml;nschen entsprechen k&amp;ouml;nnen und vor allem</description>
+			<category domain="http://dev.contrexx.org/index.php?section=news&amp;category=10">Test</category>
+			<pubDate>Thu, 23 Feb 2006 20:32:46 +0100</pubDate>
+		</item>
+	</channel>
+</rss>

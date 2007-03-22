@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rss version="2.0">
+	<channel>
+		<title>Contrexx® Open Source CMS</title>
+		<link>http://dev.contrexx.org/index.php?section=news</link>
+		<description>Informationen rund um das Contrexx® Open Source CMS</description>
+		<language>de</language>
+		<copyright>Copyright 2006, http://dev.contrexx.org</copyright>
+		<webMaster>kon@astalavista.ch</webMaster>
+		<lastBuildDate>Tue, 12 Dec 2006 13:47:23 +0100</lastBuildDate>
+		<generator>Contrexx® Web Content Management System</generator>
+		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+		<image>
+			<url>http://dev.contrexx.org/images/content/Sonnenuntergang.jpg</url>
+			<title>Contrexx® Open Source CMS</title>
+			<link>http://dev.contrexx.org/index.php?section=news</link>
+		</image>
+		<item>
+			<title>test meldung</title>
+			<link>http://dev.contrexx.org/index.php?section=news&amp;cmd=details&amp;newsid=227&amp;teaserId=0</link>
+			<description>asdf&amp;acirc;sdfasd&#039;fadsfasd&#039;adf&#039;adfa&#039;fa&#039;f\ fd fd&lt;br /&gt;
+fda&lt;br /&gt;
+fd&lt;br /&gt;
+fdasf&lt;br /&gt;
+&lt;br /&gt;
+dfads&lt;br /&gt;
+fd&lt;br /&gt;
+f</description>
+			<category domain="http://dev.contrexx.org/index.php?section=news&amp;category=1">Wirtschaft</category>
+			<pubDate>Tue, 12 Dec 2006 13:47:23 +0100</pubDate>
+		</item>
+		<item>
+			<title>changelog</title>
+			<link>http://dev.contrexx.org/index.php?section=news&amp;cmd=details&amp;newsid=226&amp;teaserId=</link>
+			<description>&lt;p&gt;Das neuste Stable Release der Contrexx&amp;reg; WCMS Software in der Version 1.0.9.10 steht ab sofort zum Download bereit.&lt;br /&gt;
+Die OpenSource Edition kann &lt;a href=&quot;http://contrexx.com/?page=99&quot;&gt;hier&lt;/a&gt; herunter geladen werden.&lt;/p&gt;
+&lt;br /&gt;
+Dieses Release beinhaltet zur Vorg&amp;auml;ngerversion folgende &amp;Auml;nderungen:&lt;br /&gt;
+&lt;br /&gt;
+&lt;h1&gt;Neues Modul: Forum&lt;/h1&gt;
+&lt;br /&gt;
+&lt;h1&gt;Neue Funktionen&lt;/h1&gt;
+&lt;strong&gt;Allgemein&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt; Bei mehreren aktiven Frontend-Sprachen wird nun automatisch die f&amp;uuml;r den Besucher best passende Sprache ausgew&amp;auml;hlt.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt;ContentManager&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt; Seiten, welche als Redirekt eingesetzt werden, sind in der &amp;Uuml;bersicht des ContentManagers nun mit einem Symbol speziell gekennzeichnet.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt;Shop&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt; Die Zahlungsabwicklung PayPal unterst&amp;uuml;tzt nun zus&amp;auml;tzlich die folgenden W&amp;auml;hrungen:
+    &lt;ul&gt;
+        &lt;li&gt;Australische Dollar (AUD)&lt;/li&gt;
+        &lt;li&gt;Schweizer Franken (CHF)&lt;/li&gt;
+        &lt;li&gt;Tschechische Kronen (CZK)&lt;/li&gt;
+        &lt;li&gt;D&amp;auml;nische Kronen (DKK)&lt;/li&gt;
+        &lt;li&gt;Hong Kong Dollar (HKD)&lt;/li&gt;
+        &lt;li&gt;Ungarische Forint (HUF)&lt;/li&gt;
+        &lt;li&gt;Norwegische Kronen (NOK)&lt;/li&gt;
+        &lt;li&gt;New Zealand Dollar (NZD)&lt;/li&gt;
+        &lt;li&gt;Polnische Zloty (PLN)&lt;/li&gt;
+        &lt;li&gt;Schwedische Kronen (SEK)&lt;/li&gt;
+        &lt;li&gt;Singapur Dollar (SGD)&lt;/li&gt;
+        &lt;li&gt;Thai Baht (THB)&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt;WYSIWYG Editor&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt; Neue Version 2.3.2 des FCKeditors eingebunden. Weitere Informationen unter: &lt;a href=&quot;http://www.fckeditor.net/whatsnew/&quot;&gt;http://www.fckeditor.net/whatsnew/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt;Newsletter&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Beim Datei-Import f&amp;uuml;r Empf&amp;auml;nger kann neu auch die Anrede importiert werden.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt; News&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Auf der News-&amp;Uuml;bersicht und der Detail-Seite existiert nun eine Variable [[NEWS_IMAGE]] welche das Teaser-Bild ausgibt.&lt;/li&gt;
+    &lt;li&gt; Es k&amp;ouml;nnen nun Umleitungen auf externe Newsmeldungen gesetzt werden. Beim Aufruf der betreffenden Meldung &amp;ouml;ffnet sich ein Link auf die externe Seite.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt; Media&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Neu gibt es 4 Medien Archive.&lt;/li&gt;
+    &lt;li&gt;Ein und dasselbe Media Archiv kann neu mehrfach verwendet werden, in dem zus&amp;auml;tzlich zur Media Archiv zuweisung bei einer Seite auch noch ein CMD angegeben wird.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt; Gallery&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt; Es existieren nun 2 Variablen [[GALLERY_RANDOM]] und [[GALLERY_LAST]], welche im Content Manager, Blocksystem und der Designverwaltung verwendet werden k&amp;ouml;nnen. Diese geben ein zuf&amp;auml;lliges, bzw. das neueste Bild der Galerie aus.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt; System Update&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Die Ausf&amp;uuml;hrung der eingegebenen SQL-Abfragen k&amp;ouml;nnen neu mit der Tastenkombination [Shift]+[Enter] ausgel&amp;ouml;st werden.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;h1&gt;&amp;Auml;nderungen an bestehenden Modulen&lt;/h1&gt;
+&lt;strong&gt;Inserate Markt&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Kategorien k&amp;ouml;nnen in Index-Ansicht angezeigt werden&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt;WYSIWYG&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Neu wird nun im Internet Explorer auch, gleich wie im Firefox, ein Zeilenumbruch (&amp;lt;br /&amp;gt;) als bisher ein Absatz (&amp;lt;p&amp;gt;&amp;lt;/p&amp;gt;) generiert, wenn die ENTER-Taste bet&amp;auml;tigt wird. Die Zugeh&amp;ouml;rige Konfigurationsvariable (UseBROnCarriageReturn) befindet sich in der Datei editor/FCKeditorConfig.js&lt;/li&gt;
+    &lt;li&gt;Beim Einf&amp;uuml;gen eines Links wird nun automatisch der Bereich &amp;quot;Webseiten&amp;quot; im File Browser angezeigt.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt;News Syndication&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Die Sortierung der NewsML Dokumente erfolgt nun prim&amp;auml;r nach dem &amp;Auml;nderungsdatum.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt;Shop&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Adresse des Saferpay Gateways auf den neusten Stand gebracht.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt;News&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Sofern bei einem Newsticker die Option &amp;quot;URL-Kodierung&amp;quot; aktiviert ist, wird neu der Tickerinhalt zuerst in den angegebenen Zeichensatz umgewandelt und danach erst URL-kodiert.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;h1&gt;Behobene Bugs&lt;/h1&gt;
+&lt;strong&gt;Kontaktformular&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Uploadfelder k&amp;ouml;nnen nun auch als Pflichtfelder definiert werden&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt;Newsletter&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Optimierung der SQL-Abfragen&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt;Inserate Markt&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Sprachvariablen sind nun vollst&amp;auml;ndig in die Language-Files extrahiert&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt;Bildergalerie&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Die Einstellung &amp;quot;Maximale Bildbreite (in Pixel)&amp;quot; wurde bisher ignoriert. Nun wird beim Upload / Importieren die Gr&amp;ouml;sse der Bilder &amp;uuml;berpr&amp;uuml;ft.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt;File Browser&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Der File Browser h&amp;auml;ngt sich jetzt nicht mehr auf, wenn ein Bild ausgew&amp;auml;hlt wird (trat bei einigen Internet Explorer Versionen auf).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt;News&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Die Teaserzuweisung funktioniert nun auch, wenn die Newsmeldung inaktiv ist.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;br /&gt;
+&lt;strong&gt;Gemeldete Bugs&lt;/strong&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;FS#80 - A page with a redirect cannot be protected (&lt;a href=&quot;http://www.contrexx.com/bugtracker/task/80&quot;&gt;http://www.contrexx.com/bugtracker/task/80&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;</description>
+			<category domain="http://dev.contrexx.org/index.php?section=news&amp;category=14">Informatik</category>
+			<pubDate>Thu, 09 Nov 2006 17:50:24 +0100</pubDate>
+		</item>
+		<item>
+			<title>Redirekt-Meldung</title>
+			<link>/index.php?page=1764</link>
+			<category domain="http://dev.contrexx.org/index.php?section=news&amp;category=14">Informatik</category>
+			<pubDate>Tue, 07 Nov 2006 19:42:18 +0100</pubDate>
+		</item>
+		<item>
+			<title>Dies ist eine Newslmeldung</title>
+			<link>http://dev.contrexx.org/index.php?section=news&amp;cmd=details&amp;newsid=188&amp;teaserId=2</link>
+			<description>Dies ist eine Newsmeldung! Dieser Abschnitt wird im News Manager erstellt.</description>
+			<category domain="http://dev.contrexx.org/index.php?section=news&amp;category=14">Informatik</category>
+			<pubDate>Tue, 20 Dec 2005 14:38:26 +0100</pubDate>
+		</item>
+	</channel>
+</rss>

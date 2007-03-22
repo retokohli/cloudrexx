@@ -1,0 +1,173 @@
+<?php
+/**
+ * Installer language file
+ * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @author        Astalavista Development Team <thun@astalvista.ch>
+ * @version       1.0.0
+ * @package     contrexx
+ * @subpackage  installer
+ * @todo        Edit PHP DocBlocks!
+ */
+
+// help
+$_ARRLANG['TXT_HELP_MSG'] = "Bei Problemen mit der Installation des [NAME] haben Sie die folgenden Möglichkeiten wie Sie vorgehen können:<br /><ul><li>Im [FORUM] nach Hilfe suchen</li><li>Schauen Sie im [SUPPORT] vorbei</li><li>Senden Sie uns eine Email an [EMAIL] mit einer Beschreibung des Problems und der Ausgabe der [PHPINFO]</li></ul>";
+$_ARRLANG['TXT_PHP_INFO'] = "PHP-Konfiguration";
+$_ARRLANG['TXT_FORUM'] = "Forum";
+$_ARRLANG['TXT_SUPPORT'] = "Support-Bereich";
+
+// titles
+$_ARRLANG['TXT_REQUIREMENTS'] = "System Anforderungen";
+$_ARRLANG['TXT_LICENSE'] = "Lizenzbedingungen";
+$_ARRLANG['TXT_CONFIGURATION'] = "Konfiguration";
+$_ARRLANG['TXT_INSTALLATION'] = "Installation";
+$_ARRLANG['TXT_SYSTEM_CONFIGURATION'] = "System Konfiguration";
+$_ARRLANG['TXT_ADMIN_ACCOUNT'] = "Administrator Konto";
+$_ARRLANG['TXT_TERMINATION'] = "Abschluss";
+$_ARRLANG['TXT_HELP'] = "Hilfe";
+
+// welcome
+$_ARRLANG['TXT_WELCOME'] = "Willkommen";
+$_ARRLANG['TXT_WELCOME_MSG'] = "<b>Willkommen beim Contrexx Web Installer</b><br />Hiermit installieren Sie die [EDITION] Version [VERSION] des [NAME].";
+$_ARRLANG['TXT_LANGUAGE'] = "Sprache";
+$_ARRLANG['TXT_NEW_VERSION'] = "Eine neuere Version des [NAME] wurde veröffentlicht.<br />Neuste Version: [VERSION]";
+
+// general
+$_ARRLANG['TXT_NEXT'] = "Weiter";
+$_ARRLANG['TXT_BACK'] = "Zurück";
+$_ARRLANG['TXT_CANCEL'] = "Abbrechen";
+$_ARRLANG['TXT_STOP'] = "Stop";
+$_ARRLANG['TXT_USERNAME'] = "Benutzername";
+$_ARRLANG['TXT_PASSWORD'] = "Passwort";
+$_ARRLANG['TXT_GENERAL'] = "Allgemein";
+$_ARRLANG['TXT_FILL_OUT_ALL_FIELDS'] = "Sie müssen alle Felder ausfüllen!";
+$_ARRLANG['TXT_FTP_PASSIVE_MODE_FAILED'] = "Konnte nicht in den Passiven Modus wechseln!";
+
+// license
+$_ARRLANG['TXT_READ_LICENCE'] = "Please read/accept license to continue installation";
+$_ARRLANG['TXT_MUST_ACCEPT_LICENCE'] = "Sie müssen die Lizenzbedingungen annehmen um mit der Installation fortzufahren!";
+$_ARRLANG['TXT_ACCEPT_LICENSE'] = "Ich akzeptiere die Contrexx Lizenz";
+
+// requirements
+$_ARRLANG['TXT_SOFTWARE_REQUIREMENTS'] = "Software Anforderungen";
+$_ARRLANG['TXT_PHP'] = "PHP";
+$_ARRLANG['TXT_PHP_VERSION'] = "PHP Version";
+$_ARRLANG['TXT_MYSQL_VERSION'] = "MySQL Version";
+$_ARRLANG['TXT_PHP_EXTENSIONS'] = "PHP Erweiterungen";
+$_ARRLANG['TXT_PHP_CONFIGURATION'] = "PHP Konfiguration";
+$_ARRLANG['TXT_ALLOW_URL_FOPEN'] = "allow_url_fopen";
+$_ARRLANG['TXT_GD_VERSION']	= "GD (Graphics Draw) Version";
+$_ARRLANG['TXT_FTP_SUPPORT'] = "FTP Unterstützung";
+$_ARRLANG['TXT_YES'] = "Ja";
+$_ARRLANG['TXT_NO'] = "Nein";
+$_ARRLANG['TXT_ON']	= "An";
+$_ARRLANG['TXT_OFF'] = "Aus";
+$_ARRLANG['TXT_PHP_VERSION_REQUIRED'] = "Für den einwandfreien Betrieb des System ist mindestens die Version [VERSION] von PHP erforderlich!";
+$_ARRLANG['TXT_MYSQL_VERSION_REQUIRED'] = "Für den einwandfreien Betrieb des System wird mindestens die Version [VERSION] der MySQL Erweiterung von PHP benötigt!";
+$_ARRLANG['TXT_GD_VERSION_REQUIRED'] = "Für den einwandfreien Betrieb des System wird mindestens die Version [VERSION] der GD Erweiterung von PHP benötigt!";
+$_ARRLANG['TXT_ALLOW_URL_FOPEN_FOR_RSS_REQUIRED'] = "Solange die Direktive \"allow_url_fopen\" der PHP Konfiguration ausgeschaltet ist, kann das Modul <i>News Syndication</i> nicht genutzt werden!";
+$_ARRLANG['TXT_FTP_SUPPORT_REQUIRED'] = "Die FTP Unterstützung für PHP ist auf diesem Server nicht erlaubt. Da PHP im Safemode läuft wäre dies für die Installation erforderlich! Ändern Sie die PHP Konfiguration mit der Option ('--enable-ftp') oder Installieren Sie das System manuell.";
+
+// configuration
+$_ARRLANG['TXT_FTP_PATH_CONFIG'] = "Ftp Pfad Konfiguration";
+$_ARRLANG['TXT_DOCUMENT_ROOT_DESCRIPTION'] = "Dies ist das Verzeichnis von dem Ihr Webserver die Dateien ausliefert.";
+$_ARRLANG['TXT_DOCUMENT_ROOT'] = "DocumentRoot";
+$_ARRLANG['TXT_OFFSET_PATH'] = "Web Pfad";
+$_ARRLANG['TXT_OFFSET_PATH_DESCRIPTION'] = "Geben Sie hier, relativ zum DocumentRoot, den Pfad zum Verzeichnis an, in welchem Sie das [NAME] entpackt haben.";
+$_ARRLANG['TXT_DATABASE'] = "MySQL Datenbank";
+$_ARRLANG['TXT_HOSTNAME'] = "Rechnername";
+$_ARRLANG['TXT_DATABASE_NAME'] = "Datenbankname";
+$_ARRLANG['TXT_TABLE_PREFIX'] = "Tabellen Präfix (Vorsilbe)";
+$_ARRLANG['TXT_FTP_PATH'] = "Pfad zum DocumentRoot";
+$_ARRLANG['TXT_FTP_PATH_DESCRIPTION'] = "Geben Sie den Pfad an, unter welchem Sie die Dateien des Contrexx CMS auf dem FTP Server abgelegt haben.";
+$_ARRLANG['TXT_FTP'] = "FTP";
+$_ARRLANG['TXT_DOCUMENT_ROOT_NEEDED'] = "Sie müssen den lokalen Pfad zum Contrexx CMS auf Ihrem Web-Server angeben!";
+$_ARRLANG['TXT_DB_HOSTNAME_NEEDED'] = "Sie müssen den Rechnernamen Ihres Datenbank-Servers angeben!";
+$_ARRLANG['TXT_DB_USERNAME_NEEDED'] = "Sie müssen einen gültigen Usernamen angeben, mit dem auf den Datenbank-Server zugegriffen werden soll!";
+$_ARRLANG['TXT_DB_DATABASE_NEEDED'] = "Sie müssen eine Datenbank definieren, oder eine existierende Datenbank angeben!";
+$_ARRLANG['TXT_DB_TABLE_PREFIX_NEEDED'] = "Sie müssen eine Vorsilbe für die Tabellen der Datenbank definieren!";
+$_ARRLANG['TXT_FTP_HOSTNAME_NEEDED'] = "Sie müssen den Rechnernamen Ihres FTP-Servers angeben!";
+$_ARRLANG['TXT_FTP_USERNAME_NEEDED'] = "Sie müssen einen gültigen Usernamen angeben, mit dem auf den FTP-Server zugegriffen werden soll!";
+$_ARRLANG['TXT_USE_FTP'] = "FTP verwenden";
+$_ARRLANG['TXT_PATH_DOES_NOT_EXIST'] = "Der Pfad \"[PATH]\" existiert nicht!";
+$_ARRLANG['TXT_CANNOT_FIND_FIlE'] = "Kann die Datei \"[FILE]\" im CMS-Verzeichniss nicht finden!";
+$_ARRLANG['TXT_DIRECTORY_ON_FTP_DOES_NOT_EXIST'] = "Das Verzeichnis \"[DIRECTORY]\" existiert auf dem FTP-Server nicht!";
+$_ARRLANG['TXT_FILE_ON_FTP_DOES_NOT_EXIST'] = "Die Datei \"[FILE]\" existiert auf dem FTP-Server nicht!";
+$_ARRLANG['TXT_USE_PASSIVE_FTP'] = "Passiver Modus";
+$_ARRLANG['TXT_FTP_DESCRIPTION'] = "Durch aktivieren dieser Option werden alle Dateimanipulationen über das FTP-Protokoll durchgeführt. Falls diese Webseite auf einem Unix ähnlichen System und die dazu verwendete PHP-Installation im Safemode läuft, ist die Verwendung des FTP-Protokolls unumgänglich.";
+$_ARRLANG['TXT_DB_TABLE_PREFIX_INVALID'] = "Das Tabellen Präfix (Vorsilbe) darf nur aus Alphanumerischen Zeichen (a-z/A-Z/0-9) und dem folgenden Sonderzeichen bestehen: _";
+
+// installation
+$_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'] = "Konnte die Berechtigungen nicht ändern: ";
+$_ARRLANG['TXT_CANNOT_OPEN_FILE'] = "Kann die Datei [FILENAME] nicht öffnen";
+$_ARRLANG['TXT_CANNOT_WRITE_TO_FILE'] = "Kann in die Datei [FILENAME] nicht schreiben";
+$_ARRLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Kann keine Verbindung zum Datenbank-Server aufbauen!";
+$_ARRLANG['TXT_DATABASE_ALREADY_EXISTS'] = "Eine Datenbank mit dem Namen \"[DATABASE]\" existiert bereits!";
+$_ARRLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "Eine Datenbank mit dem Namen \"[DATABASE]\" existiert nicht!";
+$_ARRLANG['TXT_COULD_NOT_CREATE_DATABASE'] = "Die Datanbank konnte nicht erstellt werden!";
+$_ARRLANG['TXT_CANNOT_CONNECT_TO_FTP_HOST'] = "Kann keine Verbindung zum FTP-Server aufbauen!";
+$_ARRLANG['TXT_FTP_AUTH_FAILED'] = "Die Authentifizierung mit dem angegebenen Benutzernamen und Passwort ist beim FTP-Server fehlgeschlagen!";
+$_ARRLANG['TXT_FTP_PATH_DOES_NOT_EXISTS'] = "Der Pfad zum Contrexx CMS auf dem FTP-Server existiert nicht!";
+$_ARRLANG['TXT_COULD_NOT_READ_SQL_DUMP_FILE'] = "Konnte die SQL-Dump Datei \"[FILENAME]\" nicht öffnen!";
+$_ARRLANG['TXT_SQL_QUERY_ERROR'] = "SQL-Abfrage Fehler: ".
+$_ARRLANG['TXT_CORRECT_THE_FOLLOWING_ERROR'] = "Beheben Sie die folgenden Fehler und laden Sie anschliessen diese Seite neu, um den Installationsvorgang zu wiederholen:";
+$_ARRLANG['TXT_SET_PERMISSIONS'] = "Schreibrechte gesetzt";
+$_ARRLANG['TXT_SUCCESSFULLY'] = "Erfolgreich";
+$_ARRLANG['TXT_FAILED'] = "Fehlgeschlagen";
+$_ARRLANG['TXT_CREATE_DATABASE'] = "Datenbank erstellen";
+$_ARRLANG['TXT_DATABASE_CREATED'] = "Datenbank erstellt";
+$_ARRLANG['TXT_CREATE_DATABASE_TABLES'] = "Datenbanktabellen erstellt";
+$_ARRLANG['TXT_TABLE_NOT_AVAILABLE'] = "Tabelle \"[TABLE]\" ist nicht vorhanden";
+$_ARRLANG['TXT_CREATE_DATABAES_TABLE_MANUALLY'] = "Erstellen Sie die nötige(n) Tabelle(n) und fügen Sie zusätzlich den Inhalt in die Tabelle(n) ein mit Hilfe der <a href=\"[FILEPATH]\" title=\"SQL-Datei\">SQL-Datei</a>!";
+$_ARRLANG['TXT_CHECK_DATABASE_TABLES'] = "Datenbank Struktur überprüft";
+$_ARRLANG['TXT_PRESS_REFRESH_TO_CONTINUE_INSTALLATION'] = "Drücken Sie anschliessend auf <b>Aktualisieren</b> um die Installation weiter zu führen!";
+$_ARRLANG['TXT_REFRESH'] = "Aktualisieren";
+$_ARRLANG['TXT_CREATE_CONFIG_FILE'] = "Konfigurationsdatei erstellt";
+$_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES'] = "Sie müssen den folgenden Dateien Schreibberechtigung zuweisen:";
+$_ARRLANG['TXT_CREATE_VERSION_FILE'] = "Versionsdatei erstellt";
+$_ARRLANG['TXT_COULD_NOT_GATHER_ALL_DATABASE_TABLES'] = "Konnte die vorhandenen Datenbanktabellen nicht ausfindig machen!";
+
+// system configuration
+$_ARRLANG['TXT_ADMIN_EMAIL'] = "Email Adresse des Administrators";
+$_ARRLANG['TXT_ADMIN_NAME'] = "Name des Administrators";
+$_ARRLANG['TXT_NEWS_SYTEM'] = "Newssystem";
+$_ARRLANG['TXT_RSS_TITLE'] = "RSS Titel";
+$_ARRLANG['TXT_RSS_DESCRIPTION'] = "RSS Beschreibung";
+$_ARRLANG['TXT_CONTACT'] = "Kontaktformular";
+$_ARRLANG['TXT_CONTACT_EMAIL'] = "Email Adresse";
+$_ARRLANG['TXT_COULD_NOT_SET_ADMIN_EMAIL'] = "Konnte die Administrator Email Adresse nicht setzten!";
+$_ARRLANG['TXT_COULD_NOT_SET_NEWSLETTER_EMAILS'] = "Konnte die E-Mail Adressen im Newsletter Modul nicht konfigurieren!";
+$_ARRLANG['TXT_COULD_NOT_SET_NEWSLETTER_SENDER'] = "Konnte den Absendernamen im Newsletter Modul nicht setzen!";
+$_ARRLANG['TXT_COULD_NOT_SET_ADMIN_NAME'] = "Konnte den Administrator Namen nicht setzten!";
+$_ARRLANG['TXT_COULD_NOT_SET_RSS_TITLE'] = "Konnte den RSS Titel nicht setzen!";
+$_ARRLANG['TXT_COULD_NOT_SET_RSS_DESCRIPTION'] = "Konnte die RSS Beschreibung nicht setzen!";
+$_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL'] = "Konnte die Kontaktformular Email Adresse nicht setzen!";
+$_ARRLANG['TXT_DOMAIN_URL'] = "Domain URL";
+$_ARRLANG['TXT_DOMAIN_URL_EXPLANATION'] = "Geben Sie hier den Domainnamen an, auf welchem diese Installation durchgeführt wird, z.B. 'www.ihredomain.com' (ohne http:// oder zusätzliche Pfade)";
+$_ARRLANG['TXT_COULD_NOT_SET_DOMAIN_URL'] = "Konnte die Domain URL nicht setzen!";
+$_ARRLANG['TXT_SET_VALID_DOMAIN_URL'] = "Geben Sie die Domain URL ohne 'http://' oder zusätzliche Pfade an!";
+$_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'] = "Die Datei %s konnte nicht geschrieben werden. Überprüfen Sie die Berechtigungen (666) der Datei.";
+
+// admin account
+$_ARRLANG['TXT_ADMIN_ACCOUNT_DESC'] = "Definieren Sie einen Benutzernamen mit Passwort, der als Administrator dienen soll.";
+$_ARRLANG['TXT_SET_USERNAME'] = "Sie müssen einen Benutzernamen definieren!";
+$_ARRLANG['TXT_SET_PASSWORD'] = "Sie müssen ein Passwort definieren!";
+$_ARRLANG['TXT_PASSWORD_LENGTH_DESC'] = "(min. 6 Zeichen)";
+$_ARRLANG['TXT_PASSWORD_LENGTH'] = "Das Passwort muss mindestens 6 Zeichen lang sein!";
+$_ARRLANG['TXT_PASSWORD_NOT_VERIFIED'] = "Das Bestätigungspasswort stimmt nicht mit dem Passwort über ein!";
+$_ARRLANG['TXT_PASSWORD_VERIFICATION'] = "Passwort bestätigen";
+$_ARRLANG['TXT_EMAIL'] = "E-mail";
+$_ARRLANG['TXT_EMAIL_VERIFICATION'] = "E-mail bestätigen";
+$_ARRLANG['TXT_SET_EMAIL'] = "Sie müssen eine gültige E-mail Adresse angeben!";
+$_ARRLANG['TXT_EMAIL_NOT_VERIFIED'] = "Die bestätigungs E-mail Adresse stimmt nicht mit der E-mail Adresse über ein!";
+$_ARRLANG['TXT_PASSWORD_LIKE_USERNAME'] = "Das Passwort darf nicht gleich wie der Benutzernamen sein!";
+$_ARRLANG['TXT_CREATE_ADMIN_ACCOUNT'] = "Administrator Konto erstellen";
+$_ARRLANG['TXT_COULD_NOT_CREATE_ADMIN_ACCOUNT'] = "Das Administrator Konto konnte nicht erstellt werden!";
+
+// termination
+$_ARRLANG['TXT_CONGRATULATIONS'] = "Herzlichen Glückwunsch";
+$_ARRLANG['TXT_CONGRATULATIONS_MESSAGE'] = "Das Contrexx CMS [VERSION] [EDITION] wurde erfolgreich auf Ihrem System installiert.";
+$_ARRLANG['TXT_INTERNET_SITE_FOR_VISITORS'] = "Internetseite für Besucher";
+$_ARRLANG['TXT_INTERNET_SITE_MESSAGE'] = "Die Internetseite steht ab sofort  unter folgender Adresse zur Verfügung: <br /><b>[WEB_URL]</b>";
+$_ARRLANG['TXT_ADMIN_SITE'] = "Administratorenbereich";
+$_ARRLANG['TXT_ADMIN_SITE_MESSAGE'] = "Die Seite kann unter folgender Adresse administriert und verwaltet werden: <br /><b>[ADMIN_URL]</b>";
+?>

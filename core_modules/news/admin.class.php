@@ -1,0 +1,2203 @@
+<?php
+/**
+ * News manager
+ * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @author Astalavista Development Team <thun@astalvista.ch>
+ * @version 1.0.0
+ * @package     contrexx
+ * @subpackage  core_module_news
+ * @todo        Edit PHP DocBlocks!
+ */
+
+/**
+ * Includes
+ */
+require_once ASCMS_CORE_MODULE_PATH . '/news/lib/newsLib.class.php';
+
+/**
+ * News manager
+ * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @author Astalavista Development Team <thun@astalvista.ch>
+ * @access public
+ * @version 1.0.0
+ * @package     contrexx
+ * @subpackage  core_module_news
+ */
+class newsManager extends newsLibrary {
+    var $_objTpl;
+	var $pageTitle;
+	var $pageContent;
+	var $strOkMessage;
+	var $strErrMessage;
+	var $_selectedLang;
+	var $langId;
+	var $arrSettings = array();
+	var $_defaultTickerFileName = 'newsticker.txt';
+	var $_arrCharsets = array(
+		// European languages
+		/*'ASCII',*/
+		'ISO-8859-1',
+		/*'ISO-8859-2',
+		'ISO-8859-3',
+		'ISO-8859-4',
+		'ISO-8859-5',
+		'ISO-8859-7',
+		'ISO-8859-9',
+		'ISO-8859-10',
+		'ISO-8859-13',
+		'ISO-8859-14',
+		'ISO-8859-15',
+		'ISO-8859-16',
+		'KOI8-R',
+		'KOI8-U',
+		'KOI8-RU',
+		'CP1250',
+		'CP1251',
+		'CP1252',
+		'CP1253',
+		'CP1254',
+		'CP1257',
+		'CP850',
+		'CP866',
+		'MacRoman',
+		'MacCentralEurope',
+		'MacIceland',
+		'MacCroatian',
+		'MacRomania',
+		'MacCyrillic',
+		'MacUkraine',
+		'MacGreek',
+		'MacTurkish',
+		'Macintosh',
+		// Semitic languages
+		'ISO-8859-6',
+		'ISO-8859-8',
+		'CP1255',
+		'CP1256',
+		'CP862',
+		'MacHebrew',
+		'MacArabic',
+		// Japanese
+		'EUC-JP',
+		'SHIFT_JIS',
+		'CP932',
+		'ISO-2022-JP',
+		'ISO-2022-JP-2',
+		'ISO-2022-JP-1',
+		// Chinese
+		'EUC-CN',
+		'HZ',
+		'GBK',
+		'GB18030',
+		'EUC-TW',
+		'BIG5',
+		'CP950',
+		'BIG5-HKSCS',
+		'ISO-2022-CN',
+		'ISO-2022-CN-EXT',
+		// Korean
+		'EUC-KR',
+		'CP949',
+		'ISO-2022-KR',
+		'JOHAB',
+		// Armenian
+		'ARMSCII-8',
+		// Georgian
+		'Georgian-Academy',
+		'Georgian-PS',
+		// Tajik
+		'KOI8-T',
+		// Thai
+		'TIS-620',
+		'CP874',
+		'MacThai',
+		// Laotian
+		'MuleLao-1',
+		'CP1133',
+		// Vietnamese
+		'VISCII',
+		'TCVN',
+		'CP1258',
+		// Platform specifics
+		'HP-ROMAN8',
+		'NEXTSTEP',
+		// Full Unicode*/
+		'UTF-8',
+		/*'UCS-2',
+		'UCS-2BE',
+		'UCS-2LE',
+		'UCS-4',
+		'UCS-4BE',
+		'UCS-4LE',
+		'UTF-16',
+		'UTF-16BE',
+		'UTF-16LE',
+		'UTF-32',
+		'UTF-32BE',
+		'UTF-32LE',
+		'UTF-7',
+		'C99',
+		'JAVA',*/
+	);
+
+	/**
+	* Teaser object
+	*
+	* @access private
+	* @var object
+	*/
+	var $_objTeaser;
+
+	/**
+    * PHP4 Constructor
+    *
+    * @access public
+    */
+    function newsManager()
+    {
+    	$this->__construct();
+    }
+
+    /**
+    * PHP5 Constructor
+    *
+    * @access public
+    */
+    function __construct()
+    {
+    	global  $_ARRAYLANG, $objInit, $objTemplate, $_CONFIG;
+
+        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/news/template');
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+
+        $this->_saveSettings();
+
+        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=news'>".$_ARRAYLANG['TXT_NEWS_MANAGER']."</a>
+			<a href='?cmd=news&amp;act=add'>".$_ARRAYLANG['TXT_CREATE_NEWS']."</a>
+			<a href='?cmd=news&amp;act=newscat'>".$_ARRAYLANG['TXT_CATEGORY_MANAGER']."</a>
+			<a href='?cmd=news&amp;act=ticker'>".$_ARRAYLANG['TXT_NEWS_NEWSTICKER']."</a>
+			".($_CONFIG['newsTeasersStatus'] == '1' ? "<a href='?cmd=news&amp;act=teasers'>".$_ARRAYLANG['TXT_TEASERS']."</a>" : "")."
+			<a href='?cmd=news&amp;act=placeholders'>".$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY']."</a>
+			<a href='?cmd=news&amp;act=settings'>".$_ARRAYLANG['TXT_NEWS_SETTINGS']."</a>"
+		);
+
+        $this->pageTitle = $_ARRAYLANG['TXT_NEWS_MANAGER'];
+        $this->langId = $objInit->userFrontendLangId;
+        $this->getSettings();
+        $this->_optimizeDbTables();
+    }
+
+	/**
+    * Repair and optimise all news module tables
+    *
+    * @global object  $objDatabase
+    * @access private
+    */
+    function _optimizeDbTables()
+    {
+    	global $objDatabase;
+
+		$objDatabase->Execute("REPAIR TABLE `".DBPREFIX."module_news` ,
+		                                    `".DBPREFIX."module_news_access` ,
+		                                    `".DBPREFIX."module_news_categories` ,
+		                                    `".DBPREFIX."module_news_settings` ,
+		                                    `".DBPREFIX."module_news_teaser_frame` ,
+		                                    `".DBPREFIX."module_news_teaser_frame_templates`");
+
+		$objDatabase->Execute("OPTIMIZE TABLE `".DBPREFIX."module_news` ,
+		                                      `".DBPREFIX."module_news_access` ,
+		                                      `".DBPREFIX."module_news_categories` ,
+		                                      `".DBPREFIX."module_news_settings` ,
+		                                      `".DBPREFIX."module_news_teaser_frame` ,
+		                                      `".DBPREFIX."module_news_teaser_frame_templates`");
+    }
+
+    /**
+    * Do the requested newsaction
+    *
+    * @global	 object    $objTemplate
+    * @return    string    parsed content
+    */
+    function getPage()
+    {
+    	global $objTemplate;
+
+    	if (!isset($_GET['act'])) {
+    	    $_GET['act'] = '';
+    	}
+
+        switch ($_GET['act']) {
+			case 'add':
+		        $this->add();
+				break;
+
+			case 'edit':
+				$this->edit();
+				break;
+
+			case 'delete':
+			    $this->delete();
+			    $this->overview();
+				break;
+
+			case 'update':
+			    $this->update();
+			    $this->overview();
+				break;
+
+			case 'newscat':
+			    $this->manageCategories();
+			    break;
+
+			case 'delcat':
+			    $this->deleteCat();
+			    $this->manageCategories();
+			    break;
+
+			case 'changeStatus':
+				$this->changeStatus();
+				$this->overview();
+				break;
+
+			case 'invertStatus':
+				$this->invertStatus($_GET['newsId']);
+				$this->overview();
+				break;
+
+			case 'settings':
+				$this->settings();
+				break;
+
+			case 'rss':
+				$this->rss();
+				break;
+
+			case 'ticker':
+				$this->_ticker();
+				break;
+
+			case 'teasers':
+				$this->_teasers();
+				break;
+
+			case 'placeholders':
+				$this->_placeholders();
+				break;
+
+			default:
+			    (intval($this->arrSettings['news_settings_activated'])==0) ? $this->settings() : $this->overview();
+			    break;
+    	}
+
+		$objTemplate->setVariable(array(
+			'CONTENT_TITLE'				=> $this->pageTitle,
+			'CONTENT_OK_MESSAGE'		=> $this->strOkMessage,
+			'CONTENT_STATUS_MESSAGE'	=> $this->strErrMessage,
+			'ADMIN_CONTENT'				=> $this->_objTpl->get()
+		));
+    }
+
+
+
+    /**
+    * List up the news for edit or delete
+    *
+    * @global	 object    $objDatabase
+    * @param     integer   $newsid
+    * @param     string	   $what
+    * @access  private
+    */
+    function overview()
+    {
+    	global $objDatabase, $_ARRAYLANG, $_CONFIG;
+
+    	// initialize variables
+    	$paging = "";
+
+    	$this->_objTpl->loadTemplateFile('module_news_overview.html',true,true);
+		$this->pageTitle = $_ARRAYLANG['TXT_NEWS_MANAGER'];
+
+		$messageNr = 0;
+		$validatorNr = 0;
+
+    	$this->_objTpl->setVariable(array(
+    	    'TXT_EDIT_NEWS_MESSAGE'      => $_ARRAYLANG['TXT_EDIT_NEWS_MESSAGE'],
+    	    'TXT_EDIT_NEWS_ID'           => $_ARRAYLANG['TXT_EDIT_NEWS_MESSAGE'],
+    	    'TXT_DATE'                   => $_ARRAYLANG['TXT_DATE'],
+    	    'TXT_TITLE'                  => $_ARRAYLANG['TXT_TITLE'],
+    	    'TXT_USER'                   => $_ARRAYLANG['TXT_USER'],
+    	    'TXT_LAST_EDIT'              => $_ARRAYLANG['TXT_LAST_EDIT'],
+    	    'TXT_ACTION'                 => $_ARRAYLANG['TXT_ACTION'],
+    	    'TXT_CATEGORY'               => $_ARRAYLANG['TXT_CATEGORY'],
+            'TXT_CONFIRM_DELETE_DATA'    => $_ARRAYLANG['TXT_NEWS_DELETE_CONFIRM'],
+            'TXT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_SELECT_ALL'             => $_ARRAYLANG['TXT_SELECT_ALL'],
+            'TXT_REMOVE_SELECTION'       => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
+            'TXT_DELETE_MARKED'          => $_ARRAYLANG['TXT_DELETE_MARKED'],
+            'TXT_MARKED'                 => $_ARRAYLANG['TXT_MARKED'],
+            'TXT_ACTIVATE'               => $_ARRAYLANG['TXT_ACTIVATE'],
+            'TXT_DEACTIVATE'             => $_ARRAYLANG['TXT_DEACTIVATE'],
+            'TXT_STATUS'                 => $_ARRAYLANG['TXT_STATUS'],
+            'TXT_CONFIRM_AND_ACTIVATE'	=> $_ARRAYLANG['TXT_CONFIRM_AND_ACTIVATE'],
+            'TXT_INVALIDATED_ENTRIES'	=> $_ARRAYLANG['TXT_INVALIDATED_ENTRIES']
+    	));
+
+    	$this->_objTpl->setGlobalVariable(array(
+    		'TXT_ARCHIVE'                => $_ARRAYLANG['TXT_ARCHIVE'],
+    		'TXT_EDIT'                   => $_ARRAYLANG['TXT_EDIT'],
+            'TXT_DELETE'				 => $_ARRAYLANG['TXT_DELETE']
+    	));
+
+    	// set archive list
+		$query = "SELECT n.id AS id,
+		                 n.date AS date,
+		                 n.changelog AS changelog,
+		                 n.title AS title,
+		                 n.status AS status,
+		                 n.validated AS validated,
+		                 l.name AS name,
+		                 nc.name AS catname,
+		                 u.username AS username
+		            FROM ".DBPREFIX."module_news_categories AS nc,
+		                 ".DBPREFIX."languages AS l,
+		                 ".DBPREFIX."module_news AS n
+		       LEFT JOIN ".DBPREFIX."access_users AS u
+					  ON u.id=n.userid
+		           WHERE n.lang=l.id
+		             AND n.lang=".$this->langId."
+		             AND nc.catid=n.catid
+		             AND n.validated='1'
+		        ORDER BY date DESC";
+
+		$objResult = $objDatabase->Execute($query);
+		if ($objResult !== false) {
+			$count = $objResult->RecordCount();
+
+			if (isset($_GET['show']) && $_GET['show'] == 'archive' && isset($_GET['pos'])) {
+				$pos = intval($_GET['pos']);
+			} else {
+				$pos = 0;
+			}
+
+			if ($count>intval($_CONFIG['corePagingLimit'])) {
+			    $paging = getPaging($count, $pos, "&amp;cmd=news&amp;show=archive", $_ARRAYLANG['TXT_NEWS_MESSAGES'],true);
+			}
+			$objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
+
+			if ($count<1) {
+			    $this->_objTpl->hideBlock('newstable');
+			} else {
+				while (!$objResult->EOF) {
+		            $statusPicture = "status_red.gif";
+					if($objResult->fields['status']==1) {
+					    $statusPicture = "status_green.gif";
+					}
+
+					($messageNr % 2) ? $class = "row2" : $class = "row1";
+	            	$messageNr++;
+
+					$this->_objTpl->setVariable(array(
+		                'NEWS_ID'				=> $objResult->fields['id'],
+		                'NEWS_DATE'				=> date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
+		                'NEWS_TITLE'			=> stripslashes($objResult->fields['title']),
+		                'NEWS_USER'				=> empty($objResult->fields['username']) ? $_ARRAYLANG['TXT_ANONYMOUS'] : $objResult->fields['username'],
+		                'NEWS_CHANGELOG'		=> date(ASCMS_DATE_FORMAT, $objResult->fields['changelog']),
+		                'NEWS_LIST_PARSING'		=> $paging,
+		                'NEWS_CLASS'			=> $class,
+		                'NEWS_CATEGORY'			=> stripslashes($objResult->fields['catname']),
+		                'NEWS_STATUS'			=> $objResult->fields['status'],
+		                'NEWS_STATUS_PICTURE'	=> $statusPicture,
+					));
+
+					$this->_objTpl->setVariable(array(
+						'NEWS_ACTIVATE'			=>	$_ARRAYLANG['TXT_ACTIVATE'],
+						'NEWS_DEACTIVATE'		=>	$_ARRAYLANG['TXT_DEACTIVATE']
+					));
+
+					$this->_objTpl->parse('newsrow');
+					$objResult->MoveNext();
+				}
+			}
+		}
+
+		// set unvalidated list
+		$query = "SELECT n.id AS id,
+		                 n.date AS date,
+		                 n.changelog AS changelog,
+		                 n.title AS title,
+		                 n.status AS status,
+		                 n.validated AS validated,
+		                 l.name AS name,
+		                 nc.name AS catname,
+		                 u.username AS username
+		            FROM ".DBPREFIX."module_news_categories AS nc,
+		            	 ".DBPREFIX."languages AS l,
+		                 ".DBPREFIX."module_news AS n
+			   LEFT JOIN ".DBPREFIX."access_users AS u
+			   		  ON u.id=n.userid
+		           WHERE n.lang=l.id
+		             AND n.lang=".$this->langId."
+		             AND nc.catid=n.catid
+		             AND n.validated='0'
+		        ORDER BY date DESC";
+
+		$objResult = $objDatabase->Execute($query);
+		if ($objResult !== false) {
+			$count = $objResult->RecordCount();
+			if (isset($_GET['show']) && $_GET['show'] == 'archive' && isset($_GET['pos'])) {
+				$pos = 0;
+			} else {
+				$pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+			}
+
+			if ($count>intval($_CONFIG['corePagingLimit'])) {
+			    $paging = getPaging($count, $pos, "&amp;cmd=news", $_ARRAYLANG['TXT_NEWS_MESSAGES'],true);
+			} else {
+				$paging = "";
+			}
+			$objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
+
+			if ($count < 1) {
+			    $this->_objTpl->hideBlock('news_tabmenu');
+			    $this->_objTpl->hideBlock('news_validator');
+				$this->_objTpl->setVariable('NEWS_ARCHIVE_DISPLAY_STATUS', "block");
+			} else {
+				if (isset($_GET['show']) && $_GET['show'] == 'archive') {
+					$this->_objTpl->setVariable(array(
+						'NEWS_ARCHIVE_DISPLAY_STATUS'		=> "block",
+						'NEWS_UNVALIDATED_DISPLAY_STATUS'	=> "none",
+						'NEWS_ARCHIVE_TAB_CALSS'			=> "class=\"active\"",
+						'NEWS_UNVALIDATED_TAB_CALSS'		=> ""
+					));
+				} else {
+					$this->_objTpl->setVariable(array(
+						'NEWS_ARCHIVE_DISPLAY_STATUS'		=> "none",
+						'NEWS_UNVALIDATED_DISPLAY_STATUS'	=> "block",
+						'NEWS_ARCHIVE_TAB_CALSS'			=> "",
+						'NEWS_UNVALIDATED_TAB_CALSS'		=> "class=\"active\""
+					));
+				}
+
+				$this->_objTpl->setVariable(array(
+					'NEWS_LIST_UNVALIDATED_PARSING'		=> $paging,
+				));
+
+				$this->_objTpl->touchBlock('news_tabmenu');
+
+				while (!$objResult->EOF) {
+					($validatorNr % 2) ? $class = "row2" : $class = "row1";
+	            	$validatorNr++;
+
+					$statusPicture = "status_red.gif";
+	            	if($objResult->fields['status']==1) {
+					    $statusPicture = "status_green.gif";
+					}
+
+					$this->_objTpl->setVariable(array(
+		                'NEWS_ID'				=> $objResult->fields['id'],
+		                'NEWS_DATE'				=> date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
+		                'NEWS_TITLE'			=> stripslashes($objResult->fields['title']),
+		                'NEWS_USER'				=> empty($objResult->fields['username']) ? $_ARRAYLANG['TXT_ANONYMOUS'] : $objResult->fields['username'],
+		                'NEWS_CHANGELOG'		=> date(ASCMS_DATE_FORMAT, $objResult->fields['changelog']),
+		                'NEWS_CLASS'			=> $class,
+		                'NEWS_CATEGORY'			=> stripslashes($objResult->fields['catname']),
+		                'NEWS_STATUS'			=> $objResult->fields['status'],
+		                'NEWS_STATUS_PICTURE'	=> $statusPicture
+					));
+
+					$this->_objTpl->parse('news_validator_row');
+					$objResult->MoveNext();
+				}
+			}
+		}
+    }
+
+
+
+
+    /**
+    * adds a news entry
+    *
+    * @param     integer   $newsid -> the id of the news entry
+    * @return    boolean   result
+    */
+    function add(){
+	    global $_ARRAYLANG, $_CONFIG;
+
+    	$this->_objTpl->loadTemplateFile('module_news_modify.html',true,true);
+		$this->pageTitle = $_ARRAYLANG['TXT_CREATE_NEWS'];
+
+		require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
+    	$objTeaser = &new Teasers(true);
+
+    	$frameIds = "";
+		foreach ($objTeaser->arrTeaserFrameNames as $frameName => $frameId) {
+			$frameIds .= "<option value=\"".$frameId."\">".$frameName."</option>\n";
+		}
+
+
+
+	    $this->_objTpl->setVariable(array(
+	        'TXT_NEWS_MESSAGE'    	 		=> $_ARRAYLANG['TXT_NEWS_MESSAGE'],
+	        'TXT_TITLE'           	 		=> $_ARRAYLANG['TXT_TITLE'],
+	        'TXT_CATEGORY'        	 		=> $_ARRAYLANG['TXT_CATEGORY'],
+	        'TXT_HYPERLINKS'      	 		=> $_ARRAYLANG['TXT_HYPERLINKS'],
+	        'TXT_EXTERNAL_SOURCE' 	 		=> $_ARRAYLANG['TXT_EXTERNAL_SOURCE'],
+	        'TXT_LINK'            	 		=> $_ARRAYLANG['TXT_LINK'],
+	        'TXT_NEWS_NEWS_CONTENT'	 		=> $_ARRAYLANG['TXT_NEWS_NEWS_CONTENT'],
+	        'TXT_DATE'				 		=> $_ARRAYLANG['TXT_DATE'],
+	        'TXT_PUBLISHING'      	 		=> $_ARRAYLANG['TXT_PUBLISHING'],
+	        'TXT_STARTDATE'       	 		=> $_ARRAYLANG['TXT_STARTDATE'],
+	        'TXT_ENDDATE'         			=> $_ARRAYLANG['TXT_ENDDATE'],
+	        'TXT_OPTIONAL'           		=> $_ARRAYLANG['TXT_OPTIONAL'],
+	        'TXT_ACTIVE'             		=> $_ARRAYLANG['TXT_ACTIVE'],
+	        'TXT_HEADLINES'					=> $_ARRAYLANG['TXT_HEADLINES'],
+	        'TXT_TEASERS'					=> $_ARRAYLANG['TXT_TEASERS'],
+	        'TXT_NEWS_TEASER_TEXT'			=> $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'],
+	        'TXT_IMAGE'						=> $_ARRAYLANG['TXT_IMAGE'],
+	        'TXT_BROWSE'					=> $_ARRAYLANG['TXT_BROWSE'],
+	        'TXT_NUMBER_OF_CHARS'			=> $_ARRAYLANG['TXT_NUMBER_OF_CHARS'],
+	        'TXT_TEASER_SHOW_NEWS_LINK'		=> $_ARRAYLANG['TXT_TEASER_SHOW_NEWS_LINK'],
+	        'TXT_NEWS_TYPE'					=> $_ARRAYLANG['TXT_NEWS_TYPE'],
+	        'TXT_NEWS_TYPE_REDIRECT'		=> $_ARRAYLANG['TXT_NEWS_REDIRECT_TITLE'],
+	        'TXT_NEWS_TYPE_REDIRECT_HELP'	=> $_ARRAYLANG['TXT_NEWS_TYPE_REDIRECT_HELP'],
+	        'TXT_NEWS_TYPE_DEFAULT'			=> $_ARRAYLANG['TXT_NEWS_TYPE_DEFAULT'],
+			'NEWS_TEXT'           	 		=> get_wysiwyg_editor('newsText', '', 'active'),
+			'NEWS_FORM_ACTION'       		=> "add",
+			'NEWS_STORED_FORM_ACTION'		=> "add",
+			'NEWS_STATUS'         	 		=> "checked",
+			'NEWS_ID'         		 		=> "0",
+			'NEWS_TOP_TITLE'         		=> $_ARRAYLANG['TXT_CREATE_NEWS'],
+			'NEWS_CAT_MENU'          		=> $this->getCategoryMenu($this->langId),
+			'NEWS_STARTDATE'         		=> "",
+			'NEWS_ENDDATE'           		=> "",
+			'NEWS_DATE'              		=> date("Y-m-d"),
+			'NEWS_CREATE_DATE'		 		=> date(ASCMS_DATE_FORMAT),
+			'NEWS_SUBMIT_NAME_TEXT'	 		=> $_ARRAYLANG['TXT_STORE'],
+			'NEWS_TEASER_SHOW_LINK_CHECKED'	=> 'checked="checked"',
+			'NEWS_TEASER_TEXT'				=> '',
+			'NEWS_TEASER_TEXT_LENGTH'		=> '0',
+			'NEWS_TYPE_SELECTION_CONTENT'	=> 'style="display: block;"',
+			'NEWS_TYPE_SELECTION_REDIRECT'	=> 'style="display: none;"',
+			'NEWS_TYPE_CHECKED_CONTENT'		=> 'checked="checked"',
+			'NEWS_TYPE_CHECKED_REDIRECT'	=> ''
+		));
+
+		if ($_CONFIG['newsTeasersStatus'] == '1') {
+			$this->_objTpl->parse('newsTeaserOptions');
+			$this->_objTpl->setVariable(array(
+		        'TXT_USAGE'						=> $_ARRAYLANG['TXT_USAGE'],
+		        'TXT_USE_ONLY_TEASER_TEXT'		=> $_ARRAYLANG['TXT_USE_ONLY_TEASER_TEXT'],
+		        'TXT_TEASER_TEASER_BOXES'		=> $_ARRAYLANG['TXT_TEASER_TEASER_BOXES'],
+		        'TXT_AVAILABLE_BOXES'			=> $_ARRAYLANG['TXT_AVAILABLE_BOXES'],
+		        'TXT_SELECT_ALL'				=> $_ARRAYLANG['TXT_SELECT_ALL'],
+		        'TXT_DESELECT_ALL'				=> $_ARRAYLANG['TXT_DESELECT_ALL'],
+		        'TXT_ASSOCIATED_BOXES'			=> $_ARRAYLANG['TXT_ASSOCIATED_BOXES'],
+				'NEWS_HEADLINES_TEASERS_TXT'	=> $_ARRAYLANG['TXT_HEADLINES'].' / '.$_ARRAYLANG['TXT_TEASERS'],
+				'NEWS_USE_ONLY_TEASER_CHECKED'	=> "",
+				'NEWS_TEASER_FRAMES'			=> $frameIds,
+				'NEWS_TEASER_ASSOCIATED_FRAMES'	=> ''
+			));
+		} else {
+			$this->_objTpl->hideBlock('newsTeaserOptions');
+			$this->_objTpl->setVariable('NEWS_HEADLINES_TEASERS_TXT', $_ARRAYLANG['TXT_HEADLINES']);
+		}
+
+		if (isset($_POST['newsTitle']) AND !empty($_POST['newsTitle'])){
+    	    $this->insert();
+    	    $this->createRSS();
+    	    $this->overview();
+        }
+    }
+
+
+
+
+    /**
+    * Deletes a news entry
+    *
+    * @global	 object    $objDatabase
+    * @global	 array     $_ARRAYLANG
+    * @return    -
+    */
+    function delete(){
+	    global $objDatabase, $_ARRAYLANG;
+
+	    $newsId = "";
+	    if(isset($_GET['newsId'])){
+	    	$newsId = intval($_GET['newsId']);
+		    if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news WHERE id = ".$newsId) !== false) {
+		    	$this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
+		    	$this->createRSS();
+		    } else {
+		    	$this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+		    }
+	    }
+
+		if(isset($_POST['selectedNewsId']) && is_array($_POST['selectedNewsId'])){
+			foreach ($_POST['selectedNewsId'] AS $value){
+				if (!empty($value)){
+				    if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news WHERE id = ".intval($value)) !== false) {
+				    	$this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
+				    	$this->createRSS();
+				    } else {
+			            $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+				    }
+				}
+			}
+		} elseif (isset($_POST['selectedUnvalidatedNewsId']) && is_array($_POST['selectedUnvalidatedNewsId'])) {
+			foreach ($_POST['selectedUnvalidatedNewsId'] AS $value){
+				if (!empty($value)){
+				    if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news WHERE id = ".intval($value)) !== false) {
+				    	$this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
+				    	$this->createRSS();
+				    } else {
+			            $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+				    }
+				}
+			}
+		}
+    }
+
+
+
+
+    /**
+    * Edit the news
+    *
+    * @global    object     $objDatabase
+    * @param     string     $pageContent
+    */
+    function edit()
+    {
+    	global $objDatabase,$_ARRAYLANG, $_CONFIG;
+
+		$status = "";
+		$startDate = "";
+		$endDate = "";
+
+    	$this->_objTpl->loadTemplateFile('module_news_modify.html',true,true);
+		$this->pageTitle = $_ARRAYLANG['TXT_EDIT_NEWS_CONTENT'];
+
+		$this->_objTpl->setVariable(array(
+		    'TXT_NEWS_MESSAGE'				=> $_ARRAYLANG['TXT_NEWS_MESSAGE'],
+		    'TXT_TITLE'						=> $_ARRAYLANG['TXT_TITLE'],
+		    'TXT_CATEGORY'					=> $_ARRAYLANG['TXT_CATEGORY'],
+		    'TXT_HYPERLINKS'				=> $_ARRAYLANG['TXT_HYPERLINKS'],
+		    'TXT_EXTERNAL_SOURCE'			=> $_ARRAYLANG['TXT_EXTERNAL_SOURCE'],
+		    'TXT_LINK'						=> $_ARRAYLANG['TXT_LINK'],
+		    'TXT_NEWS_NEWS_CONTENT'			=> $_ARRAYLANG['TXT_NEWS_NEWS_CONTENT'],
+	        'TXT_PUBLISHING'				=> $_ARRAYLANG['TXT_PUBLISHING'],
+	        'TXT_STARTDATE'					=> $_ARRAYLANG['TXT_STARTDATE'],
+	        'TXT_ENDDATE'					=> $_ARRAYLANG['TXT_ENDDATE'],
+	        'TXT_OPTIONAL'					=> $_ARRAYLANG['TXT_OPTIONAL'],
+	        'TXT_ACTIVE'					=> $_ARRAYLANG['TXT_ACTIVE'],
+	        'TXT_DATE'						=> $_ARRAYLANG['TXT_DATE'],
+	        'TXT_HEADLINES'					=> $_ARRAYLANG['TXT_HEADLINES'],
+	        'TXT_TEASERS'					=> $_ARRAYLANG['TXT_TEASERS'],
+	        'TXT_NEWS_TEASER_TEXT'			=> $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'],
+	        'TXT_IMAGE'						=> $_ARRAYLANG['TXT_IMAGE'],
+	        'TXT_BROWSE'					=> $_ARRAYLANG['TXT_BROWSE'],
+	        'TXT_NUMBER_OF_CHARS'			=> $_ARRAYLANG['TXT_NUMBER_OF_CHARS'],
+	        'TXT_TEASER_SHOW_NEWS_LINK'		=> $_ARRAYLANG['TXT_TEASER_SHOW_NEWS_LINK'],
+	        'TXT_NEWS_REDIRECT_TITLE'		=> $_ARRAYLANG['TXT_NEWS_REDIRECT_TITLE'],
+	        'TXT_NEWS_TYPE'					=> $_ARRAYLANG['TXT_NEWS_TYPE'],
+	        'TXT_NEWS_TYPE_REDIRECT'		=> $_ARRAYLANG['TXT_NEWS_REDIRECT_TITLE'],
+	        'TXT_NEWS_TYPE_REDIRECT_HELP'	=> $_ARRAYLANG['TXT_NEWS_TYPE_REDIRECT_HELP'],
+	        'TXT_NEWS_TYPE_DEFAULT'			=> $_ARRAYLANG['TXT_NEWS_TYPE_DEFAULT'],
+		));
+
+		$newsid = intval($_REQUEST['newsId']);
+		$objResult = $objDatabase->SelectLimit("SELECT	catid,
+													   	date,
+													   	lang,
+													   	id,
+													   	title,
+													   	text,
+													   	redirect,
+													   	source,
+													   	url1,
+													   	url2,
+													   	startdate,
+													   	enddate,
+														status,
+													   	teaser_only,
+													   	teaser_text,
+													   	teaser_show_link,
+													   	teaser_image_path
+									            FROM 	".DBPREFIX."module_news
+									            WHERE 	id = '".$newsid."'", 1);
+		if ($objResult !== false && !$objResult->EOF) {
+			$newsCat=$objResult->fields['catid'];
+			$id = $objResult->fields['id'];
+			$newsText = stripslashes($objResult->fields['text']);
+			$teaserText = stripslashes($objResult->fields['teaser_text']);
+			$teaserShowLink = $objResult->fields['teaser_show_link'];
+
+			if($objResult->fields['status']==1){
+				$status = "checked=\"checked\"";
+			}
+			if($objResult->fields['startdate']!="0000-00-00"){
+				$startDate = $objResult->fields['startdate'];
+			}
+			if($objResult->fields['enddate']!="0000-00-00"){
+				$endDate = $objResult->fields['enddate'];
+			}
+
+			if (empty($objResult->fields['redirect'])) {
+				$this->_objTpl->setVariable(array(
+					'NEWS_TYPE_SELECTION_CONTENT'	=> 'style="display: block;"',
+					'NEWS_TYPE_SELECTION_REDIRECT'	=> 'style="display: none;"',
+					'NEWS_TYPE_CHECKED_CONTENT'		=> 'checked="checked"',
+					'NEWS_TYPE_CHECKED_REDIRECT'	=> ''
+				));
+			} else {
+				$this->_objTpl->setVariable(array(
+					'NEWS_TYPE_SELECTION_CONTENT'	=> 'style="display: none;"',
+					'NEWS_TYPE_SELECTION_REDIRECT'	=> 'style="display: block;"',
+					'NEWS_TYPE_CHECKED_CONTENT'		=> '',
+					'NEWS_TYPE_CHECKED_REDIRECT'	=> 'checked="checked"'
+				));
+			}
+
+			require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
+	    	$objTeaser = &new Teasers(true);
+
+	    	$frameIds = "";
+	    	$associatedFrameIds = "";
+	    	$arrAssociatedFrameIds = explode(';', $objTeaser->arrTeasers[$newsid]['teaser_frames']);
+	    	foreach ($arrAssociatedFrameIds as $teaserFrameId) {
+	    		$associatedFrameIds .= "<option value=\"".$teaserFrameId."\">".$objTeaser->arrTeaserFrames[$teaserFrameId]['name']."</option>\n";
+	    	}
+			foreach ($objTeaser->arrTeaserFrameNames as $frameName => $frameId) {
+				if (!in_array($frameId, $arrAssociatedFrameIds)) {
+					$frameIds .= "<option value=\"".$frameId."\">".$frameName."</option>\n";
+				}
+			}
+
+			$this->_objTpl->setVariable(array(
+				'NEWS_ID'						=> $id,
+				'NEWS_STORED_ID'				=> $id,
+				'NEWS_TITLE'					=> htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET),
+				'NEWS_TEXT'						=> get_wysiwyg_editor('newsText', $newsText, 'active'),
+				'NEWS_REDIRECT'					=> htmlentities($objResult->fields['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
+				'NEWS_SOURCE'					=> htmlentities($objResult->fields['source'], ENT_QUOTES, CONTREXX_CHARSET),
+				'NEWS_URL1'						=> htmlentities($objResult->fields['url1'], ENT_QUOTES, CONTREXX_CHARSET),
+				'NEWS_URL2'						=> htmlentities($objResult->fields['url2'], ENT_QUOTES, CONTREXX_CHARSET),
+				'NEWS_CREATE_DATE'				=> date('H:i:s d.m.Y',$objResult->fields['date']),
+				'NEWS_STARTDATE'				=> $startDate,
+				'NEWS_ENDDATE'					=> $endDate,
+				'NEWS_STATUS'					=> isset($_GET['validate']) ? "checked=\"checked\"" : $status,
+				'NEWS_TEASER_TEXT'				=> $teaserText,
+				'NEWS_TEASER_SHOW_LINK_CHECKED'	=> $teaserShowLink ? 'checked="checked"' : '',
+				'NEWS_TEASER_TEXT_LENGTH'		=> strlen($teaserText),
+				'NEWS_TEASER_IMAGE_PATH'		=> htmlentities($objResult->fields['teaser_image_path'], ENT_QUOTES, CONTREXX_CHARSET),
+				'NEWS_DATE'						=> date("Y-m-d"),
+				'NEWS_SUBMIT_NAME'				=> isset($_GET['validate']) ? 'validate' : 'store',
+				'NEWS_SUBMIT_NAME_TEXT'			=> isset($_GET['validate']) ? $_ARRAYLANG['TXT_CONFIRM'] : $_ARRAYLANG['TXT_STORE']
+			));
+		}
+
+		if ($_CONFIG['newsTeasersStatus'] == '1') {
+			$this->_objTpl->parse('newsTeaserOptions');
+			$this->_objTpl->setVariable(array(
+		        'TXT_USAGE'						=> $_ARRAYLANG['TXT_USAGE'],
+		        'TXT_USE_ONLY_TEASER_TEXT'		=> $_ARRAYLANG['TXT_USE_ONLY_TEASER_TEXT'],
+		        'TXT_TEASER_TEASER_BOXES'		=> $_ARRAYLANG['TXT_TEASER_TEASER_BOXES'],
+		        'TXT_AVAILABLE_BOXES'			=> $_ARRAYLANG['TXT_AVAILABLE_BOXES'],
+		        'TXT_SELECT_ALL'				=> $_ARRAYLANG['TXT_SELECT_ALL'],
+		        'TXT_DESELECT_ALL'				=> $_ARRAYLANG['TXT_DESELECT_ALL'],
+		        'TXT_ASSOCIATED_BOXES'			=> $_ARRAYLANG['TXT_ASSOCIATED_BOXES'],
+				'NEWS_HEADLINES_TEASERS_TXT'	=> $_ARRAYLANG['TXT_HEADLINES'].' / '.$_ARRAYLANG['TXT_TEASERS'],
+				'NEWS_USE_ONLY_TEASER_CHECKED'	=> $objResult->fields['teaser_only'] == '1' ? "checked=\"checked\"" : "",
+				'NEWS_TEASER_FRAMES'			=> $frameIds,
+				'NEWS_TEASER_ASSOCIATED_FRAMES'	=> $associatedFrameIds
+			));
+		} else {
+			$this->_objTpl->hideBlock('newsTeaserOptions');
+			$this->_objTpl->setVariable('NEWS_HEADLINES_TEASERS_TXT', $_ARRAYLANG['TXT_HEADLINES']);
+		}
+
+		$this->_objTpl->setVariable("NEWS_CAT_MENU",$this->getCategoryMenu($this->langId, $newsCat));
+		$this->_objTpl->setVariable("NEWS_FORM_ACTION","update");
+	    $this->_objTpl->setVariable("NEWS_STORED_FORM_ACTION","update");
+	    $this->_objTpl->setVariable("NEWS_TOP_TITLE",$_ARRAYLANG['TXT_EDIT_NEWS_CONTENT']);
+    }
+
+
+
+    /**
+    * Update news
+    *
+    * @global	 object    $objDatabase
+    * @global	 array     $_POST[*]
+    * @param     integer   $newsid
+    * @return    boolean   result
+    */
+    function update(){
+	    global $objDatabase, $_ARRAYLANG, $_CONFIG;
+
+	    if (isset($_GET['newsId'])) {
+	    	$objValidator = &new FWValidator();
+
+	    	$id = intval($_GET['newsId']);
+		    $userId = intval($_SESSION['auth']['userid']);
+		    $changelog = mktime();
+
+		    if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['newsDate'], $arrDate)) {
+		    	$date = mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
+		    } else {
+		    	$date = time();
+		    }
+		    $title 		= contrexx_strip_tags($_POST['newsTitle']);
+		    $text 		= contrexx_addslashes($_POST['newsText']);
+		    $text 		= $this->filterBodyTag($text);
+		    $redirect	= contrexx_strip_tags($_POST['newsRedirect']);
+
+		    $source		= $objValidator->getUrl(contrexx_strip_tags($_POST['newsSource']));
+		    $url1 		= $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl1']));
+		    $url2 		= $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
+		    $catId 		= intval($_POST['newsCat']);
+
+		    $status 	= empty($_POST['status']) ? $status = 0 : intval($_POST['status']);
+
+		    $newsTeaserOnly = isset($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
+			$newsTeaserText = contrexx_addslashes($_POST['newsTeaserText']);
+			$newsTeaserShowLink = isset($_POST['newsTeaserShowLink']) ? intval($_POST['newsTeaserShowLink']) : 0;
+
+			$newsTeaserImagePath = contrexx_strip_tags($_POST['newsTeaserImagePath']);
+
+			if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
+		    	foreach ($_POST['newsTeaserFramesAsso'] as $frameId) {
+		    		if (isset($newsTeaserFrames)) {
+		    			$newsTeaserFrames .= ";".intval($frameId);
+		    		} else {
+		    			$newsTeaserFrames = intval($frameId);
+		    		}
+		    	}
+		    } else {
+		    	$newsTeaserFrames = "";
+		    }
+
+		    $startDate = contrexx_strip_tags($_POST['startDate']);
+		    $endDate = contrexx_strip_tags($_POST['endDate']);
+
+		    // $finishednewstext = $newstext."<br>".$_ARRAYLANG['TXT_LAST_EDIT'].": ".$date;
+		    $objResult = $objDatabase->Execute("UPDATE 	".DBPREFIX."module_news
+											    SET 	title='".$title."',
+											       	   	date='".$date."',
+								                       	text='".$text."',
+								                       	redirect='".$redirect."',
+								                       	source='".$source."',
+								                       	url1='".$url1."',
+								                       	url2='".$url2."',
+								                       	catid='".$catId."',
+								                       	lang='".$this->langId."',
+								                       	userid = '".$userId."',
+								                       	status = '".$status."',
+								                       	".(isset($_POST['validate']) ? "validated='1'," : "")."
+								                       	startdate = '".$startDate."',
+								                       	enddate = '".$endDate."',
+								                       	".($_CONFIG['newsTeasersStatus'] == '1' ? "teaser_only = '".$newsTeaserOnly."',
+								                       	teaser_frames = '".$newsTeaserFrames."'," : "")."
+								                       	teaser_text = '".$newsTeaserText."',
+								                       	teaser_show_link = ".$newsTeaserShowLink.",
+								                       	teaser_image_path = '".$newsTeaserImagePath."',
+								                       	changelog = '".$changelog."'
+							                    WHERE 	id = '".$id."'");
+		   if($objResult === false){
+		   	    $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+		   } else {
+	            $this->createRSS();
+	            $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+		   }
+        }
+    }
+
+    /**
+    * Change status of multiple messages
+    *
+    * @global	 object    $objDatabase
+    * @global	 array     $_POST[*]
+    * @param     integer   $newsid
+    * @return    boolean   result
+    */
+	function changeStatus(){
+		global $objDatabase, $_ARRAYLANG, $_CONFIG;
+
+		if(isset($_POST['deactivate']) AND !empty($_POST['deactivate'])){
+			$status = 0;
+		}
+		if(isset($_POST['activate']) AND !empty($_POST['activate'])){
+			$status = 1;
+		}
+		if(isset($status)){
+			if(isset($_POST['selectedNewsId']) && is_array($_POST['selectedNewsId'])){
+				foreach ($_POST['selectedNewsId'] as $value){
+					if (!empty($value)){
+					    $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_news SET status = '".$status."' WHERE id = '".intval($value)."'");
+					}
+				    if($objResult === false){
+				   	    $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+				    } else{
+			            $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+				    }
+				}
+			}
+		}
+
+		if (isset($_POST['validate']) && isset($_POST['selectedUnvalidatedNewsId']) && is_array($_POST['selectedUnvalidatedNewsId'])) {
+			foreach ($_POST['selectedUnvalidatedNewsId'] as $value) {
+				$objDatabase->Execute("UPDATE ".DBPREFIX."module_news SET status=1, validated='1' WHERE id=".intval($value));
+			}
+		}
+
+		$this->createRSS();
+    }
+
+    /**
+     * Invert status of a single message
+     *
+     * @global 	object		$objDatabase
+     * @global 	array		$_ARRAYLANG
+     * @param 	integer		$intNewsId
+     */
+    function invertStatus($intNewsId) {
+    	global $objDatabase,$_ARRAYLANG;
+
+    	$intNewsId = intval($intNewsId);
+
+    	if ($intNewsId != 0) {
+    		$objResult = $objDatabase->Execute('SELECT	status
+    											FROM	'.DBPREFIX.'module_news
+    											WHERE	id='.$intNewsId.'
+    											LIMIT	1
+    										');
+    		if ($objResult->RecordCount() == 1) {
+    			$intNewStatus = ($objResult->fields['status'] == 0) ? 1 : 0;
+
+    			$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_news
+    									SET		status="'.$intNewStatus.'"
+    									WHERE	id='.$intNewsId.'
+    									LIMIT	1
+    								');
+
+    			 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+    		}
+    	}
+    }
+
+
+
+    /**
+    * Insert news
+    *
+    * @global	 object    $objDatabase
+    * @global	 array     $_POST[*]
+    * @return    boolean   result
+    */
+    function insert(){
+	    global $objDatabase, $_ARRAYLANG;
+
+	    $objValidator = &new FWValidator();
+
+	    if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['newsDate'], $arrDate)) {
+	    	$date = mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
+	    } else {
+	    	$date = time();
+	    }
+	    $newstitle 				= contrexx_strip_tags($_POST['newsTitle']);
+	    $newstext 				= contrexx_addslashes($_POST['newsText']);
+	    $newstext 				= $this->filterBodyTag($newstext);
+	    $newsredirect 			= contrexx_strip_tags($_POST['newsRedirect']);
+	    $newssource				= $objValidator->getUrl(contrexx_strip_tags($_POST['newsSource']));
+	    $newsurl1 				= $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl1']));
+	    $newsurl2 				= $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
+	    $newscat 				= intval($_POST['newsCat']);
+	    $userid 				= intval($_SESSION['auth']['userid']);
+	    $startDate 				= contrexx_strip_tags($_POST['startDate']);
+	    $endDate 				= contrexx_strip_tags($_POST['endDate']);
+	    $status 				= intval($_POST['status']);
+	    $newsTeaserOnly 		= isset($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
+	    $newsTeaserText 		= contrexx_addslashes($_POST['newsTeaserText']);
+	    $newsTeaserImagePath 	= contrexx_strip_tags($_POST['newsTeaserImagePath']);
+	    $newsTeaserShowLink 	= isset($_POST['newsTeaserShowLink']) ? intval($_POST['newsTeaserShowLink']) : 0;
+
+	    if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
+	    	foreach ($_POST['newsTeaserFramesAsso'] as $frameId) {
+	    		if (isset($newsTeaserFrames)) {
+	    			$newsTeaserFrames .= ";".intval($frameId);
+	    		} else {
+	    			$newsTeaserFrames = intval($frameId);
+	    		}
+	    	}
+	    } else {
+	    	$newsTeaserFrames = "";
+	    }
+
+
+	    if(empty($status)) {
+	        $status = 0;
+	        $startDate = "";
+	        $endDate = "";
+	    }
+
+	    $objResult = $objDatabase->Execute('INSERT
+	    									INTO '.DBPREFIX.'module_news
+	    									SET	date='.$date.',
+											    title="'.$newstitle.'",
+											    text="'.$newstext.'",
+											    redirect="'.$newsredirect.'",
+											    source="'.$newssource.'",
+											    url1="'.$newsurl1.'",
+											    url2="'.$newsurl2.'",
+											    catid='.$newscat.',
+											    lang='.$this->langId.',
+												startdate="'.$startDate.'",
+												enddate="'.$endDate.'",
+												status='.$status.',
+												validated="1",
+												teaser_only="'.$newsTeaserOnly.'",
+												teaser_frames="'.$newsTeaserFrames.'",
+												teaser_text="'.$newsTeaserText.'",
+												teaser_show_link='.$newsTeaserShowLink.',
+												teaser_image_path="'.$newsTeaserImagePath.'",
+											    userid='.$userid.',
+											    changelog='.$date
+	    								);
+
+        if ($objResult !== false){
+    	    $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
+        } else{
+        	$this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+        }
+    }
+
+
+
+
+    /**
+    * Add or edit the news categories
+    *
+    * @global    object     $objDatabase
+    * @global    array      $_ARRAYLANG[news*]
+    * @param     string     $pageContent
+    */
+    function manageCategories(){
+    	global $objDatabase, $_ARRAYLANG;
+
+    	$this->_objTpl->loadTemplateFile('module_news_category.html',true,true);
+		$this->pageTitle = $_ARRAYLANG['TXT_CATEGORY_MANAGER'];
+
+    	$this->_objTpl->setVariable(array(
+    	    'TXT_ADD_NEW_CATEGORY'                       => $_ARRAYLANG['TXT_ADD_NEW_CATEGORY'],
+    	    'TXT_NAME'                                   => $_ARRAYLANG['TXT_NAME'],
+    	    'TXT_ADD'                                    => $_ARRAYLANG['TXT_ADD'],
+    	    'TXT_CATEGORY_LIST'                          => $_ARRAYLANG['TXT_CATEGORY_LIST'],
+    	    'TXT_ID'                                     => $_ARRAYLANG['TXT_ID'],
+    	    'TXT_ACTION'                                 => $_ARRAYLANG['TXT_ACTION'],
+    	    'TXT_ACCEPT_CHANGES'                         => $_ARRAYLANG['TXT_ACCEPT_CHANGES'],
+    	    'TXT_CONFIRM_DELETE_DATA'                    => $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
+    	    'TXT_ACTION_IS_IRREVERSIBLE'                 => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+    	    'TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK' => $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK']
+    	));
+
+    	$this->_objTpl->setGlobalVariable(array('TXT_DELETE' => $_ARRAYLANG['TXT_DELETE']));
+
+    	// Add a new category
+    	if (isset($_POST['addCat']) AND ($_POST['addCat']==true)){
+    		 $catName=contrexx_strip_tags($_POST['newCategorieName']);
+
+    	     if($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_categories (name,lang)
+    	                         VALUES ('$catName','$this->langId')") !== false) {
+    	     	$this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
+    	     } else {
+    	     	$this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+    	     }
+
+    	}
+
+    	// Modify a new category
+    	if (isset($_POST['modCat']) AND ($_POST['modCat']==true)){
+    		foreach ($_POST['newsCatName'] as $id => $name) {
+				$name=contrexx_strip_tags($name);
+				$id=intval($id);
+
+			    if($objDatabase->Execute("UPDATE ".DBPREFIX."module_news_categories SET name='$name',lang=$this->langId WHERE catid=$id") !== false) {
+			    	$this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+			    } else {
+			    	$this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+			    }
+		    }
+    	}
+
+		$objResult = $objDatabase->Execute("SELECT catid,
+		                   name,
+		                   lang
+		              FROM ".DBPREFIX."module_news_categories
+		             WHERE lang=".$this->langId."
+				  ORDER BY catid asc");
+
+		$this->_objTpl->setCurrentBlock('newsRow');
+		$i=0;
+
+		if ($objResult !== false) {
+			while (!$objResult->EOF) {
+				$cssStyle = (($i % 2) == 0) ? "row1" : "row2";
+				$this->_objTpl->setVariable(array(
+				    'NEWS_ROWCLASS'   => $cssStyle,
+					'NEWS_CAT_ID'	  => $objResult->fields['catid'],
+					'NEWS_CAT_NAME'	  => stripslashes($objResult->fields['name'])
+				));
+				$this->_objTpl->parseCurrentBlock();
+				$i++;
+				$objResult->MoveNext();
+			};
+		}
+    }
+
+
+
+
+
+    /**
+    * Delete the news categories
+    *
+    * @global    object     $objDatabase
+    * @global    array      $_ARRAYLANG[news*]
+    * @param     string     $pageContent
+    */
+    function deleteCat(){
+    	global $objDatabase, $_ARRAYLANG;
+
+    	if(isset($_GET['catId'])) {
+    	    $catId=intval($_GET['catId']);
+    	    $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_news WHERE catid=".$catId);
+
+    	    if ($objResult !== false) {
+	    	    if (!$objResult->EOF) {
+	    	         $this->strErrMessage = $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'];
+	    	    }
+	    	    else {
+	    	        if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news_categories WHERE catid=".$catId) !== false) {
+	    	            $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
+	    	        } else {
+	    	        	$this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+	    	        }
+	    	    }
+    	    }
+    	}
+    }
+
+
+
+
+
+
+    /**
+    * Create the RSS-Feed
+    *
+    */
+    function createRSS(){
+		global $_CONFIG, $objDatabase, $_FRONTEND_LANGID, $objLanguage;
+
+		require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
+
+		if (intval($this->arrSettings['news_feed_status']) == 1) {
+			$arrNews = array();
+			$objRSSWriter = new RSSWriter();
+
+			$objRSSWriter->characterEncoding = 'ISO-8859-1';
+			$objRSSWriter->channelTitle = $this->arrSettings['news_feed_title'];
+			$objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=news';
+			$objRSSWriter->channelDescription = $this->arrSettings['news_feed_description'];
+			$objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang');
+			$objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
+
+			if (!empty($this->arrSettings['news_feed_image'])) {
+				$objRSSWriter->channelImageUrl = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).$this->arrSettings['news_feed_image'];
+				$objRSSWriter->channelImageTitle = $objRSSWriter->channelTitle;
+				$objRSSWriter->channelImageLink = $objRSSWriter->channelLink;
+			}
+			$objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
+
+			$itemLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/index.php?section=news&amp;cmd=details&amp;newsid=";
+
+			$query = "SELECT tblNews.id, tblNews.date, tblNews.title, tblNews.text, tblNews.redirect, tblNews.source, tblNews.catid AS categoryId, tblNews.teaser_frames AS teaser_frames, tblNews.teaser_text, tblCategory.name AS category
+							FROM ".DBPREFIX."module_news AS tblNews, ".DBPREFIX."module_news_categories AS tblCategory
+							WHERE tblNews.status=1 AND tblNews.lang = ".$_FRONTEND_LANGID." AND tblCategory.catid = tblNews.catid
+							ORDER BY tblNews.date DESC";
+
+			if (($objResult = $objDatabase->SelectLimit($query, 20)) !== false && $objResult->RecordCount() > 0) {
+				while (!$objResult->EOF) {
+					if (empty($objRSSWriter->channelLastBuildDate)) {
+						$objRSSWriter->channelLastBuildDate = date('r', $objResult->fields['date']);
+					}
+					$arrNews[$objResult->fields['id']] = array(
+						'date'			=> $objResult->fields['date'],
+						'title'			=> $objResult->fields['title'],
+						'text'			=> (!empty($objResult->fields['teaser_text']) ? nl2br($objResult->fields['teaser_text']).'<br /><br />' : '').$objResult->fields['text'],
+						'redirect'		=> $objResult->fields['redirect'],
+						'source'		=> $objResult->fields['source'],
+						'category'		=> $objResult->fields['category'],
+						'teaser_frames'	=> explode(';', $objResult->fields['teaser_frames']),
+						'categoryId'	=> $objResult->fields['categoryId']
+					);
+					$objResult->MoveNext();
+				}
+			}
+
+			// create rss feed
+			$objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml';
+			foreach ($arrNews as $newsId => $arrNewsItem) {
+				$objRSSWriter->addItem(
+					htmlspecialchars($arrNewsItem['title'], ENT_QUOTES, CONTREXX_CHARSET),
+					(empty($arrNewsItem['redirect'])) ? ($itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? "&amp;teaserId=".$arrNewsItem['teaser_frames'][0] : "")) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
+					htmlspecialchars($arrNewsItem['text'], ENT_QUOTES, CONTREXX_CHARSET),
+					'',
+					array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/index.php?section=news&amp;category=".$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
+					'',
+					'',
+					'',
+					$arrNewsItem['date'],
+					array('url' => htmlspecialchars($arrNewsItem['source'], ENT_QUOTES, CONTREXX_CHARSET), 'title' => htmlspecialchars($arrNewsItem['title'], ENT_QUOTES, CONTREXX_CHARSET))
+				);
+			}
+			$status = $objRSSWriter->write();
+
+			// create headlines rss feed
+			$objRSSWriter->removeItems();
+			$objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_headlines_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml';
+			foreach ($arrNews as $newsId => $arrNewsItem) {
+				$objRSSWriter->addItem(
+					htmlspecialchars($arrNewsItem['title'], ENT_QUOTES, CONTREXX_CHARSET),
+					$itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? "&amp;teaserId=".$arrNewsItem['teaser_frames'][0] : ""),
+					'',
+					'',
+					array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/index.php?section=news&amp;category=".$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
+					'',
+					'',
+					'',
+					$arrNewsItem['date']
+				);
+			}
+			$statusHeadlines = $objRSSWriter->write();
+
+			$objRSSWriter->feedType = 'js';
+			$objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.js';
+			$objRSSWriter->write();
+
+			if (count($objRSSWriter->arrErrorMsg) > 0) {
+				$this->strErrMessage .= implode('<br />', $objRSSWriter->arrErrorMsg);
+			}
+			if (count($objRSSWriter->arrWarningMsg) > 0) {
+				$this->strErrMessage .= implode('<br />', $objRSSWriter->arrWarningMsg);
+			}
+		} else {
+			@unlink(ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml');
+			@unlink(ASCMS_FEED_PATH.'/news_headlines_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml');
+			@unlink(ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.js');
+		}
+    }
+
+
+    /**
+    * Save settings
+    *
+    * Save the news settings
+    *
+    * @access private
+    * @global object $objDatabase
+    * @global array $_CONFIG
+    * @global array $_ARRAYLANG
+    * @see createRSS()
+    */
+    function _saveSettings()
+    {
+    	global $objDatabase, $_CONFIG, $_ARRAYLANG;
+
+    	// Store settings
+    	if(isset($_GET['act']) && $_GET['act'] == 'settings' && isset($_POST['store'])) {
+		    $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
+		                      SET value='".contrexx_strip_tags($_POST['newsFeedTitle'])."'
+		                    WHERE name = 'news_feed_title'");
+
+		    $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
+		                      SET value='".intval($_POST['newsFeedStatus'])."'
+		                    WHERE name = 'news_feed_status'");
+
+		    $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
+		                      SET value='".contrexx_strip_tags($_POST['newsFeedDescription'])."'
+		                    WHERE name = 'news_feed_description'");
+
+		    $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
+		    				  SET value='".contrexx_addslashes($_POST['newsFeedImage'])."'
+		    				WHERE name='news_feed_image'");
+
+		    $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
+		                      SET value='".intval($_POST['headlinesLimit'])."'
+		                    WHERE name = 'news_headlines_limit'");
+
+		    $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='1' WHERE name = 'news_settings_activated'");
+
+		    $submitNews = isset($_POST['newsSubmitNews']) ? intval($_POST['newsSubmitNews']) : 0;
+		    $submitNewsCommunity = isset($_POST['newsSubmitOnlyCommunity']) ? intval($_POST['newsSubmitOnlyCommunity']) : 0;
+		    $activateSubmittedNews = isset($_POST['newsActivateSubmittedNews']) ? intval($_POST['newsActivateSubmittedNews']) : 0;
+
+		    $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$submitNews."' WHERE name='news_submit_news'");
+		    $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$submitNewsCommunity."' WHERE name='news_submit_only_community'");
+		    $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$activateSubmittedNews."' WHERE name='news_activate_submitted_news'");
+
+		    $_CONFIG['newsTeasersStatus'] = isset($_POST['newsUseTeasers']) ? intval($_POST['newsUseTeasers']) : 0;
+		    $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".$_CONFIG['newsTeasersStatus']."' WHERE setname='newsTeasersStatus'");
+
+    		$this->strOkMessage = $_ARRAYLANG['TXT_NEWS_SETTINGS_SAVED'];
+    		$this->getSettings();
+    		$this->createRSS();
+
+			require_once(ASCMS_CORE_PATH.'/settings.class.php');
+			$objSettings = &new settingsManager();
+		    $objSettings->writeSettingsFile();
+    	}
+    }
+
+
+    function settings(){
+    	global $objDatabase, $_ARRAYLANG, $_CONFIG;
+
+    	$this->pageTitle = $_ARRAYLANG['TXT_NEWS_SETTINGS'];
+    	$this->_objTpl->loadTemplateFile('module_news_settings.html',true,true);
+
+    	// Show settings
+		$objResult = $objDatabase->Execute("SELECT lang FROM ".DBPREFIX."languages WHERE id='".$this->langId."'");
+		if ($objResult !== false) {
+	    	$newsFeedPath =  "http://".$_SERVER['SERVER_NAME'].ASCMS_FEED_WEB_PATH."/news_headlines_".$objResult->fields['lang'].".xml";
+		}
+
+    	if (intval($this->arrSettings['news_feed_status'])==1) {
+    	    $status = "checked='checked'";
+    		$icon = "<a href='".$newsFeedPath."' target='_blank' title='".$newsFeedPath."'><img src='".ASCMS_CORE_MODULE_WEB_PATH."/news/images/rss.gif' border='0' alt='".$newsFeedPath."' /></a>";
+    	} else {
+    		$status ="";
+    		$icon ="";
+    	}
+
+		$this->_objTpl->setVariable(array(
+		    'NEWS_FEED_TITLE'						=> stripslashes($this->arrSettings['news_feed_title']),
+		    'NEWS_FEED_STATUS'						=> $status,
+		    'NEWS_FEED_ICON'						=> $icon,
+		    'NEWS_FEED_DESCRIPTION'					=> stripslashes($this->arrSettings['news_feed_description']),
+		    'NEWS_FEED_IMAGE'						=> htmlentities($this->arrSettings['news_feed_image'], ENT_QUOTES, CONTREXX_CHARSET),
+		    'NEWS_HEADLINES_LIMIT'					=>(intval($this->arrSettings['news_headlines_limit'])),
+		    'NEWS_FEED_PATH'						=> $newsFeedPath,
+		    'NEWS_SUBMIT_NEWS'						=> $this->arrSettings['news_submit_news'] == '1' ? "checked=\"checked\"" : "",
+		    'NEWS_SUBMIT_ONLY_COMMUNITY'			=> $this->arrSettings['news_submit_only_community'] == '1' ? "checked=\"checked\"" : "",
+		    'NEWS_ACTIVATE_SUBMITTED_NEWS'			=> $this->arrSettings['news_activate_submitted_news'] == '1' ? "checked=\"checked\"" : "",
+		    'NEWS_USE_TEASERS_CHECKED'				=> $_CONFIG['newsTeasersStatus'] == '1' ? "checked=\"checked\"" : "",
+		    'TXT_STORE'								=> $_ARRAYLANG['TXT_STORE'],
+		    'TXT_NAME'								=> $_ARRAYLANG['TXT_NAME'],
+		    'TXT_VALUE'								=> $_ARRAYLANG['TXT_VALUE'],
+		    'TXT_NEWS_SETTINGS'						=> $_ARRAYLANG['TXT_NEWS_SETTINGS'],
+		    'TXT_NEWS_FEED_STATUS'					=> $_ARRAYLANG['TXT_NEWS_FEED_STATUS'],
+		    'TXT_NEWS_FEED_TITLE'					=> $_ARRAYLANG['TXT_NEWS_FEED_TITLE'],
+		    'TXT_NEWS_FEED_DESCRIPTION'				=> $_ARRAYLANG['TXT_NEWS_FEED_DESCRIPTION'],
+		    'TXT_NEWS_FEED_IMAGE'					=> $_ARRAYLANG['TXT_NEWS_FEED_IMAGE'],
+		    'TXT_BROWSE'							=> $_ARRAYLANG['TXT_BROWSE'],
+		    'TXT_NEWS_HEADLINES_LIMIT'				=> $_ARRAYLANG['TXT_NEWS_HEADLINES_LIMIT'],
+		    'TXT_NEWS_SETTINGS_SAVED'				=> $_ARRAYLANG['TXT_NEWS_SETTINGS_SAVED'],
+		    'TXT_SUBMIT_NEWS'						=> $_ARRAYLANG['TXT_SUBMIT_NEWS'],
+		    'TXT_ALLOW_USERS_SUBMIT_NEWS'			=> $_ARRAYLANG['TXT_ALLOW_USERS_SUBMIT_NEWS'],
+		    'TXT_ALLOW_ONLY_MEMBERS_SUBMIT_NEWS'	=> $_ARRAYLANG['TXT_ALLOW_ONLY_MEMBERS_SUBMIT_NEWS'],
+		    'TXT_AUTO_ACTIVATE_SUBMITTED_NEWS'		=> $_ARRAYLANG['TXT_AUTO_ACTIVATE_SUBMITTED_NEWS'],
+		    'TXT_USE_TEASERS'						=> $_ARRAYLANG['TXT_USE_TEASERS']
+		));
+    }
+
+    function _ticker()
+    {
+    	global $_ARRAYLANG, $_CONFIG, $objDatabase;
+
+    	$_ARRAYLANG['TXT_NEWS_OVERVIEW'] = 'Übersicht';
+    	$_ARRAYLANG['TXT_NEWS_CREATE_TICKER'] = 'Ticker erstellen';
+
+    	$this->_objTpl->loadTemplatefile('module_news_ticker.html');
+
+    	$this->_objTpl->setVariable(array(
+    		'TXT_NEWS_OVERVIEW'			=> $_ARRAYLANG['TXT_NEWS_OVERVIEW'],
+    		'TXT_NEWS_CREATE_TICKER'	=> $_ARRAYLANG['TXT_NEWS_CREATE_TICKER']
+    	));
+
+    	$tpl = !empty($_REQUEST['tpl']) ? $_REQUEST['tpl'] : '';
+    	switch ($tpl) {
+    		case 'modify':
+    			$this->_modifyTicker();
+    			break;
+
+   			case 'delete':
+    			$this->_deleteTicker();
+
+    		default:
+	    		$this->_tickerOverview();
+	    		break;
+    	}
+    }
+
+    function _deleteTicker()
+    {
+    	global $objDatabase, $_ARRAYLANG;
+
+    	$arrIds = array();
+    	$status = true;
+
+    	if (isset($_POST['news_ticker_id']) && is_array($_POST['news_ticker_id'])) {
+    		foreach ($_POST['news_ticker_id'] as $id) {
+    			array_push($arrIds, intval($id));
+    		}
+    	} elseif (!empty($_GET['id'])) {
+    		array_push($arrIds, intval($_GET['id']));
+    	}
+
+    	foreach ($arrIds as $id) {
+    		$arrTicker = $this->_getTicker($id);
+    		if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_news_ticker` WHERE `id` = ".$id) === false) {
+    			$status = false;
+    		} else {
+    			@unlink(ASCMS_FEED_PATH.'/'.$arrTicker['name']);
+    		}
+    	}
+
+    	if ($status) {
+    		if (count($arrIds) > 1) {
+    			$this->strOkMessage = $_ARRAYLANG['TXT_NEWS_TICKERS_SCCESSFULLY_DELETED'];
+    		} elseif (count($arrIds) == 1) {
+    			$this->strOkMessage = sprintf($_ARRAYLANG['TXT_NEWS_TICKER_SUCCESSFULLY_DELETED'], $arrTicker['name']);
+    		}
+    	} else {
+    		if (count($arrIds) > 1) {
+    			$this->strErrMessage = $_ARRAYLANG['TXT_NEWS_TICKERS_FAILED_DELETE'];
+    		} else {
+    			$this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_TICKER_FAILED_DELETE'], $arrTicker['name']);
+    		}
+    	}
+
+    	return $status;
+    }
+
+    function _modifyTicker()
+    {
+    	global $_ARRAYLANG, $objLanguage, $objDatabase;
+
+    	$id = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+    	$pos = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
+    	$defaultCharset = 'ISO-8859-1'; //$objLanguage->getLanguageParameter($_SESSION['auth']['lang'], 'charset');
+    	if ($arrTicker = $this->_getTicker($id)) {
+    		$this->pageTitle = $_ARRAYLANG['TXT_NEWS_MODIFY_TICKER'];
+			$name = $arrTicker['name'];
+			$charset = $arrTicker['charset'];
+			$urlencode = $arrTicker['urlencode'];
+			$prefix = $arrTicker['prefix'];
+    	} else {
+    		$id = 0;
+    		$this->pageTitle = $_ARRAYLANG['TXT_NEWS_CREATE_TICKER'];
+    		$name = '';
+    		$charset = $defaultCharset;
+    		$content = '';
+    		$urlencode = 0;
+    		$prefix = '';
+    	}
+
+    	if (isset($_POST['news_save_ticker'])) {
+    		$newName = isset($_POST['news_ticker_filename']) ? contrexx_stripslashes(trim($_POST['news_ticker_filename'])) : '';
+    		$charset = isset($_POST['news_ticker_charset']) ? addslashes($_POST['news_ticker_charset']) : '';
+    		$content = isset($_POST['news_ticker_content']) ? contrexx_stripslashes($_POST['news_ticker_content']) : '';
+    		$urlencode = isset($_POST['news_ticker_urlencode']) ? intval($_POST['news_ticker_urlencode']) : 0;
+    		$prefix = isset($_POST['news_ticker_prefix']) ? contrexx_stripslashes($_POST['news_ticker_prefix']) : '';
+
+    		if (!empty($newName)) {
+				if ($name != $newName && file_exists(ASCMS_FEED_PATH.'/'.$newName)) {
+					$this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_FILE_DOES_ALREADY_EXIST'], htmlentities($newName, ENT_QUOTES, CONTREXX_CHARSET), ASCMS_FEED_PATH)."<br />";
+					$this->strErrMessage .= $_ARRAYLANG['TXT_NEWS_SELECT_OTHER_FILENAME'];
+				} elseif ($name != $newName && !@touch(ASCMS_FEED_PATH.'/'.$newName)) {
+					$this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_COULD_NOT_ATTACH_FILE'], htmlentities($newName, ENT_QUOTES, CONTREXX_CHARSET), ASCMS_FEED_PATH.'/')."<br />";
+					$this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_SET_CHMOD'], ASCMS_FEED_PATH.'/');
+				} else {
+					if ($objDatabase->Execute(($id > 0 ? "UPDATE" : "INSERT INTO")." `".DBPREFIX."module_news_ticker` SET `name` = '".addslashes($newName)."', `charset` = '".addslashes($charset)."', `urlencode` = ".$urlencode.", `prefix` = '".addslashes($prefix)."'".($id > 0 ?" WHERE `id` = ".$id : ''))) {
+						require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
+
+						$objFile = &new File();
+						$objFile->setChmod(ASCMS_FEED_PATH, ASCMS_FEED_WEB_PATH, $newName);
+
+						$fpTicker = @fopen(ASCMS_FEED_PATH.'/'.$newName, 'wb');
+						if ($fpTicker) {
+							if ($defaultCharset != $charset) {
+								$content = iconv($defaultCharset, $charset, $content);
+								$prefix = iconv($defaultCharset, $charset, $prefix);
+							}
+							$content2w = $prefix.($urlencode ? rawurlencode($content) : $content);
+							if (@fwrite($fpTicker, $content2w) !== false) {
+								$this->strOkMessage = $_ARRAYLANG['TXT_NEWS_NEWSTICKER_SUCCESSFULLY_UPDATED'];
+								if ($name != $newName && file_exists(ASCMS_FEED_PATH.'/'.$name)) {
+									@unlink(ASCMS_FEED_PATH.'/'.$name);
+								}
+								return $this->_tickerOverview();
+							} else {
+								$this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_UNABLE_TO_UPDATE_FILE'], htmlentities($newName, ENT_QUOTES, CONTREXX_CHARSET), ASCMS_FEED_PATH.'/')."<br />";
+								$this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_SET_CHMOD'], ASCMS_FEED_PATH.'/'.$newName);
+							}
+						} else {
+							$this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_FILE_DOES_NOT_EXIST'], ASCMS_FEED_PATH.'/'.$newName);
+						}
+					} else {
+						$this->strErrMessage = $_ARRAYLANG['TXT_NEWS_UNABLE_TO_RENAME_NEWSTICKER'];
+						@unlink(ASCMS_FEED_PATH.'/'.$newName);
+					}
+				}
+			} else {
+				$this->strErrMessage = $_ARRAYLANG['TXT_NEWS_YOU_MUST_SET_FILENAME'];
+			}
+
+			$name = $newName;
+    	} elseif ($id > 0) {
+			if (!file_exists(ASCMS_FEED_PATH.'/'.$name) && !@touch(ASCMS_FEED_PATH.'/'.$name)) {
+				$this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_COULD_NOT_ATTACH_FILE'], htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET), ASCMS_FEED_PATH.'/')."<br />";
+				$this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_SET_CHMOD'], ASCMS_FEED_PATH.'/');
+			} else {
+				$content = file_get_contents(ASCMS_FEED_PATH.'/'.$name);
+				if (!empty($prefix) && strpos($content, $prefix) === 0) {
+					$content = substr($content, strlen($prefix));
+				}
+				if ($urlencode) {
+					$content = rawurldecode($content);
+				}
+				if ($charset != $defaultCharset) {
+					$content = iconv($charset, $defaultCharset, $content);
+					$prefix = iconv($charset, $defaultCharset, $prefix);
+				}
+			}
+		}
+
+		$this->_objTpl->addBlockfile('NEWS_TICKER_TEMPLATE', 'module_news_ticker_modify', 'module_news_ticker_modify.html');
+
+		$this->_objTpl->setVariable(array(
+			'TXT_NEWS_FILENAME'				=> $_ARRAYLANG['TXT_NEWS_FILENAME'],
+			'TXT_NEWS_MODIFY_FILENAME'		=> $_ARRAYLANG['TXT_NEWS_MODIFY_FILENAME'],
+			'TXT_NEWS_CONTENT'				=> $_ARRAYLANG['TXT_NEWS_CONTENT'],
+			'TXT_NEWS_CHARSET'				=> $_ARRAYLANG['TXT_NEWS_CHARSET'],
+			'TXT_NEWS_SAVE'					=> $_ARRAYLANG['TXT_NEWS_SAVE'],
+			'TXT_NEWS_CANCEL'				=> $_ARRAYLANG['TXT_NEWS_CANCEL'],
+			'TXT_NEWS_URL_ENCODING'			=> $_ARRAYLANG['TXT_NEWS_URL_ENCODING'],
+			'TXT_NEWS_URL_ENCODING_TXT'		=> $_ARRAYLANG['TXT_NEWS_URL_ENCODING_TXT'],
+			'TXT_NEWS_PREFIX'				=> $_ARRAYLANG['TXT_NEWS_PREFIX'],
+			'TXT_NEWS_TICKER_PREFIX_MSG'	=> $_ARRAYLANG['TXT_NEWS_TICKER_PREFIX_MSG'],
+			'TXT_NEWS_GENERAL'				=> $_ARRAYLANG['TXT_NEWS_GENERAL'],
+			'TXT_NEWS_ADVANCED'				=> $_ARRAYLANG['TXT_NEWS_ADVANCED']
+		));
+
+		$this->_objTpl->setVariable(array(
+			'NEWS_MODIFY_TITLE_TXT'		=> $id > 0 ? $_ARRAYLANG['TXT_NEWS_MODIFY_TICKER'] : $_ARRAYLANG['TXT_NEWS_CREATE_TICKER'],
+			'NEWS_TICKER_ID'			=> $id,
+			'NEWS_TICKER_FILENAME'		=> htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET),
+			'NEWS_TICKER_CHARSET_MENU'	=> $this->_getCharsetMenu($charset, 'name="news_ticker_charset"'),
+			'NEWS_TICKER_CONTENT'		=> htmlentities($content, ENT_QUOTES, CONTREXX_CHARSET),
+			'NEWS_TICKER_URLENCODE'		=> $urlencode ? 'checked="checked"' : '',
+			'NEWS_TICKER_POS'			=> $pos,
+			'NEWS_TICKER_PREFIX'		=> $prefix
+		));
+
+		$this->_objTpl->parse('module_news_ticker_modify');
+    }
+
+    function _getCharsetMenu($selectedCharset, $attrs = '')
+    {
+    	$menu = '<select'.(!empty($attrs) ? ' '.$attrs : '').">\n";
+    	foreach ($this->_arrCharsets as $charset) {
+    		$menu .= "<option".($charset == $selectedCharset ? ' selected="selected"' : '')." value=\"".$charset."\">".$charset."</option>\n";
+    	}
+    	$menu .= "</select>\n";
+
+    	return $menu;
+    }
+
+    function _tickerOverview()
+    {
+    	global $_ARRAYLANG, $_CONFIG, $objLanguage;
+
+		$this->pageTitle = $_ARRAYLANG['TXT_NEWS_TICKERS'];
+
+    	$paging = '';
+    	$pos = isset($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
+    	$count = $this->_tickerCount();
+
+    	$this->_objTpl->addBlockfile('NEWS_TICKER_TEMPLATE', 'module_news_ticker_list', 'module_news_ticker_list.html');
+
+    	$this->_objTpl->setVariable(array(
+    		'TXT_NEWS_TICKERS'					=> $_ARRAYLANG['TXT_NEWS_TICKERS'],
+    		'TXT_NEWS_TICKER'					=> $_ARRAYLANG['TXT_NEWS_TICKER'],
+    		'TXT_NEWS_CONTENT'					=> $_ARRAYLANG['TXT_NEWS_CONTENT'],
+    		'TXT_NEWS_CHARSET'					=> $_ARRAYLANG['TXT_NEWS_CHARSET'],
+    		'TXT_NEWS_FUNCTIONS'				=> $_ARRAYLANG['TXT_NEWS_FUNCTIONS'],
+    		'TXT_NEWS_CONFIRM_DELETE_TICKER'	=> $_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKER'],
+    		'TXT_NEWS_ACTION_IS_IRREVERSIBLE'	=> $_ARRAYLANG['TXT_NEWS_ACTION_IS_IRREVERSIBLE']
+    	));
+
+    	$this->_objTpl->setGlobalVariable(array(
+    		'TXT_NEWS_SHOW_TICKER_FILE'	=> $_ARRAYLANG['TXT_NEWS_SHOW_TICKER_FILE'],
+    		'TXT_NEWS_MODIFY_TICKER'	=> $_ARRAYLANG['TXT_NEWS_MODIFY_TICKER'],
+    		'NEWS_TICKER_POS'			=> $pos
+    	));
+
+    	if ($count > $_CONFIG['corePagingLimit']) {
+    		$paging = getPaging($count, $pos, "&amp;cmd=news&amp;act=ticker", 'Ticker');
+    	}
+
+    	$displayCharset = 'ISO-8859-1'; //$objLanguage->getLanguageParameter($_SESSION['auth']['lang'], 'charset');
+
+    	$arrTickers = $this->_getTickers($pos);
+    	if (count($arrTickers) > 0) {
+	    	$nr = 0;
+	    	foreach ($arrTickers as $tickerId => $arrTicker) {
+	    		if (!file_exists(ASCMS_FEED_PATH.'/'.$arrTicker['name']) && !@touch(ASCMS_FEED_PATH.'/'.$arrTicker['name'])) {
+					$this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_COULD_NOT_ATTACH_FILE'], htmlentities($arrTicker['name'], ENT_QUOTES, CONTREXX_CHARSET), ASCMS_FEED_PATH.'/')."<br />";
+					$this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_SET_CHMOD'], ASCMS_FEED_PATH.'/');
+				} else {
+					$content = file_get_contents(ASCMS_FEED_PATH.'/'.$arrTicker['name']);
+					if (!empty($arrTicker['prefix']) && strpos($content, $arrTicker['prefix']) === 0) {
+						$content = substr($content, strlen($arrTicker['prefix']));
+					}
+					if ($arrTicker['urlencode']) {
+						$content = rawurldecode($content);
+					}
+					$content = iconv($arrTicker['charset'], $displayCharset, $content);
+
+
+					if (strlen($content) > 100) {
+						$content = substr($content, 0, 100).'...';
+					}
+				}
+
+	    		$this->_objTpl->setVariable(array(
+	    			'NEWS_TICKER_ID'			=> $tickerId,
+	    			'NEWS_TICKER_NAME'			=> htmlentities($arrTicker['name'], ENT_QUOTES, CONTREXX_CHARSET),
+	    			'NEWS_TICKER_ADDRESS'		=> ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_FEED_WEB_PATH.'/'.htmlentities($arrTicker['name'], ENT_QUOTES, CONTREXX_CHARSET),
+	    			'NEWS_TICKER_CONTENT'		=> !empty($content) ? htmlentities($content, ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;',
+	    			'NEWS_TICKER_CHARSET'		=> $arrTicker['charset'],
+	    			'NEWS_TICKER_ROW_CLASS'		=> $nr % 2 ? 1 : 2,
+	    			'NEWS_DELETE_TICKER_TXT'	=> sprintf($_ARRAYLANG['TXT_NEWS_DELETE_TICKER'], htmlentities($arrTicker['name'], ENT_QUOTES, CONTREXX_CHARSET))
+	    		));
+	    		$nr++;
+
+	    		$this->_objTpl->parse('news_ticker_list');
+	    	}
+
+	    	$this->_objTpl->setVariable(array(
+	    		'TXT_NEWS_CHECK_ALL'					=> $_ARRAYLANG['TXT_NEWS_CHECK_ALL'],
+	    		'TXT_NEWS_UNCHECK_ALL'					=> $_ARRAYLANG['TXT_NEWS_UNCHECK_ALL'],
+	    		'TXT_NEWS_WITH_SELECTED'				=> $_ARRAYLANG['TXT_NEWS_WITH_SELECTED'],
+	    		'TXT_NEWS_DELETE'						=> $_ARRAYLANG['TXT_NEWS_DELETE'],
+	    		'TXT_NEWS_CONFIRM_DELETE_TICKERS_MSG'	=> $_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKERS_MSG']
+	    	));
+
+	    	$this->_objTpl->parse('news_ticker_data');
+	    	$this->_objTpl->hideBlock('news_ticker_no_data');
+	    	$this->_objTpl->touchBlock('news_ticker_multi_select_action');
+
+	    	if (!empty($paging)) {
+	    		$this->_objTpl->setVariable('PAGING', "<br />\n".$paging);
+	    	}
+    	} else {
+    		$this->_objTpl->setVariable('TXT_NEWS_NO_TICKER_AVAILABLE', $_ARRAYLANG['TXT_NEWS_NO_TICKER_AVAILABLE']);
+
+    		$this->_objTpl->parse('news_ticker_no_data');
+    		$this->_objTpl->hideBlock('news_ticker_data');
+			$this->_objTpl->hideBlock('news_ticker_multi_select_action');
+    	}
+
+    	$this->_objTpl->parse('module_news_ticker_list');
+    }
+
+    function _getTickers($offSet = 0)
+    {
+    	global $objDatabase, $_CONFIG;
+
+    	$arrTickers = array();
+    	$query = "SELECT `id`, `name`, `charset`, `urlencode`, `prefix` FROM `".DBPREFIX."module_news_ticker` ORDER BY `name`";
+    	$objTicker = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $offSet);
+    	if ($objTicker !== false) {
+    		while (!$objTicker->EOF) {
+    			$arrTickers[$objTicker->fields['id']] = array(
+    				'name'		=> $objTicker->fields['name'],
+    				'charset'	=> $objTicker->fields['charset'],
+    				'urlencode'	=> $objTicker->fields['urlencode'],
+    				'prefix'	=> $objTicker->fields['prefix']
+    			);
+    			$objTicker->MoveNext();
+    		}
+    	}
+
+    	return $arrTickers;
+    }
+
+    function _getTicker($id)
+    {
+    	global $objDatabase;
+
+    	$objTicker = $objDatabase->SelectLimit("SELECT `name`, `charset`, `urlencode`, `prefix` FROM `".DBPREFIX."module_news_ticker` WHERE `id` = ".$id, 1);
+    	if ($objTicker !== false && $objTicker->RecordCount() == 1) {
+    		return (array(
+    			'name'		=> $objTicker->fields['name'],
+    			'charset'	=> $objTicker->fields['charset'],
+    			'urlencode'	=> $objTicker->fields['urlencode'],
+    			'prefix'	=> $objTicker->fields['prefix']
+    		));
+    	} else {
+    		return false;
+    	}
+    }
+
+    function _tickerCount()
+    {
+    	global $objDatabase;
+
+    	$objCount = $objDatabase->SelectLimit('SELECT SUM(1) AS `count` FROM `'.DBPREFIX.'module_news_ticker`', 1);
+    	if ($objCount !== false) {
+    		return $objCount->fields['count'];
+    	} else {
+    		return false;
+    	}
+    }
+
+    function _teasers()
+    {
+    	global $_ARRAYLANG;
+
+		require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
+    	$this->_objTeaser = &new Teasers(true);
+
+    	$this->_objTpl->loadTemplateFile('module_news_teasers.html');
+
+    	$this->_objTpl->setGlobalVariable(array(
+    		'TXT_TEASER_TEASER_BOXES'		=> $_ARRAYLANG['TXT_TEASER_TEASER_BOXES'],
+    		'TXT_TEASER_BOX_TEMPLATES'		=> $_ARRAYLANG['TXT_TEASER_BOX_TEMPLATES']
+    	));
+
+    	if (!isset($_REQUEST['tpl'])) {
+    		$_REQUEST['tpl'] = '';
+    	}
+
+    	switch ($_REQUEST['tpl']) {
+    	case 'teasers':
+    		$this->_showTeasers();
+    		break;
+
+    	case 'frames':
+    		$this->_showTeaserFrames();
+    		break;
+
+    	case 'editFrame':
+    		$this->_editTeaserFrame();
+    		break;
+
+    	case 'deleteFrame':
+    		$this->_deleteTeaserFrame();
+    		$this->_showTeaserFrames();
+    		break;
+
+    	case 'updateFrame':
+    		$this->_updateTeaserFrame();
+    		break;
+
+    	case 'frameTemplates':
+    		$this->_showTeaserFrameTemplates();
+    		break;
+
+    	case 'editFrameTemplate':
+    		$this->_editTeaserFrameTemplate();
+    		break;
+
+    	case 'updateFrameTemplate':
+    		$this->_updateTeaserFrameTemplate();
+    		break;
+
+    	case 'deleteFrameTemplate':
+    		$this->_deleteTeaserFrameTeamplate();
+    		$this->_showTeaserFrameTemplates();
+    		break;
+
+    	default:
+    		$this->_showTeaserFrames();
+    		break;
+    	}
+    }
+
+    /**
+    * Delete teaser frame template
+    *
+    * Deletes a teaser frame template
+    *
+    * @access private
+    * @see Teaser::deleteTeaserFrameTemplate()
+    */
+    function _deleteTeaserFrameTeamplate()
+    {
+    	$templateId = intval($_GET['id']);
+
+    	$result = $this->_objTeaser->deleteTeaserFrameTeamplte($templateId);
+    	if ($result !== false && $result !== true) {
+    		$this->strOkMessage .= $result;
+    	}
+    }
+
+    function _showTeaserFrameTemplates()
+    {
+    	global $_ARRAYLANG;
+
+    	if (count($this->_objTeaser->arrTeaserFrameTemplates) > 0) {
+    		$this->pageTitle = $_ARRAYLANG['TXT_TEASER_BOX_TEMPLATES'];
+    		$this->_objTpl->addBlockFile('NEWS_TEASERS_FILE', 'news_teaser_frame_templates', 'module_news_teasers_frame_templates.html');
+
+    		$this->_objTpl->setVariable(array(
+    			'TXT_DESCRIPTION'					=> $_ARRAYLANG['TXT_DESCRIPTION'],
+    			'TXT_FUNCTIONS'						=> $_ARRAYLANG['TXT_FUNCTIONS'],
+    			'TXT_ADD_TEMPLATE'					=> $_ARRAYLANG['TXT_ADD_TEMPLATE'],
+    			'TXT_CONFIRM_DELETE_BOX_TPL_TEXT'	=> $_ARRAYLANG['TXT_CONFIRM_DELETE_BOX_TPL_TEXT']
+    		));
+
+    		$this->_objTpl->setGlobalVariable(array(
+    			'TXT_EDIT_BOX_TEMPLATE'	=> $_ARRAYLANG['TXT_EDIT_BOX_TEMPLATE'],
+    			'TXT_DELETE_TEMPLATE'		=> $_ARRAYLANG['TXT_DELETE_TEMPLATE']
+    		));
+
+    		$rowNr = 0;
+
+    		foreach ($this->_objTeaser->arrTeaserFrameTemplates as $id => $arrTeaserFrameTemplate) {
+    			$this->_objTpl->setVariable(array(
+    				'NEWS_TEASER_FRAME_TPL_ROW_CLASS'	=> $rowNr % 2 == 0 ? "row1" : "row2",
+    				'NEWS_TEASER_FRAME_TPL_ID'			=> $id,
+    				'NEWS_TEASER_FRAME_TPL_DESCRIPTION'	=> htmlspecialchars($arrTeaserFrameTemplate['description'], ENT_QUOTES, CONTREXX_CHARSET)
+    			));
+    			$this->_objTpl->parse('news_teaser_frame_template_list');
+
+    			$rowNr++;
+    		}
+
+    		$this->_objTpl->parse('news_teaser_frame_templates');
+    	} else {
+    		$this->_editTeaserFrameTemplate();
+    	}
+
+    }
+
+    function _editTeaserFrameTemplate()
+    {
+    	global $_ARRAYLANG;
+
+    	$this->_objTpl->addBlockFile('NEWS_TEASERS_FILE', 'news_teaser_modify_frame_templates', 'module_news_teasers_modify_frame_template.html');
+
+    	// get teaser frame template id
+    	if (isset($_GET['templateId'])) {
+    		$templateId = intval($_GET['templateId']);
+    	} else {
+    		$templateId = 0;
+    	}
+
+		// set teaser frame template description
+		if (isset($_POST['teaserFrameTplDescription'])) {
+			$templateDescription = htmlentities(contrexx_strip_tags($_POST['teaserFrameTplDescription']), ENT_QUOTES, CONTREXX_CHARSET);
+		} elseif (isset($this->_objTeaser->arrTeaserFrameTemplates[$templateId]['description'])) {
+			$templateDescription = $this->_objTeaser->arrTeaserFrameTemplates[$templateId]['description'];
+		} else {
+			$templateDescription = "";
+		}
+
+		// set wysiwyg or html mode
+		if (isset($_GET['source'])) {
+			$sourceCode = intval($_GET['source']);
+		} elseif (isset($this->_objTeaser->arrTeaserFrameTemplates[$templateId]['source_code_mode'])) {
+			$sourceCode = $this->_objTeaser->arrTeaserFrameTemplates[$templateId]['source_code_mode'];
+		} else {
+			$sourceCode = 0;
+		}
+
+		if (isset($_POST['teaserFrameTplHtml'])) {
+			$templateHtml = $_POST['teaserFrameTplHtml'];
+		} elseif (isset($this->_objTeaser->arrTeaserFrameTemplates[$templateId])) {
+			$templateHtml = $this->_objTeaser->arrTeaserFrameTemplates[$templateId]['html'];
+		} else {
+			$templateHtml = "";
+		}
+		$templateHtml = preg_replace('/\{([A-Za-z0-9_]*?)\}/', '[[\\1]]', $templateHtml);
+
+		$this->pageTitle = $templateId != 0 ? $_ARRAYLANG['TXT_EDIT_BOX_TEMPLATE'] : $_ARRAYLANG['TXT_ADD_BOX_TEMPLATE'];
+
+		$this->_objTpl->setVariable(array(
+			'TXT_PLACEHOLDER_DIRECTORY'	=> $_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY'],
+			'TXT_DESCRIPTION'			=> $_ARRAYLANG['TXT_DESCRIPTION'],
+			'TXT_SOURCE_CODE_MODE'		=> $_ARRAYLANG['TXT_SOURCE_CODE_MODE'],
+			'TXT_CANCEL'			=> $_ARRAYLANG['TXT_CANCEL'],
+			'TXT_SAVE'				=> $_ARRAYLANG['TXT_SAVE'],
+			'TXT_PLACEHOLDER_LIST'		=> $_ARRAYLANG['TXT_PLACEHOLDER_LIST'],
+			'TXT_EXAMPLE'				=> $_ARRAYLANG['TXT_EXAMPLE'],
+			'TXT_BOX_TEMPLATE'		=> $_ARRAYLANG['TXT_BOX_TEMPLATE'],
+			'TXT_NEWS_LINK_DESCRIPTION'	=> $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'],
+			'TXT_CATEGORY'	=> $_ARRAYLANG['TXT_CATEGORY'],
+			'TXT_NEWS_DATE_DESCRIPTION'		=> $_ARRAYLANG['TXT_NEWS_DATE_DESCRIPTION'],
+			'TXT_NEWS_TITLE_DESCRIPTION'	=> $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'],
+			'TXT_NEWS_IMAGE_PATH_DESCRIPTION'	=> $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'],
+			'TXT_TEASER_ROW_DESCRIPTION'		=> $_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'],
+			'TXT_CONTINUE'						=> $_ARRAYLANG['TXT_CONTINUE']
+		));
+
+		$this->_objTpl->setVariable(array(
+			'NEWS_TEASER_FRAME_TPL_ID'				=> $templateId,
+    		'NEWS_TEASER_FRAME_TPL_DESCRIPTION'		=> $templateDescription,
+    		'NEWS_TEASER_FRAME_TEMPLATE_WYSIWYG'	=> $sourceCode ? get_wysiwyg_editor('teaserFrameTplHtml', $templateHtml, 'html') : get_wysiwyg_editor('teaserFrameTplHtml', $templateHtml),
+    		'NEWS_TEASER_FRAME_TPL_SOURCE_CHECKED'	=> $sourceCode ? "checked=\"checked\"" : "",
+    		'NEWS_TEASER_TITLE_TXT'					=> $templateId != 0 ? $_ARRAYLANG['TXT_EDIT_BOX_TEMPLATE'] : $_ARRAYLANG['TXT_ADD_BOX_TEMPLATE']
+    	));
+    	$this->_objTpl->parse('news_teaser_modify_frame_templates');
+    }
+
+    function _updateTeaserFrameTemplate()
+    {
+    	global $objDatabase, $_ARRAYLANG;
+
+    	if (isset($_POST['saveTeaserFrameTemplate']) && isset($_GET['templateId']) && isset($_POST['teaserFrameTplDescription']) && isset($_POST['teaserFrameTplHtml'])) {
+    		$templateId = intval($_GET['templateId']);
+    		$sourceCodeMode = isset($_POST['teaserFrameTplSource']) ? intval($_POST['teaserFrameTplSource']) : 0;
+
+    		$templateDescription = contrexx_strip_tags($_POST['teaserFrameTplDescription']);
+
+    		if (empty($templateDescription)) {
+    			$this->strErrMessage .= $_ARRAYLANG['TXT_SET_TEMPLATE_DESCRIPTION_TEXT'];
+    			$this->_editTeaserFrameTemplate();
+    			return;
+    		}
+
+    		$templateHtml = contrexx_addslashes($_POST['teaserFrameTplHtml']);
+    		$templateHtml = preg_replace('/\[\[([A-Za-z0-9_]*?)\]\]/', '{\\1}', $templateHtml);
+
+    		if ($templateId != 0) {
+    			$this->_objTeaser->updateTeaserFrameTemplate($templateId, $templateDescription, $templateHtml, $sourceCodeMode);
+    		} else {
+    			$this->_objTeaser->addTeaserFrameTemplate($templateDescription, $templateHtml, $sourceCodeMode);
+    		}
+    		$this->_objTeaser->initializeTeaserFrameTemplates($templateId);
+
+			$this->_showTeaserFrameTemplates();
+    	} elseif (isset($_POST['cancel'])) {
+    		$this->_showTeaserFrameTemplates();
+    	} else {
+    		$this->_editTeaserFrameTemplate();
+    	}
+    }
+
+    function _deleteTeaserFrame()
+    {
+    	global $_ARRAYLANG;
+
+    	$frameId = intval($_GET['id']);
+    	if ($this->_objTeaser->deleteTeaserFrame($frameId)) {
+    		$this->_objTeaser->initializeTeaserFrames();
+    		$this->strOkMessage .= $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
+    	} else {
+    		$this->strErrMessage .= $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+    	}
+    }
+
+    function _showTeaserFrames()
+    {
+    	global $_ARRAYLANG;
+
+    	$this->pageTitle = $_ARRAYLANG['TXT_TEASER_TEASER_BOXES'];
+
+    	$this->_objTeaser->initializeTeaserFrames();
+    	$arrTeaserFrames = $this->_objTeaser->arrTeaserFrames;
+
+    	if (count($this->_objTeaser->arrTeaserFrames) > 0) {
+    		$this->_objTpl->addBlockFile('NEWS_TEASERS_FILE', 'news_teasers_block', 'module_news_teasers_frames.html');
+
+	    	$rowNr = 1;
+
+	    	$this->_objTpl->setVariable(array(
+	    		'TXT_BOX_NAME'					=> $_ARRAYLANG['TXT_BOX_NAME'],
+	    		'TXT_PLACEHOLDER'					=> $_ARRAYLANG['TXT_PLACEHOLDER'],
+	    		'TXT_BOX_TEMPLATE'				=> $_ARRAYLANG['TXT_BOX_TEMPLATE'],
+	    		'TXT_FUNCTIONS'						=> $_ARRAYLANG['TXT_FUNCTIONS'],
+	    		'TXT_ADD_BOX'						=> $_ARRAYLANG['TXT_ADD_BOX'],
+	    		'TXT_CONFIRM_DELETE_TEASER_BOX'	=> $_ARRAYLANG['TXT_CONFIRM_DELETE_TEASER_BOX']
+	    	));
+
+	    	$this->_objTpl->setGlobalVariable(array(
+	    		'TXT_SHOW_TEASER_BOX'				=> $_ARRAYLANG['TXT_SHOW_TEASER_BOX'],
+	    		'TXT_EDIT_BOX_TEMPLATE'			=> $_ARRAYLANG['TXT_EDIT_BOX_TEMPLATE'],
+	    		'TXT_EDIT_TEASER_BOX'				=> $_ARRAYLANG['TXT_EDIT_TEASER_BOX'],
+	    		'TXT_DELETE_TEASER_BOX'			=> $_ARRAYLANG['TXT_DELETE_TEASER_BOX']
+	    	));
+
+	    	foreach ($arrTeaserFrames as $teaserFrameId => $arrTeaserFrame) {
+	    		$this->_objTpl->setVariable(array(
+	    			'NEWS_TEASER_FRAME_ROW_CLASS'				=> $rowNr % 2 == 0 ? "row1" : "row2",
+	    			'NEWS_TEASER_FRAME_NAME'					=> $arrTeaserFrame['name'],
+	    			'NEWS_TEASER_FRAME_TEMPLATE_PLACEHOLDER'	=> "[[TEASERS_".strtoupper($arrTeaserFrame['name'])."]]",
+	    			'NEWS_TEASER_FRAME_ID'					=> $teaserFrameId,
+	    			'NEWS_TEASER_FRAME_TPL_NAME'					=> $this->_objTeaser->arrTeaserFrameTemplates[$arrTeaserFrame['frame_template_id']]['description'],
+	    			'NEWS_TEASER_FRAME_TPL_ID'					=> $arrTeaserFrame['frame_template_id']
+	    		));
+
+	    		$this->_objTpl->parse('news_teaser_frames_list');
+
+	    		$rowNr++;
+	    	}
+	    	$this->_objTpl->parse('news_teasers_block');
+    	} else {
+    		$this->_editTeaserFrame();
+    	}
+    }
+
+    function _showTeaserFrame()
+    {
+    	$this->_objTpl->addBlockFile('NEWS_TEASERS_FILE', 'news_teasers_block', 'module_news_teasers_show_frame.html');
+
+    	$teaserFrameId = intval($_REQUEST['frameId']);
+    	$this->_objTpl->setVariable('NEWS_TEASER_FRAME', $this->_objTeaser->getTeaserFrame($teaserFrameId));
+
+    	$this->_objTpl->parse('news_teasers_block');
+    }
+
+    function _updateTeaserFrame()
+    {
+    	global $_ARRAYLANG;
+
+    	if (isset($_POST['saveTeaserFrame']) && isset($_GET['frameId']) && isset($_POST['teaserFrameName']) && isset($_POST['teaserFrameTemplateId'])) {
+    		$id = intval($_GET['frameId']);
+    		$name = preg_replace('/[^a-zA-Z0-9]+/', '', $_POST['teaserFrameName']);
+    		$name = contrexx_strip_tags($name);
+    		$templateId = intval($_POST['teaserFrameTemplateId']);
+
+    		if (empty($name)) {
+    			$this->strErrMessage .= $_ARRAYLANG['TXT_SET_FRMAE_NAME_TEXT'];
+    			$this->_editTeaserFrame();
+    			return;
+    		} elseif (!$this->_objTeaser->isUniqueFrameName($id, $name)) {
+    			$this->strErrMessage .= $_ARRAYLANG['TXT_BOX_NAME_EXISTS_TEXT'];
+    			$this->_editTeaserFrame();
+    			return;
+    		}
+
+    		if ($id != 0) {
+    			$this->_objTeaser->updateTeaserFrame($id, $templateId, $name);
+    		} else {
+    			$this->_objTeaser->addTeaserFrame($id, $templateId, $name);
+    		}
+    		$this->_objTeaser->initializeTeaserFrames($id);
+
+    		$this->_showTeaserFrames();
+    	} elseif (isset($_POST['cancel']) && isset($_GET['frameId']) && ($_GET['frameId'] == 0)) {
+    		$this->_showTeaserFrames();
+    	} elseif (isset($_POST['cancel']) && isset($_GET['frameId'])) {
+    		$this->_showTeaserFrame();
+    	} else {
+    		$this->_editTeaserFrame();
+    	}
+    }
+
+    function _editTeaserFrame()
+    {
+    	global $_ARRAYLANG;
+
+    	$this->_objTpl->addBlockFile('NEWS_TEASERS_FILE', 'news_teasers_block', 'module_news_teasers_modify_frame.html');
+
+    	$this->_objTpl->setVariable(array(
+    		'TXT_BOX_NAME'		=> $_ARRAYLANG['TXT_BOX_NAME'],
+    		'TXT_BOX_TEMPLATE'	=> $_ARRAYLANG['TXT_BOX_TEMPLATE'],
+    		'TXT_CANCEL'			=> $_ARRAYLANG['TXT_CANCEL'],
+    		'TXT_SAVE'				=> $_ARRAYLANG['TXT_SAVE']
+    	));
+
+    	// get teaser frame id
+    	if (isset($_GET['frameId'])) {
+    		$teaserFrameId = intval($_GET['frameId']);
+    	} else {
+    		$teaserFrameId = 0;
+    	}
+
+		// set teaser frame name
+		if (isset($_POST['teaserFrameName'])) {
+			$teaserFrameName = preg_replace('/[^a-zA-Z0-9]+/', '', $_POST['teaserFrameName']);
+			$teaserFrameName = htmlentities(contrexx_strip_tags($teaserFrameName), ENT_QUOTES, CONTREXX_CHARSET);
+		} elseif (isset($this->_objTeaser->arrTeaserFrames[$teaserFrameId])) {
+			$teaserFrameName = $this->_objTeaser->arrTeaserFrames[$teaserFrameId]['name'];
+		} else {
+			$teaserFrameName = "";
+		}
+
+    	// set teaser frame template
+		if (isset($_POST['teaserFrameTemplateId'])) {
+			$teaserFrameTemplateId = intval($_POST['teaserFrameTemplateId']);
+		} elseif (isset($this->_objTeaser->arrTeaserFrames[$teaserFrameId])) {
+			$teaserFrameTemplateId = $this->_objTeaser->arrTeaserFrames[$teaserFrameId]['frame_template_id'];
+		} else {
+			$teaserFrameTemplateId = $this->_objTeaser->getFirstTeaserFrameTemplateId();
+		}
+
+		$this->pageTitle = $teaserFrameId != 0 ? $_ARRAYLANG['TXT_EDIT_TEASER_BOX'] : $_ARRAYLANG['TXT_ADD_TEASER_BOX'];
+
+    	$this->_objTpl->setVariable(array(
+	    	'NEWS_TEASER_FRAME_ID'				=> $teaserFrameId,
+			'NEWS_TEASER_FRAME_NAME'			=> $teaserFrameName,
+			'NEWS_TEASER_FRAME_TEMPLATE_MENU'	=> $this->_objTeaser->getTeaserFrameTemplateMenu($teaserFrameTemplateId),
+			'NEWS_TEASER_FRAME_PREVIEW'			=> $this->_objTeaser->_getTeaserFrame($teaserFrameId, $teaserFrameTemplateId),
+			'NEWS_TEASER_TITLE_TXT'				=> $teaserFrameId != 0 ? $_ARRAYLANG['TXT_EDIT_TEASER_BOX'] : $_ARRAYLANG['TXT_ADD_TEASER_BOX']
+   		));
+    	$this->_objTpl->parse('news_teasers_block');
+    }
+
+    function _placeholders()
+    {
+    	global $_ARRAYLANG, $_CORELANG;
+
+    	$this->_objTpl->loadTemplateFile('module_news_placeholders.html');
+
+    	$this->_objTpl->setVariable(array(
+			'TXT_PERFORM'								=> $_ARRAYLANG['TXT_PERFORM'],
+			'TXT_CATEGORY'								=> $_ARRAYLANG['TXT_CATEGORY'],
+			'TXT_DATE'									=> $_ARRAYLANG['TXT_DATE'],
+			'TXT_TITLE'									=> $_ARRAYLANG['TXT_TITLE'],
+			'TXT_NEWS_SITE'								=> $_ARRAYLANG['TXT_NEWS_SITE'],
+			'TXT_NEWS_MESSAGE'							=> $_ARRAYLANG['TXT_NEWS_MESSAGE'],
+			'TXT_HEADLINES'								=> $_ARRAYLANG['TXT_HEADLINES'],
+			'TXT_TEASERS'								=> $_ARRAYLANG['TXT_TEASERS'],
+			'TXT_USAGE'									=> $_ARRAYLANG['TXT_USAGE'],
+			'TXT_NEWS_PLACEHOLLDERS_USAGE_TEXT'			=> $_ARRAYLANG['TXT_NEWS_PLACEHOLLDERS_USAGE_TEXT'],
+			'TXT_PLACEHOLDER_LIST'						=> $_ARRAYLANG['TXT_PLACEHOLDER_LIST'],
+			'TXT_LANGUAGE_VARIABLES'					=> $_ARRAYLANG['TXT_LANGUAGE_VARIABLES'],
+			'TXT_GENERAL'								=> $_ARRAYLANG['TXT_GENERAL'],
+			'TXT_NEWS_PAGIN_DESCRIPTION'				=> $_ARRAYLANG['TXT_NEWS_PAGIN_DESCRIPTION'],
+			'TXT_NEWS_NO_CATEGORY_DESCRIPTION'			=> $_ARRAYLANG['TXT_NEWS_NO_CATEGORY_DESCRIPTION'],
+			'TXT_NEWS_CAT_DROPDOWNMENU_DESCRIPTION'		=> $_ARRAYLANG['TXT_NEWS_CAT_DROPDOWNMENU_DESCRIPTION'],
+			'TXT_NEWS_DATE_DESCRIPTION'					=> $_ARRAYLANG['TXT_NEWS_DATE_DESCRIPTION'],
+			'TXT_NEWS_LONG_DATE_DESCRIPTION'			=> $_ARRAYLANG['TXT_NEWS_LONG_DATE_DESCRIPTION'],
+			'TXT_NEWS_AUTHOR_DESCRIPTION'				=> $_ARRAYLANG['TXT_NEWS_AUTHOR_DESCRIPTION'],
+			'TXT_NEWS_LINK_DESCRIPTION'					=> $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'],
+			'TXT_NEWS_CATEGORY_DESCRIPTION'				=> $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'],
+			'TXT_NEWS_CSS_DESCRIPTION'					=> $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'],
+			'TXT_NEWSROW_DESCRIPTION'					=> $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'],
+			'TXT_EXAMPLE'								=> $_ARRAYLANG['TXT_EXAMPLE'],
+			'TXT_NEWS_MESSAGES'							=> $_ARRAYLANG['TXT_NEWS_MESSAGES'],
+			'TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'		=> $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'],
+			'TXT_NEWS_TITLE_DESCRIPTION'				=> $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'],
+			'TXT_NEWS_TEXT_DESCRIPTION'					=> $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'],
+			'TXT_NEWS_URL_DESCRIPTION'					=> $_ARRAYLANG['TXT_NEWS_URL_DESCRIPTION'],
+			'TXT_PUBLISHED_ON'							=> $_ARRAYLANG['TXT_PUBLISHED_ON'],
+			'TXT_HEADLINE_PLACEHOLLDERS_USAGE'			=> $_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'],
+			'TXT_NEWS_IMAGE_PATH_DESCRIPTION'			=> $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'],
+			'TXT_HEADLINE_TEXT_DESCRIPTION'				=> $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'],
+			'TXT_MORE_NEWS'								=> $_CORELANG['TXT_MORE_NEWS'],
+			'TXT_TEASER_PLACEHOLLDERS_USAGE'			=> $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'],
+			'TXT_NEWS_LASTUPDATE_DESCRIPTION'			=> $_ARRAYLANG['TXT_NEWS_LASTUPDATE_DESCRIPTION'],
+			'TXT_NEWS_SOURCE_DESCRIPTION'				=> $_ARRAYLANG['TXT_NEWS_SOURCE_DESCRIPTION'],
+			'TXT_NEWS_IMAGE_DESCRIPTION'				=> $_ARRAYLANG['TXT_NEWS_IMAGE_DESCRIPTION']
+		));
+    }
+}
+?>

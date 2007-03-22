@@ -1,0 +1,103 @@
+************************************************
+* Neue Funktionen und Verbesserungen
+************************************************
+
+News
+Bei der Erstellung/Bearbeitung einer Newsmeldung wird neu die Textlänge des Teaser Textes angezeigt.
+Bei der Erstellung/Bearbeitung einer Newsmeldung wird abhängig von der Teaserkonfiguration die Teaser Eigenschaften ein- oder ausgeblendet.
+Im RSS-Feed werden nur noch die aktiven Newsmeldungen angezeigt.
+Neuer Platzhalter bei den Teasers: TEASER_LONG_DATE ersetzt TEASER_DATE und TEASER_DATE hat neu die Form 'd.m.Y'
+Das RSS-Feed kann nun per Javascript von einer anderen Seite eingebunden werden.
+Neue Content Seite: news feed (Zeigt den Javascript Code zum Einbinden des RSS Feeds auf einer anderen Seite an) | Platzhalter: [[NEWS_HOSTNAME]] => Hostname der Webseite; [[NEWS_RSS2JS_CODE]] => Javascript Beispiel Code
+
+Werbebanner
+Ein komplettes Werbebanner-Modul wurde integriert. Mit diesem ist es möglich, Werbebanner (Werbecode) einzublenden.
+
+Gästebuch:
+Gästebuch Einträge können nun vor der Veröffentlichung vom Administrator geprüft werden. Dies schützt den Webmaster vor Gästebuch Spammern
+
+Contentmanager: 
+- Eine Seite kann nun einfacher gelöscht werden, indem in der Contrexx-Navigation die PageID eingegeben wird und anschliessend der "Löschen"-Button betätigt.
+- Es gibt neu ein seperates Feld für den Seitentitel (Title und Metatitle wurden getrennt)
+- Es gibt neu ein Statusfeld "Caching"
+
+Bildergalerie:
+Das "Gruppenbild" für das Frontend wird nun rot hinterlegt.
+
+News-Syndication
+Neu wird das NewsML Protokoll unterstützt. Zur Zeit kann aber nur das Online Angebot von der Schweizerischen Depechenagentur genutzt werden.
+
+Filebrowser
+Thunbnails werden nicht mehr angezeigt
+
+RecommendModul
+Neues Modul erstellt zum Seite weiterempfehlen
+
+Login
+Für die E-Mail Nachricht zum Zurücksetzen des Kennwortes wird neu die E-Mail Adresse des System Administrators als Absender angegeben.
+
+Community
+Bei E-Mail Nachrichten wird neu als Absender die E-Mail Adresse des System Administrators angegeben.
+
+Calendar Modul
+- Speicherformat der Daten geändert
+- Einsatz von Activecalendar Kalenderboxen
+- Einsatz von Datepicker zum Auswählen des Datums
+- Verbesserung des Backends, transparentere Bedienung
+- Eine Auflistung der Termine ähnlich wie Headlines
+- 3 verschiedene Ansichtsmodi im Frontend
+- wysiwyg Editor
+
+Kontakte
+Kontaktformulare können nun über einen Assistenten erstellt werden.
+Kontakteinträgen können nun in der Datenbank abgespeichert werden.
+
+System
+Bei den Einstellungen gibt es nur noch ein Feld für die standard Kontaktemailadresse. 
+An diese Adresse wird ein Kontakteintrag gesendet, wenn beim Kontaktformular keine gültige "id" angegeben worden ist.
+************************************************
+* Fehler behoben
+************************************************
+Shop
+Produkte Optionen werden wieder angezeigt.
+Die Produkte werden im Warenkorb wieder gruppiert.
+Beim Editieren einer PDF-Preisliste wird das Sprachmenü wieder angezeigt.
+
+Web Installer
+Die Ftp-Konfiguration funktioniert nun auch, wenn der FTP-Dienst nicht vom gleichen Systemtyp ist, wie das Hostsystem auf dem der Webserver läuft.
+Die Verzeichnisse Current(.) und Parent(..) werden nicht mehr angezeigt.
+Der "Document Root" Pfad wird nun auch richtig erkannt, falls die Webseite "Domain Forwarding" verwendet.
+
+Statistik
+Bei den indexierten Seiten wird jede Seite nur noch einmal aufgelistet.
+
+Framework Language
+Datenbank Klasse ausgewechselt
+
+News
+Teaser von Newsmeldungen, welche eine Publizierungszeitspanne haben und ausserhalb diser sind, werden nicht mehr angezeigt.
+Die Teaser werden nun korrekt abhängig von der Frontend Sprache dargestellt.
+
+Community
+Die Umleitungs-URL beim Login nach erfolgreicher Authentifizierung führte immer auf contrexx.itsicherheit.ch
+
+Suchmaschinen Optimierung
+Zusätzlich zum Menu Namen und dem Meta Titel gibt es nun ein Feld für den Seiten Titel.
+
+Versionierungs-System
+Versehentlich einen Text überschrieben, den Sie noch gebraucht hätten? -
+Dank unseres Versionierungssystems kann Ihnen das nun nicht mehr passieren!
+Es wird für jede Änderungen am Seiteninhalt eine Kopie abgelegt. Somit
+können Sie in sekundenschnelle auf eine ältere Version wechseln - und
+natürlich auch wieder zurück! Es besteht sogar die Möglichkeit, komplett
+gelöschte Seiten wieder herzustellen. Somit gehen Ihnen nie mehr wichtige
+Daten versehentlich verloren.
+
+Workflow-System
+Geben Sie Ihren Mitarbeitern die Möglichkeit, neue Seiten zu erstellen,
+bestehende Seiten abzuändern oder gar Seiten zu löschen. Die Aktionen werden
+jedoch nicht direkt ausgeführt, sondern für Sie als Administrator zur
+Kontrolle bereitgestellt. Falls Sie die Änderungen akzeptieren wollen,
+braucht es einen einzigen Klick, um diese ins System zu übernehmen. Dadurch
+können Ihre Mitarbeiter völlig selbständig Inhalte anpassen, und sie haben
+dennoch ständig die Kontrolle über Ihre Seite.

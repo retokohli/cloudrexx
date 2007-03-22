@@ -1,0 +1,1 @@
+INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (NULL, '21', 'function', 'TXT_THEME_IMPORT_EXPORT', '1', '', '_self', '0', '0', '99');

@@ -1,0 +1,7 @@
+Readme
+------------------
+
+-File Traversal Sicherheitslücke im Media Manager geschlossen ( Backend )
+-Neu wird nach dem Speichern/Hinzufügen einer Seite im Content Manager wieder dieselbe Seite angezeigt.
+-Bug behoben: Beim löschen einer Gruppe wurden die Frontend- und Backendzugriffberechtigungen nicht aktualisiert
+-Stripslashes Bug im Design Manager behoben

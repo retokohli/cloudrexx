@@ -1,0 +1,25 @@
+<!-- start shopnavbar.html -->
+<!-- 
+//
+// CSS Styles:
+// shopnavbar1_inactive, shopnavbar1_active
+// shopnavbar2_inactive, shopnavbar2_active
+// shopnavbar3_inactive, shopnavbar3_active
+-->
+<table width="100%"  border="0" cellspacing="0" cellpadding="0">
+  <tr valign="top">
+    <td>
+<!-- BEGIN shopNavbar -->	
+{SHOP_CATEGORY_OFFSET}<a href="?section=shop&catId={SHOP_CATEGORY_ID}">{SHOP_CATEGORY_NAME}</a><br />
+<!-- END shopNavbar -->
+	</td>
+    <td>
+<!-- BEGIN shopCurrencies -->
+<b>{TXT_CURRENCIES}</b><br>
+{SHOP_CURRENCIES}
+<!-- END shopCurrencies -->	
+	</td>
+  </tr>
+</table>
+<br>
+{SHOP_CART_INFO} {SHOP_LOGIN_STATUS} {SHOP_LOGIN_INFO} 

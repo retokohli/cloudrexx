@@ -1,0 +1,26 @@
+<!-- start shopnavbar.html -->
+<!-- 
+//
+// CSS Styles:
+// shopnavbar1_inactive, shopnavbar1_active
+// shopnavbar2_inactive, shopnavbar2_active
+// shopnavbar3_inactive, shopnavbar3_active
+-->
+
+
+<div id="navcontainer">
+<ul id="navlist">
+<!-- BEGIN shopNavbar -->	
+<li>{SHOP_CATEGORY_OFFSET}<a href="index.php?section=shop&amp;catId={SHOP_CATEGORY_ID}">{SHOP_CATEGORY_NAME}</a></li>
+<!-- END shopNavbar -->
+</ul>
+</div> 
+<div style="padding: 3px;">
+<b>{SHOP_LOGIN_STATUS}</b>&nbsp;{SHOP_LOGIN_INFO}<br/>{SHOP_CART_INFO}
+<br/><br/>
+<!-- BEGIN shopCurrencies -->
+<b>{TXT_CURRENCIES}</b><br>
+{SHOP_CURRENCIES}
+<br />
+<!-- END shopCurrencies -->
+</div>

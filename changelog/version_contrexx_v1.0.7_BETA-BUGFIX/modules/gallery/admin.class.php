@@ -1,0 +1,3454 @@
+<?PHP
+/**
+* Modul Gallery
+*
+* Class to manage the gallery of the CMS
+*
+* @copyright     CONTREXX CMS - 2005 Astalavista IT Engineering GmbH 
+* @author        Astalavista Development Team <thun@astalavista.ch>   
+* @module        gallery
+* @modulegroup   modules 
+* @version       v1.1.0    
+*/
+
+require_once ASCMS_MODULE_PATH . '/gallery/Lib.class.php';
+
+class galleryManager extends GalleryLibrary
+{
+	var $_objTpl;
+	var $statusMessage = '';
+	var $arrSettings = array();
+	var $strImagePath;
+	var $strImageWebPath;
+	var $strThumbnailPath;	
+	var $strThumbnailWebPath;
+	var $strImportPath;	
+	var $intLangId;
+	var $strPageTitle;
+	var $importFiles;
+	var $boolGifEnabled = false;
+	var $boolJpgEnabled = false;
+	var $boolPngEnabled = false;
+	var $intMaxEntries = 50;
+	
+	
+	/**
+	* Constructor	-> Create the menu and copy the template
+    *
+    * @global	object		$objTemplate
+    * @global	object		$objDatabase
+    * @global 	object		$objInit
+    * @global	array		$_ARRAYLANG
+    */ 	
+	function galleryManager()
+	{
+		global $objDatabase, $_ARRAYLANG, $objTemplate, $objInit; 
+		
+		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
+		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);  
+    	 	
+    	$this->intLangId=$objInit->userFrontendintLangId;
+    		
+	    $this->strImagePath = ASCMS_GALLERY_PATH . '/';
+	    $this->strImageWebPath = ASCMS_GALLERY_WEB_PATH . '/';	    
+	    $this->strThumbnailPath = ASCMS_GALLERY_THUMBNAIL_PATH . '/';		    
+	    $this->strThumbnailWebPath = ASCMS_GALLERY_THUMBNAIL_WEB_PATH . '/';	
+	    $this->strImportPath = ASCMS_GALLERY_IMPORT_PATH. '/';
+	    $this->importWebPath = ASCMS_GALLERY_IMPORT_WEB_PATH. '/';
+		
+		if (imagetypes() & IMG_GIF) {
+	       $this->boolGifEnabled = true;
+	   	}
+	   	
+	   	if (imagetypes() &  IMG_JPG) {
+	       $this->boolJpgEnabled = true;
+	   	}
+	   	
+	   	if (imagetypes() & IMG_PNG) {
+	       $this->boolPngEnabled = true;
+	   	}
+	   	
+	   	$this->getSettings();
+    	$this->checkImages();		
+
+    	$objTemplate->setVariable('CONTENT_NAVIGATION','	<a href="?cmd=gallery">'.$_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'].'</a>
+    														<a href="?cmd=gallery&act=new_cat">'.$_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'].'</a>
+    														<a href="?cmd=gallery&act=upload_form">'.$_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD'].'</a>
+    														<a href="?cmd=gallery&act=import_picture">'.$_ARRAYLANG['TXT_GALLERY_MENU_IMPORT'].'</a>
+    														<a href="?cmd=gallery&act=validate_form&type='.$this->arrSettings['validation_standard_type'].'">'.$_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'].'</a>
+    														<a href="?cmd=gallery&act=settings">'.$_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'].'</a>');
+	}
+	
+	
+    /**
+	* Select the admired action
+    *
+    * @global 	object		$objTemplate
+    * @global 	object		$objPerm
+    * @global	array		$_ARRAYLANG
+    * @global 	array		$_GET
+    * @global 	array		$_POST
+    */ 	
+    function getPage()
+    {
+    	global $objTemplate,$objPerm,$_ARRAYLANG,$_GET,$_POST; 
+    	 
+    	if(!isset($_GET['act'])) {
+    	    $_GET['act']='';	
+    	}    	 	
+   	    switch($_GET['act']){	
+			case 'new_cat':
+				$objPerm->checkAccess(66, 'static');
+                $this->newCategory();		
+			break; 
+			case 'insert_category': 
+                $this->insertCategory();
+               $this->overview();
+			break;
+			case 'sort_categories':
+			    $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
+                $this->saveCategorySorting();
+                $this->overview();		
+			break;
+			case 'category_actions':
+				if (isset($_POST['sorting'])) {
+					$this->saveImagesSorting();
+				} else {
+					switch ($_POST['frmShowImages_MultiAction']) {
+						case 'delete':
+							if (isset($_POST['selectedImageId'])) {
+								foreach($_POST['selectedImageId'] as $intKey => $intPicId) {
+									$this->deleteImage($intPicId);
+									$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_DELETED'];
+								}
+							}
+						break;
+						case 'activate':
+							if (isset($_POST['selectedImageId'])) {
+								foreach($_POST['selectedImageId'] as $intKey => $intPicId) {
+									$this->activatePicture($intPicId, "activate");
+								}
+							}
+						break;
+						case 'deactivate':
+							if (isset($_POST['selectedImageId'])) {
+								foreach($_POST['selectedImageId'] as $intKey => $intPicId) {
+									$this->activatePicture($intPicId, "deactivate");
+								}
+							}
+						break;
+						case 'reset':
+							if (isset($_POST['selectedImageId'])) {
+								foreach($_POST['selectedImageId'] as $intKey => $intPicId) {
+									$this->resetPicture($intPicId);
+								}
+							}
+						break;
+						case 'move':
+							if (isset($_POST['selectedImageId']) && intval($_POST['frmShowImages_MultiAction_Move']) != 0) {
+								foreach($_POST['selectedImageId'] as $intKey => $intPicId) {
+									$this->changeCategoryOfPicture($intPicId,intval($_POST['frmShowImages_MultiAction_Move']));
+								}
+							}
+						break;
+						default: //do nothing
+					}
+				}		
+				$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];				
+				$this->showCategoryDetails(intval($_GET['catid']));
+			break;
+			case 'activate_category':
+			    $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
+                $this->activateCategory(intval($_GET['id']));
+                $this->overview();	
+			break;
+			case 'delete_category':
+			    $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
+                $this->deleteCategory(intval($_GET['id']));
+                $this->overview();	
+			break;
+			case 'edit_category':
+			    $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
+                $this->editCategory(intval($_GET['id']));
+			break;
+			case 'update_category':
+			    $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
+                $this->updateCategory(intval($_GET['id']));
+                $this->overview();	
+			break;
+			case 'cat_details':
+				$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_CATEGORY_DETAILS'];
+				$this->showCategoryDetails(intval($_GET['id']));
+			break;
+			case 'activate_picture':
+				$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_CATEGORY_DETAILS'];
+				$this->activatePicture(intval($_GET['id']));
+				$this->showCategoryDetails(intval($_GET['gid']));
+			break;
+			case 'reset_picture':
+				$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_CATEGORY_DETAILS'];
+				$this->resetPicture(intval($_GET['id']));
+				$this->showCategoryDetails(intval($_GET['gid']));			
+			break;
+			case 'delete_picture':
+				$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_CATEGORY_DETAILS'];
+				$this->deleteImage(intval($_GET['id']));
+				$this->showCategoryDetails(intval($_GET['gid']));			
+			break;
+			case 'change_category_picture':
+				$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_CATEGORY_DETAILS'];
+				$this->changeCategoryOfPicture(intval($_GET['id']),intval($_GET['catid']));
+				$this->showCategoryDetails(intval($_GET['catid']));			
+			break;
+			case 'rotate_picture':
+				$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_CATEGORY_DETAILS'];
+				$this->rotatePicture(intval($_GET['id']));
+				$this->showCategoryDetails(intval($_GET['catid']));
+			break;
+			case 'edit_picture':
+				$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_PICTURE_DETAILS'];
+				$this->showEditPicture();			
+			break;
+			case 'update_picture':
+				$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_CATEGORY_DETAILS'];
+				$intCatId = $this->updatePicture(); //returns the groupid
+				$this->showCategoryDetails($intCatId);
+			break;
+			case 'upload_form':
+			    $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM']; 
+			    $objPerm->checkAccess(67, 'static');
+                $this->showUploadForm();				
+			break;
+			case 'upload_images':
+			    $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM'];
+                $this->uploadImages();
+			    $this->showValidateForm(); 					
+			break;
+			case 'validate_form':
+			    $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'];
+			    $objPerm->checkAccess(69, 'static');
+			    $this->showValidateForm();
+                				
+			break;
+			case 'validate_single_picture':
+			    $this->reloadSingleValidate();
+			    $this->showValidateForm();					
+			break;
+			case 'validate_all_pictures':
+			    $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'];
+			    $this->reloadAllValidate();
+			    $this->showValidateForm();
+			break;
+			case 'settings':
+			    $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'];
+			    $objPerm->checkAccess(70, 'static');
+                $this->showSettings();
+            break;
+			case 'save_settings':
+			    $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'];
+			    $this->saveSettings();
+                $this->showSettings();
+			break;
+			case 'delete_valid_image':
+				$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'];
+			    $this->deleteImage(intval($_GET['id']));
+			    $this->showValidateForm();
+                break;
+            case 'import_picture':
+				$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_IMPORT_PICTURES'];
+				$objPerm->checkAccess(68, 'static');
+				$this->importPicture();			
+			break;
+			case 'importFromFolder':
+				$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_IMPORT_PICTURES'];
+				$this->importFromFolder();
+				$this->importPicture();		
+				$this->showValidateForm();	
+			break;
+			case 'deleteImportPicture':
+				$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_IMPORT_PICTURES'];
+				$this->deleteImportPicture();
+				$this->importPicture();			
+			break;
+			case 'delete_comment':
+				$this->deleteComment($_GET['comId']);
+				$_GET['active'] = 'comment';
+				$this->showEditPicture();
+			break;
+			case 'delete_vote':
+				$this->deleteVote($_GET['voteId']);
+				$_GET['active'] = 'voting';
+				$this->showEditPicture();			
+			break;
+			case 'edit_comment':
+				$this->strPageTitle = $_ARRAYLANG['TXT_COMMENT_EDIT'];
+				$this->showEditComment($_GET['id']);
+			break;
+			case 'save_comment':
+				$this->updateComment();
+				$_GET['id'] = intval($_POST['frmEditComment_PicId']);
+				$_GET['active'] = 'comment';
+				$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_PICTURE_DETAILS'];
+				$this->showEditPicture();
+			break;
+			case 'comment_actions':
+				switch ($_POST['frmShowComments_MultiAction'])
+				{
+					case 'delete':
+						foreach($_POST['selectedCommentsId'] as $intKey => $intCommentId) {
+							$this->deleteComment($intCommentId);
+						}
+						$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_COMMENT_DELETES_DONE'];
+					break;
+					default: //do nothing	
+				}
+				$this->showEditPicture();
+			break;
+			case 'cat_multi_action':
+				switch ($_POST['frmShowGallery_MultiAction']) {
+					case 'delete':
+						if (isset($_POST['selectedCategoryId'])) {
+							foreach($_POST['selectedCategoryId'] as $intKey => $intCatId) {
+								$this->deleteCategory($intCatId);
+							}
+						}
+					break;
+					case 'activate':
+						if (isset($_POST['selectedCategoryId'])) {
+							foreach($_POST['selectedCategoryId'] as $intKey => $intCatId) {
+								$this->activateCategory($intCatId, "activate");
+							}
+						}
+						break;
+					case 'deactivate':
+						if (isset($_POST['selectedCategoryId'])) {
+							foreach($_POST['selectedCategoryId'] as $intKey => $intCatId) {
+								$this->activateCategory($intCatId, "deactivate");
+							}
+						}
+					break;		
+					default: //do nothing
+				}
+				$this->overview();		
+			break;
+			default:
+				$objPerm->checkAccess(65, 'static');	    
+                $this->overview();              
+			    break;								
+		} 
+		$objTemplate->setVariable(array(
+			'CONTENT_TITLE'				=> $this->strPageTitle,
+			'CONTENT_STATUS_MESSAGE'	=> $this->statusMessage,
+			'ADMIN_CONTENT'				=> $this->_objTpl->get()
+		));
+    }
+    
+    
+    /**
+	* Checks if the file is still there, removes dead links
+    *
+    * @global	array		$_CONFIG
+    * @global	var			$objDatabase
+    */ 		
+	function checkImages()
+	{
+		global $objDatabase, $_CONFIG;
+		$objResult = $objDatabase->Execute('	SELECT 	path,
+														id
+												FROM 	'.DBPREFIX.'module_gallery_pictures
+												WHERE 	validated="1"');
+		while (!$objResult->EOF) {
+			if (!is_file($this->strThumbnailPath.$objResult->fields['path']) ||
+				!is_file($this->strImagePath.$objResult->fields['path'])){
+					$arrayPicToDel[$objResult->fields['id']] = $objResult->fields['path'];	
+				}
+			$objResult->MoveNext();
+		}
+		if (isset($arrayPicToDel)) {
+			foreach ($arrayPicToDel as $id => $path){
+				if (is_file($this->strThumbnailPath.$path)){
+					@unlink($this->strThumbnailPath.$path);
+				}
+				if (is_file($this->strImagePath.$path)){
+					@unlink($this->strImagePath.$path);
+				}
+				$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_gallery_pictures WHERE id=".$id);
+			}
+		}
+	}  
+	
+	
+    /**
+	* Shows the overview of the gallery
+    *
+    * @global	object		$objDatabase
+    * @global	array		$_CONFIG
+    * @global	array		$_ARRAYLANG
+    */ 	
+    function overview()
+    {
+    	global $objDatabase, $_ARRAYLANG, $_CONFIG;
+
+    	$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
+    	$this->_objTpl->loadTemplateFile('module_gallery_overview.html',true,true);
+    	   
+    	$this->_objTpl->setVariable(array(
+    		'TXT_DELETE_CATEGORY_MSG' 	=>	$_ARRAYLANG['TXT_GALLERY_DELETE_CATEGORY_MESSAGE'],
+    		'TXT_DELETE_CATEGORY_ALL'	=>	$_ARRAYLANG['TXT_GALLERY_DELETE_ALL_CATEGORY_MESSAGE'],
+	    	'TXT_NAME'					=>	$_ARRAYLANG['TXT_GALLERY_GALLERYNAME'],
+	    	'TXT_DESC'					=>	$_ARRAYLANG['TXT_GALLERY_OVERVIEW_DESCRIPTION'],
+	    	'TXT_IMAGECOUNT'			=>	$_ARRAYLANG['TXT_IMAGE_COUNT'],
+	    	'TXT_SPACE'					=>	$_ARRAYLANG['TXT_GALLERY_SPACE'],
+	    	'TXT_BUTTON_SAVESORT'		=>	$_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_SORT'],
+	    	'TXT_IMG_EDIT_ALT'			=>	$_ARRAYLANG['TXT_EDIT'],
+	    	'TXT_IMG_DEL_ALT'			=>	$_ARRAYLANG['TXT_DELETE'],
+	    	'TXT_STATUS'				=>	$_ARRAYLANG['TXT_STATUS'],
+	    	'TXT_ACTION'				=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ACTION'],
+	    	'TXT_SELECT_ALL'			=>	$_ARRAYLANG['TXT_SELECT_ALL'],
+	    	'TXT_DESELECT_ALL'			=>	$_ARRAYLANG['TXT_DESELECT_ALL'],
+	    	'TXT_SUBMIT_SELECT'			=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_SELECT'],
+	    	'TXT_SUBMIT_DELETE'			=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DELETE'],
+	    	'TXT_SUBMIT_ACTIVATE'		=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_ACTIVATE'],
+	    	'TXT_SUBMIT_DEACTIVATE'		=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DEACTIVATE'],
+	   	));
+		
+	   	$objResult = $objDatabase->Execute('SELECT 	id 
+	   										FROM '.DBPREFIX.'module_gallery_categories');
+	   	if ($objResult->RecordCount() > 0){
+		   	while (!$objResult->EOF) {
+		   		$arrImageSize[$objResult->fields['id']] = '';
+		   		$arrImageCount[$objResult->fields['id']] = '';	
+		   		$objResult->MoveNext();
+		   	}
+		   	
+		   	foreach ($arrImageSize as $intKey => $strValue){
+
+		   		$objResult = $objDatabase->Execute('SELECT 	path
+		   											FROM 	'.DBPREFIX.'module_gallery_pictures
+		   											WHERE 	catid='.$intKey);
+		   		$arrImageCount[$intKey] = $objResult->RecordCount();
+		   		while (!$objResult->EOF) {
+		   			$arrImageSize[$intKey] = $arrImageSize[$intKey] + filesize($this->strImagePath.$objResult->fields['path']);	
+		   			$objResult->MoveNext();
+		   		}
+		   		$arrImageSize[$intKey] = round($arrImageSize[$intKey] / 1024,2);
+		   	}
+	   	}
+    	
+    	$objResult = $objDatabase->Execute('SELECT 		id 
+    										FROM 		'.DBPREFIX.'module_gallery_categories 
+    										WHERE 		pid=0 
+    										ORDER BY 	sorting');
+    	
+    	// there are no entries in the database
+    	if ($objResult->RecordCount() == 0) { 
+    		$this->_objTpl->hideBlock('showCategories');
+    	} else { 
+    		// there are entries in the database
+    		while (!$objResult->EOF) {
+    			$arrMaincats[$objResult->fields['id']] = '';
+    			$objResult->MoveNext();
+    		}    		
+    		$intRowCounter = 0;
+    		
+    		foreach ($arrMaincats as $intMainKey => $strMainValue){
+    			$objResult = $objDatabase->Execute('SELECT 	sorting,
+    														status
+    												FROM 	'.DBPREFIX.'module_gallery_categories
+    														WHERE id='.$intMainKey);
+    			
+    			$objSubResult = $objDatabase->Execute('	SELECT		name,
+    																value
+    													FROM		'.DBPREFIX.'module_gallery_language
+    													WHERE		gallery_id='.$intMainKey.' AND
+    																lang_id='.intval(intval($_SESSION['auth']['lang'])).'
+    													ORDER BY	name ASC
+    												');
+    			unset($arrCategoryLang);
+    			while (!$objSubResult->EOF) {
+    				$arrCategoryLang[$objSubResult->fields['name']] = $objSubResult->fields['value'];
+    				$objSubResult->MoveNext();
+    			}
+    			
+    			$intRowColor = ($intRowCounter % 2 == 0) ? 0 : 1;
+    			$strFolderIcon = ($objResult->fields['status'] == 0) ? 'led_red' : 'led_green'; 
+    						
+    			$this->_objTpl->setVariable(array(
+	    			'OVERVIEW_ROWCLASS'		=>	$intRowColor,
+	    			'OVERVIEW_SUBCATEGORY'	=>	'',
+	    			'OVERVIEW_ID'			=>	$intMainKey,
+	    			'OVERVIEW_ICON'			=>	$strFolderIcon,
+	    			'OVERVIEW_SORTING'		=>	$objResult->fields['sorting'],
+	    			'OVERVIEW_NAME'			=>	($arrImageCount[$intMainKey]>0) ? '<a href="?cmd=gallery&amp;act=cat_details&amp;id='.$intMainKey.'" target="_self">'.$arrCategoryLang['name'].'</a>' :  $arrCategoryLang['name'],
+	    			'OVERVIEW_DESCRIPTION'	=>	$arrCategoryLang['desc'],
+			    	'OVERVIEW_COUNT_IMAGES'	=>	$arrImageCount[$intMainKey],
+			    	'OVERVIEW_IMAGE_SIZE'	=>	$arrImageSize[$intMainKey]
+    			));
+    			
+    			$this->_objTpl->parse('showCategories');
+    			$intRowCounter++;
+    			
+    			$objResult = $objDatabase->Execute('	SELECT 		id,
+    																sorting,
+    																status
+							    						FROM 		'.DBPREFIX.'module_gallery_categories
+							    						WHERE 		pid='.$intMainKey.'
+							    						ORDER BY 	sorting ASC');
+    			if ($objResult->RecordCount() != 0)
+    			{ 
+    				// there are subcategories in the database
+    				while (!$objResult->EOF) {
+		     			$objSubResult = $objDatabase->Execute('	SELECT		name,
+		    																value
+		    													FROM		'.DBPREFIX.'module_gallery_language
+		    													WHERE		gallery_id='.$objResult->fields['id'].' AND
+		    																lang_id='.intval($_SESSION['auth']['lang']).'
+		    													ORDER BY	name ASC
+		    												');   					
+    					unset($arrCategoryLang);
+		    			while (!$objSubResult->EOF) {
+		    				$arrCategoryLang[$objSubResult->fields['name']] = $objSubResult->fields['value'];
+		    				$objSubResult->MoveNext();
+		    			}
+		    			    			
+		    			$intRowColor = ($intRowCounter % 2 == 0) ? 0 : 1;	    			
+                        $strFolderIcon = ($objResult->fields['status'] == 0) ? 'led_red' : 'led_green';
+		    				    			
+		    			$this->_objTpl->setVariable(array(
+			    			'OVERVIEW_ROWCLASS'		=>	$intRowColor,
+	    					'OVERVIEW_SUBCATEGORY'	=>	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+			    			'OVERVIEW_ID'			=>	$objResult->fields['id'],
+			    			'OVERVIEW_ICON'			=>	$strFolderIcon,
+			    			'OVERVIEW_SORTING'		=>	$objResult->fields['sorting'],
+			    			'OVERVIEW_NAME'			=>	($arrImageCount[$intMainKey]>0) ? '<a href="?cmd=gallery&amp;act=cat_details&amp;id='.$objResult->fields['id'].'" target="_self">'.$arrCategoryLang['name'].'</a>' :  $arrCategoryLang['name'],
+			    			'OVERVIEW_DESCRIPTION'	=>	$arrCategoryLang['desc'],
+			    			'OVERVIEW_COUNT_IMAGES'	=>	$arrImageCount[$objResult->fields['id']],
+			    			'OVERVIEW_IMAGE_SIZE'	=>	$arrImageSize[$objResult->fields['id']]
+		    			));	
+		    			$this->_objTpl->parse('showCategories');
+		    			$intRowCounter++;
+		    			$objResult->MoveNext();  				
+    				}
+    			}
+    		}
+    	} 		
+    }
+    
+    
+    /**
+	* Shows the 'Insert new category'-Form
+    *
+    * @global	object		$objDatabase
+    * @global	array		$_ARRAYLANG
+    */ 	    
+    function newCategory()
+    {
+    	global $objDatabase, $_ARRAYLANG;	
+    	$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'];
+    	$this->_objTpl->loadTemplateFile('module_gallery_new_category.html',true,true);
+    	
+    	$this->_objTpl->setVariable(array(
+	    	'TXT_TITLE'				=>	$_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'],
+	    	'TXT_NAME'				=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'],
+	    	'TXT_EXTENDED'			=>	$_ARRAYLANG['TXT_GALLERY_EXTENDED'],
+	    	'TXT_CATEGORYTYPE'		=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE'],
+	    	'TXT_CATEGORYTYPE_NEW'	=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE_NEW'],
+	    	'TXT_CATEGORYTYPE_SUB'	=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE_SUB'],
+	    	'TXT_DESCRIPTION'		=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_DESCRIPTION'],
+	    	'TXT_STATUS'			=>	$_ARRAYLANG['TXT_STATUS'],
+	    	'TXT_STATUS_ON'			=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_ON'],
+	    	'TXT_STATUS_OFF'		=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_OFF'],
+	    	'TXT_COMMENT'			=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_COMMENT'],
+	    	'TXT_VOTING'			=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_VOTING'],
+	    	'TXT_BUTTON_SUBMIT'		=>	$_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_SORT']
+    	
+    	));
+    	
+    	$objResult = $objDatabase->Execute('	SELECT		id,
+    														name
+    											FROM		'.DBPREFIX.'languages
+    											ORDER BY	id ASC
+    										');
+    	if ($objResult->RecordCount() > 0) {
+    		while (!$objResult->EOF) {
+    			$this->_objTpl->setVariable(array(
+	    			'NAMEFIELDS_LID'		=>	$objResult->fields['id'],
+	    			'DESCFIELDS_LID'		=>	$objResult->fields['id'],
+	    			'NAMEFIELDS_LANGUAGE'	=>	$objResult->fields['name'],
+	    			'DESCFIELDS_LANGUAGE'	=>	$objResult->fields['name']
+	    		));
+	    		$this->_objTpl->parse('showNameFields'); 
+	    		$this->_objTpl->parse('showDescFields');    			
+    			$objResult->MoveNext();	
+    		}	
+    	} else {
+    		$this->_objTpl->hideBlock('showNameFields');
+    	}
+    	
+    	$objResult = $objDatabase->Execute('SELECT 		id 
+						    				FROM 		'.DBPREFIX.'module_gallery_categories
+						    				WHERE		pid=0
+						    				ORDER BY 	sorting ASC');
+    	if ($objResult->RecordCount() == 0) { // no rows
+    		$this->_objTpl->hideBlock('showCategories');
+    	} else {
+    		while (!$objResult->EOF) {
+				$objSubResult = $objDatabase->Execute('	SELECT	value
+														FROM	'.DBPREFIX.'module_gallery_language
+														WHERE	gallery_id='.$objResult->fields['id'].' AND
+																lang_id='.intval($_SESSION['auth']['lang']).' AND
+																name="name"
+														LIMIT	1
+													');
+    			$this->_objTpl->setVariable(array(
+	    			'NEW_CATEGORY_ID'	=>	$objResult->fields['id'],
+	    			'NEW_CATEGORY_NAME'	=>	$objSubResult->fields['value']
+	    		));
+	    		$this->_objTpl->parse('showCategories');
+	    		$objResult->MoveNext();
+    		}   		
+    	}    	
+    }
+    
+    
+    /**
+	* Inserts a new category into the database
+    *
+    * @global	object		$objDatabase
+    * @global	array		$_ARRAYLANG
+    */     
+    function insertCategory()
+    {
+    	global $objDatabase, $_ARRAYLANG;
+    	
+    	$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
+    	
+    	if ($_POST['category_type'] == 'new'){
+			$intPidToInsert = 0;
+    	} else{
+			$intPidToInsert = intval($_POST['select_category_id']);
+    	} 
+
+    	$objDatabase->Execute('	INSERT 
+    							INTO 	'.DBPREFIX.'module_gallery_categories
+								SET 	pid='.$intPidToInsert.',
+										status="'.intval($_POST['category_status']).'",
+										comment="'.intval($_POST['category_comment']).'",
+										voting="'.intval($_POST['category_voting']).'"');
+    	$intGalId = $objDatabase->insert_id();
+
+    	foreach ($_POST as $strKey => $strValue)
+    	{
+    		if (substr($strKey,0,strlen('category_name_')) == 'category_name_'	||
+    			substr($strKey,0,strlen('category_desc_')) == 'category_desc_')
+    		{
+    			$arrExplode = explode('_',$strKey);
+    			$arrValues[$arrExplode[2]][$arrExplode[1]] = htmlspecialchars(strip_tags($strValue));	
+    		}
+    	}
+
+    	foreach ($arrValues as $intLangId => $arrInner)
+    	{
+    		if (empty($arrInner['name'])) {
+    			$arrInner['name'] = $_ARRAYLANG['TXT_GALLERY_CATEGORY_NO_NAME'];
+    		}
+    		
+    		$objDatabase->Execute('	INSERT
+    								INTO	'.DBPREFIX.'module_gallery_language
+    								SET		gallery_id='.$intGalId.',
+    										lang_id='.$intLangId.',
+    										name="name",
+    										value="'.$arrInner['name'].'"
+    							');
+    		$objDatabase->Execute('	INSERT
+    								INTO	'.DBPREFIX.'module_gallery_language
+    								SET		gallery_id='.$intGalId.',
+    										lang_id='.$intLangId.',
+    										name="desc",
+    										value="'.$arrInner['desc'].'"
+    							');    										
+    	}
+    	$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_MESSAGE_CATEGORY_INSERTED'];
+    } 
+    
+    
+    /**
+	* Saves the category sorting
+    *
+    * @global	array		$_ARRAYLANG
+    * @global	object		$objDatabase
+    */ 
+    function saveCategorySorting()
+    {
+    	global $objDatabase, $_ARRAYLANG;
+    
+    	foreach ($_POST as $intKey => $strValue){
+    		if (substr($intKey,0,13) == 'sortingSystem') { 
+    			// this POST-Var is sortingSystem-Var
+    			$intCatId = substr($intKey,13);
+   				$objDatabase->Execute('	UPDATE '.DBPREFIX.'module_gallery_categories
+			    						SET 	sorting='.intval($strValue).'
+			    						WHERE 	id='.intval($intCatId));
+    		}
+    	}
+    	$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_SORTING_SAVED' ];
+    }
+    
+    
+    /**
+    * Saves the image sorting
+    *
+    * @global 	array		$_ARRAYLANG
+    * @global	object		$objDatabase
+    */
+    function saveImagesSorting()
+    {
+    	global $objDatabase,$_ARRAYLANG;
+    	
+    	foreach ($_POST as $intKey => $strValue) {
+    		if (substr($intKey,0,13) == 'sortingSystem') {
+    			$intImgId = substr($intKey,13);
+    			$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_pictures
+				    					SET 	sorting='.intval($strValue).'
+				    					WHERE 	id='.intval($intImgId));
+    		}
+    	}
+    	$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_IMAGE_SORTING_SAVED'];
+    }
+    
+    
+    /**
+	* Activates or inactivates a category
+    *
+    * @global	object		$objDatabase
+    * @param	integer		$intCategoryId
+    */   
+    function activateCategory($intCategoryId, $act=NULL)
+    {
+    	global $objDatabase;
+    	
+    	if ($act == "activate") {
+    		$intNewStatus = 1;
+    	} elseif ($act == "deactivate") {
+    		$intNewStatus = 0;
+    	} else {    	
+			$objResult = $objDatabase->Execute('SELECT 	status
+												FROM 	'.DBPREFIX.'module_gallery_categories
+												WHERE 	id='.$intCategoryId);
+			
+			if ($objResult->fields['status'] == 0){
+				$intNewStatus = 1;	
+			} else {
+				$intNewStatus = 0;	
+			}
+    	}
+
+		$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_categories
+								SET 	status="'.$intNewStatus.'"
+								WHERE 	id='.$intCategoryId);
+    }
+    
+    
+    /**
+	* Delete a Category
+    *
+    * @global	object		$objDatabase
+    * @global	array		$_ARRAYLANG
+    * @global	array		$_CONFIG
+    * @param	integer		$intCategoryId
+    */   
+    function deleteCategory($intCategoryId)
+    {
+    	global $objDatabase, $_ARRAYLANG, $_CONFIG;
+    	
+    	$intCategoryId = intval($intCategoryId);
+    	
+    	$objResult = $objDatabase->Execute('SELECT 	id
+						    				FROM 	'.DBPREFIX.'module_gallery_categories
+						    				WHERE 	pid='.$intCategoryId);
+    	while (!$objResult->EOF) {
+    		$arrCats[$objResult->fields['id']] = $objResult->fields['id'];
+    		$objResult->MoveNext();
+    	}
+    	$arrCats[$intCategoryId] = $intCategoryId;
+    	
+    	foreach ($arrCats as $intKey => $strValue) {
+    		$objResult = $objDatabase->Execute('SELECT 	id,
+						    							path
+							    				FROM 	'.DBPREFIX.'module_gallery_pictures
+							    				WHERE 	catid='.$strValue);
+	    	while (!$objResult->EOF) {
+	    		@unlink($this->strThumbnailPath.$objResult->fields['path']);
+	    		@unlink($this->strImagePath.$objResult->fields['path']);
+	    		
+	    		$objDatabase->Execute('	DELETE
+	    								FROM	'.DBPREFIX.'module_gallery_votes
+	    								WHERE	picid='.$objResult->fields['id'].'
+	    							');
+	    		$objDatabase->Execute('	DELETE
+	    								FROM	'.DBPREFIX.'module_gallery_comments
+	    								WHERE	picid='.$objResult->fields['id'].'
+	    							');
+	    		$objResult->MoveNext();
+	    	}
+	    	
+	    	$objDatabase->Execute('	DELETE
+				    				FROM 	'.DBPREFIX.'module_gallery_pictures
+				    				WHERE 	catid='.$strValue);
+	    	
+			$objDatabase->Execute('	DELETE
+									FROM 	'.DBPREFIX.'module_gallery_categories
+									WHERE 	id='.$strValue);
+			
+			$objDatabase->Execute('	DELETE
+									FROM	'.DBPREFIX.'module_gallery_language
+									WHERE	gallery_id='.$strValue.'
+								');
+    	}		
+		$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_CATEGORY_DELETED'];
+    }
+    
+    
+    /**
+	* Shows the "Edit-Category"-Form
+    *
+    * @global	array		$_ARRAYLANG
+    * @global	object		$objDatabase
+    * @param	integer		$intCategoryId
+    */   
+    function editCategory($intCategoryId)
+    {
+    	global $objDatabase, $_ARRAYLANG;	
+
+    	$this->_objTpl->loadTemplateFile('module_gallery_edit_category.html',true,true);
+    	$this->_objTpl->setVariable(array(
+	    	'TXT_TITLE'				=>	$_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'],
+	    	'TXT_NAME'				=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'],
+	    	'TXT_EXTENDED'			=>	$_ARRAYLANG['TXT_GALLERY_EXTENDED'],
+	    	'TXT_CATEGORYTYPE'		=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE'],
+	    	'TXT_CATEGORYTYPE_NEW'	=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE_NEW'],
+	    	'TXT_CATEGORYTYPE_SUB'	=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE_SUB'],
+	    	'TXT_DESCRIPTION'		=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_DESCRIPTION'],
+	    	'TXT_STATUS'			=>	$_ARRAYLANG['TXT_STATUS'],
+	    	'TXT_STATUS_ON'			=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_ON'],
+	    	'TXT_STATUS_OFF'		=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_OFF'],
+	    	'TXT_COMMENT'			=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_COMMENT'],
+	    	'TXT_VOTING'			=>	$_ARRAYLANG['TXT_GALLERY_CATEGORY_VOTING'],
+	    	'TXT_BUTTON_SUBMIT'		=>	$_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_CATEGORY']
+    	));   
+    	 	
+    	$objResult = $objDatabase->Execute('	SELECT		id,
+    														name,
+    														is_default
+    											FROM		'.DBPREFIX.'languages
+    											ORDER BY	id ASC
+    										');
+    	if ($objResult->RecordCount() > 0) {
+    		while (!$objResult->EOF) {
+    			$objSubResult = $objDatabase->Execute('	SELECT		name,
+    																value
+    													FROM		'.DBPREFIX.'module_gallery_language
+    													WHERE		gallery_id='.intval($intCategoryId).' AND
+    																lang_id='.$objResult->fields['id'].'
+    													ORDER BY	name ASC
+    												');
+    			unset($arrCategoryLang);
+    			while (!$objSubResult->EOF) {
+    				$arrCategoryLang[$objSubResult->fields['name']] = $objSubResult->fields['value'];
+    				$objSubResult->MoveNext();
+    			}
+    													
+    			$this->_objTpl->setVariable(array(
+	    			'NAMEFIELDS_LID'		=>	$objResult->fields['id'],
+	    			'DESCFIELDS_LID'		=>	$objResult->fields['id'],
+	    			'NAMEFIELDS_LANGUAGE'	=>	$objResult->fields['name'],
+	    			'DESCFIELDS_LANGUAGE'	=>	$objResult->fields['name'],
+	    			'NAMEFIELDS_VALUE'		=>	$arrCategoryLang['name'],
+	    			'DESCFIELDS_VALUE'		=>	$arrCategoryLang['desc']
+	    		));
+	    		
+	    		$this->_objTpl->parse('showNameFields'); 
+	    		$this->_objTpl->parse('showDescFields');  
+	    		
+    			if ($objResult->fields['is_default'] == 'true') {
+    				$strNameDefault = $arrCategoryLang['name'];
+    				$strDescDefault = $arrCategoryLang['desc'];
+    			}	    		
+    			$objResult->MoveNext();	
+    		}	
+    	} else {
+    		$this->_objTpl->hideBlock('showNameFields');
+    	}
+    			
+    	$objResult = $objDatabase->Execute('SELECT 	pid,
+    												status,
+    												comment,
+    												voting
+    										FROM 	'.DBPREFIX.'module_gallery_categories
+    										WHERE 	id='.$intCategoryId);
+     	
+    	$this->_objTpl->setVariable(array(
+    		'VALUE_ID'		=>	$intCategoryId,
+    		'VALUE_NAME'	=>	$strNameDefault,
+    		'VALUE_DESC'	=>	$strDescDefault
+    	));
+    	
+    	if ($objResult->fields['pid'] == 0){
+ 	     	$this->_objTpl->setVariable(array(
+	    		'VALUE_TYPE_MAIN'			=>	'checked',
+	    		'VALUE_TYPE_SUB'			=>	'',
+	    		'VALUE_MAINCAT_SELECTION'	=> 	'disabled'
+	    	));   	   		
+    	}else{
+ 	     	$this->_objTpl->setVariable(array(
+	    		'VALUE_TYPE_MAIN'			=>	'',
+	    		'VALUE_TYPE_SUB'			=>	'checked',
+	    		'VALUE_MAINCAT_SELECTION'	=> 	''
+	    	));   		
+    	}
+    	if ($objResult->fields['status'] == 0){
+	     	$this->_objTpl->setVariable(array(
+	    		'VALUE_STATE_ON'	=>	'',
+	    		'VALUE_STATE_OFF'	=>	'checked'
+	    	));   		
+    	}else{
+ 			$this->_objTpl->setVariable(array(
+	    		'VALUE_STATE_ON'	=>	'checked',
+	    		'VALUE_STATE_OFF'	=>	''
+	    	));     		
+    	}
+    	if ($objResult->fields['comment'] == 0){
+	     	$this->_objTpl->setVariable(array(
+	    		'VALUE_COMMENT_ON'	=>	'',
+	    		'VALUE_COMMENT_OFF'	=>	'checked'
+	    	));   		
+    	}else{
+ 			$this->_objTpl->setVariable(array(
+	    		'VALUE_COMMENT_ON'	=>	'checked',
+	    		'VALUE_COMMENT_OFF'	=>	''
+	    	));     		
+    	}
+    	if ($objResult->fields['voting'] == 0){
+	     	$this->_objTpl->setVariable(array(
+	    		'VALUE_VOTING_ON'	=>	'',
+	    		'VALUE_VOTING_OFF'	=>	'checked'
+	    	));   		
+    	}else{
+ 			$this->_objTpl->setVariable(array(
+	    		'VALUE_VOTING_ON'	=>	'checked',
+	    		'VALUE_VOTING_OFF'	=>	''
+	    	));     		
+    	}    	
+    	$intCategoryPid = $objResult->fields['pid'];
+    	
+    	$objResult = $objDatabase->Execute('SELECT 		id 
+						    				FROM 		'.DBPREFIX.'module_gallery_categories
+						    				WHERE 		pid=0 AND
+						    							id != '.$intCategoryId.'					 
+						    				ORDER BY 	sorting ASC');
+    	
+    	if ($objResult->RecordCount() == 0) { // no rows
+    		$this->_objTpl->hideBlock('showCategories');
+    		
+    	} else {
+    		while (!$objResult->EOF) {
+    			$objSubResult = $objDatabase->Execute('	SELECT		value
+    													FROM		'.DBPREFIX.'module_gallery_language
+    													WHERE		gallery_id='.$objResult->fields['id'].' AND
+    																lang_id='.intval($_SESSION['auth']['lang']).' AND
+    																name="name"
+    												');
+	    		$this->_objTpl->setVariable(array(
+		    			'NEW_CATEGORY_ID'	=>	$objResult->fields['id'],
+		    			'NEW_CATEGORY_NAME'	=>	$objSubResult->fields['value']
+		    	));
+		    		
+	    		if ($objResult->fields['id'] == $intCategoryPid) {
+	    			$this->_objTpl->setVariable('VALUE_SELECTED','selected');
+	    		} else {
+	    			$this->_objTpl->setVariable('VALUE_SELECTED','');
+	    		}
+		    		
+	    		$this->_objTpl->parse('showCategories');
+    			$objResult->MoveNext();
+    		}
+    	}
+    }
+    
+    
+    /**
+	* Updates an category in the database
+    *
+    * @global	array		$_ARRAYLANG
+    * @global	object		$objDatabase
+    * @param	integer		$intCategoryId
+    */   
+    function updateCategory($intCategoryId)
+    {
+    	global $objDatabase, $_ARRAYLANG;
+    	
+    	$intCategoryId = intval($intCategoryId);
+    	
+    	if ($_POST['category_type'] == 'main') {
+    		$intInsertPid = 0;	
+    	} else {
+    		$intInsertPid = intval($_POST['select_category_id']);
+    	}   	
+    	
+    	$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_categories
+			    				SET 	pid='.$intInsertPid.',
+			    						status="'.intval($_POST['category_status']).'",
+			    						comment="'.intval($_POST['category_comment']).'",
+			    						voting="'.intval($_POST['category_voting']).'"
+			    				WHERE 	id='.$intCategoryId);
+    	
+    	if ($intInsertPid != 0) {
+    		$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_categories
+    								SET		pid=0,
+    										sorting=99,
+    										status="0",
+    										comment="0",
+    										voting="0"
+    								WHERE 	pid='.$intCategoryId);
+    	}
+    	    	
+    	foreach ($_POST as $strKey => $strValue)
+    	{
+    		if (substr($strKey,0,strlen('category_name_')) == 'category_name_'	||
+    			substr($strKey,0,strlen('category_desc_')) == 'category_desc_')
+    		{
+    			$arrExplode = explode('_',$strKey);
+    			$arrValues[$arrExplode[2]][$arrExplode[1]] = htmlspecialchars(strip_tags($strValue));	
+    		}
+    	}
+
+    	foreach ($arrValues as $intLangId => $arrInner)
+    	{
+    		if (empty($arrInner['name'])) {
+    			$arrInner['name'] = $_ARRAYLANG['TXT_GALLERY_CATEGORY_NO_NAME'];
+    		}
+    		
+    		$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_gallery_language
+    								SET		value="'.$arrInner['name'].'"
+    								WHERE	gallery_id='.intval($intCategoryId).' AND
+    										lang_id='.$intLangId.' AND
+    										name="name"
+    								LIMIT	1
+    							');
+    										
+    		$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_gallery_language
+    								SET		value="'.$arrInner['desc'].'"
+    								WHERE	gallery_id='.intval($intCategoryId).' AND
+    										lang_id='.$intLangId.' AND
+    										name="desc"
+    								LIMIT	1
+    							'); 										
+    	} 
+    	$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_CATEGORY_UPDATED'];
+    }
+    
+    
+    /**
+	* Shows the category-details-page
+    *
+    * @global	array	$_ARRAYLANG
+    * @global	var		$objDatabase
+    * @global	array	$_CONFIG
+    */      
+    function showCategoryDetails($intCatId)
+    {
+    	global $objDatabase, $_ARRAYLANG, $_CONFIG;
+    	
+    	$this->_objTpl->loadTemplateFile('module_gallery_category_details.html', true, true);
+    	$this->_objTpl->setGlobalVariable(array(
+	    	'TXT_TITLE_NAME'			=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_NAME'],
+	    	'TXT_TITLE_ORDER'  			=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ORDER'],
+	    	'TXT_TITLE_ACTION'			=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ACTION'],
+	    	'TXT_TITLE_ATTR' 			=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ATTR'],
+	    	'TXT_TITLE_OTHER' 			=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_OTHER'],
+	    	'TXT_TITLE_CATEGORY'		=>	$_ARRAYLANG['TXT_CATEGORY'],
+	    	'TXT_RESET_PICTURE'			=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_RESET_PICTURE_MSG'],
+	    	'TXT_DELETE_PICTURE'		=>	$_ARRAYLANG['TXT_GALLERY_DELETE_IMAGE_MSG'],
+	    	'TXT_DELETE_PICTURE_ALL'	=>	$_ARRAYLANG['TXT_GALLERY_DELETE_IMAGE_ALL_MSG'],
+	    	'TXT_IMG_ROTATE_ALT'		=>	$_ARRAYLANG['TXT_GALLERY_ROTATE'],
+	    	'TXT_IMG_RESET_ALT'			=>	$_ARRAYLANG['TXT_RESET'],
+	    	'TXT_IMG_EDIT_ALT'			=>	$_ARRAYLANG['TXT_EDIT'],
+	    	'TXT_IMG_DELETE_ALT'		=>	$_ARRAYLANG['TXT_DELETE'],
+	    	'TXT_BUTTON_SAVESORT' 		=>	$_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_SORT'],
+	    	'TXT_ORIG_CAPT'				=>  $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ORIG_CAPT'],
+	    	'TXT_THUMB_CAPT'			=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_THUMB_CAPT'],
+	    	'TXT_THUMB_QUALITY_CAPT'	=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_THUMB_QUALITY_CAPT'],
+	    	'TXT_TITLE_STATUS'			=>	$_ARRAYLANG['TXT_GALLERY_STATUS'],
+	    	'TXT_SELECT_ALL'			=>	$_ARRAYLANG['TXT_SELECT_ALL'],
+	    	'TXT_DESELECT_ALL'			=>	$_ARRAYLANG['TXT_DESELECT_ALL'],
+	    	'TXT_SUBMIT_SELECT'			=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_SELECT'],
+	    	'TXT_SUBMIT_DELETE'			=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DELETE'],
+	    	'TXT_SUBMIT_ACTIVATE'		=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_ACTIVATE'],
+	    	'TXT_SUBMIT_DEACTIVATE'		=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DEACTIVATE'],
+	    	'TXT_SUBMIT_RESET'			=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_RESET'],
+	    	'TXT_SUBMIT_MOVE'			=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_MOVE'],
+	    ));     	
+
+		$objResult = $objDatabase->Execute('SELECT 	value
+											FROM 	'.DBPREFIX.'module_gallery_language
+											WHERE 	gallery_id='.intval($intCatId).' AND
+													lang_id='.intval($_SESSION['auth']['lang']).' AND
+													name="desc"
+											LIMIT	1
+										');	
+		$strCategoryComment = $objResult->fields['value'];	    
+	    
+    	$objResult = $objDatabase->Execute('SELECT 	comment,
+    												voting 
+    										FROM 	'.DBPREFIX.'module_gallery_categories 
+    										WHERE 	id='.$intCatId);
+    	$boolComment = $objResult->fields['comment'];
+    	$boolVoting = $objResult->fields['voting'];
+	
+    	$this->_objTpl->setGlobalVariable(array(
+    		'CATEGORY_NAME'	=> $strCategoryComment,
+    		'CATEGORY_ID'	=> $intCatId
+    		));
+    	
+    	$objResult = $objDatabase->Execute('SELECT 		id
+						    				FROM 		'.DBPREFIX.'module_gallery_pictures
+						    				WHERE 		catid='.$intCatId.' AND 
+						    							validated="1"
+						    				ORDER BY 	sorting');
+    	
+    	if ($objResult->RecordCount() == 0) {
+			$this->_objTpl->hideBlock('showImages');
+    	} else {
+			while (!$objResult->EOF) {
+				$arrImages[$objResult->fields['id']] = $objResult->fields['id'];
+				$objResult->MoveNext();
+			}
+    		   		
+    		$intRowCounter = 0;
+    		$this->_objTpl->setCurrentBlock('showImages');			
+	    	foreach ($arrImages AS $intKey => $strValue) {
+	    		if (!$boolFirst) {
+	    			$this->_objTpl->setVariable('IMAGES_ROWCLASS','rowWarn');
+	    			$boolFirst = true;
+	    		} else {
+		    		if ($intRowCounter % 2 == 0) {
+		    			$this->_objTpl->setVariable('IMAGES_ROWCLASS','row0');
+		    		} else {
+		    			$this->_objTpl->setVariable('IMAGES_ROWCLASS','row1');
+		    		}	    			
+	    		}
+	    		
+		    	$objResult = $objDatabase->Execute('SELECT 	*
+		    										FROM 	'.DBPREFIX.'module_gallery_pictures
+		    										WHERE 	id='.$strValue);
+				$objSubResult = $objDatabase->Execute('	SELECT	name
+														FROM	'.DBPREFIX.'module_gallery_language_pics
+														WHERE	picture_id='.$objResult->fields['id'].' AND
+																lang_id='.$_SESSION['auth']['lang'].'
+														LIMIT	1
+													');
+
+	    		
+	    		if ($objResult->fields['status'] == '0') {
+	    			$outputActiveIcon = 'led_red.gif';	
+	    		} else {
+	    			$outputActiveIcon = 'led_green.gif';	
+	    		}
+	    		
+	    		if ($objResult->fields['link'] == '') { 
+	    			// the linkfield is empty
+	    			$outputLinkIconS = '<!--';
+	    			$outputLinkIconE = '-->';
+	    		} else {
+	    			$outputLinkIconS = '';
+	    			$outputLinkIconE = '';
+	    		}
+	    
+	    		$intOutputId = $objResult->fields['id'];
+	    		$strOutputSorting = $objResult->fields['sorting'];
+	    		
+	    		$arrOrigFileInfo 	= getimagesize($this->strImagePath.$objResult->fields['path']);
+	    		$arrThumbFileInfo 	= getimagesize($this->strThumbnailPath.$objResult->fields['path']);
+	    		
+	    		$strOutputThumbpath 	= $this->strThumbnailWebPath.$objResult->fields['path'];
+	    		$strOutputOrigpath 		= $this->strImageWebPath.$objResult->fields['path'];
+	    		$strOutputName 			= $objSubResult->fields['name'];
+	    		$strOutputLastedit 		= date('d.m.Y',$objResult->fields['lastedit']);
+	    		$strOutputOrigReso 		= $arrOrigFileInfo[0].'x'.$arrOrigFileInfo[1];
+	    		$strOutputOrigWidth 	= $arrOrigFileInfo[0]+20;
+	    		$strOutputOrigHeight 	= $arrOrigFileInfo[1]+25;
+	    		$strOutputOrigSize 		= round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
+	    		$strOutputThumbReso 	= $arrThumbFileInfo[0].'x'.$arrThumbFileInfo[1];
+	    		$strOutputThumbSize 	= round(filesize($this->strThumbnailPath.$objResult->fields['path'])/1024,2);
+	    		
+	    		if ($objResult->fields['size_type'] == 'abs') {
+	    			$strOutputTypeMethod = $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS'];
+	    			$strOutputTypeSize = $objResult->fields['quality'].'%';
+	    		} else {
+	    			$strOutputTypeMethod = $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_PER'].'&nbsp;:'.$objResult->fields['size_proz'];
+	    			$strOutputTypeSize = $objResult->fields['quality'].'%';
+	    		}
+	    		
+			    if ($this->arrSettings['show_comments'] == 'on' && $boolComment) {
+		    		$objSubResult = $objDatabase->Execute('	SELECT	id
+		    												FROM	'.DBPREFIX.'module_gallery_comments
+		    												WHERE	picid='.$objResult->fields['id'].'
+		    											');
+		    		$strOutputCommentCount = $objSubResult->RecordCount().' '.$_ARRAYLANG['TXT_GALLERY_COMMENTS'].'<br />';
+			    }
+	    	    
+			    if ($this->arrSettings['show_voting'] == 'on' && $boolVoting) {
+		    		$objSubResult = $objDatabase->Execute('	SELECT	mark
+		    												FROM	'.DBPREFIX.'module_gallery_votes
+		    												WHERE	picid='.$objResult->fields['id'].'
+		    											');
+		    		$strOutputVotingCount = $objSubResult->RecordCount().' '.$_ARRAYLANG['TXT_GALLERY_RATING'];
+		    		if ($strOutputVotingCount > 0) {
+		    				$intMark = 0;
+		    			while (!$objSubResult->EOF) {
+		    				$intMark = $intMark + $objSubResult->fields['mark'];
+		    				$objSubResult->MoveNext();
+		    			}
+		    			$outputVotingAverage = ', &Oslash; '.number_format(round($intMark / $strOutputVotingCount,1),1,'.','\'');
+		    		} else {
+		    			$outputVotingAverage = ', &Oslash; 0.0';
+		    		}
+			    }			    
+			    
+	    		$strOutputSelect 		=	'<select name="newCategory'.$objResult->fields['id'].'" onchange="window.location= this.options[this.selectedIndex].value">';
+	    		$strOutputSelect 		.=	'<option value="0">---------------------------</option>';
+	    		$strMultiActionSelect 	=	'';
+	    		$strMultiActionSelect 	.=	'<option value="0">---------------------------</option>';
+				//here starts the category-menu
+				$objResult = $objDatabase->Execute('SELECT 		id
+													FROM 		'.DBPREFIX.'module_gallery_categories
+													WHERE 		pid=0 AND
+																status="1"
+													ORDER BY 	sorting');
+				while (!$objResult->EOF) {
+					$objSubResult = $objDatabase->Execute('	SELECT	value
+															FROM	'.DBPREFIX.'module_gallery_language
+															WHERE	gallery_id='.$objResult->fields['id'].' AND
+																	lang_id='.intval($_SESSION['auth']['lang']).' AND
+																	name="name"
+															LIMIT	1
+														');
+					$arrMainCategories[$objResult->fields['id']] = $objSubResult->fields['value'];	
+					$objResult->MoveNext();
+				}
+				foreach ($arrMainCategories as $intMainCatKey => $strMainCatValue) {
+					$strOutputSelect 		.= '<option value="?cmd=gallery&act=change_category_picture&id='.$intOutputId.'&catid='.$intMainCatKey.'">'.$strMainCatValue.'</option>';
+					$strMultiActionSelect 	.= '<option value="'.$intMainCatKey.'">'.$strMainCatValue.'</option>';
+					$objResult = $objDatabase->Execute('SELECT 		id
+														FROM 		'.DBPREFIX.'module_gallery_categories
+														WHERE 		pid='.$intMainCatKey.' AND status="1"
+														ORDER BY sorting');
+					if ($objResult->RecordCount() > 0) {
+						while (!$objResult->EOF) {
+							$objSubResult = $objDatabase->Execute('	SELECT	value
+																	FROM	'.DBPREFIX.'module_gallery_language
+																	WHERE	gallery_id='.$objResult->fields['id'].' AND
+																			lang_id='.intval($_SESSION['auth']['lang']).' AND
+																			name="name"
+																	LIMIT	1
+																');							
+							$strOutputSelect 		.= '<option value="?cmd=gallery&act=change_category_picture&id='.$intOutputId.'&catid='.$objResult->fields['id'].'">&nbsp;&nbsp;&nbsp;'.$objSubResult->fields['value'].'</option>';			
+							$strMultiActionSelect 	.= '<option value="'.$objResult->fields['id'].'">&nbsp;&nbsp;&nbsp;'.$objSubResult->fields['value'].'</option>';
+							$objResult->MoveNext();
+						}		
+					}
+				}
+				// here ends the category-menu	    		
+	    		$strOutputSelect .= '</select>';
+	    		
+	 			$this->_objTpl->setVariable(array(
+	    			'IMAGES_ID'					=>	$intOutputId,
+	    			'IMAGES_THUMB_PATH'			=>	$strOutputThumbpath,
+	    			'IMAGE_ORIG_PATH'			=>	$strOutputOrigpath,
+	    			'IMAGES_ACTIVE_ICON'		=>	$outputActiveIcon,
+	    			'IMAGES_HIDE_LINKICON_S'	=>	$outputLinkIconS,
+	    			'IMAGES_HIDE_LINKICON_E'	=>	$outputLinkIconE,
+	    			'IMAGES_NAME'				=>	$strOutputName,
+	    			'IMAGES_LASTEDIT'			=>	$strOutputLastedit,
+	    			'IMAGES_ORIG_RESO'			=>	$strOutputOrigReso,
+	    			'IMAGES_ORIG_WIDTH'			=>	$strOutputOrigWidth,
+	    			'IMAGES_ORIG_HEIGHT'		=>	$strOutputOrigHeight,
+	    			'IMAGES_ORIG_SIZE'			=>	$strOutputOrigSize,
+	    			'IMAGES_THUMB_RESO'			=>	$strOutputThumbReso,
+	    			'IMAGES_THUMB_SIZE'			=>	$strOutputThumbSize,
+	    			'IMAGES_TYPE_METHOD'		=>	$strOutputTypeMethod,
+	    			'IMAGES_TYPE_SIZE'			=>	$strOutputTypeSize,
+	    			'IMAGES_CATEGORY_SELECT'	=>	$strOutputSelect,
+	    			'IMAGES_SORTING'			=>	$strOutputSorting,
+	    			'IMAGES_COMMENT_COUNT'		=>	$strOutputCommentCount,
+	    			'IMAGES_VOTING_COUNT'		=>	$strOutputVotingCount,
+	    			'IMAGES_VOTING_AVERAGE'		=>	$outputVotingAverage
+	    		));	
+	    		$this->_objTpl->parseCurrentBlock();
+	    		$intRowCounter++;
+	    	}
+	    	$this->_objTpl->setVariable('IMAGES_MULTIACTION_MOVE_SELECT',$strMultiActionSelect);
+    	}
+    }
+    
+    
+    /**
+	* Activate / Inactivate a picture
+    *
+    * @global	object		$objDatabase
+    * @param	integer		$intImageId
+    */           
+    function activatePicture($intImageId, $act=NULL)
+    {
+    	global $objDatabase;
+    	
+    	$intImageId = intval($intImageId);
+    	
+    	if ($act == "activate") {
+    		$intNewStatus = 1;
+    	} elseif ($act == "deactivate") {
+    		$intNewStatus = 0;
+    	} else {
+	    	$objResult = $objDatabase->Execute('SELECT 	status
+							    				FROM 	'.DBPREFIX.'module_gallery_pictures
+							    				WHERE 	id='.$intImageId);
+	    	if ($objResult->fields['status'] == '0') {
+	    		$intNewStatus = 1;	
+	    	} else {
+	    		$intNewStatus = 0;	
+	    	}
+    	}
+   
+    	$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_pictures
+    							SET 	status="'.$intNewStatus.'"
+    							WHERE 	id='.$intImageId);
+    }
+    
+    
+    /**
+	* Reset the picture and move it back to the validation part
+    *
+    * @global	object		$objDatabase
+    * @global	array		$_CONFIG
+    * @global	array		$_ARRAYLANG
+    * @param	integer		$intImageId
+    */ 
+    function resetPicture($intImageId)
+    {
+    	global $objDatabase,$_CONFIG,$_ARRAYLANG;
+    	
+    	$intImageId = intval($intImageId);
+    	
+    	$objResult = $objDatabase->Execute('SELECT 	path
+    										FROM 	'.DBPREFIX.'module_gallery_pictures
+    										WHERE 	id='.$intImageId);
+    
+    	unlink($this->strThumbnailPath.$objResult->fields['path']);
+     	$objDatabase->Execute('	UPDATE '.DBPREFIX.'module_gallery_pictures
+    							SET 	validated="0",
+    									lastedit='.time().',
+    									catid=0
+    							WHERE 	id='.$intImageId);
+
+		$objDatabase->Execute('	DELETE
+								FROM	'.DBPREFIX.'module_gallery_votes
+								WHERE	picid='.$intImageId.'
+							');
+		$objDatabase->Execute('	DELETE
+								FROM	'.DBPREFIX.'module_gallery_comments
+								WHERE	picid='.$intImageId.'
+							');       	
+    	
+    	$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_PICTURE_RESET'];
+    }
+    
+    
+    /**
+	* Changes the Category of an Image
+    *
+    * @global	object		$objDatabase
+    * @global	array		$_ARRAYLANG
+    * @param	integer		$intImageId
+    * @param	integer		$intNewCatId
+    */     
+    function changeCategoryOfPicture($intImageId,$intNewCatId)
+    {
+    	global $objDatabase,$_ARRAYLANG;
+       	
+    	$intImageId = intval($intImageId);
+    	$intNewCatId = intval($intNewCatId);
+    	
+    	$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_pictures
+    							SET 	catid='.$intNewCatId.',
+    									lastedit='.time().'
+    							WHERE 	id='.$intImageId);
+    	$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_PICTURE_CATEGORY_CHANGED'];
+    }
+    
+    
+    /**
+	* Shows the edit-form for a picture
+    *
+    * @global	var		$objDatabase
+    * @global	array	$_CONFIG
+    * @global	array	$_ARRAYLANG
+    */      
+    function showEditPicture()
+    {
+    	global $objDatabase,$_ARRAYLANG,$_CONFIG;
+
+    	$intPid = intval($_GET['id']);
+    	
+    	$this->_objTpl->loadTemplateFile('module_gallery_edit_image.html',true,true);
+    	$this->_objTpl->setVariable(array(
+    		'TXT_TAB_SETTINGS'			=>	$_ARRAYLANG['TXT_GALLERY_MENU_PICTURE_DETAILS'],
+    		'TXT_TAB_COMMENTS'			=>	$_ARRAYLANG['TXT_TAB_COMMENTS'],
+    		'TXT_TAB_VOTES'				=>	$_ARRAYLANG['TXT_TAB_VOTES'],
+	    	'TXT_TITLE'					=>	$_ARRAYLANG['TXT_GALLERY_MENU_PICTURE_DETAILS'],
+    		'TXT_IMAGENAME'				=>	$_ARRAYLANG['TXT_IMAGE_NAME'],
+    		'TXT_IMAGELINKNAME'			=>	$_ARRAYLANG['TXT_IMAGE_LINK_NAME'],
+    		'TXT_LINKNAME_HELP'			=>	$_ARRAYLANG['TXT_IMAGE_LINK_HELP'],
+    		'TXT_IMAGELINK'				=>	$_ARRAYLANG['TXT_IMAGE_LINK'],
+    		'TXT_SIZESHOW'				=>	$_ARRAYLANG['TXT_IMAGE_SIZE_SHOW'],
+    		'TXT_BUTTON_SUBMIT'			=>	$_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_CATEGORY'],
+    		'TXT_COMMENT_TITLE'			=>	$_ARRAYLANG['TXT_COMMENT_SHOW_TITLE'],
+    		'TXT_COMMENT_EDIT'			=>	$_ARRAYLANG['TXT_COMMENT_EDIT'],
+    		'TXT_COMMENT_DELETE'		=>	$_ARRAYLANG['TXT_COMMENT_DELETE'],
+    		'TXT_COMMENT_DELETE_JS'		=>	$_ARRAYLANG['TXT_COMMENT_DELETE_JS'],
+    		'TXT_COMMENT_SELECT_ALL'	=>	$_ARRAYLANG['TXT_SELECT_ALL'],
+    		'TXT_COMMENT_DESELECT_ALL'	=>	$_ARRAYLANG['TXT_DESELECT_ALL'],
+    		'TXT_COMMENT_SELECT_ACT'	=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_SELECT'],
+    		'TXT_COMMENT_DELETE_ALL'	=>	$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DELETE'],
+    		'TXT_VOTING_TITLE'			=>	$_ARRAYLANG['TXT_GALLERY_RATING'],
+    		'TXT_VOTING_DELETE_JS'		=>	$_ARRAYLANG['TXT_VOTING_DELETE_JS'],
+    		'TXT_COMMENT_DELETE_ALL_JS'	=>	$_ARRAYLANG['TXT_VOTING_DELETE_ALL_JS'],
+    		'TXT_EXTENDED'				=>	$_ARRAYLANG['TXT_GALLERY_EXTENDED']
+    	));
+    	
+    	$objResult = $objDatabase->Execute('	SELECT		'.DBPREFIX.'module_gallery_categories.comment,
+    														'.DBPREFIX.'module_gallery_categories.voting,
+    														'.DBPREFIX.'module_gallery_pictures.id AS pID
+    											FROM		'.DBPREFIX.'module_gallery_pictures
+    											LEFT JOIN	'.DBPREFIX.'module_gallery_categories
+    											ON			'.DBPREFIX.'module_gallery_pictures.catid='.DBPREFIX.'module_gallery_categories.id
+    											HAVING		pID='.$intPid.'
+    											LIMIT		1
+    										');
+    	$boolComment 	= $objResult->fields['comment'];
+    	$boolVoting		= $objResult->fields['voting'];										
+
+    	if ($this->arrSettings['show_comments'] == 'off' || $boolComment == 0) {
+    		$this->_objTpl->hideBlock('tabComment');
+    		if ($_GET['active'] == 'comment') {
+    			$_GET['active'] = 'default';
+    		}
+    	}
+    	
+    	if ($this->arrSettings['show_voting'] == 'off' || $boolVoting == 0) {
+    		$this->_objTpl->hideBlock('tabVoting');
+    		if ($_GET['active'] == 'voting') {
+    			$_GET['active'] = 'default';
+    		}
+    	}    	
+    	
+    	switch ($_GET['active']) {
+    		case 'comment':
+    			$this->_objTpl->SetVariable(array(	'TAB_ACTIVE_SETTINGS'	=>	'',
+    												'TAB_ACTIVE_COMMENTS'	=>	'active',
+    												'TAB_ACTIVE_VOTES'		=>	'',
+    												'TAB_DISPLAY_SETTINGS'	=>	'none',
+    												'TAB_DISPLAY_COMMENTS'	=>	'block',
+    												'TAB_DISPLAY_VOTES'		=>	'none'
+    										));
+    		break;
+    		case 'voting':
+    			$this->_objTpl->SetVariable(array(	'TAB_ACTIVE_SETTINGS'	=>	'',
+    												'TAB_ACTIVE_COMMENTS'	=>	'',
+    												'TAB_ACTIVE_VOTES'		=>	'active',
+    												'TAB_DISPLAY_SETTINGS'	=>	'none',
+    												'TAB_DISPLAY_COMMENTS'	=>	'none',
+    												'TAB_DISPLAY_VOTES'		=>	'block'
+    										));    		
+    		break;
+    		default:
+    			$this->_objTpl->SetVariable(array(	'TAB_ACTIVE_SETTINGS'	=>	'active',
+    												'TAB_ACTIVE_COMMENTS'	=>	'',
+    												'TAB_ACTIVE_VOTES'		=>	'',
+    												'TAB_DISPLAY_SETTINGS'	=>	'block',
+    												'TAB_DISPLAY_COMMENTS'	=>	'none',
+    												'TAB_DISPLAY_VOTES'		=>	'none'
+    										));    
+    	}
+    	   	
+    	$objResult = $objDatabase->Execute('SELECT 	path,
+    												link,
+    												size_show
+    										FROM 	'.DBPREFIX.'module_gallery_pictures
+    										WHERE 	id='.$intPid);
+    	
+		$objSubResult = $objDatabase->Execute('	SELECT	name,
+														`desc`
+												FROM	'.DBPREFIX.'module_gallery_language_pics
+												WHERE	picture_id='.$intPid.' AND
+														lang_id='.$_SESSION['auth']['lang'].'
+												LIMIT	1');
+														
+    	$boolSizeShow = ($objResult->fields['size_show'] == '1') ? 'checked' : '';
+    	
+    	$this->_objTpl->setVariable(array(
+    		'VALUE_THUMB_PATH' 		=> $this->strThumbnailWebPath.$objResult->fields['path'],
+    		'VALUE_NAME'			=> $objSubResult->fields['name'],
+    		'VALUE_LINKNAME'		=> $objSubResult->fields['desc'],
+    		'VALUE_LINK'			=> $objResult->fields['link'],
+    		'VALUE_SIZESHOW_CHECKED'=> $boolSizeShow,
+    		'VALUE_ID'				=> $intPid 	
+    	));
+    	
+		$objResult = $objDatabase->Execute('	SELECT		id,
+															name
+												FROM		'.DBPREFIX.'languages
+												ORDER BY	id ASC
+											');    	
+		if ($objResult->RecordCount() > 0) {
+			while (!$objResult->EOF) {
+				$objSubResult = $objDatabase->Execute('	SELECT	name,
+																`desc`
+														FROM	'.DBPREFIX.'module_gallery_language_pics
+														WHERE	picture_id='.$intPid.' AND
+																lang_id='.$objResult->fields['id'].'
+														LIMIT	1');
+				$this->_objTpl->setVariable(array(
+					'NAMEFIELDS_VALUE'		=>	$objSubResult->fields['name'],
+					'NAMEFIELDS_LID'		=>	$objResult->fields['id'],
+					'NAMEFIELDS_LANGUAGE'	=>	$objResult->fields['name'],
+			));
+				$this->_objTpl->setVariable(array(
+					'DESCFIELDS_VALUE'		=>	$objSubResult->fields['desc'],
+					'DESCFIELDS_LID'		=>	$objResult->fields['id'],
+					'DESCFIELDS_LANGUAGE'	=>	$objResult->fields['name'],
+			));
+			$this->_objTpl->parse('showNameFields');  
+			$this->_objTpl->parse('showDescFields'); 			
+			$objResult->MoveNext();	
+			}	
+		} else {
+			$this->_objTpl->hideBlock('showNameFields');
+			$this->_objTpl->hideBlock('showDescFields');
+		}
+					   	
+    //comments
+    	$objResult = $objDatabase->Execute('	SELECT		id,
+    														date,
+    														ip,
+    														name,
+    														email,
+    														www,
+    														comment
+    											FROM		'.DBPREFIX.'module_gallery_comments
+    											WHERE		picid='.$intPid.'
+    											ORDER BY	date ASC
+    										');
+    	$this->_objTpl->SetVariable('COMMENTS_COUNT',$objResult->RecordCount());
+    	
+    	if ($objResult->RecordCount() > 0) {
+    		$i=1;
+    		while (!$objResult->EOF) {
+    			$this->_objTpl->SetVariable(array(	'COMMENTS_ROWCLASS'	=>	($i % 2)+1,
+    												'COMMENTS_ID'		=>	$objResult->fields['id'],
+    												'COMMENTS_DATE'		=>	date('d.m.Y',$objResult->fields['date']),
+    												'COMMENTS_IP'		=>	$objResult->fields['ip'],
+    												'COMMENTS_NAME'		=>	$objResult->fields['name'],
+    												'COMMENTS_EMAIL'	=>	$objResult->fields['email'],
+    												'COMMENTS_WWW'		=>	$objResult->fields['www'],
+    												'COMMENTS_TEXT'		=>	nl2br($objResult->fields['comment'])
+    										));
+    			$this->_objTpl->parse('showComments');
+    			$objResult->MoveNext();
+    			$i++;
+    		}
+    	} else {
+    		$this->_objTpl->hideBlock('showComments');	
+    	}
+    	
+    //voting
+    	$objResult = $objDatabase->Execute('	SELECT		id,
+    														mark
+    											FROM		'.DBPREFIX.'module_gallery_votes
+    											WHERE		picid='.$intPid.'
+    										');
+     	if ($objResult->RecordCount() > 0) {
+    		$intMark = 0;
+    		$intTotal = $objResult->RecordCount();
+    		while (!$objResult->EOF) {
+    			$intMark = $intMark + $objResult->fields['mark'];
+    			$objResult->MoveNext();
+    		}
+    	}
+    	$this->_objTpl->SetVariable(array(	'VOTING_COUNT'		=>	intval($intTotal),
+    										'VOTING_AVERAGE'	=>	number_format(@round($intMark / $intTotal,1),1,'.','\'')
+    									));
+    	/** start paging **/    	
+		$strPaging = getPaging($objResult->RecordCount(), intval($_GET['pos']),'&amp;cmd=gallery&amp;act=edit_picture&amp;active=voting&amp;id='.intval($_GET['id']), '<b>'.$_ARRAYLANG['TXT_TAB_VOTES'].'</b>', true);
+		$this->_objTpl->setVariable('VOTING_PAGING', $strPaging);
+		/** end paging **/
+    	$objResult = $objDatabase->SelectLimit('SELECT		id,
+    														date,
+    														ip,
+    														mark
+    											FROM		'.DBPREFIX.'module_gallery_votes
+    											WHERE		picid='.$intPid.'
+    											ORDER BY	date ASC',
+    											intval($_CONFIG['corePagingLimit']),
+    											intval($_GET['pos']));	
+    			   	   	
+     	if ($objResult->RecordCount() > 0) {
+     		$i=1;
+    		while (!$objResult->EOF) {
+    			$this->_objTpl->SetVariable(array(	'VOTES_ROWCLASS'	=>	($i % 2)+1,
+    												'VOTES_ID'			=>	$objResult->fields['id'],
+    												'VOTES_DATE'		=>	date('d.m.Y',$objResult->fields['date']),
+    												'VOTES_IP'			=>	$objResult->fields['ip'],
+    												'VOTES_MARK'		=>	$objResult->fields['mark']
+    										));
+    			$this->_objTpl->parse('showVotes');
+    			$objResult->MoveNext();
+    			$i++;
+    		}
+    	} else {
+    		$this->_objTpl->hideBlock('showVotes');	
+    	}
+    }
+    
+    
+    /**
+	* Updates the name of a picture
+	*
+    * @global	object		$objDatabase
+    * @global	array		$_ARRAYLANG
+    * @global	integer			$intImageId
+    */ 
+    function updatePicture()
+    {
+    	global $objDatabase,$_ARRAYLANG,$_CONFIG;
+    	
+    	$intPicId = intval($_GET['id']);
+    	
+    	foreach ($_POST as $strKey => $strValue) {
+    		if (substr($strKey,0,strlen('pictureName_')) == 'pictureName_') {
+    			$arrExplode = explode('_',$strKey,2);
+    			if (empty($strValue)) {
+    				$strValue = $_ARRAYLANG['TXT_GALLERY_CATEGORY_NO_NAME'];
+    			} else {
+					$strValue = get_magic_quotes_gpc() ? strip_tags($strValue) : addslashes(strip_tags($strValue));
+    			}
+				
+    			$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_language_pics
+										SET 	name="'.$strValue.'"
+										WHERE 	picture_id='.$intPicId.' AND
+												lang_id='.intval($arrExplode[1]).'
+										LIMIT	1');
+    		}
+    		
+    		if (substr($strKey,0,strlen('pictureDesc_')) == 'pictureDesc_') {
+    			$arrExplode = explode('_',$strKey,2);
+				
+    			$strValue = get_magic_quotes_gpc() ? strip_tags($strValue) : addslashes(strip_tags($strValue));
+				
+    			$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_language_pics
+										SET 	`desc`="'.$strValue.'"
+										WHERE 	picture_id='.$intPicId.' AND
+												lang_id='.intval($arrExplode[1]).'
+										LIMIT	1');
+    		}
+    	}
+    	    	
+    	$_POST['pictureLink'] = get_magic_quotes_gpc() ? strip_tags($_POST['pictureLink']) : addslashes(strip_tags($_POST['pictureLink']));
+    	
+    	$boolSizeShow = isset($_POST['pictureSizeShow']) ? 1 : 0;    	 	
+    	$objResult = $objDatabase->Execute('UPDATE 	'.DBPREFIX.'module_gallery_pictures
+    				   						SET 	link="'.$_POST['pictureLink'].'",
+						    					  	size_show="'.$boolSizeShow.'",
+						    					   	lastedit='.time().'
+						    				WHERE 	id='.$intPicId);
+    	
+    	$objResult = $objDatabase->Execute('SELECT 	catid
+    				  						FROM 	'.DBPREFIX.'module_gallery_pictures
+    										WHERE 	id='.$intPicId);
+    	return $objResult->fields['catid'];
+    }
+    
+    
+    /**
+	* Shows the settings-page
+    *
+    * @global	array		$_ARRAYLANG
+    * @global	object		$objDatabase
+    */       
+    function showSettings()
+    {
+     	global $objDatabase,$_ARRAYLANG;
+     	
+     	$this->_objTpl->loadTemplateFile('module_gallery_settings.html',true,true);  	
+    	$this->_objTpl->setVariable(array(
+	    	'TXT_TITLE'								=>	$_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'],
+	    	'TXT_SETTINGS_IMAGENAME_SHOW'			=>	$_ARRAYLANG['TXT_SHOW_PICTURE_NAME'],
+	    	'TXT_SETTINGS_COMMENTS_SHOW'			=>	$_ARRAYLANG['TXT_SETTINGS_COMMENTS'],
+	    	'TXT_SETTINGS_VOTING_SHOW'				=>	$_ARRAYLANG['TXT_SETTINGS_VOTING'],
+	    	'TXT_SETTINGS_UPLOAD'					=>	$_ARRAYLANG['TXT_MAX_IMAGES_UPLOAD'],
+	    	'TXT_SETTINGS_VALIDATION_TYPE'			=>	$_ARRAYLANG['TXT_VALIDATION_STANDARD_TYPE'],
+			'TXT_SETTINGS_VALIDATION_ALL'			=>	$_ARRAYLANG['TXT_SETTINGS_VALIDATION_ALL'],
+			'TXT_SETTINGS_VALIDATION_SINGLE'		=>	$_ARRAYLANG['TXT_SETTINGS_VALIDATION_SINGLE'],
+			'TXT_SETTINGS_VALIDATION_LIMIT'			=>	$_ARRAYLANG['TXT_VALIDATION_SHOW_LIMIT'],
+			'TXT_SETTINGS_THUMB_TYPE'				=>	$_ARRAYLANG['TXT_STANDARD_SIZE_TYPE_THUMBNAILS'],
+			'TXT_SETTINGS_THUMB_ABS'				=>	$_ARRAYLANG['TXT_SETTINGS_THUMB_ABS'],
+			'TXT_SETTINGS_THUMB_PROZ'				=>	$_ARRAYLANG['TXT_SETTINGS_THUMB_PROZ'],
+			'TXT_SETTINGS_THUMB_ABS_WIDTH'			=>	$_ARRAYLANG['TXT_SETTINGS_THUMB_ABS_WIDTH'],
+			'TXT_SETTINGS_THUMB_ABS_HEIGHT'			=>	$_ARRAYLANG['TXT_SETTINGS_THUMB_ABS_HEIGHT'],
+			'TXT_SETTINGS_THUMB_PROZ_DESC'			=>	$_ARRAYLANG['TXT_SETTINGS_THUMB_PROZ_DESC'],
+			'TXT_SETTINGS_QUALITY'					=>	$_ARRAYLANG['TXT_SETTINGS_QUALITY'],
+			'TXT_STANDARD_QUALITY_UPLOADED_PICS'	=>	$_ARRAYLANG['TXT_STANDARD_QUALITY_UPLOADED_PICS'],
+			'TXT_QUALITY'							=>	$_ARRAYLANG['TXT_QUALITY'],
+	    	'TXT_BUTTON_SUBMIT'						=>	$_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_SORT']
+    	)); 
+
+    	$objResult = $objDatabase->Execute('SELECT 		*
+    										FROM 		'.DBPREFIX.'module_gallery_settings
+    										ORDER BY 	id');
+    	
+    	while (!$objResult->EOF) {
+    		$strValue = '';
+    		
+    		switch ($objResult->fields['name']) {
+    			case 'show_names':
+    			case 'show_comments':
+    			case 'show_voting':
+    				if ($objResult->fields['value'] == 'on') {
+    					$strValue = 'checked';	
+    				}
+    				$this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$strValue);		
+    			break;
+    			case 'standard_size_type':
+    				if ($objResult->fields['value'] == 'abs') 	{
+    					$this->_objTpl->SetVariable(array(	'SETTINGS_VALUE_THUMB_TYPE_ABS'		=>	'checked',
+    														'SETTINGS_VALUE_THUMB_TYPE_PROZ'	=>	''
+    												));
+    				} else {
+     					$this->_objTpl->SetVariable(array(	'SETTINGS_VALUE_THUMB_TYPE_ABS'		=>	'',
+    														'SETTINGS_VALUE_THUMB_TYPE_PROZ'	=>	'checked'
+    												));   					
+    				}
+    			break;
+    			case 'validation_standard_type':
+    				if ($objResult->fields['value'] == 'all') 	{
+    					$this->_objTpl->SetVariable(array(	'SETTINGS_VALUE_VALIDATION_TYPE_ALL'	=>	'checked',
+    														'SETTINGS_VALUE_VALIDATION_TYPE_SINGLE'	=>	''
+    												));
+    				} else {
+     					$this->_objTpl->SetVariable(array(	'SETTINGS_VALUE_VALIDATION_TYPE_ALL'	=>	'',
+    														'SETTINGS_VALUE_VALIDATION_TYPE_SINGLE'	=>	'checked'
+    												));   					
+    				}    			
+    			break;
+    			default: //integer value
+    				$this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$objResult->fields['value']);		
+    		}
+    		$objResult->MoveNext();
+    	}
+    }
+    
+    
+    /**
+	* Save the settings for the gallery
+    *
+    * @global	object		$objDatabase
+    * @global	array		$_ARRAYLANG
+    * @global	array		$_POST
+    */     
+    function saveSettings()
+    {
+    	global $objDatabase,$_ARRAYLANG;
+    	
+    	if ($_POST['standard_size_type'] != 'proz' && $_POST['standard_size_type'] != 'abs') { 
+    		// the submitted category isnt allowed, so set the standardvalue 'proz'
+    		$_POST['standard_size_type'] = 'proz';	
+    	}    	
+    	if ($_POST['standard_height_abs'] > 0 && $_POST['standard_width_abs'] > 0) { 
+    		// only one value can be bigger than 0, so set one to zero
+    		$_POST['standard_height_abs'] = 0;	
+    	}
+    	
+    	if ($_POST['standard_height_abs'] > 2000) {
+    		$_POST['standard_height_abs'] = 2000;	
+    	}
+    	if ($_POST['standard_width_abs'] > 2000) {
+    		$_POST['standard_width_abs'] = 2000;	
+    	}
+    	if ($_POST['validation_standard_type'] != 'all' && $_POST['validation_standard_type'] != 'single') { 
+    		// the submitted standard type is not correct
+    		$_POST['validation_standard_type'] = 'all';
+    	}
+    	if ($_POST['show_names'] != 'on') { 
+    		// the value is not allowed, reset to off
+    		$_POST['show_names'] = 'off';
+    	}
+    	if ($_POST['show_comments'] != 'on') {
+    		//the value is not allowed, set it to 'off'
+    		$_POST['show_comments'] = 'off';	
+    	}
+      	if ($_POST['show_voting'] != 'on') {
+    		//the value is not allowed, set it to 'off'
+    		$_POST['show_voting'] = 'off';	
+    	}
+    	if (intval($_POST['quality']) > 95 || empty($_POST['quality']) || !is_integer($_POST['quality'])){
+    		// the value shouldn't be above 95 otherwise the image becomes larger
+    		$_POST['quality'] = 95;	
+    	}
+		foreach ($_POST as $strKey => $strValue) {
+			$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_settings
+									SET 	value="'.$strValue.'"
+									WHERE 	name="'.$strKey.'"');
+		}
+		$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_SETTINGS_SAVED'];
+    }
+    
+    
+    /**
+	* Shows the UploadForm
+    *
+    * @global	object		$objDatabase
+    * @global	array		$_ARRAYLANG
+    */     
+    function showUploadForm()
+    {
+    	global $objDatabase,$_ARRAYLANG;
+    	
+    	//get enabled filetypes
+		if($this->boolGifEnabled == true){
+			$strEnabledTypes .= 'GIF ';
+		}
+		
+		if($this->boolJpgEnabled == true){
+			$strEnabledTypes .= 'JPG ';
+		}
+		
+		if($this->boolPngEnabled == true){
+			$strEnabledTypes .= 'PNG ';
+		}
+    	
+    	$this->_objTpl->loadTemplateFile('module_gallery_upload_images.html',true,true); 
+ 		$this->_objTpl->setVariable(array(
+			'TXT_TITLE'					=>	$_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM'],
+			'TXT_IMAGENUMBER'			=>	$_ARRAYLANG['TXT_GALLERY_UPLOAD_FORM_IMAGE_NUMBER'],
+			'TXT_ENABLED_IMAGE_TYPE'	=>	$_ARRAYLANG['TXT_GALLERY_FORMAT_SUPPORT'].' '.$strEnabledTypes.'. '.$_ARRAYLANG['TXT_GALLERY_NO_UPLOAD'],
+			'TXT_BUTTON_SUBMIT'			=>	$_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM_SUBMIT']		
+		));
+		
+		$this->_objTpl->setCurrentBlock('showUploadForm');
+		$intRowCounter = 0;
+		for ($i = 1; $i <= $this->arrSettings['max_images_upload'];$i++)
+		{
+			$this->_objTpl->setVariable(array(	
+				'UPLOAD_IMAGENUMBER'	=>	$i,
+				'UPLOAD_ROWCLASS'		=>	($intRowCounter % 2)
+				));
+			$this->_objTpl->parseCurrentBlock();
+			$intRowCounter++;
+		}
+    }
+    
+    
+    /**
+	* Upload the submitted images
+    *
+    * @global	object		$objDatabase
+    * @global	array		$_CONFIG
+    * @global	array		$_ARRAYLANG
+    * @global 	array		$_FILES
+    */      
+    function uploadImages(){
+    	global $objDatabase,$_ARRAYLANG,$_FILES,$_CONFIG;
+    	
+    	$uploadedImagesCounter = 0;
+		for ($i = 1; $i <= $this->arrSettings['max_images_upload'];$i++){		
+			$strUploaded_Name 		= strcheck($_FILES['imageFile'.$i]['name']);
+			$strUploaded_Type		= $_FILES['imageFile'.$i]['type'];
+			$intUploaded_Size		= $_FILES['imageFile'.$i]['size'];
+			$strUploaded_Tempname	= $_FILES['imageFile'.$i]['tmp_name'];
+			$intUploaded_Error 		= $_FILES['imageFile'.$i]['error'];
+
+			$arrEnabledTypes = array();
+
+			if($this->boolGifEnabled){
+				$arrEnabledTypes[] = 'image/gif';
+			}
+			
+			if($this->boolJpgEnabled){
+				$arrEnabledTypes[] = 'image/pjpeg';
+				$arrEnabledTypes[] = 'image/jpeg';
+			}
+			
+			if($this->boolPngEnabled){
+				$arrEnabledTypes[] = 'image/png';
+			}
+			
+			if ($intUploaded_Error == 0 ){ // no errors reported
+				if(in_array($strUploaded_Type, $arrEnabledTypes)){ //filetype is okay
+					if (file_exists($this->strImagePath.$strUploaded_Name)) { //This filename already exists --> add a number behind the file (1,2,3...)					
+						$strTempFileEnding 	= strrchr($strUploaded_Name,'.'); // i have the fileending
+						$strTempFileName 	= '';
+						$arrTempFile 		= explode('.',$strUploaded_Name);
+						
+						for ($j = 0;$j < count($arrTempFile)-1;$j++){
+							$strTempFileName .= $arrTempFile[$j].'.';
+						}
+						$strTempFileName = substr($strTempFileName,0,strlen($strTempFileName)-1); // i have the filename
+	
+						$boolChecker = false;
+						$j=1;
+						while ($boolChecker == false){
+							if (!file_exists($this->strImagePath.$strTempFileName.$j.$strTempFileEnding)){ //The filename is okay
+								$strUploaded_Name = $strTempFileName.$j.$strTempFileEnding;
+								$boolChecker = true;
+							}
+							$j++;
+						}
+					}		
+					$strUploadPath 		= $this->strImagePath.$strUploaded_Name;			
+					$strDatabasePath 	= $strUploaded_Name;
+									
+					move_uploaded_file($strUploaded_Tempname,$strUploadPath);
+					$this->insertImage($strDatabasePath,$strUploaded_Name);
+					$uploadedImagesCounter++;
+				}
+			}
+		}
+		$this->statusMessage = $uploadedImagesCounter.' '.$_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_IMAGES_UPLOADED'];
+    }
+    
+    
+    /**
+	* Insert image into the database
+    *
+    * @global	object		$objDatabase
+    * @global	array		$_CONFIG
+    * @global	array		$arrSettings
+    * @param	string		$strImagePath
+    * @param	integer		$imageName
+    */ 
+    function insertImage($strImagePath,$imageName){
+    	global $objDatabase,$_CONFIG;
+    	
+    	$arrImageInfo 	= getimagesize($this->strImagePath.$strImagePath);
+    	$intOldWidth 	= $arrImageInfo[0];
+    	$intOldHeight 	= $arrImageInfo[1];
+    	$intNewWidth 	= intval($this->arrSettings['standard_width_abs']);
+    	$intNewHeight 	= intval($this->arrSettings['standard_height_abs']);
+    	   	
+    	if ($intNewWidth == 0){
+    		// exception if width and height or 0!
+    		if($intNewHeight == 0){
+    			$this->arrSettings['standard_height_abs'] = 100;
+    			$intNewHeight = intval($this->arrSettings['standard_height_abs']);
+    			$intNewWidth = round(($intOldWidth * $intNewHeight) / $intOldHeight,0);
+    		} else {
+    			$intNewWidth = round(($intOldWidth * $intNewHeight) / $intOldHeight,0);
+    		}
+    	} else {
+    		$intNewHeight = round(($intOldHeight * $intNewWidth) / $intOldWidth,0);
+    	}
+    	
+    	$objDatabase->Execute('	INSERT 
+    							INTO 	'.DBPREFIX.'module_gallery_pictures
+			    				SET 	path="'.$strImagePath.'",
+			    						lastedit='.time().',
+			    						quality='.$this->arrSettings['standard_quality'].',
+			    						size_type="'.$this->arrSettings['standard_size_type'].'",
+			    						size_proz='.$this->arrSettings['standard_size_proz'].',
+			    						size_abs_h='.$intNewHeight.',
+			    						size_abs_w='.$intNewWidth);
+    	
+    	$intPictureId = $objDatabase->insert_id();
+    	$objResult = $objDatabase->Execute('	SELECT		id
+    											FROM		'.DBPREFIX.'languages
+    											ORDER BY	id ASC
+    										');
+    	if ($objResult->RecordCount() > 0) {
+    		while (!$objResult->EOF) {
+    			$objDatabase->Execute('	INSERT
+    									INTO	'.DBPREFIX.'module_gallery_language_pics
+    									SET		picture_id='.$intPictureId.',
+    											lang_id='.$objResult->fields['id'].',
+    											name="'.$imageName.'"
+    								');
+    			$objResult->MoveNext();	
+    		}	
+    	}
+    }
+    
+    
+    /**
+	* Shows the validation-page
+    *
+    * @global	object		$objDatabase
+    * @global	array		$_ARRAYLANG
+    * @global	array		$_CONFIG
+    * @global	array		$_GET
+    */
+    function showValidateForm()
+    {
+    	global $_ARRAYLANG,$objDatabase,$_CONFIG,$_GET;
+    	
+    	$this->_objTpl->loadTemplateFile('module_gallery_validate_main.html',true,true); 
+ 		$this->_objTpl->setVariable(array(
+			'TXT_TITLE'						=> $_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'],
+			'TXT_NOTVALIDATED'				=> $_ARRAYLANG['TXT_GALLERY_VALIDATE_NOT_VALIDATED'],
+			'TXT_VALIDATE_METHOD_SINGLE' 	=> $_ARRAYLANG['TXT_GALLERY_VALIDATE_METHOD_SINGLE'],
+			'TXT_VALIDATE_METHOD_ALL' 		=> $_ARRAYLANG['TXT_GALLERY_VALIDATE_METHOD_ALL'],
+		));
+		
+		if (!isset($_GET['type'])) {			
+			$_GET['type'] = $this->arrSettings['validation_standard_type'];	
+		}
+		
+		switch ($_GET['type'])
+		{
+			case 'all':
+				$this->_objTpl->setVariable(array(
+					'VALIDATE_METHOD_SINGLE_SELECTED'	=> '',
+					'VALIDATE_METHOD_ALL_SELECTED'		=>	'checked'
+				));
+			break;
+			default:
+				$this->_objTpl->setVariable(array(
+					'VALIDATE_METHOD_SINGLE_SELECTED'	=> 'checked',
+					'VALIDATE_METHOD_ALL_SELECTED'		=>	''
+				));
+		}
+
+		$objResult = $objDatabase->Execute('SELECT 	id
+											FROM 	'.DBPREFIX.'module_gallery_pictures
+											WHERE 	validated="0"');
+		$this->_objTpl->setVariable('VALIDATE_NOTVALIDATEDPICS',$objResult->RecordCount());
+		
+		if ($objResult->RecordCount() > 0) {
+            // only a single picture			
+			if ($_GET['type'] == 'single') {
+		 		$this->_objTpl->loadTemplateFile('module_gallery_validate_details_single.html',true,true); 
+				$this->_objTpl->setVariable(array(
+					'TXT_DETAILS_TITLE'					=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_PICTURE_DETAILS'],
+					'TXT_DETAILS_NAME'					=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_NAME'],
+					'TXT_DETAILS_UPLOADDATE'			=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_UPLOAD_DATE'],
+					'TXT_DETAILS_CATEGORY'				=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_CATEGORY'],
+					'TXT_DETAILS_CATEGORYSELECT'		=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_CATEGORY_SELECT'],
+					'TXT_DETAILS_ACTIVE'				=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_ACTIVE'],
+					'TXT_DETAILS_SIZE_ORIG'				=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_SIZE_ORG'],
+					'TXT_DETAILS_HEIGHT_WIDTH_ORIG'		=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_HEIGHT_WIDTH_ORIG'],
+					'TXT_DETAILS_SIZE_THUMB'			=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_SIZE_THUMB'],
+					'TXT_DETAILS_HEIGHT_WIDTH_THUMB'	=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_HEIGHT_WIDTH_THUMB'],
+					'TXT_DETAILS_NEW_SIZE_THUMB'		=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE'],
+					'TXT_DETAILS_NEW_QUALITY_THUMB'		=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_QUALITY'],
+					'TXT_DETAILS_THUMB_SIZE_ABS'		=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS'],
+					'TXT_DETAILS_THUMB_SIZE_PROZ'		=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_PER'],
+					'TXT_DETAILS_THUMB_SIZE_ABS_WIDTH'	=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS_WIDTH'],
+					'TXT_DETAILS_THUMB_SIZE_ABS_HEIGHT'	=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS_HEIGHT'],
+					'TXT_DETAILS_THUMB_PREVIEW'			=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_PREVIEW'],
+					'TXT_DETAILS_BUTTON_UPDATE'			=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_UPDATE'],
+					'TXT_DETAILS_BUTTON_SUBMIT'			=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_SUBMIT'],
+					'TXT_DETAILS_BUTTON_DELETE'			=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_DELETE'],
+					'TXT_EXTENDED'						=>	$_ARRAYLANG['TXT_GALLERY_EXTENDED']
+				));			
+
+				$objResult = $objDatabase->Execute('SELECT 		*
+													FROM 		'.DBPREFIX.'module_gallery_pictures
+													WHERE 		validated="0"
+													ORDER BY 	lastedit ASC');				
+				
+				$objSubResult = $objDatabase->Execute('	SELECT		id,
+																	name
+														FROM		'.DBPREFIX.'languages
+														ORDER BY	id ASC
+													');
+				if ($objSubResult->RecordCount() > 0) {
+					while (!$objSubResult->EOF) {
+						$objSubSubResult = $objDatabase->Execute('	SELECT	name
+																	FROM	'.DBPREFIX.'module_gallery_language_pics
+																	WHERE	picture_id='.$objResult->fields['id'].' AND
+																			lang_id='.$objSubResult->fields['id'].'
+																	LIMIT	1');
+						$this->_objTpl->setVariable(array(
+							'NAMEFIELDS_VALUE'		=>	$objSubSubResult->fields['name'],
+							'NAMEFIELDS_LID'		=>	$objSubResult->fields['id'],
+							'NAMEFIELDS_LANGUAGE'	=>	$objSubResult->fields['name'],
+						));
+						$this->_objTpl->parse('showNameFields');   			
+						$objSubResult->MoveNext();	
+					}	
+				} else {
+					$this->_objTpl->hideBlock('showNameFields');
+				}					
+				
+				$objSubResult = $objDatabase->Execute('	SELECT	name
+														FROM	'.DBPREFIX.'module_gallery_language_pics
+														WHERE	picture_id='.$objResult->fields['id'].' AND
+																lang_id='.intval($_SESSION['auth']['lang']).'
+														LIMIT	1
+													');			
+				
+				$strDetailsActive 	= ($objResult->fields['status'] == '1') ? 'checked' : '';
+				$intImageCatId 		= $objResult->fields['catid'];
+				$arrImageInfos 		= getimagesize($this->strImagePath.$objResult->fields['path']);
+			
+				$this->_objTpl->setCurrentBlock('showThumbSize');
+				for ($i = 5; $i <= 100; $i=$i+5) {
+					$this->_objTpl->setVariable('THUMB_SIZE_VALUE',$i);
+					if ($i >= $objResult->fields['size_proz'] && !$boolCheckerThumbFileSize) {
+						$this->_objTpl->setVariable('THUMB_SIZE_SELECTED','selected');
+						$boolCheckerThumbFileSize = true;
+					} else{
+						$this->_objTpl->setVariable('THUMB_SIZE_SELECTED','');
+					}
+					$this->_objTpl->parseCurrentBlock();
+				}
+			
+				$this->_objTpl->setCurrentBlock('showThumbQuality');
+				for ($i = 5; $i <= 100; $i=$i+5)
+				{
+					$this->_objTpl->setVariable('THUMB_QUALITY_VALUE',$i);
+					if ($i >= $objResult->fields['quality'] && !$boolCheckerThumbFileQuality){
+						$this->_objTpl->setVariable('THUMB_QUALITY_SELECTED','selected');
+						$boolCheckerThumbFileQuality = true;
+					} else{
+						$this->_objTpl->setVariable('THUMB_QUALITY_SELECTED','');
+					}
+					$this->_objTpl->parseCurrentBlock();				
+				}
+				
+				//create a thumbnail, but first delete all temporary files!
+				$handleDirectory = opendir($this->strThumbnailPath); 
+				while ($strFile = readdir ($handleDirectory)) { 
+				    if (substr($strFile,0,5) == 'temp_') {
+				        unlink($this->strThumbnailPath.$strFile);
+				    } 
+				}
+				closedir($handleDirectory); 
+
+				srand ((double)microtime()*1000000);
+				$intNewThumbRandValue = rand(); // create a random value for the picture
+				
+				$this->_objTpl->setVariable(array(
+						'DETAILS_SIZE_ABS_WIDTH_VALUE'	=>	$objResult->fields['size_abs_w'],
+						'DETAILS_SIZE_ABS_HEIGHT_VALUE'	=>	$objResult->fields['size_abs_h'],
+						));
+								
+				if ($objResult->fields['size_type'] == 'proz')
+				{ // the image sizes are proportional
+					$this->_objTpl->setVariable(array(
+						'DETAILS_SIZE_SELECTION_PROZ'		=>	'checked',
+						'DETAILS_SIZE_SELECTION_ABS'		=>	'',
+						'DETAILS_SIZE_ABS_WIDTH_DISABLED'	=>	'disabled',
+						'DETAILS_SIZE_ABS_HEIGHT_DISABLED'	=>	'disabled',
+						'DETAILS_SIZE_ABS_PROP_DISABLED'	=>	'disabled',
+						'DETAILS_SIZE_PROZ_WIDTH_DISABLED'	=>	'',
+					));
+										
+					$intNewThumWidth 	= floor(($objResult->fields['size_proz']/100) * $arrImageInfos[0]);
+					$intNewThumbHeight 	= floor(($objResult->fields['size_proz']/100) * $arrImageInfos[1]);
+					$intNewThumbQuality = $objResult->fields['quality'];
+				}
+				else
+				{
+					$this->_objTpl->setVariable(array(
+						'DETAILS_SIZE_SELECTION_PROZ'		=>	'',
+						'DETAILS_SIZE_SELECTION_ABS'		=>	'checked',
+						'DETAILS_SIZE_ABS_WIDTH_DISABLED'	=>	'',
+						'DETAILS_SIZE_ABS_HEIGHT_DISABLED'	=>	'',
+						'DETAILS_SIZE_PROZ_WIDTH_DISABLED'	=>	'disabled',
+						'DETAILS_SIZE_ABS_PROP_DISABLED'	=>	''
+					));
+									
+					$intNewThumWidth 	= $objResult->fields['size_abs_w'];
+					$intNewThumbHeight 	= $objResult->fields['size_abs_h'];
+					$intNewThumbQuality = $objResult->fields['quality'];
+				}	
+				
+				//create thumb
+				$this->createImages_JPG_GIF_PNG($this->strImagePath, $this->strThumbnailPath, $objResult->fields['path'], "temp_".$intNewThumbRandValue."_".$objResult->fields['path'], $intNewThumWidth, $intNewThumbHeight, $intNewThumbQuality);	
+				
+				$this->_objTpl->setVariable(array(
+					'DETAILS_ID'					=> 	$objResult->fields['id'],
+					'DETAILS_NAME'					=>	$objSubResult->fields['name'],
+					'DETAILS_UPLOADDATE'			=>	date('d.m.Y - h:i:s',$objResult->fields['lastedit']),
+					'DETAILS_ACTIVE_SELECTED'		=>	$strDetailsActive,
+					'DETAILS_SIZE_ORIG'				=>	round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2),
+					'DETAILS_SIZE_THUMB'			=>	round(filesize($this->strThumbnailPath.'temp_'.$intNewThumbRandValue.'_'.$objResult->fields['path'])/1024,2),
+					'DETAILS_WIDTH_ORIG'			=>	$arrImageInfos[0],
+					'DETAILS_HEIGHT_ORIG'			=>	$arrImageInfos[1],
+					'DETAILS_WIDTH_THUMB'			=>	$intNewThumWidth,
+					'DETAILS_HEIGHT_THUMB'			=>	$intNewThumbHeight,
+					'DETAILS_THUMB_PREVIEW_PATH'	=>	$this->strThumbnailWebPath.'temp_'.$intNewThumbRandValue.'_'.$objResult->fields['path']
+				));
+			
+				//here starts the category-menu
+				$objResult = $objDatabase->Execute('SELECT 		id
+													FROM 		'.DBPREFIX.'module_gallery_categories
+													WHERE 		pid=0 AND 
+																status="1"
+													ORDER BY 	sorting');
+				if ($objResult->recordCount() > 0) {
+					while (!$objResult->EOF) {
+					$objSubResult = $objDatabase->Execute('	SELECT	value
+															FROM	'.DBPREFIX.'module_gallery_language
+															WHERE	gallery_id='.$objResult->fields['id'].' AND
+																	lang_id='.intval($_SESSION['auth']['lang']).' AND
+																	name="name"
+															LIMIT	1
+														');
+					$arrMainCategories[$objResult->fields['id']] = $objSubResult->fields['value'];
+						$objResult->MoveNext();
+					}					
+					
+					foreach ($arrMainCategories as $intMainCatKey => $strMainCatValue){
+						if ($intImageCatId == $intMainCatKey){
+							$strCatSelected = 'selected';	
+						} else {
+							$strCatSelected = '';	
+						}
+						
+						$this->_objTpl->setVariable(array(
+							'CATEGORY_ID' 		=> $intMainCatKey,
+							'CATEGORY_NAME' 	=> $strMainCatValue,
+							'CATEGORY_SPACER' 	=> '',
+							'CATEGORY_SELECTED'	=> $strCatSelected
+						));
+						$this->_objTpl->parse('showCategories');
+						
+						$objResult = $objDatabase->Execute('SELECT 		id
+															FROM 		'.DBPREFIX.'module_gallery_categories
+															WHERE 		pid='.$intMainCatKey.' AND 
+																		status="1"
+															ORDER BY 	sorting');
+						if ($objResult->recordCount() > 0) {
+							while (!$objResult->EOF) {
+									$objSubResult = $objDatabase->Execute('	SELECT	value
+																			FROM	'.DBPREFIX.'module_gallery_language
+																			WHERE	gallery_id='.$objResult->fields['id'].' AND
+																					lang_id='.intval($_SESSION['auth']['lang']).' AND
+																					name="name"
+																			LIMIT	1
+																		');
+								if ($intImageCatId == $objResult->fields['id']) {
+									$strCatSelected = 'selected';	
+								} else {
+									$strCatSelected = '';	
+								}
+								$this->_objTpl->setVariable(array(
+									'CATEGORY_ID'		=>	$objResult->fields['id'],
+									'CATEGORY_NAME'		=>	$objSubResult->fields['value'],
+									'CATEGORY_SPACER'	=>	'&nbsp;&nbsp;&nbsp;',
+									'CATEGORY_SELECTED'	=>	$strCatSelected
+								));
+								$this->_objTpl->parse('showCategories');
+								$objResult->MoveNext();
+							}		
+						}
+					}
+				} else {
+					$this->_objTpl->setVariable(array(
+						'CATEGORY_ID'			=>	0,
+						'CATEGORY_NAME'			=>	'',
+						'CATEGORY_SPACER'		=>	'',
+						'CATEGORY_SELECTED'		=>	''
+					));	
+				}
+				// here ends the category-menu		
+				$this->_objTpl->parse('showCategories');
+			}
+			else // multiple pictures on one page
+			{ 
+				$this->_objTpl->loadTemplateFile('module_gallery_validate_details_all.html',true,true); 
+				$this->_objTpl->setVariable(array(
+					'TXT_TITLE_NAME'					=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_NAME'],
+					'TXT_TITLE_UPLOADDATE'				=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_UPLOAD_DATE'],
+					'TXT_TITLE_SIZE_O'					=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_SIZE_ORG'],
+					'TXT_TITLE_RESO_O'					=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_HEIGHT_WIDTH_ORIG'],
+					'TXT_TITLE_SIZE_T'					=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_SIZE_THUMB'],
+					'TXT_TITLE_RESO_T'					=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_HEIGHT_WIDTH_THUMB'],
+					'TXT_TITLE_CATEGORY'				=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_CATEGORY'],
+					'TXT_TITLE_ACTIVE'					=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_ACTIVE'],
+					'TXT_DELETE_IMAGE_MSG'				=>	$_ARRAYLANG['TXT_GALLERY_DELETE_IMAGE_MSG'],
+					'TXT_WRONG_CATEGORIES_MSG'			=>	$_ARRAYLANG['TXT_GALLERY_WRONG_CATEGORIES_MSG'],
+					'TXT_SETTINGS_FILENAME'				=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_ALL_SET_FILENAME'],
+					'TXT_SETTINGS_TITLE'				=>	$_ARRAYLANG['TXT_SETTINGS'],
+					'TXT_SETTINGS_ACTIVE'				=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_ALL_SET_ACTIVE'],
+					'TXT_SETTINGS_CATEGORY'				=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_ALL_SET_CATEGORY'],
+					'TXT_SETTINGS_THUMBSIZE_ABS'		=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS'],
+					'TXT_SETTINGS_THUMBSIZE_PROZ'		=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_PER'],
+					'TXT_SETTINGS_TITLE_THUMBSIZE'		=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE'],
+					'TXT_SETTINGS_THUMBSIZE_ABS_WIDTH'	=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS_WIDTH'],
+					'TXT_SETTINGS_THUMBSIZE_ABS_HEIGHT'	=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS_HEIGHT'],
+					'TXT_SETTINGS_TITLE_THUMBQUALITY'	=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_QUALITY'],
+					'TXT_DETAILS_BUTTON_UPDATE'			=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_UPDATE'],
+					'TXT_DETAILS_BUTTON_SUBMIT'			=>	$_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_SUBMIT'],
+				));
+				$this->_objTpl->setGlobalVariable('TXT_DETAILS_CATEGORYSELECT', $_ARRAYLANG['TXT_GALLERY_VALIDATE_CATEGORY_SELECT']);
+			if ($this->arrSettings['standard_size_type'] == 'abs')
+			{
+				$this->_objTpl->setVariable( array(
+					'SETTINGS_SELECTED_ABS'				=>	'checked',
+					'SETTINGS_SELECTED_PROZ'			=>	'',
+					'SETTINGS_THUMBSIZE_ABS_WIDTH_DIS'	=> '',
+					'SETTINGS_THUMBSIZE_ABS_HEIGHT_DIS'	=>	'',
+					'SETTINGS_THUMBSIZE_PROZ_DIS'		=>	'disabled',
+				));				
+			}
+			else
+			{
+				$this->_objTpl->setVariable( array(
+					'SETTINGS_SELECTED_ABS'				=>	'',
+					'SETTINGS_SELECTED_PROZ'			=>	'checked',
+					'SETTINGS_THUMBSIZE_ABS_WIDTH_DIS'	=>	'disabled',
+					'SETTINGS_THUMBSIZE_ABS_HEIGHT_DIS'	=>	'disabled',
+					'SETTINGS_THUMBSIZE_PROZ_DIS'		=>	'',
+				));				
+			}
+			$this->_objTpl->setVariable( array(
+				'SETTINGS_THUMBSIZE_ABS_WIDTH'	=>	$this->arrSettings['standard_width_abs'],
+				'SETTINGS_THUMBSIZE_ABS_HEIGHT'	=>	$this->arrSettings['standard_height_abs']
+			));			
+			//here starts the category-menu			
+				$objResult = $objDatabase->Execute('SELECT 		id
+													FROM 		'.DBPREFIX.'module_gallery_categories
+													WHERE 		pid=0 AND 
+																status="1"
+													ORDER BY 	sorting');
+	
+				if ($objResult->RecordCount() > 0) {
+					while (!$objResult->EOF) {
+						$objSubResult = $objDatabase->Execute('	SELECT	value
+																FROM	'.DBPREFIX.'module_gallery_language
+																WHERE	gallery_id='.$objResult->fields['id'].' AND
+																		lang_id='.intval($_SESSION['auth']['lang']).' AND
+																		name="name"
+																LIMIT	1
+															');
+						$arrMainCategories[$objResult->fields['id']] = $objSubResult->fields['value'];
+						$objResult->MoveNext();
+					}
+									
+					foreach ($arrMainCategories as $intMainCatKey => $strMainCatValue)
+					{
+						$this->_objTpl->setVariable(array(
+							'CATEGORY_ID'		=>	$intMainCatKey,
+							'CATEGORY_NAME'		=>	$strMainCatValue,
+							'CATEGORY_SPACER'	=>	'',
+						));
+						$this->_objTpl->parse("showCategoriesSettings");
+						
+						$this->_objTpl->setVariable(array(
+							'CATEGORY_ID'		=>	$intMainCatKey,
+							'CATEGORY_NAME'		=>	$strMainCatValue,
+							'CATEGORY_SPACER'	=>	'',
+						));
+						$this->_objTpl->parse('showCategories');
+						
+						$objResult = $objDatabase->Execute('SELECT 		id
+															FROM 		'.DBPREFIX.'module_gallery_categories
+															WHERE 		pid='.$intMainCatKey.' AND 
+																		status="1"
+															ORDER BY 	sorting');
+						if ($objResult->RecordCount() > 0) {
+							while (!$objResult->EOF) {
+									$objSubResult = $objDatabase->Execute('	SELECT	value
+																			FROM	'.DBPREFIX.'module_gallery_language
+																			WHERE	gallery_id='.$objResult->fields['id'].' AND
+																					lang_id='.intval($_SESSION['auth']['lang']).' AND
+																					name="name"
+																			LIMIT	1
+																		');								
+								
+								$this->_objTpl->setVariable(array(
+									'CATEGORY_ID'		=>	$objResult->fields['id'],
+									'CATEGORY_NAME'		=>	$objSubResult->fields['value'],
+									'CATEGORY_SPACER'	=>	'&nbsp;&nbsp;&nbsp;',
+								));
+								$this->_objTpl->parse('showCategories');
+								
+								$this->_objTpl->setVariable(array(
+									'CATEGORY_ID'		=>	$objResult->fields['id'],
+									'CATEGORY_NAME'		=>	$objSubResult->fields['value'],
+									'CATEGORY_SPACER'	=>	'&nbsp;&nbsp;&nbsp;',
+								));
+								$this->_objTpl->parse('showCategoriesSettings');								
+								$objResult->MoveNext();
+							}	
+						}
+					}
+				} else {
+					$this->_objTpl->setVariable(array(
+						'CATEGORY_ID'		=>	'',
+						'CATEGORY_NAME'		=>	'',
+						'CATEGORY_SPACER'	=>	'',
+					));					
+				}
+			// here ends the category-menu
+			// here start the quality-dropdown
+				$this->_objTpl->setCurrentBlock('showThumbQuality');
+				
+				for ($i = 5; $i <= 100; $i=$i+5)
+				{
+					$this->_objTpl->setVariable('THUMB_QUALITY_VALUE',$i);
+					if ($i >= $this->arrSettings['standard_quality'] && !$boolCheckerThumbFileQuality)
+					{
+						$this->_objTpl->setVariable('THUMB_QUALITY_SELECTED','selected');
+						$boolCheckerThumbFileQuality = true;
+					}
+					else
+					{
+						$this->_objTpl->setVariable('THUMB_QUALITY_SELECTED','');
+					}
+					$this->_objTpl->parseCurrentBlock();			
+				}
+			// here ends the quality-dropdown
+			// here starts the thumbsize-proz dropdown
+				$this->_objTpl->setCurrentBlock('showThumbSizeProz');
+				$boolCheckerThumbFileSize = false;
+				for ($i = 5; $i <= 100; $i=$i+5)
+				{
+					$this->_objTpl->setVariable('THUMB_SIZE_VALUE',$i);
+					if ($i >= $this->arrSettings['standard_size_proz'] && !$boolCheckerThumbFileSize)
+					{
+						$this->_objTpl->setVariable('THUMB_SIZE_SELECTED','selected');
+						$boolCheckerThumbFileSize = true;
+					} else{
+						$this->_objTpl->setVariable('THUMB_SIZE_SELECTED','');
+					}
+					$this->_objTpl->parseCurrentBlock();
+				}			
+			// here ends the thumbsize-proz dropdown
+				$handleDirectory = opendir($this->strThumbnailPath);
+				while ($strFile = readdir ($handleDirectory)) {
+					if (substr($strFile,0,5) == 'temp_') {
+						unlink($this->strThumbnailPath.$strFile);	
+					}	
+				}
+				closedir($handleDirectory);				
+				srand((double)microtime()*1000000);
+				
+				$objResult = $objDatabase->SelectLimit('SELECT 		*
+														FROM 		'.DBPREFIX.'module_gallery_pictures
+														WHERE 		validated="0"
+														ORDER BY 	lastedit ASC', 
+														$this->arrSettings['validation_show_limit']);
+				
+				while (!$objResult->EOF) {
+					$objSubResult = $objDatabase->Execute('	SELECT		lang_id,
+																		name
+															FROM		'.DBPREFIX.'module_gallery_language_pics
+															WHERE		picture_id='.$objResult->fields['id'].'
+															ORDER BY	lang_id ASC
+														');
+					while (!$objSubResult->EOF) {
+						$arrNames[$objResult->fields['id']][$objSubResult->fields['lang_id']] = $objSubResult->fields['name'];
+						$objSubResult->MoveNext();	
+					}
+					$arrFileInfo = getimagesize($this->strImagePath.$objResult->fields['path']);
+										
+					$arrImageCounter[$objResult->fields['id']] 				= $objResult->fields['id'];
+					$arrImageInfo[$objResult->fields['id']]['name'] 		= $arrNames[$objResult->fields['id']][$_SESSION['auth']['lang']];
+					$arrImageInfo[$objResult->fields['id']]['random_path'] 	= $this->strThumbnailWebPath.'temp_'.rand().'_'.$objResult->fields['path'];
+					$arrImageInfo[$objResult->fields['id']]['uploadtime'] 	= date('d.m.Y',$objResult->fields['lastedit']);
+					$arrImageInfo[$objResult->fields['id']]['size_o'] 		= round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
+					$arrImageInfo[$objResult->fields['id']]['reso_o'] 		= $arrFileInfo[0].'x'.$arrFileInfo[1];
+					
+					if ($objResult->fields['size_type'] == 'proz') { // the image sizes are proportional					
+						$intNewThumWidth 		= floor(($objResult->fields['size_proz']/100) * $arrFileInfo[0]);
+						$intNewThumbHeight 	= floor(($objResult->fields['size_proz']/100) * $arrFileInfo[1]);
+						$intNewThumbQuality 	= $objResult->fields['quality'];
+					} else { // the image sizes are absolute
+						$intNewThumWidth 		= $objResult->fields['size_abs_w'];
+						$intNewThumbHeight 	= $objResult->fields['size_abs_h'];
+						$intNewThumbQuality 	= $objResult->fields['quality'];
+					}
+					
+					//create thumb
+					$this->createImages_JPG_GIF_PNG($this->strImagePath, ASCMS_PATH, $objResult->fields['path'], $arrImageInfo[$objResult->fields['id']]['random_path'], $intNewThumWidth, $intNewThumbHeight, $intNewThumbQuality);
+					$arrFileInfo = getimagesize(ASCMS_PATH.$arrImageInfo[$objResult->fields['id']]['random_path']);
+					$arrImageInfo[$objResult->fields['id']]['size_t'] = round(filesize(ASCMS_PATH.$arrImageInfo[$objResult->fields['id']]['random_path'])/1024,2);
+					$arrImageInfo[$objResult->fields['id']]['reso_t'] = $arrFileInfo[0].'x'.$arrFileInfo[1];
+					$objResult->MoveNext();
+				}
+			
+				$intRowColor = 0;
+				foreach ($arrImageCounter as $intIdKey) {				
+					$this->_objTpl->setVariable(array(
+						'IMAGES_ROWCLASS'		=> ($intRowColor % 2),
+						'IMAGES_ID'				=>	$intIdKey,
+						'IMAGES_THUMB_SOURCE'	=>	$arrImageInfo[$intIdKey]['random_path'],
+						'IMAGES_NAME'			=>	$arrImageInfo[$intIdKey]['name'],
+						'IMAGES_UPLOADDATE'		=> 	$arrImageInfo[$intIdKey]['uploadtime'],	
+						'IMAGES_SIZE_O'			=>	$arrImageInfo[$intIdKey]['size_o'],
+						'IMAGES_RESO_O'			=> 	$arrImageInfo[$intIdKey]['reso_o'],
+						'IMAGES_SIZE_T'			=>	$arrImageInfo[$intIdKey]['size_t'],
+						'IMAGES_RESO_T'			=>	$arrImageInfo[$intIdKey]['reso_t'],
+						'TXT_EXTENDED'			=>	$_ARRAYLANG['TXT_GALLERY_EXTENDED']
+					));
+					
+					$objResult = $objDatabase->Execute('	SELECT		id,
+																		name
+															FROM		'.DBPREFIX.'languages
+															ORDER BY	id ASC
+														');
+					if ($objResult->RecordCount() > 0) {
+						while (!$objResult->EOF) {
+							$this->_objTpl->setVariable(array(
+								'NAMEFIELDS_IMID'		=>	$intIdKey,
+								'NAMEFIELDS_IMVALUE'	=>	$arrNames[$intIdKey][$objResult->fields['id']],
+								'NAMEFIELDS_LID'		=>	$objResult->fields['id'],
+								'NAMEFIELDS_LANGUAGE'	=>	$objResult->fields['name'],
+							));
+							$this->_objTpl->parse('showNameFields');   			
+							$objResult->MoveNext();	
+						}	
+					} else {
+						$this->_objTpl->hideBlock('showNameFields');
+					}
+    	
+					for ($i=1;$i<=7;$i++) {
+						$this->_objTpl->setVariable('JS_IMAGE_ID'.$i,$intIdKey);
+						$this->_objTpl->parse('javascriptBlock'.$i);
+					}
+							
+					$this->_objTpl->parse('showImages');
+										
+					$intTempImageId .= $intIdKey.','; //needed some lines below
+					$intRowColor++;
+				}
+				$intTempImageId = substr($intTempImageId,0,strlen($intTempImageId)-1);
+				$this->_objTpl->setVariable('HIDDEN_ALL_IMAGES_IDS',$intTempImageId);
+			}
+		}
+		else
+		{
+			$this->_objTpl->setVariable('VALIDATE_SHOWDETAILS','');	
+		}
+    }
+    
+    
+    /**
+	* Reload the validation page / Validated a picture / delete a picture
+    *
+    * @global	object		$objDatabase
+    * @global 	array		$_ARRAYLANG
+    * @global	array		$_CONFIG
+    */
+    function reloadSingleValidate()
+    {    	
+    	global $objDatabase, $_ARRAYLANG,$_CONFIG;
+
+    	$this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'];
+    	
+	    if ($_POST['validate_active'] == 1){
+			$intInsertStatus = 1;
+		} else {
+			$intInsertStatus = 0;	
+		}
+			
+		foreach ($_POST as $strKey => $strValue)
+		{
+			if (substr($strKey,0,strlen('imageName_')) == 'imageName_') {
+				//language var
+				$arrExplode = explode('_',$strKey,2);
+				if (empty($strValue)) {
+					$strValue = $_ARRAYLANG['TXT_GALLERY_CATEGORY_NO_NAME'];
+				} else {
+					$strValue = get_magic_quotes_gpc() ? strip_tags($strValue) : addslashes(strip_tags($strValue));
+				}
+				
+				$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_language_pics
+										SET 	name="'.$strValue.'"
+										WHERE 	picture_id='.intval($_POST['validate_id']).' AND
+												lang_id='.intval($arrExplode[1]).'
+										LIMIT	1');
+			}
+		}
+				
+		if (!isset($_POST['validate_thumb_size']))
+		{ // no value, fill in the standard
+			$_POST['validate_thumb_size'] = $this->arrSettings['standard_size_proz'];	
+		}
+		if (!isset($_POST['validate_thumb_size_abs_height']))
+		{// no value, fill in the standard
+			$objResult = $objDatabase->Execute('SELECT 	path
+												FROM 	'.DBPREFIX.'module_gallery_pictures
+												WHERE 	id='.intval($_POST['validate_id']));
+			
+	    	$arrImageInfo 	= getimagesize($this->strImagePath.$objResult->fields['path']);
+	    	$intOldWidth 	= $arrImageInfo[0];
+	    	$intOldHeight 	= $arrImageInfo[1];
+	    	$intNewWidth 	= $this->arrSettings['standard_width_abs'];
+	    	$intNewHeight 	= $this->arrSettings['standard_height_abs'];
+	    	   	
+	    	if ($intNewWidth == 0) {
+	    		$_POST['validate_thumb_size_abs_width'] = round(($intOldWidth * $intNewHeight) / $intOldHeight,0);
+	    		$_POST['validate_thumb_size_abs_height'] = $intNewHeight;
+	    	} else {
+	    		$_POST['validate_thumb_size_abs_width']	= $intNewWidth;
+	    		$_POST['validate_thumb_size_abs_height'] = round(($intOldHeight * $intNewWidth) / $intOldWidth,0);
+	    	}		
+		}    	
+    //update button
+    	if (isset($_POST['update_button'])) { 
+    		// the user clicked on the update button  	
+	    	$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_pictures
+				    				SET 	catid='.intval($_POST['validate_category']).',
+				    						status="'.$intInsertStatus.'",
+				    						name="'.$_POST['validate_name'].'",
+				    						size_type="'.addslashes($_POST['validate_thumb_size_selection']).'",
+				    						size_proz='.intval($_POST['validate_thumb_size']).',
+				    						size_abs_h='.intval($_POST['validate_thumb_size_abs_height']).',
+				    						size_abs_w='.intval($_POST['validate_thumb_size_abs_width']).',
+				    						quality='.intval($_POST['validate_thumb_quality']).'
+				    				WHERE 	id='.intval($_POST['validate_id']));
+    		$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_THUMBNAIL_UPDATED'];
+
+    	}
+	//submit button   	
+    	if (isset($_POST['submit_button'])) { 
+    		// the user validated the picture
+    		if ($_POST['validate_category'] != 0) {
+	    		$objResult = $objDatabase->Execute('UPDATE 	'.DBPREFIX.'module_gallery_pictures
+								    				SET 	catid='.intval($_POST['validate_category']).',
+							    							validated="1",
+								    						status="'.$intInsertStatus.'",
+							    							lastedit='.time().',
+								    						size_type="'.addslashes($_POST['validate_thumb_size_selection']).'",
+								    						size_proz='.intval($_POST['validate_thumb_size']).',
+								    						size_abs_h='.intval($_POST['validate_thumb_size_abs_height']).',
+								    						size_abs_w='.intval($_POST['validate_thumb_size_abs_width']).',
+								    						quality='.intval($_POST['validate_thumb_quality']).'
+								    				WHERE 	id='.intval($_POST['validate_id']));
+	    		
+	    		// and now create the final thumbnail
+				$objResult = $objDatabase->Execute('SELECT 	path,
+															size_type,
+															size_proz,
+															size_abs_h,
+															size_abs_w,
+															quality
+													FROM 	'.DBPREFIX.'module_gallery_pictures
+													WHERE 	id='.intval($_POST['validate_id']));
+				
+				$strOrgPath 	= $this->strImagePath.$objResult->fields['path'];
+				$strThumbPath 	= $this->strThumbnailPath.$objResult->fields['path'];
+				$arrImageInfos 	= getimagesize($strOrgPath);	
+							
+				if ($objResult->fields['size_type'] == 'proz') {				
+					$intNewThumWidth 	= floor(($objResult->fields['size_proz']/100) * $arrImageInfos[0]);
+					$intNewThumbHeight 	= floor(($objResult->fields['size_proz']/100) * $arrImageInfos[1]);
+					$intNewThumbQuality = $objResult->fields['quality'];
+				} else {						
+					$intNewThumWidth 	= $objResult->fields['size_abs_w'];
+					$intNewThumbHeight 	= $objResult->fields['size_abs_h'];
+					$intNewThumbQuality = $objResult->fields['quality'];
+				}		
+
+				//create thumb
+				$this->createImages_JPG_GIF_PNG($strOrgPath, $strThumbPath, $strFileOld, $strFileNew, $intNewThumWidth, $intNewThumbHeight, $intNewThumbQuality);
+				$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_THUMBNAIL_VALIDATED'];
+    		} else { // no category was selected, save the values and show an error message
+		    	$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_pictures
+					    				SET 	catid='.intval($_POST['validate_category']).',
+					    						status="'.$intInsertStatus.'",
+					    						name="'.$_POST['validate_name'].'",
+					    						size_type="'.addslashes($_POST['validate_thumb_size_selection']).'",
+					    						size_proz='.intval($_POST['validate_thumb_size']).',
+					    						size_abs_h='.intval($_POST['validate_thumb_size_abs_height']).',
+					    						size_abs_w='.intval($_POST['validate_thumb_size_abs_width']).',
+					    						quality='.intval($_POST['validate_thumb_quality']).'
+					    				WHERE 	id='.intval($_POST['validate_id']));	
+    			
+    			$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_THUMBNAIL_NO_CATEGORY'];
+    		}	
+    	}
+    //delete button	
+    	if (isset($_POST['delete_button'])) { // the user wants to delete this picture
+    		$objDatabase->Execute('	DELETE
+			    					FROM 	'.DBPREFIX.'module_gallery_pictures
+			    					WHERE 	id='.intval($_POST['validate_id']));
+    		$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_PICTURE_DELETED'];
+    	}
+    }
+    
+    
+    /**
+	* Reload the validation page / Validated a picture / delete a picture
+    *
+    * @global	object		$objDatabase
+    * @global 	array		$_ARRAYLANG
+    * @global	array		$_CONFIG
+    */    
+    function reloadAllValidate()
+    {
+    	global $objDatabase,$_ARRAYLANG,$_CONFIG;
+   	
+    	$arrId = split(',',$_POST['settingsAllImagesIds']);
+    	   	
+		if ($_POST['settingsFilename'] != 1) { // update the filenames
+			foreach ($_POST as $strKey => $strValue)
+			{
+				if (substr($strKey,0,strlen('imageName_')) == 'imageName_') {
+					//language var
+					$arrExplode = explode('_',$strKey,3);
+					$strValue = get_magic_quotes_gpc() ? strip_tags($strValue) : addslashes(strip_tags($strValue));
+					$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_language_pics
+											SET 	name="'.$strValue.'"
+											WHERE 	picture_id='.intval($arrExplode[1]).' AND
+													lang_id='.intval($arrExplode[2]).'
+											LIMIT	1');
+				}
+			}	
+		}
+		
+		if ($_POST['settingsActive'] != 1) { 
+			// set the selected ones to active
+			foreach ($arrId as $intKey => $strValue)
+			{
+				$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_pictures
+										SET 	status="'.intval($_POST['imageActive'.$strValue]).'"
+										WHERE 	id='.intval($strValue));
+			}					
+		}
+		
+		if ($_POST['settingsCategory'] != 1) { 
+			// the user definies the category by himself
+			foreach ($arrId as $intKey => $strValue) {
+				$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_pictures
+										SET 	catid='.intval($_POST['imageCategory'.$strValue]).'
+										WHERE 	id='.intval($strValue));
+			}				
+		} else { // all in the same group
+			foreach ($arrId as $intKey => $strValue) {
+				$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_pictures
+										SET 	catid='.intval($_POST['imageCategoryAll']).'
+										WHERE 	id='.intval($strValue));
+			}				
+		}
+		
+    	if (isset($_POST['update_button'])) { 
+    		// the user clicked on the update button, now i have to calculate the new values sizes for the database
+    		foreach ($arrId as $intKey => $strValue) {
+    			$objResult = $objDatabase->Execute('SELECT 	path
+						    						FROM 	'.DBPREFIX.'module_gallery_pictures
+						    						WHERE 	id='.intval($strValue));
+    			
+		    	$arrImageInfo = getimagesize($this->strImagePath.$objResult->fields['path']);
+		    	
+		    	$intOldWidth = $arrImageInfo[0];
+		    	$intOldHeight = $arrImageInfo[1];
+		    	
+		    	if (isset($_POST['settingsThumbSizeAbsWidth'])) {
+		    		$intNewWidth = $_POST['settingsThumbSizeAbsWidth'];
+		    	} else {
+		    		$intNewWidth = $this->arrSettings['standard_width_abs'];
+		    	}
+		    	
+		    	if (isset($_POST['settingsThumbSizeAbsHeight'])) {
+		    		$intNewHeight = $_POST['settingsThumbSizeAbsHeight'];
+		    	} else {
+		    		$intNewHeight = $this->arrSettings['standard_height_abs'];
+		    	}
+		    	
+		    	$intInsertQuality 	= intval($_POST['settingsThumbQuality']);
+		    	$strInsertType 		= $_POST['settingsThumbSize'];
+		    	 	
+		    	if ($intNewWidth == 0) {
+		    		$intNewWidth 	= round(($intOldWidth * $intNewHeight) / $intOldHeight,0);
+		    	} else {
+		    		$intNewHeight 	= round(($intOldHeight * $intNewWidth) / $intOldWidth,0);
+		    	}    	
+	    	
+	    		if ($_POST['settingsThumbSize'] == 'abs') {
+	    			$insertSizeProz = $this->arrSettings['standard_size_proz'];
+	    		} else {
+	    			$insertSizeProz = $_POST['settingsThumbSizeProz'];
+	    		}
+	    		$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_pictures
+				    					SET 	size_type="'.addslashes($strInsertType).'",
+				    							size_proz='.intval($insertSizeProz).',
+				    							size_abs_h='.intval($intNewHeight).',
+				    							size_abs_w='.intval($intNewWidth).',
+				    							quality='.intval($intInsertQuality).'
+				    					WHERE 	id='.intval($strValue));
+    		}
+    	} else { 
+    		// the user clicked on the insert button
+    		foreach ($arrId as $intKey => $strValue) {
+	    		$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_pictures
+					    				SET 	validated="1",
+				    							lastedit='.time().'
+					    				WHERE 	id='.intval($strValue));
+    			    			    		
+	    		// and now create the final thumbnail
+				$objResult = $objDatabase->Execute('SELECT 	path,
+															size_type,
+															size_proz,
+															size_abs_h,
+															size_abs_w,
+															quality
+													FROM 	'.DBPREFIX.'module_gallery_pictures
+													WHERE 	id='.intval($strValue));
+				
+				$strOrgPath 	= $this->strImagePath.$objResult->fields['path'];
+				$strThumbPath 	= $this->strThumbnailPath.$objResult->fields['path'];
+				$arrImageInfos 	= getimagesize($strOrgPath);	
+							
+				if ($objResult->fields['size_type'] == 'proz') {				
+					$intNewThumWidth 	= round(($objResult->fields['size_proz']/100) * $arrImageInfos[0],0);
+					$intNewThumbHeight 	= round(($objResult->fields['size_proz']/100) * $arrImageInfos[1],0);
+					$intNewThumbQuality = $objResult->fields['quality'];
+				} else {						
+					$intNewThumWidth 	= $objResult->fields['size_abs_w'];
+					$intNewThumbHeight 	= $objResult->fields['size_abs_h'];
+					$intNewThumbQuality = $objResult->fields['quality'];
+				}	
+
+				//create thumb
+				$this->createImages_JPG_GIF_PNG($strOrgPath, $strThumbPath, $strFileOld, $strFileNew, $intNewThumWidth, $intNewThumbHeight, $intNewThumbQuality);
+				$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_THUMBNAIL_VALIDATED'];   			
+    		}
+    	}
+    }
+    
+    
+    /**
+	* Deletes an Image from the database
+    *
+    * @global 	array		$_ARRAYLANG
+    * @global	object		$objDatabase
+    * @param 	integer		$intImageId: Id of the image which should be delted
+    */    
+    function deleteImage($intImageId)
+    {
+    	global $objDatabase, $_ARRAYLANG;
+    	
+    	$intImageId = intval($intImageId);
+    	
+    	$objResult = $objDatabase->Execute('SELECT 	path
+						    				FROM 	'.DBPREFIX.'module_gallery_pictures
+						    				WHERE 	id='.$intImageId);
+    	
+    	if (is_file($this->strImagePath.$objResult->fields['path'])) {
+    		@unlink($this->strImagePath.$objResult->fields['path']);
+    	}
+    	
+     	if (is_file($this->strThumbnailPath.$objResult->fields['path'])) {
+    		@unlink($this->strThumbnailPath.$objResult->fields['path']);
+    	}   	
+    	
+    	$objDatabase->Execute('	DELETE
+			    				FROM 	'.DBPREFIX.'module_gallery_pictures
+			    				WHERE 	id='.$intImageId);
+
+		$objDatabase->Execute('	DELETE
+								FROM	'.DBPREFIX.'module_gallery_votes
+								WHERE	picid='.$intImageId.'
+							');
+		$objDatabase->Execute('	DELETE
+								FROM	'.DBPREFIX.'module_gallery_comments
+								WHERE	picid='.$intImageId.'
+							');
+		$objDatabase->Execute('	DELETE
+								FROM	'.DBPREFIX.'module_gallery_language_pics
+								WHERE	picture_id='.$intImageId.'
+							');    	
+    	$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_PICTURE_DELETED'];
+    }
+    
+    
+    /**
+	* Rotates an image clockwise by 90°
+    *
+    * @global	object		$objDatabase
+    * @global 	array		$_ARRAYLANG
+    * @global	array		$_CONFIG
+    */  
+    function rotatePicture($intImageId)
+    {
+    	global $objDatabase,$_ARRAYLANG,$_CONFIG;
+    	
+    	$objResult = $objDatabase->Execute('SELECT 	path,
+    												quality,
+    												size_type,
+    												size_proz,
+    												size_abs_h,
+    												size_abs_w
+						    				FROM 	'.DBPREFIX.'module_gallery_pictures
+						    				WHERE 	id='.$intImageId);
+    	
+        // FIRST I CREATE A NEW ROTATED THUMBNAIL
+    	$strOldFilename = $objResult->fields['path'];
+ 		srand ((double)microtime()*1000000);
+    	$strNewFilename = rand().$strOldFilename;
+    	
+    	$strOrgPath 	= $this->strImagePath.$strOldFilename;
+    	$strNewBigPath 	= $this->strImagePath.$strNewFilename;
+    	$strThumbPath 	= $this->strThumbnailPath.$strOldFilename;
+    	$strNewPath 	= $this->strThumbnailPath.$strNewFilename;
+
+		$arrImageInfos_B = getimagesize($strOrgPath);
+		$intX_B = $arrImageInfos_B[0];
+		$intY_B = $arrImageInfos_B[1];    	
+    	
+    	if ($objResult->fields['size_type'] == 'abs') {
+	    	$intX = $objResult->fields['size_abs_w'];
+			$intY = $objResult->fields['size_abs_h'];
+			
+			$newInsertY = $intX;
+			$newInsertX = $intY;
+    	}
+    	else {
+			$intX = round(($objResult->fields['size_proz']/100) * $arrImageInfos_B[0],0);
+			$intY = round(($objResult->fields['size_proz']/100) * $arrImageInfos_B[1],0);
+    	}
+			
+		$strType = $arrImageInfos_B[2];
+		
+		switch ($strType)
+		{
+			case 1: //GIF
+				if($this->boolGifEnabled==true){
+					$strSourceImage = @ImageCreateFromGIF($strOrgPath);
+					$strDestImage = @ImageCreate($intX-1,$intY-1);
+					if (!$strDestImage) { @ImageCreate($intX-1,$intY-1); }	
+					@ImageCopyResized($strDestImage,$strSourceImage,0,0,0,0,$intX,$intY,$intX_B,$intY_B);
+					$strRotatedImage = @ImageRotate($strDestImage,180,0);
+					$strRotatedImage = @ImageRotate($strRotatedImage,90,0);
+					@ImageGIF($strRotatedImage,$strNewPath);	
+				}else{
+						$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_NO_GIF_SUPPORT'];
+				}
+			break;
+			case 2: //JPG
+				if($this->boolJpgEnabled==true){
+					$strSourceImage = ImageCreateFromJpeg($strOrgPath);
+					$strDestImage = @ImageCreateTrueColor($intX-1,$intY-1);
+					if (!$strDestImage) { @ImageCreate($intX-1,$intY-1); }	
+					@ImageCopyResized($strDestImage,$strSourceImage,0,0,0,0,$intX,$intY,$intX_B,$intY_B);
+					$strRotatedImage = @ImageRotate($strDestImage,180,0);
+					$strRotatedImage = @ImageRotate($strRotatedImage,90,0);
+					@ImageJpeg($strRotatedImage,$strNewPath,$objResult->fields['quality']);	
+				}else{
+						$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_NO_JPG_SUPPORT'];
+				}
+			break;
+			case 3: //PNG
+				if($this->boolPngEnabled==true){
+					$strSourceImage = @ImageCreateFromPNG($strOrgPath);
+					@imageAlphaBlending($strSourceImage, true);
+					@imageSaveAlpha($strSourceImage, true);
+					$strDestImage = @ImageCreate($intX-1,$intY-1);
+					if (!$strDestImage) { ImageCreate($intX-1,$intY-1); }	
+					@ImageCopyResized($strDestImage,$strSourceImage,0,0,0,0,$intX,$intY,$intX_B,$intY_B);
+					$strRotatedImage = @ImageRotate($strDestImage,180,0);
+					$strRotatedImage = @ImageRotate($strRotatedImage,90,0);
+					@ImagePNG($strRotatedImage,$strNewPath,$objResult->fields['quality']);	
+				}else{
+						$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_NO_PNG_SUPPORT'];
+				}
+			break;
+		}
+		@unlink($strThumbPath);
+		@rename($strNewPath,$strThumbPath);
+		
+		
+    	if ($objResult->fields['size_type'] == 'abs') {
+			$objDatabase->Execute('	UPDATE 	'.DBPREFIX.'module_gallery_pictures
+									SET 	size_abs_h='.$newInsertY.',
+											size_abs_w='.$newInsertX.'
+									WHERE 	id='.$intImageId);
+    	}		
+
+    	$strType = $arrImageInfos_B[2];
+		
+		switch ($strType) {
+			case 1: //GIF
+				if($this->boolGifEnabled==true){
+					// NOW I ROTATE THE ORIGINAL IMAGE
+					$strSourceImage = @imagecreatefromGIF($strOrgPath);
+					$strRotatedImage = @imagerotate($strSourceImage, 180, 0);
+					$strRotatedImage = @imagerotate($strRotatedImage, 90, 0);
+					@ImageGIF($strRotatedImage,$strNewBigPath);
+				}else{
+					$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_NO_GIF_SUPPORT'];
+				}
+			break;
+			case 2: //JPG
+				if($this->boolJpgEnabled==true){
+					// NOW I ROTATE THE ORIGINAL IMAGE
+					$strSourceImage = @imagecreatefromjpeg($strOrgPath);
+					$strRotatedImage = @imagerotate($strSourceImage, 180, 0);
+					$strRotatedImage = @imagerotate($strRotatedImage, 90, 0);
+					@ImageJPEG($strRotatedImage,$strNewBigPath);
+				}else{
+					$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_NO_JPG_SUPPORT'];
+				}
+			break;
+			case 3: //PNG
+				if($this->boolPngEnabled==true){
+					// NOW I ROTATE THE ORIGINAL IMAGE
+					$strSourceImage = @imagecreatefromPNG($strOrgPath);
+					@imageAlphaBlending($strSourceImage, true);
+					@imageSaveAlpha($strSourceImage, true);
+					$strRotatedImage = imagerotate($strSourceImage, 180, 0);
+					$strRotatedImage = imagerotate($strRotatedImage, 90, 0);
+					@ImagePNG($strRotatedImage,$strNewBigPath);
+				}else{
+					$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_NO_PNG_SUPPORT'];
+				}
+			break;
+		}
+		unlink($strOrgPath);
+		rename($strNewBigPath,$strOrgPath);
+	 }
+	 
+	 
+	/**
+	* import Pictures (requires chmod 777 in folder gallery_import)
+    *
+    * @global	array	$_ARRAYLANG
+    */     
+    function importPicture()
+    {
+    	global $_ARRAYLANG;
+    	
+    	$this->_objTpl->loadTemplateFile('module_gallery_import_pictures.html',true,true);
+    	
+    	//get enabled filetypes
+		$arrEnabledTypes = array();
+
+		if($this->boolGifEnabled == true){
+			$arrEnabledTypes[] = 1;
+		}
+		
+		if($this->boolJpgEnabled == true){
+			$arrEnabledTypes[] = 2;
+		}
+		
+		if($this->boolPngEnabled == true){
+			$arrEnabledTypes[] = 3;
+		}
+		
+		//get images
+		$o=0;
+    	$handleDirectory = @opendir($this->strImportPath);
+		while($strName = @readdir($handleDirectory)){
+			if($strName != '.' && $strName != '..'){
+				if(is_file($this->strImportPath . $strName) && $o < $this->intMaxEntries){
+					$arrFileInfo=getimagesize($this->strImportPath.$strName);
+					$this->importFiles['name'][] = $strName;
+					$this->importFiles['size'][] = $this->_getSize($this->strImportPath.$strName);
+					$this->importFiles['type'][] = $this->_getType($this->strImportPath.$strName);
+					$this->importFiles['typeEnabled'][] = $arrFileInfo[2];
+					$this->importFiles['height'][] = $arrFileInfo[1];
+					$this->importFiles['width'][] = $arrFileInfo[0];
+					$o++;
+				}
+			}
+		}	
+		@closedir($handleDirectory);
+	    clearstatcache();
+    	 
+ 		$this->_objTpl->setVariable(array(
+			'TXT_TITLE'						=>	$_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM'],
+			'TXT_IMAGENUMBER'				=>	$_ARRAYLANG['TXT_GALLERY_UPLOAD_FORM_IMAGE_NUMBER'],
+			'TXT_IMPORT_MAKE_SELECTION'		=>	$_ARRAYLANG['TXT_GALLERY_MAKE_SELECTION'],
+			'TXT_IMPORT_DELETE_PICTURE'		=>  $_ARRAYLANG['TXT_GALLERY_REALY_DELETE'],
+			'TXT_MAX_PICTURES'				=>  $_ARRAYLANG['TXT_GALLERY_MAX_PICTURES'].' '.$this->intMaxEntries.' '.$_ARRAYLANG['TXT_GALLERY_COUNT_PICTURES'].$o,
+			'IMPORT_IMAGE_TREE_NAV_MAIN'	=> 'http://'.$_SERVER['HTTP_HOST'].$this->importWebPath
+		));
+	
+		// empty dir or php safe mode restriction
+    	if($o==0 || !@opendir($this->strImportPath)){
+    	    if(!@opendir($this->strImportPath)) {
+    	        $strTempMessage = $_ARRAYLANG['TXT_GALLERY_IMPORT_ERR_SAFEMODE'];
+    	    } else{
+    	        $strTempMessage = $_ARRAYLANG['TXT_GALLERY_IMPORT_ERR_DIR'];
+    	    }
+    	    
+    	    $this->_objTpl->setVariable(array(
+    	        'TXT_IMPORT_IMAGE_DIR_EMPTY'   => $strTempMessage,
+    	    ));
+    	    $this->_objTpl->parse('importEmptyDirectory');
+    	}
+    	// not empty dir (select action)
+    	else{   
+    		//importDirectoryTree
+			$i=0;
+			$this->_objTpl->setCurrentBlock('importDirectoryTree');
+    		
+			asort($this->importFiles['name']);
+			
+			foreach($this->importFiles['name'] as $intPicKey => $strPicName){
+				$intRowClass = ($i % 2) ? 'row2' : 'row1';
+				if(in_array($this->importFiles['typeEnabled'][$intPicKey], $arrEnabledTypes)){
+					$this->_objTpl->setVariable(array(
+						'IMPORT_IMAGE_DIR_TREE_ROW'	=>	$intRowClass,
+						'IMPORT_IMAGE_NAME'			=>	$strPicName,
+						'IMPORT_IMAGE_HEIGHT'		=>	$this->importFiles['height'][$intPicKey]+25,
+						'IMPORT_IMAGE_WIDTH'		=>	$this->importFiles['width'][$intPicKey]+20,	
+						'IMPORT_IMAGE_PATH'			=>	$this->importWebPath.$strPicName,
+						'IMPORT_IMAGE_TYP'			=>	$this->importFiles['type'][$intPicKey],
+						'IMPORT_IMAGE_SIZE'			=>	$this->importFiles['size'][$intPicKey],
+						'IMPORT_IMAGE_KEY'			=>	$intPicKey,
+						'IMPORT_IMAGE_CHECKBOX'		=>  '<input type="checkbox" title="Select '.$strPicName.'" name="formSelected[]" value="'.$strPicName.'" />',
+					));
+				}else{
+					$this->_objTpl->setVariable(array(
+						'IMPORT_IMAGE_DIR_TREE_ROW'		=>	$intRowClass,
+						'IMPORT_IMAGE_NAME'				=>	$strPicName,
+						'IMPORT_IMAGE_HEIGHT'			=>	$this->importFiles['height'][$intPicKey]+25,
+						'IMPORT_IMAGE_WIDTH'			=>	$this->importFiles['width'][$intPicKey]+20,	
+						'IMPORT_IMAGE_PATH'				=>	$this->importWebPath.$strPicName,	
+						'IMPORT_IMAGE_TYP'				=>	$this->importFiles['type'][$intPicKey],
+						'IMPORT_IMAGE_SIZE'				=>	$this->importFiles['size'][$intPicKey],
+						'IMPORT_IMAGE_KEY'				=>	$intPicKey,
+						'IMPORT_IMAGE_CHECKBOX'			=>  '&nbsp;',
+						'IMPORT_IMAGE_NAME_ATTRIBUT'	=>	'<i><font color=#ff0000>('.$_ARRAYLANG['TXT_GALLERY_TYPE_NOT_SUPPORTED'].')</font></i>'
+					));
+				}
+				$i++;
+				$this->_objTpl->parseCurrentBlock('importDirectoryTree');
+			} 
+    		
+    		$this->_objTpl->setVariable(array(
+    	        'TXT_IMPORT_IMAGE_SELECT_ACTION'  	=> $_ARRAYLANG['TXT_GALLERY_CHOOSE_ACTION'],
+    	        'TXT_IMPORT_IMAGE_IMPORT'         	=> $_ARRAYLANG['TXT_GALLERY_IMPORT'],
+    	        'TXT_IMPORT_IMAGE_DELETE'         	=> $_ARRAYLANG['TXT_GALLERY_DELETE']
+    	        
+    	    ));
+    	    $this->_objTpl->parse('importSelectAction');
+    	}
+    }
+    
+    
+    /**
+	* Get filesize
+    *
+    * @param	string		$strFile
+    * @return 	integer		$intSize: Size of the file
+    */
+    function _getSize($strFile)
+    {
+        if(is_file($strFile)){
+            if(@filesize($strFile)){
+                $intSize = filesize($strFile);
+            }
+        }
+        
+        (!isset($intSize) or empty($intSize)) ? $intSize = '0' : '';
+ 
+        return $intSize;        
+    }
+    
+    
+    /**
+	* Get filetype
+    *
+    * @param	string		$strFile
+    * @return 	string		$strType: Type of the file
+    */
+    function _getType($strFile)
+    {
+        if(is_file($strFile)){
+            $info = pathinfo($strFile);
+		    $strType = strtoupper($info['extension']);
+        }
+        
+        if(is_dir($strFile)){
+            $strType = '[folder]';
+        }
+        
+        (!isset($strType) or empty($strType)) ? $strType = '-' : '';
+        
+        return $strType;
+    }
+    
+    
+    /**
+	* Import selected pictures from folder
+    *
+    */
+    function importFromFolder()
+    {
+		foreach($_POST['formSelected'] as $intPicKey => $strPicName){
+			$strPicName = get_magic_quotes_gpc() ? strip_tags($strPicName) : addslashes(strip_tags($strPicName));
+			$this->movePicture($strPicName);
+		}	
+    }
+    
+    
+    /**
+	* Move pictures from gallery_import to gallery
+    *
+    * @param	string		$strFile
+    */
+    function movePicture($strFile) {
+    	global $objDatabase;
+    	
+    	//check if file exists
+    	$boolChecker = false;
+		while ($boolChecker == false){
+			if (file_exists($this->strImagePath.$strFile)){
+				$strImportedImageName = time().'_'.$strFile;
+			}else{
+				$strImportedImageName = $strFile;		
+			}
+			$boolChecker = true;
+		}
+		
+		// gets the quality
+		$objResult = $objDatabase->Execute('SELECT 	value 
+											FROM 	'.DBPREFIX.'module_gallery_settings
+				  							WHERE 	name = "quality"');
+		$intQuality = intval($objResult->fields['value']);
+		$intSize	= getimagesize($this->strImportPath.$strFile);
+		$intWidth	= $intSize[0];
+		$intHeight	= $intSize[1];
+		
+		$this->createImages_JPG_GIF_PNG($this->strImportPath, $this->strImagePath, $strFile, $strImportedImageName, $intWidth, $intHeight, $intQuality);
+		
+		//insert image in db
+		$strDatabasePath = $strImportedImageName;
+		$this->insertImage($strDatabasePath,$strImportedImageName);
+		
+		//delet imported images
+		if(file_exists($this->strImagePath.$strImportedImageName)){
+			unlink($this->strImportPath.$strFile);
+		}
+    }
+    
+    
+    /**
+	* Delete selected pictures
+    *
+    */
+    function deleteImportPicture()
+    {
+        if(!isset($_GET['pic'])){
+        	foreach($_POST['formSelected'] as $intPicKey => $strPicName){
+        		unlink($this->strImportPath.$strPicName);
+        	}
+        }else{
+        	unlink($this->strImportPath.$_GET['pic']);
+        }
+    }
+    
+    
+    /**
+	* Create an Image
+	*
+    * @param 	string		$strPathOld: The old path of the image
+    * @param 	string		$strPathNew: The new path for the created image
+    * @param 	string		$strFileOld: The name of the old file
+    * @param 	string		$strFileNew: The name of the new file
+    * @param 	integer		$intNewWidth: Width of the new image
+    * @param 	integer		$intNewHeight: Height of the new image
+    * @param 	integer		$intQuality: Quality of the new image
+    */
+    function createImages_JPG_GIF_PNG($strPathOld, $strPathNew, $strFileOld, $strFileNew, $intNewWidth, $intNewHeight, $intQuality)
+    {
+        //copy image
+		$intSize	= getimagesize($strPathOld.$strFileOld); //ermittelt die Größe des Bildes 
+		$intWidth	= $intSize[0]; //die Breite des Bildes 
+		$intHeight	= $intSize[1]; //die Höhe des Bildes 
+		$strType	= $intSize[2]; //type des Bildes
+	
+		switch ($strType)
+		{
+			case 1: //GIF
+				if($this->boolGifEnabled){
+					$handleImage1 = ImageCreateFromGIF($strPathOld.$strFileOld); 
+					$handleImage2 = @ImageCreateTrueColor($intNewWidth,$intNewHeight);
+					ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight); 
+					ImageGIF($handleImage2, $strPathNew.$strFileNew); 
+					
+					ImageDestroy($handleImage1);
+					ImageDestroy($handleImage2);
+				}else{
+						$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_NO_GIF_SUPPORT'];
+				}
+			break;
+			case 2: //JPG
+				if($this->boolJpgEnabled){
+					$handleImage1 = ImageCreateFromJpeg($strPathOld.$strFileOld);
+					$handleImage2 = @ImageCreateTrueColor($intNewWidth,$intNewHeight);
+					ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
+					ImageJpeg($handleImage2, $strPathNew.$strFileNew, $intQuality);
+					
+					ImageDestroy($handleImage1);
+					ImageDestroy($handleImage2);
+				}else{
+						$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_NO_JPG_SUPPORT'];
+				}
+			break;
+			case 3: //PNG
+				if($this->boolPngEnabled){
+					$handleImage1 = ImageCreateFromPNG($strPathOld.$strFileOld); 
+					ImageAlphaBlending($handleImage1, true);
+					ImageSaveAlpha($handleImage1, true);
+					$handleImage2 = @ImageCreateTrueColor($intNewWidth,$intNewHeight);
+					ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
+					ImagePNG($handleImage2, $strPathNew.$strFileNew);
+					
+					ImageDestroy($handleImage1);
+					ImageDestroy($handleImage2);
+				}else{
+						$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_NO_PNG_SUPPORT'];
+				}
+			break;
+		}
+    }
+    
+    
+    /**
+    * Delete a comment of a picture
+    *
+    * @global 	object		$objDatabase
+    * @global 	array		$_ARRAYLANG
+    * @param 	integer		$intComId: The id of the comment which should be deleted
+    */
+    function deleteComment($intComId)
+    {
+    	global $objDatabase,$_ARRAYLANG;
+    	
+    	$intComId = intval($intComId);
+    	
+    	if ($intComId != 0) {
+    		$objDatabase->Execute('	DELETE
+    								FROM	'.DBPREFIX.'module_gallery_comments
+    								WHERE	id='.$intComId.'
+    								LIMIT	1
+    							');    		
+    		$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_COMMENT_DELETE_DONE'];	
+    	} else {
+    		$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_COMMENT_DELETE_ERROR'];	
+    	}
+    }
+    
+    
+    /**
+    * Delete a voting of a picture
+    *
+    * @global 	object		$objDatabase
+    * @global 	array		$_ARRAYLANG
+    * @param 	integer		$intComId: The id of the comment which should be deleted
+    */
+    function deleteVote($intVoteId)
+    {
+    	global $objDatabase,$_ARRAYLANG;
+    	
+    	$intVoteId = intval($intVoteId);
+    	
+    	if ($intVoteId != 0) {
+    		$objDatabase->Execute('	DELETE
+    								FROM	'.DBPREFIX.'module_gallery_votes
+    								WHERE	id='.$intVoteId.'
+    								LIMIT	1
+    							');    		
+    		$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_VOTE_DELETE_DONE'];	
+    	} else {
+    		$this->statusMessage = $_ARRAYLANG['TXT_GALLERY_VOTE_DELETE_ERROR'];	
+    	}    	
+    }
+    
+    
+    /**
+    * Edit a comment of a picture
+    *
+    * @global 	object		$objDatabase
+    * @global 	array		$_ARRAYLANG
+    * @param 	integer		$intCommentId: The comment with this id will be shown in the form
+    */
+    function showEditComment($intCommentId)
+    {
+    	global $objDatabase,$_ARRAYLANG;
+    	
+    	$intCommentId = intval($intCommentId);
+    	
+    	$this->_objTpl->loadTemplateFile('module_gallery_edit_comment.html',true,true); 
+    	$this->_objTpl->SetVariable(array(	'TXT_COMMENT_EDIT_TITLE'	=>	$_ARRAYLANG['TXT_COMMENT_EDIT'],
+    										'TXT_COMMENT_EDIT_DATE'		=>	$_ARRAYLANG['TXT_COMMENT_EDIT_DATE'],
+    										'TXT_COMMENT_EDIT_IP'		=>	$_ARRAYLANG['TXT_COMMENT_EDIT_IP'],
+    										'TXT_COMMENT_EDIT_NAME'		=>	$_ARRAYLANG['TXT_COMMENT_EDIT_NAME'],   	
+    										'TXT_COMMENT_EDIT_EMAIL'	=>	$_ARRAYLANG['TXT_COMMENT_EDIT_EMAIL'],
+    										'TXT_COMMENT_EDIT_HOMEPAGE'	=>	$_ARRAYLANG['TXT_COMMENT_EDIT_HOMEPAGE'],
+    										'TXT_COMMENT_EDIT_TEXT'		=>	$_ARRAYLANG['TXT_COMMENT_EDIT_TEXT'],
+    										'TXT_COMMENT_EDIT_SUBMIT'	=>	$_ARRAYLANG['TXT_COMMENT_EDIT_SUBMIT']
+    								));
+    								
+    	$objResult = $objDatabase->Execute('	SELECT	picid,
+    													`date`,
+    													ip,
+    													name,
+    													email,
+    													www,
+    													comment
+    											FROM	'.DBPREFIX.'module_gallery_comments
+    											WHERE	id='.$intCommentId.'
+    											LIMIT	1
+    										');
+    	$this->_objTpl->SetVariable(array(	'VALUE_COMMENT_EDIT_ID'			=>	$intCommentId,
+    										'VALUE_COMMENT_EDIT_PICID'		=>	$objResult->fields['picid'],
+    										'VALUE_COMMENT_EDIT_DATE'		=>	date('d.m.Y',$objResult->fields['date']),
+    										'VALUE_COMMENT_EDIT_IP'			=>	$objResult->fields['ip'],
+    										'VALUE_COMMENT_EDIT_NAME'		=>	$objResult->fields['name'],
+    										'VALUE_COMMENT_EDIT_EMAIL'		=>	$objResult->fields['email'],
+    										'VALUE_COMMENT_EDIT_HOMEPAGE'	=>	$objResult->fields['www'],
+    										'VALUE_COMMENT_EDIT_TEXT'		=>	$objResult->fields['comment']
+    								));
+    }
+    
+    
+    /**
+    * Save all changes done to a comment
+    *
+    * @global 	object		$objDatabase
+    * @global 	array		$_ARRAYLANG
+    * @global 	array		$_POST
+    */
+    function updateComment()
+    {
+    	global $objDatabase,$_ARRAYLANG,$_POST;
+    	
+    	$intCommentId 	= intval($_POST['frmEditComment_Id']);
+    	$strName 		= htmlspecialchars(strip_tags($_POST['frmEditComment_Name']));
+		$strEMail		= htmlspecialchars(strip_tags($_POST['frmEditComment_Email']));
+		$strWWW			= htmlspecialchars(strip_tags($_POST['frmEditComment_Homepage']));
+		$strComment 	= htmlspecialchars(strip_tags($_POST['frmEditComment_Text']));
+		
+		if (!empty($strWWW) && $strWWW != 'http://') {
+			if (substr($strWWW,0,7) != 'http://') {
+				$strWWW = 'http://'.$strWWW;
+			}				
+		} else {
+			$strWWW = '';	
+		}
+		
+		if ($intCommentId != 0 && 
+			!empty($strName) && 
+			!empty($strComment))
+		{
+			$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_gallery_comments
+									SET		name="'.$strName.'",
+											email="'.$strEMail.'",
+											www="'.$strWWW.'",
+											comment="'.$strComment.'"
+									WHERE	id='.$intCommentId.'
+									LIMIT	1'
+								);
+		
+			$this->statusMessage = $_ARRAYLANG['TXT_COMMENT_EDIT_SAVED'];
+		}
+    }
+}
+?>

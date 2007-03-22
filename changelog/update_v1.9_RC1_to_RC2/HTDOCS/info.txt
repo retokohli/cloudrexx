@@ -1,0 +1,10 @@
+Bitte alle Dateien mit der Version 1.9 RC2 überschreiben.
+
+Die folgenden Verzeichnisse müssen nicht erneuert werden:
+/media
+/admin/backup
+/feed/
+/themes/ ( Optionale neue Designs )
+
+
+

@@ -1,0 +1,36 @@
+<!-- START voting_add.html -->
+<form name="form1" action="index.php?cmd=voting&amp;act=addsubmit" method="post">
+  <table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
+    <tr valign="top"> 
+      <th nowrap="nowrap"> 
+        <div align="left">{TXT_VOTING_ADD}</div>
+      </th>
+      <th nowrap="nowrap"> 
+        <div align="left"></div>
+      </th>
+    </tr>
+    <tr valign="top" class="row1"> 
+      <td nowrap="nowrap">{TXT_NAME}&nbsp;<span class="status"><b>*</b></span></td>
+      <td> 
+        <input maxlength="255" name="votingname" size="40">
+      </td>
+    </tr>
+    <tr valign="top" class="row1"> 
+      <td nowrap="nowrap">{TXT_VOTING_QUESTION}&nbsp;<span class="status"><b>*</b></span></td>
+      <td> 
+        <input maxlength="255" name="votingquestion" size="40">
+      </td>
+    </tr>
+    <tr valign="top" class="row1"> 
+      <td nowrap="nowrap">{TXT_VOTING_ADD_OPTIONS}&nbsp;<span class="status"><b>*</b></span></td>
+      <td> 
+        <textarea name="votingoptions" rows="6" cols="60"></textarea>
+      </td>
+    </tr>
+  </table>
+  <br />
+  <input type="submit" value="{TXT_STORE}" name="Submit" />
+  <input type="reset" value="{TXT_RESET}" name="Submit" />
+  <br />
+</form>
+<!-- END guestbook_add.html -->

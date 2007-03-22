@@ -1,0 +1,88 @@
+<!-- START login.html -->
+<table cellspacing="0" cellpadding="4" width="100%" border="0">
+<tr> 
+<td valign="top">
+<div> 
+<form method="post" action="index.php" name="login_form" onSubmit="return ValidateForm(this)">
+<script language="JavaScript" type="text/javascript" defer="defer">
+<!--
+form_submitted=false;
+function ValidateForm(theform)
+{
+	if(theform.USERNAME.value=='')
+	{
+		if(theform.USERNAME.focus)
+			theform.USERNAME.focus()
+		alert('It was not specified a valid username.')
+		form_submitted=false
+		return false
+	}	
+	if(theform.hash.value=='')
+	{
+		if(theform.hash.focus)
+			theform.hash.focus()
+		alert('It was not specified a valid password.')
+		form_submitted=false
+		return false
+	}
+	//theform.PASSWORD.value=MD5(theform.hash.value)
+	theform.PASSWORD.value=theform.hash.value
+	theform.hash.value=''
+	return true
+}
+//-->
+</script> 
+<br />
+<table cellspacing="0" cellpadding="2" width="100%" border="0">
+<tr> 
+<td width="20%" nowrap="nowrap">{TXT_SECURITY_CODE}:</td>
+<td width="28%">{LOGIN_IMAGE}</td>
+<td rowspan="5" width="52%">&nbsp;&nbsp;<img height="28" src="images/login_key.gif" width="20" align="middle" alt="login key" /></td>
+</tr>
+<tr> 
+<td width="20%" nowrap="nowrap">{TXT_ENTER_SECURITY_CODE}:</td>
+<td width="28%"> 
+<input style="width:100%;" tabindex="1" name="secid2" value="" maxlength="5" onChange="javascript:this.value=this.value.toUpperCase();" />
+</td>
+</tr>
+<tr> 
+<td width="20%" nowrap="nowrap">{TXT_USER_NAME}:</td>
+<td width="28%"> 
+<input style="width:100%;" tabindex="2" name="USERNAME" value="{UID}" />
+</td>
+</tr>
+<tr> 
+<td width="20%" nowrap="nowrap">{TXT_PASSWORD}:</td>
+<td width="28%"> 
+<input style="width:100%;" type="password" tabindex="3" size="40" name="hash" value="" />
+<input type="hidden" name="PASSWORD" value="" />
+</td>
+</tr>
+<tr> 
+<td width="20%">&nbsp;</td>
+<td width="28%"> 
+<input type="submit" tabindex="4" name="submit_button" value="{TXT_LOGIN}" onClick="if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=true ; form_submitted_test=form_submitted ; form_submitted=true ; form_submitted=(!form_submitted_test || confirm('Are you sure you want to submit this form again?')) ; if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=false ; sub_form='' ; return true" />
+</td>
+</tr>
+<tr> 
+<td width="20%">&nbsp;</td>
+<td width="28%"> 
+<br /><a href="index.php?cmd=lostpw">&raquo;&nbsp;Passwort vergessen?</a>
+</td>
+</tr>
+<tr>
+<td width="20%">&nbsp;</td>
+<td width="28%">
+<p><font color="red"><b>{LOGIN_ERROR_MESSAGE}</b></font></p>
+</td>
+<td width="52%">&nbsp;</td>
+</tr>
+</table>
+<br />
+</form>
+</div>
+</td>
+</tr>
+</table>
+<br />
+<!-- END login.html -->

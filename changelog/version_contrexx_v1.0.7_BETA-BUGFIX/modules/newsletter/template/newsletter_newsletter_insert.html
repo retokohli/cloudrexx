@@ -1,0 +1,190 @@
+<!-- START module_newsletter.html -->
+
+<script language="javascript">
+// <![CDATA[
+	function DeleteFile(FileID){
+		if(confirm("{TXT_CONFIRM_DELETE_DATA}")){
+			document.newsletter.AttachChange.value = "yes";
+			document.newsletter.ActMode.value = "update";
+			document.newsletter.FileID.value = FileID;
+			SubmitForm();
+		}
+	}
+	function SubmitForm(){
+		document.newsletter.submit();
+	}
+	
+	function ChangeFormat(){
+		if(document.newsletter.format.value == "html/text"){
+			document.getElementById("html_content").style.display = "block";
+			document.getElementById("text_content").style.display = "block";
+		}
+		if(document.newsletter.format.value == "html"){
+			document.getElementById("html_content").style.display = "block";
+			document.getElementById("text_content").style.display = "none";
+		}
+		if(document.newsletter.format.value == "text"){
+			document.getElementById("html_content").style.display = "none";
+			document.getElementById("text_content").style.display = "block";
+		}
+	}
+// ]]>
+</script>
+<div id="subnavbar_level2">
+<ul>
+<li><a href="index.php?cmd=newsletter&act=newsletterlist" title="{TXT_NEWSLETTER_EDIT_SEND}">{TXT_NEWSLETTER_EDIT_SEND}</a></li>
+<li><a href="index.php?cmd=newsletter&act=newsletterinsert" title="{TXT_NEWSLETTER_NEW}">{TXT_NEWSLETTER_NEW}</a></li>
+</ul>
+</div>
+<br/>
+
+<ul id="tabmenu">
+<li><a id="zoneTab_Content1" class="active" href="javascript:{}" onclick="selectTab('Content1')" title="{TXT_TITLE}">{TXT_TITLE}</a></li>
+<li><a id="zoneTab_Content2" href="javascript:{}" onclick="selectTab('Content2')" title="{TXT_WILDCART_INFOS}">{TXT_WILDCART_INFOS}</a></li>
+</ul>
+<div id="Content1" class="zoneTab" style="display:block">
+<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+	<tr>
+		<th>{TXT_TITLE}</th>
+	</tr>
+</table>
+
+<form name="newsletter" action="index.php?cmd=newsletter&act=newsletterupdate" enctype="multipart/form-data" method="POST">
+	<input type="hidden" name="ActMode" value="{ACT_MODE}" />
+	<input type="hidden" name="NewsletterID" value="{VALUE_NEWSLETTER_ID}" />
+	<input type="hidden" name="AttachChange" value="" />
+	<input type="hidden" name="FileID" value="" />
+	<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+		<tr class="row1">
+			<td width="12%">{TXT_FORMAT}</td>
+			<td width="88%">
+				<select name="format" onchange="ChangeFormat();" style="width: 220px;">
+					<option value="html/text" {VALUE_HTML_TEXT}>Html/Text</option>
+					<option value="html" {VALUE_HTML}>Html</option>
+					<option value="text" {VALUE_TEXT}>Text</option>
+				</select>
+			</td>
+		</tr>
+		<tr class="row1">
+			<td>Template</td>
+			<td>{TEMPLATE_SELECT}</td>
+		</tr>
+		<tr class="row1">
+			<td>{TXT_SENDER} E-Mail</td>
+			<td><input type="text" name="sender_email" value="{VALUE_SENDER_MAIL}" size="40" maxlength="200" style="width: 220px;" /></td>
+		</tr>
+		<tr class="row1">
+			<td>{TXT_SENDER} {TXT_LASTNAME}</td>
+			<td><input type="text" name="sender_name" value="{VALUE_SENDER_NAME}" size="40" maxlength="200" style="width: 220px;" /></td>
+		</tr>
+		<tr class="row1">
+			<td>Replay-To</td>
+			<td><input type="text" name="sender_replay" value="{VALUE_SENDER_REPLAY}" size="40" maxlength="200" style="width: 220px;" /></td>
+		</tr>
+		<tr class="row1">
+			<td>{TXT_PRIORITY}</td>
+			<td>
+				<select name="priority" style="width: 220px;">
+					<option value="1" {VALUE_PRIORITY_1}>{TXT_HIGHEST}</option>
+					<option value="2" {VALUE_PRIORITY_2}>{TXT_HIGH}</option>
+					<option value="3" {VALUE_PRIORITY_3}>{TXT_NORMAL}</option>
+					<option value="4" {VALUE_PRIORITY_4}>{TXT_LOW}</option>
+					<option value="5" {VALUE_PRIORITY_5}>{TXT_LOWEST}</option>
+				</select>
+			</td>
+		</tr>
+		{CATEGORY_SELECT}
+		<tr class="row1">
+			<td>{TXT_NEWSLETTER_SUBJECT}</td>
+			<td><input type="text" name="subject" value="{VALUE_SUBJECT}" size="40" maxlength="200" style="width: 220px;" /></td>
+		</tr>
+		<tr class="row1" >
+			<td colspan="2"><div id="html_content" style="display: block; width: 100%;">{TXT_NEWSLETTER_CONTENT} (HTML)<br/>{CONTENTAREA}</div></td>
+		</tr>
+		<tr class="row1">
+			<td colspan="2"><div  id="text_content" style="display: block; width: 100%;">{TXT_NEWSLETTER_CONTENT} (TEXT)<br/><textarea name="content_text" style="width: 100%; height: 250px;">{VALUE_CONTENT_TEXT}</textarea></div></td>
+		</tr>
+		<tr class="row1">
+			<td valign="top" width="12%">{TXT_ATTACHMENT}</td>
+			<td width="88%">{ATTACHMENT_VALUES}</td>
+		</tr>
+	</table>
+	<br/>
+	<input type="reset" value="{TXT_RESET}" /> <input type="submit" value="{TXT_SAVE}" />
+</form>
+</div>
+<div id="Content2" class="zoneTab" style="display:none">
+<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+	<tr>
+		<th>{TXT_WILDCART_INFOS}</th>
+	</tr>
+</table>
+<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+	<tr class="row1">
+		<td colspan="2"><b>{TXT_USER_DATA}</b></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%">{TXT_EMAIL_ADDRESS}</td>
+		<td width="88%"><-- email --></td>
+	</tr>
+	<tr class="row1">
+		<td width="12%">{TXT_LASTNAME}</td>
+		<td width="88%"><-- lastname --></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%">{TXT_FIRSTNAME}</td>
+		<td width="88%"><-- firstname --></td>
+	</tr>
+	<tr class="row1">
+		<td width="12%">{TXT_STREET}</td>
+		<td width="88%"><-- street --></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%">{TXT_ZIP}</td>
+		<td width="88%"><-- zip --></td>
+	</tr>
+	<tr class="row1">
+		<td width="12%">{TXT_CITY}</td>
+		<td width="88%"><-- city --></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%">{TXT_COUNTRY}</td>
+		<td width="88%"><-- country --></td>
+	</tr>
+	<tr class="row1">
+		<td width="12%">{TXT_PHONE}</td>
+		<td width="88%"><-- phone --></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%">{TXT_BIRTHDAY}</td>
+		<td width="88%"><-- birthday --></td>
+	</tr>
+	<tr class="row1">
+		<td width="12%" colspan="2"><b>{TXT_GENERALLY}</b></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%" nowrap>{TXT_NEWSLETTER_CONTENT}</td>
+		<td width="88%"><-- content --></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%" nowrap>{TXT_PROFILE_SETUP} (Link)</td>
+		<td width="88%"><-- profile_setup --></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%" nowrap>{TXT_UNSUBSCRIBE} (Link)</td>
+		<td width="88%"><-- unsubscribe --></td>
+	</tr>
+	<tr class="row2">
+		<td width="12%" nowrap>{TXT_DATE}</td>
+		<td width="88%"><-- date --></td>
+	</tr>
+</table>
+</div>
+
+
+<script language="javascript">
+// <![CDATA[
+	ChangeFormat();
+// ]]>
+</script>
+<!-- END module_newsletter.html -->

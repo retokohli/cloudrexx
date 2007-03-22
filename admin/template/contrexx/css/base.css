@@ -1,0 +1,452 @@
+/*
+   Base Style Sheet for the ASTALAVISTA secure WCMS backend console.
+
+   Copyright 2005 ASTALAVISTA IT Engineering. 
+   All Rights Reserved.
+
+*/
+
+@import url(navbar.css);  /* CSS for navigation menu. */
+
+
+html, body {
+  height:          100%;
+  min-height:      100%;
+  color:           black;
+  background:      #ffffff;
+  font-weight:     normal;
+  font-family:     Arial, Helvetica, sans-serif;
+  font-style:      normal;
+  font-size: 11px;
+  text-decoration: none;
+  padding: 0px;
+  border:  0px;
+  margin: 0px 0px 0px 0px;
+}
+
+
+
+body {
+	SCROLLBAR-FACE-COLOR: #dadada; 
+	SCROLLBAR-HIGHLIGHT-COLOR: #dadada; 
+	SCROLLBAR-SHADOW-COLOR: #dadada; 
+	SCROLLBAR-3DLIGHT-COLOR: #dadada; 
+	SCROLLBAR-ARROW-COLOR: #000000; 
+	SCROLLBAR-TRACK-COLOR: #dadada; 
+	SCROLLBAR-DARKSHADOW-COLOR: #2f4f4f; 
+	SCROLLBAR-BASE-COLOR: #dadada;
+}
+
+td {
+	font-size: 11px;
+	text-align: left; 
+}
+
+form {
+	margin: 0px; 
+}
+
+textarea,
+input,
+object,
+select {
+	BORDER-RIGHT: 1px solid; 
+	BORDER-TOP: 1px solid; 
+	FONT-SIZE: 11px; 
+	BORDER-LEFT: 1px solid; 
+	COLOR: black; 
+	BORDER-BOTTOM: 1px solid; 
+	BACKGROUND-COLOR: white
+}
+
+h1 {
+	PADDING-RIGHT: 0px; 
+	PADDING-LEFT: 0px; 
+	FONT-SIZE: 12px; 
+	PADDING-BOTTOM: 0px; 
+	MARGIN: 0px; 
+	PADDING-TOP: 0px
+}
+A {
+	FONT-SIZE: 11px; 
+	COLOR: #000000; 
+	TEXT-DECORATION: none
+}
+A:link {
+	COLOR: #000000; 
+	TEXT-DECORATION: none
+}
+A:visited {
+	COLOR: #000000; 
+	TEXT-DECORATION: none
+}
+A:hover {
+	COLOR: #0A50A1; 
+	TEXT-DECORATION: none;
+}
+A:active {
+	COLOR: #0A50A1; 
+	TEXT-DECORATION: none
+}
+
+
+
+/* inline instruction */
+.status_message {
+	background: #faf0e6
+}
+
+div#footer {
+  FONT-SIZE: 11px;
+  margin-right: 4px;
+  text-align: right; 
+}
+
+.navbar {
+	PADDING-RIGHT: 0px; 
+	PADDING-LEFT: 0px; 
+	PADDING-BOTTOM: 0px; 
+	MARGIN: 0px; 
+	WIDTH: 100%; 
+	PADDING-TOP: 0px; 
+	LIST-STYLE-TYPE: none;
+	BACKGROUND-COLOR: #C9CED4;
+}
+
+.navbar li {
+	PADDING-RIGHT: 2px; 
+	PADDING-LEFT: 2px; 
+	PADDING-BOTTOM: 0px; 
+	PADDING-TOP: 0px;
+	MARGIN: 0px;  
+	BACKGROUND-COLOR: #C9CED4;
+}
+
+.navbar a {
+	PADDING-RIGHT: 2px; 
+	PADDING-LEFT: 2px; 
+	PADDING-BOTTOM: 0px; 
+	PADDING-TOP: 0px;
+	MARGIN: 0px;  
+	BACKGROUND-COLOR: #C9CED4;
+	COLOR: #000000; 
+	TEXT-DECORATION: none;
+	font-weight:     normal;
+}
+
+.navbar li a {
+	DISPLAY: block; 
+	FONT-SIZE: 11px; 
+	COLOR: black; 
+	BACKGROUND-COLOR: #C9CED4;
+	border-top: 1px solid #C9CED4;
+	border-bottom: 1px solid #C9CED4;
+	border-left: 1px solid #C9CED4;
+	border-right: 1px solid #C9CED4;
+	PADDING-RIGHT: 2px; 
+	PADDING-LEFT: 2px; 
+	PADDING-BOTTOM: 2px; 
+	PADDING-TOP: 3px;
+	COLOR: #000000; 
+	TEXT-DECORATION: none;
+	font-weight:     normal;
+}
+
+.navbar li a:active {
+	color: #000000;
+}
+
+.navbar li a:hover {
+    color: #000000;
+	background: #B0BCC8; 
+	border-top: 1px solid #617886;
+	border-bottom: 1px solid #617886;
+	border-left: 1px solid #617886;
+	border-right: 1px solid #617886;
+}
+
+.tablenavbar{
+	BACKGROUND-COLOR: #C9CED4;
+	BORDER-TOP: 1px solid #ffffff;
+}
+
+.navigation {
+	PADDING-RIGHT: 0px; 
+	PADDING-LEFT: 0px; 
+	PADDING-BOTTOM: 0px; 
+	MARGIN: 0px 0px 0px 0px; 
+	WIDTH: 100%;
+	PADDING-TOP: 0px; 
+	LIST-STYLE-TYPE: none;
+	BORDER-TOP: 1px solid #8B9191;
+	BORDER-BOTTOM: 1px solid #ffffff;
+	BACKGROUND-COLOR: #D9DCE1;
+}
+
+.navigation li {
+	PADDING-RIGHT: 3px; 
+	PADDING-LEFT: 2px; 
+	PADDING-BOTTOM: 0px; 
+	PADDING-TOP: 1px;
+	MARGIN: 0px 0px 0px 0px;  
+	BACKGROUND-COLOR: #D9DCE1;
+	height: 20px;
+}
+.navigation li a {
+	DISPLAY: block; 
+	FONT-SIZE: 11px; 
+	COLOR: black; 
+	BACKGROUND-COLOR: #D9DCE1;
+	border-top: 1px solid #D9DCE1;
+	border-bottom: 1px solid #D9DCE1;
+	border-left: 1px solid #D9DCE1;
+	border-right: 1px solid #D9DCE1;
+	PADDING-RIGHT: 2px; 
+	PADDING-LEFT: 5px; 
+	PADDING-BOTTOM: 2px; 
+	PADDING-TOP: 2px;
+	MARGIN: 0px 0px 0px 0px;  
+}
+.navigation li a:active {
+	color: #000000;
+}
+.navigation li a:hover {
+    color: #000000;
+	background: #B0BCC8; 
+	border-top: 1px solid #617886;
+	border-bottom: 1px solid #617886;
+	border-left: 1px solid #617886;
+	border-right: 1px solid #617886;
+}
+
+
+table.adminlist {
+	FONT-SIZE: 11px; 
+	BACKGROUND-COLOR: #ffffff;
+	border-bottom: 1px solid #F0EEEE;
+	border-left: 1px solid #F0EEEE;
+	border-right: 1px solid #F0EEEE;
+	border-top: 0px solid #999999;
+}
+table.adminlist th {
+	COLOR: black; 
+	BACKGROUND-COLOR: #C9CED4;
+	border-bottom: 1px solid #8B9191; 
+	border-top: 1px solid #ffffff; 
+	COLOR: black; 
+	vertical-align: middle;
+	height: 20px;
+	text-align: left;
+	padding-bottom: 0px;
+	padding-top: 0px;
+    margin: 0px;
+}
+
+table.adminlist th.sort {
+	COLOR: black; 
+	BACKGROUND-COLOR: #D9DCE1;
+	border-bottom: 1px solid #D9DCE1; 
+	border-top: 1px solid #F9F8F8; 
+	border-left: 1px solid #8B9191;
+	border-right: 1px solid #ffffff;
+	COLOR: black; 
+	vertical-align: middle;
+	height: 20px;
+	text-align: left;
+}
+
+table.adminlist th A {
+	COLOR: black; 
+}
+table.adminlist th A:active {
+	COLOR: black; 
+	TEXT-DECORATION: underline
+}
+table.adminlist th A:visited {
+	COLOR: black; 
+}
+table.adminlist TH A:hover {
+	COLOR: #000000;  
+	TEXT-DECORATION: underline
+}
+table.adminlist TH.title {
+	COLOR: #000000; 
+	TEXT-ALIGN: left
+}
+table.adminlist tr.row2 {
+	BACKGROUND-COLOR: #F0F0F0;
+	color: #666666;
+}
+table.adminlist tr.row1 {
+	BACKGROUND-COLOR: #ffffff;
+	color: #666666;
+}
+table.adminlist tr.row3 {
+	BACKGROUND-COLOR: #ffffff;
+	color: #666666;
+}
+table.adminlist tr.highlighted {
+	background-color: #ffe7e7;
+	color: #666666;
+}
+table.adminlist tr.highlighted:hover {
+	background-color: #ffe7e7;
+	color: #666666;
+}
+table.adminlist tr.rowWarn {
+	BACKGROUND-COLOR: #ffe7e7
+	color: #666666;
+}
+table.adminlist td {
+	BORDER-BOTTOM: #E0E0E0 0px solid
+}
+table.adminlist td a{
+	color: #000000;
+	TEXT-DECORATION: none;
+}
+table.adminlist td a:hover{
+	color: #000000;
+	TEXT-DECORATION: underline;
+}
+table.adminlist tr.row1:hover {
+	BACKGROUND-COLOR: #B0BCC8;
+	color: #666666;
+}
+table.adminlist tr.row2:hover {
+	BACKGROUND-COLOR: #B0BCC8;
+	color: #666666;
+}
+table.adminlist tr.row3:hover {
+	BACKGROUND-COLOR: #ffffff;
+	color: #666666;
+}
+table.adminlist td.options {
+	FONT-SIZE: 10px; 
+	BACKGROUND-COLOR: #ffffff
+}
+
+table.title {
+	FONT-SIZE: 12px; 
+	BORDER-BOTTOM: #0A50A1 1px solid; 
+	FONT-FAMILY: Arial, Helvetica, sans-serif; 
+	BACKGROUND-COLOR: white
+}
+
+table.subnavbar {
+	FONT-SIZE: 11px; 
+	BORDER-BOTTOM: #000099 0px solid; 
+	FONT-FAMILY: Arial, Helvetica, sans-serif; 
+	BACKGROUND-COLOR: #c8d7ee;
+}
+
+#tabmenu{
+	color: black;
+	margin: 0;
+	padding: 3px 2px 10px 2px;
+	z-index: 1;
+	padding-left: 0px;
+}
+	
+#tabmenu li {
+	display: inline;
+	overflow: hidden;
+	list-style-type: none; 
+	
+}	
+	
+#tabmenu a {
+	background: #F9F8F8;
+	FONT-WEIGHT: normal;
+	border-top: 0px solid #999999;
+	border-bottom: 0px solid #999999;
+	border-left: 0px solid #999999;
+	border-right: 0px solid #999999;
+	padding: 2px 5px 2px 5px;
+	margin: 0px;
+	TEXT-DECORATION: none; 
+}
+	
+#tabmenu a.active {
+	background: #F9F8F8;
+	color: #000000;
+	border-bottom: 0px solid #cccccc;
+}
+
+#tabmenu a.visited {
+	background: #F9F8F8;
+	color: #000000;
+	border-bottom: 0px solid #cccccc;
+}
+	
+#tabmenu a:hover {
+	background: #F9F8F8;
+	color: #000000;
+	TEXT-DECORATION: underline;
+}	
+	
+#tabmenu a.active:hover {
+	background: #F9F8F8;
+	color: #000000;
+	TEXT-DECORATION: underline;
+}
+
+#alertbox {
+	border: 1px solid; 
+	color: #ff0000;
+	background: #FFCCCC;
+	padding: 4px;
+}
+
+.content{ 
+	COLOR: black; 
+	background-color: #F9F8F8;
+	border-bottom: 1px solid #eeeeee;
+}
+
+.content table{ 
+	COLOR: black; 
+	background-color: #F9F8F8;
+}
+
+.content td{ 
+	border-left: 1px solid #eeeeee;
+	border-right: 1px solid #eeeeee;
+}
+
+.content th{
+	border-bottom: 1px solid #8B9191; 
+	COLOR: black; 
+	vertical-align: middle;
+	height: 27px;
+}
+
+#admincontent{ 
+	COLOR: black; 
+	border-left: 0px;
+	border-bottom: 0px;
+	border-top: 0px;
+	border-right: 0px;
+	WIDTH: 100%;
+}
+
+#admincontent td{ 
+	COLOR: black; 
+	border-left: 0px;
+	border-bottom: 0px;
+	border-top: 0px;
+	border-right: 0px;
+}
+
+#header{
+	color: #000000;
+}
+
+#header a{
+	color: #333333;
+	TEXT-DECORATION: none
+}
+
+#header a:hover{
+	color: #333333;
+	TEXT-DECORATION: underline
+}

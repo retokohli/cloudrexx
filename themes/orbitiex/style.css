@@ -1,0 +1,451 @@
+body     {font-size: 11px; font-family: Arial, Verdana, Helvetica, sans-serif; background: #F1F1F1; color: #565656; margin:0; padding:0;}
+	
+#accesskeys{
+    display:none;
+}
+
+td       {font-size: 11px; font-family: Arial, Verdana, Helvetica, sans-serif;}
+form     {margin: 0; padding: 0;}
+a        {color: #2070C3; text-decoration: none;}
+a:hover  {text-decoration: underline;}
+p        {margin: 0 0 10px 0; line-height: 15px;}
+h1, span.h1     {font-size: 18px; font-weight: bold; margin: 0px;
+	padding: 0px;
+	color: #2161AB;}
+h2, span.h2     {font-size: 11px; border-bottom: 1px solid #A7A7A7; text-transform: uppercase;}
+h3, span.h3	{font-size: 18px; font-weight: normal; margin-bottom: 10px; padding: 0;}
+ul       {margin: 0; padding: 0; padding-left: 20px; margin-bottom: 10px;}
+
+
+#suche_top{
+
+padding:20px;
+
+
+}
+#min {
+
+min-height:200px;
+min-width:200px;
+
+
+}
+#search {
+	font-family: Verdana;
+	font-size: 11px;
+	border: 1px solid #E0E0E0;
+	background-color: #FCFCFC;
+	padding: 1px;
+	color: #000000;
+	overflow: auto;
+	margin-bottom: 1px;
+}
+
+input, textarea, select, radio {
+	font-family: Verdana;
+	font-size: 11px;
+	border: 1px solid #E0E0E0;
+	background-color: #FCFCFC;
+	padding: 1px;
+	color: #000000;
+	overflow: auto;
+	margin-bottom: 1px;
+}
+
+
+
+#navigation ul{
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+}
+
+#navigation ul li{
+	border-bottom: 1px solid #FFFFFF;
+	       
+}
+
+#navigation ul li.sublevel2, #navigation ul li.shopnavbar1{
+	border-bottom: 1px solid #FFFFFF;
+	background: #F6E9E0 url(images/leftnav_secondary_bg.gif) repeat-y;
+}
+
+#navigation ul li.sublevel3, #navigation ul li.shopnavbar2{
+	border-bottom: 1px solid #FFFFFF;
+	background: #BFBFBF url(images/level_3.gif) repeat-y;        
+}
+
+#navigation ul li.shopnavbar1_active{
+	border-bottom: 1px solid #FFFFFF;
+	background: #939393 url(images/leftnav_level3_selected_bg.gif)repeat-y;
+}
+
+#navigation ul li.shopnavbar2_active{
+	border-bottom: 1px solid #FFFFFF;
+	background: #939393;     
+}
+
+#navigation ul li a{
+	display:block;
+	font-weight: normal;
+	text-decoration: none;
+	color: #000000;
+	padding: 5px 3px 5px 10px;
+}
+
+#navigation ul li.sublevel2 a, #navigation ul li.shopnavbar1 a{
+	display:block;
+	font-weight: normal;
+	text-decoration: none;
+	color: #000000;
+	padding: 4px 3px 4px 10px;
+       
+}
+
+
+#navigation ul li.sublevel3 a, #navigation ul li.shopnavbar2 a, #navigation ul li.shopnavbar2_active a{
+	display:block;
+	font-weight: normal;
+	text-decoration: none;
+	color: #FFFFFF;
+	padding: 3px 3px 3px 20px;
+}
+
+
+
+#navigation ul li a:hover{
+	display:block;
+	color: #FFFFFF;
+        background: #F3863C url(images/leftnav_selected_bg.gif) repeat-y; 
+}
+
+#navigation ul li.sublevel2 a:hover, #navigation ul li.shopnavbar1 a:hover, #navigation ul li.shopnavbar1_active a{
+        display:block;
+	color: #FFFFFF;
+        background: #939393 url(images/leftnav_level3_selected_bg.gif)repeat-y;
+}
+
+
+#navigation ul li.sublevel3 a:hover, #navigation ul li.shopnavbar2 a:hover, #navigation ul li.shopnavbar2_active a{
+display:block;
+	color: #FFFFFF;
+        background: #939393 url(images/leftnav_secondary_selected_bg.gif) repeat-y;
+}
+
+
+
+
+#navigation ul li a.active{
+	display:block;
+	color: #FFFFFF;
+        background: #F3863C url(images/leftnav_selected_bg.gif) repeat-y; 
+}
+
+#navigation ul li.sublevel2 a.active{
+ 	color: #FFFFFF;
+ background: #939393 url(images/leftnav_level3_selected_bg.gif)repeat-y;
+}
+
+ #navigation ul li.sublevel3 a.active{  
+ background: #939393;
+}
+
+
+
+
+.graytext, .smallers { color: #77787c;	}
+.smaller       {font-size: 11px; font-family: Arial, Verdana, Helvetica, sans-serif; color: #565656; margin:0; padding:0;}
+.smallerb       {font-size: 11px; font-weight: bold; font-family: Arial, Verdana, Helvetica, sans-serif; color: #565656; margin:0; padding:0;}
+.mediumb      {font-size: 115%; font-family: Arial, Verdana, Helvetica, sans-serif; color: #565656; margin:0; padding:0; font-weight : bold;}
+
+
+/* Sites Area */
+#sites {
+  font-family: Tahoma, Arial, Helvetica, sans-serif;
+  font-size: 10px;
+ 	position: relative; z-index: 7;
+  height: 32px;
+  margin: 0; padding: 0;
+}
+
+#sites .active { font-weight: bold; font-size: 11px; }
+
+/* For Mozilla/Opera/Safari, we make sure the separator is missing from the first element */
+ul#sites > li { background-image: none; }
+ul#sites > li + li { background: url("images/separator_site_tools.gif") no-repeat 0 3px; }
+
+#sites li {
+ background: url("/themes/dinu/images/separator_site_tools.gif") no-repeat 0 3px;
+ display: block;
+ float: left;
+ margin-top: 8px; margin-left: -9px;
+ padding-left: 9px; padding-right: 16px;
+}
+
+#sites li.active a { margin-top: 0px; }
+#sites li a { margin-top: 1px; display: block; }
+#sites li a:hover { color: #EAB719; text-decoration: none; }
+
+#sites img.expand { padding-left: 2px; top: -2px; position: relative; }
+#site-tools img.expand { padding-left: 2px; top: -2px; position: relative; }
+
+#sites li ul,
+#site-tools li ul {
+ display: none;
+ position: absolute; z-index: 5;
+ background-color: #5B6065;
+ border: 1px solid #C1BFBF;
+ padding: 0 0px 10px; margin: -1px 0 0 -10px;
+}
+
+#sites li ul, #sites li li { width: 151px; }
+#sites #global ul, #sites #global li { width: 90px; }
+#site-tools li ul, #site-tools li li { width: 120px; }
+
+#site-tools li ul {
+ height: auto;
+ margin: -1px 0 0 0;
+}
+
+#sites li li,
+#site-tools li li {
+ background-image: none;
+ text-align: left;
+ padding: 0;
+ margin: 4px 0;
+ height: auto;
+}
+
+#sites li.expand:hover, #sites li.over {
+ margin: 5px 7px -1px -10px;
+ padding-right: 0px;
+ background-image: none;
+ border-left: 1px solid #C1BFBF;
+}
+
+#site-tools li.expand:hover, #site-tools li.over {
+ margin: 4px 0 0 -10px;
+ padding: 0 8px 0 0;
+ background-image: none;
+}
+
+#site-tools li.over {
+ left: -10px; /* Needed to be done this way (rather than margin-left) due to IE 5.5 bug */
+ margin: 4px -10px 0 0;
+}
+#sites li.over {
+ left: -16px; /* Needed to be done this way (rather than margin-left) due to IE 5.5 bug */
+ margin: 5px -10px 0 7px;
+}
+
+#sites li.expand:hover a, #sites li.over a,
+#site-tools li.expand:hover a, #site-tools li.over a {
+ position: relative; z-index: 6; display: block;
+ color: #EAB719; background: #5B6065;
+ border: 1px solid #C1BFBF;
+ border-bottom: 1px solid #5B6065;
+ padding: 4px 8px 4px 9px;
+ margin: -1px 0 0 -10px;
+}
+#site-tools li.expand:hover a, #site-tools li.over a {
+ padding-right: 7px;
+ margin-left: 0;
+}
+
+#sites li.expand:hover li a, #sites li.over li a,
+#site-tools li.expand:hover li a, #site-tools li.over li a {
+ position: relative; z-index: 8; display: block; 
+ text-transform: none;
+ font-family: Tahoma, Arial, Helvetica, sans-serif; font-size: 10px;
+ font-weight: normal;
+ height: auto;
+ border: none;
+ padding: 4px 10px;
+ margin: -4px 0 -2px;
+ color: white;
+}
+
+#sites li.expand li a:hover,
+#site-tools li.expand li a:hover { background-color: #383F45; color: white; text-decoration: none;}
+
+#sites li.expand:hover ul, #sites li.over ul,
+#site-tools li.expand:hover ul, #site-tools li.over ul { display: block; } /* Activates the drop downs */
+
+#sites li.expand:hover + li,
+#site-tools li.expand:hover + li { background-image: none; } /* Removes the separator from the following element in Mozilla, doesn't work in Opera */
+#sites li.over,
+#site-tools li.over { position: relative; z-index: 2; } /* Removes the separator from the following element in Internet Explorer */
+
+/* Toggles the 'v' expand image */
+#site-tools li .hover { display: none; }
+#site-tools li:hover .expand, #site-tools li.over .expand { display: none; }
+#site-tools li:hover img.hover, #site-tools li.over img.hover { display: inline; }
+#sites li .hover { display: none; }
+#sites li:hover .expand, #sites li.over .expand { display: none; }
+#sites li:hover img.hover, #sites li.over img.hover { display: inline; }
+/* END Sites Area */
+
+/* Site Tools */
+#site-tools {
+ float: left; margin: 0; padding: 0 0 0 0;
+ height: 32px; 
+ position: relative; top: 2px; right: -1px; z-index: 7;
+}
+#site-tools ul {
+ float: right; padding: 0 21px 0 0; margin: 0 -16px 0 0;
+ height: 32px; width: auto; white-space: nowrap;
+ display: table; /* Opera fix */
+}
+#site-tools ul > li { background: none; } /* Remove separator from first item in standards compliant browsers */
+#site-tools li + li { background: url("images/separator_site_tools.gif") no-repeat 0 3px; } /* Insert separator on all but first element */
+#site-tools li {
+  color: #5A5F65;
+  background: url("images/separator_site_tools.gif") no-repeat 0px 3px;
+  display: block; float: left;
+  margin-top: 8px; margin-left: -9px;
+  padding-left: 9px; padding-right: 16px;
+  font-size: 10px;
+
+}
+#site-tools li a { color: #53606D; }
+#site-tools li a:hover { color: #EAB719; text-decoration: none; }
+
+#site-tools li li a {
+ color: #565656;
+}
+#site-tools li li a:hover {
+ color: white;
+}
+
+/* END site-tools */
+	
+/*styles for main page structure */
+	#page-bg        {background: url(images/page_bg.gif) center repeat-y; padding: 10px 10px 0 10px; clear: both; align: center;}
+	#main-table     {width: 810px; text-align: left; clear: both;}
+	#body-logos     {background: #1E5799;width: 810px; height: 66px;}
+	#left-nav-td    {width: 140px; padding-top: 2px; background: #E5E5E5 url(images/leftnav_bg.gif) repeat-y; vertical-align: top;}
+	#right-nav      {width: 210px; padding-top: 6px; vertical-align: top;}
+	#main-body      {padding: 6px 10px; vertical-align: top;}
+	
+	
+/* styles for footer items */
+	#footer         {font-size: 10px; color: #B3B7B9; background: #F0F4F8; border-top: 1px solid #BFCFE1; margin-left: 10px; margin-top: 10px; padding: 10px;}
+	#footer a       {color: #B3B7B9; text-decoration: none; }
+	#footer a:hover {text-decoration: underline;}
+
+
+/* home page specific styles */F
+	#home-news           {background: #F6F6F4; width: 100%;}
+	#home-news td        {vertical-align: top;}
+	#home-news .sep      {background: #FFFFFF;}
+	#home-news .title    {background: #E9E9E9; color: #999999; font-weight: bold; padding: 5px 10px; width: 50%; text-transform: uppercase;}
+	#home-news .content  {padding: 5px 10px;}
+	#home-welcome-title  {color: #FFFFFF; font-weight: bold; text-transform: uppercase; background: #2C649B; border-bottom: 1px solid #324E6F; padding: 4px 10px;}
+	#home-welcome-text   {color: #FFFFFF; background: #5A8DBD; padding: 10px;}
+	#home-welcome-text p {text-align: right; margin: 0; margin-top: 10px;}
+	#home-welcome-text a {color: #FFFFFF; background: url(welcome_text_anchor_bg.gif); border: 1px solid #386594; padding: 1px 10px;}
+	/* styles for right nav items */
+		.home-rn          {background: #E6EEF7; line-height: 16px; margin-bottom: 5px;}
+		.home-rn h2       {font-size: 11px; color: #FFFFFF; background: #6798C7; margin: 0; padding: 5px 10px 5px 10px; text-transform: uppercase; border-bottom: 1px solid #FFFFFF; }
+		.home-rn ul       {margin:0; padding: 10px 10px 10px 30px; list-style-image: url(images/rn-arrow-bullet.gif);}
+		.home-rn p.more   {text-align: right; margin: 0; padding: 0 10px 10px 0; font-size: 10px;}
+		.home-rn p.more a {background: #6798C7; color: #FFFFFF; padding: 2px 5px; }
+
+/* styles for general page right hand nav items */		
+	.rn-top    {background: #F6E9E0; line-height: 16px; margin-bottom: 5px;}
+	.rn-top h2 {font-size: 11px; color: #FFFFFF; background: #F3863C; margin: 0; margin-bottom: 10px; padding: 5px 10px 5px 10px; border-bottom: 1px solid #FFFFFF;}
+	.rn-top ul {margin:0; padding: 0 10px 10px 30px; list-style-image: url(images/rn-arrow-bullet.gif);}
+	.rn-top p  {margin: 0; padding: 0 10px 10px 10px;}
+	
+	.rn-gen              {background: #ECECE9; line-height: 16px; margin-bottom: 5px;}
+	.rn-gen h2           {font-size: 11px; color: #60605E; background: #D1D1D0; margin: 0; text-transform: uppercase; padding: 5px 10px 5px 10px; border-bottom: 1px solid #FFFFFF;}
+	.rn-gen ul           {margin:0; padding: 0 10px 0 0; list-style: none;}
+	.rn-gen a            {display: block; width: 100%; padding: 5px 10px; border-bottom: 1px solid #FFFFFF;}
+	.rn-gen p            {margin: 0; padding: 0 10px 10px 10px;}
+	.rn-gen a.discussion {background: url(/vmtn/img/rn-gen_a-discussion_bg.gif) 115px no-repeat;}
+
+	
+/* styles for in page components */
+	.features    {background: #ECF2F9; border: 0; border-collapse: collapse;}
+	.features td {border: 1px solid #FFFFFF; padding: 10px;}
+
+
+/*----------------------------------------------------------------------------- */
+/*  END New Styles & Manual Overrides Section  ( karri )                        */
+/*----------------------------------------------------------------------------- */
+
+/*
+Request Forms by DeanQ
+Revision from Vince's tableless forms
+*/
+
+#form_request { 
+	font-family: "nimbus sans l", arial, sans-serif; 
+	font-size: 12px;
+}
+
+#form_request input, #form_request select, #form_request textarea {
+	font: 11px Verdana, Arial, Helvetica, sans-serif;
+	padding-top: 2px;
+	padding-right: 3px;
+	padding-bottom: 2px;
+	padding-left: 3px;
+	background-image: url("http://www.vmware.com/vmtn/img/input.gif");
+	background-repeat: repeat-x;
+	border-top: 1px solid #7D7D7D;
+	border-right: 1px solid #C5C5C5;
+	border-bottom: 1px solid #DEDEDE;
+	border-left: 1px solid #C5C5C5;
+}
+
+#form_request input, #form_request textarea, #form_request select {
+	display: block;
+	float: left;
+	margin-bottom: 15px;
+}
+
+#header_banner{
+
+background-image:url(images/logo.jpg);
+height:83px;
+width:810px;
+
+
+}
+#form_request .button {
+	color: #FFFFFF;
+	font-weight: 700;
+	font-size: 12px;
+	text-align: center;
+	padding: 2px;
+	margin: 0px 10px 5px 0px;
+	background: #7D7D7D;
+	border: 1px solid #ff9900;
+}
+
+#form_request label {	
+	display: block;
+	float: left;
+	width: 160px;
+	padding: 2px 5px 2px 0px;
+	margin: 0px 10px 0px 0px;
+	text-align: right;
+}
+
+#form_request label.required, #form_request p.required {	
+	background: #FFFFED;
+	padding: 2px 5px 2px 0px;
+}
+
+#form_request br {
+	clear: left;
+}
+
+#form_request .boxes {
+	border-width: 0px;
+	background-image: none;
+	width: 2em;
+	margin-bottom: -2px;
+}
+
+/* END Request Forms */

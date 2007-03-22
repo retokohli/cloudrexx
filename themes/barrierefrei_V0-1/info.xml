@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE theme SYSTEM "http://www.contrexx.com/themes/theme-1.0">
+<theme version="0.1">
+	<name>
+		Barrierefrei
+	</name>	
+	<version>
+		0.1.8
+	</version>
+	<description>
+		-Dieses Theme verzichtet bewusst auf Hintergrundbilder.
+		-Es ist ausgelegt auf eine Bildschirmbreite von 1024 Pixel.
+		-Die Höhe ist Variabel,
+		 der Footer bleibt immer am unteren Rand des Fensters.
+		-Links die ein "http/https" haben, werden durch ein symbol gekennzeichnet.
+		 (Der IE unterstüzt dieses Feature bis <V7 noch nicht, V7 konnte ich noch nicht testen)
+	</description>	
+	<authors>
+		<author>
+			<user>
+				Uwe Schanbacher
+			</user>
+			<email>
+				uweschanbacher@yahoo.de
+			</email>
+		</author>
+	</authors>
+	<filelist>
+		<file>
+			index.html
+		</file>
+		<file>
+			navbar.html
+		</file>
+		<file>
+			shopnavbar.html (nicht getestet, da in OS Version nicht möglich)
+		</file>
+		<file>
+			sidebar.html
+		</file>
+		<file>
+			subnavbar.html
+		</file>
+		<file>
+			home.html
+		</file>
+		<file>
+			headlines.html
+		</file>
+		<file>
+			forum.html
+		</file>
+		<file>
+			events.html
+		</file>
+		<file>
+			directory.html
+		</file>
+		<file>
+			content.html
+		</file>
+		<file>
+			css/buildin_style.css
+		</file>
+		<file>
+			css/navigation.css
+		</file>
+		<file>
+			css/style.css
+		</file>
+		<file>
+			css/template.css
+		</file>
+		<file>
+			scripts/javascript.js
+		</file>
+	</filelist>
+	<changelog>
+		<change date="2006-25-10">
+			<comment>
+				Begin der Template erstellung
+			</comment>
+		</change>
+		<change date="2006-05-11">
+			<comment>
+				Umarbeitung des Templates,
+				wegen kompatiblität zu IE.
+			</comment>
+		</change>
+		<change date="2006-12-11">
+			<comment>
+				Aktuallisierung des Themes auf Contrexx V1.0.9.10.1
+			</comment>
+		</change>
+		<change date="2006-29-11">
+			<comment>
+				Vorläufiger abschluss der Arbeiten am Theme.
+				Erstellung des Print-Themes
+			</comment>
+		</change>
+	</changelog>
+</theme>

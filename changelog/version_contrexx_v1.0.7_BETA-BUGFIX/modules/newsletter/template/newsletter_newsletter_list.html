@@ -1,0 +1,69 @@
+<!-- START module_newsletter_overview.html -->
+
+
+<script language="javascript">
+	function DeleteNewsletter(ID){
+		if(confirm('{TXT_CONFIRM_DELETE_DATA}')){
+			document.NewsletterEdit.NewsletterID.value = ID;
+			document.NewsletterEdit.NewsletterDelete.value = "exe";
+			document.NewsletterEdit.submit();
+		}
+	}
+	function CreateNewsletter(ID){
+		document.NewsletterEdit.NewsletterID.value = ID;
+		document.NewsletterEdit.NewsletterCreate.value = "exe";
+		document.NewsletterEdit.submit();
+	}
+</script>
+
+<div id="subnavbar_level2">
+<ul>
+<li><a href="index.php?cmd=newsletter&act=newsletterlist" title="{TXT_NEWSLETTER_EDIT_SEND}">{TXT_NEWSLETTER_EDIT_SEND}</a></li>
+<li><a href="index.php?cmd=newsletter&act=newsletterinsert" title="{TXT_NEWSLETTER_NEW}">{TXT_NEWSLETTER_NEW}</a></li>
+</ul>
+</div>
+<br/>
+<form name="NewsletterEdit" action="index.php?cmd=newsletter&act=newsletterlist" method="POST">
+	<input type="hidden" name="NewsletterID" value="" />
+	<input type="hidden" name="NewsletterDelete" value="" />
+	<input type="hidden" name="NewsletterCreate" value="" />
+</form>
+
+
+<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+	<tr>
+		<th nowrap align="center">&nbsp;</th>
+		<th nowrap width="30%">{TXT_NEWSLETTER_SUBJECT}</th>
+		<th nowrap>{TXT_FROM}</th>
+		<th nowrap>{TXT_FORMAT}</th>
+		<th nowrap>Template</th>
+		<th nowrap>{TXT_DATE}</th>
+		<th align="right"><div align="right">{TXT_ACTION}&nbsp;</div></th>
+	</tr>
+	<!-- BEGIN newsletter_list -->
+
+	<tr class="{ROW_CLASS}">
+		<td align="center">{NEWSLETTER_COUNT} / {NEWSLETTER_USERS}</td>
+		<td nowrap>{NEWSLETTER_SUBJECT}</td>
+		<td nowrap>{NEWSLETTER_SENDER_NAME} ({NEWSLETTER_SENDER_EMAIL})</td>
+		<td nowrap>{NEWSLETTER_FORMAT}</td>
+		<td nowrap>{NEWSLETTER_TEMPLATE}</td>
+		<td nowrap>{NEWSLETTER_DATE}</td>
+		<td align="right">
+			<table cellspacing="0" cellpadding="1" border="0" align="right">
+				<tr>
+					<td>{VERSENDEN_LINK}</td>
+					<td>{EDIT_LINK}</td>
+					<td><a href="javascript:CreateNewsletter({NEWSLETTER_ID});"><img src="images/icons/press.gif" border="0" alt="{TXT_STORE_AS_NEW_TEMPLATE}" title="{TXT_STORE_AS_NEW_TEMPLATE}"></a></td>
+					<td><a href="javascript:DeleteNewsletter({NEWSLETTER_ID});"><img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}"></a></td>
+				</tr>
+			</table> 
+		</td>
+	</tr>
+
+	<!-- END newsletter_list -->
+	
+</table>
+
+
+<!-- END module_newsletter_overview.html -->

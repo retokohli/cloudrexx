@@ -1,0 +1,95 @@
+Navigation
+- Einen Navigationspunkt kann jetzt auch ein optionaler CSS Name zugeordnet werden.
+
+Suche
+- Das Link-Verzeichnis Modul wurde in die Suche integriert. Neu werden bei der Suche die Einträge und Kategorien vom Link-Verzeichnis durchsucht.
+
+Kontakt
+- Neu können in Textfelter, Textareas, Labels und Hidden Felder Werte via URL übergeben werden. Als Parameter wird die FeldID verwendet.
+
+Diretory
+- Div Anpassungen und Bugs behoben.
+- Neuer Blockname für Hedalines Block: directoryLatest_row_1. Es können nun beliebig viele Blöcke verwendet werden, um eine mehrspaltige Dartellung zu ermöglichen. Max. 10 Blöcke.
+- Neue Platzhalter im Headlines-Block: [[DIRECTORY_DESC]] [[DIRECTORY_LOGO]]
+- Es können zusatzliche, frei definierbare Felder aktiviert werden:
+		> 10 Uploadfelder für Bilder, bei welchen ein Thumbnail erstellt und angezeigt werden, durch anklicken wird ein Popup mit der Originaldatei göffnet.
+		> 5 Uploadfelder für Dateien, beim Anzeigen wird ein Link aud die Datei erstellt.
+		> 2 Dropdownmenüs, bei welchen der Inhalt selber definiert werden kann.
+		> 2 spezielle Dropdownmenüs, bei welchen der Inhalt auch selber efiniert werden kann, bei der Ausgabe wird das ganze aber als Bewertung/Klassifizierung behandelt und mit der entsprechender Anzahl Sterne angezeigt.
+- Die Index-Ansicht wurde verbessert. Gross- und Kleinbuchstaben werden in der selben Gruppe angezeigt und innerhalb der einzelnen Gruppen wird auch die Reihenfolge des ABCs beachtet.
+
+Inserate Markt
+- Die Anzeigedauer kann ein- und ausgeschaltet werden. 
+- 5 frei definierbare Felder
+- Erweiterte Suche
+- Die Contentseite fürs Eintragen der Inserate muss folgendermassen angepasst werden:
+	Vorher:
+		if (days.value == "") {
+        	errorMsg = errorMsg + "- [[TXT_MARKET_END_DATE]]\n";
+    	} 
+
+	Neu:
+    	{END_DATE_JS}
+    	
+    Vorher:
+		<tr valign="top">
+			<td nowrap="nowrap" width="120">[[TXT_MARKET_END_DATE]]<font color="red"> *</font></td>		
+			<td><select name="days" style="width: 100px;">[[MARKET_DAYS_ONLINE]]</select>&nbsp;&nbsp;[[TXT_MARKET_DAYS]]</td>
+		</td>
+
+	Neu:
+    	<!-- BEGIN end_date_dropdown -->
+		<tr valign="top">
+			<td nowrap="nowrap" width="120">[[TXT_MARKET_END_DATE]]<font color="red"> *</font></td>		
+			<td><select name="days" style="width: 100px;">[[MARKET_DAYS_ONLINE]]</select>&nbsp;&nbsp;[[TXT_MARKET_DAYS]]</td>
+		</td>
+		<!-- END end_date_dropdown -->
+		
+	Vorher:
+		<tr valign="top">
+			<td nowrap="nowrap" width="120">[[TXT_MARKET_USER_DETAIL]]<font color="red"> *</font></td>		
+			<td>
+				<input type="radio" name="userdetails" value="1" [[MARKET_ENTRY_USERDETAILS_ON]] />&nbsp;[[TXT_MARKET_DETAIL_SHOW]]
+				<input type="radio" name="userdetails" value="0" />&nbsp;[[TXT_MARKET_DETAIL_HIDE]]
+			</td>
+		</td>
+
+	Neu:
+    	<tr valign="top">
+			<td nowrap="nowrap" width="120">[[TXT_MARKET_USER_DETAIL]]<font color="red"> *</font></td>		
+			<td>
+				<input type="radio" name="userdetails" value="1" [[MARKET_ENTRY_USERDETAILS_ON]] />&nbsp;[[TXT_MARKET_DETAIL_SHOW]]
+				<input type="radio" name="userdetails" value="0" />&nbsp;[[TXT_MARKET_DETAIL_HIDE]]
+			</td>
+		</td>
+		<!-- BEGIN spez_fields -->
+		<tr valign="top" >
+			<td nowrap="nowrap" width="120">{TXT_MARKET_SPEZ_FIELD_NAME}</td>
+			<td>{MARKET_SPEZ_FIELD_INPUT}</td>
+		</td>
+		<!-- END spez_fields -->
+		
+- Die Contentseite fürs Editieren der Inserate muss folgendermassen angepasst werden:
+	Vorher:
+		<tr valign="top">
+			<td nowrap="nowrap" width="120">[[TXT_MARKET_USER_DETAIL]]<font color="red"> *</font></td>		
+			<td>
+				<input type="radio" name="userdetails" value="1" [[MARKET_ENTRY_USERDETAILS_ON]] />&nbsp;[[TXT_MARKET_DETAIL_SHOW]]
+				<input type="radio" name="userdetails" value="0" />&nbsp;[[TXT_MARKET_DETAIL_HIDE]]
+			</td>
+		</td>
+
+	Neu:
+    	<tr valign="top">
+			<td nowrap="nowrap" width="120">[[TXT_MARKET_USER_DETAIL]]<font color="red"> *</font></td>		
+			<td>
+				<input type="radio" name="userdetails" value="1" [[MARKET_ENTRY_USERDETAILS_ON]] />&nbsp;[[TXT_MARKET_DETAIL_SHOW]]
+				<input type="radio" name="userdetails" value="0" [[MARKET_ENTRY_USERDETAILS_OFF]] />&nbsp;[[TXT_MARKET_DETAIL_HIDE]]
+			</td>
+		</td>
+		<!-- BEGIN spez_fields -->
+		<tr valign="top" >
+			<td nowrap="nowrap" width="120">{TXT_MARKET_SPEZ_FIELD_NAME}</td>
+			<td>{MARKET_SPEZ_FIELD_INPUT}</td>
+		</td>
+		<!-- END spez_fields -->

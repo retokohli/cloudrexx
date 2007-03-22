@@ -1,0 +1,50 @@
+
+<script language="JavaScript" type="text/javascript">
+<!-- //
+
+function deleteProduct(ProductID)
+{
+	with (document.frmProducts) {
+	if (confirm('{TXT_DELETE_PRODUCT}')) {
+		action='?cmd=egov&act=products&delete=yes&id='+ProductID;
+		submit();
+	}
+	}
+}
+// -->
+</script>
+
+<form action="index.php?cmd=egov&amp;act=product_edit" name="frmProducts" method="post">
+	<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+		<tbody>
+			<tr>
+				<th colspan="6">{TXT_PRODUCTS}</th>
+			</tr>
+			<tr class="row3" style="white-space:nowrap;">
+				<td width="3%"><b>ID</b></td>
+				<td width="3%"></td>
+				<td width="40%"><b>{TXT_PRODUCT}</b></td>
+				<td width="25%"><b>{TXT_ORDERS}</b></td>
+				<td width="11%"><b>{TXT_EGOV_RESERVATIONS}</b></td>
+				<td width="17%" style="text-align:right;"><b>{TXT_FUNCTIONS}</b></td>
+			</tr>
+			<!-- BEGIN products_list -->
+			<tr class="{ROWCLASS}">
+				<td>{PRODUCT_ID}</td>
+				<td>{PRODUCT_STATUS}</td>
+				<td><a href="?cmd=egov&amp;act=product_edit&amp;id={PRODUCT_ID}" target="_self" title="{TXT_IMGALT_EDIT}">{PRODUCT_NAME}</a></td>
+				<td>{ORDERS_VALUE}&nbsp;&nbsp;<a href="index.php?cmd=egov&amp;product={PRODUCT_ID}">{TXT_EGOV_VIEW_ORDERS}</a></td>
+				<td>{RESERVATIONS_VALUE}</td>
+
+				<td style="text-align:right;" nowrap="nowrap">
+					<a href="?cmd=egov&amp;act=product_copy&amp;id={PRODUCT_ID}" target="_self" title="{TXT_IMGALT_COPY}"><img src="images/icons/copy.gif" border="0" alt="{TXT_COPY}" title="{TXT_COPY}" /></a>
+					<a href="?cmd=egov&amp;act=product_edit&amp;id={PRODUCT_ID}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT}" title="{TXT_EDIT}" /></a>
+					<a href="javascript:deleteProduct({PRODUCT_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}" /></a>
+				</td>
+			</tr>
+			<!-- END products_list -->
+		</tbody>
+	</table>
+	<br />
+	<input type="submit" value="{TXT_EGOV_ADD_NEW_PRODUCT}" />
+</form>

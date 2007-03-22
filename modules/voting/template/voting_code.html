@@ -1,0 +1,25 @@
+<!-- START newsletter_code.html -->
+<form action="index.php?section=newsletter" method="post">
+<table cellpadding="3" cellspacing="0" border="0" width="100%">
+<td class="title"></td>
+<tr> 
+<td>
+<textarea name="textfield" cols="100" rows="10"><table width="100%" border="0">
+<tr> 
+<td><b>{VOTING_TITLE}</b></td>
+</tr>
+<tr> 
+<td> 
+<form name="VotingForm" action="?section=voting" method="post">
+{VOTING_RESULTS_TEXT}<br />
+{TXT_SUBMIT}      
+</form>
+</td>
+</tr>
+</table>
+</textarea>
+<br />
+<input onclick=javascript:this.form.textfield.focus();this.form.textfield.select(); type="button" value="{TXT_SELECT_ALL}" />
+</table>
+</form> 
+<!-- END newsletter_code.html -->

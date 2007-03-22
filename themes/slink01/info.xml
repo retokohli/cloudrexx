@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE theme SYSTEM "http://www.contrexx.com/themes/theme-1.0">
+<theme version="1.0">
+	<name>
+		Slink 01
+	</name>	
+	<version>
+		0.0.1
+	</version>
+	<description>
+        Thaistyle
+	</description>	
+	<authors>
+		<author>
+			<user>
+				Ivan Schmid
+			</user>
+			<email>
+				ivan.schmid@astalavista.ch
+			</email>
+		</author>
+	</authors>
+	<filelist>
+		<file>
+               </file>
+	</filelist>
+	<changelog>
+		<change date="2006-01-10">
+			<comment>
+				testing layout http://www.fans-festspielhaus-neuschwanstein.de/system/
+			</comment>
+		</change>
+	</changelog>
+</theme>

@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet href="http://www.w3.org/2000/08/w3c-synd/style.css" type="text/css"?>
+<rdf:RDF 
+xmlns:h="http://www.w3.org/1999/xhtml" 
+xmlns:hr="http://www.w3.org/2000/08/w3c-synd/#" 
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+xmlns:dc="http://purl.org/dc/elements/1.1/"
+xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" 
+xmlns:content="http://purl.org/rss/1.0/modules/content/"
+xmlns="http://purl.org/rss/1.0/">
+<channel rdf:about="http://www.golem.de">
+<title>Golem.de</title>
+<description>IT-News fuer Profis</description>
+<link>http://www.golem.de/</link>
+<image rdf:resource="http://corp.golem.de/golemlogo_70.png" /> 
+<items>
+<rdf:Seq>
+<rdf:li rdf:resource="http://www.golem.de/0612/49250.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49249.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49248.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49229.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49247.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49246.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49245.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49244.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49243.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49242.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49241.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49240.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49239.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49238.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49237.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49236.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49235.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49234.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49233.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49178.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49232.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49231.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0612/49230.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0611/49228.html"/>
+<rdf:li rdf:resource="http://www.golem.de/0611/49227.html"/>
+
+</rdf:Seq>
+</items>
+</channel>
+
+
+<item rdf:about="http://www.golem.de/0612/49250.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T16:00:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Philips-Weste massiert Computer-Gesch&#228;digte</title>
+<description>Mit einer speziellen Weste wollen Designer und Forscher von Philips in Zukunft denjenigen helfen, die durch lange B&#252;roarbeit am Bildschirm unter Verspannungen leiden. Im Oktober 2006 hatte das Unternehmen die &quot;Soft Therapy&quot; getaufte Weste bereits im Rahmen des &quot;Philips Simplicity Showcase&quot; gezeigt und nun noch etwas mehr dazu verraten.</description>
+<link>http://www.golem.de/0612/49250.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49249.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T15:39:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>O2 startet mit HSDPA in Deutschland</title>
+<description>Der Netzbetreiber O2 bietet ab sofort in ausgew&#228;hlten Ballungsgebieten schnelles drahtloses Surfen per HSDPA an. Zun&#228;chst wird der Dienst in sechs deutschen St&#228;dten verf&#252;gbar sein. O2-Kunden k&#246;nnen so mit einer Datenrate von maximal 1,8 MBit/s auf das Internet zugreifen. UMTS-Kunden zahlen daf&#252;r keinen Aufpreis. </description>
+<link>http://www.golem.de/0612/49249.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49248.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T15:39:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Viel Kritik f&#252;r neues Telekommunikationsgesetz</title>
+<description>Am Donnerstag hat der Bundestag &#196;nderungen am Telekommunikationsgesetz (TKG) beschlossen die unter anderem das VDSL-Netz der Telekom aus der Regulierung herausnehmen, was schon im Vorfeld von Seiten der Telekom-Konkurrenzen hart kritisiert wurde. Aber auch von Seiten der Verbrauchersch&#252;tzer kommt Kritik: Die ganze Branche lebe von fehlender Preistransparenz, meint der vzbv.</description>
+<link>http://www.golem.de/0612/49248.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49229.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T14:54:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Spieletest: Need For Speed Carbon - Canyons &amp; Stagnation</title>
+<description>Die Need-For-Speed-Reihe ist f&#252;r Electronic Arts seit Jahren ein sicherer Umsatzbringer im Vorweihnachtsgesch&#228;ft; zuletzt dominierte jeder NFS-Titel wochenlang die Verkaufscharts. Auch Need For Speed Carbon d&#252;rfte da keine Ausnahme machen - und das, obwohl sich spielerisch mittlerweile durchaus Verschlei&#223;erscheinungen bemerkbar machen.</description>
+<link>http://www.golem.de/0612/49229.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49247.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T12:55:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Noch eine Niederlage f&#252;r SCO</title>
+<description>Im Prozess gegen IBM um geistiges Eigentum von SCO im Linux-Kernel musste das US-Unternehmen nun eine weitere Niederlage einstecken. So darf SCO nun keine weiteren Punkte f&#252;r die Klage einbringen und das Verfahren somit ausdehnen.</description>
+<link>http://www.golem.de/0612/49247.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49246.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T12:15:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Bittorrent Inc. bekommt mehr Geld</title>
+<description>Das hinter dem Bittorrent-Client und dem gleichnamigen Peer-to-Peer-&#220;bertragunsprotokoll stehende Bittorrent Inc. hat sich in einer zweiten Finanzierungsrunde Investitionen in H&#246;he von 20 Millionen US-Dollar sichern k&#246;nnen. Etwa zeitgleich hatte das von Bittorrent-Erfinder Bram Cohen mitgegr&#252;ndete US-Unternehmen angek&#252;ndigt, weitere Filmstudios und Fernsehsender als Partner f&#252;r einen geplanten Download-Shop gewonnen zu haben.</description>
+<link>http://www.golem.de/0612/49246.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49245.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T12:06:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>AMD zeigt Quad-Core &quot;Barcelona&quot; in Betrieb</title>
+<description>Auf einer Analysten-Konferenz im kalifornischen Berkeley hat AMD erstmals seinen kommenden Quad-Core-Prozessor mit Codenamen &quot;Barcelona&quot; &#246;ffentlich im laufenden Betrieb demonstriert. Auch der Termin f&#252;r die Markteinf&#252;hrung ist nun etwas genauer umrissen.</description>
+<link>http://www.golem.de/0612/49245.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49244.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T12:03:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>LinkedIn nimmt OpenBC ins Visier</title>
+<description>W&#228;hrend OpenBC/Xing an die B&#246;rse strebt, versucht sich der US-Konkurrent LinkedIn hier zu Lande zunehmend Geh&#246;r zu verschaffen und meldet einen Wachstumsrekord: Um rund 1,5 Millionen auf 8,5 Millionen Mitglieder ist LinkedIn in den letzten 100 Tagen gewachsen. OpenBC/Xing bezeichnet LinkedIn aus dieser Position heraus als ein &quot;kleineres Businessnetz&quot;.</description>
+<link>http://www.golem.de/0612/49244.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49243.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T11:47:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Online-Gamer wollen nicht allein sein</title>
+<description>Das Umfrageportal Sozioland der Respondi AG hat zwischen Dezember 2005 und Mai 2006 eine Umfrage unter rund 4.500 Spielern von Massively Multiplayer Online Games (MMOG) durchgef&#252;hrt und nun die Ergebnisse ver&#246;ffentlicht. Vor allem die Kommunikation mit anderen Spielern macht den Reiz der Online-Spiele aus - gleichwohl gaben 52 Prozent der Befragten an, dass durch das Spielen Kontakte im unmittelbaren Umfeld vernachl&#228;ssigt werden.</description>
+<link>http://www.golem.de/0612/49243.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49242.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T11:35:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Palm-Nutzer aufgepasst: Opera Mini 3.0 mit Korrekturen</title>
+<description>Der in dieser Woche erschienene Handy-Browser Opera Mini 3.0 wies noch einige Fehler auf, die nur Ger&#228;te mit PalmOS betraf. Opera hat mittlerweile reagiert und eine korrigierte Fassung von Opera Mini 3.0 bereitgestellt, damit der Browser auch auf Palm-Ger&#228;ten l&#228;uft. </description>
+<link>http://www.golem.de/0612/49242.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49241.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T11:00:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Wettbewerbssch&#252;tzer untersuchen AMDs &#220;bernahme von ATI (U)</title>
+<description>Wie AMD in einer Pressemitteilung erkl&#228;rte, hat das Unternehmen vom Justizministerium der USA eine Vorladung erhalten. Es gehe um &quot;m&#246;gliche kartellrechtliche Vergehen in Bezug auf Grafikprozessoren und Grafikkarten&quot;, so AMD in einer knappen Pressemitteilung.</description>
+<link>http://www.golem.de/0612/49241.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49240.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T10:52:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Sharp investiert in Hiptop-Macher</title>
+<description>Sharp investiert in das US-Unternehmen Danger, die durch die Hiptop- alias Sidekick-Ger&#228;te bekannt geworden sind. Beide Firmen arbeiten bereits seit 2004 zusammen, denn die Fertigung des Hiptop hat Sharp vor rund zwei Jahren &#252;bernommen. </description>
+<link>http://www.golem.de/0612/49240.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49239.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T10:50:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>IE6 und IE7 im Parallelbetrieb</title>
+<description>Vor allem f&#252;r Webentwickler und -designer ist es wichtig, mehrere Browser und auch mehrere Versionen eines Browsers auf ihrem System zu installieren. Besonders schwierig gestaltet sich dieses Unterfangen bei Microsofts Internet Explorer. Nun aber bietet Microsoft eine recht einfache M&#246;glichkeit, IE6 und IE7 auf einem System zu nutzen.</description>
+<link>http://www.golem.de/0612/49239.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49238.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T10:32:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Bluetooth Stereo f&#252;r iPod und Co</title>
+<description>Jabra bietet einen Stereo-Bluetooth-Adapter speziell f&#252;r Apples iPod an. Ein weiterer Bluetooth-Adapter f&#252;r die drahtlose Stereo-Musik&#252;bertragung l&#228;sst sich per 3,5-mm-Klinkenstecker an eine beliebige Tonquelle anschlie&#223;en. Damit werden selbst preiswerte MP3-Player Bluetooth-Stereo-f&#228;hig.</description>
+<link>http://www.golem.de/0612/49238.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49237.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T10:23:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Software Freedom Law Center zweifelt E-Learning-Patent an</title>
+<description>Das Software Freedom Law Center (SFLC) hat beim US-Patentamt die erneute &#220;berpr&#252;fung des so genannten Blackboard-Patentes beantragt. Dieses behandelt internetbasierte Lehrmethoden und wird von Blackboard bereits f&#252;r Klagen gegen Mitbewerber eingesetzt. Das Patentamt hat drei Monate Zeit, um &#252;ber eine Pr&#252;fung zu entscheiden.</description>
+<link>http://www.golem.de/0612/49237.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49236.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T10:02:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Pegasus Mail: Entwicklung mit angezogener Handbremse</title>
+<description>Der Programmierer von Pegasus Mail gab bekannt, dass die Entwicklung des kostenlosen E-Mail-Clients zwar weitergef&#252;hrt wird, aber dies ohne hohe Priorit&#228;t geschieht. Eine Vista-f&#228;hige Version von Pegasus Mail soll im Januar 2007 erscheinen. Danach laufen die Arbeiten an Pegasus Mail 5 weiter, aber nicht mehr Vollzeit.</description>
+<link>http://www.golem.de/0612/49236.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49235.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T09:55:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>OpenBC droht Rechtsstreit</title>
+<description>Am 7. Dezember 2006 will OpenBC an die B&#246;rse und strebt eine Bewertung von bis zu 250 Millionen Euro an. Dazu passend verk&#252;ndet das Unternehmen einen Vertrag mit einem gro&#223;en US-Unternehmen, der f&#252;r Umsatz sorgen soll. Derweil fordert Daniel Giersch, der schon wegen GMail gegen Google vorging, Schadensersatz.</description>
+<link>http://www.golem.de/0612/49235.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49234.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T09:41:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Novell Open Enterprise Server 2 setzt komplett auf Linux</title>
+<description>Novell hat seinen Open Enterprise Server in der Version 2 angek&#252;ndigt, der komplett unter Linux laufen wird. Ab 2007 soll die neue Version erh&#228;ltlich sein und dann auch Virtualisierungsfunktionen mit an Bord haben.</description>
+<link>http://www.golem.de/0612/49234.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49233.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T09:14:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>AddThis.com macht Schluss mit der Logoflut des Web 2.0</title>
+<description>Diverse Social-Bookmark-Dienste und Feed-Reader buhlen um die Gunst der Anwender und immer mehr Website-Betreiber kleben ihre bunten Bookmarklet-Grafiken auf ihre Seiten, da sich noch l&#228;ngst kein Marktf&#252;hrer abzeichnet, sondern im Gegenteil immer mehr dieser Dienste aus dem Boden schie&#223;en. AddThis.com versteht sich als Aggregator solcher Dienste und soll die Aufkleberflut beseitigen.</description>
+<link>http://www.golem.de/0612/49233.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49178.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T09:10:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Dealjaeger.de: Digg-Prinzip f&#252;r g&#252;nstige Angebote</title>
+<description>Mit Dealjaeger.de ist eine neue Spielart der Idee &quot;Preisvergleich&quot; frisch aus dem Ei geschl&#252;pft. Hier melden die User selbst g&#252;nstige Angebote. Dealjaeger.de bildet zahlreiche Rubriken an, darunter mit Tickets und Reisen auch solche, die bei herk&#246;mmlichen Preisvergleichern eher selten auftauchen. Das Angebot ist nicht rein auf Onlineshops ausgerichtet, auch Offline-Angebote k&#246;nnen aufgenommen werden.</description>
+<link>http://www.golem.de/0612/49178.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49232.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T09:02:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Markenrecherche f&#252;r Domain-Namen ab 10 Euro</title>
+<description>Das Unternehmen Tulex aus D&#252;sseldorf bietet mit seinem Recherchedienst die  M&#246;glichkeit, bei der Anmeldung von Domainnamen diese auf eventuell bestehende  Rechte Dritter hin zu &#252;berpr&#252;fen.  </description>
+<link>http://www.golem.de/0612/49232.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49231.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T08:33:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Batteriegriff f&#252;r Canon EOS 350/400 f&#252;r 1.000 Bilder</title>
+<description>Der f&#252;r Akkus und Aufladeger&#228;te bekannte Hersteller Ansmann hat mit dem  &quot;Powergrip C-400&quot; einen Batteriegriff f&#252;r Canons digitale Spiegelreflexkameras  EOS 350 und 400 vorgestellt. Das Ger&#228;t wird einfach unter die Kamera montiert  und mit der Stativschraube befestigt. </description>
+<link>http://www.golem.de/0612/49231.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0612/49230.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-12-01T08:27:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Oki C9000 V2 f&#252;r den Proof-Farbdruck</title>
+<description>Oki hat seiner C9000-Farbdruckerserie ein Update verpasst. Die neuen Modelle mit der Zusatzbezeichnung V2 verarbeiten jetzt Papiere mit Gewichten von bis zu 330 Gramm pro Quadratmeter - so k&#246;nnen sie auch f&#252;r Visitenkarten, Brosch&#252;ren und &#196;hnliches eingesetzt werden. </description>
+<link>http://www.golem.de/0612/49230.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0611/49228.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-11-30T19:12:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Urheberrechtsabgaben: Druck aus Br&#252;ssel</title>
+<description>EU-Binnenmarktkommissar Charlie McCreevy stellt sich in der Frage der urheberrechtlichen Ger&#228;teabgaben auf die Seite der IT-Industrie, berichtet der belgische EUobserver. In einer gestern gehaltenen Rede machte er deutlich, dass er im derzeit existierenden System aus Ger&#228;teabgaben und Verwertungsgesellschaften zu deren Verteilung ein Hindernis f&#252;r den einheitlichen Markt sieht: &quot;Wir sind sehr besorgt, dass einige der gegenw&#228;rtig praktizierten Verfahren zur Kompensation der Rechteinhaber den Handel im Binnenmarkt st&#246;ren.&quot; Stattdessen sollten DRM-Technologien eine gr&#246;&#223;ere Rolle spielen.</description>
+<link>http://www.golem.de/0611/49228.html</link>
+</item>
+
+<item rdf:about="http://www.golem.de/0611/49227.html">
+<dc:format>text/html</dc:format>
+<dc:language>de</dc:language>
+<dc:publisher>golem.de</dc:publisher>
+<dc:date>2006-11-30T18:13:00+00:00</dc:date>
+<dc:rights>golem.de. Alle Rechte vorbehalten.</dc:rights>					
+<title>Mehr Freiraum f&#252;r PlayStation-Chef Ken Kutaragi</title>
+<description>Nach dem PlayStation-3-Start in Japan und den USA hat Sony Computer Entertainment die Management-Struktur ver&#228;ndert. Ken Kutaragi, der als Vater der PlayStation 1, 2 und 3 gilt, bleibt zwar weiterhin Chef von Sonys Spielekonsolensparte, Kaz Hirai wird ihm aber das Tagesgesch&#228;ft abnehmen.</description>
+<link>http://www.golem.de/0611/49227.html</link>
+</item>
+
+
+</rdf:RDF>
+
