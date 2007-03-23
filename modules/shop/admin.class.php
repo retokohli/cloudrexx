@@ -243,7 +243,8 @@ class shopmanager extends ShopLibrary {
         $this->_initCountries();
 
         $this->_initConfiguration();
-        $this->_initShipment();
+        // replaced by Shipment.class!
+        //$this->_initShipment();
         $this->_initPayment();
 
         // VAT object

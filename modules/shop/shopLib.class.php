@@ -263,6 +263,8 @@ class ShopLibrary {
     }
 
 
+/*  replaced by Shipment.class!
+
     function _initShipment()
     {
         global $objDatabase;
@@ -282,6 +284,7 @@ class ShopLibrary {
             $objResult->MoveNext();
         }
     }
+*/
 
 
     function _initCountries()
