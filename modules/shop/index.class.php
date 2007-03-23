@@ -211,7 +211,8 @@ class Shop extends ShopLibrary {
         $this->_initCountries();
 
         // initialize the shipment array
-        $this->_initShipment();
+        // replaced by Shipment.class!
+        //$this->_initShipment();
 
         if (shopUseSession()) {
             $this->_authenticate();
