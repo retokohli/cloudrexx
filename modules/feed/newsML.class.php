@@ -1046,8 +1046,7 @@ class NewsML
 	*/
 	function _xmlCharacterDataTag($parser, $cData)
 	{
-		$cData = trim($cData);
-		if (!empty($cData)) {
+		if (strlen(trim($cData))) {
 			if ($this->_inParagraph) {
 //				if (!empty($this->_xmlContentHTMLTag)) {
 				if ($this->_inCDATA) {
