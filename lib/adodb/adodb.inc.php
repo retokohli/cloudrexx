@@ -891,7 +891,6 @@
 		$rs->Init();
 		if (is_array($sql)) $rs->sql = $sql[0];
 		else $rs->sql = $sql;
-//		echo $rs->_numOfRows.'<br />';
 		if ($rs->_numOfRows <= 0) {
 		global $ADODB_COUNTRECS;
 			if ($ADODB_COUNTRECS) {
