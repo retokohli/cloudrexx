@@ -160,7 +160,15 @@ class Market extends marketLibrary
 	}
 
 
-
+	/**
+	* create categorie overview
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function overview() {
 		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
 
@@ -210,6 +218,15 @@ class Market extends marketLibrary
 
 
 
+	/**
+	* change status from categories
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function statusCategorie() {
 
 		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
@@ -243,7 +260,15 @@ class Market extends marketLibrary
 	}
 
 
-
+	/**
+	* delete categories
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function deleteCategorie() {
 		global $objDatabase, $objTemplate, $_ARRAYLANG;
 
@@ -277,7 +302,15 @@ class Market extends marketLibrary
 	}
 
 
-
+	/**
+	* set sort order for categories
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function sortCategorie() {
 		global $objDatabase, $objTemplate, $_ARRAYLANG;
 
@@ -289,7 +322,15 @@ class Market extends marketLibrary
 	}
 
 
-
+	/**
+	* add a categorie
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function addCategory(){
 
 		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
@@ -329,7 +370,15 @@ class Market extends marketLibrary
 	}
 
 
-
+	/**
+	* edit a categories
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function editCategorie(){
 
 		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
@@ -392,6 +441,15 @@ class Market extends marketLibrary
 
 
 
+	/**
+	* show market entries
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function entries(){
 
 		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
@@ -500,7 +558,15 @@ class Market extends marketLibrary
 	}
 
 
-
+	/**
+	* add a entree
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function addEntry(){
 
 		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
@@ -592,7 +658,15 @@ class Market extends marketLibrary
 	}
 
 
-
+	/**
+	* change status from entries
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function statusEntry(){
 
 		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
@@ -643,7 +717,15 @@ class Market extends marketLibrary
 
 
 
-
+	/**
+	* delete a entree
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function deleteEntry(){
 
 		global $objDatabase, $objTemplate, $_ARRAYLANG;
@@ -664,7 +746,15 @@ class Market extends marketLibrary
 	}
 
 
-
+	/**
+	* edit a entree
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function editEntry(){
 
 		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
@@ -890,7 +980,15 @@ class Market extends marketLibrary
 		}
 	}
 
-
+	/**
+	* show system settings
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function sysSettings()
 	{
 		global $_ARRAYLANG, $_CORELANG;
@@ -933,7 +1031,15 @@ class Market extends marketLibrary
     	$this->_objTpl->parse('requests_block');
 	}
 	
-	
+	/**
+	* show settings for spezial fields
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function spezfieldsSettings(){
 
 		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
@@ -1000,7 +1106,15 @@ class Market extends marketLibrary
 	}
 
 
-
+	/**
+	* show system settings
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function systemSettings(){
 
 		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
@@ -1068,7 +1182,15 @@ class Market extends marketLibrary
 	}
 
 
-
+	/**
+	* show settings for mail
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function mailSettings(){
 
 		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
@@ -1131,7 +1253,15 @@ class Market extends marketLibrary
 		}
 	}
 
-
+	/**
+	* show settings for paypal
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function paypalSettings(){
 
 		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
@@ -1178,7 +1308,15 @@ class Market extends marketLibrary
 		}
 	}
 
-
+	/**
+	* show settings for mail code
+	*
+	* @access public
+	* @global object $objTemplate
+	* @global object $objDatabase
+	* @global array $_ARRAYLANG
+	* @global array $_CORELANG
+	*/
 	function mail_codeSettings(){
 
 		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
