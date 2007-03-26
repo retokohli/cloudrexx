@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 26 Mar 2007 17:31:21 +0200
+* generated date Mon, 26 Mar 2007 17:52:04 +0200
 **/
 
 $_ARRAYLANG['TXT_MEDIA_FILE_NAME'] = "Dateiname";

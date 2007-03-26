@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 26 Mar 2007 17:31:21 +0200
+* generated date Mon, 26 Mar 2007 17:52:04 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
@@ -641,7 +641,7 @@ $_ARRAYLANG['TXT_IMAGE'] = "Image";
 $_ARRAYLANG['TXT_EXP_SEARCH'] = "expanded Search";
 $_ARRAYLANG['TXT_POPUP_MODULE_DESCRIPTION'] = "Setup Pop-up windows";
 $_ARRAYLANG['TXT_POPUP_SYSTEM'] = "Popup system";
-$_ARRAYLANG['TXT_NO_DEFAULT_THEME'] = "DB error, no default theme, this should NOT happen. please contact the administrator";
+$_ARRAYLANG['TXT_NO_DEFAULT_THEME'] = "DB error, no default theme, this should NOT happen. please contact the administrator.";
 $_ARRAYLANG['TXT_HOTEL_MANAGEMENT'] = "Hotels";
 $_ARRAYLANG['TXT_HOTEL_MODULE_DESCRIPTION'] = "Hotel-Management Module";
 ?>
