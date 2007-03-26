@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 21 Mar 2007 11:12:13 +0100
+* generated date Mon, 26 Mar 2007 17:31:21 +0200
 **/
 
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Inserate";
@@ -63,4 +63,18 @@ $_ARRAYLANG['TXT_MARKET_CODE_CLEARINGCODE'] = "Clearing code";
 $_ARRAYLANG['TXT_MARKET_ADD_SUCCESS'] = "The advertisement has been added successfully.";
 $_ARRAYLANG['TXT_MARKET_DELETE_SUCCESS'] = "The advertisement has been deleted successfully.";
 $_ARRAYLANG['TXT_MARKET_IMAGE_DELETE_ERROR'] = "Error while deleting image.";
+$_ARRAYLANG['TXT_MARKET_SPEZ_FIELDS'] = "Zusatzfelder";
+$_ARRAYLANG['TXT_MARKET_PAYPAL'] = "Zahlungsart";
+$_ARRAYLANG['TXT_MARKET_PLACEHOLDER_CONTENT'] = "Platzhalter für Inhalt";
+$_ARRAYLANG['TXT_MARKET_PLACEHOLDER_TITLE'] = "Platzhalter für Titel";
+$_ARRAYLANG['TXT_MARKET_SET_MAXDAYS'] = "max. Anzeigedauer (Tage)";
+$_ARRAYLANG['TXT_MARKET_SET_DESCRIPTION'] = "Kategoriebeschreibung anzeigen";
+$_ARRAYLANG['TXT_MARKET_SET_PAGING'] = "Anzahl Inserate pro Seite";
+$_ARRAYLANG['TXT_MARKET_SET_CURRENCY'] = "Währung";
+$_ARRAYLANG['TXT_MARKET_SET_ADD_ENTRY_ONLY_COMMUNITY'] = "Nur Mitglieder dürfen Inserate hinzufügen (Community-Modul)";
+$_ARRAYLANG['TXT_MARKET_SET_ADD_ENTRY'] = "Besuchern erlauben Inserate hinzuzufügen";
+$_ARRAYLANG['TXT_MARKET_SET_EDIT_ENTRY'] = "Besuchern erlauben Inserate zu editieren";
+$_ARRAYLANG['TXT_MARKET_SET_INDEXVIEW'] = "Index-Ansicht";
+$_ARRAYLANG['TXT_MARKET_SET_MAXDAYS_ON'] = "Beschränkte Anzeigedauer";
+$_ARRAYLANG['TXT_MARKET_SET_EXP_SEARCH_PRICE'] = "Auswahlfelder für erweiterte Suche nach "Preis bis"";
 ?>

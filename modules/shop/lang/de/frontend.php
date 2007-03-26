@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 21 Mar 2007 11:12:13 +0100
+* generated date Mon, 26 Mar 2007 17:31:21 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
@@ -162,4 +162,6 @@ $_ARRAYLANG['TXT_SHOP_COST_FREE'] = "gratis";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_COUNTRIES'] = "Lieferländer";
 $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'] = "Bitte auswählen";
 $_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'] = "Das Gesamtgewicht Ihrer Bestellung übersteigt die verfügbaren Versandmöglichkeiten.";
+$_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_HIERARCHY'] = "Sie sind hier:";
+$_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_FLAT'] = "Galerien:";
 ?>
