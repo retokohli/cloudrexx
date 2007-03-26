@@ -896,9 +896,6 @@ class Market extends marketLibrary
 		global $_ARRAYLANG, $_CORELANG;
     	$this->_objTpl->loadTemplateFile('module_market_settings.html',true,true);
     	$this->_pageTitle = $_CORELANG['TXT_SETTINGS'];
-    	
-    	$_ARRAYLANG['TXT_MARKET_SPEZ_FIELDS']		= 'Zusatzfelder';
-		$_ARRAYLANG['TXT_MARKET_PAYPAL']			= 'Zahlungsart';
 
     	$this->_objTpl->setGlobalVariable(array(
     		'TXT_SYSTEM'		=> $_CORELANG['TXT_SETTINGS_MENU_SYSTEM'],
@@ -940,10 +937,6 @@ class Market extends marketLibrary
 	function spezfieldsSettings(){
 
 		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
-		
-		$_ARRAYLANG['TXT_MARKET_SPEZ_FIELDS']			= 'Zusatzfelder';
-		$_ARRAYLANG['TXT_MARKET_PLACEHOLDER_CONTENT']	= 'Platzhalter für Inhalt';
-		$_ARRAYLANG['TXT_MARKET_PLACEHOLDER_TITLE']		= 'Platzhalter für Titel';
 
 		// initialize variables
 		$this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_market_settings_spez_fields.html');
@@ -1023,16 +1016,7 @@ class Market extends marketLibrary
 		));
 		
 		
-		$_ARRAYLANG['TXT_MARKET_SET_MAXDAYS']		= 'max. Anzeigedauer (Tage)';
-		$_ARRAYLANG['TXT_MARKET_SET_DESCRIPTION']	= 'Kategoriebeschreibung anzeigen';
-		$_ARRAYLANG['TXT_MARKET_SET_PAGING']		= 'Anzahl Inserate pro Seite';
-		$_ARRAYLANG['TXT_MARKET_SET_CURRENCY']		= 'Währung';
-		$_ARRAYLANG['TXT_MARKET_SET_ADD_ENTRY_ONLY_COMMUNITY']		= 'Nur Mitglieder dürfen Inserate hinzufügen (Community-Modul)';
-		$_ARRAYLANG['TXT_MARKET_SET_ADD_ENTRY']		= 'Besuchern erlauben Inserate hinzuzufügen';
-		$_ARRAYLANG['TXT_MARKET_SET_EDIT_ENTRY']	= 'Besuchern erlauben Inserate zu editieren';
-		$_ARRAYLANG['TXT_MARKET_SET_INDEXVIEW']		= 'Index-Ansicht';
-		$_ARRAYLANG['TXT_MARKET_SET_MAXDAYS_ON']	= 'Beschränkte Anzeigedauer';
-		$_ARRAYLANG['TXT_MARKET_SET_EXP_SEARCH_PRICE']	= 'Auswahlfelder für erweiterte Suche nach "Preis bis"';
+		
 
 		//get settings
 		$i=0;
