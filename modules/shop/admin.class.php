@@ -2769,7 +2769,8 @@ class shopmanager extends ShopLibrary {
         }
 
         //create pictures DBstring
-        $shopImageName = base64_encode($_REQUEST['productImage1'])
+        $shopImageName =
+             base64_encode($_REQUEST['productImage1'])
         .'?'.base64_encode($_REQUEST['productImage1_width'])
         .'?'.base64_encode($_REQUEST['productImage1_height'])
         .':'.base64_encode($_REQUEST['productImage2'])
@@ -2914,11 +2915,11 @@ class shopmanager extends ShopLibrary {
             $objImage = new ImageManager();
             $arrImages = $this->_getShopImagesFromBase64String($shopImageName);
             //create thumbnail if not available
-            for ($i=1; $i<=3; $i++) {
-                if (!empty($arrImages[$i]['img'])) {
-                    if (!is_file($docroot.$arrImages[$i]['img'].$this->mediaThumbNailSuffix) && $arrImages[$i]['img'] != $this->_defaultImage) {
-                        if (!$objImage->_createThumb($this->shopImagePath, $this->shopImageWebPath, $arrImages[$i]['img'])) {
-                            $this->strErrMessage = sprintf($_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'], $arrImages[$i]['img']);
+            foreach ($arrImages as $arrImage) {
+                if (!empty($arrImage['img'])) {
+                    if (!is_file($docroot.$arrImage['img'].$this->mediaThumbNailSuffix) && $arrImage['img'] != $this->_defaultImage) {
+                        if (!$objImage->_createThumb($this->shopImagePath, $this->shopImageWebPath, $arrImage['img'])) {
+                            $this->strErrMessage = sprintf($_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'], $arrImage['img']);
                         }
                     }
                 }
