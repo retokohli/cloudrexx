@@ -100,6 +100,7 @@ class ShopLibrary {
                 'height' => $shopImage_height,
             );
         }
+echo("picture array: ");var_export($arrPictures);echo("<br />");
 
         return $arrPictures;
         /*

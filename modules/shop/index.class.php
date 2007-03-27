@@ -925,7 +925,7 @@ class Shop extends ShopLibrary {
                 $pos = intval($_GET['pos']);
             }
             $count = $objResult->RecordCount();
-            if ($count==0) {
+            if ($count == 0) {
                 $paging = "<br />".$_ARRAYLANG['TXT_SELECT_SUB_GROUP'];
             } elseif ($_CONFIG['corePagingLimit']) { // $_CONFIG from /config/settings.php
                 $paging = "<br />".getPaging($count, $pos, "&amp;section=shop".$pagingCatIdQuery.$pagingTermQuery, "<b>".$_ARRAYLANG['TXT_PRODUCTS']."</b>", true);
@@ -941,22 +941,25 @@ class Shop extends ShopLibrary {
         }
 
         $this->objTemplate->setCurrentBlock('shopProductRow');
-        if ($count>0) {
+        if ($count > 0) {
             $formId = 0;
             while (!$objResult->EOF) {
                 $productSubmitFunction = "";
                 // if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
-
                 $arrPictures = $this->_getShopImagesFromBase64String($objResult->fields['picture']);
-
+                $havePicture = false;
                 foreach ($arrPictures as $index => $image) {
-                    if (empty($image['img'])) {
+                    if (empty($image['img']) || $image['width'] == '' || $image['height'] == '') {
+                        // we have at least one picture on display already.
+                        // no need to show "no picture" three times!
+                        if ($havePicture) { continue; }
                        $thumbnailPath = $this->_defaultImage;
                        $pictureLink = "javascript:alert('".$_ARRAYLANG['TXT_NO_PICTURE_AVAILABLE']."');";
                     } else {
                        $thumbnailPath = $image['img'].'.thumb';
                        $pictureLink = "javascript:viewPicture('".$image['img']."','width=".($image['width']+25).",height=".($image['height']+25)."')";
                     }
+                    $havePicture = true;
 
                     $this->objTemplate->setVariable(array(
                         'SHOP_PRODUCT_THUMBNAIL_'.$index       => $thumbnailPath,
@@ -1021,7 +1024,7 @@ class Shop extends ShopLibrary {
                 $longDescription = $objResult->fields['description'];
                 $shortDescription = $objResult->fields['shortdesc'];
 
-                if ($productId==0) {
+                if ($productId == 0) {
                     $description = $shortDescription;
                     if (!empty($longDescription)) {
                         $detailLink = "<a href=\"?section=shop&amp;cmd=details&amp;productId=".$objResult->fields['id']."\" title=\"".$_ARRAYLANG['TXT_MORE_INFORMATIONS']."\">".$_ARRAYLANG['TXT_MORE_INFORMATIONS']."</a>";
