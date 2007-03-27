@@ -252,12 +252,11 @@ class shopmanager extends ShopLibrary {
         // NOTE: There is one such object in the Settings class as well, which
         // is used for deleting, updating and adding. After this process, it is outdated,
         // therefore we create a new one here, AFTER setting up the Settings object!
-        $this->objVat = new Vat($this->arrConfig);
+        $this->objVat = new Vat();
 
         // Distribution object
         // Knows all the distribution types, and creates the menu.
         $this->objDistribution = new Distribution();
-
     }
 
 
@@ -2728,7 +2727,7 @@ class shopmanager extends ShopLibrary {
 
         // Edit products
         // begin database request edit mode
-        if ($shopProductId>0 AND $_REQUEST['edit']!=1) {
+        if ($shopProductId > 0 AND $_REQUEST['edit'] != 1) {
             $query = "SELECT * FROM ".DBPREFIX."module_shop_products WHERE id=$shopProductId";
 
             if (($objResult = $objDatabase->SelectLimit($query, 1)) !== false) {
@@ -4780,12 +4779,12 @@ class shopmanager extends ShopLibrary {
             $fileExtension = ".gif";
 
             if (empty($productsPictureName)) {
-                $thumbnailPath= $this->shopImageWebPath.$this->noPictureName;
+                $thumbnailPath = $this->shopImageWebPath.$this->noPictureName;
             } else {
-                $tempName= basename($productsPictureName, $fileExtension).$this->thumbnailNameSuffix.$fileExtension;
+                $tempName = basename($productsPictureName, $fileExtension).$this->thumbnailNameSuffix.$fileExtension;
                 // ??? $temp = $this->shopImagePath = $this->shopImageWebPath.$tempName;
-                if (file_exists( $this->shopImagePath.$tempName)) {
-                    $productsPictureName = basename($productsPictureName,$fileExtension).$this->thumbnailNameSuffix.$fileExtension;
+                if (file_exists($this->shopImagePath.$tempName)) {
+                    $productsPictureName = basename($productsPictureName, $fileExtension).$this->thumbnailNameSuffix.$fileExtension;
                     $thumbnailPath = $this->shopImageWebPath.$productsPictureName;
                 }
             }

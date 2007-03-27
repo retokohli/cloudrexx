@@ -1,7 +1,6 @@
-<?PHP
+<?php
 /**
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
  * @author      Reto Kohli <reto.kohli@astalavista.ch>
  * @version     1.0.0
  * @package     contrexx
@@ -11,15 +10,14 @@
 
 /**
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
  * @author      Reto Kohli <reto.kohli@astalavista.ch>
  * @access      public
  * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_shop
  */
-class Vat {
-
+class Vat
+{
     /**
      * @var     array   $arrVatClass    The Vat class array, entries look like
      *                                  (ID => "Class") (string)
@@ -50,6 +48,13 @@ class Vat {
     var $vatIncluded;
 
     /**
+     * @var     double  $vatDefaultId   The default VAT ID, determined by the tax_default_id entry
+     *                                  in the shop_config table.  See {@see init()},
+     *                                  {@see  calculateDefaultTax()}.
+     * @access  private
+     */
+    var $vatDefaultId;
+    /**
      * @var     double  $vatDefaultRate The default VAT rate, determined by the tax_default_id entry
      *                                  in the shop_config table.  See {@see init()},
      *                                  {@see  calculateDefaultTax()}.
@@ -58,13 +63,17 @@ class Vat {
     var $vatDefaultRate;
 
 
+
     /**
      * Set up an initialized Vat object including ready-to-use
      * arrays taken from the database. (PHP4)
+     *
+     * See {@link init()}.
+     * @access      public
      */
-    function Vat($arrConfig)
+    function Vat()
     {
-        $this->__construct($arrConfig);
+        $this->init();
     }
     /**
      * Set up an initialized Vat object including ready-to-use
@@ -72,14 +81,10 @@ class Vat {
      *
      * See {@link init()}.
      * @access      public
-     * @global      mixed               Database
-     * @return      void
-     * @package     contrexx
-     * @subpackage  module_shop
      */
-    function __construct($arrConfig)
+    function __construct()
     {
-        $this->init($arrConfig);
+        $this->init();
     }
 
 
@@ -90,13 +95,14 @@ class Vat {
      *  (ID => "class", ...)
      * and the other called $arrVatRate, like
      *  (ID => rate)
+     * Plus initializes the various object variables.
+     * May die() with a message if it fails to access its settings.
      * @global  mixed   $objDatabase    Database object
-     * @global  array   $arrConfig      Configuration array
+     * @return  void
      */
-    function init($arrConfig)
+    function init()
     {
         global $objDatabase;
-        if (!is_array($arrConfig)) { die("Vat::init(): no config array!"); }
 
         $query = "SELECT id, percent, class ".
                  "FROM ".DBPREFIX."module_shop_vat";
@@ -108,16 +114,50 @@ class Vat {
                 $this->arrVatRate[$id]  = $objResult->fields['percent'];
                 $objResult->MoveNext();
             }
-            $this->vatEnabled     = $arrConfig['tax_enabled']['value'];
-            $this->vatIncluded    = $arrConfig['tax_included']['value'];
-            $this->vatDefaultRate = $this->getRate(
-                (isset($arrConfig['tax_default_id'])
-                ? $arrConfig['tax_default_id']['value']
-                : 0));
-            return;
+        } else {
+            // no record found
+            die ("Failed to init VAT arrays<br />");
         }
-        // no record found
-        die ("Failed to init Vat arrays<br />");
+
+        $query = "SELECT * FROM ".DBPREFIX."module_shop_config WHERE name='tax_enabled'";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            $this->vatEnabled = $objResult->Fields('value');
+        } else { die ("Failed to get VAT enabled flag<br />"); }
+
+        $query = "SELECT * FROM ".DBPREFIX."module_shop_config WHERE name='tax_included'";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            $this->vatIncluded = $objResult->Fields('value');
+        } else { die ("Failed to get VAT included flag<br />"); }
+
+        $query = "SELECT * FROM ".DBPREFIX."module_shop_config WHERE name='tax_default_id'";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            $this->vatDefaultId = $objResult->Fields('value');
+        } else { die ("Failed to get default VAT ID<br />"); }
+
+        $this->vatDefaultRate = $this->getRate($this->vatDefaultId);
+    }
+
+
+    /**
+     * Returns the default VAT rate
+     *
+     * @return  float   The default VAT rate
+     */
+    function getDefaultRate() {
+        return $this->vatDefaultRate;
+    }
+
+
+    /**
+     * Returns the default VAT ID
+     *
+     * @return  integer The default VAT ID
+     */
+    function getDefaultId() {
+        return $this->vatDefaultId;
     }
 
 
@@ -176,6 +216,7 @@ class Vat {
     {
         global $_ARRAYLANG;
 
+        $string = '';
         foreach ($this->arrVatRate as $id => $rate) {
             $string .= "<option value='$id'";
             if ($selected == $id) {

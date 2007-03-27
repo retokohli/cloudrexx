@@ -75,13 +75,13 @@ class ImageManager
         $this->_resetVariables();
         $this->orgImageFile = $file;
 
-        if($this->orgImageType = $this->_isImage($this->orgImageFile))
+        if ($this->orgImageType = $this->_isImage($this->orgImageFile))
         {
             $getImage             = $this->_getImageSize($this->orgImageFile);
             $this->orgImageWidth  = $getImage[0];
             $this->orgImageHeight = $getImage[1];
 
-            if($this->orgImage = $this->_imageCreateFromFile($this->orgImageFile))
+            if ($this->orgImage = $this->_imageCreateFromFile($this->orgImageFile))
             {
                 return true;
             }
@@ -113,15 +113,16 @@ class ImageManager
      * @param int $quality
      * @return bool
      */
-    function _createThumb($strPath, $strWebPath, $file, $maxSize = 80, $quality = 90){
-        $objFile = &new File();
-	    $_objImage = &new ImageManager();
-	    $file = basename($file);
-        $tmpSize    = getimagesize($strPath.$file);
+    function _createThumb($strPath, $strWebPath, $file, $maxSize = 80, $quality = 90)
+    {
+        $objFile   = new File();
+        $_objImage = new ImageManager();
+        $file      = basename($file);
+        $tmpSize   = getimagesize($strPath.$file);
 
-        if($tmpSize[0] > $tmpSize[1]){
+        if ($tmpSize[0] > $tmpSize[1]) {
            $factor = $maxSize / $tmpSize[0];
-        }else{
+        } else {
            $factor = $maxSize / $tmpSize[1] ;
         }
         $thumbWidth  = $tmpSize[0] * $factor;
@@ -129,12 +130,12 @@ class ImageManager
 
         $_objImage->loadImage($strPath.$file);
         $_objImage->resizeImage($thumbWidth, $thumbHeight, $quality);
-        $_objImage->saveNewImage($strPath.$file . '.thumb');
-	    if($objFile->setChmod($strPath, $strWebPath, $file . '.thumb')){
-	       return true;
-	    }
-	    return false;
-	}
+        $_objImage->saveNewImage($strPath . $file . '.thumb');
+        if ($objFile->setChmod($strPath, $strWebPath, $file . '.thumb')) {
+            return true;
+        }
+        return false;
+    }
 
 
     /**
@@ -151,19 +152,19 @@ class ImageManager
      */
     function resizeImage($width, $height, $quality)
     {
-        if($this->imageCheck == 1)
+        if ($this->imageCheck == 1)
         {
             $this->newImageWidth   = $width;
             $this->newImageHeight  = $height;
             $this->newImageQuality = $quality;
             $this->newImageType    = $this->orgImageType;
 
-            if(function_exists ("imagecreatetruecolor")) {
-            	$this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
-            	// GD > 2 check
-            	if (!$this->newImage) { $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight); }
+            if (function_exists ("imagecreatetruecolor")) {
+                $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
+                // GD > 2 check
+                if (!$this->newImage) { $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight); }
             } else {
-            	$this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
+                $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
             }
             imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
             return true;
@@ -194,15 +195,15 @@ class ImageManager
      */
     function resizeImageSave($path, $webPath, $fileName, $width, $height, $quality = 70, $newPath = '', $newWebPath = '', $newFileName = '', $thumbNailSuffix = '.thumb')
     {
-        if($newPath = ''){ // use same path as the original image for new image, if not set
+        if ($newPath = '') { // use same path as the original image for new image, if not set
             $newPath = $path;
         }
 
-        if($newWebPath = ''){
+        if ($newWebPath = '') {
             $newWebPath = $webPath;
         }
 
-        if($newFileName = ''){
+        if ($newFileName = '') {
             $newFileName = $fileName.$thumbNailSuffix;
         }
 
@@ -212,24 +213,24 @@ class ImageManager
         $this->_checkTrailingSlash($newWebPath);
 
         $this->loadImage($path.$fileName);
-        if($this->imageCheck == 1){ // if file is a valid image
+        if ($this->imageCheck == 1) { // if file is a valid image
             $this->newImageWidth   = $width;
             $this->newImageHeight  = $height;
             $this->newImageQuality = $quality;
             $this->newImageType    = $this->orgImageType;
 
-            if(function_exists ("imagecreatetruecolor")) {
-            	$this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
-            	// GD > 2 check
-            	if (!$this->newImage) {
-            	    $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
-            	}
+            if (function_exists ("imagecreatetruecolor")) {
+                $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
+                // GD > 2 check
+                if (!$this->newImage) {
+                    $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
+                }
             } else {
-            	$this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
+                $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
             }
             imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
 
-            if($this->saveNewImage($newPath.$newFileName)){
+            if ($this->saveNewImage($newPath.$newFileName)) {
                 return true;
             }
         } else {
@@ -243,8 +244,8 @@ class ImageManager
      *
      * @param string $path
      */
-    function _checkTrailingSlash(&$path){
-        if(substr($path, -1) != DIRECTORY_SEPARATOR){ // add directory separator if not already provided
+    function _checkTrailingSlash(&$path) {
+        if (substr($path, -1) != DIRECTORY_SEPARATOR) { // add directory separator if not already provided
             $path .= DIRECTORY_SEPARATOR;
         }
     }
@@ -261,7 +262,7 @@ class ImageManager
      */
     function saveNewImage($file)
     {
-        if($this->imageCheck == 1 && !empty($this->newImage) && !file_exists($file))
+        if ($this->imageCheck == 1 && !empty($this->newImage) && !file_exists($file))
         {
             $this->newImageFile = $file;
 
@@ -269,7 +270,7 @@ class ImageManager
             {
                 case 1:  // gif
                     $function = 'imagegif';
-                    if(!function_exists($function)){
+                    if (!function_exists($function)) {
                         $function = 'imagejpeg';
                     }
                     break;
@@ -307,14 +308,14 @@ class ImageManager
      */
     function showNewImage()
     {
-        if($this->imageCheck == 1 && !empty($this->newImage))
+        if ($this->imageCheck == 1 && !empty($this->newImage))
         {
             switch($this->newImageType)
             {
                 case 1:  // gif
                     header("Content-type: image/gif");
                     $function = 'imagegif';
-                    if(!function_exists($function)){
+                    if (!function_exists($function)) {
                         $function = 'imagejpeg';
                     }
                     break;
@@ -374,33 +375,33 @@ class ImageManager
      * @param integer $max  maximum size (either width or height, depending on the larger value)
      * @return array || false on failure
      */
-    function getImageDim($path, $webPath, $fileName, $max = 60){
+    function getImageDim($path, $webPath, $fileName, $max = 60) {
         $this->_checkTrailingSlash($path);
-		if(is_file($path.$fileName)){
-			$size   = getimagesize($path.$fileName);
-   			$height = $size[1];
-		    $width  = $size[0];
-		    if ($height > $max && $height > $width)
-		    {
-				$height = $max;
-		        $percent = ($size[1] / $height);
-		        $width = ($size[0] / $percent);
-		    }
-		    else if ($width > $max)
-		    {
-		    	$width = $max;
-		        $percent = ($size[0] / $width);
-		        $height = ($size[1] / $percent);
-		   	}
-   			if($width > 0 && $height > 0){
-				$imgdim['style'] = 'style="height: '.$height.'px; width:'.$width.'px;"';
-				$imgdim['width'] = $size[0]+1;
-				$imgdim['height'] = $size[1]+1;
-   			}
-			return $imgdim;
-		}
-		return false;
-	}
+        if (is_file($path.$fileName)) {
+            $size   = getimagesize($path.$fileName);
+               $height = $size[1];
+            $width  = $size[0];
+            if ($height > $max && $height > $width)
+            {
+                $height = $max;
+                $percent = ($size[1] / $height);
+                $width = ($size[0] / $percent);
+            }
+            else if ($width > $max)
+            {
+                $width = $max;
+                $percent = ($size[0] / $width);
+                $height = ($size[1] / $percent);
+               }
+               if ($width > 0 && $height > 0) {
+                $imgdim['style'] = 'style="height: '.$height.'px; width:'.$width.'px;"';
+                $imgdim['width'] = $size[0]+1;
+                $imgdim['height'] = $size[1]+1;
+               }
+            return $imgdim;
+        }
+        return false;
+    }
 
 
 
@@ -415,7 +416,7 @@ class ImageManager
      */
     function _imageCreateFromFile($file)
     {
-        if($type = $this->_isImage($file))
+        if ($type = $this->_isImage($file))
         {
             switch($type)
             {
@@ -456,18 +457,18 @@ class ImageManager
      */
     function _isImage($file)
     {
-        if(file_exists($file))
+        if (file_exists($file))
         {
             $imageSize = $this->_getImageSize($file);
 
             // 1 = GIF,  2 = JPG,  3 = PNG,  4 = SWF,  5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order,
             // 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC
 
-            if($imageSize[2] == 1 || $imageSize[2] == 2 || $imageSize[2] == 3)  // gif, jpg, png
+            if ($imageSize[2] == 1 || $imageSize[2] == 2 || $imageSize[2] == 3)  // gif, jpg, png
             {
-                if($imageSize[2] == 1)
+                if ($imageSize[2] == 1)
                 {
-                    if(function_exists('imagecreatefromgif'))  // for test add an !
+                    if (function_exists('imagecreatefromgif'))  // for test add an !
                     {
                         return $imageSize[2];
                     }
@@ -507,7 +508,7 @@ class ImageManager
      */
     function _getImageSize($file)
     {
-        if($getImageSize = @getimagesize($file))
+        if ($getImageSize = @getimagesize($file))
         {
             return $getImageSize;
         }
