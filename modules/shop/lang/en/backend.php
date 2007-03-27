@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 27 Mar 2007 14:14:16 +0200
+* generated date Tue, 27 Mar 2007 14:20:47 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Orders";
@@ -464,4 +464,5 @@ $_ARRAYLANG['TXT_DISTRIBUTION_DOWNLOAD'] = "Download";
 $_ARRAYLANG['TXT_DISTRIBUTION_NONE'] = "Keiner";
 $_ARRAYLANG['TXT_SHIPPING_FEE'] = "Versandgebühr";
 $_ARRAYLANG['TXT_GALLERY_EXPORT_TARGET'] = "Zielkategorie im Shop für Export:";
+$_ARRAYLANG['TXT_GALLERY_EXPORT_CONFIRM'] = "Die Zielkategorie im Shop wird vor dem Export geleert und alle darin enthaltenen Produkte gelöscht!\nSind Sie sicher?";
 ?>
