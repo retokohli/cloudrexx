@@ -848,7 +848,7 @@ class Settings {
             // arrConfig isn't available here!  luckily, Vat::updateVat() only
             // dumps the arguments to the database and doesn't use any of the settings.
             // thus, we fake this with an empty array.
-            $objVat = new Vat(array());
+            $objVat = new Vat();
             $success &= $objVat->updateVat($_POST['vatids'], $_POST['vatclasses'], $_POST['vatrates']);
         }
         return $success;

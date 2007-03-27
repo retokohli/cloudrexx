@@ -223,7 +223,7 @@ class Shop extends ShopLibrary {
 
         // VAT object
         // Create this only after the configuration ($this->arrConfig) has been set up!
-        $this->objVat = new Vat($this->arrConfig);
+        $this->objVat = new Vat();
 
         // initialize the product options names and values array
         $this->initProductAttributes();
@@ -3330,7 +3330,6 @@ sendReq('', 1);
 
                     $weight     = $objResult->fields['weight']; // grams
                     $weight     = Weight::getWeightString($weight);
-
                     $vatId      = $objResult->fields['vat_id'];
                     $vatRate    = $this->objVat->getRate($vatId);
                     $vatPercent = $this->objVat->getShort($vatId);

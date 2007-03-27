@@ -38,14 +38,15 @@ class FileBrowser {
 	var $_iconWebPath = '';
 	var $_mediaType = '';
 	var $_arrWebpages = array();
-	var $_arrMediaTypes = array('files' 	=> 'TXT_FILEBROWSER_FILES',
-								'webpages' 	=> 'TXT_FILEBROWSER_WEBPAGES',
-								'media1'	=> 'TXT_FILEBROWSER_MEDIA_1',
-								'media2'	=> 'TXT_FILEBROWSER_MEDIA_2',
-								'media3'	=> 'TXT_FILEBROWSER_MEDIA_3',
-								'media4'	=> 'TXT_FILEBROWSER_MEDIA_4',
-								'shop'	    => 'TXT_FILEBROWSER_SHOP'
-							);
+	var $_arrMediaTypes = array(
+        'files' 	=> 'TXT_FILEBROWSER_FILES',
+        'webpages' 	=> 'TXT_FILEBROWSER_WEBPAGES',
+        'media1'	=> 'TXT_FILEBROWSER_MEDIA_1',
+        'media2'	=> 'TXT_FILEBROWSER_MEDIA_2',
+        'media3'	=> 'TXT_FILEBROWSER_MEDIA_3',
+        'media4'	=> 'TXT_FILEBROWSER_MEDIA_4',
+        'shop'	    => 'TXT_FILEBROWSER_SHOP'
+    );
     var $_shopEnabled;
 
 
@@ -222,7 +223,7 @@ class FileBrowser {
 			'TXT_CLOSE'				=> $_ARRAYLANG['TXT_CLOSE']
 		));
 
-		$this->_setNaviagtion();
+		$this->_setNavigation();
 		$this->_setContent();
 		$this->_setUploadForm();
         $this->_showStatus();
@@ -397,7 +398,7 @@ class FileBrowser {
 	* @access private
 	* @see FileBrowser::_getMediaTypeMenu, _objTpl, _mediaType, _arrDirectories
 	*/
-	function _setNaviagtion()
+	function _setNavigation()
 	{
 		global $_ARRAYLANG;
 
@@ -513,7 +514,6 @@ class FileBrowser {
 						'FILEBROWSER_FILE_DIMENSION'		=> (empty($arrFile['width']) && empty($arrFile['height'])) ? '' : intval($arrFile['width']).'x'.intval($arrFile['height'])
 					));
 					$this->_objTpl->parse('content_files');
-
 					$rowNr++;
 				}
 			}
@@ -676,4 +676,5 @@ class FileBrowser {
 		return $menu;
     }
 }
+
 ?>
