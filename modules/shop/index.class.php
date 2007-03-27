@@ -3113,38 +3113,45 @@ sendReq('', 1);
                                                zip='".trim($_SESSION['shop']['zip']," \t")."',
                                                country_id='".intval($_SESSION['shop']['countryId'])."',
                                                phone='".trim($_SESSION['shop']['phone']," \t")."',
-                                               fax='".trim($_SESSION['shop']['fax']," \t")."',
+                                               fax='".trim($_SESSION['shop']['fax']," \t")."', ".
                                                // the following fields are undefined in the first run!
-                                               ccnumber='".(isset($_SESSION['shop']['ccnumber']) ? trim($_SESSION['shop']['ccnumber']," \t") : '')."',
+                                               "ccnumber='".(isset($_SESSION['shop']['ccnumber']) ? trim($_SESSION['shop']['ccnumber']," \t") : '')."',
                                                ccdate='{". (isset($_SESSION['shop']['ccdate'])   ?      $_SESSION['shop']['ccdate']          : '')."}',
                                                ccname='".  (isset($_SESSION['shop']['ccname'])   ? trim($_SESSION['shop']['ccname']," \t")   : '')."',
                                                cvc_code='".(isset($_SESSION['shop']['cvcCode'])  ? trim($_SESSION['shop']['cvcCode']," \t")  : '')."'
                                          WHERE customerid=".$customerid;
-                    $objDatabase->Execute($query);
+                    $objResult = $objDatabase->Execute($query);
+//echo("update customer: query: $query<br />result: ".($objResult ? 'okay' : 'failed')."<br />");
                 } else {
                     // Add to customer table
-                    $query = "INSERT INTO ".DBPREFIX."module_shop_customers
-                                           SET username='".trim($_SESSION['shop']['email']," \t")."',
-                                               password='".md5($_SESSION['shop']['password'])."',
-                                               company='".trim($_SESSION['shop']['company']," \t")."',
-                                               prefix='".trim($_SESSION['shop']['prefix']," \t")."',
-                                               firstname='".trim($_SESSION['shop']['firstname']," \t")."',
-                                               lastname='".trim($_SESSION['shop']['lastname']," \t")."',
-                                               address='".trim($_SESSION['shop']['address']," \t")."',
-                                               city='".trim($_SESSION['shop']['city']," \t")."',
-                                               zip='".trim($_SESSION['shop']['zip']," \t")."',
-                                               country_id='".intval($_SESSION['shop']['countryId'])."',
-                                               phone='".trim($_SESSION['shop']['phone']," \t")."',
-                                               fax='".trim($_SESSION['shop']['fax']," \t")."',
-                                               email='".trim($_SESSION['shop']['email']," \t")."',
-                                               ccnumber='".trim($_SESSION['shop']['ccnumber']," \t")."',
-                                               ccdate='{$_SESSION['shop']['ccdate']}',
-                                               ccname='".trim($_SESSION['shop']['ccname']," \t")."',
-                                               cvc_code='".trim($_SESSION['shop']['cvcCode']," \t")."',
-                                               customer_status=1,
-                                               register_date=NOW()";
-                    $objDatabase->Execute($query);
+                    $query =
+                        "INSERT INTO ".DBPREFIX."module_shop_customers
+                        (username, password, company, prefix, firstname, lastname,
+                        address, city, zip, country_id, phone, fax, email,
+                        ccnumber, ccdate, ccname, cvc_code,
+                        customer_status, register_date)
+                        VALUES ('".
+                        trim($_SESSION['shop']['email']," \t")."', '".
+                        md5($_SESSION['shop']['password'])."', '".
+                        trim($_SESSION['shop']['company']," \t")."', '".
+                        trim($_SESSION['shop']['prefix']," \t")."', '".
+                        trim($_SESSION['shop']['firstname']," \t")."', '".
+                        trim($_SESSION['shop']['lastname']," \t")."', '".
+                        trim($_SESSION['shop']['address']," \t")."', '".
+                        trim($_SESSION['shop']['city']," \t")."', '".
+                        trim($_SESSION['shop']['zip']," \t")."', ".
+                        intval($_SESSION['shop']['countryId']).", '".
+                        trim($_SESSION['shop']['phone']," \t")."', '".
+                        trim($_SESSION['shop']['fax']," \t")."', '".
+                        trim($_SESSION['shop']['email']," \t")."', '".
+                        trim($_SESSION['shop']['ccnumber']," \t")."', '".
+                        $_SESSION['shop']['ccdate']."', '".
+                        trim($_SESSION['shop']['ccname']," \t")."', '".
+                        trim($_SESSION['shop']['cvcCode']," \t")."', ".
+                        "1, NOW())";
+                    $objResult = $objDatabase->Execute($query);
                     $customerid = $objDatabase->Insert_ID();
+//echo("update customer: query: $query<br />result: ".($objResult ? 'okay' : 'failed').", ID: $customerid<br />");
                 }
                 $_SESSION['shop']['customerid'] = $customerid;
 
@@ -3174,6 +3181,7 @@ sendReq('', 1);
                        customer_browser='$customer_browser',
                        customer_note='{$_SESSION['shop']['customer_note']}'";
                 $objResult = $objDatabase->Execute($query);
+//echo("insert order: query: $query<br />result: ".($objResult ? 'okay' : 'failed')."<br />");
                 if ($objResult) {
                     $orderid = $objDatabase->Insert_ID();
                     $_SESSION['shop']['orderid'] = $orderid;
