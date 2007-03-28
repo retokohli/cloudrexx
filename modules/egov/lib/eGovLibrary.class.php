@@ -288,7 +288,9 @@ class eGovLibrary {
 		}
 		
 		$FormActionTarget 	= ($preview ? '../' : '')."index.php?section=egov&amp;id=".$id;
-		$PayPalPaymant		= $this->GetProduktValue('product_paypal', $id);
+		
+		$Payment = $this->GetProduktValue("product_paymant", $id);
+		
 
 		$sourcecode = $this->_getJsSourceCode($id, $arrFields, $preview, $show);
 		$sourcecode .= $this->arrForms[$id]['text'] . "<br /><br />\n";
@@ -299,7 +301,7 @@ class eGovLibrary {
 		$sourcecode .= "<form action=\"".$FormActionTarget."\" ";
 		$sourcecode .= "method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return checkAllFields();\" id=\"contactForm\">\n";
 		$sourcecode .= "<input type=\"hidden\" name=\"send\" value=\"exe\"  />";
-		$sourcecode .= "<input type=\"hidden\" name=\"paypal\" value=\"".$PayPalPaymant."\"  />";
+		$sourcecode .= "<input type=\"hidden\" name=\"payment\" value=\"".$Payment."\"  />";
 		$sourcecode .= $CalenderSource."";
 		$sourcecode .= "<table border=\"0\">\n";
 

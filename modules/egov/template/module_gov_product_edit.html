@@ -476,26 +476,12 @@ function showOrHide(strElement) {
 <div class="product" id="paypaltemplate" style="display: none;">
 	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
 		<tr>
-			<th colspan="2">PAYPAL</th>
+			<th colspan="2">{TXT_EGOV_SELECT_PAYMANT}</th>
 		</tr>
 		<tr class="row1">
-			<td width="15%">{TXT_EGOV_ACTIVATE_PAYPAL}</td>
-			<td width="85%"><input type="radio" name="paypal" id="paypal_yes" value="1" {PAYPAL_YES} /><label for="paypal_yes">{TXT_YES}</label> <input type="radio" name="paypal" id="paypal_no" value="0" {PAYPAL_NO} /><label for="paypal_no">{TXT_NO}</label></td>
-		</tr>
-		<tr class="row2">
-			<td width="15%">{TXT_EGOV_SANDBOX_EMAIL}</td>
-			<td width="85%"><input type="text" name="sandbox_mail" value="{SANDBOX_EMAIL}" style="width: 670px;"" /></td>
-		</tr>
-		<tr class="row1">
-			<td width="15%">{TXT_EGOV_PAYPAL_CURRENCY}</td>
+			<td width="15%">{TXT_EGOV_PAYMENT}</td>
 			<td width="85%">
-				<select name="PayPalcurrency">
-					<option value="CHF" {SELECTED_CHF}>(CHF) Schweizer Franken</option>
-					<option value="EUR" {SELECTED_EUR}>(EUR) Euro</option>
-					<option value="USD" {SELECTED_USD}>(USD) US-Dollar</option>
-					<option value="GBP" {SELECTED_GBP}>(GBP) Britische Pfund</option>
-					<option value="JPY" {SELECTED_JPY}>(JPY) Yen</option>
-				</select>
+			{PAYMENT_SELECT}
 			</td>
 		</tr>
 	</table>

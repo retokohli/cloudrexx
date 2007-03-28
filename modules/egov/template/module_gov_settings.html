@@ -140,6 +140,10 @@
 			<tr>
 				<th colspan="2">PAYPAL</th>
 			</tr>
+		<tr class="row1">
+			<td width="15%">{TXT_EGOV_ACTIVATE_PAYPAL}</td>
+			<td width="85%"><input type="checkbox" name="act_paypal" value="1" {PAYPAL_CHECKED} /></td>
+		</tr>
 		<tr class="row2">
 			<td width="15%">{TXT_EGOV_SANDBOX_EMAIL}</td>
 			<td width="85%"><input type="text" name="PayPal_mail" value="{PAYPAL_EMAIL}" style="width: 670px;" /></td>
@@ -147,7 +151,7 @@
 		<tr class="row1">
 			<td width="15%">{TXT_EGOV_PAYPAL_CURRENCY}</td>
 			<td width="85%">
-				<select name="PayPalcurrency">
+				<select name="PayPalcurrency" style="width: 670px;">
 					<option value="CHF" {SELECTED_CHF}>(CHF) Schweizer Franken</option>
 					<option value="EUR" {SELECTED_EUR}>(EUR) Euro</option>
 					<option value="USD" {SELECTED_USD}>(USD) US-Dollar</option>
@@ -155,12 +159,51 @@
 					<option value="JPY" {SELECTED_JPY}>(JPY) Yen</option>
 				</select>
 			</td>
-		</tr>
+		</tr><!--
 		<tr class="row2">
 			<td width="15%">{TXT_EGOV_PAYPAL_IPN}</td>
 			<td width="85%"><input type="checkbox" name="PayPal_IPN" value="1" {IPN_CHECKED} /></td>
-		</tr>
+		</tr>-->
 		</table>
+		<br />
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+			<tr>
+				<th colspan="2">Worldpay</th>
+			</tr>
+		<tr class="row1">
+			<td width="15%">{TXT_ACTIVATE_WORLDPAY}</td>
+			<td width="85%"><input type="checkbox" name="act_worldpay" value="1" {WORLDPAY_CHECKED} /></td>
+		</tr>
+		<tr class="row2">
+			<td width="15%">{TXT_WORLDPAY_ID}</td>
+			<td width="85%"><input type="text" name="worldpay_id" value="{WORLDPAY_ID}" style="width: 670px;" /></td>
+		</tr>
+		<tr class="row1">
+			<td width="15%">{TXT_EGOV_PAYPAL_CURRENCY}</td>
+			<td width="85%">
+				<select name="worldpay_currency" style="width: 670px;">
+					<option value="CHF" {SELECTED_WP_CHF}>(CHF) Schweizer Franken</option>
+					<option value="EUR" {SELECTED_WP_EUR}>(EUR) Euro</option>
+					<option value="USD" {SELECTED_WP_USD}>(USD) US-Dollar</option>
+					<option value="GBP" {SELECTED_WP_GBP}>(GBP) Britische Pfund</option>
+					<option value="JPY" {SELECTED_WP_JPY}>(JPY) Yen</option>
+				</select>
+			</td>
+		</tr>
+		<tr class="row2">
+			<td width="15%">{TXT_EGOV_WORLDPAY_LANGUAGE}</td>
+			<td width="85%">
+				<select name="worldpay_lang" style="width: 670px;">
+					<option value="de" {SELECTED_WP_DE}>Deutsch</option>
+					<option value="en" {SELECTED_WP_EN}>English</option>
+					<option value="fr" {SELECTED_WP_FR}>Français</option>
+					<option value="it" {SELECTED_WP_IT}>Italiano</option>
+				</select>
+			</td>
+		</tr>
+		
+		</table>
+		
 	</div>
 	<br />
 <input type="submit" value="{TXT_SAVE}" />
