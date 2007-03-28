@@ -16,7 +16,6 @@
  */
 require_once ASCMS_MODULE_PATH . '/market/lib/marketLib.class.php';
 require_once ASCMS_CORE_PATH.'/modulemanager.class.php';
-require_once ASCMS_MODULE_PATH .'/market/paypal/paypal.class.php';
 
 /**
  * Market
@@ -130,12 +129,6 @@ class Market extends marketLibrary
 			case 'search':
 				$this->searchEntry();
 			break;
-			break;
-			case 'paypal_error':
-				$this->errorPaypal($_GET['id']);
-			break;
-			case 'paypal_successfull':
-				$this->successfullPaypal($_REQUEST['id']);
 			break;
 			default:
 				$this->showCategories();
@@ -407,21 +400,41 @@ class Market extends marketLibrary
 		   		$info     	= getimagesize($this->mediaPath.'pictures/'.$objResult->fields['picture']);
 	   			$height 	= '';
 	   			$width 		= '';
-
+	   			
 	   			if($info[0] <= $info[1]){
-	   				$height = 50;
-	   			}else{
-	   				$faktor = $info[0]/80;
-	   				$result = $info[1]/$faktor;
-	   				if($result > 50){
-	   					$height = 50;
-	   				}else{
-	   					$width = 80;
-	   				}
-	   			}
+					if($info[1] > 50){
+						$faktor = $info[1]/50;
+						$height = 50;
+						$width	= $info[0]/$faktor;
+					} else {
+						$height = $info[1];
+						$width = $info[0];
+					}
+				}else{
+					$faktor = $info[0]/80;
+					$result = $info[1]/$faktor;
+					if($result > 50){
+						if($info[1] > 50){
+							$faktor = $info[1]/50;
+							$height = 50;
+							$width	= $info[0]/$faktor;
+						}else{
+							$height = $info[1];
+							$width = $info[0];
+						}
+					}else{
+						if($info[0] > 80){
+							$width = 80;
+							$height = $info[1]/$faktor;
+						}else{
+							$width = $info[0];
+							$height = $info[1];
+						}
+					}
+				}
 
-				$width != '' ? $width = 'width="'.$width.'"' : $width = '';
-				$height != '' ? $height = 'height="'.$height.'"' : $height = '';
+				$width != '' ? $width = 'width="'.round($width,0).'"' : $width = '';
+				$height != '' ? $height = 'height="'.round($height,0).'"' : $height = '';
 
 				if (empty($objResult->fields['picture'])) {
 					$objResult->fields['picture'] = 'no_picture.gif';
@@ -456,7 +469,7 @@ class Market extends marketLibrary
 	   			$this->_objTpl->setVariable(array(
 					'MARKET_ENDDATE'    		=> $enddate,
 					'MARKET_TITLE'    			=> $objResult->fields['title'],
-					'MARKET_DESCRIPTION'    	=> substr($objResult->fields['description'], 0, 150),
+					'MARKET_DESCRIPTION'    	=> substr($objResult->fields['description'], 0, 110)."<a href='index.php?section=market&cmd=detail&id=".$objResult->fields['id']."' target='_self'>[...]</a>",
 					'MARKET_PRICE'    			=> $price,
 					'MARKET_PICTURE'    		=> $image,
 					'MARKET_ROW'    			=> $row,
@@ -559,8 +572,14 @@ class Market extends marketLibrary
 	 	$_ARRAYLANG['TXT_MARKET_ALL_PRICES'] = "egal";
 	 	
 	 	$options = '';
+	 	
+	 	if  ($this->settings['indexview']['value'] == 1) {
+			$order = "name";
+		} else {
+			$order = "displayorder";
+		}
 
-		$objResultSearch = $objDatabase->Execute("SELECT id, name, description FROM ".DBPREFIX."module_market_categories WHERE status = '1' ORDER BY displayorder");
+		$objResultSearch = $objDatabase->Execute("SELECT id, name, description FROM ".DBPREFIX."module_market_categories WHERE status = '1' ORDER BY ".$order."");
 
 		if($objResultSearch !== false){
 			while(!$objResultSearch->EOF){
@@ -661,29 +680,39 @@ class Market extends marketLibrary
 			$width 		= '';
 
 			if($info[0] <= $info[1]){
-				if($info[1] > 300){
-					$height = 300;
+				if($info[1] > 200){
+					$faktor = $info[1]/200;
+					$height = 200;
+					$width	= $info[0]/$faktor;
+				} else {
+					$height = $info[1];
+					$width = $info[0];
 				}
 			}else{
 				$faktor = $info[0]/300;
 				$result = $info[1]/$faktor;
-				if($result > 300){
-					if($info[1] > 300){
-						$height = 300;
+				if($result > 200){
+					if($info[1] > 200){
+						$faktor = $info[1]/200;
+						$height = 200;
+						$width	= $info[0]/$faktor;
 					}else{
 						$height = $info[1];
+						$width = $info[0];
 					}
 				}else{
 					if($info[0] > 300){
 						$width = 300;
+						$height = $info[1]/$faktor;
 					}else{
 						$width = $info[0];
+						$height = $info[1];
 					}
 				}
 			}
 
-			$width != '' ? $width = 'width="'.$width.'"' : $width = '';
-			$height != '' ? $height = 'height="'.$height.'"' : $height = '';
+			$width != '' ? $width = 'width="'.round($width,0).'"' : $width = '';
+				$height != '' ? $height = 'height="'.round($height,0).'"' : $height = '';
 
 			$image = '<img src="'.$this->mediaWebPath.'pictures/'.$this->entries[$id]['picture'].'" '.$width.' '.$height.' border="0" alt="'.$this->entries[$id]['title'].'" />';
 
@@ -1278,18 +1307,42 @@ class Market extends marketLibrary
 		   			$width 		= '';
 
 		   			if($info[0] <= $info[1]){
-		   				$height = 50;
-		   			}else{
-		   				$faktor = $info[0]/80;
-		   				$result = $info[1]/$faktor;
-		   				if($result > 50){
-		   					$height = 50;
-		   				}else{
-		   					$width = 80;
-		   				}
-		   			}
-		   			$image = '<img src="'.$this->mediaWebPath.'pictures/'.$objResult->fields['picture'].'" width="'.$width.'" height="'.$height.'" border="0" alt="'.$objResult->fields['title'].'" />';
-
+						if($info[1] > 50){
+							$faktor = $info[1]/50;
+							$height = 50;
+							$width	= $info[0]/$faktor;
+						} else {
+							$height = $info[1];
+							$width = $info[0];
+						}
+					}else{
+						$faktor = $info[0]/80;
+						$result = $info[1]/$faktor;
+						if($result > 50){
+							if($info[1] > 50){
+								$faktor = $info[1]/50;
+								$height = 50;
+								$width	= $info[0]/$faktor;
+							}else{
+								$height = $info[1];
+								$width = $info[0];
+							}
+						}else{
+							if($info[0] > 80){
+								$width = 80;
+								$height = $info[1]/$faktor;
+							}else{
+								$width = $info[0];
+								$height = $info[1];
+							}
+						}
+					}
+	
+					$width != '' ? $width = 'width="'.round($width,0).'"' : $width = '';
+					$height != '' ? $height = 'height="'.round($height,0).'"' : $height = '';
+					
+		   			$image = '<img src="'.$this->mediaWebPath.'pictures/'.$objResult->fields['picture'].'" '.$width.'" '.$height.'" border="0" alt="'.$objResult->fields['title'].'" />';
+		   			
 		   			if($objResult->fields['picture'] == ''){
 		   				$image = "";
 		   			}
@@ -1321,7 +1374,7 @@ class Market extends marketLibrary
 		   			$this->_objTpl->setVariable(array(
 						'MARKET_ENDDATE'    			=> $enddate,
 						'MARKET_TITLE'    				=> $objResult->fields['title'],
-						'MARKET_DESCRIPTION'    		=> substr($objResult->fields['description'], 0, 150),
+						'MARKET_DESCRIPTION'    		=> substr($objResult->fields['description'], 0, 110)."<a href='index.php?section=market&cmd=detail&id=".$objResult->fields['id']."' target='_self'>[...]</a>",
 						'MARKET_PRICE'    				=> $price,
 						'MARKET_PICTURE'    			=> $image,
 						'MARKET_ROW'    				=> $row,
@@ -1650,128 +1703,6 @@ class Market extends marketLibrary
 				exit;
 			}
 		}
-	}
-
-
-	function errorPaypal($id){
-
-		global $objDatabase, $_ARRAYLANG, $_CONFIG;
-
-		$this->_objTpl->setTemplate($this->pageContent, true, true);
-
-		//get search
-		$this->getSearch();
-
-	    //get navigatin
-		$verlauf = $this->getNavigation($this->entries[$id]['catid']);
-
-		//check paypal
-		$objReslut = $objDatabase->Execute("SELECT active, profile FROM ".DBPREFIX."module_market_paypal WHERE id = '1'");
-      	if($objReslut !== false){
-			while(!$objReslut->EOF){
-				$paypalActive 		= $objReslut->fields['active'];
-				$paypalProfile 		= $objReslut->fields['profile'];
-				$objReslut->MoveNext();
-			}
-      	}
-
-		if(isset($_GET['id']) && $paypalActive == '1' && $paypalProfile != ''){
-			$this->_objPayPal 	= &new PayPal();
-      		$PayPalForm 		= $this->_objPayPal->getForm($id);
-			$this->_objTpl->parse('paypal');
-
-			// set variables
-			$this->_objTpl->setVariable(array(
-				'TXT_MARKET_TITLE'			=> $_ARRAYLANG['TXT_MARKET_REQUIREMENTS'],
-				'TXT_MARKET_AGB'			=> $_ARRAYLANG['TXT_MARKET_AGB'],
-				'TXT_MARKET_CONFIRM'		=> $_ARRAYLANG['TXT_MARKET_AGB_ACCEPT'],
-				'TXT_PAYPAL_ERROR'			=> $_ARRAYLANG['TXT_MARKET_PAYPAL_FAILED'],
-				'MARKET_PAYPAL'				=> $PayPalForm,
-			));
-
-		}/*else{
-			header('Location: ?section=market');
-		}*/
-	}
-
-
-	function successfullPaypal($id){
-
-		global $objDatabase, $_ARRAYLANG, $_CONFIG;
-
-		$this->_objTpl->setTemplate($this->pageContent, true, true);
-
-		//get search
-		$this->getSearch();
-
-	    //get navigatin
-		$verlauf = $this->getNavigation($this->entries[$id]['catid']);
-
-		//check paypal
-		$objReslut = $objDatabase->Execute("SELECT active FROM ".DBPREFIX."module_market_paypal WHERE id = '1'");
-      	if($objReslut !== false){
-			while(!$objReslut->EOF){
-				$paypalActive 		= $objReslut->fields['active'];
-				$objReslut->MoveNext();
-			}
-      	}
-
-		if(isset($_REQUEST['id']) && $paypalActive == '1'){
-			if(isset($_POST['submit'])){
-				$id 		= contrexx_addslashes($_POST['id']);
-				$regkey 	= contrexx_addslashes($_POST['regkey']);
-
-				$objResult = $objDatabase->Execute("SELECT id, regkey, userid FROM ".DBPREFIX."module_market WHERE id = '".$id."' AND regkey='".$regkey."' AND paypal='1'  AND status='0'");
-				if($objResult !== false){
-					$count = $objResult->RecordCount();
-					while(!$objResult->EOF){
-						$today = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
-						$objResultUpdate = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market SET status='1', regkey='', regdate='".$today."' WHERE id='".$objResult->fields['id']."'");
-
-						$this->sendMail($id);
-
-						if($objResultUpdate !== false){
-							header('Location: ?section=market&cmd=detail&id='.$id.'');
-						}
-					}
-			 	}
-
-			 	if($count == 0){
-			 		$error = $_ARRAYLANG['TXT_MARKET_CLEARING_CODE_NOT_EXISTING'];
-			 	}
-			}
-
-			$objResult = $objDatabase->Execute("SELECT id, regkey FROM ".DBPREFIX."module_market WHERE id = '".$id."' AND paypal='1'  AND status='0'");
-			if($objResult !== false){
-				$count = $objResult->RecordCount();
-				while(!$objResult->EOF){
-					$key = $objResult->fields['regkey'];
-					$objResult->MoveNext();
-				}
-		 	}
-
-		 	/*if($count == 0){
-		 		header('Location: ?section=market');
-		 	}*/
-
-	      	$confirmForm	= '<form action="index.php?section=market&cmd=paypal_successfull" method="post" id="marketAGB">
-            				   <input type="hidden" name="id" value="'.$id.'" >
-            				   <input id="regkey" name="regkey" value="" size="25" maxlength="100" />&nbsp;<input id="submit" type="submit" value="Freischalten" name="submit" />
-            				   </form>';
-      		$this->_objTpl->parse('form');
-
-
-			// set variables
-			$this->_objTpl->setVariable(array(
-				'TXT_MARKET_CODE'			=> $_ARRAYLANG['TXT_MARKET_PAYPAL_SUCCESS'],
-				'MARKET_CODE'				=> $key,
-				'MARKET_ERROR_CONFIRM'		=> $error,
-				'MARKET_FORM'				=> $confirmForm,
-			));
-
-		}/*else{
-			header('Location: ?section=market');
-		}*/
 	}
 
 

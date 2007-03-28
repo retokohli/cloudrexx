@@ -1000,7 +1000,6 @@ class Market extends marketLibrary
     		'TXT_EMAIL'		    => $_ARRAYLANG['TXT_MARKET_VALIDATION_EMAIL'],
     		'TXT_EMAIL_CODE'	=> $_ARRAYLANG['TXT_MARKET_CLEARING_EMAIL'],
     		'TXT_SPEZ_FIELDS'	=> $_ARRAYLANG['TXT_MARKET_SPEZ_FIELDS'],
-    		'TXT_PAYPAL'		=> $_ARRAYLANG['TXT_MARKET_PAYPAL'],
     	));
 
     	if(!isset($_GET['tpl'])){
@@ -1016,9 +1015,6 @@ class Market extends marketLibrary
     			break;
     		case 'email_code':
     			$this->mail_codeSettings();
-    			break;
-    		case 'paypal':
-    			$this->paypalSettings();
     			break;
     		case 'spez_fields':
     			$this->spezfieldsSettings();
@@ -1246,61 +1242,6 @@ class Market extends marketLibrary
 			$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_mail SET title='".$_POST['mailTitle']."', content='".$_POST['mailContent']."', mailcc='".$_POST['mailCC']."', active='".$_POST['mailOn']."' WHERE id='1'");
 			if($objResult !== false){
 				header('Location: ?cmd=market&act=settings&tpl=email');
-				$this->strOkMessage = $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'];
-			}else{
-				$this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
-			}
-		}
-	}
-
-	/**
-	* show settings for paypal
-	*
-	* @access public
-	* @global object $objTemplate
-	* @global object $objDatabase
-	* @global array $_ARRAYLANG
-	* @global array $_CORELANG
-	*/
-	function paypalSettings(){
-
-		global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
-
-		// initialize variables
-		$this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_market_settings_paypal.html');
-
-		//get content
-		$objReslut = $objDatabase->Execute("SELECT active, profile, price, price_premium FROM ".DBPREFIX."module_market_paypal WHERE id = '1'");
-      	if($objReslut !== false){
-			while(!$objReslut->EOF){
-				$active 	= $objReslut->fields['active'];
-				$profile 	= $objReslut->fields['profile'];
-				$price 		= $objReslut->fields['price'];
-				$premium 	= $objReslut->fields['price_premium'];
-				$objReslut->MoveNext();
-			}
-      	}
-
-      	$active == 1 ? $checked = 'checked' : $checked = '';
-
-		$this->_objTpl->setVariable(array(
-			'TXT_SAVE'							=> $_CORELANG['TXT_SAVE'],
-			'TXT_PAYPAL_PROFILE'				=> $_ARRAYLANG['TXT_MARKTE_PAYPAL_EMAIL'],
-			'TXT_PAYPAL_STATUS'					=> $_ARRAYLANG['TXT_MARKET_PAYPAL_ACTIVATE'],
-			'TXT_PAYPAL_CURRENCIES'				=> $_ARRAYLANG['TXT_MARKET_PAYPAL_CURRENCIES'],
-			'TXT_PAYPAL_PRICE'					=> $_ARRAYLANG['TXT_MARKET_PAYPAL_PRICE'],
-			'TXT_PAYPAL_PREMIUM'				=> $_ARRAYLANG['TXT_MARKET_PAYPAL_MARKED'],
-			'TXT_SETTINGS'						=> $_CORELANG['TXT_SETTINGS'],
-			'STATUS_ON'							=> $checked,
-			'PROFILE'							=> $profile,
-			'PRICE'								=> $price,
-			'PREMIUM'							=> $premium,
-		));
-
-		if(isset($_POST['submitSettings'])){
-			$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_paypal SET active='".$_POST['status']."', profile='".$_POST['profile']."', price='".$_POST['price']."', price_premium='".$_POST['premium']."' WHERE id='1'");
-			if($objResult !== false){
-				header('Location: ?cmd=market&act=settings&tpl=paypal');
 				$this->strOkMessage = $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'];
 			}else{
 				$this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
