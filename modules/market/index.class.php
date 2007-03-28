@@ -384,7 +384,13 @@ class Market extends marketLibrary
 		
 		/////// START PAGING ///////
 		$pos= intval($_GET['pos']);
-		$query='SELECT * FROM '.DBPREFIX.'module_market WHERE catid = "'.contrexx_addslashes($catId).'" AND status="1" '.$where.' '.$type.' ORDER BY '.$sort.' '.$way;
+		
+		if($sort == 'price'){
+			$query='SELECT `id`,`name`,`email`,`type`,`title`,`description`,`premium`,`picture`,`catid`, CAST(`price` AS UNSIGNED),`regdate`,`enddate`,`userid`,`userdetails`,`status`,`regkey`,`paypal`,`spez_field_1`,`spez_field_2`,`spez_field_3`,`spez_field_4`,`spez_field_5` FROM '.DBPREFIX.'module_market WHERE catid = "'.contrexx_addslashes($catId).'" AND status="1" '.$where.' '.$type.' ORDER BY '.$sort.' '.$way;
+		}else{
+			$query='SELECT * FROM '.DBPREFIX.'module_market WHERE catid = "'.contrexx_addslashes($catId).'" AND status="1" '.$where.' '.$type.' ORDER BY '.$sort.' '.$way;
+		}
+		
 		$objResult = $objDatabase->Execute($query);
 		$count = $objResult->RecordCount();
 		if($count > $this->settings['paging']){
@@ -397,6 +403,10 @@ class Market extends marketLibrary
 
 		if ($objResult !== false){
 		   	while (!$objResult->EOF) {
+		   		if (empty($objResult->fields['picture'])) {
+					$objResult->fields['picture'] = 'no_picture.gif';
+				}
+		   		
 		   		$info     	= getimagesize($this->mediaPath.'pictures/'.$objResult->fields['picture']);
 	   			$height 	= '';
 	   			$width 		= '';
@@ -435,10 +445,6 @@ class Market extends marketLibrary
 
 				$width != '' ? $width = 'width="'.round($width,0).'"' : $width = '';
 				$height != '' ? $height = 'height="'.round($height,0).'"' : $height = '';
-
-				if (empty($objResult->fields['picture'])) {
-					$objResult->fields['picture'] = 'no_picture.gif';
-				}
 
 	   			$image = '<img src="'.$this->mediaWebPath.'pictures/'.$objResult->fields['picture'].'" '.$width.' '.$height.' border="0" alt="'.$objResult->fields['title'].'" />';
 
@@ -712,7 +718,7 @@ class Market extends marketLibrary
 			}
 
 			$width != '' ? $width = 'width="'.round($width,0).'"' : $width = '';
-				$height != '' ? $height = 'height="'.round($height,0).'"' : $height = '';
+			$height != '' ? $height = 'height="'.round($height,0).'"' : $height = '';
 
 			$image = '<img src="'.$this->mediaWebPath.'pictures/'.$this->entries[$id]['picture'].'" '.$width.' '.$height.' border="0" alt="'.$this->entries[$id]['title'].'" />';
 
@@ -1302,10 +1308,14 @@ class Market extends marketLibrary
 
 			if ($objResult !== false){
 			   	while (!$objResult->EOF) {
+			   		if (empty($objResult->fields['picture'])) {
+						$objResult->fields['picture'] = 'no_picture.gif';
+					}
+			   		
 			   		$info     	= getimagesize($this->mediaPath.'pictures/'.$objResult->fields['picture']);
 		   			$height 	= '';
 		   			$width 		= '';
-
+		   			
 		   			if($info[0] <= $info[1]){
 						if($info[1] > 50){
 							$faktor = $info[1]/50;
@@ -1343,9 +1353,6 @@ class Market extends marketLibrary
 					
 		   			$image = '<img src="'.$this->mediaWebPath.'pictures/'.$objResult->fields['picture'].'" '.$width.'" '.$height.'" border="0" alt="'.$objResult->fields['title'].'" />';
 		   			
-		   			if($objResult->fields['picture'] == ''){
-		   				$image = "";
-		   			}
 
 		   			$objResultUser = $objDatabase->Execute("SELECT residence FROM ".DBPREFIX."access_users WHERE id='".$objResult->fields['userid']."' LIMIT 1");
 					if($objResultUser !== false){
