@@ -36,25 +36,26 @@ function ValidateForm(theform)
 		<td width="30%" rowspan="5">&nbsp;&nbsp;&nbsp;&nbsp;<img src="template/ascms/images/icons/32x32/login_key.gif"  align="middle" alt="login key" /></td>
 	</tr>
 	<tr>
-		<td width="30%" nowrap="nowrap">{TXT_ENTER_SECURITY_CODE}:</td>
-		<td width="40%"><input style="width:100%;" tabindex="1" name="secid2" value="" maxlength="5" onChange="javascript:this.value=this.value.toUpperCase();" /></td>
+		<td nowrap="nowrap">{TXT_ENTER_SECURITY_CODE}:</td>
+		<td><input style="width:100%;" tabindex="1" name="secid2" value="" maxlength="5" onChange="javascript:this.value=this.value.toUpperCase();" /></td>
 	</tr>
 	<tr>
-		<td width="30%" nowrap="nowrap">{TXT_USER_NAME}:</td>
-		<td width="40%"><input style="width:100%;" tabindex="2" name="USERNAME" value="{UID}" /></td>
+		<td nowrap="nowrap">{TXT_USER_NAME}:</td>
+		<td><input style="width:100%;" tabindex="2" name="USERNAME" value="{UID}" /></td>
 	</tr>
 	<tr>
-		<td width="30%" nowrap="nowrap"><div style="vertical-align: top;">{TXT_PASSWORD}:</div></td>
-		<td width="40%"><input style="width:100%;" type="password" tabindex="3" size="40" name="hash" value="" /><input type="hidden" name="PASSWORD" value="" /></td>
+		<td nowrap="nowrap"><div style="vertical-align: top;">{TXT_PASSWORD}:</div></td>
+		<td><input style="width:100%;" type="password" tabindex="3" size="40" name="hash" value="" /><input type="hidden" name="PASSWORD" value="" /></td>
 	</tr>
 	<tr>
-		<td width="40%"><input type="submit" tabindex="4" name="submit_button" value="{TXT_LOGIN}" onClick="if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=true ; form_submitted_test=form_submitted ; form_submitted=true ; form_submitted=(!form_submitted_test || confirm('Are you sure you want to submit this form again?')) ; if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=false ; sub_form='' ; return true" /></td>
+		<td>&nbsp;</td>
+		<td><input type="submit" tabindex="4" name="submit_button" value="{TXT_LOGIN}" onClick="if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=true ; form_submitted_test=form_submitted ; form_submitted=true ; form_submitted=(!form_submitted_test || confirm('Are you sure you want to submit this form again?')) ; if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=false ; sub_form='' ; return true" /></td>
 	</tr>
 	<tr>
-		<td colspan="2"><a href="index.php?cmd=lostpw"><br />&raquo;&nbsp;{TXT_PASSWORD_LOST}</a></td>
+		<td colspan="3"><a href="index.php?cmd=lostpw"><br />&raquo;&nbsp;{TXT_PASSWORD_LOST}</a></td>
 	</tr>
 	<tr>
-		<td colspan="2"><div style="color: #ff0000; font-weight: bold;"><br />{LOGIN_ERROR_MESSAGE}</div></td>
+		<td colspan="3"><div style="color: #ff0000; font-weight: bold;"><br />{LOGIN_ERROR_MESSAGE}</div></td>
 	</tr>
 </table>
 </form>
