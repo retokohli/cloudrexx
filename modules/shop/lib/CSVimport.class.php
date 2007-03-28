@@ -171,8 +171,8 @@ class CSVimport {
     function GetFirstCat()
     {
         global $objDatabase;
-        $query = "SELECT catid FROM ".DBPREFIX."module_shop_categories LIMIT 0,1";
-        $objResult = $objDatabase->Execute($query);
+        $query = "SELECT catid FROM ".DBPREFIX."module_shop_categories";
+        $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult->RecordCount() > 0) {
             return $objResult->fields["catid"];
         } else {

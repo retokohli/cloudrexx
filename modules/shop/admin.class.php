@@ -1440,6 +1440,7 @@ class shopmanager extends ShopLibrary {
         'TXT_ADD'                          => $_ARRAYLANG['TXT_ADD'],
         'TXT_STORE'                        => $_ARRAYLANG['TXT_STORE'],
         'TXT_ACTIVE'                       => $_ARRAYLANG['TXT_ACTIVE'],
+        'TXT_ACTION'                       => $_ARRAYLANG['TXT_ACTION'],
         'TXT_NAME'                         => $_ARRAYLANG['TXT_NAME'],
         'TXT_FEE'                          => $_ARRAYLANG['TXT_FEE'],
         'TXT_FREE_OF_CHARGE'               => $_ARRAYLANG['TXT_FREE_OF_CHARGE'],
@@ -1461,10 +1462,8 @@ class shopmanager extends ShopLibrary {
         'TXT_PAYMENT_HANDLER'              => $_ARRAYLANG['TXT_PAYMENT_HANDLER'],
         'TXT_SEPARATED_WITH_COMMAS'        => $_ARRAYLANG['TXT_SEPARATED_WITH_COMMAS'],
         'TXT_CONFIRMATION_EMAILS'          => $_ARRAYLANG['TXT_CONFIRMATION_EMAILS'],
-
         'TXT_CONTACT_COMPANY'              => $_ARRAYLANG['TXT_CONTACT_COMPANY'],
         'TXT_CONTACT_ADDRESS'              => $_ARRAYLANG['TXT_CONTACT_ADDRESS'],
-
         'TXT_PHONE_NUMBER'                 => $_ARRAYLANG['TXT_PHONE_NUMBER'],
         'TXT_FAX_NUMBER'                   => $_ARRAYLANG['TXT_FAX_NUMBER'],
         'TXT_SHOP_EMAIL'                   => $_ARRAYLANG['TXT_SHOP_EMAIL'],
