@@ -28,8 +28,16 @@ class marketLibrary
 	function getCategories() {
 
 		global $objDatabase;
-
-		$objResultCategories = $objDatabase->Execute('SELECT * FROM '.DBPREFIX.'module_market_categories ORDER BY displayorder');
+		
+		$this->settings = $this->getSettings();
+		
+		if  ($this->settings['indexview']['value'] == 1) {
+			$order = "name";
+		} else {
+			$order = "displayorder";
+		}
+		
+		$objResultCategories = $objDatabase->Execute('SELECT * FROM '.DBPREFIX.'module_market_categories ORDER BY '.$order.'');
 	   	if ($objResultCategories !== false){
 		   	while (!$objResultCategories->EOF) {
 		   		$this->categories[$objResultCategories->fields['id']]['id'] 				= $objResultCategories->fields['id'];
