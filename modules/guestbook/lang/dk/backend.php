@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 27 Mar 2007 14:20:47 +0200
+* generated date Wed, 28 Mar 2007 09:04:55 +0200
 **/
 
 $_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY'] = "Tilføj postering til gæstebogen";

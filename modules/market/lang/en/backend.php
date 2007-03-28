@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 27 Mar 2007 14:20:47 +0200
+* generated date Wed, 28 Mar 2007 09:04:55 +0200
 **/
 
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Advertisements";
@@ -76,5 +76,5 @@ $_ARRAYLANG['TXT_MARKET_SET_ADD_ENTRY'] = "Besuchern erlauben Inserate hinzuzufü
 $_ARRAYLANG['TXT_MARKET_SET_EDIT_ENTRY'] = "Besuchern erlauben Inserate zu editieren";
 $_ARRAYLANG['TXT_MARKET_SET_INDEXVIEW'] = "Index-Ansicht";
 $_ARRAYLANG['TXT_MARKET_SET_MAXDAYS_ON'] = "Beschränkte Anzeigedauer";
-$_ARRAYLANG['TXT_MARKET_SET_EXP_SEARCH_PRICE'] = "Auswahlfelder für erweiterte Suche nach "Preis bis"";
+$_ARRAYLANG['TXT_MARKET_SET_EXP_SEARCH_PRICE'] = "Auswahlfelder für erweiterte Suche nach 'Preis bis'";
 ?>
