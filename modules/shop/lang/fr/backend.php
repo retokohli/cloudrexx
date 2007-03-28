@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 28 Mar 2007 09:04:55 +0200
+* generated date Wed, 28 Mar 2007 10:55:16 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Bestellungen";
@@ -57,6 +57,7 @@ $_ARRAYLANG['TXT_SELECT_COLUMNS_TO_EXPORT'] = "Wählen Sie die Spalten aus, die S
 $_ARRAYLANG['TXT_ORDER_NR'] = "Auftrags-Nr.";
 $_ARRAYLANG['TXT_COUNTRY'] = "Land";
 $_ARRAYLANG['TXT_ZONE'] = "Zone";
+$_ARRAYLANG['TXT_FEE'] = "Gebühr";
 $_ARRAYLANG['TXT_FREE_OF_CHARGE'] = "Gebührenfrei ab";
 $_ARRAYLANG['TXT_EDIT'] = "Éditer";
 $_ARRAYLANG['TXT_ADD'] = "Ajouter";
