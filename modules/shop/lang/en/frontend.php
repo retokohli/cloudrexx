@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 28 Mar 2007 09:04:55 +0200
+* generated date Wed, 28 Mar 2007 10:55:16 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Stock";
@@ -25,7 +25,7 @@ $_ARRAYLANG['TXT_COUNTRY'] = "Country";
 $_ARRAYLANG['TXT_ZONE'] = "Zone";
 $_ARRAYLANG['TXT_TAX_INCLUDED'] = "(VAT included)";
 $_ARRAYLANG['TXT_TAX_EXCLUDED'] = "(VAT excluded)";
-$_ARRAYLANG['TXT_FEE'] = "Versandgebühr";
+$_ARRAYLANG['TXT_FEE'] = "Gebühr";
 $_ARRAYLANG['TXT_PAYMENT_TYPE'] = "Type of payment";
 $_ARRAYLANG['TXT_PAYMENT_TYPES'] = "Types of payment";
 $_ARRAYLANG['TXT_SHIPPING_METHOD'] = "Shipping method";

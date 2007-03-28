@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 28 Mar 2007 09:04:55 +0200
+* generated date Wed, 28 Mar 2007 10:55:16 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Beholdning";
@@ -25,7 +25,7 @@ $_ARRAYLANG['TXT_COUNTRY'] = "Land";
 $_ARRAYLANG['TXT_ZONE'] = "Område";
 $_ARRAYLANG['TXT_TAX_INCLUDED'] = "(med moms)";
 $_ARRAYLANG['TXT_TAX_EXCLUDED'] = "(uden moms)";
-$_ARRAYLANG['TXT_FEE'] = "Versandgebühr";
+$_ARRAYLANG['TXT_FEE'] = "Gebühr";
 $_ARRAYLANG['TXT_PAYMENT_TYPE'] = "Betalingsmåde";
 $_ARRAYLANG['TXT_PAYMENT_TYPES'] = "Betalingsmåder";
 $_ARRAYLANG['TXT_SHIPPING_METHOD'] = "Leveringsmåde";
