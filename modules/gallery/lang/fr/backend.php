@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 27 Mar 2007 14:20:47 +0200
+* generated date Wed, 28 Mar 2007 09:04:55 +0200
 **/
 
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'] = "Name";
@@ -177,4 +177,6 @@ $_ARRAYLANG['TXT_SETTINGS_HEADER_FLAT'] = "flach";
 $_ARRAYLANG['TXT_SETTINGS_IMAGENAME_EXT_SHOW'] = "Erweiterung mit Namen anzeigen";
 $_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'] = "Edit Gallery";
 $_ARRAYLANG['TXT_GALLERY_MENU_EDIT_CATEGORY'] = "Edit Gallery";
+$_ARRAYLANG['TXT_GALLERY_EXPORT_TARGET'] = "Target shop category for export:";
+$_ARRAYLANG['TXT_GALLERY_EXPORT_CONFIRM'] = "The target shop category and all products within will be overwritten! Are you sure?";
 ?>
