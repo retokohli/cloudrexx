@@ -756,18 +756,17 @@ class Shop extends ShopLibrary {
 
                 if ($parentId == 0) {
                     $querySubCat = "SELECT catid FROM ".DBPREFIX."module_shop_categories ".
-                                   "WHERE parentid=".$catId_Pic." LIMIT 1";
-                    $objResultSubCat = $objDatabase->Execute($querySubCat);
-                    while (!$objResultSubCat->EOF) {
+                                   "WHERE parentid=".$catId_Pic;
+                    $objResultSubCat = $objDatabase->SelectLimit($querySubCat, 1);
+                    if (!$objResultSubCat->EOF) {
                         $catId_Pic = $objResultSubCat->fields['catid'];
-                        $objResultSubCat->MoveNext();
                     }
                 }
 
                 $queryProduct = "SELECT picture ".
                     "FROM ".DBPREFIX."module_shop_products ".
-                    "WHERE catid=".$catId_Pic." LIMIT 1";
-                $objResultProduct = $objDatabase->Execute($queryProduct);
+                    "WHERE catid=".$catId_Pic." ORDER BY sort_order";
+                $objResultProduct = $objDatabase->SelectLimit($queryProduct, 1);
                 if ($objResultProduct !== false) {
                     $arrImages = $this->_getShopImagesFromBase64String($objResultProduct->fields['picture']);
                 }
@@ -901,8 +900,8 @@ class Shop extends ShopLibrary {
         if ($_GET['cmd'] == 'lastFive') {
             $query = "SELECT * FROM ".DBPREFIX."module_shop_products ".
                      "WHERE status=1 ".
-                     "ORDER BY product_id DESC LIMIT 5";
-            $objResult = $objDatabase->Execute($query);
+                     "ORDER BY product_id DESC";
+            $objResult = $objDatabase->SelectLimit($query, 5);
             $count = $objResult->RecordCount();
         } else {
             if ($productId!=0) {
@@ -3124,7 +3123,6 @@ sendReq('', 1);
                                                cvc_code='".(isset($_SESSION['shop']['cvcCode'])  ? trim($_SESSION['shop']['cvcCode']," \t")  : '')."'
                                          WHERE customerid=".$customerid;
                     $objResult = $objDatabase->Execute($query);
-//echo("update customer: query: $query<br />result: ".($objResult ? 'okay' : 'failed')."<br />");
                 } else {
                     // Add to customer table
                     $query =
@@ -3154,7 +3152,6 @@ sendReq('', 1);
                         "1, NOW())";
                     $objResult = $objDatabase->Execute($query);
                     $customerid = $objDatabase->Insert_ID();
-//echo("update customer: query: $query<br />result: ".($objResult ? 'okay' : 'failed').", ID: $customerid<br />");
                 }
                 $_SESSION['shop']['customerid'] = $customerid;
 
@@ -3184,7 +3181,6 @@ sendReq('', 1);
                        customer_browser='$customer_browser',
                        customer_note='{$_SESSION['shop']['customer_note']}'";
                 $objResult = $objDatabase->Execute($query);
-//echo("insert order: query: $query<br />result: ".($objResult ? 'okay' : 'failed')."<br />");
                 if ($objResult) {
                     $orderid = $objDatabase->Insert_ID();
                     $_SESSION['shop']['orderid'] = $orderid;
