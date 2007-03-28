@@ -65,16 +65,67 @@ class eGov extends eGovLibrary
 		$ip_adress 		= $_SERVER['REMOTE_ADDR'];
 		
 		// ------------------------------------------------------
+		// Payment
+		// ------------------------------------------------------
+		$Payment = $this->GetProduktValue("product_paymant", $product_id);
+		$Payment = intval($_REQUEST["payment"]);
+
+		// ------------------------------------------------------
 		// PayPal
 		// ------------------------------------------------------
-		$p 				= new paypal_class();
+		/*$p 				= new paypal_class();
 		$this_script_1	= 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'?section=egov&cmd=detail&id='.$product_id;
 		$this_script_2	= 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'?section=egov&payment=success&id='.$product_id;
 		//$p->paypal_url 	= 'https://www.sandbox.paypal.com/cgi-bin/webscr';
 		$p->paypal_url 	= 'https://www.paypal.com/cgi-bin/webscr';
+		*/
 		
-		if($_REQUEST['paypal']=="1"){
+		if($Payment > 0){
 			
+			// -------------------------------------------------------------
+			// Paypal
+			// -------------------------------------------------------------
+			if($Payment==1){
+
+				if($this->GetProduktValue("product_per_day", $product_id)=="yes"){
+					$Addname 	= ' '.$_REQUEST["contactFormField_1000"];
+				}
+				
+				$FormFields		= 'id='.$product_id.'&send=exe&';
+				$arrFields = $this->getFormFields($product_id);
+				$FormValue = '';
+				foreach ($arrFields as $fieldId => $arrField) {
+					$FormFields .= 'contactFormField_'.$fieldId.'='.strip_tags(contrexx_addslashes($_REQUEST["contactFormField_".$fieldId])).'&';
+				}
+				if($this->GetProduktValue("product_per_day", $product_id)=="yes"){
+					$FormFields .= 'contactFormField_1000='.$_REQUEST["contactFormField_1000"]."&";
+					$FormFields .= 'contactFormField_Quantity='.$_REQUEST["contactFormField_Quantity"]."";
+				}
+				
+				require_once ASCMS_LIBRARY_PATH."/paypal/paypal.class.php";
+				$PaymentObj 				= new PayPal();
+				$PaymentObj->orderid 		= '';
+				$PaymentObj->business 		= $this->GetSettings("set_paypal_email");
+				$PaymentObj->item_name		= $this->GetProduktValue('product_name', $product_id).$Addname;
+				$PaymentObj->currency_code	= $this->GetSettings("set_paypal_currency");
+				$PaymentObj->amount			= $this->GetProduktValue('product_price', $product_id);
+				$PaymentObj->quantity		= ($this->GetProduktValue("product_per_day", $product_id)=="yes") ? $_REQUEST["contactFormField_Quantity"] : 1;
+				$PaymentObj->host			= ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET;
+				$PaymentObj->return			= $PaymentObj->host.'/index.php?section=egov&payment=success&id='.$product_id.'&'.$FormFields;
+				$PaymentObj->cancel_return	= $PaymentObj->host.'/index.php?section=egov&cmd=detail&id='.$product_id.'&'.$FormFields.'&payment=cancel';
+				$PaymentObj->notify_url		= $PaymentObj->host.'/index.php?section=egov&cmd=detail&id='.$product_id.'&'.$FormFields.'&payment=ipncheck';
+				echo($PaymentObj->GetPaypal());
+				
+			}
+			
+			// -------------------------------------------------------------
+			// Worldpay
+			// -------------------------------------------------------------
+			if($Payment==2){
+				
+			}
+			
+			/*
 			$product_amount = $this->GetProduktValue('product_price', $product_id);
 			
 			$quantity 		= ($this->GetProduktValue("product_per_day", $product_id)=="yes") ? $_REQUEST["contactFormField_Quantity"] : 1;
@@ -109,6 +160,7 @@ class eGov extends eGovLibrary
 			$p->add_field('currency_code', 	$this->GetProduktValue('product_paypal_currency', $product_id));
 			
 			$p->submit_paypal_post();
+			*/
 			
 		}else{
 		
@@ -127,6 +179,8 @@ class eGov extends eGovLibrary
 					}
 				}
 			}
+			
+			
 			if($Order){
 		
 				// PayPal IPN Confirmation per email
@@ -381,8 +435,7 @@ class eGov extends eGovLibrary
 	function _ProductDetail()
 	{
 		global $objDatabase, $_ARRAYLANG, $_CONFIG;
-
-
+		
 		if(intval($_REQUEST["id"])){
 			$query = "SELECT product_id, product_name, product_desc, product_price, product_per_day, product_quantity, product_target_email, product_target_url, product_message
 			          FROM ".DBPREFIX."module_egov_products
@@ -421,10 +474,7 @@ class eGov extends eGovLibrary
 					$this->objTemplate->hideBlock('egov_price');
 				}
 			}
-
 		}
-
-
 	}
 
 
