@@ -150,6 +150,22 @@ class CSVimport {
         return $FieldName[$FieldDesc];
     }
 
+
+    /**
+     * Returns the ID of the ShopCategory with the given name and
+     * parent ID.
+     *
+     * If the ShopCategory cannot be found, a new sub-ShopCategory
+     * with the given name is inserted and its ID returned.
+     * @static
+     * @param   string      $CatName    The ShopCategory name
+     * @param   integer     $CatParent  The parent ShopCategory ID
+     * @return  integer                 The ID of the ShopCategory,
+     *                                  or 0 on failure.
+     * @author  Unknown <thun@astalavista.ch> (Original author)
+     * @author  Reto Kohli <reto.kohli@astalavista.ch> (Made static)
+     */
+    //static
     function GetCatID($CatName, $CatParent)
     {
         global $objDatabase;
@@ -161,13 +177,26 @@ class CSVimport {
             if ($objResult->RecordCount() > 0) {
                 return $objResult->fields['catid'];
             } else {
-                return $this->InsertNewCat($CatName, $CatParent);
+                $catId = CSVimport::InsertNewCat($CatName, $CatParent);
+                return $catId;
             }
         } else {
             return 0;
         }
     }
 
+
+    /**
+     * Returns the ID of the first ShopCategory found in the database.
+     *
+     * If none is available, a default ShopCateogry named 'Import'
+     * is inserted and its ID returned instead.
+     * @static
+     * @return  integer     The ShopCategory, or 0 on failure
+     * @author  Unknown <thun@astalavista.ch> (Original author)
+     * @author  Reto Kohli <reto.kohli@astalavista.ch> (Added creation of default ShopCategory, made static)
+     */
+    //static
     function GetFirstCat()
     {
         global $objDatabase;
@@ -176,10 +205,23 @@ class CSVimport {
         if ($objResult->RecordCount() > 0) {
             return $objResult->fields["catid"];
         } else {
-            return 0;
+            return CSVimport::InsertNewCat('Import', 0);
         }
     }
 
+
+    /**
+     * Insert a new ShopCategory into the database.
+     *
+     * @static
+     * @param   string      $CatName    The new ShopCategory name
+     * @param   integer     $CatParent  The parent ShopCategory ID
+     * @return  integer                 The ID of the new ShopCategory,
+     *                                  or 0 on failure.
+     * @author  Unknown <thun@astalavista.ch> (Original author)
+     * @author  Reto Kohli <reto.kohli@astalavista.ch> (Made static)
+     */
+    //static
     function InsertNewCat($CatName, $CatParent)
     {
         global $objDatabase;
@@ -190,6 +232,7 @@ class CSVimport {
         if ($objResult) {
             return $objDatabase->Insert_Id();
         }
+        return 0;
     }
 }
 

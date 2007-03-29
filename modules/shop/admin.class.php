@@ -525,20 +525,17 @@ class shopmanager extends ShopLibrary {
                         }
                         $Counter++;
                     }
+                    $CatID = 0;
                     for ($cat=0; $cat < count($KategorieReihe); $cat++) {
                         $CatName = $FileContent[$x][$KategorieReihe[$cat]];
-                        if ($cat == 0) {
-                            if ($CatName != '') {
-                                $CatID = $this->objCSVimport->GetCatID($CatName, 0);
-                            } else {
-                                $CatID = $this->objCSVimport->GetFirstCat();
-                            }
+                        if ($CatName != '') {
+                            $CatID = $this->objCSVimport->GetCatID($CatName, $CatID);
+                        } else {
+                            $CatID = $this->objCSVimport->GetFirstCat();
                         }
-                        if ($cat > 0) {
-                            if ($CatName != '') {
-                                $CatID = $this->objCSVimport->GetCatID($CatName, $CatID);
-                            }
-                        }
+                    }
+                    if ($CatID == 0) {
+                        $CatID = $CatID = $this->objCSVimport->GetFirstCat();
                     }
                     $SpaltenNamen .= ', catid)';
                     $SpaltenValues .= ', '.$CatID.')';
