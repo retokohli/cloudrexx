@@ -52,7 +52,7 @@ function getDatabaseObject(&$errorMsg, $newInstance = false)
 			return false;
 		}
 
-		if ($objDb) {
+		if ($objDb->Execute('SET CHARSET '.CONTREXX_DB_CHARSET) && $objDb) {
 			if ($newInstance) {
 				return $objDb;
 			} else {
