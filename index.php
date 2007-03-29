@@ -88,6 +88,7 @@ require_once(dirname(__FILE__).'/config/version.php');
 //-------------------------------------------------------
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
     header("Location: installer/index.php");
+    die(1);
 }
 
 //-------------------------------------------------------
@@ -95,6 +96,7 @@ if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
 //-------------------------------------------------------
 if ($_CONFIG['systemStatus'] != 'on') {
     header('location: offline.html');
+    die(1);
 }
 
 /**
