@@ -53,6 +53,7 @@ function getDatabaseObject(&$errorMsg, $newInstance = false)
 		}
 
 		if ($objDb) {
+			$objDb->Execute('SET CHARSET latin1');
 			if ($newInstance) {
 				return $objDb;
 			} else {
