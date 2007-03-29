@@ -301,11 +301,6 @@ class rssDirectory extends directoryLibrary
 			'DIRECTORY_XML_LINK'				=> $xmlLink,
 			'DIRECTORY_INSERT_FEEDS'			=> $insertFeeds,
 		));
-
-		//get feeds
-		/*if($parentId != 0 && $showentries == '1'){
-			$this->getFeeds($parentId);
-		}*/
 	}
 
 
@@ -477,6 +472,13 @@ class rssDirectory extends directoryLibrary
 			$this->_objTpl->hideBlock('showCategories');
 		}
 
+		if ((!isset($parentId) || $parentId == 0) && $this->settings['levels']['value'] != 1) {
+			if ($this->_objTpl->blockExists('showLatest')){
+				$this->_objTpl->touchBlock('showLatest');
+				$this->getLatest();
+			}
+		}
+		
 		//get feeds
 		if($parentId != 0 && $arrCategories['showentries'] == '1'){
 			$this->getFeeds($parentId, $_GET['lid']);
@@ -514,8 +516,6 @@ class rssDirectory extends directoryLibrary
 	    if(isset($catId)){
 	    	$levelLink = "&amp;lid=".$lid;
 	    }
-	    
-	    //$objDatabase->debug=1;
 	    
 	    if ($this->settings['sortOrder']['value'] == 1) {
 	   	 	$order = "files.title";
@@ -1454,8 +1454,6 @@ class rssDirectory extends directoryLibrary
 			}
 		}
 
-		//echo $author." - ".$_SESSION['auth']['userid'];
-
 		if ($author != $_SESSION['auth']['userid']) {
 			header("Location: index.php?section=directory&cmd=myfeeds");
 		}
@@ -1674,7 +1672,6 @@ class rssDirectory extends directoryLibrary
 
 		//internal search
 		/*if($searchTerm != "" && $_GET['check'] == 'norm'){*/
-
 			//get feeds by searchterm
 			$query="SELECT  files.id AS id,
 		                    files.title AS title,
@@ -1737,11 +1734,6 @@ class rssDirectory extends directoryLibrary
 					$objResult->MoveNext();
 				}
 			}
-
-			/*print_r("<pre>");
-			print_r($this->settings['google']);
-			print_r("<pre>");*/
-
 
 			//Google Search
 			if($this->settings['google']['googleSeach'] == "1"){
@@ -1924,11 +1916,18 @@ class rssDirectory extends directoryLibrary
 		$objResult = $objDatabase->SelectLimit($query, $this->settings['latest_content']['value']);
 		if ($objResult !== false) {
 			while (!$objResult->EOF) {
+				
+				if (!empty($objResult->fields['logo'])) {
+					$logo = '<img src="'.$this->mediaWebPath.'thumbs/'.$objResult->fields['logo'].'" border="0" alt="'.stripslashes($objResult->fields['title']).'" />';
+				} else {
+					$logo = '';
+				}
+				
 				// set variables
 				$objTemplate->setVariable('DIRECTORY_DATE', date("d.m.Y", $objResult->fields['date']));
 				$objTemplate->setVariable('DIRECTORY_TITLE', stripslashes($objResult->fields['title']));
 				$objTemplate->setVariable('DIRECTORY_DESC', substr(stripslashes($objResult->fields['description']), 0, 200)." [...]");
-				$objTemplate->setVariable('DIRECTORY_LOGO', '<img src="'.$this->mediaWebPath.'thumbs/'.$objResult->fields['logo'].'" border="0" alt="'.stripslashes($objResult->fields['title']).'" />');
+				$objTemplate->setVariable('DIRECTORY_LOGO', $logo);
 				$objTemplate->setVariable('DIRECTORY_ID', $objResult->fields['id']);
 
 				$blockId = $arrBlocks[$i];
@@ -2060,7 +2059,6 @@ class rssDirectory extends directoryLibrary
 
 
     	$voteImg		= "";
-		//$vote 			= '<a href="javascript:{}" onclick="javascript:toggle('.$id.')">'.$_ARRAYLANG['TXT_DIRECTORY_YOUR_VOTE'].'</a>';
 
 		for ($x = 1; $x <= 10; $x++){
 			$voteImg .= '<a href="?section=directory&amp;cmd=vote&amp;id='.$id.'&amp;cid='.$cid.'&amp;lid='.$lid.'&amp;vote='.$x.'"><img src="'.$this->imageWebPath.'directory/'.$x.'.gif" border="0" alt="" /></a>&nbsp;';

@@ -592,15 +592,7 @@ class directoryLibrary
         $arrSettings 	= $this->getSettings();
         $arrInfo    	= getimagesize($oldFile); //ermittelt die Größe des Bildes
         $setSize		= $arrSettings['thumbSize']['value'];
-        //$intWidth    	= $setSize; //die Breite des Bildes
-        //$intFactor		= $arrInfo[0]/$intWidth;
-        //$intHeight    	= $arrInfo[1]/$intFactor; //die Höhe des Bildes
         $strType    	= $arrInfo[2]; //type des Bildes
-        
-        /*if ($arrInfo[0] < $intWidth) {
-        	$intWidth 	= $arrInfo[0];
-        	$intHeight 	= $arrInfo[1];
-        }*/
         
         if ($arrInfo[0] >= $setSize || $arrInfo[1] >= $setSize) {
 			if($arrInfo[0] <= $arrInfo[1]){
@@ -650,8 +642,6 @@ class directoryLibrary
 
                     ImageDestroy($handleImage1);
                     ImageDestroy($handleImage2);
-                }else{
-                    //$this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_GIF_SUPPORT'];
                 }
             break;
             case 2: //JPG
@@ -663,8 +653,6 @@ class directoryLibrary
 
                     ImageDestroy($handleImage1);
                     ImageDestroy($handleImage2);
-                }else{
-                       //$this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_JPG_SUPPORT'];
                 }
             break;
             case 3: //PNG
@@ -678,8 +666,6 @@ class directoryLibrary
 
                     ImageDestroy($handleImage1);
                     ImageDestroy($handleImage2);
-                }else{
-                        //$this->strErrMessage = "";
                 }
             break;
         }
@@ -1071,13 +1057,6 @@ class directoryLibrary
 						"Reply-To: ".$_CONFIG['coreAdminEmail']."\r\n" .
 						"X-Mailer: PHP/" . phpversion());
 			}
-
-			/*$sendmail = @mail($to,
-						$subject,
-						$message,
-						"From: ".$_CONFIG['coreAdminEmail']."\r\n" .
-						"Reply-To: ".$sendTo."\r\n" .
-						"X-Mailer: PHP/" . phpversion());*/
 		}
 	}
 
@@ -1206,15 +1185,14 @@ class directoryLibrary
 		//get inputfields
 		if($action == "add"){
 			//get plattforms and languages and user
-			$arrInputfieldsValue['language'] 	= $this->getLanguages($_POST['inputValue']['language']);
-			$arrInputfieldsValue['platform'] 	= $this->getPlatforms($_POST['inputValue']['platform']);
-			$arrInputfieldsValue['canton'] 		= $this->getCantons($_POST['inputValue']['canton']);
+			$arrInputfieldsValue['language'] 			= $this->getLanguages($_POST['inputValue']['language']);
+			$arrInputfieldsValue['platform'] 			= $this->getPlatforms($_POST['inputValue']['platform']);
+			$arrInputfieldsValue['canton'] 				= $this->getCantons($_POST['inputValue']['canton']);
 			$arrInputfieldsValue['spez_field_21'] 		= $this->getSpezDropdown($_POST['inputValue']['spez_field_21'], 'spez_field_21');
 			$arrInputfieldsValue['spez_field_22'] 		= $this->getSpezDropdown($_POST['inputValue']['spez_field_22'], 'spez_field_22');
 			$arrInputfieldsValue['spez_field_23'] 		= $this->getSpezVotes($_POST['inputValue']['spez_field_23'], 'spez_field_23');
 			$arrInputfieldsValue['spez_field_24'] 		= $this->getSpezVotes($_POST['inputValue']['spez_field_24'], 'spez_field_24');
-			$arrInputfieldsValue['addedby']		= $addedby;
-			//$arrInputfieldsValue['addedby']		= $this->getAuthor($addedby);
+			$arrInputfieldsValue['addedby']				= $addedby;
 		}elseif ($action == "edit" || $action == "confirm"){
 			//get file data
 			$objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_dir WHERE id = ".intval($id));
@@ -1533,17 +1511,15 @@ class directoryLibrary
 	{
 		global $objDatabase;
 
-		/*if (empty($cid)) {
+		if (empty($cid)) {
 			$this->countLevels($lid, $lid);
 			$count = $this->countFeeds($this->numLevels[$lid], 'level', $lid);
 		} else {
 			$this->countCategories($cid, $cid);
 			$count = $this->countFeeds($this->numCategories[$cid], 'cat', $lid);
-		}*/
+		}
 
-		$count = 0;
-
-		return $count;
+		return intval($count);
 	}
 
 
@@ -1558,8 +1534,7 @@ class directoryLibrary
 	function countCategories($ckey, $cid)
 	{
 		global $objDatabase;
-
-		//array_push($this->count, $cid);
+	
 		$this->numCategories[$ckey][] = $cid;
 		$objResultCat = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_directory_categories WHERE status = 1 AND parentid =".intval($cid));
 		if($objResultCat !== false){
@@ -1582,7 +1557,6 @@ class directoryLibrary
 	{
 		global $objDatabase;
 
-		//array_push($this->numLevels[$lname][], $lid);
 		$this->numLevels[$lkey][] = $lid;
 		$objResultLevel = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_directory_levels WHERE status = 1 AND parentid =".intval($lid));
 		if($objResultLevel !== false){
@@ -1719,7 +1693,7 @@ class directoryLibrary
 			$dirId 		= intval($_POST['edit_id']);
 
 			$query 		= "UPDATE ".DBPREFIX."module_directory_dir SET ";
-
+			
 			foreach($_POST["inputValue"] as $inputName => $inputValue){
 				//check links
 				if($inputName == "relatedlinks" || $inputName == "homepage"){
@@ -1736,6 +1710,8 @@ class directoryLibrary
 						$inputValue = $this->getAuthorID($inputValue);
 					}
 				}
+				
+				
 
 				//check pics
 				if ($inputName == "logo" ||
@@ -1752,8 +1728,11 @@ class directoryLibrary
 					$inputName == "spez_field_19" || 
 					$inputName == "spez_field_20"){
 						
-					$obj_file = new File();
-					if(!empty($_FILES[$inputName]['name'])){
+					
+					
+					if(!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1){
+						$obj_file = new File();
+						
 						//thumb
 						if (file_exists($this->mediaPath."thumbs/".$_POST["inputValue"][$inputName])){
 							$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "thumbs/".$_POST["inputValue"][$inputName]);
@@ -1762,30 +1741,18 @@ class directoryLibrary
 						//picture
 						if (file_exists($this->mediaPath."images/".$_POST["inputValue"][$inputName])){
 							$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "images/".$_POST["inputValue"][$inputName]);
-						}
+						} 
 						
-						$inputValue = $this->uploadMedia($inputName, "images/");
-						
-						if($inputValue == "error"){
+						if($_POST["deleteMedia"][$inputName] != 1){
+							$inputValue = $this->uploadMedia($inputName, "images/");
+							
+							if($inputValue == "error"){
+								$inputValue 	= "";
+							}
+						} else {
 							$inputValue 	= "";
 						}
 					}
-					/*
-					if($_POST["deleteMedia"]["spez_field_11"] == 1){
-						$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "images/".$_POST["inputValue"]["spez_field_11"]);
-					}
-					if($_POST["deleteMedia"]["spez_field_12"] == 1){
-						$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "images/".$_POST["inputValue"]["spez_field_12"]);
-					}
-					if($_POST["deleteMedia"]["spez_field_13"] == 1){
-						$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "images/".$_POST["inputValue"]["spez_field_13"]);
-					}
-					if($_POST["deleteMedia"]["spez_field_14"] == 1){
-						$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "images/".$_POST["inputValue"]["spez_field_14"]);
-					}
-					if($_POST["deleteMedia"]["spez_field_15"] == 1){
-						$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "images/".$_POST["inputValue"]["spez_field_15"]);
-					}*/
 				}
 				
 				//check uploads
@@ -1795,19 +1762,26 @@ class directoryLibrary
 					$inputName == "spez_field_28" || 
 					$inputName == "spez_field_29"){
 						
-					$obj_file = new File();
-					if(!empty($_FILES[$inputName]['name'])){
+					
+					if(!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1){
+						
+						$obj_file = new File();
+						
 						//upload
 						if (file_exists($this->mediaPath."uploads/".$_POST["inputValue"][$inputName])){
 							$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "uploads/".$_POST["inputValue"][$inputName]);
 						}
 						
-						$inputValue = $this->uploadMedia($inputName, "uploads/");
-						
-						if($inputValue == "error"){
+						if($_POST["deleteMedia"][$inputName] != 1){
+							$inputValue = $this->uploadMedia($inputName, "uploads/");
+							
+							if($inputValue == "error"){
+								$inputValue 	= "";
+							}
+						} else {
 							$inputValue 	= "";
 						}
-					}
+					} 
 				}
 
 				$query .= contrexx_addslashes($inputName)." ='".contrexx_strip_tags(contrexx_addslashes($inputValue))."', ";
