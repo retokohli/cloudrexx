@@ -18,22 +18,22 @@ News
 		<!-- BEGIN news_category_menu -->
 	  	<option value="[[NEWS_CATEGORY_ID]]">[[NEWS_CATEGORY_TITLE]]</option>
 	  <!-- END news_category_menu -->
-	  
+
 	Neu kann auch der Teaser Text angegeben werden:
 		[[TXT_NEWS_TEASER_TEXT]]
 		<textarea name="newsTeaserText" style="width: 100%;" cols="30" rows="5">[[NEWS_TEASER_TEXT]]</textarea>
-		
+
 	Ausserdem besteht auch die Möglichkeit eine Weiterleitung zu definieren:
 		[[TXT_NEWS_REDIRECT]]
     <input type="text" style="width: 250px;" value="[[NEWS_REDIRECT]]" name="newsRedirect" />
-    
+
   Neue Blöcke: news_submit_form und news_submitted
 
 ****************************************
 * New Features *************************
 ****************************************
 Adressverzeichnis (Memberdir)
-- Einträge im Verzeichnis können nun im Frontend wie auch im Backend als vCard ( http://de.wikipedia.org/wiki/VCard ) exportiert werden. 
+- Einträge im Verzeichnis können nun im Frontend wie auch im Backend als vCard ( http://de.wikipedia.org/wiki/VCard ) exportiert werden.
 
 Online Desk
 - Produkte können neu kopiert werden.
@@ -76,6 +76,10 @@ Shop
     Berechnung der Versandkosten.
 - Die Versandkosten lassen sich deutlich flexibler gestalten, mit verschiedenen Tarifen in Abhängigkeit vom
     Gewicht und dem Bestellwert.
+- Es steht nun eine einfache Schnittstelle für Import und Export von Shop Daten zur Verfügung.
+  Beide verarbeiten die Daten in einem MS Excel kompatiblen CSV Format, bei dem die Felder in doppelte
+  Anführungszeichen gesetzt und durch Semikola getrennt werden.
+- Der Shop unterstützt nun die Zahlungsmethode Lastschrift.
 
 Alias Verwaltung
 - Mit der Alias Verwaltung können beliebige URL-Aliase für Webseiten definiert werden.
