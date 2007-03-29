@@ -401,8 +401,6 @@ class rssDirectory extends directoryLibrary
     	    $this->_objTpl->parse('importSelectAction');
 		}else{
 			//no levels found
-
-
 			$this->_objTpl->setVariable(array(
     	        'NO_LEVEL_FOUND'  	=> $_ARRAYLANG['TXT_NO_LEVELS_FOUND'],
     	    ));
@@ -878,7 +876,6 @@ class rssDirectory extends directoryLibrary
     	    $this->_objTpl->parse('importSelectAction');
 		}else{
 			//no categories found
-
 			$this->_objTpl->setVariable(array(
     	        'NO_CAT_FOUND'  	=> $_ARRAYLANG['TXT_DIR_NO_CATEGORIE_FOUND'],
     	    ));
@@ -2043,8 +2040,6 @@ class rssDirectory extends directoryLibrary
     	    $this->_objTpl->parse('importSelectAction');
 		}
 		else{
-			//$this->_objTpl->hideBlock('showRow'); 
-			
 			// initialize variables
 			$this->_objTpl->setVariable(array(
 				'NO_FILES_FOUND' 				=> $_ARRAYLANG['TXT_DIR_NO_FILES_FOUND'], 
