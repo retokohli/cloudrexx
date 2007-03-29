@@ -123,6 +123,7 @@ Kalender
 
 News Syndication
 - Der NewsComponent (NewsML) wird mit PHP5 nun auch korrekt eingelesen.
+- Text Teile von einer NIFT Nachricht werden nun korrekt zusammengefügt (Leerzeichen zwischen den Text Teilen werden korrekt gehandhabt).
 
 Online Desk
 - Beim Bearbeiten eines Produktes wird neu bei den Eigenschaften "Beschreibung" und "Meldung nach der Bestellung" auch HTML-Code akzeptiert.
