@@ -186,8 +186,6 @@ class Shop extends ShopLibrary {
         $this->pageContent = $pageContent;
         $this->shopImageWebPath = ASCMS_SHOP_IMAGES_WEB_PATH . '/';
         $this->shopImagePath = ASCMS_SHOP_IMAGES_PATH. '/';
-        $this->noPictureName = "keinbild.jpg";
-
         $this->_defaultImage = $this->shopImageWebPath.$this->noPictureName;
 
         // sigma template
