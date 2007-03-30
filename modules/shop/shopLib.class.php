@@ -401,7 +401,7 @@ class ShopLibrary {
         $header = "From: $shopMailFromText <$shopMailFrom>\n";
         // replace cr/lf by lf only
         $shopMailBody = preg_replace('/\015\012/', "\012", $shopMailBody);
-        $shopMailBody = preg_replace('/\015\012/', "\012", $header);
+        $header = preg_replace('/\015\012/', "\012", $header);
         return @mail($shopMailTo,$shopMailSubject,$shopMailBody,$header);
     }
 
