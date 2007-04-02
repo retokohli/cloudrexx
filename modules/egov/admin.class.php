@@ -20,6 +20,9 @@ $_ARRAYLANG['TXT_EGOV_WORLDPAY_LANGUAGE'] 			= 'Sprache';
 $_ARRAYLANG['TXT_EGOV_PAYMANT_NONE'] 			= 'Keine';
 $_ARRAYLANG['TXT_EGOV_SELECT_PAYMANT'] 			= 'Zahlungsart auswählen';
 $_ARRAYLANG['TXT_EGOV_PAYMENT'] 			= 'Zahlungsart';
+$_ARRAYLANG['TXT_EGOV_SEQUENCE'] 			= 'Reihenfolge';
+$_ARRAYLANG['TXT_EGOV_UP'] 			= 'Rauf';
+$_ARRAYLANG['TXT_EGOV_DOWN'] 			= 'Runter';
 
 /**
  * E-Government
@@ -310,6 +313,7 @@ class eGov extends eGovLibrary
 			'SELECTED_WP_EN'					=> $WPselected_en,
 			'SELECTED_WP_FR'					=> $WPselected_fr,
 			'SELECTED_WP_IT'					=> $WPselected_it,
+			'WORLDPAY_ID'					 	=> $this->GetSettings("set_worldpay_id"),
 	   	));
 	}
 
@@ -597,6 +601,56 @@ class eGov extends eGovLibrary
 			$this->_strErrMessage .= $_ARRAYLANG['TXT_EGOV_FILE_ERROR'];
 		}
 		// -----------------------------------------------------------------
+		
+		// Position
+		// -----------------------------------------------------------------
+		if(isset($_REQUEST["Direction"])){
+			
+			$query = "SELECT count(*) as anzahl FROM ".DBPREFIX."module_egov_products";
+			$objResult = $objDatabase->Execute($query);
+			if ($objResult->RecordCount() == 1) {
+				$anzahl = $objResult->fields["anzahl"];
+			}
+			
+			if($_REQUEST["Direction"]=="up"){
+				$NewPosition = $this->GetProduktValue('product_orderby', $_REQUEST["id"])-1;
+			}
+			if($_REQUEST["Direction"]=="down"){
+				$NewPosition = $this->GetProduktValue('product_orderby', $_REQUEST["id"])+1;
+			}
+			if($NewPosition<0){
+				$NewPosition = 0; 
+			}
+			if($NewPosition>$anzahl){
+				$NewPosition = $anzahl; 
+			}
+				
+				$query = "SELECT product_id  FROM ".DBPREFIX."module_egov_products WHERE product_orderby=".$NewPosition;
+				$objResult = $objDatabase->Execute($query);
+				if ($objResult->RecordCount() == 1) {
+					$TauschID = $objResult->fields["product_id"];
+				}
+				$query = "SELECT product_orderby  FROM ".DBPREFIX."module_egov_products WHERE product_id=".$_REQUEST["id"];
+				$objResult = $objDatabase->Execute($query);
+				if ($objResult->RecordCount() == 1) {
+					$TauschPosition = $objResult->fields["product_orderby"];
+				}	
+				
+				$query = "UPDATE ".DBPREFIX."module_egov_products
+							 SET product_orderby=".$TauschPosition."
+							 WHERE product_id=".$TauschID."";
+				if($objDatabase->Execute($query)){
+					$this->_strOkMessage = $_ARRAYLANG['TXT_STATE_UPDATED_SUCCESSFUL'];
+				}
+			
+				$query = "UPDATE ".DBPREFIX."module_egov_products
+							 SET product_orderby=".$NewPosition."
+							 WHERE product_id=".$_REQUEST["id"]."";
+				if($objDatabase->Execute($query)){
+					$this->_strOkMessage = $_ARRAYLANG['TXT_STATE_UPDATED_SUCCESSFUL'];
+				}
+
+		}
 
 		$this->_objTpl->setVariable(array(
     		'TXT_PRODUCTS'			 	=>	$_ARRAYLANG['TXT_PRODUCTS'],
@@ -612,12 +666,15 @@ class eGov extends eGovLibrary
     		'TXT_EGOV_ADD_NEW_PRODUCT'	=>	$_ARRAYLANG['TXT_EGOV_ADD_NEW_PRODUCT'],
     		'TXT_EGOV_RESERVATIONS'		=>	$_ARRAYLANG['TXT_EGOV_RESERVATIONS'],
     		'TXT_ORDERS'				=>	$_ARRAYLANG['TXT_ORDERS'],
-    		'TXT_FUNCTIONS'				=>	$_ARRAYLANG['TXT_FUNCTIONS']
+    		'TXT_FUNCTIONS'				=>	$_ARRAYLANG['TXT_FUNCTIONS'],
+    		'TXT_EGOV_SEQUENCE'			=>	$_ARRAYLANG['TXT_EGOV_SEQUENCE'],
+    		'TXT_EGOV_UP'				=>	$_ARRAYLANG['TXT_EGOV_UP'],
+    		'TXT_EGOV_DOWN'				=>	$_ARRAYLANG['TXT_EGOV_DOWN']
 	   	));
 
 	   	$query = "SELECT *
 		          FROM ".DBPREFIX."module_egov_products
-		          ORDER BY product_name";
+		          ORDER BY product_orderby, product_name";
 		$objResult = $objDatabase->Execute($query);
 		$i = 0;
 		while(!$objResult->EOF) {
@@ -639,13 +696,15 @@ class eGov extends eGovLibrary
 	    		'PRODUCT_ID'				=>  $objResult->fields["product_id"],
 	    		'PRODUCT_NAME'				=>  $objResult->fields["product_name"],
 	    		'PRODUCT_STATUS'			=>  $StatusImg,
+	    		'PRODUCT_POSITION'			=>  $objResult->fields["product_orderby"],
 	    		'TXT_EDIT'					=>	$_ARRAYLANG['TXT_EDIT'],
     			'TXT_DELETE'				=>	$_ARRAYLANG['TXT_DELETE'],
     			'TXT_EGOV_SOURCECODE'		=>	$_ARRAYLANG['TXT_EGOV_SOURCECODE'],
     			'ORDERS_VALUE'				=>	$objResult_orders->fields["anzahl"],
     			'TXT_EGOV_VIEW_ORDERS'		=>  $_ARRAYLANG['TXT_EGOV_VIEW_ORDERS'],
     			'TXT_IMGALT_COPY'			=>	$_ARRAYLANG['TXT_IMGALT_COPY'],
-    			'TXT_COPY'					=>	$_ARRAYLANG['TXT_COPY']
+    			'TXT_COPY'					=>	$_ARRAYLANG['TXT_COPY'],
+    			'ASCMS_MODULE_WEB_PATH'		=> ASCMS_MODULE_WEB_PATH
 	   		));
 
 	   		$product_id = $objResult->fields["product_id"];
