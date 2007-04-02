@@ -655,7 +655,13 @@ class Shop extends ShopLibrary {
                 $status = $_ARRAYLANG['TXT_SHOP_SPECIFY_NEW_PASSWORD'];
             }
 
-            $this->objTemplate->setVariable('SHOP_PASSWORD_STATUS', $status."<br />");
+            $this->objTemplate->setVariable(array(
+                'SHOP_PASSWORD_STATUS'  => $status."<br />",
+                'SHOP_PASSWORD_CURRENT' => $_ARRAYLANG['SHOP_PASSWORD_CURRENT'],
+                'SHOP_PASSWORD_NEW'     => $_ARRAYLANG['SHOP_PASSWORD_NEW'],
+                'SHOP_PASSWORD_CONFIRM' => $_ARRAYLANG['SHOP_PASSWORD_CONFIRM'],
+                'SHOP_PASSWORD_CHANGE'  => $_ARRAYLANG['SHOP_PASSWORD_CHANGE'],
+            ));
             $this->objTemplate->touchBlock('shop_change_password');
         } else {
             $this->objTemplate->touchBlock('shop_change_password');
@@ -713,7 +719,11 @@ class Shop extends ShopLibrary {
                 $status = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
             }
 
-            $this->objTemplate->setVariable('SHOP_PASSWORD_STATUS', $status);
+            $this->objTemplate->setVariable(array(
+                'SHOP_PASSWORD_STATUS'      => $status,
+                'SHOP_PASSWORD_ENTER_EMAIL' => $_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'],
+                'TXT_NEXT'                  => $_ARRAYLANG['TXT_NEXT'],
+            ));
             $this->objTemplate->parse('shop_sendpass_status');
             $this->objTemplate->hideBlock('shop_sendpass');
         }
@@ -2308,9 +2318,17 @@ sendReq('', 1);
             }
 
             $this->objTemplate->setVariable(array(
-                'SHOP_LOGIN_EMAIL'  => $loginUsername,
-                'SHOP_LOGIN_ACTION' => "?section=shop&amp;cmd=login",
-                'SHOP_LOGIN_STATUS' => $statusMessage,
+                'TXT_SHOP_ACCOUNT_TITLE'             => $_ARRAYLANG['TXT_SHOP_ACCOUNT_TITLE'],
+                'TXT_SHOP_ACCOUNT_NEW_CUSTOMER'      => $_ARRAYLANG['TXT_SHOP_ACCOUNT_NEW_CUSTOMER'],
+                'TXT_SHOP_ACCOUNT_NOTE'              => $_ARRAYLANG['TXT_SHOP_ACCOUNT_NOTE'],
+                'TXT_SHOP_ACCOUNT_EXISTING_CUSTOMER' => $_ARRAYLANG['TXT_SHOP_ACCOUNT_EXISTING_CUSTOMER'],
+                'TXT_SHOP_ACCOUNT_LOGIN'             => $_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'],
+                'TXT_NEXT'                           => $_ARRAYLANG['TXT_NEXT'],
+                'TXT_EMAIL_ADDRESS'                  => $_ARRAYLANG['TXT_EMAIL_ADDRESS'],
+                'TXT_PASSWORD'                       => $_ARRAYLANG['TXT_PASSWORD'],
+                'SHOP_LOGIN_EMAIL'                   => $loginUsername,
+                'SHOP_LOGIN_ACTION'                  => "?section=shop&amp;cmd=login",
+                'SHOP_LOGIN_STATUS'                  => $statusMessage,
             ));
         }
     }
