@@ -109,6 +109,7 @@ require_once dirname(__FILE__).'/core/API.php';
 //-------------------------------------------------------
 $errorMsg = '';
 $objDatabase = getDatabaseObject($errorMsg);
+
 if ($objDatabase === false) {
     die('Database error.');
 }
@@ -342,18 +343,14 @@ if (file_exists($modulespath)) {
     /**
      * @ignore
      */
-    require_once $modulespath;
-    $objPopup = &new popup();
-
     if (preg_match_all('/{POPUP_JS_FUNCTION}/ms', $themesPages['index'], $arrMatches)) {
-        if (preg_match_all('/{POPUP}/ms', $themesPages['index'], $arrMatches)) {
+		require_once $modulespath;
+		$objPopup = &new popup();
+		    
+    	if (preg_match_all('/{POPUP}/ms', $themesPages['index'], $arrMatches)) {
             $objPopup->setPopup($themesPages['index'], $pageId);
         }
-
-        /*if (preg_match_all('/{POPUP_ONLOAD}/ms', $themesPages['index'], $arrMatches)) {
-            $objPopup->setPopupWindow($themesPages['index'], $pageId);
-        }*/
-
+        
         $objPopup->_setJS($themesPages['index']);
     }
 }
