@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 28 Mar 2007 11:29:33 +0200
+* generated date Mon, 02 Apr 2007 10:01:39 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
@@ -160,8 +160,22 @@ $_ARRAYLANG['TXT_SHOP_WEIGHT_UNLIMITED'] = "unbeschränkt";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_CONDITIONS'] = "Lieferbedingungen:";
 $_ARRAYLANG['TXT_SHOP_COST_FREE'] = "gratis";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_COUNTRIES'] = "Lieferländer";
-$_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'] = "Bitte auswählen";
 $_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'] = "Das Gesamtgewicht Ihrer Bestellung übersteigt die verfügbaren Versandmöglichkeiten.";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_HIERARCHY'] = "Sie sind hier:";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_FLAT'] = "Galerien:";
+$_ARRAYLANG['SHOP_PASSWORD_CURRENT'] = "Aktuelles Kennwort";
+$_ARRAYLANG['SHOP_PASSWORD_NEW'] = "Neues Kennwort";
+$_ARRAYLANG['SHOP_PASSWORD_CONFIRM'] = "Kennwort bestätigen";
+$_ARRAYLANG['SHOP_PASSWORD_CHANGE'] = "ändern";
+$_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'] = "Geben Sie die E-Mail Adresse für Ihr Konto ein.<br />Ihnen wird anschliessend ein neues Kennwort zugeschickt.";
+$_ARRAYLANG['SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
+$_ARRAYLANG['SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";
+$_ARRAYLANG['SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Übersicht über Ihre bisherigen Bestellungen.";
+$_ARRAYLANG['SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
+$_ARRAYLANG['SHOP_ACCOUNT_LOGIN'] = "Anmelden >>";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Übersicht über Ihre bisherigen Bestellungen.";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Anmelden";
 ?>
