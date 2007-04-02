@@ -12,7 +12,7 @@ Diretory
 - Neuer Blockname für Hedalines Block: directoryLatest_row_1. Es können nun beliebig viele Blöcke verwendet werden, um eine mehrspaltige Dartellung zu ermöglichen. Max. 10 Blöcke.
 - Neue Platzhalter im Headlines-Block: [[DIRECTORY_DESC]] [[DIRECTORY_LOGO]]
 - Es können zusatzliche, frei definierbare Felder aktiviert werden:
-		> 10 Uploadfelder für Bilder, bei welchen ein Thumbnail erstellt und angezeigt werden, durch anklicken wird ein Popup mit der Originaldatei göffnet.
+		> 10 Uploadfelder für Bilder, bei welchen ein Thumbnail erstellt und angezeigt werden, durch anklicken wird ein Popup mit der Originaldatei göffnet. Für diese Thumbnails wird ein neues Verzeichniss (CHMOD 777) angelegt.
 		> 5 Uploadfelder für Dateien, beim Anzeigen wird ein Link aud die Datei erstellt.
 		> 2 Dropdownmenüs, bei welchen der Inhalt selber definiert werden kann.
 		> 2 spezielle Dropdownmenüs, bei welchen der Inhalt auch selber efiniert werden kann, bei der Ausgabe wird das ganze aber als Bewertung/Klassifizierung behandelt und mit der entsprechender Anzahl Sterne angezeigt.
