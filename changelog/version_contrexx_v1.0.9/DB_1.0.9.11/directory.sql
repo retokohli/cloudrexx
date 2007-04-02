@@ -57,6 +57,10 @@ UPDATE `contrexx_module_directory_settings` SET `setname` = 'spez_field_21' WHER
 
 UPDATE `contrexx_module_directory_settings` SET `setname` = 'spez_field_22' WHERE `contrexx_module_directory_settings`.`setid` =33 LIMIT 1 ;
 
+UPDATE `contrexx_module_directory_inputfields` SET `name` = 'spez_field_22' WHERE `contrexx_module_directory_inputfields`.`id` =53 LIMIT 1 ;
+
+UPDATE `contrexx_module_directory_inputfields` SET `name` = 'spez_field_21' WHERE `contrexx_module_directory_inputfields`.`id` =52 LIMIT 1 ;
+
 INSERT INTO `contrexx_module_directory_settings` ( `setid` , `setname` , `setvalue` , `setdescription` , `settyp` )
 VALUES (
 NULL , 'spez_field_23', '', 'spez_field_23', '0'
