@@ -631,6 +631,14 @@ class Shop extends ShopLibrary {
             exit;
         }
 
+        $this->objTemplate->setVariable(array(
+            'SHOP_PASSWORD_CURRENT' => $_ARRAYLANG['SHOP_PASSWORD_CURRENT'],
+            'SHOP_PASSWORD_NEW'     => $_ARRAYLANG['SHOP_PASSWORD_NEW'],
+            'SHOP_PASSWORD_CONFIRM' => $_ARRAYLANG['SHOP_PASSWORD_CONFIRM'],
+            'SHOP_PASSWORD_CHANGE'  => $_ARRAYLANG['SHOP_PASSWORD_CHANGE'],
+        ));
+        $this->objTemplate->parse('shop_change_password');
+
         if (isset($_POST['shopNewPassword'])) {
             if (!empty($_POST['shopNewPassword'])) {
                 if (isset($_POST['shopCurrentPassword']) && !empty($_POST['shopCurrentPassword'])) {
@@ -657,14 +665,9 @@ class Shop extends ShopLibrary {
 
             $this->objTemplate->setVariable(array(
                 'SHOP_PASSWORD_STATUS'  => $status."<br />",
-                'SHOP_PASSWORD_CURRENT' => $_ARRAYLANG['SHOP_PASSWORD_CURRENT'],
-                'SHOP_PASSWORD_NEW'     => $_ARRAYLANG['SHOP_PASSWORD_NEW'],
-                'SHOP_PASSWORD_CONFIRM' => $_ARRAYLANG['SHOP_PASSWORD_CONFIRM'],
-                'SHOP_PASSWORD_CHANGE'  => $_ARRAYLANG['SHOP_PASSWORD_CHANGE'],
             ));
-            $this->objTemplate->touchBlock('shop_change_password');
+            $this->objTemplate->parse('shop_change_password_status');
         } else {
-            $this->objTemplate->touchBlock('shop_change_password');
         }
     }
 
@@ -673,9 +676,12 @@ class Shop extends ShopLibrary {
     {
         global $objDatabase, $_ARRAYLANG;
 
-        if (!isset($_POST['shopEmail']) || empty($_POST['shopEmail'])) {
-            $this->objTemplate->touchBlock('shop_sendpass');
-        } else {
+        $this->objTemplate->setVariable(array(
+            'SHOP_PASSWORD_ENTER_EMAIL' => $_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'],
+            'TXT_NEXT'                  => $_ARRAYLANG['TXT_NEXT'],
+        ));
+        $this->objTemplate->parse('shop_sendpass');
+        if (isset($_POST['shopEmail']) && !empty($_POST['shopEmail'])) {
             $mail = contrexx_addslashes($_POST['shopEmail']);
             $query = "SELECT customerid,
                              username,
@@ -721,11 +727,8 @@ class Shop extends ShopLibrary {
 
             $this->objTemplate->setVariable(array(
                 'SHOP_PASSWORD_STATUS'      => $status,
-                'SHOP_PASSWORD_ENTER_EMAIL' => $_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'],
-                'TXT_NEXT'                  => $_ARRAYLANG['TXT_NEXT'],
             ));
             $this->objTemplate->parse('shop_sendpass_status');
-            $this->objTemplate->hideBlock('shop_sendpass');
         }
     }
 
@@ -2248,26 +2251,23 @@ sendReq('', 1);
         }
 
         $this->objTemplate->setVariable(array(
-            'TXT_PRODUCT_ID'             => $_ARRAYLANG['TXT_PRODUCT_ID'],
-            'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
-            'TXT_PRODUCT'                => $_ARRAYLANG['TXT_PRODUCT'],
-            'TXT_UNIT_PRICE'             => $_ARRAYLANG['TXT_UNIT_PRICE'],
-            'TXT_QUANTITY'               => $_ARRAYLANG['TXT_QUANTITY'],
-            'TXT_TOTAL'                  => $_ARRAYLANG['TXT_TOTAL'],
-            'TXT_INTER_TOTAL'            => $_ARRAYLANG['TXT_INTER_TOTAL'],
-            'TXT_SHIP_COUNTRY'           => $_ARRAYLANG['TXT_SHIP_COUNTRY'],
-            'TXT_UPDATE'                 => $_ARRAYLANG['TXT_UPDATE'],
-            'TXT_NEXT'                   => $_ARRAYLANG['TXT_NEXT'],
-            'TXT_EMPTY_CART'             => $_ARRAYLANG['TXT_EMPTY_CART'],
-            'TXT_CONTINUE_SHOPPING'      => $_ARRAYLANG['TXT_CONTINUE_SHOPPING'],
-            'TXT_TAX_PREFIX'             => ($this->objVat->isIncluded()
-                                                ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
-                                                : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
-                                            ),
-            'TXT_WEIGHT'                 => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
-        ));
-
-        $this->objTemplate->setVariable(array(
+            'TXT_PRODUCT_ID'               => $_ARRAYLANG['TXT_PRODUCT_ID'],
+            'TXT_SHOP_PRODUCT_CUSTOM_ID'   => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
+            'TXT_PRODUCT'                  => $_ARRAYLANG['TXT_PRODUCT'],
+            'TXT_UNIT_PRICE'               => $_ARRAYLANG['TXT_UNIT_PRICE'],
+            'TXT_QUANTITY'                 => $_ARRAYLANG['TXT_QUANTITY'],
+            'TXT_TOTAL'                    => $_ARRAYLANG['TXT_TOTAL'],
+            'TXT_INTER_TOTAL'              => $_ARRAYLANG['TXT_INTER_TOTAL'],
+            'TXT_SHIP_COUNTRY'             => $_ARRAYLANG['TXT_SHIP_COUNTRY'],
+            'TXT_UPDATE'                   => $_ARRAYLANG['TXT_UPDATE'],
+            'TXT_NEXT'                     => $_ARRAYLANG['TXT_NEXT'],
+            'TXT_EMPTY_CART'               => $_ARRAYLANG['TXT_EMPTY_CART'],
+            'TXT_CONTINUE_SHOPPING'        => $_ARRAYLANG['TXT_CONTINUE_SHOPPING'],
+            'TXT_TAX_PREFIX'               => ($this->objVat->isIncluded()
+                                                  ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
+                                                  : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
+                                              ),
+            'TXT_WEIGHT'                   => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
             'SHOP_PRODUCT_TOTALITEM'       => $_SESSION['shop']['cart']['items'],
             'SHOP_PRODUCT_TOTALPRICE'      => $_SESSION['shop']['cart']['total_price'],
             'SHOP_PRODUCT_TOTALPRICE_UNIT' => $this->aCurrencyUnitName,
