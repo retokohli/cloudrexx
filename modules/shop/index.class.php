@@ -786,7 +786,9 @@ class Shop extends ShopLibrary {
                 if (!isset($arrImages) || $arrImages[1]['img'] == '') {
                     $thumbnailPath = $this->shopImageWebPath.$this->noPictureName;
                 } else {
-                    $thumbnailPath = ((ASCMS_PATH_OFFSET != '') ? ASCMS_PATH_OFFSET.'/' : '' ).$arrImages[1]['img'].'.thumb';
+                    // path offset is saved with the image path!
+                    $thumbnailPath = //((ASCMS_PATH_OFFSET != '') ? ASCMS_PATH_OFFSET.'/' : '' ).
+                        $arrImages[1]['img'].'.thumb';
                 }
 
                 $this->objTemplate->setVariable(array(
