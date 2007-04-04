@@ -58,8 +58,13 @@
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
-@error_reporting (0); // 0 or E_ALL
-@ini_set('display_errors', 0); // 0 or 1
+if (0) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+} else {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+}
 
 $starttime = explode(' ', microtime());
 
@@ -346,11 +351,11 @@ if (file_exists($modulespath)) {
     if (preg_match_all('/{POPUP_JS_FUNCTION}/ms', $themesPages['index'], $arrMatches)) {
 		require_once $modulespath;
 		$objPopup = &new popup();
-		    
+
     	if (preg_match_all('/{POPUP}/ms', $themesPages['index'], $arrMatches)) {
             $objPopup->setPopup($themesPages['index'], $pageId);
         }
-        
+
         $objPopup->_setJS($themesPages['index']);
     }
 }

@@ -25,6 +25,8 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Weight.class.php';
 // fpdf class
 require_once ASCMS_MODULE_PATH.'/shop/lib/fpdf.php';
 
+$_ARRAYLANG['TXT_SHOP_CATEGORIES'] = "Kategorien:";
+$_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'] = "Produkte in der Kategorie";
 
 /**
  * Use session in show
@@ -456,8 +458,8 @@ class Shop extends ShopLibrary {
 
                 $curNavbar = $this->objCurrency->getCurrencyNavbar();
                 if (!empty($curNavbar)) {
-                    $objTpl->setVariable("SHOP_CURRENCIES",$curNavbar);
-                    $objTpl->setVariable("TXT_CURRENCIES",$_ARRAYLANG['TXT_CURRENCIES']);
+                    $objTpl->setVariable("SHOP_CURRENCIES", $curNavbar);
+                    $objTpl->setVariable("TXT_CURRENCIES", $_ARRAYLANG['TXT_CURRENCIES']);
                 }
                 $objTpl->parseCurrentBlock("shopCurrencies");
                 // end currencies
@@ -854,12 +856,16 @@ class Shop extends ShopLibrary {
         $class      = "";
         $detailLink = "";
 
-        $this->objTemplate->setGlobalVariable('TXT_SEE_LARGE_PICTURE',$_ARRAYLANG['TXT_SEE_LARGE_PICTURE']);
-        $this->objTemplate->setGlobalVariable('TXT_ADD_TO_CARD',$_ARRAYLANG['TXT_ADD_TO_CARD']);
-        $this->objTemplate->setGlobalVariable('TXT_PRODUCT_ID',$_ARRAYLANG['TXT_PRODUCT_ID']);
-        $this->objTemplate->setGlobalVariable('TXT_SHOP_PRODUCT_CUSTOM_ID', $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID']);
-        $this->objTemplate->setGlobalVariable('TXT_WEIGHT', $_ARRAYLANG['TXT_WEIGHT']);
-        $this->objTemplate->setGlobalVariable('SHOP_JAVASCRIPT_CODE', $this->getJavascriptCode());
+        $this->objTemplate->setGlobalVariable(array(
+            'TXT_SEE_LARGE_PICTURE'      => $_ARRAYLANG['TXT_SEE_LARGE_PICTURE'],
+            'TXT_ADD_TO_CARD'            => $_ARRAYLANG['TXT_ADD_TO_CARD'],
+            'TXT_PRODUCT_ID'             => $_ARRAYLANG['TXT_PRODUCT_ID'],
+            'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
+            'TXT_WEIGHT'                 => $_ARRAYLANG['TXT_WEIGHT'],
+            'TXT_SHOP_CATEGORIES'        => $_ARRAYLANG['TXT_SHOP_CATEGORIES'],
+            'TXT_PRODUCTS_IN_CATEGORY'   => $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'],
+            'SHOP_JAVASCRIPT_CODE'       => $this->getJavascriptCode(),
+        ));
         $this->objTemplate->setVariable('SHOPNAVBAR_FILE', $this->getShopNavbar($themesPages['shopnavbar']));
 
         $productId = isset($_REQUEST['productId']) ? intval($_REQUEST['productId']) : 0;
@@ -1080,7 +1086,8 @@ class Shop extends ShopLibrary {
                     'SHOP_PRODUCT_DETAILLINK'         => $detailLink,
                     'SHOP_PRODUCT_FORM_NAME'          => $shopProductFormName,
                     'SHOP_PRODUCT_SUBMIT_NAME'        => $productSubmitName,
-                    'SHOP_PRODUCT_SUBMIT_FUNCTION'    => $productSubmitFunction
+                    'SHOP_PRODUCT_SUBMIT_FUNCTION'    => $productSubmitFunction,
+                    'SHOP_CURRENT_CATEGORY'           => htmlentities($this->arrCategoriesName[$catId], ENT_QUOTES, CONTREXX_CHARSET),
                 ));
 
                 $this->objTemplate->parse('shopProductRow');
