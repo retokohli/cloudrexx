@@ -81,7 +81,7 @@ class Currency
                 'is_default' => $objResult->fields['is_default']
             );
 
-            if($objResult->fields['is_default']==1) {
+            if ($objResult->fields['is_default']==1) {
                 $this->defaultCurrencyId    =$objResult->fields['id'];
                 $this->defaultCurrencySymbol=$objResult->fields['symbol'];
             }
@@ -96,11 +96,11 @@ class Currency
      */
     function _init()
     {
-        if(isset($_REQUEST['currency'])) {
+        if (isset($_REQUEST['currency'])) {
             $sId =  intval($_REQUEST['currency']);
             $_SESSION['shop']['currencyId'] = isset($this->arrCurrency[$sId]) ? $sId : $this->defaultCurrencyId;
         } else {
-            if(!isset($_SESSION['shop']['currencyId'])){
+            if (!isset($_SESSION['shop']['currencyId'])) {
                 $_SESSION['shop']['currencyId'] = $this->defaultCurrencyId;
             }
         }
@@ -217,7 +217,7 @@ class Currency
      */
     function getDefaultCurrencyPrice($price)
     {
-        if($this->activeCurrencyId == $this->defaultCurrencyId) {
+        if ($this->activeCurrencyId == $this->defaultCurrencyId) {
             return $this->formatPrice(round($price));
         } else {
             $rate = $this->arrCurrency[$this->activeCurrencyId]['rate'];
@@ -251,25 +251,21 @@ class Currency
      */
     function getCurrencyNavbar()
     {
-        $curNavbar ="";
-        $i = 0;
-        $sum = 0;
-        foreach($this->arrCurrency as $val){
-            $sum += ($val['status'] == 1) ? 1 : 0;
-        }
-
-        foreach ($this->arrCurrency as $id => $value){
-            if($value['status']==1){
-                $i++;
-                $style = ($value['is_default']==1) ? $this->activeStyleName : $this->inactiveStyleName;
-
-                $curNavbar .= "<a class=\"".$style."\" href=\"".$_SERVER['REQUEST_URI']."&amp;currency=".$id."\" title=\"".$value['code']."\">".$value['code']."</a>";
-                if( $i < $sum ) {
-                    $curNavbar .= "&nbsp;|&nbsp;\n";
-                }
+        $arrCurNavbar = array();
+        foreach ($this->arrCurrency as $id => $arrCurrency) {
+            if ($arrCurrency['status'] == 1) {
+                $style = ($arrCurrency['is_default'] == 1
+                    ? $this->activeStyleName
+                    : $this->inactiveStyleName
+                );
+                $arrCurNavbar[] = "<a class=\"".$style."\" href=\"".
+                    $_SERVER['REQUEST_URI']."&amp;currency=".$id.
+                    "\" title=\"".$arrCurrency['code']."\">".
+                    $arrCurrency['code']."</a>";
             }
         }
-        return $curNavbar;
+        return join("&nbsp;|&nbsp;\n", $arrCurNavbar);
     }
 }
+
 ?>

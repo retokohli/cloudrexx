@@ -167,7 +167,6 @@ class shopmanager extends ShopLibrary {
     {
         global $_ARRAYLANG, $objTemplate, $objInit;
 
-
         if (0) {
             global $objDatabase; $objDatabase->debug = 1;
             error_reporting(E_ALL);
