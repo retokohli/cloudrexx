@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 02 Apr 2007 10:01:39 +0200
+* generated date Thu, 05 Apr 2007 10:33:10 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 skrifttegn)";
@@ -78,4 +78,7 @@ $_ARRAYLANG['TXT_EGOVERNMENT'] = "Online-Desk";
 $_ARRAYLANG['TXT_IMAGE'] = "Image";
 $_ARRAYLANG['TXT_EXP_SEARCH'] = "expanded Search";
 $_ARRAYLANG['TXT_POPUP_MODULE_DESCRIPTION'] = "Erstellen von PupUp Fenster";
+$_ARRAYLANG['TXT_IMPRINT_MODULE_DESCRIPTION'] = "Imprint";
+$_ARRAYLANG['TXT_AGB_MODULE_DESCRIPTION'] = "Allgemeine Geschäftsbedingungen";
+$_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Privacy";
 ?>
