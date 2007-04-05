@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Apr 2007 10:33:10 +0200
+* generated date Thu, 05 Apr 2007 13:06:15 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
@@ -11,7 +11,7 @@ $_ARRAYLANG['TXT_SHOPPING_CART_VALUE'] = "Produkt(e) im Gesamtwert von";
 $_ARRAYLANG['TXT_PRODUCTS'] = "Produkte";
 $_ARRAYLANG['TXT_SHIPPING_ADDRESS'] = "Lieferadresse";
 $_ARRAYLANG['TXT_PRODUCT_ID'] = "Produkt ID";
-$_ARRAYLANG['TXT_TAX_RATE'] = "MwSt. Satz";
+$_ARRAYLANG['TXT_TAX_RATE'] = "Mehrwertsteuer Satz";
 $_ARRAYLANG['TXT_ORDER_NOW'] = "Bestellung absenden >>";
 $_ARRAYLANG['TXT_CURRENCIES'] = "Währungen";
 $_ARRAYLANG['TXT_TAXES'] = "Mehrwertsteuer";
@@ -107,7 +107,7 @@ $_ARRAYLANG['TXT_SHOP_IMAGE'] = "Bild";
 $_ARRAYLANG['TXT_SHOP_CART_IS_LOADING'] = "Warenkorb wird geladen...";
 $_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'] = "Der Warenkorb konnte nicht geladen werden!";
 $_ARRAYLANG['TXT_TAX_NOT_SET'] = "Kein MwSt. Satz zugeordnet";
-$_ARRAYLANG['TXT_TAX_RATES'] = "MwSt. Sätze";
+$_ARRAYLANG['TXT_TAX_RATES'] = "Mehrwertsteuer Sätze";
 $_ARRAYLANG['TXT_HP'] = "Händler";
 $_ARRAYLANG['TXT_EKP'] = "Endkunde";
 $_ARRAYLANG['TXT_TAX'] = "MwSt.";
@@ -180,4 +180,5 @@ $_ARRAYLANG['TXT_SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Anmelden";
 $_ARRAYLANG['TXT_SHOP_CATEGORIES'] = "Kategorien:";
 $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'] = "Produkte in der Kategorie";
+$_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'] = "Weiter zur Kategorie";
 ?>
