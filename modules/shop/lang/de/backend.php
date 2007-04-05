@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Apr 2007 13:06:15 +0200
+* generated date Thu, 05 Apr 2007 13:16:04 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Bestellungen";
@@ -132,7 +132,7 @@ $_ARRAYLANG['TXT_OTHER'] = "Andere";
 $_ARRAYLANG['TXT_DATE'] = "Datum";
 $_ARRAYLANG['TXT_REPLACEMENT_NOT_AVAILABLE'] = "Diese Platzhalter sind beim direkten Senden, von der Administrations Konsole aus, nicht vorhanden!";
 $_ARRAYLANG['TXT_NEW_TEMPLATE'] = "Neue Vorlage";
-$_ARRAYLANG['TXT_TEMPLATE_NAME'] = "Vorlagenname";
+$_ARRAYLANG['TXT_TEMPLATE_NAME'] = "Name der Vorlage";
 $_ARRAYLANG['TXT_STORE_AS_NEW_TEMPLATE'] = "Als neue Vorlage speichern";
 $_ARRAYLANG['TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE'] = "Die ausgewählte Sprache der aktuellen Vorlage kann nicht gelöscht werden, da sie noch nicht gespeichert wurde.";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_TEMPLATE_LANGUAGE'] = "Wollen Sie die ausgewählte Sprache der aktuellen Vorlage wirklich löschen?";
@@ -366,7 +366,7 @@ $_ARRAYLANG['TXT_SHOP_EDIT_OR_ADD_IMAGE'] = "Bild wählen";
 $_ARRAYLANG['TXT_SHOP_IMPORT_TITLE'] = "Import";
 $_ARRAYLANG['TXT_SHOP_IMPORT_SELECT_TEMPLATE'] = "Vorlage auswählen";
 $_ARRAYLANG['TXT_SHOP_IMPORT_IMPORT'] = "Importieren";
-$_ARRAYLANG['TXT_SHOP_IMPORT_IMPORTTEMPLATE'] = "Import Vorlage";
+$_ARRAYLANG['TXT_SHOP_IMPORT_IMPORTTEMPLATE'] = "Vorlage";
 $_ARRAYLANG['TXT_SHOP_IMPORT_TEXTFILE'] = "Textdatei";
 $_ARRAYLANG['TXT_SHOP_IMPORT_DATABASE'] = "Datenbank";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES'] = "Kategorien";
@@ -379,12 +379,12 @@ $_ARRAYLANG['TXT_SHOP_IMPORT_SAVED_TEMPLATES'] = "Gespeicherte Vorlagen";
 $_ARRAYLANG['TXT_SHOP_IMPORT_MAKE_NEW_TEMPLATE'] = "Neue Vorlage erstellen";
 $_ARRAYLANG['TXT_SHOP_IMPORT_UPLOAD'] = "Datei hochladen";
 $_ARRAYLANG['TXT_SHOP_IMPORT_NO_TEMPLATES_AVAILABLE'] = "Keine Vorlagen vorhanden";
-$_ARRAYLANG['TXT_SHOP_IMPORT_MANAGE_TEMPLATES'] = "Import Vorlagen";
+$_ARRAYLANG['TXT_SHOP_IMPORT_MANAGE_TEMPLATES'] = "Vorlagen";
 $_ARRAYLANG['TXT_SHOP_IMPORT_ENTER_TEMPLATE_NAME'] = "Bitte Name der Vorlage angeben";
 $_ARRAYLANG['TXT_SHOP_IMPORT_WARNING'] = "Beim hochladen werden alle schon vorhandene Produkte aus der Datenbank gelöscht. Möchten Sie den Vorgang trotzdem starten?";
 $_ARRAYLANG['TXT_SHOP_IMPORT_SELECT_FILE_PLEASE'] = "Bitte eine TXT/CSV Datei auswählen.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_TEMPLATE_REALLY_DELETE'] = "Möchten Sie die Vorlage wirklich löschen?";
-$_ARRAYLANG['TXT_SHOP_IMPORT_TEMPLATENAME'] = "Vorlagenname";
+$_ARRAYLANG['TXT_SHOP_IMPORT_TEMPLATENAME'] = "Name der Vorlage";
 $_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_DELETED'] = "Vorlage erfolgreich gelöscht";
 $_ARRAYLANG['TXT_SHOP_IMPORT_ERROR_DELETE'] = "Fehler beim löschen";
 $_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_SAVED'] = "Vorlage wurde erfolgreich gespeichert";
@@ -456,7 +456,7 @@ $_ARRAYLANG['TXT_SHOP_IMPORT_ASSIGNMENT_TIPS'] = "Ordnen sie Felder der Textdate
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_TIPS'] = "Um ein Feld der Textdatei als Quelle für die Namen für Produkte Kategorien festzulegen, markieren sie das Feld und klicken sie danach auf 'Kategorie hinzufügen'.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_REMOVE_TIPS'] = "Um ein Feld wieder zu entfernen, markieren sie es in der Liste 'Kategorien', und klicken sie danach auf 'Kategorie entfernen'.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_ASSIGNMENT_REMOVE_TIPS'] = "Um ein Paar wieder zu entfernen, markieren sie es in der Liste der zugeordneten Felder, und klicken sie danach auf 'Paar entfernen'.";
-$_ARRAYLANG['TXT_SHOP_IMPORT_TEMPLATE_SAVE_TIPS'] = "Speichern sie die Vorlage, indem sie zuerst einen Namen für sie in das Textfeld 'Vorlage Name' eingeben, und danach auf 'Speichern' klicken.";
+$_ARRAYLANG['TXT_SHOP_IMPORT_TEMPLATE_SAVE_TIPS'] = "Speichern sie die Vorlage, indem sie zuerst einen Namen für sie in das Textfeld 'Name der Vorlage' eingeben, und danach auf 'Speichern' klicken.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS'] = "Wählen sie eine Vorlage, die sie unter 'Importvorlagen' erstellt haben. Klicken sie danach auf 'Durchsuchen' und wählen sie die zu importierende Datei. Starten sie den Import durch einen Klick auf 'Importieren'. Warnung: Alle bestehenden Produkte werden bei diesem Vorgang gelöscht und durch die importierten Daten ersetzt!";
 $_ARRAYLANG['TXT_SHOP_EXPORT_TIPS'] = "Wählen sie eine Vorlage für den Export aus der Liste, und klicken sie danach auf das Symbol neben dem Namen der Vorlage. Ihr Browser wird sie möglicherweise fragen, wie er mit der exportierten CSV Datei verfahren soll. Wählen sie 'Speichern', klicken sie 'OK', und wählen sie danach einen Speicherort für die Datei.";
 $_ARRAYLANG['TXT_DISTRIBUTION'] = "Vertrieb";
