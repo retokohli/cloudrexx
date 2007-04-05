@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 02 Apr 2007 10:01:39 +0200
+* generated date Thu, 05 Apr 2007 10:33:10 +0200
 **/
 
 $_ARRAYLANG['TXT_CATEGORY_MANAGER'] = "Category Manager";

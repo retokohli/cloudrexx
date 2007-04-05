@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 02 Apr 2007 10:01:39 +0200
+* generated date Thu, 05 Apr 2007 10:33:10 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Stock";
@@ -178,4 +178,6 @@ $_ARRAYLANG['TXT_SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle &Uuml;bersicht &uuml;ber Ihre bisherigen Bestellungen.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Anmelden &gt;&gt;";
+$_ARRAYLANG['TXT_SHOP_CATEGORIES'] = "Kategorien:";
+$_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'] = "Produkte in der Kategorie";
 ?>
