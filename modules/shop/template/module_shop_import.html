@@ -116,11 +116,12 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 </script>
 
 <ul id="tabmenu">
-    <li><a id="generalTab_import1" class="active" href="javascript:{}" onclick="selectTab('import1')" title="Import">{TXT_SHOP_IMPORT_IMPORT}</a></li>
+    <li><a id="generalTab_import1" class="active" href="javascript:{}" onclick="selectTab('import1')" title="{TXT_SHOP_IMPORT_IMPORT}">{TXT_SHOP_IMPORT_IMPORT}</a></li>
+    <li><a id="generalTab_export" href="javascript:{}" onclick="selectTab('export')" title="{TXT_SHOP_EXPORT_DATA}">{TXT_SHOP_EXPORT_DATA}</a></li>
     <li style="display: none;"><a id="generalTab_import2" class="active" href="javascript:{}" onclick="selectTab('import2')" title="Import">SelectFields</a></li>
     <li style="display: none;"><a id="generalTab_import3" class="active" href="javascript:{}" onclick="selectTab('import3')" title="Import">Upload</a></li>
-    <li><a id="generalTab_import4" href="javascript:{}" onclick="selectTab('import4')" title="Image">{TXT_SHOP_IMPORT_MANAGE_TEMPLATES}</a></li>
-    <li><a id="generalTab_export" href="javascript:{}" onclick="selectTab('export')" title="Export">{TXT_SHOP_EXPORT_DATA}</a></li>
+    <li><a id="generalTab_import4" href="javascript:{}" onclick="selectTab('import4')" title="{TXT_SHOP_IMPORT_MANAGE_TEMPLATES}">{TXT_SHOP_IMPORT_MANAGE_TEMPLATES}</a></li>
+    <li><a id="generalTab_import5" href="javascript:{}" onclick="selectTab('import5')" title="{TXT_SHOP_IMPORT_MAKE_NEW_TEMPLATE}">{TXT_SHOP_IMPORT_MAKE_NEW_TEMPLATE}</a></li>
 </ul>
 
 <form name="frmImportFile" action="{SHOP_CMS_OFFSET}/admin/index.php?cmd=shop&amp;act=import" method="post" enctype="multipart/form-data">
@@ -128,7 +129,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <div id="import1" class="generalTab" style="display:{SELECTED_LAYER_IMPORT}">
     <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
         <tr>
-            <th colspan="2"><b>{TXT_SHOP_IMPORT_TITLE}</b></th>
+            <th colspan="2"><b>{TXT_SHOP_IMPORT_IMPORT}</b></th>
         </tr>
     </table>
     <div id="ImportLayer" style="display: block;">
@@ -148,7 +149,8 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     <input type="button" value="{TXT_SHOP_IMPORT_IMPORT}" onclick="MakeImport();" {IMPORT_BUTTON_STYLE} />
     </div>
     <br />
-    {TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}
+    <div class="infobox_head">{TXT_SHOP_TIP}</div>
+    <div class="infobox_body">{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}</div>
 </div>
 </form>
 
@@ -174,8 +176,10 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
                 {DB_FIELDS_LIST}
             </td>
             <td width="50%">
-                {TXT_SHOP_IMPORT_ASSIGNMENT_TIPS}<br /><br />
-                {TXT_SHOP_IMPORT_CATEGORY_TIPS}
+    <div class="infobox_head">{TXT_SHOP_TIP}</div>
+    <div class="infobox_body">{TXT_SHOP_IMPORT_ASSIGNMENT_TIPS}<br /><br />
+                {TXT_SHOP_IMPORT_CATEGORY_TIPS}</div>
+
             </td>
         </tr>
         <tr class="row1">
@@ -189,7 +193,8 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
                 <select name="cats" id="cats" style="width: 200px;" size="5"></select>
             </td>
             <td>
-                {TXT_SHOP_IMPORT_CATEGORY_REMOVE_TIPS}
+    <div class="infobox_head">{TXT_SHOP_TIP}</div>
+    <div class="infobox_body">{TXT_SHOP_IMPORT_CATEGORY_REMOVE_TIPS}</div>
             </td>
         </tr>
         <tr class="row1">
@@ -206,7 +211,8 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
                 <select name="DbList" id="pairs_right" style="width: 200px;" size="10" onchange="document.getElementById('pairs_left')[this.selectedIndex].selected=true"></select>
             </td>
             <td>
-                {TXT_SHOP_IMPORT_ASSIGNMENT_REMOVE_TIPS}
+    <div class="infobox_head">{TXT_SHOP_TIP}</div>
+    <div class="infobox_body">{TXT_SHOP_IMPORT_ASSIGNMENT_REMOVE_TIPS}</div>
             </td>
         </tr>
         <tr class="row1">
@@ -219,7 +225,8 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
                 <b>{TXT_SHOP_IMPORT_TEMPLATENAME}:</b> <input type="text" name="ImgName" id="ImgName" />
             </td>
             <td>
-                {TXT_SHOP_IMPORT_TEMPLATE_SAVE_TIPS}
+    <div class="infobox_head">{TXT_SHOP_TIP}</div>
+    <div class="infobox_body">{TXT_SHOP_IMPORT_TEMPLATE_SAVE_TIPS}</div>
             </td>
         </tr>
     </table>
@@ -228,7 +235,6 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 </div>
 </form>
 <!-- End FieldsSelect -->
-
 <div id="import4" class="generalTab" style="display: none;">
     <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
         <tr>
@@ -245,7 +251,8 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         </tr>
         <!-- END imgRow -->
     </table>
-    <br />
+</div>
+<div id="import5" class="generalTab" style="display: none;">
     <form name="frmUpload" enctype="multipart/form-data" action="{SHOP_CMS_OFFSET}/admin/index.php?cmd=shop&amp;act=import" method="post">
     <input type="hidden" name="cmd" value="shop" />
     <input type="hidden" name="act" value="import" />
@@ -263,7 +270,8 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     &nbsp;<input type="submit" value="{TXT_SHOP_IMPORT_UPLOAD}" />
     </form>
     <br />
-    {TXT_SHOP_IMPORT_CREATE_TEMPLATE_TIPS}
+    <div class="infobox_head">{TXT_SHOP_TIP}</div>
+    <div class="infobox_body">{TXT_SHOP_IMPORT_CREATE_TEMPLATE_TIPS}</div>
 </div>
 
 <div id="import3" class="generalTab" style="display: none;">
@@ -276,11 +284,13 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         <tr>
             <th nowrap='nowrap' colspan="3"><b>{TXT_SHOP_EXPORT}</b></th>
         </tr>
+<!--
         <tr class="row1">
             <td nowrap='nowrap' valign="top" colspan="3">
                 <b>{TXT_SHOP_EXPORT_SELECTION}</b><br />
             </td>
         </tr>
+-->
 <!-- BEGIN groupRow -->
         <tr class="{CLASS_NAME}">
             <td nowrap='nowrap'>
@@ -297,7 +307,8 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <!-- END groupRow -->
     </table>
     <br />
-    {TXT_SHOP_EXPORT_TIPS}
+    <div class="infobox_head">{TXT_SHOP_TIP}</div>
+    <div class="infobox_body">{TXT_SHOP_EXPORT_TIPS}</div>
 </div>
 
 <script language="javascript" type="text/javascript">

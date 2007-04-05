@@ -175,8 +175,8 @@ class Shop extends ShopLibrary {
     {
         global $_LANGID, $objDatabase;
 
-
         if (0) {
+            global $objDatabase; $objDatabase->debug = 1;
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
         } else {
@@ -855,6 +855,23 @@ class Shop extends ShopLibrary {
         $paging     = "";
         $class      = "";
         $detailLink = "";
+        $catId      = isset($_REQUEST['catId']) ? intval($_REQUEST['catId']) : 0;
+        $term       = isset($_REQUEST['term']) ? mysql_escape_string(stripslashes(trim($_REQUEST['term']))) : '';
+
+        $treeArray = $this->_makeArrCategories();
+        $arrCats = array_keys($treeArray);
+        if (!$catId) {
+            $catId = $arrCats[0];
+        }
+        if ($this->objTemplate->blockExists('shopNextCategoryLink')) {
+            $nextCat = isset($arrCats[array_search($catId, $arrCats)+1]) ? $arrCats[array_search($catId, $arrCats)+1] : $arrCats[0];
+            $this->objTemplate->setVariable(array(
+                'SHOP_NEXT_CATEGORY_ID'    => $nextCat,
+                'SHOP_NEXT_CATEGORY_TITLE' => '"'.htmlentities($this->arrCategoriesName[$nextCat], ENT_QUOTES, CONTREXX_CHARSET).'"',
+                'TXT_SHOP_GO_TO_CATEGORY'  => $_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'],
+            ));
+            $this->objTemplate->parse('shopNextCategoryLink');
+        }
 
         $this->objTemplate->setGlobalVariable(array(
             'TXT_SEE_LARGE_PICTURE'      => $_ARRAYLANG['TXT_SEE_LARGE_PICTURE'],
@@ -863,7 +880,6 @@ class Shop extends ShopLibrary {
             'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
             'TXT_WEIGHT'                 => $_ARRAYLANG['TXT_WEIGHT'],
             'TXT_SHOP_CATEGORIES'        => $_ARRAYLANG['TXT_SHOP_CATEGORIES'],
-            'TXT_PRODUCTS_IN_CATEGORY'   => $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'],
             'SHOP_JAVASCRIPT_CODE'       => $this->getJavascriptCode(),
         ));
         $this->objTemplate->setVariable('SHOPNAVBAR_FILE', $this->getShopNavbar($themesPages['shopnavbar']));
@@ -873,9 +889,6 @@ class Shop extends ShopLibrary {
             $cartProdId = $productId;
             $productId = $_SESSION['shop']['cart']['products'][$productId]['id'];
         }
-
-        $catId = isset($_REQUEST['catId']) ? intval($_REQUEST['catId']) : 0;
-        $term= isset($_REQUEST['term']) ? mysql_escape_string(stripslashes(trim($_REQUEST['term']))) : '';
 
         //$shopMenuOptions = $this->getCatMenu($selectedId=$catId);
         $shopMenuOptions = $this->getCatMenu($catId);
@@ -939,16 +952,19 @@ class Shop extends ShopLibrary {
                     "ORDER BY p.sort_order ASC, p.id DESC";
             }
             $objResult = $objDatabase->Execute($q);
-            if (isset($_GET['pos'])) {
-                $pos = intval($_GET['pos']);
-            }
             $count = $objResult->RecordCount();
+            $paging = '';
             if ($count == 0) {
-                $paging = "<br />".$_ARRAYLANG['TXT_SELECT_SUB_GROUP'];
+                $paging = $_ARRAYLANG['TXT_SELECT_SUB_GROUP'];
             } elseif ($_CONFIG['corePagingLimit']) { // $_CONFIG from /config/settings.php
-                $paging = "<br />".getPaging($count, $pos, "&amp;section=shop".$pagingCatIdQuery.$pagingTermQuery, "<b>".$_ARRAYLANG['TXT_PRODUCTS']."</b>", true);
-               // $q .= " LIMIT $pos, {$_CONFIG['corePagingLimit']}";
-
+                $pos = (isset($_GET['pos']) ? intval($_GET['pos']) : 0);
+                $paging = getPaging(
+                    $count,
+                    $pos,
+                    "&amp;section=shop".$pagingCatIdQuery.$pagingTermQuery,
+                    "<b>".$_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'].' "'.
+                        htmlentities($this->arrCategoriesName[$catId], ENT_QUOTES, CONTREXX_CHARSET).
+                            '"</b>', true);
                 if (!($objResult = $objDatabase->SelectLimit($q, $_CONFIG['corePagingLimit'], $pos))) {
                     $this->errorHandling();
                     return false;
@@ -1087,7 +1103,6 @@ class Shop extends ShopLibrary {
                     'SHOP_PRODUCT_FORM_NAME'          => $shopProductFormName,
                     'SHOP_PRODUCT_SUBMIT_NAME'        => $productSubmitName,
                     'SHOP_PRODUCT_SUBMIT_FUNCTION'    => $productSubmitFunction,
-                    'SHOP_CURRENT_CATEGORY'           => htmlentities($this->arrCategoriesName[$catId], ENT_QUOTES, CONTREXX_CHARSET),
                 ));
 
                 $this->objTemplate->parse('shopProductRow');
@@ -1096,18 +1111,6 @@ class Shop extends ShopLibrary {
             }
         } else {
             $this->objTemplate->hideBlock('shopProductRow');
-        }
-
-        if ($this->objTemplate->blockExists('shopNextCategoryLink')) {
-            $treeArray = $this->_makeArrCategories();
-            $arrCats = array_keys($treeArray);
-            $nextCat = isset($arrCats[array_search($catId, $arrCats)+1]) ? $arrCats[array_search($catId, $arrCats)+1] : $arrCats[0];
-
-            $this->objTemplate->setVariable(array(
-                'SHOP_NEXT_CATEGORY_ID'    => $nextCat,
-                'SHOP_NEXT_CATEGORY_TITLE' => htmlentities($this->arrCategoriesName[$nextCat], ENT_QUOTES, CONTREXX_CHARSET),
-            ));
-            $this->objTemplate->parse('shopNextCategoryLink');
         }
     }
 

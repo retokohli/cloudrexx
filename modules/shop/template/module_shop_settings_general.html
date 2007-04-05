@@ -72,7 +72,7 @@ function setVatUnset()
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">{TXT_CONTACT_ADDRESS}</td>
-      <td nowrap="nowrap"><textarea cols="40" rows="5" name="shop_address">{SHOP_CONTACT_ADDRESS}</textarea></td>
+      <td nowrap="nowrap"><textarea cols="36" rows="5" name="shop_address">{SHOP_CONTACT_ADDRESS}</textarea></td>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_PHONE_NUMBER}</td>
@@ -168,21 +168,24 @@ function setVatUnset()
         </td>
       </tr>
     </table>
+    <br />
     <table id='taxes' style="display:{SHOP_TAX_DISPLAY_STATUS};" border="0" cellspacing="0" cellpadding="2" width='100%' class="adminlist">
+    <colgroup><col width="5%"><col width="5%"><col width="90%">
+    </colgroup>
       <tr>
-        <th width='100%' colspan=2>{TXT_TAX_DETAILS}</th>
+        <th width='100%' colspan=3>{TXT_TAX_DETAILS}</th>
       </tr>
       <tr class="row1">
         <td nowrap="nowrap" width='10%'>
           {TXT_TAX_NUMBER}
         </td>
-        <td colspan=1 width='91%'>
+        <td colspan=2 width='91%'>
           <input type="text" name="tax_number" value="{SHOP_TAX_NUMBER}" size="10" maxlength="6" />
         </td>
       </tr>
       <tr>
         <td nowrap="nowrap"></td>
-        <td colspan=1 nowrap="nowrap">
+        <td colspan=2 nowrap="nowrap">
           {TXT_INCLUDED}
           <input name="tax_included" type="radio" value="1" {SHOP_TAX_INCLUDED_STATUS} />
           {TXT_EXCLUSIVE}
@@ -193,14 +196,15 @@ function setVatUnset()
         <td nowrap="nowrap">
           {TXT_TAX_DEFAULT}
         </td>
-        <td nowrap="nowrap">
+        <td nowrap="nowrap" colspan=2>
           {SHOP_TAX_DEFAULT_MENU}
           <input type='button' name='buttonSetVatUnset' value="{TXT_TAX_SET_UNSET}" onclick='javascript:setVatUnset()' />
           <input type='button' name='buttonSetVatAll' value="{TXT_TAX_SET_ALL}" onclick='javascript:setVatAll()' />
         </td>
       </tr>
+      <tr><td colspan=3>&nbsp;</td></tr>
       <tr>
-        <th colspan=2>{TXT_TAX_RATES}</th>
+        <th colspan=3>{TXT_TAX_RATES}</th>
       </tr>
 <!-- BEGIN taxRow -->
       <tr class="{SHOP_ROWCLASS}">
@@ -209,24 +213,27 @@ function setVatUnset()
           <input type="hidden" name="vatids[]" value="{SHOP_TAX_ID}" />
           <input type="text" name="vatclasses[]" value="{SHOP_TAX_CLASS}" size="30" maxlength="255" />
         </td>
-        <td colspan=1 nowrap="nowrap">
+        <td nowrap="nowrap">
           {TXT_TAX_RATE}
           <input type="text" name="vatrates[]" value="{SHOP_TAX_RATE}" size="10" maxlength="6" />%
+        </td>
+        <td>
           <a href="javascript:deleteVat({SHOP_TAX_ID})" title="{TXT_DELETE}">
             <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
           </a>
         </td>
       </tr>
 <!-- END taxRow -->
+      <tr><td colspan=3>&nbsp;</td></tr>
       <tr>
-        <th colspan=2>{TXT_TAX_NEW}</th>
+        <th colspan=3>{TXT_TAX_NEW}</th>
       </tr>
       <tr class="row1">
         <td nowrap="nowrap">
           {TXT_TAX_CLASS_NEW}
           <input type="text" name="vatclassnew" value="" size="30" maxlength="255" />
         </td>
-        <td nowrap="nowrap">
+        <td nowrap="nowrap" colspan=2>
           {TXT_TAX_RATE_NEW}
           <input type="text" name="vatratenew" value="" size="10" maxlength="6" />%
         </td>
