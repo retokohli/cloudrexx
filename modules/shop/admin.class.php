@@ -194,18 +194,17 @@ class shopmanager extends ShopLibrary {
                                    "<a href='?cmd=shop&amp;act=customers'>".$_ARRAYLANG['TXT_CUSTOMERS_PARTNERS']."</a>".
                                    "<a href='?cmd=shop&amp;act=orders'>".$_ARRAYLANG['TXT_ORDERS']."</a>".
                                    "<a href='?cmd=shop&amp;act=statistics'>".$_ARRAYLANG['TXT_STATISTIC']."</a>".
-        /*<a href='?cmd=shop&amp;act=exchange'>[Export/Import]</a>*/
                                    "<a href='?cmd=shop&amp;act=import'>".$_ARRAYLANG['TXT_IMPORT_EXPORT']."</a>".
                                    "<a href='?cmd=shop&amp;act=pricelist'>".$_ARRAYLANG['TXT_PDF_OVERVIEW']."</a>".
                                    "<a href='?cmd=shop&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>"
         ));
 
         $this->arrOrderStatus = array(
-        0    => $_ARRAYLANG['TXT_PENDING'], // Pending
-        1    => $_ARRAYLANG['TXT_CONFIRMED'], // Confirmed
-        2    => $_ARRAYLANG['TXT_CANCELLED'], // Cancelled
-        3    => $_ARRAYLANG['TXT_REFUNDED'], // Refunded
-        4    => $_ARRAYLANG['TXT_SHIPPED'] // Shipped
+            0    => $_ARRAYLANG['TXT_PENDING'], // Pending
+            1    => $_ARRAYLANG['TXT_CONFIRMED'], // Confirmed
+            2    => $_ARRAYLANG['TXT_CANCELLED'], // Cancelled
+            3    => $_ARRAYLANG['TXT_REFUNDED'], // Refunded
+            4    => $_ARRAYLANG['TXT_SHIPPED'] // Shipped
         );
 
         // Settings object
@@ -576,7 +575,7 @@ class shopmanager extends ShopLibrary {
             }
         } else {
             if ($_REQUEST["exe"] != "SelectFields") {
-                $JSnofiles     = "selectTab('import4');";
+                $JSnofiles     = "selectTab('import1');";
             } else {
                 if ($_FILES['CSVfile']['name']=="") {
                     $JSnofiles  = "selectTab('import4');";
@@ -791,12 +790,12 @@ class shopmanager extends ShopLibrary {
         for ($x=0; $x<count($this->objCSVimport->arrImportImg); $x++) {
             if (($x % 2) == 0) {$class="row1";} else {$class="row2";}
             $this->_objTpl->setVariable(array(
-            'IMG_NAME'   => $this->objCSVimport->arrImportImg[$x]["name"],
-            'IMG_ID'     => $this->objCSVimport->arrImportImg[$x]["id"],
-            'TXT_DELETE' => $_ARRAYLANG['TXT_SHOP_IMPORT_DELETE'],
-            'CLASS_NAME' => $class,
-            // cms offset fix for admin images/icons:
-            'SHOP_CMS_OFFSET' => ASCMS_PATH_OFFSET,
+                'IMG_NAME'   => $this->objCSVimport->arrImportImg[$x]["name"],
+                'IMG_ID'     => $this->objCSVimport->arrImportImg[$x]["id"],
+                'TXT_DELETE' => $_ARRAYLANG['TXT_SHOP_IMPORT_DELETE'],
+                'CLASS_NAME' => $class,
+                // cms offset fix for admin images/icons:
+                'SHOP_CMS_OFFSET' => ASCMS_PATH_OFFSET,
             ));
             $this->_objTpl->parse("imgRow");
         }

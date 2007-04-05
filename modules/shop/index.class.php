@@ -347,11 +347,6 @@ class Shop extends ShopLibrary {
                 case "changepass";
                     $_GET['act'] = "changepass";
                     break;
-// albris.ch
-                case "addresslabel";
-                    $_GET['act'] = "addresslabel";
-                    break;
-///albris.ch
                 default:
                     //$_GET['act'] = "products";
                     break;
@@ -412,11 +407,6 @@ class Shop extends ShopLibrary {
                 case "changepass";
                     $this->_changepass();
                     break;
-// albris.ch
-                case "addresslabel";
-                    $this->_addresslabel();
-                    break;
-///albris.ch
                 default:
                     $this->products();
                     break;
@@ -3637,87 +3627,6 @@ $_ARRAYLANG['TXT_TOTAL_PRICE'].": ".$_SESSION['shop']['grand_total_price']." ".$
         $body = str_replace($search, $replace, $body);
         return $body;
     }
-
-
-    /**
-     * Prints the address label using the lines found in the
-     * address array in the sector specified.
-     *
-     * Uses the free fpdf library, see {@link http://www.fpdf.org/}
-     * @param   integer $sector     The sector to print the address in
-     * @param   array   $arrAddress Array containing the address lines
-     * @return  string              Empty string on success, or an error
-     *                              message otherwise.
-     */
-    function _addresslabel()
-    {
-
-        $sector = (isset($_POST['sector']) ? intval($_POST['sector']) : 0);
-        $arrAddress = (isset($_POST['address']) ? $_POST['address'] : '');
-
-        if (!($sector >= 1 && $sector <= 4 && is_array($arrAddress))) {
-
-            // wee
-
-        } else {
-
-            // A4: 297 mm x 210 mm = 11.7'' x 8.3'' =842 pt x 595 pt
-            // A6: 148 mm x 105 mm
-            // A8:  74 mm x  52 mm
-            // useful units -- landscape -- all in millimeters
-            $page_width  = 297;             // +-----+-----+
-            $page_height = 210;             // |  + 1|  + 2|
-            $page_width_half  = 148;        // +-----+-----+
-            $page_height_half = 105;        // |--+ 3|  + 4|
-            $page_width_quarter  = 74;      // +-----+-----+
-            $page_height_quarter = 52;      //   A8 A6    A4
-
-            // line height, mm
-            $lineHeight = 5;
-
-            // address fields, indices as shown above.
-            // note that the minimal margin of 10 mm is included.
-            //
-            // position
-            $arrAddressFieldPosition = array(
-                // index => array(xOffset, yOffset)
-                1 => array($page_width_quarter+10, $page_height_quarter+10),
-                2 => array($page_width_half+$page_width_quarter+10, $page_height_quarter+10),
-                3 => array($page_width_quarter+10, $page_height_half+$page_height_quarter+10),
-                4 => array($page_width_half+$page_width_quarter+10, $page_height_half+$page_height_quarter+10),
-            );
-            // size
-            $arrAddressFieldSize = array(
-                $page_width_quarter-20,
-                $page_height_quarter-20,
-            );
-
-            // create the page and print the address
-            // orient, unit, format.
-            $objFPDF = new FPDF('L', 'mm', 'A4');
-            // r, g, b
-            $objFPDF->SetTextColor(0, 0, 0);
-            $objFPDF->AddPage();
-            // font, style, size
-            $objFPDF->SetFont('Arial', '', 12);
-
-            // fill in the address
-            $lineY = $lineHeight;
-            for ($addressLine=0; $addressLine<count($arrAddress); $addressLine++) {
-                if ($arrAddress[$addressLine]) {
-                    $objFPDF->Text(
-                        $arrAddressFieldPosition[$sector][0],
-                        $arrAddressFieldPosition[$sector][1]+$lineY,
-                        $arrAddress[$addressLine]
-                    );
-                    $lineY += $lineHeight;
-                }
-            }
-
-            // send to browser
-            $objFPDF->Output();
-        } // if/else arguments
-    } // function
 }
 
 ?>
