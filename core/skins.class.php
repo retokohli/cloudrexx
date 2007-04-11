@@ -361,7 +361,7 @@ class skins
 	    										'THEME_ACTIVATE_LINK'	=>	(empty($extra)) ? $htmlActivateLink : '',
 	    										'THEME_ID'				=>	$theme['id'],
 	    										'TXT_ACTIVATE_DESIGN'	=> 	$_CORELANG['TXT_ACTIVATE_DESIGN'],
-	    										'ROW_CLASS'				=>	($rowclass++ % 2) ? 'row1' : 'row2',
+	    										'ROW_CLASS'				=>	(!empty($extra) ? 'rowWarn' : (($rowclass++ % 2) ? 'row1' : 'row2')),
 	    										'THEME_XML_AUTHOR'		=>	$this->_xmlDocument['THEME']['AUTHORS']['AUTHOR']['USER']['cdata'],
 	    										'THEME_XML_VERSION'		=>	$this->_xmlDocument['THEME']['VERSION']['cdata'],
 	    										'THEME_XML_DESCRIPTION'	=>	$this->_xmlDocument['THEME']['DESCRIPTION']['cdata'],
@@ -1534,7 +1534,9 @@ class skins
 			$default = '';
 			if ($objResult !== false) {
 				while (!$objResult->EOF) {
-					if($objResult->fields['id'] == $defaultThemeId) $default = "(".$_CORELANG['TXT_DEFAULT'].")";
+					if($objResult->fields['id'] == $defaultThemeId){
+						$default = "(".$_CORELANG['TXT_DEFAULT'].")";
+					}
 					$tdm .="<option value='".$objResult->fields['id']."'>".$objResult->fields['themesname']." ".$default."</option>\n";
 					$default='';
 					$objResult->MoveNext();
