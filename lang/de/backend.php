@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Apr 2007 17:43:55 +0200
+* generated date Wed, 11 Apr 2007 11:25:51 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
@@ -572,7 +572,7 @@ $_ARRAYLANG['TXT_RESERVATION_MODULE_DESCRIPTION'] = "Reservierungssystem";
 $_ARRAYLANG['TXT_RESERVATION'] = "Reservierungen";
 $_ARRAYLANG['TXT_SEARCH_VISIBLE_CONTENT_ONLY'] = "Nur in sichtbaren Inhaltsseiten suchen";
 $_ARRAYLANG['TXT_RESERVATION_MODULE'] = "Reservierungssystem";
-$_ARRAYLANG['TXT_THEME_IMPORT_EXPORT'] = "Import/Export";
+$_ARRAYLANG['TXT_THEME_IMPORT_EXPORT'] = "Schnittstellen";
 $_ARRAYLANG['TXT_THEME_IMPORT'] = "Import";
 $_ARRAYLANG['TXT_THEME_EXPORT'] = "Export";
 $_ARRAYLANG['TXT_THEME_PREVIEW'] = "Vorschau";
@@ -584,7 +584,7 @@ $_ARRAYLANG['TXT_THEME_NO_URL_SPECIFIED'] = "Keine URL angegeben";
 $_ARRAYLANG['TXT_THEME_NO_FILE_SPECIFIED'] = "Keine Datei angegeben";
 $_ARRAYLANG['TXT_THEME_ARCHIVE_ERROR'] = "Archivfehler";
 $_ARRAYLANG['TXT_THEME_HTTP_CONNECTION_FAILED'] = "Konnte keine HTTP Verbindung herstellen";
-$_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'] = "  konnte nicht erstellt werden";
+$_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'] = "  konnte nicht erstellt werden";
 $_ARRAYLANG['TXT_THEME_SEND_ARCHIVE'] = "Archiv schicken";
 $_ARRAYLANG['TXT_THEME_IMPORT_ARCHIVE'] = "Archiv importieren";
 $_ARRAYLANG['TXT_LOGOUT_WARNING'] = "Sie beenden Ihre geschützte Administrations Konsole. Zu Ihrer Sicherheit empfehlen wir, den Cache Ihres Browsers zu leeren. Wollen Sie die Administrations Console wirklich beenden?";
