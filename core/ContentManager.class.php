@@ -1128,12 +1128,12 @@ class ContentManager
 															conTable.expertmode			AS conExpertMode,
 															logTable.is_validated		AS logValidated
 												FROM		'.DBPREFIX.'content_navigation_history AS navTable
-												LEFT JOIN	'.DBPREFIX.'content_history AS conTable
-												ON			navTable.id = conTable.id
-												LEFT JOIN	'.DBPREFIX.'content_logfile AS logTable
+												INNER JOIN	'.DBPREFIX.'content_history AS conTable
+												ON			conTable.id = navTable.id
+												INNER JOIN	'.DBPREFIX.'content_logfile AS logTable
 												ON			logTable.history_id = navTable.id
-												HAVING		navPageId='.$pageId.' AND
-															logValidated="1"
+												WHERE 		navTable.catid='.$pageId.' AND
+															logTable.is_validated="1"
 												ORDER BY	navChangelog DESC
 											');
 			if ($objResult->RecordCount() > 0) {
