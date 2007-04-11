@@ -379,6 +379,18 @@ class memberDir extends MemberDirLibrary
 		    if ($this->_objTpl->blockExists("row")) {
 		        // Automatic listing
     			if ($field['active']) {
+    				if(preg_match('#[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]{1,}\.[a-zA-Z0-9_-]{1,}#', $objResult->fields[$key])){
+    					$objResult->fields[$key] = '<a href="mailto:'.$objResult->fields[$key].'">'.$objResult->fields[$key].'</a>';
+    				}
+    				$subs = array();
+    				if(strpos($objResult->fields[$key], 'http://') !== false){
+	    				preg_match('#http://([a-zA-Z0-9_\-\.]+\.[a-zA-Z]{1,}[a-zA-Z0-9_\-\#\%\&/\?]+)#', $objResult->fields[$key], $subs);
+    					$objResult->fields[$key] = '<a href="http://'.$subs[1].'" title="http://'.$subs[1].'" target="_blank">'.$objResult->fields[$key].'</a>';
+    				}
+    				if(strpos($objResult->fields[$key], 'www.') !== false){
+	    				preg_match('#www\.([a-zA-Z0-9_\-\.]+\.[a-zA-Z]{1,}[a-zA-Z0-9_\-\#\%\&/\?]+)#', $objResult->fields[$key], $subs);
+    					$objResult->fields[$key] = '<a href="http://www.'.$subs[1].'" title="http://www.'.$subs[1].'" target="_blank">'.$objResult->fields[$key].'</a>';
+    				}
     				$this->_objTpl->setVariable(array(
     					"MEMBERDIR_FIELD_NAME"		=> $field['name'],
     					"MEMBERDIR_FIELD_VALUE"		=> ($key > 13) ? nl2br($objResult->fields[$key]) : $this->checkStr($objResult->fields[$key])
