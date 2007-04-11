@@ -2268,6 +2268,7 @@ class newsletter extends NewsletterLib
 				}
 			}
 		} else {
+			print_r($mail);
 			if (strstr($mail->ErrorInfo, 'authenticate')) {
 				$this->_strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_MAIL_AUTH_FAILED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
 			} elseif (strstr($mail->ErrorInfo, 'from_failed')) {
@@ -2418,13 +2419,17 @@ class newsletter extends NewsletterLib
 			$size = sizeof($allImg[1]);
 			$i = 0;
 			$port = $_SERVER['SERVER_PORT'] != 80 ? ':'.intval($_SERVER['SERVER_PORT']) : '';
+
 			while ($i < $size) {
 				$URLforReplace = $allImg[1][$i];
-				$ReplaceWith = '"'.ASCMS_PROTOCOL.'://'.$_SERVER['SERVER_NAME'].$port.$URLforReplace.'"';
+				if(substr($URLforReplace, 0, 7) != ASCMS_PROTOCOL.'://'){
+					$ReplaceWith = '"'.ASCMS_PROTOCOL.'://'.$_SERVER['SERVER_NAME'].$port.$URLforReplace.'"';
+				}else{
+					$ReplaceWith = $URLforReplace;
+				}
 				$content_text = str_replace('"'.$URLforReplace.'"', $ReplaceWith, $content_text);
 				$i++;
 			}
-
 		}
 
 		$array_1 		= array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');

@@ -191,9 +191,9 @@ class newsletter extends NewsletterLib
 			$month = !empty($birthday[1]) ? $birthday[1] : '01';
 			$year = !empty($birthday[2]) ? $birthday[2] : date("Y");
     	}else{
-    		$day = '01';
-    		$month = '01';
-    		$year = date("Y");
+    		$day 	= '01';
+    		$month 	= '01';
+    		$year 	= date("Y");
     	}
 
 		for($i=1;$i<=31;$i++){
