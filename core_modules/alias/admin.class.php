@@ -72,6 +72,14 @@ class AliasAdmin extends aliasLib
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/alias/template');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
+		if (isset($_POST['alias_save'])) {
+			if ($this->_setSettings()) {
+				array_push($this->arrStatusMsg['ok'], $_ARRAYLANG['TXT_ALIAS_CONFIG_SUCCESSFULLY_APPLYED']);
+			} else {
+				array_push($this->arrStatusMsg['error'], $_ARRAYLANG['TXT_ALIAS_CONFIG_FAILED_APPLY']);
+			}
+		}
+
 		$arrConfig = $this->_getConfig();
 
     	$objTemplate->setVariable("CONTENT_NAVIGATION",
@@ -161,9 +169,9 @@ class AliasAdmin extends aliasLib
 					$this->_objTpl->parse('alias_source_list');
 				}
 				$this->_objTpl->setVariable(array(
-					'ALIAS_ROW_CLASS_ID'	=> $nr++ % 2 + 1,
+					'ALIAS_ROW_CLASS'	=> !empty($arrAlias['pageUrl']) ? 'row'.($nr++ % 2 + 1) : 'rowWarn ',
 					'ALIAS_TARGET_ID'		=> $aliasId,
-					'ALIAS_TARGET_TITLE'	=> $arrAlias['type'] == 'local' ? $arrAlias['title'].' ('.$arrAlias['pageUrl'].')' : $arrAlias['url']
+					'ALIAS_TARGET_TITLE'	=> !empty($arrAlias['pageUrl']) ? ($arrAlias['type'] == 'local' ? $arrAlias['title'].' ('.$arrAlias['pageUrl'].')' : $arrAlias['url']) : $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST']
 				));
 				$this->_objTpl->parse('aliases_list');
 			}
@@ -311,16 +319,6 @@ class AliasAdmin extends aliasLib
 
 		$this->_objTpl->loadTemplateFile('module_alias_settings.html');
 
-		if (isset($_POST['alias_save'])) {
-			if ($this->_setSettings()) {
-				array_push($this->arrStatusMsg['ok'], $_ARRAYLANG['TXT_ALIAS_CONFIG_SUCCESSFULLY_APPLYED']);
-			} else {
-				array_push($this->arrStatusMsg['error'], $_ARRAYLANG['TXT_ALIAS_CONFIG_FAILED_APPLY']);
-			}
-
-			$this->_initConfig();
-		}
-
 		$apacheEnv = preg_match('#apache#i', $_SERVER['SERVER_SOFTWARE']);
 
 		ob_start();
@@ -340,6 +338,8 @@ class AliasAdmin extends aliasLib
 			'ALIAS_REQUIREMENTS_STATUS_MSG'	=> ($apacheEnv && $modRewriteLoaded) ? $_ARRAYLANG['TXT_ALIAS_HTACCESS_HINT'] : ($apacheEnv ? $_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] : $_ARRAYLANG['TXT_ALIAS_APACHE_MISSING']),
 
 		));
+
+		$arrConfig = $this->_getConfig();
 
 		if ($apacheEnv && $modRewriteLoaded) {
 			$this->_objTpl->setVariable(array(
