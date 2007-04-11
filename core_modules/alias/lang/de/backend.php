@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 11 Apr 2007 11:25:51 +0200
+* generated date Wed, 11 Apr 2007 16:21:28 +0200
 **/
 
 $_ARRAYLANG['TXT_ALIAS_ALIASES'] = "Aliase";
@@ -43,4 +43,5 @@ $_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "Da die Erweiterung <strong>mod_r
 $_ARRAYLANG['TXT_ALIAS_HTACCESS_HINT'] = "Versichern Sie sich also, dass auf diesem Server die Verwendung von .htaccess Dateien unterstützt wird.";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_SUCCESSFULLY_APPLYED'] = "Die Einstellungen wurden erfolgreich übernommen.";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_FAILED_APPLY'] = "Beim Speichern der Konfiguration trat ein Fehler auf!";
+$_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST'] = "Die Zielseite existiert nicht mehr!";
 ?>
