@@ -25,9 +25,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Weight.class.php';
 // fpdf class
 require_once ASCMS_MODULE_PATH.'/shop/lib/fpdf.php';
 
-$_ARRAYLANG['TXT_SHOP_CATEGORIES'] = "Kategorien:";
-$_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'] = "Produkte in der Kategorie";
-
 /**
  * Use session in show
  *
