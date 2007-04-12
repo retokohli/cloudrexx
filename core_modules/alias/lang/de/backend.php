@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 11 Apr 2007 16:21:28 +0200
+* generated date Thu, 12 Apr 2007 19:57:05 +0200
 **/
 
 $_ARRAYLANG['TXT_ALIAS_ALIASES'] = "Aliase";
@@ -40,8 +40,9 @@ $_ARRAYLANG['TXT_ALIAS_REQUIREMENTS_DESC'] = "Die Alias Verwaltung funktioniert 
 $_ARRAYLANG['TXT_ALIAS_USE_ALIAS_ADMINISTRATION'] = "Alias Verwaltung verwenden";
 $_ARRAYLANG['TXT_ALIAS_APACHE_MISSING'] = "Da Sie einen anderen Webserver als den Apache verwenden, funktioniert die Alias Verwaltung auf diesem Server nicht!";
 $_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "Da die Erweiterung <strong>mod_rewrite</strong> auf diesem Server nicht aktiviert wurde, funktioniert die Alias Verwaltung nicht!";
-$_ARRAYLANG['TXT_ALIAS_HTACCESS_HINT'] = "Versichern Sie sich also, dass auf diesem Server die Verwendung von .htaccess Dateien unterstützt wird.";
+$_ARRAYLANG['TXT_ALIAS_HTACCESS_HINT'] = "Versichern Sie sich also, dass auf diesem Server die Verwendung von <strong.htaccess</strong> Dateien unterstützt wird.";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_SUCCESSFULLY_APPLYED'] = "Die Einstellungen wurden erfolgreich übernommen.";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_FAILED_APPLY'] = "Beim Speichern der Konfiguration trat ein Fehler auf!";
 $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST'] = "Die Zielseite existiert nicht mehr!";
+$_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "Das Alias %s kann nicht verwendet werden, da es physikalisch vorhanden ist!";
 ?>
