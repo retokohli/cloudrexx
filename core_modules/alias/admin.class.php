@@ -8,7 +8,7 @@
  * @subpackage  core_module_alias
  * @todo        Edit PHP DocBlocks!
  */
-
+error_reporting(E_ALL);ini_set('display_errors', 1);
 /**
  * Includes
  */
@@ -72,15 +72,22 @@ class AliasAdmin extends aliasLib
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/alias/template');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-		if (isset($_POST['alias_save'])) {
-			if ($this->_setSettings()) {
-				array_push($this->arrStatusMsg['ok'], $_ARRAYLANG['TXT_ALIAS_CONFIG_SUCCESSFULLY_APPLYED']);
+		if (isset($_REQUEST['act']) && $_REQUEST['act'] == 'settings' && isset($_POST['alias_save'])) {
+			if ($this->_setAliasAdministrationStatus(isset($_POST['alias_status']) && $_POST['alias_status'])) {
+				$this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ALIAS_CONFIG_SUCCESSFULLY_APPLYED'];
 			} else {
-				array_push($this->arrStatusMsg['error'], $_ARRAYLANG['TXT_ALIAS_CONFIG_FAILED_APPLY']);
+				$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_CONFIG_FAILED_APPLY'];
 			}
 		}
 
 		$arrConfig = $this->_getConfig();
+		if ($arrConfig['aliasStatus'] == '') {
+			if ($this->_isModRewriteInUse()) {
+				$this->_setAliasAdministrationStatus(true);
+				$this->_initConfig();
+				$arrConfig = $this->_getConfig();
+			}
+		}
 
     	$objTemplate->setVariable("CONTENT_NAVIGATION",
     		($arrConfig['aliasStatus'] == '1' ? "<a href='index.php?cmd=alias'>".$_ARRAYLANG['TXT_ALIAS_ALIASES']."</a>"
@@ -169,9 +176,9 @@ class AliasAdmin extends aliasLib
 					$this->_objTpl->parse('alias_source_list');
 				}
 				$this->_objTpl->setVariable(array(
-					'ALIAS_ROW_CLASS'	=> !empty($arrAlias['pageUrl']) ? 'row'.($nr++ % 2 + 1) : 'rowWarn ',
+					'ALIAS_ROW_CLASS'	=> $arrAlias['type'] == 'local' && empty($arrAlias['pageUrl']) && $nr++ ? 'rowWarn ' : 'row'.($nr++ % 2 + 1),
 					'ALIAS_TARGET_ID'		=> $aliasId,
-					'ALIAS_TARGET_TITLE'	=> !empty($arrAlias['pageUrl']) ? ($arrAlias['type'] == 'local' ? $arrAlias['title'].' ('.$arrAlias['pageUrl'].')' : $arrAlias['url']) : $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST']
+					'ALIAS_TARGET_TITLE'	=> $arrAlias['type'] == 'local' ? (!empty($arrAlias['pageUrl']) ? $arrAlias['title'].' ('.$arrAlias['pageUrl'].')' : $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST']) : htmlentities($arrAlias['url'], ENT_QUOTES, CONTREXX_CHARSET)
 				));
 				$this->_objTpl->parse('aliases_list');
 			}
@@ -206,54 +213,66 @@ class AliasAdmin extends aliasLib
 			$arrAlias['sources'] = array();
 			if (!empty($_POST['alias_aliases']) && is_array($_POST['alias_aliases'])) {
 				foreach ($_POST['alias_aliases'] as $sourceId => $aliasSource) {
+					$aliasSource = trim(contrexx_stripslashes($aliasSource));
 					if (!empty($aliasSource)) {
-						array_push($arrAlias['sources'], array(
+						$arrAlias['sources'][] = array(
 							'id'	=> intval($sourceId),
-							'url'	=> trim(contrexx_stripslashes($aliasSource))
-						));
+							'url'	=> $aliasSource
+						);
 					}
 				}
 			}
 
 			if (!empty($_POST['alias_aliases_new']) && is_array($_POST['alias_aliases_new'])) {
-
 				foreach ($_POST['alias_aliases_new'] as $newAliasSource) {
+					$newAliasSource = trim(contrexx_stripslashes($newAliasSource));
 					if (!empty($newAliasSource)) {
-						array_push($arrAlias['sources'], array('url' => trim(contrexx_stripslashes($newAliasSource))));
+						if (file_exists(ASCMS_DOCUMENT_ROOT.'/'.$newAliasSource)) {
+							$this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'], htmlentities($newAliasSource, ENT_QUOTES, CONTREXX_CHARSET));
+							continue;
+						}
+
+						$arrAlias['sources'][] = array('url' => $newAliasSource);
 					}
 				}
 			}
 
 			if (!empty($arrAlias['url'])) {
-				if (count($arrAlias['sources'])) {
+				if (!$this->_isUniqueAliasTarget($arrAlias['url'], $aliasId)) {
+					$this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'], htmlentities(($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url']), ENT_QUOTES, CONTREXX_CHARSET));
+				} elseif (count($arrAlias['sources'])) {
 					$error = false;
 
 					foreach ($arrAlias['sources'] as $arrSource) {
-						if (!in_array($arrSource['url'], $arrSourceUrls) && $this->_isUniqueAliasSource($arrSource['url'], (!empty($arrSource['id']) ? $arrSource['id'] : 0))) {
-							array_push($arrSourceUrls, $arrSource['url']);
-						} else {
+						$target = $arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'];
+						if (in_array($arrSource['url'], $arrSourceUrls) || !$this->_isUniqueAliasSource($arrSource['url'], $target,(!empty($arrSource['id']) ? $arrSource['id'] : 0))) {
 							$error = true;
-							array_push($this->arrStatusMsg['error'], sprintf($_ARRAYLANG['TXT_ALIAS_ALREADY_IN_USE'], htmlentities($arrSource['url'], ENT_QUOTES, CONTREXX_CHARSET)));
+							$this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ALIAS_ALREADY_IN_USE'], htmlentities($arrSource['url'], ENT_QUOTES, CONTREXX_CHARSET));
+						} elseif (@file_exists(ASCMS_DOCUMENT_ROOT.'/'.$arrSource['url'])) {
+							$error = true;
+							$this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'], htmlentities($arrSource['url'], ENT_QUOTES, CONTREXX_CHARSET));
+						} else {
+							$arrSourceUrls[] = $arrSource['url'];
 						}
 					}
 
 					if (!$error) {
 						if (($aliasId ? $this->_updateAlias($aliasId, $arrAlias) : $this->_addAlias($arrAlias))) {
-							array_push($this->arrStatusMsg['ok'], $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_UPDATED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_ADDED']);
+							$this->arrStatusMsg['ok'][] = $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_UPDATED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_ADDED'];
 							return $this->_list();
 						} else {
-							array_push($this->arrStatusMsg['error'], $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED']);
-							array_push($this->arrStatusMsg['error'], $_ARRAYLANG['TXT_ALIAS_RETRY_OPERATION']);
+							$this->arrStatusMsg['error'][] = $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
+							$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_RETRY_OPERATION'];
 						}
 					}
 				} else {
-					array_push($this->arrStatusMsg['error'], $_ARRAYLANG['TXT_ALIAS_ONE_ALIAS_REQUIRED_MSG']);
+					$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_ONE_ALIAS_REQUIRED_MSG'];
 				}
 			} else {
 				if ($arrAlias['type'] == 'local') {
-					array_push($this->arrStatusMsg['error'], $_ARRAYLANG['TXT_ALIAS_PAGE_REQUIRED_MSG']);
+					$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_PAGE_REQUIRED_MSG'];
 				} else {
-					array_push($this->arrStatusMsg['error'], $_ARRAYLANG['TXT_ALIAS_URL_REQUIRED_MSG']);
+					$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_URL_REQUIRED_MSG'];
 				}
 			}
 		} elseif (($arrAlias = $this->_getAlias($aliasId)) === false) {
@@ -352,13 +371,21 @@ class AliasAdmin extends aliasLib
 		}
 	}
 
-	function _setSettings()
+	function _setAliasAdministrationStatus($active = false)
 	{
 		global $objDatabase;
 
-		$aliasStatus = isset($_POST['alias_status']) && $_POST['alias_status'] == '1';
+		if ($active) {
+			if (!$this->_activateRewriteEngine()) {
+				return false;
+			}
+		} else {
+			if (!$this->_deactivateRewriteEngine()) {
+				return false;
+			}
+		}
 
-		if ($objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = '".$aliasStatus."' WHERE `setname` = 'aliasStatus' AND `setmodule` = 41") !== false) {
+		if ($objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = '".($active ? '1' : '0')."' WHERE `setname` = 'aliasStatus' AND `setmodule` = 41") !== false) {
 			return true;
 		} else {
 			return false;
@@ -373,10 +400,10 @@ class AliasAdmin extends aliasLib
 
 		if ($aliasId) {
 			if ($this->_deleteAlias($aliasId)) {
-				array_push($this->arrStatusMsg['ok'], $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_REMOVED']);
+				$this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_REMOVED'];
 			} else {
-				array_push($this->arrStatusMsg['error'], $_ARRAYLANG['TXT_ALIAS_ALIAS_REMOVE_FAILED']);
-				array_push($this->arrStatusMsg['error'], $_ARRAYLANG['TXT_ALIAS_RETRY_OPERATION']);
+				$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_ALIAS_REMOVE_FAILED'];
+				$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_RETRY_OPERATION'];
 			}
 		}
 	}
