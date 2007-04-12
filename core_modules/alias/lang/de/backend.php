@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 12 Apr 2007 19:57:05 +0200
+* generated date Thu, 12 Apr 2007 23:14:08 +0200
 **/
 
 $_ARRAYLANG['TXT_ALIAS_ALIASES'] = "Aliase";
@@ -45,4 +45,5 @@ $_ARRAYLANG['TXT_ALIAS_CONFIG_SUCCESSFULLY_APPLYED'] = "Die Einstellungen wurden
 $_ARRAYLANG['TXT_ALIAS_CONFIG_FAILED_APPLY'] = "Beim Speichern der Konfiguration trat ein Fehler auf!";
 $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST'] = "Die Zielseite existiert nicht mehr!";
 $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "Das Alias %s kann nicht verwendet werden, da es physikalisch vorhanden ist!";
+$_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'] = "Ein Alias für die Seite %s existiert bereits!";
 ?>
