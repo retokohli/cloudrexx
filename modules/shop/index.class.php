@@ -22,9 +22,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/PaymentProcessing.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Vat.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Weight.class.php';
 
-// fpdf class
-require_once ASCMS_MODULE_PATH.'/shop/lib/fpdf.php';
-
 /**
  * Use session in show
  *
