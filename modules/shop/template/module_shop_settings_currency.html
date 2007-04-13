@@ -12,13 +12,13 @@ function deleteCurrency(cId)
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
 <ul id="tabmenu">
-<li><a id="currencyTab_shopContent1" class="active" href="javascript:{}" onClick="selectTab('shopContent1')" title="{TXT_CURRENCIES}">{TXT_CURRENCIES}</a></li>
-<li><a id="currencyTab_shopContent2" href="javascript:{}" onClick="selectTab('shopContent2')" title="W&auml;hrung hinzuf&uuml;gen">{TXT_ADD}</a></li>
+<li><a id="currencyTab_shopContent1" class="active" href="javascript:{}" onclick="selectTab('shopContent1')" title="{TXT_CURRENCIES}">{TXT_CURRENCIES}</a></li>
+<li><a id="currencyTab_shopContent2" href="javascript:{}" onclick="selectTab('shopContent2')" title="W&auml;hrung hinzuf&uuml;gen">{TXT_ADD}</a></li>
 </ul>
 <form name="shopForm" method="post" action="?cmd=shop&amp;act=settings&amp;tpl=currency">
 <!-- start shopContent1 div -->
 <div id="shopContent1" class="currencyTab" style="display:block">
-<table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+<table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
       <th colspan="6"><b>{TXT_CURRENCIES}</b></th>
       <th colspan="2" nowrap="nowrap" ><div align="right"><a href="http://www.xe.com/" target="_blank">{TXT_CURRENCY_CONVERTER}</a></div></th>
@@ -53,7 +53,7 @@ function deleteCurrency(cId)
 
 <!-- start shopContent2 div -->
 <div id="shopContent2" class="currencyTab" style="display:none">
-<table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+<table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
       <th colspan="5"><b>{TXT_ADD}</b></th>
       <th colspan="2" nowrap="nowrap" ><div align="right"><a href="http://www.xe.com/" target="_blank">{TXT_CURRENCY_CONVERTER}</a></div></th>
@@ -74,7 +74,7 @@ function deleteCurrency(cId)
 <option value="ATS">ATS Austria Schillings</option>
 <option value="CHF">CHF Switzerland Francs</option>
 <option value="USD">USD United States Dollars</option>
-<option value="EUR" selected>EUR Euro</option>
+<option value="EUR" selected="selected">EUR Euro</option>
 <option value="GBP">GBP United Kingdom Pounds</option>
 <option value="CAD">CAD Canada Dollars</option>
 <option value="FRF">FRF France Francs</option>

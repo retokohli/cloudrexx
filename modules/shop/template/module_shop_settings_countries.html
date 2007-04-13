@@ -1,6 +1,6 @@
 <!-- START module_shop_settings_countries.html -->
 <script language="javascript" type="text/javascript">
-<!-- //
+//<![CDATA[
 function submit_form()
 {
 	for (i=document.shopForm.elements['list1[]'].length-1; i >= 0 ; i--)
@@ -19,7 +19,7 @@ function sortSelect(obj)
 {
 	var o = new Array();
 	if (obj.options==null) { return; }
-	for (var i=0; i<obj.options.length; i++) {
+	for (var i=0; i < obj.options.length; i++) {
 		o[o.length] = new Option( obj.options[i].text, obj.options[i].value, obj.options[i].defaultSelected, obj.options[i].selected) ;
 		}
 	if (o.length==0) { return; }
@@ -31,7 +31,7 @@ function sortSelect(obj)
 			}
       );
 
-	for (var i=0; i<o.length; i++) {
+	for (var i=0; i < o.length; i++) {
 		obj.options[i] = new Option(o[i].text, o[i].value, o[i].defaultSelected, o[i].selected);
 		}
 }
@@ -39,7 +39,7 @@ function sortSelect(obj)
 function moveSelectedOptions(from,to)
 {
 	// Move them over
-	for (var i=0; i<from.options.length; i++) {
+	for (var i=0; i < from.options.length; i++) {
 		var o = from.options[i];
 		if (o.selected) {
 			to.options[to.options.length] = new Option( o.text, o.value, false, false);
@@ -52,7 +52,7 @@ function moveSelectedOptions(from,to)
 			from.options[i] = null;
 			}
 		}
-	if ((arguments.length<3) || (arguments[2]==true)) {
+	if ((arguments.length < 3) || (arguments[2]==true)) {
 		sortSelect(from);
 		sortSelect(to);
 		}
@@ -63,7 +63,7 @@ function moveSelectedOptions(from,to)
 function moveAllOptions(from,to)
 {
 	// Move them over
-	for (var i=0; i<from.options.length; i++) {
+	for (var i=0; i < from.options.length; i++) {
 		var o = from.options[i];
 			to.options[to.options.length] = new Option( o.text, o.value, false, false);
 		}
@@ -72,14 +72,14 @@ function moveAllOptions(from,to)
 		var o = from.options[i];
 			from.options[i] = null;
 		}
-	if ((arguments.length<3) || (arguments[2]==true)) {
+	if ((arguments.length < 3) || (arguments[2]==true)) {
 		sortSelect(from);
 		sortSelect(to);
 		}
 	from.selectedIndex = -1;
 	to.selectedIndex = -1;
 }
-// -->
+// ]]>
 </script>
 <style type="text/css">
 <!--
@@ -95,7 +95,7 @@ function moveAllOptions(from,to)
 <form name="shopForm" method="post" action="index.php?cmd=shop&amp;act=settings&amp;tpl=countries">
 <!-- start shopContent1 div -->
 <div id="shopContent1" class="countriesTab" style="display:block">
-<table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+<table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
   <tr>
     <th colspan="3">{TXT_COUNTRY_LIST}</th>
   </tr>
@@ -106,7 +106,7 @@ function moveAllOptions(from,to)
   </tr>
   <tr class="row2">
     <td nowrap="nowrap">
-<select class="zoneList" name="list1[]" MULTIPLE size="15" ondblclick="moveSelectedOptions(this.form['list1[]'],this.form['list2[]'])">
+<select class="zoneList" name="list1[]" multiple="multiple" size="15" ondblclick="moveSelectedOptions(this.form['list1[]'],this.form['list2[]'])">
 {SHOP_COUNTRY_SELECTED_OPTIONS}
 </select>
     </td>
@@ -117,7 +117,7 @@ function moveAllOptions(from,to)
     	<input type="button" title="{TXT_REMOVE_ALL}" name="remove_all" value="&lt;&lt;" onclick="moveAllOptions(this.form['list2[]'],this.form['list1[]'])" />
     </div></td>
     <td nowrap="nowrap">
-<select class="zoneList" name="list2[]" MULTIPLE size="15"  onDblClick="moveSelectedOptions(this.form['list2[]'],this.form['list1[]'])">
+<select class="zoneList" name="list2[]" multiple="multiple" size="15"  ondblclick="moveSelectedOptions(this.form['list2[]'],this.form['list1[]'])">
 {SHOP_COUNTRY_NOTSELECTED_OPTIONS}
 </select>
     </td>
@@ -129,7 +129,7 @@ function moveAllOptions(from,to)
 <br />
 </div>
 <!-- end shopContent1 div -->
-<input type="submit" name="countries" value="{TXT_STORE}" onClick="submit_form();" />
+<input type="submit" name="countries" value="{TXT_STORE}" onclick="submit_form();" />
 <br />
 </form>
 <!-- END module_shop_settings_countries.html -->

@@ -11,15 +11,6 @@ Text[0]=["","{TXT_FREE_OF_CHARGE_TIP}"];
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
 // -->
 </script>
-<style type="text/css">
-<!--
-.info {
-        padding-left: 18px;
-        background: url('images/icons/note.gif') no-repeat 0 50%;
-        z-index: 1000;
-}
-// -->
-</style>
 <!-- BEGIN statusBar -->
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
@@ -30,14 +21,14 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <form name="shopForm" method="post" action="?cmd=shop&amp;act=settings&amp;tpl=payment">
 <!-- start shopContent1 div -->
 <div id="shopContent1" class="paymentTab" style="display:block">
-    <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+    <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
         <th colspan="7">{TXT_PAYMENT_TYPES}</th>
       </tr>
       <tr class="row1">
         <td nowrap="nowrap" width="20%"><strong>{TXT_PAYMENT_TYPE}</strong></td>
         <td nowrap="nowrap" width="10%"><strong>{TXT_FEE}</strong></td>
-        <td nowrap="nowrap" width="12%"><strong class="info" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">{TXT_FREE_OF_CHARGE}</strong></td>
+        <td nowrap="nowrap" width="12%"><strong class="note" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">{TXT_FREE_OF_CHARGE}</strong></td>
         <td nowrap="nowrap" width="38%"><strong>{TXT_HANDLER}</strong></td>
         <td nowrap="nowrap" width="10%"><strong>{TXT_ZONE}</strong></td>
         <td nowrap="nowrap" width="5%"><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>
@@ -62,14 +53,14 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 
 <!-- start shopContent2 div -->
 <div id="shopContent2" class="paymentTab" style="display:none">
-<table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+<table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
         <th colspan="6">{TXT_ADD}</th>
       </tr>
       <tr class="row1">
         <td nowrap="nowrap" width="20%"><strong>{TXT_PAYMENT_TYPE}</strong></td>
         <td nowrap="nowrap" width="10%"><strong>{TXT_FEE}</strong></td>
-        <td nowrap="nowrap" width="12%"><strong class="info" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">{TXT_FREE_OF_CHARGE}</strong></td>
+        <td nowrap="nowrap" width="12%"><strong class="note" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">{TXT_FREE_OF_CHARGE}</strong></td>
         <td nowrap="nowrap" width="53%"><strong>{TXT_HANDLER}</strong></td>
         <td nowrap="nowrap" width="10%"><strong>{TXT_ZONE}</strong></td>
         <td nowrap="nowrap" width="5%"><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>

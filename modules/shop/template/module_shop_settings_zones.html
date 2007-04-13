@@ -1,6 +1,6 @@
 <!-- START module_shop_settings_zones.html -->
 <script language="javascript" type="text/javascript">
-<!-- //
+//<![CDATA[
 function submit_form()
 {
 
@@ -123,9 +123,7 @@ function add_zone()
 	}
 	document.shopForm.submit();
 }
-
-
-// -->
+//]]>
 </script>
 <style type="text/css">
 <!--
@@ -139,7 +137,7 @@ function add_zone()
 <form name="shopForm" method="post" action="index.php?cmd=shop&amp;act=settings&amp;tpl=zones">
 <!-- start shopContent1 div -->
 <div id="shopContent1" class="zoneTab" style="display:block">
-	<table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+	<table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
 		<tr>
 			<th colspan="2">{TXT_ZONE_LIST}</th>
 		</tr>
@@ -154,7 +152,7 @@ function add_zone()
 	<!-- BEGIN shopZones -->
 		<!-- start shopZoneContent div -->
 		<div id="{SHOP_ZONE_ID}" name="{SHOP_ZONE_ID}" class="switchzone" style="{SHOP_ZONE_DISPLAY_STYLE}">
-			<table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+			<table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
 				<tr class="row1">
 					<td width="15%">{TXT_ZONE_NAME}</td>
 					<td width="85%">
@@ -195,20 +193,20 @@ function add_zone()
 				</tr>
 				<tr class="row2">
 					<td width="15%" valign="top">{TXT_AVAILABLE_COUNTRIES}</td>
-					<td width="85%"><select class="zoneList" name="country_list[{SHOP_ZONE_ID}][]" multiple="multiple" size="10"  onDblClick="moveSelectedOptions(this.form['country_list[{SHOP_ZONE_ID}][]'],this.form['selected_countries[{SHOP_ZONE_ID}][]'])">{SHOP_COUNTRY_LIST_OPTIONS}</select></td>
+					<td width="85%"><select class="zoneList" name="country_list[{SHOP_ZONE_ID}][]" multiple="multiple" size="10"  ondblclick="moveSelectedOptions(this.form['country_list[{SHOP_ZONE_ID}][]'],this.form['selected_countries[{SHOP_ZONE_ID}][]'])">{SHOP_COUNTRY_LIST_OPTIONS}</select></td>
 				</tr>
 			</table>
 		</div>
 		<!-- end shopZoneContent div -->
 	<!-- END shopZones -->
 	<br />
-	<input type="submit" name="zones" value="{TXT_STORE}" onClick="submit_form();" />
+	<input type="submit" name="zones" value="{TXT_STORE}" onclick="submit_form();" />
 </div>
 <!-- end shopContent1 div -->
 
 <!-- start shopContent2 div -->
 <div id="shopContent2" class="zoneTab" style="display:none">
-	<table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+	<table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
 		<tr>
 			<th colspan="2">{TXT_ADD}</th>
 		</tr>
@@ -239,7 +237,7 @@ function add_zone()
 		</tr>
 		<tr class="row2">
 			<td width="15%" valign="top">{TXT_AVAILABLE_COUNTRIES}</td>
-			<td width="85%"><select class="zoneList" name="country_list[]" multiple="multiple" size="10"  onDblClick="moveSelectedOptions(this.form['country_list[]'],this.form['selected_countries[]'])">{SHOP_ZONE_COUNTRY_LIST}</select></td>
+			<td width="85%"><select class="zoneList" name="country_list[]" multiple="multiple" size="10"  ondblclick="moveSelectedOptions(this.form['country_list[]'],this.form['selected_countries[]'])">{SHOP_ZONE_COUNTRY_LIST}</select></td>
 		</tr>
 	</table>
 	<br />
