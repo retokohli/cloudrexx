@@ -12,7 +12,6 @@
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  */
-
 class NewsletterLib {
 	var $_arrRecipientTitles = null;
 
