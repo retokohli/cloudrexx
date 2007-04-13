@@ -27,7 +27,6 @@ require_once dirname(__FILE__) . "/lib/activecalendar/activecalendar.php";
  */
 class calendarLibrary
 {
-	var $_tz = 'Europe/Zurich';
 	var $_filename = '';
     var $_objTpl;
     var $strErrMessage = '';
@@ -111,8 +110,6 @@ class calendarLibrary
 		$c->setMethod('PUBLISH');
 
 		foreach ($arrEvents as $arrEvent) {
-			$s 				= $this->_getDateComponents($arrEvent['startdate']);
-			$e 				= $this->_getDateComponents($arrEvent['enddate']);
 			$comment 		= $this->_filterHTML($arrEvent['comment']);
 			$place 			= $this->_filterHTML($arrEvent['place']);
 			$name 			= $this->_filterHTML($arrEvent['name']);
@@ -166,7 +163,8 @@ class calendarLibrary
 	 */
     function _iCalExportEvent($id){
 		require_once(ASCMS_LIBRARY_PATH.'/iCalcreator/iCalcreator.class.php');
-		$this->_sendICal($this->getEventByID($id));
+		//wrap this in an array, since it is only one event (see _sendICal() to understand)
+		$this->_sendICal(array($this->getEventByID($id)));
     }
 
 	/**
@@ -329,22 +327,6 @@ class calendarLibrary
     	}
     }
 
-	/**
-	 * convert a timestamp into it's datetime components
-	 *
-	 * @param integer $timestamp
-	 * @return array $arrDateTimeComponents
-	 */
-    function _getDateComponents($timestamp){
-    	return array(
-    		'year' 		=> date('Y', $timestamp),
-    		'month' 	=> date('m', $timestamp),
-    		'day' 		=> date('d', $timestamp),
-    		'hour' 		=> date('h', $timestamp),
-    		'minute' 	=> date('i', $timestamp),
-    		'second' 	=> date('s', $timestamp),
-    	);
-    }
 
 	/**
 	 * return catgeory name by eventID
