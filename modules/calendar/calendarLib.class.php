@@ -220,7 +220,7 @@ class calendarLibrary
 	    			$categoryName = $this->_cachedCatNames[$objRS->fields['catid']];
 	    		}
 
-				array_push($arrEvents, array(
+				$arrEvents[] = array(
 					'id'			=> $objRS->fields['id'],
 					'catid' 		=> $objRS->fields['catid'],
 					'startdate'		=> $objRS->fields['startdate'],
@@ -231,14 +231,13 @@ class calendarLibrary
 					'comment' 		=> html_entity_decode($objRS->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET),
 					'place' 		=> html_entity_decode($objRS->fields['place'], ENT_QUOTES, CONTREXX_CHARSET),
 					'info' 			=> html_entity_decode($objRS->fields['info'], ENT_QUOTES, CONTREXX_CHARSET),
-				));
+				);
 				$objRS->MoveNext();
 			}
 			return $arrEvents;
     	}else{
     		$this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_READ_ERROR'];
     	}
-
     }
 
     /**
@@ -479,8 +478,8 @@ class calendarLibrary
             'CALENDAR_COMMENT'            => $comment,
             'CALENDAR_ID'                => $id,
             'CALENDAR_CAT'              => stripslashes($objResult2->fields['name']),
-            'CALENDAR_ICAL_EXPORT'      => '<a href="?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.$id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'">
-            									'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].' <img style="padding-top: -1px;" border="0" src="admin/images/icons/ical_export.png" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'" />
+            'CALENDAR_ICAL_EXPORT'      => '<a href="?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.$id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
+            									'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].' <img style="padding-top: -1px;" border="0" src="admin/images/icons/ical_export.png" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
             								</a>',
         ));
 
