@@ -1,16 +1,16 @@
 <!-- START gallery_edit_image.html -->
 <script language="JavaScript" type="text/javascript">
 function deleteComment(cId)
-{ 
+{
     if(confirm('{TXT_COMMENT_DELETE_JS}'))
-    { 
+    {
         window.location.replace("?cmd=gallery&act=delete_comment&id={VALUE_ID}&comId="+cId);
     }
 }
 function deleteVote(vId)
-{ 
+{
     if(confirm('{TXT_VOTING_DELETE_JS}'))
-    { 
+    {
         window.location.replace("?cmd=gallery&act=delete_vote&id={VALUE_ID}&voteId="+vId);
     }
 }
@@ -25,7 +25,7 @@ function selectCommentMultiAction()
 				}
 			break;
 			default: //do nothing
-			
+
 		}
 	}
 }
@@ -40,7 +40,7 @@ function selectVotingMultiAction()
 				}
 			break;
 			default: //do nothing
-			
+
 		}
 	}
 }
@@ -59,11 +59,11 @@ function copyText(strType) {
 				if (strType == 'pictureDesc_') {
 					document.forms[h].elements[i].value = document.editImage.pictureLinkName.value;
 				} else {
-					document.forms[h].elements[i].value = document.editImage.pictureName.value;	
+					document.forms[h].elements[i].value = document.editImage.pictureName.value;
 				}
 			}
 		}
-	}	
+	}
 }
 </script>
 <script language="javascript" type="text/javascript">
@@ -72,15 +72,6 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,
 Text[0]=["","{TXT_LINKNAME_HELP}"];
 // -->
 </script>
-<style type="text/css">
-<!--
-.info {
-        padding-left: 18px;
-        background: url('images/icons/note.gif') no-repeat 0 50%;
-        z-index: 1000;
-}
-// -->
-</style>
 <ul id="tabmenu">
 	<li><a id="editImageTab_Settings" class="{TAB_ACTIVE_SETTINGS}" href="javascript:{}" onclick="selectTab('Settings')" title="{TXT_TAB_SETTINGS}">{TXT_TAB_SETTINGS}</a></li>
 	<!-- BEGIN tabComment -->
@@ -104,8 +95,8 @@ Text[0]=["","{TXT_LINKNAME_HELP}"];
 				<div id="divLang_Name" style="display: none;">
 					<!-- BEGIN showNameFields -->
 					<input name="pictureName_{NAMEFIELDS_LID}" value="{NAMEFIELDS_VALUE}" size="100" style="margin-top:1px;">&nbsp;<label for="pictureName_{NAMEFIELDS_LID}">{NAMEFIELDS_LANGUAGE}</label> <br />
-					<!-- END showNameFields -->			
-				</div>				
+					<!-- END showNameFields -->
+				</div>
 			</td>
 			</tr><tr class="row1">
 			<td nowrap="nowrap" valign="top">{TXT_IMAGELINKNAME}:</td>
@@ -116,9 +107,9 @@ Text[0]=["","{TXT_LINKNAME_HELP}"];
 				<div id="divLang_Desc" style="display: none;">
 					<!-- BEGIN showDescFields -->
 					<input name="pictureDesc_{DESCFIELDS_LID}" value="{DESCFIELDS_VALUE}" size="100" style="margin-top:1px;">&nbsp;<label for="pictureDesc_{DESCFIELDS_LID}">{DESCFIELDS_LANGUAGE}</label> <br />
-					<!-- END showDescFields -->			
-				</div>	
-			</td>	
+					<!-- END showDescFields -->
+				</div>
+			</td>
 		</tr>
 		<tr class="row1">
 			<td nowrap="nowrap">{TXT_IMAGELINK}:</td>
@@ -142,7 +133,7 @@ Text[0]=["","{TXT_LINKNAME_HELP}"];
 
 <div id="Comments" class="editImageTab" style="display:{TAB_DISPLAY_COMMENTS}">
 	<form name="frmShowComments" method="POST" action="?cmd=gallery&amp;act=comment_actions&amp;active=comment&amp;id={VALUE_ID}">
-		<table width="100%" cellspacing="0" cellpadding="2" border="0" align="top" class="adminlist">	
+		<table width="100%" cellspacing="0" cellpadding="2" border="0" align="top" class="adminlist">
 			<tr>
 				<th colspan="9">{COMMENTS_COUNT} {TXT_COMMENT_TITLE}&nbsp;&nbsp;</th>
 			</tr>
@@ -159,7 +150,7 @@ Text[0]=["","{TXT_LINKNAME_HELP}"];
 				<td valign="top" align="justify"width="40%">{COMMENTS_TEXT}</td>
 				<td align="right" nowrap="nowrap">
 					<a href="?cmd=gallery&amp;act=edit_comment&amp;id={COMMENTS_ID}" target="_self"><img alt="{TXT_COMMENT_EDIT}" title="{TXT_COMMENT_EDIT}" src="images/icons/edit.gif" border="0" /></a>&nbsp;
-					<a href="javascript:deleteComment({COMMENTS_ID})" target="_self"><img alt="{TXT_COMMENT_DELETE}" title="{TXT_COMMENT_DELETE}" src="images/icons/delete.gif" border="0" /></a>		
+					<a href="javascript:deleteComment({COMMENTS_ID})" target="_self"><img alt="{TXT_COMMENT_DELETE}" title="{TXT_COMMENT_DELETE}" src="images/icons/delete.gif" border="0" /></a>
 				</td>
 			</tr>
 			<!-- END showComments -->
@@ -168,13 +159,13 @@ Text[0]=["","{TXT_LINKNAME_HELP}"];
 			<tr>
 				<td>
 					<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-					<a href="#" onclick="changeCheckboxes('frmShowComments','selectedCommentsId[]',true); return false;">{TXT_COMMENT_SELECT_ALL}</a> / 
+					<a href="#" onclick="changeCheckboxes('frmShowComments','selectedCommentsId[]',true); return false;">{TXT_COMMENT_SELECT_ALL}</a> /
 					<a href="#" onclick="changeCheckboxes('frmShowComments','selectedCommentsId[]',false); return false;">{TXT_COMMENT_DESELECT_ALL}</a>
 					<img src="images/icons/strike.gif">
 					<select name="frmShowComments_MultiAction" onchange="selectCommentMultiAction();">
 						<option value="0">{TXT_COMMENT_SELECT_ACT}</option>
 						<option value="delete">{TXT_COMMENT_DELETE_ALL}</option>
-					</select>		
+					</select>
 				</td>
 			</tr>
 		</table>
@@ -196,7 +187,7 @@ Text[0]=["","{TXT_LINKNAME_HELP}"];
 				<td width="33%"><a href="?cmd=nettools&tpl=whois&address={VOTES_IP}">{VOTES_IP}</a></td>
 				<td width="33%">{VOTES_MARK}</td>
 				<td align="right" nowrap="nowrap">
-					<a href="javascript:deleteVote({VOTES_ID})" target="_self"><img alt="{TXT_VOTING_DELETE}" title="{TXT_VOTING_DELETE}" src="images/icons/delete.gif" border="0" /></a>		
+					<a href="javascript:deleteVote({VOTES_ID})" target="_self"><img alt="{TXT_VOTING_DELETE}" title="{TXT_VOTING_DELETE}" src="images/icons/delete.gif" border="0" /></a>
 				</td>
 			</tr>
 			<!-- END showVotes -->
@@ -205,13 +196,13 @@ Text[0]=["","{TXT_LINKNAME_HELP}"];
 			<tr>
 				<td>
 				<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-				<a href="#" onclick="changeCheckboxes('frmShowVotes','selectedVotesId[]',true); return false;">{TXT_COMMENT_SELECT_ALL}</a> / 
+				<a href="#" onclick="changeCheckboxes('frmShowVotes','selectedVotesId[]',true); return false;">{TXT_COMMENT_SELECT_ALL}</a> /
 				<a href="#" onclick="changeCheckboxes('frmShowVotes','selectedVotesId[]',false); return false;">{TXT_COMMENT_DESELECT_ALL}</a>
 				<img src="images/icons/strike.gif">
 				<select name="frmShowVotes_MultiAction" onchange="selectVotingMultiAction();">
 					<option value="0">{TXT_COMMENT_SELECT_ACT}</option>
 					<option value="delete">{TXT_COMMENT_DELETE_ALL}</option>
-				</select>		
+				</select>
 				</td>
 			</tr>
 		</table>
