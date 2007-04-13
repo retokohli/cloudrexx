@@ -343,3 +343,9 @@ table.subnavbar {
 	background: #B8FD9F;
 	padding: 4px;
 }
+
+.note {
+        padding-left: 18px;
+        background: url('../../../images/icons/note.gif') no-repeat 0 50%;
+        z-index: 1000;
+}
