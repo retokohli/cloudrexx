@@ -1,5 +1,10 @@
 <?php
 /**
+ * @ignore
+ */
+require_once ASCMS_MODULE_PATH.'/newsletter/lib/NewsletterLib.class.php';
+
+/**
  * Class newsletter
  *
  * Newsletter module class
@@ -13,17 +18,6 @@
  * @todo        Edit PHP DocBlocks!
  * @todo		make total mailrecipient count static in newsletter list (act=mails) (new count field) && check if mail already sent when a user unsubscribes -> adjust count
  */
-require_once ASCMS_MODULE_PATH.'/newsletter/lib/NewsletterLib.class.php';
-
-$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ACCOUNT'] = 'E-Mail Konto';
-$_ARRAYLANG['TXT_NEWSLETTER_TASK_REJECTED_EMAIL'] = 'Aktion bei unzustellbaren E-Mails';
-$_ARRAYLANG['TXT_NEWSLETTER_DO_NOTING'] = 'Keine Aktion durchführen';
-$_ARRAYLANG['TXT_NEWSLETTER_DEACTIVATE_EMAIL'] = 'E-Mail Adresse deaktivieren';
-$_ARRAYLANG['TXT_NEWSLETTER_DELETE_EMAIL'] = 'E-Mail Adresse löschen';
-$_ARRAYLANG['TXT_NEWSLETTER_MAIL_AUTH_FAILED'] = 'Die Authentifizierung beim E-Mail Konto %s schlug fehl!';
-$_ARRAYLANG['TXT_NEWSLETTER_FROM_ADDR_REJECTED'] = 'Die Absender Adresse %s wurde von Mailserver abgelehnt!';
-$_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_FAILED'] = 'Die E-Mail Adresse %s ist ungültig!';
-
 class newsletter extends NewsletterLib
 {
 	var $_objTpl;
@@ -786,6 +780,7 @@ class newsletter extends NewsletterLib
 			'TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY'	=> $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY'],
 			'TXT_NEWSLETTER_USER_DATA'				=> $_ARRAYLANG['TXT_NEWSLETTER_USER_DATA'],
 			'TXT_NEWSLETTER_EMAIL_ADDRESS'			=> $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
+			'TXT_NEWSLETTER_SEX'					=> $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
 			'TXT_NEWSLETTER_TITLE'					=> $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
 			'TXT_NEWSLETTER_LASTNAME'				=> $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
 			'TXT_NEWSLETTER_FIRSTNAME'				=> $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
@@ -965,7 +960,7 @@ class newsletter extends NewsletterLib
 			'TXT_NEWSLETTER_USER_DATA'				=> $_ARRAYLANG['TXT_NEWSLETTER_USER_DATA'],
 			'TXT_NEWSLETTER_EMAIL_ADDRESS'			=> $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
 			'TXT_NEWSLETTER_TITLE'					=> $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
-			'TXT_NEWSELTTER_SEX'					=> $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
+			'TXT_NEWSLETTER_SEX'					=> $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
 			'TXT_NEWSLETTER_LASTNAME'				=> $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
 			'TXT_NEWSLETTER_FIRSTNAME'				=> $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
 			'TXT_NEWSLETTER_STREET'					=> $_ARRAYLANG['TXT_NEWSLETTER_STREET'],
@@ -1573,7 +1568,7 @@ class newsletter extends NewsletterLib
 			'TXT_NEWSLETTER_DO_NOTING'			=> $_ARRAYLANG['TXT_NEWSLETTER_DO_NOTING'],
 			'TXT_NEWSLETTER_TASK_REJECTED_EMAIL'	=> $_ARRAYLANG['TXT_NEWSLETTER_TASK_REJECTED_EMAIL'],
 			'TXT_NEWSLETTER_DEACTIVATE_EMAIL'	=> $_ARRAYLANG['TXT_NEWSLETTER_DEACTIVATE_EMAIL'],
-			'TXT_NEWSLETTER_DELETE_EMAIL'		=> $_ARRAYLANG['TXT_NEWSLETTER_DELETE_EMAIL'],
+			'TXT_NEWSLETTER_DELETE_EMAIL_ADDRESS'		=> $_ARRAYLANG['TXT_NEWSLETTER_DELETE_EMAIL_ADDRESS'],
 			'NEWSLETTER_REJECTED_MAIL_IGNORE'	=> $arrSettings['rejected_mail_operation'] == 'ignore' ? 'checked="checked"' : '',
 			'NEWSLETTER_REJECTED_MAIL_DEACTIVATE'	=> $arrSettings['rejected_mail_operation'] == 'deactivate' ? 'checked="checked"' : '',
 			'NEWSLETTER_REJECTED_MAIL_DELETE'		=> $arrSettings['rejected_mail_operation'] == 'delete' ? 'checked="checked"' : ''
@@ -1738,7 +1733,7 @@ class newsletter extends NewsletterLib
 			'TXT_NEWSLETTER_SAVE'					=> $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
 			'TXT_NEWSLETTER_USER_DATA'				=> $_ARRAYLANG['TXT_NEWSLETTER_USER_DATA'],
 			'TXT_NEWSLETTER_EMAIL_ADDRESS'			=> $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
-			'TXT_NEWSELTTER_SEX'					=> $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
+			'TXT_NEWSLETTER_SEX'					=> $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
 			'TXT_NEWSLETTER_TITLE'					=> $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
 			'TXT_NEWSLETTER_LASTNAME'				=> $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
 			'TXT_NEWSLETTER_FIRSTNAME'				=> $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
@@ -2268,7 +2263,6 @@ class newsletter extends NewsletterLib
 				}
 			}
 		} else {
-			print_r($mail);
 			if (strstr($mail->ErrorInfo, 'authenticate')) {
 				$this->_strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_MAIL_AUTH_FAILED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
 			} elseif (strstr($mail->ErrorInfo, 'from_failed')) {

@@ -1,5 +1,10 @@
 <?php
 /**
+ * @ignore
+ */
+require_once ASCMS_MODULE_PATH.'/newsletter/lib/NewsletterLib.class.php';
+
+/**
  * Newsletter Modul
  *
  * frontend newsletter class
@@ -12,8 +17,6 @@
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  */
-require_once ASCMS_MODULE_PATH.'/newsletter/lib/NewsletterLib.class.php';
-
 class newsletter extends NewsletterLib
 {
     var $_objTpl;
