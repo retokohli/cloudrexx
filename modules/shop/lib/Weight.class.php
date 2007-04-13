@@ -86,7 +86,7 @@ class Weight {
 
         // weight too small, too big, or no integer
         if ($grams < 1 || $grams >= 1000000000 || $grams != intval($grams)) {
-            return '';
+            return '0 g';
         }
         $unit_index = intval(log10($grams)/3);
         // unit_index shouldn't be out of range, as the weight range
