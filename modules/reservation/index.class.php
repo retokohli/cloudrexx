@@ -219,7 +219,7 @@ class reservations extends reservationLib
 
 	function save()
 	{
-	    global $objDatabase, $_ARRAYLANG;
+	    global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
 	    $day = $_POST['day'];
 	    $unit = $_POST['unit'];
@@ -237,36 +237,59 @@ class reservations extends reservationLib
 	        return;
 	    } else {
 	        // Still free. check validity
-	       $chkTime = $this->options['framestart'] + ($unit * $this->options['unit']);
-	       if ($chkTime <= $this->options['frameend']) {
-	           // Valid
-	           $status = 0;
-	           $confirmed = ($this->options['confirmation']) ? 0 : 1;
-	           $name = contrexx_addslashes($_POST['name']);
-	           $email = contrexx_addslashes($_POST['email']);
-	           $phone = contrexx_addslashes($_POST['phone']);
-	           $comments = contrexx_addslashes($_POST['comments']);
+			$chkTime = $this->options['framestart'] + ($unit * $this->options['unit']);
+			if ($chkTime <= $this->options['frameend']) {
+				// Valid
+				$status = 0;
+				$confirmed = ($this->options['confirmation']) ? 0 : 1;
+				$name = contrexx_addslashes($_POST['name']);
+				$email = contrexx_addslashes($_POST['email']);
+				$phone = contrexx_addslashes($_POST['phone']);
+				$comments = contrexx_addslashes($_POST['comments']);
 
-	           $day = contrexx_addslashes($_POST['day']);
-	           $unit = contrexx_addslashes($_POST['unit']);
+				$day = contrexx_addslashes($_POST['day']);
+				$unit = contrexx_addslashes($_POST['unit']);
 
-	           $time = time();
-	           $hash = md5(rand(0, 223232) . $time);
+				$time = time();
+				$hash = md5(rand(0, 223232) . $time);
 
-	           $query = "INSERT INTO ".DBPREFIX."module_reservation
-	                     (`status`, `confirmed`, `day`, `unit`, `name`, `email`, `phone`,
-	                      `comments`, `lang_id`, `time`, `hash`) VALUES
-	                     ('".$status."', '".$confirmed."', '".$day."', '".$unit."', '".$name."', '".$email."', '".$phone."',
-	                      '".$comments."', '".$this->langId."', '".$time."', '".$hash."')";
-	           if ($objDatabase->Execute($query)) {
-	               // sucessfull. Send mail now
+				$query = "INSERT INTO ".DBPREFIX."module_reservation
+				         (`status`, `confirmed`, `day`, `unit`, `name`, `email`, `phone`,
+				          `comments`, `lang_id`, `time`, `hash`) VALUES
+				         ('".$status."', '".$confirmed."', '".$day."', '".$unit."', '".$name."', '".$email."', '".$phone."',
+				          '".$comments."', '".$this->langId."', '".$time."', '".$hash."')";
+				if ($objDatabase->Execute($query)) {
+				// sucessfull. Send mail now
 
-	               $insertId = $objDatabase->Insert_ID();
-	               $url = "http://".$_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME']."?section=reservation&id=".$insertId."&act=confirm&hash=".$hash;
+				$insertId = $objDatabase->Insert_ID();
+				$url = "http://".$_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME']."?section=reservation&id=".$insertId."&act=confirm&hash=".$hash;
 
-	               $mailtext = str_replace("<URL>", $url, $this->options['mailtext']);
+				$mailtext = str_replace("<URL>", $url, $this->options['mailtext']);
 
-	               mail($email, "Reservation", $mailtext);
+				if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+						$objMail = new phpmailer();
+
+						if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+							$objSmtpSettings = new SmtpSettings();
+							if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+								$objMail->IsSMTP();
+								$objMail->Host = $arrSmtp['hostname'];
+								$objMail->Port = $arrSmtp['port'];
+								$objMail->SMTPAuth = true;
+								$objMail->Username = $arrSmtp['username'];
+								$objMail->Password = $arrSmtp['password'];
+							}
+						}
+
+						$objMail->From = $_CONFIG['coreAdminEmail'];
+						$objMail->FromName = $_CONFIG['coreAdminName'];
+						$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+						$objMail->Subject = "Reservation";
+						$objMail->IsHTML(false);
+						$objMail->Body = $mailtext;
+						$objMail->AddAddress($email);
+						$objMail->Send();
+					}
 
 	               $this->_objTpl->setVariable("TXT_SUCCEDED", $_ARRAYLANG['TXT_SUCCEDED']);
 	               $this->_objTpl->parse("successful");

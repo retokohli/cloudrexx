@@ -394,15 +394,43 @@ class ShopLibrary {
     /**
      * Set up and send an email from the shop.
      *
-     * @return boolean  The return value of the {@link mail()} function.
+     * @return boolean  The return value of the {@link phpmailer::Send()} function.
      */
     function shopSendmail($shopMailTo,$shopMailFrom,$shopMailFromText,$shopMailSubject,$shopMailBody,$shopMailBcc="" )
     {
-        $header = "From: $shopMailFromText <$shopMailFrom>\n";
+    	global $_CONFIG;
+
         // replace cr/lf by lf only
         $shopMailBody = preg_replace('/\015\012/', "\012", $shopMailBody);
-        $header = preg_replace('/\015\012/', "\012", $header);
-        return @mail($shopMailTo,$shopMailSubject,$shopMailBody,$header);
+
+        if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+			$objMail = new phpmailer();
+
+			if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+				$objSmtpSettings = new SmtpSettings();
+				if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+					$objMail->IsSMTP();
+					$objMail->Host = $arrSmtp['hostname'];
+					$objMail->Port = $arrSmtp['port'];
+					$objMail->SMTPAuth = true;
+					$objMail->Username = $arrSmtp['username'];
+					$objMail->Password = $arrSmtp['password'];
+				}
+			}
+
+			$objMail->From = preg_replace('/\015\012/', "\012", $shopMailFrom);
+			$objMail->FromName = preg_replace('/\015\012/', "\012", $shopMailFromText);
+			$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+			$objMail->Subject = $shopMailSubject;
+			$objMail->IsHTML(false);
+			$objMail->Body = $shopMailBody;
+			$objMail->AddAddress($shopMailTo);
+			if ($objMail->Send()) {
+				return true;
+			}
+		}
+
+		return false;
     }
 
 

@@ -399,7 +399,7 @@ class directoryLibrary
 	function getSpezDropdown($spezId, $spezField)
 	{
 		global $_CONFIG, $objDatabase, $_CORELANG;
-		
+
 		//get all languages
 		$objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_settings WHERE setname = '".$spezField."'");
 		if($objResult !== false){
@@ -424,8 +424,8 @@ class directoryLibrary
 
 		return $spezial;
 	}
-	
-	
+
+
 	/**
 	 * Enter description here...
 	 *
@@ -435,7 +435,7 @@ class directoryLibrary
 	function getSpezVotes($spezId, $spezField)
 	{
 		global $_CONFIG, $objDatabase, $_CORELANG;
-		
+
 		//get all languages
 		$objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_settings WHERE setname = '".$spezField."'");
 		if($objResult !== false){
@@ -457,13 +457,13 @@ class directoryLibrary
 			if ($spezId==$i) {
 				$checked ="selected";
 			}
-			
+
 			if ($i==0 && $spezName=="") {
 				$value = "";
 			} else {
 				$value = $i;
 			}
-			
+
 			$spezial .= "<option value='".$value."' $checked>".$spezName."</option>";
 			$i++;
 		}
@@ -560,12 +560,12 @@ class directoryLibrary
 				}else{
 					$status = "error";
 				}
-				
+
 				//make thumb
 				if(($fileType == "image/gif" || $fileType == "image/jpeg" || $fileType == "image/jpg" || $fileType == "image/png") && $path != "uploads/") {
 					$this->createThumb($fileName, $path);
 				}
-				
+
 			}else {
 				$status = "error";
 			}
@@ -573,9 +573,9 @@ class directoryLibrary
 
         return $status;
     }
-    
-    
-    
+
+
+
     /**
     * create thumb
     *
@@ -586,14 +586,14 @@ class directoryLibrary
     function createThumb($fileName, $filePath)
     {
         //copy image
-        
+
         $oldFile		= $this->mediaPath.$filePath.$fileName;
         $newFile		= $this->mediaPath."thumbs/".$fileName;
         $arrSettings 	= $this->getSettings();
         $arrInfo    	= getimagesize($oldFile); //ermittelt die Größe des Bildes
         $setSize		= $arrSettings['thumbSize']['value'];
         $strType    	= $arrInfo[2]; //type des Bildes
-        
+
         if ($arrInfo[0] >= $setSize || $arrInfo[1] >= $setSize) {
 			if($arrInfo[0] <= $arrInfo[1]){
 				$intFactor	= $arrInfo[1]/$setSize;
@@ -614,22 +614,22 @@ class directoryLibrary
 			$intWidth 	= $arrInfo[0];
         	$intHeight 	= $arrInfo[1];
 		}
-        
+
 		if (imagetypes() & IMG_GIF) {
 			$boolGifEnabled = true;
 		}
-		
+
 		if (imagetypes() &  IMG_JPG) {
 			$boolJpgEnabled = true;
 		}
-		
+
 		if (imagetypes() & IMG_PNG) {
 			$boolPngEnabled = true;
 		}
-        
+
         @touch($newFile);
-        
-        
+
+
 
         switch ($strType)
         {
@@ -787,7 +787,7 @@ class directoryLibrary
 	function addFeed()
 	{
 		global $objDatabase, $_ARRAYLANG;
-		
+
 		$arrSettings = $this->getSettings();
 
 		//check file type
@@ -830,38 +830,38 @@ class directoryLibrary
 						$inputValue = "http://".$inputValue;
 					}
 				}
-				
+
 				//upload spez pics
 				if ($inputName == "logo" ||
 					$inputName == "lokal" ||
 					$inputName == "map" ||
-					$inputName == "spez_field_11" || 
-					$inputName == "spez_field_12" || 
-					$inputName == "spez_field_13" || 
-					$inputName == "spez_field_14" || 
-					$inputName == "spez_field_15" || 
-					$inputName == "spez_field_16" || 
-					$inputName == "spez_field_17" || 
-					$inputName == "spez_field_18" || 
-					$inputName == "spez_field_19" || 
+					$inputName == "spez_field_11" ||
+					$inputName == "spez_field_12" ||
+					$inputName == "spez_field_13" ||
+					$inputName == "spez_field_14" ||
+					$inputName == "spez_field_15" ||
+					$inputName == "spez_field_16" ||
+					$inputName == "spez_field_17" ||
+					$inputName == "spez_field_18" ||
+					$inputName == "spez_field_19" ||
 					$inputName == "spez_field_20"){
-						
+
 					$inputValue = $this->uploadMedia($inputName, "images/");
-					
+
 					if($inputValue == "error"){
 						$inputValue = "";
 					}
 				}
-				
+
 				//upload spez files
-				if ($inputName == "spez_field_25" || 
-					$inputName == "spez_field_26" || 
-					$inputName == "spez_field_27" || 
-					$inputName == "spez_field_28" || 
+				if ($inputName == "spez_field_25" ||
+					$inputName == "spez_field_26" ||
+					$inputName == "spez_field_27" ||
+					$inputName == "spez_field_28" ||
 					$inputName == "spez_field_29"){
-						
+
 					$inputValue = $this->uploadMedia($inputName, "uploads/");
-					
+
 					if($inputValue == "error"){
 						$inputValue = "";
 					}
@@ -1049,13 +1049,33 @@ class directoryLibrary
 
 		    $sendTo 	= explode(';', $sendTo);
 
-			foreach($sendTo as $x => $mailAdress){
-				$sendmail = @mail($mailAdress,
-						$subject,
-						$message,
-						"From: ".$_CONFIG['coreAdminEmail']."\r\n" .
-						"Reply-To: ".$_CONFIG['coreAdminEmail']."\r\n" .
-						"X-Mailer: PHP/" . phpversion());
+			if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+				$objMail = new phpmailer();
+
+				if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+					$objSmtpSettings = new SmtpSettings();
+					if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+						$objMail->IsSMTP();
+						$objMail->Host = $arrSmtp['hostname'];
+						$objMail->Port = $arrSmtp['port'];
+						$objMail->SMTPAuth = true;
+						$objMail->Username = $arrSmtp['username'];
+						$objMail->Password = $arrSmtp['password'];
+					}
+				}
+
+				$objMail->From = $_CONFIG['coreAdminEmail'];
+				$objMail->FromName = $_CONFIG['coreAdminName'];
+				$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+				$objMail->Subject = $subject;
+				$objMail->IsHTML(false);
+				$objMail->Body = $message;
+
+				foreach($sendTo as $x => $mailAdress){
+					$objMail->AddAddress($mailAdress);
+					$objMail->Send();
+					$objMail->ClearAddresses();
+				}
 			}
 		}
 	}
@@ -1534,7 +1554,7 @@ class directoryLibrary
 	function countCategories($ckey, $cid)
 	{
 		global $objDatabase;
-	
+
 		$this->numCategories[$ckey][] = $cid;
 		$objResultCat = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_directory_categories WHERE status = 1 AND parentid =".intval($cid));
 		if($objResultCat !== false){
@@ -1693,7 +1713,7 @@ class directoryLibrary
 			$dirId 		= intval($_POST['edit_id']);
 
 			$query 		= "UPDATE ".DBPREFIX."module_directory_dir SET ";
-			
+
 			foreach($_POST["inputValue"] as $inputName => $inputValue){
 				//check links
 				if($inputName == "relatedlinks" || $inputName == "homepage"){
@@ -1710,42 +1730,42 @@ class directoryLibrary
 						$inputValue = $this->getAuthorID($inputValue);
 					}
 				}
-				
-				
+
+
 
 				//check pics
 				if ($inputName == "logo" ||
 					$inputName == "lokal" ||
 					$inputName == "map" ||
-					$inputName == "spez_field_11" || 
-					$inputName == "spez_field_12" || 
-					$inputName == "spez_field_13" || 
-					$inputName == "spez_field_14" || 
-					$inputName == "spez_field_15" || 
-					$inputName == "spez_field_16" || 
-					$inputName == "spez_field_17" || 
-					$inputName == "spez_field_18" || 
-					$inputName == "spez_field_19" || 
+					$inputName == "spez_field_11" ||
+					$inputName == "spez_field_12" ||
+					$inputName == "spez_field_13" ||
+					$inputName == "spez_field_14" ||
+					$inputName == "spez_field_15" ||
+					$inputName == "spez_field_16" ||
+					$inputName == "spez_field_17" ||
+					$inputName == "spez_field_18" ||
+					$inputName == "spez_field_19" ||
 					$inputName == "spez_field_20"){
-						
-					
-					
+
+
+
 					if(!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1){
 						$obj_file = new File();
-						
+
 						//thumb
 						if (file_exists($this->mediaPath."thumbs/".$_POST["inputValue"][$inputName])){
 							$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "thumbs/".$_POST["inputValue"][$inputName]);
 						}
-						
+
 						//picture
 						if (file_exists($this->mediaPath."images/".$_POST["inputValue"][$inputName])){
 							$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "images/".$_POST["inputValue"][$inputName]);
-						} 
-						
+						}
+
 						if($_POST["deleteMedia"][$inputName] != 1){
 							$inputValue = $this->uploadMedia($inputName, "images/");
-							
+
 							if($inputValue == "error"){
 								$inputValue 	= "";
 							}
@@ -1754,34 +1774,34 @@ class directoryLibrary
 						}
 					}
 				}
-				
+
 				//check uploads
-				if ($inputName == "spez_field_25" || 
-					$inputName == "spez_field_26" || 
-					$inputName == "spez_field_27" || 
-					$inputName == "spez_field_28" || 
+				if ($inputName == "spez_field_25" ||
+					$inputName == "spez_field_26" ||
+					$inputName == "spez_field_27" ||
+					$inputName == "spez_field_28" ||
 					$inputName == "spez_field_29"){
-						
-					
+
+
 					if(!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1){
-						
+
 						$obj_file = new File();
-						
+
 						//upload
 						if (file_exists($this->mediaPath."uploads/".$_POST["inputValue"][$inputName])){
 							$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "uploads/".$_POST["inputValue"][$inputName]);
 						}
-						
+
 						if($_POST["deleteMedia"][$inputName] != 1){
 							$inputValue = $this->uploadMedia($inputName, "uploads/");
-							
+
 							if($inputValue == "error"){
 								$inputValue 	= "";
 							}
 						} else {
 							$inputValue 	= "";
 						}
-					} 
+					}
 				}
 
 				$query .= contrexx_addslashes($inputName)." ='".contrexx_strip_tags(contrexx_addslashes($inputValue))."', ";

@@ -395,12 +395,33 @@ class Auth
                         }
 
                         $message = str_replace(array("%USERNAME%", "%URL%", "%SENDER%"), array($objResult->fields['username'], $restorLink, $_CONFIG['coreAdminName']), $_CORELANG['TXT_RESTORE_PASSWORD_MAIL']);
-                        $headers  = "MIME-Version: 1.0";
-                        $headers .= "Content-type: text/html; charset=iso-8859-1";
-                        $headers .= "To: " .$sendto."\r\n" ;
-                        $headers .= "From: ".$_CONFIG['coreAdminEmail']."\r\n";
 
-                        if (@mail($sendto, $subject, $message, $headers)) {
+                        if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+							$objMail = new phpmailer();
+
+							if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+								$objSmtpSettings = new SmtpSettings();
+								if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+									$objMail->IsSMTP();
+									$objMail->Host = $arrSmtp['hostname'];
+									$objMail->Port = $arrSmtp['port'];
+									$objMail->SMTPAuth = true;
+									$objMail->Username = $arrSmtp['username'];
+									$objMail->Password = $arrSmtp['password'];
+								}
+							}
+
+							$objMail->From = $_CONFIG['coreAdminEmail'];
+							$objMail->FromName = $_CONFIG['coreAdminName'];
+							$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+							$objMail->Subject = $subject;
+							$objMail->IsHTML(false);
+							$objMail->Body = $message;
+							$objMail->AddAddress($sendto);
+							$objMail->Send();
+						}
+
+                        if ($objMail && $objMail->Send()) {
                             $statusMessage = str_replace("%EMAIL%", $email, $_CORELANG['TXT_LOST_PASSWORD_MAIL_SENT']);
                             if ($objTemplate->blockExists('login_lost_password')) {
                                 $objTemplate->hideBlock('login_lost_password');

@@ -174,12 +174,32 @@ class Community extends Community_Library
 						$activationLink = "http://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/index.php?section=community&cmd=activate&username=".$_POST['username']."&activationKey=".$activationKey;
 						$hostLink = "http://".$_CONFIG['domainUrl'];
 						$message = str_replace(array("%HOST%","%USERNAME%","%PASSWORD%", "%ACTIVATION_LINK%", "%HOST_LINK%"), array($_CONFIG['domainUrl'], $_POST['username'], $_POST['password'], $activationLink, $hostLink), $_ARRAYLANG['TXT_CONFIRM_REGISTRATION_MAIL']);
-						//$headers  = "MIME-Version: 1.0\r\n";
-						//$headers .= "Content-type: text/html; charset=iso-8859-1\r\n";
-						//$headers .= "To: " . $sendto . "\r\n" ;
-						$headers = "From: " . $_CONFIG['coreAdminEmail'];
 
-						if (@mail($sendto, $subject, $message, $headers)) {
+						if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+							$objMail = new phpmailer();
+
+							if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+								$objSmtpSettings = new SmtpSettings();
+								if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+									$objMail->IsSMTP();
+									$objMail->Host = $arrSmtp['hostname'];
+									$objMail->Port = $arrSmtp['port'];
+									$objMail->SMTPAuth = true;
+									$objMail->Username = $arrSmtp['username'];
+									$objMail->Password = $arrSmtp['password'];
+								}
+							}
+
+							$objMail->From = $_CONFIG['coreAdminEmail'];
+							$objMail->FromName = $_CONFIG['coreAdminName'];
+							$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+							$objMail->Subject = $subject;
+							$objMail->IsHTML(false);
+							$objMail->Body = $message;
+							$objMail->AddAddress($sendto);
+						}
+
+						if ($objMail && $objMail->Send()) {
 							$timeoutStr = "";
 							if ($this->arrConfig['user_activation_timeout']['status']) {
 								if ($this->arrConfig['user_activation_timeout']['value'] > 1) {

@@ -270,7 +270,7 @@ class Market extends marketLibrary
 				}
 			}
 		}
-		
+
 		//spez fields
 		$objResult = $objDatabase->Execute("SELECT id, value FROM ".DBPREFIX."module_market_spez_fields WHERE lang_id = '1'");
       	if($objResult !== false){
@@ -316,7 +316,7 @@ class Market extends marketLibrary
 		if($this->settings['maxdayStatus'] != 0) {
 			$this->checkEnddate();
 		}
-		
+
 
 		if(!isset($_GET['type'])){
     		$_GET['type'] = '';
@@ -380,17 +380,17 @@ class Market extends marketLibrary
 		} else {
 			$where = 'AND enddate >= "'.$today.'"';
 		}
-		
-		
+
+
 		/////// START PAGING ///////
 		$pos= intval($_GET['pos']);
-		
+
 		if($sort == 'price'){
 			$query='SELECT `id`,`name`,`email`,`type`,`title`,`description`,`premium`,`picture`,`catid`, CAST(`price` AS UNSIGNED) as `price`,`regdate`,`enddate`,`userid`,`userdetails`,`status`,`regkey`,`paypal`,`spez_field_1`,`spez_field_2`,`spez_field_3`,`spez_field_4`,`spez_field_5` FROM '.DBPREFIX.'module_market WHERE catid = "'.contrexx_addslashes($catId).'" AND status="1" '.$where.' '.$type.' ORDER BY '.$sort.' '.$way;
 		}else{
 			$query='SELECT * FROM '.DBPREFIX.'module_market WHERE catid = "'.contrexx_addslashes($catId).'" AND status="1" '.$where.' '.$type.' ORDER BY '.$sort.' '.$way;
 		}
-		
+
 		$objResult = $objDatabase->Execute($query);
 		$count = $objResult->RecordCount();
 		if($count > $this->settings['paging']){
@@ -406,11 +406,11 @@ class Market extends marketLibrary
 		   		if (empty($objResult->fields['picture'])) {
 					$objResult->fields['picture'] = 'no_picture.gif';
 				}
-		   		
+
 		   		$info     	= getimagesize($this->mediaPath.'pictures/'.$objResult->fields['picture']);
 	   			$height 	= '';
 	   			$width 		= '';
-	   			
+
 	   			if($info[0] <= $info[1]){
 					if($info[1] > 50){
 						$faktor = $info[1]/50;
@@ -576,9 +576,9 @@ class Market extends marketLibrary
 
 	 	$_ARRAYLANG['TXT_MARKET_PRICE_MAX'] = "Preis bis";
 	 	$_ARRAYLANG['TXT_MARKET_ALL_PRICES'] = "egal";
-	 	
+
 	 	$options = '';
-	 	
+
 	 	if  ($this->settings['indexview']['value'] == 1) {
 			$order = "name";
 		} else {
@@ -593,21 +593,21 @@ class Market extends marketLibrary
 				$objResultSearch->MoveNext();
 			}
 		}
-		
+
 	 	$inputs 	= '<tr><td width="100" height="20">'.$_ARRAYLANG['TXT_MARKET_CATEGORY'].'</td><td><select name="catid" style="width:194px;"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_CATEGORIES'].'</option>'.$options.'</select></td></tr>';
 		$inputs 	.= '<tr><td width="100" height="20">'.$_CORELANG['TXT_TYPE'].'</td><td><select name="type" style="width:194px;"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_TYPES'].'</option><option value="offer">'.$_ARRAYLANG['TXT_MARKET_OFFER'].'</option><option value="search">'.$_ARRAYLANG['TXT_MARKET_SEARCH'].'</option></select></td></tr>';
 
 		$options = '';
-		
+
 		$arrPrices = explode(",", $this->settings['searchPrice']);
-		
+
 		foreach ($arrPrices as $arrKey => $priceValue){
 			$options .= '<option value="'.$priceValue.'">'.$priceValue.' '.$this->settings['currency'].'</option>';
 		}
 
 		$inputs 	.= '<tr><td width="100" height="20">'.$_ARRAYLANG['TXT_MARKET_PRICE_MAX'].'</td><td><select name="price" style="width:194px;"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_PRICES'].'</option>'.$options.'</select></td></tr>';
 
-		
+
 		// set variables
 		$this->_objTpl->setVariable(array(
 			'TXT_MARKET_SEARCH'					=> $_CORELANG['TXT_SEARCH'],
@@ -774,7 +774,7 @@ class Market extends marketLibrary
 				$txtplace 	= '';
 				$place 		= '';
 			}
-			
+
 			//spez fields
 			$objResult = $objDatabase->Execute("SELECT id, value FROM ".DBPREFIX."module_market_spez_fields WHERE lang_id = '1'");
 	      	if($objResult !== false){
@@ -792,7 +792,7 @@ class Market extends marketLibrary
    			}else{
    				$price = $this->entries[$id]['price'].' '.$this->settings['currency'];
    			}
-   			
+
    			if ($this->settings['maxdayStatus'] == 1) {
 				$enddate = $_ARRAYLANG['TXT_MARKET_ADVERTISEMENT_ONLINE'].' '.$enddate;
 			} else {
@@ -861,7 +861,6 @@ class Market extends marketLibrary
 
 			if($_POST['title'] != '' && $_POST['message'] != ''){
 				//create mail
-				$to         = $this->entries[$id]['email'];
 				$sendTo		= $this->entries[$id]['email'];
 				$fromName	= $_POST['name'];
 				$fromMail	= $_POST['email'];
@@ -869,15 +868,31 @@ class Market extends marketLibrary
 				$newPrice 	= $_POST['newprice']!='' ? "\n\n".$_ARRAYLANG['TXT_PRICE_EXPECTATION']."\n".$_POST['newprice'] : '';
 				$oldPrice 	= $_POST['price']!='' ? "\n\n".$_ARRAYLANG['TXT_MARKET_MESSAGE_PRICE']."\n".$_POST['price'] : '';
 				$message 	= $_POST['message'].$oldPrice.$newPrice;
-				$header		= "From: $fromName<$fromMail>\n";
-				$header 	.= "Reply-To: <$fromMail>\n";
-				$header 	.= "X-Mailer: PHP/" . phpversion();
 
-				 // Email message
-				$sendmail = @mail($to,
-							$subject,
-							$message,
-							$header);
+				if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+					$objMail = new phpmailer();
+
+					if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+						$objSmtpSettings = new SmtpSettings();
+						if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+							$objMail->IsSMTP();
+							$objMail->Host = $arrSmtp['hostname'];
+							$objMail->Port = $arrSmtp['port'];
+							$objMail->SMTPAuth = true;
+							$objMail->Username = $arrSmtp['username'];
+							$objMail->Password = $arrSmtp['password'];
+						}
+					}
+
+					$objMail->From = $fromMail;
+					$objMail->FromName = $fromName;
+					$objMail->AddReplyTo($fromMail);
+					$objMail->Subject = $subject;
+					$objMail->IsHTML(false);
+					$objMail->Body = $message;
+					$objMail->AddAddress($sendTo);
+					$objMail->Send();
+				}
 
 				// set variables
 				$this->_objTpl->setVariable(array(
@@ -955,13 +970,13 @@ class Market extends marketLibrary
       	}else{
       		$premium = $_ARRAYLANG['TXT_MARKET_ADDITIONAL_FEE'].$premium.' '.$_ARRAYLANG['TXT_MARKET_CURRENCY'];
       	}
-      	
+
       	if ($this->settings['maxdayStatus'] == 1) {
 			$daysOnline = '';
 			for($x = $this->settings['maxday']; $x >= 1; $x--){
 				$daysOnline .= '<option value="'.$x.'">'.$x.'</option>';
 			}
-			
+
 			$daysJS = 'if (days.value == "") {
 					        errorMsg = errorMsg + "- '.$_ARRAYLANG['TXT_MARKET_DURATION'].'\n";
 					   }
@@ -997,27 +1012,27 @@ class Market extends marketLibrary
 		if ($this->settings['maxdayStatus'] != 1) {
 			$this->_objTpl->hideBlock('end_date_dropdown');
 		}
-		
+
 		$objReslut = $objDatabase->Execute("SELECT id, name, value FROM ".DBPREFIX."module_market_spez_fields WHERE lang_id = '1' AND active='1' ORDER BY id DESC");
       	if($objReslut !== false){
 			while(!$objReslut->EOF){
 				$this->_objTpl->setCurrentBlock('spez_fields');
-				
+
 				($i % 2)? $class = "row2" : $class = "row1";
 				$input = '<input type="text" name="spez_'.$objReslut->fields['id'].'" style="width: 300px;" maxlength="100">';
-				
+
 				// initialize variables
 				$this->_objTpl->setVariable(array(
 					'TXT_MARKET_SPEZ_FIELD_NAME'	=> $objReslut->fields['value'],
 					'MARKET_SPEZ_FIELD_INPUT'  		=> $input,
 				));
-				
+
 				$this->_objTpl->parse('spez_fields');
 				$i++;
 				$objReslut->MoveNext();
 			}
       	}
-		
+
 		$this->_objTpl->setVariable(array(
 	    	'TXT_MARKET_PREMIUM_CONDITIONS'			=>	$premium,
 	    	'MARKET_CATEGORIES'						=>	$categories,
@@ -1177,31 +1192,44 @@ class Market extends marketLibrary
 			$fromMail	= "";
 			$subject 	= $mailTitle;
 			$message 	= $mailContent;
-			$header		= "From: $fromName<$fromMail>\n";
-			$header 	.= "Reply-To: <$fromMail>\n";
-			$header 	.= "X-Mailer: PHP/" . phpversion();
 
-			// Email message
-			$sendmail = @mail($to,
-						$subject,
-						$message,
-						$header);
 
-			foreach($array as $arrKey => $toCC) {
-				// Email message
-				if (!empty($toCC)) {
-					$sendmail = @mail($toCC,
-								$subject,
-								$message,
-								$header);
+			if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+				$objMail = new phpmailer();
+
+				if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+					$objSmtpSettings = new SmtpSettings();
+					if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+						$objMail->IsSMTP();
+						$objMail->Host = $arrSmtp['hostname'];
+						$objMail->Port = $arrSmtp['port'];
+						$objMail->SMTPAuth = true;
+						$objMail->Username = $arrSmtp['username'];
+						$objMail->Password = $arrSmtp['password'];
+					}
+				}
+
+				$objMail->From = $fromMail;
+				$objMail->FromName = $fromName;
+				$objMail->AddReplyTo($fromMail);
+				$objMail->Subject = $subject;
+				$objMail->IsHTML(false);
+				$objMail->Body = $message;
+				$objMail->AddAddress($to);
+				$objMail->Send();
+				$objMail->ClearAddresses();
+
+				foreach($array as $arrKey => $toCC) {
+					// Email message
+					if (!empty($toCC)) {
+						$objMail->AddAddress($toCC);
+						$objMail->Send();
+						$objMail->ClearAddresses();
+					}
 				}
 			}
-
 		}
 	}
-
-
-
 
 	function searchEntry(){
 
@@ -1214,7 +1242,7 @@ class Market extends marketLibrary
 
 	    //get navigatin
 		$verlauf = $this->getNavigation('');
-		
+
 		//spez fields
 		$objResult = $objDatabase->Execute("SELECT id, value FROM ".DBPREFIX."module_market_spez_fields WHERE lang_id = '1'");
       	if($objResult !== false){
@@ -1248,7 +1276,7 @@ class Market extends marketLibrary
 
 		$searchTerm	= substr($tmpTerm, 0, -1);
 		$searchTermExp = "&amp;check=norm&amp;term=".$searchTermOrg;
-		
+
 		if($_GET['check'] == 'exp'){
 
 			$searchTermExp = "&amp;check=exp&amp;term=".$searchTermOrg;
@@ -1261,7 +1289,7 @@ class Market extends marketLibrary
 				$query_search 		.="AND type LIKE ('%".$_GET['type']."%') ";
 				$searchTermExp		.= "&amp;type=".$_GET['type'];
 			}
-			
+
 			if($_GET['price'] != ''){
 				$query_search 		.="AND price < '".$_GET['price']."' ";
 				$searchTermExp		.= "&amp;price=".$_GET['price'];
@@ -1283,8 +1311,8 @@ class Market extends marketLibrary
 	                        spez_field_5,
 	                  MATCH (title,description) AGAINST ('%$searchTerm%') AS score
 	                   FROM ".DBPREFIX."module_market
-	                  WHERE (title LIKE ('%$searchTerm%') 
-	                  		OR description LIKE ('%$searchTerm%')  
+	                  WHERE (title LIKE ('%$searchTerm%')
+	                  		OR description LIKE ('%$searchTerm%')
 	                  		OR spez_field_1 LIKE ('%$searchTerm%')
 	                  		OR spez_field_2 LIKE ('%$searchTerm%')
 	                  		OR spez_field_3 LIKE ('%$searchTerm%')
@@ -1311,11 +1339,11 @@ class Market extends marketLibrary
 			   		if (empty($objResult->fields['picture'])) {
 						$objResult->fields['picture'] = 'no_picture.gif';
 					}
-			   		
+
 			   		$info     	= getimagesize($this->mediaPath.'pictures/'.$objResult->fields['picture']);
 		   			$height 	= '';
 		   			$width 		= '';
-		   			
+
 		   			if($info[0] <= $info[1]){
 						if($info[1] > 50){
 							$faktor = $info[1]/50;
@@ -1347,12 +1375,12 @@ class Market extends marketLibrary
 							}
 						}
 					}
-	
+
 					$width != '' ? $width = 'width="'.round($width,0).'"' : $width = '';
 					$height != '' ? $height = 'height="'.round($height,0).'"' : $height = '';
-					
+
 		   			$image = '<img src="'.$this->mediaWebPath.'pictures/'.$objResult->fields['picture'].'" '.$width.'" '.$height.'" border="0" alt="'.$objResult->fields['title'].'" />';
-		   			
+
 
 		   			$objResultUser = $objDatabase->Execute("SELECT residence FROM ".DBPREFIX."access_users WHERE id='".$objResult->fields['userid']."' LIMIT 1");
 					if($objResultUser !== false){
@@ -1377,7 +1405,7 @@ class Market extends marketLibrary
 		   			}else{
 		   				$price = $objResult->fields['price'].' '.$this->settings['currency'];
 		   			}
-		   			
+
 		   			$this->_objTpl->setVariable(array(
 						'MARKET_ENDDATE'    			=> $enddate,
 						'MARKET_TITLE'    				=> $objResult->fields['title'],
@@ -1542,23 +1570,23 @@ class Market extends marketLibrary
 						$objSpezFields = $objDatabase->Execute("SELECT id, name, value FROM ".DBPREFIX."module_market_spez_fields WHERE lang_id = '1' AND active='1' ORDER BY id DESC");
 				      	if($objSpezFields !== false){
 							while(!$objSpezFields->EOF){
-								
+
 								($i % 2)? $class = "row2" : $class = "row1";
 								$input = '<input type="text" name="spez_'.$objSpezFields->fields['id'].'" value="'.$objResult->fields[$objSpezFields->fields['name']].'" style="width: 300px;" maxlength="100">';
-								
+
 								// initialize variables
 								$this->_objTpl->setVariable(array(
 									'TXT_MARKET_SPEZ_FIELD_NAME'		=> $objSpezFields->fields['value'],
 									'MARKET_SPEZ_FIELD_INPUT'  			=> $input,
 								));
-								
+
 								$this->_objTpl->parse('spez_fields');
 								$i++;
 								$objSpezFields->MoveNext();
 							}
 				      	}
 
-						
+
 						$this->_objTpl->setVariable(array(
 						    'MARKET_ENTRY_ID'					=>	$entryId,
 						    'MARKET_ENTRY_TYPE_OFFER'			=>	$offer,

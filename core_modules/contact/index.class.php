@@ -458,6 +458,19 @@ class Contact extends ContactLib
 
 		if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
 			$objMail = new phpmailer();
+
+			if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+				$objSmtpSettings = new SmtpSettings();
+				if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+					$objMail->IsSMTP();
+					$objMail->Host = $arrSmtp['hostname'];
+					$objMail->Port = $arrSmtp['port'];
+					$objMail->SMTPAuth = true;
+					$objMail->Username = $arrSmtp['username'];
+					$objMail->Password = $arrSmtp['password'];
+				}
+			}
+
 			$objMail->From = $_CONFIG['coreAdminEmail'];
 			$objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
 			if (!empty($replyAddress)) {
