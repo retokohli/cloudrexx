@@ -2183,9 +2183,9 @@ class newsletter extends NewsletterLib
 		$mail = new phpmailer();
 
 		if ($smtpAccount > 0) {
-			require_once ASCMS_CORE_PATH.'/settings.class.php';
-			$objSettings = new settingsManager();
-			if (($arrSmtp = $objSettings->getSmtpAccount($smtpAccount)) !== false) {
+			require_once ASCMS_CORE_PATH.'/SmtpSettings.class.php';
+			$objSmtpSettings = new SmtpSettings();
+			if (($arrSmtp = $objSmtpSettings->getSmtpAccount($smtpAccount)) !== false) {
 				$mail->IsSMTP();
 				$mail->Host = $arrSmtp['hostname'];
 				$mail->Port = $arrSmtp['port'];

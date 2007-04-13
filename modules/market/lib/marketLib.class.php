@@ -28,15 +28,15 @@ class marketLibrary
 	function getCategories() {
 
 		global $objDatabase;
-		
+
 		$this->settings = $this->getSettings();
-		
+
 		if  ($this->settings['indexview']['value'] == 1) {
 			$order = "name";
 		} else {
 			$order = "displayorder";
 		}
-		
+
 		$objResultCategories = $objDatabase->Execute('SELECT * FROM '.DBPREFIX.'module_market_categories ORDER BY '.$order.'');
 	   	if ($objResultCategories !== false){
 		   	while (!$objResultCategories->EOF) {
@@ -261,28 +261,43 @@ class marketLibrary
 		$fromMail	= "";
 		$subject 	= $mailTitle;
 		$message 	= $mailContent;
-		$header		= "From: $fromName<$fromMail>\n";
-		$header 	.= "Reply-To: <$fromMail>\n";
-		$header 	.= "X-Mailer: PHP/" . phpversion();
 
+		if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+			$objMail = new phpmailer();
 
-		if($mailOn == 1){
+			if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+				$objSmtpSettings = new SmtpSettings();
+				if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+					$objMail->IsSMTP();
+					$objMail->Host = $arrSmtp['hostname'];
+					$objMail->Port = $arrSmtp['port'];
+					$objMail->SMTPAuth = true;
+					$objMail->Username = $arrSmtp['username'];
+					$objMail->Password = $arrSmtp['password'];
+				}
+			}
+
+			$objMail->From = $fromMail;
+			$objMail->FromName = $fromName;
+			$objMail->AddReplyTo($fromMail);
+			$objMail->Subject = $subject;
+			$objMail->IsHTML(false);
+			$objMail->Body = $message;
+
+			if($mailOn == 1){
+				$objMail->AddAddress($entryMail);
+				$objMail->Send();
+				$objMail->ClearAddresses();
+			}
 
 			// Email message
-			$sendmail = @mail($entryMail,
-						$subject,
-						$message,
-						$header);
-		}
-
-		// Email message
-		foreach($array as $arrKey => $toCC) {
-			// Email message
-			if (!empty($toCC)) {
-				$sendmail = @mail($toCC,
-							$subject,
-							$message,
-							$header);
+			foreach($array as $arrKey => $toCC) {
+				// Email message
+				if (!empty($toCC)) {
+					$objMail->AddAddress($toCC);
+					$objMail->Send();
+					$objMail->ClearAddresses();
+				}
 			}
 		}
 	}

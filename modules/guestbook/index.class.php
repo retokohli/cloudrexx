@@ -356,17 +356,39 @@ class Guestbook extends GuestbookLibrary
 	function sendNotificationEmail($nick,$comment)
 	{
 		global $_ARRAYLANG, $_CONFIG;
+
 	    $message = $_ARRAYLANG['TXT_CHECK_GUESTBOOK_ENTRY']."\n\n";
 	    $message .= $_ARRAYLANG['TXT_ENTRY_READS']."\n".$nick."\n".$comment;
 	    $mailto = $_CONFIG['coreAdminEmail'];
 	    $subject = $_ARRAYLANG['TXT_NEW_GUESTBOOK_ENTRY']." ".$_SERVER['HTTP_HOST'];
-		$return = @mail($mailto,
-		                $subject,
-		                $message,
-		                "From: ".$mailto."\r\n" .
-		                "Reply-To: ".$mailto."\r\n" .
-		                "X-Mailer: PHP/" . phpversion());
-		return $return;
+
+		if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+			$objMail = new phpmailer();
+
+			if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+				$objSmtpSettings = new SmtpSettings();
+				if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+					$objMail->IsSMTP();
+					$objMail->Host = $arrSmtp['hostname'];
+					$objMail->Port = $arrSmtp['port'];
+					$objMail->SMTPAuth = true;
+					$objMail->Username = $arrSmtp['username'];
+					$objMail->Password = $arrSmtp['password'];
+				}
+			}
+
+			$objMail->From = $mailto;
+			$objMail->AddReplyTo($mailto);
+			$objMail->Subject = $subject;
+			$objMail->IsHTML(false);
+			$objMail->Body = $message;
+			$objMail->AddAddress($mailto);
+			if ($objMail->Send()) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
 ?>

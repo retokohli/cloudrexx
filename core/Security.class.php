@@ -177,15 +177,35 @@ class Security
 
 		// The headers for the e-mail
 		$emailto = $_CONFIG['coreAdminName']." <".$_CONFIG['coreAdminEmail'].">";
-		$headers = "From: ".$emailto."\r\n";
-		$headers .= "X-Priority: 1\r\n";
-		$headers .= "X-Mailer: Contrexx Mailer\r\n";
 
 		// The message to send
 		$message = "DATE : $cdate\r\nFILE : $where\r\n\r\n$user\r\n\r\n$gpcs";
 
 		// Send the e-mail to the administrator
-		@mail($emailto, $_SERVER['HTTP_HOST']." : $type", $message, $headers);
+		if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+			$objMail = new phpmailer();
+
+			if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+				$objSmtpSettings = new SmtpSettings();
+				if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+					$objMail->IsSMTP();
+					$objMail->Host = $arrSmtp['hostname'];
+					$objMail->Port = $arrSmtp['port'];
+					$objMail->SMTPAuth = true;
+					$objMail->Username = $arrSmtp['username'];
+					$objMail->Password = $arrSmtp['password'];
+				}
+			}
+
+			$objMail->From = $_CONFIG['coreAdminEmail'];
+			$objMail->FromName = $_CONFIG['coreAdminName'];
+			$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+			$objMail->Subject = $_SERVER['HTTP_HOST']." : $type";
+			$objMail->IsHTML(false);
+			$objMail->Body = $message;
+			$objMail->AddAddress($emailto);
+			$objMail->Send();
+		}
 	}
 
 

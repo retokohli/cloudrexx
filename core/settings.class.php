@@ -15,42 +15,7 @@
  */
 require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
 require_once ASCMS_CORE_PATH.'/'.'GoogleSitemap.class.php';
-
-$_CORELANG['TXT_SETTINGS_EMAIL'] = 'E-Mail';
-$_CORELANG['TXT_SETTINGS_SERVER_CONFIGURATION'] = 'Serverkonfiguration';
-$_CORELANG['TXT_SETTINGS_EMAIL_ACCOUNTS'] = 'E-Mail Konten';
-$_CORELANG['TXT_SETTINGS_ACCOUNT'] = 'Konto';
-$_CORELANG['TXT_SETTINGS_HOST'] = 'Host';
-$_CORELANG['TXT_SETTINGS_USERNAME'] = 'Benutzername';
-$_CORELANG['TXT_SETTINGS_STANDARD'] = 'Standard';
-$_CORELANG['TXT_SETTINGS_FUNCTIONS'] = 'Funktionen';
-$_CORELANG['TXT_SETTINGS_MODFIY'] = 'Bearbeiten';
-$_CORELANG['TXT_SETTINGS_DELETE'] = 'Löschen';
-$_CORELANG['TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT'] = 'Neues SMTP Konto hinzufügen';
-$_CORELANG['TXT_SETTINGS_CONFIRM_DELETE_ACCOUNT'] = 'Möchten Sie das SMTP Konto %s wirklich löschen?';
-$_CORELANG['TXT_SETTINGS_OPERATION_IRREVERSIBLE'] = 'Dieser Vorgang kann nicht rückgängig gemacht werden!';
-$_CORELANG['TXT_SETTINGS_MODIFY_SMTP_ACCOUNT'] = 'SMTP Konto bearbeiten';
-$_CORELANG['TXT_SETTINGS_NAME_OF_ACCOUNT'] = 'Name des Kontos';
-$_CORELANG['TXT_SETTINGS_PASSWORD'] = 'Kennwort';
-$_CORELANG['TXT_SETTINGS_SMTP_SERVER'] = 'SMTP Server';
-$_CORELANG['TXT_SETTINGS_AUTHENTICATION'] = 'Authentifikation';
-$_CORELANG['TXT_SETTINGS_PORT'] = 'Port';
-$_CORELANG['TXT_SETTINGS_SMTP_AUTHENTICATION_TXT'] = 'Geben Sie hier kein Benutzernamen und Kennwort an, wenn der angegebene SMTP Server keine Authentifikation erfordert.';
-$_CORELANG['TXT_SETTINGS_SAVE'] = 'Speichern';
-$_CORELANG['TXT_SETTINGS_EMPTY_ACCOUNT_NAME_TXT'] = 'Sie müssen einen Kontonamen definieren!';
-$_CORELANG['TXT_SETTINGS_NOT_UNIQUE_SMTP_ACCOUNT_NAME'] = 'Sie müssen einen anderen Kontonamen verwenden, da der Kontoname %s bereits verwendet wird!';
-$_CORELANG['TXT_SETTINGS_EMPTY_SMTP_HOST_TXT'] = 'Sie müssen einen SMTP Server angeben!';
-$_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_SUCCEED'] = 'Das SMTP Konto %s wurde erfolgreich aktualisiert.';
-$_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_FAILED'] = 'Beim Aktualisieren des SMTP Kontos %s trat ein Fehler auf!';
-$_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_ADD_SUCCEED'] = 'Das Konto %s wurde erfolgreich hinzugefügt.';
-$_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_ADD_FAILED'] = 'Beim Hinzufügen des neuen SMTP Kontos trat ein Fehler auf!';
-$_CORELANG['TXT_SETTINGS_SMTP_SERVER_DAEMON'] = 'SMTP Dienst dieses Servers';
-$_CORELANG['TXT_SETTINGS_SMTP_DELETE_SUCCEED'] = 'Das SMTP Konto %s wurde erfolgreich gelöscht.';
-$_CORELANG['TXT_SETTINGS_SMTP_DELETE_FAILED'] = 'Beim Löschen des SMTP Kontos %s trat ein Fehler auf!';
-$_CORELANG['TXT_SETTINGS_COULD_NOT_DELETE_DEAULT_SMTP'] = 'Das SMTP Konto %s konnte nicht gelöscht werden, da es das Standard-Konto ist!';
-$_CORELANG['TXT_SETTINGS_DEFAULT_SMTP_CHANGED'] = 'Das SMTP Konto %s wird nun als Standardkonto für das Versenden von E-Mails verwendet.';
-$_CORELANG['TXT_SETTINGS_CHANGE_DEFAULT_SMTP_FAILED'] = 'Das Wechseln des Standard Kontos schlug fehl!';
-$_CORELANG['TXT_SETTINGS_BACK'] = 'Zurück';
+require_once ASCMS_CORE_PATH.'/SmtpSettings.class.php';
 
 /**
  * Settings
@@ -69,6 +34,7 @@ class settingsManager {
     var $strSettingsFile;
     var $strErrMessage;
     var $strOkMessage;
+    var $_objSmtp;
 
     function settingsManager()
     {
@@ -348,13 +314,15 @@ class settingsManager {
 
     function smtp()
     {
+    	$this->_objSmtp = new SmtpSettings();
+
     	if (empty($_REQUEST['tpl'])) {
     		$_REQUEST['tpl'] = '';
     	}
 
     	switch ($_REQUEST['tpl']) {
     		case 'modify':
-				$this->_smtpModfiy();
+				$this->_smtpModify();
 				break;
 
     		case 'delete':
@@ -377,7 +345,7 @@ class settingsManager {
     	global $objDatabase, $_CORELANG, $_CONFIG;
 
     	$id = intval($_GET['id']);
-    	if (($arrSmtp = $this->_getSmtpAccount($id)) || (($id = 0) !== false && $arrSmtp = $this->getSystemSmtpAccount())) {
+    	if (($arrSmtp = $this->_objSmtp->_getSmtpAccount($id)) || (($id = 0) !== false && $arrSmtp = $this->_objSmtp->getSystemSmtpAccount())) {
     		if ($objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = '".$id."' WHERE `setname` = 'coreSmtpServer'")) {
     			$_CONFIG['coreSmtpServer'] = $id;
     			require_once(ASCMS_CORE_PATH.'/settings.class.php');
@@ -396,7 +364,7 @@ class settingsManager {
 
     	$id = intval($_GET['id']);
 
-    	if (($arrSmtp = $this->_getSmtpAccount($id)) !== false) {
+    	if (($arrSmtp = $this->_objSmtp->_getSmtpAccount($id)) !== false) {
 	    	if ($id != $_CONFIG['coreSmtpServer']) {
 	    		if ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'settings_smtp` WHERE `id`='.$id) !== false) {
 		    		$this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_DELETE_SUCCEED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
@@ -434,7 +402,7 @@ class settingsManager {
         ));
 
         $nr = 1;
-        foreach ($this->getSmtpAccounts() as $id => $arrSmtp) {
+        foreach ($this->_objSmtp->getSmtpAccounts() as $id => $arrSmtp) {
         	if ($id) {
         		$objTemplate->setVariable(array(
 					'SETTINGS_SMTP_ACCOUNT_ID'	=> $id,
@@ -458,7 +426,7 @@ class settingsManager {
         $objTemplate->parse('settings_smtp');
     }
 
-    function _smtpModfiy()
+    function _smtpModify()
     {
     	global $objTemplate, $_CORELANG;
 
@@ -481,7 +449,7 @@ class settingsManager {
     		if (empty($arrSmtp['name'])) {
     			$error = true;
     			$this->strErrMessage .= $_CORELANG['TXT_SETTINGS_EMPTY_ACCOUNT_NAME_TXT'].'<br />';
-    		} elseif (!$this->_isUniqueSmtpAccountName($arrSmtp['name'], $id)) {
+    		} elseif (!$this->_objSmtp->_isUniqueSmtpAccountName($arrSmtp['name'], $id)) {
     			$error = true;
 				$this->strErrMessage .= sprintf($_CORELANG['TXT_SETTINGS_NOT_UNIQUE_SMTP_ACCOUNT_NAME'], htmlentities($arrSmtp['name'])).'<br />';
     		}
@@ -493,14 +461,14 @@ class settingsManager {
 
     		if (!$error) {
 	    		if ($id) {
-					if ($this->_updateSmtpAccount($id, $arrSmtp)) {
+					if ($this->_objSmtp->_updateSmtpAccount($id, $arrSmtp)) {
 						$this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_SUCCEED'], $arrSmtp['name']).'<br />';
 						return $this->_smtpOverview();
 					} else {
 						$this->strErrMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_FAILED'], $arrSmtp['name']).'<br />';
 					}
 	    		} else {
-					if ($this->_addSmtpAccount($arrSmtp)) {
+					if ($this->_objSmtp->_addSmtpAccount($arrSmtp)) {
 						$this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_ADD_SUCCEED'], $arrSmtp['name']).'<br />';
 						return $this->_smtpOverview();
 					} else {
@@ -508,7 +476,7 @@ class settingsManager {
 					}
 	    		}
     		}
-    	} elseif (($arrSmtp = $this->_getSmtpAccount($id)) === false) {
+    	} elseif (($arrSmtp = $this->_objSmtp->_getSmtpAccount($id)) === false) {
     		$id = 0;
     		$arrSmtp = array(
     			'name'		=> '',
@@ -547,184 +515,6 @@ class settingsManager {
     	));
 
     	$objTemplate->parse('settings_smtp_modify');
-    }
-
-    function _updateSmtpAccount($id, $arrSmtp)
-    {
-		global $objDatabase;
-
-		$arrUpdateAttributes = array();
-		$arrCurrentSmtp = $this->_getSmtpAccount($id);
-
-		if ($arrCurrentSmtp['name'] != $arrSmtp['name']) {
-			array_push($arrUpdateAttributes, "`name` = '".addslashes($arrSmtp['name'])."'");
-		}
-		if ($arrCurrentSmtp['hostname'] != $arrSmtp['hostname']) {
-			array_push($arrUpdateAttributes, "`hostname` = '".addslashes($arrSmtp['hostname'])."'");
-		}
-		if ($arrCurrentSmtp['port'] != $arrSmtp['port']) {
-			array_push($arrUpdateAttributes, '`port`='.$arrSmtp['port']);
-		}
-		if ($arrCurrentSmtp['username'] != $arrSmtp['username']) {
-			array_push($arrUpdateAttributes, "`username`='".addslashes($arrSmtp['username'])."'");
-		}
-		if (empty($arrSmtp['password']) || ($pass = trim($arrSmtp['password'])) && !empty($pass)) {
-			array_push($arrUpdateAttributes, "`password`='".addslashes(trim($arrSmtp['password']))."'");
-		}
-
-		if (count($arrUpdateAttributes) > 0) {
-			if ($objDatabase->Execute("UPDATE `".DBPREFIX."settings_smtp` SET ".implode(', ', $arrUpdateAttributes)." WHERE `id` = ".$id) === false) {
-				return false;
-			}
-		}
-
-		return true;
-    }
-
-    function _addSmtpAccount($arrSmtp)
-    {
-		global $objDatabase;
-
-		if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."settings_smtp` (`name`, `hostname`, `port`, `username`, `password`) VALUES ('".addslashes($arrSmtp['name'])."', '".addslashes($arrSmtp['hostname'])."', ".$arrSmtp['port'].", '".addslashes($arrSmtp['username'])."', '".addslashes($arrSmtp['password'])."')") !== false) {
-			return true;
-		} else {
-			return false;
-		}
-    }
-
-    /**
-     * Check for unique SMTP account name
-     *
-     * This method checks if the account name specified by $name is unique within
-     * the system.
-     * @access private
-     * @param string $name
-     * @param integer $id of a SMTP account
-     * @return boolean
-     */
-    function _isUniqueSmtpAccountName($name, $id = 0)
-    {
-    	global $objDatabase;
-
-    	$objSmtp = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."settings_smtp` WHERE `name` = '".addslashes($name)."' AND `id` !=".$id, 1);
-    	if ($objSmtp !== false && $objSmtp->RecordCount() == 0) {
-    		return true;
-    	} else {
-    		return false;
-    	}
-    }
-
-    /**
-     * Get a list of available SMTP accounts
-     *
-     * Returns an array with all available SMTP accounts. This includes
-     * on the one hand the self defined accounts and on the other hand the
-     * local system account defined in the php.ini.
-     * @global object $objDatabase
-     * @see getSystemSmtpAccount()
-     * @return array Array with SMTP accounts
-     */
-    function getSmtpAccounts()
-    {
-    	global $objDatabase;
-
-    	$arrSmtp[0] = $this->getSystemSmtpAccount();
-
-    	$objSmtp = $objDatabase->Execute('SELECT `id`, `name`, `hostname`, `username` FROM `'.DBPREFIX.'settings_smtp` ORDER BY `name`');
-    	if ($objSmtp !== false) {
-    		while (!$objSmtp->EOF) {
-    			$arrSmtp[$objSmtp->fields['id']] = array(
-    				'name'		=> $objSmtp->fields['name'],
-    				'hostname'	=> $objSmtp->fields['hostname'],
-    				'username'	=> $objSmtp->fields['username']
-    			);
-    			$objSmtp->MoveNext();
-    		}
-    	}
-
-    	return $arrSmtp;
-    }
-
-    /**
-     * Get details of a SMTP account
-     *
-     * Returns the details of the SMTP account specified by $accountId.
-     * If $accountId is either FALSE or not a valid account ID then FALSE will
-     * be returned instead.
-     * @param integer $accountId
-     * @see _getSmtpAccount()
-     * @return mixed Array with the details of the requested account or FALSE if the account doesn't exist
-     */
-    function getSmtpAccount($accountId = 0)
-    {
-    	if ($accountId && ($arrSmtp = $this->_getSmtpAccount($accountId, true)) !== false) {
-    		return $arrSmtp;
-    	} else {
-    		return false;
-    	}
-    }
-
-    /**
-     * Get details of a specified SMTP account
-     *
-     * Returns the details of the SMTP account specified by $accountId.
-     * If $accountId is either FALSE or not a valid account ID then this
-     * method will return FALSE.
-     * Only if $getPassword is set to TRUE will the password of the specified SMTP
-     * account be returned.
-     * @access private
-     * @global object $objDatabase
-     * @param integer $accountId
-     * @param boolean $getPassword
-     * @return mixed Array with account details if $accountId is a valid account ID, otherwise FALSE
-     */
-    function _getSmtpAccount($accountId = 0, $getPassword = false)
-    {
-    	global $objDatabase;
-
-    	if ($accountId && ($objSmtp = $objDatabase->SelectLimit('SELECT `name`, `hostname`, `port`, `username`, '.($getPassword ? '`password`' : 'CHAR_LENGTH(`password`) AS \'password\'').' FROM `'.DBPREFIX.'settings_smtp` WHERE `id` = '.$accountId, 1)) !== false && $objSmtp->RecordCount() == 1) {
-    		return array(
-    			'name'		=> $objSmtp->fields['name'],
-    			'hostname'	=> $objSmtp->fields['hostname'],
-    			'port'		=> $objSmtp->fields['port'],
-    			'username'	=> $objSmtp->fields['username'],
-    			'password'	=> $objSmtp->fields['password']
-    		);
-    	} else {
-    		return false;
-    	}
-    }
-
-    /**
-     * Get konfigured system SMTP account
-     *
-     * Returns the local konfigured SMTP account of the current system.
-     * @global array $_CORELANG
-     * @return array Array with the SMTP account details
-     */
-    function getSystemSmtpAccount()
-    {
-    	global $_CORELANG;
-
-    	return array(
-    		'name'		=> $_CORELANG['TXT_SETTINGS_SERVER_CONFIGURATION'],
-    		'hostname'	=> $_CORELANG['TXT_SETTINGS_SMTP_SERVER_DAEMON'],
-    		'port'		=> '',
-    		'username'	=> '',
-    		'password'	=> '',
-    		'system'	=> 1
-    	);
-    }
-
-    function getSmtpAccountMenu($selectedAccountId, $attrs)
-    {
-    	$menu = '<select'.(!empty($attrs) ? ' '.$attrs : '').'>';
-    	foreach ($this->getSmtpAccounts() as $id => $arrSmtp) {
-    		$menu .= '<option value="'.$id.'"'.($selectedAccountId == $id ? ' selected="selected"' : '').'>'.htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
-    	}
-    	$menu .= '</select>';
-
-    	return $menu;
     }
 }
 ?>
