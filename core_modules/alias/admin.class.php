@@ -1,5 +1,10 @@
 <?php
 /**
+ * Includes
+ */
+require_once ASCMS_CORE_MODULE_PATH.'/alias/lib/aliasLib.class.php';
+
+/**
  * AliasAdmin
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
  * @author		Astalavista Development Team <thun@astalvista.ch>
@@ -7,23 +12,6 @@
  * @package     contrexx
  * @subpackage  core_module_alias
  * @todo        Edit PHP DocBlocks!
- */
-error_reporting(E_ALL);ini_set('display_errors', 1);
-/**
- * Includes
- */
-require_once ASCMS_CORE_MODULE_PATH.'/alias/lib/aliasLib.class.php';
-
-/**
- * AliasAdmin
- *
- * Alias Module Administration Class
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
- * @access		public
- * @version		1.0.0
- * @package     contrexx
- * @subpackage  core_module_alias
  */
 class AliasAdmin extends aliasLib
 {
