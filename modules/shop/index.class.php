@@ -1202,8 +1202,16 @@ class Shop extends ShopLibrary {
                     }
 
                     // initialize variables
+
+                    // pre-version 1.1 spelling error fixed
+                    // left old spelling for comatibility (obsolete)
+                    if ($this->objTemplate->placeholderExists('SHOP_PRODCUT_OPTION')) {
+                        $this->objTemplate->setVariable('SHOP_PRODCUT_OPTION', $selectValues);
+                    }
+                    if ($this->objTemplate->placeholderExists('SHOP_PRODUCT_OPTION')) {
+                        $this->objTemplate->setVariable('SHOP_PRODUCT_OPTION', $selectValues);
+                    }
                     $this->objTemplate->setVariable(array(
-                        'SHOP_PRODCUT_OPTION'        => $selectValues,
                         'SHOP_PRODUCT_OPTIONS_NAME'  => $arrOptionDetails['name'],
                         'SHOP_PRODUCT_OPTIONS_TITLE' => "<a href=\"javascript:{}\" onclick=\"toggleOptions($product_Id)\" title=\"".$_ARRAYLANG['TXT_OPTIONS']."\">".$_ARRAYLANG['TXT_OPTIONS']."</a>\n",
                     ));
