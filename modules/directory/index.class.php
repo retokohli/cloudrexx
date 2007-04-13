@@ -347,7 +347,7 @@ class rssDirectory extends directoryLibrary
 				$class= $parentId==0 ? "catLink" : "subcatLink";
 				$this->arrRows[$i] 	.= "<a class='catLink' href='?section=directory&amp;lid=".$levelKey."''>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
 				$this->arrRowsIndex[strtoupper(htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET).$levelKey)] = strtoupper(substr(htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1))."<a class='catLink' href='?section=directory&amp;lid=".$levelKey."'>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
-				
+
 				//get sublevel
 				if($this->levels['parentid'][$levelKey] == 0){
 					$objResult = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."module_directory_levels WHERE status = '1' AND parentid =".contrexx_addslashes($levelKey)." ORDER BY displayorder LIMIT ".contrexx_addslashes($this->subLimit)."");
@@ -377,7 +377,7 @@ class rssDirectory extends directoryLibrary
 				$this->getLatest();
 			}
 		}
-		
+
 		//get feeds
 		if($arrLevel['onlyentries'] == 1){
 			$this->getFeeds('', $_GET['lid']);
@@ -386,7 +386,7 @@ class rssDirectory extends directoryLibrary
 				$this->_objTpl->hideBlock('showLatest');
 			}
 		}
-		
+
 		if($arrLevel['showcategories'] == 1 || empty($this->levels)){
 			if(isset($_GET['cid'])){
 				$arrCategories 				= $this->showCategories(intval($_GET['cid']));
@@ -445,7 +445,7 @@ class rssDirectory extends directoryLibrary
 				$class= $parentId==0 ? "catLink" : "subcatLink";
 				$this->arrRows[$i] .= "<a class='catLink' href='?section=directory".$levelLink."&amp;cid=".$catKey."''>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
 				$this->arrRowsIndex[strtoupper(htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET).$catKey)] = strtoupper(substr(htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1))."<a class='catLink' href='?section=directory".$levelLink."&amp;cid=".$catKey."'>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
-				
+
 
 				//get subcategories
 				if($this->categories['parentid'][$catKey] == 0){
@@ -478,7 +478,7 @@ class rssDirectory extends directoryLibrary
 				$this->getLatest();
 			}
 		}
-		
+
 		//get feeds
 		if($parentId != 0 && $arrCategories['showentries'] == '1'){
 			$this->getFeeds($parentId, $_GET['lid']);
@@ -516,7 +516,7 @@ class rssDirectory extends directoryLibrary
 	    if(isset($catId)){
 	    	$levelLink = "&amp;lid=".$lid;
 	    }
-	    
+
 	    if ($this->settings['sortOrder']['value'] == 1) {
 	   	 	$order = "files.title";
 	    } else {
@@ -633,8 +633,6 @@ class rssDirectory extends directoryLibrary
 	/**
     * get search
     *
-    * get search
-    *
     * @access   public
     * @param    string  $id
     */
@@ -694,7 +692,7 @@ class rssDirectory extends directoryLibrary
 		$objResult = $objDatabase->Execute("SELECT id, name, title, typ FROM ".DBPREFIX."module_directory_inputfields WHERE exp_search='1' AND is_search='1' ORDER BY sort");
 		if($objResult !== false){
 			while(!$objResult->EOF){
-				
+
 				if($objResult->fields['typ'] == 5 || $objResult->fields['typ'] == 6) {
 					$name = $objResult->fields['title'];
 				} else {
@@ -703,7 +701,7 @@ class rssDirectory extends directoryLibrary
 					} else {
 						$name = $objResult->fields['title'];
 					}
-					
+
 				}
 
 
@@ -956,42 +954,42 @@ class rssDirectory extends directoryLibrary
 					// set variables
 					$content = contrexx_strip_tags($arrFeedContent[$fieldName]);
 					$name = $_ARRAYLANG[$arrFieldsActive['title'][$fieldKey]];
-					
+
 					//get pics
 					if ($fieldName == "logo"){
 						$content = '<img src="'.$this->mediaWebPath.'images/'.$arrFeedContent[$fieldName].'" border="0" alt="'.$arrFeedContent['title'].'" />&nbsp;&nbsp;';
 					}
-					
+
 					//get pics
 					if ($fieldName == "lokal" ||
 						$fieldName == "map" ||
-						$fieldName == "spez_field_11" || 
-						$fieldName == "spez_field_12" || 
-						$fieldName == "spez_field_13" || 
-						$fieldName == "spez_field_14" || 
-						$fieldName == "spez_field_15" || 
-						$fieldName == "spez_field_16" || 
-						$fieldName == "spez_field_17" || 
-						$fieldName == "spez_field_18" || 
-						$fieldName == "spez_field_19" || 
+						$fieldName == "spez_field_11" ||
+						$fieldName == "spez_field_12" ||
+						$fieldName == "spez_field_13" ||
+						$fieldName == "spez_field_14" ||
+						$fieldName == "spez_field_15" ||
+						$fieldName == "spez_field_16" ||
+						$fieldName == "spez_field_17" ||
+						$fieldName == "spez_field_18" ||
+						$fieldName == "spez_field_19" ||
 						$fieldName == "spez_field_20"){
-							
+
 						$info     	= getimagesize($this->mediaPath."images/".$arrFeedContent[$fieldName]);
 						$width		= $info[0]+20;
 						$height		= $info[1]+20;
-						
+
 						$content = '<a href="'.$this->mediaWebPath."images/".$arrFeedContent[$fieldName].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$width.',height='.$height.',status\'); return false"><img src="'.$this->mediaWebPath.'thumbs/'.$arrFeedContent[$fieldName].'" border="0" alt="'.$arrFeedContent['title'].'" /></a>&nbsp;&nbsp;';
 					}
-					
+
 					//get uploads
-					if ($fieldName == "spez_field_25" || 
-						$fieldName == "spez_field_26" || 
-						$fieldName == "spez_field_27" || 
-						$fieldName == "spez_field_28" || 
+					if ($fieldName == "spez_field_25" ||
+						$fieldName == "spez_field_26" ||
+						$fieldName == "spez_field_27" ||
+						$fieldName == "spez_field_28" ||
 						$fieldName == "spez_field_29"){
-							
+
 						$info = (filesize($this->mediaPath."uploads/".$arrFeedContent[$fieldName]))/1000;
-						
+
 						$content = '<a href="'.$this->mediaWebPath."uploads/".$arrFeedContent[$fieldName].'" target="_blank">'.$arrFeedContent[$fieldName].'</a>&nbsp;<i>('.$info.' KB)</i>';
 					}
 
@@ -1004,7 +1002,7 @@ class rssDirectory extends directoryLibrary
 					if($fieldName =="mail"){
 						$content = "<a href='mailto:".$arrFeedContent[$fieldName]."' target='_blank'>".$arrFeedContent[$fieldName]."</a>";
 					}
-					
+
 					//get spez voting
 					if($fieldName == "spez_field_23" || $fieldName == "spez_field_24" ){
 						$content = "";
@@ -1083,13 +1081,13 @@ class rssDirectory extends directoryLibrary
 		$setVariable["DIRECTORY_FEED_EDIT"] 		= $_ARRAYLANG['TXT_DIRECTORY_EDIT'];
 		$setVariable["DIRECTORY_FEED_EDIT_LINK"] 	= "index.php?section=directory&amp;cmd=edit&amp;id=".$arrFeedContent['id'];
 		$setVariable["DIRECTORY_FEED_HITS"] 		= $arrFeedContent['hits'];
-		
+
 		if($arrFeedContent['premium'] == '1'){
 			$content = 'class="premium"';
 		}else{
 			$content = 'class="normal"';
 		}
-		
+
 		$setVariable["DIRECTORY_FEED_PREMIUM"] 		= $content;
 
 		if($arrFeedContent['link'] == "http://" || $arrFeedContent['link'] == $arrFeedContent['homepage']){
@@ -1101,7 +1099,7 @@ class rssDirectory extends directoryLibrary
 			}
 			$setVariable["DIRECTORY_FEED_LINK"] 	= $link;
 		}
-		
+
 		$setVariable["DIRECTORY_FEED_FILE"] 	= $arrFeedContent['link'];
 
 		//check attachment
@@ -1883,9 +1881,9 @@ class rssDirectory extends directoryLibrary
 					$objResult->MoveNext();
 				}
 			}
-			
+
 			//echo $link;
-			
+
 			header("Location: ".$link);
 			exit;
 		}
@@ -1903,10 +1901,10 @@ class rssDirectory extends directoryLibrary
 	*/
     function getBlockLatest($arrBlocks){
 		global $objDatabase, $objTemplate, $_LANGID;
-		
+
 		$i = 0;
 		$numBlocks = count($arrBlocks);
-		
+
 		//get latest
 		$query = "SELECT id, title, description, logo, `date`
 					FROM ".DBPREFIX."module_directory_dir
@@ -1916,13 +1914,13 @@ class rssDirectory extends directoryLibrary
 		$objResult = $objDatabase->SelectLimit($query, $this->settings['latest_content']['value']);
 		if ($objResult !== false) {
 			while (!$objResult->EOF) {
-				
+
 				if (!empty($objResult->fields['logo'])) {
 					$logo = '<img src="'.$this->mediaWebPath.'thumbs/'.$objResult->fields['logo'].'" border="0" alt="'.stripslashes($objResult->fields['title']).'" />';
 				} else {
 					$logo = '';
 				}
-				
+
 				// set variables
 				$objTemplate->setVariable('DIRECTORY_DATE', date("d.m.Y", $objResult->fields['date']));
 				$objTemplate->setVariable('DIRECTORY_TITLE', stripslashes($objResult->fields['title']));
@@ -1931,9 +1929,9 @@ class rssDirectory extends directoryLibrary
 				$objTemplate->setVariable('DIRECTORY_ID', $objResult->fields['id']);
 
 				$blockId = $arrBlocks[$i];
-				
+
 				$objTemplate->parse('directoryLatest_row_'.$blockId);
-				
+
 				if($i < $numBlocks-1){
 					$i++;
 				} else{
@@ -2198,12 +2196,12 @@ class rssDirectory extends directoryLibrary
 		foreach($this->navtreeLevels as $levelKey => $levelName){
 			$this->navtree .= "&nbsp;&raquo;&nbsp;<a href='?section=directory&amp;lid=".$levelKey."'>".$levelName."</a>";
 		}
-		
+
 		foreach($this->navtreeCategories as $catKey => $catName){
 			if($lid != 0){
 				$levelLink = "&amp;lid=".$lid;
 			}
-			
+
 			$this->navtree .= "&nbsp;&raquo;&nbsp;<a href='?section=directory".$levelLink."&amp;cid=".$catKey."'>".$catName."</a>";
 		}
 	}

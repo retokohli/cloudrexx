@@ -320,11 +320,6 @@ class Calendar extends calendarLibrary
 							</a>';
 		}
 
-
-
-
-
-
 		$this->_objTpl->setVariable(array(
 			"TXT_CALENDAR_STARTDATE" => $_ARRAYLANG['TXT_CALENDAR_STARTDATE'],
 			"TXT_CALENDAR_ENDDATE"	 => $_ARRAYLANG['TXT_CALENDAR_ENDDATE'],
