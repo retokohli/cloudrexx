@@ -128,6 +128,9 @@ class AliasAdmin extends aliasLib
 			case 'delete':
 				$this->_delete();
 
+			case 'rewriteRules':
+				$this->_rewriteRules();
+
 			default:
 				$this->_list();
 				break;
@@ -141,6 +144,11 @@ class AliasAdmin extends aliasLib
 			'CONTENT_STATUS_MESSAGE'	=> implode("<br />\n", $this->arrStatusMsg['error']),
 			'ADMIN_CONTENT'				=> $this->_objTpl->get()
 		));
+	}
+
+	function _rewriteRules()
+	{
+		$this->_activateRewriteEngine();
 	}
 
 	function _list()
@@ -167,12 +175,22 @@ class AliasAdmin extends aliasLib
 				'TXT_ALIAS_MODIFY'	=> $_ARRAYLANG['TXT_ALIAS_MODIFY']
 			));
 
+			$arrRewriteInfo = $this->_getRewriteInfo();
 
 			foreach ($arrAliases as $aliasId => $arrAlias) {
 				foreach ($arrAlias['sources'] as $arrAliasSource) {
+
 					$this->_objTpl->setVariable(array(
 						'ALIAS_SOURCE_URL'	=> 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'<strong>/'.$arrAliasSource['url'].'</strong>',
 					));
+
+					if (!isset($arrRewriteInfo['rules'][($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'])]) || !in_array($arrAliasSource['url'], $arrRewriteInfo['rules'][($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'])])) {
+						$this->_objTpl->setVariable('TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG', $_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG']);
+						$this->_objTpl->touchBlock('alias_source_not_set');
+					} else {
+						$this->_objTpl->hideBlock('alias_source_not_set');
+					}
+
 					$this->_objTpl->parse('alias_source_list');
 				}
 				$this->_objTpl->setVariable(array(
