@@ -206,7 +206,9 @@ class newsletter extends NewsletterLib
 				'USERS_BIRTHDAY_DAY_NAME'	=> $i,
 				'SELECTED_DAY'				=> $selected
 			));
-			$this->_objTpl->parse('birthday_day');
+			if($this->_objTpl->blockExists('birthday_day')){
+				$this->_objTpl->parse('birthday_day');
+			}
 		}
 
 		for($i=1;$i<=12;$i++){
@@ -216,7 +218,9 @@ class newsletter extends NewsletterLib
 				'USERS_BIRTHDAY_MONTH_NAME'	=> $this->months[$i],
 				'SELECTED_MONTH'			=> $selected
 			));
-			$this->_objTpl->parse('birthday_month');
+			if($this->_objTpl->blockExists('birthday_day')){
+				$this->_objTpl->parse('birthday_month');
+			}
 		}
 
 		for($i=date("Y");$i>=1900;$i--){
@@ -225,7 +229,9 @@ class newsletter extends NewsletterLib
 				'USERS_BIRTHDAY_YEAR' 		=> $i,
 				'SELECTED_YEAR'				=> $selected
 			));
-			$this->_objTpl->parse('birthday_year');
+			if($this->_objTpl->blockExists('birthday_day')){
+				$this->_objTpl->parse('birthday_year');
+			}
 		}
 	}
 
