@@ -8,18 +8,6 @@
  * @subpackage  core_module_alias
  * @todo        Edit PHP DocBlocks!
  */
-
-/**
- * Alias library
- *
- * Alias library class
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
- * @access		public
- * @version		1.0.0
- * @package     contrexx
- * @subpackage  core_module_alias
- */
 class aliasLib
 {
 	var $_arrAliasTypes = array(
