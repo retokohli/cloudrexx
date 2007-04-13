@@ -913,17 +913,17 @@ class Shop extends ShopLibrary {
 
         $objResult = '';
         $count = 0;
-        if ($_GET['cmd'] == 'lastFive') {
+        if (isset($_GET['cmd']) && $_GET['cmd'] == 'lastFive') {
             $query = "SELECT * FROM ".DBPREFIX."module_shop_products ".
                      "WHERE status=1 ".
                      "ORDER BY product_id DESC";
             $objResult = $objDatabase->SelectLimit($query, 5);
             $count = $objResult->RecordCount();
         } else {
-            if ($productId!=0) {
+            if ($productId != 0) {
                 $q = "SELECT *
                         FROM ".DBPREFIX."module_shop_products
-                       WHERE id = $productId";
+                       WHERE id=$productId";
             } else {
                 $q =
                     "SELECT p.id, p.product_id, p.picture, p.title, ".
@@ -3117,23 +3117,24 @@ sendReq('', 1);
                 if ($this->is_auth == 1) {
                     $customerid = $this->customerId;
                     // update customer
-                    $query = "UPDATE ".DBPREFIX."module_shop_customers
-                                               SET company='".trim($_SESSION['shop']['company']," \t")."',
-                                               prefix='".trim($_SESSION['shop']['prefix']," \t")."',
-                                               firstname='".trim($_SESSION['shop']['firstname']," \t")."',
-                                               lastname='".trim($_SESSION['shop']['lastname']," \t")."',
-                                               address='".trim($_SESSION['shop']['address']," \t")."',
-                                               city='".trim($_SESSION['shop']['city']," \t")."',
-                                               zip='".trim($_SESSION['shop']['zip']," \t")."',
-                                               country_id='".intval($_SESSION['shop']['countryId'])."',
-                                               phone='".trim($_SESSION['shop']['phone']," \t")."',
-                                               fax='".trim($_SESSION['shop']['fax']," \t")."', ".
-                                               // the following fields are undefined in the first run!
-                                               "ccnumber='".(isset($_SESSION['shop']['ccnumber']) ? trim($_SESSION['shop']['ccnumber']," \t") : '')."',
-                                               ccdate='{". (isset($_SESSION['shop']['ccdate'])   ?      $_SESSION['shop']['ccdate']          : '')."}',
-                                               ccname='".  (isset($_SESSION['shop']['ccname'])   ? trim($_SESSION['shop']['ccname']," \t")   : '')."',
-                                               cvc_code='".(isset($_SESSION['shop']['cvcCode'])  ? trim($_SESSION['shop']['cvcCode']," \t")  : '')."'
-                                         WHERE customerid=".$customerid;
+                    $query = "
+                        UPDATE ".DBPREFIX."module_shop_customers
+                           SET company='".trim($_SESSION['shop']['company']," \t")."',
+                           prefix='".trim($_SESSION['shop']['prefix']," \t")."',
+                           firstname='".trim($_SESSION['shop']['firstname']," \t")."',
+                           lastname='".trim($_SESSION['shop']['lastname']," \t")."',
+                           address='".trim($_SESSION['shop']['address']," \t")."',
+                           city='".trim($_SESSION['shop']['city']," \t")."',
+                           zip='".trim($_SESSION['shop']['zip']," \t")."',
+                           country_id='".intval($_SESSION['shop']['countryId'])."',
+                           phone='".trim($_SESSION['shop']['phone']," \t")."',
+                           fax='".trim($_SESSION['shop']['fax']," \t")."', ".
+                           // the following fields are undefined in the first run!
+                           "ccnumber='".(isset($_SESSION['shop']['ccnumber']) ? trim($_SESSION['shop']['ccnumber']," \t") : '')."',
+                           ccdate='{".  (isset($_SESSION['shop']['ccdate'])   ?      $_SESSION['shop']['ccdate']          : '')."}',
+                           ccname='".   (isset($_SESSION['shop']['ccname'])   ? trim($_SESSION['shop']['ccname']," \t")   : '')."',
+                           cvc_code='". (isset($_SESSION['shop']['cvcCode'])  ? trim($_SESSION['shop']['cvcCode']," \t")  : '')."'
+                     WHERE customerid=".$customerid;
                     $objResult = $objDatabase->Execute($query);
                 } else {
                     // Add to customer table
@@ -3168,30 +3169,43 @@ sendReq('', 1);
                 $_SESSION['shop']['customerid'] = $customerid;
 
                 // Add to order table
-                $query = "INSERT INTO ".DBPREFIX."module_shop_orders
-                   SET customerid=$customerid,
-                       selected_currency_id='{$_SESSION['shop']['currencyId']}',
-                       currency_order_sum ='{$_SESSION['shop']['grand_total_price']}',
-                       order_date=NOW(),
-                       order_status='0',
-                       ship_company='".trim($_SESSION['shop']['company2']," \t")."',
-                       ship_prefix='".trim($_SESSION['shop']['prefix2']," \t")."',
-                       ship_firstname='".trim($_SESSION['shop']['firstname2']," \t")."',
-                       ship_lastname='".trim($_SESSION['shop']['lastname2']," \t")."',
-                       ship_address='".trim($_SESSION['shop']['address2']," \t")."',
-                       ship_city='".trim($_SESSION['shop']['city2']," \t")."',
-                       ship_zip='".trim($_SESSION['shop']['zip2']," \t")."',
-                       ship_country_id='".intval($_SESSION['shop']['countryId2'])."',
-                       ship_phone='".trim($_SESSION['shop']['phone2']," \t")."',
-                       currency_ship_price='{$_SESSION['shop']['shipment_price']}',
-                       shipping_id={$_SESSION['shop']['shipperId']},
-                       payment_id={$_SESSION['shop']['paymentId']},
-                       currency_payment_price='{$_SESSION['shop']['payment_price']}',
-                       customer_ip='$customer_ip',
-                       customer_host='$customer_host',
-                       customer_lang='$customer_lang',
-                       customer_browser='$customer_browser',
-                       customer_note='{$_SESSION['shop']['customer_note']}'";
+                $query = "
+                    INSERT INTO ".DBPREFIX."module_shop_orders
+                    (customerid, selected_currency_id, currency_order_sum,
+                    order_date, order_status, ship_company, ship_prefix,
+                    ship_firstname, ship_lastname, ship_address, ship_city,
+                    ship_zip, ship_country_id, ship_phone, currency_ship_price,
+                    shipping_id, payment_id, currency_payment_price,
+                    customer_ip, customer_host, customer_lang,
+                    customer_browser, customer_note)
+                    VALUES
+                    ($customerid,
+                    '{$_SESSION['shop']['currencyId']}',
+                    '{$_SESSION['shop']['grand_total_price']}',
+                    NOW(),
+                    0,
+                    '".trim($_SESSION['shop']['company2']," \t")."',
+                    '".trim($_SESSION['shop']['prefix2']," \t")."',
+                    '".trim($_SESSION['shop']['firstname2']," \t")."',
+                    '".trim($_SESSION['shop']['lastname2']," \t")."',
+                    '".trim($_SESSION['shop']['address2']," \t")."',
+                    '".trim($_SESSION['shop']['city2']," \t")."',
+                    '".trim($_SESSION['shop']['zip2']," \t")."',
+                    '".intval($_SESSION['shop']['countryId2'])."',
+                    '".trim($_SESSION['shop']['phone2']," \t")."',
+                    '{$_SESSION['shop']['shipment_price']}', ".
+                    (isset($_SESSION['shop']['shipperId']) && $_SESSION['shop']['shipperId']
+                     ? $_SESSION['shop']['shipperId']
+                     : 0
+                    ).",
+                    {$_SESSION['shop']['paymentId']},
+                    '{$_SESSION['shop']['payment_price']}',
+                    '$customer_ip',
+                    '$customer_host',
+                    '$customer_lang',
+                    '$customer_browser',
+                    '{$_SESSION['shop']['customer_note']}')
+                ";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) {
                     $orderid = $objDatabase->Insert_ID();
@@ -3369,7 +3383,9 @@ sendReq('', 1);
                 'SHOP_SHIPMENT_PRICE'   => $_SESSION['shop']['shipment_price'],
                 'SHOP_PAYMENT_PRICE'    => $_SESSION['shop']['payment_price'],
                 'SHOP_TOTALPRICE'       => $_SESSION['shop']['total_price'],
-                'SHOP_SHIPMENT'         => $this->objShipment->getShipperName($_SESSION['shop']['shipperId']),
+                'SHOP_SHIPMENT'         => (isset($_SESSION['shop']['shipperId']) && $_SESSION['shop']['shipperId']
+                                            ? $this->objShipment->getShipperName($_SESSION['shop']['shipperId'])
+                                            : '-'),
                 'SHOP_PAYMENT'          => $strPayment,
                 'SHOP_GRAND_TOTAL'      => $_SESSION['shop']['grand_total_price'],
                 'SHOP_CUSTOMERNOTE'     => $_SESSION['shop']['customer_note'],
