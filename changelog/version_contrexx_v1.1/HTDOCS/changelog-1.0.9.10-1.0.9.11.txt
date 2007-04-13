@@ -128,6 +128,7 @@ Navigation
 
 Adressverzeichnis (Memberdir)
 - Einträge im Verzeichnis können nun im Frontend wie auch im Backend als vCard ( http://de.wikipedia.org/wiki/VCard ) exportiert werden.
+- E-Mails und Websites werden nun automatisch in HTML-Links umgewandelt.
 
 Online Desk
 - Produkte können neu kopiert werden.
@@ -214,6 +215,7 @@ Webinstaller
 
 Kalender
 - Die Kalenderbox, wird nun, je nach Frontend-Sprache, in Deutsch oder Englisch angezeigt.
+- Es können einzelne Veranstaltungen, ganze Kategorien oder die kompletten Veranstaltungen als iCal-Datei exportiert werden, welche dann in verschiedenen E-Mail Programmen importiert werden können. 
 
 News Syndication
 - Der NewsComponent (NewsML) wird mit PHP5 nun auch korrekt eingelesen.
