@@ -32,6 +32,9 @@ News
 ****************************************
 * New Features *************************
 ****************************************
+Allgemein
+- Neu kann bei den Grundeinstellungen diverse E-Mail Server (SMTP) konfiguriert werden, welche zum Versenden von E-Mails genutzt werden können. Dabei kann zum Versenden von E-Mails ein erfasstes Konto als Standard E-Mail Server definiert werden.
+
 Diretory
 - Div Anpassungen und Bugs behoben.
 - Neuer Blockname für Hedalines Block: directoryLatest_row_1. Es können nun mehrere Blöcke verwendet werden, um eine mehrspaltige Dartellung zu ermöglichen. Max. 10 Blöcke.
