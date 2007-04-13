@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 13 Apr 2007 21:48:32 +0200
+* generated date Fri, 13 Apr 2007 23:17:48 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
@@ -652,4 +652,39 @@ $_ARRAYLANG['TXT_THEME_IMPORT_INFO_BODY'] = "Geben Sie oben die Quelle des Desig
 $_ARRAYLANG['TXT_THEME_ACTIVATE_INFO'] = "Aktivierte Sprachen";
 $_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Ist eine Sprache mit rosa Farbe hinterlegt, so ist diese im Frontend bei den <a href=\"index.php?cmd=language\">Spracheinstellungen</a> aktiviert</a>";
 $_ARRAYLANG['TXT_SKINS_PREVIEW'] = "Designvorschau";
+$_ARRAYLANG['TXT_SETTINGS_EMAIL'] = "E-Mail";
+$_ARRAYLANG['TXT_SETTINGS_SERVER_CONFIGURATION'] = "Serverkonfiguration";
+$_ARRAYLANG['TXT_SETTINGS_EMAIL_ACCOUNTS'] = "E-Mail Konten";
+$_ARRAYLANG['TXT_SETTINGS_ACCOUNT'] = "Konto";
+$_ARRAYLANG['TXT_SETTINGS_HOST'] = "Host";
+$_ARRAYLANG['TXT_SETTINGS_USERNAME'] = "Benutzername";
+$_ARRAYLANG['TXT_SETTINGS_STANDARD'] = "Standard";
+$_ARRAYLANG['TXT_SETTINGS_FUNCTIONS'] = "Funktionen";
+$_ARRAYLANG['TXT_SETTINGS_MODFIY'] = "Bearbeiten";
+$_ARRAYLANG['TXT_SETTINGS_DELETE'] = "Löschen";
+$_ARRAYLANG['TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT'] = "Neues SMTP Konto hinzufügen";
+$_ARRAYLANG['TXT_SETTINGS_CONFIRM_DELETE_ACCOUNT'] = "Möchten Sie das SMTP Konto %s wirklich löschen?";
+$_ARRAYLANG['TXT_SETTINGS_OPERATION_IRREVERSIBLE'] = "Dieser Vorgang kann nicht rückgängig gemacht werden!";
+$_ARRAYLANG['TXT_SETTINGS_MODIFY_SMTP_ACCOUNT'] = "SMTP Konto bearbeiten";
+$_ARRAYLANG['TXT_SETTINGS_NAME_OF_ACCOUNT'] = "Name des Kontos";
+$_ARRAYLANG['TXT_SETTINGS_PASSWORD'] = "Kennwort";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_SERVER'] = "SMTP Server";
+$_ARRAYLANG['TXT_SETTINGS_AUTHENTICATION'] = "Authentifikation";
+$_ARRAYLANG['TXT_SETTINGS_PORT'] = "Port";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_AUTHENTICATION_TXT'] = "Geben Sie hier kein Benutzernamen und Kennwort an, wenn der angegebene SMTP Server keine Authentifikation erfordert.";
+$_ARRAYLANG['TXT_SETTINGS_SAVE'] = "Speichern";
+$_ARRAYLANG['TXT_SETTINGS_EMPTY_ACCOUNT_NAME_TXT'] = "Sie müssen einen Kontonamen definieren!";
+$_ARRAYLANG['TXT_SETTINGS_NOT_UNIQUE_SMTP_ACCOUNT_NAME'] = "Sie müssen einen anderen Kontonamen verwenden, da der Kontoname %s bereits verwendet wird!";
+$_ARRAYLANG['TXT_SETTINGS_EMPTY_SMTP_HOST_TXT'] = "Sie müssen einen SMTP Server angeben!";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_SUCCEED'] = "Das SMTP Konto %s wurde erfolgreich aktualisiert.";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_FAILED'] = "Beim Aktualisieren des SMTP Kontos %s trat ein Fehler auf!";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_ACCOUNT_ADD_SUCCEED'] = "Das Konto %s wurde erfolgreich hinzugefügt.";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_ACCOUNT_ADD_FAILED'] = "Beim Hinzufügen des neuen SMTP Kontos trat ein Fehler auf!";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_SERVER_DAEMON'] = "SMTP Dienst dieses Servers";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_DELETE_SUCCEED'] = "Das SMTP Konto %s wurde erfolgreich gelöscht.";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_DELETE_FAILED'] = "Beim Löschen des SMTP Kontos %s trat ein Fehler auf!";
+$_ARRAYLANG['TXT_SETTINGS_COULD_NOT_DELETE_DEAULT_SMTP'] = "Das SMTP Konto %s konnte nicht gelöscht werden, da es das Standard-Konto ist!";
+$_ARRAYLANG['TXT_SETTINGS_DEFAULT_SMTP_CHANGED'] = "Das SMTP Konto %s wird nun als Standardkonto für das Versenden von E-Mails verwendet.";
+$_ARRAYLANG['TXT_SETTINGS_CHANGE_DEFAULT_SMTP_FAILED'] = "Das Wechseln des Standard Kontos schlug fehl!";
+$_ARRAYLANG['TXT_SETTINGS_BACK'] = "Zurück";
 ?>
