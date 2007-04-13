@@ -22,7 +22,7 @@ window.location.replace("index.php?cmd=language&act=dellang&id="+id);
         <div align="right" style="{LANGUAGE_ADMIN_STYLE}"><a href="javascript:{}" onclick="expandcontent('sc1')" style="cursor:hand; cursor:pointer" title="{TXT_ADD_NEW_LANGUAGE}">{TXT_ADD_NEW_LANGUAGE}</a></div>
       </th>
     </tr>
-    <tr class="row2">
+    <tr class="row3">
       <td width="3%"><b>{TXT_ID}</b></td>
       <td width="27%"><b>{TXT_NAME}</b></td>
       <td width="10%"><b>{TXT_SHORT_FORM}</b></td>
@@ -33,7 +33,7 @@ window.location.replace("index.php?cmd=language&act=dellang&id="+id);
       <td width="10%"><div align="right" style="{LANGUAGE_ADMIN_STYLE}"><b>{TXT_ACTION}</b></div></td>
     </tr>
     <!-- BEGIN languageRow -->
-    <tr class="row1">
+    <tr class="{LANGUAGE_ROWCLASS}">
       <td><div align="left">{LANGUAGE_LANG_ID}</div></td>
       <td><input type="text" name="langName[{LANGUAGE_LANG_ID}]" value="{LANGUAGE_LANG_NAME}" size="40" maxlength="250" /></td>
       <td>{LANGUAGE_LANG_SHORTNAME}</td>

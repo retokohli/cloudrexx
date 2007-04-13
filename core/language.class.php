@@ -907,20 +907,17 @@ class LanguageManager
                   $checked = "checked";
                 }
                 $adminStatus ="<input type='checkbox' name='langAdminStatus[".$objResult->fields['id']."]' value='1' $checked />";
-
-                ($i % 2) ? $class  = 'row1' : $class  = 'row2';
                 $objTemplate->setVariable(array(
-                    'LANGUAGE_ROWCLASS'        => $class,
-                    'LANGUAGE_LANG_ID'        => $objResult->fields['id'],
-                    'LANGUAGE_LANG_NAME'    => $objResult->fields['name'],
-                    'LANGUAGE_LANG_SHORTNAME'    => $objResult->fields['lang'],
-                    'LANGUAGE_LANG_CHARSET'    => $objResult->fields['charset'],
-                    'LANGUAGE_LANG_STATUS'    => $status,
+                    'LANGUAGE_ROWCLASS'        	=> 'row'.(($i++ % 2)+1),
+                    'LANGUAGE_LANG_ID'        	=> $objResult->fields['id'],
+                    'LANGUAGE_LANG_NAME'    	=> $objResult->fields['name'],
+                    'LANGUAGE_LANG_SHORTNAME'   => $objResult->fields['lang'],
+                    'LANGUAGE_LANG_CHARSET'    	=> $objResult->fields['charset'],
+                    'LANGUAGE_LANG_STATUS'    	=> $status,
                     'LANGUAGE_ACTIVE_STATUS'    => $activeStatus,
-                    'LANGUAGE_ADMIN_STATUS'    => $adminStatus
+                    'LANGUAGE_ADMIN_STATUS'    	=> $adminStatus
                 ));
                 $objTemplate->parse('languageRow');
-                $i++;
                 $objResult->MoveNext();
             }
         }
