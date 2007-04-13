@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 13 Apr 2007 16:27:11 +0200
+* generated date Fri, 13 Apr 2007 17:14:34 +0200
 **/
 
 $_ARRAYLANG['TXT_SUBSCRIBER_LIST'] = "Abonnenten Liste";
@@ -352,4 +352,12 @@ $_ARRAYLANG['TXT_NEWSLETTER_SEX'] = "Geschlecht";
 $_ARRAYLANG['TXT_NEWSLETTER_DELETE_ALL_INACTIVE'] = "Alle inaktiven Empfänger löschen";
 $_ARRAYLANG['TXT_NEWSLETTER_REALLY_DELETE_ALL_INACTIVE'] = "Möchten Sie wirklich alle inaktiven Empfänger löschen?";
 $_ARRAYLANG['TXT_NEWSLETTER_INACTIVE_RECIPIENTS_SUCCESSFULLY_DELETED'] = "Die inaktiven Empfänger wurden erfolgreich gelöscht.";
+$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ACCOUNT'] = "E-Mail Konto";
+$_ARRAYLANG['TXT_NEWSLETTER_TASK_REJECTED_EMAIL'] = "Aktion bei unzustellbaren E-Mails";
+$_ARRAYLANG['TXT_NEWSLETTER_DO_NOTING'] = "Keine Aktion durchführen";
+$_ARRAYLANG['TXT_NEWSLETTER_DEACTIVATE_EMAIL'] = "E-Mail Adresse deaktivieren";
+$_ARRAYLANG['TXT_NEWSLETTER_MAIL_AUTH_FAILED'] = "Die Authentifizierung beim E-Mail Konto %s schlug fehl!";
+$_ARRAYLANG['TXT_NEWSLETTER_FROM_ADDR_REJECTED'] = "Die Absender Adresse %s wurde von Mailserver abgelehnt!";
+$_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_FAILED'] = "Die E-Mail Adresse %s ist ungültig!";
+$_ARRAYLANG['TXT_NEWSLETTER_DELETE_EMAIL_ADDRESS'] = "E-Mail Adresse löschen";
 ?>
