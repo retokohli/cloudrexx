@@ -17,15 +17,6 @@ Text[1]=["","{TXT_MAX_WEIGHT_TIP}"];
 Style[1]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
 // -->
 </script>
-<style type="text/css">
-<!--
-.info {
-        padding-left: 18px;
-        background: url('images/icons/note.gif') no-repeat 0 50%;
-        z-index: 1000;
-}
-// -->
-</style>
 <!-- BEGIN statusBar -->
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
@@ -36,7 +27,7 @@ Style[1]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <form name="shopForm" method="post" action="?cmd=shop&amp;act=settings&amp;tpl=shipment">
 <!-- start shopContent1 div -->
 <div id="shopContent1" class="shipmentTab" style="display:block">
-<table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+<table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
 <tr>
 <th colspan="7"><b>{TXT_SHIPPING_METHODS}</b></th>
 </tr>
@@ -44,9 +35,9 @@ Style[1]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <tr class="row1">
 <td width="20%" nowrap="nowrap"><strong>{TXT_SHIPPING_METHOD}</strong></td>
 <td width="10%" nowrap="nowrap"><strong>{TXT_ZONE}</strong></td>
-<td width="10%" nowrap><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>
-<td width="20%" nowrap="nowrap"><strong class="info" onmouseout="htm()" onmouseover="stm(Text[1],Style[1])">{TXT_SHIPPING_MAX_WEIGHT}</strong></td>
-<td width="20%" nowrap="nowrap"><strong class="info" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">{TXT_FREE_OF_CHARGE}</strong></td>
+<td width="10%" nowrap="nowrap"><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>
+<td width="20%" nowrap="nowrap"><strong class="note" onmouseout="htm()" onmouseover="stm(Text[1],Style[1])">{TXT_SHIPPING_MAX_WEIGHT}</strong></td>
+<td width="20%" nowrap="nowrap"><strong class="note" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">{TXT_FREE_OF_CHARGE}</strong></td>
 <td width="20%" nowrap="nowrap"><strong>{TXT_SHIPPING_FEE}</strong></td>
 <td nowrap="nowrap" width="5%">&nbsp;</td>
 </tr>
@@ -54,13 +45,13 @@ Style[1]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <td nowrap="nowrap"><select name='shipperId[{SHOP_SHIPPER_ID}]'>{SHOP_SHIPPER_MENU}</select></td>
 <td nowrap="nowrap">{SHOP_ZONE_SELECTION}</td>
 <td nowrap="nowrap"><div align="center"><input type="checkbox" name="shipperActive[{SHOP_SHIPPER_ID}]" value="1" {SHOP_SHIPPER_STATUS} /></div></td>
-<td colspan=3></td>
+<td colspan="3"></td>
 <td nowrap="nowrap"><div style="text-align:right"><a href="javascript:deleteShipper({SHOP_SHIPPER_ID})" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
 </tr>
 <!-- BEGIN shopShipment -->
 <tr class="{SHOP_SHIPMENT_STYLE}">
 <td><input type="hidden" name="sid[{SHOP_SHIPMENT_ID}]" value="{SHOP_SHIPPER_ID}" /></td>
-<td colspan=2></td>
+<td colspan="2"></td>
 <td nowrap="nowrap"><input type="text" name="shipmentMaxWeight[{SHOP_SHIPMENT_ID}]" value="{SHOP_SHIPMENT_MAX_WEIGHT}" size="15" maxlength="50" /></td>
 <td nowrap="nowrap"><input type="text" name="shipmentPriceFree[{SHOP_SHIPMENT_ID}]" value="{SHOP_SHIPMENT_PRICE_FREE}" size="15" maxlength="50" />&nbsp;{SHOP_CURRENCY}</td>
 <td nowrap="nowrap"><input type="text" name="shipmentCost[{SHOP_SHIPMENT_ID}]" value="{SHOP_SHIPMENT_COST}" size="15" maxlength="50" />&nbsp;{SHOP_CURRENCY}</td>
@@ -68,7 +59,7 @@ Style[1]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 </tr>
 <!-- END shopShipment -->
 <tr>
-<td colspan=3></td>
+<td colspan="3"></td>
 <td nowrap="nowrap"><input type="text" name="shipmentMaxWeightNew[{SHOP_SHIPPER_ID}]" value="0 g" size="15" maxlength="50" /></td>
 <td nowrap="nowrap"><input type="text" name="shipmentPriceFreeNew[{SHOP_SHIPPER_ID}]" value="0.00" size="15" maxlength="50" />&nbsp;{SHOP_CURRENCY}</td>
 <td nowrap="nowrap"><input type="text" name="shipmentCostNew[{SHOP_SHIPPER_ID}]" value="0.00" size="15" maxlength="50" />&nbsp;{SHOP_CURRENCY}</td>
@@ -83,14 +74,14 @@ Style[1]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 
 <!-- start shopContent2 div -->
 <div id="shopContent2" class="shipmentTab" style="display:none">
-<table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+<table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
 <tr>
 <th colspan="3"><b>{TXT_ADD}</b></th>
 </tr>
 <tr class="row1">
 <td nowrap="nowrap" width="20%"><strong>{TXT_SHIPPING_METHOD}</strong></td>
 <td nowrap="nowrap" width="10%"><strong>{TXT_ZONE}</strong></td>
-<td width="5%"  nowrap><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>
+<td width="5%" nowrap="nowrap"><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>
 </tr>
 <tr class="row2">
 <td nowrap="nowrap"><input type="text" name="shipperNameNew" value="" size="30" maxlength="50" /></td>

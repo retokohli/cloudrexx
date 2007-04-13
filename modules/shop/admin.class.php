@@ -2035,14 +2035,14 @@ class shopmanager extends ShopLibrary {
                 // Shop general settings template
                 $this->_objTpl->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_general.html');
 
-                $status = ($this->objVat->isEnabled()) ? 'checked=1' : '';
+                $status = ($this->objVat->isEnabled()) ? 'checked="checked"' : '';
                 $display = ($this->objVat->isEnabled()) ? 'block' : 'none';
-                $included = ($this->objVat->isIncluded() ? 'checked=1' : '');
-                $excluded = ($this->objVat->isIncluded() ? '' : 'checked=1');
-                $saferpayStatus = ($this->arrConfig['saferpay_id']['status']==1) ? 'checked=1' : '';
-                $saferpayTestStatus = ($this->arrConfig['saferpay_use_test_account']['status']==1) ? 'checked=1' : '';
-                $yellowpayStatus = ($this->arrConfig['yellowpay_id']['status']==1) ? 'checked=1' : '';;
-                $paypalStatus = ($this->arrConfig['paypal_account_email']['status']==1) ? 'checked=1' : '';
+                $included = ($this->objVat->isIncluded() ? 'checked="checked"' : '');
+                $excluded = ($this->objVat->isIncluded() ? '' : 'checked="checked"');
+                $saferpayStatus = ($this->arrConfig['saferpay_id']['status']==1) ? 'checked="checked"' : '';
+                $saferpayTestStatus = ($this->arrConfig['saferpay_use_test_account']['status']==1) ? 'checked="checked"' : '';
+                $yellowpayStatus = ($this->arrConfig['yellowpay_id']['status']==1) ? 'checked="checked"' : '';;
+                $paypalStatus = ($this->arrConfig['paypal_account_email']['status']==1) ? 'checked="checked"' : '';
 
                 if ($this->arrConfig['yellowpay_delivery_payment_type']['value']=='deferred') {
                     $yellowpayDeferred = "selected='selected'";
@@ -2219,7 +2219,7 @@ class shopmanager extends ShopLibrary {
             $this->_objTpl->setCurrentBlock("catRow");
             while(list($key, $val) = each($this->categoryTreeName)) {
                 if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
-                $catstatus = "checked";
+                $catstatus = "checked=\"checked\"";
                 $this->_objTpl->setVariable("SHOP_CAT_STATUS_PICTURE", "status_green.gif");
                 if ($this->categoryTreeStatus[$key] == 0) {
                     $catstatus = "";
@@ -2936,16 +2936,16 @@ class shopmanager extends ShopLibrary {
         }
 
         if ($shopB2B==1) {
-            $shopB2B="checked";
+            $shopB2B="checked=\"checked\"";
         }
         if ($shopB2C==1) {
-            $shopB2C="checked";
+            $shopB2C="checked=\"checked\"";
         }
         if ($shopArticleActive==1) {
-            $shopArticleActive="checked";
+            $shopArticleActive="checked=\"checked\"";
         }
         if ($shopStockVisibility==1) {
-            $shopStockVisibility="checked";
+            $shopStockVisibility="checked=\"checked\"";
         }
         if ($shopSpecialOffer==1) {
             $shopSpecialOffer="checked='checked'";
@@ -4749,7 +4749,7 @@ class shopmanager extends ShopLibrary {
         while (!$objResult->EOF) {
             if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
 
-            $productStatus = "checked";
+            $productStatus = "checked=\"checked\"";
             $productStatusValue = 1;
             $productStatusPicture = "status_green.gif";
             if (intval($objResult->fields['status'])==0) {
@@ -4758,7 +4758,7 @@ class shopmanager extends ShopLibrary {
                 $productStatusPicture = "status_red.gif";
             }
 
-            $specialOffer = "checked";
+            $specialOffer = "checked=\"checked\"";
             $specialOfferValue =1;
             if (intval($objResult->fields['is_special_offer'])==0) {
                 $specialOffer = "";
@@ -5290,17 +5290,17 @@ class shopmanager extends ShopLibrary {
         'SHOP_PRICELIST_DETAILS_ACT'         => 'pricelist_insert',
         'SHOP_PRICELIST_PDFLINK'             => '&nbsp;',
         'SHOP_PRICELIST_DETAILS_NAME'        => '',
-        'SHOP_PRICELIST_DETAILS_BORDERON'    => 'checked',
+        'SHOP_PRICELIST_DETAILS_BORDERON'    => 'checked="checked"',
         'SHOP_PRICELIST_DETAILS_BORDEROFF'   => '',
-        'SHOP_PRICELIST_DETAILS_HEADERON'    => 'checked',
+        'SHOP_PRICELIST_DETAILS_HEADERON'    => 'checked="checked"',
         'SHOP_PRICELIST_DETAILS_HEADEROFF'   => '',
         'SHOP_PRICELIST_DETAILS_HEADERLEFT'  => '',
         'SHOP_PRICELIST_DETAILS_HEADERRIGHT' => '',
-        'SHOP_PRICELIST_DETAILS_FOOTERON'    => 'checked',
+        'SHOP_PRICELIST_DETAILS_FOOTERON'    => 'checked="checked"',
         'SHOP_PRICELIST_DETAILS_FOOTEROFF'   => '',
         'SHOP_PRICELIST_DETAILS_FOOTERLEFT'  => '',
         'SHOP_PRICELIST_DETAILS_FOOTERRIGHT' => '',
-        'SHOP_PRICELIST_DETAILS_ALLPROD'     => 'checked',
+        'SHOP_PRICELIST_DETAILS_ALLPROD'     => 'checked="checked"',
         'SHOP_PRICELIST_DETAILS_SEPPROD'     => '',
         'SHOP_PRICELIST_DETAILS_LANGUAGE'    => $langMenu
         ));
@@ -5465,41 +5465,41 @@ class shopmanager extends ShopLibrary {
 
         //are the borders on?
         if ($objResult->fields['border_on'] == 1) {
-            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_BORDERON","checked");
+            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_BORDERON","checked=\"checked\"");
             $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_BORDEROFF","");
         } else {
             $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_BORDERON","");
-            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_BORDEROFF","checked");
+            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_BORDEROFF","checked=\"checked\"");
         }
         //is the header on?
         if ($objResult->fields['header_on'] == 1) {
-            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_HEADERON","checked");
+            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_HEADERON","checked=\"checked\"");
             $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_HEADEROFF","");
             $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_HEADERLEFT",$objResult->fields['header_left']);
             $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_HEADERRIGHT",$objResult->fields['header_right']);
         } else {
             $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_HEADERON","");
-            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_HEADEROFF","checked");
+            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_HEADEROFF","checked=\"checked\"");
         }
         //is the footer on?
         if ($objResult->fields['footer_on'] == 1) {
-            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_FOOTERON","checked");
+            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_FOOTERON","checked=\"checked\"");
             $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_FOOTEROFF","");
             $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_FOOTERLEFT",$objResult->fields['footer_left']);
             $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_FOOTERRIGHT",$objResult->fields['footer_right']);
         } else {
             $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_FOOTERON","");
-            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_FOOTEROFF","checked");
+            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_FOOTEROFF","checked=\"checked\"");
         }
         //which products were selected before? All or seperate?
         if ($objResult->fields['categories'] == '*') { // all categories
-            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_ALLPROD","checked");
+            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_ALLPROD","checked=\"checked\"");
             $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_SEPPROD","");
             $arrSelectedCategories = '*';
         } else {
             // I have to split the string into a nice array :)
             $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_ALLPROD","");
-            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_SEPPROD","checked");
+            $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_SEPPROD","checked=\"checked\"");
 
             $selectedCategories = explode(',',$objResult->fields['categories']);
             $query = "SELECT catid ".
