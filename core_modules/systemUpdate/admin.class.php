@@ -305,7 +305,7 @@ class systemUpdate
 				$header = "<tr>\n<th style='border-bottom: 1px solid #000000; border-right: 1px solid #000000;'>".implode("</th>\n<th style='border-bottom: 1px solid #000000; border-right: 1px solid #000000;'>", array_keys($objResult->fields))."</th>\n</tr>\n";
 				$body = '';
 				while (!$objResult->EOF) {
-					$body .= "<tr>\n<td style='border-bottom: 1px solid #000000; border-right: 1px solid #000000;'>".implode("</td>\n<td style='border-bottom: 1px solid #000000; border-right: 1px solid #000000;'>", array_map('nl2br', array_map('htmlentities', $objResult->fields)))."</td>\n</tr>\n";
+					$body .= "<tr>\n<td style='border-bottom: 1px solid #000000; border-right: 1px solid #000000;'>".implode("</td>\n<td style='border-bottom: 1px solid #000000; border-right: 1px solid #000000;'>", array_map(array($this, '_prepareOutput'), $objResult->fields))."</td>\n</tr>\n";
 					$objResult->MoveNext();
 				}
 				$this->strOkMessage .= "<table style='border-left: 1px solid #000000; border-top: 1px solid #000000;' cellpadding='3' cellspacing='0'>\n".$header.$body."</table>";
@@ -314,6 +314,18 @@ class systemUpdate
 			$this->strErrMessage .= htmlentities($query, ENT_QUOTES, CONTREXX_CHARSET).":<br />";
 			$this->strErrMessage .= $objDatabase->ErrorMsg()."<br />";
 		}
+	}
+
+	/**
+	 * Prepare data from SQL response to display it
+	 *
+	 * Makes htmlentities, sets BR-tags for new lines and sets unicode-tags for braces in the given string.
+	 *
+	 * @param string $string
+	 * @return string
+	 */
+	function _prepareOutput($string) {
+		return '<pre style="margin:5px; line-height:60%;">'.str_replace(array('{', '}'), array('&#123;', '&#125;'), nl2br(htmlentities($string, ENT_QUOTES, CONTREXX_CHARSET))).'</pre>';
 	}
 }
 ?>
