@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 13 Apr 2007 18:31:28 +0200
+* generated date Fri, 13 Apr 2007 21:48:32 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
@@ -647,4 +647,9 @@ $_ARRAYLANG['TXT_HOTEL_MODULE_DESCRIPTION'] = "Hotel-Management Modul";
 $_ARRAYLANG['TXT_IMPRINT_MODULE_DESCRIPTION'] = "Impressum";
 $_ARRAYLANG['TXT_AGB_MODULE_DESCRIPTION'] = "Allgemeine Geschäftsbedingungen";
 $_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Datenschutzhinweis";
+$_ARRAYLANG['TXT_THEME_IMPORT_INFO'] = "Design importieren";
+$_ARRAYLANG['TXT_THEME_IMPORT_INFO_BODY'] = "Geben Sie oben die Quelle des Designs an. Es kann eine lokale ZIP-Datei hochgeladen werden oder es kann eine http://-Adresse zu einer externen ZIP-Datei angegeben werden";
+$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO'] = "Aktivierte Sprachen";
+$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Ist eine Sprache mit rosa Farbe hinterlegt, so ist diese im Frontend bei den <a href=\"index.php?cmd=language\">Spracheinstellungen</a> aktiviert</a>";
+$_ARRAYLANG['TXT_SKINS_PREVIEW'] = "Designvorschau";
 ?>
