@@ -266,9 +266,29 @@ class aliasLib
 		}
 	}
 
-	function _getRewriteRules()
+	function _getRewriteInfo()
 	{
+		require_once ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php';
 
+		$objHtAccess = new File_HtAccess(ASCMS_DOCUMENT_ROOT.'/.htaccess');
+		if ($objHtAccess->load() !== true) {
+			return false;
+		} else {
+			$arrRewriteInfo = array('engine' => false, 'rules' => array());
+			$arrAddition = $objHtAccess->getAdditional('array');
+
+			foreach ($arrAddition as $directive) {
+				if (preg_match('#^\s*RewriteRule\s+\^(.+)\$\s+(.+)\s+.*$#', $directive, $arrRewriteRule)) {
+					$arrRewriteInfo['rules'][$arrRewriteRule[2]][] = $arrRewriteRule[1];
+				} elseif (preg_match('#^\s*RewriteEngine\s+(Off|On)?.*$#i', $directive, $arrEngineStatus)) {
+					if (strtolower($arrEngineStatus[1]) == 'on') {
+						$arrRewriteInfo['engine'] = true;
+					}
+				}
+			}
+
+			return $arrRewriteInfo;
+		}
 	}
 
 	function _isModRewriteInUse()
