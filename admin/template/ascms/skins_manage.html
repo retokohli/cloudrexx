@@ -108,6 +108,7 @@ var unhighlight = function(obj, direction){ //ignore active row
 }
 
 var showInfo = function(obj) {
+	return false;
 	if(getNextRow(obj).className == 'hidden'){
 		getNextRow(obj).className = obj.className;
 	}else{
@@ -116,6 +117,7 @@ var showInfo = function(obj) {
 }
 
 var hideInfo = function(obj) {
+	return false;
 	obj.id = obj.className
 	obj.className = 'hidden';
 }
@@ -194,10 +196,9 @@ document.body.onmousemove = function(event){
 <div>
 
 <form name="themesForm" id="manageform" action="index.php?cmd=skins&amp;act=manage" method="post" enctype="multipart/form-data">
-
 <table style="width:100%" border="0" cellspacing="0" cellpadding="3"  class="adminlist">
 	<tr style="white-space: nowrap;">
-		<th colspan="2">
+		<th>
 			{TXT_THEME_IMPORT}
 		</th>
 	</tr>
@@ -217,54 +218,68 @@ document.body.onmousemove = function(event){
 				</div>
 			</div>
 		</td>
-		<td align="left">
-		<div>
-			<div class="infobox_head">
-				{TXT_THEME_IMPORT_INFO
-			</div>
-			<div class="infobox_body">
-				{TXT_THEME_IMPORT_INFO_body
-			</div>
-		</div>
-		</td>
 	</tr>
 </table>
 <input type="submit" name="import" onclick="return importArchive();" value="{TXT_THEME_IMPORT}" />
 </div>
 <br />
+<div>
+	<div class="infobox_head">
+		{TXT_THEME_IMPORT_INFO}
+	</div>
+	<div class="infobox_body">
+		{TXT_THEME_IMPORT_INFO_BODY}
+	</div>
+</div>
+
+<br />
 <table style="width:100%" border="0" cellspacing="0" cellpadding="3" class="adminlist">
 	<tr>
-		<th colspan="3">
+		<th colspan="4">
 			<strong>{TXT_THEME_THEMES}</strong>
 		</th>
 	</tr>
 	<tr class="row3">
-		<td><div style="width: 14%;">
+		<td colspan="3"><div style="width: 14%;">
 			<strong>{TXT_NAME}</strong>
 		</div></td>
-		<td>
-			<strong>{TXT_THEME_PREVIEW}</strong>
-		</td>
 		<td width="5%">
 			<strong>{TXT_FUNCTIONS}</strong>
 		</td>
 	</tr>
 	<!-- BEGIN themeRow -->
 	<tr name="{THEME_NAME_EXTRA}" id="{THEME_ID}" class="{ROW_CLASS}" onmouseover="highlight(this,'lower');" onmouseout="unhighlight(this,'lower');" onclick="showInfo(this);">
-		<td><div style="vertical-align: top; font-size:1.1em">
+		<td style="width: 200px">
+		<div style="vertical-align: top; font-size:1.1em;">
 			{THEME_NAME_EXTRA}
-		</div></td>
+		</div><br />
+			<div onclick="showInfo(this.parentNode.parentNode); return openPreview({THEME_ID});" style="background-repeat: no-repeat; background-image:url({THEME_PREVIEW});background-position: center; border: 1px solid black; height: 160px; width: 160px;">
+			</div>
+			<br />
+		</td>
+		<td style="vertical-align: center; width: 150px;">
+			<input type="button" value="{TXT_SKINS_PREVIEW}" onclick="return openPreview({THEME_ID})" />
+		</td>
 		<td>
-			<img title="click for preview" alt="click for preview" src="{THEME_PREVIEW}" onclick="showInfo(this.parentNode.parentNode); return openPreview({THEME_ID});" />
+			<div>
+				{THEME_XML_AUTHOR}
+			</div>
+			<div>
+				{THEME_XML_VERSION}
+			</div>
+			<div>
+				{THEME_XML_DESCRIPTION}
+			</div>
 		</td>
 		<td><div style="text-align: right; vertical-align: top;" nowrap="nowrap">
-			<a href="?cmd=skins&amp;act=manage&amp;export={THEME_NAME}" onclick="showInfo(this.parentNode.parentNode);" title="{TXT_THEME_EXPORT}"> <img border="0" src="images/icons/export.gif" /> </a>
+			<a href="?cmd=skins&amp;act=manage&amp;export={THEME_NAME}" onclick="showInfo(this.parentNode.parentNode);" title="{TXT_THEME_EXPORT}"> <img border="0" src="images/icons/zip.gif" /> </a>
 			{THEME_ACTIVATE_LINK}
 			{THEME_DELETE_LINK}
-		</div></td>
+		</div>
+		</td>
 	</tr>
 	<tr class="hidden" onmouseover="highlight(this,'upper');" onmouseout="unhighlight(this,'upper');" onclick="hideInfo(this);" id="{ROW_CLASS}">
-		<td colspan="3">
+		<td colspan="4">
 			{THEME_XML_AUTHOR} &nbsp;&nbsp;&nbsp; {THEME_XML_VERSION} &nbsp;&nbsp;&nbsp; {THEME_XML_DESCRIPTION}
 		</td>
 	</tr>

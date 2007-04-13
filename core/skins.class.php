@@ -320,7 +320,7 @@ class skins
    			$objTemplate->setVariable('THEMES_MENU', $this->getThemesDropdown());
     	}
     	//set template variables
-    	$objTemplate->setVariable(array(	'TXT_THEME_THEMES'				=> $_CORELANG['TXT_THEME_THEMES'],
+    	$objTemplate->setGlobalVariable(array(	'TXT_THEME_THEMES'				=> $_CORELANG['TXT_THEME_THEMES'],
    											'TXT_THEME_PREVIEW'				=> $_CORELANG['TXT_THEME_PREVIEW'],
     										'TXT_THEME_IMPORT_EXPORT'		=> $_CORELANG['TXT_THEME_IMPORT_EXPORT'],
     										'TXT_THEME_NAME'				=> $_CORELANG['TXT_THEME_NAME'],
@@ -339,6 +339,9 @@ class skins
     										'TXT_THEME_NO_URL_SPECIFIED'	=> $_CORELANG['TXT_THEME_NO_URL_SPECIFIED'],
     										'TXT_THEME_NO_FILE_SPECIFIED'	=> $_CORELANG['TXT_THEME_NO_FILE_SPECIFIED'],
     										'TXT_THEME_DETAILS'				=> $_CORELANG['TXT_THEME_DETAILS'],
+    										'TXT_THEME_IMPORT_INFO'			=> $_CORELANG['TXT_THEME_IMPORT_INFO'],
+    										'TXT_THEME_IMPORT_INFO_BODY'	=> $_CORELANG['TXT_THEME_IMPORT_INFO_BODY'],
+    										'TXT_SKINS_PREVIEW'				=> $_CORELANG['TXT_SKINS_PREVIEW'],
 									    	'THEMES_MENU'					=> $this->getThemesDropdown()
     	));
     	//create themelist
@@ -347,7 +350,8 @@ class skins
 	   		$rowclass = 0;
 	      	foreach ($this->_getThemes() as $theme) {
 	      		$extra = (!empty($theme['extra'])) ? $theme['extra'] : '';
-	    		$this->_getXML($theme['foldername']);
+
+	      		$this->_getXML($theme['foldername']);
 
 	    		$htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.$_CORELANG['TXT_DELETE'].'\');" href="?cmd=skins&amp;act=manage&amp;delete='.$theme['themesname'].'" title="'.$_CORELANG['TXT_DELETE'].'"> <img border="0" src="images/icons/delete.gif" /> </a>';
 	    		$htmlActivateLink = '<a onclick="showInfo(this.parentNode.parentNode);" href="?cmd=skins&amp;act=manage&amp;activate='.$theme['id'].'" title="'.$_CORELANG['TXT_ACTIVATE_DESIGN'].'"> <img border="0" src="images/icons/check.gif" /> </a>';
@@ -750,7 +754,9 @@ class skins
 		    'TXT_LANGUAGE'             => $_CORELANG['TXT_LANGUAGE'],
 		    'TXT_ACTIVE_TEMPLATE'      => $_CORELANG['TXT_ACTIVE_TEMPLATE'],
 		    'TXT_ACTIVE_PRINT_TEMPLATE' => $_CORELANG['TXT_ACTIVE_PRINT_TEMPLATE'],
-		    'TXT_SAVE'    => $_CORELANG['TXT_SAVE']
+		    'TXT_SAVE'    => $_CORELANG['TXT_SAVE'],
+		    'TXT_THEME_ACTIVATE_INFO'    => $_CORELANG['TXT_THEME_ACTIVATE_INFO'],
+		    'TXT_THEME_ACTIVATE_INFO_BODY'    => $_CORELANG['TXT_THEME_ACTIVATE_INFO_BODY'],
 		));
 		$i=0;
 
@@ -763,10 +769,18 @@ class skins
 			}
 			$this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
 		}
-		$objResult = $objDatabase->Execute("SELECT id,lang,name,themesid,print_themes_id FROM ".DBPREFIX."languages ORDER BY id");
+		$objResult = $objDatabase->Execute("SELECT id,lang,name,frontend,themesid,print_themes_id FROM ".DBPREFIX."languages ORDER BY id");
 		if ($objResult !== false) {
 			while (!$objResult->EOF) {
-				if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
+				if (($i % 2) == 0) {
+					$class="row1";
+				} else {
+					$class="row2";
+				}
+
+				if ( $objResult->fields['frontend']){
+					$class="rowWarn";
+				}
 				$objTemplate->setVariable(array(
 					'THEMES_ROWCLASS'			=> $class,
 					'THEMES_LANG_ID'			=> $objResult->fields['id'],
@@ -1611,7 +1625,7 @@ class skins
 	 */
 	function _getThemes()
 	{
-		global $objDatabase, $_CORELANG;
+		global $objDatabase, $_CORELANG, $_FRONTEND_LANGID;
    		$query = "SELECT id, themesname, foldername from ".DBPREFIX."skins ORDER BY themesname";
  	 	$objRS = $objDatabase->Execute($query);
 		if($objRS){
@@ -1619,13 +1633,28 @@ class skins
 			$defaultTheme = $this->selectTheme();
 			$defaultPrintTheme = $this->getDefaultPrintTheme();
 	 	 	while(!$objRS->EOF){
+	 	 		$languagesWithThisTheme = '';
+ 	 			$query = '	SELECT `name`
+							FROM '.DBPREFIX.'languages
+							WHERE 1=1
+							AND `frontend` = 1
+							AND (`themesid` = '.$objRS->fields['id'].'
+							OR `print_themes_id` = '.$objRS->fields['id'].')';
+				if($objRSLang = $objDatabase->Execute($query)){
+					while(!$objRSLang->EOF){
+						$languagesWithThisTheme .= $objRSLang->fields['name'].', ';
+						$objRSLang->MoveNext();
+					}
+	      		}
+	      		$languagesWithThisTheme = substr($languagesWithThisTheme, 0, -2);
 	 	 		if($objRS->fields['foldername'] == $defaultTheme){
-	 	 			$objRS->fields['extra'] = ' ('.$_CORELANG['TXT_DEFAULT']. ') ';
+	 	 			$objRS->fields['extra'] = ' ('.$_CORELANG['TXT_DEFAULT']. (!empty($languagesWithThisTheme) ? ') - '.$languagesWithThisTheme : ')');
 					array_unshift($themes, $objRS->fields);
 				}elseif($objRS->fields['foldername'] == $defaultPrintTheme){
-					$objRS->fields['extra'] = ' ('.$_CORELANG['TXT_THEME_PRINT']. ') ';
+					$objRS->fields['extra'] = ' ('.$_CORELANG['TXT_THEME_PRINT']. (!empty($languagesWithThisTheme) ? ') - '.$languagesWithThisTheme : ')');
 					array_unshift($themes, $objRS->fields);
 				}else{
+					$objRS->fields['extra'] = !empty($languagesWithThisTheme) ? ' - '.$languagesWithThisTheme : '';
 					$themes[] = $objRS->fields;
 				}
 				$objRS->MoveNext();
