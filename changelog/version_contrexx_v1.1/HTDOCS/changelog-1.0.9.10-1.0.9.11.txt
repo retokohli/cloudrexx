@@ -204,6 +204,12 @@ Neu wird nun einheitlich bei jeder Browser eine neue Zeile eingefügt, wenn die "
 Bildergalerie
 - Neu kann für jede Kategorie und dessen Unterkategorien eine eigene Inhaltsseite verwendet werden. Dies kann erreicht werden, indem bei einer Inhaltsseite, welche aus dem Aufbau der Galerie Inhaltsstruktur besteht, als CMD die ID der gewünschten Bilderkategorie angegeben wird.
 
+Layout & Design
+- Import / Export wurde auf "Schnittstellen" umbenannt
+- Alle aktiven Designs werden mit rosa hinterlegt und die entsprechende Sprache in welcher das Design aktiv ist angezeigt.
+- Die "Aktivieren" Seite hinterlegt nun auch alle aktiven Sprachen mit einer rosa Farbe.
+- Neues Layout
+
 
 ****************************************
 * Bugfixes *****************************
