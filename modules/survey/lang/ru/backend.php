@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 13 Apr 2007 11:07:01 +0200
+* generated date Fri, 13 Apr 2007 16:20:51 +0200
 **/
 
 $_ARRAYLANG['TXT_SURVEY_INSERT_SUCCESS_VOTING'] = "The voting has been successfully added.";

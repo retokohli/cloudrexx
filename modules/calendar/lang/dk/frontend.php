@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 13 Apr 2007 11:07:01 +0200
+* generated date Fri, 13 Apr 2007 16:20:51 +0200
 **/
 
 $_ARRAYLANG['TXT_CALENDAR_DATE'] = "Termindato";
@@ -32,4 +32,5 @@ $_ARRAYLANG['TXT_CALENDAR_MONTH_ARRAY'] = "Januar,Februar,Marts,April,Maj,Juni,J
 $_ARRAYLANG['TXT_CALENDAR_DAY_ARRAY'] = "Sun,Mon,Tue,Wed,Thu,Fri,Sat";
 $_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'] = "Aktuelle Kategorie als iCalendar-Datei exportieren";
 $_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'] = "Alle Termine als iCalendar-Datei exportieren";
+$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'] = "Export this event";
 ?>

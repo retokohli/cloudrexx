@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 13 Apr 2007 11:07:01 +0200
+* generated date Fri, 13 Apr 2007 16:20:51 +0200
 **/
 
 $_ARRAYLANG['TXT_CALENDAR_DATE'] = "Termindatum";
@@ -141,4 +141,5 @@ $_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'] = "Aktuelle Kategorie als iCalendar-Date
 $_ARRAYLANG['TXT_DATABASE_READ_ERROR'] = "Ein Fehler ist beim Herauslesen von Daten entstanden";
 $_ARRAYLANG['TXT_DATABASE_WRITE_ERROR'] = "Ein Fehler ist beim Speichern von Daten in die Datenbank entstanden";
 $_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'] = "Alle Termine als iCalendar-Datei exportieren";
+$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'] = "Diese Veranstaltung exportieren";
 ?>
