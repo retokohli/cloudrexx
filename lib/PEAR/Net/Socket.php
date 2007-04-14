@@ -19,7 +19,7 @@
 //
 // $Id: Socket.php,v 1.29 2007/03/28 04:53:35 chagenbu Exp $
 
-require_once 'PEAR.php';
+require_once ASCMS_LIBRARY_PATH.'/PEAR/PEAR.php';
 
 define('NET_SOCKET_READ',  1);
 define('NET_SOCKET_WRITE', 2);
