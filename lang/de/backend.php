@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Sat, 14 Apr 2007 12:56:12 +0200
+* generated date Sat, 14 Apr 2007 15:06:54 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
@@ -621,7 +621,7 @@ $_ARRAYLANG['TXT_FORUM_MODULE_DESCRIPTION'] = "Forum für die Community";
 $_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'] = "Kategorien & Foren";
 $_ARRAYLANG['TXT_FORUM_MENU_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_EGOVERNMENT'] = "Online-Desk";
-$_ARRAYLANG['TXT_EGOVERNMENT_MODULE_DESCRIPTION'] = "Der Gemeinde-Shalter ermöglicht es Geschäfte (Bestellungen, Anträge, Ab/Anmeldungen usw.) mit der Gemeinde direkt über das Internet abzuwickeln.";
+$_ARRAYLANG['TXT_EGOVERNMENT_MODULE_DESCRIPTION'] = "Der Gemeinde-Schalter ermöglicht es Geschäfte (Bestellungen, Anträge, Ab/Anmeldungen usw.) mit der Gemeinde direkt über das Internet abzuwickeln.";
 $_ARRAYLANG['TXT_SUPPORT_WIKI'] = "Support Wiki";
 $_ARRAYLANG['TXT_CONTENT_TYPE'] = "Seitentyp";
 $_ARRAYLANG['TXT_CONTENT_TYPE_REDIRECT'] = "Weiterleitung";
