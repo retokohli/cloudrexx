@@ -5,17 +5,8 @@
  * @author      Astalavista Development Team <thun@astalvista.ch>
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  core_module_nettools
+ * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
- */
-
-/**
- * Framework user
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalvista.ch>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  core_module_nettools
  */
 class FWUser
 {

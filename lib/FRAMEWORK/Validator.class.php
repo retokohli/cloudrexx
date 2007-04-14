@@ -8,18 +8,6 @@
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
-
-/**
- * Class Framework Validator
- *
- * Framework Validator
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
- * @access		public
- * @version		1.0.1
- * @package     contrexx
- * @subpackage  lib_framework
- */
 class FWValidator
 {
 	/**
