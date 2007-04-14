@@ -245,6 +245,7 @@ Shop
 
 Kontakte Manager
 - Sonderzeichen werden nicht mehr in HTML-Codes umgewandelt beim versendenden E-Mail, da dies unnötig ist, weil das E-Mail als Plaintext versendet wird.
+- Leere Wörter in der Spam Wortliste werden nun ignoriert.
 
 Volltextsuche
 - Newsmeldungen von Typ Weiterleitung werden nun auch korrekt bei den Suchergebnissen aufgeliestet.
