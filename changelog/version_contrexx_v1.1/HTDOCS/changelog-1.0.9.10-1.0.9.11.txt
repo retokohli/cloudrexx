@@ -248,3 +248,6 @@ Kontakte Manager
 
 Volltextsuche
 - Newsmeldungen von Typ Weiterleitung werden nun auch korrekt bei den Suchergebnissen aufgeliestet.
+
+Netzwerk Tools
+- Die MX-Lookup Funktion funktioniert nun auch korrekt, wenn die Lookup-Abfrage an einen weiteren DNS-Server weiter geleitet wird.
