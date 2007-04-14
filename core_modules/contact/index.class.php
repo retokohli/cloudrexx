@@ -360,9 +360,11 @@ class Contact extends ContactLib
 	function _isSpam($string, $arrKeywords)
 	{
 		foreach ($arrKeywords as $keyword) {
-		    if (preg_match("%$keyword%i",$string)) {
-		        return true;
-		    }
+			if (!empty($keyword)) {
+			    if (preg_match("%$keyword%i",$string)) {
+			        return true;
+			    }
+			}
 		}
 		return false;
 	}
