@@ -312,24 +312,24 @@ class Guestbook extends GuestbookLibrary
 		}
 
 		if (empty($_POST['nickname'])) {
-			$this->makeError('Name');
+			$this->makeError($_ARRAYLANG['TXT_NAME']);
 		}
 
 		if (empty($_POST['comment'])) {
-			$this->makeError('Kommentar');
+			$this->makeError($_ARRAYLANG['TXT_COMMENT']);
 		}
 
 		if (empty($_POST['malefemale'])) {
-			$this->makeError('Geschlecht');
+			$this->makeError($_ARRAYLANG['TXT_SEX']);
 		}
 
 		if (empty($_POST['location'])) {
-			$this->makeError('Location');
+			$this->makeError($_ARRAYLANG['TXT_LOCATION']);
 		}
 
 		// Hopefully a bulletproof e-mail regex. Found somewhere in the www
 		if (!$this->isEmail($_POST['email']) OR empty($_POST['email'])) {
-			$this->makeError('Email');
+			$this->makeError($_ARRAYLANG['TXT_EMAIL']);
 		}
 
 		if (empty($this->error)) {
