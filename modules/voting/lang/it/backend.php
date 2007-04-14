@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 13 Apr 2007 23:17:48 +0200
+* generated date Sat, 14 Apr 2007 12:56:12 +0200
 **/
 
 $_ARRAYLANG['TXT_VOTING_MANAGER'] = "Votings";
@@ -32,4 +32,19 @@ $_ARRAYLANG['TXT_SELECT_ALL'] = "Select All";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database Query Error ";
 $_ARRAYLANG['TXT_VOTING_OLDER'] = "Older Votings";
 $_ARRAYLANG['TXT_VOTING_ENTRIES'] = "Votings";
+$_ARRAYLANG['TXT_VOTING_METHOD_OF_RESTRICTION_TXT'] = "Methode der Restriktion, dass jeder Benutzer nur einmal Abstimmen darf.";
+$_ARRAYLANG['TXT_VOTING_COOKIE_BASED'] = "Cookie basiert";
+$_ARRAYLANG['TXT_VOTING_EMAIL_BASED'] = "E-Mail basiert";
+$_ARRAYLANG['TXT_VOTING_EMAIL_ADRESSE_OF_QUESTION'] = "E-Mail Adressen der Umfrage %s";
+$_ARRAYLANG['TXT_VOTING_EMAIL'] = "E-Mail";
+$_ARRAYLANG['TXT_VOTING_VALID'] = "G&uuml;ltig";
+$_ARRAYLANG['TXT_VOTING_VERIFY_EMAIL'] = "E-Mail Adresse als g&uuml;ltig markieren";
+$_ARRAYLANG['TXT_VOTING_DELETE_EMAIL'] = "E-Mail Adresse l&ouml;schen";
+$_ARRAYLANG['TXT_VOTING_CONFIRM_DELETE_EMAIL'] = "Wollen Sie die E-Mail Adresse %s wirklich löschen?";
+$_ARRAYLANG['TXT_VOTING_CONFIRM_VERIFY_EMAIL'] = "Soll die E-Mail Adresse %s als gültig markiert werden?";
+$_ARRAYLANG['TXT_VOTING_FUNCTIONS'] = "Funktionen";
+$_ARRAYLANG['TXT_VOTING_EMAIL_ISNT_VAILD'] = "Diese E-Mail Adresse konnte nicht auf dessen g&uuml;ltigkeit &uuml;erp&uuml;ft werden!";
+$_ARRAYLANG['TXT_VOTING_EMAIL_IS_VAILD'] = "Diese E-Mail Adresse ist g&uuml;ltig.";
+$_ARRAYLANG['TXT_VOTING_SHOW_EMAIL_ADRESSES'] = "E-Mail Adressen dieser Umfrage anzeigen.";
+$_ARRAYLANG['TXT_VOTING_WRITE_EMAIL'] = "E-Mail an diese Adresse senden.";
 ?>
