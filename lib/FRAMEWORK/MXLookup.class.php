@@ -8,16 +8,6 @@
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
-
-/**
- * MXLookup
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Thomas Däppen <thomas.daeppen@astalavista.ch>
- * @version     1.0
- * @access      public
- * @package     contrexx
- * @subpackage  lib_framework
- */
 class MXLookup {
 	var $timeout = 3;
 	var $query;
@@ -44,7 +34,7 @@ class MXLookup {
 			return false;
 		}
 
-		return $this->_getMXRRs();;
+		return $this->_getMXRRs();
 	}
 
 	/**
