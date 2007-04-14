@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Sat, 14 Apr 2007 12:56:12 +0200
+* generated date Sat, 14 Apr 2007 15:06:54 +0200
 **/
 
 $_ARRAYLANG['TXT_CLIENT_DATA'] = "Client-Data (Useragent,Ip,Host)";

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Sat, 14 Apr 2007 12:56:12 +0200
+* generated date Sat, 14 Apr 2007 15:06:54 +0200
 **/
 
 $_ARRAYLANG['TXT_VOTING_MANAGER'] = "Rundspørgelser";
@@ -43,7 +43,7 @@ $_ARRAYLANG['TXT_VOTING_DELETE_EMAIL'] = "E-Mail Adresse l&ouml;schen";
 $_ARRAYLANG['TXT_VOTING_CONFIRM_DELETE_EMAIL'] = "Wollen Sie die E-Mail Adresse %s wirklich löschen?";
 $_ARRAYLANG['TXT_VOTING_CONFIRM_VERIFY_EMAIL'] = "Soll die E-Mail Adresse %s als gültig markiert werden?";
 $_ARRAYLANG['TXT_VOTING_FUNCTIONS'] = "Funktionen";
-$_ARRAYLANG['TXT_VOTING_EMAIL_ISNT_VAILD'] = "Diese E-Mail Adresse konnte nicht auf dessen g&uuml;ltigkeit &uuml;erp&uuml;ft werden!";
+$_ARRAYLANG['TXT_VOTING_EMAIL_ISNT_VAILD'] = "Diese E-Mail Adresse konnte nicht auf dessen gültigkeit überprüft werden!";
 $_ARRAYLANG['TXT_VOTING_EMAIL_IS_VAILD'] = "Diese E-Mail Adresse ist g&uuml;ltig.";
 $_ARRAYLANG['TXT_VOTING_SHOW_EMAIL_ADRESSES'] = "E-Mail Adressen dieser Umfrage anzeigen.";
 $_ARRAYLANG['TXT_VOTING_WRITE_EMAIL'] = "E-Mail an diese Adresse senden.";
