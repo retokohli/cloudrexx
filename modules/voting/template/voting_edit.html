@@ -1,33 +1,40 @@
 <!-- START voting_add.html -->
-<form name="form1" action="index.php?cmd=voting&amp;act=editsubmit" method="post">
+<form action="index.php?cmd=voting&amp;act=editsubmit" method="post">
   <table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
-    <tr valign="top"> 
-      <th nowrap="nowrap"> 
-        <div align="left">{TXT_VOTING_EDIT} 
+    <tr valign="top">
+      <th nowrap="nowrap">
+        <div align="left">{TXT_VOTING_EDIT}
           <input type="hidden" name="votingid" value="{VOTING_ID}" />
           <input type="hidden" name="votingresults" value="{VOTING_RESULTS}" />
         </div>
       </th>
-      <th nowrap="nowrap"> 
+      <th nowrap="nowrap">
         <div align="left"></div>
       </th>
     </tr>
-    <tr valign="top" class="row1"> 
-      <td nowrap="nowrap">{TXT_NAME}&nbsp;<span class="status"><b>*</b></span></td>
-      <td> 
+    <tr valign="top" class="row1">
+      <td nowrap="nowrap" width="15%">{TXT_NAME}&nbsp;<span class="status"><b>*</b></span></td>
+      <td width="85%">
         <input maxlength="255" name="votingname" size="40" value="{EDIT_NAME}" />
       </td>
     </tr>
-    <tr valign="top" class="row1"> 
+    <tr valign="top" class="row2">
       <td nowrap="nowrap">{TXT_VOTING_QUESTION}&nbsp;<span class="status"><b>*</b></span></td>
-      <td> 
+      <td>
         <input maxlength="255" name="votingquestion" size="40" value="{EDIT_QUESTION}" />
       </td>
     </tr>
-    <tr valign="top" class="row1"> 
+    <tr valign="top" class="row1">
       <td nowrap="nowrap">{TXT_VOTING_ADD_OPTIONS}&nbsp;<span class="status"><b>*</b></span></td>
-      <td> 
+      <td>
         <textarea name="votingoptions" rows="6" cols="60">{EDIT_OPTIONS}</textarea>
+      </td>
+    </tr>
+    <tr valign="top" class="row2">
+      <td nowrap="nowrap">{TXT_VOTING_METHOD_OF_RESTRICTION_TXT}&nbsp;<span class="status"><b>*</b></span></td>
+      <td>
+        <input type="radio" name="votingRestrictionMethod" id="votingRestrictionMethodCookie" value="cookie" {VOTING_METHOD_OF_RESTRICTION_COOKIE} /><label for="votingRestrictionMethodCookie">{TXT_VOTING_COOKIE_BASED}</label><br />
+        <input type="radio" name="votingRestrictionMethod" id="votingRestrictionMethodEmail" value="email" {VOTING_METHOD_OF_RESTRICTION_EMAIL} /><label for="votingRestrictionMethodEmail">{TXT_VOTING_EMAIL_BASED}</label>
       </td>
     </tr>
   </table>

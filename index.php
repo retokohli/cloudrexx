@@ -627,6 +627,32 @@ if ($_CONFIGURATION['custom']['shopJsCart']) {
     }
 }
 
+//-------------------------------------------------------
+// get voting
+//-------------------------------------------------------
+$modulespath = "modules/voting/index.class.php";
+if (file_exists($modulespath)) {
+	require_once($modulespath);
+	$_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('voting'));
+//
+//	if ($objTemplate->blockExists('voting_result')) {
+//		$objTemplate->_blocks['voting_result'] = setVotingResult($objTemplate->_blocks['voting_result']);
+//	}
+//
+	if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['sidebar'], $regs, PREG_SET_ORDER)) {
+		$themesPages['sidebar'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $themesPages['sidebar']);
+	}
+	if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['index'], $regs, PREG_SET_ORDER)) {
+		$themesPages['index'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $themesPages['index']);
+	}
+	if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $page_content, $regs, PREG_SET_ORDER)) {
+		$page_content = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $page_content);
+	}
+	if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $page_template, $regs, PREG_SET_ORDER)) {
+		$page_template = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $page_template);
+	}
+
+}
 
 //-------------------------------------------------------
 // Load design template

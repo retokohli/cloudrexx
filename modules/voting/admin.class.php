@@ -1,4 +1,10 @@
 <?php
+// Checks empty entries
+function checkEntryData($var)
+{
+    return (trim($var)!="");
+}
+
 /**
  * Class voting manager
  *
@@ -11,15 +17,6 @@
  * @subpackage  module_voting
  * @todo        Edit PHP DocBlocks!
  */
-
-
-// Checks empty entries
-function checkEntryData($var)
-{
-    return (trim($var)!="");
-}
-
-
 class votingmanager
 {
 	var $_objTpl;
@@ -32,7 +29,6 @@ class votingmanager
     * @param  string
     * @access public
     */
-
     function votingmanager ()
     {
     	global $_ARRAYLANG, $objTemplate;
@@ -44,13 +40,13 @@ class votingmanager
     	$objTemplate->setVariable(array(
     	    'CONTENT_TITLE'      => $_ARRAYLANG['TXT_VOTING_MANAGER'],
     	    'CONTENT_NAVIGATION' => "<a href='?cmd=voting'>".$_ARRAYLANG['TXT_VOTING_RESULTS']."</a>
-    	                           <a href='?cmd=voting&act=add'>".$_ARRAYLANG['TXT_VOTING_ADD']."</a>
-    	                           <a href='?cmd=voting&act=disablestatus'>".$_ARRAYLANG['TXT_VOTING_DISABLE']."</a>"
+    	                           <a href='?cmd=voting&amp;act=add'>".$_ARRAYLANG['TXT_VOTING_ADD']."</a>
+    	                           <a href='?cmd=voting&amp;act=disablestatus'>".$_ARRAYLANG['TXT_VOTING_DISABLE']."</a>"
     	   ));
     }
 
-
-    function getVotingPage() {
+    function getVotingPage()
+    {
     	global $_ARRAYLANG, $objTemplate;
 
     	if (empty($_GET['act'])) {
@@ -58,6 +54,9 @@ class votingmanager
     	}
 
         switch($_GET['act']){
+        	case 'detail':
+        		$action = $this->_detail();
+        		break;
 			case "add":
                 $action = $this->votingAdd();
 			break;
@@ -103,6 +102,99 @@ class votingmanager
 		));
     }
 
+    function _detail()
+    {
+    	global $objDatabase, $_CONFIG, $_ARRAYLANG;
+
+    	$systemId = intval($_REQUEST['id']);
+    	$count = 0;
+    	$pos = 0;
+
+    	$objVoting = $objDatabase->SelectLimit('SELECT `title`, `question` FROM `'.DBPREFIX.'voting_system` WHERE `id` = '.$systemId, 1);
+    	if ($objVoting !== false && $objVoting->RecordCount() == 1) {
+    		$title = $objVoting->fields['title'];
+    		$question = $objVoting->fields['question'];
+    	} else {
+    		return $this->showCurrent();
+    	}
+
+    	if (!empty($_GET['delete'])) {
+    		$objMail = $objDatabase->Execute('SELECT system_id, voting_id FROM `'.DBPREFIX.'voting_rel_email_system` WHERE email_id = '.intval($_GET['delete']));
+    		if ($objMail !== false && $objMail->RecordCount() > 0) {
+    			while (!$objMail->EOF) {
+    				$objDatabase->Execute('UPDATE `'.DBPREFIX.'voting_system` SET `votes` = `votes` - 1 WHERE `id` = '.$objMail->fields['system_id']);
+    				$objDatabase->Execute('UPDATE `'.DBPREFIX.'voting_results` SET `votes` = `votes` - 1 WHERE `id` = '.$objMail->fields['voting_id'].' AND `voting_system_id` = '.$objMail->fields['system_id']);
+    				$objMail->MoveNext();
+    			}
+
+    			$objDatabase->Execute('DELETE FROM `'.DBPREFIX.'voting_rel_email_system` WHERE `email_id` = '.intval($_GET['delete']));
+    			$objDatabase->Execute('DELETE FROM `'.DBPREFIX.'voting_email` WHERE `id` = '.intval($_GET['delete']));
+    		}
+    	}
+
+    	if (!empty($_GET['verify'])) {
+    		$objDatabase->Execute('UPDATE `'.DBPREFIX.'voting_email` SET `valid` = \'1\' WHERE `id` = '.intval($_GET['verify']));
+    	}
+
+    	$objCount = $objDatabase->SelectLimit('SELECT COUNT(1) AS votecount FROM `'.DBPREFIX.'voting_rel_email_system` AS s INNER JOIN `'.DBPREFIX.'voting_email` AS e ON e.id=s.email_id WHERE s.system_id='.$systemId.' GROUP BY s.system_id', 1);
+    	if ($objCount !== false) {
+    		$count = $objCount->fields['votecount'];
+    	}
+
+    	if (!$count) {
+    		return $this->showCurrent();
+    	}
+
+    	$this->_objTpl->loadTemplatefile('voting_detail.html');
+
+    	if ($count > $_CONFIG['corePagingLimit']) {
+			$pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+			$paging = getPaging($count, $pos, '&amp;cmd=voting&amp;act=detail&amp;id='.$systemId, ' E-Mails');
+			$this->_objTpl->setVariable('VOTING_PAGING', '<br /><br />'.$paging."<br /><br />\n");
+		}
+
+		$this->_objTpl->setVariable(array(
+			'VOTING_POS'	=> $pos,
+			'VOTING_ID'		=> $systemId,
+			'TXT_VOTING_FUNCTIONS'					=> $_ARRAYLANG['TXT_VOTING_FUNCTIONS'],
+			'TXT_VOTING_EMAIL_ADRESSE_OF_QUESTION'	=> sprintf($_ARRAYLANG['TXT_VOTING_EMAIL_ADRESSE_OF_QUESTION'], htmlentities($title, ENT_QUOTES).' ('.htmlentities($question, ENT_QUOTES).')'),
+			'TXT_VOTING_EMAIL'						=> $_ARRAYLANG['TXT_VOTING_EMAIL'],
+			'TXT_VOTING_VALID'					=> $_ARRAYLANG['TXT_VOTING_VALID'],
+			'TXT_VOTING_FUNCTIONS'					=> $_ARRAYLANG['TXT_VOTING_FUNCTIONS'],
+			'TXT_VOTING_CONFIRM_DELETE_EMAIL'		=> $_ARRAYLANG['TXT_VOTING_CONFIRM_DELETE_EMAIL'],
+			'TXT_VOTING_CONFIRM_VERIFY_EMAIL'		=> $_ARRAYLANG['TXT_VOTING_CONFIRM_VERIFY_EMAIL']
+		));
+
+		$this->_objTpl->setGlobalVariable(array(
+			'TXT_VOTING_VERIFY_EMAIL'				=> $_ARRAYLANG['TXT_VOTING_VERIFY_EMAIL'],
+			'TXT_VOTING_DELETE_EMAIL'				=> $_ARRAYLANG['TXT_VOTING_DELETE_EMAIL'],
+			'TXT_VOTING_WRITE_EMAIL'				=> $_ARRAYLANG['TXT_VOTING_WRITE_EMAIL']
+		));
+
+		$objMails = $objDatabase->SelectLimit('SELECT e.id,e.email,e.valid FROM `'.DBPREFIX.'voting_rel_email_system` AS s INNER JOIN `'.DBPREFIX.'voting_email` AS e ON e.id=s.email_id WHERE s.system_id='.$systemId.' ORDER BY e.email', $_CONFIG['corePagingLimit'], $pos);
+		if ($objMails !== false) {
+			$row = 1;
+			while (!$objMails->EOF) {
+				$this->_objTpl->setVariable(array(
+					'VOTING_ROW_NR'		=> $row = $row % 2 == 1 ? 2 : 1,
+					'VOTING_EMAIL'		=> htmlentities($objMails->fields['email'], ENT_QUOTES),
+					'VOTING_EMAIL_ID'	=> $objMails->fields['id'],
+					'VOTING_VALID'	=> $objMails->fields['valid'] == '1' ? '<img src="images/icons/check mark copy.ico" width="16" height="16" alt="'.$_ARRAYLANG['TXT_VOTING_EMAIL_IS_VAILD'].'" />' : '<img src="images/icons/help copy.ico" width="16" height="16" alt="'.$_ARRAYLANG['TXT_VOTING_EMAIL_ISNT_VAILD'].'" />'
+				));
+
+				if ($objMails->fields['valid'] == '1') {
+					$this->_objTpl->hideBlock('voting_verify_email');
+				} else {
+					$this->_objTpl->touchBlock('voting_verify_email');
+				}
+
+				$objMails->MoveNext();
+
+				$this->_objTpl->parse('voting_emails');
+			}
+		}
+    }
+
     function showCurrent()
     {
     	global $objDatabase, $_ARRAYLANG;
@@ -141,9 +233,9 @@ class votingmanager
 				    $percentage = (round(($votes/$votingVotes)*10000))/100;
 				    $imagewidth = round($percentage,0);
 				}
-				$votingResultText .= stripslashes($objResult->fields['question'])."<br>\n";
-				$votingResultText .= "<img src='images/icons/$images.gif' width='$imagewidth%' height=10>";
-				$votingResultText .= "&nbsp;<font size='1'>$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %</font><br>\n";
+				$votingResultText .= stripslashes($objResult->fields['question'])."<br />\n";
+				$votingResultText .= "<img src='images/icons/$images.gif' width='$imagewidth%' height=\"10\" alt=\"$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %\" />";
+				$votingResultText .= "&nbsp;<font size='1'>$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %</font><br />\n";
 				$objResult->MoveNext();
 			}
 
@@ -166,7 +258,7 @@ class votingmanager
 			$this->_objTpl->setGlobalVariable('TXT_HTML_CODE', $_ARRAYLANG['TXT_HTML_CODE']);
 
 			// show other Voting entries
-			$query="SELECT id,status, UNIX_TIMESTAMP(date) as datesec, title, votes FROM ".DBPREFIX."voting_system order by id desc";
+			$query="SELECT id,status,submit_check, UNIX_TIMESTAMP(date) as datesec, title, votes FROM ".DBPREFIX."voting_system order by id desc";
 			$objResult = $objDatabase->Execute($query);
 
 			$i = 0;
@@ -178,9 +270,9 @@ class votingmanager
 				$votingStatus=$objResult->fields['status'];
 
 				if ($votingStatus==0) {
-					 $radio=" onclick=\"Javascript: window.location.replace('?cmd=voting&act=changestatus&votingid=$votingid');\">";
+					 $radio=" onclick=\"Javascript: window.location.replace('?cmd=voting&amp;act=changestatus&amp;votingid=$votingid');\" />";
 				} else {
-					 $radio=" checked>";
+					 $radio=" checked=\"checked\" />";
 				}
 				if (($i % 2) == 0) {
 					$class="row1";
@@ -189,9 +281,9 @@ class votingmanager
 				}
 
 				$this->_objTpl->setVariable(array(
-					'VOTING_OLDER_TEXT'	   => "<a href='?cmd=voting&votingid=$votingid'>".$votingTitle."</a>",
+					'VOTING_OLDER_TEXT'	   => "<a href='?cmd=voting&amp;votingid=$votingid'>".$votingTitle."</a>",
 					'VOTING_OLDER_DATE'      => showFormattedDate($votingDate),
-					'VOTING_OLDER_VOTES'     => $votingVotes,
+					'VOTING_OLDER_VOTES'     => ($votingVotes > 0 && $objResult->fields['submit_check'] == 'email') ? '<a href="?cmd=voting&amp;act=detail&amp;id='.$votingid.'" title="'.$_ARRAYLANG['TXT_VOTING_SHOW_EMAIL_ADRESSES'].'">'.$votingVotes.'</a>' : $votingVotes,
 					'VOTING_ID'              => $votingid,
 					'VOTING_LIST_CLASS'      => $class,
 					'VOTING_RADIO'           => "<input type='radio' name='voting_selected' value='radiobutton'".$radio
@@ -202,12 +294,6 @@ class votingmanager
 			}
 		}
 	}
-
-    /**
-     * @return unknown
-     * @desc Beschreibung eingeben...
-     */
-
 
     function votingAddSubmit()
     {
@@ -220,9 +306,11 @@ class votingmanager
         	return false;
     	}
 
+    	$method = isset($_POST['votingRestrictionMethod']) ? contrexx_addslashes($_POST['votingRestrictionMethod']) : 'cookie';
+
     	$query="UPDATE ".DBPREFIX."voting_system set status=0,date=date";
 		$objDatabase->Execute($query);
-       	$query="INSERT INTO ".DBPREFIX."voting_system (title,question,status,votes)  values ('".htmlspecialchars(addslashes($_POST['votingname']), ENT_QUOTES, CONTREXX_CHARSET)."','".htmlspecialchars(addslashes($_POST['votingquestion']), ENT_QUOTES, CONTREXX_CHARSET)."','1','0')";
+       	$query="INSERT INTO ".DBPREFIX."voting_system (title,question,status,submit_check,votes)  values ('".htmlspecialchars(addslashes($_POST['votingname']), ENT_QUOTES, CONTREXX_CHARSET)."','".htmlspecialchars(addslashes($_POST['votingquestion']), ENT_QUOTES, CONTREXX_CHARSET)."','1','".$method."','0')";
 		$objDatabase->Execute($query);
     	$query = "SELECT MAX(id) as max_id FROM ".DBPREFIX."voting_system";
     	$objResult = $objDatabase->Execute($query);
@@ -256,6 +344,7 @@ class votingmanager
     	$options= explode ("\n", $_POST['votingoptions']);
     	$optionsid= explode (";", $_POST['votingresults']);
     	$looptimes=max(count($options),count($optionsid));
+    	$method = isset($_POST['votingRestrictionMethod']) ? contrexx_addslashes($_POST['votingRestrictionMethod']) : 'cookie';
 
     	if (count(array_filter($options,"checkEntryData"))<2) {
         	return false;
@@ -282,7 +371,7 @@ class votingmanager
             }
     	}
 
-    	$query="UPDATE ".DBPREFIX."voting_system set date=date, title='".htmlspecialchars(addslashes($_POST['votingname']), ENT_QUOTES, CONTREXX_CHARSET)."',question='".htmlspecialchars(addslashes($_POST['votingquestion']), ENT_QUOTES, CONTREXX_CHARSET)."',votes=votes-".$deleted_votes." WHERE id='".intval($_POST['votingid'])."'";
+    	$query="UPDATE ".DBPREFIX."voting_system set date=date, title='".htmlspecialchars(addslashes($_POST['votingname']), ENT_QUOTES, CONTREXX_CHARSET)."',question='".htmlspecialchars(addslashes($_POST['votingquestion']), ENT_QUOTES, CONTREXX_CHARSET)."',votes=votes-".$deleted_votes.", submit_check='".$method."' WHERE id='".intval($_POST['votingid'])."'";
 		if ($objDatabase->Execute($query)) {
 			$this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'];
     		return true;
@@ -291,10 +380,6 @@ class votingmanager
 			return false;
 		}
 	}
-
-
-
-
 
 	function votingDelete()
     {
@@ -315,10 +400,31 @@ class votingmanager
 			}
 
 		}
+
+		$objDatabase->Execute("DELETE FROM `".DBPREFIX."voting_rel_email_system` WHERE system_id=".intval($_GET['votingid']));
+		$this->_cleanUpEmails();
+
       	$query="DELETE FROM ".DBPREFIX."voting_system WHERE id=".intval($_GET['votingid'])." ";
 		$objDatabase->Execute($query);
   		$query="DELETE FROM ".DBPREFIX."voting_results WHERE voting_system_id=".intval($_GET['votingid'])." ";
 		$objDatabase->Execute($query);
+	}
+
+	function _cleanUpEmails()
+	{
+		global $objDatabase;
+
+		$arrEmailIds = array();
+
+		$objEmails = $objDatabase->Execute("SELECT e.id FROM ".DBPREFIX."voting_email AS e INNER JOIN ".DBPREFIX."voting_rel_email_system AS s ON s.email_id=e.id");
+		if ($objEmails !== false) {
+			while (!$objEmails->EOF) {
+				array_push($arrEmailIds, $objEmails->fields['id']);
+				$objEmails->MoveNext();
+			}
+
+			$objDatabase->Execute("DELETE FROM ".DBPREFIX."voting_email".(count($arrEmailIds) > 0 ? " WHERE id!=".implode(' AND id!=', $arrEmailIds) : ''));
+		}
 	}
 
 
@@ -349,15 +455,17 @@ class votingmanager
     	$this->_objTpl->loadTemplateFile('voting_add.html');
 
 		$this->_objTpl->setVariable(array(
-		    'TXT_VOTING_ADD'         => $_ARRAYLANG['TXT_VOTING_ADD'],
-			'TXT_NAME'	           => $_ARRAYLANG['TXT_NAME'],
-			'TXT_VOTING_QUESTION'    => $_ARRAYLANG['TXT_VOTING_QUESTION'],
-			'TXT_VOTING_ADD_OPTIONS' => $_ARRAYLANG['TXT_VOTING_ADD_OPTIONS'],
-			'TXT_STORE'              => $_ARRAYLANG['TXT_STORE'],
-			'TXT_RESET'              => $_ARRAYLANG['TXT_RESET']
+			'TXT_VOTING_METHOD_OF_RESTRICTION_TXT'	=> $_ARRAYLANG['TXT_VOTING_METHOD_OF_RESTRICTION_TXT'],
+			'TXT_VOTING_COOKIE_BASED'				=> $_ARRAYLANG['TXT_VOTING_COOKIE_BASED'],
+			'TXT_VOTING_EMAIL_BASED'				=> $_ARRAYLANG['TXT_VOTING_EMAIL_BASED'],
+		    'TXT_VOTING_ADD'						=> $_ARRAYLANG['TXT_VOTING_ADD'],
+			'TXT_NAME'								=> $_ARRAYLANG['TXT_NAME'],
+			'TXT_VOTING_QUESTION'					=> $_ARRAYLANG['TXT_VOTING_QUESTION'],
+			'TXT_VOTING_ADD_OPTIONS'				=> $_ARRAYLANG['TXT_VOTING_ADD_OPTIONS'],
+			'TXT_STORE'								=> $_ARRAYLANG['TXT_STORE'],
+			'TXT_RESET'								=> $_ARRAYLANG['TXT_RESET']
 		));
 	}
-
 
 	function votingEdit()
     {
@@ -370,6 +478,7 @@ class votingmanager
 			$votingname=stripslashes($objResult->fields["title"]);
 			$votingquestion=stripslashes($objResult->fields["question"]);
 			$votingid=$objResult->fields["id"];
+			$votingmethod = $objResult->fields['submit_check'];
 		}
 
 		$query="SELECT question,id FROM ".DBPREFIX."voting_results WHERE voting_system_id='$votingid' ORDER BY id";
@@ -383,20 +492,24 @@ class votingmanager
 		}
 
 		$this->_objTpl->setVariable(array(
-		    'TXT_VOTING_EDIT'        => $_ARRAYLANG['TXT_VOTING_EDIT'],
-			'TXT_NAME'	           => $_ARRAYLANG['TXT_NAME'],
-			'TXT_VOTING_QUESTION'    => $_ARRAYLANG['TXT_VOTING_QUESTION'],
-			'TXT_VOTING_ADD_OPTIONS' => $_ARRAYLANG['TXT_VOTING_ADD_OPTIONS'],
-			'TXT_STORE'              => $_ARRAYLANG['TXT_STORE'],
-			'TXT_RESET'              => $_ARRAYLANG['TXT_RESET'],
-			'EDIT_NAME'			   => $votingname,
-			'EDIT_QUESTION'		   => $votingquestion,
-			'EDIT_OPTIONS' 		   => $votingoptions,
-			'VOTING_ID'			   => $votingid,
-			'VOTING_RESULTS'         => implode($voltingresults,";")
+			'TXT_VOTING_METHOD_OF_RESTRICTION_TXT'	=> $_ARRAYLANG['TXT_VOTING_METHOD_OF_RESTRICTION_TXT'],
+			'TXT_VOTING_COOKIE_BASED'				=> $_ARRAYLANG['TXT_VOTING_COOKIE_BASED'],
+			'TXT_VOTING_EMAIL_BASED'				=> $_ARRAYLANG['TXT_VOTING_EMAIL_BASED'],
+			'VOTING_METHOD_OF_RESTRICTION_COOKIE'	=> $votingmethod == 'cookie' ? 'checked="checked"' : '',
+			'VOTING_METHOD_OF_RESTRICTION_EMAIL'	=> $votingmethod == 'email' ? 'checked="checked"' : '',
+		    'TXT_VOTING_EDIT'    				    => $_ARRAYLANG['TXT_VOTING_EDIT'],
+			'TXT_NAME'	        					=> $_ARRAYLANG['TXT_NAME'],
+			'TXT_VOTING_QUESTION'  					=> $_ARRAYLANG['TXT_VOTING_QUESTION'],
+			'TXT_VOTING_ADD_OPTIONS' 				=> $_ARRAYLANG['TXT_VOTING_ADD_OPTIONS'],
+			'TXT_STORE'          				    => $_ARRAYLANG['TXT_STORE'],
+			'TXT_RESET'         				    => $_ARRAYLANG['TXT_RESET'],
+			'EDIT_NAME'								=> $votingname,
+			'EDIT_QUESTION'							=> $votingquestion,
+			'EDIT_OPTIONS'							=> $votingoptions,
+			'VOTING_ID'								=> $votingid,
+			'VOTING_RESULTS'						=> implode($voltingresults,";")
 		));
 	}
-
 
 	function votingCode()
     {
@@ -436,10 +549,10 @@ class votingmanager
 		$submitbutton= '<input type="submit" value="'.$_ARRAYLANG['TXT_SUBMIT'].'" name="Submit" />';
 
 		$this->_objTpl->setVariable(array(
-		    'VOTING_TITLE'             => $votingTitle." - ".showFormattedDate($votingDate),
+		    'VOTING_TITLE'             => htmlentities($votingTitle, ENT_QUOTES, CONTREXX_CHARSET)." - ".showFormattedDate($votingDate),
 		    'VOTING_CODE'              => $_ARRAYLANG['TXT_VOTING_CODE'],
-		    'VOTING_RESULTS_TEXT'      => $votingResultText,
-		    'TXT_SUBMIT'               => $submitbutton,
+		    'VOTING_RESULTS_TEXT'      => htmlentities($votingResultText, ENT_QUOTES, CONTREXX_CHARSET),
+		    'TXT_SUBMIT'               => htmlentities($submitbutton, ENT_QUOTES, CONTREXX_CHARSET),
 		    'TXT_SELECT_ALL'           => $_ARRAYLANG['TXT_SELECT_ALL']
 
 		));
@@ -453,3 +566,4 @@ class votingmanager
     }
 
 }
+?>
