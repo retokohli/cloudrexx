@@ -9,40 +9,40 @@ function selectMultiAction()
 				action='?cmd=block&act=activate';
 				submit();
 				break;
-				
+
 			case 'deactivate':
 				action='?cmd=block&act=deactivate';
 				submit();
 				break;
-				
+
 			case 'random':
 				action='?cmd=block&act=random';
 				submit();
 				break;
-				
+
 			case 'random_off':
 				action='?cmd=block&act=random_off';
 				submit();
 				break;
-			
+
 			case 'global':
 				action='?cmd=block&act=global';
 				submit();
 				break;
-				
+
 			case 'global_off':
 				action='?cmd=block&act=global_off';
 				submit();
 				break;
-				
+
 			case 'delete':
 				if (confirm('{TXT_BLOCK_DELETE_SELECTED_BLOCKS}\n{TXT_BLOCK_OPERATION_IRREVERSIBLE}')) {
 					action='?cmd=block&act=del';
 					submit();
 				}
 				break;
-				
-			default: //do nothing			
+
+			default: //do nothing
 		}
 	}
 }
@@ -77,7 +77,7 @@ function blockDeleteBlock(blockId, blockName)
 					<td width="1%" style="text-align:center; font-weight:bold;">{BLOCK_STATUS}</td>
 					<td width="23%"><input maxlength="5" size="1" value="{BLOCK_ORDER}" name="displayorder[{BLOCK_ID}]" >&nbsp;<a href="index.php?cmd=block&amp;act=modify&amp;blockId={BLOCK_ID}" title="{BLOCK_MODIFY}">{BLOCK_NAME}</a></td>
 					<td width="10%">[[{BLOCK_PLACEHOLDER}]]</td>
-					<td width="60%" style="text-align:left;">{BLOCK_RANDOM}</td>
+					<td width="60%" style="text-align:left;">{BLOCK_RANDOM}&nbsp;{BLOCK_RANDOM_2}&nbsp;{BLOCK_RANDOM_3}</td>
 					<td width="5%" style="text-align:right;">
 						<a href="index.php?cmd=block&amp;act=modify&amp;blockId={BLOCK_ID}" title="{BLOCK_MODIFY}"><img src="images/icons/edit.gif" width="16" height="16" alt="{BLOCK_MODIFY}" border="0" /></a>
 						<a href="index.php?cmd=block&amp;act=copy&amp;blockId={BLOCK_ID}" title="{BLOCK_COPY}"><img src="images/icons/copy.gif" width="16" height="16" alt="{BLOCK_COPY}" border="0" /></a>
@@ -85,7 +85,7 @@ function blockDeleteBlock(blockId, blockName)
 						</td>
 				</tr>
 			<!-- END blockBlockList -->
-			
+
 		</tbody>
 	</table>
 	<br />
@@ -94,7 +94,7 @@ function blockDeleteBlock(blockId, blockName)
 		<tr>
 			<td>
 				<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-				<a href="javascript:{void(0)};" onclick="changeCheckboxes('frmBlocks','selectedBlockId[]',true); return false;">{TXT_BLOCK_SELECT_ALL}</a> / 
+				<a href="javascript:{void(0)};" onclick="changeCheckboxes('frmBlocks','selectedBlockId[]',true); return false;">{TXT_BLOCK_SELECT_ALL}</a> /
 				<a href="javascript:{void(0)};" onclick="changeCheckboxes('frmBlocks','selectedBlockId[]',false); return false;">{TXT_BLOCK_DESELECT_ALL}</a>
 				<img src="images/icons/strike.gif" width="34" height="22" alt="strike" />
 				<select name="frmBlocksMultiAction" onChange="selectMultiAction();">

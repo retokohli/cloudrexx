@@ -43,7 +43,7 @@ class block extends blockLibrary
 			$this->_setBlock(intval($blockId), $code);
 		}
 	}
-	
+
 	/**
 	* Set block Random
 	*
@@ -54,11 +54,11 @@ class block extends blockLibrary
 	* @param string &$code
 	* @see blockLibrary::_setBlock()
 	*/
-	function setBlockRandom(&$code)
+	function setBlockRandom(&$code, $id)
 	{
-		$this->_setBlockRandom($code);
+		$this->_setBlockRandom($code, $id);
 	}
-	
+
 	function setBlockGlobal(&$code, $pageId)
 	{
 		$this->_setBlockGlobal($code, $pageId);
