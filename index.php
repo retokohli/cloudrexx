@@ -398,17 +398,46 @@ if ($_CONFIG['blockStatus'] == '1') {
         }
 
         if ($_CONFIG['blockRandom'] == '1') {
+        	//randomizer block 1
             if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/ms', $page_content, $arrMatches)) {
-                $objBlock->setBlockRandom($page_content);
+                $objBlock->setBlockRandom($page_content, 1);
             }
             if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/ms', $page_template, $arrMatches)) {
-                $objBlock->setBlockRandom($page_template);
+                $objBlock->setBlockRandom($page_template, 1);
             }
             if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/ms', $themesPages['index'], $arrMatches)) {
-                $objBlock->setBlockRandom($themesPages['index']);
+                $objBlock->setBlockRandom($themesPages['index'], 1);
             }
             if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/ms', $themesPages['sidebar'], $arrMatches)) {
-                $objBlock->setBlockRandom($themesPages['sidebar']);
+                $objBlock->setBlockRandom($themesPages['sidebar'], 1);
+            }
+
+            //randomizer block 2
+            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/ms', $page_content, $arrMatches)) {
+                $objBlock->setBlockRandom($page_content, 2);
+            }
+            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/ms', $page_template, $arrMatches)) {
+                $objBlock->setBlockRandom($page_template, 2);
+            }
+            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/ms', $themesPages['index'], $arrMatches)) {
+                $objBlock->setBlockRandom($themesPages['index'], 2);
+            }
+            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/ms', $themesPages['sidebar'], $arrMatches)) {
+                $objBlock->setBlockRandom($themesPages['sidebar'], 2);
+            }
+
+            //randomizer block 3
+            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/ms', $page_content, $arrMatches)) {
+                $objBlock->setBlockRandom($page_content, 3);
+            }
+            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/ms', $page_template, $arrMatches)) {
+                $objBlock->setBlockRandom($page_template, 3);
+            }
+            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/ms', $themesPages['index'], $arrMatches)) {
+                $objBlock->setBlockRandom($themesPages['index'], 3);
+            }
+            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/ms', $themesPages['sidebar'], $arrMatches)) {
+                $objBlock->setBlockRandom($themesPages['sidebar'], 3);
             }
         }
     }
