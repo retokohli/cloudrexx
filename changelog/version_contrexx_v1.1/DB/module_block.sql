@@ -13,3 +13,6 @@ CREATE TABLE `contrexx_module_block_settings` (
 `name` VARCHAR( 100 ) NOT NULL ,
 `value` VARCHAR( 100 ) NOT NULL
 ) ENGINE = MYISAM ;
+
+ALTER TABLE `contrexx_module_block_blocks` ADD `random_2` INT( 1 ) NOT NULL DEFAULT '0' AFTER `random` ,
+ADD `random_3` INT( 1 ) NOT NULL DEFAULT '0' AFTER `random_2` ;
