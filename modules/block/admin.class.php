@@ -231,7 +231,19 @@ class blockManager extends blockLibrary
 				if ($arrBlock['random'] ==  '1') {
 					$random = "<img src='images/icons/refresh.gif' width='16' height='16' border='0' alt='' />";
 				} else {
-					$random = "&nbsp;";
+					$random = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' />";
+				}
+
+				if ($arrBlock['random2'] ==  '1') {
+					$random2 = "<img src='images/icons/refresh2.gif' width='16' height='16' border='0' alt='' />";
+				} else {
+					$random2 = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' />";
+				}
+
+				if ($arrBlock['random3'] ==  '1') {
+					$random3 = "<img src='images/icons/refresh3.gif' width='16' height='16' border='0' alt='' />";
+				} else {
+					$random4 = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' />";
 				}
 
 				if ($arrBlock['global'] ==  '1') {
@@ -245,6 +257,8 @@ class blockManager extends blockLibrary
 					'BLOCK_ROW_CLASS'		=> $rowNr % 2 ? "row1" : "row2",
 					'BLOCK_ID'				=> $blockId,
 					'BLOCK_RANDOM'			=> $random,
+					'BLOCK_RANDOM_2'		=> $random2,
+					'BLOCK_RANDOM_3'		=> $random3,
 					'BLOCK_GLOBAL'			=> $global,
 					'BLOCK_ORDER'			=> $arrBlock['order'],
 					'BLOCK_PLACEHOLDER'		=> $this->blockNamePrefix.$blockId,
@@ -297,6 +311,8 @@ class blockManager extends blockLibrary
 			$blockContent 			= isset($_POST['blockBlockContent']) ? $_POST['blockBlockContent'] : '';
 			$blockName 				= isset($_POST['blockName']) ? $_POST['blockName'] : '';
 			$blockRandom 			= isset($_POST['blockRandom']) ? intval($_POST['blockRandom']) : 0;
+			$blockRandom2 			= isset($_POST['blockRandom2']) ? intval($_POST['blockRandom2']) : 0;
+			$blockRandom3 			= isset($_POST['blockRandom3']) ? intval($_POST['blockRandom3']) : 0;
 			$blockGlobal 			= isset($_POST['blockGlobal']) ? intval($_POST['blockGlobal']) : 0;
 			$blockPages 			= array();
 			$blockPages 			= isset($_POST['selectedPages']) ? $_POST['selectedPages'] : '';;
@@ -323,7 +339,7 @@ class blockManager extends blockLibrary
 					$this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'];
 				}
 			} else {
-				if ($this->_addBlock($blockId, $blockContent, $blockName, $blockRandom, $blockGlobal, $blockAssociatedLangIds)) {
+				if ($this->_addBlock($blockId, $blockContent, $blockName, $blockRandom, $blockRandom2, $blockRandom3, $blockGlobal, $blockAssociatedLangIds)) {
 					$this->_strOkMessage = sprintf($_ARRAYLANG['TXT_BLOCK_BLOCK_ADDED_SUCCESSFULLY'], $blockName);
 					return $this->_showOverview();
 				} else {
@@ -333,6 +349,8 @@ class blockManager extends blockLibrary
 		} elseif (($arrBlock = &$this->_getBlock($blockId)) !== false) {
 			$blockName = $arrBlock['name'];
 			$blockRandom = $arrBlock['random'];
+			$blockRandom2 = $arrBlock['random2'];
+			$blockRandom3 = $arrBlock['random3'];
 			$blockGlobal = $arrBlock['global'];
 			$blockContent = $arrBlock['content'];
 			$blockAssociatedLangIds = $this->_getAssociatedLangIds($blockId);
@@ -352,6 +370,8 @@ class blockManager extends blockLibrary
 			'BLOCK_MODIFY_TITLE'				=> $pageTitle,
 			'BLOCK_NAME'						=> htmlentities($blockName, ENT_QUOTES, CONTREXX_CHARSET),
 			'BLOCK_RANDOM'						=> $blockRandom == '1' ? 'checked="checked"' : '',
+			'BLOCK_RANDOM_2'					=> $blockRandom2 == '1' ? 'checked="checked"' : '',
+			'BLOCK_RANDOM_3'					=> $blockRandom3 == '1' ? 'checked="checked"' : '',
 			'BLOCK_GLOBAL'						=> $blockGlobal == '1' ? 'checked="checked"' : '',
 			'BLOCK_CONTENT'						=> get_wysiwyg_editor('blockBlockContent', $blockContent)
 		));
@@ -464,6 +484,10 @@ class blockManager extends blockLibrary
 			'TXT_BLOCK_CONTENT'				=> $_ARRAYLANG['TXT_BLOCK_CONTENT'],
 			'TXT_BLOCK_NAME'				=> $_ARRAYLANG['TXT_BLOCK_NAME'],
 			'TXT_BLOCK_RANDOM'				=> $_ARRAYLANG['TXT_BLOCK_RANDOM'],
+			'TXT_BLOCK_RANDOM'				=> $_ARRAYLANG['TXT_BLOCK_RANDOM'],
+			'TXT_BLOCK_RANDOM_1'			=> "Block #1",
+			'TXT_BLOCK_RANDOM_2'			=> "Block #2",
+			'TXT_BLOCK_RANDOM_3'			=> "Block #3",
 			'TXT_BLOCK_GLOBAL'				=> "im globalen Block anzeigen",
 			'TXT_BLOCK_FRONTEND_LANGUAGES'	=> $_ARRAYLANG['TXT_BLOCK_FRONTEND_LANGUAGES'],
 			'TXT_BLOCK_SAVE'				=> $_ARRAYLANG['TXT_BLOCK_SAVE'],

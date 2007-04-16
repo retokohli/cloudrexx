@@ -1,6 +1,6 @@
 <!-- START module_block_block.html -->
 <script language="JavaScript" type="text/javascript">
-function add(from,dest,add,remove) 
+function add(from,dest,add,remove)
 {
     if ( from.selectedIndex < 0)
 	{
@@ -10,36 +10,36 @@ function add(from,dest,add,remove)
 		return false;
 	}
 	else
-	{	
+	{
 //		str='';
 //		j=0;
 //		for(i in from){
 //			if(i = "length"){
 //				alert(from[i]):
 //			}
-//			
+//
 //		}
 //		alert(str);
-		for (var i=0; i<from.options.length; i++) 
-		{	    
-			if (from.options[i].selected) 
+		for (var i=0; i<from.options.length; i++)
+		{
+			if (from.options[i].selected)
 			{
-		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);				
-   			}			
+		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
+   			}
 		}
-	    for (var i=from.length-1; i>=0; i--) 
-		{	    
-			if (from.options[i].selected) 
+	    for (var i=from.length-1; i>=0; i--)
+		{
+			if (from.options[i].selected)
 			{
-		       from.options[i] = null;				
-   			}			
-		}		
+		       from.options[i] = null;
+   			}
+		}
 	}
     //disableButtons(from,dest,add,remove);
-}	
+}
 
 
-function remove(from,dest,add,remove) 
+function remove(from,dest,add,remove)
 {
 	if ( dest.selectedIndex < 0)
 	{
@@ -49,30 +49,30 @@ function remove(from,dest,add,remove)
 		return false;
 	}
 	else
-	{	
-		for (var i=0; i<dest.options.length; i++) 
-		{	    
-			if (dest.options[i].selected) 
+	{
+		for (var i=0; i<dest.options.length; i++)
+		{
+			if (dest.options[i].selected)
 			{
-		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);				
-   			}			
+		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+   			}
 		}
-	    for (var i=dest.options.length-1; i>=0; i--) 
-		{	    
-			if (dest.options[i].selected) 
+	    for (var i=dest.options.length-1; i>=0; i--)
+		{
+			if (dest.options[i].selected)
 			{
-		       dest.options[i] = null;				
-   			}			
-		}		
-	}	
+		       dest.options[i] = null;
+   			}
+		}
+	}
 	//disableButtons(from,dest,add,remove);
 }
 
 function disableButtons(from,dest,add,remove)
 {
 	if (from.options.length > 0 )
-	{		
-		add.disabled = 0;		
+	{
+		add.disabled = 0;
 	}
 	else
 		add.disabled = 1;
@@ -102,24 +102,24 @@ function deselectAll(CONTROL)
 function showOrHide(strElement)
 {
 	//alert(document.getElementByName(strElement+'_selectedPages[]').value);
-	
+
 	addpages		=	document.getElementsByName(strElement+'_addpages')[0];
 	removepages		=	document.getElementsByName(strElement+'_removepages')[0];
 	checkbox 		= 	document.getElementsByName('block_show_on_all_pages['+strElement+']')[0];
-	
+
 	if(checkbox.checked){
 		addpages.disabled = true;
 		removepages.disabled = true;
-		
- 		while(document.getElementsByName(strElement+'_selectedPages[]')[0].length > 0){ 
+
+ 		while(document.getElementsByName(strElement+'_selectedPages[]')[0].length > 0){
  			remove(document.getElementById(strElement+'notSelectedPages'),document.getElementById(strElement+'SelectedPages'),addpages,removepages);
 		}
 	}else{
 		addpages.disabled = false;
-		removepages.disabled = false;		
+		removepages.disabled = false;
 	}
-	
-	
+
+
 	/*if (document.getElementById(strElement).style.display == 'block'){
 		document.getElementByName(strElement+'_selectedPages[]').value = '';
 	} else {
@@ -141,7 +141,7 @@ function showOrHide(strElement)
 				</tr>
 				<tr class="row1">
 					<td>{TXT_BLOCK_RANDOM}:</td>
-					<td colspan="3"><input type="checkbox" name="blockRandom" value="1" {BLOCK_RANDOM}/></td>
+					<td colspan="3"><input type="checkbox" name="blockRandom" value="1" {BLOCK_RANDOM}/>{TXT_BLOCK_RANDOM_1}&nbsp;&nbsp;&nbsp;<input type="checkbox" name="blockRandom2" value="1" {BLOCK_RANDOM_2}/>{TXT_BLOCK_RANDOM_2}&nbsp;&nbsp;&nbsp;<input type="checkbox" name="blockRandom3" value="1" {BLOCK_RANDOM_3}/>{TXT_BLOCK_RANDOM_3}</td>
 				</tr>
 				<tr class="row2" style="vertical-align:top;">
 					<td width="16%">{TXT_BLOCK_FRONTEND_LANGUAGES}</td>
@@ -182,36 +182,36 @@ function showOrHide(strElement)
 		</table>
 		<div id="pages_{BLOCK_SELECTED_LANG_SHORTCUT}" style="display:block;">
 		<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
-			</tbody>	
+			</tbody>
 				<tr class="row2">
 					<td width="16%" valign="top">{TXT_BLOCK_FRONTEND_PAGES}:</td>
 					<td width="84%" colspan="3">
 						<table width="100%" border="0">
-						  <tr> 
+						  <tr>
 						    <td width="13%">
 						      <select id="{BLOCK_LANG_ID}notSelectedPages" name="{BLOCK_LANG_ID}_notSelectedPages[]" size="12" style="width:200px;" multiple="multiple">
 						          {BLOCK_RELATION_PAGES_UNSELECTED}
 						      </select>
 						      <br />
 						      <font size="1"><a href="javascript:selectAll(document.blockFormModifyBlock.elements['{BLOCK_LANG_ID}_notSelectedPages[]']);" style="color:blue;">{TXT_BLOCK_RELATION_SELECT}<br />
-						      </a><a href="javascript:deselectAll(document.blockFormModifyBlock.elements['{BLOCK_LANG_ID}_notSelectedPages[]']);" style="color:blue;">{TXT_BLOCK_RELATION_DESELECT}</a></font> 
+						      </a><a href="javascript:deselectAll(document.blockFormModifyBlock.elements['{BLOCK_LANG_ID}_notSelectedPages[]']);" style="color:blue;">{TXT_BLOCK_RELATION_DESELECT}</a></font>
 						    </td>
-						    <td width="4%"> 
-						      <div align="center"> 
+						    <td width="4%">
+						      <div align="center">
 						        <input type="button" value=" &gt;&gt; " name="{BLOCK_LANG_ID}_addpages" onclick="add(document.getElementById('{BLOCK_LANG_ID}notSelectedPages'),document.getElementById('{BLOCK_LANG_ID}SelectedPages'),document.getElementsByName('{BLOCK_LANG_ID}_addpages')[0],document.getElementsByName('{BLOCK_LANG_ID}_removepages')[0]);" />
 						        <br />
 						        <input type="button" value=" &lt;&lt; " name="{BLOCK_LANG_ID}_removepages" onclick="remove(document.getElementById('{BLOCK_LANG_ID}notSelectedPages'),document.getElementById('{BLOCK_LANG_ID}SelectedPages'),document.getElementsByName('{BLOCK_LANG_ID}_addpages')[0],document.getElementsByName('{BLOCK_LANG_ID}_removepages')[0]);" />
 						        <br /><br />
 						      </div>
 						    </td>
-						    <td width="1%"> 
+						    <td width="1%">
 						      <div align="left">
 						        <select id="{BLOCK_LANG_ID}SelectedPages" name="{BLOCK_LANG_ID}_selectedPages[]" size="12" style="width:200px;" multiple="multiple">
 						        	{BLOCK_RELATION_PAGES_SELECTED}
 						        </select>
 						        <br />
 						        <font size="1"><a href="javascript:selectAll(document.blockFormModifyBlock.elements['{BLOCK_LANG_ID}_selectedPages[]']);" style="color:blue;">{TXT_BLOCK_RELATION_SELECT}<br />
-						        </a><a href="javascript:deselectAll(document.blockFormModifyBlock.elements['{BLOCK_LANG_ID}_selectedPages[]']);" style="color:blue;">{TXT_BLOCK_RELATION_DESELECT}</a></font> 
+						        </a><a href="javascript:deselectAll(document.blockFormModifyBlock.elements['{BLOCK_LANG_ID}_selectedPages[]']);" style="color:blue;">{TXT_BLOCK_RELATION_DESELECT}</a></font>
 						      </div>
 						    </td>
 						    <td width="82%">&nbsp;</td>
