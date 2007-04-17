@@ -102,26 +102,6 @@ class ShopLibrary {
         }
 
         return $arrPictures;
-        /*
-        list($shopImage2, $shopImage2_width, $shopImage2_height) = explode('?', $tmp2);
-        list($shopImage3, $shopImage3_width, $shopImage3_height) = explode('?', $tmp3);
-
-
-        $shopImage2        = base64_decode($shopImage2);
-        $shopImage2_width  = base64_decode($shopImage2_width);
-        $shopImage2_height = base64_decode($shopImage2_height);
-
-        $shopImage3        = base64_decode($shopImage3);
-        $shopImage3_width  = base64_decode($shopImage3_width);
-        $shopImage3_height = base64_decode($shopImage3_height);
-
-        $arrPictures = array();
-
-        return array(   1 => array,
-                        2 => array('img' => $shopImage2, 'width' => $shopImage2_width, 'height' => $shopImage2_height),
-                        3 => array('img' => $shopImage3, 'width' => $shopImage3_width, 'height' => $shopImage3_height),
-        );
-        */
     }
 
 

@@ -168,9 +168,9 @@ class shopmanager extends ShopLibrary {
         global $_ARRAYLANG, $objTemplate, $objInit;
 
         if (0) {
-            global $objDatabase; $objDatabase->debug = 1;
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
+            global $objDatabase; $objDatabase->debug = 1;
         } else {
             error_reporting(0);
             ini_set('display_errors', 0);
@@ -2887,7 +2887,7 @@ class shopmanager extends ShopLibrary {
                         }
                     }
                 } else {
-                    if (count($arrProductOptions)>0) {
+                    if (count($arrProductOptions) > 0) {
                         foreach ($arrProductOptions as $attributesValueId => $arrAttributeDetails) {
                             $query =
                                 "INSERT INTO ".DBPREFIX."module_shop_products_attributes ".
@@ -2912,8 +2912,11 @@ class shopmanager extends ShopLibrary {
             //create thumbnail if not available
             foreach ($arrImages as $arrImage) {
                 if (!empty($arrImage['img'])) {
-                    if (!is_file($docroot.$arrImage['img'].$this->mediaThumbNailSuffix) && $arrImage['img'] != $this->_defaultImage) {
-                        if (!$objImage->_createThumb($this->shopImagePath, $this->shopImageWebPath, $arrImage['img'])) {
+                    $length    = strlen(ASCMS_PATH_OFFSET);
+                    $strPath   = substr($arrImage['img'], $length);
+                    $strOffset = ASCMS_PATH_OFFSET;
+                    if (!is_file(ASCMS_PATH.$arrImage['img'].$this->mediaThumbNailSuffix) && $arrImage['img'] != $this->_defaultImage) {
+                        if (!$objImage->_createThumb(ASCMS_PATH, '', $arrImage['img'])) {
                             $this->strErrMessage = sprintf($_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'], $arrImage['img']);
                         }
                     }
@@ -2975,9 +2978,9 @@ class shopmanager extends ShopLibrary {
         'SHOP_CAT_MENU'               => $this->getCatMenu($shopCatMenu),
         'SHOP_CUSTOMER_PRICE'         => $shopCustomerPrice,
         'SHOP_RESELLER_PRICE'         => $shopResellerPrice,
-        'SHOP_TAX'                    => $this->objVat->getLongMenuString($shopTaxId, 'shopTaxId', ''),
+        'SHOP_TAX'                    => $this->objVat->getLongMenuString($shopTaxId, 'shopTaxId', "style='width: 220px'"),
         'SHOP_WEIGHT'                 => Weight::getWeightString($shopWeight),
-        'SHOP_DISTRIBUTION_MENU'      => $this->objDistribution->getDistributionMenu($shopDistribution, 'distribution'),
+        'SHOP_DISTRIBUTION_MENU'      => $this->objDistribution->getDistributionMenu($shopDistribution, 'distribution', "style='width: 220px'"),
         'SHOP_SHORT_DESCRIPTION'      => get_wysiwyg_editor('shopShortDescription', $shopShortDescription, 'shop'),
         'SHOP_DESCRIPTION'            => get_wysiwyg_editor('shopDescription', $shopDescription, 'shop'),
         'SHOP_STOCK'                  => $shopStock,
