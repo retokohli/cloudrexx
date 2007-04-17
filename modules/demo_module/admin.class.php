@@ -2,23 +2,11 @@
 /**
  * Demo module
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>            
+ * @author		Astalavista Development Team <thun@astalvista.ch>
  * @version		1.0.0
  * @package     contrexx
  * @subpackage  module_demo
  * @todo        Edit PHP DocBlocks!
- */
-
-/**
- * Demo module
- *
- * Demo module
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
- * @access		public
- * @version		1.0.0
- * @package     contrexx
- * @subpackage  module_demo
  */
 class demoModule
 {
@@ -29,7 +17,7 @@ class demoModule
 	* @var object
 	*/
 	var $_objTpl;
-	
+
 	/**
 	* Page title
 	*
@@ -37,7 +25,7 @@ class demoModule
 	* @var string
 	*/
 	var $_pageTitle;
-	
+
 	/**
 	* Status message
 	*
@@ -45,7 +33,7 @@ class demoModule
 	* @var string
 	*/
 	var $_statusMessage = '';
-	
+
 	/**
 	* Constructor
 	*/
@@ -53,7 +41,7 @@ class demoModule
 	{
 		$this->__construct();
 	}
-	
+
 	/**
 	* PHP5 constructor
 	*
@@ -63,13 +51,13 @@ class demoModule
 	function __construct()
 	{
 		global $objTemplate, $_ARRAYLANG;
-		
+
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/demo_module/template');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-    	
+
     	$objTemplate->setVariable("CONTENT_NAVIGATION", "	<a href='index.php?cmd=gallery'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>");
 	}
-	
+
 	/**
 	* Set the backend page
 	*
@@ -77,15 +65,15 @@ class demoModule
 	* @global object $objTemplate
 	* @global array $_ARRAYLANG
 	*/
-	function getPage() 
+	function getPage()
 	{
 		global $objTemplate, $_ARRAYLANG;
-		
+
 		$this->_pageTitle = $_ARRAYLANG['TXT_OVERVIEW'];
-		
+
 		$this->_objTpl->loadTemplateFile('module_demoModule_overview.html');
 		$this->_objTpl->setVariable('TXT_WELCOME_MSG', $_ARRAYLANG['TXT_WELCOME_MSG']);
-		
+
 		$objTemplate->setVariable(array(
 			'CONTENT_TITLE'				=> $this->_pageTitle,
 			'CONTENT_STATUS_MESSAGE'	=> $this->_statusMessage,

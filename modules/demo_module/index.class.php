@@ -8,18 +8,6 @@
  * @subpackage  module_demo
  * @todo        Edit PHP DocBlocks!
  */
-
-/**
- * Demo module
- *
- * Demo module class
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
- * @access		public
- * @version		1.0.0
- * @package     contrexx
- * @subpackage  module_demo_module
- */
 class demoModule
 {
 	/**
@@ -29,7 +17,7 @@ class demoModule
 	* @var object
 	*/
 	var $_objTpl;
-	
+
 	/**
 	* Constructor
 	*/
@@ -37,7 +25,7 @@ class demoModule
 	{
 		$this->__construct($pageContent);
 	}
-	
+
 	/**
 	* PHP5 constructor
 	*
@@ -50,13 +38,13 @@ class demoModule
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 		$this->_objTpl->setTemplate($pageContent);
 	}
-	
+
 	/**
 	* Get content page
 	*
 	* @access public
 	*/
-	function getPage() 
+	function getPage()
 	{
 		return $this->_objTpl->get();
 	}
