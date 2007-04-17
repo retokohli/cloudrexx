@@ -650,7 +650,7 @@ class rssDirectory extends directoryLibrary
 
 		$expSearch = '';
 
-		$javascript	= 	'<script language="JavaScript">
+		$javascript	= 	'<script type="text/javascript">
 						<!--
 						function toggle(target){
 						    obj = document.getElementById(target);
@@ -722,10 +722,10 @@ class rssDirectory extends directoryLibrary
 		}
 
 
-		$html 		=	'<table width="100%" cellspacing="5" cellpadding="0" border="0" id="directory">
+		$html 		=	'<table width="100%" cellspacing="5" cellpadding="0" border="0">
 					    <tbody>
 					        <tr>
-					            <td class="description">
+					            <td class="directorySearch">
 					                <form action="index.php?" method="get" name="directorySearch" id="directorySearch">
 					                    <input name="term" value="'.(!empty($_GET['term']) ? htmlentities($_GET['term'], ENT_QUOTES, CONTREXX_CHARSET) : '').'" size="25" maxlength="100" />
 					                    <input id="searchCheck" type="hidden" name="check" value="norm" size="10" />
@@ -2067,7 +2067,7 @@ class rssDirectory extends directoryLibrary
 		    'DIRECTORY_FEED_VOTE_ID'    		=> $id,
 			'DIRECTORY_FEED_VOTE'    			=> $_ARRAYLANG['TXT_DIRECTORY_YOUR_VOTE'],
 			'DIRECTORY_FEED_VOTE_IMG'    		=> $voteImg,
-			'DIRECTORY_FEED_VOTE_LINK'    		=>'javascript:toggle(\''.$id.'\')',
+			'DIRECTORY_FEED_VOTE_LINK'    		=>'javascript:toggle(\'voting_'.$id.'\')',
 		));
     }
 
