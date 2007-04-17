@@ -640,14 +640,14 @@ class eGov extends eGovLibrary
 							 SET product_orderby=".$TauschPosition."
 							 WHERE product_id=".$TauschID."";
 				if($objDatabase->Execute($query)){
-					$this->_strOkMessage = $_ARRAYLANG['TXT_STATE_UPDATED_SUCCESSFUL'];
+					$this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
 				}
 			
 				$query = "UPDATE ".DBPREFIX."module_egov_products
 							 SET product_orderby=".$NewPosition."
 							 WHERE product_id=".$_REQUEST["id"]."";
 				if($objDatabase->Execute($query)){
-					$this->_strOkMessage = $_ARRAYLANG['TXT_STATE_UPDATED_SUCCESSFUL'];
+					$this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
 				}
 
 		}
@@ -704,7 +704,9 @@ class eGov extends eGovLibrary
     			'TXT_EGOV_VIEW_ORDERS'		=>  $_ARRAYLANG['TXT_EGOV_VIEW_ORDERS'],
     			'TXT_IMGALT_COPY'			=>	$_ARRAYLANG['TXT_IMGALT_COPY'],
     			'TXT_COPY'					=>	$_ARRAYLANG['TXT_COPY'],
-    			'ASCMS_MODULE_WEB_PATH'		=> ASCMS_MODULE_WEB_PATH
+    			'ASCMS_MODULE_WEB_PATH'		=> ASCMS_MODULE_WEB_PATH,
+    			'TXT_EGOV_UP'				=>	$_ARRAYLANG['TXT_EGOV_UP'],
+    			'TXT_EGOV_DOWN'				=>	$_ARRAYLANG['TXT_EGOV_DOWN']
 	   		));
 
 	   		$product_id = $objResult->fields["product_id"];
