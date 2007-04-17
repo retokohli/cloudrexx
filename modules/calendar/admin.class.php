@@ -176,7 +176,7 @@ class calendarManager extends calendarLibrary
 			while(!$objResult->EOF) {
 				$select = '';
 				if ($objResult->fields['id'] == $_GET['catid']){
-					$select = ' selected';
+					$select = ' selected="selected"';
 				}
 
 				$query = "SELECT lang
@@ -331,7 +331,7 @@ class calendarManager extends calendarLibrary
 		$monthnames = split(",", $_ARRAYLANG['TXT_MONTH_ARRAY']);
 		foreach($monthnames as $name) {
 			if ($i == $month) {
-				$selected = " selected=\"1\"";
+				$selected = " selected=\"selected\"";
 			} else {
 				$selected = "";
 			}
@@ -350,7 +350,7 @@ class calendarManager extends calendarLibrary
 		// The lists of years
 		for($i = date("Y")-10; $i<=2037; $i++) {
 			if ($i == intval($year)) {
-				$selected = " selected=\"1\"";
+				$selected = " selected=\"selected\"";
 			} else {
 				$selected = "";
 			}
@@ -521,7 +521,7 @@ class calendarManager extends calendarLibrary
 
 				$selected = '';
 				if ($objResult2->fields['id'] == $objResult->fields['catid']) {
-					$selected = ' selected';
+					$selected = ' selected="selected"';
 				}
 
 				$this->_objTpl->setVariable(array(
@@ -639,7 +639,7 @@ class calendarManager extends calendarLibrary
 	   		$x = str_pad($x, 2, '0', STR_PAD_LEFT);
 
 	   		if ($x == $day) {
-	   			$this->_objTpl->setVariable($var1, ' selected');
+	   			$this->_objTpl->setVariable($var1, ' selected="selected"');
 	   		}
 	   		else {
 	   			$this->_objTpl->setVariable($var1, '');
@@ -664,7 +664,7 @@ class calendarManager extends calendarLibrary
 			$this->_objTpl->setVariable($var1, $x);
 
 			if ($x == $month) {
-				$this->_objTpl->setVariable($var2, ' selected');
+				$this->_objTpl->setVariable($var2, ' selected="selected');
 			} else {
 				$this->_objTpl->setVariable($var2, '');
 			}
@@ -685,7 +685,7 @@ class calendarManager extends calendarLibrary
 	{
 	    for ($x = $this->calStartYear; $x <= $this->calEndYear; $x++) {
 	    	if ($x == $year) {
-	    		$this->_objTpl->setVariable($var1, ' selected');
+	    		$this->_objTpl->setVariable($var1, ' selected="selected"');
 	    	} else {
 	   			$this->_objTpl->setVariable($var1, '');
 	   		}
@@ -705,7 +705,7 @@ class calendarManager extends calendarLibrary
 	{
 		for ($curhour = 0; $curhour <= 23; $curhour++) {
 			if ($curhour == $hour) {
-				$this->_objTpl->setVariable($bool_select, ' selected');
+				$this->_objTpl->setVariable($bool_select, ' selected="selected"');
 			} else {
 				$this->_objTpl->setVariable($bool_select, '');
 			}
@@ -719,7 +719,7 @@ class calendarManager extends calendarLibrary
 	{
 		for ($curmin = 0; $curmin <= 59; $curmin++) {
 			if ($curmin == $minutes) {
-				$this->_objTpl->setVariable($bool_select, ' selected');
+				$this->_objTpl->setVariable($bool_select, ' selected="selected"');
 			} else {
 				$this->_objTpl->setVariable($bool_select, '');
 			}
@@ -1079,7 +1079,7 @@ class calendarManager extends calendarLibrary
 		    while(!$objResult->EOF) {
 		    	$selected = '';
 		    	if ($_LANGID == $objResult->fields['id']){
-		    		$selected = ' selected';
+		    		$selected = ' selected="selected"';
 		    	}
 
 		    	$this->_objTpl->setVariable(array(
@@ -1225,11 +1225,11 @@ class calendarManager extends calendarLibrary
 			}
 
 			if ($objResult->fields['status'] == 0) {
-				$status0 = ' selected';
+				$status0 = ' selected="selected"';
 				$status1 = '';
 			} else {
 				$status0 = '';
-				$status1 = ' selected';
+				$status1 = ' selected="selected"';
 			}
 
 			$query = "SELECT id,
@@ -1242,7 +1242,7 @@ class calendarManager extends calendarLibrary
 				while(!$objResult2->EOF) {
 					$selected = '';
 					if ($objResult->fields['lang'] == $objResult2->fields['id']) {
-						$selected = ' selected';
+						$selected = ' selected="selected"';
 					}
 
 					$this->_objTpl->setVariable(array(

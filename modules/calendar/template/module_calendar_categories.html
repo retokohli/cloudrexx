@@ -27,9 +27,9 @@
             return false;
         }
     }
-    
+
     function selectTodoCategory()
-    {    
+    {
         if(document.form2.form_select_todo.value == "sort")
 	    {
             document.form2.form_sort.value = "1";
@@ -65,22 +65,22 @@
 	    }
         document.form2.form_select_todo.value = "0";
     }
-    
+
 	function setCheckboxes(do_check)
 	{
 		with(document.form2)
-		{	
+		{
 		    var box      = elements['selected[]'];
 		    var box_cnt  = (typeof(box.length) != 'undefined') ? box.length : 0;
-		                  
-		    if(box_cnt) 
+
+		    if(box_cnt)
 		    {
-		        for(var i = 0; i < box_cnt; i++) 
+		        for(var i = 0; i < box_cnt; i++)
 		        {
 		            box[i].checked = do_check;
 		        }
 		    }
-		    else 
+		    else
 		    {
 		        box.checked = do_check;
 		    }
@@ -116,7 +116,7 @@
 	    	    {TXT_CALENDAR_CATEGORY_NAME}: <input type="text" name="name" size="30" />&nbsp;&nbsp;&nbsp;&nbsp;
 	    		{TXT_CALENDAR_STATUS}: <select name="status">
 	    	                <option value="0">{TXT_CALENDAR_INACTIVE}</option>
-	    		            <option value="1" selected>{TXT_CALENDAR_ACTIVE}</option>
+	    		            <option value="1" selected="selected">{TXT_CALENDAR_ACTIVE}</option>
 	    	                </select>&nbsp;&nbsp;&nbsp;&nbsp;
 	    		{TXT_CALENDAR_LANG}: <select name="lang">
 	    					<!-- BEGIN calendar_lang -->
@@ -129,6 +129,7 @@
 	</table>
 </form><br />
 <form action="?cmd=calendar&amp;act=cat&amp;chg=1" name="form2" method="post" style="padding:0px; margin:0px;">
+<input type="hidden" name="ischecked" value="0" />
 <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr>
     	<th width="25"><center>#</center></th>
@@ -139,7 +140,6 @@
 	    <th width="100"><center>{TXT_CALENDAR_RECORDS}</center></th>
 	    <th width="100">{TXT_CALENDAR_LANG}</th>
     </tr>
-    <input type="hidden" name="ischecked" value="0" />
     <!-- BEGIN calendar_cat_row -->
     <tr class="{CALENDAR_CLASS}">
     	<td><input type="checkbox" name="selected[]" value="{CALENDAR_ID}" onclick="isChecked(this.checked);" /></td>
@@ -161,8 +161,8 @@
     <tr>
     	<td>
     	    <img src="images/icons/arrow.gif" alt="" />
-    	    <a href="" onclick="setCheckboxes(true); return false;">{TXT_CALENDAR_MARK_ALL}</a> /
-    	    <a href="" onclick="setCheckboxes(false); return false;">{TXT_CALENDAR_REMOVE_CHOICE}</a>
+    	    <a href="javascript:{void(0)}" onclick="setCheckboxes(true); return false;">{TXT_CALENDAR_MARK_ALL}</a> /
+    	    <a href="javascript:{void(0)}" onclick="setCheckboxes(false); return false;">{TXT_CALENDAR_REMOVE_CHOICE}</a>
     	    <img src="images/icons/strike.gif" alt="" />
     	    <select name="form_select_todo" onchange="selectTodoCategory();">
     	        <option value="0" selected="selected">{TXT_CALENDAR_SELECT_OPERATION}:</option>

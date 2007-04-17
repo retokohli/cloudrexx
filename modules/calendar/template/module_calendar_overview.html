@@ -137,9 +137,9 @@ function selectMultiAction()
 								<td style="width: 150px">{CALENDAR_EVENT_CAT}</td>
 								<td style="width: 16px; text-align: right;">
 									<a href="?cmd=calendar&amp;act=edit&amp;id={CALENDAR_EVENT_ID}" title="{TXT_CALENDAR_EDIT}">
-										<img src="images/icons/newdoc.gif" align="absmiddle" border="0" alt="{TXT_CALENDAR_EDIT}" />
+										<img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_CALENDAR_EDIT}" />
 									</a><a href="javascript:deleteNote({CALENDAR_EVENT_ID})" title="{TXT_CALENADR_DELETE}">
-										<img src="images/icons/delete.gif" align="absmiddle" border="0" alt="{TXT_CALENDAR_DELETE}" />
+										<img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_CALENDAR_DELETE}" />
 									</a>
 								</td>
 							</tr>
@@ -152,8 +152,8 @@ function selectMultiAction()
 									<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
 									<a href="#" onclick="changeCheckboxes('frmEventList','selectedEventId',true); return false;">{TXT_SELECT_ALL}</a> /
 									<a href="#" onclick="changeCheckboxes('frmEventList','selectedEventId',false); return false;">{TXT_DESELECT_ALL}</a>
-									<img src="images/icons/strike.gif">
-                                    <select name="frmEventList_MultiAction" onChange="selectMultiAction();">
+									<img src="images/icons/strike.gif" alt="space" />
+                                    <select name="frmEventList_MultiAction" onchange="selectMultiAction();">
                                       <option value="0">{TXT_SUBMIT_SELECT}</option>
                                       <option value="delete">{TXT_SUBMIT_DELETE}</option>
                                       <option value="activate">{TXT_SUBMIT_ACTIVATE}</option>
