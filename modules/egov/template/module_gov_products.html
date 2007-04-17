@@ -11,6 +11,10 @@ function deleteProduct(ProductID)
 	}
 	}
 }
+
+function Position(ProductID, Direction){
+	document.location.href = '?cmd=egov&act=products&id='+ProductID+'&Direction='+Direction;
+}
 // -->
 </script>
 
@@ -18,12 +22,13 @@ function deleteProduct(ProductID)
 	<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
 		<tbody>
 			<tr>
-				<th colspan="6">{TXT_PRODUCTS}</th>
+				<th colspan="7">{TXT_PRODUCTS}</th>
 			</tr>
 			<tr class="row3" style="white-space:nowrap;">
 				<td width="3%"><b>ID</b></td>
 				<td width="3%"></td>
-				<td width="40%"><b>{TXT_PRODUCT}</b></td>
+				<td width="5%"><b>{TXT_EGOV_SEQUENCE}</b></td>
+				<td width="35%"><b>{TXT_PRODUCT}</b></td>
 				<td width="25%"><b>{TXT_ORDERS}</b></td>
 				<td width="11%"><b>{TXT_EGOV_RESERVATIONS}</b></td>
 				<td width="17%" style="text-align:right;"><b>{TXT_FUNCTIONS}</b></td>
@@ -32,6 +37,14 @@ function deleteProduct(ProductID)
 			<tr class="{ROWCLASS}">
 				<td>{PRODUCT_ID}</td>
 				<td>{PRODUCT_STATUS}</td>
+				<td>
+					<table cellspacing="0" cellpadding="0" border="0">
+						<tr>
+							<td><a href="javascript: Position({PRODUCT_ID}, 'up');"><img src="{ASCMS_MODULE_WEB_PATH}/egov/images/icon_up.gif" width="16" height="16" border="0" alt="{TXT_EGOV_UP}" title="{TXT_EGOV_UP}"></a></td>
+							<td><a href="javascript: Position({PRODUCT_ID}, 'down');""><img src="{ASCMS_MODULE_WEB_PATH}/egov/images/icon_down.gif" width="16" height="16" border="0" alt="{TXT_EGOV_DOWN}" title="TXT_EGOV_DOWN"></a></td>
+						</tr>
+					</table>
+				</td>
 				<td><a href="?cmd=egov&amp;act=product_edit&amp;id={PRODUCT_ID}" target="_self" title="{TXT_IMGALT_EDIT}">{PRODUCT_NAME}</a></td>
 				<td>{ORDERS_VALUE}&nbsp;&nbsp;<a href="index.php?cmd=egov&amp;product={PRODUCT_ID}">{TXT_EGOV_VIEW_ORDERS}</a></td>
 				<td>{RESERVATIONS_VALUE}</td>
