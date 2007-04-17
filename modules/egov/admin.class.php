@@ -13,16 +13,7 @@
  * Includes
  */
 require_once dirname(__FILE__).'/lib/eGovLibrary.class.php';
-$_ARRAYLANG['TXT_EGOV_ACTIVATE_PAYPAL'] 		= 'Paypal aktivieren';
-$_ARRAYLANG['TXT_EGOV_ACTIVATE_WORLDPAY'] 	= 'Worldpay aktivieren';
-$_ARRAYLANG['TXT_EGOV_WORLDPAY_ID'] 			= 'WorldPay ID';
-$_ARRAYLANG['TXT_EGOV_WORLDPAY_LANGUAGE'] 			= 'Sprache';
-$_ARRAYLANG['TXT_EGOV_PAYMANT_NONE'] 			= 'Keine';
-$_ARRAYLANG['TXT_EGOV_SELECT_PAYMANT'] 			= 'Zahlungsart auswählen';
-$_ARRAYLANG['TXT_EGOV_PAYMENT'] 			= 'Zahlungsart';
-$_ARRAYLANG['TXT_EGOV_SEQUENCE'] 			= 'Reihenfolge';
-$_ARRAYLANG['TXT_EGOV_UP'] 			= 'Rauf';
-$_ARRAYLANG['TXT_EGOV_DOWN'] 			= 'Runter';
+
 
 /**
  * E-Government
@@ -167,45 +158,30 @@ class eGov extends eGovLibrary
 					$paypal_ipn = 0;	
 				}
 				
-				$paypal_act = $_REQUEST["act_paypal"];
-				if($paypal_act!="1"){
-					$paypal_act = 0;	
-				}
-				
-				$worldpay_act = $_REQUEST["act_worldpay"];
-				if($worldpay_act!="1"){
-					$worldpay_act = 0;	
-				}
-				
 				$query = "UPDATE ".DBPREFIX."module_egov_settings
-							 SET set_sender_name='".$_REQUEST["senderName"]."',
-							 set_sender_email='".$_REQUEST["senderEmail"]."',
-							 set_recipient_email='".$_REQUEST["recipientEmail"]."',
-							 set_state_email='".$_REQUEST["stateEmail"]."',
-							 set_calendar_color_1='".$_REQUEST["calenderColor1"]."',
-							 set_calendar_color_2='".$_REQUEST["calenderColor2"]."',
-							 set_calendar_color_3='".$_REQUEST["calenderColor3"]."',
-							 set_calendar_legende_1='".$_REQUEST["calenderLegende1"]."',
-							 set_calendar_legende_2='".$_REQUEST["calenderLegende2"]."',
-							 set_calendar_legende_3='".$_REQUEST["calenderLegende3"]."',
-							 set_calendar_background='".$_REQUEST["calenderBackground"]."',
-							 set_calendar_border='".$_REQUEST["calenderBorder"]."',
-							 set_calendar_date_label='".$_REQUEST["calenderDateLabel"]."',
-							 set_calendar_date_desc='".$_REQUEST["calenderDateDesc"]."',
-							 set_state_subject='".$_REQUEST["stateSubject"]."',
-							 set_orderentry_subject='".$_REQUEST["orderentrySubject"]."',
-							 set_orderentry_email='".$_REQUEST["orderentryEmail"]."',
-							 set_orderentry_name='".$_REQUEST["orderentrysenderName"]."',
-							 set_orderentry_sender='".$_REQUEST["orderentrysenderEmail"]."',
-							 set_orderentry_recipient='".$_REQUEST["orderentryrecipientEmail"]."',
-							 set_paypal_email='".$_REQUEST["PayPal_mail"]."',
-							 set_paypal_currency='".$_REQUEST["PayPalcurrency"]."',
-							 set_paypal_active='".$paypal_act."',
-							 set_worldpay_active='".$worldpay_act."',
-							 set_worldpay_id='".$_REQUEST["worldpay_id"]."',
-							 set_worldpay_currency='".$_REQUEST["worldpay_currency"]."',
-							 set_worldpay_lang='".$_REQUEST["worldpay_lang"]."',
-							 set_paypal_ipn='".$paypal_ipn."'
+							 SET set_sender_name='".strip_tags(contrexx_addslashes($_REQUEST["senderName"]))."',
+							 set_sender_email='".strip_tags(contrexx_addslashes($_REQUEST["senderEmail"]))."',
+							 set_recipient_email='".strip_tags(contrexx_addslashes($_REQUEST["recipientEmail"]))."',
+							 set_state_email='".strip_tags(contrexx_addslashes($_REQUEST["stateEmail"]))."',
+							 set_calendar_color_1='".strip_tags(contrexx_addslashes($_REQUEST["calenderColor1"]))."',
+							 set_calendar_color_2='".strip_tags(contrexx_addslashes($_REQUEST["calenderColor2"]))."',
+							 set_calendar_color_3='".strip_tags(contrexx_addslashes($_REQUEST["calenderColor3"]))."',
+							 set_calendar_legende_1='".strip_tags(contrexx_addslashes($_REQUEST["calenderLegende1"]))."',
+							 set_calendar_legende_2='".strip_tags(contrexx_addslashes($_REQUEST["calenderLegende2"]))."',
+							 set_calendar_legende_3='".strip_tags(contrexx_addslashes($_REQUEST["calenderLegende3"]))."',
+							 set_calendar_background='".strip_tags(contrexx_addslashes($_REQUEST["calenderBackground"]))."',
+							 set_calendar_border='".strip_tags(contrexx_addslashes($_REQUEST["calenderBorder"]))."',
+							 set_calendar_date_label='".strip_tags(contrexx_addslashes($_REQUEST["calenderDateLabel"]))."',
+							 set_calendar_date_desc='".strip_tags(contrexx_addslashes($_REQUEST["calenderDateDesc"]))."',
+							 set_state_subject='".strip_tags(contrexx_addslashes($_REQUEST["stateSubject"]))."',
+							 set_orderentry_subject='".strip_tags(contrexx_addslashes($_REQUEST["orderentrySubject"]))."',
+							 set_orderentry_email='".strip_tags(contrexx_addslashes($_REQUEST["orderentryEmail"]))."',
+							 set_orderentry_name='".strip_tags(contrexx_addslashes($_REQUEST["orderentrysenderName"]))."',
+							 set_orderentry_sender='".strip_tags(contrexx_addslashes($_REQUEST["orderentrysenderEmail"]))."',
+							 set_orderentry_recipient='".strip_tags(contrexx_addslashes($_REQUEST["orderentryrecipientEmail"]))."',
+							 set_paypal_email='".strip_tags(contrexx_addslashes($_REQUEST["PayPal_mail"]))."',
+							 set_paypal_currency='".strip_tags(contrexx_addslashes($_REQUEST["PayPalcurrency"]))."',
+							 set_paypal_ipn='".strip_tags(contrexx_addslashes($paypal_ipn))."'
 							 WHERE set_id=1";
 				if($objDatabase->Execute($query)){
 					$this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_SETTINGS_UPDATED_SUCCESSFUL'];
@@ -213,29 +189,14 @@ class eGov extends eGovLibrary
 			}
 		}
 		
-		$currency 			= $this->GetSettings("set_paypal_currency");
+		$currency 			= $this->GetSettings("set_paypal_currency", $product_id);
 		$selected_CHF	 	= ($currency=="CHF") ? 'selected' : '';
 		$selected_EUR	 	= ($currency=="EUR") ? 'selected' : '';
 		$selected_USD	 	= ($currency=="USD") ? 'selected' : '';
 		$selected_GBP	 	= ($currency=="GBP") ? 'selected' : '';
 		$selected_JPY	 	= ($currency=="JPY") ? 'selected' : '';
 		
-		$WPcurrency 		= $this->GetSettings("set_worldpay_currency");
-		$WPselected_CHF	 	= ($WPcurrency=="CHF") ? 'selected' : '';
-		$WPselected_EUR	 	= ($WPcurrency=="EUR") ? 'selected' : '';
-		$WPselected_USD	 	= ($WPcurrency=="USD") ? 'selected' : '';
-		$WPselected_GBP	 	= ($WPcurrency=="GBP") ? 'selected' : '';
-		$WPselected_JPY	 	= ($WPcurrency=="JPY") ? 'selected' : '';
-		
-		$WPlang 			= $this->GetSettings("set_worldpay_lang");
-		$WPselected_de	 	= ($WPlang=="de") ? 'selected' : '';
-		$WPselected_fr	 	= ($WPlang=="fr") ? 'selected' : '';
-		$WPselected_en	 	= ($WPlang=="en") ? 'selected' : '';
-		$WPselected_it	 	= ($WPlang=="it") ? 'selected' : '';
-		
 		$ipnchecked 		= ($this->GetSettings("set_paypal_ipn")==1) ? 'checked' : '';
-		$paypal_act 		= ($this->GetSettings("set_paypal_active")==1) ? 'checked' : '';
-		$worldpay_act 		= ($this->GetSettings("set_worldpay_active")==1) ? 'checked' : '';
 		
 		// ----------------------------------------
 		$this->_objTpl->setVariable(array(
@@ -296,25 +257,10 @@ class eGov extends eGovLibrary
 			'SELECTED_USD'					=> $selected_USD,
 			'SELECTED_GBP'					=> $selected_GBP,
 			'SELECTED_JPY'					=> $selected_JPY,
-			'SELECTED_WP_CHF'					=> $WPselected_CHF,
-			'SELECTED_WP_EUR'					=> $WPselected_EUR,
-			'SELECTED_WP_USD'					=> $WPselected_USD,
-			'SELECTED_WP_GBP'					=> $WPselected_GBP,
-			'SELECTED_WP_JPY'					=> $WPselected_JPY,
 			'IPN_CHECKED'					=> $ipnchecked,
 			'TXT_EGOV_PAYPAL_IPN'		 		=> $_ARRAYLANG['TXT_EGOV_PAYPAL_IPN'],
-			'TXT_EGOV_ACTIVATE_PAYPAL'		 		=> $_ARRAYLANG['TXT_EGOV_ACTIVATE_PAYPAL'],
-			'TXT_ACTIVATE_WORLDPAY'		 		=> $_ARRAYLANG['TXT_EGOV_ACTIVATE_WORLDPAY'],
-			'TXT_WORLDPAY_ID'		 			=> $_ARRAYLANG['TXT_EGOV_WORLDPAY_ID'],
-			'TXT_EGOV_WORLDPAY_LANGUAGE'		 			=> $_ARRAYLANG['TXT_EGOV_WORLDPAY_LANGUAGE'],
-			'PAYPAL_CHECKED'					=> $paypal_act,
-			'WORLDPAY_CHECKED'					=> $worldpay_act,
-			'SELECTED_WP_DE'					=> $WPselected_de,
-			'SELECTED_WP_EN'					=> $WPselected_en,
-			'SELECTED_WP_FR'					=> $WPselected_fr,
-			'SELECTED_WP_IT'					=> $WPselected_it,
-			'WORLDPAY_ID'					 	=> $this->GetSettings("set_worldpay_id"),
 	   	));
+
 	}
 
 	function _save_form(){
@@ -403,11 +349,6 @@ class eGov extends eGovLibrary
 		$selected_GBP	 	= ($currency=="GBP") ? 'selected' : '';
 		$selected_JPY	 	= ($currency=="JPY") ? 'selected' : '';
 		
-		$PaymentSelect = '<select name="productPayment" style="width: 670px;">
-			<option value="0">'.$_ARRAYLANG['TXT_EGOV_PAYMANT_NONE'].'</option>
-			'.$this->_GetPaymantOptions($product_id).'
-		</select>';
-		
 		
 		$this->_objTpl->setVariable(array(
     		'TXT_ACTION_TITLE'			 	=>	$this->_pageTitle,
@@ -477,10 +418,6 @@ class eGov extends eGovLibrary
 			'SELECTED_USD'					=> $selected_USD,
 			'SELECTED_GBP'					=> $selected_GBP,
 			'SELECTED_JPY'					=> $selected_JPY,
-			'TXT_EGOV_PAYMANT_NONE'			=> $_ARRAYLANG['TXT_EGOV_PAYMANT_NONE'],
-			'TXT_EGOV_SELECT_PAYMANT'		=> $_ARRAYLANG['TXT_EGOV_SELECT_PAYMANT'],
-			'TXT_EGOV_PAYMENT'				=> $_ARRAYLANG['TXT_EGOV_PAYMENT'],
-			'PAYMENT_SELECT'				=> $PaymentSelect,
 	   	));
 
 	   	if($this->GetProduktValue("product_per_day", $product_id)=="yes"){
@@ -551,21 +488,6 @@ class eGov extends eGovLibrary
 		));
 
 
-	}
-	
-	function _GetPaymantOptions($product_id){
-		global $objDatabase;
-		$Returnvar = '';
-		$Productpayment = $this->GetProduktValue("product_paymant", $product_id);
-		if($this->GetSettings("set_paypal_active")==1){
-			$SelectedText = ($Productpayment==1) ? 'selected' : '';
-			$Returnvar .= '<option value="1" '.$SelectedText.'>Paypal</option>';
-		}
-		if($this->GetSettings("set_worldpay_active")==1){
-			$SelectedText = ($Productpayment==2) ? 'selected' : '';
-			$Returnvar .= '<option value="2" '.$SelectedText.'>Worldpay</option>';
-		}
-		return $Returnvar;
 	}
 
 	function _products($SaveError=''){
@@ -651,6 +573,7 @@ class eGov extends eGovLibrary
 				}
 
 		}
+
 
 		$this->_objTpl->setVariable(array(
     		'TXT_PRODUCTS'			 	=>	$_ARRAYLANG['TXT_PRODUCTS'],
@@ -1158,10 +1081,9 @@ class eGov extends eGovLibrary
 			$productSenderEmail		= isset($_POST["productSenderEmail"]) ? strip_tags(contrexx_addslashes($_POST["productSenderEmail"])) : '';
 			$productTargetSubject	= isset($_POST["productTargetSubject"]) ? strip_tags(contrexx_addslashes($_POST["productTargetSubject"])) : '';
 			$productTargetBody		= isset($_POST["productTargetBody"]) ? strip_tags(contrexx_addslashes($_POST["productTargetBody"])) : '';
-			/*$productPayPal			= intval($_POST["paypal"]);
+			$productPayPal			= intval($_POST["paypal"]);
 			$productPayPalSandbox	= isset($_POST["sandbox_mail"]) ? strip_tags(contrexx_addslashes($_POST["sandbox_mail"])) : '';
-			$productPayPalCurrency	= isset($_POST["PayPalcurrency"]) ? strip_tags(contrexx_addslashes($_POST["PayPalcurrency"])) : '';*/
-			$productPayment			= intval($_REQUEST["productPayment"]);
+			$productPayPalCurrency	= isset($_POST["PayPalcurrency"]) ? strip_tags(contrexx_addslashes($_POST["PayPalcurrency"])) : '';
 
 			// Check Config-File
 			// ----------------------------
@@ -1203,9 +1125,9 @@ class eGov extends eGovLibrary
 					$formEmails = $_CONFIG['contactFormEmail'];
 				}
 				if ($formId > 0) {
-					$this->_updateProduct($formId, $productName, $contactFormDesc, $productFormTargetUrl, $productFormTargetMessage, $productFormPerDay, $productFormQuintity, $productFormPrice, $arrFields, $formEmails, $productState, $productAutoStatus, $productElectro, $productFile, $productSenderName, $productSenderEmail, $productTargetSubject, $productTargetBody, $productPayment);
+					$this->_updateProduct($formId, $productName, $contactFormDesc, $productFormTargetUrl, $productFormTargetMessage, $productFormPerDay, $productFormQuintity, $productFormPrice, $arrFields, $formEmails, $productState, $productAutoStatus, $productElectro, $productFile, $productSenderName, $productSenderEmail, $productTargetSubject, $productTargetBody, $productPayPal , $productPayPalSandbox, $productPayPalCurrency);
 				} else {
-					$this->_saveProduct($formId, $productName, $contactFormDesc, $productFormTargetUrl, $productFormTargetMessage, $productFormPerDay, $productFormQuintity, $productFormPrice, $arrFields, $formEmails, $productState, $productAutoStatus, $productElectro, $productFile, $productSenderName, $productSenderEmail, $productTargetSubject, $productTargetBody, $productPayment);
+					$this->_saveProduct($formId, $productName, $contactFormDesc, $productFormTargetUrl, $productFormTargetMessage, $productFormPerDay, $productFormQuintity, $productFormPrice, $arrFields, $formEmails, $productState, $productAutoStatus, $productElectro, $productFile, $productSenderName, $productSenderEmail, $productTargetSubject, $productTargetBody, $productPayPal , $productPayPalSandbox, $productPayPalCurrency);
 				}
 				$this->_products($FileErr);
 			} else {
@@ -1268,12 +1190,12 @@ class eGov extends eGovLibrary
 		return $arrFields;
 	}
 
-	function _updateProduct($formId, $productName, $contactFormDesc, $productFormTargetUrl, $productFormTargetMessage, $productFormPerDay, $productFormQuintity, $productFormPrice, $arrFields, $formEmails, $productState, $productAutoStatus, $productElectro, $productFile, $productSenderName, $productSenderEmail, $productTargetSubject, $productTargetBody, $productPayment){
+	function _updateProduct($formId, $productName, $contactFormDesc, $productFormTargetUrl, $productFormTargetMessage, $productFormPerDay, $productFormQuintity, $productFormPrice, $arrFields, $formEmails, $productState, $productAutoStatus, $productElectro, $productFile, $productSenderName, $productSenderEmail, $productTargetSubject, $productTargetBody, $productPayPal , $productPayPalSandbox, $productPayPalCurrency){
 		global $objDatabase;
 
 		$objDatabase->Execute("UPDATE ".DBPREFIX."module_egov_products SET product_name='".$productName."', product_desc='".$contactFormDesc."',
 				product_price='".$productFormPrice."', product_per_day='".$productFormPerDay."', product_quantity='".$productFormQuintity."',
-				product_target_email='".$formEmails."', product_target_url='".$productFormTargetUrl."', product_message='".$productFormTargetMessage."', product_status='".$productState."', product_autostatus='".$productAutoStatus."', product_electro='".$productElectro."', product_file='".$productFile."', product_sender_name='".$productSenderName."', product_sender_email='".$productSenderEmail."', product_target_subject='".$productTargetSubject."', product_target_body='".$productTargetBody."', product_paymant='".$productPayment."' WHERE product_id=".$formId);
+				product_target_email='".$formEmails."', product_target_url='".$productFormTargetUrl."', product_message='".$productFormTargetMessage."', product_status='".$productState."', product_autostatus='".$productAutoStatus."', product_electro='".$productElectro."', product_file='".$productFile."', product_sender_name='".$productSenderName."', product_sender_email='".$productSenderEmail."', product_target_subject='".$productTargetSubject."', product_target_body='".$productTargetBody."', product_paypal='".$productPayPal."', product_paypal_sandbox='".$productPayPalSandbox."', product_paypal_currency='".$productPayPalCurrency."' WHERE product_id=".$formId);
 
 		$arrFormFields = $this->getFormFields($formId);
 		$arrRemoveFormFields = array_diff_assoc($arrFormFields, $arrFields);
@@ -1291,13 +1213,13 @@ class eGov extends eGovLibrary
 		}
 	}
 
-	function _saveProduct($formId, $productName, $contactFormDesc, $productFormTargetUrl, $productFormTargetMessage, $productFormPerDay, $productFormQuintity, $productFormPrice, $arrFields, $formEmails, $productState, $productAutoStatus, $productElectro, $productFile, $productSenderName, $productSenderEmail, $productTargetSubject, $productTargetBody, $productPayment){
+	function _saveProduct($formId, $productName, $contactFormDesc, $productFormTargetUrl, $productFormTargetMessage, $productFormPerDay, $productFormQuintity, $productFormPrice, $arrFields, $formEmails, $productState, $productAutoStatus, $productElectro, $productFile, $productSenderName, $productSenderEmail, $productTargetSubject, $productTargetBody, $productPayPal , $productPayPalSandbox, $productPayPalCurrency){
 		global $objDatabase;
 
 		if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_egov_products
-								  (`product_name`, `product_desc`,`product_price`, `product_per_day`, `product_quantity`, `product_target_email`, `product_target_url`, `product_message`, `product_status`, `product_autostatus`, `product_electro`, `product_file`, `product_sender_name`, `product_sender_email`, `product_target_subject`, `product_target_body`, `product_paymant`)
+								  (`product_name`, `product_desc`,`product_price`, `product_per_day`, `product_quantity`, `product_target_email`, `product_target_url`, `product_message`, `product_status`, `product_autostatus`, `product_electro`, `product_file`, `product_sender_name`, `product_sender_email`, `product_target_subject`, `product_target_body`, `product_paypal`, `product_paypal_sandbox`, `product_paypal_currency`)
 								  VALUES
-								  ('".$productName."', '".$contactFormDesc."', '".$productFormPrice."', '".$productFormPerDay."', '".$productFormQuintity."', '".$formEmails."', '".$productFormTargetUrl."', '".$productFormTargetMessage."', '".$productState."', '".$productAutoStatus."', '".$productElectro."', '".$productFile."', '".$productSenderName."', '".$productSenderEmail."', '".$productTargetSubject."', '".$productTargetBody."', '".$productPayment."')") !== false) {
+								  ('".$productName."', '".$contactFormDesc."', '".$productFormPrice."', '".$productFormPerDay."', '".$productFormQuintity."', '".$formEmails."', '".$productFormTargetUrl."', '".$productFormTargetMessage."', '".$productState."', '".$productAutoStatus."', '".$productElectro."', '".$productFile."', '".$productSenderName."', '".$productSenderEmail."', '".$productTargetSubject."', '".$productTargetBody."', '".$productPayPal."', '".$productPayPalSandbox."', '".$productPayPalCurrency."')") !== false) {
 			$formId = $objDatabase->Insert_ID();
 
 			foreach ($arrFields as $fieldId => $arrField) {
