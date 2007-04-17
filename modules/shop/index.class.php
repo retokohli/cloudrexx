@@ -578,6 +578,9 @@ class Shop extends ShopLibrary {
                 $jsCart .= "if (typeof(objCart) != 'undefined') {shopGenerateCart();};\n";
                 $jsCart .= "// ]]>\n";
                 $jsCart .= "</script>\n";
+                if ($_REQUEST['section'] != 'shop') {
+					$jsCart .= Shop::getJavascriptCode();
+				}
             }
         }
         return $jsCart;
