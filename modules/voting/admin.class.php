@@ -179,7 +179,7 @@ class votingmanager
 					'VOTING_ROW_NR'		=> $row = $row % 2 == 1 ? 2 : 1,
 					'VOTING_EMAIL'		=> htmlentities($objMails->fields['email'], ENT_QUOTES),
 					'VOTING_EMAIL_ID'	=> $objMails->fields['id'],
-					'VOTING_VALID'	=> $objMails->fields['valid'] == '1' ? '<img src="images/icons/check mark copy.ico" width="16" height="16" alt="'.$_ARRAYLANG['TXT_VOTING_EMAIL_IS_VAILD'].'" />' : '<img src="images/icons/help copy.ico" width="16" height="16" alt="'.$_ARRAYLANG['TXT_VOTING_EMAIL_ISNT_VAILD'].'" />'
+					'VOTING_VALID'	=> $objMails->fields['valid'] == '1' ? '<img src="images/icons/check_mark.gif" width="16" height="16" alt="'.$_ARRAYLANG['TXT_VOTING_EMAIL_IS_VAILD'].'" />' : '<img src="images/icons/question_mark.gif" width="16" height="16" alt="'.$_ARRAYLANG['TXT_VOTING_EMAIL_ISNT_VAILD'].'" />'
 				));
 
 				if ($objMails->fields['valid'] == '1') {
