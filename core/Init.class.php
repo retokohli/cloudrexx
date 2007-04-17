@@ -481,7 +481,7 @@ class InitCMS
 				// remove escape characters
 				foreach ($_ARRAYLANG as $langTxtId => $langTxt) {
 					$_ARRAYLANG[$langTxtId] = ereg_replace("\\\"", "\"", $_ARRAYLANG[$langTxtId]);
-					if($_CONFIG['langDebugIds'] == 'on'){
+					if (isset($_CONFIG['langDebugIds']) && $_CONFIG['langDebugIds'] == 'on') {
 						$objRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."modules WHERE name = '$module' LIMIT 1");
 						$moduleID = $objRS->fields['id'];
 						$objRS = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."language_variable_names

@@ -359,6 +359,7 @@ class File
 	function setChmod($path, $webPath, $fileName)
 	{
 		global $_FTPCONFIG;
+
 		if (file_exists($path.$fileName)) {
 			if (is_dir($path.$fileName)) {
 				if (@chmod($path.$fileName, $this->chmodFolder)) {
@@ -373,7 +374,6 @@ class File
 						return @ftp_chmod($this->conn_id, $this->chmodFolder, $this->ftpDirectory.$webPath.$fileName);
 					}
 				}
-
 				return false;
 			} else {
 				if (@chmod($path.$fileName, $this->chmodFile)) {
@@ -388,12 +388,11 @@ class File
 						return @ftp_chmod($this->conn_id, $this->chmodFile, $this->ftpDirectory.$webPath.$fileName);
 					}
 				}
-
 				return false;
 			}
 		}
+        return false;
 	}
-
 
 
 	function uploadFile($path, $webPath, $fileName, $sourceFile){
