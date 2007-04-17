@@ -1,22 +1,6 @@
 <?php
-/**
- * Calendar
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalvista.ch>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_egov
- * @todo        Edit PHP DocBlocks!
- */
 
-/**
- * Calendar
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalvista.ch>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_egov
- */
+
 function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc, $DatumLabel, $ArrayRD, $Anzahl, $date = '', $backgroundcolor='', $legende1='', $legende2='', $legende3='', $legende1Color='', $legende2Color='', $legende3Color='', $border='') {
 	Global $link_on_day, $PHP_SELF, $params;
 	Global $HTTP_POST_VARS, $HTTP_GET_VARS;
@@ -254,8 +238,8 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
             
             if ($i == $current_day) {
 				// zustand
-					if(isset($ArrayRD[$current_year][intval($current_month_2)][$i])){
-						if($ArrayRD[$current_year][intval($current_month_2)][$i] < $Anzahl){
+					if(isset($ArrayRD[$current_year][$current_month_2][$i])){
+						if($ArrayRD[$current_year][$current_month_2][$i] < $Anzahl){
 							// teilweise
 							$day_class = "calendarTeils".$param['calendar_id'];
 						}else{
@@ -276,9 +260,10 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 					$output .= '<td class="calendar'.$css_2_use.$param['calendar_id'].'">'.$i.$txt_2_use.'</td>'."\n";
 				}
 				else {
+					
 					// zustand
-					if(isset($ArrayRD[$current_year][intval($current_month_2)][$i])){
-						if($ArrayRD[$current_year][intval($current_month_2)][$i] < $Anzahl){
+					if(isset($ArrayRD[$current_year][$current_month_2][$i])){
+						if($ArrayRD[$current_year][$current_month_2][$i] < $Anzahl){
 							// teilweise
 							$day_class = "calendarTeils".$param['calendar_id'];
 						}else{

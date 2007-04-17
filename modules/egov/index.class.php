@@ -9,8 +9,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-$_ARRAYLANG["TXT_EGOV_PAYMENT_NOT_VALID"] = 'Zahlung fehlgeschlagen.';
-$_ARRAYLANG['TXT_EGOV_WORLDPAY_CANCEL'] = 'Worldpayzahlung wurde abgebrochen.';
 
 /**
  * Includes
@@ -53,18 +51,11 @@ class eGov extends eGovLibrary
     		case 'detail':
 				$this->_ProductDetail();
     		break;
-    		case 'ipncheck':
-    			require_once ASCMS_LIBRARY_PATH."/paypal/paypal.class.php";
-				$PaymentObj = new PayPal();
-				$PaymentObj->ipnCheck();
-					
-    		break;
     		default:
                 $this->_ProductsList();
     	}
     	return $this->objTemplate->get();
 	}
-
 
 	function _saveOrder(){
 		global $objDatabase, $_ARRAYLANG;
@@ -74,93 +65,82 @@ class eGov extends eGovLibrary
 		$ip_adress 		= $_SERVER['REMOTE_ADDR'];
 		
 		// ------------------------------------------------------
-		// Payment
+		// PayPal
 		// ------------------------------------------------------
-		$Payment = $this->GetProduktValue("product_paymant", $product_id);
-		$Payment = intval($_REQUEST["payment"]);
-
+		$p 				= new paypal_class();
+		$this_script_1	= 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'?section=egov&cmd=detail&id='.$product_id;
+		$this_script_2	= 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'?section=egov&payment=success&id='.$product_id;
+		//$p->paypal_url 	= 'https://www.sandbox.paypal.com/cgi-bin/webscr';
+		$p->paypal_url 	= 'https://www.paypal.com/cgi-bin/webscr';
 		
-		if($Payment > 0){
+		if($_REQUEST['paypal']=="1"){
 			
-			// -------------------------------------------------------------
-			// Paypal
-			// -------------------------------------------------------------
-			if($Payment==1){
-
-				if($this->GetProduktValue("product_per_day", $product_id)=="yes"){
-					$Addname 	= ' '.$_REQUEST["contactFormField_1000"];
-				}
-				
-				$FormFields		= 'id='.$product_id.'&send=exe&';
-				$arrFields = $this->getFormFields($product_id);
-				$FormValue = '';
-				foreach ($arrFields as $fieldId => $arrField) {
-					$FormFields .= 'contactFormField_'.$fieldId.'='.strip_tags(contrexx_addslashes($_REQUEST["contactFormField_".$fieldId])).'&';
-				}
-				if($this->GetProduktValue("product_per_day", $product_id)=="yes"){
-					$FormFields .= 'contactFormField_1000='.$_REQUEST["contactFormField_1000"]."&";
-					$FormFields .= 'contactFormField_Quantity='.$_REQUEST["contactFormField_Quantity"]."";
-				}
-				
-				$query 		= "INSERT INTO ".DBPREFIX."module_egov_paypal SET paypal_status=0 ";
-				$objDatabase->Execute($query);
-				$paypal_id 	= $objDatabase->Insert_ID();
-				
-				require_once ASCMS_LIBRARY_PATH."/paypal/paypal.class.php";
-				$PaymentObj 				= new PayPal();
-				$PaymentObj->orderid 		= '';
-				$PaymentObj->business 		= $this->GetSettings("set_paypal_email");
-				$PaymentObj->item_name		= $this->GetProduktValue('product_name', $product_id).$Addname;
-				$PaymentObj->currency_code	= $this->GetSettings("set_paypal_currency");
-				$PaymentObj->amount			= $this->GetProduktValue('product_price', $product_id);
-				$PaymentObj->quantity		= ($this->GetProduktValue("product_per_day", $product_id)=="yes") ? $_REQUEST["contactFormField_Quantity"] : 1;
-				$PaymentObj->host			= ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET;
-				$PaymentObj->return			= $PaymentObj->host.'/index.php?section=egov&payment=success&id='.$product_id.'&'.$FormFields.'&paypal_id='.$paypal_id.'&code='.md5($paypal_id."success");
-				$PaymentObj->cancel_return	= $PaymentObj->host.'/index.php?section=egov&cmd=detail&id='.$product_id.'&'.$FormFields.'&payment=cancel&paypal_id='.$paypal_id;
-				$PaymentObj->notify_url		= $PaymentObj->host.'/index.php?section=egov&cmd=ipncheck&id='.$product_id.'&'.$FormFields.'&payment=ipncheck&paypal_id='.$paypal_id;
-				echo($PaymentObj->GetPaypal());
+			$product_amount = $this->GetProduktValue('product_price', $product_id);
+			
+			$quantity 		= ($this->GetProduktValue("product_per_day", $product_id)=="yes") ? $_REQUEST["contactFormField_Quantity"] : 1;
+			
+			$FormFields		= 'id='.$product_id.'&send=exe&';
+			$arrFields = $this->getFormFields($product_id);
+			$FormValue = '';
+			foreach ($arrFields as $fieldId => $arrField) {
+				$FormFields .= 'contactFormField_'.$fieldId.'='.strip_tags(contrexx_addslashes($_REQUEST["contactFormField_".$fieldId])).'&';
+			}
+			if($this->GetProduktValue("product_per_day", $product_id)=="yes"){
+				$FormFields .= 'contactFormField_1000='.$_REQUEST["contactFormField_1000"]."&";
+				$FormFields .= 'contactFormField_Quantity='.$_REQUEST["contactFormField_Quantity"]."";
 			}
 			
-			// -------------------------------------------------------------
-			// Worldpay
-			// -------------------------------------------------------------
-			if($Payment==2){
-				
-				if($this->GetProduktValue("product_per_day", $product_id)=="yes"){
-					$Addname 	= ' '.$_REQUEST["contactFormField_1000"];
-				}
-				
-				require_once ASCMS_LIBRARY_PATH."/worldpay/worldpay.class.php";
-				$PaymentObj = new worldpay();
-				$PaymentObj->instId 		= $this->GetSettings("set_worldpay_id");
-				$PaymentObj->cartId 		= "12345";
-				$PaymentObj->amount 		= $this->GetProduktValue('product_price', $product_id);
-				$PaymentObj->currency 		= $this->GetSettings("set_worldpay_currency");
-				$PaymentObj->desc 			= $this->GetProduktValue('product_name', $product_id).$Addname;
-				$PaymentObj->lang 			= $this->GetSettings("set_worldpay_lang");
-				echo($PaymentObj->GetWorldPay());
+			if($this->GetProduktValue("product_per_day", $product_id)=="yes"){
+				$Addname 	= ' '.$_REQUEST["contactFormField_1000"];
 			}
+			
+			$RandomID = rand(1000,1000000);
+			$_SESSION["order"]['id']		= $RandomID;
+			$_SESSION["order"][$RandomID] 	= $FormFields;
+			
+			$p->add_field('business', 	$this->GetProduktValue('product_paypal_sandbox', $product_id));
+			$p->add_field('return', 	$this_script_2.'&custom='.$RandomID.'&'.$FormFields);
+			$p->add_field('cancel_return', $this_script_1.'&payment=cancel&'.$FormFields);
+			//$p->add_field('notify_url', $this_script.'&payment=ipn&'.$FormFields);
+			$p->add_field('item_name', 	$this->GetProduktValue('product_name', $product_id).$Addname);
+			$p->add_field('amount', 	$product_amount);
+			$p->add_field('quantity', 	$quantity);
+			$p->add_field('custom', 	$RandomID);
+			$p->add_field('currency_code', 	$this->GetProduktValue('product_paypal_currency', $product_id));
+			
+			$p->submit_paypal_post();
 			
 		}else{
 		
+			
 			$Order = true;
-			if(isset($_REQUEST["payment"])){
-				if($_REQUEST["code"]!=md5($_REQUEST["paypal_id"]."success")){
-					$Order 			= false;
-					$ReturnValue 	= 'alert('.$_ARRAYLANG["TXT_EGOV_PAYMENT_NOT_VALID"].');'.chr(10);
+			if($this->GetProduktValue('product_paypal', $product_id)){
+				if($this->GetSettings("set_paypal_ipn")==1){
+					if (!$p->validate_ipn()) {
+						$Order 			= false;
+						$ReturnValue 	= 'alert("'.$_ARRAYLANG["TXT_EGOV_PAYPAL_NOT_VALID"].'");'.chr(10);
+					}
+				}else{
+					if ($_REQUEST["payment"]!="success") {
+						$Order 			= false;
+						$ReturnValue 	= 'alert('.$_ARRAYLANG["TXT_EGOV_PAYPAL_NOT_VALID"].');'.chr(10);
+					}
 				}
 			}
-			if(isset($_REQUEST["transStatus"])){
-				if($_REQUEST["transStatus"]!="Y"){
-					$Order 			= false;
-					$ReturnValue 	= 'alert('.$_ARRAYLANG["TXT_EGOV_PAYMENT_NOT_VALID"].');'.chr(10);
-				}
-			}
-			
-			
 			if($Order){
 		
+				// PayPal IPN Confirmation per email
+				// ---------------------------------
+				/*
+				$subject 	= 'Instant Payment Notification - Recieved Payment';
+				$to 		= $this->GetProduktValue('product_paypal_sandbox', $product_id);
+				$body 		=  "An instant payment notification was successfully recieved\n";
+				$body 		.= "from ".$p->ipn_data['payer_email']." on ".date('m/d/Y');
+				$body 		.= " at ".date('g:i A')."\n\nDetails:\n";
 				
+				foreach ($p->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
+				mail($to, $subject, $body);
+				*/
 				
 				$arrFields = $this->getFormFields($product_id);
 				$FormValue = '';
@@ -401,7 +381,8 @@ class eGov extends eGovLibrary
 	function _ProductDetail()
 	{
 		global $objDatabase, $_ARRAYLANG, $_CONFIG;
-		
+
+
 		if(intval($_REQUEST["id"])){
 			$query = "SELECT product_id, product_name, product_desc, product_price, product_per_day, product_quantity, product_target_email, product_target_url, product_message
 			          FROM ".DBPREFIX."module_egov_products
@@ -411,9 +392,6 @@ class eGov extends eGovLibrary
 			if(isset($_REQUEST["payment"])){
 				if($_REQUEST["payment"]=="cancel"){
 					$ReturnValue = 'alert("'.$_ARRAYLANG['TXT_EGOV_PAYPAL_CANCEL'].'");'.chr(10);
-				}
-				if($_REQUEST["transStatus"]=="C"){
-					$ReturnValue = 'alert("'.$_ARRAYLANG['TXT_EGOV_WORLDPAY_CANCEL'].'");'.chr(10);
 				}
 				$Return = chr(10).chr(10).'<script language="JavaScript" type="text/javascript">'.chr(10);
 				$Return .= '<!--'.chr(10);
@@ -443,7 +421,10 @@ class eGov extends eGovLibrary
 					$this->objTemplate->hideBlock('egov_price');
 				}
 			}
+
 		}
+
+
 	}
 
 
