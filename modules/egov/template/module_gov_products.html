@@ -38,12 +38,8 @@ function Position(ProductID, Direction){
 				<td>{PRODUCT_ID}</td>
 				<td>{PRODUCT_STATUS}</td>
 				<td>
-					<table cellspacing="0" cellpadding="0" border="0">
-						<tr>
-							<td><a href="javascript: Position({PRODUCT_ID}, 'up');"><img src="{ASCMS_MODULE_WEB_PATH}/egov/images/icon_up.gif" width="16" height="16" border="0" alt="{TXT_EGOV_UP}" title="{TXT_EGOV_UP}"></a></td>
-							<td><a href="javascript: Position({PRODUCT_ID}, 'down');""><img src="{ASCMS_MODULE_WEB_PATH}/egov/images/icon_down.GIF" width="16" height="16" border="0" alt="{TXT_EGOV_DOWN}" title="{TXT_EGOV_DOWN}"></a></td>
-						</tr>
-					</table>
+					<a href="javascript: Position({PRODUCT_ID}, 'up');"><img src="images/icons/up.gif" width="14" height="12" border="0" alt="{TXT_EGOV_UP}" title="{TXT_EGOV_UP}"></a>
+					<a href="javascript: Position({PRODUCT_ID}, 'down');""><img src="images/icons/down.gif" width="14" height="12" border="0" alt="{TXT_EGOV_DOWN}" title="{TXT_EGOV_DOWN}"></a>
 				</td>
 				<td><a href="?cmd=egov&amp;act=product_edit&amp;id={PRODUCT_ID}" target="_self" title="{TXT_IMGALT_EDIT}">{PRODUCT_NAME}</a></td>
 				<td>{ORDERS_VALUE}&nbsp;&nbsp;<a href="index.php?cmd=egov&amp;product={PRODUCT_ID}">{TXT_EGOV_VIEW_ORDERS}</a></td>
