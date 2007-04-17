@@ -62,10 +62,10 @@ function whole_day()
 <script language="JavaScript" type="text/javascript">
 <!--
   DatePickerControl.onSelect = function(inputid)
-  {  	
+  {
     var startdate = document.getElementById("editCalendarNote").inputStartDate.value.replace(/-/g, "");
     var enddate = document.getElementById("editCalendarNote").inputEndDate.value.replace(/-/g, "");
-    
+
     if (startdate > enddate) {
     	var date = document.getElementById("editCalendarNote").inputStartDate.value;
     	document.getElementById("editCalendarNote").inputEndDate.value = date;
@@ -74,14 +74,14 @@ function whole_day()
   // -->
   </script>
 
-<form action="?cmd=calendar&amp;act=saveEdited" method="post" name="editCalendarNote" id="editCalendarNote" onSubmit="return newNote()">
+<form action="index.php?cmd=calendar&amp;act=saveEdited" method="post" name="editCalendarNote" id="editCalendarNote" onsubmit="return newNote()">
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-    <tr> 
-      <th colspan="2" nowrap="nowrap"> 
+    <tr>
+      <th colspan="2" nowrap="nowrap">
         <div align="left">{TXT_CALENDAR_EDIT_EVENT}</div>
       </th>
     </tr>
-	<tr class="row1">
+	<tr class="row2">
       <td valign="middle">{TXT_CALENDAR_CAT}:</td>
       <td valign="middle">
 	  <select name="inputCategory" style="width: 25%; ">
@@ -91,18 +91,18 @@ function whole_day()
         <!-- END calendar_cat -->
       </select></td>
     </tr>
-    <tr class="row1"> 
+    <tr class="row1">
       <td valign="middle" width="80"> {TXT_CALENDAR_NAME}: </td>
-      <td valign="middle"> 
+      <td valign="middle">
         <input type="text" name='inputName' style="width: 25%; padding: 2px;"  value='{CALENDAR_NAME}'/>
-        
+
         <input type="checkbox" name="inputActive" style="margin-left: 15px;" {CALENDAR_ACTIVE_CHECKED}/> {TXT_CALENDAR_ACTIVE}
 		</td>
     </tr>
-    <tr class="row1"> 
+    <tr class="row2">
       <td valign="middle" width="80"> {TXT_CALENDAR_PLACE}: </td>
-      <td valign="middle"> 
-        <input type="text" name='inputPlace' style="width: 25%; padding: 2px;" value='{CALENDAR_PLACE}' /> 
+      <td valign="middle">
+        <input type="text" name='inputPlace' style="width: 25%; padding: 2px;" value='{CALENDAR_PLACE}' />
       </td>
     </tr>
 	<tr class="row1">
@@ -111,10 +111,10 @@ function whole_day()
     		<input type="text" value="{CALENDAR_INFO}" name='inputInfo' style="width: 25%; padding:2px;" />
     	</td>
 	</tr>
-    <tr class="row1"> 
+    <tr class="row2">
       <td valign="middle" width="80"> {TXT_CALENDAR_START}: </td>
       <td valign="middle">
-		<input type "text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{CALENDAR_STARTDATE}" style="width: 8em; padding: 2px;"> 
+		<input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{CALENDAR_STARTDATE}" style="width: 8em; padding: 2px;" />
 		<select name="inputHour" style="margin-left: 10px">
 			<!-- BEGIN hour -->
 			<option value="{CALENDAR_HOUR}"{CALENDAR_HOUR_SELECT}>{CALENDAR_HOUR}</option>
@@ -126,14 +126,14 @@ function whole_day()
 			<option value="{CALENDAR_MINUTES}"{CALENDAR_MINUTES_SELECT}>{CALENDAR_MINUTES}</option>
 			<!-- END minutes -->
 		</select>
-		
+
 		 <a style="margin-left: 15px;" href="#" onclick="whole_day()">{TXT_CALENDAR_WHOLE_DAY}</a>
 	</td>
     </tr>
-    <tr class="row1"> 
+    <tr class="row1">
       <td valign="middle" width="80"> {TXT_CALENDAR_END}: </td>
       <td valign="middle">
-	  	<input type "text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{CALENDAR_ENDDATE}" style="width:8em; padding: 2px;"> 
+	  	<input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{CALENDAR_ENDDATE}" style="width:8em; padding: 2px;" />
 		<select name="inputEndHour" style="margin-left: 10px">
 			<!-- BEGIN endhour -->
 			<option value="{CALENDAR_END_HOUR}"{CALENDAR_END_HOUR_SELECT}>{CALENDAR_END_HOUR}</option>
@@ -150,16 +150,17 @@ function whole_day()
 	</table>
 	<br />
 	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-    <tr> 
-	 <th colspan="2" nowrap="nowrap"> 
+    <tr>
+	 <th colspan="2" nowrap="nowrap">
         <div align="left">{TXT_CALENDAR_COMMENT}</div>
       </th>
+     </tr>
 	 <tr>
-      <td valign="top" colspan="2">  
+      <td valign="top" colspan="2">
         {CALENDAR_DESCRIPTION}</td>
     </tr>
   </table>
-	
+
   <br />
   <input type="reset" value="{TXT_CALENDAR_RESET}" name="reset" />
   <input type="submit" value="{TXT_CALENDAR_SUBMIT}" name="submit" />
