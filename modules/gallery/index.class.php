@@ -42,7 +42,7 @@ class Gallery {
     */
     function __construct($pageContent)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;                             //echo("__construct(): entered<br />");
+        global $objDatabase, $_ARRAYLANG, $_LANGID;
 
         $this->pageContent = $pageContent;
         $this->langId= $_LANGID;
@@ -53,7 +53,7 @@ class Gallery {
         $this->strImagePath = ASCMS_GALLERY_PATH . '/';
         $this->strImageWebPath = ASCMS_GALLERY_WEB_PATH . '/';
         $this->strThumbnailPath = ASCMS_GALLERY_THUMBNAIL_PATH . '/';
-        $this->strThumbnailWebPath = ASCMS_GALLERY_THUMBNAIL_WEB_PATH . '/';    //echo("__construct(): settings<br />");
+        $this->strThumbnailWebPath = ASCMS_GALLERY_THUMBNAIL_WEB_PATH . '/';
 
 // temp
 	$arrGallerySettings = array(
@@ -77,7 +77,7 @@ foreach ($arrGallerySettings as $name => $value) {
         while (!$objResult->EOF) {
             $this->arrSettings[$objResult->fields['name']] = $objResult->fields['value'];
             $objResult->MoveNext();
-        }                                                                       //echo("__construct(): almost done<br />");
+        }
     }
 
     /**
@@ -140,24 +140,24 @@ foreach ($arrGallerySettings as $name => $value) {
         // get category description
         $query = "SELECT value FROM ".DBPREFIX."module_gallery_language ".
             "WHERE gallery_id=$intCatId AND lang_id=$this->langId AND name='desc' ".
-            "LIMIT 1";                                                          //echo("showPictureNoPop(): query $query<br />");
-        $objResult = $objDatabase->Execute($query);                             //echo("showPictureNoPop(): objResult: $objResult<br />");
+            "LIMIT 1";
+        $objResult = $objDatabase->Execute($query);
         $strCategoryComment = $objResult->fields['value'];
 
         $objResult = $objDatabase->Execute(
             "SELECT comment, voting ".
-            "FROM ".DBPREFIX."module_gallery_categories WHERE id=$intCatId");   //echo("showPictureNoPop(): objResult: $objResult<br />");
+            "FROM ".DBPREFIX."module_gallery_categories WHERE id=$intCatId");
         $boolComment = $objResult->fields['comment'];
         $boolVoting = $objResult->fields['voting'];
 
         // get picture informations
         $objResult = $objDatabase->Execute(
             "SELECT id, path, link, size_show FROM ".DBPREFIX."module_gallery_pictures ".
-            "WHERE id=$intPicId");                                              //echo("showPictureNoPop(): objResult: $objResult<br />");
+            "WHERE id=$intPicId");
 
         $query = "SELECT p.name, p.desc FROM ".DBPREFIX."module_gallery_language_pics p ".
-            "WHERE picture_id=$intPicId AND lang_id=$this->langId LIMIT 1";     //echo("showPictureNoPop(): query: $query<br />");
-        $objSubResult = $objDatabase->Execute($query);                          //echo("showPictureNoPop(): objSubResult: $objSubResult<br />");
+            "WHERE picture_id=$intPicId AND lang_id=$this->langId LIMIT 1";
+        $objSubResult = $objDatabase->Execute($query);
 // while? -> if!
         while (!$objResult->EOF) {
             $imageReso = getimagesize($this->strImagePath.$objResult->fields['path']);
@@ -213,10 +213,10 @@ foreach ($arrGallerySettings as $name => $value) {
             $imageDesc = '-';
         }
 
-        $strImageTitle = substr(strrchr($strImagePath, '/'), 1);                //echo("showPictureNoPop(): strImageTitle: $strImageTitle<br />");
+        $strImageTitle = substr(strrchr($strImagePath, '/'), 1);
         // chop the file extension if the settings tell us to do so
         if ($this->arrSettings['show_ext'] == 'off') {
-            $strImageTitle = substr($strImageTitle, 0, strrpos($strImageTitle, '.'));   //echo("showPictureNoPop(): strImageTitle: $strImageTitle<br />");
+            $strImageTitle = substr($strImageTitle, 0, strrpos($strImageTitle, '.'));
         }
         // set variables
         $this->_objTpl->setVariable(array(
@@ -239,7 +239,7 @@ foreach ($arrGallerySettings as $name => $value) {
                 'GALLERY_CATEGORY_TREE'     => $this->getCategoryTree(),
                 'TXT_GALLERY_CATEGORY_HINT' => $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_HIERARCHY'],
             ));
-        } else {                                                                //echo("showPictureNoPop(): calling getSiblingList<br />");
+        } else {
             $this->_objTpl->setVariable(array(
                 'GALLERY_CATEGORY_TREE'     => $this->getSiblingList(),
                 'TXT_GALLERY_CATEGORY_HINT' => $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_FLAT'],
@@ -435,10 +435,10 @@ foreach ($arrGallerySettings as $name => $value) {
             $intPicIdPrevious = end($arrPictures);
         }
 
-        $strImageTitle = substr(strrchr($strImagePath, '/'), 1);                //echo("showPicture(): strImageTitle: $strImageTitle<br />");
+        $strImageTitle = substr(strrchr($strImagePath, '/'), 1);
         // chop the file extension if the settings tell us to do so
         if ($this->arrSettings['show_ext'] == 'off') {
-            $strImageTitle = substr($strImageTitle, 0, strrpos($strImageTitle, '.'));   //echo("showPicture(): strImageTitle: $strImageTitle<br />");
+            $strImageTitle = substr($strImageTitle, 0, strrpos($strImageTitle, '.'));
         }
 
         // set language variables
@@ -632,29 +632,29 @@ foreach ($arrGallerySettings as $name => $value) {
      * a list of siblings of the current gallery
      */
     function getSiblingList() {
-        global $objDatabase;                                                    //echo("getSiblingList(): entered<br />");
+        global $objDatabase;
 
         if (isset($_GET['cid'])) {
             $intCatId = intval($_GET['cid']);
             $objResult = $objDatabase->Execute(
                 "SELECT pid FROM ".DBPREFIX."module_gallery_categories ".
-                "WHERE id=$intCatId");                                          //echo("getSiblingList(): objResult: $objResult<br />");
+                "WHERE id=$intCatId");
             if ($objResult) {
-                $intParentId = intval($objResult->Fields('pid'));               //echo("getSiblingList(): intParentId: $intParentId<br />");
+                $intParentId = intval($objResult->Fields('pid'));
                 $query = "SELECT id, value FROM ".DBPREFIX."module_gallery_categories ".
                     "INNER JOIN ".DBPREFIX."module_gallery_language ON id=gallery_id ".
-                    "WHERE lang_id=$this->langId AND name='name' AND pid=$intParentId"; //echo("getSiblingList(): query: $query<br />");
+                    "WHERE lang_id=$this->langId AND name='name' AND pid=$intParentId";
                 $objResult = $objDatabase->Execute($query);
-                if ($objResult) {                                               //echo("getSiblingList(): $objResult: $objResult<br />");
+                if ($objResult) {
                     $strOutput = '| ';
                     do {
                         $strOutput .= "<a href='?section=gallery&amp;cid=".
                             $objResult->Fields('id').
                             "' title='".$objResult->Fields('value').
                             "' target='_self'>".$objResult->Fields('value')."</a> | ";
-                    } while ($objResult->MoveNext());                           //echo("getSiblingList(): strOutput: $strOutput<br />");
+                    } while ($objResult->MoveNext());
                     return $strOutput;
-                }                                                               //echo("getSiblingList(): FAILED<br />");
+                }
             }
         }
         return '';
@@ -666,7 +666,7 @@ foreach ($arrGallerySettings as $name => $value) {
      * @return  string          The gallery name, or '' if not applicable
      */
     function getTopGalleryName() {
-        global $objDatabase;                                                    //echo("getGalleryName(): entered<br />");
+        global $objDatabase;
 
         if (isset($_GET['cid'])) {
             $intCatId = intval($_GET['cid']);
@@ -674,9 +674,9 @@ foreach ($arrGallerySettings as $name => $value) {
             $running = true;
             while ($running) {
                 $query = "SELECT pid FROM ".DBPREFIX."module_gallery_categories ".
-                    "WHERE id=$intCatId";                                       //echo("getGalleryName(): query: $query<br />");
-                $objResult = $objDatabase->Execute($query);                     //echo("getGalleryName(): objResult: $objResult<br />");
-                if ($objResult) {                                               //echo("getGalleryName(): pid: ".$objResult->Fields('pid')."<br />");
+                    "WHERE id=$intCatId";
+                $objResult = $objDatabase->Execute($query);
+                if ($objResult) {
                     if ($objResult->Fields('pid') != 0) {
                         $intCatId = $objResult->Fields('pid');
                     } else {
@@ -687,15 +687,15 @@ foreach ($arrGallerySettings as $name => $value) {
 
             $query = "SELECT value FROM ".DBPREFIX."module_gallery_language ".
                 "WHERE gallery_id=$intCatId AND lang_id=$this->langId ".
-                "AND name='name' LIMIT 1";                                      //echo("getGalleryName(): query: $query<br />");
-            $objResult = $objDatabase->Execute($query);                         //echo("getGalleryName(): objResult: $objResult<br />");
+                "AND name='name' LIMIT 1";
+            $objResult = $objDatabase->Execute($query);
             if ($objResult) {
-                $galleryName = $objResult->Fields('value');                     //echo("getGalleryName(): galleryName: $galleryName<br />");
+                $galleryName = $objResult->Fields('value');
                 return $galleryName;
             }
         }
         // category is not set
-        // we're not inside a subgallery nor showing a picture yet.             //echo("getGalleryName(): no name!<br />");
+        // we're not inside a subgallery nor showing a picture yet.
         return '';
     }
 
@@ -707,7 +707,7 @@ foreach ($arrGallerySettings as $name => $value) {
      * @global  object  $objDatabase
      * @param   var     $intParentId
      */
-    function showCategoryOverview($intParentId=0) {                             //echo("showCategoryOverview(): entered<br />");
+    function showCategoryOverview($intParentId=0) {
         global $objDatabase, $_ARRAYLANG;
 
         $intParentId = intval($intParentId);
@@ -722,7 +722,7 @@ foreach ($arrGallerySettings as $name => $value) {
                 'GALLERY_CATEGORY_TREE'     => $this->getCategoryTree(),
                 'TXT_GALLERY_CATEGORY_HINT' => $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_HIERARCHY'],
             ));
-        } else {                                                                //echo("showCategoryOverview(): calling getSiblingList<br />");
+        } else {
             $this->_objTpl->setVariable(array(
                 'GALLERY_CATEGORY_TREE'     => $this->getSiblingList(),
                 'TXT_GALLERY_CATEGORY_HINT' => $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_FLAT'],
@@ -759,9 +759,9 @@ foreach ($arrGallerySettings as $name => $value) {
         //$arrCategoryImageCounter    ->        Counts all images in one group
 
         $query = "SELECT * FROM ".DBPREFIX."module_gallery_categories ".
-            "WHERE pid=$intParentId AND status='1' ORDER BY sorting ASC";       //okay: echo("showCategoryOverview(): cat query: $query<br />");
-        $objResult = $objDatabase->Execute($query);                             //okay: echo("showCategoryOverview(): pid: $intParentId<br />");
-        if ($objResult->RecordCount() == 0) {                                   //okay: echo("showCategoryOverview(): NO cat RECORDS<br />");
+            "WHERE pid=$intParentId AND status='1' ORDER BY sorting ASC";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult->RecordCount() == 0) {
 
             // no categories in the database, hide the output
             //$this->_objTpl->hideBlock('galleryCategoryList');
@@ -840,8 +840,8 @@ foreach ($arrGallerySettings as $name => $value) {
         $objResult = $objDatabase->SelectLimit(
             "SELECT id, path, link, size_show FROM ".DBPREFIX."module_gallery_pictures ".
             "WHERE status='1' AND validated='1' AND catid=$intParentId ".
-            "ORDER BY sorting", intval($this->arrSettings["paging"]), $intPos); //okay: echo("showCategoryOverview(): catid: $intParentId, limit: ".intval($this->arrSettings["paging"])."/$intPos, objResult: $objResult<br />");
-        if ($objResult->RecordCount() == 0) {                                   //okay: echo("showCategoryOverview(): NO RECORDS<br />");
+            "ORDER BY sorting", intval($this->arrSettings["paging"]), $intPos);
+        if ($objResult->RecordCount() == 0) {
             // No images in the category
             if (empty($strCategoryComment)) {
                 $this->_objTpl->hideBlock('galleryImageBlock');
