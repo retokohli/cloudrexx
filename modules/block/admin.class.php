@@ -243,7 +243,7 @@ class blockManager extends blockLibrary
 				if ($arrBlock['random3'] ==  '1') {
 					$random3 = "<img src='images/icons/refresh3.gif' width='16' height='16' border='0' alt='' />";
 				} else {
-					$random4 = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' />";
+					$random3 = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' />";
 				}
 
 				if ($arrBlock['global'] ==  '1') {
@@ -300,6 +300,8 @@ class blockManager extends blockLibrary
 		$blockId 				= isset($_REQUEST['blockId']) ? intval($_REQUEST['blockId']) : 0;
 		$blockName 				= '';
 		$blockRandom		 	= 0;
+		$blockRandom2		 	= 0;
+		$blockRandom3		 	= 0;
 		$blockContent 			= '';
 		$blockAssociatedLangIds = array();
 
