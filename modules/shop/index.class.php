@@ -973,7 +973,7 @@ class Shop extends ShopLibrary {
                     if (empty($image['img']) || $image['width'] == '' || $image['height'] == '') {
                         // we have at least one picture on display already.
                         // no need to show "no picture" three times!
-                        if ($havePicture) { continue; }
+                       if ($havePicture) { continue; }
                        $thumbnailPath = $this->_defaultImage;
                        $pictureLink = "javascript:alert('".$_ARRAYLANG['TXT_NO_PICTURE_AVAILABLE']."');";
                     } else {
@@ -1078,11 +1078,6 @@ class Shop extends ShopLibrary {
                     'SHOP_PRODUCT_PRICE_UNIT'         => ($price=="0.00") ? "" : $this->aCurrencyUnitName,
                     'SHOP_PRODUCT_DISCOUNTPRICE'      => $discountPrice,
                     'SHOP_PRODUCT_DISCOUNTPRICE_UNIT' => $discountPrice_Unit,
-                    'SHOP_PRODUCT_TAX_PREFIX'         => ($this->objVat->isIncluded()
-                                                            ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
-                                                            : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
-                                                         ),
-                    'SHOP_PRODUCT_TAX'                => $this->objVat->getShort($objResult->fields['vat_id']),
                     'SHOP_PRODUCT_WEIGHT'             => Weight::getWeightString($objResult->fields['weight']),
                     'SHOP_PRODUCT_STOCK'              => $stock,
                     'SHOP_MANUFACTURER_LINK'          => $manufacturerLink,
@@ -1091,7 +1086,16 @@ class Shop extends ShopLibrary {
                     'SHOP_PRODUCT_SUBMIT_NAME'        => $productSubmitName,
                     'SHOP_PRODUCT_SUBMIT_FUNCTION'    => $productSubmitFunction,
                 ));
-
+                if ($this->objVat->isEnabled()) {
+                    $this->objTemplate->setVariable(array(
+                        'SHOP_PRODUCT_TAX_PREFIX'         =>
+                            ($this->objVat->isIncluded()
+                                ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
+                                : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
+                             ),
+                        'SHOP_PRODUCT_TAX'                => $this->objVat->getShort($objResult->fields['vat_id'])
+                   ));
+                }
                 $this->objTemplate->parse('shopProductRow');
                 $formId++;
                 $objResult->MoveNext();
@@ -2231,6 +2235,8 @@ sendReq('', 1);
 
         if (count($arrProducts)) {
             foreach ($arrProducts as $arrProduct) {
+                // those fields that don't apply have been set to ''
+                // (empty string) already -- see _parseCart().
                 $this->objTemplate->setVariable(array(
                     'SHOP_PRODUCT_ID'             => $arrProduct['id'],
                     'SHOP_PRODUCT_CUSTOM_ID'      => $arrProduct['custom_id'],
@@ -2242,15 +2248,22 @@ sendReq('', 1);
                     'SHOP_PRODUCT_QUANTITY'       => $arrProduct['quantity'],
                     'SHOP_PRODUCT_ITEMPRICE'      => $arrProduct['itemprice'],
                     'SHOP_PRODUCT_ITEMPRICE_UNIT' => $arrProduct['itemprice_unit'],
-                    // those fields that don't apply have been set to '' (empty string) already -- see _parseCart().
-                    // avoid a lonely '%' percent sign in case 'percent' is unset
-                    'SHOP_PRODUCT_TAX_RATE'       => ($arrProduct['percent']
-                                                        ? Vat::format($arrProduct['percent'])
-                                                        : '-'),
-                    'SHOP_PRODUCT_TAX_AMOUNT'     => $arrProduct['tax_amount'],
                     'SHOP_PRODUCT_WEIGHT'         => Weight::getWeightString($arrProduct['weight']),
 
                 ));
+                if ($this->objVat->isEnabled()) {
+                    $this->objTemplate->setVariable(array(
+                        // avoid a lonely '%' percent sign in case 'percent' is unset
+                        'SHOP_PRODUCT_TAX_RATE'       =>
+                            ($arrProduct['percent']
+                                ? Vat::format($arrProduct['percent'])
+                                : '-'
+                            ),
+                        'SHOP_PRODUCT_TAX_AMOUNT'     =>
+                            '('.$arrProduct['tax_amount'].'&nbsp;'.
+                            $arrProduct['itemprice_unit'].')',
+                    ));
+                }
                 $this->objTemplate->parse("shopCartRow");
             }
         } else {
@@ -2270,18 +2283,25 @@ sendReq('', 1);
             'TXT_NEXT'                     => $_ARRAYLANG['TXT_NEXT'],
             'TXT_EMPTY_CART'               => $_ARRAYLANG['TXT_EMPTY_CART'],
             'TXT_CONTINUE_SHOPPING'        => $_ARRAYLANG['TXT_CONTINUE_SHOPPING'],
-            'TXT_TAX_PREFIX'               => ($this->objVat->isIncluded()
-                                                  ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
-                                                  : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
-                                              ),
             'TXT_WEIGHT'                   => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
             'SHOP_PRODUCT_TOTALITEM'       => $_SESSION['shop']['cart']['items'],
             'SHOP_PRODUCT_TOTALPRICE'      => $_SESSION['shop']['cart']['total_price'],
             'SHOP_PRODUCT_TOTALPRICE_UNIT' => $this->aCurrencyUnitName,
-            'SHOP_TOTAL_TAX_AMOUNT'        => $_SESSION['shop']['cart']['total_tax_amount'],
             'SHOP_TOTAL_WEIGHT'            => Weight::getWeightString($_SESSION['shop']['cart']['total_weight']),
         ));
+        if ($this->objVat->isEnabled()) {
+            $this->objTemplate->setVariable(array(
+                'TXT_TAX_PREFIX'               =>
+                    ($this->objVat->isIncluded()
+                        ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
+                        : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
+                    ),
+                'SHOP_TOTAL_TAX_AMOUNT'        =>
+                    '('.$_SESSION['shop']['cart']['total_tax_amount']
+                    .'&nbsp;'.$this->aCurrencyUnitName.')',
 
+            ));
+        }
         if ($_SESSION['shop']['shipment']) {
             $this->objTemplate->setVariable('SHOP_COUNTRIES_MENU', $this->_getCountriesMenu($menuName="countryId2", $selectedId=$_SESSION['shop']['countryId2'], $onchange="document.forms['shopForm'].submit()"));
         }
@@ -3063,19 +3083,13 @@ sendReq('', 1);
             'SHOP_CUSTOMERNOTE'       => $_SESSION['shop']['customer_note'],
             'SHOP_AGB'                => $_SESSION['shop']['agb'],
             'SHOP_STATUS'             => $paymentStatus,
-            'SHOP_TAX_PRICE'          => $_SESSION['shop']['tax_price'],
-            'SHOP_TAX_PRODUCTS_TXT'   => $_SESSION['shop']['tax_products_txt'],
-            'SHOP_TAX_GRAND_TXT'      => $_SESSION['shop']['tax_grand_txt'],
             'SHOP_PAYMENT_MENU'       => $this->_getPaymentMenu(),
             'SHOP_TOTAL_WEIGHT'       => Weight::getWeightString($_SESSION['shop']['cart']['total_weight']),
-        ));
-        $this->objTemplate->setVariable(array(
             'TXT_PRODUCTS'            => $_ARRAYLANG['TXT_PRODUCTS'],
             'TXT_TOTALLY_GOODS'       => $_ARRAYLANG['TXT_TOTALLY_GOODS'],
             'TXT_PRODUCT_S'           => $_ARRAYLANG['TXT_PRODUCT_S'],
             'TXT_SHIPPING_METHODS'    => $_ARRAYLANG['TXT_SHIPPING_METHODS'],
             'TXT_PAYMENT_TYPES'       => $_ARRAYLANG['TXT_PAYMENT_TYPES'],
-            'TXT_TAX_RATE'            => $_ARRAYLANG['TXT_TAX_RATE'],
             'TXT_ORDER_SUM'           => $_ARRAYLANG['TXT_ORDER_SUM'],
             'TXT_COMMENTS'            => $_ARRAYLANG['TXT_COMMENTS'],
             'TXT_TAC'                 => $_ARRAYLANG['TXT_TAC'],
@@ -3083,12 +3097,23 @@ sendReq('', 1);
             'TXT_UPDATE'              => $_ARRAYLANG['TXT_UPDATE'],
             'TXT_NEXT'                => $_ARRAYLANG['TXT_NEXT'],
             'TXT_TOTAL_PRICE'         => $_ARRAYLANG['TXT_TOTAL_PRICE'],
-            'TXT_TAX_PREFIX'          => ($this->objVat->isIncluded()
-                                             ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
-                                             : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
-                                         ),
             'TXT_TOTAL_WEIGHT'        => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
         ));
+        if ($this->objVat->isEnabled()) {
+            $this->objTemplate->setVariable(array(
+                'SHOP_TAX_PRICE'          =>
+                    $_SESSION['shop']['tax_price'].
+                    '&nbsp;'.$this->aCurrencyUnitName,
+                'SHOP_TAX_PRODUCTS_TXT'   => $_SESSION['shop']['tax_products_txt'],
+                'SHOP_TAX_GRAND_TXT'      => $_SESSION['shop']['tax_grand_txt'],
+                'TXT_TAX_RATE'            => $_ARRAYLANG['TXT_TAX_RATE'],
+                'TXT_TAX_PREFIX'          =>
+                    ($this->objVat->isIncluded()
+                        ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
+                        : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
+                    ),
+            ));
+        }
     }
 
 
@@ -3379,9 +3404,15 @@ sendReq('', 1);
                         'SHOP_PRODUCT_ITEMPRICE'    => $this->objCurrency->formatPrice($price+$priceOptions),
                         'SHOP_UNIT'                 => $this->aCurrencyUnitName,
                         'SHOP_PRODUCT_WEIGHT'       => $weight,
-                        'SHOP_PRODUCT_TAX_RATE'     => $vatPercent,
-                        'SHOP_PRODUCT_TAX_AMOUNT'   => $this->objCurrency->formatPrice($vatAmount),
                     ));
+                    if ($this->objVat->isEnabled()) {
+                        $this->objTemplate->setVariable(array(
+                            'SHOP_PRODUCT_TAX_RATE'     => $vatPercent,
+                            'SHOP_PRODUCT_TAX_AMOUNT'   =>
+                                $this->objCurrency->formatPrice($vatAmount).
+                                '&nbsp;'.$this->aCurrencyUnitName,
+                        ));
+                    }
                     $this->objTemplate->parse("shopCartRow");
                 }
             }
@@ -3391,18 +3422,11 @@ sendReq('', 1);
             $this->objTemplate->setVariable(array(
                 'SHOP_UNIT'             => $this->aCurrencyUnitName,
                 'SHOP_TOTALITEM'        => $_SESSION['shop']['items'],
-                'SHOP_SHIPMENT_PRICE'   => $_SESSION['shop']['shipment_price'],
                 'SHOP_PAYMENT_PRICE'    => $_SESSION['shop']['payment_price'],
                 'SHOP_TOTALPRICE'       => $_SESSION['shop']['total_price'],
-                'SHOP_SHIPMENT'         => (isset($_SESSION['shop']['shipperId']) && $_SESSION['shop']['shipperId']
-                                            ? $this->objShipment->getShipperName($_SESSION['shop']['shipperId'])
-                                            : '-'),
                 'SHOP_PAYMENT'          => $strPayment,
                 'SHOP_GRAND_TOTAL'      => $_SESSION['shop']['grand_total_price'],
                 'SHOP_CUSTOMERNOTE'     => $_SESSION['shop']['customer_note'],
-                'SHOP_TAX_PRICE'        => $_SESSION['shop']['tax_price'],
-                'SHOP_TAX_PRODUCTS_TXT' => $_SESSION['shop']['tax_products_txt'],
-                'SHOP_TAX_GRAND_TXT'    => $_SESSION['shop']['tax_grand_txt'],
                 'SHOP_COMPANY'          => stripslashes($_SESSION['shop']['company']),
                 'SHOP_PREFIX'           => stripslashes($_SESSION['shop']['prefix']),
                 'SHOP_LASTNAME'         => stripslashes($_SESSION['shop']['lastname']),
@@ -3431,20 +3455,35 @@ sendReq('', 1);
                 'TXT_TOTAL'             => $_ARRAYLANG['TXT_TOTAL'],
                 'TXT_INTER_TOTAL'       => $_ARRAYLANG['TXT_INTER_TOTAL'],
                 'TXT_PRODUCT_S'         => $_ARRAYLANG['TXT_PRODUCT_S'],
-                'TXT_SHIPPING_METHOD'   => $_ARRAYLANG['TXT_SHIPPING_METHOD'],
                 'TXT_PAYMENT_TYPE'      => $_ARRAYLANG['TXT_PAYMENT_TYPE'],
-                'TXT_TAX_RATE'          => $_ARRAYLANG['TXT_TAX_RATE'],
                 'TXT_TOTAL_PRICE'       => $_ARRAYLANG['TXT_TOTAL_PRICE'],
                 'TXT_ADDRESS_CUSTOMER'  => $_ARRAYLANG['TXT_ADDRESS_CUSTOMER'],
-                'TXT_SHIPPING_ADDRESS'  => $_ARRAYLANG['TXT_SHIPPING_ADDRESS'],
                 'TXT_COMMENTS'          => $_ARRAYLANG['TXT_COMMENTS'],
                 'TXT_ORDER_NOW'         => $_ARRAYLANG['TXT_ORDER_NOW'],
                 'TXT_WEIGHT'            => $_ARRAYLANG['TXT_WEIGHT'],
-                'TXT_TAX_PREFIX'        => ($this->objVat->isIncluded()
-                                               ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
-                                               : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
-                                           ),
             ));
+            if ($this->objVat->isEnabled()) {
+                $this->objTemplate->setVariable(array(
+                    'TXT_TAX_RATE'          => $_ARRAYLANG['TXT_TAX_RATE'],
+                    'SHOP_TAX_PRICE'        => $_SESSION['shop']['tax_price'],
+                    'SHOP_TAX_PRODUCTS_TXT' => $_SESSION['shop']['tax_products_txt'],
+                    'SHOP_TAX_GRAND_TXT'    => $_SESSION['shop']['tax_grand_txt'],
+                    'TXT_TAX_PREFIX'        =>
+                        ($this->objVat->isIncluded()
+                            ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
+                            : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
+                        ),
+               ));
+            }
+            if (isset($_SESSION['shop']['shipperId']) && $_SESSION['shop']['shipperId']) {
+                $this->objTemplate->setVariable(array(
+                    'SHOP_SHIPMENT_PRICE'   => $_SESSION['shop']['shipment_price'],
+                    'SHOP_SHIPMENT' =>
+                        $this->objShipment->getShipperName($_SESSION['shop']['shipperId']),
+                    'TXT_SHIPPING_METHOD'   => $_ARRAYLANG['TXT_SHIPPING_METHOD'],
+                    'TXT_SHIPPING_ADDRESS'  => $_ARRAYLANG['TXT_SHIPPING_ADDRESS'],
+                ));
+            }
         } // end if process
         $this->objTemplate->setVariable('SHOP_STATUS', $statusMessage);
     }
@@ -3593,10 +3632,9 @@ sendReq('', 1);
                             $price." ".$this->aCurrencyUnitName." | ".
                             $arrProduct['quantity']." | ".
                             $this->objCurrency->formatPrice($price*$arrProduct['quantity'])." ".$this->aCurrencyUnitName."\n";
-
-                // Taxes are enabled
-                $taxTxt = "";
+                $taxTxt = '';
                 if ($this->objVat->isEnabled()) {
+                    // taxes are enabled
                     $taxTxt = ($this->objVat->isIncluded()
                         ? $_ARRAYLANG['TXT_TAX_INCLUDED']
                         : $_ARRAYLANG['TXT_TAX_EXCLUDED']

@@ -261,7 +261,7 @@ class Vat
         }
         if ($menuname) {
             $string = "<select name='$menuname'".
-                ($selectAttributes=='' ? '' : " $selectAttributes").
+                ($selectAttributes == '' ? '' : " $selectAttributes").
                 ">$string</select>";
         }
         return $string;
