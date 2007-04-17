@@ -152,12 +152,12 @@ class eGov extends eGovLibrary
 		// ----------------------------------------
 		if(isset($_REQUEST["tpl"])){
 			if($_REQUEST["tpl"]=="save"){
-				
+
 				$paypal_ipn = $_REQUEST["PayPal_IPN"];
 				if($paypal_ipn!="1"){
-					$paypal_ipn = 0;	
+					$paypal_ipn = 0;
 				}
-				
+
 				$query = "UPDATE ".DBPREFIX."module_egov_settings
 							 SET set_sender_name='".strip_tags(contrexx_addslashes($_REQUEST["senderName"]))."',
 							 set_sender_email='".strip_tags(contrexx_addslashes($_REQUEST["senderEmail"]))."',
@@ -188,16 +188,16 @@ class eGov extends eGovLibrary
 				}
 			}
 		}
-		
+
 		$currency 			= $this->GetSettings("set_paypal_currency", $product_id);
 		$selected_CHF	 	= ($currency=="CHF") ? 'selected' : '';
 		$selected_EUR	 	= ($currency=="EUR") ? 'selected' : '';
 		$selected_USD	 	= ($currency=="USD") ? 'selected' : '';
 		$selected_GBP	 	= ($currency=="GBP") ? 'selected' : '';
 		$selected_JPY	 	= ($currency=="JPY") ? 'selected' : '';
-		
+
 		$ipnchecked 		= ($this->GetSettings("set_paypal_ipn")==1) ? 'checked' : '';
-		
+
 		// ----------------------------------------
 		$this->_objTpl->setVariable(array(
     		'TXT_EGOV_SETTINGS_GENERALLY'			 =>	$_ARRAYLANG['TXT_EGOV_SETTINGS_GENERALLY'],
@@ -330,13 +330,13 @@ class eGov extends eGovLibrary
 		if($ProductTargetBody==''){
 			$ProductTargetBody = $this->GetSettings("set_state_email");
 		}
-		
+
 		$PayPal_yes	 = ($this->GetProduktValue("product_paypal", $product_id)==1) ? 'checked' : '';
 		$PayPal_no	 = ($PayPal_yes=='') ? 'checked' : '';
-		
+
 		$currency 			= $this->GetProduktValue("product_paypal_currency", $product_id);
 		$paypalEmail		= $this->GetProduktValue("product_paypal_sandbox", $product_id);
-		
+
 		if($paypalEmail==""){
 			$paypalEmail = $this->GetSettings("set_paypal_email");;
 		}
@@ -348,8 +348,8 @@ class eGov extends eGovLibrary
 		$selected_USD	 	= ($currency=="USD") ? 'selected' : '';
 		$selected_GBP	 	= ($currency=="GBP") ? 'selected' : '';
 		$selected_JPY	 	= ($currency=="JPY") ? 'selected' : '';
-		
-		
+
+
 		$this->_objTpl->setVariable(array(
     		'TXT_ACTION_TITLE'			 	=>	$this->_pageTitle,
     		'TXT_PRODUCT_NAME'			 	=>	$_ARRAYLANG['TXT_PRODUCT_NAME'],
@@ -523,17 +523,17 @@ class eGov extends eGovLibrary
 			$this->_strErrMessage .= $_ARRAYLANG['TXT_EGOV_FILE_ERROR'];
 		}
 		// -----------------------------------------------------------------
-		
+
 		// Position
 		// -----------------------------------------------------------------
 		if(isset($_REQUEST["Direction"])){
-			
+
 			$query = "SELECT count(*) as anzahl FROM ".DBPREFIX."module_egov_products";
 			$objResult = $objDatabase->Execute($query);
 			if ($objResult->RecordCount() == 1) {
 				$anzahl = $objResult->fields["anzahl"];
 			}
-			
+
 			if($_REQUEST["Direction"]=="up"){
 				$NewPosition = $this->GetProduktValue('product_orderby', $_REQUEST["id"])-1;
 			}
@@ -541,12 +541,12 @@ class eGov extends eGovLibrary
 				$NewPosition = $this->GetProduktValue('product_orderby', $_REQUEST["id"])+1;
 			}
 			if($NewPosition<0){
-				$NewPosition = 0; 
+				$NewPosition = 0;
 			}
 			if($NewPosition>$anzahl){
-				$NewPosition = $anzahl; 
+				$NewPosition = $anzahl;
 			}
-				
+
 				$query = "SELECT product_id  FROM ".DBPREFIX."module_egov_products WHERE product_orderby=".$NewPosition;
 				$objResult = $objDatabase->Execute($query);
 				if ($objResult->RecordCount() == 1) {
@@ -556,15 +556,15 @@ class eGov extends eGovLibrary
 				$objResult = $objDatabase->Execute($query);
 				if ($objResult->RecordCount() == 1) {
 					$TauschPosition = $objResult->fields["product_orderby"];
-				}	
-				
+				}
+
 				$query = "UPDATE ".DBPREFIX."module_egov_products
 							 SET product_orderby=".$TauschPosition."
 							 WHERE product_id=".$TauschID."";
 				if($objDatabase->Execute($query)){
 					$this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
 				}
-			
+
 				$query = "UPDATE ".DBPREFIX."module_egov_products
 							 SET product_orderby=".$NewPosition."
 							 WHERE product_id=".$_REQUEST["id"]."";
@@ -603,9 +603,9 @@ class eGov extends eGovLibrary
 		while(!$objResult->EOF) {
 			$rowclass = ($i % 2) ? 'row1' : 'row2';
 
-			$StatusImg = '<img src="/admin/images/icons/status_green.gif" width="10" height="10" border="0" alt="" />';
+			$StatusImg = '<img src="images/icons/status_green.gif" width="10" height="10" border="0" alt="" />';
 			if($objResult->fields["product_status"]!=1){
-				$StatusImg = '<img src="/admin/images/icons/status_red.gif" width="10" height="10" border="0" alt="" />';
+				$StatusImg = '<img src="images/icons/status_red.gif" width="10" height="10" border="0" alt="" />';
 			}
 
 			$query_orders = "SELECT count(*) as anzahl
@@ -627,7 +627,6 @@ class eGov extends eGovLibrary
     			'TXT_EGOV_VIEW_ORDERS'		=>  $_ARRAYLANG['TXT_EGOV_VIEW_ORDERS'],
     			'TXT_IMGALT_COPY'			=>	$_ARRAYLANG['TXT_IMGALT_COPY'],
     			'TXT_COPY'					=>	$_ARRAYLANG['TXT_COPY'],
-    			'ASCMS_MODULE_WEB_PATH'		=> ASCMS_MODULE_WEB_PATH,
     			'TXT_EGOV_UP'				=>	$_ARRAYLANG['TXT_EGOV_UP'],
     			'TXT_EGOV_DOWN'				=>	$_ARRAYLANG['TXT_EGOV_DOWN']
 	   		));

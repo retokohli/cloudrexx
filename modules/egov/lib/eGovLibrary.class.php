@@ -286,7 +286,7 @@ class eGovLibrary {
 		}else{
 			$CalenderSource = '';
 		}
-		
+
 		$FormActionTarget 	= ($preview ? '../' : '')."index.php?section=egov&amp;id=".$id;
 		$PayPalPaymant		= $this->GetProduktValue('product_paypal', $id);
 
