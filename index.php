@@ -629,7 +629,7 @@ if (file_exists($modulespath)) {
 //-------------------------------------------------------
 // Load JavaScript Cart
 //-------------------------------------------------------
-if ($_CONFIGURATION['custom']['shopJsCart']) {
+if ($_CONFIGURATION['custom']['shopJsCart'] && ($_CONFIGURATION['custom']['shopnavbar'] || (!empty($_REQUEST['section']) && $_REQUEST['section'] == 'shop'))) {
     $modulespath = "modules/shop/index.class.php";
     if (file_exists($modulespath)) {
         /**
