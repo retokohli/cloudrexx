@@ -30,7 +30,7 @@ class ForumLibrary {
 	var $_arrGroups 			= array();
 	var $_communityUserGroupId 	= array(0);
 	var $_anonymousGroupId 		= array(0);
-	var $_maxStringLenght		= 32;
+	var $_maxStringLenght		= 50;
 	var $_minPostLenght			= 5;
 
 
@@ -289,9 +289,9 @@ class ForumLibrary {
 
 	function convertlinks($text){
 		if(preg_match('#^http://.*#', $text)){
-			return preg_replace('#(http://)+(www\.)?([a-zA-Z][a-zA-Z0-9-/]+\.[a-zA-Z][a-zA-Z0-9-/&\#\+=\?\.;%]+)+(\[/url\])?#i', '[url]$2$3$4$5[/url]' , $text);
+			return preg_replace('#(http://)+(www\.)?([a-zA-Z][a-zA-Z0-9-/]+\.[a-zA-Z][a-zA-Z0-9-/&\#\+=\?\.:;%]+)+(\[/url\])?#i', '[url]$2$3$4$5[/url]' , $text);
 		}
-		return preg_replace('#[\s](http://)+(www\.)?([a-zA-Z][a-zA-Z0-9-/]+\.[a-zA-Z][a-zA-Z0-9-/&\#\+=\?\.;%]+)+(\[/url\])?#i', '[url]$2$3$4$5[/url]' , $text);
+		return preg_replace('#[\s](http://)+(www\.)?([a-zA-Z][a-zA-Z0-9-/]+\.[a-zA-Z][a-zA-Z0-9-/&\#\+=\?\.:;%]+)+(\[/url\])?#i', '[url]$2$3$4$5[/url]' , $text);
 	}
 	/**
 	 * strip BB tags
