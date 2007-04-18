@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Sat, 14 Apr 2007 15:06:54 +0200
+* generated date Wed, 18 Apr 2007 09:02:04 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Stock";
@@ -181,4 +181,8 @@ $_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Anmelden &gt;&gt;";
 $_ARRAYLANG['TXT_SHOP_CATEGORIES'] = "Kategorien:";
 $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'] = "Produkte in der Kategorie";
 $_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'] = "Weiter zur Kategorie";
+$_ARRAYLANG['TXT_SHOP_LSV_EE_FIRST_NAME'] = "Vorname";
+$_ARRAYLANG['TXT_SHOP_LSV_EE_LAST_NAME'] = "Nachname";
+$_ARRAYLANG['TXT_SHOP_LSV_EE_ZIP'] = "Postleitzahl";
+$_ARRAYLANG['TXT_SHOP_LSV_EE_CITY'] = "Stadt";
 ?>
