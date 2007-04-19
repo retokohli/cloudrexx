@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 19 Apr 2007 10:51:17 +0200
+* generated date Thu, 19 Apr 2007 15:16:31 +0200
 **/
 
 $_ARRAYLANG['TXT_FORUM_CATEGORY_NAME'] = "Name der Kategorie / Forum";
@@ -57,7 +57,7 @@ $_ARRAYLANG['TXT_FORUM_SETTINGS_POSTING_PAGING_HELP'] = "Dieser Wert legt fest, 
 $_ARRAYLANG['TXT_FORUM_SETTINGS_UPDATE_OK'] = "Die neuen Einstellungen wurden erfolgreich gespeichert.";
 $_ARRAYLANG['TXT_FORUM_SELECT_ALL'] = "Alle auswählen";
 $_ARRAYLANG['TXT_FORUM_DESELECT_ALL'] = "Alle abwählen";
-$_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'] = "Kategorien &amp; Foren";
+$_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'] = "Kategorien & Foren";
 $_ARRAYLANG['TXT_CATEGORY_GLOBAL_RIGHTS'] = "global";
 $_ARRAYLANG['TXT_FORUM_THREAD'] = "Thema";
 $_ARRAYLANG['TXT_FORUM_ANONYMOUS_GROUP_NAME'] = "Anonym";
@@ -73,7 +73,7 @@ $_ARRAYLANG['TXT_FORUM_CLICK_TO_INSERT'] = "Klicken um einzufügen";
 $_ARRAYLANG['TXT_FORUM_CLICK_VARIABLE_TO_INSERT'] = "Variable klicken um einzufügen";
 $_ARRAYLANG['TXT_FORUM_ROWCLASS'] = "CSS-Klasse für die Tabellenzeile";
 $_ARRAYLANG['TXT_FORUM_HOMECONTENT_USAGE'] = "Verwendung";
-$_ARRAYLANG['TXT_FORUM_HOMECONTENT_USAGE_TEXT'] = "Die Platzhalter können unter dem Menüpunkt \"Layout & Designs\" in der Datei <strong>forum.html</strong> einer Designvorlage verwendet werden. <br /> Diese Datei kann mit dem Platzhalter <strong>[[FORUM_FILE]]</strong> in einer beliebigen Designvorlage Datei oder in einer Inhaltsseite eingebunden werden.";
+$_ARRAYLANG['TXT_FORUM_HOMECONTENT_USAGE_TEXT'] = "Die Platzhalter können unter dem Menüpunkt \"Layout & Designs\" in der Datei <strong>forum.html</strong> einer Webdesignvorlage verwendet werden. <br /> Diese Datei kann mit dem Platzhalter <strong>[[FORUM_FILE]]</strong> in einer beliebigen Webdesignvorlage Datei oder in einer Inhaltsseite eingebunden werden.";
 $_ARRAYLANG['TXT_FORUM_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_FORUM_SHOW_HOME_CONTENT'] = "Neuste Einträge auf Startseite anzeigen";
 $_ARRAYLANG['TXT_FORUM_DEACTIVATE'] = "Deaktivieren";

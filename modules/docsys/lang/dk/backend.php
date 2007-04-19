@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 19 Apr 2007 10:51:17 +0200
+* generated date Thu, 19 Apr 2007 15:16:31 +0200
 **/
 
 $_ARRAYLANG['TXT_CATEGORY_MANAGER'] = "Kategori manager";
@@ -53,4 +53,9 @@ $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Denne aktion kan ha
 $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "Kategorien kunne ikke slettes! Slet venligst først undergrupperne.";
 $_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND'] = "Der er ikke blevet fundet nogle dokumenter";
 $_ARRAYLANG['TXT_DELETE'] = "Slet";
+$_ARRAYLANG['TXT_DOCSYS_SORTING'] = "Sortierung";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_ALPHA'] = "nach Alphabet";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE'] = "nach Datum";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE_ALPHA'] = "nach Datum und Alphabet";
+$_ARRAYLANG['TXT_DOCSYS_SORTTYPE'] = "Art der Sortierung";
 ?>

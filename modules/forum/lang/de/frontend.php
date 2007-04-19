@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 19 Apr 2007 10:51:17 +0200
+* generated date Thu, 19 Apr 2007 15:16:31 +0200
 **/
 
 $_ARRAYLANG['TXT_FORUM_NO_POSTINGS'] = "Kein Beitrag vorhanden.";
@@ -56,7 +56,7 @@ $_ARRAYLANG['TXT_FORUM_THREAD_STRATER'] = "Gestartet von";
 $_ARRAYLANG['TXT_FORUM_POST_COUNT'] = "Beiträge";
 $_ARRAYLANG['TXT_FORUM_THREAD_CREATE_DATE'] = "Erstellt am";
 $_ARRAYLANG['TXT_FORUM_NO_SUBJECT'] = "Kein Betreff";
-$_ARRAYLANG['TXT_FORUM_POST_EMPTY'] = "Beitrag leer oder zu kurz (mind. %d Zeichen)";
+$_ARRAYLANG['TXT_FORUM_POST_EMPTY'] = "Kein Beitrag oder zu kurz (mind. %d Zeichen)";
 $_ARRAYLANG['TXT_FORUM_UPDATE_NOTIFICATION'] = "Benachrichtigung setzen";
 $_ARRAYLANG['TXT_FORUM_NOTIFICATION'] = "Benachrichtigung";
 $_ARRAYLANG['TXT_FORUM_MUST_BE_AUTHENTICATED'] = "Sie müssen angemeldet sein um Foren abonnieren zu können.";
