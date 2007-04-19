@@ -401,6 +401,7 @@ class Market extends marketLibrary
 		$objResult = $objDatabase->SelectLimit($query, $this->settings['paging'], $pos);
 		/////// END PAGING ///////
 
+		$i=0;
 		if ($objResult !== false){
 		   	while (!$objResult->EOF) {
 		   		if (empty($objResult->fields['picture'])) {
@@ -459,7 +460,7 @@ class Market extends marketLibrary
 	   			if($objResult->fields['premium'] == 1){
 	   				$row = "marketRow1";
 	   			}else{
-	   				$row = "marketRow2";
+	   				$row = $i % 2 == 0 ? 'marketRow2' : 'marketRow3';
 	   			}
 
 	   			$enddate = date("d.m.Y", $objResult->fields['enddate']);
@@ -490,6 +491,8 @@ class Market extends marketLibrary
 				));
 
 				$this->_objTpl->parse('showEntries');
+
+				$i++;
 				$objResult->MoveNext();
 	   		}
 
