@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Confirmation successfully! You will now recieve the Newsletter.";
@@ -24,7 +24,7 @@ $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'] = "Data record deleting error!";
 $_ARRAYLANG['TXT_SENDING_MESSAGE_ERROR'] = "Message sending error";
 $_ARRAYLANG['TXT_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBER_ALREADY_INSERTED'] = "You email address exists already in our database.";
-$_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "Es ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihre E-Mail Adresse.";
+$_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "Es ist ein Fehler aufgetreten. Bitte Ã¼berprÃ¼fen Sie Ihre E-Mail Adresse.";
 $_ARRAYLANG['TXT_LASTNAME'] = "Lastname";
 $_ARRAYLANG['TXT_FIRSTNAME'] = "Firstname";
 $_ARRAYLANG['TXT_STREET'] = "Street";

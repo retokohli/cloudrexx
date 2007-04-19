@@ -1,23 +1,23 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_BODY'] = "Nachrichtentext";
 $_ARRAYLANG['TXT_SUBJECT'] = "Betreff";
 $_ARRAYLANG['TXT_SUBMIT'] = "Speichern";
-$_ARRAYLANG['TXT_AVAILABLE_VARS'] = "Verfügbare Platzhalter";
+$_ARRAYLANG['TXT_AVAILABLE_VARS'] = "VerfÃ¼gbare Platzhalter";
 $_ARRAYLANG['TXT_SENDERNAME'] = "Name von demjenigen der die Seite empfiehlt";
 $_ARRAYLANG['TXT_SENDERMAIL'] = "E-Mail Adresse von demjenigen der die Seite empfiehlt";
-$_ARRAYLANG['TXT_RECEIVERMAIL'] = "E-Mail Adresse vom Empfänger";
-$_ARRAYLANG['TXT_RECEIVERNAME'] = "Name vom Empfänger";
+$_ARRAYLANG['TXT_RECEIVERMAIL'] = "E-Mail Adresse vom EmpfÃ¤nger";
+$_ARRAYLANG['TXT_RECEIVERNAME'] = "Name vom EmpfÃ¤nger";
 $_ARRAYLANG['TXT_URL'] = "URL (Adresse) der Website";
 $_ARRAYLANG['TXT_COMMENT'] = "Kommentar von demjenigen der die Seite empfiehlt";
-$_ARRAYLANG['TXT_ERROR'] = "Datensatz konnte nicht gespeichert werden. Überprüfen Sie ob kein Feld leer ist!";
-$_ARRAYLANG['TXT_STATUS_OK'] = "Änderungen wurden erfolgreich gespeichert";
-$_ARRAYLANG['TXT_SALUTATION_FEMALE'] = "Anrede für weibliche Personen";
-$_ARRAYLANG['TXT_SALUTATION_MALE'] = "Anrede für männliche Personen";
+$_ARRAYLANG['TXT_ERROR'] = "Datensatz konnte nicht gespeichert werden. ÃœberprÃ¼fen Sie ob kein Feld leer ist!";
+$_ARRAYLANG['TXT_STATUS_OK'] = "Ã„nderungen wurden erfolgreich gespeichert";
+$_ARRAYLANG['TXT_SALUTATION_FEMALE'] = "Anrede fÃ¼r weibliche Personen";
+$_ARRAYLANG['TXT_SALUTATION_MALE'] = "Anrede fÃ¼r mÃ¤nnliche Personen";
 $_ARRAYLANG['TXT_SALUTATION'] = "Anrede";
 ?>

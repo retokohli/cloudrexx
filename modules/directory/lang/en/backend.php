@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Create new themes";
@@ -117,7 +117,7 @@ $_ARRAYLANG['TXT_DIR_SYSTEM_VAlUE'] = "Value";
 $_ARRAYLANG['TXT_DIR_SETTINGS_SUCCESFULL_SAVE'] = "Settings succesfully changed";
 $_ARRAYLANG['TXT_DIR_FILE_MANAGEMENT'] = "Filemanagement";
 $_ARRAYLANG['TXT_DIR_USER_MANAGEMENT'] = "Usermanagement";
-$_ARRAYLANG['TXT_DIR_CONFIRM_ENTREE'] = "Einträge bestätigen";
+$_ARRAYLANG['TXT_DIR_CONFIRM_ENTREE'] = "EintrÃ¤ge bestÃ¤tigen";
 $_ARRAYLANG['TXT_DIR_CREATE_ENTREE'] = "Add Entree";
 $_ARRAYLANG['TXT_DIR_CATEGORIES'] = "Categories";
 $_ARRAYLANG['TXT_DIR_MD5_CHECKSUM'] = "MD5 checksum";

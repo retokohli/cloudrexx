@@ -1,12 +1,12 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_PREVIEW'] = "Vorschau";
 $_ARRAYLANG['TXT_MEDIA_FILE_NAME'] = "Dateiname";
-$_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Dateigrösse";
+$_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "DateigrÃ¶sse";
 $_ARRAYLANG['TXT_MEDIA_FILE_DATE'] = "Datum";
 $_ARRAYLANG['TXT_MEDIA_FILE_PERM'] = "Zugriffsrechte";
 $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] = "Medienarchiv";
@@ -25,29 +25,29 @@ $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_NEW_DIR'] = "Fehler: Neuer Ordner kann nicht er
 $_ARRAYLANG['TXT_MEDIA_MSG_NEW_DIR'] = "Neuer Ordner wurde erfolgreich erstellt!";
 $_ARRAYLANG['TXT_MEDIA_MSG_NEW_FILE'] = "Dateien wurden erfolgreich hochgeladen!";
 $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_NEW_FILE'] = "Fehler: Dateien wurden nicht hochgeladen!";
-$_ARRAYLANG['TXT_MEDIA_DELETE'] = "Löschen";
-$_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'] = "Wollen Sie diese Datei(n) wirklich löschen? ACHTUNG! Diese Änderung kann nicht mehr rückgängig gemacht werden!";
-$_ARRAYLANG['TXT_MEDIA_MSG_DIR_DELETE'] = "Ordner wurde erfolgreich gelöscht!";
-$_ARRAYLANG['TXT_MEDIA_MSG_FILE_DELETE'] = "Medien erfolgreich gelöscht!";
-$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_DIR'] = "Fehler: Ordner konnte nicht gelöscht werden! Stellen Sie sicher, dass er leer ist!";
-$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_FILE'] = "Fehler: Medien konnten nicht gelöscht werden!";
+$_ARRAYLANG['TXT_MEDIA_DELETE'] = "LÃ¶schen";
+$_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'] = "Wollen Sie diese Datei(n) wirklich lÃ¶schen? ACHTUNG! Diese Ã„nderung kann nicht mehr rÃ¼ckgÃ¤ngig gemacht werden!";
+$_ARRAYLANG['TXT_MEDIA_MSG_DIR_DELETE'] = "Ordner wurde erfolgreich gelÃ¶scht!";
+$_ARRAYLANG['TXT_MEDIA_MSG_FILE_DELETE'] = "Medien erfolgreich gelÃ¶scht!";
+$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_DIR'] = "Fehler: Ordner konnte nicht gelÃ¶scht werden! Stellen Sie sicher, dass er leer ist!";
+$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_FILE'] = "Fehler: Medien konnten nicht gelÃ¶scht werden!";
 $_ARRAYLANG['TXT_MEDIA_EDIT'] = "Bearbeiten";
 $_ARRAYLANG['TXT_MEDIA_SAVE'] = "Speichern";
-$_ARRAYLANG['TXT_MEDIA_OVERVIEW'] = "Medien Übersicht";
+$_ARRAYLANG['TXT_MEDIA_OVERVIEW'] = "Medien Ãœbersicht";
 $_ARRAYLANG['TXT_MEDIA_MSG_SEVERAL_NEW_FILE'] = "Manche Dateien konnten nicht hochgeladen werden!";
-$_ARRAYLANG['TXT_MEDIA_SELECT_ACTION'] = "Aktion auswählen:";
+$_ARRAYLANG['TXT_MEDIA_SELECT_ACTION'] = "Aktion auswÃ¤hlen:";
 $_ARRAYLANG['TXT_DESIGN_FILES_ADMINISTRATION'] = "Design Dateienverwaltung";
 $_ARRAYLANG['TXT_MEDIA_MAKE_SELECTION'] = "Bitte treffen Sie eine Auswahl!";
 $_ARRAYLANG['TXT_MEDIA_EDIT_FILE'] = "Media bearbeiten";
 $_ARRAYLANG['TXT_MEDIA_ERROR_OCCURED'] = "Ein Fehler ist aufgetreten!";
-$_ARRAYLANG['TXT_MEDIA_FILE_DONT_EXISTS'] = "Die gewünschte Datei existiert nicht!";
-$_ARRAYLANG['TXT_MEDIA_BACK'] = "zurück";
+$_ARRAYLANG['TXT_MEDIA_FILE_DONT_EXISTS'] = "Die gewÃ¼nschte Datei existiert nicht!";
+$_ARRAYLANG['TXT_MEDIA_BACK'] = "zurÃ¼ck";
 $_ARRAYLANG['TXT_MEDIA_MSG_EDIT'] = "Media erfolgreich bearbeitet!";
 $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT'] = "Fehler: Media konnte nicht beabeitet werden!";
-$_ARRAYLANG['TXT_MEDIA_RENAME_EXT'] = "Sind sie sicher, dass Sie die Dateierweiterung ändern wollen?";
-$_ARRAYLANG['TXT_MEDIA_SELECT_UPLOAD_FILE'] = "Bitte wählen Sie eine Datei aus!";
+$_ARRAYLANG['TXT_MEDIA_RENAME_EXT'] = "Sind sie sicher, dass Sie die Dateierweiterung Ã¤ndern wollen?";
+$_ARRAYLANG['TXT_MEDIA_SELECT_UPLOAD_FILE'] = "Bitte wÃ¤hlen Sie eine Datei aus!";
 $_ARRAYLANG['TXT_MEDIA_CUT'] = "Ausschneiden";
-$_ARRAYLANG['TXT_MEDIA_PASTE'] = "Einfügen";
+$_ARRAYLANG['TXT_MEDIA_PASTE'] = "EinfÃ¼gen";
 $_ARRAYLANG['TXT_MEDIA_MSG_CUT'] = "Media-Dateien erfolgreich verschoben!";
 $_ARRAYLANG['TXT_MEDIA_COPY'] = "Kopieren";
 $_ARRAYLANG['TXT_MEDIA_MSG_COPY'] = "Media-Dateien erfolgreich kopiert!";
@@ -55,15 +55,15 @@ $_ARRAYLANG['TXT_MEDIA_RENAME_NAME'] = "Geben Sie einen Name ein!";
 $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_COPY'] = "Fehler: Der Ordner kann nicht in sich selber kopiert werden!";
 $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_CUT'] = "Fehler: Der Ordner kann nicht in sich selber verschoben werden!";
 $_ARRAYLANG['TXT_MEDIA_WIDTH'] = "Breite";
-$_ARRAYLANG['TXT_MEDIA_HEIGHT'] = "Höhe";
+$_ARRAYLANG['TXT_MEDIA_HEIGHT'] = "HÃ¶he";
 $_ARRAYLANG['TXT_MEDIA_BALANCE'] = "Proportion beibehalten";
-$_ARRAYLANG['TXT_MEDIA_RESET'] = "Zurücksetzen";
-$_ARRAYLANG['TXT_MEDIA_QUALITY'] = "Qualität";
+$_ARRAYLANG['TXT_MEDIA_RESET'] = "ZurÃ¼cksetzen";
+$_ARRAYLANG['TXT_MEDIA_QUALITY'] = "QualitÃ¤t";
 $_ARRAYLANG['TXT_MEDIA_EDIT_IMAGE'] = "Bild bearbeiten";
 $_ARRAYLANG['TXT_MEDIA_NO'] = "Nein";
 $_ARRAYLANG['TXT_MEDIA_YES'] = "Ja";
 $_ARRAYLANG['TXT_MEDIA_INSERT_AS_COPY'] = "Als Kopie speichern";
-$_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Design Überblick";
+$_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Design Ãœberblick";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "Neue Designvorlage erstellen";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Aktivieren";
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = "Platzhalter Verzeichnis";

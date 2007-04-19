@@ -1,11 +1,11 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_CALENDAR_DATE'] = "Event Date";
-$_ARRAYLANG['TXT_CALENDAR_BACK'] = "« back";
+$_ARRAYLANG['TXT_CALENDAR_BACK'] = "Â« back";
 $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "The next events:";
 $_ARRAYLANG['TXT_CALENDAR_SHOW'] = "show";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'] = "There are no events...";

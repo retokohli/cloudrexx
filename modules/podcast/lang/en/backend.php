@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_PODCAST_OVERVIEW'] = "Overview";
@@ -77,7 +77,7 @@ $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE'] = "Source code ";
 $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE_OF_MEDIUM'] = "Show source code of medium %s";
 $_ARRAYLANG['TXT_PODCAST_SELECT_ALL'] = "Select all";
 $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE'] = "Select source";
-$_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'] = "Geben Sie entweder ein lokales Medium an, dass Sie zur Podcast Bibliothek hinzuf¸gen mˆchten,<br />oder geben Sie direkt die URL eines Mediums an.";
+$_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'] = "Geben Sie entweder ein lokales Medium an, dass Sie zur Podcast Bibliothek hinzuf√ºgen m√∂chten,<br />oder geben Sie direkt die URL eines Mediums an.";
 $_ARRAYLANG['TXT_PODCAST_LOCAL'] = "Local";
 $_ARRAYLANG['TXT_PODCAST_REMOTE'] = "URL";
 $_ARRAYLANG['TXT_PODCAST_NEXT'] = "Next";
@@ -94,7 +94,7 @@ $_ARRAYLANG['TXT_PODCAST_SHOW'] = "Show";
 $_ARRAYLANG['TXT_PODCAST_CONFIRM_DELETE_TEMPLATE'] = "Do you really want to delete the template \"%s\"?";
 $_ARRAYLANG['TXT_PODCAST_TEMPLATE_DELETED_SUCCESSFULL'] = "The template \'%s\' has been successfully deleted.";
 $_ARRAYLANG['TXT_PODCAST_TEMPLATE_DELETED_FAILURE'] = "An error occured while deleting the template \'%s\'!";
-$_ARRAYLANG['TXT_PODCAST_TEMPLATE_STILL_IN_USE_MSG'] = "Die Vorlage \'%s\' kann nicht gelˆscht werden, da sie noch von mindestens einem Medium verwendet wird!";
+$_ARRAYLANG['TXT_PODCAST_TEMPLATE_STILL_IN_USE_MSG'] = "Die Vorlage \'%s\' kann nicht gel√∂scht werden, da sie noch von mindestens einem Medium verwendet wird!";
 $_ARRAYLANG['TXT_PODCAST_PLAYLENGHT'] = "Playlenght";
 $_ARRAYLANG['TXT_PODCAST_PLAYLENGHT_FORMAT'] = "hours:minutes:seconds";
 $_ARRAYLANG['TXT_PODCAST_AUTHOR'] = "Author";

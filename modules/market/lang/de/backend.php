@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Inserate";
@@ -13,21 +13,21 @@ $_ARRAYLANG['TXT_MARKET_ACTION'] = "Aktion";
 $_ARRAYLANG['TXT_MARKET_AD_COUNT'] = "Anzahl Inserate";
 $_ARRAYLANG['TXT_MARKET_ACTIVATE'] = "Aktivieren";
 $_ARRAYLANG['TXT_MARKET_DEACTIVATE'] = "Deaktivieren";
-$_ARRAYLANG['TXT_MARKET_DELETE_ENTRIES'] = "Daten werden unwiederruflich gelöscht.";
-$_ARRAYLANG['TXT_MARKET_STATUS_CHANGED'] = "Der Status wurde erfolgreich geändert.";
-$_ARRAYLANG['TXT_MARKET_CATEGORY_DELETE_ERROR'] = "Kategorie kann nicht gelöscht werden, da diese noch Einträge enthält.";
-$_ARRAYLANG['TXT_MARKET_CATEGORY_DELETE_SUCCESS'] = "Die Kategorie wurde erfolgreich gelöscht.";
+$_ARRAYLANG['TXT_MARKET_DELETE_ENTRIES'] = "Daten werden unwiederruflich gelÃ¶scht.";
+$_ARRAYLANG['TXT_MARKET_STATUS_CHANGED'] = "Der Status wurde erfolgreich geÃ¤ndert.";
+$_ARRAYLANG['TXT_MARKET_CATEGORY_DELETE_ERROR'] = "Kategorie kann nicht gelÃ¶scht werden, da diese noch EintrÃ¤ge enthÃ¤lt.";
+$_ARRAYLANG['TXT_MARKET_CATEGORY_DELETE_SUCCESS'] = "Die Kategorie wurde erfolgreich gelÃ¶scht.";
 $_ARRAYLANG['TXT_MARKET_CATEGORY_SORTING_UPDATED'] = "Die Sortierung wurde erfolgreich editiert.";
-$_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_FILL_FIELDS'] = "Bitte alle Pflichfelder ausfüllen";
-$_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_SUCCESS'] = "Die Kategorie wurde erfolgreich hinzugefügt.";
+$_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_FILL_FIELDS'] = "Bitte alle Pflichfelder ausfÃ¼llen";
+$_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_SUCCESS'] = "Die Kategorie wurde erfolgreich hinzugefÃ¼gt.";
 $_ARRAYLANG['TXT_MARKET_CATEGORY_EDIT'] = "Kategorie editieren";
 $_ARRAYLANG['TXT_MARKET_TITLE'] = "Titel";
-$_ARRAYLANG['TXT_MARKET_ADDEDBY'] = "Hinzugefügt von";
+$_ARRAYLANG['TXT_MARKET_ADDEDBY'] = "HinzugefÃ¼gt von";
 $_ARRAYLANG['TXT_MARKET_NO_ENTRIES_FOUND'] = "Keine Inserate gefunden.";
 $_ARRAYLANG['TXT_MARKET_OFFER'] = "Ich biete";
 $_ARRAYLANG['TXT_MARKET_SEARCH'] = "Ich suche";
 $_ARRAYLANG['TXT_MARKET_IMAGE'] = "Bild";
-$_ARRAYLANG['TXT_MARKET_FIELDS_NOT_CORRECT'] = "Folgende Felder wurden nicht korrekt ausgefüllt:";
+$_ARRAYLANG['TXT_MARKET_FIELDS_NOT_CORRECT'] = "Folgende Felder wurden nicht korrekt ausgefÃ¼llt:";
 $_ARRAYLANG['TXT_MARKET_PRICE'] = "Preis";
 $_ARRAYLANG['TXT_MARKET_FREE'] = "Gratis abzugeben";
 $_ARRAYLANG['TXT_MARKET_ARRANGEMENT'] = "Preis nach Absprache";
@@ -40,12 +40,12 @@ $_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'] = "Inserat editieren";
 $_ARRAYLANG['TXT_MARKET_DAYS'] = "Tag(e)";
 $_ARRAYLANG['TXT_MARKET_EDIT_SUCCESSFULLY'] = "Das Inserat wurde erfolgreich editiert.";
 $_ARRAYLANG['TXT_MARKET_IMAGE_UPLOAD_ERROR'] = "Fehler beim Heraufladen des Bildes.";
-$_ARRAYLANG['TXT_MARKET_VALIDATION_EMAIL'] = "Bestätigungs E-Mail";
+$_ARRAYLANG['TXT_MARKET_VALIDATION_EMAIL'] = "BestÃ¤tigungs E-Mail";
 $_ARRAYLANG['TXT_MARKET_CLEARING_EMAIL'] = "Freischaltcode E-Mail";
 $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'] = "Einstellungen wurden erfolgreich gespeichert.";
 $_ARRAYLANG['TXT_MARKET_PLACEHOLDER'] = "Platzhalter";
-$_ARRAYLANG['TXT_MARKET_ACTIVATE_VALIDATION_EMAIL'] = "Bestätigungs E-Mail aktivieren";
-$_ARRAYLANG['TXT_MARKET_ADDITIONAL_RECIPENT'] = "Weiterer Empfänger";
+$_ARRAYLANG['TXT_MARKET_ACTIVATE_VALIDATION_EMAIL'] = "BestÃ¤tigungs E-Mail aktivieren";
+$_ARRAYLANG['TXT_MARKET_ADDITIONAL_RECIPENT'] = "Weiterer EmpfÃ¤nger";
 $_ARRAYLANG['TXT_MARKET_SUBJECT'] = "Betreff";
 $_ARRAYLANG['TXT_MARKET_TEXT'] = "Text";
 $_ARRAYLANG['TXT_MARKET_URL'] = "URL";
@@ -54,27 +54,27 @@ $_ARRAYLANG['TXT_MARKET_ADVERTISEMENT_ID'] = "Inserate ID";
 $_ARRAYLANG['TXT_MARKET_ADVERTISEMENT_TITLE'] = "Inserate Titel";
 $_ARRAYLANG['TXT_MARKTE_PAYPAL_EMAIL'] = "PayPay E-Mail-Konto";
 $_ARRAYLANG['TXT_MARKET_PAYPAL_ACTIVATE'] = "PayPal aktivieren";
-$_ARRAYLANG['TXT_MARKET_PAYPAL_CURRENCIES'] = "Nur die folgenden Währungen";
+$_ARRAYLANG['TXT_MARKET_PAYPAL_CURRENCIES'] = "Nur die folgenden WÃ¤hrungen";
 $_ARRAYLANG['TXT_MARKET_PAYPAL_PRICE'] = "Preis pro Inserat";
-$_ARRAYLANG['TXT_MARKET_PAYPAL_MARKED'] = "Gebühr für farbig hinterlegtes Inserat";
+$_ARRAYLANG['TXT_MARKET_PAYPAL_MARKED'] = "GebÃ¼hr fÃ¼r farbig hinterlegtes Inserat";
 $_ARRAYLANG['TXT_MARKET_CODE_SEND'] = "Code an Inserenten senden";
-$_ARRAYLANG['TXT_MARKET_CODE_CLEARING_CODE'] = "Freischaltcode Empfänger";
+$_ARRAYLANG['TXT_MARKET_CODE_CLEARING_CODE'] = "Freischaltcode EmpfÃ¤nger";
 $_ARRAYLANG['TXT_MARKET_CODE_CLEARINGCODE'] = "Freischaltcode";
-$_ARRAYLANG['TXT_MARKET_ADD_SUCCESS'] = "Das Inserat wurde erfolgreich hinzugefügt.";
-$_ARRAYLANG['TXT_MARKET_DELETE_SUCCESS'] = "Das Inserat wurde erfolgreich gelöscht.";
-$_ARRAYLANG['TXT_MARKET_IMAGE_DELETE_ERROR'] = "Fehler beim Löschen der Bilddatei.";
+$_ARRAYLANG['TXT_MARKET_ADD_SUCCESS'] = "Das Inserat wurde erfolgreich hinzugefÃ¼gt.";
+$_ARRAYLANG['TXT_MARKET_DELETE_SUCCESS'] = "Das Inserat wurde erfolgreich gelÃ¶scht.";
+$_ARRAYLANG['TXT_MARKET_IMAGE_DELETE_ERROR'] = "Fehler beim LÃ¶schen der Bilddatei.";
 $_ARRAYLANG['TXT_MARKET_SPEZ_FIELDS'] = "Zusatzfelder";
 $_ARRAYLANG['TXT_MARKET_PAYPAL'] = "Zahlungsart";
-$_ARRAYLANG['TXT_MARKET_PLACEHOLDER_CONTENT'] = "Platzhalter für Inhalt";
-$_ARRAYLANG['TXT_MARKET_PLACEHOLDER_TITLE'] = "Platzhalter für Titel";
+$_ARRAYLANG['TXT_MARKET_PLACEHOLDER_CONTENT'] = "Platzhalter fÃ¼r Inhalt";
+$_ARRAYLANG['TXT_MARKET_PLACEHOLDER_TITLE'] = "Platzhalter fÃ¼r Titel";
 $_ARRAYLANG['TXT_MARKET_SET_MAXDAYS'] = "max. Anzeigedauer (Tage)";
 $_ARRAYLANG['TXT_MARKET_SET_DESCRIPTION'] = "Kategoriebeschreibung anzeigen";
 $_ARRAYLANG['TXT_MARKET_SET_PAGING'] = "Anzahl Inserate pro Seite";
-$_ARRAYLANG['TXT_MARKET_SET_CURRENCY'] = "Währung";
-$_ARRAYLANG['TXT_MARKET_SET_ADD_ENTRY_ONLY_COMMUNITY'] = "Nur Mitglieder dürfen Inserate hinzufügen (Community-Modul)";
-$_ARRAYLANG['TXT_MARKET_SET_ADD_ENTRY'] = "Besuchern erlauben Inserate hinzuzufügen";
+$_ARRAYLANG['TXT_MARKET_SET_CURRENCY'] = "WÃ¤hrung";
+$_ARRAYLANG['TXT_MARKET_SET_ADD_ENTRY_ONLY_COMMUNITY'] = "Nur Mitglieder dÃ¼rfen Inserate hinzufÃ¼gen (Community-Modul)";
+$_ARRAYLANG['TXT_MARKET_SET_ADD_ENTRY'] = "Besuchern erlauben Inserate hinzuzufÃ¼gen";
 $_ARRAYLANG['TXT_MARKET_SET_EDIT_ENTRY'] = "Besuchern erlauben Inserate zu editieren";
 $_ARRAYLANG['TXT_MARKET_SET_INDEXVIEW'] = "Index-Ansicht";
-$_ARRAYLANG['TXT_MARKET_SET_MAXDAYS_ON'] = "Beschränkte Anzeigedauer";
-$_ARRAYLANG['TXT_MARKET_SET_EXP_SEARCH_PRICE'] = "Auswahlfelder für erweiterte Suche nach 'Preis bis'";
+$_ARRAYLANG['TXT_MARKET_SET_MAXDAYS_ON'] = "BeschrÃ¤nkte Anzeigedauer";
+$_ARRAYLANG['TXT_MARKET_SET_EXP_SEARCH_PRICE'] = "Auswahlfelder fÃ¼r erweiterte Suche nach 'Preis bis'";
 ?>

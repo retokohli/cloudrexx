@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_CATEGORY_MANAGER'] = "Kategori manager";
@@ -28,7 +28,7 @@ $_ARRAYLANG['TXT_MARKED'] = "markerede";
 $_ARRAYLANG['TXT_ACTIVATE'] = "Aktiver";
 $_ARRAYLANG['TXT_DEACTIVATE'] = "Deaktiver";
 $_ARRAYLANG['TXT_STATUS'] = "Status";
-$_ARRAYLANG['TXT_ADD_DOCUMENT'] = "Lav/tilføj nyt dokument";
+$_ARRAYLANG['TXT_ADD_DOCUMENT'] = "Lav/tilfÃ¸j nyt dokument";
 $_ARRAYLANG['TXT_HYPERLINKS'] = "Links";
 $_ARRAYLANG['TXT_EXTERNAL_SOURCE'] = "Eksterne kilder";
 $_ARRAYLANG['TXT_LINK'] = "Link";
@@ -42,15 +42,15 @@ $_ARRAYLANG['TXT_ACTIVE'] = "Aktiv";
 $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'] = "Data record er blevet slettet med succes!";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database fejl!";
 $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'] = "Data er blevet aktualiseret med succes";
-$_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'] = "Data er blevet tilføjet med succes";
-$_ARRAYLANG['TXT_ADD_NEW_CATEGORY'] = "Tilføj en ny kateogri";
+$_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'] = "Data er blevet tilfÃ¸jet med succes";
+$_ARRAYLANG['TXT_ADD_NEW_CATEGORY'] = "TilfÃ¸j en ny kateogri";
 $_ARRAYLANG['TXT_NAME'] = "Navn";
-$_ARRAYLANG['TXT_ADD'] = "Tilføj";
+$_ARRAYLANG['TXT_ADD'] = "TilfÃ¸j";
 $_ARRAYLANG['TXT_CATEGORY_LIST'] = "Kategoriliste";
 $_ARRAYLANG['TXT_ID'] = "ID";
-$_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Accepter ændringer";
-$_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Denne aktion kan have indflydelse på systemfunktionaliteten!";
-$_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "Kategorien kunne ikke slettes! Slet venligst først undergrupperne.";
+$_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Accepter Ã¦ndringer";
+$_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Denne aktion kan have indflydelse pÃ¥ systemfunktionaliteten!";
+$_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "Kategorien kunne ikke slettes! Slet venligst fÃ¸rst undergrupperne.";
 $_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND'] = "Der er ikke blevet fundet nogle dokumenter";
 $_ARRAYLANG['TXT_DELETE'] = "Slet";
 ?>

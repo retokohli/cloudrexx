@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_AUTHOR'] = "Autor";
@@ -13,7 +13,7 @@ $_ARRAYLANG['TXT_DOCUMENTS'] = "Dokumente";
 $_ARRAYLANG['TXT_NAME'] = "Name";
 $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] = "Wichtige Hyperlinks";
 $_ARRAYLANG['TXT_LAST_UPDATE'] = "Letzte Aktualisierung";
-$_ARRAYLANG['TXT_PERFORM'] = "Ausführen";
+$_ARRAYLANG['TXT_PERFORM'] = "AusfÃ¼hren";
 $_ARRAYLANG['TXT_SOURCE'] = "Quelle";
 $_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND'] = "Es wurden keine Dokumente gefunden";
 ?>

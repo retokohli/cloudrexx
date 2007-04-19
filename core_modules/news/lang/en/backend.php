@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_DELETE_MARKED'] = "Delete marked";
@@ -47,7 +47,7 @@ $_ARRAYLANG['TXT_NAME'] = "Name";
 $_ARRAYLANG['TXT_ADD'] = "Add";
 $_ARRAYLANG['TXT_CATEGORY_LIST'] = "Category list";
 $_ARRAYLANG['TXT_ID'] = "ID";
-$_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Änderungen übernehmen";
+$_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Ã„nderungen Ã¼bernehmen";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Do you really want to delete the data record?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "This action can have influence on the functionallity of the system!";
 $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "This category could not be deletet! Please delete all the subgroups first!";
@@ -104,7 +104,7 @@ $_ARRAYLANG['TXT_SET_FRMAE_NAME_TEXT'] = "You must specify a name for the frame!
 $_ARRAYLANG['TXT_BOX_NAME_EXISTS_TEXT'] = "A box with the same name exists already!";
 $_ARRAYLANG['TXT_COULD_NOT_DELETE_TEMPLATE_TEXT'] = "Could not delete the template because it is still in use!";
 $_ARRAYLANG['TXT_NEWS_SITE'] = "News site";
-$_ARRAYLANG['TXT_NEWS_PLACEHOLLDERS_USAGE_TEXT'] = "Die folgenden Platzhalter stehen bei den Seiten zur Verfügung, welche zur <b>section</b> news gehören.";
+$_ARRAYLANG['TXT_NEWS_PLACEHOLLDERS_USAGE_TEXT'] = "Die folgenden Platzhalter stehen bei den Seiten zur VerfÃ¼gung, welche zur <b>section</b> news gehÃ¶ren.";
 $_ARRAYLANG['TXT_LANGUAGE_VARIABLES'] = "Language variables";
 $_ARRAYLANG['TXT_GENERAL'] = "General";
 $_ARRAYLANG['TXT_NEWS_PAGIN_DESCRIPTION'] = "Navigation of the paging system";
@@ -116,7 +116,7 @@ $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'] = "Link to the news message";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'] = "Category of the news message";
 $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-class: row1 or row2";
 $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block zur definierung einer News meldung. Starttag: &lt;!-- BEGIN newsrow --&gt; Endtag: &lt;!-- END newsrow --&gt;";
-$_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Die folgenden Platzhalter stehen bei den Seiten zur Verfügung, welche zur <b>section</b> news gehören und als <b>cmd</b> details haben.";
+$_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Die folgenden Platzhalter stehen bei den Seiten zur VerfÃ¼gung, welche zur <b>section</b> news gehÃ¶ren und als <b>cmd</b> details haben.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Title of the news message";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Text of the news message";
 $_ARRAYLANG['TXT_NEWS_LASTUPDATE_DESCRIPTION'] = "Date of the last modification of the news message";
@@ -126,7 +126,7 @@ $_ARRAYLANG['TXT_PUBLISHED_ON'] = "Published on:";
 $_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "In der Designvorlage <b>headlines.html</b>. Diese Seite kann mit dem Platzhalter [[HEADLINES_FILE]] im Design oder in einer Content Seite eingebunden werden.";
 $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Path to the image of the news message";
 $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'] = "Short text of the news message";
-$_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "Die Teaserboxen können im Design oder im Content eingebunden werden.<br />Verwenden Sie die Platzhalter die bei der Teaseradministration angezeigt werden,<br />um die Boxen einzubinden.";
+$_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "Die Teaserboxen kÃ¶nnen im Design oder im Content eingebunden werden.<br />Verwenden Sie die Platzhalter die bei der Teaseradministration angezeigt werden,<br />um die Boxen einzubinden.";
 $_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Block zur definierung eines Teasers. Starttag: &lt;!-- BEGIN teaser_n --&gt; Endtag: &lt;!-- END teaser_n --&gt;. n ist die Box Nummer, beginnend bei 1";
 $_ARRAYLANG['TXT_CONTINUE'] = "continue";
 $_ARRAYLANG['TXT_NUMBER_OF_CHARS'] = "Number of chars";
@@ -153,27 +153,27 @@ $_ARRAYLANG['TXT_NEWS_TICKERS'] = "Tickers";
 $_ARRAYLANG['TXT_NEWS_TICKER'] = "Ticker";
 $_ARRAYLANG['TXT_NEWS_CHARSET'] = "Zeichensatz";
 $_ARRAYLANG['TXT_NEWS_FUNCTIONS'] = "Funktionen";
-$_ARRAYLANG['TXT_NEWS_ACTION_IS_IRREVERSIBLE'] = "Diese Aktion kann nicht rückgängig gemacht werden!";
-$_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKER'] = "Möchten Sie den Ticker %s wirklich löschen?";
-$_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKERS_MSG'] = "Möchten Sie die ausgewählten Ticker wirklich löschen?";
-$_ARRAYLANG['TXT_NEWS_DELETE_TICKER'] = "Ticker %s löschen";
+$_ARRAYLANG['TXT_NEWS_ACTION_IS_IRREVERSIBLE'] = "Diese Aktion kann nicht rÃ¼ckgÃ¤ngig gemacht werden!";
+$_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKER'] = "MÃ¶chten Sie den Ticker %s wirklich lÃ¶schen?";
+$_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKERS_MSG'] = "MÃ¶chten Sie die ausgewÃ¤hlten Ticker wirklich lÃ¶schen?";
+$_ARRAYLANG['TXT_NEWS_DELETE_TICKER'] = "Ticker %s lÃ¶schen";
 $_ARRAYLANG['TXT_NEWS_NO_TICKER_AVAILABLE'] = "Keine Ticker vorhanden!";
-$_ARRAYLANG['TXT_NEWS_CHECK_ALL'] = "Alle auswählen";
+$_ARRAYLANG['TXT_NEWS_CHECK_ALL'] = "Alle auswÃ¤hlen";
 $_ARRAYLANG['TXT_NEWS_UNCHECK_ALL'] = "Auswahl entfernen";
 $_ARRAYLANG['TXT_NEWS_WITH_SELECTED'] = "markierte";
-$_ARRAYLANG['TXT_NEWS_DELETE'] = "Löschen";
+$_ARRAYLANG['TXT_NEWS_DELETE'] = "LÃ¶schen";
 $_ARRAYLANG['TXT_NEWS_CANCEL'] = "Abbrechen";
 $_ARRAYLANG['TXT_NEWS_CREATE_TICKER'] = "Ticker erstellen";
 $_ARRAYLANG['TXT_NEWS_MODIFY_TICKER'] = "Ticker bearbeiten";
 $_ARRAYLANG['TXT_NEWS_FILENAME'] = "Dateiname";
-$_ARRAYLANG['TXT_NEWS_TICKERS_SCCESSFULLY_DELETED'] = "Die ausgewählten Ticker wurden erfolgreich gelöscht.";
-$_ARRAYLANG['TXT_NEWS_TICKER_SUCCESSFULLY_DELETED'] = "Der Ticker %s wurde erfolgreich gelöscht.";
-$_ARRAYLANG['TXT_NEWS_TICKERS_FAILED_DELETE'] = "Beim Löschen der ausgewählten Ticker trat ein Fehler auf!";
-$_ARRAYLANG['TXT_NEWS_TICKER_FAILED_DELETE'] = "Beim Löschen des Tickers %s trat ein Fehler auf!";
+$_ARRAYLANG['TXT_NEWS_TICKERS_SCCESSFULLY_DELETED'] = "Die ausgewÃ¤hlten Ticker wurden erfolgreich gelÃ¶scht.";
+$_ARRAYLANG['TXT_NEWS_TICKER_SUCCESSFULLY_DELETED'] = "Der Ticker %s wurde erfolgreich gelÃ¶scht.";
+$_ARRAYLANG['TXT_NEWS_TICKERS_FAILED_DELETE'] = "Beim LÃ¶schen der ausgewÃ¤hlten Ticker trat ein Fehler auf!";
+$_ARRAYLANG['TXT_NEWS_TICKER_FAILED_DELETE'] = "Beim LÃ¶schen des Tickers %s trat ein Fehler auf!";
 $_ARRAYLANG['TXT_NEWS_URL_ENCODING'] = "URL-Kodierung";
 $_ARRAYLANG['TXT_NEWS_URL_ENCODING_TXT'] = "Durch aktivieren dieser Option wird der Inhalt dieses Tickers nach RFC 1738 URL-Kodiert.";
 $_ARRAYLANG['TXT_NEWS_PREFIX'] = "Prefix";
-$_ARRAYLANG['TXT_NEWS_TICKER_PREFIX_MSG'] = "Das Prefix wird beim Speichern des Tickers dem Inhalt vorangestellt.<br />Dabei wird das Prefix nicht URL-Kodiert, sofern diese Option ausgewählt wurde.";
+$_ARRAYLANG['TXT_NEWS_TICKER_PREFIX_MSG'] = "Das Prefix wird beim Speichern des Tickers dem Inhalt vorangestellt.<br />Dabei wird das Prefix nicht URL-Kodiert, sofern diese Option ausgewÃ¤hlt wurde.";
 $_ARRAYLANG['TXT_NEWS_IMAGE_DESCRIPTION'] = "Image (Teasers)";
 $_ARRAYLANG['TXT_NEWS_GENERAL'] = "General";
 $_ARRAYLANG['TXT_NEWS_ADVANCED'] = "Advanced";

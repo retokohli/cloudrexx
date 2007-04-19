@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Stock";
@@ -25,7 +25,7 @@ $_ARRAYLANG['TXT_COUNTRY'] = "Country";
 $_ARRAYLANG['TXT_ZONE'] = "Zone";
 $_ARRAYLANG['TXT_TAX_INCLUDED'] = "(VAT included)";
 $_ARRAYLANG['TXT_TAX_EXCLUDED'] = "(VAT excluded)";
-$_ARRAYLANG['TXT_FEE'] = "Gebühr";
+$_ARRAYLANG['TXT_FEE'] = "GebÃ¼hr";
 $_ARRAYLANG['TXT_PAYMENT_TYPE'] = "Type of payment";
 $_ARRAYLANG['TXT_PAYMENT_TYPES'] = "Types of payment";
 $_ARRAYLANG['TXT_SHIPPING_METHOD'] = "Shipping method";
@@ -87,7 +87,7 @@ $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database error! If the error occures 
 $_ARRAYLANG['TXT_INVALID_PASSWORD'] = "Password is invalid (min. 6 chars).";
 $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "Your e-mail address is invalid!";
 $_ARRAYLANG['TXT_MAKE_DECISION_FOR_OPTIONS'] = "You have to make a decision for the following options";
-$_ARRAYLANG['TXT_ACCEPT_AGB'] = "Bitte bestÃ¤tigen Sie die Akzeptanz der allgemeinen GeschÃ¤ftsbedingungen.";
+$_ARRAYLANG['TXT_ACCEPT_AGB'] = "Bitte bestÃƒÂ¤tigen Sie die Akzeptanz der allgemeinen GeschÃƒÂ¤ftsbedingungen.";
 $_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER'] = "This e-mail address is already used by an other customer!";
 $_ARRAYLANG['TXT_USERNAME_USED_BY_OTHER_CUSTOMER'] = "This username is already used by an other customer!";
 $_ARRAYLANG['TXT_SHOP_PAYPAL_ITEM_NAME'] = "Purchase";
@@ -125,8 +125,8 @@ $_ARRAYLANG['TXT_ACCOUNT_HOLDER'] = "Account owner";
 $_ARRAYLANG['TXT_ACCOUNT_BANK'] = "";
 $_ARRAYLANG['TXT_ACCOUNT_BLZ'] = "";
 $_ARRAYLANG['TXT_PAYMENT_LSV'] = "Lastschrift (LSV)";
-$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = " Wichtig: Füllen Sie <a href='?section=shop&cmd=einzug' target='_blank'>das Formular 'Einzugsermächtigung'</a> aus, und faxen oder schicken Sie es ausgefüllt und unterzeichnet an uns. Dort finden Sie auch unsere Faxnummer und Anschrift.<br />Wenn wir den Rechnungsbetrag Ihrem Konto belasten können, werden wir Ihnen die Bestellung zustellen.<br />";
-$_ARRAYLANG['TXT_PAYMENT_LSV_FEE'] = "Gebühr für LSV";
+$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = " Wichtig: FÃ¼llen Sie <a href='?section=shop&cmd=einzug' target='_blank'>das Formular 'EinzugsermÃ¤chtigung'</a> aus, und faxen oder schicken Sie es ausgefÃ¼llt und unterzeichnet an uns. Dort finden Sie auch unsere Faxnummer und Anschrift.<br />Wenn wir den Rechnungsbetrag Ihrem Konto belasten kÃ¶nnen, werden wir Ihnen die Bestellung zustellen.<br />";
+$_ARRAYLANG['TXT_PAYMENT_LSV_FEE'] = "GebÃ¼hr fÃ¼r LSV";
 $_ARRAYLANG['TXT_ERROR_INSERTING_ORDER_ITEM_ATTRIBUTE'] = "Error while inserting order items attributes";
 $_ARRAYLANG['TXT_ERROR_INSERTING_ORDER_ITEM'] = "Error while inserting order item";
 $_ARRAYLANG['TXT_ERROR_LOOKING_UP_ORDER'] = "Error while looking up product";
@@ -134,12 +134,12 @@ $_ARRAYLANG['TXT_ERROR_INSERTING_ACCOUNT_INFORMATION'] = "Error while inserting 
 $_ARRAYLANG['TXT_ERROR_ACCOUNT_INFORMATION_NOT_AVAILABLE'] = "Error: account information is not available";
 $_ARRAYLANG['TXT_ERROR_STORING_CUSTOMER_DATA'] = "Error while storing customer data";
 $_ARRAYLANG['TXT_ORDER_ALREADY_PLACED'] = "Your order has been stored already!";
-$_ARRAYLANG['TXT_SHOP_LSV_EE_TITLE'] = "Einzugsermächtigung";
-$_ARRAYLANG['TXT_SHOP_LSV_EE_INFO'] = "Füllen Sie bitte dieses Formular in Ihrem Browser <b>vollständig</b> aus.  Drucken Sie es anschliessend und senden oder faxen Sie es uns <b>unterschrieben</b> zu.";
+$_ARRAYLANG['TXT_SHOP_LSV_EE_TITLE'] = "EinzugsermÃ¤chtigung";
+$_ARRAYLANG['TXT_SHOP_LSV_EE_INFO'] = "FÃ¼llen Sie bitte dieses Formular in Ihrem Browser <b>vollstÃ¤ndig</b> aus.  Drucken Sie es anschliessend und senden oder faxen Sie es uns <b>unterschrieben</b> zu.";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_ADDRESS'] = "Unsere Adresse:";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_FAX'] = "Fax:";
-$_ARRAYLANG['TXT_SHOP_LSV_EE_TEXT'] = "Hiermit ermächtige(n) ich/wir die als Zahlungsempfänger genannte Firma widerruflich, die von mir/uns zu entrichtenden Zahlungen bei Fälligkeit zu Lasten meines/unseres Kontos mittels Lastschrift einzuziehen. Wenn mein/unser Konto die erforderliche Deckung nicht aufweist, besteht seitens des kontoführenden Kreditinstituts keine Verpflichtung zur Einlösung. Teileinlösungen werden im Lastschriftverfahren nicht vorgenommen.";
-$_ARRAYLANG['TXT_SHOP_LSV_EE_RECIPIENT'] = "Zahlungsempfänger:";
+$_ARRAYLANG['TXT_SHOP_LSV_EE_TEXT'] = "Hiermit ermÃ¤chtige(n) ich/wir die als ZahlungsempfÃ¤nger genannte Firma widerruflich, die von mir/uns zu entrichtenden Zahlungen bei FÃ¤lligkeit zu Lasten meines/unseres Kontos mittels Lastschrift einzuziehen. Wenn mein/unser Konto die erforderliche Deckung nicht aufweist, besteht seitens des kontofÃ¼hrenden Kreditinstituts keine Verpflichtung zur EinlÃ¶sung. TeileinlÃ¶sungen werden im Lastschriftverfahren nicht vorgenommen.";
+$_ARRAYLANG['TXT_SHOP_LSV_EE_RECIPIENT'] = "ZahlungsempfÃ¤nger:";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_REASON'] = "Zahlungsgrund:";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_DESCRIPTION'] = "(Artikelbezeichnung)";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_CUSTOMER'] = "Kontoinhaber:";
@@ -154,28 +154,28 @@ $_ARRAYLANG['TXT_SHOP_LSV_EE_BANKCODE'] = "Bankleitzahl (BLZ)";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_ACCOUNT'] = "Kontonummer";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_DATE'] = "Ort, Datum";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_SIGNATURE'] = "Unterschrift";
-$_ARRAYLANG['TXT_SHOP_LSV_EE_PRINT'] = "Einzugsermächtigung ausdrucken";
+$_ARRAYLANG['TXT_SHOP_LSV_EE_PRINT'] = "EinzugsermÃ¤chtigung ausdrucken";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_WEIGHT'] = "Weight:";
 $_ARRAYLANG['TXT_SHOP_WEIGHT_UNLIMITED'] = "unlimited";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_CONDITIONS'] = "Shipment conditions:";
 $_ARRAYLANG['TXT_SHOP_COST_FREE'] = "free";
-$_ARRAYLANG['TXT_SHOP_SHIPMENT_COUNTRIES'] = "Lieferländer";
-$_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'] = "Das Gesamtgewicht Ihrer Bestellung übersteigt die verfügbaren Versandmöglichkeiten.";
+$_ARRAYLANG['TXT_SHOP_SHIPMENT_COUNTRIES'] = "LieferlÃ¤nder";
+$_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'] = "Das Gesamtgewicht Ihrer Bestellung Ã¼bersteigt die verfÃ¼gbaren VersandmÃ¶glichkeiten.";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_HIERARCHY'] = "Sie sind hier:";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_FLAT'] = "Galerien:";
 $_ARRAYLANG['SHOP_PASSWORD_CURRENT'] = "Aktuelles Kennwort";
 $_ARRAYLANG['SHOP_PASSWORD_NEW'] = "Neues Kennwort";
-$_ARRAYLANG['SHOP_PASSWORD_CONFIRM'] = "Kennwort bestätigen";
-$_ARRAYLANG['SHOP_PASSWORD_CHANGE'] = "ändern";
-$_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'] = "Geben Sie die E-Mail Adresse für Ihr Konto ein.<br />Ihnen wird anschliessend ein neues Kennwort zugeschickt.";
+$_ARRAYLANG['SHOP_PASSWORD_CONFIRM'] = "Kennwort bestÃ¤tigen";
+$_ARRAYLANG['SHOP_PASSWORD_CHANGE'] = "Ã¤ndern";
+$_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'] = "Geben Sie die E-Mail Adresse fÃ¼r Ihr Konto ein.<br />Ihnen wird anschliessend ein neues Kennwort zugeschickt.";
 $_ARRAYLANG['SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
 $_ARRAYLANG['SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";
-$_ARRAYLANG['SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle &Uuml;bersicht &uuml;ber Ihre bisherigen Bestellungen.";
+$_ARRAYLANG['SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Ãœbersicht Ã¼ber Ihre bisherigen Bestellungen.";
 $_ARRAYLANG['SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
 $_ARRAYLANG['SHOP_ACCOUNT_LOGIN'] = "Anmelden &gt;&gt;";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";
-$_ARRAYLANG['TXT_SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle &Uuml;bersicht &uuml;ber Ihre bisherigen Bestellungen.";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Ãœbersicht Ã¼ber Ihre bisherigen Bestellungen.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Anmelden &gt;&gt;";
 $_ARRAYLANG['TXT_SHOP_CATEGORIES'] = "Kategorien:";

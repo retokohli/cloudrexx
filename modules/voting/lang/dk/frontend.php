@@ -1,21 +1,21 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_NAME'] = "Navn";
-$_ARRAYLANG['TXT_RESET'] = "Sæt tilbage";
+$_ARRAYLANG['TXT_RESET'] = "SÃ¦t tilbage";
 $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'] = "Dataene blev gemt med succes";
 $_ARRAYLANG['TXT_VOTES'] = "Stemmer";
 $_ARRAYLANG['TXT_VOTING_TOTAL'] = "Total antal stemmer";
 $_ARRAYLANG['TXT_DATE'] = "Dato";
 $_ARRAYLANG['TXT_TITLE'] = "Titel";
 $_ARRAYLANG['TXT_SUBMIT'] = "Send";
-$_ARRAYLANG['TXT_VOTING_NOT_AVAILABLE'] = "I øjeblikket er der ikke nogele rundspørgelser.";
-$_ARRAYLANG['TXT_VOTING_OLDER'] = "Gamle rundspørgelser";
-$_ARRAYLANG['TXT_VOTING_ENTRIES'] = "Rundspørgelser";
-$_ARRAYLANG['TXT_VOTING_INVALID_EMAIL_ERROR'] = "Geben Sie bitte eine g&uuml;ltige E-Mail Adresse an!";
+$_ARRAYLANG['TXT_VOTING_NOT_AVAILABLE'] = "I Ã¸jeblikket er der ikke nogele rundspÃ¸rgelser.";
+$_ARRAYLANG['TXT_VOTING_OLDER'] = "Gamle rundspÃ¸rgelser";
+$_ARRAYLANG['TXT_VOTING_ENTRIES'] = "RundspÃ¸rgelser";
+$_ARRAYLANG['TXT_VOTING_INVALID_EMAIL_ERROR'] = "Geben Sie bitte eine gÃ¼ltige E-Mail Adresse an!";
 $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'] = "Sie haben bereits an dieser Umfrage teilgenommen!";
 $_ARRAYLANG['TXT_VOTING_NONEXISTENT_EMAIL'] = "Ihre E-Mail Adresse existiert nicht!";
 ?>

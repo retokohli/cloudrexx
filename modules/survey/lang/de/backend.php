@@ -1,50 +1,50 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
-$_ARRAYLANG['TXT_SURVEY_INSERT_SUCCESS_VOTING'] = "Die Abstimmung wurde erfolgreich hinzugefügt.";
-$_ARRAYLANG['TXT_SURVEY_INSERT_SUCCESS_SURVEY'] = "Die Umfrage wurde erfolgreich hinzugefügt.";
+$_ARRAYLANG['TXT_SURVEY_INSERT_SUCCESS_VOTING'] = "Die Abstimmung wurde erfolgreich hinzugefÃ¼gt.";
+$_ARRAYLANG['TXT_SURVEY_INSERT_SUCCESS_SURVEY'] = "Die Umfrage wurde erfolgreich hinzugefÃ¼gt.";
 $_ARRAYLANG['TXT_SURVEY_PLACEHOLDER'] = "Platzhalter";
 $_ARRAYLANG['TXT_SURVEY_PARTICIPANT'] = "Teilnehmer";
 $_ARRAYLANG['TXT_SURVEY_PARTICIPANT_LAST'] = "Letzter Teilnehmer";
 $_ARRAYLANG['TXT_SURVEY_ACTIONS'] = "Aktionen";
-$_ARRAYLANG['TXT_SURVEY_DELETE_JS'] = "Soll diese Umfrage wirklich gelöscht werden? Achtung: Alle Aufzeichnungen gehen dabei verloren.";
+$_ARRAYLANG['TXT_SURVEY_DELETE_JS'] = "Soll diese Umfrage wirklich gelÃ¶scht werden? Achtung: Alle Aufzeichnungen gehen dabei verloren.";
 $_ARRAYLANG['TXT_SURVEY_STATUS_CHANGE'] = "Status wechseln";
 $_ARRAYLANG['TXT_SURVEY_EDIT'] = "Abstimmung / Umfrage editieren";
 $_ARRAYLANG['TXT_SURVEY_TYPE_SURVEY'] = "Umfrage";
 $_ARRAYLANG['TXT_SURVEY_TYPE_VOTING'] = "Abstimmung";
 $_ARRAYLANG['TXT_SURVEY_PLACEHOLDER_ACTIVE'] = "Aktiv in Platzhalter";
 $_ARRAYLANG['TXT_SURVEY_NO_SURVEYS'] = "Es sind keine Abstimmungen / Umfragen vorhanden.";
-$_ARRAYLANG['TXT_SURVEY_DELETE_ALL_JS'] = "Möchten Sie wirklich alle markierten Einträge löschen? Dieser Vorgang kann nicht rückgängig gemacht werden!";
-$_ARRAYLANG['TXT_MULTIACTION_SELECT'] = "Aktion wählen";
-$_ARRAYLANG['TXT_MULTIACTION_DELETE'] = "Markierte Einträge löschen";
-$_ARRAYLANG['TXT_MULTIACTION_ACTIVATE'] = "Markierte Einträge aktivieren";
-$_ARRAYLANG['TXT_MULTIACTION_DEACTIVATE'] = "Markierte Einträge deaktivieren";
+$_ARRAYLANG['TXT_SURVEY_DELETE_ALL_JS'] = "MÃ¶chten Sie wirklich alle markierten EintrÃ¤ge lÃ¶schen? Dieser Vorgang kann nicht rÃ¼ckgÃ¤ngig gemacht werden!";
+$_ARRAYLANG['TXT_MULTIACTION_SELECT'] = "Aktion wÃ¤hlen";
+$_ARRAYLANG['TXT_MULTIACTION_DELETE'] = "Markierte EintrÃ¤ge lÃ¶schen";
+$_ARRAYLANG['TXT_MULTIACTION_ACTIVATE'] = "Markierte EintrÃ¤ge aktivieren";
+$_ARRAYLANG['TXT_MULTIACTION_DEACTIVATE'] = "Markierte EintrÃ¤ge deaktivieren";
 $_ARRAYLANG['TXT_SURVEY_STATUS_CHANGE_SUCCESS'] = "Status wurde erfolgreich gewechselt.";
-$_ARRAYLANG['TXT_SURVEY_DELETE_ERROR'] = "Beim Löschen der Abstimmung / Umfrage ist ein Fehler aufgetreten.";
-$_ARRAYLANG['TXT_SURVEY_STATUS_CHANGE_ERROR'] = "Beim Ändern des Status ist ein Fehler aufgetreten.";
-$_ARRAYLANG['TXT_SURVEY_DELETE_SUCCESS'] = "Die Abstimmung / Umfrage [NAME] wurde erfolgreich gelöscht.";
-$_ARRAYLANG['TXT_SURVEY_REDIRECT_HELP'] = "Falls Sie nach der Teilnahme an einer Abstimmung, bzw. Umfrage eine Weiterleitung wünschen, können Sie dies hier definieren.";
-$_ARRAYLANG['TXT_SURVEY_COMMENTS_HELP'] = "Durch Aktivieren der Kommentarfunktion wird am Ende der Umfrage ein Feld für Kommentare angefügt.";
-$_ARRAYLANG['TXT_SURVEY_HOMEBOX_HELP'] = "Durch Aktivieren der Platzhalterfunktion wird die Abstimmung in die Systemvariable [[SURVEY_HOME]] geparsed. Diese können Sie dann z.B. in der Sidebar verwenden.";
+$_ARRAYLANG['TXT_SURVEY_DELETE_ERROR'] = "Beim LÃ¶schen der Abstimmung / Umfrage ist ein Fehler aufgetreten.";
+$_ARRAYLANG['TXT_SURVEY_STATUS_CHANGE_ERROR'] = "Beim Ã„ndern des Status ist ein Fehler aufgetreten.";
+$_ARRAYLANG['TXT_SURVEY_DELETE_SUCCESS'] = "Die Abstimmung / Umfrage [NAME] wurde erfolgreich gelÃ¶scht.";
+$_ARRAYLANG['TXT_SURVEY_REDIRECT_HELP'] = "Falls Sie nach der Teilnahme an einer Abstimmung, bzw. Umfrage eine Weiterleitung wÃ¼nschen, kÃ¶nnen Sie dies hier definieren.";
+$_ARRAYLANG['TXT_SURVEY_COMMENTS_HELP'] = "Durch Aktivieren der Kommentarfunktion wird am Ende der Umfrage ein Feld fÃ¼r Kommentare angefÃ¼gt.";
+$_ARRAYLANG['TXT_SURVEY_HOMEBOX_HELP'] = "Durch Aktivieren der Platzhalterfunktion wird die Abstimmung in die Systemvariable [[SURVEY_HOME]] geparsed. Diese kÃ¶nnen Sie dann z.B. in der Sidebar verwenden.";
 $_ARRAYLANG['TXT_SURVEY_QUESTION'] = "Frage";
 $_ARRAYLANG['TXT_SURVEY_QUESTION_REMOVE'] = "Soll die letzte Frage wirklich entfernt werden?";
 $_ARRAYLANG['TXT_SURVEY_ANSWER_REMOVE'] = "Soll diese Antwort wirklich entfernt werden?";
 $_ARRAYLANG['TXT_SURVEY_EXTENDED'] = "Erweitert";
 $_ARRAYLANG['TXT_SURVEY_ANSWERS'] = "Antworten";
-$_ARRAYLANG['TXT_SURVEY_ANSWER_ADD'] = "Weitere Antwort hinzufügen";
+$_ARRAYLANG['TXT_SURVEY_ANSWER_ADD'] = "Weitere Antwort hinzufÃ¼gen";
 $_ARRAYLANG['TXT_SURVEY_MOVE_UP'] = "Nach oben schieben";
 $_ARRAYLANG['TXT_SURVEY_MOVE_DOWN'] = "Nach unten schieben";
 $_ARRAYLANG['TXT_SURVEY_ANSWER_DELETE'] = "Antwort entfernen";
 $_ARRAYLANG['TXT_SURVEY_ACTIVATED_IN'] = "Aktiv in";
 $_ARRAYLANG['TXT_SURVEY_TYPESELECTION'] = "Typenauswahl";
 $_ARRAYLANG['TXT_SURVEY_COMMENTABLE'] = "Kommentare";
-$_ARRAYLANG['TXT_SURVEY_QUESTION_ADD'] = "Frage hinzufügen";
+$_ARRAYLANG['TXT_SURVEY_QUESTION_ADD'] = "Frage hinzufÃ¼gen";
 $_ARRAYLANG['TXT_SURVEY_QUESTION_DELETE'] = "Frage entfernen";
-$_ARRAYLANG['TXT_SETTINGS_LOGFILE'] = "Logfile führen";
-$_ARRAYLANG['TXT_SETTINGS_LOGFILE_HELP'] = "Wenn Sie diese Option aktivieren, werden für jeden Teilnehmer detaillierte Informationen gespeichert.";
+$_ARRAYLANG['TXT_SETTINGS_LOGFILE'] = "Logfile fÃ¼hren";
+$_ARRAYLANG['TXT_SETTINGS_LOGFILE_HELP'] = "Wenn Sie diese Option aktivieren, werden fÃ¼r jeden Teilnehmer detaillierte Informationen gespeichert.";
 $_ARRAYLANG['TXT_SETTINGS_ANONYMOUS'] = "Anonyme Teilnahme erlauben";
 $_ARRAYLANG['TXT_SETTINGS_ANONYMOUS_HELP'] = "Durch Aktivierung dieser Option kann bei Umfragen auch anonym Teilgenommen werden.";
 $_ARRAYLANG['TXT_SETTINGS_UPDATE_SUCCESSFULL'] = "Die Einstellungen wurden erfolgreich aktualisiert.";
