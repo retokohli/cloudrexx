@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_CLIENT_DATA'] = "Client-Data (Useragent,Ip,Host)";
@@ -111,13 +111,13 @@ $_ARRAYLANG['TXT_COLOUR_DEPTH'] = "Colour depth";
 $_ARRAYLANG['TXT_CLIENT_SUPPORTS_JAVASCRIPT'] = "Client supports javascript";
 $_ARRAYLANG['TXT_COUNTRY_OF_ORIGIN'] = "Country of origin";
 $_ARRAYLANG['TXT_MAKE_STATISTICS'] = "Statistiken erstellen";
-$_ARRAYLANG['TXT_REMOVE_REQUESTS'] = "Seiten, welche seit einiger Zeit nicht mehr besucht wurden, aus der Statistik \"Beliebteste Seiten\" löschen.";
-$_ARRAYLANG['TXT_ONLINE_TIMEOUT'] = "Online Benutzerzählung";
-$_ARRAYLANG['TXT_RELOAD_BLOCK_TIME'] = "Zeitspanne nach der letzten Anforderung eines Benutzers bis er wieder als neuer Benutzer gezählt wird. (1800 - 86400 Sekunden)";
-$_ARRAYLANG['TXT_SHOW_LIMIT'] = "Anzahl Einträge, die bei der Statistikauswertung angezeigt werden sollen. (1 - 100)";
+$_ARRAYLANG['TXT_REMOVE_REQUESTS'] = "Seiten, welche seit einiger Zeit nicht mehr besucht wurden, aus der Statistik \"Beliebteste Seiten\" lÃ¶schen.";
+$_ARRAYLANG['TXT_ONLINE_TIMEOUT'] = "Online BenutzerzÃ¤hlung";
+$_ARRAYLANG['TXT_RELOAD_BLOCK_TIME'] = "Zeitspanne nach der letzten Anforderung eines Benutzers bis er wieder als neuer Benutzer gezÃ¤hlt wird. (1800 - 86400 Sekunden)";
+$_ARRAYLANG['TXT_SHOW_LIMIT'] = "Anzahl EintrÃ¤ge, die bei der Statistikauswertung angezeigt werden sollen. (1 - 100)";
 $_ARRAYLANG['TXT_STORE'] = "Save";
 $_ARRAYLANG['TXT_SECONDS'] = "seconds";
-$_ARRAYLANG['TXT_SELECT_STATISTICS_TO_RESET'] = "Wählen Sie die gewünschten Arten der Statistik aus, die zurückgesetzt werden sollen";
+$_ARRAYLANG['TXT_SELECT_STATISTICS_TO_RESET'] = "WÃ¤hlen Sie die gewÃ¼nschten Arten der Statistik aus, die zurÃ¼ckgesetzt werden sollen";
 $_ARRAYLANG['TXT_VISITOR_DETAIL_FROM_TODAY'] = "Visitor detail from today";
 $_ARRAYLANG['TXT_MARKED'] = "marked";
 $_ARRAYLANG['TXT_SELECT_ALL'] = "Select all";
@@ -126,7 +126,7 @@ $_ARRAYLANG['TXT_BIT'] = "bit";
 $_ARRAYLANG['TXT_DOMAINS'] = "Domains";
 $_ARRAYLANG['TXT_DOMAIN'] = "Domain";
 $_ARRAYLANG['TXT_REMOVE_REQUESTS_INTERVAL'] = "Zeitspanne in Sekunden nachdem eine Seite zuletzt aufgerufen wurde. (86400 - 31536000 Sekunden)";
-$_ARRAYLANG['TXT_ONLINE_TIMEOUT_INTERVAL'] = "Zeitspanne nach der letzten Anforderung eines Benutzers bis er nicht mehr als online gezählt wird. (60 - 3600 Sekunden)";
+$_ARRAYLANG['TXT_ONLINE_TIMEOUT_INTERVAL'] = "Zeitspanne nach der letzten Anforderung eines Benutzers bis er nicht mehr als online gezÃ¤hlt wird. (60 - 3600 Sekunden)";
 $_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'] = "Wert ist nicht im definierten Bereich!";
 $_ARRAYLANG['TXT_UNKNOWN'] = "Unknown";
 $_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY'] = "Statistic was successfully deleted:";
@@ -135,9 +135,9 @@ $_ARRAYLANG['TXT_SHOW_DETAILS'] = "Show details";
 $_ARRAYLANG['TXT_EXTERNAL'] = "External";
 $_ARRAYLANG['TXT_INTERNAL'] = "Internal";
 $_ARRAYLANG['TXT_SUMMARY'] = "Summary";
-$_ARRAYLANG['TXT_SHOW_LIMIT_VISITOR_DETAILS'] = "Anzahl Einträge, die bei den Besucherdetails angezeigt werden sollen. (1 - 1000)";
-$_ARRAYLANG['TXT_PAGING_LIMIT'] = "Anzeigelimit für Statistikauswertung";
-$_ARRAYLANG['TXT_PAGING_LIMIT_VISITOR_DETAILS'] = "Anzeigelimit für Besucherdetails";
+$_ARRAYLANG['TXT_SHOW_LIMIT_VISITOR_DETAILS'] = "Anzahl EintrÃ¤ge, die bei den Besucherdetails angezeigt werden sollen. (1 - 1000)";
+$_ARRAYLANG['TXT_PAGING_LIMIT'] = "Anzeigelimit fÃ¼r Statistikauswertung";
+$_ARRAYLANG['TXT_PAGING_LIMIT_VISITOR_DETAILS'] = "Anzeigelimit fÃ¼r Besucherdetails";
 $_ARRAYLANG['TXT_IMAGE_EDIT_SHOW'] = "Show";
 $_ARRAYLANG['TXT_STATS_COUNT_VISIOTR_NUMBER'] = "Compute the number of the current visitor. This option must be enabled if you intend to use the placeholder [[VISITOR_NUMBER]] in the frontend.";
 ?>

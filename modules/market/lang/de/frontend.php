@@ -1,20 +1,20 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Inserate";
 $_ARRAYLANG['TXT_ENTRIES'] = "Inserate";
 $_ARRAYLANG['TXT_NEW_ENTRY'] = "Neues Inserat";
-$_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_FILL_FIELDS'] = "Bitte alle Pflichfelder ausfüllen";
+$_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_FILL_FIELDS'] = "Bitte alle Pflichfelder ausfÃ¼llen";
 $_ARRAYLANG['TXT_MARKET_TITLE'] = "Titel";
-$_ARRAYLANG['TXT_MARKET_ADDEDBY'] = "Hinzugefügt von";
+$_ARRAYLANG['TXT_MARKET_ADDEDBY'] = "HinzugefÃ¼gt von";
 $_ARRAYLANG['TXT_MARKET_NO_ENTRIES_FOUND'] = "Keine Inserate gefunden.";
 $_ARRAYLANG['TXT_MARKET_OFFER'] = "Ich biete";
 $_ARRAYLANG['TXT_MARKET_SEARCH'] = "Ich suche";
 $_ARRAYLANG['TXT_MARKET_IMAGE'] = "Bild";
-$_ARRAYLANG['TXT_MARKET_FIELDS_NOT_CORRECT'] = "Folgende Felder wurden nicht korrekt ausgefüllt:";
+$_ARRAYLANG['TXT_MARKET_FIELDS_NOT_CORRECT'] = "Folgende Felder wurden nicht korrekt ausgefÃ¼llt:";
 $_ARRAYLANG['TXT_MARKET_PRICE'] = "Preis";
 $_ARRAYLANG['TXT_MARKET_FREE'] = "Gratis abzugeben";
 $_ARRAYLANG['TXT_MARKET_ARRANGEMENT'] = "Preis nach Absprache";
@@ -36,7 +36,7 @@ $_ARRAYLANG['TXT_MARKET_ALL_TYPES'] = "Alle Typen";
 $_ARRAYLANG['TXT_MARKET_CATEGORY'] = "Kategorie";
 $_ARRAYLANG['TXT_MARKET_CONTACT'] = "Kontakt";
 $_ARRAYLANG['TXT_MARKET_PLACE'] = "Ort des Gegenstandes";
-$_ARRAYLANG['TXT_MARKET_DELETE_ADVERTISEMENT'] = "Inserat löschen";
+$_ARRAYLANG['TXT_MARKET_DELETE_ADVERTISEMENT'] = "Inserat lÃ¶schen";
 $_ARRAYLANG['TXT_MARKET_SEND_MESSAGE'] = "Nachricht an Anbieter";
 $_ARRAYLANG['TXT_MARKTE_MESSAGE_ABOUT'] = "Anfrage zu";
 $_ARRAYLANG['TXT_MARKET_MESSAGE'] = "Mitteilung";
@@ -47,17 +47,17 @@ $_ARRAYLANG['TXT_PRICE_EXPECTATION'] = "Preisvorstellung";
 $_ARRAYLANG['TXT_MARKET_MESSAGE_PRICE'] = "Den angegebenen Preis finde ich:";
 $_ARRAYLANG['TXT_MARKET_MESSAGE_SUCCESS_TITLE'] = "Versand erfolgreich";
 $_ARRAYLANG['TXT_MARKET_MESSAGE_SUCCESS_BODY'] = "Die Mitteilung wurde erfolgreich an den Anbieter dieses Gegenstandes verschickt.";
-$_ARRAYLANG['TXT_MARKET_ADDITIONAL_FEE'] = "Zusatzgebühr von ";
+$_ARRAYLANG['TXT_MARKET_ADDITIONAL_FEE'] = "ZusatzgebÃ¼hr von ";
 $_ARRAYLANG['TXT_MARKET_CURRENCY'] = "SFr";
 $_ARRAYLANG['TXT_MARKET_CLEARING_CODE_NOT_EXISTING'] = "Der eingegebene Freischaltcode ist falsch oder existiert nicht.";
 $_ARRAYLANG['TXT_MARKET_REQUIREMENTS'] = "Teilnahmebedingungen";
-$_ARRAYLANG['TXT_MARKET_AGB'] = "Hier könnten Ihre AGB's stehen.";
+$_ARRAYLANG['TXT_MARKET_AGB'] = "Hier kÃ¶nnten Ihre AGB's stehen.";
 $_ARRAYLANG['TXT_MARKET_AGB_ACCEPT'] = "Ich akzeptiere die obenstehenden Bedingungen.";
 $_ARRAYLANG['TXT_MARKET_SEARCH_INSERT'] = "Geben Sie bitte einen Suchbegriff ein.";
-$_ARRAYLANG['TXT_MARKET_ADVERTISEMENT_DELETE'] = "Wollen Sie dieses Inserat wirklich löschen? Achtung: Alle Daten werden unvwiederruflich gelöscht!";
+$_ARRAYLANG['TXT_MARKET_ADVERTISEMENT_DELETE'] = "Wollen Sie dieses Inserat wirklich lÃ¶schen? Achtung: Alle Daten werden unvwiederruflich gelÃ¶scht!";
 $_ARRAYLANG['TXT_MARKET_PAYPAL_FAILED'] = "PayPal fehlgeschlagen";
-$_ARRAYLANG['TXT_MARKET_PAYPAL_SUCCESS'] = "Die Gebühren wurden erfolgreich mit PayPal bezahlt. Nachfolgend Ihr Freischaltcode:";
-$_ARRAYLANG['TXT_MARKET_ADD_SUCCESS'] = "Das Inserat wurde erfolgreich hinzugefügt.";
-$_ARRAYLANG['TXT_MARKET_DELETE_SUCCESS'] = "Das Inserat wurde erfolgreich gelöscht.";
-$_ARRAYLANG['TXT_MARKET_IMAGE_DELETE_ERROR'] = "Fehler beim Löschen der Bilddatei.";
+$_ARRAYLANG['TXT_MARKET_PAYPAL_SUCCESS'] = "Die GebÃ¼hren wurden erfolgreich mit PayPal bezahlt. Nachfolgend Ihr Freischaltcode:";
+$_ARRAYLANG['TXT_MARKET_ADD_SUCCESS'] = "Das Inserat wurde erfolgreich hinzugefÃ¼gt.";
+$_ARRAYLANG['TXT_MARKET_DELETE_SUCCESS'] = "Das Inserat wurde erfolgreich gelÃ¶scht.";
+$_ARRAYLANG['TXT_MARKET_IMAGE_DELETE_ERROR'] = "Fehler beim LÃ¶schen der Bilddatei.";
 ?>

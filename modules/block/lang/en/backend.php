@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'] = "Modify block %s";
@@ -43,6 +43,6 @@ $_ARRAYLANG['TXT_BLOCK_OPERATION_IRREVERSIBLE'] = "This operation is irreversibl
 $_ARRAYLANG['TXT_BLOCK_CONFIRM_DELETE_BLOCK'] = "Do you really want to delete the block %s?";
 $_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'] = "Copy block %s";
 $_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'] = "Delete block %s";
-$_ARRAYLANG['TXT_BLOCK_BLOCK_RANDOM'] = "Platzhalter für Zufallsgenerator";
-$_ARRAYLANG['TXT_BLOCK_BLOCK_GLOBAL'] = "Platzhalter für sämtliche Blöcke. Bei diesem Platzhalter wird die Seiten- und Sprachzuordnung auch berücksichtigt.";
+$_ARRAYLANG['TXT_BLOCK_BLOCK_RANDOM'] = "Platzhalter fÃ¼r Zufallsgenerator";
+$_ARRAYLANG['TXT_BLOCK_BLOCK_GLOBAL'] = "Platzhalter fÃ¼r sÃ¤mtliche BlÃ¶cke. Bei diesem Platzhalter wird die Seiten- und Sprachzuordnung auch berÃ¼cksichtigt.";
 ?>

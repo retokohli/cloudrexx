@@ -1,12 +1,12 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_CALENDAR_DATE'] = "Termindato";
 $_ARRAYLANG['TXT_CALENDAR_BACK'] = "&laquo; tilbage";
-$_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "De næste terminer:";
+$_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "De nÃ¦ste terminer:";
 $_ARRAYLANG['TXT_CALENDAR_SHOW'] = "vis";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'] = "Der blev ikke fundet nogle terminer...";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS'] = "Terminer";
@@ -19,7 +19,7 @@ $_ARRAYLANG['TXT_CALENDAR_START'] = "Start";
 $_ARRAYLANG['TXT_CALENDAR_END'] = "Slut";
 $_ARRAYLANG['TXT_CALENDAR_COMMENT'] = "Beskrivelse";
 $_ARRAYLANG['TXT_CALENDAR_INFO'] = "Link";
-$_ARRAYLANG['TXT_CALENDAR_SEARCH'] = "Søg";
+$_ARRAYLANG['TXT_CALENDAR_SEARCH'] = "SÃ¸g";
 $_ARRAYLANG['TXT_ENDDATE'] = "";
 $_ARRAYLANG['TXT_DETAILED'] = "";
 $_ARRAYLANG['TXT_CALENDAR_STARTDATE'] = "";

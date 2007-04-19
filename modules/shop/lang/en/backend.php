@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Orders";
@@ -57,8 +57,8 @@ $_ARRAYLANG['TXT_SELECT_COLUMNS_TO_EXPORT'] = "Select the columns you want to ex
 $_ARRAYLANG['TXT_ORDER_NR'] = "Order-Nr.";
 $_ARRAYLANG['TXT_COUNTRY'] = "Country";
 $_ARRAYLANG['TXT_ZONE'] = "Zone";
-$_ARRAYLANG['TXT_FEE'] = "Gebühr";
-$_ARRAYLANG['TXT_FREE_OF_CHARGE'] = "Gebührenfrei ab";
+$_ARRAYLANG['TXT_FEE'] = "GebÃ¼hr";
+$_ARRAYLANG['TXT_FREE_OF_CHARGE'] = "GebÃ¼hrenfrei ab";
 $_ARRAYLANG['TXT_EDIT'] = "Edit";
 $_ARRAYLANG['TXT_ADD'] = "Add";
 $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'] = "This action can not be undone!";
@@ -264,12 +264,12 @@ $_ARRAYLANG['TXT_PRICE_PREFIX'] = "Prefix";
 $_ARRAYLANG['TXT_ADD_NEW_VALUE'] = "Add new value";
 $_ARRAYLANG['TXT_EDIT_OPTION'] = "Edit option";
 $_ARRAYLANG['TXT_DELETE'] = "Delete";
-$_ARRAYLANG['TXT_SAVE_CHANGES'] = "Ã?nderungen speichern";
+$_ARRAYLANG['TXT_SAVE_CHANGES'] = "Ãƒ?nderungen speichern";
 $_ARRAYLANG['TXT_DELETE_OPTION'] = "Delete option";
 $_ARRAYLANG['TXT_PRODUCT_OPTIONS'] = "Product options";
-$_ARRAYLANG['TXT_CHECKBOXES_OPTION'] = "KontrollkÃ¤stchen (keine oder mehrere AuswahlmÃ¶glichkeiten)";
+$_ARRAYLANG['TXT_CHECKBOXES_OPTION'] = "KontrollkÃƒÂ¤stchen (keine oder mehrere AuswahlmÃƒÂ¶glichkeiten)";
 $_ARRAYLANG['TXT_RADIOBUTTON_OPTION'] = "Radiobutton (eine Auswahl zwingend)";
-$_ARRAYLANG['TXT_MENU_OPTION'] = "Menu (keine oder eine Auswahl mÃ¶glich)";
+$_ARRAYLANG['TXT_MENU_OPTION'] = "Menu (keine oder eine Auswahl mÃƒÂ¶glich)";
 $_ARRAYLANG['TXT_DISPLAY_AS'] = "Display as";
 $_ARRAYLANG['TXT_SEQUENCE'] = "Sequence";
 $_ARRAYLANG['TXT_REMARK'] = "Remark";
@@ -423,15 +423,15 @@ $_ARRAYLANG['TXT_ACCOUNT_HOLDER'] = "Account owner";
 $_ARRAYLANG['TXT_ACCOUNT_BANK'] = "";
 $_ARRAYLANG['TXT_ACCOUNT_BLZ'] = "";
 $_ARRAYLANG['TXT_PAYMENT_LSV'] = "Lastschrift (LSV)";
-$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = " Wichtig: Füllen Sie <a href='?section=shop&cmd=einzug' target='_blank'>das Formular 'Einzugsermächtigung'</a> aus, und faxen oder schicken Sie es ausgefüllt und unterzeichnet an uns. Dort finden Sie auch unsere Faxnummer und Anschrift.<br />Wenn wir den Rechnungsbetrag Ihrem Konto belasten können, werden wir Ihnen die Bestellung zustellen.<br />";
-$_ARRAYLANG['TXT_PAYMENT_LSV_FEE'] = "Gebühr für LSV";
-$_ARRAYLANG['TXT_MAX_WEIGHT_TIP'] = "Geben Sie an, bis zu welchem Gewicht der Versand zu diesen Konditionen möglich ist, oder 0 g für beliebiges Gewicht.";
+$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = " Wichtig: FÃ¼llen Sie <a href='?section=shop&cmd=einzug' target='_blank'>das Formular 'EinzugsermÃ¤chtigung'</a> aus, und faxen oder schicken Sie es ausgefÃ¼llt und unterzeichnet an uns. Dort finden Sie auch unsere Faxnummer und Anschrift.<br />Wenn wir den Rechnungsbetrag Ihrem Konto belasten kÃ¶nnen, werden wir Ihnen die Bestellung zustellen.<br />";
+$_ARRAYLANG['TXT_PAYMENT_LSV_FEE'] = "GebÃ¼hr fÃ¼r LSV";
+$_ARRAYLANG['TXT_MAX_WEIGHT_TIP'] = "Geben Sie an, bis zu welchem Gewicht der Versand zu diesen Konditionen mÃ¶glich ist, oder 0 g fÃ¼r beliebiges Gewicht.";
 $_ARRAYLANG['TXT_CONTACT_COMPANY'] = "Company";
 $_ARRAYLANG['TXT_CONTACT_ADDRESS'] = "Address";
 $_ARRAYLANG['TXT_SHOP_EXPORT'] = "Exportieren";
 $_ARRAYLANG['TXT_SHOP_EXPORT_DATA'] = "Daten Exportieren";
-$_ARRAYLANG['TXT_SHOP_EXPORT_SELECTION'] = "Wählen Sie die zu exportierenden Daten:";
-$_ARRAYLANG['TXT_SHOP_EXPORT_WARNING'] = "Wählen Sie im folgenden Dialog 'Speichern', und wählen Sie dann einen Speicherort.";
+$_ARRAYLANG['TXT_SHOP_EXPORT_SELECTION'] = "WÃ¤hlen Sie die zu exportierenden Daten:";
+$_ARRAYLANG['TXT_SHOP_EXPORT_WARNING'] = "WÃ¤hlen Sie im folgenden Dialog 'Speichern', und wÃ¤hlen Sie dann einen Speicherort.";
 $_ARRAYLANG['TXT_SHOP_EXPORT_ERROR'] = "Fehler beim Erstellen der Exportdaten";
 $_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_TPRODUCT'] = "Produkte Tabelle";
 $_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_RPRODUCT'] = "Produkte (mit Relationen)";
@@ -442,31 +442,31 @@ $_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_RORDER'] = "Bestellungen (mit Relationen)";
 $_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_TPRODUCT_TIP'] = "Exportiert alle Felder der Produkte Tabelle";
 $_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_RPRODUCT_TIP'] = "Exportiert die wichtigsten Felder der Produkte Tabelle, plus entsprechende Felder aus der Mehrwertsteuer Tabelle";
 $_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_TCUSTOMER_TIP'] = "Exportiert alle Felder der Kunden Tabelle";
-$_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_RCUSTOMER_TIP'] = "Exportiert die wichtigsten Felder der Kunden Tabelle, plus entsprechende Felder aus der Länder Tabelle";
+$_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_RCUSTOMER_TIP'] = "Exportiert die wichtigsten Felder der Kunden Tabelle, plus entsprechende Felder aus der LÃ¤nder Tabelle";
 $_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_TORDER_TIP'] = "Exportiert alle Felder der Bestellungen Tabelle";
-$_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_RORDER_TIP'] = "Exportiert die wichtigsten Felder der Bestellungen Tabelle, plus entsprechende Felder aus den Tabellen Kunden, Länder, Währungen, Versandarten, Bezahlung und LSV";
+$_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_RORDER_TIP'] = "Exportiert die wichtigsten Felder der Bestellungen Tabelle, plus entsprechende Felder aus den Tabellen Kunden, LÃ¤nder, WÃ¤hrungen, Versandarten, Bezahlung und LSV";
 $_ARRAYLANG['TXT_IMPORT_EXPORT'] = "Import/Export";
-$_ARRAYLANG['TXT_SHOP_IMPORT_CREATE_TEMPLATE_TIPS'] = "Klicken sie auf 'Durchsuchen', und wählen sie eine vorhandene CSV Datei aus. Klicken sie danach auf 'Upload'";
-$_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Art der Überschrift";
+$_ARRAYLANG['TXT_SHOP_IMPORT_CREATE_TEMPLATE_TIPS'] = "Klicken sie auf 'Durchsuchen', und wÃ¤hlen sie eine vorhandene CSV Datei aus. Klicken sie danach auf 'Upload'";
+$_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Art der Ãœberschrift";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_HIERARCHY'] = "hierarchisch";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_FLAT'] = "flach";
 $_ARRAYLANG['TXT_SETTINGS_IMAGENAME_EXT_SHOW'] = "Erweiterung mit Namen anzeigen";
-$_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'] = "--- Bitte wählen ---";
-$_ARRAYLANG['TXT_SHOP_IMPORT_ASSIGNMENT_TIPS'] = "Ordnen sie Felder der Textdatei entsprechenden Feldern der Datenbank Tabelle zu, indem sie je eines markieren und danach auf 'Paar hinzufügen' klicken.";
-$_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_TIPS'] = "Um ein Feld der Textdatei als Quelle für die Namen für Produkte Kategorien festzulegen, markieren sie das Feld und klicken sie danach auf 'Kategorie hinzufügen'.";
+$_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'] = "--- Bitte wÃ¤hlen ---";
+$_ARRAYLANG['TXT_SHOP_IMPORT_ASSIGNMENT_TIPS'] = "Ordnen sie Felder der Textdatei entsprechenden Feldern der Datenbank Tabelle zu, indem sie je eines markieren und danach auf 'Paar hinzufÃ¼gen' klicken.";
+$_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_TIPS'] = "Um ein Feld der Textdatei als Quelle fÃ¼r die Namen fÃ¼r Produkte Kategorien festzulegen, markieren sie das Feld und klicken sie danach auf 'Kategorie hinzufÃ¼gen'.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_REMOVE_TIPS'] = "Um ein Feld wieder zu entfernen, markieren sie es in der Liste 'Kategorien', und klicken sie danach auf 'Kategorie entfernen'.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_ASSIGNMENT_REMOVE_TIPS'] = "Um ein Paar wieder zu entfernen, markieren sie es in der Liste der zugeordneten Felder, und klicken sie danach auf 'Paar entfernen'.";
-$_ARRAYLANG['TXT_SHOP_IMPORT_TEMPLATE_SAVE_TIPS'] = "Speichern sie die Vorlage, indem sie zuerst einen Namen für sie in das Textfeld 'Vorlage Name' eingeben, und danach auf 'Speichern' klicken.";
-$_ARRAYLANG['TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS'] = "Wählen sie eine Vorlage, die sie unter 'Importvorlagen Verwaltung erstellt haben. Klicken sie danach auf 'Durchsuchen' und wählen sie die zu importierende Datei. Starten sie den Import durch einen Klick auf 'Importieren'. Warnung: Alle bestehenden Produkte werden bei diesem Vorgang gelöscht und durch die importierten Daten ersetzt!";
-$_ARRAYLANG['TXT_SHOP_EXPORT_TIPS'] = "Wählen sie eine Vorlage für den Export aus der Liste, und klicken sie danach auf das Symbol neben dem Namen der Vorlage. Ihr Browser wird sie möglicherweise fragen, wie er mit der exportierten CSV Datei verfahren soll. Wählen sie 'Speichern', klicken sie 'OK', und wählen sie danach einen Speicherort für die Datei.";
+$_ARRAYLANG['TXT_SHOP_IMPORT_TEMPLATE_SAVE_TIPS'] = "Speichern sie die Vorlage, indem sie zuerst einen Namen fÃ¼r sie in das Textfeld 'Vorlage Name' eingeben, und danach auf 'Speichern' klicken.";
+$_ARRAYLANG['TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS'] = "WÃ¤hlen sie eine Vorlage, die sie unter 'Importvorlagen Verwaltung erstellt haben. Klicken sie danach auf 'Durchsuchen' und wÃ¤hlen sie die zu importierende Datei. Starten sie den Import durch einen Klick auf 'Importieren'. Warnung: Alle bestehenden Produkte werden bei diesem Vorgang gelÃ¶scht und durch die importierten Daten ersetzt!";
+$_ARRAYLANG['TXT_SHOP_EXPORT_TIPS'] = "WÃ¤hlen sie eine Vorlage fÃ¼r den Export aus der Liste, und klicken sie danach auf das Symbol neben dem Namen der Vorlage. Ihr Browser wird sie mÃ¶glicherweise fragen, wie er mit der exportierten CSV Datei verfahren soll. WÃ¤hlen sie 'Speichern', klicken sie 'OK', und wÃ¤hlen sie danach einen Speicherort fÃ¼r die Datei.";
 $_ARRAYLANG['TXT_DISTRIBUTION'] = "Vertrieb";
 $_ARRAYLANG['TXT_DISTRIBUTION_UNDEFINED'] = "Undefiniert";
 $_ARRAYLANG['TXT_DISTRIBUTION_DELIVERY'] = "Lieferung";
 $_ARRAYLANG['TXT_DISTRIBUTION_DOWNLOAD'] = "Download";
 $_ARRAYLANG['TXT_DISTRIBUTION_NONE'] = "Keiner";
-$_ARRAYLANG['TXT_SHIPPING_FEE'] = "Versandgebühr";
-$_ARRAYLANG['TXT_GALLERY_EXPORT_TARGET'] = "Zielkategorie im Shop für Export:";
-$_ARRAYLANG['TXT_GALLERY_EXPORT_CONFIRM'] = "Die Zielkategorie im Shop wird vor dem Export geleert und alle darin enthaltenen Produkte gelöscht!\nSind Sie sicher?";
-$_ARRAYLANG['TXT_ERROR_DELETING_PRODUCT'] = "Fehler beim löschen des Produktes";
+$_ARRAYLANG['TXT_SHIPPING_FEE'] = "VersandgebÃ¼hr";
+$_ARRAYLANG['TXT_GALLERY_EXPORT_TARGET'] = "Zielkategorie im Shop fÃ¼r Export:";
+$_ARRAYLANG['TXT_GALLERY_EXPORT_CONFIRM'] = "Die Zielkategorie im Shop wird vor dem Export geleert und alle darin enthaltenen Produkte gelÃ¶scht!\nSind Sie sicher?";
+$_ARRAYLANG['TXT_ERROR_DELETING_PRODUCT'] = "Fehler beim lÃ¶schen des Produktes";
 $_ARRAYLANG['TXT_SHOP_TIP'] = "Hinweise";
 ?>

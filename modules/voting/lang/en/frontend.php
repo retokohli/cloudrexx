@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_NAME'] = "Name";
@@ -15,7 +15,7 @@ $_ARRAYLANG['TXT_SUBMIT'] = "Submit";
 $_ARRAYLANG['TXT_VOTING_NOT_AVAILABLE'] = "There are votings available at the moment.";
 $_ARRAYLANG['TXT_VOTING_OLDER'] = "Older Votings";
 $_ARRAYLANG['TXT_VOTING_ENTRIES'] = "Votings";
-$_ARRAYLANG['TXT_VOTING_INVALID_EMAIL_ERROR'] = "Geben Sie bitte eine g&uuml;ltige E-Mail Adresse an!";
+$_ARRAYLANG['TXT_VOTING_INVALID_EMAIL_ERROR'] = "Geben Sie bitte eine gültige E-Mail Adresse an!";
 $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'] = "Sie haben bereits an dieser Umfrage teilgenommen!";
 $_ARRAYLANG['TXT_VOTING_NONEXISTENT_EMAIL'] = "Ihre E-Mail Adresse existiert nicht!";
 ?>

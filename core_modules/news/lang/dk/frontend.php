@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_DATE'] = "Dato";
@@ -16,7 +16,7 @@ $_ARRAYLANG['TXT_NEWS_NEWS_CONTENT'] = "Nyhedsindhold";
 $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] = "Vigtige Links";
 $_ARRAYLANG['TXT_NEWS_SOURCE'] = "Kilde";
 $_ARRAYLANG['TXT_LAST_UPDATE'] = "Sidste update";
-$_ARRAYLANG['TXT_PERFORM'] = "Udfør";
+$_ARRAYLANG['TXT_PERFORM'] = "UdfÃ¸r";
 $_ARRAYLANG['TXT_NO_NEWS_FOUND'] = "Der blev ikke fundet nogle nyheder";
 $_ARRAYLANG['TXT_NEWS_FEED_TITLE'] = "News Feed Title";
 $_ARRAYLANG['TXT_NEWS_FEED_DESCRIPTION'] = "News Feed Description";
@@ -27,7 +27,7 @@ $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT'] = "You have to set at lea
 $_ARRAYLANG['TXT_NEWS_SHOW_NEWS'] = "Vis nyheder";
 $_ARRAYLANG['TXT_NEWS_OPTIONAL_VARS'] = "Diese Variablen sind optional";
 $_ARRAYLANG['TXT_NEWS_FONT_COLOR'] = "Schriftfarbe";
-$_ARRAYLANG['TXT_NEWS_FONT_SIZE'] = "Schriftgrösse";
+$_ARRAYLANG['TXT_NEWS_FONT_SIZE'] = "SchriftgrÃ¶sse";
 $_ARRAYLANG['TXT_NEWS_FONT'] = "Schriftart";
 $_ARRAYLANG['TXT_NEWS_DISPLAY_LIMIT'] = "Anzahl anzuzeigende Newsmeldungen";
 $_ARRAYLANG['TXT_NEWS_SHOW_NEWS_DATE'] = "Datum der Newsmeldung anzeigen";

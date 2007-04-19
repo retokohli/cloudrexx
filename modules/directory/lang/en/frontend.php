@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Create new themes";
@@ -79,8 +79,8 @@ $_ARRAYLANG['TXT_DIR_CITY'] = "City";
 $_ARRAYLANG['TXT_RESTORE_MAIL_TITLE'] = "Restore your password";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART1'] = "Someone has requested a new password for your ";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART2'] = " RSS directory useraccount, username:";
-$_ARRAYLANG['TXT_RESTORE_MAIL_PART3'] = "\\n\\nIn the case that you havenâ??t requested a new password you can simply ignore this message. This message was only sent to the address of this useraccount.";
-$_ARRAYLANG['TXT_RESTORE_MAIL_PART4'] = "In that case you donâ??t have to worry about your user account.\\n\\nYou have to follow this link to set an new password: ";
+$_ARRAYLANG['TXT_RESTORE_MAIL_PART3'] = "\\n\\nIn the case that you haven't requested a new password you can simply ignore this message. This message was only sent to the address of this useraccount.";
+$_ARRAYLANG['TXT_RESTORE_MAIL_PART4'] = "In that case you don't have to worry about your user account.\\n\\nYou have to follow this link to set an new password: ";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART5'] = "This message was requested from : ";
 $_ARRAYLANG['TXT_DIR_LAST_UPDATE'] = "Last update";
 $_ARRAYLANG['TXT_INFOZEILE'] = "Info";

@@ -1,25 +1,25 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
-$_ARRAYLANG['TXT_STATUS_RECEIVER_NAME'] = "Empfänger Name";
-$_ARRAYLANG['TXT_STATUS_RECEIVER_MAIL'] = "Empfänger E-Mail Adresse";
+$_ARRAYLANG['TXT_STATUS_RECEIVER_NAME'] = "EmpfÃ¤nger Name";
+$_ARRAYLANG['TXT_STATUS_RECEIVER_MAIL'] = "EmpfÃ¤nger E-Mail Adresse";
 $_ARRAYLANG['TXT_STATUS_COMMENT'] = "Kommentar";
 $_ARRAYLANG['TXT_STATUS_SENDER_MAIL'] = "Ihre E-Mail Adresse";
 $_ARRAYLANG['TXT_STATUS_SENDER_NAME'] = "Ihr Name";
 $_ARRAYLANG['TXT_SENT_OK'] = "Empfehlung wurde erfolgreich verschickt.";
 $_ARRAYLANG['TXT_IS_EMPTY'] = "ist leer!";
-$_ARRAYLANG['TXT_IS_INVALID'] = "ist ungültig!";
-$_ARRAYLANG['TXT_RECEIVERMAIL_FRONTEND'] = "Empfänger E-Mail Adresse";
-$_ARRAYLANG['TXT_RECEIVERNAME_FRONTEND'] = "Empfänger Name";
-$_ARRAYLANG['TXT_GENDER_FRONTEND'] = "Geschlecht des Empfängers";
+$_ARRAYLANG['TXT_IS_INVALID'] = "ist ungÃ¼ltig!";
+$_ARRAYLANG['TXT_RECEIVERMAIL_FRONTEND'] = "EmpfÃ¤nger E-Mail Adresse";
+$_ARRAYLANG['TXT_RECEIVERNAME_FRONTEND'] = "EmpfÃ¤nger Name";
+$_ARRAYLANG['TXT_GENDER_FRONTEND'] = "Geschlecht des EmpfÃ¤ngers";
 $_ARRAYLANG['TXT_SENDERNAME_FRONTEND'] = "Ihr Name";
 $_ARRAYLANG['TXT_SENDERMAIL_FRONTEND'] = "Ihre E-Mail Adresse";
 $_ARRAYLANG['TXT_COMMENT_FRONTEND'] = "Kommentar";
 $_ARRAYLANG['TXT_PREVIEW_FRONTEND'] = "Vorschau";
 $_ARRAYLANG['TXT_FEMALE_FRONTEND'] = "Weiblich";
-$_ARRAYLANG['TXT_MALE_FRONTEND'] = "Männlich";
-$_ARRAYLANG['TXT_INTRODUCTION'] = "Möchten Sie diese Seite weiterempfehlen, füllen Sie einfach das folgende Formular aus   und klicken anschliessend auf &quot;Absenden&quot;. Der/die Empfänger/in wird per E-Mail auf   diese Seite aufmerksam gemacht.";
+$_ARRAYLANG['TXT_MALE_FRONTEND'] = "MÃ¤nnlich";
+$_ARRAYLANG['TXT_INTRODUCTION'] = "MÃ¶chten Sie diese Seite weiterempfehlen, fÃ¼llen Sie einfach das folgende Formular aus   und klicken anschliessend auf &quot;Absenden&quot;. Der/die EmpfÃ¤nger/in wird per E-Mail auf   diese Seite aufmerksam gemacht.";
 ?>

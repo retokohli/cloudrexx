@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_DATE'] = "Date";
@@ -27,7 +27,7 @@ $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT'] = "You have to set at lea
 $_ARRAYLANG['TXT_NEWS_SHOW_NEWS'] = "News anzeigen";
 $_ARRAYLANG['TXT_NEWS_OPTIONAL_VARS'] = "Diese Variablen sind optional";
 $_ARRAYLANG['TXT_NEWS_FONT_COLOR'] = "Schriftfarbe";
-$_ARRAYLANG['TXT_NEWS_FONT_SIZE'] = "Schriftgrösse";
+$_ARRAYLANG['TXT_NEWS_FONT_SIZE'] = "SchriftgrÃ¶sse";
 $_ARRAYLANG['TXT_NEWS_FONT'] = "Schriftart";
 $_ARRAYLANG['TXT_NEWS_DISPLAY_LIMIT'] = "Anzahl anzuzeigende Newsmeldungen";
 $_ARRAYLANG['TXT_NEWS_SHOW_NEWS_DATE'] = "Datum der Newsmeldung anzeigen";

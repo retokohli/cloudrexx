@@ -1,21 +1,21 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
-$_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Succesfuld bekræftelse! Du vil fremover modtage nyhedsbrevet.";
+$_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Succesfuld bekrÃ¦ftelse! Du vil fremover modtage nyhedsbrevet.";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_ERROR'] = "De indtastede informationer matcher ikke. <br>Tjek venligst IDen og emailadressen fra nyhedsbrevet.";
 $_ARRAYLANG['TXT_NEWSLETTER_SEND_TO_ALL_SUBSCRIBERS_SUCCESSFUL'] = "Nyhedsbrevet blev sendt til alle abonnementer";
-$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK'] = "Din emailadresse blev registreret. Du vil snart modtage en email til bekræftelse af registreringen";
+$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK'] = "Din emailadresse blev registreret. Du vil snart modtage en email til bekrÃ¦ftelse af registreringen";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION'] = "Tilmelding til nyhedsbrev";
-$_ARRAYLANG['TXT_NEWSLETTER_MUST_CONFIRM'] = "Bekræft venligst tilmeldingen ved at følge nedstående link:";
+$_ARRAYLANG['TXT_NEWSLETTER_MUST_CONFIRM'] = "BekrÃ¦ft venligst tilmeldingen ved at fÃ¸lge nedstÃ¥ende link:";
 $_ARRAYLANG['TXT_NEWS_MESSAGES'] = "Nyhedsmeldinger";
 $_ARRAYLANG['TXT_EMAIL_ADDRESS'] = "Email adresse";
 $_ARRAYLANG['TXT_TITLE'] = "Titel";
 $_ARRAYLANG['TXT_TEXT'] = "Tekst";
-$_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Udfyld venligst alle nødvendige felter.";
-$_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "Det er nødvendigt at udfylde disse felter";
+$_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Udfyld venligst alle nÃ¸dvendige felter.";
+$_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "Det er nÃ¸dvendigt at udfylde disse felter";
 $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'] = "Data er blevet aktualiseret med succes";
 $_ARRAYLANG['TXT_DATABASE_ERROR'] = "Database fejl, systemet er stoppet!";
 $_ARRAYLANG['TXT_FROM'] = "af";
@@ -36,10 +36,10 @@ $_ARRAYLANG['TXT_BIRTHDAY'] = "";
 $_ARRAYLANG['TXT_SAVE'] = "";
 $_ARRAYLANG['TXT_UNSUBSCRIBE'] = "Unsubscribe";
 $_ARRAYLANG['TXT_AUTHENTICATION_FAILED'] = "";
-$_ARRAYLANG['TXT_CATEGORY_ERROR'] = "Es muss eine Kategorie mit mindestens einem Empf&auml;nger ausgew&auml;hlt werden.";
+$_ARRAYLANG['TXT_CATEGORY_ERROR'] = "Es muss eine Kategorie mit mindestens einem EmpfÃ¤nger ausgewÃ¤hlt werden.";
 $_ARRAYLANG['TXT_NOT_VALID_EMAIL'] = "Not valid E-Mail address.";
 $_ARRAYLANG['TXT_EMAL_ALLREDY_EXIST'] = "";
-$_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'] = "Ihre E-Mail Adresse wurde erfolgreich aus dem System gelöscht.";
+$_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'] = "Ihre E-Mail Adresse wurde erfolgreich aus dem System gelÃ¶scht.";
 $_ARRAYLANG['TXT_STATISTICS'] = "";
 $_ARRAYLANG['TXT_GENERALLY'] = "";
 $_ARRAYLANG['TXT_NEWSLETTER_ALL'] = "";
@@ -63,12 +63,12 @@ $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'] = "Geburtstag";
 $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE'] = "Abonnieren";
 $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'] = "Firma";
 $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY'] = "January,February,March,April,May,June,July,August,September,October,November,December";
-$_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_LIST'] = "Sie müssen mindestens eine Liste auswählen!";
+$_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_LIST'] = "Sie mÃ¼ssen mindestens eine Liste auswÃ¤hlen!";
 $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED'] = "Ihre Daten wurden erfolgreich aktualisiert.";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA'] = "Beim aktualisieren Ihrer Daten trat ein Fehler auf!";
-$_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "Beim hinzufügen zum Newsletter-System trat ein Fehler auf!";
+$_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "Beim hinzufÃ¼gen zum Newsletter-System trat ein Fehler auf!";
 $_ARRAYLANG['TXT_NEWSLETTER_AUTHENTICATION_FAILED'] = "Authentifizierung fehlgeschlagen!";
 $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL'] = "Der Anmeldevorgang wurde abgebrochen, da das Aktivierungsemail nicht gesendet werden konnte!";
-$_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] = "Beim löschen Ihrer E-Mail Adresse aus dem Newsletter System trat ein Fehler auf!";
+$_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] = "Beim lÃ¶schen Ihrer E-Mail Adresse aus dem Newsletter System trat ein Fehler auf!";
 $_ARRAYLANG['TXT_NEWSLETTER_SEX'] = "Sex";
 ?>

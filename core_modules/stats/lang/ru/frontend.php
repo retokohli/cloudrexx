@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_CLIENT_DATA'] = "Client-Data (Useragent,Ip,Host)";
@@ -11,21 +11,21 @@ $_ARRAYLANG['TXT_DAY'] = "Tag";
 $_ARRAYLANG['TXT_BROWSER_AND_OPERATING_SYSTEMS'] = "Browser und Betriebssysteme";
 $_ARRAYLANG['TXT_USER_STATISTIC'] = "Besucher Statistik";
 $_ARRAYLANG['TXT_PROXY_SERVERS'] = "Proxy Servers";
-$_ARRAYLANG['TXT_HOSTNAMES_AND_COUNTRIES'] = "Hostnamen und Länder";
+$_ARRAYLANG['TXT_HOSTNAMES_AND_COUNTRIES'] = "Hostnamen und LÃ¤nder";
 $_ARRAYLANG['TXT_SEARCHING_MACHINES_AND_SPIDERS'] = "Suchmaschinen und Spider";
 $_ARRAYLANG['TXT_VISITORS_TODAY'] = "Besucher Heute";
 $_ARRAYLANG['TXT_MOST_VISITED_PAGES'] = "Welches sind die beliebtesten Seiten";
 $_ARRAYLANG['TXT_SEARCH'] = "Suche";
 $_ARRAYLANG['TXT_TOP'] = "Top";
 $_ARRAYLANG['TXT_NAME'] = "Name";
-$_ARRAYLANG['TXT_DAILY_VISITORS_AND_PAGE_VIEWS'] = "Die täglichen Besucher und Seitenaufrufe";
+$_ARRAYLANG['TXT_DAILY_VISITORS_AND_PAGE_VIEWS'] = "Die tÃ¤glichen Besucher und Seitenaufrufe";
 $_ARRAYLANG['TXT_VISITOR'] = "Besucher";
 $_ARRAYLANG['TXT_MONTHLY_VISITORS_AND_PAGE_VIEWS'] = "Die monatlichen Besucher und Seitenaufrufe";
-$_ARRAYLANG['TXT_COUNTRIES'] = "Länder";
+$_ARRAYLANG['TXT_COUNTRIES'] = "LÃ¤nder";
 $_ARRAYLANG['TXT_PAGES_TODAY'] = "Seiten heute";
 $_ARRAYLANG['TXT_PAGES_THIS_MONTH'] = "Seiten diesen Monat";
-$_ARRAYLANG['TXT_MOST_SPIDER_VISITS'] = "Spiderbesuche nach Häufigkeit";
-$_ARRAYLANG['TXT_DAILY_SPIDER_VISITS'] = "Die täglichen Spider besuche";
+$_ARRAYLANG['TXT_MOST_SPIDER_VISITS'] = "Spiderbesuche nach HÃ¤ufigkeit";
+$_ARRAYLANG['TXT_DAILY_SPIDER_VISITS'] = "Die tÃ¤glichen Spider besuche";
 $_ARRAYLANG['TXT_PROXY_HOSTNAMES'] = "Proxy Host-Namen";
 $_ARRAYLANG['TXT_PROXY_USER_AGENTS'] = "Proxy Useragenten";
 $_ARRAYLANG['TXT_SEARCH_QUERY'] = "Suchausdruck";

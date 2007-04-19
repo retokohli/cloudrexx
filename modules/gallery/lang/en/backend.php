@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'] = "Name";
@@ -19,7 +19,7 @@ $_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_SORT'] = "Save ";
 $_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_CATEGORY'] = "Save changes";
 $_ARRAYLANG['TXT_MAX_IMAGES_UPLOAD'] = "Amount of pictures for upload";
 $_ARRAYLANG['TXT_STANDARD_QUALITY_UPLOADED_PICS'] = "Quality for thumbnails (1-100)";
-$_ARRAYLANG['TXT_STANDARD_SIZE_UPLOADED_PICS_PROZ'] = "Standardgrösse für heraufgeladene Bilder (prozentual)";
+$_ARRAYLANG['TXT_STANDARD_SIZE_UPLOADED_PICS_PROZ'] = "StandardgrÃ¶sse fÃ¼r heraufgeladene Bilder (prozentual)";
 $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_SETTINGS_SAVED'] = "The settings were savet successfully.";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_CATEGORY_UPDATED'] = "The changes in the category were updated";
 $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_CATEGORY_DELETED'] = "The category was deleted.";
@@ -52,9 +52,9 @@ $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_THUMBNAIL_VALIDATED'] = "Image was accep
 $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_THUMBNAIL_NO_CATEGORY'] = "You did not choose a category!";
 $_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_DELETE'] = "Delete image";
 $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_PICTURE_DELETED'] = "Image was deletet.";
-$_ARRAYLANG['TXT_STANDARD_SIZE_UPLOADED_PICS_ABS'] = "Standardbreite für heraufgeladene Bilder (absolut)";
+$_ARRAYLANG['TXT_STANDARD_SIZE_UPLOADED_PICS_ABS'] = "Standardbreite fÃ¼r heraufgeladene Bilder (absolut)";
 $_ARRAYLANG['TXT_STANDARD_SIZE_TYPE_THUMBNAILS'] = "Default method for thumbnails (proz,abs)";
-$_ARRAYLANG['TXT_STANDARD_HEIGHT_UPLOADED_PICS_ABS'] = "Standardhöhe für heraufgeladene Bilder (absolut)";
+$_ARRAYLANG['TXT_STANDARD_HEIGHT_UPLOADED_PICS_ABS'] = "StandardhÃ¶he fÃ¼r heraufgeladene Bilder (absolut)";
 $_ARRAYLANG['TXT_VALIDATION_SHOW_LIMIT'] = "pictures in multimode";
 $_ARRAYLANG['TXT_GALLERY_VALIDATE_METHOD_SINGLE'] = "Single image mode";
 $_ARRAYLANG['TXT_GALLERY_VALIDATE_METHOD_ALL'] = "Multiple image mode";
@@ -68,7 +68,7 @@ $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_NAME'] = "Name of image";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_RESET_PICTURE_MSG'] = "Do you really want to set back the image and move it into the confirmation-folder?";
 $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_PICTURE_RESET'] = "The image was set back and moved into the confirmaion folder";
 $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_PICTURE_CATEGORY_CHANGED'] = "The image was moved into the desired category.";
-$_ARRAYLANG['TXT_GALLERY_ROTATE'] = "Rotate image clockwise in 90° deg";
+$_ARRAYLANG['TXT_GALLERY_ROTATE'] = "Rotate image clockwise in 90Â° deg";
 $_ARRAYLANG['TXT_SHOW_PICTURE_NAME'] = "Show picturenames";
 $_ARRAYLANG['TXT_FILESIZE'] = "Filesize";
 $_ARRAYLANG['TXT_IMAGE_NAME'] = "Image name";
@@ -92,19 +92,19 @@ $_ARRAYLANG['TXT_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_GALLERY'] = "Gallery";
 $_ARRAYLANG['TXT_SIZE'] = "Filesize";
 $_ARRAYLANG['TXT_GALLERY_IMPORT_PICTURES'] = "Import Pictures";
-$_ARRAYLANG['TXT_GALLERY_FORMAT_SUPPORT'] = "Auf Ihrem System werden folgende Bildformate unterstützt:";
+$_ARRAYLANG['TXT_GALLERY_FORMAT_SUPPORT'] = "Auf Ihrem System werden folgende Bildformate unterstÃ¼tzt:";
 $_ARRAYLANG['TXT_GALLERY_NO_UPLOAD'] = "Bilder welche nicht diesen Formaten entsprechen, werden nicht heraufgeladen.";
 $_ARRAYLANG['TXT_GALLERY_MAKE_SELECTION'] = "Select a picture please.";
 $_ARRAYLANG['TXT_GALLERY_REALY_DELETE'] = "";
-$_ARRAYLANG['TXT_GALLERY_MAX_PICTURES'] = "Es können maximal";
+$_ARRAYLANG['TXT_GALLERY_MAX_PICTURES'] = "Es kÃ¶nnen maximal";
 $_ARRAYLANG['TXT_GALLERY_COUNT_PICTURES'] = "Bilder auf einmal angezeigt und importiert werden. Auf dem FTP-Server (Verzeichnis) vorhandene Bilder:";
 $_ARRAYLANG['TXT_GALLERY_TYPE_NOT_SUPPORTED'] = "This Type will not be supported";
 $_ARRAYLANG['TXT_GALLERY_CHOOSE_ACTION'] = "Choose action";
 $_ARRAYLANG['TXT_GALLERY_DELETE'] = "Delete";
 $_ARRAYLANG['TXT_GALLERY_IMPORT'] = "Import";
-$_ARRAYLANG['TXT_GALLERY_NO_GIF_SUPPORT'] = "Auf Ihren Server können keine GIF-Dateien bearbeitet werden";
-$_ARRAYLANG['TXT_GALLERY_NO_JPG_SUPPORT'] = "Auf Ihren Server können keine JPG-Dateien bearbeitet werden";
-$_ARRAYLANG['TXT_GALLERY_NO_PNG_SUPPORT'] = "Auf Ihren Server können keine PNG-Dateien bearbeitet werden";
+$_ARRAYLANG['TXT_GALLERY_NO_GIF_SUPPORT'] = "Auf Ihren Server kÃ¶nnen keine GIF-Dateien bearbeitet werden";
+$_ARRAYLANG['TXT_GALLERY_NO_JPG_SUPPORT'] = "Auf Ihren Server kÃ¶nnen keine JPG-Dateien bearbeitet werden";
+$_ARRAYLANG['TXT_GALLERY_NO_PNG_SUPPORT'] = "Auf Ihren Server kÃ¶nnen keine PNG-Dateien bearbeitet werden";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ACTION'] = "Action";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ATTR'] = "Attributes";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ORIG_CAPT'] = "Original image size";
@@ -157,7 +157,7 @@ $_ARRAYLANG['TXT_SETTINGS_THUMB_ABS_WIDTH'] = "pixels for width";
 $_ARRAYLANG['TXT_SETTINGS_THUMB_ABS_HEIGHT'] = "pixels for height";
 $_ARRAYLANG['TXT_SETTINGS_THUMB_PROZ_DESC'] = "percent of original";
 $_ARRAYLANG['TXT_SETTINGS_QUALITY'] = "Quality";
-$_ARRAYLANG['TXT_GALLERY_EXTENDED'] = "More options »";
+$_ARRAYLANG['TXT_GALLERY_EXTENDED'] = "More options Â»";
 $_ARRAYLANG['TXT_GALLERY_DELETE_ALL_CATEGORY_MESSAGE'] = "Do you really want to delete all selected categories?";
 $_ARRAYLANG['TXT_GALLERY_IMPORT_ERR_DIR'] = "This directory is empty.";
 $_ARRAYLANG['TXT_GALLERY_IMPORT_ERR_SAFEMODE'] = "PHP Safemode restriction.";
@@ -171,7 +171,7 @@ $_ARRAYLANG['TXT_GALLERY_SETTINGS_PAGING'] = "Images per page (paging)";
 $_ARRAYLANG['TXT_GALLERY_UPLOAD_ERROR_WIDTH'] = "Error: The width of the image was bigger than the allowed maximum value of  pixels.";
 $_ARRAYLANG['TXT_GALLERY_SETTINGS_HOME_LAST'] = "Activate 'newest image'-function";
 $_ARRAYLANG['TXT_GALLERY_SETTINGS_HOME_RANDOM'] = "Activate 'random image'-function";
-$_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Art der Überschrift";
+$_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Art der Ãœberschrift";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_HIERARCHY'] = "hierarchisch";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_FLAT'] = "flach";
 $_ARRAYLANG['TXT_SETTINGS_IMAGENAME_EXT_SHOW'] = "Erweiterung mit Namen anzeigen";

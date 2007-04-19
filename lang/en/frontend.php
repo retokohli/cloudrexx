@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
@@ -79,6 +79,6 @@ $_ARRAYLANG['TXT_IMAGE'] = "Image";
 $_ARRAYLANG['TXT_EXP_SEARCH'] = "expanded Search";
 $_ARRAYLANG['TXT_POPUP_MODULE_DESCRIPTION'] = "Setup Pop-up windows";
 $_ARRAYLANG['TXT_IMPRINT_MODULE_DESCRIPTION'] = "Imprint";
-$_ARRAYLANG['TXT_AGB_MODULE_DESCRIPTION'] = "Allgemeine Geschäftsbedingungen";
+$_ARRAYLANG['TXT_AGB_MODULE_DESCRIPTION'] = "Allgemeine GeschÃ¤ftsbedingungen";
 $_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Privacy";
 ?>

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_DATE'] = "Datum";
@@ -16,18 +16,18 @@ $_ARRAYLANG['TXT_NEWS_NEWS_CONTENT'] = "Newsinhalt";
 $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] = "Wichtige Hyperlinks";
 $_ARRAYLANG['TXT_NEWS_SOURCE'] = "Quelle";
 $_ARRAYLANG['TXT_LAST_UPDATE'] = "Letzte Aktualisierung";
-$_ARRAYLANG['TXT_PERFORM'] = "Ausführen";
+$_ARRAYLANG['TXT_PERFORM'] = "AusfÃ¼hren";
 $_ARRAYLANG['TXT_NO_NEWS_FOUND'] = "Es wurden keine Newsmeldungen gefunden";
 $_ARRAYLANG['TXT_NEWS_FEED_TITLE'] = "News Feed Titel";
 $_ARRAYLANG['TXT_NEWS_FEED_DESCRIPTION'] = "News Feed Beschreibung";
 $_ARRAYLANG['TXT_SUBMIT_NEWS'] = "Newsmeldung anmelden";
 $_ARRAYLANG['TXT_NEWS_SUCCESSFULLY_SUBMITED'] = "Die Newsmeldung wurde erfolgreich angemeldet.";
 $_ARRAYLANG['TXT_NEWS_SUBMIT_ERROR'] = "Es trat ein unerwarteter Fehler auf beim anmelden der Newsmeldung.<br />Versuchen Sie es erneut!";
-$_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT'] = "Sie müssen für den News Eintrag mindestens einen Titel setzen und etwas Text hinzu schreiben oder eine Weiterleitungsadresse angeben.";
+$_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT'] = "Sie mÃ¼ssen fÃ¼r den News Eintrag mindestens einen Titel setzen und etwas Text hinzu schreiben oder eine Weiterleitungsadresse angeben.";
 $_ARRAYLANG['TXT_NEWS_SHOW_NEWS'] = "News anzeigen";
 $_ARRAYLANG['TXT_NEWS_OPTIONAL_VARS'] = "Diese Variablen sind optional";
 $_ARRAYLANG['TXT_NEWS_FONT_COLOR'] = "Schriftfarbe";
-$_ARRAYLANG['TXT_NEWS_FONT_SIZE'] = "Schriftgrösse";
+$_ARRAYLANG['TXT_NEWS_FONT_SIZE'] = "SchriftgrÃ¶sse";
 $_ARRAYLANG['TXT_NEWS_FONT'] = "Schriftart";
 $_ARRAYLANG['TXT_NEWS_DISPLAY_LIMIT'] = "Anzahl anzuzeigende Newsmeldungen";
 $_ARRAYLANG['TXT_NEWS_SHOW_NEWS_DATE'] = "Datum der Newsmeldung anzeigen";

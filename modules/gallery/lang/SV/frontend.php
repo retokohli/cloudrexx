@@ -1,35 +1,35 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_GALLERY_EXTERNAL_SUB_CATS'] = "Unterkategorien";
 $_ARRAYLANG['TXT_CLOSE_WINDOW'] = "Fenster schliessen";
 $_ARRAYLANG['TXT_ZOOM_OUT'] = "Wegzoomen";
 $_ARRAYLANG['TXT_ZOOM_IN'] = "Heranzoomen";
-$_ARRAYLANG['TXT_CHANGE_BG_COLOR'] = "Hintergrundfarbe ändern";
+$_ARRAYLANG['TXT_CHANGE_BG_COLOR'] = "Hintergrundfarbe Ã¤ndern";
 $_ARRAYLANG['TXT_PRINT'] = "Drucken";
 $_ARRAYLANG['TXT_PREVIOUS_IMAGE'] = "Vorheriges Bild";
-$_ARRAYLANG['TXT_NEXT_IMAGE'] = "Nächstes Bild";
-$_ARRAYLANG['TXT_FILESIZE'] = "Dateigrösse";
-$_ARRAYLANG['TXT_RESOLUTION'] = "Auflösung";
+$_ARRAYLANG['TXT_NEXT_IMAGE'] = "NÃ¤chstes Bild";
+$_ARRAYLANG['TXT_FILESIZE'] = "DateigrÃ¶sse";
+$_ARRAYLANG['TXT_RESOLUTION'] = "AuflÃ¶sung";
 $_ARRAYLANG['TXT_USER_DEFINED'] = "Benutzerdefiniert";
 $_ARRAYLANG['TXT_IMAGE_NAME'] = "Bildname";
 $_ARRAYLANG['TXT_IMAGE_COUNT'] = "Anzahl Bilder";
 $_ARRAYLANG['TXT_CATEGORY'] = "Kategorie";
 $_ARRAYLANG['TXT_GALLERY'] = "Galerie";
-$_ARRAYLANG['TXT_SIZE'] = "Dateigrösse";
+$_ARRAYLANG['TXT_SIZE'] = "DateigrÃ¶sse";
 $_ARRAYLANG['TXT_VOTING_TITLE'] = "Bildbewertungen";
 $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'] = "Aktuelle Bewertung";
 $_ARRAYLANG['TXT_VOTING_STATS_WITH'] = "bei";
 $_ARRAYLANG['TXT_VOTING_STATS_VOTES'] = "Stimmen.";
 $_ARRAYLANG['TXT_COMMENTS_TITLE'] = "Kommentare vorhanden";
 $_ARRAYLANG['TXT_COMMENTS_DATEFORMAT'] = "d.m.Y";
-$_ARRAYLANG['TXT_COMMENTS_ADD_TITLE'] = "Kommentar hinzufügen";
+$_ARRAYLANG['TXT_COMMENTS_ADD_TITLE'] = "Kommentar hinzufÃ¼gen";
 $_ARRAYLANG['TXT_COMMENTS_ADD_HOMEPAGE'] = "Homepage";
 $_ARRAYLANG['TXT_COMMENTS_ADD_TEXT'] = "Kommentar";
-$_ARRAYLANG['TXT_COMMENTS_ADD_SUBMIT'] = "Kommentar hinzufügen";
+$_ARRAYLANG['TXT_COMMENTS_ADD_SUBMIT'] = "Kommentar hinzufÃ¼gen";
 $_ARRAYLANG['TXT_COMMENTS_ADD_COMMENTS'] = "Kommentare";
 $_ARRAYLANG['TXT_COMMENTS_ADD_NAME'] = "Name";
 $_ARRAYLANG['TXT_COMMENTS_ADD_EMAIL'] = "E-Mail";

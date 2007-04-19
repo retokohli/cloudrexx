@@ -1,12 +1,12 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_PODCAST_MEDIA'] = "Medien";
 $_ARRAYLANG['TXT_PODCAST_ALL'] = "Alle";
-$_ARRAYLANG['TXT_PODCAST_SELECT_CATEGORY'] = "Kategorie wählen";
+$_ARRAYLANG['TXT_PODCAST_SELECT_CATEGORY'] = "Kategorie wÃ¤hlen";
 $_ARRAYLANG['TXT_PODCAST_SHOW'] = "Anzeigen";
 $_ARRAYLANG['TXT_PODCAST_HOUR'] = "Stunde";
 $_ARRAYLANG['TXT_PODCAST_MINUTE'] = "Minute";

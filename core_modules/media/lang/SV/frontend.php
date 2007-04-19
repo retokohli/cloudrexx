@@ -1,11 +1,11 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_MEDIA_FILE_NAME'] = "Dateiname";
-$_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Dateigrösse";
+$_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "DateigrÃ¶sse";
 $_ARRAYLANG['TXT_MEDIA_FILE_DATE'] = "Datum";
 $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] = "Medienarchiv";
 $_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'] = "Dieses Verzeichnis ist leer";

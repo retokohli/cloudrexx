@@ -1,12 +1,12 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 18 Apr 2007 09:02:04 +0200
+* generated date Thu, 19 Apr 2007 10:00:14 +0200
 **/
 
 $_ARRAYLANG['TXT_CALENDAR_DATE'] = "Termindatum";
-$_ARRAYLANG['TXT_CALENDAR_BACK'] = "&laquo; zurück";
-$_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "Die nächsten Termine:";
+$_ARRAYLANG['TXT_CALENDAR_BACK'] = "&laquo; zurÃ¼ck";
+$_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "Die nÃ¤chsten Termine:";
 $_ARRAYLANG['TXT_CALENDAR_SHOW'] = "anzeigen";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'] = "Es wurden keine Termine gefunden...";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS'] = "Termine";
@@ -14,7 +14,7 @@ $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'] = "Alle Kategorien";
 $_ARRAYLANG['TXT_CALENDAR_CAT'] = "Kategorie";
 $_ARRAYLANG['TXT_CALENDAR_NAME'] = "Betreff";
 $_ARRAYLANG['TXT_CALENDAR_PLACE'] = "Ort";
-$_ARRAYLANG['TXT_CALENDAR_PRIORITY'] = "Priorität";
+$_ARRAYLANG['TXT_CALENDAR_PRIORITY'] = "PrioritÃ¤t";
 $_ARRAYLANG['TXT_CALENDAR_START'] = "Start";
 $_ARRAYLANG['TXT_CALENDAR_END'] = "Ende";
 $_ARRAYLANG['TXT_CALENDAR_COMMENT'] = "Beschreibung";
