@@ -171,7 +171,6 @@ $pageId  = $objInit->getPageID($page, $section, $command);
 $is_home = $objInit->is_home;
 
 $objNavbar  = &new Navigation($pageId);
-$objBanner  = &new Banner();
 $objCounter = &new statsLibrary();
 $objCounter->checkForSpider();
 $themesPages = $objInit->getTemplates();
@@ -1369,7 +1368,7 @@ $objTemplate->setVariable(array(
     'ONLINE_USERS'            => $objCounter->getOnlineUsers(),
     'VISITOR_NUMBER'        => $objCounter->getVisitorNumber(),
     'COUNTER'                => $objCounter->getCounterTag(),
-    'BANNER'                => $objBanner->getBannerJS(),
+    'BANNER'                => isset($objBanner) ? $objBanner->getBannerJS() : '',
     'VERSION'                   => $_CONFIG['coreCmsName'],
     'LANGUAGE_NAVBAR'        => $objNavbar->getFrontendLangNavigation(),
     'ACTIVE_LANGUAGE_NAME'  => $objInit->getFrontendLangName(),

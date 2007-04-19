@@ -497,14 +497,7 @@ class NetToolsLib {
 			// Non existant port number
 			return -1;
 		} else {
-			// Set the error display not to show warnings
-			$errdsp = error_reporting(0);
-
-			// Connect to the port (kill the error message)
-			$sock = fsockopen($targethost, $destport, $errno, $errdesc, 3);
-
-			// Return the previous error display settings
-			error_reporting($errdsp);
+			$sock = @fsockopen($targethost, $destport, $errno, $errdesc, 3);
 
 			// Determine whether it was a success
 			if(!$sock) {
@@ -528,9 +521,6 @@ class NetToolsLib {
 	* Returns: The whois information ("" on failure)
 	*/
 	function WhoisIP($ip) {
-		// Set the error display not to show warnings
-		$errdsp = error_reporting(0);
-
 		$whoisInfo = "";
 
 		if (empty($ip)) {
@@ -543,7 +533,7 @@ class NetToolsLib {
 		$lastref = -1;
 		for ($i = 0; $i < count($this->arrWhoisIps); $i++) {
 			// Create the socket
-			$sock = fsockopen($this->arrWhoisIps[$i]['server'], $this->arrWhoisIps[$i]['port'], $errno, $errdesc, $this->ServerTimeout);
+			$sock = @fsockopen($this->arrWhoisIps[$i]['server'], $this->arrWhoisIps[$i]['port'], $errno, $errdesc, $this->ServerTimeout);
 
 			if($sock) {
 				// Send the requested IP
@@ -605,9 +595,6 @@ class NetToolsLib {
 								$greatestres = 1;
 							}
 						} else {	// Perfect!
-							// Back to normal error reporting
-							error_reporting($errdsp);
-
 							// Succeeded, bail out
 							$whoisInfo = $resp;
 
@@ -636,8 +623,6 @@ class NetToolsLib {
 				}
 			}
 		}
-		// Back to normal error reporting
-		error_reporting($errdsp);
 
 		// Tried 'em all, all failed, return the best result
 		return $whoisInfo;
@@ -660,10 +645,6 @@ class NetToolsLib {
 		while(substr_count($domain, ".") > 1)
 			$domain = substr($domain, strpos($domain, ".") + 1);
 
-
-		// Set the error display not to show warnings
-		$errdsp = error_reporting(0);
-
 		// For every defined server
 		foreach ($this->arrWhoisDomains as $arrWhoisDomain) {
 			// Search the domain type
@@ -671,7 +652,7 @@ class NetToolsLib {
 				// If it's "" or it matches
 				if ($arrWhoisDomainType == "" || substr($domain, -strlen($arrWhoisDomainType) - 1) == ".".$arrWhoisDomainType) {
 					// Create the socket
-					$sock = fsockopen($arrWhoisDomain['server'], $arrWhoisDomain['port'], $errno, $errdesc, $this->ServerTimeout);
+					$sock = @fsockopen($arrWhoisDomain['server'], $arrWhoisDomain['port'], $errno, $errdesc, $this->ServerTimeout);
 					if ($sock) {
 						// Send the requested IP
 						fputs($sock, $arrWhoisDomain['prepend'].$domain.$arrWhoisDomain['append']."\r\n");
@@ -685,8 +666,6 @@ class NetToolsLib {
 						fclose($sock);
 
 						if (strstr($resp, "\n".str_replace("{DOMAIN}", $domain, $arrWhoisDomain['error'])) === false && substr($resp, 0, strlen($arrWhoisDomain['error'])) != $arrWhoisDomain['error'] && strstr($resp, "0.0.0.0 - 255.255.255.255") === false) {
-							// Back to normal error reporting
-							error_reporting($errdsp);
 
 							// Succeeded, bail out
 							return $resp;
@@ -696,8 +675,6 @@ class NetToolsLib {
 				}
 			}
 		}
-		// Back to normal error reporting
-		error_reporting($errdsp);
 
 		// Tried 'em all, all failed, return ""
 		return "";
