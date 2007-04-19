@@ -13,53 +13,53 @@ function disableDate()
 		else
 		{
 			startDate.disabled = false;
-		    endDate.disabled = false;			
+		    endDate.disabled = false;
 		}
-	}	
+	}
 }
 
 
 function setStartDate()
-{ 
+{
 	with(document.docsys)
     {
 	   if(startDate.value=="")
 	   {
 	        startDate.value= "{DOCSYS_DATE}";
-	   }	   
+	   }
     }
 }
 
 function setEndDate()
-{ 
+{
     with(document.docsys)
     {
 	   if(endDate.value=="")
 	   {
 	        endDate.value = "{DOCSYS_DATE}";
-	   }	   
+	   }
     }
 }
 // -->
-</script>  
+</script>
 <form name="docsys" method="post" action="index.php?cmd=docsys&act={DOCSYS_FORM_ACTION}&id={DOCSYS_ID}">
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-    <tr> 
-      <th valign="top" colspan="2"> 
-        <div align="left">{TXT_DOCSYS_MESSAGE} 
+    <tr>
+      <th valign="top" colspan="2">
+        <div align="left">{TXT_DOCSYS_MESSAGE}
           <input type="hidden" name="docSysFormAction" value="{DOCSYS_STORED_FORM_ACTION}" />
           <input type="hidden" name="docSysId" value="{DOCSYS_STORED_ID}" />
           <input type="hidden" name="docSysTopTitle" value="{DOCSYS_TOP_TITLE}" />
         </div>
       </th>
     </tr>
-    <tr class="row1"> 
+    <tr class="row1">
       <td width="12%" nowrap="nowrap">{TXT_TITLE}</TD>
-      <td> 
+      <td>
         <input type="text" name="docSysTitle" size="80" value="{DOCSYS_TITLE}" maxlength="250" />
       </td>
     </tr>
-    <tr class="row1"> 
+    <tr class="row2">
       <td width="12%" nowrap="nowrap">{TXT_CATEGORY}</td>
       <td>
 <select name="docSysCat">
@@ -67,62 +67,69 @@ function setEndDate()
 </select>
 </td>
 </tr>
-<tr class="row1"> 
+<tr class="row1">
 <td width="12%" nowrap="nowrap">{TXT_AUTHOR}</TD>
-<td> 
+<td>
 <input name="author" type="text" id="author" value="{DOCSYS_AUTHOR}" size="50" maxlength="150" />
 </td>
-</tr>	
+</tr>
+<tr>
+<td nowrap="nowrap">{TXT_DATE}</TD>
+<td>
+<input name="creation_date" type="text" id="creation_date" value="{DOCSYS_DATE}" size="50" maxlength="150" />
+</td>
+
+</tr>
   </table>
 <br />
   <table cellspacing="0" cellpadding=3 width="100%" border="0" class="adminlist">
-    <tr> 
-      <th valign="top" colspan="2"> 
+    <tr>
+      <th valign="top" colspan="2">
         <div align="left">{TXT_HYPERLINKS}</div>
       </th>
     </tr>
-    <tr class="row1"> 
+    <tr class="row2">
       <td width="12%" nowrap="nowrap">{TXT_EXTERNAL_SOURCE}</TD>
-      <td><b> 
+      <td><b>
         <input type="text" name="docSysSource" size="80" value="{DOCSYS_SOURCE}" maxlength="250" />
         </b></td>
     </tr>
-    <tr class="row1"> 
+    <tr class="row1">
       <td width="12%" nowrap="nowrap">{TXT_LINK} #1</td>
-      <td><b> 
+      <td><b>
         <input type="text" name="docSysUrl1" size="80" value="{DOCSYS_URL1}" maxlength="250" />
         </b></td>
     </tr>
-    <tr class="row1"> 
+    <tr class="row2">
       <td width="12%" nowrap="nowrap">{TXT_LINK} #2</TD>
-      <td><b> 
+      <td><b>
         <input type="text" name="docSysUrl2" size="80" value="{DOCSYS_URL2}" maxlength="250" />
         </b></TD>
     </tr>
   </table>
   <br />
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-    <tr> 
+    <tr>
       <th valign="top">{TXT_DOCSYS_CONTENT}</th>
     </tr>
-    <tr class="row1"> 
+    <tr class="row1">
       <td valign="top">{DOCSYS_TEXT}</td>
     </tr>
   </table>
   <br />
   <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
-    <tr> 
-      <th colspan="2"> 
+    <tr>
+      <th colspan="2">
         <div align="left">{TXT_PUBLISHING}</div>
       </th>
     </tr>
-    <tr valign="top" class="row1"> 
+    <tr valign="top" class="row1">
       <td nowrap="nowrap" width="12%" height="26">{TXT_ACTIVE}</td>
-      <td height="26"><b> 
+      <td height="26"><b>
         <input type="checkbox" name="status" value="1" {DOCSYS_STATUS} onClick="disableDate()" />
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>&nbsp;&nbsp;&nbsp;&nbsp;{TXT_STARTDATE}: 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>&nbsp;&nbsp;&nbsp;&nbsp;{TXT_STARTDATE}:
         <input type="text" name="startDate" size="10" maxlength="10" onClick="setStartDate()" value="{DOCSYS_STARTDATE}" enabled />
-        &nbsp;&nbsp; {TXT_ENDDATE}: 
+        &nbsp;&nbsp; {TXT_ENDDATE}:
         <input type="text" name="endDate" size="10" maxlength="10" onFocus="setEndDate()" value="{DOCSYS_ENDDATE}" enabled />
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( {TXT_OPTIONAL} )</td>
     </tr>
