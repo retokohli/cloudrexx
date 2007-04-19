@@ -181,7 +181,12 @@ if (!$objAuth->checkAuth()) {
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $objTemplate->loadTemplateFile('index.html');
     $objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
-    $objTemplate->setVariable('TXT_PAGE_ID', $_CORELANG['TXT_PAGE_ID']);
+    $objTemplate->setVariable(
+    	array(
+    		'TXT_PAGE_ID'		=> $_CORELANG['TXT_PAGE_ID'],
+    		'CONTREXX_CHARSET'	=> CONTREXX_CHARSET
+    	)
+    );
     $objTemplate->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
 }
 

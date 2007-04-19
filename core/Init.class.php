@@ -297,7 +297,7 @@ class InitCMS
     function getFrontendLangCharset()
 	{
 		if (empty($this->frontendLangCharset)){
-            return "iso-8859-1";
+            return CONTREXX_CHARSET;
 		}else{
 		    return $this->frontendLangCharset;
 		}
@@ -314,7 +314,7 @@ class InitCMS
     function getBackendLangCharset()
 	{
 		if (empty($this->backendLangCharset)){
-            return "iso-8859-1";
+            return CONTREXX_CHARSET;
 		}else{
 		    return $this->backendLangCharset;
 		}

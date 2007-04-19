@@ -96,7 +96,7 @@ class AliasAdmin extends aliasLib
 		global $objTemplate, $_ARRAYLANG;
 
 		$arrConfig = $this->_getConfig();
-		if ($arrConfig['aliasStatus'] == '0') {
+		if (!$arrConfig['aliasStatus']) {
 			$_REQUEST['act'] = 'settings';
 		}
 

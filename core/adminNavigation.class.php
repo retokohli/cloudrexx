@@ -137,7 +137,7 @@ class adminMenu
                 // checks if the links are childs of this area ID
                 if ($link_data[0] == $group_id) {
                     if ($this->moduleExists($link_data[4])) {
-                        $navigation.= "<li><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>»&nbsp;".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
+                        $navigation.= "<li><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>&raquo;&nbsp;".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                     }
                 }
                 $objTemplate->setGlobalVariable('NAVIGATION_MENU',$navigation);
