@@ -10,6 +10,12 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+$_ARRAYLANG['TXT_DOCSYS_SORTING'] = "Sortierung";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_ALPHA'] = "nach Alphabet";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE'] = "nach Datum";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE_ALPHA'] = "nach Datum und Alphabet";
+$_ARRAYLANG['TXT_DOCSYS_SORTTYPE'] = "Art der Sortierung";
+
 /**
  * Includes
  */
@@ -215,6 +221,18 @@ class docSysManager extends docSysLibrary
 
 
 
+    function _getSortingDropdown($catID, $sorting = 'alpha')
+    {
+    	global $_ARRAYLANG;
+    	return '
+    		<select name="sortStyle['.$catID.']">
+    			<option value="alpha" '.($sorting == 'alpha' ? 'selected="selected"' : '').' >'.$_ARRAYLANG['TXT_DOCSYS_SORTING_ALPHA'].'</option>
+    			<option value="date" '.($sorting == 'date' ? 'selected="selected"' : '').'>'.$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE'].'</option>
+    			<option value="date_alpha" '.($sorting == 'date_alpha' ? 'selected="selected"' : '').'>'.$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE_ALPHA'].'</option>
+    		</select>
+    	';
+    }
+
 
     /**
     * adds a news entry
@@ -244,6 +262,7 @@ class docSysManager extends docSysLibrary
 	        'TXT_ENDDATE'         	 => $_ARRAYLANG['TXT_ENDDATE'],
 	        'TXT_OPTIONAL'           => $_ARRAYLANG['TXT_OPTIONAL'],
 	        'TXT_ACTIVE'             => $_ARRAYLANG['TXT_ACTIVE'],
+	        'TXT_DATE'            	 => $_ARRAYLANG['TXT_DATE'],
 			'DOCSYS_TEXT'            => get_wysiwyg_editor('docSysText', '', 'active'),
 			'DOCSYS_FORM_ACTION'     => "add",
 			'DOCSYS_STORED_FORM_ACTION' => "add",
@@ -253,7 +272,7 @@ class docSysManager extends docSysLibrary
 			'DOCSYS_CAT_MENU'        => $this->getCategoryMenu($this->langId, $selectedOption=""),
 			'DOCSYS_STARTDATE'       => "",
 			'DOCSYS_ENDDATE' => "",
-			'DOCSYS_DATE'  => date("Y-m-d"),
+			'DOCSYS_DATE'  => date(ASCMS_DATE_FORMAT, time()),
             'TXT_AUTHOR' => $_ARRAYLANG['TXT_AUTHOR'],
             'DOCSYS_AUTHOR' => $_SESSION['auth']['username'],
 		));
@@ -339,25 +358,27 @@ class docSysManager extends docSysLibrary
 	        'TXT_STARTDATE'       => $_ARRAYLANG['TXT_STARTDATE'],
 	        'TXT_ENDDATE'         => $_ARRAYLANG['TXT_ENDDATE'],
 	        'TXT_OPTIONAL'        => $_ARRAYLANG['TXT_OPTIONAL'],
+	        'TXT_DATE'      	  => $_ARRAYLANG['TXT_DATE'],
 	        'TXT_ACTIVE'=> $_ARRAYLANG['TXT_ACTIVE'],
 	        'TXT_AUTHOR' => $_ARRAYLANG['TXT_AUTHOR'],
 		));
 
 		$id = intval($_REQUEST['id']);
 
-		$query = "SELECT catid,
-						   lang,
-						   id,
-						   title,
-		                   author,
-						   text,
-						   source,
-						   url1,
-						   url2,
-						   startdate,
-						   enddate,
-						   status
-		              FROM ".DBPREFIX."module_docsys
+		$query = "SELECT `catid`,
+						   `lang`,
+						   `date`,
+						   `id`,
+						   `title`,
+		                   `author`,
+						   `text`,
+						   `source`,
+						   `url1`,
+						   `url2`,
+						   `startdate`,
+						   `enddate`,
+						   `status`
+		              FROM `".DBPREFIX."module_docsys`
 		             WHERE id = '$id'
 		             LIMIT 1";
 		$objResult = $objDatabase->Execute($query);
@@ -389,7 +410,7 @@ class docSysManager extends docSysLibrary
 				'DOCSYS_STARTDATE'	=> $startDate,
 				'DOCSYS_ENDDATE'	=> $endDate,
 				'DOCSYS_STATUS'		=> $status,
-				'DOCSYS_DATE'       => date("Y-m-d"),
+				'DOCSYS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
 			));
 		}
 
@@ -433,6 +454,7 @@ class docSysManager extends docSysLibrary
 
 		    $query = "UPDATE ".DBPREFIX."module_docsys
 					       SET title='$title',
+					       	   date=".$this->_checkDate($_POST['creation_date']).",
 		                       author='".$author."',
 		                       text='$text',
 		                       source='$source',
@@ -494,6 +516,20 @@ class docSysManager extends docSysLibrary
 		}
     }
 
+	/**
+	 * checks if date is valid
+	 *
+	 * @param string $date
+	 * @return integer $timestamp
+	 */
+	function _checkDate($date)
+    {
+    	if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $date, $arrDate)) {
+	    	return mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
+	    } else {
+	    	return time();
+	    }
+    }
 
 
     /**
@@ -506,7 +542,7 @@ class docSysManager extends docSysLibrary
     {
 	    global $objDatabase, $_ARRAYLANG;
 
-	    $date = mktime();
+	    $date = $this->_checkDate($_POST['creation_date']);
 	    $title = get_magic_quotes_gpc() ? strip_tags($_POST['docSysTitle']) : addslashes(strip_tags($_POST['docSysTitle']));
 	    $author = get_magic_quotes_gpc() ? strip_tags($_POST['author']) : addslashes(strip_tags($_POST['author']));
 	    $text = get_magic_quotes_gpc() ? $_POST['docSysText'] : addslashes($_POST['docSysText']);
@@ -531,22 +567,22 @@ class docSysManager extends docSysLibrary
 	        $endDate = "";
 	    }
 
-	    $query = "INSERT INTO ".DBPREFIX."module_docsys
-	                            ( id,
-							      date,
-							      title,
-	                              author,
-							      text,
-							      source,
-							      url1,
-							      url2,
-							      catid,
-							      lang,
-								  startdate,
-								  enddate,
-								  status,
-							      userid,
-							      changelog )
+	    $query = "INSERT INTO `".DBPREFIX."module_docsys`
+	                            ( `id`,
+							      `date`,
+							      `title`,
+	                              `author`,
+							      `text`,
+							      `source`,
+							      `url1`,
+							      `url2`,
+							      `catid`,
+							      `lang`,
+								  `startdate`,
+								  `enddate`,
+								  `status`,
+							      `userid`,
+							      `changelog` )
 	                     VALUES ( '',
 	                              '$date',
 								  '$title',
@@ -599,6 +635,8 @@ class docSysManager extends docSysLibrary
     	    'TXT_CONFIRM_DELETE_DATA'                    => $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
     	    'TXT_ACTION_IS_IRREVERSIBLE'                 => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
     	    'TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK' => $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'],
+    	    'TXT_DOCSYS_SORTING' 						 => $_ARRAYLANG['TXT_DOCSYS_SORTING'],
+    	    'TXT_DOCSYS_SORTTYPE' 						 => $_ARRAYLANG['TXT_DOCSYS_SORTTYPE'],
     	));
 
     	$this->_objTpl->setGlobalVariable(array(
@@ -623,9 +661,12 @@ class docSysManager extends docSysLibrary
 				$name = get_magic_quotes_gpc() ? strip_tags($name) : addslashes(strip_tags($name));
 				$id=intval($id);
 
+				$sorting = !empty($_REQUEST['sortStyle'][$id]) ? contrexx_addslashes($_REQUEST['sortStyle'][$id]) : 'alpha';
+
 			    if($objDatabase->Execute("UPDATE ".DBPREFIX."module_docsys_categories
 			                      SET name='$name',
-			                          lang='$this->langId'
+			                          lang='$this->langId',
+			                          sort_style='$sorting'
 			                    WHERE catid=$id"))
 			    {
 			    	$this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
@@ -635,11 +676,12 @@ class docSysManager extends docSysLibrary
 		    }
     	}
 
-		$query = "SELECT catid,
-		                   name
-		              FROM ".DBPREFIX."module_docsys_categories
-		             WHERE lang='$this->langId'
-		          ORDER BY catid asc";
+		$query = "SELECT `catid`,
+		                   `name`,
+		                   `sort_style`
+		              FROM `".DBPREFIX."module_docsys_categories`
+		             WHERE `lang`='$this->langId'
+		          ORDER BY `catid` asc";
 		$objResult = $objDatabase->Execute($query);
 
 		$this->_objTpl->setCurrentBlock('row');
@@ -647,10 +689,12 @@ class docSysManager extends docSysLibrary
 
 		while (!$objResult->EOF) {
 			$class = (($i % 2) == 0) ? "row1" : "row2";
+			$sorting = $objResult->fields['sort_style'];
 			$this->_objTpl->setVariable(array(
 			    'DOCSYS_ROWCLASS'   => $class,
 				'DOCSYS_CAT_ID'	  => $objResult->fields['catid'],
 				'DOCSYS_CAT_NAME'	  => stripslashes($objResult->fields['name']),
+				'DOCSYS_SORTING_DROPDOWN'	=> $this->_getSortingDropdown($objResult->fields['catid'], $sorting),
 			));
 			$this->_objTpl->parseCurrentBlock('row');
 			$i++;
