@@ -936,10 +936,12 @@ class Installer
 			}
 
 			$this->arrDirectoryTree = $objCommon->getFtpDirectoryTree($path);
-
-			$this->arrDirectoryPaths = explode("/", $path);
-
-			$this->_createDirectoryTree(0);
+			if (is_array($this->arrDirectoryTree)) {
+				$this->arrDirectoryPaths = explode("/", $path);
+				$this->_createDirectoryTree(0);
+			} else {
+				$this->arrStatusMsg['ftpPath'] = $this->arrDirectoryTree;
+			}
 
 			if (isset($this->arrStatusMsg['ftpPath']) && !empty($this->arrStatusMsg['ftpPath'])) {
 				$objTpl->setVariable(array(

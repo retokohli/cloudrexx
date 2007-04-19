@@ -95,6 +95,8 @@ $_ARRLANG['TXT_FILE_ON_FTP_DOES_NOT_EXIST'] = "Die Datei \"[FILE]\" existiert au
 $_ARRLANG['TXT_USE_PASSIVE_FTP'] = "Passiver Modus";
 $_ARRLANG['TXT_FTP_DESCRIPTION'] = "Durch aktivieren dieser Option werden alle Dateimanipulationen über das FTP-Protokoll durchgeführt. Falls diese Webseite auf einem Unix ähnlichen System und die dazu verwendete PHP-Installation im Safemode läuft, ist die Verwendung des FTP-Protokolls unumgänglich.";
 $_ARRLANG['TXT_DB_TABLE_PREFIX_INVALID'] = "Das Tabellen Präfix (Vorsilbe) darf nur aus Alphanumerischen Zeichen (a-z/A-Z/0-9) und dem folgenden Sonderzeichen bestehen: _";
+$_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'] = "Die Ordnerstruktur kann auf diesem Server nicht angezeigt werden, da die PHP-Direktive open_basedir gesetzt ist, wobei diese aber den notwendigen Temp-Pfad (/tmp) nicht enthält!";
+$_ARRLANG['TXT_OPEN_BASEDIR_MISS_CONFIGURED'] = "Die Ordnerstruktur kann auf diesem Server nicht angezeigt werden, da die PHP-Direktive open_basedir falsch konfiguriert ist!";
 
 // installation
 $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'] = "Konnte die Berechtigungen nicht ändern: ";
