@@ -737,27 +737,17 @@ class Market extends marketLibrary
 					$objResultUser->fields['mobile'] != '' ? $mobile = $objResultUser->fields['mobile'].'<br />' : $mobile = '';
 					$objResultUser->fields['webpage'] != '' ? $webpage = '<a href="http://:'.$objResultUser->fields['webpage'].'" target="_blank">'.$objResultUser->fields['webpage'].'</a><br />' : $webpage = '';
 
-					$userDetails = '<td width="*" valign="top">
-										<table width="100%" cellspacing="0" cellpadding="0" border="0">
-											<tr>
-												<td width="100%" class="description" valign="top">
-													<b>'.$_ARRAYLANG['TXT_MARKET_CONTACT'].'</b><br />
-													<br />
-													'.$user.'
-													'.$street.'
-													'.$objResultUser->fields['zip'].' '.$objResultUser->fields['residence'].'<br />
-													<br />
-													'.$phone.'
-													'.$mobile.'
-													<br />
-													'.$userMail.'
-													'.$webpage.'
-												</td>
-											</tr>
-										</table>
-										<br />
-										<br />
-									</td>';
+					$TXTuserDetails = $_ARRAYLANG['TXT_MARKET_CONTACT'];
+					$userDetails = 	$user.'<br />
+									'.$street.'
+									'.$objResultUser->fields['zip'].' '.$objResultUser->fields['residence'].'<br />
+									<br />
+									'.$phone.'
+									'.$mobile.'
+									<br />
+									'.$userMail.'
+									'.$webpage;
+
 					$residence = $objResultUser->fields['zip'].' '.$objResultUser->fields['residence'];
 					$objResultUser->MoveNext();
 				}
@@ -811,6 +801,7 @@ class Market extends marketLibrary
 				'MARKET_TYPE'					=> $type,
 				'MARKET_PICTURE'				=> $image,
 				'MARKET_USER_DETAILS' 			=> $userDetails,
+				'TXT_MARKET_USER_DETAILS' 		=> $TXTuserDetails,
 				'MARKET_DESCRIPTION' 			=> $this->entries[$id]['description'],
 				'TXT_MARKET_PLACE' 				=> $txtplace,
 				'MARKET_PLACE' 					=> $place,
