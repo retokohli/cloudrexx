@@ -52,7 +52,7 @@ function getDatabaseObject(&$errorMsg, $newInstance = false)
 			return false;
 		}
 
-		if ($objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']) && $objDb) {
+		if (empty($_DBCONFIG['charset']) || $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']) && $objDb) {
 			if ($newInstance) {
 				return $objDb;
 			} else {

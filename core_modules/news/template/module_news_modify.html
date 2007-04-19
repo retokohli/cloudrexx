@@ -25,7 +25,7 @@ function newsGetFileBrowser(elInsertBox, sType)
 	newsElType = sType;
 
 	if (sType == 'link') {
-		newsElLinkText = prompt('Geben Sie einen Text für den Link ein:', '');
+		newsElLinkText = prompt('{TXT_NEWS_DEFINE_LINK_ALT_TEXT}', '');
 		if (newsElLinkText == null) {
 			return false;
 		}
@@ -261,7 +261,7 @@ function modusSelection(strAction) {
 			<td>
 				<textarea name="newsTeaserText" id="newsTeaserText" onkeyup="document.getElementById('newsTeaserTextCharCount').childNodes[0].nodeValue=this.value.length" style="width:100%; height:100px; vertical-align:top; float:left;">{NEWS_TEASER_TEXT}</textarea><br />
 					<div style="padding-right:50px; float:left;">&nbsp;{TXT_NUMBER_OF_CHARS}:&nbsp;<div id="newsTeaserTextCharCount" style="display:inline;">{NEWS_TEASER_TEXT_LENGTH}</div></div>
-					<div>&nbsp;<a href="javascript:{}" onclick="newsGetFileBrowser('newsTeaserText', 'link')">Link einfügen</a></div>
+					<div>&nbsp;<a href="javascript:{}" onclick="newsGetFileBrowser('newsTeaserText', 'link')">{TXT_NEWS_INSERT_LINK}</a></div>
 				</div>
 			</td>
 		</tr>

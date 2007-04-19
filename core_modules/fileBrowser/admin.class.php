@@ -219,6 +219,7 @@ class FileBrowser {
 		}
 
 		$this->_objTpl->setVariable(array(
+			'CONTREXX_CHARSET'		=> CONTREXX_CHARSET,
 			'FILEBROWSER_WEB_PATH'	=> $strWebPath,
 			'TXT_CLOSE'				=> $_ARRAYLANG['TXT_CLOSE']
 		));
@@ -665,7 +666,7 @@ class FileBrowser {
     {
     	global $_ARRAYLANG;
 
-    	$menu = "<select name=".$name." ".$attrs.">";
+    	$menu = "<select name=\"".$name."\" ".$attrs.">";
     	foreach ($this->_arrMediaTypes as $type => $text) {
     	    if($type == 'shop' && !$this->_shopEnabled){
     	        continue;
