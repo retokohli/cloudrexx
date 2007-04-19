@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 19 Apr 2007 10:51:17 +0200
+* generated date Thu, 19 Apr 2007 15:16:31 +0200
 **/
 
 $_ARRAYLANG['TXT_DELETE_MARKED'] = "Markierte löschen";
@@ -162,7 +162,7 @@ $_ARRAYLANG['TXT_NEWS_CHECK_ALL'] = "Alle auswählen";
 $_ARRAYLANG['TXT_NEWS_UNCHECK_ALL'] = "Auswahl entfernen";
 $_ARRAYLANG['TXT_NEWS_WITH_SELECTED'] = "markierte";
 $_ARRAYLANG['TXT_NEWS_DELETE'] = "Löschen";
-$_ARRAYLANG['TXT_NEWS_CANCEL'] = "Abbrechenäрмании";
+$_ARRAYLANG['TXT_NEWS_CANCEL'] = "Abbrechen";
 $_ARRAYLANG['TXT_NEWS_CREATE_TICKER'] = "Ticker erstellen";
 $_ARRAYLANG['TXT_NEWS_MODIFY_TICKER'] = "Ticker bearbeiten";
 $_ARRAYLANG['TXT_NEWS_FILENAME'] = "Dateiname";
