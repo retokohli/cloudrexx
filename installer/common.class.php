@@ -435,6 +435,9 @@ class CommonFunctions
 						$statusMsg .= str_replace("[DIRECTORY]", dirname($_SESSION['installer']['config']['ftpPath'].$_SESSION['installer']['config']['offsetPath'].$file), $_ARRLANG['TXT_DIRECTORY_ON_FTP_DOES_NOT_EXIST']."<br />");
 					} else {
 						$arrFTPFiles = $this->_getFilesOfFtpDirectory($objFtp);
+						if (!is_array($arrFTPFiles)) {
+							return $arrFTPFiles;
+						}
 						preg_match("/.*\/([\d\D]+)$/", $file, $arrMatches);
 						$checkFile = $arrMatches[1];
 						if (!is_array($arrFTPFiles) || !in_array($checkFile, $arrFTPFiles)) {
@@ -453,22 +456,32 @@ class CommonFunctions
 
 	function _getFilesOfFtpDirectory(&$objFtp)
 	{
+		global $_ARRLANG;
+
 		$arrDirectories = array();
-		$fileList = @ftp_rawlist($objFtp, ".");
+		if (($fileList = ftp_rawlist($objFtp, ".")) !== false) {
+			if (count($fileList) > 0) {
+				if ($this->isWindowsFtp($objFtp)) {
+					$pcre = $this->_ftpFileWinPCRE;
+				} else {
+					$pcre = $this->_ftpFileUnixPCRE;
+				}
 
-		if (count($fileList) > 0) {
-			if ($this->isWindowsFtp($objFtp)) {
-				$pcre = $this->_ftpFileWinPCRE;
-			} else {
-				$pcre = $this->_ftpFileUnixPCRE;
-			}
-
-			foreach ($fileList as $fileDescription) {
-				if (preg_match($pcre, $fileDescription, $arrFile)) {
-					if ($arrFile[1] != '.' && $arrFile[1] != '..') {
-						array_push($arrDirectories, $arrFile[1]);
+				foreach ($fileList as $fileDescription) {
+					if (preg_match($pcre, $fileDescription, $arrFile)) {
+						if ($arrFile[1] != '.' && $arrFile[1] != '..') {
+							array_push($arrDirectories, $arrFile[1]);
+						}
 					}
 				}
+			}
+		} else {
+			$openbasedir = @ini_get('open_basedir');print $openbasedir;
+			if (!empty($openbasedir)) {
+				if (!$this->isWindows() && !in_array('/tmp', explode(':', @ini_get('open_basedir')))) {
+					return $_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'];
+				}
+				return $_ARRLANG['TXT_OPEN_BASEDIR_MISS_CONFIGURED'];
 			}
 		}
 		return $arrDirectories;
@@ -1034,7 +1047,7 @@ class CommonFunctions
 				// set shop email
 				$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."module_shop_config`
 							 SET `value` = '".$_SESSION['installer']['sysConfig']['adminEmail']."'
-						   WHERE `name` = 'email' OR `name` = 'confirmation_emails'";
+						   WHERE `name` = 'email' OR `name` = 'confirmation_emails' OR `name` = 'paypal_account_email'";
 				if (!@$objDb->Execute($query)) {
 					$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL']."<br />";
 				}
@@ -1168,6 +1181,9 @@ class CommonFunctions
 				$directoryPath .= $arrPaths[$directoryId].'/';
 
 				$arrDirectoryTree = $this->_getFilesOfFtpDirectory($objFtp);
+				if (!is_array($arrDirectoryTree)) {
+					return $arrDirectoryTree;
+				}
 
 				foreach ($arrDirectoryTree as $file) {
 					if (@ftp_chdir($objFtp, $file)) {
