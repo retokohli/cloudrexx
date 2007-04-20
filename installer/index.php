@@ -11,8 +11,9 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-error_reporting (0);
-ini_set('display_errors', 0);
+@error_reporting (0);
+@ini_set('display_errors', 0);
+@ini_set('default_charset', 'UTF-8');
 $php = phpversion();
 if ($php < "4.3") {
 	errorBox("Das Contrexx CMS benötigt mindestens PHP in der Version 4.3.<br>Auf Ihrem System läuft PHP ".$php);
