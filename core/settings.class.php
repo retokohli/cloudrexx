@@ -173,15 +173,15 @@ class settingsManager {
         }
 
         $objTemplate->setVariable(array(
-            'SETTINGS_CONTACT_EMAIL'              => stripslashes($arrSettings['contactFormEmail']),
-            'SETTINGS_ADMIN_EMAIL'                => stripslashes($arrSettings['coreAdminEmail']),
-            'SETTINGS_ADMIN_NAME'                 => stripslashes($arrSettings['coreAdminName']),
-            'SETTINGS_GLOBAL_TITLE'               => stripslashes($arrSettings['coreGlobalPageTitle']),
-            'SETTINGS_DOMAIN_URL'                 => stripslashes($arrSettings['domainUrl']),
+            'SETTINGS_CONTACT_EMAIL'              => htmlentities($arrSettings['contactFormEmail'], ENT_QUOTES, CONTREXX_CHARSET),
+            'SETTINGS_ADMIN_EMAIL'                => htmlentities($arrSettings['coreAdminEmail'], ENT_QUOTES, CONTREXX_CHARSET),
+            'SETTINGS_ADMIN_NAME'                 => htmlentities($arrSettings['coreAdminName'], ENT_QUOTES, CONTREXX_CHARSET),
+            'SETTINGS_GLOBAL_TITLE'               => htmlentities($arrSettings['coreGlobalPageTitle'], ENT_QUOTES, CONTREXX_CHARSET),
+            'SETTINGS_DOMAIN_URL'                 => htmlentities($arrSettings['domainUrl'], ENT_QUOTES, CONTREXX_CHARSET),
             'SETTINGS_PAGING_LIMIT'               => intval($arrSettings['corePagingLimit']),
             'SETTINGS_SEARCH_RESULT_LENGTH'       => intval($arrSettings['searchDescriptionLength']),
             'SETTINGS_SESSION_LIFETIME'           => intval($arrSettings['sessionLifeTime']),
-            'SETTINGS_DNS_SERVER'                 => stripslashes($arrSettings['dnsServer']),
+            'SETTINGS_DNS_SERVER'                 => htmlentities($arrSettings['dnsServer'], ENT_QUOTES, CONTREXX_CHARSET),
             'SETTINGS_IDS_RADIO_ON'               => ($arrSettings['coreIdsStatus'] == 'on') ? 'checked' : '',
             'SETTINGS_IDS_RADIO_OFF'              => ($arrSettings['coreIdsStatus'] == 'off') ? 'checked' : '',
             'SETTINGS_HISTORY_ON'                 => ($arrSettings['contentHistoryStatus'] == 'on') ? 'checked' : '',

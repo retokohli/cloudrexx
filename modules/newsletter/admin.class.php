@@ -686,8 +686,8 @@ class newsletter extends NewsletterLib
 			}
 		}
 
-		require_once(ASCMS_CORE_PATH.'/settings.class.php');
-		$objSettings = &new settingsManager();
+		require_once(ASCMS_CORE_PATH.'/SmtpSettings.class.php');
+		$objSettings = &new SmtpSettings();
 
 		$this->_objTpl->setVariable(array(
 			'NEWSLETTER_MAIL_ID'					=> $copy ? 0 : $mailId,
@@ -873,8 +873,8 @@ class newsletter extends NewsletterLib
 			}
 		}
 
-		require_once ASCMS_CORE_PATH.'/settings.class.php';
-		$objSettings = new settingsManager();
+		require_once(ASCMS_CORE_PATH.'/SmtpSettings.class.php');
+		$objSettings = &new SmtpSettings();
 		if (($arrSmtp = $objSettings->getSmtpAccount($mailSmtpServer)) === false) {
 			$arrSmtp = $objSettings->getSystemSmtpAccount();
 		}

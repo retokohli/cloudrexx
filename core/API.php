@@ -130,10 +130,6 @@ if (isset($adminPage) && $adminPage ) {
     /**
      * @ignore
      */
-   	require_once ASCMS_CORE_MODULE_PATH.'/banner/index.class.php';
-    /**
-     * @ignore
-     */
     require_once ASCMS_CORE_PATH.'/Security.class.php';
 }
 
