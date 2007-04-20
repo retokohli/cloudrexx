@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 19 Apr 2007 15:16:31 +0200
+* generated date Fri, 20 Apr 2007 13:34:18 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Stock";
@@ -105,7 +105,7 @@ $_ARRAYLANG['TXT_SHOP_NO_ACCOUNT_WITH_EMAIL'] = "The is no user account with the
 $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] = "Our ID";
 $_ARRAYLANG['TXT_SHOP_IMAGE'] = "Image";
 $_ARRAYLANG['TXT_SHOP_CART_IS_LOADING'] = "Cart is loading...";
-$_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'] = "The cart couldn't be loaded!";
+$_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'] = "The cart couldn\'t be loaded!";
 $_ARRAYLANG['TXT_TAX_NOT_SET'] = "No VAT assigned";
 $_ARRAYLANG['TXT_TAX_RATES'] = "VAT rates";
 $_ARRAYLANG['TXT_HP'] = "Reseller";
@@ -172,12 +172,12 @@ $_ARRAYLANG['SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
 $_ARRAYLANG['SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";
 $_ARRAYLANG['SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Übersicht über Ihre bisherigen Bestellungen.";
 $_ARRAYLANG['SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
-$_ARRAYLANG['SHOP_ACCOUNT_LOGIN'] = "Anmelden &gt;&gt;";
+$_ARRAYLANG['SHOP_ACCOUNT_LOGIN'] = "Anmelden >>";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Übersicht über Ihre bisherigen Bestellungen.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
-$_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Anmelden &gt;&gt;";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Anmelden >>";
 $_ARRAYLANG['TXT_SHOP_CATEGORIES'] = "Kategorien:";
 $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'] = "Produkte in der Kategorie";
 $_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'] = "Weiter zur Kategorie";

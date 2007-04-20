@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 19 Apr 2007 15:16:31 +0200
+* generated date Fri, 20 Apr 2007 13:34:18 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 skrifttegn)";
@@ -81,4 +81,6 @@ $_ARRAYLANG['TXT_POPUP_MODULE_DESCRIPTION'] = "Erstellen von PupUp Fenster";
 $_ARRAYLANG['TXT_IMPRINT_MODULE_DESCRIPTION'] = "Imprint";
 $_ARRAYLANG['TXT_AGB_MODULE_DESCRIPTION'] = "Allgemeine Geschäftsbedingungen";
 $_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Privacy";
+$_ARRAYLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "Database not available!";
+$_ARRAYLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Unable to connect to database server!";
 ?>
