@@ -1,4 +1,0 @@
-ALTER TABLE `contrexx_module_podcast_medium` CHANGE `width` `width` INT( 10 ) UNSIGNED NOT NULL DEFAULT '',
-CHANGE `height` `height` INT( 10 ) UNSIGNED NOT NULL DEFAULT ''
-
-ALTER TABLE `contrexx_module_podcast_medium` ADD `size` INT UNSIGNED NOT NULL AFTER `playlenght` ;
