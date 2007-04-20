@@ -151,7 +151,7 @@ class CommonFunctions
 				return false;
 			}
 
-			if ($objDb) {
+			if ($objDb->Execute('SET CHARACTER SET utf8') && $objDb) {
 				return $objDb;
 			} else {
 				unset($objDb);
