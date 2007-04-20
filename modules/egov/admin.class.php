@@ -758,6 +758,7 @@ class eGov extends eGovLibrary
 					if($TargetMail!=''){
 						if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
 							$objMail = new phpmailer();
+							$objMail->CharSet = CONTREXX_CHARSET;
 							$objMail->From 		= $FromEmail;
 							$objMail->FromName 	= $FromName;
 							$objMail->AddReplyTo($FromEmail);

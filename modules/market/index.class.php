@@ -878,6 +878,7 @@ class Market extends marketLibrary
 						}
 					}
 
+					$objMail->CharSet = CONTREXX_CHARSET;
 					$objMail->From = $fromMail;
 					$objMail->FromName = $fromName;
 					$objMail->AddReplyTo($fromMail);
@@ -1203,6 +1204,7 @@ class Market extends marketLibrary
 					}
 				}
 
+				$objMail->CharSet = CONTREXX_CHARSET;
 				$objMail->From = $fromMail;
 				$objMail->FromName = $fromName;
 				$objMail->AddReplyTo($fromMail);

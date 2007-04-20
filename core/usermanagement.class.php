@@ -270,6 +270,7 @@ class userManagement
 						}
 
 						$mail =& new PHPMailer();
+						$mail->CharSet = CONTREXX_CHARSET;
 			   			$mail->From 	= $sender_email;
 						$mail->FromName = $sender_name;
 						$mail->AddReplyTo($sender_replyto);
@@ -1861,6 +1862,7 @@ class userManagement
 									}
 								}
 
+								$objMail->CharSet = CONTREXX_CHARSET;
 								$objMail->From = $_CONFIG['coreAdminEmail'];
 								$objMail->FromName = $_CONFIG['coreAdminName'];
 								$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);

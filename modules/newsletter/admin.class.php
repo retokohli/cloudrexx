@@ -2195,6 +2195,7 @@ class newsletter extends NewsletterLib
 			}
 		}
 
+		$objMail->CharSet = CONTREXX_CHARSET;
 		$mail->From 	= $sender_email;
 		$mail->FromName = $sender_name;
 		$mail->AddReplyTo($return_path);

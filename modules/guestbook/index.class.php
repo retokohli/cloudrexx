@@ -377,6 +377,7 @@ class Guestbook extends GuestbookLibrary
 				}
 			}
 
+			$objMail->CharSet = CONTREXX_CHARSET;
 			$objMail->From = $mailto;
 			$objMail->AddReplyTo($mailto);
 			$objMail->Subject = $subject;

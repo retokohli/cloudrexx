@@ -473,6 +473,7 @@ class Contact extends ContactLib
 				}
 			}
 
+			$objMail->CharSet = CONTREXX_CHARSET;
 			$objMail->From = $_CONFIG['coreAdminEmail'];
 			$objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
 			if (!empty($replyAddress)) {
