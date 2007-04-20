@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 19 Apr 2007 15:16:31 +0200
+* generated date Fri, 20 Apr 2007 13:34:18 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
@@ -687,4 +687,6 @@ $_ARRAYLANG['TXT_SETTINGS_COULD_NOT_DELETE_DEAULT_SMTP'] = "Das SMTP Konto %s ko
 $_ARRAYLANG['TXT_SETTINGS_DEFAULT_SMTP_CHANGED'] = "Das SMTP Konto %s wird nun als Standardkonto für das Versenden von E-Mails verwendet.";
 $_ARRAYLANG['TXT_SETTINGS_CHANGE_DEFAULT_SMTP_FAILED'] = "Das Wechseln des Standard Kontos schlug fehl!";
 $_ARRAYLANG['TXT_SETTINGS_BACK'] = "Zurück";
+$_ARRAYLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "Database not available!";
+$_ARRAYLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Unable to connect to database server!";
 ?>
