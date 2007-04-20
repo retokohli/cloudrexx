@@ -1046,6 +1046,14 @@ class CommonFunctions
 				}
 			}
 
+			if (in_array($_SESSION['installer']['config']['dbTablePrefix']."module_shop_mail_content", $arrTables)) {
+				// set shop email
+				$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."module_shop_mail_content`
+							 SET `from_mail` = '".$_SESSION['installer']['sysConfig']['adminEmail']."'";
+				if (!@$objDb->Execute($query)) {
+					$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL']."<br />";
+				}
+			}
 
 			/*
 			// set rss title
