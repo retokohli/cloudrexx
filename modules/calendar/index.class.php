@@ -297,7 +297,7 @@ class Calendar extends calendarLibrary
 							   title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'">
             					'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'
             					<img style="padding-top: -1px;" border="0"
-            						 src="admin/images/icons/ical_export.png"
+            						 src="images/modules/calendar/ical_export.gif"
             						 alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'"
             						 title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'" />
 							</a>';
@@ -306,7 +306,7 @@ class Calendar extends calendarLibrary
 							   title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'">
             					'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'
             					<img style="padding-top: -1px;" border="0"
-            						 src="admin/images/icons/ical_export.png"
+            						 src="images/modules/calendar/ical_export.gif"
             						 alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'"
             						 title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'" />
             				</a><br />
@@ -314,7 +314,7 @@ class Calendar extends calendarLibrary
 							   title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'">
             					'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'
             					<img style="padding-top: -1px;" border="0"
-            						 src="admin/images/icons/ical_export.png"
+            						 src="images/modules/calendar/ical_export.gif"
             						 alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'"
             						 title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'" />
 							</a>';
