@@ -1,30 +1,28 @@
 <?php
 /**
-* Version code
-*
-* Version informations
-*
-* @copyright	CONTREXX CMS - Astalavista IT Engineering GmbH Thun
-* @author		Astalavista Development Team <thun@astalvista.ch>
-* @access		public
-* @module		version
-* @modulegroup	core
-* @version		1.0.0
-**/
+ * Version code
+ *
+ * Version informations
+ *
+ * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @author       Astalavista Developer Team <thun@astalavista.ch>
+ * @version		1.0.0
+ * @package     contrexx
+ * @subpackage  config
+ * @todo        Edit PHP DocBlocks!
+ */
 
-
-/** @exclude status levels
-*	Planning
-*	Pre-Alpha
-*	Alpha
-*	Beta
-*	Production/Stable
-*	Mature
-*	Inactive
-**/
+// status levels:
+//	Planning
+//	Pre-Alpha
+//	Alpha
+//	Beta
+//	Production/Stable
+//	Mature
+//	Inactive
 
 $_CONFIG['coreCmsName']			= "%CMS_NAME%";
-$_CONFIG['coreCmsVersion']		= "%CMS_VERSION%"; 
+$_CONFIG['coreCmsVersion']		= "%CMS_VERSION%";
 $_CONFIG['coreCmsStatus']		= "%CMS_STATUS%";
 $_CONFIG['coreCmsEdition']		= "%CMS_EDITION%";
 $_CONFIG['coreCmsCodeName']		= "%CMS_CODE_NAME%";

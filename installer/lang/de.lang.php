@@ -121,7 +121,7 @@ $_ARRLANG['TXT_CREATE_DATABASE_TABLES'] = "Datenbanktabellen erstellt";
 $_ARRLANG['TXT_TABLE_NOT_AVAILABLE'] = "Tabelle \"[TABLE]\" ist nicht vorhanden";
 $_ARRLANG['TXT_CREATE_DATABAES_TABLE_MANUALLY'] = "Erstellen Sie die nötige(n) Tabelle(n) und fügen Sie zusätzlich den Inhalt in die Tabelle(n) ein mit Hilfe der <a href=\"[FILEPATH]\" title=\"SQL-Datei\">SQL-Datei</a>!";
 $_ARRLANG['TXT_CHECK_DATABASE_TABLES'] = "Datenbank Struktur überprüft";
-$_ARRLANG['TXT_PRESS_REFRESH_TO_CONTINUE_INSTALLATION'] = "Drücken Sie anschliessend auf <b>Aktualisieren</b> um die Installation weiter zu führen!";
+$_ARRLANG['TXT_PRESS_REFRESH_TO_CONTINUE_INSTALLATION'] = "Drücken Sie anschliessend auf <b>Weiter</b> um die Installation weiter zu führen!";
 $_ARRLANG['TXT_REFRESH'] = "Aktualisieren";
 $_ARRLANG['TXT_CREATE_CONFIG_FILE'] = "Konfigurationsdatei erstellt";
 $_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES'] = "Sie müssen den folgenden Dateien Schreibberechtigung zuweisen:";

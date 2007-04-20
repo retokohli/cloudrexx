@@ -121,7 +121,7 @@ $_ARRLANG['TXT_CREATE_DATABASE_TABLES'] = "Database tables created";
 $_ARRLANG['TXT_TABLE_NOT_AVAILABLE'] = "Table \"[TABLE]\" is not available";
 $_ARRLANG['TXT_CREATE_DATABAES_TABLE_MANUALLY'] = "Generate the necessary table(s) and join the contents into the table (s) with the aid of <a href=\"[FILEPATH]\" title=\"SQL-Datei\">SQL file</a>!";
 $_ARRLANG['TXT_CHECK_DATABASE_TABLES'] = "Check database structure";
-$_ARRLANG['TXT_PRESS_REFRESH_TO_CONTINUE_INSTALLATION'] = "Press <b>Update</b> in order to proceed the installation steps!  ";
+$_ARRLANG['TXT_PRESS_REFRESH_TO_CONTINUE_INSTALLATION'] = "Press <b>Next</b> in order to proceed the installation steps!  ";
 $_ARRLANG['TXT_REFRESH'] = "Update";
 $_ARRLANG['TXT_CREATE_CONFIG_FILE'] = "Create configuration file";
 $_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES'] = "You must assign write-permission to the following files:";

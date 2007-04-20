@@ -802,7 +802,7 @@ class CommonFunctions
 	}
 
 	function checkDatabaseTables() {
-		global $arrDatabaseTables, $arrDatabaseTablesModulesStandard, $arrDatabaseTablesModulesECommerce, $_ARRLANG, $sqlDumpFile, $dbType, $_CONFIG;
+		global $arrDatabaseTables, $_ARRLANG, $sqlDumpFile, $dbType, $_CONFIG;
 
 		$statusMsg = "";
 		$arrTables = array();
@@ -819,13 +819,6 @@ class CommonFunctions
 			}
 		}
 
-		if ($_CONFIG['coreCmsEdition'] == "Standard" || $_CONFIG['coreCmsEdition'] == "Premium") {
-			$arrDatabaseTables = array_Merge($arrDatabaseTables, $arrDatabaseTablesModulesStandard);
-		}
-		if ($_CONFIG['coreCmsEdition'] == "eCommerce" || $_CONFIG['coreCmsEdition'] == "Premium") {
-			$arrDatabaseTables = array_merge($arrDatabaseTables, $arrDatabaseTablesModulesECommerce);
-		}
-
 		foreach ($arrDatabaseTables as $table) {
 			if (!in_array($_SESSION['installer']['config']['dbTablePrefix'].$table, $arrTables)) {
 				$statusMsg .= str_replace("[TABLE]", $table, $_ARRLANG['TXT_TABLE_NOT_AVAILABLE'])."<br />";
@@ -835,7 +828,7 @@ class CommonFunctions
 		if (empty($statusMsg)) {
 			return true;
 		} else {
-			$statusMsg .= str_replace("[FILEPATH]", $_SESSION['installer']['config']['offsetPath'].$sqlDumpFile.'_'.strtolower($_CONFIG['coreCmsEdition']).'.sql', $_ARRLANG['TXT_CREATE_DATABAES_TABLE_MANUALLY'])."<br />";
+			$statusMsg .= str_replace("[FILEPATH]", $_SESSION['installer']['config']['offsetPath'].str_replace(DIRECTORY_SEPARATOR, '/', $sqlDumpFile).'_'.strtolower($_CONFIG['coreCmsEdition']).'.sql', $_ARRLANG['TXT_CREATE_DATABAES_TABLE_MANUALLY'])."<br />";
 			$statusMsg .= $_ARRLANG['TXT_PRESS_REFRESH_TO_CONTINUE_INSTALLATION'];
 			return $statusMsg;
 		}
