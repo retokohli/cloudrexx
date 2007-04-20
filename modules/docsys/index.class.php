@@ -236,10 +236,10 @@ class docSys extends docSysLibrary
 				break;
 
 				default:
-					$query .= " ORDER BY n.id DESC";
+					$query .= " ORDER BY n.date DESC";
 			}
 		}else{
-			$query .= " ORDER BY n.id DESC";
+			$query .= " ORDER BY n.date DESC";
 		}
 
 
