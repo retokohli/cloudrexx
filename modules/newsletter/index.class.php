@@ -164,6 +164,7 @@ class newsletter extends NewsletterLib
 
 
 					$mail = new phpmailer();
+					$objMail->CharSet = CONTREXX_CHARSET;
 					$mail->From 			= $value_sender_emailDEF;
 					$mail->FromName 		= $value_sender_nameDEF;
 					$mail->AddReplyTo($value_reply_mailDEF);
@@ -533,6 +534,7 @@ class newsletter extends NewsletterLib
 		$arrSettings = &$this->_getSettings();
 
 		$objMail = new phpmailer();
+		$objMail->CharSet = CONTREXX_CHARSET;
 		$objMail->From = $arrSettings['sender_mail']['setvalue'];
 		$objMail->FromName = $arrSettings['sender_name']['setvalue'];
 		$objMail->AddReplyTo($arrSettings['reply_mail']['setvalue']);

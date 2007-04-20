@@ -63,7 +63,7 @@ class eGov extends eGovLibrary
 		$product_id 	= intval($_REQUEST["id"]);
 		$datum_db 		= date("Y")."-".date("m")."-".date("d")." ".date("H").":".date("i").":".date("s");
 		$ip_adress 		= $_SERVER['REMOTE_ADDR'];
-		
+
 		// ------------------------------------------------------
 		// PayPal
 		// ------------------------------------------------------
@@ -72,13 +72,13 @@ class eGov extends eGovLibrary
 		$this_script_2	= 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'?section=egov&payment=success&id='.$product_id;
 		//$p->paypal_url 	= 'https://www.sandbox.paypal.com/cgi-bin/webscr';
 		$p->paypal_url 	= 'https://www.paypal.com/cgi-bin/webscr';
-		
+
 		if($_REQUEST['paypal']=="1"){
-			
+
 			$product_amount = $this->GetProduktValue('product_price', $product_id);
-			
+
 			$quantity 		= ($this->GetProduktValue("product_per_day", $product_id)=="yes") ? $_REQUEST["contactFormField_Quantity"] : 1;
-			
+
 			$FormFields		= 'id='.$product_id.'&send=exe&';
 			$arrFields = $this->getFormFields($product_id);
 			$FormValue = '';
@@ -89,15 +89,15 @@ class eGov extends eGovLibrary
 				$FormFields .= 'contactFormField_1000='.$_REQUEST["contactFormField_1000"]."&";
 				$FormFields .= 'contactFormField_Quantity='.$_REQUEST["contactFormField_Quantity"]."";
 			}
-			
+
 			if($this->GetProduktValue("product_per_day", $product_id)=="yes"){
 				$Addname 	= ' '.$_REQUEST["contactFormField_1000"];
 			}
-			
+
 			$RandomID = rand(1000,1000000);
 			$_SESSION["order"]['id']		= $RandomID;
 			$_SESSION["order"][$RandomID] 	= $FormFields;
-			
+
 			$p->add_field('business', 	$this->GetProduktValue('product_paypal_sandbox', $product_id));
 			$p->add_field('return', 	$this_script_2.'&custom='.$RandomID.'&'.$FormFields);
 			$p->add_field('cancel_return', $this_script_1.'&payment=cancel&'.$FormFields);
@@ -107,12 +107,12 @@ class eGov extends eGovLibrary
 			$p->add_field('quantity', 	$quantity);
 			$p->add_field('custom', 	$RandomID);
 			$p->add_field('currency_code', 	$this->GetProduktValue('product_paypal_currency', $product_id));
-			
+
 			$p->submit_paypal_post();
-			
+
 		}else{
-		
-			
+
+
 			$Order = true;
 			if($this->GetProduktValue('product_paypal', $product_id)){
 				if($this->GetSettings("set_paypal_ipn")==1){
@@ -128,7 +128,7 @@ class eGov extends eGovLibrary
 				}
 			}
 			if($Order){
-		
+
 				// PayPal IPN Confirmation per email
 				// ---------------------------------
 				/*
@@ -137,11 +137,11 @@ class eGov extends eGovLibrary
 				$body 		=  "An instant payment notification was successfully recieved\n";
 				$body 		.= "from ".$p->ipn_data['payer_email']." on ".date('m/d/Y');
 				$body 		.= " at ".date('g:i A')."\n\nDetails:\n";
-				
+
 				foreach ($p->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 				mail($to, $subject, $body);
 				*/
-				
+
 				$arrFields = $this->getFormFields($product_id);
 				$FormValue = '';
 				$FormValue4Mail = '';
@@ -149,30 +149,30 @@ class eGov extends eGovLibrary
 					$FormValue .= $arrField['name'].'::'.strip_tags(contrexx_addslashes($_REQUEST["contactFormField_".$fieldId])).';;';
 					$FormValue4Mail .= html_entity_decode($arrField['name']).': '.html_entity_decode($_REQUEST["contactFormField_".$fieldId]).chr(10);
 				}
-		
+
 				if($this->GetProduktValue("product_per_day", $product_id)=="yes"){
 					$FormValue = $this->GetSettings("set_calendar_date_label")."::".strip_tags(contrexx_addslashes($_REQUEST["contactFormField_1000"])).";;".$FormValue;
 					$FormValue = $_ARRAYLANG['TXT_EGOV_QUANTITY']."::".strip_tags(contrexx_addslashes($_REQUEST["contactFormField_Quantity"])).";;".$FormValue;
 					$FormValue4Mail = html_entity_decode($this->GetSettings("set_calendar_date_label")).": ".$_REQUEST["contactFormField_1000"].chr(10).$FormValue4Mail;
 					$FormValue4Mail = $_ARRAYLANG['TXT_EGOV_QUANTITY'].": ".$_REQUEST["contactFormField_Quantity"].chr(10).$FormValue4Mail;
 				}
-		
+
 				$objDatabase->Execute("INSERT INTO ".DBPREFIX."module_egov_orders
 							(`order_date`, `order_ip`,`order_product`, `order_values`)
 							 VALUES ('".$datum_db."', '".$ip_adress."', '".$product_id."', '".$FormValue."')");
 				$order_id = $objDatabase->Insert_ID();
-		
-		
+
+
 				if($this->GetProduktValue("product_per_day", $product_id)=="yes"){
 					list ($calD, $calM, $calY) = split('[.]', $_REQUEST["contactFormField_1000"]);
-		
+
 					for($x=1; $x<=intval($_REQUEST["contactFormField_Quantity"]); $x++){
 						$objDatabase->Execute("INSERT INTO ".DBPREFIX."module_egov_product_calendar
 						(`calendar_product`, `calendar_order`,`calendar_day`, `calendar_month`, `calendar_year`)
 						 VALUES ('".$product_id."', '".$order_id."', '".$calD."', '".$calM."', '".$calY."')");
 					}
 				}
-		
+
 				if($this->GetProduktValue("product_message", $product_id)!=""){
 					$AlertMessageTxt = html_entity_decode($this->GetProduktValue("product_message", $product_id));
 					$ReturnValue = 'alert("'.$AlertMessageTxt.'");'.chr(10);
@@ -180,29 +180,30 @@ class eGov extends eGovLibrary
 				if($this->GetProduktValue("product_target_url", $product_id)!=""){
 					$ReturnValue .= 'document.location.href="'.$this->GetProduktValue("product_target_url", $product_id).'";'.chr(10);
 				}
-		
+
 				// Bestelleingang-Benachrichtigung || Mail für den Administrator
 				// -------------------------------------------------------------------
 				if($this->GetProduktValue("product_target_email", $product_id)!=""){
-		
+
 					$recipient = $this->GetProduktValue("product_target_email", $product_id);
 					if($recipient==''){
 						$recipient = $this->GetSettings("set_orderentry_recipient");
 					}
-		
+
 					$SubjectText = str_replace("[[PRODUCT_NAME]]", html_entity_decode($this->GetProduktValue("product_name", $product_id)), $this->GetSettings("set_orderentry_subject"));
 					$SubjectText = html_entity_decode($SubjectText);
-		
+
 					$BodyText = str_replace("[[ORDER_VALUE]]", $FormValue4Mail, $this->GetSettings("set_orderentry_email"));
 					$BodyText = html_entity_decode($BodyText);
-		
+
 					$replyAddress = $this->GetEmailAdress($order_id);
 					if (empty($replyAddress)) {
 						$replyAddress = $this->GetSettings("set_orderentry_sender");
 					}
-		
+
 					if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
 						$objMail = new phpmailer();
+						$objMail->CharSet = CONTREXX_CHARSET;
 						$objMail->From 		= $this->GetSettings("set_orderentry_sender");
 						$objMail->FromName 	= $this->GetSettings("set_orderentry_name");
 						$objMail->AddReplyTo($replyAddress);
@@ -214,53 +215,54 @@ class eGov extends eGovLibrary
 						$objMail->Send();
 					}
 				}
-		
+
 				// Update 29.10.2006 Statusmail automatisch abschicken || Produktdatei
 				// -------------------------------------------------------------------
 				if($this->GetProduktValue('product_electro', $product_id)==1){
-		
+
 					$query = "UPDATE ".DBPREFIX."module_egov_orders
 									 SET order_state=1
 									 WHERE order_id=".$order_id."";
 					$objDatabase->Execute($query);
-		
+
 					$query = "UPDATE ".DBPREFIX."module_egov_product_calendar
 									 SET calendar_act=1
 									 WHERE calendar_order=".$order_id."";
 					$objDatabase->Execute($query);
-		
+
 					$TargetMail = $this->GetEmailAdress($order_id);
-		
+
 					$FromEmail 	= $this->GetProduktValue("product_sender_email", $product_id);
 					if($FromEmail==''){
 						$FromEmail = $this->GetSettings("set_sender_email");
 					}
-		
+
 					$FromName 	= $this->GetProduktValue("product_sender_name", $product_id);
 					if($FromName==''){
 						$FromName = $this->GetSettings("set_sender_name");
 					}
-		
+
 					$SubjectDB = $this->GetProduktValue("product_target_subject", $product_id);
 					if($SubjectDB == ''){
 						$SubjectDB = $this->GetSettings("set_state_subject");
 					}
-		
+
 					$SubjectText = str_replace("[[PRODUCT_NAME]]", html_entity_decode($this->GetProduktValue("product_name", $product_id)), $SubjectDB);
 					$SubjectText = html_entity_decode($SubjectText);
-		
+
 					$BodyDB = $this->GetProduktValue("product_target_body", $product_id);
 					if($BodyDB == ''){
 						$BodyDB = $this->GetSettings("set_state_email");
 					}
-		
+
 					$BodyText = str_replace("[[ORDER_VALUE]]", $FormValue4Mail, $BodyDB);
 					$BodyText = str_replace("[[PRODUCT_NAME]]", html_entity_decode($this->GetProduktValue("product_name", $product_id)), $BodyText);
 					$BodyText = html_entity_decode($BodyText);
-		
+
 					if($TargetMail!=''){
 						if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
 							$objMail = new phpmailer();
+							$objMail->CharSet = CONTREXX_CHARSET;
 							$objMail->From 		= $FromEmail;
 							$objMail->FromName 	= $FromName;
 							$objMail->AddReplyTo($FromEmail);
@@ -271,53 +273,54 @@ class eGov extends eGovLibrary
 							$objMail->Body 		= $BodyText;
 							$objMail->AddAddress($TargetMail);
 							$objMail->Send();
-		
+
 						}
 					}
-		
+
 				}elseif ($this->GetProduktValue('product_autostatus', $product_id)==1){
-		
+
 					$query = "UPDATE ".DBPREFIX."module_egov_orders
 									 SET order_state=1
 									 WHERE order_id=".$order_id."";
 					$objDatabase->Execute($query);
-		
+
 					$query = "UPDATE ".DBPREFIX."module_egov_product_calendar
 									 SET calendar_act=1
 									 WHERE calendar_order=".$order_id."";
 					$objDatabase->Execute($query);
-		
+
 					$SubjectDB = $this->GetProduktValue("product_target_subject", $product_id);
 					if($SubjectDB == ''){
 						$SubjectDB = $this->GetSettings("set_state_subject");
 					}
-		
+
 					$SubjectText = str_replace("[[PRODUCT_NAME]]", html_entity_decode($this->GetProduktValue("product_name", $product_id)), $SubjectDB);
 					$SubjectText = html_entity_decode($SubjectText);
-		
+
 					$BodyDB = $this->GetProduktValue("product_target_body", $product_id);
 					if($BodyDB == ''){
 						$BodyDB = $this->GetSettings("set_state_email");
 					}
-		
+
 					$BodyText = str_replace("[[ORDER_VALUE]]", $FormValue4Mail, $BodyDB);
 					$BodyText = str_replace("[[PRODUCT_NAME]]", html_entity_decode($this->GetProduktValue("product_name", $product_id)), $BodyText);
 					$BodyText = html_entity_decode($BodyText);
-		
+
 					$FromEmail 	= $this->GetProduktValue("product_sender_email", $product_id);
 					if($FromEmail==''){
 						$FromEmail = $this->GetSettings("set_sender_email");
 					}
-		
+
 					$FromName 	= $this->GetProduktValue("product_sender_name", $product_id);
 					if($FromName==''){
 						$FromName = $this->GetSettings("set_sender_name");
 					}
-		
+
 					$TargetMail = $this->GetEmailAdress($order_id);
 					if($TargetMail!=''){
 						if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
 							$objMail = new phpmailer();
+							$objMail->CharSet = CONTREXX_CHARSET;
 							$objMail->From 		= $FromEmail;
 							$objMail->FromName 	= $FromName;
 							$objMail->AddReplyTo($FromEmail);
@@ -330,11 +333,11 @@ class eGov extends eGovLibrary
 						}
 					}
 				}
-				
+
 				$ReturnValue .= 'history.go(-1);'.chr(10);
 				$ReturnValue .= 'document.location.href="'.$_SERVER['PHP_SELF'].'?section=egov";'.chr(10);
 			}
-		
+
 		}
 		return $ReturnValue;
 
@@ -388,7 +391,7 @@ class eGov extends eGovLibrary
 			          FROM ".DBPREFIX."module_egov_products
 			          WHERE product_id=".$_REQUEST["id"]."";
 			$objResult = $objDatabase->Execute($query);
-			
+
 			if(isset($_REQUEST["payment"])){
 				if($_REQUEST["payment"]=="cancel"){
 					$ReturnValue = 'alert("'.$_ARRAYLANG['TXT_EGOV_PAYPAL_CANCEL'].'");'.chr(10);
@@ -398,10 +401,10 @@ class eGov extends eGovLibrary
 				$Return .= $ReturnValue;
 				$Return .= '// -->'.chr(10);
 				$Return .= '</script>'.chr(10);
-				
+
 				$AddSource = $Return;
 			}
-			
+
 			if ($objResult->RecordCount() != 0) {
 				$product_id = $objResult->fields['product_id'];
 				$FormSource = $this->getSourceCode($product_id);

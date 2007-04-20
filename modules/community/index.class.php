@@ -190,6 +190,7 @@ class Community extends Community_Library
 								}
 							}
 
+							$objMail->CharSet = CONTREXX_CHARSET;
 							$objMail->From = $_CONFIG['coreAdminEmail'];
 							$objMail->FromName = $_CONFIG['coreAdminName'];
 							$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);

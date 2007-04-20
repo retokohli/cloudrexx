@@ -398,6 +398,7 @@ class ShopLibrary {
 				}
 			}
 
+			$objMail->CharSet = CONTREXX_CHARSET;
 			$objMail->From = preg_replace('/\015\012/', "\012", $shopMailFrom);
 			$objMail->FromName = preg_replace('/\015\012/', "\012", $shopMailFromText);
 			$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
