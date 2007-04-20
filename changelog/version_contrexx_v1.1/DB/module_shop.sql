@@ -15,5 +15,4 @@ CREATE TABLE `contrexx_module_shop_importimg` (
 	) TYPE=MyISAM
 
 
-/* noch nicht im update skript /*
 UPDATE `contrexx_module_shop_payment_processors` SET `status` = '0' WHERE `name` = 'Internal_CreditCard' OR `name` = 'Internal_Debit';
