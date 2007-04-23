@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 23 Apr 2007 11:11:07 +0200
+* generated date Mon, 23 Apr 2007 16:53:51 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Neues Design erstellen";
@@ -247,4 +247,8 @@ $_ARRAYLANG['TXT_USEMENT_TEXT'] = "In der Designvorlage <b>directory.html</b>. D
 $_ARRAYLANG['TXT_DIRECTORY_DEACTIVATE'] = "Deaktivieren";
 $_ARRAYLANG['TXT_SHOW_DIR_HOMECONTENT'] = "Verzeichnis auf Startseite anzeigen";
 $_ARRAYLANG['TXT_SHOW_ONLY_ENTRIES'] = "only entries";
+$_ARRAYLANG['TXT_GOOGLESEARCH'] = "Google Suche";
+$_ARRAYLANG['TXT_GOOGLERESULTS'] = "Anzahl Google Resultate";
+$_ARRAYLANG['TXTX_GOOGLEID'] = "Google Key";
+$_ARRAYLANG['TXTX_GOOGLELANG'] = "Sprachparameter";
 ?>
