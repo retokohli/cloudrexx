@@ -2583,7 +2583,7 @@ class rssDirectory extends directoryLibrary
 
 		//get settings
 		$i=0;
-      	$objReslut = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_settings WHERE settyp != '0' AND setid != '30' ORDER BY settyp DESC");
+      	$objReslut = $objDatabase->Execute("SELECT setid,setname,setvalue,setdescription,settyp FROM ".DBPREFIX."module_directory_settings WHERE settyp != '0' AND setid != '30' ORDER BY settyp DESC");
       	if($objReslut !== false){
 			while(!$objReslut->EOF){
 				$allow_url_fopen = '';
@@ -2610,7 +2610,7 @@ class rssDirectory extends directoryLibrary
 				$this->_objTpl->setVariable(array(
 					'SETTINGS_ROWCLASS'		=> $class,
 					'SETTINGS_SETVALUE'		=> $setValueField,
-					'SETTINGS_DESCRIPTION'  => $objReslut->fields['setdescription'],
+					'SETTINGS_DESCRIPTION'  => $_ARRAYLANG['TXT_'.strtoupper($objReslut->fields['setname'])],
 				));
 				$this->_objTpl->parseCurrentBlock('settingsOutput');
 				$i++;
@@ -2637,7 +2637,7 @@ class rssDirectory extends directoryLibrary
 
 		//get settings
 		$i=0;
-      	$objReslut = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_settings_google ORDER BY setid");
+      	$objReslut = $objDatabase->Execute("SELECT setid,setname,setvalue,setdescription,settyp FROM ".DBPREFIX."module_directory_settings_google ORDER BY setid");
       	if($objReslut !== false){
 			while(!$objReslut->EOF){
 				$this->_objTpl->setCurrentBlock('settingsOutput');
@@ -2660,7 +2660,7 @@ class rssDirectory extends directoryLibrary
 				$this->_objTpl->setVariable(array(
 					'SETTINGS_ROWCLASS'		=> $class,
 					'SETTINGS_SETVALUE'		=> $setValueField,
-					'SETTINGS_DESCRIPTION'  => $objReslut->fields['setdescription'],
+					'SETTINGS_DESCRIPTION'  => $_ARRAYLANG['TXT_'.strtoupper($objReslut->fields['setname'])],
 				));
 				$this->_objTpl->parseCurrentBlock('settingsOutput');
 				$i++;
