@@ -3856,21 +3856,21 @@ class newsletter extends NewsletterLib
 
 
 	function ConfigSystem(){
-		global $objDatabase, $_ARRAYLANG;
+		global $objDatabase, $_ARRAYLANG, $_CORELANG;
 		$this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
 		$this->_objTpl->loadTemplateFile('newsletter_config_system.html');
-		$this->_objTpl->setVariable('TXT_TITLE', "System");
+		$this->_objTpl->setVariable('TXT_TITLE', $_CORELANG['TXT_SETTINGS_MENU_SYSTEM']);
 
 		if($_POST["update"]=="exe"){
-			$objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_system SET sysvalue='".intval($_POST['def_unsubscribe'])."' WHERE sysname='defUnsubscribe'");
+			$objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST['def_unsubscribe'])."' WHERE setname='defUnsubscribe'");
 		}
 
 
 		// Load Values
-		$objSystem = $objDatabase->Execute("SELECT sysname, sysvalue FROM ".DBPREFIX."module_newsletter_system");
+		$objSystem = $objDatabase->Execute("SELECT setname, setvalue FROM ".DBPREFIX."module_newsletter_settings");
 		if ($objSystem !== false) {
 			while (!$objSystem->EOF) {
-				$arrSystem[$objSystem->fields['sysname']] = $objSystem->fields['sysvalue'];
+				$arrSystem[$objSystem->fields['setname']] = $objSystem->fields['setvalue'];
 				$objSystem->MoveNext();
 			}
 		}
@@ -3888,11 +3888,11 @@ class newsletter extends NewsletterLib
 			'TXT_ACTIVATE_MAIL'			=> $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
 			'TXT_DISPATCH_SETINGS'		=> $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
 			'TXT_GENERATE_HTML'			=> $_ARRAYLANG['TXT_GENERATE_HTML'],
-			'TXT_SYSTEM_SETINGS'		=> "System",
-			'TXT_DEF_UNSUBSCRIBE'		=> "Zustand ausgetragener Empfänger:",
-			'UNSUBSCRIBE_DEACTIVATE'	=> "deaktiviert",
-			'UNSUBSCRIBE_DELETE'		=> "gelöscht",
-			'TXT_SAVE'					=> "Speichern",
+			'TXT_SYSTEM_SETINGS'		=> $_CORELANG['TXT_SETTINGS_MENU_SYSTEM'],
+			'TXT_DEF_UNSUBSCRIBE'		=> $_ARRAYLANG['TXT_STATE_OF_SUBSCRIBED_USER'],
+			'UNSUBSCRIBE_DEACTIVATE'	=> $_CORELANG['TXT_DEACTIVATED'],
+			'UNSUBSCRIBE_DELETE'		=> $_CORELANG['TXT_DELETED'],
+			'TXT_SAVE'					=> $_CORELANG['TXT_SETTINGS_SAVE'],
 			'UNSUBSCRIBE_DEACTIVATE_ON'	=> $deactivate,
 			'UNSUBSCRIBE_DELETE_ON'		=> $delete,
 		));
