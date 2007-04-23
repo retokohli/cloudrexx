@@ -755,6 +755,7 @@ class Market extends marketLibrary
 
 			if($this->entries[$id]['userdetails'] != 1){
 				$userDetails = '';
+				$TXTuserDetails = '';
 			}
 
 			//type
