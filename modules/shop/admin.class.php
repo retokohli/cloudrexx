@@ -1307,7 +1307,7 @@ class shopmanager extends ShopLibrary {
         $select = true;
 
         foreach ($this->arrAttributes[$attributeId]['values'] as $id => $arrValue) {
-            $inputBoxes .= "<input type=\"text\" name=\"".$name."[$id]\" id=\"".$name."[$id]\" value=\"$arrValue[$content]\" maxlength=\"$maxlength\" style=\"display:".($select == true ? "inline" : "none").";$style\" onchange=\"updateAttributeList($attributeId, $id)\" />";
+            $inputBoxes .= "<input type=\"text\" name=\"".$name."[$id]\" id=\"".$name."[$id]\" value=\"$arrValue[$content]\" maxlength=\"$maxlength\" style=\"display:".($select == true ? "inline" : "none").";$style\" onchange=\"updateAttributeValueList($attributeId, $id)\" />";
             if ($select) {
                 $select = false;
             }
@@ -1337,7 +1337,8 @@ class shopmanager extends ShopLibrary {
             $menu .=
                 "<select style=\"width:50px;display:".
                 ($select == true ? "inline" : "none").
-                ";\" name=\"".$name."[$id]\" id=\"".$name."[$id]\" size=\"1\">\n".
+                ";\" name=\"".$name."[$id]\" id=\"".$name."[$id]\" size=\"1\"".
+                "onchange='updateAttributeValueList($attributeId)'>\n".
                 "<option value=\"+\" ".
                 ($arrValue['price_prefix'] != "-" ? "selected=\"selected\"" : "").
                 ">+</option>\n".
