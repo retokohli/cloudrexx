@@ -167,7 +167,7 @@ class shopmanager extends ShopLibrary {
     {
         global $_ARRAYLANG, $objTemplate, $objInit;
 
-        if (0) {
+        if (1) {
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
             global $objDatabase; $objDatabase->debug = 1;
@@ -4098,38 +4098,38 @@ class shopmanager extends ShopLibrary {
         $i = 1;
         //begin language variables
         $this->_objTpl->setVariable(array(
-        TXT_CUSTOMER_DETAILS     => $_ARRAYLANG['TXT_CUSTOMER_DETAILS'],
-        TXT_CUSTOMER_DATA        => $_ARRAYLANG['TXT_CUSTOMER_DATA'],
-        TXT_COMPANY              => $_ARRAYLANG['TXT_COMPANY'],
-        TXT_PREFIX               => $_ARRAYLANG['TXT_PREFIX'],
-        TXT_FIRST_NAME           => $_ARRAYLANG['TXT_FIRST_NAME'],
-        TXT_LAST_NAME            => $_ARRAYLANG['TXT_LAST_NAME'],
-        TXT_ADDRESS              => $_ARRAYLANG['TXT_ADDRESS'],
-        TXT_ZIP_CITY             => $_ARRAYLANG['TXT_ZIP_CITY'],
-        TXT_PHONE                => $_ARRAYLANG['TXT_PHONE'],
-        TXT_EMAIL                => $_ARRAYLANG['TXT_EMAIL'],
-        TXT_CUSTOMER_NUMBER      => $_ARRAYLANG['TXT_CUSTOMER_NUMBER'],
-        TXT_CUSTOMER_TYP         => $_ARRAYLANG['TXT_CUSTOMER_TYP'],
-        TXT_LOGIN_NAME           => $_ARRAYLANG['TXT_LOGIN_NAME'],
-        TXT_REGISTER_DATE        => $_ARRAYLANG['TXT_REGISTER_DATE'],
-        TXT_CUSTOMER_STATUS      => $_ARRAYLANG['TXT_CUSTOMER_STATUS'],
-        TXT_COUNTRY              => $_ARRAYLANG['TXT_COUNTRY'],
-        TXT_FAX                  => $_ARRAYLANG['TXT_FAX'],
-        TXT_PAYMENT_INFORMATIONS => $_ARRAYLANG['TXT_PAYMENT_INFORMATIONS'],
-        TXT_CREDIT_CARD_OWNER    => $_ARRAYLANG['TXT_CREDIT_CARD_OWNER'],
-        TXT_CARD_NUMBER          => $_ARRAYLANG['TXT_CARD_NUMBER'],
-        TXT_CVC_CODE             => $_ARRAYLANG['TXT_CVC_CODE'],
-        TXT_EXPIRY_DATE          => $_ARRAYLANG['TXT_EXPIRY_DATE'],
-        TXT_ORDERS               => $_ARRAYLANG['TXT_ORDERS'],
-        TXT_ORDERNUMBER          => $_ARRAYLANG['TXT_ORDERNUMBER'],
-        TXT_ORDERSTATUS          => $_ARRAYLANG['TXT_ORDERSTATUS'],
-        TXT_DATE                 => $_ARRAYLANG['TXT_DATE'],
-        TXT_CUSTOMER_STATUS      => $_ARRAYLANG['TXT_CUSTOMER_STATUS'],
-        TXT_ORDER_SUM            => $_ARRAYLANG['TXT_ORDER_SUM'],
-        TXT_MORE_INFORMATIONS    => $_ARRAYLANG['TXT_MORE_INFORMATIONS'],
-        TXT_REMARK               => $_ARRAYLANG['TXT_REMARK'],
-        TXT_EDIT_CUSTOMER        => $_ARRAYLANG['TXT_EDIT_CUSTOMER'],
-        TXT_SEND_MAIL_TO_ADDRESS => $_ARRAYLANG['TXT_SEND_MAIL_TO_ADDRESS']
+            'TXT_CUSTOMER_DETAILS'     => $_ARRAYLANG['TXT_CUSTOMER_DETAILS'],
+            'TXT_CUSTOMER_DATA'        => $_ARRAYLANG['TXT_CUSTOMER_DATA'],
+            'TXT_COMPANY'              => $_ARRAYLANG['TXT_COMPANY'],
+            'TXT_PREFIX'               => $_ARRAYLANG['TXT_PREFIX'],
+            'TXT_FIRST_NAME'           => $_ARRAYLANG['TXT_FIRST_NAME'],
+            'TXT_LAST_NAME'            => $_ARRAYLANG['TXT_LAST_NAME'],
+            'TXT_ADDRESS'              => $_ARRAYLANG['TXT_ADDRESS'],
+            'TXT_ZIP_CITY'             => $_ARRAYLANG['TXT_ZIP_CITY'],
+            'TXT_PHONE'                => $_ARRAYLANG['TXT_PHONE'],
+            'TXT_EMAIL'                => $_ARRAYLANG['TXT_EMAIL'],
+            'TXT_CUSTOMER_NUMBER'      => $_ARRAYLANG['TXT_CUSTOMER_NUMBER'],
+            'TXT_CUSTOMER_TYP'         => $_ARRAYLANG['TXT_CUSTOMER_TYP'],
+            'TXT_LOGIN_NAME'           => $_ARRAYLANG['TXT_LOGIN_NAME'],
+            'TXT_REGISTER_DATE'        => $_ARRAYLANG['TXT_REGISTER_DATE'],
+            'TXT_CUSTOMER_STATUS'      => $_ARRAYLANG['TXT_CUSTOMER_STATUS'],
+            'TXT_COUNTRY'              => $_ARRAYLANG['TXT_COUNTRY'],
+            'TXT_FAX'                  => $_ARRAYLANG['TXT_FAX'],
+            'TXT_PAYMENT_INFORMATIONS' => $_ARRAYLANG['TXT_PAYMENT_INFORMATIONS'],
+            'TXT_CREDIT_CARD_OWNER'    => $_ARRAYLANG['TXT_CREDIT_CARD_OWNER'],
+            'TXT_CARD_NUMBER'          => $_ARRAYLANG['TXT_CARD_NUMBER'],
+            'TXT_CVC_CODE'             => $_ARRAYLANG['TXT_CVC_CODE'],
+            'TXT_EXPIRY_DATE'          => $_ARRAYLANG['TXT_EXPIRY_DATE'],
+            'TXT_ORDERS'               => $_ARRAYLANG['TXT_ORDERS'],
+            'TXT_ORDERNUMBER'          => $_ARRAYLANG['TXT_ORDERNUMBER'],
+            'TXT_ORDERSTATUS'          => $_ARRAYLANG['TXT_ORDERSTATUS'],
+            'TXT_DATE'                 => $_ARRAYLANG['TXT_DATE'],
+            'TXT_CUSTOMER_STATUS'      => $_ARRAYLANG['TXT_CUSTOMER_STATUS'],
+            'TXT_ORDER_SUM'            => $_ARRAYLANG['TXT_ORDER_SUM'],
+            'TXT_MORE_INFORMATIONS'    => $_ARRAYLANG['TXT_MORE_INFORMATIONS'],
+            'TXT_REMARK'               => $_ARRAYLANG['TXT_REMARK'],
+            'TXT_EDIT_CUSTOMER'        => $_ARRAYLANG['TXT_EDIT_CUSTOMER'],
+            'TXT_SEND_MAIL_TO_ADDRESS' => $_ARRAYLANG['TXT_SEND_MAIL_TO_ADDRESS']
         ));
 
         $this->_objTpl->setGlobalVariable(array(
@@ -4164,7 +4164,7 @@ class shopmanager extends ShopLibrary {
                     $shopIsReseller     = intval($_POST['shopCustomerClass']);
                     $shopRegisterDate   = addslashes(strip_tags($_POST['shopRegisterDate']));
 
-                    //update the customer informations
+                    // update the customer informations
                     $shopMd5Password == "";
                     if ($shopPassword <> "") {
                         $shopMd5Password = md5($shopPassword);
@@ -4196,6 +4196,7 @@ class shopmanager extends ShopLibrary {
                                       is_reseller='".$shopIsReseller."',
                                       register_date='".$shopRegisterDate."'
                               WHERE customerid=".$customerid."";
+
                     if (!$objDatabase->Execute($query)) {
                         //if query has errors, call errorhandling
                         $this->errorHandling();
@@ -4252,29 +4253,29 @@ class shopmanager extends ShopLibrary {
                 }
                 //set edit fields
                 $this->_objTpl->setVariable(array(
-                SHOP_CUSTOMERID       => $objResult->fields['customerid'],
-                SHOP_PREFIX           => stripslashes($objResult->fields['prefix']) == "" ? "&nbsp;" : stripslashes($objResult->fields['prefix']),
-                SHOP_LASTNAME         => stripslashes($objResult->fields['lastname']) == "" ? "&nbsp;" : stripslashes($objResult->fields['lastname']),
-                SHOP_FIRSTNAME        => stripslashes($objResult->fields['firstname']) == "" ? "&nbsp;" : stripslashes($objResult->fields['firstname']),
-                SHOP_COMPANY          => stripslashes($objResult->fields['company']) == "" ? "&nbsp;" : stripslashes($objResult->fields['company']),
-                SHOP_ADDRESS          => stripslashes($objResult->fields['address']) == "" ? "&nbsp;" : stripslashes($objResult->fields['address']),
-                SHOP_CITY             => stripslashes($objResult->fields['city']) == "" ? "&nbsp;" : stripslashes($objResult->fields['city']),
-                SHOP_USERNAME         => stripslashes($objResult->fields['username']) == "" ? "&nbsp;" : stripslashes($objResult->fields['username']),
-                SHOP_ORDER_STATUS     => $objResult->fields['order_status'],
-                SHOP_COUNTRY          => $this->arrCountries[$objResult->fields['country_id']]['countries_name'],
-                SHOP_ZIP              => stripslashes($objResult->fields['zip']) == "" ? "&nbsp;" : stripslashes($objResult->fields['zip']),
-                SHOP_PHONE            => stripslashes($objResult->fields['phone']) == "" ? "&nbsp;" : stripslashes($objResult->fields['phone']),
-                SHOP_FAX              => stripslashes($objResult->fields['fax']) == "" ? "&nbsp;" : stripslashes($objResult->fields['fax']),
-                SHOP_EMAIL            => stripslashes($objResult->fields['email']) == "" ? "&nbsp;" : stripslashes($objResult->fields['email']),
-                SHOP_PAYMENTTYPE      => $objResult->fields['paymenttyp'],
-                SHOP_CCNUMBER         => stripslashes($objResult->fields['ccnumber']) == "" ? "&nbsp;" : stripslashes($objResult->fields['ccnumber']),
-                SHOP_CCDATE           => $objResult->fields['ccdate'] == "" ? "&nbsp;" : $objResult->fields['ccdate'],
-                SHOP_CCNAME           => stripslashes($objResult->fields['ccname']) == "" ? "&nbsp;" : stripslashes($objResult->fields['ccname']),
-                SHOP_CVC_CODE         => stripslashes($objResult->fields['cvc_code']) == "" ? "&nbsp;" : stripslashes($objResult->fields['cvc_code']),
-                SHOP_COMPANY_NOTE     => stripslashes($objResult->fields['company_note']) == "" ? "-" : stripslashes($objResult->fields['company_note']),
-                SHOP_IS_RESELLER      => $customerType,
-                SHOP_REGISTER_DATE    => $objResult->fields['register_date'],
-                SHOP_CUSTOMER_STATUS  => $customerStatus,
+                    'SHOP_CUSTOMERID'       => $objResult->fields['customerid'],
+                    'SHOP_PREFIX'           => stripslashes($objResult->fields['prefix']) == "" ? "&nbsp;" : stripslashes($objResult->fields['prefix']),
+                    'SHOP_LASTNAME'         => stripslashes($objResult->fields['lastname']) == "" ? "&nbsp;" : stripslashes($objResult->fields['lastname']),
+                    'SHOP_FIRSTNAME'        => stripslashes($objResult->fields['firstname']) == "" ? "&nbsp;" : stripslashes($objResult->fields['firstname']),
+                    'SHOP_COMPANY'          => stripslashes($objResult->fields['company']) == "" ? "&nbsp;" : stripslashes($objResult->fields['company']),
+                    'SHOP_ADDRESS'          => stripslashes($objResult->fields['address']) == "" ? "&nbsp;" : stripslashes($objResult->fields['address']),
+                    'SHOP_CITY'             => stripslashes($objResult->fields['city']) == "" ? "&nbsp;" : stripslashes($objResult->fields['city']),
+                    'SHOP_USERNAME'         => stripslashes($objResult->fields['username']) == "" ? "&nbsp;" : stripslashes($objResult->fields['username']),
+                    'SHOP_ORDER_STATUS'     => $objResult->fields['order_status'],
+                    'SHOP_COUNTRY'          => $this->arrCountries[$objResult->fields['country_id']]['countries_name'],
+                    'SHOP_ZIP'              => stripslashes($objResult->fields['zip']) == "" ? "&nbsp;" : stripslashes($objResult->fields['zip']),
+                    'SHOP_PHONE'            => stripslashes($objResult->fields['phone']) == "" ? "&nbsp;" : stripslashes($objResult->fields['phone']),
+                    'SHOP_FAX'              => stripslashes($objResult->fields['fax']) == "" ? "&nbsp;" : stripslashes($objResult->fields['fax']),
+                    'SHOP_EMAIL'            => stripslashes($objResult->fields['email']) == "" ? "&nbsp;" : stripslashes($objResult->fields['email']),
+                    'SHOP_PAYMENTTYPE'      => $objResult->fields['paymenttyp'],
+                    'SHOP_CCNUMBER'         => stripslashes($objResult->fields['ccnumber']) == "" ? "&nbsp;" : stripslashes($objResult->fields['ccnumber']),
+                    'SHOP_CCDATE'           => $objResult->fields['ccdate'] == "" ? "&nbsp;" : $objResult->fields['ccdate'],
+                    'SHOP_CCNAME'           => stripslashes($objResult->fields['ccname']) == "" ? "&nbsp;" : stripslashes($objResult->fields['ccname']),
+                    'SHOP_CVC_CODE'         => stripslashes($objResult->fields['cvc_code']) == "" ? "&nbsp;" : stripslashes($objResult->fields['cvc_code']),
+                    'SHOP_COMPANY_NOTE'     => stripslashes($objResult->fields['company_note']) == "" ? "-" : stripslashes($objResult->fields['company_note']),
+                    'SHOP_IS_RESELLER'      => $customerType,
+                    'SHOP_REGISTER_DATE'    => $objResult->fields['register_date'],
+                    'SHOP_CUSTOMER_STATUS'  => $customerStatus,
                 ));
                 $objResult->MoveNext();
             }//end if
@@ -4284,7 +4285,8 @@ class shopmanager extends ShopLibrary {
                   "FROM ".DBPREFIX."module_shop_orders ".
                   "WHERE customerid = $customerid ".
                   "ORDER BY order_date DESC";
-        if (($objResult = $objDatabase->Execute($query)) === false) {
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
             //if query has errors, call errorhandling
             $this->errorHandling();
         } else {
@@ -4299,11 +4301,11 @@ class shopmanager extends ShopLibrary {
                 $this->objCurrency->activeCurrencyId = $objResult->fields['selected_currency_id'];
                 //set edit fields
                 $this->_objTpl->setVariable(array(
-                SHOP_ROWCLASS     => $class,
-                SHOP_ORDER_ID     => $objResult->fields['orderid'],
-                SHOP_ORDER_DATE   => $objResult->fields['order_date'],
-                SHOP_ORDER_STATUS => $this->arrOrderStatus[intval($objResult->fields['order_status'])],
-                SHOP_ORDER_SUM    => $this->objCurrency->getDefaultCurrencyPrice($objResult->fields['currency_order_sum'])." ".$arrCurrency[$this->objCurrency->defaultCurrencyId]['symbol'],
+                    'SHOP_ROWCLASS'     => $class,
+                    'SHOP_ORDER_ID'     => $objResult->fields['orderid'],
+                    'SHOP_ORDER_DATE'   => $objResult->fields['order_date'],
+                    'SHOP_ORDER_STATUS' => $this->arrOrderStatus[intval($objResult->fields['order_status'])],
+                    'SHOP_ORDER_SUM'    => $this->objCurrency->getDefaultCurrencyPrice($objResult->fields['currency_order_sum'])." ".$arrCurrency[$this->objCurrency->defaultCurrencyId]['symbol'],
                 ));
                 $this->_objTpl->parse("orderRow");
                 $i++;
@@ -4322,61 +4324,66 @@ class shopmanager extends ShopLibrary {
         //set template
         $this->_objTpl->loadTemplateFile("module_shop_edit_customer.html", true, true);
 
+        //Check if the data must be stored
+        if (isset($_POST['shopStore'])) {
+            $this->shopAddCustomer();
+        }
+
         //begin language variables
         $this->_objTpl->setVariable(array(
-        TXT_CUSTOMER_DATA        => $_ARRAYLANG['TXT_CUSTOMER_DATA'],
-        TXT_CUSTOMER_NUMBER      => $_ARRAYLANG['TXT_CUSTOMER_NUMBER'],
-        TXT_COMPANY              => $_ARRAYLANG['TXT_COMPANY'],
-        TXT_PREFIX               => $_ARRAYLANG['TXT_PREFIX'],
-        TXT_FIRST_NAME           => $_ARRAYLANG['TXT_FIRST_NAME'],
-        TXT_LAST_NAME            => $_ARRAYLANG['TXT_LAST_NAME'],
-        TXT_ADDRESS              => $_ARRAYLANG['TXT_ADDRESS'],
-        TXT_ZIP_CITY             => $_ARRAYLANG['TXT_ZIP_CITY'],
-        TXT_PHONE                => $_ARRAYLANG['TXT_PHONE'],
-        TXT_EMAIL                => $_ARRAYLANG['TXT_EMAIL'],
-        TXT_CUSTOMER_TYP         => $_ARRAYLANG['TXT_CUSTOMER_TYP'],
-        TXT_CUSTOMER             => $_ARRAYLANG['TXT_CUSTOMER'],
-        TXT_RESELLER             => $_ARRAYLANG['TXT_RESELLER'],
-        TXT_LOGIN_NAME           => $_ARRAYLANG['TXT_LOGIN_NAME'],
-        TXT_RESET_PASSWORD       => $_ARRAYLANG['TXT_RESET_PASSWORD'],
-        TXT_REGISTER_DATE        => $_ARRAYLANG['TXT_REGISTER_DATE'],
-        TXT_CUSTOMER_STATUS      => $_ARRAYLANG['TXT_CUSTOMER_STATUS'],
-        TXT_INACTIVE             => $_ARRAYLANG['TXT_INACTIVE'],
-        TXT_ACTIVE               => $_ARRAYLANG['TXT_ACTIVE'],
-        TXT_COUNTRY              => $_ARRAYLANG['TXT_COUNTRY'],
-        TXT_FAX                  => $_ARRAYLANG['TXT_FAX'],
-        TXT_PAYMENT_INFORMATIONS => $_ARRAYLANG['TXT_PAYMENT_INFORMATIONS'],
-        TXT_CREDIT_CARD_OWNER    => $_ARRAYLANG['TXT_CREDIT_CARD_OWNER'],
-        TXT_CARD_NUMBER          => $_ARRAYLANG['TXT_CARD_NUMBER'],
-        TXT_CVC_CODE             => $_ARRAYLANG['TXT_CVC_CODE'],
-        TXT_EXPIRY_DATE          => $_ARRAYLANG['TXT_EXPIRY_DATE'],
-        TXT_OPTIONS              => $_ARRAYLANG['TXT_OPTIONS'],
-        TXT_ORDERNUMBER          => $_ARRAYLANG['TXT_ORDERNUMBER'],
-        TXT_REMARK               => $_ARRAYLANG['TXT_REMARK'],
-        TXT_SAVE_CHANGES         => $_ARRAYLANG['TXT_SAVE_CHANGES'],
-        TXT_SEND_LOGIN_DATA      => $_ARRAYLANG['TXT_SEND_LOGIN_DATA'],
+            'TXT_CUSTOMER_DATA'        => $_ARRAYLANG['TXT_CUSTOMER_DATA'],
+            'TXT_CUSTOMER_NUMBER'      => $_ARRAYLANG['TXT_CUSTOMER_NUMBER'],
+            'TXT_COMPANY'              => $_ARRAYLANG['TXT_COMPANY'],
+            'TXT_PREFIX'               => $_ARRAYLANG['TXT_PREFIX'],
+            'TXT_FIRST_NAME'           => $_ARRAYLANG['TXT_FIRST_NAME'],
+            'TXT_LAST_NAME'            => $_ARRAYLANG['TXT_LAST_NAME'],
+            'TXT_ADDRESS'              => $_ARRAYLANG['TXT_ADDRESS'],
+            'TXT_ZIP_CITY'             => $_ARRAYLANG['TXT_ZIP_CITY'],
+            'TXT_PHONE'                => $_ARRAYLANG['TXT_PHONE'],
+            'TXT_EMAIL'                => $_ARRAYLANG['TXT_EMAIL'],
+            'TXT_CUSTOMER_TYP'         => $_ARRAYLANG['TXT_CUSTOMER_TYP'],
+            'TXT_CUSTOMER'             => $_ARRAYLANG['TXT_CUSTOMER'],
+            'TXT_RESELLER'             => $_ARRAYLANG['TXT_RESELLER'],
+            'TXT_LOGIN_NAME'           => $_ARRAYLANG['TXT_LOGIN_NAME'],
+            'TXT_RESET_PASSWORD'       => $_ARRAYLANG['TXT_RESET_PASSWORD'],
+            'TXT_REGISTER_DATE'        => $_ARRAYLANG['TXT_REGISTER_DATE'],
+            'TXT_CUSTOMER_STATUS'      => $_ARRAYLANG['TXT_CUSTOMER_STATUS'],
+            'TXT_INACTIVE'             => $_ARRAYLANG['TXT_INACTIVE'],
+            'TXT_ACTIVE'               => $_ARRAYLANG['TXT_ACTIVE'],
+            'TXT_COUNTRY'              => $_ARRAYLANG['TXT_COUNTRY'],
+            'TXT_FAX'                  => $_ARRAYLANG['TXT_FAX'],
+            'TXT_PAYMENT_INFORMATIONS' => $_ARRAYLANG['TXT_PAYMENT_INFORMATIONS'],
+            'TXT_CREDIT_CARD_OWNER'    => $_ARRAYLANG['TXT_CREDIT_CARD_OWNER'],
+            'TXT_CARD_NUMBER'          => $_ARRAYLANG['TXT_CARD_NUMBER'],
+            'TXT_CVC_CODE'             => $_ARRAYLANG['TXT_CVC_CODE'],
+            'TXT_EXPIRY_DATE'          => $_ARRAYLANG['TXT_EXPIRY_DATE'],
+            'TXT_OPTIONS'              => $_ARRAYLANG['TXT_OPTIONS'],
+            'TXT_ORDERNUMBER'          => $_ARRAYLANG['TXT_ORDERNUMBER'],
+            'TXT_REMARK'               => $_ARRAYLANG['TXT_REMARK'],
+            'TXT_SAVE_CHANGES'         => $_ARRAYLANG['TXT_SAVE_CHANGES'],
+            'TXT_SEND_LOGIN_DATA'      => $_ARRAYLANG['TXT_SEND_LOGIN_DATA'],
         ));
         //set requested customerid
-        $customerid = intval($_REQUEST['customerid']);
+        $customerid = (isset($_REQUEST['customerid']) ? intval($_REQUEST['customerid']) : 0);
         if ($customerid == 0) { //create a new customer
             $this->pageTitle = $_ARRAYLANG['TXT_ADD_NEW_CUSTOMER'];
             $this->_objTpl->setVariable(array(
-            'SHOP_CUSTOMERID'                => "&nbsp;",
-            'SHOP_SEND_LOGING_DATA_STATUS'    => "checked=\"checked\"",
-            'SHOP_REGISTER_DATE'            => date("Y-m-d h:m:s"),
-            'SHOP_COUNTRY'                    => $this->_getCountriesMenu("shopCountry"),
-            'SHOP_CUSTOMER_ACT'                => "neweditcustomer"
+            'SHOP_CUSTOMERID'              => "&nbsp;",
+            'SHOP_SEND_LOGING_DATA_STATUS' => "checked=\"checked\"",
+            'SHOP_REGISTER_DATE'           => date("Y-m-d h:m:s"),
+            'SHOP_COUNTRY'                 => $this->_getCountriesMenu("shopCountry"),
+            'SHOP_CUSTOMER_ACT'            => "neweditcustomer"
             ));
         } else {    //edit user
             $this->pageTitle = $_ARRAYLANG['TXT_EDIT_CUSTOMER'];
             $this->_objTpl->setVariable(array(
-            'SHOP_SEND_LOGING_DATA_STATUS'    => "",
-            'SHOP_CUSTOMER_ACT'                => "customerdetails&amp;customerid={SHOP_CUSTOMERID}"
+            'SHOP_SEND_LOGING_DATA_STATUS' => "",
+            'SHOP_CUSTOMER_ACT'            => "customerdetails&amp;customerid={SHOP_CUSTOMERID}"
             ));
 
         }
-        //set the customer informations
-        if ($customerid>0) {
+        // set the customer informations
+        if ($customerid > 0) {
             $query = "SELECT *
                   FROM ".DBPREFIX."module_shop_customers
                   WHERE customerid = $customerid
@@ -4402,31 +4409,126 @@ class shopmanager extends ShopLibrary {
                     }
                     //set edit fields
                     $this->_objTpl->setVariable(array(
-                    'SHOP_CUSTOMERID'       => $objResult->fields['customerid'],
-                    'SHOP_PREFIX'           => stripslashes($objResult->fields['prefix']) == "" ? "&nbsp;" : stripslashes($objResult->fields['prefix']),
-                    'SHOP_LASTNAME'         => stripslashes($objResult->fields['lastname']) == "" ? "&nbsp;" : stripslashes($objResult->fields['lastname']),
-                    'SHOP_FIRSTNAME'        => stripslashes($objResult->fields['firstname']) == "" ? "&nbsp;" : stripslashes($objResult->fields['firstname']),
-                    'SHOP_COMPANY'          => stripslashes($objResult->fields['company']) == "" ? "&nbsp;" : stripslashes($objResult->fields['company']),
-                    'SHOP_ADDRESS'          => stripslashes($objResult->fields['address']) == "" ? "&nbsp;" : stripslashes($objResult->fields['address']),
-                    'SHOP_CITY'             => stripslashes($objResult->fields['city']) == "" ? "&nbsp;" : stripslashes($objResult->fields['city']),
-                    'SHOP_USERNAME'         => stripslashes($objResult->fields['username']) == "" ? "&nbsp;" : stripslashes($objResult->fields['username']),
-                    'SHOP_ORDER_STATUS'     => $objResult->fields['order_status'],
-                    'SHOP_COUNTRY'          => $this->_getCountriesMenu("shopCountry", $objResult->fields['country_id']),
-                    'SHOP_ZIP'              => stripslashes($objResult->fields['zip']) == "" ? "&nbsp;" : stripslashes($objResult->fields['zip']),
-                    'SHOP_PHONE'            => stripslashes($objResult->fields['phone']) == "" ? "&nbsp;" : stripslashes($objResult->fields['phone']),
-                    'SHOP_FAX'              => stripslashes($objResult->fields['fax']) == "" ? "&nbsp;" : stripslashes($objResult->fields['fax']),
-                    'SHOP_EMAIL'            => stripslashes($objResult->fields['email']) == "" ? "&nbsp;" : stripslashes($objResult->fields['email']),
-                    'SHOP_PAYMENTTYPE'      => $objResult->fields['paymenttyp'],
-                    'SHOP_CCNUMBER'         => stripslashes($objResult->fields['ccnumber']) == "" ? "&nbsp;" : stripslashes($objResult->fields['ccnumber']),
-                    'SHOP_CCDATE'           => $objResult->fields['ccdate'] == "" ? "&nbsp;" : $objResult->fields['ccdate'],
-                    'SHOP_CCNAME'           => stripslashes($objResult->fields['ccname']) == "" ? "&nbsp;" : stripslashes($objResult->fields['ccname']),
-                    'SHOP_CVC_CODE'         => stripslashes($objResult->fields['cvc_code']) == "" ? "&nbsp;" : stripslashes($objResult->fields['cvc_code']),
-                    'SHOP_COMPANY_NOTE'     => stripslashes($objResult->fields['company_note']) == "" ? "&nbsp;" : stripslashes($objResult->fields['company_note']),
-                    'SHOP_REGISTER_DATE'    => $objResult->fields['register_date'],
+                        'SHOP_CUSTOMERID'       => $objResult->fields['customerid'],
+                        'SHOP_PREFIX'           => stripslashes($objResult->fields['prefix']) == "" ? "&nbsp;" : stripslashes($objResult->fields['prefix']),
+                        'SHOP_LASTNAME'         => stripslashes($objResult->fields['lastname']) == "" ? "&nbsp;" : stripslashes($objResult->fields['lastname']),
+                        'SHOP_FIRSTNAME'        => stripslashes($objResult->fields['firstname']) == "" ? "&nbsp;" : stripslashes($objResult->fields['firstname']),
+                        'SHOP_COMPANY'          => stripslashes($objResult->fields['company']) == "" ? "&nbsp;" : stripslashes($objResult->fields['company']),
+                        'SHOP_ADDRESS'          => stripslashes($objResult->fields['address']) == "" ? "&nbsp;" : stripslashes($objResult->fields['address']),
+                        'SHOP_CITY'             => stripslashes($objResult->fields['city']) == "" ? "&nbsp;" : stripslashes($objResult->fields['city']),
+                        'SHOP_USERNAME'         => stripslashes($objResult->fields['username']) == "" ? "&nbsp;" : stripslashes($objResult->fields['username']),
+                        'SHOP_ORDER_STATUS'     => $objResult->fields['order_status'],
+                        'SHOP_COUNTRY'          => $this->_getCountriesMenu("shopCountry", $objResult->fields['country_id']),
+                        'SHOP_ZIP'              => stripslashes($objResult->fields['zip']) == "" ? "&nbsp;" : stripslashes($objResult->fields['zip']),
+                        'SHOP_PHONE'            => stripslashes($objResult->fields['phone']) == "" ? "&nbsp;" : stripslashes($objResult->fields['phone']),
+                        'SHOP_FAX'              => stripslashes($objResult->fields['fax']) == "" ? "&nbsp;" : stripslashes($objResult->fields['fax']),
+                        'SHOP_EMAIL'            => stripslashes($objResult->fields['email']) == "" ? "&nbsp;" : stripslashes($objResult->fields['email']),
+                        'SHOP_PAYMENTTYPE'      => $objResult->fields['paymenttyp'],
+                        'SHOP_CCNUMBER'         => stripslashes($objResult->fields['ccnumber']) == "" ? "&nbsp;" : stripslashes($objResult->fields['ccnumber']),
+                        'SHOP_CCDATE'           => $objResult->fields['ccdate'] == "" ? "&nbsp;" : $objResult->fields['ccdate'],
+                        'SHOP_CCNAME'           => stripslashes($objResult->fields['ccname']) == "" ? "&nbsp;" : stripslashes($objResult->fields['ccname']),
+                        'SHOP_CVC_CODE'         => stripslashes($objResult->fields['cvc_code']) == "" ? "&nbsp;" : stripslashes($objResult->fields['cvc_code']),
+                        'SHOP_COMPANY_NOTE'     => stripslashes($objResult->fields['company_note']) == "" ? "&nbsp;" : stripslashes($objResult->fields['company_note']),
+                        'SHOP_REGISTER_DATE'    => $objResult->fields['register_date'],
                     ));
                 }
             }
         }
+    }
+
+
+    /**
+     * Add a new customer to the Database.
+     *
+     * Sets Ok/Err messages with status.
+     * @return  boolean     True on success, false otherwise
+     */
+    function shopAddCustomer()
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        if ($this->_checkEmailIntegrity($_POST['shopEmail'])) {
+            if ($this->_checkUsernameIntegrity($_POST['shopUsername'])) {
+                $shopUsername       = addslashes(strip_tags($_POST['shopUsername']));
+                $shopPassword       = $_POST['shopPassword'];
+                $shopMd5Password    = md5($shopPassword);
+                $shopCompany        = addslashes(strip_tags($_POST['shopCompany']));
+                $shopPrefix         = addslashes(strip_tags($_POST['shopPrefix']));
+                $shopFirstname      = addslashes(strip_tags($_POST['shopFirstname']));
+                $shopLastname       = addslashes(strip_tags($_POST['shopLastname']));
+                $shopAddress        = addslashes(strip_tags($_POST['shopAddress']));
+                $shopCity           = addslashes(strip_tags($_POST['shopCity']));
+                $shopZip            = addslashes(strip_tags($_POST['shopZip']));
+                $shopCountry        = intval($_POST['shopCountry']);
+                $shopPhone          = addslashes(strip_tags($_POST['shopPhone']));
+                $shopFax            = addslashes(strip_tags($_POST['shopFax']));
+                $shopEmail          = addslashes(strip_tags($_POST['shopEmail']));
+                $shopCcnumber       = addslashes(strip_tags($_POST['shopCcnumber']));
+                $shopCcdate         = addslashes(strip_tags($_POST['shopCcdate']));
+                $shopCcname         = addslashes(strip_tags($_POST['shopCcname']));
+                $shopCvcCode        = addslashes(strip_tags($_POST['shopCvcCode']));
+                $shopCompanyNote    = addslashes(strip_tags($_POST['shopCompanyNote']));
+                $shopCustomerStatus = intval($_POST['shopCustomerStatus']);
+                $shopIsReseller     = intval($_POST['shopCustomerClass']);
+                $shopRegisterDate   = addslashes(strip_tags($_POST['shopRegisterDate']));
+
+                // insert the customer data
+                $query = "
+                    INSERT INTO ".DBPREFIX."module_shop_customers
+                        (username, password, prefix, company, firstname,
+                        lastname, address, city, zip, country_id,
+                        phone, fax, email,
+                        ccnumber, ccdate, ccname, cvc_code,
+                        company_note, customer_status,
+                        is_reseller, register_date)
+                    VALUES
+                        ('$shopUsername', '$shopMd5Password', '$shopPrefix',
+                        '$shopCompany', '$shopFirstname', '$shopLastname',
+                        '$shopAddress', '$shopCity', '$shopZip',
+                        '$shopCountry', '$shopPhone', '$shopFax',
+                        '$shopEmail', '$shopCcnumber', '$shopCcdate',
+                        '$shopCcname', '$shopCvcCode', '$shopCompanyNote',
+                        $shopCustomerStatus, $shopIsReseller, '$shopRegisterDate')
+                ";
+                if (!$objDatabase->Execute($query)) {
+                    // if query has errors, call errorhandling
+                    $this->errorHandling();
+                } else {
+                    $this->strOkMessage .= $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']."\n";
+                }
+                $customerid = $objDatabase->Insert_ID();
+                //check if the logindata must be sent
+                if (isset($_POST['shopSendLoginData'])) {
+                    $this->shopSetMailtemplate(3);//select template for sending logindata
+                    $shopMailTo = $_POST['shopEmail'];
+                    $shopMailFrom = $this->arrShopMailTemplate['mail_from'];
+                    $shopMailFromText = $this->arrShopMailTemplate['mail_x_sender'];
+                    $shopMailSubject = $this->arrShopMailTemplate['mail_subject'];
+                    $shopMailBody = $this->arrShopMailTemplate['mail_body'];
+                    //replace variables from template
+                    $shopMailBody = str_replace("<USERNAME>",$shopUsername,$shopMailBody);
+                    $shopMailBody = str_replace("<PASSWORD>",$shopPassword,$shopMailBody);
+                    // added
+                    $shopMailBody = str_replace("<CUSTOMER_PREFIX>", $shopPrefix, $shopMailBody);
+                    $shopMailBody = str_replace("<CUSTOMER_LASTNAME>", $shopLastname, $shopMailBody);
+                    $result = $this->shopSendmail($shopMailTo,$shopMailFrom,$shopMailFromText,$shopMailSubject,$shopMailBody,"");
+                    if ($result) {
+                        $this->strOkMessage .= sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'],$shopMailTo)."\n";
+                    } else {
+                        $this->strErrMessage .= $_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']."\n";
+                        return false;
+                    }
+                }
+            } else {
+                $this->strErrMessage .= $_ARRAYLANG['TXT_USERNAME_USED_BY_OTHER_CUSTOMER'];
+                return false;
+            }
+        } else {
+            $this->strErrMessage .= $_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER'];
+            return false;
+        }
+        $this->strOkMessage .= $_ARRAYLANG['TXT_SHOP_INSERTED_CUSTOMER'].", ID $customerid";
+        return true;
     }
 
 
