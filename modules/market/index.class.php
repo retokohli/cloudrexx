@@ -181,8 +181,8 @@ class Market extends marketLibrary
 					$count = "0";
 				}
 
-				$categorieRows[$i] .= "<a class='catLink' href='?section=market&amp;id=".$catKey."''>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
-				array_push($arrRowsIndex, substr(htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1)."<a class='catLink' href='?section=market&amp;id=".$catKey."''>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />");
+				$categorieRows[$i] .= "<a class='catLink' href='?section=market&amp;id=".$catKey."'>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
+				array_push($arrRowsIndex, substr(htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1)."<a class='catLink' href='?section=market&amp;id=".$catKey."'>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />");
 
 				if($i%$catRows==0){
 					$i=1;
