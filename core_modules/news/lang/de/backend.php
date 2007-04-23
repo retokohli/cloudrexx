@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 20 Apr 2007 13:34:18 +0200
+* generated date Mon, 23 Apr 2007 10:38:40 +0200
 **/
 
 $_ARRAYLANG['TXT_DELETE_MARKED'] = "Markierte löschen";
@@ -186,4 +186,5 @@ $_ARRAYLANG['TXT_NEWS_TYPE_REDIRECT_HELP'] = "Falls Sie auf eine externe Newsmel
 $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'] = "Teaser Text";
 $_ARRAYLANG['TXT_NEWS_DEFINE_LINK_ALT_TEXT'] = "Geben Sie einen Text für den Link ein:";
 $_ARRAYLANG['TXT_NEWS_INSERT_LINK'] = "Link einfügen";
+$_ARRAYLANG['TXT_NEWS_OVERVIEW'] = "Übersicht";
 ?>
