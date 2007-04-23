@@ -2272,6 +2272,8 @@ class newsletter extends NewsletterLib
 				$this->_strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_FAILED'], htmlentities($TargetEmail, ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
 			} elseif (strstr($mail->ErrorInfo, 'instantiate')) {
 				$this->_strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_LOCAL_SMTP_FAILED'].'<br />';
+			} elseif (strstr($mail->ErrorInfo, 'connect_host')) {
+				$this->_strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_CONNECT_SMTP_FAILED'].'<br />';
 			} else {
 				$this->_strErrMessage .= $mail->ErrorInfo.'<br />';
 			}
