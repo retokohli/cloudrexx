@@ -722,27 +722,21 @@ class rssDirectory extends directoryLibrary
 		}
 
 
-		$html 		=	'<table width="100%" cellspacing="5" cellpadding="0" border="0">
-					    <tbody>
-					        <tr>
-					            <td class="directorySearch">
-					                <form action="index.php?" method="get" name="directorySearch" id="directorySearch">
-					                    <input name="term" value="'.(!empty($_GET['term']) ? htmlentities($_GET['term'], ENT_QUOTES, CONTREXX_CHARSET) : '').'" size="25" maxlength="100" />
-					                    <input id="searchCheck" type="hidden" name="check" value="norm" size="10" />
-					                    <input type="hidden" name="section" value="directory" size="10" />
-					                    <input type="hidden" name="cmd" value="search" size="10" />
-					                     <input type="submit" value="'.$_ARRAYLANG['TXT_DIR_F_SEARCH'].'" name="search" /> &raquo; <a onclick="javascript:toggle(\'hiddenSearch\')" href="javascript:{}">'.$_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'].'</a><br />
-					                    <div style="display: none;" id="hiddenSearch">
-					                    <br />
-					                    <table width="100%" cellspacing="0" cellpadding="0" border="0">
-					                    '.$expSearch.'
-					                    </table>
-					                    </div>
-					                </form>
-					            </td>
-					        </tr>
-					    </tbody>
-					</table>';
+		$html 		=	'<div class="directorySearch">
+			                <form action="index.php?" method="get" name="directorySearch" id="directorySearch">
+			                    <input name="term" value="'.(!empty($_GET['term']) ? htmlentities($_GET['term'], ENT_QUOTES, CONTREXX_CHARSET) : '').'" size="25" maxlength="100" />
+			                    <input id="searchCheck" type="hidden" name="check" value="norm" size="10" />
+			                    <input type="hidden" name="section" value="directory" size="10" />
+			                    <input type="hidden" name="cmd" value="search" size="10" />
+			                     <input type="submit" value="'.$_ARRAYLANG['TXT_DIR_F_SEARCH'].'" name="search" /> &raquo; <a onclick="javascript:toggle(\'hiddenSearch\')" href="javascript:{}">'.$_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'].'</a><br />
+			                    <div style="display: none;" id="hiddenSearch">
+			                    <br />
+			                    <table width="100%" cellspacing="0" cellpadding="0" border="0">
+			                    '.$expSearch.'
+			                    </table>
+			                    </div>
+			                </form>
+			            </div>';
 
 		// set variables
 		$this->_objTpl->setVariable(array(
