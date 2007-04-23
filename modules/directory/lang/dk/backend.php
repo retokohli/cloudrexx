@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 23 Apr 2007 16:53:51 +0200
+* generated date Mon, 23 Apr 2007 17:35:58 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Lav nyt design";
@@ -251,4 +251,9 @@ $_ARRAYLANG['TXT_GOOGLESEARCH'] = "Google Suche";
 $_ARRAYLANG['TXT_GOOGLERESULTS'] = "Anzahl Google Resultate";
 $_ARRAYLANG['TXTX_GOOGLEID'] = "Google Key";
 $_ARRAYLANG['TXTX_GOOGLELANG'] = "Sprachparameter";
+$_ARRAYLANG['TXT_XMLLIMIT'] = "XML Limite";
+$_ARRAYLANG['TXT_PLATFORM'] = "Plattformen";
+$_ARRAYLANG['TXT_LANGUAGE'] = "Sprachen";
+$_ARRAYLANG['TXT_LATEST_CONTENT'] = "Anzahl Einträge (Headlines)";
+$_ARRAYLANG['TXT_LATEST_XML'] = "Anzahl Einträge (XML)";
 ?>
