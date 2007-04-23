@@ -386,7 +386,9 @@ class ShopLibrary {
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
 			$objMail = new phpmailer();
 
-			if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+			if (   isset($_CONFIG['coreSmtpServer'])
+			    && $_CONFIG['coreSmtpServer'] > 0
+			    && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
 				$objSmtpSettings = new SmtpSettings();
 				if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
 					$objMail->IsSMTP();
@@ -397,7 +399,6 @@ class ShopLibrary {
 					$objMail->Password = $arrSmtp['password'];
 				}
 			}
-
 			$objMail->CharSet = CONTREXX_CHARSET;
 			$objMail->From = preg_replace('/\015\012/', "\012", $shopMailFrom);
 			$objMail->FromName = preg_replace('/\015\012/', "\012", $shopMailFromText);
@@ -410,7 +411,6 @@ class ShopLibrary {
 				return true;
 			}
 		}
-
 		return false;
     }
 

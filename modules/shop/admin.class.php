@@ -1973,18 +1973,26 @@ class shopmanager extends ShopLibrary {
                             break;
                         case 'shopMailSend':
                             // Generate language menu
-                            $langMenu = "<select name=\"langId\" size=\"1\" onchange=\"loadTpl(document.shopFormSend.elements['tplId'].value,this.value,'shopMailSend');\">\n";
+                            $langMenu = "<select name='langId' size='1' onchange=\"loadTpl(document.shopFormSend.elements['tplId'].value,this.value,'shopMailSend');\">\n";
                             foreach ($arrLanguage as $langValues)
                             {
                                 if ($langValues['frontend']) {
-                                    $selected = ($_GET['langId'] == $langValues['id'] ? "selected=\"selected\"" : "");
-                                    $langMenu .= "<option value=\"".$langValues['id']."\" $selected>".$langValues['name']."</option>\n";
+                                    $selected = (isset($_GET['langId']) && $_GET['langId'] == $langValues['id']
+                                        ? "selected='selected'"
+                                        : '');
+                                    $langMenu .= "<option value='".$langValues['id']."' $selected>".$langValues['name']."</option>\n";
                                 }
                             }
-                            $langMenu .= "</select>";
+                            $langMenu .= '</select>';
 
                             // Get the content of the template
-                            $query = "SELECT id, from_mail, xsender, subject, message FROM ".DBPREFIX."module_shop_mail_content WHERE tpl_id=".intval($_GET['tplId'])." AND lang_id=".intval($_GET['langId']);
+                            $tplId = (isset($_GET['tplId']) ? intval($_GET['tplId']) : '');
+                            $langId = (isset($_GET['langId']) ? intval($_GET['langId']) : '');
+                            $query = "
+                                SELECT id, from_mail, xsender, subject, message
+                                  FROM ".DBPREFIX."module_shop_mail_content
+                                 WHERE ".($tplId ? "tpl_id=$tplId AND " : '').
+                                         ($langId ? "lang_id=$langId AND " : '')."1";
                             $objResult = $objDatabase->Execute($query);
                             if (!$objResult->EOF) {
                                 $this->_objTpl->setVariable(array(
@@ -2011,7 +2019,7 @@ class shopmanager extends ShopLibrary {
                     'SHOP_MAIL_SEND_STYLE'          => ($_GET['strTab'] == "shopMailSend" ? "display:block" : "display:none"),
                     'SHOP_MAILTAB_SEND_CLASS'       => ($_GET['strTab'] == "shopMailSend" ? "active" : ""),
                     'SHOP_MAIL_SEND_TEMPLATES'      => ($_GET['strTab'] == "shopMailSend" ? $strMailSelectedTemplates : $strMailTemplates),
-                    'SHOP_MAIL_SEND_LANGS'          => ($_GET['strTab'] == "shopMailSend" ? ($_GET['tplId'] != 0 ? $langMenu : "<input type=\"hidden\" name=\"langId\" value=\"".$defaultLang."\" />") : "<input type=\"hidden\" name=\"langId\" value=\"".$defaultLang."\" />"),
+                    'SHOP_MAIL_SEND_LANGS'          => ($_GET['strTab'] == "shopMailSend" ? (isset($_GET['tplId']) ? $langMenu : "<input type=\"hidden\" name=\"langId\" value=\"".$defaultLang."\" />") : "<input type=\"hidden\" name=\"langId\" value=\"".$defaultLang."\" />"),
                     'SHOP_MAIL_TO'                  => ($_GET['strTab'] == "shopMailSend" ? (isset($_GET['shopMailTo']) ? $_GET['shopMailTo'] : "") : "")
                     ));
                 } else {
@@ -4139,9 +4147,9 @@ class shopmanager extends ShopLibrary {
         //get id
         $customerid = intval($_REQUEST['customerid']);
         //Check if the data must be stored
-        if ($this->_checkEmailIntegrity($_POST['shopEmail'], $customerid)) {
-            if ($this->_checkUsernameIntegrity($_POST['shopUsername'], $customerid)) {
-                if (isset($_POST['shopStore'])) {
+        if (isset($_POST['shopStore'])) {
+            if ($this->_checkEmailIntegrity($_POST['shopEmail'], $customerid)) {
+                if ($this->_checkUsernameIntegrity($_POST['shopUsername'], $customerid)) {
                     $shopUsername       = addslashes(strip_tags($_POST['shopUsername']));
                     $shopPassword       = $_POST['shopPassword'];
                     $shopCompany        = addslashes(strip_tags($_POST['shopCompany']));
@@ -4165,12 +4173,12 @@ class shopmanager extends ShopLibrary {
                     $shopRegisterDate   = addslashes(strip_tags($_POST['shopRegisterDate']));
 
                     // update the customer informations
-                    $shopMd5Password == "";
-                    if ($shopPassword <> "") {
+                    $shopMd5Password = '';
+                    if ($shopPassword != '') {
                         $shopMd5Password = md5($shopPassword);
                     }
-                    $shopUdatePassword = "";
-                    if ($shopMd5Password <>"") { //if password has been reset, set it new
+                    $shopUdatePassword = '';
+                    if ($shopMd5Password != '') { //if password has been reset, set it new
                         $shopUdatePassword = ",password = '$shopMd5Password' ";
                     }
 
@@ -4225,13 +4233,14 @@ class shopmanager extends ShopLibrary {
                             return false;
                         }
                     }
-                }//end if
+                } else {
+                    $this->strErrMessage .= $_ARRAYLANG['TXT_USERNAME_USED_BY_OTHER_CUSTOMER'];
+                }
             } else {
-                $this->strErrMessage .= $_ARRAYLANG['TXT_USERNAME_USED_BY_OTHER_CUSTOMER'];
+                $this->strErrMessage .= $_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER'];
             }
-        } else {
-            $this->strErrMessage .= $_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER'];
-        }
+        }//end if
+
         //set the customer informations
         $query = "SELECT * FROM ".DBPREFIX."module_shop_customers ".
                  "WHERE customerid = $customerid ORDER BY lastname ASC";
@@ -4261,13 +4270,15 @@ class shopmanager extends ShopLibrary {
                     'SHOP_ADDRESS'          => stripslashes($objResult->fields['address']) == "" ? "&nbsp;" : stripslashes($objResult->fields['address']),
                     'SHOP_CITY'             => stripslashes($objResult->fields['city']) == "" ? "&nbsp;" : stripslashes($objResult->fields['city']),
                     'SHOP_USERNAME'         => stripslashes($objResult->fields['username']) == "" ? "&nbsp;" : stripslashes($objResult->fields['username']),
-                    'SHOP_ORDER_STATUS'     => $objResult->fields['order_status'],
+                    // unavailable
+                    //'SHOP_ORDER_STATUS'     => $objResult->fields['order_status'],
                     'SHOP_COUNTRY'          => $this->arrCountries[$objResult->fields['country_id']]['countries_name'],
                     'SHOP_ZIP'              => stripslashes($objResult->fields['zip']) == "" ? "&nbsp;" : stripslashes($objResult->fields['zip']),
                     'SHOP_PHONE'            => stripslashes($objResult->fields['phone']) == "" ? "&nbsp;" : stripslashes($objResult->fields['phone']),
                     'SHOP_FAX'              => stripslashes($objResult->fields['fax']) == "" ? "&nbsp;" : stripslashes($objResult->fields['fax']),
                     'SHOP_EMAIL'            => stripslashes($objResult->fields['email']) == "" ? "&nbsp;" : stripslashes($objResult->fields['email']),
-                    'SHOP_PAYMENTTYPE'      => $objResult->fields['paymenttyp'],
+                    // unavailable
+                    //'SHOP_PAYMENTTYPE'      => $objResult->fields['paymenttyp'],
                     'SHOP_CCNUMBER'         => stripslashes($objResult->fields['ccnumber']) == "" ? "&nbsp;" : stripslashes($objResult->fields['ccnumber']),
                     'SHOP_CCDATE'           => $objResult->fields['ccdate'] == "" ? "&nbsp;" : $objResult->fields['ccdate'],
                     'SHOP_CCNAME'           => stripslashes($objResult->fields['ccname']) == "" ? "&nbsp;" : stripslashes($objResult->fields['ccname']),
@@ -4417,13 +4428,15 @@ class shopmanager extends ShopLibrary {
                         'SHOP_ADDRESS'          => stripslashes($objResult->fields['address']) == "" ? "&nbsp;" : stripslashes($objResult->fields['address']),
                         'SHOP_CITY'             => stripslashes($objResult->fields['city']) == "" ? "&nbsp;" : stripslashes($objResult->fields['city']),
                         'SHOP_USERNAME'         => stripslashes($objResult->fields['username']) == "" ? "&nbsp;" : stripslashes($objResult->fields['username']),
-                        'SHOP_ORDER_STATUS'     => $objResult->fields['order_status'],
+                        // unavailable
+                        //'SHOP_ORDER_STATUS'     => $objResult->fields['order_status'],
                         'SHOP_COUNTRY'          => $this->_getCountriesMenu("shopCountry", $objResult->fields['country_id']),
                         'SHOP_ZIP'              => stripslashes($objResult->fields['zip']) == "" ? "&nbsp;" : stripslashes($objResult->fields['zip']),
                         'SHOP_PHONE'            => stripslashes($objResult->fields['phone']) == "" ? "&nbsp;" : stripslashes($objResult->fields['phone']),
                         'SHOP_FAX'              => stripslashes($objResult->fields['fax']) == "" ? "&nbsp;" : stripslashes($objResult->fields['fax']),
                         'SHOP_EMAIL'            => stripslashes($objResult->fields['email']) == "" ? "&nbsp;" : stripslashes($objResult->fields['email']),
-                        'SHOP_PAYMENTTYPE'      => $objResult->fields['paymenttyp'],
+                        // unavailable
+                        //'SHOP_PAYMENTTYPE'      => $objResult->fields['paymenttyp'],
                         'SHOP_CCNUMBER'         => stripslashes($objResult->fields['ccnumber']) == "" ? "&nbsp;" : stripslashes($objResult->fields['ccnumber']),
                         'SHOP_CCDATE'           => $objResult->fields['ccdate'] == "" ? "&nbsp;" : $objResult->fields['ccdate'],
                         'SHOP_CCNAME'           => stripslashes($objResult->fields['ccname']) == "" ? "&nbsp;" : stripslashes($objResult->fields['ccname']),
@@ -4494,9 +4507,9 @@ class shopmanager extends ShopLibrary {
                     // if query has errors, call errorhandling
                     $this->errorHandling();
                 } else {
-                    $this->strOkMessage .= $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']."\n";
+                    $customerid = $objDatabase->Insert_ID();
+                    $this->strOkMessage .= $_ARRAYLANG['TXT_SHOP_INSERTED_CUSTOMER'].", ID $customerid\n";
                 }
-                $customerid = $objDatabase->Insert_ID();
                 //check if the logindata must be sent
                 if (isset($_POST['shopSendLoginData'])) {
                     $this->shopSetMailtemplate(3);//select template for sending logindata
@@ -4527,7 +4540,6 @@ class shopmanager extends ShopLibrary {
             $this->strErrMessage .= $_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER'];
             return false;
         }
-        $this->strOkMessage .= $_ARRAYLANG['TXT_SHOP_INSERTED_CUSTOMER'].", ID $customerid";
         return true;
     }
 
