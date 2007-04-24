@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 24 Apr 2007 10:19:52 +0200
+* generated date Tue, 24 Apr 2007 10:38:01 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Neues Design erstellen";
@@ -275,4 +275,7 @@ $_ARRAYLANG['TXT_SHOLEVELS'] = "Ebenen aktivieren";
 $_ARRAYLANG['TXT_INDEXVIEW'] = "Index-Ansicht für Kategorien";
 $_ARRAYLANG['TXT_THUMBSIZE'] = "Thumbnail Breite (Pixel)";
 $_ARRAYLANG['TXT_SORTORDER'] = "Einträge nach Alphabet sortieren";
+$_ARRAYLANG['TXT_SHOWLEVELS'] = "Ebenen aktivieren";
+$_ARRAYLANG['TXT_GOOGLEID'] = "Google Schlüssel";
+$_ARRAYLANG['TXT_GOOGLELANG'] = "Sprachparameter";
 ?>
