@@ -1,5 +1,6 @@
-<!-- START content_editor.html -->
+<!-- START content_history.html -->
 <script language="JavaScript" type="text/javascript">
+// <![CDATA[
 function showOrHide(strElement)
 {
 	if (document.getElementById(strElement).style.display == 'block'){
@@ -13,9 +14,10 @@ function restoreDeleted(intId) {
 		window.location.replace("index.php?cmd=workflow&act=restoreHistory&hId="+intId);
 	}
 }
+// ]]>
 </script>
 <div id="content1" class="editorTab" style="display:block">
-	<table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+	<table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
 		<tr>
 			<th colspan="5">{TXT_TITLE}</th>
 		</tr>
@@ -25,7 +27,7 @@ function restoreDeleted(intId) {
 			<td width="20%"><b>{TXT_SUBTITLE_MODULE}</b></td>
 			<td width="20%"><b>{TXT_SUBTITLE_USER}</b></td>
 			<td width="1%"><b>{TXT_SUBTITLE_FUNCTIONS}</b></td>
-		<tr>
+		</tr>
 		<!-- BEGIN showPages -->
 		<tr class="{HISTORY_ROWCLASS}">
 			<td><div style="border-bottom:0px;">{HISTORY_DATE}</div></td>
@@ -33,7 +35,7 @@ function restoreDeleted(intId) {
 			<td><div style="border-bottom:0px;"><i>{HISTORY_MODULE}</i></div></td>
 			<td><div style="border-bottom:0px;"><img src="images/icons/creator.gif" alt="{HISTORY_USER}" title="{HISTORY_USER}" border="0" align="middle" />&nbsp;{HISTORY_USER}</div></td>
 			<td nowrap="nowrap"><div style="border-bottom:0px; text-align:right;">
-				{HISTORY_IMGDETAILS}
+				{HISTORY_IMGDETAILS}</div>
 			</td>
 		</tr>
 		<tr class="{HISTORY_ROWCLASS}">
@@ -66,7 +68,7 @@ function restoreDeleted(intId) {
 							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{HISTORY_THEME}</div></td>
 							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_SOURCE_MODE}</b></div></td>
 							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{HISTORY_SOURCEMODE}</div></td>
-							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;" height="1%"><b>{TXT_BACKEND}</b></div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px; height:1%;"><b>{TXT_BACKEND}</b></div></td>
 							<td rowspan="2" valign="top"><div style="border-bottom:0px;">{HISTORY_BACKEND}</div></td>
 						</tr>
 						<tr>
@@ -88,4 +90,4 @@ function restoreDeleted(intId) {
 	<br />
 	{HISTORY_PAGING}
 </div>
-<!-- END content_editor.html -->
+<!-- END content_history.html -->

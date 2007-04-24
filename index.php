@@ -163,36 +163,38 @@ $objTemplate = &new HTML_Template_Sigma(ASCMS_THEMES_PATH);
 
 $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
-$section = isset($_REQUEST['section']) ? (get_magic_quotes_gpc() ? $_REQUEST['section'] : addslashes($_REQUEST['section'])) : "";
-$command = isset($_REQUEST['cmd']) ? (get_magic_quotes_gpc() ? $_REQUEST['cmd'] : addslashes($_REQUEST['cmd'])) : "";
-$page    = isset($_REQUEST['page']) ? intval($_GET['page']) : "";
+$section = isset($_REQUEST['section']) ? contrexx_addslashes($_REQUEST['section']) : '';
+$command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
+$page    = isset($_REQUEST['page']) ? intval($_GET['page']) : 0;
+$history = isset($_REQUEST['history']) ? intval($_GET['history']) : 0;
 
-$pageId  = $objInit->getPageID($page, $section, $command);
+$pageId  = $objInit->getPageID($page, $section, $command, $history);
 $is_home = $objInit->is_home;
 
 $objNavbar  = &new Navigation($pageId);
 $objCounter = &new statsLibrary();
 $objCounter->checkForSpider();
 $themesPages = $objInit->getTemplates();
-$query="SELECT content,
-               title,
-               catname,
-               redirect,
-               metatitle,
-               metadesc,
-               metakeys,
-               metarobots,
-               ".DBPREFIX."content.css_name,
-               protected,
-               frontend_access_id
-          FROM ".DBPREFIX."content,
-               ".DBPREFIX."content_navigation
-         WHERE id = '$pageId'
-           AND id = catid
-           AND (startdate<=CURDATE() OR startdate='0000-00-00')
-           AND (enddate>=CURDATE() OR enddate='0000-00-00')
-           AND activestatus='1'
-           AND is_validated='1'";
+$query="SELECT c.content,
+               c.title,
+               n.catname,
+               c.redirect,
+               c.metatitle,
+               c.metadesc,
+               c.metakeys,
+               c.metarobots,
+               c.css_name,
+               n.protected,
+               n.frontend_access_id
+               ".(!empty($history) ? ',n.catid' : '')."
+          FROM ".DBPREFIX.(empty($history) ? 'content' : 'content_history')." AS c,
+               ".DBPREFIX.(empty($history) ? 'content_navigation' : 'content_navigation_history')." AS n
+         WHERE c.id = ".(empty($history) ? $pageId : $history)."
+           AND c.id = ".(!empty($history) ? 'n.id' : "n.catid
+           AND (n.startdate<=CURDATE() OR n.startdate='0000-00-00')
+           AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
+           AND n.activestatus='1'
+           AND n.is_validated='1'");
 $objResult = $objDatabase->SelectLimit($query, 1);
 
 if ($objResult === false || $objResult->EOF) {
@@ -216,23 +218,41 @@ if ($objResult === false || $objResult->EOF) {
     $page_protected = $objResult->fields["protected"];
     $page_access_id = $objResult->fields["frontend_access_id"];
     $page_template  = $themesPages['content'];
+
+    if ($history) {
+		$objPageProtection = $objDatabase->SelectLimit('SELECT backend_access_id FROM '.DBPREFIX.'content_navigation WHERE catid='.$objResult->fields['catid'].' AND backend_access_id!=0', 1);
+		if ($objPageProtection !== false) {
+			if ($objPageProtection->RecordCount() == 1) {
+				$page_protected = 1;
+				$page_access_id = $objPageProtection->fields['backend_access_id'];
+			}
+		} else {
+			$page_protected = 1;
+		}
+	}
 }
 
 //-------------------------------------------------------
 // authentification for protected pages
 //-------------------------------------------------------
-if ($page_protected){
-
+if ($page_protected || $history) {
     $sessionObj=&new cmsSession();
     $sessionObj->cmsSessionStatusUpdate($status="frontend");
 
     $objAuth = &new Auth($type='frontend');
     if ($objAuth->checkAuth()) {
         $objPerm =&new Permission($type='frontend');
-        if (!$objPerm->checkAccess($page_access_id, 'dynamic')) {
-            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-            header ("Location: ?section=login&cmd=noaccess&redirect=".$link);
-            exit;
+        if ($page_protected) {
+	        if (!$objPerm->checkAccess($page_access_id, 'dynamic')) {
+	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
+	            header ("Location: ?section=login&cmd=noaccess&redirect=".$link);
+	            exit;
+	        }
+        }
+        if ($history && !$objPerm->checkAccess(78, 'static')) {
+			$link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
+			header ("Location: ?section=login&cmd=noaccess&redirect=".$link);
+			exit;
         }
     } else {
         $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);

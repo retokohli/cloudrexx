@@ -511,9 +511,10 @@ class InitCMS
 	* @param     string		$command
 	* @return    integer    $catID
 	*/
-	function getPageID($catID="", $section="", $command="")
+	function getPageID($catID = 0, $section='', $command='', $historyId=0)
 	{
 		global $objDatabase;
+
 		$langId = $this->getFrontendLangId();
 		switch ($section) {
 			case 'home':
@@ -524,38 +525,37 @@ class InitCMS
 				break;
 			default:
 		}
-		if (empty($catID) OR $catID=="0"){
-			if (empty($section) AND empty($command)){
-				$query="SELECT n.catid AS catid,
+		if (empty($catID)) {
+			if (empty($section) && empty($command)) {
+				$query = 'SELECT n.catid AS catid,
 				               n.module AS module,
 				               n.themes_id AS themes_id
-				          FROM ".DBPREFIX."content_navigation AS n,
-				               ".DBPREFIX."modules AS m
-				         WHERE 1
-				           AND m.name = 'home'
-				           AND n.module=m.id
-				           AND lang='".$langId."'";
+				          FROM '.DBPREFIX.'modules AS m
+				    INNER JOIN '.DBPREFIX.'content_navigation AS n
+				    ON n.module = m.id
+				         WHERE m.name = \'home\'
+				           AND n.lang='.$langId;
 				$objResult = $objDatabase->SelectLimit($query, 1);
 				if ($objResult !== false) {
 					$catID=$objResult->fields['catid'];
 					$this->_setCustomizedThemesId($objResult->fields['themes_id']);
 					$this->is_home=true;
-				}else{
+				} else {
 					header('Location: index.php?section=error');
 					exit;
 				}
 			}
 			// section without command is given!
-			elseif (!empty($section) AND empty($command)){
-				$query="SELECT catid,
-							   themes_id
-				         FROM ".DBPREFIX."content_navigation,
-				              ".DBPREFIX."modules
-				        WHERE name = '".$section."'
-				          AND cmd = ''
-				          AND module=id
-				          AND lang='".$langId."'
-				        ORDER BY parcat ASC";
+			elseif (!empty($section) && empty($command)) {
+				$query='SELECT n.catid,
+							   n.themes_id
+				         FROM '.DBPREFIX.'modules AS m
+				   INNER JOIN '.DBPREFIX.'content_navigation AS n
+				           ON n.module = m.id
+				        WHERE m.name = \''.$section.'\'
+				          AND n.cmd = \'\'
+				          AND n.lang='.$langId.'
+				        ORDER BY parcat ASC';
 
 				//$query="SELECT catid FROM ".DBPREFIX."content_navigation WHERE section = '$section' LIMIT 1"
 				$objResult = $objDatabase->SelectLimit($query, 1);
@@ -564,21 +564,19 @@ class InitCMS
 				        $catID = $objResult->fields['catid'];
 				        $this->_setCustomizedThemesId($objResult->fields['themes_id']);
 				    }
-				}else{
+				} else {
 					header('Location: index.php?section=error');
 					exit;
 				}
-			}
-			else
-			{
-				$query="SELECT catid,
-			                   themes_id
-				          FROM ".DBPREFIX."content_navigation,
-				               ".DBPREFIX."modules
-				        WHERE name = '".$section."'
-				          AND cmd = '".$command."'
-				          AND lang='".$langId."'
-				          AND module=id";
+			} else {
+				$query='SELECT n.catid,
+			                   n.themes_id
+				          FROM '.DBPREFIX.'content_navigation AS n
+				    INNER JOIN '.DBPREFIX.'modules AS m
+				            ON n.module = m.id
+				         WHERE m.name = \''.$section.'\'
+				           AND n.cmd = \''.$command.'\'
+				           AND n.lang='.$langId;
 
 				$objResult = $objDatabase->SelectLimit($query,1);
 				if ($objResult !== false) {
@@ -587,16 +585,22 @@ class InitCMS
 				    	$this->_setCustomizedThemesId($objResult->fields['themes_id']);
 				    }
 				}
-				if(empty($catID)){
+				if (empty($catID)) {
 					header('Location: index.php?section=error');
 					exit;
 				}
 			}
 			return $catID;
-		} else{
-			$query="SELECT themes_id
-			          FROM ".DBPREFIX."content_navigation
-			         WHERE catid = '".$catID."'";
+		} else {
+			if (empty($historyId)) {
+				$query='SELECT themes_id
+			          FROM '.DBPREFIX.'content_navigation
+			         WHERE catid = '.$catID;
+			} else {
+				$query='SELECT themes_id
+			          FROM '.DBPREFIX.'content_navigation_history
+			         WHERE id = '.$historyId;
+			}
 
 			$objResult = $objDatabase->SelectLimit($query, 1);
 			if ($objResult !== false) {

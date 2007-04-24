@@ -789,6 +789,22 @@ class ContentManager
 		return $arrAssignedGroups;
 	}
 
+	function _checkModificationPermission($pageId)
+	{
+		global $objDatabase, $objPerm;
+
+		$objResult = $objDatabase->SelectLimit('SELECT backend_access_id FROM '.DBPREFIX.'content_navigation WHERE catid='.$pageId.' AND backend_access_id!=0');
+		if ($objResult !== false) {
+			if ($objResult->RecordCount() == 1 && !$objPerm->checkAccess($objResult->fields['backend_access_id'], 'dynamic')) {
+				header('Location: index.php?cmd=noaccess');
+				exit;
+			};
+		} else {
+			header('Location: index.php?cmd=noaccess');
+			exit;
+		}
+	}
+
     /**
     * Content editing
     *
@@ -801,7 +817,7 @@ class ContentManager
     */
 	function showEditPage($pageId = '')
 	{
-		global $objDatabase, $_CORELANG, $objTemplate, $objPerm;
+		global $objDatabase, $_CORELANG, $objTemplate;
 
 		$existingBackendGroups = "";
 		$existingGroups = "";
@@ -812,16 +828,7 @@ class ContentManager
 			$pageId = intval($_REQUEST['pageId']);
 		}
 
-		$objResult = $objDatabase->Execute("SELECT backend_access_id FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId." AND backend_access_id!=0");
-		if ($objResult !== false) {
-			if ($objResult->RecordCount() == 1 && !$objPerm->checkAccess($objResult->fields['backend_access_id'], 'dynamic')) {
-				header('Location: index.php?cmd=noaccess');
-				exit;
-			};
-		} else {
-			header('Location: index.php?cmd=noaccess');
-			exit;
-		}
+		$this->_checkModificationPermission($pageId);
 
 		$objTemplate->addBlockfile('ADMIN_CONTENT', 'content_editor', 'content_editor.html');
 	    $this->pageTitle = $_CORELANG['TXT_EDIT_PAGE'];
@@ -1248,6 +1255,9 @@ class ContentManager
 	{
 		global $objDatabase, $_CORELANG, $_CONFIG;
 
+		$pageId = intval($_POST['pageId']);
+		$this->_checkModificationPermission($pageId);
+
 		if ($_POST['formContent_HistoryMultiAction'] == 'delete') {
 			if (is_array($_POST['selectedChangelogId'])) {
 				require_once ASCMS_CORE_PATH.'/ContentWorkflow.class.php';
@@ -1275,7 +1285,6 @@ class ContentManager
 			$robotstatus = "index";
 		}
 
-		$pageId = intval($_POST['pageId']);
 		$catname = contrexx_addslashes(strip_tags($_POST['newpage']));
 		$contenthtml = contrexx_addslashes($_POST['html']);
 		$contenthtml = preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}' ,$contenthtml);
