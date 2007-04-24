@@ -271,7 +271,7 @@ class Auth
             return true;
         $arrUserGroups = $_SESSION['auth']['groups'];
         if (is_array($arrUserGroups)) {
-            $objResult = $objDatabase->Execute("SELECT group_id FROM ".DBPREFIX."access_user_groups WHERE type='$this->type'");
+            $objResult = $objDatabase->Execute("SELECT group_id FROM ".DBPREFIX."access_user_groups WHERE type='$this->type' OR type='backend'");
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
                     if (in_array($objResult->fields['group_id'],$arrUserGroups))

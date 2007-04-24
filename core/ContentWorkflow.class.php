@@ -107,17 +107,13 @@ class ContentWorkflow {
     			$objPerm->checkAccess(75, 'static');
     			$this->showHistory('deleted');
     		break;
-    		case 'unvalidated':
-    			$objPerm->checkAccess(69, 'static');
-    			$this->showHistory('unvalidated');
-    		break;
     		case 'validate':
-    			$objPerm->checkAccess(69, 'static');
+    			$objPerm->checkAccess(78, 'static');
     			$this->validatePage($_GET['id'],$_GET['acc']);
     			$this->showHistory('unvalidated');
     		break;
+			case 'unvalidated':
     		default:
-      			$objPerm->checkAccess(69, 'static');
     			$this->showHistory('unvalidated');
 
     	}
@@ -215,7 +211,7 @@ class ContentWorkflow {
 											'.$strQueryWhere.'
 										');
 		/** start paging **/
-		$strPaging = getPaging($objResult->RecordCount(),intval($_GET['pos']),'&amp;cmd=workflow&act='.$strPagingAct,'<b>'.$_ARRAYLANG['TXT_GUESTBOOK_ENTRIES'].'</b>', true);
+		$strPaging = getPaging($objResult->RecordCount(),intval($_GET['pos']),'&amp;cmd=workflow&amp;act='.$strPagingAct,'', true);
 		$objTemplate->setVariable('HISTORY_PAGING',$strPaging);
 		/** end paging **/
 
@@ -245,7 +241,7 @@ class ContentWorkflow {
 				$strQueryAction = $arrInner['action'];
 				$intLogfileId 	= $arrInner['id'];
 
-				$objResult = $objDatabase->Execute('SELECT		navTable.id					AS navID,
+				$objResult = $objDatabase->SelectLimit('SELECT	navTable.id					AS navID,
 																navTable.catid				AS navPageId,
 																navTable.is_active			AS navActive,
 																navTable.catname			AS navCatname,
@@ -259,6 +255,7 @@ class ContentWorkflow {
 																navTable.module				AS navModule,
 																navTable.frontend_access_id	AS navFAccess,
 																navTable.backend_access_id	AS navBAccess,
+																navTable.lang				AS navLang,
 																conTable.title				AS conTitle,
 																conTable.metatitle			AS conMetaTitle,
 																conTable.metadesc			AS conMetaDesc,
@@ -268,19 +265,15 @@ class ContentWorkflow {
 																conTable.redirect			AS conRedirect,
 																conTable.expertmode			AS conExpertMode
 													FROM		'.DBPREFIX.'content_navigation_history AS navTable
-													LEFT JOIN	'.DBPREFIX.'content_history AS conTable
-													ON			navTable.id = conTable.id
-													HAVING		navID='.$intHistoryId.'
-													LIMIT		1
-												');
+													INNER JOIN	'.DBPREFIX.'content_history AS conTable
+													ON			conTable.id = navTable.id
+													WHERE 		navTable.id = '.$intHistoryId, 1);
 				$strBackendGroups 	= '';
 				$strFrontendGroups 	= '';
 
-				$objSubResult = $objDatabase->Execute('	SELECT	catid
+				$objSubResult = $objDatabase->SelectLimit('	SELECT	catid
 														FROM	'.DBPREFIX.'content_navigation
-														WHERE	catid='.$objResult->fields['navPageId'].'
-														LIMIT	1
-													');
+														WHERE	catid='.$objResult->fields['navPageId'], 1);
 				if ($objSubResult->RecordCount() == 1) {
 					$boolPageExists = true;
 				} else {
@@ -320,7 +313,11 @@ class ContentWorkflow {
 						if(!$boolPageExists) {
 							$strIcon = '<img src="images/icons/empty.gif" alt="'.$_CORELANG['TXT_HISTORY_DELETED'].'" title="'.$_CORELANG['TXT_HISTORY_DELETED'].'" border="0" />';
 						} else {
-							$strIcon = '<a href="?cmd=content&amp;act=edit&amp;pageId='.$objResult->fields['navPageId'].'"><img src="images/icons/details.gif" alt="'.$_CORELANG['TXT_DETAILS'].'" title="'.$_CORELANG['TXT_DETAILS'].'" border="0" /></a>';
+							$s = isset($arrModules[$objResult->fields['navModule']]) ? $arrModules[$objResult->fields['navModule']] : '';
+							$c = $objResult->fields['navCMD'];
+							$section = ($s=="" || $s == '-') ? "" : "&amp;section=$s";
+							$cmd = ($c=="") ? "" : "&amp;cmd=$c";
+							$strIcon = '<a href="../index.php?page='.$objResult->fields['navPageId'].$section.$cmd.'&amp;history='.$intHistoryId.'&amp;langId='.$objResult->fields['navLang'].'" target="_blank" title="'.$_CORELANG['TXT_WORKFLOW_PAGE_PREVIEW'].'"><img src="images/icons/details.gif" width="16" height="16" border="0" align="middle" alt="'.$_CORELANG['TXT_WORKFLOW_PAGE_PREVIEW'].'" /></a>';
 						}
 					break;
 					case 'deleted':
@@ -329,7 +326,11 @@ class ContentWorkflow {
 					case 'unvalidated':
 						$strIcon = '<a href="?cmd=workflow&amp;act=validate&amp;acc=1&amp;id='.$intLogfileId.'"><img src="images/icons/thumb_up.gif" alt="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_ACCEPT'].'" title="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_ACCEPT'].'" border="0" align="middle" /></a>&nbsp;';
 						$strIcon .= '<a href="?cmd=workflow&amp;act=validate&amp;acc=0&amp;id='.$intLogfileId.'"><img src="images/icons/thumb_down.gif" alt="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_DECLINE'].'" title="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_DECLINE'].'" border="0" align="middle" /></a>&nbsp;';
-						$strIcon .= '<a href="?cmd=content&amp;act=edit&amp;pageId='.$objResult->fields['navPageId'].'"><img src="images/icons/details.gif" alt="'.$_CORELANG['TXT_DETAILS'].'" title="'.$_CORELANG['TXT_DETAILS'].'" border="0" align="middle" /></a>';
+						$s = isset($arrModules[$objResult->fields['navModule']]) ? $arrModules[$objResult->fields['navModule']] : '';
+						$c = $objResult->fields['navCMD'];
+						$section = ($s=="" || $s == '-') ? "" : "&amp;section=$s";
+						$cmd = ($c=="") ? "" : "&amp;cmd=$c";
+						$strIcon .= '<a href="../index.php?page='.$objResult->fields['navPageId'].$section.$cmd.'&amp;history='.$intHistoryId.'&amp;langId='.$objResult->fields['navLang'].'" target="_blank" title="'.$_CORELANG['TXT_WORKFLOW_PAGE_PREVIEW'].'"><img src="images/icons/details.gif" width="16" height="16" border="0" align="middle" alt="'.$_CORELANG['TXT_WORKFLOW_PAGE_PREVIEW'].'" /></a>';
 
 						switch ($strQueryAction) {
 							case 'new':
