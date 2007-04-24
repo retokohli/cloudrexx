@@ -47,7 +47,7 @@ CREATE TABLE `contrexx_module_directory_rel_dir_cat` (
 ALTER TABLE `contrexx_module_directory_rel_dir_cat` ADD PRIMARY KEY ( `dir_id` , `cat_id` ) ;*/
 
 
-/*//set indexes 
+/*//set indexes
 ALTER TABLE `contrexx_module_directory_dir` ADD INDEX ( `title` ) ;
 ALTER TABLE `contrexx_module_directory_dir` ADD INDEX ( `status` );
 ALTER TABLE `contrexx_module_directory_dir` ADD INDEX ( `date` ) ;
@@ -113,4 +113,11 @@ ADD `spez_field_17` VARCHAR( 255 ) NOT NULL ;
 
 INSERT INTO `contrexx_module_directory_settings` ( `setid` , `setname` , `setvalue` , `setdescription` , `settyp` )VALUES (NULL , 'spez_field_16', '', 'spez_field_16', '0');
 INSERT INTO `contrexx_module_directory_settings` ( `setid` , `setname` , `setvalue` , `setdescription` , `settyp` )VALUES (NULL , 'spez_field_17', '', 'spez_field_17', '0');
-*/
+
+
+
+UPDATE `contrexx_module_directory_settings` SET `setname` = 'catDescription' WHERE `contrexx_module_directory_settings`.`setid` =13 LIMIT 1 ;
+
+UPDATE `contrexx_module_directory_settings` SET `setname` = 'entryStatus' WHERE `contrexx_module_directory_settings`.`setid` =12 LIMIT 1 ;
+
+UPDATE `contrexx_module_directory_settings` SET `setname` = 'showLevels' WHERE `contrexx_module_directory_settings`.`setid` =1 LIMIT 1 ;*/
