@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 24 Apr 2007 10:38:01 +0200
+* generated date Tue, 24 Apr 2007 16:34:13 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
@@ -690,4 +690,5 @@ $_ARRAYLANG['TXT_SETTINGS_BACK'] = "Zurück";
 $_ARRAYLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "Database not available!";
 $_ARRAYLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Unable to connect to database server!";
 $_ARRAYLANG['TXT_DELETED'] = "deleted";
+$_ARRAYLANG['TXT_WORKFLOW_PAGE_PREVIEW'] = "Page preview";
 ?>
