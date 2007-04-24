@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 23 Apr 2007 17:35:58 +0200
+* generated date Tue, 24 Apr 2007 10:12:56 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Neues Design erstellen";
@@ -256,4 +256,23 @@ $_ARRAYLANG['TXT_PLATFORM'] = "Plattformen";
 $_ARRAYLANG['TXT_LANGUAGE'] = "Sprachen";
 $_ARRAYLANG['TXT_LATEST_CONTENT'] = "Anzahl Einträge (Headlines)";
 $_ARRAYLANG['TXT_LATEST_XML'] = "Anzahl Einträge (XML)";
+$_ARRAYLANG['TXT_CATDESCRIPTION'] = "Kategorie Beschreibung";
+$_ARRAYLANG['TXT_ENTRYSTATUS'] = "Einträge automatisch aktiv";
+$_ARRAYLANG['TXT_POPULARDAYS'] = "Anzahl Tage für Popular";
+$_ARRAYLANG['TXT_CANTON'] = "Kantone";
+$_ARRAYLANG['TXT_REFRESHFEEDS'] = "XML aktualisieren (sec)";
+$_ARRAYLANG['TXT_SHOW_RSS'] = "RSS erlauben";
+$_ARRAYLANG['TXT_SHOW_FILES'] = "Dateien erlauben";
+$_ARRAYLANG['TXT_SHOW_LINKS'] = "Links erlauben";
+$_ARRAYLANG['TXT_MARK_NEW_ENTREES'] = "Neue Einträge markieren (Tage)";
+$_ARRAYLANG['TXT_SHOWCONFIRM'] = "Nicht bestätigte Feeds beim Start (Backend) anzeigen";
+$_ARRAYLANG['TXT_ADDFEED_ONLY_COMMUNITY'] = "Nur Mitglieder dürfen Einträge anmelden (Community-Modul)";
+$_ARRAYLANG['TXT_ADDFEED'] = "Besuchern erlauben Einträge anzumelden";
+$_ARRAYLANG['TXT_EDITFEED'] = "Besuchern erlauben, eigene Einträge zu editieren (Community-Modul)";
+$_ARRAYLANG['TXT_EDITFEED_STATUS'] = "Einträge nach Bearbeiten wieder aktiv";
+$_ARRAYLANG['TXT_ADMINMAIL'] = "Benachrichtigungsmail Empfänger";
+$_ARRAYLANG['TXT_SHOLEVELS'] = "Ebenen aktivieren";
+$_ARRAYLANG['TXT_INDEXVIEW'] = "Index-Ansicht für Kategorien";
+$_ARRAYLANG['TXT_THUMBSIZE'] = "Thumbnail Breite (Pixel)";
+$_ARRAYLANG['TXT_SORTORDER'] = "Einträge nach Alphabet sortieren";
 ?>
