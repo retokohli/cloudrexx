@@ -235,6 +235,7 @@ Online Desk
 
 Content Manager
 - Ein unautorisierter Benutzer kann nun den Status (aktiv / inaktiv / sichtbar / unsichtbar) einer Seite nicht mehr ändern.
+- Ein unautorisierter Benutzer kann nun eine Seite nicht mehr modifizieren.
 
 Newsletter
 - Die Funktion zum Löschen einer Vorlage funktioniert nun auch wenn die Vorlage ein einfaches Anführungszeichen im Namen enthält.
