@@ -167,7 +167,7 @@ class shopmanager extends ShopLibrary {
     {
         global $_ARRAYLANG, $objTemplate, $objInit;
 
-        if (1) {
+        if (0) {
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
             global $objDatabase; $objDatabase->debug = 1;
@@ -3310,7 +3310,7 @@ class shopmanager extends ShopLibrary {
         'TXT_PAYMENT_TYPE'         => $_ARRAYLANG['TXT_PAYMENT_TYPE'],
         'TXT_NUMBER'               => $_ARRAYLANG['TXT_NUMBER'],
         'TXT_PRODUCT_ID'           => $_ARRAYLANG['TXT_ID'],
-        'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_CODE'],
+        'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
         'TXT_PRODUCT_NAME'         => $_ARRAYLANG['TXT_PRODUCT_NAME'],
         'TXT_PRODUCT_PRICE'        => $_ARRAYLANG['TXT_PRODUCT_PRICE'],
         'TXT_SUM'                  => $_ARRAYLANG['TXT_SUM'],
