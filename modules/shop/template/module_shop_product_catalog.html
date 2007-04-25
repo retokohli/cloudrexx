@@ -95,7 +95,7 @@ function shopProductsIsChecked(fieldName)
 				<td><img src="images/icons/{SHOP_PRODUCT_STATUS_PICTURE}" alt="{TXT_PRODUCT_STATUS}" title="{TXT_PRODUCT_STATUS}" /></td>
 				<td><input type="text" name="shopSortOrder[{SHOP_PRODUCT_ID}]" size="5" maxlength="5" value="{SHOP_SORT_ORDER}" /><input type="hidden" name="shopSortOrderOld[{SHOP_PRODUCT_ID}]" value="{SHOP_SORT_ORDER}" /></td>
 				<td>&nbsp;&nbsp;<a href="?cmd=shop&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}" title="{SHOP_PRODUCT_NAME1}">{SHOP_PRODUCT_NAME2}</a></td>
-				<td><input maxlength="10" name="identifier[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" size="6" /><input type="hidden" name="identifierOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" /></td>
+				<td><input maxlength="255" name="identifier[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" size="10" /><input type="hidden" name="identifierOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" /></td>
 				<td width="7%"><input type="checkbox" name="specialOffer[{SHOP_PRODUCT_ID}]" value="1" {SHOP_PRODUCT_SPECIAL_OFFER} /></td>
 				<td width="5%"><input maxlength=10 name="discount[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_DISCOUNT}" size="6" /><input type="hidden" name="discountOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_DISCOUNT}" />
 				<input type="hidden" name="specialOfferOld[{SHOP_PRODUCT_ID}]" value="{SHOP_SPECIAL_OFFER_VALUE_OLD}" /></td>
