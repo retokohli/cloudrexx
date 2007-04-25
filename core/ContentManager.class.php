@@ -1359,7 +1359,6 @@ class ContentManager
 			}
 		} else {
 			//create copy of parcat (for history)
-			$intHistoryParcat = 0;
 			if ($boolDirectUpdate) {
 			   	$objDatabase->Execute("	UPDATE 	".DBPREFIX."content_navigation
 					                  	SET 	catname='".$catname."',
@@ -1422,7 +1421,8 @@ class ContentManager
 
 		//create backup for history
 		if ($this->boolHistoryEnabled) {
-			$objResult = $objDatabase->Execute('SELECT	displayorder,
+			$objResult = $objDatabase->Execute('SELECT	parcat,
+														displayorder,
 														protected,
 														frontend_access_id,
 														backend_access_id
@@ -1430,6 +1430,10 @@ class ContentManager
 												WHERE	catid='.$pageId.'
 												LIMIT	1
 											');
+			if (!isset($intHistoryParcat)) {
+				$intHistoryParcat = $objResult->fields['parcat'];
+			}
+
 			if ($boolDirectUpdate) {
 				$objDatabase->Execute('	UPDATE	'.DBPREFIX.'content_navigation_history
 										SET		is_active="0"
