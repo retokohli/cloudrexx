@@ -100,7 +100,7 @@
 
     function DeleteImg(ImgID) {
         if(confirm("{TXT_SHOP_IMPORT_TEMPLATE_REALLY_DELETE}")){
-            document.location.href = '{SHOP_CMS_OFFSET}/admin/index.php?cmd=shop&act=import&deleteImg=exe&img='+ImgID;
+            document.location.href = '{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop&act=import&deleteImg=exe&img='+ImgID;
         }
     }
 
@@ -124,7 +124,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     <li><a id="generalTab_import5" href="javascript:{}" onclick="selectTab('import5')" title="{TXT_SHOP_IMPORT_MAKE_NEW_TEMPLATE}">{TXT_SHOP_IMPORT_MAKE_NEW_TEMPLATE}</a></li>
 </ul>
 
-<form name="frmImportFile" action="{SHOP_CMS_OFFSET}/admin/index.php?cmd=shop&amp;act=import" method="post" enctype="multipart/form-data">
+<form name="frmImportFile" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop&amp;act=import" method="post" enctype="multipart/form-data">
 <input type="hidden" name="exe" value="ImportFile" />
 <div id="import1" class="generalTab" style="display:{SELECTED_LAYER_IMPORT}">
     <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
@@ -155,7 +155,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 </form>
 
 <!-- Begin FieldsSelect -->
-<form name="frmSelectFields" action="{SHOP_CMS_OFFSET}/admin/index.php?cmd=shop&amp;act=import" method="post">
+<form name="frmSelectFields" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop&amp;act=import" method="post">
 <input type="hidden" name="exe" value="SaveImg" />
 <input type="hidden" name="pairs_left_keys" id="pairs_left_keys" value="" />
 <input type="hidden" name="pairs_right_keys" id="pairs_right_keys" value="" />
@@ -247,13 +247,13 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         <!-- BEGIN imgRow -->
         <tr class="{CLASS_NAME}">
             <td>{IMG_NAME}</td>
-            <td><div style="text-align:right;"><a href="javascript:DeleteImg({IMG_ID});"><img src="{SHOP_CMS_OFFSET}/admin/images/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}" /></a></div></td>
+            <td><div style="text-align:right;"><a href="javascript:DeleteImg({IMG_ID});"><img src="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/images/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}" /></a></div></td>
         </tr>
         <!-- END imgRow -->
     </table>
 </div>
 <div id="import5" class="generalTab" style="display: none;">
-    <form name="frmUpload" enctype="multipart/form-data" action="{SHOP_CMS_OFFSET}/admin/index.php?cmd=shop&amp;act=import" method="post">
+    <form name="frmUpload" enctype="multipart/form-data" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop&amp;act=import" method="post">
     <input type="hidden" name="cmd" value="shop" />
     <input type="hidden" name="act" value="import" />
     <input type="hidden" name="mode" value="ImportImg" />
@@ -300,7 +300,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
             </td>
             <td colspan="2">
                 <a href="#" title="{TXT_EXPORT}" onclick="javascript:MakeExport('{SHOP_EXPORT_GROUP_CODE}');" >
-                    <img src="{SHOP_CMS_OFFSET}/admin/images/icons/csv.gif" alt="{TXT_EXPORT}" border="0" />
+                    <img src="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/images/icons/csv.gif" alt="{TXT_EXPORT}" border="0" />
                 </a>
             </td>
         </tr>

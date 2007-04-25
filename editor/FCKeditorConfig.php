@@ -1,4 +1,5 @@
-﻿/*
+<?php require_once('../config/configuration.php') ?>
+/*
  * FCKeditor config file
  */
 
@@ -32,9 +33,9 @@ FCKConfig.ToolbarSets["News"] = [
 	['FitWindow']
 ] ;
 
-FCKConfig.LinkBrowserURL = FCKConfig.BasePath + '../../../admin/index.php?cmd=fileBrowser&standalone=true&type=webpages' ;
-FCKConfig.ImageBrowserURL = FCKConfig.BasePath + '../../../admin/index.php?cmd=fileBrowser&standalone=true';
-FCKConfig.FlashBrowserURL = FCKConfig.BasePath + '../../../admin/index.php?cmd=fileBrowser&standalone=true';
-FCKConfig.LinkUploadURL = FCKConfig.BasePath + '../../../admin/index.php?cmd=fileBrowser&act=FCKEditorUpload&standalone=true&type=webpages';
-FCKConfig.ImageUploadURL = FCKConfig.BasePath + '../../../admin/index.php?cmd=fileBrowser&act=FCKEditorUpload&standalone=true';
-FCKConfig.FlashUploadURL = FCKConfig.BasePath + '../../../admin/index.php?cmd=fileBrowser&act=FCKEditorUpload&standalone=true';
+FCKConfig.LinkBrowserURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&standalone=true&type=webpages' ;
+FCKConfig.ImageBrowserURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&standalone=true';
+FCKConfig.FlashBrowserURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&standalone=true';
+FCKConfig.LinkUploadURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&act=FCKEditorUpload&standalone=true&type=webpages';
+FCKConfig.ImageUploadURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&act=FCKEditorUpload&standalone=true';
+FCKConfig.FlashUploadURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&act=FCKEditorUpload&standalone=true';

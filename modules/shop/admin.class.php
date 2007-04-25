@@ -407,7 +407,8 @@ class shopmanager extends ShopLibrary {
         $this->_objTpl->loadTemplateFile('module_shop_import.html', true, true);
         $this->_objTpl->SetGlobalVariable(array(
             // cms offset fix for admin images/icons:
-            'SHOP_CMS_OFFSET' => ASCMS_PATH_OFFSET,
+            'SHOP_CMS_OFFSET' 		=> ASCMS_PATH_OFFSET,
+			'ASCMS_BACKEND_PATH'	=> ASCMS_BACKEND_PATH,
         ));
 
         // Delete template

@@ -406,7 +406,7 @@ class memberDir extends MemberDirLibrary
 		    }
 		}
 
-		$this->_objTpl->setVariable('MEMBERDIR_VCARD', '<a style="float: right; padding-right: 10px" href="?section=memberdir&amp;exportvcf=1&amp;id='.$id.'"> vCard <img border="0" alt="vcard" title="vcard" src="admin/images/icons/vcard.gif" style="margin-top: 3px;" /></a>');
+		$this->_objTpl->setVariable('MEMBERDIR_VCARD', '<a style="float: right; padding-right: 10px" href="?section=memberdir&amp;exportvcf=1&amp;id='.$id.'"> vCard <img border="0" alt="vcard" title="vcard" src="images/modules/memberdir/vcard.gif" style="margin-top: 3px;" /></a>');
 
 		$this->_objTpl->parse("memberdir_detail_view");
 	}

@@ -15,7 +15,7 @@
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
-if (0) {
+if (1) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 } else {
@@ -842,6 +842,7 @@ $objTemplate->setVariable(array(
 'TXT_LOG_OUT' => $_CORELANG['TXT_LOG_OUT'],
 'CONTENT_WYSIWYG_CODE' => get_wysiwyg_code()
 ));
+
 if (isset($objTemplate->_variables['CONTENT_STATUS_MESSAGE']) && !empty($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
     $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] = "<div id=\"alertbox\" style='overflow:auto'>".$objTemplate->_variables['CONTENT_STATUS_MESSAGE']."</div><br />";
 }

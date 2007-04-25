@@ -391,7 +391,7 @@ class Auth
                         if ($this->type == "frontend") {
                             $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET."/index.php?section=login&cmd=resetpw&username=".$objResult->fields['username']."&restoreKey=".$restoreKey;
                         } else {
-                            $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET."/admin/index.php?cmd=resetpw&username=".$objResult->fields['username']."&restoreKey=".$restoreKey;
+                            $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=resetpw&username=".$objResult->fields['username']."&restoreKey=".$restoreKey;
                         }
 
                         $message = str_replace(array("%USERNAME%", "%URL%", "%SENDER%"), array($objResult->fields['username'], $restorLink, $_CONFIG['coreAdminName']), $_CORELANG['TXT_RESTORE_PASSWORD_MAIL']);

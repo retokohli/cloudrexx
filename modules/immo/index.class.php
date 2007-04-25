@@ -20,7 +20,7 @@ require_once ASCMS_MODULE_PATH."/immo/ImmoLib.class.php";
 
 /**
  * Real-Estate management module
- * 
+ *
  * @copyright	CONTREXX CMS - Astalavista IT Engineering GmbH Thun
  * @author		Astalavista Development Team <thun@astalvista.ch>
  * @access		public
@@ -49,7 +49,7 @@ class Immo extends ImmoLib
 	 * @access public
 	 */
 	var $frontLang;
-	
+
 	/**
 	 * default currency suffix for price values
 	 *
@@ -57,15 +57,15 @@ class Immo extends ImmoLib
 	 * @access 		private
 	 */
 	var $_currencySuffix = '.-';
-	
+
 	/**
 	 * Number of entries for listing
 	 *
 	 * @var integer
-	 * @see $this->_getListing() 
+	 * @see $this->_getListing()
 	 */
 	var $_listingCount = 3;
-	
+
 	/**
 	 * array holding prices to determine the smallest value
 	 *
@@ -73,7 +73,7 @@ class Immo extends ImmoLib
 	 * @access  private
 	 */
 	var $_priceFields = array();
-								
+
 	/**
 	* PHP4 constructor (obsolete)
 	* @param $pageContent HTML template (@see /index.php)
@@ -91,16 +91,16 @@ class Immo extends ImmoLib
 	* @param $pageContent HTML template (@see /index.php)
 	*/
 	function __construct($pageContent)
-	{	
-		global $objDatabase;		
-		$this->frontLang = (isset($_GET['immoLang'])) ? intval($_GET['immoLang']) : 1;		
-		$objRS=$objDatabase->Execute("	SELECT count(1) as cnt FROM ".DBPREFIX."module_immo_fieldname WHERE 
+	{
+		global $objDatabase;
+		$this->frontLang = (isset($_GET['immoLang'])) ? intval($_GET['immoLang']) : 1;
+		$objRS=$objDatabase->Execute("	SELECT count(1) as cnt FROM ".DBPREFIX."module_immo_fieldname WHERE
 										lang_id = 1 AND lower(name) LIKE '%aufzählung%'");
 		$this->_listingCount = $objRS->fields['cnt'];
 		$this->_objTpl = &new HTML_Template_Sigma('.');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 		$this->_objTpl->setTemplate($pageContent);
-		
+
 		parent::__construct();
 	}
 
@@ -126,22 +126,22 @@ class Immo extends ImmoLib
     		   		break;
     		    case 'immolist':
     		    	$this->_showImmoList();
-    		    	break;    		    
+    		    	break;
     		    case 'showmapoverview':
     		    	$this->_showMap();
-    		    	break;	
+    		    	break;
     		    case 'showObj':
     		    	$this->_showObject();
-    		    	break; 
+    		    	break;
     		    case 'interest':
 					$this->_showInterestForm();
-    		    	break;   		    	
+    		    	break;
     		    case 'submitContact':
 					$this->_addContact();
-    		    	break;        	
+    		    	break;
     		    case 'getPDF':
 					$this->_getPDF();
-    		    	break;	        
+    		    	break;
     		    default:
                     $this->_showOverview();
                 	break;
@@ -156,13 +156,13 @@ class Immo extends ImmoLib
 	 * @return string pagetitle
 	 */
 	function getPageTitle(){
-		return $this->_getFieldFromText('Kopfzeile');	
+		return $this->_getFieldFromText('Kopfzeile');
 	}
-	
+
 	function _showImageViewer(){
 		global $_ARRAYLANG;
-		$this->_objTpl->loadTemplateFile("modules/immo/template/frontend_images_viewer.html");		
-		$immoID = intval($_GET['id']);	
+		$this->_objTpl->loadTemplateFile("modules/immo/template/frontend_images_viewer.html");
+		$immoID = intval($_GET['id']);
 		$images = $this->_getImagesFromObject($immoID);
         foreach ($images as $index => $image) {
             $this->_objTpl->setVariable(array(
@@ -174,32 +174,32 @@ class Immo extends ImmoLib
 	   	       'IMMO_IMAGE_CONTENT'	   => $image['content'],
 	   	       'IMMO_CURRENT_INDEX'    => intval($_GET['index']),
 	   	       'IMMO_IMAGE_FIELD_ID'   => $image['field_id'],
-	   	    ));            		
-	   	    $this->_objTpl->parse('imagesArray');	   	    
-	   	    $this->_objTpl->parse('indexArray');	   	    
-        }	
-							
+	   	    ));
+	   	    $this->_objTpl->parse('imagesArray');
+	   	    $this->_objTpl->parse('indexArray');
+        }
+
 		$this->_objTpl->show();
-		die();	
+		die();
 	}
-	
-	
+
+
 	function _showInterestForm(){
-		global $objDatabase, $_ARRAYLANG;
+		global $objDatabase, $_ARRAYLANG, $_CONFIG;
 		require_once(ASCMS_LIBRARY_PATH.DIRECTORY_SEPARATOR.'phpmailer'.DIRECTORY_SEPARATOR."class.phpmailer.php");
-			
+
 		if(!empty($_REQUEST['immoid'])){
 			$this->_objTpl->setVariable('IMMO_ID', intval($_REQUEST['immoid']));
 		}
-		
-		
-		if(!empty($_REQUEST['submitContactForm'])){
-			
-			
-			
-	
 
-			$immoid 			= intval($_REQUEST['contactFormField_immoid']);//hidden field: immoid 
+
+		if(!empty($_REQUEST['submitContactForm'])){
+
+
+
+
+
+			$immoid 			= intval($_REQUEST['contactFormField_immoid']);//hidden field: immoid
 			$name 				= !empty($_REQUEST['contactFormField_name']) ? contrexx_addslashes(contrexx_strip_tags($_REQUEST['contactFormField_name'])) : '';
 			$firstname 			= !empty($_REQUEST['contactFormField_vorname']) ? contrexx_addslashes(contrexx_strip_tags($_REQUEST['contactFormField_vorname'])) : '';
 			$street 			= !empty($_REQUEST['contactFormField_strasse']) ? contrexx_addslashes(contrexx_strip_tags($_REQUEST['contactFormField_strasse'])) : '';
@@ -214,41 +214,41 @@ class Immo extends ImmoLib
 			$inspection 		= !empty($_REQUEST['contactFormField_besichtigung']) ? contrexx_addslashes(contrexx_strip_tags($_REQUEST['contactFormField_besichtigung'])) : '';
 			$contact_via_phone 	= !empty($_REQUEST['contactFormField_kontakttelefon']) ? contrexx_addslashes(contrexx_strip_tags($_REQUEST['contactFormField_kontakttelefon'])) : '';
 			$comment	 		= !empty($_REQUEST['contactFormField_bemerkungen']) ? contrexx_addslashes(contrexx_strip_tags($_REQUEST['contactFormField_bemerkungen'])) : '';
-			
-			
-			
-			$query = "INSERT INTO ".DBPREFIX."module_immo_interest VALUES (	NULL, $immoid, '$name', '$firstname', 
-																			'$street', '$zip', '$location', '$email', 
-																			'$phone_office', '$phone_home', '$phone_mobile', 
-																			'$doc_via_mail', '$funding_advice', '$inspection', 
+
+
+
+			$query = "INSERT INTO ".DBPREFIX."module_immo_interest VALUES (	NULL, $immoid, '$name', '$firstname',
+																			'$street', '$zip', '$location', '$email',
+																			'$phone_office', '$phone_home', '$phone_mobile',
+																			'$doc_via_mail', '$funding_advice', '$inspection',
 																			'$contact_via_phone', '$comment', ".mktime().")";
-			
+
 			if(!$objDatabase->Execute($query)){
 				$this->_objTpl->setVariable('CONTACT_FEEDBACK_TEXT', $_ARRAYLANG['TXT_IMMO_DATABASE_ERROR']);
 				return false;
 			}
-			
+
 		    $query = "   SELECT reference, ref_nr_note
 		                 FROM ".DBPREFIX."module_immo
 		                 WHERE id = ".$immoid;
 		    if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
 		        $reference   = $objRS->fields['reference'];
 		        $ref_note    = $objRS->fields['ref_nr_note'];
-		    }	    
+		    }
 
 		    //set immo ID for _getFieldFromText function
 		    $this->_getFieldNames($immoid);
-		    $this->_currFieldID = $immoid;    
-		    
+		    $this->_currFieldID = $immoid;
+
 		    $address 	= $this->_getFieldFromText('adresse');
 		    $location 	= $this->_getFieldFromText('ort');
 
-		    
+
 			$mailer = &new PHPMailer();
 			$objRS = $objDatabase->SelectLimit('SELECT setvalue FROM '.DBPREFIX.'module_immo_settings
 			WHERE setname="contact_receiver"');
-					
-			//set recipients		
+
+			//set recipients
 			$emails = explode(',', $objRS->fields['setvalue']);
 			foreach ($emails as $email) {
 				$mailer->AddAddress($email);
@@ -256,9 +256,9 @@ class Immo extends ImmoLib
 
 		    $mailer->From = contrexx_addslashes($_REQUEST['contactFormField_email']);
 			$mailer->FromName = 'Interessent';
-			$mailer->Subject = 'Neuer Interessent für '.$ref_note.' Ref-Nr.: '.$reference;	    	
+			$mailer->Subject = 'Neuer Interessent für '.$ref_note.' Ref-Nr.: '.$reference;
 			$mailer->IsHTML(false);
-			$mailer->Body = 'Jemand interessiert sich für das Objekt '.$ref_note.' Ref-Nr.: '.$reference."\n \nhttp://immothunersee.ch/admin/index.php?cmd=immo&act=stats";
+			$mailer->Body = 'Jemand interessiert sich für das Objekt '.$ref_note.' Ref-Nr.: '.$reference."\n \nhttp://".$_CONFIG['domainUrl'].ASCMS_BACKEND_PATH."/index.php?cmd=immo&act=stats";
 			$mailer->Body .= $_ARRAYLANG['TXT_IMMO_E_MAIL'].': '.contrexx_addslashes($_REQUEST['contactFormField_email'])."\n";
 			$mailer->Body .= $_ARRAYLANG['TXT_IMMO_NAME'].': '.$name."\n";
 			$mailer->Body .= $_ARRAYLANG['TXT_IMMO_FIRSTNAME'].': '.$firstname."\n";
@@ -272,22 +272,22 @@ class Immo extends ImmoLib
 			$mailer->Body .= $_ARRAYLANG['TXT_IMMO_CONTACT_FOR_INSPECTION'].': '.(($inspection) ? $_ARRAYLANG['TXT_IMMO_YES'] : $_ARRAYLANG['TXT_IMMO_NO'])."\n";
 			$mailer->Body .= $_ARRAYLANG['TXT_IMMO_CONTACT_VIA_PHONE'].': '.(($contact_via_phone) ? $_ARRAYLANG['TXT_IMMO_YES'] : $_ARRAYLANG['TXT_IMMO_NO'])."\n";
 			$mailer->Body .= $_ARRAYLANG['TXT_IMMO_COMMENTS'].': '.$comment."\n";
-			$mailer->Send();		
-			
+			$mailer->Send();
+
 			//mail for interested customer
 			$mailer->ClearAddresses();
 			$mailer->From = $this->arrSettings['sender_email'];
 			$mailer->FromName = $this->arrSettings['sender_name'];
-			$mailer->AddAddress($_REQUEST['contactFormField_email']);	
+			$mailer->AddAddress($_REQUEST['contactFormField_email']);
 			$mailer->Subject = $this->arrSettings['interest_confirm_subject'];
 			$message = str_replace('[[IMMO_OBJECT]]', $address.', '.$location." (Ref.Nr.: $reference)", $this->arrSettings['interest_confirm_message']);
 			$mailer->Body = $message;
-			$mailer->Send();			
+			$mailer->Send();
 			$this->_objTpl->setVariable('CONTACT_FEEDBACK_TEXT', $_ARRAYLANG['TXT_IMMO_CONTACT_SUCCESSFUL']);
 		}
 	}
-	
-	
+
+
 	/**
 	 * return array of images for corresponding immoid
 	 *
@@ -298,13 +298,13 @@ class Immo extends ImmoLib
 		global $objDatabase;
 		$query = "	SELECT img.field_id as field_id, content.fieldvalue AS content, name.name, img.uri AS imgsrc
 					FROM ".DBPREFIX."module_immo_content AS content
-					LEFT JOIN ".DBPREFIX."module_immo_fieldname AS name 
+					LEFT JOIN ".DBPREFIX."module_immo_fieldname AS name
 						ON content.field_id = name.field_id
-					LEFT JOIN ".DBPREFIX."module_immo_image AS img 
+					LEFT JOIN ".DBPREFIX."module_immo_image AS img
 						ON content.immo_id = img.immo_id
 					AND content.field_id = img.field_id
 					WHERE content.field_id
-					IN (					
+					IN (
 						SELECT id
 						FROM `".DBPREFIX."module_immo_field`
 						WHERE TYPE = 'img'
@@ -318,20 +318,20 @@ class Immo extends ImmoLib
 		$images = array();
 		if(($objRS = $objDatabase->Execute($query)) !== false){
 			while(!$objRS->EOF){
-			    
+
 				$images[$index] = $objRS->fields;
                 $dim = $this->_getImageDim($images[$index]['imgsrc']);
-				$images[$index]['width']    = $dim[1];				
+				$images[$index]['width']    = $dim[1];
 				$images[$index]['height']	= $dim[2];
 				$index++;
-				$objRS->MoveNext();	
+				$objRS->MoveNext();
 			}
 			return $images;
 		}
-		
+
 	}
-	
-	
+
+
 	/**
 	 * show the main form for searching objects
 	 *
@@ -367,17 +367,17 @@ class Immo extends ImmoLib
 			'TXT_IMMO_NO'						=>	$_ARRAYLANG['TXT_IMMO_NO'],
 			'TXT_IMMO_ORDER_BY'					=>	$_ARRAYLANG['TXT_IMMO_ORDER_BY'],
 			'TXT_IMMO_FOREIGNER_AUTHORIZATION'	=>	$_ARRAYLANG['TXT_IMMO_FOREIGNER_AUTHORIZATION'],
-	    	'TXT_IMMO_LOGO'                     => $_ARRAYLANG['TXT_IMMO_LOGO'],    		
+	    	'TXT_IMMO_LOGO'                     => $_ARRAYLANG['TXT_IMMO_LOGO'],
 			'IMMO_IMMO_JAVASCRIPT'				=>	$this->_getImmoJS(),
-		));		
-		$locations = $this->_getLocations();	
+		));
+		$locations = $this->_getLocations();
 		foreach ($locations as $location) {
 				$this->_objTpl->setVariable(array(
 					'IMMO_LOCATION_CONTENT'	=> 	$location
 				));
 				$this->_objTpl->parse("locations");
-			}	
-		
+			}
+
 		$this->_showSpecialOffers();
 	}
 
@@ -388,7 +388,7 @@ class Immo extends ImmoLib
 	 */
 	function _getLocations(){
 		global $objDatabase;
-		$query = "	SELECT TRIM(a.fieldvalue) as location FROM ".DBPREFIX.'module_immo_content AS a 
+		$query = "	SELECT TRIM(a.fieldvalue) as location FROM ".DBPREFIX.'module_immo_content AS a
 																WHERE a.field_id = (
 																	SELECT field_id
 																	FROM '.DBPREFIX.'module_immo_fieldname
@@ -403,9 +403,9 @@ class Immo extends ImmoLib
 				$objRS->MoveNext();
 			}
 		}
-		return $locations;	
+		return $locations;
 	}
-	
+
 	/**
 	 * display the specialoffers
 	 *
@@ -415,7 +415,7 @@ class Immo extends ImmoLib
 		$specialOffers = $this->_getSpecialOffers();
 		foreach ($specialOffers as $specialOffer) {
 			$img = $specialOffer['imgsrc'];
-			$imgdim = $this->_getImageDim($img, 50);						
+			$imgdim = $this->_getImageDim($img, 50);
 			$this->_objTpl->setVariable(array(
 				'IMMO_ID'							=>	$specialOffer['immo_id'],
 				'IMMO_SPECIAL_OFFER_IMG_SRC'		=>	$specialOffer['imgsrc'],
@@ -423,7 +423,7 @@ class Immo extends ImmoLib
 				'IMMO_SPECIAL_OFFER_HEADER'			=> 	$specialOffer['header'],
 			));
 			$this->_objTpl->parse('specialOffersImg');
-			
+
 			$this->_objTpl->setVariable(array(
 				'IMMO_SPECIAL_OFFER_HEADER'			=> 	$specialOffer['header'],
 				'IMMO_SPECIAL_OFFER_PRICE_PREFIX'	=>  htmlentities($this->arrSettings['currency_lang_'.$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
@@ -431,7 +431,7 @@ class Immo extends ImmoLib
 				'IMMO_SPECIAL_OFFER_PRICE_SUFFIX'	=>  $this->_currencySuffix,
 				'IMMO_SPECIAL_OFFER_LOCATION'		=>	$specialOffer['location'],
 			));
-			$this->_objTpl->parse('specialOffersText');			
+			$this->_objTpl->parse('specialOffersText');
 		}
 	}
 
@@ -442,9 +442,9 @@ class Immo extends ImmoLib
 	 */
 	function _getSpecialOffers(){
 		global $objDatabase;
-	    $query='SELECT 	immo.id AS immo_id, reference, visibility, a.fieldvalue AS location, 
-	    				b.fieldvalue AS price, 
-	    				c.fieldvalue AS header, 
+	    $query='SELECT 	immo.id AS immo_id, reference, visibility, a.fieldvalue AS location,
+	    				b.fieldvalue AS price,
+	    				c.fieldvalue AS header,
 	    				img.uri 	 AS imgsrc
 				FROM '.DBPREFIX.'module_immo AS immo
 				LEFT JOIN '.DBPREFIX.'module_immo_content AS a ON ( immo.id = a.immo_id
@@ -472,7 +472,7 @@ class Immo extends ImmoLib
 															AND img.field_id = (
 																SELECT field_id
 																FROM '.DBPREFIX.'module_immo_fieldname
-																WHERE name = "übersichtsbild" ) 
+																WHERE name = "übersichtsbild" )
 															)
 				WHERE special_offer = 1
 				AND visibility != "disabled"
@@ -487,22 +487,22 @@ class Immo extends ImmoLib
 		}
 		return $immos;
 	}
-	
-	
+
+
 	/**
 	 * function handling protected link requests
 	 *
 	 * @return void
 	 */
-	function _getPDF(){	
+	function _getPDF(){
 		global $objDatabase, $_ARRAYLANG, $_CONFIG;
 		require_once(ASCMS_LIBRARY_PATH.DS.'/FRAMEWORK'.DS."Validator.class.php");
 		$objValidator = &new FWValidator();
 
 		$ids=explode('_',$_GET['id']);
 		$immoID=intval($ids[0]);
-		$fieldID=intval($ids[1]);	
-		if(isset($_POST['immo_id'])){	//form was sent		
+		$fieldID=intval($ids[1]);
+		if(isset($_POST['immo_id'])){	//form was sent
 			$name             = !empty($_POST['name']) ? contrexx_addslashes(strip_tags($_POST['name'])) : '';
 			$firstname        =	!empty($_POST['firstname']) ? contrexx_addslashes(strip_tags($_POST['firstname'])) : '';
 			$company          =	!empty($_POST['company']) ? contrexx_addslashes(strip_tags($_POST['company'])) : '';
@@ -516,12 +516,12 @@ class Immo extends ImmoLib
 			$funding          = isset($_POST['funding']) ? 1 : 0;
 			$email            =	!empty($_POST['email']) ? contrexx_addslashes(strip_tags($_POST['email'])) : '';
 			$comment          = !empty($_POST['comment']) ? contrexx_addslashes(strip_tags($_POST['comment'])) : '';
-			$immoID           = !empty($_POST['immo_id']) ? intval($_POST['immo_id']) : '';	
+			$immoID           = !empty($_POST['immo_id']) ? intval($_POST['immo_id']) : '';
 			$fieldID          = !empty($_POST['field_id']) ? intval($_POST['field_id']) : '';
-			
-			$error=0;		
+
+			$error=0;
 			if($objValidator->isEmail($email)){
-				if(!empty($name) && !empty($telephone) && !empty($email) && $immoID > 0 && $fieldID > 0){	
+				if(!empty($name) && !empty($telephone) && !empty($email) && $immoID > 0 && $fieldID > 0){
 					require_once(ASCMS_LIBRARY_PATH.DS.'/phpmailer'.DS."class.phpmailer.php");
 					$objRS = $objDatabase->SelectLimit("SELECT email
 												FROM ".DBPREFIX."module_immo_contact
@@ -533,7 +533,7 @@ class Immo extends ImmoLib
 						$this->_showContactForm($immoID, $fieldID);
 						return false;
 					}
-					
+
 					$objRS = $objDatabase->SelectLimit("SELECT fieldvalue
 												FROM ".DBPREFIX."module_immo_content
 												WHERE immo_id = '$immoID'
@@ -542,51 +542,51 @@ class Immo extends ImmoLib
 					if($objRS){
 						$link = 'http://'.$_CONFIG['domainUrl'].str_replace(" ", "%20", $objRS->fields['fieldvalue']);
 						$mailer = &new PHPMailer();
-						$objDatabase->Execute("INSERT INTO ".DBPREFIX."module_immo_contact 
-												VALUES 
+						$objDatabase->Execute("INSERT INTO ".DBPREFIX."module_immo_contact
+												VALUES
 												(NULL, '$email', '$name', '$firstname', '$street', '$zip', '$location', '$company', '$telephone', '$telephone_office', '$telephone_mobile', '$purchase', '$funding', '$comment', '$immoID', '$fieldID', ".mktime()." )");
-						
+
 						$mailer->IsHTML(false);
 						$mailer->From 		= $this->arrSettings['sender_email'];
 						$mailer->FromName 	= $this->arrSettings['sender_name'];
 						$mailer->Subject 	= $this->arrSettings['prot_link_message_subject'];
 						$mailer->Body 		= str_replace('[[IMMO_PROTECTED_LINK]]', $link, $this->arrSettings['prot_link_message_body'])."\n\n";
 						$mailer->AddAddress($email);
-						$mailer->Send();						
+						$mailer->Send();
 					}else{
 						$this->_objTpl->setVariable('TXT_IMMO_STATUS', '<span class="errmsg">DB error.</span>');
-					}															
-																				
+					}
+
 				}else{
 					$error=1;
 				}
-				
-			}else{		
-				$error=1;		
+
+			}else{
+				$error=1;
 			}
-	
-			
-			if($error==1){	
+
+
+			if($error==1){
 				$this->_objTpl->setVariable('TXT_IMMO_STATUS', '<span class="errmsg">'.$_ARRAYLANG['TXT_IMMO_MISSIONG_OR_INVALID_FIELDS'].'</span>');
 			}else{
 				$this->_objTpl->setVariable('TXT_IMMO_STATUS', '<span class="okmsg">'.$_ARRAYLANG['TXT_IMMO_CONTACT_SUCCESSFUL'].'</span>');
 			}
 		}else{ //form was not sent
-			
+
 		}
-		$this->_showContactForm($immoID, $fieldID);		
+		$this->_showContactForm($immoID, $fieldID);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * show the contact form for the according immo- and field-ID
 	 *
 	 * @param int $immoID
 	 * @param int $fieldID
-	 * @return void 
+	 * @return void
 	 */
-	function _showContactForm($immoID, $fieldID){		
+	function _showContactForm($immoID, $fieldID){
 		global $_ARRAYLANG;
 		$this->_objTpl->setVariable(array(
 			'IMMO_ID' => $immoID,
@@ -606,9 +606,9 @@ class Immo extends ImmoLib
 			'TXT_IMMO_DELETE'	       	=> $_ARRAYLANG['TXT_IMMO_DELETE'],
 			'TXT_IMMO_SEND'		        => $_ARRAYLANG['TXT_IMMO_SEND'],
 			'IMMO_FIELD_ID'			    => $fieldID,
-		));		
+		));
 	}
-	
+
 	/**
 	 * get the attribute list for the showObject page
 	 *
@@ -620,10 +620,10 @@ class Immo extends ImmoLib
 			if(!empty($list)){
 				$this->_objTpl->setVariable('IMMO_LISTING', $this->_getFieldFromText('Aufzählung'.$i));
 				$this->_objTpl->parse("listing");
-			}	
+			}
 		}
 	}
-	
+
 	/**
 	 * show the details of an object
 	 *
@@ -638,14 +638,14 @@ class Immo extends ImmoLib
 				die();
 			}
 		}
-		$this->_getFieldNames($immoID, $this->frontLang);			
+		$this->_getFieldNames($immoID, $this->frontLang);
 		if(($objRS = $objDatabase->SelectLimit('SELECT reference FROM '.DBPREFIX.'module_immo WHERE id='.$immoID, 1)) !== false){
 		      $reference = $objRS->fields['reference'];
         }
-		
+
 		$this->_objTpl->setGlobalVariable(array(
     		'TXT_IMMO_PRICE_PREFIX'		=> $this->arrSettings['currency_lang_'.$this->frontLang],
-   			'TXT_IMMO_PRICE_SUFFIX' 	=> $this->_currencySuffix,			    
+   			'TXT_IMMO_PRICE_SUFFIX' 	=> $this->_currencySuffix,
    			'TXT_IMMO_SHOWMAP'			=> $_ARRAYLANG['TXT_IMMO_SHOWMAP'],
    			'TXT_IMMO_PRINT_PAGE'		=> $_ARRAYLANG['TXT_IMMO_PRINT_PAGE'],
    			'TXT_IMMO_BACK'				=> $_ARRAYLANG['TXT_IMMO_BACK'],
@@ -665,7 +665,7 @@ class Immo extends ImmoLib
    			'IMMO_ID'         			=> $immoID,
    			'IMMO_DETAILS_JAVASCRIPT' 	=> $this->_getDetailsJS(),
 		));
-		
+
 		$img = $this->_getFieldFromText('Übersichtsbild', 'img');
 		$imgOverviewKey = $this->_currFieldID;
 		$imgdim = $this->_getImageDim($img, 540);
@@ -674,27 +674,27 @@ class Immo extends ImmoLib
 		$this->_getListing();
 		$this->_objTpl->setVariable(array(
 			'IMMO_HEADER' 			=> $this->_getFieldFromText('Kopfzeile'),
-	    	'IMMO_ADDRESS' 			=> $this->_getFieldFromText('Adresse'),				    	
-	    	'IMMO_REF_NR' 			=> $reference,				    	
-	    	'IMMO_LOCATION' 		=> $this->_getFieldFromText('Ort'),				    	
-	    	'IMMO_PRICE' 			=> $this->_getFieldFromText('Preis'),		    	
+	    	'IMMO_ADDRESS' 			=> $this->_getFieldFromText('Adresse'),
+	    	'IMMO_REF_NR' 			=> $reference,
+	    	'IMMO_LOCATION' 		=> $this->_getFieldFromText('Ort'),
+	    	'IMMO_PRICE' 			=> $this->_getFieldFromText('Preis'),
 	    	'IMMO_DESCRIPTION' 		=> $this->_getFieldFromText('Beschreibung'),
 	    	'IMMO_HEADLINE' 		=> $this->_getFieldFromText('Headline'),
 	    	'IMMO_HOMEPAGE_LINK' 	=> $homepageLink,
 	    	'IMMO_IMG_DIM'			=> $imgdim[0],
 	    	'IMMO_IMG_WIDTH'		=> $imgdim[1],
-			'IMMO_IMG_HEIGHT'		=> $imgdim[2],	    	
+			'IMMO_IMG_HEIGHT'		=> $imgdim[2],
 			'IMMO_IMG_SRC'			=> $img,
 	    	'IMMO_ID'				=> $immoID,
 	    	'IMMO_IMAGES_INDEX'     => $imgOverviewKey,
 		));
 		if($homepageLink != '' && $homepageLink_active){
 			$this->_objTpl->parse("homepageLink");
-		}else{		
-			$this->_objTpl->hideblock("homepageLink");		
+		}else{
+			$this->_objTpl->hideblock("homepageLink");
 		}
 		$this->_objTpl->parse("basicData");
-		
+
 		$imgRow = 1;
 		$lnkRow = 1;
 		$textcount = 0;
@@ -706,9 +706,9 @@ class Immo extends ImmoLib
 				switch($field['type']){
 					case 'text':
 					case 'textarea':
-					case 'digits_only':	
-					case 'price':	
-						$textcount++;								
+					case 'digits_only':
+					case 'price':
+						$textcount++;
 						$this->_objTpl->setVariable(array(
 							'IMMO_FIELD_NAME'			=>	htmlentities($field['names'][$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
 							'IMMO_FIELD_CONTENT'		=>	htmlentities($field['type'] == 'price' ? number_format($field['content'][$this->frontLang],0,".","'") : $field['content'][$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
@@ -722,9 +722,9 @@ class Immo extends ImmoLib
 							$this->_objTpl->parse('textList');
 						}
 					break;
-					
+
 					case 'img':
-						$imagecount++;	
+						$imagecount++;
 						$img = trim($field['img']);
 						if(!empty($img)){
 							$imgdim = $this->_getImageDim($img, 160);
@@ -737,7 +737,7 @@ class Immo extends ImmoLib
 								'IMMO_IMG_DIM'			=>	$imgdim[0],
 								'IMMO_IMAGES_INDEX'		=>	$fieldKey,
 							));
-							
+
 							if($fieldKey == 125 ){
 								$this->_objTpl->touchBlock("anchor_plan_images");
 							}
@@ -750,11 +750,11 @@ class Immo extends ImmoLib
 							}else{
 								$this->_objTpl->parse('imageList');
 							}
-							
-							
+
+
 						}
 					break;
-							
+
 					case 'panorama':
 						$img = trim($field['img']);
 						if(!empty($img)){
@@ -771,7 +771,7 @@ class Immo extends ImmoLib
 							$this->_objTpl->parse('panorama');
 						}
 					break;
-					
+
 					case 'link':
 					case 'protected_link':
 						$linkcount++;
@@ -782,8 +782,8 @@ class Immo extends ImmoLib
 							'IMMO_FIELD_NAME'			=>	htmlentities($field['names'][$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
 							'IMMO_FIELD_CONTENT'		=>	$field['type']=='protected_link' ? '?section=immo&amp;cmd=getPDF&amp;id='.$immoID.'_'.$fieldKey : $field['content'][$this->frontLang],
 						));
-									
-					
+
+
 					if(trim($field['content'][$this->frontLang]) != ''){
 						if($lnkRow++ % 2 == 0){
 							$this->_objTpl->parse('linkList');
@@ -792,14 +792,14 @@ class Immo extends ImmoLib
 							$this->_objTpl->parse('linkList');
 						}
 					}
-						
-					break;					
-				}						
-			}				
+
+					break;
+				}
+			}
 		}
 	}
 
-	
+
 	/**
 	 * return image source to the specified icon
 	 *
@@ -807,52 +807,52 @@ class Immo extends ImmoLib
 	 * @return string path to icon
 	 */
 	function _getIcon($icon){
-		return 'images/content/immo/'.$icon.'.gif';		
+		return 'images/content/immo/'.$icon.'.gif';
 	}
-	
-	
-	
+
+
+
 	function _doNothing() {
 	}
 
-	
+
 	/**
 	 * shows the list of objects, also handles search requests
 	 *
 	 * @return void
 	 */
 	function _showImmoList(){
-	    global $objDatabase, $_ARRAYLANG;    
-	   
+	    global $objDatabase, $_ARRAYLANG;
+
 	    $this->_objTpl->setGlobalVariable(array(
     		'TXT_IMMO_BACK'               => $_ARRAYLANG['TXT_IMMO_BACK'],
     		'TXT_IMMO_CURRENCY_PREFIX'	  => $this->arrSettings['currency_lang_'.$this->frontLang],
    			'TXT_IMMO_CURRENCY_SUFFIX' 	  => $this->_currencySuffix,
-	    	'TXT_IMMO_MORE_INFOS' 		  => $_ARRAYLANG['TXT_IMMO_MORE_INFOS'],    		
+	    	'TXT_IMMO_MORE_INFOS' 		  => $_ARRAYLANG['TXT_IMMO_MORE_INFOS'],
 	    ));
-		$locations        = contrexx_addslashes(strip_tags(($_REQUEST['locations'])));    		
-		$obj_type         = contrexx_addslashes(strip_tags(($_REQUEST['obj_type'])));   		
-		$property_type    = contrexx_addslashes(strip_tags(($_REQUEST['property_type'])));    		
+		$locations        = contrexx_addslashes(strip_tags(($_REQUEST['locations'])));
+		$obj_type         = contrexx_addslashes(strip_tags(($_REQUEST['obj_type'])));
+		$property_type    = contrexx_addslashes(strip_tags(($_REQUEST['property_type'])));
 		$new_building     = contrexx_addslashes(strip_tags(($_REQUEST['new_building'])));
 		$logo             = contrexx_addslashes(strip_tags(($_REQUEST['logo'])));
-		if(!empty($_REQUEST['foreigner_auth'])){	
-    		$foreigner_auth = intval($_REQUEST['foreigner_auth']) > 0 ? $_ARRAYLANG['TXT_IMMO_YES'] : $_ARRAYLANG['TXT_IMMO_NO'];    		
+		if(!empty($_REQUEST['foreigner_auth'])){
+    		$foreigner_auth = intval($_REQUEST['foreigner_auth']) > 0 ? $_ARRAYLANG['TXT_IMMO_YES'] : $_ARRAYLANG['TXT_IMMO_NO'];
 		}
-        $fprice = contrexx_addslashes(strip_tags(($_REQUEST['fprice'])));    		
-		$tprice = contrexx_addslashes(strip_tags(($_REQUEST['tprice'])));    		
-		$frooms = contrexx_addslashes(strip_tags(($_REQUEST['frooms'])));    		
+        $fprice = contrexx_addslashes(strip_tags(($_REQUEST['fprice'])));
+		$tprice = contrexx_addslashes(strip_tags(($_REQUEST['tprice'])));
+		$frooms = contrexx_addslashes(strip_tags(($_REQUEST['frooms'])));
 		$trooms = contrexx_addslashes(strip_tags(($_REQUEST['trooms'])));
-    
-		//show all    
-	    $orderBy = !empty($_REQUEST['order_by']) ? contrexx_addslashes($_REQUEST['order_by']) : 'location';	    		    	
-	    	
-	    $query = 'SELECT 	immo.id AS immo_id, reference, visibility, 
-	    					a.fieldvalue AS location, 
-		    				CAST(b.fieldvalue AS UNSIGNED) AS price, 
-		    				c.fieldvalue AS header, 
-		    				d.fieldvalue AS headline, 
-		    				e.fieldvalue AS rooms,  
-		    				f.fieldvalue AS address,  
+
+		//show all
+	    $orderBy = !empty($_REQUEST['order_by']) ? contrexx_addslashes($_REQUEST['order_by']) : 'location';
+
+	    $query = 'SELECT 	immo.id AS immo_id, reference, visibility,
+	    					a.fieldvalue AS location,
+		    				CAST(b.fieldvalue AS UNSIGNED) AS price,
+		    				c.fieldvalue AS header,
+		    				d.fieldvalue AS headline,
+		    				e.fieldvalue AS rooms,
+		    				f.fieldvalue AS address,
 		    				img.uri 	 AS imgsrc
 					FROM '.DBPREFIX.'module_immo AS immo
 					LEFT JOIN '.DBPREFIX.'module_immo_content AS a ON ( immo.id = a.immo_id
@@ -901,19 +901,19 @@ class Immo extends ImmoLib
 																AND img.field_id = (
 																	SELECT field_id
 																	FROM '.DBPREFIX.'module_immo_fieldname
-																	WHERE name = "übersichtsbild" ) 
-																)																
+																	WHERE name = "übersichtsbild" )
+																)
 					WHERE  ( visibility = "listing"';
                     if(!empty($_REQUEST['ref_nr'])){
-	    	           $query .= " OR visibility = 'reference' ) ";   
+	    	           $query .= " OR visibility = 'reference' ) ";
                     }else{
                         $query .= ") ORDER BY $orderBy ASC";
                     }
-	                   
-	    
-	    //request from search form?	
+
+
+	    //request from search form?
 	    if(empty($_REQUEST['ref_nr'])){
-	    	//fulltext search 
+	    	//fulltext search
 	    	$keys1 = array_filter(array_keys($_ARRAYLANG), array(&$this, "filterImmoType"));
 	        foreach ($keys1 as $key) {
 	            $keys[$key] = $_ARRAYLANG[$key];
@@ -921,25 +921,25 @@ class Immo extends ImmoLib
 	        array_walk($keys, array(&$this, 'arrStrToLower'));
 	    	$searchterm = contrexx_addslashes($_REQUEST['search']);
 	    	if(!empty($searchterm) && strlen($searchterm) <= 3){
-	    	      $this->_objTpl->setVariable("TXT_IMMO_SEARCHTERM_TOO_SHORT", $_ARRAYLANG['TXT_IMMO_SEARCHTERM_TOO_SHORT']);  
-	    	      return false;  
+	    	      $this->_objTpl->setVariable("TXT_IMMO_SEARCHTERM_TOO_SHORT", $_ARRAYLANG['TXT_IMMO_SEARCHTERM_TOO_SHORT']);
+	    	      return false;
             }
-	    	
-	    	$query = "  SELECT immo.id AS `immo_id`, immo.reference AS `reference`, immo.object_type AS otype, immo.new_building AS `new`, immo.property_type AS ptype, logo, 
-	    				a.fieldvalue as headline, 
-	    				CAST(b.fieldvalue AS UNSIGNED) as price, 
-	    				c.fieldvalue as header, 
-	    				d.fieldvalue as location, 
-	    				e.fieldvalue as rooms, 
-	    				f.fieldvalue as foreigner_authorization, 
-	    				g.fieldvalue as address, 
+
+	    	$query = "  SELECT immo.id AS `immo_id`, immo.reference AS `reference`, immo.object_type AS otype, immo.new_building AS `new`, immo.property_type AS ptype, logo,
+	    				a.fieldvalue as headline,
+	    				CAST(b.fieldvalue AS UNSIGNED) as price,
+	    				c.fieldvalue as header,
+	    				d.fieldvalue as location,
+	    				e.fieldvalue as rooms,
+	    				f.fieldvalue as foreigner_authorization,
+	    				g.fieldvalue as address,
 	    				img.uri AS imgsrc
                         FROM ".DBPREFIX."module_immo AS immo";
                         if(!empty($searchterm)){
 						    $query .= ", ".DBPREFIX."module_immo_content AS content";
                         }
-                        
-                    
+
+
              $query .= " LEFT JOIN ".DBPREFIX."module_immo_content AS a ON ( immo.id = a.immo_id
 																AND a.field_id = (
 																	SELECT field_id
@@ -967,7 +967,7 @@ class Immo extends ImmoLib
 																	FROM ".DBPREFIX."module_immo_fieldname
 																	WHERE name = 'ort'
 																	AND lang_id = 1 )
-																AND d.lang_id = ".$this->frontLang." )						
+																AND d.lang_id = ".$this->frontLang." )
 						LEFT JOIN ".DBPREFIX."module_immo_content AS e ON ( immo.id = e.immo_id
 																AND e.field_id = (
 																	SELECT field_id
@@ -993,7 +993,7 @@ class Immo extends ImmoLib
 																AND img.field_id = (
 																	SELECT field_id
 																	FROM ".DBPREFIX."module_immo_fieldname
-																	WHERE name = 'übersichtsbild' ) 
+																	WHERE name = 'übersichtsbild' )
 																)
 						WHERE TRUE
 						";
@@ -1003,22 +1003,22 @@ class Immo extends ImmoLib
                         }
                         $query .= " AND immo.visibility != 'disabled' ";
                         if(!intval($_REQUEST['refnr'])){
-	    	                $query .= " AND immo.visibility != 'reference' ";   
+	    	                $query .= " AND immo.visibility != 'reference' ";
                         }
-    		
-    		if(!empty($locations) || !empty($obj_type) || !empty($property_type)){	    			
-				if(!empty($locations)){			
-					$query .= " AND d.fieldvalue = '".$locations."'";	
-				}					
-				if(!empty($property_type)){			
-					$query .= " AND immo.property_type = '".$property_type."'";	
+
+    		if(!empty($locations) || !empty($obj_type) || !empty($property_type)){
+				if(!empty($locations)){
+					$query .= " AND d.fieldvalue = '".$locations."'";
 				}
-				if(!empty($obj_type)){			
+				if(!empty($property_type)){
+					$query .= " AND immo.property_type = '".$property_type."'";
+				}
+				if(!empty($obj_type)){
 					$query .= " AND immo.object_type = '".$obj_type."'";
 				}
-				if(!empty($new_building)){			
+				if(!empty($new_building)){
 					$query .= " AND immo.new_building = '".$new_building."'";
-				}	
+				}
 				if(!empty($foreigner_auth)){//max rooms
 					$query .= " AND f.fieldvalue = '".$foreigner_auth."' ";
 				}
@@ -1038,16 +1038,16 @@ class Immo extends ImmoLib
 					$query .= " AND logo = '".$logo."' ";
 				}
 
-				$query .= ' GROUP BY immo.id ORDER BY '.$orderBy.' ASC';		
+				$query .= ' GROUP BY immo.id ORDER BY '.$orderBy.' ASC';
     		}
 	    }elseif(!empty($_REQUEST['ref_nr'])){ //advanced search
-	    	$orderBy = !empty($_REQUEST['order_by']) ? contrexx_addslashes($_REQUEST['order_by']) : 'immo.id';	
+	    	$orderBy = !empty($_REQUEST['order_by']) ? contrexx_addslashes($_REQUEST['order_by']) : 'immo.id';
 	    	$refnr = intval($_REQUEST['ref_nr']);
-			$query .= ' AND reference = '.$refnr." GROUP BY immo.id ORDER BY $orderBy ASC" ; 		
+			$query .= ' AND reference = '.$refnr." GROUP BY immo.id ORDER BY $orderBy ASC" ;
 	    }else{
-		 	//no where clause => show all   
-	    } 
-	     
+		 	//no where clause => show all
+	    }
+
 	    $objRS = $objDatabase->Execute($query);
 	    if($objRS){
 	    	while(!$objRS->EOF){
@@ -1056,8 +1056,8 @@ class Immo extends ImmoLib
 		    		$imgdim = $this->_getImageDim($img, 80);
 				    $this->_objTpl->setVariable(array(
 				    	'IMMO_HEADER' 				=> $objRS->fields['header'],
-				    	'IMMO_LOCATION' 			=> $objRS->fields['location'] ,				    	
-				    	'IMMO_PRICE' 				=> $objRS->fields['price'],				    
+				    	'IMMO_LOCATION' 			=> $objRS->fields['location'] ,
+				    	'IMMO_PRICE' 				=> $objRS->fields['price'],
 				    	'IMMO_REF_NR' 				=> $objRS->fields['reference'],
 				    	'IMMO_HEADLINE' 			=> $objRS->fields['headline'],
 				    	'IMMO_IMG_PREVIEW_DIM'		=> $imgdim[0],
@@ -1066,35 +1066,35 @@ class Immo extends ImmoLib
 					));
 
 					if(!empty($objRS->fields['imgsrc'])){
-						$this->_objTpl->parse("previewImage");									
+						$this->_objTpl->parse("previewImage");
 					}else{
 						$this->_objTpl->hideBlock("previewImage");
 					}
 					$this->_objTpl->setVariable('IMMO_HEADER', $objRS->fields['header']);
-					$this->_objTpl->parse("objectRow");   
+					$this->_objTpl->parse("objectRow");
 				$objRS->MoveNext();
 	    	}
 		$limit = $_CONFIG['corePagingLimit'];
 		$count = '';
 		$pos = intval($_GET['pos']);
-	    $this->_objTpl->setVariable('IMMO_PAGING', getPaging($count, $pos, '&amp;search='.$_REQUEST['search'], '', true));	    	
+	    $this->_objTpl->setVariable('IMMO_PAGING', getPaging($count, $pos, '&amp;search='.$_REQUEST['search'], '', true));
 	    }else{
 	    	echo "DB error. file: ".__FILE__." line: ".__LINE__;
 	    }
 	}
-	
+
 	/**
 	 * return the dimensions of an image to fit the content (resized if neccessary)
 	 *
 	 * @param string $img path to the image
 	 * @param int $max maximum acceptable size of the image (height or width, whichever is bigger)
-	 * @return array containing the style string, the width and the height 
+	 * @return array containing the style string, the width and the height
 	 */
 	function _getImageDim($img, $max = 60){
 		if($img != ''){
 			$size     	= getimagesize(ASCMS_DOCUMENT_ROOT.$img);
 			$height 	= '';
-   			$width 		= '';	
+   			$width 		= '';
    			$height = $size[1];
 		    $width = $size[0];
 		    if ($height > $max && $height > $width)
@@ -1118,7 +1118,7 @@ class Immo extends ImmoLib
 		}
 		return '';
 	}
-	
+
 	/**
 	 * Shows the map
 	 *
@@ -1127,7 +1127,7 @@ class Immo extends ImmoLib
 	 */
 	function _showMap() {
 	    global $objDatabase, $_ARRAYLANG;
-		$this->_objTpl->loadTemplateFile("modules/immo/template/frontend_map_template.html");		
+		$this->_objTpl->loadTemplateFile("modules/immo/template/frontend_map_template.html");
 	    /*
 	       Check if something has to be highlighted
 	    */
@@ -1212,7 +1212,7 @@ class Immo extends ImmoLib
 				die($query);
                 $objResult2 = $objDatabase->Execute($query);
                 while (!$objResult2->EOF) {
-                    $data[strtolower($objResult2->fields['field_name'])] = ($objResult2->fields['type'] == "img" || $objResult2->fields['type'] == "panorama") ? ((!empty($objResult2->fields['uri'])) ? $objResult2->fields['uri']: "admin/images/icons/pixel.gif") : $objResult2->fields['value'];
+                    $data[strtolower($objResult2->fields['field_name'])] = ($objResult2->fields['type'] == "img" || $objResult2->fields['type'] == "panorama") ? ((!empty($objResult2->fields['uri'])) ? $objResult2->fields['uri']: ASCMS_BACKEND_PATH."/images/icons/pixel.gif") : $objResult2->fields['value'];
                     $objResult2->MoveNext();
                 }
 
@@ -1269,7 +1269,7 @@ class Immo extends ImmoLib
 		$this->_objTpl->show();
 		die;
 	}
-	
+
 	/**
 	 * return javascript for search form
 	 *
@@ -1283,9 +1283,9 @@ class Immo extends ImmoLib
 	}
 EOF;
 	}
-	
+
 	/**
-	 * return javascript for the details page 
+	 * return javascript for the details page
 	 *
 	 * @return string javascript
 	 */
@@ -1306,7 +1306,7 @@ EOF;
 		popUp.focus();
 		return false;
 	}
-		
+
  	var openPreview = function(immoid, imageIndex){
 		try{
 			if(! imgPopUp.closed){
@@ -1320,15 +1320,15 @@ EOF;
 			return true;
 		}
 		imgPopUp = window.open('?section=immo&img=1&id='+immoid+'&index='+imageIndex, '', 'width=500,height=500,scrollbars=no');
-		
+
 		imgPopUp.focus();
-		imgPopUp.moveTo(0,0);		
-		return false;				
+		imgPopUp.moveTo(0,0);
+		return false;
 	}
 EOF;
 	}
-	
-	
+
+
 
 }
 ?>
