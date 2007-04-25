@@ -432,6 +432,33 @@ class ImageManager
                     return false;
             }
 
+            if ((@include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php')) && ($arrSizeInfo = getimagesize($file)) !== false) {
+            	$objSystem = new FWSystem();
+            	$memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
+
+            	if (empty($memoryLimit)) {
+            		// set default php memory limit of 8MBytes
+            		$memoryLimit = 8*pow(1024, 2);
+            	}
+
+            	$potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * $arrSizeInfo['bits'] * $arrSizeInfo['channels'] * 1.8;
+            	if (function_exists('memory_get_usage')) {
+            		$potentialRequiredMemory += memory_get_usage();
+            	} else {
+            		// add a default of 3MBytes
+            		$potentialRequiredMemory += 3*pow(1024, 2);
+            	}
+
+            	if ($potentialRequiredMemory > $memoryLimit) {
+            		// try to set a higher memory_limit
+            		@ini_set('memory_limit', $potentialRequiredMemory);
+            	} else {
+            		return false;
+            	}
+            } else {
+            	return false;
+            }
+
             $image = $function($file);
             return $image;
         }
@@ -517,5 +544,4 @@ class ImageManager
         }
     }
 }
-
 ?>
