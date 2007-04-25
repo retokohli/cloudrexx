@@ -182,7 +182,7 @@ function get_wysiwyg_editor($name, $value, $mode="active")
 
 			$objFCKeditor = new FCKeditor($name) ;
 			$objFCKeditor->BasePath	=  ASCMS_PATH_OFFSET.$FCKeditorBasePath;
-			$objFCKeditor->Config['CustomConfigurationsPath'] = ASCMS_PATH_OFFSET.'/editor/FCKeditorConfig.js';
+			$objFCKeditor->Config['CustomConfigurationsPath'] = ASCMS_PATH_OFFSET.'/editor/FCKeditorConfig.php';
 			$objFCKeditor->Value = empty($value) ? "" : $value;
 
 			if ($mode != "html") {

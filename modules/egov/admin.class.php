@@ -93,6 +93,9 @@ class eGov extends eGovLibrary
     		default:
                 $this->_orders();
     	}
+
+    	$this->_objTpl->setGlobalVariable('ASCMS_BACKEND_PATH', ASCMS_BACKEND_PATH);
+
     	$objTemplate->setVariable(array(
 			'CONTENT_TITLE'				=> $this->_pageTitle,
 			'CONTENT_OK_MESSAGE'		=> $this->_strOkMessage,

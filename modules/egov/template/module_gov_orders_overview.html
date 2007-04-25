@@ -1,4 +1,4 @@
-<!-- START module_gov_orders_overview.html --> 
+<!-- START module_gov_orders_overview.html -->
 
 <script language="JavaScript" type="text/javascript">
 <!-- //
@@ -12,13 +12,13 @@ function selectMultiAction()
 					submit();
 				}
 			break;
-			default:		
+			default:
 		}
 	}
 }
 
 function deleteOrder(OrderID)
-{	
+{
 	with (document.frmOrders) {
 		if (confirm('{TXT_DELETE_ORDER}')) {
 			action='?cmd=egov&act=orders&delete=yes&id='+OrderID;
@@ -45,16 +45,16 @@ function deleteOrder(OrderID)
 				<td width="20%" style="text-align:right;"><b>{TXT_FUNCTIONS}</b></td>
 			</tr>
 			<!-- BEGIN orders_row -->
-				 <tr class="{ORDERS_ROWCLASS}"> 
-				    <td><input type="checkbox" name="selectedOrderId[]" id="selectedOrderId" value="{ORDER_ID}" /></td>     
+				 <tr class="{ORDERS_ROWCLASS}">
+				    <td><input type="checkbox" name="selectedOrderId[]" id="selectedOrderId" value="{ORDER_ID}" /></td>
 				    <td>{ORDER_ID}</td>
 				    <td><a href="?cmd=egov&amp;act=order_edit&amp;id={ORDER_ID}" target="_self">{ORDER_PRODUCT}</a></td>
-				    <td><img src="/admin/images/icons/{ORDER_STATE_IMG}" alt="{ORDER_STATE}" title="{ORDER_STATE}" border="0" /> {ORDER_STATE}</td>
+				    <td><img src="{ASCMS_BACKEND_PATH}/images/icons/{ORDER_STATE_IMG}" alt="{ORDER_STATE}" title="{ORDER_STATE}" border="0" /> {ORDER_STATE}</td>
 				    <td><a href="?cmd=egov&amp;act=order_edit&amp;id={ORDER_ID}" target="_self">{ORDER_DATE}</a></td>
 					<td>{ORDER_NAME}</td>
 					<td style="text-align:right;" nowrap="nowrap">
 						<a href="?cmd=egov&amp;act=order_edit&amp;id={ORDER_ID}" target="_self" title="{TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT}" title="{TXT_EDIT}" /></a>
-						<a href="javascript:deleteOrder({ORDER_ID});" target="_self" title="{TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}" /></a> 
+						<a href="javascript:deleteOrder({ORDER_ID});" target="_self" title="{TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}" /></a>
 					</td>
 				  </tr>
 			<!-- END orders_row -->
@@ -65,7 +65,7 @@ function deleteOrder(OrderID)
 		<tr>
 			<td>
 				<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-				<a href="#" onClick="changeCheckboxes('frmOrders','selectedOrderId[]',true); return false;">{TXT_SELECT_ALL}</a> / 
+				<a href="#" onClick="changeCheckboxes('frmOrders','selectedOrderId[]',true); return false;">{TXT_SELECT_ALL}</a> /
 				<a href="#" onClick="changeCheckboxes('frmOrders','selectedOrderId[]',false); return false;">{TXT_DESELECT_ALL}</a>
 				<img src="images/icons/strike.gif" />
 				<select name="frmOrders_MultiAction" onChange="selectMultiAction();">
@@ -77,4 +77,4 @@ function deleteOrder(OrderID)
 	</table>
 </form>
 
-<!-- END module_gov_orders_overview.html --> 
+<!-- END module_gov_orders_overview.html -->
