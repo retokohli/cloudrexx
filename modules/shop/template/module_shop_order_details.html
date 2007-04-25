@@ -153,11 +153,12 @@ function edit(orderId)
 <br />
 <table border="0" width="100%" class="adminlist" cellspacing="0" cellpadding="2">
 	<tr>
-		<th colspan="8">{TXT_BILL}</th>
+		<th colspan="9">{TXT_BILL}</th>
 	</tr>
 	<tr class="row1">
 		<td nowrap='nowrap' width="5%"><b>{TXT_NUMBER}</b></td>
 		<td nowrap='nowrap' width="10%"><b>{TXT_PRODUCT_ID}</b></td>
+		<td nowrap='nowrap' width="10%"><b>{TXT_SHOP_PRODUCT_CUSTOM_ID}</b></td>
 		<td nowrap='nowrap' width="40%"><b>{TXT_PRODUCT_NAME}</b></td>
 		<td nowrap='nowrap' width="10%"><div style="text-align:right;"><b>{TXT_WEIGHT}</b></div></td>
 		<td nowrap='nowrap' width="15%"><div style="text-align:right;"><b>{TXT_PRODUCT_PRICE}</b></div></td>
@@ -168,6 +169,7 @@ function edit(orderId)
 	<tr class="{SHOP_ROWCLASS}" style="vertical-align: top;">
 		<td nowrap='nowrap'>{SHOP_QUANTITY}&nbsp;</td>
 		<td nowrap='nowrap'>{SHOP_P_ID}&nbsp;</td>
+		<td nowrap='nowrap'>{SHOP_PRODUCT_CUSTOM_ID}&nbsp;</td>
 		<td nowrap='nowrap'>{SHOP_PRODUCT_NAME}&nbsp;</td>
 		<td nowrap='nowrap'><div style="text-align:right;">{SHOP_PRODUCT_WEIGHT}&nbsp;</div></td>
 		<td nowrap='nowrap'><div style="text-align:right;">{SHOP_PRODUCT_PRICE}&nbsp;{SHOP_CURRENCY}</div></td>
@@ -178,14 +180,14 @@ function edit(orderId)
 <!-- END orderdetailsRow -->
 <!-- BEGIN shopNetPrice -->
     <tr>
-        <td colspan="6">&nbsp;</td>
+        <td colspan="7">&nbsp;</td>
         <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_NET_PRICE}</b></div></td>
         <td nowrap="nowrap"><div style="text-align:right;">{SHOP_NET_PRICE}&nbsp;{SHOP_CURRENCY}</div></td>
     </tr>
 <!-- END shopNetPrice -->
 <!-- BEGIN shopTaxPrice -->
 	<tr>
-        <td colspan="6">&nbsp;</td>
+        <td colspan="7">&nbsp;</td>
 		<td><div style="text-align:right;"><b>{SHOP_PART_TAX_PROCENTUAL}</b></div></td>
 		<td><div style="text-align:right;">{SHOP_TAX_PRICE}&nbsp;{SHOP_CURRENCY}</div></td>
 	</tr>
@@ -193,7 +195,7 @@ function edit(orderId)
 <!-- BEGIN shopShipmentPrice -->
     <tr><td>&nbsp;</td></tr>
 	<tr>
-        <td colspan="2">&nbsp;</td>
+        <td colspan="3">&nbsp;</td>
         <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_TOTAL_WEIGHT}</b>&nbsp;</div></td>
         <td nowrap="nowrap"><div style="text-align:right;">{SHOP_TOTAL_WEIGHT}</div></td>
         <td colspan="2">&nbsp;</td>
@@ -203,13 +205,13 @@ function edit(orderId)
 <!-- END shopShipmentPrice -->
 <!-- BEGIN shopPaymentPrice -->
 	<tr>
-        <td colspan="6">&nbsp;</td>
+        <td colspan="7">&nbsp;</td>
 		<td><div style="text-align:right;"><b>{TXT_PAYMENT_COSTS}</b></div></td>
 		<td><div style="text-align:right;">{SHOP_PAYMENT_PRICE}&nbsp;{SHOP_CURRENCY}</div></td>
 	</tr>
 <!-- END shopPaymentPrice -->
 	<tr>
-        <td colspan="6">&nbsp;</td>
+        <td colspan="7">&nbsp;</td>
 		<td><div style="text-align:right;"><b>{TXT_TOTAL}</b></div></td>
 		<td><div style="text-align:right;">{SHOP_CURRENCY_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</div></td>
 	</tr>

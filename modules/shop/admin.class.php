@@ -167,7 +167,7 @@ class shopmanager extends ShopLibrary {
     {
         global $_ARRAYLANG, $objTemplate, $objInit;
 
-        if (0) {
+        if (1) {
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
             global $objDatabase; $objDatabase->debug = 1;
@@ -2990,10 +2990,10 @@ class shopmanager extends ShopLibrary {
         $this->_objTpl->setVariable(array(
 // replaced by SHOP_PRODUCT_ID
 //        'SHOP_ID'                     => $shopProductId,
+        'SHOP_PRODUCT_ID'             => $shopProductId,
         'SHOP_PRODUCT_CUSTOM_ID'      => $shopProductIdentifier,
         'SHOP_DATE'                   => date("Y-m-d H:m"),
-        'SHOP_PRODUCT_ID'             => $shopProductId,
-        'SHOP_PRODUCT_NAME'           => $shopProductName ,
+        'SHOP_PRODUCT_NAME'           => htmlentities($shopProductName),
         'SHOP_CAT_MENU'               => $this->getCatMenu($shopCatMenu),
         'SHOP_CUSTOMER_PRICE'         => $shopCustomerPrice,
         'SHOP_RESELLER_PRICE'         => $shopResellerPrice,
@@ -3003,7 +3003,7 @@ class shopmanager extends ShopLibrary {
         'SHOP_SHORT_DESCRIPTION'      => get_wysiwyg_editor('shopShortDescription', $shopShortDescription, 'shop'),
         'SHOP_DESCRIPTION'            => get_wysiwyg_editor('shopDescription', $shopDescription, 'shop'),
         'SHOP_STOCK'                  => $shopStock,
-        'SHOP_MANUFACTURER_URL'       => $shopManufacturerUrl,
+        'SHOP_MANUFACTURER_URL'       => htmlentities($shopManufacturerUrl),
         'SHOP_DISCOUNT'               => $shopDiscount,
         'SHOP_STARTDATE'              => $shopStartdate,
         'SHOP_ENDDATE'                => $shopEnddate,
@@ -3309,8 +3309,8 @@ class shopmanager extends ShopLibrary {
         'TXT_EXPIRY_DATE'          => $_ARRAYLANG['TXT_EXPIRY_DATE'],
         'TXT_PAYMENT_TYPE'         => $_ARRAYLANG['TXT_PAYMENT_TYPE'],
         'TXT_NUMBER'               => $_ARRAYLANG['TXT_NUMBER'],
-        'TXT_PRODUCT_ID'           => $_ARRAYLANG['TXT_PRODUCT_ID'],
-        'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
+        'TXT_PRODUCT_ID'           => $_ARRAYLANG['TXT_ID'],
+        'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_CODE'],
         'TXT_PRODUCT_NAME'         => $_ARRAYLANG['TXT_PRODUCT_NAME'],
         'TXT_PRODUCT_PRICE'        => $_ARRAYLANG['TXT_PRODUCT_PRICE'],
         'TXT_SUM'                  => $_ARRAYLANG['TXT_SUM'],
@@ -3357,6 +3357,9 @@ class shopmanager extends ShopLibrary {
                 'SHOP_ACCOUNT_BLZ'    => stripslashes($objResult->Fields('blz')),
             ));
         }
+
+        // used below; will contain the Products from the database
+        $arrProducts = array();
 
         // Order and Customer query (no products/order items)
         $query = "SELECT o.orderid, o.customerid, o.selected_currency_id, o.currency_order_sum, ".
@@ -3522,7 +3525,7 @@ class shopmanager extends ShopLibrary {
 */
 
                 // set products menu and javascript array
-                $query = "SELECT id, title, ".
+                $query = "SELECT id, product_id, title, ".
                         "resellerprice, normalprice, discountprice, is_special_offer, ".
                         "weight, vat_id ".
                     "FROM ".DBPREFIX."module_shop_products p ".
@@ -3532,16 +3535,18 @@ class shopmanager extends ShopLibrary {
                     $this->errorHandling();
                 } else {
                     while (!$objResult->EOF) {
+echo("ID: ".$objResult->fields['id']."<br />");
                         $arrProducts[$objResult->fields['id']] = array(
-                        'id'               => $objResult->fields['id'],
-                        'title'            => $objResult->fields['title'],
-                        'resellerprice'    => $objResult->fields['resellerprice'],
-                        'normalprice'      => $objResult->fields['normalprice'],
-                        'discountprice'    => $objResult->fields['discountprice'],
-                        'is_special_offer' => $objResult->fields['is_special_offer'],
-                        // Store VAT as percentage, not ID, as we will only update the order items
-                        'percent'          => $this->objVat->getRate($objResult->fields['vat_id']),
-                        'weight'           => Weight::getWeightString($objResult->fields['weight']),
+                            'id'               => $objResult->fields['id'],
+                            'product_id'       => $objResult->fields['product_id'],
+                            'title'            => $objResult->fields['title'],
+                            'resellerprice'    => $objResult->fields['resellerprice'],
+                            'normalprice'      => $objResult->fields['normalprice'],
+                            'discountprice'    => $objResult->fields['discountprice'],
+                            'is_special_offer' => $objResult->fields['is_special_offer'],
+                            // Store VAT as percentage, not ID, as we will only update the order items
+                            'percent'          => $this->objVat->getRate($objResult->fields['vat_id']),
+                            'weight'           => Weight::getWeightString($objResult->fields['weight']),
                         );
                         $objResult->MoveNext();
                     }
@@ -3556,11 +3561,12 @@ class shopmanager extends ShopLibrary {
                         // the menu for a new product - no preselected value
                         $menu .= "<option value='".$arrProduct['id']."'>".$arrProduct['id']."</option>\n";
                         $strJsArrProduct .=
-                        "arrProducts[".$arrProduct['id']."] = new Array();\n".
-                        "arrProducts[".$arrProduct['id']."]['id'] = ".$arrProduct['id'].";\n".
-                        "arrProducts[".$arrProduct['id']."]['title'] = '".addslashes($arrProduct['title'])."';\n".
-                        "arrProducts[".$arrProduct['id']."]['percent'] = '".$arrProduct['percent']."';\n".
-                        "arrProducts[".$arrProduct['id']."]['weight'] = '".$arrProduct['weight']."';\n";
+                            "arrProducts[".$arrProduct['id']."] = new Array();\n".
+                            "arrProducts[".$arrProduct['id']."]['id'] = ".$arrProduct['id'].";\n".
+                            "arrProducts[".$arrProduct['id']."]['product_id'] = ".$arrProduct['product_id'].";\n".
+                            "arrProducts[".$arrProduct['id']."]['title'] = '".addslashes($arrProduct['title'])."';\n".
+                            "arrProducts[".$arrProduct['id']."]['percent'] = '".$arrProduct['percent']."';\n".
+                            "arrProducts[".$arrProduct['id']."]['weight'] = '".$arrProduct['weight']."';\n";
                         if ($isReseller) {
                             $strJsArrProduct .= "arrProducts[".$arrProduct['id']."]['price'] = '".
                             $this->objCurrency->getCurrencyPrice($arrProduct['resellerprice'])."';\n";
@@ -3673,21 +3679,35 @@ class shopmanager extends ShopLibrary {
                 }
 
                 if (($i++ % 2) == 0) {$class="row2";} else {$class="row1";}
+
+                // get product code (aka custom id)
+                $query = "
+                    SELECT product_id FROM ".DBPREFIX."module_shop_products
+                    WHERE id=".$objResult->fields['productid'];
+                $objResult2 = $objDatabase->Execute($query);
+                $productCode = '';
+                if (!$objResult2 || $objResult2->EOF) {
+                    $this->errorHandling();
+                } else {
+                    $productCode = $objResult2->fields['product_id'];
+                }
+
                 $this->_objTpl->setVariable(array(
-                'SHOP_ROWCLASS'         => $class,
-                'SHOP_QUANTITY'         => $productQuantity,
-                'SHOP_PRODUCT_NAME'     => $productName,
-                'SHOP_PRODUCT_PRICE'    => Currency::formatPrice($productPrice),
-                'SHOP_PRODUCT_SUM'      => Currency::formatPrice($rowNetPrice),
-                'SHOP_P_ID'             => ($type == 1
-                    ? $objResult->fields['order_items_id'] // edit order
-                    // if we're only showing the order details, the product ID is only used in the product ID column
-                    : $objResult->fields['productid']),    // show order
-                // fill VAT field
-                'SHOP_PRODUCT_TAX_RATE'     => ($type==1 ? $productVatRate : Vat::getShort($productVatRate)),
-                'SHOP_PRODUCT_TAX_AMOUNT'   => Currency::formatPrice($rowVatAmount),
-                // fill weight field only if it's set to a non-zero value
-                'SHOP_PRODUCT_WEIGHT'       => Weight::getWeightString($weight),
+                    'SHOP_ROWCLASS'           => $class,
+                    'SHOP_QUANTITY'           => $productQuantity,
+                    'SHOP_PRODUCT_NAME'       => $productName,
+                    'SHOP_PRODUCT_PRICE'      => Currency::formatPrice($productPrice),
+                    'SHOP_PRODUCT_SUM'        => Currency::formatPrice($rowNetPrice),
+                    'SHOP_P_ID'               => ($type == 1
+                        ? $objResult->fields['order_items_id'] // edit order
+                        // if we're only showing the order details, the product ID is only used in the product ID column
+                        : $objResult->fields['productid']),    // show order
+                    'SHOP_PRODUCT_CUSTOM_ID'  => $productCode,
+                    // fill VAT field
+                    'SHOP_PRODUCT_TAX_RATE'   => ($type==1 ? $productVatRate : Vat::getShort($productVatRate)),
+                    'SHOP_PRODUCT_TAX_AMOUNT' => Currency::formatPrice($rowVatAmount),
+                    // fill weight field only if it's set to a non-zero value
+                    'SHOP_PRODUCT_WEIGHT'     => Weight::getWeightString($weight),
                 ));
 
                 // get a product menu for each product if $type==1 (edit)
@@ -3703,7 +3723,7 @@ class shopmanager extends ShopLibrary {
                         $menu .= '>'.$arrProduct['id'].'</option>\n';
                     }
                     $this->_objTpl->setVariable(array(
-                    'SHOP_PRODUCT_IDS_MENU' => $menu
+                        'SHOP_PRODUCT_IDS_MENU' => $menu
                     ));
                 }
                 $this->_objTpl->parse("orderdetailsRow");
@@ -4730,7 +4750,7 @@ class shopmanager extends ShopLibrary {
         $q_search = "";
         $q1_category = "";
         $q2_category = "";
-        if ($_SESSION['shopP']['catId']!=0) {
+        if ($_SESSION['shopP']['catId'] != 0) {
             $q1_category = "," .DBPREFIX."module_shop_categories AS c";
             $q2_category = "AND ( p.catid = c.catid AND c.catid = {$_SESSION['shopP']['catId']}) ";
         }
@@ -4920,9 +4940,7 @@ class shopmanager extends ShopLibrary {
             'SHOP_ROWCLASS'                => $class,
             'SHOP_PRODUCT_ID'              => $objResult->fields['id'],
             'SHOP_PRODUCT_CUSTOM_ID'       => stripslashes($objResult->fields['product_id']),
-            // the tags in the template also use double quotes, so we just replace
-            // them with two single quotes for the title attribute.
-            'SHOP_PRODUCT_NAME1'           => htmlentities(str_replace('"', "''", stripslashes($objResult->fields['title']))),
+            'SHOP_PRODUCT_NAME1'           => htmlentities(stripslashes($objResult->fields['title'])),
             'SHOP_PRODUCT_NAME2'           => htmlentities(stripslashes($objResult->fields['title'])),
             'SHOP_PRODUCT_PRICE1'          => $objResult->fields['normalprice'],
             'SHOP_PRODUCT_PRICE2'          => $objResult->fields['resellerprice'],
@@ -4940,7 +4958,7 @@ class shopmanager extends ShopLibrary {
             'SHOP_PRODUCT_DISCOUNT'        => $objResult->fields['discountprice'],
             'SHOP_PRODUCT_SPECIAL_OFFER'   => $specialOffer,
             'SHOP_SPECIAL_OFFER_VALUE_OLD' => $specialOfferValue,
-            'SHOP_PRODUCT_SHORT_DESC'      => $objResult->fields['shortdesc'],
+            'SHOP_PRODUCT_SHORT_DESC'      => htmlentities($objResult->fields['shortdesc']),
             'SHOP_PRODUCT_STATUS'          => $productStatus,
             'SHOP_PRODUCT_STATUS_PICTURE'  => $productStatusPicture,
             'SHOP_ACTIVE_VALUE_OLD'        => $productStatusValue,
