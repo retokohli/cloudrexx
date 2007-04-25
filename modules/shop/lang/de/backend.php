@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 25 Apr 2007 10:36:40 +0200
+* generated date Wed, 25 Apr 2007 11:26:02 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Bestellungen";
@@ -9,7 +9,7 @@ $_ARRAYLANG['TXT_STOCK'] = "Bestand";
 $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'] = "Alle Produktegruppen";
 $_ARRAYLANG['TXT_PRODUCTS'] = "Produkte";
 $_ARRAYLANG['TXT_SHIPPING_ADDRESS'] = "Lieferadresse";
-$_ARRAYLANG['TXT_PRODUCT_ID'] = "Produkt Code";
+$_ARRAYLANG['TXT_PRODUCT_ID'] = "Produkt ID";
 $_ARRAYLANG['TXT_TAX_RATE'] = "Mehrwertsteuer Satz";
 $_ARRAYLANG['TXT_CURRENCIES'] = "Währungen";
 $_ARRAYLANG['TXT_GENERAL_SETTINGS'] = "Allgemeine Einstellungen";
