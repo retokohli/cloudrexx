@@ -28,6 +28,9 @@ News
     <input type="text" style="width: 250px;" value="[[NEWS_REDIRECT]]" name="newsRedirect" />
 
   Neue Blöcke: news_submit_form und news_submitted
+  
+Content Verlauf
+- Von jeder aufgelisteten Seite in den Bereichen "Änderungen freigeben" und "Aktualisierte Seiten" kann nun eine Vorschau angezeigt werden.
 
 ****************************************
 * New Features *************************
@@ -236,6 +239,9 @@ Online Desk
 Content Manager
 - Ein unautorisierter Benutzer kann nun den Status (aktiv / inaktiv / sichtbar / unsichtbar) einer Seite nicht mehr ändern.
 - Ein unautorisierter Benutzer kann nun eine Seite nicht mehr modifizieren.
+
+Content Verlauf
+- Die Position in der Seitenstruktur einer Seite wird beim Speichern nun auch im Content Verlauf aufgenommen.
 
 Newsletter
 - Die Funktion zum Löschen einer Vorlage funktioniert nun auch wenn die Vorlage ein einfaches Anführungszeichen im Namen enthält.
