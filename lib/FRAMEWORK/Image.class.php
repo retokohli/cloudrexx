@@ -451,7 +451,9 @@ class ImageManager
 
             	if ($potentialRequiredMemory > $memoryLimit) {
             		// try to set a higher memory_limit
-            		@ini_set('memory_limit', $potentialRequiredMemory);
+            		if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
+            			return false;
+            		}
             	} else {
             		return false;
             	}
