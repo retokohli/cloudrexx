@@ -167,7 +167,7 @@ class shopmanager extends ShopLibrary {
     {
         global $_ARRAYLANG, $objTemplate, $objInit;
 
-        if (1) {
+        if (0) {
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
             global $objDatabase; $objDatabase->debug = 1;
@@ -182,6 +182,7 @@ class shopmanager extends ShopLibrary {
 
         $this->langId=$objInit->userFrontendLangId;
 
+        // both include ASCMS_PATH_OFFSET!
         $this->shopImagePath = ASCMS_SHOP_IMAGES_PATH . '/';
         $this->shopImageWebPath = ASCMS_SHOP_IMAGES_WEB_PATH . '/';
 
@@ -936,19 +937,19 @@ class shopmanager extends ShopLibrary {
                 }
                 $this->_objTpl->setVariable(array(
                 'SHOP_PRODUCTS_ATTRIBUTE_ID'             => $attributeId,
-                'SHOP_PRODUCTS_ATTRIBUTE_VALUE_ID'         => $id,
-                'SHOP_PRODUCTS_ATTRIBUTE_VALUE_TEXT'    => $arrValues['value'].' ('.$arrValues['price_prefix'].$arrValues['price'].' '.$this->defaultCurrency.')',
-                'SHOP_PRODUCTS_ATTRIBUTE_VALUE_SELECTED'    => $attributeValueSelected == true ? "checked=\"checked\"" : ""
+                'SHOP_PRODUCTS_ATTRIBUTE_VALUE_ID'       => $id,
+                'SHOP_PRODUCTS_ATTRIBUTE_VALUE_TEXT'     => $arrValues['value'].' ('.$arrValues['price_prefix'].$arrValues['price'].' '.$this->defaultCurrency.')',
+                'SHOP_PRODUCTS_ATTRIBUTE_VALUE_SELECTED' => $attributeValueSelected == true ? "checked=\"checked\"" : ""
                 ));
                 $this->_objTpl->parse('attributeValueList');
             }
             $this->_objTpl->setVariable(array(
             'SHOP_PRODUCTS_ATTRIBUTE_ROW_CLASS'    => $i%2 == 0 ? "row1" : "row2",
-            'SHOP_PRODUCTS_ATTRIBUTE_ID'    => $attributeId,
-            'SHOP_PRODUCTS_ATTRIBUTE_NAME'    => $arrAttributeValues['name'],
-            'SHOP_PRODUCTS_ATTRIBUTE_SELECTED'        => $attributeSelected == true ? "checked=\"checked\"" : "",
-            'SHOP_PRODUCTS_ATTRIBUTE_DISPLAY_TYPE'  => $attributeSelected == true ? "block" : "none",
-            'SHOP_PRODUCTS_ATTRIBUTE_SORTID'  => $arrAttributeValues['sortid']
+            'SHOP_PRODUCTS_ATTRIBUTE_ID'           => $attributeId,
+            'SHOP_PRODUCTS_ATTRIBUTE_NAME'         => $arrAttributeValues['name'],
+            'SHOP_PRODUCTS_ATTRIBUTE_SELECTED'     => $attributeSelected == true ? "checked=\"checked\"" : "",
+            'SHOP_PRODUCTS_ATTRIBUTE_DISPLAY_TYPE' => $attributeSelected == true ? "block" : "none",
+            'SHOP_PRODUCTS_ATTRIBUTE_SORTID'       => $arrAttributeValues['sortid']
             ));
             $this->_objTpl->parse('attributeList');
             $i++;
@@ -2520,7 +2521,7 @@ class shopmanager extends ShopLibrary {
             array_push($arrProductId,$productId);
         }
 
-        if (count($arrProductId)>0) {
+        if (count($arrProductId) > 0) {
             foreach ($arrProductId as $pId) {
                 // check the name of the picture
                 $query = "SELECT picture FROM ".DBPREFIX."module_shop_products WHERE id=".intval($pId);
@@ -2532,14 +2533,21 @@ class shopmanager extends ShopLibrary {
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop_products_attributes WHERE product_id=".intval($pId));
 
                 // check if another product use the same picture
-                $query = "SELECT picture FROM ".DBPREFIX."module_shop_products WHERE picture='$pictureName'";
-                $objResult = $objDatabase->SelectLimit($query, 1);
-                if ($objResult->RecordCount()<1) {
-                    // delete the picture and thumbnail
-                    $fileArr = explode (".", $pictureName);
-                    $file = $fileArr[0].$this->thumbnailNameSuffix.".".$fileArr[1];
-                    $this->delFile( $this->shopImagePath.$file );
-                    $this->delFile( $this->shopImagePath.$pictureName);
+                foreach (explode(':', $base64Str) as $imageData) {
+                    list($shopImage, $shopImage_width, $shopImage_height) = explode('?', $imageData);
+                    $query = "SELECT picture FROM ".DBPREFIX."module_shop_products WHERE picture LIKE '%$shopImage%'";
+                    $objResult = $objDatabase->SelectLimit($query, 1);
+                    // not used anywhere
+                    if ($objResult->RecordCount() == 0) {
+                        $shopImage = base64_decode($shopImage);
+                        // skip default image
+                        if ($shopImage == $this->_defaultImage) {
+                            continue;
+                        }
+                        // delete the picture and thumbnail
+                        $this->delFile($this->shopImagePath.$shopImage.'.'.$this->thumbnailNameSuffix);
+                        $this->delFile($this->shopImagePath.$shopImage);
+                    }
                 }
             }
             return true;
@@ -2614,6 +2622,7 @@ class shopmanager extends ShopLibrary {
         // begin language variables
         $this->_objTpl->setVariable(array(
         'TXT_PRODUCT_ID'              => $_ARRAYLANG['TXT_PRODUCT_ID'],
+        'TXT_SHOP_PRODUCT_CUSTOM_ID'  => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
         'TXT_MANUFACTURER_URL'        => $_ARRAYLANG['TXT_MANUFACTURER_URL'],
         'TXT_WITH_HTTP'               => $_ARRAYLANG['TXT_WITH_HTTP'],
         'TXT_PRODUCT_INFORMATIONS'    => $_ARRAYLANG['TXT_PRODUCT_INFORMATIONS'],
@@ -2712,7 +2721,7 @@ class shopmanager extends ShopLibrary {
         if (!isset($_REQUEST['id'])) { //OR $_REQUEST['new']
             $this->_objTpl->setVariable(array(
             'SHOP_CAT_MENU'                      => $this->getCatMenu($shopCatMenu),
-            'SHOP_PRODUCT_IDENTIFIER'            => "",
+            'SHOP_PRODUCT_CUSTOM_ID'             => '',
             'SHOP_DATE'                          => date("Y-m-d H:m"),
             'SHOP_ARTICLE_ACTIVE'                => $shopArticleActive,
             'SHOP_B2B'                           => $shopB2B,
@@ -2979,8 +2988,9 @@ class shopmanager extends ShopLibrary {
         $shopThumbnailImagePath = $this->shopImageWebPath.$shopTempThumbnailName;
         $shopDescription        = stripslashes($shopDescription);
         $this->_objTpl->setVariable(array(
-        'SHOP_ID'                     => $shopProductId,
-        'SHOP_PRODUCT_IDENTIFIER'     => $shopProductIdentifier,
+// replaced by SHOP_PRODUCT_ID
+//        'SHOP_ID'                     => $shopProductId,
+        'SHOP_PRODUCT_CUSTOM_ID'      => $shopProductIdentifier,
         'SHOP_DATE'                   => date("Y-m-d H:m"),
         'SHOP_PRODUCT_ID'             => $shopProductId,
         'SHOP_PRODUCT_NAME'           => $shopProductName ,
@@ -3020,9 +3030,9 @@ class shopmanager extends ShopLibrary {
         'SHOP_PICTURE1_IMG_SRC'       => (!empty($arrImages[1]['img']) && is_file($docroot.$arrImages[1]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[1]['img'].$this->mediaThumbNailSuffix : $this->_defaultImage,
         'SHOP_PICTURE2_IMG_SRC'       => (!empty($arrImages[2]['img']) && is_file($docroot.$arrImages[2]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[2]['img'].$this->mediaThumbNailSuffix : $this->_defaultImage,
         'SHOP_PICTURE3_IMG_SRC'       => (!empty($arrImages[3]['img']) && is_file($docroot.$arrImages[3]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[3]['img'].$this->mediaThumbNailSuffix : $this->_defaultImage,
-        'SHOP_PICTURE1_IMG_SRC_NO_THUMB'     => (!empty($arrImages[1]['img']) && is_file($docroot.$arrImages[1]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[1]['img'] : $this->_defaultImage,
-        'SHOP_PICTURE2_IMG_SRC_NO_THUMB'     => (!empty($arrImages[2]['img']) && is_file($docroot.$arrImages[2]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[2]['img'] : $this->_defaultImage,
-        'SHOP_PICTURE3_IMG_SRC_NO_THUMB'     => (!empty($arrImages[3]['img']) && is_file($docroot.$arrImages[3]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[3]['img'] : $this->_defaultImage,
+        'SHOP_PICTURE1_IMG_SRC_NO_THUMB' => (!empty($arrImages[1]['img']) && is_file($docroot.$arrImages[1]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[1]['img'] : $this->_defaultImage,
+        'SHOP_PICTURE2_IMG_SRC_NO_THUMB' => (!empty($arrImages[2]['img']) && is_file($docroot.$arrImages[2]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[2]['img'] : $this->_defaultImage,
+        'SHOP_PICTURE3_IMG_SRC_NO_THUMB' => (!empty($arrImages[3]['img']) && is_file($docroot.$arrImages[3]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[3]['img'] : $this->_defaultImage,
         'SHOP_PICTURE1_IMG_WIDTH'     => $arrImages[1]['width'],
         'SHOP_PICTURE1_IMG_HEIGHT'    => $arrImages[1]['height'],
         'SHOP_PICTURE2_IMG_WIDTH'     => $arrImages[2]['width'],
@@ -3300,6 +3310,7 @@ class shopmanager extends ShopLibrary {
         'TXT_PAYMENT_TYPE'         => $_ARRAYLANG['TXT_PAYMENT_TYPE'],
         'TXT_NUMBER'               => $_ARRAYLANG['TXT_NUMBER'],
         'TXT_PRODUCT_ID'           => $_ARRAYLANG['TXT_PRODUCT_ID'],
+        'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
         'TXT_PRODUCT_NAME'         => $_ARRAYLANG['TXT_PRODUCT_NAME'],
         'TXT_PRODUCT_PRICE'        => $_ARRAYLANG['TXT_PRODUCT_PRICE'],
         'TXT_SUM'                  => $_ARRAYLANG['TXT_SUM'],
@@ -4681,11 +4692,11 @@ class shopmanager extends ShopLibrary {
         'TXT_EKP'                    => $_ARRAYLANG['TXT_EKP'],
         'TXT_TAX'                    => $_ARRAYLANG['TXT_TAX'],
         'TXT_WEIGHT'                 => $_ARRAYLANG['TXT_WEIGHT'],
-        'TXT_DISTRIBUTION'                => $_ARRAYLANG['TXT_DISTRIBUTION'],
+        'TXT_DISTRIBUTION'           => $_ARRAYLANG['TXT_DISTRIBUTION'],
         'TXT_STATUS'                 => $_ARRAYLANG['TXT_STATUS'],
         'TXT_ACTION'                 => $_ARRAYLANG['TXT_ACTION'],
         'TXT_STOCK'                  => $_ARRAYLANG['TXT_STOCK'],
-        'TXT_PRODUCT_ID'             => $_ARRAYLANG['TXT_PRODUCT_ID'],
+        'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_CODE'],
         'TXT_NAME'                   => $_ARRAYLANG['TXT_NAME'],
         'TXT_ACCEPT_CHANGES'         => $_ARRAYLANG['TXT_ACCEPT_CHANGES'],
         'TXT_ALL_PRODUCT_GROUPS'     => $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'],
@@ -4728,7 +4739,8 @@ class shopmanager extends ShopLibrary {
             $q_search = "AND (p.title LIKE '%{$_SESSION['shopP']['shopSearchTerm']}%' ".
             "OR p.description LIKE '%{$_SESSION['shopP']['shopSearchTerm']}%' ".
             "OR p.shortdesc LIKE '%{$_SESSION['shopP']['shopSearchTerm']}%' ".
-            "OR p.id LIKE '%{$_SESSION['shopP']['shopSearchTerm']}%')";
+            "OR p.id LIKE '%{$_SESSION['shopP']['shopSearchTerm']}%' ".
+            "OR p.product_id LIKE '%{$_SESSION['shopP']['shopSearchTerm']}%')";
         }
         $shopQuerySpecialoffer = "";
         if (isset($_REQUEST['specialoffer'])) {
@@ -4760,8 +4772,9 @@ class shopmanager extends ShopLibrary {
                 $shopWeightOld        = $_POST['weightOld'][$id];
                 $shopDistribution     = $_POST['distribution'][$id];
                 $shopDistributionOld  = $_POST['distributionOld'][$id];
-                // flag used to determine whether the record has to be updated in the database
-                $updateProduct =  false;
+                // flag used to determine whether the record has to be
+                // updated in the database
+                $updateProduct = false;
 
                 // check whether weight was changed
                 if ($shopWeight != $shopWeightOld) {
@@ -4882,6 +4895,7 @@ class shopmanager extends ShopLibrary {
                 $specialOffer = "";
                 $specialOfferValue = "";
             }
+/* old and bogus -- won't work anymore
             $productsPictureName = $objResult->fields['picture'];
             if (eregi("\.png$", $productsPictureName))
             $fileExtension = ".png";
@@ -4893,21 +4907,19 @@ class shopmanager extends ShopLibrary {
             $fileExtension = ".gif";
 
             if (empty($productsPictureName)) {
-                $thumbnailPath = $this->shopImageWebPath.$this->noPictureName;
+                $thumbnailPath = $this->_defaultImage;
             } else {
                 $tempName = basename($productsPictureName, $fileExtension).$this->thumbnailNameSuffix.$fileExtension;
-                // ??? $temp = $this->shopImagePath = $this->shopImageWebPath.$tempName;
                 if (file_exists($this->shopImagePath.$tempName)) {
                     $productsPictureName = basename($productsPictureName, $fileExtension).$this->thumbnailNameSuffix.$fileExtension;
                     $thumbnailPath = $this->shopImageWebPath.$productsPictureName;
                 }
             }
-
-            //"thumb_". $objResult->fields['picture');
+*/
             $this->_objTpl->setVariable(array(
             'SHOP_ROWCLASS'                => $class,
             'SHOP_PRODUCT_ID'              => $objResult->fields['id'],
-            'SHOP_PRODUCT_IDENTIFIER'      => stripslashes($objResult->fields['product_id']),
+            'SHOP_PRODUCT_CUSTOM_ID'       => stripslashes($objResult->fields['product_id']),
             // the tags in the template also use double quotes, so we just replace
             // them with two single quotes for the title attribute.
             'SHOP_PRODUCT_NAME1'           => htmlentities(str_replace('"', "''", stripslashes($objResult->fields['title']))),
@@ -4923,7 +4935,8 @@ class shopmanager extends ShopLibrary {
                 $objResult->fields['handler'], "distribution[".$objResult->fields['id']."]"),
             'SHOP_PRODUCT_DISTRIBUTION'    => $objResult->fields['handler'],
             'SHOP_PRODUCT_STOCK'           => $objResult->fields['stock'],
-            'SHOP_PRODUCT_THUMBNAIL'       => $thumbnailPath,
+            // unused
+            //'SHOP_PRODUCT_THUMBNAIL'       => $thumbnailPath,
             'SHOP_PRODUCT_DISCOUNT'        => $objResult->fields['discountprice'],
             'SHOP_PRODUCT_SPECIAL_OFFER'   => $specialOffer,
             'SHOP_SPECIAL_OFFER_VALUE_OLD' => $specialOfferValue,

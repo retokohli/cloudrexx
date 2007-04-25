@@ -169,7 +169,7 @@ class Shop extends ShopLibrary {
     {
         global $_LANGID, $objDatabase;
 
-        if (0) {
+        if (1) {
             global $objDatabase; $objDatabase->debug = 1;
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
@@ -767,17 +767,16 @@ class Shop extends ShopLibrary {
                     "FROM ".DBPREFIX."module_shop_products ".
                     "WHERE catid=".$catId_Pic." ORDER BY sort_order";
                 $objResultProduct = $objDatabase->SelectLimit($queryProduct, 1);
-                if ($objResultProduct !== false) {
+                if ($objResultProduct) {
                     $arrImages = $this->_getShopImagesFromBase64String($objResultProduct->fields['picture']);
                 }
 
                 // no product picture available
                 if (!isset($arrImages) || $arrImages[1]['img'] == '') {
-                    $thumbnailPath = $this->shopImageWebPath.$this->noPictureName;
+                    $thumbnailPath = $this->_defaultImage;
                 } else {
                     // path offset is saved with the image path!
-                    $thumbnailPath = //((ASCMS_PATH_OFFSET != '') ? ASCMS_PATH_OFFSET.'/' : '' ).
-                        $arrImages[1]['img'].'.thumb';
+                    $thumbnailPath = $arrImages[1]['img'].'.thumb';
                 }
 
                 $this->objTemplate->setVariable(array(
@@ -848,7 +847,7 @@ class Shop extends ShopLibrary {
         $treeArray = $this->_makeArrCategories();
         $arrCats = array_keys($treeArray);
         if (!$catId) {
-            $catId = $arrCats[0];
+            $catId = 0; //$arrCats[0];
         }
         if ($this->objTemplate->blockExists('shopNextCategoryLink')) {
             $nextCat = isset($arrCats[array_search($catId, $arrCats)+1]) ? $arrCats[array_search($catId, $arrCats)+1] : $arrCats[0];
@@ -877,7 +876,6 @@ class Shop extends ShopLibrary {
             $productId = $_SESSION['shop']['cart']['products'][$productId]['id'];
         }
 
-        //$shopMenuOptions = $this->getCatMenu($selectedId=$catId);
         $shopMenuOptions = $this->getCatMenu($catId);
         $shopMenu = '<form action="?section=shop" method="post">';
         $shopMenu .= '<input type="text" name="term" value="'.$term.'" />';
@@ -889,13 +887,15 @@ class Shop extends ShopLibrary {
         $this->objTemplate->setVariable("SHOP_CART_INFO", $this->showCartInfo());
 
         $q_search = "";
-        $q_special_offer = "AND (is_special_offer = 1) ";
+        $q_special_offer = '';//"AND (is_special_offer = 1) ";
         $q1_category = "";
         $q2_category = "";
         $pagingTermQuery = "";
-        $pagingCatIdQuery="";
+        $pagingCatIdQuery = "";
 
-        if ($catId!=0) {
+        // consider the category iff it has been requested, not if it has been
+        // determined above
+        if ($catId > 0) {
            $q_special_offer = "";
            $q1_category = "," .DBPREFIX."module_shop_categories AS c";
            $q2_category = "AND ( p.catid = c.catid
@@ -905,12 +905,13 @@ class Shop extends ShopLibrary {
 
         if (!empty($term)) {
            $q_special_offer = "";
-           $q_search = "AND (
-                              p.title LIKE '%$term%'
-                           OR p.description LIKE '%$term%'
-                           OR p.shortdesc LIKE '%$term%'
-                           OR p.id LIKE '%$term%'
-                       )";
+           $q_search = "
+               AND (  p.title LIKE '%$term%'
+                   OR p.description LIKE '%$term%'
+                   OR p.shortdesc LIKE '%$term%'
+                   OR p.product_id LIKE '%$term%'
+                   OR p.id LIKE '%$term%')
+           ";
            $pagingTermQuery = "&amp;term=".$term;
         }
 
@@ -949,16 +950,19 @@ class Shop extends ShopLibrary {
                     $count,
                     $pos,
                     "&amp;section=shop".$pagingCatIdQuery.$pagingTermQuery,
-                    "<b>".$_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'].' "'.
-                        htmlentities($this->arrCategoriesName[$catId], ENT_QUOTES, CONTREXX_CHARSET).
-                            '"</b>', true);
+                    '',
+                    true);
                 if (!($objResult = $objDatabase->SelectLimit($q, $_CONFIG['corePagingLimit'], $pos))) {
                     $this->errorHandling();
                     return false;
                 }
             }
-            $this->objTemplate->setVariable("SHOP_PRODUCT_PAGING", $paging);
-            $this->objTemplate->setVariable("SHOP_PRODUCT_TOTAL", $count);
+            $this->objTemplate->setVariable(array(
+                'TXT_PRODUCTS_IN_CATEGORY' => $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'],
+                'SHOP_CATEGORY_NAME'       => htmlentities($this->arrCategoriesName[$catId], ENT_QUOTES, CONTREXX_CHARSET),
+                'SHOP_PRODUCT_PAGING'      => $paging,
+                'SHOP_PRODUCT_TOTAL'       => $count,
+            ));
         }
 
         $this->objTemplate->setCurrentBlock('shopProductRow');
@@ -2181,7 +2185,7 @@ sendReq('', 1);
 
                     array_push($arrProducts, array(
                         'id'             => $arrProduct['id'],
-                        'custom_id'      => $objResult->fields['product_id'],
+                        'product_id'     => $objResult->fields['product_id'],
                         'cart_id'        => $cartProdId,
                         'title'          => empty($_GET['remoteJs']) ? $objResult->fields['title'] : htmlspecialchars($objUtf8->strToUtf8($objResult->fields['title'])),
                         'options'        => $productOptions,
@@ -2239,7 +2243,7 @@ sendReq('', 1);
                 // (empty string) already -- see _parseCart().
                 $this->objTemplate->setVariable(array(
                     'SHOP_PRODUCT_ID'             => $arrProduct['id'],
-                    'SHOP_PRODUCT_CUSTOM_ID'      => $arrProduct['custom_id'],
+                    'SHOP_PRODUCT_CUSTOM_ID'      => $arrProduct['product_id'],
                     'SHOP_PRODUCT_CART_ID'        => $arrProduct['cart_id'],
                     'SHOP_PRODUCT_TITLE'          => $arrProduct['title'].'<br />',
                     'SHOP_PRODUCT_OPTIONS'        => $arrProduct['options'],
@@ -2271,7 +2275,7 @@ sendReq('', 1);
         }
 
         $this->objTemplate->setVariable(array(
-            'TXT_PRODUCT_ID'               => $_ARRAYLANG['TXT_PRODUCT_ID'],
+            'TXT_PRODUCT_ID'               => $_ARRAYLANG['TXT_ID'],
             'TXT_SHOP_PRODUCT_CUSTOM_ID'   => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
             'TXT_PRODUCT'                  => $_ARRAYLANG['TXT_PRODUCT'],
             'TXT_UNIT_PRICE'               => $_ARRAYLANG['TXT_UNIT_PRICE'],
@@ -3400,6 +3404,7 @@ sendReq('', 1);
 
                     $this->objTemplate->setVariable(array(
                         'SHOP_PRODUCT_ID'           => $arrProduct['id'],
+                        'SHOP_PRODUCT_CUSTOM_ID'    => $arrProduct['product_id'],
                         'SHOP_PRODUCT_TITLE'        => $objResult->fields['title'].$productOptions,
                         'SHOP_PRODUCT_PRICE'        => $this->objCurrency->formatPrice(($price+$priceOptions)*$arrProduct['quantity']),
                         'SHOP_PRODUCT_QUANTITY'     => $arrProduct['quantity'],
@@ -3463,6 +3468,7 @@ sendReq('', 1);
                 'TXT_COMMENTS'          => $_ARRAYLANG['TXT_COMMENTS'],
                 'TXT_ORDER_NOW'         => $_ARRAYLANG['TXT_ORDER_NOW'],
                 'TXT_WEIGHT'            => $_ARRAYLANG['TXT_WEIGHT'],
+                'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
             ));
             if ($this->objVat->isEnabled()) {
                 $this->objTemplate->setVariable(array(
@@ -3594,16 +3600,17 @@ sendReq('', 1);
         $taxTxt  = '';
 
         foreach ($_SESSION['shop']['cart']['products'] as $cartProdId => $arrProduct) {
-            $objResult = $objDatabase->SelectLimit("SELECT id,
-                                  title,
-                                  catid,
-                                  normalprice,
-                                  resellerprice,
-                                  discountprice,
-                                  is_special_offer
-                             FROM ".DBPREFIX."module_shop_products
-                            WHERE status = 1
-                              AND id = ".$arrProduct['id'], 1);
+            $objResult = $objDatabase->SelectLimit("
+               SELECT product_id,
+                      title,
+                      catid,
+                      normalprice,
+                      resellerprice,
+                      discountprice,
+                      is_special_offer
+                 FROM ".DBPREFIX."module_shop_products
+                WHERE status = 1
+                  AND id = ".$arrProduct['id'], 1);
             if ($objResult !== false && $objResult->RecordCount()==1) {
                 $price = $this->_getProductPrice($objResult->fields['normalprice'], $objResult->fields['resellerprice'], $objResult->fields['discountprice'],$objResult->fields['is_special_offer']);
                 $productName = substr($objResult->fields['title'], 0, 40);
@@ -3629,7 +3636,7 @@ sendReq('', 1);
                 }
 
 
-                $cartTxt .= $objResult->fields['id']." | ".
+                $cartTxt .= $objResult->fields['product_id']." | ".
                             $productName.$productOptions." | ".
                             $price." ".$this->aCurrencyUnitName." | ".
                             $arrProduct['quantity']." | ".
@@ -3648,7 +3655,7 @@ sendReq('', 1);
 "-----------------------------------------------------------------\n".
 $_ARRAYLANG['TXT_ORDER_INFOS']."\n".
 "-----------------------------------------------------------------\n".
-$_ARRAYLANG['TXT_ID']." | ".$_ARRAYLANG['TXT_PRODUCT']." | ".$_ARRAYLANG['TXT_UNIT_PRICE']." | ".$_ARRAYLANG['TXT_QUANTITY']." | ".$_ARRAYLANG['TXT_TOTAL']."\n".
+$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID']." | ".$_ARRAYLANG['TXT_PRODUCT']." | ".$_ARRAYLANG['TXT_UNIT_PRICE']." | ".$_ARRAYLANG['TXT_QUANTITY']." | ".$_ARRAYLANG['TXT_TOTAL']."\n".
 "-----------------------------------------------------------------\n".
 $cartTxt.
 "-----------------------------------------------------------------\n".
