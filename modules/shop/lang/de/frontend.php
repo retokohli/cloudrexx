@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 24 Apr 2007 16:34:13 +0200
+* generated date Wed, 25 Apr 2007 10:36:40 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
@@ -10,7 +10,7 @@ $_ARRAYLANG['TXT_SHOPPING_CART'] = "Warenkorb:";
 $_ARRAYLANG['TXT_SHOPPING_CART_VALUE'] = "Produkt(e) im Gesamtwert von";
 $_ARRAYLANG['TXT_PRODUCTS'] = "Produkte";
 $_ARRAYLANG['TXT_SHIPPING_ADDRESS'] = "Lieferadresse";
-$_ARRAYLANG['TXT_PRODUCT_ID'] = "Produkt ID";
+$_ARRAYLANG['TXT_PRODUCT_ID'] = "Produkt Code";
 $_ARRAYLANG['TXT_TAX_RATE'] = "Mehrwertsteuer Satz";
 $_ARRAYLANG['TXT_ORDER_NOW'] = "Bestellung absenden >>";
 $_ARRAYLANG['TXT_CURRENCIES'] = "Währungen";
@@ -102,7 +102,7 @@ $_ARRAYLANG['TXT_SHOP_ACCOUNT_DETAILS_SENT_SUCCESSFULLY'] = "Ihre Zugangsdaten s
 $_ARRAYLANG['TXT_SHOP_UNABLE_TO_SEND_EMAIL'] = "Es konnte keine E-Mail Nachricht gesendet werden!";
 $_ARRAYLANG['TXT_SHOP_UNABLE_SET_NEW_PASSWORD'] = "Es konnte kein neues Kennwort gesetzt werden!";
 $_ARRAYLANG['TXT_SHOP_NO_ACCOUNT_WITH_EMAIL'] = "Es konnte kein Benutzerkonto mit der angegebenen E-Mail Adresse gefunden werden!";
-$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] = "Unsere ID";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] = "Produkt Code";
 $_ARRAYLANG['TXT_SHOP_IMAGE'] = "Bild";
 $_ARRAYLANG['TXT_SHOP_CART_IS_LOADING'] = "Warenkorb wird geladen...";
 $_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'] = "Der Warenkorb konnte nicht geladen werden!";

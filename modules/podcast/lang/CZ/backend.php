@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 24 Apr 2007 16:34:13 +0200
+* generated date Wed, 25 Apr 2007 10:36:40 +0200
 **/
 
 $_ARRAYLANG['TXT_PODCAST_OVERVIEW'] = "Übersicht";

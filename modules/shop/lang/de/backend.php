@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 24 Apr 2007 16:34:13 +0200
+* generated date Wed, 25 Apr 2007 10:36:40 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Bestellungen";
@@ -9,7 +9,7 @@ $_ARRAYLANG['TXT_STOCK'] = "Bestand";
 $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'] = "Alle Produktegruppen";
 $_ARRAYLANG['TXT_PRODUCTS'] = "Produkte";
 $_ARRAYLANG['TXT_SHIPPING_ADDRESS'] = "Lieferadresse";
-$_ARRAYLANG['TXT_PRODUCT_ID'] = "Produkt ID";
+$_ARRAYLANG['TXT_PRODUCT_ID'] = "Produkt Code";
 $_ARRAYLANG['TXT_TAX_RATE'] = "Mehrwertsteuer Satz";
 $_ARRAYLANG['TXT_CURRENCIES'] = "Währungen";
 $_ARRAYLANG['TXT_GENERAL_SETTINGS'] = "Allgemeine Einstellungen";
@@ -227,7 +227,7 @@ $_ARRAYLANG['TXT_INDICATE_PAYMENT_WINDOW_AS'] = "Zahlungsfenster anzeigen als";
 $_ARRAYLANG['TXT_PAYPAL'] = "PayPal";
 $_ARRAYLANG['TXT_PAYPAL_EMAIL_ACCOUNT'] = "PayPal E-Mail Konto";
 $_ARRAYLANG['TXT_YELLOWPAY_POSTFINANCE'] = "yellowpay PostFinance";
-$_ARRAYLANG['TXT_SHOP_ID'] = "Shop ID";
+$_ARRAYLANG['TXT_SHOP_ID'] = "ID";
 $_ARRAYLANG['TXT_HASH_SEED'] = "Hash seed";
 $_ARRAYLANG['TXT_IMMEDIATE'] = "immediate";
 $_ARRAYLANG['TXT_DEFERRED'] = "deferred";
