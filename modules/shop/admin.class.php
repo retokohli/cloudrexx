@@ -2246,7 +2246,7 @@ class shopmanager extends ShopLibrary {
                 $this->_objTpl->setVariable(array(
                 'SHOP_ROWCLASS'       => $class,
                 'SHOP_CAT_ID'         => $key,
-                'SHOP_CAT_NAME'       => htmlentities($val),
+                'SHOP_CAT_NAME'       => htmlentities($val, ENT_QUOTES, CONTREXX_CHARSET),
                 'SHOP_CAT_SORTING'    => $this->categoryTreeSorting[$key],
                 'SHOP_CAT_STATUS'     => $catstatus,
                 'SHOP_CAT_LEVEL'      => $this->categoryTreeLevel[$key],
@@ -2993,7 +2993,7 @@ class shopmanager extends ShopLibrary {
         'SHOP_PRODUCT_ID'             => $shopProductId,
         'SHOP_PRODUCT_CUSTOM_ID'      => $shopProductIdentifier,
         'SHOP_DATE'                   => date("Y-m-d H:m"),
-        'SHOP_PRODUCT_NAME'           => htmlentities($shopProductName),
+        'SHOP_PRODUCT_NAME'           => htmlentities($shopProductName, ENT_QUOTES, CONTREXX_CHARSET),
         'SHOP_CAT_MENU'               => $this->getCatMenu($shopCatMenu),
         'SHOP_CUSTOMER_PRICE'         => $shopCustomerPrice,
         'SHOP_RESELLER_PRICE'         => $shopResellerPrice,
@@ -3003,7 +3003,7 @@ class shopmanager extends ShopLibrary {
         'SHOP_SHORT_DESCRIPTION'      => get_wysiwyg_editor('shopShortDescription', $shopShortDescription, 'shop'),
         'SHOP_DESCRIPTION'            => get_wysiwyg_editor('shopDescription', $shopDescription, 'shop'),
         'SHOP_STOCK'                  => $shopStock,
-        'SHOP_MANUFACTURER_URL'       => htmlentities($shopManufacturerUrl),
+        'SHOP_MANUFACTURER_URL'       => htmlentities($shopManufacturerUrl, ENT_QUOTES, CONTREXX_CHARSET),
         'SHOP_DISCOUNT'               => $shopDiscount,
         'SHOP_STARTDATE'              => $shopStartdate,
         'SHOP_ENDDATE'                => $shopEnddate,
@@ -4631,7 +4631,7 @@ echo("ID: ".$objResult->fields['id']."<br />");
                 if ($selectedid==$key) {
                     $selected= "selected";
                 }
-                $result.= "<option value='$key' $selected>$output".htmlentities($val)."</option>\n";
+                $result.= "<option value='$key' $selected>$output".htmlentities($val, ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
 // fix: the following line produces infinite loops if parent == child
 //                if (isset($navtable[$key])) {
                 if ( ($key != $parcat) &&
@@ -4915,54 +4915,33 @@ echo("ID: ".$objResult->fields['id']."<br />");
                 $specialOffer = "";
                 $specialOfferValue = "";
             }
-/* old and bogus -- won't work anymore
-            $productsPictureName = $objResult->fields['picture'];
-            if (eregi("\.png$", $productsPictureName))
-            $fileExtension = ".png";
-            if (eregi("\.jpg$", $productsPictureName))
-            $fileExtension = ".jpg";
-            if (eregi("\.jpeg$", $productsPictureName))
-            $fileExtension = ".jpeg$";
-            if (eregi("\.gif$", $productsPictureName))
-            $fileExtension = ".gif";
-
-            if (empty($productsPictureName)) {
-                $thumbnailPath = $this->_defaultImage;
-            } else {
-                $tempName = basename($productsPictureName, $fileExtension).$this->thumbnailNameSuffix.$fileExtension;
-                if (file_exists($this->shopImagePath.$tempName)) {
-                    $productsPictureName = basename($productsPictureName, $fileExtension).$this->thumbnailNameSuffix.$fileExtension;
-                    $thumbnailPath = $this->shopImageWebPath.$productsPictureName;
-                }
-            }
-*/
             $this->_objTpl->setVariable(array(
-            'SHOP_ROWCLASS'                => $class,
-            'SHOP_PRODUCT_ID'              => $objResult->fields['id'],
-            'SHOP_PRODUCT_CUSTOM_ID'       => stripslashes($objResult->fields['product_id']),
-            'SHOP_PRODUCT_NAME1'           => htmlentities(stripslashes($objResult->fields['title'])),
-            'SHOP_PRODUCT_NAME2'           => htmlentities(stripslashes($objResult->fields['title'])),
-            'SHOP_PRODUCT_PRICE1'          => $objResult->fields['normalprice'],
-            'SHOP_PRODUCT_PRICE2'          => $objResult->fields['resellerprice'],
-            'SHOP_PRODUCT_TAX_MENU'        => $this->objVat->getShortMenuString(
-                $objResult->fields['vat_id'], 'taxId['.$objResult->fields['id'].']'),   // no extra attributes (yet)
-            'SHOP_PRODUCT_TAX_ID'          => ($objResult->fields['vat_id']
-                                                ? $objResult->fields['vat_id'] : 'NULL'), // Old only
-            'SHOP_PRODUCT_WEIGHT'          => Weight::getWeightString($objResult->fields['weight']),
-            'SHOP_DISTRIBUTION_MENU'       => $this->objDistribution->getDistributionMenu(
-                $objResult->fields['handler'], "distribution[".$objResult->fields['id']."]"),
-            'SHOP_PRODUCT_DISTRIBUTION'    => $objResult->fields['handler'],
-            'SHOP_PRODUCT_STOCK'           => $objResult->fields['stock'],
-            // unused
-            //'SHOP_PRODUCT_THUMBNAIL'       => $thumbnailPath,
-            'SHOP_PRODUCT_DISCOUNT'        => $objResult->fields['discountprice'],
-            'SHOP_PRODUCT_SPECIAL_OFFER'   => $specialOffer,
-            'SHOP_SPECIAL_OFFER_VALUE_OLD' => $specialOfferValue,
-            'SHOP_PRODUCT_SHORT_DESC'      => htmlentities($objResult->fields['shortdesc']),
-            'SHOP_PRODUCT_STATUS'          => $productStatus,
-            'SHOP_PRODUCT_STATUS_PICTURE'  => $productStatusPicture,
-            'SHOP_ACTIVE_VALUE_OLD'        => $productStatusValue,
-            'SHOP_SORT_ORDER'              => $objResult->fields['sort_order']
+                'SHOP_ROWCLASS'                => $class,
+                'SHOP_PRODUCT_ID'              => $objResult->fields['id'],
+                'SHOP_PRODUCT_CUSTOM_ID'       => $objResult->fields['product_id'],
+                'SHOP_PRODUCT_NAME1'           => $objResult->fields['title'],
+                'SHOP_PRODUCT_NAME2'           => $objResult->fields['title'],
+                'SHOP_PRODUCT_PRICE1'          => $objResult->fields['normalprice'],
+                'SHOP_PRODUCT_PRICE2'          => $objResult->fields['resellerprice'],
+                'SHOP_PRODUCT_TAX_MENU'        => $this->objVat->getShortMenuString(
+                    $objResult->fields['vat_id'], 'taxId['.$objResult->fields['id'].']'),   // no extra attributes (yet)
+                'SHOP_PRODUCT_TAX_ID'          => ($objResult->fields['vat_id']
+                                                    ? $objResult->fields['vat_id'] : 'NULL'), // Old only
+                'SHOP_PRODUCT_WEIGHT'          => Weight::getWeightString($objResult->fields['weight']),
+                'SHOP_DISTRIBUTION_MENU'       => $this->objDistribution->getDistributionMenu(
+                    $objResult->fields['handler'], "distribution[".$objResult->fields['id']."]"),
+                'SHOP_PRODUCT_DISTRIBUTION'    => $objResult->fields['handler'],
+                'SHOP_PRODUCT_STOCK'           => $objResult->fields['stock'],
+                // unused
+                //'SHOP_PRODUCT_THUMBNAIL'       => $thumbnailPath,
+                'SHOP_PRODUCT_DISCOUNT'        => $objResult->fields['discountprice'],
+                'SHOP_PRODUCT_SPECIAL_OFFER'   => $specialOffer,
+                'SHOP_SPECIAL_OFFER_VALUE_OLD' => $specialOfferValue,
+                'SHOP_PRODUCT_SHORT_DESC'      => $objResult->fields['shortdesc'],
+                'SHOP_PRODUCT_STATUS'          => $productStatus,
+                'SHOP_PRODUCT_STATUS_PICTURE'  => $productStatusPicture,
+                'SHOP_ACTIVE_VALUE_OLD'        => $productStatusValue,
+                'SHOP_SORT_ORDER'              => $objResult->fields['sort_order']
             ));
             $this->_objTpl->parse("productRow");
             $i++;

@@ -878,7 +878,7 @@ class Shop extends ShopLibrary {
 
         $shopMenuOptions = $this->getCatMenu($catId);
         $shopMenu = '<form action="?section=shop" method="post">';
-        $shopMenu .= '<input type="text" name="term" value="'.htmlentities($term).'" />';
+        $shopMenu .= '<input type="text" name="term" value="'.htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET).'" />';
         $shopMenu .= '<select name="catId">';
         $shopMenu .= '<option value="0">'.$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].'</option>';
         $shopMenu .= $shopMenuOptions.'</select>';
@@ -913,7 +913,7 @@ class Shop extends ShopLibrary {
                    OR p.product_id LIKE '%".mysql_escape_string($term)."%'
                    OR p.id LIKE '%".mysql_escape_string($term)."%')
            ";
-           $pagingTermQuery = "&amp;term=".htmlentities($term);
+           $pagingTermQuery = "&amp;term=".htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET);
         }
 
         $objResult = '';
@@ -1799,7 +1799,7 @@ sendReq('', 1);
                 if ($selectedid == $key) {
                     $selected= "selected=\"selected\"";
                 }
-                $val = htmlentities($val);
+                $val = htmlentities($val, ENT_QUOTES, CONTREXX_CHARSET);
                 $result.= "<option value=\"".$key."\" $selected>$output$val</option>\n";
 // fix: the following line produces infinite loops if parent == child
 //                if (isset($this->arrCategoriesTable[$key])) {
@@ -2281,7 +2281,7 @@ sendReq('', 1);
         }
 
         $this->objTemplate->setVariable(array(
-            'TXT_PRODUCT_ID'               => $_ARRAYLANG['TXT_ID'],
+            'TXT_PRODUCT_ID'               => $_ARRAYLANG['TXT_SHOP_ID'],
             'TXT_SHOP_PRODUCT_CUSTOM_ID'   => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
             'TXT_PRODUCT'                  => $_ARRAYLANG['TXT_PRODUCT'],
             'TXT_UNIT_PRICE'               => $_ARRAYLANG['TXT_UNIT_PRICE'],
@@ -3461,7 +3461,7 @@ sendReq('', 1);
                 'SHOP_COUNTRY2'         => $this->arrCountries[$_SESSION['shop']['countryId2']]['countries_name'],
                 'SHOP_PHONE2'           => stripslashes($_SESSION['shop']['phone2']),
                 'TXT_ORDER_INFOS'       => $_ARRAYLANG['TXT_ORDER_INFOS'],
-                'TXT_ID'                => $_ARRAYLANG['TXT_ID'],
+                'TXT_ID'                => $_ARRAYLANG['TXT_SHOP_ID'],
                 'TXT_PRODUCT'           => $_ARRAYLANG['TXT_PRODUCT'],
                 'TXT_UNIT_PRICE'        => $_ARRAYLANG['TXT_UNIT_PRICE'],
                 'TXT_QUANTITY'          => $_ARRAYLANG['TXT_QUANTITY'],
@@ -3662,7 +3662,7 @@ sendReq('', 1);
 "-----------------------------------------------------------------\n".
 $_ARRAYLANG['TXT_ORDER_INFOS']."\n".
 "-----------------------------------------------------------------\n".
-$_ARRAYLANG['TXT_ID']." | ".$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID']." | ".$_ARRAYLANG['TXT_PRODUCT']." | ".$_ARRAYLANG['TXT_UNIT_PRICE']." | ".$_ARRAYLANG['TXT_QUANTITY']." | ".$_ARRAYLANG['TXT_TOTAL']."\n".
+$_ARRAYLANG['TXT_SHOP_ID']." | ".$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID']." | ".$_ARRAYLANG['TXT_PRODUCT']." | ".$_ARRAYLANG['TXT_UNIT_PRICE']." | ".$_ARRAYLANG['TXT_QUANTITY']." | ".$_ARRAYLANG['TXT_TOTAL']."\n".
 "-----------------------------------------------------------------\n".
 $cartTxt.
 "-----------------------------------------------------------------\n".
