@@ -55,24 +55,6 @@ class Gallery {
         $this->strThumbnailPath = ASCMS_GALLERY_THUMBNAIL_PATH . '/';
         $this->strThumbnailWebPath = ASCMS_GALLERY_THUMBNAIL_WEB_PATH . '/';
 
-// temp
-	$arrGallerySettings = array(
-    'header_type'   => 'hierarchy',
-    'show_ext'      => 'on',
-);
-foreach ($arrGallerySettings as $name => $value) {
-	$query = "SELECT id FROM `".DBPREFIX."module_gallery_settings` WHERE `name`='".$name."'";
-	if (($objSettings = $objDatabase->Execute($query)) !== false) {
-		if ($objSettings->RecordCount() == 0) {
-			$query = "INSERT INTO `".DBPREFIX."module_gallery_settings` ( `id` , `name` , `value` ) VALUES ('', '".$name."', '".$value."')";
-			if ($objDatabase->Execute($query) === false) {
-				die("$query:<br />".$objDatabase->ErrorMsg());
-			}
-		}
-	}
-}
-
-
         $objResult = $objDatabase->Execute('SELECT name, value FROM '.DBPREFIX.'module_gallery_settings');
         while (!$objResult->EOF) {
             $this->arrSettings[$objResult->fields['name']] = $objResult->fields['value'];
@@ -255,7 +237,7 @@ foreach ($arrGallerySettings as $name => $value) {
                 'TXT_VOTING_STATS_VOTES'  => $_ARRAYLANG['TXT_VOTING_STATS_VOTES'],
             ));
             if (isset($_COOKIE['Gallery_Voting_'.$intPicId])) {
-                //$this->_objTpl->hideBlock('showVotingBar');
+                $this->_objTpl->hideBlock('showVotingBar');
                 $this->_objTpl->setVariable(array(
                     'TXT_VOTING_ALREADY_VOTED'  => $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'],
                     'VOTING_ALREADY_VOTED_MARK' => intval($_COOKIE['Gallery_Voting_'.$intPicId])
@@ -273,7 +255,7 @@ foreach ($arrGallerySettings as $name => $value) {
                         'VOTING_BAR_CID'   => $intCatId,
                         'VOTING_BAR_PICID' => $intPicId
                     ));
-                    //$this->_objTpl->parse('showVotingBar');
+                    $this->_objTpl->parse('showVotingBar');
                 }
             }
 
@@ -479,7 +461,7 @@ foreach ($arrGallerySettings as $name => $value) {
                 'TXT_VOTING_STATS_VOTES'  => $_ARRAYLANG['TXT_VOTING_STATS_VOTES'],
             ));
             if (isset($_COOKIE["Gallery_Voting_$intPicId"])) {
-                //$objTpl->hideBlock('showVotingBar');
+                $objTpl->hideBlock('showVotingBar');
 
                 $objTpl->setVariable(array(
                     'TXT_VOTING_ALREADY_VOTED'  => $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'],
@@ -498,7 +480,7 @@ foreach ($arrGallerySettings as $name => $value) {
                             'VOTING_BAR_CID'   => $intCatId,
                             'VOTING_BAR_PICID' => $intPicId
                         ));
-                    //$objTpl->parse('showVotingBar');
+                    $objTpl->parse('showVotingBar');
                 }
             }
 
