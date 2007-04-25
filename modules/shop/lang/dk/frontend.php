@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 25 Apr 2007 11:34:42 +0200
+* generated date Wed, 25 Apr 2007 11:58:13 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Beholdning";
@@ -185,4 +185,5 @@ $_ARRAYLANG['TXT_SHOP_LSV_EE_FIRST_NAME'] = "Vorname";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_LAST_NAME'] = "Nachname";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_ZIP'] = "Postleitzahl";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_CITY'] = "Stadt";
+$_ARRAYLANG['TXT_CODE'] = "Code";
 ?>

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 25 Apr 2007 11:34:42 +0200
+* generated date Wed, 25 Apr 2007 11:58:13 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Orders";
@@ -471,4 +471,5 @@ $_ARRAYLANG['TXT_GALLERY_EXPORT_CONFIRM'] = "Die Zielkategorie im Shop wird vor 
 $_ARRAYLANG['TXT_ERROR_DELETING_PRODUCT'] = "Fehler beim löschen des Produktes";
 $_ARRAYLANG['TXT_SHOP_TIP'] = "Hinweise";
 $_ARRAYLANG['TXT_SHOP_INSERTED_CUSTOMER'] = "Neuer Kunde erfolgreich eingefügt";
+$_ARRAYLANG['TXT_CODE'] = "Code";
 ?>
