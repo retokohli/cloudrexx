@@ -4716,7 +4716,7 @@ echo("ID: ".$objResult->fields['id']."<br />");
         'TXT_STATUS'                 => $_ARRAYLANG['TXT_STATUS'],
         'TXT_ACTION'                 => $_ARRAYLANG['TXT_ACTION'],
         'TXT_STOCK'                  => $_ARRAYLANG['TXT_STOCK'],
-        'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_CODE'],
+        'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
         'TXT_NAME'                   => $_ARRAYLANG['TXT_NAME'],
         'TXT_ACCEPT_CHANGES'         => $_ARRAYLANG['TXT_ACCEPT_CHANGES'],
         'TXT_ALL_PRODUCT_GROUPS'     => $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'],
