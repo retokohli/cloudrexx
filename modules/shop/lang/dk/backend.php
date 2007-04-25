@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 25 Apr 2007 11:31:05 +0200
+* generated date Wed, 25 Apr 2007 11:34:42 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Bestillinger";
@@ -359,6 +359,7 @@ $_ARRAYLANG['TXT_SHOP_FAX'] = "Fax";
 $_ARRAYLANG['TXT_SHOP_SHIPPING_INFORMATIONS'] = "Lieferinformationen";
 $_ARRAYLANG['TXT_SHOP_ORDER_TIME'] = "Bestellungszeit";
 $_ARRAYLANG['TXT_SHOP_PAYPAL_DEFAULT_CURRENCY'] = "Standard Währung";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] = "Produkt Code";
 $_ARRAYLANG['TXT_SHOP_IMAGE'] = "Image";
 $_ARRAYLANG['TXT_SHOP_MENU_OPTION_DUTY'] = "Menu (Auswahl zwingend)";
 $_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'] = "Unable to create thumbnail for %s.";

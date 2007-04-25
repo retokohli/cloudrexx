@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 25 Apr 2007 11:31:05 +0200
+* generated date Wed, 25 Apr 2007 11:34:42 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
@@ -102,7 +102,7 @@ $_ARRAYLANG['TXT_SHOP_ACCOUNT_DETAILS_SENT_SUCCESSFULLY'] = "Ihre Zugangsdaten s
 $_ARRAYLANG['TXT_SHOP_UNABLE_TO_SEND_EMAIL'] = "Es konnte keine Email Nachricht gesendet werden!";
 $_ARRAYLANG['TXT_SHOP_UNABLE_SET_NEW_PASSWORD'] = "Es konnte kein neues Kennwort gesetzt werden!";
 $_ARRAYLANG['TXT_SHOP_NO_ACCOUNT_WITH_EMAIL'] = "Es konnte kein Benutzerkonto mit der angegebenen Email Adresse gefunden werden!";
-$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] = "Unsere ID";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] = "Produkt Code";
 $_ARRAYLANG['TXT_SHOP_IMAGE'] = "Bild";
 $_ARRAYLANG['TXT_SHOP_CART_IS_LOADING'] = "Cart is loading...";
 $_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'] = "The cart couldn't be loaded!";
