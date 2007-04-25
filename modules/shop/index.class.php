@@ -503,7 +503,7 @@ class Shop extends ShopLibrary {
                     'SHOP_CATEGORY_STYLE'  => $style,
                     'SHOP_CATEGORY_ID'     => $k,
                     'SHOP_CATEGORY_OFFSET' => $width,
-                    'SHOP_CATEGORY_NAME'   => htmlentities($this->arrCategoriesName[$k], ENT_QUOTES, CONTREXX_CHARSET),
+                    'SHOP_CATEGORY_NAME'   => str_replace('"', '&quot;', $this->arrCategoriesName[$k]),
                 ));
                 $objTpl->parseCurrentBlock("shopNavbar");
             }
@@ -780,7 +780,7 @@ class Shop extends ShopLibrary {
                 }
 
                 $this->objTemplate->setVariable(array(
-                    'SHOP_PRODUCT_TITLE'            => htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET),
+                    'SHOP_PRODUCT_TITLE'            => str_replace('"', '&quot;', $catName),
                     'SHOP_PRODUCT_THUMBNAIL'        => $thumbnailPath,
                     'TXT_ADD_TO_CARD'               => "zur Kategorie",
                     'SHOP_PRODUCT_DETAILLINK_IMAGE' => "index.php?section=shop&amp;catId=".$catId_Link,
@@ -842,7 +842,7 @@ class Shop extends ShopLibrary {
         $class      = "";
         $detailLink = "";
         $catId      = isset($_REQUEST['catId']) ? intval($_REQUEST['catId']) : 0;
-        $term       = isset($_REQUEST['term']) ? mysql_escape_string(stripslashes(trim($_REQUEST['term']))) : '';
+        $term       = isset($_REQUEST['term'])  ? stripslashes(trim($_REQUEST['term'])) : '';
 
         $treeArray = $this->_makeArrCategories();
         $arrCats = array_keys($treeArray);
@@ -853,7 +853,7 @@ class Shop extends ShopLibrary {
             $nextCat = isset($arrCats[array_search($catId, $arrCats)+1]) ? $arrCats[array_search($catId, $arrCats)+1] : $arrCats[0];
             $this->objTemplate->setVariable(array(
                 'SHOP_NEXT_CATEGORY_ID'    => $nextCat,
-                'SHOP_NEXT_CATEGORY_TITLE' => '"'.htmlentities($this->arrCategoriesName[$nextCat], ENT_QUOTES, CONTREXX_CHARSET).'"',
+                'SHOP_NEXT_CATEGORY_TITLE' => str_replace('"', '&quot;', $this->arrCategoriesName[$nextCat]),
                 'TXT_SHOP_GO_TO_CATEGORY'  => $_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'],
             ));
             $this->objTemplate->parse('shopNextCategoryLink');
@@ -878,7 +878,7 @@ class Shop extends ShopLibrary {
 
         $shopMenuOptions = $this->getCatMenu($catId);
         $shopMenu = '<form action="?section=shop" method="post">';
-        $shopMenu .= '<input type="text" name="term" value="'.$term.'" />';
+        $shopMenu .= '<input type="text" name="term" value="'.htmlentities($term).'" />';
         $shopMenu .= '<select name="catId">';
         $shopMenu .= '<option value="0">'.$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].'</option>';
         $shopMenu .= $shopMenuOptions.'</select>';
@@ -887,6 +887,7 @@ class Shop extends ShopLibrary {
         $this->objTemplate->setVariable("SHOP_CART_INFO", $this->showCartInfo());
 
         $q_search = "";
+        // replaced by discounts()
         $q_special_offer = '';//"AND (is_special_offer = 1) ";
         $q1_category = "";
         $q2_category = "";
@@ -906,13 +907,13 @@ class Shop extends ShopLibrary {
         if (!empty($term)) {
            $q_special_offer = "";
            $q_search = "
-               AND (  p.title LIKE '%$term%'
-                   OR p.description LIKE '%$term%'
-                   OR p.shortdesc LIKE '%$term%'
-                   OR p.product_id LIKE '%$term%'
-                   OR p.id LIKE '%$term%')
+               AND (  p.title LIKE '%".mysql_escape_string($term)."%'
+                   OR p.description LIKE '%".mysql_escape_string($term)."%'
+                   OR p.shortdesc LIKE '%".mysql_escape_string($term)."%'
+                   OR p.product_id LIKE '%".mysql_escape_string($term)."%'
+                   OR p.id LIKE '%".mysql_escape_string($term)."%')
            ";
-           $pagingTermQuery = "&amp;term=".$term;
+           $pagingTermQuery = "&amp;term=".htmlentities($term);
         }
 
         $objResult = '';
@@ -957,9 +958,13 @@ class Shop extends ShopLibrary {
                     return false;
                 }
             }
+            if ($this->arrCategoriesName[$catId] != '') {
+                $this->objTemplate->setVariable(array(
+                    'TXT_PRODUCTS_IN_CATEGORY' => $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'],
+                    'SHOP_CATEGORY_NAME'       => str_replace('"', '&quot;', $this->arrCategoriesName[$catId]),
+                ));
+            }
             $this->objTemplate->setVariable(array(
-                'TXT_PRODUCTS_IN_CATEGORY' => $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'],
-                'SHOP_CATEGORY_NAME'       => htmlentities($this->arrCategoriesName[$catId], ENT_QUOTES, CONTREXX_CHARSET),
                 'SHOP_PRODUCT_PAGING'      => $paging,
                 'SHOP_PRODUCT_TOTAL'       => $count,
             ));
@@ -1074,12 +1079,12 @@ class Shop extends ShopLibrary {
                 $this->objTemplate->setVariable(array(
                     'SHOP_ROWCLASS'                   => $class,
                     'SHOP_PRODUCT_ID'                 => $objResult->fields['id'],
-                    'SHOP_PRODUCT_CUSTOM_ID'          => htmlentities($objResult->fields['product_id'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'SHOP_PRODUCT_TITLE'              => htmlentities($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'SHOP_PRODUCT_DESCRIPTION'        => $description,
-                    'SHOP_PRODUCT_DETAILDESCRIPTION'  => $longDescription,
-                    'SHOP_PRODUCT_PRICE'              => ($price=="0.00") ? "" : $price,
-                    'SHOP_PRODUCT_PRICE_UNIT'         => ($price=="0.00") ? "" : $this->aCurrencyUnitName,
+                    'SHOP_PRODUCT_CUSTOM_ID'          => str_replace('"', '&quot;', $objResult->fields['product_id']),
+                    'SHOP_PRODUCT_TITLE'              => str_replace('"', '&quot;', $objResult->fields['title']),
+                    'SHOP_PRODUCT_DESCRIPTION'        => str_replace('"', '&quot;', $description),
+                    'SHOP_PRODUCT_DETAILDESCRIPTION'  => str_replace('"', '&quot;', $longDescription),
+                    'SHOP_PRODUCT_PRICE'              => ($price ? $price : ''),
+                    'SHOP_PRODUCT_PRICE_UNIT'         => ($price ? $this->aCurrencyUnitName : ''),
                     'SHOP_PRODUCT_DISCOUNTPRICE'      => $discountPrice,
                     'SHOP_PRODUCT_DISCOUNTPRICE_UNIT' => $discountPrice_Unit,
                     'SHOP_PRODUCT_WEIGHT'             => Weight::getWeightString($objResult->fields['weight']),
@@ -1092,12 +1097,12 @@ class Shop extends ShopLibrary {
                 ));
                 if ($this->objVat->isEnabled()) {
                     $this->objTemplate->setVariable(array(
-                        'SHOP_PRODUCT_TAX_PREFIX'         =>
+                        'SHOP_PRODUCT_TAX_PREFIX' =>
                             ($this->objVat->isIncluded()
                                 ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
                                 : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
                              ),
-                        'SHOP_PRODUCT_TAX'                => $this->objVat->getShort($objResult->fields['vat_id'])
+                        'SHOP_PRODUCT_TAX'        => $this->objVat->getShort($objResult->fields['vat_id'])
                    ));
                 }
                 $this->objTemplate->parse('shopProductRow');
@@ -1253,7 +1258,8 @@ class Shop extends ShopLibrary {
                  AND status = 1
             ORDER BY sort_order";
 
-        if (!($objResult = $objDatabase->SelectLimit($q, 4))) {
+        $objResult = $objDatabase->Execute($q);
+        if (!$objResult) {
             $this->errorHandling();
             return false;
         }
@@ -1269,14 +1275,14 @@ class Shop extends ShopLibrary {
 
             // no product picture available
             if (!isset($arrImages) || $arrImages[1]['img'] == '') {
-                $arrThumbnailPath[$i] = $this->shopImageWebPath."no_picture.gif";
+                $arrThumbnailPath[$i] = $this->_defaultImage;
             } else {
                 $arrThumbnailPath[$i] = $arrImages[1]['img'].'.thumb';
             }
 
             $price = $this->_getProductPrice($objResult->fields['normalprice'], $objResult->fields['resellerprice']);
 
-            if ($objResult->fields['discountprice']== "0.00") {
+            if ($objResult->fields['discountprice'] == 0) {
                 $arrPrice[$i]         = $price;
                 $arrDiscountPrice[$i] = "";
             } else {
@@ -1290,15 +1296,15 @@ class Shop extends ShopLibrary {
         }
 
         $this->objTemplate->setGlobalVariable(array(
-            'TXT_PRICE_NOW' => $_ARRAYLANG['TXT_PRICE_NOW'],
+            'TXT_PRICE_NOW'  => $_ARRAYLANG['TXT_PRICE_NOW'],
             'TXT_INSTEAD_OF' => $_ARRAYLANG['TXT_INSTEAD_OF']
-            ));
+        ));
 
-        for ($i=1;$i<=$count;$i=$i+2) {
+        for ($i=1; $i <= $count; $i = $i+2) {
                 if (!empty($arrTitle[$i+1])) {
                     $this->objTemplate->setCurrentBlock("shopProductRow2");
                     $this->objTemplate->setVariable(array(
-                        'SHOP_PRODUCT_TITLE'                => $arrTitle[$i+1],
+                        'SHOP_PRODUCT_TITLE'                => str_replace('"', '&quot;', $arrTitle[$i+1]),
                         'SHOP_PRODUCT_THUMBNAIL'            => $arrThumbnailPath[$i+1],
                         'SHOP_PRODUCT_PRICE'                => $arrPrice[$i+1],
                         'SHOP_PRODUCT_DISCOUNTPRICE'        => $arrDiscountPrice[$i+1],
@@ -1312,7 +1318,7 @@ class Shop extends ShopLibrary {
                 }
                 $this->objTemplate->setCurrentBlock("shopProductRow1");
                 $this->objTemplate->setVariable(array(
-                    'SHOP_PRODUCT_TITLE'                => $arrTitle[$i],
+                    'SHOP_PRODUCT_TITLE'                => str_replace('"', '&quot;', $arrTitle[$i]),
                     'SHOP_PRODUCT_THUMBNAIL'            => $arrThumbnailPath[$i],
                     'SHOP_PRODUCT_PRICE'                => $arrPrice[$i],
                     'SHOP_PRODUCT_DISCOUNTPRICE'        => $arrDiscountPrice[$i],
@@ -2245,7 +2251,7 @@ sendReq('', 1);
                     'SHOP_PRODUCT_ID'             => $arrProduct['id'],
                     'SHOP_PRODUCT_CUSTOM_ID'      => $arrProduct['product_id'],
                     'SHOP_PRODUCT_CART_ID'        => $arrProduct['cart_id'],
-                    'SHOP_PRODUCT_TITLE'          => $arrProduct['title'].'<br />',
+                    'SHOP_PRODUCT_TITLE'          => str_replace('"', '&quot;', $arrProduct['title']).'<br />',
                     'SHOP_PRODUCT_OPTIONS'        => $arrProduct['options'],
                     'SHOP_PRODUCT_PRICE'          => $arrProduct['price'],  // items * qty
                     'SHOP_PRODUCT_PRICE_UNIT'     => $arrProduct['price_unit'],
@@ -2919,22 +2925,22 @@ sendReq('', 1);
             $_SESSION['shop']['account_holder'] = $_POST['account_holder'];
             $_SESSION['shop']['account_bank']   = $_POST['account_bank'];
             $_SESSION['shop']['account_blz']    = $_POST['account_blz'];
-         }
+        }
 
-            // set up the page
-            $this->objTemplate->setVariable(array(
-                'SHOP_ACCOUNT_HOLDER'       => (isset($_SESSION['shop']['account_holder'])
-                                                ? $_SESSION['shop']['account_holder'] : ''),
-                'SHOP_ACCOUNT_BANK'         => (isset($_SESSION['shop']['account_bank'])
-                                                ? $_SESSION['shop']['account_bank']   : ''),
-                'SHOP_ACCOUNT_BLZ'          => (isset($_SESSION['shop']['account_blz'])
-                                                ? $_SESSION['shop']['account_blz']    : ''),
-                'TXT_PAYMENT_LSV'           => $_ARRAYLANG['TXT_PAYMENT_LSV'],
-                'TXT_PAYMENT_LSV_NOTE'      => $_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'],
-                'TXT_ACCOUNT_HOLDER'        => $_ARRAYLANG['TXT_ACCOUNT_HOLDER'],
-                'TXT_ACCOUNT_BANK'          => $_ARRAYLANG['TXT_ACCOUNT_BANK'],
-                'TXT_ACCOUNT_BLZ'           => $_ARRAYLANG['TXT_ACCOUNT_BLZ'],
-            ));
+        // set up the page
+        $this->objTemplate->setVariable(array(
+            'SHOP_ACCOUNT_HOLDER'       => (isset($_SESSION['shop']['account_holder'])
+                                            ? $_SESSION['shop']['account_holder'] : ''),
+            'SHOP_ACCOUNT_BANK'         => (isset($_SESSION['shop']['account_bank'])
+                                            ? $_SESSION['shop']['account_bank']   : ''),
+            'SHOP_ACCOUNT_BLZ'          => (isset($_SESSION['shop']['account_blz'])
+                                            ? $_SESSION['shop']['account_blz']    : ''),
+            'TXT_PAYMENT_LSV'           => $_ARRAYLANG['TXT_PAYMENT_LSV'],
+            'TXT_PAYMENT_LSV_NOTE'      => $_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'],
+            'TXT_ACCOUNT_HOLDER'        => $_ARRAYLANG['TXT_ACCOUNT_HOLDER'],
+            'TXT_ACCOUNT_BANK'          => $_ARRAYLANG['TXT_ACCOUNT_BANK'],
+            'TXT_ACCOUNT_BLZ'           => $_ARRAYLANG['TXT_ACCOUNT_BLZ'],
+        ));
 
         if (isset($_SESSION['shop']['account_holder']) && $_SESSION['shop']['account_holder']
          && isset($_SESSION['shop']['account_bank'])   && $_SESSION['shop']['account_bank']
@@ -3405,7 +3411,7 @@ sendReq('', 1);
                     $this->objTemplate->setVariable(array(
                         'SHOP_PRODUCT_ID'           => $arrProduct['id'],
                         'SHOP_PRODUCT_CUSTOM_ID'    => $arrProduct['product_id'],
-                        'SHOP_PRODUCT_TITLE'        => $objResult->fields['title'].$productOptions,
+                        'SHOP_PRODUCT_TITLE'        => str_replace('"', '&quot;', $objResult->fields['title'].$productOptions),
                         'SHOP_PRODUCT_PRICE'        => $this->objCurrency->formatPrice(($price+$priceOptions)*$arrProduct['quantity']),
                         'SHOP_PRODUCT_QUANTITY'     => $arrProduct['quantity'],
                         'SHOP_PRODUCT_ITEMPRICE'    => $this->objCurrency->formatPrice($price+$priceOptions),
@@ -3636,7 +3642,8 @@ sendReq('', 1);
                 }
 
 
-                $cartTxt .= $objResult->fields['product_id']." | ".
+                $cartTxt .= $arrProduct['id']." | ".
+                            $objResult->fields['product_id']." | ".
                             $productName.$productOptions." | ".
                             $price." ".$this->aCurrencyUnitName." | ".
                             $arrProduct['quantity']." | ".
@@ -3655,7 +3662,7 @@ sendReq('', 1);
 "-----------------------------------------------------------------\n".
 $_ARRAYLANG['TXT_ORDER_INFOS']."\n".
 "-----------------------------------------------------------------\n".
-$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID']." | ".$_ARRAYLANG['TXT_PRODUCT']." | ".$_ARRAYLANG['TXT_UNIT_PRICE']." | ".$_ARRAYLANG['TXT_QUANTITY']." | ".$_ARRAYLANG['TXT_TOTAL']."\n".
+$_ARRAYLANG['TXT_ID']." | ".$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID']." | ".$_ARRAYLANG['TXT_PRODUCT']." | ".$_ARRAYLANG['TXT_UNIT_PRICE']." | ".$_ARRAYLANG['TXT_QUANTITY']." | ".$_ARRAYLANG['TXT_TOTAL']."\n".
 "-----------------------------------------------------------------\n".
 $cartTxt.
 "-----------------------------------------------------------------\n".
