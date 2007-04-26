@@ -84,10 +84,13 @@ class GalleryHomeContent extends GalleryLibrary {
 	function getRandomImage() {
 		global $objDatabase, $_CONFIG, $_ARRAYLANG;
 		
-		$objResult = $objDatabase->Execute('SELECT	id
-											FROM	'.DBPREFIX.'module_gallery_pictures
-											WHERE	validated="1" AND
-													status="1"
+		$objResult = $objDatabase->Execute('SELECT	pics.id as id
+											FROM	'.DBPREFIX.'module_gallery_pictures	AS pics,
+													'.DBPREFIX.'module_gallery_categories AS categories
+											WHERE	categories.id = pics.catid AND
+													categories.status="1" AND
+													pics.validated="1" AND
+													pics.status="1"
 										');
 		
 		if ($objResult->RecordCount() == 0) {
@@ -138,10 +141,13 @@ class GalleryHomeContent extends GalleryLibrary {
 														pics.path	AS PATH,
 														lang.name	AS NAME
 											FROM		'.DBPREFIX.'module_gallery_pictures 		AS pics,
-														'.DBPREFIX.'module_gallery_language_pics 	AS lang														
-											WHERE		pics.validated = "1"		AND
+														'.DBPREFIX.'module_gallery_language_pics 	AS lang,
+														'.DBPREFIX.'module_gallery_categories AS categories													
+											WHERE		categories.status = "1"		AND
+														pics.validated = "1"		AND
 														pics.status = "1"			AND
 														pics.id = lang.picture_id	AND
+														pics.id = categories.id		AND
 														lang.lang_id = '.$this->_intLangId.'
 											ORDER BY	pics.id DESC
 											LIMIT		1
