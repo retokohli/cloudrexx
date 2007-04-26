@@ -28,6 +28,8 @@ News
     <input type="text" style="width: 250px;" value="[[NEWS_REDIRECT]]" name="newsRedirect" />
 
   Neue Blöcke: news_submit_form und news_submitted
+  	Alles was sich innerhalb des Blockes news_submit_form befindet, wird nach dem Anmelden der Newsmeldung nicht mehr angezeigt.
+  	Im Gegensatz dazu wird der Inhalt des Blockes news_submitted erst angezeigt, nachdem die Newsmeldung angemeldet wurde.
   
 Content Verlauf
 - Von jeder aufgelisteten Seite in den Bereichen "Änderungen freigeben" und "Aktualisierte Seiten" kann nun eine Vorschau angezeigt werden.
@@ -215,6 +217,26 @@ Layout & Design
 - Alle aktiven Designs werden mit rosa hinterlegt und die entsprechende Sprache in welcher das Design aktiv ist angezeigt.
 - Die "Aktivieren" Seite hinterlegt nun auch alle aktiven Sprachen mit einer rosa Farbe.
 - Neues Layout
+
+Newsletter
+- Neu kann das Geschlecht und eine Benutzerdefinierte Anrede bei einem Empfänger definiert werden.
+	Frontend-Platzhalter für die Anrede:
+		Text "Anrede" 			=> [[TXT_NEWSLETTER_TITLE]]
+		Anrede Auswahlmenü	=> [[NEWSLETTER_TITLE]]
+- Für jedes E-Mail kann zum Versenden ein aus den Grundeinstellungen erfasstes SMTP-Konto verwendet werden.
+- Bei unzustellbaren E-Mails kann nun global definiert werden, ob die entsprechenden Empfänger entweder deaktiviert oder gelöscht werden sollen oder ob dies ignoriert werden soll.
+
+Umfrage
+- Das Umfrage System kann nun auch für Initiativen verwendent werden, indem die E-Mail Adresse als Unterschrift verwendet wird.
+- Damit die E-Mail Erfassung funktioniert, muss die Umfage Inhalts-Seite folgendermassen erweitert werden:
+
+	Mit dem Platzhalter [[VOTING_MSG]] kann die Statusmeldung zur Erfassung der E-Mail Adresse ausgegeben werden.1
+
+	Der Block voting_email_input kann verwendet werden, damit ein Eingabefeld für die E-Mail Adresse angezeigt wird:
+		<!-- BEGIN voting_email_input -->
+		Tragen Sie bitte Ihre E-Mail Adresse ein, damit Sie an der Umfrage teilnehmen können:<br />
+		<input type="text" name="votingemail" value="[[VOTING_EMAIL]]" /><br /><br />
+		<!-- END voting_email_input -->
 
 
 ****************************************
