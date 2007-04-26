@@ -136,7 +136,7 @@ class Teasers extends newsLibrary
     				}
     				array_push($this->arrFrameTeaserIds[$frameId], $objResult->fields['id']);
     			}
-    			
+
     			if(!empty($objResult->fields['redirect'])) {
     				$extUrl = substr($objResult->fields['redirect'], 7);
     				$tmp	= explode('/', $extUrl);
@@ -144,7 +144,7 @@ class Teasers extends newsLibrary
     			} else {
     				$extUrl = "";
     			}
-    			
+
     			if(!empty($objResult->fields['firstname']) && !empty($objResult->fields['lastname'])) {
     				$author = $objResult->fields['firstname']." ".$objResult->fields['lastname'];
     			} else {
