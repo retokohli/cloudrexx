@@ -687,33 +687,32 @@ class CommonFunctions
 	    }
 
 	    //PATHS
-	 	$str = str_replace("%PATH_ROOT%", $_SESSION['installer']['config']['documentRoot'], $str);
-	    $str = str_replace("%PATH_ROOT_OFFSET%", $_SESSION['installer']['config']['offsetPath'], $str);
+	 	$str = str_replace(
+	 		array("%PATH_ROOT%", "%PATH_ROOT_OFFSET%"),
+	 		array($_SESSION['installer']['config']['documentRoot'], $_SESSION['installer']['config']['offsetPath']),
+	 		$str
+	 	);
 
 	    //MySQL
-	    $str = str_replace("%DB_HOST%", $_SESSION['installer']['config']['dbHostname'], $str);
-	    $str = str_replace("%DB_NAME%", $_SESSION['installer']['config']['dbDatabaseName'], $str);
-	    $str = str_replace("%DB_USER%", $_SESSION['installer']['config']['dbUsername'], $str);
-	    $str = str_replace("%DB_PASSWORD%", $_SESSION['installer']['config']['dbPassword'], $str);
-	  	$str=  str_replace("%DB_TABLE_PREFIX%" , $_SESSION['installer']['config']['dbTablePrefix'], $str);
+	    $str = str_replace(
+	    	array("%DB_HOST%", "%DB_NAME%", "%DB_USER%", "%DB_PASSWORD%", "%DB_TABLE_PREFIX%"),
+	    	array($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbDatabaseName'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'], $_SESSION['installer']['config']['dbTablePrefix']),
+	    	$str
+	    );
 
 	    //FTP
 	    if ($_SESSION['installer']['config']['useFtp']) {
-	    	$str = str_replace("%FTP_STATUS%", "true", $str);
-	    	$str = str_replace("%FTP_PASSIVE%", ($_SESSION['installer']['config']['ftpPasv'] ? "true" : "false"), $str);
-		 	$str = str_replace("%FTP_HOST%", $_SESSION['installer']['config']['ftpHostname'], $str);
-		 	$str = str_replace("%FTP_PORT%", (isset($_SESSION['installer']['config']['ftpPort']) ? $_SESSION['installer']['config']['ftpPort'] : $this->ftpPort), $str);
-			$str = str_replace("%FTP_USER%", $_SESSION['installer']['config']['ftpUsername'], $str);
-		 	$str = str_replace("%FTP_PASSWORD%", $_SESSION['installer']['config']['ftpPassword'], $str);
-		 	$str = str_replace("%FTP_PATH%", $_SESSION['installer']['config']['ftpPath'], $str);
+	    	$str = str_replace(
+	    		array("%FTP_STATUS%", "%FTP_PASSIVE%", "%FTP_HOST%", "%FTP_PORT%", "%FTP_USER%", "%FTP_PASSWORD%", "%FTP_PATH%"),
+	    		array("true", ($_SESSION['installer']['config']['ftpPasv'] ? "true" : "false"), $_SESSION['installer']['config']['ftpHostname'], (isset($_SESSION['installer']['config']['ftpPort']) ? $_SESSION['installer']['config']['ftpPort'] : $this->ftpPort), $_SESSION['installer']['config']['ftpUsername'], $_SESSION['installer']['config']['ftpPassword'], $_SESSION['installer']['config']['ftpPath']),
+	    		$str
+	    	);
 	    } else {
-	    	$str = str_replace("%FTP_STATUS%", "false", $str);
-	    	$str = str_replace("%FTP_PASSIVE%", "false", $str);
-		 	$str = str_replace("%FTP_HOST%", "", $str);
-			$str = str_replace("%FTP_PORT%", $this->ftpPort, $str);
-			$str = str_replace("%FTP_USER%", "", $str);
-		 	$str = str_replace("%FTP_PASSWORD%", "", $str);
-		 	$str = str_replace("%FTP_PATH%", "", $str);
+	    	$str = str_replace(
+	    		array("%FTP_STATUS%", "%FTP_PASSIVE%", "%FTP_HOST%", "%FTP_PORT%", "%FTP_USER%", "%FTP_PASSWORD%", "%FTP_PATH%"),
+	    		array("false", "false", "", $this->ftpPort, "", "", ""),
+	    		$str
+	    	);
 	    }
 		return $str;
 	}
@@ -724,21 +723,16 @@ class CommonFunctions
 	* get the version template file, set the values and return it
 	*
 	* @access private
-	* @return string	$str	parsed version template file
+	* @return string parsed version template file
 	*/
 	function _getVersionTemplateFile() {
 		global $versionTemplateFile, $_CONFIG;
 
-		$str = @file_get_contents($versionTemplateFile);
-
-		$str = str_replace("%CMS_NAME%", $_CONFIG['coreCmsName'], $str);
-		$str = str_replace("%CMS_VERSION%", $_CONFIG['coreCmsVersion'], $str);
-		$str = str_replace("%CMS_STATUS%", $_CONFIG['coreCmsStatus'], $str);
-		$str = str_replace("%CMS_EDITION%", $_CONFIG['coreCmsEdition'], $str);
-		$str = str_replace("%CMS_CODE_NAME%", $_CONFIG['coreCmsCodeName'], $str);
-		$str = str_replace("%CMS_RELEASE_DATE%", $_CONFIG['coreCmsReleaseDate'], $str);
-
-		return $str;
+		return str_replace(
+			array("%CMS_NAME%","%CMS_VERSION%", "%CMS_STATUS%", "%CMS_EDITION%", "%CMS_CODE_NAME%", "%CMS_RELEASE_DATE%"),
+			array($_CONFIG['coreCmsName'], $_CONFIG['coreCmsVersion'], $_CONFIG['coreCmsStatus'], $_CONFIG['coreCmsEdition'], $_CONFIG['coreCmsCodeName'], $_CONFIG['coreCmsReleaseDate']),
+			@file_get_contents($versionTemplateFile)
+		);
 	}
 
 	function createDatabase() {
@@ -846,12 +840,16 @@ class CommonFunctions
 
 		$configFilePath = $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$configFile;
 
+		if (!file_exists($configFilePath) && (touch($configFilePath) === false || !@chmod($configFilePath, 0755))) {
+			return sprintf($_ARRLANG['TXT_CANNOT_CREATE_FILE']."<br />", $configFilePath);
+		}
+
 		if (!$fp = @fopen($configFilePath, "w")) {
 			return str_replace("[FILENAME]", $configFilePath, $_ARRLANG['TXT_CANNOT_OPEN_FILE']."<br />");
 		} else {
 			if (!@fwrite($fp, $configFileContent)) {
 				@fclose($fp);
-				return str_replace("[FILENAME]", $configFilePath, $_ARRLANG['TXT_CANNOT_WRITE_TO_FILE']."<br />");
+				return sprintf($_ARRLANG['TXT_CANNOT_CREATE_FILE']."<br />", $configFilePath);
 			}
 			@fclose($fp);
 			return true;
@@ -864,12 +862,16 @@ class CommonFunctions
 		$versionFileContent = $this->_getVersionTemplateFile();
 		$versionFilePath = $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$versionFile;
 
+		if (!file_exists($versionFilePath) && (touch($versionFilePath) === false || !@chmod($versionFilePath, 0755))) {
+			return sprintf($_ARRLANG['TXT_CANNOT_CREATE_FILE']."<br />", $versionFilePath);
+		}
+
 		if (!$fp = @fopen($versionFilePath, "w")) {
 			return str_replace("[FILENAME]", $versionFilePath, $_ARRLANG['TXT_CANNOT_OPEN_FILE']."<br />");
 		} else {
 			if (!@fwrite($fp, $versionFileContent)) {
 				@fclose($fp);
-				return str_replace("[FILENAME]", $versionFileContent, $_ARRLANG['TXT_CANNOT_WRITE_TO_FILE']."<br />");
+				return sprintf($_ARRLANG['TXT_CANNOT_CREATE_FILE']."<br />", $versionFileContent);
 			}
 			@fclose($fp);
 			return true;

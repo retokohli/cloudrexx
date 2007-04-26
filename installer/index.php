@@ -36,7 +36,6 @@ $basePath = realpath(dirname(__FILE__));
 define('ASCMS_LIBRARY_PATH', realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'lib'));
 
 require_once 'config/config.php';
-require_once '../config/version.php';
 require_once '../lib/PEAR/HTML/Template/Sigma/Sigma.php';
 require_once 'common.class.php';
 require_once 'installer.class.php';

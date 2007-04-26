@@ -28,6 +28,12 @@ $supportURI = "http://www.contrexx.com/index.php?page=754";
 $forumURI = "http://www.contrexx.com/forum/";
 $contrexxURI = "http://www.contrexx.com/";
 
+$_CONFIG['coreCmsName']			= "%CMS_NAME%";
+$_CONFIG['coreCmsVersion']		= "%CMS_VERSION%";
+$_CONFIG['coreCmsStatus']		= "%CMS_STATUS%";
+$_CONFIG['coreCmsEdition']		= "%CMS_EDITION%";
+$_CONFIG['coreCmsCodeName']		= "%CMS_CODE_NAME%";
+$_CONFIG['coreCmsReleaseDate']	= "%CMS_RELEASE_DATE%";
 
 $arrDefaultConfig = array(
 	'dbHostname'	=> 'localhost',
@@ -52,25 +58,7 @@ $arrLanguages = array(
 		'lang'	=> 'en',
 		'name'	=> 'English',
 		'is_default'	=> false
-	)/*,
-	3	=> array(
-		'id'	=> 3,
-		'lang'	=> 'fr',
-		'name'	=> 'French',
-		'is_default'	=> false
-	),
-	4	=> array(
-		'id'	=> 4,
-		'lang'	=> 'it',
-		'name'	=> 'Italian',
-		'is_default'	=> false
-	),
-	5	=> array(
-		'id'	=> 5,
-		'lang'	=> 'dk',
-		'name'	=> 'Danish',
-		'is_default'	=> false
-	)*/
+	)
 );
 
 $arrFiles = array(
@@ -102,14 +90,6 @@ $arrFiles = array(
 		'mode'		=> '0777',
 		'mode_oct'	=> 0777,
 		'sub_dirs'	=> true
-	),
-	$configFile => array(
-		'mode'		=> '0706',
-		'mode_oct'	=> 0706
-	),
-	$versionFile => array(
-		'mode'		=> '0706',
-		'mode_oct'	=> 0706
 	),
 	'/config/settings.php'	=> array(
 		'mode'		=> '0666',
