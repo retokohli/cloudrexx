@@ -73,20 +73,20 @@ $starttime = explode(' ', microtime());
  *
  * Initialises global settings array and constants.
  */
-require_once(dirname(__FILE__).'/config/configuration.php');
+include_once(dirname(__FILE__).'/config/configuration.php');
 /**
  * User configuration settings
  *
  * This file is re-created by the CMS itself. It initializes the
  * {@link $_CONFIG[]} global array.
  */
-require_once(dirname(__FILE__).'/config/settings.php');
+$incSettingsStatus = include_once(dirname(__FILE__).'/config/settings.php');
 /**
  * Version information
  *
  * Adds version information to the {@link $_CONFIG[]} global array.
  */
-require_once(dirname(__FILE__).'/config/version.php');
+$incVersionStatus = include_once(dirname(__FILE__).'/config/version.php');
 
 //-------------------------------------------------------
 // Check if system is installed
@@ -94,6 +94,8 @@ require_once(dirname(__FILE__).'/config/version.php');
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
     header("Location: installer/index.php");
     die(1);
+} elseif ($incSettingsStatus === false || $incVersionStatus === false) {
+	die('System halted: Unable to load basic configuration!');
 }
 
 //-------------------------------------------------------
