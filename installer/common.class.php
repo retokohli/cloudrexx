@@ -757,12 +757,13 @@ class CommonFunctions
 	}
 
 	function createDatabaseTables() {
-		global $_ARRLANG, $sqlDumpFile, $dbType, $dbPrefix, $_CONFIG;
+		global $_ARRLANG, $sqlDumpFile, $dbType, $dbPrefix, $_CONFIG, $arrDatabaseTables;
 
 		$sqlQuery = "";
 		$buffer = "";
 		$result = "";
 		$statusMsg = "";
+		$dbPrefixRegexp = '#`'.$dbPrefix.'('.implode('|', $arrDatabaseTables).')`#';
 
 		$objDb = $this->_getDbObject($statusMsg);
 		if ($objDb === false) {
@@ -774,8 +775,9 @@ class CommonFunctions
 				while (!feof($fp)) {
 					$buffer = fgets($fp);
 					if ((substr($buffer,0,1) != "#") && (substr($buffer,0,2) != "--")) {
-						$sqlQuery .= chop(str_replace($dbPrefix, $_SESSION['installer']['config']['dbTablePrefix'], $buffer));
+						$sqlQuery .= $buffer;
 						if (preg_match("/;[ \t\r\n]*$/", $buffer)) {
+							$sqlQuery = preg_replace($dbPrefixRegexp, '`'.$_SESSION['installer']['config']['dbTablePrefix'].'$1`', $sqlQuery);
 							$result = @$objDb->Execute($sqlQuery);
 							if ($result === false) {
 								$statusMsg .= "<br />".$sqlQuery."<br /> (".$objDb->ErrorMsg().")<br />";
@@ -1101,7 +1103,7 @@ class CommonFunctions
 				return sprintf($_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'], $strSettingsFile);
 			}
 
-			if (!$fp = @fopen($strSettingsFile, "w")) {
+			if (!$handleFile = @fopen($strSettingsFile, "w")) {
 				return str_replace("[FILENAME]", $strSettingsFile, $_ARRLANG['TXT_CANNOT_OPEN_FILE']."<br />");
 			} else {
 			//Header & Footer
