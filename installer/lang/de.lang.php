@@ -101,7 +101,7 @@ $_ARRLANG['TXT_OPEN_BASEDIR_MISS_CONFIGURED'] = "Die Ordnerstruktur kann auf die
 // installation
 $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'] = "Konnte die Berechtigungen nicht ändern: ";
 $_ARRLANG['TXT_CANNOT_OPEN_FILE'] = "Kann die Datei [FILENAME] nicht öffnen";
-$_ARRLANG['TXT_CANNOT_WRITE_TO_FILE'] = "Kann in die Datei [FILENAME] nicht schreiben";
+$_ARRLANG['TXT_CANNOT_CREATE_FILE'] = "Kann die Datei %s nicht erstellen";
 $_ARRLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Kann keine Verbindung zum Datenbank-Server aufbauen!";
 $_ARRLANG['TXT_DATABASE_ALREADY_EXISTS'] = "Eine Datenbank mit dem Namen \"[DATABASE]\" existiert bereits!";
 $_ARRLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "Eine Datenbank mit dem Namen \"[DATABASE]\" existiert nicht!";

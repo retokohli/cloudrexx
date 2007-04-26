@@ -100,8 +100,8 @@ $_ARRLANG['TXT_OPEN_BASEDIR_MISS_CONFIGURED'] = "The directory tree couldn't be 
 
 // installation
 $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'] = "Could not change the permissions:  ";
-$_ARRLANG['TXT_CANNOT_OPEN_FILE'] = "Cannot open the file [FILENAME] ";
-$_ARRLANG['TXT_CANNOT_WRITE_TO_FILE'] = "Cannot write to the file [FILENAME]";
+$_ARRLANG['TXT_CANNOT_OPEN_FILE'] = "Cannot open the file [FILENAME]";
+$_ARRLANG['TXT_CANNOT_CREATE_FILE'] = "Cannot create file %s";
 $_ARRLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "No connection to the database server!  ";
 $_ARRLANG['TXT_DATABASE_ALREADY_EXISTS'] = "A database file name \"[DATABASE]\" exists already!  ";
 $_ARRLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "The database file name \"[DATABASE]\" does not exist! ";

@@ -8,18 +8,6 @@
  * @subpackage  installer
  * @todo        Edit PHP DocBlocks!
  */
-
-/**
- * Install Wizard Controller
- *
- * The Install Wizard
- *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author        Astalavista Development Team <thun@astalavista.ch>
- * @version       $Id:     Exp $
- * @package     contrexx
- * @subpackage  installer
- */
 class Installer
 {
 	var $colorSuccessfully = "#00ff00";
@@ -1193,12 +1181,12 @@ class Installer
 			$this->_setInstallationStatus($result, $_ARRLANG['TXT_CHECK_DATABASE_TABLES']);
 		}
 
-		/*
+
 		// create version file
 		if ($result === true) {
 			$result = $this->_createVersionFile();
 			$this->_setInstallationStatus($result, $_ARRLANG['TXT_CREATE_VERSION_FILE']);
-		}*/
+		}
 	}
 
 	/**
