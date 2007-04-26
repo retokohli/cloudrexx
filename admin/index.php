@@ -15,7 +15,7 @@
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
-if (1) {
+if (0) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 } else {
@@ -32,26 +32,28 @@ $adminPage = true;
  *
  * Initialises global settings array and constants.
  */
-require_once '../config/configuration.php';
+include_once('../config/configuration.php');
 /**
  * User configuration settings
  *
  * This file is re-created by the CMS itself. It initializes the
  * {@link $_CONFIG[]} global array.
  */
-require_once '../config/settings.php';
+$incSettingsStatus = include_once('../config/settings.php');
 /**
  * Version information
  *
  * Adds version information to the {@link $_CONFIG[]} global array.
  */
-require_once '../config/version.php';
+$incVersionStatus = include_once('../config/version.php');
 
 //-------------------------------------------------------
 // Check if system is installed
 //-------------------------------------------------------
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
     header("Location: ../installer/index.php");
+} elseif ($incSettingsStatus === false || $incVersionStatus === false) {
+	die('System halted: Unable to load basic configuration!');
 }
 
 require_once '../core/API.php';
