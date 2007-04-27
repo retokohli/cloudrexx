@@ -739,7 +739,7 @@ class CommonFunctions
 	}
 
 	function createDatabase() {
-		global $_ARRLANG, $dbType;
+		global $_ARRLANG, $dbType, $useUtf8;
 
 		require_once $this->adoDbPath;
 
@@ -749,7 +749,21 @@ class CommonFunctions
 		@$db->Connect($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword']);
 
 		// create database
-		$result = @$db->Execute("CREATE DATABASE `".$_SESSION['installer']['config']['dbDatabaseName']."`");
+		if ($useUtf8) {
+			$objCharset = $db->SelectLimit('SELECT DEFAULT_COLLATE_NAME FROM information_schema.CHARACTER_SETS WHERE CHARACTER_SET_NAME=\'utf8\'', 1);
+			if ($objCharset === false || $objCharset->RecordCount() == 0) {
+				return $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'].'<br />';
+			} else {
+				if ($objCharset->fields['DEFAULT_COLLATE_NAME'] != 'utf8_unicode_ci') {
+					$objCollation = $db->SelectLimit('SELECT 1 FROM information_schema.COLLATTIONS WHERE COLLATION_NAME LIKE \'utf8_unicode_ci\'');
+					if ($objCollation !== false && $objCollation->RecordCount() == 1) {
+
+					}
+				}
+			}
+		}
+
+		$result = @$db->Execute("CREATE DATABASE `".$_SESSION['installer']['config']['dbDatabaseName']."` DEFAULT CHARACTER SET ".($useUtf8 ? "utf8 COLLATE utf8_unicode_ci" : "latin1"));
 
 		if ($result === false) {
 			return $_ARRLANG['TXT_COULD_NOT_CREATE_DATABASE']."<br />";;
