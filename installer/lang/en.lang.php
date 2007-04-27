@@ -127,6 +127,7 @@ $_ARRLANG['TXT_CREATE_CONFIG_FILE'] = "Create configuration file";
 $_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES'] = "You must assign write-permission to the following files:";
 $_ARRLANG['TXT_CREATE_VERSION_FILE'] = "Create version file";
 $_ARRLANG['TXT_COULD_NOT_GATHER_ALL_DATABASE_TABLES'] = "Could not find the available database tables!";
+$_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'] = "Your database server doesn't support the character set UTF-8! You need the a version of Contrexx which uses the latin1 character set instead!";
 
 // system configuration
 $_ARRLANG['TXT_ADMIN_EMAIL'] = "Administrator email address ";
