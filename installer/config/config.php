@@ -17,9 +17,9 @@ $defaultLanguage = "de";
 $licenseFileCommerce = "data".DIRECTORY_SEPARATOR."contrexx_lizenz_de.txt";
 $licenseFileOpenSource = "data".DIRECTORY_SEPARATOR."contrexx_lizenz_opensource_de.txt";
 $configFile = "/config/configuration.php";
-$configTemplateFile = "data".DIRECTORY_SEPARATOR."configuration.tpl";
+$configTemplateFile = "data".DIRECTORY_SEPARATOR."%CONFIG_TPL%";
 $versionFile = "/config/version.php";
-$versionTemplateFile = "data".DIRECTORY_SEPARATOR."version.tpl";
+$versionTemplateFile = "data".DIRECTORY_SEPARATOR."%VERSION_TPL%";
 $sqlDumpFile = DIRECTORY_SEPARATOR."installer".DIRECTORY_SEPARATOR."data".DIRECTORY_SEPARATOR."contrexx_dump";
 $dbPrefix = "contrexx_";
 $templatePath = "template/contrexx/";
@@ -90,10 +90,6 @@ $arrFiles = array(
 		'mode'		=> '0777',
 		'mode_oct'	=> 0777,
 		'sub_dirs'	=> true
-	),
-	'/config/settings.php'	=> array(
-		'mode'		=> '0666',
-		'mode_oct'	=> 0706
 	),
 	'/cache'	=> array(
 		'mode'		=> '0777',
