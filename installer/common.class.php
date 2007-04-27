@@ -129,7 +129,7 @@ class CommonFunctions
 	* @return	mixed	object $objDb on success, false on failure
 	*/
 	function _getDbObject(&$statusMsg) {
-		global $objDb, $_ARRLANG, $dbType;
+		global $objDb, $_ARRLANG, $dbType, $useUtf8;
 
 		if (isset($objDb)) {
 			return $objDb;
@@ -151,7 +151,7 @@ class CommonFunctions
 				return false;
 			}
 
-			if ($objDb->Execute('SET CHARACTER SET utf8') && $objDb) {
+			if ($objDb->Execute('SET CHARACTER SET '.($useUtf8 ? 'utf8' : 'latin1')) && $objDb) {
 				return $objDb;
 			} else {
 				unset($objDb);
@@ -676,7 +676,7 @@ class CommonFunctions
 	}
 
 	function _getConfigFileTemplate(&$statusMsg) {
-		global $configTemplateFile, $_ARRLANG;
+		global $configTemplateFile, $_ARRLANG, $useUtf8;
 
 		$str = "";
 
@@ -695,10 +695,13 @@ class CommonFunctions
 
 	    //MySQL
 	    $str = str_replace(
-	    	array("%DB_HOST%", "%DB_NAME%", "%DB_USER%", "%DB_PASSWORD%", "%DB_TABLE_PREFIX%"),
-	    	array($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbDatabaseName'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'], $_SESSION['installer']['config']['dbTablePrefix']),
+	    	array("%DB_HOST%", "%DB_NAME%", "%DB_USER%", "%DB_PASSWORD%", "%DB_TABLE_PREFIX%", "DB_CHARSET"),
+	    	array($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbDatabaseName'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'], $_SESSION['installer']['config']['dbTablePrefix'], $useUtf8 ? 'utf8' : 'latin1'),
 	    	$str
 	    );
+
+	    // CHARSET
+	    $str = str_replace("%CHARSET%", $useUtf8 ? 'UTF-8' : 'ISO-8859-1', $str);
 
 	    //FTP
 	    if ($_SESSION['installer']['config']['useFtp']) {
