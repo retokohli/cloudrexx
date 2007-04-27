@@ -876,9 +876,10 @@ class MediaLibrary{
 
 
     // formats the date of the last modification of the file
-    function _formatDate($date){
+    function _formatDate($date)
+    {
         if(!empty($date)){
-            $date = date(ASCMS_DATE_FORMAT, $date);
+            $date = date(ASCMS_DATE_FILE_FORMAT, $date);
         }else{
             $date = '-';
         }
