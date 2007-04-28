@@ -196,6 +196,8 @@ class XML_Parser extends PEAR
     {
         $this->PEAR('XML_Parser_Error');
 
+        $tgtenc = CONTREXX_CHARSET;
+
         $this->mode   = $mode;
         $this->srcenc = $srcenc;
         $this->tgtenc = $tgtenc;
@@ -421,14 +423,47 @@ class XML_Parser extends PEAR
             return $result;
         }
 
+		if(!isset($srcEncSameAsTgtEnc)){
+			$srcEncSameAsTgtEnc = (CONTREXX_CHARSET !== $this->srcenc);
+		}
+
+
         // if $this->fp was fopened previously
         if (is_resource($this->fp)) {
-
             while ($data = fread($this->fp, 4096)) {
+				if(empty($this->srcenc)){
+					$rx = '#<?xml.*encoding=[\'"]?([^\'"]+).*?>#mi';
+				    if (preg_match($rx, $data, $m)) {
+				      $this->srcenc = strtoupper($m[1]);
+				    } else {
+				      $this->srcenc = "UTF-8"; //XML default charset is UTF-8
+				    }
+				}
+
+//				switch($this->srcenc){
+//					case 'UTF-8':
+//					case 'ISO-8859-1':
+//						break;
+//					default:
+//						echo ""
+//				}
+
+//				if(!isset($srcEncSameAsTgtEnc)){
+//			        $srcEncSameAsTgtEnc = (CONTREXX_CHARSET !== $this->srcenc);
+//				}
+//
+//				if($srcEncSameAsTgtEnc){
+//					if($this->srcenc == 'UTF-8'){
+//						$data = utf8_encode($data);
+//					}elseif ($this->srcenc == 'ISO-8859-1'){
+//						$data = utf8_decode($data);
+//					}
+//				}
                 if (!$this->_parseString($data, feof($this->fp))) {
                     return $this->raiseError();
                 }
             }
+
         // otherwise, $this->fp must be a string
         } else {
             if (!$this->_parseString($this->fp, true)) {

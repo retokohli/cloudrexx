@@ -284,11 +284,8 @@ class feed extends feedLibrary{
 			//rss class
 			$rss =& new XML_RSS($filename);
 			$rss->parse();
-
 			//channel info
-			$info = $rss->getChannelInfo();
-
-			$out_title = strip_tags($info['title']);
+			$out_title = strip_tags($rss->channel['title']);
 			$out_time  = strip_tags($objResult->fields['time']);
 
 			//image
@@ -301,7 +298,7 @@ class feed extends feedLibrary{
 
 			$this->_objTpl->setVariable(array(
 			    'FEED_IMAGE'            => $out_image,
-			    'FEED_TITLE'            => $this->replaceChars($out_title),
+			    'FEED_TITLE'            => $out_title,
 			    'FEED_TIME'             => $out_time,
 			    'TXT_FEED_LAST_UPTDATE' => $_ARRAYLANG['TXT_FEED_LAST_UPDATE']
 			));
@@ -312,14 +309,12 @@ class feed extends feedLibrary{
 				if($x < $objResult->fields['articles']){
 					$this->_objTpl->setVariable(array(
 					    'FEED_LINK'   => strip_tags($value['link']),
-					    'FEED_NAME'   => strip_tags($value['title'])
+					    'FEED_NAME'   => strip_tags($rss->struct[$x]['title']),
 					));
-
 					$this->_objTpl->parse('feed_output_news');
 					$x++;
 				}
 			}
-
 			$this->_objTpl->parse('feed_show_news');
 		}
 	}
