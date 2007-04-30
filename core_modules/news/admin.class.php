@@ -1211,7 +1211,7 @@ class newsManager extends newsLibrary {
 			$arrNews = array();
 			$objRSSWriter = new RSSWriter();
 
-			$objRSSWriter->characterEncoding = 'ISO-8859-1';
+			$objRSSWriter->characterEncoding = CONTREXX_CHARSET;
 			$objRSSWriter->channelTitle = $this->arrSettings['news_feed_title'];
 			$objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=news';
 			$objRSSWriter->channelDescription = $this->arrSettings['news_feed_description'];
@@ -1490,7 +1490,7 @@ class newsManager extends newsLibrary {
 
     	$id = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
     	$pos = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
-    	$defaultCharset = 'ISO-8859-1'; //$objLanguage->getLanguageParameter($_SESSION['auth']['lang'], 'charset');
+    	$defaultCharset = CONTREXX_CHARSET;
     	if ($arrTicker = $this->_getTicker($id)) {
     		$this->pageTitle = $_ARRAYLANG['TXT_NEWS_MODIFY_TICKER'];
 			$name = $arrTicker['name'];
@@ -1651,7 +1651,7 @@ class newsManager extends newsLibrary {
     		$paging = getPaging($count, $pos, "&amp;cmd=news&amp;act=ticker", 'Ticker');
     	}
 
-    	$displayCharset = 'ISO-8859-1'; //$objLanguage->getLanguageParameter($_SESSION['auth']['lang'], 'charset');
+    	$displayCharset = CONTREXX_CHARSET;
 
     	$arrTickers = $this->_getTickers($pos);
     	if (count($arrTickers) > 0) {
