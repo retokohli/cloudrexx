@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 25 Apr 2007 11:58:13 +0200
+* generated date Mon, 30 Apr 2007 12:39:30 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Bestillinger";
@@ -472,4 +472,5 @@ $_ARRAYLANG['TXT_ERROR_DELETING_PRODUCT'] = "Fehler beim löschen des Produktes"
 $_ARRAYLANG['TXT_SHOP_TIP'] = "Hinweise";
 $_ARRAYLANG['TXT_SHOP_INSERTED_CUSTOMER'] = "Neuer Kunde erfolgreich eingefügt";
 $_ARRAYLANG['TXT_CODE'] = "Code";
+$_ARRAYLANG['TXT_CLEAR_DATABASE_BEFORE_IMPORTING'] = "Bestehende Produkte vor dem importieren löschen";
 ?>
