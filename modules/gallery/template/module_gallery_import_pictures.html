@@ -70,19 +70,19 @@ function importDoAction()
     {
         alert("{TXT_IMPORT_MAKE_SELECTION}");
     }
-    
+
     document.fileList.selectAction.value = "0";
 }
 
 function deletePicture(pic)
-{ 
+{
     if(confirm('{TXT_IMPORT_DELETE_PICTURE}'))
-    { 
+    {
         window.location.replace("index.php?cmd=gallery&act=deleteImportPicture&pic="+pic);
     }
 }
 
-function openWindow(theURL,winName,features) 
+function openWindow(theURL,winName,features)
 	{
 	  window.open(theURL,winName,features);
 	}
@@ -90,18 +90,18 @@ function openWindow(theURL,winName,features)
 <div id="okbox">{TXT_MAX_PICTURES}</div><br />
 <form name="fileList" method="post" action="index.php?cmd=gallery&act=import_picture">
     <table width="100%" cellspacing="0" cellpadding="5" border="0" align="middle" class="adminlist">
-    	<tr> 
+    	<tr>
     	    <th width="16"><div align="center">#</div></th>
-    	    <th colspan="">Dateiname
+    	    <th colspan="">{TXT_FILENAME}
     	        {IMPORT_IMAGE_NAME_ICON}
     	    </th>
     	    <th width="90">
-    	        <div align="right">Dateigrösse
+    	        <div align="right">{TXT_FILESIZE}
     	            {IMPORT_IMAGE_SIZE_ICON}
     	        </div>
     	    </th>
     	    <th width="90">
-    	        <div align="right">Dateityp
+    	        <div align="right">{TXT_FILETYPE}
     	            {IMPORT_IMAGE_TYPE_ICON}
     	        </div>
     	    </th>
@@ -109,7 +109,7 @@ function openWindow(theURL,winName,features)
     	        &nbsp;
     	    </th>
     	</tr>
-     	<tr valign="middle" class="row2"> 
+     	<tr valign="middle" class="row2">
     	    <td width="16">
     	        <center>
     	            <input type="checkbox" name="toggleAll" title="Select or deselect all messages" onclick="importSelectAll(this);">
@@ -120,7 +120,7 @@ function openWindow(theURL,winName,features)
     	    	<strong><a href="{IMPORT_IMAGE_TREE_NAV_MAIN_HREF}">{IMPORT_IMAGE_TREE_NAV_MAIN}</a></strong>
     	    </td>
      	</tr>
-     	
+
     	<!-- BEGIN importDirectoryTree -->
     		<tr class="{IMPORT_IMAGE_DIR_TREE_ROW}" valign="top">
     			<td>{IMPORT_IMAGE_CHECKBOX}</td>
