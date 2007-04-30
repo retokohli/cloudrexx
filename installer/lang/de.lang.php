@@ -97,6 +97,7 @@ $_ARRLANG['TXT_FTP_DESCRIPTION'] = "Durch aktivieren dieser Option werden alle D
 $_ARRLANG['TXT_DB_TABLE_PREFIX_INVALID'] = "Das Tabellen Präfix (Vorsilbe) darf nur aus Alphanumerischen Zeichen (a-z/A-Z/0-9) und dem folgenden Sonderzeichen bestehen: _";
 $_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'] = "Die Ordnerstruktur kann auf diesem Server nicht angezeigt werden, da die PHP-Direktive open_basedir gesetzt ist, wobei diese aber den notwendigen Temp-Pfad (/tmp) nicht enthält!";
 $_ARRLANG['TXT_OPEN_BASEDIR_MISS_CONFIGURED'] = "Die Ordnerstruktur kann auf diesem Server nicht angezeigt werden, da die PHP-Direktive open_basedir falsch konfiguriert ist!";
+$_ARRLANG['TXT_DATABASE_CONNECTION_COLLATION'] = "Zeichensatz der Verbindung";
 
 // installation
 $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'] = "Konnte die Berechtigungen nicht ändern: ";

@@ -79,6 +79,7 @@ class Installer
 		// set step
 		if (isset($_GET['cancel'])) {
 			unset($_POST);
+			unset($_SESSION);
 			session_destroy();
 			session_start();
 		} elseif (isset($_GET['back'])) {
@@ -533,7 +534,7 @@ class Installer
 	* @global	array	$_ARRLANG
 	*/
 	function _checkConfiguration() {
-		global $objCommon, $_ARRLANG;
+		global $objCommon, $_ARRLANG, $useUtf8;
 
 		$statusGeneral = true;
 		$statusDb = true;
@@ -592,6 +593,9 @@ class Installer
 						$_POST['dbPassword'] = stripslashes($_POST['dbPassword']);
 						$_POST['dbDatabaseName'] = stripslashes($_POST['dbDatabaseName']);
 						$_POST['dbTablePrefix'] = stripslashes($_POST['dbTablePrefix']);
+						if (isset($_POST['dbCollation'])) {
+							$_POST['dbCollation'] = stripslashes($_POST['dbCollation']);
+						}
 					}
 
 					if (!isset($_POST['createDatabase'])) {
@@ -605,6 +609,7 @@ class Installer
 						|| !isset($_SESSION['installer']['config']['dbDatabaseName']) || $_POST['dbDatabaseName'] != $_SESSION['installer']['config']['dbDatabaseName']
 						|| !isset($_SESSION['installer']['config']['dbTablePrefix']) || $_POST['dbTablePrefix'] != $_SESSION['installer']['config']['dbTablePrefix']
 						|| !isset($_SESSION['installer']['config']['createDatabase']) || ((boolean) $_POST['createDatabase']) != $_SESSION['installer']['config']['createDatabase']
+						|| ($useUtf8 && (!isset($_SESSION['installer']['config']['dbCollation']) || $_POST['dbCollation'] != $_SESSION['installer']['config']['dbCollation']))
 						) {
 
 						$_SESSION['installer']['config']['dbHostname'] = $_POST['dbHostname'];
@@ -613,6 +618,9 @@ class Installer
 						$_SESSION['installer']['config']['dbDatabaseName'] = $_POST['dbDatabaseName'];
 						$_SESSION['installer']['config']['dbTablePrefix'] = $_POST['dbTablePrefix'];
 						$_SESSION['installer']['config']['createDatabase'] = (boolean) $_POST['createDatabase'];
+						if (isset($_POST['dbCollation'])) {
+							$_SESSION['installer']['config']['dbCollation'] = $_POST['dbCollation'];
+						}
 					}
 
 					// check if the needed configuration values are set
@@ -770,7 +778,7 @@ class Installer
 	* @global	array	$_ARRLANG
 	*/
 	function _checkConfigDatabase() {
-		global $objCommon, $_ARRLANG;
+		global $objCommon, $_ARRLANG, $useUtf8;
 
 		if (isset($_SESSION['installer']['createDatabaseTables']) && $_SESSION['installer']['createDatabaseTables']) {
 			$this->configDb = true;
@@ -779,7 +787,8 @@ class Installer
 				|| !isset($_SESSION['installer']['config']['dbUsername'])
 				|| !isset($_SESSION['installer']['config']['dbPassword'])
 				|| !isset($_SESSION['installer']['config']['dbDatabaseName'])
-				|| !isset($_SESSION['installer']['config']['dbTablePrefix']))
+				|| !isset($_SESSION['installer']['config']['dbTablePrefix'])
+				|| $useUtf8 && !isset($_SESSION['installer']['config']['dbCollation']))
 			{
 				$this->configDb = false;
 			} else {
@@ -900,7 +909,7 @@ class Installer
 	* @global	object	$objCommon
 	*/
 	function _getConfigurationPage() {
-		global $objTpl, $_ARRLANG, $objCommon, $templatePath, $arrDefaultConfig, $_CONFIG;
+		global $objTpl, $_ARRLANG, $objCommon, $templatePath, $arrDefaultConfig, $_CONFIG, $useUtf8;
 
 		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
 			$protocol = "https://";
@@ -999,6 +1008,7 @@ class Installer
 				$dbPassword = sprintf("%'*".strlen($_SESSION['installer']['config']['dbPassword'])."s","");
 				$dbDatabaseName = $_SESSION['installer']['config']['dbDatabaseName'];
 				$dbTablePrefix = $_SESSION['installer']['config']['dbTablePrefix'];
+				$dbCollation = !empty($_SESSION['installer']['config']['dbCollation']) ? $_SESSION['installer']['config']['dbCollation'] : '';
 			} else {
 				if (!isset($_SESSION['installer']['config']['createDatabase'])) {
 					$_SESSION['installer']['config']['createDatabase'] = false;
@@ -1010,6 +1020,18 @@ class Installer
 				$dbUsername = "<input class=\"textBox\" type=\"text\" name=\"dbUsername\" value=\"".(isset($_SESSION['installer']['config']['dbUsername']) ? $_SESSION['installer']['config']['dbUsername'] : $arrDefaultConfig['dbUsername'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
 				$dbPassword = "<input class=\"textBox\" type=\"password\" name=\"dbPassword\" value=\"".(isset($_SESSION['installer']['config']['dbPassword']) ? $_SESSION['installer']['config']['dbPassword'] : $arrDefaultConfig['dbPassword'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
 				$dbTablePrefix = "<input class=\"textBox\" type=\"text\" name=\"dbTablePrefix\" value=\"".(isset($_SESSION['installer']['config']['dbTablePrefix']) ? $_SESSION['installer']['config']['dbTablePrefix'] : $arrDefaultConfig['dbTablePrefix'])."\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<img src=\"".$templatePath."images/help.gif\" alt=\"\" width=\"16\" height=\"16\" onmouseout=\"htm()\" onmouseover=\"stm(Text[2],Style[2])\" />";
+
+				$mysqlServerVersion = $objCommon->getMySQLServerVersion();
+				if ($mysqlServerVersion && !$objCommon->_isNewerVersion($mysqlServerVersion, '4.1') && ($arrCollate = $objCommon->_getUtf8Collations()) !== false && count($arrCollate)) {
+					$selectedCollation = !empty($_SESSION['installer']['config']['dbCollation']) ? $_SESSION['installer']['config']['dbCollation'] : 'utf8_unicode_ci';
+					$dbCollation = '<select name="dbCollation" style="width:200px;">';
+					foreach ($arrCollate as $collate) {
+						$dbCollation .= '<option value="'.$collate.($collate == $selectedCollation ? '" selected="selected' : '').'">'.$collate.'</option>';
+					}
+					$dbCollation .= '</select>';
+				} else {
+					$this->arrStatusMsg['database'] = $_ARRLANG['TXT_UTF_NOT_SUPPORTED'];
+				}
 			}
 
 			// set general and database configuration options
@@ -1023,6 +1045,14 @@ class Installer
 				'DB_DATABASE_NAME'	=> $dbDatabaseName,
 				'DB_TABLE_PREFIX'	=> (empty($dbTablePrefix) ? "&nbsp;" : $dbTablePrefix),
 			));
+
+			if ($useUtf8 && $objCommon->checkDbConnection($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword']) === true) {
+				$objTpl->setVariable('DB_CONNECTION_COLLATION', $dbCollation);
+				$objTpl->parse('database_collation');
+			} else {
+				$this->arrStatusMsg['database'] = $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'];
+				$objTpl->hideBlock('database_collation');
+			}
 
 			// set general error message
 			if (isset($this->arrStatusMsg['general']) && !empty($this->arrStatusMsg['general'])) {

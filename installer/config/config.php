@@ -27,7 +27,7 @@ $supportEmail = "support@contrexx.com";
 $supportURI = "http://www.contrexx.com/index.php?page=754";
 $forumURI = "http://www.contrexx.com/forum/";
 $contrexxURI = "http://www.contrexx.com/";
-$useUtf8 = %USE_UTF8%;
+$useUtf8 = USE_UTF8;
 
 $_CONFIG['coreCmsName']			= "%CMS_NAME%";
 $_CONFIG['coreCmsVersion']		= "%CMS_VERSION%";

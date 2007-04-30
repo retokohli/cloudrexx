@@ -97,6 +97,7 @@ $_ARRLANG['TXT_FTP_DESCRIPTION'] = "This option enables file manipulations over 
 $_ARRLANG['TXT_DB_TABLE_PREFIX_INVALID'] = "The table prefix may only consist of alphanumeric signs (a-z/A-Z/0-9) and the following special character: _";
 $_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'] = "The directory tree couldn't be showed on this server, due that the PHP-directive open_basedir is active, but does not include the required temp path (/tmp)!";
 $_ARRLANG['TXT_OPEN_BASEDIR_MISS_CONFIGURED'] = "The directory tree couldn't be showed on this server, due that the PHP-directive open_basedir is miss configured!";
+$_ARRLANG['TXT_DATABASE_CONNECTION_COLLATION'] = "Connection charset";
 
 // installation
 $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'] = "Could not change the permissions:  ";
