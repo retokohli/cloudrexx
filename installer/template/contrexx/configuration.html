@@ -125,7 +125,7 @@ Style[3]=["","","","","",,"#000000","#ecf1f9","","","",,,,1,"#3366cc",2,24,0.3,,
 	<!-- END ftp -->
 	<!-- BEGIN ftpPathConfig -->
 		<tr>
-			<th colspan="2">{TXT_FTP_PATH_CONFIG}</th>
+			<th colspan="2">{TXT_FTP_PATH_CONFIG}<input type="hidden" name="ftpPathConfig" value="1" /></th>
 		</tr>
 		<!-- BEGIN ftpPathErrorMsg -->
 			<tr>
@@ -139,14 +139,16 @@ Style[3]=["","","","","",,"#000000","#ecf1f9","","","",,,,1,"#3366cc",2,24,0.3,,
 				</td>
 			</tr>
 		<!-- END ftpPathErrorMsg -->
-		<tr>
-			<td colspan="2" height="20"><b>{TXT_FTP_PATH_DESCRIPTION}</b><input type="hidden" name="ftpPathConfig" value="1" /></td>
-		</tr>
-		<!-- BEGIN ftpDirectory -->
-			<tr class="{FTP_DIRECTORY_ROW_CLASS}">
-				<td style="{FTP_DIRECTORY_STYLE}">{FTP_DIRECTORY}</td>
+		<!-- BEGIN ftpDirectoryTree -->
+			<tr>
+				<td colspan="2" height="20"><b>{TXT_FTP_PATH_DESCRIPTION}</b></td>
 			</tr>
-		<!-- END ftpDirectory -->
+			<!-- BEGIN ftpDirectory -->
+				<tr class="{FTP_DIRECTORY_ROW_CLASS}">
+					<td style="{FTP_DIRECTORY_STYLE}">{FTP_DIRECTORY}</td>
+				</tr>
+			<!-- END ftpDirectory -->
+		<!-- END ftpDirectoryTree -->
 	<!-- END ftpPathConfig -->
 </table>
 <br />

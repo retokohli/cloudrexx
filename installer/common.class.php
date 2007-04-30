@@ -456,8 +456,6 @@ class CommonFunctions
 
 	function _getFilesOfFtpDirectory(&$objFtp)
 	{
-		global $_ARRLANG;
-
 		$arrDirectories = array();
 		if (($fileList = ftp_rawlist($objFtp, ".")) !== false) {
 			if (count($fileList) > 0) {
@@ -476,13 +474,7 @@ class CommonFunctions
 				}
 			}
 		} else {
-			$openbasedir = @ini_get('open_basedir');print $openbasedir;
-			if (!empty($openbasedir)) {
-				if (!$this->isWindows() && !in_array('/tmp', explode(':', @ini_get('open_basedir')))) {
-					return $_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'];
-				}
-				return $_ARRLANG['TXT_OPEN_BASEDIR_MISS_CONFIGURED'];
-			}
+			return false;
 		}
 		return $arrDirectories;
 	}
@@ -1179,6 +1171,21 @@ class CommonFunctions
 
 				return true;
 			}
+		}
+	}
+
+	function _checkOpenbaseDirConfig()
+	{
+		global $_ARRLANG;
+
+		$openbasedir = @ini_get('open_basedir');
+		if (!empty($openbasedir)) {
+			if (!$this->isWindows() && !count(preg_grep('#^/tmp/?$#', array_map('trim', explode(':', $openbasedir))))) {
+				return $_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'];
+			}
+			return $_ARRLANG['TXT_OPEN_BASEDIR_MISS_CONFIGURED'];
+		} else {
+			return true;
 		}
 	}
 
