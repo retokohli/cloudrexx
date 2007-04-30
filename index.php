@@ -726,13 +726,6 @@ $page_content = str_replace('{TITLE}',  $page_title, $page_content);
 // start module switches
 //-------------------------------------------------------
 switch ($section) {
-//-------------------------------------------------------
-// Popup module
-//-------------------------------------------------------
-
-    case "popup":
-        echo "no source...";
-    break;
 
 //-------------------------------------------------------
 // Login module
