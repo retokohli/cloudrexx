@@ -1421,9 +1421,6 @@ class newsManager extends newsLibrary {
     {
     	global $_ARRAYLANG, $_CONFIG, $objDatabase;
 
-    	$_ARRAYLANG['TXT_NEWS_OVERVIEW'] = 'Übersicht';
-    	$_ARRAYLANG['TXT_NEWS_CREATE_TICKER'] = 'Ticker erstellen';
-
     	$this->_objTpl->loadTemplatefile('module_news_ticker.html');
 
     	$this->_objTpl->setVariable(array(
