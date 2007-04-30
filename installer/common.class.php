@@ -128,7 +128,7 @@ class CommonFunctions
 	* @global	string	$dbType
 	* @return	mixed	object $objDb on success, false on failure
 	*/
-	function _getDbObject(&$statusMsg) {
+	function _getDbObject(&$statusMsg, $useDb = true) {
 		global $objDb, $_ARRLANG, $dbType, $useUtf8;
 
 		if (isset($objDb)) {
@@ -138,7 +138,7 @@ class CommonFunctions
 			require_once $this->adoDbPath;
 
 			$objDb = ADONewConnection($dbType);
-			@$objDb->Connect($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'], $_SESSION['installer']['config']['dbDatabaseName']);
+			@$objDb->Connect($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'], ($useDb ? $_SESSION['installer']['config']['dbDatabaseName'] : null));
 
 			$errorNo = $objDb->ErrorNo();
 			if ($errorNo != 0) {
@@ -151,11 +151,20 @@ class CommonFunctions
 				return false;
 			}
 
-			if ($objDb->Execute('SET CHARACTER SET '.($useUtf8 ? 'utf8' : 'latin1')) && $objDb) {
-				return $objDb;
-			} else {
-				unset($objDb);
+			if ($objDb) {
+				if (($mysqlServerVersion = $this->getMySQLServerVersion()) !== false && !$this->_isNewerVersion($mysqlServerVersion, '4.1')) {
+					if ($objDb->Execute('SET CHARACTER SET '.($useUtf8 ? 'utf8' : 'latin1')) !== false) {
+						return $objDb;
+					}
+				} else {
+					return $objDb;
+				}
+
 				$statusMsg = $_ARRLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER']."<i>&nbsp;(".$objDb->ErrorMsg().")</i><br />";
+				unset($objDb);
+			} else {
+				$statusMsg = $_ARRLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER']."<i>&nbsp;(".$objDb->ErrorMsg().")</i><br />";
+				unset($objDb);
 			}
 			return false;
 		}
@@ -174,6 +183,66 @@ class CommonFunctions
 
 		if (isset($objDb)) {
 			@$objDb->Close();
+		}
+	}
+
+	function getMySQLServerVersion()
+	{
+		$statusMsg = '';
+
+		$objDb = $this->_getDbObject($statusMsg, false);
+		if ($objDb === false) {
+			return $statusMsg;
+		} else {
+			$objVersion = $objDb->SelectLimit('SELECT VERSION() AS mysqlversion', 1);
+			if ($objVersion !== false && $objVersion->RecordCount() == 1 && preg_match('#^([0-9.]+)#', $objVersion->fields['mysqlversion'], $version)) {
+				return $version[1];
+			} else {
+				return false;
+			}
+		}
+	}
+
+	function _isNewerVersion($installedVersion, $newVersion)
+	{
+		$arrInstalledVersion = explode('.', $installedVersion);
+		$arrNewVersion = explode('.', $newVersion);
+
+		$maxSubVersion = count($arrInstalledVersion) > count($arrNewVersion) ? count($arrInstalledVersion) : count($arrNewVersion);
+		for ($nr = 0; $nr < $maxSubVersion; $nr++) {
+			if (!isset($arrInstalledVersion[$nr])) {
+				return true;
+			} elseif (!isset($arrNewVersion[$nr])) {
+				return false;
+			} elseif ($arrNewVersion[$nr] > $arrInstalledVersion[$nr]) {
+				return true;
+			} elseif ($arrNewVersion[$nr] < $arrInstalledVersion[$nr]) {
+				return false;
+			}
+		}
+
+		return false;
+	}
+
+	function _getUtf8Collations()
+	{
+		$arrCollate = array();
+
+		$objDb = $this->_getDbObject($statusMsg);
+		if ($objDb === false) {
+			return $statusMsg;
+		} else {
+			$objCollation = $objDb->Execute('SHOW COLLATION WHERE CHARSET = \'utf8\'');
+			if ($objCollation !== false) {
+				while (!$objCollation->EOF) {
+					$arrCollate[] = $objCollation->fields['Collation'];
+					$objCollation->MoveNext();
+				}
+
+				return $arrCollate;
+			} else {
+				return false;
+			}
 		}
 	}
 
@@ -740,22 +809,7 @@ class CommonFunctions
 		$db = ADONewConnection($dbType);
 		@$db->Connect($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword']);
 
-		// create database
-		if ($useUtf8) {
-			$objCharset = $db->SelectLimit('SELECT DEFAULT_COLLATE_NAME FROM information_schema.CHARACTER_SETS WHERE CHARACTER_SET_NAME=\'utf8\'', 1);
-			if ($objCharset === false || $objCharset->RecordCount() == 0) {
-				return $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'].'<br />';
-			} else {
-				if ($objCharset->fields['DEFAULT_COLLATE_NAME'] != 'utf8_unicode_ci') {
-					$objCollation = $db->SelectLimit('SELECT 1 FROM information_schema.COLLATTIONS WHERE COLLATION_NAME LIKE \'utf8_unicode_ci\'');
-					if ($objCollation !== false && $objCollation->RecordCount() == 1) {
-
-					}
-				}
-			}
-		}
-
-		$result = @$db->Execute("CREATE DATABASE `".$_SESSION['installer']['config']['dbDatabaseName']."` DEFAULT CHARACTER SET ".($useUtf8 ? "utf8 COLLATE utf8_unicode_ci" : "latin1"));
+		$result = @$db->Execute("CREATE DATABASE `".$_SESSION['installer']['config']['dbDatabaseName']."` DEFAULT CHARACTER SET ".($useUtf8 ? "utf8 COLLATE ".$_SESSION['installer']['config']['dbCollation'] : "latin1"));
 
 		if ($result === false) {
 			return $_ARRLANG['TXT_COULD_NOT_CREATE_DATABASE']."<br />";;
