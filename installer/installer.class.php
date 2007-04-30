@@ -927,17 +927,26 @@ class Installer
 			if (is_array($this->arrDirectoryTree)) {
 				$this->arrDirectoryPaths = explode("/", $path);
 				$this->_createDirectoryTree(0);
+			} elseif (($result = $objCommon->_checkOpenbaseDirConfig()) !== true) {
+				$_SESSION['installer']['config']['setFtpPath'] = false;
+				$_SESSION['installer']['config']['useFtp'] = false;
+				$this->arrStatusMsg['ftpPath'] = $result;
 			} else {
 				$this->arrStatusMsg['ftpPath'] = $this->arrDirectoryTree;
 			}
 
-			if (isset($this->arrStatusMsg['ftpPath']) && !empty($this->arrStatusMsg['ftpPath'])) {
+			if (!empty($this->arrStatusMsg['ftpPath'])) {
 				$objTpl->setVariable(array(
 					'FTP_PATH_ERROR_MSG'	=> $this->arrStatusMsg['ftpPath']
 				));
 				$objTpl->parse('ftpPathErrorMsg');
+
+				if ($objCommon->_checkOpenbaseDirConfig() !== true) {
+					$objTpl->hideBlock('ftpDirectoryTree');
+				}
 			} else {
 				$objTpl->hideBlock('ftpPathErrorMsg');
+				$objTpl->parse('ftpDirectoryTree');
 			}
 
 			$objTpl->parse('ftpPathConfig');
