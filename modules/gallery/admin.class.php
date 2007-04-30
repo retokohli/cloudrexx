@@ -3115,7 +3115,7 @@ class galleryManager extends GalleryLibrary
     */
     function importPicture()
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->loadTemplateFile('module_gallery_import_pictures.html',true,true);
 
@@ -3156,6 +3156,9 @@ class galleryManager extends GalleryLibrary
 
          $this->_objTpl->setVariable(array(
             'TXT_TITLE'                        =>    $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM'],
+            'TXT_FILENAME'                        =>    $_ARRAYLANG['TXT_GALLERY_FILE_NAME'],
+            'TXT_FILESIZE'                        =>    $_CORELANG['TXT_SIZE'],
+            'TXT_FILETYPE'                        =>    $_ARRAYLANG['TXT_GALLERY_FILE_TYPE'],
             'TXT_IMAGENUMBER'                =>    $_ARRAYLANG['TXT_GALLERY_UPLOAD_FORM_IMAGE_NUMBER'],
             'TXT_IMPORT_MAKE_SELECTION'        =>    $_ARRAYLANG['TXT_GALLERY_MAKE_SELECTION'],
             'TXT_IMPORT_DELETE_PICTURE'        =>  $_ARRAYLANG['TXT_GALLERY_REALY_DELETE'],

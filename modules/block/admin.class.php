@@ -761,8 +761,8 @@ class blockManager extends blockLibrary
 			'TXT_PLACEHOLDERS'							=> $_ARRAYLANG['TXT_BLOCK_PLACEHOLDER'],
 			'TXT_BLOCK_BLOCK_RANDOM'					=> $_ARRAYLANG['TXT_BLOCK_BLOCK_RANDOM'],
 			'TXT_BLOCK_BLOCK_GLOBAL'					=> $_ARRAYLANG['TXT_BLOCK_BLOCK_GLOBAL'],
-			'TXT_BLOCK_GLOBAL_SEPERATOR'				=> "Trennzeichen im globalen Block",
-			'TXT_BLOCK_GLOBAL_SEPERATOR_INFO'			=> "Trennzeichen zwischen den einzelnen Blöcken im globalen Block. Es kann auch HTML verwendet werden,",
+			'TXT_BLOCK_GLOBAL_SEPERATOR'				=> $_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR'],
+			'TXT_BLOCK_GLOBAL_SEPERATOR_INFO'			=> $_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR_INFO'],
 			'TXT_BLOCK_SAVE'							=> $_ARRAYLANG['TXT_SAVE'],
 		));
 

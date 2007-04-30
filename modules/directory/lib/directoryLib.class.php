@@ -338,13 +338,13 @@ class directoryLibrary
 
 		if($objResultLang !== false){
 			while(!$objResultLang->EOF){
-				$languages 			= $objResultLang->fields['setvalue'];
+				$language 			= $objResultLang->fields['setvalue'];
 				$objResultLang->MoveNext();
 			}
 		}
 
 		//explode languages
-		$this->getLanguage=explode(",", $languages);
+		$this->getLanguage=explode(",", $language);
 
 		//make languages dropdown
 		foreach($this->getLanguage as $langKey => $langName){
@@ -368,13 +368,13 @@ class directoryLibrary
 		$objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_settings WHERE setname = 'canton'");
 		if($objResult !== false){
 			while(!$objResult->EOF){
-				$cantons 			= $objResult->fields['setvalue'];
+				$canton 			= $objResult->fields['setvalue'];
 				$objResult->MoveNext();
 			}
 		}
 
 		//explode languages
-		$this->getCantons=explode(",", $cantons);
+		$this->getCantons=explode(",", $canton);
 
 		//make languages dropdown
 		foreach($this->getCantons as $cantKey => $cantName){

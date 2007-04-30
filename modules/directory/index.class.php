@@ -640,13 +640,13 @@ class rssDirectory extends directoryLibrary
 	{
 		global $objDatabase, $_ARRAYLANG, $template;
 
-		$arrDropdown['language'] 	= $this->getLanguages('');
-		$arrDropdown['platform'] 	= $this->getPlatforms('');
-		$arrDropdown['canton'] 		= $this->getCantons('');
-		$arrDropdown['spez_field_21']		= $this->getSpezDropdown('','spez_field_21');
-		$arrDropdown['spez_field_22']		= $this->getSpezDropdown('','spez_field_22');
-		$arrDropdown['spez_field_23']		= $this->getSpezVotes('','spez_field_23');
-		$arrDropdown['spez_field_24']		= $this->getSpezVotes('','spez_field_24');
+		$arrDropdown['language'] 	= $this->getLanguages(contrexx_addslashes($_REQUEST['language']));
+		$arrDropdown['platform'] 	= $this->getPlatforms(contrexx_addslashes($_REQUEST['platform']));
+		$arrDropdown['canton'] 		= $this->getCantons(contrexx_addslashes($_REQUEST['canton']));
+		$arrDropdown['spez_field_21']		= $this->getSpezDropdown(contrexx_addslashes($_REQUEST['spez_field_21']),'spez_field_21');
+		$arrDropdown['spez_field_22']		= $this->getSpezDropdown(contrexx_addslashes($_REQUEST['spez_field_22']),'spez_field_22');
+		$arrDropdown['spez_field_23']		= $this->getSpezVotes(contrexx_addslashes($_REQUEST['spez_field_23']),'spez_field_23');
+		$arrDropdown['spez_field_24']		= $this->getSpezVotes(contrexx_addslashes($_REQUEST['spez_field_24']),'spez_field_24');
 
 		$expSearch = '';
 
@@ -666,7 +666,8 @@ class rssDirectory extends directoryLibrary
 
 		//get levels
 		if ($this->settings['levels']['value'] == 1) {
-			$options 	= $this->getSearchLevels('');
+			$lid		= intval($_REQUEST['lid']);
+			$options 	= $this->getSearchLevels($lid);
 			$name		= "Ebene";
 			$field 		= '<select name="lid" style="width:194px;"><option value="">Alle Ebenen</option>'.$options.'</select>';
 
@@ -678,7 +679,8 @@ class rssDirectory extends directoryLibrary
 		}
 
 		//get categories
-		$options 	= $this->getSearchCategories('');
+		$cid		= intval($_REQUEST['cid']);
+		$options 	= $this->getSearchCategories($cid);
 		$name		= $_ARRAYLANG['TXT_DIR_F_CATEGORIE'];
 		$field	 	= '<select name="cid" style="width:194px;"><option value="">Alle Kategorien</option>'.$options.'</select>';
 
@@ -706,7 +708,7 @@ class rssDirectory extends directoryLibrary
 
 
 				if($objResult->fields['typ'] == 1 || $objResult->fields['typ'] == 2 || $objResult->fields['typ'] == 5 || $objResult->fields['typ'] == 6){
-					$field 		= '<input maxlength="100" size="30" name="'.$objResult->fields['name'].'" />';
+					$field 		= '<input maxlength="100" size="30" name="'.$objResult->fields['name'].'" value="'.contrexx_addslashes($_REQUEST[$objResult->fields['name']]).'" />';
 				}else{
 					$field 		= '<select name="'.$objResult->fields['name'].'" style="width:194px;">'.$arrDropdown[$objResult->fields['name']].'</select>';
 				}
