@@ -186,7 +186,7 @@ class blockManager extends blockLibrary
 	*/
 	function _showOverview()
 	{
-		global $_ARRAYLANG, $objDatabase;
+		global $_ARRAYLANG, $objDatabase, $_CORELANG;
 
 		$this->_pageTitle = $_ARRAYLANG['TXT_BLOCK_BLOCKS'];
 		$this->_objTpl->loadTemplateFile('module_block_overview.html');
@@ -201,17 +201,16 @@ class blockManager extends blockLibrary
 			'TXT_BLOCK_SUBMIT_DEACTIVATE'		=> $_ARRAYLANG['TXT_BLOCK_SUBMIT_DEACTIVATE'],
 			'TXT_BLOCK_SUBMIT_RANDOM'			=> $_ARRAYLANG['TXT_BLOCK_SUBMIT_RANDOM'],
 			'TXT_BLOCK_SUBMIT_RANDOM_OFF'		=> $_ARRAYLANG['TXT_BLOCK_SUBMIT_RANDOM_OFF'],
-			'TXT_BLOCK_SUBMIT_GLOBAL'			=> "Markierte zum globalen Block hinzufügen",
-			'TXT_BLOCK_SUBMIT_GLOBAL_OFF'		=> "Markierte vom globalen Block entfernen",
+			'TXT_BLOCK_SUBMIT_GLOBAL'			=> $_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL'],
+			'TXT_BLOCK_SUBMIT_GLOBAL_OFF'		=> $_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL_OFF'],
 			'TXT_BLOCK_SELECT_ALL'				=> $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'],
 			'TXT_BLOCK_DESELECT_ALL'			=> $_ARRAYLANG['TXT_BLOCK_DESELECT_ALL'],
 			'TXT_BLOCK_RANDOM'					=> $_ARRAYLANG['TXT_BLOCK_RANDOM'],
-			'TXT_BLOCK_GLOBAL'					=> "im globalen Block",
 			'TXT_BLOCK_PLACEHOLDER'				=> $_ARRAYLANG['TXT_BLOCK_PLACEHOLDER'],
 			'TXT_BLOCK_FUNCTIONS'				=> $_ARRAYLANG['TXT_BLOCK_FUNCTIONS'],
 			'TXT_BLOCK_DELETE_SELECTED_BLOCKS'	=> $_ARRAYLANG['TXT_BLOCK_DELETE_SELECTED_BLOCKS'],
 			'TXT_BLOCK_CONFIRM_DELETE_BLOCK'	=> $_ARRAYLANG['TXT_BLOCK_CONFIRM_DELETE_BLOCK'],
-			'TXT_SAVE_CHANGES'					=> "Änderungen Speichern",
+			'TXT_SAVE_CHANGES'					=> $_CORELANG['TXT_SAVE_CHANGES'],
 			'TXT_BLOCK_OPERATION_IRREVERSIBLE'	=> $_ARRAYLANG['TXT_BLOCK_OPERATION_IRREVERSIBLE']
 		));
 
@@ -490,58 +489,13 @@ class blockManager extends blockLibrary
 			'TXT_BLOCK_RANDOM_1'			=> "Block #1",
 			'TXT_BLOCK_RANDOM_2'			=> "Block #2",
 			'TXT_BLOCK_RANDOM_3'			=> "Block #3",
-			'TXT_BLOCK_GLOBAL'				=> "im globalen Block anzeigen",
+			'TXT_BLOCK_GLOBAL'				=> $_ARRAYLANG['TXT_BLOCK_SHOW_IN_GLOBAL'],
 			'TXT_BLOCK_FRONTEND_LANGUAGES'	=> $_ARRAYLANG['TXT_BLOCK_FRONTEND_LANGUAGES'],
 			'TXT_BLOCK_SAVE'				=> $_ARRAYLANG['TXT_BLOCK_SAVE'],
 			'BLOCK_FORM_ONSUBMIT'			=> $formOnSubmit,
 		));
 	}
 
-	/**
-	* Save block
-	*
-	* Add or update the conten to a block
-	*
-	* @access private
-	* @global array $_ARRAYLANG
-	* @see blockLibrary::_updateBlock()
-	*/
-	/*function _saveBlock()
-	{
-		global $_ARRAYLANG;
-
-		$blockId = isset($_POST['blockId']) ? intval($_POST['blockId']) : 0;
-		$blockContent = isset($_POST['blockBlockContent']) ? contrexx_addslashes($_POST['blockBlockContent']) : '';
-		$blockName = htmlspecialchars($_POST['blockName'], ENT_QUOTES, CONTREXX_CHARSET);
-		$blockRandom = $_POST['blockRandom'];
-		$blockAssociatedLangIds = array();
-
-		if (isset($_POST['block_associated_language'])) {
-			foreach ($_POST['block_associated_language'] as $langId => $status) {
-				if (intval($status) == 1) {
-					array_push($blockAssociatedLangIds, intval($langId));
-				}
-			}
-		}
-
-		if($blockName == null ){
-			$blockName = $_ARRAYLANG['TXT_BLOCK_NO_NAME'];
-		}
-
-		if ($blockId != 0) {
-			if ($this->_updateBlock($blockId, $blockContent, $blockName, $blockRandom, $blockAssociatedLangIds)) {
-				$this->_strOkMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'];
-			}else{
-				$this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'];
-			}
-		}else{
-			if($this->_addBlock($blockId, $blockContent, $blockName, $blockRandom, $blockAssociatedLangIds)) {
-				$this->_strOkMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'];
-			}else{
-				$this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'];
-			}
-		}
-	}*/
 
 	/**
 	* del block
