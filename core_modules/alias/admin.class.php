@@ -372,8 +372,10 @@ class AliasAdmin extends aliasLib
 				'ALIAS_STATUS_CHECKED'					=> $arrConfig['aliasStatus'] == '1' ? 'checked="checked"' : ''
 			));
 			$this->_objTpl->parse('alias_status_form');
+			$this->_objTpl->parse('alias_status_form_submit');
 		} else {
 			$this->_objTpl->hideBlock('alias_status_form');
+			$this->_objTpl->hideBlock('alias_status_form_submit');
 		}
 	}
 
