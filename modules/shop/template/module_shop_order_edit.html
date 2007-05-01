@@ -65,7 +65,6 @@ function changeProduct(pId, newId)
         }
     }
 
-//alert("changeProduct: pId: '"+pId+"', newId: '"+newId+"', anzPId: '"+anzPId+"'");
     // check if the product is already present in the order list
     if (anzPId == 0) {
         // the new product ID is zero, so an item is to be deleted
@@ -151,18 +150,15 @@ function updateWeight() {
             pId = elementId.substr(17)
             // pick number of items
             number = document.getElementById("shopProductQuantity"+pId).value
-//alert("made pId: '"+pId+", number: "+number);
             // pick weight string from order item
             var weight = document.getElementsByTagName("input")[element_index].value.toLowerCase();
             // convert to grams (integer) and multiply
             grams = getWeightGrams(weight) * number;
             // sum of products' weights
             totalWeight += grams;
-//alert("made weight: '"+number+"', unit '"+unit+"'");
 
         }
     }
-//alert("total weight: '"+totalWeight+"'");
     // convert total weight to appropriate unit
     totalWeight = weightToString(totalWeight);
     document.forms.shopOrderEdit.shopTotalWeight.value = totalWeight;
@@ -189,7 +185,6 @@ function updateShipment(){
     // found flag is set to the index of a suitable shipment, if encountered below.
     // if the flag stays at -1, there is no way to deliver it!
     var found = -1;
-// debug    var strAlert = "updateShipment():\nweight: "+weight+" > "+"price: "+price+"\n";
     // try all the available shipments;
     // (see Shipment.class.php::getJSArrays())
     for (var i=0; i<shipments.length; i++){
@@ -205,12 +200,10 @@ function updateShipment(){
                 // we're well within the weight limit, and the order is also expensive
                 // enough to get a free shipping.
                 cost = '0.00';
-//alert("FREE! price: "+price+", price_free: "+price_free);
             } else {
                 // either the order amount is too low, or price_free is unset, or zero,
                 // so the shipping has to be paid for in any case.
                 cost = shipments[i][3];
-//alert("cost set to "+cost);
             }
 
             // we found a kind of shipment that can handle the order, but maybe
@@ -221,13 +214,10 @@ function updateShipment(){
                 lowest_cost = cost;
             }
         }
-// debug strAlert += "i: "+i+" > "+"cid: "+shipments[i][0]+", "+"mw: "+shipments[i][1]+" ("+"g: "+max_weight+"), "+"pf: "+shipments[i][2]+", "+"cost: "+shipments[i][3]+" -> "+"found: "+found+", "+"c: "+cost+" ==> "+"lc: "+lowest_cost+"\n";
     }
     if (found != -1) {
-//alert(strAlert);
         // after checking all the shipments, we found the lowest cost for the
         // given weight and order price. - update the shipping cost
-//alert("lc: "+lowest_cost);
         document.forms.shopOrderEdit.shopShippingPrice.value = lowest_cost; //.toFixed(2);
     } else {
         // alert the user
@@ -249,7 +239,6 @@ function calcPrice(pId) {
     // calculate the total sum of the selected product
     if(pId) {
         if (pId == 'new') pId = "'new'";
-//alert("got pId: "+pId);
         document.getElementById("shopProductSum["+pId+"]").value =
             (Number(document.getElementById("shopProductQuantity["+pId+"]").value)
            * Number(document.getElementById("shopProductPrice["   +pId+"]").value)).toFixed(2);
@@ -294,7 +283,7 @@ function swapSendToStatus(orderId) {
         document.getElementById("shopSendMailDiv").style.display = 'none';
     }
 }
- -->
+// -->
 </script>
 <style type="text/css">
 <!--
