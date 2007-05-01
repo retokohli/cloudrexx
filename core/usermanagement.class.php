@@ -270,6 +270,19 @@ class userManagement
 						}
 
 						$mail =& new PHPMailer();
+
+						if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+							$objSmtpSettings = new SmtpSettings();
+							if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+								$mail->IsSMTP();
+								$mail->Host = $arrSmtp['hostname'];
+								$mail->Port = $arrSmtp['port'];
+								$mail->SMTPAuth = true;
+								$mail->Username = $arrSmtp['username'];
+								$mail->Password = $arrSmtp['password'];
+							}
+						}
+
 						$mail->CharSet = CONTREXX_CHARSET;
 			   			$mail->From 	= $sender_email;
 						$mail->FromName = $sender_name;
