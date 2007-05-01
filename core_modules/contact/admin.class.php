@@ -587,7 +587,7 @@ class ContactManager extends ContactLib
 			$this->_objTpl->setVariable(array(
 				'CONTACT_FORM_FIELD_NAME'				=> '',
 				'CONTACT_FORM_FIELD_ID'					=> 1,
-				'CONTACT_FORM_FIELD_TYPE_MENU'			=> $this->_getFormFieldTypesMenu('contactFormFieldType[1]', 'text', 'id="contactFormFieldType_1" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
+				'CONTACT_FORM_FIELD_TYPE_MENU'			=> $this->_getFormFieldTypesMenu('contactFormFieldType[1]', 'text', 'id="contactFormFieldType_1" style="width:110px;" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
 				'CONTACT_FORM_FIELD_CHECK_MENU'			=> $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType[1]', 'contactFormFieldCheckType_1', 'text', 1),
 				'CONTACT_FORM_FIELD_CHECK_BOX'			=> $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired[1]', 'contactFormFieldRequired_1', 'text', false),
 				'CONTACT_FORM_FIELD_ATTRIBUTES'			=> $this->_getFormFieldAttribute(1, 'text', '')
@@ -613,7 +613,7 @@ class ContactManager extends ContactLib
 				$this->_objTpl->setVariable(array(
 					'CONTACT_FORM_FIELD_NAME'				=> $arrField['name'],
 					'CONTACT_FORM_FIELD_ID'					=> $fieldId,
-					'CONTACT_FORM_FIELD_TYPE_MENU'			=> $this->_getFormFieldTypesMenu('contactFormFieldType['.$fieldId.']', $arrField['type'], 'id="contactFormFieldType_'.$fieldId.'" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
+					'CONTACT_FORM_FIELD_TYPE_MENU'			=> $this->_getFormFieldTypesMenu('contactFormFieldType['.$fieldId.']', $arrField['type'], 'id="contactFormFieldType_'.$fieldId.'" style="width:110px;" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
 					'CONTACT_FORM_FIELD_CHECK_MENU'			=> $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType['.$fieldId.']', 'contactFormFieldCheckType_'.$fieldId, $arrField['type'], $arrField['check_type']),
 					'CONTACT_FORM_FIELD_CHECK_BOX'			=> $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired['.$fieldId.']', 'contactFormFieldRequired_'.$fieldId, $arrField['type'], $checked),
 					'CONTACT_FORM_FIELD_ATTRIBUTES'			=> $this->_getFormFieldAttribute($fieldId, $arrField['type'], $arrField['attributes'])
@@ -647,7 +647,7 @@ class ContactManager extends ContactLib
 			'CONTACT_FORM_FEEDBACK'							=> $formFeedback,
 			'CONTACT_FORM_SHOW_FORM_YES'					=> $formShowForm ? 'checked="checked"' : '',
 			'CONTACT_FORM_SHOW_FORM_NO'						=> $formShowForm ? '' : 'checked="checked"',
-			'CONTACT_FORM_FIELD_TYPE_MENU_TPL'				=> $this->_getFormFieldTypesMenu('contactFormFieldType['.($lastFieldId+1).']', key($this->_arrFormFieldTypes), 'id="contactFormFieldType_'.($lastFieldId+1).'" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
+			'CONTACT_FORM_FIELD_TYPE_MENU_TPL'				=> $this->_getFormFieldTypesMenu('contactFormFieldType['.($lastFieldId+1).']', key($this->_arrFormFieldTypes), 'id="contactFormFieldType_'.($lastFieldId+1).'" style="width:110px;" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
 			'CONTACT_FORM_FIELD_TEXT_TPL'					=> $this->_getFormFieldAttribute(0, 'text', ''),
 			'CONTACT_FORM_FIELD_CHECKBOX_TPL'				=> $this->_getFormFieldAttribute(0, 'checkbox', 0),
 			'CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL'			=> $this->_getFormFieldAttribute(0, 'checkboxGroup', ''),

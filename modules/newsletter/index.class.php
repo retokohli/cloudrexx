@@ -83,7 +83,7 @@ class newsletter extends NewsletterLib
     }
 
     function _confirm(){
-    	global $objDatabase, $_ARRAYLANG;
+    	global $objDatabase, $_ARRAYLANG, $_CONFIG;
 		$this->_objTpl->setTemplate($this->pageContent, true, true);
 
 		$query 		= "SELECT id FROM ".DBPREFIX."module_newsletter_user where status=0 and email='".contrexx_addslashes($_GET['email'])."'";
@@ -164,7 +164,20 @@ class newsletter extends NewsletterLib
 
 
 					$mail = new phpmailer();
-					$objMail->CharSet = CONTREXX_CHARSET;
+
+					if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+						$objSmtpSettings = new SmtpSettings();
+						if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+							$mail->IsSMTP();
+							$mail->Host = $arrSmtp['hostname'];
+							$mail->Port = $arrSmtp['port'];
+							$mail->SMTPAuth = true;
+							$mail->Username = $arrSmtp['username'];
+							$mail->Password = $arrSmtp['password'];
+						}
+					}
+
+					$mail->CharSet = CONTREXX_CHARSET;
 					$mail->From 			= $value_sender_emailDEF;
 					$mail->FromName 		= $value_sender_nameDEF;
 					$mail->AddReplyTo($value_reply_mailDEF);
@@ -534,6 +547,19 @@ class newsletter extends NewsletterLib
 		$arrSettings = &$this->_getSettings();
 
 		$objMail = new phpmailer();
+
+		if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+			$objSmtpSettings = new SmtpSettings();
+			if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+				$objMail->IsSMTP();
+				$objMail->Host = $arrSmtp['hostname'];
+				$objMail->Port = $arrSmtp['port'];
+				$objMail->SMTPAuth = true;
+				$objMail->Username = $arrSmtp['username'];
+				$objMail->Password = $arrSmtp['password'];
+			}
+		}
+
 		$objMail->CharSet = CONTREXX_CHARSET;
 		$objMail->From = $arrSettings['sender_mail']['setvalue'];
 		$objMail->FromName = $arrSettings['sender_name']['setvalue'];

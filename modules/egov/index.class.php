@@ -58,7 +58,7 @@ class eGov extends eGovLibrary
 	}
 
 	function _saveOrder(){
-		global $objDatabase, $_ARRAYLANG;
+		global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
 		$product_id 	= intval($_REQUEST["id"]);
 		$datum_db 		= date("Y")."-".date("m")."-".date("d")." ".date("H").":".date("i").":".date("s");
@@ -203,6 +203,19 @@ class eGov extends eGovLibrary
 
 					if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
 						$objMail = new phpmailer();
+
+						if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+							$objSmtpSettings = new SmtpSettings();
+							if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+								$objMail->IsSMTP();
+								$objMail->Host = $arrSmtp['hostname'];
+								$objMail->Port = $arrSmtp['port'];
+								$objMail->SMTPAuth = true;
+								$objMail->Username = $arrSmtp['username'];
+								$objMail->Password = $arrSmtp['password'];
+							}
+						}
+
 						$objMail->CharSet = CONTREXX_CHARSET;
 						$objMail->From 		= $this->GetSettings("set_orderentry_sender");
 						$objMail->FromName 	= $this->GetSettings("set_orderentry_name");
@@ -262,6 +275,19 @@ class eGov extends eGovLibrary
 					if($TargetMail!=''){
 						if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
 							$objMail = new phpmailer();
+
+							if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+								$objSmtpSettings = new SmtpSettings();
+								if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+									$objMail->IsSMTP();
+									$objMail->Host = $arrSmtp['hostname'];
+									$objMail->Port = $arrSmtp['port'];
+									$objMail->SMTPAuth = true;
+									$objMail->Username = $arrSmtp['username'];
+									$objMail->Password = $arrSmtp['password'];
+								}
+							}
+
 							$objMail->CharSet = CONTREXX_CHARSET;
 							$objMail->From 		= $FromEmail;
 							$objMail->FromName 	= $FromName;
@@ -320,6 +346,19 @@ class eGov extends eGovLibrary
 					if($TargetMail!=''){
 						if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
 							$objMail = new phpmailer();
+
+							if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+								$objSmtpSettings = new SmtpSettings();
+								if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+									$objMail->IsSMTP();
+									$objMail->Host = $arrSmtp['hostname'];
+									$objMail->Port = $arrSmtp['port'];
+									$objMail->SMTPAuth = true;
+									$objMail->Username = $arrSmtp['username'];
+									$objMail->Password = $arrSmtp['password'];
+								}
+							}
+
 							$objMail->CharSet = CONTREXX_CHARSET;
 							$objMail->From 		= $FromEmail;
 							$objMail->FromName 	= $FromName;
