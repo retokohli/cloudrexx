@@ -1021,16 +1021,18 @@ class Installer
 				$dbPassword = "<input class=\"textBox\" type=\"password\" name=\"dbPassword\" value=\"".(isset($_SESSION['installer']['config']['dbPassword']) ? $_SESSION['installer']['config']['dbPassword'] : $arrDefaultConfig['dbPassword'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
 				$dbTablePrefix = "<input class=\"textBox\" type=\"text\" name=\"dbTablePrefix\" value=\"".(isset($_SESSION['installer']['config']['dbTablePrefix']) ? $_SESSION['installer']['config']['dbTablePrefix'] : $arrDefaultConfig['dbTablePrefix'])."\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<img src=\"".$templatePath."images/help.gif\" alt=\"\" width=\"16\" height=\"16\" onmouseout=\"htm()\" onmouseover=\"stm(Text[2],Style[2])\" />";
 
-				$mysqlServerVersion = $objCommon->getMySQLServerVersion();
-				if ($mysqlServerVersion && !$objCommon->_isNewerVersion($mysqlServerVersion, '4.1') && ($arrCollate = $objCommon->_getUtf8Collations()) !== false && count($arrCollate)) {
-					$selectedCollation = !empty($_SESSION['installer']['config']['dbCollation']) ? $_SESSION['installer']['config']['dbCollation'] : 'utf8_unicode_ci';
-					$dbCollation = '<select name="dbCollation" style="width:200px;">';
-					foreach ($arrCollate as $collate) {
-						$dbCollation .= '<option value="'.$collate.($collate == $selectedCollation ? '" selected="selected' : '').'">'.$collate.'</option>';
+				if ($useUtf8 && $objCommon->checkDbConnection($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword']) === true) {
+					$mysqlServerVersion = $objCommon->getMySQLServerVersion();
+					if ($mysqlServerVersion && !$objCommon->_isNewerVersion($mysqlServerVersion, '4.1') && ($arrCollate = $objCommon->_getUtf8Collations()) !== false && count($arrCollate)) {
+						$selectedCollation = !empty($_SESSION['installer']['config']['dbCollation']) ? $_SESSION['installer']['config']['dbCollation'] : 'utf8_unicode_ci';
+						$dbCollation = '<select name="dbCollation" style="width:200px;">';
+						foreach ($arrCollate as $collate) {
+							$dbCollation .= '<option value="'.$collate.($collate == $selectedCollation ? '" selected="selected' : '').'">'.$collate.'</option>';
+						}
+						$dbCollation .= '</select>';
+					} else {
+						$this->arrStatusMsg['database'] = $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'];
 					}
-					$dbCollation .= '</select>';
-				} else {
-					$this->arrStatusMsg['database'] = $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'];
 				}
 			}
 
