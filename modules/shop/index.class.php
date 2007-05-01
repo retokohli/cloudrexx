@@ -169,7 +169,7 @@ class Shop extends ShopLibrary {
     {
         global $_LANGID, $objDatabase;
 
-        if (1) {
+        if (0) {
             global $objDatabase; $objDatabase->debug = 1;
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
