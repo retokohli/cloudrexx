@@ -3536,7 +3536,6 @@ class shopmanager extends ShopLibrary {
                     $this->errorHandling();
                 } else {
                     while (!$objResult->EOF) {
-echo("ID: ".$objResult->fields['id']."<br />");
                         $arrProducts[$objResult->fields['id']] = array(
                             'id'               => $objResult->fields['id'],
                             'product_id'       => $objResult->fields['product_id'],
