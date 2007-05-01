@@ -47,7 +47,8 @@ $objCommon->initLanguage();
 
 $objTpl = &new HTML_Template_Sigma($templatePath);
 $objTpl->setErrorHandling(PEAR_ERROR_DIE);
-$objTpl->loadTemplateFile('index.html',true,true);
+$objTpl->loadTemplateFile('index.html');
+$objTpl->setVariable('CHARSET', $useUtf8 ? 'UTF-8' : 'ISO-8859-1');
 
 $objTpl->setVariable($_ARRLANG);
 $objInstaller->checkOptions();
