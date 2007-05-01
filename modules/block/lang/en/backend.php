@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 01 May 2007 10:12:33 +0200
+* generated date Tue, 01 May 2007 11:23:13 +0200
 **/
 
 $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'] = "Modify block %s";
@@ -47,4 +47,7 @@ $_ARRAYLANG['TXT_BLOCK_BLOCK_RANDOM'] = "Platzhalter für Zufallsgenerator";
 $_ARRAYLANG['TXT_BLOCK_BLOCK_GLOBAL'] = "Platzhalter für sämtliche Blöcke. Bei diesem Platzhalter wird die Seiten- und Sprachzuordnung auch berücksichtigt.";
 $_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR'] = "Trennzeichen im globalen Block";
 $_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR_INFO'] = "Trennzeichen zwischen den einzelnen Blöcken im globalen Block. Es kann auch HTML verwendet werden.";
+$_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL'] = "Markierte zum globalen Block hinzufügen";
+$_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL_OFF'] = "Markierte vom globalen Block entfernen";
+$_ARRAYLANG['TXT_BLOCK_SHOW_IN_GLOBAL'] = "im globalen Block anzeigen";
 ?>
