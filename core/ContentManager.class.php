@@ -466,14 +466,14 @@ class ContentManager
     */
 	function _getAllGroups($groupType="frontend")
 	{
-		$objDb = getDatabaseObject($this->strErrMessage, true);
+		global $objDatabase;
 
         if ($groupType!="frontend") {
         	$groupType="backend";
         }
 
 	    $arrGroups=array();
-		$objResult = $objDb->Execute("SELECT group_id, group_name FROM ".DBPREFIX."access_user_groups WHERE type='".$groupType."'");
+		$objResult = $objDatabase->Execute("SELECT group_id, group_name FROM ".DBPREFIX."access_user_groups WHERE type='".$groupType."'");
 		if ($objResult !== false) {
 	    	while (!$objResult->EOF) {
 	    		$arrGroups[$objResult->fields['group_id']]=$objResult->fields['group_name'];
@@ -746,9 +746,9 @@ class ContentManager
     */
 	function _getPageProtectionStatus($pageId)
 	{
-		$objDb = getDatabaseObject($this->strErrMessage, true);
+		global $objDatabase;
 
-		$objResult = $objDb->SelectLimit("SELECT protected FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId, 1);
+		$objResult = $objDatabase->SelectLimit("SELECT protected FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId, 1);
 		if ($objResult !== false && $objResult->RecordCount()>0 && isset($objResult->fields['protected']) && $objResult->fields['protected']) {
 			return "checked";
 		} else {

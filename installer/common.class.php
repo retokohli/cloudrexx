@@ -757,7 +757,7 @@ class CommonFunctions
 	    //MySQL
 	    $str = str_replace(
 	    	array("%DB_HOST%", "%DB_NAME%", "%DB_USER%", "%DB_PASSWORD%", "%DB_TABLE_PREFIX%", "%DB_CHARSET%"),
-	    	array($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbDatabaseName'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'], $_SESSION['installer']['config']['dbTablePrefix'], $useUtf8 ? 'utf8' : 'latin1'),
+	    	array($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbDatabaseName'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'], $_SESSION['installer']['config']['dbTablePrefix'], !empty($_SESSION['installer']['config']['dbCollation']) ? 'utf8' : ''),
 	    	$str
 	    );
 

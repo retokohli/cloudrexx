@@ -1046,11 +1046,15 @@ class Installer
 				'DB_TABLE_PREFIX'	=> (empty($dbTablePrefix) ? "&nbsp;" : $dbTablePrefix),
 			));
 
-			if ($useUtf8 && $objCommon->checkDbConnection($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword']) === true) {
-				$objTpl->setVariable('DB_CONNECTION_COLLATION', $dbCollation);
-				$objTpl->parse('database_collation');
+			if ($useUtf8) {
+				if ($objCommon->checkDbConnection($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword']) === true) {
+					$objTpl->setVariable('DB_CONNECTION_COLLATION', $dbCollation);
+					$objTpl->parse('database_collation');
+				} else {
+					$this->arrStatusMsg['database'] = $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'];
+					$objTpl->hideBlock('database_collation');
+				}
 			} else {
-				$this->arrStatusMsg['database'] = $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'];
 				$objTpl->hideBlock('database_collation');
 			}
 
