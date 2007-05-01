@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 30 Apr 2007 12:39:30 +0200
+* generated date Tue, 01 May 2007 10:12:33 +0200
 **/
 
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'] = "Navn";
@@ -179,4 +179,6 @@ $_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'] = "Edit Gallery";
 $_ARRAYLANG['TXT_GALLERY_MENU_EDIT_CATEGORY'] = "Edit Gallery";
 $_ARRAYLANG['TXT_GALLERY_EXPORT_TARGET'] = "Target shop category for export:";
 $_ARRAYLANG['TXT_GALLERY_EXPORT_CONFIRM'] = "The target shop category and all products within will be overwritten! Are you sure?";
+$_ARRAYLANG['TXT_GALLERY_FILE_NAME'] = "Filename";
+$_ARRAYLANG['TXT_GALLERY_FILE_TYPE'] = "Filetype";
 ?>

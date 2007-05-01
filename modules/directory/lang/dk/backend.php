@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 30 Apr 2007 12:39:30 +0200
+* generated date Tue, 01 May 2007 10:12:33 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Lav nyt design";
@@ -278,4 +278,8 @@ $_ARRAYLANG['TXT_SORTORDER'] = "Einträge nach Alphabet sortieren";
 $_ARRAYLANG['TXT_SHOWLEVELS'] = "Ebenen aktivieren";
 $_ARRAYLANG['TXT_GOOGLEID'] = "Google Key";
 $_ARRAYLANG['TXT_GOOGLELANG'] = "Sprachparameter";
+$_ARRAYLANG['TXT_DIRECTORY_REMEMBER'] = "Benachrichtigung";
+$_ARRAYLANG['TXT_DIRECTORY_CONFIRM'] = "Bestätigung";
+$_ARRAYLANG['TXT_DIRECTORY_CONFIRM_MAIL'] = "Bestätigung";
+$_ARRAYLANG['TXT_GOOGLESEACH'] = "Google Search";
 ?>
