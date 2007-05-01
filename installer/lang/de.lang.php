@@ -10,7 +10,7 @@
  */
 
 // help
-$_ARRLANG['TXT_HELP_MSG'] = "Bei Problemen mit der Installation des [NAME] haben Sie die folgenden Möglichkeiten wie Sie vorgehen können:<br /><ul><li>Im [FORUM] nach Hilfe suchen</li><li>Schauen Sie im [SUPPORT] vorbei</li><li>Senden Sie uns eine Email an [EMAIL] mit einer Beschreibung des Problems und der Ausgabe der [PHPINFO]</li></ul>";
+$_ARRLANG['TXT_HELP_MSG'] = "Bei Problemen mit der Installation des [NAME] haben Sie die folgenden Möglichkeiten wie Sie vorgehen können:<br /><ul><li>Im [FORUM] nach Hilfe suchen</li><li>Schauen Sie im [SUPPORT] vorbei</li><li>Senden Sie uns eine E-Mail an [EMAIL] mit einer Beschreibung des Problems und der Ausgabe der [PHPINFO]</li></ul>";
 $_ARRLANG['TXT_PHP_INFO'] = "PHP-Konfiguration";
 $_ARRLANG['TXT_FORUM'] = "Forum";
 $_ARRLANG['TXT_SUPPORT'] = "Support-Bereich";
@@ -131,20 +131,20 @@ $_ARRLANG['TXT_COULD_NOT_GATHER_ALL_DATABASE_TABLES'] = "Konnte die vorhandenen 
 $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'] = "Ihr Datenbank Server unterstützt den Zeichensatz UTF-8 nicht! Sie müssen daher eine Version von Contrexx mit dem Zeichensatz latin1 verwenden!";
 
 // system configuration
-$_ARRLANG['TXT_ADMIN_EMAIL'] = "Email Adresse des Administrators";
+$_ARRLANG['TXT_ADMIN_EMAIL'] = "E-Mail Adresse des Administrators";
 $_ARRLANG['TXT_ADMIN_NAME'] = "Name des Administrators";
 $_ARRLANG['TXT_NEWS_SYTEM'] = "Newssystem";
 $_ARRLANG['TXT_RSS_TITLE'] = "RSS Titel";
 $_ARRLANG['TXT_RSS_DESCRIPTION'] = "RSS Beschreibung";
 $_ARRLANG['TXT_CONTACT'] = "Kontaktformular";
-$_ARRLANG['TXT_CONTACT_EMAIL'] = "Email Adresse";
-$_ARRLANG['TXT_COULD_NOT_SET_ADMIN_EMAIL'] = "Konnte die Administrator Email Adresse nicht setzten!";
+$_ARRLANG['TXT_CONTACT_EMAIL'] = "E-Mail Adresse";
+$_ARRLANG['TXT_COULD_NOT_SET_ADMIN_EMAIL'] = "Konnte die Administrator E-Mail Adresse nicht setzten!";
 $_ARRLANG['TXT_COULD_NOT_SET_NEWSLETTER_EMAILS'] = "Konnte die E-Mail Adressen im Newsletter Modul nicht konfigurieren!";
 $_ARRLANG['TXT_COULD_NOT_SET_NEWSLETTER_SENDER'] = "Konnte den Absendernamen im Newsletter Modul nicht setzen!";
 $_ARRLANG['TXT_COULD_NOT_SET_ADMIN_NAME'] = "Konnte den Administrator Namen nicht setzten!";
 $_ARRLANG['TXT_COULD_NOT_SET_RSS_TITLE'] = "Konnte den RSS Titel nicht setzen!";
 $_ARRLANG['TXT_COULD_NOT_SET_RSS_DESCRIPTION'] = "Konnte die RSS Beschreibung nicht setzen!";
-$_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL'] = "Konnte die Kontaktformular Email Adresse nicht setzen!";
+$_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL'] = "Konnte die Kontaktformular E-Mail Adresse nicht setzen!";
 $_ARRLANG['TXT_DOMAIN_URL'] = "Domain URL";
 $_ARRLANG['TXT_DOMAIN_URL_EXPLANATION'] = "Geben Sie hier den Domainnamen an, auf welchem diese Installation durchgeführt wird, z.B. 'www.ihredomain.com' (ohne http:// oder zusätzliche Pfade)";
 $_ARRLANG['TXT_COULD_NOT_SET_DOMAIN_URL'] = "Konnte die Domain URL nicht setzen!";
