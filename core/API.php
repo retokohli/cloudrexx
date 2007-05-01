@@ -13,7 +13,6 @@
  * @uses /core/auth.class.php
  * @uses /core/ContentSitemap.class.php
  * @uses /core/database.php
- * @uses /core/db_extends.class.php
  * @uses /core/Init.class.php
  * @uses /core/Modulechecker.class.php
  * @uses /core/Navigation.class.php
@@ -26,8 +25,6 @@
  * @uses /lib/FRAMEWORK/framework.php
  * @uses /lib/adodb/adodb.inc.php
  * @uses /lib/PEAR/HTML/Template/Sigma/Sigma.php
- * //uses /lib/phplib/db_mysql.class.php
- * @uses /lib/phplib/db_mysql.inc
  * @todo Add comment for all require_once()s
  */
 
@@ -55,11 +52,6 @@ require_once ASCMS_CORE_PATH.'/validator.inc.php';
  * @ignore
  */
 require_once ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php';
-// require_once ASCMS_LIBRARY_PATH.'/phplib/db_mysql.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_LIBRARY_PATH.'/phplib/db_mysql.inc';
 /**
  * @ignore
  */
@@ -68,11 +60,6 @@ require_once ASCMS_CORE_PATH.'/database.php';
  * @ignore
  */
 require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
-
-/**
- * Includes the phplib database extention class
- */
-require_once ASCMS_CORE_PATH.'/db_extends.class.php';
 
 /**
  * Includes all framework files

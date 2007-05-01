@@ -100,12 +100,6 @@ $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : "";
 $objTemplate = &new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
 $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
-// old database object
-$db =&new astalavistaDB;
-
-// new database link object
-$objDb =&new astalavistaDB;
-
 // language object from the Framework
 $objLanguage = &new FWLanguage();
 

@@ -67,6 +67,10 @@ $arrFiles = array(
 		'mode'		=> '0777',
 		'mode_oct'	=> 0777
 	),
+	'/config'		=> array(
+		'mode'		=> '0777',
+		'mode_oct'	=> 0777
+	),
 	'/feed'	=> array(
 		'mode'		=> '0777',
 		'mode_oct'	=> 0777,

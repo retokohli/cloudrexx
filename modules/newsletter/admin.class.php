@@ -2239,7 +2239,7 @@ class newsletter extends NewsletterLib
                 $query = "UPDATE ".DBPREFIX."module_newsletter_tmp_sending SET sendt=1 where email='".$TargetEmail."' AND newsletter=".$NewsletterID."";
                 if ($objDatabase->Execute($query) === false) {
 					if ($_DBCONFIG['dbType'] == 'mysql' && $objDatabase->ErrorNo() == 2006) {
-						@$objDb->Connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password'], $_DBCONFIG['database'], true);
+						@$objDatabase->Connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password'], $_DBCONFIG['database'], true);
 						if ($objDatabase->Execute($query) === false) {
 							return false;
 						}
