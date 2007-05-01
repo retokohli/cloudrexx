@@ -10,7 +10,7 @@
  */
 
 // help
-$_ARRLANG['TXT_HELP_MSG'] = "Encountered installation problems with [NAME] you can proceed with the following options: <br /><ul><li>Search for help in [FORUM]</li><li>View previous answers in  [SUPPORT]</li><li>Send us an email at [EMAIL] with a description of the problem and the edition of the [PHPINFO]</li></ul>";
+$_ARRLANG['TXT_HELP_MSG'] = "Encountered installation problems with [NAME] you can proceed with the following options: <br /><ul><li>Search for help in [FORUM]</li><li>View previous answers in  [SUPPORT]</li><li>Send us an e-mail at [EMAIL] with a description of the problem and the edition of the [PHPINFO]</li></ul>";
 $_ARRLANG['TXT_PHP_INFO'] = "PHP configuration";
 $_ARRLANG['TXT_FORUM'] = "Forum";
 $_ARRLANG['TXT_SUPPORT'] = "Support area";
@@ -131,20 +131,20 @@ $_ARRLANG['TXT_COULD_NOT_GATHER_ALL_DATABASE_TABLES'] = "Could not find the avai
 $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'] = "Your database server doesn't support the character set UTF-8! You need the a version of Contrexx which uses the latin1 character set instead!";
 
 // system configuration
-$_ARRLANG['TXT_ADMIN_EMAIL'] = "Administrator email address ";
+$_ARRLANG['TXT_ADMIN_EMAIL'] = "Administrator e-mail address ";
 $_ARRLANG['TXT_ADMIN_NAME'] = "Administrator name";
 $_ARRLANG['TXT_NEWS_SYTEM'] = "News system";
 $_ARRLANG['TXT_RSS_TITLE'] = "RSS title";
 $_ARRLANG['TXT_RSS_DESCRIPTION'] = "RSS description";
 $_ARRLANG['TXT_CONTACT'] = "Contact form";
-$_ARRLANG['TXT_CONTACT_EMAIL'] = "Email address";
-$_ARRLANG['TXT_COULD_NOT_SET_ADMIN_EMAIL'] = "Could not set the administrator email address!  ";
-$_ARRLANG['TXT_COULD_NOT_SET_NEWSLETTER_EMAILS'] = "Could not configure email addresses in the newsletter module!  ";
+$_ARRLANG['TXT_CONTACT_EMAIL'] = "E-mail address";
+$_ARRLANG['TXT_COULD_NOT_SET_ADMIN_EMAIL'] = "Could not set the administrator e-mail address!  ";
+$_ARRLANG['TXT_COULD_NOT_SET_NEWSLETTER_EMAILS'] = "Could not configure e-mail addresses in the newsletter module!  ";
 $_ARRLANG['TXT_COULD_NOT_SET_NEWSLETTER_SENDER'] = "The module was not able to set the sender name in the newsletter! ";
 $_ARRLANG['TXT_COULD_NOT_SET_ADMIN_NAME'] = "Could not set the administrator name!  ";
 $_ARRLANG['TXT_COULD_NOT_SET_RSS_TITLE'] = "Could not set the RSS title!  ";
 $_ARRLANG['TXT_COULD_NOT_SET_RSS_DESCRIPTION'] = "Failed to set the RSS description!  ";
-$_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL'] = "Could not set the email address of the contact forms!  ";
+$_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL'] = "Could not set the e-mail address of the contact forms!  ";
 $_ARRLANG['TXT_DOMAIN_URL'] = "Domain URL";
 $_ARRLANG['TXT_DOMAIN_URL_EXPLANATION'] = "Provide here the domain name for the installation steps, for example 'www.yourdomain.com' (without http: // or additional paths)";
 $_ARRLANG['TXT_COULD_NOT_SET_DOMAIN_URL'] = "Could not set the domain URL!  ";
@@ -159,10 +159,10 @@ $_ARRLANG['TXT_PASSWORD_LENGTH_DESC'] = "(min. 6 characters)";
 $_ARRLANG['TXT_PASSWORD_LENGTH'] = "Password must be at least 6 characters in length!  ";
 $_ARRLANG['TXT_PASSWORD_NOT_VERIFIED'] = "The confirmation password does not match the password above!  ";
 $_ARRLANG['TXT_PASSWORD_VERIFICATION'] = "Confirm password";
-$_ARRLANG['TXT_EMAIL'] = "Email";
-$_ARRLANG['TXT_EMAIL_VERIFICATION'] = "Confirm email";
-$_ARRLANG['TXT_SET_EMAIL'] = "You must provide a valid email address!  ";
-$_ARRLANG['TXT_EMAIL_NOT_VERIFIED'] = "The confirmation email address does not match the email address above!  ";
+$_ARRLANG['TXT_EMAIL'] = "E-mail";
+$_ARRLANG['TXT_EMAIL_VERIFICATION'] = "Confirm e-mail";
+$_ARRLANG['TXT_SET_EMAIL'] = "You must provide a valid e-mail address!  ";
+$_ARRLANG['TXT_EMAIL_NOT_VERIFIED'] = "The confirmation e-mail address does not match the e-mail address above!  ";
 $_ARRLANG['TXT_PASSWORD_LIKE_USERNAME'] = "The password must not be similar or the same as the user name!  ";
 $_ARRLANG['TXT_CREATE_ADMIN_ACCOUNT'] = "Create administrator account";
 $_ARRLANG['TXT_COULD_NOT_CREATE_ADMIN_ACCOUNT'] = "Could not create the administrator account!";
