@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 30 Apr 2007 12:39:30 +0200
+* generated date Tue, 01 May 2007 10:12:33 +0200
 **/
 
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'] = "Name";
@@ -179,4 +179,6 @@ $_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'] = "Neue Kategorie";
 $_ARRAYLANG['TXT_GALLERY_MENU_EDIT_CATEGORY'] = "Kategorie editieren";
 $_ARRAYLANG['TXT_GALLERY_EXPORT_TARGET'] = "Zielkategorie im Shop für den Export:";
 $_ARRAYLANG['TXT_GALLERY_EXPORT_CONFIRM'] = "Die Shop Kategorie mit allen enthaltenen Produkten wird beim Export überschrieben! Sind sie sicher?";
+$_ARRAYLANG['TXT_GALLERY_FILE_NAME'] = "Dateiname";
+$_ARRAYLANG['TXT_GALLERY_FILE_TYPE'] = "Dateityp";
 ?>
