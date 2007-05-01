@@ -174,7 +174,7 @@ class eGov extends eGovLibrary
 				}
 
 				if($this->GetProduktValue("product_message", $product_id)!=""){
-					$AlertMessageTxt = html_entity_decode($this->GetProduktValue("product_message", $product_id));
+					$AlertMessageTxt = html_entity_decode($this->GetProduktValue("product_message", $product_id), ENT_QUOTES, CONTREXX_CHARSET);
 					$ReturnValue = 'alert("'.$AlertMessageTxt.'");'.chr(10);
 				}
 				if($this->GetProduktValue("product_target_url", $product_id)!=""){
@@ -386,13 +386,13 @@ class eGov extends eGovLibrary
 		global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
 
-		if(intval($_REQUEST["id"])){
+		if (intval($_REQUEST["id"])) {
 			$query = "SELECT product_id, product_name, product_desc, product_price, product_per_day, product_quantity, product_target_email, product_target_url, product_message
 			          FROM ".DBPREFIX."module_egov_products
-			          WHERE product_id=".$_REQUEST["id"]."";
+			          WHERE product_id=".intval($_REQUEST["id"]);
 			$objResult = $objDatabase->Execute($query);
 
-			if(isset($_REQUEST["payment"])){
+			if (isset($_REQUEST["payment"])) {
 				if($_REQUEST["payment"]=="cancel"){
 					$ReturnValue = 'alert("'.$_ARRAYLANG['TXT_EGOV_PAYPAL_CANCEL'].'");'.chr(10);
 				}
@@ -417,20 +417,14 @@ class eGov extends eGovLibrary
 				));
 			}
 
-			if($this->objTemplate->blockExists('egov_price')){
-				if(intval($objResult->fields['product_price']) > 0){
+			if ($this->objTemplate->blockExists('egov_price')) {
+				if (intval($objResult->fields['product_price']) > 0) {
 					$this->objTemplate->touchBlock('egov_price');
-				}else{
+				} else {
 					$this->objTemplate->hideBlock('egov_price');
 				}
 			}
-
 		}
-
-
 	}
-
-
-
 }
 ?>
