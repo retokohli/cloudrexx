@@ -229,59 +229,61 @@ class Gallery {
         }
 
         //voting
-        if ($this->arrSettings['show_voting'] == 'on' && $boolVoting) {
-            $this->_objTpl->setVariable(array(
-                'TXT_VOTING_TITLE'        => $_ARRAYLANG['TXT_VOTING_TITLE'],
-                'TXT_VOTING_STATS_ACTUAL' => $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'],
-                'TXT_VOTING_STATS_WITH'   => $_ARRAYLANG['TXT_VOTING_STATS_WITH'],
-                'TXT_VOTING_STATS_VOTES'  => $_ARRAYLANG['TXT_VOTING_STATS_VOTES'],
-            ));
-            if (isset($_COOKIE['Gallery_Voting_'.$intPicId])) {
-                $this->_objTpl->hideBlock('showVotingBar');
-                $this->_objTpl->setVariable(array(
-                    'TXT_VOTING_ALREADY_VOTED'  => $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'],
-                    'VOTING_ALREADY_VOTED_MARK' => intval($_COOKIE['Gallery_Voting_'.$intPicId])
-                ));
-            } else {
-                $this->_objTpl->setVariable(array(
-                    'TXT_VOTING_ALREADY_VOTED'  => '',
-                    'VOTING_ALREADY_VOTED_MARK' => ''
-                ));
-                for ($i=1;$i<=10;$i++) {
-                    $this->_objTpl->setVariable(array(
-                        'VOTING_BAR_SRC'   => ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/voting/'.$i.'.gif',
-                        'VOTING_BAR_ALT'   => $_ARRAYLANG['TXT_VOTING_RATE'].': '.$i,
-                        'VOTING_BAR_MARK'  => $i,
-                        'VOTING_BAR_CID'   => $intCatId,
-                        'VOTING_BAR_PICID' => $intPicId
-                    ));
-                    $this->_objTpl->parse('showVotingBar');
-                }
-            }
+        if ($this->_objTpl->blockExists('votingTab')) {
+	        if ($this->arrSettings['show_voting'] == 'on' && $boolVoting) {
+	            $this->_objTpl->setVariable(array(
+	                'TXT_VOTING_TITLE'        => $_ARRAYLANG['TXT_VOTING_TITLE'],
+	                'TXT_VOTING_STATS_ACTUAL' => $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'],
+	                'TXT_VOTING_STATS_WITH'   => $_ARRAYLANG['TXT_VOTING_STATS_WITH'],
+	                'TXT_VOTING_STATS_VOTES'  => $_ARRAYLANG['TXT_VOTING_STATS_VOTES'],
+	            ));
+	            if (isset($_COOKIE['Gallery_Voting_'.$intPicId])) {
+	                $this->_objTpl->hideBlock('showVotingBar');
+	                $this->_objTpl->setVariable(array(
+	                    'TXT_VOTING_ALREADY_VOTED'  => $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'],
+	                    'VOTING_ALREADY_VOTED_MARK' => intval($_COOKIE['Gallery_Voting_'.$intPicId])
+	                ));
+	            } else {
+	                $this->_objTpl->setVariable(array(
+	                    'TXT_VOTING_ALREADY_VOTED'  => '',
+	                    'VOTING_ALREADY_VOTED_MARK' => ''
+	                ));
+	                for ($i=1;$i<=10;$i++) {
+	                    $this->_objTpl->setVariable(array(
+	                        'VOTING_BAR_SRC'   => ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/voting/'.$i.'.gif',
+	                        'VOTING_BAR_ALT'   => $_ARRAYLANG['TXT_VOTING_RATE'].': '.$i,
+	                        'VOTING_BAR_MARK'  => $i,
+	                        'VOTING_BAR_CID'   => $intCatId,
+	                        'VOTING_BAR_PICID' => $intPicId
+	                    ));
+	                    $this->_objTpl->parse('showVotingBar');
+	                }
+	            }
 
-            $objResult = $objDatabase->Execute(
-                "SELECT mark FROM ".DBPREFIX."module_gallery_votes ".
-                "WHERE picid=$intPicId");
-            if ($objResult->RecordCount() > 0) {
-                $intCount = 0;
-                $intMark  = 0;
-                while (!$objResult->EOF) {
-                    $intCount++;
-                    $intMark = $intMark + intval($objResult->fields['mark']);
-                    $objResult->MoveNext();
-                }
-                $this->_objTpl->setVariable(array(
-                    'VOTING_STATS_MARK'  => number_format(round($intMark / $intCount,1),1,'.','\''),
-                    'VOTING_STATS_VOTES' => $intCount
-                ));
-            } else {
-                $this->_objTpl->setVariable(array(
-                    'VOTING_STATS_MARK'  => 0,
-                    'VOTING_STATS_VOTES' => 0
-                ));
-            }
-        } else {
-            $this->_objTpl->hideBlock('votingTab');
+	            $objResult = $objDatabase->Execute(
+	                "SELECT mark FROM ".DBPREFIX."module_gallery_votes ".
+	                "WHERE picid=$intPicId");
+	            if ($objResult->RecordCount() > 0) {
+	                $intCount = 0;
+	                $intMark  = 0;
+	                while (!$objResult->EOF) {
+	                    $intCount++;
+	                    $intMark = $intMark + intval($objResult->fields['mark']);
+	                    $objResult->MoveNext();
+	                }
+	                $this->_objTpl->setVariable(array(
+	                    'VOTING_STATS_MARK'  => number_format(round($intMark / $intCount,1),1,'.','\''),
+	                    'VOTING_STATS_VOTES' => $intCount
+	                ));
+	            } else {
+	                $this->_objTpl->setVariable(array(
+	                    'VOTING_STATS_MARK'  => 0,
+	                    'VOTING_STATS_VOTES' => 0
+	                ));
+	            }
+	        } else {
+	            $this->_objTpl->hideBlock('votingTab');
+	        }
         }
 
         // comments
@@ -455,59 +457,61 @@ class Gallery {
         ));
 
         //voting
-        if ($this->arrSettings['show_voting'] == 'on'    && $boolVoting) {
-            $objTpl->setVariable(array(
-                'TXT_VOTING_TITLE'        => $_ARRAYLANG['TXT_VOTING_TITLE'],
-                'TXT_VOTING_STATS_ACTUAL' => $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'],
-                'TXT_VOTING_STATS_WITH'   => $_ARRAYLANG['TXT_VOTING_STATS_WITH'],
-                'TXT_VOTING_STATS_VOTES'  => $_ARRAYLANG['TXT_VOTING_STATS_VOTES'],
-            ));
-            if (isset($_COOKIE["Gallery_Voting_$intPicId"])) {
-                $objTpl->hideBlock('showVotingBar');
+        if ($objTpl->blockExists('votingTab')) {
+	        if ($this->arrSettings['show_voting'] == 'on'    && $boolVoting) {
+	            $objTpl->setVariable(array(
+	                'TXT_VOTING_TITLE'        => $_ARRAYLANG['TXT_VOTING_TITLE'],
+	                'TXT_VOTING_STATS_ACTUAL' => $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'],
+	                'TXT_VOTING_STATS_WITH'   => $_ARRAYLANG['TXT_VOTING_STATS_WITH'],
+	                'TXT_VOTING_STATS_VOTES'  => $_ARRAYLANG['TXT_VOTING_STATS_VOTES'],
+	            ));
+	            if (isset($_COOKIE["Gallery_Voting_$intPicId"])) {
+	                $objTpl->hideBlock('showVotingBar');
 
-                $objTpl->setVariable(array(
-                    'TXT_VOTING_ALREADY_VOTED'  => $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'],
-                    'VOTING_ALREADY_VOTED_MARK' => intval($_COOKIE['Gallery_Voting_'.$intPicId])
-                ));
-            } else {
-                $objTpl->setVariable(array(
-                    'TXT_VOTING_ALREADY_VOTED'  => '',
-                    'VOTING_ALREADY_VOTED_MARK' => ''
-                ));
-                for ($i=1;$i<=10;$i++) {
-                        $objTpl->setVariable(array(
-                            'VOTING_BAR_SRC'   => ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/voting/'.$i.'.gif',
-                            'VOTING_BAR_ALT'   => $_ARRAYLANG['TXT_VOTING_RATE'].': '.$i,
-                            'VOTING_BAR_MARK'  => $i,
-                            'VOTING_BAR_CID'   => $intCatId,
-                            'VOTING_BAR_PICID' => $intPicId
-                        ));
-                    $objTpl->parse('showVotingBar');
-                }
-            }
+	                $objTpl->setVariable(array(
+	                    'TXT_VOTING_ALREADY_VOTED'  => $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'],
+	                    'VOTING_ALREADY_VOTED_MARK' => intval($_COOKIE['Gallery_Voting_'.$intPicId])
+	                ));
+	            } else {
+	                $objTpl->setVariable(array(
+	                    'TXT_VOTING_ALREADY_VOTED'  => '',
+	                    'VOTING_ALREADY_VOTED_MARK' => ''
+	                ));
+	                for ($i=1;$i<=10;$i++) {
+	                        $objTpl->setVariable(array(
+	                            'VOTING_BAR_SRC'   => ASCMS_MODULE_IMAGE_WEB_PATH.'/gallery/voting/'.$i.'.gif',
+	                            'VOTING_BAR_ALT'   => $_ARRAYLANG['TXT_VOTING_RATE'].': '.$i,
+	                            'VOTING_BAR_MARK'  => $i,
+	                            'VOTING_BAR_CID'   => $intCatId,
+	                            'VOTING_BAR_PICID' => $intPicId
+	                        ));
+	                    $objTpl->parse('showVotingBar');
+	                }
+	            }
 
-            $objResult = $objDatabase->Execute(
-                "SELECT mark FROM ".DBPREFIX."module_gallery_votes ".
-                "WHERE picid=$intPicId");
-            if ($objResult->RecordCount() > 0) {
-                $intCount = 0;
-                while (!$objResult->EOF) {
-                    $intCount++;
-                    $intMark = $intMark + intval($objResult->fields['mark']);
-                    $objResult->MoveNext();
-                }
-                $objTpl->setVariable(array(
-                    'VOTING_STATS_MARK'  => number_format(round($intMark / $intCount,1),1,'.','\''),
-                    'VOTING_STATS_VOTES' => $intCount
-                ));
-            } else {
-                $objTpl->setVariable(array(
-                    'VOTING_STATS_MARK'  => 0,
-                    'VOTING_STATS_VOTES' => 0
-                ));
-            }
-        } else {
-            $objTpl->hideBlock('votingTab');
+	            $objResult = $objDatabase->Execute(
+	                "SELECT mark FROM ".DBPREFIX."module_gallery_votes ".
+	                "WHERE picid=$intPicId");
+	            if ($objResult->RecordCount() > 0) {
+	                $intCount = 0;
+	                while (!$objResult->EOF) {
+	                    $intCount++;
+	                    $intMark = $intMark + intval($objResult->fields['mark']);
+	                    $objResult->MoveNext();
+	                }
+	                $objTpl->setVariable(array(
+	                    'VOTING_STATS_MARK'  => number_format(round($intMark / $intCount,1),1,'.','\''),
+	                    'VOTING_STATS_VOTES' => $intCount
+	                ));
+	            } else {
+	                $objTpl->setVariable(array(
+	                    'VOTING_STATS_MARK'  => 0,
+	                    'VOTING_STATS_VOTES' => 0
+	                ));
+	            }
+	        } else {
+	            $objTpl->hideBlock('votingTab');
+	        }
         }
         //comments
         if ($this->arrSettings['show_comments'] == 'on' && $boolComment) {
