@@ -83,7 +83,7 @@ class skins
 	 * @access private
 	 * @var string
 	 */
-	var $_xmlParserCharacterEncoding = 'ISO-8859-1';
+	var $_xmlParserCharacterEncoding;
 
 	/**
 	 * Defines the current XML element which is being parsed
@@ -158,6 +158,8 @@ class skins
     function __construct()
     {
     	global  $_CORELANG, $_FTPCONFIG, $objTemplate, $objDatabase;
+
+    	$this->_xmlParserCharacterEncoding = CONTREXX_CHARSET;
         //add preview.gif to required files
     	$this->filenames[] = "images".DIRECTORY_SEPARATOR."preview.gif";
 		//get path variables

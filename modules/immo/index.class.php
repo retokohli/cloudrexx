@@ -164,6 +164,9 @@ class Immo extends ImmoLib
 		$this->_objTpl->loadTemplateFile("modules/immo/template/frontend_images_viewer.html");
 		$immoID = intval($_GET['id']);
 		$images = $this->_getImagesFromObject($immoID);
+
+		$this->_objTpl->setVariable('CONTREXX_CHARSET', CONTREXX_CHARSET);
+
         foreach ($images as $index => $image) {
             $this->_objTpl->setVariable(array(
 		  	   'IMMO_IMAGE_INDEX'      => $index,

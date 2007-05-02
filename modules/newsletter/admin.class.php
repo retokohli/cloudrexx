@@ -2044,6 +2044,7 @@ class newsletter extends NewsletterLib
 		));
 
 		$this->_objTpl->setVariable(array(
+			'CONTREXX_CHARSET'				=> CONTREXX_CHARSET,
 			'NEWSLETTER_MAIL_ID'			=> $mailId,
 			'NEWSLETTER_MAIL_USERES'		=> $mailRecipientCount,
 			'NEWSLETTER_SENDT'				=> $count,

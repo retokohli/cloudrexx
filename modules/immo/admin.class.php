@@ -2409,6 +2409,7 @@ WHERE id = $immoID )";
 		$objTpl->loadTemplateFile('module_immo_map_popup.html');
 		$googlekey = (!empty($this->arrSettings['GOOGLE_API_KEY_'.$_SERVER['SERVER_NAME']])) ? $this->arrSettings['GOOGLE_API_KEY_'.$_SERVER['SERVER_NAME']] : '';
 		$objTpl->setVariable(array(
+			'CONTREXX_CHARSET'					=> CONTREXX_CHARSET,
 			'TXT_IMMO_BROWSER_NOT_SUPPORTED'	=> $_ARRAYLANG['TXT_IMMO_BROWSER_NOT_SUPPORTED'],
 			'TXT_IMMO_CLOSE'					=> $_ARRAYLANG['TXT_IMMO_CLOSE'],
 			'TXT_IMMO_DBLCLICK_TO_SET_POINT'	=> $_ARRAYLANG['TXT_IMMO_DBLCLICK_TO_SET_POINT'],

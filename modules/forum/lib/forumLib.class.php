@@ -1100,7 +1100,14 @@ class ForumLibrary {
 	 * @param string|array $mixedMode
 	 * @return bool hasAccess
 	 */
-	function _checkAuth($intCatId, $mixedMode='read'){
+	function _checkAuth($intCatId, $mixedMode='read')
+	{
+		global $objPerm;
+
+		if ($objPerm->allAccess) {
+			return true;
+		}
+
 		$arrAccess = $this->createAccessArray($intCatId);
 		if(empty($_SESSION['auth']['groups'])){
 			$_SESSION['auth']['groups'] = $this->_anonymousGroupId;
