@@ -530,6 +530,7 @@ class directoryLibrary
         //check file array
         if(isset($_FILES) && !empty($_FILES))
         {
+
         	//get file info
         	$status        	= "";
         	$tmpFile  		= $_FILES[$name]['tmp_name'];
