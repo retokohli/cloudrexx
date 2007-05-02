@@ -88,7 +88,7 @@ class pdfCreator
 
 		$this->langProductName = $_ARRAYLANG['TXT_PRODUCT_NAME'];
 		$this->langProductCustomId = $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'];
-		$this->langProductId = $_ARRAYLANG['TXT_PRODUCT_ID'];
+		$this->langProductId = $_ARRAYLANG['TXT_ID'];
 		$this->langPrice = $_ARRAYLANG['TXT_UNIT_PRICE'];
 		$this->langCategoryName = $_ARRAYLANG['TXT_CATEGORY'];
 
