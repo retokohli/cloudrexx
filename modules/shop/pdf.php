@@ -87,6 +87,7 @@ class pdfCreator
 		$_ARRAYLANG = $objInit->loadLanguageData('shop');
 
 		$this->langProductName = $_ARRAYLANG['TXT_PRODUCT_NAME'];
+		$this->langProductCustomId = $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'];
 		$this->langProductId = $_ARRAYLANG['TXT_PRODUCT_ID'];
 		$this->langPrice = $_ARRAYLANG['TXT_UNIT_PRICE'];
 		$this->langCategoryName = $_ARRAYLANG['TXT_CATEGORY'];
@@ -97,7 +98,7 @@ class pdfCreator
 			$this->currencySymbol = $this->_objResult->fields['symbol'];
 		}
 
-		$this->_objResult = $this->_objDatabase->Execute("SELECT pro.id,pro.title,pro.catid,pro.normalprice,pro.status,pro.is_special_offer,cat.catname,cat.catid
+		$this->_objResult = $this->_objDatabase->Execute("SELECT pro.id,pro.product_id,pro.title,pro.catid,pro.normalprice,pro.status,pro.is_special_offer,cat.catname,cat.catid
 					      FROM ".DBPREFIX."module_shop_products as pro,
 		                        ".DBPREFIX."module_shop_categories as cat
 						  WHERE pro.catid = cat.catid AND pro.status=1
@@ -105,16 +106,16 @@ class pdfCreator
 		while (!$this->_objResult->EOF) {
 			$this->arrProducts[$this->_objResult->fields['id']] = array	(	'title' => $this->_objResult->fields['title'],
 																'catname' => $this->_objResult->fields['catname'],
+																'product_id' => $this->_objResult->fields['product_id'],
 																'id' => $this->_objResult->fields['id'],
 																'normalprice' => $this->_objResult->fields['normalprice']." ".$this->currencySymbol
 															);
-
 			$this->arrProductCat[$this->_objResult->fields['id']] = $this->_objResult->fields['catid'];
 			$this->_objResult->MoveNext();
 		}
 
 		//mark special offers
-		$this->_objResult = $this->_objDatabase->Execute("SELECT pro.id,pro.title,pro.catid,pro.discountprice,pro.status,cat.catname,cat.catid
+		$this->_objResult = $this->_objDatabase->Execute("SELECT pro.id,pro.product_id,pro.title,pro.catid,pro.discountprice,pro.status,cat.catname,cat.catid
 					      FROM ".DBPREFIX."module_shop_products as pro,
 		                        ".DBPREFIX."module_shop_categories as cat
 						  WHERE pro.catid = cat.catid AND pro.status=1 AND pro.is_special_offer=1
@@ -123,6 +124,7 @@ class pdfCreator
 		while (!$this->_objResult->EOF) {
 			$this->arrProducts[$this->_objResult->fields['id']] = array(	'title' => $this->_objResult->fields['title'],
 															'catname' => $this->_objResult->fields['catname'],
+															'product_id' => $this->_objResult->fields['product_id'],
 															'id' => $this->_objResult->fields['id'],
 															'normalprice' => "S ".$this->_objResult->fields['discountprice']." ".$this->currencySymbol
 														  );
@@ -295,6 +297,7 @@ class pdfCreator
 
 		$this->pdf->ezTable($arrOutput,array(	'title' => '<b>'.$this->langProductName.'</b>',
 												'catname' => '<b>'.$this->langCategoryName.'</b>',
+												'product_id' => '<b>'.$this->langProductCustomId.'</b>',
 												'id' => '<b>'.$this->langProductId.'</b>',
 												'normalprice' => '<b>'.$this->langPrice.'</b>'),'',
 						array('showHeadings' => 1,
@@ -312,10 +315,11 @@ class pdfCreator
 											hexdec(substr($this->pdfRowColor2,4,2))/255
 											),
 						// Total 530
-						'cols' => array('id' => array('width' => 45,'justification' => 'right'),
-										'title' => array('width' => 275),
-										'catname' => array('width' => 150),
-										'normalprice' => array('width' => 60,'justification' => 'right'))
+						'cols' => array('id' => array('width' => 40,'justification' => 'right'),
+										'product_id' => array('width' => 50,'justification' => 'right'),
+										'title' => array('width' => 255),
+										'catname' => array('width' => 135),
+										'normalprice' => array('width' => 50,'justification' => 'right'))
 							 )
 					);
 	$this->pdf->ezStream();
