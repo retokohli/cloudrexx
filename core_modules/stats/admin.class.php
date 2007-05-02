@@ -285,9 +285,6 @@ class stats extends statsLibrary
 		$requests = 0;
 		$rowClass = 0;
 
-		// create language object
-		$objLanguage = new FWLanguage();
-
     	$this->_objTpl->addBlockfile('STATS_REQUESTS_CONTENT', 'requests_block', 'module_stats_requests_today.html');
 
     	// initialize the statistics
@@ -333,13 +330,10 @@ class stats extends statsLibrary
 		));
 		$this->_objTpl->parse('stats_requests_today');
 
-		// get language informations
-		$arrLanguages = $objLanguage->getLanguageArray();
-
 		// set statistic graph
 		if (count($this->arrRequests)>0) {
 			$this->_objTpl->setVariable(array(
-				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_today&amp;lang='.$arrLanguages[$_LANGID]['lang'].'&amp;mode=backend" width="600" height="250" />'
+				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_today" width="600" height="250" />'
 			));
 		} else {
 			$this->_objTpl->setVariable(array(
@@ -367,9 +361,6 @@ class stats extends statsLibrary
 		$visitors = 0;
 		$requests = 0;
 		$rowClass = 0;
-
-		// create language object
-		$objLanguage = new FWLanguage();
 
 		$this->_objTpl->addBlockfile('STATS_REQUESTS_CONTENT', 'requests_block', 'module_stats_requests_days.html');
 
@@ -427,13 +418,10 @@ class stats extends statsLibrary
 		));
 		$this->_objTpl->parse('stats_requests_days');
 
-		// get language informations
-		$arrLanguages = $objLanguage->getLanguageArray();
-
 		// set statistic graph
 		if (count($this->arrRequests)>0) {
 			$this->_objTpl->setVariable(array(
-				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_days&amp;lang='.$arrLanguages[$_LANGID]['lang'].'&amp;mode=backend" width="600" height="250" />',
+				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_days" width="600" height="250" />',
 			));
 		} else {
 			$this->_objTpl->setVariable(array(
@@ -462,9 +450,6 @@ class stats extends statsLibrary
 		$visitors = 0;
 		$requests = 0;
 		$rowClass = 0;
-
-		// create language object
-		$objLanguage = new FWLanguage();
 
 		$this->_objTpl->addBlockfile('STATS_REQUESTS_CONTENT', 'requests_block', 'module_stats_requests_months.html');
 
@@ -511,13 +496,10 @@ class stats extends statsLibrary
 		));
 		$this->_objTpl->parse('stats_requests_months');
 
-		// get language informations
-		$arrLanguages = $objLanguage->getLanguageArray();
-
 		// set statistic graph
 		if (count($this->arrRequests)>0) {
 			$this->_objTpl->setVariable(array(
-				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_months&amp;lang='.$arrLanguages[$_LANGID]['lang'].'&amp;mode=backend" width="600" height="250" />',
+				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_months" width="600" height="250" />',
 			));
 		} else {
 			$this->_objTpl->setVariable(array(
@@ -545,9 +527,6 @@ class stats extends statsLibrary
 		$visitors = 0;
 		$requests = 0;
 		$rowClass = 0;
-
-		// create language object
-		$objLanguage = new FWLanguage();
 
 		$this->_objTpl->addBlockfile('STATS_REQUESTS_CONTENT', 'requests_block', 'module_stats_requests_years.html');
 
@@ -595,13 +574,10 @@ class stats extends statsLibrary
 			$this->_objTpl->parse('stats_requests_years');
     	}
 
-		// get language informations
-		$arrLanguages = $objLanguage->getLanguageArray();
-
 		// set statistic graph
 		if (count($this->arrRequests)>0) {
 			$this->_objTpl->setVariable(array(
-				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_years&amp;lang='.$arrLanguages[$_LANGID]['lang'].'&amp;mode=backend" width="600" height="250" />',
+				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_years" width="600" height="250" />',
 			));
 		} else {
 			$this->_objTpl->setVariable(array(

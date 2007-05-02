@@ -8,52 +8,6 @@
  * @subpackage  core_module_stats
  * @todo        Edit PHP DocBlocks!
  */
-
-error_reporting(0);
-
-/**
- * Includes
- */
-require_once dirname(__FILE__).'/../../config/configuration.php';
-include ASCMS_LIBRARY_PATH.'/ykcee/ykcee.php';
-
-
-if (isset($_GET['lang']) && !empty($_GET['lang'])) {
-	$lang = $_GET['lang'];
-} else {
-	$lang = 'en';
-}
-
-if (isset($_GET['mode']) && !empty($_GET['mode'])) {
-	$mode = $_GET['mode'];
-} else {
-	$mode = 'frontend';
-}
-
-$langFile = dirname(__FILE__).'/lang/'.$lang.'/'.$mode.'.php';
-if (file_exists($langFile)) {
-	include $langFile;
-} else {
-	$langFile = dirname(__FILE__).'/lang/en/frontend.php';
-	if (file_exists($langFile)) {
-		include $langFile;
-	}
-}
-
-require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
-
-$objDb = ADONewConnection($_DBCONFIG['dbType']); # eg 'mysql' or 'postgres'
-$objDb->Connect($_DBCONFIG['host'],$_DBCONFIG['user'],$_DBCONFIG['password'],$_DBCONFIG['database']);
-
-
-/**
- * Make Graph
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author Astalavista Development Team <thun@astalvista.ch>
- * @version 1.0
- * @package     contrexx
- * @subpackage  core_module_stats
- */
 class makeGraph
 {
 	var $stats = '';
@@ -133,7 +87,7 @@ class makeGraph
 
 
 	function _makeRequestsHoursGraph() {
-		global $objDb, $_ARRAYLANG;
+		global $objDatabase, $_ARRAYLANG;
 
 		$arrBarPlot1 = array();
 		$arrBarPlot2 = array();
@@ -142,7 +96,7 @@ class makeGraph
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` , `count`
 			FROM `".DBPREFIX."stats_visitors_summary`
 			WHERE FROM_UNIXTIME( `timestamp` , '%d-%m-%Y' ) = '".date('d-m-Y')."' AND `type` = 'hour' AND `count` > 0";
-		$result = $objDb->Execute($query);
+		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
 				$arrBarPlot1[$arrResult['hour']] = $arrResult['count'];
@@ -151,7 +105,7 @@ class makeGraph
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` , `count`
 			FROM `".DBPREFIX."stats_requests_summary`
 			WHERE FROM_UNIXTIME( `timestamp` , '%d-%m-%Y' ) = '".date('d-m-Y')."' AND `type` = 'hour' AND `count` > 0";
-		$result = $objDb->Execute($query);
+		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
 				$arrBarPlot2[$arrResult['hour']] = $arrResult['count'];
@@ -179,7 +133,7 @@ class makeGraph
 
 
 	function _makeRequestsDaysGraph() {
-		global $objDb, $_ARRAYLANG;
+		global $objDatabase, $_ARRAYLANG;
 
 		$arrBarPlot1 = array();
 		$arrBarPlot2 = array();
@@ -189,7 +143,7 @@ class makeGraph
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%d' ) AS `day` , `count`
 			FROM `".DBPREFIX."stats_visitors_summary`
 			WHERE `type` = 'day' AND `count` > 0 AND FROM_UNIXTIME( `timestamp` , '%m-%Y' ) = '".date('m-Y')."'";
-		$result = $objDb->Execute($query);
+		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
 				$arrBarPlot1[$arrResult['day']] = $arrResult['count'];
@@ -199,7 +153,7 @@ class makeGraph
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%d' ) AS `day` , `count`
 			FROM `".DBPREFIX."stats_requests_summary`
 			WHERE `type` = 'day' AND `count` > 0 AND FROM_UNIXTIME( `timestamp` , '%m-%Y' ) = '".date('m-Y')."'";
-		$result = $objDb->Execute($query);
+		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
 				$arrBarPlot2[$arrResult['day']] = $arrResult['count'];
@@ -228,7 +182,7 @@ class makeGraph
 
 
 	function _makeRequestsMonthsGraph() {
-		global $objDb, $_ARRAYLANG;
+		global $objDatabase, $_ARRAYLANG;
 
 		$arrBarPlot1 = array();
 		$arrBarPlot2 = array();
@@ -238,7 +192,7 @@ class makeGraph
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%m' ) AS `month` , `count`
 			FROM `".DBPREFIX."stats_visitors_summary`
 			WHERE `type` = 'month' AND `count` > 0 AND FROM_UNIXTIME( `timestamp` , '%Y' ) = '".date('Y')."'";
-		$result = $objDb->Execute($query);
+		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
 				$arrBarPlot1[$arrResult['month']] = $arrResult['count'];
@@ -248,7 +202,7 @@ class makeGraph
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%m' ) AS `month` , `count`
 			FROM `".DBPREFIX."stats_requests_summary`
 			WHERE `type` = 'month' AND `count` > 0 AND FROM_UNIXTIME( `timestamp` , '%Y' ) = '".date('Y')."'";
-		$result = $objDb->Execute($query);
+		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
 				$arrBarPlot2[$arrResult['month']] = $arrResult['count'];
@@ -278,7 +232,7 @@ class makeGraph
 
 
 	function _makeRequestsYearsGraph() {
-		global $objDb, $_ARRAYLANG;
+		global $objDatabase, $_ARRAYLANG;
 
 		$arrBarPlot1 = array();
 		$arrBarPlot2 = array();
@@ -293,7 +247,7 @@ class makeGraph
 			FROM `".DBPREFIX."stats_visitors_summary`
 			WHERE `type` = 'year'
 			ORDER BY `year`";
-		$result = $objDb->Execute($query);
+		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
 				$arrBarPlot1[$arrResult['year']] = $arrResult['count'];
@@ -304,7 +258,7 @@ class makeGraph
 			FROM `".DBPREFIX."stats_requests_summary`
 			WHERE `type` = 'year'
 			ORDER BY `year`";
-		$result = $objDb->Execute($query);
+		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
 				$arrBarPlot2[$arrResult['year']] = $arrResult['count'];
@@ -386,6 +340,33 @@ class makeGraph
 	    $graph->DrawGraph();
 	}
 }
+
+error_reporting(0);
+
+/**
+ * Includes
+ */
+require_once dirname(__FILE__).'/../../config/configuration.php';
+include ASCMS_LIBRARY_PATH.'/ykcee/ykcee.php';
+
+$adminPage = true;
+require_once ASCMS_CORE_PATH.'/API.php';
+
+$errorMsg = '';
+$objDatabase = getDatabaseObject($errorMsg);
+
+$objInit= new InitCMS($mode="backend");
+
+$sessionObj= &new cmsSession();
+$sessionObj->cmsSessionStatusUpdate($status="backend");
+
+$objPerm =&new Permission($type='backend');
+$objPerm->checkAccess(19, 'static');
+
+$objInit->_initBackendLanguage();
+$objInit->getUserFrontendLangId();
+
+$_ARRAYLANG = $objInit->loadLanguageData('stats');
 
 new makeGraph();
 ?>
