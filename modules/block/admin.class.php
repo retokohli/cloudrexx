@@ -333,7 +333,7 @@ class blockManager extends blockLibrary
 			}
 
 			if ($blockId != 0) {
-				if ($this->_updateBlock($blockId, $blockContent, $blockName, $blockRandom, $blockGlobal, $blockAssociatedLangIds)) {
+				if ($this->_updateBlock($blockId, $blockContent, $blockName, $blockRandom, $blockRandom2, $blockRandom3, $blockGlobal, $blockAssociatedLangIds)) {
 					$this->_strOkMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'];
 					return $this->_showOverview();
 				} else {
