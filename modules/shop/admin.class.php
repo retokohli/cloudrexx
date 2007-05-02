@@ -58,8 +58,7 @@ class shopmanager extends ShopLibrary {
     var $categoryTreeName      = array();
     var $categoryTreeSorting   = array();
     var $categoryTreeStatus    = array();
-    var $thumbnailNameSuffix   = "_thumb";
-    var $mediaThumbNailSuffix  = ".thumb";
+    var $thumbnailNameSuffix   = ".thumb";
     var $shopImagePath;
     var $shopImageWebPath;
     var $langId;
@@ -185,7 +184,7 @@ class shopmanager extends ShopLibrary {
         // both include ASCMS_PATH_OFFSET!
         $this->shopImagePath = ASCMS_SHOP_IMAGES_PATH . '/';
         $this->shopImageWebPath = ASCMS_SHOP_IMAGES_WEB_PATH . '/';
-
+//echo("shopImagePath $this->shopImagePath, shopImageWebPath $this->shopImageWebPath<br />");
         $this->_defaultImage = $this->shopImageWebPath.$this->noPictureName;
 
         $objTemplate->setVariable(array(
@@ -2539,14 +2538,14 @@ class shopmanager extends ShopLibrary {
                     $query = "SELECT picture FROM ".DBPREFIX."module_shop_products WHERE picture LIKE '%$shopImage%'";
                     $objResult = $objDatabase->SelectLimit($query, 1);
                     // not used anywhere
-                    if ($objResult->RecordCount() == 0) {
+                    if ($objResult && $objResult->RecordCount() == 0) {
                         $shopImage = base64_decode($shopImage);
                         // skip default image
-                        if ($shopImage == $this->_defaultImage) {
+                        if ($shopImage == $this->noPictureName || $shopImage == '') {
                             continue;
                         }
                         // delete the picture and thumbnail
-                        $this->delFile($this->shopImagePath.$shopImage.'.'.$this->thumbnailNameSuffix);
+                        $this->delFile($this->shopImagePath.$shopImage.$this->thumbnailNameSuffix);
                         $this->delFile($this->shopImagePath.$shopImage);
                     }
                 }
@@ -2595,92 +2594,48 @@ class shopmanager extends ShopLibrary {
 
         // init default values
         $shopProductId            =  0;
-        $shopB2B                  =  1;
-        $shopB2C                  =  1;
-        $shopArticleActive        =  1;
-        $shopImageQuality         = 90;
-        $shopThumbnailPercentSize = 50;
-        $specialOffer             = "";
-        $stockVisibility          = "";
-        $shopCatMenu              = "";
-        $shopImageOverwrite       =  0;
-        $shopTempThumbnailName    = "";
+
+        $shopProductName          = '';
+        $shopProductIdentifier    = '';
+        $shopCatMenu              = '';
+        $shopCustomerPrice        = 0;
+        $shopResellerPrice        = 0;
+        $shopSpecialOffer         = 0;
+        $shopDiscount             = 0;
+        $shopTaxId                = 0;
+        $shopWeight               = 0;
+        $shopDistribution         = '';
+        $shopShortDescription     = '';
+        $shopDescription          = '';
+        $shopStock                = 10;
+        $shopStockVisibility      = 1;
+        $shopManufacturerUrl      = '';
+        $shopArticleActive        = 1;
+        $shopB2B                  = 1;
+        $shopB2C                  = 1;
+        $shopStartdate            = '';
+        $shopEnddate              = '';
+        $shopImageName            = '';
+        //$shopImageQuality         = 90;
+        //$shopThumbnailPercentSize = 50;
+        //$shopImageOverwrite       =  0;
+        //$shopTempThumbnailName    = "";
+        //$shopImageWidth           = intval($_POST['shopImageWidth']);
         $arrAttributes            = array();
         $arrProductOptions        = array();
-
-        $docroot = str_replace(ASCMS_PATH_OFFSET, '', ASCMS_DOCUMENT_ROOT);
+        $insertId                 =  0;
 
         if (isset($_SESSION['shopPM']['TempThumbnailName'])) {
             $shopTempThumbnailName = $_SESSION['shopPM']['TempThumbnailName'];
             unset($_SESSION['shopPM']['TempThumbnailName']);
         }
 
-        $randomImageExt = rand();
+        $shopProductId = (isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
 
-        // set template
-        $this->_objTpl->addBlockfile('SHOP_PRODUCTS_FILE', 'shop_products_block', 'module_shop_product_manage.html');
-
-        // begin language variables
-        $this->_objTpl->setVariable(array(
-        'TXT_PRODUCT_ID'              => $_ARRAYLANG['TXT_PRODUCT_ID'],
-        'TXT_SHOP_PRODUCT_CUSTOM_ID'  => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
-        'TXT_MANUFACTURER_URL'        => $_ARRAYLANG['TXT_MANUFACTURER_URL'],
-        'TXT_WITH_HTTP'               => $_ARRAYLANG['TXT_WITH_HTTP'],
-        'TXT_PRODUCT_INFORMATIONS'    => $_ARRAYLANG['TXT_PRODUCT_INFORMATIONS'],
-        'TXT_ADD_NEW'                 => $_ARRAYLANG['TXT_ADD_NEW'],
-        'TXT_OVERWRITE'               => $_ARRAYLANG['TXT_OVERWRITE'],
-        'TXT_IMAGES_WITH_SAME_NAME'   => $_ARRAYLANG['TXT_IMAGES_WITH_SAME_NAME'],
-        'TXT_ACTION_AFTER_SAVEING'    => $_ARRAYLANG['TXT_ACTION_AFTER_SAVEING'],
-        'TXT_PRODUCT_CATALOG'         => $_ARRAYLANG['TXT_PRODUCT_CATALOG'],
-        'TXT_ADD_PRODUCTS'            => $_ARRAYLANG['TXT_ADD_PRODUCTS'],
-        'TXT_FROM_TEMPLATE'           => $_ARRAYLANG['TXT_FROM_TEMPLATE'],
-        'TXT_PRODUCT_NAME'            => $_ARRAYLANG['TXT_PRODUCT_NAME'],
-        'TXT_CUSTOMER_PRICE'          => $_ARRAYLANG['TXT_CUSTOMER_PRICE'],
-        'TXT_ID'                      => $_ARRAYLANG['TXT_ID'],
-        'TXT_RESELLER_PRICE'          => $_ARRAYLANG['TXT_RESELLER_PRICE'],
-        'TXT_SHORT_DESCRIPTION'       => $_ARRAYLANG['TXT_SHORT_DESCRIPTION'],
-        'TXT_DESCRIPTION'             => $_ARRAYLANG['TXT_DESCRIPTION'],
-        'TXT_ACTIVE'                  => $_ARRAYLANG['TXT_ACTIVE'],
-        'TXT_CATEGORY'                => $_ARRAYLANG['TXT_CATEGORY'],
-        'TXT_STOCK'                   => $_ARRAYLANG['TXT_STOCK'],
-        'TXT_SPECIAL_OFFER'           => $_ARRAYLANG['TXT_SPECIAL_OFFER'],
-        'TXT_IMAGE_WIDTH'             => $_ARRAYLANG['TXT_IMAGE_WIDTH'],
-        'TXT_IMAGE'                   => $_ARRAYLANG['TXT_IMAGE'],
-        'TXT_THUMBNAIL_SIZE'          => $_ARRAYLANG['TXT_THUMBNAIL_SIZE'],
-        'TXT_QUALITY'                 => $_ARRAYLANG['TXT_QUALITY'],
-        'TXT_STORE'                   => $_ARRAYLANG['TXT_STORE'],
-        'TXT_RESET'                   => $_ARRAYLANG['TXT_RESET'],
-        'TXT_ENABLED_FILE_EXTENSIONS' => $_ARRAYLANG['TXT_ENABLED_FILE_EXTENSIONS'],
-        'TXT_ACTIVE'                  => $_ARRAYLANG['TXT_ACTIVE'],
-        'TXT_INACTIVE'                => $_ARRAYLANG['TXT_INACTIVE'],
-        'TXT_START_DATE'              => $_ARRAYLANG['TXT_START_DATE'],
-        'TXT_END_DATE'                => $_ARRAYLANG['TXT_END_DATE'],
-        'TXT_THUMBNAIL_SIZE'          => $_ARRAYLANG['TXT_THUMBNAIL_SIZE'],
-        'TXT_THUMBNAIL_PREVIEW'       => $_ARRAYLANG['TXT_THUMBNAIL_PREVIEW'],
-        'TXT_THUMBNAIL_SETTINGS'      => $_ARRAYLANG['TXT_THUMBNAIL_SETTINGS'],
-        'TXT_IMAGE_DIMENSION'         => $_ARRAYLANG['TXT_IMAGE_DIMENSION'],
-        'TXT_PRODUCT_STATUS'          => $_ARRAYLANG['TXT_PRODUCT_STATUS'],
-        'TXT_IMAGE_SIZE'              => $_ARRAYLANG['TXT_IMAGE_SIZE'],
-        'TXT_PIXEL'                   => $_ARRAYLANG['TXT_PIXEL'],
-        'TXT_PRODUCT_IMAGE'           => $_ARRAYLANG['TXT_PRODUCT_IMAGE'],
-        'TXT_OPTIONS'                 => $_ARRAYLANG['TXT_OPTIONS'],
-        'TXT_IMAGE_UPLOAD'            => $_ARRAYLANG['TXT_IMAGE_UPLOAD'],
-        'TXT_IMAGE_INFORMATIONS'      => $_ARRAYLANG['TXT_IMAGE_INFORMATIONS'],
-        'TXT_IMAGE_NAME'              => $_ARRAYLANG['TXT_IMAGE_NAME'],
-        'TXT_PRODUCT_OPTIONS'         => $_ARRAYLANG['TXT_PRODUCT_OPTIONS'],
-        'TXT_SHOP_EDIT_OR_ADD_IMAGE'  => $_ARRAYLANG['TXT_SHOP_EDIT_OR_ADD_IMAGE'],
-        'TXT_TAX_RATE'                => $_ARRAYLANG['TXT_TAX_RATE'],
-        'TXT_WEIGHT'                  => $_ARRAYLANG['TXT_WEIGHT'],
-        'TXT_DISTRIBUTION'            => $_ARRAYLANG['TXT_DISTRIBUTION'],
-        ));
-        // end language variables
-
-        // begin to set product attribute if form is sent
+        // set product data if form is sent
         if (isset($_POST['shopProductName'])) {
-            $escapeStrings = !get_magic_quotes_gpc();
-
-            $shopProductName          = $escapeStrings ? addslashes(strip_tags($_POST['shopProductName'])) : strip_tags($_POST['shopProductName']);
-            $shopProductIdentifier    = $escapeStrings ? addslashes(strip_tags($_POST['shopProductIdentifier'])) : strip_tags($_POST['shopProductIdentifier']);
+            $shopProductName          = contrexx_addslashes(strip_tags($_POST['shopProductName']));
+            $shopProductIdentifier    = contrexx_addslashes(strip_tags($_POST['shopProductIdentifier']));
             $shopCatMenu              = intval($_POST['shopCatMenu']);
             $shopCustomerPrice        = floatval($_POST['shopCustomerPrice']);
             $shopResellerPrice        = floatval($_POST['shopResellerPrice']);
@@ -2689,116 +2644,41 @@ class shopmanager extends ShopLibrary {
             $shopTaxId                = $_POST['shopTaxId'];
             $shopWeight               = Weight::getWeight($_POST['shopWeight']);
             $shopDistribution         = $_POST['distribution'];
-            $shopShortDescription     = $escapeStrings ? addslashes($_POST['shopShortDescription']) : $_POST['shopShortDescription'];
-            $shopDescription          = $escapeStrings ? addslashes($_POST['shopDescription']) : $_POST['shopDescription'];
+            $shopShortDescription     = contrexx_addslashes($_POST['shopShortDescription']);
+            $shopDescription          = contrexx_addslashes($_POST['shopDescription']);
             $shopStock                = intval($_POST['shopStock']);
             $shopStockVisibility      = intval($_POST['shopStockVisibility']);
-            $shopManufacturerUrl      = htmlspecialchars($escapeStrings ? addslashes(strip_tags($_POST['shopManufacturerUrl'])) : strip_tags($_POST['shopManufacturerUrl']), ENT_QUOTES, CONTREXX_CHARSET);
+            $shopManufacturerUrl      = htmlspecialchars(contrexx_addslashes(strip_tags($_POST['shopManufacturerUrl'])), ENT_QUOTES, CONTREXX_CHARSET);
             $shopArticleActive        = intval($_POST['shopArticleActive']);
             $shopB2B                  = intval($_POST['shopB2B']);
             $shopB2C                  = intval($_POST['shopB2C']);
-            $shopStartdate            = $escapeStrings ? addslashes($_POST['shopStartdate']) : $_POST['shopStartdate'];
-            $shopEnddate              = $escapeStrings ? addslashes($_POST['shopEnddate']) : $_POST['shopEnddate'];
+            $shopStartdate            = contrexx_addslashes($_POST['shopStartdate']);
+            $shopEnddate              = contrexx_addslashes($_POST['shopEnddate']);
             //begin image attributes
             $shopImageWidth           = intval($_POST['shopImageWidth']);
             $shopThumbnailPercentSize = intval($_POST['shopThumbnailPercentSize']);
             $shopImageQuality         = intval($_POST['shopImageQuality']);
-            $shopImageName            = $escapeStrings ? addslashes(strip_tags($_POST['shopImageName'])) : strip_tags($_POST['shopImageName']);
+            //$shopImageName            = contrexx_addslashes(strip_tags($_POST['shopImageName']));
             $shopImageOverwrite       = intval($_POST['shopImageOverwrite']);
 
-            if (!isset($_POST['shopStoreProduct'])) {
-                $shopProductName       = stripslashes($shopProductName);
-                $shopProductIdentifier = stripslashes($shopProductIdentifier);
-                $shopShortDescription  = stripslashes($shopShortDescription);
-                $shopDescription       = stripslashes($shopDescription);
-                $shopStartdate         = stripslashes($shopStartdate);
-                $shopEnddate           = stripslashes($shopEnddate);
-                $shopImageName         = stripslashes($shopImageName);
-                $shopManufacturerUrl   = stripslashes($shopManufacturerUrl);
-            }
+            //create pictures DBstring
+            $shopImageName =
+                 base64_encode(basename($_POST['productImage1']))
+            .'?'.base64_encode($_POST['productImage1_width'])
+            .'?'.base64_encode($_POST['productImage1_height'])
+            .':'.base64_encode(basename($_POST['productImage2']))
+            .'?'.base64_encode($_POST['productImage2_width'])
+            .'?'.base64_encode($_POST['productImage2_height'])
+            .':'.base64_encode(basename($_POST['productImage3']))
+            .'?'.base64_encode($_POST['productImage3_width'])
+            .'?'.base64_encode($_POST['productImage3_height']);
         }
 
-        // if new entry, set default values
-        if (!isset($_REQUEST['id'])) { //OR $_REQUEST['new']
-            $this->_objTpl->setVariable(array(
-            'SHOP_CAT_MENU'                      => $this->getCatMenu($shopCatMenu),
-            'SHOP_PRODUCT_CUSTOM_ID'             => '',
-            'SHOP_DATE'                          => date("Y-m-d H:m"),
-            'SHOP_ARTICLE_ACTIVE'                => $shopArticleActive,
-            'SHOP_B2B'                           => $shopB2B,
-            'SHOP_B2C'                           => $shopB2C,
-            'SHOP_THUMBNAIL_LINK'                => "",
-            'SHOP_SELECTED_THUMBNAIL_PERCENTAGE' => "<option value=\"".$shopThumbnailPercentSize."\" selected=\"selected\">$shopThumbnailPercentSize%</option>",
-            'SHOP_SELECTED_THUMBNAIL_QUALITY'    => "<option value=\"".$shopImageQuality."\" selected=\"selected\">$shopImageQuality%</option>",
-            'SHOP_COMMENT_START'                 => "<!--",
-            'SHOP_COMMENT_END'                   => "-->",
-            ));
-            $this->_getAttributeList();
-        } else {
-            $shopProductId = intval($_REQUEST['id']);
-            $this->_getAttributeList($shopProductId);
-        }
-
-        // Edit products
-        // begin database request edit mode
-        if ($shopProductId > 0 AND $_REQUEST['edit'] != 1) {
-            $query = "SELECT * FROM ".DBPREFIX."module_shop_products WHERE id=$shopProductId";
-
-            if (($objResult = $objDatabase->SelectLimit($query, 1)) !== false) {
-                if (!$objResult->EOF) {
-                    $shopProductId            = $objResult->fields['id'];
-                    $shopProductIdentifier    = $objResult->fields['product_id'];
-                    $shopProductName          = $objResult->fields['title'];
-                    $shopCatMenu              = $objResult->fields['catid'];
-                    $shopCustomerPrice        = $objResult->fields['normalprice'];
-                    $shopResellerPrice        = $objResult->fields['resellerprice'];
-                    $shopSpecialOffer         = $objResult->fields['is_special_offer'];
-                    $shopDiscount             = $objResult->fields['discountprice'];
-                    $shopTaxId                = $objResult->fields['vat_id'];
-                    $shopWeight               = $objResult->fields['weight'];
-                    $shopDistribution         = $objResult->fields['handler'];
-                    $shopShortDescription     = $objResult->fields['shortdesc'];
-                    $shopDescription          = $objResult->fields['description'];
-                    $shopStock                = $objResult->fields['stock'];
-                    $shopStockVisibility      = $objResult->fields['stock_visibility'];
-                    $shopArticleActive        = $objResult->fields['status'];
-                    $shopB2B                  = $objResult->fields['b2b'];
-                    $shopB2C                  = $objResult->fields['b2c'];
-                    $shopStartdate            = $objResult->fields['startdate'];
-                    $shopEnddate              = $objResult->fields['enddate'];
-                    $shopImageName            = $objResult->fields['picture'];
-                    $shopManufacturerUrl      = $objResult->fields['manufacturer_url'];
-                    $shopThumbnailPercentSize = $objResult->fields['thumbnail_percent'];
-                    $shopImageQuality         = $objResult->fields['thumbnail_quality'];
-                }
-
-                //extract product image infos (path, width, height)
-                $arrImages = $this->_getShopImagesFromBase64String($shopImageName);
-                if ($_REQUEST['new']) {
-                    $shopProductId=0;
-                }
-            } else { //end if db query
-                $this->errorHandling();
-            }
-        }
-
-        //create pictures DBstring
-        $shopImageName =
-             base64_encode($_REQUEST['productImage1'])
-        .'?'.base64_encode($_REQUEST['productImage1_width'])
-        .'?'.base64_encode($_REQUEST['productImage1_height'])
-        .':'.base64_encode($_REQUEST['productImage2'])
-        .'?'.base64_encode($_REQUEST['productImage2_width'])
-        .'?'.base64_encode($_REQUEST['productImage2_height'])
-        .':'.base64_encode($_REQUEST['productImage3'])
-        .'?'.base64_encode($_REQUEST['productImage3_width'])
-        .'?'.base64_encode($_REQUEST['productImage3_height']);
-
-        // Add Product
-        // if form was sent and productId is 0, then add as new product
         if (isset($_POST['shopStoreProduct'])) {
+            // Product was edited and is about to be stored
+
             // add new product
-            if ($shopProductId==0) {
+            if ($shopProductId == 0) {
                 $query = "INSERT INTO ".DBPREFIX."module_shop_products ".
                     "(product_id, title, catid, normalprice, resellerprice, is_special_offer, discountprice, ".
                     "vat_id, weight, handler, ".
@@ -2918,8 +2798,7 @@ class shopmanager extends ShopLibrary {
                     }
                 }
                 // end update products attributes
-
-                $_SESSION['shop']['strOkMessage']=$_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+                $_SESSION['shop']['strOkMessage'] = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             }
 
             if (file_exists($this->shopImagePath.$shopTempThumbnailName)) {
@@ -2928,15 +2807,16 @@ class shopmanager extends ShopLibrary {
 
             $objImage = new ImageManager();
             $arrImages = $this->_getShopImagesFromBase64String($shopImageName);
-            //create thumbnail if not available
+            // create thumbnails if not available
             foreach ($arrImages as $arrImage) {
-                if (!empty($arrImage['img'])) {
-                    $length    = strlen(ASCMS_PATH_OFFSET);
-                    $strPath   = substr($arrImage['img'], $length);
-                    $strOffset = ASCMS_PATH_OFFSET;
-                    if (!is_file(ASCMS_PATH.$arrImage['img'].$this->mediaThumbNailSuffix) && $arrImage['img'] != $this->_defaultImage) {
-                        if (!$objImage->_createThumb(ASCMS_PATH, '', $arrImage['img'])) {
-                            $this->strErrMessage = sprintf($_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'], $arrImage['img']);
+                if (   !empty($arrImage['img'])
+                    && $arrImage['img'] != $this->noPictureName) {
+                    if (!is_file($this->shopImagePath.$arrImage['img'].$this->thumbnailNameSuffix)) {
+                        // reset ImageManager
+                        $objImage->imageCheck = 1;
+                        //if (!$objImage->_createThumb(ASCMS_SHOP_IMAGES_PATH, ASCMS_SHOP_IMAGES_WEB_PATH, $arrImage['img'])) {
+                        if (!$objImage->_createThumb($this->shopImagePath, $this->shopImageWebPath, $arrImage['img'])) {
+                            $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'], $arrImage['img']).'<br />';
                         }
                     }
                 }
@@ -2954,6 +2834,126 @@ class shopmanager extends ShopLibrary {
                     // prevent further output, go back to product overview
                     die();
                     break;
+            }
+        }
+
+        // set template
+        $this->_objTpl->addBlockfile('SHOP_PRODUCTS_FILE', 'shop_products_block', 'module_shop_product_manage.html');
+
+        // begin language variables
+        $this->_objTpl->setVariable(array(
+        'TXT_PRODUCT_ID'              => $_ARRAYLANG['TXT_PRODUCT_ID'],
+        'TXT_SHOP_PRODUCT_CUSTOM_ID'  => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
+        'TXT_MANUFACTURER_URL'        => $_ARRAYLANG['TXT_MANUFACTURER_URL'],
+        'TXT_WITH_HTTP'               => $_ARRAYLANG['TXT_WITH_HTTP'],
+        'TXT_PRODUCT_INFORMATIONS'    => $_ARRAYLANG['TXT_PRODUCT_INFORMATIONS'],
+        'TXT_ADD_NEW'                 => $_ARRAYLANG['TXT_ADD_NEW'],
+        'TXT_OVERWRITE'               => $_ARRAYLANG['TXT_OVERWRITE'],
+        'TXT_IMAGES_WITH_SAME_NAME'   => $_ARRAYLANG['TXT_IMAGES_WITH_SAME_NAME'],
+        'TXT_ACTION_AFTER_SAVEING'    => $_ARRAYLANG['TXT_ACTION_AFTER_SAVEING'],
+        'TXT_PRODUCT_CATALOG'         => $_ARRAYLANG['TXT_PRODUCT_CATALOG'],
+        'TXT_ADD_PRODUCTS'            => $_ARRAYLANG['TXT_ADD_PRODUCTS'],
+        'TXT_FROM_TEMPLATE'           => $_ARRAYLANG['TXT_FROM_TEMPLATE'],
+        'TXT_PRODUCT_NAME'            => $_ARRAYLANG['TXT_PRODUCT_NAME'],
+        'TXT_CUSTOMER_PRICE'          => $_ARRAYLANG['TXT_CUSTOMER_PRICE'],
+        'TXT_ID'                      => $_ARRAYLANG['TXT_ID'],
+        'TXT_RESELLER_PRICE'          => $_ARRAYLANG['TXT_RESELLER_PRICE'],
+        'TXT_SHORT_DESCRIPTION'       => $_ARRAYLANG['TXT_SHORT_DESCRIPTION'],
+        'TXT_DESCRIPTION'             => $_ARRAYLANG['TXT_DESCRIPTION'],
+        'TXT_ACTIVE'                  => $_ARRAYLANG['TXT_ACTIVE'],
+        'TXT_CATEGORY'                => $_ARRAYLANG['TXT_CATEGORY'],
+        'TXT_STOCK'                   => $_ARRAYLANG['TXT_STOCK'],
+        'TXT_SPECIAL_OFFER'           => $_ARRAYLANG['TXT_SPECIAL_OFFER'],
+        'TXT_IMAGE_WIDTH'             => $_ARRAYLANG['TXT_IMAGE_WIDTH'],
+        'TXT_IMAGE'                   => $_ARRAYLANG['TXT_IMAGE'],
+        'TXT_THUMBNAIL_SIZE'          => $_ARRAYLANG['TXT_THUMBNAIL_SIZE'],
+        'TXT_QUALITY'                 => $_ARRAYLANG['TXT_QUALITY'],
+        'TXT_STORE'                   => $_ARRAYLANG['TXT_STORE'],
+        'TXT_RESET'                   => $_ARRAYLANG['TXT_RESET'],
+        'TXT_ENABLED_FILE_EXTENSIONS' => $_ARRAYLANG['TXT_ENABLED_FILE_EXTENSIONS'],
+        'TXT_ACTIVE'                  => $_ARRAYLANG['TXT_ACTIVE'],
+        'TXT_INACTIVE'                => $_ARRAYLANG['TXT_INACTIVE'],
+        'TXT_START_DATE'              => $_ARRAYLANG['TXT_START_DATE'],
+        'TXT_END_DATE'                => $_ARRAYLANG['TXT_END_DATE'],
+        'TXT_THUMBNAIL_SIZE'          => $_ARRAYLANG['TXT_THUMBNAIL_SIZE'],
+        'TXT_THUMBNAIL_PREVIEW'       => $_ARRAYLANG['TXT_THUMBNAIL_PREVIEW'],
+        'TXT_THUMBNAIL_SETTINGS'      => $_ARRAYLANG['TXT_THUMBNAIL_SETTINGS'],
+        'TXT_IMAGE_DIMENSION'         => $_ARRAYLANG['TXT_IMAGE_DIMENSION'],
+        'TXT_PRODUCT_STATUS'          => $_ARRAYLANG['TXT_PRODUCT_STATUS'],
+        'TXT_IMAGE_SIZE'              => $_ARRAYLANG['TXT_IMAGE_SIZE'],
+        'TXT_PIXEL'                   => $_ARRAYLANG['TXT_PIXEL'],
+        'TXT_PRODUCT_IMAGE'           => $_ARRAYLANG['TXT_PRODUCT_IMAGE'],
+        'TXT_OPTIONS'                 => $_ARRAYLANG['TXT_OPTIONS'],
+        'TXT_IMAGE_UPLOAD'            => $_ARRAYLANG['TXT_IMAGE_UPLOAD'],
+        'TXT_IMAGE_INFORMATIONS'      => $_ARRAYLANG['TXT_IMAGE_INFORMATIONS'],
+        'TXT_IMAGE_NAME'              => $_ARRAYLANG['TXT_IMAGE_NAME'],
+        'TXT_PRODUCT_OPTIONS'         => $_ARRAYLANG['TXT_PRODUCT_OPTIONS'],
+        'TXT_SHOP_EDIT_OR_ADD_IMAGE'  => $_ARRAYLANG['TXT_SHOP_EDIT_OR_ADD_IMAGE'],
+        'TXT_TAX_RATE'                => $_ARRAYLANG['TXT_TAX_RATE'],
+        'TXT_WEIGHT'                  => $_ARRAYLANG['TXT_WEIGHT'],
+        'TXT_DISTRIBUTION'            => $_ARRAYLANG['TXT_DISTRIBUTION'],
+        ));
+        // end language variables
+
+        // if new entry, set default values
+        if (!isset($_REQUEST['id'])) { //OR $_REQUEST['new']
+            $this->_objTpl->setVariable(array(
+            'SHOP_CAT_MENU'                      => $this->getCatMenu($shopCatMenu),
+            'SHOP_PRODUCT_CUSTOM_ID'             => '',
+            'SHOP_DATE'                          => date("Y-m-d H:m"),
+            'SHOP_ARTICLE_ACTIVE'                => $shopArticleActive,
+            'SHOP_B2B'                           => $shopB2B,
+            'SHOP_B2C'                           => $shopB2C,
+            'SHOP_THUMBNAIL_LINK'                => "",
+            'SHOP_SELECTED_THUMBNAIL_PERCENTAGE' => "<option value=\"".$shopThumbnailPercentSize."\" selected=\"selected\">$shopThumbnailPercentSize%</option>",
+            'SHOP_SELECTED_THUMBNAIL_QUALITY'    => "<option value=\"".$shopImageQuality."\" selected=\"selected\">$shopImageQuality%</option>",
+            'SHOP_COMMENT_START'                 => "<!--",
+            'SHOP_COMMENT_END'                   => "-->",
+            ));
+            $this->_getAttributeList();
+        } else {
+            $shopProductId = intval($_REQUEST['id']);
+            $this->_getAttributeList($shopProductId);
+        }
+
+        // Edit products
+        // begin database request edit mode
+        if ($shopProductId > 0 AND $_REQUEST['edit'] != 1) {
+            $query = "SELECT * FROM ".DBPREFIX."module_shop_products WHERE id=$shopProductId";
+
+            if (($objResult = $objDatabase->SelectLimit($query, 1)) !== false) {
+                if (!$objResult->EOF) {
+                    $shopProductId            = $objResult->fields['id'];
+                    $shopProductIdentifier    = $objResult->fields['product_id'];
+                    $shopProductName          = $objResult->fields['title'];
+                    $shopCatMenu              = $objResult->fields['catid'];
+                    $shopCustomerPrice        = $objResult->fields['normalprice'];
+                    $shopResellerPrice        = $objResult->fields['resellerprice'];
+                    $shopSpecialOffer         = $objResult->fields['is_special_offer'];
+                    $shopDiscount             = $objResult->fields['discountprice'];
+                    $shopTaxId                = $objResult->fields['vat_id'];
+                    $shopWeight               = $objResult->fields['weight'];
+                    $shopDistribution         = $objResult->fields['handler'];
+                    $shopShortDescription     = $objResult->fields['shortdesc'];
+                    $shopDescription          = $objResult->fields['description'];
+                    $shopStock                = $objResult->fields['stock'];
+                    $shopStockVisibility      = $objResult->fields['stock_visibility'];
+                    $shopArticleActive        = $objResult->fields['status'];
+                    $shopB2B                  = $objResult->fields['b2b'];
+                    $shopB2C                  = $objResult->fields['b2c'];
+                    $shopStartdate            = $objResult->fields['startdate'];
+                    $shopEnddate              = $objResult->fields['enddate'];
+                    $shopImageName            = $objResult->fields['picture'];
+                    $shopManufacturerUrl      = $objResult->fields['manufacturer_url'];
+                    $shopThumbnailPercentSize = $objResult->fields['thumbnail_percent'];
+                    $shopImageQuality         = $objResult->fields['thumbnail_quality'];
+                }
+
+                if ($_REQUEST['new']) {
+                    $shopProductId = 0;
+                }
+            } else { //end if db query
+                $this->errorHandling();
             }
         }
 
@@ -2983,11 +2983,16 @@ class shopmanager extends ShopLibrary {
             $this->_objTpl->setVariable("SHOP_IMAGE_OVERWRITE_SELECTED_1", "");
         }
 
-        $shopPreviewImageHeight = $shopImageHeight +25;
-        $shopPreviewImageWidth  = $shopImageWidth + 25;
-        $shopImagePath          = $this->shopImageWebPath.$shopImageName;
+        $shopPreviewImageHeight = $shopImageHeight + 25;
+        $shopPreviewImageWidth  = $shopImageWidth  + 25;
+        //$shopImagePath          = $this->shopImageWebPath.$shopImageName;
         $shopThumbnailImagePath = $this->shopImageWebPath.$shopTempThumbnailName;
         $shopDescription        = stripslashes($shopDescription);
+        // extract product image infos (path, width, height)
+        $arrImages = $this->_getShopImagesFromBase64String($shopImageName);
+
+//echo("img 1: ".$arrImages[1]['img'].", thumb path: ".$this->shopImagePath.$arrImages[1]['img'].$this->thumbnailNameSuffix);
+
         $this->_objTpl->setVariable(array(
 // replaced by SHOP_PRODUCT_ID
 //        'SHOP_ID'                     => $shopProductId,
@@ -3008,32 +3013,56 @@ class shopmanager extends ShopLibrary {
         'SHOP_DISCOUNT'               => $shopDiscount,
         'SHOP_STARTDATE'              => $shopStartdate,
         'SHOP_ENDDATE'                => $shopEnddate,
-        'SHOP_IMAGE_PATH'             => $shopImagePath,
-        'SHOP_IMAGE_WIDTH'            => $shopPreviewImageWidth,
-        'SHOP_IMAGE_HEIGHT'           => $shopPreviewImageHeight,
-        'SHOP_THUMBNAIL_IMAGE_PATH'   => $shopThumbnailImagePath,
-        'SHOP_THUMBNAIL_IMAGE_WIDTH'  => $shopThumbnailWidth,
-        'SHOP_THUMBNAIL_IMAGE_HEIGHT' => $shopThumbnailHeight,
         'SHOP_ARTICLE_ACTIVE'         => $shopArticleActive,
         'SHOP_B2B'                    => $shopB2B,
         'SHOP_B2C'                    => $shopB2C,
         'SHOP_SPECIAL_OFFER'          => $shopSpecialOffer,
         'SHOP_STOCK_VISIBILITY'       => $shopStockVisibility,
-        'SHOP_THUMBNAIL_WIDTH'        => $shopThumbnailWidth,
-        'SHOP_THUMBNAIL_HEIGHT'       => $shopThumbnailHeight,
-        'SHOP_IMAGE_WIDTH'            => $shopImageWidth,
-        'SHOP_IMAGE_HIGHT'            => $shopImageHeight,
-        'SHOP_IMAGE_SIZE'             => $shopImageSize,
-        'SHOP_THUMBNAIL_SIZE'         => $shopThumbnailSize,
-        'SHOP_SELECTED_THUMBNAIL_PERCENTAGE' =>  "<option value='".$shopThumbnailPercentSize."' selected=\"selected\">".$shopThumbnailPercentSize."%</option>",
-        'SHOP_SELECTED_THUMBNAIL_QUALITY'    =>  "<option value='".$shopImageQuality."' selected=\"selected\">".$shopImageQuality."%</option>",
-        'SHOP_IMAGE_NAME'             => $shopImageName,
-        'SHOP_PICTURE1_IMG_SRC'       => (!empty($arrImages[1]['img']) && is_file($docroot.$arrImages[1]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[1]['img'].$this->mediaThumbNailSuffix : $this->_defaultImage,
-        'SHOP_PICTURE2_IMG_SRC'       => (!empty($arrImages[2]['img']) && is_file($docroot.$arrImages[2]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[2]['img'].$this->mediaThumbNailSuffix : $this->_defaultImage,
-        'SHOP_PICTURE3_IMG_SRC'       => (!empty($arrImages[3]['img']) && is_file($docroot.$arrImages[3]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[3]['img'].$this->mediaThumbNailSuffix : $this->_defaultImage,
-        'SHOP_PICTURE1_IMG_SRC_NO_THUMB' => (!empty($arrImages[1]['img']) && is_file($docroot.$arrImages[1]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[1]['img'] : $this->_defaultImage,
-        'SHOP_PICTURE2_IMG_SRC_NO_THUMB' => (!empty($arrImages[2]['img']) && is_file($docroot.$arrImages[2]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[2]['img'] : $this->_defaultImage,
-        'SHOP_PICTURE3_IMG_SRC_NO_THUMB' => (!empty($arrImages[3]['img']) && is_file($docroot.$arrImages[3]['img'].$this->mediaThumbNailSuffix)) ? $arrImages[3]['img'] : $this->_defaultImage,
+        //'SHOP_IMAGE_PATH'             => $shopImagePath,
+        //'SHOP_IMAGE_WIDTH'            => $shopPreviewImageWidth,
+        //'SHOP_IMAGE_HEIGHT'           => $shopPreviewImageHeight,
+        //'SHOP_THUMBNAIL_IMAGE_PATH'   => $shopThumbnailImagePath,
+        //'SHOP_THUMBNAIL_IMAGE_WIDTH'  => $shopThumbnailWidth,
+        //'SHOP_THUMBNAIL_IMAGE_HEIGHT' => $shopThumbnailHeight,
+        //'SHOP_THUMBNAIL_WIDTH'        => $shopThumbnailWidth,
+        //'SHOP_THUMBNAIL_HEIGHT'       => $shopThumbnailHeight,
+        //'SHOP_IMAGE_WIDTH'            => $shopImageWidth,
+        //'SHOP_IMAGE_HIGHT'            => $shopImageHeight,
+        //'SHOP_IMAGE_SIZE'             => $shopImageSize,
+        //'SHOP_THUMBNAIL_SIZE'         => $shopThumbnailSize,
+        //'SHOP_SELECTED_THUMBNAIL_PERCENTAGE' =>  "<option value='".$shopThumbnailPercentSize."' selected=\"selected\">".$shopThumbnailPercentSize."%</option>",
+        //'SHOP_SELECTED_THUMBNAIL_QUALITY'    =>  "<option value='".$shopImageQuality."' selected=\"selected\">".$shopImageQuality."%</option>",
+        //'SHOP_IMAGE_NAME'             => $shopImageName,
+        'SHOP_PICTURE1_IMG_SRC'       =>
+            (!empty($arrImages[1]['img']) && is_file($this->shopImagePath.$arrImages[1]['img'].$this->thumbnailNameSuffix)
+                ? $this->shopImageWebPath.$arrImages[1]['img'].$this->thumbnailNameSuffix
+                : $this->_defaultImage
+            ),
+        'SHOP_PICTURE2_IMG_SRC'       =>
+            (!empty($arrImages[2]['img']) && is_file($this->shopImagePath.$arrImages[2]['img'].$this->thumbnailNameSuffix)
+                ? $this->shopImageWebPath.$arrImages[2]['img'].$this->thumbnailNameSuffix
+                : $this->_defaultImage
+            ),
+        'SHOP_PICTURE3_IMG_SRC'       =>
+            (!empty($arrImages[3]['img']) && is_file($this->shopImagePath.$arrImages[3]['img'].$this->thumbnailNameSuffix)
+                ? $this->shopImageWebPath.$arrImages[3]['img'].$this->thumbnailNameSuffix
+                : $this->_defaultImage
+            ),
+        'SHOP_PICTURE1_IMG_SRC_NO_THUMB' =>
+            (!empty($arrImages[1]['img']) && is_file($this->shopImagePath.$arrImages[1]['img'])
+                ? $this->shopImageWebPath.$arrImages[1]['img']
+                : $this->_defaultImage
+            ),
+        'SHOP_PICTURE2_IMG_SRC_NO_THUMB' =>
+            (!empty($arrImages[2]['img']) && is_file($this->shopImagePath.$arrImages[2]['img'])
+                ? $this->shopImageWebPath.$arrImages[2]['img']
+                : $this->_defaultImage
+            ),
+        'SHOP_PICTURE3_IMG_SRC_NO_THUMB' =>
+            (!empty($arrImages[3]['img']) && is_file($this->shopImagePath.$arrImages[3]['img'])
+                ? $this->shopImageWebPath.$arrImages[3]['img']
+                : $this->_defaultImage
+            ),
         'SHOP_PICTURE1_IMG_WIDTH'     => $arrImages[1]['width'],
         'SHOP_PICTURE1_IMG_HEIGHT'    => $arrImages[1]['height'],
         'SHOP_PICTURE2_IMG_WIDTH'     => $arrImages[2]['width'],
@@ -3042,13 +3071,15 @@ class shopmanager extends ShopLibrary {
         'SHOP_PICTURE3_IMG_HEIGHT'    => $arrImages[3]['height'],
         ));
 
+/*
         if (empty($shopImageName)) {
             $this->_objTpl->setVariable(array(
             'SHOP_COMMENT_START' => "<!--",
             'SHOP_COMMENT_END'   => "-->",
             ));
         }
-        if ($shopProductId ==0) {
+*/
+        if ($shopProductId == 0) {
             $this->_objTpl->setVariable(array(
             'SHOP_ID_COMMENT_START' => "<!--",
             'SHOP_ID_COMMENT_END'   => "-->",
