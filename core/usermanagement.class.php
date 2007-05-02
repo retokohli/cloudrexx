@@ -1952,6 +1952,7 @@ class userManagement
 
 		if(isset($_REQUEST['useract']) AND $_REQUEST['useract']=="inactive") {
 			$status=0;
+			$useract = "&useract=inactive";
 		}
 
 		$objTemplate->setVariable(array(
@@ -1996,7 +1997,7 @@ class userManagement
 		    $pos = intval($_GET['pos']);
 		}
 		if ($count>intval($_CONFIG['corePagingLimit'])){
-			$paging = getPaging($count, $pos, "&cmd=user", "<b>".$_CORELANG['TXT_USER']."</b>", true);
+			$paging = getPaging($count, $pos, "&cmd=user".$useract, "<b>".$_CORELANG['TXT_USER']."</b>", true);
 		}
 		/** end paging **/
 
