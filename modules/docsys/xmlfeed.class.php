@@ -98,7 +98,7 @@ class rssFeed
     	global $_LANGID, $objDatabase;
 
     	if ($this->checkPermissions()){
-		    $xmlOutput .= "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
+		    $xmlOutput .= "<?xml version=\"1.0\" encoding=\"".CONTREXX_CHARSET."\"?>\n";
 			$xmlOutput .= "<rss version=\"2.0\">\n";
 			$xmlOutput .= "<channel>\n";
 			$xmlOutput .= "<title>".$this->channelTitle."</title>\n";

@@ -35,7 +35,7 @@ class NewsML
 	var $_xmlContentHTMLTag = '';
 	var $_inParagraph = false;
 	var $_tmpParagraph = array();
-	var $_xmlParserCharacterEncoding = 'ISO-8859-1';
+	var $_xmlParserCharacterEncoding;
 	var $standardMessageCount = 10;
 	var $administrate = false;
 	var $_inCDATA = false;
@@ -50,6 +50,7 @@ class NewsML
 		global $objDatabase;
 
 		$this->administrate = $administrate;
+		$this->_xmlParserCharacterEncoding = CONTREXX_CHARSET;
 		$this->initCategories();
 	}
 

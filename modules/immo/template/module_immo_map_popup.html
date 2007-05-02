@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>Google Map Coordinate Picker</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset={CONTREXX_CHARSET}" />
 <meta name="robots" content="noindex" />
 <meta name="robots" content="nofollow" />
 <meta name="robots" content="noarchive" />
@@ -23,13 +23,13 @@
 
 
 //todo: add langvars
-var reasons=[];   
+var reasons=[];
 reasons[G_GEO_SUCCESS]            = "Success";
-reasons[G_GEO_MISSING_ADDRESS]    = "Missing Address: The address was either missing or had no value.";     
-reasons[G_GEO_UNKNOWN_ADDRESS]    = "Unknown Address:  No corresponding geographic location could be found for the specified address."; 
+reasons[G_GEO_MISSING_ADDRESS]    = "Missing Address: The address was either missing or had no value.";
+reasons[G_GEO_UNKNOWN_ADDRESS]    = "Unknown Address:  No corresponding geographic location could be found for the specified address.";
 reasons[G_GEO_UNAVAILABLE_ADDRESS]= "Unavailable Address:  The geocode for the given address cannot be returned due to legal or contractual reasons.";
 reasons[G_GEO_BAD_KEY]            = "Bad Key: The API key is either invalid or does not match the domain for which it was given";
-reasons[G_GEO_TOO_MANY_QUERIES]   = "Too Many Queries: The daily geocoding quota for this site has been exceeded.";                                   
+reasons[G_GEO_TOO_MANY_QUERIES]   = "Too Many Queries: The daily geocoding quota for this site has been exceeded.";
 reasons[G_GEO_SERVER_ERROR]       = "Server error: The geocoding request could not be successfully processed.";
 
 var map = null;
@@ -47,17 +47,17 @@ var load = function() {
     		lon = window.opener.document.getElementById('longitude').value;
     		lonf = window.opener.document.getElementById('longitude_fraction').value;
     		lat = window.opener.document.getElementById('latitude').value;
-    		latf = window.opener.document.getElementById('latitude_fraction').value; 
+    		latf = window.opener.document.getElementById('latitude_fraction').value;
     		zoom = parseInt(((window.opener.document.getElementById('map_zoom').value != '') ? window.opener.document.getElementById('map_zoom').value : 13));
     		map.setCenter(new GLatLng(lon+'.'+lonf, lat+'.'+latf), zoom);
     		point = map.getCenter();
     		document.getElementById("loclayer").innerHTML = getStatusString(point.x.toString(), point.y.toString());
     	}else{
-    		map.setCenter(new GLatLng({IMMO_MAP_LAT_BACKEND}, {IMMO_MAP_LON_BACKEND}), {IMMO_MAP_ZOOM_BACKEND});  //standard location: thun	
+    		map.setCenter(new GLatLng({IMMO_MAP_LAT_BACKEND}, {IMMO_MAP_LON_BACKEND}), {IMMO_MAP_ZOOM_BACKEND});  //standard location: thun
     		point = map.getCenter();
     		document.getElementById("loclayer").innerHTML = getStatusString(point.x.toString(), point.y.toString());
     	}
-    	
+
     	point = map.getCenter();
     	map.addOverlay(new GMarker(point));
 
@@ -77,7 +77,7 @@ var load = function() {
 }
 
 var getStatusString = function(X, Y){
-	return '<span class="red">lat: </span>'+Y+'<br /><span class="red">lon: </span>'+X+'<span class="red"><br /> zoom: </span>'+map.getZoom();	
+	return '<span class="red">lat: </span>'+Y+'<br /><span class="red">lon: </span>'+X+'<span class="red"><br /> zoom: </span>'+map.getZoom();
 }
 
 var passValues = function(){
@@ -90,7 +90,7 @@ var passValues = function(){
 	window.opener.document.getElementById('latitude').value = lat;
 	window.opener.document.getElementById('latitude_fraction').value = latfac;
 	window.opener.document.getElementById('map_zoom').value = map.getZoom();
-	window.opener.popUp = false; window.close(); window.opener.focus(); 
+	window.opener.popUp = false; window.close(); window.opener.focus();
 }
 
 var showAddress = function() {
@@ -102,7 +102,7 @@ var showAddress = function() {
 
 var getGeoCodeData = function(data){
 	if(data.Status.code == G_GEO_SUCCESS){
-		document.getElementById("status").innerHTML = reasons[data.Status.code];	
+		document.getElementById("status").innerHTML = reasons[data.Status.code];
 		point = new GLatLng(data.Placemark[0].Point.coordinates[1], data.Placemark[0].Point.coordinates[0]);
 		map.setCenter(point);
 	}else{
@@ -137,7 +137,7 @@ var getGeoCodeData = function(data){
 		z-index: 100000;
 		background-color: #F4F7FF;
 		width: 140px;
-		height:	41px; 
+		height:	41px;
 		padding: 2px 4px 2px 2px;
 	}
 	.red{

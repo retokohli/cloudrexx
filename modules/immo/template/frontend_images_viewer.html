@@ -6,7 +6,7 @@
 <meta name="title" content="Immobilien" />
 <meta name="description" content="Immobilien"/>
 <meta name="keywords" content="Immobilien"/>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset={CONTREXX_CHARSET}" />
 <meta name="robots" content="index"/>
 
 <meta name="generator" content="Contrexx® Web Content Management System"/>
@@ -42,7 +42,7 @@ a{
     var oImage;
     var oSpanImgName;
     var oSpanImgContent
-    
+
 <!-- BEGIN imagesArray -->
     arrImages[{IMMO_IMAGE_FIELD_ID}] = new Array(5);
     arrImages[{IMMO_IMAGE_FIELD_ID}]['src']     = '{IMMO_IMAGE_SRC}';
@@ -52,7 +52,7 @@ a{
     arrImages[{IMMO_IMAGE_FIELD_ID}]['content'] = '{IMMO_IMAGE_CONTENT}';
     arrIndex.push({IMMO_IMAGE_FIELD_ID});
 <!-- END imagesArray -->
-            
+
     var init = function(){
         <!-- BEGIN indexArray -->arrIndex.push({IMMO_IMAGE_FIELD_ID});
         <!-- END indexArray -->
@@ -67,7 +67,7 @@ a{
 	var resize = function(){
 		window.resizeTo(parseInt(arrImages[index]['width'])+100, parseInt(arrImages[index]['height'])+200);
 	}
-	
+
 	var showImage = function(){
         oImage.src = arrImages[index]['src'];
         oImage.alt = arrImages[index]['name'];
@@ -76,29 +76,29 @@ a{
         oSpanImgName.appendChild(document.createTextNode(arrImages[index]['name']));
         oSpanImgContent.removeChild(oSpanImgContent.childNodes[0]);
         oSpanImgContent.appendChild(document.createTextNode(arrImages[index]['content']));
-        resize();	
+        resize();
 	}
 
 	var nextImage = function(){
         index=getArrayKeyFromValue(index, arrIndex);
         if(index < arrIndex.length - 1){
-          index = arrIndex[++index];            
+          index = arrIndex[++index];
         }else{
-          index = arrIndex[0];                
-        }        
+          index = arrIndex[0];
+        }
 	    showImage();
 	}
 
 	var prevImage = function(){
         index = getArrayKeyFromValue(index, arrIndex);
         if(index > 0){
-          index = arrIndex[--index];            
+          index = arrIndex[--index];
         }else{
-          index = arrIndex[arrIndex.length-1];                
+          index = arrIndex[arrIndex.length-1];
         }
 	    showImage();
 	}
-	
+
 	var getArrayKeyFromValue = function(searchS, arraySA){
         var I = 0;
         var minI = 0;
@@ -130,9 +130,9 @@ a{
             <a href="javascript:nextImage();" title="{TXT_IMMO_NEXT_IMAGE}"><span class="big">&rarr;</span></a>
         </div>
     </div>
-    
-    
-    
+
+
+
     <div class="center">
     	<span id="imgName">&nbsp;</span><br />
     	<img  src="." alt="foo" title="foo" id="theImage" />	<br />

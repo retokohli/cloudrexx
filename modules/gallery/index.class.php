@@ -440,6 +440,7 @@ class Gallery {
         ));
         // set variables
         $objTpl->setVariable(array(
+        	'CONTREXX_CHARSET'		=> CONTREXX_CHARSET,
             'GALLERY_WINDOW_WIDTH'  => $imageReso[0] < 420 ? 500 : $imageReso[0]+80,
             'GALLERY_WINDOW_HEIGHT' => $imageReso[1]+120,
             'GALLERY_PICTURE_ID'    => $intPicId,

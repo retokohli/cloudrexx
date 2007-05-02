@@ -1016,7 +1016,7 @@ class Installer
 
 				$dbHostname = "<input class=\"textBox\" type=\"text\" name=\"dbHostname\" value=\"".(isset($_SESSION['installer']['config']['dbHostname']) ? $_SESSION['installer']['config']['dbHostname'] : $arrDefaultConfig['dbHostname'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
 				$dbDatabaseName = "<input class=\"textBox\" type=\"text\" name=\"dbDatabaseName\" value=\"".(isset($_SESSION['installer']['config']['dbDatabaseName']) ? $_SESSION['installer']['config']['dbDatabaseName'] : $arrDefaultConfig['dbDatabaseName'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
-				$dbCreateDb = "&nbsp;<input type=\"checkbox\" name=\"createDatabase\" id=\"createDatabase\" value=\"1\"".($_SESSION['installer']['config']['createDatabase'] ? "checked=\"checked\"" : "")."\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<label for=\"createDatabase\">".$_ARRLANG['TXT_CREATE_DATABASE']."</label>";
+				$dbCreateDb = "&nbsp;<input type=\"checkbox\" name=\"createDatabase\" style=\"border-color:#ffffff; background-color:#ffffff;\" id=\"createDatabase\" value=\"1\"".($_SESSION['installer']['config']['createDatabase'] ? "checked=\"checked\"" : "")."\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<label for=\"createDatabase\">".$_ARRLANG['TXT_CREATE_DATABASE']."</label>";
 				$dbUsername = "<input class=\"textBox\" type=\"text\" name=\"dbUsername\" value=\"".(isset($_SESSION['installer']['config']['dbUsername']) ? $_SESSION['installer']['config']['dbUsername'] : $arrDefaultConfig['dbUsername'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
 				$dbPassword = "<input class=\"textBox\" type=\"password\" name=\"dbPassword\" value=\"".(isset($_SESSION['installer']['config']['dbPassword']) ? $_SESSION['installer']['config']['dbPassword'] : $arrDefaultConfig['dbPassword'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
 				$dbTablePrefix = "<input class=\"textBox\" type=\"text\" name=\"dbTablePrefix\" value=\"".(isset($_SESSION['installer']['config']['dbTablePrefix']) ? $_SESSION['installer']['config']['dbTablePrefix'] : $arrDefaultConfig['dbTablePrefix'])."\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<img src=\"".$templatePath."images/help.gif\" alt=\"\" width=\"16\" height=\"16\" onmouseout=\"htm()\" onmouseover=\"stm(Text[2],Style[2])\" />";
@@ -1025,11 +1025,12 @@ class Installer
 					$mysqlServerVersion = $objCommon->getMySQLServerVersion();
 					if ($mysqlServerVersion && !$objCommon->_isNewerVersion($mysqlServerVersion, '4.1') && ($arrCollate = $objCommon->_getUtf8Collations()) !== false && count($arrCollate)) {
 						$selectedCollation = !empty($_SESSION['installer']['config']['dbCollation']) ? $_SESSION['installer']['config']['dbCollation'] : 'utf8_unicode_ci';
-						$dbCollation = '<select name="dbCollation" style="width:200px;">';
+						$dbCollation = '<select name="dbCollation" style="width:202px;">';
 						foreach ($arrCollate as $collate) {
 							$dbCollation .= '<option value="'.$collate.($collate == $selectedCollation ? '" selected="selected' : '').'">'.$collate.'</option>';
 						}
 						$dbCollation .= '</select>';
+						$dbCollation .= '&nbsp;<img src="'.$templatePath.'images/help.gif" alt="" width="16" height="16" onmouseout="htm()" onmouseover="stm(Text[4],Style[4])" />';
 					} else {
 						$this->arrStatusMsg['database'] = $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'];
 					}
@@ -1116,9 +1117,9 @@ class Installer
 						$objTpl->hideBlock('ftp');
 					}
 				} else {
-					$useFtp = "<label for=\"useFtp\">".$_ARRLANG['TXT_USE_FTP']."</label>&nbsp;<input type=\"checkbox\" name=\"useFtp\" id=\"useFtp\" value=\"1\" ".($_SESSION['installer']['config']['useFtp'] ? "checked=\"checked\"" : "")." ".($_SESSION['installer']['config']['forceFtp'] ? "disabled=\"disabled\"" : "")." tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<img src=\"".$templatePath."images/help.gif\" alt=\"\" width=\"16\" height=\"16\" onmouseout=\"htm()\" onmouseover=\"stm(Text[3],Style[3])\" />";
+					$useFtp = "<label for=\"useFtp\">".$_ARRLANG['TXT_USE_FTP']."</label>&nbsp;<input type=\"checkbox\" name=\"useFtp\" style=\"border-color:#F4F7FF; background-color:#F4F7FF;\" id=\"useFtp\" value=\"1\" ".($_SESSION['installer']['config']['useFtp'] ? "checked=\"checked\"" : "")." ".($_SESSION['installer']['config']['forceFtp'] ? "disabled=\"disabled\"" : "")." tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<img src=\"".$templatePath."images/help.gif\" alt=\"\" width=\"16\" height=\"16\" onmouseout=\"htm()\" onmouseover=\"stm(Text[3],Style[3])\" />";
 					$ftpHostname = "<input class=\"textBox\" type=\"text\" name=\"ftpHostname\" value=\"".(isset($_SESSION['installer']['config']['ftpHostname']) ? $_SESSION['installer']['config']['ftpHostname'] : $arrDefaultConfig['ftpHostname']).(isset($_SESSION['installer']['config']['ftpPort']) ? ":".$_SESSION['installer']['config']['ftpPort'] : "")."\" tabindex=\"".$this->_getTabIndex()."\" />";
-					$ftpPasv = "&nbsp;<input type=\"checkbox\" name=\"ftpPasv\" id=\"ftpPasv\" value=\"1\" ".($_SESSION['installer']['config']['ftpPasv'] ? "checked=\"checked\"" : "")." tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<label for=\"ftpPasv\">".$_ARRLANG['TXT_USE_PASSIVE_FTP']."</label>";
+					$ftpPasv = "&nbsp;<input type=\"checkbox\" name=\"ftpPasv\" style=\"border-color:#ffffff; background-color:#ffffff;\" id=\"ftpPasv\" value=\"1\" ".($_SESSION['installer']['config']['ftpPasv'] ? "checked=\"checked\"" : "")." tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<label for=\"ftpPasv\">".$_ARRLANG['TXT_USE_PASSIVE_FTP']."</label>";
 					$ftpUsername = "<input class=\"textBox\" type=\"text\" name=\"ftpUsername\" value=\"".(isset($_SESSION['installer']['config']['ftpUsername']) ? $_SESSION['installer']['config']['ftpUsername'] : $arrDefaultConfig['ftpUsername'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
 					$ftpPassword = "<input class=\"textBox\" type=\"password\" name=\"ftpPassword\" value=\"".(isset($_SESSION['installer']['config']['ftpPassword']) ? $_SESSION['installer']['config']['ftpPassword'] : $arrDefaultConfig['ftpPassword'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
 

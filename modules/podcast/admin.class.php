@@ -1035,7 +1035,7 @@ class podcastManager extends podcastLib
 
 		$objRSSWriter = new RSSWriter();
 
-		$objRSSWriter->characterEncoding = 'ISO-8859-1';
+		$objRSSWriter->characterEncoding = CONTREXX_CHARSET;
 		$objRSSWriter->channelTitle = $arrSettings['feed_title'];
 		$objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=podcast';
 		$objRSSWriter->channelDescription = $arrSettings['feed_description'];

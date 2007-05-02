@@ -441,7 +441,7 @@ class CommonFunctions
 		require_once $this->adoDbPath;
 
 		$db = ADONewConnection($dbType);
-		@$db->Connect($host, $user, $password);
+		@$db->NConnect($host, $user, $password);
 
 		$errorNr = $db->ErrorNo();
 		$db->Close();
