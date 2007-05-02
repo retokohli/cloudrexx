@@ -117,7 +117,7 @@ class ImageManager
     {
         $objFile   = new File();
         $_objImage = new ImageManager();
-        //$file      = basename($file);
+        $file      = basename($file);
         $tmpSize   = getimagesize($strPath.$file);
 
         if ($tmpSize[0] > $tmpSize[1]) {
@@ -127,13 +127,19 @@ class ImageManager
         }
         $thumbWidth  = $tmpSize[0] * $factor;
         $thumbHeight = $tmpSize[1] * $factor;
-        $_objImage->loadImage($strPath.$file);
-        $_objImage->resizeImage($thumbWidth, $thumbHeight, $quality);
-        $_objImage->saveNewImage($strPath . $file . '.thumb');
-        if ($objFile->setChmod($strPath, $strWebPath, $file . '.thumb')) {
-            return true;
+        if (!$_objImage->loadImage($strPath.$file)) {
+            return false;
         }
-        return false;
+        if (!$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) {
+            return false;
+        }
+        if (!$_objImage->saveNewImage($strPath . $file . '.thumb')) {
+            return false;
+        }
+        if (!$objFile->setChmod($strPath, $strWebPath, $file . '.thumb')) {
+            return false;
+        }
+        return true;
     }
 
 
@@ -432,16 +438,20 @@ class ImageManager
                     return false;
             }
 
-            if ((@include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php')) && ($arrSizeInfo = getimagesize($file)) !== false) {
-            	$objSystem = new FWSystem();
+            @include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
+        	$objSystem = new FWSystem();
+        	if (!$objSystem) {
+        	    return false;
+        	}
+            $arrSizeInfo = getimagesize($file);
+            if (is_array($arrSizeInfo)) {
             	$memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
-
             	if (empty($memoryLimit)) {
             		// set default php memory limit of 8MBytes
             		$memoryLimit = 8*pow(1024, 2);
             	}
 
-            	$potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * $arrSizeInfo['bits'] * $arrSizeInfo['channels'] * 1.8;
+            	$potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * ($arrSizeInfo['bits']/8) * $arrSizeInfo['channels'] * 1.8;
             	if (function_exists('memory_get_usage')) {
             		$potentialRequiredMemory += memory_get_usage();
             	} else {
@@ -454,13 +464,10 @@ class ImageManager
             		if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
             			return false;
             		}
-            	} else {
-            		return false;
             	}
             } else {
             	return false;
             }
-
             $image = $function($file);
             return $image;
         }

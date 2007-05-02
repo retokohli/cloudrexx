@@ -78,7 +78,7 @@ class Shop extends ShopLibrary {
     var $arrParentCategoriesId = array();
     var $arrParentCategoriesTable = array();
     var $statusMessage = "";
-    var $thumbnailNameSuffix = "_thumb";
+    var $thumbnailNameSuffix = ".thumb";
     var $customerId;
     var $customerUsername;
     var $customerPrefix;
@@ -775,8 +775,8 @@ class Shop extends ShopLibrary {
                 if (!isset($arrImages) || $arrImages[1]['img'] == '') {
                     $thumbnailPath = $this->_defaultImage;
                 } else {
-                    // path offset is saved with the image path!
-                    $thumbnailPath = $arrImages[1]['img'].'.thumb';
+                    // path offset is saved WITHOUT the image path!
+                    $thumbnailPath = $this->shopImageWebPath.$arrImages[1]['img'].$this->thumbnailNameSuffix;
                 }
 
                 $this->objTemplate->setVariable(array(
@@ -986,8 +986,8 @@ class Shop extends ShopLibrary {
                        $thumbnailPath = $this->_defaultImage;
                        $pictureLink = "javascript:alert('".$_ARRAYLANG['TXT_NO_PICTURE_AVAILABLE']."');";
                     } else {
-                       $thumbnailPath = $image['img'].'.thumb';
-                       $pictureLink = "javascript:viewPicture('".$image['img']."','width=".($image['width']+25).",height=".($image['height']+25)."')";
+                       $thumbnailPath = $this->shopImageWebPath.$image['img'].$this->thumbnailNameSuffix;
+                       $pictureLink = "javascript:viewPicture('".$this->shopImageWebPath.$image['img']."','width=".($image['width']+25).",height=".($image['height']+25)."')";
                     }
                     $havePicture = true;
 
@@ -1277,7 +1277,7 @@ class Shop extends ShopLibrary {
             if (!isset($arrImages) || $arrImages[1]['img'] == '') {
                 $arrThumbnailPath[$i] = $this->_defaultImage;
             } else {
-                $arrThumbnailPath[$i] = $arrImages[1]['img'].'.thumb';
+                $arrThumbnailPath[$i] = $this->shopImageWebPath.$arrImages[1]['img'].$this->thumbnailNameSuffix;
             }
 
             $price = $this->_getProductPrice($objResult->fields['normalprice'], $objResult->fields['resellerprice']);
