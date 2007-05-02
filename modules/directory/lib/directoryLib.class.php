@@ -1818,7 +1818,7 @@ class directoryLibrary
 				}
 			}
 
-			$query .= " premium='".$_POST["premium"]."', filename='".contrexx_strip_tags($file)."', link='".contrexx_strip_tags($link)."', status='".contrexx_strip_tags($entryStatus)."', typ='".contrexx_strip_tags($typ)."',  validatedate='".mktime("now")."' WHERE id='".$dirId."'";
+			$query .= " premium='".$_POST["premium"]."', size='".contrexx_strip_tags($size)."', filename='".contrexx_strip_tags($file)."', link='".contrexx_strip_tags($link)."', status='".contrexx_strip_tags($entryStatus)."', typ='".contrexx_strip_tags($typ)."',  validatedate='".mktime("now")."' WHERE id='".$dirId."'";
 
 
 			//edit entry
