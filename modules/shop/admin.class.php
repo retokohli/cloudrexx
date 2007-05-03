@@ -2667,8 +2667,10 @@ class shopmanager extends ShopLibrary {
                 if ($imageDir != $this->shopImageWebPath) {
                     // copy image to shop image folder
                     $imageFile = basename($_POST['productImage'.$i]);
-                    copy(ASCMS_PATH.$imageDir.$imageFile,
-                         ASCMS_PATH.$this->shopImageWebPath.$imageFile);
+                    if (!copy(ASCMS_PATH.$imageDir.$imageFile,
+                        ASCMS_PATH.$this->shopImageWebPath.$imageFile)) {
+                        $this->strErrMessage .= "$imageDir$imageFile -> $this->shopImageWebPath$imageFile<br />";
+                    }
                 }
             }
             // add all to pictures DBstring
