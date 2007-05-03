@@ -1196,7 +1196,7 @@ class Installer
 	* @see	_setPermissions(), _createDatabase(), _createDatabaseTables(), _checkDatabaseTables(), _setInstallationStatus()
 	*/
 	function _getInstallationPage() {
-		global $objCommon, $_ARRLANG, $objTpl;
+		global $objCommon, $_ARRLANG, $objTpl, $useUtf8;
 
 		$objTpl->addBlockfile('CONTENT', 'CONTENT_BLOCK', "installation.html");
 
@@ -1208,6 +1208,9 @@ class Installer
 		if ($result === true && isset($_SESSION['installer']['config']['createDatabase']) && $_SESSION['installer']['config']['createDatabase'] == true) {
 			$result = $this->_createDatabase();
 			$this->_setInstallationStatus($result, $_ARRLANG['TXT_CREATE_DATABASE']);
+		} elseif ($result === true && $useUtf8) {
+			$result = $this->_alterDatabase();
+			$this->_setInstallationStatus($result, $_ARRLANG['TXT_CONFIG_DATABASE']);
 		}
 
 		// create database tables
@@ -1276,6 +1279,22 @@ class Installer
 				return $result;
 			} else {
 				$_SESSION['installer']['createDatabase'] = true;
+				return true;
+			}
+		}
+	}
+
+	function _alterDatabase() {
+		global $objCommon;
+
+		if (isset($_SESSION['installer']['alterDatabase']) && $_SESSION['installer']['alterDatabase']) {
+			return true;
+		} else {
+			$result = $objCommon->setDatabaseCharset();
+			if ($result !== true) {
+				return $result;
+			} else {
+				$_SESSION['installer']['alterDatabase'] = true;
 				return true;
 			}
 		}
