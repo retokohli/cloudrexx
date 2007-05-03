@@ -533,7 +533,7 @@ class Contact extends ContactLib
 			}
 		}
 
-		$this->objTemplate->setVariable('CONTACT_FEEDBACK_TEXT', $this->_getError().nl2br(htmlentities(stripslashes($feedback), ENT_QUOTES, CONTREXX_CHARSET)).'<br /><br />');
+		$this->objTemplate->setVariable('CONTACT_FEEDBACK_TEXT', $this->_getError().stripslashes($feedback).'<br /><br />');
 	}
 
 	/**

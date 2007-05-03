@@ -644,7 +644,7 @@ class ContactManager extends ContactLib
 			'CONTACT_ACTION_TITLE'							=> $actionTitle,
 			'CONTACT_FORM_ID'								=> $formId,
 			'CONTACT_FORM_TEXT'								=> get_wysiwyg_editor('contactFormText', $formText, 'shop'),
-			'CONTACT_FORM_FEEDBACK'							=> $formFeedback,
+			'CONTACT_FORM_FEEDBACK'							=> get_wysiwyg_editor('contactFormFeedback', $formFeedback, 'shop'),
 			'CONTACT_FORM_SHOW_FORM_YES'					=> $formShowForm ? 'checked="checked"' : '',
 			'CONTACT_FORM_SHOW_FORM_NO'						=> $formShowForm ? '' : 'checked="checked"',
 			'CONTACT_FORM_FIELD_TYPE_MENU_TPL'				=> $this->_getFormFieldTypesMenu('contactFormFieldType['.($lastFieldId+1).']', key($this->_arrFormFieldTypes), 'id="contactFormFieldType_'.($lastFieldId+1).'" style="width:110px;" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
