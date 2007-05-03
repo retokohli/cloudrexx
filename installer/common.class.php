@@ -232,10 +232,12 @@ class CommonFunctions
 		if ($objDb === false) {
 			return $statusMsg;
 		} else {
-			$objCollation = $objDb->Execute('SHOW COLLATION WHERE CHARSET = \'utf8\'');
+			$objCollation = $objDb->Execute('SHOW COLLATION');
 			if ($objCollation !== false) {
 				while (!$objCollation->EOF) {
-					$arrCollate[] = $objCollation->fields['Collation'];
+					if ($objCollation->fields['Charset'] == 'utf8') {
+						$arrCollate[] = $objCollation->fields['Collation'];
+					}
 					$objCollation->MoveNext();
 				}
 
@@ -813,6 +815,27 @@ class CommonFunctions
 
 		if ($result === false) {
 			return $_ARRLANG['TXT_COULD_NOT_CREATE_DATABASE']."<br />";;
+		} else {
+			@$db->Close();
+			return true;
+		}
+	}
+
+	function setDatabaseCharset()
+	{
+		global $_ARRLANG, $dbType, $useUtf8;
+
+		require_once $this->adoDbPath;
+
+		$result = "";
+
+		$db = ADONewConnection($dbType);
+		@$db->Connect($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword']);
+
+		$result = @$db->Execute("ALTER DATABASE `".$_SESSION['installer']['config']['dbDatabaseName']."` DEFAULT CHARACTER SET utf8 COLLATE ".$_SESSION['installer']['config']['dbCollation']);
+
+		if ($result === false) {
+			return $_ARRLANG['TXT_COULD_NOT_SET_DATABASE_CHARSET']."<br />";;
 		} else {
 			@$db->Close();
 			return true;
