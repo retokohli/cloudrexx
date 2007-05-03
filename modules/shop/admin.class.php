@@ -406,8 +406,8 @@ class shopmanager extends ShopLibrary {
         $this->_objTpl->loadTemplateFile('module_shop_import.html', true, true);
         $this->_objTpl->SetGlobalVariable(array(
             // cms offset fix for admin images/icons:
-            'SHOP_CMS_OFFSET' 		=> ASCMS_PATH_OFFSET,
-			'ASCMS_BACKEND_PATH'	=> ASCMS_BACKEND_PATH,
+            'SHOP_CMS_OFFSET'         => ASCMS_PATH_OFFSET,
+            'ASCMS_BACKEND_PATH'    => ASCMS_BACKEND_PATH,
         ));
 
         // Delete template
@@ -2661,7 +2661,17 @@ class shopmanager extends ShopLibrary {
             //$shopImageName            = contrexx_addslashes(strip_tags($_POST['shopImageName']));
             $shopImageOverwrite       = intval($_POST['shopImageOverwrite']);
 
-            //create pictures DBstring
+            // check incoming picture file paths
+            for ($i = 1; $i < 4; $i++) {
+                $imageDir = dirname($_POST['productImage'.$i]).'/';
+                if ($imageDir != $this->shopImageWebPath) {
+                    // copy image to shop image folder
+                    $imageFile = basename($_POST['productImage'.$i]);
+                    copy(ASCMS_PATH.$imageDir.$imageFile,
+                         ASCMS_PATH.$this->shopImageWebPath.$imageFile);
+                }
+            }
+            // add all to pictures DBstring
             $shopImageName =
                  base64_encode(basename($_POST['productImage1']))
             .'?'.base64_encode($_POST['productImage1_width'])
