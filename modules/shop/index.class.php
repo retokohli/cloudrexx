@@ -2163,18 +2163,6 @@ sendReq('', 1);
                     );
                     $quantity = $_SESSION['shop']['cart']['products'][$cartProdId]['quantity'];
 
-                    if (!empty($_GET['remoteJs'])) {
-                        /**
-                         * Charset conversion class
-                         *
-                         * This class is used to convert the charset of a product's title into UTF-8
-                         */
-                        if (!@include_once(ASCMS_FRAMEWORK_PATH.'/utf8.class.php')) {
-                        	die('could not load utf8 converter class');
-                        }
-                        $objUtf8 = new utf8(ISO_8859_1);
-                    }
-
                     $itemprice  = $price + $priceOptions;
                     $price      = $itemprice * $quantity;
                     $itemweight = $objResult->fields['weight'];
@@ -2193,7 +2181,7 @@ sendReq('', 1);
                         'id'             => $arrProduct['id'],
                         'product_id'     => $objResult->fields['product_id'],
                         'cart_id'        => $cartProdId,
-                        'title'          => empty($_GET['remoteJs']) ? $objResult->fields['title'] : htmlspecialchars($objUtf8->strToUtf8($objResult->fields['title'])),
+                        'title'          => empty($_GET['remoteJs']) ? $objResult->fields['title'] : htmlspecialchars(utf8_encode($objResult->fields['title'])),
                         'options'        => $productOptions,
                         'price'          => $this->objCurrency->formatPrice($price),
                         'price_unit'     => $this->aCurrencyUnitName,
