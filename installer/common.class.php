@@ -1257,10 +1257,15 @@ class CommonFunctions
 
 		$openbasedir = @ini_get('open_basedir');
 		if (!empty($openbasedir)) {
-			if (!$this->isWindows() && !count(preg_grep('#^/tmp/?$#', array_map('trim', explode(':', $openbasedir))))) {
-				return $_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'];
+			if ($this->isWindows()) {
+				return true;
+			} else {
+				if (count(preg_grep('#^/tmp$#', array_map('trim', explode(':', $openbasedir))))) {
+					return true;
+				} else {
+					return $_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'];
+				}
 			}
-			return $_ARRLANG['TXT_OPEN_BASEDIR_MISS_CONFIGURED'];
 		} else {
 			return true;
 		}
