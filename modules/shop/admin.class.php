@@ -2667,9 +2667,16 @@ class shopmanager extends ShopLibrary {
                 if ($imageDir != $this->shopImageWebPath) {
                     // copy image to shop image folder
                     $imageFile = basename($_POST['productImage'.$i]);
+                    if (file_exists(ASCMS_PATH.$this->shopImageWebPath.$imageFile)) {
+                        $this->strErrMessage .=
+                            $this->shopImageWebPath.$imageFile.': '.
+                            $_ARRAYLANG['TXT_SHOP_FILE_EXISTS'].'<br />';
+                    }
                     if (!copy(ASCMS_PATH.$imageDir.$imageFile,
                         ASCMS_PATH.$this->shopImageWebPath.$imageFile)) {
-                        $this->strErrMessage .= "$imageDir$imageFile -> $this->shopImageWebPath$imageFile<br />";
+                        $this->strErrMessage .=
+                            $imageDir.$imageFile.': '.
+                            $_ARRAYLANG['TXT_SHOP_COULD_NOT_COPY_FILE'].'<br />';
                     }
                 }
             }
