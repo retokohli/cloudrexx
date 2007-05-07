@@ -345,7 +345,7 @@ class rssDirectory extends directoryLibrary
 				$count = $this->count($levelKey, '');
 
 				$class= $parentId==0 ? "catLink" : "subcatLink";
-				$this->arrRows[$i] 	.= "<a class='catLink' href='?section=directory&amp;lid=".$levelKey."''>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
+				$this->arrRows[$i] 	.= "<a class='catLink' href='?section=directory&amp;lid=".$levelKey."'>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
 				$this->arrRowsIndex[strtoupper(htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET).$levelKey)] = strtoupper(substr(htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1))."<a class='catLink' href='?section=directory&amp;lid=".$levelKey."'>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
 
 				//get sublevel
@@ -443,7 +443,7 @@ class rssDirectory extends directoryLibrary
 				$count = $this->count($_GET['lid'], $catKey);
 
 				$class= $parentId==0 ? "catLink" : "subcatLink";
-				$this->arrRows[$i] .= "<a class='catLink' href='?section=directory".$levelLink."&amp;cid=".$catKey."''>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
+				$this->arrRows[$i] .= "<a class='catLink' href='?section=directory".$levelLink."&amp;cid=".$catKey."'>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
 				$this->arrRowsIndex[strtoupper(htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET).$catKey)] = strtoupper(substr(htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1))."<a class='catLink' href='?section=directory".$levelLink."&amp;cid=".$catKey."'>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
 
 
