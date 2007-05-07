@@ -405,7 +405,7 @@ class skins
     	if (is_dir($this->_archiveTempPath)) {
 		    if ($dh = opendir($this->_archiveTempPath)) {
 		        while (($file = readdir($dh)) !== false) {
-		        	if($file != '..' && $file != '.'){
+		        	if($file != '..' && $file != '.' && is_file($this->_archiveTempPath.$file)){
 		        		unlink($this->_archiveTempPath.$file);
 		        	}
 		        }
@@ -1052,7 +1052,6 @@ class skins
 		if($themes == '' && !empty($_GET['delete'])){
 			$themes = addslashes($_GET['delete']);
 		}
-		//path traversal security check
 		$theme = str_replace(array('..','/'), '', $themes);
 		if($themes!="") {
         	$_POST['themes'] = (!empty($_POST['themes'])) ? contrexx_addslashes($_POST['themes']) : '';
