@@ -615,8 +615,8 @@ class Installer
 						$_SESSION['installer']['config']['dbHostname'] = $_POST['dbHostname'];
 						$_SESSION['installer']['config']['dbUsername'] = $_POST['dbUsername'];
 						$_SESSION['installer']['config']['dbPassword'] = $_POST['dbPassword'];
-						$_SESSION['installer']['config']['dbDatabaseName'] = $_POST['dbDatabaseName'];
-						$_SESSION['installer']['config']['dbTablePrefix'] = $_POST['dbTablePrefix'];
+						$_SESSION['installer']['config']['dbDatabaseName'] = trim($_POST['dbDatabaseName']);
+						$_SESSION['installer']['config']['dbTablePrefix'] = trim($_POST['dbTablePrefix']);
 						$_SESSION['installer']['config']['createDatabase'] = (boolean) $_POST['createDatabase'];
 						if (isset($_POST['dbCollation'])) {
 							$_SESSION['installer']['config']['dbCollation'] = $_POST['dbCollation'];
