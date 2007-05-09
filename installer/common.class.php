@@ -1236,7 +1236,7 @@ class CommonFunctions
 					foreach($arrInner as $strName => $strValue) {
 						@fwrite($handleFile,sprintf("%-".$intMaxLen."s",'$_CONFIG[\''.$strName.'\']'));
 						@fwrite($handleFile,"= ");
-						@fwrite($handleFile,((intval($strValue) > 0) ? $strValue : '"'.$strValue.'"').";\n");
+						@fwrite($handleFile,(is_numeric($strValue) ? $strValue : '"'.$strValue.'"').";\n");
 					}
 					@fwrite($handleFile,"\n");
 				}
