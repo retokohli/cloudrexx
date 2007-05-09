@@ -1,0 +1,2 @@
+FileBrowser
+* Bei Bilddateien werden in jedem Fall ein Thumbnail erstellt
