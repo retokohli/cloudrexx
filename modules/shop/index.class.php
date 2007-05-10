@@ -1000,7 +1000,7 @@ class Shop extends ShopLibrary {
                         'SHOP_PRODUCT_POPUP_LINK_NAME_'.$index => $_ARRAYLANG['TXT_SHOP_IMAGE'].' '.$index,
                     ));
 
-                    if (1) { //$thumbnailPath != $this->_defaultImage.'.thumb' && $thumbnailPath != $this->_defaultImage && $thumbnailPath != '.thumb') {
+                    if ($thumbnailPath != $this->_defaultImage.'.thumb' && $thumbnailPath != $this->_defaultImage && $thumbnailPath != '.thumb') {
                         // condition by Reto ('cause block not found)
                         if ($this->objTemplate->blockExists('productImage'.$index)) {
                            $this->objTemplate->parse('productImage'.$index);
