@@ -440,7 +440,7 @@ class ImageManager
 
             @include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
         	$objSystem = new FWSystem();
-        	if (!$objSystem) {
+        	if ($objSystem === false) {
         	    return false;
         	}
             $arrSizeInfo = getimagesize($file);

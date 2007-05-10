@@ -39,13 +39,13 @@ function edit(orderId)
 	</tr>
 	<tr class="row1">
 		<td nowrap='nowrap'>{TXT_ORDER_SUM}</td>
-		<td nowrap='nowrap'>{SHOP_ORDER_SUM}&nbsp;{SHOP_DEFAULT_CURRENCY}</td>
+		<td nowrap='nowrap' colspan="3">{SHOP_ORDER_SUM}&nbsp;{SHOP_DEFAULT_CURRENCY}</td>
 	</tr>
 <!-- </table> <br /> <table width="100%" cellspacing="0" cellpadding="2" class="adminlist" border="0"> -->
 <tr><td>&nbsp;</td></tr>
 	<tr>
-		<th nowrap colspan="2">{TXT_BILLING_ADDRESS}</th>
-		<th nowrap colspan="2">{TXT_SHIPPING_ADDRESS}</th>
+		<th nowrap="nowrap" colspan="2">{TXT_BILLING_ADDRESS}</th>
+		<th nowrap="nowrap" colspan="2">{TXT_SHIPPING_ADDRESS}</th>
 	</tr>
 	<tr class="row1">
 		<td nowrap='nowrap'>{TXT_COMPANY}</td>
@@ -97,7 +97,7 @@ function edit(orderId)
 	</tr>
 	<tr class="row1">
 		<td nowrap='nowrap'>{TXT_FAX}</td>
-		<td nowrap='nowrap'>{SHOP_FAX}&nbsp;</td>
+		<td nowrap='nowrap' colspan="3">{SHOP_FAX}&nbsp;</td>
 	</tr>
 	<tr class="row2">
 		<td nowrap='nowrap'>{TXT_EMAIL}</td>
@@ -112,40 +112,40 @@ function edit(orderId)
 	</tr>
 	<tr class="row1">
 		<td nowrap='nowrap'>{TXT_PAYMENT_TYPE}</td>
-		<td nowrap='nowrap'>{SHOP_PAYMENTTYPE}&nbsp;({SHOP_PAYMENT_HANDLER})</td>
+		<td nowrap='nowrap' colspan="3">{SHOP_PAYMENTTYPE}&nbsp;({SHOP_PAYMENT_HANDLER})</td>
 	</tr>
 
 <!-- BEGIN creditCard -->
 	<tr class="row2">
 		<td nowrap='nowrap'>{TXT_CREDIT_CARD_OWNER}</td>
-		<td nowrap='nowrap'>{SHOP_CCNAME}&nbsp;</td>
+		<td nowrap='nowrap' colspan="3">{SHOP_CCNAME}&nbsp;</td>
 	</tr>
 	<tr class="row1">
 		<td nowrap='nowrap'>{TXT_CARD_NUMBER}</td>
-		<td nowrap='nowrap'>{SHOP_CCNUMBER}&nbsp;</td>
+		<td nowrap='nowrap' colspan="3">{SHOP_CCNUMBER}&nbsp;</td>
 	</tr>
 	<tr class="row2">
 		<td nowrap='nowrap'>{TXT_CVC_CODE}</td>
-		<td nowrap='nowrap'>{SHOP_CVC_CODE}&nbsp;</td>
+		<td nowrap='nowrap' colspan="3">{SHOP_CVC_CODE}&nbsp;</td>
 	</tr>
 	<tr class="row1">
 		<td nowrap='nowrap'>{TXT_EXPIRY_DATE}</td>
-		<td nowrap='nowrap'>{SHOP_CCDATE}&nbsp;</td>
+		<td nowrap='nowrap' colspan="3">{SHOP_CCDATE}&nbsp;</td>
 	</tr>
 <!-- END creditCard -->
 
 <!-- BEGIN lsv -->
 	<tr class="row2">
 		<td nowrap='nowrap'>{TXT_ACCOUNT_HOLDER}</td>
-		<td nowrap='nowrap'>{SHOP_ACCOUNT_HOLDER}&nbsp;</td>
+		<td nowrap='nowrap' colspan="3">{SHOP_ACCOUNT_HOLDER}&nbsp;</td>
 	</tr>
 	<tr class="row1">
 		<td nowrap='nowrap'>{TXT_ACCOUNT_BANK}</td>
-		<td nowrap='nowrap'>{SHOP_ACCOUNT_BANK}&nbsp;</td>
+		<td nowrap='nowrap' colspan="3">{SHOP_ACCOUNT_BANK}&nbsp;</td>
 	</tr>
 	<tr class="row2">
 		<td nowrap='nowrap'>{TXT_ACCOUNT_BLZ}</td>
-		<td nowrap='nowrap'>{SHOP_ACCOUNT_BLZ}&nbsp;</td>
+		<td nowrap='nowrap' colspan="3">{SHOP_ACCOUNT_BLZ}&nbsp;</td>
 	</tr>
 <!-- END lsv -->
 
@@ -162,7 +162,7 @@ function edit(orderId)
 		<td nowrap='nowrap' width="40%"><b>{TXT_PRODUCT_NAME}</b></td>
 		<td nowrap='nowrap' width="10%"><div style="text-align:right;"><b>{TXT_WEIGHT}</b></div></td>
 		<td nowrap='nowrap' width="15%"><div style="text-align:right;"><b>{TXT_PRODUCT_PRICE}</b></div></td>
-		<td colspan=2 nowrap='nowrap' width="10%"><div style="text-align:left;"><b>{TXT_TAX_RATE}</b></div></td>
+		<td colspan="2" nowrap='nowrap' width="10%"><div style="text-align:left;"><b>{TXT_TAX_RATE}</b></div></td>
 		<td nowrap='nowrap' width="10%"><div style="text-align:right;"><b>{TXT_SUM}</b></div></td>
 	</tr>
 <!-- BEGIN orderdetailsRow -->
