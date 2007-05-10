@@ -1021,7 +1021,7 @@ class Installer
 				$dbPassword = "<input class=\"textBox\" type=\"password\" name=\"dbPassword\" value=\"".(isset($_SESSION['installer']['config']['dbPassword']) ? $_SESSION['installer']['config']['dbPassword'] : $arrDefaultConfig['dbPassword'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
 				$dbTablePrefix = "<input class=\"textBox\" type=\"text\" name=\"dbTablePrefix\" value=\"".(isset($_SESSION['installer']['config']['dbTablePrefix']) ? $_SESSION['installer']['config']['dbTablePrefix'] : $arrDefaultConfig['dbTablePrefix'])."\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<img src=\"".$templatePath."images/help.gif\" alt=\"\" width=\"16\" height=\"16\" onmouseout=\"htm()\" onmouseover=\"stm(Text[2],Style[2])\" />";
 
-				if ($useUtf8) {
+				if ($useUtf8 && !empty($_SESSION['installer']['config']['dbHostname']) && !empty($_SESSION['installer']['config']['dbUsername'])) {
 					if (($result = $objCommon->checkDbConnection($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'])) === true) {
 						$mysqlServerVersion = $objCommon->getMySQLServerVersion();
 						if ($mysqlServerVersion && !$objCommon->_isNewerVersion($mysqlServerVersion, '4.1') && ($arrCollate = $objCommon->_getUtf8Collations()) !== false && count($arrCollate)) {
