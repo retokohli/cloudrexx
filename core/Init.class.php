@@ -377,20 +377,20 @@ class InitCMS
 			}
 		}
 
-	  	$this->templates['index'] = stripslashes(file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/index.html'));
-		$this->templates['content'] = stripslashes(file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html'));
-		$this->templates['home'] = stripslashes(file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html'));
-		$this->templates['navbar'] = stripslashes(file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html'));
-		$this->templates['subnavbar'] = stripslashes(file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html'));
-		$this->templates['sidebar'] = stripslashes(file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html'));
-		$this->templates['shopnavbar'] = stripslashes(file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html'));
-		$this->templates['headlines'] = stripslashes(file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html'));
-		$this->templates['javascript'] = stripslashes(file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js'));
-		//$this->templates['style'] = stripslashes(file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css'));
-		$this->templates['buildin_style'] = stripslashes(file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css'));
-		@$this->templates['calendar_headlines'] = stripslashes(file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/events.html'));
-		@$this->templates['directory_content'] = stripslashes(file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/directory.html'));
-		@$this->templates['forum_content'] = stripslashes(file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/forum.html'));
+	  	$this->templates['index'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/index.html');
+		$this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
+		$this->templates['home'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html');
+		$this->templates['navbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html');
+		$this->templates['subnavbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html');
+		$this->templates['sidebar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html');
+		$this->templates['shopnavbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html');
+		$this->templates['headlines'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html');
+		$this->templates['javascript'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js');
+		//$this->templates['style'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css');
+		$this->templates['buildin_style'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css');
+		@$this->templates['calendar_headlines'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/events.html');
+		@$this->templates['directory_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/directory.html');
+		@$this->templates['forum_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/forum.html');
 
 	  	return $this->templates;
 	}

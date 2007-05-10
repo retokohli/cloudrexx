@@ -961,7 +961,7 @@ class skins
     {
 	    $themes = $_POST['themes'];
 	    $themesPage = $_POST['themesPage'];
-	    $pageContent = $_POST['content'];
+	    $pageContent = contrexx_stripslashes($_POST['content']);
 	    // Change the replacement variables from [[TITLE]] into {TITLE}
 	    $pageContent = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,$pageContent);
 		if (!$fp = @fopen($this->path.$themes.DIRECTORY_SEPARATOR.$themesPage ,"w")) {
@@ -1358,7 +1358,6 @@ class skins
 	    	if(file_exists($file)) {
 				$contenthtml=file_get_contents($file);
 				$contenthtml = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]' ,$contenthtml);
-				$contenthtml = stripslashes($contenthtml);
 				$contenthtml = htmlspecialchars($contenthtml);
 				$objResult = $objDatabase->Execute("SELECT id,expert FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
 				if ($objResult !== false) {
