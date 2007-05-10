@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 02 May 2007 23:57:04 +0200
+* generated date Thu, 10 May 2007 09:35:53 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
@@ -691,4 +691,5 @@ $_ARRAYLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "Database not available!";
 $_ARRAYLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Unable to connect to database server!";
 $_ARRAYLANG['TXT_DELETED'] = "deleted";
 $_ARRAYLANG['TXT_WORKFLOW_PAGE_PREVIEW'] = "Page preview";
+$_ARRAYLANG['TXT_STATUS_CANNOT_DELETE'] = "Unable to delete.";
 ?>
