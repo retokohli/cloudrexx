@@ -1,2 +1,21 @@
+////////////////////////////////////////
+// CHANGELOG 1.1.0-1.1.1 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Changes ******************************
+****************************************
 FileBrowser
-* Bei Bilddateien werden in jedem Fall ein Thumbnail erstellt
+- Bei Bilddateien werden in jedem Fall ein Thumbnail erstellt.
+
+Layout & Design
+- Die Designs werden ohne Backslashs als Escape-Zeichen gespeichert.
+
+Kontaktmanager
+- Die Rückgabemeldung kann in HTML-Code erfasst werden.
+
+****************************************
+* Bugfixes *****************************
+****************************************
+Webinstaller
+- Host-Server spezifische Fehler
