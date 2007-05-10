@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 02 May 2007 23:57:04 +0200
+* generated date Thu, 10 May 2007 09:35:53 +0200
 **/
 
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'] = "Navn";
@@ -181,4 +181,6 @@ $_ARRAYLANG['TXT_GALLERY_EXPORT_TARGET'] = "Target shop category for export:";
 $_ARRAYLANG['TXT_GALLERY_EXPORT_CONFIRM'] = "The target shop category and all products within will be overwritten! Are you sure?";
 $_ARRAYLANG['TXT_GALLERY_FILE_NAME'] = "Filename";
 $_ARRAYLANG['TXT_GALLERY_FILE_TYPE'] = "Filetype";
+$_ARRAYLANG['TXT_GALLERY_COULD_NOT_CREATE_THUMBNAIL'] = "Could not create thumbnail";
+$_ARRAYLANG['TXT_GALLERY_IMAGE_EXISTS'] = "Image already exists";
 ?>

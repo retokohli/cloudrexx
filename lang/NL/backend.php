@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 02 May 2007 23:57:04 +0200
+* generated date Thu, 10 May 2007 09:35:53 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
@@ -584,7 +584,7 @@ $_ARRAYLANG['TXT_THEME_NO_URL_SPECIFIED'] = "Keine URL angegeben";
 $_ARRAYLANG['TXT_THEME_NO_FILE_SPECIFIED'] = "Keine Datei angegeben";
 $_ARRAYLANG['TXT_THEME_ARCHIVE_ERROR'] = "Archivfehler";
 $_ARRAYLANG['TXT_THEME_HTTP_CONNECTION_FAILED'] = "Konnte keine HTTP Verbindung herstellen";
-$_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'] = "&nbsp; konnte nicht erstellt werden";
+$_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'] = "  konnte nicht erstellt werden";
 $_ARRAYLANG['TXT_THEME_SEND_ARCHIVE'] = "Archiv schicken";
 $_ARRAYLANG['TXT_THEME_IMPORT_ARCHIVE'] = "Archiv importieren";
 $_ARRAYLANG['TXT_LOGOUT_WARNING'] = "Sie beenden Ihre geschützte Administrations Konsole. Zu Ihrer Sicherheit empfehlen wir, den Cache Ihres Browsers zu leeren. Wollen Sie die Administrations Console wirklich beenden?";
@@ -691,4 +691,5 @@ $_ARRAYLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "Database not available!";
 $_ARRAYLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Unable to connect to database server!";
 $_ARRAYLANG['TXT_DELETED'] = "deleted";
 $_ARRAYLANG['TXT_WORKFLOW_PAGE_PREVIEW'] = "Page preview";
+$_ARRAYLANG['TXT_STATUS_CANNOT_DELETE'] = "Unable to delete.";
 ?>

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 02 May 2007 23:57:04 +0200
+* generated date Thu, 10 May 2007 09:35:53 +0200
 **/
 
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'] = "Name";
@@ -181,4 +181,6 @@ $_ARRAYLANG['TXT_GALLERY_EXPORT_TARGET'] = "Zielkategorie im Shop für den Expor
 $_ARRAYLANG['TXT_GALLERY_EXPORT_CONFIRM'] = "Die Shop Kategorie mit allen enthaltenen Produkten wird beim Export überschrieben! Sind sie sicher?";
 $_ARRAYLANG['TXT_GALLERY_FILE_NAME'] = "Dateiname";
 $_ARRAYLANG['TXT_GALLERY_FILE_TYPE'] = "Dateityp";
+$_ARRAYLANG['TXT_GALLERY_COULD_NOT_CREATE_THUMBNAIL'] = "Konnte Thumbnail nicht erstellen";
+$_ARRAYLANG['TXT_GALLERY_IMAGE_EXISTS'] = "Bild existiert betreits";
 ?>
