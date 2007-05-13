@@ -560,7 +560,7 @@ class Gallery {
                         'COMMENTS_ROWCLASS' => $intRowClass
                     ));
 
-                    //$objTpl->parse('showComments');
+                    $objTpl->parse('showComments');
                     $objResult->MoveNext();
                     $i++;
                 }
@@ -791,7 +791,7 @@ class Gallery {
                     'GALLERY_CATEGORY_INFO'        => $strInfo,
                     'GALLERY_CATEGORY_DESCRIPTION' => $strDesc
                 ));
-                $this->_objTpl->parse('galleryCategories');
+                $this->_objTpl->parse('galleryCategoryList');
                 $i++;
 
                 $objResult->MoveNext();
