@@ -921,7 +921,7 @@ class Shop extends ShopLibrary {
         if (isset($_GET['cmd']) && $_GET['cmd'] == 'lastFive') {
             $query = "SELECT * FROM ".DBPREFIX."module_shop_products ".
                      "WHERE status=1 ".
-                     "ORDER BY product_id DESC";
+                     "ORDER BY id DESC";
             $objResult = $objDatabase->SelectLimit($query, 5);
             $count = $objResult->RecordCount();
         } else {
