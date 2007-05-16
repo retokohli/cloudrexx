@@ -19,7 +19,7 @@
 // -->
 </style>
 <script type="text/javascript">
-<!--
+// <![CDATA[
 var	highlightcolor = "#F1F1F1";
 var	row1color = "#F4F7FF";
 var	row2color = "#FFFFFF";
@@ -191,7 +191,7 @@ document.body.onmousemove = function(event){
 	}
 	scrollPage(y);
 }
-// -->
+// ]]>
 </script>
 <div>
 
@@ -221,7 +221,7 @@ document.body.onmousemove = function(event){
 	</tr>
 </table>
 <input type="submit" name="import" onclick="return importArchive();" value="{TXT_THEME_IMPORT}" />
-</div>
+<br />
 <br />
 <div>
 	<div class="infobox_head">
@@ -248,7 +248,7 @@ document.body.onmousemove = function(event){
 		</td>
 	</tr>
 	<!-- BEGIN themeRow -->
-	<tr name="{THEME_NAME_EXTRA}" id="{THEME_ID}" class="{ROW_CLASS}" onmouseover="highlight(this,'lower');" onmouseout="unhighlight(this,'lower');" onclick="showInfo(this);">
+	<tr class="{ROW_CLASS}" onmouseover="highlight(this,'lower');" onmouseout="unhighlight(this,'lower');" onclick="showInfo(this);">
 		<td style="width: 200px">
 		<div style="vertical-align: top; font-size:1.1em;">
 			{THEME_NAME_EXTRA}
@@ -271,14 +271,14 @@ document.body.onmousemove = function(event){
 				{THEME_XML_DESCRIPTION}
 			</div>
 		</td>
-		<td><div style="text-align: right; vertical-align: top;" nowrap="nowrap">
-			<a href="?cmd=skins&amp;act=manage&amp;export={THEME_NAME}" onclick="showInfo(this.parentNode.parentNode);" title="{TXT_THEME_EXPORT}"> <img border="0" src="images/icons/zip.gif" /> </a>
+		<td><div style="text-align: right; vertical-align: top; white-space:nowrap;">
+			<a href="?cmd=skins&amp;act=manage&amp;export={THEME_NAME}" onclick="showInfo(this.parentNode.parentNode);" title="{TXT_THEME_EXPORT}"> <img border="0" src="images/icons/zip.gif" alt="" /> </a>
 			{THEME_ACTIVATE_LINK}
 			{THEME_DELETE_LINK}
 		</div>
 		</td>
 	</tr>
-	<tr class="hidden" onmouseover="highlight(this,'upper');" onmouseout="unhighlight(this,'upper');" onclick="hideInfo(this);" id="{ROW_CLASS}">
+	<tr class="hidden" onmouseover="highlight(this,'upper');" onmouseout="unhighlight(this,'upper');" onclick="hideInfo(this);">
 		<td colspan="4">
 			{THEME_XML_AUTHOR} &nbsp;&nbsp;&nbsp; {THEME_XML_VERSION} &nbsp;&nbsp;&nbsp; {THEME_XML_DESCRIPTION}
 		</td>

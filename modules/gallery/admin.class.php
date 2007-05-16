@@ -83,11 +83,11 @@ class galleryManager extends GalleryLibrary
         $this->checkImages();
 
         $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="?cmd=gallery">'.$_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'].'</a>
-                                                            <a href="?cmd=gallery&act=new_cat">'.$_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'].'</a>
-                                                            <a href="?cmd=gallery&act=upload_form">'.$_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD'].'</a>
-                                                            <a href="?cmd=gallery&act=import_picture">'.$_ARRAYLANG['TXT_GALLERY_MENU_IMPORT'].'</a>
-                                                            <a href="?cmd=gallery&act=validate_form&type='.$this->arrSettings['validation_standard_type'].'">'.$_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'].'</a>
-                                                            <a href="?cmd=gallery&act=settings">'.$_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'].'</a>');
+                                                            <a href="?cmd=gallery&amp;act=new_cat">'.$_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'].'</a>
+                                                            <a href="?cmd=gallery&amp;act=upload_form">'.$_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD'].'</a>
+                                                            <a href="?cmd=gallery&amp;act=import_picture">'.$_ARRAYLANG['TXT_GALLERY_MENU_IMPORT'].'</a>
+                                                            <a href="?cmd=gallery&amp;act=validate_form&amp;type='.$this->arrSettings['validation_standard_type'].'">'.$_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'].'</a>
+                                                            <a href="?cmd=gallery&amp;act=settings">'.$_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'].'</a>');
     }
 
 
@@ -1129,12 +1129,19 @@ class galleryManager extends GalleryLibrary
             'CATEGORY_ID'    => $intCatId
             ));
 
-        $objResult = $objDatabase->Execute('SELECT         id
-                                            FROM         '.DBPREFIX.'module_gallery_pictures
-                                            WHERE         catid='.$intCatId.' AND
-                                                        validated="1"
-                                            ORDER BY     sorting ASC,
-                                                        id ASC');
+        $selectQuery = 'FROM 		'.DBPREFIX.'module_gallery_pictures
+						    				WHERE 		catid='.$intCatId.' AND
+						    							validated="1"
+						    				ORDER BY 	sorting ASC,
+                                                        id ASC';
+
+
+    	$objCount = $objDatabase->SelectLimit('SELECT count(id) AS picCount '.$selectQuery, 1);
+    	$pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+    	if ($objCount !== false && $objCount->fields['picCount'] > $_CONFIG['corePagingLimit']) {
+    		$this->_objTpl->setVariable('GALLERY_PAGING', '<br />'.getPaging($objCount->fields['picCount'], $pos, '&amp;cmd=gallery&amp;act=cat_details&amp;id=7', 'bilder'));
+    	}
+        $objResult = $objDatabase->SelectLimit('SELECT 		id '.$selectQuery, $_CONFIG['corePagingLimit'], $pos);
 
         if ($objResult->RecordCount() == 0) {
             $this->_objTpl->hideBlock('showImages');
@@ -1263,7 +1270,7 @@ class galleryManager extends GalleryLibrary
                     $objResult->MoveNext();
                 }
                 foreach ($arrMainCategories as $intMainCatKey => $strMainCatValue) {
-                    $strOutputSelect         .= '<option value="?cmd=gallery&act=change_category_picture&id='.$intOutputId.'&catid='.$intMainCatKey.'">'.$strMainCatValue.'</option>';
+                    $strOutputSelect         .= '<option value="?cmd=gallery&amp;act=change_category_picture&amp;id='.$intOutputId.'&amp;catid='.$intMainCatKey.'">'.$strMainCatValue.'</option>';
                     $strMultiActionSelect     .= '<option value="'.$intMainCatKey.'">'.$strMainCatValue.'</option>';
                     $objResult = $objDatabase->Execute('SELECT         id
                                                         FROM         '.DBPREFIX.'module_gallery_categories
@@ -1278,7 +1285,7 @@ class galleryManager extends GalleryLibrary
                                                                             name="name"
                                                                     LIMIT    1
                                                                 ');
-                            $strOutputSelect         .= '<option value="?cmd=gallery&act=change_category_picture&id='.$intOutputId.'&catid='.$objResult->fields['id'].'">&nbsp;&nbsp;&nbsp;'.$objSubResult->fields['value'].'</option>';
+                            $strOutputSelect         .= '<option value="?cmd=gallery&amp;act=change_category_picture&amp;id='.$intOutputId.'&amp;catid='.$objResult->fields['id'].'">&nbsp;&nbsp;&nbsp;'.$objSubResult->fields['value'].'</option>';
                             $strMultiActionSelect     .= '<option value="'.$objResult->fields['id'].'">&nbsp;&nbsp;&nbsp;'.$objSubResult->fields['value'].'</option>';
                             $objResult->MoveNext();
                         }

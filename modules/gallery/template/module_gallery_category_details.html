@@ -1,12 +1,13 @@
 <!-- START gallery_category_details.html -->
 <script language="JavaScript" type="text/javascript">
+// <![CDATA[
 	function resetPicture(picId) {
-	    if(confirm('{TXT_RESET_PICTURE}')) { 
+	    if(confirm('{TXT_RESET_PICTURE}')) {
 	        window.location.replace("?cmd=gallery&act=reset_picture&gid={CATEGORY_ID}&id="+picId);
 	    }
 	}
-	function deletePicture(picId) { 
-	    if(confirm('{TXT_DELETE_PICTURE}')) { 
+	function deletePicture(picId) {
+	    if(confirm('{TXT_DELETE_PICTURE}')) {
 	        window.location.replace("?cmd=gallery&act=delete_picture&gid={CATEGORY_ID}&id="+picId);
 	    }
 	}
@@ -31,7 +32,7 @@
 				break;
 				case 'move':
 					if (frmShowImages_MultiAction_Move.disabled == true) {
-						frmShowImages_MultiAction_Move.disabled = false;	
+						frmShowImages_MultiAction_Move.disabled = false;
 					} else {
 						if (frmShowImages_MultiAction_Move.value != '' &&
 							frmShowImages_MultiAction_Move.value != 0) {
@@ -40,16 +41,17 @@
 					}
 				break;
 				default: //do nothing
-				
+
 			}
 		}
 	}
 	function openWindow(theURL,winName,features) {
 	  window.open(theURL,winName,features);
 	}
+// ]]>
 </script>
-<form name="frmShowImages" method="post" action="?cmd=gallery&amp;act=category_actions&catid={CATEGORY_ID}">
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+<form name="frmShowImages" method="post" action="?cmd=gallery&amp;act=category_actions&amp;catid={CATEGORY_ID}">
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
 		<tr>
 		    <th colspan="9">
 		      <div align="left"><b>{CATEGORY_NAME}</b></div>
@@ -68,7 +70,7 @@
 		<!-- BEGIN showImages -->
 		<tr class="{IMAGES_ROWCLASS}">
 			<td nowrap="nowrap" align="left" valign="top">
-				<input type="checkbox" name="selectedImageId[]" id="selectedImageId" value="{IMAGES_ID}" >
+				<input type="checkbox" name="selectedImageId[]" value="{IMAGES_ID}" />
 			</td>
 			<td nowrap="nowrap" align="center" valign="top">
 				<input type="text" name="sortingSystem{IMAGES_CATTYPE}{IMAGES_ID}" value="{IMAGES_SORTING}" maxlength="3" size="2" />
@@ -97,7 +99,7 @@
 				<div align="right">
 					{IMAGES_HIDE_LINKICON_S}
 						<img src="images/icons/link.gif" border="0" alt="Link" title="Link" />&nbsp;
-					{IMAGES_HIDE_LINKICON_E} 
+					{IMAGES_HIDE_LINKICON_E}
 					<a href="?cmd=gallery&amp;act=rotate_picture&amp;catid={CATEGORY_ID}&amp;id={IMAGES_ID}" target="_self"><img alt="{TXT_IMG_ROTATE_ALT}" title="{TXT_IMG_ROTATE_ALT}" src="images/icons/rotate.gif" border="0" /></a>&nbsp;
 					<a href="javascript:resetPicture({IMAGES_ID})" target="_self"><img alt="{TXT_IMG_RESET_ALT}" title="{TXT_IMG_RESET_ALT}" src="images/icons/refresh.gif" border="0" /></a>&nbsp;
 					<a href="?cmd=gallery&amp;act=edit_picture&amp;id={IMAGES_ID}" target="_self"><img alt="{TXT_IMG_EDIT_ALT}" title="{TXT_IMG_EDIT_ALT}" src="images/icons/edit.gif" border="0" /></a>&nbsp;
@@ -112,9 +114,9 @@
 		<tr>
 			<td>
 				<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-				<a href="#" onclick="changeCheckboxes('frmShowImages','selectedImageId[]',true); return false;">{TXT_SELECT_ALL}</a> / 
+				<a href="#" onclick="changeCheckboxes('frmShowImages','selectedImageId[]',true); return false;">{TXT_SELECT_ALL}</a> /
 				<a href="#" onclick="changeCheckboxes('frmShowImages','selectedImageId[]',false); return false;">{TXT_DESELECT_ALL}</a>
-				<img src="images/icons/strike.gif">
+				<img src="images/icons/strike.gif" alt="" />
 				<select name="frmShowImages_MultiAction" onchange="selectMultiAction();">
 					<option value="0">{TXT_SUBMIT_SELECT}</option>
 					<option value="delete">{TXT_SUBMIT_DELETE}</option>
@@ -130,4 +132,5 @@
 		</tr>
 	</table>
 </form>
+{GALLERY_PAGING}
 <!-- END gallery_category_details.html -->

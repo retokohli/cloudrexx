@@ -294,6 +294,7 @@ class Guestbook extends GuestbookLibrary
 	    }
 
 	    header("Location: index.php?section=guestbook");
+	    exit;
 	}
 
 	/**
