@@ -1,0 +1,18 @@
+////////////////////////////////////////
+// CHANGELOG 1.1.1-1.1.2 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Changes ******************************
+****************************************
+Bildergalerie
+- Bilder einer Kategorie werden in der Administrationskonsole mit einem Paging aufgelistet.
+
+****************************************
+* Bugfixes *****************************
+****************************************
+Layout & Design
+- Der Export funktioniert auch unter Windows.
+
+Kontaktmanager
+- Die JavaScript Validierung funktioniert korrekt in der Unicode Variante.
