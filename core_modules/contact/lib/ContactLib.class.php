@@ -105,7 +105,7 @@ class ContactLib
 				'name'	=> 'TXT_CONTACT_REGEX_URL'
 			),
 			4	=> array(
-				'regex'	=> '^[A-Za-zäàáüâûôñèöéè\ ]*$',
+				'regex'	=> '^[A-Za-z'.(strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_encode('äàáüâûôñèöéè') : 'äàáüâûôñèöéè').'\ ]*$',
 				'name'	=> 'TXT_CONTACT_REGEX_TEXT'
 			),
 			5	=> array(

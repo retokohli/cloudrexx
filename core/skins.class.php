@@ -165,7 +165,7 @@ class skins
 		//get path variables
 	    $this->path = ASCMS_THEMES_PATH.DIRECTORY_SEPARATOR;
 		$this->arrWebPaths  = array(ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR);
-	    $this->themeZipPath = DIRECTORY_SEPARATOR.'themezips'.DIRECTORY_SEPARATOR;
+	    $this->themeZipPath = '/themezips/';
 	    $this->_archiveTempWebPath = ASCMS_TEMP_WEB_PATH.$this->themeZipPath;
 	    $this->_archiveTempPath = ASCMS_PATH.$this->_archiveTempWebPath;
 	    $this->_objFile = &new File();
@@ -355,8 +355,8 @@ class skins
 
 	      		$this->_getXML($theme['foldername']);
 
-	    		$htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.$_CORELANG['TXT_DELETE'].'\');" href="?cmd=skins&amp;act=manage&amp;delete='.$theme['themesname'].'" title="'.$_CORELANG['TXT_DELETE'].'"> <img border="0" src="images/icons/delete.gif" /> </a>';
-	    		$htmlActivateLink = '<a onclick="showInfo(this.parentNode.parentNode);" href="?cmd=skins&amp;act=manage&amp;activate='.$theme['id'].'" title="'.$_CORELANG['TXT_ACTIVATE_DESIGN'].'"> <img border="0" src="images/icons/check.gif" /> </a>';
+	    		$htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.$_CORELANG['TXT_DELETE'].'\');" href="?cmd=skins&amp;act=manage&amp;delete='.$theme['themesname'].'" title="'.$_CORELANG['TXT_DELETE'].'"> <img border="0" src="images/icons/delete.gif" alt="" /> </a>';
+	    		$htmlActivateLink = '<a onclick="showInfo(this.parentNode.parentNode);" href="?cmd=skins&amp;act=manage&amp;activate='.$theme['id'].'" title="'.$_CORELANG['TXT_ACTIVATE_DESIGN'].'"> <img border="0" src="images/icons/check.gif" alt="" /> </a>';
 
 	    		$objTemplate->setVariable(array('THEME_NAME'			=>	$theme['themesname'],
 	    										'THEME_NAME_EXTRA'		=>	$theme['themesname'].' '.$extra,
@@ -431,7 +431,7 @@ class skins
     	//check for MIME type and whether its a zip (not all browsers provide the type)
 		if(is_uploaded_file($_FILES['importlocal']['tmp_name']) && is_file($_FILES['importlocal']['tmp_name'])){
 			if(isset($_FILES['importlocal']['type'])){
-				if(!strpos($_FILES['importlocal']['type'],'zip')){
+				if(!strpos($_FILES['importlocal']['type'],'zip') && !strpos($_FILES['importlocal']['type'],'binary')){
 					$this->strErrMessage = $_FILES['importlocal']['name'].': '.$_CORELANG['TXT_THEME_IMPORT_WRONG_MIMETYPE'];
 					return false;
 				}
