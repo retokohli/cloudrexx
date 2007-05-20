@@ -187,6 +187,19 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 }
 
 switch($cmd) {
+	    //-----------------------------------------------------------------------------------------------
+	    // access & user management
+	    //-----------------------------------------------------------------------------------------------
+	case "access":
+		//$objPerm->checkAccess(18, 'static');
+		$modulespath = ASCMS_CORE_MODULE_PATH . "/access/admin.class.php";
+		if (file_exists($modulespath)) require_once($modulespath);
+		else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+		$subMenuTitle = $_CORELANG['TXT_COMMUNITY'];
+		$objAccess = &new Access();
+		$objAccess->getPage();
+		break;
+		
         //-----------------------------------------------------------------------------------------------
         // e-government
         //-----------------------------------------------------------------------------------------------
