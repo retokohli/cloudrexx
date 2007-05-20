@@ -152,17 +152,17 @@ class Auth
         if (isset($_SESSION['auth']['username']) && isset($_SESSION['auth']['password'])) {
             $user = $objDatabase->qstr($_SESSION['auth']['username']);
 
-            $query = "SELECT password,
-                           username,
-                           id,
-                           groups,
-                           is_admin,
-                           langId,
-                           firstname,
-                           lastname,
-                           active
-                           FROM ".DBPREFIX."access_users
-                           WHERE username = ".$user." AND active=1";
+           $query = "SELECT tblUser.password,
+			                       tblUser.username,
+			                       tblUser.id,
+			                       tblUser.is_admin,
+			                       tblUser.langId,
+			                       tblProfile.firstname,
+			                       tblProfile.lastname,
+			                       tblUser.active
+			                  FROM ".DBPREFIX."access_users AS tblUser,
+			                  ".DBPREFIX."access_user_profile AS tblProfile
+			                 WHERE tblUser.username = ".$user." AND tblUser.active=1 AND tblProfile.user_id=tblUser.id";
 
             $objResult = $objDatabase->SelectLimit($query, 1);
 
@@ -174,17 +174,13 @@ class Auth
                     $_SESSION['auth']['lang'] = $objResult->fields['langId'];
                     $_SESSION['auth']['is_admin'] = $objResult->fields['is_admin'];
 
-                    $arrGroups = explode(",", $objResult->fields['groups']);
-
-                    $objResult = $objDatabase->Execute("SELECT group_id FROM ".DBPREFIX."access_user_groups WHERE is_active=1");
-                    if ($objResult !== false) {
-                        while (!$objResult->EOF) {
-                            if (in_array($objResult->fields['group_id'], $arrGroups)) {
-                                array_push($arrUserGroups, $objResult->fields['group_id']);
-                            }
-                            $objResult->MoveNext();
-                        }
-                    }
+					$objResult = $objDatabase->Execute("SELECT tblGroup.group_id FROM ".DBPREFIX."access_user_groups AS tblGroup, ".DBPREFIX."access_rel_user_group AS tblRel WHERE tblGroup.is_active=1 AND tblRel.user_id=".$objResult->fields['id']." AND tblGroup.group_id=tblRel.group_id");
+					if ($objResult !== false) {
+						while (!$objResult->EOF) {
+							array_push($arrUserGroups, $objResult->fields['group_id']);
+							$objResult->MoveNext();
+						}
+					}
                     $_SESSION['auth']['groups'] = $arrUserGroups;
 
                     $this->_initUserRights();
