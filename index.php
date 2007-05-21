@@ -726,20 +726,7 @@ $page_content = str_replace('{TITLE}',  $page_title, $page_content);
 // start module switches
 //-------------------------------------------------------
 switch ($section) {
-	//-------------------------------------------------------
-	// Login module
-	//-------------------------------------------------------
-	case "access":
-		$modulespath = "core_modules/access/index.class.php";
-		if (file_exists($modulespath)) require_once($modulespath);
-		else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-		if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
-		if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type='frontend');
-		if (!isset($objPerm) || !is_object($objPerm)) $objPerm =&new Permission($type='frontend');
-		$objLogin = &new Login($page_content);
-		$objTemplate->setVariable('CONTENT_TEXT', $objLogin->getContent());
-	break;
-	
+
 //-------------------------------------------------------
 // Login module
 //-------------------------------------------------------

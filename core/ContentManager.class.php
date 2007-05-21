@@ -795,16 +795,10 @@ class ContentManager
 
 		$objResult = $objDatabase->SelectLimit('SELECT backend_access_id FROM '.DBPREFIX.'content_navigation WHERE catid='.$pageId.' AND backend_access_id!=0');
 		if ($objResult !== false) {
-			if ($objResult->RecordCount() == 1) {
-				if (!$objPerm->checkAccess($objResult->fields['backend_access_id'], 'dynamic')) {
-					header('Location: index.php?cmd=noaccess');
-					exit;
-				} else {
-					return true;
-				}
-			} else {
-				return false;
-			}
+			if ($objResult->RecordCount() == 1 && !$objPerm->checkAccess($objResult->fields['backend_access_id'], 'dynamic')) {
+				header('Location: index.php?cmd=noaccess');
+				exit;
+			};
 		} else {
 			header('Location: index.php?cmd=noaccess');
 			exit;
@@ -834,11 +828,7 @@ class ContentManager
 			$pageId = intval($_REQUEST['pageId']);
 		}
 
-		if ($this->_checkModificationPermission($pageId)) {
-			$_backendPermissions = true;
-		} else {
-			$_backendPermissions = false;
-		}
+		$this->_checkModificationPermission($pageId);
 
 		$objTemplate->addBlockfile('ADMIN_CONTENT', 'content_editor', 'content_editor.html');
 	    $this->pageTitle = $_CORELANG['TXT_EDIT_PAGE'];
@@ -2171,27 +2161,27 @@ class ContentManager
 	{
 		global $objDatabase, $_CONFIG;
 
-		$loginModuleId = 18;
 		$rightId = 0;
 		$pageIsProtected = false;
 		$protectionString = "";
 		$lastRightId = $_CONFIG['lastAccessId'];
 
+		if (!is_array($arrGroups)) {
+			$protect = false;
+		}
+
 		if (!$protect && $parentPageId != 0 && $parentPageId != $pageId) {
 			$arrGroups = array();
 
-			$objResult = $objDatabase->Execute('SELECT n.`'.$type.'_access_id`, a.`group_id` FROM `'.DBPREFIX.'content_navigation` AS n LEFT JOIN `'.DBPREFIX.'access_group_dynamic_ids` AS a ON a.`access_id`=n.`'.$type.'_access_id` WHERE n.`catid`='.$parentPageId);
-
-			if ($objResult !== false && $objResult->RecordCount() > 0) {
-				if ($objResult->fields[$type.'_access_id'] > 0) {
-					$protect = true;
-
-					while (!$objResult->EOF) {
-						array_push($arrGroups, $objResult->fields['group_id']);
-						$objResult->MoveNext();
-					}
+			$objResult = $objDatabase->Execute("SELECT rights.group_id
+											FROM ".DBPREFIX."access_group_dynamic_ids AS rights,
+												 ".DBPREFIX."content_navigation AS navigation
+											WHERE navigation.catid=".$parentPageId." AND rights.access_id=navigation.".$type."_access_id");
+			if ($objResult !== false) {
+				while (!$objResult->EOF) {
+					array_push($arrGroups, $objResult->fields['group_id']);
+					$objResult->MoveNext();
 				}
-
 			}
 
 			if (count($arrGroups)>0) {
@@ -2282,9 +2272,6 @@ class ContentManager
 			}
 		}
 
-		// Login Module must be unprotected!
-		$objDatabase->Execute("UPDATE ".DBPREFIX."content_navigation SET protected=0 WHERE module=".$loginModuleId);
-		
 		if ($lastRightId > $_CONFIG['lastAccessId']) {
 			$_CONFIG['lastAccessId'] = $lastRightId;
 			$objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue=".$lastRightId." WHERE setname='lastAccessId'");
