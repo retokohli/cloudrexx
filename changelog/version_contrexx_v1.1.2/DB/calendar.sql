@@ -17,3 +17,5 @@ ADD `organizerStreet` VARCHAR( 255 ) NOT NULL AFTER `organizerName` ,
 ADD `organizerZip` VARCHAR( 255 ) NOT NULL AFTER `organizerStreet` ,
 ADD `organizerMail` VARCHAR( 255 ) NOT NULL AFTER `organizerZip` ,
 ADD `organizerLink` VARCHAR( 255 ) NOT NULL AFTER `organizerMail` ;
+
+ALTER TABLE `contrexx_module_calendar` ADD `organizerPlace` VARCHAR( 255 ) NOT NULL AFTER `organizerZip` ;
