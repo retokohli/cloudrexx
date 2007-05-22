@@ -85,7 +85,7 @@ class myAdminManager {
 			'TXT_LAST_LOG_SESSIONS'			=> htmlentities($_CORELANG['TXT_LAST_LOG_SESSIONS'], ENT_QUOTES, CONTREXX_CHARSET),
 			'TXT_RELEASE_DATE'				=> htmlentities($_CORELANG['TXT_RELEASE_DATE'], ENT_QUOTES, CONTREXX_CHARSET),
 			'INDEX_HOME_CMS_NAME'			=> htmlentities($_CONFIG['coreCmsName'], ENT_QUOTES, CONTREXX_CHARSET),
-			'INDEX_HOME_CMS_VERSION'		=> htmlentities($_CONFIG['coreCmsVersion'], ENT_QUOTES, CONTREXX_CHARSET),
+			'INDEX_HOME_CMS_VERSION'		=> htmlentities(preg_replace('#^(\d\.\d)\.(\d)$#', '$1 Service Pack $2', $_CONFIG['coreCmsVersion']), ENT_QUOTES, CONTREXX_CHARSET),
 			'INDEX_HOME_CMS_STATUS'			=> htmlentities($_CONFIG['coreCmsStatus'], ENT_QUOTES, CONTREXX_CHARSET),
 			'INDEX_HOME_CMS_CODENAME'		=> htmlentities($_CONFIG['coreCmsCodeName'], ENT_QUOTES, CONTREXX_CHARSET),
 			'INDEX_HOME_CMS_RELEASEDATE'	=> htmlentities($_CONFIG['coreCmsReleaseDate'], ENT_QUOTES, CONTREXX_CHARSET),
