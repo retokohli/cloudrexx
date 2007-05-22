@@ -877,7 +877,7 @@ class Shop extends ShopLibrary {
         }
 
         $shopMenuOptions = $this->getCatMenu($catId);
-        $shopMenu = '<form action="?section=shop" method="post">';
+        $shopMenu = '<form action="index.php?section=shop" method="post">';
         $shopMenu .= '<input type="text" name="term" value="'.htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET).'" />';
         $shopMenu .= '<select name="catId">';
         $shopMenu .= '<option value="0">'.$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].'</option>';
@@ -1057,7 +1057,7 @@ class Shop extends ShopLibrary {
                 if ($productId == 0) {
                     $description = $shortDescription;
                     if (!empty($longDescription)) {
-                        $detailLink = "<a href=\"?section=shop&amp;cmd=details&amp;productId=".$objResult->fields['id']."\" title=\"".$_ARRAYLANG['TXT_MORE_INFORMATIONS']."\">".$_ARRAYLANG['TXT_MORE_INFORMATIONS']."</a>";
+                        $detailLink = "<a href=\"index.php?section=shop&amp;cmd=details&amp;productId=".$objResult->fields['id']."\" title=\"".$_ARRAYLANG['TXT_MORE_INFORMATIONS']."\">".$_ARRAYLANG['TXT_MORE_INFORMATIONS']."</a>";
                     } else {
                         $detailLink = "";
                     }
@@ -1289,7 +1289,7 @@ class Shop extends ShopLibrary {
                 $arrPrice[$i] = "<s>".$price."</s>";
                 $arrDiscountPrice[$i] = $this->objCurrency->getCurrencyPrice($objResult->fields['discountprice']);
             }
-            $arrDetailLink[$i] = "?section=shop&amp;cmd=details&amp;productId=".$objResult->fields['id'];
+            $arrDetailLink[$i] = "index.php?section=shop&amp;cmd=details&amp;productId=".$objResult->fields['id'];
             $arrTitle[$i] = $objResult->fields['title'];
             $i++;
             $objResult->MoveNext();
@@ -1345,7 +1345,7 @@ class Shop extends ShopLibrary {
                 $cartInfo = $_ARRAYLANG['TXT_SHOPPING_CART']." ".$this->calculateItems($_SESSION['shop']['cart']).
                             " ".$_ARRAYLANG['TXT_SHOPPING_CART_VALUE']." ".$this->_calculatePrice($_SESSION['shop']['cart']).
                             " ".$this->aCurrencyUnitName;
-                $cartInfo = "<a href=\"?section=shop&amp;cmd=cart\" title=\"".$cartInfo."\">$cartInfo</a>";
+                $cartInfo = "<a href=\"index.php?section=shop&amp;cmd=cart\" title=\"".$cartInfo."\">$cartInfo</a>";
             }
         }
         return $cartInfo;
@@ -1478,7 +1478,7 @@ class Shop extends ShopLibrary {
         global $_ARRAYLANG, $_CONFIGURATION;
         $javascriptCode =
 "<script language=\"JavaScript\" type=\"text/javascript\">
-<!-- //
+// <![CDATA[
 function viewPicture(picture,features)
 {
     window.open(picture,'',features);
@@ -1675,7 +1675,7 @@ function sendReq(data, type)
 
     if (type == 1) {
         // add product
-        objHttp.open('get', '?section=shop&cmd=cart&remoteJs=addProduct'+data, true);
+        objHttp.open('get', 'index.php?section=shop&cmd=cart&remoteJs=addProduct'+data, true);
         objHttp.onreadystatechange = shopUpdateCart;
     } else {//if ..
         //more requests here...
@@ -1697,13 +1697,7 @@ function shopUpdateCart()
         } catch(e) {}
         request_active = false;
     } else {
-        try {
-            if (objHttp.statusText == 'OK') {
-                return false;
-            } else {
-                alert('error: ' + objHttp.statusText);
-            }
-        } catch(e) {}
+    	return false;
     }
 }
 
@@ -1744,7 +1738,7 @@ function shopGenerateCart()
 sendReq('', 1);
 
 ")."
-// -->
+// ]]>
 </script>
 ";
 
@@ -2101,7 +2095,7 @@ sendReq('', 1);
     {
         // go to the next step
         if (isset($_POST['continue'])) {
-            header("Location: ?section=shop&cmd=login");
+            header("Location: index.php?section=shop&cmd=login");
             exit;
         }
     }
@@ -2318,7 +2312,7 @@ sendReq('', 1);
 
         if ($this->is_auth==1) {
             // redirect to the checkout page
-            header("Location: ?section=shop&cmd=account");
+            header("Location: index.php?section=shop&cmd=account");
             exit;
         } else {
             $statusMessage = "";
@@ -2331,10 +2325,10 @@ sendReq('', 1);
                 $loginUsername = $_SESSION['shop']['username'];
                 if ($this->_authenticate()) {
                     if (isset($_REQUEST['redirect']) && $_REQUEST['redirect'] == "shop") {
-                        header("Location: ?section=shop");
+                        header("Location: index.php?section=shop");
                         exit;
                     } else {
-                        header("Location: ?section=shop&cmd=account");
+                        header("Location: index.php?section=shop&cmd=account");
                         exit;
                     }
                 } else {
@@ -2440,9 +2434,9 @@ sendReq('', 1);
 
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 1) {
-                header("Location: ?section=shop&cmd=payment");
+                header("Location: index.php?section=shop&cmd=payment");
             } else {
-                header("Location: ?section=shop&cmd=confirm");
+                header("Location: index.php?section=shop&cmd=confirm");
             }
             exit;
         }
@@ -2599,7 +2593,7 @@ sendReq('', 1);
     {
          // Reloading or loading without sessions
         if (!isset($_SESSION['shop']['cart'])) {
-            header("Location: ?section=shop");
+            header("Location: index.php?section=shop");
             exit;
         }
 
@@ -2875,7 +2869,7 @@ sendReq('', 1);
 
             if ($agbStatus && $shipmentStatus && $paymentStatus) {
                 // everything is set and valid
-                header("Location: ?section=shop&cmd=confirm");
+                header("Location: index.php?section=shop&cmd=confirm");
                 exit;
             } else {
                 // something is missing od invalid
@@ -3128,7 +3122,7 @@ sendReq('', 1);
 
         // if the cart is missing, return to the shop
         if (!isset($_SESSION['shop']['cart'])) {
-            header("Location: ?section=shop");
+            header("Location: index.php?section=shop");
             exit;
         }
         // initalize variables
@@ -3354,7 +3348,7 @@ sendReq('', 1);
             // suppose that if the customers' last name is set, so is the rest
             // -- there may be a better alternative though.
             if (!isset($_SESSION['shop']['lastname'])) {
-                header('Location: ?section=shop');
+                header('Location: index.php?section=shop');
                 exit();
             }
             // Show confirmation page
