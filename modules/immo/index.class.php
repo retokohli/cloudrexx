@@ -1293,6 +1293,8 @@ EOF;
 	 * @return string javascript
 	 */
 	function _getDetailsJS(){
+		global $_CONFIG;
+		$domainUrl = $_CONFIG['domainUrl'];
 		return <<< EOF
 	var openMap = function(id){
 		try{
@@ -1301,7 +1303,7 @@ EOF;
 			}
 		}catch(e){}
 
-		url='http://www.immothunersee.ch/?section=immo&standalone=1&highlight='+id;
+		url='{$domainUrl}/?section=immo&standalone=1&highlight='+id;
 		if (!window.focus){
 			return true;
 		}
