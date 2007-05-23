@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 16 May 2007 18:01:49 +0200
+* generated date Wed, 23 May 2007 10:09:31 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Bestellungen";
@@ -476,4 +476,6 @@ $_ARRAYLANG['TXT_CLEAR_DATABASE_BEFORE_IMPORTING'] = "Bestehende Produkte vor de
 $_ARRAYLANG['TXT_SHOP_ERROR'] = "Error";
 $_ARRAYLANG['TXT_SHOP_FILE_EXISTS'] = "file already exists";
 $_ARRAYLANG['TXT_SHOP_COULD_NOT_COPY_FILE'] = "could not copy file";
+$_ARRAYLANG['TXT_CUSTOMER_HOMEPAGE'] = "Homepage";
+$_ARRAYLANG['TXT_CUSTOMER_PICTURE_NAME'] = "Logo";
 ?>
