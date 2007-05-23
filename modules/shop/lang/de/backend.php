@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 23 May 2007 10:09:31 +0200
+* generated date Wed, 23 May 2007 10:16:58 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Bestellungen";
@@ -478,4 +478,8 @@ $_ARRAYLANG['TXT_SHOP_FILE_EXISTS'] = "Datei existiert bereits";
 $_ARRAYLANG['TXT_SHOP_COULD_NOT_COPY_FILE'] = "Konnte Datei nicht kopieren";
 $_ARRAYLANG['TXT_CUSTOMER_HOMEPAGE'] = "Homepage";
 $_ARRAYLANG['TXT_CUSTOMER_PICTURE_NAME'] = "Logo";
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_DISCOUNT_CODE'] = "Rabattcode";
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_DISCOUNT'] = "Kundenrabatt";
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_PREORDER_CODE'] = "Vorbestellung";
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_PAYMENT_CODE'] = "Bezahlungscode";
 ?>
