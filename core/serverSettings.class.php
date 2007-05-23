@@ -97,7 +97,7 @@ class serverSettings
         global $_CORELANG, $_CONFIG, $objTemplate;
 
         $objTemplate->setVariable(array(
-            'ADMIN_CMS_NAME'           => $_CONFIG['coreCmsName'],
+            'ADMIN_CMS_NAME'           => htmlentities($_CONFIG['coreCmsName'], ENT_QUOTES, CONTREXX_CHARSET),
             'ADMIN_CMS_VERSION'        => str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $_CONFIG['coreCmsVersion'])),
             'MYADMIN_DB_VERSION'       => @mysql_get_server_info(),
             'MYADMIN_PHP_VERSION'      => @phpversion(),
