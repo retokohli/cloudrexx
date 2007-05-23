@@ -298,7 +298,7 @@ class Installer
 		$objTpl->addBlockfile('CONTENT', 'CONTENT_BLOCK', 'welcome.html');
 
 		$welcomeMsg = str_replace("[EDITION]", $_CONFIG['coreCmsEdition'], $_ARRLANG['TXT_WELCOME_MSG']);
-		$welcomeMsg = str_replace("[VERSION]", str_replace(' Service Pack 0', '', preg_replace('#^(\d\.\d)\.(\d)$#', '$1 Service Pack $2', $_CONFIG['coreCmsVersion'])), $welcomeMsg);
+		$welcomeMsg = str_replace("[VERSION]", str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $_CONFIG['coreCmsVersion'])), $welcomeMsg);
 		$welcomeMsg = str_replace("[NAME]", $_CONFIG['coreCmsName'], $welcomeMsg);
 
 		$objTpl->setVariable(array(
@@ -307,7 +307,7 @@ class Installer
 
 		$newestVersion = $objCommon->getNewestVersion();
 		if (!$objCommon->_isNewestVersion($_CONFIG['coreCmsVersion'], $newestVersion)) {
-			$versionMsg = str_replace("[VERSION]", $newestVersion, $_ARRLANG['TXT_NEW_VERSION']);
+			$versionMsg = str_replace("[VERSION]", str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $newestVersion)), $_ARRLANG['TXT_NEW_VERSION']);
 			$versionMsg = str_replace("[NAME]", "<a href=\"".$contrexxURI."\" target=\"_blank\">".$_CONFIG['coreCmsName']."</a>", $versionMsg);
 			$objTpl->setVariable(array(
 				'NEW_VERSION_TEXT'	=> "<br />".$versionMsg
