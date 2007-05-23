@@ -3,6 +3,12 @@
 ////////////////////////////////////////
 
 ****************************************
+* Changes ******************************
+****************************************
+Allgemein
+- Die CMS Version wird nach dem folgenden Schema dargestellt: 1.1 Service Pack 3
+
+****************************************
 * New Features *************************
 ****************************************
 Update-System
@@ -13,3 +19,9 @@ Update-System
 ****************************************
 Update-System
 - Migration der Verzeichniseinträge auf die neue Architektur.
+
+Bildergalerie
+- Das Paging bei der Bilderauflistung einer Kategorie (Administrationskonsole) funktioniert nun korrekt.
+
+Shop
+- Der JavaScript-Warenkorb generiert kein Fehler mehr im Safari Browser.
