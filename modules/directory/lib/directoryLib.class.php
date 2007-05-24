@@ -146,7 +146,7 @@ class directoryLibrary
 		global $_CONFIG, $objDatabase, $_CORELANG;
 
 		//get all categories
-		$objResultCat = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_categories ORDER BY displayorder");
+		$objResultCat = $objDatabase->Execute("SELECT id, parentid, name FROM ".DBPREFIX."module_directory_categories ORDER BY displayorder");
 
 		if($objResultCat !== false){
 			while(!$objResultCat->EOF){
