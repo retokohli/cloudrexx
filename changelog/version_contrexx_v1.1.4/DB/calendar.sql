@@ -19,3 +19,19 @@ ADD `organizerMail` VARCHAR( 255 ) NOT NULL AFTER `organizerZip` ,
 ADD `organizerLink` VARCHAR( 255 ) NOT NULL AFTER `organizerMail` ;
 
 ALTER TABLE `contrexx_module_calendar` ADD `organizerPlace` VARCHAR( 255 ) NOT NULL AFTER `organizerZip` ;
+
+ALTER TABLE `contrexx_module_calendar` ADD `placeCity` VARCHAR( 255 ) NOT NULL AFTER `placeZip` ;
+
+CREATE TABLE `contrexx_module_calendar_access` (
+`id` int( 11 ) unsigned NOT NULL AUTO_INCREMENT ,
+`name` varchar( 64 ) NOT NULL default '',
+`description` varchar( 255 ) NOT NULL default '',
+`access_id` int( 11 ) unsigned NOT NULL default '0',
+`type` enum( 'global', 'frontend', 'backend' ) NOT NULL default 'global',
+PRIMARY KEY ( `id` )
+) AUTO_INCREMENT =2;
+
+INSERT INTO `contrexx_module_calendar_access` ( `id` , `name` , `description` , `access_id` , `type` )
+VALUES (
+NULL , 'showNote', 'Community Events einsehen', '116', 'frontend'
+);
