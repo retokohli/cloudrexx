@@ -56,6 +56,8 @@ class rssDirectory extends directoryLibrary
 	var $navtreeCategories = array();
 
 	var $searchResults = array();
+	var $searchCategories = array();
+	var $searchLevels = array();
 	var $settings = array();
 	var $getCantons = array();
 	var $arrFeedContent = array();
@@ -556,6 +558,16 @@ class rssDirectory extends directoryLibrary
 		////// paging end /////////
 
 
+		// set variables
+		$this->_objTpl->setVariable(array(
+			'SEARCH_PAGING'    			=> $paging,
+			'DIRECTORY_CAT_ID'    		=> $cid,
+			'DIRECTORY_LEVEL_ID'   		=> $lid,
+			'DIRECTORY_MAIN_CAT_ID'    	=> $cid,
+			'DIRECTORY_MAIN_LEVEL_ID'   => $lid,
+		));
+
+
 		$pagingLimit = intval(35);
 	    $objResult = $objDatabase->SelectLimit($query, $pagingLimit, $pos);
 	    $count = $objResult->RecordCount();
@@ -586,10 +598,7 @@ class rssDirectory extends directoryLibrary
 			}
 		}
 
-		// set variables
-		$this->_objTpl->setVariable(array(
-			'SEARCH_PAGING'    		=> $paging,
-		));
+
 
 		if ($count == 0) {
 			// set variables
@@ -1071,12 +1080,21 @@ class rssDirectory extends directoryLibrary
 			$lid = "";
 		}
 
-		$setVariable["DIRECTORY_FEED_ID"] 			= $arrFeedContent['id'];
-		$setVariable["DIRECTORY_FEED_DETAIL"] 		= $_ARRAYLANG['TXT_DIRECTORY_DETAIL'];
-		$setVariable["DIRECTORY_FEED_DETAIL_LINK"] 	= "index.php?section=directory&amp;cmd=detail&amp;id=".$arrFeedContent['id'].$lid.$cid;
-		$setVariable["DIRECTORY_FEED_EDIT"] 		= $_ARRAYLANG['TXT_DIRECTORY_EDIT'];
-		$setVariable["DIRECTORY_FEED_EDIT_LINK"] 	= "index.php?section=directory&amp;cmd=edit&amp;id=".$arrFeedContent['id'];
-		$setVariable["DIRECTORY_FEED_HITS"] 		= $arrFeedContent['hits'];
+		if (strlen($arrFeedContent['description']) > 400) {
+			$points = "...";
+		} else {
+			$points = "";
+		}
+
+		$parts= explode("\n", wordwrap($arrFeedContent['description'], 400, "\n"));
+
+		$setVariable["DIRECTORY_FEED_SHORT_DESCRIPTION"] 	= $parts[0].$points;
+		$setVariable["DIRECTORY_FEED_ID"] 					= $arrFeedContent['id'];
+		$setVariable["DIRECTORY_FEED_DETAIL"] 				= $_ARRAYLANG['TXT_DIRECTORY_DETAIL'];
+		$setVariable["DIRECTORY_FEED_DETAIL_LINK"] 			= "index.php?section=directory&amp;cmd=detail&amp;id=".$arrFeedContent['id'].$lid.$cid;
+		$setVariable["DIRECTORY_FEED_EDIT"] 				= $_ARRAYLANG['TXT_DIRECTORY_EDIT'];
+		$setVariable["DIRECTORY_FEED_EDIT_LINK"] 			= "index.php?section=directory&amp;cmd=edit&amp;id=".$arrFeedContent['id'];
+		$setVariable["DIRECTORY_FEED_HITS"] 				= $arrFeedContent['hits'];
 
 		if($arrFeedContent['premium'] == '1'){
 			$content = 'class="premium"';
@@ -1571,7 +1589,6 @@ class rssDirectory extends directoryLibrary
 		}
 	}
 
-
 	/**
     * serch feed
     *
@@ -1624,13 +1641,31 @@ class rssDirectory extends directoryLibrary
 		}
 
 		if($_GET['cid'] != "" && $_GET['check'] == 'exp'){
-			$query_search 		.=" AND (rel_cat.cat_id='".intval($_GET['cid'])."' AND rel_cat.dir_id=files.id)";
+			array_push($this->searchCategories, intval($_GET['cid']));
+			$this->getCatIds(intval($_GET['cid']));
+
+			if (!empty($this->searchCategories)) {
+				foreach ($this->searchCategories as $arrKey => $catId) {
+					$categories .= "(rel_cat.cat_id='".$catId."' AND rel_cat.dir_id=files.id) OR ";
+				}
+			}
+
+			$query_search 		.=" AND (".$categories."  (rel_cat.cat_id='".intval($_GET['cid'])."' AND rel_cat.dir_id=files.id))";
 			$searchTermExp		.= "&amp;cid=".intval($_GET['cid']);
 			$db					.= DBPREFIX."module_directory_rel_dir_cat AS rel_cat, ";
 	    }
 
 	    if($_GET['lid'] != "" && $_GET['check'] == 'exp'){
-			$query_search 		.=" AND (rel_level.level_id='".intval($_GET['lid'])."' AND rel_level.dir_id=files.id)";
+			array_push($this->searchLevels, intval($_GET['lid']));
+			$this->getLevelIds(intval($_GET['lid']));
+
+			if (!empty($this->searchLevels)) {
+				foreach ($this->searchLevels as $arrKey => $levelId) {
+					$levels .= "(rel_level.level_id='".$levelId."' AND rel_level.dir_id=files.id) OR ";
+				}
+			}
+
+			$query_search 		.=" AND (".$levels."  (rel_level.level_id='".intval($_GET['lid'])."' AND rel_level.dir_id=files.id))";
 			$searchTermExp		.= "&amp;lid=".intval($_GET['lid']);
 			$db					.= DBPREFIX."module_directory_rel_dir_level AS rel_level, ";
 	    }
@@ -1767,6 +1802,44 @@ class rssDirectory extends directoryLibrary
 			'SEARCH_PAGING'    				=> $paging,
 		));
 	}
+
+
+
+
+	function getCatIds($catId) {
+		global $objDatabase;
+
+		//get all categories
+		$objResultCat = $objDatabase->Execute("SELECT id, parentid, name FROM ".DBPREFIX."module_directory_categories WHERE parentid='".$catId."'");
+
+		if($objResultCat !== false){
+			while(!$objResultCat->EOF){if(!empty($objResultCat->fields['id'])) {
+					array_push($this->searchCategories, $objResultCat->fields['id']);
+				}
+				$this->getCatIds($objResultCat->fields['id']);
+
+				$objResultCat->MoveNext();
+			}
+		}
+	}
+
+	function getLevelIds($levelId) {
+		global $objDatabase;
+
+		//get all categories
+		$objResultLevel = $objDatabase->Execute("SELECT id, parentid, name FROM ".DBPREFIX."module_directory_levels WHERE parentid='".$levelId."'");
+
+		if($objResultLevel !== false){
+			while(!$objResultLevel->EOF){if(!empty($objResultLevel->fields['id'])) {
+					array_push($this->searchLevels, $objResultLevel->fields['id']);
+				}
+				$this->getLevelIds($objResultLevel->fields['id']);
+
+				$objResultLevel->MoveNext();
+			}
+		}
+	}
+
 
 	/**
     * google search
