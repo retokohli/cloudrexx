@@ -1057,8 +1057,8 @@ class Forum extends ForumLibrary {
 
 		$query = "	SELECT `n`.`category_id`, `l`.`name` , `c`.`status`
 					FROM `".DBPREFIX."module_forum_notification` AS `n`
-					INNER JOIN contrexx_module_forum_categories_lang AS `l` USING ( category_id )
-					INNER JOIN contrexx_module_forum_categories AS `c` ON ( `c`.`id` = `n`.`category_id` )
+					INNER JOIN ".DBPREFIX."module_forum_categories_lang AS `l` USING ( category_id )
+					INNER JOIN ".DBPREFIX."module_forum_categories AS `c` ON ( `c`.`id` = `n`.`category_id` )
 					WHERE `n`.`user_id` = ".$_SESSION['auth']['userid']."
 					AND `n`.`thread_id` = 0
 					AND `l`.`lang_id` = ".$this->_intLangId."
