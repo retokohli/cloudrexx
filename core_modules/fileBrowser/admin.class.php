@@ -366,7 +366,10 @@ class FileBrowser {
 		    }
 			$objFile->setChmod($strPath, $strWebPath, $file);
 		}
-		if($this->_mediaType == 'shop'){
+
+		$fileType = pathinfo($strPath.$file);
+
+		if($fileType['extension'] == 'jpg' || $fileType['extension'] == 'jpeg' || $fileType['extension'] == 'png' || $fileType['extension'] == 'gif'){
 		    if($this->_createThumb($strPath, $strWebPath, $file)){
 		      $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_SUCCESSFULLY_CREATED'], $strWebPath.$file));
 		    }
