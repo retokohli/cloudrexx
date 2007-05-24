@@ -2,8 +2,8 @@
 /**
  * News library
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author Astalavista Development Team <thun@astalvista.ch>         
- * @version 1.0.0                                                 
+ * @author Astalavista Development Team <thun@astalvista.ch>
+ * @version 1.0.0
  * @package     contrexx
  * @subpackage  core_module_news
  * @todo        Edit PHP DocBlocks!
@@ -19,16 +19,16 @@
  * @subpackage  core_module_news
  */
 class newsLibrary
-{		  
-    
+{
+
 	/**
     * Gets the categorie option menu string
     *
     * @global    object     $objDatabase
     * @param     string     $lang
     * @param     string     $selectedOption
-    * @return    string     $modulesMenu                                                                              
-    */ 
+    * @return    string     $modulesMenu
+    */
     function getSettings()
     {
     	global $objDatabase;
@@ -39,28 +39,28 @@ class newsLibrary
 		    $objResult->MoveNext();
 	    }
     }
-    
-    
+
+
     function getCategoryMenu($langId, $selectedOption=""){
 	    global $objDatabase;
-	    
-	    $strMenu = "";      
-        $query = "SELECT catid, name FROM ".DBPREFIX."module_news_categories 
+
+	    $strMenu = "";
+        $query = "SELECT catid, name FROM ".DBPREFIX."module_news_categories
                         WHERE catid<>0 AND lang=".$langId." ORDER BY catid";
         $objResult = $objDatabase->Execute($query);
 	    while (!$objResult->EOF) {
 		    $selected = ($selectedOption==$objResult->fields['catid']) ? "selected" : "";
-		    $strMenu .="<option value=\"".$objResult->fields['catid']."\" $selected>".stripslashes($objResult->fields['name'])."</option>\n"; 
+		    $strMenu .='<option value="'.$objResult->fields['catid'].'" $selected>'.stripslashes($objResult->fields['name']).'</option>\n';
 		    $objResult->MoveNext();
 	    }
 	    return $strMenu;
     }
-    
+
     /**
     * Gets only the body content and deleted all the other tags
     *
     * @param     string     $fullContent      HTML-Content with more than BODY
-    * @return    string     $content          HTML-Content between BODY-Tag                                                                
+    * @return    string     $content          HTML-Content between BODY-Tag
     */
     function filterBodyTag($fullContent){
 	    $res=false;
@@ -72,7 +72,7 @@ class newsLibrary
             $bodyStartTag = $arrayMatches[0][0];
             // Position des Start-Tags holen
             $posBody = strpos($fullContent, $bodyStartTag, 0);
-            // Beginn des Contents ohne Body-Tag berechnen 
+            // Beginn des Contents ohne Body-Tag berechnen
             $posStartBodyContent = $posBody + strlen($bodyStartTag);
 	    }
 	    $posEndTag=strlen($fullContent);
@@ -87,20 +87,20 @@ class newsLibrary
 	     $content = substr($fullContent, $posStartBodyContent, $posEndTag  - $posStartBodyContent);
          return $content;
     }
-    
+
     function getCategories()
     {
     	global $objDatabase, $objInit;
-    	
+
     	$arrCatgories = array();
-    	
-    	$objResult = $objDatabase->Execute("SELECT catid, 
+
+    	$objResult = $objDatabase->Execute("SELECT catid,
 			name,
 			lang
-			FROM ".DBPREFIX."module_news_categories 
+			FROM ".DBPREFIX."module_news_categories
 			WHERE lang=".$objInit->userFrontendLangId."
 			ORDER BY catid asc");
-		
+
     	if ($objResult !== false) {
     		while (!$objResult->EOF) {
     			$arrCatgories[$objResult->fields['catid']] = array(
@@ -111,7 +111,7 @@ class newsLibrary
     			$objResult->MoveNext();
     		}
     	}
-    	
+
     	return $arrCatgories;
     }
 }
