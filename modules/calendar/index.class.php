@@ -528,6 +528,7 @@ class Calendar extends calendarLibrary
 
 		} else {
 			header("Location: ?section=calendar&cmd=boxes");
+			exit;
 		}
 
 
@@ -573,6 +574,7 @@ class Calendar extends calendarLibrary
 	{
 		if (!isset($_GET['id'])) {
 			header("Location: ?section=calendar");
+			exit;
 		}
 		$this->_objTpl->setTemplate($this->pageContent);
 		$this->getDayNote($_GET['id']);
