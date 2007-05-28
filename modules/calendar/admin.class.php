@@ -80,6 +80,7 @@ class calendarManager extends calendarLibrary
 			case 'saveNew':
 				$id = $this->writeNote();
 				header("Location: ?cmd=calendar&act=event&id=$id");
+				exit;
 				break;
 
 			case 'cat':
@@ -105,6 +106,7 @@ class calendarManager extends calendarLibrary
 			case 'saveEdited':
 				$this->writeEditedNote();
 				header("Location: ?cmd=calendar&act=event&id={$_POST['inputId']}");
+				exit;
 				break;
 
 			case 'settings':
@@ -116,6 +118,7 @@ class calendarManager extends calendarLibrary
 				$this->saveSettings();
 				$this->setStdCat();
 				header("Location: ?cmd=calendar&act=settings");
+				exit;
 				break;
 
 			case 'event_actions':
@@ -411,6 +414,7 @@ class calendarManager extends calendarLibrary
 		}
 
 		header("LOCATION: ?cmd=calendar");
+		exit;
 	}
 
 
@@ -461,6 +465,7 @@ class calendarManager extends calendarLibrary
 			}
 		}
 		header("Location: index.php?cmd=calendar&amp;act=all&amp;pos=0");
+		exit;
 	}
 
 

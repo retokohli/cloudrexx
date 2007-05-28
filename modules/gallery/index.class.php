@@ -109,7 +109,7 @@ class Gallery {
      */
     function showPictureNoPop($intPicId)
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG, $objNavbar;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $arrPictures = array();
         $intPicId    = intval($intPicId);
