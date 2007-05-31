@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 23 May 2007 10:16:58 +0200
+* generated date Thu, 31 May 2007 16:24:49 +0200
 **/
 
 $_ARRAYLANG['TXT_FORUM_NO_POSTINGS'] = "Kein Beitrag vorhanden.";
