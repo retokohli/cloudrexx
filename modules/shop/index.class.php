@@ -842,6 +842,7 @@ class Shop extends ShopLibrary {
         $class      = "";
         $detailLink = "";
         $catId      = isset($_REQUEST['catId']) ? intval($_REQUEST['catId']) : 0;
+        $ManufacturerId = isset($_REQUEST['ManufacturerId']) ? intval($_REQUEST['ManufacturerId']) : 0;
         $term       = isset($_REQUEST['term'])  ? stripslashes(trim($_REQUEST['term'])) : '';
 
         $treeArray = $this->_makeArrCategories();
@@ -878,10 +879,11 @@ class Shop extends ShopLibrary {
 
         $shopMenuOptions = $this->getCatMenu($catId);
         $shopMenu = '<form action="index.php?section=shop" method="post">';
-        $shopMenu .= '<input type="text" name="term" value="'.htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET).'" />';
+        $shopMenu .= '<input type="text" name="term" value="'.htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET).'" /><br />';
         $shopMenu .= '<select name="catId">';
         $shopMenu .= '<option value="0">'.$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].'</option>';
-        $shopMenu .= $shopMenuOptions.'</select>';
+        $shopMenu .= $shopMenuOptions.'</select><br />';
+        $shopMenu .= $this->_GetManufacturerSelect();
         $shopMenu .= '<input type="submit" name="Submit" value="'.$_ARRAYLANG['TXT_SEARCH'].'" /></form>';
         $this->objTemplate->setVariable("SHOP_MENU", $shopMenu);
         $this->objTemplate->setVariable("SHOP_CART_INFO", $this->showCartInfo());
@@ -902,6 +904,10 @@ class Shop extends ShopLibrary {
            $q2_category = "AND ( p.catid = c.catid
                            AND c.catid = $catId) ";
            $pagingCatIdQuery = "&amp;catId=".$catId;
+        }
+        
+        if ($ManufacturerId > 0) {
+           $q1_manufacturer = " AND manufacturer=".$ManufacturerId." ";
         }
 
         if (!empty($term)) {
@@ -934,10 +940,10 @@ class Shop extends ShopLibrary {
                     "SELECT p.id, p.product_id, p.picture, p.title, ".
                         "p.normalprice, p.resellerprice, p.shortdesc, ".
                         "p.description, p.stock, p.stock_visibility, ".
-                        "p.manufacturer_url, p.discountprice, p.is_special_offer, ".
+                        "p.manufacturer, p.manufacturer_url, p.discountprice, p.is_special_offer, ".
                         "p.status, p.sort_order, p.vat_id, p.weight ".
                     "FROM ".DBPREFIX."module_shop_products AS p $q1_category ".
-                    "WHERE status=1 $q_special_offer $q2_category $q_search ".
+                    "WHERE status=1 $q_special_offer $q2_category $q_search $q1_manufacturer ".
                     "ORDER BY p.sort_order ASC, p.id DESC";
             }
             $objResult = $objDatabase->Execute($q);
@@ -1036,6 +1042,9 @@ class Shop extends ShopLibrary {
                 // Show the stock
                 $stock = ($objResult->fields['stock_visibility']==1) ? $_ARRAYLANG['TXT_STOCK'].": ".intval($objResult->fields['stock']) : "";
 
+                $manufacturerName 	= $objResult->fields['manufacturer'] > 0 ? $this->_GetManufacturer($objResult->fields['manufacturer'], 'name') : "";
+                $manufacturerUrl 	= $this->_GetManufacturer($objResult->fields['manufacturer'], 'url') != '' ? "<a href=\"".$this->_GetManufacturer($objResult->fields['manufacturer'], 'url')."\" title=\"".$this->_GetManufacturer($objResult->fields['manufacturer'], 'url')."\" target=\"_blank\">".$this->_GetManufacturer($objResult->fields['manufacturer'], 'url')."</a>" : "";
+                
                 // Show the manufacturer hyperlink
                 $manufacturerLink = strlen($objResult->fields['manufacturer_url'])>10 ? "<a href=\"".$objResult->fields['manufacturer_url']."\" title=\"".$_ARRAYLANG['TXT_MANUFACTURER_URL']."\" target=\"_blank\">".$_ARRAYLANG['TXT_MANUFACTURER_URL']."</a>" : "";
 
@@ -1089,6 +1098,8 @@ class Shop extends ShopLibrary {
                     'SHOP_PRODUCT_DISCOUNTPRICE_UNIT' => $discountPrice_Unit,
                     'SHOP_PRODUCT_WEIGHT'             => Weight::getWeightString($objResult->fields['weight']),
                     'SHOP_PRODUCT_STOCK'              => $stock,
+                    'SHOP_MANUFACTURER_NAME'          => $manufacturerName,
+                    'SHOP_MANUFACTURER_URL'           => $manufacturerUrl,
                     'SHOP_MANUFACTURER_LINK'          => $manufacturerLink,
                     'SHOP_PRODUCT_DETAILLINK'         => $detailLink,
                     'SHOP_PRODUCT_FORM_NAME'          => $shopProductFormName,
@@ -3684,6 +3695,52 @@ $_ARRAYLANG['TXT_TOTAL_PRICE'].": ".$_SESSION['shop']['grand_total_price']." ".$
         $body = str_replace($search, $replace, $body);
         return $body;
     }
+    /**
+     * get manufacturer select options for "$shopmenu" (SearchForm)
+     *
+     */
+    function _GetManufacturerSelect(){
+    	global $objDatabase, $_ARRAYLANG, $objDatabase;
+    	$ManufacturerSelect = '<select name="ManufacturerId" style="width: 220px;">';
+        $ManufacturerSelect .= '<option value="0">'.$_ARRAYLANG["TXT_ALL_MANUFACTURER"].'</option>';
+        $query = 'SELECT id, name, url FROM '.DBPREFIX.'module_shop_manufacturer ORDER BY name';
+	    $objResult = $objDatabase->Execute($query);
+	    $Count = 0;
+	    while ($objResult && !$objResult->EOF) {
+	    	if(isset($_REQUEST["ManufacturerId"])){
+		    	if(intval($_REQUEST["ManufacturerId"])==$objResult->fields['id']){
+		    		$SelectedText = 'selected'; 	
+		    	}else{
+		    		$SelectedText = '';	
+		    	}
+	    	}else{
+	    		$SelectedText = '';	
+	    	}
+	    	$ManufacturerSelect .= '<option value="'.$objResult->fields['id'].'" '.$SelectedText.'>'.$objResult->fields['name'].'</option>';
+	    	$Count++;
+	        $objResult->MoveNext();
+	    }
+        $ManufacturerSelect .= '</select><br />';
+        if($Count>0){
+        	return $ManufacturerSelect;
+        }else{
+        	return '';
+        }
+    }
+    
+    /**
+     * get manufacturer name or url
+     *
+     */
+     function _GetManufacturer($Manufacturer, $Field='name'){
+     	global $objDatabase;
+     	$objResult = $objDatabase->SelectLimit("SELECT ".$Field." FROM ".DBPREFIX."module_shop_manufacturer WHERE id = ".$Manufacturer, 1);
+            if ($objResult !== false && $objResult->RecordCount()==1) {
+            	return $objResult->fields[$Field];
+            }else{
+            	return '';	
+            }
+     }
 }
 
 ?>
