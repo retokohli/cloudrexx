@@ -191,6 +191,7 @@ class shopmanager extends ShopLibrary {
             'CONTENT_NAVIGATION'=> "<a href='?cmd=shop'>".$_ARRAYLANG['TXT_SHOP_INDEX']."</a>".
                                    "<a href='?cmd=shop&amp;act=cat'>".$_ARRAYLANG['TXT_CATEGORIES']."</a>".
                                    "<a href='?cmd=shop&amp;act=products'>".$_ARRAYLANG['TXT_PRODUCTS']."</a>".
+                                   "<a href='?cmd=shop&amp;act=manufacturer'>".$_ARRAYLANG['TXT_SHOP_MANUFACTURER']."</a>".
                                    "<a href='?cmd=shop&amp;act=customers'>".$_ARRAYLANG['TXT_CUSTOMERS_PARTNERS']."</a>".
                                    "<a href='?cmd=shop&amp;act=orders'>".$_ARRAYLANG['TXT_ORDERS']."</a>".
                                    "<a href='?cmd=shop&amp;act=statistics'>".$_ARRAYLANG['TXT_STATISTIC']."</a>".
@@ -381,6 +382,9 @@ class shopmanager extends ShopLibrary {
             case "import":
                 $this->_import();
                 break;
+            case "manufacturer":
+            	$this->_manufacturer();
+            	break;
             default:
                 $this->shopShowOrders();
                 break;
@@ -394,6 +398,121 @@ class shopmanager extends ShopLibrary {
         ));
     }
 
+    /**
+     * Manage manufacturer
+     */
+    function _manufacturer()
+    {
+    	global $_ARRAYLANG, $objDatabase;
+    	$this->pageTitle = $_ARRAYLANG['TXT_SHOP_MANUFACTURER'];
+        $this->_objTpl->loadTemplateFile('module_shop_manufacturer.html', true, true);
+        
+        if(isset($_REQUEST["exe"])){
+        	
+        	// insert new manufacturer
+        	// --------------------------------------
+        	if($_REQUEST["exe"] == "insert"){
+				$query = "INSERT INTO ".DBPREFIX."module_shop_manufacturer (name, url) VALUES ('".$_REQUEST['name']."', '".$_REQUEST['url']."')";
+				if(($objResult = $objDatabase->Execute($query)) !== false) {
+				    $this->strOkMessage = $_ARRAYLANG['TXT_SHOP_MANUFACTURER_INSERT_SUCCESS'];
+				}else {
+				    $this->strErrMessage = $_ARRAYLANG['TXT_SHOP_MANUFACTURER_INSERT_FAILED'];
+				}
+        	}
+        	
+        	// update manufacturer
+        	// --------------------------------------
+        	if($_REQUEST["exe"] == "update"){
+	        	$query =  "UPDATE ".DBPREFIX."module_shop_manufacturer SET name='".$_REQUEST["name"]."', url='".$_REQUEST["url"]."' WHERE id=".intval($_REQUEST["id"]);
+	        	if (!$objDatabase->Execute($query)) {
+					$this->strErrMessage = $_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_FAILED'];
+                }else{
+                	$this->strOkMessage = $_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_SUCCESS'];
+                }
+        	}
+        	
+        	if($_REQUEST["exe"]=="delete"){
+        		if($_REQUEST["id"]!=""){
+					$query = "DELETE FROM ".DBPREFIX."module_shop_manufacturer WHERE id=".intval($_REQUEST["id"])."";
+					if (($objResult = $objDatabase->Execute($query)) !== false) {
+					    $this->strOkMessage 	= $_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_SUCCESS'];
+					}else {
+					    $this->strErrMessage 	= $_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED'];
+					}
+        		}
+        	}
+        	
+        	if($_REQUEST["exe"]=="deleteList"){
+        		foreach ($_POST['selectedManufacturerId'] as $value) {
+		            $query = "DELETE FROM ".DBPREFIX."module_shop_manufacturer WHERE id=".intval($value)."";
+		            if (($objResult = $objDatabase->Execute($query)) !== false) {
+					    $this->strOkMessage 	= $_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_SUCCESS'];
+					}else {
+					    $this->strErrMessage 	= $_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED'];
+					}
+		        }
+        	}
+        	
+    	}
+    	$i = 1;
+    	$query = 'SELECT id, name, url FROM '.DBPREFIX.'module_shop_manufacturer ORDER BY name';
+	    $objResult = $objDatabase->Execute($query);
+	    $arrSelectedCountries = array();
+	    while ($objResult && !$objResult->EOF) {
+	    	if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
+	    	$this->_objTpl->setVariable(array(
+	            'VALUE_ID'          					=> $objResult->fields['id'],
+	            'VALUE_NAME'							=> $objResult->fields['name'],
+	            'TXT_EDIT'								=> $_ARRAYLANG['TXT_EDIT'],
+	            'TXT_DELETE'							=> $_ARRAYLANG['TXT_DELETE'],
+	            'SHOP_ROWCLASS'							=> $class
+	        ));
+	        $this->_objTpl->parse("manufacturerRow");
+	        $i++;
+	        $objResult->MoveNext();
+	    }
+	    
+	    // if mode==update
+	    // ----------------
+	    if($_REQUEST["mode"]=="update"){
+	    	$query = 'SELECT id, name, url FROM '.DBPREFIX.'module_shop_manufacturer WHERE id='.$_REQUEST["id"].'';
+            $objResult = $objDatabase->Execute($query);
+	    	$this->_objTpl->setVariable(array(
+	            'TXT_SHOP_INSERT_NEW_MANUFACTURER'          => $_ARRAYLANG['TXT_SHOP_UPDATE_MANUFACTURER'],
+	            'VALUE_MANUFACTURER_NAME'					=> $objResult->fields['name'],
+	            'VALUE_MANUFACTURER_URL'					=> $objResult->fields['url'],
+	            'EXE_MODE'									=> 'update',
+	            'VALUE_ID'									=> $_REQUEST["id"],
+	        ));
+	    }else{
+	    	$this->_objTpl->setVariable(array(
+	            'TXT_SHOP_INSERT_NEW_MANUFACTURER'          => $_ARRAYLANG['TXT_SHOP_INSERT_NEW_MANUFACTURER'],
+	            'VALUE_MANUFACTURER_NAME'					=> '',
+	            'VALUE_MANUFACTURER_URL'					=> '',
+	            'EXE_MODE'									=> 'insert',
+	        ));
+	    }
+	    
+	    $this->_objTpl->setVariable(array(
+            'TXT_NAME'									=> $_ARRAYLANG['TXT_NAME'],
+            'TXT_URL'									=> $_ARRAYLANG['TXT_SHOP_MANUFACTURER_URL'],
+            'TXT_SHOP_INSERT_NEW_MANUFACTURER_ERROR'	=> $_ARRAYLANG['TXT_SHOP_INSERT_NEW_MANUFACTURER_ERROR'],
+            'TXT_STORE'									=> $_ARRAYLANG['TXT_STORE'],
+            'TXT_SHOP_MANUFACTURER'						=> $_ARRAYLANG['TXT_SHOP_MANUFACTURER'],
+            'TXT_ID'									=> $_ARRAYLANG['TXT_ID'],
+            'TXT_NAME'									=> $_ARRAYLANG['TXT_NAME'],
+            'TXT_ACTION'								=> $_ARRAYLANG['TXT_ACTION'],
+            'TXT_MARKED'								=> $_ARRAYLANG['TXT_MARKED'],
+            'TXT_SELECT_ALL'							=> $_ARRAYLANG['TXT_SELECT_ALL'],
+            'TXT_REMOVE_SELECTION'						=> $_ARRAYLANG['TXT_REMOVE_SELECTION'],
+            'TXT_SELECT_ACTION'							=> $_ARRAYLANG['TXT_SELECT_ACTION'],
+            'TXT_DELETE_MARKED'							=> $_ARRAYLANG['TXT_DELETE_MARKED'],
+            'TXT_ACTION_IS_IRREVERSIBLE'				=> $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_SHOP_CONFIRM_DELETE_MANUFACTURER'		=> $_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_MANUFACTURER'],
+            'TXT_MAKE_SELECTION'						=> $_ARRAYLANG['TXT_MAKE_SELECTION'],
+        ));
+    	
+    }
 
     /**
      * Import and Export data from/to csv
@@ -2609,6 +2728,7 @@ class shopmanager extends ShopLibrary {
         $shopDescription          = '';
         $shopStock                = 10;
         $shopStockVisibility      = 1;
+        $shopManufacturer		  = 0;
         $shopManufacturerUrl      = '';
         $shopArticleActive        = 1;
         $shopB2B                  = 1;
@@ -2660,6 +2780,7 @@ class shopmanager extends ShopLibrary {
             $shopImageQuality         = intval($_POST['shopImageQuality']);
             //$shopImageName            = contrexx_addslashes(strip_tags($_POST['shopImageName']));
             $shopImageOverwrite       = intval($_POST['shopImageOverwrite']);
+            $shopManufacturer		  = intval($_POST["shopManufacturer"]);
 
             // check incoming picture file paths
             for ($i = 1; $i < 4; $i++) {
@@ -2702,13 +2823,13 @@ class shopmanager extends ShopLibrary {
                     "(product_id, title, catid, normalprice, resellerprice, is_special_offer, discountprice, ".
                     "vat_id, weight, handler, ".
                     "shortdesc, description, stock, stock_visibility, picture, status, b2b, b2c, ".
-                    "startdate, enddate, thumbnail_percent, thumbnail_quality, manufacturer_url) ".
+                    "startdate, enddate, thumbnail_percent, thumbnail_quality, manufacturer, manufacturer_url) ".
                     "VALUES('$shopProductIdentifier', '$shopProductName', $shopCatMenu, $shopCustomerPrice,
                     $shopResellerPrice, $shopSpecialOffer, $shopDiscount, ".
                     "$shopTaxId, $shopWeight, '$shopDistribution', ".
                     "'$shopShortDescription', '$shopDescription', ".
                     "$shopStock, $shopStockVisibility, '$shopImageName', $shopArticleActive, $shopB2B, $shopB2C, ".
-                    "'$shopStartdate', '$shopEnddate', '$shopThumbnailPercentSize', $shopImageQuality, '$shopManufacturerUrl')";
+                    "'$shopStartdate', '$shopEnddate', '$shopThumbnailPercentSize', $shopImageQuality, $shopManufacturer, '$shopManufacturerUrl')";
                 $objResult = $objDatabase->Execute($query);
                 $insertId = $objDatabase->Insert_Id();
 
@@ -2743,6 +2864,7 @@ class shopmanager extends ShopLibrary {
                 "enddate='$shopEnddate', ".
                 "thumbnail_percent=$shopThumbnailPercentSize, ".
                 "thumbnail_quality=$shopImageQuality, ".
+                "manufacturer=$shopManufacturer, ".
                 "manufacturer_url='$shopManufacturerUrl', ".
                 "vat_id=$shopTaxId, ".
                 "weight=$shopWeight, ".
@@ -2964,6 +3086,7 @@ class shopmanager extends ShopLibrary {
                     $shopEnddate              = $objResult->fields['enddate'];
                     $shopImageName            = $objResult->fields['picture'];
                     $shopManufacturerUrl      = $objResult->fields['manufacturer_url'];
+                    $shopManufacturer		  = $objResult->fields['manufacturer'];
                     $shopThumbnailPercentSize = $objResult->fields['thumbnail_percent'];
                     $shopImageQuality         = $objResult->fields['thumbnail_quality'];
                 }
@@ -2975,6 +3098,25 @@ class shopmanager extends ShopLibrary {
                 $this->errorHandling();
             }
         }
+        
+        $ManufacturerSelect = '<select name="shopManufacturer" style="width: 220px;">';
+        $ManufacturerSelect .= '<option value=""></option>';
+        $query = 'SELECT id, name, url FROM '.DBPREFIX.'module_shop_manufacturer ORDER BY name';
+	    $objResult = $objDatabase->Execute($query);
+	    while ($objResult && !$objResult->EOF) {
+	    	if(intval($shopManufacturer)>0 && intval($shopManufacturer)==$objResult->fields['id']){
+	    		$SelectedText = 'selected'; 	
+	    	}else{
+	    		$SelectedText = '';	
+	    	}
+	    	$ManufacturerSelect .= '<option value="'.$objResult->fields['id'].'" '.$SelectedText.'>'.$objResult->fields['name'].'</option>';
+	        $objResult->MoveNext();
+	    }
+        $ManufacturerSelect .= '</select>';
+        $this->_objTpl->setVariable(array(
+        	'TXT_SHOP_MANUFACTURER'		=> $_ARRAYLANG['TXT_SHOP_MANUFACTURER'],
+        	'MANUFACTURER_SELECT'		=> $ManufacturerSelect,
+        ));
 
         if ($shopB2B==1) {
             $shopB2B="checked=\"checked\"";

@@ -1,3 +1,9 @@
 ////////////////////////////////////////
 // CHANGELOG 1.1.3-1.1.4 ///////////////
 ////////////////////////////////////////
+
+
+// 01.05.2007 Shop - Hersteller
+Verwaltung von Hersteller. Im Admin steht ein neues Administrationsmenü "Hersteller" zur Verfügung. Frontend-Marker "SHOP_MENU" wurde durch ein weiteres Dropdown "Hersteller" erweitert (Falls Hersteller im Shop-Modul erfasst wurden). Es stehen zwei weitere Frontend-Marker zur Verfügung: SHOP_MANUFACTURER_NAME und SHOP_MANUFACTURER_URL. SHOP_MANUFACTURER_URL wird als Link angezeigt (target="_blank").
+
+
