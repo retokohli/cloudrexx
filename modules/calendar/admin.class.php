@@ -95,7 +95,7 @@ class calendarManager extends calendarLibrary
 
 			case 'all':
     			$this->_objTpl->loadTemplateFile('module_calendar_show_all.html');
-				$action = $this->allNote();
+				$action = $this->delAllNote();
 				break;
 
 			case 'edit':
