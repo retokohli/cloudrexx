@@ -2477,24 +2477,35 @@ class shopmanager extends ShopLibrary {
     {
         global $objDatabase;
 
-        if (!empty($_REQUEST[newCatName])) {
-            // Modify category
-            if (!empty($_REQUEST[modCatId])) {
-                $query = "UPDATE ".DBPREFIX."module_shop_categories
-                               SET parentid=".intval($_POST['catParentId']).",
-                                   catname='".addslashes(strip_tags($_POST['newCatName']))."',
-                                   catstatus=".intval($_POST['catStatus'])."
-                             WHERE catid =".intval($_REQUEST[modCatId]);
-
-                //$objResult = $objDatabase->Execute($query);
-                //unset($_REQUEST[newCatName]);
-                //unset($_REQUEST[modCatId]);
-            } else { // Add new category
-                $query = "INSERT INTO ".DBPREFIX."module_shop_categories
-                                    SET parentid=".intval($_POST['catParentId']).",
-                                        catname='".addslashes(strip_tags($_POST['newCatName']))."',
-                                        catsorting=0,
-                                        catstatus=".intval($_POST['catStatus']);
+        if (isset($_REQUEST[newCatName]) && !empty($_REQUEST[newCatName])) {
+            $name      = contrexx_addslashes(strip_tags($_REQUEST['newCatName']));
+            $status    = intval($_REQUEST['catStatus']);
+            $parentid  = intval($_REQUEST['catParentId']);
+            if (isset($_REQUEST[modCatId]) && $_REQUEST[modCatId]) {
+                // Modify category
+                $id = $_REQUEST[modCatId];
+                $query = "
+                    UPDATE ".DBPREFIX."module_shop_categories
+                       SET catname='$name',
+                           catstatus=$status
+                ".
+                // check validity of the IDs of the category and its parent.
+                // if the values are identical, leave the parent ID alone!
+                ($id != $parentid
+                    ? ", parentid=$parentid "
+                    : ''
+                )."
+                     WHERE catid=$id
+                ";
+            } else {
+                // Add new category
+                $query = "
+                    INSERT INTO ".DBPREFIX."module_shop_categories
+                       SET parentid=$parentid,
+                           catname='$name',
+                           catstatus=$status,
+                           catsorting=0
+                ";
             }
             if (!$objDatabase->Execute($query)) {
                 $this->errorHandling();
@@ -2516,11 +2527,10 @@ class shopmanager extends ShopLibrary {
             $_catSorting = $_POST['catSorting'][$value];
             $_catStatus = $_POST['catStatus'][$value];
 
-            if ($_catStatus==1) {
+            if ($_catStatus) {
                 $_catStatus = "checked";
                 $_catStatusDB = 1;
             } else {
-                //$_catStatus = "unchecked";
                 $_catStatusDB = 0;
             }
             if ( ($_catSorting != $_POST['catSorting_old'][$value]) ||
