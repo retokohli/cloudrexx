@@ -2462,7 +2462,7 @@ class ContentManager
 	function getBlocks($pageId = null) {
 		global $objDatabase;
 
-		$blocks = array();
+		$blocks = array('', ''); // initialize to empty strings to avoid notice
 		$arrBlocks = array();
 		$arrRelationBlocks = array();
 
