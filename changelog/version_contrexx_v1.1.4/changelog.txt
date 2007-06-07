@@ -25,5 +25,6 @@ Shop
 Kontaktmanager
 - Der CSV-Export funktioniert nun mit unlimitierter erfasster Anzahl Einträge.
 
-
+Update System
+- Das Update der Bildergalerie funktioniert auch wenn der MySQL Mode NO_AUTO_VALUE_ON_ZERO aktiviert ist.
 
