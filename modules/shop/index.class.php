@@ -556,7 +556,7 @@ class Shop extends ShopLibrary {
 
         $jsCart = '';
         $cartProductsTpl = '';
-        if ((empty($_REQUEST['cmd']) || $_REQUEST['cmd'] == 'details')) {
+        if (empty($_REQUEST['section']) || $_REQUEST['section'] != 'shop' || empty($_REQUEST['cmd']) || $_REQUEST['cmd'] == 'details') {
 
             $arrMatch = '';
             if (preg_match('#^([\n\r]?[^<]*<.*id=["\']shopJsCart["\'][^>]*>)(([\n\r].*)*)(</[^>]*>[^<]*[\n\r]?)$#', $cartTpl, $arrMatch)) {
@@ -905,7 +905,7 @@ class Shop extends ShopLibrary {
                            AND c.catid = $catId) ";
            $pagingCatIdQuery = "&amp;catId=".$catId;
         }
-        
+
         if ($ManufacturerId > 0) {
            $q1_manufacturer = " AND manufacturer=".$ManufacturerId." ";
         }
@@ -1044,7 +1044,7 @@ class Shop extends ShopLibrary {
 
                 $manufacturerName 	= $objResult->fields['manufacturer'] > 0 ? $this->_GetManufacturer($objResult->fields['manufacturer'], 'name') : "";
                 $manufacturerUrl 	= $this->_GetManufacturer($objResult->fields['manufacturer'], 'url') != '' ? "<a href=\"".$this->_GetManufacturer($objResult->fields['manufacturer'], 'url')."\" title=\"".$this->_GetManufacturer($objResult->fields['manufacturer'], 'url')."\" target=\"_blank\">".$this->_GetManufacturer($objResult->fields['manufacturer'], 'url')."</a>" : "";
-                
+
                 // Show the manufacturer hyperlink
                 $manufacturerLink = strlen($objResult->fields['manufacturer_url'])>10 ? "<a href=\"".$objResult->fields['manufacturer_url']."\" title=\"".$_ARRAYLANG['TXT_MANUFACTURER_URL']."\" target=\"_blank\">".$_ARRAYLANG['TXT_MANUFACTURER_URL']."</a>" : "";
 
@@ -3709,12 +3709,12 @@ $_ARRAYLANG['TXT_TOTAL_PRICE'].": ".$_SESSION['shop']['grand_total_price']." ".$
 	    while ($objResult && !$objResult->EOF) {
 	    	if(isset($_REQUEST["ManufacturerId"])){
 		    	if(intval($_REQUEST["ManufacturerId"])==$objResult->fields['id']){
-		    		$SelectedText = 'selected'; 	
+		    		$SelectedText = 'selected';
 		    	}else{
-		    		$SelectedText = '';	
+		    		$SelectedText = '';
 		    	}
 	    	}else{
-	    		$SelectedText = '';	
+	    		$SelectedText = '';
 	    	}
 	    	$ManufacturerSelect .= '<option value="'.$objResult->fields['id'].'" '.$SelectedText.'>'.$objResult->fields['name'].'</option>';
 	    	$Count++;
@@ -3727,7 +3727,7 @@ $_ARRAYLANG['TXT_TOTAL_PRICE'].": ".$_SESSION['shop']['grand_total_price']." ".$
         	return '';
         }
     }
-    
+
     /**
      * get manufacturer name or url
      *
@@ -3738,7 +3738,7 @@ $_ARRAYLANG['TXT_TOTAL_PRICE'].": ".$_SESSION['shop']['grand_total_price']." ".$
             if ($objResult !== false && $objResult->RecordCount()==1) {
             	return $objResult->fields[$Field];
             }else{
-            	return '';	
+            	return '';
             }
      }
 }
