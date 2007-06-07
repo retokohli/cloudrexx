@@ -406,9 +406,9 @@ class shopmanager extends ShopLibrary {
     	global $_ARRAYLANG, $objDatabase;
     	$this->pageTitle = $_ARRAYLANG['TXT_SHOP_MANUFACTURER'];
         $this->_objTpl->loadTemplateFile('module_shop_manufacturer.html', true, true);
-        
+
         if(isset($_REQUEST["exe"])){
-        	
+
         	// insert new manufacturer
         	// --------------------------------------
         	if($_REQUEST["exe"] == "insert"){
@@ -419,7 +419,7 @@ class shopmanager extends ShopLibrary {
 				    $this->strErrMessage = $_ARRAYLANG['TXT_SHOP_MANUFACTURER_INSERT_FAILED'];
 				}
         	}
-        	
+
         	// update manufacturer
         	// --------------------------------------
         	if($_REQUEST["exe"] == "update"){
@@ -430,7 +430,7 @@ class shopmanager extends ShopLibrary {
                 	$this->strOkMessage = $_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_SUCCESS'];
                 }
         	}
-        	
+
         	if($_REQUEST["exe"]=="delete"){
         		if($_REQUEST["id"]!=""){
 					$query = "DELETE FROM ".DBPREFIX."module_shop_manufacturer WHERE id=".intval($_REQUEST["id"])."";
@@ -441,7 +441,7 @@ class shopmanager extends ShopLibrary {
 					}
         		}
         	}
-        	
+
         	if($_REQUEST["exe"]=="deleteList"){
         		foreach ($_POST['selectedManufacturerId'] as $value) {
 		            $query = "DELETE FROM ".DBPREFIX."module_shop_manufacturer WHERE id=".intval($value)."";
@@ -452,7 +452,7 @@ class shopmanager extends ShopLibrary {
 					}
 		        }
         	}
-        	
+
     	}
     	$i = 1;
     	$query = 'SELECT id, name, url FROM '.DBPREFIX.'module_shop_manufacturer ORDER BY name';
@@ -471,7 +471,7 @@ class shopmanager extends ShopLibrary {
 	        $i++;
 	        $objResult->MoveNext();
 	    }
-	    
+
 	    // if mode==update
 	    // ----------------
 	    if($_REQUEST["mode"]=="update"){
@@ -492,7 +492,7 @@ class shopmanager extends ShopLibrary {
 	            'EXE_MODE'									=> 'insert',
 	        ));
 	    }
-	    
+
 	    $this->_objTpl->setVariable(array(
             'TXT_NAME'									=> $_ARRAYLANG['TXT_NAME'],
             'TXT_URL'									=> $_ARRAYLANG['TXT_SHOP_MANUFACTURER_URL'],
@@ -511,7 +511,7 @@ class shopmanager extends ShopLibrary {
             'TXT_SHOP_CONFIRM_DELETE_MANUFACTURER'		=> $_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_MANUFACTURER'],
             'TXT_MAKE_SELECTION'						=> $_ARRAYLANG['TXT_MAKE_SELECTION'],
         ));
-    	
+
     }
 
     /**
@@ -2911,7 +2911,7 @@ class shopmanager extends ShopLibrary {
                         $query =
                             "DELETE FROM ".DBPREFIX."module_shop_products_attributes ".
                             "WHERE product_id=".$shopProductId.
-                              "AND attributes_value_id=".intval($attributesValueId);
+                              " AND attributes_value_id=".intval($attributesValueId);
                         $objResult = $objDatabase->Execute($query);
                     }
                     if (count($arrProductOptions)>0) {
@@ -3108,16 +3108,16 @@ class shopmanager extends ShopLibrary {
                 $this->errorHandling();
             }
         }
-        
+
         $ManufacturerSelect = '<select name="shopManufacturer" style="width: 220px;">';
         $ManufacturerSelect .= '<option value=""></option>';
         $query = 'SELECT id, name, url FROM '.DBPREFIX.'module_shop_manufacturer ORDER BY name';
 	    $objResult = $objDatabase->Execute($query);
 	    while ($objResult && !$objResult->EOF) {
 	    	if(intval($shopManufacturer)>0 && intval($shopManufacturer)==$objResult->fields['id']){
-	    		$SelectedText = 'selected'; 	
+	    		$SelectedText = 'selected';
 	    	}else{
-	    		$SelectedText = '';	
+	    		$SelectedText = '';
 	    	}
 	    	$ManufacturerSelect .= '<option value="'.$objResult->fields['id'].'" '.$SelectedText.'>'.$objResult->fields['name'].'</option>';
 	        $objResult->MoveNext();
