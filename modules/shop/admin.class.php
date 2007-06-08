@@ -409,6 +409,10 @@ class shopmanager extends ShopLibrary {
 
         if(isset($_REQUEST["exe"])){
 
+        	if(substr(strtolower($_REQUEST['url']), 0, 7)!="http://" && substr(strtolower($_REQUEST['url']), 0, 7)!="https://" && $_REQUEST['url']!=""){
+        		$_REQUEST['url'] = 'http://'.$_REQUEST['url'];
+        	}
+
         	// insert new manufacturer
         	// --------------------------------------
         	if($_REQUEST["exe"] == "insert"){
@@ -495,7 +499,7 @@ class shopmanager extends ShopLibrary {
 
 	    $this->_objTpl->setVariable(array(
             'TXT_NAME'									=> $_ARRAYLANG['TXT_NAME'],
-            'TXT_URL'									=> $_ARRAYLANG['TXT_SHOP_MANUFACTURER_URL'],
+            'TXT_URL'									=> $_ARRAYLANG['TXT_MANUFACTURER_URL'],
             'TXT_SHOP_INSERT_NEW_MANUFACTURER_ERROR'	=> $_ARRAYLANG['TXT_SHOP_INSERT_NEW_MANUFACTURER_ERROR'],
             'TXT_STORE'									=> $_ARRAYLANG['TXT_STORE'],
             'TXT_SHOP_MANUFACTURER'						=> $_ARRAYLANG['TXT_SHOP_MANUFACTURER'],
@@ -755,7 +759,7 @@ class shopmanager extends ShopLibrary {
                         'status', 'b2b', 'b2c',
                         'startdate', 'enddate',
                         'manufacturer_url', 'external_link',
-                        'sort_order',
+                        'sort_order', 'manufacturer_name', 'manufacturer_website',
                         'vat_id', 'vat_percent', 'weight'
                     );
                     $query =
@@ -765,6 +769,7 @@ class shopmanager extends ShopLibrary {
                         "p.shortdesc, p.description, p.stock, p.stock_visibility, ".
                         "p.status, p.b2b, p.b2c, p.startdate, p.enddate, ".
                         "p.manufacturer_url, p.external_link, p.sort_order, ".
+                        "".DBPREFIX."module_shop_manufacturer.name as manufacturer_name, ".DBPREFIX."module_shop_manufacturer.url as manufacturer_website, ".
                         "p.vat_id, v.percent as vat_percent, p.weight ".
                         "FROM ".DBPREFIX."module_shop_products p ".
                         // c1.catid *MUST NOT* be NULL
@@ -775,6 +780,8 @@ class shopmanager extends ShopLibrary {
                         "ON c1.parentid=c2.catid ".
                         // vat_id, OTOH, *MAY* be NULL
                         "LEFT JOIN ".DBPREFIX."module_shop_vat v ON vat_id = v.id ".
+                        // manufacturer
+                        "LEFT JOIN ".DBPREFIX."module_shop_manufacturer ON ".DBPREFIX."module_shop_manufacturer.id = p.manufacturer ".
                         "ORDER BY catid ASC, product_id ASC";
                 break;
                 // customer - plain fields:
