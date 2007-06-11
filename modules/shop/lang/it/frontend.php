@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 31 May 2007 16:24:49 +0200
+* generated date Mon, 11 Jun 2007 17:34:18 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
@@ -189,4 +189,7 @@ $_ARRAYLANG['TXT_CODE'] = "Code";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS'] = "Neueste Produkte im Online Shop:";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_NONE_FOUND'] = "Keine Produkte gefunden.";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_FAILED'] = "Fehler bei der Produkte Abfrage";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "&Uuml;bersicht";
+$_ARRAYLANG['TXT_SHOP_BACK'] = "Zur&uuml;ck";
+$_ARRAYLANG['TXT_SHOP_GOTO_DETAIL_VIEW'] = "zur Detailansicht / &agrav; la ...";
 ?>
