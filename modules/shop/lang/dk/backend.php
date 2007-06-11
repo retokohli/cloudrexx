@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 31 May 2007 16:24:49 +0200
+* generated date Mon, 11 Jun 2007 17:34:18 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Bestillinger";
@@ -482,4 +482,25 @@ $_ARRAYLANG['TXT_SHOP_CUSTOMER_DISCOUNT_CODE'] = "Rabattcode";
 $_ARRAYLANG['TXT_SHOP_CUSTOMER_DISCOUNT'] = "Kundenrabatt";
 $_ARRAYLANG['TXT_SHOP_CUSTOMER_PREORDER_CODE'] = "Vorbestellung";
 $_ARRAYLANG['TXT_SHOP_CUSTOMER_PAYMENT_CODE'] = "Bezahlungscode";
+$_ARRAYLANG['TXT_SHOP_MANUFACTURER'] = "Hersteller";
+$_ARRAYLANG['TXT_SHOP_INSERT_NEW_MANUFACTURER'] = "Neuen Hersteller hinzufügen";
+$_ARRAYLANG['TXT_SHOP_UPDATE_MANUFACTURER'] = "Hersteller aktualisieren";
+$_ARRAYLANG['TXT_SHOP_INSERT_NEW_MANUFACTURER_ERROR'] = "Herstellername muss angegeben werden";
+$_ARRAYLANG['TXT_SHOP_MANUFACTURER_URL'] = "Url";
+$_ARRAYLANG['TXT_SHOP_MANUFACTURER_INSERT_FAILED'] = "Hersteller konnte nicht hinzugefügt werden";
+$_ARRAYLANG['TXT_SHOP_MANUFACTURER_INSERT_SUCCESS'] = "Hersteller wurde erfolgreich hinzugefügt";
+$_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_MANUFACTURER'] = "Möchten Sie diese Hersteller wirklich löschen?";
+$_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_SUCCESS'] = "Hersteller wurde erfolgreich aktualisiert";
+$_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_FAILED'] = "Fehler beim aktualisieren";
+$_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_SUCCESS'] = "Hersteller wurde(n) erfolgreich gelöscht";
+$_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED'] = "Fehler beim löschen";
+$_ARRAYLANG['TXT_ALL_MANUFACTURER'] = "Alle Hersteller";
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_HOMEPAGE'] = "Homepage";
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_PICTURE_NAME'] = "Logo";
+$_ARRAYLANG['TXT_SHOP_PARENT_CATEGORY'] = "&Uuml;bergeordnete Kategorie";
+$_ARRAYLANG['TXT_SHOP_CATEGORY_DESCRIPTION'] = "Beschreibung";
+$_ARRAYLANG['TXT_SHOP_IMPORT_IMPORT_CATEGORIES'] = "Kategorien importieren";
+$_ARRAYLANG['TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES'] = "Bestehende Kategorien vor dem importieren löschen";
+$_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES_TIPS'] = "Klicken Sie auf 'Durchsuchen' und wählen sie die zu importierende Datei. Starten sie den Import durch einen Klick auf 'Importieren'. Aktivieren Sie das Kästchen 'Bestehende Kategorien vor dem importieren löschen' nur, wenn Sie alle bestehenden Kategorien und Produkte vor dem Import löschen wollen!";
+$_ARRAYLANG['TXT_SHOP_IMPORT_PRODUCTS'] = "Produkte importieren";
 ?>
