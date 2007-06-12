@@ -4934,19 +4934,22 @@ class shopmanager extends ShopLibrary {
                 // flag used to determine whether the record has to be
                 // updated in the database
                 $updateProduct = false;
-
                 // check whether weight was changed
                 if ($shopWeight != $shopWeightOld) {
                     // changed
                     // if it's empty, set to NULL and don't complain
+                    // the NULL weight will be silently ignored by the database.
                     if ($shopWeight == '') {
                         $shopWeight = 'NULL';
-                        $updateProduct = true;
                     } else {
                         // check format
                         $shopWeight = Weight::getWeight($shopWeight);
-                        // if getWeight() returns an integer >0, the format is valid.
-                        if (intval($shopWeight) > 0) {
+                        // the NULL weight will be silently ignored by the database.
+                        if ($shopWeight === 'NULL') {
+                            // 'NULL', the format was invalid. cast error
+                            $this->strErrMessage = $_ARRAYLANG['TXT_WEIGHT_INVALID_IGNORED'];
+                        } else {
+                            // if getWeight() returns any other value, the format is valid.
                             // verify that the numeric value has changed as well; might
                             // be that the user simply removed the 'g'
                             if ($shopWeight != Weight::getWeight($shopWeightOld)) {
@@ -4954,9 +4957,6 @@ class shopmanager extends ShopLibrary {
                                 $updateProduct = true;
                             }
                             // otherwise, the new amd old values are the same.
-                        } else {
-                            // 'NULL', the format was invalid. cast error
-                            $this->strErrMessage = $_ARRAYLANG['TXT_WEIGHT_INVALID_IGNORED'];
                         }
                     }
                 }
