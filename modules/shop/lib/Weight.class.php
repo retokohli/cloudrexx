@@ -133,11 +133,11 @@ class Weight {
         // numeric result value
         $grams    = 0;
 
-        if (preg_match('/^([0-9]*\.?[0-9]+)\s*(\w*)$/', $weightString, $arrMatch)) {
+        if (preg_match('/^(\d*\.?\d+)\s*(\w*)$/', $weightString, $arrMatch)) {
             $weight = $arrMatch[1];
             $unit   = $arrMatch[2];
             // if the number is missing, return NULL
-            if (empty($weight)) {
+            if ($weight == '') {
                 return 'NULL';
             }
             // if the unit is missing, default to 'g' (grams)
@@ -156,7 +156,7 @@ class Weight {
             }
             // $grams is set to an integer now, in any case.
             // check whether the weight is too small, or too big
-            if ($grams < 1 || $grams >= 1000000000) {
+            if ($grams < 0 || $grams >= 1000000000) {
                 return 'NULL';
             }
             // return weight in grams

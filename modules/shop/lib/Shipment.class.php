@@ -418,7 +418,7 @@ class Shipment {
             // get the shipment conditions that are closest to our order:
             // we have to make sure the maximum weight is big enough for the order,
             // or that it's unspecified (don't care)
-            if (($max_weight > 0 && $weight <= $max_weight ) || $max_weight == 0) {
+            if (($max_weight > 0 && $weight <= $max_weight) || $max_weight == 0) {
                 // if price_free is set, the order amount has to be higher than that
                 // in order to get the shipping for free.
                 if ($price_free > 0 && $price >= $price_free) {
@@ -430,14 +430,12 @@ class Shipment {
                     // so the shipping has to be paid for in any case.
                     $cost = $conditions['cost'];
                 }
-
                 // we found a kind of shipment that can handle the order, but maybe
                 // it's too expensive. - keep the cheapest way to deliver it
                 if ($cost < $lowest_cost) {
                     // found a cheaper one. keep the index.
                     $found = $cid;
                     $lowest_cost = $cost;
-
                 }
             }
         }
