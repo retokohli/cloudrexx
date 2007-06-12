@@ -330,14 +330,14 @@ class blockLibrary
 												GROUP 	BY tblBlock.id
 												ORDER BY `order`
 												");
+		$block = '';
 		if ($objBlock !== false) {
 			while (!$objBlock->EOF) {
 				$block .= $objBlock->fields['content'].$seperator;
 				$objBlock->MoveNext();
 			}
+    		$code = str_replace("{".$this->blockNamePrefix."GLOBAL}", $block, $code);
 		}
-
-		$code = str_replace("{".$this->blockNamePrefix."GLOBAL}", $block, $code);
 	}
 
 	/**
