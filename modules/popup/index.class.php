@@ -79,13 +79,17 @@ class popup extends popupLibrary
 		$query = "SELECT popup_id FROM ".DBPREFIX."module_popup_rel_pages WHERE popup_id!=''";
 		$objCheck = $objDatabase->SelectLimit($query, 1);
 
-		if ($objCheck->RecordCount() == 0) {
-			$tables = DBPREFIX."module_popup_rel_lang AS tblLang";
-			$where	= "";
+		if ($objCheck) {
+		    if ($objCheck->RecordCount() == 0) {
+    			$tables = DBPREFIX."module_popup_rel_lang AS tblLang";
+    			$where	= "";
+    		} else {
+    			$tables = DBPREFIX."module_popup_rel_lang AS tblLang,
+    					".DBPREFIX."module_popup_rel_pages AS tblPage";
+    			$where	= "AND 	((tblPage.page_id=".intval($pageId)." AND tblPage.popup_id=tblPopup.id) OR tblLang.all_pages='1')";
+    		}
 		} else {
-			$tables = DBPREFIX."module_popup_rel_lang AS tblLang,
-					".DBPREFIX."module_popup_rel_pages AS tblPage";
-			$where	= "AND 	((tblPage.page_id=".intval($pageId)." AND tblPage.popup_id=tblPopup.id) OR tblLang.all_pages='1')";
+		    return false;
 		}
 
 		$objPopup = $objDatabase->Execute("	SELECT 		tblPopup.id,
