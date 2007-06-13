@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 11 Jun 2007 17:34:18 +0200
+* generated date Wed, 13 Jun 2007 16:03:42 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
@@ -66,9 +66,7 @@ $_ARRAYLANG['TXT_INVALID_PASSWORD'] = "Password is invalid (min. 6 chars).";
 $_ARRAYLANG['TXT_PASSWORD_CHANGED_SUCCESSFULLY'] = "Your password has benn successfully changed.";
 $_ARRAYLANG['TXT_PASSWORD_LOST'] = "Forgot password?";
 $_ARRAYLANG['TXT_NOT_ALLOWED_TO_ACCESS'] = "You are not allowed to access to this part of the website!";
-$_ARRAYLANG['TXT_SAVE'] = "Save";
 $_ARRAYLANG['TXT_CANCEL'] = "Cancel";
-$_ARRAYLANG['TXT_CATEGORY'] = "Category";
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Advertisement";
 $_ARRAYLANG['TXT_MARKET_TITLE'] = "Advertisement";
 $_ARRAYLANG['TXT_RESERVATION'] = "Reservations";
