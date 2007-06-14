@@ -3342,6 +3342,7 @@ sendReq('', 1);
                          }
                     }
                     $this->objTemplate->setVariable('SHOP_PAYMENT_PROCESSING', $this->objProcessing->checkOut());
+                    $this->_sendProcessedMail();
                 } else {    // if ($objResult) (order)
                     // $orderId is unset!
                     $statusMessage .= $_ARRAYLANG['TXT_ERROR_STORING_CUSTOMER_DATA'];
@@ -3540,14 +3541,11 @@ sendReq('', 1);
         $query = "SELECT order_status FROM ".DBPREFIX."module_shop_orders WHERE orderid = ".intval($orderId);
         $objResult = $objDatabase->Execute($query);
         if ($objResult->fields['order_status'] == 1) {
-            $this->_sendProcessedMail();
             return true;
         } else {
             $query = "UPDATE ".DBPREFIX."module_shop_orders ".
                      "SET order_status='1' WHERE orderid =".intval($orderId);
-
             if ($objResult = $objDatabase->Execute($query)) {
-                $this->_sendProcessedMail();
                 return true;
             } else {
                 return false;
