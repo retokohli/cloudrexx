@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 13 Jun 2007 16:03:42 +0200
+* generated date Mon, 18 Jun 2007 15:41:05 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(minimaal 6 karakters)";
@@ -30,7 +30,7 @@ $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database query error!";
 $_ARRAYLANG['TXT_LOGTIME'] = "Tijdsstempel";
 $_ARRAYLANG['TXT_USERAGENT'] = "Browser and user agents";
 $_ARRAYLANG['TXT_TO'] = "naar";
-$_ARRAYLANG['TXT_MONTH_ARRAY'] = "Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember";
+$_ARRAYLANG['TXT_MONTH_ARRAY'] = "januari,februari,maart,april,mei,juni,juli,augustus,september,oktober,november,december";
 $_ARRAYLANG['TXT_DAY_ARRAY'] = "zondag,maandag,dinsdag,woensdag,donderdag,vrijdag,zaterdag";
 $_ARRAYLANG['TXT_HOSTNAME'] = "Hostname";
 $_ARRAYLANG['TXT_COLLAPS_LINK'] = "sluiten";

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 13 Jun 2007 16:03:42 +0200
+* generated date Mon, 18 Jun 2007 15:41:05 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Bestellungen";
@@ -458,7 +458,7 @@ $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_TIPS'] = "Um ein Feld der Textdatei als Qu
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_REMOVE_TIPS'] = "Um ein Feld wieder zu entfernen, markieren sie es in der Liste 'Kategorien', und klicken sie danach auf 'Kategorie entfernen'.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_ASSIGNMENT_REMOVE_TIPS'] = "Um ein Paar wieder zu entfernen, markieren sie es in der Liste der zugeordneten Felder, und klicken sie danach auf 'Paar entfernen'.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_TEMPLATE_SAVE_TIPS'] = "Speichern sie die Vorlage, indem sie zuerst einen Namen für sie in das Textfeld 'Name der Vorlage' eingeben, und danach auf 'Speichern' klicken.";
-$_ARRAYLANG['TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS'] = "Wählen sie eine Vorlage, die sie unter 'Importvorlagen' erstellt haben. Klicken sie danach auf 'Durchsuchen' und wählen sie die zu importierende Datei. Starten sie den Import durch einen Klick auf 'Importieren'. Warnung: Alle bestehenden Produkte werden bei diesem Vorgang gelöscht und durch die importierten Daten ersetzt!";
+$_ARRAYLANG['TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS'] = "Wählen sie eine Vorlage, die sie unter 'Importvorlagen' erstellt haben. Klicken sie danach auf 'Durchsuchen' und wählen sie die zu importierende Datei. Starten sie den Import durch einen Klick auf 'Importieren'. Aktivieren Sie das Kästchen 'Bestehende Produkte und Kategorien vor dem importieren löschen' nur, wenn Sie alle bestehenden Produkte und Kategorien vor dem Import löschen wollen!";
 $_ARRAYLANG['TXT_SHOP_EXPORT_TIPS'] = "Wählen sie eine Vorlage für den Export aus der Liste, und klicken sie danach auf das Symbol neben dem Namen der Vorlage. Ihr Browser wird sie möglicherweise fragen, wie er mit der exportierten CSV Datei verfahren soll. Wählen sie 'Speichern', klicken sie 'OK', und wählen sie danach einen Speicherort für die Datei.";
 $_ARRAYLANG['TXT_DISTRIBUTION'] = "Vertrieb";
 $_ARRAYLANG['TXT_DISTRIBUTION_UNDEFINED'] = "Undefiniert";
@@ -472,7 +472,7 @@ $_ARRAYLANG['TXT_ERROR_DELETING_PRODUCT'] = "Fehler beim löschen des Produktes"
 $_ARRAYLANG['TXT_SHOP_TIP'] = "Hinweise";
 $_ARRAYLANG['TXT_SHOP_INSERTED_CUSTOMER'] = "Neuer Kunde erfolgreich eingefügt";
 $_ARRAYLANG['TXT_CODE'] = "Code";
-$_ARRAYLANG['TXT_CLEAR_DATABASE_BEFORE_IMPORTING'] = "Bestehende Produkte vor dem importieren löschen";
+$_ARRAYLANG['TXT_CLEAR_DATABASE_BEFORE_IMPORTING'] = "Bestehende Produkte und Kategorien vor dem importieren löschen";
 $_ARRAYLANG['TXT_SHOP_ERROR'] = "Fehler";
 $_ARRAYLANG['TXT_SHOP_FILE_EXISTS'] = "Datei existiert bereits";
 $_ARRAYLANG['TXT_SHOP_COULD_NOT_COPY_FILE'] = "Konnte Datei nicht kopieren";
@@ -500,7 +500,7 @@ $_ARRAYLANG['TXT_SHOP_CUSTOMER_PICTURE_NAME'] = "Logo";
 $_ARRAYLANG['TXT_SHOP_PARENT_CATEGORY'] = "&Uuml;bergeordnete Kategorie";
 $_ARRAYLANG['TXT_SHOP_CATEGORY_DESCRIPTION'] = "Beschreibung";
 $_ARRAYLANG['TXT_SHOP_IMPORT_IMPORT_CATEGORIES'] = "Kategorien importieren";
-$_ARRAYLANG['TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES'] = "Bestehende Kategorien vor dem importieren löschen";
-$_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES_TIPS'] = "Klicken Sie auf 'Durchsuchen' und wählen sie die zu importierende Datei. Starten sie den Import durch einen Klick auf 'Importieren'. Aktivieren Sie das Kästchen 'Bestehende Kategorien vor dem importieren löschen' nur, wenn Sie alle bestehenden Kategorien und Produkte vor dem Import löschen wollen!";
+$_ARRAYLANG['TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES'] = "Bestehende Produkte und Kategorien vor dem importieren löschen";
+$_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES_TIPS'] = "Klicken Sie auf 'Durchsuchen' und wählen sie die zu importierende Datei. Starten sie den Import durch einen Klick auf 'Importieren'. Aktivieren Sie das Kästchen 'Bestehende Produkte und Kategorien vor dem importieren löschen' nur, wenn Sie alle bestehenden Produkte und Kategorien vor dem Import löschen wollen!";
 $_ARRAYLANG['TXT_SHOP_IMPORT_PRODUCTS'] = "Produkte importieren";
 ?>

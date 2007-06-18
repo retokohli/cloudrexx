@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 13 Jun 2007 16:03:42 +0200
+* generated date Mon, 18 Jun 2007 15:41:05 +0200
 **/
 
 $_ARRAYLANG['TXT_ACTION'] = "Functies";
@@ -31,7 +31,7 @@ $_ARRAYLANG['TXT_BACKUP'] = "Database backup";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "De geselecteerde gegevens verwijderen?";
 $_ARRAYLANG['TXT_DATE'] = "Datum";
 $_ARRAYLANG['TXT_DESIGN_MANAGEMENT'] = "Layout en ontwerp";
-$_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Deze actie kan de werking van het systeem be&iuml;nvloeden!";
+$_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Deze actie kan de werking van het systeem beïnvloeden!";
 $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'] = "Deze actie kan niet ongedaan gemaakt worden!";
 $_ARRAYLANG['TXT_BACKUP_CREATE'] = "Genereer backup";
 $_ARRAYLANG['TXT_ADD_NEW_LANGUAGE'] = "Voeg een nieuwe taal toe";
@@ -102,7 +102,7 @@ $_ARRAYLANG['TXT_NEW_LANGUAGE_ADDED_SUCCESSFUL'] = "De nieuwe taal en alle taalv
 $_ARRAYLANG['TXT_LANGUAGE_VARIABLE_ALREADY_EXIST'] = "Deze variabele bestaat al!";
 $_ARRAYLANG['TXT_LANGUAGE_VARIABLE_ADDED_SUCCESSFUL'] = "De nieuwe variabele is succesvol toegevoegd";
 $_ARRAYLANG['TXT_TO'] = "naar";
-$_ARRAYLANG['TXT_MONTH_ARRAY'] = "Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember";
+$_ARRAYLANG['TXT_MONTH_ARRAY'] = "januari,februari,maart,april,mei,juni,juli,augustus,september,oktober,november,december";
 $_ARRAYLANG['TXT_ADMINISTRATION_PAGES'] = "Beheer";
 $_ARRAYLANG['TXT_APPLICATION_RANGE'] = "Applicatiebereik";
 $_ARRAYLANG['TXT_USER_NOT_DELETED'] = "<b>Gebruiker kon niet verwijderd worden.<br />Er dient ten minste 1 actieve beheerder te zijn!</b>";
@@ -116,7 +116,7 @@ $_ARRAYLANG['TXT_MODULE_MANAGER'] = "Modulebeheer";
 $_ARRAYLANG['TXT_GUESTBOOK_MODULE_DESCRIPTION'] = "Er is al een gastenboek op de website geplaatst.";
 $_ARRAYLANG['TXT_REMOVE_MODULE'] = "Module verwijderen";
 $_ARRAYLANG['TXT_INSTALL_MODULE'] = "Module installeren";
-$_ARRAYLANG['TXT_MODULES_INSTALLED_SUCCESFULL'] = "Module(s) %s is/zijn succesvol ge&iuml;nstalleerd";
+$_ARRAYLANG['TXT_MODULES_INSTALLED_SUCCESFULL'] = "Module(s) %s is/zijn succesvol geïnstalleerd";
 $_ARRAYLANG['TXT_MODULES_REMOVED_SUCCESSFUL'] = "Module(s) %s is/zijn succesvol verwijderd.";
 $_ARRAYLANG['TXT_MODULE_ACTIVATION'] = "Module activatie";
 $_ARRAYLANG['TXT_SECTION'] = "Sectie";
@@ -605,7 +605,7 @@ $_ARRAYLANG['TXT_SURVEY_MODULE_DESCRIPTION'] = "Create votings and surveys.";
 $_ARRAYLANG['TXT_SURVEY'] = "Votings and Surveys";
 $_ARRAYLANG['TXT_SURVEY_MENU_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_SURVEY_MENU_ADD'] = "Add survey";
-$_ARRAYLANG['TXT_SURVEY_MENU_SETTINGS'] = "Settings";
+$_ARRAYLANG['TXT_SURVEY_MENU_SETTINGS'] = "Instellingen";
 $_ARRAYLANG['TXT_NAVIGATION'] = "Navigation";
 $_ARRAYLANG['TXT_SURVEY_DELETE'] = "Delete voting / survey";
 $_ARRAYLANG['TXT_ALIAS_MODULE_DESCRIPTION'] = "URL-alias administration";
