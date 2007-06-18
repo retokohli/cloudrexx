@@ -101,6 +101,18 @@
         }
     }
 
+    function MakeImportCategories() {
+        if (document.getElementById("importFileCategories").value != '') {
+            if ((   document.getElementById("clearCategories").checked
+                 && confirm("{TXT_SHOP_IMPORT_CATEGORIES_WARNING}"))
+                || !document.getElementById("clearCategories").checked) {
+                document.forms.frmImportCategories.submit();
+            }
+        } else {
+            alert("{TXT_SHOP_IMPORT_SELECT_FILE_PLEASE}");
+        }
+    }
+
     function DeleteImg(ImgID) {
         if (confirm("{TXT_SHOP_IMPORT_TEMPLATE_REALLY_DELETE}")){
             document.location.href = '{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop&act=import&deleteImg=exe&img='+ImgID;
@@ -127,24 +139,50 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     <li><a id="generalTab_import5" href="javascript:{}" onclick="selectTab('import5')" title="{TXT_SHOP_IMPORT_MAKE_NEW_TEMPLATE}">{TXT_SHOP_IMPORT_MAKE_NEW_TEMPLATE}</a></li>
 </ul>
 
-<form name="frmImportFile" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop&amp;act=import" method="post" enctype="multipart/form-data">
-<input type="hidden" name="exe" value="ImportFile" />
 <div id="import1" class="generalTab" style="display:{SELECTED_LAYER_IMPORT}">
+<form name="frmImportCategories" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop&amp;act=import" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="exe" value="ImportCategories" />
     <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
         <tr>
-            <th colspan="2"><b>{TXT_SHOP_IMPORT_IMPORT}</b></th>
+            <th colspan="2"><b>{TXT_SHOP_IMPORT_IMPORT_CATEGORIES}</b></th>
+        </tr>
+        <tr class="row2">
+            <td nowrap="nowrap" width='20%'>{TXT_SHOP_IMPORT_FILE}</td>
+            <td nowrap="nowrap" width='80%'>
+                <input type="file" name="importFileCategories"
+                    id="importFileCategories" style="width: 200px;"
+                    size="50" />
+            </td>
+        </tr>
+        <tr class="row1">
+            <td><label for='clearCategories'>{TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES}</label></td>
+            <td><input type='checkbox' name='clearCategories' id='clearCategories' value='1' /></td>
         </tr>
     </table>
-    <div id="ImportLayer" style="display: block;">
+    <br />
+    <input type="button" value="{TXT_SHOP_IMPORT_IMPORT}" onclick="javascript:MakeImportCategories();" {IMPORT_BUTTON_STYLE} />
+    <br />
+    <br />
+    <div class="infobox_head">{TXT_SHOP_TIP}</div>
+    <div class="infobox_body">{TXT_SHOP_IMPORT_CATEGORIES_TIPS}</div>
+</form>
+
+<br />
+
+<form name="frmImportProducts" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop&amp;act=import" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="exe" value="importFileProducts" />
     <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+        <tr>
+            <th colspan="2"><b>{TXT_SHOP_IMPORT_PRODUCTS}</b></th>
+        </tr>
         <tr class="row1">
-            <td nowrap="nowrap">&nbsp;{TXT_SHOP_IMPORT_SELECT_TEMPLATE}:</td>
+            <td nowrap="nowrap">{TXT_SHOP_IMPORT_SELECT_TEMPLATE}</td>
             <td nowrap="nowrap" width="80%">
                 {IMAGE_CHOICE}
             </td>
         </tr>
         <tr class="row2">
-            <td nowrap="nowrap">&nbsp;{TXT_SHOP_IMPORT_FILE}:</td>
+            <td nowrap="nowrap">{TXT_SHOP_IMPORT_FILE}</td>
             <td nowrap="nowrap"><input type="file" name="importfile" id="importfile" style="width: 200px;" size="50" /></td>
         </tr>
         <tr class="row1">
@@ -153,13 +191,13 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         </tr>
     </table>
     <br />
-    <input type="button" value="{TXT_SHOP_IMPORT_IMPORT}" onclick="MakeImport();" {IMPORT_BUTTON_STYLE} />
-    </div>
+    <input type="button" value="{TXT_SHOP_IMPORT_IMPORT}" onclick="javascript:MakeImport();" {IMPORT_BUTTON_STYLE} />
+    <br />
     <br />
     <div class="infobox_head">{TXT_SHOP_TIP}</div>
     <div class="infobox_body">{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}</div>
-</div>
 </form>
+</div>
 
 <!-- Begin FieldsSelect -->
 <form name="frmSelectFields" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop&amp;act=import" method="post">

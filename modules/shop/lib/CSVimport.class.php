@@ -171,7 +171,7 @@ class CSVimport {
         global $objDatabase;
         $query =
             "SELECT catid FROM ".DBPREFIX."module_shop_categories ".
-            "WHERE catname='".$CatName."' AND parentid=".$CatParent."";
+            "WHERE catname='$CatName' AND parentid=$CatParent";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
             if ($objResult->RecordCount() > 0) {
