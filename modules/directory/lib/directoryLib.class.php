@@ -881,7 +881,7 @@ class directoryLibrary
 			}
 
 			//get status settings
-			$objResult = $objDatabase->Execute("SELECT setvalue FROM ".DBPREFIX."module_directory_settings WHERE setname = 'status' LIMIT 1");
+			$objResult = $objDatabase->Execute("SELECT setvalue FROM ".DBPREFIX."module_directory_settings WHERE setname = 'entryStatus' LIMIT 1");
 
 			if($objResult !== false){
 				while(!$objResult->EOF){
@@ -890,7 +890,7 @@ class directoryLibrary
 				}
 			}
 
-			$query .= " checksum='".$checksum."', filename='".contrexx_strip_tags($file)."', link='".contrexx_strip_tags($link)."', date='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', size='".$this->fileSize."', typ='".contrexx_strip_tags($_POST['type'])."', status='".contrexx_strip_tags($entryStatus)."', provider='".gethostbyaddr($_SERVER['REMOTE_ADDR'])."', ip='".$_SERVER['REMOTE_ADDR']."',  validatedate='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', xml_refresh='".mktime("now")."'";
+			$query .= " checksum='".$checksum."', filename='".contrexx_strip_tags($file)."', link='".contrexx_strip_tags($link)."', date='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', size='".$this->fileSize."', typ='".contrexx_strip_tags($_POST['type'])."', status='".intval($entryStatus)."', provider='".gethostbyaddr($_SERVER['REMOTE_ADDR'])."', ip='".$_SERVER['REMOTE_ADDR']."',  validatedate='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', xml_refresh='".mktime("now")."'";
 
 			//add entry
 			$objResult = $objDatabase->query($query);
@@ -1819,7 +1819,10 @@ class directoryLibrary
 				}
 			}
 
-			$query .= " premium='".$_POST["premium"]."', size='".contrexx_strip_tags($size)."', filename='".contrexx_strip_tags($file)."', link='".contrexx_strip_tags($link)."', status='".contrexx_strip_tags($entryStatus)."', typ='".contrexx_strip_tags($typ)."',  validatedate='".mktime("now")."' WHERE id='".$dirId."'";
+			echo "asdasd".$entryStatus;
+
+
+			$query .= " premium='".$_POST["premium"]."', size='".contrexx_strip_tags($size)."', filename='".contrexx_strip_tags($file)."', link='".contrexx_strip_tags($link)."', status='".intval($entryStatus)."', typ='".contrexx_strip_tags($typ)."',  validatedate='".mktime("now")."' WHERE id='".$dirId."'";
 
 
 			//edit entry
