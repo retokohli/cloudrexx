@@ -247,7 +247,7 @@ class Shipment {
             return $_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'];
         }
         if ($onchange) {
-            $menu = "\n<select name='shipperId' onchange=$onchange>\n$menu\n</select>\n";
+            $menu = "\n<select name=\"shipperId\" onchange=\"$onchange\">\n$menu\n</select>\n";
         }
         return $menu;
     }

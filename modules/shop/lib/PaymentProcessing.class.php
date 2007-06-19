@@ -194,7 +194,7 @@ class PaymentProcessing
 
 			case 'Internal':
 			    /* Redirect browser */
-			    header("location: ?section=shop&cmd=success&handler=Internal");
+			    header("location: index.php?section=shop&cmd=success&handler=Internal");
 			    exit;
 				break;
 
@@ -208,7 +208,7 @@ class PaymentProcessing
 
 			case 'Internal_LSV':
 			    /* Redirect browser */
-			    header("location: ?section=shop&cmd=success&handler=Internal");
+			    header("location: index.php?section=shop&cmd=success&handler=Internal");
 			    exit;
 				break;
 
@@ -250,9 +250,9 @@ class PaymentProcessing
 				'CURRENCY'		=> $this->_currencyCode,
 				'ORDERID'		=> $_SESSION['shop']['orderid'],
 				'ACCOUNTID'		=> $this->arrConfig['saferpay_id']['value'],
-				'SUCCESSLINK'	=> urlencode("http://".$_SERVER['SERVER_NAME'].'/?section=shop&cmd=success&handler=saferpay'),
-				'FAILLINK'		=> urlencode("http://".$_SERVER['SERVER_NAME'].'/?section=shop&cmd=cart'),
-				'BACKLINK'		=> urlencode("http://".$_SERVER['SERVER_NAME'].'/?section=shop&cmd=cart'),
+				'SUCCESSLINK'	=> urlencode("http://".$_SERVER['SERVER_NAME'].'/index.php?section=shop&cmd=success&handler=saferpay'),
+				'FAILLINK'		=> urlencode("http://".$_SERVER['SERVER_NAME'].'/index.php?section=shop&cmd=cart'),
+				'BACKLINK'		=> urlencode("http://".$_SERVER['SERVER_NAME'].'/index.php?section=shop&cmd=cart'),
 				'DESCRIPTION'	=> urlencode("\"".$_ARRAYLANG['TXT_ORDER_NR']." ".$_SESSION['shop']['orderid']."\""),
 				'LANGID'		=> $this->_languageCode,
 				'PROVIDERSET'	=> $arrCards
