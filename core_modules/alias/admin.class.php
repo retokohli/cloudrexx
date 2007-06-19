@@ -147,7 +147,7 @@ class AliasAdmin extends aliasLib
 		$this->_pageTitle = $_ARRAYLANG['TXT_ALIAS_ALIAS_ES'];
 		$this->_objTpl->setGlobalVariable('TXT_ALIAS_ALIASES', $_ARRAYLANG['TXT_ALIAS_ALIASES']);
 
-		$arrAliases = $this->_getAliases();
+		$arrAliases = $this->_getAliases($_CONFIG['corePagingLimit']);
 		$nr = 1;
 		if (count($arrAliases)) {
 			$this->_objTpl->setVariable(array(
@@ -191,6 +191,10 @@ class AliasAdmin extends aliasLib
 
 			$this->_objTpl->parse('alias_data');
 			$this->_objTpl->hideBlock('alias_no_data');
+
+			if ($this->_getAliasesCount() > count($arrAliases)) {
+				$this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($this->_getAliasesCount(), intval($_GET['pos']), '&amp;cmd=alias', $_ARRAYLANG['TXT_ALIAS_ALIASES']));
+			}
 		} else {
 			$this->_objTpl->setVariable('TXT_ALIAS_NO_ALIASES_MSG', $_ARRAYLANG['TXT_ALIAS_NO_ALIASES_MSG']);
 

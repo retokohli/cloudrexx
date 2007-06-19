@@ -40,7 +40,7 @@ class aliasLib
 		}
 	}
 
-	function _getAliases()
+	function _getAliases($limit = null)
 	{
 		global $objDatabase, $_CONFIG;
 
@@ -48,7 +48,7 @@ class aliasLib
 		$arrLocalAliases = array();
 		$pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
-		$objAlias = $objDatabase->SelectLimit("
+		$query = "
 			SELECT
 				t.`id` AS targetId,
 				t.`type` AS targetType,
@@ -57,8 +57,13 @@ class aliasLib
 				s.`url` AS sourceUrl
 			FROM `".DBPREFIX."module_alias_target` AS t
 			INNER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`
-			ORDER BY sourceUrl ASC", $_CONFIG['corePagingLimit'], $pos
-		);
+			ORDER BY sourceUrl ASC";
+
+		if (!empty($limit)) {
+			$objAlias = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
+		} else {
+			$objAlias = $objDatabase->Execute($query);
+		}
 
 		if ($objAlias !== false) {
 			while (!$objAlias->EOF) {
@@ -108,6 +113,23 @@ class aliasLib
 		}
 
 		return $arrAliases;
+	}
+
+	function _getAliasesCount()
+	{
+		global $objDatabase;
+
+		$objAlias = $objDatabase->Execute("
+			SELECT SUM(1) AS aliasCount
+			FROM `".DBPREFIX."module_alias_target` AS t
+			INNER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`
+		");
+
+		if ($objAlias !== false) {
+			return $objAlias->fields['aliasCount'];
+		} else {
+			return 0;
+		};
 	}
 
 	function _getAlias($aliasId)
