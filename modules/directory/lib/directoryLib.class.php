@@ -150,7 +150,7 @@ class directoryLibrary
 
 		if($objResultCat !== false){
 			while(!$objResultCat->EOF){
-				$this->getCategories['name'][$objResultCat->fields['id']]			=$objResultCat->fields['name'];
+				$this->getCategories['name'][$objResultCat->fields['id']]			=htmlentities($objResultCat->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
 				$this->getCategories['parentid'][$objResultCat->fields['id']]		=$objResultCat->fields['parentid'];
 				$objResultCat->MoveNext();
 			}

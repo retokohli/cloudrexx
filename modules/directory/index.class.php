@@ -299,7 +299,7 @@ class rssDirectory extends directoryLibrary
 			'DIRECTORY_ROW_WIDTH'				=> $this->rowWidth,
 			'DIRECTORY_ROW1'					=> $this->arrRows[1]."<br />",
 			'DIRECTORY_ROW2'					=> $this->arrRows[2]."<br />",
-			'DIRECTORY_TITLE'  					=> $arrAttributes['title'],
+			'DIRECTORY_TITLE'  					=> htmlentities($arrAttributes['title'], ENT_QUOTES, CONTREXX_CHARSET),
 			'DIRECTORY_XML_LINK'				=> $xmlLink,
 			'DIRECTORY_INSERT_FEEDS'			=> $insertFeeds,
 		));
@@ -983,7 +983,7 @@ class rssDirectory extends directoryLibrary
 						$width		= $info[0]+20;
 						$height		= $info[1]+20;
 
-						$content = '<a href="'.$this->mediaWebPath."images/".$arrFeedContent[$fieldName].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$width.',height='.$height.',status\'); return false"><img src="'.$this->mediaWebPath.'thumbs/'.$arrFeedContent[$fieldName].'" border="0" alt="'.$arrFeedContent['title'].'" /></a>&nbsp;&nbsp;';
+						$content = '<a href="'.$this->mediaWebPath."images/".$arrFeedContent[$fieldName].'" onclick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$width.',height='.$height.',status\'); return false"><img src="'.$this->mediaWebPath.'thumbs/'.$arrFeedContent[$fieldName].'" border="0" alt="'.$arrFeedContent['title'].'" /></a>&nbsp;&nbsp;';
 					}
 
 					//get uploads

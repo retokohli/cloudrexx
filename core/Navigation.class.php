@@ -322,7 +322,7 @@ class Navigation
 
 							$this->_objTpl->setCurrentBlock($blockName);
 						    $this->_objTpl->setVariable('URL',$this->data[$id]['url']);
-						    $this->_objTpl->setVariable('NAME',$this->data[$id]['catname']);
+						    $this->_objTpl->setVariable('NAME',htmlentities($this->data[$id]['catname'], ENT_QUOTES, CONTREXX_CHARSET));
 						    $this->_objTpl->setVariable('TARGET',$target);
 						    $this->_objTpl->setVariable('LEVEL_INFO',$levelInfo);
 						    $this->_objTpl->setVariable('NAVIGATION_ID',$navigationId[$level]);
@@ -550,7 +550,7 @@ class Navigation
 			$n = $this->data[$parentId]['catname'];
 			if ($n == "") $this->separator = "";
 			$u = $this->data[$parentId]['url'];
-			$trail = "<a href=\"".$u."\" title=\"".$n."\">".$n."</a>".$this->separator;
+			$trail = "<a href=\"".$u."\" title=\"".htmlentities($n, ENT_QUOTES, CONTREXX_CHARSET)."\">".htmlentities($n, ENT_QUOTES, CONTREXX_CHARSET)."</a>".$this->separator;
 			$return=$trail.$return;
 			$parentId = $this->parentId[$parentId];
 		}
