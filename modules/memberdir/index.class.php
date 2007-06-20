@@ -416,24 +416,20 @@ class memberDir extends MemberDirLibrary
 		global $objDatabase;
 
 		$lastlevel = 0;
+		$arrKeys = array_keys($this->directories);
 
 		foreach ($this->directories as $dirkey => $directory) {
 			if ($directory['active']) {
 			    if ($directory['level'] > $lastlevel) {
+			    	// open sub level
 			        $this->_objTpl->setVariable(array(
 			             "MEMBERDIR_PARENT_ID" => $directory['parentdir'],
 			             "MEMBERDIR_PADDING_LEFT"  => $directory['level'] * 20
 			        ));
 			        $this->_objTpl->parse("div-block-beginning");
 			        $lastlevel = $directory['level'];
-			    }
-
-			    if ($directory['level'] < $lastlevel) {
-			        for ($i=$lastlevel; $i>$directory['level']; $i--) {
-            	        $this->_objTpl->touchBlock("div-block-ending");
-            	        $this->_objTpl->parse("div-block-ending");
-            	        $lastlevel = $directory['level'];
-			        }
+			    } else {
+			    	$this->_objTpl->hideBlock('div-block-beginning');
 			    }
 
 				if ($directory['has_children']) {
@@ -451,6 +447,23 @@ class memberDir extends MemberDirLibrary
 					"MEMBERDIR_DIR_ID"		=> $dirkey,
 					"MEMBERDIR_DIR_NAME"	=> $directory['name'],
 				));
+
+				if ($directory['level'] == $lastlevel &&
+			    	$this->directories[$arrKeys[array_search($dirkey, array_keys($this->directories))+1]]['level'] < $directory['level']
+		    	) {
+		    		// close sub level
+		    		$lastlevel--;
+					$this->_objTpl->touchBlock("div-block-ending");
+			    } elseif ($directory['level'] < $lastlevel) {
+			    	// close sub levels till current level
+			        for ($i=$lastlevel; $i>$directory['level']; $i--) {
+            	        $this->_objTpl->touchBlock("div-block-ending");
+            	        $this->_objTpl->parse("div-block-ending");
+			        }
+			        $lastlevel = $directory['level'];
+			    } else {
+			    	$this->_objTpl->hideBlock('div-block-ending');
+			    }
 
 				$this->_objTpl->parse("category");
 			}

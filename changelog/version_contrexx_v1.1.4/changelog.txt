@@ -21,6 +21,7 @@ Shop
 ****************************************
 Shop
 - Zugewiesene Merkmale können einem Produkt wieder entfernt werden.
+- Automatisch generierte Links enthalten nun die Angabe der index.php.
 
 Kontaktmanager
 - Der CSV-Export funktioniert nun mit unlimitierter erfasster Anzahl Einträge.
@@ -28,3 +29,8 @@ Kontaktmanager
 Update System
 - Das Update der Bildergalerie funktioniert auch wenn der MySQL Mode NO_AUTO_VALUE_ON_ZERO aktiviert ist.
 
+Alias Verwaltung
+- Die Paging Navigation bei der Alias Übersicht wird angezeigt.
+
+Adressverwaltung
+- Korrekte Darstellung bei Verschachtelten Kategorien.
