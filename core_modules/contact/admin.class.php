@@ -1119,6 +1119,8 @@ class ContactManager extends ContactLib
 		$sourcecode .= $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'];
 		$sourcecode .= "</div>\n<br />";
 		$sourcecode .= "<!-- BEGIN contact_form -->\n";
+		$sourcecode .= "<fieldset id=\"contactFrame\">\n";		
+		$sourcecode .= "<legend>".$this->arrForms[$id]['name']."</legend>\n";	
 		$sourcecode .= "<form action=\"".($preview ? '../' : '')."index.php?section=contact&amp;cmd=".$id."\" ";
 		$sourcecode .= "method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return checkAllFields();\" id=\"contactForm\">\n";
 		$sourcecode .= "<table border=\"0\">\n";
@@ -1206,8 +1208,8 @@ class ContactManager extends ContactLib
 		$sourcecode .= "</td>\n";
 		$sourcecode .= "</tr>\n";
 		$sourcecode .= "</table>\n";
-
 		$sourcecode .= "</form>";
+		$sourcecode .= "</fieldset>";
 		$sourcecode .= "<!-- END contact_form -->\n";
 
 		$sourcecode .= $this->_getJsSourceCode($id, $arrFields, $preview, $show);
