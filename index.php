@@ -211,11 +211,11 @@ if ($objResult === false || $objResult->EOF) {
     $page_content   = $objResult->fields["content"];
     $page_title     = $objResult->fields["title"];
     $page_catname   = $objResult->fields["catname"];
-    $page_metatitle = $objResult->fields["metatitle"];
-    $page_keywords  = $objResult->fields["metakeys"];
+    $page_metatitle = htmlentities($objResult->fields["metatitle"], ENT_QUOTES, CONTREXX_CHARSET);
+    $page_keywords  = htmlentities($objResult->fields["metakeys"], ENT_QUOTES, CONTREXX_CHARSET);
     $page_robots    = $objResult->fields["metarobots"];
     $pageCssName    = $objResult->fields["css_name"];
-    $page_desc      = $objResult->fields["metadesc"];
+    $page_desc      = htmlentities($objResult->fields["metadesc"], ENT_QUOTES, CONTREXX_CHARSET);
     $page_redirect  = $objResult->fields["redirect"];
     $page_protected = $objResult->fields["protected"];
     $page_access_id = $objResult->fields["frontend_access_id"];
