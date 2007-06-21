@@ -3,8 +3,8 @@
 /**
  * Immo management
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author		Comvation Development Team <info@comvation.com>
  * @access		public
  * @version		1.0.0
  * @package     contrexx
@@ -22,7 +22,7 @@ require_once ASCMS_MODULE_PATH."/immo/ImmoLib.class.php";
  * Real-Estate management module
  *
  * @copyright	CONTREXX CMS - Astalavista IT Engineering GmbH Thun
- * @author		Astalavista Development Team <thun@astalvista.ch>
+ * @author		Comvation Development Team <info@comvation.com>
  * @access		public
  * @package	    contrexx
  * @subpackage  module_immo

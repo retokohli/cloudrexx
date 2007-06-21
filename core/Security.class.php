@@ -1,7 +1,7 @@
 <?php
 /**
  * Security
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author	    Gerben van der Lubbe <spoofedexistence@gmail.com>
  * @author	    Ivan Schmid <ivan.schmid@astalavista.ch>
  * @version      2.1
@@ -15,7 +15,7 @@
  *
  * The security class checks for possible attacks to the server
  * and supports a few functions to make everything more secure.
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author	    Gerben van der Lubbe <spoofedexistence@gmail.com>
  * @author	    Ivan Schmid <ivan.schmid@astalavista.ch>
  * @version      2.1

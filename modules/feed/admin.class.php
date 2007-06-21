@@ -1,7 +1,7 @@
 <?php
 /**
  * Feed
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
  * @subpackage  module_feed
@@ -25,7 +25,7 @@ if (ini_get('allow_url_fopen') != 1){
  * Feed
  *
  * Manage CMS news feed
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
  * @subpackage  module_feed

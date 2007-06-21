@@ -2,7 +2,7 @@
 /**
  * Shop library
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
  * @version     1.0.0
  * @package     contrexx
@@ -13,7 +13,7 @@
 /**
  * All the helping hands needed to run the shop
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
  * @access      public
  * @version     1.0.0

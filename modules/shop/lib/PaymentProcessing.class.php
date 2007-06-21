@@ -2,7 +2,7 @@
 /**
  * Payment processing manager.
  * @package     contrexx
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */

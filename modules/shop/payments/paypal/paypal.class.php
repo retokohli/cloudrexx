@@ -9,7 +9,7 @@
  * @link https://www.paypal.com/ch/cgi-bin/webscr?cmd=_pdn_howto_checkout_outside
  * @link https://www.paypal.com/ipn
  * @author Stefan Heinemannn <stefan.heinemann@astalavista.ch>
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!

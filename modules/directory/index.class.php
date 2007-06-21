@@ -1,8 +1,8 @@
 <?php
 /**
  * RSS Directory
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_directory
@@ -23,8 +23,8 @@ require_once ASCMS_CORE_PATH.'/modulemanager.class.php';
  * RSS Directory
  *
  * functions for the directory
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
  * @access      public
  * @package     contrexx

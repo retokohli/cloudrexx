@@ -5,7 +5,7 @@
 * Skins and Themes management functions
 *
 * @copyright	CONTREXX CMS - Astalavista IT Engineering GmbH Thun
-* @author		Astalavista Development Team <thun@astalvista.ch>
+* @author		Comvation Development Team <info@comvation.com>
 * @access		public
 * @module		settings
 * @modulegroup	core

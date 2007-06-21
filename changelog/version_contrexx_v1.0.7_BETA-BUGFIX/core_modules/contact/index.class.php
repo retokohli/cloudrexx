@@ -7,7 +7,7 @@
 * Ex. <FORM name="form1" action="index.php?section=contact&cmd=thanks" method="post">
 *
 * @copyright   CONTREXX CMS - Astalavista IT Engineering GmbH Thun
-* @author      Astalavista Development Team <thun@astalvista.ch>
+* @author      Comvation Development Team <info@comvation.com>
 * @module      contact
 * @modulegroup modules
 * @version     1.1.0   

@@ -1,8 +1,8 @@
 <?php
 /**
  * System Update
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
  * @version       1.0
  * @package     contrexx
  * @subpackage  core_module_systemupdate
@@ -16,8 +16,8 @@ require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
 
 /**
  * System Update
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
  * @version       1.0
  * @access        public
  * @package     contrexx

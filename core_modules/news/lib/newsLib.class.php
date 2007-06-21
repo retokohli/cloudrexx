@@ -1,8 +1,8 @@
 <?php
 /**
  * News library
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
  * @version 1.0.0
  * @package     contrexx
  * @subpackage  core_module_news
@@ -11,8 +11,8 @@
 
 /**
  * News library
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
  * @access public
  * @version 1.0.0
  * @package     contrexx

@@ -3,8 +3,8 @@
  * Navigation
 
  * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author		Comvation Development Team <info@comvation.com>
  * @version		1.0.0
  * @package     contrexx
  * @subpackage  core
@@ -16,8 +16,8 @@
  *
  * This class creates the navigation tree
  * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author		Comvation Development Team <info@comvation.com>
  * @access		public
  * @version		1.0.0
  * @package     contrexx

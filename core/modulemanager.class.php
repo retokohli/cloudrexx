@@ -1,7 +1,7 @@
 <?php
 /**
  * Modulemanager
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Astalavista DEV Team <thun@astalavista.ch>
  * @package     contrexx
  * @subpackage  core
@@ -13,7 +13,7 @@
  *
  * This class manages the CMS Modules
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Astalavista DEV Team <thun@astalavista.ch>
  * @package     contrexx
  * @subpackage  core

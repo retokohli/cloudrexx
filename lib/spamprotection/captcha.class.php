@@ -1,7 +1,7 @@
 <?PHP
 /**
  * Captcha
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch>
  * @version     1.1.0
  * @package     contrexx
@@ -11,7 +11,7 @@
 
 /**
  * Captcha
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch>
  * @access      public
  * @version     1.1.0

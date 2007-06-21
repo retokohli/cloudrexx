@@ -4,7 +4,7 @@
  *
  * Class for the administration of the shop
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
  * @version     $Id: index.inc.php,v 1.00 $
  * @package     contrexx
@@ -42,7 +42,7 @@ require_once ASCMS_MODULE_PATH . "/shop/lib/Distribution.class.php";
 /**
  * Administration of the shop
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
  * @version     $Id: index.inc.php,v 1.00 $
  * @access      public

@@ -4,7 +4,7 @@
  *
  * Manages shop settings storing
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author       Ivan Schmid <ivan.schmid@astalavista.ch>
  * @package     contrexx
  * @subpackage  module_shop

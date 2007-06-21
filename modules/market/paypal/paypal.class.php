@@ -4,7 +4,7 @@
  * @link        https://www.paypal.com/ch/cgi-bin/webscr?cmd=_pdn_howto_checkout_outside
  * @link        https://www.paypal.com/ipn
  * @author      Stefan Heinemannn <janik.tschanz@astalavista.ch>
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_market
  * @todo        Edit PHP DocBlocks!
@@ -18,7 +18,7 @@
  * It requires a html form to send the date to
  * PayPal. This class generates it.
  * @author      Stefan Heinemannn <janik.tschanz@astalavista.ch>
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_market
  */

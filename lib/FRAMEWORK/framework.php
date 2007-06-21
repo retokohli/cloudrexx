@@ -1,7 +1,7 @@
 <?PHP
 /**
  * Framework includes
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @version     $Id:  Exp $
  * @package     contrexx
  * @subpackage  lib_framework

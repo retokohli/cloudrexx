@@ -1,8 +1,8 @@
 <?php
 /**
  * Gallery
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @version     v1.1.0
  * @package     contrexx
  * @subpackage  module_gallery
@@ -18,8 +18,8 @@ require_once ASCMS_MODULE_PATH . '/gallery/Lib.class.php';
  * Gallery
  *
  * Class to manage the gallery of the CMS
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @version     v1.1.0
  * @package     contrexx
  * @subpackage  module_gallery

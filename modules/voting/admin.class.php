@@ -10,7 +10,7 @@ function checkEntryData($var)
  *
  * Class for the voting system
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Contrexx Dev Team <thun@astalavista.ch>
  * @version	   1.1
  * @package     contrexx

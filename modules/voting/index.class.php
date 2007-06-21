@@ -4,7 +4,7 @@
  *
  * Functions for the Voting
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Leandro Nery <nery@astalavista.net>
  * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
  * @version	   $Id: index.inc.php,v 1.00 $

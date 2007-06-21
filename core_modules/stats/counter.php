@@ -1,8 +1,8 @@
 <?php
 /**
  * Counter
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
  * @version 1.0.3
  * @package     contrexx
  * @subpackage  core_module_stats
@@ -30,8 +30,8 @@ $counter = &new counter($arrRobots,$arrBannedWords);
  * Counter
  *
  * This class counts unique users, page visits, set client infos, referer
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
  * @access public
  * @version 1.0.3
  * @package     contrexx

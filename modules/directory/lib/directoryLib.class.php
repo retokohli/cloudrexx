@@ -1,8 +1,8 @@
 <?php
 /**
  * Directory library
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author        Astalavista Development Team <thun@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author        Comvation Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  module_directory
  * @todo        Edit PHP DocBlocks!
@@ -18,8 +18,8 @@ require_once ASCMS_MODULE_PATH . '/directory/lib/xmlfeed.class.php';
  * Directory library
  *
  * External functions for the directory
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author        Astalavista Development Team <thun@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author        Comvation Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  module_directory
  */

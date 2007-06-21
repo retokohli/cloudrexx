@@ -1,7 +1,7 @@
 <?php
 /**
  * File Manager
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Janik Tschanz <janik.tschanz@astalavista.net>
  * @version     $Id:  Exp $
  * @package     contrexx
@@ -13,7 +13,7 @@
  * File Manager
  *
  * LibClass to manage fils and folders
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Janik Tschanz <janik.tschanz@astalavista.net>
  * @version     $Id:  Exp $
  * @package     contrexx

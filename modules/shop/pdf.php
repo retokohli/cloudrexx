@@ -4,7 +4,7 @@
  *
  * This file creates a PDF-File with the information from the Database
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Thomas Kaelin <gwanun@astalavista.com>
  * @version       $Id:     Exp $
  * @package     contrexx

@@ -1,8 +1,8 @@
 <?PHP
 /**
  * Docsys RSS XML Feed
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @version     1.0.0
  * @package     contrexx
@@ -14,8 +14,8 @@
  * Docsys RSS XML Feed
  *
  * Produces the RSS XML Feedfile of the latest docsys entries
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @version     1.0.0
  * @package     contrexx

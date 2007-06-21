@@ -1,8 +1,8 @@
 <?php
 /**
  * Immo
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author		Comvation Development Team <info@comvation.com>
  * @version		1.0.0
  * @package     contrexx
  * @subpackage  module_immo
@@ -19,8 +19,8 @@ include(dirname(__FILE__).'/ImmoLib.class.php');
  * Immo
  *
  * Immo backend
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author		Comvation Development Team <info@comvation.com>
  * @access		public
  * @version		1.0.0
  * @package     contrexx

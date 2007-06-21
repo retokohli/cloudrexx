@@ -1,7 +1,7 @@
 <?php
 /**
  * Cache
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Ivan Schmid <ivan.schmid@astalavistagroup.ch>
  * @version       $Id:  Exp $
  * @package     contrexx
@@ -20,7 +20,7 @@ if (eregi("cache.class.php",$_SERVER['PHP_SELF']))
  * Class to cache the output
  *
  * Class to create and show the cached output
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Ivan Schmid <ivan.schmid@astalavistagroup.ch>
  * @version       $Id:  Exp $
  * @package     contrexx

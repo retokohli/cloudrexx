@@ -1,7 +1,7 @@
 <?php
 /**
  * MXLookup
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@astalavista.ch>
  * @version     1.0
  * @package     contrexx

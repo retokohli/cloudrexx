@@ -1,7 +1,7 @@
 <?php
 /**
  * Directory
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Janik Tschanz <janik.tschanz@astalavista.net>
  * @package     contrexx
  * @subpackage  module_directory
@@ -21,7 +21,7 @@ require_once ASCMS_CORE_PATH.'/'.'settings.class.php';
  * Directory
  *
  * Class to manage CMS RSS news feeds
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Janik Tschanz <janik.tschanz@astalavista.net>
  * @package     contrexx
  * @subpackage  module_directory
