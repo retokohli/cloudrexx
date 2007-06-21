@@ -5,7 +5,7 @@
 * Newsletter module class
 *
 * @copyright	CONTREXX CMS - Astalavista IT Engineering GmbH Thun
-* @author		Astalavista Development Team <thun@astalvista.ch>            
+* @author		Comvation Development Team <info@comvation.com>            
 * @module		Newsletter
 * @modulegroup	modules
 * @access		public

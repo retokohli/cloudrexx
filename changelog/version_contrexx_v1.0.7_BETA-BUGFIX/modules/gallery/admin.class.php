@@ -5,7 +5,7 @@
 * Class to manage the gallery of the CMS
 *
 * @copyright     CONTREXX CMS - 2005 Astalavista IT Engineering GmbH 
-* @author        Astalavista Development Team <thun@astalavista.ch>   
+* @author        Comvation Development Team <info@comvation.com>   
 * @module        gallery
 * @modulegroup   modules 
 * @version       v1.1.0    

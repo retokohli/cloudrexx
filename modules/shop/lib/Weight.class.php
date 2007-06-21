@@ -1,6 +1,6 @@
 <?PHP
 /**
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@astalavista.ch>
  * @version     1.0.0
  * @package     contrexx
@@ -13,7 +13,7 @@
  * This class is used to properly convert weights between the format used
  * in the database (grams, integer) and a format for displaying and editing
  * in the user interface (string, with units).
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@astalavista.ch>
  * @access      public
  * @version     1.0.0

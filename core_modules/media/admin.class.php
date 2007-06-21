@@ -1,8 +1,8 @@
 <?php
 /**
  * Media Manager
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author        Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author        Comvation Development Team <info@comvation.com>
  * @version       1.0.0
  * @package     contrexx
  * @subpackage  core_module_media
@@ -18,8 +18,8 @@ require_once ASCMS_LIBRARY_PATH . '/FRAMEWORK/File.class.php';
 
 /**
  * Media Manager
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author        Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author        Comvation Development Team <info@comvation.com>
  * @version       1.0.0
  * @access        public
  * @package     contrexx

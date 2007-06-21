@@ -1,6 +1,6 @@
 <?PHP
 /**
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
@@ -9,7 +9,7 @@
 /**
  * Useful methods to handle shipping related stuff
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
  */

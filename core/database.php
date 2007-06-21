@@ -1,8 +1,8 @@
 <?php
 /**
  * Database access function(s)
- * @copyright	CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
+ * @copyright	CONTREXX CMS - COMVATION AG
+ * @author		Comvation Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  core
  * @version	    1.0.0
@@ -15,7 +15,7 @@
  * creates a new database object first.
  * In case of an error, the reference argument $errorMsg is set
  * to the error message.
- * @author  Astalavista Development Team <thun@astalvista.ch>
+ * @author  Comvation Development Team <info@comvation.com>
  * @access	public
  * @version	1.0.0
  * @param   string	$errorMsg     Error message

@@ -3,8 +3,8 @@
  * Global file including
  *
  * Global file to include the required files
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  core
  * @version     1.0.0

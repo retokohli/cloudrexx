@@ -1,7 +1,7 @@
 <?php
 /**
  * Module Session
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Leandro Nery <nery@astalavista.com>
  * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
  * @version	   $Id:    Exp $
@@ -13,7 +13,7 @@
 /**
  * Session
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Leandro Nery <nery@astalavista.com>
  * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
  * @version	   $Id:    Exp $

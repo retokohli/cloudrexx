@@ -1,7 +1,7 @@
 <?php
 /**
  * Forum
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@astalavista.ch>              
  * @version	    $Id: index.inc.php,v 1.00 $
  * @package     contrexx
@@ -16,7 +16,7 @@ require_once ASCMS_MODULE_PATH.'/forum/lib/forumLib.class.php';
 
 /**
  * Forum
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@astalavista.ch>
  * @version	    $Id: index.inc.php,v 1.00 $
  * @package     contrexx

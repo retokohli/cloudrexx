@@ -1,7 +1,7 @@
 <?PHP
 /**
  * Currencies manager.
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
@@ -9,7 +9,7 @@
 
 /**
  * Currencies manager.
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
  */

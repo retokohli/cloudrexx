@@ -4,8 +4,8 @@
  *
  * Functions to create and restore backups of the contrexx cms
  *
- * @copyright	CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
+ * @copyright	CONTREXX CMS - COMVATION AG
+ * @author		Comvation Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  core
  * @version		1.0.0

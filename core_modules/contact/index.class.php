@@ -6,8 +6,8 @@
  * It sends the contact email(s) and uploads data (optional)
  * Ex. <FORM name="form1" action="index.php?section=contact&cmd=thanks" method="post">
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @version     1.1.0
  * @package     contrexx
  * @subpackage  core_module_contact
@@ -26,8 +26,8 @@ require_once ASCMS_CORE_MODULE_PATH.'/contact/lib/ContactLib.class.php';
  * It sends the contact email(s) and uploads data (optional)
  * Ex. <FORM name="form1" action="index.php?section=contact&cmd=thanks" method="post">
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @version     1.1.0
  * @package     contrexx
  * @subpackage  core_module_contact

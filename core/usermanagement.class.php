@@ -1,7 +1,7 @@
 <?php
 /**
  * User Management
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
  * @version     $Id:  Exp $
  * @package     contrexx
@@ -16,7 +16,7 @@ require_once ASCMS_CORE_PATH.'/Tree.class.php';
 
 /**
  * User Management
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
  * @version     $Id:  Exp $
  * @package     contrexx

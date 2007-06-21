@@ -1,8 +1,8 @@
 <?php
 /**
  * my Administrator manager
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @version	   1.0.1
  * @package     contrexx
  * @subpackage  core
@@ -14,8 +14,8 @@
  *
  * Class to show the my admin pages
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @version	   1.0.1
  * @package     contrexx
  * @subpackage  core

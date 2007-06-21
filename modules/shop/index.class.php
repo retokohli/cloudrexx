@@ -2,7 +2,7 @@
 /**
  * The shop
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
  * @access      public
  * @version     1.0.0

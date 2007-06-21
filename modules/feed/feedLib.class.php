@@ -1,7 +1,7 @@
 <?php
 /**
  * Feed library
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
  * @subpackage  module_feed
@@ -19,7 +19,7 @@ if (eregi('feedLib.class.php', $_SERVER['PHP_SELF']))
  * Feed library
  *
  * Manage CMS feed
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
  * @subpackage  module_feed

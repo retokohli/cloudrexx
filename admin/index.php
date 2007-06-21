@@ -4,7 +4,7 @@
  *
  * CMS Administration
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Astalavista Engineering Team
  * @version       $Id:    Exp $
  * @package     contrexx

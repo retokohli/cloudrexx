@@ -1,8 +1,8 @@
 <?php
 /**
  * Calendar
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author 		Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author 		Comvation Development Team <info@comvation.com>
  * @version 	1.1.0
  * @package     contrexx
  * @subpackage  module_calendar
@@ -18,8 +18,8 @@ require_once dirname(__FILE__) . "/lib/activecalendar/activecalendar.php";
  * Calendar
  *
  * LibClass to manage cms calendar
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
  * @access public
  * @version 1.1.0
  * @package     contrexx

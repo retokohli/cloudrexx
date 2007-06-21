@@ -1,8 +1,8 @@
 <?php
 /**
  * Install Wizard Controller
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author        Astalavista Development Team <thun@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author        Comvation Development Team <info@comvation.com>
  * @version       $Id:     Exp $
  * @package     contrexx
  * @subpackage  installer
@@ -14,8 +14,8 @@
  *
  * The Install Wizard
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author        Astalavista Development Team <thun@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author        Comvation Development Team <info@comvation.com>
  * @version       $Id:     Exp $
  * @package     contrexx
  * @subpackage  installer

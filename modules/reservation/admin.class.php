@@ -5,8 +5,8 @@
  *
  * Class for managing the reservations
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author Astalavista Development Team <thun@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
  * @version v1.0.0
  * @uses ImportExport
  * @package     contrexx

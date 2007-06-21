@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@astalavista.ch>
  * @version     1.0.0
  * @package     contrexx
@@ -9,7 +9,7 @@
  */
 
 /**
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@astalavista.ch>
  * @access      public
  * @version     1.0.0

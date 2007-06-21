@@ -1,7 +1,7 @@
 <?php
 /**
  * Content Workflow
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author		Thomas Kaelin <thomas.kaelin@astalvista.ch>
  * @version		1.0.0
  * @package     contrexx
@@ -20,7 +20,7 @@ require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
  * Content Workflow
  *
  * Class for managing the content history
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author		Thomas Kaelin <thomas.kaelin@astalvista.ch>
  * @access		public
  * @version		1.0.0

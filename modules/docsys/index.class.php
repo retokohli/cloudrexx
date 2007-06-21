@@ -1,8 +1,8 @@
 <?PHP
 /**
  * DocSys
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @version     1.0.0
  * @package     contrexx
@@ -19,8 +19,8 @@ require_once ASCMS_MODULE_PATH . '/docsys/lib/Library.class.php';
  * DocSys
  *
  * This module will get all the docSys pages
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @version     1.0.0
  * @package     contrexx

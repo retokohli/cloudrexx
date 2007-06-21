@@ -1,8 +1,8 @@
 <?php
 /**
  * RSSWriter
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author Astalavista Development Team <thun@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
  * @version 2.0.0
  * @package     contrexx
  * @subpackage  lib_framework
@@ -13,8 +13,8 @@
  * RSSWriter
  *
  * Creates RSS files
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author Astalavista Development Team <thun@astalavista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
  * @access public
  * @version 2.0.0
  * @package     contrexx

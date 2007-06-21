@@ -1,8 +1,8 @@
 <?php
 /**
  * Market
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author		Comvation Development Team <info@comvation.com>
  * @access		public
  * @version		1.0.0
  * @package     contrexx
@@ -22,8 +22,8 @@ require_once ASCMS_MODULE_PATH . '/market/lib/marketLib.class.php';
  * Market
  *
  * Demo market class
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author		Comvation Development Team <info@comvation.com>
  * @access		public
  * @version		1.0.0
  * @package     contrexx

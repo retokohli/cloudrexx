@@ -1,8 +1,8 @@
 <?php
 /**
  * Paging
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
  * @version 1.0.0
  * @package     contrexx
  * @subpackage  core
@@ -20,8 +20,8 @@ if (eregi("paging.class.php",$_SERVER['PHP_SELF'])) {
  * Function getPaging
  *
  * helping function for the Paging class
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
  * @access public
  * @version 1.0.0
  * @global  array       Configuration

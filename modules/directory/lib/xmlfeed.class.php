@@ -1,7 +1,7 @@
 <?PHP
 /**
  * RSS Feed
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Astalavista Dev Team <thun@astalavista.ch>
  * @version     $Id:     Exp $
  * @package     contrexx
@@ -13,7 +13,7 @@
  * RSS Feed
  *
  * Creates and deletes rss feeds
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Astalavista Dev Team <thun@astalavista.ch>
  * @version     $Id:     Exp $
  * @package     contrexx

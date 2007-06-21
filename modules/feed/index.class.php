@@ -1,7 +1,7 @@
 <?php
 /**
  * Feed
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
@@ -32,7 +32,7 @@ if(ini_get('allow_url_fopen') != 1){
  * Feed
  *
  * News Syndication Class to manage XML feeds
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx

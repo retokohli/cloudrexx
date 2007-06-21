@@ -2,8 +2,8 @@
 /**
  * Create error pages
  *
- * @copyright	CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
+ * @copyright	CONTREXX CMS - COMVATION AG
+ * @author		Comvation Development Team <info@comvation.com>
  * @package	    contrexx
  * @subpackage  core
  * @version		1.0.0
@@ -14,7 +14,7 @@
  * Handles all errors.
  *
  * @copyright	CONTREXX CMS - Astalavista IT Engineering GmbH Thun
- * @author		Astalavista Development Team <thun@astalvista.ch>
+ * @author		Comvation Development Team <info@comvation.com>
  * @access		public
  * @package	    contrexx
  * @subpackage  core

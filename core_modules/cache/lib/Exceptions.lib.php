@@ -2,8 +2,8 @@
 /**
  * Cache Module - Exceptions: A list of all pages which shouldn't be cached
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author      Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.1
  *
  * @package     contrexx
