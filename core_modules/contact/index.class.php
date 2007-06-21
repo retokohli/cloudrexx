@@ -443,7 +443,12 @@ class Contact extends ContactLib
 			}
 
 			foreach ($arrFormData['data'] as $key => $value) {
-				$body .= $key.": \t\t".$value."\n";
+				$tabCount = ceil((strlen($key)+1) / 6);
+				$tabs = 7 - $tabCount;
+				if((strlen($key)+1) % 6 == 0){
+					$tabs--;
+				}
+				$body .= $key.":".str_repeat("\t", $tabs).$value."\n";
 				if (empty($replyAddress) && ($mail = $this->_getEmailAdressOfString($value))) {
 					$replyAddress = $mail;
 				}
