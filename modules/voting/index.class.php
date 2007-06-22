@@ -6,7 +6,7 @@
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Leandro Nery <nery@astalavista.net>
- * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
+ * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @version	   $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_voting

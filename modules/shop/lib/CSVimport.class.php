@@ -163,7 +163,7 @@ class CSVimport {
      * @return  integer                 The ID of the ShopCategory,
      *                                  or 0 on failure.
      * @author  Unknown <thun@astalavista.ch> (Original author)
-     * @author  Reto Kohli <reto.kohli@astalavista.ch> (Made static)
+     * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
     //static
     function GetCatID($CatName, $CatParent)
@@ -194,7 +194,7 @@ class CSVimport {
      * @static
      * @return  integer     The ShopCategory, or 0 on failure
      * @author  Unknown <thun@astalavista.ch> (Original author)
-     * @author  Reto Kohli <reto.kohli@astalavista.ch> (Added creation of default ShopCategory, made static)
+     * @author  Reto Kohli <reto.kohli@comvation.com> (Added creation of default ShopCategory, made static)
      */
     //static
     function GetFirstCat()
@@ -219,7 +219,7 @@ class CSVimport {
      * @return  integer                 The ID of the new ShopCategory,
      *                                  or 0 on failure.
      * @author  Unknown <thun@astalavista.ch> (Original author)
-     * @author  Reto Kohli <reto.kohli@astalavista.ch> (Made static)
+     * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
     //static
     function InsertNewCat($CatName, $CatParent)

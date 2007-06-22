@@ -3,7 +3,7 @@
  * Exports and Imports CSV data
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author       Thomas Däppen <thomas.daeppen@astalavista.ch>
+ * @author       Thomas Däppen <thomas.daeppen@comvation.com>
  * @package     contrexx
  * @version      0.1
  * @subpackage  module_shop
@@ -14,7 +14,7 @@
  * Exports and Imports CSV data
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author       Thomas Däppen <thomas.daeppen@astalavista.ch>
+ * @author       Thomas Däppen <thomas.daeppen@comvation.com>
  * @package     contrexx
  * @version      0.1
  * @subpackage  module_shop

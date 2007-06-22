@@ -5,7 +5,7 @@
  * Interface for the payment mask yellowpay
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author       Thomas Däppen <thomas.daeppen@astalavista.ch>
+ * @author       Thomas Däppen <thomas.daeppen@comvation.com>
  * @version      $Id:  Exp $
  * @package     contrexx
  * @subpackage  module_shop

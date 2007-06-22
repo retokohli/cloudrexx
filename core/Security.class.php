@@ -3,7 +3,7 @@
  * Security
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author	    Gerben van der Lubbe <spoofedexistence@gmail.com>
- * @author	    Ivan Schmid <ivan.schmid@astalavista.ch>
+ * @author	    Ivan Schmid <ivan.schmid@comvation.com>
  * @version      2.1
  * @package     contrexx
  * @subpackage  core
@@ -17,7 +17,7 @@
  * and supports a few functions to make everything more secure.
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author	    Gerben van der Lubbe <spoofedexistence@gmail.com>
- * @author	    Ivan Schmid <ivan.schmid@astalavista.ch>
+ * @author	    Ivan Schmid <ivan.schmid@comvation.com>
  * @version      2.1
  * @package     contrexx
  * @subpackage  core

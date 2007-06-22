@@ -5,7 +5,7 @@
  * Manages shop settings storing
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author       Ivan Schmid <ivan.schmid@astalavista.ch>
+ * @author       Ivan Schmid <ivan.schmid@comvation.com>
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
