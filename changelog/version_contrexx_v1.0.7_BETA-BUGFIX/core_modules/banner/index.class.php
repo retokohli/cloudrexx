@@ -4,7 +4,7 @@
 *
 * This module will get all the news pages
 *
-* @copyright CONTREXX CMS - Astalavista IT Engineering GmbH Thun
+* @copyright CONTREXX CMS - COMVATION AG
 * @author Comvation Development Team <info@comvation.com>
 * @module banner
 * @modulegroup core_modules

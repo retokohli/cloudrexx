@@ -4,7 +4,7 @@
 *
 * frontend newsletter class
 *
-* @copyright CONTREXX CMS - Astalavista IT Engineering GmbH Thun
+* @copyright CONTREXX CMS - COMVATION AG
 * @author Comvation Development Team <info@comvation.com>  
 * @module guestbook
 * @modulegroup modules

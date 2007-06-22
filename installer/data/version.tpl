@@ -4,7 +4,7 @@
  *
  * Version informations
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author       Astalavista Developer Team <thun@astalavista.ch>
  * @version		1.0.0
  * @package     contrexx

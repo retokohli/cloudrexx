@@ -6,7 +6,7 @@
 * It sends the contact email(s) and uploads data (optional)
 * Ex. <FORM name="form1" action="index.php?section=contact&cmd=thanks" method="post">
 *
-* @copyright   CONTREXX CMS - Astalavista IT Engineering GmbH Thun
+* @copyright   CONTREXX CMS - COMVATION AG
 * @author      Comvation Development Team <info@comvation.com>
 * @module      contact
 * @modulegroup modules

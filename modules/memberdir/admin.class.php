@@ -1,7 +1,7 @@
 <?php
 /**
  * Member directory manager
- * @copyright   CONTREXX CMS - 2005 Astalavista IT Engineering GmbH
+ * @copyright   CONTREXX CMS - 2005 COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     v1.0.0
  * @uses        ImportExport
@@ -19,7 +19,7 @@ require_once ASCMS_MODULE_PATH . '/memberdir/lib/MemberDirLib.class.php';
  * Member directory manager
  *
  * For managing the member directory
- * @copyright   CONTREXX CMS - 2005 Astalavista IT Engineering GmbH
+ * @copyright   CONTREXX CMS - 2005 COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     v1.0.0
  * @uses        ImportExport
