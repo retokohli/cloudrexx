@@ -1,7 +1,7 @@
 <?php
 /**
  * ContentManager
- * @copyright	CONTREXX CMS - Astalavista IT Engineering GmbH Thun
+ * @copyright	CONTREXX CMS - COMVATION AG
  * @author		Comvation Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  core
@@ -19,7 +19,7 @@ require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
  * ContentManager
  *
  * Manages the site content
- * @copyright	CONTREXX CMS - Astalavista IT Engineering GmbH Thun
+ * @copyright	CONTREXX CMS - COMVATION AG
  * @author		Comvation Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  core

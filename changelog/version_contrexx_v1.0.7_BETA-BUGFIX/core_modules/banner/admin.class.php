@@ -2,7 +2,7 @@
 /**
 * Class Banner management
 *
-* @copyright CONTREXX CMS - Astalavista IT Engineering GmbH Thun
+* @copyright CONTREXX CMS - COMVATION AG
 * @author Comvation Development Team <info@comvation.com>         
 * @module banner
 * @modulegroups core_modules                    

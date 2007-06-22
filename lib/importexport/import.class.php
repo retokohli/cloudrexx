@@ -6,7 +6,7 @@ require_once ASCMS_LIBRARY_PATH."/importexport/lib/importexport.class.php";
 *
 * Class which handles the main import operations
 *
-* @copyright CONTREXX CMS - 2005 Astalavista IT Engineering GmbH
+* @copyright CONTREXX CMS - 2005 COMVATION AG
 * @author Comvation Development Team <info@comvation.com>
 * @version v1.0.0
 * @uses ImportExport

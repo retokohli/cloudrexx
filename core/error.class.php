@@ -13,7 +13,7 @@
 /**
  * Handles all errors.
  *
- * @copyright	CONTREXX CMS - Astalavista IT Engineering GmbH Thun
+ * @copyright	CONTREXX CMS - COMVATION AG
  * @author		Comvation Development Team <info@comvation.com>
  * @access		public
  * @package	    contrexx
