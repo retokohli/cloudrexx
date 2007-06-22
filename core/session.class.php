@@ -3,7 +3,7 @@
  * Module Session
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Leandro Nery <nery@astalavista.com>
- * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
+ * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @version	   $Id:    Exp $
  * @package     contrexx
  * @subpackage  core
@@ -15,7 +15,7 @@
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Leandro Nery <nery@astalavista.com>
- * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
+ * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @version	   $Id:    Exp $
  * @package     contrexx
  * @subpackage  core

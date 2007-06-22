@@ -2,7 +2,7 @@
 /**
  * Forum library
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Kaelin <thomas.kaelin@astalavista.ch>
+ * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version	    $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_forum
@@ -12,7 +12,7 @@
 /**
  * Forum library
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Kaelin <thomas.kaelin@astalavista.ch>
+ * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version	    $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_forum

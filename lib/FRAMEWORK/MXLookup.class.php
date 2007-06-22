@@ -2,7 +2,7 @@
 /**
  * MXLookup
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Däppen <thomas.daeppen@astalavista.ch>
+ * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     1.0
  * @package     contrexx
  * @subpackage  lib_framework

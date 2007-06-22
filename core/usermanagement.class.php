@@ -2,7 +2,7 @@
 /**
  * User Management
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
+ * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @version     $Id:  Exp $
  * @package     contrexx
  * @subpackage  core
@@ -17,7 +17,7 @@ require_once ASCMS_CORE_PATH.'/Tree.class.php';
 /**
  * User Management
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
+ * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @version     $Id:  Exp $
  * @package     contrexx
  * @subpackage  core

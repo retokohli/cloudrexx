@@ -1,7 +1,7 @@
 <?PHP
 /**
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Reto Kohli <reto.kohli@astalavista.ch>
+ * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_shop
@@ -11,7 +11,7 @@
  * The Distribution class provides the different distribution methods.
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Reto Kohli <reto.kohli@astalavista.ch>
+ * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
  * @version     1.0.0
  * @package     contrexx

@@ -156,7 +156,7 @@ function showFormattedDate($unixtimestamp = "")
  * Searches the string for known special (non-ASCII) characters and
  * replaces them with ASCII representations.  Removes any other
  * non-ASCII characters left.
- * @author  Ivan Schmid <ivan.schmid@astalavista.ch>
+ * @author  Ivan Schmid <ivan.schmid@comvation.com>
  * @param   string  $string     Raw string
  * @return  string              Cleaned string
  * @todo    The function is inappropriately named "strcheck",
@@ -187,7 +187,7 @@ function strcheck(&$string)
  *
  * Assumes that the string is valid JavaScript code and adds
  * a pair of <script> / </script> tags before printing.
- * @author  Ivan Schmid <ivan.schmid@astalavista.ch>
+ * @author  Ivan Schmid <ivan.schmid@comvation.com>
  * @param   string  $string     javascript code
  * @todo    It can't be wrong to add a HTML comment around the script as well:
  *          - <script type="text/javascript"><!--
@@ -205,7 +205,7 @@ function evalJS($string){
  *
  * Takes the string and creates a JavaScript alert() call.
  * This is directly passed to {@link evalJS}.
- * @author  Ivan Schmid <ivan.schmid@astalavista.ch>
+ * @author  Ivan Schmid <ivan.schmid@comvation.com>
  * @param   string  $string    alert message
  * @todo    This function should have a more elaborate name as well.
  */

@@ -3,7 +3,7 @@
  * Shop library
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
+ * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_shop
@@ -14,7 +14,7 @@
  * All the helping hands needed to run the shop
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Ivan Schmid <ivan.schmid@astalavista.ch>
+ * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @access      public
  * @version     1.0.0
  * @package     contrexx
