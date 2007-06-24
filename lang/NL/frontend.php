@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 18 Jun 2007 15:41:05 +0200
+* generated date Sun, 24 Jun 2007 21:03:38 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(minimaal 6 karakters)";
@@ -24,11 +24,11 @@ $_ARRAYLANG['TXT_PASSWORD'] = "Wachtwoord";
 $_ARRAYLANG['TXT_PAGE'] = "Website";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Taal";
 $_ARRAYLANG['TXT_FROM'] = "van";
-$_ARRAYLANG['TXT_PASSWORD_FIELD_EMPTY'] = "Indien het wachtwoordveld leeg gelaten wordt, blijft het huidige wachtwoord actief!";
+$_ARRAYLANG['TXT_PASSWORD_FIELD_EMPTY'] = "Indien het wachtwoordveld leeggelaten wordt, blijft het huidige wachtwoord actief!";
 $_ARRAYLANG['TXT_SIZE'] = "Bestandsformaat";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database query error!";
 $_ARRAYLANG['TXT_LOGTIME'] = "Tijdsstempel";
-$_ARRAYLANG['TXT_USERAGENT'] = "Browser and user agents";
+$_ARRAYLANG['TXT_USERAGENT'] = "Browser en user agents";
 $_ARRAYLANG['TXT_TO'] = "naar";
 $_ARRAYLANG['TXT_MONTH_ARRAY'] = "januari,februari,maart,april,mei,juni,juli,augustus,september,oktober,november,december";
 $_ARRAYLANG['TXT_DAY_ARRAY'] = "zondag,maandag,dinsdag,woensdag,donderdag,vrijdag,zaterdag";
@@ -55,11 +55,11 @@ $_ARRAYLANG['TXT_BACK'] = "terug";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "De twee wachtwoorden komen niet overeen";
 $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "Kan geen e-mail verzenden naar %EMAIL%!";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Reset wachtwoord";
-$_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "Please enter your email address. A message will be sent to you shortly with further instructions.";
-$_ARRAYLANG['TXT_RESTORE_PASSWORD_MAIL'] = "Dear %USERNAME%,\r\n\r\nTo choose a new password, please go to the following URL and enter your new password.\r\n\r\nPLEASE NOTE: This URL will expire in 60 minutes from the time the email was sent. If you need more time, simply enter your email address again.rnrnYour URL is:\r\n%URL%\r\n\r\n\r\nRegards,\r\n%SENDER%";
-$_ARRAYLANG['TXT_LOST_PASSWORD_MAIL_SENT'] = "An email with further instructions has been sent to %EMAIL%.";
-$_ARRAYLANG['TXT_ACCOUNT_WITH_EMAIL_DOES_NOT_EXIST'] = "A user account with this email address does not exist!";
-$_ARRAYLANG['TXT_SET_PASSWORD_TEXT'] = "Please fill in your desired password, and repeat it for confirmation.";
+$_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "Vul uw e-mailadres in. Een bericht met verdere instructies zal spoedig verstuurd worden.";
+$_ARRAYLANG['TXT_RESTORE_PASSWORD_MAIL'] = "Beste %USERNAME%,\r\n\r\nOm een nieuw wachtwoord te kiezen, ga naar the onderstaande link en geef het nieuwe wachtwoord op.\r\n\r\nLet op: deze link zal binnen 60 minuten vervallen nadat hij is verstuurd. rnrnUw link is:\r\n%URL%\r\n\r\n\r\nGroet,\r\n%SENDER%";
+$_ARRAYLANG['TXT_LOST_PASSWORD_MAIL_SENT'] = "Een e-mailbericht met meer informatie is verstuurd naar %EMAIL%.";
+$_ARRAYLANG['TXT_ACCOUNT_WITH_EMAIL_DOES_NOT_EXIST'] = "Een gebruikersaccount met dit e-mailadres bestaat al!";
+$_ARRAYLANG['TXT_SET_PASSWORD_TEXT'] = "Vul uw gewenste wachtwoord in en herhaal dit ter controle.";
 $_ARRAYLANG['TXT_INVALID_USER_ACCOUNT'] = "Ongeldig gebruikersaccount opgegeven";
 $_ARRAYLANG['TXT_SET_NEW_PASSWORD'] = "Kies nieuw wachtwoord";
 $_ARRAYLANG['TXT_INVALID_PASSWORD'] = "Het wachtwoord is ongeldig, deze moet minimaal uit 6 karakters bestaan.";
@@ -71,15 +71,15 @@ $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Adverteren";
 $_ARRAYLANG['TXT_MARKET_TITLE'] = "Adverteren";
 $_ARRAYLANG['TXT_RESERVATION'] = "Reserveringen";
 $_ARRAYLANG['TXT_RESERVATION_MODULE'] = "Reserveringssysteem";
-$_ARRAYLANG['TXT_COMPANY'] = "Company";
+$_ARRAYLANG['TXT_COMPANY'] = "Bedrijf";
 $_ARRAYLANG['TXT_EGOVERNMENT'] = "Online-Desk";
 $_ARRAYLANG['TXT_IMAGE'] = "Image";
-$_ARRAYLANG['TXT_EXP_SEARCH'] = "expanded Search";
-$_ARRAYLANG['TXT_POPUP_MODULE_DESCRIPTION'] = "Setup Pop-up windows";
-$_ARRAYLANG['TXT_IMPRINT_MODULE_DESCRIPTION'] = "Imprint";
-$_ARRAYLANG['TXT_AGB_MODULE_DESCRIPTION'] = "Allgemeine Geschäftsbedingungen";
+$_ARRAYLANG['TXT_EXP_SEARCH'] = "uitgebreid zoeken";
+$_ARRAYLANG['TXT_POPUP_MODULE_DESCRIPTION'] = "Pop-up vensters instellen";
+$_ARRAYLANG['TXT_IMPRINT_MODULE_DESCRIPTION'] = "Inprint";
+$_ARRAYLANG['TXT_AGB_MODULE_DESCRIPTION'] = "Algemene voorwaarden";
 $_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Privacy";
-$_ARRAYLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "Database not available!";
-$_ARRAYLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Unable to connect to database server!";
-$_ARRAYLANG['TXT_DELETED'] = "deleted";
+$_ARRAYLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "Database niet beschikbaar!";
+$_ARRAYLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Het is niet mogelijk om een connectie met de databaseserver te maken!";
+$_ARRAYLANG['TXT_DELETED'] = "verwijderd";
 ?>

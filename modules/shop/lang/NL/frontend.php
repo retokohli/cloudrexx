@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 18 Jun 2007 15:41:05 +0200
+* generated date Sun, 24 Jun 2007 21:03:38 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
@@ -62,7 +62,7 @@ $_ARRAYLANG['TXT_COMMENTS'] = "Mitteilungen";
 $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ADDRESS_CUSTOMER'] = "Kundenadresse";
 $_ARRAYLANG['TXT_TAC'] = "Allgemeine Geschäftsbedingungen";
-$_ARRAYLANG['TXT_ACCEPT_TAC'] = "Ich bestätige die Richtigkeit der gemachten Angaben und die <a href=\"index.php?section=shop&amp;cmd=terms\" target=\"_blank\">Geschäftsbedingungen</a> zu kennen und akzeptiere diese.";
+$_ARRAYLANG['TXT_ACCEPT_TAC'] = "Ich bestätige die Richtigkeit der gemachten Angaben und die <a href=\"index.php?section=shop&cmd=terms\" target=\"_blank\">Geschäftsbedingungen</a> zu kennen und akzeptiere diese.";
 $_ARRAYLANG['TXT_TOTAL_PRICE'] = "Gesamtpreis";
 $_ARRAYLANG['TXT_ORDER_INFOS'] = "Bestellinformationen";
 $_ARRAYLANG['TXT_ORDER_PREPARED'] = "Die Bestellung ist nun für die Zahlung vorbereitet.";
@@ -138,7 +138,7 @@ $_ARRAYLANG['TXT_SHOP_LSV_EE_TITLE'] = "Einzugsermächtigung";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_INFO'] = "Füllen Sie bitte dieses Formular in Ihrem Browser <b>vollständig</b> aus.  Drucken Sie es anschliessend";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_ADDRESS'] = "Unsere Adresse:";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_FAX'] = "Fax:";
-$_ARRAYLANG['TXT_SHOP_LSV_EE_TEXT'] = "Hiermit ermächtige(n) ich/wir {TXT_SHOP_COMPANY} widerruflich, die von mir/uns zu entrichtenden";
+$_ARRAYLANG['TXT_SHOP_LSV_EE_TEXT'] = "Hiermit ermächtige(n) ich/wir  widerruflich, die von mir/uns zu entrichtenden";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_RECIPIENT'] = "Zahlungsempfänger:";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_REASON'] = "Zahlungsgrund:";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_DESCRIPTION'] = "(Artikelbezeichnung)";
@@ -172,12 +172,12 @@ $_ARRAYLANG['SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
 $_ARRAYLANG['SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";
 $_ARRAYLANG['SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Übersicht über Ihre bisherigen Bestellungen.";
 $_ARRAYLANG['SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
-$_ARRAYLANG['SHOP_ACCOUNT_LOGIN'] = "Anmelden &gt;&gt;";
+$_ARRAYLANG['SHOP_ACCOUNT_LOGIN'] = "Anmelden >>";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Übersicht über Ihre bisherigen Bestellungen.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
-$_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Anmelden &gt;&gt;";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Anmelden >>";
 $_ARRAYLANG['TXT_SHOP_CATEGORIES'] = "Kategorien:";
 $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'] = "Produkte in der Kategorie";
 $_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'] = "Weiter zur Kategorie";
@@ -189,7 +189,7 @@ $_ARRAYLANG['TXT_CODE'] = "Code";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS'] = "Neueste Produkte im Online Shop:";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_NONE_FOUND'] = "Keine Produkte gefunden.";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_FAILED'] = "Fehler bei der Produkte Abfrage";
-$_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "&Uuml;bersicht";
-$_ARRAYLANG['TXT_SHOP_BACK'] = "Zur&uuml;ck";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "Übersicht";
+$_ARRAYLANG['TXT_SHOP_BACK'] = "Zurück";
 $_ARRAYLANG['TXT_SHOP_GOTO_DETAIL_VIEW'] = "zur Detailansicht / &agrav; la ...";
 ?>

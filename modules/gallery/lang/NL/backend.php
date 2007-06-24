@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 18 Jun 2007 15:41:05 +0200
+* generated date Sun, 24 Jun 2007 21:03:38 +0200
 **/
 
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'] = "Name";
@@ -168,7 +168,7 @@ $_ARRAYLANG['TXT_GALLERY_SETTINGS_IMAGE_WIDTH'] = "Maximale Bildbreite (in Pixel
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_DE_ACTIVATE'] = "Bild aktivieren / deaktivieren";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SET_CATIMG'] = "Als Kategoriebild festlegen";
 $_ARRAYLANG['TXT_GALLERY_SETTINGS_PAGING'] = "Bilder pro Seite (Paging)";
-$_ARRAYLANG['TXT_GALLERY_UPLOAD_ERROR_WIDTH'] = "Error: The width of the image was bigger than the allowed maximum value of {WIDTH} pixels.";
+$_ARRAYLANG['TXT_GALLERY_UPLOAD_ERROR_WIDTH'] = "Error: The width of the image was bigger than the allowed maximum value of  pixels.";
 $_ARRAYLANG['TXT_GALLERY_SETTINGS_HOME_LAST'] = "Activate 'newest image'-function";
 $_ARRAYLANG['TXT_GALLERY_SETTINGS_HOME_RANDOM'] = "Activate 'random image'-function";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Art der Überschrift";
