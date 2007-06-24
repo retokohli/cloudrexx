@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 18 Jun 2007 15:41:05 +0200
+* generated date Sun, 24 Jun 2007 21:03:38 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Bestellungen";
@@ -497,7 +497,7 @@ $_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED'] = "Fehler beim löschen";
 $_ARRAYLANG['TXT_ALL_MANUFACTURER'] = "Alle Hersteller";
 $_ARRAYLANG['TXT_SHOP_CUSTOMER_HOMEPAGE'] = "Homepage";
 $_ARRAYLANG['TXT_SHOP_CUSTOMER_PICTURE_NAME'] = "Logo";
-$_ARRAYLANG['TXT_SHOP_PARENT_CATEGORY'] = "&Uuml;bergeordnete Kategorie";
+$_ARRAYLANG['TXT_SHOP_PARENT_CATEGORY'] = "Übergeordnete Kategorie";
 $_ARRAYLANG['TXT_SHOP_CATEGORY_DESCRIPTION'] = "Beschreibung";
 $_ARRAYLANG['TXT_SHOP_IMPORT_IMPORT_CATEGORIES'] = "Kategorien importieren";
 $_ARRAYLANG['TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES'] = "Bestehende Produkte und Kategorien vor dem importieren löschen";
