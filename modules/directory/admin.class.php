@@ -1727,6 +1727,7 @@ class rssDirectory extends directoryLibrary
 		//get categories/levels
 		$categories = $this->getCategories('', 1);
 		$levels = $this->getLevels('', 1);
+		$platforms = $this->getPlatforms('', 1);
 
 		$this->_objTpl->loadTemplateFile('module_directory_entry_add.html',true,true);
 		$this->pageTitle = $_ARRAYLANG['TXT_DIR_ADD_ENTREE'];
