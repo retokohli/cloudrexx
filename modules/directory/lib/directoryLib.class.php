@@ -489,7 +489,7 @@ class directoryLibrary
 		global $_CONFIG, $objDatabase, $_CORELANG;
 
 		//get all plattforms
-		$objResultPlat = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_settings WHERE setname = 'platform'");
+		$objResultPlat = $objDatabase->Execute("SELECT setvalue FROM ".DBPREFIX."module_directory_settings WHERE setname = 'platform'");
 		if($objResultPlat !== false){
 			while(!$objResultPlat->EOF){
 				$platforms 			= $objResultPlat->fields['setvalue'];
