@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 19:48:57 +0200
+* generated date Mon, 25 Jun 2007 21:57:34 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
@@ -22,7 +22,7 @@ $_ARRAYLANG['TXT_ADD_DELETE_LANGUAGE_REMARK'] = "Beim Hinzufügen einer neuen Sp
 $_ARRAYLANG['TXT_USER'] = "Benutzer";
 $_ARRAYLANG['TXT_ADD_USER'] = "Benutzer hinzufügen";
 $_ARRAYLANG['TXT_USER_LIST'] = "Benutzer Liste";
-$_ARRAYLANG['TXT_USERNAME'] = "Benutzername";
+$_ARRAYLANG['TXT_USERNAME'] = "Nom d'utilisateur";
 $_ARRAYLANG['TXT_USER_ADMINISTRATION'] = "Benutzerverwaltung";
 $_ARRAYLANG['TXT_DESCRIPTION'] = "Beschreibung";
 $_ARRAYLANG['TXT_IMAGE_ADMINISTRATION'] = "Bilderverwaltung";
@@ -70,7 +70,7 @@ $_ARRAYLANG['TXT_NEW_CATEGORY'] = "Neue Kategorie";
 $_ARRAYLANG['TXT_NEW_PAGE'] = "Neue Seite";
 $_ARRAYLANG['TXT_NEWS_MANAGER'] = "News Manager";
 $_ARRAYLANG['TXT_NEWSLETTER'] = "Newsletter";
-$_ARRAYLANG['TXT_PASSWORD'] = "Passwort";
+$_ARRAYLANG['TXT_PASSWORD'] = "Mot de passe";
 $_ARRAYLANG['TXT_OPEN_ISSUE'] = "Pendent";
 $_ARRAYLANG['TXT_SOURCE_MODE'] = "Quelltext Mode:";
 $_ARRAYLANG['TXT_REDIRECT'] = "Redirekt URL";
@@ -194,7 +194,7 @@ $_ARRAYLANG['TXT_CANNOT_DELETE_STANDARD_GROUPS'] = "Die Standard Gruppen können
 $_ARRAYLANG['TXT_GROUP_ID'] = "ID";
 $_ARRAYLANG['TXT_CANNOT_DELETE_ADMINS'] = "Alle Benutzer mit Administratoren Rechte wurden nicht aus Standard Backend Gruppe gelöscht!";
 $_ARRAYLANG['TXT_SECURITY_CODE_IS_INCORRECT'] = "Der Sicherheitscode ist unkorrekt.";
-$_ARRAYLANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'] = "Das Passwort oder der Benutzername ist falsch.";
+$_ARRAYLANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'] = "Le mot de passe ou le nom d'utilisateur est incorrect.";
 $_ARRAYLANG['TXT_FEED_MODULE_DESCRIPTION'] = "News Syndication";
 $_ARRAYLANG['TXT_LANGUAGE_NAME_REQUIRED'] = "Bitte geben Sie einen Sprachvariablen Namen an!";
 $_ARRAYLANG['TXT_APPLICATION_RANGE_REQUIRED'] = "Bitte wählen Sie die Verwendungsbereiche!";
@@ -275,7 +275,7 @@ $_ARRAYLANG['TXT_DESIGN_FILES_ADMINISTRATION'] = "Design files administration";
 $_ARRAYLANG['TXT_CREATE_FILE'] = "Create file";
 $_ARRAYLANG['TXT_GUESTBOOK'] = "Gästebuch";
 $_ARRAYLANG['TXT_ADMIN_STATUS'] = "Administrator";
-$_ARRAYLANG['TXT_USER_NAME'] = "Benutzername";
+$_ARRAYLANG['TXT_USER_NAME'] = "Nom d'utilisateur";
 $_ARRAYLANG['TXT_MORE_NEWS'] = "More News";
 $_ARRAYLANG['TXT_DOC_SYS_MANAGER'] = "Dokumenten System";
 $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'] = "Übersicht";
@@ -377,7 +377,7 @@ $_ARRAYLANG['TXT_NEWPW_MAIL_TITLE'] = "Ihr Passwort wurde geändert";
 $_ARRAYLANG['TXT_NEWPW_MAIL_PART1'] = "Ihr Passwort für das ";
 $_ARRAYLANG['TXT_NEWPW_MAIL_PART2'] = " CMS Benutzerkonto, Benutzername: ";
 $_ARRAYLANG['TXT_NEWPW_MAIL_PART3'] = ", wurde erfolgreich geändert. Aus Sicherheitsgründen ist Ihr neues Passwort hier nicht aufgeführt.";
-$_ARRAYLANG['TXT_NEWPW_MAIL_USER'] = "Benutzername: ";
+$_ARRAYLANG['TXT_NEWPW_MAIL_USER'] = "Nom d'utilisateur: ";
 $_ARRAYLANG['TXT_NEWPW_MAIL_PART4'] = "Falls diese Änderung nicht durch Sie erfolgte, können Sie sich mit folgendem Link ein neues Passwort setzen.";
 $_ARRAYLANG['TXT_PW_TO_SHORT'] = "Das angegebene Passwort ist zu kurz. Bitte min. 6 Zeichen angeben.";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "Die beiden Passwörter stimmen nicht überein.";
@@ -431,7 +431,7 @@ $_ARRAYLANG['TXT_EDIT_USER_ACCOUNT'] = "Benutzerkonto bearbeiten";
 $_ARRAYLANG['TXT_SET_NEW_PASSWORD'] = "Neues Passwort setzen";
 $_ARRAYLANG['TXT_INVALID_PASSWORD'] = "Das Passwort ist ungültig (min. 6 Zeichen).";
 $_ARRAYLANG['TXT_PASSWORD_CHANGED_SUCCESSFULLY'] = "Ihr Passwort wurde erfolgreich geändert.";
-$_ARRAYLANG['TXT_PASSWORD_LOST'] = "Passwort vergessen?";
+$_ARRAYLANG['TXT_PASSWORD_LOST'] = "Avez-vous oublié votre mot de passe?";
 $_ARRAYLANG['TXT_NOTEPAD'] = "Notepad";
 $_ARRAYLANG['TXT_COMMUNITY_MODULE_DESCRIPTION'] = "Stellte das Basissystem für eine Community Plattform zur Verfügung.";
 $_ARRAYLANG['TXT_RESIDENCE'] = "Wohnort";
@@ -657,7 +657,7 @@ $_ARRAYLANG['TXT_SETTINGS_SERVER_CONFIGURATION'] = "Serverkonfiguration";
 $_ARRAYLANG['TXT_SETTINGS_EMAIL_ACCOUNTS'] = "E-Mail Konten";
 $_ARRAYLANG['TXT_SETTINGS_ACCOUNT'] = "Konto";
 $_ARRAYLANG['TXT_SETTINGS_HOST'] = "Host";
-$_ARRAYLANG['TXT_SETTINGS_USERNAME'] = "Benutzername";
+$_ARRAYLANG['TXT_SETTINGS_USERNAME'] = "Nom d'utilisateur";
 $_ARRAYLANG['TXT_SETTINGS_STANDARD'] = "Standard";
 $_ARRAYLANG['TXT_SETTINGS_FUNCTIONS'] = "Funktionen";
 $_ARRAYLANG['TXT_SETTINGS_MODFIY'] = "Bearbeiten";
