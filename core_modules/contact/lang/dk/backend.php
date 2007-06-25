@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 21:57:34 +0200
+* generated date Mon, 25 Jun 2007 22:11:48 +0200
 **/
 
 $_ARRAYLANG['TXT_CONTACT_DATE'] = "Dato";
@@ -34,7 +34,7 @@ $_ARRAYLANG['TXT_CONTACT_FUNCTIONS'] = "Funktionen";
 $_ARRAYLANG['TXT_CONTACT_DETAILS'] = "Detaljer";
 $_ARRAYLANG['TXT_CONTACT_DELETE_ENTRY'] = "Eintrag löschen";
 $_ARRAYLANG['TXT_CONTACT_ENTRIES_OF_NAME'] = "Kontaktformulareinträge von %NAME%";
-$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'] = "Da diese Datei von einer unbekannten Person herauf geladen wurde,\\\\nbesteht die Möglichkeit, dass diese Datei Viren oder Trojaner enthält!\\\\n\\\\nMöchten Sie diese Datei trotzdem öffnen?";
+$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'] = "Da diese Datei von einer unbekannten Person herauf geladen wurde,\\nbesteht die Möglichkeit, dass diese Datei Viren oder Trojaner enthält!\\n\\nMöchten Sie diese Datei trotzdem öffnen?";
 $_ARRAYLANG['TXT_CONTACT_ACTION_IS_IRREVERSIBLE'] = "Diese Aktion kann nicht rückgängig gemacht werden!";
 $_ARRAYLANG['TXT_CONTACT_NAME'] = "Name";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES'] = "Empfängeradresse(n)";
