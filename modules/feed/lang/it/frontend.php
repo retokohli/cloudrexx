@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 11:10:29 +0200
+* generated date Mon, 25 Jun 2007 11:46:26 +0200
 **/
 
 $_ARRAYLANG['TXT_FEED_NO_NEWSFEED'] = "Keine NewsFeeds vorhanden!";
