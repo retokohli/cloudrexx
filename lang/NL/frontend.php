@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 13:54:35 +0200
+* generated date Mon, 25 Jun 2007 18:05:16 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(minimaal 6 karakters)";
@@ -66,7 +66,9 @@ $_ARRAYLANG['TXT_INVALID_PASSWORD'] = "Het wachtwoord is ongeldig, deze moet min
 $_ARRAYLANG['TXT_PASSWORD_CHANGED_SUCCESSFULLY'] = "Het wachtwoord is succesvol gewijzigd!";
 $_ARRAYLANG['TXT_PASSWORD_LOST'] = "Wachtwoord vergeten?";
 $_ARRAYLANG['TXT_NOT_ALLOWED_TO_ACCESS'] = "Dit gedeelte van de website is niet toegankelijk!";
+$_ARRAYLANG['TXT_SAVE'] = "Opslaan";
 $_ARRAYLANG['TXT_CANCEL'] = "Annuleer";
+$_ARRAYLANG['TXT_CATEGORY'] = "Categorie";
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Adverteren";
 $_ARRAYLANG['TXT_MARKET_TITLE'] = "Adverteren";
 $_ARRAYLANG['TXT_RESERVATION'] = "Reserveringen";

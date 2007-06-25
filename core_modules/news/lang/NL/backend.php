@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 13:54:35 +0200
+* generated date Mon, 25 Jun 2007 18:05:16 +0200
 **/
 
 $_ARRAYLANG['TXT_DELETE_MARKED'] = "Verwijderen";
@@ -114,8 +114,8 @@ $_ARRAYLANG['TXT_NEWS_DATE_DESCRIPTION'] = "Datum van het nieuwsbericht";
 $_ARRAYLANG['TXT_NEWS_LONG_DATE_DESCRIPTION'] = "Datum met tijdsaanduiding";
 $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'] = "Link naar het nieuwsbericht";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'] = "Categorie nieuwsbericht";
-$_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-klasse: row1 of row2";
-$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block voor de definiering van een nieuwsbericht. Starttag: <!-- BEGIN newsrow --> Eindtag: <!-- END newsrow -->";
+$_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-klasse (row1 of row2)";
+$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block voor de definiering van een nieuwsbericht. De starttag: <!-- BEGIN newsrow --> en de eindtag: <!-- END newsrow -->.";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "De onderstaande placeholders zijn beschikbaar en behoren tot de <b>sectie</b> nieuws en hebben <b>cmd</b> als details.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Titel van het nieuwsbericht";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Tekst van het nieuwsbericht";
@@ -126,8 +126,8 @@ $_ARRAYLANG['TXT_PUBLISHED_ON'] = "Gepubliceerd op:";
 $_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "In het designvoorbeeld <b>headlines.html</b>. Deze pagina kan met de placeholder [[HEADLINES_FILE]] in het design of in de content geplaatst worden.";
 $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Pad van de afbeelding van het nieuwsbericht";
 $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'] = "Korte tekst van het nieuwsbericht";
-$_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "De teaservelden kunnen in het design of in de content geplaatst worden.>br />Gebruik de placeholder die bij het teaserbeheer wordt aangegeven om de velden te plaatsen.";
-$_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Block voor de definiering van een teaser. Starttag: <!-- BEGIN teaser_n --> Eindtag: <!-- END teaser_n -->. n is het veldnummer, beginnend bij 1";
+$_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "De teaservelden kunnen in het design of in de content geplaatst worden. Gebruik de placeholder die bij het teaserbeheer wordt aangegeven om de velden te plaatsen.";
+$_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Block voor de definiering van een teaser. De starttag: <!-- BEGIN teaser_n --> en de eindtag <!-- END teaser_n -->. n is het veldnummer, beginnend bij 1.";
 $_ARRAYLANG['TXT_CONTINUE'] = "verder";
 $_ARRAYLANG['TXT_NUMBER_OF_CHARS'] = "Aantal karakters";
 $_ARRAYLANG['TXT_IMAGE'] = "Afbeelding";
