@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 19:35:56 +0200
+* generated date Mon, 25 Jun 2007 19:48:57 +0200
 **/
 
 $_ARRAYLANG['TXT_NAME'] = "Name";
@@ -22,7 +22,7 @@ $_ARRAYLANG['TXT_ENTRY_READS'] = "Der Eintrag lautet:";
 $_ARRAYLANG['TXT_NEW_GUESTBOOK_ENTRY'] = "Neuer Gästebucheintrag auf";
 $_ARRAYLANG['TXT_DATA_RECORD_STORED_ACTIVATE'] = "Beachten Sie bitte, dass der Administrator alle einkommenden Beiträge zuerst überprüft, bevor diese auf der Seite erscheinen.";
 $_ARRAYLANG['txt_captcha'] = "Bitte geben Sie die abgebildeten Ziffern ein";
-$_ARRAYLANG['TXT_ALT_STRING'] = "Der Wert dieses Bildes lautet: {NUMBER}, ohne Leerzeichen zwischen den Ziffern.";
+$_ARRAYLANG['TXT_ALT_STRING'] = "Der Wert dieses Bildes lautet: , ohne Leerzeichen zwischen den Ziffern.";
 $_ARRAYLANG['captcha_error'] = "Die eingegebene Nummer stimmt nicht!";
 $_ARRAYLANG['TXT_IS_INVALID'] = "ist leer oder nicht gültig!";
 $_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "Die eingegebene Zahl stimmt nicht!";
