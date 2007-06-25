@@ -1,10 +1,10 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 11:10:29 +0200
+* generated date Mon, 25 Jun 2007 11:46:26 +0200
 **/
 
-$_ARRAYLANG['TXT_DELETE_MARKED'] = "Selectie verwijderen";
+$_ARRAYLANG['TXT_DELETE_MARKED'] = "xxx";
 $_ARRAYLANG['TXT_NEWS_MANAGER'] = "Nieuwsbeheer";
 $_ARRAYLANG['TXT_CREATE_NEWS'] = "Nieuws toevoegen";
 $_ARRAYLANG['TXT_CATEGORY_MANAGER'] = "Categoriebeheer";
@@ -18,8 +18,8 @@ $_ARRAYLANG['TXT_ACTION'] = "Functies";
 $_ARRAYLANG['TXT_CATEGORY'] = "Categorie";
 $_ARRAYLANG['TXT_NEWS_DELETE_CONFIRM'] = "Dit nieuwsbericht verwijderen?";
 $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'] = "Deze actie kan niet ongedaan gemaakt worden!";
-$_ARRAYLANG['TXT_SELECT_ALL'] = "Alles selecteren";
-$_ARRAYLANG['TXT_REMOVE_SELECTION'] = "Selectie verwijderen";
+$_ARRAYLANG['TXT_SELECT_ALL'] = "Selecteer alles";
+$_ARRAYLANG['TXT_REMOVE_SELECTION'] = "Deselecteer alles";
 $_ARRAYLANG['TXT_EDIT'] = "Bewerken";
 $_ARRAYLANG['TXT_MARKED'] = "Geselecteerd";
 $_ARRAYLANG['TXT_ACTIVATE'] = "Activeren";
@@ -158,7 +158,7 @@ $_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKER'] = "Möchten Sie den Ticker %s wirk
 $_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKERS_MSG'] = "Möchten Sie die ausgewählten Ticker wirklich löschen?";
 $_ARRAYLANG['TXT_NEWS_DELETE_TICKER'] = "Ticker %s löschen";
 $_ARRAYLANG['TXT_NEWS_NO_TICKER_AVAILABLE'] = "Keine Ticker vorhanden!";
-$_ARRAYLANG['TXT_NEWS_CHECK_ALL'] = "Alles selecteren";
+$_ARRAYLANG['TXT_NEWS_CHECK_ALL'] = "Selecteer alles";
 $_ARRAYLANG['TXT_NEWS_UNCHECK_ALL'] = "Deselecteer alles";
 $_ARRAYLANG['TXT_NEWS_WITH_SELECTED'] = "Geselecteerde";
 $_ARRAYLANG['TXT_NEWS_DELETE'] = "Verwijderen";
