@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 09:17:54 +0200
+* generated date Mon, 25 Jun 2007 11:10:29 +0200
 **/
 
 $_ARRAYLANG['TXT_DELETE_MARKED'] = "Delete marked";
@@ -38,7 +38,7 @@ $_ARRAYLANG['TXT_ENDDATE'] = "End date";
 $_ARRAYLANG['TXT_OPTIONAL'] = "Start and end date are optional!";
 $_ARRAYLANG['TXT_ACTIVE'] = "Active";
 $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'] = "The data were deletet successfully!";
-$_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Error in the database! If this error appear many times, please contact ASTALAVISTA";
+$_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Error in the database! If this error appear many times, please contact Comvation Development Team";
 $_ARRAYLANG['TXT_EDIT_NEWS_CONTENT'] = "Edit news";
 $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'] = "The data were successfully updated";
 $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'] = "The data  record was added successfully";
@@ -115,7 +115,7 @@ $_ARRAYLANG['TXT_NEWS_LONG_DATE_DESCRIPTION'] = "Date with time";
 $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'] = "Link to the news message";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'] = "Category of the news message";
 $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-class: row1 or row2";
-$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block zur definierung einer News meldung. Starttag: &lt;!-- BEGIN newsrow --&gt; Endtag: &lt;!-- END newsrow --&gt;";
+$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block zur definierung einer News meldung. Starttag: <!-- BEGIN newsrow --> Endtag: <!-- END newsrow -->";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Die folgenden Platzhalter stehen bei den Seiten zur Verfügung, welche zur <b>section</b> news gehören und als <b>cmd</b> details haben.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Title of the news message";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Text of the news message";
@@ -127,7 +127,7 @@ $_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "In der Designvorlage <b>headl
 $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Path to the image of the news message";
 $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'] = "Short text of the news message";
 $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "Die Teaserboxen können im Design oder im Content eingebunden werden.<br />Verwenden Sie die Platzhalter die bei der Teaseradministration angezeigt werden,<br />um die Boxen einzubinden.";
-$_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Block zur definierung eines Teasers. Starttag: &lt;!-- BEGIN teaser_n --&gt; Endtag: &lt;!-- END teaser_n --&gt;. n ist die Box Nummer, beginnend bei 1";
+$_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Block zur definierung eines Teasers. Starttag: <!-- BEGIN teaser_n --> Endtag: <!-- END teaser_n -->. n ist die Box Nummer, beginnend bei 1";
 $_ARRAYLANG['TXT_CONTINUE'] = "continue";
 $_ARRAYLANG['TXT_NUMBER_OF_CHARS'] = "Number of chars";
 $_ARRAYLANG['TXT_IMAGE'] = "Image";
