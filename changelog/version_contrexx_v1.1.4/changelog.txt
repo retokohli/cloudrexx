@@ -8,6 +8,8 @@
 // 01.05.2007 Shop - Hersteller
 Verwaltung von Hersteller. Im Admin steht ein neues Administrationsmenü "Hersteller" zur Verfügung. Frontend-Marker "SHOP_MENU" wurde durch ein weiteres Dropdown "Hersteller" erweitert (Falls Hersteller im Shop-Modul erfasst wurden). Es stehen zwei weitere Frontend-Marker zur Verfügung: SHOP_MANUFACTURER_NAME und SHOP_MANUFACTURER_URL. SHOP_MANUFACTURER_URL wird als Link angezeigt (target="_blank").
 
+Gästebuch
+- Konfigurationsoption damit alle Einträge in jeder Sprache angezeigt werden.
 
 ****************************************
 * Changes ******************************
@@ -15,6 +17,8 @@ Verwaltung von Hersteller. Im Admin steht ein neues Administrationsmenü "Herstel
 Shop
 - Der JavaScript Warenkorb wird nun auf jeder Seite ausserhalb des Shops angezeigt (Sofern die Einstellung $_CONFIGURATION['custom']['shopnavbar'] in der Konfigurationsdatei (config/configuration.php) aktiviert ist.)
 
+Allgemein
+- Russische Übersetzung des Grundsystems erweitert (Dank an Herr Andreas Hahn!)
 
 ****************************************
 * Bugfixes *****************************
@@ -22,9 +26,13 @@ Shop
 Shop
 - Zugewiesene Merkmale können einem Produkt wieder entfernt werden.
 - Automatisch generierte Links enthalten nun die Angabe der index.php.
+- Darstellungsfehler (Unicode / Latin1)
 
 Kontaktmanager
 - Der CSV-Export funktioniert nun mit unlimitierter erfasster Anzahl Einträge.
+
+News
+- Komplette URI's bei Teaserbild Auswahlfunktion
 
 Update System
 - Das Update der Bildergalerie funktioniert auch wenn der MySQL Mode NO_AUTO_VALUE_ON_ZERO aktiviert ist.
