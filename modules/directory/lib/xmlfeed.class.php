@@ -2,7 +2,7 @@
 /**
  * RSS Feed
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Astalavista Dev Team <thun@astalavista.ch>
+ * @author      Comvation Development Team <info@comvation.com>
  * @version     $Id:     Exp $
  * @package     contrexx
  * @subpackage  module_directory
@@ -14,7 +14,7 @@
  *
  * Creates and deletes rss feeds
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Astalavista Dev Team <thun@astalavista.ch>
+ * @author      Comvation Development Team <info@comvation.com>
  * @version     $Id:     Exp $
  * @package     contrexx
  * @subpackage  module_directory

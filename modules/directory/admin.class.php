@@ -2,7 +2,7 @@
 /**
  * Directory
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Janik Tschanz <janik.tschanz@astalavista.net>
+ * @author        Janik Tschanz <janik.tschanz@comvation.com>
  * @package     contrexx
  * @subpackage  module_directory
  * @todo        Edit PHP DocBlocks!
@@ -22,7 +22,7 @@ require_once ASCMS_CORE_PATH.'/'.'settings.class.php';
  *
  * Class to manage CMS RSS news feeds
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Janik Tschanz <janik.tschanz@astalavista.net>
+ * @author      Janik Tschanz <janik.tschanz@comvation.com>
  * @package     contrexx
  * @subpackage  module_directory
  */

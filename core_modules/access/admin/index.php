@@ -5,7 +5,7 @@
  * CMS Administration
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Astalavista Engineering Team
+ * @author        Comvation Engineering Team
  * @version       $Id:    Exp $
  * @package     contrexx
  * @subpackage  core_module_access
