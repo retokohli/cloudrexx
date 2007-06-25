@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 13:40:27 +0200
+* generated date Mon, 25 Jun 2007 13:54:35 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(minimaal 6 karakters)";
@@ -73,7 +73,7 @@ $_ARRAYLANG['TXT_RESERVATION'] = "Reserveringen";
 $_ARRAYLANG['TXT_RESERVATION_MODULE'] = "Reserveringssysteem";
 $_ARRAYLANG['TXT_COMPANY'] = "Bedrijf";
 $_ARRAYLANG['TXT_EGOVERNMENT'] = "Online desk";
-$_ARRAYLANG['TXT_IMAGE'] = "Image";
+$_ARRAYLANG['TXT_IMAGE'] = "Afbeelding";
 $_ARRAYLANG['TXT_EXP_SEARCH'] = "uitgebreid zoeken";
 $_ARRAYLANG['TXT_POPUP_MODULE_DESCRIPTION'] = "Pop-up vensters instellen";
 $_ARRAYLANG['TXT_IMPRINT_MODULE_DESCRIPTION'] = "Inprint";
