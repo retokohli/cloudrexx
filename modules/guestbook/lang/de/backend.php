@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 18:05:16 +0200
+* generated date Mon, 25 Jun 2007 19:35:56 +0200
 **/
 
 $_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY'] = "Gästebucheintrag hinzufügen";
@@ -45,4 +45,5 @@ $_ARRAYLANG['TXT_DELETE_CATEGORY_ALL'] = "Wollen Sie wirklich alle markierten Ei
 $_ARRAYLANG['TXT_DATA_RECORD_MULTI_DELETE_ERROR'] = "Fehler beim löschen eines oder mehreren Datensätzen";
 $_ARRAYLANG['TXT_REPLACE_AT'] = "Die @ in Email Adressen ersetzen";
 $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATE_OVERVIEW'] = "Template Übersicht";
+$_ARRAYLANG['TXT_GUESTBOOK_ONLY_LANG_ENTRIES'] = "Nur Einträge der aktuellen Sprache anzeigen.";
 ?>
