@@ -106,10 +106,11 @@ class Guestbook extends GuestbookLibrary
 
 		/** start paging **/
 		$query = "SELECT *
-		              FROM ".DBPREFIX."module_guestbook
-		             WHERE lang_id=".$this->langId."
-		             AND status = 1
-		          ORDER BY id DESC";
+			FROM ".DBPREFIX."module_guestbook
+			WHERE "
+			.($this->arrSettings['guestbook_only_lang_entries'] ? "lang_id='$this->langId' AND " : '')
+			."status = 1
+			ORDER BY id DESC";
 		$objResult = $objDatabase->Execute($query);
 		$count = $objResult->RecordCount();
 		$paging = getPaging($count, $pos, "&amp;section=guestbook", "<b>".$_ARRAYLANG['TXT_GUESTBOOK_ENTRIES']."</b>", false);
@@ -119,10 +120,11 @@ class Guestbook extends GuestbookLibrary
         $this->_objTpl->setVariable("GUESTBOOK_TOTAL_ENTRIES", $count);
 
 		$query = "SELECT *
-		              FROM ".DBPREFIX."module_guestbook
-				     WHERE lang_id=".$this->langId."
-				 	 AND status = 1
-		          ORDER BY id DESC";
+			FROM ".DBPREFIX."module_guestbook
+			WHERE "
+			.($this->arrSettings['guestbook_only_lang_entries'] ? "lang_id='$this->langId' AND " : '')
+			."status = 1
+			ORDER BY id DESC";
 		$objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
 
 		while (!$objResult->EOF) {

@@ -66,31 +66,31 @@ class pdfCreator
     */
 	function pdfCreator($plid)
 	{
-		global $objInit, $objDatabase;
+		global $objInit, $objDatabase, $_CONFIG;
 
 		$this->_objDatabase = $objDatabase;
 
 		$this->pdfID = $plid;
 		$this->_objResult = $this->_objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_shop_pricelists WHERE id=".$plid);
-		$this->pdfNAME = $this->_objResult->fields['name'];
+		$this->pdfNAME = strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($this->_objResult->fields['name']) : $this->_objResult->fields['name'];
 		$this->pdfLANG_ID = $this->_objResult->fields['lang_id'];
 		$this->pdfBORDER_ON = $this->_objResult->fields['border_on'];
 		$this->pdfHEADER_ON = $this->_objResult->fields['header_on'];
-		$this->pdfHEADER_LEFT = $this->_objResult->fields['header_left'];
-		$this->pdfHEADER_RIGHT = $this->_objResult->fields['header_right'];
+		$this->pdfHEADER_LEFT = strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($this->_objResult->fields['header_left']) : $this->_objResult->fields['header_left'];
+		$this->pdfHEADER_RIGHT = strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($this->_objResult->fields['header_right']) : $this->_objResult->fields['header_right'];
 		$this->pdfFOOTER_ON = $this->_objResult->fields['footer_on'];
-		$this->pdfFOOTER_LEFT = $this->_objResult->fields['footer_left'];
-		$this->pdfFOOTER_RIGHT = $this->_objResult->fields['footer_right'];
+		$this->pdfFOOTER_LEFT = strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($this->_objResult->fields['footer_left']) : $this->_objResult->fields['footer_left'];
+		$this->pdfFOOTER_RIGHT = strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($this->_objResult->fields['footer_right']) : $this->_objResult->fields['footer_right'];
 		$this->pdfCATEGORIES = $this->_objResult->fields['categories'];
 
 		$objInit->backendLangId = $this->pdfLANG_ID;
 		$_ARRAYLANG = $objInit->loadLanguageData('shop');
 
-		$this->langProductName = $_ARRAYLANG['TXT_PRODUCT_NAME'];
-		$this->langProductCustomId = $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'];
-		$this->langProductId = $_ARRAYLANG['TXT_ID'];
-		$this->langPrice = $_ARRAYLANG['TXT_UNIT_PRICE'];
-		$this->langCategoryName = $_ARRAYLANG['TXT_CATEGORY'];
+		$this->langProductName = strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($_ARRAYLANG['TXT_PRODUCT_NAME']) : $_ARRAYLANG['TXT_PRODUCT_NAME'];
+		$this->langProductCustomId = strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID']) : $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'];
+		$this->langProductId = strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($_ARRAYLANG['TXT_ID']) : $_ARRAYLANG['TXT_ID'];
+		$this->langPrice = strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($_ARRAYLANG['TXT_UNIT_PRICE']) : $_ARRAYLANG['TXT_UNIT_PRICE'];
+		$this->langCategoryName = strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($_ARRAYLANG['TXT_CATEGORY']) : $_ARRAYLANG['TXT_CATEGORY'];
 
 		// set currency symbol
 		$this->_objResult = $this->_objDatabase->Execute("SELECT symbol FROM ".DBPREFIX."module_shop_currencies WHERE is_default=1");
@@ -104,8 +104,8 @@ class pdfCreator
 						  WHERE pro.catid = cat.catid AND pro.status=1
 					      ORDER BY pro.id DESC");
 		while (!$this->_objResult->EOF) {
-			$this->arrProducts[$this->_objResult->fields['id']] = array	(	'title' => $this->_objResult->fields['title'],
-																'catname' => $this->_objResult->fields['catname'],
+			$this->arrProducts[$this->_objResult->fields['id']] = array	(	'title' => (strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($this->_objResult->fields['title']) : $this->_objResult->fields['title']),
+																'catname' => (strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($this->_objResult->fields['catname']) : $this->_objResult->fields['catname']),
 																'product_id' => $this->_objResult->fields['product_id'],
 																'id' => $this->_objResult->fields['id'],
 																'normalprice' => $this->_objResult->fields['normalprice']." ".$this->currencySymbol
@@ -122,8 +122,8 @@ class pdfCreator
 					      ORDER BY pro.id DESC");
 
 		while (!$this->_objResult->EOF) {
-			$this->arrProducts[$this->_objResult->fields['id']] = array(	'title' => $this->_objResult->fields['title'],
-															'catname' => $this->_objResult->fields['catname'],
+			$this->arrProducts[$this->_objResult->fields['id']] = array(	'title' => (strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($this->_objResult->fields['title']) : $this->_objResult->fields['title']),
+															'catname' => (strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($this->_objResult->fields['catname']) : $this->_objResult->fields['catname']),
 															'product_id' => $this->_objResult->fields['product_id'],
 															'id' => $this->_objResult->fields['id'],
 															'normalprice' => "S ".$this->_objResult->fields['discountprice']." ".$this->currencySymbol

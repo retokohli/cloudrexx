@@ -130,21 +130,24 @@ class GuestbookManager extends GuestbookLibrary
 
 
 
-    function _settings(){
+    function _settings()
+    {
     	global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
     	$this->pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
     	$this->_objTpl->loadTemplateFile('module_guestbook_settings.html',true,true);
 
     	// Store settings
-    	if(isset($_POST['store'])) {
+    	if (isset($_POST['store'])) {
 		    $activate = isset($_POST['guestbook_activate_submitted_entries']) ? intval($_POST['guestbook_activate_submitted_entries']) : 0;
 		    $notification = isset($_POST['guestbook_send_notification_email']) ? intval($_POST['guestbook_send_notification_email']) : 0;
 		    $replace_at = isset($_POST['guestbook_replace_at']) ? intval($_POST['guestbook_replace_at']) : 0;
+		    $maintainLangSeparated = isset($_POST['guestbook_only_lang_entries']) ? intval($_POST['guestbook_only_lang_entries']) : 0;
 
 		    $objDatabase->Execute("UPDATE ".DBPREFIX."module_guestbook_settings SET value='".$activate."' WHERE name='guestbook_activate_submitted_entries'");
 		    $objDatabase->Execute("UPDATE ".DBPREFIX."module_guestbook_settings SET value='".$notification."' WHERE name='guestbook_send_notification_email'");
 		    $objDatabase->Execute("UPDATE ".DBPREFIX."module_guestbook_settings SET value='".$replace_at."' WHERE name='guestbook_replace_at'");
+		    $objDatabase->Execute("UPDATE ".DBPREFIX."module_guestbook_settings SET value='".$maintainLangSeparated."' WHERE name='guestbook_only_lang_entries'");
 
     		$this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'];
     		// renew the settings values
@@ -156,11 +159,13 @@ class GuestbookManager extends GuestbookLibrary
 		    'GUESTBOOK_ACTIVATE_SUBMITTED_ENTRIES' => $this->arrSettings['guestbook_activate_submitted_entries'] == '1' ? "checked=\"checked\"" : "",
 		    'GUESTBOOK_SEND_NOTIFICATION_EMAIL' => $this->arrSettings['guestbook_send_notification_email'] == '1' ? "checked=\"checked\"" : "",
 		    'GUESTBOOK_REPLACE_AT' => $this->arrSettings['guestbook_replace_at'] == '1' ? "checked=\"checked\"" : "",
+		    'GUESTBOOK_ONLY_LANG_ENTRIES' => $this->arrSettings['guestbook_only_lang_entries'] == '1' ? "checked=\"checked\"" : "",
 		    'TXT_STORE'	=> $_ARRAYLANG['TXT_STORE'],
 		    'TXT_SETTINGS'	=> $_ARRAYLANG['TXT_SETTINGS'],
 		    'TXT_AUTO_ACTIVATE_NEW_ENTRIES'	=> $_ARRAYLANG['TXT_AUTO_ACTIVATE_NEW_ENTRIES'],
 		    'TXT_SEND_NOTIFICATION_MESSAGE'	=> $_ARRAYLANG['TXT_SEND_NOTIFICATION_MESSAGE'],
-		    'TXT_REPLACE_AT' => $_ARRAYLANG['TXT_REPLACE_AT']
+		    'TXT_REPLACE_AT' => $_ARRAYLANG['TXT_REPLACE_AT'],
+		    'TXT_GUESTBOOK_ONLY_LANG_ENTRIES' => $_ARRAYLANG['TXT_GUESTBOOK_ONLY_LANG_ENTRIES']
 		));
     }
 
@@ -409,9 +414,9 @@ class GuestbookManager extends GuestbookLibrary
 
 		/** start paging **/
 		$query = "SELECT *
-		              FROM ".DBPREFIX."module_guestbook
-		             WHERE lang_id='$this->langId'
-		          ORDER BY id DESC";
+			FROM ".DBPREFIX."module_guestbook "
+			.($this->arrSettings['guestbook_only_lang_entries'] ? "WHERE lang_id='$this->langId' " : '')
+			."ORDER BY id DESC";
 		$objResult = $objDatabase->Execute($query);
 
 		$count = $objResult->RecordCount();
@@ -421,9 +426,9 @@ class GuestbookManager extends GuestbookLibrary
 		/** end paging **/
 
 		$query = "SELECT *
-		              FROM ".DBPREFIX."module_guestbook
-		             WHERE lang_id='$this->langId'
-		          ORDER BY id DESC ";
+			FROM ".DBPREFIX."module_guestbook "
+			.($this->arrSettings['guestbook_only_lang_entries'] ? "WHERE lang_id='$this->langId' " : '')
+			."ORDER BY id DESC ";
 		$objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
 
 		$i=0;
