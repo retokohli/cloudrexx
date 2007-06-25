@@ -162,7 +162,7 @@ class CSVimport {
      * @param   integer     $CatParent  The parent ShopCategory ID
      * @return  integer                 The ID of the ShopCategory,
      *                                  or 0 on failure.
-     * @author  Unknown <thun@astalavista.ch> (Original author)
+     * @author  Unknown <info@comvation.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
     //static
@@ -193,7 +193,7 @@ class CSVimport {
      * is inserted and its ID returned instead.
      * @static
      * @return  integer     The ShopCategory, or 0 on failure
-     * @author  Unknown <thun@astalavista.ch> (Original author)
+     * @author  Unknown <info@comvation.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Added creation of default ShopCategory, made static)
      */
     //static
@@ -218,7 +218,7 @@ class CSVimport {
      * @param   integer     $CatParent  The parent ShopCategory ID
      * @return  integer                 The ID of the new ShopCategory,
      *                                  or 0 on failure.
-     * @author  Unknown <thun@astalavista.ch> (Original author)
+     * @author  Unknown <info@comvation.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
     //static

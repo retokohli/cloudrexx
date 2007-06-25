@@ -1,7 +1,7 @@
 <?php
 /**
  * Stats
- * @copyright   ASTALAVISTA SECURE CMS - 2005 COMVATION AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Christian Wehrli <christian.wehrli@astalavista.ch>
  * @version     $Id: index.class.php,v 1.11 2003/05/05 10:10:32 hitsch Exp $
  * @package     contrexx
@@ -25,7 +25,7 @@ require_once ASCMS_CORE_MODULE_PATH . '/stats/lib/statsLib.class.php';
  *
  * Class with different methodes to get statistical information about
  * webaccess
- * @copyright   ASTALAVISTA SECURE CMS - 2005 COMVATION AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Christian Wehrli <christian.wehrli@astalavista.ch>
  * @version     $Id: index.class.php,v 1.11 2003/05/05 10:10:32 hitsch Exp $
  * @package     contrexx

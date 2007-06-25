@@ -2,7 +2,7 @@
 /**
  * File Manager
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Janik Tschanz <janik.tschanz@astalavista.net>
+ * @author      Janik Tschanz <janik.tschanz@comvation.com>
  * @version     $Id:  Exp $
  * @package     contrexx
  * @subpackage  lib_framework
@@ -14,7 +14,7 @@
  *
  * LibClass to manage fils and folders
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Janik Tschanz <janik.tschanz@astalavista.net>
+ * @author      Janik Tschanz <janik.tschanz@comvation.com>
  * @version     $Id:  Exp $
  * @package     contrexx
  * @subpackage  lib_framework

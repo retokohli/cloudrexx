@@ -3,7 +3,7 @@
 /**
  * The main page for the CMS
  * @copyright    CONTREXX CMS - COMVATION AG
- * @author      ASTALAVISTA Development Team
+ * @author      Comvation Development Team
  * @version     v1.0.9.10.1 stable
  * @package        contrexx
  * @subpackage    core

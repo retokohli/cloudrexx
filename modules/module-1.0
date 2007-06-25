@@ -1,6 +1,6 @@
 <!-- 	http://de.wikipedia.org/wiki/DTD
 		derived from pears package dtd
-		GPL, 2006 ASTALAVISTA IT Engineering
+		GPL, 2007 COMVATION AG
 -->
 
 <!ENTITY % NUMBER "CDATA">

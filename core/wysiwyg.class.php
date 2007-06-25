@@ -6,12 +6,12 @@ if (eregi("wysiwyg.class.php",$_SERVER['PHP_SELF']))
     die();
 }
 
-/* RichEditor v1.9 modification for Astalavista
+/* RichEditor v1.9 modification for Comvation
 /*************************************************
 	see /editor/richeditor19_README.txt
 */
 
-/* FCKeditor v2.0 RC3 modification for Astalavista
+/* FCKeditor v2.0 RC3 modification for Comvation
 /***************************************************
 	see /editor/FCKeditor_2.0rc3_README.txt
 */

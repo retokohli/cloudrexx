@@ -2,7 +2,7 @@
 /**
  * Cache
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Ivan Schmid <ivan.schmid@astalavistagroup.ch>
+ * @author        Ivan Schmid <ivan.schmid@comvation.com>
  * @version       $Id:  Exp $
  * @package     contrexx
  * @subpackage  lib_framework
@@ -21,7 +21,7 @@ if (eregi("cache.class.php",$_SERVER['PHP_SELF']))
  *
  * Class to create and show the cached output
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Ivan Schmid <ivan.schmid@astalavistagroup.ch>
+ * @author        Ivan Schmid <ivan.schmid@comvation.com>
  * @version       $Id:  Exp $
  * @package     contrexx
  * @subpackage  lib_framework

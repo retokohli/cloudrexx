@@ -11,7 +11,7 @@ if (eregi("shop_image.class.php",$_SERVER['PHP_SELF']))
 *
 * Class to upload an image and create a thumbnail
 *
-* @copyright   ASTALAVISTA SECURE CMS - 2003 Astalavista Group GmbH
+* @copyright   CONTREXX CMS - COMVATION AG
 * @author      Christian Wehrli <schristian.wehrli@astalavista.ch>              
 * @module      shopmanager
 * @modulegroup shop                                                                                     

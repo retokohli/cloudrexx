@@ -2,7 +2,7 @@
 /**
  * Modulemanager
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Astalavista DEV Team <thun@astalavista.ch>
+ * @author      Astalavista DEV Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -14,7 +14,7 @@
  * This class manages the CMS Modules
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Astalavista DEV Team <thun@astalavista.ch>
+ * @author      Astalavista DEV Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  core
  */

@@ -11,7 +11,7 @@ function checkEntryData($var)
  * Class for the voting system
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Contrexx Dev Team <thun@astalavista.ch>
+ * @author      Contrexx Dev Team <info@comvation.com>
  * @version	   1.1
  * @package     contrexx
  * @subpackage  module_voting
