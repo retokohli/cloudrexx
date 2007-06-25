@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 11:46:26 +0200
+* generated date Mon, 25 Jun 2007 13:40:27 +0200
 **/
 
 $_ARRAYLANG['TXT_DATE'] = "Datum";
@@ -17,7 +17,7 @@ $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] = "Gerelateerde hyperlinks";
 $_ARRAYLANG['TXT_NEWS_SOURCE'] = "Bron";
 $_ARRAYLANG['TXT_LAST_UPDATE'] = "Laatste update";
 $_ARRAYLANG['TXT_PERFORM'] = "Uitvoeren";
-$_ARRAYLANG['TXT_NO_NEWS_FOUND'] = "Er is geen nieuws gevonden";
+$_ARRAYLANG['TXT_NO_NEWS_FOUND'] = "Er is geen nieuws gevonden!";
 $_ARRAYLANG['TXT_NEWS_FEED_TITLE'] = "Niewsfeed titel";
 $_ARRAYLANG['TXT_NEWS_FEED_DESCRIPTION'] = "Niewsfeed omschrijving";
 $_ARRAYLANG['TXT_SUBMIT_NEWS'] = "Nieuwsbericht toevoegen";
