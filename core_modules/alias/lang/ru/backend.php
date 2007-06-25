@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Sun, 24 Jun 2007 21:03:38 +0200
+* generated date Mon, 25 Jun 2007 09:17:54 +0200
 **/
 
 $_ARRAYLANG['TXT_ALIAS_ALIASES'] = "Aliase";

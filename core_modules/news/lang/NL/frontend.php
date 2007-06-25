@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Sun, 24 Jun 2007 21:03:38 +0200
+* generated date Mon, 25 Jun 2007 09:17:54 +0200
 **/
 
 $_ARRAYLANG['TXT_DATE'] = "Datum";
@@ -22,7 +22,7 @@ $_ARRAYLANG['TXT_NEWS_FEED_TITLE'] = "News Feed Titel";
 $_ARRAYLANG['TXT_NEWS_FEED_DESCRIPTION'] = "News Feed Beschreibung";
 $_ARRAYLANG['TXT_SUBMIT_NEWS'] = "Newsmeldung anmelden";
 $_ARRAYLANG['TXT_NEWS_SUCCESSFULLY_SUBMITED'] = "Die Newsmeldung wurde erfolgreich angemeldet.";
-$_ARRAYLANG['TXT_NEWS_SUBMIT_ERROR'] = "Es trat ein unerwarteter Fehler auf beim anmelden der Newsmeldung.<br />Versuchen Sie es erneut!";
+$_ARRAYLANG['TXT_NEWS_SUBMIT_ERROR'] = "Er is een onbekende fout opgetreden bij het toevoegen van het nieuwsbericht.<br />Probeer het nogmaals!";
 $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT'] = "You have to set at least a title and add some text to the news entry or set a redirect link.";
 $_ARRAYLANG['TXT_NEWS_SHOW_NEWS'] = "News anzeigen";
 $_ARRAYLANG['TXT_NEWS_OPTIONAL_VARS'] = "Diese Variablen sind optional";
