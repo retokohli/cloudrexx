@@ -1,14 +1,14 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Sun, 24 Jun 2007 21:03:38 +0200
+* generated date Mon, 25 Jun 2007 09:17:54 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(minimaal 6 karakters)";
 $_ARRAYLANG['TXT_ACTIVE'] = "Actief";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "Deze velden zijn vereist.";
 $_ARRAYLANG['TXT_PASSWORD_NOT_USERNAME_TEXT'] = "Het wachtwoord en de gebruikersnaam mogen niet identiek zijn!";
-$_ARRAYLANG['TXT_SAVE_CHANGES'] = "Bewaar wijzigingen";
+$_ARRAYLANG['TXT_SAVE_CHANGES'] = "Wijzigingen opslaan";
 $_ARRAYLANG['TXT_LOGGED_IN_AS'] = "Inlogd als";
 $_ARRAYLANG['TXT_USER'] = "Gebruiker";
 $_ARRAYLANG['TXT_ADD_USER'] = "Gebruiker toevoegen";

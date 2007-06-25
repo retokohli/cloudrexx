@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Sun, 24 Jun 2007 21:03:38 +0200
+* generated date Mon, 25 Jun 2007 09:17:54 +0200
 **/
 
 $_ARRAYLANG['TXT_DELETE_MARKED'] = "Markierte löschen";
@@ -9,7 +9,7 @@ $_ARRAYLANG['TXT_NEWS_MANAGER'] = "News Manager";
 $_ARRAYLANG['TXT_CREATE_NEWS'] = "News erstellen";
 $_ARRAYLANG['TXT_CATEGORY_MANAGER'] = "Kategorienmanager";
 $_ARRAYLANG['TXT_EDIT_NEWS_MESSAGE'] = "Newsmeldungen bearbeiten";
-$_ARRAYLANG['TXT_ARCHIVE'] = "Archiv";
+$_ARRAYLANG['TXT_ARCHIVE'] = "Archief";
 $_ARRAYLANG['TXT_DATE'] = "Datum";
 $_ARRAYLANG['TXT_TITLE'] = "Titel";
 $_ARRAYLANG['TXT_USER'] = "Benutzer";
@@ -42,12 +42,12 @@ $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Fehler beim Ausführen der Datenbanka
 $_ARRAYLANG['TXT_EDIT_NEWS_CONTENT'] = "Newsmeldung bearbeiten";
 $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'] = "Die Daten wurden erfolgreich aktualisiert";
 $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'] = "Der Datensatz wurde erfolgreich hinzugefügt";
-$_ARRAYLANG['TXT_ADD_NEW_CATEGORY'] = "Een nieuwe categorie aanmaken";
+$_ARRAYLANG['TXT_ADD_NEW_CATEGORY'] = "Nieuwe categorie toevoegen";
 $_ARRAYLANG['TXT_NAME'] = "Name";
 $_ARRAYLANG['TXT_ADD'] = "Toevoegen";
 $_ARRAYLANG['TXT_CATEGORY_LIST'] = "Kategorienliste";
 $_ARRAYLANG['TXT_ID'] = "ID";
-$_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Änderungen übernehmen";
+$_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Veranderingen doorvoeren";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Datensatz wirklich löschen?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Diese Aktion kann die Systemfunktionalität beinflussen!";
 $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "Die Kategorie konnte nicht gelöscht werden! Bitte löschen Sie zuerst alle Untergruppen.";
@@ -61,8 +61,8 @@ $_ARRAYLANG['TXT_NEWS_FEED_DESCRIPTION'] = "News Feed Beschreibung";
 $_ARRAYLANG['TXT_NEWS_HEADLINES_LIMIT'] = "Anzahl Headlines";
 $_ARRAYLANG['TXT_SUBMIT_NEWS'] = "Newsmeldung anmelden";
 $_ARRAYLANG['TXT_CONFIRM'] = "Bestätigen";
-$_ARRAYLANG['TXT_ANONYMOUS'] = "Anonym";
-$_ARRAYLANG['TXT_ALLOW_USERS_SUBMIT_NEWS'] = "Besucher erlauben News anzumelden.";
+$_ARRAYLANG['TXT_ANONYMOUS'] = "Anoniem";
+$_ARRAYLANG['TXT_ALLOW_USERS_SUBMIT_NEWS'] = "Toestaan dat bezoekers nieuws kunnen posten";
 $_ARRAYLANG['TXT_ALLOW_ONLY_MEMBERS_SUBMIT_NEWS'] = "Nur Mitglieder dürfen News anmelden (Benötigt Community-Modul).";
 $_ARRAYLANG['TXT_AUTO_ACTIVATE_SUBMITTED_NEWS'] = "Toegevoegde nieuwsberichten automatisch activeren.";
 $_ARRAYLANG['TXT_INVALIDATED_ENTRIES'] = "Unbestätigte Einträge";
@@ -86,17 +86,17 @@ $_ARRAYLANG['TXT_SHOW_TEASER_BOX'] = "Teaser Box anzeigen";
 $_ARRAYLANG['TXT_EDIT_TEASER_BOX'] = "Teaser Box bearbeiten";
 $_ARRAYLANG['TXT_EDIT_BOX_TEMPLATE'] = "Box Vorlage bearbeiten";
 $_ARRAYLANG['TXT_DELETE_TEASER_BOX'] = "Teaser Box löschen";
-$_ARRAYLANG['TXT_ADD_BOX'] = "Neue Box hinzufügen";
+$_ARRAYLANG['TXT_ADD_BOX'] = "Nieuw veld toevoegen";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_TEASER_BOX'] = "Möchten Sie diese Teaser Box wirklich löschen?";
 $_ARRAYLANG['TXT_TEASER_BOX_TEMPLATES'] = "Teaser Boxvorlagen";
 $_ARRAYLANG['TXT_ADD_TEASER_BOX'] = "Teaser Box hinzufügen";
 $_ARRAYLANG['TXT_SAVE'] = "Speichern";
 $_ARRAYLANG['TXT_DESCRIPTION'] = "Beschreibung";
 $_ARRAYLANG['TXT_DELETE_TEMPLATE'] = "Vorlage löschen";
-$_ARRAYLANG['TXT_ADD_TEMPLATE'] = "Neue Vorlage hinzufügen";
+$_ARRAYLANG['TXT_ADD_TEMPLATE'] = "Nieuwe template toevoegen";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_BOX_TPL_TEXT'] = "Möchten Sie diese Box Vorlage wirklich löschen?";
 $_ARRAYLANG['TXT_SOURCE_CODE_MODE'] = "Quelltext Modus";
-$_ARRAYLANG['TXT_ADD_BOX_TEMPLATE'] = "Een veld template";
+$_ARRAYLANG['TXT_ADD_BOX_TEMPLATE'] = "Veld template toevoegen";
 $_ARRAYLANG['TXT_PLACEHOLDER_LIST'] = "Platzhalter Liste";
 $_ARRAYLANG['TXT_EXAMPLE'] = "Beispiel";
 $_ARRAYLANG['TXT_SET_TEMPLATE_DESCRIPTION_TEXT'] = "Sie müssen eine Beschreibung für die Vorlage angeben!";
@@ -158,7 +158,7 @@ $_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKER'] = "Möchten Sie den Ticker %s wirk
 $_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKERS_MSG'] = "Möchten Sie die ausgewählten Ticker wirklich löschen?";
 $_ARRAYLANG['TXT_NEWS_DELETE_TICKER'] = "Ticker %s löschen";
 $_ARRAYLANG['TXT_NEWS_NO_TICKER_AVAILABLE'] = "Keine Ticker vorhanden!";
-$_ARRAYLANG['TXT_NEWS_CHECK_ALL'] = "Alle auswählen";
+$_ARRAYLANG['TXT_NEWS_CHECK_ALL'] = "Alles selecteren";
 $_ARRAYLANG['TXT_NEWS_UNCHECK_ALL'] = "Auswahl entfernen";
 $_ARRAYLANG['TXT_NEWS_WITH_SELECTED'] = "markierte";
 $_ARRAYLANG['TXT_NEWS_DELETE'] = "Löschen";
@@ -176,7 +176,7 @@ $_ARRAYLANG['TXT_NEWS_PREFIX'] = "Prefix";
 $_ARRAYLANG['TXT_NEWS_TICKER_PREFIX_MSG'] = "Das Prefix wird beim Speichern des Tickers dem Inhalt vorangestellt.<br />Dabei wird das Prefix nicht URL-Kodiert, sofern diese Option ausgewählt wurde.";
 $_ARRAYLANG['TXT_NEWS_IMAGE_DESCRIPTION'] = "Image (Teasers)";
 $_ARRAYLANG['TXT_NEWS_GENERAL'] = "General";
-$_ARRAYLANG['TXT_NEWS_ADVANCED'] = "Advanced";
+$_ARRAYLANG['TXT_NEWS_ADVANCED'] = "Uitgebreid";
 $_ARRAYLANG['TXT_NEWS_REDIRECT'] = "If you want to link on a external news-message, you can insert a link to the desired page. ";
 $_ARRAYLANG['TXT_NEWS_REDIRECT_TITLE'] = "Redirect";
 $_ARRAYLANG['TXT_NEWS_TYPE'] = "Type of message";
