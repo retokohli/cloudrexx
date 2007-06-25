@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 13:40:27 +0200
+* generated date Mon, 25 Jun 2007 13:54:35 +0200
 **/
 
 $_ARRAYLANG['TXT_DELETE_MARKED'] = "Verwijderen";
@@ -123,7 +123,7 @@ $_ARRAYLANG['TXT_NEWS_LASTUPDATE_DESCRIPTION'] = "Datum van de laatste wijziging
 $_ARRAYLANG['TXT_NEWS_SOURCE_DESCRIPTION'] = "Externe bron van het nieuwsbericht";
 $_ARRAYLANG['TXT_NEWS_URL_DESCRIPTION'] = "Link #1 en #2 van het nieuwsbericht";
 $_ARRAYLANG['TXT_PUBLISHED_ON'] = "Gepubliceerd op:";
-$_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "In het designvoorbeeld <b>headlines.html</b>. Deze pagina kan met de placeholder [[HEADLINES_FILE]] in het design of in de inhoud geplaatst worden.";
+$_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "In het designvoorbeeld <b>headlines.html</b>. Deze pagina kan met de placeholder [[HEADLINES_FILE]] in het design of in de content geplaatst worden.";
 $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Pad van de afbeelding van het nieuwsbericht";
 $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'] = "Korte tekst van het nieuwsbericht";
 $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "De teaservelden kunnen in het design of in de content geplaatst worden.>br />Gebruik de placeholder die bij het teaserbeheer wordt aangegeven om de velden te plaatsen.";
