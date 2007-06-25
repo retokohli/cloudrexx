@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 09:17:54 +0200
+* generated date Mon, 25 Jun 2007 11:10:29 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(minimaal 6 karakters)";
@@ -34,10 +34,10 @@ $_ARRAYLANG['TXT_MONTH_ARRAY'] = "januari,februari,maart,april,mei,juni,juli,aug
 $_ARRAYLANG['TXT_DAY_ARRAY'] = "zondag,maandag,dinsdag,woensdag,donderdag,vrijdag,zaterdag";
 $_ARRAYLANG['TXT_HOSTNAME'] = "Hostname";
 $_ARRAYLANG['TXT_COLLAPS_LINK'] = "sluiten";
-$_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Vul alle verplichte velden in.";
+$_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Vul alle verplichte velden in!";
 $_ARRAYLANG['TXT_LOG_OUT'] = "Uitloggen";
 $_ARRAYLANG['TXT_EXPAND_LINK'] = "Uitbreiden";
-$_ARRAYLANG['TXT_THIS_MODULE_DOESNT_EXISTS'] = "Deze module bestaat niet.";
+$_ARRAYLANG['TXT_THIS_MODULE_DOESNT_EXISTS'] = "Deze module bestaat niet!";
 $_ARRAYLANG['TXT_STATUS'] = "Status";
 $_ARRAYLANG['TXT_DESELECT_ALL'] = "Deselecteer alles";
 $_ARRAYLANG['TXT_OVERVIEW'] = "Overzicht";
@@ -52,7 +52,7 @@ $_ARRAYLANG['TXT_USER_NAME'] = "Gebruikersnaam";
 $_ARRAYLANG['TXT_MORE_NEWS'] = "Meer nieuws";
 $_ARRAYLANG['TXT_LOGIN'] = "Inloggen";
 $_ARRAYLANG['TXT_BACK'] = "terug";
-$_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "De twee wachtwoorden komen niet overeen";
+$_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "De twee wachtwoorden komen niet overeen!";
 $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "Kan geen e-mail verzenden naar %EMAIL%!";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Reset wachtwoord";
 $_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "Vul uw e-mailadres in. Een bericht met verdere instructies zal spoedig verstuurd worden.";
@@ -62,8 +62,8 @@ $_ARRAYLANG['TXT_ACCOUNT_WITH_EMAIL_DOES_NOT_EXIST'] = "Een gebruikersaccount me
 $_ARRAYLANG['TXT_SET_PASSWORD_TEXT'] = "Vul uw gewenste wachtwoord in en herhaal dit ter controle.";
 $_ARRAYLANG['TXT_INVALID_USER_ACCOUNT'] = "Ongeldig gebruikersaccount opgegeven";
 $_ARRAYLANG['TXT_SET_NEW_PASSWORD'] = "Kies nieuw wachtwoord";
-$_ARRAYLANG['TXT_INVALID_PASSWORD'] = "Het wachtwoord is ongeldig, deze moet minimaal uit 6 karakters bestaan.";
-$_ARRAYLANG['TXT_PASSWORD_CHANGED_SUCCESSFULLY'] = "Het wachtwoord is succesvol gewijzigd.";
+$_ARRAYLANG['TXT_INVALID_PASSWORD'] = "Het wachtwoord is ongeldig, deze moet minimaal uit 6 karakters bestaan!";
+$_ARRAYLANG['TXT_PASSWORD_CHANGED_SUCCESSFULLY'] = "Het wachtwoord is succesvol gewijzigd!";
 $_ARRAYLANG['TXT_PASSWORD_LOST'] = "Wachtwoord vergeten?";
 $_ARRAYLANG['TXT_NOT_ALLOWED_TO_ACCESS'] = "Dit gedeelte van de website is niet toegankelijk!";
 $_ARRAYLANG['TXT_CANCEL'] = "Annuleer";
@@ -72,7 +72,7 @@ $_ARRAYLANG['TXT_MARKET_TITLE'] = "Adverteren";
 $_ARRAYLANG['TXT_RESERVATION'] = "Reserveringen";
 $_ARRAYLANG['TXT_RESERVATION_MODULE'] = "Reserveringssysteem";
 $_ARRAYLANG['TXT_COMPANY'] = "Bedrijf";
-$_ARRAYLANG['TXT_EGOVERNMENT'] = "Online-Desk";
+$_ARRAYLANG['TXT_EGOVERNMENT'] = "Online desk";
 $_ARRAYLANG['TXT_IMAGE'] = "Image";
 $_ARRAYLANG['TXT_EXP_SEARCH'] = "uitgebreid zoeken";
 $_ARRAYLANG['TXT_POPUP_MODULE_DESCRIPTION'] = "Pop-up vensters instellen";
