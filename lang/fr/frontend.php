@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 19:48:57 +0200
+* generated date Mon, 25 Jun 2007 21:57:34 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
@@ -12,7 +12,7 @@ $_ARRAYLANG['TXT_SAVE_CHANGES'] = "Des modifications stocker";
 $_ARRAYLANG['TXT_LOGGED_IN_AS'] = "Sie sind angemeldet als";
 $_ARRAYLANG['TXT_USER'] = "Benutzer";
 $_ARRAYLANG['TXT_ADD_USER'] = "Benutzer hinzufügen";
-$_ARRAYLANG['TXT_USERNAME'] = "Benutzername";
+$_ARRAYLANG['TXT_USERNAME'] = "Nom d'utilisateur";
 $_ARRAYLANG['TXT_DESCRIPTION'] = "Beschreibung";
 $_ARRAYLANG['TXT_DATE'] = "Datum";
 $_ARRAYLANG['TXT_EMAIL'] = "e-mail";
@@ -20,7 +20,7 @@ $_ARRAYLANG['TXT_END_DATE'] = "Enddatum";
 $_ARRAYLANG['TXT_ADD'] = "Hinzufügen";
 $_ARRAYLANG['TXT_MODULE'] = "Module";
 $_ARRAYLANG['TXT_NAME'] = "Name";
-$_ARRAYLANG['TXT_PASSWORD'] = "Passwort";
+$_ARRAYLANG['TXT_PASSWORD'] = "Mot de passe";
 $_ARRAYLANG['TXT_PAGE'] = "Seite";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Sprache";
 $_ARRAYLANG['TXT_FROM'] = "von";
@@ -45,10 +45,10 @@ $_ARRAYLANG['TXT_FORUM'] = "Forum";
 $_ARRAYLANG['TXT_VERIFY_PASSWORD'] = "Passwort bestätigen";
 $_ARRAYLANG['TXT_TYPE'] = "Type";
 $_ARRAYLANG['TXT_SECURITY_CODE_IS_INCORRECT'] = "Der Sicherheitscode ist unkorrekt.";
-$_ARRAYLANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'] = "Das Passwort oder der Benutzername ist falsch.";
+$_ARRAYLANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'] = "Le mot de passe ou le nom d'utilisateur est incorrect.";
 $_ARRAYLANG['TXT_SEARCH'] = "Rechercher";
 $_ARRAYLANG['TXT_ADMIN_STATUS'] = "Administrator";
-$_ARRAYLANG['TXT_USER_NAME'] = "Benutzername";
+$_ARRAYLANG['TXT_USER_NAME'] = "Nom d'utilisateur";
 $_ARRAYLANG['TXT_MORE_NEWS'] = "More News";
 $_ARRAYLANG['TXT_LOGIN'] = "Anmelden";
 $_ARRAYLANG['TXT_BACK'] = "zurück";
@@ -64,7 +64,7 @@ $_ARRAYLANG['TXT_INVALID_USER_ACCOUNT'] = "Ungültiges Benutzerkonto angegeben!"
 $_ARRAYLANG['TXT_SET_NEW_PASSWORD'] = "Neues Passwort setzen";
 $_ARRAYLANG['TXT_INVALID_PASSWORD'] = "Das Passwort ist ungültig (min. 6 Zeichen).";
 $_ARRAYLANG['TXT_PASSWORD_CHANGED_SUCCESSFULLY'] = "Ihr Passwort wurde erfolgreich geändert.";
-$_ARRAYLANG['TXT_PASSWORD_LOST'] = "Passwort vergessen?";
+$_ARRAYLANG['TXT_PASSWORD_LOST'] = "Avez-vous oublié votre mot de passe?";
 $_ARRAYLANG['TXT_NOT_ALLOWED_TO_ACCESS'] = "Sie sind nicht berechtigt auf diesen Teil der Webseite zuzugreifen!";
 $_ARRAYLANG['TXT_SAVE'] = "Save";
 $_ARRAYLANG['TXT_CANCEL'] = "Abbrechen";
