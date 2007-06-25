@@ -2124,7 +2124,7 @@ sendReq('', 1);
      */
     function _parseCart()
     {
-        global $objDatabase;
+        global $objDatabase, $_CONFIG;
 
         $arrProducts      = array();
         $shipment         = false;
@@ -2186,7 +2186,7 @@ sendReq('', 1);
                         'id'             => $arrProduct['id'],
                         'product_id'     => $objResult->fields['product_id'],
                         'cart_id'        => $cartProdId,
-                        'title'          => empty($_GET['remoteJs']) ? $objResult->fields['title'] : htmlspecialchars(utf8_encode($objResult->fields['title'])),
+                        'title'          => empty($_GET['remoteJs']) ? $objResult->fields['title'] : htmlspecialchars((strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? $objResult->fields['title'] : utf8_encode($objResult->fields['title']))),
                         'options'        => $productOptions,
                         'price'          => $this->objCurrency->formatPrice($price),
                         'price_unit'     => $this->aCurrencyUnitName,
