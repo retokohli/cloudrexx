@@ -3332,6 +3332,7 @@ sendReq('', 1);
                         "1, NOW())";
                     $objResult = $objDatabase->Execute($query);
                     $customerid = $objDatabase->Insert_ID();
+                    $_SESSION['shop']['username'] = trim($_SESSION['shop']['email']);
                 }
                 $_SESSION['shop']['customerid'] = $customerid;
 
