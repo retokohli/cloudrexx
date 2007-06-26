@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 25 Jun 2007 22:11:48 +0200
+* generated date Tue, 26 Jun 2007 15:16:34 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(minimaal 6 karakters)";
@@ -692,4 +692,5 @@ $_ARRAYLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Het is niet mogelijk om een co
 $_ARRAYLANG['TXT_DELETED'] = "verwijderd";
 $_ARRAYLANG['TXT_WORKFLOW_PAGE_PREVIEW'] = "Page preview";
 $_ARRAYLANG['TXT_STATUS_CANNOT_DELETE'] = "Het is niet mogelijk om te verwijderen!";
+$_ARRAYLANG['TXT_ASSIGN_BLOCK'] = "";
 ?>
