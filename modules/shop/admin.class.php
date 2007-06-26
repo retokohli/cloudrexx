@@ -2794,8 +2794,8 @@ class shopmanager extends ShopLibrary {
             $shopArticleActive        = intval($_POST['shopArticleActive']);
             $shopB2B                  = intval($_POST['shopB2B']);
             $shopB2C                  = intval($_POST['shopB2C']);
-            $shopStartdate            = contrexx_addslashes($_POST['shopStartdate']);
-            $shopEnddate              = contrexx_addslashes($_POST['shopEnddate']);
+            $shopStartdate            = !empty($_POST['shopStartdate']) ? contrexx_addslashes($_POST['shopStartdate']) : 0;
+            $shopEnddate              = !empty($_POST['shopEnddate']) ? contrexx_addslashes($_POST['shopEnddate']) : 0;
             //begin image attributes
             $shopImageWidth           = intval($_POST['shopImageWidth']);
             $shopThumbnailPercentSize = intval($_POST['shopThumbnailPercentSize']);
