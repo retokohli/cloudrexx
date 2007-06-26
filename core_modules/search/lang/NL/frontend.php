@@ -1,13 +1,13 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 26 Jun 2007 23:58:46 +0200
+* generated date Wed, 27 Jun 2007 01:37:13 +0200
 **/
 
-$_ARRAYLANG['TXT_SEARCH_RESULTS'] = "Suchresultate";
-$_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_RELEVANCE'] = "Ihre Suche zu <strong>%s</strong>  ergab %d Treffer (sortiert nach Relevanz)";
-$_ARRAYLANG['TXT_RELEVANCE'] = "Relevanz";
-$_ARRAYLANG['TXT_NO_SEARCH_RESULTS'] = "Mit dem Suchbegriff <strong>%s</strong> wurden keine Resultate gefunden.";
-$_ARRAYLANG['TXT_SEARCH'] = "Suchen";
-$_ARRAYLANG['TXT_PLEASE_ENTER_SEARCHTERM'] = "Bitte geben Sie ein Suchwort ein.";
+$_ARRAYLANG['TXT_SEARCH_RESULTS'] = "Zoekresultaten";
+$_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_RELEVANCE'] = "De zoekresultaten voor <strong>%s</strong> geven %d treffers (gesorteerd bij relevantie)";
+$_ARRAYLANG['TXT_RELEVANCE'] = "Relevantie";
+$_ARRAYLANG['TXT_NO_SEARCH_RESULTS'] = "Er zijn geen zoekresultaten voor <strong>%s</strong>!";
+$_ARRAYLANG['TXT_SEARCH'] = "Zoeken";
+$_ARRAYLANG['TXT_PLEASE_ENTER_SEARCHTERM'] = "Geef een zoekterm op";
 ?>
