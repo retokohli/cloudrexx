@@ -802,7 +802,7 @@ class Shop extends ShopLibrary {
     function getFirstProductThumbnailFromCategory($catId=0)
     {
         global $objDatabase;
-echo("catId: $catId<br />");
+//echo("catId: $catId<br />");
         // look for thumbnails in products from that category first
         $queryProduct = "
             SELECT picture
@@ -835,7 +835,7 @@ echo("catId: $catId<br />");
         }
         while (!$objResultSubCat->EOF) {
             $childCatId = $objResultSubCat->fields['catid'];
-echo("catId: $catId, child: $childCatId<br />");
+//echo("catId: $catId, child: $childCatId<br />");
             $thumbnailPath =
                 $this->getFirstProductThumbnailFromCategory($childCatId);
             if ($thumbnailPath) {
