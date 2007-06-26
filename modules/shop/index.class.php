@@ -723,14 +723,140 @@ class Shop extends ShopLibrary {
 
 
     /**
+     * Set up the subcategories block in the current shop page.
      *
+     * Recursively searches the category given by $parentId and its
+     * subcategories for a suitable product thumbnail.  Displays the
+     * categories along with a contained thumbnail.
+     * @param   integer     $parentId   The (sub-)category ID
+     * @return  boolean                 True on success, false otherwise
+     * @todo    Template field 'TXT_ADD_TO_CARD' is very inappropriately
+     *          named.  Rename to the same as the value filled in from
+     *          $_ARRAYLANG.
+     * @global  mixed   $objDatabase    Database object
+     * @global  array   $_ARRAYLANG     Language array
+     */
+    function getCategories($parentId)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        if ($parentId == 0) {
+            $parentId = 0;
+        }
+        // get all active child categories with parent ID $parentId
+        $query = "
+            SELECT catid, catname
+              FROM ".DBPREFIX."module_shop_categories
+             WHERE parentid=$parentId AND catstatus!=0
+          ORDER BY catsorting ASC, catname ASC
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return false;
+        }
+        $this->objTemplate->setCurrentBlock('subCategories');
+        $cell = 0;
+        // for all children categories do...
+        while (!$objResult->EOF) {
+            $catId   = $objResult->fields['catid'];
+            $catName = $objResult->fields['catname'];
+            // look for products with pictures in the category and its
+            // subcategories.
+            $thumbnailPath = $this->getFirstProductThumbnailFromCategory($catId);
+            if (!$thumbnailPath) {
+                // none found.  use default image.
+                $thumbnailPath = $this->shopImageWebPath.$this->noPictureName;
+            }
+
+            $this->objTemplate->setVariable(array(
+                'SHOP_PRODUCT_TITLE'            => htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET),
+                'SHOP_PRODUCT_THUMBNAIL'        => $thumbnailPath,
+                'TXT_ADD_TO_CARD'               => $_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'],
+                'SHOP_PRODUCT_DETAILLINK_IMAGE' => "index.php?section=shop&amp;catId=$catId",
+                'SHOP_PRODUCT_SUBMIT_FUNCTION'  => "location.replace('index.php?section=shop&catId=$catId')",
+                'SHOP_PRODUCT_SUBMIT_TYPE'      => "button",
+            ));
+
+            if ($this->objTemplate->blockExists('subCategories')) {
+                $this->objTemplate->parse('subCategories');
+                   if(++$cell % 4 == 0) {
+                    $this->objTemplate->parse('subCategoriesRow');
+                }
+            }
+            $objResult->MoveNext();
+        }
+        return true;
+    }
+
+
+    /**
+     * Recursively search the categories for a valid product thumbnail.
      *
-     * @param integer $parentId
+     * Searches the category given by the $catId argument first.  If no
+     * thumbnails are found, recursively searches all child categories
+     * (depth first).
+     * @param   integer     $catId  The top category to search
+     * @return  string              The product thumbnail path on success,
+     *                              false otherwise.
+     */
+    function getFirstProductThumbnailFromCategory($catId=0)
+    {
+        global $objDatabase;
+echo("catId: $catId<br />");
+        // look for thumbnails in products from that category first
+        $queryProduct = "
+            SELECT picture
+              FROM ".DBPREFIX."module_shop_products
+             WHERE catid=$catId
+               AND picture!=''
+          ORDER BY sort_order
+        ";
+        $objResultProduct = $objDatabase->SelectLimit($queryProduct, 1);
+        if ($objResultProduct && $objResultProduct->RecordCount() > 0) {
+            // got a picture!
+            $arrImages = $this->_getShopImagesFromBase64String(
+                $objResultProduct->fields['picture']
+            );
+            $thumbnailPath = $this->shopImageWebPath.
+                             $arrImages[1]['img'].
+                             $this->thumbnailNameSuffix;
+            return $thumbnailPath;
+        }
+        // no thumbnail in that category, try its subcategories
+        $querySubCat = "
+            SELECT catid
+              FROM ".DBPREFIX."module_shop_categories
+             WHERE parentid=$catId
+        ";
+        $objResultSubCat = $objDatabase->Execute($querySubCat);
+        // query failed, or no more subcategories? - give up
+        if (!$objResultSubCat || $objResultSubCat->RecordCount() == 0) {
+            return false;
+        }
+        while (!$objResultSubCat->EOF) {
+            $childCatId = $objResultSubCat->fields['catid'];
+echo("catId: $catId, child: $childCatId<br />");
+            $thumbnailPath =
+                $this->getFirstProductThumbnailFromCategory($childCatId);
+            if ($thumbnailPath) {
+                return $thumbnailPath;
+            }
+            $objResultSubCat->MoveNext();
+        }
+        // no more subcategories, no picture -- give up
+        return false;
+    }
+
+
+    /**
+     * old version
+     *
+     * @param   integer $parentId
      * @todo    Documentation!
      * @todo    Fix template field 'TXT_ADD_TO_CARD' being filled with string constant
      *          instead of value from $_ARRAYLANG
      */
-    function getCategories($parentId)
+    function getCategoriesOld($parentId)
     {
         global $objDatabase;
 
