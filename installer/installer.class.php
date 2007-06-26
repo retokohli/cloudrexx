@@ -393,16 +393,15 @@ class Installer
 	* @access	private
 	* @global	object	$objCommon
 	* @global	double	$requiredGDVersion
-	* @global	double	$requiredMySQLVersion
 	* @global	double	$requiredPHPVersion
 	*/
 	function _checkRequirements() {
-		global $objCommon, $requiredGDVersion, $requiredMySQLVersion, $requiredPHPVersion;
+		global $objCommon, $requiredGDVersion, $requiredPHPVersion;
 
 		if (isset($_POST['next'])) {
 			// get sytem informations
 			$phpVersion = $objCommon->getPHPVersion();
-			$mysqlVersion = $objCommon->getMysqlVersion();
+			$mysqlSupport = $objCommon->checkMySQLSupport();
 			$gdVersion = $objCommon->checkGDSupport();
 
 			if (!$objCommon->isWindows() && ini_get('safe_mode')) {
@@ -411,7 +410,7 @@ class Installer
 				$ftpSupport = true;
 			}
 
-			if (($phpVersion >= $requiredPHPVersion) && ($mysqlVersion >= $requiredMySQLVersion) && ($gdVersion >= $requiredGDVersion) && ($ftpSupport)) {
+			if (($phpVersion >= $requiredPHPVersion) && ($mysqlSupport) && ($gdVersion >= $requiredGDVersion) && ($ftpSupport)) {
 				$_SESSION['installer']['step']++;
 			}
 		}
@@ -427,11 +426,10 @@ class Installer
 	* @global	object	$objTpl
 	* @global	array	$_ARRLANG
 	* @global	double	$requiredGDVersion
-	* @global	double	$requiredMySQLVersion
 	* @global	double	$requiredPHPVersion
 	*/
 	function _getRequirementsPage() {
-		global $objCommon, $objTpl, $_ARRLANG, $requiredPHPVersion, $requiredMySQLVersion, $requiredGDVersion, $_CONFIG;
+		global $objCommon, $objTpl, $_ARRLANG, $requiredPHPVersion, $requiredGDVersion, $_CONFIG;
 
 		$this->arrStatusMsg['php'] = "";
 		$this->arrStatusMsg['extensions'] = "";
@@ -441,15 +439,15 @@ class Installer
 
 		// get sytem informations
 		$phpVersion = $objCommon->getPHPVersion();
-		$mysqlVersion = $objCommon->getMysqlVersion();
+		$mysqlSupport = $objCommon->checkMySQLSupport();
 		$gdVersion = $objCommon->checkGDSupport();
 		$ftpSupport = $objCommon->checkFTPSupport();
 
 		if ($phpVersion < $requiredPHPVersion) {
 			$this->arrStatusMsg['php'] .= str_replace("[VERSION]", $requiredPHPVersion, $_ARRLANG['TXT_PHP_VERSION_REQUIRED']."<br />");
 		}
-		if ($mysqlVersion < $requiredMySQLVersion) {
-			$this->arrStatusMsg['extensions'] .= str_replace("[VERSION]", $requiredMySQLVersion, $_ARRLANG['TXT_MYSQL_VERSION_REQUIRED']."<br />");
+		if (!$mysqlSupport) {
+			$this->arrStatusMsg['extensions'] .= $_ARRLANG['TXT_MYSQL_SUPPORT_REQUIRED']."<br />";
 		}
 		if ($gdVersion < $requiredGDVersion) {
 			$this->arrStatusMsg['extensions'] .= str_replace("[VERSION]", $requiredGDVersion, $_ARRLANG['TXT_GD_VERSION_REQUIRED']."<br />");
@@ -466,9 +464,8 @@ class Installer
 			'PHP_REQUIRED_VERION'	=> $_ARRLANG['TXT_PHP_VERSION']." >= ".$requiredPHPVersion,
 			'PHP_VERSION'			=> $phpVersion,
 			'PHP_VERSION_CLASS'		=> ($phpVersion >= $requiredPHPVersion) ? "successful" : "failed",
-			'MYSQL_VERSION'			=> $mysqlVersion,
-			'MYSQL_VERSION_CLASS'	=> $mysqlVersion >= $requiredMySQLVersion ? "successful" : "failed",
-			'MYSQL_REQUIRED_VERSION'	=> $_ARRLANG['TXT_MYSQL_VERSION']." >= ".$requiredMySQLVersion,
+			'MYSQL_SUPPORT'			=> $mysqlSupport ? $_ARRLANG['TXT_YES'] : $_ARRLANG['TXT_NO'],
+			'MYSQL_SUPPORT_CLASS'	=> $mysqlSupport ? "successful" : "failed",
 			'GD_REQUIRED_VERSION'	=> $_ARRLANG['TXT_GD_VERSION']." >= ".$requiredGDVersion,
 			'GD_VERSION'			=> $gdVersion,
 			'GD_VERSION_CLASS'		=> ($gdVersion >= $requiredGDVersion) ? "successful" : "failed",

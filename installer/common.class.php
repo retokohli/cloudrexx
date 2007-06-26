@@ -319,11 +319,33 @@ class CommonFunctions
 		return phpversion();
 	}
 
-	function getMysqlVersion() {
+	function checkMysqlVersion($installedMySQLVersion) {
+		global $requiredMySQLVersion;
+
+		$arrInstalledVersion = explode('.', $installedMySQLVersion);
+		$arrRequiredVersion = explode('.', $requiredMySQLVersion);
+
+		$maxSubVersion = count($arrInstalledVersion) > count($arrRequiredVersion) ? count($arrInstalledVersion) : count($arrRequiredVersion);
+		for ($nr = 0; $nr < $maxSubVersion; $nr++) {
+			if (!isset($arrRequiredVersion[$nr])) {
+				return true;
+			} elseif (!isset($arrInstalledVersion[$nr])) {
+				return false;
+			} elseif ($arrInstalledVersion[$nr] > $arrRequiredVersion[$nr]) {
+				return true;
+			} elseif ($arrInstalledVersion[$nr] < $arrRequiredVersion[$nr]) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	function checkMySQLSupport() {
 		if (extension_loaded('mysql')) {
-			return mysql_get_client_info();
+			return true;
 		} else {
-			return 0;
+			return false;
 		}
 	}
 
@@ -438,7 +460,7 @@ class CommonFunctions
 	}
 
 	function checkDbConnection($host, $user, $password) {
-		global $_ARRLANG, $dbType;
+		global $_ARRLANG, $dbType, $requiredMySQLVersion;
 
 		require_once $this->adoDbPath;
 
@@ -446,9 +468,16 @@ class CommonFunctions
 		@$db->NConnect($host, $user, $password);
 
 		$errorNr = $db->ErrorNo();
+		$arrServerInfo = $db->ServerInfo();
 		$db->Close();
+
 		if ($errorNr == 0) {
-			return true;
+			if ($this->checkMysqlVersion($arrServerInfo['version'])) {
+				return true;
+			} else {
+				return str_replace("[VERSION]", $requiredMySQLVersion, $_ARRLANG['TXT_MYSQL_VERSION_REQUIRED']."<br />")
+					.sprintf($_ARRLANG['TXT_MYSQL_SERVER_VERSION'], $arrServerInfo['version']);
+			}
 		} else {
 			return $_ARRLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER']."<i>&nbsp;(".$db->ErrorMsg().")</i><br />";
 		}

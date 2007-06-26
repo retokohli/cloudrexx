@@ -18,7 +18,11 @@ Shop
 - Der JavaScript Warenkorb wird nun auf jeder Seite ausserhalb des Shops angezeigt (Sofern die Einstellung $_CONFIGURATION['custom']['shopnavbar'] in der Konfigurationsdatei (config/configuration.php) aktiviert ist.)
 
 Allgemein
-- Russische Übersetzung des Grundsystems erweitert (Dank an Herr Andreas Hahn!)
+- Russische und Französische Übersetzung des Grundsystems erweitert.
+
+Webinstaller
+- MySQL Server Version Überprüfung anstatt der Client Version.
+
 
 ****************************************
 * Bugfixes *****************************
