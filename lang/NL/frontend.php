@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 26 Jun 2007 23:58:46 +0200
+* generated date Wed, 27 Jun 2007 01:37:13 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(minimaal 6 karakters)";
@@ -33,10 +33,10 @@ $_ARRAYLANG['TXT_TO'] = "naar";
 $_ARRAYLANG['TXT_MONTH_ARRAY'] = "januari,februari,maart,april,mei,juni,juli,augustus,september,oktober,november,december";
 $_ARRAYLANG['TXT_DAY_ARRAY'] = "zondag,maandag,dinsdag,woensdag,donderdag,vrijdag,zaterdag";
 $_ARRAYLANG['TXT_HOSTNAME'] = "Hostname";
-$_ARRAYLANG['TXT_COLLAPS_LINK'] = "sluiten";
+$_ARRAYLANG['TXT_COLLAPS_LINK'] = "inklappen";
 $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Vul alle verplichte velden in!";
 $_ARRAYLANG['TXT_LOG_OUT'] = "Uitloggen";
-$_ARRAYLANG['TXT_EXPAND_LINK'] = "Uitbreiden";
+$_ARRAYLANG['TXT_EXPAND_LINK'] = "uitklappen";
 $_ARRAYLANG['TXT_THIS_MODULE_DOESNT_EXISTS'] = "Deze module bestaat niet!";
 $_ARRAYLANG['TXT_STATUS'] = "Status";
 $_ARRAYLANG['TXT_DESELECT_ALL'] = "Deselecteer alles";

@@ -1,15 +1,15 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 26 Jun 2007 23:58:46 +0200
+* generated date Wed, 27 Jun 2007 01:37:13 +0200
 **/
 
-$_ARRAYLANG['TXT_MEDIA_FILE_NAME'] = "Dateiname";
-$_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Dateigrösse";
+$_ARRAYLANG['TXT_MEDIA_FILE_NAME'] = "Bestandsnaam";
+$_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Bestandsgrootte";
 $_ARRAYLANG['TXT_MEDIA_FILE_DATE'] = "Datum";
-$_ARRAYLANG['TXT_MEDIA_ARCHIVE'] = "Medienarchiv";
-$_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'] = "Dieses Verzeichnis ist leer";
-$_ARRAYLANG['TXT_MEDIA_FILE_TYPE'] = "Typ";
-$_ARRAYLANG['TXT_MEDIA_FILE_DIRECTORY'] = "Dateiordner";
-$_ARRAYLANG['TXT_MEDIA_FILE'] = "Datei";
+$_ARRAYLANG['TXT_MEDIA_ARCHIVE'] = "Bestandsarchief";
+$_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'] = "Deze map is leeg!";
+$_ARRAYLANG['TXT_MEDIA_FILE_TYPE'] = "Type";
+$_ARRAYLANG['TXT_MEDIA_FILE_DIRECTORY'] = "Bestandsmap";
+$_ARRAYLANG['TXT_MEDIA_FILE'] = "Bestand";
 ?>
