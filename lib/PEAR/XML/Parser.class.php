@@ -343,6 +343,19 @@ class XML_Parser extends PEAR
 
         $fp = @fopen($file, 'rb');
         if (is_resource($fp)) {
+        	if (empty($this->srcenc)) {
+        		$rx = '#<?xml.*encoding=[\'"]?([^\'"]+).*?>#mi';
+
+        		while (!feof($fp)) {
+				    $buffer = fgets($fp);
+				    if (preg_match($rx, $buffer, $m)) {
+				      $this->srcenc = strtoupper($m[1]);
+				      break;
+				    }
+				}
+        		rewind($fp);
+			}
+
             $this->fp = $fp;
             return $fp;
         }
