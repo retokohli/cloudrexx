@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 27 Jun 2007 02:00:51 +0200
+* generated date Wed, 27 Jun 2007 02:44:26 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(minimaal 6 karakters)";
@@ -472,7 +472,7 @@ $_ARRAYLANG['TXT_DELETED_RESTORE'] = "Herstel verwijderde pagina";
 $_ARRAYLANG['TXT_DELETED_RESTORE_JS'] = "Herstel verwijderde pagina?";
 $_ARRAYLANG['TXT_HISTORY_DELETED'] = "Deze pagina is al verwijderd!";
 $_ARRAYLANG['TXT_MULTISELECT_SELECT'] = "Selecteer actie";
-$_ARRAYLANG['TXT_MULTISELECT_DELETE'] = "Verwijder selectie";
+$_ARRAYLANG['TXT_MULTISELECT_DELETE'] = "Verwijderen";
 $_ARRAYLANG['TXT_DELETE_HISTORY_ALL'] = "Alle geselecteerde items verwijderen?";
 $_ARRAYLANG['TXT_PAGETITLE'] = "Paginatitel";
 $_ARRAYLANG['TXT_SUBMIT'] = "Opslaan";
@@ -505,8 +505,8 @@ $_ARRAYLANG['TXT_WORKFLOW'] = "Workflow";
 $_ARRAYLANG['TXT_CONTACT_SETTINGS'] = "Instellingen";
 $_ARRAYLANG['TXT_SYSTEM_DEVELOPMENT'] = "Ontwikkeling";
 $_ARRAYLANG['TXT_SETTINGS'] = "Instellingen";
-$_ARRAYLANG['TXT_MULTISELECT_ACTIVATE'] = "Activeer selectie";
-$_ARRAYLANG['TXT_MULTISELECT_DEACTIVATE'] = "Deactiveer selectie";
+$_ARRAYLANG['TXT_MULTISELECT_ACTIVATE'] = "Activeren";
+$_ARRAYLANG['TXT_MULTISELECT_DEACTIVATE'] = "Deactiveren";
 $_ARRAYLANG['TXT_DIRECTORY_MANAGE_CATEGORIES'] = "Beheercategoriën";
 $_ARRAYLANG['TXT_DIRECTORY_CONFIRM'] = "Valideer bestanden";
 $_ARRAYLANG['TXT_DIRECTORY_MANAGE_FILES'] = "Beheer files";
