@@ -36,11 +36,10 @@ function MultiAction(){
 }
 // ]]>
 </script>
-<form action="index.php?cmd=newsletter&amp;act=editlist&amp;id=0" method="post">
-<input type="submit" value="{TXT_NEWSLETTER_ADD_NEW_LIST}" />
-</form>
-<br />
 <div style="width: 100%; text-align: right;">
+	<form action="index.php?cmd=newsletter&amp;act=editlist&amp;id=0" method="post" style="float: left;">
+		<input type="submit" value="{TXT_NEWSLETTER_ADD_NEW_LIST}" />
+	</form>
 	<span>
 		<a href="index.php?cmd=newsletter&amp;act=users&amp;tpl=export&amp;listId=0">
 			<img style="border: 0;" alt="" title="{TXT_NEWSLETTER_EXPORT_ALL_LISTS}" src="images/icons/icon_excel.gif" /> 
@@ -48,6 +47,7 @@ function MultiAction(){
 		</a>  
 	</span>
 </div>
+<br />
 <form name="listslist" action="?cmd=newsletter&amp;act=lists&amp;bulkdelete=exe" method="post">
 <table border="0" cellpadding="2" cellspacing="0" width="100%" class="adminlist">
 	<tbody>
