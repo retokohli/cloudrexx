@@ -72,6 +72,10 @@ function search_getSearchPage($pos, $page_content)
 			$queryDirectory = search_searchQuery("directory", $term);
 			$queryDirectoryCats = search_searchQuery("directory_cats", $term);
 		}
+		if (in_array('calendar', $arrActiveModules)) {
+			$queryCalendar = search_searchQuery("calendar", $term);
+			$queryCalendarCats = search_searchQuery("calendar_cats", $term);
+		}
     }
 
     //Prm: Query,Section,Cmd,PageVar
@@ -87,6 +91,8 @@ function search_getSearchPage($pos, $page_content)
     $arrayMemberdirCats = array();
     $arrayDirectory = array();
     $arrayDirectoryCats = array();
+    $arrayCalendar = array();
+    $arrayCalendarCats = array();
 
     if (!empty($querydocsys)) {
        	$arrayDocsys=search_getResultArray($querydocsys,"docsys","details","id=",$term);
@@ -110,12 +116,17 @@ function search_getSearchPage($pos, $page_content)
     	$arrayDirectory = search_getResultArray($queryDirectory, "directory", "detail", "id=", $term);
     	$arrayDirectoryCats = search_getResultArray($queryDirectoryCats, "directory", "", "lid=", $term);
     }
+	if (!empty($queryCalendar)) {
+    	$arrayCalendar = search_getResultArray($queryCalendar, "calendar", "event", "id=", $term);
+    	$arrayCalendarCats = search_getResultArray($queryCalendarCats, "calendar", "", "catid=", $term);
+    }
 
+    
     //**************************************
 	//paging start
     //**************************************
 
-    $arraySearchResults=array_merge($arrayContent,$arrayNews,$arrayDocsys,$arrayPodcastMedia,$arrayPodcastCategory,$arrayShopProducts,$arrayGalleryCats,$arrayGalleryPics,$arrayMemberdir,$arrayMemberdirCats,$arrayDirectory,$arrayDirectoryCats);
+    $arraySearchResults=array_merge($arrayContent,$arrayNews,$arrayDocsys,$arrayPodcastMedia,$arrayPodcastCategory,$arrayShopProducts,$arrayGalleryCats,$arrayGalleryPics,$arrayMemberdir,$arrayMemberdirCats,$arrayDirectory,$arrayDirectoryCats,$arrayCalendar,$arrayCalendarCats);
     if(is_array($arraySearchResults)){
         usort($arraySearchResults, "search_comparison");
     }
@@ -174,7 +185,7 @@ function search_getSearchPage($pos, $page_content)
  * @param  string	replace the variable with the search term
  * @return string	SQL-Query with search term
  */
-function search_searchQuery($section,$searchTerm)
+function search_searchQuery($section, $searchTerm)
 {
     global $_LANGID, $_CONFIG;
     $query="";
@@ -184,15 +195,13 @@ function search_searchQuery($section,$searchTerm)
             $query ="SELECT id AS id,
                             text AS content,
                             title AS title,
-                            redirect,
-                      MATCH (text,title,teaser_text) AGAINST ('%$searchTerm%') AS score
-                       FROM ".DBPREFIX."module_news
+                            redirect
+                      FROM ".DBPREFIX."module_news
                       WHERE (text LIKE ('%$searchTerm%') OR title LIKE ('%$searchTerm%') OR teaser_text LIKE ('%$searchTerm%'))
 		                AND lang=".$_LANGID."
                         AND status=1
                         AND (startdate<=CURDATE() OR startdate='0000-00-00')
                         AND (enddate>=CURDATE() OR enddate='0000-00-00')";
-
 			break;
 
         case "content":
@@ -344,7 +353,29 @@ function search_searchQuery($section,$searchTerm)
 			WHERE status = '1'
 			AND (name LIKE ('%$searchTerm%') OR description LIKE ('%$searchTerm%'))";
 			break;
-
+		case "calendar":
+			$query = "	SELECT `id` AS id,
+							 `name` AS title,
+							 `comment` AS content
+						FROM `".DBPREFIX."module_calendar`
+						WHERE `active` = '1'
+						AND (	
+								`name` LIKE ('%$searchTerm%') 
+							OR 	`comment` LIKE ('%$searchTerm%')
+							OR 	`place` LIKE ('%$searchTerm%')
+							OR 	`info` LIKE ('%$searchTerm%')							
+						)";
+						break;
+			
+		case "calendar_cats":
+			$query = "	SELECT id AS id,
+							 name AS title
+						FROM ".DBPREFIX."module_calendar_categories
+						WHERE status = '1'
+						AND (name LIKE ('%$searchTerm%'))";
+			break;
+			
+			
 		default:
             break;
     }
@@ -398,6 +429,7 @@ function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
 	        	case 'gallery':
 	        	case 'memberdir':
 	        	case 'directory':
+	        	case 'calendar':
 	        		$temp_pagelink  = '?'.$pagevar.$objResult->fields['id'].$temp_section.$temp_cmd;
 	        		break;
 
