@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 27 Jun 2007 01:37:13 +0200
+* generated date Wed, 27 Jun 2007 02:00:51 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(minimaal 6 karakters)";
@@ -223,7 +223,7 @@ $_ARRAYLANG['TXT_TARGET'] = "Doel";
 $_ARRAYLANG['TXT_HOME'] = "Home";
 $_ARRAYLANG['TXT_NOT_DELETE_REQUIRED_MODULES'] = "Noodzakelijke systeemmodules kunnen niet worden verwijderd!";
 $_ARRAYLANG['TXT_COPY_CONTENT'] = "Kopieër inhoud";
-$_ARRAYLANG['TXT_COPY'] = "Kopieër";
+$_ARRAYLANG['TXT_COPY'] = "Kopiëren";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_CONTENT'] = "De complete website verwijderen?!";
 $_ARRAYLANG['TXT_EDIT'] = "Bewerk";
 $_ARRAYLANG['TXT_STANDARD_SITE_NOT_DELETED'] = "De standaard pagina kan niet worden verwijderd!";

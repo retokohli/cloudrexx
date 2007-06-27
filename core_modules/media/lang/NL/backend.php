@@ -1,14 +1,14 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 27 Jun 2007 01:37:13 +0200
+* generated date Wed, 27 Jun 2007 02:00:51 +0200
 **/
 
 $_ARRAYLANG['TXT_PREVIEW'] = "Voorbeeld";
 $_ARRAYLANG['TXT_MEDIA_FILE_NAME'] = "Bestandsnaam";
 $_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Bestandsgrootte";
 $_ARRAYLANG['TXT_MEDIA_FILE_DATE'] = "Datum";
-$_ARRAYLANG['TXT_MEDIA_FILE_PERM'] = "Permissie";
+$_ARRAYLANG['TXT_MEDIA_FILE_PERM'] = "Permissies";
 $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] = "Bestandsarchief";
 $_ARRAYLANG['TXT_IMAGE_ADMINISTRATION'] = "Afbeeldingsbeheer";
 $_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'] = "Deze map is leeg!";
@@ -41,7 +41,7 @@ $_ARRAYLANG['TXT_MEDIA_MAKE_SELECTION'] = "Maak een selectie!";
 $_ARRAYLANG['TXT_MEDIA_EDIT_FILE'] = "Bestand bewerken";
 $_ARRAYLANG['TXT_MEDIA_ERROR_OCCURED'] = "Er is een error opgetreden!";
 $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EXISTS'] = "Het gevraagde bestand bestaat niet!";
-$_ARRAYLANG['TXT_MEDIA_BACK'] = "terug";
+$_ARRAYLANG['TXT_MEDIA_BACK'] = "Terug";
 $_ARRAYLANG['TXT_MEDIA_MSG_EDIT'] = "De bestanden zijn succesvol aangepast!";
 $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT'] = "Error: de bestanden kunnen niet worden aangepast!";
 $_ARRAYLANG['TXT_MEDIA_RENAME_EXT'] = "De bestandsextentie wijzigen?";
@@ -49,7 +49,7 @@ $_ARRAYLANG['TXT_MEDIA_SELECT_UPLOAD_FILE'] = "Selecteer een bestand!";
 $_ARRAYLANG['TXT_MEDIA_CUT'] = "Knippen";
 $_ARRAYLANG['TXT_MEDIA_PASTE'] = "Plakken";
 $_ARRAYLANG['TXT_MEDIA_MSG_CUT'] = "De bestanden zijn succesvol verplaatst!";
-$_ARRAYLANG['TXT_MEDIA_COPY'] = "Kopieër";
+$_ARRAYLANG['TXT_MEDIA_COPY'] = "kopiëren";
 $_ARRAYLANG['TXT_MEDIA_MSG_COPY'] = "De bestanden zijn succesvol gekopieerd!";
 $_ARRAYLANG['TXT_MEDIA_RENAME_NAME'] = "Geef een bestandsnaam op!";
 $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_COPY'] = "Error: de map kan niet in zichzelf gekopieerd worden!";
