@@ -283,6 +283,7 @@ class newsletter extends NewsletterLib
 			'TXT_NEWSLETTER_FLUSH'						=> $_ARRAYLANG['TXT_NEWSLETTER_FLUSH'],
 			'TXT_CONFIRM_DELETE_DATA'					=> $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
 			'TXT_NEWSLETTER_CONFIRM_FLUSH_LIST'			=> $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_FLUSH_LIST'],
+			'TXT_NEWSLETTER_EXPORT_ALL_LISTS'			=> $_ARRAYLANG['TXT_NEWSLETTER_EXPORT_ALL_LISTS'],
 		));
 
 		$this->_objTpl->setGlobalVariable(array(
@@ -290,7 +291,7 @@ class newsletter extends NewsletterLib
 			'TXT_NEWSLETTER_DELETE'						=> $_ARRAYLANG['TXT_NEWSLETTER_DELETE'],
 			'TXT_NEWSLETTER_GENERATE_HTML_SOURCE_CODE'	=> $_ARRAYLANG['TXT_NEWSLETTER_GENERATE_HTML_SOURCE_CODE'],
 			'TXT_NEWSLETTER_SHOW_LAST_SENT_EMAIL'		=> $_ARRAYLANG['TXT_NEWSLETTER_SHOW_LAST_SENT_EMAIL'],
-			'TXT_NEWSLETTER_CREATE_NEW_EMAIL'			=> $_ARRAYLANG['TXT_NEWSLETTER_CREATE_NEW_EMAIL']
+			'TXT_NEWSLETTER_CREATE_NEW_EMAIL'			=> $_ARRAYLANG['TXT_NEWSLETTER_CREATE_NEW_EMAIL'],
 		));
 
 		foreach ($arrLists as $id => $arrList) {
@@ -2520,136 +2521,52 @@ class newsletter extends NewsletterLib
 	function exportuser(){
 		global $objDatabase, $_ARRAYLANG;
 
-
-
-		$this->_pageTitle = $_ARRAYLANG['TXT_EXPORT'];
-
-		if (isset($_POST['newsletter_user_export'])) {
-			$this->_pageTitle = $_ARRAYLANG['TXT_EXPORT'];
-			$this->_objTpl->addBlockfile('NEWSLETTER_USER_FILE', 'module_newsletter_user_export_list', 'module_newsletter_user_export_list.html');
-			$this->_objTpl->setVariable(array(
-				'TXT_TITLE'			=> $_ARRAYLANG['TXT_EXPORT'],
-				'TXT_SELECT_ALL'	=> $_ARRAYLANG['TXT_SELECT_ALL'],
-			));
-
-			$arrRecipientTitles = &$this->_getRecipientTitles();
-
-			// Export nach kategorien
-			$WhereStatement = " and (";
-			if (isset($_POST['selectedCat'])) {
-				foreach ($_POST['selectedCat'] as $intKey => $intCatId) {
-					if($WhereStatement==" and ("){
-						$NextCar = "";
-					}else{
-						$NextCar = " or ";
-					}
-					$WhereStatement .= $NextCar." category=".$intCatId." ";
-				}
-			}
-			$WhereStatement .= ")";
-
-			$query		= "SELECT * FROM ".DBPREFIX."module_newsletter_rel_user_cat right join ".DBPREFIX."module_newsletter_user on ".DBPREFIX."module_newsletter_rel_user_cat.user=".DBPREFIX."module_newsletter_user.id where 1=1 ".$WhereStatement." GROUP BY user";
-			$objResult 	= $objDatabase->Execute($query);
-			$StringForFile = '';
-			$separetor = $_POST["separetor"];
-			if ($objResult !== false) {
-				while (!$objResult->EOF) {
-
-					if($_POST["email"]=="1"){
-						$StringForFile .= $objResult->fields['email'].$separetor;
-					}
-					if($_POST["sex"]=="1"){
-						$StringForFile .= $objResult->fields['sex'].$separetor;
-					}
-					if($_POST["title"]=="1"){
-						$StringForFile .= $arrRecipientTitles[$objResult->fields['title']].$separetor;
-					}
-					if($_POST["lastname"]=="1"){
-						$StringForFile .= $objResult->fields['lastname'].$separetor;
-					}
-					if($_POST["firstname"]=="1"){
-						$StringForFile .= $objResult->fields['firstname'].$separetor;
-					}
-					if($_POST["company"]=="1"){
-						$StringForFile .= $objResult->fields['company'].$separetor;
-					}
-					if($_POST["street"]=="1"){
-						$StringForFile .= $objResult->fields['street'].$separetor;
-					}
-					if($_POST["zip"]=="1"){
-						$StringForFile .= $objResult->fields['zip'].$separetor;
-					}
-					if($_POST["city"]=="1"){
-						$StringForFile .= $objResult->fields['city'].$separetor;
-					}
-					if($_POST["country"]=="1"){
-						$StringForFile .= $objResult->fields['country'].$separetor;
-					}
-					if($_POST["phone"]=="1"){
-						$StringForFile .= $objResult->fields['phone'].$separetor;
-					}
-					if($_POST["birthday"]=="1"){
-						$StringForFile .= $objResult->fields['birthday'].$separetor;;
-					}
-
-					$StringForFile = substr($StringForFile, 0, -1);
-
-					$StringForFile .= chr(13).chr(10);
-					$objResult->MoveNext();
-				}
-			}
-
-			$this->_objTpl->setVariable('USER_LIST', $StringForFile);
-
-			$this->_objTpl->parse('module_newsletter_user_export_list');
-		} else {
-			$this->_objTpl->addBlockfile('NEWSLETTER_USER_FILE', 'module_newsletter_user_export', 'module_newsletter_user_export.html');
-			$this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_SETTINGS']);
-
-
-			$category_values = '';
-		$query 		= "SELECT id, name FROM ".DBPREFIX."module_newsletter_category order by name";
+		$listId = isset($_REQUEST['listId']) ? intval($_REQUEST['listId']) : 0;
+		
+		$arrRecipientTitles = &$this->_getRecipientTitles();
+		
+		if($listId > 0){
+			$WhereStatement = " WHERE category=".$listId;
+			$list = $this->_getList($listId);
+			$listname = $list['name'];
+		}else{
+			$listname = "all_lists";
+		}
+		$query	= "	SELECT * FROM ".DBPREFIX."module_newsletter_rel_user_cat 
+					RIGHT JOIN ".DBPREFIX."module_newsletter_user 
+						ON ".DBPREFIX."module_newsletter_rel_user_cat.user=".DBPREFIX."module_newsletter_user.id ".
+					$WhereStatement." GROUP BY user";
+						
 		$objResult 	= $objDatabase->Execute($query);
-		$i=1;
+		$StringForFile = '';
+		$separator = ';';
 		if ($objResult !== false) {
 			while (!$objResult->EOF) {
-				$checked = '';
-				if(!empty($_GET['listId']) && intval($_GET['listId']) == $objResult->fields['id'] ){
-					$checked = 'checked="checked"';
-				}
-				$category_values .= '<input id="x'.$i.'" type="checkbox" '.$checked.' name="selectedCat[]" value="'.$objResult->fields['id'].'" /><label for="x'.$i++.'"> '.$objResult->fields['name']."</label><br/>";
+				$StringForFile .= $objResult->fields['email'].$separator;
+				$StringForFile .= $objResult->fields['sex'].$separator;
+				$StringForFile .= $arrRecipientTitles[$objResult->fields['title']].$separator;
+				$StringForFile .= $objResult->fields['lastname'].$separator;
+				$StringForFile .= $objResult->fields['firstname'].$separator;
+				$StringForFile .= $objResult->fields['company'].$separator;
+				$StringForFile .= $objResult->fields['street'].$separator;
+				$StringForFile .= $objResult->fields['zip'].$separator;
+				$StringForFile .= $objResult->fields['city'].$separator;
+				$StringForFile .= $objResult->fields['country'].$separator;
+				$StringForFile .= $objResult->fields['phone'].$separator;
+				$StringForFile .= $objResult->fields['birthday'];
+
+				$StringForFile .= chr(13).chr(10);
 				$objResult->MoveNext();
 			}
 		}
-
-		$this->_objTpl->setVariable(array(
-			'TXT_EMAIL_ADDRESS'		=> $_ARRAYLANG['TXT_EMAIL_ADDRESS'],
-			'TXT_LASTNAME'			=> $_ARRAYLANG['TXT_LASTNAME'],
-			'TXT_FIRSTNAME'			=> $_ARRAYLANG['TXT_FIRSTNAME'],
-			'TXT_STREET'			=> $_ARRAYLANG['TXT_STREET'],
-			'TXT_ZIP'				=> $_ARRAYLANG['TXT_ZIP'],
-			'TXT_CITY'				=> $_ARRAYLANG['TXT_CITY'],
-			'TXT_COUNTRY'			=> $_ARRAYLANG['TXT_COUNTRY'],
-			'TXT_PHONE'				=> $_ARRAYLANG['TXT_PHONE'],
-			'TXT_BIRTHDAY'			=> $_ARRAYLANG['TXT_BIRTHDAY'],
-			'TXT_OPEN_ISSUE'		=> $_ARRAYLANG['TXT_OPEN_ISSUE'],
-			'TXT_COMPANY'			=> $_ARRAYLANG['TXT_COMPANY'],
-			'TXT_ACTIVE'			=> $_ARRAYLANG['TXT_ACTIVE'],
-			'TXT_EXPORT'			=> $_ARRAYLANG['TXT_EXPORT'],
-			'TXT_CHOOSE_SEPERATOR' 	=> $_ARRAYLANG['TXT_CHOOSE_SEPERATOR'],
-			'TXT_SELECT_ALL'		=> $_ARRAYLANG['TXT_SELECT_ALL'],
-			'TXT_EDIT'				=> $_ARRAYLANG['TXT_EDIT'],
-			'TXT_ADD'				=> $_ARRAYLANG['TXT_ADD'],
-			'TXT_IMPORT'			=> $_ARRAYLANG['TXT_IMPORT'],
-			'TXT_EXPORT'			=> $_ARRAYLANG['TXT_EXPORT'],
-			'TXT_NEWSLETTER_CATEGORYS'=> $_ARRAYLANG['TXT_NEWSLETTER_CATEGORYS'],
-			'CATEGORY_VALUES'		=> $category_values,
-			'TXT_USER_TITLE'		=> $_ARRAYLANG['TXT_USER_TITLE'],
-			));
-
-
-		$this->_objTpl->parse('module_newsletter_user_export');
+		
+		if(strtolower(CONTREXX_CHARSET) == 'utf-8'){
+			$StringForFile = utf8_decode($StringForFile);
 		}
+		
+		header("Content-Type: text/comma-separated-values");
+		header('Content-Disposition: attachment; filename="'.date('Y_m_d')."-".$listname.'.csv"');		
+		die($StringForFile);
 	}
 
 
