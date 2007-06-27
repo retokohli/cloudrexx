@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 27 Jun 2007 02:44:26 +0200
+* generated date Wed, 27 Jun 2007 13:34:31 +0200
 **/
 
 $_ARRAYLANG['TXT_CLOSE'] = "Sluiten";
@@ -16,7 +16,7 @@ $_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'] = "De map %s kon niet wor
 $_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_SUCCESSFULLY_CREATED'] = "De map %s is succesvol aangemaakt!";
 $_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_SUCCESSFULLY_CREATED'] = "De thumbnail voor %s is succesvol aangemaakt!";
 $_ARRAYLANG['TXT_FILEBROWSER_MEDIA_4'] = "Bestandsarchief #4";
-$_ARRAYLANG['TXT_FILEBROWSER_FILES'] = "Bestanden";
+$_ARRAYLANG['TXT_FILEBROWSER_FILES'] = "Afbeeldingen";
 $_ARRAYLANG['TXT_FILEBROWSER_WEBPAGES'] = "Webpagina's";
 $_ARRAYLANG['TXT_FILEBROWSER_PREVIEW'] = "Voorbeeld";
 ?>
