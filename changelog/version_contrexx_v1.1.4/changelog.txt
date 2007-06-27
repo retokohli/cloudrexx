@@ -46,3 +46,6 @@ Alias Verwaltung
 
 Adressverwaltung
 - Korrekte Darstellung bei Verschachtelten Kategorien.
+
+News-Syndication
+- Die RSS Feed werden unter PHP4 mit der Latin1 Variante korrekt eingelesen.
