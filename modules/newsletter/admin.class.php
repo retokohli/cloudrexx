@@ -2542,6 +2542,7 @@ class newsletter extends NewsletterLib
 		$separator = ';';
 		if ($objResult !== false) {
 			while (!$objResult->EOF) {
+				$StringForFile .= $objResult->fields['status'].$separator;
 				$StringForFile .= $objResult->fields['email'].$separator;
 				$StringForFile .= $objResult->fields['sex'].$separator;
 				$StringForFile .= $arrRecipientTitles[$objResult->fields['title']].$separator;
