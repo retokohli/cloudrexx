@@ -40,6 +40,14 @@ function MultiAction(){
 <input type="submit" value="{TXT_NEWSLETTER_ADD_NEW_LIST}" />
 </form>
 <br />
+<div style="width: 100%; text-align: right;">
+	<span>
+		<a href="index.php?cmd=newsletter&amp;act=users&amp;tpl=export&amp;listId=0">
+			<img style="border: 0;" alt="" title="{TXT_NEWSLETTER_EXPORT_ALL_LISTS}" src="images/icons/icon_excel.gif" /> 
+			{TXT_NEWSLETTER_EXPORT_ALL_LISTS}		
+		</a>  
+	</span>
+</div>
 <form name="listslist" action="?cmd=newsletter&amp;act=lists&amp;bulkdelete=exe" method="post">
 <table border="0" cellpadding="2" cellspacing="0" width="100%" class="adminlist">
 	<tbody>
@@ -60,7 +68,8 @@ function MultiAction(){
 				<td style="text-align:center;"><a href="javascript:void(0);" onclick="changeListStatus({NEWSLETTER_LIST_ID}, '{NEWSLETTER_LIST_NAME}')" title="{NEWSLETTER_LIST_STATUS_MSG}"><img src="images/icons/{NEWSLETTER_LIST_STATUS_IMG}" alt="{NEWSLETTER_LIST_STATUS_MSG}" width="15" height="13" border="0" /></a></td>
 				<td><a href="index.php?cmd=newsletter&amp;act=editlist&amp;id={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_MODIFY}">{NEWSLETTER_LIST_NAME}</a></td>
 				<td>{NEWSLETTER_LIST_RECIPIENT}</td>
-				<td><!-- BEGIN newsletter_list_last_mail -->
+				<td>
+					<!-- BEGIN newsletter_list_last_mail -->
 						<a href="index.php?cmd=newsletter&amp;act=showMail&amp;id={NEWSLETTER_LAST_MAIL_ID}" title="{TXT_NEWSLETTER_SHOW_LAST_SENT_EMAIL}">{NEWSLETTER_LIST_LAST_MAIL}</a>
 					<!-- END newsletter_list_last_mail -->
 					<!-- BEGIN newsletter_list_no_last_mail -->
@@ -69,7 +78,7 @@ function MultiAction(){
 				</td>
 				
 				<td style="text-align:right; white-space:nowrap;">
-					<a href="index.php?cmd=newsletter&amp;act=users&amp;tpl=export&amp;listId={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_EXPORT}"><img src="images/icons/export.gif" border="0" alt="{TXT_NEWSLETTER_EXPORT}" /> </a>
+					<a href="index.php?cmd=newsletter&amp;act=users&amp;tpl=export&amp;listId={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_EXPORT}"><img src="images/icons/icon_excel.gif" border="0" alt="{TXT_NEWSLETTER_EXPORT}" /> </a>
 					<a href="index.php?cmd=newsletter&amp;act=gethtml&amp;id={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_GENERATE_HTML_SOURCE_CODE}"><img src="images/icons/html.gif" border="0" width="16" height="16" alt="{TXT_NEWSLETTER_GENERATE_HTML_SOURCE_CODE}" /></a>
 					<a href="index.php?cmd=newsletter&amp;act=editlist&amp;id={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_MODIFY}"><img src="images/icons/edit.gif" border="0" width="16" height="16" alt="{TXT_NEWSLETTER_MODIFY}" /></a>
 					<a href="javascript:void(0);" onclick="flushList({NEWSLETTER_LIST_ID}, '{NEWSLETTER_LIST_NAME}');" title="{TXT_NEWSLETTER_FLUSH}"><img src="images/icons/empty.gif" border="0" width="17" height="17" alt="{TXT_NEWSLETTER_FLUSH}" /></a>
