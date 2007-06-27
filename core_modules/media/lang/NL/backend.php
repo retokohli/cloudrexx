@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 27 Jun 2007 02:00:51 +0200
+* generated date Wed, 27 Jun 2007 02:44:26 +0200
 **/
 
 $_ARRAYLANG['TXT_PREVIEW'] = "Voorbeeld";
@@ -49,7 +49,7 @@ $_ARRAYLANG['TXT_MEDIA_SELECT_UPLOAD_FILE'] = "Selecteer een bestand!";
 $_ARRAYLANG['TXT_MEDIA_CUT'] = "Knippen";
 $_ARRAYLANG['TXT_MEDIA_PASTE'] = "Plakken";
 $_ARRAYLANG['TXT_MEDIA_MSG_CUT'] = "De bestanden zijn succesvol verplaatst!";
-$_ARRAYLANG['TXT_MEDIA_COPY'] = "kopiëren";
+$_ARRAYLANG['TXT_MEDIA_COPY'] = "Kopiëren";
 $_ARRAYLANG['TXT_MEDIA_MSG_COPY'] = "De bestanden zijn succesvol gekopieerd!";
 $_ARRAYLANG['TXT_MEDIA_RENAME_NAME'] = "Geef een bestandsnaam op!";
 $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_COPY'] = "Error: de map kan niet in zichzelf gekopieerd worden!";
