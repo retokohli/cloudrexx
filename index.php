@@ -488,10 +488,12 @@ if (file_exists($modulespath)) {
      */
     include_once($modulespath);
 
-    if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
-    $sessionObj->cmsSessionStatusUpdate($status="frontend");
-    if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
-    if (!isset($objPerm) || !is_object($objPerm)) $objPerm = &new Permission();
+    if(!empty($_COOKIE['PHPSESSID'])) {
+	    if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
+	    $sessionObj->cmsSessionStatusUpdate($status="frontend");
+	    if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
+	    if (!isset($objPerm) || !is_object($objPerm)) $objPerm = &new Permission();
+    }
 
     $calHeadlinesObj = &new calHeadlines($themesPages['calendar_headlines']);
     $page_content = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $page_content);
