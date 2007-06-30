@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 27 Jun 2007 13:34:31 +0200
+* generated date Sat, 30 Jun 2007 13:56:33 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
@@ -192,4 +192,9 @@ $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_FAILED'] = "Fehler bei der Produkte Abfrag
 $_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "&Uuml;bersicht";
 $_ARRAYLANG['TXT_SHOP_BACK'] = "Zur&uuml;ck";
 $_ARRAYLANG['TXT_SHOP_GOTO_DETAIL_VIEW'] = "zur Detailansicht / &agrav; la ...";
+$_ARRAYLANG['TXT_SHOP_PAYMENT_CANCELLED'] = "Die Bezahlung wurde abgebrochen.";
+$_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "Ihre Bestellung wurde annuliert.";
+$_ARRAYLANG['TXT_SHOP_ORDER_STILL_IN_CART'] = "Ihre Bestellung bleibt im Warenkorb.";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Zur&uuml;ck zum Online Shop";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Art der Bezahlung &auml;ndern";
 ?>

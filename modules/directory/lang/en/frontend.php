@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 27 Jun 2007 13:34:31 +0200
+* generated date Sat, 30 Jun 2007 13:56:33 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Create new themes";
@@ -17,7 +17,7 @@ $_ARRAYLANG['TXT_DIR_F_RSS'] = "RSS feed";
 $_ARRAYLANG['TXT_DIR_F_USERNAME'] = "Username";
 $_ARRAYLANG['TXT_DIR_F_PASSWORD'] = "Password";
 $_ARRAYLANG['TXT_DIR_F_LOGIN'] = "Login";
-$_ARRAYLANG['TXT_DIR_F_NO_ACCOUNT'] = "<a href=\'?section=directory&cmd=reg\'>Register here for a new account.</a>";
+$_ARRAYLANG['TXT_DIR_F_NO_ACCOUNT'] = "<a href=\'index.php?section=directory&cmd=reg\'>Register here for a new account.</a>";
 $_ARRAYLANG['TXT_DIR_F_NEW_ENTREE'] = "new entree";
 $_ARRAYLANG['TXT_DIR_F_NAME2'] = "Name";
 $_ARRAYLANG['TXT_DIR_F_DESCRIPTION'] = "Description";
@@ -129,7 +129,7 @@ $_ARRAYLANG['TXT_DIRECTORY_SAVE'] = "Save";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_SUCCESFULL'] = "Voting successfull";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_SUCCESFULL_TEXT'] = "";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED'] = "Voting aborted";
-$_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'] = "";
+$_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'] = "You voted already.";
 $_ARRAYLANG['TXT_DIRECTORY_VOTES'] = "Votes";
 $_ARRAYLANG['TXT_DIRECTORY_YOUR_VOTE'] = "Vote";
 $_ARRAYLANG['TXT_DIRECTORY_MY_FEEDS'] = "My Feeds";

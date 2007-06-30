@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 27 Jun 2007 13:34:31 +0200
+* generated date Sat, 30 Jun 2007 13:56:33 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Bestillinger";
@@ -503,4 +503,5 @@ $_ARRAYLANG['TXT_SHOP_IMPORT_IMPORT_CATEGORIES'] = "Kategorien importieren";
 $_ARRAYLANG['TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES'] = "Bestehende Produkte und Kategorien vor dem importieren löschen";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES_TIPS'] = "Klicken Sie auf 'Durchsuchen' und wählen sie die zu importierende Datei. Starten sie den Import durch einen Klick auf 'Importieren'. Aktivieren Sie das Kästchen 'Bestehende Produkte und Kategorien vor dem importieren löschen' nur, wenn Sie alle bestehenden Produkte und Kategorien vor dem Import löschen wollen!";
 $_ARRAYLANG['TXT_SHOP_IMPORT_PRODUCTS'] = "Produkte importieren";
+$_ARRAYLANG['TXT_SHOP_SHOW_PENDING_ORDERS'] = "Pendente Bestellungen anzeigen";
 ?>

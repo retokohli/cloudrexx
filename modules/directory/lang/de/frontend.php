@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 27 Jun 2007 13:34:31 +0200
+* generated date Sat, 30 Jun 2007 13:56:33 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Neues Design erstellen";
@@ -78,7 +78,7 @@ $_ARRAYLANG['TXT_WRONG_EMAIL'] = "Die von Ihnen angegebene E-Mail Adresse ist un
 $_ARRAYLANG['TXT_DIR_CITY'] = "Stadt";
 $_ARRAYLANG['TXT_RESTORE_MAIL_TITLE'] = "Zurücksetzung Ihres Passwortes";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART1'] = "Jemand hat für Ihr  ";
-$_ARRAYLANG['TXT_RESTORE_MAIL_PART2'] = " RSS Verzeichnis Benutzerkonto, Benutzername: ";
+$_ARRAYLANG['TXT_RESTORE_MAIL_PART2'] = " Verzeichnis Benutzerkonto, Benutzername: ";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART3'] = ", eine Zurückstellung des Passwortes angefordert.\\n\\nFalls diese Zurückstellung nicht von Ihnen angefordert wurde, kann dieses E-Mail missachten werden. Diese Nachricht wurde nur an die Adresse dieses Benutzerkonto verschickt. ";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART4'] = "Sie müssen sich gegebenen Falls keine Sorgen um Ihr Benutzerkonto machen.\\n\\nUm ein neues Passwort zu setzen, benutzen Sie bitte folgenden Link: ";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART5'] = "Diese Zurückstellung wurde angefordert von: ";
@@ -112,7 +112,7 @@ $_ARRAYLANG['DIRECTORY_NO_FEEDS_FOUND'] = "Keine Einträge gefunden";
 $_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'] = "Erweiterte Suche";
 $_ARRAYLANG['TXT_DIRECTORY_DETAIL'] = "Detail";
 $_ARRAYLANG['TXT_DIRECTORY_EDIT'] = "Editieren";
-$_ARRAYLANG['DIRECTORY_FEED_ADDED'] = "Der Eintrag wurde erforgreich hinzugefügt und wird nach der aktivierung Aufgeschaltet.";
+$_ARRAYLANG['DIRECTORY_FEED_ADDED'] = "Der Eintrag wurde erforgreich hinzugefügt und wird nach erfolgreicher Aktivierung aufgeschaltet.";
 $_ARRAYLANG['TXT_DIRECTORY_BACK'] = "Zurück";
 $_ARRAYLANG['DIRECTORY_NO_NEWS'] = "Der angegebene Link enthaltet keine News.";
 $_ARRAYLANG['DIRECTORY_NO_RSS'] = "Kein gültiges RSS-Feed angegeben.";
@@ -134,7 +134,7 @@ $_ARRAYLANG['TXT_DIRECTORY_VOTES'] = "Stimmen";
 $_ARRAYLANG['TXT_DIRECTORY_YOUR_VOTE'] = "Ihre Stimme";
 $_ARRAYLANG['TXT_DIRECTORY_MY_FEEDS'] = "Meine Einträge";
 $_ARRAYLANG['TXT_DIRECTORY_EDIT_FEED'] = "Eintrag Editieren";
-$_ARRAYLANG['TXT_DIRECTORY_UPDATE_SUCCESSFULL'] = "Der Eintrag wurde erforgreich editiert und wird nach der aktivierung Aufgeschaltet.";
+$_ARRAYLANG['TXT_DIRECTORY_UPDATE_SUCCESSFULL'] = "Der Eintrag wurde erforgreich editiert und wird nach erfolgreicher Aktivierung aufgeschaltet.";
 $_ARRAYLANG['TXT_DIRECTORY_CHECK_REQUIRED'] = "Bitte alle Felder korrekt ausfüllen.";
 $_ARRAYLANG['TXT_DIRECTORY_AUTHOR'] = "Autor";
 $_ARRAYLANG['TXT_DIRECTORY_SPEZ_SORT'] = "Spezial Sortierung";
@@ -198,7 +198,7 @@ $_ARRAYLANG['TXT_DIRECTORY_HOME_CONTENT'] = "Inhalt Startseite";
 $_ARRAYLANG['TXT_DIRECTORY_RECIEVER'] = "Empfänger";
 $_ARRAYLANG['TXT_EXAMPLE'] = "Beispiel";
 $_ARRAYLANG['TXT_ID_DESCRIPTION'] = "ID vom Verzeichniseintrag";
-$_ARRAYLANG['TXT_DATE_DESCRIPTION'] = "Datum vom Verzeichniseintrag";
+$_ARRAYLANG['TXT_DATE_DESCRIPTION'] = "Datum des Verzeichniseintrag";
 $_ARRAYLANG['TXT_TITLE_DESCRIPTION'] = "Titel vom Verzeichniseintrag";
 $_ARRAYLANG['TXT_USEMENT'] = "Verwendung";
 $_ARRAYLANG['TXT_USEMENT_TEXT'] = "In der Designvorlage <b>directory.html</b>. Diese Seite kann mit dem Platzhalter <b>[[DIRECTORY_FILE]]</b> im Design oder in einer Content Seite eingebunden werden.";

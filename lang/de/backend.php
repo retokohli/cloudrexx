@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 27 Jun 2007 13:34:31 +0200
+* generated date Sat, 30 Jun 2007 13:56:33 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
@@ -562,7 +562,7 @@ $_ARRAYLANG['TXT_DESC_DELIMITER'] = "Dies ist das Zeichen das die einzelnen Wert
 $_ARRAYLANG['TXT_DESC_ENCLOSURE'] = "Dies ist das Zeichen welches die einzelnen Werte umschliesst. Normalerweise ist das ein doppeltes Anführungszeichen \".<br /><br />Falls Sie sich nicht sicher sind, welches Zeichen in Ihrer Datei verwendet wurde, können Sie die exportierte Datei öffnen und nachschauen. Achten Sie auf das Zeichen welches die einzelnen Wert umschliesst. <br /><br />Achtung: Es ist auch möglich, dass kein solches Zeichen vorhanden ist. Geben Sie in diesem Fall einfach den Standardwert \" ein.";
 $_ARRAYLANG['TXT_FIELDSELECT_SELECT_DESC'] = "Hier können Sie zwei Felder zueinander Zuweisen.<br /><br />In der Linken spalte sehen Sie alle Felder die in der Importierten Datei gefunden wurden. Rechts sind die Felder, die mit den Werten gefüllt werden können.";
 $_ARRAYLANG['TXT_FIELDSELECT_SHOW_DESC'] = "Hier sehen Sie ihre ausgewählten Entsprechungen.";
-$_ARRAYLANG['TXT_SETTINGS_DOMAIN_URL'] = "URL Ihrer Homepage";
+$_ARRAYLANG['TXT_SETTINGS_DOMAIN_URL'] = "Domain Ihrer Homepage";
 $_ARRAYLANG['TXT_SETTINGS_DOMAIN_URL_HELP'] = "Geben Sie hier die URL Ihrer Website an. Achten Sie darauf, dass am Ende der URL kein Slash steht! ( / )";
 $_ARRAYLANG['TXT_SETTINGS_GOOGLESITEMAP'] = "Google Sitemap";
 $_ARRAYLANG['TXT_SETTINGS_GOOGLESITEMAP_HELP'] = "Automatische Erzeugung einer Google Sitemap - Status (on | off).";
