@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 27 Jun 2007 13:34:31 +0200
+* generated date Sat, 30 Jun 2007 13:56:33 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Create new themes";
@@ -171,7 +171,7 @@ $_ARRAYLANG['TXT_DIRECTORY_SAVE'] = "Save";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_SUCCESFULL'] = "Voting successfull";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_SUCCESFULL_TEXT'] = "";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED'] = "Voting aborted";
-$_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'] = "";
+$_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'] = "You voted already.";
 $_ARRAYLANG['TXT_DIRECTORY_VOTES'] = "Votes";
 $_ARRAYLANG['TXT_DIRECTORY_YOUR_VOTE'] = "Vote";
 $_ARRAYLANG['TXT_DIRECTORY_MY_FEEDS'] = "My Feeds";
@@ -256,7 +256,7 @@ $_ARRAYLANG['TXT_PLATFORM'] = "Plattformen";
 $_ARRAYLANG['TXT_LANGUAGE'] = "Sprachen";
 $_ARRAYLANG['TXT_LATEST_CONTENT'] = "Anzahl Einträge (Headlines)";
 $_ARRAYLANG['TXT_LATEST_XML'] = "Anzahl Einträge (XML)";
-$_ARRAYLANG['TXT_CATDESCRIPTION'] = "Kategorie Beschreibung";
+$_ARRAYLANG['TXT_CATDESCRIPTION'] = "Category description";
 $_ARRAYLANG['TXT_ENTRYSTATUS'] = "Einträge automatisch aktiv";
 $_ARRAYLANG['TXT_POPULARDAYS'] = "Anzahl Tage für Popular";
 $_ARRAYLANG['TXT_CANTON'] = "Kantone";
@@ -272,7 +272,7 @@ $_ARRAYLANG['TXT_EDITFEED'] = "Besuchern erlauben, eigene Einträge zu editieren
 $_ARRAYLANG['TXT_EDITFEED_STATUS'] = "Einträge nach Bearbeiten wieder aktiv";
 $_ARRAYLANG['TXT_ADMINMAIL'] = "Benachrichtigungsmail Empfänger";
 $_ARRAYLANG['TXT_SHOLEVELS'] = "Ebenen aktivieren";
-$_ARRAYLANG['TXT_INDEXVIEW'] = "Index-Ansicht für Kategorien";
+$_ARRAYLANG['TXT_INDEXVIEW'] = "Index view for categories";
 $_ARRAYLANG['TXT_THUMBSIZE'] = "Thumbnail Breite (Pixel)";
 $_ARRAYLANG['TXT_SORTORDER'] = "Einträge nach Alphabet sortieren";
 $_ARRAYLANG['TXT_SHOWLEVELS'] = "Ebenen aktivieren";
