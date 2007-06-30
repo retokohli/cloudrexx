@@ -55,15 +55,15 @@ function getPaging($count, $pos, $extargv, $paging_text, $showeverytime = false,
             $totalpages=sizeof($array_row_paging);
     //        if ($currpage>2 && $totalpages>3) $paging .="..";
 
-            if ($currpage>2) $paging .= $array_row_paging[$currpage-3] ."&nbsp;";
-            if ($currpage>1) $paging .= $array_row_paging[$currpage-2] ."&nbsp;";
-            if ($currpage>0) $paging .= $array_row_paging[$currpage-1] ."&nbsp;";
+            if ($currpage > 2) $paging .= $array_row_paging[$currpage-3] ."&nbsp;";
+            if ($currpage > 1) $paging .= $array_row_paging[$currpage-2] ."&nbsp;";
+            if ($currpage > 0) $paging .= $array_row_paging[$currpage-1] ."&nbsp;";
 
             $paging .= $array_row_paging[$currpage] ."&nbsp;";
 
-            if ($currpage != $totalpages  ) $paging .= $array_row_paging[$currpage+1] ."&nbsp;";
-            if ($currpage != $totalpages-1) $paging .= $array_row_paging[$currpage+2] ."&nbsp;";
-            if ($currpage != $totalpages-2) $paging .= (!empty($array_row_paging[$currpage+3]) ? $array_row_paging[$currpage+3] : '')."&nbsp;";
+            if ($currpage < $totalpages-1) $paging .= $array_row_paging[$currpage+1] ."&nbsp;";
+            if ($currpage < $totalpages-2) $paging .= $array_row_paging[$currpage+2] ."&nbsp;";
+            if ($currpage < $totalpages-3) $paging .= (!empty($array_row_paging[$currpage+3]) ? $array_row_paging[$currpage+3] : '')."&nbsp;";
 
             $paging .= $array_paging['last'] ."&gt;&gt;</a>&nbsp;]";
             return $paging;
