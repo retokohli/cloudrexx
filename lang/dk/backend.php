@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Sat, 30 Jun 2007 13:56:33 +0200
+* generated date Mon, 02 Jul 2007 11:19:13 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 skrifttegn)";
@@ -693,4 +693,6 @@ $_ARRAYLANG['TXT_DELETED'] = "deleted";
 $_ARRAYLANG['TXT_WORKFLOW_PAGE_PREVIEW'] = "Page preview";
 $_ARRAYLANG['TXT_STATUS_CANNOT_DELETE'] = "Unable to delete.";
 $_ARRAYLANG['TXT_ASSIGN_BLOCK'] = "";
+$_ARRAYLANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'] = "Diese Einstellung bewirkt, dass automatisch die Standardsprache des Browsers ausgelesen und als Contentsprache verwendet wird.";
+$_ARRAYLANG['TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'] = "Auto-detect language";
 ?>
