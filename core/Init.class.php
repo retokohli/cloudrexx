@@ -171,14 +171,16 @@ class InitCMS
 	 */
 	function _selectBestLanguage()
 	{
-		$arrAcceptedLanguages = &$this->_getClientAcceptedLanguages();
-
-		foreach (array_keys($arrAcceptedLanguages) as $language) {
-			if (in_array($language, array_keys($this->arrLangNames))) {
-				return $this->arrLangNames[$language];
-			} elseif (in_array($strippedLanguage = substr($language, 0, strpos($language, '-')), array_keys($this->arrLangNames))) {
-				return $this->arrLangNames[$strippedLanguage];
-			}
+		global $_CONFIG;		
+		if('on' == $_CONFIG['languageDetection']){
+			$arrAcceptedLanguages = &$this->_getClientAcceptedLanguages();			
+			foreach (array_keys($arrAcceptedLanguages) as $language) {
+				if (in_array($language, array_keys($this->arrLangNames))) {
+					return $this->arrLangNames[$language];
+				} elseif (in_array($strippedLanguage = substr($language, 0, strpos($language, '-')), array_keys($this->arrLangNames))) {
+					return $this->arrLangNames[$strippedLanguage];
+				}
+			}		
 		}
 		return $this->defaultFrontendLangId;
 	}
