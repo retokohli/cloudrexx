@@ -128,36 +128,38 @@ class settingsManager {
         $this->strPageTitle = $_CORELANG['TXT_SYSTEM_SETTINGS'];
 
         $objTemplate->setVariable(array(
-            'TXT_TITLE_SET1'                  => $_CORELANG['TXT_SETTINGS_TITLE_MISC'],
-            'TXT_TITLE_SET2'                  => $_CORELANG['TXT_SETTINGS_TITLE_CONTACT'],
-            'TXT_SAVE_CHANGES'                => $_CORELANG['TXT_SAVE'],
-            'TXT_RADIO_ON'                    => $_CORELANG['TXT_ACTIVATED'],
-            'TXT_RADIO_OFF'                   => $_CORELANG['TXT_DEACTIVATED'],
-            'TXT_SYSTEM_STATUS'               => $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS'],
-            'TXT_SYSTEM_STATUS_HELP'          => $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS_HELP'],
-            'TXT_IDS_STATUS'                  => $_CORELANG['TXT_SETTINGS_IDS'],
-            'TXT_IDS_STATUS_HELP'             => $_CORELANG['TXT_SETTINGS_IDS_HELP'],
-            'TXT_HISTORY_STATUS'              => $_CORELANG['TXT_SETTINGS_HISTORY'],
-            'TXT_HISTORY_STATUS_HELP'         => $_CORELANG['TXT_SETTINGS_HISTORY_HELP'],
-            'TXT_GOOGLESITEMAP_STATUS'        => $_CORELANG['TXT_SETTINGS_GOOGLESITEMAP'],
-            'TXT_GOOGLESITEMAP_STATUS_HELP'   => $_CORELANG['TXT_SETTINGS_GOOGLESITEMAP_HELP'],
-            'TXT_GLOBAL_TITLE'                => $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE'],
-            'TXT_GLOBAL_TITLE_HELP'           => $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE_HELP'],
-            'TXT_DOMAIN_URL'                  => $_CORELANG['TXT_SETTINGS_DOMAIN_URL'],
-            'TXT_DOMAIN_URL_HELP'             => $_CORELANG['TXT_SETTINGS_DOMAIN_URL_HELP'],
-            'TXT_PAGING_LIMIT'                => $_CORELANG['TXT_SETTINGS_PAGING_LIMIT'],
-            'TXT_PAGING_LIMIT_HELP'           => $_CORELANG['TXT_SETTINGS_PAGING_LIMIT_HELP'],
-            'TXT_SEARCH_RESULT'               => $_CORELANG['TXT_SETTINGS_SEARCH_RESULT'],
-            'TXT_SEARCH_RESULT_HELP'          => $_CORELANG['TXT_SETTINGS_SEARCH_RESULT_HELP'],
-            'TXT_SESSION_LIVETIME'            => $_CORELANG['TXT_SETTINGS_SESSION_LIVETIME'],
-            'TXT_SESSION_LIVETIME_HELP'       => $_CORELANG['TXT_SETTINGS_SESSION_LIVETIME_HELP'],
-            'TXT_DNS_SERVER'                  => $_CORELANG['TXT_SETTINGS_DNS_SERVER'],
-            'TXT_DNS_SERVER_HELP'             => $_CORELANG['TXT_SETTINGS_DNS_SERVER_HELP'],
-            'TXT_ADMIN_NAME'                  => $_CORELANG['TXT_SETTINGS_ADMIN_NAME'],
-            'TXT_ADMIN_EMAIL'                 => $_CORELANG['TXT_SETTINGS_ADMIN_EMAIL'],
-            'TXT_CONTACT_EMAIL'               => $_CORELANG['TXT_SETTINGS_CONTACT_EMAIL'],
-            'TXT_CONTACT_EMAIL_HELP'          => $_CORELANG['TXT_SETTINGS_CONTACT_EMAIL_HELP'],
-            'TXT_SEARCH_VISIBLE_CONTENT_ONLY' => $_CORELANG['TXT_SEARCH_VISIBLE_CONTENT_ONLY'],
+            'TXT_TITLE_SET1'					=> $_CORELANG['TXT_SETTINGS_TITLE_MISC'],
+            'TXT_TITLE_SET2'                  	=> $_CORELANG['TXT_SETTINGS_TITLE_CONTACT'],
+            'TXT_SAVE_CHANGES'                	=> $_CORELANG['TXT_SAVE'],
+            'TXT_RADIO_ON'                   	=> $_CORELANG['TXT_ACTIVATED'],
+            'TXT_RADIO_OFF'                  	=> $_CORELANG['TXT_DEACTIVATED'],
+            'TXT_SYSTEM_STATUS'              	=> $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS'],
+            'TXT_SYSTEM_STATUS_HELP'        	=> $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS_HELP'],
+            'TXT_IDS_STATUS'                	=> $_CORELANG['TXT_SETTINGS_IDS'],
+            'TXT_IDS_STATUS_HELP'            	=> $_CORELANG['TXT_SETTINGS_IDS_HELP'],
+            'TXT_HISTORY_STATUS'            	=> $_CORELANG['TXT_SETTINGS_HISTORY'],
+            'TXT_HISTORY_STATUS_HELP'        	=> $_CORELANG['TXT_SETTINGS_HISTORY_HELP'],
+            'TXT_GOOGLESITEMAP_STATUS'       	=> $_CORELANG['TXT_SETTINGS_GOOGLESITEMAP'],
+            'TXT_GOOGLESITEMAP_STATUS_HELP'   	=> $_CORELANG['TXT_SETTINGS_GOOGLESITEMAP_HELP'],
+            'TXT_GLOBAL_TITLE'                	=> $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE'],
+            'TXT_GLOBAL_TITLE_HELP'           	=> $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE_HELP'],
+            'TXT_DOMAIN_URL'					=> $_CORELANG['TXT_SETTINGS_DOMAIN_URL'],
+            'TXT_DOMAIN_URL_HELP'				=> $_CORELANG['TXT_SETTINGS_DOMAIN_URL_HELP'],
+            'TXT_PAGING_LIMIT'					=> $_CORELANG['TXT_SETTINGS_PAGING_LIMIT'],
+            'TXT_PAGING_LIMIT_HELP'           	=> $_CORELANG['TXT_SETTINGS_PAGING_LIMIT_HELP'],
+            'TXT_SEARCH_RESULT'               	=> $_CORELANG['TXT_SETTINGS_SEARCH_RESULT'],
+            'TXT_SEARCH_RESULT_HELP'          	=> $_CORELANG['TXT_SETTINGS_SEARCH_RESULT_HELP'],
+            'TXT_SESSION_LIVETIME'            	=> $_CORELANG['TXT_SETTINGS_SESSION_LIVETIME'],
+            'TXT_SESSION_LIVETIME_HELP'       	=> $_CORELANG['TXT_SETTINGS_SESSION_LIVETIME_HELP'],
+            'TXT_DNS_SERVER'                  	=> $_CORELANG['TXT_SETTINGS_DNS_SERVER'],
+            'TXT_DNS_SERVER_HELP'             	=> $_CORELANG['TXT_SETTINGS_DNS_SERVER_HELP'],
+            'TXT_ADMIN_NAME'                  	=> $_CORELANG['TXT_SETTINGS_ADMIN_NAME'],
+            'TXT_ADMIN_EMAIL'                 	=> $_CORELANG['TXT_SETTINGS_ADMIN_EMAIL'],
+            'TXT_CONTACT_EMAIL'               	=> $_CORELANG['TXT_SETTINGS_CONTACT_EMAIL'],
+            'TXT_CONTACT_EMAIL_HELP'          	=> $_CORELANG['TXT_SETTINGS_CONTACT_EMAIL_HELP'],
+            'TXT_SEARCH_VISIBLE_CONTENT_ONLY' 	=> $_CORELANG['TXT_SEARCH_VISIBLE_CONTENT_ONLY'],
+            'TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'=> $_CORELANG['TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'],
+            'TXT_SYSTEM_DEFAULT_LANGUAGE_HELP' 	=> $_CORELANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'],
         ));
 
         $objResult = $objDatabase->Execute('SELECT setid,
@@ -192,6 +194,8 @@ class settingsManager {
             'SETTINGS_SYSTEMSTATUS_OFF'           => ($arrSettings['systemStatus'] == 'off') ? 'checked' : '',
             'SETTINGS_SEARCH_VISIBLE_CONTENT_ON'  => ($arrSettings['searchVisibleContentOnly'] == 'on') ? 'checked' : '',
             'SETTINGS_SEARCH_VISIBLE_CONTENT_OFF' => ($arrSettings['searchVisibleContentOnly'] == 'off') ? 'checked' : '',
+            'SETTINGS_DETECT_BROWSER_LANGUAGE_ON' => ($arrSettings['languageDetection'] == 'on') ? 'checked' : '',
+            'SETTINGS_DETECT_BROWSER_LANGUAGE_OFF'=> ($arrSettings['languageDetection'] == 'off') ? 'checked' : '',
         ));
     }
 
@@ -211,7 +215,8 @@ class settingsManager {
                 intval($intId) == 50 ||
                 intval($intId) == 54 ||
                 intval($intId) == 55 ||
-                intval($intId) == 56) {
+                intval($intId) == 56 ||
+                intval($intId) == 63) {
                 $strValue = ($strValue == 'on') ? 'on' : 'off';
             }
 

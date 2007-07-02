@@ -13,6 +13,7 @@ Text[9]=["","{TXT_GLOBAL_TITLE_HELP}"];
 Text[10]=["","{TXT_DOMAIN_URL_HELP}"];
 Text[11]=["","{TXT_GOOGLESITEMAP_STATUS_HELP}"];
 Text[12]=["","{TXT_SYSTEM_STATUS_HELP}"];
+Text[13]=["","{TXT_SYSTEM_DEFAULT_LANGUAGE_HELP}"];
 // -->
 </script>
 
@@ -66,26 +67,34 @@ Text[12]=["","{TXT_SYSTEM_STATUS_HELP}"];
 				</td>
 			</tr>
 			<tr class="row1">
+				<td>{TXT_SYSTEM_DETECT_BROWSER_LANGUAGE}&nbsp;</td>
+				<td>
+					<label for="setvalue[63]"><input type="radio" name="setvalue[63]" value="on" {SETTINGS_DETECT_BROWSER_LANGUAGE_ON}>{TXT_RADIO_ON}</label>&nbsp;
+					<label for="setvalue[63]"><input type="radio" name="setvalue[63]" value="off" {SETTINGS_DETECT_BROWSER_LANGUAGE_OFF}>{TXT_RADIO_OFF}</label>&nbsp;
+					<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[13],Style[0])" />
+				</td>
+			</tr>
+			<tr class="row2">
 				<td>{TXT_GLOBAL_TITLE}&nbsp;</td>
 				<td><input type="text" name="setvalue[51]" value="{SETTINGS_GLOBAL_TITLE}" size="70" maxlength="250">&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[9],Style[0])" /></td>
 			</tr>
-			<tr class="row2">
+			<tr class="row1">
 				<td>{TXT_DOMAIN_URL}&nbsp;</td>
 				<td><input type="text" name="setvalue[53]" value="{SETTINGS_DOMAIN_URL}" size="70" maxlength="250">&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[10],Style[0])" /></td>
 			</tr>
-			<tr class="row1">
+			<tr class="row2">
 				<td>{TXT_PAGING_LIMIT}&nbsp;</td>
 				<td><input type="text" name="setvalue[18]" value="{SETTINGS_PAGING_LIMIT}" size="70" maxlength="250">&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
 			</tr>
-			<tr class="row2">
+			<tr class="row1">
 				<td>{TXT_SEARCH_RESULT}&nbsp;</td>
 				<td><input type="text" name="setvalue[19]" value="{SETTINGS_SEARCH_RESULT_LENGTH}" size="70" maxlength="250">&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
 			</tr>
-			<tr class="row1">
+			<tr class="row2">
 				<td>{TXT_SESSION_LIVETIME}&nbsp;</td>
 				<td><input type="text" name="setvalue[34]" value="{SETTINGS_SESSION_LIFETIME}" size="70" maxlength="250">&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
 			</tr>
-			<tr class="row2">
+			<tr class="row1">
 				<td>{TXT_DNS_SERVER}&nbsp;</td>
 				<td><input type="text" name="setvalue[3]" value="{SETTINGS_DNS_SERVER}" size="70" maxlength="250">&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[7],Style[0])" /></td>
 			</tr>
