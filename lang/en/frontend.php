@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 02 Jul 2007 11:19:13 +0200
+* generated date Tue, 03 Jul 2007 18:09:11 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
@@ -39,7 +39,7 @@ $_ARRAYLANG['TXT_LOG_OUT'] = "Logout";
 $_ARRAYLANG['TXT_EXPAND_LINK'] = "Expand";
 $_ARRAYLANG['TXT_THIS_MODULE_DOESNT_EXISTS'] = "This module does not exist.";
 $_ARRAYLANG['TXT_STATUS'] = "Status";
-$_ARRAYLANG['TXT_DESELECT_ALL'] = "Delete mark";
+$_ARRAYLANG['TXT_DESELECT_ALL'] = "Deselect All";
 $_ARRAYLANG['TXT_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_FORUM'] = "Forum";
 $_ARRAYLANG['TXT_VERIFY_PASSWORD'] = "Verify Password";

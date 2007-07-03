@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 02 Jul 2007 11:19:13 +0200
+* generated date Tue, 03 Jul 2007 18:09:11 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
@@ -197,4 +197,5 @@ $_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "Ihre Bestellung wurde annuliert.";
 $_ARRAYLANG['TXT_SHOP_ORDER_STILL_IN_CART'] = "Ihre Bestellung bleibt im Warenkorb.";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Zur&uuml;ck zum Online Shop";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Art der Bezahlung &auml;ndern";
+$_ARRAYLANG['TXT_SHOP_SAFERPAY_INIT_ERROR'] = "Payment using SaferPay couldn't be initialized!";
 ?>

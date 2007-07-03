@@ -1,14 +1,14 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 02 Jul 2007 11:19:13 +0200
+* generated date Tue, 03 Jul 2007 18:09:11 +0200
 **/
 
 $_ARRAYLANG['TXT_DATE'] = "Date";
 $_ARRAYLANG['TXT_TITLE'] = "Title";
 $_ARRAYLANG['TXT_CATEGORY'] = "Category";
 $_ARRAYLANG['TXT_NEWS_MESSAGES'] = "News messages";
-$_ARRAYLANG['TXT_NEWS_MESSAGE'] = "News message";
+$_ARRAYLANG['TXT_NEWS_MESSAGE'] = "News Message";
 $_ARRAYLANG['TXT_HYPERLINKS'] = "Hyperlinks";
 $_ARRAYLANG['TXT_EXTERNAL_SOURCE'] = "External sources";
 $_ARRAYLANG['TXT_LINK'] = "Link";
