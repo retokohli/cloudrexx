@@ -159,6 +159,22 @@ class PaymentProcessing
 
 
     /**
+     * Returns the type associated with the given payment processor ID
+     *
+     * Currently supported types are 'internal' and 'external'.
+     * @param   integer     $processorId    The payment processor ID
+     * @return  string                      The payment processor type.
+     */
+    function getCurrentPaymentProcessorType()
+    {
+        if (!$this->_processorId) {
+            return '';
+        }
+        return $this->arrPaymentProcessor[$this->_processorId]['type'];
+    }
+
+
+    /**
      * Check out the payment processor associated with the payment processor
      * selected by {@link initProcessor()}.
      *
@@ -253,13 +269,18 @@ class PaymentProcessing
 
         $payInitUrl = $this->_objSaferpay->payInit($arrShopOrder);
         $return = '';
-        if (strtoupper(substr($payInitUrl,0,5)) == "ERROR") {
-            $return .= "<font color='red'><b>The Saferpay Payment processor couldn't be initialized!<br />".$payInitUrl."</b></font>";
+        // Fixed: Added check for empty return string,
+        // i.e. on connection problems
+        if (   !$payInitUrl
+            || strtoupper(substr($payInitUrl, 0, 5)) == "ERROR") {
+            $return .= "<font color='red'><b>
+            The Saferpay Payment processor couldn't be initialized!
+            <br />$payInitUrl</b></font>";
         } else {
             $return .= "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
             switch ($this->arrConfig['saferpay_window_option']['value']){
                 case 0: // iframe
-                    $return .= $_ARRAYLANG['TXT_ORDER_PREPARED'].'<br/><br/>\n';
+                    $return .= $_ARRAYLANG['TXT_ORDER_PREPARED']."<br/><br/>\n";
                     $return .= "<iframe src='$payInitUrl' width='580' height='400' scrolling='no' marginheight='0' marginwidth='0' frameborder='0' name='saferpay'></iframe>\n";
                     break;
                 case 1: // popup
@@ -276,7 +297,6 @@ class PaymentProcessing
                                                         'SaferpayTerminal',
                                                         'scrollbars=1,resizable=0,toolbar=0,location=0,directories=0,status=1,menubar=0,width=580,height=400'
                                     );
-
                                     if (oWin==null || typeof(oWin)==\"undefined\") {
                                         alert(\"The payment couldn't be initialized, because it seems that you are using a popup blocker!\");
                                     }
@@ -286,7 +306,7 @@ class PaymentProcessing
                     break;
                 case 2: // new window
                     $return .= $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n";
-                    $return .= "<form method='post' action='".$payInitUrl."'>\n<input type='Submit' value='".$_ARRAYLANG['TXT_ORDER_NOW']."'>\n</form>\n";
+                    $return .= "<form method='post' action='$payInitUrl'>\n<input type='Submit' value='".$_ARRAYLANG['TXT_ORDER_NOW']."'>\n</form>\n";
                     break;
             }
         }
@@ -302,19 +322,23 @@ class PaymentProcessing
     {
         global $_ARRAYLANG;
         $arrShopOrder = array(
-                'txtShopId'           => $this->arrConfig['yellowpay_id']['value'],
-                'txtOrderTotal'       => $_SESSION['shop']['grand_total_price'],
-                'ShopId'              => $this->arrConfig['yellowpay_shop_id'],
-                'Hash_seed'           => $this->arrConfig['yellowpay_hash_seed'],
-                'txtLangVersion'      => strtoupper($this->_languageCode),
-                'txtArtCurrency'      => $this->_currencyCode,
-                'txtOrderIDShop'      => $_SESSION['shop']['orderid'],
-                'PaymentType'         => 'DebitDirect',
-                'DeliveryPaymentType' => $this->arrConfig['yellowpay_delivery_payment_type']['value'],
-                'SessionId'           => $_SESSION['shop']['PHPSESSID']
-                );
+            'txtShopId'           => $this->arrConfig['yellowpay_id']['value'],
+            'txtOrderTotal'       => $_SESSION['shop']['grand_total_price'],
+            'ShopId'              => $this->arrConfig['yellowpay_shop_id'],
+            'Hash_seed'           => $this->arrConfig['yellowpay_hash_seed'],
+            'txtLangVersion'      => strtoupper($this->_languageCode),
+            'txtArtCurrency'      => $this->_currencyCode,
+            'txtOrderIDShop'      => $_SESSION['shop']['orderid'],
+            'PaymentType'         => 'DebitDirect',
+            'DeliveryPaymentType' => $this->arrConfig['yellowpay_delivery_payment_type']['value'],
+// huh?  this isn't set anywhere in the shop, and not even used anywhere in yellowpay.class.php
+            'SessionId'           => $_SESSION['shop']['PHPSESSID']
+        );
 
-        $yellowpayForm = $this->_objYellowpay->getForm($arrShopOrder,$_ARRAYLANG['TXT_ORDER_NOW']);
+        $yellowpayForm = $this->_objYellowpay->getForm(
+            $arrShopOrder,
+            $_ARRAYLANG['TXT_ORDER_NOW']
+        );
         if (count($this->_objYellowpay->arrError) > 0) {
             $return .= "<font color='red'><b>This payment type couldn't be initialized!</b></font>";
         } else {

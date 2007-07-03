@@ -26,23 +26,23 @@ class PayPal
     var $PayPalAcc;
 
     var $arrAcceptedCurrencyCodes = array(
-        'AUD',// Australian Dollar
-        'CAD',// Canadian Dollar
-        'CHF',// Swiss Franc
-        'CZK',// Czech Koruna
-        'DKK',// Danish Krone
-        'EUR',// Euro
-        'GBP',// Pound Sterling
-        'HKD',// Hong Kong Dollar
-        'HUF',// Hungarian Forint
-        'JPY',// Japanese Yen
-        'NOK',// Norwegian Krone
-        'NZD',// New Zealand Dollar
-        'PLN',// Polish Zloty
-        'SEK',// Swedish Krona
-        'SGD',// Singapore Dollar
-        'THB',// Thai Baht
-        'USD'// U.S. Dollar
+        'AUD', // Australian Dollar
+        'CAD', // Canadian Dollar
+        'CHF', // Swiss Franc
+        'CZK', // Czech Koruna
+        'DKK', // Danish Krone
+        'EUR', // Euro
+        'GBP', // Pound Sterling
+        'HKD', // Hong Kong Dollar
+        'HUF', // Hungarian Forint
+        'JPY', // Japanese Yen
+        'NOK', // Norwegian Krone
+        'NZD', // New Zealand Dollar
+        'PLN', // Polish Zloty
+        'SEK', // Swedish Krona
+        'SGD', // Singapore Dollar
+        'THB', // Thai Baht
+        'USD', // U.S. Dollar
     );
 
     /**
@@ -80,13 +80,13 @@ class PayPal
         $currency_code = $this->getCurencyCode($_SESSION['shop']['currencyId']);
         $amount = $_SESSION['shop']['grand_total_price'];
 
-        $sum = md5("contrexx".$_SERVER['HTTP_HOST'].intval($amount).$orderid);
-        $host = ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET;
-        $return = $host. "/index.php?section=shop&amp;cmd=success&amp;handler=paypal&amp;orderid=$orderid";
-        $cancel_return = $host."/index.php?section=shop&amp;cmd=cancel&amp;orderid=$orderid";
-        $notify_url = $host."/index.php?section=shop&amp;act=paypalIpnCheck";
+        $sum = md5('contrexx'.$_SERVER['HTTP_HOST'].intval($amount).$orderid);
+        $host = ASCMS_PROTOCOL.'://'.$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET;
+        $return = $host. '/index.php?section=shop&amp;cmd=success&amp;handler=paypal&amp;orderid=$orderid';
+        $cancel_return = $host.'/index.php?section=shop&amp;cmd=cancel";//&amp;orderid=$orderid';
+        $notify_url = $host.'/index.php?section=shop&amp;act=paypalIpnCheck';
 
-        $retval = "<script language=\"JavaScript\" type=\"text/javascript\">
+        $retval = "<script language='JavaScript' type='text/javascript'>
             // <![CDATA[
                 function go()
                 {
@@ -97,42 +97,43 @@ class PayPal
             </script>";
 
 //        $retval .= "\n<form name=\"paypal\" action=\"https://www.sandbox.paypal.com/ch/cgi-bin/webscr\" method=\"post\">\n";
-        $retval .= "\n<form name=\"paypal\" action=\"https://www.paypal.com/ch/cgi-bin/webscr\" method=\"post\">\n";
-        $retval .= $this->getInput("cmd", "_xclick");
-        $retval .= $this->getInput("business", $business);
-        $retval .= $this->getInput("item_name", $item_name);
-        $retval .= $this->getInput("currency_code", $currency_code);
-        $retval .= $this->getInput("amount", $amount);
-        $retval .= $this->getInput("custom", $orderid);
-        $retval .= $this->getInput("notify_url", $notify_url);
-        $retval .= $this->getInput("return", $return);
-        $retval .= $this->getInput("cancel_return", $cancel_return);
+        $retval .= "\n<form name='paypal' action='https://www.paypal.com/ch/cgi-bin/webscr' method='post'>\n";
+        $retval .= $this->getInput('cmd', '_xclick');
+        $retval .= $this->getInput('business', $business);
+        $retval .= $this->getInput('item_name', $item_name);
+        $retval .= $this->getInput('currency_code', $currency_code);
+        $retval .= $this->getInput('amount', $amount);
+        $retval .= $this->getInput('custom', $orderid);
+        $retval .= $this->getInput('notify_url', $notify_url);
+        $retval .= $this->getInput('return', $return);
+        $retval .= $this->getInput('cancel_return', $cancel_return);
         $retval .= "{$_ARRAYLANG['TXT_PAYPAL_SUBMIT']}<br /><br />";
-        $retval .= "<input type=\"submit\" name=\"submitbutton\" value=\"{$_ARRAYLANG['TXT_PAYPAL_SUBMIT_BUTTON']}\" />\n";
+        $retval .= "<input type='submit' name='submitbutton' value=\"{$_ARRAYLANG['TXT_PAYPAL_SUBMIT_BUTTON']}\" />\n";
         $retval .= "</form>\n";
 
         return $retval;
     }
 
     /**
-     * Generates an hidden input field
-     *
+     * Generates a hidden input field
      * @param $field Array containing the name and the value of the field
      */
     function getInput($name, $value)
     {
-        return "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+        return "<input type='hidden' name=\"$name\" value=\"$value\" />\n";
     }
 
 
     /**
-     * reads the paypal email address out of the database
+     * Reads the paypal email address from the database
      */
     function getBusiness()
     {
         global $objDatabase;
-        $query = "SELECT value FROM ".DBPREFIX."module_shop_config
-                  WHERE name = 'paypal_account_email'";
+        $query = "
+            SELECT value FROM ".DBPREFIX."module_shop_config
+             WHERE name = 'paypal_account_email'
+        ";
         $objResult = $objDatabase->Execute($query);
         //FIXME
         // was ist wenn das feld leer ist?
@@ -140,29 +141,32 @@ class PayPal
     }
 
     /**
-     * reads the currencycode out of the database
-     *
-     * @param $id ID of the currency code
+     * Read the currency code from the database
+     * @param   integer     $id         The currency code ID
+     * @return  string                  The currency code
      */
     function getCurencyCode($id)
     {
         global $objDatabase;
-        $query = "SELECT code FROM ".DBPREFIX."module_shop_currencies
-            WHERE id = '$id'";
-
+        $query = "
+            SELECT code FROM ".DBPREFIX."module_shop_currencies
+             WHERE id = '$id'
+        ";
         $objResult = $objDatabase->Execute($query);
         return $objResult->fields['code'];
     }
 
 
     /**
-     * confirms the payment
+     * Try to determine whether the payment was successful.
+     * @return  mixed       True on success, false on failure, or
+     *                      NULL if the order status isn't set to 'confirmed'.
      */
     function payConfirm()
     {
         global $objDatabase;
 
-        if (!empty($_GET['orderid'])) {
+        if (isset($_GET['orderid']) && !empty($_GET['orderid'])) {
             $orderid = intval($_GET['orderid']);
         }
         $query = "
@@ -170,7 +174,8 @@ class PayPal
               FROM ".DBPREFIX."module_shop_orders
              WHERE orderid=$orderid
         ";
-        if (!$objResult = $objDatabase->Execute($query)) {
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
             return false;
         }
         if ($objResult->fields['order_status'] == 1) {
@@ -219,7 +224,7 @@ class PayPal
             fwrite ($fp, $header . $req);
             while (!feof($fp)) {
                 $res = fgets ($fp, 1024);
-                if (strcmp ($res, "VERIFIED") == 0) {
+                if (strcmp ($res, 'VERIFIED') == 0) {
                     $query = "SELECT value FROM ".DBPREFIX."module_shop_config
                               WHERE name = 'paypal_account_email'";
                     $objResult = $objDatabase->Execute($query);

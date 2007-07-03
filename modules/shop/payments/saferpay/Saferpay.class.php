@@ -331,9 +331,12 @@ class Saferpay
      */
     function payInit($arrShopOrder)
     {
-        $this->arrShopOrder = $arrShopOrder;
-        $this->attributes = $this->getAttributeList('payInit');
-        $this->arrTemp['result'] = join('', file($this->gateway['payInit'].'?'.$this->attributes));
+        $this->arrShopOrder      = $arrShopOrder;
+        $this->attributes        = $this->getAttributeList('payInit');
+        // Fixed: suppressed warnings if no network is available
+        // or any other connection problem occurs
+        $this->arrTemp['result'] =
+            @join('', file($this->gateway['payInit'].'?'.$this->attributes));
         return $this->arrTemp['result'];
     }
 
@@ -342,21 +345,22 @@ class Saferpay
      * Confirms the payment transaction
      *
      * @access  public
-     * @return  boolean True on success, false on failure
+     * @return  boolean     True on success, false otherwise
      */
     function payConfirm()
     {
         parse_str($_SERVER['QUERY_STRING']);
 
-        $this->arrShopOrder['DATA'] = urlencode($DATA);
+        $this->arrShopOrder['DATA']      = urlencode($DATA);
         $this->arrShopOrder['SIGNATURE'] = urlencode($SIGNATURE);
 
         $this->attributes = $this->getAttributeList('payConfirm');
-        $this->arrTemp['result'] = join('', file($this->gateway['payConfirm'].'?'.$this->attributes));
+        $this->arrTemp['result'] =
+            join('', file($this->gateway['payConfirm'].'?'.$this->attributes));
 
         if (substr($this->arrTemp['result'], 0, 2) == 'OK') {
             parse_str(substr($this->arrTemp['result'], 3));
-            $this->arrTemp['id'] = $ID;
+            $this->arrTemp['id']    = $ID;
             $this->arrTemp['token'] = $TOKEN;
             return true;
         } else {
@@ -369,19 +373,20 @@ class Saferpay
     /**
      * Completes the payment transaction
      *
-     * @param   array   Attributes
+     * @param   array       Attributes
      * @access  public
-     * @return  boolean True on success, false on failure
+     * @return  boolean     True on success, false otherwise
      */
     function payComplete($arrShopOrder)
     {
         $this->arrShopOrder = $arrShopOrder;
 
-        $this->arrShopOrder['ID'] = $this->arrTemp['id'];
+        $this->arrShopOrder['ID']    = $this->arrTemp['id'];
         $this->arrShopOrder['TOKEN'] = $this->arrTemp['token'];
 
         $this->attributes = $this->getAttributeList('payComplete');
-        $this->arrTemp['result'] = join('', file($this->gateway['payComplete'].'?'.$this->attributes));
+        $this->arrTemp['result'] =
+            join('', file($this->gateway['payComplete'].'?'.$this->attributes));
 
         if (substr($this->arrTemp['result'], 0, 2) == 'OK') {
             return true;
@@ -415,8 +420,8 @@ class Saferpay
      * Checks whether the given attribute exists in the array arrShopOrder.
      *
      * @access  private
-     * @param   string  Attribute to check for its existence
-     * @return  boolean True on success, false on failure
+     * @param   string      Attribute to check for its existence
+     * @return  boolean     True on success, false otherwise
      */
     function ifExist($attribute)
     {
@@ -433,8 +438,8 @@ class Saferpay
      * Verifies the value of an attribute for correctness.
      *
      * @access  private
-     * @param   string  Attribute to check for correctness
-     * @return  boolean True on success, false on failure
+     * @param   string      Attribute to check for correctness
+     * @return  boolean     True on success, false otherwise
      */
     function checkAttribute($attribute)
     {
@@ -596,12 +601,12 @@ class Saferpay
 
 
     /**
-     * Adds an attribute to the attribute-list attributes.
+     * Adds an attribute to the attributes list class variable.
      *
      * Also deletes the attribute from the attribute array arrShopOrder.
      * @access  private
-     * @param   string  Attribute to add
-     * @return  boolean True on success, false on failure
+     * @param   string      Attribute to add
+     * @return  boolean     True on success, false otherwise
      */
     function addAttribute($attribute)
     {
