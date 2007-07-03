@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 02 Jul 2007 11:19:13 +0200
+* generated date Tue, 03 Jul 2007 18:09:11 +0200
 **/
 
 $_ARRAYLANG['TXT_CONTACT_DATE'] = "Date";
@@ -37,8 +37,8 @@ $_ARRAYLANG['TXT_CONTACT_ENTRIES_OF_NAME'] = "Contact form entries of %NAME%";
 $_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'] = "It could be possible that this file is infected by a virus or trojan,\\nbecause it was uploaded by someone unknown.\\n\\nDo you want to open it anyway?";
 $_ARRAYLANG['TXT_CONTACT_ACTION_IS_IRREVERSIBLE'] = "This action is irreversible!";
 $_ARRAYLANG['TXT_CONTACT_NAME'] = "Name";
-$_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES'] = "Receiver address(es)";
-$_ARRAYLANG['TXT_CONTACT_ADD_OTHER_FIELD'] = "add an other field";
+$_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES'] = "Receiver Address(es)";
+$_ARRAYLANG['TXT_CONTACT_ADD_OTHER_FIELD'] = "Add Field";
 $_ARRAYLANG['TXT_CONTACT_FORM_FIELDS'] = "Form fields";
 $_ARRAYLANG['TXT_CONTACT_DELETE'] = "Delete";
 $_ARRAYLANG['TXT_CONTACT_MOVE_UP'] = "Move up";
@@ -57,8 +57,8 @@ $_ARRAYLANG['TXT_CONTACT_PASSWORD_FIELD'] = "Password field";
 $_ARRAYLANG['TXT_CONTACT_RADIO_BOXES'] = "Select fields";
 $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_FORM'] = "Do you really want to delete this form?";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES_WILL_BE_DELETED'] = "All contact entries of the form will be deleted!";
-$_ARRAYLANG['TXT_CONTACT_LATEST_ENTRY'] = "Lastest entry";
-$_ARRAYLANG['TXT_CONTACT_NUMBER_OF_ENTRIES'] = "Number of entries";
+$_ARRAYLANG['TXT_CONTACT_LATEST_ENTRY'] = "Lastest Submission";
+$_ARRAYLANG['TXT_CONTACT_NUMBER_OF_ENTRIES'] = "Number of Submissions";
 $_ARRAYLANG['TXT_CONTACT_ID'] = "ID";
 $_ARRAYLANG['TXT_CONTACT_MODIFY'] = "Modify";
 $_ARRAYLANG['TXT_CONTACT_SHOW_SOURCECODE'] = "Show source code";
@@ -73,14 +73,14 @@ $_ARRAYLANG['TXT_CONTACT_USE_AS_TEMPLATE'] = "Use as a template for a new form";
 $_ARRAYLANG['TXT_CONTACT_SELECTBOX'] = "Select menu";
 $_ARRAYLANG['TXT_CONTACT_TEXTAREA'] = "Multiline text area";
 $_ARRAYLANG['TXT_CONTACT_GET_CSV'] = "Export as CSV file";
-$_ARRAYLANG['TXT_CONTACT_SUBJECT'] = "Email subject";
+$_ARRAYLANG['TXT_CONTACT_SUBJECT'] = "E-Mail Subject";
 $_ARRAYLANG['TXT_CONTACT_NEW_PAGE'] = "Create new page in content manager";
 $_ARRAYLANG['TXT_CONTACT_TITLE'] = "Contact";
 $_ARRAYLANG['TXT_CONTACT_FORM_DESC'] = "Form text";
-$_ARRAYLANG['TXT_CONTACT_FEEDBACK'] = "Feedback";
+$_ARRAYLANG['TXT_CONTACT_FEEDBACK'] = "Receipt Confirmation Message";
 $_ARRAYLANG['TXT_CONTACT_IS_REQUIRED'] = "Is required";
 $_ARRAYLANG['TXT_CONTACT_REGEX_EVERYTHING'] = "Everything";
-$_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'] = "E-mail address";
+$_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'] = "E-Mail Address";
 $_ARRAYLANG['TXT_CONTACT_REGEX_URL'] = "Webaddress";
 $_ARRAYLANG['TXT_CONTACT_REGEX_TEXT'] = "Characters only";
 $_ARRAYLANG['TXT_CONTACT_REGEX_NUMBERS'] = "Numbers only";
@@ -114,9 +114,9 @@ $_ARRAYLANG['TXT_CONTACT_CONTACT_FORM_SUCCESSFULLY_DELETED'] = "The contact form
 $_ARRAYLANG['TXT_CONTACT_FAILED_DELETE_CONTACT_FORM'] = "The contact form couldn't be deleted due to an error!";
 $_ARRAYLANG['TXT_CONTACT_DATA_RECORD_UPDATED_SUCCESSFUL_VALIDATE'] = "Your changes have been inserted into database. Because of your limited user-rights, an administrator has to check your update before it appears on the webpage.";
 $_ARRAYLANG['TXT_CONTACT_SETTINGS_UPDATED'] = "Settings have been applied.";
-$_ARRAYLANG['TXT_CONTACT_META_DATE_BY_EXPORT'] = "Metainformations at Export";
+$_ARRAYLANG['TXT_CONTACT_META_DATE_BY_EXPORT'] = "Meta Data to Export";
 $_ARRAYLANG['TXT_CONTACT_DEFAULT_FEEDBACK_TXT'] = "Thank you for your request. We will get back to you as soon as possible.";
-$_ARRAYLANG['TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'] = "Display the form again when showing the feedback text";
+$_ARRAYLANG['TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'] = "Display the form again when showing the confirmation receipt text.";
 $_ARRAYLANG['TXT_CONTACT_LANG'] = "Language";
 $_ARRAYLANG['TXT_CONTACT_ENTRIE_DETAILS'] = "Details";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES'] = "Entries";
