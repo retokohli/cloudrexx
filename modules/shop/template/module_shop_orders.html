@@ -79,6 +79,9 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
           <option value="firstname">{TXT_FIRST_NAME}</option>
           <option value="company">{TXT_COMPANY}</option>
         </select>
+        &nbsp;&nbsp;&nbsp;
+        <label for="shopShowPendingOrders">{TXT_SHOP_SHOW_PENDING_ORDERS}</label>
+        <input type="checkbox" {SHOP_SHOW_PENDING_ORDERS_CHECKED} id="shopShowPendingOrders" name="shopShowPendingOrders" onchange="document.formSearchOrders.submit();" />
       </td>
     </tr>
     <tr class=row1>

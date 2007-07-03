@@ -187,25 +187,26 @@ class shopmanager extends ShopLibrary {
 
         $this->_defaultImage = $this->shopImageWebPath.$this->noPictureName;
 
-        $objTemplate->setVariable(array(
-            'CONTENT_NAVIGATION'=> "<a href='?cmd=shop'>".$_ARRAYLANG['TXT_SHOP_INDEX']."</a>".
-                                   "<a href='?cmd=shop&amp;act=cat'>".$_ARRAYLANG['TXT_CATEGORIES']."</a>".
-                                   "<a href='?cmd=shop&amp;act=products'>".$_ARRAYLANG['TXT_PRODUCTS']."</a>".
-                                   "<a href='?cmd=shop&amp;act=manufacturer'>".$_ARRAYLANG['TXT_SHOP_MANUFACTURER']."</a>".
-                                   "<a href='?cmd=shop&amp;act=customers'>".$_ARRAYLANG['TXT_CUSTOMERS_PARTNERS']."</a>".
-                                   "<a href='?cmd=shop&amp;act=orders'>".$_ARRAYLANG['TXT_ORDERS']."</a>".
-                                   "<a href='?cmd=shop&amp;act=statistics'>".$_ARRAYLANG['TXT_STATISTIC']."</a>".
-                                   "<a href='?cmd=shop&amp;act=import'>".$_ARRAYLANG['TXT_IMPORT_EXPORT']."</a>".
-                                   "<a href='?cmd=shop&amp;act=pricelist'>".$_ARRAYLANG['TXT_PDF_OVERVIEW']."</a>".
-                                   "<a href='?cmd=shop&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>"
-        ));
+        $objTemplate->setVariable(
+            'CONTENT_NAVIGATION',
+            "<a href='?cmd=shop'>".$_ARRAYLANG['TXT_SHOP_INDEX']."</a>".
+            "<a href='?cmd=shop&amp;act=cat'>".$_ARRAYLANG['TXT_CATEGORIES']."</a>".
+            "<a href='?cmd=shop&amp;act=products'>".$_ARRAYLANG['TXT_PRODUCTS']."</a>".
+            "<a href='?cmd=shop&amp;act=manufacturer'>".$_ARRAYLANG['TXT_SHOP_MANUFACTURER']."</a>".
+            "<a href='?cmd=shop&amp;act=customers'>".$_ARRAYLANG['TXT_CUSTOMERS_PARTNERS']."</a>".
+            "<a href='?cmd=shop&amp;act=orders'>".$_ARRAYLANG['TXT_ORDERS']."</a>".
+            "<a href='?cmd=shop&amp;act=statistics'>".$_ARRAYLANG['TXT_STATISTIC']."</a>".
+            "<a href='?cmd=shop&amp;act=import'>".$_ARRAYLANG['TXT_IMPORT_EXPORT']."</a>".
+            "<a href='?cmd=shop&amp;act=pricelist'>".$_ARRAYLANG['TXT_PDF_OVERVIEW']."</a>".
+            "<a href='?cmd=shop&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>"
+        );
 
         $this->arrOrderStatus = array(
-            0    => $_ARRAYLANG['TXT_PENDING'], // Pending
-            1    => $_ARRAYLANG['TXT_CONFIRMED'], // Confirmed
-            2    => $_ARRAYLANG['TXT_CANCELLED'], // Cancelled
-            3    => $_ARRAYLANG['TXT_REFUNDED'], // Refunded
-            4    => $_ARRAYLANG['TXT_SHIPPED'] // Shipped
+            0 => $_ARRAYLANG['TXT_PENDING'],   // Pending
+            1 => $_ARRAYLANG['TXT_CONFIRMED'], // Confirmed
+            2 => $_ARRAYLANG['TXT_CANCELLED'], // Cancelled
+            3 => $_ARRAYLANG['TXT_REFUNDED'],  // Refunded
+            4 => $_ARRAYLANG['TXT_SHIPPED']    // Shipped
         );
 
         // Settings object
@@ -3410,18 +3411,16 @@ class shopmanager extends ShopLibrary {
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-        //initalize vars
-        $i=0;//used for rowclass
+        $i=0; // used for rowclass
         $shopSearchPattern="";
         $arrCurrency = $this->objCurrency->getCurrencyArray();
 
         // update order status
         if (isset($_GET['changeOrderStatus']) &&
-            intval($_GET['changeOrderStatus']) >=0 &&
-            intval($_GET['changeOrderStatus']) <=4 &&
+            intval($_GET['changeOrderStatus']) >= 0 &&
+            intval($_GET['changeOrderStatus']) <= 4 &&
             isset($_GET['orderId']) &&
-            !empty($_GET['orderId']))
-        {
+            !empty($_GET['orderId'])) {
             $query = "UPDATE ".DBPREFIX."module_shop_orders ".
                      "SET order_status='".intval($_GET['changeOrderStatus'])."', ".
                          "modified_by ='".$_SESSION['auth']['username']."', ".
@@ -3432,7 +3431,7 @@ class shopmanager extends ShopLibrary {
 
         // send an email to the customer
         if (isset($_GET['changeOrderStatus']) && $_GET['changeOrderStatus'] == 4
-        && isset($_GET['shopSendMail']) && !empty($_GET['shopSendMail'])) {
+            && isset($_GET['shopSendMail']) && !empty($_GET['shopSendMail'])) {
             $query = "SELECT c.email, o.last_modified FROM ".
             DBPREFIX."module_shop_customers AS c, ".
             DBPREFIX."module_shop_orders AS o ".
@@ -3463,36 +3462,36 @@ class shopmanager extends ShopLibrary {
 
         // begin language variables
         $this->_objTpl->setVariable(array(
-        'TXT_CUSTOMER_TYP'              => $_ARRAYLANG['TXT_CUSTOMER_TYP'],
-        'TXT_CUSTOMER'                  => $_ARRAYLANG['TXT_CUSTOMER'],
-        'TXT_RESELLER'                  => $_ARRAYLANG['TXT_RESELLER'],
-        'TXT_FIRST_NAME'                => $_ARRAYLANG['TXT_FIRST_NAME'],
-        'TXT_LAST_NAME'                 => $_ARRAYLANG['TXT_LAST_NAME'],
-        'TXT_COMPANY'                   => $_ARRAYLANG['TXT_COMPANY'],
-        'TXT_SORT_ORDER'                => $_ARRAYLANG['TXT_SORT_ORDER'],
-        'TXT_ID'                        => $_ARRAYLANG['TXT_ID'],
-        'TXT_DATE'                      => $_ARRAYLANG['TXT_DATE'],
-        'TXT_NAME'                      => $_ARRAYLANG['TXT_NAME'],
-        'TXT_ORDER_SUM'                 => $_ARRAYLANG['TXT_ORDER_SUM'],
-        'TXT_ACTION'                    => $_ARRAYLANG['TXT_ACTION'],
-        'TXT_CONFIRM_DELETE_ORDER'      => $_ARRAYLANG['TXT_CONFIRM_DELETE_ORDER'],
-        'TXT_ACTION_IS_IRREVERSIBLE'    => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
-        'TXT_CONFIRM_CHANGE_STATUS'     => $_ARRAYLANG['TXT_CONFIRM_CHANGE_STATUS'],
-        'TXT_SEARCH'                    => $_ARRAYLANG['TXT_SEARCH'],
-        'TXT_SEND_TEMPLATE_TO_CUSTOMER' => str_replace('TXT_ORDER_COMPLETE',$_ARRAYLANG['TXT_ORDER_COMPLETE'],$_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER']),
-        'TXT_MARKED'                    => $_ARRAYLANG['TXT_MARKED'],
-        'TXT_SELECT_ALL'                => $_ARRAYLANG['TXT_SELECT_ALL'],
-        'TXT_REMOVE_SELECTION'          => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
-        'TXT_SELECT_ACTION'             => $_ARRAYLANG['TXT_SELECT_ACTION'],
-        'TXT_MAKE_SELECTION'            => $_ARRAYLANG['TXT_MAKE_SELECTION']
+            'TXT_CUSTOMER_TYP'              => $_ARRAYLANG['TXT_CUSTOMER_TYP'],
+            'TXT_CUSTOMER'                  => $_ARRAYLANG['TXT_CUSTOMER'],
+            'TXT_RESELLER'                  => $_ARRAYLANG['TXT_RESELLER'],
+            'TXT_FIRST_NAME'                => $_ARRAYLANG['TXT_FIRST_NAME'],
+            'TXT_LAST_NAME'                 => $_ARRAYLANG['TXT_LAST_NAME'],
+            'TXT_COMPANY'                   => $_ARRAYLANG['TXT_COMPANY'],
+            'TXT_SORT_ORDER'                => $_ARRAYLANG['TXT_SORT_ORDER'],
+            'TXT_ID'                        => $_ARRAYLANG['TXT_ID'],
+            'TXT_DATE'                      => $_ARRAYLANG['TXT_DATE'],
+            'TXT_NAME'                      => $_ARRAYLANG['TXT_NAME'],
+            'TXT_ORDER_SUM'                 => $_ARRAYLANG['TXT_ORDER_SUM'],
+            'TXT_ACTION'                    => $_ARRAYLANG['TXT_ACTION'],
+            'TXT_CONFIRM_DELETE_ORDER'      => $_ARRAYLANG['TXT_CONFIRM_DELETE_ORDER'],
+            'TXT_ACTION_IS_IRREVERSIBLE'    => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_CONFIRM_CHANGE_STATUS'     => $_ARRAYLANG['TXT_CONFIRM_CHANGE_STATUS'],
+            'TXT_SEARCH'                    => $_ARRAYLANG['TXT_SEARCH'],
+            'TXT_SEND_TEMPLATE_TO_CUSTOMER' => str_replace('TXT_ORDER_COMPLETE',$_ARRAYLANG['TXT_ORDER_COMPLETE'],$_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER']),
+            'TXT_MARKED'                    => $_ARRAYLANG['TXT_MARKED'],
+            'TXT_SELECT_ALL'                => $_ARRAYLANG['TXT_SELECT_ALL'],
+            'TXT_REMOVE_SELECTION'          => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
+            'TXT_SELECT_ACTION'             => $_ARRAYLANG['TXT_SELECT_ACTION'],
+            'TXT_MAKE_SELECTION'            => $_ARRAYLANG['TXT_MAKE_SELECTION'],
+            'TXT_SHOP_SHOW_PENDING_ORDERS'  => $_ARRAYLANG['TXT_SHOP_SHOW_PENDING_ORDERS'],
         ));
-
         $this->_objTpl->setGlobalVariable(array(
-        'TXT_STATUS'       => $_ARRAYLANG['TXT_STATUS'],
-        'TXT_VIEW_DETAILS' => $_ARRAYLANG['TXT_VIEW_DETAILS'],
-        'TXT_EDIT'         => $_ARRAYLANG['TXT_EDIT'],
-        'TXT_DELETE'       => $_ARRAYLANG['TXT_DELETE'],
-        'SHOP_CURRENCY'    => $arrCurrency[$this->objCurrency->defaultCurrencyId]['symbol']
+            'TXT_STATUS'       => $_ARRAYLANG['TXT_STATUS'],
+            'TXT_VIEW_DETAILS' => $_ARRAYLANG['TXT_VIEW_DETAILS'],
+            'TXT_EDIT'         => $_ARRAYLANG['TXT_EDIT'],
+            'TXT_DELETE'       => $_ARRAYLANG['TXT_DELETE'],
+            'SHOP_CURRENCY'    => $arrCurrency[$this->objCurrency->defaultCurrencyId]['symbol']
         ));
 
         // create "search order status" listbox
@@ -3505,94 +3504,115 @@ class shopmanager extends ShopLibrary {
         //check if an search has been made
         $shopCustomerOrder = "date DESC";
         if (isset($_POST['shopSearchOrders']) OR isset($_POST['shopListLetter'])) {
-            if ($_POST['shopOrderStatus']<5) {
+            if ($_POST['shopOrderStatus'] < 5) {
                 $shopOrderStatus = intval($_POST['shopOrderStatus']);
                 $shopSearchPattern = " AND order_status = '$shopOrderStatus'";
             }
 
-            if ($_POST['shopCustomer']<2) {
+            if ($_POST['shopCustomer'] < 2) {
                 $shopCustomer = intval($_POST['shopCustomer']);
                 $shopSearchPattern .= " AND is_reseller = $shopCustomer";
             }
             if (!empty($_POST['shopSearchTerm'])) {
                 $searchTerm = htmlspecialchars($_POST['shopSearchTerm'], ENT_QUOTES, CONTREXX_CHARSET);
-
                 $shopSearchPattern .= " AND ( company LIKE '%$searchTerm%' OR firstname LIKE '%$searchTerm%' OR lastname LIKE '%$searchTerm%' OR address LIKE '%$searchTerm%'  OR city LIKE '%$searchTerm%' OR phone LIKE '%$searchTerm%' OR email LIKE '%$searchTerm%' )";
-
             }
-            if ($_POST['shopListLetter'] != "") {
+            if ($_POST['shopListLetter'] != '') {
                 $shopLetter = htmlspecialchars($_POST['shopListLetter'], ENT_QUOTES, CONTREXX_CHARSET);
                 $shopListOrder = addslashes(strip_tags($_POST['shopListSort']));
                 $shopSearchPattern .= " AND LEFT($shopListOrder,1) = '$shopLetter' ";
             }
-
             if (isset($_POST['shopListSort'])) {
                 $shopCustomerOrder = addslashes(strip_tags($_POST['shopListSort']))." DESC";
             }
+            // let the user choose whether to see pending orders or not
+            if (!isset($_POST['shopShowPendingOrders'])) {
+                $shopSearchPattern = " AND order_status!='0'";
+            } else {
+                $this->_objTpl->setVariable(
+                    'SHOP_SHOW_PENDING_ORDERS_CHECKED', 'checked="checked"'
+                );
+            }
         }
 
-        //create sql query
-        $query = "SELECT o.orderid AS orderid,
-                         c.firstname AS firstname,
-                         c.lastname AS lastname,
-                         c.company AS company,
-                         o.currency_order_sum AS currency_order_sum,
-                         o.selected_currency_id AS selected_currency_id,
-                         o.order_date AS date,
-                         o.customer_note AS customer_note,
-                         o.order_status AS order_status
-                    FROM ".DBPREFIX."module_shop_customers AS c,
-                         ".DBPREFIX."module_shop_orders AS o
-                   WHERE c.customerid = o.customerid $shopSearchPattern
-                   ORDER BY o.order_date DESC";
+        // create sql query
+        $query = "
+            SELECT orderid, firstname, lastname, company,
+                   currency_order_sum, selected_currency_id,
+                   order_date, customer_note, order_status
+              FROM ".DBPREFIX."module_shop_customers c,
+                   ".DBPREFIX."module_shop_orders o
+             WHERE c.customerid=o.customerid $shopSearchPattern
+          ORDER BY order_date DESC
+        ";
 
-        if (($objResult = $objDatabase->Execute($query)) === false) {
-            //if query has errors, call errorhandling
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            // if query has errors, call errorhandling
             $this->errorHandling();
         } else {
             $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
             $count = $objResult->RecordCount();
             $shopPagingLimit = intval($_CONFIG['corePagingLimit']);
-            $viewPaging = ($count > $shopPagingLimit) ? true : false;
-            $paging = getPaging($count, $pos, "&amp;cmd=shop&amp;act=orders", $_ARRAYLANG['TXT_ORDERS'], $viewPaging);
-            //$query .= " LIMIT $pos, $shopPagingLimit";
+            $viewPaging = $count > $shopPagingLimit ? true : false;
+            $paging = getPaging(
+                $count,
+                $pos,
+                '&amp;cmd=shop&amp;act=orders',
+                $_ARRAYLANG['TXT_ORDERS'],
+                $viewPaging
+            );
         }
-        if (!$objResult = $objDatabase->SelectLimit($query, $shopPagingLimit, $pos)) {
-            //if query has errors, call errorhandling
+        $objResult = $objDatabase->SelectLimit($query, $shopPagingLimit, $pos);
+        if (!$objResult) {
+            // if query has errors, call errorhandling
             $this->errorHandling();
         } else {
-            if ($objResult->RecordCount()<1) {
-                $this->_objTpl->hideBlock("orderTable");
+            if ($objResult->RecordCount() < 1) {
+                $this->_objTpl->hideBlock('orderTable');
             } else {
-                $this->_objTpl->setCurrentBlock("orderRow");
+                $this->_objTpl->setCurrentBlock('orderRow');
                 while(!$objResult->EOF) {
-                    $styleName = (($i % 2) == 0)? "row1" : "row2";
-                    // PHP5! $tipNote = (strlen($objResult['customer_note'])>0) ? stripslashes(php_strip_whitespace($objResult['customer_note'])) : "";
+                    $styleName = (++$i % 2 ? 'row1' : 'row2');
+                    // PHP5! $tipNote = (strlen($objResult['customer_note'])>0) ? stripslashes(php_strip_whitespace($objResult['customer_note'])) : '';
                     $tipNote = $objResult->fields['customer_note'];
-                    $tipNote = ereg_replace("(\r\n|\n|\r)", "<br />",stripslashes($tipNote));
-                    $tipLink = !empty($tipNote) ? "<img src=\"images/icons/comment.gif\" onmouseout=\"htm()\" onmouseover=\"stm(Text[".$objResult->fields['orderid']."],Style[0])\" width=\"11\" height=\"10\" alt=\"\" title=\"\" />" : "";
-
+                    $tipNote = ereg_replace('(\r\n|\n|\r)', '<br />', stripslashes($tipNote));
+                    $tipLink = (!empty($tipNote) ? '<img src="images/icons/comment.gif" onmouseout="htm()" onmouseover="stm(Text['.$objResult->fields['orderid'].'],Style[0])" width="11" height="10" alt="" title="" />' : '');
                     // set currency id
                     $this->objCurrency->activeCurrencyId = $objResult->fields['selected_currency_id'];
-
                     $this->_objTpl->setVariable(array(
-                    'SHOP_ROWCLASS'     => $objResult->fields['order_status'] == 0 ? "rowWarn" : $styleName,
-                    'SHOP_ORDERID'      => $objResult->fields['orderid'],
-                    'SHOP_TIP_ID'       => $objResult->fields['orderid'],
-                    'SHOP_TIP_NOTE'     => $tipNote,
-                    'SHOP_TIP_LINK'     => $tipLink,
-                    'SHOP_DATE'         => $objResult->fields['date'],
-                    'SHOP_NAME'         => (strlen($objResult->fields['company'])>1) ? trim(stripslashes($objResult->fields['company'])) : stripslashes($objResult->fields['firstname'])." ".stripslashes($objResult->fields['lastname']),
-                    'SHOP_ORDER_SUM'    => $this->objCurrency->getDefaultCurrencyPrice($objResult->fields['currency_order_sum']),
-                    'SHOP_ORDER_STATUS' => $this->_getOrderStatusMenu("shopOrderStatusId[".$objResult->fields['orderid']."]",$objResult->fields['order_status'],"changeOrderStatus(".$objResult->fields['orderid'].",".$objResult->fields['order_status'].",this.value)")
+                        'SHOP_ROWCLASS'     =>
+                            $objResult->fields['order_status'] == 0
+                                ? 'rowWarn'
+                                : $styleName,
+                        'SHOP_ORDERID'      => $objResult->fields['orderid'],
+                        'SHOP_TIP_ID'       => $objResult->fields['orderid'],
+                        'SHOP_TIP_NOTE'     => $tipNote,
+                        'SHOP_TIP_LINK'     => $tipLink,
+                        'SHOP_DATE'         => $objResult->fields['order_date'],
+                        'SHOP_NAME'         =>
+                            strlen($objResult->fields['company']) > 1
+                                ? trim(stripslashes($objResult->fields['company']))
+                                : stripslashes($objResult->fields['firstname']).' '.
+                                  stripslashes($objResult->fields['lastname']),
+                        'SHOP_ORDER_SUM'    =>
+                            $this->objCurrency->getDefaultCurrencyPrice(
+                                $objResult->fields['currency_order_sum']),
+                        'SHOP_ORDER_STATUS' => $this->_getOrderStatusMenu(
+                            'shopOrderStatusId['.
+                                $objResult->fields['orderid'].']',
+                            $objResult->fields['order_status'],
+                            'changeOrderStatus('.
+                                $objResult->fields['orderid'].','.
+                                $objResult->fields['order_status'].',this.value)'
+                        )
                     ));
-                    $this->_objTpl->parse("orderRow");
-                    $this->_objTpl->parse("tipMessageRow");
-                    $i++;
+                    $this->_objTpl->parse('orderRow');
+                    $this->_objTpl->parse('tipMessageRow');
                     $objResult->MoveNext();
                 }
             }
-            $this->_objTpl->setVariable("SHOP_ORDER_PAGING", $paging);
+            $this->_objTpl->setVariable('SHOP_ORDER_PAGING', $paging);
         }
     }
 
@@ -3801,8 +3821,6 @@ class shopmanager extends ShopLibrary {
                         $this->_objTpl->setVariable(array('SHOP_PAYMENT_PRICE' => '0.00'));
 //                    }
                 }
-
-                // moved VAT setup down...
 
                 $this->_objTpl->setGlobalVariable(array(
                     'SHOP_CURRENCY' => $arrCurrency[$selectedCurrencyId]['symbol']
