@@ -515,7 +515,7 @@ class rssDirectory extends directoryLibrary
 	    	$catLink = "&amp;cid=".$cid;
 	    }
 
-	    if(isset($catId)){
+	    if(isset($lid)){
 	    	$levelLink = "&amp;lid=".$lid;
 	    }
 
@@ -1162,7 +1162,7 @@ class rssDirectory extends directoryLibrary
 
 		//metatitle
 		if($_GET['cmd'] == 'detail'){
-			$this->pageTitle .= "&nbsp;&raquo;&nbsp;".$arrFeedContent['title'];
+			$this->pageTitle .= $arrFeedContent['title'];
 		}
 
 		// set variables
@@ -1990,10 +1990,18 @@ class rssDirectory extends directoryLibrary
 					$logo = '';
 				}
 
+				if (strlen($objResult->fields['description']) > 60) {
+					$points = "...";
+				} else {
+					$points = "";
+				}
+
+				$parts= explode("\n", wordwrap($objResult->fields['description'], 60, "\n"));
+
 				// set variables
 				$objTemplate->setVariable('DIRECTORY_DATE', date("d.m.Y", $objResult->fields['date']));
 				$objTemplate->setVariable('DIRECTORY_TITLE', stripslashes($objResult->fields['title']));
-				$objTemplate->setVariable('DIRECTORY_DESC', substr(stripslashes($objResult->fields['description']), 0, 200)." [...]");
+				$objTemplate->setVariable('DIRECTORY_DESC', $parts[0].$points);
 				$objTemplate->setVariable('DIRECTORY_LOGO', $logo);
 				$objTemplate->setVariable('DIRECTORY_ID', $objResult->fields['id']);
 
@@ -2234,14 +2242,14 @@ class rssDirectory extends directoryLibrary
 			if($lid != 0){
 				$levelLink = "&amp;lid=".$lid;
 			}
-			$navtree = "&nbsp;&raquo;&nbsp;".$catName.$navtree;
+			$navtree = $catName.$navtree."&nbsp;-&nbsp;";
 		}
 
 		foreach($this->navtreeLevels as $levelKey => $levelName){
-			$navtree = "&nbsp;&raquo;&nbsp;".$levelName.$navtree;
+			$navtree = $levelName.$navtree."&nbsp;-&nbsp;";
 		}
 
-		$this->pageTitle = $_ARRAYLANG['TXT_DIR_DIRECTORY'].$navtree.$this->pageTitle;
+		$this->pageTitle = $navtree.$this->pageTitle;
 
 		return $this->pageTitle;
 	}
