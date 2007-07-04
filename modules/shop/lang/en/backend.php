@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 04 Jul 2007 11:33:56 +0200
+* generated date Wed, 04 Jul 2007 11:43:31 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Orders";
@@ -10,16 +10,16 @@ $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'] = "All Products Categories";
 $_ARRAYLANG['TXT_PRODUCTS'] = "Products";
 $_ARRAYLANG['TXT_SHIPPING_ADDRESS'] = "Shipping address";
 $_ARRAYLANG['TXT_PRODUCT_ID'] = "Product ID";
-$_ARRAYLANG['TXT_TAX_RATE'] = "VAT";
+$_ARRAYLANG['TXT_TAX_RATE'] = "TAX";
 $_ARRAYLANG['TXT_CURRENCIES'] = "Currencies";
 $_ARRAYLANG['TXT_GENERAL_SETTINGS'] = "General settings";
-$_ARRAYLANG['TXT_TAXES'] = "Value added tax";
+$_ARRAYLANG['TXT_TAXES'] = "Value Added TAX";
 $_ARRAYLANG['TXT_METHODS_OF_PAYMENT'] = "Methods of payment";
 $_ARRAYLANG['TXT_CURRENCY_CONVERTER'] = "Currency Converter";
 $_ARRAYLANG['TXT_RATE'] = "Rate";
 $_ARRAYLANG['TXT_SYMBOL'] = "Symbol";
-$_ARRAYLANG['TXT_ACTIVATE_TAXES'] = "Activate VAT";
-$_ARRAYLANG['TXT_TAX_NUMBER'] = "VAT number";
+$_ARRAYLANG['TXT_ACTIVATE_TAXES'] = "Activate TAX";
+$_ARRAYLANG['TXT_TAX_NUMBER'] = "TAX number";
 $_ARRAYLANG['TXT_INCLUDED'] = "Included";
 $_ARRAYLANG['TXT_EXCLUSIVE'] = "Exclusive";
 $_ARRAYLANG['TXT_SHIPPING_METHODS'] = "Shipping methods";
@@ -248,7 +248,7 @@ $_ARRAYLANG['TXT_ISO_CODE'] = "ISO-CODE";
 $_ARRAYLANG['TXT_NOT_APPLICABLE_SHORT_FORM'] = "N/A";
 $_ARRAYLANG['TXT_NO_TEMPLATE'] = "No template";
 $_ARRAYLANG['TXT_MANUFACTURER_URL'] = "Manufacturer link";
-$_ARRAYLANG['TXT_WITH_HTTP'] = "with http://";
+$_ARRAYLANG['TXT_WITH_HTTP'] = "with http://www.SITENAME.com";
 $_ARRAYLANG['TXT_OPTIONS'] = "Options";
 $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Please fill out all required fields.";
 $_ARRAYLANG['TXT_PRODUCT_CHARACTERISTICS'] = "Product characteristics";
@@ -278,7 +278,7 @@ $_ARRAYLANG['TXT_SHOP_INDEX'] = "Shop Overview";
 $_ARRAYLANG['TXT_CATEGORIES'] = "Product Categories";
 $_ARRAYLANG['TXT_STATISTIC'] = "Stats";
 $_ARRAYLANG['TXT_PDF_OVERVIEW'] = "PDF-Price lists";
-$_ARRAYLANG['TXT_PRODUCT_CATALOG'] = "Product catalog";
+$_ARRAYLANG['TXT_PRODUCT_CATALOG'] = "Product Catalog";
 $_ARRAYLANG['TXT_EDIT_ORDER'] = "Edit order";
 $_ARRAYLANG['TXT_CUSTOMER_DETAILS'] = "Customer details";
 $_ARRAYLANG['TXT_MAKE_NEW_PRICELIST'] = "Create new price list";
@@ -398,10 +398,10 @@ $_ARRAYLANG['TXT_TAX_CLASS'] = "VAT class";
 $_ARRAYLANG['TXT_TAX_RATE_NEW'] = "New VAT rate";
 $_ARRAYLANG['TXT_TAX_CLASS_NEW'] = "Neue Steuerklasse";
 $_ARRAYLANG['TXT_TAX_NOT_SET'] = "No VAT assigned";
-$_ARRAYLANG['TXT_TAX_RATES'] = "VAT rates";
-$_ARRAYLANG['TXT_TAX_CONFIRM_DELETE'] = "Delete VAT rate?";
-$_ARRAYLANG['TXT_TAX_DETAILS'] = "VAT Details";
-$_ARRAYLANG['TXT_TAX_NEW'] = "Add VAT rate";
+$_ARRAYLANG['TXT_TAX_RATES'] = "TAX Rates";
+$_ARRAYLANG['TXT_TAX_CONFIRM_DELETE'] = "Delete TAX Rate?";
+$_ARRAYLANG['TXT_TAX_DETAILS'] = "TAX Details";
+$_ARRAYLANG['TXT_TAX_NEW'] = "Add TAX Rate";
 $_ARRAYLANG['TXT_HP'] = "Reseller Price";
 $_ARRAYLANG['TXT_EKP'] = "Retail Price";
 $_ARRAYLANG['TXT_TAX'] = "TAX";
