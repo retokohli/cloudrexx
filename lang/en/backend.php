@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 04 Jul 2007 11:33:56 +0200
+* generated date Wed, 04 Jul 2007 11:43:31 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
@@ -122,7 +122,7 @@ $_ARRAYLANG['TXT_COLLAPS_LINK'] = "close";
 $_ARRAYLANG['TXT_PAGE_NOT_DELETED_DELETE_SUBCATEGORIES_FIRST'] = "The site could not be deleted. Please delete all the sub-categories first!";
 $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'] = "The data record was deleted successfully!";
 $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Please fill out all required fields.";
-$_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'] = "The data were successfully updated";
+$_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'] = "Data successfully updated.";
 $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'] = "The data record was added successfully";
 $_ARRAYLANG['TXT_LOG_OUT'] = "Logout";
 $_ARRAYLANG['TXT_MODULE_MANAGER'] = "Module Manager";

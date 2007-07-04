@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 04 Jul 2007 11:33:56 +0200
+* generated date Wed, 04 Jul 2007 11:43:31 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "In Stock";
@@ -11,10 +11,10 @@ $_ARRAYLANG['TXT_SHOPPING_CART_VALUE'] = "product(s) in the total value of";
 $_ARRAYLANG['TXT_PRODUCTS'] = "Products";
 $_ARRAYLANG['TXT_SHIPPING_ADDRESS'] = "Shipping address";
 $_ARRAYLANG['TXT_PRODUCT_ID'] = "Product ID";
-$_ARRAYLANG['TXT_TAX_RATE'] = "VAT";
+$_ARRAYLANG['TXT_TAX_RATE'] = "TAX";
 $_ARRAYLANG['TXT_ORDER_NOW'] = "Order now >>";
 $_ARRAYLANG['TXT_CURRENCIES'] = "Currencies";
-$_ARRAYLANG['TXT_TAXES'] = "Value added tax";
+$_ARRAYLANG['TXT_TAXES'] = "Value Added TAX";
 $_ARRAYLANG['TXT_SHIPPING_METHODS'] = "Shipping methods";
 $_ARRAYLANG['TXT_PHONE_NUMBER'] = "Phone number";
 $_ARRAYLANG['TXT_FAX_NUMBER'] = "Fax number";
@@ -107,7 +107,7 @@ $_ARRAYLANG['TXT_SHOP_IMAGE'] = "Image";
 $_ARRAYLANG['TXT_SHOP_CART_IS_LOADING'] = "Cart is loading...";
 $_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'] = "The cart couldn\'t be loaded!";
 $_ARRAYLANG['TXT_TAX_NOT_SET'] = "No VAT assigned";
-$_ARRAYLANG['TXT_TAX_RATES'] = "VAT rates";
+$_ARRAYLANG['TXT_TAX_RATES'] = "TAX Rates";
 $_ARRAYLANG['TXT_HP'] = "Reseller Price";
 $_ARRAYLANG['TXT_EKP'] = "Retail Price";
 $_ARRAYLANG['TXT_TAX'] = "TAX";

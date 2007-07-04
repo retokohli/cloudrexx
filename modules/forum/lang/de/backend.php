@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 04 Jul 2007 11:33:56 +0200
+* generated date Wed, 04 Jul 2007 11:43:31 +0200
 **/
 
 $_ARRAYLANG['TXT_FORUM_CATEGORY_NAME'] = "Name der Kategorie / Forum";
