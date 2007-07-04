@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 03 Jul 2007 18:09:11 +0200
+* generated date Wed, 04 Jul 2007 09:40:41 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
@@ -50,7 +50,7 @@ $_ARRAYLANG['TXT_SEARCH'] = "Rechercher";
 $_ARRAYLANG['TXT_ADMIN_STATUS'] = "Administrator";
 $_ARRAYLANG['TXT_USER_NAME'] = "Nom d'utilisateur";
 $_ARRAYLANG['TXT_MORE_NEWS'] = "More News";
-$_ARRAYLANG['TXT_LOGIN'] = "Anmelden";
+$_ARRAYLANG['TXT_LOGIN'] = "Login";
 $_ARRAYLANG['TXT_BACK'] = "zurück";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "Die beiden Passwörter stimmen nicht überein.";
 $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "Konnte keine Email an %EMAIL% gesendet werden!";

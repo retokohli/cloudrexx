@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 03 Jul 2007 18:09:11 +0200
+* generated date Wed, 04 Jul 2007 09:40:41 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
@@ -309,7 +309,7 @@ $_ARRAYLANG['TXT_INST_REMO_MODULES'] = "Install/Remove Modules";
 $_ARRAYLANG['TXT_COPY_DELETE_SITES'] = "Copy/Delete complete Sites";
 $_ARRAYLANG['TXT_SECURITY_CODE'] = "Sicherheitscode";
 $_ARRAYLANG['TXT_ENTER_SECURITY_CODE'] = "Sicherheitscode eingeben";
-$_ARRAYLANG['TXT_LOGIN'] = "Anmelden";
+$_ARRAYLANG['TXT_LOGIN'] = "Login";
 $_ARRAYLANG['TXT_SHOP_ADMINISTRATION'] = "Shop Administration";
 $_ARRAYLANG['TXT_STATISTIC'] = "Statistic";
 $_ARRAYLANG['TXT_SEARCH_STATISTIC'] = "Statistik-Suche";
