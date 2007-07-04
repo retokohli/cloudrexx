@@ -1,11 +1,11 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 04 Jul 2007 09:40:41 +0200
+* generated date Wed, 04 Jul 2007 11:33:56 +0200
 **/
 
-$_ARRAYLANG['TXT_STOCK'] = "Stock";
-$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'] = "All products groups";
+$_ARRAYLANG['TXT_STOCK'] = "In Stock";
+$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'] = "All Products Categories";
 $_ARRAYLANG['TXT_SHOPPING_CART'] = "Shopping Cart:";
 $_ARRAYLANG['TXT_SHOPPING_CART_VALUE'] = "product(s) in the total value of";
 $_ARRAYLANG['TXT_PRODUCTS'] = "Products";
@@ -102,15 +102,15 @@ $_ARRAYLANG['TXT_SHOP_ACCOUNT_DETAILS_SENT_SUCCESSFULLY'] = "Your account detail
 $_ARRAYLANG['TXT_SHOP_UNABLE_TO_SEND_EMAIL'] = "The email message couldn't be sent!";
 $_ARRAYLANG['TXT_SHOP_UNABLE_SET_NEW_PASSWORD'] = "The password couldn't be changed!";
 $_ARRAYLANG['TXT_SHOP_NO_ACCOUNT_WITH_EMAIL'] = "The is no user account with the specified email address!";
-$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] = "Produkt Code";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] = "Product Code";
 $_ARRAYLANG['TXT_SHOP_IMAGE'] = "Image";
 $_ARRAYLANG['TXT_SHOP_CART_IS_LOADING'] = "Cart is loading...";
 $_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'] = "The cart couldn\'t be loaded!";
 $_ARRAYLANG['TXT_TAX_NOT_SET'] = "No VAT assigned";
 $_ARRAYLANG['TXT_TAX_RATES'] = "VAT rates";
-$_ARRAYLANG['TXT_HP'] = "Reseller";
-$_ARRAYLANG['TXT_EKP'] = "Final cust.";
-$_ARRAYLANG['TXT_TAX'] = "VAT";
+$_ARRAYLANG['TXT_HP'] = "Reseller Price";
+$_ARRAYLANG['TXT_EKP'] = "Retail Price";
+$_ARRAYLANG['TXT_TAX'] = "TAX";
 $_ARRAYLANG['TXT_TAX_PREFIX_INCL'] = "incl. VAT";
 $_ARRAYLANG['TXT_TAX_PREFIX_EXCL'] = "excl. VAT";
 $_ARRAYLANG['TXT_NET_PRICE'] = "Net price";
@@ -189,13 +189,13 @@ $_ARRAYLANG['TXT_CODE'] = "Code";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS'] = "Neueste Produkte im Online Shop:";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_NONE_FOUND'] = "Keine Produkte gefunden.";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_FAILED'] = "Fehler bei der Produkte Abfrage";
-$_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "&Uuml;bersicht";
-$_ARRAYLANG['TXT_SHOP_BACK'] = "Zur&uuml;ck";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "Übersicht";
+$_ARRAYLANG['TXT_SHOP_BACK'] = "Zurück";
 $_ARRAYLANG['TXT_SHOP_GOTO_DETAIL_VIEW'] = "zur Detailansicht / &agrav; la ...";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_CANCELLED'] = "Die Bezahlung wurde abgebrochen.";
 $_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "Ihre Bestellung wurde annuliert.";
 $_ARRAYLANG['TXT_SHOP_ORDER_STILL_IN_CART'] = "Ihre Bestellung bleibt im Warenkorb.";
-$_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Zur&uuml;ck zum Online Shop";
-$_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Art der Bezahlung &auml;ndern";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Zurück zum Online Shop";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Art der Bezahlung ändern";
 $_ARRAYLANG['TXT_SHOP_SAFERPAY_INIT_ERROR'] = "Payment using SaferPay couldn't be initialized!";
 ?>

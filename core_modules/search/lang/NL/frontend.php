@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 04 Jul 2007 09:40:41 +0200
+* generated date Wed, 04 Jul 2007 11:33:56 +0200
 **/
 
 $_ARRAYLANG['TXT_SEARCH_RESULTS'] = "Zoekresultaten";
