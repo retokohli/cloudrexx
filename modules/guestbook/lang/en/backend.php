@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 04 Jul 2007 09:40:41 +0200
+* generated date Wed, 04 Jul 2007 11:33:56 +0200
 **/
 
 $_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY'] = "Add guestbook entry";
@@ -26,7 +26,7 @@ $_ARRAYLANG['TXT_EDIT_ENTRY'] = "Edit entry";
 $_ARRAYLANG['TXT_DATE'] = "Date";
 $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'] = "The data entry was deletet successfully!";
 $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'] = "Error while deleting the data record!";
-$_ARRAYLANG['TXT_MANAGE_ENTRIES'] = "Manage guestbook entries";
+$_ARRAYLANG['TXT_MANAGE_ENTRIES'] = "Manage Guestbook Entries";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Do you really want to delete the data record?";
 $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'] = "This action can not be undone!";
 $_ARRAYLANG['TXT_GUESTBOOK_ENTRIES'] = "Guestbookentries";
@@ -45,5 +45,5 @@ $_ARRAYLANG['TXT_DELETE_CATEGORY_ALL'] = "Do you really want to delete all selec
 $_ARRAYLANG['TXT_DATA_RECORD_MULTI_DELETE_ERROR'] = "Error while deleting one or more datasets";
 $_ARRAYLANG['TXT_REPLACE_AT'] = "Replace the @ in E-Mail addresses";
 $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATE_OVERVIEW'] = "Template overview";
-$_ARRAYLANG['TXT_GUESTBOOK_ONLY_LANG_ENTRIES'] = "Only show entries of the current language";
+$_ARRAYLANG['TXT_GUESTBOOK_ONLY_LANG_ENTRIES'] = "Only show entries in the current language";
 ?>

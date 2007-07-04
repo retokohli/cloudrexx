@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 04 Jul 2007 09:40:41 +0200
+* generated date Wed, 04 Jul 2007 11:33:56 +0200
 **/
 
 $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'] = "Modify block %s";
@@ -16,7 +16,7 @@ $_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'] = "The block was successfull
 $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'] = "The block couldn't be updated!";
 $_ARRAYLANG['TXT_BLOCK_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_BLOCK_USE_BLOCK_SYSTEM'] = "Use block system";
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "Overwiev";
+$_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_SELECT'] = "Select action";
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_DELETE'] = "Delete selected";
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_ACTIVATE'] = "activate marked";
@@ -25,7 +25,7 @@ $_ARRAYLANG['TXT_BLOCK_SUBMIT_RANDOM'] = "add marked to random generator";
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_RANDOM_OFF'] = "";
 $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'] = "";
 $_ARRAYLANG['TXT_BLOCK_DESELECT_ALL'] = "Delete mark";
-$_ARRAYLANG['TXT_BLOCK_RANDOM'] = "In the random generator";
+$_ARRAYLANG['TXT_BLOCK_RANDOM'] = "Include In Randomizer:";
 $_ARRAYLANG['TXT_BLOCK_DELETE_SELECTED_BLOCKS'] = "Do you really want to delete the selected blocks?";
 $_ARRAYLANG['TXT_BLOCK_NO_NAME'] = "[no name]";
 $_ARRAYLANG['TXT_BLOCK_USE_BLOCK_RANDOM'] = "use random generator";
@@ -50,4 +50,10 @@ $_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR_INFO'] = "Trennzeichen zwischen den einz
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL'] = "Markierte zum globalen Block hinzufügen";
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL_OFF'] = "Markierte vom globalen Block entfernen";
 $_ARRAYLANG['TXT_BLOCK_SHOW_IN_GLOBAL'] = "im globalen Block anzeigen";
+$_ARRAYLANG['TXT_BLOCK_STATUS'] = "Status";
+$_ARRAYLANG['TXT_BLOCK_BLOCK'] = "Block";
+$_ARRAYLANG['TXT_BLOCK_ACTIVATE'] = "aktivieren";
+$_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_ON_ALL_'] = "Block auf jeder Seite dieser Sprache anzeigen";
+$_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'] = "Frontend Seiten";
+$_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'] = "Block in dieser Sprache anzeigen";
 ?>
