@@ -705,7 +705,7 @@ class ContentManager
 		    'TXT_CONTENT_TYPE_REDIRECT'=> $_CORELANG['TXT_CONTENT_TYPE_REDIRECT'],
 		    'TXT_CONTENT_TYPE_HELP'	   => $_CORELANG['TXT_CONTENT_TYPE_HELP'],
 		    'TXT_NAVIGATION'		   => $_CORELANG['TXT_NAVIGATION'],
-		    'TXT_BLOCKS'		   	   => $_CORELANG['TXT_BLOCKS'],
+		    'TXT_BLOCKS'		   	   => $_CORELANG['TXT_ASSIGN_BLOCK'],
 		));
 
 		$objTemplate->hideBlock('deleteButton');
