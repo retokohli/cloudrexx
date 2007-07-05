@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 04 Jul 2007 11:43:31 +0200
+* generated date Thu, 05 Jul 2007 10:59:22 +0200
 **/
 
 $_ARRAYLANG['TXT_CALENDAR_DATE'] = "Termindato";
@@ -57,4 +57,9 @@ $_ARRAYLANG['TXT_CALENDAR_STAT_EDITED_ERROR'] = "Fehler bei Editieren";
 $_ARRAYLANG['TXT_CALENDAR_STAT_ADDED'] = "Termin erfolgreich hinzugefügt";
 $_ARRAYLANG['TXT_CALENDAR_STAT_ADDED_ERROR'] = "Fehler bei Hinzfügen";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SHORT_DESC'] = "Kurze Beschreibung (200 Zeichen)";
+$_ARRAYLANG['TXT_CALENDAR_WRONG_REGISTRATION'] = "Sie sind nicht berechtigt sich zu diesem Termin an- oder abzumelden.";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFUL'] = "Ihr Eintrag wurde erfolgreich gespeichert.";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'] = "Anmeldung";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_INFO'] = "Für diesen Termin ist eine Anmeldung erforderlich. Bitte melden Sie sich mit folgendem Anmeldeformular an.";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_NO_PLACE'] = "Für diesen Termin können keine Anmeldungen mehr entgegen genommen werden, da die maximale Teilnehmerzahl bereits erreicht wurde.";
 ?>

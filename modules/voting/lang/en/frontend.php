@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 04 Jul 2007 11:43:31 +0200
+* generated date Thu, 05 Jul 2007 10:59:22 +0200
 **/
 
 $_ARRAYLANG['TXT_NAME'] = "Name";
@@ -10,12 +10,12 @@ $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'] = "The data record was saved su
 $_ARRAYLANG['TXT_VOTES'] = "Votes";
 $_ARRAYLANG['TXT_VOTING_TOTAL'] = "Total Vote";
 $_ARRAYLANG['TXT_DATE'] = "Date";
-$_ARRAYLANG['TXT_TITLE'] = "Title";
+$_ARRAYLANG['TXT_TITLE'] = "Poll Name";
 $_ARRAYLANG['TXT_SUBMIT'] = "Submit";
 $_ARRAYLANG['TXT_VOTING_NOT_AVAILABLE'] = "There are votings available at the moment.";
 $_ARRAYLANG['TXT_VOTING_OLDER'] = "Older Votings";
 $_ARRAYLANG['TXT_VOTING_ENTRIES'] = "Votings";
-$_ARRAYLANG['TXT_VOTING_INVALID_EMAIL_ERROR'] = "Geben Sie bitte eine gültige E-Mail Adresse an!";
-$_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'] = "Sie haben bereits an dieser Umfrage teilgenommen!";
-$_ARRAYLANG['TXT_VOTING_NONEXISTENT_EMAIL'] = "Ihre E-Mail Adresse existiert nicht!";
+$_ARRAYLANG['TXT_VOTING_INVALID_EMAIL_ERROR'] = "Please insert a valid E-Mail Address";
+$_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'] = "You have already answered this poll question";
+$_ARRAYLANG['TXT_VOTING_NONEXISTENT_EMAIL'] = "Your E-Mail Address doesn't exist";
 ?>

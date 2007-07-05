@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 04 Jul 2007 11:43:31 +0200
+* generated date Thu, 05 Jul 2007 10:59:22 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
@@ -15,7 +15,7 @@ $_ARRAYLANG['TXT_ADD_USER'] = "Add user";
 $_ARRAYLANG['TXT_USERNAME'] = "Username";
 $_ARRAYLANG['TXT_DESCRIPTION'] = "Description";
 $_ARRAYLANG['TXT_DATE'] = "Date";
-$_ARRAYLANG['TXT_EMAIL'] = "Email address";
+$_ARRAYLANG['TXT_EMAIL'] = "E-Mail Address";
 $_ARRAYLANG['TXT_END_DATE'] = "End date";
 $_ARRAYLANG['TXT_ADD'] = "Add";
 $_ARRAYLANG['TXT_MODULE'] = "Module";
@@ -79,7 +79,7 @@ $_ARRAYLANG['TXT_IMAGE'] = "Image";
 $_ARRAYLANG['TXT_EXP_SEARCH'] = "expanded Search";
 $_ARRAYLANG['TXT_POPUP_MODULE_DESCRIPTION'] = "Setup Pop-up windows";
 $_ARRAYLANG['TXT_IMPRINT_MODULE_DESCRIPTION'] = "Imprint";
-$_ARRAYLANG['TXT_AGB_MODULE_DESCRIPTION'] = "Allgemeine Geschäftsbedingungen";
+$_ARRAYLANG['TXT_AGB_MODULE_DESCRIPTION'] = "General Terms and Conditions";
 $_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Privacy";
 $_ARRAYLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "Database not available!";
 $_ARRAYLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Unable to connect to database server!";
