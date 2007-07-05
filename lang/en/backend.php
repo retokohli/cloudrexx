@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 04 Jul 2007 11:43:31 +0200
+* generated date Thu, 05 Jul 2007 10:59:22 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
@@ -40,7 +40,7 @@ $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "This action can cha
 $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'] = "This action cannot be cancelled!";
 $_ARRAYLANG['TXT_BACKUP_CREATE'] = "Build backup";
 $_ARRAYLANG['TXT_ADD_NEW_LANGUAGE'] = "Add a new language";
-$_ARRAYLANG['TXT_EMAIL'] = "Email address";
+$_ARRAYLANG['TXT_EMAIL'] = "E-Mail Address";
 $_ARRAYLANG['TXT_END_DATE'] = "End date";
 $_ARRAYLANG['TXT_EXPERT_MODE'] = "Expert Mode";
 $_ARRAYLANG['TXT_FOUND'] = "found";
@@ -233,7 +233,7 @@ $_ARRAYLANG['TXT_THIS_PROCEDURE_DELETES_ALL_EXISTING_ENTRIES_OF_THE_SELECTED_LAN
 $_ARRAYLANG['TXT_WARNING'] = "Warning";
 $_ARRAYLANG['TXT_DO_YOU_WANT_TO_CONTINUE'] = "Do you want to continue?";
 $_ARRAYLANG['TXT_SEARCH'] = "Search";
-$_ARRAYLANG['TXT_VOTING'] = "Votings";
+$_ARRAYLANG['TXT_VOTING'] = "User Polls";
 $_ARRAYLANG['TXT_COULD_NOT_WRITE_TO_FILE'] = "Could not write to file";
 $_ARRAYLANG['TXT_SUCCESSFULLY_EXPORTED_TO_FILES'] = "Language variables successfully exported to files.";
 $_ARRAYLANG['TXT_WRITE_VARIABLES_TO_FILES'] = "Write changes to file";
@@ -467,7 +467,7 @@ $_ARRAYLANG['TXT_CONTENT_HISTORY'] = "Content History";
 $_ARRAYLANG['TXT_NEW_PAGES'] = "New pages";
 $_ARRAYLANG['TXT_UPDATED_PAGES'] = "Past Versions";
 $_ARRAYLANG['TXT_DELETED_PAGES'] = "Deleted pages";
-$_ARRAYLANG['TXT_DETAILS'] = "Show details";
+$_ARRAYLANG['TXT_DETAILS'] = "Show Details";
 $_ARRAYLANG['TXT_DELETED_RESTORE'] = "Restore deleted page";
 $_ARRAYLANG['TXT_DELETED_RESTORE_JS'] = "Restore deleted page?";
 $_ARRAYLANG['TXT_HISTORY_DELETED'] = "This page was already removed.";
@@ -531,7 +531,7 @@ $_ARRAYLANG['TXT_SETTINGS_SESSION_LIVETIME_HELP'] = "Session length in seconds";
 $_ARRAYLANG['TXT_SETTINGS_IDS'] = "Security system";
 $_ARRAYLANG['TXT_SETTINGS_IDS_HELP'] = "Contrexx Intrusion Detection System - Reporting Status (on | off)";
 $_ARRAYLANG['TXT_SETTINGS_ADMIN_NAME'] = "Administrators name";
-$_ARRAYLANG['TXT_SETTINGS_CONTACT_EMAIL'] = "Email address for contact form (default)";
+$_ARRAYLANG['TXT_SETTINGS_CONTACT_EMAIL'] = "E-Mail Address for Contact Form (default)";
 $_ARRAYLANG['TXT_SETTINGS_CONTACT_EMAIL_HELP'] = "The email address of the receiver for the default form (no id specified). Several addresses can be separated by comma.";
 $_ARRAYLANG['TXT_SETTINGS_HISTORY'] = "Content history & Workflow System";
 $_ARRAYLANG['TXT_DEACTIVATED'] = "Deactivated";
@@ -645,54 +645,55 @@ $_ARRAYLANG['TXT_NO_DEFAULT_THEME'] = "DB error, no default theme, this should N
 $_ARRAYLANG['TXT_HOTEL_MANAGEMENT'] = "Hotels";
 $_ARRAYLANG['TXT_HOTEL_MODULE_DESCRIPTION'] = "Hotel-Management Module";
 $_ARRAYLANG['TXT_IMPRINT_MODULE_DESCRIPTION'] = "Imprint";
-$_ARRAYLANG['TXT_AGB_MODULE_DESCRIPTION'] = "Allgemeine Geschäftsbedingungen";
+$_ARRAYLANG['TXT_AGB_MODULE_DESCRIPTION'] = "General Terms and Conditions";
 $_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Privacy";
-$_ARRAYLANG['TXT_THEME_IMPORT_INFO'] = "Design importieren";
-$_ARRAYLANG['TXT_THEME_IMPORT_INFO_BODY'] = "Geben Sie oben die Quelle des Designs an. Es kann eine lokale ZIP-Datei hochgeladen werden oder es kann eine http://-Adresse zu einer externen ZIP-Datei angegeben werden";
+$_ARRAYLANG['TXT_THEME_IMPORT_INFO'] = "Import Design";
+$_ARRAYLANG['TXT_THEME_IMPORT_INFO_BODY'] = "Please select the location of your design. The design can be a local ZIP file or can be a URL.";
 $_ARRAYLANG['TXT_THEME_ACTIVATE_INFO'] = "Activated languages";
-$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Ist eine Sprache mit rosa Farbe hinterlegt, so ist diese im Frontend bei den <a href=\"index.php?cmd=language\">Spracheinstellungen</a> aktiviert</a>";
-$_ARRAYLANG['TXT_SKINS_PREVIEW'] = "Designvorschau";
-$_ARRAYLANG['TXT_SETTINGS_EMAIL'] = "E-Mail";
-$_ARRAYLANG['TXT_SETTINGS_SERVER_CONFIGURATION'] = "Serverkonfiguration";
-$_ARRAYLANG['TXT_SETTINGS_EMAIL_ACCOUNTS'] = "E-Mail Konten";
+$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Languags highlighted in pink have been activated as a Frontend language in the <a href=\"index.php?cmd=language\">settings.</a>
+";
+$_ARRAYLANG['TXT_SKINS_PREVIEW'] = "Design Preview";
+$_ARRAYLANG['TXT_SETTINGS_EMAIL'] = "E-Mail Address";
+$_ARRAYLANG['TXT_SETTINGS_SERVER_CONFIGURATION'] = "Server Configuration";
+$_ARRAYLANG['TXT_SETTINGS_EMAIL_ACCOUNTS'] = "E-Mail Accounts";
 $_ARRAYLANG['TXT_SETTINGS_ACCOUNT'] = "Account";
 $_ARRAYLANG['TXT_SETTINGS_HOST'] = "Host";
-$_ARRAYLANG['TXT_SETTINGS_USERNAME'] = "Benutzername";
-$_ARRAYLANG['TXT_SETTINGS_STANDARD'] = "Standard";
+$_ARRAYLANG['TXT_SETTINGS_USERNAME'] = "Username";
+$_ARRAYLANG['TXT_SETTINGS_STANDARD'] = "Default";
 $_ARRAYLANG['TXT_SETTINGS_FUNCTIONS'] = "Actions";
-$_ARRAYLANG['TXT_SETTINGS_MODFIY'] = "Bearbeiten";
-$_ARRAYLANG['TXT_SETTINGS_DELETE'] = "Löschen";
-$_ARRAYLANG['TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT'] = "Neues SMTP Konto hinzufügen";
-$_ARRAYLANG['TXT_SETTINGS_CONFIRM_DELETE_ACCOUNT'] = "Möchten Sie das SMTP Konto %s wirklich löschen?";
-$_ARRAYLANG['TXT_SETTINGS_OPERATION_IRREVERSIBLE'] = "Dieser Vorgang kann nicht rückgängig gemacht werden!";
-$_ARRAYLANG['TXT_SETTINGS_MODIFY_SMTP_ACCOUNT'] = "SMTP Konto bearbeiten";
-$_ARRAYLANG['TXT_SETTINGS_NAME_OF_ACCOUNT'] = "Name des Kontos";
+$_ARRAYLANG['TXT_SETTINGS_MODFIY'] = "Edit";
+$_ARRAYLANG['TXT_SETTINGS_DELETE'] = "Delete";
+$_ARRAYLANG['TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT'] = "Add New SMTP Account";
+$_ARRAYLANG['TXT_SETTINGS_CONFIRM_DELETE_ACCOUNT'] = "Are you sure you wish to delete the SMTP acoount %s";
+$_ARRAYLANG['TXT_SETTINGS_OPERATION_IRREVERSIBLE'] = "This operation can not be undone";
+$_ARRAYLANG['TXT_SETTINGS_MODIFY_SMTP_ACCOUNT'] = "Edit SMTP account";
+$_ARRAYLANG['TXT_SETTINGS_NAME_OF_ACCOUNT'] = "Account Name";
 $_ARRAYLANG['TXT_SETTINGS_PASSWORD'] = "Password";
 $_ARRAYLANG['TXT_SETTINGS_SMTP_SERVER'] = "SMTP Server";
-$_ARRAYLANG['TXT_SETTINGS_AUTHENTICATION'] = "Authentifikation";
+$_ARRAYLANG['TXT_SETTINGS_AUTHENTICATION'] = "Authentication";
 $_ARRAYLANG['TXT_SETTINGS_PORT'] = "Port";
-$_ARRAYLANG['TXT_SETTINGS_SMTP_AUTHENTICATION_TXT'] = "Geben Sie hier kein Benutzernamen und Kennwort an, wenn der angegebene SMTP Server keine Authentifikation erfordert.";
-$_ARRAYLANG['TXT_SETTINGS_SAVE'] = "Speichern";
-$_ARRAYLANG['TXT_SETTINGS_EMPTY_ACCOUNT_NAME_TXT'] = "Sie müssen einen Kontonamen definieren!";
-$_ARRAYLANG['TXT_SETTINGS_NOT_UNIQUE_SMTP_ACCOUNT_NAME'] = "Sie müssen einen anderen Kontonamen verwenden, da der Kontoname %s bereits verwendet wird!";
-$_ARRAYLANG['TXT_SETTINGS_EMPTY_SMTP_HOST_TXT'] = "Sie müssen einen SMTP Server angeben!";
-$_ARRAYLANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_SUCCEED'] = "Das SMTP Konto %s wurde erfolgreich aktualisiert.";
-$_ARRAYLANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_FAILED'] = "Beim Aktualisieren des SMTP Kontos %s trat ein Fehler auf!";
-$_ARRAYLANG['TXT_SETTINGS_SMTP_ACCOUNT_ADD_SUCCEED'] = "Das Konto %s wurde erfolgreich hinzugefügt.";
-$_ARRAYLANG['TXT_SETTINGS_SMTP_ACCOUNT_ADD_FAILED'] = "Beim Hinzufügen des neuen SMTP Kontos trat ein Fehler auf!";
-$_ARRAYLANG['TXT_SETTINGS_SMTP_SERVER_DAEMON'] = "SMTP Dienst dieses Servers";
-$_ARRAYLANG['TXT_SETTINGS_SMTP_DELETE_SUCCEED'] = "Das SMTP Konto %s wurde erfolgreich gelöscht.";
-$_ARRAYLANG['TXT_SETTINGS_SMTP_DELETE_FAILED'] = "Beim Löschen des SMTP Kontos %s trat ein Fehler auf!";
-$_ARRAYLANG['TXT_SETTINGS_COULD_NOT_DELETE_DEAULT_SMTP'] = "Das SMTP Konto %s konnte nicht gelöscht werden, da es das Standard-Konto ist!";
-$_ARRAYLANG['TXT_SETTINGS_DEFAULT_SMTP_CHANGED'] = "Das SMTP Konto %s wird nun als Standardkonto für das Versenden von E-Mails verwendet.";
-$_ARRAYLANG['TXT_SETTINGS_CHANGE_DEFAULT_SMTP_FAILED'] = "Das Wechseln des Standard Kontos schlug fehl!";
-$_ARRAYLANG['TXT_SETTINGS_BACK'] = "Zurück";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_AUTHENTICATION_TXT'] = "Username and password are not required if your SMTP Server does not require authentification";
+$_ARRAYLANG['TXT_SETTINGS_SAVE'] = "Save";
+$_ARRAYLANG['TXT_SETTINGS_EMPTY_ACCOUNT_NAME_TXT'] = "Please define an account name";
+$_ARRAYLANG['TXT_SETTINGS_NOT_UNIQUE_SMTP_ACCOUNT_NAME'] = "The account name %s already exists.";
+$_ARRAYLANG['TXT_SETTINGS_EMPTY_SMTP_HOST_TXT'] = "Please define an SMTP Server";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_SUCCEED'] = "The SMTP account %s has been successfully updated";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_FAILED'] = "An error occurred while updating SMTP account %s!";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_ACCOUNT_ADD_SUCCEED'] = "The account %s has been deleted successfully.";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_ACCOUNT_ADD_FAILED'] = "An error occurred while creating SMTP account %s!";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_SERVER_DAEMON'] = "This server's SMTP Service";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_DELETE_SUCCEED'] = "The SMTP account %s has been successfully deleted";
+$_ARRAYLANG['TXT_SETTINGS_SMTP_DELETE_FAILED'] = "An error occurred while deleting SMTP account %s!";
+$_ARRAYLANG['TXT_SETTINGS_COULD_NOT_DELETE_DEAULT_SMTP'] = "The SMTP account %s could not be deleted as it is the default account.";
+$_ARRAYLANG['TXT_SETTINGS_DEFAULT_SMTP_CHANGED'] = "The SMTP account %s has been set as the default account.";
+$_ARRAYLANG['TXT_SETTINGS_CHANGE_DEFAULT_SMTP_FAILED'] = "The change of the default account has failed";
+$_ARRAYLANG['TXT_SETTINGS_BACK'] = "Back";
 $_ARRAYLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "Database not available!";
 $_ARRAYLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Unable to connect to database server!";
 $_ARRAYLANG['TXT_DELETED'] = "deleted";
 $_ARRAYLANG['TXT_WORKFLOW_PAGE_PREVIEW'] = "Past Version Preview";
 $_ARRAYLANG['TXT_STATUS_CANNOT_DELETE'] = "Unable to delete.";
-$_ARRAYLANG['TXT_ASSIGN_BLOCK'] = "Assign Block";
-$_ARRAYLANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'] = "Diese Einstellung bewirkt, dass automatisch die Standardsprache des Browsers ausgelesen und als Contentsprache verwendet wird.";
+$_ARRAYLANG['TXT_ASSIGN_BLOCK'] = "Assign Content Block";
+$_ARRAYLANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'] = "This configuration allows for language specific content based on browser setting";
 $_ARRAYLANG['TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'] = "Auto-detect language";
 ?>
