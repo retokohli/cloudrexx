@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 10:59:22 +0200
+* generated date Thu, 05 Jul 2007 11:04:15 +0200
 **/
 
 $_ARRAYLANG['TXT_AVAILABLE'] = "Klicken Sie hier um die Reservation vorzunehmen";

@@ -1,11 +1,9 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 10:59:22 +0200
+* generated date Thu, 05 Jul 2007 11:04:15 +0200
 **/
 
-$_ARRAYLANG['TXT_CALENDAR_DATE'] = "Event Date";
-$_ARRAYLANG['TXT_CALENDAR_BACK'] = "« back";
 $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "The next events:";
 $_ARRAYLANG['TXT_CALENDAR_SHOW'] = "show";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'] = "There are no events...";
@@ -62,4 +60,25 @@ $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFUL'] = "Ihr Eintrag wurde erfolgr
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION'] = "Anmeldung";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_INFO'] = "Für diesen Termin ist eine Anmeldung erforderlich. Bitte melden Sie sich mit folgendem Anmeldeformular an.";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_NO_PLACE'] = "Für diesen Termin können keine Anmeldungen mehr entgegen genommen werden, da die maximale Teilnehmerzahl bereits erreicht wurde.";
+$_ARRAYLANG['TXT_CALENDAR_INPUTFIELD'] = "Textfeld";
+$_ARRAYLANG['TXT_CALENDAR_TEXTAREA'] = "Mehrzeiliges Textfeld";
+$_ARRAYLANG['TXT_CALENDAR_CHECKBOCK'] = "Auswahlfeld";
+$_ARRAYLANG['TXT_CALENDAR_CHOSE_TYPE'] = "Feldtyp auswählen";
+$_ARRAYLANG['TXT_CALENDAR_REG_FIRSTNAME'] = "Vorname";
+$_ARRAYLANG['TXT_CALENDAR_REG_LASTNAME'] = "Nachname";
+$_ARRAYLANG['TXT_CALENDAR_REG_STREET'] = "Strasse";
+$_ARRAYLANG['TXT_CALENDAR_REG_ZIP'] = "PLZ";
+$_ARRAYLANG['TXT_CALENDAR_REG_CITY'] = "Wohnort";
+$_ARRAYLANG['TXT_CALENDAR_REG_MAIL'] = "E-Mail";
+$_ARRAYLANG['TXT_CALENDAR_REG_WEBSITE'] = "Website";
+$_ARRAYLANG['TXT_CALENDAR_REG_PHONE'] = "Telefon";
+$_ARRAYLANG['TXT_CALENDAR_REG_MOBILE'] = "Mobile";
+$_ARRAYLANG['TXT_CALENDAR_REG_INTERESSTS'] = "Interessen";
+$_ARRAYLANG['TXT_CALENDAR_REG_PROFESSION'] = "Beruf";
+$_ARRAYLANG['TXT_CALENDAR_REG_COMPANY'] = "Firma";
+$_ARRAYLANG['TXT_CALENDAR_REG_ESCORT'] = "Begleitung";
+$_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'] = "Anmeldung";
+$_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'] = "Abmeldung";
+$_ARRAYLANG['TXT_CALENDAR_CHECK_REQUIRED'] = "Bitte alle Felder ausfüllen";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_LINK'] = "zur Anmeldung";
 ?>
