@@ -330,7 +330,8 @@ class Calendar extends calendarLibrary
     		"CALENDAR_ICAL_EXPORT"      => $exportLinks,
 		));
 
-		$startdate = time();
+		$startdate = !empty($_REQUEST['s']) ? intval($_REQUEST['s']) : time();
+		$orderBy =	!empty($_REQUEST['o']) && $_REQUEST['o'] == 'asc' ? 'ASC' : 'DESC'; 
 
 		if (empty($_GET['catid'])) {
 			$query = "SELECT id, name, startdate, enddate, place
@@ -338,7 +339,7 @@ class Calendar extends calendarLibrary
 						WHERE active = 1 AND
 						(startdate > $startdate OR
 						enddate > $startdate)
-						ORDER BY startdate ASC";
+						ORDER BY startdate $orderBy";
 		} else {
 			$query = "SELECT id, name, startdate, enddate, place
 						FROM ".DBPREFIX."module_calendar
@@ -346,7 +347,7 @@ class Calendar extends calendarLibrary
 						AND active = 1
 						AND (startdate > $startdate OR
 						enddate > $startdate)
-						ORDER BY startdate ASC";
+						ORDER BY startdate $orderBy";
 		}
 
 		$this->_showList($query);
