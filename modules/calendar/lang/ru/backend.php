@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 11:04:15 +0200
+* generated date Thu, 05 Jul 2007 11:40:34 +0200
 **/
 
 $_ARRAYLANG['TXT_CALENDAR_DATE'] = "Datum";
@@ -218,4 +218,6 @@ $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'] = "Anzahl Teilnehmer";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER_INFO'] = "Für unbegrenzte Anzahl Teilnemer den Wert \"0\" eigeben oder das Feld leer lassen.";
 $_ARRAYLANG['TXT_CALENDAR_SEND_MAIL_AGAIN'] = "E-Mail erneut senden";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_TYPE'] = "Anmeldung/Abmeldung";
+$_ARRAYLANG['TXT_CALENDAR_MAIL_NOTIFICATION'] = "Benachrichtigung";
+$_ARRAYLANG['TXT_CALENDAR_MAIL_CONFIRMATION'] = "Bestätigung";
 ?>
