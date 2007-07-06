@@ -6,22 +6,51 @@
 * New Features *************************
 ****************************************
 // 01.05.2007 Shop - Hersteller
-Verwaltung von Hersteller. Im Admin steht ein neues Administrationsmenü "Hersteller" zur Verfügung. Frontend-Marker "SHOP_MENU" wurde durch ein weiteres Dropdown "Hersteller" erweitert (Falls Hersteller im Shop-Modul erfasst wurden). Es stehen zwei weitere Frontend-Marker zur Verfügung: SHOP_MANUFACTURER_NAME und SHOP_MANUFACTURER_URL. SHOP_MANUFACTURER_URL wird als Link angezeigt (target="_blank").
+- Verwaltung von Hersteller. Im Admin steht ein neues Administrationsmenü 
+  "Hersteller" zur Verfügung. Frontend-Marker "SHOP_MENU" wurde durch ein 
+  weiteres Dropdown "Hersteller" erweitert (Falls Hersteller im Shop-Modul 
+  erfasst wurden).
+  Es stehen zwei weitere Frontend-Marker zur Verfügung: 
+  SHOP_MANUFACTURER_NAME und SHOP_MANUFACTURER_URL. 
+  SHOP_MANUFACTURER_URL wird als Link angezeigt (target="_blank").
 
 Gästebuch
 - Konfigurationsoption damit alle Einträge in jeder Sprache angezeigt werden.
+
+Suche
+- Die Suchfunktion durchsucht zusätzlich die Kalendereinträge.
+
+Core
+- Neue Option 'languageDetection' in den Grundeinsellungen, welche
+  bewirkt, dass die Contentsprache basierend auf den Browser-Sprachen 
+  (accept-languages) ausgewählt wird oder immer die Standardsprache verwendet
+  wird.
 
 ****************************************
 * Changes ******************************
 ****************************************
 Shop
-- Der JavaScript Warenkorb wird nun auf jeder Seite ausserhalb des Shops angezeigt (Sofern die Einstellung $_CONFIGURATION['custom']['shopnavbar'] in der Konfigurationsdatei (config/configuration.php) aktiviert ist.)
+- Der JavaScript Warenkorb wird nun auf jeder Seite ausserhalb des Shops 
+  angezeigt (Sofern die Einstellung $_CONFIGURATION['custom']['shopnavbar'] in 
+  der Konfigurationsdatei (config/configuration.php) aktiviert ist.)
+- Die Versendung von Mails an den Shopbetreiber nach einer 
+  Bestellung erfolgt nun direkt nach der Auftragsbestätigung.
 
 Allgemein
 - Russische und Französische Übersetzung des Grundsystems erweitert.
 
 Webinstaller
 - MySQL Server Version Überprüfung anstatt der Client Version.
+
+Newsletter
+- Export wurde angepasst (one-click export). Es können einzelne Listen oder 
+  alles auf einmal exportiert werden. Es werden alle Felder inkl. `status` als 
+  CSV Datei exportiert und als Download an den Browser gesendet.
+
+Kontakt
+- Die Darstellung generierter E-Mails (nur Text) wurde verbessert (rechtsbündig)
+- Die Formulare werden jetzt von einer Legende (mit Rahmen) umschlossen.
+
 
 
 ****************************************
@@ -39,7 +68,8 @@ News
 - Komplette URI's bei Teaserbild Auswahlfunktion
 
 Update System
-- Das Update der Bildergalerie funktioniert auch wenn der MySQL Mode NO_AUTO_VALUE_ON_ZERO aktiviert ist.
+- Das Update der Bildergalerie funktioniert auch wenn der MySQL Mode 
+  NO_AUTO_VALUE_ON_ZERO aktiviert ist.
 
 Alias Verwaltung
 - Die Paging Navigation bei der Alias Übersicht wird angezeigt.
