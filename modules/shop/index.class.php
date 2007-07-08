@@ -3684,7 +3684,7 @@ right after the customer logs in!
         global $_ARRAYLANG;
 
         // hide currency navbar
-        $this->_hideCurrencyNavbar=true;
+        $this->_hideCurrencyNavbar = true;
 
         // if no order ID backup is present, redirect to the shop start page.
         // this check is necessary in order to avoid this page being
@@ -3694,30 +3694,35 @@ right after the customer logs in!
             exit;
         }
         $orderId = $this->objProcessing->checkIn();
+//echo("success(): checkIn returned order ID '$orderId'<br />");
         // the order ID has been backed up for other external payments
         // that might not be able to return our order ID
         if (!$orderId) {
             $orderId = $_SESSION['shop']['orderid_checkin'];
+//echo("success(): backup order ID '$orderId'<br />");
         }
         // clear backup ID, avoid success() from being run again
         unset($_SESSION['shop']['orderid_checkin']);
 
         // check the returned order ID.
         // this is set to true for all internal payment processors,
-        // which we can assume to be confirmed successfully already.
+        // which we assume to be confirmed successfully already.
         // external processors should return the result of the transaction
-        // along with the order ID.  The respective order is confirmed
-        // in _checkPaymentValidation(), if possible.
+        // along with the order ID.  The respective order is set to confirmed
+        // state in _checkPaymentValidation(), if necessary and possible.
         if ($orderId === true
-            || (intval($orderId) > 1
+            || (intval($orderId) > 0
                 && $this->_checkPaymentValidation($orderId))) {
+//echo("success(): success! order ID '$orderId'<br />");
             $statusMessage = $_ARRAYLANG['TXT_ORDER_PROCESSED'];
             if (!$this->_sendProcessedMail()) {
                 $statusMessage .=
                     '<br /><br />'.$_ARRAYLANG['TXT_SHOP_UNABLE_TO_SEND_EMAIL'];
             }
         } else {
-            $statusMessage = $_ARRAYLANG['TXT_NO_PENDING_ORDER'];
+            $statusMessage = $_ARRAYLANG['TXT_NO_PENDING_ORDER']
+//."<br />orderId $orderId"
+            ;
         }
         $this->objTemplate->setVariable('SHOP_STATUS', $statusMessage);
         $this->destroyCart();
@@ -3754,11 +3759,11 @@ right after the customer logs in!
             if ($_REQUEST['orderid'] == $_SESSION['shop']['orderid_checkin']) {
                 // the order ID is correct
                 $orderId = $_SESSION['shop']['orderid_checkin'];
-echo("cancel(): got order ID $orderId from _REQUEST<br />");
+//echo("cancel(): got order ID $orderId from _REQUEST<br />");
             }
         } else {
             $orderId = $_SESSION['shop']['orderid_checkin'];
-echo("cancel(): got order ID $orderId from _SESSION backup<br />");
+//echo("cancel(): got order ID $orderId from _SESSION backup<br />");
         }
         // clear backup ID, it won't be used again
         unset($_SESSION['shop']['orderid_backup']);
@@ -3768,8 +3773,8 @@ echo("cancel(): got order ID $orderId from _SESSION backup<br />");
             // set the order status to '2' (cancelled)
             $query = "
                 UPDATE ".DBPREFIX."module_shop_orders
-                SET order_status='2'
-                WHERE orderid=$orderId
+                   SET order_status='2'
+                 WHERE orderid=$orderId
             ";
             $objResult = $objDatabase->Execute($query);
             if ($objResult) {
@@ -3778,7 +3783,7 @@ echo("cancel(): got order ID $orderId from _SESSION backup<br />");
                 ));
                 $this->destroyCart();
             } else {
-echo("cancel(): updating order ID $orderId failed, query: $query<br />");
+//echo("cancel(): updating order ID $orderId failed, query: $query<br />");
                 $this->objTemplate->setVariable(array(
                     'TXT_SHOP_CANCEL_MESSAGE'  => $_ARRAYLANG['TXT_SHOP_ORDER_STILL_IN_CART'],
                     'TXT_SHOP_BACK_TO_PAYMENT' => $_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'],
@@ -3794,7 +3799,7 @@ echo("cancel(): updating order ID $orderId failed, query: $query<br />");
             'TXT_SHOP_PAYMENT_CANCELLED' => $_ARRAYLANG['TXT_SHOP_PAYMENT_CANCELLED'],
             'TXT_SHOP_BACK_TO_SHOP'      => $_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'],
         ));
-echo("cancel(): leaving<br />");
+//echo("cancel(): leaving<br />");
     }
 
 
@@ -3816,10 +3821,9 @@ echo("cancel(): leaving<br />");
 
         $orderId = intval($orderId);
         if ($orderId == 0) {
-echo("_checkPaymentValidation($orderId): missing order id argument - failed<br />");
+//echo("_checkPaymentValidation($orderId): missing order id argument - failed<br />");
             return false;
         }
-
         $query = "
             SELECT order_status
               FROM ".DBPREFIX."module_shop_orders
@@ -3827,6 +3831,7 @@ echo("_checkPaymentValidation($orderId): missing order id argument - failed<br /
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
+//echo("_checkPaymentValidation($orderId): query $query failed<br />");
             return false;
         }
         if ($objResult->fields['order_status'] == 0) {
@@ -3837,10 +3842,10 @@ echo("_checkPaymentValidation($orderId): missing order id argument - failed<br /
             ";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) {
+//echo("_checkPaymentValidation($orderId): query $query failed<br />");
                 return false;
             }
         }
-
         // the shop MUST be flushed right after this method returns true.
         return true;
     }

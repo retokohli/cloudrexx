@@ -1,4 +1,5 @@
 <?PHP
+
 /**
  * Payment manager.
  * @package     contrexx
@@ -6,33 +7,39 @@
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */
+
+/**
+ * Payment manager.
+ * @package     contrexx
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ */
+
 class Payment
 {
 
     /**
-     * Array of all available payment methods
-     * @var array
-     * @access public
+     * Array of available payment methods
+     * @var     array
+     * @access  public
      */
     var $arrPaymentObject = array();
 
 
     /**
-     * Constructor
-     *
-     * @param  string
-     * @access public
+     * Constructor (PHP4)
+     * @access  public
      */
     function Payment()
     {
         $this->__construct();
     }
 
-
     /**
-     * PHP5 Constructor
-     * @return void
-     * @desc Initialize the shipping options as an indexed array
+     * Constructor (PHP5)
+     *
+     * Sets up the array of payment objects
      */
     function __construct()
     {
@@ -44,8 +51,8 @@ class Payment
           ORDER BY id
         ";
         $objResult = $objDatabase->Execute($query);
-        while(!$objResult->EOF) {
-            $this->arrPaymentObject[$objResult->fields['id']]= array(
+        while($objResult && !$objResult->EOF) {
+            $this->arrPaymentObject[$objResult->fields['id']] = array(
                 'id'             => $objResult->fields['id'],
                 'name'           => $objResult->fields['name'],
                 'processor_id'   => $objResult->fields['processor_id'],
@@ -54,36 +61,39 @@ class Payment
                 'sort_order'     => $objResult->fields['sort_order'],
                 'status'         => $objResult->fields['status']
             );
-
             $objResult->MoveNext();
         }
     }
 
 
     /**
-     * Returns the countries related payment ID array
+     * Returns the countries related payment ID array.
      *
-     * @global   mixed   $objDatabase    Database object
-     * @param    integer $countryId      The country ID
-     * @param    array   $arrCurrencies  The currencies array
-     * @return   array   $arrPaymentId   Array of payment IDs, like: array( index => paymentId )
+     * @global   mixed   $objDatabase       Database object
+     * @param    integer $countryId         The country ID
+     * @param    array   $arrCurrencies     The currencies array
+     * @return   array   $arrPaymentId      Array of payment IDs, like:
+     *                                      array( index => paymentId )
      */
     function getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies)
     {
         global $objDatabase;
 
-        require_once ASCMS_MODULE_PATH .'/shop/payments/paypal/paypal.class.php';
+        require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/paypal.class.php';
         $objPayPal = new PayPal();
 
         $arrAcceptedCurrencyCodes = array();
 
         foreach ($arrCurrencies as $arrCurrency) {
-            if ($arrCurrency['status'] && in_array($arrCurrency['code'], $objPayPal->arrAcceptedCurrencyCodes)) {
+            if (   $arrCurrency['status']
+                && in_array($arrCurrency['code'],
+                            $objPayPal->arrAcceptedCurrencyCodes)
+            ) {
                 array_push($arrAcceptedCurrencyCodes, $arrCurrency['code']);
             }
         }
 
-        $arrPaymentId=array();
+        $arrPaymentId = array();
         $query = "
             SELECT p.payment_id as payment_id
               FROM ".DBPREFIX."module_shop_rel_countries AS c,
@@ -95,14 +105,13 @@ class Payment
                AND z.zones_id=p.zones_id)
         ";
         $objResult = $objDatabase->Execute($query);
-
-        while (!$objResult->EOF) {
+        while ($objResult && !$objResult->EOF) {
             if (   isset($this->arrPaymentObject[$objResult->fields['payment_id']])
                 && $this->arrPaymentObject[$objResult->fields['payment_id']]['status'] == 1
                 && (   $this->arrPaymentObject[$objResult->fields['payment_id']]['processor_id'] != 2
                     || count($arrAcceptedCurrencyCodes) > 0)
             ) {
-                $arrPaymentId[]=$objResult->fields['payment_id'];
+                $arrPaymentId[] = $objResult->fields['payment_id'];
             }
             $objResult->MoveNext();
         }
@@ -125,7 +134,7 @@ class Payment
         global $_ARRAYLANG;
 
         $arrPaymentId = $this->getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies);
-        $onchange = !empty($onchange) ? "onchange='$onchange'" : '';
+        $onchange = !empty($onchange) ? 'onchange="'.$onchange.'"' : '';
         $menu = "\n<select name='paymentId' $onchange>\n".
             (intval($selectedId) == 0
                 ?   "<option value='0' selected='selected'>".
@@ -152,8 +161,8 @@ class Payment
      * @return  string                  The name of the payment processor
      * @global  mixed   $objDatabase    Database object
      * @todo    This method belongs to the PaymentProcessing class.  It's
-     *          still here because the backend only uses this class, not
-     *          the PaymentProcessing.
+     *          still here because the backend only uses this class, and not
+     *          PaymentProcessing.
      */
     function getPaymentProcessorName($processorId)
     {

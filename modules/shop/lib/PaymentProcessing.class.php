@@ -7,84 +7,79 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+/**
+ * Saferpay payment handling
+ */
+require_once ASCMS_MODULE_PATH.'/shop/payments/saferpay/Saferpay.class.php';
+/**
+ * Yellowpay payment handling
+ */
+require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
+/**
+ * PayPal payment handling
+ */
+require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/PayPal.class.php';
+/**
+ * Dummy payment handling -- for testing purposes only.
+ */
+require_once ASCMS_MODULE_PATH.'/shop/payments/dummy/Dummy.class.php';
 
-require_once ASCMS_MODULE_PATH .'/shop/payments/saferpay/Saferpay.class.php';
-require_once ASCMS_MODULE_PATH .'/shop/payments/yellowpay/Yellowpay.class.php';
-require_once ASCMS_MODULE_PATH .'/shop/payments/paypal/paypal.class.php';
-
-
+/**
+ * Payment processing manager.
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @copyright   CONTREXX CMS - COMVATION AG
+ */
 class PaymentProcessing
 {
     /**
      * The active currency code (e.g. CHF, EUR, USD)
-     * @access private
-     * @var string $_currencyCode
+     * @access  private
+     * @var     string
      */
     var $_currencyCode = NULL;
 
     /**
      * The active language code (e.g. de, en, fr)
-     * @access private
-     * @var string $_languageCode
+     * @access  private
+     * @var     string
      */
     var $_languageCode = NULL;
 
     /**
      * The Shop configuration Array
-     * @access public
-     * @var array $arrConfig
+     * @access  public
+     * @var     array
      */
     var $arrConfig = array();
 
     /**
      * Array of all available payment processors
-     * @var array
-     * @access public
+     * @access  public
+     * @var     array
      */
     var $arrPaymentProcessor = array();
 
     /**
      * The selected processor ID
-     * @var integer
-     * @access private
+     * @access  private
+     * @var     integer
      */
     var $_processorId = NULL;
 
     /**
-     * Shop payments image path (e.g. /modules/shop/images/payments/)
-     * @access private
-     * @var string $imagePath
+     * Payment logo folder (e.g. /modules/shop/images/payments/)
+     * @access  private
+     * @var     string
      */
     var $_imagePath;
-
-    /**
-     * Saferpay processing object
-     * @access private
-     * @var mixed $_objSaferpay
-     */
-    var $_objSaferpay;
-
-    /**
-     * Yellowpay processing object
-     * @access private
-     * @var mixed $_objYellowpay
-     */
-    var $_objYellowpay;
-
-    /**
-     * PayPal processing object
-     * @access private
-     * @var mixed $_objPayPal
-     */
-    var $_objPayPal;
 
 
     /**
      * Constructor (PHP4)
      *
      * Initialize the shipping options as an indexed array
-     * @param  string
-     * @access public
+     * @param   array   $arrConfig  Configuration array
      */
     function PaymentProcessing($arrConfig)
     {
@@ -104,28 +99,25 @@ class PaymentProcessing
         global $objDatabase;
 
         $this->arrConfig     = $arrConfig;
-        $this->_objSaferpay  = new Saferpay();
-        $this->_objYellowpay = new Yellowpay();
-        $this->_objPayPal    = new PayPal();
-        $this->_imagePath    = ASCMS_PATH_OFFSET . '/modules/shop/images/payments/';
+        $this->_imagePath    = ASCMS_PATH_OFFSET.'/modules/shop/images/payments/';
 
-         $query = '
+        $query = '
             SELECT id, type, name, description,
                    company_url, status, picture, text
               FROM '.DBPREFIX.'module_shop_payment_processors
           ORDER BY id
-         ';
-         $objResult = $objDatabase->Execute($query);
-         while(!$objResult->EOF) {
+        ';
+        $objResult = $objDatabase->Execute($query);
+        while(!$objResult->EOF) {
             $this->arrPaymentProcessor[$objResult->fields['id']] = array(
-               'id' => $objResult->fields['id'],
-               'type' => $objResult->fields['type'],
-               'name' => $objResult->fields['name'],
-               'description' => $objResult->fields['description'],
-               'company_url' => $objResult->fields['company_url'],
-               'status' => $objResult->fields['status'],
-               'picture' => $objResult->fields['picture'],
-               'text' => $objResult->fields['text']
+                'id'          => $objResult->fields['id'],
+                'type'        => $objResult->fields['type'],
+                'name'        => $objResult->fields['name'],
+                'description' => $objResult->fields['description'],
+                'company_url' => $objResult->fields['company_url'],
+                'status'      => $objResult->fields['status'],
+                'picture'     => $objResult->fields['picture'],
+                'text'        => $objResult->fields['text']
             );
             $objResult->MoveNext();
         }
@@ -141,36 +133,121 @@ class PaymentProcessing
      */
     function initProcessor($processorId, $currencyCode, $languageCode)
     {
+        $this->_processorId  = $processorId;
         $this->_currencyCode = $currencyCode;
         $this->_languageCode = $languageCode;
-        $this->_processorId  = $processorId;
     }
 
 
     /**
-     * Returns the name associated with the given payment processor ID
-     * @param   integer     $processorId    The payment processor ID
-     * @return  string                      The payment processors' name
-     */
-    function getPaymentProcessorName($processorId)
-    {
-        return $this->arrPaymentProcessor[$processorId]['name'];
-    }
-
-
-    /**
-     * Returns the type associated with the given payment processor ID
+     * Returns the name associated with a payment processor ID.
      *
-     * Currently supported types are 'internal' and 'external'.
+     * If the optional argument is not set and greater than zero, the value
+     * _processorId stored in this object is used.  If this is invalid as
+     * well, returns the empty string.
      * @param   integer     $processorId    The payment processor ID
-     * @return  string                      The payment processor type.
+     * @return  string                      The payment processors' name,
+     *                                      or the empty string on failure.
+     * @global  mixed       $objDatabase    Database object
      */
-    function getCurrentPaymentProcessorType()
+    function getPaymentProcessorName($processorId=0)
     {
-        if (!$this->_processorId) {
-            return '';
+        global $objDatabase;
+
+        // either the argument or the object may not be initialized.
+        if (!$processorId) {
+            if (!$this->_processorId) {
+                return '';
+            } else {
+                $processorId = $this->_processorId;
+            }
         }
-        return $this->arrPaymentProcessor[$this->_processorId]['type'];
+        $query = "
+            SELECT name
+              FROM ".DBPREFIX."module_shop_payment_processors
+             WHERE id=$processorId
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            return $objResult->fields['name'];
+        }
+        return '';
+    }
+
+
+    /**
+     * Returns the processor type associated with a payment processor ID.
+     *
+     * If the optional argument is not set and greater than zero, the value
+     * _processorId stored in this object is used.  If this is invalid as
+     * well, returns the empty string.
+     * Note: Currently supported types are 'internal' and 'external'.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @param   integer     $processorId    The payment processor ID
+     * @return  string                      The payment processor type,
+     *                                      or the empty string on failure.
+     * @global  mixed       $objDatabase    Database object
+     */
+    function getCurrentPaymentProcessorType($processorId=0)
+    {
+        global $objDatabase;
+
+        // either the argument or the object may not be initialized.
+        if (!$processorId) {
+            if (!$this->_processorId) {
+                return '';
+            } else {
+                $processorId = $this->_processorId;
+            }
+        }
+
+        $query = "
+            SELECT type
+              FROM ".DBPREFIX."module_shop_payment_processors
+             WHERE id=$processorId
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            return $objResult->fields['type'];
+        }
+        return '';
+    }
+
+
+    /**
+     * Returns the picture file name associated with a payment processor ID.
+     *
+     * If the optional argument is not set and greater than zero, the value
+     * _processorId stored in this object is used.  If this is invalid as
+     * well, returns the empty string.
+     * @param   integer     $processorId    The payment processor ID
+     * @return  string                      The payment processors' picture
+     *                                      file name, or the empty string
+     *                                      on failure.
+     * @global  mixed       $objDatabase    Database object
+     */
+    function getPaymentProcessorPicture($processorId=0)
+    {
+        global $objDatabase;
+
+        // either the argument or the object may not be initialized.
+        if (!$processorId) {
+            if (!$this->_processorId) {
+                return '';
+            } else {
+                $processorId = $this->_processorId;
+            }
+        }
+        $query = "
+            SELECT picture
+              FROM ".DBPREFIX."module_shop_payment_processors
+             WHERE id=$processorId
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            return $objResult->fields['picture'];
+        }
+        return '';
     }
 
 
@@ -186,7 +263,7 @@ class PaymentProcessing
      */
     function checkOut()
     {
-        switch ($this->arrPaymentProcessor[$this->_processorId]['name']) {
+        switch ($this->getPaymentProcessorName()) {
             case 'Internal':
                 /* Redirect browser */
                 header('location: index.php?section=shop&cmd=success&handler=Internal');
@@ -218,6 +295,9 @@ class PaymentProcessing
             case 'Paypal':
                 $return = $this->_PayPalProcessor();
                 break;
+            case 'Dummy':
+                $return = Dummy::getForm();
+                break;
         }
         // shows the payment picture
         $return .= $this->_getPictureCode();
@@ -233,11 +313,12 @@ class PaymentProcessing
      */
     function _getPictureCode()
     {
-        $imageName = $this->arrPaymentProcessor[$this->_processorId]['picture'];
+        $imageName = $this->getPaymentProcessorPicture();
         return (!empty($imageName)
-            ?   '<br /><br /><img src="'.$this->_imagePath.$imageName.
+            ?   '<br /><br /><img src="'.
+                $this->_imagePath.$imageName.
                 '" alt="" title="" /><br /><br />'
-            : ''
+            :   ''
         );
     }
 
@@ -250,8 +331,9 @@ class PaymentProcessing
     {
         global $_ARRAYLANG;
 
+        $objSaferpay = new Saferpay();
         if ($this->arrConfig['saferpay_use_test_account']['status'] == 1) {
-            $this->_objSaferpay->isTest = true;
+            $objSaferpay->isTest = true;
         }
 
         $arrShopOrder = array(
@@ -267,46 +349,54 @@ class PaymentProcessing
             'PROVIDERSET' => $arrCards
         );
 
-        $payInitUrl = $this->_objSaferpay->payInit($arrShopOrder);
+        $payInitUrl = $objSaferpay->payInit($arrShopOrder);
         $return = '';
         // Fixed: Added check for empty return string,
         // i.e. on connection problems
         if (   !$payInitUrl
-            || strtoupper(substr($payInitUrl, 0, 5)) == "ERROR") {
-            $return .= "<font color='red'><b>
-            The Saferpay Payment processor couldn't be initialized!
-            <br />$payInitUrl</b></font>";
+            || strtoupper(substr($payInitUrl, 0, 5)) == 'ERROR') {
+            $return .=
+                "<font color='red'><b>".
+                "The Saferpay Payment processor couldn't be initialized!".
+                "<br />$payInitUrl</b></font>";
         } else {
             $return .= "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
             switch ($this->arrConfig['saferpay_window_option']['value']){
                 case 0: // iframe
-                    $return .= $_ARRAYLANG['TXT_ORDER_PREPARED']."<br/><br/>\n";
-                    $return .= "<iframe src='$payInitUrl' width='580' height='400' scrolling='no' marginheight='0' marginwidth='0' frameborder='0' name='saferpay'></iframe>\n";
+                    $return .=
+                        $_ARRAYLANG['TXT_ORDER_PREPARED']."<br/><br/>\n".
+                        "<iframe src='$payInitUrl' width='580' height='400' scrolling='no' marginheight='0' marginwidth='0' frameborder='0' name='saferpay'></iframe>\n";
                     break;
                 case 1: // popup
-                    $return .= $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n";
-                    $return .= "<script language='javascript' type='text/javascript'>
-                                function openSaferpay()
-                                {
-                                    strUrl = '$payInitUrl';
-                                    if (strUrl.indexOf(\"WINDOWMODE=Standalone\") == -1){
-                                        strUrl += \"&WINDOWMODE=Standalone\";
-                                    }
-                                    oWin = window.open(
-                                                        strUrl,
-                                                        'SaferpayTerminal',
-                                                        'scrollbars=1,resizable=0,toolbar=0,location=0,directories=0,status=1,menubar=0,width=580,height=400'
-                                    );
-                                    if (oWin==null || typeof(oWin)==\"undefined\") {
-                                        alert(\"The payment couldn't be initialized, because it seems that you are using a popup blocker!\");
-                                    }
-                                }
-                                </script>\n";
-                    $return .= "<input type='button' name='order_now' value='".$_ARRAYLANG['TXT_ORDER_NOW']."' onclick='openSaferpay()' />\n";
+                    $return .=
+                        $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
+                        "<script language='javascript' type='text/javascript'>
+                         function openSaferpay()
+                         {
+                             strUrl = '$payInitUrl';
+                             if (strUrl.indexOf(\"WINDOWMODE=Standalone\") == -1){
+                                 strUrl += \"&WINDOWMODE=Standalone\";
+                             }
+                             oWin = window.open(
+                                                 strUrl,
+                                                 'SaferpayTerminal',
+                                                 'scrollbars=1,resizable=0,toolbar=0,location=0,directories=0,status=1,menubar=0,width=580,height=400'
+                             );
+                             if (oWin==null || typeof(oWin)==\"undefined\") {
+                                 alert(\"The payment couldn't be initialized, because it seems that you are using a popup blocker!\");
+                             }
+                         }
+                         </script>\n".
+                        "<input type='button' name='order_now' value='".
+                        $_ARRAYLANG['TXT_ORDER_NOW'].
+                        "' onclick='openSaferpay()' />\n";
                     break;
                 case 2: // new window
-                    $return .= $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n";
-                    $return .= "<form method='post' action='$payInitUrl'>\n<input type='Submit' value='".$_ARRAYLANG['TXT_ORDER_NOW']."'>\n</form>\n";
+                    $return .=
+                        $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
+                        "<form method='post' action='$payInitUrl'>\n<input type='Submit' value='".
+                        $_ARRAYLANG['TXT_ORDER_NOW'].
+                        "'>\n</form>\n";
                     break;
             }
         }
@@ -321,6 +411,7 @@ class PaymentProcessing
     function _YellowpayProcessor()
     {
         global $_ARRAYLANG;
+
         $arrShopOrder = array(
             'txtShopId'           => $this->arrConfig['yellowpay_id']['value'],
             'txtOrderTotal'       => $_SESSION['shop']['grand_total_price'],
@@ -335,16 +426,15 @@ class PaymentProcessing
             'SessionId'           => $_SESSION['shop']['PHPSESSID']
         );
 
-        $yellowpayForm = $this->_objYellowpay->getForm(
+        $objYellowpay = new Yellowpay();
+        $yellowpayForm = $objYellowpay->getForm(
             $arrShopOrder,
             $_ARRAYLANG['TXT_ORDER_NOW']
         );
-        if (count($this->_objYellowpay->arrError) > 0) {
-            $return .= "<font color='red'><b>This payment type couldn't be initialized!</b></font>";
-        } else {
-            $return .= $yellowpayForm;
+        if (count($objYellowpay->arrError) > 0) {
+            return "<font color='red'><b>Yellowpay couldn't be initialized!</b></font>";
         }
-        return $return;
+        return $yellowpayForm;
     }
 
 
@@ -354,15 +444,23 @@ class PaymentProcessing
      */
     function  _PayPalProcessor()
     {
-        $PayPalForm = $this->_objPayPal->getForm();
-        return $PayPalForm;
+        $objPayPal = new PayPal();
+        return $objPayPal->getForm();
     }
 
 
     /**
      * Check in the payment processor after the payment is complete.
-     * @return  integer     The order ID, as stored in the session, upon
-     *                      success, the NULL value otherwise.
+     * @return  mixed   For external payment types:
+     *                  The integer order ID, if known, upon success,
+     *                  the 'NULL' string value upon failure.  This may
+     *                  be used in successive queries in place of the order
+     *                  ID and will yield no result, and thus the
+     *                  confirmation will fail as a consequence.
+     *                  For internal payment types:
+     *                  Boolean true, because these all skip the order
+     *                  confirmation after this, as this has already been
+     *                  done.
      */
     function checkIn()
     {
@@ -370,48 +468,58 @@ class PaymentProcessing
         if (isset($_GET['handler']) && !empty($_GET['handler'])) {
             switch ($_GET['handler']) {
                 case 'saferpay':
+                    $objSaferpay  = new Saferpay();
                     if ($this->arrConfig['saferpay_use_test_account']['status'] == 1) {
-                        $this->_objSaferpay->isTest = true;
+                        $objSaferpay->isTest = true;
                     } else {
                         $arrShopOrder['ACCOUNTID'] = $this->arrConfig['saferpay_id']['value'];
                     }
-                    $transaction = $this->_objSaferpay->payConfirm();
+                    $transaction = $objSaferpay->payConfirm();
                     if (intval($this->arrConfig['saferpay_finalize_payment']['value']) == 1) {
-                        if ($this->_objSaferpay->isTest == true) {
+                        if ($objSaferpay->isTest == true) {
                             $transaction = true;
                         } else {
-                            $transaction = $this->_objSaferpay->payComplete($arrShopOrder);
+                            $transaction = $objSaferpay->payComplete($arrShopOrder);
                         }
                     }
                     if ($transaction) {
-                        return $this->_objSaferpay->getOrderId();
+                        return $objSaferpay->getOrderId();
                     }
                     break;
                 case 'paypal':
-                    // order ID must be returned when the payment is done
+                    // order ID must be returned when the payment is done.
+                    // is this guaranteed to be a GET request?
                     if (isset($_REQUEST['orderid'])) {
                         return intval($_REQUEST['orderid']);
                     }
                     break;
-                // dunno about this one
+                // Dunno about this one...
                 case 'PostFinance_DebitDirect':
                     break;
-                // for the remaining types, there's no need to check in,
-                // so we return true and jump over the validation of the ID
+                // For the remaining types, there's no need to check in, so we
+                // return true and jump over the validation of the order ID
                 // directly to success!
                 case 'Internal':
                 case 'Internal_CreditCard':
                 case 'Internal_Debit':
                 case 'Internal_LSV':
                     return true;
-                    break;
+                // Dummy payment.
+                // Returns a result similar to PayPal or Saferpay.
+                case 'dummy':
+                    $result = '';
+                    if (isset($_REQUEST['result'])) {
+                        $result = $_REQUEST['result'];
+                    }
+                    // returns the order ID on success, 'NULL' otherwise
+                    return Dummy::commit($result);
                 default:
                     break;
-                // NOTE: the order ID is still kept in a backup for payment
-                // methods that do not return it.
+                // Note: The order ID is kept in a backup in index.class.php
+                // for payment methods that do not return it.
             }
         }
-        // loosers
+        // Anything else is wrong.
         return 'NULL';
     }
 }
