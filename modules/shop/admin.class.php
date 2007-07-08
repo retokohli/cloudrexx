@@ -2399,7 +2399,7 @@ class shopmanager extends ShopLibrary {
 
     function _getPayPalAcceptedCurrencyCodesMenu()
     {
-        require_once ASCMS_MODULE_PATH .'/shop/payments/paypal/paypal.class.php';
+        require_once ASCMS_MODULE_PATH .'/shop/payments/paypal/Paypal.class.php';
         $objPayPal = new PayPal();
 
         $menu = "<select name=\"paypal_default_currency\">\n";
