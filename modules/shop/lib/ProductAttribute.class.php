@@ -520,8 +520,7 @@ die("ERROR: value id not set after update/insert<br />");
             return false;
         }
         // not updated? -- insert!
-        // ($objResult->Affected_Rows() == 0) won't work here, so:
-        if (is_a($objResult, 'ADORecordSet_empty')) {
+        if ($objDatabase->Affected_Rows() == 0) {
             return ProductAttribute::_insertValue($value, $this->id);
         }
         return true;
@@ -1462,56 +1461,54 @@ echo("WARNING: bogus method ProductAttribute::getAttributeList() called<br />");
 
 }
 
-/*
-// test
-$objProductAttribute = new ProductAttribute('Grösse', 0);
-$objProductAttribute->addValue('S', 9.95, '-');
-$objProductAttribute->addValue('M', 0.00, '+');
-$objProductAttribute->addValue('L', 9.95, '+');
-echo("new PA:<br />".$objProductAttribute->toString());
+/* test
+    $objProductAttribute = new ProductAttribute('Grösse', 0);
+    $objProductAttribute->addValue('S', 9.95, '-');
+    $objProductAttribute->addValue('M', 0.00, '+');
+    $objProductAttribute->addValue('L', 9.95, '+');
+    echo("new PA:<br />".$objProductAttribute->toString());
 
-echo("id: ".$objProductAttribute->getId()."<br />");
-$objProductAttribute->setName('Neuer Name');
-echo("changed name: ".$objProductAttribute->getName()."<br />");
-$objProductAttribute->setType(1);
-echo("changed type: ".$objProductAttribute->getType()."<br />");
-//echo("setName() result: ".($objProductAttribute->setName('Neuer Name') ? 'true' : 'false').'<br />');
+    echo("id: ".$objProductAttribute->getId()."<br />");
+    $objProductAttribute->setName('Neuer Name');
+    echo("changed name: ".$objProductAttribute->getName()."<br />");
+    $objProductAttribute->setType(1);
+    echo("changed type: ".$objProductAttribute->getType()."<br />");
+    //echo("setName() result: ".($objProductAttribute->setName('Neuer Name') ? 'true' : 'false').'<br />');
 
-$arrValues = $objProductAttribute->getValueArray();
-echo("value array: ");var_export($arrValues);echo("<br />");
-$arrValueIds = $objProductAttribute->getValueIdArray();
-echo("value ID array: ");var_export($arrValueIds);echo("<br />");
-$arrNameIds = $objProductAttribute->getNameIdArray();
-echo("name ID array: ");var_export($arrNameIds);echo("<br />");
-echo("indices:<br />");
-foreach ($arrValueIds as $id) {
-    echo("id $id => ".$objProductAttribute->getValueIndexByValueId($id).'<br />');
-}
-$id = current($arrValueIds);
-$objProductAttribute->updateValue($id, 'XL', 19.95, '+');
+    $arrValues = $objProductAttribute->getValueArray();
+    echo("value array: ");var_export($arrValues);echo("<br />");
+    $arrValueIds = $objProductAttribute->getValueIdArray();
+    echo("value ID array: ");var_export($arrValueIds);echo("<br />");
+    $arrNameIds = $objProductAttribute->getNameIdArray();
+    echo("name ID array: ");var_export($arrNameIds);echo("<br />");
+    echo("indices:<br />");
+    foreach ($arrValueIds as $id) {
+        echo("id $id => ".$objProductAttribute->getValueIndexByValueId($id).'<br />');
+    }
+    $id = current($arrValueIds);
+    $objProductAttribute->updateValue($id, 'XL', 19.95, '+');
 
-die();
+    die();
 
-// todo from here
-updateValue($valueId, $value, $price, $prefix)
-deleteValueById($id)
-_deleteValueById($id)
-delete()
-store()
-update()
-_updateValue($value)
-insert()
-_insertValue(&$value, $nameId)
-getByNameId($nameId, $arrProductAttributeValueId='')
-getByValueId($valueId)
-getNameIdByValueId($valueId)
-getAttributeArray()
-getAttributeDisplayTypeMenu($attributeId, $displayTypeId='0')
-getAttributeInputBoxes($attributeId, $name, $content, $maxlength, $style='')
-getAttributePricePrefixMenu($attributeId, $name, $pricePrefix)
-getAttributeValueMenu($attributeId, $name, $selectedId, $onchange, $style)
-// todo: getAttributeJSVars()
-///test
+    // todo from here
+    updateValue($valueId, $value, $price, $prefix)
+    deleteValueById($id)
+    _deleteValueById($id)
+    delete()
+    store()
+    update()
+    _updateValue($value)
+    insert()
+    _insertValue(&$value, $nameId)
+    getByNameId($nameId, $arrProductAttributeValueId='')
+    getByValueId($valueId)
+    getNameIdByValueId($valueId)
+    getAttributeArray()
+    getAttributeDisplayTypeMenu($attributeId, $displayTypeId='0')
+    getAttributeInputBoxes($attributeId, $name, $content, $maxlength, $style='')
+    getAttributePricePrefixMenu($attributeId, $name, $pricePrefix)
+    getAttributeValueMenu($attributeId, $name, $selectedId, $onchange, $style)
+    // todo: getAttributeJSVars()
 */
 
 
