@@ -397,7 +397,7 @@ class Shop extends ShopLibrary
                     $this->products();
                     break;
                 case 'paypalIpnCheck':
-                    require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/paypal.class.php';
+                    require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
                     $objPaypal = new PayPal;
                     $objPaypal->ipnCheck();
                     exit;
@@ -2788,7 +2788,7 @@ sendReq('', 1);
                 exit;
             }
         } else {
-            require_once ASCMS_MODULE_PATH."/shop/payments/paypal/paypal.class.php";
+            require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
             $objPaypal = new PayPal;
             if (!in_array($this->objCurrency->getActiveCurrencyCode(), $objPaypal->arrAcceptedCurrencyCodes)) {
                 foreach ($this->objCurrency->arrCurrency as $arrCurrency) {

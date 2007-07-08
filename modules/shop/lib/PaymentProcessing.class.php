@@ -18,7 +18,7 @@ require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
 /**
  * PayPal payment handling
  */
-require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/PayPal.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
 /**
  * Dummy payment handling -- for testing purposes only.
  */
