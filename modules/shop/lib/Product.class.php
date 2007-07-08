@@ -941,7 +941,7 @@ class Product
 //echo("Debug: Product::delete(): entered<br />");
 
         if (!$this->id) {
-echo("Error: Product::delete(): this Product is missing the Product ID<br />");
+echo("Product::delete(): Error: This Product is missing the Product ID<br />");
             return false;
         }
 
@@ -977,14 +977,14 @@ echo("Error: Product::delete(): this Product is missing the Product ID<br />");
 //echo("Debug: Product::delete(): pictureName $pictureName, thumbName $thumbName<br />");
 //echo("Debug: Product::delete(): split filename: ");var_export($fileArr);echo("<br />thumbname: $thumbName<br />");
                     if (!@unlink(ASCMS_PATH."$thumbName"  )) { // ".ASCMS_SHOP_IMAGES_PATH."/
-echo("WARNING: Product::delete(): Failed to delete the thumbnail file '".ASCMS_PATH."$thumbName'<br />");
+echo("Product::delete(): Warning: Failed to delete the thumbnail file '".ASCMS_PATH."$thumbName'<br />");
                         // should continue despite the warning - maybe the super user
                         // has just "rm -rf *"ed the picture for us. ;)
                         //return true;
                     }
 //echo("Debug: Product::delete(): deleted thumbnail '".ASCMS_PATH."$thumbName'<br />");
                     if (!@unlink(ASCMS_PATH."$pictureName")) {
-echo("WARNING: Product::delete(): Failed to delete the picture file '".ASCMS_PATH."$pictureName'<br />");
+echo("Product::delete(): Warning: Failed to delete the picture file '".ASCMS_PATH."$pictureName'<br />");
                         // should continue despite the warning - maybe the super user
                         // has just "rm -rf *"ed the picture for us. ;)
                         //return true;
@@ -999,7 +999,7 @@ echo("WARNING: Product::delete(): Failed to delete the picture file '".ASCMS_PAT
              WHERE id=$this->id
         ");
         if (!$objResult) {
-echo("Error: Product::delete(): Failed to delete the Product from the database<br />");
+echo("Product::delete(): Error: Failed to delete the Product from the database<br />");
             return false;
         }
         $objDatabase->Execute("
@@ -1007,7 +1007,7 @@ echo("Error: Product::delete(): Failed to delete the Product from the database<b
              WHERE product_id=$this->id
         ");
         if (!$objResult) {
-echo("Error: Product::delete(): Failed to delete the Product Attributes from the database<br />");
+echo("Product::delete(): Error: Failed to delete the Product Attributes from the database<br />");
             return false;
         }
         return true;
@@ -1235,7 +1235,7 @@ echo("Error: Product::delete(): Failed to delete the Product Attributes from the
                         contrexx_addslashes($pattern)."%'";
         	    }
         	} else {
-echo("Customer::getByWildcard(): illegal field name '$fieldName' ignored<br />");
+//echo("Customer::getByWildcard(): illegal field name '$fieldName' ignored<br />");
         	}
         }
         return $query;
@@ -1386,7 +1386,7 @@ echo("Customer::getByWildcard(): illegal field name '$fieldName' ignored<br />")
         if (is_array($arrProducts)) {
             foreach ($arrProducts as $objProduct) {
                 if (!$objProduct->delete()) {
-echo("Error: Product::deleteByShopCategory(): Failed to delete Product<br />");
+echo("Product::deleteByShopCategory(): Error: Failed to delete Product<br />");
                     return false;
                 }
 //echo("Debug: Product::deleteByShopCategory(): Deleted ");var_export($objProduct);echo("<br />");
