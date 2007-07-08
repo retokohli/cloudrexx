@@ -250,6 +250,7 @@ class Settings {
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_config");
             return true;
         }
+        return false;
     }
 
 
@@ -286,13 +287,17 @@ class Settings {
                                          ".intval($_POST['currencyDefaultNew']).")";
 
             $objResult = $objDatabase->Execute($query);
+            if (!$objResult) {
+                return false;
+            }
             $cId = $objDatabase->Insert_Id();
             if($_POST['currencyDefaultNew']) {
                 $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_currencies Set is_default=0 WHERE id!=".intval($cId));
             }
-
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_currencies");
+            return true;
         }
+        return false;
     }
 
 
