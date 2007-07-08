@@ -278,11 +278,11 @@ class Customer
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-echo("Customer::authenticate($userName, $password): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
+echo("Customer::authenticate($userName, $password): Error: Query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
             return false;
         }
         if ($objResult->RecordCount() != 1) {
-echo("Customer::authenticate($userName, $password): query result miscount: ".$objResult->RecordCount()."<br />");
+echo("Customer::authenticate($userName, $password): Error: Query result miscount: ".$objResult->RecordCount()."<br />");
             return false;
         }
         $id = $objResult->fields['customerid'];
@@ -738,7 +738,7 @@ echo("Customer::authenticate($userName, $password): query result miscount: ".$ob
 //echo("Debug: Customer::delete(): entered<br />");
 
         if (!$this->id) {
-echo("Error: Customer::delete(): this Customer is missing the Customer ID<br />");
+echo("Customer::delete(): Error: This Customer is missing the Customer ID<br />");
             return false;
         }
         $query = "
@@ -747,7 +747,7 @@ echo("Error: Customer::delete(): this Customer is missing the Customer ID<br />"
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-echo("Error: Customer::delete(): Failed to delete the Customer from the database<br />");
+echo("Customer::delete(): Error: Failed to delete the Customer from the database<br />");
             return false;
         }
         return true;
@@ -885,11 +885,11 @@ echo("Error: Customer::delete(): Failed to delete the Customer from the database
         $objResult = $objDatabase->Execute($query);
 //echo("Customer::getById($id): objResult: '$objResult'<br />");
         if (!$objResult) {
-echo("Customer::getById($id): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
+echo("Customer::getById($id): Error: Query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
             return false;
         }
         if ($objResult->RecordCount() != 1) {
-echo("Customer::getById($id): query result miscount: ".$objResult->RecordCount()."<br />");
+echo("Customer::getById($id): Error: Query result miscount: ".$objResult->RecordCount()."<br />");
             return false;
         }
         $objCustomer = new Customer(
@@ -952,7 +952,7 @@ echo("Customer::getById($id): query result miscount: ".$objResult->RecordCount()
                         contrexx_addslashes($pattern)."%'";
         	    }
         	} else {
-echo("Customer::getByWildcard(): illegal field name '$fieldName' ignored<br />");
+//echo("Customer::getByWildcard(): illegal field name '$fieldName' ignored<br />");
         	}
         }
 //echo("Customer::getByWildcard($id): query: $query<br />");
@@ -1006,79 +1006,79 @@ echo("Customer::getByWildcard(): illegal field name '$fieldName' ignored<br />")
 }
 
 /* test
-global $objDatabase; $objDatabase->debug = 1;
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+    global $objDatabase; $objDatabase->debug = 1;
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
 
-$objCustomer = new Customer(
-'herr',
-'retoli',
-'koh',
-'firmama',
-'wohnehier',
-'städtli',
-'3245',
-'204',
-'325-7824',
-'432-2344'
-);
-echo("new customer: ");     echo($objCustomer->toString());   echo("<br />");
-$objCustomer->store();
-echo("stored customer: ");  echo($objCustomer->toString());   echo("<br />");
-$objCustomer->setCcCode('cccode');
-$objCustomer->setCcDate('ccdate');
-$objCustomer->setCcName('ccname');
-$objCustomer->setCcNumber(123);
-echo("added customer cc: ");  echo($objCustomer->toString());   echo("<br />");
-$objCustomer->makeClone();
-echo("cloned customer: ");  echo($objCustomer->toString());   echo("<br />");
-$objCustomer->setUserName('username');
-$objCustomer->setPassword('passwort');
-$objCustomer->setCompanyNote('companynote');
-echo("changed customer: ");  echo($objCustomer->toString());   echo("<br />");
-$objCustomer->store();
-echo("stored customer: ");  echo($objCustomer->toString());   echo("<br />");
-$objCustomer->setResellerStatus('erah');
-$objCustomer->setRegisterDate('sdfga');
-$objCustomer->setActiveStatus('etwiuhv');
-echo("changed customer: ");  echo($objCustomer->toString());   echo("<br />");
-$objCustomer->store();
-echo("stored customer: ");  echo($objCustomer->toString());   echo("<br />");
+    $objCustomer = new Customer(
+    'herr',
+    'retoli',
+    'koh',
+    'firmama',
+    'wohnehier',
+    'städtli',
+    '3245',
+    '204',
+    '325-7824',
+    '432-2344'
+    );
+    echo("new customer: ");     echo($objCustomer->toString());   echo("<br />");
+    $objCustomer->store();
+    echo("stored customer: ");  echo($objCustomer->toString());   echo("<br />");
+    $objCustomer->setCcCode('cccode');
+    $objCustomer->setCcDate('ccdate');
+    $objCustomer->setCcName('ccname');
+    $objCustomer->setCcNumber(123);
+    echo("added customer cc: ");  echo($objCustomer->toString());   echo("<br />");
+    $objCustomer->makeClone();
+    echo("cloned customer: ");  echo($objCustomer->toString());   echo("<br />");
+    $objCustomer->setUserName('username');
+    $objCustomer->setPassword('passwort');
+    $objCustomer->setCompanyNote('companynote');
+    echo("changed customer: ");  echo($objCustomer->toString());   echo("<br />");
+    $objCustomer->store();
+    echo("stored customer: ");  echo($objCustomer->toString());   echo("<br />");
+    $objCustomer->setResellerStatus('erah');
+    $objCustomer->setRegisterDate('sdfga');
+    $objCustomer->setActiveStatus('etwiuhv');
+    echo("changed customer: ");  echo($objCustomer->toString());   echo("<br />");
+    $objCustomer->store();
+    echo("stored customer: ");  echo($objCustomer->toString());   echo("<br />");
 
-$objCustomer->setPrefix('prefix');
-$objCustomer->setFirstName('firstName');
-$objCustomer->setLastName('lastName');
-$objCustomer->setCompany('company');
-$objCustomer->setAddress('address');
-$objCustomer->setCity('city');
-$objCustomer->setZip('zip');
-$objCustomer->setCountryId(432);
-$objCustomer->setPhone('phone');
-$objCustomer->setFax('fax');
-$objCustomer->setEmail('email');
+    $objCustomer->setPrefix('prefix');
+    $objCustomer->setFirstName('firstName');
+    $objCustomer->setLastName('lastName');
+    $objCustomer->setCompany('company');
+    $objCustomer->setAddress('address');
+    $objCustomer->setCity('city');
+    $objCustomer->setZip('zip');
+    $objCustomer->setCountryId(432);
+    $objCustomer->setPhone('phone');
+    $objCustomer->setFax('fax');
+    $objCustomer->setEmail('email');
 
-echo("id: ".$objCustomer->getId()."<br/>");
-echo("prefix: ".$objCustomer->getPrefix()."<br/>");
-echo("firstName: ".$objCustomer->getFirstName()."<br/>");
-echo("lastName: ".$objCustomer->getLastName()."<br/>");
-echo("company: ".$objCustomer->getCompany()."<br/>");
-echo("address: ".$objCustomer->getAddress()."<br/>");
-echo("city: ".$objCustomer->getCity()."<br/>");
-echo("zip: ".$objCustomer->getZip()."<br/>");
-echo("countryId: ".$objCustomer->getCountryId()."<br/>");
-echo("phone: ".$objCustomer->getPhone()."<br/>");
-echo("fax: ".$objCustomer->getFax()."<br/>");
-echo("email: ".$objCustomer->getEmail()."<br/>");
-echo("ccNumber: ".$objCustomer->getCcNumber()."<br/>");
-echo("ccDate: ".$objCustomer->getCcDate()."<br/>");
-echo("ccName: ".$objCustomer->getCcName()."<br/>");
-echo("ccCode: ".$objCustomer->getCcCode()."<br/>");
-echo("userName: ".$objCustomer->getUserName()."<br/>");
-echo("password: ".$objCustomer->getPasswordMd5()."<br/>");
-echo("companyNote: ".$objCustomer->getCompanyNote()."<br/>");
-echo("resellerStatus: ".$objCustomer->getResellerStatus()."<br/>");
-echo("registerDate: ".$objCustomer->getRegisterDate()."<br/>");
-echo("activeStatus: ".$objCustomer->getActiveStatus()."<br/>");
+    echo("id: ".$objCustomer->getId()."<br/>");
+    echo("prefix: ".$objCustomer->getPrefix()."<br/>");
+    echo("firstName: ".$objCustomer->getFirstName()."<br/>");
+    echo("lastName: ".$objCustomer->getLastName()."<br/>");
+    echo("company: ".$objCustomer->getCompany()."<br/>");
+    echo("address: ".$objCustomer->getAddress()."<br/>");
+    echo("city: ".$objCustomer->getCity()."<br/>");
+    echo("zip: ".$objCustomer->getZip()."<br/>");
+    echo("countryId: ".$objCustomer->getCountryId()."<br/>");
+    echo("phone: ".$objCustomer->getPhone()."<br/>");
+    echo("fax: ".$objCustomer->getFax()."<br/>");
+    echo("email: ".$objCustomer->getEmail()."<br/>");
+    echo("ccNumber: ".$objCustomer->getCcNumber()."<br/>");
+    echo("ccDate: ".$objCustomer->getCcDate()."<br/>");
+    echo("ccName: ".$objCustomer->getCcName()."<br/>");
+    echo("ccCode: ".$objCustomer->getCcCode()."<br/>");
+    echo("userName: ".$objCustomer->getUserName()."<br/>");
+    echo("password: ".$objCustomer->getPasswordMd5()."<br/>");
+    echo("companyNote: ".$objCustomer->getCompanyNote()."<br/>");
+    echo("resellerStatus: ".$objCustomer->getResellerStatus()."<br/>");
+    echo("registerDate: ".$objCustomer->getRegisterDate()."<br/>");
+    echo("activeStatus: ".$objCustomer->getActiveStatus()."<br/>");
 */
 
 ?>

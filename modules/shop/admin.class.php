@@ -3506,21 +3506,21 @@ class shopmanager extends ShopLibrary {
         if (isset($_POST['shopSearchOrders']) OR isset($_POST['shopListLetter'])) {
             if ($_POST['shopOrderStatus'] < 5) {
                 $shopOrderStatus = intval($_POST['shopOrderStatus']);
-                $shopSearchPattern = " AND order_status = '$shopOrderStatus'";
+                $shopSearchPattern = " AND order_status='$shopOrderStatus'";
             }
 
             if ($_POST['shopCustomer'] < 2) {
                 $shopCustomer = intval($_POST['shopCustomer']);
-                $shopSearchPattern .= " AND is_reseller = $shopCustomer";
+                $shopSearchPattern .= " AND is_reseller=$shopCustomer";
             }
             if (!empty($_POST['shopSearchTerm'])) {
                 $searchTerm = htmlspecialchars($_POST['shopSearchTerm'], ENT_QUOTES, CONTREXX_CHARSET);
-                $shopSearchPattern .= " AND ( company LIKE '%$searchTerm%' OR firstname LIKE '%$searchTerm%' OR lastname LIKE '%$searchTerm%' OR address LIKE '%$searchTerm%'  OR city LIKE '%$searchTerm%' OR phone LIKE '%$searchTerm%' OR email LIKE '%$searchTerm%' )";
+                $shopSearchPattern .= " AND (company LIKE '%$searchTerm%' OR firstname LIKE '%$searchTerm%' OR lastname LIKE '%$searchTerm%' OR address LIKE '%$searchTerm%'  OR city LIKE '%$searchTerm%' OR phone LIKE '%$searchTerm%' OR email LIKE '%$searchTerm%')";
             }
             if ($_POST['shopListLetter'] != '') {
                 $shopLetter = htmlspecialchars($_POST['shopListLetter'], ENT_QUOTES, CONTREXX_CHARSET);
                 $shopListOrder = addslashes(strip_tags($_POST['shopListSort']));
-                $shopSearchPattern .= " AND LEFT($shopListOrder,1) = '$shopLetter' ";
+                $shopSearchPattern .= " AND LEFT($shopListOrder, 1)='$shopLetter' ";
             }
             if (isset($_POST['shopListSort'])) {
                 $shopCustomerOrder = addslashes(strip_tags($_POST['shopListSort']))." DESC";
@@ -3703,20 +3703,23 @@ class shopmanager extends ShopLibrary {
         $shopOrderId = intval($_REQUEST['orderid']);
 
         // lsv data
-        $query = "SELECT * FROM contrexx_module_shop_lsv ".
-            "WHERE order_id=$shopOrderId";
+        $query = "
+            SELECT * FROM contrexx_module_shop_lsv
+             WHERE order_id=$shopOrderId
+        ";
         $objResult = $objDatabase->Execute($query);
-        if ($objResult && $objDatabase->Affected_Rows() > 0) {
-            $this->_objTpl->hideBlock('creditCard');
-            $this->_objTpl->setVariable(array(
-                'TXT_ACCOUNT_HOLDER'  => $_ARRAYLANG['TXT_ACCOUNT_HOLDER'],
-                'TXT_ACCOUNT_BANK'    => $_ARRAYLANG['TXT_ACCOUNT_BANK'],
-                'TXT_ACCOUNT_BLZ'     => $_ARRAYLANG['TXT_ACCOUNT_BLZ'],
-                'SHOP_ACCOUNT_HOLDER' => stripslashes($objResult->Fields('holder')),
-                'SHOP_ACCOUNT_BANK'   => stripslashes($objResult->Fields('bank')),
-                'SHOP_ACCOUNT_BLZ'    => stripslashes($objResult->Fields('blz')),
-            ));
+        if (!$objResult || $objResult->RecordCount() != 1) {
+            $this->errorHandling();
         }
+        $this->_objTpl->hideBlock('creditCard');
+        $this->_objTpl->setVariable(array(
+            'TXT_ACCOUNT_HOLDER'  => $_ARRAYLANG['TXT_ACCOUNT_HOLDER'],
+            'TXT_ACCOUNT_BANK'    => $_ARRAYLANG['TXT_ACCOUNT_BANK'],
+            'TXT_ACCOUNT_BLZ'     => $_ARRAYLANG['TXT_ACCOUNT_BLZ'],
+            'SHOP_ACCOUNT_HOLDER' => stripslashes($objResult->Fields('holder')),
+            'SHOP_ACCOUNT_BANK'   => stripslashes($objResult->Fields('bank')),
+            'SHOP_ACCOUNT_BLZ'    => stripslashes($objResult->Fields('blz')),
+        ));
 
         // used below; will contain the Products from the database
         $arrProducts = array();
@@ -3757,7 +3760,7 @@ class shopmanager extends ShopLibrary {
                 'SHOP_ORDERID'          => $objResult->fields['orderid'],
                 'SHOP_DATE'             => $objResult->fields['order_date'],
                 'SHOP_ORDER_STATUS'     => ($type == 1
-                    ?   $this->_getOrderStatusMenu("shopOrderStatusId",$orderStatus, "swapSendToStatus(this.value)")
+                    ?   $this->_getOrderStatusMenu("shopOrderStatusId", $orderStatus, "swapSendToStatus(this.value)")
                     :   $this->arrOrderStatus[$orderStatus]),
                 'SHOP_SEND_MAIL_STYLE'  => $orderStatus == '4' ? "display: inline;" : "display: none;",
                 'SHOP_SEND_MAIL_STATUS' => $type == 1 ? $orderStatus != '4' ? "checked=\"checked\"" : "" : "",
@@ -4212,35 +4215,35 @@ class shopmanager extends ShopLibrary {
         }
 
         // store the order details
-        $query = "UPDATE ".DBPREFIX."module_shop_orders ".
-             "SET currency_order_sum = ".floatval($shopTotalOrderSum).
-             ", currency_ship_price = ".floatval($_POST['shopShippingPrice']).
-             ", currency_payment_price = ".floatval($_POST['shopPaymentPrice']).
-             ", order_status = ".intval($_POST['shopOrderStatusId']).
-             ", ship_prefix = '".addslashes(strip_tags($_POST['shopShipPrefix'])).
-             "', ship_company = '".addslashes(strip_tags($_POST['shopShipCompany'])).
-             "', ship_firstname = '".addslashes(strip_tags($_POST['shopShipFirstname'])).
-             "', ship_lastname = '".addslashes(strip_tags($_POST['shopShipLastname'])).
-             "', ship_address = '".addslashes(strip_tags($_POST['shopShipAddress'])).
-             "', ship_city = '".addslashes(strip_tags($_POST['shopShipCity'])).
-             "', ship_zip = '".addslashes(strip_tags($_POST['shopShipZip'])).
-             "', ship_country_id = ".intval($_POST['shopShipCountry']).
-             ", ship_phone = '".addslashes(strip_tags($_POST['shopShipPhone'])).
-             // Here's the tax_price field again.
-             // It MUST be safe to write it back where it came from.
-             "', tax_price = ".floatval($_POST['shopTaxPrice']).
-             ", shipping_id = ".intval($_POST['shipperId']).
-            // should not be changed, see above
-            // ", payment_id = ".intval($_POST['paymentId']).
-             ", modified_by = '".addslashes(strip_tags($_SESSION['auth']['username'])).
-             "', last_modified = now() ".
-         "WHERE orderid = $shopOrderId";
-         if (!$objDatabase->Execute($query)) {
-             // if query has errors, call errorhandling
-             $this->errorHandling();
-         } else  {
-             $this->strOkMessage .= $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
-         }
+        $query = "
+            UPDATE ".DBPREFIX."module_shop_orders
+               SET currency_order_sum=".floatval($shopTotalOrderSum).",
+                   currency_ship_price=".floatval($_POST['shopShippingPrice']).",
+                   currency_payment_price=".floatval($_POST['shopPaymentPrice']).",
+                   order_status ='".intval($_POST['shopOrderStatusId'])."',
+                   ship_prefix='".addslashes(strip_tags($_POST['shopShipPrefix']))."',
+                   ship_company='".addslashes(strip_tags($_POST['shopShipCompany']))."',
+                   ship_firstname='".addslashes(strip_tags($_POST['shopShipFirstname']))."',
+                   ship_lastname='".addslashes(strip_tags($_POST['shopShipLastname']))."',
+                   ship_address='".addslashes(strip_tags($_POST['shopShipAddress']))."',
+                   ship_city='".addslashes(strip_tags($_POST['shopShipCity']))."',
+                   ship_zip='".addslashes(strip_tags($_POST['shopShipZip']))."',
+                   ship_country_id=".intval($_POST['shopShipCountry']).",
+                   ship_phone='".addslashes(strip_tags($_POST['shopShipPhone']))."',
+                   tax_price=".floatval($_POST['shopTaxPrice']).",
+                   shipping_id=".intval($_POST['shipperId']).",
+                   modified_by='".addslashes(strip_tags($_SESSION['auth']['username']))."',
+                   last_modified=now()
+             WHERE orderid = $shopOrderId
+        ";
+        // should not be changed, see above
+        // ", payment_id = ".intval($_POST['paymentId']).
+        if (!$objDatabase->Execute($query)) {
+            // if query has errors, call errorhandling
+            $this->errorHandling();
+        } else  {
+            $this->strOkMessage .= $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+        }
     }
 
 
