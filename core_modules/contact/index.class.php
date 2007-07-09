@@ -72,6 +72,8 @@ class Contact extends ContactLib
 	 */
 	var $errorMsg = '';
 
+	var $captchaError = '';
+
 	/**
 	 * @ignore
 	 */
@@ -105,14 +107,18 @@ class Contact extends ContactLib
 	 */
     function getContactPage()
     {
+    	$formId = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
+    	$useCaptcha = $this->getContactFormCaptchaStatus($formId);
+
     	if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) {
     		$showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
 
 	    	$arrFormData = &$this->_getContactFormData();
 	    	if ($arrFormData) {
-	    		if ($this->_checkValues($arrFormData) && $this->_insertIntoDatabase($arrFormData)) {
+	    		if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) {
 		    		$this->_sendMail($arrFormData);
 	    		} else {
+	    			$this->setCaptcha($useCaptcha);
 	    			return $this->_showError();
 	    		}
 
@@ -124,6 +130,7 @@ class Contact extends ContactLib
     		$this->_getParams();
     	}
 
+    	$this->setCaptcha($useCaptcha);
     	if ($this->objTemplate->blockExists('contact_form')) {
 	    	if (isset($arrFormData['showForm']) && !$arrFormData['showForm']) {
 				$this->objTemplate->hideBlock('contact_form');
@@ -134,6 +141,32 @@ class Contact extends ContactLib
 
     	return $this->objTemplate->get();
     }
+
+    function setCaptcha($useCaptcha)
+    {
+    	global $_ARRAYLANG;
+
+    	if (!$this->objTemplate->blockExists('contact_form_captcha')) {
+    		return;
+    	}
+
+    	if ($useCaptcha) {
+			include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
+			$captcha = new Captcha();
+
+			$this->objTemplate->setVariable(array(
+				'CONTACT_CAPTCHA_OFFSET'			=> $captcha->getOffset(),
+				'CONTACT_CAPTCHA_URL'				=> $captcha->getUrl(),
+				'CONTACT_CAPTCHA_ALT'				=> $captcha->getAlt(),
+				'TXT_CONTACT_CAPTCHA_DESCRIPTION'	=> $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
+				'CONTACT_CAPTCHA_ERROR'				=> $this->captchaError
+			));
+
+			$this->objTemplate->parse('contact_form_captcha');
+    	} else {
+    		$this->objTemplate->hideBlock('contact_form_captcha');
+    	}
+	}
 
     /**
      * Get data from contact form submit
@@ -163,7 +196,7 @@ class Contact extends ContactLib
 			$arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields']);
 
 			foreach ($_POST as $key => $value) {
-				if (!empty($value) && $key != 'Submit' && $key != 'submitContactForm') {
+				if (!empty($value) && !in_array($key, array('Submit', 'submitContactForm', 'contactFormCaptcha', 'contactFormCaptchaOffset'))) {
 					$id = intval(substr($key, 17));
 					if (isset($arrFormData['fields'][$id])) {
 						$key = $arrFormData['fields'][$id]['name'];
@@ -314,7 +347,7 @@ class Contact extends ContactLib
 	 * @see getSettings(), initCheckTypes(), arrCheckTypes, _isSpam(), errorMsg
 	 * @return boolean Return FALSE if a field's value isn't valid, otherwise TRUE
 	 */
-	function _checkValues($arrFields)
+	function _checkValues($arrFields, $useCaptcha)
 	{
 		global $_ARRAYLANG;
 
@@ -336,6 +369,16 @@ class Contact extends ContactLib
 				} elseif ($this->_isSpam($arrFields[$source][$field['name']], $arrSpamKeywords)) {
 					$error = true;
 				}
+			}
+		}
+
+		if ($useCaptcha) {
+			include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
+			$captcha = new Captcha();
+
+			if (!$captcha->compare($_POST['contactFormCaptcha'], $_POST['contactFormCaptchaOffset'])) {
+				$error = true;
+				$this->captchaError = $_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'];
 			}
 		}
 
