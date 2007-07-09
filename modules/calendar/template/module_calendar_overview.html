@@ -6,11 +6,6 @@ function deleteNote(Id)
 	if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
 		window.location.replace("?cmd=calendar&act=delete&id="+Id);
 }
-function deleteAllNote()
-{
-	if(confirm('{TXT_CALENDAR_DELETE_ALL_CONFIRM}'))
-		window.location.replace("?cmd=calendar&act=all&id=all&catid={CALENDAR_GET_CATID}");
-}
 function category()
 {
 	window.location.href = "{CALENDAR_REQUEST_URI}&catid="+document.selectCat.inputCat.value;
@@ -112,7 +107,7 @@ function selectMultiAction()
 						<form name="frmEventList" method="post" action="?cmd=calendar&amp;act=event_actions">
 						<table class="adminlist" style="width: 100%; border-spacing: 0px; margin: 0px;" cellpadding="3" cellspacing="0">
 							<tr>
-								<th colspan="7">
+								<th colspan="10">
 									{TXT_EVENTS}
 								</th>
 							</tr>
@@ -122,6 +117,9 @@ function selectMultiAction()
 								<td><span style="font-weight:bold;">{TXT_CALENDAR_START}</span></td>
 								<td><span style="font-weight:bold;">{TXT_CALENDAR_END}</span></td>
 								<td><span style="font-weight:bold;">{TXT_CALENDAR_TITLE}</span></td>
+								<td><span style="font-weight:bold;">{TXT_CALENDAR_REGISTRATIONS}</span></td>
+								<td><span style="font-weight:bold;">{TXT_CALENDAR_SUBSCRIBER}</span></td>
+								<td><span style="font-weight:bold;">{TXT_CALENDAR_CSV_FILE}</span></td>
 								<td><span style="font-weight:bold;">{TXT_CALENDAR_CAT}</span></td>
 								<td><span style="font-weight:bold;">{TXT_CALENDAR_ACTION}</span></td>
 							</tr>
@@ -134,8 +132,11 @@ function selectMultiAction()
 								<td style="width: 110px">{CALENDAR_EVENT_STARTDATE}</td>
 								<td style="width: 110px">{CALENDAR_EVENT_ENDDATE}</td>
 								<td><a href="?cmd=calendar&amp;act=event&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_TITLE}</a></td>
+								<td><a href="?cmd=calendar&amp;act=reg&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_COUNT_REG} / {CALENDAR_EVENT_COUNT_SIGNOFF}</a></td>
+								<td style="width: 150px">{CALENDAR_EVENT_COUNT_SUBSCRIBER}</td>
+								<td style="width: 150px"><a href="?cmd=calendar&amp;act=getCSV&amp;id={CALENDAR_EVENT_ID}"><img src="images/icons/xls.gif" alt="{TXT_CALENDAR_CSV_FILE}" title="{TXT_CALENDAR_CSV_FILE}" border="0"/></a></td>
 								<td style="width: 150px">{CALENDAR_EVENT_CAT}</td>
-								<td style="width: 16px; text-align: right;">
+								<td style="width: 40px; text-align: right;">
 									<a href="?cmd=calendar&amp;act=edit&amp;id={CALENDAR_EVENT_ID}" title="{TXT_CALENDAR_EDIT}">
 										<img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_CALENDAR_EDIT}" />
 									</a><a href="javascript:deleteNote({CALENDAR_EVENT_ID})" title="{TXT_CALENADR_DELETE}">
@@ -155,7 +156,6 @@ function selectMultiAction()
 									<img src="images/icons/strike.gif" alt="space" />
                                     <select name="frmEventList_MultiAction" onchange="selectMultiAction();">
                                       <option value="0">{TXT_SUBMIT_SELECT}</option>
-                                      <option value="delete">{TXT_SUBMIT_DELETE}</option>
                                       <option value="activate">{TXT_SUBMIT_ACTIVATE}</option>
                                       <option value="deactivate">{TXT_SUBMIT_DEACTIVATE}</option>
                                     </select>
