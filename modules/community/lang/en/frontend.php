@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 11:40:34 +0200
+* generated date Mon, 09 Jul 2007 11:40:32 +0200
 **/
 
 $_ARRAYLANG['TXT_LOGIN_NAME'] = "Login username";
@@ -47,5 +47,5 @@ $_ARRAYLANG['TXT_PROFILE_DATA_SUCCESSFULLY_CHANGED'] = "Your profile data has be
 $_ARRAYLANG['TXT_MALE_FRONTEND'] = "Male";
 $_ARRAYLANG['TXT_RESIDENCE'] = "Residence";
 $_ARRAYLANG['TXT_ZIP'] = "Zip";
-$_ARRAYLANG['TXT_BACK'] = "zurück";
+$_ARRAYLANG['TXT_BACK'] = "back";
 ?>

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 11:40:34 +0200
+* generated date Mon, 09 Jul 2007 11:40:32 +0200
 **/
 
 $_ARRAYLANG['TXT_CLIENT_DATA'] = "Client-Data (Useragent,Ip,Host)";
@@ -23,7 +23,7 @@ $_ARRAYLANG['TXT_VISITORS_TODAY'] = "Today visitors";
 $_ARRAYLANG['TXT_MOST_VISITED_PAGES'] = "Wich are the most popular pages";
 $_ARRAYLANG['TXT_SEARCHING_TERMS'] = "Search therms";
 $_ARRAYLANG['TXT_SEARCH'] = "Search";
-$_ARRAYLANG['TXT_RESET_STATISTIC'] = "reset&nbsp;stats";
+$_ARRAYLANG['TXT_RESET_STATISTIC'] = "reset stats";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Do you really want to delete the data record?";
 $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'] = "This action is irreversible!";
 $_ARRAYLANG['TXT_TOP'] = "Top";
@@ -69,8 +69,8 @@ $_ARRAYLANG['TXT_SVGA'] = "Super VGA";
 $_ARRAYLANG['TXT_HIGH_COLOR'] = "HighColor";
 $_ARRAYLANG['TXT_TRUE_COLOR'] = "TrueColor";
 $_ARRAYLANG['TXT_TRUE_COLOR_WITH_ALPHA_CHANNEL'] = "TrueColor with alpha channel";
-$_ARRAYLANG['TXT_VISITORS_AND_PAGE_VIEWS'] = "Visitors&nbsp;and&nbsp;page&nbsp;views";
-$_ARRAYLANG['TXT_MOST_POPULAR_PAGES'] = "Most&nbsp;popular&nbsp;pages";
+$_ARRAYLANG['TXT_VISITORS_AND_PAGE_VIEWS'] = "Visitors and page views";
+$_ARRAYLANG['TXT_MOST_POPULAR_PAGES'] = "Most popular pages";
 $_ARRAYLANG['TXT_SEARCH_ENGINES'] = "Search engines";
 $_ARRAYLANG['TXT_COUNTRIES_OF_ORIGIN'] = "Countries of origin";
 $_ARRAYLANG['TXT_USER_INFORMATION'] = "User information";

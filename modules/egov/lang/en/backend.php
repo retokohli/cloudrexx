@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 11:40:34 +0200
+* generated date Mon, 09 Jul 2007 11:40:32 +0200
 **/
 
 $_ARRAYLANG['TXT_PRODUCTS'] = "Products";
@@ -115,7 +115,7 @@ $_ARRAYLANG['TXT_EGOV_BASIC_DATA'] = "Basic data";
 $_ARRAYLANG['TXT_EGOV_EXTENDED_OPTIONS'] = "Extended options";
 $_ARRAYLANG['TXT_EGOV_FORM_FIELD_UNIQUE_MSG'] = "Every fieldname has to be unique!";
 $_ARRAYLANG['TXT_EGOV_FILE_ERROR'] = "A bad file was indicated and removed";
-$_ARRAYLANG['TXT_EGOV_PAYMENTS'] = "Zahlungsarten";
+$_ARRAYLANG['TXT_EGOV_PAYMENTS'] = "Payment Handlers";
 $_ARRAYLANG['TXT_EGOV_ACTIVATE_PAYPAL'] = "PayPal aktivieren";
 $_ARRAYLANG['TXT_EGOV_SANDBOX_EMAIL'] = "PayPal-Kennung (E-Mail Adresse)";
 $_ARRAYLANG['TXT_EGOV_PAYPAL_CURRENCY'] = "Currency";

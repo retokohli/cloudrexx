@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 11:40:34 +0200
+* generated date Mon, 09 Jul 2007 11:40:32 +0200
 **/
 
 $_ARRAYLANG['TXT_CALENDAR_DATE'] = "Datum";
@@ -215,9 +215,11 @@ $_ARRAYLANG['TXT_CALENDAR_HOST_URL'] = "Url";
 $_ARRAYLANG['TXT_SUBMIT_SIGN_OFF'] = "Markierte abmelden";
 $_ARRAYLANG['TXT_SUBMIT_SIGN_ON'] = "Markierte anmelden";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'] = "Anzahl Teilnehmer";
-$_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER_INFO'] = "Für unbegrenzte Anzahl Teilnemer den Wert \"0\" eigeben oder das Feld leer lassen.";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER_INFO'] = "Für unbegrenzte Anzahl Teilnehmer den Wert 0 eingeben oder das Feld leer lassen.";
 $_ARRAYLANG['TXT_CALENDAR_SEND_MAIL_AGAIN'] = "E-Mail erneut senden";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_TYPE'] = "Anmeldung/Abmeldung";
 $_ARRAYLANG['TXT_CALENDAR_MAIL_NOTIFICATION'] = "Benachrichtigung";
 $_ARRAYLANG['TXT_CALENDAR_MAIL_CONFIRMATION'] = "Bestätigung";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_ADDRESSER_INFO'] = "Werden Benutzergruppen ausgewählt, wird jedem Benutzer dieser Gruppe autom. ein E-Mail mit dem direkten Link zur Anmeldung verschickt. Wird die Anmeldung als öffentlich definiert, erscheint ein Link zur Anmeldung direkt beim Termin.";
+$_ARRAYLANG['TXT_CALENDAR_CSV_FILE'] = "CSV Datei";
 ?>

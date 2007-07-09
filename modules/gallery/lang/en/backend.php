@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 11:40:34 +0200
+* generated date Mon, 09 Jul 2007 11:40:32 +0200
 **/
 
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'] = "Name";
@@ -164,7 +164,7 @@ $_ARRAYLANG['TXT_GALLERY_IMPORT_ERR_SAFEMODE'] = "PHP Safemode restriction.";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_RESET'] = "Reset selected";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_MOVE'] = "Move selected";
 $_ARRAYLANG['TXT_GALLERY_SETTINGS_POPUP_ENABLED'] = "Open Images in a seperate Window (Popup)";
-$_ARRAYLANG['TXT_GALLERY_SETTINGS_IMAGE_WIDTH'] = "max. width (in pixel)";
+$_ARRAYLANG['TXT_GALLERY_SETTINGS_IMAGE_WIDTH'] = "Max. Width (Pixel)";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_DE_ACTIVATE'] = "Activate / deactivate picture";
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SET_CATIMG'] = "Set as category image";
 $_ARRAYLANG['TXT_GALLERY_SETTINGS_PAGING'] = "Images per page (paging)";
@@ -173,7 +173,7 @@ $_ARRAYLANG['TXT_GALLERY_SETTINGS_HOME_LAST'] = "Activate 'newest image'-functio
 $_ARRAYLANG['TXT_GALLERY_SETTINGS_HOME_RANDOM'] = "Activate 'random image'-function";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Art der Überschrift";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_HIERARCHY'] = "hierarchisch";
-$_ARRAYLANG['TXT_SETTINGS_HEADER_FLAT'] = "flach";
+$_ARRAYLANG['TXT_SETTINGS_HEADER_FLAT'] = "flat";
 $_ARRAYLANG['TXT_SETTINGS_IMAGENAME_EXT_SHOW'] = "Erweiterung mit Namen anzeigen";
 $_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'] = "Add New Category";
 $_ARRAYLANG['TXT_GALLERY_MENU_EDIT_CATEGORY'] = "Edit Category";
@@ -182,5 +182,5 @@ $_ARRAYLANG['TXT_GALLERY_EXPORT_CONFIRM'] = "The target shop category and all pr
 $_ARRAYLANG['TXT_GALLERY_FILE_NAME'] = "Filename";
 $_ARRAYLANG['TXT_GALLERY_FILE_TYPE'] = "Filetype";
 $_ARRAYLANG['TXT_GALLERY_COULD_NOT_CREATE_THUMBNAIL'] = "Could not create thumbnail";
-$_ARRAYLANG['TXT_GALLERY_IMAGE_EXISTS'] = "Image already exists";
+$_ARRAYLANG['TXT_GALLERY_IMAGE_EXISTS'] = "Image Already Exists";
 ?>
