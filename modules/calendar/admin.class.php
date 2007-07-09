@@ -1,7 +1,7 @@
 <?php
 /**
  * Calendar
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
  * @subpackage  module_calendar
@@ -18,13 +18,16 @@ require_once ASCMS_CORE_PATH.'/settings.class.php';
  * Calendar
  *
  * Class to manage cms calendar
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
  * @author        Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
  * @subpackage  module_calendar
  */
 class calendarManager extends calendarLibrary
 {
+	var $pageTitle;
+	var $_csvSeparator = ';';
+
 	/**
 	 * PHP 5 Constructor
 	 */
@@ -38,11 +41,11 @@ class calendarManager extends calendarLibrary
 	 */
     function calendarManager()
     {
-    	$this->calendarLibrary($_SERVER["SCRIPT_NAME"]."?cmd=calendar");
-	    global $_ARRAYLANG, $objTemplate;
+    	global $_ARRAYLANG, $objTemplate;
 
+    	$this->calendarLibrary($_SERVER["SCRIPT_NAME"]."?cmd=calendar");
         // links
-		$objTemplate->setVariable("CONTENT_TITLE", $_ARRAYLANG['TXT_CALENDAR']);
+		$this->pageTitle = $_ARRAYLANG['TXT_CALENDAR'];
 
     	$objTemplate->setVariable("CONTENT_NAVIGATION","
             <a href='?cmd=calendar'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW']." </a>
@@ -68,50 +71,72 @@ class calendarManager extends calendarLibrary
 
         switch ($_REQUEST['act']) {
 			case 'event':
-				$this->_objTpl->loadTemplateFile('module_calendar_show_note.html');
-				$action = $this->showEvent();
+				$this->_objTpl->loadTemplateFile('module_calendar_note_show.html');
+				$this->showEvent(intval($_GET['id']));
 				break;
 
+			case 'reg':
+				$this->_objTpl->loadTemplateFile('module_calendar_reg_overview.html');
+				$this->showRegistrationList(intval($_GET['id']));
+				break;
+
+			case 'regdetail':
+				$this->_objTpl->loadTemplateFile('module_calendar_reg_show.html');
+				$this->showRegistrationDetail(intval($_GET['id']));
+				break;
+
+			case 'regdelete':
+				$this->deleteRegistration(intval($_GET['id']));
+			    $this->_objTpl->loadTemplateFile('module_calendar_reg_overview.html');
+			   	$this->showRegistrationList(intval($_GET['note_id']));
+			    break;
+
+			case 'regsign':
+				$this->signRegistration(intval($_GET['type']));
+			    $this->_objTpl->loadTemplateFile('module_calendar_reg_overview.html');
+			   	$this->showRegistrationList(intval($_GET['note_id']));
+			    break;
+
 			case 'new':
-    			$this->_objTpl->loadTemplateFile('module_calendar_new_note.html');
-				$action = $this->newNote();
+    			$this->_objTpl->loadTemplateFile('module_calendar_note_modify.html');
+				$this->modifyNote();
 				break;
 
 			case 'saveNew':
-				$id = $this->writeNote();
+				$id = $this->writeNote('');
 				header("Location: ?cmd=calendar&act=event&id=$id");
 				exit;
 				break;
 
+			case 'getCSV':
+				$id = intval($_GET['id']);
+				$this->_getCsv($id);
+				break;
+
 			case 'cat':
 			    $this->_objTpl->loadTemplateFile('module_calendar_categories.html');
-			    $action = $this->showCategories();
+			    $this->showCategories();
 			    break;
 
 			case 'catedit':
 				$this->_objTpl->loadTemplateFile('module_calendar_categories_edit.html');
-				$action = $this->categoriesEdit();
-				break;
-
-			case 'all':
-    			$this->_objTpl->loadTemplateFile('module_calendar_show_all.html');
-				$action = $this->delAllNote();
+				$this->categoriesEdit();
 				break;
 
 			case 'edit':
-				$this->_objTpl->loadTemplateFile('module_calendar_edit_note.html');
-				$action = $this->editNote();
+				$this->_objTpl->loadTemplateFile('module_calendar_note_modify.html');
+				$this->modifyNote(intval($_GET['id']));
 				break;
 
 			case 'saveEdited':
-				$this->writeEditedNote();
-				header("Location: ?cmd=calendar&act=event&id={$_POST['inputId']}");
+				$id = $this->writeNote(intval($_POST['id']));
+				header("Location: ?cmd=calendar");
 				exit;
 				break;
 
 			case 'settings':
 			    $this->_objTpl->loadTemplateFile('module_calendar_settings.html');
-			    $action = $this->settings();
+			    $this->settings();
 			    break;
 
 			case 'saveSettings':
@@ -127,32 +152,34 @@ class calendarManager extends calendarLibrary
 
 			case 'delete':
 			    $this->delNote($_GET['id']);
-			    $action = $this->showOverview();
+			    $this->showOverview();
 			    break;
 
 			case 'activate':
 			    $this->activateNote();
-			    $action = $this->showOverview();
+			    $this->showOverview();
 			    break;
 
 		 	case 'deactivate':
 			    $this->deactivateNote();
-			    $action = $this->showOverview();
+			    $this->showOverview();
 			    break;
 
 			case 'placeholder':
 				$this->showPlaceholders();
 				break;
 			default:
-				$action = $this->showOverview();
+				$this->showOverview();
 		}
 
 
 		$objTemplate->setVariable(array(
 			'CONTENT_OK_MESSAGE'		=> $this->strOkMessage,
 			'CONTENT_STATUS_MESSAGE'	=> $this->strErrMessage,
-			'ADMIN_CONTENT'				=> $this->_objTpl->get()
+			'ADMIN_CONTENT'				=> $this->_objTpl->get(),
+			'CONTENT_TITLE'				=> $this->pageTitle,
 		));
+
     }
 
 
@@ -242,15 +269,15 @@ class calendarManager extends calendarLibrary
 		}
 
 		if (isset($_POST['search'])) {
+			echo "suche";
 			$keyword = htmlentities(addslashes($_POST['inputKeyword']), ENT_QUOTES, CONTREXX_CHARSET);
-			$query = "SELECT active, id, name, catid, startdate, enddate,
-						MATCH (name, `comment`, place) AGAINST ('$keyword') as score
+			echo $keyword;
+			$query = "SELECT active, id, name, catid, startdate, enddate
 					  	FROM ".DBPREFIX."module_calendar
 					  	WHERE (`name` LIKE '%$keyword%' OR
 					  	`comment` LIKE '%$keyword%' OR
-					  	`place` LIKE '%$keyword%' OR
 					  	`id` LIKE '%$keyword%')
-					    ORDER BY score ASC";
+					    ORDER BY startdate";
 		} else {
 			if ($select_next_ten && !empty($_GET['catid'])) {
 				$query = "SELECT active, id, name, catid, startdate, enddate
@@ -308,6 +335,8 @@ class calendarManager extends calendarLibrary
 					$event_led = $_ARRAYLANG['TXT_CALENDAR_LED_OLD'];
 				}
 
+				$reg_signoff = $this->_countRegistrations($objResult->fields['id']);
+
 				$this->_objTpl->setVariable(array(
 					'CALENDAR_ACTIVE_ICON'		=> $status,
 					'CALENDAR_EVENT_ID'			=> $objResult->fields['id'],
@@ -316,7 +345,10 @@ class calendarManager extends calendarLibrary
 					'CALENDAR_EVENT_TITLE'		=> htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
 					'CALENDAR_EVENT_CAT'		=> $cats[$objResult->fields['catid']],
 					'CALENDAR_ROW'				=> "row".$rowcounter,
-					'CALENDAR_EVENT_LED'		=> $event_led
+					'CALENDAR_EVENT_LED'		=> $event_led,
+					'CALENDAR_EVENT_COUNT_REG'	=> $reg_signoff[0],
+					'CALENDAR_EVENT_COUNT_SIGNOFF'	=> $reg_signoff[1],
+					'CALENDAR_EVENT_COUNT_SUBSCRIBER'	=> $this->_countSubscriber($objResult->fields['id']),
 				));
 
 				$this->_objTpl->parse("event");
@@ -369,34 +401,139 @@ class calendarManager extends calendarLibrary
 
 		// Variable assignement
 		$this->_objTpl->setVariable(array(
-			'TXT_EVENTS'			=> $_ARRAYLANG['TXT_CALENDAR_EVENTS'],
-			'TXT_CALENDAR_OVERVIEW'	=> $_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW'],
-			'TXT_CALENDAR'		   	=> $_ARRAYLANG['TXT_CALENDAR'],
-			'TXT_CALENDAR_CAT'	  	=> $_ARRAYLANG['TXT_CALENDAR_CAT'],
-			'TXT_CALENDAR_SEARCH'	=> $_ARRAYLANG['TXT_CALENDAR_SEARCH'],
-			'TXT_CALENDAR_KEYWORD'	=> $_ARRAYLANG['TXT_CALENDAR_KEYWORD'],
-			'TXT_GO'				=> $_ARRAYLANG['TXT_GO'],
-			'TXT_SEARCH'			=> $_ARRAYLANG['TXT_CALENDAR_SEARCH'],
-			'TXT_CALENDAR_START'	=> $_ARRAYLANG['TXT_CALENDAR_START'],
-			'TXT_CALENDAR_END'		=> $_ARRAYLANG['TXT_CALENDAR_END'],
-			'TXT_CALENDAR_TITLE'	=> $_ARRAYLANG['TXT_CALENDAR_TITLE'],
-			'TXT_CALENDAR_CAT'		=> $_ARRAYLANG['TXT_CALENDAR_CAT'],
-			'TXT_CALENDAR_ACTION'	=> $_ARRAYLANG['TXT_CALENDAR_ACTION'],
-			'TXT_SUBMIT_SELECT'		=> $_ARRAYLANG['TXT_SUBMIT_SELECT'],
-			'TXT_SUBMIT_DELETE'		=> $_ARRAYLANG['TXT_SUBMIT_DELETE'],
-			'TXT_SUBMIT_ACTIVATE'		=> $_ARRAYLANG['TXT_SUBMIT_ACTIVATE'],
-			'TXT_SUBMIT_DEACTIVATE'		=> $_ARRAYLANG['TXT_SUBMIT_DEACTIVATE'],
-			'TXT_SELECT_ALL'		=> $_ARRAYLANG['TXT_SELECT_ALL'],
-			'TXT_DESELECT_ALL'		=> $_ARRAYLANG['TXT_DESELECT_ALL'],
-			'TXT_CALENDAR_DELETE_CONFIRM' => $_ARRAYLANG['TXT_CALENDAR_DELETE_CONFIRM'],
-			'CALENDAR'			   	=> $calendarbox,
-			'CALENDAR_DATE'		   	=> $titledate,
-			'TXT_CALENDAR_ALL_CAT' 	=> $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
-			'CALENDAR_REQUEST_URI' 	=> $requestUri,
-			'CALENDAR_CATID'       	=> $_GET['catid']
+			'TXT_EVENTS'					=> $_ARRAYLANG['TXT_CALENDAR_EVENTS'],
+			'TXT_CALENDAR_REGISTRATIONS'	=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'],
+			'TXT_CALENDAR_SUBSCRIBER'		=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'],
+			'TXT_CALENDAR_OVERVIEW'			=> $_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW'],
+			'TXT_CALENDAR'		   			=> $_ARRAYLANG['TXT_CALENDAR'],
+			'TXT_CALENDAR_CAT'	  			=> $_ARRAYLANG['TXT_CALENDAR_CAT'],
+			'TXT_CALENDAR_SEARCH'			=> $_ARRAYLANG['TXT_CALENDAR_SEARCH'],
+			'TXT_CALENDAR_KEYWORD'			=> $_ARRAYLANG['TXT_CALENDAR_KEYWORD'],
+			'TXT_GO'						=> $_ARRAYLANG['TXT_GO'],
+			'TXT_SEARCH'					=> $_ARRAYLANG['TXT_CALENDAR_SEARCH'],
+			'TXT_CALENDAR_START'			=> $_ARRAYLANG['TXT_CALENDAR_START'],
+			'TXT_CALENDAR_END'				=> $_ARRAYLANG['TXT_CALENDAR_END'],
+			'TXT_CALENDAR_TITLE'			=> $_ARRAYLANG['TXT_CALENDAR_TITLE'],
+			'TXT_CALENDAR_CAT'				=> $_ARRAYLANG['TXT_CALENDAR_CAT'],
+			'TXT_CALENDAR_ACTION'			=> $_ARRAYLANG['TXT_CALENDAR_ACTION'],
+			'TXT_SUBMIT_SELECT'				=> $_ARRAYLANG['TXT_SUBMIT_SELECT'],
+			'TXT_SUBMIT_DELETE'				=> $_ARRAYLANG['TXT_SUBMIT_DELETE'],
+			'TXT_SUBMIT_ACTIVATE'			=> $_ARRAYLANG['TXT_SUBMIT_ACTIVATE'],
+			'TXT_SUBMIT_DEACTIVATE'			=> $_ARRAYLANG['TXT_SUBMIT_DEACTIVATE'],
+			'TXT_SELECT_ALL'				=> $_ARRAYLANG['TXT_SELECT_ALL'],
+			'TXT_DESELECT_ALL'				=> $_ARRAYLANG['TXT_DESELECT_ALL'],
+			'TXT_CALENDAR_DELETE_CONFIRM' 	=> $_ARRAYLANG['TXT_CALENDAR_DELETE_CONFIRM'],
+			'CALENDAR'			   			=> $calendarbox,
+			'CALENDAR_DATE'		   			=> $titledate,
+			'TXT_CALENDAR_ALL_CAT' 			=> $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
+			'CALENDAR_REQUEST_URI' 			=> $requestUri,
+			'CALENDAR_CATID'       			=> $_GET['catid'],
+			'TXT_CALENDAR_CSV_FILE'       	=> $_ARRAYLANG['TXT_CALENDAR_CSV_FILE']
 		));
 	}
 
+	/**
+	 * Show Registrations
+	 *
+	 * Shows egistrations for each note
+	 */
+	function showRegistrationList($id)
+	{
+		global $objDatabase, $_ARRAYLANG, $_CORELANG , $_LANGID;
+
+		$this->pageTitle=$_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'];
+
+		//get fields
+		$query = "SELECT id
+		            FROM ".DBPREFIX."module_calendar_registrations
+		           WHERE note_id='".$id."'
+		           ORDER BY time";
+
+		$objResult 	= $objDatabase->Execute($query);
+		$count 		= $objResult->RecordCount();
+
+		$i=0;
+		if ($objResult !== false && $count != 0) {
+			while(!$objResult->EOF) {
+				$this->getRegData($objResult->fields['id']);
+
+				$this->_objTpl->setVariable(array(
+			    	'CALENDAR_ROW'       => ($i % 2) ? $class = 'row2' : $class = 'row1',
+				));
+
+				$this->_objTpl->parse("registrations");
+
+				$i++;
+
+				$objResult->moveNext();
+			}
+		} else {
+			$this->_objTpl->setVariable(array(
+		    	'TXT_CALENDAR_NO_REGISTRATIONS'       => $_ARRAYLANG['TXT_CALENDAR_NO_REGISTRATIONS'],
+			));
+
+			$this->_objTpl->parse("noRegistrations");
+		}
+
+		// Variable assignement
+		$this->_objTpl->setVariable(array(
+			'TXT_CALENDAR_REGISTRATIONS'	=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'],
+			'TXT_CALENDAR_ACTION'			=> $_ARRAYLANG['TXT_CALENDAR_ACTION'],
+			'TXT_SUBMIT_SELECT'				=> $_ARRAYLANG['TXT_SUBMIT_SELECT'],
+			'TXT_SUBMIT_DELETE'				=> $_ARRAYLANG['TXT_SUBMIT_DELETE'],
+			'TXT_SELECT_ALL'				=> $_ARRAYLANG['TXT_SELECT_ALL'],
+			'TXT_DESELECT_ALL'				=> $_ARRAYLANG['TXT_DESELECT_ALL'],
+			'TXT_CALENDAR_DELETE_CONFIRM' 	=> $_ARRAYLANG['TXT_CALENDAR_DELETE_CONFIRM'],
+			'TXT_CALENDAR_DATE' 			=> $_CORELANG['TXT_DATE'],
+			'TXT_CALENDAR_NAME' 			=> $_CORELANG['TXT_NAME'],
+			'TXT_CALENDAR_SECOND' 			=> $arrFields[$fieldIdSecond],
+			'TXT_CALENDAR_EMAIL' 			=> $_ARRAYLANG['TXT_CALENDAR_MAIL'],
+			'CALENDAR_NOTE_ID' 				=> $id,
+			'TXT_CALENDAR_ACTION' 			=> $_ARRAYLANG['TXT_CALENDAR_ACTION'],
+			'TXT_CALENDAR_REG_TYPE' 		=> $_ARRAYLANG['TXT_CALENDAR_FIELD_STATUS'],
+			'TXT_SUBMIT_SIGN_OFF' 			=> $_ARRAYLANG['TXT_SUBMIT_SIGN_OFF'],
+			'TXT_SUBMIT_SIGN_ON' 			=> $_ARRAYLANG['TXT_SUBMIT_SIGN_ON']
+		));
+	}
+
+
+	/**
+	 * Show Registration
+	 *
+	 * Shows registrations detail
+	 */
+	function showRegistrationDetail($id)
+	{
+		global $objDatabase, $_ARRAYLANG, $_CORELANG , $_LANGID;
+
+		$this->pageTitle=$_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'];
+
+		$arrFieldsData = $this->getRegData($id);
+
+		$i=0;
+
+		if(!empty($arrFieldsData)){
+			foreach($arrFieldsData as $fieldName => $fieldValue) {
+				if($fieldName != '' || $fieldValue != ''){
+					$this->_objTpl->setVariable(array(
+						'CALENDAR_ROW'       			=> ($i % 2) ? $class = 'row2' : $class = 'row1',
+						'CALENDAR_REG_FIELD_NAME' 		=> htmlentities($fieldName, ENT_QUOTES, CONTREXX_CHARSET),
+						'CALENDAR_REG_FIELD_VALUE' 		=> htmlentities($fieldValue, ENT_QUOTES, CONTREXX_CHARSET),
+					));
+
+					$this->_objTpl->parse("registration");
+
+					$i++;
+				}
+			}
+		}
+		$this->_objTpl->setVariable(array(
+			'TXT_CALENDAR_FIELD'			=> $_ARRAYLANG['TXT_CALENDAR_FIELD'],
+			'TXT_CALENDAR_VALUE'			=> $_ARRAYLANG['TXT_CALENDAR_VALUE'],
+			'TXT_CALENDAR_BACK'				=> $_ARRAYLANG['TXT_CALENDAR_BACK'],
+			'TXT_CALENDAR_DELETE'			=> $_ARRAYLANG['TXT_CALENDAR_DELETE'],
+		));
+	}
 
 	/**
 	 * Deletes multiple events
@@ -409,7 +546,11 @@ class calendarManager extends calendarLibrary
 			foreach ($_POST['selectedEventId'] as $eventid) {
 				$query = "DELETE FROM ".DBPREFIX."module_calendar WHERE id=$eventid";
 
-				$objDatabase->Execute($query);
+				$objResultDel = $objDatabase->Execute($query);
+
+				if ($objResultDel !== false) {
+					$this->deleteFormular($eventid);
+				}
 			}
 		}
 
@@ -419,17 +560,44 @@ class calendarManager extends calendarLibrary
 
 
     // CASE NOTE
-	function showEvent()
+	function showEvent($id)
 	{
-		global $_ARRAYLANG;
+		global $_ARRAYLANG, $_CORELANG;
 
 		// get day note
-		$this->getDayNote($_GET['id']);
+		$this->getNoteData($id, 'show', 3);
 
 	    // parse remains to template
 		$this->_objTpl->setVariable(array(
-			'TXT_CALENDAR'                => $_ARRAYLANG['TXT_CALENDAR'],
-			'TXT_CALENDAR_DELETE_CONFIRM' => $_ARRAYLANG['TXT_CALENDAR_DELETE_CONFIRM']
+			'TXT_CALENDAR'                	=> $_ARRAYLANG['TXT_CALENDAR'],
+			'TXT_CALENDAR_PLACE'         	=> $_ARRAYLANG['TXT_CALENDAR_PLACE'],
+			'TXT_CALENDAR_EVENT' 		  	=> $_ARRAYLANG['TXT_CALENDAR_TERMIN'],
+			'TXT_CALENDAR_ORGANIZER' 		=> $_ARRAYLANG['TXT_CALENDAR_ORGANIZER'],
+			'TXT_CALENDAR_OPTIONS' 			=> $_ARRAYLANG['TXT_CALENDAR_OPTIONS'],
+			'TXT_CALENDAR_CAT'            	=> $_ARRAYLANG['TXT_CALENDAR_CAT'],
+			'TXT_CALENDAR_NAME'	          	=> $_ARRAYLANG['TXT_CALENDAR_NAME'],
+			'TXT_CALENDAR_PLACE'         	=> $_ARRAYLANG['TXT_CALENDAR_PLACE'],
+			'TXT_CALENDAR_PRIORITY'	      	=> $_ARRAYLANG['TXT_CALENDAR_PRIORITY'],
+			'TXT_CALENDAR_START'          	=> $_ARRAYLANG['TXT_CALENDAR_START'],
+			'TXT_CALENDAR_END'            	=> $_ARRAYLANG['TXT_CALENDAR_END'],
+			'TXT_CALENDAR_COMMENT'        	=> $_ARRAYLANG['TXT_CALENDAR_COMMENT'],
+			'TXT_CALENDAR_LINK'           	=> $_ARRAYLANG['TXT_CALENDAR_INFO'],
+			'TXT_CALENDAR_EVENT' 		  	=> $_ARRAYLANG['TXT_CALENDAR_TERMIN'],
+			'TXT_CALENDAR_STREET_NR' 		=> $_ARRAYLANG['TXT_CALENDAR_STREET_NR'],
+			'TXT_CALENDAR_ZIP' 		  		=> $_ARRAYLANG['TXT_CALENDAR_ZIP'],
+			'TXT_CALENDAR_LINK' 		  	=> $_ARRAYLANG['TXT_CALENDAR_LINK'],
+			'TXT_CALENDAR_MAP' 		  		=> $_ARRAYLANG['TXT_CALENDAR_MAP'],
+			'TXT_CALENDAR_ORGANIZER' 		=> $_ARRAYLANG['TXT_CALENDAR_ORGANIZER'],
+			'TXT_CALENDAR_MAIL' 		  	=> $_ARRAYLANG['TXT_CALENDAR_MAIL'],
+			'TXT_CALENDAR_ORGANIZER_NAME' 	=> $_CORELANG['TXT_NAME'],
+			'TXT_CALENDAR_TITLE' 			=> $_ARRAYLANG['TXT_CALENDAR_TITLE'],
+			'TXT_CALENDAR_OPTIONS' 			=> $_ARRAYLANG['TXT_CALENDAR_OPTIONS'],
+			'TXT_CALENDAR_THUMBNAIL' 		=> $_ARRAYLANG['TXT_CALENDAR_THUMBNAIL'],
+			'TXT_CALENDAR_ACCESS' 			=> $_ARRAYLANG['TXT_CALENDAR_ACCESS'],
+			'TXT_CALENDAR_ATTACHMENT' 		=> $_ARRAYLANG['TXT_CALENDAR_ATTACHMENT'],
+			'TXT_CALENDAR_PRIORITY' 		=> $_ARRAYLANG['TXT_CALENDAR_PRIORITY'],
+			'TXT_CALENDAR_REGISTRATIONS'	=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'],
+			'TXT_CALENDAR_SUBSCRIBER'		=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER']
 		));
 	}
 
@@ -438,203 +606,13 @@ class calendarManager extends calendarLibrary
 	{
 		global $objDatabase, $_ARRAYLANG, $_LANGID;
 
-		$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_calendar WHERE id = ".intval($id));
-		$objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_calendar");
+		$objResultDel = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_calendar WHERE id = ".intval($id));
 
-		if ($objDatabase->Affected_Rows() == 0){
-			$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_calendar");
+		if ($objResultDel !== false) {
+			$this->deleteFormular($id);
+			$this->strOkMessage = $_ARRAYLANG['TXT_CALENDAR_STAT_DEL']."<br />";
 		}
-
-		$this->strOkMessage = $_ARRAYLANG['TXT_CALENDAR_STAT_DEL']."<br />";
 	}
-
-
-	// delete all notes
-	function delAllNote($catid)
-	{
-		global $objDatabase, $_ARRAYLANG, $_LANGID;
-
-		if ($catid == 0){
-			$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_calendar");
-		}
-		else{
-			$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_calendar WHERE catid =".intval($catid));
-			$objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_calendar");
-			if ($objResult->Affected_Rows() == 0){
-				$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_calendar");
-			}
-		}
-		header("Location: index.php?cmd=calendar&amp;act=all&amp;pos=0");
-		exit;
-	}
-
-
-
-	/**
-	 * Edit Note
-	 *
-	 * Shows the form for editing a note
-	 */
-	function editNote()
-	{
-		global $objDatabase, $_ARRAYLANG, $_LANGID;
-
-		$id = intval($_GET['id']);
-
-		$query = "
-		    SELECT id, active, catid, startdate, enddate, priority, name, comment, place, info
-		    FROM ".DBPREFIX."module_calendar
-		    WHERE id = '".$id."'";
-		$objResult 	= $objDatabase->SelectLimit($query, 1);
-
-		$startdate  = $objResult->fields['startdate'];
-		$enddate	= $objResult->fields['enddate'];
-
-		$day		= date("d", $startdate);
-		$end_day	= date("d", $enddate);
-		$month		= date("m", $startdate);
-		$end_month	= date("m", $enddate);
-		$year		= date("Y", $startdate);
-		$end_year	= date("Y", $enddate);
-		$hour		= date("H", $startdate);
-		$minutes	= date("i", $startdate);
-		$end_hour	= date("H", $enddate);
-		$end_minutes	= date("i", $enddate);
-		$info      	= $objResult->fields['info'];
-
-		$select1 = '';
-		$select2 = '';
-		$select3 = '';
-		$select4 = '';
-
-
-		$query = "SELECT id,
-		                    name,
-		                    lang
-		               FROM ".DBPREFIX."module_calendar_categories
-		            ORDER BY pos";
-
-		$objResult2 = $objDatabase->Execute($query);
-
-		if ($objResult2 !== false) {
-			while(!$objResult2->EOF) {
-				$query = "SELECT lang
-				               FROM ".DBPREFIX."languages
-				              WHERE id = '".$objResult2->fields['lang']."'";
-
-				$objResult3 = $objDatabase->SelectLimit($query, 1);
-
-				$selected = '';
-				if ($objResult2->fields['id'] == $objResult->fields['catid']) {
-					$selected = ' selected="selected"';
-				}
-
-				$this->_objTpl->setVariable(array(
-				    'CALENDAR_CAT_ID'       => $objResult2->fields['id'],
-				    'CALENDAR_CAT_SELECTED' => $selected,
-			    	'CALENDAR_CAT_LANG'     => $objResult3->fields['lang'],
-				    'CALENDAR_CAT_NAME'     => $objResult2->fields['name']
-				));
-				$this->_objTpl->parse("calendar_cat");
-
-				$objResult2->MoveNext();
-			}
-		}
-
-//		 select priority
-//
-//		for ($x = 1; $x <= 5; $x++) {
-//	   		if ($x == 1) {
-//	   			$this->_objTpl->setVariable('CALENDAR_IMG_PRIORITY', '2h');
-//	   		}
-//	   		if ($x == 2) {
-//	   			$this->_objTpl->setVariable('CALENDAR_IMG_PRIORITY', 'h');
-//	   		}
-//	   		if ($x == 3) {
-//	   			$this->_objTpl->setVariable('CALENDAR_IMG_PRIORITY', 'no');
-//	   		}
-//	   		if ($x == 4) {
-//	   			$this->_objTpl->setVariable('CALENDAR_IMG_PRIORITY', 'l');
-//	   		}
-//	   		if ($x == 5) {
-//	   			$this->_objTpl->setVariable('CALENDAR_IMG_PRIORITY', '2l');
-//	   		}
-//
-//	   		if ($x == $objResult->fields['priority']) {
-//	   			$this->_objTpl->setVariable('CALENDAR_PRIORITY_SELECT', " checked");
-//	   		} else {
-//	   			$this->_objTpl->setVariable('CALENDAR_PRIORITY_SELECT', "");
-//	   		}
-//
-//			$this->_objTpl->setVariable('CALENDAR_PRIORITY', $x);
-//
-//			$this->_objTpl->parse("priority");
-//		}
-
-//		 select days
-//	    $this->selectDay($day, 'day', 'CALENDAR_DAY_SELECT', 'CALENDAR_DAY');
-//	    $this->selectDay($end_day, 'endday', 'CALENDAR_END_DAY_SELECT', 'CALENDAR_END_DAY');
-//
-//	   	 select months
-//		$this->selectMonth($month, 'month', 'CALENDAR_MONTH', 'CALENDAR_MONTH_SELECT', 'CALENDAR_MONTH_NAME');
-//		$this->selectMonth($end_month, 'endmonth', 'CALENDAR_END_MONTH', 'CALENDAR_END_MONTH_SELECT', 'CALENDAR_END_MONTH_NAME');
-
-//	     select years
-//	    $this->selectYear($year, 'year', 'CALENDAR_YEAR_SELECT', 'CALENDAR_YEAR');
-//	    $this->selectYear($end_year, 'endyear', 'CALENDAR_END_YEAR_SELECT', 'CALENDAR_END_YEAR');
-
-//	     Generate the time dropdowns
-		$this->selectHour($hour, "hour", "CALENDAR_HOUR_SELECT", "CALENDAR_HOUR");
-		$this->selectMinutes($minutes, "minutes", "CALENDAR_MINUTES_SELECT", "CALENDAR_MINUTES");
-	    $this->selectHour($end_hour, "endhour", "CALENDAR_END_HOUR_SELECT", "CALENDAR_END_HOUR");
-		$this->selectMinutes($end_minutes, "endminutes", "CALENDAR_END_MINUTES_SELECT", "CALENDAR_END_MINUTES");
-
-		$ed = get_wysiwyg_editor('inputComment', $objResult->fields['comment'], 'active');
-
-		if (!empty($objResult->fields['active'])) {
-			$checked = "checked=\"checked\"";
-		} else {
-			$checked = "";
-		}
-
-		// parse to template
-		$this->_objTpl->setVariable(array(
-		    'CALENDAR_CAT'               => $objResult2->fields['name'],
-		    'CALENDAR_ID'                => $objResult->fields['id'],
-		    'CALENDAR_DAY'               => $day,
-		    'CALENDAR_NAME'              => htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
-		    'CALENDAR_PLACE'             => htmlentities($objResult->fields['place'], ENT_QUOTES, CONTREXX_CHARSET),
-		    'CALENDAR_COMMENT'           => htmlentities($objResult->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET),
-		    'CALENDAR_INFO'              => $info,
-		    'CALENDAR_INFO_SELECT1'      => $select1,
-		    'CALENDAR_INFO_SELECT2'      => $select2,
-		    'CALENDAR_INFO_SELECT3'      => $select3,
-		    'CALENDAR_INFO_SELECT4'      => $select4,
-			'TXT_CALENDAR_ERROR_NAME'    => $_ARRAYLANG['TXT_CALENDAR_ERROR_NAME'],
-			'TXT_CALENDAR_ERROR_PLACE'   => $_ARRAYLANG['TXT_CALENDAR_ERROR_PLACE'],
-			'TXT_CALENDAR_ERROR_DATE'    => $_ARRAYLANG['TXT_CALENDAR_ERROR_DATE'],
-			'TXT_CALENDAR_ERROR_COMMENT' => $_ARRAYLANG['TXT_CALENDAR_ERROR_COMMENT'],
-			'TXT_CALENDAR_EDIT_EVENT'    => $_ARRAYLANG['TXT_CALENDAR_EDIT_EVENT'],
-			'TXT_CALENDAR_NAME'	         => $_ARRAYLANG['TXT_CALENDAR_NAME'],
-			'TXT_CALENDAR_PLACE'         => $_ARRAYLANG['TXT_CALENDAR_PLACE'],
-//			'TXT_CALENDAR_PRIORITY'	     => $_ARRAYLANG['TXT_CALENDAR_PRIORITY'],
-			'TXT_CALENDAR_START'         => $_ARRAYLANG['TXT_CALENDAR_START'],
-			'TXT_CALENDAR_END'           => $_ARRAYLANG['TXT_CALENDAR_END'],
-			'TXT_CALENDAR_COMMENT'       => $_ARRAYLANG['TXT_CALENDAR_COMMENT'],
-			'TXT_CALENDAR_RESET'         => $_ARRAYLANG['TXT_CALENDAR_RESET'],
-			'TXT_CALENDAR_SUBMIT'        => $_ARRAYLANG['TXT_CALENDAR_SUBMIT'],
-			'TXT_CALENDAR_CAT'           => $_ARRAYLANG['TXT_CALENDAR_CAT'],
-			'TXT_CALENDAR_ERROR_CATEGORY' => $_ARRAYLANG['TXT_CALENDAR_ERROR_CATEGORY'],
-			'TXT_CALENDAR_INFO'          => $_ARRAYLANG['TXT_CALENDAR_INFO'],
-			'TXT_CALENDAR_WHOLE_DAY'	 => $_ARRAYLANG['TXT_CALENDAR_WHOLE_DAY'],
-			'TXT_CALENDAR_ACTIVE'		 => $_ARRAYLANG['TXT_CALENDAR_ACTIVE'],
-			'CALENDAR_ACTIVE_CHECKED'	 => $checked,
-			'CALENDAR_DESCRIPTION'		 => $ed,
-			'CALENDAR_STARTDATE'		 => date("Y-m-d", $startdate),
-			'CALENDAR_ENDDATE'			 => date("Y-m-d", $enddate)
-		));
-	}
-
 
 
 	// select days
@@ -735,181 +713,186 @@ class calendarManager extends calendarLibrary
 	}
 
 
-	/**
-	 * write edited note
-	 *
-	 * Saves the changes of a note
-	 */
-	function writeEditedNote()
-	{
-		global $objDatabase, $_ARRAYLANG, $_LANGID;
-
-	    $query = "SELECT id
-		              FROM ".DBPREFIX."module_calendar
-		      WHERE id = '".addslashes(intval($_POST['inputId']))."'";
-
-	    $objResult = $objDatabase->Execute($query);
-
-		if ($objDatabase->Affected_Rows() > 0) {
-    		$catid  = intval($_POST['inputCategory']);
-			$up_id       = intval($_POST['inputId']);
-			$up_priority = intval($_POST['inputPriority']);
-			$up_name     = contrexx_addslashes(contrexx_strip_tags($_POST['inputName']));
-			$up_place    = contrexx_addslashes(contrexx_strip_tags($_POST['inputPlace']));
-			$up_comment  = contrexx_addslashes($_POST['inputComment']);
-			$info        = contrexx_addslashes(contrexx_strip_tags($_POST['inputInfo']));
-
-			if (!empty($info)) {
-				if (!preg_match("%^http:\/\/%", $info)) {
-					$info = "http://".$info;
-				}
-			}
-
-			$dateparts = split("-", $_POST['inputStartDate']);
-			$startdate	 = mktime(intval($_POST['inputHour']), intval($_POST['inputMinutes']),00, $dateparts[1], $dateparts[2], $dateparts[0]);
-
-			$dateparts = split("-", $_POST['inputEndDate']);
-			$enddate	 = mktime(intval($_POST['inputEndHour']), intval($_POST['inputEndMinutes']),00, $dateparts[1], $dateparts[2], $dateparts[0]);
-
-			if (!empty($_POST['inputActive'])) {
-				$active = 1;
-			} else{
-				$active = 0;
-			}
-
-			$query = "UPDATE ".DBPREFIX."module_calendar
-				SET catid = '".$catid."',
-					active = '".$active."',
-					startdate = '".$startdate."',
-					enddate = '".$enddate."',
-					priority = '".$up_priority."',
-					name = '".$up_name."',
-					comment = '".$up_comment."',
-					place = '".$up_place."',
-			        info = '".$info."'
-				WHERE id = '".$up_id."'
-			";
-
-			$objDatabase->Execute($query);
-
-			echo mysql_error();
-
-			$this->strOkMessage = $_ARRAYLANG['TXT_CALENDAR_STAT_EDITED']."<br />";
-		} else {
-			$this->strErrMessage = $_ARRAYLANG['TXT_CALENDAR_STAT_ERROR_EXISTING']."<br />";
-		}
-	}
-
-
 
 	/**
 	 * New Note
 	 *
 	 * Form for a new note
 	 */
-	function newNote()
+	function modifyNote($id=null)
 	{
-	    global $objDatabase, $_ARRAYLANG, $_LANGID;
+	    global $objDatabase, $_ARRAYLANG, $_LANGID, $_CORELANG;
 
-	    // categories
-		$query = "SELECT id,
-	                       name,
-		                   lang
-	                  FROM ".DBPREFIX."module_calendar_categories
-	              ORDER BY 'pos'";
+	    if(!empty($id)) {
+	    	//edit note
+	    	$this->pageTitle=$_ARRAYLANG['TXT_CALENDAR_TERMIN'];
 
-		$objResult = $objDatabase->Execute($query);
+			//load data
+			$this->getNoteData($id, "edit", 0);
 
-		if ($objResult !== false) {
-			while(!$objResult->EOF) {
-				$query = "SELECT lang
-				               FROM ".DBPREFIX."languages
-				              WHERE id = '".$objResult->fields['lang']."'";
-				$objResult2 = $objDatabase->SelectLimit($query, 1);
+			//get editor
+		    $ed = get_wysiwyg_editor('inputComment',"", 'active');
 
-				$this->_objTpl->setVariable(array(
-			    	'CALENDAR_CAT_ID'       => $objResult->fields['id'],
-			    	'CALENDAR_CAT_LANG'     => $objResult2->fields['lang'],
-			    	'CALENDAR_CAT_NAME'     => $objResult->fields['name']
-				));
-				$this->_objTpl->parse("calendar_cat");
-				$objResult->MoveNext();
+		    //show send mail again
+		    $this->_objTpl->parse('sendMailAgain');
+
+		    //get formular
+		    $this->_getFormular($id, 'backend');
+
+	    	 // data
+			$this->_objTpl->setVariable(array(
+				'CALENDAR_ID' 					=> $id,
+				'CALENDAR_FORM_ACTION'		  	=> "saveEdited",
+			));
+
+	    } else {
+	    	//new note
+		    $this->pageTitle=$_ARRAYLANG['TXT_CALENDAR_NEW'];
+
+		    //hide send mail again
+		    $this->_objTpl->hideBlock('sendMailAgain');
+
+		    // categories
+			$query = "SELECT 	id,
+		                       	name,
+			                   	lang
+		                  FROM 	".DBPREFIX."module_calendar_categories
+		              ORDER BY 	'pos'";
+
+			$objResultCat = $objDatabase->Execute($query);
+
+			if ($objResultCat !== false) {
+				while(!$objResultCat->EOF) {
+					$query = "SELECT lang
+					            FROM ".DBPREFIX."languages
+					           WHERE id = '".$objResultCat->fields['lang']."'";
+					$objResultLang = $objDatabase->SelectLimit($query, 1);
+
+					$this->_objTpl->setVariable(array(
+				    	'CALENDAR_CAT_ID'       => $objResultCat->fields['id'],
+				    	'CALENDAR_CAT_LANG'     => $objResultLang->fields['lang'],
+				    	'CALENDAR_CAT_NAME'     => $objResultCat->fields['name']
+					));
+					$this->_objTpl->parse("calendar_cat");
+					$objResultCat->MoveNext();
+				}
 			}
-		}
 
-	    // select days
-		if (isset($_GET['time'])) {
-			$timeDay = substr($_GET['time'], 0, 2);
-		} else {
-			$timeDay = strftime("%d");
-		}
+		    $ed = get_wysiwyg_editor('inputComment',"", 'active');
 
-	    // select months
-		if (isset($_GET['time'])) {
-			$timeMonth = substr($_GET['time'], 2, 2);
-		} else {
-			$timeMonth = strftime("%m");
-		}
+		    //get mail template
+			$query 			= "SELECT setvalue
+			              	 	 FROM ".DBPREFIX."module_calendar_settings
+				            	WHERE setid = '1'";
 
-	    // select years
-		if (isset($_GET['time'])) {
-			$timeYear = substr($_GET['time'], 4, 4);
-		} else {
-			$timeYear = strftime("%Y");
-		}
+			$objResult 		= $objDatabase->SelectLimit($query, 1);
+			$mailTitle 		= $objResult->fields['setvalue'];
 
-	    // select time
-	    $time_min = date("i") + 30;
-	    $time_std = date("H") * 100;
-	    if ($time_min >= 60){
-	    	$time_min = $time_min - 60 + 100;
+			$query 			= "SELECT setvalue
+			              	 	 FROM ".DBPREFIX."module_calendar_settings
+				            	WHERE setid = '2'";
+
+			$objResult 		= $objDatabase->SelectLimit($query, 1);
+			$mailContent 	= $objResult->fields['setvalue'];
+
+		    //data
+		    $this->_objTpl->setVariable(array(
+				'CALENDAR_START'			  				=> date("Y-m-d"),
+				'CALENDAR_END'				  				=> date("Y-m-d"),
+				'CALENDAR_DESCRIPTION'		  				=> $ed,
+				'CALENDAR_ACTIVE'		  					=> "checked",
+				'CALENDAR_FORM_ACTION'		  				=> "saveNew",
+				'CALENDAR_ACCESS_PUBLIC'					=> "selected='selected'",
+				'CALENDAR_PRIORITY_NORMAL'					=> "selected='selected'",
+				'CALENDAR_REGISTRATIONS_GROUPS_UNSELECTED' 	=> $this->_getUserGroups('', 0),
+				'CALENDAR_REGISTRATIONS_GROUPS_SELECTED' 	=> $this->_getUserGroups('', 1),
+				'CALENDAR_MAIL_TITLE' 						=> $mailTitle,
+				'CALENDAR_MAIL_CONTENT' 					=> $mailContent,
+		    ));
+
+		   $this->_getFormular('', 'backend');
+
+		    $this->selectHour(12, "hour", "CALENDAR_HOUR_SELECT", "CALENDAR_HOUR");
+		    $this->selectMinutes(00, "minutes", "CALENDAR_MINUTES_SELECT", "CALENDAR_MINUTES");
+		    $this->selectHour(13, "endhour", "CALENDAR_END_HOUR_SELECT", "CALENDAR_END_HOUR");
+		    $this->selectMinutes(30, "endminutes", "CALENDAR_END_MINUTES_SELECT", "CALENDAR_END_MINUTES");
 	    }
-
-	    if (isset($_GET['time'])) {
-	    	$time_std = substr($_GET['time'], 8, 2) * 100;
-	    	$time_min = '00';
-	    }
-
-	    $this->selectHour(12, "hour", "CALENDAR_HOUR_SELECT", "CALENDAR_HOUR");
-	    $this->selectMinutes(00, "minutes", "CALENDAR_MINUTES_SELECT", "CALENDAR_MINUTES");
-	    $this->selectHour(13, "endhour", "CALENDAR_END_HOUR_SELECT", "CALENDAR_END_HOUR");
-	    $this->selectMinutes(30, "endminutes", "CALENDAR_END_MINUTES_SELECT", "CALENDAR_END_MINUTES");
-
-	    // select end time
-	    $time_min = date("i");
-	    $time_std = date("H") * 100 + 100;
-
-	    if (isset($_GET['time'])) {
-	    	$time_std = substr($_GET['time'], 8, 2) * 100;
-	    	$time_min = '30';
-	    }
-
-	    $ed = get_wysiwyg_editor('inputComment',"", 'active');
 
 	    // parse to template
 		$this->_objTpl->setVariable(array(
-			'TXT_CALENDAR_ERROR_CATEGORY' => $_ARRAYLANG['TXT_CALENDAR_ERROR_CATEGORY'],
-			'TXT_CALENDAR_ACTIVE'		  => $_ARRAYLANG['TXT_CALENDAR_ACTIVE'],
-			'TXT_CALENDAR_CAT'            => $_ARRAYLANG['TXT_CALENDAR_CAT'],
-			'TXT_CALENDAR_ERROR_NAME'     => $_ARRAYLANG['TXT_CALENDAR_ERROR_NAME'],
-			'TXT_CALENDAR_ERROR_PLACE'    => $_ARRAYLANG['TXT_CALENDAR_ERROR_PLACE'],
-			'TXT_CALENDAR_ERROR_DATE'     => $_ARRAYLANG['TXT_CALENDAR_ERROR_DATE'],
-			'TXT_CALENDAR_ERROR_COMMENT'  => $_ARRAYLANG['TXT_CALENDAR_ERROR_COMMENT'],
-			'TXT_CALENDAR_NEW'            => $_ARRAYLANG['TXT_CALENDAR_NEW'],
-			'TXT_CALENDAR_NAME'	          => $_ARRAYLANG['TXT_CALENDAR_NAME'],
-			'TXT_CALENDAR_PLACE'          => $_ARRAYLANG['TXT_CALENDAR_PLACE'],
-			'TXT_CALENDAR_PRIORITY'	      => $_ARRAYLANG['TXT_CALENDAR_PRIORITY'],
-			'TXT_CALENDAR_START'          => $_ARRAYLANG['TXT_CALENDAR_START'],
-			'TXT_CALENDAR_END'            => $_ARRAYLANG['TXT_CALENDAR_END'],
-			'TXT_CALENDAR_COMMENT'        => $_ARRAYLANG['TXT_CALENDAR_COMMENT'],
-			'TXT_CALENDAR_INFO'           => $_ARRAYLANG['TXT_CALENDAR_INFO'],
-			'TXT_CALENDAR_RESET'          => $_ARRAYLANG['TXT_CALENDAR_RESET'],
-			'TXT_CALENDAR_SUBMIT'         => $_ARRAYLANG['TXT_CALENDAR_SUBMIT'],
-			'TXT_CALENDAR_WHOLE_DAY'	  => $_ARRAYLANG['TXT_CALENDAR_WHOLE_DAY'],
-			'CALENDAR_TODAY'			  => date("Y-m-d"),
-			'CALENDAR_DESCRIPTION'		  => $ed
+			'TXT_CALENDAR_ERROR_CATEGORY' 	=> $_ARRAYLANG['TXT_CALENDAR_ERROR_CATEGORY'],
+			'TXT_CALENDAR_ACTIVE'		  	=> $_ARRAYLANG['TXT_CALENDAR_ACTIVE'],
+			'TXT_CALENDAR_CAT'            	=> $_ARRAYLANG['TXT_CALENDAR_CAT'],
+			'TXT_CALENDAR_ERROR_NAME'     	=> $_ARRAYLANG['TXT_CALENDAR_ERROR_NAME'],
+			'TXT_CALENDAR_ERROR_PLACE'    	=> $_ARRAYLANG['TXT_CALENDAR_ERROR_PLACE'],
+			'TXT_CALENDAR_ERROR_DATE'     	=> $_ARRAYLANG['TXT_CALENDAR_ERROR_DATE'],
+			'TXT_CALENDAR_ERROR_COMMENT'  	=> $_ARRAYLANG['TXT_CALENDAR_ERROR_COMMENT'],
+			'TXT_CALENDAR_NEW'            	=> $_ARRAYLANG['TXT_CALENDAR_NEW'],
+			'TXT_CALENDAR_NAME'	          	=> $_ARRAYLANG['TXT_CALENDAR_NAME'],
+			'TXT_CALENDAR_PLACE'         	=> $_ARRAYLANG['TXT_CALENDAR_PLACE'],
+			'TXT_CALENDAR_PRIORITY'	      	=> $_ARRAYLANG['TXT_CALENDAR_PRIORITY'],
+			'TXT_CALENDAR_START'          	=> $_ARRAYLANG['TXT_CALENDAR_START'],
+			'TXT_CALENDAR_END'            	=> $_ARRAYLANG['TXT_CALENDAR_END'],
+			'TXT_CALENDAR_COMMENT'        	=> $_ARRAYLANG['TXT_CALENDAR_COMMENT'],
+			'TXT_CALENDAR_LINK'           	=> $_ARRAYLANG['TXT_CALENDAR_INFO'],
+			'TXT_CALENDAR_RESET'          	=> $_ARRAYLANG['TXT_CALENDAR_RESET'],
+			'TXT_CALENDAR_SUBMIT'         	=> $_ARRAYLANG['TXT_CALENDAR_SUBMIT'],
+			'TXT_CALENDAR_WHOLE_DAY'	  	=> $_ARRAYLANG['TXT_CALENDAR_WHOLE_DAY'],
+			'TXT_CALENDAR_EVENT' 		  	=> $_ARRAYLANG['TXT_CALENDAR_TERMIN'],
+			'TXT_CALENDAR_STREET_NR' 		=> $_ARRAYLANG['TXT_CALENDAR_STREET_NR'],
+			'TXT_CALENDAR_ZIP' 		  		=> $_ARRAYLANG['TXT_CALENDAR_ZIP'],
+			'TXT_CALENDAR_LINK' 		  	=> $_ARRAYLANG['TXT_CALENDAR_LINK'],
+			'TXT_CALENDAR_MAP' 		  		=> $_ARRAYLANG['TXT_CALENDAR_MAP'],
+			'TXT_CALENDAR_ORGANIZER' 		=> $_ARRAYLANG['TXT_CALENDAR_ORGANIZER'],
+			'TXT_CALENDAR_MAIL' 		  	=> $_ARRAYLANG['TXT_CALENDAR_MAIL'],
+			'TXT_CALENDAR_ORGANIZER_NAME' 	=> $_CORELANG['TXT_NAME'],
+			'TXT_CALENDAR_TITLE' 			=> $_ARRAYLANG['TXT_CALENDAR_TITLE'],
+			'TXT_CALENDAR_OPTIONS' 			=> $_ARRAYLANG['TXT_CALENDAR_OPTIONS'],
+			'TXT_CALENDAR_THUMBNAIL' 		=> $_ARRAYLANG['TXT_CALENDAR_THUMBNAIL'],
+			'TXT_CALENDAR_BROWSE' 			=> $_CORELANG['TXT_BROWSE'],
+			'TXT_CALENDAR_ACCESS' 			=> $_ARRAYLANG['TXT_CALENDAR_ACCESS'],
+			'TXT_CALENDAR_ACCESS_PUBLIC' 	=> $_ARRAYLANG['TXT_CALENDAR_ACCESS_PUBLIC'],
+			'TXT_CALENDAR_ACCESS_COMMUNITY' => $_ARRAYLANG['TXT_CALENDAR_ACCESS_COMMUNITY'],
+			'TXT_CALENDAR_REPEAT_MASK' 		=> $_ARRAYLANG['TXT_CALENDAR_REPEAT_MASK'],
+			'TXT_CALENDAR_REPEAT_DURANCE' 	=> $_ARRAYLANG['TXT_CALENDAR_REPEAT_DURANCE'],
+			'TXT_CALENDAR_ATTACHMENT' 		=> $_ARRAYLANG['TXT_CALENDAR_ATTACHMENT'],
+			'TXT_CALENDAR_PRIORITY' 		=> $_ARRAYLANG['TXT_CALENDAR_PRIORITY'],
+			'TXT_CALENDAR_PRIORITY_VERY_HEIGHT' 		=> $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT'],
+			'TXT_CALENDAR_PRIORITY_HEIGHT' 	=> $_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT'],
+			'TXT_CALENDAR_PRIORITY_NORMAL' 	=> $_ARRAYLANG['TXT_CALENDAR_PRIORITY_NORMAL'],
+			'TXT_CALENDAR_PRIORITY_LOW' 	=> $_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW'],
+			'TXT_CALENDAR_PRIORITY_VERY_LOW'=> $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW'],
+			'TXT_CALENDAR_REGISTRATIONS'	=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'],
+			'TXT_CALENDAR_FORMULAR'			=> $_ARRAYLANG['TXT_CALENDAR_FORMULAR'],
+			'TXT_CALENDAR_FIELD_TYPE'		=> $_ARRAYLANG['TXT_CALENDAR_FIELD_TYPE'],
+			'TXT_CALENDAR_FIELD_NAME'		=> $_ARRAYLANG['TXT_CALENDAR_FIELD_NAME'],
+			'TXT_CALENDAR_FIELD_REQUIRED'	=> $_ARRAYLANG['TXT_CALENDAR_FIELD_REQUIRED'],
+			'TXT_CALENDAR_FIELD_STATUS'		=> $_ARRAYLANG['TXT_CALENDAR_FIELD_STATUS'],
+			'TXT_CALENDAR_REGISTRATIONS_ACTIVATED'				=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_ACTIVATED'],
+			'TXT_CALENDAR_REGISTRATIONS_ADDRESSER'				=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_ADDRESSER'],
+			'TXT_CALENDAR_REGISTRATIONS_SELECT_GROUP'			=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SELECT_GROUP'],
+			'TXT_CALENDAR_REGISTRATIONS_ADDRESSER_ALL'			=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_ADDRESSER_ALL'],
+			'TXT_CALENDAR_REGISTRATIONS_ADDRESSER_ALL_USER'		=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_ADDRESSER_ALL_USER'],
+			'TXT_CALENDAR_REGISTRATIONS_ADDRESSER_SELECT_GROUP'	=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_ADDRESSER_SELECT_GROUP'],
+			'TXT_CALENDAR_MAIL_TEMPLATE'	=> $_ARRAYLANG['TXT_CALENDAR_MAIL_TEMPLATE'],
+			'TXT_CALENDAR_PLACEHOLDERS'		=> $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDERS'],
+			'TXT_CALENDAR_FIRSTNAME'		=> $_ARRAYLANG['TXT_CALENDAR_FIRSTNAME'],
+			'TXT_CALENDAR_LASTNAME'			=> $_ARRAYLANG['TXT_CALENDAR_LASTNAME'],
+			'TXT_CALENDAR_REG_LINK'			=> $_ARRAYLANG['TXT_CALENDAR_REG_LINK'],
+			'TXT_CALENDAR_TITLE'			=> $_ARRAYLANG['TXT_CALENDAR_TITLE'],
+			'TXT_CALENDAR_START_DATE'		=> $_ARRAYLANG['TXT_CALENDAR_START_DATE'],
+			'TXT_CALENDAR_END_DATE'			=> $_ARRAYLANG['TXT_CALENDAR_END_DATE'],
+			'TXT_CALENDAR_DATE'				=> $_ARRAYLANG['TXT_CALENDAR_DATE'],
+			'TXT_CALENDAR_MAIL_CONTENT'		=> $_ARRAYLANG['TXT_CALENDAR_MAIL_CONTENT'],
+			'TXT_CALENDAR_TEXT'				=> $_ARRAYLANG['TXT_CALENDAR_TEXT'],
+			'TXT_CALENDAR_HOST_URL'			=> $_ARRAYLANG['TXT_CALENDAR_HOST_URL'],
+			'TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'			=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'],
+			'TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER_INFO'	=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER_INFO'],
+			'TXT_CALENDAR_SEND_MAIL_AGAIN'	=> $_ARRAYLANG['TXT_CALENDAR_SEND_MAIL_AGAIN'],
+			'TXT_CALENDAR_REGISTRATIONS_ADDRESSER_INFO'	=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_ADDRESSER_INFO'],
 		));
 	}
+
 
 	/**
 	 * Write Note
@@ -921,54 +904,315 @@ class calendarManager extends calendarLibrary
 	    global $objDatabase, $_LANGID;
 
 	    $_POST['inputInfo'] = str_replace(' ', '', $_POST['inputInfo']);
+	    $return = 0;
 
-	    $catid    = intval($_POST['inputCategory']);
-		$priority = intval($_POST['inputPriority']);
-		$name     = contrexx_addslashes(contrexx_strip_tags($_POST['inputName']));
-		$place    = contrexx_addslashes(contrexx_strip_tags($_POST['inputPlace']));
-		$comment  = contrexx_addslashes($_POST['inputComment']);
-		$info     = contrexx_addslashes(contrexx_strip_tags($_POST['inputInfo']));
+	    //options
+	    $catid    		= intval($_POST['inputCategory']);
+		$priority 		= intval($_POST['inputPriority']);
+		$access 		= intval($_POST['inputAccess']);
+		$id    			= intval($_POST['inputEventId']);
+		$active   		= intval($_POST['inputActive']);
 
-		if (!empty($info)) {
-			if (!preg_match("%^(?:ftp|http|https):\/\/%", $info)) {
-				$info = "http://".$info;
+		//event
+		$title			= contrexx_addslashes(contrexx_strip_tags($_POST['inputTitle']));
+		$link			= contrexx_addslashes(contrexx_strip_tags($_POST['inputEventLink']));
+		$pic			= contrexx_addslashes(contrexx_strip_tags($_POST['inputEventImage']));
+		$attach			= contrexx_addslashes(contrexx_strip_tags($_POST['inputEventAttachment']));
+		$comment  		= contrexx_addslashes($_POST['inputComment']);
+
+		//start 'n' end
+		$dateparts 		= split("-", $_POST['inputStartDate']);
+		$startdate	 	= mktime(intval($_POST['inputHour']), intval($_POST['inputMinutes']),00, $dateparts[1], $dateparts[2], $dateparts[0]);
+
+		$dateparts 		= split("-", $_POST['inputEndDate']);
+		$enddate	 	= mktime(intval($_POST['inputEndHour']), intval($_POST['inputEndMinutes']),00, $dateparts[1], $dateparts[2], $dateparts[0]);
+
+		//place
+		$place			= contrexx_addslashes(contrexx_strip_tags($_POST['inputPlace']));
+		$placeStreet	= contrexx_addslashes(contrexx_strip_tags($_POST['inputPlaceStreetNr']));
+		$placeZip		= contrexx_addslashes(contrexx_strip_tags($_POST['inputPlaceZip']));
+		$placeCity		= contrexx_addslashes(contrexx_strip_tags($_POST['inputPlaceCity']));
+		$placeLink		= contrexx_addslashes(contrexx_strip_tags($_POST['inputPlaceLink']));
+		$placeMap		= contrexx_addslashes(contrexx_strip_tags($_POST['inputPlaceMap']));
+
+		//organizer
+		$organizer		= contrexx_addslashes(contrexx_strip_tags($_POST['inputOrganizer']));
+		$organizerStreet= contrexx_addslashes(contrexx_strip_tags($_POST['inputOrganizerStreetNr']));
+		$organizerZip	= contrexx_addslashes(contrexx_strip_tags($_POST['inputOrganizerZip']));
+		$organizerPlace	= contrexx_addslashes(contrexx_strip_tags($_POST['inputOrganizerPlace']));
+		$organizerLink	= contrexx_addslashes(contrexx_strip_tags($_POST['inputOrganizerLink']));
+		$organizerMail	= contrexx_addslashes(contrexx_strip_tags($_POST['inputOrganizerMail']));
+
+		//registrations
+		$registration					= intval($_POST['inputRegistrations']);
+		$registrationAdresser			= intval($_POST['inputRegistrationsAddresser']);
+		$registrationGroups				= $_POST['selectedGroups'];
+		$registrationArrFieldIds		= $_POST['arrFieldIds'];
+		$registrationArrFieldStatus		= $_POST['arrFieldStatus'];
+		$registrationArrFieldOrder		= $_POST['arrFieldOrder'];
+		$registrationArrFieldName		= $_POST['arrFieldName'];
+		$registrationArrFieldType		= $_POST['arrFieldType'];
+		$registrationArrFieldRequired	= $_POST['arrFieldRequired'];
+		$registrationSubscriber			= intval($_POST['inputRegistrationSubscriber']);
+
+		//mail
+		$mailTitle		= contrexx_addslashes(contrexx_strip_tags($_POST['registrationMailTitle']));
+		$mailContent	= contrexx_addslashes(contrexx_strip_tags($_POST['registrationMailContent']));
+		$mailSendAgain	= intval($_POST['inputSendMailAgain']);
+
+		if (!empty($link)) {
+			if (!preg_match("%^(?:ftp|http|https):\/\/%", $link)) {
+				$link = "http://".$link;
 			}
 		}
 
-		$dateparts = split("-", $_POST['inputStartDate']);
-		$startdate	 = mktime(intval($_POST['inputHour']), intval($_POST['inputMinutes']),00, $dateparts[1], $dateparts[2], $dateparts[0]);
-
-		if (empty($_POST['inputActive'])) {
-			$active = 0;
-		} else {
-			$active = 1;
+		if (!empty($placeLink)) {
+			if (!preg_match("%^(?:ftp|http|https):\/\/%", $placeLink)) {
+				$placeLink = "http://".$placeLink;
+			}
 		}
 
-		$dateparts = split("-", $_POST['inputEndDate']);
-		$enddate	 = mktime(intval($_POST['inputEndHour']), intval($_POST['inputEndMinutes']),00, $dateparts[1], $dateparts[2], $dateparts[0]);
+		if (!empty($organizerLink)) {
+			if (!preg_match("%^(?:ftp|http|https):\/\/%", $organizerLink)) {
+				$organizerLink = "http://".$organizerLink;
+			}
+		}
+
+		if($registration == 1){
+			switch($registrationAdresser){
+	    		case 0:
+		    		$groups			= "";
+					$all_groups		= 0;
+					$public			= 1;
+	    			break;
+	    		case 1:
+		    		$groups			= "";
+					$all_groups		= 1;
+					$public			= 0;
+	    			break;
+	    		case 2:
+					$all_groups		= 0;
+					$public			= 0;
+
+					foreach ($registrationGroups as $arrKey => $groupId){
+						$groups .= $groupId.";";
+					}
 
 
-		$query = "INSERT INTO ".DBPREFIX."module_calendar (catid,
-											active,
-											startdate,
-											enddate,
-											priority,
-											name,
-											comment,
-											place,
-											info)
-										VALUES ('$catid',
-											'$active',
-											'$startdate',
-											'$enddate',
-											'$priority',
-											'$name',
-											'$comment',
-											'$place',
-											'$info')";
-		$objDatabase->Execute($query);
+	    			break;
+	    	}
+		} else {
+			$registration			= 0;
+			$groups					= "";
+			$all_groups				= 0;
+			$public					= 0;
+			$registrationSubscriber	= "";
+		}
 
-		return $objDatabase->Insert_ID();
+	    if(!empty($id)) {
+	    	$query = "SELECT id
+		                FROM ".DBPREFIX."module_calendar
+		               WHERE id = '".addslashes($id)."'";
+
+	    	$objResult = $objDatabase->Execute($query);
+
+	    	if ($objDatabase->Affected_Rows() > 0) {
+				$query = "UPDATE ".DBPREFIX."module_calendar SET   	active = '".$active."',
+																	catid = '".$catid."',
+																	startdate = '".$startdate."',
+																	enddate = '".$enddate."',
+																	priority = '".$priority."',
+																	access = '".$access."',
+																	name = '".$title."',
+																	comment = '".$comment."',
+																	link = '".$link."',
+																	pic = '".$pic."',
+																	attachment = '".$attach."',
+																	placeName = '".$place."',
+																	placeStreet = '".$placeStreet."',
+																	placeZip = '".$placeZip."',
+																	placeCity = '".$placeCity."',
+																	placeLink = '".$placeLink."',
+																	placeMap = '".$placeMap."',
+																	organizerName = '".$organizer."',
+																	organizerStreet = '".$organizerStreet."',
+																	organizerZip = '".$organizerZip."',
+																	organizerPlace = '".$organizerPlace."',
+																	organizerMail = '".$organizerMail."',
+																	organizerLink = '".$organizerLink."',
+																	registration = '".$registration."',
+																	groups = '".$groups."',
+																	all_groups = '".$all_groups."',
+																	public = '".$public."',
+																	mailTitle = '".$mailTitle."',
+																	mailContent = '".$mailContent."',
+																	num = '".$registrationSubscriber."'
+															WHERE   id = '".$id."'";
+				$objResult = $objDatabase->Execute($query);
+
+				if ($objResult !== false) {
+
+					if ($registration == 1) {
+
+						$query = "DELETE FROM ".DBPREFIX."module_calendar_form_fields WHERE note_id='".$id."'";
+						$objResultFields = $objDatabase->Execute($query);
+
+						if ($objResultFields !== false) {
+							//input fields
+							foreach ($registrationArrFieldStatus as $fieldKey => $fieldStatus) {
+								$fieldId		= $registrationArrFieldIds[$fieldKey];
+								$fieldName		= $registrationArrFieldName[$fieldKey];
+								$fieldType		= $registrationArrFieldType[$fieldKey];
+								$fieldRequired	= $registrationArrFieldRequired[$fieldKey];
+								$fieldOrder		= $registrationArrFieldOrder[$fieldKey];
+
+								$query = "INSERT INTO ".DBPREFIX."module_calendar_form_fields (`id`,
+																						       `note_id`,
+																							   `name`,
+																							   `type`,
+																							   `required`,
+																							   `order`,
+																							   `key`)
+																		   			   VALUES ('$fieldId',
+																		   			   		   '$id',
+																		   			   		   '$fieldName',
+																		   			   		   '$fieldType',
+																		   			   		   '$fieldRequired',
+																		   			   		   '$fieldOrder',
+																				               '$fieldKey')";
+								$objResultFields = $objDatabase->Execute($query);
+							}
+						}
+
+						if ($registrationAdresser != 0 && $mailSendAgain == 1) {
+							$this->_sendRegistration($id);
+						}
+					} else {
+						$this->deleteFormular($id);
+					}
+
+					$this->strOkMessage = $_ARRAYLANG['TXT_CALENDAR_STAT_EDITED']."<br />";
+					$return = $id;
+				} else {
+					$this->strErrMessage = $_ARRAYLANG['TXT_CALENDAR_STAT_EDITED_ERROR']."<br />";
+				}
+			} else {
+				$this->strErrMessage = $_ARRAYLANG['TXT_CALENDAR_STAT_ERROR_EXISTING']."<br />";
+			}
+	    } else {
+
+
+
+	    	$md5 = md5(uniqid(rand()));
+	    	$key = substr($md5,0,10);
+
+			$query = "INSERT INTO ".DBPREFIX."module_calendar  (active,
+																catid,
+																startdate,
+																enddate,
+																priority,
+																access,
+																name,
+																comment,
+																link,
+																pic,
+																attachment,
+																placeName,
+																placeStreet,
+																placeZip,
+																placeCity,
+																placeLink,
+																placeMap,
+																organizerName,
+																organizerStreet,
+																organizerZip,
+																organizerPlace,
+																organizerMail,
+																organizerLink,
+																registration,
+																groups,
+																all_groups,
+																public,
+																mailTitle,
+																mailContent,
+																`key`,
+																num)
+														VALUES ('$active',
+																'$catid',
+																'$startdate',
+																'$enddate',
+																'$priority',
+																'$access',
+																'$title',
+																'$comment',
+																'$link',
+																'$pic',
+																'$attach',
+																'$place',
+																'$placeStreet',
+																'$placeZip',
+																'$placeCity',
+																'$placeLink',
+																'$placeMap',
+																'$organizer',
+																'$organizerStreet',
+																'$organizerZip',
+																'$organizerPlace',
+																'$organizerMail',
+																'$organizerLink',
+																'$registration',
+																'$groups',
+																'$all_groups',
+																'$public',
+																'$mailTitle',
+																'$mailContent',
+																'$key',
+																'$registrationSubscriber')";
+			$objResult = $objDatabase->Execute($query);
+
+			if ($objResult !== false) {
+
+				$noteId = $objDatabase->Insert_ID();
+
+				if ($registration == 1) {
+					//input fields
+					foreach ($registrationArrFieldStatus as $fieldKey => $fieldStatus) {
+
+						$fieldName		= $registrationArrFieldName[$fieldKey];
+						$fieldType		= $registrationArrFieldType[$fieldKey];
+						$fieldRequired	= $registrationArrFieldRequired[$fieldKey];
+						$fieldOrder		= $registrationArrFieldOrder[$fieldKey];
+
+						$query = "INSERT INTO ".DBPREFIX."module_calendar_form_fields (`note_id`,
+																					   `name`,
+																					   `type`,
+																					   `required`,
+																					   `order`,
+																					   `key`)
+																   			   VALUES ('$noteId',
+																   			   		   '$fieldName',
+																   			   		   '$fieldType',
+																   			   		   '$fieldRequired',
+																   			   		   '$fieldOrder',
+																		               '$fieldKey')";
+						$objResultFields = $objDatabase->Execute($query);
+
+					}
+
+					if ($registrationAdresser != 0) {
+						$this->_sendRegistration($noteId);
+					}
+				}
+
+				$this->strOkMessage = $_ARRAYLANG['TXT_CALENDAR_STAT_ADDED']."<br />";
+
+				$return = $noteId;
+			} else {
+				$this->strErrMessage = $_ARRAYLANG['TXT_CALENDAR_STAT_ADDED_ERROR']."<br />";
+			}
+	    }
+
+	    return $return;
 	}
 
 	// CASE cat
@@ -1198,8 +1442,6 @@ class calendarManager extends calendarLibrary
 			}
 		}
 
-		//-----------------------------------------------------------------------------------------
-
 		if (isset($_GET['id']) and $_GET['id'] != '') {
 			$this->_objTpl->setVariable(array(
 				'TXT_CALENDAR_EDIT_CAT'            => $_ARRAYLANG['TXT_CALENDAR_EDIT_CAT'],
@@ -1352,10 +1594,39 @@ class calendarManager extends calendarLibrary
 			$objResult->MoveNext();
 		}
 
-		$query = "SELECT id,name,lang FROM ".DBPREFIX."module_calendar_categories ORDER BY pos";
-		$objResult = $objDatabase->Execute($query);
+		$query 		= "SELECT id,name,lang FROM ".DBPREFIX."module_calendar_categories ORDER BY pos";
+		$objResult 	= $objDatabase->Execute($query);
 
-//		 Parse
+		//get mail templates
+		$query 			= "SELECT setvalue
+		              	 	 FROM ".DBPREFIX."module_calendar_settings
+			            	WHERE setid = '1'";
+
+		$objResult 		= $objDatabase->SelectLimit($query, 1);
+		$mailNotTitle 		= $objResult->fields['setvalue'];
+
+		$query 			= "SELECT setvalue
+		              	 	 FROM ".DBPREFIX."module_calendar_settings
+			            	WHERE setid = '2'";
+
+		$objResult 		= $objDatabase->SelectLimit($query, 1);
+		$mailNotContent 	= $objResult->fields['setvalue'];
+
+		$query 			= "SELECT setvalue
+		              	 	 FROM ".DBPREFIX."module_calendar_settings
+			            	WHERE setid = '3'";
+
+		$objResult 		= $objDatabase->SelectLimit($query, 1);
+		$mailConTitle 	= $objResult->fields['setvalue'];
+
+		$query 			= "SELECT setvalue
+		              	 	 FROM ".DBPREFIX."module_calendar_settings
+			            	WHERE setid = '4'";
+
+		$objResult 		= $objDatabase->SelectLimit($query, 1);
+		$mailConContent = $objResult->fields['setvalue'];
+
+		//Parse
 		$this->_objTpl->setVariable(array(
 		    'TXT_CALENDAR_MENU_SETTINGS'        => $_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS'],
 	        'TXT_CALENDAR_STD_CAT'              => $_ARRAYLANG['TXT_CALENDAR_STD_CAT'],
@@ -1368,31 +1639,55 @@ class calendarManager extends calendarLibrary
 	        'TXT_CALENDAR_SET_HEADLINESCAT'	  	=> $_ARRAYLANG['TXT_CALENDAR_SET_HEADLINESCAT'],
 	        'CALENDAR_CATEGORIES'				=> $calendar_categories,
 	        'TXT_CALENDAR_SET_STDCOUNT'			=> $_ARRAYLANG['TXT_CALENDAR_SET_STDCOUNT'],
-	        'CALENDAR_STANDARDNUMBER'			=> $_CONFIG['calendardefaultcount']
+	        'CALENDAR_STANDARDNUMBER'			=> $_CONFIG['calendardefaultcount'],
+	        'TXT_CALENDAR_MAIL_TEMPLATE'		=> $_ARRAYLANG['TXT_CALENDAR_MAIL_TEMPLATE'],
+			'TXT_CALENDAR_TITLE'				=> $_ARRAYLANG['TXT_CALENDAR_TITLE'],
+			'TXT_CALENDAR_TEXT'					=> $_ARRAYLANG['TXT_CALENDAR_TEXT'],
+			'CALENDAR_NOT_MAIL_TITLE'			=> $mailNotTitle,
+			'CALENDAR_NOT_MAIL_CONTENT'			=> $mailNotContent,
+			'CALENDAR_CON_MAIL_TITLE'			=> $mailConTitle,
+			'CALENDAR_CON_MAIL_CONTENT'			=> $mailConContent,
+			'TXT_CALENDAR_PLACEHOLDERS'			=> $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDERS'],
+			'TXT_CALENDAR_FIRSTNAME'			=> $_ARRAYLANG['TXT_CALENDAR_FIRSTNAME'],
+			'TXT_CALENDAR_LASTNAME'				=> $_ARRAYLANG['TXT_CALENDAR_LASTNAME'],
+			'TXT_CALENDAR_REG_LINK'				=> $_ARRAYLANG['TXT_CALENDAR_REG_LINK'],
+			'TXT_CALENDAR_TITLE'				=> $_ARRAYLANG['TXT_CALENDAR_TITLE'],
+			'TXT_CALENDAR_START_DATE'			=> $_ARRAYLANG['TXT_CALENDAR_START_DATE'],
+			'TXT_CALENDAR_END_DATE'				=> $_ARRAYLANG['TXT_CALENDAR_END_DATE'],
+			'TXT_CALENDAR_DATE'					=> $_ARRAYLANG['TXT_CALENDAR_DATE'],
+			'TXT_CALENDAR_MAIL_CONTENT'			=> $_ARRAYLANG['TXT_CALENDAR_MAIL_CONTENT'],
+			'TXT_CALENDAR_TEXT'					=> $_ARRAYLANG['TXT_CALENDAR_TEXT'],
+			'TXT_CALENDAR_HOST_URL'				=> $_ARRAYLANG['TXT_CALENDAR_HOST_URL'],
+			'TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'			=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'],
+			'TXT_CALENDAR_REGISTRATION_TYPE'				=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_TYPE'],
+			'TXT_CALENDAR_MAIL_NOTIFICATION'				=> $_ARRAYLANG['TXT_CALENDAR_MAIL_NOTIFICATION'],
+			'TXT_CALENDAR_MAIL_CONFIRMATION'				=> $_ARRAYLANG['TXT_CALENDAR_MAIL_CONFIRMATION'],
 	    ));
 
 	    $this->_objTpl->setGlobalVariable('TXT_CALENDAR_STD_CAT_NONE', $_ARRAYLANG['TXT_CALENDAR_STD_CAT_NONE']);
 
 //		set standard
-		$query = "SELECT stdCat
-		              FROM ".DBPREFIX."module_calendar_style
-		             WHERE id = '2'";
+		$query 		= "SELECT stdCat
+		              	 FROM ".DBPREFIX."module_calendar_style
+			            WHERE id = '2'";
 
-		$objResult = $objDatabase->SelectLimit($query, 1);
+		$objResult 	= $objDatabase->SelectLimit($query, 1);
 
-	    $array1 = explode(' ', $objResult->fields['stdCat']);
-		$cats   = '';
-//
+	    $array1 	= explode(' ', $objResult->fields['stdCat']);
+		$cats   	= '';
+
 		foreach($array1 as $out){
 			$array2           = explode('>', $out);
 			$cats[$array2[0]] = $array2[1];
 		}
 
 		// get active languages
-		$lang = array(0=>"foo"); // this is needed because otherwise the first index would be 0, that's false and doesn't work with the if query below
-		$query = "SELECT id FROM ".DBPREFIX."languages
+		$lang 	= array(0=>"foo"); // this is needed because otherwise the first index would be 0, that's false and doesn't work with the if query below
+		$query 	= "SELECT id FROM ".DBPREFIX."languages
 					WHERE frontend = 1";
+
 		$objResult = $objDatabase->Execute($query);
+
 		while(!$objResult->EOF) {
 			$lang[] = $objResult->fields['id'];
 			$objResult->MoveNext();
@@ -1498,6 +1793,28 @@ class calendarManager extends calendarLibrary
 				WHERE setname = 'calendardefaultcount'";
 		$objDatabase->Execute($query);
 
+		$query = "UPDATE ".DBPREFIX."module_calendar_settings
+				SET setvalue = '".contrexx_addslashes($_POST['registrationNotMailTitle'])."'
+				WHERE setid = '1'";
+		$objDatabase->Execute($query);
+
+		$query = "UPDATE ".DBPREFIX."module_calendar_settings
+				SET setvalue = '".contrexx_addslashes($_POST['registrationNotMailContent'])."'
+				WHERE setid = '2'";
+		$objDatabase->Execute($query);
+
+		$query = "UPDATE ".DBPREFIX."module_calendar_settings
+				SET setvalue = '".contrexx_addslashes($_POST['registrationConMailTitle'])."'
+				WHERE setid = '3'";
+		$objDatabase->Execute($query);
+
+		$query = "UPDATE ".DBPREFIX."module_calendar_settings
+				SET setvalue = '".contrexx_addslashes($_POST['registrationConMailContent'])."'
+				WHERE setid = '4'";
+		$objDatabase->Execute($query);
+
+
+
 		$objSettings = &new settingsManager();
        	$objSettings->writeSettingsFile();
 	}
@@ -1512,8 +1829,6 @@ class calendarManager extends calendarLibrary
 	{
 		global $objDatabase, $_ARRAYLANG, $_LANGID;
 
-//		$objDatabase->debug = true;
-
 		$this->_objTpl->loadTemplateFile('module_calendar_placeholder.html');
 
 		$this->_objTpl->setVariable(array(
@@ -1525,7 +1840,9 @@ class calendarManager extends calendarLibrary
 			"TXT_CALENDAR_EVENT_ENDDATE"		=> $_ARRAYLANG['TXT_CALENDAR_EVENT_ENDDATE'],
 			"TXT_CALENDAR_EVENT_ENDTIME"		=> $_ARRAYLANG['TXT_CALENDAR_EVENT_ENDTIME'],
 			"TXT_CALENDAR_EVENT_NAME"			=> $_ARRAYLANG['TXT_CALENDAR_EVENT_NAME'],
-			"TXT_CALENDAR_EVENT_ID"				=> $_ARRAYLANG['TXT_CALENDAR_EVENT_ID']
+			"TXT_CALENDAR_EVENT_ID"				=> $_ARRAYLANG['TXT_CALENDAR_EVENT_ID'],
+			"TXT_CALENDAR_EVENT_THUMBNAIL"		=> $_ARRAYLANG['TXT_CALENDAR_THUMBNAIL'],
+			"TXT_CALENDAR_EVENT_SHORT_DESC"		=> $_ARRAYLANG['TXT_CALENDAR_EVENT_SHORT_DESC']
 		));
 	}
 
@@ -1570,5 +1887,171 @@ class calendarManager extends calendarLibrary
 			}
 		}
 	}
+
+
+	/**
+     * sign on/off registration
+     *
+     * @param int $type
+     */
+	function signRegistration($type)
+	{
+		global $objDatabase;
+
+		foreach ($_POST['selectedRegId'] as $arrKey => $arrId) {
+			$query = "UPDATE ".DBPREFIX."module_calendar_registrations SET type=$type WHERE id=$arrId";
+			$objDatabase->Execute($query);
+		}
+	}
+
+
+	/**
+     * del registration
+     *
+     * @param int $regId
+     */
+	function deleteRegistration($regId)
+	{
+		global $objDatabase;
+
+		if ($regId == 0) {
+			foreach ($_POST['selectedRegId'] as $arrKey => $arrId) {
+				//del registration
+				$query = "DELETE FROM ".DBPREFIX."module_calendar_registrations WHERE id='".$arrId."'";
+				$objResultDelete = $objDatabase->Execute($query);
+
+				//del data
+				$query = "DELETE FROM ".DBPREFIX."module_calendar_form_data WHERE reg_id='".$arrId."'";
+				$objResultDelete = $objDatabase->Execute($query);
+			}
+		} else {
+			//del registration
+			$query = "DELETE FROM ".DBPREFIX."module_calendar_registrations WHERE id='".$regId."'";
+			$objResultDelete = $objDatabase->Execute($query);
+
+			//del data
+			$query = "DELETE FROM ".DBPREFIX."module_calendar_form_data WHERE reg_id='".$regId."'";
+			$objResultDelete = $objDatabase->Execute($query);
+		}
+	}
+
+
+	/**
+     * del formular
+     *
+     * @param int $noteId
+     */
+	function deleteFormular($noteId)
+	{
+		global $objDatabase;
+
+		//del formular
+		$query = "DELETE FROM ".DBPREFIX."module_calendar_form_fields WHERE note_id='".$noteId."'";
+		$objResultDelete = $objDatabase->Execute($query);
+
+		//del registrations
+		$queryReg 		= "SELECT id
+							 FROM ".DBPREFIX."module_calendar_registrations
+				   		    WHERE note_id = '".$noteId."'";
+
+		$objResultReg 	= $objDatabase->Execute($queryReg);
+
+		if ($objResultReg !== false) {
+			while(!$objResultReg->EOF) {
+				$this->deleteRegistration($objResultReg->fields['id']);
+				$objResultReg->moveNext();
+			}
+		}
+	}
+
+
+	/**
+	 * Get CSV File
+	 *
+	 * @access private
+	 * @global $objDatabase
+	 * @global $_ARRAYLANG
+	 */
+	function _getCsv($id)
+	{
+		global $objDatabase, $_ARRAYLANG, $_CONFIG;
+
+		if (empty($id)) {
+			header("Location: index.php?cmd=calendar");
+			return;
+		}
+
+		//note title
+		$queryNote 		= "SELECT `name` FROM ".DBPREFIX."module_calendar WHERE id=".$id;
+		$objResultNote 	= $objDatabase->SelectLimit($queryNote, 1);
+
+		$filename = $objResultNote->fields['name'].".csv";
+
+		//note form fields
+		$queryFields 	= "SELECT id,`name` FROM ".DBPREFIX."module_calendar_form_fields WHERE note_id=".$id." ORDER BY `order`, `key`";
+		$objResultFields 	= $objDatabase->Execute($queryFields);
+
+		if ($objResultFields !== false) {
+			while (!$objResultFields->EOF) {
+				$arrFormFields[$objResultFields->fields['id']] = $objResultFields->fields['name'];
+				$objResultFields->MoveNext();
+			}
+		}
+
+		// Because we return a csv, we need to set the correct header
+		header("Content-Type: text/comma-separated-values", true);
+		header("Content-Disposition: attachment; filename=\"$filename\"", true);
+
+		$value = '';
+
+		print ($_ARRAYLANG['TXT_CALENDAR_DATE'].$this->_csvSeparator.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_TYPE'].$this->_csvSeparator);
+
+		foreach ($arrFormFields as $arrFieldId => $arrFieldName) {
+			print $this->_escapeCsvValue($arrFieldName).$this->_csvSeparator;
+		}
+
+		print ("\r\n");
+
+		$queryReg 		= "SELECT id,time,host,ip_address,type FROM ".DBPREFIX."module_calendar_registrations WHERE note_id=".$id." ORDER BY `time` DESC, `type` DESC";
+		$objResultReg 	= $objDatabase->Execute($queryReg);
+		if ($objResultReg !== false) {
+			while (!$objResultReg->EOF)
+			{
+				print (date("d.m.Y H:i:s", $objResultReg->fields['time']).$this->_csvSeparator);
+				print ($objResultReg->fields['type'] == 1 ? $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'].$this->_csvSeparator : $_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'].$this->_csvSeparator);
+
+				foreach ($arrFormFields as $arrFieldId => $arrFieldName) {
+					$queryData 		= "SELECT `data` FROM ".DBPREFIX."module_calendar_form_data WHERE field_id=".$arrFieldId." AND reg_id=".$objResultReg->fields['id']."";
+					$objResultData 	= $objDatabase->SelectLimit($queryData, 1);
+
+					print ($objResultData->fields['data'].$this->_csvSeparator);
+				}
+
+				print ("\r\n");
+
+				$objResultReg->MoveNext();
+			}
+		}
+
+		exit();
+	}
+
+	/**
+	 * Escape a value that it could be inserted into a csv file.
+	 *
+	 * @param string $value
+	 * @return string
+	 */
+	function _escapeCsvValue(&$value)
+	{
+		$value = preg_replace('/\r\n/', "\n", $value);
+		$valueModified = str_replace('"', '""', $value);
+
+		if ($valueModified != $value || preg_match('/['.$this->_csvSeparator.'\n]+/', $value)) {
+			$value = '"'.$valueModified.'"';
+		}
+		return $value;
+	}
+
 }
 ?>

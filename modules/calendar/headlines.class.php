@@ -75,7 +75,7 @@ class calHeadlines
 					$strWhere = substr($strWhere,0,strlen($strWhere)-4);
 					$strWhere .= ' ) ';
 
-					$query = "SELECT id, catid, startdate, enddate, name FROM ".DBPREFIX."module_calendar
+					$query = "SELECT id, catid, startdate, pic, comment, enddate, name FROM ".DBPREFIX."module_calendar
 							  WHERE enddate > $today  AND
 							  active = 1
 							  ".$strWhere."
@@ -83,7 +83,7 @@ class calHeadlines
 						  	LIMIT 0,".$_CONFIG['calendarheadlinescount'];
 				}
 			} else {
-				$query = "SELECT id, catid, startdate, enddate, name FROM ".DBPREFIX."module_calendar
+				$query = "SELECT id, catid, pic, startdate, enddate, comment, name FROM ".DBPREFIX."module_calendar
 				  WHERE catid = {$_CONFIG['calendarheadlinescat']}
 				  AND enddate > $today AND
 				  active = 1
@@ -95,13 +95,25 @@ class calHeadlines
 
 			if ($objResult !== false && $objResult->RecordCount()>=0) {
 				while (!$objResult->EOF) {
+					if (strlen($objResult->fields['comment']) > 100) {
+						$points = "...";
+					} else {
+						$points = "";
+					}
+
+					$parts= explode("\n", wordwrap($objResult->fields['comment'], 100, "\n"));
+
 					$this->_objTemplate->setVariable(array(
 						"CALENDAR_EVENT_ENDTIME"		=> date("H:i", $objResult->fields['enddate']),
 						"CALENDAR_EVENT_ENDDATE"		=> date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['enddate']),
 						"CALENDAR_EVENT_STARTTIME"		=> date("H:i", $objResult->fields['startdate']),
 						"CALENDAR_EVENT_STARTDATE"		=> date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['startdate']),
 						"CALENDAR_EVENT_NAME"			=> stripslashes(htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)),
-						"CALENDAR_EVENT_ID"				=> $objResult->fields['id'],
+						"CALENDAR_EVENT_THUMB" 			=> "<img src='".$objResult->fields['pic'].".thumb' border='0' alt='".$objResult->fields['name']."' />",
+						"CALENDAR_EVENT_THUMB_SOURCE" 	=> $objResult->fields['pic'],
+						"CALENDAR_EVENT_ID" 			=> $objResult->fields['id'],
+						"CALENDAR_EVENT_COMMENT"		=> $objResult->fields['comment'],
+						"CALENDAR_EVENT_SHORT_COMMENT"	=> $parts[0].$points,
 					));
 
 					$this->_objTemplate->parseCurrentBlock();

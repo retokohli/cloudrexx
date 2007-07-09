@@ -28,7 +28,7 @@ function setStyle()
 			</th>
 		</tr>
 		<tr class="row1">
-			<td style="width: 350px">
+			<td style="width: 180px">
 				{TXT_CALENDAR_SET_HEADLINES}
 			</td>
 			<td>
@@ -52,7 +52,7 @@ function setStyle()
 				</select>
 			</td>
 		</tr>
-		<tr>
+		<tr class="row2">
 			<td>{TXT_CALENDAR_SET_STDCOUNT}</td>
 			<td><input type="text" name="defaultlistcount" value="{CALENDAR_STANDARDNUMBER}" style="width: 2em;" maxlength="2" /></td>
 		</tr>
@@ -78,7 +78,136 @@ function setStyle()
 			</td>
 		</tr>
 		<!-- END calendar_std_lang -->
+    </table>
+    <br />
+    <ul id="tabmenu">
+		<li><a id="mailTab_notification" class="active" href="javascript:{}" onclick="selectTab('notification')" title="{TXT_CALENDAR_MAIL_NOTIFICATION}">{TXT_CALENDAR_MAIL_NOTIFICATION}</a></li>
+		<li><a id="mailTab_confirmation" href="javascript:{}" onclick="selectTab('confirmation')" title="{TXT_CALENDAR_MAIL_CONFIRMATION}">{TXT_CALENDAR_MAIL_CONFIRMATION}</a></li>
+	</ul>
+	<div id="notification" class="mailTab" style="display:block">
+	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+	    <tr>
+	      <th colspan="2" nowrap="nowrap">
+	        <div align="left">{TXT_CALENDAR_MAIL_TEMPLATE}</div>
+	      </th>
+	    </tr>
+	    <tr class="row3">
+			<td colspan="2" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_PLACEHOLDERS}</span></td>
+		</tr>
+		<tr class="row1">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_FIRSTNAME}</td>
+			<td nowrap="nowrap">[[FIRSTNAME]]</td>
+		</tr>
+		<tr class="row2">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_LASTNAME}</td>
+			<td nowrap="nowrap">[[LASTNAME]]</td>
+		</tr>
+		<tr class="row1">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_REG_LINK}</td>
+			<td nowrap="nowrap">[[REG_LINK]]</td>
+		</tr>
+		<tr class="row2">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_TITLE}</td>
+			<td nowrap="nowrap">[[TITLE]]</td>
+		</tr>
+		<tr class="row1">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_START_DATE}</td>
+			<td nowrap="nowrap">[[START_DATE]]</td>
+		</tr>
+		<tr class="row2">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_END_DATE}</td>
+			<td nowrap="nowrap">[[END_DATE]]</td>
+		</tr>
+		<tr class="row1">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER}</td>
+			<td nowrap="nowrap">[[NUM_SUBSCRIBER]]</td>
+		</tr>
+		<tr class="row2">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_HOST_URL}</td>
+			<td nowrap="nowrap">[[URL]]</td>
+		</tr>
+		<tr class="row1">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_DATE}</td>
+			<td nowrap="nowrap">[[DATE]]</td>
+		</tr>
+	  </table>
+	  <br />
+    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+		<tr>
+	      <th colspan="2" nowrap="nowrap">
+			{TXT_CALENDAR_MAIL_CONTENT}
+	      </th>
+		</tr>
+		<tr class="row1">
+			<td>{TXT_CALENDAR_TITLE}</td>
+			<td><input type="text" name="registrationNotMailTitle" value="{CALENDAR_NOT_MAIL_TITLE}" style="width:468px;"></td>
+		</tr>
+		<tr class="row2">
+			<td valign="top">{TXT_CALENDAR_TEXT}</td>
+			<td><textarea name="registrationNotMailContent" style="width:468px; overflow: auto;" rows='15'>{CALENDAR_NOT_MAIL_CONTENT}</textarea></td>
+		</tr>
 	</table>
+	</div>
+	<div id="confirmation" class="mailTab" style="display:none">
+	 <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+	    <tr>
+	      <th colspan="2" nowrap="nowrap">
+	        <div align="left">{TXT_CALENDAR_MAIL_TEMPLATE}</div>
+	      </th>
+	    </tr>
+	    <tr class="row3">
+			<td colspan="2" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_PLACEHOLDERS}</span></td>
+		</tr>
+		<tr class="row1">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_FIRSTNAME}</td>
+			<td nowrap="nowrap">[[FIRSTNAME]]</td>
+		</tr>
+		<tr class="row2">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_LASTNAME}</td>
+			<td nowrap="nowrap">[[LASTNAME]]</td>
+		</tr>
+		<tr class="row1">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_TITLE}</td>
+			<td nowrap="nowrap">[[TITLE]]</td>
+		</tr>
+		<tr class="row2">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_START_DATE}</td>
+			<td nowrap="nowrap">[[START_DATE]]</td>
+		</tr>
+		<tr class="row1">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_END_DATE}</td>
+			<td nowrap="nowrap">[[END_DATE]]</td>
+		</tr>
+		<tr class="row2">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_HOST_URL}</td>
+			<td nowrap="nowrap">[[URL]]</td>
+		</tr>
+		<tr class="row1">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_DATE}</td>
+			<td nowrap="nowrap">[[DATE]]</td>
+		</tr>
+		<tr class="row2">
+			<td width="120" nowrap="nowrap">{TXT_CALENDAR_REGISTRATION_TYPE}</td>
+			<td nowrap="nowrap">[[REG_TYPE]]</td>
+		</tr>
+	  </table>
+	  <br />
+	 <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+		<tr>
+	      <th colspan="2" nowrap="nowrap">
+			{TXT_CALENDAR_MAIL_CONTENT}
+	      </th>
+		</tr>
+		<tr class="row1">
+			<td>{TXT_CALENDAR_TITLE}</td>
+			<td><input type="text" name="registrationConMailTitle" value="{CALENDAR_CON_MAIL_TITLE}" style="width:468px;"></td>
+		</tr>
+		<tr class="row2">
+			<td valign="top">{TXT_CALENDAR_TEXT}</td>
+			<td><textarea name="registrationConMailContent" style="width:468px; overflow: auto;" rows='15'>{CALENDAR_CON_MAIL_CONTENT}</textarea></td>
+		</tr>
+	</table>
+	</div>
 	<br /><input type="submit" value="{TXT_SUBMIT}" />
 </form>
 

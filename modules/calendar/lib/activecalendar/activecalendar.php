@@ -458,23 +458,23 @@ function mkMonthTitle(){
 	if (!$this->monthNav){
 		// Modified!!
 		// Added a link for the monthname
-		$out="<tr><td class=\"".$this->cssMonthTitle."\" colspan=\"7\">";
+		$out="<tr><td class=\"".$this->cssMonthTitle."\" colspan=\"7\" nowrap>";
 		$out.=$this->mkUrl($this->actyear, $this->actmonth);
-		$out.=$this->getMonthName().$this->monthYearDivider."<br />".$this->actyear;
+		$out.=$this->getMonthName().$this->monthYearDivider."&nbsp;".$this->actyear;
 		$out.="</a></td></tr>\n";
 	}
 	else{
 		// Modified!!
 		// Added a link for the monthname
-		$out="<tr><td class=\"".$this->cssMonthNav."\" colspan=\"2\">";
+		$out="<tr><td class=\"".$this->cssMonthNav."\" colspan=\"1\">";
 		if ($this->actmonth==1) $out.=$this->mkMonthNavUrl($this->actyear-1,"12");
 		else $out.=$this->mkMonthNavUrl($this->actyear,$this->actmonth-1);
 
 		$out.=$this->monthNavBack."</a></td>";
-		$out.="<td class=\"".$this->cssMonthTitle."\" colspan=\"3\">";
+		$out.="<td class=\"".$this->cssMonthTitle."\" colspan=\"5\" nowrap>";
 		$out.=$this->mkUrl($this->actyear, $this->actmonth);
 		$out.=htmlentities($this->getMonthName().$this->monthYearDivider.$this->actyear, ENT_QUOTES, CONTREXX_CHARSET)."</a></td>";
-		$out.="<td class=\"".$this->cssMonthNav."\" colspan=\"2\">";
+		$out.="<td class=\"".$this->cssMonthNav."\" colspan=\"1\">";
 
 		if ($this->actmonth==12) $out.=$this->mkMonthNavUrl($this->actyear+1,"1");
 		else $out.=$this->mkMonthNavUrl($this->actyear,$this->actmonth+1);
