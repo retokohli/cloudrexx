@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 11:40:34 +0200
+* generated date Mon, 09 Jul 2007 11:40:32 +0200
 **/
 
 $_ARRAYLANG['TXT_POPUP_OVERVIEW'] = "Overview";
@@ -16,7 +16,7 @@ $_ARRAYLANG['TXT_POPUP_DEFAULT_WIDTH'] = "Standard Breite";
 $_ARRAYLANG['TXT_POPUP_DEFAULT_HEIGHT'] = "Standard Höche";
 $_ARRAYLANG['TXT_SAVE'] = "Speichern";
 $_ARRAYLANG['TXT_POPUP_JS_FUNCTION'] = "Beinhaltet die Javascript Funktion zum öffenen von Fenster. Platzierung im Header.";
-$_ARRAYLANG['TXT_POPUP_ONLOAD'] = "Ruft die einzelnen Javascript Funktionen auf. Platzierung &lt;body [[POPUP_ONLOAD]]&gt;.";
+$_ARRAYLANG['TXT_POPUP_ONLOAD'] = "Ruft die einzelnen Javascript Funktionen auf. Platzierung <body [[POPUP_ONLOAD]]>.";
 $_ARRAYLANG['TXT_POPUP_LAYER'] = "Generiert den Layer, welcher über die Website gelegt wird. Plazierung am Schluss im Body.";
 $_ARRAYLANG['TXT_POPUP_PLACEHOLDER_DESC'] = "Folgende Platzhalter müssen je nach Verwending in der <b>index.html</b> Datei platziert werden.";
 $_ARRAYLANG['TXT_NO_POPUP_FOUND'] = "keine PopUps gefunden";

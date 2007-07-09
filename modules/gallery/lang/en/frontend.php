@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 11:40:34 +0200
+* generated date Mon, 09 Jul 2007 11:40:32 +0200
 **/
 
 $_ARRAYLANG['TXT_GALLERY_EXTERNAL_SUB_CATS'] = "Subcategories";
@@ -36,7 +36,7 @@ $_ARRAYLANG['TXT_COMMENTS_ADD_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_VOTING_RATE'] = "Rate picture";
 $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'] = "You\'ve already voted on this picture. Your rating:";
 $_ARRAYLANG['TXT_VOTING_SCORE'] = "Rating";
-$_ARRAYLANG['TXT_GALLERY_IMAGE_DESCRIPTION'] = "description: ";
+$_ARRAYLANG['TXT_GALLERY_IMAGE_DESCRIPTION'] = "Description:";
 $_ARRAYLANG['TXT_IMAGES'] = "Images";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_HIERARCHY'] = "You are here:";
 ?>

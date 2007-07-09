@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 11:40:34 +0200
+* generated date Mon, 09 Jul 2007 11:40:32 +0200
 **/
 
 $_ARRAYLANG['TXT_FORUM_NO_POSTINGS'] = "Kein Beitrag vorhanden.";
@@ -11,12 +11,12 @@ $_ARRAYLANG['TXT_FORUM_OVERVIEW_THREADS'] = "Themen";
 $_ARRAYLANG['TXT_FORUM_OVERVIEW_POSTINGS'] = "Beiträge";
 $_ARRAYLANG['TXT_FORUM_THREADS_NONE'] = "Keine Beiträge in diesem Forum vorhanden.";
 $_ARRAYLANG['TXT_FORUM_THREADS_SUBJECTAUTHOR'] = "Thema / Autor";
-$_ARRAYLANG['TXT_FORUM_THREADS_REPLIES'] = "Antworten";
+$_ARRAYLANG['TXT_FORUM_THREADS_REPLIES'] = "Answeres";
 $_ARRAYLANG['TXT_FORUM_THREADS_HITS'] = "Zugriffe";
 $_ARRAYLANG['TXT_ALT_STRING'] = "The value of this picture is: , without the whitespaces between the cyphers.";
 $_ARRAYLANG['TXT_FORUM_THREAD'] = "Thema";
 $_ARRAYLANG['TXT_FORUM_ADD_THREAD'] = "Neues Thema hinzufügen";
-$_ARRAYLANG['TXT_FORUM_SUBJECT'] = "Betreff";
+$_ARRAYLANG['TXT_FORUM_SUBJECT'] = "Subject";
 $_ARRAYLANG['TXT_FORUM_MESSAGE'] = "Nachricht";
 $_ARRAYLANG['TXT_FORUM_RESET'] = "Zurücksetzen";
 $_ARRAYLANG['TXT_FORUM_CREATE_THREAD'] = "Thema erstellen";

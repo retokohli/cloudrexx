@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 11:40:34 +0200
+* generated date Mon, 09 Jul 2007 11:40:32 +0200
 **/
 
 $_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY'] = "Add guestbook entry";
@@ -32,15 +32,15 @@ $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'] = "This action can not be undone!";
 $_ARRAYLANG['TXT_GUESTBOOK_ENTRIES'] = "Guestbookentries";
 $_ARRAYLANG['TXT_SHOW_DETAILS'] = "Show details";
 $_ARRAYLANG['TXT_SETTINGS'] = "Settings";
-$_ARRAYLANG['TXT_AUTO_ACTIVATE_NEW_ENTRIES'] = "Auto activate new entries";
-$_ARRAYLANG['TXT_SEND_NOTIFICATION_MESSAGE'] = "Send notification E-Mail";
+$_ARRAYLANG['TXT_AUTO_ACTIVATE_NEW_ENTRIES'] = "Auto Activate New Entries";
+$_ARRAYLANG['TXT_SEND_NOTIFICATION_MESSAGE'] = "Send Notification E-Mail";
 $_ARRAYLANG['TXT_SELECT_ALL'] = "Select all";
 $_ARRAYLANG['TXT_DESELECT_ALL'] = "Delete mark";
 $_ARRAYLANG['TXT_SUBMIT_SELECT'] = "Select action";
 $_ARRAYLANG['TXT_SUBMIT_DELETE'] = "Delete selected";
 $_ARRAYLANG['TXT_SUBMIT_ACTIVATE'] = "Activate";
 $_ARRAYLANG['TXT_SUBMIT_DEACTIVATE'] = "Deactivate";
-$_ARRAYLANG['TXT_GUESTBOOK_ACTION'] = "Action";
+$_ARRAYLANG['TXT_GUESTBOOK_ACTION'] = "Functions";
 $_ARRAYLANG['TXT_DELETE_CATEGORY_ALL'] = "Do you really want to delete all selected entries?";
 $_ARRAYLANG['TXT_DATA_RECORD_MULTI_DELETE_ERROR'] = "Error while deleting one or more datasets";
 $_ARRAYLANG['TXT_REPLACE_AT'] = "Replace the @ in E-Mail addresses";

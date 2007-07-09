@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 11:40:34 +0200
+* generated date Mon, 09 Jul 2007 11:40:32 +0200
 **/
 
 $_ARRAYLANG['TXT_CATEGORY_MANAGER'] = "Category Manager";
@@ -12,7 +12,7 @@ $_ARRAYLANG['TXT_AUTHOR'] = "Author";
 $_ARRAYLANG['TXT_DATE'] = "Date";
 $_ARRAYLANG['TXT_EDIT_DOCUMENTS'] = "Edit documents";
 $_ARRAYLANG['TXT_DOCUMENT_ID'] = "Document ID";
-$_ARRAYLANG['TXT_ARCHIVE'] = "Archiv";
+$_ARRAYLANG['TXT_ARCHIVE'] = "Archive";
 $_ARRAYLANG['TXT_TITLE'] = "Title";
 $_ARRAYLANG['TXT_USER'] = "User";
 $_ARRAYLANG['TXT_LAST_EDIT'] = "Last edit";

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 11:40:34 +0200
+* generated date Mon, 09 Jul 2007 11:40:32 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
@@ -206,7 +206,7 @@ $_ARRAYLANG['TXT_MORE_OPTIONS'] = "Additional options";
 $_ARRAYLANG['TXT_THEMES'] = "Design template";
 $_ARRAYLANG['TXT_CREATE_BACKEND_GROUP'] = "Add backend group";
 $_ARRAYLANG['TXT_CREATE_FRONTEND_GROUP'] = "Add frontend group";
-$_ARRAYLANG['TXT_FUNCTIONS'] = "Actions";
+$_ARRAYLANG['TXT_FUNCTIONS'] = "Functions";
 $_ARRAYLANG['TXT_ACTIVATED'] = "Activated";
 $_ARRAYLANG['TXT_EXISTING_USERS'] = "Existing users";
 $_ARRAYLANG['TXT_PROTECT_EXISTING_RANGES'] = "Protect existing ranges ";

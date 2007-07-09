@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 11:40:34 +0200
+* generated date Mon, 09 Jul 2007 11:40:32 +0200
 **/
 
 $_ARRAYLANG['TXT_FORUM_CATEGORY_NAME'] = "Name der Kategorie / Forum";
@@ -57,7 +57,7 @@ $_ARRAYLANG['TXT_FORUM_SETTINGS_POSTING_PAGING_HELP'] = "Dieser Wert legt fest, 
 $_ARRAYLANG['TXT_FORUM_SETTINGS_UPDATE_OK'] = "Die neuen Einstellungen wurden erfolgreich gespeichert.";
 $_ARRAYLANG['TXT_FORUM_SELECT_ALL'] = "Alle auswählen";
 $_ARRAYLANG['TXT_FORUM_DESELECT_ALL'] = "Alle abwählen";
-$_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'] = "Kategorien &amp; Foren";
+$_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'] = "Kategorien & Foren";
 $_ARRAYLANG['TXT_CATEGORY_GLOBAL_RIGHTS'] = "global";
 $_ARRAYLANG['TXT_FORUM_THREAD'] = "Thema";
 $_ARRAYLANG['TXT_FORUM_ANONYMOUS_GROUP_NAME'] = "Anonym";
@@ -76,7 +76,7 @@ $_ARRAYLANG['TXT_FORUM_HOMECONTENT_USAGE'] = "Verwendung";
 $_ARRAYLANG['TXT_FORUM_HOMECONTENT_USAGE_TEXT'] = "Die Platzhalter können unter dem Menüpunkt \"Layout & Designs\" in der Datei <strong>forum.html</strong> einer Designvorlage verwendet werden. <br /> Diese Datei kann mit dem Platzhalter <strong>[[FORUM_FILE]]</strong> in einer beliebigen Designvorlage Datei oder in einer Inhaltsseite eingebunden werden.";
 $_ARRAYLANG['TXT_FORUM_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_FORUM_SHOW_HOME_CONTENT'] = "Neuste Einträge auf Startseite anzeigen";
-$_ARRAYLANG['TXT_FORUM_DEACTIVATE'] = "Deaktivieren";
+$_ARRAYLANG['TXT_FORUM_DEACTIVATE'] = "Deactivate";
 $_ARRAYLANG['TXT_FORUM_ACTIVATE'] = "Aktivieren";
 $_ARRAYLANG['TXT_FORUM_THREAD_NAME'] = "Name des Themas";
 $_ARRAYLANG['TXT_FORUM_EMAIL_NOTIFICATION'] = "E-Mail Benachrichtigung";
@@ -86,7 +86,7 @@ $_ARRAYLANG['TXT_FORUM_FORUM_NAME'] = "Name des Forums";
 $_ARRAYLANG['TXT_FORUM_THREAD_STARTER'] = "Name des Erstellers";
 $_ARRAYLANG['TXT_FORUM_POST_COUNT_INFO'] = "Anzahl Beiträge";
 $_ARRAYLANG['TXT_FORUM_THREAD_CREATE_DATE_INFO'] = "Erstellzungsdatum";
-$_ARRAYLANG['TXT_FORUM_EMAIL_TEMPLATE_SUBJECT'] = "Betreff";
+$_ARRAYLANG['TXT_FORUM_EMAIL_TEMPLATE_SUBJECT'] = "Subject";
 $_ARRAYLANG['TXT_FORUM_LATEST_SUBJECT'] = "Betreff des neusten Beitrags";
 $_ARRAYLANG['TXT_FORUM_LATEST_MESSAGE'] = "Inhalt des neusten Beitrags";
 $_ARRAYLANG['TXT_FORUM_USERNAME'] = "Benutzername des Empfängers";

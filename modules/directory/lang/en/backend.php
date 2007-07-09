@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 05 Jul 2007 11:40:34 +0200
+* generated date Mon, 09 Jul 2007 11:40:32 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Create new themes";
@@ -247,23 +247,23 @@ $_ARRAYLANG['TXT_USEMENT_TEXT'] = "In der Designvorlage <b>directory.html</b>. D
 $_ARRAYLANG['TXT_DIRECTORY_DEACTIVATE'] = "deactivate";
 $_ARRAYLANG['TXT_SHOW_DIR_HOMECONTENT'] = "show Directory on Homepage";
 $_ARRAYLANG['TXT_SHOW_ONLY_ENTRIES'] = "only entries";
-$_ARRAYLANG['TXT_GOOGLESEARCH'] = "Google Suche";
+$_ARRAYLANG['TXT_GOOGLESEARCH'] = "Google Search";
 $_ARRAYLANG['TXT_GOOGLERESULTS'] = "Anzahl Google Resultate";
 $_ARRAYLANG['TXTX_GOOGLEID'] = "Google Key";
 $_ARRAYLANG['TXTX_GOOGLELANG'] = "Sprachparameter";
 $_ARRAYLANG['TXT_XMLLIMIT'] = "XML Limite";
-$_ARRAYLANG['TXT_PLATFORM'] = "Plattformen";
-$_ARRAYLANG['TXT_LANGUAGE'] = "Sprachen";
+$_ARRAYLANG['TXT_PLATFORM'] = "Platforms";
+$_ARRAYLANG['TXT_LANGUAGE'] = "Languages";
 $_ARRAYLANG['TXT_LATEST_CONTENT'] = "Anzahl Einträge (Headlines)";
 $_ARRAYLANG['TXT_LATEST_XML'] = "Anzahl Einträge (XML)";
 $_ARRAYLANG['TXT_CATDESCRIPTION'] = "Category description";
 $_ARRAYLANG['TXT_ENTRYSTATUS'] = "Einträge automatisch aktiv";
 $_ARRAYLANG['TXT_POPULARDAYS'] = "Anzahl Tage für Popular";
-$_ARRAYLANG['TXT_CANTON'] = "Kantone";
+$_ARRAYLANG['TXT_CANTON'] = "Cantones";
 $_ARRAYLANG['TXT_REFRESHFEEDS'] = "XML aktualisieren (sec)";
-$_ARRAYLANG['TXT_SHOW_RSS'] = "RSS erlauben";
+$_ARRAYLANG['TXT_SHOW_RSS'] = "Allow RSS";
 $_ARRAYLANG['TXT_SHOW_FILES'] = "Dateien erlauben";
-$_ARRAYLANG['TXT_SHOW_LINKS'] = "Links erlauben";
+$_ARRAYLANG['TXT_SHOW_LINKS'] = "Allow Links";
 $_ARRAYLANG['TXT_MARK_NEW_ENTREES'] = "Neue Einträge markieren (Tage)";
 $_ARRAYLANG['TXT_SHOWCONFIRM'] = "Nicht bestätigte Feeds beim Start (Backend) anzeigen";
 $_ARRAYLANG['TXT_ADDFEED_ONLY_COMMUNITY'] = "Nur Mitglieder dürfen Einträge anmelden (Community-Modul)";
