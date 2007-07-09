@@ -308,8 +308,8 @@ class feed extends feedLibrary{
 			foreach ($rss->getItems() as $value){
 				if($x < $objResult->fields['articles']){
 					$this->_objTpl->setVariable(array(
-					    'FEED_LINK'   => strip_tags($value['link']),
-					    'FEED_NAME'   => strip_tags($rss->struct[$x]['title']),
+					    'FEED_LINK'   => htmlentities($value['link'], ENT_QUOTES, CONTREXX_CHARSET),
+					    'FEED_NAME'   => htmlentities($value['title'], ENT_QUOTES, CONTREXX_CHARSET),
 					));
 					$this->_objTpl->parse('feed_output_news');
 					$x++;

@@ -83,3 +83,7 @@ Adressverwaltung
 News-Syndication
 - Die RSS Feed werden unter PHP4 mit der Latin1 Variante korrekt eingelesen.
 - Redundante Einträge von NewsML Dokumenten werden erkannt und entfernt.
+- Die Einträge eines RSS Feeds werden korrekt verlinkt.
+
+Allgemein
+- Die HTML-Struktur beim Navigationstyp "Nested Navigation" wird korrekt ausgegeben.
