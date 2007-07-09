@@ -405,6 +405,13 @@ class Navigation
 			}
 			$navigationId[$level]++;
 
+			if ($nextLevel == NULL) $nextLevel = $match[1];
+
+			$closingTags = '';
+			for ($i=1; $i<=($level - $nextLevel); $i++) {
+				$closingTags .= "\n</ul>\n</li>";
+			}
+
             // Current block
             $this->_rowBlock = trim($this->_objTpl->_blocks['level']);
 
@@ -413,7 +420,7 @@ class Navigation
                 $cssStyle = $this->_cssPrefix.($nextLevel);
                 $nestedRow = "<li>".$this->_rowBlock."\n<ul id='$cssStyle'>";
             } elseif ($level > $match[1] && $level > $nextLevel) {
-                $nestedRow = "<li>".$this->_rowBlock."</li>\n</ul>\n</li>";
+				$nestedRow = "<li>".$this->_rowBlock."</li>".$closingTags;
             } else {
                 $nestedRow = "<li>".$this->_rowBlock."</li>";
             }
