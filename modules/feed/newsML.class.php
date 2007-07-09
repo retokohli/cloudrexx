@@ -420,6 +420,33 @@ class NewsML
 					}
 				}
 			}
+
+			$this->removeRedundantEntriesInDb();
+		}
+	}
+
+	/**
+	 * Removes redundant NewsML documents from the database.
+	 *
+	 * @global object $objDatabase
+	 * @return void
+	 */
+	function removeRedundantEntriesInDb()
+	{
+		global $objDatabase;
+
+		$objRedundantEntry = $objDatabase->SelectLimit('SELECT `publicIdentifier`, COUNT(1) as `entry_count` FROM `'.DBPREFIX.'module_feed_newsml_documents` GROUP BY `publicIdentifier` ORDER BY `entry_count` DESC', 10);
+		if ($objRedundantEntry !== false) {
+			while (!$objRedundantEntry->EOF) {
+				if ($objRedundantEntry->fields['entry_count'] > 1) {
+					$objEntry = $objDatabase->SelectLimit("DELETE FROM `".DBPREFIX."module_feed_newsml_documents` WHERE `publicIdentifier` = '".$objRedundantEntry->fields['publicIdentifier']."' ORDER BY `id` DESC", $objRedundantEntry->fields['entry_count']-1);
+				} else {
+					return;
+				}
+				$objRedundantEntry->MoveNext();
+			}
+
+			$this->removeRedundantEntriesInDb();
 		}
 	}
 
