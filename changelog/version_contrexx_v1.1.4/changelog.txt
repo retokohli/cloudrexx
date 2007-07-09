@@ -25,6 +25,9 @@ Core
   bewirkt, dass die Contentsprache basierend auf den Browser-Sprachen 
   (accept-languages) ausgewählt wird oder immer die Standardsprache verwendet
   wird.
+  
+Kontaktmanager
+- Ein Kontaktformular kann mit einem CAPTCHA-Schutz geschützt werden.
 
 ****************************************
 * Changes ******************************
@@ -79,3 +82,4 @@ Adressverwaltung
 
 News-Syndication
 - Die RSS Feed werden unter PHP4 mit der Latin1 Variante korrekt eingelesen.
+- Redundante Einträge von NewsML Dokumenten werden erkannt und entfernt.

@@ -539,7 +539,9 @@ class ContactManager extends ContactLib
 			'TXT_CONTACT_CONFIRM_UPDATE_CONTENT_SITE'		=> $_ARRAYLANG['TXT_CONTACT_CONFIRM_UPDATE_CONTENT_SITE'],
 			'TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'			=> $_ARRAYLANG['TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'],
 			'TXT_CONTACT_YES'								=> $_ARRAYLANG['TXT_CONTACT_YES'],
-			'TXT_CONTACT_NO'								=> $_ARRAYLANG['TXT_CONTACT_NO']
+			'TXT_CONTACT_NO'								=> $_ARRAYLANG['TXT_CONTACT_NO'],
+			'TXT_CONTACT_CAPTCHA_PROTECTION'				=> $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'],
+			'TXT_CONTACT_CAPTCHA_DESCRIPTION'				=> $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION']
 		));
 
 		$this->_objTpl->setGlobalVariable(array(
@@ -568,6 +570,7 @@ class ContactManager extends ContactLib
 			$formText = contrexx_stripslashes($_POST['contactFormText']);
 			$formFeedback = contrexx_stripslashes($_POST['contactFormFeedback']);
 			$formShowForm = intval($_POST['contactFormShowForm']);
+			$formUseCaptcha = intval($_POST['contactFormUseCaptcha']);
 		} elseif (isset($this->arrForms[$formId])) {
 			$arrFields = &$this->getFormFields($formId);
 			$formName = $this->arrForms[$formId]['name'];
@@ -576,6 +579,7 @@ class ContactManager extends ContactLib
 			$formText = $this->arrForms[$formId]['text'];
 			$formFeedback = stripslashes($this->arrForms[$formId]['feedback']);
 			$formShowForm = $this->arrForms[$formId]['showForm'];
+			$formUseCaptcha = $this->arrForms[$formId]['useCaptcha'];
 		} else {
 			$formName = '';
 			$formEmails = $_CONFIG['contactFormEmail'];
@@ -583,6 +587,7 @@ class ContactManager extends ContactLib
 			$formText = '';
 			$formShowForm = 0;
 			$formFeedback = $_ARRAYLANG['TXT_CONTACT_DEFAULT_FEEDBACK_TXT'];
+			$formUseCaptcha = 1;
 
 			$this->_objTpl->setVariable(array(
 				'CONTACT_FORM_FIELD_NAME'				=> '',
@@ -647,6 +652,8 @@ class ContactManager extends ContactLib
 			'CONTACT_FORM_FEEDBACK'							=> get_wysiwyg_editor('contactFormFeedback', $formFeedback, 'shop'),
 			'CONTACT_FORM_SHOW_FORM_YES'					=> $formShowForm ? 'checked="checked"' : '',
 			'CONTACT_FORM_SHOW_FORM_NO'						=> $formShowForm ? '' : 'checked="checked"',
+			'CONTACT_FORM_USE_CAPTCHA_YES'					=> $formUseCaptcha ? 'checked="checked"' : '',
+			'CONTACT_FORM_USE_CAPTCHA_NO'					=> $formUseCaptcha ? '' : 'checked="checked"',
 			'CONTACT_FORM_FIELD_TYPE_MENU_TPL'				=> $this->_getFormFieldTypesMenu('contactFormFieldType['.($lastFieldId+1).']', key($this->_arrFormFieldTypes), 'id="contactFormFieldType_'.($lastFieldId+1).'" style="width:110px;" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
 			'CONTACT_FORM_FIELD_TEXT_TPL'					=> $this->_getFormFieldAttribute(0, 'text', ''),
 			'CONTACT_FORM_FIELD_CHECKBOX_TPL'				=> $this->_getFormFieldAttribute(0, 'checkbox', 0),
@@ -729,6 +736,7 @@ class ContactManager extends ContactLib
 			$formText = isset($_POST['contactFormText']) ? contrexx_addslashes($_POST['contactFormText']) : '';
 			$formFeedback = isset($_POST['contactFormFeedback']) ? contrexx_addslashes($_POST['contactFormFeedback']) : '';
 			$formShowForm = intval($_POST['contactFormShowForm']);
+			$formUseCaptcha = intval($_POST['contactFormUseCaptcha']);
 			if (!empty($formName)) {
 				if ($this->isUniqueFormName($formName, $formId)) {
 					$arrFields = $this->_getFormFieldsFromPost($uniqueFieldNames);
@@ -753,9 +761,9 @@ class ContactManager extends ContactLib
 
 						if ($formId > 0) {
 							// This updates the database
-							$this->updateForm($formId, $formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $arrFields);
+							$this->updateForm($formId, $formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $arrFields);
 						} else {
-							$this->addForm($formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $arrFields);
+							$this->addForm($formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $arrFields);
 						}
 						$this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_FORM_SUCCESSFULLY_SAVED']."<br />";
 
@@ -1119,8 +1127,8 @@ class ContactManager extends ContactLib
 		$sourcecode .= $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'];
 		$sourcecode .= "</div>\n<br />";
 		$sourcecode .= "<!-- BEGIN contact_form -->\n";
-		$sourcecode .= "<fieldset id=\"contactFrame\">\n";		
-		$sourcecode .= "<legend>".$this->arrForms[$id]['name']."</legend>\n";	
+		$sourcecode .= "<fieldset id=\"contactFrame\">\n";
+		$sourcecode .= "<legend>".$this->arrForms[$id]['name']."</legend>\n";
 		$sourcecode .= "<form action=\"".($preview ? '../' : '')."index.php?section=contact&amp;cmd=".$id."\" ";
 		$sourcecode .= "method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return checkAllFields();\" id=\"contactForm\">\n";
 		$sourcecode .= "<table border=\"0\">\n";
@@ -1201,6 +1209,52 @@ class ContactManager extends ContactLib
 			$sourcecode .= "</td>\n";
 			$sourcecode .= "</tr>\n";
 		}
+
+		if ($preview) {
+			if ($this->arrForms[$id]['useCaptcha']) {
+				include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
+				$captcha = new Captcha();
+
+				$offset = $captcha->getOffset();
+				$alt = $captcha->getAlt();
+				$url = $captcha->getUrl();
+
+				$sourcecode .= "<tr>\n";
+				$sourcecode .= "<td colspan=\"2\">\n";
+				$sourcecode .= "<br />".$_CORELANG['TXT_CONTACT_CAPTCHA_DESCRIPTION']."<br />\n";
+				$sourcecode .= "<img src=\"".$url."\" alt=\"".$alt."\" />\n";
+				$sourcecode .= "<div style=\"color: red;\"></div>\n";
+				$sourcecode .= "<input type=\"text\" style=\"width: 58px;\" name=\"contactFormCaptcha\" /><br />\n";
+				$sourcecode .= "<input type=\"hidden\" name=\"contactFormCaptchaOffset\" value=\"".$offset."\" />\n";
+				$sourcecode .= "</td>\n";
+				$sourcecode .= "</tr>\n";
+			}
+		} elseif ($show) {
+			$sourcecode .= "<!-- BEGIN contact_form_captcha -->\n";
+			$sourcecode .= "<tr>\n";
+			$sourcecode .= "<td colspan=\"2\">\n";
+			$sourcecode .= "<br />[[TXT_CONTACT_CAPTCHA_DESCRIPTION]]<br />\n";
+			$sourcecode .= "<img src=\"[[CONTACT_CAPTCHA_URL]]\" alt=\"[[CONTACT_CAPTCHA_ALT]]\" />\n";
+			$sourcecode .= "<div style=\"color: red;\">[[CONTACT_CAPTCHA_ERROR]]</div>\n";
+			$sourcecode .= "<input type=\"text\" style=\"width: 58px;\" name=\"contactFormCaptcha\" /><br />\n";
+			$sourcecode .= "<input type=\"hidden\" name=\"contactFormCaptchaOffset\" value=\"[[CONTACT_CAPTCHA_OFFSET]]\" />\n";
+			$sourcecode .= "</td>\n";
+			$sourcecode .= "</tr>\n";
+			$sourcecode .= "<!-- END contact_form_captcha -->\n";
+		} else {
+			$sourcecode .= "<!-- BEGIN contact_form_captcha -->\n";
+			$sourcecode .= "<tr>\n";
+			$sourcecode .= "<td colspan=\"2\">\n";
+			$sourcecode .= "<br />{TXT_CONTACT_CAPTCHA_DESCRIPTION}<br />\n";
+			$sourcecode .= "<img src=\"{CONTACT_CAPTCHA_URL}\" alt=\"{CONTACT_CAPTCHA_ALT}\" />\n";
+			$sourcecode .= "<div style=\"color: red;\">{CONTACT_CAPTCHA_ERROR}</div>\n";
+			$sourcecode .= "<input type=\"text\" style=\"width: 58px;\" name=\"contactFormCaptcha\" /><br />\n";
+			$sourcecode .= "<input type=\"hidden\" name=\"contactFormCaptchaOffset\" value=\"{CONTACT_CAPTCHA_OFFSET}\" />\n";
+			$sourcecode .= "</td>\n";
+			$sourcecode .= "</tr>\n";
+			$sourcecode .= "<!-- END contact_form_captcha -->\n";
+		}
+
 		$sourcecode .= "<tr>\n";
 		$sourcecode .= "<td>&nbsp;</td>\n";
 		$sourcecode .= "<td>\n";
