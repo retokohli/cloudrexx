@@ -1940,23 +1940,17 @@ sendReq('', 1);
      */
     function doShopCatMenu($parcat=0, $level, $selectedid)
     {
-        $result = "";
+        $result = '';
         $list = $this->arrCategoriesTable[$parcat];
         if (is_array($list)) {
             while (list($key,$val)=each($list)) {
-                $output = "";
-                $selected = "";
-                if ($level != 0) {
-                    $count = $level*3;
-                    for ($i = 1; $i <= $count; $i++) {
-                        $output .="&nbsp;";
-                    }
-                }
+                $output   = str_repeat('&nbsp;', $level*3);
+                $selected = '';
                 if ($selectedid == $key) {
-                    $selected= "selected=\"selected\"";
+                    $selected= 'selected="selected"';
                 }
                 $val = htmlentities($val, ENT_QUOTES, CONTREXX_CHARSET);
-                $result.= "<option value=\"".$key."\" $selected>$output$val</option>\n";
+                $result.= "<option value=\"$key\" $selected>$output$val</option>\n";
 // fix: the following line produces infinite loops if parent == child
 //                if (isset($this->arrCategoriesTable[$key])) {
                 if ( ($key != $parcat) &&
