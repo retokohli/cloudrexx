@@ -1,6 +1,6 @@
 <?php
 //Security-Check
-if (eregi("shop_image.class.php",$_SERVER['PHP_SELF'])) 
+if (eregi("shop_image.class.php",$_SERVER['PHP_SELF']))
 {
     Header("Location: index.php");
     die();
@@ -12,9 +12,9 @@ if (eregi("shop_image.class.php",$_SERVER['PHP_SELF']))
 * Class to upload an image and create a thumbnail
 *
 * @copyright   CONTREXX CMS - COMVATION AG
-* @author      Christian Wehrli <schristian.wehrli@astalavista.ch>              
+* @author      Christian Wehrli <schristian.wehrli@astalavista.ch>
 * @module      shopmanager
-* @modulegroup shop                                                                                     
+* @modulegroup shop
 * @version	   $Id: index.inc.php,v 1.00 $
 */
 
@@ -22,7 +22,7 @@ class upload
 {
 	// class variable
 	var $file_permitted;	// array MIME type of the permited file
-	var $archive_dir;		// upload directory	
+	var $archive_dir;		// upload directory
 	var $max_filesize;		// max size of file upload
 	var $imageQuality;
 	var $imageSize;
@@ -34,22 +34,22 @@ class upload
 	var $fileName;
 	var $thumbnailName;
 	var $randomNumber;
-	
-	
+
+
     /**
     * Constructor
     *
     * @version 1.0    initial version
     * @param  string  $max_file_size
-    * @param  array   $file_perm 
+    * @param  array   $file_perm
     * @param  string  $arc_dir
     * @param  int  $quality
-    * @access public 
+    * @access public
     */
-	
+
 	function upload ($file_perm,$max_file_size = 300000,$arc_dir = "..",$quality)
 	{
-		if( empty ($file_perm)) 
+		if( empty ($file_perm))
 		{
 		    $file_perm = array ("image/pjpeg","image/x-png","image/jpeg","image/png","image/gif");
 		}
@@ -58,7 +58,7 @@ class upload
 		$this->max_filesize = $max_file_size; // set max size of file upload
 		$this->archive_dir = $arc_dir;  // set destination dir of the upload file
 	}
-	
+
 	/**
     * putFile
     *
@@ -66,9 +66,9 @@ class upload
     * @param  string  $file
     * @param  integer $pictureWidth
     * @param  integer $overwriteMode
-    * @access public 
+    * @access public
     */
-	
+
 	function putFile($file,$pictureWidth,$overwriteMode)
 	{
 		$userfile_type = strtok($_FILES[$file]['type'], ";"); // clear file type:  MIME TYPE
@@ -95,13 +95,13 @@ class upload
         {
 			$filename = basename($userfile_name); // extract file name
             if (!empty ($this->archive_dir) )
-            { 
+            {
 				$destination = $this->archive_dir."/".$this->removeBadChars(basename($filename));
             }
-			else 
+			else
 			{
 				$destination = $arc_dir.$this->removeBadChars(basename($filename));
-			}	 
+			}
 			// if exist, add a random number to the file name
 			if(file_exists($destination) AND $overwriteMode==0)
             {
@@ -111,7 +111,7 @@ class upload
             	$destination = $this->archive_dir.$this->randomNumber.$filename; // add number to file name
                 $this->fileName = $this->randomNumber.$filename;
             }
-            else 
+            else
             {
             	 $this->fileName = $filename;
             }
@@ -129,9 +129,9 @@ class upload
 			if(!empty($pictureWidth))
 			{
 				$this->resize_jpeg($destination,$destination,$pictureWidth,1600,"");
-				
+
 			}
-			return $destination; // return the full path of the file on file system of the server 
+			return $destination; // return the full path of the file on file system of the server
 		}
 		else
         {
@@ -140,37 +140,37 @@ class upload
         }
 
 	}
-	
+
 	/**
     * chkgd2
     *
     * Checks the version of the GD-Library (if installed) to use the right function to create picture
     *
     * @version 1.0    initial version
-    * @access public 
+    * @access public
     */
 
 	function chkgd2()
 	{
 		$testGD = get_extension_funcs("gd"); // Grab function list
-		if (!$testGD) 
-		{ 
-			echo "GD not even installed."; 
-			return false; 
+		if (!$testGD)
+		{
+			echo "GD not even installed.";
+			return false;
 		}
 		else
 		{
 			ob_start(); // Turn on output buffering
 			phpinfo(8); // Output in the output buffer the content of phpinfo
 			$grab = ob_get_contents(); // Grab the buffer
-			ob_end_clean(); // Clean (erase) the output buffer and turn off output buffering 
-			
+			ob_end_clean(); // Clean (erase) the output buffer and turn off output buffering
+
 			$version = strpos  ($grab,"2.0 or higher"); // search for string '2.0 or higher'
 			if ( $version ) return "gd2"; // if find the string return gd2
 			else return "gd"; // else return "gd"
 		}
-	}	
-	
+	}
+
 	/**
     * resize_jpgeg
     *
@@ -180,7 +180,7 @@ class upload
     * @param string  $new_image_file_path
     * @param integer $percent
     * @version 1.0   initial version
-    * @access public 
+    * @access public
     */
 	function resize_jpeg( $image_file_path, $new_image_file_path, $percent="" )
 	{
@@ -195,12 +195,12 @@ class upload
     	{
     		$return_val = ( ($img = ImageCreateFromJPEG ( $image_file_path )) && $return_val == 1 ) ? "1" : "0";
     	}
-    	
+
     	if(eregi("\.gif$",$image_file_path)) // if is a gif
     	{
 			$return_val = ( ($img = ImageCreateFromGIF ( $image_file_path )) && $return_val == 1 ) ? "1" : "0";
     	}
-    	
+
 		//get the original image size and store it in an array
     	$arrImageInfo = getimagesize($image_file_path);
     	$this->imageWidth= $arrImageInfo[0];
@@ -214,14 +214,14 @@ class upload
 		$this->thumbnailHeight=$new_height;
 		// check to see if gd2+ libraries are compiled with php
 		$gd_version = ( $this->chkgd2() );
-		if ( $gd_version == "gd2" ) 
-		{		
-    		$full_id =  ImageCreateTrueColor( $this->thumbnailWidth-1 , $this->thumbnailHeight-1 ); 
+		if ( $gd_version == "gd2" )
+		{
+    		$full_id =  ImageCreateTrueColor( $this->thumbnailWidth-1 , $this->thumbnailHeight-1 );
     		ImageCopyResampled($full_id,$img, 0,0,0,0, $this->thumbnailWidth, $this->thumbnailHeight, $this->imageWidth, $this->imageHeight );
 		}
 		elseif ( $gd_version == "gd" )
-		{	
-    		$full_id = ImageCreateTrueColor( $this->thumbnailWidth-1 , $this->thumbnailHeight-1  ); 
+		{
+    		$full_id = ImageCreateTrueColor( $this->thumbnailWidth-1 , $this->thumbnailHeight-1  );
     		ImageCopyResized ( $full_id, $img, 0,0,0,0, $this->thumbnailWidth, $this->thumbnailHeight, $this->imageWidth, $this->imageHeight );
 		}
 		else
@@ -238,26 +238,26 @@ class upload
     	{
 			$return_val = ( $full = ImagePNG( $full_id, $new_image_file_path ) && $return_val == 1 ) ? "1" : "0";
     	}
-    	
+
     	if(eregi("\.gif$",$image_file_path))
     	{
 			$return_val = ( $full = ImageGIF( $full_id, $new_image_file_path ) && $return_val == 1 ) ? "1" : "0";
     	}
-    	
+
         //set thumbnail size
         if(file_exists($new_image_file_path))
 		     $this->thumbnailSize= filesize($new_image_file_path);
-		//set original size     
+		//set original size
 		if(file_exists($new_image_file_path))
 		   $this->imageSize= filesize($image_file_path);
     	ImageDestroy( $full_id );
     	// --End Creation, Copying--
     	return ($return_val) ? TRUE : FALSE ;
 	}
-	
-	
+
+
 	/**
-    * createThumbnail
+    * Create Thumbnail
     *
     * Function to create a thumbnail
     *
@@ -266,31 +266,30 @@ class upload
     * @param string $pre_name
     * @param integer $percent
     * @version 1.0   initial version
-    * @access public 
-    */	
+    * @access public
+    */
 	function createThumbnail( $image_path, $path, $pre_name="thumb_" ,$percent="")
 	{
-		
 		if ( (eregi("\.png$", $image_path) || eregi("\.(jpg|jpeg)$", $image_path) || eregi("\.gif$", $image_path)) && $image_path )
         {
         	if(eregi("\.png$", $image_path))
         	   $fileExtension = ".png";
         	if(eregi("\.jpg$", $image_path))
-        	   $fileExtension = ".jpg";  
+        	   $fileExtension = ".jpg";
         	if(eregi("\.jpeg$", $image_path))
-        	   $fileExtension = ".jpeg$"; 
+        	   $fileExtension = ".jpeg$";
         	if(eregi("\.gif$", $image_path))
-        	   $fileExtension = ".gif"; 
-        	        	    
+        	   $fileExtension = ".gif";
+
 			$image_name = basename($image_path,$fileExtension). $pre_name.$fileExtension;
 			$this->thumbnailName = $image_name;
-			
-			if (!empty ($path) ) 
+
+			if (!empty ($path) )
 				$thumb_path = $path."/".$image_name; // complete path to thumbnail dir
 				//$thumb_path = $path.$image_name; // complete path to thumbnail dir
-			else 
+			else
 				$thumb_path = $pre_name.$image_name; // complete path to thumbnail dir
-			
+
 			if ($this->resize_jpeg($image_path, $thumb_path, $percent) ){
 				return $image_name ;//$thumb_path
 			}else {
@@ -298,27 +297,27 @@ class upload
 			}
 		}
         elseif ($image_path) return "Impossible to create thumbnail<br />";
-		elseif ($send && $image_path) return "<b>Error $cont</b><br />";	
+		elseif ($send && $image_path) return "<b>Error $cont</b><br />";
 	}
-	
+
 	/**
     * removeBadChars(
     *
     * @version 1.0    initial version
     * @param  string  $filename
-    * @access public 
-    */	
+    * @access public
+    */
 	function removeBadChars($filename)
-    {	
+    {
     	if(eregi("\.png$", $filename))
         	$fileExtension = ".png";
         if(eregi("\.jpg$", $filename))
-        	$fileExtension = ".jpg";  
+        	$fileExtension = ".jpg";
         if(eregi("\.jpeg$", $filename))
-        	 $fileExtension = ".jpeg$"; 
+        	 $fileExtension = ".jpeg$";
         if(eregi("\.gif$", $filename))
         	 $fileExtension = ".gif";
-        	         	    
+
 		$image_name = basename($filename,$fileExtension);
     	$image_name = strtolower($image_name);
 	    $image_name = str_replace(" ","",$image_name);
@@ -333,7 +332,7 @@ class upload
 	    $image_name = str_replace("?","",$image_name);
 	    $image_name = str_replace("!","",$image_name);
 	    $image_name = str_replace("\"","",$image_name);
-	    $image_name = str_replace("'","",$image_name);	
+	    $image_name = str_replace("'","",$image_name);
 	    $image_name = str_replace("<","",$image_name);
 	    $image_name = str_replace(">","",$image_name);
 	    $image_name = str_replace("|","",$image_name);
