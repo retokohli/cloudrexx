@@ -1,10 +1,10 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
-$_ARRAYLANG['TXT_AVAILABLE'] = "Click here to reserve";
+$_ARRAYLANG['TXT_AVAILABLE'] = "Click Here To Reserve";
 $_ARRAYLANG['TXT_OCCUPIED'] = "This date is already reserved but not confirmed!";
 $_ARRAYLANG['TXT_CONFIRMED'] = "This date is not available anymore.";
 $_ARRAYLANG['TXT_NAME'] = "Name";
@@ -17,7 +17,7 @@ $_ARRAYLANG['TXT_SETTINGS_UNIT'] = "Time unit";
 $_ARRAYLANG['TXT_SETTINGS_FRAMESTART'] = "Reservation frame start";
 $_ARRAYLANG['TXT_SETTINGS_FRAMEEND'] = "Reservation frame end";
 $_ARRAYLANG['TXT_SETTINGS_DESCRIPTION'] = "Description";
-$_ARRAYLANG['TXT_SETTINGS_MAILTEXT'] = "Confirmation mail text";
+$_ARRAYLANG['TXT_SETTINGS_MAILTEXT'] = "Confirmation E-Mail Text";
 $_ARRAYLANG['TXT_SETTINGS_CONFIRMATION'] = "Reservation has to be confirmed by the admin";
 $_ARRAYLANG['TXT_DATABASE_WRITE_ERROR'] = "An error occured while saving!";
 $_ARRAYLANG['TXT_DATABASE_SUCCESSFUL'] = "Successful saved";

@@ -1,28 +1,28 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
-$_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY'] = "Add guestbook entry";
+$_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY'] = "Add Guestbook Entry";
 $_ARRAYLANG['TXT_NAME'] = "Name";
 $_ARRAYLANG['TXT_COMMENT'] = "Comment";
 $_ARRAYLANG['TXT_LOCATION'] = "Location";
 $_ARRAYLANG['TXT_SEX'] = "Sex";
 $_ARRAYLANG['TXT_EMAIL'] = "e-mail";
-$_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "Your e-mail address is invalid!";
+$_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "Your E-Mail address is invalid!";
 $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Please fill out all recuired fields.";
-$_ARRAYLANG['TXT_ADD_ENTRY'] = "Add entry";
+$_ARRAYLANG['TXT_ADD_ENTRY'] = "Add Entry";
 $_ARRAYLANG['TXT_MALE'] = "Male";
 $_ARRAYLANG['TXT_FEMALE'] = "Female";
-$_ARRAYLANG['TXT_HOMEPAGE'] = "Homepage";
+$_ARRAYLANG['TXT_HOMEPAGE'] = "Website";
 $_ARRAYLANG['TXT_IP_ADDRESS'] = "IP Address";
 $_ARRAYLANG['TXT_STORE'] = "Save";
 $_ARRAYLANG['TXT_RESET'] = "Reset";
-$_ARRAYLANG['TXT_INVALID_INTERNET_ADDRESS'] = "Wrong internetaddress";
+$_ARRAYLANG['TXT_INVALID_INTERNET_ADDRESS'] = "Wrong URL";
 $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'] = "The data record was successfully saved";
 $_ARRAYLANG['TXT_EDIT_GUESTBOOK'] = "Edit guestbook";
-$_ARRAYLANG['TXT_EDIT_ENTRY'] = "Edit entry";
+$_ARRAYLANG['TXT_EDIT_ENTRY'] = "Edit Entry";
 $_ARRAYLANG['TXT_DATE'] = "Date";
 $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'] = "The data entry was deletet successfully!";
 $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'] = "Error while deleting the data record!";

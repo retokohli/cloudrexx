@@ -1,17 +1,17 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
-$_ARRAYLANG['TXT_CLIENT_DATA'] = "Client-Data (Useragent,Ip,Host)";
-$_ARRAYLANG['TXT_PROXY_DATA'] = "Proxy-Data(Host, Ip,Art, Useragent) ";
+$_ARRAYLANG['TXT_CLIENT_DATA'] = "Client-Data (Useragent, IP, Host)";
+$_ARRAYLANG['TXT_PROXY_DATA'] = "Proxy-Data(Host, Ip, Type, Useragent) ";
 $_ARRAYLANG['TXT_ANONYMOUS_PROXY'] = "Anonymous-Proxy";
 $_ARRAYLANG['TXT_DAY'] = "Day";
-$_ARRAYLANG['TXT_BROWSER_AND_OPERATING_SYSTEMS'] = "Browser and OS";
-$_ARRAYLANG['TXT_USER_STATISTIC'] = "Stats";
+$_ARRAYLANG['TXT_BROWSER_AND_OPERATING_SYSTEMS'] = "Browser And Operating Systems";
+$_ARRAYLANG['TXT_USER_STATISTIC'] = "Statistics";
 $_ARRAYLANG['TXT_PROXY_SERVERS'] = "Proxy Servers";
-$_ARRAYLANG['TXT_HOSTNAMES_AND_COUNTRIES'] = "Hostnames and countries";
+$_ARRAYLANG['TXT_HOSTNAMES_AND_COUNTRIES'] = "Hostnames And Countries";
 $_ARRAYLANG['TXT_SEARCHING_MACHINES_AND_SPIDERS'] = "Searchengines and spiders";
 $_ARRAYLANG['TXT_VISITORS_TODAY'] = "Today visitors";
 $_ARRAYLANG['TXT_MOST_VISITED_PAGES'] = "Wich are the most popular pages";

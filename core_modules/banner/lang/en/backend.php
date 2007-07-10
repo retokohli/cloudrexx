@@ -1,19 +1,19 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_BANNER_ADD_SELECT_ALL'] = "Select everything";
-$_ARRAYLANG['TXT_BANNER_ADD_TITLE'] = "Create new banner";
+$_ARRAYLANG['TXT_BANNER_ADD_TITLE'] = "Create New Banner";
 $_ARRAYLANG['TXT_BANNER_ADD_NAME'] = "Name";
 $_ARRAYLANG['TXT_BANNER_ADD_GROUP'] = "Group";
 $_ARRAYLANG['TXT_BANNER_ADD_GROUP_SELECT'] = "Select group";
 $_ARRAYLANG['TXT_BANNER_ADD_STATUS'] = "Status";
 $_ARRAYLANG['TXT_BANNER_ADD_CODE'] = "Code";
 $_ARRAYLANG['TXT_BANNER_ADD_RELATION'] = "Assignment";
-$_ARRAYLANG['TXT_BANNER_ADD_RELATION_SELECT'] = "Select all";
+$_ARRAYLANG['TXT_BANNER_ADD_RELATION_SELECT'] = "Select All";
 $_ARRAYLANG['TXT_BANNER_ADD_RELATION_DESELECT'] = "Deselect all";
 $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SAVE'] = "Save";
 $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_FUNCTIONS'] = "Functions";
@@ -38,7 +38,7 @@ $_ARRAYLANG['TXT_BANNER_GROUP_EDIT'] = "Edit group";
 $_ARRAYLANG['TXT_BANNER_GROUP_EMPTY'] = "Empty group";
 $_ARRAYLANG['TXT_BANNER_GROUP_EMPTY_JS'] = "Do you really want to delete all banners in this group?";
 $_ARRAYLANG['TXT_BANNER_SUBMIT_EXPAND'] = "Expand selected";
-$_ARRAYLANG['TXT_BANNER_SUBMIT_COMPRESS'] = "Compress selected";
+$_ARRAYLANG['TXT_BANNER_SUBMIT_COMPRESS'] = "Compress Selected";
 $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_DEFAULT'] = "Default";
 $_ARRAYLANG['TXT_BANNER_SETTINGS_ACTIVE'] = "Module activated";
 $_ARRAYLANG['TXT_BANNER_SETTINGS_ON'] = "Yes";
@@ -56,7 +56,7 @@ $_ARRAYLANG['TXT_BANNER_GROUP_DELETED'] = "Group was deleted.";
 $_ARRAYLANG['TXT_BANNER_GROUP_ADD_MAX_TITLE'] = "Maximum groups reached";
 $_ARRAYLANG['TXT_BANNER_GROUP_ADD_MAX_CONTENT'] = "You have reached the allowed maximum for bannergroups. You have to delete an existing group before adding a new one.";
 $_ARRAYLANG['TXT_BANNER_GROUP_ADDED'] = "Group was added.";
-$_ARRAYLANG['TXT_BANNER_SETTINGS_CONTENT'] = "Content-banner activated";
+$_ARRAYLANG['TXT_BANNER_SETTINGS_CONTENT'] = "Content Banner Activated";
 $_ARRAYLANG['TXT_BANNER_SETTINGS_TEASER'] = "Teaser-banner activated";
 $_ARRAYLANG['TXT_BANNER_NOT_ACTIVE'] = "Attention: The banner-modul is currently not activated.";
 $_ARRAYLANG['TXT_BANNER_INSERT_DONE'] = "Banner has been successfully added.";

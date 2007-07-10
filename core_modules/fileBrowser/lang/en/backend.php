@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_CLOSE'] = "Close";
@@ -9,7 +9,7 @@ $_ARRAYLANG['TXT_FILEBROWSER_MEDIA_1'] = "Media Archive #1";
 $_ARRAYLANG['TXT_FILEBROWSER_MEDIA_2'] = "Media Archive #2";
 $_ARRAYLANG['TXT_FILEBROWSER_MEDIA_3'] = "Media Archive #3";
 $_ARRAYLANG['TXT_FILEBROWSER_SHOP'] = "Shop";
-$_ARRAYLANG['TXT_FILEBROWSER_CREATE_DIRECTORY'] = "Create directory";
+$_ARRAYLANG['TXT_FILEBROWSER_CREATE_DIRECTORY'] = "Create Directory";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE'] = "Upload file";
 $_ARRAYLANG['TXT_FILEBROWSER_INVALID_CHARACTERS'] = "Invalid characters detected";
 $_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'] = "Unable to create folder %s.";

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_PREVIEW'] = "Preview";
@@ -10,9 +10,9 @@ $_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Filesize";
 $_ARRAYLANG['TXT_MEDIA_FILE_DATE'] = "Date";
 $_ARRAYLANG['TXT_MEDIA_FILE_PERM'] = "Permission";
 $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] = "Mediaarchive";
-$_ARRAYLANG['TXT_IMAGE_ADMINISTRATION'] = "Image administration";
+$_ARRAYLANG['TXT_IMAGE_ADMINISTRATION'] = "Image Administration";
 $_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'] = "This directory is empty";
-$_ARRAYLANG['TXT_MEDIA_NEW_DIRECTORY'] = "Create a new directory";
+$_ARRAYLANG['TXT_MEDIA_NEW_DIRECTORY'] = "Create A New Directory";
 $_ARRAYLANG['TXT_MEDIA_CREATE'] = "Create";
 $_ARRAYLANG['TXT_MEDIA_NAME'] = "Name";
 $_ARRAYLANG['TXT_MEDIA_CHECK_NAME'] = "Please insert a name!";
@@ -37,9 +37,9 @@ $_ARRAYLANG['TXT_MEDIA_OVERVIEW'] = "Media Overview";
 $_ARRAYLANG['TXT_MEDIA_MSG_SEVERAL_NEW_FILE'] = "Several files could not been uploaded!";
 $_ARRAYLANG['TXT_MEDIA_SELECT_ACTION'] = "Select action:";
 $_ARRAYLANG['TXT_DESIGN_FILES_ADMINISTRATION'] = "Design files administration";
-$_ARRAYLANG['TXT_MEDIA_MAKE_SELECTION'] = "Please make a selection!";
+$_ARRAYLANG['TXT_MEDIA_MAKE_SELECTION'] = "Please Make A Selection!";
 $_ARRAYLANG['TXT_MEDIA_EDIT_FILE'] = "Edit media";
-$_ARRAYLANG['TXT_MEDIA_ERROR_OCCURED'] = "An Error occured!";
+$_ARRAYLANG['TXT_MEDIA_ERROR_OCCURED'] = "An Error Occured!";
 $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EXISTS'] = "The requested file doesn\'t exist!";
 $_ARRAYLANG['TXT_MEDIA_BACK'] = "back";
 $_ARRAYLANG['TXT_MEDIA_MSG_EDIT'] = "Media successfully edited!";

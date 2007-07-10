@@ -1,16 +1,16 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM'] = "These are the informations transferred from the contact form of the website of ";
 $_ARRAYLANG['TXT_CONTACT_FORM'] = "New Webform contact entry at";
 $_ARRAYLANG['TXT_CONTACT_DATE'] = "Date";
 $_ARRAYLANG['TXT_CONTACT_HOSTNAME'] = "Hostname";
-$_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'] = "IP address";
+$_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'] = "IP Address";
 $_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'] = "Browser Language";
-$_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION'] = "Browser version ";
+$_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION'] = "Browser Version ";
 $_ARRAYLANG['TXT_CONTACT_UPLOADS'] = "Uploads";
 $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] = "Please check your input!";
 $_ARRAYLANG['TXT_FEEDBACK_ERROR'] = "Ein oder mehrere Fehler sind aufgetreten. Benüzen Sie die \"Zurück\"-Schaltfläche Ihres Browser um zurück zum Formular zu gelangen und überprüfen Sie ihre Angaben!";

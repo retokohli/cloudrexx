@@ -1,13 +1,13 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Confirmation successfully! You will now recieve the Newsletter.";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_ERROR'] = "The given data do not apply. <br>Please check the ID and the announced email address from that newsletter.";
 $_ARRAYLANG['TXT_NEWSLETTER_SEND_TO_ALL_SUBSCRIBERS_SUCCESSFUL'] = "The newsletter was sent to all subscribers";
-$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK'] = "Your email address was registered. You will receive a confirmation message shortly.";
+$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK'] = "Your E-Mail address was registered. You will receive a confirmation message shortly.";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION'] = "Newsletter subscription";
 $_ARRAYLANG['TXT_NEWSLETTER_MUST_CONFIRM'] = "Please confirm your registration by following the link below:";
 $_ARRAYLANG['TXT_NEWS_MESSAGES'] = "News messages";
@@ -24,30 +24,30 @@ $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'] = "Data record deleting error!";
 $_ARRAYLANG['TXT_SENDING_MESSAGE_ERROR'] = "Message sending error";
 $_ARRAYLANG['TXT_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBER_ALREADY_INSERTED'] = "You email address exists already in our database.";
-$_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "Es ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihre E-Mail Adresse.";
+$_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "An error has occurred. Please check your E-Mail Address";
 $_ARRAYLANG['TXT_LASTNAME'] = "Lastname";
 $_ARRAYLANG['TXT_FIRSTNAME'] = "Firstname";
 $_ARRAYLANG['TXT_STREET'] = "Street";
-$_ARRAYLANG['TXT_ZIP'] = "Zip";
+$_ARRAYLANG['TXT_ZIP'] = "ZIP";
 $_ARRAYLANG['TXT_CITY'] = "City";
 $_ARRAYLANG['TXT_COUNTRY'] = "Country";
 $_ARRAYLANG['TXT_PHONE'] = "Phone";
 $_ARRAYLANG['TXT_BIRTHDAY'] = "Birthday";
 $_ARRAYLANG['TXT_SAVE'] = "Save";
 $_ARRAYLANG['TXT_UNSUBSCRIBE'] = "Unsubscribe";
-$_ARRAYLANG['TXT_AUTHENTICATION_FAILED'] = "Authentication failed";
+$_ARRAYLANG['TXT_AUTHENTICATION_FAILED'] = "Authentication Failed!";
 $_ARRAYLANG['TXT_CATEGORY_ERROR'] = "Select a category with at least one recipient.";
 $_ARRAYLANG['TXT_NOT_VALID_EMAIL'] = "Not valid E-Mail address.";
 $_ARRAYLANG['TXT_EMAL_ALLREDY_EXIST'] = "E-Mail adress exist allredy";
-$_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'] = "Email successfully deleted";
+$_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'] = "E-Mail successfully deleted";
 $_ARRAYLANG['TXT_STATISTICS'] = "Statistics";
 $_ARRAYLANG['TXT_GENERALLY'] = "Generally";
 $_ARRAYLANG['TXT_NEWSLETTER_ALL'] = "All";
 $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'] = "Templates";
 $_ARRAYLANG['TXT_USER_TITLE'] = "Title";
-$_ARRAYLANG['TXT_EDIT_PROFILE'] = "Profil bearbeiten";
-$_ARRAYLANG['TXT_NEWSLETTER_FEMALE'] = "Frau";
-$_ARRAYLANG['TXT_NEWSLETTER_MALE'] = "Herr";
+$_ARRAYLANG['TXT_EDIT_PROFILE'] = "Edit Profile";
+$_ARRAYLANG['TXT_NEWSLETTER_FEMALE'] = "Miss";
+$_ARRAYLANG['TXT_NEWSLETTER_MALE'] = "Mr";
 $_ARRAYLANG['TXT_NEWSLETTER_LISTS'] = "Lists";
 $_ARRAYLANG['TXT_NEWSLETTER_SAVE'] = "Save";
 $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'] = "E-mail address";
@@ -55,8 +55,8 @@ $_ARRAYLANG['TXT_NEWSLETTER_TITLE'] = "Title";
 $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'] = "Lastname";
 $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'] = "Firstname";
 $_ARRAYLANG['TXT_NEWSLETTER_STREET'] = "Street";
-$_ARRAYLANG['TXT_NEWSLETTER_ZIP'] = "Zip";
-$_ARRAYLANG['TXT_NEWSLETTER_CITY'] = "Zip";
+$_ARRAYLANG['TXT_NEWSLETTER_ZIP'] = "ZIP";
+$_ARRAYLANG['TXT_NEWSLETTER_CITY'] = "ZIP";
 $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'] = "Country";
 $_ARRAYLANG['TXT_NEWSLETTER_PHONE'] = "Phone";
 $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'] = "Birthday";
@@ -67,7 +67,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_LIST'] = "You must select at least one l
 $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED'] = "Your data has been updated successfully.";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA'] = "An error occurred while updating your data!";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "An error occurred while adding you to the newsletter-sytem!";
-$_ARRAYLANG['TXT_NEWSLETTER_AUTHENTICATION_FAILED'] = "Authentication failed!";
+$_ARRAYLANG['TXT_NEWSLETTER_AUTHENTICATION_FAILED'] = "Authentication Failed!";
 $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL'] = "The subscription has been canceled because the activation email couldn't be sent!";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] = "An error occurred while removing your e-mail address from the newsletter system!";
 $_ARRAYLANG['TXT_NEWSLETTER_SEX'] = "Sex";

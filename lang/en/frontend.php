@@ -1,17 +1,17 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
-$_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
+$_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Characters)";
 $_ARRAYLANG['TXT_ACTIVE'] = "Active";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "These fields are required.";
 $_ARRAYLANG['TXT_PASSWORD_NOT_USERNAME_TEXT'] = "The password and the login name cannot be identical";
-$_ARRAYLANG['TXT_SAVE_CHANGES'] = "Save changes";
+$_ARRAYLANG['TXT_SAVE_CHANGES'] = "Save Changes";
 $_ARRAYLANG['TXT_LOGGED_IN_AS'] = "You are logged in as";
 $_ARRAYLANG['TXT_USER'] = "User";
-$_ARRAYLANG['TXT_ADD_USER'] = "Add user";
+$_ARRAYLANG['TXT_ADD_USER'] = "Add User";
 $_ARRAYLANG['TXT_USERNAME'] = "Username";
 $_ARRAYLANG['TXT_DESCRIPTION'] = "Description";
 $_ARRAYLANG['TXT_DATE'] = "Date";
@@ -26,19 +26,19 @@ $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Language";
 $_ARRAYLANG['TXT_FROM'] = "from";
 $_ARRAYLANG['TXT_PASSWORD_FIELD_EMPTY'] = "If the password field remains empty, the current password is maintained!";
 $_ARRAYLANG['TXT_SIZE'] = "File size";
-$_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database query error!";
+$_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database Query Error!";
 $_ARRAYLANG['TXT_LOGTIME'] = "Timestamp";
-$_ARRAYLANG['TXT_USERAGENT'] = "Browser and User agents";
+$_ARRAYLANG['TXT_USERAGENT'] = "Browser And User Agents";
 $_ARRAYLANG['TXT_TO'] = "to";
 $_ARRAYLANG['TXT_MONTH_ARRAY'] = "January,February,March,April,May,June,July,August,September,October,November,December";
 $_ARRAYLANG['TXT_DAY_ARRAY'] = "Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday";
 $_ARRAYLANG['TXT_HOSTNAME'] = "Hostname";
-$_ARRAYLANG['TXT_COLLAPS_LINK'] = "close";
+$_ARRAYLANG['TXT_COLLAPS_LINK'] = "Close All";
 $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Please fill out all required fields.";
 $_ARRAYLANG['TXT_LOG_OUT'] = "Logout";
 $_ARRAYLANG['TXT_EXPAND_LINK'] = "Expand";
 $_ARRAYLANG['TXT_THIS_MODULE_DOESNT_EXISTS'] = "This module does not exist.";
-$_ARRAYLANG['TXT_STATUS'] = "Active";
+$_ARRAYLANG['TXT_STATUS'] = "Status";
 $_ARRAYLANG['TXT_DESELECT_ALL'] = "Deselect All";
 $_ARRAYLANG['TXT_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_FORUM'] = "Forum";
@@ -76,7 +76,7 @@ $_ARRAYLANG['TXT_RESERVATION_MODULE'] = "Reservation system";
 $_ARRAYLANG['TXT_COMPANY'] = "Company";
 $_ARRAYLANG['TXT_EGOVERNMENT'] = "Online-Desk";
 $_ARRAYLANG['TXT_IMAGE'] = "Image";
-$_ARRAYLANG['TXT_EXP_SEARCH'] = "expanded Search";
+$_ARRAYLANG['TXT_EXP_SEARCH'] = "Expanded Search";
 $_ARRAYLANG['TXT_POPUP_MODULE_DESCRIPTION'] = "Setup Pop-up windows";
 $_ARRAYLANG['TXT_IMPRINT_MODULE_DESCRIPTION'] = "Imprint";
 $_ARRAYLANG['TXT_AGB_MODULE_DESCRIPTION'] = "General Terms and Conditions";
