@@ -1,12 +1,12 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
-$_ARRAYLANG['TXT_OPEN_TICKET'] = "Create ticket";
+$_ARRAYLANG['TXT_OPEN_TICKET'] = "Create Ticket";
 $_ARRAYLANG['TXT_DIRECTORY'] = "Directory";
-$_ARRAYLANG['TXT_SEARCH'] = "Suchen";
+$_ARRAYLANG['TXT_SEARCH'] = "Search";
 $_ARRAYLANG['TXT_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_SUBDIRECTORIES'] = "Subdirectories:";
 $_ARRAYLANG['TXT_MEMBERDIR_EXPORT_CONTACT_AS_VCARD'] = "Kontakt als VCard exportieren";

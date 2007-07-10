@@ -1,12 +1,12 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'] = "Modify Content Block %s";
-$_ARRAYLANG['TXT_BLOCK_ADD_BLOCK'] = "Add block";
-$_ARRAYLANG['TXT_BLOCK_BLOCKS'] = "Blocks";
+$_ARRAYLANG['TXT_BLOCK_ADD_BLOCK'] = "Add Content Block";
+$_ARRAYLANG['TXT_BLOCK_BLOCKS'] = "Content Blocks";
 $_ARRAYLANG['TXT_BLOCK_NAME'] = "Name";
 $_ARRAYLANG['TXT_BLOCK_PLACEHOLDER'] = "Placeholder";
 $_ARRAYLANG['TXT_BLOCK_FUNCTIONS'] = "Functions";
@@ -19,8 +19,8 @@ $_ARRAYLANG['TXT_BLOCK_USE_BLOCK_SYSTEM'] = "Use block system";
 $_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_SELECT'] = "Select action";
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_DELETE'] = "Delete selected";
-$_ARRAYLANG['TXT_BLOCK_SUBMIT_ACTIVATE'] = "activate marked";
-$_ARRAYLANG['TXT_BLOCK_SUBMIT_DEACTIVATE'] = "deactivate marked";
+$_ARRAYLANG['TXT_BLOCK_SUBMIT_ACTIVATE'] = "Activate Marked";
+$_ARRAYLANG['TXT_BLOCK_SUBMIT_DEACTIVATE'] = "Deactivate Marked";
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_RANDOM'] = "Add Marked To Random Generator";
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_RANDOM_OFF'] = "";
 $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'] = "Select All";
@@ -43,7 +43,7 @@ $_ARRAYLANG['TXT_BLOCK_OPERATION_IRREVERSIBLE'] = "This operation is irreversibl
 $_ARRAYLANG['TXT_BLOCK_CONFIRM_DELETE_BLOCK'] = "Do you really want to delete the Content Block %s?";
 $_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'] = "Copy Content Block %s";
 $_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'] = "Delete Content Block %s";
-$_ARRAYLANG['TXT_BLOCK_BLOCK_RANDOM'] = "Platzhalter für Zufallsgenerator";
+$_ARRAYLANG['TXT_BLOCK_BLOCK_RANDOM'] = "Placeholder For Random Generator";
 $_ARRAYLANG['TXT_BLOCK_BLOCK_GLOBAL'] = "Platzhalter für sämtliche Blöcke. Bei diesem Platzhalter wird die Seiten- und Sprachzuordnung auch berücksichtigt.";
 $_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR'] = "Trennzeichen im globalen Block";
 $_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR_INFO'] = "Trennzeichen zwischen den einzelnen Blöcken im globalen Block. Es kann auch HTML verwendet werden.";

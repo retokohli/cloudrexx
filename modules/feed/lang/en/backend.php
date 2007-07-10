@@ -1,23 +1,23 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_FEED_INSERT_NEW_FEED'] = "New News Feed";
 $_ARRAYLANG['TXT_FEED_CATEGORY'] = "Category";
-$_ARRAYLANG['TXT_FEED_CHOOSE_CATEGORY'] = "choose category";
+$_ARRAYLANG['TXT_FEED_CHOOSE_CATEGORY'] = "Choose Category";
 $_ARRAYLANG['TXT_FEED_NAME'] = "Name";
 $_ARRAYLANG['TXT_FEED_LINK'] = "Link";
 $_ARRAYLANG['TXT_FEED_FILE_NAME'] = "File Name";
-$_ARRAYLANG['TXT_FEED_CHOOSE_FILE_NAME'] = "choose File Name";
-$_ARRAYLANG['TXT_FEED_NUMBER_ARTICLES'] = "Number of Articles";
+$_ARRAYLANG['TXT_FEED_CHOOSE_FILE_NAME'] = "Choose File Name";
+$_ARRAYLANG['TXT_FEED_NUMBER_ARTICLES'] = "Number Of Articles";
 $_ARRAYLANG['TXT_FEED_CACHE_TIME'] = "Cache Time (sec)";
 $_ARRAYLANG['TXT_FEED_SHOW_LOGO'] = "Show Feed Logo";
 $_ARRAYLANG['TXT_FEED_STATUS'] = "Status";
 $_ARRAYLANG['TXT_FEED_SAVE'] = "Save";
 $_ARRAYLANG['TXT_FEED_NO'] = "no";
-$_ARRAYLANG['TXT_FEED_YES'] = "yes";
+$_ARRAYLANG['TXT_FEED_YES'] = "Yes";
 $_ARRAYLANG['TXT_FEED_INACTIVE'] = "inactive";
 $_ARRAYLANG['TXT_FEED_ACTIVE'] = "active";
 $_ARRAYLANG['TXT_FEED_SORTING'] = "Sorting";
@@ -43,14 +43,14 @@ $_ARRAYLANG['TXT_FEED_FORMCHECK_CACHE'] = "Please insert the cache time!";
 $_ARRAYLANG['TXT_FEED_FORMCHECK_IMAGE'] = "Please select if the feed logo should be displayed ot not!";
 $_ARRAYLANG['TXT_FEED_FORMCHECK_STATUS'] = "Please select the status!";
 $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_NEWS_FEED'] = "Error: This link contains no news!";
-$_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_DELETE'] = "Error: Error during the deleting!";
+$_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_DELETE'] = "Error: Error during delete!";
 $_ARRAYLANG['TXT_FEED_MESSAGE_IMPORTANT'] = "Importat: Here you will see the logo (if existent) and ALL the news!";
 $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_LINK_NO_NEWS'] = "Error: The link contains no news!";
 $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_EXISTING_NEWS'] = "Error: This news already exists!";
 $_ARRAYLANG['TXT_FEED_RESET'] = "Reset";
 $_ARRAYLANG['TXT_FEED_FORMCHECK_ERROR_INTERN'] = "An intern error occured! Please load the news again!";
 $_ARRAYLANG['TXT_FEED_MESSAGE_SUCCESSFULL_EDIT_NEWS'] = "News Feed has been updated successfully!";
-$_ARRAYLANG['TXT_FEED_INSERT_CATEGORY'] = "Add a new category";
+$_ARRAYLANG['TXT_FEED_INSERT_CATEGORY'] = "Add A New Category";
 $_ARRAYLANG['TXT_FEED_DELETE_CONFIRM'] = "Do you really want delete the selection?nThis operation cannot be undone!";
 $_ARRAYLANG['TXT_FEED_NO_SELECT_OPERATION'] = "Nothing has been selected for this operation!";
 $_ARRAYLANG['TXT_FEED_CAT_NAME'] = "Category Name";
@@ -127,7 +127,7 @@ $_ARRAYLANG['TXT_FEED_PLACEHOLDERS'] = "Placeholders";
 $_ARRAYLANG['TXT_FEED_PLACEHOLDER'] = "Placeholder";
 $_ARRAYLANG['TXT_FEED_DESCRIPTION'] = "Description";
 $_ARRAYLANG['TXT_FEED_ID_OF_NEWS_MSG'] = "Id of the news message";
-$_ARRAYLANG['TXT_FEED_CONTENT_OF_NEWS_MSG'] = "Content of the news message";
+$_ARRAYLANG['TXT_FEED_CONTENT_OF_NEWS_MSG'] = "Content Of The News Message";
 $_ARRAYLANG['TXT_FEED_AVAILABILITY_OF_PLACEHOLDERS'] = "The following placeholders are available for the  formation of the layout:";
 $_ARRAYLANG['TXT_FEED_SHOW_PICTURES'] = "Show pictures";
 ?>

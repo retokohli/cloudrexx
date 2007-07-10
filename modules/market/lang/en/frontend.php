@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Advertisements";
@@ -26,13 +26,13 @@ $_ARRAYLANG['TXT_MARKET_MARK_ADVERTISEMENT'] = "Mark advertisement with color";
 $_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'] = "Edit advertisement";
 $_ARRAYLANG['TXT_MARKET_DAYS'] = "Day(s)";
 $_ARRAYLANG['TXT_MARKET_IMAGE_UPLOAD_ERROR'] = "Error while uploading image.";
-$_ARRAYLANG['TXT_MARKET_ADD_ADVERTISEMENT'] = "advertisements have been inserted";
+$_ARRAYLANG['TXT_MARKET_ADD_ADVERTISEMENT'] = "Advertisements have been inserted";
 $_ARRAYLANG['TXT_MARKET_ALL'] = "All";
 $_ARRAYLANG['TXT_MARKET_OFFERS'] = "Offers";
 $_ARRAYLANG['TXT_MARKET_REQUEST'] = "Requests";
 $_ARRAYLANG['TXT_MARKET_CITY'] = "City";
-$_ARRAYLANG['TXT_MARKET_ALL_CATEGORIES'] = "All categories";
-$_ARRAYLANG['TXT_MARKET_ALL_TYPES'] = "All types";
+$_ARRAYLANG['TXT_MARKET_ALL_CATEGORIES'] = "All Categories";
+$_ARRAYLANG['TXT_MARKET_ALL_TYPES'] = "All Types";
 $_ARRAYLANG['TXT_MARKET_CATEGORY'] = "Category";
 $_ARRAYLANG['TXT_MARKET_CONTACT'] = "Contact";
 $_ARRAYLANG['TXT_MARKET_PLACE'] = "Place of article";

@@ -1,12 +1,12 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_POPUP_OVERVIEW'] = "Overview";
-$_ARRAYLANG['TXT_PUPUP_ADD_PUPUP'] = "add PopUp";
-$_ARRAYLANG['TXT_POPUP_SETTINGS'] = "Einstellungen";
+$_ARRAYLANG['TXT_PUPUP_ADD_PUPUP'] = "Add PopUp";
+$_ARRAYLANG['TXT_POPUP_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_POPUP_PLACEHOLDER'] = "Platzhalter";
 $_ARRAYLANG['TXT_POPUP_BORDER_COLOR'] = "Rahmenfarbe";
 $_ARRAYLANG['TXT_POPUP_BORDER_SIZE'] = "Rahmengrösse (Pixel)";
@@ -20,15 +20,15 @@ $_ARRAYLANG['TXT_POPUP_ONLOAD'] = "Ruft die einzelnen Javascript Funktionen auf.
 $_ARRAYLANG['TXT_POPUP_LAYER'] = "Generiert den Layer, welcher über die Website gelegt wird. Plazierung am Schluss im Body.";
 $_ARRAYLANG['TXT_POPUP_PLACEHOLDER_DESC'] = "Folgende Platzhalter müssen je nach Verwending in der <b>index.html</b> Datei platziert werden.";
 $_ARRAYLANG['TXT_NO_POPUP_FOUND'] = "keine PopUps gefunden";
-$_ARRAYLANG['TXT_POPUP_POPUPS'] = "PopUp Fenster";
+$_ARRAYLANG['TXT_POPUP_POPUPS'] = "PopUp Window";
 $_ARRAYLANG['TXT_POPUP_NAME'] = "Name";
-$_ARRAYLANG['TXT_POPUP_TYPE'] = "Typ";
-$_ARRAYLANG['TXT_POPUP_FUNCTIONS'] = "Funktionen";
-$_ARRAYLANG['TXT_POPUP_SUBMIT_SELECT'] = "Aktion wählen";
+$_ARRAYLANG['TXT_POPUP_TYPE'] = "Type";
+$_ARRAYLANG['TXT_POPUP_FUNCTIONS'] = "Functions";
+$_ARRAYLANG['TXT_POPUP_SUBMIT_SELECT'] = "Choose Action";
 $_ARRAYLANG['TXT_POPUP_SUBMIT_DELETE'] = "Markierte löschen";
 $_ARRAYLANG['TXT_POPUP_SUBMIT_ACTIVATE'] = "Markierte aktivieren";
 $_ARRAYLANG['TXT_POPUP_SUBMIT_DEACTIVATE'] = "Markierte deaktivieren";
-$_ARRAYLANG['TXT_POPUP_SELECT_ALL'] = "Alles markieren";
+$_ARRAYLANG['TXT_POPUP_SELECT_ALL'] = "Mark All";
 $_ARRAYLANG['TXT_POPUP_DESELECT_ALL'] = "Markierung löschen";
 $_ARRAYLANG['TXT_POPUP_DELETE_SELECTED_POPUP'] = "Möchten Sie die markierten PopUps wirklich löschen?";
 $_ARRAYLANG['TXT_POPUP_OPERATION_IRREVERSIBLE'] = "Dieser Vorgang kann nicht rückgängig gemacht werden! ";

@@ -1,12 +1,12 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_CATEGORY_MANAGER'] = "Category Manager";
 $_ARRAYLANG['TXT_DOC_SYS_MANAGER'] = "Documents System";
-$_ARRAYLANG['TXT_CREATE_DOCUMENT'] = "create document";
+$_ARRAYLANG['TXT_CREATE_DOCUMENT'] = "Create Document";
 $_ARRAYLANG['TXT_DOC_SYS_MENU_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_AUTHOR'] = "Author";
 $_ARRAYLANG['TXT_DATE'] = "Date";
@@ -22,13 +22,13 @@ $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Do you really want to delete the data 
 $_ARRAYLANG['TXT_DOCUMENT_DELETE_CONFIRM'] = "Do you really want to delete this document?";
 $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'] = "This action can not be undone!";
 $_ARRAYLANG['TXT_SELECT_ALL'] = "Select All";
-$_ARRAYLANG['TXT_REMOVE_SELECTION'] = "Remove selection";
+$_ARRAYLANG['TXT_REMOVE_SELECTION'] = "Remove Selection";
 $_ARRAYLANG['TXT_EDIT'] = "Edit";
 $_ARRAYLANG['TXT_MARKED'] = "marked";
 $_ARRAYLANG['TXT_ACTIVATE'] = "Activate";
 $_ARRAYLANG['TXT_DEACTIVATE'] = "Deactivate";
 $_ARRAYLANG['TXT_STATUS'] = "Status";
-$_ARRAYLANG['TXT_ADD_DOCUMENT'] = "Create new document";
+$_ARRAYLANG['TXT_ADD_DOCUMENT'] = "Create New Document";
 $_ARRAYLANG['TXT_HYPERLINKS'] = "Hyperlinks";
 $_ARRAYLANG['TXT_EXTERNAL_SOURCE'] = "External sources";
 $_ARRAYLANG['TXT_LINK'] = "Link";
@@ -43,12 +43,12 @@ $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'] = "The data record was deletet
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Error by executing the database inquery!";
 $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'] = "The data were successfully updated";
 $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'] = "The data record was added successfully";
-$_ARRAYLANG['TXT_ADD_NEW_CATEGORY'] = "Add a new category";
+$_ARRAYLANG['TXT_ADD_NEW_CATEGORY'] = "Add A New Category";
 $_ARRAYLANG['TXT_NAME'] = "Name";
 $_ARRAYLANG['TXT_ADD'] = "Add";
-$_ARRAYLANG['TXT_CATEGORY_LIST'] = "Category list";
+$_ARRAYLANG['TXT_CATEGORY_LIST'] = "Category List";
 $_ARRAYLANG['TXT_ID'] = "ID";
-$_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Accept changes";
+$_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Accept Changes";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "This action can affect the system functionality!";
 $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "The category could not be deleted! Pleas delete the subgroups first.";
 $_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND'] = "No documents found";

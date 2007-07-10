@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_VOTING_MANAGER'] = "Votings";
@@ -29,7 +29,7 @@ $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'] = "This action can not be undone!";
 $_ARRAYLANG['TXT_SUBMIT'] = "Submit";
 $_ARRAYLANG['TXT_VOTING_CODE'] = "Voting HTML Code ";
 $_ARRAYLANG['TXT_SELECT_ALL'] = "Select All";
-$_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database query error ";
+$_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database Query Error!";
 $_ARRAYLANG['TXT_VOTING_OLDER'] = "Older Votings";
 $_ARRAYLANG['TXT_VOTING_ENTRIES'] = "Votings";
 $_ARRAYLANG['TXT_VOTING_METHOD_OF_RESTRICTION_TXT'] = "Unique User Verification Methode";

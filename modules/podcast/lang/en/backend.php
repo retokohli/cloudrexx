@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_PODCAST_OVERVIEW'] = "Overview";
@@ -32,10 +32,10 @@ $_ARRAYLANG['TXT_PODCAST_MEDIUM_ADDED_SUCCESSFULL'] = "The medium has beed added
 $_ARRAYLANG['TXT_PODCAST_MEDIUM_ADDED_FAILED'] = "An error occured while adding the medium!";
 $_ARRAYLANG['TXT_PODCAST_MEDIUM_UPDATED_SUCCESSFULL'] = "The medium has been successfully updated.";
 $_ARRAYLANG['TXT_PODCAST_MEDIUM_UPDATED_FAILED'] = "An error occured while updating the medium!";
-$_ARRAYLANG['TXT_PODCAST_MEDIA_COUNT'] = "Media count";
+$_ARRAYLANG['TXT_PODCAST_MEDIA_COUNT'] = "Media Count";
 $_ARRAYLANG['TXT_PODCAST_MODIFY_CATEGORY'] = "Modify category";
 $_ARRAYLANG['TXT_PODCAST_DELETE_CATEGORY'] = "Delete category";
-$_ARRAYLANG['TXT_PODCAST_ADD_NEW_CATEGORY'] = "Add new category";
+$_ARRAYLANG['TXT_PODCAST_ADD_NEW_CATEGORY'] = "Add New Category";
 $_ARRAYLANG['TXT_PODCAST_EMPTY_CATEGORY_TITLE_MSG'] = "You must define a titel for the category!";
 $_ARRAYLANG['TXT_PODCAST_CATEGORY_UPDATED_SUCCESSFULL'] = "The category has been successfully updated.";
 $_ARRAYLANG['TXT_PODCAST_CATEGORY_UPDATED_FAILED'] = "An error occured while updating the category!";
@@ -52,8 +52,8 @@ $_ARRAYLANG['TXT_PODCAST_CONFIRM_DELETE_MEDIUM_MSG'] = "Do you really want to de
 $_ARRAYLANG['TXT_PODCAST_DELETE_MEDIUM_SUCCESSFULL_MSG'] = "The medium %s has been successfully deleted.";
 $_ARRAYLANG['TXT_PODCAST_DELETE_MEDIUM_FAILED_MSG'] = "An error occured while deleting the medium \'%s\'!";
 $_ARRAYLANG['TXT_PODCAST_CHECK_ALL'] = "Select all";
-$_ARRAYLANG['TXT_PODCAST_UNCHECK_ALL'] = "Uncheck all";
-$_ARRAYLANG['TXT_PODCAST_WITH_SELECTED'] = "with selected";
+$_ARRAYLANG['TXT_PODCAST_UNCHECK_ALL'] = "Uncheck All";
+$_ARRAYLANG['TXT_PODCAST_WITH_SELECTED'] = "Selected";
 $_ARRAYLANG['TXT_PODCAST_DELETE'] = "Delete";
 $_ARRAYLANG['TXT_PODCAST_CONFIRM_DELETE_MEDIA_MSG'] = "Do you really want to delete the selected media?";
 $_ARRAYLANG['TXT_PODCAST_DELETE_MEDIA_SUCCESSFULL_MSG'] = "The media has been successfully deleted.";
@@ -62,7 +62,7 @@ $_ARRAYLANG['TXT_PODCAST_EMPTY_CATEGORY_MSG'] = "The category %s doesn't contain
 $_ARRAYLANG['TXT_PODCAST_MEDIA_OF_CATEGORY'] = "Media of category %s";
 $_ARRAYLANG['TXT_PODCAST_TEMPLATES'] = "Templates";
 $_ARRAYLANG['TXT_PODCAST_DESCRIPTION'] = "Description";
-$_ARRAYLANG['TXT_PODCAST_ADD_NEW_TEMPLATE'] = "Add new template";
+$_ARRAYLANG['TXT_PODCAST_ADD_NEW_TEMPLATE'] = "Add New Template";
 $_ARRAYLANG['TXT_PODCAST_MODIFY_TEMPLATE'] = "Modify template";
 $_ARRAYLANG['TXT_PODCAST_DELETE_TEMPLATE'] = "Delete template";
 $_ARRAYLANG['TXT_PODCAST_TEMPLATE'] = "Template";
@@ -72,9 +72,9 @@ $_ARRAYLANG['TXT_PODCAST_TEMPLATE_UPDATED_SUCCESSFULL'] = "The template \'%s\' h
 $_ARRAYLANG['TXT_PODCAST_TEMPLATE_UPDATED_FAILED'] = "An error occured while updating the template!";
 $_ARRAYLANG['TXT_PODCAST_TEMPLATE_ADDED_SUCCESSFULL'] = "The template \'%s\' has been successfully added.";
 $_ARRAYLANG['TXT_PODCAST_TEMPLATE_ADDED_FAILED'] = "An error occured while adding a template!";
-$_ARRAYLANG['TXT_PODCAST_SHOW_HTML_SOURCE_CODE'] = "Show HTML source code";
-$_ARRAYLANG['TXT_PODCAST_SOURCE_CODE'] = "Source code ";
-$_ARRAYLANG['TXT_PODCAST_SOURCE_CODE_OF_MEDIUM'] = "Show source code of medium %s";
+$_ARRAYLANG['TXT_PODCAST_SHOW_HTML_SOURCE_CODE'] = "Show HTML Source Code";
+$_ARRAYLANG['TXT_PODCAST_SOURCE_CODE'] = "Source Code";
+$_ARRAYLANG['TXT_PODCAST_SOURCE_CODE_OF_MEDIUM'] = "Show Source Code of medium %s";
 $_ARRAYLANG['TXT_PODCAST_SELECT_ALL'] = "Select all";
 $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE'] = "Select source";
 $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'] = "Geben Sie entweder ein lokales Medium an, dass Sie zur Podcast Bibliothek hinzufügen möchten,<br />oder geben Sie direkt die URL eines Mediums an.";
@@ -87,16 +87,16 @@ $_ARRAYLANG['TXT_PODCAST_SHOW_MEDIUM'] = "Show medium";
 $_ARRAYLANG['TXT_PODCAST_MEDIUM'] = "Medium";
 $_ARRAYLANG['TXT_PODCAST_ALL'] = "All";
 $_ARRAYLANG['TXT_PODCAST_SELECT_CATEGORY'] = "Select category";
-$_ARRAYLANG['TXT_PODCAST_FILE_EXTENSIONS'] = "File extensions";
+$_ARRAYLANG['TXT_PODCAST_FILE_EXTENSIONS'] = "File Extensions";
 $_ARRAYLANG['TXT_PODCAST_STEP'] = "Step";
-$_ARRAYLANG['TXT_PODCAST_CONFIG_MEDIUM'] = "Config medium";
+$_ARRAYLANG['TXT_PODCAST_CONFIG_MEDIUM'] = "Config Medium";
 $_ARRAYLANG['TXT_PODCAST_SHOW'] = "Show";
 $_ARRAYLANG['TXT_PODCAST_CONFIRM_DELETE_TEMPLATE'] = "Do you really want to delete the template \"%s\"?";
 $_ARRAYLANG['TXT_PODCAST_TEMPLATE_DELETED_SUCCESSFULL'] = "The template \'%s\' has been successfully deleted.";
 $_ARRAYLANG['TXT_PODCAST_TEMPLATE_DELETED_FAILURE'] = "An error occured while deleting the template \'%s\'!";
 $_ARRAYLANG['TXT_PODCAST_TEMPLATE_STILL_IN_USE_MSG'] = "Die Vorlage \'%s\' kann nicht gelöscht werden, da sie noch von mindestens einem Medium verwendet wird!";
 $_ARRAYLANG['TXT_PODCAST_PLAYLENGHT'] = "Playlenght";
-$_ARRAYLANG['TXT_PODCAST_PLAYLENGHT_FORMAT'] = "hours:minutes:seconds";
+$_ARRAYLANG['TXT_PODCAST_PLAYLENGHT_FORMAT'] = "Hours:Minutes:Seconds";
 $_ARRAYLANG['TXT_PODCAST_AUTHOR'] = "Author";
 $_ARRAYLANG['TXT_PODCAST_HOUR'] = "Hour";
 $_ARRAYLANG['TXT_PODCAST_HOURS'] = "Hours";
@@ -114,5 +114,5 @@ $_ARRAYLANG['TXT_PODCAST_BYTES'] = "Bytes";
 $_ARRAYLANG['TXT_PODCAST_FEED_TITLE'] = "Podcast-Feed title";
 $_ARRAYLANG['TXT_PODCAST_FEED_DESCRIPTION'] = "Podcast-Feed description";
 $_ARRAYLANG['TXT_PODCAST_FEED_IMAGE'] = "Podcast-Feed image";
-$_ARRAYLANG['TXT_PODCAST_FEED_LINK'] = "Podcast-Feed link";
+$_ARRAYLANG['TXT_PODCAST_FEED_LINK'] = "Podcast-Feed Link";
 ?>

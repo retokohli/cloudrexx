@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM'] = "Hier sind die übermittelten Informationen vom Kontaktformular der Webseite von";
@@ -25,5 +25,5 @@ $_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "Die Datei %s wurde nicht hinauf gel
 $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Die Datei %s wurde nicht komplet hinauf geladen!";
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Eine Datei wurde nicht hinauf geladen!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Tippen Sie bitte die Zeichenfolge im dargestellten Bild in das Textfeld ein. Dies ist Notwendig, damit das System Sie von einem Spambot unterscheiden kann.";
-$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Die eingegebene Zeichenfolge war falsch.";
+$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Die eingegebene Zeichenfolge war falsch!";
 ?>

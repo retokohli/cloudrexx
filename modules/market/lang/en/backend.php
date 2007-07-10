@@ -1,11 +1,11 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Advertisements";
-$_ARRAYLANG['TXT_NEW_CATEGORIE'] = "new Categorie";
+$_ARRAYLANG['TXT_NEW_CATEGORIE'] = "New Category";
 $_ARRAYLANG['TXT_ENTRIES'] = "Advertisements";
 $_ARRAYLANG['TXT_NEW_ENTRY'] = "new Advertisement";
 $_ARRAYLANG['TXT_SETTINGS'] = "Settings";
@@ -41,17 +41,17 @@ $_ARRAYLANG['TXT_MARKET_DAYS'] = "Day(s)";
 $_ARRAYLANG['TXT_MARKET_EDIT_SUCCESSFULLY'] = "The advertisement has been updated successfully.";
 $_ARRAYLANG['TXT_MARKET_IMAGE_UPLOAD_ERROR'] = "Error while uploading image.";
 $_ARRAYLANG['TXT_MARKET_VALIDATION_EMAIL'] = "Validation E-Mail";
-$_ARRAYLANG['TXT_MARKET_CLEARING_EMAIL'] = "Clearing code E-Mail";
+$_ARRAYLANG['TXT_MARKET_CLEARING_EMAIL'] = "Clearing-Code E-Mail";
 $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'] = "Settings have been saved successfully.";
 $_ARRAYLANG['TXT_MARKET_PLACEHOLDER'] = "Placeholder";
-$_ARRAYLANG['TXT_MARKET_ACTIVATE_VALIDATION_EMAIL'] = "Activate validation e-mail";
-$_ARRAYLANG['TXT_MARKET_ADDITIONAL_RECIPENT'] = "Additional recipent";
+$_ARRAYLANG['TXT_MARKET_ACTIVATE_VALIDATION_EMAIL'] = "Activate Validation E-Mail";
+$_ARRAYLANG['TXT_MARKET_ADDITIONAL_RECIPENT'] = "Additional Recipent";
 $_ARRAYLANG['TXT_MARKET_SUBJECT'] = "Subject";
 $_ARRAYLANG['TXT_MARKET_TEXT'] = "Body";
 $_ARRAYLANG['TXT_MARKET_URL'] = "URL";
 $_ARRAYLANG['TXT_MARKET_LINK'] = "Link";
 $_ARRAYLANG['TXT_MARKET_ADVERTISEMENT_ID'] = "Advertisement ID";
-$_ARRAYLANG['TXT_MARKET_ADVERTISEMENT_TITLE'] = "Advertisement subject";
+$_ARRAYLANG['TXT_MARKET_ADVERTISEMENT_TITLE'] = "Advertisement Subject";
 $_ARRAYLANG['TXT_MARKTE_PAYPAL_EMAIL'] = "PayPal e-mail";
 $_ARRAYLANG['TXT_MARKET_PAYPAL_ACTIVATE'] = "Activate PayPal";
 $_ARRAYLANG['TXT_MARKET_PAYPAL_CURRENCIES'] = "Accept only the following currencies";
@@ -59,7 +59,7 @@ $_ARRAYLANG['TXT_MARKET_PAYPAL_PRICE'] = "Price for advertisement";
 $_ARRAYLANG['TXT_MARKET_PAYPAL_MARKED'] = "Fee for marked advertisement";
 $_ARRAYLANG['TXT_MARKET_CODE_SEND'] = "Send code to an advertiser";
 $_ARRAYLANG['TXT_MARKET_CODE_CLEARING_CODE'] = "Receiver of clearing code";
-$_ARRAYLANG['TXT_MARKET_CODE_CLEARINGCODE'] = "Clearing code";
+$_ARRAYLANG['TXT_MARKET_CODE_CLEARINGCODE'] = "Clearing-Code";
 $_ARRAYLANG['TXT_MARKET_ADD_SUCCESS'] = "The advertisement has been added successfully.";
 $_ARRAYLANG['TXT_MARKET_DELETE_SUCCESS'] = "The advertisement has been deleted successfully.";
 $_ARRAYLANG['TXT_MARKET_IMAGE_DELETE_ERROR'] = "Error while deleting image.";

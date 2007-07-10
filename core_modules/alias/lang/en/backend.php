@@ -1,26 +1,26 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 09 Jul 2007 11:40:32 +0200
+* generated date Tue, 10 Jul 2007 11:58:48 +0200
 **/
 
 $_ARRAYLANG['TXT_ALIAS_ALIASES'] = "Aliase";
 $_ARRAYLANG['TXT_ALIAS_ALIAS'] = "Alias";
-$_ARRAYLANG['TXT_ALIAS_SETTINGS'] = "Einstellungen";
+$_ARRAYLANG['TXT_ALIAS_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_ALIAS_DELETE'] = "Delete";
 $_ARRAYLANG['TXT_ALIAS_MODIFY'] = "Edit";
-$_ARRAYLANG['TXT_ALIAS_PAGE'] = "Seite";
+$_ARRAYLANG['TXT_ALIAS_PAGE'] = "Page";
 $_ARRAYLANG['TXT_ALIAS_ALIAS_ES'] = "Alias(e)";
-$_ARRAYLANG['TXT_ALIAS_FUNCTIONS'] = "Funktionen";
+$_ARRAYLANG['TXT_ALIAS_FUNCTIONS'] = "Functions";
 $_ARRAYLANG['TXT_ALIAS_MODIFY_ALIAS'] = "Edit alias";
 $_ARRAYLANG['TXT_ALIAS_ADD_ALIAS'] = "Neues Alias hinzufügen";
-$_ARRAYLANG['TXT_ALIAS_TARGET_PAGE'] = "Ziel Seite";
+$_ARRAYLANG['TXT_ALIAS_TARGET_PAGE'] = "Target Page";
 $_ARRAYLANG['TXT_ALIAS_LOCAL'] = "Local";
 $_ARRAYLANG['TXT_ALIAS_URL'] = "URL";
 $_ARRAYLANG['TXT_ALIAS_BROWSE'] = "Webseiten durchsuchen";
 $_ARRAYLANG['TXT_ALIAS_CONFIRM_REMOVE_ALIAS'] = "Möchten Sie das Alias %s wirklich entfernen?";
 $_ARRAYLANG['TXT_ALIAS_ADD_ANOTHER_ALIAS'] = "weiteres Alias hinzufügen";
-$_ARRAYLANG['TXT_ALIAS_SAVE'] = "Speichern";
+$_ARRAYLANG['TXT_ALIAS_SAVE'] = "Save";
 $_ARRAYLANG['TXT_ALIAS_CANCEL'] = "Cancel";
 $_ARRAYLANG['TXT_ALIAS_ONE_ALIAS_REQUIRED_MSG'] = "Sie müssen mindestens ein Alias definieren!";
 $_ARRAYLANG['TXT_ALIAS_URL_REQUIRED_MSG'] = "Sie müssen eine URL angeben!";
