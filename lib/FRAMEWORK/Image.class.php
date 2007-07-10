@@ -144,6 +144,67 @@ class ImageManager
 
 
     /**
+     * Create a thumbnail of a picture.
+     *
+     * This is very much like {@link _createThumb()}, but provides more
+     * parameters.  Both the width and height of the thumbnail may be
+     * specified; the picture will still be scaled to fit within the given
+     * sizes while keeping the original width/height ratio.
+     * In addition to that, this method tries to delete an existing
+     * thumbnail before attempting to write the new one.
+     * @param   string  $strPath        The image file folder
+     * @param   string  $strWebPath     The image file web folder
+     * @param   string  $file           The image file name
+     * @param   integer $maxWidth       The maximum width of the image
+     * @param   integer $maxHeight      The maximum height of the image
+     * @param   integer $quality        The desired jpeg thumbnail quality
+     * @return  bool                    True on success, false otherwise.
+     */
+    function _createThumbWhq(
+        $strPath, $strWebPath, $file, $maxWidth=80, $maxHeight=80, $quality=90
+    ) {
+        $objFile   = new File();
+        $_objImage = new ImageManager();
+        $file      = basename($file);
+        $tmpSize   = getimagesize($strPath.$file);
+
+        $width       = $tmpSize[0];
+        $height      = $tmpSize[1];
+        $widthRatio  = $width/$maxWidth;
+        $heightRatio = $height/$maxHeight;
+        $thumbWidth  = 0;
+        $thumbHeight = 0;
+
+        if ($widthRatio < $heightRatio) {
+            $thumbHeight = $maxHeight;
+            $thumbWidth  = $width*$maxHeight/$height;
+        } else {
+            $thumbWidth  = $maxWidth;
+            $thumbHeight = $height*$maxWidth/$width;
+        }
+
+        if (!$_objImage->loadImage($strPath.$file)) {
+            return false;
+        }
+        if (!$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) {
+            return false;
+        }
+        if (is_file("$strPath$file.thumb")) {
+            if (!unlink("$strPath$file.thumb")) {
+                return false;
+            }
+        }
+        if (!$_objImage->saveNewImage("$strPath$file.thumb")) {
+            return false;
+        }
+        if (!$objFile->setChmod($strPath, $strWebPath, "$file.thumb")) {
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
      * Resize Image
      *
      * Resizes the loaded Image as you wish and creates a variable with
