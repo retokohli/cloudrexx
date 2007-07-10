@@ -247,6 +247,23 @@ class Settings {
                                     WHERE name='payment_lsv_status'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
+
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+                                    SET value=".intval($_POST['shop_thumbnail_max_width'])."
+                                    WHERE name='shop_thumbnail_max_width'"
+                                );
+            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+                                    SET value=".intval($_POST['shop_thumbnail_max_height'])."
+                                    WHERE name='shop_thumbnail_max_height'"
+                                );
+            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+                                    SET value=".intval($_POST['shop_thumbnail_quality'])."
+                                    WHERE name='shop_thumbnail_quality'"
+                                );
+            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
+
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_config");
             return true;
         }

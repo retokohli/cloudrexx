@@ -48,6 +48,7 @@ function setVatUnset()
 <li><a id="generalTab_shopContent1" class="active" href="javascript:{}" onclick="selectTab('shopContent1')" title="{TXT_GENERAL_SETTINGS}">{TXT_GENERAL_SETTINGS}</a></li>
 <li><a id="generalTab_shopContent2" href="javascript:{}" onclick="selectTab('shopContent2')" title="{TXT_PAYMENT_HANDLER}">{TXT_PAYMENT_HANDLER}</a></li>
 <li><a id="generalTab_shopContent3" href="javascript:{}" onclick="selectTab('shopContent3')" title="{TXT_TAXES}">{TXT_TAXES}</a></li>
+<li><a id="generalTab_shopContent4" href="javascript:{}" onclick="selectTab('shopContent4')" title="{TXT_SHOP_IMAGE_SETTINGS}">{TXT_SHOP_IMAGE_SETTINGS}</a></li>
 </ul>
 <form name="shopForm" method="post" action="?cmd=shop&amp;act=settings&amp;tpl=general">
 <!-- start shopContent1 div -->
@@ -241,6 +242,42 @@ function setVatUnset()
   <br />
 </div>
 <!-- end shopContent3 div -->
+
+<!-- start shopContent4 div -->
+<div id="shopContent4" class="generalTab" style="display:none;">
+    <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+      <tr>
+        <th>{TXT_SHOP_IMAGE_SETTINGS}</th>
+      </tr>
+      <tr class="row1">
+        <td nowrap="nowrap" width='10%'>
+          {TXT_SHOP_THUMBNAIL_MAX_WIDTH}
+        </td>
+        <td colspan="2" width='90%'>
+          <input type="text" name="shop_thumbnail_max_width" value="{SHOP_THUMBNAIL_MAX_WIDTH}" size="6" maxlength="3" />
+        </td>
+      </tr>
+      <tr class="row2">
+        <td nowrap="nowrap" width='10%'>
+          {TXT_SHOP_THUMBNAIL_MAX_HEIGHT}
+        </td>
+        <td colspan="2" width='90%'>
+          <input type="text" name="shop_thumbnail_max_height" value="{SHOP_THUMBNAIL_MAX_HEIGHT}" size="6" maxlength="3" />
+        </td>
+      </tr>
+      <tr class="row1">
+        <td nowrap="nowrap" width='10%'>
+          {TXT_SHOP_THUMBNAIL_QUALITY}
+        </td>
+        <td colspan="2" width='90%'>
+          <input type="text" name="shop_thumbnail_quality" value="{SHOP_THUMBNAIL_QUALITY}" size="6" maxlength="3" />
+        </td>
+      </tr>
+    </table>
+  <br />
+</div>
+<!-- end shopContent4 div -->
+
 <input type="submit" name="general" value="{TXT_STORE}" />
 </form>
 <!-- END module_shop_settings_general.html -->

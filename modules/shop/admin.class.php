@@ -1081,19 +1081,24 @@ class shopmanager extends ShopLibrary {
                 continue;
             }
             $imageName = $objResult->fields['picture'];
+            // only try to create thumbs from entries that contain a
+            // plain text file name (i.e. from an import)
             if (   $imageName == ''
                 || !preg_match('/\.(?:jpg|jpeg|gif|png)$/', $imageName)) {
                 continue;
             }
-            // delete old thumb
-            unlink($this->shopImagePath.$imageName.$this->thumbnailNameSuffix);
+            // delete old thumb - now integrated into _createThumbWhq()
+            //unlink($this->shopImagePath.$imageName.$this->thumbnailNameSuffix);
             // reset the ImageManager
             $objImageManager->imageCheck = 1;
             // create thumbnail
-            if ($objImageManager->_createThumb(
-                ASCMS_SHOP_IMAGES_PATH.'/',
-                ASCMS_SHOP_IMAGES_WEB_PATH.'/',
-                $imageName
+            if ($objImageManager->_createThumbWhq(
+                $this->shopImagePath,
+                $this->shopImageWebPath,
+                $imageName,
+                $_CONFIG['shop_thumbnail_max_width'],
+                $_CONFIG['shop_thumbnail_max_height'],
+                $_CONFIG['shop_thumbnail_quality']
             )) {
                 $width  = $objImageManager->orgImageWidth;
                 $height = $objImageManager->orgImageHeight;
@@ -1692,108 +1697,112 @@ class shopmanager extends ShopLibrary {
 
         //set language variables
         $this->_objTpl->setGlobalVariable(array(
-        // Global variables
-        'TXT_ADD_ALL'                      => $_ARRAYLANG['TXT_ADD_ALL'],
-        'TXT_ADD_SELECTION'                => $_ARRAYLANG['TXT_ADD_SELECTION'],
-        'TXT_REMOVE_ALL'                   => $_ARRAYLANG['TXT_REMOVE_ALL'],
-        'TXT_REMOVE_SELECTION'             => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
-        'TXT_ADD'                          => $_ARRAYLANG['TXT_ADD'],
-        'TXT_STORE'                        => $_ARRAYLANG['TXT_STORE'],
-        'TXT_ACTIVE'                       => $_ARRAYLANG['TXT_ACTIVE'],
-        'TXT_ACTION'                       => $_ARRAYLANG['TXT_ACTION'],
-        'TXT_NAME'                         => $_ARRAYLANG['TXT_NAME'],
-        'TXT_FEE'                          => $_ARRAYLANG['TXT_FEE'],
-        'TXT_FREE_OF_CHARGE'               => $_ARRAYLANG['TXT_FREE_OF_CHARGE'],
-        'TXT_FREE_OF_CHARGE_TIP'           => $_ARRAYLANG['TXT_FREE_OF_CHARGE_TIP'],
-        'TXT_ZONE'                         => $_ARRAYLANG['TXT_ZONE'],
-        'TXT_MAIL_TEMPLATES'               => $_ARRAYLANG['TXT_MAIL_TEMPLATES'],
-        'TXT_CURRENCIES'                   => $_ARRAYLANG['TXT_CURRENCIES'],
-        'TXT_GENERAL_SETTINGS'             => $_ARRAYLANG['TXT_GENERAL_SETTINGS'],
-        'TXT_GENERAL'                      => $_ARRAYLANG['TXT_GENERAL'],
-        'TXT_CURRENCY_CONVERTER'           => $_ARRAYLANG['TXT_CURRENCY_CONVERTER'],
-        'TXT_RATE'                         => $_ARRAYLANG['TXT_RATE'],
-        'TXT_SYMBOL'                       => $_ARRAYLANG['TXT_SYMBOL'],
-        'TXT_ID'                           => $_ARRAYLANG['TXT_ID'],
-        'TXT_STANDARD'                     => $_ARRAYLANG['TXT_STANDARD'],
-        'TXT_SHIPPING_METHODS'             => $_ARRAYLANG['TXT_SHIPPING_METHODS'],
-        'TXT_SHIPPING_METHOD'              => $_ARRAYLANG['TXT_SHIPPING_METHOD'],
-        'TXT_LANGUAGE'                     => $_ARRAYLANG['TXT_LANGUAGE'],
-        'TXT_HANDLER'                      => $_ARRAYLANG['TXT_HANDLER'],
-        'TXT_PAYMENT_HANDLER'              => $_ARRAYLANG['TXT_PAYMENT_HANDLER'],
-        'TXT_SEPARATED_WITH_COMMAS'        => $_ARRAYLANG['TXT_SEPARATED_WITH_COMMAS'],
-        'TXT_CONFIRMATION_EMAILS'          => $_ARRAYLANG['TXT_CONFIRMATION_EMAILS'],
-        'TXT_CONTACT_COMPANY'              => $_ARRAYLANG['TXT_CONTACT_COMPANY'],
-        'TXT_CONTACT_ADDRESS'              => $_ARRAYLANG['TXT_CONTACT_ADDRESS'],
-        'TXT_PHONE_NUMBER'                 => $_ARRAYLANG['TXT_PHONE_NUMBER'],
-        'TXT_FAX_NUMBER'                   => $_ARRAYLANG['TXT_FAX_NUMBER'],
-        'TXT_SHOP_EMAIL'                   => $_ARRAYLANG['TXT_SHOP_EMAIL'],
-        'TXT_STATEMENT'                    => $_ARRAYLANG['TXT_STATEMENT'],
-        'TXT_AUTORIZATION'                 => $_ARRAYLANG['TXT_AUTORIZATION'],
-        'TXT_CODE'                         => "ISO-CODE",
-        'TXT_STATEMENT'                    => $_ARRAYLANG['TXT_STATEMENT'],
-        'TXT_STATEMENT'                    => $_ARRAYLANG['TXT_STATEMENT'],
-        'TXT_COUNTRY'                      => $_ARRAYLANG['TXT_COUNTRY'],
-        'TXT_ZONES'                        => $_ARRAYLANG['TXT_ZONES'],
-        'TXT_EDIT'                         => $_ARRAYLANG['TXT_EDIT'],
-        'TXT_DELETE'                       => $_ARRAYLANG['TXT_DELETE'],
-        'TXT_ACTION_IS_IRREVERSIBLE'       => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
-        'TXT_CONFIRM_DELETE_CURRENCY'      => $_ARRAYLANG['TXT_CONFIRM_DELETE_CURRENCY'],
-        'TXT_PAYMENT_TYPES'                => $_ARRAYLANG['TXT_PAYMENT_TYPES'],
-        'TXT_PAYMENT_TYPE'                 => $_ARRAYLANG['TXT_PAYMENT_TYPE'],
-        'TXT_PAYMENT_LSV'                  => $_ARRAYLANG['TXT_PAYMENT_LSV'],
-        'TXT_PAYMENT_LSV_FEE'              => $_ARRAYLANG['TXT_PAYMENT_LSV_FEE'],
-        'TXT_CONFIRM_DELETE_PAYMENT'       => $_ARRAYLANG['TXT_CONFIRM_DELETE_PAYMENT'],
-        'TXT_CONFIRM_DELETE_SHIPMENT'      => $_ARRAYLANG['TXT_CONFIRM_DELETE_SHIPMENT'],
-        'TXT_DELIVERY_COUNTRIES'           => $_ARRAYLANG['TXT_DELIVERY_COUNTRIES'],
-        'TXT_DELIVERY_COUNTRY'             => $_ARRAYLANG['TXT_DELIVERY_COUNTRY'],
-        'TXT_SAFERPAY'                     => $_ARRAYLANG['TXT_SAFERPAY'],
-        'TXT_ACCOUNT_ID'                   => $_ARRAYLANG['TXT_ACCOUNT_ID'],
-        'TXT_USE_TEST_ACCOUNT'             => $_ARRAYLANG['TXT_USE_TEST_ACCOUNT'],
-        'TXT_FINALIZE_PAYMENT'             => $_ARRAYLANG['TXT_FINALIZE_PAYMENT'],
-        'TXT_INDICATE_PAYMENT_WINDOW_AS'   => $_ARRAYLANG['TXT_INDICATE_PAYMENT_WINDOW_AS'],
-        'TXT_PAYPAL'                       => $_ARRAYLANG['TXT_PAYPAL'],
-        'TXT_PAYPAL_EMAIL_ACCOUNT'         => $_ARRAYLANG['TXT_PAYPAL_EMAIL_ACCOUNT'],
-        'TXT_SHOP_PAYPAL_DEFAULT_CURRENCY' => $_ARRAYLANG['TXT_SHOP_PAYPAL_DEFAULT_CURRENCY'],
-        'TXT_YELLOWPAY_POSTFINANCE'        => $_ARRAYLANG['TXT_YELLOWPAY_POSTFINANCE'],
-        'TXT_SHOP_ID'                      => $_ARRAYLANG['TXT_SHOP_ID'],
-        'TXT_HASH_SEED'                    => $_ARRAYLANG['TXT_HASH_SEED'],
-        'TXT_IMMEDIATE'                    => $_ARRAYLANG['TXT_IMMEDIATE'],
-        'TXT_DEFERRED'                     => $_ARRAYLANG['TXT_DEFERRED'],
-        // country settings
-        'TXT_COUNTRY_LIST'                 => $_ARRAYLANG['TXT_COUNTRY_LIST'],
-        'TXT_DISPLAY_IT_IN_THE_SHOP'       => $_ARRAYLANG['TXT_DISPLAY_IT_IN_THE_SHOP'],
-        'TXT_DONT_DISPLAY_IT_IN_THE_SHOP'  => $_ARRAYLANG['TXT_DONT_DISPLAY_IT_IN_THE_SHOP'],
-        'TXT_SELECT_COUNTRIES'             => $_ARRAYLANG['TXT_SELECT_COUNTRIES'],
-        'TXT_SELECT_SEVERAL_COUNTRIES'     => $_ARRAYLANG['TXT_SELECT_SEVERAL_COUNTRIES'],
-        // zone settings
-        'TXT_CONFIRM_DELETE_ZONE'          => $_ARRAYLANG['TXT_CONFIRM_DELETE_ZONE'],
-        'TXT_ZONE_NAME'                    => $_ARRAYLANG['TXT_ZONE_NAME'],
-        'TXT_ZONE_LIST'                    => $_ARRAYLANG['TXT_ZONE_LIST'],
-        'TXT_SETTINGS'                     => $_ARRAYLANG['TXT_SETTINGS'],
-        'TXT_SELECTED_COUNTRIES'           => $_ARRAYLANG['TXT_SELECTED_COUNTRIES'],
-        'TXT_AVAILABLE_COUNTRIES'          => $_ARRAYLANG['TXT_AVAILABLE_COUNTRIES'],
-        // weight
-        'TXT_SHIPPING_MAX_WEIGHT'          => $_ARRAYLANG['TXT_SHIPPING_MAX_WEIGHT'],
-        'TXT_MAX_WEIGHT_TIP'               => $_ARRAYLANG['TXT_MAX_WEIGHT_TIP'],
-        'TXT_FREE_OF_CHARGE'               => $_ARRAYLANG['TXT_FREE_OF_CHARGE'],
-        'TXT_SHIPPING_FEE'                 => $_ARRAYLANG['TXT_SHIPPING_FEE'],
-        // VAT (Value Added Tax)
-        'TXT_ACTIVATE_TAXES'               => $_ARRAYLANG['TXT_ACTIVATE_TAXES'],
-        'TXT_TAX_DETAILS'                  => $_ARRAYLANG['TXT_TAX_DETAILS'],
-        'TXT_TAX_NUMBER'                   => $_ARRAYLANG['TXT_TAX_NUMBER'],
-        'TXT_TAX_NEW'                      => $_ARRAYLANG['TXT_TAX_NEW'],
-        'TXT_TAX_RATES'                    => $_ARRAYLANG['TXT_TAX_RATES'],
-        'TXT_TAX'                          => $_ARRAYLANG['TXT_TAX'],
-        'TXT_TAXES'                        => $_ARRAYLANG['TXT_TAXES'],
-        'TXT_TAX_CONFIRM_DELETE'           => $_ARRAYLANG['TXT_TAX_CONFIRM_DELETE'],
-        'TXT_INCLUDED'                     => $_ARRAYLANG['TXT_INCLUDED'],
-        'TXT_EXCLUSIVE'                    => $_ARRAYLANG['TXT_EXCLUSIVE'],
-        'TXT_TAX_DEFAULT'                  => $_ARRAYLANG['TXT_TAX_DEFAULT'],
-        'TXT_TAX_SET_ALL'                  => $_ARRAYLANG['TXT_TAX_SET_ALL'],
-        'TXT_TAX_SET_UNSET'                => $_ARRAYLANG['TXT_TAX_SET_UNSET'],
-        'TXT_TAX_CONFIRM_SET_ALL'          => $_ARRAYLANG['TXT_TAX_CONFIRM_SET_ALL'],
-        'TXT_TAX_CONFIRM_SET_UNSET'        => $_ARRAYLANG['TXT_TAX_CONFIRM_SET_UNSET'],
-        // VAT end
+            // Global variables
+            'TXT_ADD_ALL'                      => $_ARRAYLANG['TXT_ADD_ALL'],
+            'TXT_ADD_SELECTION'                => $_ARRAYLANG['TXT_ADD_SELECTION'],
+            'TXT_REMOVE_ALL'                   => $_ARRAYLANG['TXT_REMOVE_ALL'],
+            'TXT_REMOVE_SELECTION'             => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
+            'TXT_ADD'                          => $_ARRAYLANG['TXT_ADD'],
+            'TXT_STORE'                        => $_ARRAYLANG['TXT_STORE'],
+            'TXT_ACTIVE'                       => $_ARRAYLANG['TXT_ACTIVE'],
+            'TXT_ACTION'                       => $_ARRAYLANG['TXT_ACTION'],
+            'TXT_NAME'                         => $_ARRAYLANG['TXT_NAME'],
+            'TXT_FEE'                          => $_ARRAYLANG['TXT_FEE'],
+            'TXT_FREE_OF_CHARGE'               => $_ARRAYLANG['TXT_FREE_OF_CHARGE'],
+            'TXT_FREE_OF_CHARGE_TIP'           => $_ARRAYLANG['TXT_FREE_OF_CHARGE_TIP'],
+            'TXT_ZONE'                         => $_ARRAYLANG['TXT_ZONE'],
+            'TXT_MAIL_TEMPLATES'               => $_ARRAYLANG['TXT_MAIL_TEMPLATES'],
+            'TXT_CURRENCIES'                   => $_ARRAYLANG['TXT_CURRENCIES'],
+            'TXT_GENERAL_SETTINGS'             => $_ARRAYLANG['TXT_GENERAL_SETTINGS'],
+            'TXT_GENERAL'                      => $_ARRAYLANG['TXT_GENERAL'],
+            'TXT_CURRENCY_CONVERTER'           => $_ARRAYLANG['TXT_CURRENCY_CONVERTER'],
+            'TXT_RATE'                         => $_ARRAYLANG['TXT_RATE'],
+            'TXT_SYMBOL'                       => $_ARRAYLANG['TXT_SYMBOL'],
+            'TXT_ID'                           => $_ARRAYLANG['TXT_ID'],
+            'TXT_STANDARD'                     => $_ARRAYLANG['TXT_STANDARD'],
+            'TXT_SHIPPING_METHODS'             => $_ARRAYLANG['TXT_SHIPPING_METHODS'],
+            'TXT_SHIPPING_METHOD'              => $_ARRAYLANG['TXT_SHIPPING_METHOD'],
+            'TXT_LANGUAGE'                     => $_ARRAYLANG['TXT_LANGUAGE'],
+            'TXT_HANDLER'                      => $_ARRAYLANG['TXT_HANDLER'],
+            'TXT_PAYMENT_HANDLER'              => $_ARRAYLANG['TXT_PAYMENT_HANDLER'],
+            'TXT_SEPARATED_WITH_COMMAS'        => $_ARRAYLANG['TXT_SEPARATED_WITH_COMMAS'],
+            'TXT_CONFIRMATION_EMAILS'          => $_ARRAYLANG['TXT_CONFIRMATION_EMAILS'],
+            'TXT_CONTACT_COMPANY'              => $_ARRAYLANG['TXT_CONTACT_COMPANY'],
+            'TXT_CONTACT_ADDRESS'              => $_ARRAYLANG['TXT_CONTACT_ADDRESS'],
+            'TXT_PHONE_NUMBER'                 => $_ARRAYLANG['TXT_PHONE_NUMBER'],
+            'TXT_FAX_NUMBER'                   => $_ARRAYLANG['TXT_FAX_NUMBER'],
+            'TXT_SHOP_EMAIL'                   => $_ARRAYLANG['TXT_SHOP_EMAIL'],
+            'TXT_STATEMENT'                    => $_ARRAYLANG['TXT_STATEMENT'],
+            'TXT_AUTORIZATION'                 => $_ARRAYLANG['TXT_AUTORIZATION'],
+            'TXT_CODE'                         => "ISO-CODE",
+            'TXT_STATEMENT'                    => $_ARRAYLANG['TXT_STATEMENT'],
+            'TXT_STATEMENT'                    => $_ARRAYLANG['TXT_STATEMENT'],
+            'TXT_COUNTRY'                      => $_ARRAYLANG['TXT_COUNTRY'],
+            'TXT_ZONES'                        => $_ARRAYLANG['TXT_ZONES'],
+            'TXT_EDIT'                         => $_ARRAYLANG['TXT_EDIT'],
+            'TXT_DELETE'                       => $_ARRAYLANG['TXT_DELETE'],
+            'TXT_ACTION_IS_IRREVERSIBLE'       => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_CONFIRM_DELETE_CURRENCY'      => $_ARRAYLANG['TXT_CONFIRM_DELETE_CURRENCY'],
+            'TXT_PAYMENT_TYPES'                => $_ARRAYLANG['TXT_PAYMENT_TYPES'],
+            'TXT_PAYMENT_TYPE'                 => $_ARRAYLANG['TXT_PAYMENT_TYPE'],
+            'TXT_PAYMENT_LSV'                  => $_ARRAYLANG['TXT_PAYMENT_LSV'],
+            'TXT_PAYMENT_LSV_FEE'              => $_ARRAYLANG['TXT_PAYMENT_LSV_FEE'],
+            'TXT_CONFIRM_DELETE_PAYMENT'       => $_ARRAYLANG['TXT_CONFIRM_DELETE_PAYMENT'],
+            'TXT_CONFIRM_DELETE_SHIPMENT'      => $_ARRAYLANG['TXT_CONFIRM_DELETE_SHIPMENT'],
+            'TXT_DELIVERY_COUNTRIES'           => $_ARRAYLANG['TXT_DELIVERY_COUNTRIES'],
+            'TXT_DELIVERY_COUNTRY'             => $_ARRAYLANG['TXT_DELIVERY_COUNTRY'],
+            'TXT_SAFERPAY'                     => $_ARRAYLANG['TXT_SAFERPAY'],
+            'TXT_ACCOUNT_ID'                   => $_ARRAYLANG['TXT_ACCOUNT_ID'],
+            'TXT_USE_TEST_ACCOUNT'             => $_ARRAYLANG['TXT_USE_TEST_ACCOUNT'],
+            'TXT_FINALIZE_PAYMENT'             => $_ARRAYLANG['TXT_FINALIZE_PAYMENT'],
+            'TXT_INDICATE_PAYMENT_WINDOW_AS'   => $_ARRAYLANG['TXT_INDICATE_PAYMENT_WINDOW_AS'],
+            'TXT_PAYPAL'                       => $_ARRAYLANG['TXT_PAYPAL'],
+            'TXT_PAYPAL_EMAIL_ACCOUNT'         => $_ARRAYLANG['TXT_PAYPAL_EMAIL_ACCOUNT'],
+            'TXT_SHOP_PAYPAL_DEFAULT_CURRENCY' => $_ARRAYLANG['TXT_SHOP_PAYPAL_DEFAULT_CURRENCY'],
+            'TXT_YELLOWPAY_POSTFINANCE'        => $_ARRAYLANG['TXT_YELLOWPAY_POSTFINANCE'],
+            'TXT_SHOP_ID'                      => $_ARRAYLANG['TXT_SHOP_ID'],
+            'TXT_HASH_SEED'                    => $_ARRAYLANG['TXT_HASH_SEED'],
+            'TXT_IMMEDIATE'                    => $_ARRAYLANG['TXT_IMMEDIATE'],
+            'TXT_DEFERRED'                     => $_ARRAYLANG['TXT_DEFERRED'],
+            // country settings
+            'TXT_COUNTRY_LIST'                 => $_ARRAYLANG['TXT_COUNTRY_LIST'],
+            'TXT_DISPLAY_IT_IN_THE_SHOP'       => $_ARRAYLANG['TXT_DISPLAY_IT_IN_THE_SHOP'],
+            'TXT_DONT_DISPLAY_IT_IN_THE_SHOP'  => $_ARRAYLANG['TXT_DONT_DISPLAY_IT_IN_THE_SHOP'],
+            'TXT_SELECT_COUNTRIES'             => $_ARRAYLANG['TXT_SELECT_COUNTRIES'],
+            'TXT_SELECT_SEVERAL_COUNTRIES'     => $_ARRAYLANG['TXT_SELECT_SEVERAL_COUNTRIES'],
+            // zone settings
+            'TXT_CONFIRM_DELETE_ZONE'          => $_ARRAYLANG['TXT_CONFIRM_DELETE_ZONE'],
+            'TXT_ZONE_NAME'                    => $_ARRAYLANG['TXT_ZONE_NAME'],
+            'TXT_ZONE_LIST'                    => $_ARRAYLANG['TXT_ZONE_LIST'],
+            'TXT_SETTINGS'                     => $_ARRAYLANG['TXT_SETTINGS'],
+            'TXT_SELECTED_COUNTRIES'           => $_ARRAYLANG['TXT_SELECTED_COUNTRIES'],
+            'TXT_AVAILABLE_COUNTRIES'          => $_ARRAYLANG['TXT_AVAILABLE_COUNTRIES'],
+            // weight
+            'TXT_SHIPPING_MAX_WEIGHT'          => $_ARRAYLANG['TXT_SHIPPING_MAX_WEIGHT'],
+            'TXT_MAX_WEIGHT_TIP'               => $_ARRAYLANG['TXT_MAX_WEIGHT_TIP'],
+            'TXT_FREE_OF_CHARGE'               => $_ARRAYLANG['TXT_FREE_OF_CHARGE'],
+            'TXT_SHIPPING_FEE'                 => $_ARRAYLANG['TXT_SHIPPING_FEE'],
+            // VAT (Value Added Tax)
+            'TXT_ACTIVATE_TAXES'               => $_ARRAYLANG['TXT_ACTIVATE_TAXES'],
+            'TXT_TAX_DETAILS'                  => $_ARRAYLANG['TXT_TAX_DETAILS'],
+            'TXT_TAX_NUMBER'                   => $_ARRAYLANG['TXT_TAX_NUMBER'],
+            'TXT_TAX_NEW'                      => $_ARRAYLANG['TXT_TAX_NEW'],
+            'TXT_TAX_RATES'                    => $_ARRAYLANG['TXT_TAX_RATES'],
+            'TXT_TAX'                          => $_ARRAYLANG['TXT_TAX'],
+            'TXT_TAXES'                        => $_ARRAYLANG['TXT_TAXES'],
+            'TXT_TAX_CONFIRM_DELETE'           => $_ARRAYLANG['TXT_TAX_CONFIRM_DELETE'],
+            'TXT_INCLUDED'                     => $_ARRAYLANG['TXT_INCLUDED'],
+            'TXT_EXCLUSIVE'                    => $_ARRAYLANG['TXT_EXCLUSIVE'],
+            'TXT_TAX_DEFAULT'                  => $_ARRAYLANG['TXT_TAX_DEFAULT'],
+            'TXT_TAX_SET_ALL'                  => $_ARRAYLANG['TXT_TAX_SET_ALL'],
+            'TXT_TAX_SET_UNSET'                => $_ARRAYLANG['TXT_TAX_SET_UNSET'],
+            'TXT_TAX_CONFIRM_SET_ALL'          => $_ARRAYLANG['TXT_TAX_CONFIRM_SET_ALL'],
+            'TXT_TAX_CONFIRM_SET_UNSET'        => $_ARRAYLANG['TXT_TAX_CONFIRM_SET_UNSET'],
+            // Image settings
+            'TXT_SHOP_IMAGE_SETTINGS'          => $_ARRAYLANG['TXT_SHOP_IMAGE_SETTINGS'],
+            'TXT_SHOP_THUMBNAIL_MAX_WIDTH'     => $_ARRAYLANG['TXT_SHOP_THUMBNAIL_MAX_WIDTH'],
+            'TXT_SHOP_THUMBNAIL_MAX_HEIGHT'    => $_ARRAYLANG['TXT_SHOP_THUMBNAIL_MAX_HEIGHT'],
+            'TXT_SHOP_THUMBNAIL_QUALITY'       => $_ARRAYLANG['TXT_SHOP_THUMBNAIL_QUALITY'],
         ));
 
         if (!isset($_GET['tpl'])) {
@@ -2306,7 +2315,6 @@ class shopmanager extends ShopLibrary {
             default:
                 // Shop general settings template
                 $this->_objTpl->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_general.html');
-
                 $status = ($this->objVat->isEnabled()) ? 'checked="checked"' : '';
                 $display = ($this->objVat->isEnabled()) ? 'block' : 'none';
                 $included = ($this->objVat->isIncluded() ? 'checked="checked"' : '');
@@ -2357,39 +2365,43 @@ class shopmanager extends ShopLibrary {
                 // end value added tax (VAT)
 
                 $this->_objTpl->setVariable(array(
-                'SHOP_TAX_STATUS'                   => $status,
-                'SHOP_TAX_NUMBER'                   => $this->arrConfig['tax_number']['value'],
-                'SHOP_TAX_INCLUDED_STATUS'          => $included,
-                'SHOP_TAX_EXCLUDED_STATUS'          => $excluded,
-                'SHOP_TAX_DISPLAY_STATUS'           => $display,
-                'SHOP_TAX_DEFAULT_MENU'             => $this->objVat->getLongMenuString(
-                                                           $this->arrConfig['tax_default_id']['value'], 'tax_default_id'
-                                                       ),
-                'SHOP_SAFERPAY_ID'                  => $this->arrConfig['saferpay_id']['value'],
-                'SHOP_SAFERPAY_STATUS'              => $saferpayStatus,
-                'SHOP_SAFERPAY_TEST_ID'             => $this->arrConfig['saferpay_use_test_account']['value'],
-                'SHOP_SAFERPAY_TEST_STATUS'         => $saferpayTestStatus,
-                'SHOP_SAFERPAY_FINALIZE_PAYMENT'    => $this->arrConfig['saferpay_finalize_payment']['value'] == 1 ? "checked=\"checked\"" : "",
-                'SHOP_SAFERPAY_WINODW_OPTION_MENU'  => $strSaferpayWindowOptionMenu,
-                'SHOP_YELLOWPAY_ID'                 => $this->arrConfig['yellowpay_id']['value'],
-                'SHOP_YELLOWPAY_STATUS'             => $yellowpayStatus,
-                'SHOP_YELLOWPAY_HASH_SEED'          => $this->arrConfig['yellowpay_hash_seed']['value'],
-                'SHOP_YELLOWPAY_IMMEDIATE_STATUS'   => $yellowpayImmediate,
-                'SHOP_YELLOWPAY_DEFERRED_STATUS'    => $yellowpayDeferred,
-                'SHOP_CONFIRMATION_EMAILS'          => $this->arrConfig['confirmation_emails']['value'],
-                'SHOP_CONTACT_EMAIL'                => $this->arrConfig['email']['value'],
-                'SHOP_CONTACT_COMPANY'              => $this->arrConfig['shop_company']['value'],
-                'SHOP_CONTACT_ADDRESS'              => $this->arrConfig['shop_address']['value'],
-                'SHOP_CONTACT_TEL'                  => $this->arrConfig['telephone']['value'],
-                'SHOP_CONTACT_FAX'                  => $this->arrConfig['fax']['value'],
-                'SHOP_PAYPAL_EMAIL'                 => $this->arrConfig['paypal_account_email']['value'],
-                'SHOP_PAYPAL_STATUS'                => $paypalStatus,
-                'SHOP_PAYPAL_DEFAULT_CURRENCY_MENU' => $this->_getPayPalAcceptedCurrencyCodesMenu(),
-                // lsv settings
-                'SHOP_PAYMENT_LSV_STATUS'           => ($this->arrConfig['payment_lsv_status']['status'] ? 'checked="checked"' : ''),
-                'SHOP_PAYMENT_DEFAULT_CURRENCY'     => $this->objCurrency->getDefaultCurrencySymbol(),
-                //
-                'SHOP_GENERAL_COUNTRY'              => $countryIdMenu,
+                    'SHOP_TAX_STATUS'                   => $status,
+                    'SHOP_TAX_NUMBER'                   => $this->arrConfig['tax_number']['value'],
+                    'SHOP_TAX_INCLUDED_STATUS'          => $included,
+                    'SHOP_TAX_EXCLUDED_STATUS'          => $excluded,
+                    'SHOP_TAX_DISPLAY_STATUS'           => $display,
+                    'SHOP_TAX_DEFAULT_MENU'             => $this->objVat->getLongMenuString(
+                                                               $this->arrConfig['tax_default_id']['value'], 'tax_default_id'
+                                                           ),
+                    'SHOP_SAFERPAY_ID'                  => $this->arrConfig['saferpay_id']['value'],
+                    'SHOP_SAFERPAY_STATUS'              => $saferpayStatus,
+                    'SHOP_SAFERPAY_TEST_ID'             => $this->arrConfig['saferpay_use_test_account']['value'],
+                    'SHOP_SAFERPAY_TEST_STATUS'         => $saferpayTestStatus,
+                    'SHOP_SAFERPAY_FINALIZE_PAYMENT'    => $this->arrConfig['saferpay_finalize_payment']['value'] == 1 ? "checked=\"checked\"" : "",
+                    'SHOP_SAFERPAY_WINODW_OPTION_MENU'  => $strSaferpayWindowOptionMenu,
+                    'SHOP_YELLOWPAY_ID'                 => $this->arrConfig['yellowpay_id']['value'],
+                    'SHOP_YELLOWPAY_STATUS'             => $yellowpayStatus,
+                    'SHOP_YELLOWPAY_HASH_SEED'          => $this->arrConfig['yellowpay_hash_seed']['value'],
+                    'SHOP_YELLOWPAY_IMMEDIATE_STATUS'   => $yellowpayImmediate,
+                    'SHOP_YELLOWPAY_DEFERRED_STATUS'    => $yellowpayDeferred,
+                    'SHOP_CONFIRMATION_EMAILS'          => $this->arrConfig['confirmation_emails']['value'],
+                    'SHOP_CONTACT_EMAIL'                => $this->arrConfig['email']['value'],
+                    'SHOP_CONTACT_COMPANY'              => $this->arrConfig['shop_company']['value'],
+                    'SHOP_CONTACT_ADDRESS'              => $this->arrConfig['shop_address']['value'],
+                    'SHOP_CONTACT_TEL'                  => $this->arrConfig['telephone']['value'],
+                    'SHOP_CONTACT_FAX'                  => $this->arrConfig['fax']['value'],
+                    'SHOP_PAYPAL_EMAIL'                 => $this->arrConfig['paypal_account_email']['value'],
+                    'SHOP_PAYPAL_STATUS'                => $paypalStatus,
+                    'SHOP_PAYPAL_DEFAULT_CURRENCY_MENU' => $this->_getPayPalAcceptedCurrencyCodesMenu(),
+                    // lsv settings
+                    'SHOP_PAYMENT_LSV_STATUS'           => ($this->arrConfig['payment_lsv_status']['status'] ? 'checked="checked"' : ''),
+                    'SHOP_PAYMENT_DEFAULT_CURRENCY'     => $this->objCurrency->getDefaultCurrencySymbol(),
+                    //
+                    'SHOP_GENERAL_COUNTRY'              => $countryIdMenu,
+                    // image settings (thumbnails)
+                    'SHOP_THUMBNAIL_MAX_WIDTH'          => $this->arrConfig['shop_thumbnail_max_width']['value'],
+                    'SHOP_THUMBNAIL_MAX_HEIGHT'         => $this->arrConfig['shop_thumbnail_max_height']['value'],
+                    'SHOP_THUMBNAIL_QUALITY'            => $this->arrConfig['shop_thumbnail_quality']['value'],
                 ));
                 break;
         }
@@ -2798,7 +2810,7 @@ class shopmanager extends ShopLibrary {
                 $objResult = $objDatabase->SelectLimit($query, 1);
                 if (!$objResult->EOF) {
                     $pictureName = $objResult->fields['picture'];
-                    foreach ($this->_getShopImagesFromString() as $arrImage) {
+                    foreach ($this->_getShopImagesFromBase64String($pictureName) as $arrImage) {
                         // check whether another product uses the same picture
                         if (   $arrImage['img'] != ''
                             && $arrImage['img'] != $this->noPictureName) {
@@ -2895,6 +2907,8 @@ class shopmanager extends ShopLibrary {
         $arrProductOptions        = array();
         $insertId                 =  0;
 
+// Todo: Is $shopTempThumbnailName, and its session equivalent,
+// still in use anywhere?
         if (isset($_SESSION['shopPM']['TempThumbnailName'])) {
             $shopTempThumbnailName = $_SESSION['shopPM']['TempThumbnailName'];
             unset($_SESSION['shopPM']['TempThumbnailName']);
@@ -2909,7 +2923,11 @@ class shopmanager extends ShopLibrary {
             $shopCatMenu              = intval($_POST['shopCatMenu']);
             $shopCustomerPrice        = floatval($_POST['shopCustomerPrice']);
             $shopResellerPrice        = floatval($_POST['shopResellerPrice']);
-            $shopSpecialOffer         = intval($_POST['shopSpecialOffer']);
+            $shopSpecialOffer         =
+                (isset($_POST['shopSpecialOffer'])
+                    ? intval($_POST['shopSpecialOffer'])
+                    : 0
+                );
             $shopDiscount             = floatval($_POST['shopDiscount']);
             $shopTaxId                = $_POST['shopTaxId'];
             $shopWeight               = Weight::getWeight($_POST['shopWeight']);
@@ -2924,12 +2942,13 @@ class shopmanager extends ShopLibrary {
             $shopB2C                  = intval($_POST['shopB2C']);
             $shopStartdate            = !empty($_POST['shopStartdate']) ? contrexx_addslashes($_POST['shopStartdate']) : 0;
             $shopEnddate              = !empty($_POST['shopEnddate']) ? contrexx_addslashes($_POST['shopEnddate']) : 0;
-            //begin image attributes
-            $shopImageWidth           = intval($_POST['shopImageWidth']);
-            $shopThumbnailPercentSize = intval($_POST['shopThumbnailPercentSize']);
-            $shopImageQuality         = intval($_POST['shopImageQuality']);
-            //$shopImageName            = contrexx_addslashes(strip_tags($_POST['shopImageName']));
-            $shopImageOverwrite       = intval($_POST['shopImageOverwrite']);
+            // begin image attributes
+            // these are all unused!
+//            $shopImageWidth           = intval($_POST['shopImageWidth']);
+//            $shopThumbnailPercentSize = intval($_POST['shopThumbnailPercentSize']);
+//            $shopImageQuality         = intval($_POST['shopImageQuality']);
+//            $shopImageName            = contrexx_addslashes(strip_tags($_POST['shopImageName']));
+//            $shopImageOverwrite       = intval($_POST['shopImageOverwrite']);
             $shopManufacturer		  = intval($_POST["shopManufacturer"]);
 
             // check incoming picture file paths
@@ -3012,8 +3031,9 @@ class shopmanager extends ShopLibrary {
                 "b2c=$shopB2C, ".
                 "startdate='$shopStartdate', ".
                 "enddate='$shopEnddate', ".
-                "thumbnail_percent=$shopThumbnailPercentSize, ".
-                "thumbnail_quality=$shopImageQuality, ".
+// these are unused!
+//                "thumbnail_percent=$shopThumbnailPercentSize, ".
+//                "thumbnail_quality=$shopImageQuality, ".
                 "manufacturer=$shopManufacturer, ".
                 "manufacturer_url='$shopManufacturerUrl', ".
                 "vat_id=$shopTaxId, ".
@@ -3048,30 +3068,33 @@ class shopmanager extends ShopLibrary {
                 if (count($arrAttributes)>0) {
                     $deleteOptions = array_diff_assoc($arrAttributes, $arrProductOptions);
                     foreach ($deleteOptions as $attributesValueId => $attributesNameId) {
-                        $query =
-                            "DELETE FROM ".DBPREFIX."module_shop_products_attributes ".
-                            "WHERE product_id=".$shopProductId.
-                              "AND attributes_value_id=".intval($attributesValueId);
+                        $query = "
+                            DELETE FROM ".DBPREFIX."module_shop_products_attributes
+                             WHERE product_id=$shopProductId
+                               AND attributes_value_id=".intval($attributesValueId);
                         $objResult = $objDatabase->Execute($query);
                     }
                     if (count($arrProductOptions)>0) {
                         $addOptions = array_diff_assoc($arrProductOptions, $arrAttributes);
                         foreach ($addOptions as $attributesValueId => $arrAttributeDetails) {
-                            $query =
-                                "INSERT INTO ".DBPREFIX."module_shop_products_attributes ".
-                                    "(product_id, attributes_name_id, attributes_value_id, sort_id) ".
-                                "VALUES (".$shopProductId.",".intval($arrAttributeDetails['name_id']).",".
-                                      intval($attributesValueId).",".$arrAttributeDetails['sort_id'].")";
+                            $query = "
+                                INSERT INTO ".DBPREFIX."module_shop_products_attributes (
+                                    product_id, attributes_name_id, attributes_value_id, sort_id
+                                ) VALUES (
+                                    $shopProductId, ".
+                                    intval($arrAttributeDetails['name_id']).', '.
+                                    intval($attributesValueId).', '.
+                                    $arrAttributeDetails['sort_id'].') ';
                             $objResult = $objDatabase->Execute($query);
                         }
 
                         foreach ($arrProductOptions as $attributesValueId => $arrAttributeDetails) {
                             if ($arrAttributeDetails['sort_id'] != $arrAttributes[$attributesValueId]['sort_id']) {
-                                $query =
-                                    "UPDATE ".DBPREFIX."module_shop_products_attributes ".
-                                    "SET sort_id=".$arrAttributeDetails['sort_id']." ".
-                                    "WHERE product_id=".$shopProductId." ".
-                                      "AND attributes_value_id=".intval($attributesValueId);
+                                $query = "
+                                    UPDATE ".DBPREFIX."module_shop_products_attributes
+                                       SET sort_id=".$arrAttributeDetails['sort_id']."
+                                     WHERE product_id=$shopProductId
+                                       AND attributes_value_id=".intval($attributesValueId);
                                 $objResult = $objDatabase->Execute($query);
                             }
                         }
@@ -3079,11 +3102,14 @@ class shopmanager extends ShopLibrary {
                 } else {
                     if (count($arrProductOptions) > 0) {
                         foreach ($arrProductOptions as $attributesValueId => $arrAttributeDetails) {
-                            $query =
-                                "INSERT INTO ".DBPREFIX."module_shop_products_attributes ".
-                                    "(product_id, attributes_name_id, attributes_value_id, sort_id) ".
-                                "VALUES (".$shopProductId.",".intval($arrAttributeDetails['name_id']).",".
-                                      intval($attributesValueId).",".$arrAttributeDetails['sort_id'].")";
+                            $query = "
+                                INSERT INTO ".DBPREFIX."module_shop_products_attributes (
+                                    product_id, attributes_name_id, attributes_value_id, sort_id
+                                ) VALUES (
+                                    $shopProductId, ".
+                                    intval($arrAttributeDetails['name_id']).', '.
+                                    intval($attributesValueId).', '.
+                                    $arrAttributeDetails['sort_id'].')';
                             $objResult = $objDatabase->Execute($query);
                         }
                     }
@@ -3092,7 +3118,8 @@ class shopmanager extends ShopLibrary {
                 $_SESSION['shop']['strOkMessage'] = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             }
 
-            if (file_exists($this->shopImagePath.$shopTempThumbnailName)) {
+            if (   !empty($shopTempThumbnailName)
+                && file_exists($this->shopImagePath.$shopTempThumbnailName)) {
                 @unlink($this->shopImagePath.$shopTempThumbnailName);
             }
 
@@ -3102,13 +3129,17 @@ class shopmanager extends ShopLibrary {
             foreach ($arrImages as $arrImage) {
                 if (   !empty($arrImage['img'])
                     && $arrImage['img'] != $this->noPictureName) {
-                    if (!is_file($this->shopImagePath.$arrImage['img'].$this->thumbnailNameSuffix)) {
-                        // reset ImageManager
-                        $objImage->imageCheck = 1;
-                        //if (!$objImage->_createThumb(ASCMS_SHOP_IMAGES_PATH, ASCMS_SHOP_IMAGES_WEB_PATH, $arrImage['img'])) {
-                        if (!$objImage->_createThumb($this->shopImagePath, $this->shopImageWebPath, $arrImage['img'])) {
-                            $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'], $arrImage['img']).'<br />';
-                        }
+                    // Reset ImageManager!  Won't work without this.
+                    $objImage->imageCheck = 1;
+                    if (!$objImage->_createThumbWhq(
+                        $this->shopImagePath,
+                        $this->shopImageWebPath,
+                        $arrImage['img'],
+                        $this->arrConfig['shop_thumbnail_max_width']['value'],
+                        $this->arrConfig['shop_thumbnail_max_height']['value'],
+                        $this->arrConfig['shop_thumbnail_quality']['value']
+                    )) {
+                        $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'], $arrImage['img']).'<br />';
                     }
                 }
             }
@@ -3133,56 +3164,56 @@ class shopmanager extends ShopLibrary {
 
         // begin language variables
         $this->_objTpl->setVariable(array(
-        'TXT_PRODUCT_ID'              => $_ARRAYLANG['TXT_PRODUCT_ID'],
-        'TXT_SHOP_PRODUCT_CUSTOM_ID'  => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
-        'TXT_MANUFACTURER_URL'        => $_ARRAYLANG['TXT_MANUFACTURER_URL'],
-        'TXT_WITH_HTTP'               => $_ARRAYLANG['TXT_WITH_HTTP'],
-        'TXT_PRODUCT_INFORMATIONS'    => $_ARRAYLANG['TXT_PRODUCT_INFORMATIONS'],
-        'TXT_ADD_NEW'                 => $_ARRAYLANG['TXT_ADD_NEW'],
-        'TXT_OVERWRITE'               => $_ARRAYLANG['TXT_OVERWRITE'],
-        'TXT_IMAGES_WITH_SAME_NAME'   => $_ARRAYLANG['TXT_IMAGES_WITH_SAME_NAME'],
-        'TXT_ACTION_AFTER_SAVEING'    => $_ARRAYLANG['TXT_ACTION_AFTER_SAVEING'],
-        'TXT_PRODUCT_CATALOG'         => $_ARRAYLANG['TXT_PRODUCT_CATALOG'],
-        'TXT_ADD_PRODUCTS'            => $_ARRAYLANG['TXT_ADD_PRODUCTS'],
-        'TXT_FROM_TEMPLATE'           => $_ARRAYLANG['TXT_FROM_TEMPLATE'],
-        'TXT_PRODUCT_NAME'            => $_ARRAYLANG['TXT_PRODUCT_NAME'],
-        'TXT_CUSTOMER_PRICE'          => $_ARRAYLANG['TXT_CUSTOMER_PRICE'],
-        'TXT_ID'                      => $_ARRAYLANG['TXT_ID'],
-        'TXT_RESELLER_PRICE'          => $_ARRAYLANG['TXT_RESELLER_PRICE'],
-        'TXT_SHORT_DESCRIPTION'       => $_ARRAYLANG['TXT_SHORT_DESCRIPTION'],
-        'TXT_DESCRIPTION'             => $_ARRAYLANG['TXT_DESCRIPTION'],
-        'TXT_ACTIVE'                  => $_ARRAYLANG['TXT_ACTIVE'],
-        'TXT_CATEGORY'                => $_ARRAYLANG['TXT_CATEGORY'],
-        'TXT_STOCK'                   => $_ARRAYLANG['TXT_STOCK'],
-        'TXT_SPECIAL_OFFER'           => $_ARRAYLANG['TXT_SPECIAL_OFFER'],
-        'TXT_IMAGE_WIDTH'             => $_ARRAYLANG['TXT_IMAGE_WIDTH'],
-        'TXT_IMAGE'                   => $_ARRAYLANG['TXT_IMAGE'],
-        'TXT_THUMBNAIL_SIZE'          => $_ARRAYLANG['TXT_THUMBNAIL_SIZE'],
-        'TXT_QUALITY'                 => $_ARRAYLANG['TXT_QUALITY'],
-        'TXT_STORE'                   => $_ARRAYLANG['TXT_STORE'],
-        'TXT_RESET'                   => $_ARRAYLANG['TXT_RESET'],
-        'TXT_ENABLED_FILE_EXTENSIONS' => $_ARRAYLANG['TXT_ENABLED_FILE_EXTENSIONS'],
-        'TXT_ACTIVE'                  => $_ARRAYLANG['TXT_ACTIVE'],
-        'TXT_INACTIVE'                => $_ARRAYLANG['TXT_INACTIVE'],
-        'TXT_START_DATE'              => $_ARRAYLANG['TXT_START_DATE'],
-        'TXT_END_DATE'                => $_ARRAYLANG['TXT_END_DATE'],
-        'TXT_THUMBNAIL_SIZE'          => $_ARRAYLANG['TXT_THUMBNAIL_SIZE'],
-        'TXT_THUMBNAIL_PREVIEW'       => $_ARRAYLANG['TXT_THUMBNAIL_PREVIEW'],
-        'TXT_THUMBNAIL_SETTINGS'      => $_ARRAYLANG['TXT_THUMBNAIL_SETTINGS'],
-        'TXT_IMAGE_DIMENSION'         => $_ARRAYLANG['TXT_IMAGE_DIMENSION'],
-        'TXT_PRODUCT_STATUS'          => $_ARRAYLANG['TXT_PRODUCT_STATUS'],
-        'TXT_IMAGE_SIZE'              => $_ARRAYLANG['TXT_IMAGE_SIZE'],
-        'TXT_PIXEL'                   => $_ARRAYLANG['TXT_PIXEL'],
-        'TXT_PRODUCT_IMAGE'           => $_ARRAYLANG['TXT_PRODUCT_IMAGE'],
-        'TXT_OPTIONS'                 => $_ARRAYLANG['TXT_OPTIONS'],
-        'TXT_IMAGE_UPLOAD'            => $_ARRAYLANG['TXT_IMAGE_UPLOAD'],
-        'TXT_IMAGE_INFORMATIONS'      => $_ARRAYLANG['TXT_IMAGE_INFORMATIONS'],
-        'TXT_IMAGE_NAME'              => $_ARRAYLANG['TXT_IMAGE_NAME'],
-        'TXT_PRODUCT_OPTIONS'         => $_ARRAYLANG['TXT_PRODUCT_OPTIONS'],
-        'TXT_SHOP_EDIT_OR_ADD_IMAGE'  => $_ARRAYLANG['TXT_SHOP_EDIT_OR_ADD_IMAGE'],
-        'TXT_TAX_RATE'                => $_ARRAYLANG['TXT_TAX_RATE'],
-        'TXT_WEIGHT'                  => $_ARRAYLANG['TXT_WEIGHT'],
-        'TXT_DISTRIBUTION'            => $_ARRAYLANG['TXT_DISTRIBUTION'],
+            'TXT_PRODUCT_ID'              => $_ARRAYLANG['TXT_PRODUCT_ID'],
+            'TXT_SHOP_PRODUCT_CUSTOM_ID'  => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
+            'TXT_MANUFACTURER_URL'        => $_ARRAYLANG['TXT_MANUFACTURER_URL'],
+            'TXT_WITH_HTTP'               => $_ARRAYLANG['TXT_WITH_HTTP'],
+            'TXT_PRODUCT_INFORMATIONS'    => $_ARRAYLANG['TXT_PRODUCT_INFORMATIONS'],
+            'TXT_ADD_NEW'                 => $_ARRAYLANG['TXT_ADD_NEW'],
+            'TXT_OVERWRITE'               => $_ARRAYLANG['TXT_OVERWRITE'],
+            'TXT_IMAGES_WITH_SAME_NAME'   => $_ARRAYLANG['TXT_IMAGES_WITH_SAME_NAME'],
+            'TXT_ACTION_AFTER_SAVEING'    => $_ARRAYLANG['TXT_ACTION_AFTER_SAVEING'],
+            'TXT_PRODUCT_CATALOG'         => $_ARRAYLANG['TXT_PRODUCT_CATALOG'],
+            'TXT_ADD_PRODUCTS'            => $_ARRAYLANG['TXT_ADD_PRODUCTS'],
+            'TXT_FROM_TEMPLATE'           => $_ARRAYLANG['TXT_FROM_TEMPLATE'],
+            'TXT_PRODUCT_NAME'            => $_ARRAYLANG['TXT_PRODUCT_NAME'],
+            'TXT_CUSTOMER_PRICE'          => $_ARRAYLANG['TXT_CUSTOMER_PRICE'],
+            'TXT_ID'                      => $_ARRAYLANG['TXT_ID'],
+            'TXT_RESELLER_PRICE'          => $_ARRAYLANG['TXT_RESELLER_PRICE'],
+            'TXT_SHORT_DESCRIPTION'       => $_ARRAYLANG['TXT_SHORT_DESCRIPTION'],
+            'TXT_DESCRIPTION'             => $_ARRAYLANG['TXT_DESCRIPTION'],
+            'TXT_ACTIVE'                  => $_ARRAYLANG['TXT_ACTIVE'],
+            'TXT_CATEGORY'                => $_ARRAYLANG['TXT_CATEGORY'],
+            'TXT_STOCK'                   => $_ARRAYLANG['TXT_STOCK'],
+            'TXT_SPECIAL_OFFER'           => $_ARRAYLANG['TXT_SPECIAL_OFFER'],
+            'TXT_IMAGE_WIDTH'             => $_ARRAYLANG['TXT_IMAGE_WIDTH'],
+            'TXT_IMAGE'                   => $_ARRAYLANG['TXT_IMAGE'],
+            'TXT_THUMBNAIL_SIZE'          => $_ARRAYLANG['TXT_THUMBNAIL_SIZE'],
+            'TXT_QUALITY'                 => $_ARRAYLANG['TXT_QUALITY'],
+            'TXT_STORE'                   => $_ARRAYLANG['TXT_STORE'],
+            'TXT_RESET'                   => $_ARRAYLANG['TXT_RESET'],
+            'TXT_ENABLED_FILE_EXTENSIONS' => $_ARRAYLANG['TXT_ENABLED_FILE_EXTENSIONS'],
+            'TXT_ACTIVE'                  => $_ARRAYLANG['TXT_ACTIVE'],
+            'TXT_INACTIVE'                => $_ARRAYLANG['TXT_INACTIVE'],
+            'TXT_START_DATE'              => $_ARRAYLANG['TXT_START_DATE'],
+            'TXT_END_DATE'                => $_ARRAYLANG['TXT_END_DATE'],
+            'TXT_THUMBNAIL_SIZE'          => $_ARRAYLANG['TXT_THUMBNAIL_SIZE'],
+            'TXT_THUMBNAIL_PREVIEW'       => $_ARRAYLANG['TXT_THUMBNAIL_PREVIEW'],
+            'TXT_THUMBNAIL_SETTINGS'      => $_ARRAYLANG['TXT_THUMBNAIL_SETTINGS'],
+            'TXT_IMAGE_DIMENSION'         => $_ARRAYLANG['TXT_IMAGE_DIMENSION'],
+            'TXT_PRODUCT_STATUS'          => $_ARRAYLANG['TXT_PRODUCT_STATUS'],
+            'TXT_IMAGE_SIZE'              => $_ARRAYLANG['TXT_IMAGE_SIZE'],
+            'TXT_PIXEL'                   => $_ARRAYLANG['TXT_PIXEL'],
+            'TXT_PRODUCT_IMAGE'           => $_ARRAYLANG['TXT_PRODUCT_IMAGE'],
+            'TXT_OPTIONS'                 => $_ARRAYLANG['TXT_OPTIONS'],
+            'TXT_IMAGE_UPLOAD'            => $_ARRAYLANG['TXT_IMAGE_UPLOAD'],
+            'TXT_IMAGE_INFORMATIONS'      => $_ARRAYLANG['TXT_IMAGE_INFORMATIONS'],
+            'TXT_IMAGE_NAME'              => $_ARRAYLANG['TXT_IMAGE_NAME'],
+            'TXT_PRODUCT_OPTIONS'         => $_ARRAYLANG['TXT_PRODUCT_OPTIONS'],
+            'TXT_SHOP_EDIT_OR_ADD_IMAGE'  => $_ARRAYLANG['TXT_SHOP_EDIT_OR_ADD_IMAGE'],
+            'TXT_TAX_RATE'                => $_ARRAYLANG['TXT_TAX_RATE'],
+            'TXT_WEIGHT'                  => $_ARRAYLANG['TXT_WEIGHT'],
+            'TXT_DISTRIBUTION'            => $_ARRAYLANG['TXT_DISTRIBUTION'],
         ));
         // end language variables
 
@@ -3209,10 +3240,12 @@ class shopmanager extends ShopLibrary {
 
         // Edit products
         // begin database request edit mode
-        if ($shopProductId > 0 AND $_REQUEST['edit'] != 1) {
+        if (   $shopProductId > 0
+//            && isset($_REQUEST['edit']) && $_REQUEST['edit'] != 1
+        ) {
             $query = "SELECT * FROM ".DBPREFIX."module_shop_products WHERE id=$shopProductId";
-
-            if (($objResult = $objDatabase->SelectLimit($query, 1)) !== false) {
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) {
                 if (!$objResult->EOF) {
                     $shopProductId            = $objResult->fields['id'];
                     $shopProductIdentifier    = $objResult->fields['product_id'];
@@ -3240,11 +3273,10 @@ class shopmanager extends ShopLibrary {
                     $shopThumbnailPercentSize = $objResult->fields['thumbnail_percent'];
                     $shopImageQuality         = $objResult->fields['thumbnail_quality'];
                 }
-
-                if ($_REQUEST['new']) {
+                if (isset($_REQUEST['new']) && $_REQUEST['new']) {
                     $shopProductId = 0;
                 }
-            } else { //end if db query
+            } else { // end if db query
                 $this->errorHandling();
             }
         }
@@ -3269,42 +3301,44 @@ class shopmanager extends ShopLibrary {
         ));
 
         if ($shopB2B==1) {
-            $shopB2B="checked=\"checked\"";
+            $shopB2B='checked="checked"';
         }
         if ($shopB2C==1) {
-            $shopB2C="checked=\"checked\"";
+            $shopB2C='checked="checked"';
         }
         if ($shopArticleActive==1) {
-            $shopArticleActive="checked=\"checked\"";
+            $shopArticleActive='checked="checked"';
         }
         if ($shopStockVisibility==1) {
-            $shopStockVisibility="checked=\"checked\"";
+            $shopStockVisibility='checked="checked"';
         }
         if ($shopSpecialOffer==1) {
-            $shopSpecialOffer="checked='checked'";
+            $shopSpecialOffer='checked="checked"';
         } else {
             $shopSpecialOffer='';
         }
 
-        if ($shopImageOverwrite==1) {
-            $this->_objTpl->setVariable("SHOP_IMAGE_OVERWRITE_SELECTED_1", "selected");
-            $this->_objTpl->setVariable("SHOP_IMAGE_OVERWRITE_SELECTED_0", "");
+/*  unused
+        if ($shopImageOverwrite == 1) {
+            $this->_objTpl->setVariable('SHOP_IMAGE_OVERWRITE_SELECTED_1', 'selected="selected"');
+            $this->_objTpl->setVariable('SHOP_IMAGE_OVERWRITE_SELECTED_0', '');
         } else {
-            $this->_objTpl->setVariable("SHOP_IMAGE_OVERWRITE_SELECTED_0", "selected");
-            $this->_objTpl->setVariable("SHOP_IMAGE_OVERWRITE_SELECTED_1", "");
+            $this->_objTpl->setVariable('SHOP_IMAGE_OVERWRITE_SELECTED_0', 'selected="selected"');
+            $this->_objTpl->setVariable('SHOP_IMAGE_OVERWRITE_SELECTED_1', '');
         }
-
         $shopPreviewImageHeight = $shopImageHeight + 25;
         $shopPreviewImageWidth  = $shopImageWidth  + 25;
         //$shopImagePath          = $this->shopImageWebPath.$shopImageName;
         $shopThumbnailImagePath = $this->shopImageWebPath.$shopTempThumbnailName;
-        $shopDescription        = stripslashes($shopDescription);
+*/
+
+        $shopDescription = stripslashes($shopDescription);
         // extract product image infos (path, width, height)
         $arrImages = $this->_getShopImagesFromBase64String($shopImageName);
 
         $this->_objTpl->setVariable(array(
-// replaced by SHOP_PRODUCT_ID
-//        'SHOP_ID'                     => $shopProductId,
+        // replaced by SHOP_PRODUCT_ID
+        //'SHOP_ID'                     => $shopProductId,
         'SHOP_PRODUCT_ID'             => $shopProductId,
         'SHOP_PRODUCT_CUSTOM_ID'      => $shopProductIdentifier,
         'SHOP_DATE'                   => date("Y-m-d H:m"),
@@ -3372,12 +3406,12 @@ class shopmanager extends ShopLibrary {
                 ? $this->shopImageWebPath.$arrImages[3]['img']
                 : $this->_defaultImage
             ),
-        'SHOP_PICTURE1_IMG_WIDTH'     => $arrImages[1]['width'],
-        'SHOP_PICTURE1_IMG_HEIGHT'    => $arrImages[1]['height'],
-        'SHOP_PICTURE2_IMG_WIDTH'     => $arrImages[2]['width'],
-        'SHOP_PICTURE2_IMG_HEIGHT'    => $arrImages[2]['height'],
-        'SHOP_PICTURE3_IMG_WIDTH'     => $arrImages[3]['width'],
-        'SHOP_PICTURE3_IMG_HEIGHT'    => $arrImages[3]['height'],
+        'SHOP_PICTURE1_IMG_WIDTH'  => $arrImages[1]['width'],
+        'SHOP_PICTURE1_IMG_HEIGHT' => $arrImages[1]['height'],
+        'SHOP_PICTURE2_IMG_WIDTH'  => $arrImages[2]['width'],
+        'SHOP_PICTURE2_IMG_HEIGHT' => $arrImages[2]['height'],
+        'SHOP_PICTURE3_IMG_WIDTH'  => $arrImages[3]['width'],
+        'SHOP_PICTURE3_IMG_HEIGHT' => $arrImages[3]['height'],
         ));
 
 /*
