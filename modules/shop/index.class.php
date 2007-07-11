@@ -306,9 +306,10 @@ class Shop extends ShopLibrary
                 case 'success':
                     $_GET['act'] = 'success';
                     break;
-                case 'cancel':
+/*                case 'cancel':
                     $_GET['act'] = 'cancel';
                     break;
+*/
                 case 'confirm':
                     $_GET['act'] = 'confirm';
                     break;
@@ -359,9 +360,10 @@ class Shop extends ShopLibrary
                 case 'success':
                     $this->success();
                     break;
-                case 'cancel':
+/*                case 'cancel':
                     $this->cancel();
                     break;
+*/
                 case 'confirm':
                     $this->confirm();
                     break;
@@ -968,7 +970,7 @@ class Shop extends ShopLibrary
         if (isset($_GET['handler']) && !empty($_GET['handler'])) {
             switch ($_GET['handler']) {
                 case 'yellowpay':
-                    $this->_checkPaymentValidation(
+                    $this->updateOrderStatus(
                         $_POST['txtOrderIDShop'],
                         $_POST['SessionId']
                     );
@@ -978,9 +980,9 @@ class Shop extends ShopLibrary
 
         // initialize variabes
         $pos        = 0;
-        $paging     = "";
-        $class      = "";
-        $detailLink = "";
+        $paging     = '';
+        $class      = '';
+        $detailLink = '';
         $catId      = isset($_REQUEST['catId']) ? intval($_REQUEST['catId']) : 0;
         $ManufacturerId = isset($_REQUEST['ManufacturerId']) ? intval($_REQUEST['ManufacturerId']) : 0;
         $term       = isset($_REQUEST['term'])  ? stripslashes(trim($_REQUEST['term'])) : '';
@@ -1028,31 +1030,31 @@ class Shop extends ShopLibrary
         $this->objTemplate->setVariable("SHOP_MENU", $shopMenu);
         $this->objTemplate->setVariable("SHOP_CART_INFO", $this->showCartInfo());
 
-        $q_search = "";
+        $q_search = '';
         // replaced by discounts()
-        $q_special_offer = '';//"AND (is_special_offer = 1) ";
-        $q1_category = "";
-        $q2_category = "";
-        $pagingTermQuery = "";
-        $pagingCatIdQuery = "";
+        $q_special_offer = 'AND (is_special_offer = 1) ';
+        $q1_category = '';
+        $q2_category = '';
+        $pagingTermQuery = '';
+        $pagingCatIdQuery = '';
 
         // consider the category iff it has been requested, not if it has been
         // determined above
         if ($catId > 0) {
-           $q_special_offer = "";
-           $q1_category = "," .DBPREFIX."module_shop_categories AS c";
+           $q_special_offer = '';
+           $q1_category = ','.DBPREFIX.'module_shop_categories AS c';
            $q2_category = "AND ( p.catid = c.catid
                            AND c.catid = $catId) ";
-           $pagingCatIdQuery = "&amp;catId=".$catId;
+           $pagingCatIdQuery = "&amp;catId=$catId";
         }
 
         $q1_manufacturer = '';
         if ($ManufacturerId > 0) {
-           $q1_manufacturer = " AND manufacturer=".$ManufacturerId." ";
+           $q1_manufacturer = " AND manufacturer=$ManufacturerId ";
         }
 
         if (!empty($term)) {
-           $q_special_offer = "";
+           $q_special_offer = '';
            $q_search = "
                AND (  p.title LIKE '%".mysql_escape_string($term)."%'
                    OR p.description LIKE '%".mysql_escape_string($term)."%'
@@ -1060,7 +1062,7 @@ class Shop extends ShopLibrary
                    OR p.product_id LIKE '%".mysql_escape_string($term)."%'
                    OR p.id LIKE '%".mysql_escape_string($term)."%')
            ";
-           $pagingTermQuery = "&amp;term=".htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET);
+           $pagingTermQuery = '&amp;term='.htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET);
         }
 
         $objResult = '';
@@ -2729,6 +2731,7 @@ sendReq('', 1);
     {
          // Reloading or loading without sessions
         if (!isset($_SESSION['shop']['cart'])) {
+//echo("no cart");
             header("Location: index.php?section=shop");
             exit;
         }
@@ -3384,14 +3387,21 @@ right after the customer logs in!
 //echo("saving order items<br />");
                     $orderid = $objDatabase->Insert_ID();
                     $_SESSION['shop']['orderid'] = $orderid;
+                    // The products will be tested one by one below.
+                    // If any single one of them requires delivery, this
+                    // flag will be set to true.
+                    // This is used to determine the order status at the
+                    // end of the shopping process.
+                    $_SESSION['shop']['isDelivery'] = false;
 
                     foreach ($_SESSION['shop']['cart']['products'] as $arrProduct) {
-                        $objResult = $objDatabase->Execute("
+                        $query = "
                             SELECT title, normalprice, resellerprice,
                                    discountprice, is_special_offer,
-                                   vat_id, weight
+                                   vat_id, weight, handler
                               FROM ".DBPREFIX."module_shop_products
-                             WHERE status=1 AND id=".$arrProduct['id'], 1);
+                             WHERE status=1 AND id=".$arrProduct['id'];
+                        $objResult = $objDatabase->Execute($query);
 //echo("lookup query: $query<br />");
                         if ($objResult) {
                             $productId       = $arrProduct['id'];
@@ -3412,6 +3422,12 @@ right after the customer logs in!
                             $productVatRate  = ($productVatId ? $this->objVat->getRate($productVatId) : '0.00');
                             $productWeight   = $objResult->fields['weight']; // grams
                             if ($productWeight == '') { $productWeight = 0; }
+                            // Test the distribution method for delivery
+                            $productDistribution = $objResult->fields['handler'];
+                            if ($productDistribution == 'delivery') {
+                                $_SESSION['shop']['isDelivery'] = true;
+//echo("isDelivery<br />");
+                            }
                             // Add to order items table
                             $query = "
                                 INSERT INTO ".DBPREFIX."module_shop_order_items (
@@ -3423,6 +3439,7 @@ right after the customer logs in!
                                     $productVatRate, $productWeight
                                 )
                             ";
+//echo("insert order item query:<br />$query<br />");
                             $objResult = $objDatabase->Execute($query);
                             if ($objResult) {
                                 $orderItemsId = $objDatabase->Insert_ID();
@@ -3456,7 +3473,7 @@ right after the customer logs in!
 
 //echo("setting up processor<br />");
                     $processorId = $this->objPayment->arrPaymentObject[$_SESSION['shop']['paymentId']]['processor_id'];
-                    $processorName = $this->objProcessing->getCurrentPaymentProcessorType($processorId);
+                    $processorName = $this->objProcessing->getPaymentProcessorName($processorId);
                      // other payment methods
                     $objLanguage = new FWLanguage();
                     $this->objProcessing->initProcessor(
@@ -3465,7 +3482,7 @@ right after the customer logs in!
                         $objLanguage->getLanguageParameter($this->langId, 'lang')
                     );
 
-//echo("check for lsv<br />");
+//echo("check for lsv, processorName $processorName<br />");
                     // if the processor is Internal_LSV, and there is account information,
                     // store the information
                     if ($processorName == 'Internal_LSV') {
@@ -3475,9 +3492,9 @@ right after the customer logs in!
                             $query = "INSERT INTO contrexx_module_shop_lsv ".
                                 "(order_id, holder, bank, blz) VALUES (".
                                 $orderid.", '".
-                                addslashes($_SESSION['shop']['account_holder'])."', '".
-                                addslashes($_SESSION['shop']['account_bank'])."', '".
-                                addslashes($_SESSION['shop']['account_blz'])."')";
+                                contrexx_addslashes($_SESSION['shop']['account_holder'])."', '".
+                                contrexx_addslashes($_SESSION['shop']['account_bank'])."', '".
+                                contrexx_addslashes($_SESSION['shop']['account_blz'])."')";
                             $objResult = $objDatabase->Execute($query);
                             if (!$objResult) {
                                 unset($_SESSION['shop']['orderid']);
@@ -3495,10 +3512,27 @@ right after the customer logs in!
                     $strProcessorType =
                         $this->objProcessing->getCurrentPaymentProcessorType();
 
+                    // Test whether the selected payment method can be
+                    // considered an instant or deferred one.
+                    // This is used to set the order status at the end
+                    // of the shopping process.
+                    $_SESSION['shop']['isInstantPayment'] = false;
+                    if ($strProcessorType == 'external') {
+                        // For the sake of simplicity, all external payment
+                        // methods are considered to be 'instant'.
+                        // All currently implemented internal methods require
+                        // further action from the merchant, and thus are
+                        // considered to be 'deferred'.
+//echo("isInstant<br />");
+                        $_SESSION['shop']['isInstantPayment'] = true;
+                    }
+
+/* -> *MUST* be updated on success() page, like all other payment methods
 //echo("processor type is $strProcessorType<br />");
                     if ($strProcessorType == 'internal') {
-                        $this->_checkPaymentValidation($orderid);
+                        $this->updateOrderStatus($orderid);
                     }
+*/
 
 //echo("show payment processing<br />");
                     // Show payment processing page.
@@ -3521,14 +3555,6 @@ right after the customer logs in!
             }
         } else {
             // Show confirmation page.
-            // Make sure the page isn't called "cold" -
-            // index.php?section=shop&cmd=confirm with no session yields
-            // a lot of notices.
-            if (!isset($_SESSION['shop']['cart'])) {
-                header('Location: index.php?section=shop');
-                exit();
-            }
-
             $this->objTemplate->hideBlock("shopProcess");
             $this->objTemplate->setCurrentBlock("shopCartRow");
             foreach ($_SESSION['shop']['cart']['products'] as $arrProduct) {
@@ -3670,6 +3696,8 @@ right after the customer logs in!
 
 
     /**
+     * The payment process has completed successfully.
+     *
      * Check the data from the payment provider.
      * @access public
      */
@@ -3680,6 +3708,10 @@ right after the customer logs in!
         // hide currency navbar
         $this->_hideCurrencyNavbar = true;
 
+        // default new order status: As long as it's pending,
+        // updateOrderStatus() will choose the new value automatically.
+        $newOrderStatus = SHOP_ORDER_STATUS_PENDING;
+
         // if no order ID backup is present, redirect to the shop start page.
         // this check is necessary in order to avoid this page being
         // reloaded, which will fail in any case!
@@ -3688,38 +3720,57 @@ right after the customer logs in!
             exit;
         }
         $orderId = $this->objProcessing->checkIn();
-//echo("success(): checkIn returned order ID '$orderId'<br />");
+echo("success(): checkIn returned order ID '$orderId'<br />");
         // the order ID has been backed up for other external payments
         // that might not be able to return our order ID
         if (!$orderId) {
-            $orderId = $_SESSION['shop']['orderid_checkin'];
-//echo("success(): backup order ID '$orderId'<br />");
+            // Zero or false:
+            // The payment failed or was cancelled.
+            // It's all the same to the order, as it is cancelled in any case.
+            $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
         }
-        // clear backup ID, avoid success() from being run again
-        unset($_SESSION['shop']['orderid_checkin']);
+        if ($orderId === true || !intval($orderId)) {
+            // True or integer > 0.
+            // Internal payment methods: update automatically.
+            // External payment methods: completed successfully;
+            // update automatically.
+            $orderId = $_SESSION['shop']['orderid_checkin'];
+echo("success(): backup order ID '$orderId'<br />");
+        }
 
-        // check the returned order ID.
-        // this is set to true for all internal payment processors,
-        // which we assume to be confirmed successfully already.
-        // external processors should return the result of the transaction
-        // along with the order ID.  The respective order is set to confirmed
-        // state in _checkPaymentValidation(), if necessary and possible.
-        if ($orderId === true
-            || (intval($orderId) > 0
-                && $this->_checkPaymentValidation($orderId))) {
-//echo("success(): success! order ID '$orderId'<br />");
-            $statusMessage = $_ARRAYLANG['TXT_ORDER_PROCESSED'];
-            if (!$this->_sendProcessedMail()) {
-                $statusMessage .=
-                    '<br /><br />'.$_ARRAYLANG['TXT_SHOP_UNABLE_TO_SEND_EMAIL'];
+        // Check the returned order ID.
+        // We must have a valid order ID, or zero, or false.
+        // The respective order state, if available, is updated
+        // in updateOrderStatus().
+        if (intval($orderId) > 0) {
+            $newOrderStatus = $this->updateOrderStatus($orderId, $newOrderStatus);
+echo("success(): success! order ID '$orderId', newOrderStatus $newOrderStatus<br />");
+            switch ($newOrderStatus) {
+                case SHOP_ORDER_STATUS_CONFIRMED:
+                case SHOP_ORDER_STATUS_PAID:
+                case SHOP_ORDER_STATUS_SHIPPED:
+                case SHOP_ORDER_STATUS_COMPLETED:
+                    $statusMessage = $_ARRAYLANG['TXT_ORDER_PROCESSED'];
+                    if (!$this->_sendProcessedMail()) {
+                        $statusMessage .= '<br /><br />'.
+                            $_ARRAYLANG['TXT_SHOP_UNABLE_TO_SEND_EMAIL'];
+                    }
+                    break;
+                case SHOP_ORDER_STATUS_PENDING:
+                case SHOP_ORDER_STATUS_DELETED:
+                case SHOP_ORDER_STATUS_CANCELLED:
+                    $statusMessage =
+                        $_ARRAYLANG['TXT_SHOP_PAYMENT_FAILED'].'<br /><br />'.
+                        $_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'];
+                    break;
             }
         } else {
-            $statusMessage = $_ARRAYLANG['TXT_NO_PENDING_ORDER']
-//."<br />orderId $orderId"
-            ;
+            $statusMessage = $_ARRAYLANG['TXT_NO_PENDING_ORDER'];
         }
         $this->objTemplate->setVariable('SHOP_STATUS', $statusMessage);
         $this->destroyCart();
+        // clear backup ID, avoid success() from being run again
+        unset($_SESSION['shop']['orderid_checkin']);
     }
 
 
@@ -3728,13 +3779,11 @@ right after the customer logs in!
      *
      * Called when the customer has cancelled the payment process and thus
      * the order.
-     *
      * If the order ID can be determined, the respective order
      * record is marked as cancelled.
      * @global  array   $_ARRAYLANG     Language array
      * @global  mixed   $objDatabase    Database object
      * @return  void
-     */
     function cancel()
     {
         global $_ARRAYLANG, $objDatabase;
@@ -3759,19 +3808,11 @@ right after the customer logs in!
             $orderId = $_SESSION['shop']['orderid_checkin'];
 //echo("cancel(): got order ID $orderId from _SESSION backup<br />");
         }
-        // clear backup ID, it won't be used again
-        unset($_SESSION['shop']['orderid_backup']);
         // if $orderid is set to a value other than '', we assume
         // that there is a matching order.
         if ($orderId) {
-            // set the order status to '2' (cancelled)
-            $query = "
-                UPDATE ".DBPREFIX."module_shop_orders
-                   SET order_status='2'
-                 WHERE orderid=$orderId
-            ";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
+            // set the order status 'cancelled'
+            if ($this->updateOrderStatus($orderId, SHOP_ORDER_STATUS_CANCELLED)) {
                 $this->objTemplate->setVariable(array(
                     'TXT_SHOP_CANCEL_MESSAGE'    => $_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'],
                 ));
@@ -3794,29 +3835,38 @@ right after the customer logs in!
             'TXT_SHOP_BACK_TO_SHOP'      => $_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'],
         ));
 //echo("cancel(): leaving<br />");
+        // clear backup ID, it won't be used again
+        unset($_SESSION['shop']['orderid_backup']);
     }
+     */
 
 
     /**
-     * Mark the current order as confirmed
+     * Mark the current order as confirmed, paid, shipped, cancelled, deleted,
+     * or completed.
      *
-     * If the order exists and isn't marked as confirmed (order_status == 1),
-     * it is updated accordingly.
-     * If either the order ID is invalid, or if the update fails,
-     * returns false.
+     * If the order exists and has the pending status (order_status == 0),
+     * it is updated according to the payment and distribution type.
+     * If the optional argument $newOrderStatus is set and not zero,
+     * the order status is set to that value instead.
+     * If either the order ID is invalid, or if the update fails, this method
+     * returns zero.
      * @access  private
      * @param   integer $orderId    The ID of the current order
-     * @return  boolean             True if the order is marked as confirmed,
-     *                              false otherwise
+     * @param   integer $newOrderStatus The optional new order status.
+     * @return  integer             The new order status (different from zero)
+     *                              if the order status can be changed
+     *                              accordingly, false otherwise
      */
-    function _checkPaymentValidation($orderId)
+    function updateOrderStatus($orderId, $newOrderStatus=0)
     {
         global $objDatabase;
 
+echo("updateOrderStatus($orderId): entered<br />");
         $orderId = intval($orderId);
         if ($orderId == 0) {
-//echo("_checkPaymentValidation($orderId): missing order id argument - failed<br />");
-            return false;
+echo("updateOrderStatus($orderId): missing order id argument - failed<br />");
+            return SHOP_ORDER_STATUS_PENDING;
         }
         $query = "
             SELECT order_status
@@ -3825,23 +3875,61 @@ right after the customer logs in!
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("_checkPaymentValidation($orderId): query $query failed<br />");
-            return false;
+echo("updateOrderStatus($orderId): query $query failed<br />");
+            return SHOP_ORDER_STATUS_PENDING;
         }
+
         if ($objResult->fields['order_status'] == 0) {
+            // If the optional new order status argument is zero, determine
+            // the new status automatically.
+            if (!$newOrderStatus) {
+                // The new order status is determined by two factors:
+                // - The method of payment (instant/deferred), and
+                // - The method of delivery (if any).
+                // If the payment is instant (currenty, all external payments
+                // processors are considered to be instant), and there is no
+                // delivery needed (because it's all downloads), the order status
+                // is flipped to 'completed' right away.
+                // If only one of these conditions is met, the status is set to
+                // 'paid', or 'delivered' respectively.
+                // If neither condition is met, the status is set to 'confirmed'.
+                $newOrderStatus = SHOP_ORDER_STATUS_CONFIRMED;
+                if ($_SESSION['shop']['isInstantPayment']) {
+                    if ($_SESSION['shop']['isDelivery']) {
+                        // instant, delivery -> paid
+                        $newOrderStatus = SHOP_ORDER_STATUS_PAID;
+                    } else {
+                        // instant, download -> completed
+                        $newOrderStatus = SHOP_ORDER_STATUS_COMPLETED;
+                    }
+                } else {
+                    if (!$_SESSION['shop']['isDelivery']) {
+                        // deferred, download -> shipped
+                        $newOrderStatus = SHOP_ORDER_STATUS_SHIPPED;
+                    }
+                    //else { deferred, delivery -> confirmed }
+                }
+            }
+
             $query = "
                 UPDATE ".DBPREFIX."module_shop_orders
-                   SET order_status='1'
+                   SET order_status='$newOrderStatus'
                  WHERE orderid=$orderId
             ";
+echo("new order status query:<br />$query<br />");
             $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-//echo("_checkPaymentValidation($orderId): query $query failed<br />");
-                return false;
+            if ($objResult && $objDatabase->Affected_Rows() == 1) {
+                // The shopping cart *MUST* be flushed right after this method
+                // returns true.
+                return $newOrderStatus;
             }
+echo("updateOrderStatus($orderId): query $query failed<br />");
+            // The query failed.
+            return SHOP_ORDER_STATUS_PENDING;
         }
-        // the shop MUST be flushed right after this method returns true.
-        return true;
+echo("updateOrderStatus($orderId): order status is not zero<br />");
+        // The status of the order is not equal to zero.
+        return SHOP_ORDER_STATUS_PENDING;
     }
 
 
@@ -3849,7 +3937,7 @@ right after the customer logs in!
      * Sends an email with the order data
      *
      * @access private
-     * @see _checkPaymentValidation()
+     * @see updateOrderStatus()
      */
     function _sendProcessedMail()
     {
