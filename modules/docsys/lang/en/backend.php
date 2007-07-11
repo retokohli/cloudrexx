@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_CATEGORY_MANAGER'] = "Category Manager";
@@ -53,9 +53,9 @@ $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "This action can aff
 $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "The category could not be deleted! Pleas delete the subgroups first.";
 $_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND'] = "No documents found";
 $_ARRAYLANG['TXT_DELETE'] = "Delete";
-$_ARRAYLANG['TXT_DOCSYS_SORTING'] = "Sortierung";
-$_ARRAYLANG['TXT_DOCSYS_SORTING_ALPHA'] = "nach Alphabet";
-$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE'] = "nach Datum";
-$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE_ALPHA'] = "nach Datum und Alphabet";
-$_ARRAYLANG['TXT_DOCSYS_SORTTYPE'] = "Art der Sortierung";
+$_ARRAYLANG['TXT_DOCSYS_SORTING'] = "Sort Key";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_ALPHA'] = "Alphabetic";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE'] = "By Date";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE_ALPHA'] = "By Date And Alphabet";
+$_ARRAYLANG['TXT_DOCSYS_SORTTYPE'] = "Sort Key";
 ?>

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_DELETE_MARKED'] = "Delete marked";
@@ -135,29 +135,29 @@ $_ARRAYLANG['TXT_NUMBER_OF_CHARS'] = "Number Of Chars";
 $_ARRAYLANG['TXT_IMAGE'] = "Image";
 $_ARRAYLANG['TXT_TEXT'] = "Text";
 $_ARRAYLANG['TXT_TEASER_SHOW_NEWS_LINK'] = "Display the News Entry link";
-$_ARRAYLANG['TXT_NEWS_FEED_IMAGE'] = "News Feed Image";
+$_ARRAYLANG['TXT_NEWS_FEED_IMAGE'] = "Newsfeed Image";
 $_ARRAYLANG['TXT_NEWS_NEWSTICKER'] = "Newsticker";
 $_ARRAYLANG['TXT_NEWS_CONTENT'] = "Content";
 $_ARRAYLANG['TXT_NEWS_SAVE'] = "Save";
 $_ARRAYLANG['TXT_NEWS_MODIFY_FILENAME'] = "Change Filename";
 $_ARRAYLANG['TXT_NEWS_SHOW_TICKER_FILE'] = "Show Newsticker File";
-$_ARRAYLANG['TXT_NEWS_FILE_DOES_ALREADY_EXIST'] = "A file with the name %s does already exist in the directory %s!";
+$_ARRAYLANG['TXT_NEWS_FILE_DOES_ALREADY_EXIST'] = "A file with the name %s already exists in the directory %s!";
 $_ARRAYLANG['TXT_NEWS_COULD_NOT_ATTACH_FILE'] = "The file %s couldn't be attached in the directory %s!";
-$_ARRAYLANG['TXT_NEWS_SET_CHMOD'] = "Please set chmod 777 (Unix) or write access (Windows) on: %s";
+$_ARRAYLANG['TXT_NEWS_SET_CHMOD'] = "Please set chmod 777 (Unix) or turn on write access (Windows)for the following directory: %s";
 $_ARRAYLANG['TXT_NEWS_NEWSTICKER_SUCCESSFULLY_UPDATED'] = "Newsticker has been updated successfully.";
 $_ARRAYLANG['TXT_NEWS_UNABLE_TO_UPDATE_FILE'] = "The file %s couldn't be updated in the directory %s!";
 $_ARRAYLANG['TXT_NEWS_FILE_DOES_NOT_EXIST'] = "The file %s doesn't exist!";
-$_ARRAYLANG['TXT_NEWS_UNABLE_TO_RENAME_NEWSTICKER'] = "The filename of the newsticker couldn't be renamed!";
-$_ARRAYLANG['TXT_NEWS_YOU_MUST_SET_FILENAME'] = "You must set a filename for the newsticker!";
-$_ARRAYLANG['TXT_NEWS_SELECT_OTHER_FILENAME'] = "Select an other filename!";
+$_ARRAYLANG['TXT_NEWS_UNABLE_TO_RENAME_NEWSTICKER'] = "The news ticker file could ot be renamed!";
+$_ARRAYLANG['TXT_NEWS_YOU_MUST_SET_FILENAME'] = "Please select a name for the news ticker file!";
+$_ARRAYLANG['TXT_NEWS_SELECT_OTHER_FILENAME'] = "Select another file name!";
 $_ARRAYLANG['TXT_NEWS_AUTHOR_DESCRIPTION'] = "Name of author";
 $_ARRAYLANG['TXT_NEWS_TICKERS'] = "Tickers";
 $_ARRAYLANG['TXT_NEWS_TICKER'] = "Ticker";
 $_ARRAYLANG['TXT_NEWS_CHARSET'] = "Character Set";
 $_ARRAYLANG['TXT_NEWS_FUNCTIONS'] = "Functions";
-$_ARRAYLANG['TXT_NEWS_ACTION_IS_IRREVERSIBLE'] = "Diese Aktion kann nicht rückgängig gemacht werden!";
-$_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKER'] = "Möchten Sie den Ticker %s wirklich löschen?";
-$_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKERS_MSG'] = "Möchten Sie die ausgewählten Ticker wirklich löschen?";
+$_ARRAYLANG['TXT_NEWS_ACTION_IS_IRREVERSIBLE'] = "This action cannot be undone!";
+$_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKER'] = "Do you really want to erase the ticker %s%?";
+$_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKERS_MSG'] = "Do you really want to delete the selected ticker?";
 $_ARRAYLANG['TXT_NEWS_DELETE_TICKER'] = "Delete Ticker %s";
 $_ARRAYLANG['TXT_NEWS_NO_TICKER_AVAILABLE'] = "No Ticker Available";
 $_ARRAYLANG['TXT_NEWS_CHECK_ALL'] = "Select all";
@@ -170,8 +170,8 @@ $_ARRAYLANG['TXT_NEWS_MODIFY_TICKER'] = "Edit Ticker";
 $_ARRAYLANG['TXT_NEWS_FILENAME'] = "Filename";
 $_ARRAYLANG['TXT_NEWS_TICKERS_SCCESSFULLY_DELETED'] = "The selected ticker has been deleted succesfully.";
 $_ARRAYLANG['TXT_NEWS_TICKER_SUCCESSFULLY_DELETED'] = "The ticker %s has been deleted succesfully!";
-$_ARRAYLANG['TXT_NEWS_TICKERS_FAILED_DELETE'] = "Beim Löschen der ausgewählten Ticker trat ein Fehler auf!";
-$_ARRAYLANG['TXT_NEWS_TICKER_FAILED_DELETE'] = "Beim Löschen des Tickers %s trat ein Fehler auf!";
+$_ARRAYLANG['TXT_NEWS_TICKERS_FAILED_DELETE'] = "An error occurred during the deletion of the selected ticker.";
+$_ARRAYLANG['TXT_NEWS_TICKER_FAILED_DELETE'] = "An error occurred during the deletion of ticker %s%.";
 $_ARRAYLANG['TXT_NEWS_URL_ENCODING'] = "URL Encoding";
 $_ARRAYLANG['TXT_NEWS_URL_ENCODING_TXT'] = "Enable RFC 1738 encoding.";
 $_ARRAYLANG['TXT_NEWS_PREFIX'] = "Prefix";

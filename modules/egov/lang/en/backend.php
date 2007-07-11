@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_PRODUCTS'] = "Products";
@@ -22,7 +22,7 @@ $_ARRAYLANG['TXT_ORDER'] = "Order";
 $_ARRAYLANG['TXT_IP_ADDRESS'] = "IP Address";
 $_ARRAYLANG['TXT_DATA'] = "Data";
 $_ARRAYLANG['TXT_SEND_STATE_CHANGE_EMAIL'] = "Send a e-mail about the state change?";
-$_ARRAYLANG['TXT_CHANGE_STATE'] = "Change State";
+$_ARRAYLANG['TXT_CHANGE_STATE'] = "Change Status";
 $_ARRAYLANG['TXT_EMAIL_TEXT'] = "E-Mail text";
 $_ARRAYLANG['TXT_EMAIL_ADDRESS'] = "E-Mail address";
 $_ARRAYLANG['TXT_SAVE_AND_SEND'] = "Save and send e-mail";

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'] = "Modify Content Block %s";
@@ -44,12 +44,12 @@ $_ARRAYLANG['TXT_BLOCK_CONFIRM_DELETE_BLOCK'] = "Do you really want to delete th
 $_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'] = "Copy Content Block %s";
 $_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'] = "Delete Content Block %s";
 $_ARRAYLANG['TXT_BLOCK_BLOCK_RANDOM'] = "Placeholder For Random Generator";
-$_ARRAYLANG['TXT_BLOCK_BLOCK_GLOBAL'] = "Platzhalter für sämtliche Blöcke. Bei diesem Platzhalter wird die Seiten- und Sprachzuordnung auch berücksichtigt.";
+$_ARRAYLANG['TXT_BLOCK_BLOCK_GLOBAL'] = ". Bei diesem Platzhalter wird die Seiten- und Sprachzuordnung auch berücksichtigt.";
 $_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR'] = "Trennzeichen im globalen Block";
 $_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR_INFO'] = "Trennzeichen zwischen den einzelnen Blöcken im globalen Block. Es kann auch HTML verwendet werden.";
-$_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL'] = "Markierte zum globalen Block hinzufügen";
-$_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL_OFF'] = "Markierte vom globalen Block entfernen";
-$_ARRAYLANG['TXT_BLOCK_SHOW_IN_GLOBAL'] = "im globalen Block anzeigen";
+$_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL'] = "Add Selectet to the global Content Block";
+$_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL_OFF'] = "Delete Selectet from the global Content Block";
+$_ARRAYLANG['TXT_BLOCK_SHOW_IN_GLOBAL'] = "Display in global block";
 $_ARRAYLANG['TXT_BLOCK_STATUS'] = "Status";
 $_ARRAYLANG['TXT_BLOCK_BLOCK'] = "Content Block";
 $_ARRAYLANG['TXT_BLOCK_ACTIVATE'] = "Activate";

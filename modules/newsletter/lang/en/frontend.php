@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Confirmation successfully! You will now recieve the Newsletter.";
@@ -68,7 +68,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED'] = "Your data has be
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA'] = "An error occurred while updating your data!";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "An error occurred while adding you to the newsletter-sytem!";
 $_ARRAYLANG['TXT_NEWSLETTER_AUTHENTICATION_FAILED'] = "Authentication Failed!";
-$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL'] = "The subscription has been canceled because the activation email couldn't be sent!";
+$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL'] = "The Registration has not been completed because the activation email failed!";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] = "An error occurred while removing your e-mail address from the newsletter system!";
 $_ARRAYLANG['TXT_NEWSLETTER_SEX'] = "Sex";
 ?>

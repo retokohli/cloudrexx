@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "In Stock";
@@ -136,7 +136,7 @@ $_ARRAYLANG['TXT_ERROR_STORING_CUSTOMER_DATA'] = "Error while storing customer d
 $_ARRAYLANG['TXT_ORDER_ALREADY_PLACED'] = "Your order has been stored already!";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_TITLE'] = "Einzugsermächtigung";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_INFO'] = "Füllen Sie bitte dieses Formular in Ihrem Browser <b>vollständig</b> aus.  Drucken Sie es anschliessend und senden oder faxen Sie es uns <b>unterschrieben</b> zu.";
-$_ARRAYLANG['TXT_SHOP_LSV_EE_ADDRESS'] = "Unsere Adresse:";
+$_ARRAYLANG['TXT_SHOP_LSV_EE_ADDRESS'] = "Our Address:";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_FAX'] = "Fax:";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_TEXT'] = "Hiermit ermächtige(n) ich/wir die als Zahlungsempfänger genannte Firma widerruflich, die von mir/uns zu entrichtenden Zahlungen bei Fälligkeit zu Lasten meines/unseres Kontos mittels Lastschrift einzuziehen. Wenn mein/unser Konto die erforderliche Deckung nicht aufweist, besteht seitens des kontoführenden Kreditinstituts keine Verpflichtung zur Einlösung. Teileinlösungen werden im Lastschriftverfahren nicht vorgenommen.";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_RECIPIENT'] = "Zahlungsempfänger:";
@@ -159,7 +159,7 @@ $_ARRAYLANG['TXT_SHOP_PRODUCT_WEIGHT'] = "Weight:";
 $_ARRAYLANG['TXT_SHOP_WEIGHT_UNLIMITED'] = "unlimited";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_CONDITIONS'] = "Shipment Conditions:";
 $_ARRAYLANG['TXT_SHOP_COST_FREE'] = "free";
-$_ARRAYLANG['TXT_SHOP_SHIPMENT_COUNTRIES'] = "Lieferländer";
+$_ARRAYLANG['TXT_SHOP_SHIPMENT_COUNTRIES'] = "Delivery Countries";
 $_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'] = "Das Gesamtgewicht Ihrer Bestellung übersteigt die verfügbaren Versandmöglichkeiten.";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_HIERARCHY'] = "You are here:";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_FLAT'] = "Galleries:";
@@ -171,31 +171,38 @@ $_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'] = "Geben Sie die E-Mail Adresse für Ih
 $_ARRAYLANG['SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
 $_ARRAYLANG['SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";
 $_ARRAYLANG['SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Übersicht über Ihre bisherigen Bestellungen.";
-$_ARRAYLANG['SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
+$_ARRAYLANG['SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "I'm already existing customer.";
 $_ARRAYLANG['SHOP_ACCOUNT_LOGIN'] = "Anmelden >>";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
-$_ARRAYLANG['TXT_SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_NEW_CUSTOMER'] = "I'm new customer.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Übersicht über Ihre bisherigen Bestellungen.";
-$_ARRAYLANG['TXT_SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
-$_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Anmelden >>";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Existing customer.";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Login >>";
 $_ARRAYLANG['TXT_SHOP_CATEGORIES'] = "Categories:";
 $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'] = "Produkte in der Kategorie";
-$_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'] = "Weiter zur Kategorie";
+$_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'] = "Continue to Category";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_FIRST_NAME'] = "Firstname";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_LAST_NAME'] = "Lastname";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_ZIP'] = "ZIP";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_CITY'] = "City";
 $_ARRAYLANG['TXT_CODE'] = "Code";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS'] = "Neueste Produkte im Online Shop:";
-$_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_NONE_FOUND'] = "Keine Produkte gefunden.";
+$_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_NONE_FOUND'] = "No products have been found.";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_FAILED'] = "Fehler bei der Produkte Abfrage";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_SHOP_BACK'] = "Back";
 $_ARRAYLANG['TXT_SHOP_GOTO_DETAIL_VIEW'] = "zur Detailansicht / &agrav; la ...";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_CANCELLED'] = "Die Bezahlung wurde abgebrochen.";
-$_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "Ihre Bestellung wurde annuliert.";
+$_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "annuliert";
 $_ARRAYLANG['TXT_SHOP_ORDER_STILL_IN_CART'] = "Ihre Bestellung bleibt im Warenkorb.";
-$_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Zurück zum Online Shop";
-$_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Art der Bezahlung ändern";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Back to the Online Shop";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Change Payment Type";
 $_ARRAYLANG['TXT_SHOP_SAFERPAY_INIT_ERROR'] = "Payment using SaferPay couldn't be initialized!";
+$_ARRAYLANG['TXT_SHOP_PAYMENT_FAILED'] = "Die Bezahlung ist fehlgeschlagen.";
+$_ARRAYLANG['TXT_SHOP_ORDER_PENDING'] = "pendent";
+$_ARRAYLANG['TXT_SHOP_ORDER_CONFIRMED'] = "bestätigt";
+$_ARRAYLANG['TXT_SHOP_ORDER_DELETED'] = "gelöscht";
+$_ARRAYLANG['TXT_SHOP_ORDER_COMPLETED'] = "abgeschlossen";
+$_ARRAYLANG['TXT_SHOP_ORDER_PAID'] = "bezahlt";
+$_ARRAYLANG['TXT_SHOP_ORDER_SHIPPED'] = "versandt";
 ?>

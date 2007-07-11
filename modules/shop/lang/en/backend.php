@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Orders";
@@ -361,7 +361,7 @@ $_ARRAYLANG['TXT_SHOP_ORDER_TIME'] = "Order time";
 $_ARRAYLANG['TXT_SHOP_PAYPAL_DEFAULT_CURRENCY'] = "Default Currency";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] = "Product Code";
 $_ARRAYLANG['TXT_SHOP_IMAGE'] = "Image";
-$_ARRAYLANG['TXT_SHOP_MENU_OPTION_DUTY'] = "Menu (Auswahl zwingend)";
+$_ARRAYLANG['TXT_SHOP_MENU_OPTION_DUTY'] = "Menu (Selection required)";
 $_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'] = "Unable to create thumbnail for %s.";
 $_ARRAYLANG['TXT_SHOP_EDIT_OR_ADD_IMAGE'] = "Select Image";
 $_ARRAYLANG['TXT_SHOP_IMPORT_TITLE'] = "Import";
@@ -449,7 +449,7 @@ $_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_TORDER_TIP'] = "Exportiert alle Felder der Be
 $_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_RORDER_TIP'] = "Exportiert die wichtigsten Felder der Bestellungen Tabelle, plus entsprechende Felder aus den Tabellen Kunden, Länder, Währungen, Versandarten, Bezahlung und LSV";
 $_ARRAYLANG['TXT_IMPORT_EXPORT'] = "Import/Export";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CREATE_TEMPLATE_TIPS'] = "Klicken sie auf 'Durchsuchen', und wählen sie eine vorhandene CSV Datei aus. Klicken sie danach auf 'Upload'";
-$_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Art der Überschrift";
+$_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Typ Of Headline";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_HIERARCHY'] = "hierarchisch";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_FLAT'] = "flat";
 $_ARRAYLANG['TXT_SETTINGS_IMAGENAME_EXT_SHOW'] = "Erweiterung mit Namen anzeigen";
@@ -471,20 +471,20 @@ $_ARRAYLANG['TXT_GALLERY_EXPORT_TARGET'] = "Zielkategorie im Shop für Export:";
 $_ARRAYLANG['TXT_GALLERY_EXPORT_CONFIRM'] = "Die Zielkategorie im Shop wird vor dem Export geleert und alle darin enthaltenen Produkte gelöscht!\nSind Sie sicher?";
 $_ARRAYLANG['TXT_ERROR_DELETING_PRODUCT'] = "Fehler beim löschen des Produktes";
 $_ARRAYLANG['TXT_SHOP_TIP'] = "Note";
-$_ARRAYLANG['TXT_SHOP_INSERTED_CUSTOMER'] = "Neuer Kunde erfolgreich eingefügt";
+$_ARRAYLANG['TXT_SHOP_INSERTED_CUSTOMER'] = "New Cusomter succesfully added.";
 $_ARRAYLANG['TXT_CODE'] = "Code";
 $_ARRAYLANG['TXT_CLEAR_DATABASE_BEFORE_IMPORTING'] = "Overwrite existing products and product categories with new data:";
 $_ARRAYLANG['TXT_SHOP_ERROR'] = "Error";
 $_ARRAYLANG['TXT_SHOP_FILE_EXISTS'] = "file already exists";
 $_ARRAYLANG['TXT_SHOP_COULD_NOT_COPY_FILE'] = "could not copy file";
-$_ARRAYLANG['TXT_CUSTOMER_HOMEPAGE'] = "Homepage";
+$_ARRAYLANG['TXT_CUSTOMER_HOMEPAGE'] = "Website";
 $_ARRAYLANG['TXT_CUSTOMER_PICTURE_NAME'] = "Logo";
 $_ARRAYLANG['TXT_SHOP_CUSTOMER_DISCOUNT_CODE'] = "Discount Code";
 $_ARRAYLANG['TXT_SHOP_CUSTOMER_DISCOUNT'] = "Customer Discount";
 $_ARRAYLANG['TXT_SHOP_CUSTOMER_PREORDER_CODE'] = "Pre Order";
-$_ARRAYLANG['TXT_SHOP_CUSTOMER_PAYMENT_CODE'] = "Bezahlungscode";
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_PAYMENT_CODE'] = "Payment Code";
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER'] = "Manucfacturer";
-$_ARRAYLANG['TXT_SHOP_INSERT_NEW_MANUFACTURER'] = "Neuen Hersteller hinzufügen";
+$_ARRAYLANG['TXT_SHOP_INSERT_NEW_MANUFACTURER'] = "Add New Manufacturerer";
 $_ARRAYLANG['TXT_SHOP_UPDATE_MANUFACTURER'] = "Update Manucfacturer";
 $_ARRAYLANG['TXT_SHOP_INSERT_NEW_MANUFACTURER_ERROR'] = "Herstellername muss angegeben werden";
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER_URL'] = "URL";
@@ -494,9 +494,9 @@ $_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_MANUFACTURER'] = "Möchten Sie diese Herste
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_SUCCESS'] = "Hersteller wurde erfolgreich aktualisiert";
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_FAILED'] = "Fehler beim aktualisieren";
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_SUCCESS'] = "Hersteller wurde(n) erfolgreich gelöscht";
-$_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED'] = "Fehler beim löschen";
+$_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED'] = "Error While Deleting";
 $_ARRAYLANG['TXT_ALL_MANUFACTURER'] = "All Manufacturers";
-$_ARRAYLANG['TXT_SHOP_CUSTOMER_HOMEPAGE'] = "Homepage";
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_HOMEPAGE'] = "Website";
 $_ARRAYLANG['TXT_SHOP_CUSTOMER_PICTURE_NAME'] = "Logo";
 $_ARRAYLANG['TXT_SHOP_PARENT_CATEGORY'] = "Übergeordnete Kategorie";
 $_ARRAYLANG['TXT_SHOP_CATEGORY_DESCRIPTION'] = "Descritption";
@@ -505,8 +505,15 @@ $_ARRAYLANG['TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES'] = "Overwrite 
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES_TIPS'] = "Click Browse to select the file you wish to import from your local machine.  Activate the Category Overwrite checkbox to overwrite all existing category data.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_PRODUCTS'] = "Import Products";
 $_ARRAYLANG['TXT_SHOP_SHOW_PENDING_ORDERS'] = "Pendente Bestellungen anzeigen";
+$_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "annuliert";
 $_ARRAYLANG['TXT_SHOP_IMAGE_SETTINGS'] = "Einstellungen f&uuml;r Bilder";
 $_ARRAYLANG['TXT_SHOP_THUMBNAIL_MAX_WIDTH'] = "Maximale Breite der Thumbnails";
 $_ARRAYLANG['TXT_SHOP_THUMBNAIL_MAX_HEIGHT'] = "Maximale H&ouml;he der Thumbnails";
 $_ARRAYLANG['TXT_SHOP_THUMBNAIL_QUALITY'] = "Qualit&auml;t der Thumbnails";
+$_ARRAYLANG['TXT_SHOP_ORDER_PENDING'] = "pendent";
+$_ARRAYLANG['TXT_SHOP_ORDER_CONFIRMED'] = "bestätigt";
+$_ARRAYLANG['TXT_SHOP_ORDER_DELETED'] = "gelöscht";
+$_ARRAYLANG['TXT_SHOP_ORDER_COMPLETED'] = "abgeschlossen";
+$_ARRAYLANG['TXT_SHOP_ORDER_PAID'] = "bezahlt";
+$_ARRAYLANG['TXT_SHOP_ORDER_SHIPPED'] = "versandt";
 ?>

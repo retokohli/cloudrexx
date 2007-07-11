@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Create New Themes";
@@ -201,7 +201,7 @@ $_ARRAYLANG['TXT_ID_DESCRIPTION'] = "ID od Entree";
 $_ARRAYLANG['TXT_DATE_DESCRIPTION'] = "Date of entree";
 $_ARRAYLANG['TXT_TITLE_DESCRIPTION'] = "Title of Entree";
 $_ARRAYLANG['TXT_USEMENT'] = "Assignment";
-$_ARRAYLANG['TXT_USEMENT_TEXT'] = "In der Designvorlage <b>directory.html</b>. Diese Seite kann mit dem Platzhalter <b>[[DIRECTORY_FILE]]</b> im Design oder in einer Content Seite eingebunden werden.";
+$_ARRAYLANG['TXT_USEMENT_TEXT'] = "In the design template <b>directory.html</b>. Diese Seite kann mit dem Platzhalter <b>[[DIRECTORY_FILE]]</b> im Design oder in einer Content Seite eingebunden werden.";
 $_ARRAYLANG['TXT_DIRECTORY_DEACTIVATE'] = "deactivate";
 $_ARRAYLANG['TXT_SHOW_DIR_HOMECONTENT'] = "show Directory on Homepage";
 ?>

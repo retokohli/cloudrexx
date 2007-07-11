@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
@@ -193,9 +193,16 @@ $_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "Übersicht";
 $_ARRAYLANG['TXT_SHOP_BACK'] = "Zurück";
 $_ARRAYLANG['TXT_SHOP_GOTO_DETAIL_VIEW'] = "zur Detailansicht / &agrav; la ...";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_CANCELLED'] = "Die Bezahlung wurde abgebrochen.";
-$_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "Ihre Bestellung wurde annuliert.";
+$_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "annuliert";
 $_ARRAYLANG['TXT_SHOP_ORDER_STILL_IN_CART'] = "Ihre Bestellung bleibt im Warenkorb.";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Zur&uuml;ck zum Online Shop";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Art der Bezahlung &auml;ndern";
 $_ARRAYLANG['TXT_SHOP_SAFERPAY_INIT_ERROR'] = "Payment using SaferPay couldn't be initialized!";
+$_ARRAYLANG['TXT_SHOP_PAYMENT_FAILED'] = "Die Bezahlung ist fehlgeschlagen.";
+$_ARRAYLANG['TXT_SHOP_ORDER_PENDING'] = "pendent";
+$_ARRAYLANG['TXT_SHOP_ORDER_CONFIRMED'] = "bestätigt";
+$_ARRAYLANG['TXT_SHOP_ORDER_DELETED'] = "gelöscht";
+$_ARRAYLANG['TXT_SHOP_ORDER_COMPLETED'] = "abgeschlossen";
+$_ARRAYLANG['TXT_SHOP_ORDER_PAID'] = "bezahlt";
+$_ARRAYLANG['TXT_SHOP_ORDER_SHIPPED'] = "versandt";
 ?>
