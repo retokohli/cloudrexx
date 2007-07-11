@@ -451,20 +451,15 @@ class PaymentProcessing
 
     /**
      * Check in the payment processor after the payment is complete.
-     * @return  mixed   For external payment types:
-     *                  The integer order ID, if known, upon success,
-     *                  the 'NULL' string value upon failure.  This may
-     *                  be used in successive queries in place of the order
-     *                  ID and will yield no result, and thus the
-     *                  confirmation will fail as a consequence.
-     *                  For internal payment types:
-     *                  Boolean true, because these all skip the order
-     *                  confirmation after this, as this has already been
-     *                  done.
+     * @return  mixed   For external payment methods:
+     *                  - The integer order ID, if known, upon success,
+     *                  - boolean false if not known, or upon failure.
+     *                  For internal payment methods:
+     *                  - Boolean true, in order to make these skip the order
+     *                    status update, as this has already been done.
      */
     function checkIn()
     {
-        $transaction = false;
         if (isset($_GET['handler']) && !empty($_GET['handler'])) {
             switch ($_GET['handler']) {
                 case 'saferpay':
@@ -487,14 +482,11 @@ class PaymentProcessing
                     }
                     break;
                 case 'paypal':
-                    // order ID must be returned when the payment is done.
+                    // The order ID must be returned when the payment is done.
                     // is this guaranteed to be a GET request?
                     if (isset($_REQUEST['orderid'])) {
                         return intval($_REQUEST['orderid']);
                     }
-                    break;
-                // Dunno about this one...
-                case 'PostFinance_DebitDirect':
                     break;
                 // For the remaining types, there's no need to check in, so we
                 // return true and jump over the validation of the order ID
@@ -511,16 +503,24 @@ class PaymentProcessing
                     if (isset($_REQUEST['result'])) {
                         $result = $_REQUEST['result'];
                     }
-                    // returns the order ID on success, 'NULL' otherwise
+                    // returns the order ID on success, false otherwise
                     return Dummy::commit($result);
                 default:
                     break;
-                // Note: The order ID is kept in a backup in index.class.php
+                // Note: A backup of the order ID is kept in the session
                 // for payment methods that do not return it.
             }
+            // Anything else is wrong.
+            return false;
+        }
+        // 'PostFinance_DebitDirect':
+        // Guaranteed to be a POST request.
+        // The request *MUST* contain the order ID!
+        if (isset($_POST['txtOrderIDShop'])) {
+            return intval($_POST['txtOrderIDShop']);
         }
         // Anything else is wrong.
-        return 'NULL';
+        return false;
     }
 }
 
