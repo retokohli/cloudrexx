@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Create New Themes";
@@ -243,14 +243,14 @@ $_ARRAYLANG['TXT_ID_DESCRIPTION'] = "ID od Entree";
 $_ARRAYLANG['TXT_DATE_DESCRIPTION'] = "Date of entree";
 $_ARRAYLANG['TXT_TITLE_DESCRIPTION'] = "Title of Entree";
 $_ARRAYLANG['TXT_USEMENT'] = "Assignment";
-$_ARRAYLANG['TXT_USEMENT_TEXT'] = "In der Designvorlage <b>directory.html</b>. Diese Seite kann mit dem Platzhalter <b>[[DIRECTORY_FILE]]</b> im Design oder in einer Content Seite eingebunden werden.";
+$_ARRAYLANG['TXT_USEMENT_TEXT'] = "In the design template <b>directory.html</b>. Diese Seite kann mit dem Platzhalter <b>[[DIRECTORY_FILE]]</b> im Design oder in einer Content Seite eingebunden werden.";
 $_ARRAYLANG['TXT_DIRECTORY_DEACTIVATE'] = "deactivate";
 $_ARRAYLANG['TXT_SHOW_DIR_HOMECONTENT'] = "show Directory on Homepage";
 $_ARRAYLANG['TXT_SHOW_ONLY_ENTRIES'] = "only entries";
 $_ARRAYLANG['TXT_GOOGLESEARCH'] = "Google Search";
-$_ARRAYLANG['TXT_GOOGLERESULTS'] = "Anzahl Google Resultate";
+$_ARRAYLANG['TXT_GOOGLERESULTS'] = "Count of Google Results";
 $_ARRAYLANG['TXTX_GOOGLEID'] = "Google Key";
-$_ARRAYLANG['TXTX_GOOGLELANG'] = "Sprachparameter";
+$_ARRAYLANG['TXTX_GOOGLELANG'] = "Language Parameter";
 $_ARRAYLANG['TXT_XMLLIMIT'] = "XML Limit";
 $_ARRAYLANG['TXT_PLATFORM'] = "Platforms";
 $_ARRAYLANG['TXT_LANGUAGE'] = "Languages";
@@ -271,14 +271,14 @@ $_ARRAYLANG['TXT_ADDFEED'] = "Besuchern erlauben Einträge anzumelden";
 $_ARRAYLANG['TXT_EDITFEED'] = "Besuchern erlauben, eigene Einträge zu editieren (Community-Modul)";
 $_ARRAYLANG['TXT_EDITFEED_STATUS'] = "Einträge nach Bearbeiten wieder aktiv";
 $_ARRAYLANG['TXT_ADMINMAIL'] = "Benachrichtigungsmail Empfänger";
-$_ARRAYLANG['TXT_SHOLEVELS'] = "Ebenen aktivieren";
+$_ARRAYLANG['TXT_SHOLEVELS'] = "Activate Levels";
 $_ARRAYLANG['TXT_INDEXVIEW'] = "Index view for categories";
-$_ARRAYLANG['TXT_THUMBSIZE'] = "Thumbnail Breite (Pixel)";
-$_ARRAYLANG['TXT_SORTORDER'] = "Einträge nach Alphabet sortieren";
-$_ARRAYLANG['TXT_SHOWLEVELS'] = "Ebenen aktivieren";
+$_ARRAYLANG['TXT_THUMBSIZE'] = "Thumbnail Width (pixel)";
+$_ARRAYLANG['TXT_SORTORDER'] = "Sort Entries Alphabeticly";
+$_ARRAYLANG['TXT_SHOWLEVELS'] = "Activat Levels";
 $_ARRAYLANG['TXT_GOOGLEID'] = "Google Key";
-$_ARRAYLANG['TXT_GOOGLELANG'] = "Sprachparameter";
-$_ARRAYLANG['TXT_DIRECTORY_REMEMBER'] = "Benachrichtigung";
+$_ARRAYLANG['TXT_GOOGLELANG'] = "Languages Parameter";
+$_ARRAYLANG['TXT_DIRECTORY_REMEMBER'] = "Confirmation";
 $_ARRAYLANG['TXT_DIRECTORY_CONFIRM'] = "Confirmation";
 $_ARRAYLANG['TXT_DIRECTORY_CONFIRM_MAIL'] = "Confirmation";
 $_ARRAYLANG['TXT_GOOGLESEACH'] = "Google Search";

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Advertisements";
@@ -37,7 +37,7 @@ $_ARRAYLANG['TXT_MARKET_CATEGORY'] = "Category";
 $_ARRAYLANG['TXT_MARKET_CONTACT'] = "Contact";
 $_ARRAYLANG['TXT_MARKET_PLACE'] = "Place of article";
 $_ARRAYLANG['TXT_MARKET_DELETE_ADVERTISEMENT'] = "Remove advertisement";
-$_ARRAYLANG['TXT_MARKET_SEND_MESSAGE'] = "Message to offerer";
+$_ARRAYLANG['TXT_MARKET_SEND_MESSAGE'] = "Message to Seller";
 $_ARRAYLANG['TXT_MARKTE_MESSAGE_ABOUT'] = "Question about";
 $_ARRAYLANG['TXT_MARKET_MESSAGE'] = "Message";
 $_ARRAYLANG['TXT_MARKET_SEND'] = "Send";

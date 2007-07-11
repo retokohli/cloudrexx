@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_ALIAS_ALIASES'] = "Aliase";
@@ -13,11 +13,11 @@ $_ARRAYLANG['TXT_ALIAS_PAGE'] = "Page";
 $_ARRAYLANG['TXT_ALIAS_ALIAS_ES'] = "Alias(e)";
 $_ARRAYLANG['TXT_ALIAS_FUNCTIONS'] = "Functions";
 $_ARRAYLANG['TXT_ALIAS_MODIFY_ALIAS'] = "Edit alias";
-$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS'] = "Neues Alias hinzufügen";
+$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS'] = "Add New Alias";
 $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE'] = "Target Page";
 $_ARRAYLANG['TXT_ALIAS_LOCAL'] = "Local";
 $_ARRAYLANG['TXT_ALIAS_URL'] = "URL";
-$_ARRAYLANG['TXT_ALIAS_BROWSE'] = "Webseiten durchsuchen";
+$_ARRAYLANG['TXT_ALIAS_BROWSE'] = "Search Page";
 $_ARRAYLANG['TXT_ALIAS_CONFIRM_REMOVE_ALIAS'] = "Möchten Sie das Alias %s wirklich entfernen?";
 $_ARRAYLANG['TXT_ALIAS_ADD_ANOTHER_ALIAS'] = "weiteres Alias hinzufügen";
 $_ARRAYLANG['TXT_ALIAS_SAVE'] = "Save";

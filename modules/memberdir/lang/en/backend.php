@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_TICKET_MODULE_DESCRIPTION'] = "Support ticket system";
@@ -67,19 +67,19 @@ $_ARRAYLANG['TXT_DISPLAY_MODE'] = "Display Mode";
 $_ARRAYLANG['TXT_DISPLAY_MODE_BOTH'] = "Show Child Directories and Entries";
 $_ARRAYLANG['TXT_DISPLAY_MODE_DIR_ONLY'] = "Show Child Directories only";
 $_ARRAYLANG['TXT_DISPLAY_MODE_ENTRIES_ONLY'] = "Show Entries only";
-$_ARRAYLANG['TXT_SORT'] = "Sortieren nach";
+$_ARRAYLANG['TXT_SORT'] = "Sort by";
 $_ARRAYLANG['TXT_FIELD_DEFAULT_NAMES'] = "Lastname;Firstname;Company;Phonenumber;Mobilenumber;Address;ZIP;Town;E-Mail;Faxnumber;Website;Date Of Birth";
-$_ARRAYLANG['TXT_PIC_UPLOAD'] = "Bildauswahl";
-$_ARRAYLANG['TXT_SETTINGS_IMAGE_MAX_HEIGHT'] = "Maximal angezeigte Bildhöhe";
-$_ARRAYLANG['TXT_SETTINGS_IMAGE_MAX_WIDTH'] = "Maximal angezeigte Bildbreite";
+$_ARRAYLANG['TXT_PIC_UPLOAD'] = "Image Selector";
+$_ARRAYLANG['TXT_SETTINGS_IMAGE_MAX_HEIGHT'] = "Maximum Image Height";
+$_ARRAYLANG['TXT_SETTINGS_IMAGE_MAX_WIDTH'] = "Maximum Image Width";
 $_ARRAYLANG['TXT_PICTURE'] = "Image";
-$_ARRAYLANG['TXT_DOWNLOAD_QUESTION'] = "Wollen Sie auch die Unterverzeichnisse exportieren?";
-$_ARRAYLANG['TXT_MAX_FILE_SIZE'] = "Maximale Dateigrösse";
-$_ARRAYLANG['TXT_EDIT_IMAGE'] = "Bild einfügen/editieren";
+$_ARRAYLANG['TXT_DOWNLOAD_QUESTION'] = "Would you like to export the Child Directories?";
+$_ARRAYLANG['TXT_MAX_FILE_SIZE'] = "Maximum File Size";
+$_ARRAYLANG['TXT_EDIT_IMAGE'] = "Insert or Edit Image";
 $_ARRAYLANG['TXT_MEMBERDIR_USER_DEFINED'] = "User Definied";
-$_ARRAYLANG['TXT_MEMBERDIR_SORTING'] = "Sortierung";
+$_ARRAYLANG['TXT_MEMBERDIR_SORTING'] = "Sort Key";
 $_ARRAYLANG['TXT_MEMBERDIR_LANGUAGE'] = "Language";
 $_ARRAYLANG['TXT_MEMBERDIR_COPY_DIR'] = "Copy Directory";
 $_ARRAYLANG['TXT_ORDER'] = "Order";
-$_ARRAYLANG['TXT_MEMBERDIR_EXPORT_CONTACT_AS_VCARD'] = "Kontakt als VCard exportieren";
+$_ARRAYLANG['TXT_MEMBERDIR_EXPORT_CONTACT_AS_VCARD'] = "Export Contact As VCard";
 ?>

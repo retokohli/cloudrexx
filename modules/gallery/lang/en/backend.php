@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'] = "Name";
@@ -171,7 +171,7 @@ $_ARRAYLANG['TXT_GALLERY_SETTINGS_PAGING'] = "Images per page (paging)";
 $_ARRAYLANG['TXT_GALLERY_UPLOAD_ERROR_WIDTH'] = "Error: The width of the image was bigger than the allowed maximum value of  pixels.";
 $_ARRAYLANG['TXT_GALLERY_SETTINGS_HOME_LAST'] = "Activate 'newest image'-function";
 $_ARRAYLANG['TXT_GALLERY_SETTINGS_HOME_RANDOM'] = "Activate 'random image'-function";
-$_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Art der Überschrift";
+$_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Typ Of Headline";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_HIERARCHY'] = "hierarchisch";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_FLAT'] = "flat";
 $_ARRAYLANG['TXT_SETTINGS_IMAGENAME_EXT_SHOW'] = "Erweiterung mit Namen anzeigen";

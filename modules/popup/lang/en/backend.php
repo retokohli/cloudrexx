@@ -1,19 +1,19 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_POPUP_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_PUPUP_ADD_PUPUP'] = "Add PopUp";
 $_ARRAYLANG['TXT_POPUP_SETTINGS'] = "Settings";
-$_ARRAYLANG['TXT_POPUP_PLACEHOLDER'] = "Platzhalter";
-$_ARRAYLANG['TXT_POPUP_BORDER_COLOR'] = "Rahmenfarbe";
-$_ARRAYLANG['TXT_POPUP_BORDER_SIZE'] = "Rahmengrösse (Pixel)";
-$_ARRAYLANG['TXT_POPUP_DEFAULT_TOP'] = "Standard Abstand oben";
-$_ARRAYLANG['TXT_POPUP_DEFAULT_LEFT'] = "Standard Abstand links";
-$_ARRAYLANG['TXT_POPUP_DEFAULT_WIDTH'] = "Standard Breite";
-$_ARRAYLANG['TXT_POPUP_DEFAULT_HEIGHT'] = "Standard Höche";
+$_ARRAYLANG['TXT_POPUP_PLACEHOLDER'] = "Placeholder";
+$_ARRAYLANG['TXT_POPUP_BORDER_COLOR'] = "Border Color";
+$_ARRAYLANG['TXT_POPUP_BORDER_SIZE'] = "Border Size (pixel)";
+$_ARRAYLANG['TXT_POPUP_DEFAULT_TOP'] = "Default Padding Top";
+$_ARRAYLANG['TXT_POPUP_DEFAULT_LEFT'] = "Default Padding Left";
+$_ARRAYLANG['TXT_POPUP_DEFAULT_WIDTH'] = "Default Width";
+$_ARRAYLANG['TXT_POPUP_DEFAULT_HEIGHT'] = "Default Height";
 $_ARRAYLANG['TXT_SAVE'] = "Speichern";
 $_ARRAYLANG['TXT_POPUP_JS_FUNCTION'] = "Beinhaltet die Javascript Funktion zum öffenen von Fenster. Platzierung im Header.";
 $_ARRAYLANG['TXT_POPUP_ONLOAD'] = "Ruft die einzelnen Javascript Funktionen auf. Platzierung <body [[POPUP_ONLOAD]]>.";

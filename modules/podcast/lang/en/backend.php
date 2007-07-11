@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_PODCAST_OVERVIEW'] = "Overview";
@@ -77,7 +77,7 @@ $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE'] = "Source Code";
 $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE_OF_MEDIUM'] = "Show Source Code of medium %s";
 $_ARRAYLANG['TXT_PODCAST_SELECT_ALL'] = "Select all";
 $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE'] = "Select source";
-$_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'] = "Geben Sie entweder ein lokales Medium an, dass Sie zur Podcast Bibliothek hinzufügen möchten,<br />oder geben Sie direkt die URL eines Mediums an.";
+$_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'] = "Please select a local media file or enter URL to add a file to the Podcast Library";
 $_ARRAYLANG['TXT_PODCAST_LOCAL'] = "Local";
 $_ARRAYLANG['TXT_PODCAST_REMOTE'] = "URL";
 $_ARRAYLANG['TXT_PODCAST_NEXT'] = "Next";
@@ -94,7 +94,7 @@ $_ARRAYLANG['TXT_PODCAST_SHOW'] = "Show";
 $_ARRAYLANG['TXT_PODCAST_CONFIRM_DELETE_TEMPLATE'] = "Do you really want to delete the template \"%s\"?";
 $_ARRAYLANG['TXT_PODCAST_TEMPLATE_DELETED_SUCCESSFULL'] = "The template \'%s\' has been successfully deleted.";
 $_ARRAYLANG['TXT_PODCAST_TEMPLATE_DELETED_FAILURE'] = "An error occured while deleting the template \'%s\'!";
-$_ARRAYLANG['TXT_PODCAST_TEMPLATE_STILL_IN_USE_MSG'] = "Die Vorlage \'%s\' kann nicht gelöscht werden, da sie noch von mindestens einem Medium verwendet wird!";
+$_ARRAYLANG['TXT_PODCAST_TEMPLATE_STILL_IN_USE_MSG'] = "The template \'%s\' could not be deleted as it is still in use.";
 $_ARRAYLANG['TXT_PODCAST_PLAYLENGHT'] = "Playlenght";
 $_ARRAYLANG['TXT_PODCAST_PLAYLENGHT_FORMAT'] = "Hours:Minutes:Seconds";
 $_ARRAYLANG['TXT_PODCAST_AUTHOR'] = "Author";
@@ -105,7 +105,7 @@ $_ARRAYLANG['TXT_PODCAST_MINUTES'] = "Minutes";
 $_ARRAYLANG['TXT_PODCAST_SECOND'] = "Second";
 $_ARRAYLANG['TXT_PODCAST_SECONDS'] = "Seconds";
 $_ARRAYLANG['TXT_PODCAST_FRONTEND_LANGUAGES'] = "Frontend languages";
-$_ARRAYLANG['TXT_PODCAST_INVALID_MEDIUM_SOURCE'] = "Couldn't access to the given source!";
+$_ARRAYLANG['TXT_PODCAST_INVALID_MEDIUM_SOURCE'] = "Could not access selected source!";
 $_ARRAYLANG['TXT_PODCAST_STANDARD_DIMENSIONS'] = "Standard dimensions";
 $_ARRAYLANG['TXT_PODCAST_UPDATE_SETTINGS_SUCCESSFULL'] = "The settings have been successfully updated.";
 $_ARRAYLANG['TXT_PODCAST_UPDATE_SETTINGS_FAILED'] = "An error occured while updating the settings!";

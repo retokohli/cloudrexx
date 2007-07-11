@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 10 Jul 2007 11:58:48 +0200
+* generated date Wed, 11 Jul 2007 15:00:45 +0200
 **/
 
 $_ARRAYLANG['TXT_SUBSCRIBER_LIST'] = "Subscriber list";
@@ -332,19 +332,19 @@ $_ARRAYLANG['TXT_NEWSLETTER_INVALID_EMAIL'] = "Invalid email specified!";
 $_ARRAYLANG['TXT_NEWSLETTER_OVERVIEW_ENTRIES'] = "Number of Newsletter Overview Entries";
 $_ARRAYLANG['TXT_NEWSLETTER_REPLY_EMAIL'] = "Reply E-Mail Address";
 $_ARRAYLANG['TXT_NEWSLETTER_ERROR_SAVE_RETRY'] = "Error while saving. Please try again!";
-$_ARRAYLANG['TXT_NEWSLETTER_SUBJECT_ALREADY_EXISTS'] = "Wählen Sie einen anderen <i>Betreff / Titel</i> für das E-Mail, da bereits ein E-Mail mit demselben <i>Betreff / Titel</i> existiert!";
+$_ARRAYLANG['TXT_NEWSLETTER_SUBJECT_ALREADY_EXISTS'] = "This E-Mail subject already exists!  Please choose another subject.";
 $_ARRAYLANG['TXT_NEWSLETTER_ERROR_NO_SUBJECT'] = "Please specify a subject!";
 $_ARRAYLANG['TXT_NEWSLETTER_EMAILS_DELETED'] = "Emails deleted successfully.";
 $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_DELETED'] = "Email deleted successfully.";
 $_ARRAYLANG['TXT_NEWSLETTER_ERROR_EMAIL_DELETE'] = "Error while deleteing email.";
 $_ARRAYLANG['TXT_NEWSLETTER_ERROR_EMAILS_DELETE'] = "Error while deleteing emails.";
-$_ARRAYLANG['TXT_NEWSLETTER_SEND_TESTMAIL_FIRST'] = "Bevor Sie den Newsletter verschicken können, müssen Sie ein Testmail verschicken";
+$_ARRAYLANG['TXT_NEWSLETTER_SEND_TESTMAIL_FIRST'] = "Please perform an E-Mail test prior to sending the Newsletter.";
 $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'] = "Company";
 $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY'] = "January,February,March,April,May,June,July,August,September,October,November,December";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_DELETE_RECIPIENT_OF_ADDRESS'] = "Do you really want to delete the recipient with the address %s?";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_DELETE_SELECTED_RECIPIENTS'] = "Do you really want to delete the selected recipients?";
 $_ARRAYLANG['TXT_NEWSLETTER_FLUSH'] = "Flush";
-$_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_FLUSH_LIST'] = "Möchten Sie die Liste %s wirklich leeren?";
+$_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_FLUSH_LIST'] = "Do you really want to delete the list %s?";
 $_ARRAYLANG['TXT_NEWSLETTER_SUCCESSFULLY_FLUSHED'] = "Data successfully flushed.";
 $_ARRAYLANG['TXT_NEWSLETTER_NO_ID_SPECIFIED'] = "No ID specified!";
 $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_FROM_FILE'] = "Import from file";
