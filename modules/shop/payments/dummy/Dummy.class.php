@@ -48,9 +48,9 @@ class Dummy
     function getForm()
     {
         $orderid    = $_SESSION['shop']['orderid'];
-        $successURI = "index.php?section=shop&amp;cmd=success&amp;handler=dummy&amp;orderid=$orderid&amp;result=1";
         $failureURI = "index.php?section=shop&amp;cmd=success&amp;handler=dummy&amp;orderid=$orderid&amp;result=0";
-        $cancelURI  = "index.php?section=shop&amp;cmd=cancel&amp;orderid=$orderid";
+        $successURI = "index.php?section=shop&amp;cmd=success&amp;handler=dummy&amp;orderid=$orderid&amp;result=1";
+        $cancelURI  = "index.php?section=shop&amp;cmd=success&amp;handler=dummy&amp;orderid=$orderid&amp;result=2";
         return <<<_
 Please choose one:
 <hr />
@@ -66,7 +66,7 @@ _;
 
 
     /**
-     * Commit the payment process result to the order database.
+     * Commit the payment process result (dummy operation).
      *
      * After the user submitted the payment form, a result according to her
      * choices is created here.
@@ -81,8 +81,7 @@ _;
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @static
      * @return  mixed   The integer order ID after a successful payment,
-     *                  The 'NULL' string value (not the null value of the
-     *                  null type!) after a failed payment or a general
+     *                  Boolean false after a failed payment or a general
      *                  error.
      */
     //static
@@ -95,32 +94,17 @@ _;
 
         if ($result < 1 || $result > 2) {
 //echo("getPaymentStatus(): result is as good as zero. fail.<br />");
-            return 'NULL';
+            return false;
         }
         // only cases 1 and 2 remain
         if (isset($_GET['orderid'])) {
             $orderid = intval($_GET['orderid']);
         } else {
 //echo("getPaymentStatus(): no order ID. fail.<br />");
-            return 'NULL';
+            return false;
         }
-//echo("getPaymentStatus(): Setting result '$result', order ID is '$orderid'<br />");
-        $query = "
-            UPDATE ".DBPREFIX."module_shop_orders
-               SET order_status='$result'
-             WHERE orderid=$orderid
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-//echo("getPaymentStatus(): query $query failed<br />");
-            return 'NULL';
-        }
-        if ($objDatabase->Affected_Rows() != 1) {
-//echo("getPaymentStatus(): row miscount: ".$objDatabase->Affected_Rows()." fail.<br />");
-            return 'NULL';
-        }
-//echo("getPaymentStatus(): Returning ".($result == 1 ? $orderid : 'NULL')."<br />");
-        return ($result == 1 ? $orderid : 'NULL');
+//echo("getPaymentStatus(): Returning ".($result == 1 ? $orderid : 'false')."<br />");
+        return ($result == 1 ? $orderid : false);
     }
 }
 
