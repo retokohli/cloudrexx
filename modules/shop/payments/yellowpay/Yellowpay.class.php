@@ -221,7 +221,7 @@ class Yellowpay
 
     /**
      * Verifies the value of a key.
-     * If the key is correct, he is added to the HTML form.
+     * If the key is correct, it is added to the HTML form.
      *
      * @access  private
      * @param   string  Key to check for correctness
