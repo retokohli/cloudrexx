@@ -354,7 +354,7 @@ class Forum extends ForumLibrary {
 			}
 		}
 
-		if(!empty($_REQUEST['l']) && $_REQUEST['l'] = 1){
+		if(!empty($_REQUEST['l']) && $_REQUEST['l'] == 1){
 			$pos = $this->_getEditPos($intPostId, $intThreadId);
 		}
 
