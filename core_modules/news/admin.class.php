@@ -564,6 +564,8 @@ class newsManager extends newsLibrary {
 	        'TXT_NEWS_TYPE_DEFAULT'			=> $_ARRAYLANG['TXT_NEWS_TYPE_DEFAULT'],
 	        'TXT_NEWS_DEFINE_LINK_ALT_TEXT'	=> $_ARRAYLANG['TXT_NEWS_DEFINE_LINK_ALT_TEXT'],
 	        'TXT_NEWS_INSERT_LINK'			=> $_ARRAYLANG['TXT_NEWS_INSERT_LINK'],
+	        'TXT_BASIC_DATA'				=> $_ARRAYLANG['TXT_BASIC_DATA'],
+			'TXT_MORE_OPTIONS'				=> $_ARRAYLANG['TXT_MORE_OPTIONS'],
 			'NEWS_TEXT'           	 		=> get_wysiwyg_editor('newsText', '', 'active'),
 			'NEWS_FORM_ACTION'       		=> "add",
 			'NEWS_STORED_FORM_ACTION'		=> "add",
@@ -709,6 +711,8 @@ class newsManager extends newsLibrary {
 	        'TXT_NEWS_TYPE_REDIRECT'		=> $_ARRAYLANG['TXT_NEWS_REDIRECT_TITLE'],
 	        'TXT_NEWS_TYPE_REDIRECT_HELP'	=> $_ARRAYLANG['TXT_NEWS_TYPE_REDIRECT_HELP'],
 	        'TXT_NEWS_TYPE_DEFAULT'			=> $_ARRAYLANG['TXT_NEWS_TYPE_DEFAULT'],
+	        'TXT_BASIC_DATA'				=> $_ARRAYLANG['TXT_BASIC_DATA'],
+			'TXT_MORE_OPTIONS'				=> $_ARRAYLANG['TXT_MORE_OPTIONS'],
 		));
 
 		$newsid = intval($_REQUEST['newsId']);
