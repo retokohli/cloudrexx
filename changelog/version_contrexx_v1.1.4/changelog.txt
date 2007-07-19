@@ -45,6 +45,9 @@ Allgemein
 Webinstaller
 - MySQL Server Version Überprüfung anstatt der Client Version.
 
+Update System
+- Der Contrexx Session-Handler (Datenbankablage) wird verwendet.
+
 Newsletter
 - Export wurde angepasst (one-click export). Es können einzelne Listen oder 
   alles auf einmal exportiert werden. Es werden alle Felder inkl. `status` als 
@@ -63,6 +66,7 @@ Shop
 - Zugewiesene Merkmale können einem Produkt wieder entfernt werden.
 - Automatisch generierte Links enthalten nun die Angabe der index.php.
 - Darstellungsfehler (Unicode / Latin1)
+- Als Produkt Code können Alphanumerische Zeichen verwendet werden.
 
 Kontaktmanager
 - Der CSV-Export funktioniert nun mit unlimitierter erfasster Anzahl Einträge.
