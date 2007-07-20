@@ -91,3 +91,6 @@ News-Syndication
 
 Allgemein
 - Die HTML-Struktur beim Navigationstyp "Nested Navigation" wird korrekt ausgegeben.
+
+Newsletter
+- Zuweisung der Anrede bei einem Empfänger.
