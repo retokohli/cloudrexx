@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 11 Jul 2007 15:00:45 +0200
+* generated date Mon, 23 Jul 2007 10:01:49 +0200
 **/
 
 $_ARRAYLANG['TXT_POPUP_OVERVIEW'] = "Übersicht";

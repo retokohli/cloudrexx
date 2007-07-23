@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 11 Jul 2007 15:00:45 +0200
+* generated date Mon, 23 Jul 2007 10:01:49 +0200
 **/
 
 $_ARRAYLANG['TXT_PODCAST_OVERVIEW'] = "Übersicht";
@@ -77,7 +77,7 @@ $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE'] = "Quelltext";
 $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE_OF_MEDIUM'] = "Quelltext vom Medium %s";
 $_ARRAYLANG['TXT_PODCAST_SELECT_ALL'] = "Alles markieren";
 $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE'] = "Quelle auswählen";
-$_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'] = "Geben Sie entweder ein lokales Medium an, dass Sie zur Podcast Bibliothek hinzufügen möchten,<br />oder geben Sie direkt die URL eines Mediums an.";
+$_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'] = "Geben Sie entweder ein lokales Medium an, dass Sie zur Podcast Bibliothek hinzufügen möchten,<br />oder geben Sie direkt die URL eines Mediums an.<br /><br />Sie können auch einen YouTube Link direkt zum Video angeben. (Bsp: http://youtube.com/watch?v=abcdef12345)<br />Dieser Link kann auf der YouTube Videoseite aus der URL-Box rechts oder von der Browser-Adressleiste kopiert und hier eingefügt werden.";
 $_ARRAYLANG['TXT_PODCAST_LOCAL'] = "Lokal";
 $_ARRAYLANG['TXT_PODCAST_REMOTE'] = "URL";
 $_ARRAYLANG['TXT_PODCAST_NEXT'] = "Weiter";
@@ -115,4 +115,25 @@ $_ARRAYLANG['TXT_PODCAST_FEED_TITLE'] = "Podcast-Feed Titel";
 $_ARRAYLANG['TXT_PODCAST_FEED_DESCRIPTION'] = "Podcast-Feed Beschreibung";
 $_ARRAYLANG['TXT_PODCAST_FEED_IMAGE'] = "Podcast-Feed Bild";
 $_ARRAYLANG['TXT_PODCAST_FEED_LINK'] = "Podcast-Feed Link";
+$_ARRAYLANG['TXT_PODCAST_THUMBNAIL'] = "Bildvorschau";
+$_ARRAYLANG['TXT_PODCAST_EDIT_OR_ADD_IMAGE'] = "Bild ändern";
+$_ARRAYLANG['TXT_PODCAST_SHOW_FILE'] = "Bild anzeigen";
+$_ARRAYLANG['TXT_PODCAST_YOUTUBE'] = "YouTube Link";
+$_ARRAYLANG['TXT_PODCAST_YOUTUBE_ID_VALID'] = "YouTube ID gültig";
+$_ARRAYLANG['TXT_PODCAST_YOUTUBE_ID_INVALID'] = "YouTube ID ungültig";
+$_ARRAYLANG['TXT_PODCAST_YOUTUBE_SPECIFY_ID'] = "Bitte geben Sie einen gültigen YouTube Link an";
+$_ARRAYLANG['TXT_PODCAST_LATEST_MEDIA_COUNT'] = "Anzahl neue Medien auf der Startseite";
+$_ARRAYLANG['TXT_PODCAST_PLACEHOLDERS'] = "Platzhalter";
+$_ARRAYLANG['TXT_PODCAST_GENERAL'] = "Grundeinstellungen";
+$_ARRAYLANG['TXT_PODCAST_BLOCK_TEMPLATE'] = "Block Vorlage";
+$_ARRAYLANG['TXT_PODCAST_BLOCK_SETTINGS'] = "Block Einstellungen";
+$_ARRAYLANG['TXT_PODCAST_SHOW_HOME_CONTENT'] = "Podcast-Medien auf Startseite anzeigen";
+$_ARRAYLANG['TXT_PODCAST_DEACTIVATE'] = "Deaktivieren";
+$_ARRAYLANG['TXT_PODCAST_ACTIVATE'] = "Aktivieren";
+$_ARRAYLANG['TXT_PODCAST_HOMECONTENT_USAGE'] = "Verwendung";
+$_ARRAYLANG['TXT_PODCAST_HOMECONTENT_USAGE_TEXT'] = "Die Platzhalter können unter dem Menüpunkt \"Layout & Designs\" in der Datei <strong>podcast.html</strong> einer Webdesignvorlage verwendet werden. <br /> Diese Datei kann mit dem Platzhalter <strong>[[PODCAST_FILE]]</strong> in einer beliebigen Webdesignvorlage Datei oder in einer Inhaltsseite eingebunden werden.";
+$_ARRAYLANG['TXT_PODCAST_THUMB_MAX_SIZE'] = "Max. Thumbnailgrösse (Modulseite)";
+$_ARRAYLANG['TXT_PODCAST_THUMB_MAX_SIZE_HOMECONTENT'] = "Max. Thumbnailgrösse (Startseite)";
+$_ARRAYLANG['TXT_PODCAST_PIXEL'] = "Pixel";
+$_ARRAYLANG['TXT_PODCAST_PLAY'] = "Abspielen";
 ?>

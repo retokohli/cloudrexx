@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 11 Jul 2007 15:00:45 +0200
+* generated date Mon, 23 Jul 2007 10:01:49 +0200
 **/
 
 $_ARRAYLANG['TXT_PODCAST_MEDIA'] = "Media";
@@ -17,4 +17,5 @@ $_ARRAYLANG['TXT_PODCAST_BYTES'] = "Bytes";
 $_ARRAYLANG['TXT_PODCAST_KBYTE'] = "KB";
 $_ARRAYLANG['TXT_PODCAST_MBYTE'] = "MB";
 $_ARRAYLANG['TXT_PODCAST_GBYTE'] = "GB";
+$_ARRAYLANG['TXT_PODCAST_PLAY'] = "Abspielen";
 ?>

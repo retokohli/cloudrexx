@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 11 Jul 2007 15:00:45 +0200
+* generated date Mon, 23 Jul 2007 10:01:49 +0200
 **/
 
 $_ARRAYLANG['TXT_PODCAST_OVERVIEW'] = "Overview";
@@ -77,7 +77,9 @@ $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE'] = "Source Code";
 $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE_OF_MEDIUM'] = "Show Source Code of medium %s";
 $_ARRAYLANG['TXT_PODCAST_SELECT_ALL'] = "Select all";
 $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE'] = "Select source";
-$_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'] = "Please select a local media file or enter URL to add a file to the Podcast Library";
+$_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'] = "Either add a local medium or specify a direct URL<br /><br />
+You may also enter a YouTube link (e.g. http://youtube.com/watch?v=abcdef12345)<br />
+This link can be copied directly from the YouTube video page.";
 $_ARRAYLANG['TXT_PODCAST_LOCAL'] = "Local";
 $_ARRAYLANG['TXT_PODCAST_REMOTE'] = "URL";
 $_ARRAYLANG['TXT_PODCAST_NEXT'] = "Next";
@@ -115,4 +117,28 @@ $_ARRAYLANG['TXT_PODCAST_FEED_TITLE'] = "Podcast-Feed title";
 $_ARRAYLANG['TXT_PODCAST_FEED_DESCRIPTION'] = "Podcast-Feed description";
 $_ARRAYLANG['TXT_PODCAST_FEED_IMAGE'] = "Podcast-Feed image";
 $_ARRAYLANG['TXT_PODCAST_FEED_LINK'] = "Podcast-Feed Link";
+$_ARRAYLANG['TXT_PODCAST_THUMBNAIL'] = "Preview image";
+$_ARRAYLANG['TXT_PODCAST_EDIT_OR_ADD_IMAGE'] = "Edit image";
+$_ARRAYLANG['TXT_PODCAST_SHOW_FILE'] = "Show image";
+$_ARRAYLANG['TXT_PODCAST_YOUTUBE'] = "YouTube Link";
+$_ARRAYLANG['TXT_PODCAST_YOUTUBE_ID_VALID'] = "YouTube ID valid";
+$_ARRAYLANG['TXT_PODCAST_YOUTUBE_ID_INVALID'] = "YouTube ID invalid";
+$_ARRAYLANG['TXT_PODCAST_YOUTUBE_SPECIFY_ID'] = "Please enter a valid YouTube Link";
+$_ARRAYLANG['TXT_PODCAST_LATEST_MEDIA_COUNT'] = "Number of media to show on the homepage";
+$_ARRAYLANG['TXT_PODCAST_PLACEHOLDERS'] = "Placeholders";
+$_ARRAYLANG['TXT_PODCAST_GENERAL'] = "Basic settings";
+$_ARRAYLANG['TXT_PODCAST_BLOCK_TEMPLATE'] = "Block template";
+$_ARRAYLANG['TXT_PODCAST_BLOCK_SETTINGS'] = "Block settings";
+$_ARRAYLANG['TXT_PODCAST_SHOW_HOME_CONTENT'] = "Show Podcast media on the homepage";
+$_ARRAYLANG['TXT_PODCAST_DEACTIVATE'] = "Disabled";
+$_ARRAYLANG['TXT_PODCAST_ACTIVATE'] = "Enable";
+$_ARRAYLANG['TXT_PODCAST_HOMECONTENT_USAGE'] = "Usage";
+$_ARRAYLANG['TXT_PODCAST_HOMECONTENT_USAGE_TEXT'] = "The placeholders can be used in the file <strong>podcast.html</strong> in the "Layout & Designs" adminpage for any skin.
+<br /> 
+This file kann be included in any content page with the following placeholder: <strong>[[PODCAST_FILE]]</strong>.
+";
+$_ARRAYLANG['TXT_PODCAST_THUMB_MAX_SIZE'] = "Max. thumbnailsize (module page)";
+$_ARRAYLANG['TXT_PODCAST_THUMB_MAX_SIZE_HOMECONTENT'] = "Max. thumbnailgrösse (homepage)";
+$_ARRAYLANG['TXT_PODCAST_PIXEL'] = "Pixel";
+$_ARRAYLANG['TXT_PODCAST_PLAY'] = "Abspielen";
 ?>
