@@ -12,16 +12,42 @@
  */
 
 /**
- * ignore
+ * Common methods for both frontend and backend of the Shop.
  */
 require_once ASCMS_MODULE_PATH.'/shop/shopLib.class.php';
+/**
+ * Currency: Conversion, formatting.
+ */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
+/**
+ * Payment: Selection of the payment method.
+ */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Payment.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Shipment.class.php';
+/**
+ * Payment Processing: Provides functionality for the payment process.
+ */
 require_once ASCMS_MODULE_PATH.'/shop/lib/PaymentProcessing.class.php';
+/**
+ * Shipment: Selection of the Shipper and Shipment conditions.
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/Shipment.class.php';
+/**
+ * Vat: Calculation of the VAT amounts, formatting.
+ */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Vat.class.php';
+/**
+ * Weight: Formatting and conversion.
+ */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Weight.class.php';
+/**
+ * Customer object with database layer.
+ */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Customer.class.php';
+/**
+ * ShopCategory: Database layer, selection.
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategory.class.php';
+
 
 /**
  * Check whether a session will be required and has to get inizialized
@@ -61,20 +87,23 @@ function shopUseSession()
 class Shop extends ShopLibrary
 {
     var $pageContent;
+
+// todo: remove
     var $arrCategoriesSorted = array();
     var $arrCategoriesTable = array();
     var $arrCategoriesName = array();
     var $arrParentCategoriesId = array();
     var $arrParentCategoriesTable = array();
-    var $statusMessage = "";
-    var $thumbnailNameSuffix = ".thumb";
+
+    var $statusMessage = '';
+    var $thumbnailNameSuffix = '.thumb';
     var $is_reseller = 0;
     var $is_auth = 0;
-    var $noPictureName = "no_picture.gif";
+    var $noPictureName = 'no_picture.gif';
     var $shopImageWebPath;
     var $shopImagePath;
-    var $inactiveStyleName = "inactive";
-    var $activeStyleName = "active";
+    var $inactiveStyleName = 'inactive';
+    var $activeStyleName = 'active';
     var $arrProductAttributes = array();
     var $langId;
     var $_defaultImage = '';
@@ -144,6 +173,7 @@ class Shop extends ShopLibrary
      * The VAT object
      * @var     Vat
      * @access  private
+     * @see     lib/Vat.class.php
      */
     var $objVat;
 
@@ -166,7 +196,7 @@ class Shop extends ShopLibrary
      * @param  string
      * @access public
      */
-    function __construct($pageContent = '')
+    function __construct($pageContent='')
     {
         global $_LANGID, $objDatabase;
 
@@ -185,13 +215,12 @@ class Shop extends ShopLibrary
         $this->shopImagePath = ASCMS_SHOP_IMAGES_PATH. '/';
         $this->_defaultImage = $this->shopImageWebPath.$this->noPictureName;
 
-        // sigma template
+        // PEAR Sigma template
         $this->objTemplate = new HTML_Template_Sigma('.');
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($this->pageContent, true, true);
 
         // Currency object
-        // see Currency.class.php
         $this->objCurrency = new Currency();
         $this->aCurrencyUnitName = $this->objCurrency->getActiveCurrencySymbol();
 
@@ -199,15 +228,10 @@ class Shop extends ShopLibrary
         $this->objShipment = new Shipment(0);
 
         // Payment object
-        // see Payment.class.php
         $this->objPayment = new Payment();
 
         // initialize the countries array
         $this->_initCountries();
-
-        // initialize the shipment array
-        // replaced by Shipment.class!
-        //$this->_initShipment();
 
         if (shopUseSession()) {
             $this->_authenticate();
@@ -216,15 +240,14 @@ class Shop extends ShopLibrary
         $this->_initConfiguration();
         $this->_initPayment();
 
-        // VAT object
-        // Create this only after the configuration ($this->arrConfig) has been set up!
+        // VAT object -- Create this only after the configuration
+        // ($this->arrConfig) has been set up!
         $this->objVat = new Vat();
 
         // initialize the product options names and values array
         $this->initProductAttributes();
 
         // Payment processing object
-        // see PaymentProcessing.class.php
         $this->objProcessing = new PaymentProcessing($this->arrConfig);
 
         $query = "SELECT catid, parentid, catname ".
@@ -463,7 +486,7 @@ class Shop extends ShopLibrary
         }
         // end currencies
 
-        if($objTpl->blockExists('shopNavbar')) {
+        if ($objTpl->blockExists('shopNavbar')) {
             $objTpl->setCurrentBlock('shopNavbar');
         }
         $currentCatId = 0;
@@ -538,7 +561,6 @@ class Shop extends ShopLibrary
         $list = $this->arrCategoriesTable[$parcat];
         if (is_array($list)) {
             foreach (array_keys($list) as $childCatId) {
-//            while (list($childCatId, $categoryName) = each($list)) {
                 $this->arrCategoriesSorted[$childCatId] = $level;
 // fix: the following line produces infinite loops if parent == child
 //                if (isset($this->arrCategoriesTable[$childCatId])) {
@@ -780,7 +802,6 @@ class Shop extends ShopLibrary
                 // none found.  use default image.
                 $thumbnailPath = $this->shopImageWebPath.$this->noPictureName;
             }
-
             $this->objTemplate->setVariable(array(
                 'SHOP_PRODUCT_TITLE'            => htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET),
                 'SHOP_PRODUCT_THUMBNAIL'        => $thumbnailPath,
@@ -789,10 +810,9 @@ class Shop extends ShopLibrary
                 'SHOP_PRODUCT_SUBMIT_FUNCTION'  => "location.replace('index.php?section=shop&catId=$catId')",
                 'SHOP_PRODUCT_SUBMIT_TYPE'      => "button",
             ));
-
             if ($this->objTemplate->blockExists('subCategories')) {
                 $this->objTemplate->parse('subCategories');
-                   if(++$cell % 4 == 0) {
+                   if (++$cell % 4 == 0) {
                     $this->objTemplate->parse('subCategoriesRow');
                 }
             }
@@ -815,7 +835,6 @@ class Shop extends ShopLibrary
     function getFirstProductThumbnailFromCategory($catId=0)
     {
         global $objDatabase;
-//echo("catId: $catId<br />");
         // look for thumbnails in products from that category first
         $queryProduct = "
             SELECT picture
@@ -848,7 +867,6 @@ class Shop extends ShopLibrary
         }
         while (!$objResultSubCat->EOF) {
             $childCatId = $objResultSubCat->fields['catid'];
-//echo("catId: $catId, child: $childCatId<br />");
             $thumbnailPath =
                 $this->getFirstProductThumbnailFromCategory($childCatId);
             if ($thumbnailPath) {
@@ -865,15 +883,15 @@ class Shop extends ShopLibrary
      * old version
      *
      * @param   integer $parentId
-     * @todo    Documentation!
      * @todo    Fix template field 'TXT_ADD_TO_CARD' being filled with string constant
      *          instead of value from $_ARRAYLANG
+     * @todo    Remove.
      */
     function getCategoriesOld($parentId)
     {
         global $objDatabase;
 
-        if($parentId == '') {
+        if ($parentId == '') {
             $parentId = 0;
         }
 
@@ -885,7 +903,7 @@ class Shop extends ShopLibrary
 
         $this->objTemplate->setCurrentBlock('shopProductRow');
         $cell = 1;
-        if($objResult !== false) {
+        if ($objResult !== false) {
             while (!$objResult->EOF) {
                 //$file          = '';
                 $thumbnailPath = '';
@@ -929,7 +947,7 @@ class Shop extends ShopLibrary
 
                 if ($this->objTemplate->blockExists('subCategories')) {
                     $this->objTemplate->parse('subCategories');
-                       if($cell++ % 4 == 0) {
+                       if ($cell++ % 4 == 0) {
                         $this->objTemplate->parse('subCategoriesRow');
                     }
                 }
@@ -954,7 +972,7 @@ class Shop extends ShopLibrary
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG, $themesPages;
 
-        /*start categories list*/
+        // categories list
         $this->rowSplitter = 1;
         if (!isset($_REQUEST['catId']) && !isset($_REQUEST['productId'])) {
             $this->getCategories('');
@@ -965,6 +983,8 @@ class Shop extends ShopLibrary
         }
         /*end categories list*/
 
+/*  This appears to be highly untested, and plain wrong according to
+    the new requirement specifications.
         // Check payment validation
         // Return URI after payment was successful
         if (isset($_GET['handler']) && !empty($_GET['handler'])) {
@@ -977,6 +997,7 @@ class Shop extends ShopLibrary
                     exit;
             }
         }
+*/
 
         // initialize variabes
         $pos        = 0;
@@ -1097,7 +1118,6 @@ class Shop extends ShopLibrary
             }
             $objResult = $objDatabase->Execute($query);
             $count = $objResult->RecordCount();
-            $paging = '';
             if ($count == 0) {
                 $paging = $_ARRAYLANG['TXT_SELECT_SUB_GROUP'];
             } elseif ($_CONFIG['corePagingLimit']) { // $_CONFIG from /config/settings.php
@@ -1818,9 +1838,9 @@ function addProductToCart(objForm)
 function getXMLHttpRequestObj()
 {
     var objXHR;
-    if(window.XMLHttpRequest) {
+    if (window.XMLHttpRequest) {
         objXHR = new XMLHttpRequest();
-    } else if(window.ActiveXObject) {
+    } else if (window.ActiveXObject) {
         objXHR = new ActiveXObject('Microsoft.XMLHTTP');
     }
     return objXHR;
@@ -1905,7 +1925,6 @@ sendReq('', 1);
 // ]]>
 </script>
 ";
-
         return  $javascriptCode;
     }
 
@@ -2731,7 +2750,6 @@ sendReq('', 1);
     {
          // Reloading or loading without sessions
         if (!isset($_SESSION['shop']['cart'])) {
-//echo("no cart");
             header("Location: index.php?section=shop");
             exit;
         }
@@ -3282,13 +3300,11 @@ right after the customer logs in!
         // the customer clicked the confirm button now;
         // this won't be the case the first time this method is called.
         if (isset($_POST['process'])) {
-//echo("process was pressed<br />");
             // verify that the order hasn't yet been saved
             // (and has thus not yet been confirmed)
             if (isset($_SESSION['shop']['orderId'])) {
                 $statusMessage .= $_ARRAYLANG['TXT_ORDER_ALREADY_PLACED'];
             } else {
-//echo("saving customer<br />");
                 // no more confirmation
                 $this->objTemplate->hideBlock("shopConfirm");
                 // store the customer, register the order
@@ -3342,7 +3358,6 @@ right after the customer logs in!
 // todo: is this really needed?
                 $_SESSION['shop']['customerid'] = $this->objCustomer->getId();
 
-//echo("saving order<br />");
                 // Add to order table
                 $query = "
                     INSERT INTO ".DBPREFIX."module_shop_orders (
@@ -3384,7 +3399,6 @@ right after the customer logs in!
                 ";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) {
-//echo("saving order items<br />");
                     $orderid = $objDatabase->Insert_ID();
                     $_SESSION['shop']['orderid'] = $orderid;
                     // The products will be tested one by one below.
@@ -3402,7 +3416,6 @@ right after the customer logs in!
                               FROM ".DBPREFIX."module_shop_products
                              WHERE status=1 AND id=".$arrProduct['id'];
                         $objResult = $objDatabase->Execute($query);
-//echo("lookup query: $query<br />");
                         if ($objResult) {
                             $productId       = $arrProduct['id'];
                             $productName     = $objResult->fields['title'];
@@ -3426,7 +3439,6 @@ right after the customer logs in!
                             $productDistribution = $objResult->fields['handler'];
                             if ($productDistribution == 'delivery') {
                                 $_SESSION['shop']['isDelivery'] = true;
-//echo("isDelivery<br />");
                             }
                             // Add to order items table
                             $query = "
@@ -3439,7 +3451,6 @@ right after the customer logs in!
                                     $productVatRate, $productWeight
                                 )
                             ";
-//echo("insert order item query:<br />$query<br />");
                             $objResult = $objDatabase->Execute($query);
                             if ($objResult) {
                                 $orderItemsId = $objDatabase->Insert_ID();
@@ -3471,7 +3482,6 @@ right after the customer logs in!
                         }
                     } // foreach product in cart
 
-//echo("setting up processor<br />");
                     $processorId = $this->objPayment->arrPaymentObject[$_SESSION['shop']['paymentId']]['processor_id'];
                     $processorName = $this->objProcessing->getPaymentProcessorName($processorId);
                      // other payment methods
@@ -3482,7 +3492,6 @@ right after the customer logs in!
                         $objLanguage->getLanguageParameter($this->langId, 'lang')
                     );
 
-//echo("check for lsv, processorName $processorName<br />");
                     // if the processor is Internal_LSV, and there is account information,
                     // store the information
                     if ($processorName == 'Internal_LSV') {
@@ -3508,7 +3517,6 @@ right after the customer logs in!
                     }
 
                     $_SESSION['shop']['orderid_checkin'] = $orderid;
-//echo("set orderid_checkin to ".$_SESSION['shop']['orderid_checkin']."<br />");
                     $strProcessorType =
                         $this->objProcessing->getCurrentPaymentProcessorType();
 
@@ -3523,18 +3531,15 @@ right after the customer logs in!
                         // All currently implemented internal methods require
                         // further action from the merchant, and thus are
                         // considered to be 'deferred'.
-//echo("isInstant<br />");
                         $_SESSION['shop']['isInstantPayment'] = true;
                     }
 
 /* -> *MUST* be updated on success() page, like all other payment methods
-//echo("processor type is $strProcessorType<br />");
                     if ($strProcessorType == 'internal') {
                         $this->updateOrderStatus($orderid);
                     }
 */
 
-//echo("show payment processing<br />");
                     // Show payment processing page.
                     // Note that some internal payments are redirected away
                     // from this page in checkOut():
@@ -3720,7 +3725,6 @@ right after the customer logs in!
             exit;
         }
         $orderId = $this->objProcessing->checkIn();
-echo("success(): checkIn returned order ID '$orderId'<br />");
         // the order ID has been backed up for other external payments
         // that might not be able to return our order ID
         if (!$orderId) {
@@ -3735,7 +3739,6 @@ echo("success(): checkIn returned order ID '$orderId'<br />");
             // External payment methods: completed successfully;
             // update automatically.
             $orderId = $_SESSION['shop']['orderid_checkin'];
-echo("success(): backup order ID '$orderId'<br />");
         }
 
         // Check the returned order ID.
@@ -3744,7 +3747,6 @@ echo("success(): backup order ID '$orderId'<br />");
         // in updateOrderStatus().
         if (intval($orderId) > 0) {
             $newOrderStatus = $this->updateOrderStatus($orderId, $newOrderStatus);
-echo("success(): success! order ID '$orderId', newOrderStatus $newOrderStatus<br />");
             switch ($newOrderStatus) {
                 case SHOP_ORDER_STATUS_CONFIRMED:
                 case SHOP_ORDER_STATUS_PAID:
@@ -3775,73 +3777,6 @@ echo("success(): success! order ID '$orderId', newOrderStatus $newOrderStatus<br
 
 
     /**
-     * Cancel the order and have the customer return to the shop.
-     *
-     * Called when the customer has cancelled the payment process and thus
-     * the order.
-     * If the order ID can be determined, the respective order
-     * record is marked as cancelled.
-     * @global  array   $_ARRAYLANG     Language array
-     * @global  mixed   $objDatabase    Database object
-     * @return  void
-    function cancel()
-    {
-        global $_ARRAYLANG, $objDatabase;
-
-        // if no order ID backup is present, redirect to the shop start page.
-        // this check is necessary in order to avoid this page being
-        // reloaded, which will fail in any case!
-        if (!isset($_SESSION['shop']['orderid_checkin'])) {
-//echo("cancel(): unable to restore orderid from _SESSION backup<br />");
-            header("Location: ?section=shop");
-            exit;
-        }
-        $orderId = '';
-        // if the order ID is sent along with the cancel request, check it
-        if (isset($_REQUEST['orderid'])) {
-            if ($_REQUEST['orderid'] == $_SESSION['shop']['orderid_checkin']) {
-                // the order ID is correct
-                $orderId = $_SESSION['shop']['orderid_checkin'];
-//echo("cancel(): got order ID $orderId from _REQUEST<br />");
-            }
-        } else {
-            $orderId = $_SESSION['shop']['orderid_checkin'];
-//echo("cancel(): got order ID $orderId from _SESSION backup<br />");
-        }
-        // if $orderid is set to a value other than '', we assume
-        // that there is a matching order.
-        if ($orderId) {
-            // set the order status 'cancelled'
-            if ($this->updateOrderStatus($orderId, SHOP_ORDER_STATUS_CANCELLED)) {
-                $this->objTemplate->setVariable(array(
-                    'TXT_SHOP_CANCEL_MESSAGE'    => $_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'],
-                ));
-                $this->destroyCart();
-            } else {
-//echo("cancel(): updating order ID $orderId failed, query: $query<br />");
-                $this->objTemplate->setVariable(array(
-                    'TXT_SHOP_CANCEL_MESSAGE'  => $_ARRAYLANG['TXT_SHOP_ORDER_STILL_IN_CART'],
-                    'TXT_SHOP_BACK_TO_PAYMENT' => $_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'],
-                ));
-            }
-        } else {
-            $this->objTemplate->setVariable(array(
-                'TXT_SHOP_CANCEL_MESSAGE'  => $_ARRAYLANG['TXT_SHOP_ORDER_STILL_IN_CART'],
-                'TXT_SHOP_BACK_TO_PAYMENT' => $_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'],
-            ));
-        }
-        $this->objTemplate->setVariable(array(
-            'TXT_SHOP_PAYMENT_CANCELLED' => $_ARRAYLANG['TXT_SHOP_PAYMENT_CANCELLED'],
-            'TXT_SHOP_BACK_TO_SHOP'      => $_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'],
-        ));
-//echo("cancel(): leaving<br />");
-        // clear backup ID, it won't be used again
-        unset($_SESSION['shop']['orderid_backup']);
-    }
-     */
-
-
-    /**
      * Mark the current order as confirmed, paid, shipped, cancelled, deleted,
      * or completed.
      *
@@ -3862,10 +3797,8 @@ echo("success(): success! order ID '$orderId', newOrderStatus $newOrderStatus<br
     {
         global $objDatabase;
 
-echo("updateOrderStatus($orderId): entered<br />");
         $orderId = intval($orderId);
         if ($orderId == 0) {
-echo("updateOrderStatus($orderId): missing order id argument - failed<br />");
             return SHOP_ORDER_STATUS_PENDING;
         }
         $query = "
@@ -3875,7 +3808,6 @@ echo("updateOrderStatus($orderId): missing order id argument - failed<br />");
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-echo("updateOrderStatus($orderId): query $query failed<br />");
             return SHOP_ORDER_STATUS_PENDING;
         }
 
@@ -3916,18 +3848,15 @@ echo("updateOrderStatus($orderId): query $query failed<br />");
                    SET order_status='$newOrderStatus'
                  WHERE orderid=$orderId
             ";
-echo("new order status query:<br />$query<br />");
             $objResult = $objDatabase->Execute($query);
             if ($objResult && $objDatabase->Affected_Rows() == 1) {
                 // The shopping cart *MUST* be flushed right after this method
                 // returns true.
                 return $newOrderStatus;
             }
-echo("updateOrderStatus($orderId): query $query failed<br />");
             // The query failed.
             return SHOP_ORDER_STATUS_PENDING;
         }
-echo("updateOrderStatus($orderId): order status is not zero<br />");
         // The status of the order is not equal to zero.
         return SHOP_ORDER_STATUS_PENDING;
     }
@@ -3955,6 +3884,7 @@ echo("updateOrderStatus($orderId): order status is not zero<br />");
         foreach($copies as $sendTo) {
             $this->shopSendmail($sendTo,$mailFrom,$mailFromText,$mailSubject,$mailBody);
         }
+        return true;
     }
 
 
@@ -4091,6 +4021,8 @@ $_SESSION['shop']['grand_total_price'].' '.$this->aCurrencyUnitName."\n".
         $body = str_replace($search, $replace, $body);
         return $body;
     }
+
+
     /**
      * get manufacturer select options for "$shopmenu" (SearchForm)
      *
@@ -4103,8 +4035,8 @@ $_SESSION['shop']['grand_total_price'].' '.$this->aCurrencyUnitName."\n".
 	    $objResult = $objDatabase->Execute($query);
 	    $Count = 0;
 	    while ($objResult && !$objResult->EOF) {
-	    	if(isset($_REQUEST["ManufacturerId"])){
-		    	if(intval($_REQUEST["ManufacturerId"])==$objResult->fields['id']){
+	    	if (isset($_REQUEST["ManufacturerId"])){
+		    	if (intval($_REQUEST["ManufacturerId"])==$objResult->fields['id']){
 		    		$SelectedText = 'selected';
 		    	}else{
 		    		$SelectedText = '';
@@ -4117,7 +4049,7 @@ $_SESSION['shop']['grand_total_price'].' '.$this->aCurrencyUnitName."\n".
 	        $objResult->MoveNext();
 	    }
         $ManufacturerSelect .= '</select><br />';
-        if($Count>0){
+        if ($Count>0){
         	return $ManufacturerSelect;
         }else{
         	return '';
