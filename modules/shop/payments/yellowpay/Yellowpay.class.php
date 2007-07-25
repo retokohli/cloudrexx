@@ -13,6 +13,24 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+/**
+ * Yellowpay plugin for online payment
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Däppen <thomas.daeppen@comvation.com>
+ * @version     $Id:  Exp $
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo    Yellowpay must be configured and this code rewritten to return and
+ * handle the follwing requests:
+ * POST after payment was made:
+ *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=-1
+ * GET after payment has completed successfully:
+ *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=1
+ * GET after payment has failed:
+ *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=0
+ * GET after payment has been cancelled:
+ *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=2
+ */
 // error_reporting(E_ALL);
 
 class Yellowpay
