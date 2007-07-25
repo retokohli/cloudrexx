@@ -15,16 +15,16 @@
 /**
  * @ignore
  */
-require_once ASCMS_MODULE_PATH . "/shop/shopLib.class.php";
-require_once ASCMS_MODULE_PATH . "/shop/lib/shop_image.class.php";
-require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
-require_once ASCMS_MODULE_PATH . "/shop/lib/Currency.class.php";
-require_once ASCMS_MODULE_PATH . "/shop/lib/Exchange.class.php";
-require_once ASCMS_MODULE_PATH . "/shop/lib/Settings.class.php";
-require_once ASCMS_MODULE_PATH . "/shop/lib/Payment.class.php";
-require_once ASCMS_MODULE_PATH . "/shop/lib/Shipment.class.php";
-require_once ASCMS_MODULE_PATH . "/shop/payments/saferpay/Saferpay.class.php";
-require_once ASCMS_MODULE_PATH . "/shop/lib/CSVimport.class.php";
+require_once ASCMS_MODULE_PATH . '/shop/shopLib.class.php';
+require_once ASCMS_MODULE_PATH . '/shop/lib/shop_image.class.php';
+require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
+require_once ASCMS_MODULE_PATH . '/shop/lib/Currency.class.php';
+require_once ASCMS_MODULE_PATH . '/shop/lib/Exchange.class.php';
+require_once ASCMS_MODULE_PATH . '/shop/lib/Settings.class.php';
+require_once ASCMS_MODULE_PATH . '/shop/lib/Payment.class.php';
+require_once ASCMS_MODULE_PATH . '/shop/lib/Shipment.class.php';
+require_once ASCMS_MODULE_PATH . '/shop/payments/saferpay/Saferpay.class.php';
+require_once ASCMS_MODULE_PATH . '/shop/lib/CSVimport.class.php';
 require_once ASCMS_MODULE_PATH . '/shop/lib/Csv_bv.class.php';
 /**
  * Value Added Tax (VAT)
@@ -37,7 +37,7 @@ require_once ASCMS_MODULE_PATH . '/shop/lib/Weight.class.php';
 /**
  * Distribution
  */
-require_once ASCMS_MODULE_PATH . "/shop/lib/Distribution.class.php";
+require_once ASCMS_MODULE_PATH . '/shop/lib/Distribution.class.php';
 
 /**
  * Administration of the shop
@@ -2514,13 +2514,13 @@ class shopmanager extends ShopLibrary {
                 }
                 $spacer = str_repeat("|----", $this->categoryTreeLevel[$key]);
                 $this->_objTpl->setVariable(array(
-                'SHOP_ROWCLASS'       => $class,
-                'SHOP_CAT_ID'         => $key,
-                'SHOP_CAT_NAME'       => htmlentities($val, ENT_QUOTES, CONTREXX_CHARSET),
-                'SHOP_CAT_SORTING'    => $this->categoryTreeSorting[$key],
-                'SHOP_CAT_STATUS'     => $catstatus,
-                'SHOP_CAT_LEVEL'      => $this->categoryTreeLevel[$key],
-                'SHOP_CAT_LEVELSPACE' => $spacer,
+                    'SHOP_ROWCLASS'       => $class,
+                    'SHOP_CAT_ID'         => $key,
+                    'SHOP_CAT_NAME'       => htmlentities($val, ENT_QUOTES, CONTREXX_CHARSET),
+                    'SHOP_CAT_SORTING'    => $this->categoryTreeSorting[$key],
+                    'SHOP_CAT_STATUS'     => $catstatus,
+                    'SHOP_CAT_LEVEL'      => $this->categoryTreeLevel[$key],
+                    'SHOP_CAT_LEVELSPACE' => $spacer,
                 ));
                 $this->_objTpl->parse("catRow");
                 $i++;
@@ -3747,7 +3747,6 @@ class shopmanager extends ShopLibrary {
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("lsv query failed<br />");
             $this->errorHandling();
         }
         if ($objResult->RecordCount() == 1) {
@@ -3781,7 +3780,6 @@ class shopmanager extends ShopLibrary {
             "WHERE c.customerid = o.customerid AND o.orderid = $shopOrderId";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("order query failed<br />");
             $this->errorHandling();
         } else  {
             // set the customer and order data, if found
@@ -3891,7 +3889,6 @@ class shopmanager extends ShopLibrary {
                 if ($ppName) {
                     $this->_objTpl->setVariable(array('SHOP_PAYMENT_HANDLER' => $ppName));
                 } else {
-//echo("no payment processor<br />");
                     $this->errorHandling();
                 }
 
@@ -3951,7 +3948,6 @@ class shopmanager extends ShopLibrary {
                 ';
                 $objResult = $objDatabase->Execute($query);
                 if (!$objResult) {
-//echo("products query failed<br />");
                     $this->errorHandling();
                 } else {
                     while (!$objResult->EOF) {
@@ -4014,7 +4010,6 @@ class shopmanager extends ShopLibrary {
         $arrProductOptions = array();
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("order items attributes query failed<br />");
             $this->errorHandling();
         } else {
             while (!$objResult->EOF) {
@@ -4034,7 +4029,6 @@ class shopmanager extends ShopLibrary {
         "WHERE orderid = $shopOrderId";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("order items query failed<br />");
             $this->errorHandling();
         } else {
             $this->_objTpl->setCurrentBlock("orderdetailsRow");
@@ -4061,7 +4055,6 @@ class shopmanager extends ShopLibrary {
                 $productPrice    = $objResult->fields['price'];
                 $productQuantity = $objResult->fields['quantity'];
                 $productVatRate  = $objResult->fields['vat_percent'];
-//echo("productPrice '$productPrice', productQuantity '$productQuantity', productVatRate '$productVatRate'<br />");
                 // $rowNetPrice means 'product times price' from here
                 $rowNetPrice  = $productPrice * $productQuantity;
                 $rowPrice     = $rowNetPrice; // VAT added later, if applicable
@@ -4107,7 +4100,6 @@ class shopmanager extends ShopLibrary {
                 $objResult2 = $objDatabase->Execute($query);
                 $productCode = '';
                 if (!$objResult2 || $objResult2->EOF) {
-//echo("product_id query failed<br />");
                     $this->errorHandling();
                 } else {
                     $productCode = $objResult2->fields['product_id'];
