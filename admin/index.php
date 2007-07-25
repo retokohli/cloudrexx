@@ -781,6 +781,25 @@ switch($cmd) {
         $objPodcast->getPage();
         break;
 
+    /**
+     * Support System Module
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   1.2.0
+     * @version 0.0.1 alpha
+     */
+    case "support":
+        $objPerm->checkAccess(87, 'static');
+        $modulespath = ASCMS_MODULE_PATH."/support/admin.class.php";
+        if (file_exists($modulespath)) {
+            require_once($modulespath);
+        } else {
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        }
+        $subMenuTitle = $_CORELANG['TXT_SUPPORT_SYSTEM'];
+        $objSupport = new Support();
+        $objSupport->getPage();
+        break;
+
         //-----------------------------------------------------------------------------------------------
         // access denied
         //-----------------------------------------------------------------------------------------------
