@@ -26,6 +26,38 @@ require_once ASCMS_MODULE_PATH.'/shop/payments/dummy/Dummy.class.php';
 
 /**
  * Payment processing manager.
+ *
+ * These are the requirements of the current specification
+ * for any external payment service provider class:
+ * - Any payment method must be implemented in its own class, with its
+ *   constructor and/or methods being called from PaymentProcessing.class.php
+ *   using only the two methods checkIn() and checkOut().
+ * - Any data needed by the payment service class *MUST* be provided
+ *   as arguments to the constructor and/or methods from within the
+ *   PaymentProcessing class.
+ * - Any code in checkIn() *MUST* return either a valid payment form *OR*
+ *   redirect to a payment page of that provider, supplying all necessary
+ *   data for a successful payment.
+ * - Any code in checkOut() *MUST* return the original order ID of the order
+ *   being processed on success, false otherwise (both in the case of failure
+ *   and upon cancelling the payment).
+ * - A payment provider class *MUST NOT* access the database itself, in
+ *   particular it is strictly forbidden to read or change the order status
+ *   of any order.
+ * - A payment provider class *MUST NOT* store any data in the global session
+ *   array.  Instead, it is to rely on the protocol of the payment service
+ *   provider to transmit and retrieve all necessary data.
+ * - Any payment method providing different return values for different
+ *   outcomes of the payment in the consecutive HTTP requests *SHOULD* use
+ *   the follwing arguments and values:
+ *      Successful payments:            result=1
+ *      Successful payments, silent *:  result=-1
+ *      Failed payments:                result=0
+ *      Aborted payments:               result=2
+ *   * Some payment services do not only redirect the customer after a
+ *      successful payment has completed, but already after the payment
+ *      has been authorized.  Yellowpay, as an example, expects an empty
+ *      page as a reply to such a request.
  * @package     contrexx
  * @subpackage  module_shop
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -422,7 +454,7 @@ class PaymentProcessing
             'txtOrderIDShop'      => $_SESSION['shop']['orderid'],
             'PaymentType'         => 'DebitDirect',
             'DeliveryPaymentType' => $this->arrConfig['yellowpay_delivery_payment_type']['value'],
-// huh?  this isn't set anywhere in the shop, and not even used anywhere in yellowpay.class.php
+// Todo: This isn't set anywhere in the shop, and not even used anywhere in yellowpay.class.php
             'SessionId'           => $_SESSION['shop']['PHPSESSID']
         );
 
@@ -508,7 +540,8 @@ class PaymentProcessing
                 default:
                     break;
                 // Note: A backup of the order ID is kept in the session
-                // for payment methods that do not return it.
+                // for payment methods that do not return it. This is used
+                // to cancel orders in all cases where false is returned.
             }
             // Anything else is wrong.
             return false;
@@ -516,6 +549,20 @@ class PaymentProcessing
         // 'PostFinance_DebitDirect':
         // Guaranteed to be a POST request.
         // The request *MUST* contain the order ID!
+        // Additional arguments:
+        // section=shop&cmd=success&handler=yellowpay&result=1
+/**
+ * @todo    Yellowpay must be configured and this code rewritten to return and
+ * handle the follwing requests:
+ * POST after payment was made:
+ *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=-1
+ * GET after payment has completed successfully:
+ *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=1
+ * GET after payment has failed:
+ *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=0
+ * GET after payment has been cancelled:
+ *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=2
+ */
         if (isset($_POST['txtOrderIDShop'])) {
             return intval($_POST['txtOrderIDShop']);
         }
