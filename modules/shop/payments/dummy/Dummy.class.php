@@ -1,10 +1,9 @@
 <?php
 
 /**
- * Dummy class for simulating an external payment provider
+ * Dummy class for simulating an external payment provider.
  *
  * Creates a dummy form for testing the payment process in the shop.
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author Reto Kohli <reto.kohli@comvation.com>
  * @package     contrexx
@@ -12,6 +11,19 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+
+/**
+ * Lets you choose successful, failed, and aborted payments.
+ *
+ * This also demonstrates the requirements of the current specification
+ * for any external payment service provider class.
+ * See {@link PaymentProcessing.class} for details.
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Reto Kohli <reto.kohli@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ */
 
 class Dummy
 {
@@ -87,23 +99,19 @@ _;
     //static
     function commit()
     {
-        global $objDatabase;
-
         $result = intval(isset($_GET['result']) ? $_GET['result'] : 0);
-//echo("getPaymentStatus(): result is '$result'<br />");
-
         if ($result < 1 || $result > 2) {
-//echo("getPaymentStatus(): result is as good as zero. fail.<br />");
+            // Result is as good as zero. fail.
             return false;
         }
-        // only cases 1 and 2 remain
+        // only cases 1 and 2 remaining.
         if (isset($_GET['orderid'])) {
             $orderid = intval($_GET['orderid']);
         } else {
-//echo("getPaymentStatus(): no order ID. fail.<br />");
+            // No order ID. fail.
             return false;
         }
-//echo("getPaymentStatus(): Returning ".($result == 1 ? $orderid : 'false')."<br />");
+        // Returning order ID or false.
         return ($result == 1 ? $orderid : false);
     }
 }
