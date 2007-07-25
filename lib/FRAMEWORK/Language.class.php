@@ -27,54 +27,86 @@ class FWLanguage
     }
 
     /**
-    * Constructor
-    *
-    * @access private
-    * @global object $objDatabase
-    */
+     * Constructor (PHP5)
+     * @access  private
+     * @global  mixed   $objDatabase    Database object
+     */
     function __construct()
     {
-    	global $objDatabase;
+        global $objDatabase;
 
-     	$objLanguages = $objDatabase->Execute("SELECT id, lang, name, charset, themesid, frontend, backend, is_default FROM ".DBPREFIX."languages ORDER BY id");
-
-     	if ($objLanguages !== false) {
-		 	while (!$objLanguages->EOF) {
-				$this->arrLanguage[$objLanguages->fields['id']] = array(
-					'id'			=> $objLanguages->fields['id'],
-					'lang'		=> $objLanguages->fields['lang'],
-					'name'		=> $objLanguages->fields['name'],
-					'charset'	=> $objLanguages->fields['charset'],
-					'themesid'	=> $objLanguages->fields['themesid'],
-					'frontend'	=> $objLanguages->fields['frontend'],
-					'backend'	=> $objLanguages->fields['backend'],
-					'is_default'	=> $objLanguages->fields['is_default']
-				);
-				$objLanguages->MoveNext();
-			}
-     	}
+         $objResult = $objDatabase->Execute('
+            SELECT id, lang, name, charset, themesid,
+                   frontend, backend, is_default
+              FROM '.DBPREFIX.'languages
+          ORDER BY id
+         ');
+         if ($objResult) {
+             while (!$objResult->EOF) {
+                $this->arrLanguage[$objResult->fields['id']] = array(
+                    'id'         => $objResult->fields['id'],
+                    'lang'       => $objResult->fields['lang'],
+                    'name'       => $objResult->fields['name'],
+                    'charset'    => $objResult->fields['charset'],
+                    'themesid'   => $objResult->fields['themesid'],
+                    'frontend'   => $objResult->fields['frontend'],
+                    'backend'    => $objResult->fields['backend'],
+                    'is_default' => $objResult->fields['is_default'],
+                );
+                $objResult->MoveNext();
+            }
+        }
     }
 
-	/**
-	* Gets all language information as an indexed array
-	*
-	* @return array $languageInfo indexed array
-	* @access public
-	*/
-	function getLanguageArray()
-	{
-		return $this->arrLanguage;
-	}
 
-	/**
-	* Gets all language information as an indexed array
-	*
-	* @return array $languageInfo indexed array
-	* @access public
-	*/
-	function getLanguageParameter($id, $index)
-	{
-		return isset($this->arrLanguage[$id][$index]) ? $this->arrLanguage[$id][$index] : false;
-	}
+    /**
+     * Returns the complete language data
+     * @see     FWLanguage()
+     * @return  array           The language data
+     * @access  public
+     */
+    function getLanguageArray()
+    {
+        return $this->arrLanguage;
+    }
+
+    /**
+     * Returns single language related fields
+     *
+     * Access language data by specifying the language ID and the index
+     * as initialized by {@link FWLanguage()}.
+     * @return  mixed           Language data field content
+     * @access  public
+     */
+    function getLanguageParameter($id, $index)
+    {
+        return isset($this->arrLanguage[$id][$index]) ? $this->arrLanguage[$id][$index] : false;
+    }
+
+
+    /**
+     * Returns HTML code to display a language selection dropdown menu.
+     * @param   integer $selectedId The Optional preselected language ID
+     * @return  string              The dropdown menu HTML code
+     */
+    function getMenu($selectedId=0, $menuName='languageId', $onchange='')
+    {
+        $menu =
+            "<select id='$menuName' name='$menuName'".
+                ($onchange
+                    ? ' onchange="'.$onchange.'"'
+                    : ''
+                ).
+            ">\n";
+        foreach ($this->arrLanguage as $id => $arrField) {
+            $menu .=
+                "<option value='$id'".
+                ($selectedId == $id ? ' selected="selected"' : '').
+                ">{$arrField['name']}</option>\n";
+        }
+        $menu .= "</select>\n";
+        return $menu;
+    }
 }
+
 ?>
