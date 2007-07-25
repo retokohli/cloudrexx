@@ -1,0 +1,142 @@
+<script type="text/javascript">
+<!--
+function deleteTicket(ticketId)
+{
+  if(confirm('{TXT_SUPPORT_CONFIRM_DELETE_TICKET}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace("index.php?cmd=support&act=delticket&ticketId="+ticketId);
+}
+
+function supportTicketsDoAction(strForm, strCheckbox, objSelect, strAct)
+{
+  if (checkboxIsChecked(strForm, strCheckbox) == true){
+    switch(strAct){
+      case 'del':
+        if(confirm('{TXT_SUPPORT_CONFIRM_DELETE_TICKET}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')){
+          document.forms[strForm].action = "index.php?cmd=support&act=delticket";
+          document.forms[strForm].submit();
+        }
+        break;
+    }
+  } else {
+    alert("{TXT_SUPPORT_MAKE_SELECTION}");
+  }
+  objSelect.value = 0;
+}
+
+function changeTicketStatus(ticketId, ticketStatus, newTicketStatus)
+{
+  if (confirm('{TXT_SUPPORT_CONFIRM_CHANGE_STATUS}')){
+    strURI =
+      "index.php?cmd=support&act=tickets&ticketId="+
+      ticketId+"&changeTicketStatus="+newTicketStatus;
+    if (newTicketStatus == 127){
+      if (confirm('{TXT_SUPPORT_SEND_MAIL_TO_CUSTOMER}')){
+        strURI += "&supportSendMail=1";
+      }
+    }
+    window.location.replace(strURI);
+  } else {
+    document.getElementById("ticketStatusId["+ticketId+"]").
+      setAttribute("value", ticketStatus);
+  }
+}
+
+<!-- BEGIN tipMessageRow -->
+Text[{SUPPORT_TIP_ID}]=["","{SUPPORT_TIP_NOTE}"];
+<!-- END tipMessageRow -->
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,10,-20];
+//-->
+</script>
+<form name="formSearchTickets" method="post" action="?cmd=support&amp;act=tickets">
+  <table summary="" width="100%" bticket="0" cellspacing="0" cellpadding="2" class="adminlist">
+  <tr>
+    <th style="text-align: left">
+    {TXT_SUPPORT_SEARCH_TICKETS}
+    </th>
+  </tr>
+  <tr class=row1>
+    <td>
+    <input type="text" name="ticketSearchTerm" size="40" maxlength="255" />
+    <select name="ticketSource">
+      <option value="0" selected>-- {TXT_SUPPORT_TICKET_SOURCE} --</option>
+      <option value="1">{TXT_SUPPORT_EMAIL}</option>
+      <option value="2">{TXT_SUPPORT_WEB}</option>
+    </select>
+    <select name="ticketStatus">
+      {SUPPORT_TICKET_SEARCH_STATUS}
+    </select>
+    <input type="submit" name="supportSearchTickets" value="{TXT_SUPPORT_SEARCH_TICKETS}" />
+    </td>
+  </tr>
+  <tr class=row1>
+    <td>{TXT_SUPPORT_SORT_TICKET}
+      <select name="ticketListSort">
+        <option value="id" selected>{TXT_SUPPORT_TICKET_ID}</option>
+        <option value="date">{TXT_SUPPORT_TICKET_DATE}</option>
+        <option value="status">{TXT_SUPPORT_TICKET_STATUS}</option>
+        <option value="email">{TXT_SUPPORT_TICKET_EMAIL}</option>
+        <option value="category">{TXT_SUPPORT_CATEGORY}</option>
+        <option value="">{}</option>
+      </select>
+      &nbsp;&nbsp;&nbsp;
+      <label for="supportShowClosedTickets">{TXT_SUPPORT_SHOW_CLOSED_TICKETS}</label>
+      <input type="checkbox" {SUPPORT_SHOW_CLOSED_TICKETS_CHECK}
+        id="supportShowClosedTickets" name="supportShowClosedTickets"
+        onchange="document.formSearchTickets.submit();" />
+    </td>
+  </tr>
+  </table>
+  <br />
+</form>
+<!-- BEGIN ticketTable -->
+{SUPPORT_TICKET_PAGING}
+<form name="supportSelectTickets" method="post" action="?cmd=support&amp;act=tickets">
+  <table summary="" class="adminlist" bticket=0 width="100%" cellpadding="2" cellspacing="0">
+    <tr>
+      <th nowrap="nowrap" style="text-align:center;">#</th>
+      <th nowrap="nowrap" width="2%">{TXT_SUPPORT_TICKET_ID}&nbsp;</th>
+      <th nowrap="nowrap" width="11%">{TXT_SUPPORT_TICKET_DATE}&nbsp;</th>
+      <th nowrap="nowrap" width="7%"> {TXT_SUPPORT_TICKET_STATUS}&nbsp;</th>
+      <th nowrap="nowrap" width="22%">{TXT_SUPPORT_TICKET_EMAIL}&nbsp;</th>
+      <th style="text-align:left;">{TXT_SUPPORT_TICKET_CATEGORY}&nbsp;</th>
+      <th nowrap="nowrap" width="56%" style="text-align:right;">{TXT_SUPPORT_ACTION}</th>
+    </tr>
+    <!-- BEGIN ticketRow -->
+      <tr class="{SUPPORT_ROWCLASS}">
+        <td nowrap="nowrap"><input type="checkbox" name="selectedTicketId[]" value="{SUPPORT_TICKET_ID}" /></td>
+        <td nowrap="nowrap">{SUPPORT_TICKET_ID}</td>
+        <td nowrap="nowrap">{SUPPORT_DATE}</td>
+        <td nowrap="nowrap">{SUPPORT_TICKET_STATUS}</td>
+        <td nowrap="nowrap">
+          <a href="?cmd=support&amp;act=ticketdetails&amp;ticketid={SUPPORT_TICKET_ID}" title="{TXT_SUPPORT_VIEW_DETAILS}">
+            {SUPPORT_TICKET_EMAIL}
+          </a>
+        </td>
+        <td nowrap="nowrap">{SUPPORT_TICKET_CATEGORY}</td>
+        <td>
+          <div style="text-align:right;">
+            <a href="?cmd=support&amp;act=ticketdetails&amp;ticketid={SUPPORT_TICKET_ID}" title="{TXT_SUPPORT_VIEW_DETAILS}">
+              <img src="images/icons/press.gif" alt="{TXT_SUPPORT_VIEW_DETAILS}" bticket="0" />
+            </a>
+            &nbsp;
+            <a href="?cmd=support&amp;act=editticket&amp;ticketid={SUPPORT_TICKET_ID}" title="{TXT_SUPPORT_EDIT}">
+              <img src="images/icons/edit.gif" alt="{TXT_SUPPORT_EDIT}" bticket="0" />
+            </a>
+            <a href="javascript:deleteTicket('{SUPPORT_TICKET_ID}')" title="{TXT_SUPPORT_DELETE}">
+              <img src="images/icons/delete.gif" alt="{TXT_SUPPORT_DELETE}" bticket="0" />
+            </a>
+          </div>
+        </td>
+      </tr>
+    <!-- END ticketRow -->
+  </table>
+  <img src="images/icons/arrow.gif" bticket="0" width="38" height="22" title="{TXT_SUPPORT_MARKED_TICKETS}:" alt="{TXT_SUPPORT_MARKED_TICKETS}:" />
+  <a href="javascript:{}" onclick="changeCheckboxes('supportSelectTickets','selectedTicketId[]',true)" title="{TXT_SUPPORT_SELECT_ALL}">{TXT_SUPPORT_SELECT_ALL}</a>&nbsp;/&nbsp;
+  <a href="javascript:{}" onclick="changeCheckboxes('supportSelectTickets','selectedTicketId[]',false)" title="{TXT_SUPPORT_SELECT_NONE}">{TXT_SUPPORT_SELECT_NONE}</a>&nbsp;&nbsp;&nbsp;
+  <select name="selectAction" onchange="supportTicketsDoAction('supportSelectTickets','selectedTicketId[]',this,this.value)">
+    <option value="0" selected="selected">{TXT_SUPPORT_SELECT_ACTION}:</option>
+    <option value="del">{TXT_SUPPORT_DELETE}</option>
+  </select>
+</form>
+<!-- END ticketTable -->
+<p>{SUPPORT_TICKET_PAGING}&nbsp;</p>

@@ -1,0 +1,148 @@
+<script language="javascript" type="text/javascript">
+<!--
+function deleteCategories(id)
+{
+  if (confirm('{TXT_SUPPORT_CONFIRM_DELETE_CATEGORIES}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace(
+        "index.php?cmd=support&act=deleteCategories&id="+id+
+        "&offset={SUPPORT_CATEGORY_OFFSET}"+
+        "&editLanguageId='+document.getElementById('editLanguageId').value);"
+    );
+}
+
+function supportCategoryDoAction(strForm, strCheckbox, objSelect, strAction)
+{
+  if (checkboxIsChecked(strForm, strCheckbox) == true){
+    switch (strAction) {
+      case 'delete':
+        if (confirm('{TXT_SUPPORT_CONFIRM_DELETE_CATEGORIES}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')){
+          document.forms[strForm].action =
+            "index.php?cmd=support&act=deleteCategories"+
+            "&offset={SUPPORT_CATEGORY_OFFSET}"+
+            "&editLanguageId="+document.getElementById('editLanguageId').value;
+          document.forms[strForm].submit();
+        }
+        break;
+    }
+  } else {
+    alert("{TXT_SUPPORT_MAKE_SELECTION}");
+  }
+  objSelect.value = 0;
+}
+
+function editCategories(id)
+{
+    window.location.replace(
+        "index.php?cmd=support&act=editCategories&id="+id+
+        "&offset={SUPPORT_CATEGORY_OFFSET}"+
+        "&editLanguageId="+document.getElementById('editLanguageId').value
+    );
+}
+// -->
+</script>
+<!-- BEGIN editSupportCategory -->
+<form name="supportEditCategoryForm" method="post"
+  action="?cmd=support&amp;act=editCategories&amp;editLanguageId={SUPPORT_CATEGORY_EDIT_LANGUAGE_ID}&amp;offset={SUPPORT_CATEGORY_OFFSET}">
+  <table summary="" width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
+    <tr>
+      <th>{TXT_SUPPORT_EDIT_CATEGORY}</th>
+    </tr>
+    <tr class="row1">
+      <td>
+        <!-- label for="order">{TXT_SUPPORT_CATEGORY_ORDER}</label -->
+        <input type="text" id="order" name="order" size="4" maxlength="5"
+          value="{SUPPORT_CATEGORY_ORDER}" />&nbsp;
+        <label for="name">{TXT_SUPPORT_CATEGORY_NAME}</label>
+        <input type="text" id="name" name="name" size="40" maxlength="255"
+          value="{SUPPORT_CATEGORY_NAME}" />&nbsp;
+        <label for="languageId">{TXT_SUPPORT_CATEGORY_LANGUAGE}</label>
+        {SUPPORT_CATEGORY_LANGUAGE_MENU}&nbsp;
+        <label for="parentId">{TXT_SUPPORT_CATEGORY_PARENT}</label>
+        <select id="parentId" name="parentId" size="1">
+          <option value="0">{TXT_SUPPORT_NEW_CATEGORY}</option>
+          {SUPPORT_CATEGORY_PARENTID}
+        </select>&nbsp;
+        <label for="status">{TXT_SUPPORT_CATEGORY_STATUS}</label>
+        <input type="checkbox" id="status" name="status" value="1"{SUPPORT_CATEGORY_STATUS_CHECKED} />&nbsp;
+        <input type="submit" name="storeSupportCategory" value="{TXT_SUPPORT_STORE}" />
+        <input type="hidden" name="id" value="{SUPPORT_CATEGORY_ID}" />
+      </td>
+    </tr>
+  </table>
+</form>
+<br />
+<!-- END editSupportCategory -->
+<form name="supportCategories" method="post"
+  action="?cmd=support&amp;act=editCategories&amp;editLanguageId={SUPPORT_CATEGORY_EDIT_LANGUAGE_ID}&amp;offset={SUPPORT_CATEGORY_OFFSET}">
+  <table summary="" width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
+    <tr>
+      <th colspan="6">{TXT_SUPPORT_CATEGORIES}&nbsp;({TXT_SUPPORT_CATEGORIES_COUNT}&nbsp;{TXT_SUPPORT_CATEGORIES_COUNT_TOTAL})</th>
+    </tr>
+    <tr class="row1">
+      <td width="1%" nowrap="nowrap">
+        <div style="text-align:center;"><b>#</b></div></td>
+      <td width="3%" nowrap="nowrap"><b>{TXT_SUPPORT_CATEGORY_ID}</b></td>
+      <!-- td width="22%" nowrap="nowrap"><b>{TXT_SUPPORT_CATEGORY_ORDER}</b></td -->
+      <td width="22%" nowrap="nowrap">{SUPPORT_CATEGORY_INDENT}<b>{TXT_SUPPORT_CATEGORY_NAME}</b></td>
+      <td width="22%" nowrap="nowrap">
+        <b>{TXT_SUPPORT_CATEGORY_LANGUAGE}</b>&nbsp;
+        {SUPPORT_CATEGORY_EDIT_LANGUAGE_MENU}
+      </td>
+      <td width="3%" nowrap="nowrap"><b>{TXT_SUPPORT_CATEGORY_STATUS}</b></td>
+      <td width="1%" nowrap="nowrap">
+        <div style="text-align:right;"><b>{TXT_SUPPORT_ACTION}</b></div>
+      </td>
+    </tr>
+    <!-- BEGIN supportCategoryRow -->
+      <tr class="{SUPPORT_ROW_CLASS}">
+        <td nowrap="nowrap">
+          <input type="hidden" value="{SUPPORT_CATEGORY_ID}" name="id[{SUPPORT_CATEGORY_ID}]" />
+          <input type="checkbox" name="selectedId[]" value="{SUPPORT_CATEGORY_ID}" />
+        </td>
+        <td nowrap="nowrap">{SUPPORT_CATEGORY_ID}</td>
+        <td nowrap="nowrap">
+          {SUPPORT_CATEGORY_INDENT}
+          <input type="text" name="order[{SUPPORT_CATEGORY_ID}]"
+            value="{SUPPORT_CATEGORY_SORTING}" size="3" maxlength="5" />
+          <b><a href="index.php?cmd=support&amp;act=editCategories&id={SUPPORT_CATEGORY_ID}&amp;offset={SUPPORT_CATEGORY_OFFSET}&editLanguageId={SUPPORT_CATEGORY_EDIT_LANGUAGE_ID}"
+            title="{SUPPORT_CATEGORY_NAME}">{SUPPORT_CATEGORY_NAME}</a></b>
+          <a href="?cmd=support&amp;act=ticketOverview&amp;supportCategoryId={SUPPORT_CATEGORY_ID}"
+            title="{TXT_SUPPORT_TICKETS_IN_CATEGORY}">
+              <img src="images/icons/details.gif" width="14" height="16"
+                border="0" alt="{TXT_SUPPORT_TICKETS_IN_CATEGORY}" /></a>
+        </td>
+        <td nowrap="nowrap">{SUPPORT_CATEGORY_LANGUAGE}</td>
+        <td nowrap="nowrap">
+          <input type="checkbox" name="status[{SUPPORT_CATEGORY_ID}]"
+            value="1"{SUPPORT_CATEGORY_STATUS_CHECKED} />
+        </td>
+        <td nowrap="nowrap">
+          <div style="text-align:right;">
+            <a href="?cmd=support&amp;act=editCategories&amp;id={SUPPORT_CATEGORY_ID}"
+              title="{TXT_SUPPORT_EDIT_CATEGORY}">
+              <img src="images/icons/edit.gif" alt="{TXT_SUPPORT_EDIT_CATEGORY}" border="0" />
+            </a>
+            <a href="javascript:deleteCategories('{SUPPORT_CATEGORY_ID}')"
+              title="{TXT_SUPPORT_DELETE_CATEGORY}">
+              <img src="images/icons/delete.gif" alt="{TXT_SUPPORT_DELETE_CATEGORY}" border="0" />
+            </a>
+          </div>
+        </td>
+      </tr>
+    <!-- END supportCategoryRow -->
+  </table>
+  <img src="images/icons/arrow.gif" border="0" width="38" height="22"
+    title="{TXT_SUPPORT_MARKED_CATEGORIES}" alt="{TXT_SUPPORT_MARKED_CATEGORIES}" />
+  <a href="javascript:{}" onclick="changeCheckboxes('supportCategories', 'selectedId[]', true)"
+    title="{TXT_SUPPORT_SELECT_ALL}">{TXT_SUPPORT_SELECT_ALL}
+  </a>
+  <a href="javascript:{}" onclick="changeCheckboxes('supportCategories', 'selectedId[]', false)"
+    title="{TXT_SUPPORT_SELECT_NONE}">{TXT_SUPPORT_SELECT_NONE}</a>
+  <select name="selectAction" onchange="supportCategoryDoAction('supportCategories', 'selectedId[]', this, this.value)">
+    <option value="0" selected="selected">{TXT_SUPPORT_SELECT_ACTION}</option>
+    <option value="delete">{TXT_SUPPORT_DELETE_MARKED}</option>
+  </select>
+  <br />
+  <br />
+  <input type="submit" name="storeSupportCategories" value="{TXT_SUPPORT_ACCEPT_CHANGES}" />
+</form>
