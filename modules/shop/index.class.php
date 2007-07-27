@@ -3879,12 +3879,15 @@ right after the customer logs in!
         $today = date("d.m.Y");
         $mailSubject = str_replace("<DATE>",$today,$mailSubject);
         $mailBody = $this->_generateEmailBody($mailBody);
-        $this->shopSendmail($mailTo,$mailFrom,$mailFromText,$mailSubject,$mailBody);
+        $return = true;
+        if (!$this->shopSendmail($mailTo,$mailFrom,$mailFromText,$mailSubject,$mailBody)) {
+            $return = false;
+        }
         $copies = explode(",",trim($this->arrConfig['confirmation_emails']['value']));
         foreach($copies as $sendTo) {
             $this->shopSendmail($sendTo,$mailFrom,$mailFromText,$mailSubject,$mailBody);
         }
-        return true;
+        return $return;
     }
 
 
