@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 24 Jul 2007 17:07:25 +0200
+* generated date Fri, 27 Jul 2007 01:18:25 +0200
 **/
 
 $_ARRAYLANG['TXT_PODCAST_OVERVIEW'] = "Übersicht";
@@ -136,4 +136,16 @@ $_ARRAYLANG['TXT_PODCAST_THUMB_MAX_SIZE'] = "Max. Thumbnailgrösse (Modulseite)"
 $_ARRAYLANG['TXT_PODCAST_THUMB_MAX_SIZE_HOMECONTENT'] = "Max. Thumbnailgrösse (Startseite)";
 $_ARRAYLANG['TXT_PODCAST_PIXEL'] = "Pixel";
 $_ARRAYLANG['TXT_PODCAST_PLAY'] = "Abspielen";
+$_ARRAYLANG['TXT_PODCAST_MEDIA_DATE'] = "Datum des Mediums";
+$_ARRAYLANG['TXT_PODCAST_MEDIA_TITLE'] = "Titel des Mediums";
+$_ARRAYLANG['TXT_PODCAST_MEDIA_PLAYLENGHT'] = "Medium Abspielzeit";
+$_ARRAYLANG['TXT_PODCAST_MEDIA_ID'] = "Medium ID";
+$_ARRAYLANG['TXT_PODCAST_MEDIA_VIEWS_COUNT'] = "Anzahl Aufrufe des Mediums";
+$_ARRAYLANG['TXT_PODCAST_MEDIA_AUTHOR'] = "Author des Mediums";
+$_ARRAYLANG['TXT_PODCAST_MEDIA_SHORT_PLAYLENGHT'] = "Medium Abspielzeit (kurz)";
+$_ARRAYLANG['TXT_PODCAST_MEDIA_URL'] = "URL zum Mediums";
+$_ARRAYLANG['TXT_PODCAST_MEDIA_THUMBNAIL'] = "URL zum Thumbnail des Mediums";
+$_ARRAYLANG['TXT_PODCAST_MEDIA_SHORT_DATE'] = "Datum des Mediums (kurz)";
+$_ARRAYLANG['TXT_PODCAST_MEDIA_DESCRIPTION'] = "Beschreibung des Mediums";
+$_ARRAYLANG['TXT_PODCAST_MEDIA_VIEWS'] = "Aufrufe";
 ?>
