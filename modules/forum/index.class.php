@@ -403,7 +403,7 @@ class Forum extends ForumLibrary {
 			'FORUM_JAVASCRIPT_GOTO'		=>	$this->getJavascript('goto'),
 			'FORUM_JAVASCRIPT_DELETE'	=>	$this->getJavascript('deletePost'),
 			'FORUM_JAVASCRIPT_SCROLLTO'	=>	$this->getJavascript('scrollto'),
-			'FORUM_SCROLLPOS'			=>	intval($_REQUEST['scrollpos']),
+			'FORUM_SCROLLPOS'			=>	!empty($_REQUEST['scrollpos']) ? intval($_REQUEST['scrollpos']) : '0',
 			'FORUM_JAVASCRIPT_INSERT_TEXT'	=> 	$this->getJavascript('insertText'),
 			'FORUM_NAME'				=>	$this->_shortenString($firstPost['subject'], $this->_maxStringLenght),
 			'FORUM_TREE'				=>	$this->_createNavTree($intCatId).'<a title="'.$this->_arrTranslations[$intCatId][$this->_intLangId]['name'].'" href="?section=forum&amp;cmd=board&amp;id='.$intCatId.'">'.$this->_shortenString($this->_arrTranslations[$intCatId][$this->_intLangId]['name'], $this->_maxStringLenght).'</a> > ' ,

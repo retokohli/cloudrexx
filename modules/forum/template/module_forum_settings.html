@@ -14,7 +14,7 @@ function insertTag(elInsertBox, sTag) {
 			elInsertBox = document.getElementById('forum_notification_template');
 		}
 	}catch(e){}
-	
+
 	elInsertBox.focus();
 	/* IE */
 	if (typeof document.selection != 'undefined') {
@@ -72,9 +72,9 @@ function insertTag(elInsertBox, sTag) {
 				<td width="20%">{TXT_LATEST_ENTRIES_COUNT}&nbsp;</td>
 				<td width="80%"><input type="text" name="setvalue[3]" value="{SETTINGS_LATEST_ENTRIES_COUNT}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
 			</tr>
-		</table>		
+		</table>
 	</div>
-	
+
 	<div id="Notification" class="settings" style="display: none;">
 		<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
 			<tr>
@@ -93,7 +93,7 @@ function insertTag(elInsertBox, sTag) {
 				<td width="38%">
 					&nbsp;&nbsp;  {TXT_FORUM_THREAD_STARTER}
 				</td>
-			</tr>	
+			</tr>
 			<tr class="row2">
 				<td width="10%" nowrap="nowrap">
 					<a title="{TXT_FORUM_CLICK_TO_INSERT}" href="javascript:void(0)" onclick="insertTag(null, this.childNodes[0].data); return false;">[[FORUM_LATEST_SUBJECT]]</a>
@@ -107,7 +107,7 @@ function insertTag(elInsertBox, sTag) {
 				<td width="38%">
 					&nbsp;&nbsp;  {TXT_FORUM_LATEST_MESSAGE}
 				</td>
-			</tr>	
+			</tr>
 			<tr class="row1">
 				<td width="10%" nowrap="nowrap">
 					<a title="{TXT_FORUM_CLICK_TO_INSERT}" href="javascript:void(0)" onclick="insertTag(null, this.childNodes[0].data); return false;">[[FORUM_USERNAME]]</a>
@@ -121,10 +121,10 @@ function insertTag(elInsertBox, sTag) {
 				<td width="38%">
 					&nbsp;&nbsp;  {TXT_FORUM_THREAD_URL}
 				</td>
-			</tr>	
+			</tr>
 		</table>
 		<br />
-		<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">			
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
 			<tr>
 				<th colspan="2">{TXT_FORUM_EMAIL_TEMPLATE}</th>
 			</tr>
@@ -148,10 +148,9 @@ function insertTag(elInsertBox, sTag) {
 				<td width="80%"><textarea id="forum_notification_template" name="setvalue[5]" style="width: 70%; height: 300px;">{SETTINGS_NOTIFICATION_TEMPLATE}</textarea>
 				</td>
 			</tr>
-		</table>	
-	</div>	
+		</table>
+	</div>
 	<div id="Block" class="settings" style="display: none;">
-		<form name="settings" method="post" action="?cmd=directory&amp;act=settings&amp;tpl=homecontent" style="margin:0px;padding:0px;">
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
 			<tr>
 				<th colspan="2">{TXT_FORUM_SETTINGS}</th>
@@ -193,12 +192,12 @@ function insertTag(elInsertBox, sTag) {
 				<td width="38%">
 					&nbsp;&nbsp;  {TXT_FORUM_THREAD_NAME}
 				</td>
-			</tr>	
+			</tr>
 			<tr class="row2">
 				<td width="10%">
 					[[TXT_FORUM_OVERVIEW_FORUM]]
 				</td>
-				<td width="34%">	
+				<td width="34%">
 					&nbsp;&nbsp;  "{TXT_FORUM_OVERVIEW_FORUM}"
 				</td>
 				<td width="10%">
@@ -221,12 +220,12 @@ function insertTag(elInsertBox, sTag) {
 				<td width="38%">
 					&nbsp;&nbsp;  {TXT_FORUM_THREAD_STARTER}
 				</td>
-			</tr>	
+			</tr>
 			<tr class="row2">
 				<td width="10%">
 					[[TXT_FORUM_POST_COUNT]]
 				</td>
-				<td width="34%">	
+				<td width="34%">
 					&nbsp;&nbsp;  "{TXT_FORUM_POST_COUNT}"
 				</td>
 				<td width="10%">
@@ -249,7 +248,7 @@ function insertTag(elInsertBox, sTag) {
 				<td width="38%">
 					&nbsp;&nbsp;  {TXT_FORUM_THREAD_CREATE_DATE_INFO}
 				</td>
-			</tr>	
+			</tr>
 		</table>
 		<br />
 		<div class="infobox_head">

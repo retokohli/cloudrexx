@@ -1068,15 +1068,15 @@ class ForumLibrary {
 	 */
 	function _showLatestEntries($arrLatestEntries){
 		global $_ARRAYLANG;
+		$count = min(count($arrLatestEntries), $this->_arrSettings['latest_entries_count']);
 		$this->_objTpl->setGlobalVariable(array(
 			'TXT_FORUM_THREAD' 				=> $_ARRAYLANG['TXT_FORUM_THREAD'],
 			'TXT_FORUM_OVERVIEW_FORUM' 		=> $_ARRAYLANG['TXT_FORUM_OVERVIEW_FORUM'],
 			'TXT_FORUM_THREAD_STRATER'	 	=> $_ARRAYLANG['TXT_FORUM_THREAD_STRATER'],
 			'TXT_FORUM_POST_COUNT' 			=> $_ARRAYLANG['TXT_FORUM_POST_COUNT'],
 			'TXT_FORUM_THREAD_CREATE_DATE' 	=> $_ARRAYLANG['TXT_FORUM_THREAD_CREATE_DATE'],
-			'TXT_FORUM_LATEST_ENTRIES'		=> sprintf($_ARRAYLANG['TXT_FORUM_LATEST_ENTRIES'], $this->_arrSettings['latest_entries_count']),
+			'TXT_FORUM_LATEST_ENTRIES'		=> sprintf($_ARRAYLANG['TXT_FORUM_LATEST_ENTRIES'], $count),
 		));
-
 		$rowclass=0;
 		foreach ($arrLatestEntries as $entry) {
 			$strUserProfileLink = ($entry['user_id'] > 0) ? '<a href="?section=forum&amp;cmd=userinfo&amp;id='.$entry['user_id'].'" title="'.$entry['username'].'">'.$entry['username'].'</a>' : $entry['username'] ;

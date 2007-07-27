@@ -5,7 +5,7 @@
 	var langID;
 	var langcount=2
 	var elInputID;
-	var elinputid; 
+	var elinputid;
 	var value;
 	var popUp;
 	var browserPopup;
@@ -19,13 +19,13 @@
 	try{
 		document.body.onresize=function(){
 			handleResize();
-		}		
+		}
 	}catch(e){}
-	
+
 	try{
 		document.body.setAttribute('onresize', 'handleResize();');
 	}catch(e){}
-	
+
 	 /*
         Written by Jonathan Snook, http://www.snook.ca/jonathan
         Add-ons by Robert Nyman, http://www.robertnyman.com
@@ -45,7 +45,7 @@
         return (arrReturnElements)
     }
 
-	
+
 	if (document.ELEMENT_NODE == null) {
  		 document.ELEMENT_NODE = 1;
  		 document.TEXT_NODE = 3;
@@ -59,10 +59,10 @@
 					style.top = pos.Y;
 			}
 			removeTrace();
-			createTrace(getInputPosition(document.getElementsByName(elInputID)[0]), getInputPosition(ol));			
+			createTrace(getInputPosition(document.getElementsByName(elInputID)[0]), getInputPosition(ol));
 		}catch(e){}
 	}
-	
+
 	function getXMLHttpRequestObj() {
 	  var objXHR;
 	  if(window.XMLHttpRequest) {
@@ -77,10 +77,10 @@
 
 	var fileBrowserPopUpLoaded = function(popup){
 		TD = popup.document.getElementById('pathTD');
-		TD.childNodes[0].data += "  Ref.Nr.: {IMMO_REF_NR}  Ref.Notiz: {IMMO_REF_NR_NOTE}" 
+		TD.childNodes[0].data += "  Ref.Nr.: {IMMO_REF_NR}  Ref.Notiz: {IMMO_REF_NR_NOTE}"
 	}
-	
-	
+
+
     var openBrowser = function openBrowser(url, id ,attrs, xtype, xelName) {
     	fieldID=id;
     	ltype=xtype;
@@ -94,10 +94,10 @@
 			return true;
 		}
   		browserPopup = window.open(url, "", attrs);
-  		browserPopup.focus();  		
+  		browserPopup.focus();
   		return false;
     }
-    
+
     /** findpos functions code by Peter-Paul Koch (quirksmode.org)
     */
     var findPosX = function(obj){
@@ -114,7 +114,7 @@
 			curleft += obj.x;
 		return curleft;
 	}
-	
+
 	var findPosY = function(obj){
 		var curtop = 0;
 		if (obj.offsetParent)
@@ -129,33 +129,33 @@
 			curtop += obj.y;
 		return curtop;
 	}
-    
+
     var SetUrl = function(url, width, height, alt) {
-    	
+
 		switch(ltype){
     		case 'img':
 			   	notDefined = true;
 		    	elInput = document.getElementById("hi_"+fieldID);
-		
+
 				elInput.setAttribute('type', 'hidden');
 				elInput.setAttribute('name', 'hi_'+fieldID);
 				elInput.setAttribute('id', 'hi_'+fieldID);
 				elInput.setAttribute('value', url);
-		
+
 				if(document.getElementById('lnk_'+fieldID) == null){
 					notDefined = true;
 		    	}else{
 		    		notDefined = false;
 		    	}
-		
+
 				fileRegExp = /.+\/(.+)$/;
 				fileRegExp.exec(url);
 
-		
+
 				if(notDefined){
 					elTxt = document.createTextNode(RegExp.$1);
 				}
-		
+
 				img = document.getElementById("img"+fieldID);
 				img.src = url;
 				if(width > height){
@@ -176,7 +176,7 @@
 				elALink.setAttribute('target', '_blank');
 				elALink.setAttribute('id', 'lnk_'+fieldID);
 				elALink.setAttribute('title', '{TXT_IMMO_SHOW_FILE}');
-		
+
 				if(notDefined){
 					elALink.appendChild(elTxt);
 					img.parentNode.appendChild(elALink);
@@ -188,9 +188,9 @@
 					elALink.appendChild(elTxt);
 				}
 			break;
-			
+
 			case 'pdf':
-				document.getElementsByName(elName)[0].value = url;	
+				document.getElementsByName(elName)[0].value = url;
 			break;
     	}
 	}
@@ -198,16 +198,16 @@
 	var decimalOnly = function(str){
 		return str.replace(/[^0-9\.]/g, '');
 	}
-	
+
 	var decimalOnlyCoords = function(str){
 		str = str.replace(/[^0-9\-]/g, '');
 		if(str.indexOf('-', 1) == -1){
-			return str;		
+			return str;
 		}else{
-			return '-'+str.replace(/-/g, '');	
+			return '-'+str.replace(/-/g, '');
 		}
 	}
-	
+
 	var mapPopUp = function(obj){
 		try{
 			if(! popUp.closed){
@@ -230,7 +230,7 @@
 		langID=lID;
 		value=val;
 		elInputID=eID;
-		
+
 		try{
 			if(fieldID && langID && elInputID){
 				http.open('get', '?cmd=immo&standalone=1&act=rpc&fieldid='+fieldID+'&langid='+langID+'&value='+value+'&ID='+elInputID);
@@ -241,8 +241,8 @@
 			return false;
 		}
 	}
-	
-	var showSuggestions = function(){ 
+
+	var showSuggestions = function(){
 		if(http.readyState == 4){
 			try{
 				if(ol!='null'){
@@ -250,15 +250,15 @@
 						ol.parentNode.removeChild(ol);
 					}catch(e){}
 				}
-				removeTrace();			
-				if(http.responseText.indexOf('{}') != -1 
+				removeTrace();
+				if(http.responseText.indexOf('{}') != -1
 				|| http.responseText.indexOf('{ 0:""}') != -1
 				|| http.responseText.indexOf('<!D') != -1){
 					return false;
 				}
 				eval(http.responseText);
-				elInput = document.getElementsByName(elInputID)[0];	
-				par = elInput.parentNode;							
+				elInput = document.getElementsByName(elInputID)[0];
+				par = elInput.parentNode;
 				while(par.tagName != 'TD'){
 					par = par.parentNode;
 				}
@@ -274,7 +274,7 @@
 					return false;
 				}
 				with(ol){
-					style.cursor = "pointer";			
+					style.cursor = "pointer";
 					style.padding = "0px 0px 0px 1px";
 					style.border = "solid 1px #000";
 					style.position = "absolute";
@@ -298,18 +298,18 @@
 			li=document.createElement('li');
 			with(li){
 				style.listStyleType='none';
-				style.display='block';				
+				style.display='block';
 			}
 			width='';
 			if(elInput.tagName == 'TEXTAREA'){
 				width="_width: 100%;";
-			}		
+			}
 			li.innerHTML='<div id="div'+i+'" style="'+width+' max-width: 600px; white-space: nowarp; min-width: 100px; background-color:'+((rclass % 2 == 0) ? '#FAFAFA' : '#E5E6FA')+'" onclick="setCont(\''+sugglist[i]+'\'); removeTrace();" onmouseover="document.getElementById(\'div'+i+'\').style.backgroundColor=\'#D5D6DA\'" onmouseout="document.getElementById(\'div'+i+'\').style.backgroundColor=\''+((rclass++ % 2 == 0) ? '#FAFAFA' : '#E5E6FA')+'\'">'+unescape(sugglist[i])+'<\/div>';
-			ol.appendChild(li);			
+			ol.appendChild(li);
 		}
-		return ol.cloneNode(true);	
+		return ol.cloneNode(true);
 	}
-	
+
 	var setCont = function(text){
 		elInput.value = unescape(text);
 		if(ol!='null'){
@@ -318,7 +318,7 @@
 			}catch(e){}
 		}
 	}
-	
+
 	var removeTrace = function(){
 		try{
 			trace=document.getElementsByTagName("div");
@@ -331,7 +331,7 @@
 			}
 		}catch(e){}
 	}
-	
+
 	var getStyle = function(oElm, strCssRule){
 	    var strValue = "";
 	    if(document.defaultView && document.defaultView.getComputedStyle){
@@ -345,16 +345,16 @@
 	    }
 	    return strValue;
 	}
-	
-	
+
+
 	var createTrace = function(start, end){
 		if(parseInt(start.X.replace('px','')) < parseInt(end.X.replace('px','')) ){
 			sx = parseInt(start.X.replace('px',''));
 			ex = parseInt(end.X.replace('px',''));
-		}else{			
+		}else{
 			sx = parseInt(end.X.replace('px',''));
 			ex = parseInt(start.X.replace('px',''));
-		}		
+		}
 		sy = parseInt(end.Y.replace('px',''));
 		maxTraceWidth = ex-sx;
 		tleft = getStyle(elInput,'right')+18;
@@ -362,8 +362,8 @@
 //		maxTraceWidth = (document.body.offsetWidth - 150 - 155 - (langcount * 342) / langcount
 //		alert(ol.offsetWidth+" "+Math.floor(maxTraceWidth))
 		if(parseInt(ol.offsetWidth) < parseInt(Math.floor(maxTraceWidth))){
-			if(document.all){		
-				return false;		
+			if(document.all){
+				return false;
 				sy+=17;
 				sx-=maxTraceWidth-ol.offsetWidth;
 				ex-=maxTraceWidth-ol.offsetWidth;
@@ -376,7 +376,7 @@
 			makeDivPoint(sx, sy, maxTraceWidth-(maxTraceWidth-ol.offsetWidth));
 		}
 	}
-	
+
 	var makeDivPoint = function(x,y,len){
 		mydiv=document.createElement("div");
 		with(mydiv){
@@ -391,13 +391,13 @@
 		}
 		document.body.appendChild(mydiv);
 	}
-	
+
 	var getInputPosition = function(elInput){
 		try{
 			x = findPosX(elInput);
 			y = findPosY(elInput);
 		}catch(e){}
-		if(document.all){		
+		if(document.all){
 			x+=286;
 		}else{
 			x+=322;

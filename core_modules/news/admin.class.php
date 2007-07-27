@@ -184,32 +184,6 @@ class newsManager extends newsLibrary {
         $this->pageTitle = $_ARRAYLANG['TXT_NEWS_MANAGER'];
         $this->langId = $objInit->userFrontendLangId;
         $this->getSettings();
-        $this->_optimizeDbTables();
-    }
-
-	/**
-    * Repair and optimise all news module tables
-    *
-    * @global object  $objDatabase
-    * @access private
-    */
-    function _optimizeDbTables()
-    {
-    	global $objDatabase;
-
-		$objDatabase->Execute("REPAIR TABLE `".DBPREFIX."module_news` ,
-		                                    `".DBPREFIX."module_news_access` ,
-		                                    `".DBPREFIX."module_news_categories` ,
-		                                    `".DBPREFIX."module_news_settings` ,
-		                                    `".DBPREFIX."module_news_teaser_frame` ,
-		                                    `".DBPREFIX."module_news_teaser_frame_templates`");
-
-		$objDatabase->Execute("OPTIMIZE TABLE `".DBPREFIX."module_news` ,
-		                                      `".DBPREFIX."module_news_access` ,
-		                                      `".DBPREFIX."module_news_categories` ,
-		                                      `".DBPREFIX."module_news_settings` ,
-		                                      `".DBPREFIX."module_news_teaser_frame` ,
-		                                      `".DBPREFIX."module_news_teaser_frame_templates`");
     }
 
     /**
@@ -306,6 +280,7 @@ class newsManager extends newsLibrary {
     * @param     integer   $newsid
     * @param     string	   $what
     * @access  private
+    * @todo 	use SQL_CALC_FOUND_ROWS and drop 'n.validated' in where clause instead of calling same query four times
     */
     function overview()
     {
@@ -368,7 +343,6 @@ class newsManager extends newsLibrary {
 		             AND nc.catid=n.catid
 		             AND n.validated='1'
 		        ORDER BY date DESC";
-
 		$objResult = $objDatabase->Execute($query);
 		if ($objResult !== false) {
 			$count = $objResult->RecordCount();
@@ -442,6 +416,7 @@ class newsManager extends newsLibrary {
 		        ORDER BY date DESC";
 
 		$objResult = $objDatabase->Execute($query);
+
 		if ($objResult !== false) {
 			$count = $objResult->RecordCount();
 			if (isset($_GET['show']) && $_GET['show'] == 'archive' && isset($_GET['pos'])) {
