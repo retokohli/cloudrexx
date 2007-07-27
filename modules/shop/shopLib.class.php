@@ -32,7 +32,8 @@ define("SHOP_ORDER_STATUS_SHIPPED",   6);
  *              various variables, and/or move the appropriate parts to
  *              a pure Shop class.
  */
-class ShopLibrary {
+class ShopLibrary
+{
     /**
      * @todo These class variable *SHOULD* be initialized in the constructor,
      * otherwise it makes no sense to have them as class variables
