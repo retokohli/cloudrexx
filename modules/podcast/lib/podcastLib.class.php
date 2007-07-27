@@ -15,19 +15,54 @@
 
 class podcastLib
 {
-	function _getMedia($ofCategory = false, $isActive = false)
-	{
-		global $objDatabase, $_CONFIG;
+	/**
+	 * the default thumbnail image path
+	 *
+	 * @access private
+	 * @var $_noThumbnail string path to default image, without offset
+	 */
+	var $_noThumbnail = '/images/content/podcast/no_picture.gif';
 
+	/**
+	 * settings array
+	 *
+	 * @access private
+	 * @var array
+	 */
+	var $_arrSettings = array();
+
+	function podcastLib(){
+		$this->__construct();
+	}
+
+	function __construct(){
+		$this->_arrSettings = $this->_getSettings();
+	}
+
+	function _getMedia($ofCategory = false, $isActive = false, $limit = 0)
+	{
+		global $objDatabase, $_CONFIG, $_LANGID;
 		$arrMedia = array();
+		$cat = false;
 		$pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+		$sqlLimit = ($limit == 0) ? $_CONFIG['corePagingLimit'] : $limit;
+		if(is_array($ofCategory)){
+			$cat = implode(',', $ofCategory);
+			if(empty($cat)){
+				$cat = '-1';
+			}
+		}elseif(!empty($ofCategory) && intval($ofCategory) > 0){
+			$cat = $ofCategory;
+		}
 
 		$objMedium = $objDatabase->SelectLimit("
 			SELECT tblMedium.id,
 				   tblMedium.title,
+				   tblMedium.youtube_id,
 				   tblMedium.author,
 				   tblMedium.description,
 				   tblMedium.source,
+				   tblMedium.thumbnail,
 				   tblMedium.width,
 				   tblMedium.height,
 				   tblMedium.playlenght,
@@ -36,16 +71,23 @@ class podcastLib
 				   tblMedium.date_added,
 				   tblMedium.template_id
 			FROM ".DBPREFIX."module_podcast_medium AS tblMedium".
-			($ofCategory !== false ? ", ".DBPREFIX."module_podcast_rel_medium_category AS tblRel WHERE tblMedium.id=tblRel.medium_id AND tblRel.category_id=".$ofCategory : "").
-			($isActive ? ($ofCategory !== false ? " AND " : " WHERE ")."tblMedium.status=1" : "").
-			" ORDER BY tblMedium.date_added DESC", $_CONFIG['corePagingLimit'], $pos);
+			(!empty($cat) ? ", ".DBPREFIX."module_podcast_rel_medium_category AS tblRel WHERE tblMedium.id=tblRel.medium_id AND tblRel.category_id IN (".$cat.")" : "").
+			($isActive ? (!empty($cat) ? " AND " : " WHERE ")."tblMedium.status=1" : "").
+			" ORDER BY tblMedium.date_added DESC", $sqlLimit, $pos);
 		if ($objMedium != false) {
 			while (!$objMedium->EOF) {
+				if(!empty($objMedium->fields['youtube_id'])){
+					$mediumSource = 'http://youtube.com/v/'.$objMedium->fields['youtube_id'];
+				}else{
+					$mediumSource = str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']);
+				}
 				$arrMedia[$objMedium->fields['id']] = array(
 					'title'			=> $objMedium->fields['title'],
+					'youtube_id'	=> $objMedium->fields['youtube_id'],
 					'author'		=> $objMedium->fields['author'],
 					'description'	=> $objMedium->fields['description'],
-					'source'		=> str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']),
+					'source'		=> $mediumSource,
+					'thumbnail'		=> !empty($objMedium->fields['thumbnail']) ? $objMedium->fields['thumbnail'] : $this->_noThumbnail,
 					'width'			=> $objMedium->fields['width'],
 					'height'		=> $objMedium->fields['height'],
 					'playlenght'	=> $objMedium->fields['playlenght'],
@@ -54,7 +96,6 @@ class podcastLib
 					'date_added'	=> $objMedium->fields['date_added'],
 					'template_id'	=> $objMedium->fields['template_id']
 				);
-
 				$objMedium->MoveNext();
 			}
 			return $arrMedia;
@@ -70,9 +111,11 @@ class podcastLib
 		$objMedium = $objDatabase->SelectLimit("
 			SELECT
 				   title,
+				   youtube_id,
 				   author,
 				   description,
 				   source,
+				   thumbnail,
 				   width,
 				   height,
 				   playlenght,
@@ -84,11 +127,18 @@ class podcastLib
 			WHERE id=".$mediumId.
 			($isActive ? " AND status=1" : ""), 1);
 		if ($objMedium !== false && $objMedium->RecordCount() == 1) {
+			if(!empty($objMedium->fields['youtube_id'])){
+				$mediumSource = 'http://youtube.com/v/'.$objMedium->fields['youtube_id'];
+			}else{
+				$mediumSource = str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']);
+			}
 			$arrMedium = array(
 				'title'			=> $objMedium->fields['title'],
+				'youtube_id'	=> $objMedium->fields['youtube_id'],
 				'author'		=> $objMedium->fields['author'],
 				'description'	=> $objMedium->fields['description'],
-				'source'		=> str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']),
+				'source'		=> $mediumSource,
+				'thumbnail'		=> !empty($objMedium->fields['thumbnail']) ? $objMedium->fields['thumbnail'] : $this->_noThumbnail,
 				'width'			=> $objMedium->fields['width'],
 				'height'		=> $objMedium->fields['height'],
 				'playlenght'	=> $objMedium->fields['playlenght'],
@@ -318,22 +368,22 @@ class podcastLib
 		}
 	}
 
-	function _addMedium($title, $author, $description, $source, $template, $width, $height, $playlenght, $size, $arrCategories, $status)
+	function _addMedium($title, $youtubeID, $author, $description, $source, $thumbnail, $template, $width, $height, $playlenght, $size, $arrCategories, $status)
 	{
 		global $objDatabase;
 
-		if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_podcast_medium (`title`, `author`,`description`, `source`, `template_id`, `width`, `height`, `playlenght`, `size`, `status`, `date_added`) VALUES ('".contrexx_addslashes($title)."', '".contrexx_addslashes($author)."','".contrexx_addslashes($description)."', '".contrexx_addslashes($source)."', ".$template.", ".$width.", ".$height.", ".$playlenght.", ".$size.", ".$status.", ".time().")") !== false) {
+		if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_podcast_medium (`title`, `youtube_id`, `author`,`description`, `source`, `thumbnail`, `template_id`, `width`, `height`, `playlenght`, `size`, `status`, `date_added`) VALUES ('".contrexx_addslashes($title)."', '".contrexx_addslashes($youtubeID)."', '".contrexx_addslashes($author)."','".contrexx_addslashes($description)."', '".contrexx_addslashes($source)."', '".contrexx_addslashes($thumbnail)."', ".$template.", ".$width.", ".$height.", ".$playlenght.", ".$size.", ".$status.", ".time().")") !== false) {
 			return $this->_setMediumCategories($objDatabase->Insert_ID(), $arrCategories);
 		} else {
 			return false;
 		}
 	}
 
-	function _updateMedium($id, $title, $author, $description, $template, $width, $height, $playlenght, $size, $arrCategories, $status)
+	function _updateMedium($id, $title, $youtubeID, $author, $description, $thumbnail, $template, $width, $height, $playlenght, $size, $arrCategories, $status)
 	{
 		global $objDatabase;
 
-		if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_podcast_medium SET `title`='".contrexx_addslashes($title)."', `author`='".contrexx_addslashes($author)."',`description`='".contrexx_addslashes($description)."', `template_id`=".$template.", `width`=".$width.", `height`=".$height.", `playlenght`=".$playlenght.", `size`=".$size.", `status`=".$status." WHERE id=".$id) !== false) {
+		if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_podcast_medium SET `title`='".contrexx_addslashes($title)."', `youtube_id`='".contrexx_addslashes($youtubeID)."', `author`='".contrexx_addslashes($author)."',`description`='".contrexx_addslashes($description)."', `thumbnail`='".contrexx_addslashes($thumbnail)."', `template_id`=".$template.", `width`=".$width.", `height`=".$height.", `playlenght`=".$playlenght.", `size`=".$size.", `status`=".$status." WHERE id=".$id) !== false) {
 			return $this->_setMediumCategories($id, $arrCategories);
 		} else {
 			return false;
@@ -380,6 +430,33 @@ class podcastLib
 		} else {
 			return false;
 		}
+	}
+
+	function _setHomecontentCategories($arrCategories)
+	{
+		global $objDatabase;
+		$arrCategories = array_filter($arrCategories, create_function('$cat', 'return intval($cat) > 0;'));
+		$query = "	UPDATE  `".DBPREFIX."module_podcast_settings`
+					SET `setvalue` = '".implode(',', $arrCategories)."'
+					WHERE `setname` = 'latest_media_categories'";
+		if ($objDatabase->Execute($query) !== false) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	function _getHomecontentCategories($langId = 0)
+	{
+		$arrHomeCategories = explode(',', $this->_arrSettings['latest_media_categories']);
+		if($langId > 0){
+			foreach ($arrHomeCategories as $index => $cat) {
+				if(!in_array($langId, $this->_getLangIdsOfCategory($cat))){
+					unset($arrHomeCategories[$index]);
+				}
+			}
+		}
+		return $arrHomeCategories;
 	}
 
 	function _isUniqueMediumTitle($title, $mediumId)
@@ -461,7 +538,9 @@ class podcastLib
 	function _getTemplateMenu($selectedTemplateId, $attrs = '')
 	{
 		$arrTemplates = &$this->_getTemplates();
-
+		if($selectedTemplateId == $this->_getYoutubeTemplate()){
+			$attrs .= ' disabled="disabled"';
+		}
 		$menu = "<select".(!empty($attrs) ? " ".$attrs : "").">\n";
 		foreach ($arrTemplates as $templateId => $arrTemplate) {
 			$menu .= "<option value=\"".$templateId."\" ".($templateId == $selectedTemplateId ? 'selected="selected"' : '').">".$arrTemplate['description']." (".$arrTemplate['extensions'].")</option>\n";
@@ -517,6 +596,18 @@ class podcastLib
 		}
 
 		return false;
+	}
+
+	function _getYoutubeTemplate()
+	{
+		global $objDatabase;
+		$id = 0;
+		$query = "	SELECT `id` FROM `".DBPREFIX."module_podcast_template`
+					WHERE `description` = 'YouTube Video'";
+		$objRS = $objDatabase->SelectLimit($query, 1);
+		if($objRS !== false){
+			return $objRS->fields['id'];
+		}
 	}
 
 	function _deleteTemplate($templateId)
@@ -647,5 +738,65 @@ class podcastLib
 			return round($size/pow(1024, 3), 2).' '.$_ARRAYLANG['TXT_PODCAST_GBYTE'];
 		}
 	}
+
+	function _getViews($mediumID)
+	{
+		global $objDatabase;
+		$query =	"SELECT `views` FROM `".DBPREFIX."module_podcast_medium` WHERE `id` = ".$mediumID;
+		if(($objRS = $objDatabase->Execute($query)) !== false){
+			return $objRS->fields['views'];
+		}else{
+			return false;
+		}
+	}
+
+	/**
+	 * increment the amount of views for the specified podcast medium by one
+	 *
+	 * @access private
+	 * @param integer medium ID
+	 */
+	function _updateViews($mediumID)
+	{
+		global $objDatabase;
+
+		$query =	"UPDATE `".DBPREFIX."module_podcast_medium` SET `views` = `views` + 1 WHERE `id` = ".$mediumID;
+		$objDatabase->Execute($query);
+	}
+
+	/**
+	 * return the thumbnail resize javascript function
+	 *
+	 * @return string javascript resize function
+	 */
+	function _getSetSizeJS(){
+		$defaultImg = $this->_noThumbnail;
+		return <<< EOF
+	var setSize = function(elImg, maxSize){
+		try{
+			if(elImg.src.indexOf("$defaultImg") > -1){
+				return true;
+			}
+			width = elImg.offsetWidth;
+			height = elImg.offsetHeight;
+			if(width > maxSize || height > maxSize){
+				if(width > height){
+						fact = maxSize / width;
+						elImg.style.width = width*fact+'px';
+						elImg.style.height = height*fact+'px';
+				}else{
+						fact = maxSize / height;
+						elImg.style.height = height*fact+'px';
+						elImg.style.width = width*fact+'px';
+				}
+			}else{
+				elImg.style.height = height+'px';
+				elImg.style.width = width+'px';
+			}
+		}catch(e){}
+	}
+EOF;
+	}
+
 }
 ?>

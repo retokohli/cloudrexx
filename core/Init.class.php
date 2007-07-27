@@ -171,16 +171,16 @@ class InitCMS
 	 */
 	function _selectBestLanguage()
 	{
-		global $_CONFIG;		
+		global $_CONFIG;
 		if('on' == $_CONFIG['languageDetection']){
-			$arrAcceptedLanguages = &$this->_getClientAcceptedLanguages();			
+			$arrAcceptedLanguages = &$this->_getClientAcceptedLanguages();
 			foreach (array_keys($arrAcceptedLanguages) as $language) {
 				if (in_array($language, array_keys($this->arrLangNames))) {
 					return $this->arrLangNames[$language];
 				} elseif (in_array($strippedLanguage = substr($language, 0, strpos($language, '-')), array_keys($this->arrLangNames))) {
 					return $this->arrLangNames[$strippedLanguage];
 				}
-			}		
+			}
 		}
 		return $this->defaultFrontendLangId;
 	}
@@ -393,6 +393,7 @@ class InitCMS
 		@$this->templates['calendar_headlines'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/events.html');
 		@$this->templates['directory_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/directory.html');
 		@$this->templates['forum_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/forum.html');
+		@$this->templates['podcast_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/podcast.html');
 
 	  	return $this->templates;
 	}

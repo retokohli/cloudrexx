@@ -119,7 +119,7 @@ class skins
 	 * Required files
 	 * @var array
 	 */
-	var $filenames = array("index.html","style.css","content.html","home.html","navbar.html","subnavbar.html","sidebar.html","shopnavbar.html","headlines.html","events.html","javascript.js","buildin_style.css","directory.html","info.xml","forum.html");
+	var $filenames = array("index.html","style.css","content.html","home.html","navbar.html","subnavbar.html","sidebar.html","shopnavbar.html","headlines.html","events.html","javascript.js","buildin_style.css","directory.html","info.xml","forum.html","podcast.html");
 
 	/**
 	 * Required directories
@@ -190,6 +190,9 @@ class skins
 	    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."skins");
     	$this->oldTable = DBPREFIX."themes";
         $this->_objFile->setChmod($this->path, $this->webPath, "");
+        if(!empty($_REQUEST['themes']) && !strstr($_REQUEST['themes'], '..')){
+	        $this->_createDefaultFiles($_REQUEST['themes'], true);
+        }
     }
 
     /**
@@ -1121,7 +1124,6 @@ class skins
 	function _getDropdownActivated($themesId)
 	{
 		global $_CONFIG, $_CORELANG, $objDatabase;
-
 		$objResult = $objDatabase->Execute("SELECT id,themesname FROM ".DBPREFIX."skins ORDER BY id");
 		if ($objResult !== false) {
 			while (!$objResult->EOF) {
@@ -1484,7 +1486,7 @@ class skins
     * @access   public
     * @param    string   $themes
     */
-    function _createDefaultFiles($themes)
+    function _createDefaultFiles($themes, $filesOnly = false)
     {
     	global $_CORELANG, $_FTPCONFIG;
     	$status='';
@@ -1501,6 +1503,9 @@ class skins
 				@chown($this->path.$themes.DIRECTORY_SEPARATOR.$this->filenames[$x], $_FTPCONFIG['username']);
 		        @chmod($this->path.$themes.DIRECTORY_SEPARATOR.$this->filenames[$x], 0777);
 	    	}
+	    }
+	    if($filesOnly){
+	    	return true;
 	    }
         if($status == 'error'){
         	$this->strErrMessage = __FUNCTION__.'(): '.$_CORELANG['TXT_ERRORS_WHILE_READING_THE_FILE'];

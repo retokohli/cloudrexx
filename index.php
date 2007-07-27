@@ -655,6 +655,52 @@ if (file_exists($modulespath)) {
     }
 }
 
+//-------------------------------------------------------
+// get latest podcast entries
+//-------------------------------------------------------
+if ($_CONFIG['podcastHomeContent'] == '1') {
+	$modulespath = "modules/podcast/homeContent.class.php";
+	if (file_exists($modulespath)) {
+		/**
+		 * @ignore
+		 */
+		require_once($modulespath);
+
+		$podcastHomeContentInPageContent = false;
+		$podcastHomeContentInPageTemplate = false;
+		$podcastHomeContentInThemesPage = false;
+
+		if (strpos($page_content, '{PODCAST_FILE}') !== false) {
+			$podcastHomeContentInPageContent = true;
+		}
+		if (strpos($page_template, '{PODCAST_FILE}') !== false) {
+			$podcastHomeContentInPageTemplate = true;
+		}
+		if (strpos($themesPages['index'], '{PODCAST_FILE}') !== false) {
+			$podcastHomeContentInThemesPage = true;
+		}
+		if ($podcastHomeContentInPageContent || $podcastHomeContentInPageTemplate || $podcastHomeContentInThemesPage) {
+			$_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('podcast'));
+			$objPodcast = &new podcastHomeContent($themesPages['podcast_content']);
+		}
+		if ($podcastHomeContentInPageContent) {
+			$page_content = str_replace('{PODCAST_FILE}', $objPodcast->getContent(), $page_content);
+		}
+		if ($podcastHomeContentInPageTemplate) {
+			$page_template = str_replace('{PODCAST_FILE}', $objPodcast->getContent(), $page_template);
+		}
+		if ($podcastHomeContentInThemesPage) {
+			$blockFirst = false;
+			if(strpos($_SERVER['REQUEST_URI'], 'section=podcast')){
+				$podcastBlockPos = strpos($themesPages['index'], '{PODCAST_FILE}');
+				$contentPos 	 = strpos($themesPages['index'], '{CONTENT_FILE}');
+				$blockFirst 	 = $podcastBlockPos < $contentPos ? true : false;
+			}
+			$themesPages['index'] = str_replace('{PODCAST_FILE}', $objPodcast->getContent($blockFirst), $themesPages['index']);
+		}
+
+	}
+}
 
 //-------------------------------------------------------
 // Load JavaScript Cart
@@ -1150,7 +1196,7 @@ switch ($section) {
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objPodcast = &new podcast($page_content);
-        $objTemplate->setVariable("CONTENT_TEXT", $objPodcast->getPage());
+        $objTemplate->setVariable("CONTENT_TEXT", $objPodcast->getPage($blockFirst));
         break;
 
 //-------------------------------------------------------

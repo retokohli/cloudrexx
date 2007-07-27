@@ -26,10 +26,10 @@ require_once ASCMS_MODULE_PATH.'/forum/lib/forumLib.class.php';
  * @subpackage  module_forum
  */
 class ForumHomeContent extends ForumLibrary {
-	
+
 	var $_pageContent;
 	var $_objTpl;
-	
+
 	/**
 	 * Constructor php5
 	 */
@@ -37,7 +37,7 @@ class ForumHomeContent extends ForumLibrary {
 		global $_LANGID;
 	    $this->_pageContent = $pageContent;
 	    $this->_objTpl = &new HTML_Template_Sigma('.');
-	    $this->_intLangId = $_LANGID; 
+	    $this->_intLangId = $_LANGID;
 		$this->_arrSettings = $this->createSettingsArray();
 	}
 
@@ -45,9 +45,9 @@ class ForumHomeContent extends ForumLibrary {
 	 * Constructor php4
 	 */
     function ForumHomeContent($pageContent) {
-    	$this->__construct($pageContent);    	
+    	$this->__construct($pageContent);
 	}
-	
+
 	/**
 	 * Fetch latest entries and parse forumtemplate
 	 *
@@ -57,7 +57,7 @@ class ForumHomeContent extends ForumLibrary {
 	{
 		global $_CONFIG, $objDatabase, $_ARRAYLANG;
 		$this->_objTpl->setTemplate($this->_pageContent,true,true);
-		$this->_showLatestEntries($this->_getLastestEntries());			
+		$this->_showLatestEntries($this->_getLastestEntries());
 		return $this->_objTpl->get();
 	}
 }

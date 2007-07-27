@@ -527,7 +527,7 @@ class Navigation
     */
 	function _getParents()
 	{
-		$parentId = $this->parentId[$this->pageId];
+		$parentId = !empty($this->parentId[$this->pageId]) ? $this->parentId[$this->pageId] : 0;
 		while($parentId!=0) {
 			if(is_array($this->table[$parentId])) {
 				array_push($this->parents, $parentId);

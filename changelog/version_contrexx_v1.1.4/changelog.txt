@@ -6,12 +6,12 @@
 * New Features *************************
 ****************************************
 // 01.05.2007 Shop - Hersteller
-- Verwaltung von Hersteller. Im Admin steht ein neues Administrationsmenü 
-  "Hersteller" zur Verfügung. Frontend-Marker "SHOP_MENU" wurde durch ein 
-  weiteres Dropdown "Hersteller" erweitert (Falls Hersteller im Shop-Modul 
+- Verwaltung von Hersteller. Im Admin steht ein neues Administrationsmenü
+  "Hersteller" zur Verfügung. Frontend-Marker "SHOP_MENU" wurde durch ein
+  weiteres Dropdown "Hersteller" erweitert (Falls Hersteller im Shop-Modul
   erfasst wurden).
-  Es stehen zwei weitere Frontend-Marker zur Verfügung: 
-  SHOP_MANUFACTURER_NAME und SHOP_MANUFACTURER_URL. 
+  Es stehen zwei weitere Frontend-Marker zur Verfügung:
+  SHOP_MANUFACTURER_NAME und SHOP_MANUFACTURER_URL.
   SHOP_MANUFACTURER_URL wird als Link angezeigt (target="_blank").
 
 Gästebuch
@@ -22,10 +22,10 @@ Suche
 
 Core
 - Neue Option 'languageDetection' in den Grundeinsellungen, welche
-  bewirkt, dass die Contentsprache basierend auf den Browser-Sprachen 
+  bewirkt, dass die Contentsprache basierend auf den Browser-Sprachen
   (accept-languages) ausgewählt wird oder immer die Standardsprache verwendet
   wird.
-  
+
 Kontaktmanager
 - Ein Kontaktformular kann mit einem CAPTCHA-Schutz geschützt werden.
 
@@ -33,10 +33,10 @@ Kontaktmanager
 * Changes ******************************
 ****************************************
 Shop
-- Der JavaScript Warenkorb wird nun auf jeder Seite ausserhalb des Shops 
-  angezeigt (Sofern die Einstellung $_CONFIGURATION['custom']['shopnavbar'] in 
+- Der JavaScript Warenkorb wird nun auf jeder Seite ausserhalb des Shops
+  angezeigt (Sofern die Einstellung $_CONFIGURATION['custom']['shopnavbar'] in
   der Konfigurationsdatei (config/configuration.php) aktiviert ist.)
-- Die Versendung von Mails an den Shopbetreiber nach einer 
+- Die Versendung von Mails an den Shopbetreiber nach einer
   Bestellung erfolgt nun direkt nach der Auftragsbestätigung.
 
 Allgemein
@@ -49,15 +49,19 @@ Update System
 - Der Contrexx Session-Handler (Datenbankablage) wird verwendet.
 
 Newsletter
-- Export wurde angepasst (one-click export). Es können einzelne Listen oder 
-  alles auf einmal exportiert werden. Es werden alle Felder inkl. `status` als 
+- Export wurde angepasst (one-click export). Es können einzelne Listen oder
+  alles auf einmal exportiert werden. Es werden alle Felder inkl. `status` als
   CSV Datei exportiert und als Download an den Browser gesendet.
 
 Kontakt
 - Die Darstellung generierter E-Mails (nur Text) wurde verbessert (rechtsbündig)
 - Die Formulare werden jetzt von einer Legende (mit Rahmen) umschlossen.
 
-
+Podcast
+- Es kann ein Youtube Link angegeben werden, welcher dann als Medium im
+  Podcastmodul erfasst wird.
+- Die neusten Videos beliebiger Kategorien können auf der Startseite angezeigt
+  werden.
 
 ****************************************
 * Bugfixes *****************************
@@ -75,7 +79,7 @@ News
 - Komplette URI's bei Teaserbild Auswahlfunktion
 
 Update System
-- Das Update der Bildergalerie funktioniert auch wenn der MySQL Mode 
+- Das Update der Bildergalerie funktioniert auch wenn der MySQL Mode
   NO_AUTO_VALUE_ON_ZERO aktiviert ist.
 
 Alias Verwaltung
