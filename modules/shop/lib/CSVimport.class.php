@@ -230,7 +230,7 @@ class CSVimport {
             "(catname, parentid) VALUES ('".$CatName."','".$CatParent."')";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
-            return $objDatabase->Insert_Id();
+            return $objDatabase->Insert_ID();
         }
         return 0;
     }
