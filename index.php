@@ -2,11 +2,11 @@
 
 /**
  * The main page for the CMS
- * @copyright    CONTREXX CMS - COMVATION AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team
  * @version     v1.0.9.10.1 stable
- * @package        contrexx
- * @subpackage    core
+ * @package     contrexx
+ * @subpackage  core
  * @link        http://www.contrexx.com/ contrexx homepage
  * @since       v0.0.0.0
  * @todo        Capitalize all class names in project
@@ -120,6 +120,7 @@ $objDatabase = getDatabaseObject($errorMsg);
 if ($objDatabase === false) {
     die('Database error.');
 }
+//$objDatabase->debug = 1;
 
 //-------------------------------------------------------
 // Caching-System
@@ -658,7 +659,10 @@ if (file_exists($modulespath)) {
 //-------------------------------------------------------
 // Load JavaScript Cart
 //-------------------------------------------------------
-if ($_CONFIGURATION['custom']['shopJsCart'] && ($_CONFIGURATION['custom']['shopnavbar'] || (!empty($_REQUEST['section']) && $_REQUEST['section'] == 'shop'))) {
+if (   $_CONFIGURATION['custom']['shopJsCart']
+    && (   $_CONFIGURATION['custom']['shopnavbar']
+        ||    isset($_REQUEST['section'])
+           && $_REQUEST['section'] == 'shop')) {
     $modulespath = "modules/shop/index.class.php";
     if (file_exists($modulespath)) {
         /**
@@ -667,20 +671,20 @@ if ($_CONFIGURATION['custom']['shopJsCart'] && ($_CONFIGURATION['custom']['shopn
         require_once($modulespath);
         $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('shop'));
 
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['sidebar'], $regs, PREG_SET_ORDER)) {
-            $themesPages['sidebar'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', Shop::setJsCart($regs[0][2]), $themesPages['sidebar']);
+        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['sidebar'], $regs, PREG_SET_ORDER)) {
+            $themesPages['sidebar'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($regs[0][2]), $themesPages['sidebar']);
         }
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['shopnavbar'], $regs, PREG_SET_ORDER)) {
-            $themesPages['shopnavbar'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', Shop::setJsCart($regs[0][2]), $themesPages['shopnavbar']);
+        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['shopnavbar'], $regs, PREG_SET_ORDER)) {
+            $themesPages['shopnavbar'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($regs[0][2]), $themesPages['shopnavbar']);
         }
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['index'], $regs, PREG_SET_ORDER)) {
-            $themesPages['index'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', Shop::setJsCart($regs[0][2]), $themesPages['index']);
+        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['index'], $regs, PREG_SET_ORDER)) {
+            $themesPages['index'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($regs[0][2]), $themesPages['index']);
         }
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $page_content, $regs, PREG_SET_ORDER)) {
-            $page_content = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', Shop::setJsCart($regs[0][2]), $page_content);
+        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $page_content, $regs, PREG_SET_ORDER)) {
+            $page_content = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($regs[0][2]), $page_content);
         }
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $page_template, $regs, PREG_SET_ORDER)) {
-            $page_template = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', Shop::setJsCart($regs[0][2]), $page_template);
+        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $page_template, $regs, PREG_SET_ORDER)) {
+            $page_template = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($regs[0][2]), $page_template);
         }
     }
 }
@@ -751,7 +755,7 @@ switch ($section) {
         if (!isset($objPerm) || !is_object($objPerm)) $objPerm =&new Permission($type='frontend');
         $objLogin = &new Login($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objLogin->getContent());
-    break;
+        break;
 
 //-------------------------------------------------------
 // Nettools
@@ -765,7 +769,7 @@ switch ($section) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objNetTools = &new NetTools($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objNetTools->getPage());
-    break;
+        break;
 
 
 //-------------------------------------------------------
@@ -783,7 +787,7 @@ switch ($section) {
         $objTemplate->setVariable('CONTENT_TEXT', $shopObj->getShopPage());
         $objTemplate->setVariable('SHOPNAVBAR_FILE', $shopObj->getShopNavbar($themesPages['shopnavbar']));
         $boolShop = true;
-    break;
+        break;
 
 //-------------------------------------------------------
 // Community module
@@ -799,7 +803,7 @@ switch ($section) {
         if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
         $communityObj = &new Community($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $communityObj->getCommunityPage());
-    break;
+        break;
 
 //-------------------------------------------------------
 // News module
@@ -826,7 +830,7 @@ switch ($section) {
         $objTemplate->setVariable('CONTENT_TEXT', $newsObj->getNewsPage());
         $newsObj->getPageTitle($page_title);
         $page_title = $newsObj->newsTitle;
-    break;
+        break;
 
 //-------------------------------------------------------
 // Livecam
@@ -840,7 +844,7 @@ switch ($section) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objLivecam = &new Livecam($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objLivecam->getPage());
-    break;
+        break;
 
 //-------------------------------------------------------
 // Guestbook
@@ -854,7 +858,7 @@ switch ($section) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objGuestbook = &new Guestbook($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objGuestbook->getPage());
-    break;
+        break;
 
 //-------------------------------------------------------
 // Memberdir
@@ -868,8 +872,7 @@ switch ($section) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objMemberDir = &new memberDir($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objMemberDir->getPage());
-    break;
-
+        break;
 
 //-------------------------------------------------------
 // Download
@@ -883,7 +886,7 @@ switch ($section) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objDownload = &new Download($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objDownload->getPage());
-    break;
+        break;
 
 //-------------------------------------------------------
 // Recommend
@@ -897,7 +900,7 @@ switch ($section) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objRecommend = &new Recommend($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objRecommend->getPage());
-    break;
+        break;
 
 //-------------------------------------------------------
 // DocumentSystem module
@@ -913,7 +916,7 @@ switch ($section) {
         $objTemplate->setVariable('CONTENT_TEXT', $docSysObj->getDocSysPage());
         $docSysObj->getPageTitle($page_title);
         $page_title = $docSysObj->docSysTitle;
-    break;
+        break;
 
 //-------------------------------------------------------
 // Search Module
@@ -928,7 +931,7 @@ switch ($section) {
         $pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : "";
         $objTemplate->setVariable('CONTENT_TEXT', search_getSearchPage($pos, $page_content));
         unset($pos);
-    break;
+        break;
 
 //-------------------------------------------------------
 // Contact Module
@@ -943,7 +946,7 @@ switch ($section) {
         $contactObj= &new Contact($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $contactObj->getContactPage());
         $moduleStyleFile = "core_modules/contact/frontend_style.css";
-    break;
+        break;
 
 //-------------------------------------------------------
 // Sitemap Core
@@ -964,7 +967,7 @@ switch ($section) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $sitemap = &new sitemap($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $sitemap->getSitemapContent());
-    break;
+        break;
 
 //-------------------------------------------------------
 // media Core
@@ -982,7 +985,7 @@ switch ($section) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objMedia = &new MediaManager($page_content, $section);
         $objTemplate->setVariable('CONTENT_TEXT', $objMedia->getMediaPage());
-    break;
+        break;
 
 //-------------------------------------------------------
 // newsletter Module
@@ -996,7 +999,7 @@ switch ($section) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $newsletter = &new newsletter($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $newsletter->getPage());
-    break;
+        break;
 
 //-------------------------------------------------------
 // gallery Module
@@ -1030,7 +1033,7 @@ switch ($section) {
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objTemplate->setVariable("CONTENT_TEXT", votingShowCurrent($page_content));
-    break;
+        break;
 
 //-------------------------------------------------------
 // News Feed Module
@@ -1044,7 +1047,7 @@ switch ($section) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objFeed = &new feed($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objFeed->getFeedPage());
-    break;
+        break;
 
 //-------------------------------------------------------
 // immo Module
@@ -1076,27 +1079,27 @@ switch ($section) {
         $objCalendar = &new Calendar($page_content);
         $objTemplate->setVariable("CONTENT_TEXT", $objCalendar->getCalendarPage());
         $moduleStyleFile = "modules/calendar/frontend_style.css";
-    break;
+        break;
 
 //-------------------------------------------------------
 // Reservation Module
 //-------------------------------------------------------
     case "reservation":
-    $modulespath = "modules/reservation/index.class.php";
-    /**
-     * @ignore
-     */
-    if (file_exists($modulespath)) require_once($modulespath);
-    else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-    $objReservationModule = &new reservations($page_content);
-    $objTemplate->setVariable('CONTENT_TEXT', $objReservationModule->getPage());
-    $moduleStyleFile = "modules/reservation/frontend_style.css";
-break;
+        $modulespath = "modules/reservation/index.class.php";
+        /**
+         * @ignore
+         */
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objReservationModule = &new reservations($page_content);
+        $objTemplate->setVariable('CONTENT_TEXT', $objReservationModule->getPage());
+        $moduleStyleFile = "modules/reservation/frontend_style.css";
+        break;
 
 //-------------------------------------------------------
 // Directory Module
 //-------------------------------------------------------
-  case "directory":
+    case "directory":
         $modulespath = "modules/directory/index.class.php";
         /**
          * @ignore
@@ -1119,7 +1122,7 @@ break;
 //-------------------------------------------------------
 // Market Module
 //-------------------------------------------------------
-  case "market":
+    case "market":
         $modulespath = "modules/market/index.class.php";
         /**
          * @ignore
@@ -1139,7 +1142,7 @@ break;
 //-------------------------------------------------------
 // Podcast Module
 //-------------------------------------------------------
-  case "podcast":
+    case "podcast":
         $modulespath = "modules/podcast/index.class.php";
         /**
          * @ignore
@@ -1165,7 +1168,7 @@ break;
         $objForum = &new Forum($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objForum->getPage());
 //        $moduleStyleFile = "modules/forum/css/frontend_style.css";
-    break;
+        break;
 
 //          $sessionObj=&new cmsSession();
 //        $modulespath = "modules/forum/index.class.php";
@@ -1195,7 +1198,7 @@ break;
         $sessionObj=&new cmsSession();
         $objAuth =&new Auth($type='public');
         $objAuth->logout();
-    break;
+        break;
 
 //-------------------------------------------------------
 // error module
@@ -1209,12 +1212,12 @@ break;
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $errorObj= &new error($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $errorObj->getErrorPage());
-    break;
+        break;
 
 //-------------------------------------------------------
 // E-Government Module
 //-------------------------------------------------------
-  case "egov":
+    case "egov":
         $modulespath = "modules/egov/index.class.php";
         /**
          * @ignore
@@ -1225,6 +1228,23 @@ break;
         $objTemplate->setVariable("CONTENT_TEXT", $objEgov->getPage());
         break;
 
+    case "support":
+        /**
+         * Support System Module
+         * @author  Reto Kohli <reto.kohli@comvation.com>
+         * @since   1.2.0
+         * @version 0.0.1 alpha
+         */
+        $modulespath = ASCMS_MODULE_PATH."/support/index.class.php";
+        if (file_exists($modulespath)) {
+            /** @ignore */
+            require_once($modulespath);
+        } else {
+            die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        }
+        $objSupport = new support($page_content);
+        $objTemplate->setVariable("CONTENT_TEXT", $objSupport->getPage());
+        break;
 
 //-------------------------------------------------------
 // default case
