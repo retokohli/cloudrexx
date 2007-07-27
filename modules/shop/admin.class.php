@@ -3539,7 +3539,7 @@ class shopmanager extends ShopLibrary {
         }
         $this->_objTpl->setVariable(array('SHOP_ORDER_SEARCH_STATUS' => $strShopOrderSearchStatus));
 
-        //check if an search has been made
+        // check whether a search has been requested
         $shopCustomerOrder = "date DESC";
         if (isset($_POST['shopSearchOrders']) OR isset($_POST['shopListLetter'])) {
             if ($_POST['shopOrderStatus'] <= SHOP_ORDER_STATUS_SHIPPED) {
@@ -3613,7 +3613,7 @@ class shopmanager extends ShopLibrary {
                 while (!$objResult->EOF) {
                     // PHP5! $tipNote = (strlen($objResult['customer_note'])>0) ? stripslashes(php_strip_whitespace($objResult['customer_note'])) : '';
                     $tipNote = $objResult->fields['customer_note'];
-                    $tipNote = ereg_replace('(\r\n|\n|\r)', '<br />', stripslashes($tipNote));
+                    $tipNote = contrexx_stripslashes($tipNote);
                     $tipLink = (!empty($tipNote) ? '<img src="images/icons/comment.gif" onmouseout="htm()" onmouseover="stm(Text['.$objResult->fields['orderid'].'],Style[0])" width="11" height="10" alt="" title="" />' : '');
                     // set currency id
                     $this->objCurrency->activeCurrencyId = $objResult->fields['selected_currency_id'];
@@ -3625,7 +3625,10 @@ class shopmanager extends ShopLibrary {
                             ),
                         'SHOP_ORDERID'      => $objResult->fields['orderid'],
                         'SHOP_TIP_ID'       => $objResult->fields['orderid'],
-                        'SHOP_TIP_NOTE'     => $tipNote,
+                        'SHOP_TIP_NOTE'     =>
+                            ereg_replace(
+                                "\r\n|\n|\r", '<br />', htmlentities(strip_tags($tipNote))
+                            ),
                         'SHOP_TIP_LINK'     => $tipLink,
                         'SHOP_DATE'         => $objResult->fields['order_date'],
                         'SHOP_NAME'         =>
