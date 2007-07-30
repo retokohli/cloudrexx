@@ -325,13 +325,16 @@ echo("Support Category::delete($languageId): Error: Failed to delete the Support
         global $objDatabase;
 
         if (!$this->id) {
-echo("Support Category::getChildren($languageId): Error: This Support Category is missing the ID<br />");
+echo("getChildren(): Error: This Support Category is missing the ID<br />");
             return false;
         }
         $query = "
             SELECT id
               FROM ".DBPREFIX."module_support_category
-             WHERE parent_id=$id
+        INNER JOIN ".DBPREFIX."module_support_category_language
+                ON id=support_category_id
+             WHERE parent_id=$this->id
+               AND language_id=$this->languageId
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
@@ -339,7 +342,11 @@ echo("Support Category::getChildren($languageId): Error: This Support Category i
         }
         $arrChildren = array();
         while (!$objResult->EOF) {
-            $arrChildren[] = $objResult->fields['id'];
+            $arrChildren[] = SupportCategory::getById(
+                $objResult->fields['id'],
+                $this->languageId
+            );
+echo("getChildren(): parent: $this->id, child: ".$objResult->fields['id']."<br />");
             $objResult->MoveNext();
         }
         return $arrChildren;
@@ -590,156 +597,6 @@ echo("SupportCategory::getById($id, $languageId): no result: ".$objResult->Recor
         return $objSupportCategory;
     }
 
-
-    /**
-     * Returns an array of chosen Support Category IDs and names.
-     *
-     * Returns Support Category names with the same language ID and
-     * parent ID only.
-     * The array has the form array(id => "Support Category name").
-     * @static
-     * @param   integer $languageId         The language ID
-     * @param   integer $parentCategoryId   The optional parent Support Category ID
-     * @param   integer $offset             The optional paging offset
-     * @return  array                       The array of Support Categories
-     * @global  mixed   $objDatabase        Database object
-     * @global  array   $_CONFIG            Global configuration array
-     */
-    //static
-    function getSupportCategoryNameArray(
-        $languageId, $parentCategoryId=0, $offset=0
-    ) {
-        global $objDatabase, $_CONFIG;
-
-        $query = "
-            SELECT id, `name`
-              FROM ".DBPREFIX."module_support_category
-        INNER JOIN ".DBPREFIX."module_support_category_language
-                ON id=support_category_id
-             WHERE parent_id=$parentCategoryId
-               AND language_id=$languageId
-        ";
-        $objResult = $objDatabase->SelectLimit(
-            $query, $_CONFIG['corePagingLimit'], $offset
-        );
-        if (!$objResult) { // || $objResult->RecordCount() == 0) {
-            return false;
-        }
-        // return array
-        $arrCategory = array();
-        while (!$objResult->EOF) {
-            $arrCategory[$objResult->fields['id']] = $objResult->fields['name'];
-            $objResult->MoveNext();
-        }
-        return $arrCategory;
-    }
-
-
-    /**
-     * Returns an array of the Support Category IDs and names below the
-     * given parent ID.
-     *
-     * Returns Support Category names with the same language ID only.
-     * The array has the following form:
-     *  array(
-     *    index => array(
-     *      'id          => ID
-     *      'parentId'   => parent ID,
-     *      'status'     => Status,
-     *      'order'      => Sorting order,
-     *      'languageId' => Language ID,
-     *      'name'       => Name,
-     *      'level'      => Indent level,
-     *    ),
-     *    ...
-     *  )
-     * Note that the index is in no way related to the Support Categories,
-     * but represents their place within the tree only.
-     * @static
-     * @param   integer $languageId         The language ID
-     * @param   integer $parentCategoryId   The optional parent Support Category ID
-     * @param   integer $level              The optional indent level.
-     *                                      Initially 0 (zero).
-     * @return  array                       The array of Support Categories
-     * @global  mixed   $objDatabase        Database object
-     * @global  array   $_CONFIG            Global configuration array
-     */
-    //static
-    function getSupportCategoryNameTreeArray(
-        $languageId, $parentCategoryId=0, $level=0
-    ) {
-        global $objDatabase, $_CONFIG;
-
-        $query = "
-            SELECT *
-              FROM ".DBPREFIX."module_support_category
-        INNER JOIN ".DBPREFIX."module_support_category_language
-                ON id=support_category_id
-             WHERE parent_id=$parentCategoryId
-               AND language_id=$languageId
-          ORDER BY id ASC
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) { // || $objResult->RecordCount() == 0) {
-            return false;
-        }
-        // return array
-        $arrCategories = array();
-        while (!$objResult->EOF) {
-            $id = $objResult->fields['id'];
-            $arrSupportCategory = array(
-                'id'         => $id,
-                'parentId'   => $objResult->fields['parent_id'],
-                'status'     => $objResult->fields['status'],
-                'order'      => $objResult->fields['order'],
-                'languageId' => $objResult->fields['language_id'],
-                'name'       => $objResult->fields['name'],
-                'level'      => $level,
-            );
-//echo("getSupportCategoryNameTreeArray(lang=$languageId, parent=$parentCategoryId, level=$level): ");var_export($arrSupportCategory);echo("<br />");
-            $arrCategories[] = $arrSupportCategory;
-            $arrCategories = array_merge(
-                $arrCategories,
-                SupportCategory::getSupportCategoryNameTreeArray(
-                    $languageId, $id, $level+1
-                )
-            );
-            $objResult->MoveNext();
-        }
-        return $arrCategories;
-    }
-
-
-    /**
-     * Returns HTML code to display a Support Category selection dropdown menu.
-     * @param   integer $languageId The language ID of the Support Categories
-     *                              to be used
-     * @param   integer $selectedId The optional preselected Support Category ID
-     * @param   string  $menuName   The optional menu name, defaults to the
-     *                              empty string.  Unless specified, no <select>
-     *                              tag pair will be added.
-     * @return  string              The dropdown menu HTML code
-     */
-    function getMenu($languageId, $selectedId=0, $menuName='')
-    {
-        $menu = '';
-        foreach (SupportCategory::getSupportCategoryNameTreeArray(
-                    $languageId,
-                    0,
-                    0
-                ) as $arrField) {
-echo("getMenu(lang=$languageId, selected=$selectedId): id ".$arrField['id'].", name ".$arrField['name']."<br />");
-            $menu .=
-                '<option value="'.$arrField['id'].'"'.
-                ($selectedId == $arrField['id'] ? ' selected="selected"' : '').
-                ">{$arrField['name']}</option>\n";
-        }
-        if ($menuName) {
-            $menu = "<select id='$menuName' name='$menuName'>\n$menu\n</select>\n";
-        }
-echo("getMenu(lang=$languageId, parent=$selectedId): made menu: ".htmlentities($menu)."<br />");
-        return $menu;
-    }
 }
 
 ?>
