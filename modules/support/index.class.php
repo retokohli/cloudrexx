@@ -43,6 +43,14 @@ class Support
      */
     var $statusMessage = '';
 
+    /**
+     * The Support Categories object
+     *
+     * Do not confuse this with the Support Category object!
+     * @var     SupportCategories
+     */
+    var $objSupportCategories;
+
 
     /**
      * Constructor (PHP4)
@@ -123,11 +131,17 @@ class Support
     {
         global $_ARRAYLANG;
 
+        $supportCategoryId = 0;
+        if (!empty($_REQUEST['supportcategoryid'])) {
+            $supportCategoryId = $_REQUEST['supportcategoryid'];
+        }
+
         $this->objTemplate->setVariable(array(
             'TXT_SUPPORT_WELCOME'           => $_ARRAYLANG['TXT_SUPPORT_WELCOME'],
             'TXT_SUPPORT_CHOOSE_CATEGORY'   => $_ARRAYLANG['TXT_SUPPORT_CHOOSE_CATEGORY'],
             'TXT_SUPPORT_CONTINUE'          => $_ARRAYLANG['TXT_SUPPORT_CONTINUE'],
-            'SUPPORT_CATEGORIES'            => $this->getSupportCategoriesMenu(),
+            'SUPPORT_CATEGORIES'            =>
+                $this->objSupportCategories->getMenu($supportCategoryId),
         ));
         $this->objTemplate->parse();
 echo("template: ");var_export($this->objTemplate);echo("<br />");
@@ -135,43 +149,7 @@ echo("template: ");var_export($this->objTemplate);echo("<br />");
     }
 
 
-    /**
-     * Returns HTML code for the Support Categories dropdown menu.
-     *
-     * Note that the enclosing <select> block is not included!
-     * @param   integer     $parentCategoryId   The parent Support Category ID
-     * @param   integer     $selectedCategoryId The selected Support Category ID
-     * @return  string                          The dropdown menu HTML code
-     * @global  Init        $objInit            Init object
-     */
-    function getSupportCategoriesMenu($parentCategoryId=0, $selectedCategoryId=0)
-    {
-        global $objInit;
 
-        // *MUST* return an array(id => "category name", ...)
-        $arrCategories =
-            SupportCategory::getSupportCategoryNameArray(
-                $objInit->userFrontendLangId,
-                $parentCategoryId
-            );
-        if (!is_array($arrCategories) || count($arrCategories) == 0) {
-echo("getSupportCategoriesMenu($parentCategoryId=0, $selectedCategoryId=0): failed to get name array<br />");
-            // no categories here.  abort.
-            return false;
-        }
-        $strOptions = '';
-        foreach ($arrCategories as $id => $categoryName) {
-            $strOptions .=
-               "<option value='$id' ".
-               ($id == $selectedCategoryId
-                   ? 'selected="selected"'
-                   : ''
-               ).'>'.
-               htmlentities($categoryName, ENT_QUOTES, CONTREXX_CHARSET).
-               "</option>\n";
-        }
-        return $strOptions;
-    }
 }
 
 ?>

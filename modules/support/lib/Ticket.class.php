@@ -29,6 +29,61 @@ CREATE TABLE contrexx_module_support_ticket (
 */
 
 
+// Ticket status constant values
+// UNKNOWN: The Ticket was found in a state other than those listed
+// here, and has been reset to unknown state.  Someone needs to
+// adjust its state manually now.
+define('SHOP_SUPPORT_TICKET_STATUS_UNKNOWN', 0);
+// NEW: The Ticket has been opened, but noone has seen it yet.
+define('SHOP_SUPPORT_TICKET_STATUS_NEW',     1);
+// OPEN: The Ticket is open, someone has already taken a look at it.
+define('SHOP_SUPPORT_TICKET_STATUS_OPEN',    2);
+// WAIT: The Ticket has been handled other than just looking at it,
+// i.e. replied, moved.  It's now waiting for the next step to take place,
+// like another reply or the other person accepting it.
+define('SHOP_SUPPORT_TICKET_STATUS_WAIT',    3);
+// CLOSED: The Ticket has been replied and is considered to be
+// satisfactorily answered.
+define('SHOP_SUPPORT_TICKET_STATUS_CLOSED',  4);
+// More to come...
+//define('SHOP_SUPPORT_TICKET_STATUS_', 0);
+// Total number.  Keep this up to date!
+define('SHOP_SUPPORT_TICKET_STATUS_COUNT',   5);
+
+// Ticket action constant values
+// UNKNOWN: Some Ticket action was found other than those listed
+// here, and has been reset to unknown state.  The Ticket status
+// should be UNKNOWN now, too.  Someone needs to take more action now.
+define('SHOP_SUPPORT_TICKET_ACTION_UNKNOWN', 0);
+// NONE: No action has been taken on this Ticket yet.
+// If you see this, you probably should, as this Tickets' state
+// must still be NEW!
+define('SHOP_SUPPORT_TICKET_ACTION_NONE',    1);
+// READ: Someone took a look at this Ticket.  The Ticket status
+// must be OPEN now.
+// Tickets with status WAIT or CLOSED should not be moved!
+define('SHOP_SUPPORT_TICKET_ACTION_READ',    2);
+// MOVE: Someone moved this Ticket to another Support Category,
+// or to another person.
+// If the Ticket status is WAIT, the other person hasn't seen it since.
+// If the Ticket status is OPEN, the Support Category has been changed only.
+define('SHOP_SUPPORT_TICKET_ACTION_MOVE',    3);
+// CHANGE: Someone made changes other than the Support Category
+// or the person in charge.
+// After changing a Ticket, its status must be set to OPEN.
+// Tickets with status WAIT or CLOSED should not be changed!
+define('SHOP_SUPPORT_TICKET_ACTION_CHANGE',  4);
+// REPLY: Someone has sent a reply to the Ticket.
+// Tickets that have been replied must be set to status WAIT!
+define('SHOP_SUPPORT_TICKET_ACTION_REPLY',   5);
+// CLOSE: Someone has declared this Ticket closed.
+// The Ticket state must now be CLOSED, and the Ticket should
+// not be MOVEd or CHANGEd anymore!
+define('SHOP_SUPPORT_TICKET_ACTION_CLOSE',   6);
+// Total number.  Keep this up to date!
+define('SHOP_SUPPORT_TICKET_ACTION_COUNT',   7);
+
+
 /**
  * Ticket
  *
@@ -91,6 +146,19 @@ class Ticket
      */
     var $supportCategoryId;
 
+    /**
+     * Language associated with this Ticket
+     *
+     * From table modules_support_ticket
+     * @var integer
+     */
+    var $languageId;
+
+    /**
+     * Status strings
+     * @var array
+     */
+    var $status;
 
 
     /**
@@ -100,24 +168,55 @@ class Ticket
      * @version     0.0.1
      * @see         __construct()
      */
-    function Ticket($date, $email, $status, $supportCategoryId, $id=0)
-    {
-        $this->__construct($date, $email, $status, $supportCategoryId, $id);
+    function Ticket(
+        $date, $email, $status, $supportCategoryId, $languageId, $id=0
+    ) {
+        $this->__construct(
+            $date, $email, $status, $supportCategoryId, $languageId, $id
+        );
     }
 
     /**
      * Constructor (PHP5)
+     * @global      array   $_ARRAYLANG     Language array
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
+     * @todo        PHP5: Make $this->arrStatusString and
+     *                         $this->arrActionString static!
      */
-    function __construct($date, $email, $status, $supportCategoryId, $id=0)
+    function __construct(
+        $date, $email, $status, $supportCategoryId, $languageId, $id=0)
     {
+        global $_ARRAYLANG;
+
         $this->date              = $date;
         $this->email             = $email;
         $this->status            = $status;
         $this->supportCategoryId = $supportCategoryId;
+        $this->languageId        = $languageId;
         $this->id                = $id;
+
+        // *SHOULD* be static
+        $this->arrStatusString = array(
+            SUPPORT_TICKET_STATUS_UNKNOWN => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_UNKNOWN'],
+            SUPPORT_TICKET_STATUS_NEW     => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_NEW'],
+            SUPPORT_TICKET_STATUS_OPEN    => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_OPEN'],
+            SUPPORT_TICKET_STATUS_WAIT    => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_WAIT'],
+            SUPPORT_TICKET_STATUS_CLOSED  => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_CLOSED'],
+        );
+
+        // *SHOULD* be static
+        $this->arrActionString = array(
+            SUPPORT_TICKET_ACTION_UNKNOWN => $_ARRAYLANG['TXT_SUPPORT_TICKET_ACTION_UNKNOWN'],
+            SUPPORT_TICKET_ACTION_NONE    => $_ARRAYLANG['TXT_SUPPORT_TICKET_ACTION_NONE'],
+            SUPPORT_TICKET_ACTION_READ    => $_ARRAYLANG['TXT_SUPPORT_TICKET_ACTION_READ'],
+            SUPPORT_TICKET_ACTION_MOVE    => $_ARRAYLANG['TXT_SUPPORT_TICKET_ACTION_MOVE'],
+            SUPPORT_TICKET_ACTION_CHANGE  => $_ARRAYLANG['TXT_SUPPORT_TICKET_ACTION_CHANGE'],
+            SUPPORT_TICKET_ACTION_REPLY   => $_ARRAYLANG['TXT_SUPPORT_TICKET_ACTION_REPLY'],
+            SUPPORT_TICKET_ACTION_CLOSE   => $_ARRAYLANG['TXT_SUPPORT_TICKET_ACTION_CLOSE'],
+        );
+
     }
 
 
@@ -198,6 +297,33 @@ class Ticket
         $this->supportCategoryId = intval($supportCategoryId);
     }
 
+    /**
+     * Get this Tickets' language ID
+     * @return  integer     The Ticket language ID
+     */
+    function getLanguageId()
+    {
+        return $this->languageId;
+    }
+    /**
+     * Set this Tickets' language ID
+     * @param   integer     The Ticket language ID
+     */
+    function setLanguageId($languageId)
+    {
+        $this->languageId = intval($languageId);
+    }
+
+
+    /**
+     * Get this Tickets' status as a string
+     * @return  string      The Ticket status string
+     */
+    function getStatusString()
+    {
+        return $this->statusStrings[$this->status];
+    }
+
 
     /**
      * Delete this Ticket from the database.
@@ -261,6 +387,7 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
                    email=$this->email,
                    'status'=$this->status,
                    support_category_id=$this->supportCategoryId,
+                   language_id=$this->languageId,
              WHERE id=$this->id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -285,15 +412,17 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
 
         $query = "
             INSERT INTO ".DBPREFIX."module_support_ticket (
-                   'date'
-                   email
-                   'status'
-                   support_category_id
+                   'date',
+                   email,
+                   'status',
+                   support_category_id,
+                   language_id
             ) VALUES (
                    $this->date,
                    $this->email,
                    $this->status,
-                   $this->supportCategoryId
+                   $this->supportCategoryId,
+                   $this->languageId
             )
         ";
         $objResult = $objDatabase->Execute($query);
@@ -342,6 +471,7 @@ echo("Ticket::getById($id): no result: ".$objResult->RecordCount()."<br />");
             $objResult->fields('email'),
             $objResult->fields('status'),
             $objResult->fields('support_category_id'),
+            $objResult->fields('language_id'),
             $objResult->fields('id')
         );
         return $objTicket;
