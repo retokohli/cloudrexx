@@ -3452,10 +3452,10 @@ class shopmanager extends ShopLibrary {
         $shopSearchPattern = '';
         $arrCurrency = $this->objCurrency->getCurrencyArray();
 
-        // update order status
+        // Update the order status if valid
         if (isset($_GET['changeOrderStatus']) &&
-            intval($_GET['changeOrderStatus']) >= SHOP_ORDER_STATUS_PENDING &&
-            intval($_GET['changeOrderStatus']) <= SHOP_ORDER_STATUS_SHIPPED &&
+            intval($_GET['changeOrderStatus']) >= 0 &&
+            intval($_GET['changeOrderStatus']) <= SHOP_ORDER_STATUS_COUNT &&
             isset($_GET['orderId']) &&
             !empty($_GET['orderId'])) {
             $query = "UPDATE ".DBPREFIX."module_shop_orders ".
@@ -3542,7 +3542,8 @@ class shopmanager extends ShopLibrary {
         // check whether a search has been requested
         $shopCustomerOrder = "date DESC";
         if (isset($_POST['shopSearchOrders']) OR isset($_POST['shopListLetter'])) {
-            if ($_POST['shopOrderStatus'] <= SHOP_ORDER_STATUS_SHIPPED) {
+            if (   $_POST['shopOrderStatus'] >= 0
+                && $_POST['shopOrderStatus'] <= SHOP_ORDER_STATUS_COUNT) {
                 $shopOrderStatus = intval($_POST['shopOrderStatus']);
                 $shopSearchPattern = " AND order_status='$shopOrderStatus'";
             }
