@@ -11,13 +11,15 @@
  */
 
 // Order status constant values
-define("SHOP_ORDER_STATUS_PENDING",   0);
-define("SHOP_ORDER_STATUS_CONFIRMED", 1);
-define("SHOP_ORDER_STATUS_DELETED",   2);
-define("SHOP_ORDER_STATUS_CANCELLED", 3);
-define("SHOP_ORDER_STATUS_COMPLETED", 4);
-define("SHOP_ORDER_STATUS_PAID",      5);
-define("SHOP_ORDER_STATUS_SHIPPED",   6);
+define('SHOP_ORDER_STATUS_PENDING',   0);
+define('SHOP_ORDER_STATUS_CONFIRMED', 1);
+define('SHOP_ORDER_STATUS_DELETED',   2);
+define('SHOP_ORDER_STATUS_CANCELLED', 3);
+define('SHOP_ORDER_STATUS_COMPLETED', 4);
+define('SHOP_ORDER_STATUS_PAID',      5);
+define('SHOP_ORDER_STATUS_SHIPPED',   6);
+// Total number.  Keep this up to date!
+define('SHOP_ORDER_STATUS_COUNT',     7);
 
 /**
  * All the helping hands needed to run the shop
