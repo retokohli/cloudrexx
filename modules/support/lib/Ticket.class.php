@@ -14,75 +14,31 @@
 
 Database Tables Structure:
 
+DROP TABLE contrexx_module_support_ticket;
 CREATE TABLE contrexx_module_support_ticket (
-  id int(10) unsigned NOT NULL auto_increment,
-  `date` datetime NOT NULL,
-  email varchar(255) NOT NULL,
-  `status` int(11) NOT NULL,
-  support_category_id int(10) unsigned NOT NULL,
-  PRIMARY KEY  (id),
-  KEY email (email),
-  KEY `status` (`status`),
-  KEY support_category_id (support_category_id)
+  id                  int(10)      unsigned NOT NULL auto_increment,
+  support_category_id int(10)      unsigned NOT NULL,
+  language_id         int(10)      unsigned NOT NULL,
+  `status`            tinyint(2)   unsigned NOT NULL default 1,
+  email               varchar(255)          NOT NULL,
+  `timestamp`         timestamp             NOT NULL default current_timestamp,
+  PRIMARY KEY (id),
+  KEY support_category_id (support_category_id),
+  KEY language_id         (language_id),
+  KEY `status`            (`status`),
+  KEY email               (email)
 ) ENGINE=MyISAM;
 
 */
 
-
-// Ticket status constant values
-// UNKNOWN: The Ticket was found in a state other than those listed
-// here, and has been reset to unknown state.  Someone needs to
-// adjust its state manually now.
-define('SHOP_SUPPORT_TICKET_STATUS_UNKNOWN', 0);
-// NEW: The Ticket has been opened, but noone has seen it yet.
-define('SHOP_SUPPORT_TICKET_STATUS_NEW',     1);
-// OPEN: The Ticket is open, someone has already taken a look at it.
-define('SHOP_SUPPORT_TICKET_STATUS_OPEN',    2);
-// WAIT: The Ticket has been handled other than just looking at it,
-// i.e. replied, moved.  It's now waiting for the next step to take place,
-// like another reply or the other person accepting it.
-define('SHOP_SUPPORT_TICKET_STATUS_WAIT',    3);
-// CLOSED: The Ticket has been replied and is considered to be
-// satisfactorily answered.
-define('SHOP_SUPPORT_TICKET_STATUS_CLOSED',  4);
-// More to come...
-//define('SHOP_SUPPORT_TICKET_STATUS_', 0);
-// Total number.  Keep this up to date!
-define('SHOP_SUPPORT_TICKET_STATUS_COUNT',   5);
-
-// Ticket action constant values
-// UNKNOWN: Some Ticket action was found other than those listed
-// here, and has been reset to unknown state.  The Ticket status
-// should be UNKNOWN now, too.  Someone needs to take more action now.
-define('SHOP_SUPPORT_TICKET_ACTION_UNKNOWN', 0);
-// NONE: No action has been taken on this Ticket yet.
-// If you see this, you probably should, as this Tickets' state
-// must still be NEW!
-define('SHOP_SUPPORT_TICKET_ACTION_NONE',    1);
-// READ: Someone took a look at this Ticket.  The Ticket status
-// must be OPEN now.
-// Tickets with status WAIT or CLOSED should not be moved!
-define('SHOP_SUPPORT_TICKET_ACTION_READ',    2);
-// MOVE: Someone moved this Ticket to another Support Category,
-// or to another person.
-// If the Ticket status is WAIT, the other person hasn't seen it since.
-// If the Ticket status is OPEN, the Support Category has been changed only.
-define('SHOP_SUPPORT_TICKET_ACTION_MOVE',    3);
-// CHANGE: Someone made changes other than the Support Category
-// or the person in charge.
-// After changing a Ticket, its status must be set to OPEN.
-// Tickets with status WAIT or CLOSED should not be changed!
-define('SHOP_SUPPORT_TICKET_ACTION_CHANGE',  4);
-// REPLY: Someone has sent a reply to the Ticket.
-// Tickets that have been replied must be set to status WAIT!
-define('SHOP_SUPPORT_TICKET_ACTION_REPLY',   5);
-// CLOSE: Someone has declared this Ticket closed.
-// The Ticket state must now be CLOSED, and the Ticket should
-// not be MOVEd or CHANGEd anymore!
-define('SHOP_SUPPORT_TICKET_ACTION_CLOSE',   6);
-// Total number.  Keep this up to date!
-define('SHOP_SUPPORT_TICKET_ACTION_COUNT',   7);
-
+/**
+ * Actions taken on a Ticket
+ */
+require_once ASCMS_MODULE_PATH.'/support/lib/Action.class.php';
+/**
+ * Messages related to a Ticket
+ */
+require_once ASCMS_MODULE_PATH.'/support/lib/Message.class.php';
 
 /**
  * Ticket
@@ -93,7 +49,7 @@ define('SHOP_SUPPORT_TICKET_ACTION_COUNT',   7);
  *  id
  *  email       Either from the e-mail message, or the web form.
  *  date
- *  status      0 new, 1 open, 2 waiting, 127 closed.
+ *  status      See {@link seaTicket.inc.php} for details.
  *  support_category_id
  * One or more Messages should be linked to the Ticket.
  * Attachments may be linked to Messages.
@@ -155,10 +111,53 @@ class Ticket
     var $languageId;
 
     /**
-     * Status strings
-     * @var array
+     * ID of the person responsible for the Ticket
+     *
+     * From table modules_support_action
+     * @var integer
+    var $personId;
      */
-    var $status;
+
+    /**
+     * Set to true whenever the status of this Ticket changes.
+     *
+     * Defaults to false.
+     * @var boolean
+    var $statusChanged = false;
+     */
+
+    /**
+     * Set to true whenever the Support Category ID of this Ticket changes.
+     *
+     * Defaults to false.
+     * @var boolean
+    var $supportCategoryIdChanged = false;
+     */
+
+
+    /**
+     * The State-Event-Action Matrix
+     *
+     * *SHOULD* be static
+     * @var     array
+     */
+    var $arrSea;
+
+    /**
+     * The status text array
+     *
+     * *SHOULD* be static
+     * @var     array
+     */
+    var $arrStatusString;
+
+    /**
+     * The event text array
+     *
+     * *SHOULD* be static
+     * @var     array
+     */
+    var $arrEventString;
 
 
     /**
@@ -188,35 +187,20 @@ class Ticket
     function __construct(
         $date, $email, $status, $supportCategoryId, $languageId, $id=0)
     {
-        global $_ARRAYLANG;
-
         $this->date              = $date;
         $this->email             = $email;
         $this->status            = $status;
         $this->supportCategoryId = $supportCategoryId;
         $this->languageId        = $languageId;
         $this->id                = $id;
-
-        // *SHOULD* be static
-        $this->arrStatusString = array(
-            SUPPORT_TICKET_STATUS_UNKNOWN => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_UNKNOWN'],
-            SUPPORT_TICKET_STATUS_NEW     => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_NEW'],
-            SUPPORT_TICKET_STATUS_OPEN    => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_OPEN'],
-            SUPPORT_TICKET_STATUS_WAIT    => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_WAIT'],
-            SUPPORT_TICKET_STATUS_CLOSED  => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_CLOSED'],
-        );
-
-        // *SHOULD* be static
-        $this->arrActionString = array(
-            SUPPORT_TICKET_ACTION_UNKNOWN => $_ARRAYLANG['TXT_SUPPORT_TICKET_ACTION_UNKNOWN'],
-            SUPPORT_TICKET_ACTION_NONE    => $_ARRAYLANG['TXT_SUPPORT_TICKET_ACTION_NONE'],
-            SUPPORT_TICKET_ACTION_READ    => $_ARRAYLANG['TXT_SUPPORT_TICKET_ACTION_READ'],
-            SUPPORT_TICKET_ACTION_MOVE    => $_ARRAYLANG['TXT_SUPPORT_TICKET_ACTION_MOVE'],
-            SUPPORT_TICKET_ACTION_CHANGE  => $_ARRAYLANG['TXT_SUPPORT_TICKET_ACTION_CHANGE'],
-            SUPPORT_TICKET_ACTION_REPLY   => $_ARRAYLANG['TXT_SUPPORT_TICKET_ACTION_REPLY'],
-            SUPPORT_TICKET_ACTION_CLOSE   => $_ARRAYLANG['TXT_SUPPORT_TICKET_ACTION_CLOSE'],
-        );
-
+/*
+        $this->statusChanged = false;
+        $this->supportCategoryIdChanged = false;
+*/
+        /**
+         * Ticket State-Event-Action matrix (would-be static)
+         */
+        require_once ASCMS_MODULE_PATH.'/support/lib/seaTicketMatrix.php';
     }
 
 
@@ -240,11 +224,11 @@ class Ticket
     /**
      * Set this Tickets' date
      * @param   string      The Ticket date
-     */
     function setDate($date)
     {
         $this->date = $date;
     }
+     */
 
     /**
      * Get this Tickets' e-mail address
@@ -257,11 +241,11 @@ class Ticket
     /**
      * Set this Tickets' e-mail address
      * @param   string      The Ticket e-mail address
-     */
     function setEmail($email)
     {
         $this->email = strip_tags($email);
     }
+     */
 
     /**
      * Get this Tickets' status
@@ -274,11 +258,12 @@ class Ticket
     /**
      * Set this Tickets' status
      * @param   string      The Ticket status
-     */
     function setStatus($status)
     {
         $this->status = intval($status);
+        $this->statusChanged = true;
     }
+     */
 
     /**
      * Get this Tickets' SupportCategory ID
@@ -291,11 +276,12 @@ class Ticket
     /**
      * Set this Tickets' SupportCategory ID
      * @param   integer     The Ticket SupportCategory ID
-     */
     function setSupportCategoryId($supportCategoryId)
     {
         $this->supportCategoryId = intval($supportCategoryId);
+        $this->supportCategoryIdChanged = true;
     }
+     */
 
     /**
      * Get this Tickets' language ID
@@ -321,7 +307,21 @@ class Ticket
      */
     function getStatusString()
     {
-        return $this->statusStrings[$this->status];
+        return $this->arrStatusString[$this->status];
+    }
+
+
+    /**
+     * Get the event string for the code
+     * @param   integer     The event code
+     * @return  string      The respective event string
+     * @todo    As soon as $this->arrEventString is static, so is this method.
+     * @(static)
+     */
+    //static
+    function getEventString($code)
+    {
+        return $this->arrEventString[$code];
     }
 
 
@@ -520,6 +520,158 @@ echo("Ticket::getById($id): no result: ".$objResult->RecordCount()."<br />");
         }
         return $arrTicket;
     }
+
+
+    /**
+     * Processes any event for this Ticket.
+     *
+     * Updates affected objects (and tables) accordingly:
+     * Ticket: status
+     * @param   integer $event      Any valid (or invalid) Ticket event.
+     * @param   integer $personId   The person ID (from the Ticket form)
+     * @param   integer $messageId  The message ID (from the Ticket form)
+     * @param   integer $supportCategoryId
+     *                          The SupportCategory ID (from the Ticket form)
+     * @return  boolean             True on success, false otherwise.
+     */
+    function processEvent($event, $personId, $messageId, $supportCategoryId)
+    {
+        // Get the would-be status after processing the event
+        $newStatus = $this->getNewStatus($event);
+        // This *SHOULD* never be visible!
+        // -- Which means that every state-event combination causing it
+        // has to be avoided.
+        if ($newStatus == SUPPORT_TICKET_EVENT_UNKNOWN) {
+echo("WARNING!  Event is causing an UNKNOWN status<br />");
+        }
+
+        // Get the appropriate action method name for the event
+        $action = $this->getAction($event);
+        // These methods *MUST* return a boolean true upon success,
+        // or false otherwise.
+        // They must also call the appropriate Ticket methods in order
+        // to create the Action object and entry.
+        // When they fail, the status must remain untouched!
+        if (!eval('$this->$action;')) {
+            return false;
+        }
+        // Only store if it's necessary
+        if ($this->status != $newStatus) {
+            // Update $this->status and store it.
+            $this->status = $newStatus;
+            return $this->store();
+        }
+        // Same status
+        return true;
+    }
+
+
+    /**
+     * Returns the appropriate Action for the current status
+     * and the event code.
+     *
+     * The event code must be one of the codes define()d in the
+     * constants in {@link lib/SupportCommon.class.php} and used in
+     * {@link seaTicketMatrix.inc.php} to initialize the matrix.
+     * The returned string must correspond to a Ticket method with
+     * the appropriate variable names as arguments.
+     * @param   integer $event  The event code
+     * @return  string          The name of the action to take.
+     */
+    function getAction($event)
+    {
+        return $this->arrSea[$this->status][$event]['action'];
+    }
+
+
+    /**
+     * Returns the prospective status the Ticket will be set to
+     * after taking successful action for the current status and
+     * the event code.
+     *
+     * The event code must be one of the codes define()d in the
+     * constants in {@link lib/SupportCommon.class.php} and used in
+     * {@link seaTicketMatrix.inc.php} to initialize the matrix.
+     * The returned integer must correspond to a status as define()d
+     * in the constants in {@link lib/SupportCommon.class.php} as well.
+     * @param   integer $event  The event code
+     * @return  string          The prospective status code.
+     */
+    function getNewStatus($event)
+    {
+        return $this->arrSea[$this->status][$event]['status'];
+    }
+
+
+    /**
+     * Take no Action on this Ticket.
+     *
+     * This is all about not changing the Ticket status.
+     * @return unknown
+     */
+    function actionNone()
+    {
+        return true;
+    }
+
+
+    /**
+     * Try to assign this Ticket to the person reading it.
+     *
+     * This method is to be called for Tickets with status NEW or MOVED,
+     * whenever a READ event occurs.
+     * The Ticket is assigned to the person reading it only if
+     * - The Ticket hasn't been assigned before (its status is NEW), or if
+     * - The Ticket has been assigned (moved) to the person reading it now,
+     *   that is, the person currently logged in. See
+     *   {@link core/auth.class.php}.
+     * @return  boolean     True on success, false otherwise.
+     */
+    function actionAssignToReader()
+    {
+        $ownerId  = $this->getOwnerId();
+        $personId = intval($_SESSION['auth']['userid']);
+        if ($personId == 0) {
+echo("ERROR: No User ID found in Session!<br />");
+            return false;
+        }
+        if ($ownerId != 0) {
+            if ($ownerId == $personId) {
+                return true;
+            }
+echo("NOTE: Ticket is assigned to someone else!<br />");
+            return false;
+        }
+        // Creates an Action entry
+        return $this->setOwnerId($personId);
+    }
+
+
+    /**
+     * Try to assign this Ticket to the person with the given ID.
+     *
+     * This method is to be called for Tickets with status OPEN or MOVED,
+     * whenever a CHANGE_PERSON event occurs.
+     * @return  boolean     True on success, false otherwise.
+     */
+    function actionAssign($personId)
+    {
+        if ($personId == 0) {
+echo("actionAssign($personId): ERROR: No User ID specified!<br />");
+            return false;
+        }
+        $ownerId = $this->getOwnerId();
+        if ($ownerId == 0) {
+echo("actionAssign($personId): WARNING: Something's wrong -- this Ticket isn't owned!<br />");
+            return false;
+        }
+        if ($ownerId == $personId) {
+            return true;
+        }
+        // Creates an Action entry
+        return $this->setOwnerId($personId);
+    }
+
 }
 
 ?>

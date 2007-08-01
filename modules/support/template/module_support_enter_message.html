@@ -69,11 +69,8 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     </td>
   </tr>
   <tr class=row1>
-    <td>
-<!--
-      {TXT_SUPPORT_SORT_TICKET}
-      <select name="supportTicketListSort"
-        onchange="document.formSearchTickets.submit();">
+    <td>{TXT_SUPPORT_SORT_TICKET}
+      <select name="ticketListSort">
         <option value="id" selected>{TXT_SUPPORT_TICKET_ID}</option>
         <option value="date">{TXT_SUPPORT_TICKET_DATE}</option>
         <option value="status">{TXT_SUPPORT_TICKET_STATUS}</option>
@@ -82,7 +79,6 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         <option value="">{}</option>
       </select>
       &nbsp;&nbsp;&nbsp;
--->
       <label for="supportShowClosedTickets">{TXT_SUPPORT_SHOW_CLOSED_TICKETS}</label>
       <input type="checkbox" {SUPPORT_SHOW_CLOSED_TICKETS_CHECK}
         id="supportShowClosedTickets" name="supportShowClosedTickets"
@@ -102,30 +98,12 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
   <table summary="" class="adminlist" border=0 width="100%" cellpadding="2" cellspacing="0">
     <tr>
       <th nowrap="nowrap" style="text-align:center;">#</th>
-      <th nowrap="nowrap" width="2%">{TXT_SUPPORT_TICKET_ID}</th>
-      <th nowrap="nowrap" width="11%">
-        <a href="{SUPPORT_TICKET_ORDER_DATE}">
-          {TXT_SUPPORT_TICKET_DATE}
-        </a>
-      </th>
-      <th nowrap="nowrap" width="7%">
-        <a href="{SUPPORT_TICKET_ORDER_STATUS}">
-          {TXT_SUPPORT_TICKET_STATUS}
-        </a>
-      </th>
-      <th nowrap="nowrap" width="22%">
-        <a href="{SUPPORT_TICKET_ORDER_EMAIL}">
-          {TXT_SUPPORT_TICKET_EMAIL}
-        </a>
-      </th>
-      <th style="text-align:left;">
-        <a href="{SUPPORT_TICKET_ORDER_CATEGORY}">
-          {TXT_SUPPORT_TICKET_CATEGORY}
-        </a>
-      </th>
-      <th nowrap="nowrap" width="56%" style="text-align:right;">
-        {TXT_SUPPORT_ACTION}
-      </th>
+      <th nowrap="nowrap" width="2%">{TXT_SUPPORT_TICKET_ID}&nbsp;</th>
+      <th nowrap="nowrap" width="11%">{TXT_SUPPORT_TICKET_DATE}&nbsp;</th>
+      <th nowrap="nowrap" width="7%"> {TXT_SUPPORT_TICKET_STATUS}&nbsp;</th>
+      <th nowrap="nowrap" width="22%">{TXT_SUPPORT_TICKET_EMAIL}&nbsp;</th>
+      <th style="text-align:left;">{TXT_SUPPORT_TICKET_CATEGORY}&nbsp;</th>
+      <th nowrap="nowrap" width="56%" style="text-align:right;">{TXT_SUPPORT_ACTION}</th>
     </tr>
     <!-- BEGIN ticketRow -->
       <tr class="{SUPPORT_ROWCLASS}">
@@ -145,9 +123,9 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
               <img src="images/icons/press.gif" alt="{TXT_SUPPORT_VIEW_TICKET}" border="0" />
             </a>
             &nbsp;
-            <!-- a href="?cmd=support&amp;act=editticket&amp;id={SUPPORT_TICKET_ID}" title="{TXT_SUPPORT_EDIT}">
+            <a href="?cmd=support&amp;act=editticket&amp;id={SUPPORT_TICKET_ID}" title="{TXT_SUPPORT_EDIT}">
               <img src="images/icons/edit.gif" alt="{TXT_SUPPORT_EDIT}" border="0" />
-            </a -->
+            </a>
             <a href="javascript:deleteTicket('{SUPPORT_TICKET_ID}')" title="{TXT_SUPPORT_DELETE}">
               <img src="images/icons/delete.gif" alt="{TXT_SUPPORT_DELETE}" border="0" />
             </a>
