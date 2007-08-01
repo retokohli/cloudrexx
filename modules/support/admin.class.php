@@ -89,6 +89,7 @@ class Support
 
     /**
      * Constructor (PHP5)
+     * @global  Template    $objTemplate    PEAR Sigma Template
      * @global  array       $_ARRAYLANG     Language array
      * @global  mixed       $objInit        Init object
      */
@@ -113,7 +114,9 @@ class Support
                 $_ARRAYLANG['TXT_SUPPORT_TICKETS'].'</a>'.
                 '<a href="index.php?cmd=support&amp;act=editCategories">'.
                 $_ARRAYLANG['TXT_SUPPORT_CATEGORIES'].'</a>'.
-                '<a href="index.php?cmd=support&amp;act=settings">'.
+                '<a href="index.php?cmd=support&amp;act=enterMessage">'.
+                $_ARRAYLANG['TXT_SUPPORT_CREATE_TICKET'].'</a>'.
+                '<a href="index.php?cmd=support&amp;act=enterMessage">'.
                 $_ARRAYLANG['TXT_SETTINGS'].'</a>'
         );
 
@@ -169,8 +172,22 @@ class Support
             $this->deleteTicket();
             $this->ticketOverview();
             break;
+          case 'enterMessage':
+            $this->enterMessage();
+            break;
           case 'deleteTickets':
             $this->deleteTickets();
+            $this->ticketOverview();
+            break;
+          case 'ticket':
+            $this->ticket();
+            break;
+          case 'changeTicket':
+            $this->changeTicket();
+            $this->ticket();
+            break;
+          case 'replyTicket':
+            $this->replyTicket();
             $this->ticketOverview();
             break;
 /*
@@ -192,47 +209,100 @@ class Support
 
 
     /**
-     * Set the Ticket status
-     * @return  boolean             True on success, false otherwise
-     * @global  array       $_ARRAYLANG     Language array
-     * @global  mixed       $objInit        Init object
+     * Enter a new Message into the system
+     *
+     * If there is no associated Ticket ID, as a consequence, a new
+     * Ticket will be created as well.  Otherwise, the Message can be
+     * used as a reply to an open Ticket.
+     * @global  array   $_ARRAYLANG Language array
+     * @global  Init    $objInit    Init object
      */
-    function setTicketStatus()
+    function enterMessage()
     {
         global $_ARRAYLANG, $objInit;
 
-echo("deleteTicket(): \$_GET: ");var_export($_GET);echo("<br />");
-        $return = true;
+        $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_ENTER_MESSAGE'];
+        $this->objTemplate->loadTemplateFile('module_support_enter_message.html', true, true);
 
-        // The ID of the Ticket currently being edited
-        if (empty($_GET['id']) || empty($_GET['status'])) {
-            $return = false;
+        // Any Ticket around?
+        $ticketId = 0;
+        if (!empty($_REQUEST['ticketId'])) {
+            $ticketId = intval($_REQUEST['ticketId']);
+            $this->showTicket($ticketId);
+            $this->showMessages($ticketId);
+        }
+
+        // The Message
+        $supportMessageStatusString = '';
+        $supportMessageFrom         = '';
+        $supportMessageSubject      = '';
+        $supportMessageBody         = '';
+        $supportMessageDate         = '';
+
+        // Any Message selected?
+        $messageId = 0;
+        if (!empty($_REQUEST['messageId'])) {
+            $messageId  = intval($_REQUEST['messageId']);
+            $objMessage = Message::getById($messageId);
+            if (!$objMessage) {
+echo("Support::enterMessage(): ERROR: No Message found for Message ID $messageId<br />");
+                return false;
+            }
+            $supportMessageStatusString = $objMessage->getStatusString();
+            $supportMessageFrom         = $objMessage->getFrom();
+            $supportMessageSubject      = $objMessage->getSubject();
+            $supportMessageBody         = $objMessage->getBody();
+            $supportMessageDate         = $objMessage->getDate();
         } else {
-            $id     = intval($_GET['id']);
-            $status = intval($_GET['status']);
-            $objTicket = Ticket::getById($id);
-            if (!$objTicket) {
-                $return = false;
-            } else {
-                if ($status != $objTicket->getStatus()) {
-                    $objTicket->setStatus($status);
-                    if (!$objTicket->store()) {
-                        $return = false;
-                    }
-                }
+            if (!empty($_REQUEST['supportMessageFrom'])) {
+                $supportMessageFrom = intval($_REQUEST['supportMessageFrom']);
+            }
+            if (!empty($_REQUEST['supportMessageSubject'])) {
+                $supportMessageSubject = $_REQUEST['supportMessageSubject'];
+            }
+            if (!empty($_REQUEST['supportMessageBody'])) {
+                $supportMessageBody = $_REQUEST['supportMessageBody'];
+            }
+            if (!empty($_REQUEST['supportMessageDate'])) {
+                $supportMessageDate =  $_REQUEST['supportMessageDate'];
             }
         }
-        if ($return) {
-            $this->strOkMessage = $_ARRAYLANG['TXT_SUPPORT_UPDATED_DATA_SUCCESSFULLY'];
-        } else {
-            $this->strErrMessage = $_ARRAYLANG['TXT_SUPPORT_UPDATING_DATA_FAILED'];
-        }
-        return $return;
+
+        $this->objTemplate->setVariable(array(
+            'SUPPORT_MESSAGE_STATUS'    => $supportMessageStatusString,
+            'SUPPORT_MESSAGE_FROM'      => $supportMessageFrom,
+            'SUPPORT_MESSAGE_SUBJECT'   => $supportMessageSubject,
+            'SUPPORT_MESSAGE_BODY'      => $supportMessageBody,
+            'SUPPORT_MESSAGE_DATE'      => $supportMessageDate,
+        ));
+
+        $this->objTemplate->setVariable(array(
+            'TXT_SUPPORT_CATEGORY'              => $_ARRAYLANG['TXT_SUPPORT_CATEGORY'],
+            'TXT_SUPPORT_CONFIRM_CHANGE_STATUS' => $_ARRAYLANG['TXT_SUPPORT_CONFIRM_CHANGE_STATUS'],
+            'TXT_SUPPORT_CONFIRM_DELETE_TICKET' => $_ARRAYLANG['TXT_SUPPORT_CONFIRM_DELETE_TICKET'],
+            'TXT_SUPPORT_DELETE'                => $_ARRAYLANG['TXT_SUPPORT_DELETE'],
+            'TXT_SUPPORT_EDIT'                  => $_ARRAYLANG['TXT_SUPPORT_EDIT'],
+            'TXT_SUPPORT_EMAIL'                 => $_ARRAYLANG['TXT_SUPPORT_EMAIL'],
+            'TXT_SUPPORT_MARKED_TICKETS'        => $_ARRAYLANG['TXT_SUPPORT_MARKED_TICKETS'],
+            'TXT_SUPPORT_SEARCH_TICKETS'        => $_ARRAYLANG['TXT_SUPPORT_SEARCH_TICKETS'],
+            'TXT_SUPPORT_SEND_MAIL_TO_CUSTOMER' => $_ARRAYLANG['TXT_SUPPORT_SEND_MAIL_TO_CUSTOMER'],
+            'TXT_SUPPORT_SHOW_CLOSED_TICKETS'   => $_ARRAYLANG['TXT_SUPPORT_SHOW_CLOSED_TICKETS'],
+            'TXT_SUPPORT_SORT_TICKET'           => $_ARRAYLANG['TXT_SUPPORT_SORT_TICKET'],
+            'TXT_SUPPORT_TICKET_CATEGORY'       => $_ARRAYLANG['TXT_SUPPORT_TICKET_CATEGORY'],
+            'TXT_SUPPORT_TICKET_DATE'           => $_ARRAYLANG['TXT_SUPPORT_TICKET_DATE'],
+            'TXT_SUPPORT_TICKET_EMAIL'          => $_ARRAYLANG['TXT_SUPPORT_TICKET_EMAIL'],
+            'TXT_SUPPORT_TICKET_ID'             => $_ARRAYLANG['TXT_SUPPORT_TICKET_ID'],
+            'TXT_SUPPORT_TICKET_SOURCE'         => $_ARRAYLANG['TXT_SUPPORT_TICKET_SOURCE'],
+            'TXT_SUPPORT_TICKET_STATUS'         => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS'],
+            'TXT_SUPPORT_VIEW_DETAILS'          => $_ARRAYLANG['TXT_SUPPORT_VIEW_DETAILS'],
+            'TXT_SUPPORT_WEB'                   => $_ARRAYLANG['TXT_SUPPORT_WEB'],
+        ));
+        return true;
     }
 
 
     /**
-     * Delete the Ticket
+     * Delete the chosen Ticket
      * @return  boolean             True on success, false otherwise
      * @global  array       $_ARRAYLANG     Language array
      * @global  mixed       $objInit        Init object
@@ -303,65 +373,148 @@ echo("deleteTickets(): \$_POST: ");var_export($_POST);echo("<br />");
     {
         global $_ARRAYLANG, $objInit;
 
-        $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_SETTINGS'];
+        $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_TICKET_OVERVIEW'];
         $this->objTemplate->loadTemplateFile('module_support_ticket_overview.html', true, true);
 
-        $supportCategoryId = 0;
-        if (isset($_REQUEST['supportcategoryid'])) {
-            $supportCategoryId = $_REQUEST['supportcategoryid'];
-        }
         $order = 'date DESC';
-        if (isset($_REQUEST['order'])) {
+        if (!empty($_REQUEST['order'])) {
             $order = $_REQUEST['order'];
         }
+        list($orderField, $orderDirection) = split(' ', $order);
+        switch ($orderField) {
+          case 'id':
+          case 'date':
+          case 'status':
+          case 'email':
+          case 'support_category_id':
+            break;
+          default:
+            $orderField = 'date';
+        }
+        $orderDirectionReverse = '';
+        switch ($orderDirection) {
+          case 'ASC':
+            $orderDirectionReverse = 'DESC';
+            break;
+          case 'DESC':
+            $orderDirectionReverse = 'ASC';
+            break;
+          default:
+            $orderDirection        = 'DESC';
+            $orderDirectionReverse = 'ASC';
+        }
+        $orderDirectionString =
+            ($orderDirection == 'ASC'
+                ? $_ARRAYLANG['TXT_SUPPORT_ORDER_ASCENDING']
+                : $_ARRAYLANG['TXT_SUPPORT_ORDER_DESCENDING']
+            );
+        $orderDirectionImage =
+            '<img src="'.ASCMS_ADMIN_WEB_PATH.'/images/icons/'.
+                strtolower($orderDirection).
+            '.png" border=0 alt="'.$orderDirectionString.
+            '" title="'.$orderDirectionString.'" />';
+
         $offset = 0;
-        if (isset($_REQUEST['offset'])) {
-            $offset = $_REQUEST['offset'];
+        if (!empty($_REQUEST['offset'])) {
+            $offset = intval($_REQUEST['offset']);
         }
 
-        // get range of Tickets, default to latest first
-        $arrTicket = Ticket::getTicketArray($order, $offset);
+        $supportCategoryId = 0;
+        if (!empty($_REQUEST['supportCategoryId'])) {
+            $supportCategoryId = intval($_REQUEST['supportCategoryId']);
+        }
+        $supportShowOwnTickets = 1;
+        if (empty($_REQUEST['supportShowOwnTickets'])) {
+            $supportShowOwnTickets = 0;
+        }
+        $supportShowClosedTickets = 0;
+        if (!empty($_REQUEST['supportShowClosedTickets'])) {
+            $supportShowOwnTickets = 1;
+        }
+
         // get all Support Categories' IDs and names
         $arrSupportCategoryName =
             $this->objSupportCategories->getSupportCategoryNameArray(0, true);
-        foreach ($arrTicket as $objTicket) {
-            $supportCategoryId = $objTicket->getSupportCategoryId();
-            $this->objTemplate->setVariable(array(
-                'SUPPORT_TICKET_ID'       => $objTicket->getId(),
-                'SUPPORT_TICKET_EMAIL'    => $objTicket->getEmail(),
-                'SUPPORT_TICKET_DATE'     => $objTicket->getDate(),
-                // status: new, open, reopened, pending, closed, ...
-                'SUPPORT_TICKET_STATUS'   => $objTicket->getStatus(),
-                'SUPPORT_TICKET_CATEGORY' =>
-                    $arrSupportCategoryName[$supportCategoryId],
-            ));
-        }
+
+        // get range of Tickets, default to latest first
+        $arrTicket = Ticket::getTicketArray($order, $offset);
+
         $this->objTemplate->setVariable(array(
             'TXT_SUPPORT_CATEGORY'              => $_ARRAYLANG['TXT_SUPPORT_CATEGORY'],
-            'TXT_SUPPORT_CONFIRM_CHANGE_STATUS' => $_ARRAYLANG['TXT_SUPPORT_CONFIRM_CHANGE_STATUS'],
             'TXT_SUPPORT_CONFIRM_DELETE_TICKET' => $_ARRAYLANG['TXT_SUPPORT_CONFIRM_DELETE_TICKET'],
             'TXT_SUPPORT_DELETE'                => $_ARRAYLANG['TXT_SUPPORT_DELETE'],
-            'TXT_SUPPORT_EDIT'                  => $_ARRAYLANG['TXT_SUPPORT_EDIT'],
             'TXT_SUPPORT_EMAIL'                 => $_ARRAYLANG['TXT_SUPPORT_EMAIL'],
             'TXT_SUPPORT_MARKED_TICKETS'        => $_ARRAYLANG['TXT_SUPPORT_MARKED_TICKETS'],
             'TXT_SUPPORT_SEARCH_TICKETS'        => $_ARRAYLANG['TXT_SUPPORT_SEARCH_TICKETS'],
-            'TXT_SUPPORT_SEND_MAIL_TO_CUSTOMER' => $_ARRAYLANG['TXT_SUPPORT_SEND_MAIL_TO_CUSTOMER'],
-            'TXT_SUPPORT_SHOW_CLOSED_TICKETS'   => $_ARRAYLANG['TXT_SUPPORT_SHOW_CLOSED_TICKETS'],
             'TXT_SUPPORT_SORT_TICKET'           => $_ARRAYLANG['TXT_SUPPORT_SORT_TICKET'],
-            'TXT_SUPPORT_TICKET_CATEGORY'       => $_ARRAYLANG['TXT_SUPPORT_TICKET_CATEGORY'],
-            'TXT_SUPPORT_TICKET_DATE'           => $_ARRAYLANG['TXT_SUPPORT_TICKET_DATE'],
-            'TXT_SUPPORT_TICKET_EMAIL'          => $_ARRAYLANG['TXT_SUPPORT_TICKET_EMAIL'],
-            'TXT_SUPPORT_TICKET_ID'             => $_ARRAYLANG['TXT_SUPPORT_TICKET_ID'],
+            'TXT_SUPPORT_TICKET_ID'             =>
+                '<a href="?cmd=support&amp;act=ticketOverview&amp;order=id+'.
+                $orderDirectionReverse.'">'.
+                $_ARRAYLANG['TXT_SUPPORT_TICKET_ID'].'&nbsp;'.
+                ($orderField == 'id' ? $orderDirectionImage : '').'</a>',
+            'TXT_SUPPORT_TICKET_DATE'           =>
+                '<a href="?cmd=support&amp;act=ticketOverview&amp;order=date+'.
+                $orderDirectionReverse.'">'.
+                $_ARRAYLANG['TXT_SUPPORT_TICKET_DATE'].'&nbsp;'.
+                ($orderField == 'date' ? $orderDirectionImage : '').'</a>',
+            'TXT_SUPPORT_TICKET_STATUS'         =>
+                '<a href="?cmd=support&amp;act=ticketOverview&amp;order=status+'.
+                $orderDirectionReverse.'">'.
+                $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS'].'&nbsp;'.
+                ($orderField == 'status' ? $orderDirectionImage : '').'</a>',
+            'TXT_SUPPORT_TICKET_EMAIL'          =>
+                '<a href="?cmd=support&amp;act=ticketOverview&amp;order=email+'.
+                $orderDirectionReverse.'">'.
+                $_ARRAYLANG['TXT_SUPPORT_TICKET_EMAIL'].'&nbsp;'.
+                ($orderField == 'email' ? $orderDirectionImage : '').'</a>',
+            'TXT_SUPPORT_TICKET_CATEGORY'       =>
+                '<a href="?cmd=support&amp;act=ticketOverview&amp;order=support_category_id+'.
+                $orderDirectionReverse.'">'.
+                $_ARRAYLANG['TXT_SUPPORT_TICKET_CATEGORY'].'&nbsp;'.
+                ($orderField == 'support_category_id' ? $orderDirectionImage : '').'</a>',
             'TXT_SUPPORT_TICKET_SOURCE'         => $_ARRAYLANG['TXT_SUPPORT_TICKET_SOURCE'],
-            'TXT_SUPPORT_TICKET_STATUS'         => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS'],
             'TXT_SUPPORT_VIEW_DETAILS'          => $_ARRAYLANG['TXT_SUPPORT_VIEW_DETAILS'],
             'TXT_SUPPORT_WEB'                   => $_ARRAYLANG['TXT_SUPPORT_WEB'],
+            'TXT_SUPPORT_SHOW_OWN_TICKETS_ONLY' => $_ARRAYLANG['TXT_SUPPORT_SHOW_OWN_TICKETS_ONLY'],
+            'TXT_SUPPORT_SHOW_CLOSED_TICKETS'   => $_ARRAYLANG['TXT_SUPPORT_SHOW_CLOSED_TICKETS'],
+            'SUPPORT_SHOW_OWN_TICKETS_CHECK'    =>
+                ($supportShowOwnTickets     ? 'checked="checked"' : ''),
+            'SUPPORT_SHOW_CLOSED_TICKETS_CHECK' =>
+                ($supportShowClosedTickets  ? 'checked="checked"' : ''),
+            'SUPPORT_TICKET_ORDER_ID'           => '',
+            'SUPPORT_TICKET_ORDER_DATE'         =>
+                "?cmd=support&amp;act=ticketOverview&amp;order=date $orderDirectionReverse",
+            'SUPPORT_TICKET_ORDER_STATUS'       =>
+                "?cmd=support&amp;act=ticketOverview&amp;order=status $orderDirectionReverse",
+            'SUPPORT_TICKET_ORDER_EMAIL'        =>
+                "?cmd=support&amp;act=ticketOverview&amp;order=email $orderDirectionReverse",
+            'SUPPORT_TICKET_ORDER_CATEGORY'     =>
+                "?cmd=support&amp;act=ticketOverview&amp;order=support_category_id $orderDirectionReverse",
         ));
+
+        if (is_array($arrTicket) && count($arrTicket)) {
+            $this->objTemplate->setCurrentBlock('ticketRow');
+            foreach ($arrTicket as $objTicket) {
+                $supportCategoryId = $objTicket->getSupportCategoryId();
+                $this->objTemplate->setVariable(array(
+                    'SUPPORT_TICKET_ID'       => $objTicket->getId(),
+                    'SUPPORT_TICKET_EMAIL'    => $objTicket->getEmail(),
+                    'SUPPORT_TICKET_DATE'     => $objTicket->getDate(),
+                    'SUPPORT_TICKET_STATUS'   => $objTicket->getStatus(),
+                    'SUPPORT_TICKET_CATEGORY' =>
+                        $arrSupportCategoryName[$supportCategoryId],
+                ));
+                $this->objTemplate->parseCurrentBlock();
+            }
+        } else {
+            $this->objTemplate->hideBlock('ticketRow');
+        }
     }
 
 
     /**
-     * Set up the Ticket detail view.
+     * Show the Ticket detail page.
+     * @return  void
      * @global  array   $_ARRAYLANG Language array
      * @global  Init    $objInit    Init object
      */
@@ -371,59 +524,7 @@ echo("deleteTickets(): \$_POST: ");var_export($_POST);echo("<br />");
 
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_TICKET'];
         $this->objTemplate->loadTemplateFile('module_support_ticket.html', true, true);
-
-        $id = 0;
-        if (isset($_REQUEST['id'])) {
-            $id = $_REQUEST['id'];
-        }
-
-        // get the Ticket
-        $objTicket = Ticket::getById($id);
-        // The language ID of the language the Customer chose
-        $languageId = $objTicket->getLanguageId();
-
-// TODO FROM HERE
-
-        // get all Support Categories' IDs and names
-        $arrSupportCategoryName =
-            $this->objSupportCategories->getSupportCategoryNameArray(0, true);
-        foreach ($arrTicket as $objTicket) {
-            $supportCategoryId = $objTicket->getSupportCategoryId();
-            $this->objTemplate->setVariable(array(
-                'SUPPORT_TICKET_ID'       => $objTicket->getId(),
-                'SUPPORT_TICKET_EMAIL'    => $objTicket->getEmail(),
-                'SUPPORT_TICKET_DATE'     => $objTicket->getDate(),
-                'SUPPORT_TICKET_LANGUAGE' =>
-                    $this->objLanguage->getLanguageParameter(
-                        $objTicket->getLanguageId(), 'name'
-                    ),
-                // status: new, open, reopened, pending, closed, ...
-                'SUPPORT_TICKET_STATUS'   => $objTicket->getStatusAsString(),
-                'SUPPORT_TICKET_CATEGORY' =>
-                    $arrSupportCategoryName[$supportCategoryId],
-            ));
-        }
-        $this->objTemplate->setVariable(array(
-            'TXT_SUPPORT_CATEGORY'              => $_ARRAYLANG['TXT_SUPPORT_CATEGORY'],
-            'TXT_SUPPORT_CONFIRM_CHANGE_STATUS' => $_ARRAYLANG['TXT_SUPPORT_CONFIRM_CHANGE_STATUS'],
-            'TXT_SUPPORT_CONFIRM_DELETE_TICKET' => $_ARRAYLANG['TXT_SUPPORT_CONFIRM_DELETE_TICKET'],
-            'TXT_SUPPORT_DELETE'                => $_ARRAYLANG['TXT_SUPPORT_DELETE'],
-            'TXT_SUPPORT_EDIT'                  => $_ARRAYLANG['TXT_SUPPORT_EDIT'],
-            'TXT_SUPPORT_EMAIL'                 => $_ARRAYLANG['TXT_SUPPORT_EMAIL'],
-            'TXT_SUPPORT_MARKED_TICKETS'        => $_ARRAYLANG['TXT_SUPPORT_MARKED_TICKETS'],
-            'TXT_SUPPORT_SEARCH_TICKETS'        => $_ARRAYLANG['TXT_SUPPORT_SEARCH_TICKETS'],
-            'TXT_SUPPORT_SEND_MAIL_TO_CUSTOMER' => $_ARRAYLANG['TXT_SUPPORT_SEND_MAIL_TO_CUSTOMER'],
-            'TXT_SUPPORT_SHOW_CLOSED_TICKETS'   => $_ARRAYLANG['TXT_SUPPORT_SHOW_CLOSED_TICKETS'],
-            'TXT_SUPPORT_SORT_TICKET'           => $_ARRAYLANG['TXT_SUPPORT_SORT_TICKET'],
-            'TXT_SUPPORT_TICKET_CATEGORY'       => $_ARRAYLANG['TXT_SUPPORT_TICKET_CATEGORY'],
-            'TXT_SUPPORT_TICKET_DATE'           => $_ARRAYLANG['TXT_SUPPORT_TICKET_DATE'],
-            'TXT_SUPPORT_TICKET_EMAIL'          => $_ARRAYLANG['TXT_SUPPORT_TICKET_EMAIL'],
-            'TXT_SUPPORT_TICKET_ID'             => $_ARRAYLANG['TXT_SUPPORT_TICKET_ID'],
-            'TXT_SUPPORT_TICKET_SOURCE'         => $_ARRAYLANG['TXT_SUPPORT_TICKET_SOURCE'],
-            'TXT_SUPPORT_TICKET_STATUS'         => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS'],
-            'TXT_SUPPORT_VIEW_DETAILS'          => $_ARRAYLANG['TXT_SUPPORT_VIEW_DETAILS'],
-            'TXT_SUPPORT_WEB'                   => $_ARRAYLANG['TXT_SUPPORT_WEB'],
-        ));
+        $this->showTicket();
     }
 
 
@@ -770,6 +871,195 @@ echo("storeSupportCategory(): ");var_export($objSupportCategory);echo("<br />");
             $this->strOkMessage = $_ARRAYLANG['TXT_SUPPORT_UPDATED_DATA_SUCCESSFULLY'];
         }
         return $return;
+    }
+
+
+    /**
+     * Set up the Ticket detail view.
+     *
+     * This method may be called on any page that includes the
+     * appropriate block and placeholders.
+     * @global  array   $_ARRAYLANG Language array
+     * @global  Init    $objInit    Init object
+     */
+    function showTicket()
+    {
+        global $_ARRAYLANG, $objInit;
+
+        $ticketId = 0;
+        if (!empty($_REQUEST['ticketId'])) {
+            $ticketId = intval($_REQUEST['ticketId']);
+        }
+        if (!$ticketId) {
+echo("Support::showTicket(): ERROR: Missing the Ticket ID!<br />");
+            return false;
+        }
+        // get the Ticket
+        $objTicket = Ticket::getById($ticketId);
+        if (!$objTicket) {
+echo("Support::showTicket(): ERROR: Could not get the Ticket with ID $ticketId!<br />");
+            return false;
+        }
+
+        // get all Support Categories' IDs and names
+        $arrSupportCategoryName =
+            $this->objSupportCategories->getSupportCategoryNameArray(0, true);
+
+        // The Support Ticket details
+        $ticketEmail            = $objTicket->getEmail();
+        $ticketDate             = $objTicket->getDate();
+        $ticketLanguageId       = $objTicket->getLanguageId();
+        $ticketLanguageString   =
+            $this->objLanguage->getLanguageParameter(
+                $ticketLanguageId, 'name'
+            );
+        $ticketStatusString     = $objTicket->getStatusString();
+        $ticketCategoryId       = $objTicket->getSupportCategoryId();
+        $ticketCategoryString   = $arrSupportCategoryName[$ticketCategoryId];
+
+        $this->objTemplate->setVariable(array(
+            'SUPPORT_TICKET_ID'       => $ticketId,
+            'SUPPORT_TICKET_EMAIL'    => $ticketEmail,
+            'SUPPORT_TICKET_DATE'     => $ticketDate,
+            'SUPPORT_TICKET_LANGUAGE' => $ticketLanguageString,
+            'SUPPORT_TICKET_STATUS'   => $ticketStatusString,
+            'SUPPORT_TICKET_CATEGORY' => $ticketCategoryString,
+        ));
+
+        $this->objTemplate->setVariable(array(
+            'TXT_SUPPORT_CATEGORY'              => $_ARRAYLANG['TXT_SUPPORT_CATEGORY'],
+            'TXT_SUPPORT_CONFIRM_DELETE_TICKET' => $_ARRAYLANG['TXT_SUPPORT_CONFIRM_DELETE_TICKET'],
+            'TXT_SUPPORT_DELETE'                => $_ARRAYLANG['TXT_SUPPORT_DELETE'],
+            'TXT_SUPPORT_EDIT'                  => $_ARRAYLANG['TXT_SUPPORT_EDIT'],
+            'TXT_SUPPORT_EMAIL'                 => $_ARRAYLANG['TXT_SUPPORT_EMAIL'],
+            'TXT_SUPPORT_TICKET_CATEGORY'       => $_ARRAYLANG['TXT_SUPPORT_TICKET_CATEGORY'],
+            'TXT_SUPPORT_TICKET_DATE'           => $_ARRAYLANG['TXT_SUPPORT_TICKET_DATE'],
+            'TXT_SUPPORT_TICKET_EMAIL'          => $_ARRAYLANG['TXT_SUPPORT_TICKET_EMAIL'],
+            'TXT_SUPPORT_TICKET_ID'             => $_ARRAYLANG['TXT_SUPPORT_TICKET_ID'],
+            'TXT_SUPPORT_TICKET_SOURCE'         => $_ARRAYLANG['TXT_SUPPORT_TICKET_SOURCE'],
+            'TXT_SUPPORT_TICKET_STATUS'         => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS'],
+            'TXT_SUPPORT_WEB'                   => $_ARRAYLANG['TXT_SUPPORT_WEB'],
+        ));
+        return true;
+    }
+
+
+    /**
+     * Sets up the Messages list view on any page that includes the
+     * appropriate block and placeholders.
+     *
+     * A range of optional parameters lets you choose the Messages to display.
+     * Also picks a few standard options from the $_REQUEST array.
+     * See {@link Messages::getMessageArray()} for a detailed explanation.
+     * @param   integer     $ticketId       The Ticket ID
+     * @param   integer     $status         The optional status filter value
+     * @param   string      $from           The optional from filter value
+     * @param   string      $subject        The optional subject filter value
+     * @param   string      $date           The optional date filter value
+     * @return  boolean         True on success, false otherwise.
+     * @global  array       $_ARRAYLANG     Language array
+     */
+    function showMessages($ticketId, $status=0, $from='', $subject='', $date='')
+    {
+        global $_ARRAYLANG;
+
+        $offset = 0;
+        if (!empty($_REQUEST['offset'])) {
+            $offset = intval($_REQUEST['offset']);
+        }
+        $limit = 0;
+        if (!empty($_REQUEST['limit'])) {
+            $limit = intval($_REQUEST['limit']);
+        }
+        $order = '';
+        if (!empty($_GET['order'])) {
+            $order = html_entity_decode(stripslashes($_GET['order']));
+echo("Support::showMessages(ticketId=$ticketId, status=$status, from=$from, subject=$subject, date=$date): order: GET $order '".htmlentities($order)."'<br />");
+        } elseif (!empty($_POST['order'])) {
+            $order = stripslashes($_GET['order']);
+echo("Support::showMessages(ticketId=$ticketId, status=$status, from=$from, subject=$subject, date=$date): order: POST $order '".htmlentities($order)."'<br />");
+        }
+
+        $arrMessages = Message::getMessageArray(
+            $ticketId(),
+            $status, $from, $subject, $date,
+            $order, $offset, $limit
+        );
+        if (!$arrMessages) {
+echo("Support::showMessages(ticketId=$ticketId, status=$status, from=$from, subject=$subject, date=$date): ERROR: got no Message array!<br />");
+            return false;
+        }
+        $this->objTemplate->setCurrentBlock('messageRow');
+        foreach ($arrMessages as $objMessage) {
+            $this->objTemplate->setVariable(array(
+                'SUPPORT_MESSAGE_ID'        => $objMessage->getId(),
+                'SUPPORT_MESSAGE_STATUS'    => $objMessage->getStatus(),
+                'SUPPORT_MESSAGE_FROM'      => $objMessage->getFrom(),
+                'SUPPORT_MESSAGE_SUBJECT'   => $objMessage->getSubject(),
+                'SUPPORT_MESSAGE_DATE'      => $objMessage->getDate(),
+            ));
+        	$this->objTemplate->parseCurrentBlock();
+        }
+
+        $this->objTemplate->setVariable(array(
+            'TXT_SUPPORT_MESSAGES'          => $_ARRAYLANG['TXT_SUPPORT_MESSAGES'],
+            'TXT_SUPPORT_MESSAGE_STATUS'    => $_ARRAYLANG['TXT_SUPPORT_MESSAGE_STATUS'],
+            'TXT_SUPPORT_MESSAGE_FROM'      => $_ARRAYLANG['TXT_SUPPORT_MESSAGE_FROM'],
+            'TXT_SUPPORT_MESSAGE_SUBJECT'   => $_ARRAYLANG['TXT_SUPPORT_MESSAGE_SUBJECT'],
+            'TXT_SUPPORT_MESSAGE_DATE'      => $_ARRAYLANG['TXT_SUPPORT_MESSAGE_DATE'],
+            'SUPPORT_MESSAGE_OFFSET'        => $offset,
+            'SUPPORT_MESSAGE_LIMIT'         => $limit,
+            'SUPPORT_MESSAGE_ORDER'         => $order,
+        ));
+
+        return true;
+    }
+
+
+    /**
+     * Sets up the single Message view on any page that includes the
+     * appropriate block and placeholders.
+     *
+     * Returns true if the Message is displayed successfully, false if
+     * the Message ID is missing or if there is some other problem.
+     * @param   integer     $messageId      The Message ID
+     * @return  boolean                     True on success, false otherwise.
+     * @global  array       $_ARRAYLANG     Language array
+     */
+    function showMessage()
+    {
+        // Any Message selected?
+        $messageId = 0;
+        if (!empty($_REQUEST['messageId'])) {
+            $messageId = intval($_REQUEST['messageId']);
+        } else {
+echo("Support::showMessage(): ERROR: No message ID present!<br />");
+            return false;
+        }
+        $objMessage = Message::getById($messageId);
+        if (!$objMessage) {
+echo("Support::showMessage(): ERROR: Could not get Message with ID $messageId!<br />");
+            return false;
+        }
+
+        // If the person owning the associated Ticket reads a Message with
+        // status NEW, the status must be toggled to READ.
+        if ($objMessage->getStatus() == SUPPORT_MESSAGE_STATUS_NEW)
+        // Selected message details
+        $supportMessageStatus   = $objMessage->getStatus();
+        $supportMessageFrom     = $objMessage->getFrom();
+        $supportMessageSubject  = $objMessage->getSubject();
+        $supportMessageBody     = $objMessage->getBody();
+        $supportMessageDate     = $objMessage->getDate();
+
+        $this->objTemplate->setVariable(array(
+            'SUPPORT_MESSAGE_STATUS'    => $supportMessageStatus,
+            'SUPPORT_MESSAGE_FROM'      => $supportMessageFrom,
+            'SUPPORT_MESSAGE_SUBJECT'   => $supportMessageSubject,
+            'SUPPORT_MESSAGE_BODY'      => $supportMessageBody,
+            'SUPPORT_MESSAGE_DATE'      => $supportMessageDate,
+        ));
+        return true;
     }
 }
 

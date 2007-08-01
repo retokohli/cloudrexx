@@ -71,16 +71,22 @@ class Settings
     function _storeGeneral()
     {
         global $objDatabase;
-        if(isset($_POST['general']) && !empty($_POST['general'])) {
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
-                                    SET status=".intval($_POST['payment_lsv_status'])."
-                                    WHERE name='payment_lsv_status'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_config");
-            return true;
+        if (!empty($_POST['general'])) {
+            $query = "
+                UPDATE ".DBPREFIX."module_support_config
+                   SET status=".intval($_POST['xy'])."
+                 WHERE name='xy'
+            ";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) {
+                return false;
+            }
+            if ($objDatabase->Affected_Rows()) {
+                $this->flagChanged = true;
+                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_support_config");
+            }
         }
-        return false;
+        return true;
     }
 
 

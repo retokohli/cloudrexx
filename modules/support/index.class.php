@@ -132,8 +132,8 @@ class Support
         global $_ARRAYLANG;
 
         $supportCategoryId = 0;
-        if (!empty($_REQUEST['supportcategoryid'])) {
-            $supportCategoryId = $_REQUEST['supportcategoryid'];
+        if (!empty($_REQUEST['supportCategoryId'])) {
+            $supportCategoryId = $_REQUEST['supportCategoryId'];
         }
 
         $this->objTemplate->setVariable(array(
