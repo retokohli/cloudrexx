@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 30 Jul 2007 12:13:32 +0200
+* generated date Wed, 01 Aug 2007 07:47:20 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Characters)";
@@ -696,4 +696,5 @@ $_ARRAYLANG['TXT_STATUS_CANNOT_DELETE'] = "Unable to delete.";
 $_ARRAYLANG['TXT_ASSIGN_BLOCK'] = "Assign Content Block";
 $_ARRAYLANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'] = "This configuration allows for language specific content based on browser setting";
 $_ARRAYLANG['TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'] = "Auto-Detect Language";
+$_ARRAYLANG['TXT_SUPPORT_SYSTEM'] = "Support System";
 ?>
