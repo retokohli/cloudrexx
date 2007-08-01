@@ -26,33 +26,36 @@ class Auth
      * Valid values are 'frontend' or 'backend'.
      */
     var $type = '';
+
     /**
      * Array of error messages
      */
     var $errorMessage = array();
+
     /**
      * Status
-     * @todo What is this good for?  It's set to the value of $type once,
-     *      but never read.
+     * @todo    What is this good for?  It's set to the value of $type once,
+     *          but never read.
      */
     var $status;
 
-	/**
-	 * Authentification constructor
-	 *
-	 * @param string $authType Authentification type. Defaults to 'frontend',
-	 *                         see {@link $type}.
-	 */
+
+    /**
+     * Authentification constructor
+     *
+     * @param string $authType Authentification type. Defaults to 'frontend',
+     *                         see {@link $type}.
+     */
     function Auth($authType='frontend')
     {
-		$this->type=$authType;
-	}
+        $this->type=$authType;
+    }
 
-	/**
-	 * Check the authentification provided by the user.
+    /**
+     * Check the authentification provided by the user.
      * @global mixed   Session object
      * @global array   Core language
-     * @return bool    True if the authentification was successful.
+     * @return boolean    True if the authentification was successful.
      */
     function checkAuth()
     {
@@ -73,7 +76,7 @@ class Auth
                     // sets cookie for 30 days
                     setcookie("username", $_SESSION['auth']['username'], time()+3600*24*30);
                     $this->log();
-                    $sessionObj->cmsSessionUserUpdate($username=$_SESSION['auth']['username']);
+                    $sessionObj->cmsSessionUserUpdate($_SESSION['auth']['username']);
                     return true;
                 }
             } else {
@@ -81,15 +84,16 @@ class Auth
                 // Frontend Authentification
                 ///////////////////////////////////
                 if($this->checkUserData() && $this->checkType()) {
-                    $sessionObj->cmsSessionUserUpdate($username=$_SESSION['auth']['username']);
+                    $sessionObj->cmsSessionUserUpdate($_SESSION['auth']['username']);
                     return true;
                 }
             }
         }
-        $sessionObj->cmsSessionUserUpdate($username="unknown");
-        $sessionObj->cmsSessionStatusUpdate($status=$this->type);
+        $sessionObj->cmsSessionUserUpdate('unknown');
+        $sessionObj->cmsSessionStatusUpdate($this->type);
         return false;
     }
+
 
     /**
      * Assign data from login form to internal values.
@@ -120,7 +124,7 @@ class Auth
      * This function compares the security image code with the
      * code present in the current session.
      * @access private
-     * @return bool true if the images are identical
+     * @return boolean true if the images are identical
      */
     function checkCode()
     {
@@ -140,7 +144,7 @@ class Auth
      * @global mixed  Database
      * @global array  Core language
      * @see    _initUserRights()
-     * @return bool true if the user authenticated successfully
+     * @return boolean true if the user authenticated successfully
      */
     function checkUserData()
     {
@@ -256,7 +260,7 @@ class Auth
      * Check type
      *
      * @global  array   Database
-     * @return  bool    True if valid
+     * @return  boolean    True if valid
      * @todo    Understand this and document:
      *          What exactly is compared here?  What are "group_id"s used for?
      *          Where do "User Groups" apply? Is the function name meaningful?
@@ -397,30 +401,30 @@ class Auth
                         $message = str_replace(array("%USERNAME%", "%URL%", "%SENDER%"), array($objResult->fields['username'], $restorLink, $_CONFIG['coreAdminName']), $_CORELANG['TXT_RESTORE_PASSWORD_MAIL']);
 
                         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-							$objMail = new phpmailer();
+                            $objMail = new phpmailer();
 
-							if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-								$objSmtpSettings = new SmtpSettings();
-								if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-									$objMail->IsSMTP();
-									$objMail->Host = $arrSmtp['hostname'];
-									$objMail->Port = $arrSmtp['port'];
-									$objMail->SMTPAuth = true;
-									$objMail->Username = $arrSmtp['username'];
-									$objMail->Password = $arrSmtp['password'];
-								}
-							}
+                            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                                $objSmtpSettings = new SmtpSettings();
+                                if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                                    $objMail->IsSMTP();
+                                    $objMail->Host = $arrSmtp['hostname'];
+                                    $objMail->Port = $arrSmtp['port'];
+                                    $objMail->SMTPAuth = true;
+                                    $objMail->Username = $arrSmtp['username'];
+                                    $objMail->Password = $arrSmtp['password'];
+                                }
+                            }
 
-							$objMail->CharSet = CONTREXX_CHARSET;
-							$objMail->From = $_CONFIG['coreAdminEmail'];
-							$objMail->FromName = $_CONFIG['coreAdminName'];
-							$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
-							$objMail->Subject = $subject;
-							$objMail->IsHTML(false);
-							$objMail->Body = $message;
-							$objMail->AddAddress($sendto);
-							$objMail->Send();
-						}
+                            $objMail->CharSet = CONTREXX_CHARSET;
+                            $objMail->From = $_CONFIG['coreAdminEmail'];
+                            $objMail->FromName = $_CONFIG['coreAdminName'];
+                            $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+                            $objMail->Subject = $subject;
+                            $objMail->IsHTML(false);
+                            $objMail->Body = $message;
+                            $objMail->AddAddress($sendto);
+                            $objMail->Send();
+                        }
 
                         if ($objMail && $objMail->Send()) {
                             $statusMessage = str_replace("%EMAIL%", $email, $_CORELANG['TXT_LOST_PASSWORD_MAIL_SENT']);
