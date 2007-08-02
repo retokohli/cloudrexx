@@ -98,3 +98,6 @@ Allgemein
 
 Newsletter
 - Zuweisung der Anrede bei einem Empfänger.
+
+Gallery
+- [[GALLERY_LATEST]] funktioniert nun wieder.
