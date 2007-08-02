@@ -1712,8 +1712,8 @@ class calendarManager extends calendarLibrary
 					$cal_option = '';
 					while(!$objResult2->EOF){
 						$select = '';
-						if ($cats[$objResult->fields['id']] == $objResult->fields['id']){
-							$select = ' selected';
+						if ($cats[$objResult->fields['id']] == $objResult2->fields['id']){
+							$select = ' selected="selected"';
 						}
 						$cal_option .= "<option value=\"".$objResult2->fields['id']."\"".$select.">".$objResult2->fields['name']."</option>\n";
 						$objResult2->MoveNext();
