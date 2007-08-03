@@ -86,25 +86,30 @@ class FWLanguage
 
     /**
      * Returns HTML code to display a language selection dropdown menu.
-     * @param   integer $selectedId The Optional preselected language ID
+     *
+     * Does only contain the <select> tag pair if the optional $menuName
+     * is specified and evaluates to a true value.
+     * @param   integer $selectedId The optional preselected language ID
+     * @param   string  $menuName   The optional menu name
+     * @param   string  $onchange   The optional onchange code
      * @return  string              The dropdown menu HTML code
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getMenu($selectedId=0, $menuName='languageId', $onchange='')
+    function getMenu($selectedId=0, $menuName='', $onchange='')
     {
-        $menu =
-            "<select id='$menuName' name='$menuName'".
-                ($onchange
-                    ? ' onchange="'.$onchange.'"'
-                    : ''
-                ).
-            ">\n";
+        $menu = '';
         foreach ($this->arrLanguage as $id => $arrField) {
             $menu .=
                 "<option value='$id'".
                 ($selectedId == $id ? ' selected="selected"' : '').
                 ">{$arrField['name']}</option>\n";
         }
-        $menu .= "</select>\n";
+        if ($menuName) {
+            $menu = "<select id='$menuName' name='$menuName'".
+                    ($onchange ? ' onchange="'.$onchange.'"' : '').
+                    ">\n$menu</select>\n";
+        }
+//echo("getMenu(select=$selectedId, name=$menuName, onchange=$onchange): made menu: ".htmlentities($menu)."<br />");
         return $menu;
     }
 }
