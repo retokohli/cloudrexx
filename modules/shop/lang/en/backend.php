@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 01 Aug 2007 07:47:20 +0200
+* generated date Fri, 03 Aug 2007 09:00:16 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Orders";
@@ -517,11 +517,11 @@ $_ARRAYLANG['TXT_SHOP_ORDER_COMPLETED'] = "abgeschlossen";
 $_ARRAYLANG['TXT_SHOP_ORDER_PAID'] = "bezahlt";
 $_ARRAYLANG['TXT_SHOP_ORDER_SHIPPED'] = "versandt";
 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_PENDING'] = "pendent";
-$_ARRAYLANG['TXT_SHOP_ORDER_STATUS_CONFIRMED'] = "best&auml;tigt";
-$_ARRAYLANG['TXT_SHOP_ORDER_STATUS_DELETED'] = "gel&ouml;scht";
+$_ARRAYLANG['TXT_SHOP_ORDER_STATUS_CONFIRMED'] = "bestätigt";
+$_ARRAYLANG['TXT_SHOP_ORDER_STATUS_DELETED'] = "gelöscht";
 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_CANCELLED'] = "annuliert";
 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_COMPLETED'] = "abgeschlossen";
 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_PAID'] = "bezahlt";
 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_SHIPPED'] = "versandt";
-$_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES_WARNING'] = "Beim hochladen werden alle vorhandenen Kategorien und Produkte aus der Datenbank gelÃ¶scht. MÃ¶chten Sie den Vorgang trotzdem starten?";
+$_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES_WARNING'] = "Beim hochladen werden alle vorhandenen Kategorien und Produkte aus der Datenbank gelöscht. Möchten Sie den Vorgang trotzdem starten?";
 ?>
