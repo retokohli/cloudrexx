@@ -28,13 +28,12 @@ class SupportCategories
     /**
      * Support Categories tree array
      *
-     * This is initialized in the constructor, it avoids many database
-     * accesses and speeds up the page setup.  It is initialized on
-     * demand by calling its access method
-     * {@link getSupportCategoryTreeArray()}.
+     * This is initialized on the first call to
+     * {@link getSupportCategoryTree()}.
+     * It avoids many database accesses and speeds up the page setup.
      * @var array
      */
-    var $arrSupportCategoryTreeArray;
+    var $arrSupportCategoryTree;
 
     /**
      * Support Categories language ID
@@ -50,7 +49,6 @@ class SupportCategories
      * Constructor (PHP4)
      *
      * @param       integer     $languageId     The language ID to use
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
      * @see         __construct()
@@ -64,14 +62,13 @@ class SupportCategories
      * Constructor (PHP5)
      *
      * @param       integer     $languageId     The language ID to use
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
      */
     function __construct($languageId)
     {
         $this->languageId = intval($languageId);
-echo("__construct(lang=$languageId): made ");var_export($this);echo("<br />");
+//echo("__construct(lang=$languageId): made ");var_export($this);echo("<br />");
     }
 
 
@@ -106,14 +103,20 @@ echo("__construct(lang=$languageId): made ");var_export($this);echo("<br />");
      * @return  array                       The array of Support Categories
      * @global  mixed   $objDatabase        Database object
      * @global  array   $_CONFIG            Global configuration array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getSupportCategoryNameArray(
-        $parentCategoryId=0, $flagRecursive=false
+        $parentCategoryId=0, $flagRecursive=false, $flagActiveOnly=true
     ) {
+
+        $arrSupportCategoryTree =
+            $this->getSupportCategoryTreeArray(
+                $this->languageId, $flagActiveOnly
+            );
         // debug
-        if (   !is_array($this->arrSupportCategoryTreeArray)
-            || count($this->arrSupportCategoryTreeArray) == 0) {
-echo("getSupportCategoriesMenu(parent=$parentCategoryId, recurse=$flagRecursive): no or empty tree array<br />");
+        if (   !is_array($arrSupportCategoryTree)
+            || count($arrSupportCategoryTree) == 0) {
+echo("getSupportCategoryNameArray(parent=$parentCategoryId, recurse=$flagRecursive): no or empty tree array<br />");
             // no categories here.  abort.
             return false;
         }
@@ -122,14 +125,16 @@ echo("getSupportCategoriesMenu(parent=$parentCategoryId, recurse=$flagRecursive)
         // This is lame coding, but provides all the possibilities
         // we need.  should be recoded, however...
         $arrResult = array();
-        foreach ($this->arrSupportCategoryTreeArray as $arrSupportCategory) {
+        foreach ($arrSupportCategoryTree as $arrSupportCategory) {
             if ($arrSupportCategory['parentId'] == $parentCategoryId) {
                 $id = $arrSupportCategory['id'];
                 $arrResult[$id] = $arrSupportCategory['name'];
                 if ($flagRecursive) {
                     $arrResult = array_merge(
                         $arrResult,
-                        $this->getSupportCategoryNameArray($id, true)
+                        $this->getSupportCategoryNameArray(
+                            $id, true, $flagActiveOnly
+                        )
                     );
                 }
             }
@@ -159,24 +164,28 @@ echo("getSupportCategoriesMenu(parent=$parentCategoryId, recurse=$flagRecursive)
      * Note that the index is in no way related to the Support Categories,
      * but represents their place within the tree according to the
      * sorting order.
-     * @param   integer $languageId         The language ID
-     * @param   integer $parentCategoryId   The optional parent Support Category ID
+     * @param   integer $languageId         The language ID. 0 (zero) means
+     *                                      all languages.
+     * @param   boolean $flagActiveOnly     If true, only active Support
+     *                                      Categories are included.
+     * @param   integer $parentId           The optional parent ID.
      * @param   integer $level              The optional indent level.
      *                                      Initially 0 (zero).
      * @return  array                       The array of Support Categories
      * @global  mixed   $objDatabase        Database object
-     * @global  array   $_CONFIG            Global configuration array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getSupportCategoryTreeArray(
-        $languageId, $parentCategoryId=0, $level=0
-    ) {
+        $languageId, $flagActiveOnly=true, $parentId=0, $level=0)
+    {
         global $objDatabase;
 
         // if it has already been initialized with the correct language,
-        // just return it
-        if (   $languageId == $this->languageId
-            && is_array($this->arrSupportCategoryTreeArray)) {
-            return $this->arrSupportCategoryTreeArray;
+        // just return it // $level == 0 &&
+        if (   $parentId == 0
+            && $languageId == $this->languageId
+            && is_array($this->arrSupportCategoryTree)) {
+            return $this->arrSupportCategoryTree;
         }
 
         // otherwise, initialize it
@@ -185,10 +194,12 @@ echo("getSupportCategoriesMenu(parent=$parentCategoryId, recurse=$flagRecursive)
               FROM ".DBPREFIX."module_support_category
         INNER JOIN ".DBPREFIX."module_support_category_language
                 ON id=support_category_id
-             WHERE parent_id=$parentCategoryId
-               AND language_id=$languageId
+             WHERE parent_id=$parentId
+               ".($flagActiveOnly ? " AND status=1" : '')."
+               ".($languageId     ? " AND language_id=$languageId" : '')."
           ORDER BY id ASC
         ";
+//               ".($level      ? " AND parent_id=$parentId"     : '')."
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) { // || $objResult->RecordCount() == 0) {
             return false;
@@ -206,16 +217,17 @@ echo("getSupportCategoriesMenu(parent=$parentCategoryId, recurse=$flagRecursive)
                 'name'       => $objResult->fields['name'],
                 'level'      => $level,
             );
-echo("getSupportCategoryNameTreeArray(lang=$languageId, parent=$parentCategoryId, level=$level): ");var_export($arrSupportCategory);echo("<br />");
+//echo("getSupportCategoryNameTreeArray(lang=$languageId, parent=$parentId, level=$level): ");var_export($arrSupportCategory);echo("<br />");
             $arrSupportCategoryTree[] = $arrSupportCategory;
             $arrSupportCategoryTree = array_merge(
                 $arrSupportCategoryTree,
                 $this->getSupportCategoryTreeArray(
-                    $languageId, $id, $level+1
+                    $languageId, $flagActiveOnly, $id, $level+1
                 )
             );
             $objResult->MoveNext();
         }
+        $this->arrSupportCategoryTree = $arrSupportCategoryTree;
         return $arrSupportCategoryTree;
     }
 
@@ -235,19 +247,17 @@ echo("getSupportCategoryNameTreeArray(lang=$languageId, parent=$parentCategoryId
      *                              empty string.  Unless specified, no <select>
      *                              tag pair will be added.
      * @return  string              The dropdown menu HTML code
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getAdminMenu($languageId, $selectedId=0, $menuName='')
     {
         $menu = '';
-        foreach ($this->getSupportCategoryTreeArray(
-                    $languageId,
-                    0,
-                    0
-                ) as $arrField) {
+        foreach ($this->getSupportCategoryTreeArray($languageId, false)
+                as $arrField) {
             $id    = $arrField['id'];
             $name  = $arrField['name'];
             $level = $arrField['level'];
-echo("getMenu(lang=$languageId, selected=$selectedId): id $id, name $name<br />");
+//echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): id $id, name $name<br />");
             $menu .=
                 "<option value='$id'".
                 ($selectedId == $id ? ' selected="selected"' : '').
@@ -258,7 +268,7 @@ echo("getMenu(lang=$languageId, selected=$selectedId): id $id, name $name<br />"
         if ($menuName) {
             $menu = "<select id='$menuName' name='$menuName'>\n$menu\n</select>\n";
         }
-echo("getMenu(lang=$languageId, parent=$selectedId): made menu: ".htmlentities($menu)."<br />");
+//echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): made menu: ".htmlentities($menu)."<br />");
         return $menu;
     }
 
@@ -267,25 +277,29 @@ echo("getMenu(lang=$languageId, parent=$selectedId): made menu: ".htmlentities($
      * Returns HTML code for the Support Categories dropdown menu.
      *
      * Does not contain the <select> tag pair.
-     * This is meant for the frontend, as it only contains the children Support
-     * Categories of the given parent ID.  It should be used to let the
-     * customer select the Support Category/-ies for her ticket.
+     * This is meant for the frontend, as it only contains the active
+     * children Support Categories of the given parent ID.
+     * It should be used to let the customer select the Support Category/-ies
+     * for her ticket.
      * @param   integer     $parentCategoryId   The parent Support Category ID
      * @param   integer     $selectedCategoryId The selected Support Category ID
      * @return  string                          The dropdown menu HTML code
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getMenu($parentCategoryId=0, $selectedCategoryId=0)
     {
+        $arrSupportCategoryTree =
+            $this->getSupportCategoryTreeArray($this->languageId, true);
         // debug
-        if (   !is_array($this->arrSupportCategoryTreeArray)
-            || count($this->arrSupportCategoryTreeArray) == 0) {
-echo("getSupportCategoriesMenu($parentCategoryId=0, $selectedCategoryId=0): no or empty tree array<br />");
+        if (   !is_array($arrSupportCategoryTree)
+            || count($arrSupportCategoryTree) == 0) {
+echo("SupportCategories::getMenu(parent=$parentCategoryId, selected=$selectedCategoryId): no or empty tree array<br />");
             // no categories here.  abort.
             return false;
         }
 
         $strOptions = '';
-        foreach ($this->arrSupportCategoryTreeArray as $arrSupportCategory) {
+        foreach ($arrSupportCategoryTree() as $arrSupportCategory) {
             if ($arrSupportCategory['parentId'] == $parentCategoryId) {
                 $id   = $arrSupportCategory['id'];
                 $name = $arrSupportCategory['name'];

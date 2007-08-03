@@ -19,17 +19,60 @@ CREATE TABLE contrexx_module_support_ticket (
   id                  int(10)      unsigned NOT NULL auto_increment,
   support_category_id int(10)      unsigned NOT NULL,
   language_id         int(10)      unsigned NOT NULL,
+  owner_id            int(10)      unsigned NOT NULL default 0,
   `status`            tinyint(2)   unsigned NOT NULL default 1,
+  source              tinyint(2)   unsigned NOT NULL default 0,
   email               varchar(255)          NOT NULL,
   `timestamp`         timestamp             NOT NULL default current_timestamp,
   PRIMARY KEY (id),
   KEY support_category_id (support_category_id),
   KEY language_id         (language_id),
+  KEY owner_id            (owner_id),
   KEY `status`            (`status`),
   KEY email               (email)
 ) ENGINE=MyISAM;
 
 */
+
+
+/**
+ * Ticket State text array
+ * @todo    *SHOULD* be static instead of global
+ */
+$arrTicketStatusString = array(
+    SUPPORT_TICKET_STATUS_UNKNOWN => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_UNKNOWN'],
+    SUPPORT_TICKET_STATUS_NEW     => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_NEW'],
+    SUPPORT_TICKET_STATUS_OPEN    => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_OPEN'],
+    SUPPORT_TICKET_STATUS_WAIT    => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_WAIT'],
+    SUPPORT_TICKET_STATUS_MOVED   => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_MOVED'],
+    SUPPORT_TICKET_STATUS_CLOSED  => $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_CLOSED'],
+);
+
+/**
+ * Ticket Event text array
+ * @todo    *SHOULD* be static instead of global
+ */
+$arrTicketEventString = array(
+    SUPPORT_TICKET_EVENT_UNKNOWN         => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_UNKNOWN'],
+    SUPPORT_TICKET_EVENT_READ            => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_READ'],
+    SUPPORT_TICKET_EVENT_CHANGE_CATEGORY => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_CHANGE_CATEGORY'],
+    SUPPORT_TICKET_EVENT_CHANGE_PERSON   => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_CHANGE_PERSON'],
+    SUPPORT_TICKET_EVENT_CHANGE_OTHER    => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_CHANGE_OTHER'],
+    SUPPORT_TICKET_EVENT_REPLY           => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_REPLY'],
+    SUPPORT_TICKET_EVENT_MESSAGE         => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_MESSAGE'],
+    SUPPORT_TICKET_EVENT_CLOSE           => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_CLOSE'],
+);
+
+/**
+ * Ticket Source text array
+ * @todo    *SHOULD* be static instead of global
+ */
+$arrTicketSourceString = array(
+    SUPPORT_TICKET_SOURCE_UNKNOWN => $_ARRAYLANG['TXT_SUPPORT_TICKET_SOURCE_UNKNOWN'],
+    SUPPORT_TICKET_SOURCE_EMAIL   => $_ARRAYLANG['TXT_SUPPORT_TICKET_SOURCE_EMAIL'],
+    SUPPORT_TICKET_SOURCE_WEB     => $_ARRAYLANG['TXT_SUPPORT_TICKET_SOURCE_WEB'],
+);
+
 
 /**
  * Actions taken on a Ticket
@@ -58,6 +101,8 @@ require_once ASCMS_MODULE_PATH.'/support/lib/Message.class.php';
  * @version     0.0.1
  * @package     contrexx
  * @subpackage  module_support
+ * @todo        PHP5: Make $this->arrStatusString and
+ *                         $this->arrActionString static!
  */
 
 class Ticket
@@ -69,14 +114,6 @@ class Ticket
      * @var integer
      */
     var $id;
-
-    /**
-     * Date
-     *
-     * From table modules_support_ticket
-     * @var string
-     */
-    var $date;
 
     /**
      * E-Mail
@@ -95,6 +132,15 @@ class Ticket
     var $status;
 
     /**
+     * Source
+     *
+     * Shows where the Ticket came from
+     * From table modules_support_ticket
+     * @var integer
+     */
+    var $source;
+
+    /**
      * Support Category associated with this Ticket
      *
      * From table modules_support_ticket
@@ -109,6 +155,22 @@ class Ticket
      * @var integer
      */
     var $languageId;
+
+    /**
+     * The ID of the current owner of this Ticket
+     *
+     * From table modules_support_ticket
+     * @var integer
+     */
+    var $ownerId;
+
+    /**
+     * Timestamp
+     *
+     * From table modules_support_ticket
+     * @var string
+     */
+    var $timestamp;
 
     /**
      * ID of the person responsible for the Ticket
@@ -168,10 +230,12 @@ class Ticket
      * @see         __construct()
      */
     function Ticket(
-        $date, $email, $status, $supportCategoryId, $languageId, $id=0
+        $email, $status, $source, $supportCategoryId,
+        $languageId, $ownerId, $timestamp='', $id=0
     ) {
         $this->__construct(
-            $date, $email, $status, $supportCategoryId, $languageId, $id
+            $email, $status, $source, $supportCategoryId,
+            $languageId, $ownerId, $timestamp='', $id
         );
     }
 
@@ -185,13 +249,16 @@ class Ticket
      *                         $this->arrActionString static!
      */
     function __construct(
-        $date, $email, $status, $supportCategoryId, $languageId, $id=0)
-    {
-        $this->date              = $date;
+        $email, $status, $source, $supportCategoryId,
+        $languageId, $ownerId, $timestamp='', $id=0
+    ) {
         $this->email             = $email;
         $this->status            = $status;
+        $this->source            = $source;
         $this->supportCategoryId = $supportCategoryId;
         $this->languageId        = $languageId;
+        $this->ownerId           = $ownerId;
+        $this->timestamp         = $timestamp;
         $this->id                = $id;
 /*
         $this->statusChanged = false;
@@ -212,23 +279,6 @@ class Ticket
     {
         return $this->Id;
     }
-
-    /**
-     * Get this Tickets' date
-     * @return  string      The Ticket date
-     */
-    function getDate()
-    {
-        return $this->date;
-    }
-    /**
-     * Set this Tickets' date
-     * @param   string      The Ticket date
-    function setDate($date)
-    {
-        $this->date = $date;
-    }
-     */
 
     /**
      * Get this Tickets' e-mail address
@@ -261,7 +311,24 @@ class Ticket
     function setStatus($status)
     {
         $this->status = intval($status);
-        $this->statusChanged = true;
+//        $this->statusChanged = true;
+    }
+     */
+
+    /**
+     * Get this Tickets' source
+     * @return  integer     The Ticket source
+     */
+    function getSource()
+    {
+        return $this->source;
+    }
+    /**
+     * Set this Tickets' source
+     * @param   string      The Ticket source
+    function setSource($source)
+    {
+        $this->source = intval($source);
     }
      */
 
@@ -276,12 +343,12 @@ class Ticket
     /**
      * Set this Tickets' SupportCategory ID
      * @param   integer     The Ticket SupportCategory ID
+     */
     function setSupportCategoryId($supportCategoryId)
     {
         $this->supportCategoryId = intval($supportCategoryId);
-        $this->supportCategoryIdChanged = true;
+//        $this->supportCategoryIdChanged = true;
     }
-     */
 
     /**
      * Get this Tickets' language ID
@@ -300,28 +367,91 @@ class Ticket
         $this->languageId = intval($languageId);
     }
 
+    /**
+     * Get this Tickets' owner ID
+     * @return  integer     The Ticket owner ID
+     */
+    function getOwnerId()
+    {
+        return $this->ownerId;
+    }
+    /**
+     * Set this Tickets' owner ID
+     * @param   integer     The Ticket owner ID
+     */
+    function setOwnerId($ownerId)
+    {
+        $this->ownerId = intval($ownerId);
+    }
+
+    /**
+     * Get this Tickets' timestamp
+     * @return  string      The Ticket timestamp
+     */
+    function getTimestamp()
+    {
+        return $this->timestamp;
+    }
+    /**
+     * Set this Tickets' timestamp
+     * @param   string      The Ticket timestamp
+    function setTimestamp($timestamp)
+    {
+        $this->timestamp = $timestamp;
+    }
+     */
+
 
     /**
      * Get this Tickets' status as a string
-     * @return  string      The Ticket status string
+     * @return  string                              The Ticket status string
+     * @global  array       $arrTicketStatusString  Ticket status strings
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getStatusString()
+    function getStatusString($status='')
     {
-        return $this->arrStatusString[$this->status];
+        global $arrTicketStatusString;
+
+        if ($status === '') {
+            return $arrTicketStatusString[$this->status];
+        } else {
+        	return $arrTicketStatusString[$status];
+        }
+    }
+
+
+    /**
+     * Get this Tickets' source as a string
+     * @return  string                              The Ticket source string
+     * @global  array       $arrTicketSourceString  Ticket source strings
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getSourceString($source='')
+    {
+        global $arrTicketSourceString;
+
+        if ($source === '') {
+            return $arrTicketSourceString[$this->source];
+        } else {
+        	return $arrTicketSourceString[$source];
+        }
     }
 
 
     /**
      * Get the event string for the code
+     * @static
      * @param   integer     The event code
      * @return  string      The respective event string
-     * @todo    As soon as $this->arrEventString is static, so is this method.
-     * @(static)
+     * @global  array       $arrTicketEventString   Ticket event strings
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function getEventString($code)
     {
-        return $this->arrEventString[$code];
+        global $arrTicketEventString;
+
+        return $arrTicketEventString[$code];
     }
 
 
@@ -329,7 +459,6 @@ class Ticket
      * Delete this Ticket from the database.
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function delete()
@@ -358,7 +487,6 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
      *
      * Either updates (id > 0) or inserts (id == 0) the object.
      * @return      boolean     True on success, false otherwise
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function store()
@@ -372,9 +500,11 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
 
     /**
      * Update this Ticket in the database.
+     *
+     * Note that only the status, source, support_category_id,
+     * language_id, and owner_id fields may be changed.
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function update()
@@ -383,11 +513,11 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
 
         $query = "
             UPDATE ".DBPREFIX."module_support_ticket
-               SET 'date'='".contrexx_addslashes($this->date)."',
-                   email=$this->email,
-                   'status'=$this->status,
+               SET 'status'=$this->status,
+                   source=$this->source,
                    support_category_id=$this->supportCategoryId,
-                   language_id=$this->languageId,
+                   language_id=$this->languageId
+                   owner_id=$this->ownerId
              WHERE id=$this->id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -403,7 +533,6 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
      * Insert this Ticket into the database.
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function insert()
@@ -412,17 +541,19 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
 
         $query = "
             INSERT INTO ".DBPREFIX."module_support_ticket (
-                   'date',
                    email,
                    'status',
+                   source,
                    support_category_id,
-                   language_id
+                   language_id,
+                   owner_id
             ) VALUES (
-                   $this->date,
                    $this->email,
                    $this->status,
+                   $this->source,
                    $this->supportCategoryId,
-                   $this->languageId
+                   $this->languageId,
+                   $this->ownerId
             )
         ";
         $objResult = $objDatabase->Execute($query);
@@ -431,6 +562,39 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
         }
         $this->id = $objDatabase->Insert_ID();
 //echo("Ticket::insert(): done<br />");
+        return $this->refreshTimestamp();
+    }
+
+
+    /**
+     * Updates the Ticket object with the timestamp value stored in the
+     * database.
+     *
+     * This *MUST* be called by insert() after INSERTing any new record!
+     * @return  boolean         True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function refreshTimestamp()
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT 'timestamp'
+              FROM ".DBPREFIX."module_support_ticket
+             WHERE id=$this->id
+        ";
+echo("Ticket::refreshTimestamp(): query: $query<br />");
+        $objResult = $objDatabase->Execute($query);
+echo("Ticket::refreshTimestamp(): objResult: '$objResult'<br />");
+        if (!$objResult) {
+echo("Ticket::refreshTimestamp(): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
+            return false;
+        }
+        if ($objResult->RecordCount() == 0) {
+echo("Ticket::refreshTimestamp(): no result: ".$objResult->RecordCount()."<br />");
+            return false;
+        }
+        $this->timestamp = $objResult->fields('timestamp');
         return true;
     }
 
@@ -442,7 +606,6 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
      * @return      Ticket                      The Ticket object
      *                                          on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -467,11 +630,13 @@ echo("Ticket::getById($id): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
         $objTicket = new Ticket(
-            $objResult->fields('date'),
             $objResult->fields('email'),
             $objResult->fields('status'),
+            $objResult->fields('source'),
             $objResult->fields('support_category_id'),
             $objResult->fields('language_id'),
+            $objResult->fields('owner_id'),
+            $objResult->fields('timestamp'),
             $objResult->fields('id')
         );
         return $objTicket;
@@ -485,29 +650,51 @@ echo("Ticket::getById($id): no result: ".$objResult->RecordCount()."<br />");
      * The optional parameter $order determines the sorting order
      * in SQL syntax, it defaults to ordered by date, latest first.
      * The optional parameter $offset determines the offset of the
-     * first Ticket to be read from the database.
+     * first Ticket to be read from the database, and $limit overrides the
+     * global paging size limit setting.
      * @static
+     * @param       integer     $supportCategoryId  The Support Category ID,
+     *                                              or zero
+     * @param       integer     $languageId     The language ID, or zero
+     * @param       integer     $ownerId        The owner ID, or zero
+     * @param       integer     $status         The Ticket status, or
+     *                                          a negative number
+     * @param       integer     $source         The Ticket source, or
+     *                                          a negative number
+     * @param       string      $email          The e-mail address, or the
+     *                                          empty string
      * @param       string      $order          The sorting order
      * @param       integer     $offset         The offset
      * @return      array                       The array of Ticket objects
+     *                                          on success, false otherwise
      * @global      mixed       $objDatabase    Database object
      * @global      array       $_CONFIG        Global configuration array
-     *                                          on success, false otherwise
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
-    function getTicketArray($order="'date' DESC", $offset=0)
-    {
+    function getTicketArray(
+        $supportCategoryId, $languageId, $ownerId, $status, $source, $email,
+        $order="'timestamp' DESC", $offset=0, $limit=0
+    ) {
         global $objDatabase, $_CONFIG;
 
+        if (!$limit) {
+            $limit = $_CONFIG['corePagingLimit'];
+        }
         $query = "
             SELECT id
               FROM ".DBPREFIX."module_support_ticket
+             WHERE 1
+              ".($supportCategoryId ? " AND support_category_id=$supportCategoryId" : '')."
+              ".($languageId        ? " AND language_id=$languageId" : '')."
+              ".($ownerId           ? " AND owner_id=$ownerId"       : '')."
+              ".(!$status < 0       ? " AND `status`=$status"        : '')."
+              ".(!$source < 0       ? " AND source=$source"          : '')."
+              ".($email             ? " AND email=$email"            : '')."
           ORDER BY $order
         ";
         $objResult = $objDatabase->SelectLimit(
-            $query, $_CONFIG['corePagingLimit'], $offset
+            $query, $limit, $offset
         );
         if (!$objResult) {
             return false;
@@ -523,18 +710,67 @@ echo("Ticket::getById($id): no result: ".$objResult->RecordCount()."<br />");
 
 
     /**
+     * Returns the number of records for the given criteria
+     *
+     * The method uses the same mandatory arguments as
+     * {@link getTicketArray()}, but returns the number of records
+     * found (without limiting the size).
+     * @static
+     * @param       integer     $supportCategoryId  The Support Category ID,
+     *                                              or zero
+     * @param       integer     $languageId     The language ID, or zero
+     * @param       integer     $ownerId        The owner ID, or zero
+     * @param       integer     $status         The Ticket status, or
+     *                                          a negative number
+     * @param       integer     $source         The Ticket source, or
+     *                                          a negative number
+     * @param       string      $email          The e-mail address, or the
+     *                                          empty string
+     * @return      integer                     The number of Ticket records
+     *                                          on success, false otherwise
+     * @global      mixed       $objDatabase    Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    //static
+    function getRecordCount(
+        $supportCategoryId, $languageId, $ownerId, $status, $source, $email
+    ) {
+        global $objDatabase, $_CONFIG;
+
+        $query = "
+            SELECT COUNT(*) as numof
+              FROM ".DBPREFIX."module_support_ticket
+             WHERE 1
+              ".($supportCategoryId ? " AND support_category_id=$supportCategoryId" : '')."
+              ".($languageId        ? " AND language_id=$languageId" : '')."
+              ".($ownerId           ? " AND owner_id=$ownerId"       : '')."
+              ".(!$status < 0       ? " AND `status`=$status"        : '')."
+              ".(!$source < 0       ? " AND source=$source"          : '')."
+              ".($email             ? " AND email=$email"            : '');
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return false;
+        }
+        // return count
+        if (!$objResult->EOF) {
+            return $objResult->fields['numof'];
+        }
+        return false;
+    }
+
+
+    /**
      * Processes any event for this Ticket.
      *
-     * Updates affected objects (and tables) accordingly:
-     * Ticket: status
+     * Finds out what action to take, calls appropriate Ticket methods,
+     * and updates the Ticket status, if necessary.
      * @param   integer $event      Any valid (or invalid) Ticket event.
-     * @param   integer $personId   The person ID (from the Ticket form)
-     * @param   integer $messageId  The message ID (from the Ticket form)
-     * @param   integer $supportCategoryId
-     *                          The SupportCategory ID (from the Ticket form)
+     * @param   integer $foreignId  The foreign ID
+     * @param   integer $value      The new value
      * @return  boolean             True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function processEvent($event, $personId, $messageId, $supportCategoryId)
+    function processEvent($event, $foreignId, $value)
     {
         // Get the would-be status after processing the event
         $newStatus = $this->getNewStatus($event);
@@ -546,10 +782,10 @@ echo("WARNING!  Event is causing an UNKNOWN status<br />");
         }
 
         // Get the appropriate action method name for the event
-        $action = $this->getAction($event);
+        $action = $this->getAction($event, $foreignId, $value);
         // These methods *MUST* return a boolean true upon success,
         // or false otherwise.
-        // They must also call the appropriate Ticket methods in order
+        // They must also call the appropriate Ticket method in order
         // to create the Action object and entry.
         // When they fail, the status must remain untouched!
         if (!eval('$this->$action;')) {
@@ -577,6 +813,7 @@ echo("WARNING!  Event is causing an UNKNOWN status<br />");
      * the appropriate variable names as arguments.
      * @param   integer $event  The event code
      * @return  string          The name of the action to take.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getAction($event)
     {
@@ -596,6 +833,7 @@ echo("WARNING!  Event is causing an UNKNOWN status<br />");
      * in the constants in {@link lib/SupportCommon.class.php} as well.
      * @param   integer $event  The event code
      * @return  string          The prospective status code.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getNewStatus($event)
     {
@@ -608,6 +846,7 @@ echo("WARNING!  Event is causing an UNKNOWN status<br />");
      *
      * This is all about not changing the Ticket status.
      * @return unknown
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function actionNone()
     {
@@ -626,6 +865,7 @@ echo("WARNING!  Event is causing an UNKNOWN status<br />");
      *   that is, the person currently logged in. See
      *   {@link core/auth.class.php}.
      * @return  boolean     True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function actionAssignToReader()
     {
@@ -653,6 +893,7 @@ echo("NOTE: Ticket is assigned to someone else!<br />");
      * This method is to be called for Tickets with status OPEN or MOVED,
      * whenever a CHANGE_PERSON event occurs.
      * @return  boolean     True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function actionAssign($personId)
     {
@@ -671,6 +912,100 @@ echo("actionAssign($personId): WARNING: Something's wrong -- this Ticket isn't o
         // Creates an Action entry
         return $this->setOwnerId($personId);
     }
+
+
+    /**
+     * Returns HTML code for the Ticket status dropdown menu.
+     *
+     * Does only contain the <select> tag pair if the optional $menuName
+     * is specified and evaluates to a true value.
+     * @param   integer $selectedId The optional preselected status
+     * @param   string  $menuName   The optional menu name, defaults to the
+     *                              empty string.  Unless specified, no <select>
+     *                              tag pair will be added.
+     * @return  string              The dropdown menu HTML code
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getStatusMenu($selectedId=0, $menuName='')
+    {
+        $menu = '';
+        for ($index = 0; $index < SUPPORT_TICKET_STATUS_COUNT; ++$index) {
+            $menu .=
+                "<option value='$index'".
+                ($selectedId == $index ? ' selected="selected"' : '').
+                '>'.Ticket::getStatusString($index)."</option>\n";
+        }
+        if ($menuName) {
+            $menu = "<select id='$menuName' name='$menuName'>\n$menu\n</select>\n";
+        }
+//echo("getStatusMenu(selected=$selectedId, name=$menuName): made menu: ".htmlentities($menu)."<br />");
+        return $menu;
+
+    }
+
+
+    /**
+     * Returns HTML code for the Ticket source dropdown menu.
+     *
+     * Does only contain the <select> tag pair if the optional $menuName
+     * is specified and evaluates to a true value.
+     * @param   integer $selectedId The optional preselected source
+     * @param   string  $menuName   The optional menu name, defaults to the
+     *                              empty string.  Unless specified, no <select>
+     *                              tag pair will be added.
+     * @return  string              The dropdown menu HTML code
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getSourceMenu($selectedId=0, $menuName='')
+    {
+        $menu = '';
+        for ($index = 0; $index < SUPPORT_TICKET_SOURCE_COUNT; ++$index) {
+            $menu .=
+                "<option value='$index'".
+                ($selectedId == $index ? ' selected="selected"' : '').
+                '>'.Ticket::getSourceString($index)."</option>\n";
+        }
+        if ($menuName) {
+            $menu = "<select id='$menuName' name='$menuName'>\n$menu\n</select>\n";
+        }
+//echo("getSourceMenu(selected=$selectedId, name=$menuName): made menu: ".htmlentities($menu)."<br />");
+        return $menu;
+
+    }
+
+
+    /**
+     * Returns HTML code for the Ticket owner dropdown menu.
+     *
+     * Does only contain the <select> tag pair if the optional $menuName
+     * is specified and evaluates to a true value.
+     * @param   integer $selectedId The optional preselected owner ID
+     * @param   string  $menuName   The optional menu name, defaults to the
+     *                              empty string.  Unless specified, no <select>
+     *                              tag pair will be added.
+     * @return  string              The dropdown menu HTML code
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getOwnerMenu($selectedId=0, $menuName='')
+    {
+        // The argument in this function call is fake!
+        // It will return all user IDs.
+        $arrUserId = Auth::getUserIdArray('support');
+        $menu = '';
+        foreach ($arrUserId as $userId) {
+            $menu .=
+                "<option value='$userId'".
+                ($selectedId == $userId ? ' selected="selected"' : '').
+                '>'.Auth::getFullName($userId)."</option>\n";
+        }
+        if ($menuName) {
+            $menu = "<select id='$menuName' name='$menuName'>\n$menu\n</select>\n";
+        }
+echo("getOwnerMenu(selected=$selectedId, name=$menuName): made menu: ".htmlentities($menu)."<br />");
+        return $menu;
+
+    }
+
 
 }
 

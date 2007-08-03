@@ -164,8 +164,7 @@ class Message
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
-     * @todo        PHP5: Make $this->arrStatusString and
-     *                         $this->arrActionString static!
+     * @todo        PHP5: Make $this->arrStatusString static!
      * @global  array       $_ARRAYLANG     Language array
      */
     function __construct(

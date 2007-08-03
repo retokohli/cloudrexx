@@ -76,6 +76,16 @@ define('SUPPORT_TICKET_EVENT_CLOSE',           7);
 // Total number.  Keep this up to date!
 define('SUPPORT_TICKET_EVENT_COUNT',           8);
 
+// Ticket source constants
+// UNKNOWN: It is not known how this Ticket got here.
+define('SUPPORT_TICKET_SOURCE_UNKNOWN',        0);
+// EMAIL: The Ticket has been sent by e-mail.
+define('SUPPORT_TICKET_SOURCE_EMAIL',          1);
+// WEB: The Ticket has been posted on the web site.
+define('SUPPORT_TICKET_SOURCE_WEB',            2);
+// Total number.  Keep this up to date!
+define('SUPPORT_TICKET_SOURCE_COUNT',          3);
+
 // Message status constants
 // UNKNOWN: The Message needs to be read again to return to READ status.
 define('SUPPORT_MESSAGE_STATUS_UNKNOWN', 0);
@@ -90,6 +100,7 @@ define('SUPPORT_MESSAGE_STATUS_DELETED', 3);
 // Total number.  Keep this up to date!
 define('SUPPORT_MESSAGE_STATUS_COUNT',   4);
 
+
 /**
  * Common functions and methods used by both front- and backend.
  *
@@ -99,7 +110,6 @@ define('SUPPORT_MESSAGE_STATUS_COUNT',   4);
  * @package     contrexx
  * @subpackage  module_support
  */
-
 class SupportCommon
 {
     /**
