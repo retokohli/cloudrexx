@@ -17,16 +17,18 @@ Database Table Structure:
 DROP TABLE contrexx_module_support_action;
 CREATE TABLE contrexx_module_support_action (
   id            int(10)     unsigned NOT NULL auto_increment,
-  `event`       tinyint(2)  unsigned NOT NULL default  0,
   foreign_id    int(10)     unsigned NOT NULL default  0,
-  `table`       varchar(32)          NOT NULL default '',
-  `field`       varchar(32)          NOT NULL default '',
-  `value`       varchar(16)          NOT NULL default '',
+  `event`       tinyint(2)  unsigned NOT NULL default  0,
+  `value`       int(10)     unsigned,
   `timestamp`   timestamp            NOT NULL default current_timestamp,
   PRIMARY KEY    (id),
   KEY foreign_id (foreign_id),
   KEY `timestamp`     (`timestamp`)
 ) ENGINE=MyISAM;
+
+removed:
+  `table`       varchar(32)          NOT NULL default '',
+  `field`       varchar(32)          NOT NULL default '',
 
 */
 
@@ -56,14 +58,6 @@ class Action
     var $id;
 
     /**
-     * The code for the event taken
-     *
-     * From table modules_support_action
-     * @var integer
-     */
-    var $event;
-
-    /**
      * The associated foreign key (ID)
      *
      * From table modules_support_action
@@ -72,20 +66,28 @@ class Action
     var $foreignId;
 
     /**
+     * The code for the event taken
+     *
+     * From table modules_support_action
+     * @var integer
+     */
+    var $event;
+
+    /**
      * The name of the table affected by the Action taken
      *
      * From table modules_support_action
      * @var string
-     */
     var $table;
+     */
 
     /**
      * The field name affected by the Action
      *
      * From table modules_support_action
      * @var string
-     */
     var $field;
+     */
 
     /**
      * The new value changed by the action taken
@@ -116,10 +118,11 @@ class Action
      * @see         __construct()
      */
     function Action(
-        $event, $foreignId, $table, $field, $value, $timestamp='', $id=0
+//        $event, $foreignId, $table, $field, $value, $timestamp='', $id=0
+        $foreignId, $event, $value, $timestamp='', $id=0
     ) {
         $this->__construct(
-            $event, $foreignId, $table, $field, $value, $timestamp, $id
+            $foreignId, $event, $value, $timestamp='', $id
         );
     }
 
@@ -129,24 +132,24 @@ class Action
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
-     * @todo        PHP5: Make $this->arrStatusString and
-     *                         $this->arrActionString static!
      */
     function __construct(
-        $event, $foreignId, $table, $field, $value, $timestamp='', $id=0
+        $foreignId, $event, $value, $timestamp='', $id=0
     ) {
         if (!$this->foreignId) {
 echo("Action::__construct(): No foreign ID!<br />;");
             exit;
         }
 
-        $this->event     = intval($event);
         $this->foreignId = intval($foreignId);
-        $this->table     = $table;
-        $this->field     = $field;
+        $this->event     = intval($event);
         $this->value     = $value;
         $this->timestamp = $timestamp;
         $this->id        = $id;
+/*
+        $this->table     = $table;
+        $this->field     = $field;
+*/
 
         // If it's not an Action read from the database but a brand new
         // one, store it immediately!
@@ -166,23 +169,6 @@ echo("Action::__construct(): No foreign ID!<br />;");
     }
 
     /**
-     * Get the event code from this Action
-     * @return  integer     The event code
-     */
-    function getEvent()
-    {
-        return $this->event;
-    }
-    /**
-     * Set the event code for this Action
-     * @param   integer     The event code
-    function setEvent($event)
-    {
-        $this->event = intval($event);
-    }
-     */
-
-    /**
      * Get the foreign key from this Action
      * @return  integer     The foreign key
      */
@@ -200,13 +186,30 @@ echo("Action::__construct(): No foreign ID!<br />;");
      */
 
     /**
+     * Get the event code from this Action
+     * @return  integer     The event code
+     */
+    function getEvent()
+    {
+        return $this->event;
+    }
+    /**
+     * Set the event code for this Action
+     * @param   integer     The event code
+    function setEvent($event)
+    {
+        $this->event = intval($event);
+    }
+     */
+
+    /**
      * Get the table affected by this Action
      * @return  string      The table name
-     */
     function getTable()
     {
         return $this->table;
     }
+     */
     /**
      * Set the table affected by this Action
      * @param   string      The table name
@@ -219,11 +222,11 @@ echo("Action::__construct(): No foreign ID!<br />;");
     /**
      * Get the field name from this Action
      * @return  string      The field name
-     */
     function getField()
     {
         return $this->field;
     }
+     */
     /**
      * Set the field name for this Action
      * @param   string      The field name
@@ -254,14 +257,14 @@ echo("Action::__construct(): No foreign ID!<br />;");
      * Get this Actions' timestamp
      * @return  string      The Action timestamp
      */
-    function getDate()
+    function getTimestamp()
     {
         return $this->timestamp;
     }
     /**
      * Set this Actions' timestamp
      * @param   string      The Action timestamp
-    function setDate($timestamp)
+    function setTimestamp($timestamp)
     {
         $this->timestamp = $timestamp;
     }
@@ -269,27 +272,65 @@ echo("Action::__construct(): No foreign ID!<br />;");
 
 
     /**
-     * Delete this Action from the database.
+     * Get this Tickets' current owner ID
+     * @return  string                              The Ticket owner ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getCurrentOwnerId($ticketId)
+    {
+        global $objDatabase;
+//echo("Action::getCurrentOwnerName(ticketId=$ticketId): entered<br />");
+
+        if (!$ticketId > 0) {
+echo("Action::getCurrentOwnerName(ticketId=$ticketId): ERROR: illegal ticket ID '$ticketId'!<br />");
+            return false;
+        }
+        $query = "
+            SELECT value
+              FROM ".DBPREFIX."module_support_action
+             WHERE foreign_id=$ticketId
+               AND event=".SUPPORT_TICKET_EVENT_CHANGE_PERSON."
+          ORDER BY id DESC
+        ";
+        $objResult = $objDatabase->SelectLimit($query, 1);
+        if (!$objResult) {
+echo("Action::getCurrentOwnerName(ticketId=$ticketId): ERROR: query failed:<br />$query<br />");
+            return false;
+        }
+        if ($objResult->EOF) {
+            return false;
+        }
+        return $objResult->fields['value'];
+    }
+
+
+    /**
+     * Delete the Actions referring to a certain foreign key from the database.
+     *
+     * Note that this *MUST* only be called when the associated
+     * foreign object is deleted as well.
+     * @static
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function delete()
+    //static
+    function deleteByForeignId($foreignId)
     {
         global $objDatabase;
 //echo("Debug: Action::delete(): entered<br />");
 
-        if (!$this->id) {
-echo("Action::delete(): ERROR: This Action is missing the Action ID!<br />");
+        if (!$foreignId > 0) {
+echo("Action::delete(): ERROR: illegal foreign ID '$foreignId'!<br />");
             return false;
         }
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_support_action
-             WHERE id=$this->id
+             WHERE foreign_id=$foreignId
         ");
         if (!$objResult) {
-echo("Action::delete(): Error: Failed to delete the Action from the database<br />");
+echo("Action::delete(): Error: Failed to delete the Action records from the database<br />");
             return false;
         }
         return true;
@@ -356,15 +397,17 @@ echo("Action::store(): WARNING: someone is trying to UPDATE an Action record! --
 
         $query = "
             INSERT INTO ".DBPREFIX."module_support_action (
-                   foreign_id, 'event', 'table', 'field', 'value'
+                   foreign_id, 'event', 'value'
             ) VALUES (
                    $this->foreignId,
                    $this->event,
-                   $this->table,
-                   $this->field,
                    $this->value
             )
         ";
+/*
+'table', 'field',
+$this->table, $this->field,
+*/
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -383,6 +426,7 @@ echo("Action::store(): WARNING: someone is trying to UPDATE an Action record! --
      * This *MUST* be called by insert() after INSERTing any new
      * Action object!
      * @return  boolean         True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function refreshTimestamp()
     {
@@ -412,12 +456,11 @@ echo("Action::refreshTimestamp(): no result: ".$objResult->RecordCount()."<br />
     /**
      * Select an Action by ID from the database.
      * @static
-     * @param       integer     $id             The Action ID
-     * @return      Action                      The Action object
-     *                                          on success, false otherwise
-     * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @param   integer     $id             The Action ID
+     * @return  Action                      The Action object
+     *                                      on success, false otherwise
+     * @global  mixed       $objDatabase    Database object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function getById($id)
@@ -441,14 +484,16 @@ echo("Action::getById($id): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
         $objAction = new Action(
-            $objResult->fields('event'),
             $objResult->fields('foreign_id'),
-            $objResult->fields('table'),
-            $objResult->fields('field'),
+            $objResult->fields('event'),
             $objResult->fields('value'),
             $objResult->fields('timestamp'),
             $objResult->fields('id')
         );
+/*
+            $objResult->fields('table'),
+            $objResult->fields('field'),
+*/
         return $objAction;
     }
 
@@ -470,14 +515,9 @@ echo("Action::getById($id): no result: ".$objResult->RecordCount()."<br />");
      * It defaults to the value of the global $_CONFIG['corePagingLimit']
      * setting if unset or zero.
      * @static
-     * @param       integer     $event          The desired event code, or zero
      * @param       integer     $foreignId      The desired foreign ID, or zero
-     * @param       string      $table          The desired table name, or the
-     *                                          empty string
-     * @param       string      $field          The desired field name, or the
-     *                                          empty string
-     * @param       string      $value          The desired field value, or the
-     *                                          empty string
+     * @param       integer     $event          The desired event code, or zero
+     * @param       string      $value          The desired field value, or zero
      * @param       string      $order          The sorting order
      * @param       integer     $offset         The offset
      * @return      array                       The array of Action objects
@@ -489,7 +529,7 @@ echo("Action::getById($id): no result: ".$objResult->RecordCount()."<br />");
      */
     //static
     function getActionArray(
-        $event, $foreignId, $table, $field, $value,
+        $foreignId, $event, $value,
         $order="'timestamp' DESC", $offset=0, $limit=0
     ) {
         global $objDatabase, $_CONFIG;
@@ -499,11 +539,9 @@ echo("Action::getById($id): no result: ".$objResult->RecordCount()."<br />");
             SELECT id
               FROM ".DBPREFIX."module_support_action
              WHERE 1
-              ".($event     ? "AND event=$event"          : '')."
-              ".($foreignId ? "AND foreign_id=$foreignId" : '')."
-              ".($table     ? "AND table='$table'"        : '')."
-              ".($field     ? "AND field='$field'"        : '')."
-              ".($value     ? "AND value='$value'"        : '')."
+              ".($foreignId ? " AND foreign_id=$foreignId" : '')."
+              ".($event     ? " AND event=$event"          : '')."
+              ".($value     ? " AND value='$value'"        : '')."
           ORDER BY $order
         ";
         $objResult = $objDatabase->SelectLimit($query, $limit, $offset);
