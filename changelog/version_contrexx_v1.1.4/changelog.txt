@@ -29,6 +29,11 @@ Core
 Kontaktmanager
 - Ein Kontaktformular kann mit einem CAPTCHA-Schutz geschützt werden.
 
+Datenbank Manager
+- Es gibt neu einen Datenbank Manager zur Verwaltung der Datenbank. Dieser 
+  erlaubt die Optmierung von Datenbanken. Ausserdem können SQL / CVS Backups
+  erzeugt und SQL-Quries ausgeführt werden.
+
 ****************************************
 * Changes ******************************
 ****************************************
