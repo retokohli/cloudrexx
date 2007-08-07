@@ -706,33 +706,36 @@ class calendarLibrary
      * list of categories
      */
     function category_list($selected_var, $name="categories") {
-        global $objDatabase, $_ARRAYLANG;
+		global $objDatabase, $_ARRAYLANG, $_LANGID;
 
-        $calendar_categories = "<form action=\"#\" id=\"selectcat\">
-            <select name=\"$name\" onchange=\"changecat()\"  id=\"calendarSelectcat\">
-                <option value=\"0\">".$_ARRAYLANG['TXT_CALENDAR_ALL_CAT']."</option>";
+		$calendar_categories = "<form action=\"#\" id=\"selectcat\">
+		    <select name=\"$name\" onchange=\"changecat()\"  id=\"calendarSelectcat\">
+		        <option value=\"0\">".$_ARRAYLANG['TXT_CALENDAR_ALL_CAT']."</option>";
 
-        // makes the category list
-        $query = "SELECT id,name,lang FROM ".DBPREFIX."module_calendar_categories WHERE status = '1' ORDER BY pos";
-        $objResult = $objDatabase->Execute($query);
+		// makes the category list
+		$query = "SELECT id,name,lang FROM ".DBPREFIX."module_calendar_categories
+			  WHERE status = '1'".
+				  (!empty($_LANGID) && intval($_LANGID > 0) ? " AND lang = ".$_LANGID : '')."
+			  ORDER BY pos";
+		$objResult = $objDatabase->Execute($query);
 
-        while (!$objResult->EOF) {
-            if ($objResult->fields['id'] == $selected_var) {
-                $selected = " selected=\"selected\"";
-            } else {
-                $selected = "";
-            }
+		while (!$objResult->EOF) {
+		    if ($objResult->fields['id'] == $selected_var) {
+		        $selected = " selected=\"selected\"";
+		    } else {
+		        $selected = "";
+		    }
 
 
-            $calendar_categories .= "<option value=\"".$objResult->fields['id']."\"$selected>".$objResult->fields['name']."</option>";
-            $objResult->MoveNext();
-        }
+		    $calendar_categories .= "<option value=\"".$objResult->fields['id']."\"$selected>".$objResult->fields['name']."</option>";
+		    $objResult->MoveNext();
+		}
 
-        $calendar_categories .= "
-                </select>
-            </form>";
+		$calendar_categories .= "
+		        </select>
+		    </form>";
 
-        return $calendar_categories;
+		return $calendar_categories;
     }
 
 
