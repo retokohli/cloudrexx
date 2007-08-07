@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 03 Aug 2007 09:00:16 +0200
+* generated date Tue, 07 Aug 2007 09:43:55 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "Пароль, мин. 6 знаков";
@@ -701,4 +701,68 @@ $_ARRAYLANG['TXT_MODULE_SUPPORT_SYSTEM'] = "Support System";
 $_ARRAYLANG['TXT_MODULE_SUPPORT_SYSTEM_DESCRIPTION'] = "Support System zum generieren, bearbeiten und verwalten von Support Tickets";
 $_ARRAYLANG['TXT_CORE_SORTING_ASCENDING'] = "aufsteigend";
 $_ARRAYLANG['TXT_CORE_SORTING_DESCENDING'] = "absteigend";
+$_ARRAYLANG['TXT_DATABASE_MANAGER'] = "Datenbank Manager";
+$_ARRAYLANG['TXT_DBM_MAINTENANCE_TITLE'] = "Wartung";
+$_ARRAYLANG['TXT_DBM_SQL_TITLE'] = "SQL";
+$_ARRAYLANG['TXT_DBM_STATUS_TITLE'] = "Statusinformationen";
+$_ARRAYLANG['TXT_DBM_BACKUP_TITLE'] = "Sicherung";
+$_ARRAYLANG['TXT_DBM_SHOW_TABLE_TITLE'] = "Tabelleninhalt anzeigen";
+$_ARRAYLANG['TXT_DBM_STATUS_MYSQL_VERSION'] = "MySQL Version";
+$_ARRAYLANG['TXT_DBM_STATUS_USED_TABLES'] = "Verwendete Tabellen";
+$_ARRAYLANG['TXT_DBM_STATUS_USED_SPACE'] = "Belegter Speicher";
+$_ARRAYLANG['TXT_DBM_STATUS_BACKOG'] = "&Uuml;berhang";
+$_ARRAYLANG['TXT_DBM_STATUS_PHPINFO'] = "PHP-Info";
+$_ARRAYLANG['TXT_DBM_CONNECTION_TITLE'] = "Verbindungsinformationen";
+$_ARRAYLANG['TXT_DBM_CONNECTION_DBPREFIX'] = "Datenbank-Pr&auml;fix";
+$_ARRAYLANG['TXT_DBM_CONNECTION_DATABASE'] = "Datenbank-Name";
+$_ARRAYLANG['TXT_DBM_CONNECTION_USERNAME'] = "Datenbank-Benutzer";
+$_ARRAYLANG['TXT_DBM_MAINTENANCE_TABLES'] = "Tabellen";
+$_ARRAYLANG['TXT_DBM_MAINTENANCE_TABLENAME'] = "Tabellenname";
+$_ARRAYLANG['TXT_DBM_MAINTENANCE_ROWS'] = "Zeilen";
+$_ARRAYLANG['TXT_DBM_MAINTENANCE_DATA_SIZE'] = "Datengr&ouml;sse";
+$_ARRAYLANG['TXT_DBM_MAINTENANCE_INDEX_SIZE'] = "Indexgr&ouml;sse";
+$_ARRAYLANG['TXT_DBM_MAINTENANCE_OPTIMIZE_DB'] = "Datenbank optimieren";
+$_ARRAYLANG['TXT_DBM_MAINTENANCE_OPTIMIZE_START'] = "Optimieren starten";
+$_ARRAYLANG['TXT_DBM_MAINTENANCE_OPTIMIZE_DESC'] = "Mit dieser Funktion k&ouml;nnen Sie die Contrexx-Datenbank optimieren. Dabei wird eventuell nicht freigewordener Speicherplatz, auch &Uuml;berhang genannt, freigegeben. Das System wird dadurch beschleunigt und zus&auml;tzlich der freigegebene Speicherplatz eingespart. Abh&auml;ngig von der vorhandenen Datenmenge kann dies einige Sekunden dauern. Es wird empfohlen, in regelm&auml;ssigen Abst&auml;nden die Optimierung zu starten.";
+$_ARRAYLANG['TXT_DBM_MAINTENANCE_OPTIMIZE_DONE'] = "Alle Tabellen der Datenbank wurden erfolgreich optimiert.";
+$_ARRAYLANG['TXT_DBM_MAINTENANCE_REPAIR_DB'] = "Datenbank reparieren";
+$_ARRAYLANG['TXT_DBM_MAINTENANCE_REPAIR_START'] = "Reparieren starten";
+$_ARRAYLANG['TXT_DBM_MAINTENANCE_REPAIR_DESC'] = "Durch ein unerwartetes Beenden des Datenbankservers k&ouml;nnen die Tabellen besch&auml;digt werden. In diesem Fall muss eine Reperatur der betroffenen Tabellen gestartet werden. Dadurch werden entstandene Sch&auml;den behoben. Es wird empfohlen, die Reperatur bei Problemen mit dem Datenbankserver zu starten.";
+$_ARRAYLANG['TXT_DBM_MAINTENANCE_REPAIR_DONE'] = "Alle Tabellen der Datenbank wurden erfolgreich repariert";
+$_ARRAYLANG['TXT_DBM_SHOW_TABLE_HTML_TITLE'] = "HTML-Darstellung";
+$_ARRAYLANG['TXT_DBM_SHOW_TABLE_DUMP_TITLE'] = "SQL-Dump";
+$_ARRAYLANG['TXT_DBM_SHOW_TABLE_WRONG_PREFIX'] = "Fehler: Sie k&ouml;nnen nur auf Tabellen von Contrexx zugreifen.";
+$_ARRAYLANG['TXT_DBM_SQL_CODE'] = "SQL-Befehl ausf&uuml;hren";
+$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Hinweis: Alle Abfragen m&uuml;ssen aus systemtechnischen Gr&uuml;nden immer mit einem Semikolon (";") und einem Zeilenumbruch abgeschlossen werden. Nachfolgend ein Beispiel:<pre>SELECT * FROM Table;'."\n".'SELECT * FROM AnotherTable;</pre>";
+$_ARRAYLANG['TXT_DBM_SQL_FILE'] = "SQL-Datei ausf&uuml;hren";
+$_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_TYPES'] = "Erlaubte Dateitypen";
+$_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_SIZE'] = "Erlaubte Dateigr&ouml;sse";
+$_ARRAYLANG['TXT_DBM_SQL_EXECUTED'] = "Ausgef&uuml;hrte Abfrage";
+$_ARRAYLANG['TXT_DBM_SQL_ERROR_EMPTY'] = "Sie haben eine ung&uuml;ltige SQL-Query eingegeben.";
+$_ARRAYLANG['TXT_DBM_SQL_ERROR_TYPE'] = "Ihr heraufgeladenes File besitzt einen ung&uuml;ltiger Datentyp: \'{TYPE}\'!";
+$_ARRAYLANG['TXT_DBM_EXPORT_TITLE'] = "Sicherung erstellen";
+$_ARRAYLANG['TXT_DBM_EXPORT_DESCRIPTION'] = "Kommentar";
+$_ARRAYLANG['TXT_DBM_EXPORT_TYPE'] = "Export Typ";
+$_ARRAYLANG['TXT_DBM_EXPORT_BACKUPS'] = "Vorhandene Sicherungen";
+$_ARRAYLANG['TXT_DBM_EXPORT_DATE'] = "Datum";
+$_ARRAYLANG['TXT_DBM_EXPORT_VERSION'] = "Version";
+$_ARRAYLANG['TXT_DBM_EXPORT_EDITION'] = "Edition";
+$_ARRAYLANG['TXT_DBM_EXPORT_SIZE'] = "Dateigr&ouml;sse";
+$_ARRAYLANG['TXT_DBM_EXPORT_COMMENTS'] = "Hinweise: <font style="color: green; font-weight: bold;">Gr&uuml;n hinterlegte Zeilen</font> sind Sicherungen der aktuellen Contrexx-Version. <font style="color: red; font-weight: bold;">Rot hinterlegte Zeilen</font> sind Sicherungen aus einer &auml;lteren Contrexx-Version. Bei Verwendung dieser Sicherungen ist Vorsicht geboten, da diese mit neueren Versionen von Contrexx inkompatibel sein k&ouml;nnen.";
+$_ARRAYLANG['TXT_DBM_EXPORT_RESTORE'] = "Backup laden";
+$_ARRAYLANG['TXT_DBM_EXPORT_ERROR'] = "Backup fehlgeschlagen: Der Zielordner \'{PATH}\' verf&uuml;gt nicht &uuml;ber die ben&ouml;tigten Zugriffsrechte (777).";
+$_ARRAYLANG['TXT_DBM_EXPORT_ERROR_SELECTION'] = "Backup fehlgeschlagen: Es wurden keine Tabellen zum Export markiert.";
+$_ARRAYLANG['TXT_DBM_EXPORT_SUCCESS'] = "Ein Backup der Datenbank wurde unter \'{PATH}\' erfolgreich erstellt.";
+$_ARRAYLANG['TXT_DBM_EXPORT_DELETE_SUCCESS'] = "Das Backup wurde erfolgreich entfernt.";
+$_ARRAYLANG['TXT_DBM_EXPORT_DELETE_ERROR'] = "Backup konnte nicht gel&ouml;scht werden.";
+$_ARRAYLANG['TXT_DBM_IMPORT'] = "Sicherung importieren";
+$_ARRAYLANG['TXT_DBM_IMPORT_DESCRIPTION'] = "Hier k&ouml;nnen Sie eine Sicherung von einem anderen System in Ihre Contrexx-Installation importieren. Nach erfolgreichem heraufladen der Datei erscheint diese in der &Uuml;bersicht unter &quot;Vorhandene Sicherungen&quot;.";
+$_ARRAYLANG['TXT_DBM_IMPORT_FILE'] = "Sicherungsdatei";
+$_ARRAYLANG['TXT_DBM_IMPORT_SUBMIT'] = "Sicherung hochladen";
+$_ARRAYLANG['TXT_DBM_IMPORT_ERROR_TYPE'] = "Fehler beim Upload: Ung&uuml;ltiger Datentyp \'{TYPE}\'!";
+$_ARRAYLANG['TXT_DBM_IMPORT_ERROR_NO_CONTREXX'] = "Die heraufgeladene Datei enthielt keine von Contrexx erstellte Datenbanksicherung.";
+$_ARRAYLANG['TXT_DBM_IMPORT_SUCCESS'] = "Bestehende Sicherung wurde erfolgreich heraufgeladen.";
+$_ARRAYLANG['TXT_DBM_DETAILS_TITLE'] = "Details anzeigen";
+$_ARRAYLANG['TXT_DBM_DETAILS_CONTENT'] = "Backup-Inhalt";
+$_ARRAYLANG['TXT_DBM_DETAILS_ERROR_ID'] = "Ein Backup mit dieser ID existiert nicht. &Uuml;berpr&uuml;fen Sie Ihre Eingabe.";
 ?>
