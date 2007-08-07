@@ -145,7 +145,7 @@ class Calendar extends calendarLibrary
 
     function _standardView()
     {
-    	global $objDatabase, $_ARRAYLANG, $_CONFIG, $objAuth, $objPerm;
+    	global $objDatabase, $_ARRAYLANG, $_CONFIG, $objAuth, $objPerm, $_LANGID;
 
     	$this->url = "?section=calendar";
 
@@ -173,15 +173,18 @@ class Calendar extends calendarLibrary
 
     		$keyword = htmlentities(addslashes($_POST['keyword']), ENT_QUOTES, CONTREXX_CHARSET);
 
-			$query = "SELECT id, name, startdate, enddate, placeName,
-				MATCH (name,comment,placeName) AGAINST ('%$keyword%') AS score
-				FROM ".DBPREFIX."module_calendar
-			  	WHERE (`name` LIKE '%$keyword%' OR
-			  	`comment` LIKE '%$keyword%' OR
-			  	`placeName` LIKE '%$keyword%') AND
-			  	((startdate BETWEEN $startdate AND $enddate) OR
-				(enddate BETWEEN $startdate AND $enddate) OR
-				(startdate < $startdate AND enddate > $startdate)) $where
+			$query = "SELECT cal.id, cal.catid, cal.name, cal.startdate, cal.enddate, cal.placeName,
+				MATCH (cal.name,cal.comment,cal.placeName) AGAINST ('%$keyword%') AS score
+				FROM ".DBPREFIX."module_calendar as cal
+				LEFT JOIN ".DBPREFIX."module_calendar_categories as cat ON
+					(cat.id = cal.catid)
+			  	WHERE cat.lang = $_LANGID
+			  	AND (cal.`name` LIKE '%$keyword%' OR
+			  	cal.`comment` LIKE '%$keyword%' OR
+			  	cal.`placeName` LIKE '%$keyword%') AND
+			  	((cal.startdate BETWEEN $startdate AND $enddate) OR
+				(cal.enddate BETWEEN $startdate AND $enddate) OR
+				(cal.startdate < $startdate AND cal.enddate > $startdate)) $where
 			  	ORDER BY score ASC";
 
 			$calendarbox = $this->getBoxes(3, date("Y"), date("m"));
@@ -220,7 +223,7 @@ class Calendar extends calendarLibrary
 			}
 
 			if ($select_next_ten && !empty($_GET['catid'])) {
-				$query = "SELECT id, name, startdate, enddate, placeName
+				$query = "SELECT id, catid, name, startdate, enddate, placeName
 					FROM ".DBPREFIX."module_calendar
 					WHERE catid={$_GET['catid']} AND
 					active = 1 AND
@@ -230,7 +233,7 @@ class Calendar extends calendarLibrary
 					LIMIT 0,".$_CONFIG['calendardefaultcount'];
 
 			} elseif ($select_next_ten && empty($_GET['catid'])) {
-				$query = "SELECT id, name, startdate, enddate, placeName
+				$query = "SELECT id, catid, name, startdate, enddate, placeName
 					FROM ".DBPREFIX."module_calendar
 					WHERE active = 1 AND
 					((startdate > $startdate) OR
@@ -239,7 +242,7 @@ class Calendar extends calendarLibrary
 					LIMIT 0,".$_CONFIG['calendardefaultcount'];
 
 			} elseif (!$select_next_ten && !empty($_GET['catid'])) {
-				$query = "SELECT id, name, startdate, enddate, placeName
+				$query = "SELECT id, catid, name, startdate, enddate, placeName
 					FROM ".DBPREFIX."module_calendar
 					WHERE catid = {$_GET['catid']} AND
 					active = 1 AND
@@ -249,7 +252,7 @@ class Calendar extends calendarLibrary
 					ORDER BY startdate ASC";
 
 			} elseif (!$select_next_ten && empty($_GET['catid'])) {
-				$query = "SELECT id, name, startdate, enddate, placeName
+				$query = "SELECT id, catid, name, startdate, enddate, placeName
 					FROM ".DBPREFIX."module_calendar
 					WHERE active = 1 AND
 					((startdate BETWEEN $startdate AND $enddate) OR
@@ -296,14 +299,29 @@ class Calendar extends calendarLibrary
 
     function _showList($query)
     {
-    	global $objDatabase, $_ARRAYLANG;
+    	global $objDatabase, $_ARRAYLANG, $_LANGID;
 
     	$objResult = $objDatabase->Execute($query);
 		$count = $objResult->RecordCount();
 		$i=0;
 
+		$arrCats = array();
+		$catQuery = "	SELECT `id`
+						FROM `".DBPREFIX."module_calendar_categories`
+						WHERE `lang` = ".$_LANGID;
+		if(($objRSCats = $objDatabase->Execute($catQuery)) !== false){
+			while(!$objRSCats->EOF){
+				$arrCats[] = $objRSCats->fields['id'];
+				$objRSCats->MoveNext();
+			}
+		}
+
 		if ($count >= 1) {
 			while (!$objResult->EOF) {
+				if(!in_array($objResult->fields['catid'], $arrCats)){
+					$objResult->MoveNext();
+					continue;
+				}
 				//load data
 				$this->getNoteData($objResult->fields['id'], "show", 1);
 
@@ -392,14 +410,14 @@ class Calendar extends calendarLibrary
 		$orderBy =	!empty($_REQUEST['o']) && $_REQUEST['o'] == 'asc' ? 'ASC' : 'DESC';
 
 		if (empty($_GET['catid'])) {
-			$query = "SELECT id, name, startdate, enddate, placeName
+			$query = "SELECT id, catid, name, startdate, enddate, placeName
 						FROM ".DBPREFIX."module_calendar
 						WHERE active = 1 AND
 						(startdate > $startdate OR
 						enddate > $startdate) $where
 						ORDER BY startdate $orderBy";
 		} else {
-			$query = "SELECT id, name, startdate, enddate, placeName
+			$query = "SELECT id, catid, name, startdate, enddate, placeName
 						FROM ".DBPREFIX."module_calendar
 						WHERE catid = ".addslashes($_GET['catid'])."
 						AND active = 1
