@@ -470,62 +470,19 @@ switch($cmd) {
 		 break;
 
         //-----------------------------------------------------------------------------------------------
-        // backup
+        // database manager
         //-----------------------------------------------------------------------------------------------
-    case "backup":
-        $objPerm->checkAccess(20, 'static');
-        $modulespath = ASCMS_CORE_PATH . "/backup.class.php";
-        if (file_exists($modulespath)) include($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle= $_CORELANG['TXT_OVERVIEW'];
-        $statustxt = "";
-
-        if(!isset($_GET['act'])){
-            $_GET['act']="";
-        }
-
-        switch($_GET['act']){
-            case "create":
-                $objPerm->checkAccess(41, 'static');
-                $strOkMessage = backup_create();
-                break;
-            case "restore":
-                $objPerm->checkAccess(42, 'static');
-                $strOkMessage = backup_restore();
-                break;
-            case "delete":
-                $objPerm->checkAccess(43, 'static');
-                $strOkMessage  =backup_delete();
-                break;
-            case "view":
-                $objPerm->checkAccess(45, 'static');
-                $othertxt = backup_view();
-                break;
-            case "viewtables":
-                $objPerm->checkAccess(45, 'static');
-                $othertxt = backup_viewTables();
-                break;
-            case "download":
-                $objPerm->checkAccess(44, 'static');
-                backup_download();
-                break;
-        }
-
-        $objTemplate->setVariable(array(
-        'CONTENT_OK_MESSAGE'		=> $strOkMessage,
-        'CONTENT_STATUS_MESSAGE'	=> $strErrMessage,
-        'CONTENT_TITLE'				=> $_CORELANG['TXT_BACKUP'],
-        'CONTENT_NAVIGATION'		=> "<a href='?cmd=backup'>".$_CORELANG['TXT_OVERVIEW']."</a>"
-        ));
-
-        if (isset($othertxt)){
-            $objTemplate->setVariable('ADMIN_CONTENT',$othertxt);
-        } else {
-            backup_showList();
-        }
-        break;
+	case 'dbm':
+	    $modulespath = ASCMS_CORE_PATH.'/DatabaseManager.class.php';
+	    if (file_exists($modulespath)) include($modulespath);
+	    else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+	    $subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
+	    $objDatabaseManager = &new DatabaseManager();
+	    $objDatabaseManager->getPage();
+		break;
+        
         //----------------------------------------------------------------------------------------------
-        //stats
+        // stats
         //----------------------------------------------------------------------------------------------
     case "stats":
         $objPerm->checkAccess(19, 'static');
@@ -535,19 +492,6 @@ switch($cmd) {
         $subMenuTitle = $_CORELANG['TXT_STATISTIC'];
         $statistic= &new stats();
         $statistic->getContent();
-        break;
-
-        //----------------------------------------------------------------------------------------------
-        // system update
-        //----------------------------------------------------------------------------------------------
-    case "systemUpdate":
-        $objPerm->checkAccess(58, 'static');
-        $modulespath = ASCMS_CORE_MODULE_PATH . "/systemUpdate/admin.class.php";
-        if (file_exists($modulespath)) include($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_SYSTEM_UPDATE'];
-        $systemUpdate = &new systemUpdate();
-        $systemUpdate->getContent();
         break;
 
         //----------------------------------------------------------------------------------------------
