@@ -29,6 +29,11 @@ Core
 Kontaktmanager
 - Ein Kontaktformular kann mit einem CAPTCHA-Schutz geschützt werden.
 
+Seitenempfehlungen
+- Die Seitenempfehlungen werden nun mit einem CAPTCHA geschützt. Dazu muss
+  das Standardtemplate für die Seitenempfehlungen allerdings zurückgesetzt
+  werden.
+
 Datenbank Manager
 - Es gibt neu einen Datenbank Manager zur Verwaltung der Datenbank. Dieser 
   erlaubt die Optmierung von Datenbanken. Ausserdem können SQL / CVS Backups
