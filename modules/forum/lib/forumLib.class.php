@@ -284,7 +284,7 @@ class ForumLibrary {
 	}
 
 	function removeDoubleEscapes($text){
-		return str_replace('&amp;amp;', '&amp;', $text);
+		return html_entity_decode($text, ENT_QUOTES, CONTREXX_CHARSET);
 	}
 
 	function convertlinks($text){
