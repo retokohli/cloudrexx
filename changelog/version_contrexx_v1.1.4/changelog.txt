@@ -81,6 +81,7 @@ Shop
 - Automatisch generierte Links enthalten nun die Angabe der index.php.
 - Darstellungsfehler (Unicode / Latin1)
 - Als Produkt Code können Alphanumerische Zeichen verwendet werden.
+- Produkte von inaktiven Kategorien werden nicht mehr aufgelistet.
 
 Kontaktmanager
 - Der CSV-Export funktioniert nun mit unlimitierter erfasster Anzahl Einträge.

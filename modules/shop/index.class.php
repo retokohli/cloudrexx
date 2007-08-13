@@ -789,7 +789,7 @@ class Shop extends ShopLibrary
         if (!$objResult) {
             return false;
         }
-        $this->objTemplate->setCurrentBlock('subCategories');
+
         $cell = 0;
         // for all children categories do...
         while (!$objResult->EOF) {
@@ -1054,7 +1054,6 @@ class Shop extends ShopLibrary
         $q_search = '';
         // replaced by discounts()
         $q_special_offer = 'AND (is_special_offer = 1) ';
-        $q1_category = '';
         $q2_category = '';
         $pagingTermQuery = '';
         $pagingCatIdQuery = '';
@@ -1063,9 +1062,7 @@ class Shop extends ShopLibrary
         // determined above
         if ($catId > 0) {
            $q_special_offer = '';
-           $q1_category = ','.DBPREFIX.'module_shop_categories AS c';
-           $q2_category = "AND ( p.catid = c.catid
-                           AND c.catid = $catId) ";
+           $q2_category = "AND c.catid = $catId ";
            $pagingCatIdQuery = "&amp;catId=$catId";
         }
 
@@ -1090,9 +1087,10 @@ class Shop extends ShopLibrary
         $count = 0;
         if (isset($_GET['cmd']) && $_GET['cmd'] == 'lastFive') {
             $query = "
-                SELECT * FROM ".DBPREFIX."module_shop_products
-                 WHERE status=1
-              ORDER BY id DESC
+                SELECT * FROM ".DBPREFIX."module_shop_products AS p
+                INNER JOIN `".DBPREFIX."module_shop_categories` AS c USING (catid)
+                 WHERE p.status=1 AND c.catstatus=1
+              ORDER BY p.id DESC
             ";
             $objResult = $objDatabase->SelectLimit($query, 5);
             $count = $objResult->RecordCount();
@@ -1100,8 +1098,9 @@ class Shop extends ShopLibrary
             if ($productId != 0) {
                 $query = "
                     SELECT *
-                      FROM ".DBPREFIX."module_shop_products
-                     WHERE id=$productId
+                      FROM ".DBPREFIX."module_shop_products AS p
+                      INNER JOIN `".DBPREFIX."module_shop_categories` AS c USING (catid)
+                     WHERE p.id=$productId AND c.catstatus=1
                 ";
             } else {
                 $query = "
@@ -1111,8 +1110,9 @@ class Shop extends ShopLibrary
                            p.manufacturer, p.manufacturer_url,
                            p.discountprice, p.is_special_offer,
                            p.status, p.sort_order, p.vat_id, p.weight
-                    FROM ".DBPREFIX."module_shop_products AS p $q1_category
-                    WHERE status=1 $q_special_offer $q2_category $q_search $q1_manufacturer
+                    FROM ".DBPREFIX."module_shop_products AS p
+                    INNER JOIN `".DBPREFIX."module_shop_categories` AS c USING (catid)
+                    WHERE status=1 AND c.catstatus=1 $q_special_offer $q2_category $q_search $q1_manufacturer
                     ORDER BY p.sort_order ASC, p.id DESC
                 ";
             }
@@ -1437,10 +1437,12 @@ class Shop extends ShopLibrary
         ////////////////////////////////////////////
 
         $q = "SELECT *
-                FROM ".DBPREFIX."module_shop_products
-               WHERE is_special_offer = 1
-                 AND status = 1
-            ORDER BY sort_order";
+                FROM ".DBPREFIX."module_shop_products AS p
+                INNER JOIN ".DBPREFIX."module_shop_categories AS c USING (catid)
+               WHERE p.is_special_offer = 1
+                 AND p.status = 1
+                 AND c.catstatus=1
+            ORDER BY p.sort_order";
 
         $objResult = $objDatabase->Execute($q);
         if (!$objResult) {
