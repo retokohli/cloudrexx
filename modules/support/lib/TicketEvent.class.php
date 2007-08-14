@@ -529,6 +529,13 @@ echo("TicketEvent::getCurrentOwnerName(ticketId=$ticketId): ERROR: query failed:
     //static
     function getTicketStatus($ticketId)
     {
+
+/*
+
+    HEAVY TODO HERE
+
+*/
+
 //echo("TicketEvent::getTicketStatus(ticketId=$ticketId): entered<br />");
         global $objDatabase;
 
@@ -549,7 +556,7 @@ echo("TicketEvent::getTicketStatus(ticketId=$ticketId): ERROR: missing or invali
                     ".SUPPORT_TICKET_EVENT_MESSAGE_NEW.",
                     ".SUPPORT_TICKET_EVENT_MESSAGE_DELETE.",
                     ".SUPPORT_TICKET_EVENT_CLOSE.")
-          ORDER BY id ASC
+          ORDER BY id DESC
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
