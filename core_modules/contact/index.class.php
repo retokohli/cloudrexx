@@ -185,13 +185,14 @@ class Contact extends ContactLib
 		if (isset($_POST) && !empty($_POST)) {
 			$arrFormData = array();
 			$arrFormData['id'] = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
-			if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['showForm'])) {
+			if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'])) {
 				$arrFormData['fields'] = $this->getFormFields($arrFormData['id']);
 			} else {
 				$arrFormData['id'] = 0;
 				$arrFormData['emails'] = explode(',', $_CONFIG['contactFormEmail']);
 				$arrFormData['subject'] = $_ARRAYLANG['TXT_CONTACT_FORM']." ".$_CONFIG['domainUrl'];
 				$arrFormData['showForm'] = 1;
+				//$arrFormData['sendCopy'] = 0;
 			}
 			$arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields']);
 
@@ -526,6 +527,11 @@ class Contact extends ContactLib
 			$objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
 			if (!empty($replyAddress)) {
 				$objMail->AddReplyTo($replyAddress);
+
+				if ($arrFormData['sendCopy'] == 1) {
+					$objMail->AddAddress($replyAddress);
+				}
+
 			}
 			$objMail->Subject = $arrFormData['subject'];
 			$objMail->IsHTML(false);
