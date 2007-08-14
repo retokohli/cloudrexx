@@ -130,7 +130,11 @@ class MediaLibrary{
 		                    $exte     = $info['extension'];
 		                    $exte     = (!empty($exte)) ? '.' . $exte : '';
 		                    $part1    = substr($fileName, 0, strlen($fileName) - strlen($exte));
-		                    $fileName = $part1 . '_' . (time() + $x) . $exte;
+		                    if(!empty($_REQUEST['uploadForceOverwrite']) && intval($_REQUEST['uploadForceOverwrite'] > 0)){
+			                    $fileName = $part1 . $exte;
+		                    }else{
+			                    $fileName = $part1 . '_' . (time() + $x) . $exte;                	
+		                    }
                         }
 
                         // delete old thumb
@@ -470,7 +474,7 @@ class MediaLibrary{
                 $this->_objImage->loadImage($this->path . $this->dirLog);
 		        $this->_objImage->resizeImage($_POST['imgWidthPx'], $_POST['imgHeightPx'], $_POST['imgQuality']);
 		        //unlink($this->path . $this->dirLog);
-		        $this->_objImage->saveNewImage($this->path . $this->dirLog);
+		        $this->_objImage->saveNewImage($this->path . $this->dirLog, true);
 		    }
         }
     }
@@ -527,26 +531,26 @@ class MediaLibrary{
     // replaces some characters
     function _replaceCharacters($string){
         // replace $change with ''
-        $change = array('+', '¦', '"', '@', '*', '#', '°', '%', '§', '&', '¬', '/', '|', '(', '¢', ')', '=', '?', '\'', '´', '`', '^', '~', '!', '¨', '[', ']', '{', '}', '£', '$', '-', '<', '>', '\\', ';', ',', ':');
+        $change = array('\\', '/', ':', '*', '?', '"', '<', '>', '|');
         // replace $signs1 with $signs
         $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
 
         $string = strtolower($string);
         foreach($change as $str){
-		    $string = str_replace($str, '', $string);
+		    $string = str_replace($str, '_', $string);
         }
         for($x = 0; $x < count($signs1); $x++){
             $string = str_replace($signs1[$x], $signs2[$x], $string);
         }
         $string = str_replace('__', '_', $string);
 
-        if(strlen($string) > 40){
+        if(strlen($string) > 60){
             $info       = pathinfo($string);
             $stringExt  = $info['extension'];
 
             $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
-            $stringName = substr($stringName, 0, 40 - (strlen($stringExt) + 1));
+            $stringName = substr($stringName, 0, 60 - (strlen($stringExt) + 1));
             $string     = $stringName . '.' . $stringExt;
         }
         return $string;

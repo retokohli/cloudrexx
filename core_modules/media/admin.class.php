@@ -9,6 +9,8 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+$_ARRAYLANG['TXT_MEDIA_FORCE_OVERWRITE'] = "Dateien überschreiben, falls vorhanden";
+
 /**
  * Includes
  */
@@ -516,7 +518,8 @@ class MediaManager extends MediaLibrary {
     	$this->_objTpl->setVariable(array(  // upload files
     	    'TXT_MEDIA_UPLOAD_FILES'    => $_ARRAYLANG['TXT_MEDIA_UPLOAD_FILES'],
     	    'MEDIA_UPLOAD_FILES_ACTION' => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=upload&amp;path=' . $this->webPath,
-    	    'TXT_MEDIA_UPLOAD'          => $_ARRAYLANG['TXT_MEDIA_UPLOAD']
+    	    'TXT_MEDIA_UPLOAD'          => $_ARRAYLANG['TXT_MEDIA_UPLOAD'],
+    	    'TXT_MEDIA_FORCE_OVERWRITE' => $_ARRAYLANG['TXT_MEDIA_FORCE_OVERWRITE'],    	    
     	));
 
     	$this->_objTpl->setVariable(array(  // parse dir content

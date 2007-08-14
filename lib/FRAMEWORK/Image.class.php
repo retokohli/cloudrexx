@@ -326,9 +326,9 @@ class ImageManager
      * @param    string [$file] path and filename where to save the new image
      * @return   bool
      */
-    function saveNewImage($file)
+    function saveNewImage($file, $forceOverwrite = false)
     {
-        if ($this->imageCheck == 1 && !empty($this->newImage) && !file_exists($file))
+        if ($this->imageCheck == 1 && !empty($this->newImage) && (!file_exists($file) || $forceOverwrite))
         {
             $this->newImageFile = $file;
 
