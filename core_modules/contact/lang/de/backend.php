@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 07 Aug 2007 09:43:55 +0200
+* generated date Tue, 14 Aug 2007 17:56:13 +0200
 **/
 
 $_ARRAYLANG['TXT_CONTACT_DATE'] = "Datum";
@@ -122,4 +122,6 @@ $_ARRAYLANG['TXT_CONTACT_ENTRIE_DETAILS'] = "Details";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES'] = "Einträge";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "CAPTCHA-Schutz";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Durch Aktivieren dieser Option werden die Besucher gezwungen eine bildlich dargestellte Zeichenfolge abzutippen, damit sie die Kontaktanfrage absenden können. Dies ermöglicht es, dass eine Grosszahl an Einträgen, welche automatisch von Spambots generiert wurden, blockiert werden können.";
+$_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Durch das Aktivieren dieser Option, wird zusätzlich eine Kopie der angegebenen Formulardaten an den Absender geschickt.";
+$_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Kopie an Absender";
 ?>

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 07 Aug 2007 09:43:55 +0200
+* generated date Tue, 14 Aug 2007 17:56:13 +0200
 **/
 
 $_ARRAYLANG['TXT_STATUS_RECEIVER_NAME'] = "Receiver name";
@@ -22,4 +22,5 @@ $_ARRAYLANG['TXT_PREVIEW_FRONTEND'] = "";
 $_ARRAYLANG['TXT_FEMALE_FRONTEND'] = "";
 $_ARRAYLANG['TXT_MALE_FRONTEND'] = "";
 $_ARRAYLANG['TXT_INTRODUCTION'] = "";
+$_ARRAYLANG['TXT_RECOMMEND_CAPTCHA'] = "";
 ?>

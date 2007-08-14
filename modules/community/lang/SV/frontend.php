@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 07 Aug 2007 09:43:55 +0200
+* generated date Tue, 14 Aug 2007 17:56:13 +0200
 **/
 
 $_ARRAYLANG['TXT_LOGIN_NAME'] = "Login Benutzername";

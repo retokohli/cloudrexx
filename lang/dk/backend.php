@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 07 Aug 2007 09:43:55 +0200
+* generated date Tue, 14 Aug 2007 17:56:13 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 skrifttegn)";
@@ -764,4 +764,5 @@ $_ARRAYLANG['TXT_DBM_IMPORT_SUCCESS'] = "Bestehende Sicherung wurde erfolgreich 
 $_ARRAYLANG['TXT_DBM_DETAILS_TITLE'] = "Details anzeigen";
 $_ARRAYLANG['TXT_DBM_DETAILS_CONTENT'] = "Backup-Inhalt";
 $_ARRAYLANG['TXT_DBM_DETAILS_ERROR_ID'] = "Ein Backup mit dieser ID existiert nicht. &Uuml;berpr&uuml;fen Sie Ihre Eingabe.";
+$_ARRAYLANG['TXT_CORE_SORTING_ORDER'] = "Sortierung";
 ?>
