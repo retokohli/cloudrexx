@@ -73,9 +73,6 @@ class ContactManager extends ContactLib
 			'textarea'		=> $_ARRAYLANG['TXT_CONTACT_TEXTAREA']
 		);
 
-		$_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Durch das Aktivieren dieser Option, wird zusätzlich eine Kopie der angegebenen Formulardaten an den Absender geschickt.";
-		$_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Kopie an Absender";
-
     	$this->initContactForms(true);
     	$this->initCheckTypes();
 
