@@ -37,6 +37,8 @@ if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
 
 require_once '../core/API.php';
 
+global $_CONFIG;
+
 //-------------------------------------------------------
 // Initialize database object
 //-------------------------------------------------------
@@ -103,7 +105,7 @@ if (!$objAuth->checkAuth()) {
     switch ($cmd) {
         case "secure":
             $_SESSION['auth']['secid'] = strtoupper(substr(md5(microtime()), 0, 4));
-            getSecurityImage($id=$_SESSION['auth']['secid']);
+            getSecurityImage($_SESSION['auth']['secid']);
             exit;
             break;
 
@@ -450,6 +452,7 @@ switch($cmd) {
             $_GET['act']="";
         }
 
+        $strOkMessage = '';
         switch($_GET['act']){
             case "create":
                 $objPerm->checkAccess(41, 'static');
@@ -479,6 +482,7 @@ switch($cmd) {
 
         $objTemplate->setVariable(array(
         'CONTENT_OK_MESSAGE'		=> $strOkMessage,
+// TODO: $strErrMessage is never initialized!
         'CONTENT_STATUS_MESSAGE'	=> $strErrMessage,
         'CONTENT_TITLE'				=> $_CORELANG['TXT_BACKUP'],
         'CONTENT_NAVIGATION'		=> "<a href='?cmd=backup'>".$_CORELANG['TXT_OVERVIEW']."</a>"
