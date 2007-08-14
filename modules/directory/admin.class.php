@@ -82,6 +82,10 @@ class rssDirectory extends directoryLibrary
         $this->rssPath = ASCMS_FEED_PATH . '/';
 	    $this->rssWebPath = ASCMS_FEED_WEB_PATH . '/';
 
+	    $_ARRAYLANG['TXT_DIRECTORY_RSS_FEED']	= "RSS Link";
+	    $_ARRAYLANG['TXT_ENCODEFILENAME']	= "Dateinamen verschlüsseln";
+
+
         //check chmod
 		$obj_file = &new File();
         $obj_file->setChmod(mediaPath, $this->mediaWebPath, "");
@@ -1245,12 +1249,13 @@ class rssDirectory extends directoryLibrary
 
 		$arrImages = array();
 		$arrUploads = array();
+		$arrRSS = array();
 
 		//get file data
 		$objResult = $objDatabase->Execute("SELECT 	title,
-													filename,
+													attachment,
 													logo,
-													typ,
+													rss_file,
 													map,
 													lokal,
 													spez_field_11,
@@ -1288,23 +1293,19 @@ class rssDirectory extends directoryLibrary
 				array_push($arrImages,$objResult->fields['spez_field_19']);
 				array_push($arrImages,$objResult->fields['spez_field_20']);
 
+				array_push($arrUploads,$objResult->fields['attachment']);
 				array_push($arrUploads,$objResult->fields['spez_field_25']);
 				array_push($arrUploads,$objResult->fields['spez_field_26']);
 				array_push($arrUploads,$objResult->fields['spez_field_27']);
 				array_push($arrUploads,$objResult->fields['spez_field_28']);
 				array_push($arrUploads,$objResult->fields['spez_field_29']);
+
+				array_push($arrRSS,$objResult->fields['rss_file']);
 				$objResult->MoveNext();
 			}
 		}
 
 		$obj_file = new File();
-
-		//select filetype
-		if($typ ==  "rss"){
-			$this->dirLog = $obj_file->delFile($this->mediaPath, $this->mediaWebPath, "ext_feeds/".$file);
-		}elseif($typ ==  "file"){
-    		$this->dirLog = $obj_file->delFile($this->mediaPath, $this->mediaWebPath, "uploads/".$file);
-		}
 
 		//del images
 		foreach($arrImages as $arrKey => $arrFile){
@@ -1324,6 +1325,14 @@ class rssDirectory extends directoryLibrary
 			//file
 			if (file_exists($this->mediaPath."uploads/".$arrFile) && !empty($arrFile)){
 				$this->dirLog = $obj_file->delFile($this->mediaPath, $this->mediaWebPath, "uploads/".$arrFile);
+			}
+		}
+
+		//del rss
+		foreach($arrRSS as $arrKey => $arrFile){
+			//file
+			if (file_exists($this->mediaPath."ext_feeds/".$arrFile) && !empty($arrFile)){
+				$this->dirLog = $obj_file->delFile($this->mediaPath, $this->mediaWebPath, "ext_feeds/".$arrFile);
 			}
 		}
 
@@ -1735,12 +1744,6 @@ class rssDirectory extends directoryLibrary
 		//get inputfields
 		$this->getInputfields($_SESSION['auth']['userid'], "add", "", "backend");
 
-		//settings
-		$dirTyp_File	= $this->settings['show_files']['disabled'];
-		$dirTyp_RSS		= $this->settings['show_rss']['disabled'];
-		$dirTyp_Link	= $this->settings['show_links']['disabled'];
-
-
 		// initialize variables
 		$this->_objTpl->setVariable(array(
 			'TXT_NEW_ENTRY' 			=> $_ARRAYLANG['TXT_DIR_NEW_ENTREE'],
@@ -1748,12 +1751,8 @@ class rssDirectory extends directoryLibrary
 			'TXT_DESCRIPTION' 			=> $_ARRAYLANG['TXT_DIR_DESCRIPTION'],
 			'TXT_CATEGORY' 				=> $_ARRAYLANG['TXT_DIR_CATEGORIE'],
 			'TXT_LEVEL' 				=> $_ARRAYLANG['TXT_LEVEL'],
-			'TXT_FILE'  				=> $_ARRAYLANG['TXT_DIR_FILE_UPLOAD'] ,
 			'TXT_OS'  					=> $_ARRAYLANG['TXT_DIR_PLATFORM'],
 			'TXT_LANGUAGE'  			=> $_ARRAYLANG['TXT_DIR_LANG'],
-			'TXT_LINK'  				=> $_ARRAYLANG['TXT_DIR_LINK'],
-			'TXT_RSSLINK'  				=> $_ARRAYLANG['TXT_DIR_RSS'],
-			'TXT_FILETYPE'  			=> $_ARRAYLANG['TXT_DIR_FILETYP'],
 			'TXT_ADDEDBY'  				=> $_ARRAYLANG['TXT_DIR_ADDED_BY'],
 			'TXT_LINKS'  				=> $_ARRAYLANG['TXT_DIR_RELATED_LINKS'],
 			'TXT_REQUIRED_FIELDS'		=> $_ARRAYLANG['TXT_DIR_REQUIRED_FIELDS'],
@@ -1768,9 +1767,6 @@ class rssDirectory extends directoryLibrary
 		    'LEVELS'					=> $levels,
 		    'LANGUAGE'  				=> $languages,
 		    'OS'  						=> $platforms,
-		    'TYP_FILE'				    => $dirTyp_File,
-		    'TYP_RSS'				    => $dirTyp_RSS,
-		    'TYP_LINK'				    => $dirTyp_Link,
 
 		));
 
@@ -1840,7 +1836,6 @@ class rssDirectory extends directoryLibrary
 		$this->pageTitle = $_ARRAYLANG['TXT_DIR_FILE_MANAGEMENT'];
 		$this->_objTpl->setVariable(array(
 		    'TXT_NAME' 						=> $_ARRAYLANG['TXT_DIRECTORY_NAME'],
-			'TXT_FILESIZE' 					=> $_ARRAYLANG['TXT_DIR_FILESIZE'],
 			'TXT_DESCRIPTION' 				=> $_ARRAYLANG['TXT_DIR_DESCRIPTION'],
 			'TXT_DATE'						=> $_ARRAYLANG['TXT_DIR_DATE'],
 			'TXT_OPTIONS' 					=> $_ARRAYLANG['TXT_DIR_OPTIONS'],
@@ -1855,7 +1850,6 @@ class rssDirectory extends directoryLibrary
 			'TXT_ACTION' 					=> $_ARRAYLANG['TXT_DIR_ACTION'],
 			'TXT_HITS' 						=> $_ARRAYLANG['TXT_DIR_HITS'],
 			'TXT_LIST' 						=> $_ARRAYLANG['TXT_DIR_LIST'],
-			'TXT_SIZE' 						=> $_ARRAYLANG['TXT_DIR_SIZE'],
 			'TXT_CONFIRM_DELETE_DATA'   	=> $_ARRAYLANG['TXT_DIR_CONFIRM_DEL'],
 		    'TXT_ACTION_IS_IRREVERSIBLE' 	=> $_ARRAYLANG['TXT_DIR_ACTION_IS_IRREVERSIBLE'],
 		    'CATID_SORT'					=> $catIdSort,
@@ -1870,9 +1864,6 @@ class rssDirectory extends directoryLibrary
 				break;
 				case 'name':
 				$_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="files.title desc")? "files.title asc" : "files.title desc";
-				break;
-				case 'size':
-				$_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="files.size desc")? "files.size asc" : "files.size desc";
 				break;
 				case 'hits':
 				$_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="files.hits desc")? "files.hits asc" : "files.hits desc";
@@ -1908,17 +1899,12 @@ class rssDirectory extends directoryLibrary
 
 
 		//create query
-		$query="SELECT 	 files.filename AS filename,
-						 files.title AS title,
+		$query="SELECT 	 files.title AS title,
 						 files.id AS id,
 						 files.description AS description,
-						 files.size AS size,
 						 files.hits as hits,
 						 files.spezial AS spezial,
 						 files.date AS date,
-						 files.link AS link,
-						 files.date AS date,
-						 files.typ AS typ,
 						 files.addedby AS addedby
 					FROM ".$db." ".DBPREFIX."module_directory_dir AS files
 				   WHERE files.status = 1 ".$where."
@@ -1948,12 +1934,9 @@ class rssDirectory extends directoryLibrary
 				$file_array[$i]['title']=$objResult->fields['title'];
 				$file_array[$i]['id']=$objResult->fields['id'];
 				$file_array[$i]['description']=$objResult->fields['description'];
-				$file_array[$i]['size']=$objResult->fields['size'];
 				$file_array[$i]['hits']=$objResult->fields['hits'];
 				$file_array[$i]['spez']=$objResult->fields['spezial'];
 				$file_array[$i]['date']=$objResult->fields['date'];
-				$file_array[$i]['link']=$objResult->fields['link'];
-				$file_array[$i]['typ']=$objResult->fields['typ'];
 				$file_array[$i]['addedby']=$objResult->fields['addedby'];
 				$i++;
 				$objResult->MoveNext();
@@ -1967,23 +1950,6 @@ class rssDirectory extends directoryLibrary
 			//show files
 			foreach ($file_array as $file)
 			{
-				//select filetype
-				if  ($file['typ'] ==  "rss"){
-	    			$url= $file['title'];
-	    			$icon= $this->imageWebPath."directory/rss.gif";
-	    			$size="-";
-	    			$description=$file['description'];
-	    		}elseif ($file['typ'] ==  "link"){
-		    		$description=$file['description'];
-			    	$size= "-";
-			    	$icon = $this->imageWebPath."directory/html.gif";
-			    	$url= stripslashes($file['title']);
-	    		}elseif ($file['typ'] ==  "file"){
-		    		$description=$file['description'];
-			    	$size=round(($file['size']/1000), 3)." KB";
-			    	$icon = $this->getExtension($file['filename']);
-			    	$url=stripslashes($file['title']);
-		    	}
 
 		    	//get categorie name
 				$catId 			= $file['catid'];
@@ -2011,11 +1977,9 @@ class rssDirectory extends directoryLibrary
 				$this->_objTpl->setVariable(array(
 				    'FILES_ROW' 				=> $class,
 					'FILES_ID' 					=> $file['id'],
-					'FILES_ICON' 				=> $icon,
-					'FILES_NAME'				=> $url,
-					'FILES_SIZE' 				=> $size,
+					'FILES_NAME'				=> $file['title'],
 					'FILES_AUTHOR' 				=> $this->getAuthor($file['addedby']),
-					'FILES_DESCRIPTION' 		=> substr($description, 0, 200),
+					'FILES_DESCRIPTION' 		=> substr($file['description'], 0, 200),
 					'FILES_SPEZ_SORT' 			=> $file['spez'],
 					'FILES_DATE' 				=> date("d.m.Y H:i:s",$file['date']),
 					'FILES_HITS' 				=> $file['hits'],
@@ -2098,13 +2062,9 @@ class rssDirectory extends directoryLibrary
 	{
 		global $_CONFIG, $objDatabase, $_ARRAYLANG, $template;
 
-		$objResult = $objDatabase->Execute("SELECT typ, size, link, filename, spezial, premium FROM ".DBPREFIX."module_directory_dir WHERE id = '$id'");
+		$objResult = $objDatabase->Execute("SELECT  spezial, premium FROM ".DBPREFIX."module_directory_dir WHERE id = '$id'");
 		if($objResult !== false){
 			while(!$objResult->EOF){
-				$dirTyp 		= $objResult->fields['typ'];
-				$size	 		= $objResult->fields['size'];
-				$link 			= $objResult->fields['link'];
-				$filename 		= $objResult->fields['filename'];
 				$spezSort 		= $objResult->fields['spezial'];
 				$premium		= $objResult->fields['premium'];
 				$objResult->MoveNext();
@@ -2123,39 +2083,6 @@ class rssDirectory extends directoryLibrary
 		$levelDe 		= $this->getLevels($id, 1);
 		$levelSe		= $this->getLevels($id, 2);
 
-		//get settings and typ
-		switch($dirTyp)
-		{
-			case "rss":
-		        $dirTyp_File	= $this->settings['show_files']['disabled'];
-		    	$dirTyp_RSS		= "checked";
-		    	$dirTyp_Link	= $this->settings['show_links']['disabled'];
-		    	$attachment 	= "<a href='".$link."' target='_blank'>".$link."</a>";
-		    	$display_RSS 	= $this->settings['show_rss']['display'];
-		    	$display_Link 	= "none";
-		    	$display_File 	= "none";
-			break;
-			case "link":
-				$dirTyp_File	= $this->settings['show_files']['disabled'];
-		    	$dirTyp_RSS		= $this->settings['show_rss']['disabled'];
-		    	$dirTyp_Link	= "checked";
-		    	$attachment 	= "<a href='".$link."' target='_blank'>".$link."</a>";
-		    	$display_Link 	= $this->settings['show_links']['display'];
-		    	$display_RSS 	= "none";
-		    	$display_File 	= "none";
-			break;
-			case "file":
-		        $dirTyp_File	= "checked";
-		    	$dirTyp_RSS		= $this->settings['show_rss']['disabled'];
-		    	$dirTyp_Link	= $this->settings['show_links']['disabled'];
-		    	$attachment 	= "<a href='".$this->mediaWebPath."uploads/".$filename."' target='_blank'>".$link."</a>";
-		    	$display_File 	= $this->settings['show_files']['display'];
-		    	$display_Link 	= "none";
-		    	$display_RSS 	= "none";
-			break;
-			default:
-		}
-
 	    // initialize variables
 		$this->_objTpl->loadTemplateFile('module_directory_entry_edit.html',true,true);
 		$this->pageTitle =  $_ARRAYLANG['TXT_DIR_EDIT_FILE'];
@@ -2168,15 +2095,9 @@ class rssDirectory extends directoryLibrary
 		    'TXT_NAME' 					=> $_ARRAYLANG['TXT_DIR_NEW_ENTREE'],
 		    'TXT_EDIT_ENTREE' 			=> $_ARRAYLANG['TXT_DIRECTORY_EDIT_FEED'],
 			'TXT_CATEGORY' 				=> $_ARRAYLANG['TXT_DIR_CATEGORIE'],
-			'TXT_FILE'  				=> $_ARRAYLANG['TXT_DIR_FILE_UPLOAD'],
-			'TXT_NEW_FILE'  			=> $_ARRAYLANG['TXT_DIR_FILE_UPLOAD'],
 			'TXT_REQUIRED_FIELDS'		=> $_ARRAYLANG['TXT_DIR_REQUIRED_FIELDS'],
 			'TXT_UPDATE'				=> $_ARRAYLANG['TXT_DIR_CHANGES_SAVE'],
 		    'TXT_FIELDS_REQUIRED'		=> $_ARRAYLANG['TXT_DIR_FILL_ALL'],
-		    'TXT_LINK'  				=> $_ARRAYLANG['TXT_DIR_LINK'],
-		    'TXT_RSSLINK'  				=> $_ARRAYLANG['TXT_DIR_RSS'],
-			'TXT_FILETYPE'  			=> $_ARRAYLANG['TXT_DIR_FILETYP'],
-			'TXT_ATTACHMENT'  			=> $_ARRAYLANG['TXT_DIRECTORY_ATTACHMENT'],
 		    'CATEGORY_DESELECTED'		=> $categorieDe,
 		    'CATEGORY_SELECTED'			=> $categorieSe,
 		    'LEVEL_DESELECTED'			=> $levelDe,
@@ -2184,17 +2105,7 @@ class rssDirectory extends directoryLibrary
 		    'OS'  						=> $platforms,
 		    'IP'						=> $dirIp,
 		    'HOST'						=> $dirProvider,
-		    'TYP_FILE'				    => $dirTyp_File,
-		    'TYP_RSS'				    => $dirTyp_RSS,
-		    'TYP_LINK'				    => $dirTyp_Link,
-		    'DISPLAY_FILE'				=> $display_File,
-		    'DISPLAY_RSS'				=> $display_RSS,
-		    'DISPLAY_LINK'				=> $display_Link,
-		    'SIZE'				    	=> $size,
 		    'ID'				    	=> $id,
-		    'FILE'				    	=> $filename,
-		    'LINK'				    	=> $link,
-		    'ATTACHMENT'				=> $attachment,
 		    'TXT_DIRECTORY_SPEZ_SORT'	=> $_ARRAYLANG['TXT_DIRECTORY_SPEZ_SORT'],
 		    'TXT_DIRECTORY_SORT'		=> $_ARRAYLANG['TXT_DIRECTORY_SORT'],
 		    'DIRECTORY_SORT'			=> $spezSort,
@@ -2248,7 +2159,6 @@ class rssDirectory extends directoryLibrary
 			'TXT_CONFIRMLIST' 				=> $_ARRAYLANG['TXT_DIR_CONFIRM_LIST'],
 			'TXT_CONFIRMFILE' 				=> $_ARRAYLANG['TXT_DIR_CONFIRM'],
 		    'TXT_NAME' 						=> $_ARRAYLANG['TXT_DIRECTORY_NAME'],
-			'TXT_FILESIZE' 					=> $_ARRAYLANG['TXT_DIR_FILESIZE'],
 			'TXT_DESCRIPTION' 				=> $_ARRAYLANG['TXT_DIR_DESCRIPTION'],
 			'TXT_DATE'						=> $_ARRAYLANG['TXT_DIR_DATE'],
 			'TXT_OPTIONS' 					=> $_ARRAYLANG['TXT_DIR_OPTIONS'],
@@ -2260,7 +2170,6 @@ class rssDirectory extends directoryLibrary
 			'TXT_SEARCH' 					=> $_ARRAYLANG['TXT_DIR_SEARCH'],
 			'TXT_ACTION' 					=> $_ARRAYLANG['TXT_DIR_ACTION'],
 			'TXT_ADDEDBY' 					=> $_ARRAYLANG['TXT_DIRECTORY_AUTHOR'],
-			'TXT_SIZE' 						=> $_ARRAYLANG['TXT_DIR_SIZE'],
 			'TXT_CONFIRM_DELETE_DATA'   	=> $_ARRAYLANG['TXT_DIR_CONFIRM_DEL'],
 		    'TXT_ACTION_IS_IRREVERSIBLE' 	=> $_ARRAYLANG['TXT_DIR_ACTION_IS_IRREVERSIBLE'],
 		    'CATID_SORT'					=> $catIdSort,
@@ -2275,9 +2184,6 @@ class rssDirectory extends directoryLibrary
 				break;
 				case 'name':
 				$_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="title desc")? "title asc" : "title desc";
-				break;
-				case 'size':
-				$_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="size desc")? "size asc" : "size desc";
 				break;
 				case 'addedby':
 				$_SESSION['directory']['sort']=($_SESSION['directory']['sort']=="addedby desc")? "addedby asc" : "addedby desc";
@@ -2329,18 +2235,14 @@ class rssDirectory extends directoryLibrary
 	    $i=0;
 	    if($objResult !== false){
 			while (!$objResult->EOF){
-				$file_array[$i]['filename']=$objResult->fields['filename'];
 				$file_array[$i]['title']=$objResult->fields['title'];
 				$file_array[$i]['id']=$objResult->fields['id'];
 				$file_array[$i]['description']=$objResult->fields['description'];
-				$file_array[$i]['size']=$objResult->fields['size'];
 				$file_array[$i]['catid']=$objResult->fields['catid'];
 				$file_array[$i]['addedby']=$objResult->fields['addedby'];
 				$file_array[$i]['language']=$objResult->fields['language'];
 				$file_array[$i]['platform']=$objResult->fields['platform'];
 				$file_array[$i]['date']=$objResult->fields['date'];
-				$file_array[$i]['link']=$objResult->fields['link'];
-				$file_array[$i]['typ']=$objResult->fields['typ'];
 				$i++;
 				$objResult->MoveNext();
 			}
@@ -2352,24 +2254,6 @@ class rssDirectory extends directoryLibrary
 		$this->_objTpl->setCurrentBlock('filesRow');
 		if(!empty($file_array)){
 			foreach ($file_array as $file) {
-				// check file type
-				if  ($file['typ'] == "rss"){
-	    			$url="<a href='".$file['link']."' target='_blank'>".stripslashes($file['title'])."</a>";
-	    			$icon= $this->imageWebPath."directory/rss.gif";
-	    			$size="-";
-	    			$description=$file['description'];
-	    		}elseif ($file['typ'] == "link"){
-		    		$description=$file['description'];
-			    	$size= "-";
-			    	$icon = $this->imageWebPath."directory/html.gif";
-			    	$url= "<a href='".$file['link']."' target='_blank'>".stripslashes($file['title'])."</a>";
-	    		}elseif ($file['typ'] == "file"){
-		    		$description=$file['description'];
-			    	$size=round(($file['size']/1000), 3)." KB";
-			    	$icon = $this->getExtension($file['filename']);
-			    	$url="<a href='http://".$_SERVER['SERVER_NAME'].$this->mediaWebPath."uploads/".$file['filename']."' target='new'>".stripslashes($file['title'])."</a>";
-		    	}
-
 		    	//check paging
 		    	if (!$count>intval($_CONFIG['corePagingLimit'])){
 					$paging = "";
@@ -2384,10 +2268,8 @@ class rssDirectory extends directoryLibrary
 				$this->_objTpl->setVariable(array(
 				    'FILES_ROW' 				=> $class,
 					'FILES_ID' 					=> $file['id'],
-					'FILES_ICON' 				=> $icon,
-					'FILES_NAME'				=> $url,
-					'FILES_SIZE' 				=> $size,
-					'FILES_DESCRIPTION' 		=> substr($description, 0, 200),
+					'FILES_NAME'				=> stripslashes($file['title']),
+					'FILES_DESCRIPTION' 		=> substr(stripslashes($file['description']), 0, 200),
 					'FILES_LANGUAGE' 			=> $file['language'],
 					'FILES_PLATFORM' 			=> $file['platform'],
 					'FILES_DATE' 				=> date("d.m.Y H:i:s",$file['date']),
@@ -2438,33 +2320,16 @@ class rssDirectory extends directoryLibrary
 	{
 		global $_CONFIG, $objDatabase, $_ARRAYLANG, $template;
 
-		//get entry data
-		$objResult = $objDatabase->Execute("SELECT id, filename, link FROM ".DBPREFIX."module_directory_dir WHERE id = '$id'");
-		if($objResult !== false){
-			while(!$objResult->EOF){
-				$dirId 				= $objResult->fields['id'];
-				$dirFile 			= $objResult->fields['filename'];
-				$dirLink 			= $objResult->fields['link'];
-				$objResult->MoveNext();
-			}
-		}
-
-		if($dirFile  == ""){
-			$file = $dirLink;
-		}else{
-			$file = $dirFile ;
-		}
-
 		//get categories/levels
-		$categories = $this->getCategories($dirId, 2);
-		$levels 	= $this->getLevels($dirId, 2);
+		$categories = $this->getCategories($id, 2);
+		$levels 	= $this->getLevels($id, 2);
 
 	    // initialize variables
 		$this->_objTpl->loadTemplateFile('module_directory_confirm_details.html',true,true);
 		$this->pageTitle = $_ARRAYLANG['TXT_DIR_EDIT_FILE'];
 
 		//get inputfields
-		$this->getInputfields($_SESSION['auth']['name'], "confirm", $id, "backend");
+		$this->getInputfields($_SESSION['auth']['name'], "confirm", intval($id), "backend");
 
 		$this->_objTpl->setVariable(array(
 		    'TXT_NAME' 					=> $_ARRAYLANG['TXT_DIRECTORY_NAME'],
@@ -2473,13 +2338,9 @@ class rssDirectory extends directoryLibrary
 			'TXT_LEVEL' 				=> $_ARRAYLANG['TXT_LEVEL'],
 			'TXT_BACK'					=> $_ARRAYLANG['TXT_DIR_BACK'],
 			'TXT_CONFIRM'				=> $_ARRAYLANG['TXT_DIR_CONFIRM'],
-			'TXT_LINK'  				=> $_ARRAYLANG['TXT_DIR_LINK'],
-			'TXT_FILE'  				=> $_ARRAYLANG['TXT_DIR_FILE2'],
-		    'TXT_RSSLINK'  				=> $_ARRAYLANG['TXT_DIR_RSS'],
-			'TXT_FILETYPE'  			=> $_ARRAYLANG['TXT_DIR_FILETYP'],
 		    'CATEGORY'					=> $categories,
 		    'LEVELS'					=> $levels,
-		    'ID'						=> $dirId,
+		    'ID'						=> $id,
 		    'FILE'						=> $file,
 		));
 
@@ -2489,7 +2350,6 @@ class rssDirectory extends directoryLibrary
 			$this->_objTpl->hideBlock('levels');
 		}
 	}
-
 
 
 	function confirmEntry_step1()
@@ -2774,6 +2634,12 @@ class rssDirectory extends directoryLibrary
 					case '10':
 						$setType = "<img src='".$this->imageWebPath ."directory/upload.gif' border='0' title='Upload' alt='Upload' />";
 					break;
+					case '11':
+						$setType = "<img src='".$this->imageWebPath ."directory/upload.gif' border='0' title='Upload' alt='Upload' />";
+					break;
+					case '12':
+						$setType = "<img src='".$this->imageWebPath ."directory/rssnew.gif' border='0' title='RSS Feed' alt='RSS Feed' />";
+					break;
 				}
 
 				//status backend
@@ -2809,7 +2675,7 @@ class rssDirectory extends directoryLibrary
 				}
 
 				//is spez field
-				if ($objReslut->fields['typ'] >= 5 ) {
+				if ($objReslut->fields['typ'] >= 5 &&  $objReslut->fields['typ'] <= 10 ) {
 					$setName = "<input type=\"text\" name=\"setSpezFields[".$objReslut->fields['id']."]\" value=\"".$objReslut->fields['title']."\" style=\"width:130px;\" maxlength='250'>";
 				} else {
 					$setName = $_ARRAYLANG[$objReslut->fields['title']];
