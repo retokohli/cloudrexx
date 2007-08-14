@@ -37,15 +37,16 @@ define('SUPPORT_TICKET_STATUS_CLOSED',  5);
 // Total number.  Keep this up to date!
 define('SUPPORT_TICKET_STATUS_COUNT',   6);
 
-// Ticket action constant values
+// Ticket Event constant values
 // UNKNOWN: Some irregular Ticket event has occurred,
 // and the Ticket status should be set to UNKNOWN now, too.
 // Someone needs to take action now.
 define('SUPPORT_TICKET_EVENT_UNKNOWN',         0);
-// READ: Someone took a look at this Ticket.
-// The Ticket status is set to OPEN after that either if the Ticket
-// was NEW, or if it has been MOVEd to this person before.
-define('SUPPORT_TICKET_EVENT_READ',            1);
+// MESSAGE_VIEW: Someone took a look at a Message associated
+// with this Ticket.
+// The Ticket status is set to OPEN after that if no unread
+// Messages are associated with the Ticket anymore.
+define('SUPPORT_TICKET_EVENT_MESSAGE_VIEW',    1);
 // CHANGE_CATEGORY: Someone changed the Support Category.
 // Upon changing the Support Category of a new or open Ticket,
 // its status must be set to OPEN.
@@ -57,24 +58,38 @@ define('SUPPORT_TICKET_EVENT_CHANGE_CATEGORY', 2);
 // be notified!
 // The Ticket status is WAIT until the other person views it.
 // Tickets with status WAIT or CLOSED should not be changed!
-define('SUPPORT_TICKET_EVENT_CHANGE_PERSON',   3);
+define('SUPPORT_TICKET_EVENT_CHANGE_OWNER',    3);
 // CHANGE_OTHER: Any other changes that don't affect the Ticket's state.
 define('SUPPORT_TICKET_EVENT_CHANGE_OTHER',    4);
 // REPLY: Someone has sent a reply to the Ticket.
-// Tickets that have been replied must be set to status WAIT!
+// Tickets that have been replied to must be set to status WAIT!
 define('SUPPORT_TICKET_EVENT_REPLY',           5);
-// MESSAGE: The Customer has sent another message regarding his
+// MESSAGE_NEW: The Customer has sent another message regarding his
 // Ticket.  This will usually lead to the Ticket state being reset
 // to new, except when it has already been closed, or if it's in
 // UNKNOWN state.  In the former case, a new Ticket will be created.
 // In the latter case, the status will be left UNKNOWN.
-define('SUPPORT_TICKET_EVENT_MESSAGE',         6);
+define('SUPPORT_TICKET_EVENT_MESSAGE_NEW',     6);
+// MESSAGE_DELETE: The User has marked the Message as deleted.
+// This will not change the Ticket status, but the Message
+// status field *MUST* be updated.
+// Note that Message status are restored whenever a Ticket has been MOVEd
+// to and accepted by another owner.  If the new owner never owned the
+// Ticket before, all MESSAGE status will be reset to NEW.  If the Ticket
+// was owned by her before, all Messages she has viewed
+// before will be marked accordingly.  Messages marked as DELETED, however,
+// will remain in that state until they are restored.
+define('SUPPORT_TICKET_EVENT_MESSAGE_DELETE',  7);
+// REFERENCE: This Ticket references some other, probably older and closed,
+// Ticket.  This Event doesn't require any changes to both Tickets,
+// it simply creates a TicketEvent record.
+define('SUPPORT_TICKET_EVENT_REFERENCE',       8);
 // CLOSE: Someone has declared this Ticket closed.
 // The Ticket state must now be CLOSED, and the Ticket should
 // not be MOVEd or CHANGEd anymore!
-define('SUPPORT_TICKET_EVENT_CLOSE',           7);
+define('SUPPORT_TICKET_EVENT_CLOSE',           9);
 // Total number.  Keep this up to date!
-define('SUPPORT_TICKET_EVENT_COUNT',           8);
+define('SUPPORT_TICKET_EVENT_COUNT',          10);
 
 // Ticket source constants
 // UNKNOWN: It is not known how this Ticket got here.
@@ -83,8 +98,10 @@ define('SUPPORT_TICKET_SOURCE_UNKNOWN',        0);
 define('SUPPORT_TICKET_SOURCE_EMAIL',          1);
 // WEB: The Ticket has been posted on the web site.
 define('SUPPORT_TICKET_SOURCE_WEB',            2);
+// SYSTEM: The Ticket has been posted from the administration page.
+define('SUPPORT_TICKET_SOURCE_SYSTEM',         3);
 // Total number.  Keep this up to date!
-define('SUPPORT_TICKET_SOURCE_COUNT',          3);
+define('SUPPORT_TICKET_SOURCE_COUNT',          4);
 
 // Message status constants
 // UNKNOWN: The Message needs to be read again to return to READ status.

@@ -1,0 +1,36 @@
+<table summary="" class="adminlist" border=0 width="100%" cellpadding="2" cellspacing="0">
+  <tr>
+    <th nowrap="nowrap" colspan="4">{TXT_SUPPORT_MESSAGE}</th>
+  </tr>
+  <tr class="row1">
+    <td nowrap="nowrap">{TXT_SUPPORT_ID}</td>
+    <td nowrap="nowrap">{SUPPORT_MESSAGE_ID}</td>
+    <td nowrap="nowrap">{TXT_SUPPORT_STATUS}</td>
+    <td nowrap="nowrap">{SUPPORT_MESSAGE_STATUS}</td>
+  </tr>
+  <tr class="row2">
+    <td nowrap="nowrap" width="20%">{TXT_SUPPORT_DATE}</td>
+    <td nowrap="nowrap" width="30%">{SUPPORT_MESSAGE_DATE}</td>
+    <td nowrap="nowrap" width="20%">{TXT_SUPPORT_FROM}</td>
+    <td nowrap="nowrap" width="30%">{SUPPORT_MESSAGE_FROM}</td>
+  </tr>
+  <tr class="row1">
+    <td nowrap="nowrap">{TXT_SUPPORT_SUBJECT}</td>
+    <td nowrap="nowrap" colspan="3">{SUPPORT_MESSAGE_SUBJECT}</td>
+  </tr>
+</table>
+<br />
+<table summary="" class="adminlist" border=0 width="100%" cellpadding="2" cellspacing="0">
+  <tr>
+    <th nowrap="nowrap">{TXT_SUPPORT_MESSAGE_BODY}</th>
+  </tr>
+  <tr class="row1">
+    <td nowrap="nowrap">{SUPPORT_MESSAGE_BODY}</td>
+  </tr>
+</table>
+<br />
+<form name="formSupportMessage" method="post" action="?cmd=support&amp;act=messageEdit">
+  <input type="hidden" id="supportMessageId" name="supportMessageId"
+    value="{SUPPORT_MESSAGE_ID}" />
+  <input type="submit" id="quote" name="quote" value="{TXT_SUPPORT_MESSAGE_QUOTE}" />
+</form>

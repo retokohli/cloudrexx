@@ -597,6 +597,49 @@ echo("SupportCategory::getById($id, $languageId): no result: ".$objResult->Recor
         return $objSupportCategory;
     }
 
+
+    /**
+     * Select a Support Category name by ID from the database.
+     *
+     * Only the corresponding language of the $languageId parameter is read
+     * from the database.
+     * @static
+     * @param       integer     $id             The Support Category ID
+     * @param       integer     $languageId     The optional language ID
+     * @return      string                      The Support Category name
+     *                                          on success, false otherwise
+     * @global      mixed       $objDatabase    Database object
+     * @copyright   CONTREXX CMS - COMVATION AG
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    //static
+    function getNameById($id, $languageId=0)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT name
+              FROM ".DBPREFIX."module_support_category
+        INNER JOIN ".DBPREFIX."module_support_category_language
+                ON id=support_category_id
+             WHERE id=$id
+               AND language_id=$languageId
+        ";
+//echo("SupportCategory::getNameById($id, $languageId): query: $query<br />");
+        $objResult = $objDatabase->Execute($query);
+//echo("SupportCategory::getNameById($id, $languageId): objResult: '$objResult'<br />");
+        if (!$objResult) {
+echo("SupportCategory::getNameById($id, $languageId): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
+            return false;
+        }
+        if ($objResult->RecordCount() == 0) {
+echo("SupportCategory::getNameById($id, $languageId): no result: ".$objResult->RecordCount()."<br />");
+            return false;
+        }
+//echo("SupportCategory::getNameById($id, $languageId): ID is ".$objResult->fields('id')."<br />");
+        return contrexx_stripslashes($objResult->fields['name']);
+    }
+
 }
 
 ?>

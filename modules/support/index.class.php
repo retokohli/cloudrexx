@@ -18,6 +18,18 @@ require_once ASCMS_MODULE_PATH.'/support/lib/SupportCommon.class.php';
  * Support Category
  */
 require_once ASCMS_MODULE_PATH.'/support/lib/SupportCategory.class.php';
+/**
+ * Support Categories
+ */
+require_once ASCMS_MODULE_PATH.'/support/lib/SupportCategories.class.php';
+/**
+ * Support Ticket
+require_once ASCMS_MODULE_PATH.'/support/lib/Ticket.class.php';
+ */
+/**
+ * Provides clickable table headers for sorting
+require_once ASCMS_CORE_PATH.'/Sorting.class.php';
+ */
 
 /**
  * Support system frontend
@@ -67,13 +79,15 @@ class Support
 
     /**
      * Constructor (PHP5)
+     * @param       string      $strTemplate    Template name
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
-     * @param       string  $strTemplate
      */
     function __construct($strTemplate)
     {
+        global $objInit;
+
         if (1) {
             global $objDatabase; $objDatabase->debug = 1;
             error_reporting(E_ALL);
@@ -86,7 +100,8 @@ class Support
         $this->objTemplate = new HTML_Template_Sigma('.');
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($strTemplate);
-//        $this->initialize();
+        $this->objSupportCategories =
+            new SupportCategories($objInit->getFrontendLangId());
     }
 
 
