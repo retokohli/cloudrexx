@@ -1,21 +1,15 @@
 <!-- START module_directory_entry_edit.html -->
 <script language="JavaScript">
 function confirmFile(id)
-{ 
+{
    window.location.replace("?cmd=directory&act=confirmfile&id="+id);
 }
 </script>
   <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%"  class="adminlist">
-    <tr> 
+    <tr>
       <th colspan="2">{TXT_CONFIRM}</th>
     </tr>
-    <tr class="row1"> 
-      <td width="150">{TXT_FILE}:</td>
-      <td> 
-        <input disabled name="fileName" style="width:300px;" value="{FILE}">
-        </td>
-    </tr>
-    <tr class="row2"> 
+    <tr class="row1">
       <td width="150" valign="top">{TXT_CATEGORY}</td>
       <td>
         <select name="selectedCat[]" size="12" style="width:300px;" multiple="multiple">
@@ -24,7 +18,7 @@ function confirmFile(id)
       </td>
     </tr>
     <!-- BEGIN levels -->
-    <tr class="row1"> 
+    <tr class="row2">
       <td width="150" valign="top">{TXT_LEVEL}</td>
       <td>
         <select name="selectedLevel[]" size="12" style="width:300px;" multiple="multiple">
@@ -33,10 +27,10 @@ function confirmFile(id)
       </td>
     </tr>
     <!-- END levels -->
-  </table> 
+  </table>
    <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%"  class="adminlist">
    	<!-- BEGIN inputfieldsOutput -->
-    <tr class="{FIELD_ROW}"> 
+    <tr class="{FIELD_ROW}">
       <td width="150" valign="top">{FIELD_NAME}:</td>
       <td >{FIELD_VALUE}</td>
     </tr>

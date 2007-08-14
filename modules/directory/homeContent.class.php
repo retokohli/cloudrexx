@@ -319,13 +319,17 @@ class dirHomeContent extends directoryLibrary
 	{
 		global $objDatabase, $_ARRAYLANG, $template;
 
-		$arrDropdown['language'] 	= $this->getLanguages('');
-		$arrDropdown['platform'] 	= $this->getPlatforms('');
-		$arrDropdown['canton'] 		= $this->getCantons('');
+		$arrDropdown['language'] 	= $this->getLanguages(contrexx_addslashes($_REQUEST['language']));
+		$arrDropdown['platform'] 	= $this->getPlatforms(contrexx_addslashes($_REQUEST['platform']));
+		$arrDropdown['canton'] 		= $this->getCantons(contrexx_addslashes($_REQUEST['canton']));
+		$arrDropdown['spez_field_21']		= $this->getSpezDropdown(contrexx_addslashes($_REQUEST['spez_field_21']),'spez_field_21');
+		$arrDropdown['spez_field_22']		= $this->getSpezDropdown(contrexx_addslashes($_REQUEST['spez_field_22']),'spez_field_22');
+		$arrDropdown['spez_field_23']		= $this->getSpezVotes(contrexx_addslashes($_REQUEST['spez_field_23']),'spez_field_23');
+		$arrDropdown['spez_field_24']		= $this->getSpezVotes(contrexx_addslashes($_REQUEST['spez_field_24']),'spez_field_24');
 
+		$expSearch = '';
 
-
-		$javascript	= 	'<script language="JavaScript">
+		$javascript	= 	'<script type="text/javascript">
 						<!--
 						function toggle(target){
 						    obj = document.getElementById(target);
@@ -341,35 +345,49 @@ class dirHomeContent extends directoryLibrary
 
 		//get levels
 		if ($this->settings['levels']['value'] == 1) {
-			$options 	= $this->getSearchLevels('');
-			$name		= "Ebene";
-			$field 		= '<select name="lid" style="width:194px;"><option value="">Alle Ebenen</option>'.$options.'</select>';
+			$lid		= intval($_REQUEST['lid']);
+			$options 	= $this->getSearchLevels($lid);
+			$name		= $_ARRAYLANG['TXT_LEVEL'];
+			$field 		= '<select name="lid" style="width:194px;"><option value=""></option>'.$options.'</select>';
 
 			// set variables
 			$expSearch	.= '<tr>
-	                            <td width="100" height="20">'.$name.'</td>
-	                            <td>'.$field.'</td>
+	                            <td width="100" height="20" style="border: 0px solid #ff0000;">'.$name.'</td>
+	                            <td style="border: 0px solid #ff0000;">'.$field.'</td>
 	                        </tr>';
 		}
 
 		//get categories
-		$options 	= $this->getSearchCategories('');
+		$cid		= intval($_REQUEST['cid']);
+		$options 	= $this->getSearchCategories($cid);
 		$name		= $_ARRAYLANG['TXT_DIR_F_CATEGORIE'];
-		$field	 	= '<select name="cid" style="width:194px;"><option value="">Alle Kategorien</option>'.$options.'</select>';
+		$field	 	= '<select name="cid" style="width:194px;"><option value=""></option>'.$options.'</select>';
 
 		// set variables
 		$expSearch	.= '<tr>
-                            <td width="100" height="20">'.$name.'</td>
-                            <td>'.$field.'</td>
+                            <td width="100" height="20" style="border: 0px solid #ff0000;">'.$name.'</td>
+                            <td style="border: 0px solid #ff0000;">'.$field.'</td>
                         </tr>';
 
 		//get exp search fields
 		$objResult = $objDatabase->Execute("SELECT id, name, title, typ FROM ".DBPREFIX."module_directory_inputfields WHERE exp_search='1' AND is_search='1' ORDER BY sort");
 		if($objResult !== false){
 			while(!$objResult->EOF){
-				$name = $_ARRAYLANG[$objResult->fields['title']];
-				if($objResult->fields['typ'] == 1){
-					$field 		= '<input maxlength="100" size="30" name="'.$objResult->fields['name'].'" />';
+
+				if($objResult->fields['typ'] == 5 || $objResult->fields['typ'] == 6) {
+					$name = $objResult->fields['title'];
+				} else {
+					if (!empty($_ARRAYLANG[$objResult->fields['title']])) {
+						$name = $_ARRAYLANG[$objResult->fields['title']];
+					} else {
+						$name = $objResult->fields['title'];
+					}
+
+				}
+
+
+				if($objResult->fields['typ'] == 1 || $objResult->fields['typ'] == 2 || $objResult->fields['typ'] == 5 || $objResult->fields['typ'] == 6){
+					$field 		= '<input maxlength="100" size="30" name="'.$objResult->fields['name'].'" value="'.contrexx_addslashes($_REQUEST[$objResult->fields['name']]).'" />';
 				}else{
 					$field 		= '<select name="'.$objResult->fields['name'].'" style="width:194px;">'.$arrDropdown[$objResult->fields['name']].'</select>';
 				}
@@ -385,27 +403,21 @@ class dirHomeContent extends directoryLibrary
 		}
 
 
-		$html 		=	'<table width="100%" cellspacing="5" cellpadding="0" border="0" id="directory">
-					    <tbody>
-					        <tr>
-					            <td class="description">
-					                <form action="index.php?" method="get" name="directorySearch" id="directorySearch">
-					                    <input name="term" value="{TXT_DIRECTORY_SEARCHTERM}" size="25" maxlength="100" />
-					                    <input id="searchCheck" type="hidden" name="check" value="norm" size="10" />
-					                    <input type="hidden" name="section" value="directory" size="10" />
-					                    <input type="hidden" name="cmd" value="search" size="10" />
-					                    <input type="submit" value="'.$_ARRAYLANG['TXT_DIR_F_SEARCH'].'" name="search" /> » <a onclick="javascript:toggle(\'hiddenSearch\')" href="javascript:{}">'.$_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'].'</a><br />
-					                    <div style="display: none;" id="hiddenSearch">
-					                    <br />
-					                    <table width="100%" cellspacing="0" cellpadding="0" border="0">
-					                    '.$expSearch.'
-					                    </table>
-					                    </div>
-					                </form>
-					            </td>
-					        </tr>
-					    </tbody>
-					</table>';
+		$html 		=	'<div class="directorySearch">
+			                <form action="index.php?" method="get" name="directorySearch" id="directorySearch">
+			                    <input name="term" value="'.(!empty($_GET['term']) ? htmlentities($_GET['term'], ENT_QUOTES, CONTREXX_CHARSET) : '').'" size="25" maxlength="100" />
+			                    <input id="searchCheck" type="hidden" name="check" value="norm" size="10" />
+			                    <input type="hidden" name="section" value="directory" size="10" />
+			                    <input type="hidden" name="cmd" value="search" size="10" />
+			                     <input type="submit" value="'.$_ARRAYLANG['TXT_DIR_F_SEARCH'].'" name="search" /> &raquo; <a onclick="javascript:toggle(\'hiddenSearch\')" href="javascript:{}">'.$_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'].'</a><br />
+			                    <div style="display: none;" id="hiddenSearch">
+			                    <br />
+			                    <table width="100%" cellspacing="0" cellpadding="0" border="0">
+			                    '.$expSearch.'
+			                    </table>
+			                    </div>
+			                </form>
+			            </div>';
 
 		// set variables
 		$this->_objTemplate->setVariable(array(

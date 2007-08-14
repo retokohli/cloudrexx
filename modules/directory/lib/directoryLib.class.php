@@ -539,19 +539,41 @@ class directoryLibrary
            	$this->fileSize = $_FILES[$name]['size'];
 
            	if($fileName != ""){
-				//check extension
-           		$info     = pathinfo($fileName);
-				$exte     = $info['extension'];
-				$exte     = (!empty($exte)) ? '.' . $exte : '';
-				$part1    = substr($fileName, 0, strlen($fileName) - strlen($exte));
-				$rand	  = rand(10, 99);
-				$fileName = md5($rand.$part1).$exte;
 
-				//check file
+				//check extension
+           		$info     		= pathinfo($fileName);
+				$exte     		= $info['extension'];
+				$exte     		= (!empty($exte)) ? '.' . $exte : '';
+				$part1    		= substr($fileName, 0, strlen($fileName) - strlen($exte));
+				$rand	  		= rand(10, 99);
+				$arrSettings 	= $this->getSettings();
+
+				if($arrSettings['encodeFilename']['value'] == 1) {
+					$fileName = md5($rand.$part1).$exte;
+           		}
+
+           		//check file
 				if(file_exists($this->mediaPath.$path.$fileName)){
-					$fileName = $rand.$part1 . '_' . (time() + $x) . $exte;
-					$fileName = md5($fileName).$exte;
+					$fileName = $part1 . '_' . (time() + $x) . $exte;
 				}
+
+				//check extension
+           		$info     		= pathinfo($fileName);
+				$exte     		= $info['extension'];
+				$exte     		= (!empty($exte)) ? '.' . $exte : '';
+				$part1    		= substr($fileName, 0, strlen($fileName) - strlen($exte));
+				$rand	  		= rand(10, 99);
+				$arrSettings 	= $this->getSettings();
+
+				if($arrSettings['encodeFilename']['value'] == 1) {
+					$fileName = md5($rand.$part1).$exte;
+           		}
+
+           		//check file
+				if(file_exists($this->mediaPath.$path.$fileName)){
+					$fileName = $part1 . '_' . (time() + $x) . $exte;
+				}
+
 
 				//upload file
 				if(@move_uploaded_file($tmpFile, $this->mediaPath.$path.$fileName)) {
@@ -686,8 +708,14 @@ class directoryLibrary
     function createXML ($link)
     {
     	//copy
-    	$time = time();
-		$filename = "feed_".$time."_".basename($link).".xml";
+    	$time 			= time();
+		$filename 		= $time."_".basename($link);
+		$rand	  		= rand(10, 99);
+		$arrSettings 	= $this->getSettings();
+
+		if($arrSettings['encodeFilename']['value'] == 1) {
+			$fileName = md5($rand.$filename)."xml";
+   		}
 
 
 		if(!@copy($link, $this->mediaPath."ext_feeds/".$filename)){
@@ -697,6 +725,7 @@ class directoryLibrary
 			$rss =& new XML_RSS($this->mediaPath."ext_feeds/".$filename);
 			$rss->parse();
 			$content = '';
+
 			foreach($rss->getStructure() as $array)
 			{
 				$content .= $array;
@@ -734,13 +763,12 @@ class directoryLibrary
 		global $objDatabase, $_ARRAYLANG;
 
 		//get filename
-		$objResult = $objDatabase->Execute("SELECT  id, filename, link FROM ".DBPREFIX."module_directory_dir WHERE status = '1' AND id = '".contrexx_addslashes($id)."'");
+		$objResult = $objDatabase->Execute("SELECT  id, rss_link, rss_file FROM ".DBPREFIX."module_directory_dir WHERE status = '1' AND id = '".contrexx_addslashes($id)."'");
 
 		if($objResult !== false){
 			while(!$objResult->EOF){
-				$hits 		= $objResult->fields['hits'];
-				$filename 	= $objResult->fields['filename'];
-				$link 		= $objResult->fields['link'];
+				$filename 	= $objResult->fields['rss_file'];
+				$link 		= $objResult->fields['rss_link'];
 				$objResult->MoveNext();
 			}
 		}
@@ -791,33 +819,6 @@ class directoryLibrary
 
 		$arrSettings = $this->getSettings();
 
-		//check file type
-		if($_POST['type'] == "rss"){
-			$link 		= $_POST['rssname'];
-			$file 		= $this->createXML($link);
-			$msg_error 	= $_ARRAYLANG['DIRECTORY_NO_RSS'];
-			$checksum 	= "";
-		}elseif($_POST['type'] == "file"){
-			$file 		= $this->uploadMedia("fileName", "uploads/");
-			$link 		= $_FILES['fileName']['name'];
-			$checksum 	= md5_file($this->mediaPath."uploads/".$file);
-			$msg_error 	= $_ARRAYLANG['DIRECTORY_UPLOAD_FAILED'];
-		}elseif($_POST['type'] == "link"){
-			if($_POST['linkname'] == "http://"){
-				$msg_error 	= $_ARRAYLANG['DIRECTORY_NO_LINK'];
-				$file 		= "error";
-			}else{
-				$link 		= $_POST['linkname'];
-				if(substr($link, 0,7) != "http://"){
-					$link = "http://".$link;
-				}
-				$checksum 	= "";
-				$file 		= "";
-			}
-		}
-
-
-
 		//get post data
 		if($file != "error"){
 
@@ -826,10 +827,28 @@ class directoryLibrary
 			foreach($_POST["inputValue"] as $inputName => $inputValue){
 
 				//check links
-				if($inputName == "relatedlinks" || $inputName == "homepage"){
+				if($inputName == "relatedlinks" || $inputName == "homepage" || $inputName == "link"){
 					if(substr($inputValue, 0,7) != "http://" && $inputValue != ""){
 						$inputValue = "http://".$inputValue;
 					}
+				}
+
+				//check rss
+				if($inputName == "rss_link"){
+
+					//create rss
+					$link 		= $inputValue;
+					$rss_file 	= $this->createXML($link);
+
+					if(substr($inputValue, 0,7) != "http://" && $inputValue != ""){
+						$inputValue = "http://".$inputValue;
+					}
+
+					if ($rss_file == "error") {
+						$inputValue = "";
+						$rss_file	= "";
+					}
+
 				}
 
 				//upload spez pics
@@ -854,8 +873,9 @@ class directoryLibrary
 					}
 				}
 
-				//upload spez files
-				if ($inputName == "spez_field_25" ||
+				//upload spez files and attachment
+				if ($inputName == "attachment" ||
+					$inputName == "spez_field_25" ||
 					$inputName == "spez_field_26" ||
 					$inputName == "spez_field_27" ||
 					$inputName == "spez_field_28" ||
@@ -890,7 +910,7 @@ class directoryLibrary
 				}
 			}
 
-			$query .= " checksum='".$checksum."', filename='".contrexx_strip_tags($file)."', link='".contrexx_strip_tags($link)."', date='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', size='".$this->fileSize."', typ='".contrexx_strip_tags($_POST['type'])."', status='".intval($entryStatus)."', provider='".gethostbyaddr($_SERVER['REMOTE_ADDR'])."', ip='".$_SERVER['REMOTE_ADDR']."',  validatedate='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', xml_refresh='".mktime("now")."'";
+			$query .= "rss_file='".$rss_file."', date='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', status='".intval($entryStatus)."', provider='".gethostbyaddr($_SERVER['REMOTE_ADDR'])."', ip='".$_SERVER['REMOTE_ADDR']."',  validatedate='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', xml_refresh='".mktime("now")."'";
 
 			//add entry
 			$objResult = $objDatabase->query($query);
@@ -1190,7 +1210,7 @@ class directoryLibrary
     	global $objDatabase, $_ARRAYLANG;
 
     	//get settings
-		$i=1;
+		$i=0;
       	$width= "300";
 
 		$this->_objTpl->setCurrentBlock('inputfieldsOutput');
@@ -1222,7 +1242,9 @@ class directoryLibrary
 				while(!$objResult->EOF){
 					$arrInputfieldsValue['id'] 					= $objResult->fields['id'];
 					$arrInputfieldsValue['title'] 				= $objResult->fields['title'];
-					$arrInputfieldsValue['filename']	 		= $objResult->fields['filename'];
+					$arrInputfieldsValue['attachment'] 			= $objResult->fields['attachment'];
+					$arrInputfieldsValue['rss_link'] 			= $objResult->fields['rss_link'];
+					$arrInputfieldsValue['link'] 				= $objResult->fields['link'];
 					$arrInputfieldsValue['date']	 			= $objResult->fields['date'];
 					$arrInputfieldsValue['description'] 		= $objResult->fields['description'];
 					$arrInputfieldsValue['relatedlinks']		= $objResult->fields['relatedlinks'];
@@ -1231,9 +1253,6 @@ class directoryLibrary
 					$arrInputfieldsValue['provider'] 			= $objResult->fields['provider'];
 					$arrInputfieldsValue['ip'] 					= $objResult->fields['ip'];
 					$arrInputfieldsValue['validatedate'] 		= $objResult->fields['validatedate'];
-					$arrInputfieldsValue['size'] 				= $objResult->fields['size'];
-					$arrInputfieldsValue['link'] 				= $objResult->fields['link'];
-					$arrInputfieldsValue['typ'] 				= $objResult->fields['typ'];
 					$arrInputfieldsValue['platform'] 			= $objResult->fields['platform'];
 					$arrInputfieldsValue['language'] 			= $objResult->fields['language'];
 					$arrInputfieldsValue['canton'] 				= $objResult->fields['canton'];
@@ -1245,7 +1264,6 @@ class directoryLibrary
 					$arrInputfieldsValue['contact'] 			= $objResult->fields['contact'];
 					$arrInputfieldsValue['hits'] 				= $objResult->fields['hits'];
 					$arrInputfieldsValue['xml_refresh'] 		= $objResult->fields['xml_refresh'];
-					$arrInputfieldsValue['checksum'] 			= $objResult->fields['checksum'];
 					$arrInputfieldsValue['city'] 				= $objResult->fields['city'];
 					$arrInputfieldsValue['information'] 		= $objResult->fields['information'];
 					$arrInputfieldsValue['fax'] 				= $objResult->fields['fax'];
@@ -1334,11 +1352,7 @@ class directoryLibrary
 							var errorMsg = "";
 							with( document.addForm ) {
 							';
-		$javascript 	.= 'if (document.getElementsByName(\'type\')[0].checked == false && document.getElementsByName(\'type\')[1].checked == false && document.getElementsByName(\'type\')[2].checked == false) {
-								errorMsg = errorMsg + "- '.$_ARRAYLANG['TXT_DIR_FILETYP'].'\n";
-							}
-
-							if (document.getElementsByName(\'selectedCat[]\')[0].value == "") {
+		$javascript 	.= 'if (document.getElementsByName(\'selectedCat[]\')[0].value == "") {
 										errorMsg = errorMsg + "- '.$_ARRAYLANG['TXT_DIR_CATEGORIE'].'\n";
 							}
 							';
@@ -1346,12 +1360,6 @@ class directoryLibrary
 		if($arrSettings['levels']['int'] == 1){
 			$javascript 	.= 'if (document.getElementsByName(\'selectedLevel[]\')[0].value == "") {
 										errorMsg = errorMsg + "- '.$_ARRAYLANG['TXT_LEVEL'].'\n";
-								}';
-		}
-
-		if($action != "edit"){
-			$javascript 	.= 'if (document.getElementsByName(\'linkname\')[0].value == "http://" && document.getElementsByName(\'rssname\')[0].value == "http://" && document.getElementsByName(\'fileName\')[0].value == "") {
-										errorMsg = errorMsg + "- '.$_ARRAYLANG['TXT_DIRECTORY_ATTACHMENT'].'\n";
 								}';
 		}
 
@@ -1395,7 +1403,11 @@ class directoryLibrary
 		    			if(!file_exists($this->mediaPath."images/".$arrInputfieldsValue[$inputName]) || $arrInputfieldsValue[$inputName] == ""){
 	    					$inputValueField = "<img src='".$this->mediaWebPath."/images/no_picture.gif' alt='' /><br /><br />";
 	    				}else{
-	    					$inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+	    					if ($action !== "confirm"){
+	    						$inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+	    					} else {
+	    						$inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+	    					}
 	    				}
 	    			}
 	    			if ($action !== "confirm"){
@@ -1416,7 +1428,11 @@ class directoryLibrary
 		    			if(!file_exists($this->mediaPath."images/".$arrInputfieldsValue[$inputName]) || $arrInputfieldsValue[$inputName] == ""){
 	    					$inputValueField = "<img src='".$this->mediaWebPath."/images/no_picture.gif' alt='' /><br /><br />";
 	    				}else{
-	    					$inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+	    					if ($action !== "confirm"){
+	    						$inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+	    					} else {
+	    						$inputValueField = "<img src='".$this->mediaWebPath."thumbs/".$arrInputfieldsValue[$inputName]."' alt='' /><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+	    					}
 	    				}
 	    			}
 	    			if ($action !== "confirm"){
@@ -1438,7 +1454,11 @@ class directoryLibrary
 		    			if(!file_exists($this->mediaPath."uploads/".$arrInputfieldsValue[$inputName]) || $arrInputfieldsValue[$inputName] == ""){
 	    					$inputValueField = "-<br /><br />";
 	    				}else{
-	    					$inputValueField = "<a href='".$this->mediaWebPath."uploads/".$arrInputfieldsValue[$inputName]."' target='_blank' />".$arrInputfieldsValue[$inputName]."</a><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+	    					if ($action !== "confirm"){
+	    						$inputValueField = "<a href='".$this->mediaWebPath."uploads/".$arrInputfieldsValue[$inputName]."' target='_blank' />".$arrInputfieldsValue[$inputName]."</a><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+	    					} else {
+	    						$inputValueField = "<a href='".$this->mediaWebPath."uploads/".$arrInputfieldsValue[$inputName]."' target='_blank' />".$arrInputfieldsValue[$inputName]."</a><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+	    					}
 	    				}
 	    			}
 	    			if ($action !== "confirm"){
@@ -1447,6 +1467,27 @@ class directoryLibrary
 	    			}
 	    			$fieldName = $arrInputfieldsActive['title'][$inputKey];
 	    			break;
+	    		case '11':
+	    		 	if ($action !== "add"){
+		    			if(!file_exists($this->mediaPath."uploads/".$arrInputfieldsValue[$inputName]) || $arrInputfieldsValue[$inputName] == ""){
+	    					$inputValueField = "-<br /><br />";
+	    				}else{
+	    					if ($action !== "confirm"){
+	    						$inputValueField = "<a href='".$this->mediaWebPath."uploads/".$arrInputfieldsValue[$inputName]."' target='_blank' />".$arrInputfieldsValue[$inputName]."</a><br /><input type=\"checkbox\" value=\"1\" name=\"deleteMedia[".$inputName."]\">".$_ARRAYLANG['TXT_DIR_DEL']."<br /><br />";
+	    					} else {
+	    						$inputValueField = "<a href='".$this->mediaWebPath."uploads/".$arrInputfieldsValue[$inputName]."' target='_blank' />".$arrInputfieldsValue[$inputName]."</a>";
+	    					}
+	    				}
+	    			}
+
+	    			if ($action !== "confirm"){
+	    				$inputValueField .= "<input type=\"file\" name=\"".$inputName."\" size=\"37\" style=\"width:".$width."px;\"'>";
+	    		 		$inputValueField .="<input type=\"hidden\" name=\"inputValue[".$inputName."]\" value='".$arrInputfieldsValue[$inputName]."'>";
+	    			}
+	    		 	break;
+	    		case '12':
+	    		 	$inputValueField .= "<input type=\"text\" name=\"inputValue[".$inputName."]\" value=\"".$arrInputfieldsValue[$inputName]."\" style=\"width:".$width."px;\" maxlength='250'>";
+	    		 	break;
 			}
 
 
@@ -1660,67 +1701,43 @@ class directoryLibrary
 
 		//get post data
 		if(isset($_POST['edit_submit'])){
-
-			//check attachment changes
-			if(!empty($_FILES['fileName']['name']) && ($_POST['type']  == "file")){
-				$obj_file 	= new File();
-				$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "uploads/".$_POST['edit_fileName']);
-				$file 		= $this->uploadMedia("fileName", "uploads/");
-				$link 		= $_FILES['fileName']['name'];
-				$size 		= $this->fileSize;
-				$typ 		= "file";
-			} elseif ($_POST['type']  == "rss"){
-				if($_POST['rssname'] == "http://"){
-					$link 		= $_POST['edit_linkName'];
-					$file 		= $_POST['edit_fileName'];
-				}else{
-					$obj_file 	= new File();
-					$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "ext_feeds/".$_POST['edit_fileName']);
-					$link 		= $_POST['rssname'];
-					$file 		= $this->createXML($link);
-				}
-				$size 		= "";
-				$typ 		="rss";
-			} elseif (($_POST['type']  == "link")){
-				if(!empty($_POST['edit_fileName'])){
-					$obj_file 	= new File();
-					$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "uploads/".$_POST['edit_fileName']);
-					$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "ext_feeds/".$_POST['edit_fileName']);
-				}
-				if($_POST['linkname'] == "http://"){
-					$link 		= $_POST['edit_linkName'];
-					if(substr($link, 0,7) != "http://"){
-						$link = "http://".$link;
-					}
-				}else{
-					$link 		= $_POST['linkname'];
-					if(substr($link, 0,7) != "http://"){
-						$link = "http://".$link;
-					}
-				}
-				$size 		= "";
-				$file 		= "";
-				$typ 		="link";
-			} else {
-				$size = $_POST['edit_size'];
-				if($_POST['type']  == "link"){
-					$file 		= "";
-				}else{
-					$file 		= $_POST['edit_fileName'];
-				}
-				$link 		= $_POST['edit_linkName'];
-				$typ 		= $_POST['type'];
-			}
-
 			$dirId 		= intval($_POST['edit_id']);
-
 			$query 		= "UPDATE ".DBPREFIX."module_directory_dir SET ";
 
 			foreach($_POST["inputValue"] as $inputName => $inputValue){
 				//check links
-				if($inputName == "relatedlinks" || $inputName == "homepage"){
+				if($inputName == "relatedlinks" || $inputName == "homepage" || $inputName == "link"){
 					if(substr($inputValue, 0,7) != "http://" && $inputValue != ""){
 						$inputValue = "http://".$inputValue;
+					}
+				}
+
+				//check rss
+				if($inputName == "rss_link"){
+					$objResultRSS 	= $objDatabase->SelectLimit("SELECT rss_link, rss_file FROM ".DBPREFIX."module_directory_dir WHERE id = '".$dirId."'",1);
+					$oldRssLink 	= $objResultRSS->fields['rss_link'];
+					$oldRssFile 	= $objResultRSS->fields['rss_file'];
+
+					if ($inputValue != $oldRssLink) {
+
+						$obj_file = new File();
+						$obj_file->delFile($this->mediaPath, $this->mediaWebPath, "ext_feeds/".$oldRssFile);
+
+						//create rss
+						$link 		= $inputValue;
+						$rss_file 	= $this->createXML($link);
+
+						if(substr($inputValue, 0,7) != "http://" && $inputValue != ""){
+							$inputValue = "http://".$inputValue;
+						}
+
+						if ($rss_file == "error") {
+							$inputValue = "";
+							$rss_file	= "";
+						}
+					} else {
+						$inputValue = $oldRssLink;
+						$rss_file	= $oldRssLink;
 					}
 				}
 
@@ -1732,8 +1749,6 @@ class directoryLibrary
 						$inputValue = $this->getAuthorID($inputValue);
 					}
 				}
-
-
 
 				//check pics
 				if ($inputName == "logo" ||
@@ -1749,8 +1764,6 @@ class directoryLibrary
 					$inputName == "spez_field_18" ||
 					$inputName == "spez_field_19" ||
 					$inputName == "spez_field_20"){
-
-
 
 					if(!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1){
 						$obj_file = new File();
@@ -1778,7 +1791,8 @@ class directoryLibrary
 				}
 
 				//check uploads
-				if ($inputName == "spez_field_25" ||
+				if ($inputName == "attachment" ||
+					$inputName == "spez_field_25" ||
 					$inputName == "spez_field_26" ||
 					$inputName == "spez_field_27" ||
 					$inputName == "spez_field_28" ||
@@ -1819,11 +1833,8 @@ class directoryLibrary
 				}
 			}
 
-			echo "asdasd".$entryStatus;
 
-
-			$query .= " premium='".$_POST["premium"]."', size='".contrexx_strip_tags($size)."', filename='".contrexx_strip_tags($file)."', link='".contrexx_strip_tags($link)."', status='".intval($entryStatus)."', typ='".contrexx_strip_tags($typ)."',  validatedate='".mktime("now")."' WHERE id='".$dirId."'";
-
+			$query .= " premium='".$_POST["premium"]."', status='".intval($entryStatus)."',  validatedate='".mktime("now")."' WHERE id='".$dirId."'";
 
 			//edit entry
 			$objResult = $objDatabase->Execute($query);

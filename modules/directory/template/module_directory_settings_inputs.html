@@ -1,10 +1,10 @@
 <!-- START module_directory_settings_system.html --> <font color="#FF0000">{STATUS} </font>
 <form name="settings" method="post" action="?cmd=directory&act=settings&tpl=inputs">
   <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-    <tr> 
+    <tr>
       <th colspan=9>{TXT_INPUT_FIELDS}</th>
     </tr>
-    <tr class="row3"> 
+    <tr class="row3">
       <td width="16" valign="top" align="center"><b>{TXT_TYPE}</b></td>
       <td width="150" valign="top"><b>{TXT_NAME}</b></td>
       <td width="80"><b>{TXT_ACTIVE}</b></td>
@@ -15,19 +15,8 @@
       <td width="250"><b>{TXT_PLACEHOLDER}</b></td>
       <td><b>{TXT_PLACEHOLDER_TXT}</b></td>
     </tr>
-     <tr class="row2" style="background-color: #d8ffca;"> 
-      <td {ROW_STYLE}><div align="center">-</div></td>
-      <td width="150" valign="top">{FIELD_ATTACHMENT}</td>
-      <td ><input type="checkbox" disabled checked></td>
-      <td ><input type="checkbox" disabled checked></td>
-      <td ><input type="text"  value="0" size='2' disabled></td>
-      <td ><input type="checkbox" disabled checked></td>
-      <td >&nbsp;</td>
-      <td >{ATTACHMENT_PLACEHOLDER}</td>
-      <td >&nbsp;-&nbsp;</td>
-    </tr>
     <!-- BEGIN settingsOutput -->
-    <tr class="{FIELD_ROWCLASS}" style="background-color: {ROW_COLOR};"> 
+    <tr class="{FIELD_ROWCLASS}" style="background-color: {ROW_COLOR};">
       <td {ROW_STYLE}><div align="center">{FIELD_TYPE}</div></td>
       <td width="150" valign="top" {ROW_STYLE}>{FIELD_NAME}</td>
       <td {ROW_STYLE}>{FIELD_STATUS}</td>
