@@ -194,7 +194,9 @@ echo("Sorting::getHeaderForField(fieldName=$fieldName): ERROR: unknown field nam
      */
     function getOrder()
     {
-        return "$this->orderField $this->orderDirection";
+        // Better backquote all field names to avoid SQL errors on
+        // reserved words
+        return "`$this->orderField` $this->orderDirection";
     }
 
 
