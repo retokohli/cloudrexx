@@ -4,6 +4,7 @@
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 Text[0]=["","{TXT_CONTACT_FEEDBACK_EXPLANATION}"];
 Text[1]=["","{TXT_CONTACT_CAPTCHA_DESCRIPTION}"];
+Text[2]=["","{TXT_CONTACT_SEND_COPY_DESCRIPTION}"];
 
 formFieldLastId = {CONTACT_FORM_FIELD_NEXT_ID};
 
@@ -311,6 +312,10 @@ function updateContentSite()
 				<td><input type="radio" name="contactFormUseCaptcha" value="1" id="contactFormUseCaptcha_1" {CONTACT_FORM_USE_CAPTCHA_YES} /><label for="contactFormUseCaptcha_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormUseCaptcha" value="0" id="contactFormUseCaptcha_0" {CONTACT_FORM_USE_CAPTCHA_NO} /><label for="contactFormUseCaptcha_0">{TXT_CONTACT_NO}</label></td>
 			</tr>
 			<tr class="row2">
+				<td>{TXT_CONTACT_SEND_COPY}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
+				<td><input type="radio" name="contactFormSendCopy" value="1" id="contactFormSendCopy_1" {CONTACT_FORM_SEND_COPY_YES} /><label for="contactFormSendCopy_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormSendCopy" value="0" id="contactFormSendCopy_0" {CONTACT_FORM_SEND_COPY_NO} /><label for="contactFormSendCopy_0">{TXT_CONTACT_NO}</label></td>
+			</tr>
+			<tr class="row1">
 				<td>{TXT_CONTACT_FORM_FIELDS}</td>
 				<td>
 					<div id="formFieldContainer">

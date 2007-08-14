@@ -61,7 +61,7 @@ class ContactLib
 		$this->arrForms = array();
 
 		$objContactForms = $objDatabase->Execute("SELECT tblForm.id, tblForm.name, tblForm.mails, tblForm.langId,
-													tblForm.subject, tblForm.text, tblForm.feedback, tblForm.showForm, tblForm.`use_captcha`,
+													tblForm.subject, tblForm.text, tblForm.feedback, tblForm.showForm, tblForm.`use_captcha`,tblForm.`send_copy`,
 													COUNT(tblData.id) AS number, MAX(tblData.time) AS last
 												FROM ".DBPREFIX."module_contact_form AS tblForm
 												LEFT OUTER JOIN ".DBPREFIX."module_contact_form_data AS tblData ON tblForm.id=tblData.id_form
@@ -80,7 +80,8 @@ class ContactLib
 					'lang'		=> $objContactForms->fields['langId'],
 					'feedback'	=> $objContactForms->fields['feedback'],
 					'showForm'	=> $objContactForms->fields['showForm'],
-					'useCaptcha'	=> $objContactForms->fields['use_captcha']
+					'useCaptcha'	=> $objContactForms->fields['use_captcha'],
+					'sendCopy'	=> $objContactForms->fields['send_copy']
 				);
 
 				$objContactForms->MoveNext();
@@ -139,11 +140,11 @@ class ContactLib
 		return $this->_arrSettings;
 	}
 
-	function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$showForm, &$useCaptcha)
+	function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$showForm, &$useCaptcha, &$sendCopy)
 	{
 		global $objDatabase, $_CONFIG, $_ARRAYLANG;
 
-		$objContactForm = $objDatabase->SelectLimit("SELECT mails, subject, feedback, showForm, use_captcha FROM ".DBPREFIX."module_contact_form WHERE id=".$id, 1);
+		$objContactForm = $objDatabase->SelectLimit("SELECT mails, subject, feedback, showForm, use_captcha, send_copy FROM ".DBPREFIX."module_contact_form WHERE id=".$id, 1);
 		if ($objContactForm !== false && $objContactForm->RecordCount() == 1) {
 			$this->arrForms[$id] = array();
 			$arrEmails = explode(',', $objContactForm->fields['mails']);
@@ -151,6 +152,7 @@ class ContactLib
 			$feedback = $objContactForm->fields['feedback'];
 			$showForm = $objContactForm->fields['showForm'];
 			$useCaptcha = $objContactForm->fields['use_captcha'];
+			$sendCopy = $objContactForm->fields['send_copy'];
 			return true;
 		} else {
 			return false;
@@ -233,12 +235,12 @@ class ContactLib
 		return true;
 	}
 
-	function updateForm($id, $name, $emails, $subject, $text, $feedback, $showForm, $useCaptcha, $arrFields)
+	function updateForm($id, $name, $emails, $subject, $text, $feedback, $showForm, $useCaptcha, $arrFields, $sendCopy)
 	{
 		global $objDatabase;
 
 		$objDatabase->Execute("UPDATE ".DBPREFIX."module_contact_form SET name='".$name."', mails='".addslashes($emails)."',
-				subject='".$subject."', text='".$text."', feedback='".$feedback."', showForm=".$showForm.", use_captcha=".$useCaptcha." WHERE id=".$id);
+				subject='".$subject."', text='".$text."', feedback='".$feedback."', showForm=".$showForm.", use_captcha=".$useCaptcha.", send_copy=".$sendCopy." WHERE id=".$id);
 
 		$arrFormFields = $this->getFormFields($id);
 		$arrRemoveFormFields = array_diff_assoc($arrFormFields, $arrFields);
@@ -258,14 +260,14 @@ class ContactLib
 		$this->initContactForms(true);
 	}
 
-	function addForm($name, $emails, $subject, $text, $feedback, $showForm, $useCaptcha, $arrFields)
+	function addForm($name, $emails, $subject, $text, $feedback, $showForm, $useCaptcha, $arrFields, $sendCopy)
 	{
 		global $objDatabase, $_FRONTEND_LANGID;
 
 		if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form
-								  (`name`,`mails`, `subject`, `text`, `feedback`, `showForm`, `use_captcha`, `langId`)
+								  (`name`,`mails`, `subject`, `text`, `feedback`, `showForm`, `use_captcha`, `send_copy`, `langId`)
 								  VALUES
-								  ('".$name."', '".addslashes($emails)."', '".$subject."', '".$text."', '".$feedback."', ".$showForm.", ".$useCaptcha.", ".$_FRONTEND_LANGID.")") !== false) {
+								  ('".$name."', '".addslashes($emails)."', '".$subject."', '".$text."', '".$feedback."', ".$showForm.", ".$useCaptcha.", ".$sendCopy.", ".$_FRONTEND_LANGID.")") !== false) {
 			$formId = $objDatabase->Insert_ID();
 
 			foreach ($arrFields as $fieldId => $arrField) {

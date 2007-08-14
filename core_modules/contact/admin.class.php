@@ -73,6 +73,9 @@ class ContactManager extends ContactLib
 			'textarea'		=> $_ARRAYLANG['TXT_CONTACT_TEXTAREA']
 		);
 
+		$_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Durch das Aktivieren dieser Option, wird zusätzlich eine Kopie der angegebenen Formulardaten an den Absender geschickt.";
+		$_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Kopie an Absender";
+
     	$this->initContactForms(true);
     	$this->initCheckTypes();
 
@@ -541,7 +544,9 @@ class ContactManager extends ContactLib
 			'TXT_CONTACT_YES'								=> $_ARRAYLANG['TXT_CONTACT_YES'],
 			'TXT_CONTACT_NO'								=> $_ARRAYLANG['TXT_CONTACT_NO'],
 			'TXT_CONTACT_CAPTCHA_PROTECTION'				=> $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'],
-			'TXT_CONTACT_CAPTCHA_DESCRIPTION'				=> $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION']
+			'TXT_CONTACT_CAPTCHA_DESCRIPTION'				=> $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
+			'TXT_CONTACT_SEND_COPY_DESCRIPTION'				=> $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'],
+			'TXT_CONTACT_SEND_COPY'							=> $_ARRAYLANG['TXT_CONTACT_SEND_COPY'],
 		));
 
 		$this->_objTpl->setGlobalVariable(array(
@@ -571,6 +576,7 @@ class ContactManager extends ContactLib
 			$formFeedback = contrexx_stripslashes($_POST['contactFormFeedback']);
 			$formShowForm = intval($_POST['contactFormShowForm']);
 			$formUseCaptcha = intval($_POST['contactFormUseCaptcha']);
+			$formSendCopy = intval($_POST['contactFormSendCopy']);
 		} elseif (isset($this->arrForms[$formId])) {
 			$arrFields = &$this->getFormFields($formId);
 			$formName = $this->arrForms[$formId]['name'];
@@ -580,6 +586,7 @@ class ContactManager extends ContactLib
 			$formFeedback = stripslashes($this->arrForms[$formId]['feedback']);
 			$formShowForm = $this->arrForms[$formId]['showForm'];
 			$formUseCaptcha = $this->arrForms[$formId]['useCaptcha'];
+			$formSendCopy = $this->arrForms[$formId]['sendCopy'];
 		} else {
 			$formName = '';
 			$formEmails = $_CONFIG['contactFormEmail'];
@@ -588,6 +595,7 @@ class ContactManager extends ContactLib
 			$formShowForm = 0;
 			$formFeedback = $_ARRAYLANG['TXT_CONTACT_DEFAULT_FEEDBACK_TXT'];
 			$formUseCaptcha = 1;
+			$formSendCopy = 0;
 
 			$this->_objTpl->setVariable(array(
 				'CONTACT_FORM_FIELD_NAME'				=> '',
@@ -662,7 +670,9 @@ class ContactManager extends ContactLib
 			'CONTACT_FORM_FIELD_HIDDEN_TPL'					=> $this->_getFormFieldAttribute(0, 'hidden', ''),
 			'CONTACT_FORM_FIELD_RADIO_TPL'					=> $this->_getFormFieldAttribute(0, 'radio', ''),
 			'CONTACT_FORM_FIELD_SELECT_TPL'					=> $this->_getFormFieldAttribute(0, 'select', ''),
-			'CONTACT_JS_SUBMIT_FUNCTION'					=> $jsSubmitFunction
+			'CONTACT_JS_SUBMIT_FUNCTION'					=> $jsSubmitFunction,
+			'CONTACT_FORM_SEND_COPY_YES'					=> $formSendCopy ? 'checked="checked"' : '',
+			'CONTACT_FORM_SEND_COPY_NO'						=> $formSendCopy ? '' : 'checked="checked"',
 		));
 	}
 
@@ -737,6 +747,7 @@ class ContactManager extends ContactLib
 			$formFeedback = isset($_POST['contactFormFeedback']) ? contrexx_addslashes($_POST['contactFormFeedback']) : '';
 			$formShowForm = intval($_POST['contactFormShowForm']);
 			$formUseCaptcha = intval($_POST['contactFormUseCaptcha']);
+			$formSendCopy = intval($_POST['contactFormSendCopy']);
 			if (!empty($formName)) {
 				if ($this->isUniqueFormName($formName, $formId)) {
 					$arrFields = $this->_getFormFieldsFromPost($uniqueFieldNames);
@@ -761,9 +772,9 @@ class ContactManager extends ContactLib
 
 						if ($formId > 0) {
 							// This updates the database
-							$this->updateForm($formId, $formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $arrFields);
+							$this->updateForm($formId, $formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $arrFields, $formSendCopy);
 						} else {
-							$this->addForm($formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $arrFields);
+							$this->addForm($formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $arrFields, $formSendCopy);
 						}
 						$this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_FORM_SUCCESSFULLY_SAVED']."<br />";
 
