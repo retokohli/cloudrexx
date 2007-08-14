@@ -39,6 +39,11 @@ Datenbank Manager
   erlaubt die Optmierung von Datenbanken. Ausserdem können SQL / CVS Backups
   erzeugt und SQL-Quries ausgeführt werden.
 
+Media Manager/Bilderverwaltung
+- Es werden mehr Zeichen erlaubt in Dateinamen.
+- Dateien können in einem Schritt überschrieben werden beim Upload.
+
+
 ****************************************
 * Changes ******************************
 ****************************************
@@ -72,6 +77,7 @@ Podcast
   Podcastmodul erfasst wird.
 - Die neusten Videos beliebiger Kategorien können auf der Startseite angezeigt
   werden.
+
 
 ****************************************
 * Bugfixes *****************************
@@ -112,3 +118,6 @@ Newsletter
 
 Gallery
 - [[GALLERY_LATEST]] funktioniert nun wieder.
+
+Media Manager/Bilderverwaltung
+- Die Bilderbearbeitung spiechert die Bilder nun wieder korrekt
