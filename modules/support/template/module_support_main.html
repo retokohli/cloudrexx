@@ -1,0 +1,97 @@
+<script type="text/javascript">
+<!--
+function supportTicketDoAction(strAct)
+{
+  switch(strAct) {
+    case 'commit':
+      if (confirm('{TXT_SUPPORT_TICKET_CHANGE_CONFIRM}')) {
+        document.forms.formSupportTicket.action =
+          "index.php?cmd=support&act=ticketChange";
+        document.forms.formSupportTicket.submit();
+      }
+      break;
+  }
+}
+
+function supportMessageDoAction(strAct)
+{
+  switch(strAct) {
+    case 'clear':
+      if (confirm('{TXT_SUPPORT_MESSAGE_REALLY_CLEAR}')) {
+        document.forms.formSupportMessageEdit.elements.messageBody.value = '';
+      }
+      break;
+    case 'revert':
+      if (confirm('{TXT_SUPPORT_MESSAGE_REALLY_REVERT}')) {
+        document.forms.formSupportMessageEdit.elements.messageBody.value =
+          document.getElementById('messageBodyOriginal').value;
+      }
+      break;
+    case 'commit':
+      if (confirm('{TXT_SUPPORT_MESSAGE_REALLY_COMMIT}')) {
+        document.forms.formSupportMessageEdit.action =
+          "index.php?cmd=support&act=messageCommit";
+        document.forms.formSupportMessageEdit.submit();
+      }
+      break;
+    case 'quote':
+// TODO: quote the Message in a reply
+      break;
+    case 'select':
+// TODO: display selected Message in messageData
+  }
+}
+
+function categoryDelete(id)
+{
+  if (confirm('{TXT_SUPPORT_CATEGORY_DELETE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace(
+        "index.php?cmd=support&act=categoryDelete&id="+id+
+//        "&offset={SUPPORT_CATEGORY_OFFSET}"+
+        "&editLanguageId="+document.getElementById('editLanguageId').value
+    );
+}
+
+function supportCategoryDoAction(strForm, strCheckbox, objSelect, strAction)
+{
+  if (checkboxIsChecked(strForm, strCheckbox) == true){
+    switch (strAction) {
+      case 'delete':
+        if (confirm('{TXT_SUPPORT_CATEGORIES_DELETE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')){
+          document.forms[strForm].action =
+            "index.php?cmd=support&act=categoriesDelete"+
+//            "&offset={SUPPORT_CATEGORY_OFFSET}"+
+            "&editLanguageId="+document.getElementById('editLanguageId').value;
+          document.forms[strForm].submit();
+        }
+        break;
+    }
+  } else {
+    alert("{TXT_SUPPORT_MAKE_SELECTION}");
+  }
+  objSelect.value = 0;
+}
+<!-- BEGIN tipMessageRow -->
+Text[{SUPPORT_TIP_ID}]=["","{SUPPORT_TIP_NOTE}"];
+<!-- END tipMessageRow -->
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,10,-20];
+// -->
+</script>
+
+<table summary="" border=0 width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td>{SUPPORT_TOPLEFT}</td>
+    <td>{SUPPORT_TOPCENTER}</td>
+    <td>{SUPPORT_TOPRIGHT}</td>
+  </tr>
+  <tr>
+    <td>{SUPPORT_LEFT}</td>
+    <td>{SUPPORT_CENTER}</td>
+    <td>{SUPPORT_RIGHT}</td>
+  </tr>
+  <tr>
+    <td>{SUPPORT_BOTTOMLEFT}</td>
+    <td>{SUPPORT_BOTTOMCENTER}</td>
+    <td>{SUPPORT_BOTTOMRIGHT}</td>
+  </tr>
+</table>

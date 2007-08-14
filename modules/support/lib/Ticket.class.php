@@ -19,8 +19,8 @@ CREATE TABLE contrexx_module_support_ticket (
   id                  int(10)      unsigned NOT NULL auto_increment,
   support_category_id int(10)      unsigned NOT NULL,
   language_id         int(10)      unsigned NOT NULL,
-  owner_id            int(10)      unsigned NOT NULL default 0,
-  `status`            tinyint(2)   unsigned NOT NULL default 1,
+--  owner_id            int(10)      unsigned NOT NULL default 0,
+--  `status`            tinyint(2)   unsigned NOT NULL default 1,
   source              tinyint(2)   unsigned NOT NULL default 0,
   email               varchar(255)          NOT NULL,
   `timestamp`         timestamp             NOT NULL default current_timestamp,
@@ -28,12 +28,14 @@ CREATE TABLE contrexx_module_support_ticket (
   KEY support_category_id (support_category_id),
   KEY language_id         (language_id),
   KEY owner_id            (owner_id),
-  KEY `status`            (`status`),
+--  KEY `status`            (`status`),
   KEY email               (email)
 ) ENGINE=MyISAM;
 
 */
 
+
+global $_ARRAYLANG;
 
 /**
  * Ticket State text array
@@ -54,12 +56,13 @@ $arrTicketStatusString = array(
  */
 $arrTicketEventString = array(
     SUPPORT_TICKET_EVENT_UNKNOWN         => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_UNKNOWN'],
-    SUPPORT_TICKET_EVENT_READ            => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_READ'],
+    SUPPORT_TICKET_EVENT_MESSAGE_VIEW    => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_MESSAGE_VIEW'],
     SUPPORT_TICKET_EVENT_CHANGE_CATEGORY => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_CHANGE_CATEGORY'],
-    SUPPORT_TICKET_EVENT_CHANGE_PERSON   => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_CHANGE_PERSON'],
+    SUPPORT_TICKET_EVENT_CHANGE_OWNER    => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_CHANGE_OWNER'],
     SUPPORT_TICKET_EVENT_CHANGE_OTHER    => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_CHANGE_OTHER'],
     SUPPORT_TICKET_EVENT_REPLY           => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_REPLY'],
-    SUPPORT_TICKET_EVENT_MESSAGE         => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_MESSAGE'],
+    SUPPORT_TICKET_EVENT_MESSAGE_NEW     => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_MESSAGE_NEW'],
+    SUPPORT_TICKET_EVENT_REFERENCE       => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_REFERENCE'],
     SUPPORT_TICKET_EVENT_CLOSE           => $_ARRAYLANG['TXT_SUPPORT_TICKET_EVENT_CLOSE'],
 );
 
@@ -71,13 +74,14 @@ $arrTicketSourceString = array(
     SUPPORT_TICKET_SOURCE_UNKNOWN => $_ARRAYLANG['TXT_SUPPORT_TICKET_SOURCE_UNKNOWN'],
     SUPPORT_TICKET_SOURCE_EMAIL   => $_ARRAYLANG['TXT_SUPPORT_TICKET_SOURCE_EMAIL'],
     SUPPORT_TICKET_SOURCE_WEB     => $_ARRAYLANG['TXT_SUPPORT_TICKET_SOURCE_WEB'],
+    SUPPORT_TICKET_SOURCE_SYSTEM  => $_ARRAYLANG['TXT_SUPPORT_TICKET_SOURCE_SYSTEM'],
 );
 
 
 /**
- * Actions taken on a Ticket
+ * Handles events on a Ticket
  */
-require_once ASCMS_MODULE_PATH.'/support/lib/Action.class.php';
+require_once ASCMS_MODULE_PATH.'/support/lib/TicketEvent.class.php';
 /**
  * Messages related to a Ticket
  */
@@ -92,7 +96,7 @@ require_once ASCMS_MODULE_PATH.'/support/lib/Message.class.php';
  *  id
  *  email       Either from the e-mail message, or the web form.
  *  date
- *  status      See {@link seaTicket.inc.php} for details.
+ * // status      See {@link seaTicket.inc.php} for details.
  *  support_category_id
  * One or more Messages should be linked to the Ticket.
  * Attachments may be linked to Messages.
@@ -124,14 +128,6 @@ class Ticket
     var $email;
 
     /**
-     * Status
-     *
-     * From table modules_support_ticket
-     * @var integer
-     */
-    var $status;
-
-    /**
      * Source
      *
      * Shows where the Ticket came from
@@ -161,8 +157,8 @@ class Ticket
      *
      * From table modules_support_ticket
      * @var integer
-     */
     var $ownerId;
+     */
 
     /**
      * Timestamp
@@ -179,6 +175,17 @@ class Ticket
      * @var integer
     var $personId;
      */
+
+    /**
+     * Status
+     *
+     * This is a run-time calculated value not stored with the
+     * Ticket record.
+     * From table modules_support_ticket_event, see
+     * {@link TicketEvent::getTicketStatus()}
+     * @var integer
+     */
+    var $status;
 
     /**
      * Set to true whenever the status of this Ticket changes.
@@ -198,31 +205,6 @@ class Ticket
 
 
     /**
-     * The State-Event-Action Matrix
-     *
-     * *SHOULD* be static
-     * @var     array
-     */
-    var $arrSea;
-
-    /**
-     * The status text array
-     *
-     * *SHOULD* be static
-     * @var     array
-     */
-    var $arrStatusString;
-
-    /**
-     * The event text array
-     *
-     * *SHOULD* be static
-     * @var     array
-     */
-    var $arrEventString;
-
-
-    /**
      * Constructor (PHP4)
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -230,12 +212,12 @@ class Ticket
      * @see         __construct()
      */
     function Ticket(
-        $email, $status, $source, $supportCategoryId,
-        $languageId, $ownerId, $timestamp='', $id=0
+        $email, $source, $supportCategoryId,
+        $languageId, $timestamp='', $id=0
     ) {
         $this->__construct(
-            $email, $status, $source, $supportCategoryId,
-            $languageId, $ownerId, $timestamp='', $id
+            $email, $source, $supportCategoryId,
+            $languageId, $timestamp, $id
         );
     }
 
@@ -249,25 +231,21 @@ class Ticket
      *                         $this->arrActionString static!
      */
     function __construct(
-        $email, $status, $source, $supportCategoryId,
-        $languageId, $ownerId, $timestamp='', $id=0
+        $email, $source, $supportCategoryId,
+        $languageId, $timestamp='', $id=0
     ) {
         $this->email             = $email;
-        $this->status            = $status;
+//        $this->status            = $status;
         $this->source            = $source;
         $this->supportCategoryId = $supportCategoryId;
         $this->languageId        = $languageId;
-        $this->ownerId           = $ownerId;
+//        $this->ownerId           = $ownerId;
         $this->timestamp         = $timestamp;
         $this->id                = $id;
 /*
         $this->statusChanged = false;
         $this->supportCategoryIdChanged = false;
 */
-        /**
-         * Ticket State-Event-Action matrix (would-be static)
-         */
-        require_once ASCMS_MODULE_PATH.'/support/lib/seaTicketMatrix.php';
     }
 
 
@@ -277,7 +255,7 @@ class Ticket
      */
     function getId()
     {
-        return $this->Id;
+        return $this->id;
     }
 
     /**
@@ -303,6 +281,13 @@ class Ticket
      */
     function getStatus()
     {
+        if ($this->status === false) {
+            $this->status =
+                TicketEvent::getTicketStatus(
+                    $this->ticketId,
+                    $this->id
+                );
+        }
         return $this->status;
     }
     /**
@@ -341,14 +326,14 @@ class Ticket
         return $this->supportCategoryId;
     }
     /**
-     * Set this Tickets' SupportCategory ID
+     * Set this Tickets' SupportCategory ID -- OBSOLETE
      * @param   integer     The Ticket SupportCategory ID
-     */
     function setSupportCategoryId($supportCategoryId)
     {
         $this->supportCategoryId = intval($supportCategoryId);
 //        $this->supportCategoryIdChanged = true;
     }
+     */
 
     /**
      * Get this Tickets' language ID
@@ -359,30 +344,30 @@ class Ticket
         return $this->languageId;
     }
     /**
-     * Set this Tickets' language ID
+     * Set this Tickets' language ID -- OBSOLETE
      * @param   integer     The Ticket language ID
-     */
     function setLanguageId($languageId)
     {
         $this->languageId = intval($languageId);
     }
+     */
 
     /**
      * Get this Tickets' owner ID
      * @return  integer     The Ticket owner ID
-     */
     function getOwnerId()
     {
         return $this->ownerId;
     }
-    /**
-     * Set this Tickets' owner ID
-     * @param   integer     The Ticket owner ID
      */
+    /**
+     * Set this Tickets' owner ID -- OBSOLETE
+     * @param   integer     The Ticket owner ID
     function setOwnerId($ownerId)
     {
         $this->ownerId = intval($ownerId);
     }
+     */
 
     /**
      * Get this Tickets' timestamp
@@ -404,6 +389,9 @@ class Ticket
 
     /**
      * Get this Tickets' status as a string
+     *
+     * This method may be called as a static method, if the optional
+     * $status parameter is set.
      * @return  string                              The Ticket status string
      * @global  array       $arrTicketStatusString  Ticket status strings
      * @author  Reto Kohli <reto.kohli@comvation.com>
@@ -421,7 +409,10 @@ class Ticket
 
 
     /**
-     * Get this Tickets' source as a string
+     * Get this Tickets' source as a string.
+     *
+     * This method may be called as a static method, if the optional
+     * $source parameter is set.
      * @return  string                              The Ticket source string
      * @global  array       $arrTicketSourceString  Ticket source strings
      * @author  Reto Kohli <reto.kohli@comvation.com>
@@ -475,7 +466,16 @@ echo("Ticket::delete(): Error: This Ticket is missing the Ticket ID<br />");
              WHERE id=$this->id
         ");
         if (!$objResult) {
-echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br />");
+echo("Ticket::delete(): ERROR: Failed to delete the Ticket with ID $this->id from the database!<br />");
+            return false;
+        }
+        // delete associated records in Messages and TicketEvents tables
+        if (!Message::deleteByTicketId($this->id)) {
+echo("Ticket::delete(): Error: Failed to delete Messages associated with Ticket ID $this->id from the database!<br />");
+            return false;
+        }
+        if (!TicketEvent::deleteByTicketId($this->id)) {
+echo("Ticket::delete(): Error: Failed to delete TicketEvents associated with Ticket ID $this->id from the database!<br />");
             return false;
         }
         return true;
@@ -501,8 +501,8 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
     /**
      * Update this Ticket in the database.
      *
-     * Note that only the status, source, support_category_id,
-     * language_id, and owner_id fields may be changed.
+     * Note that only the support_category_id field may be changed.
+     * (not source, language_id!).
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -513,13 +513,15 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
 
         $query = "
             UPDATE ".DBPREFIX."module_support_ticket
-               SET 'status'=$this->status,
-                   source=$this->source,
-                   support_category_id=$this->supportCategoryId,
-                   language_id=$this->languageId
-                   owner_id=$this->ownerId
+               SET support_category_id=$this->supportCategoryId
              WHERE id=$this->id
         ";
+/*
+                   `status`=$this->status,
+                   owner_id=$this->ownerId
+                   source=$this->source,
+                   language_id=$this->languageId,
+*/
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -530,7 +532,11 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
 
 
     /**
-     * Insert this Ticket into the database.
+     * Insert this new Ticket into the database.
+     *
+     * Note that some fields have their default values defined
+     * by the table definition and are not set explicitly here.
+     * These include: timestamp (current time).
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -542,18 +548,14 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
         $query = "
             INSERT INTO ".DBPREFIX."module_support_ticket (
                    email,
-                   'status',
                    source,
                    support_category_id,
-                   language_id,
-                   owner_id
+                   language_id
             ) VALUES (
-                   $this->email,
-                   $this->status,
+                   '$this->email',
                    $this->source,
                    $this->supportCategoryId,
-                   $this->languageId,
-                   $this->ownerId
+                   $this->languageId
             )
         ";
         $objResult = $objDatabase->Execute($query);
@@ -561,14 +563,18 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
             return false;
         }
         $this->id = $objDatabase->Insert_ID();
+
+        // Do not create a TicketEvent for this new Ticket, but for
+        // the Message that caused it!  See addMessage().
+
 //echo("Ticket::insert(): done<br />");
-        return $this->refreshTimestamp();
+        return $this->refresh();
     }
 
 
     /**
-     * Updates the Ticket object with the timestamp value stored in the
-     * database.
+     * Updates the Ticket object with the timestamp values
+     * stored in the database.
      *
      * This *MUST* be called by insert() after INSERTing any new record!
      * @return  boolean         True on success, false otherwise.
@@ -579,22 +585,378 @@ echo("Ticket::delete(): Error: Failed to delete the Ticket from the database<br 
         global $objDatabase;
 
         $query = "
-            SELECT 'timestamp'
+            SELECT `timestamp`
               FROM ".DBPREFIX."module_support_ticket
              WHERE id=$this->id
         ";
-echo("Ticket::refreshTimestamp(): query: $query<br />");
+echo("Ticket::refresh(): ID: $this->id, query: $query<br />");
+// TODO: Here, ADODB shoots its foot:
         $objResult = $objDatabase->Execute($query);
-echo("Ticket::refreshTimestamp(): objResult: '$objResult'<br />");
+echo("Ticket::refresh(): objResult: '$objResult'<br />");
         if (!$objResult) {
-echo("Ticket::refreshTimestamp(): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
+echo("Ticket::refresh(): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
             return false;
         }
         if ($objResult->RecordCount() == 0) {
-echo("Ticket::refreshTimestamp(): no result: ".$objResult->RecordCount()."<br />");
+echo("Ticket::refresh(): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
+//        $this->status    = $objResult->fields('status');
         $this->timestamp = $objResult->fields('timestamp');
+echo("Ticket::refresh(): done!<br />");
+        return true;
+    }
+
+
+    /**
+     * Update the Support Category of this Ticket
+     *
+     * Only updates the Ticket record if the Support Category ID differs
+     * from the current value in the object.
+     * Returns true if the update was successful, or if no changes
+     * were made.  Returns false on errors only.
+     * @param   integer $supportCategoryId  The new Support Category ID
+     * @return  boolean                     True on success, false otherwise
+     */
+    function updateSupportCategoryId($supportCategoryId)
+    {
+        if ($this->supportCategoryId != $supportCategoryId) {
+            // Create the appropriate TicketEvent
+            $objEvent = new TicketEvent(
+                $this,
+                SUPPORT_TICKET_EVENT_CHANGE_CATEGORY,
+                $supportCategoryId
+            );
+            // Process the TicketEvent, returns the new Ticket status
+            $newStatus = $objEvent->process();
+            // If the status would be UNKNOWN, abort the whole process
+            if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
+                return false;
+            }
+            $this->supportCategoryId = $supportCategoryId;
+//            $this->status = $newStatus;
+            // Update the Ticket
+            if (!$this->update()) {
+                // Roll back if the update failed
+                return $objEvent->delete();
+            }
+        }
+        // Nothing has been changed.  All is well.
+        return true;
+    }
+
+
+    /**
+     * Update the owner ID of this Ticket
+     *
+     * Only updates the Ticket record if the owner ID differs
+     * from the current value in the object.
+     * Returns true if the update was successful, or if no changes
+     * were made.  Returns false on errors only.
+     * @param   integer $ownerId            The new owner ID
+     * @return  boolean                     True on success, false otherwise
+     */
+    function updateOwnerId($ownerId)
+    {
+        if ($this->ownerId != $ownerId) {
+            // Create the appropriate TicketEvent
+            $objEvent = new TicketEvent(
+                $this,
+                SUPPORT_TICKET_EVENT_CHANGE_OWNER,
+                $ownerId
+            );
+            // Process the TicketEvent, returns the new Ticket status
+            $newStatus = $objEvent->process();
+            // If the status would be UNKNOWN, abort the whole process
+            if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
+                return false;
+            }
+/*
+            $this->ownerId = $ownerId;
+            $this->status = $newStatus;
+            // Update the Ticket
+            if (!$this->update()) {
+                // Roll back if the update failed
+                return $objEvent->delete();
+            }
+            return false;
+*/
+        }
+        // Nothing has been changed.  All is well.
+        return true;
+
+
+
+    }
+
+
+    /**
+     * Change a Ticket property not covered by either updateSupportCategoryId()
+     * or updateOwnerId().
+     *
+     * Note: This is currently unimplemented, and thus always fails.
+     * @return  boolean                     Always false.
+     */
+    function updateOther() {
+        return false;
+    }
+
+
+    /**
+     * Adds a new Message to this Ticket.
+     *
+     * This method creates a TicketEvent in order to
+     * create a MESSAGE_NEW entry and to update the Ticket status.
+     * If the Ticket has already been closed, this creates a new Ticket
+     * and a REFERENCE to the old one.
+     * The optional $supportCategoryId, $supportTicketLanguageId,
+     * and $supportTicketSource arguments are only considered in case
+     * a new Ticket is created.  If they are missing, the values from
+     * the old Ticket are copied.  Otherwise, they are ignored, and the
+     * respective values of the existing Ticket are left untouched.
+     * The optional $supportMessageDate argument will be set to the current
+     * date and time if empty.
+     * @param   string  $supportMessageFrom     The Messages' e-mail field
+     * @param   string  $supportMessageSubject  The Message subject
+     * @param   string  $supportMessageBody     The Message text
+     * @return  boolean                         True on success,
+     *                                          false otherwise.
+     */
+    function addMessage(
+        $supportMessageFrom, $supportMessageSubject, $supportMessageBody,
+        $supportCategoryId=0, $supportTicketLanguageId=0,
+        $supportTicketSource=0, $supportMessageDate=0
+    ) {
+echo("Ticket::addMessage(
+        supportMessageFrom=$supportMessageFrom,
+        supportMessageSubject=$supportMessageSubject,
+        supportMessageBody=$supportMessageBody,
+        supportCategoryId=$supportCategoryId,
+        supportTicketLanguageId=$supportTicketLanguageId,
+        supportTicketSource=$supportTicketSource,
+        supportMessageDate=$supportMessageDate,
+): INFO: entered<br />");
+        if ($supportMessageDate == 0) {
+            $supportMessageDate = date('Y-m-d H:i:s');
+        }
+        $objTicket = $this;
+        $ticketStatus = TicketEvent::getTicketStatus($this->getId());
+        if ($ticketStatus == SUPPORT_TICKET_STATUS_CLOSED) {
+            // The Ticket has already been closed.
+            // Copy old Ticket values, if no new ones are available.
+            if ($supportCategoryId == 0) {
+                $supportCategoryId = $this->supportCategoryId;
+            }
+            if ($supportTicketLanguageId == 0) {
+                $supportTicketLanguageId = $this->languageId;
+            }
+            if ($supportTicketSource == 0) {
+                $supportTicketSource = $this->source;
+            }
+            // Create the new Ticket.
+            $objTicket = new Ticket(
+                $supportMessageFrom,
+                0,
+                $supportTicketSource,
+                $supportCategoryId,
+                $supportTicketLanguageId,
+                0
+            );
+            if (!$objTicket->insert()) {
+                return false;
+            }
+        }
+        // Create the new Message object
+        $objMessage = new Message(
+            $objTicket->getId(),
+            $supportMessageFrom,
+            $supportMessageSubject,
+            $supportMessageBody,
+            $supportMessageDate
+        );
+        // The Message *MUST* be insert()ed prior to creating the TicketEvent
+        // (Otherwise, we wouldn't have a valid Message ID).
+        if (!$objMessage->insert()) {
+echo("Ticket::addMessage(): ERROR: Failed to insert() the new Message, ticketId ".$objTicket->getId()."<br />");
+            return false;
+        }
+        // Create the TicketEvent
+        $objEvent = new TicketEvent(
+            $objTicket,
+            SUPPORT_TICKET_EVENT_MESSAGE_NEW,
+            $objMessage->getId()
+        );
+        if (!$objEvent) {
+echo("Ticket::addMessage(): ERROR: Failed to create MESSAGE TicketEvent, ticketId ".$objTicket->getId().", messageId ".$objMessage->getId()."<br />");
+            return false;
+        }
+        // Process the MESSAGE TicketEvent.  Returns the new status.
+        $newStatus = $objEvent->process();
+        if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
+echo("Ticket::addMessage(): ERROR: Adding Message results in UNKNOWN state - rolling back!  ticketId ".$objTicket->getId().", messageId ".$objMessage->getId()."<br />");
+            // On failure, try to roll back
+            return $objMessage->delete();
+        }
+        // If a new Ticket was created above, add a REFERENCE to the old one.
+        if ($this != $objTicket) {
+            $objEvent = new TicketEvent(
+                $objTicket,                     // New Ticket object
+                SUPPORT_TICKET_EVENT_REFERENCE,
+                $this->id                       // Old Ticket ID
+            );
+            if (!$objEvent) {
+echo("Ticket::addMessage(): ERROR: Failed to create REFERENCE TicketEvent, ticketId ".$objTicket->getId().", reference ticketId $this->id<br />");
+                return false;
+            }
+            // Process the REFERENCE TicketEvent.
+            // Note that this will not change either Tickets' status.
+            $newStatus = $objEvent->process();
+            if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
+echo("Ticket::addMessage(): ERROR: Adding REFERENCE TicketEvent results in UNKNOWN state!  ticketId ".$objTicket->getId().", ref. Ticket ID $this->id<br />");
+                // Nothing to roll back upon failure
+                return false;
+            }
+        }
+        $objTicket->status = $newStatus;
+        return $objTicket->update();
+    }
+
+
+    /**
+     * Mark the Message as deleted
+     *
+     * Only works for Messages associated with this Ticket.
+     * This will not physically erase the Message from the
+     * Database, but a TicketEvent record will be added indicating that
+     * the current User doesn't consider it necessary to further process
+     * the Ticket.
+     * Note that this decision applies to the current owner, as well as all
+     * future owners of the Ticket.  The Message can be restored, however.
+     * @param   integer     $messageId      The Message ID
+     * @return  boolean                     True on success, false otherwise
+     */
+    function deleteMessage($messageId)
+    {
+        $objEvent = new TicketEvent(
+            $this,
+            SUPPORT_TICKET_EVENT_MESSAGE_DELETE,
+            $messageId
+        );
+        $newStatus = $objEvent->process();
+        if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
+            // Nothing to roll back upon failure
+            return false;
+        }
+/*
+        $this->status = $newStatus;
+        return $this->update();
+*/
+        return true;
+    }
+
+
+    /**
+     * Mark the Message as viewed, if applicable
+     *
+     * Only works for Messages associated with this Ticket.
+     * A TicketEvent record will be added indicating that the User
+     * has seen it, if and only if he is the current owner of the Ticket.
+     * @param   integer     $messageId      The Message ID
+     * @return  boolean                     True on success, false otherwise
+     */
+    function updateView($messageId)
+    {
+        $objEvent = new TicketEvent(
+            $this,
+            SUPPORT_TICKET_EVENT_MESSAGE_VIEW,
+            $messageId
+        );
+        $newStatus = $objEvent->process();
+        if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
+            // Nothing to roll back upon failure
+            return false;
+        }
+/*
+        // All Messages have been seen by the current User,
+        // update the Ticket status to OPEN
+        $this->status = $newStatus;
+        return $this->update();
+*/
+        return true;
+    }
+
+
+    /**
+     * Mark the Ticket as replied.
+     *
+     * Only works for Messages associated with this Ticket.
+     * An appropriate TicketEvent record will be added.
+     * @param   integer     $messageId      The Message ID
+     * @return  boolean                     True on success, false otherwise
+     */
+    function reply($messageId) {
+        $objEvent = new TicketEvent(
+            $this,
+            SUPPORT_TICKET_EVENT_REPLY,
+            $messageId
+        );
+        $newStatus = $objEvent->process();
+        if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
+            // Nothing to roll back upon failure
+            return false;
+        }
+/*
+        $this->status = $newStatus;
+        return $this->update();
+*/
+        return true;
+    }
+
+
+    /**
+     * Add a reference from this Ticket to another.
+     *
+     * An appropriate TicketEvent record will be added.
+     * @param   integer     $ticketId       The referenced Ticket ID
+     * @return  boolean                     True on success, false otherwise
+    function reference($ticketId) {
+        $objEvent = new TicketEvent(
+            $this,
+            SUPPORT_TICKET_EVENT_REFERENCE,
+            $ticketId
+        );
+        $newStatus = $objEvent->process();
+        if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
+            // Nothing to roll back upon failure
+            return false;
+        }
+        return true;
+    }
+     */
+
+
+    /**
+     * Close this Ticket.
+     *
+     * An appropriate TicketEvent record will be added.
+     * @param   integer     $ticketId       The referenced Ticket ID
+     * @return  boolean                     True on success, false otherwise
+     */
+    function close() {
+        $objEvent = new TicketEvent(
+            $this,
+            SUPPORT_TICKET_EVENT_CLOSE,
+            0
+        );
+        $newStatus = $objEvent->process();
+        if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
+            // Nothing to roll back upon failure
+            return false;
+        }
+/*
+        $this->status = $newStatus;
+        return $this->update();
+*/
         return true;
     }
 
@@ -603,8 +965,8 @@ echo("Ticket::refreshTimestamp(): no result: ".$objResult->RecordCount()."<br />
      * Select a Ticket by ID from the database.
      * @static
      * @param       integer     $id             The Ticket ID
-     * @return      Ticket                      The Ticket object
-     *                                          on success, false otherwise
+     * @return      Ticket                      The Ticket object on success,
+     *                                          false otherwise
      * @global      mixed       $objDatabase    Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
@@ -618,11 +980,11 @@ echo("Ticket::refreshTimestamp(): no result: ".$objResult->RecordCount()."<br />
               FROM ".DBPREFIX."module_support_ticket
              WHERE id=$id
         ";
-echo("Ticket::getById($id): query: $query<br />");
+//echo("Ticket::getById($id): query: $query<br />");
         $objResult = $objDatabase->Execute($query);
-echo("Ticket::getById($id): objResult: '$objResult'<br />");
+//echo("Ticket::getById($id): objResult: '$objResult'<br />");
         if (!$objResult) {
-echo("Ticket::getById($id): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
+echo("Ticket::getById($id): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />query: $query<br />");
             return false;
         }
         if ($objResult->RecordCount() == 0) {
@@ -631,11 +993,10 @@ echo("Ticket::getById($id): no result: ".$objResult->RecordCount()."<br />");
         }
         $objTicket = new Ticket(
             $objResult->fields('email'),
-            $objResult->fields('status'),
             $objResult->fields('source'),
             $objResult->fields('support_category_id'),
             $objResult->fields('language_id'),
-            $objResult->fields('owner_id'),
+//            $objResult->fields('owner_id'),
             $objResult->fields('timestamp'),
             $objResult->fields('id')
         );
@@ -644,8 +1005,89 @@ echo("Ticket::getById($id): no result: ".$objResult->RecordCount()."<br />");
 
 
     /**
+     * Returns an array of Ticket IDs from the database.
+     *
+     * This is the same as {@link getTicketArray()}, except that it
+     * returns an array of IDs rather than complete objects.
+     * The array size is limited by the global paging size limit setting.
+     * The optional parameter $order determines the sorting order
+     * in SQL syntax, it defaults to ordered by date, latest first.
+     * The optional parameter $offset determines the offset of the
+     * first Ticket to be read from the database, and $limit overrides the
+     * global paging size limit setting.
+     * @static
+     * @param       integer     $supportCategoryId  The Support Category ID,
+     *                                              or zero
+     * @param       integer     $languageId     The language ID, or zero
+     * @param       integer     $ownerId        The owner ID, or zero
+     * @param       integer     $status         The Ticket status, or
+     *                                          a negative number
+     * @param       integer     $source         The Ticket source, or
+     *                                          a negative number
+     * @param       string      $email          The e-mail address, or the
+     *                                          empty string
+     * @param       string      $order          The sorting order
+     * @param       integer     $offset         The offset
+     * @return      array                       The array of Ticket IDs
+     *                                          on success, false otherwise
+     * @global      mixed       $objDatabase    Database object
+     * @global      array       $_CONFIG        Global configuration array
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    //static
+    function getTicketIdArray(
+        $supportCategoryId, $languageId, $ownerId, $status, $source, $email,
+        $order="`timestamp` DESC", $offset=0, $limit=0
+    ) {
+        global $objDatabase, $_CONFIG;
+
+        if (!$limit) {
+            $limit = $_CONFIG['corePagingLimit'];
+        }
+        $query = "
+            SELECT id
+              FROM ".DBPREFIX."module_support_ticket
+             WHERE 1
+              ".($supportCategoryId ? " AND support_category_id=$supportCategoryId" : '')."
+              ".($languageId        ? " AND language_id=$languageId" : '')."
+              ".(!$source < 0       ? " AND source=$source"          : '')."
+              ".($email             ? " AND email=$email"            : '')."
+          ORDER BY $order
+        ";
+        $objResult = $objDatabase->SelectLimit(
+            $query, $limit, $offset
+        );
+        if (!$objResult) {
+            return false;
+        }
+        // return array
+        $arrTicketId = array();
+        while (!$objResult->EOF) {
+            // Compare status if desired -- This is a bit costly!
+            if (
+                    ($status >= SUPPORT_TICKET_STATUS_UNKNOWN
+                        ?   TicketEvent::getTicketStatus($this->id) == $status
+                        :   true
+                    )
+                &&
+                    ($ownerId >= 0
+                        ?   TicketEvent::getTicketOwnerId($this->id) == $ownerId
+                        :   true
+                    )
+            ) {
+                $arrTicketId[] = $objResult->fields['id'];
+            }
+            $objResult->MoveNext();
+        }
+        return $arrTicketId;
+    }
+
+
+    /**
      * Returns an array of Ticket objects from the database.
      *
+     * This is the same as {@link getTicketIdArray()}, except that it
+     * returns an array of complete objects rather than just IDs.
      * The array size is limited by the global paging size limit setting.
      * The optional parameter $order determines the sorting order
      * in SQL syntax, it defaults to ordered by date, latest first.
@@ -674,36 +1116,28 @@ echo("Ticket::getById($id): no result: ".$objResult->RecordCount()."<br />");
     //static
     function getTicketArray(
         $supportCategoryId, $languageId, $ownerId, $status, $source, $email,
-        $order="'timestamp' DESC", $offset=0, $limit=0
+        $order="`timestamp` DESC", $offset=0, $limit=0
     ) {
         global $objDatabase, $_CONFIG;
 
         if (!$limit) {
             $limit = $_CONFIG['corePagingLimit'];
         }
-        $query = "
-            SELECT id
-              FROM ".DBPREFIX."module_support_ticket
-             WHERE 1
-              ".($supportCategoryId ? " AND support_category_id=$supportCategoryId" : '')."
-              ".($languageId        ? " AND language_id=$languageId" : '')."
-              ".($ownerId           ? " AND owner_id=$ownerId"       : '')."
-              ".(!$status < 0       ? " AND `status`=$status"        : '')."
-              ".(!$source < 0       ? " AND source=$source"          : '')."
-              ".($email             ? " AND email=$email"            : '')."
-          ORDER BY $order
-        ";
-        $objResult = $objDatabase->SelectLimit(
-            $query, $limit, $offset
+
+        // Get Ticket ID array
+        $arrTicketId = $this->getTicketIdArray(
+            $supportCategoryId, $languageId, $ownerId, $status, $source, $email,
+            $order, $offset, $limit
         );
-        if (!$objResult) {
+        // Was it successful?
+        if ($arrTicketId === false) {
             return false;
         }
+
         // return array
         $arrTicket = array();
-        while (!$objResult->EOF) {
-            $arrTicket[] = Ticket::getById($objResult->fields['id']);
-            $objResult->MoveNext();
+        foreach ($arrTicketId as $ticketId) {
+            $arrTicket[] = Ticket::getById($ticketId);
         }
         return $arrTicket;
     }
@@ -730,7 +1164,6 @@ echo("Ticket::getById($id): no result: ".$objResult->RecordCount()."<br />");
      *                                          on success, false otherwise
      * @global      mixed       $objDatabase    Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
     //static
     function getRecordCount(
         $supportCategoryId, $languageId, $ownerId, $status, $source, $email
@@ -744,7 +1177,6 @@ echo("Ticket::getById($id): no result: ".$objResult->RecordCount()."<br />");
               ".($supportCategoryId ? " AND support_category_id=$supportCategoryId" : '')."
               ".($languageId        ? " AND language_id=$languageId" : '')."
               ".($ownerId           ? " AND owner_id=$ownerId"       : '')."
-              ".(!$status < 0       ? " AND `status`=$status"        : '')."
               ".(!$source < 0       ? " AND source=$source"          : '')."
               ".($email             ? " AND email=$email"            : '');
         $objResult = $objDatabase->Execute($query);
@@ -757,161 +1189,7 @@ echo("Ticket::getById($id): no result: ".$objResult->RecordCount()."<br />");
         }
         return false;
     }
-
-
-    /**
-     * Processes any event for this Ticket.
-     *
-     * Finds out what action to take, calls appropriate Ticket methods,
-     * and updates the Ticket status, if necessary.
-     * @param   integer $event      Any valid (or invalid) Ticket event.
-     * @param   integer $foreignId  The foreign ID
-     * @param   integer $value      The new value
-     * @return  boolean             True on success, false otherwise.
-     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function processEvent($event, $foreignId, $value)
-    {
-        // Get the would-be status after processing the event
-        $newStatus = $this->getNewStatus($event);
-        // This *SHOULD* never be visible!
-        // -- Which means that every state-event combination causing it
-        // has to be avoided.
-        if ($newStatus == SUPPORT_TICKET_EVENT_UNKNOWN) {
-echo("WARNING!  Event is causing an UNKNOWN status<br />");
-        }
-
-        // Get the appropriate action method name for the event
-        $action = $this->getAction($event, $foreignId, $value);
-        // These methods *MUST* return a boolean true upon success,
-        // or false otherwise.
-        // They must also call the appropriate Ticket method in order
-        // to create the Action object and entry.
-        // When they fail, the status must remain untouched!
-        if (!eval('$this->$action;')) {
-            return false;
-        }
-        // Only store if it's necessary
-        if ($this->status != $newStatus) {
-            // Update $this->status and store it.
-            $this->status = $newStatus;
-            return $this->store();
-        }
-        // Same status
-        return true;
-    }
-
-
-    /**
-     * Returns the appropriate Action for the current status
-     * and the event code.
-     *
-     * The event code must be one of the codes define()d in the
-     * constants in {@link lib/SupportCommon.class.php} and used in
-     * {@link seaTicketMatrix.inc.php} to initialize the matrix.
-     * The returned string must correspond to a Ticket method with
-     * the appropriate variable names as arguments.
-     * @param   integer $event  The event code
-     * @return  string          The name of the action to take.
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getAction($event)
-    {
-        return $this->arrSea[$this->status][$event]['action'];
-    }
-
-
-    /**
-     * Returns the prospective status the Ticket will be set to
-     * after taking successful action for the current status and
-     * the event code.
-     *
-     * The event code must be one of the codes define()d in the
-     * constants in {@link lib/SupportCommon.class.php} and used in
-     * {@link seaTicketMatrix.inc.php} to initialize the matrix.
-     * The returned integer must correspond to a status as define()d
-     * in the constants in {@link lib/SupportCommon.class.php} as well.
-     * @param   integer $event  The event code
-     * @return  string          The prospective status code.
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getNewStatus($event)
-    {
-        return $this->arrSea[$this->status][$event]['status'];
-    }
-
-
-    /**
-     * Take no Action on this Ticket.
-     *
-     * This is all about not changing the Ticket status.
-     * @return unknown
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function actionNone()
-    {
-        return true;
-    }
-
-
-    /**
-     * Try to assign this Ticket to the person reading it.
-     *
-     * This method is to be called for Tickets with status NEW or MOVED,
-     * whenever a READ event occurs.
-     * The Ticket is assigned to the person reading it only if
-     * - The Ticket hasn't been assigned before (its status is NEW), or if
-     * - The Ticket has been assigned (moved) to the person reading it now,
-     *   that is, the person currently logged in. See
-     *   {@link core/auth.class.php}.
-     * @return  boolean     True on success, false otherwise.
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function actionAssignToReader()
-    {
-        $ownerId  = $this->getOwnerId();
-        $personId = intval($_SESSION['auth']['userid']);
-        if ($personId == 0) {
-echo("ERROR: No User ID found in Session!<br />");
-            return false;
-        }
-        if ($ownerId != 0) {
-            if ($ownerId == $personId) {
-                return true;
-            }
-echo("NOTE: Ticket is assigned to someone else!<br />");
-            return false;
-        }
-        // Creates an Action entry
-        return $this->setOwnerId($personId);
-    }
-
-
-    /**
-     * Try to assign this Ticket to the person with the given ID.
-     *
-     * This method is to be called for Tickets with status OPEN or MOVED,
-     * whenever a CHANGE_PERSON event occurs.
-     * @return  boolean     True on success, false otherwise.
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function actionAssign($personId)
-    {
-        if ($personId == 0) {
-echo("actionAssign($personId): ERROR: No User ID specified!<br />");
-            return false;
-        }
-        $ownerId = $this->getOwnerId();
-        if ($ownerId == 0) {
-echo("actionAssign($personId): WARNING: Something's wrong -- this Ticket isn't owned!<br />");
-            return false;
-        }
-        if ($ownerId == $personId) {
-            return true;
-        }
-        // Creates an Action entry
-        return $this->setOwnerId($personId);
-    }
 
 
     /**
@@ -979,29 +1257,48 @@ echo("actionAssign($personId): WARNING: Something's wrong -- this Ticket isn't o
      *
      * Does only contain the <select> tag pair if the optional $menuName
      * is specified and evaluates to a true value.
+     * The $onchange argument will only be inserted if the <select> tag
+     * is added, according to the above rule.
+     * Note that Users with neither first nor last names present in the
+     * database table will silently be ignored!
+     * @static
      * @param   integer $selectedId The optional preselected owner ID
      * @param   string  $menuName   The optional menu name, defaults to the
      *                              empty string.  Unless specified, no <select>
      *                              tag pair will be added.
-     * @return  string              The dropdown menu HTML code
+     * @param   string  $onchange   The optional onchange code.
+     * @return  mixed               The dropdown menu HTML code on success,
+     *                              false otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getOwnerMenu($selectedId=0, $menuName='')
+    // static
+    function getOwnerMenu($selectedId=0, $menuName='', $onchange='')
     {
         // The argument in this function call is fake!
         // It will return all user IDs.
         $arrUserId = Auth::getUserIdArray('support');
+        if (!$arrUserId) {
+echo("getOwnerMenu(selected=$selectedId, name=$menuName, onchange=$onchange): ERROR: got no user IDs!<br />");
+            return false;
+        }
+//echo("getOwnerMenu(selected=$selectedId, name=$menuName, onchange=$onchange): got user IDs: ");var_export($arrUserId);echo("<br />");
         $menu = '';
         foreach ($arrUserId as $userId) {
+            $fullName = trim(Auth::getFullName($userId));
+            if ($fullName == '') {
+                continue;
+            }
             $menu .=
                 "<option value='$userId'".
                 ($selectedId == $userId ? ' selected="selected"' : '').
-                '>'.Auth::getFullName($userId)."</option>\n";
+                '>'.$fullName."</option>\n";
         }
         if ($menuName) {
-            $menu = "<select id='$menuName' name='$menuName'>\n$menu\n</select>\n";
+            $menu = "<select id='$menuName' name='$menuName'".
+            ($onchange ? ' onchange="'.$onchange.'"' : '').
+            ">\n$menu\n</select>\n";
         }
-echo("getOwnerMenu(selected=$selectedId, name=$menuName): made menu: ".htmlentities($menu)."<br />");
+//echo("getOwnerMenu(selected=$selectedId, name=$menuName, onchange=$onchange): made menu: ".htmlentities($menu)."<br />");
         return $menu;
 
     }
