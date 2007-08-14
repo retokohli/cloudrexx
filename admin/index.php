@@ -58,6 +58,8 @@ if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
 
 require_once '../core/API.php';
 
+global $_CONFIG;
+
 //-------------------------------------------------------
 // Initialize database object
 //-------------------------------------------------------
@@ -73,10 +75,10 @@ if ($objDatabase === false) {
 // Load settings and configuration
 //-------------------------------------------------------
 
-$objInit= new InitCMS($mode="backend");
+$objInit = new InitCMS('backend');
 
-$sessionObj= &new cmsSession();
-$sessionObj->cmsSessionStatusUpdate($status="backend");
+$sessionObj = &new cmsSession();
+$sessionObj->cmsSessionStatusUpdate('backend');
 
 $objInit->_initBackendLanguage();
 $objInit->getUserFrontendLangId();
@@ -106,8 +108,8 @@ $objLanguage = &new FWLanguage();
 // Module object
 $objModules = &new ModuleChecker();
 
-$objAuth =&new Auth($type='backend');
-$objPerm =&new Permission($type='backend');
+$objAuth = &new Auth('backend');
+$objPerm = &new Permission('backend');
 
 //-----------------------------------------------------------------------------------------------
 // Authentification start
@@ -120,7 +122,7 @@ if (!$objAuth->checkAuth()) {
     switch ($cmd) {
         case "secure":
             $_SESSION['auth']['secid'] = strtoupper(substr(md5(microtime()), 0, 4));
-            getSecurityImage($id=$_SESSION['auth']['secid']);
+            getSecurityImage($_SESSION['auth']['secid']);
             exit;
             break;
 
