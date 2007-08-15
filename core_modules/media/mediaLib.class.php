@@ -531,12 +531,11 @@ class MediaLibrary{
     // replaces some characters
     function _replaceCharacters($string){
         // replace $change with ''
-        $change = array('\\', '/', ':', '*', '?', '"', '<', '>', '|');
+        $change = array('\\', '/', ':', '*', '?', '"', '<', '>', '|', '+');
         // replace $signs1 with $signs
         $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
 
-        $string = strtolower($string);
         foreach($change as $str){
 		    $string = str_replace($str, '_', $string);
         }
