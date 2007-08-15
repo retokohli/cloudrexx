@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The main page for the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -1436,30 +1435,31 @@ if ($_CONFIG['bannerStatus'] == '1') {
 if(!isset($loginStatus)) $loginStatus='';
 
 $objTemplate->setVariable(array(
-    'CHARSET'                => $objInit->getFrontendLangCharset(),
+    'CHARSET'               => $objInit->getFrontendLangCharset(),
     'TITLE'                 => $page_title,
-    'METATITLE'                => $page_metatitle,
-    'NAVTITLE'                => $page_catname,
-    'GLOBAL_TITLE'            => $_CONFIG['coreGlobalPageTitle'],
+    'METATITLE'             => $page_metatitle,
+    'NAVTITLE'              => $page_catname,
+    'GLOBAL_TITLE'          => $_CONFIG['coreGlobalPageTitle'],
     'DOMAIN_URL'            => $_CONFIG['domainUrl'],
-    'METAKEYS'                => $page_keywords,
-    'METADESC'                => $page_desc,
+    'METAKEYS'              => $page_keywords,
+    'METADESC'              => $page_desc,
     'METAROBOTS'            => $page_robots,
-    'CONTENT_TITLE'               => $page_title,
+    'CONTENT_TITLE'         => $page_title,
     'CSS_NAME'              => $pageCssName,
     'PRINT_URL'             => $objInit->getPrintUri(),
     'PAGE_URL'              => $objInit->getPageUri(),
-    'CURRENT_URL'             => $objInit->getCurrentPageUri(),
-    'DATE'                    => showFormattedDate(),
-    'NAVTREE'                => $objNavbar->getTrail(),
-    'SUBNAVBAR_FILE'          => $objNavbar->getNavigation($themesPages['subnavbar'],$boolShop),
-    'NAVBAR_FILE'              => $objNavbar->getNavigation($themesPages['navbar'],$boolShop),
-    'ONLINE_USERS'            => $objCounter->getOnlineUsers(),
+    'CURRENT_URL'           => $objInit->getCurrentPageUri(),
+    'DATE'                  => showFormattedDate(),
+    'TIME'                  => date("h:m", time()),
+    'NAVTREE'               => $objNavbar->getTrail(),
+    'SUBNAVBAR_FILE'        => $objNavbar->getNavigation($themesPages['subnavbar'],$boolShop),
+    'NAVBAR_FILE'           => $objNavbar->getNavigation($themesPages['navbar'],$boolShop),
+    'ONLINE_USERS'          => $objCounter->getOnlineUsers(),
     'VISITOR_NUMBER'        => $objCounter->getVisitorNumber(),
-    'COUNTER'                => $objCounter->getCounterTag(),
+    'COUNTER'               => $objCounter->getCounterTag(),
     'BANNER'                => isset($objBanner) ? $objBanner->getBannerJS() : '',
-    'VERSION'                   => $_CONFIG['coreCmsName'],
-    'LANGUAGE_NAVBAR'        => $objNavbar->getFrontendLangNavigation(),
+    'VERSION'               => $_CONFIG['coreCmsName'],
+    'LANGUAGE_NAVBAR'       => $objNavbar->getFrontendLangNavigation(),
     'ACTIVE_LANGUAGE_NAME'  => $objInit->getFrontendLangName(),
     'LOGGING_STATUS'        => $loginStatus,
     'RANDOM'                => md5(microtime()),
