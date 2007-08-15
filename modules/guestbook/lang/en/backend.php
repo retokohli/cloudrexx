@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 15 Aug 2007 10:51:52 +0200
+* generated date Wed, 15 Aug 2007 10:56:36 +0200
 **/
 
 $_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY'] = "Add Guestbook Entry";
