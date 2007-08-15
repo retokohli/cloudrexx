@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 14 Aug 2007 17:56:13 +0200
+* generated date Wed, 15 Aug 2007 10:36:51 +0200
 **/
 
 $_ARRAYLANG['TXT_FORUM_CATEGORY_NAME'] = "Category / Forum Name";
@@ -40,13 +40,13 @@ $_ARRAYLANG['TXT_FORUM_CATEGORY_ACCESS_EDIT'] = "Edit";
 $_ARRAYLANG['TXT_FORUM_CATEGORY_ACCESS_DELETE'] = "Delete";
 $_ARRAYLANG['TXT_FORUM_CATEGORY_ACCESS_MOVE'] = "Move";
 $_ARRAYLANG['TXT_FORUM_CATEGORY_ACCESS_CLOSE'] = "Close";
-$_ARRAYLANG['TXT_FORUM_CATEGORY_ACCESS_STICKY'] = "Festhalten";
+$_ARRAYLANG['TXT_FORUM_CATEGORY_ACCESS_STICKY'] = "Sticky";
 $_ARRAYLANG['TXT_CATEGORY_ACCESS_BEQUEATH'] = "Grant Access: Include Subdirectories";
 $_ARRAYLANG['TXT_CATEGORY_ADD_FORUM_INHERIT'] = "Grant Access Rights:";
 $_ARRAYLANG['TXT_FORUM_CATEGORY_ACCESS_NOGROUPS'] = "The are no Front End groups defined in the User Administration.";
 $_ARRAYLANG['TXT_FORUM_CATEGORY_ACCESS_UPDATED'] = "Access rights have been successfully updated.";
 $_ARRAYLANG['TXT_FORUM_CATEGORY_LANGUAGES'] = "Languages";
-$_ARRAYLANG['TXT_FORUM_CATEGORY_EXTENDED'] = "Erweitert";
+$_ARRAYLANG['TXT_FORUM_CATEGORY_EXTENDED'] = "Extended";
 $_ARRAYLANG['TXT_FORUM_CATEGORY_UPDATE_ERROR'] = "An error occurred while saving your settings.  This could be because:<br />- A language has not been activated <br />- You have selected an invalid category";
 $_ARRAYLANG['TXT_FORUM_OVERVIEW_FORUM'] = "Forum";
 $_ARRAYLANG['TXT_FORUM_SETTINGS_GENERAL'] = "General Settings";
@@ -64,7 +64,7 @@ $_ARRAYLANG['TXT_FORUM_ANONYMOUS_GROUP_NAME'] = "Anonymous";
 $_ARRAYLANG['TXT_FORUM_ANONYMOUS_GROUP_DESC'] = "Anonymous Forum User";
 $_ARRAYLANG['TXT_FORUM_MENU_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_LATEST_ENTRIES_COUNT'] = "Lates Entries Count";
-$_ARRAYLANG['TXT_LATEST_ENTRIES_COUNT_HELP'] = "Legt fest, wieviele neuste Einträge auf der Forenübersicht angezeigt werden";
+$_ARRAYLANG['TXT_LATEST_ENTRIES_COUNT_HELP'] = "Defines how many of the newest postings will be shown in the overview.";
 $_ARRAYLANG['TXT_FORUM_BLOCK_TEMPLATE'] = "Content Block Template";
 $_ARRAYLANG['TXT_FORUM_TEMPLATE'] = "Template";
 $_ARRAYLANG['TXT_BLOCK_TEMPLATE_HELP'] = "This HTML Code defines the template for the newest entries displayed on the homepage";
@@ -81,22 +81,22 @@ $_ARRAYLANG['TXT_FORUM_ACTIVATE'] = "Activate";
 $_ARRAYLANG['TXT_FORUM_THREAD_NAME'] = "Thread Name";
 $_ARRAYLANG['TXT_FORUM_EMAIL_NOTIFICATION'] = "E-Mail Confirmation";
 $_ARRAYLANG['TXT_FORUM_EMAIL_TEMPLATE'] = "Content";
-$_ARRAYLANG['TXT_FORUM_NOTIFICATION_TEMPLATE_HELP'] = "Diese E-Mail Vorlage wird als Benachrichtigung bei neuen Beiträgen verwendet. ";
+$_ARRAYLANG['TXT_FORUM_NOTIFICATION_TEMPLATE_HELP'] = "This email template will be used as a notification for new postings.";
 $_ARRAYLANG['TXT_FORUM_FORUM_NAME'] = "Forum Name";
-$_ARRAYLANG['TXT_FORUM_THREAD_STARTER'] = "Name des Erstellers";
+$_ARRAYLANG['TXT_FORUM_THREAD_STARTER'] = "Created by";
 $_ARRAYLANG['TXT_FORUM_POST_COUNT_INFO'] = "Count Of Entries";
 $_ARRAYLANG['TXT_FORUM_THREAD_CREATE_DATE_INFO'] = "Creation Date";
 $_ARRAYLANG['TXT_FORUM_EMAIL_TEMPLATE_SUBJECT'] = "Subject";
-$_ARRAYLANG['TXT_FORUM_LATEST_SUBJECT'] = "Betreff des neusten Beitrags";
-$_ARRAYLANG['TXT_FORUM_LATEST_MESSAGE'] = "Inhalt des neusten Beitrags";
-$_ARRAYLANG['TXT_FORUM_USERNAME'] = "Benutzername des Empfängers";
+$_ARRAYLANG['TXT_FORUM_LATEST_SUBJECT'] = "Subject of the newest posting";
+$_ARRAYLANG['TXT_FORUM_LATEST_MESSAGE'] = "Content of the newest posting";
+$_ARRAYLANG['TXT_FORUM_USERNAME'] = "Name of recipient";
 $_ARRAYLANG['TXT_FORUM_THREAD_URL'] = "Link to Thread";
 $_ARRAYLANG['TXT_FORUM_EMAIL_TEMPLATE_FROM_EMAIL'] = "Sender E-Mail";
 $_ARRAYLANG['TXT_FORUM_EMAIL_TEMPLATE_FROM_NAME'] = "Sender Name";
-$_ARRAYLANG['TXT_FORUM_LATEST_ENTRIES'] = "Die %s neuesten Einträge";
+$_ARRAYLANG['TXT_FORUM_LATEST_ENTRIES'] = "The %s newest entries";
 $_ARRAYLANG['TXT_FORUM_THREAD_STRATER'] = "Started by";
-$_ARRAYLANG['TXT_FORUM_POST_COUNT'] = "Beiträge";
-$_ARRAYLANG['TXT_FORUM_THREAD_CREATE_DATE'] = "Erstellt am";
+$_ARRAYLANG['TXT_FORUM_POST_COUNT'] = "Posts";
+$_ARRAYLANG['TXT_FORUM_THREAD_CREATE_DATE'] = "Created at";
 $_ARRAYLANG['TXT_FORUM_NO_SUBJECT'] = "No Suject";
-$_ARRAYLANG['TXT_FORUM_NOTIFICATION'] = "Benachrichtigung";
+$_ARRAYLANG['TXT_FORUM_NOTIFICATION'] = "Notification";
 ?>

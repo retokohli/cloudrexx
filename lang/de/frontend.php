@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 14 Aug 2007 17:56:13 +0200
+* generated date Wed, 15 Aug 2007 10:36:51 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
@@ -56,7 +56,7 @@ $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "Die beiden Passwörter stimmen nicht übere
 $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "Konnte keine Email an %EMAIL% gesendet werden!";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Passwort zurücksetzen";
 $_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "Geben Sie bitte Ihre E-Mail Adresse an. Eine Nachricht mit weiteren Anweisungen wird Ihnen dann in kürze zugesandt.";
-$_ARRAYLANG['TXT_RESTORE_PASSWORD_MAIL'] = "Hallo %USERNAME%,\r\n\r\nUm ein neues Passwort zu wählen, müssen Sie auf die unten aufgeführte URL gehen und dort Ihr neues Passwort eingeben.\r\n\r\nWICHTIG: Die Gültigkeit der URL wird nach 60 Minuten verfallen, nachdem diese E-Mail abgeschickt wurde. Falls Sie mehr Zeit benötigen, geben Sie Ihre E-Mail Adresse einfach ein weiteres Mal ein.\r\n\r\nIhre URL:\r\n%URL%\r\n\r\n\r\nMit freundlichen Grüssen,\r\n%SENDER%";
+$_ARRAYLANG['TXT_RESTORE_PASSWORD_MAIL'] = "Hallo %USERNAME%,rnrnUm ein neues Passwort zu wählen, müssen Sie auf die unten aufgeführte URL gehen und dort Ihr neues Passwort eingeben.rnrnWICHTIG: Die Gültigkeit der URL wird nach 60 Minuten verfallen, nachdem diese E-Mail abgeschickt wurde. Falls Sie mehr Zeit benötigen, geben Sie Ihre E-Mail Adresse einfach ein weiteres Mal ein.rnrnIhre URL:rn%URL%rnrnrnMit freundlichen Grüssen,rn%SENDER%";
 $_ARRAYLANG['TXT_LOST_PASSWORD_MAIL_SENT'] = "Eine E-Mail mit weiteren Anweisungen wurde an %EMAIL% gesendet.";
 $_ARRAYLANG['TXT_ACCOUNT_WITH_EMAIL_DOES_NOT_EXIST'] = "Ein Benutzerkonto mit dieser E-Mail Adresse existiert nicht!";
 $_ARRAYLANG['TXT_SET_PASSWORD_TEXT'] = "Geben Sie bitte Ihr gewünschtes Passwort ein und wiederholen Sie es um es zu bestätigen.";

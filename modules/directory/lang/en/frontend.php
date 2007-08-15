@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 14 Aug 2007 17:56:13 +0200
+* generated date Wed, 15 Aug 2007 10:36:51 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Create New Themes";
@@ -18,7 +18,7 @@ $_ARRAYLANG['TXT_DIR_F_USERNAME'] = "Username";
 $_ARRAYLANG['TXT_DIR_F_PASSWORD'] = "Password";
 $_ARRAYLANG['TXT_DIR_F_LOGIN'] = "Login";
 $_ARRAYLANG['TXT_DIR_F_NO_ACCOUNT'] = "<a href=\'index.php?section=directory&cmd=reg\'>Register here for a new account.</a>";
-$_ARRAYLANG['TXT_DIR_F_NEW_ENTREE'] = "new entree";
+$_ARRAYLANG['TXT_DIR_F_NEW_ENTREE'] = "new entry";
 $_ARRAYLANG['TXT_DIR_F_NAME2'] = "Name";
 $_ARRAYLANG['TXT_DIR_F_DESCRIPTION'] = "Description";
 $_ARRAYLANG['TXT_DIR_F_CATEGORIE'] = "Category";
@@ -47,7 +47,7 @@ $_ARRAYLANG['TXT_DIR_F_USER_ALREADY_EXISTS'] = "This account or e-mail does allr
 $_ARRAYLANG['TXT_DIR_F_USER_SUCCESSFULL_ADDED'] = "Thanks for registering. An email with your activation code has been sent to your email address.\\nOnce you receive this email, you must click the link in it to conclude your registration.";
 $_ARRAYLANG['TXT_DIR_F_SEARCH'] = "Search";
 $_ARRAYLANG['TXT_DIR_F_TITLE'] = "Title";
-$_ARRAYLANG['TXT_DIR_F_CANTON'] = "Staat";
+$_ARRAYLANG['TXT_DIR_F_CANTON'] = "State";
 $_ARRAYLANG['TXT_DIR_F_SEARCH_KEYS'] = "Searchterms";
 $_ARRAYLANG['TXT_DIR_F_CO_NAME'] = "Company";
 $_ARRAYLANG['TXT_DIR_F_STREET'] = "Street / No.";
@@ -55,7 +55,7 @@ $_ARRAYLANG['TXT_DIR_F_PLZ'] = "ZIP";
 $_ARRAYLANG['TXT_DIR_F_PHONE'] = "Phone";
 $_ARRAYLANG['TXT_DIR_F_PERSON'] = "Contact Person";
 $_ARRAYLANG['TXT_DIR_FILL_ALL'] = "Fill all Fields please";
-$_ARRAYLANG['TXT_DIR_NEW_ENTREE'] = "New entree";
+$_ARRAYLANG['TXT_DIR_NEW_ENTREE'] = "New entry";
 $_ARRAYLANG['TXT_DIR_DATE'] = "Date";
 $_ARRAYLANG['TXT_DIR_FILESIZE'] = "Filesize";
 $_ARRAYLANG['TXT_DIR_F_EMPTY_DIR'] = "This directory is empty.";
@@ -166,7 +166,7 @@ $_ARRAYLANG['TXT_LEVEL'] = "Level";
 $_ARRAYLANG['TXT_ADD_LEVEL'] = "Add Level";
 $_ARRAYLANG['TXT_NEW_LEVEL'] = "New Level";
 $_ARRAYLANG['TXT_SHOW_CATEGORIES'] = "Show Categories";
-$_ARRAYLANG['TXT_SHOW_ENTRIES'] = "Show Enties";
+$_ARRAYLANG['TXT_SHOW_ENTRIES'] = "Show Entries";
 $_ARRAYLANG['TXT_YES'] = "Yes";
 $_ARRAYLANG['TXT_NO'] = "No";
 $_ARRAYLANG['TXT_SHOW_TYPE'] = "Display Mode";
@@ -189,7 +189,7 @@ $_ARRAYLANG['TXT_LEVEL_CORRUPT_DEL'] = "delete level corrupded";
 $_ARRAYLANG['TXT_LEVEL_SUCCESSFULL_DEL'] = "Level successfull deleted";
 $_ARRAYLANG['TXT_ORDER_CORRUPT_EDIT'] = "edit order corrupded";
 $_ARRAYLANG['TXT_FEED_CORRUPT_CONFIRM'] = "Confirm Error ";
-$_ARRAYLANG['TXT_FEED_SUCCESSFULL_ADDED'] = "Entrie successfull added";
+$_ARRAYLANG['TXT_FEED_SUCCESSFULL_ADDED'] = "Entry successfull added";
 $_ARRAYLANG['TXT_CAT_CORRUPT_EDIT'] = "edit categorie corrupded";
 $_ARRAYLANG['TXT_PREMIUM'] = "Premium Entree";
 $_ARRAYLANG['TXT_DIRECTORY_EMPTY_CONFIRMLIST'] = "mo Entrees found";
@@ -197,11 +197,11 @@ $_ARRAYLANG['TXT_DIRECTORY_HEADLINES'] = "Headlines";
 $_ARRAYLANG['TXT_DIRECTORY_HOME_CONTENT'] = "Content Homepage";
 $_ARRAYLANG['TXT_DIRECTORY_RECIEVER'] = "Recipient";
 $_ARRAYLANG['TXT_EXAMPLE'] = "Example";
-$_ARRAYLANG['TXT_ID_DESCRIPTION'] = "ID od Entree";
+$_ARRAYLANG['TXT_ID_DESCRIPTION'] = "ID of Entry";
 $_ARRAYLANG['TXT_DATE_DESCRIPTION'] = "Date of entree";
 $_ARRAYLANG['TXT_TITLE_DESCRIPTION'] = "Title of Entree";
 $_ARRAYLANG['TXT_USEMENT'] = "Assignment";
-$_ARRAYLANG['TXT_USEMENT_TEXT'] = "In the design template <b>directory.html</b>. Diese Seite kann mit dem Platzhalter <b>[[DIRECTORY_FILE]]</b> im Design oder in einer Content Seite eingebunden werden.";
+$_ARRAYLANG['TXT_USEMENT_TEXT'] = "This page can be included within the design or content by using the variable [[DIRECTORY_FILE]]. There is a design template called directory.html";
 $_ARRAYLANG['TXT_DIRECTORY_DEACTIVATE'] = "deactivate";
 $_ARRAYLANG['TXT_SHOW_DIR_HOMECONTENT'] = "show Directory on Homepage";
 ?>

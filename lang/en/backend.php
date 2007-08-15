@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 14 Aug 2007 17:56:13 +0200
+* generated date Wed, 15 Aug 2007 10:36:51 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Characters)";
@@ -733,7 +733,7 @@ $_ARRAYLANG['TXT_DBM_SHOW_TABLE_HTML_TITLE'] = "HTML-Darstellung";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_DUMP_TITLE'] = "SQL-Dump";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_WRONG_PREFIX'] = "Fehler: Sie k&ouml;nnen nur auf Tabellen von Contrexx zugreifen.";
 $_ARRAYLANG['TXT_DBM_SQL_CODE'] = "SQL-Befehl ausf&uuml;hren";
-$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Hinweis: Alle Abfragen m&uuml;ssen aus systemtechnischen Gr&uuml;nden immer mit einem Semikolon (";") und einem Zeilenumbruch abgeschlossen werden. Nachfolgend ein Beispiel:<pre>SELECT * FROM Table;'."\n".'SELECT * FROM AnotherTable;</pre>";
+$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Hinweis: Alle Abfragen müssen aus systemtechnischen Gründen immer mit einem Semikolon (\";\") und einem Zeilenumbruch abgeschlossen werden. Nachfolgend ein Beispiel:<pre>SELECT * FROM Table;\'.\"n\".\'SELECT * FROM AnotherTable;</pre>";
 $_ARRAYLANG['TXT_DBM_SQL_FILE'] = "SQL-Datei ausf&uuml;hren";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_TYPES'] = "Erlaubte Dateitypen";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_SIZE'] = "Erlaubte Dateigr&ouml;sse";
