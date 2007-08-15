@@ -25,6 +25,9 @@ Core
   bewirkt, dass die Contentsprache basierend auf den Browser-Sprachen
   (accept-languages) ausgewählt wird oder immer die Standardsprache verwendet
   wird.
+- Neuer Platzhalter für die Zeitanzeige. Eingebunden im Design erzeugt der 
+  Platzhalter [[TIME]] die Ausgabe der aktuellen Uhrzeit im folgenden
+  Format: HH:MM .
 
 Kontaktmanager
 - Ein Kontaktformular kann mit einem CAPTCHA-Schutz geschützt werden.
