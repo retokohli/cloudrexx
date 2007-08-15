@@ -404,7 +404,7 @@ class podcastManager extends podcastLib
 		$mediumHeight = 0;
 		$mediumPlaylenght = 0;
 		$mediumSize = 0;
-		$mediumStatus = '';
+		$mediumStatus = 1;
 		$mediumCategories = array();
 		$saveStatus = true;
 
