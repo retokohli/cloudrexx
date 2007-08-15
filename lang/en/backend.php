@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 15 Aug 2007 10:36:51 +0200
+* generated date Wed, 15 Aug 2007 10:51:52 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Characters)";
@@ -756,7 +756,7 @@ $_ARRAYLANG['TXT_DBM_EXPORT_SUCCESS'] = "Ein Backup der Datenbank wurde unter \'
 $_ARRAYLANG['TXT_DBM_EXPORT_DELETE_SUCCESS'] = "Das Backup wurde erfolgreich entfernt.";
 $_ARRAYLANG['TXT_DBM_EXPORT_DELETE_ERROR'] = "Backup konnte nicht gel&ouml;scht werden.";
 $_ARRAYLANG['TXT_DBM_IMPORT'] = "Sicherung importieren";
-$_ARRAYLANG['TXT_DBM_IMPORT_DESCRIPTION'] = "Hier k&ouml;nnen Sie eine Sicherung von einem anderen System in Ihre Contrexx-Installation importieren. Nach erfolgreichem heraufladen der Datei erscheint diese in der &Uuml;bersicht unter &quot;Vorhandene Sicherungen&quot;.";
+$_ARRAYLANG['TXT_DBM_IMPORT_DESCRIPTION'] = "Hier können Sie eine Sicherung von einem anderen System in Ihre Contrexx-Installation importieren. Nach erfolgreichem heraufladen der Datei erscheint diese in der Übersicht unter \"Vorhandene Sicherungen\".";
 $_ARRAYLANG['TXT_DBM_IMPORT_FILE'] = "Sicherungsdatei";
 $_ARRAYLANG['TXT_DBM_IMPORT_SUBMIT'] = "Sicherung hochladen";
 $_ARRAYLANG['TXT_DBM_IMPORT_ERROR_TYPE'] = "Fehler beim Upload: Ung&uuml;ltiger Datentyp \'{TYPE}\'!";
