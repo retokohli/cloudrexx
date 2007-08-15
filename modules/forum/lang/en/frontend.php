@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 14 Aug 2007 17:56:13 +0200
+* generated date Wed, 15 Aug 2007 10:36:51 +0200
 **/
 
 $_ARRAYLANG['TXT_FORUM_NO_POSTINGS'] = "No Entries Available.";
@@ -50,22 +50,22 @@ $_ARRAYLANG['TXT_FORUM_REGISTER'] = "Registration";
 $_ARRAYLANG['TXT_FORUM_PROFILE'] = "Profile";
 $_ARRAYLANG['TXT_FORUM_LOGOUT'] = "Logout";
 $_ARRAYLANG['TXT_FORUM_NOTIFY_NEW_POSTS'] = "Notify me about new posts in this discussion";
-$_ARRAYLANG['TXT_FORUM_QUICKACCESS'] = "Schnellzugriff: ";
-$_ARRAYLANG['TXT_FORUM_LATEST_ENTRIES'] = "Die %s neuesten Einträge";
+$_ARRAYLANG['TXT_FORUM_QUICKACCESS'] = "Quickaccess: ";
+$_ARRAYLANG['TXT_FORUM_LATEST_ENTRIES'] = "The %s newest entries";
 $_ARRAYLANG['TXT_FORUM_THREAD_STRATER'] = "Started by";
-$_ARRAYLANG['TXT_FORUM_POST_COUNT'] = "Beiträge";
-$_ARRAYLANG['TXT_FORUM_THREAD_CREATE_DATE'] = "Erstellt am";
+$_ARRAYLANG['TXT_FORUM_POST_COUNT'] = "Posts";
+$_ARRAYLANG['TXT_FORUM_THREAD_CREATE_DATE'] = "Created at";
 $_ARRAYLANG['TXT_FORUM_NO_SUBJECT'] = "No Suject";
-$_ARRAYLANG['TXT_FORUM_POST_EMPTY'] = "Beitrag leer oder zu kurz (mind. %d Zeichen)";
-$_ARRAYLANG['TXT_FORUM_UPDATE_NOTIFICATION'] = "Benachrichtigung setzen";
-$_ARRAYLANG['TXT_FORUM_NOTIFICATION'] = "Benachrichtigung";
-$_ARRAYLANG['TXT_FORUM_MUST_BE_AUTHENTICATED'] = "Sie müssen angemeldet sein um Foren abonnieren zu können.";
+$_ARRAYLANG['TXT_FORUM_POST_EMPTY'] = "Post empty or too short (at least %d characters)";
+$_ARRAYLANG['TXT_FORUM_UPDATE_NOTIFICATION'] = "Set notification ";
+$_ARRAYLANG['TXT_FORUM_NOTIFICATION'] = "Notification";
+$_ARRAYLANG['TXT_FORUM_MUST_BE_AUTHENTICATED'] = "You have to be logged on to be able to subscribe to this forum.";
 $_ARRAYLANG['TXT_FORUM_NOTIFICATION_UPDATED'] = "The Confirmation has been updated";
-$_ARRAYLANG['TXT_FORUM_THREAD_NOTIFICATION'] = "Benachrichtigung";
+$_ARRAYLANG['TXT_FORUM_THREAD_NOTIFICATION'] = "Notification";
 $_ARRAYLANG['TXT_SELECT_ALL'] = "Select All";
 $_ARRAYLANG['TXT_DESELECT_ALL'] = "Deselect All";
-$_ARRAYLANG['TXT_FORUM_NOTIFICATION_HELPTEXT'] = "Um einzelne Einträge zu markieren, halten Sie die Strg-Taste gedrückt und markieren Sie mit der Maus die gewünschten Einträge";
+$_ARRAYLANG['TXT_FORUM_NOTIFICATION_HELPTEXT'] = "To be able to select entries please hold down the Ctrl button and mark the required entries with the mouse.";
 $_ARRAYLANG['TXT_FORUM_NOTIFICATION_SUBMIT'] = "Save";
-$_ARRAYLANG['TXT_FORUM_SUBSCRIBED_THREADS'] = "Abonnierte Kategorien/Foren";
+$_ARRAYLANG['TXT_FORUM_SUBSCRIBED_THREADS'] = "Subscribed categories / forums";
 $_ARRAYLANG['TXT_FORUM_UNSUBSCRIBED_THREADS'] = "Available Categories / Forums";
 ?>

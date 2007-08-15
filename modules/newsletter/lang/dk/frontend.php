@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Tue, 14 Aug 2007 17:56:13 +0200
+* generated date Wed, 15 Aug 2007 10:36:51 +0200
 **/
 
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Succesfuld bekræftelse! Du vil fremover modtage nyhedsbrevet.";
