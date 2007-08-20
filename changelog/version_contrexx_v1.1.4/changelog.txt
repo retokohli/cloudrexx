@@ -58,6 +58,7 @@ Shop
   Bestellung erfolgt nun direkt nach der Auftragsbestätigung.
 
 Allgemein
+- Das Changelog wurde auf max. 80 Zeilen breite beschränkt.
 - Russische und Französische Übersetzung des Grundsystems erweitert.
 
 Webinstaller
@@ -94,6 +95,8 @@ Shop
 
 Kontaktmanager
 - Der CSV-Export funktioniert nun mit unlimitierter erfasster Anzahl Einträge.
+- Der Form Text wird nun auch versteckt, wenn das Formular beim Feedback nicht
+  mehr angezeigt werden soll.
 
 News
 - Komplette URI's bei Teaserbild Auswahlfunktion
@@ -114,7 +117,8 @@ News-Syndication
 - Die Einträge eines RSS Feeds werden korrekt verlinkt.
 
 Allgemein
-- Die HTML-Struktur beim Navigationstyp "Nested Navigation" wird korrekt ausgegeben.
+- Die HTML-Struktur beim Navigationstyp "Nested Navigation" wird korrekt 
+  ausgegeben.
 
 Newsletter
 - Zuweisung der Anrede bei einem Empfänger.
