@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 15 Aug 2007 10:56:36 +0200
+* generated date Mon, 20 Aug 2007 17:27:40 +0200
 **/
 
 $_ARRAYLANG['TXT_PREVIEW'] = "Preview";
@@ -70,4 +70,5 @@ $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = "Replacement directory";
 $_ARRAYLANG['TXT_DIR_META_KEYS'] = "Meta Keys";
 $_ARRAYLANG['TXT_IMAGE_SHOP'] = "Shop";
 $_ARRAYLANG['TXT_IMAGE_CONTENT'] = "Content";
+$_ARRAYLANG['TXT_MEDIA_FORCE_OVERWRITE'] = "Vorhandene Dateien überschreiben";
 ?>
