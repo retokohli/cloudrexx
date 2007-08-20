@@ -124,6 +124,10 @@ class Contact extends ContactLib
 
 	    		if (!$showThanks) {
 	    			$this->_showFeedback($arrFormData);
+	    		}else{
+	    			if($this->objTemplate->blockExists("formText")){
+	    				$this->objTemplate->hideBlock("formText");
+	    			}
 	    		}
 	    	}
     	} else {
@@ -581,7 +585,6 @@ class Contact extends ContactLib
 				if (isset($_POST['contactFormField_'.$key])) {
 					$name = $field['name'];
 					$value = contrexx_strip_tags($_POST['contactFormField_'.$key]);
-
 					$feedback = str_replace('[['.$name.']]', $value, $feedback);
 				}
 			}

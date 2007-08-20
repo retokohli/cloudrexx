@@ -1130,7 +1130,7 @@ class ContactManager extends ContactLib
 		} else {
 			$sourcecode = "{CONTACT_FEEDBACK_TEXT}\n";
 		}
-		$sourcecode .= $this->arrForms[$id]['text'] . "<br /><br />\n";
+		$sourcecode .= "<!-- BEGIN formText -->".$this->arrForms[$id]['text'] . "<!-- END formText --><br /><br />\n";
 		$sourcecode .= "<div id=\"contactFormError\" style=\"color: red; display: none;\">";
 		$sourcecode .= $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'];
 		$sourcecode .= "</div>\n<br />";
