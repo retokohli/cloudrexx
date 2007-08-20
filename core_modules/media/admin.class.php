@@ -9,8 +9,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-$_ARRAYLANG['TXT_MEDIA_FORCE_OVERWRITE'] = "Dateien überschreiben, falls vorhanden";
-
 /**
  * Includes
  */
