@@ -93,9 +93,12 @@ class CsvLib
 
 			$limit = $looplimit;
 			while (($data = fgetcsv($handle, $len, $this->separator, $this->enclosure)) && $limit != 0) {
-				if (!empty($data[0])) {
+				if (!empty($data[0]) || $looplimit == 1) {
 					if ($firstline && $this->firstAreNames) {
-						foreach ($data as $field) {
+						foreach ($data as $index => $field) {
+							if(empty($field)){
+								$field = "emptyField_$index";
+							}
 							$retdata['fieldnames'][] = $field;
 						}
 						$firstline = false;
