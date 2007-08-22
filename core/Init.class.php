@@ -384,6 +384,8 @@ class InitCMS
 		$this->templates['home'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html');
 		$this->templates['navbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html');
 		$this->templates['subnavbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html');
+		$this->templates['subnavbar2'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html');
+		$this->templates['subnavbar3'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html');
 		$this->templates['sidebar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html');
 		$this->templates['shopnavbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html');
 		$this->templates['headlines'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html');

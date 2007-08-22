@@ -28,6 +28,9 @@ Core
 - Neuer Platzhalter für die Zeitanzeige. Eingebunden im Design erzeugt der 
   Platzhalter [[TIME]] die Ausgabe der aktuellen Uhrzeit im folgenden
   Format: HH:MM .
+- Neue Navigationsplatzhalter. Standardmässig gibt es nun 4 Platzhalter die es
+  ermöglichen die Navigation an 4 verschiedenen Stellen im Design einzubinden.
+  [[NAVBAR_FILE]] - [[SUBNAVBAR_FILE]] - [[SUBNAVBAR2_FILE]] - [[SUBNAVBAR3_FILE]]
 
 Kontaktmanager
 - Ein Kontaktformular kann mit einem CAPTCHA-Schutz geschützt werden.
