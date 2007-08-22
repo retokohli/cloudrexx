@@ -1453,6 +1453,8 @@ $objTemplate->setVariable(array(
     'TIME'                  => date("h:m", time()),
     'NAVTREE'               => $objNavbar->getTrail(),
     'SUBNAVBAR_FILE'        => $objNavbar->getNavigation($themesPages['subnavbar'],$boolShop),
+    'SUBNAVBAR2_FILE'       => $objNavbar->getNavigation($themesPages['subnavbar2'],$boolShop),
+    'SUBNAVBAR3_FILE'       => $objNavbar->getNavigation($themesPages['subnavbar3'],$boolShop),
     'NAVBAR_FILE'           => $objNavbar->getNavigation($themesPages['navbar'],$boolShop),
     'ONLINE_USERS'          => $objCounter->getOnlineUsers(),
     'VISITOR_NUMBER'        => $objCounter->getVisitorNumber(),
