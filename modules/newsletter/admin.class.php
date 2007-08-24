@@ -2522,9 +2522,9 @@ class newsletter extends NewsletterLib
 		global $objDatabase, $_ARRAYLANG;
 
 		$listId = isset($_REQUEST['listId']) ? intval($_REQUEST['listId']) : 0;
-		
+
 		$arrRecipientTitles = &$this->_getRecipientTitles();
-		
+
 		if($listId > 0){
 			$WhereStatement = " WHERE category=".$listId;
 			$list = $this->_getList($listId);
@@ -2532,11 +2532,11 @@ class newsletter extends NewsletterLib
 		}else{
 			$listname = "all_lists";
 		}
-		$query	= "	SELECT * FROM ".DBPREFIX."module_newsletter_rel_user_cat 
-					RIGHT JOIN ".DBPREFIX."module_newsletter_user 
+		$query	= "	SELECT * FROM ".DBPREFIX."module_newsletter_rel_user_cat
+					RIGHT JOIN ".DBPREFIX."module_newsletter_user
 						ON ".DBPREFIX."module_newsletter_rel_user_cat.user=".DBPREFIX."module_newsletter_user.id ".
 					$WhereStatement." GROUP BY user";
-						
+
 		$objResult 	= $objDatabase->Execute($query);
 		$StringForFile = '';
 		$separator = ';';
@@ -2560,13 +2560,13 @@ class newsletter extends NewsletterLib
 				$objResult->MoveNext();
 			}
 		}
-		
+
 		if(strtolower(CONTREXX_CHARSET) == 'utf-8'){
 			$StringForFile = utf8_decode($StringForFile);
 		}
-		
+
 		header("Content-Type: text/comma-separated-values");
-		header('Content-Disposition: attachment; filename="'.date('Y_m_d')."-".$listname.'.csv"');		
+		header('Content-Disposition: attachment; filename="'.date('Y_m_d')."-".$listname.'.csv"');
 		die($StringForFile);
 	}
 
@@ -2704,10 +2704,10 @@ class newsletter extends NewsletterLib
 			$objImport->initFileSelectTemplate($objTpl);
 
 			$objTpl->setVariable(array(
-				"IMPORT_ACTION"	=> "?cmd=newsletter&amp;act=users&amp;tpl=import",
-				'TXT_FILETYPE'	=> 'Dateityp',
-				'TXT_HELP'		=> 'Wählen Sie hier eine Datei aus, deren Inhalt importiert werden soll:',
-				'IMPORT_ADD_NAME'    => 'Liste',
+				"IMPORT_ACTION"		=> "?cmd=newsletter&amp;act=users&amp;tpl=import",
+				'TXT_FILETYPE'		=> $_ARRAYLANG['TXT_NEWSLETTER_FILE_TYPE'],
+				'TXT_HELP'			=> $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'],
+				'IMPORT_ADD_NAME'    => $_ARRAYLANG['TXT_NEWSLETTER_LIST'],
 				'IMPORT_ADD_VALUE'   => $this->CategoryDropDown(),
 				'IMPORT_ROWCLASS'    => 'row2'
 			));

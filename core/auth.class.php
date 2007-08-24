@@ -331,7 +331,7 @@ class Auth
         }
 
         if ($this->type=='public') {
-            header('Location: ?section=login');
+            header('Location: index.php?section=login');
         } else {
             header('Location: ../index.php');
         }
@@ -355,7 +355,7 @@ class Auth
         } else {
             return $_CORELANG['TXT_LOGGED_IN_AS']." ".
                 $_SESSION['auth']['username'].
-                " (<a href='?section=logout' title='logout'>logout</a>)";
+                " (<a href='index.php?section=logout' title='logout'>logout</a>)";
         }
     }
 
