@@ -1,9 +1,9 @@
 <?php
 /**
- * Sitemapping 
+ * Sitemapping
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>             
- * @version 1.0.1  
+ * @author Comvation Development Team <info@comvation.com>
+ * @version 1.0.1
  * @package     contrexx
  * @subpackage  core_module_sitemap
  * @todo        Edit PHP DocBlocks!
@@ -34,14 +34,14 @@ class sitemap
     var $_doSitemap = true;
     var $_sitemapBlock;
     var $_cssPrefix = "sitemap_level_";
-    var $_subTagStart = "<ul>"; 
+    var $_subTagStart = "<ul>";
     var $_subTagEnd = "</ul>";
-    
-    
+
+
     /**
     * Constructor
     *
-    * @param  string  
+    * @param  string
     * @access public
     */
     function sitemap($pageContent)
@@ -49,9 +49,9 @@ class sitemap
 		$this->pageContent = $pageContent;
 		$this->_objTpl = &new HTML_Template_Sigma('.');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-		
+
 		$this->_objTpl->setTemplate($this->pageContent);
-		
+
 		if (isset($this->_objTpl->_blocks['sitemap'])) {
 			$this->_initialize();
 			$this->_doSitemapArray();
@@ -59,45 +59,57 @@ class sitemap
 			$this->_doSitemap = false;
 		}
     }
-    
-    
-    
+
+
+
     function getSitemapContent() {
         return $this->doSitemap();
     }
 
-    
-    function _initialize() 
+
+    function _initialize()
     {
-    	global $objDatabase, $_LANGID;
-	  	
+    	global $objDatabase, $_LANGID, $objPerm;
+
 		$query = "SELECT n.cmd AS cmd,
 		                 n.catid AS catid,
-		                 n.catname AS catname, 
+		                 n.catname AS catname,
 		                 n.target AS target,
 		                 n.parcat AS parcat,
 		                 n.displayorder AS displayorder,
-		                 m.name AS section 
+		                 m.name AS section
 		            FROM ".DBPREFIX."content_navigation AS n,
-		                 ".DBPREFIX."modules AS m 
-		           WHERE (n.module=m.id AND n.displaystatus = 'on' AND n.activestatus = '1' AND n.lang=".$_LANGID.") 
-		             AND (n.protected=0)
+		                 ".DBPREFIX."modules AS m
+		           WHERE (n.module=m.id AND n.displaystatus = 'on' AND n.activestatus = '1' AND n.lang=".$_LANGID.")
+		             ".(
+						!is_object($objPerm) ?
+							// user is not authenticated
+							'AND (n.protected=0)' :
+							// user is authenticated
+							(
+								!$objPerm->allAccess ?
+									 // user is not administrator
+									'AND (n.protected=0'.(count($objPerm->getDynamicAccessIds()) ? ' OR n.frontend_access_id IN ('.implode(', ', $objPerm->getDynamicAccessIds()).')' : '').')' :
+									// user is administrator
+									''
+							)
+						)."
 		             AND (n.startdate<=CURDATE() OR n.startdate='0000-00-00')
            			 AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
 		        ORDER BY n.parcat DESC, n.displayorder ASC";
-		
+
 		$objResult = $objDatabase->Execute($query);
 		if ($objResult !== false) {
 			while (!$objResult->EOF) {
 				$s = $objResult->fields['section'];
 				$c = $objResult->fields['cmd'];
-				$section = ( ($s=="") ? "" : "&amp;section=$s" ); 
-				$cmd     = ( ($c=="") ? "" : "&amp;cmd=$c" ); 			
+				$section = ( ($s=="") ? "" : "&amp;section=$s" );
+				$cmd     = ( ($c=="") ? "" : "&amp;cmd=$c" );
 				if (!empty($s)) {
-				    $link = "?section=".$s.$cmd;					
+				    $link = "?section=".$s.$cmd;
 				} else {
 				    $link = "?page=".$objResult->fields['catid'].$section.$cmd;
-				}								
+				}
 				$this->_arrName[$objResult->fields['parcat']][$objResult->fields['catid']] = stripslashes($objResult->fields['catname']);
 				$this->_arrUrl[$objResult->fields['catid']] = $link;
 				$this->_arrTarget[$objResult->fields['catid']] = empty($objResult->fields['target']) ? "_self" : $objResult->fields['target'];
@@ -115,8 +127,8 @@ class sitemap
     * @param    integer  $selectedid
     * @return   string   $result
     */
-	function _doSitemapArray($parcat=0,$level=0) 
-	{				
+	function _doSitemapArray($parcat=0,$level=0)
+	{
 		$list = $this->_arrName[$parcat];
 		if (is_array($list)) {
 			while (list($key,$val) = each($list)) {
@@ -124,20 +136,20 @@ class sitemap
 				$this->_sitemapPageURL[$key] = $this->_arrUrl[$key];
 				$this->_sitemapPageLevel[$key] = $level;
 				$this->_sitemapPageTarget[$key] = $this->_arrTarget[$key];
-				
+
 				if (isset($this->_arrName[$key])) {
 					$this->_doSitemapArray($key,$level+1);
 				}
 			}
 		}
 	}
-    
-    
+
+
 	/**
     * Do Sitemap rows
     *
-    */      
-    function doSitemap() 
+    */
+    function doSitemap()
     {
     	if ($this->_doSitemap && is_array($this->_sitemapPageName)) {
     		$this->_sitemapBlock = trim($this->_objTpl->_blocks['sitemap']);
@@ -153,8 +165,8 @@ class sitemap
 					} else {
 						$width=1;
 					}
-					$spacer = "<img src='".ASCMS_MODULE_IMAGE_WEB_PATH."/sitemap/spacer.gif' width='$width' height='12' alt='' />"; 
-					
+					$spacer = "<img src='".ASCMS_MODULE_IMAGE_WEB_PATH."/sitemap/spacer.gif' width='$width' height='12' alt='' />";
+
 					$this->_objTpl->setVariable(array(
 						'STYLE' 	=> $cssStyle,
 						'SPACER' 	=> $spacer,
@@ -168,40 +180,40 @@ class sitemap
     	}
     	return $this->_objTpl->get();
 	}
-	
-	
-	
-	
-	function _buildNestedSitemap($key = 0) 
+
+
+
+
+	function _buildNestedSitemap($key = 0)
 	{
 		$sitemapBlock = "";
-		
+
 		foreach ($this->_arrName[$key] as $pageId => $pageTitle) {
 			if (isset($this->_arrName[$pageId])) {
 				$subPages = $this->_subTagStart.$this->_buildNestedSitemap($pageId).$this->_subTagEnd."\n";
 			} else {
 				$subPages = "";
 			}
-			
+
 			if ($this->_sitemapPageLevel[$pageId] != 0) {
 				$width = $this->_sitemapPageLevel[$pageId]*25;
 			} else {
 				$width = 1;
 			}
-			$spacer = "<img src='".ASCMS_MODULE_IMAGE_WEB_PATH."/sitemap/spacer.gif' width='$width' height='12' alt='' />"; 
-			
+			$spacer = "<img src='".ASCMS_MODULE_IMAGE_WEB_PATH."/sitemap/spacer.gif' width='$width' height='12' alt='' />";
+
 			$tmpSitemapBlock = $this->_sitemapBlock;
-			
+
 			$tmpSitemapBlock = str_replace('{STYLE}', $this->_cssPrefix.($this->_sitemapPageLevel[$pageId]+1), $tmpSitemapBlock);
 			$tmpSitemapBlock = str_replace('{SPACER}', $spacer, $tmpSitemapBlock);
 			$tmpSitemapBlock = str_replace('{NAME}', $this->_sitemapPageName[$pageId], $tmpSitemapBlock);
 			$tmpSitemapBlock = str_replace('{TARGET}', $this->_sitemapPageTarget[$pageId], $tmpSitemapBlock);
 			$tmpSitemapBlock = str_replace('{URL}', $this->_sitemapPageURL[$pageId], $tmpSitemapBlock);
-			$tmpSitemapBlock = str_replace('{SUB_MENU}', $subPages, $tmpSitemapBlock);	
-					
+			$tmpSitemapBlock = str_replace('{SUB_MENU}', $subPages, $tmpSitemapBlock);
+
 			$sitemapBlock .= $tmpSitemapBlock."\n";
 		}
 		return $sitemapBlock;
 	}
-}  
+}
 ?>

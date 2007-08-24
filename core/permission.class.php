@@ -59,5 +59,29 @@ class Permission
 		}
 		return false;
 	}
+
+	/**
+	 * Get static access ids
+	 *
+	 * Returns an array containing the static access ID's of the initialized user.
+	 *
+	 * @return array
+	 */
+	function getStaticAccessIds()
+	{
+		return $_SESSION['auth']['static_access_ids'];
+	}
+
+	/**
+	 * Get dynamic access ids
+	 *
+	 * Returns an array containing the dynamic access ID's of the initialized user.
+	 *
+	 * @return array
+	 */
+	function getDynamicAccessIds()
+	{
+		return $_SESSION['auth']['dynamic_access_ids'];
+	}
 }
 ?>

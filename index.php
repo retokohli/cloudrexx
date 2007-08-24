@@ -247,18 +247,18 @@ if ($page_protected || $history) {
         if ($page_protected) {
 	        if (!$objPerm->checkAccess($page_access_id, 'dynamic')) {
 	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-	            header ("Location: ?section=login&cmd=noaccess&redirect=".$link);
+	            header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
 	            exit;
 	        }
         }
         if ($history && !$objPerm->checkAccess(78, 'static')) {
 			$link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-			header ("Location: ?section=login&cmd=noaccess&redirect=".$link);
+			header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
 			exit;
         }
     } else {
         $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-        header ("Location: ?section=login&redirect=".$link);
+        header ("Location: index.php?section=login&redirect=".$link);
         exit;
     }
     $loginStatus = $objAuth->status();

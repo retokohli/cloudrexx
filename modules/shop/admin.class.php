@@ -4659,7 +4659,7 @@ class shopmanager extends ShopLibrary {
                                       customer_status='".$shopCustomerStatus."',
                                       is_reseller='".$shopIsReseller."',
                                       register_date='".$shopRegisterDate."'
-                              WHERE customerid=".$customerid."";
+                              WHERE customerid=".$customerid;
 
                     if (!$objDatabase->Execute($query)) {
                         //if query has errors, call errorhandling
