@@ -364,7 +364,7 @@ class Contact extends ContactLib
 		if (count($arrFields['fields']) > 0) {
 			foreach ($arrFields['fields'] as $field) {
 				$source = $field['type'] == 'file' ? 'uploadedFiles' : 'data';
-				$regex = "%".$this->arrCheckTypes[$field['check_type']]['regex'] ."%";
+				$regex = "¬".$this->arrCheckTypes[$field['check_type']]['regex'] ."¬";
 				if ($field['is_required'] && empty($arrFields[$source][$field['name']])) {
 					$error = true;
 				} elseif (empty($arrFields[$source][$field['name']])) {
@@ -409,7 +409,7 @@ class Contact extends ContactLib
 	{
 		foreach ($arrKeywords as $keyword) {
 			if (!empty($keyword)) {
-			    if (preg_match("%$keyword%i",$string)) {
+			    if (preg_match("¬{$keyword}¬i",$string)) {
 			        return true;
 			    }
 			}

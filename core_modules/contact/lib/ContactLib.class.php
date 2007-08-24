@@ -103,7 +103,7 @@ class ContactLib
 				'name'	=> 'TXT_CONTACT_REGEX_EMAIL'
 			),
 			3	=> array(
-				'regex'	=> '^(ht|f)tp[s]?\:\/\/[A-Za-z0-9\-\:\.\?\&\=]*$',
+				'regex'	=> '^(ht|f)tp[s]?\:\/\/[A-Za-z0-9\-\:\.\?\&\=\/\#\%]*$',
 				'name'	=> 'TXT_CONTACT_REGEX_URL'
 			),
 			4	=> array(
