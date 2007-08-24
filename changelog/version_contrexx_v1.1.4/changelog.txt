@@ -59,6 +59,7 @@ Shop
   der Konfigurationsdatei (config/configuration.php) aktiviert ist.)
 - Die Versendung von Mails an den Shopbetreiber nach einer
   Bestellung erfolgt nun direkt nach der Auftragsbestätigung.
+- Die Mehrwertsteuernummer jedes Landes wirt akzeptiert. 
 
 Allgemein
 - Das Changelog wurde auf max. 80 Zeilen breite beschränkt.
@@ -122,6 +123,7 @@ News-Syndication
 Allgemein
 - Die HTML-Struktur beim Navigationstyp "Nested Navigation" wird korrekt 
   ausgegeben.
+- Mit dem Safari kann auf geschüzte Bereichte zugegriffen werden. 
 
 Newsletter
 - Zuweisung der Anrede bei einem Empfänger.
@@ -131,3 +133,6 @@ Gallery
 
 Media Manager/Bilderverwaltung
 - Die Bilderbearbeitung spiechert die Bilder nun wieder korrekt
+
+Sitemap
+- Es werden nur die Seiten aufgelistet, auf welche der Benutzer zugreifen darf.
