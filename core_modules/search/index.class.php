@@ -121,7 +121,7 @@ function search_getSearchPage($pos, $page_content)
     	$arrayCalendarCats = search_getResultArray($queryCalendarCats, "calendar", "", "catid=", $term);
     }
 
-    
+
     //**************************************
 	//paging start
     //**************************************
@@ -187,7 +187,7 @@ function search_getSearchPage($pos, $page_content)
  */
 function search_searchQuery($section, $searchTerm)
 {
-    global $_LANGID, $_CONFIG;
+    global $_LANGID, $_CONFIG, $objPerm;
     $query="";
     switch($section)
     {
@@ -197,7 +197,7 @@ function search_searchQuery($section, $searchTerm)
                             title AS title,
                             redirect
                       FROM ".DBPREFIX."module_news
-                      WHERE (text LIKE ('%$searchTerm%') OR title LIKE ('%$searchTerm%') OR teaser_text LIKE ('%$searchTerm%'))
+                      WHERE (text LIKE ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%') OR title LIKE ('%$searchTerm%') OR teaser_text LIKE ('%$searchTerm%'))
 		                AND lang=".$_LANGID."
                         AND status=1
                         AND (startdate<=CURDATE() OR startdate='0000-00-00')
@@ -211,16 +211,30 @@ function search_searchQuery($section, $searchTerm)
 		                    c.id AS contentid,
 		                    c.content AS content,
 		                    c.title AS title,
-                      MATCH (content,title) AGAINST ('%$searchTerm%') AS score
+                      MATCH (content,title) AGAINST ('%.".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%') AS score
                        FROM ".DBPREFIX."content AS c,
                             ".DBPREFIX."content_navigation AS n,
                             ".DBPREFIX."modules AS m
-                      WHERE (content LIKE ('%$searchTerm%')
+                      WHERE (content LIKE ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%')
                       	OR title LIKE ('%$searchTerm%'))
                         ".(($_CONFIG['searchVisibleContentOnly'] == "on") ? "AND n.displaystatus = 'on'" : "")."
                         AND activestatus='1'
                         AND is_validated='1'
-                        AND n.protected = 0
+                        ".(
+						!is_object($objPerm) ?
+							// user is not authenticated
+							'AND (n.protected=0)' :
+							// user is authenticated
+							(
+								!$objPerm->allAccess ?
+									 // user is not administrator
+									'AND (n.protected=0'.(count($objPerm->getDynamicAccessIds()) ? ' OR n.frontend_access_id IN ('.implode(', ', $objPerm->getDynamicAccessIds()).')' : '').')' :
+									// user is administrator
+									''
+							)
+						)."
+						AND (n.startdate<=CURDATE() OR n.startdate='0000-00-00')
+						AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
                         AND n.module =m.id
                         AND n.catid = c.id
 						AND n.lang=".$_LANGID;
@@ -230,9 +244,9 @@ function search_searchQuery($section, $searchTerm)
              $query="SELECT id,
 		                    text AS content,
                             title AS title,
-                      MATCH (text,title) AGAINST ('%$searchTerm%') AS score
+                      MATCH (text,title) AGAINST ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%') AS score
                        FROM ".DBPREFIX."module_docsys
-                      WHERE (text LIKE ('%$searchTerm%') OR title LIKE ('%$searchTerm%'))
+                      WHERE (text LIKE ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%') OR title LIKE ('%$searchTerm%'))
                         AND lang=".$_LANGID."
                         AND status=1
                         AND (startdate<=CURDATE() OR startdate='0000-00-00')
@@ -264,9 +278,9 @@ function search_searchQuery($section, $searchTerm)
              $query="SELECT id,
                             title,
 		                    description AS content,
-                      MATCH (description,title) AGAINST ('%$searchTerm%') AS score
+                      MATCH (description,title) AGAINST ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%') AS score
                        FROM ".DBPREFIX."module_shop_products
-                      WHERE description LIKE ('%$searchTerm%')
+                      WHERE description LIKE ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%')
                          OR title LIKE ('%$searchTerm%')
                         AND status =1";
             break;
@@ -359,14 +373,14 @@ function search_searchQuery($section, $searchTerm)
 							 `comment` AS content
 						FROM `".DBPREFIX."module_calendar`
 						WHERE `active` = '1'
-						AND (	
-								`name` LIKE ('%$searchTerm%') 
+						AND (
+								`name` LIKE ('%$searchTerm%')
 							OR 	`comment` LIKE ('%$searchTerm%')
 							OR 	`place` LIKE ('%$searchTerm%')
-							OR 	`info` LIKE ('%$searchTerm%')							
+							OR 	`info` LIKE ('%$searchTerm%')
 						)";
 						break;
-			
+
 		case "calendar_cats":
 			$query = "	SELECT id AS id,
 							 name AS title
@@ -374,8 +388,8 @@ function search_searchQuery($section, $searchTerm)
 						WHERE status = '1'
 						AND (name LIKE ('%$searchTerm%'))";
 			break;
-			
-			
+
+
 		default:
             break;
     }
