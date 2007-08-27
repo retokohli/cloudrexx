@@ -64,6 +64,8 @@ Shop
 Allgemein
 - Das Changelog wurde auf max. 80 Zeilen breite beschränkt.
 - Russische und Französische Übersetzung des Grundsystems erweitert.
+- Ein Benutzer ist nun auch auf nicht geschützten Seiten authentifiziert,
+  sofern sich dieser zuvor authentifiziert hat.
 
 Webinstaller
 - MySQL Server Version Überprüfung anstatt der Client Version.
@@ -85,6 +87,14 @@ Podcast
   Podcastmodul erfasst wird.
 - Die neusten Videos beliebiger Kategorien können auf der Startseite angezeigt
   werden.
+
+WYSIWYG-Editor
+- Neue Version 2.4.3 des FCKeditors. Weitere Informationen unter:
+  http://www.fckeditor.net/whatsnew/
+
+Volltextsuche
+- Geschützte Inhaltsseiten, auf welche der Besucher zugriff hat, werden in das
+  Suchergebnis einbezogen. 
 
 
 ****************************************
@@ -130,6 +140,8 @@ Newsletter
 
 Gallery
 - [[GALLERY_LATEST]] funktioniert nun wieder.
+- Fallback Mechanismus bei der Erstellung von Thumbnails, damit die
+  Programmausführung bei zu grossen Bilder nicht unerwartet abgebrochen wird. 
 
 Media Manager/Bilderverwaltung
 - Die Bilderbearbeitung spiechert die Bilder nun wieder korrekt

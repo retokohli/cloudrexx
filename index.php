@@ -57,7 +57,7 @@
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
-if (1) {
+if (0) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 } else {
@@ -237,7 +237,7 @@ if ($objResult === false || $objResult->EOF) {
 //-------------------------------------------------------
 // authentification for protected pages
 //-------------------------------------------------------
-if ($page_protected || $history) {
+if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && !isset($_REQUEST['section']) || $_REQUEST['section'] != 'login') {
     $sessionObj=&new cmsSession();
     $sessionObj->cmsSessionStatusUpdate($status="frontend");
 
@@ -256,6 +256,8 @@ if ($page_protected || $history) {
 			header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
 			exit;
         }
+    } elseif (!empty($_COOKIE['PHPSESSID']) && !$page_protected) {
+    	unset($_COOKIE['PHPSESSID']);
     } else {
         $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
         header ("Location: index.php?section=login&redirect=".$link);
@@ -1240,7 +1242,7 @@ switch ($section) {
 // logout
 //-------------------------------------------------------
     case "logout":
-        $sessionObj=&new cmsSession();
+    	if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = &new cmsSession();
         $objAuth =&new Auth($type='public');
         $objAuth->logout();
         break;
