@@ -8,6 +8,10 @@
  * @subpackage  core_module_contact
  * @todo        Edit PHP DocBlocks!
  */
+
+$_ARRAYLANG['TXT_CONTACT_CUSTOM_SYTLE_DESCRIPTION'] = "Wird ein eigener CSS-Stil verwendet, so hat dieses Forumlar die ID und CSS-Klasse <strong>'contactForm_\$FormularNummer'</strong> z.B. contactForm_2, standardmässig sind für diese Attribute nur 'contactForm' gesetzt";
+$_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'] = "Eigener Stil verwenden";
+
 require_once ASCMS_CORE_MODULE_PATH.'/contact/lib/ContactLib.class.php';
 
 /**
@@ -509,14 +513,15 @@ class ContactManager extends ContactLib
 	 */
 	function _modifyForm($copy = false)
 	{
-		global $_ARRAYLANG, $_CONFIG;
+		global $_ARRAYLANG, $_CONFIG, $objDatabase;
 
 		if ($copy) {
 			$this->initContactForms(true);
 		}
 
 		$formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
-
+		
+				
 		$this->_objTpl->loadTemplateFile('module_contact_form_modify.html');
 		$this->_pageTitle = (!$copy && $formId != 0) ? $_ARRAYLANG['TXT_CONTACT_MODIFY_CONTACT_FORM'] : $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
 
@@ -544,6 +549,8 @@ class ContactManager extends ContactLib
 			'TXT_CONTACT_CAPTCHA_DESCRIPTION'				=> $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
 			'TXT_CONTACT_SEND_COPY_DESCRIPTION'				=> $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'],
 			'TXT_CONTACT_SEND_COPY'							=> $_ARRAYLANG['TXT_CONTACT_SEND_COPY'],
+			'TXT_CONTACT_CUSTOM_SYTLE_DESCRIPTION'			=> $_ARRAYLANG['TXT_CONTACT_CUSTOM_SYTLE_DESCRIPTION'],
+			'TXT_CONTACT_CUSTOM_STYLE'						=> $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'],
 		));
 
 		$this->_objTpl->setGlobalVariable(array(
@@ -573,6 +580,7 @@ class ContactManager extends ContactLib
 			$formFeedback = contrexx_stripslashes($_POST['contactFormFeedback']);
 			$formShowForm = intval($_POST['contactFormShowForm']);
 			$formUseCaptcha = intval($_POST['contactFormUseCaptcha']);
+			$formUseCustomStyle = intval($_POST['contactFormUseCustomStyle']);
 			$formSendCopy = intval($_POST['contactFormSendCopy']);
 		} elseif (isset($this->arrForms[$formId])) {
 			$arrFields = &$this->getFormFields($formId);
@@ -583,6 +591,7 @@ class ContactManager extends ContactLib
 			$formFeedback = stripslashes($this->arrForms[$formId]['feedback']);
 			$formShowForm = $this->arrForms[$formId]['showForm'];
 			$formUseCaptcha = $this->arrForms[$formId]['useCaptcha'];
+			$formUseCustomStyle = $this->arrForms[$formId]['useCustomStyle'];
 			$formSendCopy = $this->arrForms[$formId]['sendCopy'];
 		} else {
 			$formName = '';
@@ -592,6 +601,7 @@ class ContactManager extends ContactLib
 			$formShowForm = 0;
 			$formFeedback = $_ARRAYLANG['TXT_CONTACT_DEFAULT_FEEDBACK_TXT'];
 			$formUseCaptcha = 1;
+			$formUseCustomStyle = 0;
 			$formSendCopy = 0;
 
 			$this->_objTpl->setVariable(array(
@@ -659,6 +669,8 @@ class ContactManager extends ContactLib
 			'CONTACT_FORM_SHOW_FORM_NO'						=> $formShowForm ? '' : 'checked="checked"',
 			'CONTACT_FORM_USE_CAPTCHA_YES'					=> $formUseCaptcha ? 'checked="checked"' : '',
 			'CONTACT_FORM_USE_CAPTCHA_NO'					=> $formUseCaptcha ? '' : 'checked="checked"',
+			'CONTACT_FORM_USE_CUSTOM_STYLE_YES'			=> $formUseCustomStyle ? 'checked="checked"' : '',
+			'CONTACT_FORM_USE_CUSTOM_STYLE_NO'				=> $formUseCustomStyle ? '' : 'checked="checked"',
 			'CONTACT_FORM_FIELD_TYPE_MENU_TPL'				=> $this->_getFormFieldTypesMenu('contactFormFieldType['.($lastFieldId+1).']', key($this->_arrFormFieldTypes), 'id="contactFormFieldType_'.($lastFieldId+1).'" style="width:110px;" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
 			'CONTACT_FORM_FIELD_TEXT_TPL'					=> $this->_getFormFieldAttribute(0, 'text', ''),
 			'CONTACT_FORM_FIELD_CHECKBOX_TPL'				=> $this->_getFormFieldAttribute(0, 'checkbox', 0),
@@ -744,6 +756,7 @@ class ContactManager extends ContactLib
 			$formFeedback = isset($_POST['contactFormFeedback']) ? contrexx_addslashes($_POST['contactFormFeedback']) : '';
 			$formShowForm = intval($_POST['contactFormShowForm']);
 			$formUseCaptcha = intval($_POST['contactFormUseCaptcha']);
+			$formUseCustomStyle = intval($_POST['contactFormUseCustomStyle']);
 			$formSendCopy = intval($_POST['contactFormSendCopy']);
 			if (!empty($formName)) {
 				if ($this->isUniqueFormName($formName, $formId)) {
@@ -1122,100 +1135,97 @@ class ContactManager extends ContactLib
 	function _getSourceCode($id, $preview = false, $show = false)
 	{
 		global $_ARRAYLANG;
-
+		
 		$arrFields = $this->getFormFields($id);
-
+		$sourcecode[] = array();
+		
 		if ($show) {
-			$sourcecode = "[[CONTACT_FEEDBACK_TEXT]]\n";
+			$sourcecode[] = "[[CONTACT_FEEDBACK_TEXT]]";
 		} else {
-			$sourcecode = "{CONTACT_FEEDBACK_TEXT}\n";
+			$sourcecode[] = "{CONTACT_FEEDBACK_TEXT}";
 		}
-		$sourcecode .= "<!-- BEGIN formText -->".$this->arrForms[$id]['text'] . "<!-- END formText --><br /><br />\n";
-		$sourcecode .= "<div id=\"contactFormError\" style=\"color: red; display: none;\">";
-		$sourcecode .= $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'];
-		$sourcecode .= "</div>\n<br />";
-		$sourcecode .= "<!-- BEGIN contact_form -->\n";
-		$sourcecode .= "<fieldset id=\"contactFrame\">\n";
-		$sourcecode .= "<legend>".$this->arrForms[$id]['name']."</legend>\n";
-		$sourcecode .= "<form action=\"".($preview ? '../' : '')."index.php?section=contact&amp;cmd=".$id."\" ";
-		$sourcecode .= "method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return checkAllFields();\" id=\"contactForm\">\n";
-		$sourcecode .= "<table border=\"0\">\n";
-
+		$sourcecode[] = "<!-- BEGIN formText -->".$this->arrForms[$id]['text'] . "<!-- END formText --><br /><br />";
+		$sourcecode[] = '<div id="contactFormError" style="color: red; display: none;">';
+		$sourcecode[] = $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'];
+		$sourcecode[] = "</div>";
+		$sourcecode[] = "<br />";
+		$sourcecode[] = "<!-- BEGIN contact_form -->";
+		$sourcecode[] = '<fieldset id="contactFrame">';
+		$sourcecode[] = "<legend>".$this->arrForms[$id]['name']."</legend>";
+		$sourcecode[] = '<form action="'.($preview ? '../' : '')."index.php?section=contact&amp;cmd=".$id.'" ';
+		$sourcecode[] = 'method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();" id="contactForm'.(!empty($_REQUEST['customFormStyle']) ? '_'.$id : '').'" class="contactForm'.(!empty($_REQUEST['customFormStyle']) ? '_'.$id : '').'">';
+				
+		
 		foreach ($arrFields as $fieldId => $arrField) {
 			if ($arrField['is_required']) {
-				$required = "<span style=\"color: red;\">*</span>";
+				$required = '<span style="color: red;">*</span>';
 			} else {
 				$required = "";
 			}
 
-			$sourcecode .= "<tr>\n";
-			$sourcecode .= "<td style=\"width:100px;\">".(($arrField['type'] != 'hidden' && $arrField['type'] != 'label') ? $arrField['name'] : '&nbsp;')." ".$required."</td>\n";
-			$sourcecode .= "<td>";
-
+//			$sourcecode[] = "<tr>\n";
+//			$sourcecode[] = "<td style=\"width:100px;\">".(($arrField['type'] != 'hidden' && $arrField['type'] != 'label') ? $arrField['name'] : '&nbsp;')." ".$required."</td>\n";
+//			$sourcecode[] = "<td>";
+			
+			$sourcecode[] = '<p> <label for="contactFormFieldId_'.$fieldId.'">'.(($arrField['type'] != 'hidden' && $arrField['type'] != 'label') ? $arrField['name'] : '&nbsp;')." ".$required.'</label>';
+			
 			switch ($arrField['type']) {
 				case 'text':
-					$sourcecode .= "<input style=\"width:300px;\" type=\"text\" name=\"contactFormField_".$fieldId."\" value=\"".($arrField['attributes'] == '' ? '{'.$fieldId.'_VALUE}' : $arrField['attributes'])."\" />\n";
+					$sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_"'.$fieldId.'" value="'.($arrField['attributes'] == '' ? '{'.$fieldId.'_VALUE}' : $arrField['attributes']).'" />';
 					break;
 
 				case 'label':
-					$sourcecode .= $arrField['attributes'] == '' ? '{'.$fieldId.'_VALUE}' : $arrField['attributes']."\n";
+					$sourcecode[] = $arrField['attributes'] == '' ? '{'.$fieldId.'_VALUE}' : $arrField['attributes'];
 					break;
 
 				case 'checkbox':
-					$sourcecode .= "<input type=\"checkbox\" name=\"contactFormField_".$fieldId."\" value=\"1\"".($arrField['attributes'] == '1' ? ' checked="checked"' : '')." />\n";
+					$sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="checkbox" name="contactFormField_'.$fieldId.'" value="1"'.($arrField['attributes'] == '1' ? ' checked="checked"' : '').' />';
 					break;
 
 				case 'checkboxGroup':
 					$options = explode(',', $arrField['attributes']);
-					$nr = 0;
-					foreach ($options as $option) {
-						$sourcecode .= "<input type=\"checkbox\" name=\"contactFormField_".$fieldId."[]\" id=\"contactFormField_".$nr."_".$fieldId."\" value=\"".$option."\" /><label for=\"contactFormField_".$nr."_".$fieldId."\">".$option."</label>\n";
-						$nr++;
+					foreach ($options as $index => $option) {
+						$sourcecode[] = '<label for="contactFormField_'.$index.'_'.$fieldId.'">'.$option.'</label><input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><br />';
 					}
 					break;
 
 				case 'date':
-					$sourcecode .= "<input style=\"width:300px;\" type=\"text\" name=\"contactFormField_".$fieldId."\" id=\"DPC_date".$fieldId."_YYYY-MM-DD\" />\n";
+					$sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" type="text" name="contactFormField_'.$fieldId.'" id="DPC_date'.$fieldId.'_YYYY-MM-DD" />';
 					break;
 
 				case 'file':
-					$sourcecode .= "<input style=\"width:300px;\" type=\"file\" name=\"contactFormField_".$fieldId."\" />\n";
+					$sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" />';
 					break;
 
 				case 'hidden':
-					$sourcecode .= "<input type=\"hidden\" name=\"contactFormField_".$fieldId."\" value=\"".($arrField['attributes'] == "" ? "{".$fieldId."_VALUE}" : $arrField['attributes'])."\" />\n";
+					$sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="hidden" name="contactFormField_'.$fieldId.'" value="'.($arrField['attributes'] == "" ? "{".$fieldId."_VALUE}" : $arrField['attributes']).'" />';
 					break;
 
 				case 'password':
-					$sourcecode .= "<input style=\"width:300px;\" type=\"password\" name=\"contactFormField_".$fieldId."\" value=\"\" />\n";
+					$sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="password" name="contactFormField_'.$fieldId.'" value="" />';
 					break;
 
 				case 'radio':
 					$options = explode(',', $arrField['attributes']);
-					$nr = 0;
-					foreach ($options as $option) {
-						$sourcecode .= "<input type=\"radio\" name=\"contactFormField_".$fieldId."\" id=\"contactFormField_".$nr."_".$fieldId."\" value=\"".$option."\" /><label for=\"contactFormField_".$nr."_".$fieldId."\">".$option."</label>\n";
-						$nr++;
+					foreach ($options as $index => $option) {
+						$sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label for="contactFormField_'.$index.'_'.$fieldId.'\>'.$option.'</label><br />';
 					}
 					break;
 
 				case 'select':
 					$options = explode(',', $arrField['attributes']);
-					$nr = 0;
-					$sourcecode .= "<select style=\"width:300px;\" name=\"contactFormField_".$fieldId."\">\n";
-					foreach ($options as $option) {
-						$sourcecode .= "<option>".$option."</option>\n";
+					$sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'">';
+					foreach ($options as $index => $option) {
+						$sourcecode[] = "<option>".$option."</option>";
 					}
-					$sourcecode .= "</select>\n";
+					$sourcecode[] = "</select>";
 					break;
 
 				case 'textarea':
-					$sourcecode .= "<textarea style=\"width:300px; height:100px;\" name=\"contactFormField_".$fieldId."\">{".$fieldId."_VALUE}</textarea>\n";
+					$sourcecode[] = '<textarea class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'">{'.$fieldId.'_VALUE}</textarea>';
 					break;
 			}
-
-			$sourcecode .= "</td>\n";
-			$sourcecode .= "</tr>\n";
+			$sourcecode[] = "</p>";
 		}
 
 		if ($preview) {
@@ -1227,56 +1237,46 @@ class ContactManager extends ContactLib
 				$alt = $captcha->getAlt();
 				$url = $captcha->getUrl();
 
-				$sourcecode .= "<tr>\n";
-				$sourcecode .= "<td colspan=\"2\">\n";
-				$sourcecode .= "<br />".$_CORELANG['TXT_CONTACT_CAPTCHA_DESCRIPTION']."<br />\n";
-				$sourcecode .= "<img src=\"".$url."\" alt=\"".$alt."\" />\n";
-				$sourcecode .= "<div style=\"color: red;\"></div>\n";
-				$sourcecode .= "<input type=\"text\" style=\"width: 58px;\" name=\"contactFormCaptcha\" /><br />\n";
-				$sourcecode .= "<input type=\"hidden\" name=\"contactFormCaptchaOffset\" value=\"".$offset."\" />\n";
-				$sourcecode .= "</td>\n";
-				$sourcecode .= "</tr>\n";
+				$sourcecode[] = "<p>";
+				$sourcecode[] = $_CORELANG['TXT_CONTACT_CAPTCHA_DESCRIPTION']."<br />";
+				$sourcecode[] = '<img src="'.$url.'" alt="'.$alt.'" />';
+				$sourcecode[] = '<div style="color: red;"></div>';
+				$sourcecode[] = '<input type="text" name="contactFormCaptcha" /><br />';
+				$sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="'.$offset.'" />';
+				$sourcecode[] = "</p>";
 			}
 		} elseif ($show) {
-			$sourcecode .= "<!-- BEGIN contact_form_captcha -->\n";
-			$sourcecode .= "<tr>\n";
-			$sourcecode .= "<td colspan=\"2\">\n";
-			$sourcecode .= "<br />[[TXT_CONTACT_CAPTCHA_DESCRIPTION]]<br />\n";
-			$sourcecode .= "<img src=\"[[CONTACT_CAPTCHA_URL]]\" alt=\"[[CONTACT_CAPTCHA_ALT]]\" />\n";
-			$sourcecode .= "<div style=\"color: red;\">[[CONTACT_CAPTCHA_ERROR]]</div>\n";
-			$sourcecode .= "<input type=\"text\" style=\"width: 58px;\" name=\"contactFormCaptcha\" /><br />\n";
-			$sourcecode .= "<input type=\"hidden\" name=\"contactFormCaptchaOffset\" value=\"[[CONTACT_CAPTCHA_OFFSET]]\" />\n";
-			$sourcecode .= "</td>\n";
-			$sourcecode .= "</tr>\n";
-			$sourcecode .= "<!-- END contact_form_captcha -->\n";
+			$sourcecode[] = "<!-- BEGIN contact_form_captcha -->";
+			$sourcecode[] = "<p>";
+			$sourcecode[] = "[[TXT_CONTACT_CAPTCHA_DESCRIPTION]]<br />";
+			$sourcecode[] = '<img src="[[CONTACT_CAPTCHA_URL]]" alt="[[CONTACT_CAPTCHA_ALT]]" />';
+			$sourcecode[] = '<div style="color: red;">[[CONTACT_CAPTCHA_ERROR]]</div>';
+			$sourcecode[] = '<input type="text" name="contactFormCaptcha" /><br />';
+			$sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="[[CONTACT_CAPTCHA_OFFSET]]" />';
+			$sourcecode[] = "</p>";
+			$sourcecode[] = "<!-- END contact_form_captcha -->";
 		} else {
-			$sourcecode .= "<!-- BEGIN contact_form_captcha -->\n";
-			$sourcecode .= "<tr>\n";
-			$sourcecode .= "<td colspan=\"2\">\n";
-			$sourcecode .= "<br />{TXT_CONTACT_CAPTCHA_DESCRIPTION}<br />\n";
-			$sourcecode .= "<img src=\"{CONTACT_CAPTCHA_URL}\" alt=\"{CONTACT_CAPTCHA_ALT}\" />\n";
-			$sourcecode .= "<div style=\"color: red;\">{CONTACT_CAPTCHA_ERROR}</div>\n";
-			$sourcecode .= "<input type=\"text\" style=\"width: 58px;\" name=\"contactFormCaptcha\" /><br />\n";
-			$sourcecode .= "<input type=\"hidden\" name=\"contactFormCaptchaOffset\" value=\"{CONTACT_CAPTCHA_OFFSET}\" />\n";
-			$sourcecode .= "</td>\n";
-			$sourcecode .= "</tr>\n";
-			$sourcecode .= "<!-- END contact_form_captcha -->\n";
+			$sourcecode[] = "<!-- BEGIN contact_form_captcha -->";
+			$sourcecode[] = "<p>";
+			$sourcecode[] = "{TXT_CONTACT_CAPTCHA_DESCRIPTION}<br />";
+			$sourcecode[] = '<img src="{CONTACT_CAPTCHA_URL}" alt="{CONTACT_CAPTCHA_ALT}" />';
+			$sourcecode[] = '<div style="color: red;">{CONTACT_CAPTCHA_ERROR}</div>';
+			$sourcecode[] = '<input type="text" name="contactFormCaptcha" /><br />';
+			$sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="{CONTACT_CAPTCHA_OFFSET}" />';
+			$sourcecode[] = "</p>";
+			$sourcecode[] = "<!-- END contact_form_captcha -->\n";
 		}
 
-		$sourcecode .= "<tr>\n";
-		$sourcecode .= "<td>&nbsp;</td>\n";
-		$sourcecode .= "<td>\n";
-		$sourcecode .= "<input type=\"reset\" value=\"".$_ARRAYLANG['TXT_CONTACT_DELETE']."\" /> <input type=\"submit\" name=\"submitContactForm\" value=\"".$_ARRAYLANG['TXT_CONTACT_SUBMIT']."\" />\n";
-		$sourcecode .= "</td>\n";
-		$sourcecode .= "</tr>\n";
-		$sourcecode .= "</table>\n";
-		$sourcecode .= "</form>";
-		$sourcecode .= "</fieldset>";
-		$sourcecode .= "<!-- END contact_form -->\n";
+		$sourcecode[] = "<p>";
+		$sourcecode[] = '<input class="contactFormClass_button" type="reset" value="'.$_ARRAYLANG['TXT_CONTACT_DELETE'].'" /> <input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.$_ARRAYLANG['TXT_CONTACT_SUBMIT'].'" />';
+		$sourcecode[] = "</p>";
+		$sourcecode[] = "</form>";
+		$sourcecode[] = "</fieldset>";
+		$sourcecode[] = "<!-- END contact_form -->";
 
-		$sourcecode .= $this->_getJsSourceCode($id, $arrFields, $preview, $show);
+		$sourcecode[] = $this->_getJsSourceCode($id, $arrFields, $preview, $show);
 
-		return $sourcecode;
+		return implode("\n", $sourcecode);
 	}
 
 
