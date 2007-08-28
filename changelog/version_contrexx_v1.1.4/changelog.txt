@@ -34,6 +34,9 @@ Core
 
 Kontaktmanager
 - Ein Kontaktformular kann mit einem CAPTCHA-Schutz geschützt werden.
+- Es werden keine Tabellen mehr verwendet, sondern semantisch korrektes
+  HTML mit Paragraphen und Labels.
+
 
 Seitenempfehlungen
 - Die Seitenempfehlungen werden nun mit einem CAPTCHA geschützt. Dazu muss
@@ -81,6 +84,8 @@ Newsletter
 Kontakt
 - Die Darstellung generierter E-Mails (nur Text) wurde verbessert (rechtsbündig)
 - Die Formulare werden jetzt von einer Legende (mit Rahmen) umschlossen.
+- Die Styles sind nicht mehr fest im Code verankert.
+
 
 Podcast
 - Es kann ein Youtube Link angegeben werden, welcher dann als Medium im
