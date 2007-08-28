@@ -1998,7 +1998,7 @@ class rssDirectory extends directoryLibrary
     	        'TXT_DELETE'         	=> $_ARRAYLANG['TXT_DIR_DEL'],
     	        'TXT_SELECT_ALL'  		=> $_ARRAYLANG['TXT_DIRECTORY_SELECT_ALL'],
     	        'TXT_DESELECT_ALL'      => $_ARRAYLANG['TXT_DIRECTORY_DESELECT_ALL'],
-    	        'TXT_MAKE_SELECTION'    => $_ARRAYLANG['TXT_MAKE_SELECTION'],
+    	        'TXT_MAKE_SELECTION'    => $_ARRAYLANG['TXT_DIR_MAKE_SELECTION'],
     	        'TXT_MOVE'				=> $_ARRAYLANG['TXT_MOVE'],
     	    ));
     	    $this->_objTpl->parse('importSelectAction');
