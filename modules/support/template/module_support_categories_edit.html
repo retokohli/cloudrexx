@@ -1,36 +1,37 @@
 <form name="supportEditCategoryForm" method="post"
-  action="?cmd=support&amp;act=categoryStore&amp;editLanguageId={SUPPORT_CATEGORY_EDIT_LANGUAGE_ID}&amp;offset={SUPPORT_CATEGORY_OFFSET}">
+  action="?cmd=support&amp;act=categoryStore&amp;supportTicketLanguageId={SUPPORT_CATEGORY_EDIT_LANGUAGE_ID}&amp;offset={SUPPORT_CATEGORY_OFFSET}">
   <table summary="" width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
       <th>{TXT_SUPPORT_CATEGORY_EDIT}</th>
     </tr>
     <tr class="row1">
       <td>
-        <label for="order">{TXT_CORE_SORTING_ORDER}</label>
-        <input type="text" id="order" name="order" size="4" maxlength="5"
-          value="{SUPPORT_CATEGORY_ORDER}" />&nbsp;
-        <label for="name">{TXT_SUPPORT_CATEGORY_NAME}</label>
-        <input type="text" id="name" name="name" size="40" maxlength="255"
-          value="{SUPPORT_CATEGORY_NAME}" />&nbsp;
-        <label for="parentId">{TXT_SUPPORT_CATEGORY_PARENT}</label>
-        <select id="parentId" name="parentId" size="1">
+        <label for="supportCategoryOrder">{TXT_CORE_SORTING_ORDER}</label>
+        <input type="text" id="supportCategoryOrder" name="supportCategoryOrder"
+          size="4" maxlength="5" value="{SUPPORT_CATEGORY_ORDER}" />&nbsp;
+        <label for="supportCategoryName">{TXT_SUPPORT_CATEGORY_NAME}</label>
+        <input type="text" id="supportCategoryName" name="supportCategoryName"
+          size="40" maxlength="255" value="{SUPPORT_CATEGORY_NAME}" />&nbsp;
+        <label for="supportCategoryParentId">{TXT_SUPPORT_CATEGORY_PARENT}</label>
+        <select id="supportCategoryParentId" name="supportCategoryParentId" size="1">
           <option value="0">{TXT_SUPPORT_CATEGORY_ROOT}</option>
           {SUPPORT_CATEGORY_PARENTID}
         </select>&nbsp;
-        <label for="languageId">{TXT_SUPPORT_CATEGORY_LANGUAGE}</label>
+        <label for="supportCategoryLanguageId">{TXT_SUPPORT_CATEGORY_LANGUAGE}</label>
         {SUPPORT_CATEGORY_LANGUAGE_MENU}&nbsp;
-        <label for="status">{TXT_SUPPORT_CATEGORY_STATUS}</label>
-        <input type="checkbox" id="status" name="status" value="1"{SUPPORT_CATEGORY_STATUS_CHECKED} />&nbsp;
+        <label for="supportCategoryStatus">{TXT_SUPPORT_CATEGORY_STATUS}</label>
+        <input type="checkbox" id="supportCategoryStatus" name="supportCategoryStatus"
+          value="1"{SUPPORT_CATEGORY_STATUS_CHECKED} />&nbsp;
         <input type="submit" name="storeSupportCategory" value="{TXT_SUPPORT_STORE}" />
-        <input type="hidden" name="id" value="{SUPPORT_CATEGORY_ID}" />
+        <input type="hidden" name="supportCategoryId" value="{SUPPORT_CATEGORY_ID}" />
       </td>
     </tr>
   </table>
 </form>
 <br />
 
-<form name="supportCategories" method="post"
-  action="?cmd=support&amp;act=categoriesStore&amp;editLanguageId={SUPPORT_CATEGORY_EDIT_LANGUAGE_ID}&amp;offset={SUPPORT_CATEGORY_OFFSET}">
+<form name="formSupportCategoryTable" method="post"
+  action="?cmd=support&amp;act=categoriesStore&amp;supportTicketLanguageId={SUPPORT_CATEGORY_EDIT_LANGUAGE_ID}&amp;offset={SUPPORT_CATEGORY_OFFSET}">
   <table summary="" width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
     <tr>
       <th colspan="6">{TXT_SUPPORT_CATEGORIES}</th>
@@ -56,16 +57,16 @@
   </table>
   <img src="images/icons/arrow.gif" border="0" width="38" height="22"
     title="{TXT_SUPPORT_CATEGORIES_MARKED}" alt="{TXT_SUPPORT_CATEGORIES_MARKED}" />
-  <a href="javascript:{}" onclick="changeCheckboxes('supportCategories', 'selectedCategoryId[]', true)"
+  <a href="javascript:{}" onclick="changeCheckboxes('formSupportCategoryTable', 'selectedCategoryId[]', true)"
     title="{TXT_SUPPORT_SELECT_ALL}">{TXT_SUPPORT_SELECT_ALL}
   </a>
-  <a href="javascript:{}" onclick="changeCheckboxes('supportCategories', 'selectedCategoryId[]', false)"
+  <a href="javascript:{}" onclick="changeCheckboxes('formSupportCategoryTable', 'selectedCategoryId[]', false)"
     title="{TXT_SUPPORT_SELECT_NONE}">{TXT_SUPPORT_SELECT_NONE}</a>
-  <select name="selectAction" onchange="supportCategoryDoAction('supportCategories', 'selectedCategoryId[]', this, this.value)">
+  <select name="selectAction" onchange="supportDoAction(this.value, 'formSupportCategoryTable', 'selectedCategoryId[]', this)">
     <option value="0" selected="selected">{TXT_SUPPORT_SELECT_ACTION}</option>
     <option value="delete">{TXT_SUPPORT_DELETE_MARKED}</option>
   </select>
   <br />
   <br />
-  <input type="submit" name="storeSupportCategories" value="{TXT_SUPPORT_ACCEPT_CHANGES}" />
+  <input type="submit" name="storeformSupportCategoryTable" value="{TXT_SUPPORT_ACCEPT_CHANGES}" />
 </form>

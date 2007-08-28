@@ -1,8 +1,8 @@
 <tr class="row1">
   <td nowrap="nowrap">
-    <input type="radio" id="supportMessageSelect" name="supportMessageSelect"
+    <input type="radio" name="supportMessageSelect"
       value="{SUPPORT_MESSAGE_ID}"{SUPPORT_MESSAGE_SELECTED}
-      onselect="" />
+      onchange="supportMessageTableEvent('select', {SUPPORT_MESSAGE_ID})" />
   </td>
   <td nowrap="nowrap">{SUPPORT_MESSAGE_ID}</td>
   <td nowrap="nowrap">{SUPPORT_MESSAGE_DATE}</td>
@@ -15,18 +15,3 @@
   </td>
   <td nowrap="nowrap">{SUPPORT_MESSAGE_SUBJECT}</td>
 </tr>
-
-
-<!-- tr class="row1">
-  <td nowrap="nowrap">{SUPPORT_MESSAGE_ID}</td>
-  <td nowrap="nowrap">
-    <input type="text" id="supportMessageFrom"
-      name="supportMessageFrom" value="{SUPPORT_MESSAGE_FROM}" />
-  </td>
-  <td nowrap="nowrap">
-    <input type="text" id="supportMessageSubject"
-      name="supportMessageSubject" value="{SUPPORT_MESSAGE_SUBJECT}" />
-  </td>
-  <td nowrap="nowrap">{SUPPORT_MESSAGE_DATE}</td>
-  <td nowrap="nowrap">{SUPPORT_MESSAGE_STATUS}</td>
-</tr -->

@@ -102,7 +102,7 @@ class SupportCategories
     function __construct($languageId)
     {
         $this->languageId = intval($languageId);
-//echo("__construct(lang=$languageId): made ");var_export($this);echo("<br />");
+//if (MY_DEBUG) { echo("__construct(lang=$languageId): made ");var_export($this);echo("<br />"); }
     }
 
 
@@ -167,7 +167,7 @@ class SupportCategories
         // debug
         if (   !is_array($arrSupportCategoryTree)
             || count($arrSupportCategoryTree) == 0) {
-echo("getSupportCategoryNameArray(parent=$parentId, recurse=$flagRecursive, active=$flagActiveOnly): no or empty tree array<br />");
+if (MY_DEBUG) echo("getSupportCategoryNameArray(parent=$parentId, recurse=$flagRecursive, active=$flagActiveOnly): no or empty tree array<br />");
             // no categories here.  abort.
             return false;
         }
@@ -191,7 +191,7 @@ echo("getSupportCategoryNameArray(parent=$parentId, recurse=$flagRecursive, acti
                 }
             }
         }
-echo("getSupportCategoryNameArray(parent=$parentId, recurse=$flagRecursive, active=$flagActiveOnly): made array: ");var_export($arrResult);echo("<br />");
+if (MY_DEBUG) { echo("getSupportCategoryNameArray(parent=$parentId, recurse=$flagRecursive, active=$flagActiveOnly): made array: ");var_export($arrResult);echo("<br />"); }
         return $arrResult;
     }
 
@@ -342,7 +342,7 @@ echo("getSupportCategoryNameArray(parent=$parentId, recurse=$flagRecursive, acti
             $id    = $arrField['id'];
             $name  = $arrField['name'];
             $level = $arrField['level'];
-echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): id $id, name $name<br />");
+if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): id $id, name $name<br />");
             $menu .=
                 "<option value='$id'".
                 ($selectedId == $id ? ' selected="selected"' : '').
@@ -353,7 +353,7 @@ echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): id $id
         if ($menuName) {
             $menu = "<select id='$menuName' name='$menuName'>\n$menu\n</select>\n";
         }
-echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): made menu: ".htmlentities($menu)."<br />");
+if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): made menu: ".htmlentities($menu)."<br />");
         return $menu;
     }
 
@@ -378,7 +378,7 @@ echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): made m
         // debug
         if (   !is_array($arrSupportCategoryTree)
             || count($arrSupportCategoryTree) == 0) {
-echo("SupportCategories::getMenu(parent=$parentCategoryId, selected=$selectedCategoryId): no or empty tree array<br />");
+if (MY_DEBUG) echo("SupportCategories::getMenu(parent=$parentCategoryId, selected=$selectedCategoryId): no or empty tree array<br />");
             // no categories here.  abort.
             return false;
         }

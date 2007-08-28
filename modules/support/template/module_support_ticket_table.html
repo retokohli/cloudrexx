@@ -1,17 +1,11 @@
 <script type="text/javascript">
 <!--
-function ticketDelete(id)
-{
-  if(confirm('{TXT_SUPPORT_TICKET_CONFIRM_DELETE}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=support&act=ticketDelete&id="+id);
-}
-
-function supportTicketsDoAction(strForm, strCheckbox, objSelect, strAct)
+function supportTicketsDoAction(strAction, strForm, strCheckbox, objSelect)
 {
   if (checkboxIsChecked(strForm, strCheckbox) == true) {
-    switch(strAct) {
+    switch(strAction) {
       case 'delete':
-        if(confirm('{TXT_SUPPORT_TICKETS_CONFIRM_DELETE}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')) {
+        if (confirm('{TXT_SUPPORT_TICKETS_DELETE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')) {
           document.forms[strForm].action = "index.php?cmd=support&act=ticketsDelete";
           document.forms[strForm].submit();
         }
@@ -22,12 +16,7 @@ function supportTicketsDoAction(strForm, strCheckbox, objSelect, strAct)
   }
   objSelect.value = 0;
 }
-
-<!-- BEGIN tipMessageRow -->
-Text[{SUPPORT_TIP_ID}]=["","{SUPPORT_TIP_NOTE}"];
-<!-- END tipMessageRow -->
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,10,-20];
-//-->
+// -->
 </script>
 
 <!-- BEGIN ticketTableFilter -->
@@ -49,25 +38,29 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
       <label for="supportTicketOwnerId">{TXT_SUPPORT_OWNER}</label>
       <select id="supportTicketOwnerId" name="supportTicketOwnerId"
         onchange="document.forms.formSupportTicketsFilter.submit()">
-        <option value="0">{TXT_SUPPORT_ALL}</option>
+        <option value="-1">{TXT_SUPPORT_ALL}</option>
         {SUPPORT_TICKET_OWNER_MENU}
+        <option value="0">{TXT_SUPPORT_NO_OWNER}</option>
       </select>&nbsp;&nbsp;
       <label for="supportCategoryId">{TXT_SUPPORT_CATEGORY}</label>
-      <select id="supportCategoryId" name="supportCategoryId">
+      <select id="supportCategoryId" name="supportCategoryId"
+        onchange="document.forms.formSupportTicketsFilter.submit()">
         <option value="0">{TXT_SUPPORT_ALL}</option>
         {SUPPORT_TICKET_CATEGORY_MENU}
       </select>&nbsp;&nbsp;
       <label for="supportTicketStatus">{TXT_SUPPORT_STATUS}</label>
-      <select id="supportTicketStatus" name="supportTicketStatus">
+      <select id="supportTicketStatus" name="supportTicketStatus"
+        onchange="document.forms.formSupportTicketsFilter.submit()">
         <option value="-1">{TXT_SUPPORT_ALL}</option>
         {SUPPORT_TICKET_STATUS_MENU}
       </select>&nbsp;&nbsp;
       <label for="supportTicketSource">{TXT_SUPPORT_SOURCE}</label>
-      <select id="supportTicketSource" name="supportTicketSource">
+      <select id="supportTicketSource" name="supportTicketSource"
+        onchange="document.forms.formSupportTicketsFilter.submit()">
         <option value="-1">{TXT_SUPPORT_ALL}</option>
         {SUPPORT_TICKET_SOURCE_MENU}
       </select>&nbsp;&nbsp;
-      <input type="submit" name="supportTicketsUpdate" value="{TXT_SUPPORT_TICKET_UPDATE}" />
+      <!-- input type="submit" name="supportTicketsUpdate" value="{TXT_SUPPORT_TICKET_UPDATE}" / -->
     </td>
   </tr>
   <tr class=row2>
@@ -95,7 +88,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <p>
   {SUPPORT_PAGING}
 </p>
-<form name="supportTicketSelect" method="post" action="?cmd=support&amp;act=tickets">
+<form name="formSupportTicketSelect" method="post" action="?cmd=support&amp;act=tickets">
   <table summary="" class="adminlist" border=0 width="100%" cellpadding="2" cellspacing="0">
     <tr>
       <th nowrap="nowrap" style="text-align:center;">#</th>
@@ -117,11 +110,11 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
   </table>
   <img src="images/icons/arrow.gif" border="0" width="38" height="22"
     title="{TXT_SUPPORT_TICKETS_MARKED}:" alt="{TXT_SUPPORT_TICKETS_MARKED}:" />
-  <a href="javascript:{}" onclick="changeCheckboxes('supportTicketSelect','selectedTicketId[]',true)"
+  <a href="javascript:{}" onclick="changeCheckboxes('formSupportTicketSelect', 'selectedTicketId[]', true)"
     title="{TXT_SUPPORT_SELECT_ALL}">{TXT_SUPPORT_SELECT_ALL}</a>&nbsp;/&nbsp;
-  <a href="javascript:{}" onclick="changeCheckboxes('supportTicketSelect','selectedTicketId[]',false)"
+  <a href="javascript:{}" onclick="changeCheckboxes('formSupportTicketSelect', 'selectedTicketId[]', false)"
     title="{TXT_SUPPORT_SELECT_NONE}">{TXT_SUPPORT_SELECT_NONE}</a>&nbsp;&nbsp;&nbsp;
-  <select name="selectAction" onchange="supportTicketsDoAction('supportTicketSelect','selectedTicketId[]',this,this.value)">
+  <select name="selectAction" onchange="supportTicketsDoAction(this.value, 'formSupportTicketSelect', 'selectedTicketId[]', this)">
     <option value="0" selected="selected">{TXT_SUPPORT_SELECT_ACTION}:</option>
     <option value="delete">{TXT_SUPPORT_DELETE}</option>
   </select>

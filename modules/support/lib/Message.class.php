@@ -196,6 +196,7 @@ class Message
             SUPPORT_MESSAGE_STATUS_READ    => $_ARRAYLANG['TXT_SUPPORT_MESSAGE_STATUS_READ'],
             SUPPORT_MESSAGE_STATUS_DELETED => $_ARRAYLANG['TXT_SUPPORT_MESSAGE_STATUS_DELETED'],
         );
+//if (MY_DEBUG) { echo("Message::__construct(ticketId=$ticketId, from=$from, subject=$subject, body=$body, date=$date, timestamp=$timestamp, id=$id): INFO: Made Message: ");var_export($this);echo("<br />"); }
     }
 
 
@@ -214,7 +215,7 @@ class Message
      */
     function getTicketId()
     {
-echo("Message::getTicketId(): returning $this->ticketId<br />");
+if (MY_DEBUG) echo("Message::getTicketId(): returning $this->ticketId<br />");
         return $this->ticketId;
     }
     /**
@@ -321,8 +322,8 @@ echo("Message::getTicketId(): returning $this->ticketId<br />");
         if ($this->status === false) {
             $this->status =
                 TicketEvent::getMessageStatus(
-                    $this->ticketId,
-                    $this->id
+                    $this->id,
+                    $this->ticketId
                 );
         }
         return $this->status;
@@ -344,7 +345,7 @@ echo("Message::getTicketId(): returning $this->ticketId<br />");
     function getStatusString()
     {
         return $this->arrStatusString[
-            TicketEvent::getMessageStatus($this->ticketId, $this->id)
+            TicketEvent::getMessageStatus($this->id, $this->ticketId)
         ];
     }
 
@@ -362,10 +363,10 @@ echo("Message::getTicketId(): returning $this->ticketId<br />");
     function delete()
     {
         global $objDatabase;
-//echo("Debug: Message::delete(): entered<br />");
+//if (MY_DEBUG) echo("Debug: Message::delete(): entered<br />");
 
         if (!$this->id) {
-echo("Message::delete(): Error: This Message is missing its ID!<br />");
+if (MY_DEBUG) echo("Message::delete(): Error: This Message is missing its ID!<br />");
             return false;
         }
         $objResult = $objDatabase->Execute("
@@ -373,7 +374,7 @@ echo("Message::delete(): Error: This Message is missing its ID!<br />");
              WHERE id=$this->id
         ");
         if (!$objResult) {
-echo("Message::delete(): Error: Failed to delete the Message from the database!<br />");
+if (MY_DEBUG) echo("Message::delete(): Error: Failed to delete the Message from the database!<br />");
             return false;
         }
         return true;
@@ -419,7 +420,7 @@ echo("Message::delete(): Error: Failed to delete the Message from the database!<
         if (!$objResult) {
             return false;
         }
-//echo("Message::update(): done<br />");
+//if (MY_DEBUG) echo("Message::update(): done<br />");
         return true;
     }
 
@@ -455,7 +456,7 @@ echo("Message::delete(): Error: Failed to delete the Message from the database!<
         }
         $this->id = $objDatabase->Insert_ID();
         // Update the object with the actual timestamp
-//echo("Message::insert(): done<br />");
+//if (MY_DEBUG) echo("Message::insert(): done<br />");
         return $this->refreshTimestamp();
     }
 
@@ -477,15 +478,15 @@ echo("Message::delete(): Error: Failed to delete the Message from the database!<
               FROM ".DBPREFIX."module_support_message
              WHERE id=$this->id
         ";
-echo("Message::refreshTimestamp(): query: $query<br />");
+if (MY_DEBUG) echo("Message::refreshTimestamp(): query: $query<br />");
         $objResult = $objDatabase->Execute($query);
-echo("Message::refreshTimestamp(): objResult: '$objResult'<br />");
+if (MY_DEBUG) echo("Message::refreshTimestamp(): objResult: '$objResult'<br />");
         if (!$objResult) {
-echo("Message::refreshTimestamp(): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
+if (MY_DEBUG) echo("Message::refreshTimestamp(): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
             return false;
         }
         if ($objResult->RecordCount() == 0) {
-echo("Message::refreshTimestamp(): no result: ".$objResult->RecordCount()."<br />");
+if (MY_DEBUG) echo("Message::refreshTimestamp(): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
         $this->timestamp = $objResult->fields('timestamp');
@@ -510,10 +511,10 @@ echo("Message::refreshTimestamp(): no result: ".$objResult->RecordCount()."<br /
     function deleteByTicketId($ticketId)
     {
         global $objDatabase;
-//echo("Debug: Message::deleteByTicketId(ticketId=$ticketId): entered<br />");
+//if (MY_DEBUG) echo("Debug: Message::deleteByTicketId(ticketId=$ticketId): entered<br />");
 
         if (!$ticketId > 0) {
-echo("Message::deleteByTicketId(ticketId=$ticketId): ERROR: missing or illegal Ticket ID!<br />");
+if (MY_DEBUG) echo("Message::deleteByTicketId(ticketId=$ticketId): ERROR: missing or illegal Ticket ID!<br />");
             return false;
         }
         $objResult = $objDatabase->Execute("
@@ -521,7 +522,7 @@ echo("Message::deleteByTicketId(ticketId=$ticketId): ERROR: missing or illegal T
              WHERE ticket_id=$ticketId
         ");
         if (!$objResult) {
-echo("Message::deleteByTicketId(ticketId=$ticketId): ERROR: Failed to delete the Message records from the database<br />");
+if (MY_DEBUG) echo("Message::deleteByTicketId(ticketId=$ticketId): ERROR: Failed to delete the Message records from the database<br />");
             return false;
         }
         return true;
@@ -548,20 +549,19 @@ echo("Message::deleteByTicketId(ticketId=$ticketId): ERROR: Failed to delete the
               FROM ".DBPREFIX."module_support_message
              WHERE id=$id
         ";
-//echo("Message::getById($id): query: $query<br />");
+//if (MY_DEBUG) echo("Message::getById($id): query: $query<br />");
         $objResult = $objDatabase->Execute($query);
-//echo("Message::getById($id): objResult: '$objResult'<br />");
+//if (MY_DEBUG) echo("Message::getById($id): objResult: '$objResult'<br />");
         if (!$objResult) {
-echo("Message::getById($id): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
+if (MY_DEBUG) echo("Message::getById($id): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
             return false;
         }
         if ($objResult->RecordCount() == 0) {
-echo("Message::getById($id): no result: ".$objResult->RecordCount()."<br />");
+if (MY_DEBUG) echo("Message::getById($id): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
         $objMessage = new Message(
             $objResult->fields('ticket_id'),
-            $objResult->fields('status'),
             $objResult->fields('from'),
             $objResult->fields('subject'),
             $objResult->fields('body'),
@@ -569,7 +569,7 @@ echo("Message::getById($id): no result: ".$objResult->RecordCount()."<br />");
             $objResult->fields('timestamp'),
             $objResult->fields('id')
         );
-echo("Message::getById($id): made Message: ");var_export($objMessage);echo("<br />");
+if (MY_DEBUG) { echo("Message::getById($id): made Message: ");var_export($objMessage);echo("<br />"); }
         return $objMessage;
     }
 
@@ -695,7 +695,7 @@ echo("Message::getById($id): made Message: ");var_export($objMessage);echo("<br 
             $order, $offset, $limit
         );
         if (!is_array($arrMessageId)) {
-echo("Message::getMessageArray(array=$arrMessageId): ERROR: got no array of IDs!");
+if (MY_DEBUG) echo("Message::getMessageArray(array=$arrMessageId): ERROR: got no array of IDs!");
             return false;
         }
         // return array of objects
