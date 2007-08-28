@@ -159,7 +159,7 @@ class Support
                 $this->objSupportCategories->getMenu($supportCategoryId),
         ));
         $this->objTemplate->parse();
-echo("template: ");var_export($this->objTemplate);echo("<br />");
+if (MY_DEBUG) { echo("template: ");var_export($this->objTemplate);echo("<br />"); }
         return $this->objTemplate->get();
     }
 

@@ -1,16 +1,43 @@
-<!-- BEGIN ticketData -->
+<script type="text/javascript">
+<!--
+function supportMessageEditEvent(strAction, messageId)
+{
+  switch(strAction) {
+    case 'clear':
+      if (confirm('{TXT_SUPPORT_MESSAGE_REALLY_CLEAR}')) {
+        document.forms.formSupportMessageEdit.elements.messageBody.value = '';
+      }
+      break;
+    case 'revert':
+      if (confirm('{TXT_SUPPORT_MESSAGE_REALLY_REVERT}')) {
+        document.forms.formSupportMessageEdit.elements.messageBody.value =
+          document.getElementById('messageBodyOriginal').value;
+      }
+      break;
+    case 'commit':
+      if (confirm('{TXT_SUPPORT_MESSAGE_REALLY_COMMIT}')) {
+        document.forms.formSupportMessageEdit.action =
+          "index.php?cmd=support&act=messageCommit";
+        document.forms.formSupportMessageEdit.submit();
+      }
+      break;
+  }
+}
+// -->
+</script>
+
 {TICKET_DATA}
-<!-- END ticketData -->
-<!-- BEGIN messageTable -->
+
 {MESSAGE_TABLE}
-<!-- END messageTable -->
+
 <br />
-<form name="formSupportMessageEdit" method="post" action="?cmd=support&amp;act=messageEdit" -->
+<form name="formSupportMessageEdit" method="post" action="?cmd=support&amp;act=messageEdit">
   <input type="hidden" id="messageBodyOriginal" name="messageBodyOriginal"
     value="{SUPPORT_MESSAGE_BODY}">
   <input type="hidden" id="supportTicketId" name="supportTicketId"
     value="{SUPPORT_TICKET_ID}">
-  <!-- BEGIN messageData -->
+  <input type="hidden" id="supportCategoryId" name="supportCategoryId"
+    value="{SUPPORT_CATEGORY_ID}">
   <table summary="" class="adminlist" border=0 width="100%" cellpadding="2" cellspacing="0">
     <tr>
       <th nowrap="nowrap" colspan="4">{TXT_SUPPORT_MESSAGE_BODY}</th>
@@ -38,9 +65,10 @@
       </td>
     </tr>
   </table>
-  <!-- END messageData -->
   <br />
-  <input type="button" id="clearMessage" value="{TXT_SUPPORT_CLEAR}" onclick="supportMessageDoAction('clear')">&nbsp;&nbsp;
-  <input type="button" id="revertMessage" value="{TXT_SUPPORT_REVERT}" onclick="supportMessageDoAction('revert')">&nbsp;&nbsp;
-  <input type="button" id="messageCommit" value="{TXT_SUPPORT_COMMIT}" onclick="supportMessageDoAction('commit')">&nbsp;&nbsp;
+  <input type="button" id="messageCommit" value="{TXT_SUPPORT_COMMIT}" onclick="supportMessageEditEvent('commit', 0)">&nbsp;&nbsp;
+  <label for="ticketClose">{TXT_SUPPORT_TICKET_CLOSE}</label>
+  <input type="checkbox" id="supportTicketClose" name="supportTicketClose" value="1">&nbsp;&nbsp;
+  <input type="button" id="messageClear" value="{TXT_SUPPORT_CLEAR}" onclick="supportMessageEditEvent('clear', 0)">&nbsp;&nbsp;
+  <input type="button" id="messageRevert" value="{TXT_SUPPORT_REVERT}" onclick="supportMessageEditEvent('revert', 0)">&nbsp;&nbsp;
 </form>

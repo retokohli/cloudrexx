@@ -17,8 +17,8 @@ Database Tables Structure:
 CREATE TABLE contrexx_module_support_category (
   id int(11) unsigned NOT NULL auto_increment,
   parent_id int(11) unsigned NOT NULL default '0',
-  `status` tinyint(1) NOT NULL default '1',
-  `order` int(11) NOT NULL default '0',
+  `status` tinyint(1) unsigned NOT NULL default '1',
+  `order` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY (id),
   KEY parent_id (parent_id),
   KEY `status` (`status`)
@@ -536,15 +536,9 @@ echo("insert(): ");var_export($this);echo("<br />");
      * Support Category from the database.  Otherwise, all languages
      * are loaded and stored in the $arrName array, and the $name variable
      * is set to the language with the lowest ID.
-     * If the optional $activeonly parameter is true, only active Support
-     * Categories are returned.  Otherwise, inactive Support Categories
-     * are returned as well.  $activeonly defaults to true.
      * @static
      * @param       integer     $id             The Support Category ID
      * @param       integer     $languageId     The optional language ID
-     * @param       boolean     $activeonly     The optional flag indicaing
-     *                                          whether to return only active
-     *                                          Support Categories, or all
      * @return      SupportCategory             The Support Category object
      *                                          on success, false otherwise
      * @global      mixed       $objDatabase    Database object
@@ -601,11 +595,11 @@ echo("SupportCategory::getById($id, $languageId): no result: ".$objResult->Recor
     /**
      * Select a Support Category name by ID from the database.
      *
-     * Only the corresponding language of the $languageId parameter is read
+     * Only the language corresponding to the $languageId parameter is read
      * from the database.
      * @static
      * @param       integer     $id             The Support Category ID
-     * @param       integer     $languageId     The optional language ID
+     * @param       integer     $languageId     The language ID
      * @return      string                      The Support Category name
      *                                          on success, false otherwise
      * @global      mixed       $objDatabase    Database object
@@ -613,7 +607,7 @@ echo("SupportCategory::getById($id, $languageId): no result: ".$objResult->Recor
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
-    function getNameById($id, $languageId=0)
+    function getNameById($id, $languageId)
     {
         global $objDatabase;
 

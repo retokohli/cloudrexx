@@ -1,14 +1,14 @@
 <tr class="{SUPPORT_ROW_CLASS}">
   <td nowrap="nowrap">
-    <input type="hidden" value="{SUPPORT_CATEGORY_ID}" name="id[{SUPPORT_CATEGORY_ID}]" />
+    <input type="hidden" value="{SUPPORT_CATEGORY_ID}" name="supportCategoryId[{SUPPORT_CATEGORY_ID}]" />
     <input type="checkbox" name="selectedCategoryId[]" value="{SUPPORT_CATEGORY_ID}" />
   </td>
   <td nowrap="nowrap">{SUPPORT_CATEGORY_ID}</td>
   <td nowrap="nowrap">
     {SUPPORT_CATEGORY_INDENT}
-    <input type="text" name="order[{SUPPORT_CATEGORY_ID}]"
+    <input type="text" name="supportCategoryOrder[{SUPPORT_CATEGORY_ID}]"
       value="{SUPPORT_CATEGORY_ORDER}" size="3" maxlength="5" />
-    <b><a href="index.php?cmd=support&amp;act=editCategories&id={SUPPORT_CATEGORY_ID}&amp;offset={SUPPORT_CATEGORY_OFFSET}&editLanguageId={SUPPORT_CATEGORY_EDIT_LANGUAGE_ID}"
+    <b><a href="index.php?cmd=support&amp;act=editCategories&supportCategoryId={SUPPORT_CATEGORY_ID}&amp;offset={SUPPORT_CATEGORY_OFFSET}&supportTicketLanguageId={SUPPORT_CATEGORY_EDIT_LANGUAGE_ID}"
       title="{SUPPORT_CATEGORY_NAME}">{SUPPORT_CATEGORY_NAME}</a></b>
     <a href="?cmd=support&amp;act=ticketTable&amp;supportCategoryId={SUPPORT_CATEGORY_ID}"
       title="{TXT_SUPPORT_CATEGORY_HAS_TICKETS}">
@@ -22,7 +22,7 @@
   </td>
   <td nowrap="nowrap">
     <div style="text-align:right;">
-      <a href="?cmd=support&amp;act=editCategories&amp;id={SUPPORT_CATEGORY_ID}"
+      <a href="?cmd=support&amp;act=editCategories&amp;supportCategoryId={SUPPORT_CATEGORY_ID}"
         title="{TXT_SUPPORT_CATEGORY_EDIT}">
         <img src="images/icons/edit.gif" alt="{TXT_SUPPORT_CATEGORY_EDIT}" border="0" />
       </a>

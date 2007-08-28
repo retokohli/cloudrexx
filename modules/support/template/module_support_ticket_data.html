@@ -1,4 +1,4 @@
-<form name="formSupportTicket" method="post" action="?cmd=support&amp;act=tickets">
+<form name="formSupportTicketData" method="post" action="?cmd=support&amp;act=tickets">
   <table summary="" class="adminlist" border=0 width="100%" cellpadding="2" cellspacing="0">
     <tr>
       <th nowrap="nowrap" colspan="4">{TXT_SUPPORT_TICKET_DETAIL}</th>
@@ -40,7 +40,7 @@
   </table>
   <br />
   <!-- BEGIN messageButton -->
-  <input type="button" id="commit" value="{TXT_SUPPORT_ACCEPT_CHANGES}"
+  <input type="button" id="commit" name="commit" value="{TXT_SUPPORT_ACCEPT_CHANGES}"
     onclick="supportTicketDoAction('commit')">&nbsp;&nbsp;
   <br />
   <!-- END messageButton -->
