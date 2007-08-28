@@ -1134,10 +1134,10 @@ class ContactManager extends ContactLib
 
 	function _getSourceCode($id, $preview = false, $show = false)
 	{
-		global $_ARRAYLANG;
+		global $_ARRAYLANG, $objInit, $objDatabase;
 		
 		$arrFields = $this->getFormFields($id);
-		$sourcecode[] = array();
+		$sourcecode = array();
 		
 		if ($show) {
 			$sourcecode[] = "[[CONTACT_FEEDBACK_TEXT]]";
@@ -1158,7 +1158,7 @@ class ContactManager extends ContactLib
 		
 		foreach ($arrFields as $fieldId => $arrField) {
 			if ($arrField['is_required']) {
-				$required = '<span style="color: red;">*</span>';
+				$required = '<strong class="is_required">*</strong>';
 			} else {
 				$required = "";
 			}
@@ -1171,7 +1171,7 @@ class ContactManager extends ContactLib
 			
 			switch ($arrField['type']) {
 				case 'text':
-					$sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_"'.$fieldId.'" value="'.($arrField['attributes'] == '' ? '{'.$fieldId.'_VALUE}' : $arrField['attributes']).'" />';
+					$sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($arrField['attributes'] == '' ? '{'.$fieldId.'_VALUE}' : $arrField['attributes']).'" />';
 					break;
 
 				case 'label':
@@ -1185,7 +1185,7 @@ class ContactManager extends ContactLib
 				case 'checkboxGroup':
 					$options = explode(',', $arrField['attributes']);
 					foreach ($options as $index => $option) {
-						$sourcecode[] = '<label for="contactFormField_'.$index.'_'.$fieldId.'">'.$option.'</label><input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><br />';
+						$sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.$option.'</label><br />';
 					}
 					break;
 
@@ -1208,7 +1208,7 @@ class ContactManager extends ContactLib
 				case 'radio':
 					$options = explode(',', $arrField['attributes']);
 					foreach ($options as $index => $option) {
-						$sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label for="contactFormField_'.$index.'_'.$fieldId.'\>'.$option.'</label><br />';
+						$sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.$option.'</label><br />';
 					}
 					break;
 
@@ -1236,32 +1236,51 @@ class ContactManager extends ContactLib
 				$offset = $captcha->getOffset();
 				$alt = $captcha->getAlt();
 				$url = $captcha->getUrl();
+				
 
-				$sourcecode[] = "<p>";
-				$sourcecode[] = $_CORELANG['TXT_CONTACT_CAPTCHA_DESCRIPTION']."<br />";
-				$sourcecode[] = '<img src="'.$url.'" alt="'.$alt.'" />';
+				$objDatabase->debug=1;
+				
+				$frontendLang = $objInit->userFrontendLangId;
+				$themeId = $objInit->arrLang[$frontendLang]['themesid'];
+				
+				if(($objRS = $objDatabase->SelectLimit("SELECT `foldername` FROM `".DBPREFIX."skins` WHERE `id` = ".$themeId, 1)) !== false){
+					$themePath = $objRS->fields['foldername'];
+				}
+				
+				
+				
+				$sourcecode[] = '<link href="../themes/'.$themePath.'/buildin_style.css" rel="stylesheet" type="text/css" />';
+				
+				$sourcecode[] = '<p><span>'.$_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION']."</span><br />";
+				$sourcecode[] = '<img src="'.$url.'" alt="'.$alt.'" /></p>';
 				$sourcecode[] = '<div style="color: red;"></div>';
-				$sourcecode[] = '<input type="text" name="contactFormCaptcha" /><br />';
+				$sourcecode[] = "<p>";
+				$sourcecode[] = '<label for="contactFormCaptcha"> CAPTCHA </label><input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
 				$sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="'.$offset.'" />';
 				$sourcecode[] = "</p>";
 			}
 		} elseif ($show) {
 			$sourcecode[] = "<!-- BEGIN contact_form_captcha -->";
-			$sourcecode[] = "<p>";
-			$sourcecode[] = "[[TXT_CONTACT_CAPTCHA_DESCRIPTION]]<br />";
+			$sourcecode[] = "<p><span>&nbsp;</span> ";
+			$sourcecode[] = "[[TXT_CONTACT_CAPTCHA_DESCRIPTION]]";
 			$sourcecode[] = '<img src="[[CONTACT_CAPTCHA_URL]]" alt="[[CONTACT_CAPTCHA_ALT]]" />';
+			$sourcecode[] = "</p>";
+			$sourcecode[] = "<p>";
 			$sourcecode[] = '<div style="color: red;">[[CONTACT_CAPTCHA_ERROR]]</div>';
-			$sourcecode[] = '<input type="text" name="contactFormCaptcha" /><br />';
+			$sourcecode[] = '<label for="contactFormCaptcha"> CAPTCHA </label><input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
 			$sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="[[CONTACT_CAPTCHA_OFFSET]]" />';
 			$sourcecode[] = "</p>";
 			$sourcecode[] = "<!-- END contact_form_captcha -->";
 		} else {
 			$sourcecode[] = "<!-- BEGIN contact_form_captcha -->";
-			$sourcecode[] = "<p>";
+			$sourcecode[] = "<p><span>&nbsp;</span> ";
 			$sourcecode[] = "{TXT_CONTACT_CAPTCHA_DESCRIPTION}<br />";
-			$sourcecode[] = '<img src="{CONTACT_CAPTCHA_URL}" alt="{CONTACT_CAPTCHA_ALT}" />';
+			$sourcecode[] = '</p>';
+			$sourcecode[] = '<p><img src="{CONTACT_CAPTCHA_URL}" alt="{CONTACT_CAPTCHA_ALT}" />';
+			$sourcecode[] = '</p>';			
+			$sourcecode[] = "<p>";
 			$sourcecode[] = '<div style="color: red;">{CONTACT_CAPTCHA_ERROR}</div>';
-			$sourcecode[] = '<input type="text" name="contactFormCaptcha" /><br />';
+			$sourcecode[] = '<span> &nbsp; </span> <input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
 			$sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="{CONTACT_CAPTCHA_OFFSET}" />';
 			$sourcecode[] = "</p>";
 			$sourcecode[] = "<!-- END contact_form_captcha -->\n";
