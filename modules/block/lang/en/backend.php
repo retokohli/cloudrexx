@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 20 Aug 2007 17:27:40 +0200
+* generated date Wed, 29 Aug 2007 10:52:25 +0200
 **/
 
 $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'] = "Modify Content Block %s";
@@ -13,7 +13,7 @@ $_ARRAYLANG['TXT_BLOCK_FUNCTIONS'] = "Functions";
 $_ARRAYLANG['TXT_BLOCK_CONTENT'] = "Content";
 $_ARRAYLANG['TXT_BLOCK_SAVE'] = "Save";
 $_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'] = "The Content Block was successfully updated.";
-$_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'] = "The Content Block couldn't be updated!";
+$_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'] = "The Content Block couldn\'t be updated!";
 $_ARRAYLANG['TXT_BLOCK_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_BLOCK_USE_BLOCK_SYSTEM'] = "Use block system";
 $_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "Overview";
@@ -26,7 +26,7 @@ $_ARRAYLANG['TXT_BLOCK_SUBMIT_RANDOM_OFF'] = "";
 $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'] = "Select All";
 $_ARRAYLANG['TXT_BLOCK_DESELECT_ALL'] = "Delete Mark";
 $_ARRAYLANG['TXT_BLOCK_RANDOM'] = "Include In Randomizer:";
-$_ARRAYLANG['TXT_BLOCK_DELETE_SELECTED_BLOCKS'] = "Do you really want to delete the selected Content Blocks?";
+$_ARRAYLANG['TXT_BLOCK_DELETE_SELECTED_BLOCKS'] = "Do you really want to delete the selected content blocks?";
 $_ARRAYLANG['TXT_BLOCK_NO_NAME'] = "[No Name]";
 $_ARRAYLANG['TXT_BLOCK_USE_BLOCK_RANDOM'] = "Use Random Generator";
 $_ARRAYLANG['TXT_BLOCK_USE_BLOCK_RANDOM_PLACEHOLDER'] = "[[BLOCK_RANDOMIZER]] placeholder for the random generator";
@@ -40,13 +40,13 @@ $_ARRAYLANG['TXT_BLOCK_FAILED_TO_DELETE_BLOCKS'] = "An error occurred while dele
 $_ARRAYLANG['TXT_BLOCK_SUCCESSFULLY_DELETED'] = "The Content Block %s has been deleted successfully.";
 $_ARRAYLANG['TXT_BLOCK_BLOCKS_SUCCESSFULLY_DELETED'] = "The Content Block have beed deleted successfully.";
 $_ARRAYLANG['TXT_BLOCK_OPERATION_IRREVERSIBLE'] = "This operation is irreversible!";
-$_ARRAYLANG['TXT_BLOCK_CONFIRM_DELETE_BLOCK'] = "Do you really want to delete the Content Block %s?";
+$_ARRAYLANG['TXT_BLOCK_CONFIRM_DELETE_BLOCK'] = "Do you really want to delete the content block %s?";
 $_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'] = "Copy Content Block %s";
 $_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'] = "Delete Content Block %s";
 $_ARRAYLANG['TXT_BLOCK_BLOCK_RANDOM'] = "Placeholder For Random Generator";
-$_ARRAYLANG['TXT_BLOCK_BLOCK_GLOBAL'] = ". Bei diesem Platzhalter wird die Seiten- und Sprachzuordnung auch berücksichtigt.";
-$_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR'] = "Trennzeichen im globalen Block";
-$_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR_INFO'] = "Trennzeichen zwischen den einzelnen Blöcken im globalen Block. Es kann auch HTML verwendet werden.";
+$_ARRAYLANG['TXT_BLOCK_BLOCK_GLOBAL'] = "Placeholder for all blocks. Within this placeholder all page and language assignments will be considered.";
+$_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR'] = "Delimeter within global block";
+$_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR_INFO'] = "Delimiter between separate blocks within the global block. HTML can be used.";
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL'] = "Add Selectet to the global Content Block";
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL_OFF'] = "Delete Selectet from the global Content Block";
 $_ARRAYLANG['TXT_BLOCK_SHOW_IN_GLOBAL'] = "Display in global block";

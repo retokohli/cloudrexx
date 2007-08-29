@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 20 Aug 2007 17:27:40 +0200
+* generated date Wed, 29 Aug 2007 10:52:25 +0200
 **/
 
 $_ARRAYLANG['TXT_CONTACT_DATE'] = "Date";
@@ -98,7 +98,7 @@ $_ARRAYLANG['TXT_CONTACT_DOWNLOAD'] = "Download";
 $_ARRAYLANG['TXT_CONTACT_CSV_FILE'] = "CSV File";
 $_ARRAYLANG['TXT_CONTACT_SPAM_PROTECTION_WORD_LIST'] = "Spam protection word list";
 $_ARRAYLANG['TXT_CONTACT_SPAM_PROTECTION_WW_DESCRIPTION'] = "Entries corresponding to words contained in the anti-spam list are not accepted by the system. This helps prevent spam attacks.";
-$_ARRAYLANG['TXT_CONTACT_DATA_RECORD_DELETED_SUCCESSFUL_VALIDATE'] = "You're not allowed to delete this page directly. The page was marked for deleting and will be checked by an administrator.";
+$_ARRAYLANG['TXT_CONTACT_DATA_RECORD_DELETED_SUCCESSFUL_VALIDATE'] = "You\'re not allowed to delete this page directly. The page was marked for deleting and will be checked by an administrator.";
 $_ARRAYLANG['TXT_CONTACT_DATABASE_QUERY_ERROR'] = "Database query error!";
 $_ARRAYLANG['TXT_CONTACT_DATA_RECORD_DELETED_SUCCESSFUL'] = "The data record was deleted successfully!";
 $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_CONTENT_SITE'] = "Do you want to delete the associated content page also?";
@@ -111,7 +111,7 @@ $_ARRAYLANG['TXT_CONTACT_PROCEED'] = "Proceed";
 $_ARRAYLANG['TXT_CONTACT_COPY_FORM'] = "Copy Contact Form";
 $_ARRAYLANG['TXT_CONTACT_SELECT_FRONTEND_LANG_TXT'] = "Please choose the frontend language to be used for this form:";
 $_ARRAYLANG['TXT_CONTACT_CONTACT_FORM_SUCCESSFULLY_DELETED'] = "The contact form has been successfully deleted.";
-$_ARRAYLANG['TXT_CONTACT_FAILED_DELETE_CONTACT_FORM'] = "The contact form couldn't be deleted due to an error!";
+$_ARRAYLANG['TXT_CONTACT_FAILED_DELETE_CONTACT_FORM'] = "The contact form couldn\'t be deleted due to an error!";
 $_ARRAYLANG['TXT_CONTACT_DATA_RECORD_UPDATED_SUCCESSFUL_VALIDATE'] = "Your changes have been inserted into database. Because of your limited user-rights, an administrator has to check your update before it appears on the webpage.";
 $_ARRAYLANG['TXT_CONTACT_SETTINGS_UPDATED'] = "Settings have been applied.";
 $_ARRAYLANG['TXT_CONTACT_META_DATE_BY_EXPORT'] = "Meta Data to Export";
@@ -122,6 +122,6 @@ $_ARRAYLANG['TXT_CONTACT_ENTRIE_DETAILS'] = "Details";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES'] = "Entries";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "CAPTCHA protection";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Durch Aktivieren dieser Option werden die Besucher gezwungen eine bildlich dargestellte Zeichenfolge abzutippen, damit sie die Kontaktanfrage absenden können. Dies ermöglicht es, dass eine Grosszahl an Einträgen, welche automatisch von Spambots generiert wurden, blockiert werden können.";
-$_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Durch das Aktivieren dieser Option, wird zusätzlich eine Kopie der angegebenen Formulardaten an den Absender geschickt.";
-$_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Kopie an Absender";
+$_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Activating this option makes sure that a carbon copy of the data from the form will be sent to the sender.";
+$_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Carbon copy to sender";
 ?>
