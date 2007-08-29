@@ -61,7 +61,7 @@ class ContactLib
 		$this->arrForms = array();
 
 		$objContactForms = $objDatabase->Execute("SELECT tblForm.id, tblForm.name, tblForm.mails, tblForm.langId,
-													tblForm.subject, tblForm.text, tblForm.feedback, tblForm.showForm, tblForm.`use_captcha`,tblForm.`send_copy`,
+													tblForm.subject, tblForm.text, tblForm.feedback, tblForm.showForm, tblForm.`use_captcha`,tblForm.`use_custom_style`,tblForm.`send_copy`,
 													COUNT(tblData.id) AS number, MAX(tblData.time) AS last
 												FROM ".DBPREFIX."module_contact_form AS tblForm
 												LEFT OUTER JOIN ".DBPREFIX."module_contact_form_data AS tblData ON tblForm.id=tblData.id_form
@@ -81,6 +81,7 @@ class ContactLib
 					'feedback'	=> $objContactForms->fields['feedback'],
 					'showForm'	=> $objContactForms->fields['showForm'],
 					'useCaptcha'	=> $objContactForms->fields['use_captcha'],
+					'useCustomStyle'	=> $objContactForms->fields['use_custom_style'],
 					'sendCopy'	=> $objContactForms->fields['send_copy']
 				);
 
@@ -235,12 +236,12 @@ class ContactLib
 		return true;
 	}
 
-	function updateForm($id, $name, $emails, $subject, $text, $feedback, $showForm, $useCaptcha, $arrFields, $sendCopy)
+	function updateForm($id, $name, $emails, $subject, $text, $feedback, $showForm, $useCaptcha, $useCustomStyle, $arrFields, $sendCopy)
 	{
 		global $objDatabase;
 
 		$objDatabase->Execute("UPDATE ".DBPREFIX."module_contact_form SET name='".$name."', mails='".addslashes($emails)."',
-				subject='".$subject."', text='".$text."', feedback='".$feedback."', showForm=".$showForm.", use_captcha=".$useCaptcha.", send_copy=".$sendCopy." WHERE id=".$id);
+				subject='".$subject."', text='".$text."', feedback='".$feedback."', showForm=".$showForm.", use_captcha=".$useCaptcha.", use_custom_style=".$useCustomStyle.", send_copy=".$sendCopy." WHERE id=".$id);
 
 		$arrFormFields = $this->getFormFields($id);
 		$arrRemoveFormFields = array_diff_assoc($arrFormFields, $arrFields);
@@ -260,14 +261,14 @@ class ContactLib
 		$this->initContactForms(true);
 	}
 
-	function addForm($name, $emails, $subject, $text, $feedback, $showForm, $useCaptcha, $arrFields, $sendCopy)
+	function addForm($name, $emails, $subject, $text, $feedback, $showForm, $useCaptcha, $useCustomStyle, $arrFields, $sendCopy)
 	{
 		global $objDatabase, $_FRONTEND_LANGID;
 
 		if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form
-								  (`name`,`mails`, `subject`, `text`, `feedback`, `showForm`, `use_captcha`, `send_copy`, `langId`)
+								  (`name`,`mails`, `subject`, `text`, `feedback`, `showForm`, `use_captcha`, `use_custom_style`, `send_copy`, `langId`)
 								  VALUES
-								  ('".$name."', '".addslashes($emails)."', '".$subject."', '".$text."', '".$feedback."', ".$showForm.", ".$useCaptcha.", ".$sendCopy.", ".$_FRONTEND_LANGID.")") !== false) {
+								  ('".$name."', '".addslashes($emails)."', '".$subject."', '".$text."', '".$feedback."', ".$showForm.", ".$useCaptcha.", ".$useCustomStyle.", ".$sendCopy.", ".$_FRONTEND_LANGID.")") !== false) {
 			$formId = $objDatabase->Insert_ID();
 
 			foreach ($arrFields as $fieldId => $arrField) {

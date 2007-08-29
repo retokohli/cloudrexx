@@ -9,8 +9,8 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-$_ARRAYLANG['TXT_CONTACT_CUSTOM_SYTLE_DESCRIPTION'] = "Wird ein eigener CSS-Stil verwendet, so hat dieses Forumlar die ID und CSS-Klasse <strong>'contactForm_\$FormularNummer'</strong> z.B. contactForm_2, standardmässig sind für diese Attribute nur 'contactForm' gesetzt";
-$_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'] = "Eigener Stil verwenden";
+$_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "Wird ein eigener CSS-Stil verwendet, so hat dieses Forumlar die ID und CSS-Klasse <strong>'contactForm_\$FormularNummer'</strong> z.B. contactForm_2, standardmässig sind für diese Attribute nur 'contactForm' gesetzt";
+$_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'] = "Eigenen Stil verwenden";
 
 require_once ASCMS_CORE_MODULE_PATH.'/contact/lib/ContactLib.class.php';
 
@@ -549,7 +549,7 @@ class ContactManager extends ContactLib
 			'TXT_CONTACT_CAPTCHA_DESCRIPTION'				=> $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
 			'TXT_CONTACT_SEND_COPY_DESCRIPTION'				=> $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'],
 			'TXT_CONTACT_SEND_COPY'							=> $_ARRAYLANG['TXT_CONTACT_SEND_COPY'],
-			'TXT_CONTACT_CUSTOM_SYTLE_DESCRIPTION'			=> $_ARRAYLANG['TXT_CONTACT_CUSTOM_SYTLE_DESCRIPTION'],
+			'TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'			=> $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'],
 			'TXT_CONTACT_CUSTOM_STYLE'						=> $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'],
 		));
 
@@ -669,7 +669,7 @@ class ContactManager extends ContactLib
 			'CONTACT_FORM_SHOW_FORM_NO'						=> $formShowForm ? '' : 'checked="checked"',
 			'CONTACT_FORM_USE_CAPTCHA_YES'					=> $formUseCaptcha ? 'checked="checked"' : '',
 			'CONTACT_FORM_USE_CAPTCHA_NO'					=> $formUseCaptcha ? '' : 'checked="checked"',
-			'CONTACT_FORM_USE_CUSTOM_STYLE_YES'			=> $formUseCustomStyle ? 'checked="checked"' : '',
+			'CONTACT_FORM_USE_CUSTOM_STYLE_YES'				=> $formUseCustomStyle ? 'checked="checked"' : '',
 			'CONTACT_FORM_USE_CUSTOM_STYLE_NO'				=> $formUseCustomStyle ? '' : 'checked="checked"',
 			'CONTACT_FORM_FIELD_TYPE_MENU_TPL'				=> $this->_getFormFieldTypesMenu('contactFormFieldType['.($lastFieldId+1).']', key($this->_arrFormFieldTypes), 'id="contactFormFieldType_'.($lastFieldId+1).'" style="width:110px;" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
 			'CONTACT_FORM_FIELD_TEXT_TPL'					=> $this->_getFormFieldAttribute(0, 'text', ''),
@@ -689,7 +689,7 @@ class ContactManager extends ContactLib
 	{
 		global $objDatabase;
 
-		$objContentSite = $objDatabase->SelectLimit("SELECT catid FROM ".DBPREFIX."content_navigation AS n, ".DBPREFIX."modules AS m WHERE m.name='contact' AND n.module=m.id AND n.cmd='".$formId."'", 1);
+		$objContentSite = $objDatabase->SelectLimit("SELECT `catid` FROM `".DBPREFIX."content_navigation` AS `n`, `".DBPREFIX."modules` AS `m` WHERE `m`.`name`='contact' AND `n`.`module`=`m`.`id` AND `n`.`cmd`='".$formId."'", 1);
 		if ($objContentSite !== false) {
 			if ($objContentSite->RecordCount() == 1) {
 				return $objContentSite->fields['catid'];
@@ -697,7 +697,20 @@ class ContactManager extends ContactLib
 		}
 		return false;
 	}
+	
+	function _getContentSiteParCat($formId)
+	{
+		global $objDatabase;
 
+		$objParentCat = $objDatabase->SelectLimit("SELECT `parcat` FROM `".DBPREFIX."content_navigation` AS `n`, `".DBPREFIX."modules` AS `m` WHERE `m`.`name`='contact' AND `n`.`module`=`m`.`id` AND `n`.`cmd`='".$formId."'", 1);
+		if ($objParentCat !== false) {
+			if ($objParentCat->RecordCount() == 1) {
+				return $objParentCat->fields['parcat'];
+			}
+		}
+		return false;
+	}
+	
 	function _getFormFieldAttribute($id, $type, $attr)
 	{
 		global $_ARRAYLANG;
@@ -782,9 +795,9 @@ class ContactManager extends ContactLib
 
 						if ($formId > 0) {
 							// This updates the database
-							$this->updateForm($formId, $formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $arrFields, $formSendCopy);
+							$this->updateForm($formId, $formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $formUseCustomStyle, $arrFields, $formSendCopy);
 						} else {
-							$this->addForm($formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $arrFields, $formSendCopy);
+							$this->addForm($formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $formUseCustomStyle, $arrFields, $formSendCopy);
 						}
 						$this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_FORM_SUCCESSFULLY_SAVED']."<br />";
 
@@ -1162,10 +1175,6 @@ class ContactManager extends ContactLib
 			} else {
 				$required = "";
 			}
-
-//			$sourcecode[] = "<tr>\n";
-//			$sourcecode[] = "<td style=\"width:100px;\">".(($arrField['type'] != 'hidden' && $arrField['type'] != 'label') ? $arrField['name'] : '&nbsp;')." ".$required."</td>\n";
-//			$sourcecode[] = "<td>";
 			
 			$sourcecode[] = '<p> <label for="contactFormFieldId_'.$fieldId.'">'.(($arrField['type'] != 'hidden' && $arrField['type'] != 'label') ? $arrField['name'] : '&nbsp;')." ".$required.'</label>';
 			
@@ -1183,10 +1192,12 @@ class ContactManager extends ContactLib
 					break;
 
 				case 'checkboxGroup':
+					$sourcecode[] = '<p class="contactFormGroup">';
 					$options = explode(',', $arrField['attributes']);
 					foreach ($options as $index => $option) {
 						$sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.$option.'</label><br />';
 					}
+					$sourcecode[] = '</p>';
 					break;
 
 				case 'date':
@@ -1206,10 +1217,12 @@ class ContactManager extends ContactLib
 					break;
 
 				case 'radio':
+					$sourcecode[] = '<p class="contactFormGroup">';
 					$options = explode(',', $arrField['attributes']);
 					foreach ($options as $index => $option) {
 						$sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.$option.'</label><br />';
 					}
+					$sourcecode[] = '</p>';
 					break;
 
 				case 'select':
@@ -1237,9 +1250,6 @@ class ContactManager extends ContactLib
 				$alt = $captcha->getAlt();
 				$url = $captcha->getUrl();
 				
-
-				$objDatabase->debug=1;
-				
 				$frontendLang = $objInit->userFrontendLangId;
 				$themeId = $objInit->arrLang[$frontendLang]['themesid'];
 				
@@ -1247,12 +1257,9 @@ class ContactManager extends ContactLib
 					$themePath = $objRS->fields['foldername'];
 				}
 				
-				
-				
-				$sourcecode[] = '<link href="../themes/'.$themePath.'/buildin_style.css" rel="stylesheet" type="text/css" />';
-				
+				$sourcecode[] = '<link href="../themes/'.$themePath.'/buildin_style.css" rel="stylesheet" type="text/css" />';				
 				$sourcecode[] = '<p><span>'.$_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION']."</span><br />";
-				$sourcecode[] = '<img src="'.$url.'" alt="'.$alt.'" /></p>';
+				$sourcecode[] = '<img class="captcha" src="'.$url.'" alt="'.$alt.'" /></p>';
 				$sourcecode[] = '<div style="color: red;"></div>';
 				$sourcecode[] = "<p>";
 				$sourcecode[] = '<label for="contactFormCaptcha"> CAPTCHA </label><input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
@@ -1261,29 +1268,26 @@ class ContactManager extends ContactLib
 			}
 		} elseif ($show) {
 			$sourcecode[] = "<!-- BEGIN contact_form_captcha -->";
-			$sourcecode[] = "<p><span>&nbsp;</span> ";
-			$sourcecode[] = "[[TXT_CONTACT_CAPTCHA_DESCRIPTION]]";
-			$sourcecode[] = '<img src="[[CONTACT_CAPTCHA_URL]]" alt="[[CONTACT_CAPTCHA_ALT]]" />';
-			$sourcecode[] = "</p>";
-			$sourcecode[] = "<p>";
 			$sourcecode[] = '<div style="color: red;">[[CONTACT_CAPTCHA_ERROR]]</div>';
-			$sourcecode[] = '<label for="contactFormCaptcha"> CAPTCHA </label><input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
+			$sourcecode[] = "<p>";
+			$sourcecode[] = "[[TXT_CONTACT_CAPTCHA_DESCRIPTION]]<br />";
+			$sourcecode[] = '</p>';
+			$sourcecode[] = '<p><span>CAPTCHA</span><img class="captcha" src="[[CONTACT_CAPTCHA_URL]]" alt="[[CONTACT_CAPTCHA_ALT]]" />';
+			$sourcecode[] = '<input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
 			$sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="[[CONTACT_CAPTCHA_OFFSET]]" />';
 			$sourcecode[] = "</p>";
-			$sourcecode[] = "<!-- END contact_form_captcha -->";
+			$sourcecode[] = "<!-- END contact_form_captcha -->";			
 		} else {
 			$sourcecode[] = "<!-- BEGIN contact_form_captcha -->";
-			$sourcecode[] = "<p><span>&nbsp;</span> ";
+			$sourcecode[] = '<div style="color: red;">{CONTACT_CAPTCHA_ERROR}</div>';
+			$sourcecode[] = "<p>";
 			$sourcecode[] = "{TXT_CONTACT_CAPTCHA_DESCRIPTION}<br />";
 			$sourcecode[] = '</p>';
-			$sourcecode[] = '<p><img src="{CONTACT_CAPTCHA_URL}" alt="{CONTACT_CAPTCHA_ALT}" />';
-			$sourcecode[] = '</p>';			
-			$sourcecode[] = "<p>";
-			$sourcecode[] = '<div style="color: red;">{CONTACT_CAPTCHA_ERROR}</div>';
-			$sourcecode[] = '<span> &nbsp; </span> <input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
+			$sourcecode[] = '<p><span>CAPTCHA</span><img class="captcha" src="{CONTACT_CAPTCHA_URL}" alt="{CONTACT_CAPTCHA_ALT}" />';
+			$sourcecode[] = '<input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
 			$sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="{CONTACT_CAPTCHA_OFFSET}" />';
 			$sourcecode[] = "</p>";
-			$sourcecode[] = "<!-- END contact_form_captcha -->\n";
+			$sourcecode[] = "<!-- END contact_form_captcha -->";						
 		}
 
 		$sourcecode[] = "<p>";
@@ -1594,9 +1598,9 @@ class ContactManager extends ContactLib
 		global $objDatabase, $_FRONTEND_LANGID, $objPerm, $_ARRAYLANG;
 
 		$objPerm->checkAccess(35, 'static');
-
 		$formId = intval($_REQUEST['formId']);
 		$pageId = $this->_getContentSiteId($formId);
+		$parcat = $this->_getContentSiteParCat($formId);
 		if ($pageId > 0) {
 			$objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form WHERE id=".$formId, 1);
 			if ($objContactForm !== false) {
