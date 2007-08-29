@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 20 Aug 2007 17:27:40 +0200
+* generated date Wed, 29 Aug 2007 10:52:25 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(minimaal 6 karakters)";
@@ -765,4 +765,6 @@ $_ARRAYLANG['TXT_DBM_DETAILS_TITLE'] = "Details anzeigen";
 $_ARRAYLANG['TXT_DBM_DETAILS_CONTENT'] = "Backup-Inhalt";
 $_ARRAYLANG['TXT_DBM_DETAILS_ERROR_ID'] = "Ein Backup mit dieser ID existiert nicht. &Uuml;berpr&uuml;fen Sie Ihre Eingabe.";
 $_ARRAYLANG['TXT_CORE_SORTING_ORDER'] = "Sortierung";
+$_ARRAYLANG['TXT_ACTIVE_PDF_TEMPLATE'] = "Aktives PDF Template";
+$_ARRAYLANG['TXT_THEME_PDF'] = "PDF-Ansicht";
 ?>

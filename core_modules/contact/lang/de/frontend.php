@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 20 Aug 2007 17:27:40 +0200
+* generated date Wed, 29 Aug 2007 10:52:25 +0200
 **/
 
 $_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM'] = "Hier sind die übermittelten Informationen vom Kontaktformular der Webseite von";
@@ -13,7 +13,7 @@ $_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'] = "Browser Sprache ";
 $_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION'] = "Browser Version ";
 $_ARRAYLANG['TXT_CONTACT_UPLOADS'] = "Uploads";
 $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] = "Bitte überprüfen Sie ihre Eingabe!";
-$_ARRAYLANG['TXT_FEEDBACK_ERROR'] = "Ein oder mehrere Fehler sind aufgetreten. Benüzen Sie die \"Zurück\"-Schaltfläche Ihres Browser um zurück zum Formular zu gelangen und überprüfen Sie ihre Angaben!";
+$_ARRAYLANG['TXT_FEEDBACK_ERROR'] = "Ein oder mehrere Fehler sind aufgetreten. Benützen Sie die \"Zurück\"-Schaltfläche Ihres Browser um zurück zum Formular zu gelangen und überprüfen Sie ihre Angaben!";
 $_ARRAYLANG['TXT_CONTACT_LANG'] = "Sprache";
 $_ARRAYLANG['TXT_CONTACT_ENTRIE_DETAILS'] = "Details";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES'] = "Einträge";
