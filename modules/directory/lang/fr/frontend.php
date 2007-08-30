@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 29 Aug 2007 10:52:25 +0200
+* generated date Thu, 30 Aug 2007 10:22:49 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Neues Design erstellen";
@@ -54,6 +54,7 @@ $_ARRAYLANG['TXT_DIR_F_STREET'] = "Street / No.";
 $_ARRAYLANG['TXT_DIR_F_PLZ'] = "PLZ";
 $_ARRAYLANG['TXT_DIR_F_PHONE'] = "Phone";
 $_ARRAYLANG['TXT_DIR_F_PERSON'] = "Ansprechperson";
+$_ARRAYLANG['TXT_DIR_DEL'] = "Löschen";
 $_ARRAYLANG['TXT_DIR_FILL_ALL'] = "Fill all Fields please";
 $_ARRAYLANG['TXT_DIR_NEW_ENTREE'] = "Neuer Eintrag";
 $_ARRAYLANG['TXT_DIR_DATE'] = "Date";
@@ -204,4 +205,5 @@ $_ARRAYLANG['TXT_USEMENT'] = "Verwendung";
 $_ARRAYLANG['TXT_USEMENT_TEXT'] = "In der Designvorlage <b>directory.html</b>. Diese Seite kann mit dem Platzhalter <b>[[DIRECTORY_FILE]]</b> im Design oder in einer Content Seite eingebunden werden.";
 $_ARRAYLANG['TXT_DIRECTORY_DEACTIVATE'] = "Deaktivieren";
 $_ARRAYLANG['TXT_SHOW_DIR_HOMECONTENT'] = "Verzeichnis auf Startseite anzeigen";
+$_ARRAYLANG['TXT_DIRECTORY_RSS_FEED'] = "RSS Link";
 ?>

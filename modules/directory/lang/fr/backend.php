@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 29 Aug 2007 10:52:25 +0200
+* generated date Thu, 30 Aug 2007 10:22:49 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Neues Design erstellen";
@@ -59,7 +59,6 @@ $_ARRAYLANG['TXT_DIR_META_DESC'] = "Meta Desc";
 $_ARRAYLANG['TXT_DIR_REQUIRED_FIELDS'] = "These Fields are required.";
 $_ARRAYLANG['TXT_DIR_ADD'] = "Add";
 $_ARRAYLANG['TXT_DIR_META_KEYS'] = "Meta Keys";
-$_ARRAYLANG['TXT_DIR_DEL'] = "Delete";
 $_ARRAYLANG['TXT_DIR_EDIT'] = "Edit";
 $_ARRAYLANG['TXT_DIR_LIST'] = "List";
 $_ARRAYLANG['TXT_DIR_COLLAPS'] = "Collaps all";
@@ -282,4 +281,6 @@ $_ARRAYLANG['TXT_DIRECTORY_REMEMBER'] = "Benachrichtigung";
 $_ARRAYLANG['TXT_DIRECTORY_CONFIRM'] = "Bestätigung";
 $_ARRAYLANG['TXT_DIRECTORY_CONFIRM_MAIL'] = "Bestätigung";
 $_ARRAYLANG['TXT_GOOGLESEACH'] = "Google Search";
+$_ARRAYLANG['TXT_ENCODEFILENAME'] = "Dateinamen verschlüsseln";
+$_ARRAYLANG['TXT_DIRECTORY_RSS_FEED'] = "RSS Link";
 ?>
