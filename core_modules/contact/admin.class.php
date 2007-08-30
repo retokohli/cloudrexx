@@ -9,9 +9,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-$_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "Wird ein eigener CSS-Stil verwendet, so hat dieses Forumlar die ID und CSS-Klasse <strong>'contactForm_\$FormularNummer'</strong> z.B. contactForm_2, standardmässig sind für diese Attribute nur 'contactForm' gesetzt";
-$_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'] = "Eigenen Stil verwenden";
-
 require_once ASCMS_CORE_MODULE_PATH.'/contact/lib/ContactLib.class.php';
 
 /**
@@ -1166,7 +1163,7 @@ class ContactManager extends ContactLib
 		$sourcecode[] = '<fieldset id="contactFrame">';
 		$sourcecode[] = "<legend>".$this->arrForms[$id]['name']."</legend>";
 		$sourcecode[] = '<form action="'.($preview ? '../' : '')."index.php?section=contact&amp;cmd=".$id.'" ';
-		$sourcecode[] = 'method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();" id="contactForm'.(!empty($_REQUEST['customFormStyle']) ? '_'.$id : '').'" class="contactForm'.(!empty($_REQUEST['customFormStyle']) ? '_'.$id : '').'">';
+		$sourcecode[] = 'method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();" id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'">';
 				
 		
 		foreach ($arrFields as $fieldId => $arrField) {
