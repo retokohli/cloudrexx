@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 29 Aug 2007 10:52:25 +0200
+* generated date Thu, 30 Aug 2007 10:22:49 +0200
 **/
 
 $_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM'] = "Her er informationerne fra kontaktformularet af hjemmesiden af ";
