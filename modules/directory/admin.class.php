@@ -82,10 +82,6 @@ class rssDirectory extends directoryLibrary
         $this->rssPath = ASCMS_FEED_PATH . '/';
 	    $this->rssWebPath = ASCMS_FEED_WEB_PATH . '/';
 
-	    $_ARRAYLANG['TXT_DIRECTORY_RSS_FEED']	= "RSS Link";
-	    $_ARRAYLANG['TXT_ENCODEFILENAME']	= "Dateinamen verschlüsseln";
-
-
         //check chmod
 		$obj_file = &new File();
         $obj_file->setChmod(mediaPath, $this->mediaWebPath, "");

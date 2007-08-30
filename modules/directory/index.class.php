@@ -131,9 +131,6 @@ class rssDirectory extends directoryLibrary
 	    $this->folderImageLarge = "<img src='../../images/modules/directory/_folder_24.gif' alt='' />";
 	    $this->folderImageSmall = "<img src='../../images/modules/directory/_folder.gif' alt='' />";
 
-	    $_ARRAYLANG['TXT_DIRECTORY_RSS_FEED']	= "RSS Link";
-	    $_ARRAYLANG['TXT_DIR_DEL'] = "Löschen";
-
         //create latest xml
 		$this->createRSSlatest();
 
