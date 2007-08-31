@@ -1892,7 +1892,7 @@ function shopGenerateCart()
     cart = '';
 
     if (countObjects(objCart.products)) {
-        for (i in objCart.products) {
+		for (i = 0; i < objCart.products.length; i++) {
             cartProduct = cartProductsTpl.replace('[[SHOP_JS_PRODUCT_QUANTITY]]', objCart.products[i].quantity);
             cartProduct = cartProduct.replace('[[SHOP_JS_PRODUCT_TITLE]]', objCart.products[i].title+objCart.products[i].options);
             cartProduct = cartProduct.replace('[[SHOP_JS_PRODUCT_PRICE]]', objCart.products[i].price);

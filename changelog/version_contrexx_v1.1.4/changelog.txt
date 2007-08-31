@@ -85,13 +85,20 @@ Kontakt
 - Die Darstellung generierter E-Mails (nur Text) wurde verbessert (rechtsbündig)
 - Die Formulare werden jetzt von einer Legende (mit Rahmen) umschlossen.
 - Die Styles sind nicht mehr fest im Code verankert.
-
+- Es kann eine Kopie des Formulars an den Absender geschickt werden.
 
 Podcast
 - Es kann ein Youtube Link angegeben werden, welcher dann als Medium im
   Podcastmodul erfasst wird.
 - Die neusten Videos beliebiger Kategorien können auf der Startseite angezeigt
   werden.
+  
+Verzeichnis
+- Im Verzeichnis wurde die Typselektion (File, RSS or Link) aufgehoben und
+  statessen 3 neue Platzhalter hinzugefügt:
+	[DIRECTORY_FEED_ATTACHMENT]]
+	[[DIRECTORY_FEED_LINK]]
+	[[DIRECTORY_FEED_RSS_LINK]]
 
 WYSIWYG-Editor
 - Neue Version 2.4.3 des FCKeditors. Weitere Informationen unter:
@@ -111,6 +118,8 @@ Shop
 - Darstellungsfehler (Unicode / Latin1)
 - Als Produkt Code können Alphanumerische Zeichen verwendet werden.
 - Produkte von inaktiven Kategorien werden nicht mehr aufgelistet.
+- Der JavaScript Warenkorb funktioniert auch, wenn ein anderes Skript Prototypes
+  erweitert. 
 
 Kontaktmanager
 - Der CSV-Export funktioniert nun mit unlimitierter erfasster Anzahl Einträge.
@@ -153,3 +162,7 @@ Media Manager/Bilderverwaltung
 
 Sitemap
 - Es werden nur die Seiten aufgelistet, auf welche der Benutzer zugreifen darf.
+
+Gästebuch
+- Das Erstellungsdatum eines Eintrages wird bei dessen Aktualisierung nicht
+  mehr geändert. 
