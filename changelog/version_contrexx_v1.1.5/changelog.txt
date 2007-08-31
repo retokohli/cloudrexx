@@ -11,19 +11,6 @@
 * Changes ******************************
 ****************************************
 
-DIRECTORY
-Im Verzeichnis wurde die Typselektion (File, RSS or Link) aufgehoben und statessen 3 neue Platzhalter hinzugefügt:
-	- [[DIRECTORY_FEED_ATTACHMENT]]
-	- [[DIRECTORY_FEED_LINK]]
-	- [[DIRECTORY_FEED_RSS_LINK]]
-Aufgrund dieser Anpassung müssen folgende Contentseiten angepasst werden:
-	- section=directory&cmd=detail
-	- section=directory&cmd=edit
-	- section=directory&cmd=add
-
-CONTACT
-Es kann eine Kopie des Formulars an den Absender geschickt werden.
-
 
 ****************************************
 * Bugfixes *****************************
