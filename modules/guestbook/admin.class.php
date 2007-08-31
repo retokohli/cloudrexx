@@ -515,7 +515,7 @@ class GuestbookManager extends GuestbookLibrary
 								   comment='$comment',
 								   location='$location',
 								   ip='$ip',
-								   datetime=NOW(),
+								   datetime='$date',
 				                   lang_id='$this->langId'
 							 WHERE id=$guestbookId";
 				$objResult = $objDatabase->Execute($query);
