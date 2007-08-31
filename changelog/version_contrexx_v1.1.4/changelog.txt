@@ -25,7 +25,7 @@ Core
   bewirkt, dass die Contentsprache basierend auf den Browser-Sprachen
   (accept-languages) ausgewählt wird oder immer die Standardsprache verwendet
   wird.
-- Neuer Platzhalter für die Zeitanzeige. Eingebunden im Design erzeugt der 
+- Neuer Platzhalter für die Zeitanzeige. Eingebunden im Design erzeugt der
   Platzhalter [[TIME]] die Ausgabe der aktuellen Uhrzeit im folgenden
   Format: HH:MM .
 - Neue Navigationsplatzhalter. Standardmässig gibt es nun 4 Platzhalter die es
@@ -36,6 +36,7 @@ Kontaktmanager
 - Ein Kontaktformular kann mit einem CAPTCHA-Schutz geschützt werden.
 - Es werden keine Tabellen mehr verwendet, sondern semantisch korrektes
   HTML mit Paragraphen und Labels.
+- Es kann eine Kopie des Formulars an den Absender geschickt werden.
 
 
 Seitenempfehlungen
@@ -44,7 +45,7 @@ Seitenempfehlungen
   werden.
 
 Datenbank Manager
-- Es gibt neu einen Datenbank Manager zur Verwaltung der Datenbank. Dieser 
+- Es gibt neu einen Datenbank Manager zur Verwaltung der Datenbank. Dieser
   erlaubt die Optmierung von Datenbanken. Ausserdem können SQL / CVS Backups
   erzeugt und SQL-Quries ausgeführt werden.
 
@@ -62,7 +63,7 @@ Shop
   der Konfigurationsdatei (config/configuration.php) aktiviert ist.)
 - Die Versendung von Mails an den Shopbetreiber nach einer
   Bestellung erfolgt nun direkt nach der Auftragsbestätigung.
-- Die Mehrwertsteuernummer jedes Landes wirt akzeptiert. 
+- Die Mehrwertsteuernummer jedes Landes wirt akzeptiert.
 
 Allgemein
 - Das Changelog wurde auf max. 80 Zeilen breite beschränkt.
@@ -106,7 +107,17 @@ WYSIWYG-Editor
 
 Volltextsuche
 - Geschützte Inhaltsseiten, auf welche der Besucher zugriff hat, werden in das
-  Suchergebnis einbezogen. 
+  Suchergebnis einbezogen.
+
+Directory
+Im Verzeichnis wurde die Typselektion (File, RSS or Link) aufgehoben und stattdessen 3 neue Platzhalter hinzugefügt:
+	- [[DIRECTORY_FEED_ATTACHMENT]]
+	- [[DIRECTORY_FEED_LINK]]
+	- [[DIRECTORY_FEED_RSS_LINK]]
+Aufgrund dieser Anpassung müssen folgende Contentseiten angepasst werden:
+	- section=directory&cmd=detail
+	- section=directory&cmd=edit
+	- section=directory&cmd=add
 
 
 ****************************************
@@ -145,9 +156,9 @@ News-Syndication
 - Die Einträge eines RSS Feeds werden korrekt verlinkt.
 
 Allgemein
-- Die HTML-Struktur beim Navigationstyp "Nested Navigation" wird korrekt 
+- Die HTML-Struktur beim Navigationstyp "Nested Navigation" wird korrekt
   ausgegeben.
-- Mit dem Safari kann auf geschüzte Bereichte zugegriffen werden. 
+- Mit dem Safari kann auf geschüzte Bereichte zugegriffen werden.
 
 Newsletter
 - Zuweisung der Anrede bei einem Empfänger.
@@ -155,7 +166,7 @@ Newsletter
 Gallery
 - [[GALLERY_LATEST]] funktioniert nun wieder.
 - Fallback Mechanismus bei der Erstellung von Thumbnails, damit die
-  Programmausführung bei zu grossen Bilder nicht unerwartet abgebrochen wird. 
+  Programmausführung bei zu grossen Bilder nicht unerwartet abgebrochen wird.
 
 Media Manager/Bilderverwaltung
 - Die Bilderbearbeitung spiechert die Bilder nun wieder korrekt
