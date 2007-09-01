@@ -25,6 +25,18 @@ require_once ASCMS_MODULE_PATH.'/support/lib/SupportCategory.class.php';
  */
 require_once ASCMS_MODULE_PATH.'/support/lib/SupportCategories.class.php';
 /**
+ * Information Field
+ */
+require_once ASCMS_MODULE_PATH.'/support/lib/InfoField.class.php';
+/**
+ * Information Fields
+ */
+require_once ASCMS_MODULE_PATH.'/support/lib/InfoFields.class.php';
+/**
+ * Knowledge Base
+ */
+require_once ASCMS_MODULE_PATH.'/support/lib/KnowledgeBase.class.php';
+/**
  * Support Ticket
  */
 require_once ASCMS_MODULE_PATH.'/support/lib/Ticket.class.php';
@@ -32,6 +44,7 @@ require_once ASCMS_MODULE_PATH.'/support/lib/Ticket.class.php';
  * Provides clickable table headers for sorting
  */
 require_once ASCMS_CORE_PATH.'/Sorting.class.php';
+
 
 /**
  * Support system backend
@@ -77,10 +90,18 @@ class Support
     /**
      * The Support Categories object
      *
-     * Do not confuse this with the Support Category object!
+     * Do not confuse this with Support Category objects!
      * @var     SupportCategories
      */
     var $objSupportCategories;
+
+    /**
+     * The Info Fields object
+     *
+     * Do not confuse this with Info Field objects!
+     * @var     SupportCategories
+     */
+    var $objInfoFields;
 
     /**
      * The language object
@@ -92,7 +113,13 @@ class Support
      * The currently selected Ticket language ID (also filter value)
      * @var     integer
      */
-    var $supportTicketLanguageId;
+    var $supportLanguageId;
+
+    /**
+     * Show all available languages instead of the selected one only
+     * @var     boolean
+     */
+    var $supportLanguageShowAll;
 
     /**
      * The currently selected Ticket ID (also filter value)
@@ -117,6 +144,32 @@ class Support
      * @var     integer
      */
     var $supportCategoryId;
+
+    /**
+     * The currently selected Support Category language ID
+     * @var     integer
+     */
+    var $supportCategoryLanguageId;
+
+    /**
+     * The currently selected Info Field ID
+     * @var     integer
+     */
+    var $supportInfoFieldId;
+
+    /**
+     * The currently selected Info Field language ID
+     * @var     integer
+     */
+    var $supportInfoFieldLanguageId;
+
+    /**
+     * The offset for the Info Field list
+     *
+     * Note: Not implemented yet!
+     * @var     integer
+     */
+    var $supportInfoFieldOffset;
 
     /**
      * The currently selected Ticket status (filter value)
@@ -213,6 +266,7 @@ class Support
     /**
      * Constructor (PHP4)
      * @param   string  $strTemplate
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      * @see     __construct()
      */
     function Support()
@@ -225,6 +279,7 @@ class Support
      * @global  Template    $objTemplate    PEAR Sigma Template
      * @global  array       $_ARRAYLANG     Language array
      * @global  mixed       $objInit        Init object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct()
     {
@@ -246,91 +301,113 @@ class Support
             'CONTENT_NAVIGATION',
                 '<a href="index.php?cmd=support&amp;act=ticketTable">'.
                 $_ARRAYLANG['TXT_SUPPORT_TICKETS'].'</a>'.
-                '<a href="index.php?cmd=support&amp;act=editCategories">'.
+                '<a href="index.php?cmd=support&amp;act=categoriesEdit">'.
                 $_ARRAYLANG['TXT_SUPPORT_CATEGORIES'].'</a>'.
+                '<a href="index.php?cmd=support&amp;act=infoFieldsEdit">'.
+                $_ARRAYLANG['TXT_SUPPORT_INFO_FIELDS'].'</a>'.
                 '<a href="index.php?cmd=support&amp;act=messageEdit">'.
                 $_ARRAYLANG['TXT_SUPPORT_TICKET_NEW'].'</a>'.
                 '<a href="index.php?cmd=support&amp;act=settings">'.
                 $_ARRAYLANG['TXT_SETTINGS'].'</a>'
         );
 
-        $this->supportTicketLanguageId = (isset($_REQUEST['supportTicketLanguageId'])
-            ?   $_REQUEST['supportTicketLanguageId']
+        $this->supportLanguageId = (!empty($_REQUEST['supportLanguageId'])
+            ?   $_REQUEST['supportLanguageId']
             :   $objInit->getBackendLangId()
         );
-        $this->supportTicketId = (isset($_REQUEST['supportTicketId'])
+        $this->supportLanguageShowAll = (!empty($_REQUEST['supportLanguageShowAll'])
+            ?   1
+            :   0
+        );
+        $this->supportTicketId = (!empty($_REQUEST['supportTicketId'])
             ?   $_REQUEST['supportTicketId']
             :   0
         );
-        $this->supportTicketOwnerId = (isset($_REQUEST['supportTicketOwnerId'])
+        $this->supportTicketOwnerId = (!empty($_REQUEST['supportTicketOwnerId'])
             ?   $_REQUEST['supportTicketOwnerId']
             :   0
         );
-        $this->supportTicketEmail = (isset($_REQUEST['supportTicketEmail'])
+        $this->supportTicketEmail = (!empty($_REQUEST['supportTicketEmail'])
             ?   $_REQUEST['supportTicketEmail']
             :   ''
         );
-        $this->supportCategoryId = (isset($_REQUEST['supportCategoryId'])
+        $this->supportCategoryId = (!empty($_REQUEST['supportCategoryId'])
             ?   $_REQUEST['supportCategoryId']
             :   0
         );
-        $this->supportTicketStatus = (isset($_REQUEST['supportTicketStatus'])
+        $this->supportCategoryLanguageId = (!empty($_REQUEST['supportCategoryLanguageId'])
+            ?   $_REQUEST['supportCategoryLanguageId']
+            :   0
+        );
+        $this->supportInfoFieldId = (!empty($_REQUEST['supportInfoFieldId'])
+            ?   $_REQUEST['supportInfoFieldId']
+            :   0
+        );
+        $this->supportInfoFieldLanguageId = (!empty($_REQUEST['supportInfoFieldLanguageId'])
+            ?   $_REQUEST['supportInfoFieldLanguageId']
+            :   0
+        );
+        $this->supportInfoFieldOffset = (!empty($_REQUEST['supportInfoFieldOffset'])
+            ?   $_REQUEST['supportInfoFieldOffset']
+            :   0
+        );
+        $this->supportTicketStatus = (!empty($_REQUEST['supportTicketStatus'])
             ?   $_REQUEST['supportTicketStatus']
             :   -1  // Default to all
         );
-        $this->supportTicketSource = (isset($_REQUEST['supportTicketSource'])
+        $this->supportTicketSource = (!empty($_REQUEST['supportTicketSource'])
             ?   $_REQUEST['supportTicketSource']
             :   -1  // Default to all
         );
-        $this->supportTicketClose = (isset($_REQUEST['supportTicketClose'])
+        $this->supportTicketClose = (!empty($_REQUEST['supportTicketClose'])
             ?   $_REQUEST['supportTicketClose']
             :   0  // Don't close by default
         );
-        $this->supportTicketSearchTerm = (isset($_REQUEST['supportTicketSearchTerm'])
+        $this->supportTicketSearchTerm = (!empty($_REQUEST['supportTicketSearchTerm'])
             ?   $_REQUEST['supportTicketSearchTerm']
             :   ''
         );
-        $this->supportTicketShowClosed = (isset($_REQUEST['supportTicketShowClosed'])
+        $this->supportTicketShowClosed = (!empty($_REQUEST['supportTicketShowClosed'])
             ?   $_REQUEST['supportTicketShowClosed']
             :   0
         );
-        $this->supportTicketOffset = (isset($_REQUEST['supportTicketOffset'])
+        $this->supportTicketOffset = (!empty($_REQUEST['supportTicketOffset'])
             ?   $_REQUEST['supportTicketOffset']
             :   0
         );
-        $this->supportTicketLimit = (isset($_REQUEST['supportTicketLimit'])
+        $this->supportTicketLimit = (!empty($_REQUEST['supportTicketLimit'])
             ?   $_REQUEST['supportTicketLimit']
             :   0
         );
-        $this->supportTicketOrder = (isset($_REQUEST['supportTicketOrder'])
+        $this->supportTicketOrder = (!empty($_REQUEST['supportTicketOrder'])
             ?   $_REQUEST['supportTicketOrder']
             :   0
         );
-        $this->supportMessageId = (isset($_REQUEST['supportMessageId'])
+        $this->supportMessageId = (!empty($_REQUEST['supportMessageId'])
             ?   $_REQUEST['supportMessageId']
             :   0
         );
-        $this->supportMessageBody = (isset($_REQUEST['supportMessageBody'])
+        $this->supportMessageBody = (!empty($_REQUEST['supportMessageBody'])
             ?   $_REQUEST['supportMessageBody']
             :   0
         );
-        $this->supportMessageFrom = (isset($_REQUEST['supportMessageFrom'])
+        $this->supportMessageFrom = (!empty($_REQUEST['supportMessageFrom'])
             ?   $_REQUEST['supportMessageFrom']
             :   0
         );
-        $this->supportMessageSubject = (isset($_REQUEST['supportMessageSubject'])
+        $this->supportMessageSubject = (!empty($_REQUEST['supportMessageSubject'])
             ?   $_REQUEST['supportMessageSubject']
             :   0
         );
-        $this->supportMessageOffset = (isset($_REQUEST['supportMessageOffset'])
+        $this->supportMessageOffset = (!empty($_REQUEST['supportMessageOffset'])
             ?   $_REQUEST['supportMessageOffset']
             :   0
         );
-        $this->supportMessageLimit = (isset($_REQUEST['supportMessageLimit'])
+        $this->supportMessageLimit = (!empty($_REQUEST['supportMessageLimit'])
             ?   $_REQUEST['supportMessageLimit']
             :   0
         );
-        $this->supportMessageOrder = (isset($_REQUEST['supportMessageOrder'])
+        $this->supportMessageOrder = (!empty($_REQUEST['supportMessageOrder'])
             ?   $_REQUEST['supportMessageOrder']
             :   0
         );
@@ -340,7 +417,10 @@ class Support
 
         // Support Categories object
         $this->objSupportCategories =
-            new SupportCategories($this->supportTicketLanguageId);
+            new SupportCategories($this->supportLanguageId);
+        // Info Fields object
+        $this->objInfoFields =
+            new InfoFields($this->supportLanguageId);
     }
 
 
@@ -350,16 +430,15 @@ class Support
      * @global  Template    $objTemplate    Template
      * @global  array       $_ARRAYLANG     Language array
      * @return  string      The created content
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getPage()
     {
         global $objTemplate, $_ARRAYLANG;
 
-        if (!isset($_GET['act'])) {
-            $_GET['act'] = '';
-        }
-        switch ($_GET['act']) {
-          case 'editCategories':
+        $action = (!empty($_GET['act']) ? $_GET['act'] : '');
+        switch ($action) {
+          case 'categoriesEdit':
             $this->objTemplate->setVariable('SUPPORT_CENTER', $this->categoriesEdit());
             break;
           case 'categoryStore':
@@ -377,6 +456,25 @@ class Support
           case 'categoriesDelete':
             $this->categoriesDelete();
             $this->objTemplate->setVariable('SUPPORT_CENTER', $this->categoriesEdit());
+            break;
+          case 'infoFieldsEdit':
+            $this->objTemplate->setVariable('SUPPORT_CENTER', $this->infoFieldsEdit());
+            break;
+          case 'infoFieldStore':
+            $this->infoFieldStore();
+            $this->objTemplate->setVariable('SUPPORT_CENTER', $this->infoFieldsEdit());
+            break;
+          case 'infoFieldsStore':
+            $this->infoFieldsStore();
+            $this->objTemplate->setVariable('SUPPORT_CENTER', $this->infoFieldsEdit());
+            break;
+          case 'infoFieldDelete':
+            $this->infoFieldDelete();
+            $this->objTemplate->setVariable('SUPPORT_CENTER', $this->infoFieldsEdit());
+            break;
+          case 'infoFieldsDelete':
+            $this->infoFieldsDelete();
+            $this->objTemplate->setVariable('SUPPORT_CENTER', $this->infoFieldsEdit());
             break;
           case 'ticketData':
             $this->objTemplate->setVariable('SUPPORT_TOP', $this->ticketData());
@@ -430,7 +528,7 @@ class Support
 
     function getFilterValuesUri() {
         return
-            "&amp;supportTicketLanguageId=$this->supportTicketLanguageId".
+            "&amp;supportLanguageId=$this->supportLanguageId".
             "&amp;supportCategoryId=$this->supportCategoryId".
             "&amp;supportTicketOwnerId=$this->supportTicketOwnerId".
             "&amp;supportTicketEmail=".urlencode($this->supportTicketEmail).
@@ -446,6 +544,7 @@ class Support
      * @return  boolean             True on success, false otherwise.
      * @global  Init    $objInit    Init object
      * @global  array   $_ARRAYLANG Language array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function messageCommit()
     {
@@ -496,23 +595,21 @@ if (MY_DEBUG) echo("messageCommit(): No Message subject!<br />");
         // No or an invalid Ticket ID is present, which means
         // that a new Ticket must be created.
         // Use the Support Category ID from the request.
-        $supportCategoryId = $this->supportCategoryId;
-        if ($supportCategoryId <= 0) {
-if (MY_DEBUG) echo("messageCommit(): ERROR: No or invalid Support Category ID ($supportCategoryId)!<br />");
+        if ($this->supportCategoryId <= 0) {
+if (MY_DEBUG) echo("messageCommit(): ERROR: No or invalid Support Category ID ($this->supportCategoryId)!<br />");
             return false;
         }
         // Pick the language parameter from the request, too
-        $supportTicketLanguageId = $this->supportTicketLanguageId;
-        if ($supportTicketLanguageId <= 0) {
-if (MY_DEBUG) echo("messageCommit(): ERROR: No or invalid language ID ($supportTicketLanguageId)!<br />");
+        if ($this->supportLanguageId <= 0) {
+if (MY_DEBUG) echo("messageCommit(): ERROR: No or invalid language ID ($this->supportLanguageId)!<br />");
             return false;
         }
         // create a new Ticket from the edited Message.
         $objTicket = new Ticket(
             $supportMessageFrom,
             SUPPORT_TICKET_SOURCE_SYSTEM,
-            $supportCategoryId,
-            $supportTicketLanguageId
+            $this->supportCategoryId,
+            $this->supportLanguageId
         );
         // Need to store it, so it gets an ID.
         $objTicket->store();
@@ -531,6 +628,7 @@ if (MY_DEBUG) { echo("messageCommit(): INFO: Stored new Ticket: ");var_export($o
      * @return  boolean             True on success, false otherwise
      * @global  array       $_ARRAYLANG     Language array
      * @global  mixed       $objInit        Init object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function ticketDelete()
     {
@@ -555,9 +653,9 @@ if (MY_DEBUG) echo("ticketDelete(): ERROR: No Ticket ID!<br />");
             }
         }
         if ($return) {
-            $this->strOkMessage = $_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL'];
+            $this->addMessage($_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL']);
         } else {
-            $this->strErrMessage = $_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED'];
+            $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED']);
         }
         return $return;
     }
@@ -568,6 +666,7 @@ if (MY_DEBUG) echo("ticketDelete(): ERROR: No Ticket ID!<br />");
      * @return  boolean             True on success, false otherwise
      * @global  array       $_ARRAYLANG     Language array
      * @global  mixed       $objInit        Init object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function ticketsDelete()
     {
@@ -582,12 +681,12 @@ if (MY_DEBUG) echo("ticketsDelete(): ERROR: Ticket with ID $supportTicketId coul
                 return false;
             }
             if (!$objTicket->delete()) {
-                $this->strErrMessage = $_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED'];
+                $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED']);
 if (MY_DEBUG) echo("ticketsDelete(): ERROR: Ticket with ID $supportTicketId could not be deleted!<br />");
                 return false;
             }
         }
-        $this->strOkMessage = $_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL'];
+        $this->addMessage($_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL']);
         return true;
     }
 
@@ -596,6 +695,7 @@ if (MY_DEBUG) echo("ticketsDelete(): ERROR: Ticket with ID $supportTicketId coul
      * Save changes to the Ticket
      * @return  boolean             True on success, false otherwise
      * @global  array   $_ARRAYLANG Language array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function ticketChange()
     {
@@ -657,6 +757,7 @@ if (MY_DEBUG) echo("ticketChange(): WARNING: illegal Ticket owner ID $supportTic
      * Closes a Ticket
      * @return  boolean             True on success, false otherwise
      * @global  array   $_ARRAYLANG Language array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function ticketClose()
     {
@@ -694,6 +795,7 @@ if (MY_DEBUG) echo("ticketClose(): ERROR: could not retrieve the Ticket with ID 
      * @return  boolean             True on success, false otherwise
      * @global  array       $_ARRAYLANG     Language array
      * @global  mixed       $objInit        Init object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function categoryDelete()
     {
@@ -703,27 +805,29 @@ if (MY_DEBUG) { echo("categoryDelete(): \$_GET: ");var_export($_GET);echo("<br /
         $return = true;
 
         // The ID of the Support Category currently being edited
-        if (empty($_GET['supportCategoryId'])) {
+        if ($this->supportCategoryId <= 0) {
             $return = false;
         } else {
-            $id = intval($_GET['supportCategoryId']);
             $objSupportCategory =
-                SupportCategory::getById($id, $this->supportTicketLanguageId);
+                SupportCategory::getById(
+                    $this->supportCategoryId, $this->supportCategoryLanguageId);
             if (!$objSupportCategory) {
                 $return = false;
             } else {
                 if (!$objSupportCategory->delete(
-                        $objSupportCategory->getLanguageId()
-                    )
+                        $this->supportCategoryLanguageId)
                 ) {
                     $return = false;
                 }
             }
         }
         if ($return) {
-            $this->strOkMessage = $_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL'];
+            // *MUST* invalidate the tree array after
+            // changing the data!
+            $this->objSupportCategories->invalidateSupportCategoryTreeArray();
+            $this->addMessage($_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL']);
         } else {
-            $this->strErrMessage = $_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED'];
+            $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED']);
         }
         return $return;
     }
@@ -736,24 +840,30 @@ if (MY_DEBUG) { echo("categoryDelete(): \$_GET: ");var_export($_GET);echo("<br /
      * @return  boolean             True on success, false otherwise
      * @global  array       $_ARRAYLANG     Language array
      * @global  mixed       $objInit        Init object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function categoriesDelete()
     {
         global $_ARRAYLANG, $objInit;
 
 if (MY_DEBUG) { echo("categoriesDelete(): \$_POST: ");var_export($_POST);echo("<br />"); }
-        foreach ($_POST['selectedCategoryId'] as $id) {
+        foreach ($_POST['selectedCategoryArrayId'] as $id) {
+            $arrLanguageId = $_POST['selectedCategoryArrayLanguageId'];
             $objSupportCategory =
-                SupportCategory::getById($id, $this->supportTicketLanguageId);
+                SupportCategory::getById($id, $arrLanguageId[$id]);
             if (!$objSupportCategory) {
+if (MY_DEBUG) { echo("Support::categoriesDelete(): ERROR: Failed to get Suppoprt Category with ID $id, lang $languageId!<br />"); }
                 return false;
             }
-            if (!$objSupportCategory->delete($objSupportCategory->getLanguageId())) {
-                $this->strErrMessage = $_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED'];
+            if (!$objSupportCategory->delete($arrLanguageId[$id])) {
+                $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED']);
                 return false;
             }
         }
-        $this->strOkMessage = $_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL'];
+        // *MUST* invalidate the tree array after
+        // changing the data!
+        $this->objSupportCategories->invalidateSupportCategoryTreeArray();
+        $this->addMessage($_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL']);
         return true;
     }
 
@@ -763,6 +873,7 @@ if (MY_DEBUG) { echo("categoriesDelete(): \$_POST: ");var_export($_POST);echo("<
      * @global  array   $_ARRAYLANG Language array
      * @global  Init    $objInit    Init object
      * @return  string              The HTML content
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function categoriesEdit()
     {
@@ -771,21 +882,10 @@ if (MY_DEBUG) { echo("categoriesDelete(): \$_POST: ");var_export($_POST);echo("<
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_CATEGORIES_EDIT'];
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-        $objTemplate->loadTemplateFile('module_support_categories_edit.html', true, true);
-
-        // The ID of the Support Category currently being edited
-        $supportCategoryId = $this->supportCategoryId;
-/*
-        // The offset of the Support Category list being displayed
-        // THIS IS NOT SUPPORTED FOR THE TIME BEING!
-        $offset = 0;
-        if (!empty($_REQUEST['offset'])) {
-            $offset = $_REQUEST['offset'];
-        }
-*/
+        $objTemplate->loadTemplateFile('module_support_category_edit.html', true, true);
 
         $objTemplate->setVariable(array(
-            'TXT_SUPPORT_ACCEPT_CHANGES'            => $_ARRAYLANG['TXT_SUPPORT_ACCEPT_CHANGES'],
+            'TXT_SUPPORT_STORE'                     => $_ARRAYLANG['TXT_SUPPORT_STORE'],
             'TXT_SUPPORT_ACTION'                    => $_ARRAYLANG['TXT_SUPPORT_ACTION'],
             'TXT_SUPPORT_ACTION_IS_IRREVERSIBLE'    => $_ARRAYLANG['TXT_SUPPORT_ACTION_IS_IRREVERSIBLE'],
             'TXT_SUPPORT_ACTIVE'                    => $_ARRAYLANG['TXT_SUPPORT_ACTIVE'],
@@ -793,47 +893,63 @@ if (MY_DEBUG) { echo("categoriesDelete(): \$_POST: ");var_export($_POST);echo("<
             'TXT_SUPPORT_CATEGORIES_COUNT'          => $_ARRAYLANG['TXT_SUPPORT_CATEGORIES_COUNT'],
             'TXT_SUPPORT_CATEGORIES_COUNT_TOTAL'    => $_ARRAYLANG['TXT_SUPPORT_CATEGORIES_COUNT_TOTAL'],
             'TXT_SUPPORT_CATEGORY_ID'               => $_ARRAYLANG['TXT_SUPPORT_ID'],
+            'TXT_SUPPORT_CATEGORY_LANGUAGE'         => $_ARRAYLANG['TXT_SUPPORT_LANGUAGE'],
+            'TXT_SUPPORT_CATEGORY_NAME'             => $_ARRAYLANG['TXT_SUPPORT_NAME'],
+            'TXT_SUPPORT_CATEGORY_STATUS'           => $_ARRAYLANG['TXT_SUPPORT_STATUS'],
             'TXT_SUPPORT_CATEGORY_ORDER'            => $_ARRAYLANG['TXT_CORE_SORTING_ORDER'],
             'TXT_SUPPORT_CATEGORY_PARENT'           => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_PARENT'],
             'TXT_SUPPORT_CATEGORIES_DELETE_CONFIRM' => $_ARRAYLANG['TXT_SUPPORT_CATEGORIES_DELETE_CONFIRM'],
             'TXT_SUPPORT_CATEGORY_DELETE_CONFIRM'   => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_DELETE_CONFIRM'],
             'TXT_SUPPORT_CATEGORIES_DELETE'         => $_ARRAYLANG['TXT_SUPPORT_CATEGORIES_DELETE'],
-            'TXT_SUPPORT_CATEGORY_DELETE'           => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_DELETE'],
+//            'TXT_SUPPORT_CATEGORY_DELETE'           => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_DELETE'],
             'TXT_SUPPORT_DELETE_MARKED'             => $_ARRAYLANG['TXT_SUPPORT_DELETE_MARKED'],
             'TXT_SUPPORT_MAKE_SELECTION'            => $_ARRAYLANG['TXT_SUPPORT_MAKE_SELECTION'],
             'TXT_SUPPORT_CATEGORIES_MARKED'         => $_ARRAYLANG['TXT_SUPPORT_CATEGORIES_MARKED'],
-            'TXT_SUPPORT_CATEGORY_ROOT'              => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_ROOT'],
+            'TXT_SUPPORT_CATEGORY_ROOT'             => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_ROOT'],
+            'TXT_SUPPORT_LANGUAGE_SHOW_ALL'         => $_ARRAYLANG['TXT_SUPPORT_LANGUAGE_SHOW_ALL'],
             'TXT_SUPPORT_SELECT_ACTION'             => $_ARRAYLANG['TXT_SUPPORT_SELECT_ACTION'],
             'TXT_SUPPORT_SELECT_ALL'                => $_ARRAYLANG['TXT_SUPPORT_SELECT_ALL'],
             'TXT_SUPPORT_SELECT_NONE'               => $_ARRAYLANG['TXT_SUPPORT_SELECT_NONE'],
             'TXT_SUPPORT_STORE'                     => $_ARRAYLANG['TXT_SUPPORT_STORE'],
-            'SUPPORT_CATEGORY_EDIT_LANGUAGE_MENU'   =>
+            'TXT_SUPPORT_CATEGORY_EDIT'  =>
+                ($this->supportCategoryId > 0
+                    ?   $_ARRAYLANG['TXT_SUPPORT_CATEGORY_EDIT']
+                    :   $_ARRAYLANG['TXT_SUPPORT_CATEGORY_EDIT_NEW']
+                ),
+            'SUPPORT_EDIT_LANGUAGE_MENU' =>
                 $this->objLanguage->getMenu(
-                    $this->supportTicketLanguageId,
-                    'supportTicketLanguageId',
+                    $this->supportLanguageId,
+                    'supportLanguageId',
                     "window.location.replace('index.php?cmd=support".
-//                    "&amp;offset=$offset".
-                    "&amp;act=editCategories&amp;id=$supportCategoryId".
-                    "&amp;supportTicketLanguageId='+document.getElementById('supportTicketLanguageId').value);"
+                    "&amp;act=categoriesEdit".
+                    "&amp;supportCategoryId=$this->supportCategoryId".
+                    "&amp;supportCategoryLanguageId=$this->supportCategoryLanguageId".
+                    "&amp;supportLanguageId='+this.value+'".
+                    "&amp;supportLanguageShowAll=$this->supportLanguageShowAll')"
+//                    "&amp;supportCategoryOffset=$supportCategoryOffset".
                 ),
         ));
+
         $objTemplate->setGlobalVariable(array(
-            'SUPPORT_CATEGORY_EDIT_LANGUAGE_ID' => $this->supportTicketLanguageId,
-            'TXT_SUPPORT_CATEGORY_LANGUAGE'     => $_ARRAYLANG['TXT_SUPPORT_LANGUAGE'],
-            'TXT_SUPPORT_CATEGORY_NAME'         => $_ARRAYLANG['TXT_SUPPORT_NAME'],
-            'TXT_SUPPORT_CATEGORY_STATUS'       => $_ARRAYLANG['TXT_SUPPORT_STATUS'],
-            'TXT_SUPPORT_CATEGORY_DELETE'       => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_DELETE'],
-            'TXT_SUPPORT_CATEGORY_EDIT'         => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_EDIT'],
-            'TXT_SUPPORT_CATEGORY_HAS_TICKETS'  => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_HAS_TICKETS'],
-//            'SUPPORT_CATEGORY_OFFSET'               => $offset,
+            'SUPPORT_LANGUAGE_SHOW_ALL'         =>
+                ($this->supportLanguageShowAll ? '1' : ''),
+            'SUPPORT_LANGUAGE_SHOW_ALL_CHECKED' =>
+                ($this->supportLanguageShowAll ? ' checked="checked"' : ''),
+            'SUPPORT_EDIT_LANGUAGE_ID' => $this->supportLanguageId,
+            'TXT_SUPPORT_LANGUAGE'     => $_ARRAYLANG['TXT_SUPPORT_LANGUAGE'],
+            'TXT_SUPPORT_NAME'         => $_ARRAYLANG['TXT_SUPPORT_NAME'],
+            'TXT_SUPPORT_STATUS'       => $_ARRAYLANG['TXT_SUPPORT_STATUS'],
+            'TXT_SUPPORT_DELETE'       => $_ARRAYLANG['TXT_SUPPORT_INFO_FIELD_DELETE'],
+            'TXT_SUPPORT_EDIT'         => $_ARRAYLANG['TXT_SUPPORT_INFO_FIELD_EDIT'],
+//            'SUPPORT_INFO_FIELD_OFFSET' => $this->supportInfoFieldOffset,
         ));
 
         // List Support Categories by language
         $arrSupportCategoryTree =
             $this->objSupportCategories->getSupportCategoryTreeArray(
-                $this->supportTicketLanguageId, false
+                $this->supportLanguageId, false
             );
-if (MY_DEBUG) { echo("got Support Category tree:<br />");var_export($arrSupportCategoryTree);echo("<br />"); }
+//if (MY_DEBUG) { echo("Support::categoriesEdit(): INFO: Got Support Category tree:<br />");var_export($arrSupportCategoryTree);echo("<br />"); }
         if ($arrSupportCategoryTree === false) {
 if (MY_DEBUG) echo("failed to get Support Category tree<br />");
         }
@@ -849,36 +965,44 @@ if (MY_DEBUG) echo("failed to get Support Category tree<br />");
 
         $objTemplate->setCurrentBlock();
         // Edit Support Category
-        if ($supportCategoryId) {
+        if ($this->supportCategoryId > 0) {
+            $languageId = $this->supportCategoryLanguageId;
+            if ($languageId <= 0) {
+                $languageId = $this->supportLanguageId;
+            }
             // Select one by ID
-if (MY_DEBUG) echo("editCategories(): id is $supportCategoryId<br />");
-            $objSupportCategory = SupportCategory::getById(
-                $supportCategoryId, $this->supportTicketLanguageId
-            );
-            if ($objSupportCategory) {
+//if (MY_DEBUG) echo("categoriesEdit(): id is $this->supportCategoryId<br />");
+            // Find the array index corresponding to the ID
+            $index = 0;
+            while (   $index < count($arrSupportCategoryTree)
+                   && $arrSupportCategoryTree[$index]['id'] != $this->supportCategoryId) {
+                ++$index;
+            }
+            // Found the matching index
+            if ($index < count($arrSupportCategoryTree)) {
                 // Edit the existing Support Category
                 $objTemplate->setVariable(array(
-                    'SUPPORT_CATEGORY_ID'             => $supportCategoryId,
+                    'SUPPORT_CATEGORY_ID'             =>
+                        $this->supportCategoryId,
                     'SUPPORT_CATEGORY_PARENTID'       =>
                         $this->objSupportCategories->getAdminMenu(
-                            $objSupportCategory->getLanguageId(),
-                            $objSupportCategory->getParentId()
+                            $languageId,
+                            $arrSupportCategoryTree[$index]['parentId']
                         ),
                     'SUPPORT_CATEGORY_STATUS_CHECKED' =>
-                        ($objSupportCategory->getStatus()
+                        ($arrSupportCategoryTree[$index]['status']
                             ? ' checked="checked"'
                             : ''
                         ),
                     'SUPPORT_CATEGORY_ORDER'          =>
-                        $objSupportCategory->getOrder(),
+                        $arrSupportCategoryTree[$index]['order'],
                     'SUPPORT_CATEGORY_LANGUAGE_MENU'  =>
                         $this->objLanguage->getMenu(
-                            $objSupportCategory->getLanguageId(),
-                            'languageId',
-                            "document.forms.supportEditCategoryForm.submit()"
+                            $languageId,
+                            'supportCategoryLanguageId'
                     ),
                     'SUPPORT_CATEGORY_NAME'           =>
-                        $objSupportCategory->getName(),
+                        $arrSupportCategoryTree[$index]['arrName'][$languageId],
                 ));
             }
         } else {
@@ -887,15 +1011,13 @@ if (MY_DEBUG) echo("editCategories(): id is $supportCategoryId<br />");
                 'SUPPORT_CATEGORY_ID'             => 0,
                     'SUPPORT_CATEGORY_PARENTID'   =>
                         $this->objSupportCategories->getAdminMenu(
-                            $this->supportTicketLanguageId
+                            $this->supportLanguageId
                         ),
                 'SUPPORT_CATEGORY_STATUS_CHECKED' => ' checked="checked"',
                 'SUPPORT_CATEGORY_ORDER'          => 0,
                 'SUPPORT_CATEGORY_LANGUAGE_MENU'  =>
                     $this->objLanguage->getMenu(
-                        $this->supportTicketLanguageId,
-                        'languageId'
-                    ),
+                        $this->supportLanguageId, 'supportCategoryLanguageId'),
                 'SUPPORT_CATEGORY_NAME'           => '',
             ));
         }
@@ -912,32 +1034,81 @@ if (MY_DEBUG) echo("editCategories(): id is $supportCategoryId<br />");
      * @param   array   $arrSupportCategory     The array with the Support
      *                                          Category data
      * @return  string                          The HTML content
+     * @global  array   $_ARRAYLANG             Language array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function categoryRow($arrSupportCategory)
     {
-        global $moduloRow;
+        global $moduloRow, $_ARRAYLANG;
 
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-        $objTemplate->loadTemplateFile('module_support_categories_row.html', true, true);
+        $objTemplate->loadTemplateFile('module_support_category_row.html', true, true);
 
+        $objTemplate->setCurrentBlock('supportCategoryRow');
         $objTemplate->setVariable(array(
-            'SUPPORT_ROW_CLASS'         => (++$moduloRow % 2 ? 'row2' : 'row1'),
-            'SUPPORT_CATEGORY_ID'       => $arrSupportCategory['id'],
-            'SUPPORT_CATEGORY_STATUS_CHECKED' =>
-                ($arrSupportCategory['status']
-                    ? ' checked="checked"'
-                    : ''
-                ),
-            'SUPPORT_CATEGORY_ORDER'    => $arrSupportCategory['order'],
-            'SUPPORT_CATEGORY_LANGUAGE' =>
+            'TXT_SUPPORT_CATEGORY_HAS_TICKETS' => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_HAS_TICKETS'],
+            'TXT_SUPPORT_CATEGORY_EDIT'        => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_EDIT'],
+            'TXT_SUPPORT_CATEGORY_DELETE'      => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_DELETE'],
+            'SUPPORT_ROW_CLASS'                => (++$moduloRow % 2 ? 'row2' : 'row1'),
+            'SUPPORT_CATEGORY_ID'              => $arrSupportCategory['id'],
+            'SUPPORT_CATEGORY_LANGUAGE_ID'     => $arrSupportCategory['languageId'],
+            'SUPPORT_CATEGORY_LANGUAGE'        =>
                 $this->objLanguage->getLanguageParameter(
                     $arrSupportCategory['languageId'], 'name'
                 ),
-            'SUPPORT_CATEGORY_INDENT'   =>
-                str_repeat('|----', $arrSupportCategory['level']),
-            'SUPPORT_CATEGORY_NAME'     => $arrSupportCategory['name'],
+            'SUPPORT_EDIT_LANGUAGE_ID'         => $this->supportLanguageId,
+            'SUPPORT_CATEGORY_STATUS_CHECKED'  =>
+                ($arrSupportCategory['status'] ? ' checked="checked"' : '' ),
+            'SUPPORT_CATEGORY_ORDER'           => $arrSupportCategory['order'],
+            'SUPPORT_INDENT'   =>
+                ($arrSupportCategory['level'] >= 1
+                    ?   str_repeat('&nbsp;', ($arrSupportCategory['level']-1)*6).
+                        '&nbsp;+&nbsp;'
+                    : ''
+                ),
+            'SUPPORT_CATEGORY_NAME'            => $arrSupportCategory['name'],
+            'SUPPORT_LANGUAGE_SHOW_ALL'         =>
+                ($this->supportLanguageShowAll ? '1' : ''),
         ));
+        $objTemplate->parseCurrentBlock();
+        $arrName = $arrSupportCategory['arrName'];
+        if ($this->supportLanguageShowAll) {
+            if (is_array($arrName)) {
+                $objTemplate->setCurrentBlock('supportCategoryLanguageRow');
+                foreach ($arrName as $languageId => $name) {
+                    // Skip selected language ID, this is displayed above already.
+                    if ($languageId == $arrSupportCategory['languageId']) {
+                        continue;
+                    }
+                	$objTemplate->setVariable(array(
+                        'TXT_SUPPORT_CATEGORY_HAS_TICKETS' => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_HAS_TICKETS'],
+                        'TXT_SUPPORT_CATEGORY_EDIT'        => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_EDIT'],
+                        'TXT_SUPPORT_CATEGORY_DELETE'      => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_DELETE'],
+                        'SUPPORT_ROW_CLASS'         => ($moduloRow % 2 ? 'row2' : 'row1'),
+                        'SUPPORT_INDENT'            =>
+                            ($arrSupportCategory['level'] >= 1
+                                ?   str_repeat('&nbsp;', ($arrSupportCategory['level']-1)*6).
+                                    '&nbsp;+&nbsp;'
+                                : ''
+                            ),
+                        'SUPPORT_CATEGORY_ID'       => $arrSupportCategory['id'],
+                        'SUPPORT_CATEGORY_LANGUAGE_ID' => $languageId,
+                        'SUPPORT_CATEGORY_LANGUAGE' =>
+                            $this->objLanguage->getLanguageParameter(
+                                $languageId, 'name'
+                            ),
+                        'SUPPORT_EDIT_LANGUAGE_ID'  => $this->supportLanguageId,
+                        'SUPPORT_CATEGORY_NAME'     => $name,
+                        'SUPPORT_LANGUAGE_SHOW_ALL'         =>
+                            ($this->supportLanguageShowAll ? '1' : ''),
+                	));
+                	$objTemplate->parseCurrentBlock();
+                }
+            } else {
+echo("Support::categoryRow(...): ERROR: Missing Name array!<br />");
+            }
+        }
         return $objTemplate->get();
     }
 
@@ -950,33 +1121,30 @@ if (MY_DEBUG) echo("editCategories(): id is $supportCategoryId<br />");
      * forget to reinitialize it, or you won't see the new entry!
      * @return  boolean             True on success, false otherwise
      * @global  array   $_ARRAYLANG Language array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function categoryStore()
     {
         global $_ARRAYLANG;
 
         if (empty($_POST['supportCategoryName'])) {
-            $this->strErrMessage = $_ARRAYLANG['TXT_SUPPORT_CATEGORY_FILL_IN_NAME'];
+            $this->addError($_ARRAYLANG['TXT_SUPPORT_CATEGORY_FILL_IN_NAME']);
             return false;
         }
 //if (MY_DEBUG) { echo("POST: ");var_export($_POST);echo("<br />"); }
-        $supportCategoryId = $this->supportCategoryId;
         $supportCategoryName = $_POST['supportCategoryName'];
         $supportCategoryParentId = $_POST['supportCategoryParentId'];
         $supportCategoryStatus =
             (!empty($_POST['supportCategoryStatus'])
-                ? $_POST['supportCategoryStatus']
-                : 0
+                ? true : false
             );
         $supportCategoryLanguageId =
             (!empty($_POST['supportCategoryLanguageId'])
-                ? $_POST['supportCategoryLanguageId']
-                : 0
+                ? $_POST['supportCategoryLanguageId'] : 0
             );
         $supportCategoryOrder =
             (!empty($_POST['supportCategoryOrder'])
-                ? $_POST['supportCategoryOrder']
-                : 0
+                ? $_POST['supportCategoryOrder'] : 0
             );
         $objSupportCategory = new SupportCategory(
             $supportCategoryName,
@@ -984,77 +1152,95 @@ if (MY_DEBUG) echo("editCategories(): id is $supportCategoryId<br />");
             $supportCategoryParentId,
             $supportCategoryStatus,
             $supportCategoryOrder,
-            $supportCategoryId
+            $this->supportCategoryId
         );
         if (!$objSupportCategory) {
 if (MY_DEBUG) echo("categoryStore(): ERROR: Failed to create SupportCategory object!<br />");
             return false;
         }
-if (MY_DEBUG) { echo("categoryStore(): ");var_export($objSupportCategory);echo("<br />"); }
+//if (MY_DEBUG) { echo("categoryStore(): ");var_export($objSupportCategory);echo("<br />"); }
         if ($objSupportCategory->store()) {
-            $this->strOkMessage = $_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL'];
+            $this->addMessage($_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL']);
+            // Clear the ID of the Support Category, so the User
+            // can create a new one after that.
+            $this->supportCategoryId = 0;
+            // *MUST* invalidate the tree array after
+            // changing the data!
+            $this->objSupportCategories->invalidateSupportCategoryTreeArray();
             return true;
         } else {
-            $this->strErrMessage = $_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED'];
+            $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED']);
         }
         return false;
     }
 
 
     /**
-     * Store all changes made to the Support Categories shown.
-     * @return  boolean             True on success, false otherwise
+     * Store all changes made to the Support Categories submitted.
+     * @return  boolean                     True on success, false otherwise
      * @global  array       $_ARRAYLANG     Language array
      * @global  mixed       $objInit        Init object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function categoriesStore()
     {
         global $_ARRAYLANG, $objInit;
+//echo("Support::categoriesStore(): INFO: Entered.<br />");
+
+        // If no array with IDs has been posted, then why are we here?
+        if (!is_array($_POST['supportCategoryArrayId'])) {
+            return false;
+        }
 
         $arrSupportCategoryTree =
             $this->objSupportCategories->getSupportCategoryTreeArray(
-                $this->supportTicketLanguageId, false
+                $this->supportLanguageId, false
             );
         $return = true;
 
+//echo("Support::categoriesStore(): INFO: lang=$this->supportLanguageId, tree=");var_export($arrSupportCategoryTree);echo(".<br />");
         foreach ($arrSupportCategoryTree as $arrSupportCategory) {
             $id     = $arrSupportCategory['id'];
-            $order  = $arrSupportCategory['order'];
-            $status = $arrSupportCategory['status'];
-            $postOrder  = $_POST['supportCategoryOrder'][$id];
-            $postStatus =
-                (!empty($_POST['supportCategoryStatus'][$id])
-                    ? $_POST['supportCategoryStatus'][$id]
+            $postOrder  =
+                (!empty($_POST['supportCategoryArrayOrder'][$id])
+                    ? $_POST['supportCategoryArrayOrder'][$id]
                     : 0
                 );
-            if (   !empty($_POST['supportCategoryId'][$id])
-                && (   $order  != $postOrder
-                    || $status != $postStatus)
+            $postStatus =
+                (!empty($_POST['supportCategoryArrayStatus'][$id])
+                    ? $_POST['supportCategoryArrayStatus'][$id]
+                    : 0
+                );
+//echo("Support::categoriesStore(): INFO: id=$id, order=$order, postOrder=$postOrder, status=$status, postStatus=$postStatus.<br />");
+            if (   !empty($_POST['supportCategoryArrayId'][$id])
+                && (   $postOrder  != $arrSupportCategory['order']
+                    || $postStatus != $arrSupportCategory['status'])
             ) {
+//echo("Support::categoriesStore(): INFO: Updating id=$id.<br />");
                 $objSupportCategory = SupportCategory::getById($id);
                 if (!$objSupportCategory) {
-/*  ignore
-                    $this->strErrMessage .=
-                        ($this->strErrMessage ? '<br />' : '').
-                        $_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED'].
-                        ', ???';
+echo("Support::categoriesStore(): ERROR: Failed to get Support Category id=$id!<br />");
+                    $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED']);
                     $return = false;
-*/
                 } else {
                     $objSupportCategory->setOrder($postOrder);
                     $objSupportCategory->setStatus($postStatus);
                     if (!$objSupportCategory->store()) {
-                        $this->strErrMessage .=
-                            ($this->strErrMessage ? '<br />' : '').
-                            $_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED'].
-                            ', '.$objSupportCategory->getName();
+                        $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED'].
+                            ", ID $id -- ".$objSupportCategory->getName());
                         $return = false;
+                    } else {
+                        // *MUST* invalidate the tree array after
+                        // changing the data!
+                        $this->objSupportCategories->invalidateSupportCategoryTreeArray();
                     }
                 }
             }
         }
         if ($return) {
-            $this->strOkMessage = $_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL'];
+            $this->addMessage($_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL']);
+        } else {
+            $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED']);
         }
         return $return;
     }
@@ -1073,6 +1259,7 @@ if (MY_DEBUG) { echo("categoryStore(): ");var_export($objSupportCategory);echo("
      * @return  string                      The HTML content
      * @global  array   $_ARRAYLANG         Language array
      * @global  Init    $objInit            Init object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function ticketData($supportTicketId=0, $flagTicketChange=false)
     {
@@ -1083,11 +1270,11 @@ if (MY_DEBUG) { echo("categoryStore(): ");var_export($objSupportCategory);echo("
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_ticket_data.html', true, true);
 
-        if ($supportTicketId == 0) {
+        if ($supportTicketId <= 0) {
             $supportTicketId = $this->supportTicketId;
         }
         $supportCategoryId = $this->supportCategoryId;
-        $supportTicketLanguageId = $this->supportTicketLanguageId;
+        $supportLanguageId = $this->supportLanguageId;
 
         // Other Support Ticket defaults
         $ownerId             = 0;
@@ -1108,7 +1295,7 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
                 return false;
             }
             // The Support Ticket details override the defaults
-            $supportTicketLanguageId     = $objTicket->getLanguageId();
+            $supportLanguageId  = $objTicket->getLanguageId();
             $supportCategoryId  = $objTicket->getSupportCategoryId();
             $ownerId            = TicketEvent::getTicketOwnerId($supportTicketId);
             $ownerName          = Auth::getFullName($ownerId);
@@ -1127,12 +1314,12 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
             $ticketEmail = $_ARRAYLANG['TXT_SUPPORT_EMAIL_UNKNOWN'];
         }
         $languageName    =
-            $this->objLanguage->getLanguageParameter($supportTicketLanguageId, 'name');
+            $this->objLanguage->getLanguageParameter($supportLanguageId, 'name');
         if ($languageName == false) {
             $languageName = $_ARRAYLANG['TXT_SUPPORT_LANGUAGE_UNKNOWN'];
         }
         $supportCategoryName =
-            SupportCategory::getNameById($supportCategoryId, $supportTicketLanguageId);
+            SupportCategory::getNameById($supportCategoryId, $supportLanguageId);
         if ($supportCategoryName == false) {
             $supportCategoryName = $_ARRAYLANG['TXT_SUPPORT_CATEGORY_UNKNOWN'];
         }
@@ -1143,12 +1330,12 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
                     $objTicket->getOwnerMenu($ownerId, 'supportTicketOwnerId'),
                 'SUPPORT_TICKET_CATEGORY_MENU' =>
                     $this->objSupportCategories->getAdminMenu(
-                        $supportTicketLanguageId,
+                        $supportLanguageId,
                         $supportCategoryId,
                         'supportCategoryId'
                     ),
                 'TXT_SUPPORT_CHANGE_TO'      => $_ARRAYLANG['TXT_SUPPORT_CHANGE_TO'],
-                'TXT_SUPPORT_ACCEPT_CHANGES' => $_ARRAYLANG['TXT_SUPPORT_ACCEPT_CHANGES'],
+                'TXT_SUPPORT_STORE' => $_ARRAYLANG['TXT_SUPPORT_STORE'],
             ));
             $objTemplate->touchBlock('messageButton');
         }
@@ -1159,7 +1346,7 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
             'SUPPORT_TICKET_OWNER_ID'    => $ownerId,
             'SUPPORT_TICKET_OWNER'       => $ownerName,
             'SUPPORT_TICKET_DATE'        => $ticketTimestamp,
-            'SUPPORT_TICKET_LANGUAGE_ID' => $supportTicketLanguageId,
+            'SUPPORT_TICKET_LANGUAGE_ID' => $supportLanguageId,
             'SUPPORT_TICKET_LANGUAGE'    => $languageName,
             'SUPPORT_TICKET_STATUS'      => $ticketStatusString,
             'SUPPORT_TICKET_SOURCE'      => $ticketSourceString,
@@ -1193,6 +1380,7 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
      * @global  array   $_ARRAYLANG Language array
      * @global  Init    $objInit    Init object
      * @global  array   $_CONFIG    Global cofiguration array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function ticketTable()
     {
@@ -1208,9 +1396,8 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
         $objTemplate->loadTemplateFile('module_support_ticket_table.html', true, true);
 
         // Ticket filtering parameters
-        $supportCategoryId = $this->supportCategoryId;
-        // Default to the users' backend language setting
-        $supportTicketLanguageId = $this->supportTicketLanguageId; //objInit->getBackendLangId();
+// TODO: remove
+/*
         $supportTicketOwnerId = $this->supportTicketOwnerId;
         // A value of -1 here stands for DON'T CARE
         $supportTicketStatus = $this->supportTicketStatus; // -1;
@@ -1219,7 +1406,7 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
         $supportTicketEmail = $this->supportTicketEmail;
         $supportTicketSearchTerm = $this->supportTicketSearchTerm;
         $supportTicketShowClosed = $this->supportTicketShowClosed;
-        $offset = $this->supportTicketOffset;
+*/
 
         $objSorting = new Sorting(
             $baseUri,
@@ -1238,23 +1425,16 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
             ),
             false
         );
-
-/*
-            // get all Support Categories' IDs and names
-            $arrSupportCategoryName =
-                $this->objSupportCategories->getSupportCategoryNameArray(
-                    0, true, false
-                );
-*/
         // Get total Ticket count -- Not very performant!
         $ticketCount = count(Ticket::getTicketIdArray(
-            $supportCategoryId,
-            $supportTicketLanguageId,
-            $supportTicketOwnerId,
-            $supportTicketStatus,
-            $supportTicketSource,
-            $supportTicketEmail,
-// TODO:      $supportTicketSearchTerm
+            $this->supportCategoryId,
+            $this->supportLanguageId,
+            $this->supportTicketOwnerId,
+            $this->supportTicketStatus,
+            $this->supportTicketSource,
+            $this->supportTicketEmail,
+// TODO: implement
+//            $supportTicketSearchTerm
             '',
             0,
             999999999 // limit; make sure the count isn't limited
@@ -1262,15 +1442,16 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
 if (MY_DEBUG) echo("ticketTable(): sorting order: ".$objSorting->getOrder()."<br />");
         // get range of Tickets IDs, default to latest first
         $arrTicketId = Ticket::getTicketIdArray(
-            $supportCategoryId,
-            $supportTicketLanguageId,
-            $supportTicketOwnerId,
-            $supportTicketStatus,
-            $supportTicketSource,
-            $supportTicketEmail,
-// TODO:      $supportTicketSearchTerm,
+            $this->supportCategoryId,
+            $this->supportLanguageId,
+            $this->supportTicketOwnerId,
+            $this->supportTicketStatus,
+            $this->supportTicketSource,
+            $this->supportTicketEmail,
+// TODO: implement
+//            $supportTicketSearchTerm,
             $objSorting->getOrder(),
-            $offset
+            $this->supportTicketOffset
         );
 
         $objTemplate->setVariable(array(
@@ -1305,31 +1486,31 @@ if (MY_DEBUG) echo("ticketTable(): sorting order: ".$objSorting->getOrder()."<br
             'TXT_SUPPORT_TICKETS_DELETE_CONFIRM' => $_ARRAYLANG['TXT_SUPPORT_TICKETS_DELETE_CONFIRM'],
             'TXT_SUPPORT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_SUPPORT_ACTION_IS_IRREVERSIBLE'],
             'TXT_SUPPORT_MAKE_SELECTION'        => $_ARRAYLANG['TXT_SUPPORT_MAKE_SELECTION'],
-            'SUPPORT_TICKET_SEARCH_TERM'        => htmlspecialchars($supportTicketSearchTerm),
-            'TXT_SUPPORT_TICKET_SEARCH_TERM'           => $_ARRAYLANG['TXT_SUPPORT_SEARCH_TERM'],
+            'SUPPORT_TICKET_SEARCH_TERM'        => htmlspecialchars($this->supportTicketSearchTerm),
+            'TXT_SUPPORT_TICKET_SEARCH_TERM'    => $_ARRAYLANG['TXT_SUPPORT_SEARCH_TERM'],
             'SUPPORT_TICKET_SHOW_CLOSED_CHECK'  =>
-                ($supportTicketShowClosed  ? 'checked="checked"' : ''),
+                ($this->supportTicketShowClosed  ? 'checked="checked"' : ''),
             'SUPPORT_PAGING'                    =>
                 getPaging(
-                    $ticketCount, $offset,
+                    $ticketCount, $this->supportTicketOffset,
                     $baseUri.$objSorting->getOrderUriEncoded(), '', true
                 ),
         ));
 
         $objTemplate->setVariable(array(
             'SUPPORT_TICKET_LANGUAGE_MENU'  =>
-                $this->objLanguage->getMenu($supportTicketLanguageId),
+                $this->objLanguage->getMenu($this->supportLanguageId),
             'SUPPORT_TICKET_OWNER_MENU'     =>
-                Ticket::getOwnerMenu($supportTicketOwnerId),
+                Ticket::getOwnerMenu($this->supportTicketOwnerId),
             'SUPPORT_TICKET_CATEGORY_MENU'  =>
                 $this->objSupportCategories->getAdminMenu(
-                    $supportTicketLanguageId,
-                    $supportCategoryId
+                    $this->supportLanguageId,
+                    $this->supportCategoryId
                 ),
             'SUPPORT_TICKET_STATUS_MENU'    =>
-                Ticket::getStatusMenu($supportTicketStatus),
+                Ticket::getStatusMenu($this->supportTicketStatus),
             'SUPPORT_TICKET_SOURCE_MENU'    =>
-                Ticket::getSourceMenu($supportTicketSource),
+                Ticket::getSourceMenu($this->supportTicketSource),
         ));
 
         if (is_array($arrTicketId) && count($arrTicketId)) {
@@ -1357,6 +1538,7 @@ if (MY_DEBUG) echo("ticketTable(): sorting order: ".$objSorting->getOrder()."<br
      * @return  string                      The HTML content
      * @global  array   $_ARRAYLANG         Language array
      * @global  Init    $objInit            Init object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function ticketRow($supportTicketId=0)
     {
@@ -1468,6 +1650,7 @@ if (MY_DEBUG) echo("REACHED<br />");exit;
      * @param   string      $date           The optional date filter value
      * @return  string                      The HTML content
      * @global  array       $_ARRAYLANG     Language array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function messageTable(
         $supportTicketId=0, $flagShowSelectionColumn=false,
@@ -1486,9 +1669,6 @@ if (MY_DEBUG) echo("Support::messageTable(ticketId=$supportTicketId, flagShowSel
                 return false;
             }
         }
-
-        $offset = $this->supportMessageOffset;
-        $limit  = $this->supportMessageLimit;
 
         $baseUri =
             '?cmd=support&amp;act=ticketData'.
@@ -1515,7 +1695,7 @@ if (MY_DEBUG) echo("Support::messageTable(ticketId=$supportTicketId, flagShowSel
             $supportTicketId,
             $status, $from, $subject, $date,
             $objSorting->getOrder(),
-            $offset, $limit
+            $this->supportMessageOffset, $this->supportMessageLimit
         );
         if (!is_array($arrMessageId)) {
 if (MY_DEBUG) echo("Support::messageTable(ticketId=$supportTicketId, flagShowSelectionColumn=$flagShowSelectionColumn, status=$status, from=$from, subject=$subject, date=$date): ERROR: got no Message array!<br />");
@@ -1541,8 +1721,8 @@ if (MY_DEBUG) echo("Support::messageTable(ticketId=$supportTicketId, flagShowSel
             'HEADER_SUPPORT_MESSAGE_STATUS'  => $objSorting->getHeaderForField('status'),
             'HEADER_SUPPORT_MESSAGE_FROM'    => $objSorting->getHeaderForField('from'),
             'HEADER_SUPPORT_MESSAGE_SUBJECT' => $objSorting->getHeaderForField('subject'),
-            'SUPPORT_MESSAGE_OFFSET'         => $offset,
-            'SUPPORT_MESSAGE_LIMIT'          => $limit,
+            'SUPPORT_MESSAGE_OFFSET'         => $this->supportMessageOffset,
+            'SUPPORT_MESSAGE_LIMIT'          => $this->supportMessageLimit,
             'SUPPORT_MESSAGE_TABLE_ACTION'   => "ticketData&amp;supportTicketId=$supportTicketId",
         ));
 
@@ -1562,6 +1742,7 @@ if (MY_DEBUG) echo("Support::messageTable(ticketId=$supportTicketId, flagShowSel
      * @return  string                          The HTML content on success,
      *                                          the empty string otherwise.
      * @global  array       $_ARRAYLANG         Language array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function messageData($supportMessageId=0)
     {
@@ -1647,6 +1828,7 @@ if (MY_DEBUG) echo("Support::messageData(supportMessageId=$supportMessageId, fla
      * @return  string                          The HTML content on success,
      *                                          the empty string otherwise.
      * @global  array       $_ARRAYLANG         Language array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function messageRow($supportMessageId=0, $selected=false)
     {
@@ -1713,6 +1895,7 @@ if (MY_DEBUG) echo("Support::messageRow(): ERROR: Could not get Message with ID 
      * @global  Init    $objInit    Init object
      * @return  string              The HTML content on success,
      *                              or the empty string on failure
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function messageEdit()
     {
@@ -1811,14 +1994,14 @@ if (MY_DEBUG) echo("Support::messageEdit(): INFO: quoting body ($supportMessageB
                 'TXT_SUPPORT_LANGUAGE'  => $_ARRAYLANG['TXT_SUPPORT_LANGUAGE'],
                 'SUPPORT_LANGUAGE_MENU' =>
                     $this->objLanguage->getMenu(
-                        $this->supportTicketLanguageId,
-                        'supportTicketLanguageId',
+                        $this->supportLanguageId,
+                        'supportLanguageId',
                         'document.forms.formSupportMessageEdit.submit();'
                     ),
                 'TXT_SUPPORT_CATEGORY'  => $_ARRAYLANG['TXT_SUPPORT_CATEGORY'],
                 'SUPPORT_CATEGORY_MENU' =>
                     $this->objSupportCategories->getAdminMenu(
-                        $this->supportTicketLanguageId,
+                        $this->supportLanguageId,
                         $this->supportCategoryId,
                         'supportCategoryId'
                     ),
@@ -1868,6 +2051,7 @@ if (MY_DEBUG) echo("Support::messageEdit(): INFO: Editing Message for new Ticket
      * If necessary, inserts a line break tag (<br />) between
      * error messages.
      * @param   string  $strErrorMessage    The error message to add
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function addError($strErrorMessage)
     {
@@ -1883,6 +2067,7 @@ if (MY_DEBUG) echo("Support::messageEdit(): INFO: Editing Message for new Ticket
      * If necessary, inserts a line break tag (<br />) between
      * messages.
      * @param   string  $strOkMessage       The message to add
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function addMessage($strOkMessage)
     {
@@ -1890,6 +2075,483 @@ if (MY_DEBUG) echo("Support::messageEdit(): INFO: Editing Message for new Ticket
             ($this->strOkMessage ? '<br />' : '').
             $strOkMessage;
     }
+
+
+    /**
+     * Delete the Info Field
+     *
+     * Deletes the currently selected language only!
+     * @return  boolean                     True on success, false otherwise
+     * @global  array       $_ARRAYLANG     Language array
+     * @global  mixed       $objInit        Init object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function infoFieldDelete()
+    {
+        global $_ARRAYLANG, $objInit;
+
+if (MY_DEBUG) { echo("infoFieldDelete(): \$_GET: ");var_export($_GET);echo("<br />"); }
+        $return = true;
+
+        // The ID of the Info Field currently being edited
+        if ($this->supportInfoFieldId <= 0) {
+            $return = false;
+        } else {
+            $objInfoField = InfoField::getById(
+                $this->supportInfoFieldId, $this->supportInfoFieldLanguageId);
+            if (!$objInfoField) {
+                $return = false;
+            } else {
+                if (!$objInfoField->delete($this->supportInfoFieldLanguageId)) {
+                    $return = false;
+                } else {
+                    // *MUST* invalidate the InfoField Array
+                    // after changing the data!
+                    $this->objInfoFields->invalidateInfoFieldArray();
+                }
+            }
+        }
+        if ($return) {
+            $this->addMessage($_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL']);
+        } else {
+            $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED']);
+        }
+        return $return;
+    }
+
+
+    /**
+     * Delete the marked Info Fields
+     *
+     * Deletes the selected language only!
+     * @return  boolean                     True on success, false otherwise
+     * @global  array       $_ARRAYLANG     Language array
+     * @global  mixed       $objInit        Init object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function infoFieldsDelete()
+    {
+        global $_ARRAYLANG, $objInit;
+
+if (MY_DEBUG) { echo("infoFields(): \$_POST: ");var_export($_POST);echo("<br />"); }
+        foreach ($_POST['selectedInfoFieldArrayId'] as $id) {
+            $arrLanguageId = $_POST['supportInfoFieldArrayLanguageId'];
+            $objInfoField =
+                InfoField::getById($id, $arrLanguageId[$id]);
+            if (!$objInfoField) {
+if (MY_DEBUG) { echo("infoFields(): ERROR: Failed to get InfoField with ID $id!<br />"); }
+                return false;
+            }
+            if (!$objInfoField->delete($arrLanguageId[$id])) {
+                $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED']);
+                return false;
+            }
+            // *MUST* invalidate the InfoField Array after changing the data!
+            $this->objInfoFields->invalidateInfoFieldArray();
+        }
+        $this->addMessage($_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL']);
+        return true;
+    }
+
+
+    /**
+     * Set up the viewing and editing of Info Fields.
+     * @global  array   $_ARRAYLANG Language array
+     * @global  Init    $objInit    Init object
+     * @return  string              The HTML content
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function infoFieldsEdit()
+    {
+        global $_ARRAYLANG, $objInit;
+
+        $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_INFO_FIELDS_EDIT'];
+        $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        $objTemplate->loadTemplateFile('module_support_info_field_edit.html', true, true);
+
+        $objTemplate->setVariable(array(
+            'TXT_SUPPORT_STORE'             => $_ARRAYLANG['TXT_SUPPORT_STORE'],
+            'TXT_SUPPORT_ACTION'                     => $_ARRAYLANG['TXT_SUPPORT_ACTION'],
+            'TXT_SUPPORT_ACTION_IS_IRREVERSIBLE'     => $_ARRAYLANG['TXT_SUPPORT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_SUPPORT_ACTIVE'                     => $_ARRAYLANG['TXT_SUPPORT_ACTIVE'],
+            'TXT_SUPPORT_INFO_FIELDS'                => $_ARRAYLANG['TXT_SUPPORT_INFO_FIELDS'],
+            'TXT_SUPPORT_INFO_FIELDS_COUNT'          => $_ARRAYLANG['TXT_SUPPORT_INFO_FIELDS_COUNT'],
+            'TXT_SUPPORT_INFO_FIELDS_COUNT_TOTAL'    => $_ARRAYLANG['TXT_SUPPORT_INFO_FIELDS_COUNT_TOTAL'],
+            'TXT_SUPPORT_INFO_FIELD_ID'              => $_ARRAYLANG['TXT_SUPPORT_ID'],
+            'TXT_SUPPORT_INFO_FIELD_ORDER'           => $_ARRAYLANG['TXT_CORE_SORTING_ORDER'],
+            'TXT_SUPPORT_INFO_FIELDS_DELETE_CONFIRM' => $_ARRAYLANG['TXT_SUPPORT_INFO_FIELDS_DELETE_CONFIRM'],
+            'TXT_SUPPORT_INFO_FIELD_DELETE_CONFIRM'  => $_ARRAYLANG['TXT_SUPPORT_INFO_FIELD_DELETE_CONFIRM'],
+            'TXT_SUPPORT_INFO_FIELDS_DELETE'         => $_ARRAYLANG['TXT_SUPPORT_INFO_FIELDS_DELETE'],
+            'TXT_SUPPORT_INFO_FIELD_DELETE'          => $_ARRAYLANG['TXT_SUPPORT_INFO_FIELD_DELETE'],
+            'TXT_SUPPORT_DELETE_MARKED'              => $_ARRAYLANG['TXT_SUPPORT_DELETE_MARKED'],
+            'TXT_SUPPORT_LANGUAGE_SHOW_ALL'          => $_ARRAYLANG['TXT_SUPPORT_LANGUAGE_SHOW_ALL'],
+            'TXT_SUPPORT_MAKE_SELECTION'             => $_ARRAYLANG['TXT_SUPPORT_MAKE_SELECTION'],
+            'TXT_SUPPORT_INFO_FIELDS_MARKED'         => $_ARRAYLANG['TXT_SUPPORT_INFO_FIELDS_MARKED'],
+            'TXT_SUPPORT_SELECT_ACTION'              => $_ARRAYLANG['TXT_SUPPORT_SELECT_ACTION'],
+            'TXT_SUPPORT_SELECT_ALL'                 => $_ARRAYLANG['TXT_SUPPORT_SELECT_ALL'],
+            'TXT_SUPPORT_SELECT_NONE'                => $_ARRAYLANG['TXT_SUPPORT_SELECT_NONE'],
+            'TXT_SUPPORT_STORE'                      => $_ARRAYLANG['TXT_SUPPORT_STORE'],
+            'TXT_CORE_SORTING_ORDER'                 => $_ARRAYLANG['TXT_CORE_SORTING_ORDER'],
+            'SUPPORT_EDIT_LANGUAGE_MENU'             =>
+                $this->objLanguage->getMenu(
+                    $this->supportLanguageId,
+                    'supportLanguageId',
+                    "window.location.replace('index.php?cmd=support".
+                    "&amp;act=infoFieldsEdit".
+                    "&amp;supportInfoFieldId=$this->supportInfoFieldId".
+                    "&amp;supportInfoFieldLanguageId=$this->supportInfoFieldLanguageId".
+                    "&amp;supportLanguageId='+this.value+'".
+                    "&amp;supportLanguageShowAll=$this->supportLanguageShowAll')"
+//                    "&amp;supportInfoFieldOffset=$this->supportInfoFieldOffset".
+                ),
+        ));
+
+        $objTemplate->setGlobalVariable(array(
+            'SUPPORT_LANGUAGE_SHOW_ALL'         =>
+                ($this->supportLanguageShowAll ? '1' : ''),
+            'SUPPORT_LANGUAGE_SHOW_ALL_CHECKED' =>
+                ($this->supportLanguageShowAll ? ' checked="checked"' : ''),
+            'SUPPORT_EDIT_LANGUAGE_ID' => $this->supportLanguageId,
+            'TXT_SUPPORT_LANGUAGE'     => $_ARRAYLANG['TXT_SUPPORT_LANGUAGE'],
+            'TXT_SUPPORT_NAME'         => $_ARRAYLANG['TXT_SUPPORT_NAME'],
+            'TXT_SUPPORT_STATUS'       => $_ARRAYLANG['TXT_SUPPORT_STATUS'],
+            'TXT_SUPPORT_DELETE'       => $_ARRAYLANG['TXT_SUPPORT_INFO_FIELD_DELETE'],
+            'TXT_SUPPORT_EDIT'         => $_ARRAYLANG['TXT_SUPPORT_INFO_FIELD_EDIT'],
+            'TXT_SUPPORT_MANDATORY'    => $_ARRAYLANG['TXT_SUPPORT_MANDATORY'],
+            'TXT_SUPPORT_MULTIPLE'     => $_ARRAYLANG['TXT_SUPPORT_MULTIPLE'],
+            'TXT_SUPPORT_TYPE'         => $_ARRAYLANG['TXT_SUPPORT_TYPE'],
+//            'SUPPORT_INFO_FIELD_OFFSET' => $this->supportInfoFieldOffset,
+        ));
+
+        // List Info Fields by language
+        $arrInfoFields =
+            $this->objInfoFields->getInfoFieldArray(
+                $this->supportLanguageId, false
+            );
+//if (MY_DEBUG) { echo("got Info Field tree:<br />");var_export($arrInfoField);echo("<br />"); }
+        if ($arrInfoFields === false) {
+if (MY_DEBUG) echo("failed to get Info Field tree<br />");
+        }
+
+        $objTemplate->setCurrentBlock('infoFieldRow');
+        foreach ($arrInfoFields as $arrInfoField) {
+            $objTemplate->setVariable(
+                'INFO_FIELD_ROW',
+                $this->infoFieldRow($arrInfoField)
+            );
+            $objTemplate->parseCurrentBlock();
+        }
+
+        $objTemplate->setCurrentBlock();
+        // Edit Info Field
+        if ($this->supportInfoFieldId > 0) {
+            $languageId = $this->supportInfoFieldLanguageId;
+            if ($languageId <= 0) {
+                $languageId = $this->supportLanguageId;
+            }
+            // Some InfoField is selected by ID
+if (MY_DEBUG) echo("infoFieldsEdit(): id is ");var_export($this->supportInfoFieldId);echo("<br />");
+            // Find the array index corresponding to the ID
+            $index = 0;
+            while (   $index < count($arrInfoFields)
+                   && $arrInfoFields[$index]['id'] != $this->supportInfoFieldId) {
+                ++$index;
+            }
+            // Found the matching index
+            if ($index < count($arrInfoFields)) {
+                // Edit the existing Info Field
+                $objTemplate->setVariable(array(
+                    'SUPPORT_INFO_FIELD_ID'                =>
+                        $this->supportInfoFieldId,
+                    'SUPPORT_INFO_FIELD_STATUS_CHECKED'    =>
+                        ($arrInfoFields[$index]['status']    ? ' checked="checked"' : ''),
+                    'SUPPORT_INFO_FIELD_MANDATORY_CHECKED' =>
+                        ($arrInfoFields[$index]['mandatory'] ? ' checked="checked"' : ''),
+                    'SUPPORT_INFO_FIELD_MULTIPLE_CHECKED'  =>
+                        ($arrInfoFields[$index]['multiple']  ? ' checked="checked"' : ''),
+                    'SUPPORT_INFO_FIELD_TYPE_MENU'         =>
+                        InfoFields::getTypeMenu(
+                            $arrInfoFields[$index]['type'],
+                            'supportInfoFieldType'),
+                    'SUPPORT_INFO_FIELD_ORDER'             =>
+                        $arrInfoFields[$index]['order'],
+                    'SUPPORT_INFO_FIELD_LANGUAGE_MENU'     =>
+                        $this->objLanguage->getMenu(
+                            $languageId,
+                            'supportInfoFieldLanguageId'
+                        ),
+                    'SUPPORT_INFO_FIELD_NAME'              =>
+                        $arrInfoFields[$index]['arrName'][$languageId],
+                ));
+            }
+        } else {
+            // Default values
+            $objTemplate->setVariable(array(
+                'SUPPORT_INFO_FIELD_ID'             => 0,
+                'SUPPORT_INFO_FIELD_STATUS_CHECKED' => ' checked="checked"',
+                    'SUPPORT_INFO_FIELD_TYPE_MENU'  =>
+                        InfoFields::getTypeMenu(0, 'supportInfoFieldType' ),
+                'SUPPORT_INFO_FIELD_ORDER'          => 0,
+                'SUPPORT_INFO_FIELD_LANGUAGE_MENU'  =>
+                    $this->objLanguage->getMenu(
+                        $this->supportLanguageId, 'supportInfoFieldLanguageId'),
+//                'SUPPORT_INFO_FIELD_MANDATORY_CHECKED' => '',
+//                'SUPPORT_INFO_FIELD_MULTIPLE_CHECKED'  => '',
+            ));
+        }
+        return $objTemplate->get();
+    }
+
+
+    /**
+     * Set up a single Info Field row.
+     *
+     * Takes an array of a Info Field as provided by an element of
+     * the array returned by
+     * {@link InfoFields::getInfoFieldArray()}.
+     * @param   array   $arrInfoField     The array with the Support
+     *                                          Category data
+     * @return  string                          The HTML content
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function infoFieldRow($arrInfoField)
+    {
+        global $moduloRow;
+
+        $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        $objTemplate->loadTemplateFile('module_support_info_field_row.html', true, true);
+
+        $objTemplate->setCurrentBlock('supportInfoFieldRow');
+        $objTemplate->setVariable(array(
+            'SUPPORT_ROW_CLASS'                 =>
+                (++$moduloRow % 2 ? 'row2' : 'row1'),
+            'SUPPORT_INFO_FIELD_ID'             => $arrInfoField['id'],
+            'SUPPORT_INFO_FIELD_LANGUAGE_ID'    => $arrInfoField['languageId'],
+            'SUPPORT_INFO_FIELD_STATUS_CHECKED' =>
+                ($arrInfoField['status']
+                    ? ' checked="checked"'
+                    : ''
+                ),
+            'SUPPORT_INFO_FIELD_MANDATORY_CHECKED' =>
+                ($arrInfoField['mandatory']
+                    ? ' checked="checked"' : ''
+                ),
+            'SUPPORT_INFO_FIELD_MULTIPLE_CHECKED' =>
+                ($arrInfoField['multiple']
+                    ? ' checked="checked"' : ''
+                ),
+            'SUPPORT_INFO_FIELD_ORDER'    => $arrInfoField['order'],
+            'SUPPORT_INFO_FIELD_LANGUAGE' =>
+                $this->objLanguage->getLanguageParameter(
+                    $arrInfoField['languageId'], 'name'
+                ),
+            'SUPPORT_EDIT_LANGUAGE_ID'    => $this->supportLanguageId,
+            'SUPPORT_INFO_FIELD_NAME'     => $arrInfoField['name'],
+            'SUPPORT_INFO_FIELD_TYPE'     =>
+                InfoField::getTypeString($arrInfoField['type']),
+            'SUPPORT_INFO_FIELD_OFFSET'   => $this->supportInfoFieldOffset,
+            'SUPPORT_LANGUAGE_SHOW_ALL'         =>
+                ($this->supportLanguageShowAll ? '1' : ''),
+//            'SUPPORT_EDIT_LANGUAGE_ID'    => $this->supportLanguageId,
+        ));
+        $objTemplate->parseCurrentBlock();
+        $arrName = $arrInfoField['arrName'];
+        if ($this->supportLanguageShowAll) {
+            if (is_array($arrName)) {
+                $objTemplate->setCurrentBlock('supportInfoFieldLanguageRow');
+                foreach ($arrName as $languageId => $name) {
+                    // Skip selected language ID, this is displayed above already.
+                    if ($languageId == $arrInfoField['languageId']) {
+                        continue;
+                    }
+                	$objTemplate->setVariable(array(
+                        'SUPPORT_ROW_CLASS'                 =>
+                            ($moduloRow % 2 ? 'row2' : 'row1'),
+                        'SUPPORT_INFO_FIELD_ID'       => $arrInfoField['id'],
+                        'SUPPORT_INFO_FIELD_LANGUAGE_ID' => $languageId,
+                        'SUPPORT_INFO_FIELD_LANGUAGE' =>
+                            $this->objLanguage->getLanguageParameter(
+                                $languageId, 'name'
+                            ),
+                        'SUPPORT_EDIT_LANGUAGE_ID'    => $this->supportLanguageId,
+                        'SUPPORT_INFO_FIELD_NAME'     => $name,
+                        'SUPPORT_INFO_FIELD_OFFSET'   => $this->supportInfoFieldOffset,
+                        'SUPPORT_LANGUAGE_SHOW_ALL'         =>
+                            ($this->supportLanguageShowAll ? '1' : ''),
+                	));
+                	$objTemplate->parseCurrentBlock();
+                }
+            } else {
+echo("Support::infoFieldRow(...): ERROR: Missing Name array!<br />");
+            }
+        }
+        return $objTemplate->get();
+    }
+
+
+    /**
+     * Store the Info Field currently being edited.
+     *
+     * Note that the Info Field tree array in the InfoFields
+     * object will be outdated after inserting a new InfoField.  Don't
+     * forget to reinitialize it, or you won't see the new entry!
+     * @return  boolean             True on success, false otherwise
+     * @global  array   $_ARRAYLANG Language array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function infoFieldStore()
+    {
+        global $_ARRAYLANG;
+
+        if (empty($_POST['supportInfoFieldName'])) {
+            $this->addError($_ARRAYLANG['TXT_SUPPORT_INFO_FIELD_FILL_IN_NAME']);
+            return false;
+        }
+        if (empty($_POST['supportInfoFieldType'])) {
+            $this->addError($_ARRAYLANG['TXT_SUPPORT_INFO_FIELD_SELECT_TYPE']);
+            return false;
+        }
+//if (MY_DEBUG) { echo("POST: ");var_export($_POST);echo("<br />"); }
+        $supportInfoFieldId = $this->supportInfoFieldId;
+        $supportInfoFieldName = $_POST['supportInfoFieldName'];
+        $supportInfoFieldType = $_POST['supportInfoFieldType'];
+        $supportInfoFieldMandatory =
+            (!empty($_POST['supportInfoFieldMandatory'])
+                ? true : false
+            );
+        $supportInfoFieldMultiple =
+            (!empty($_POST['supportInfoFieldMultiple'])
+                ? true : false
+            );
+        $supportInfoFieldStatus =
+            (!empty($_POST['supportInfoFieldStatus'])
+                ? true : false
+            );
+        $supportInfoFieldLanguageId =
+            (!empty($_POST['supportInfoFieldLanguageId'])
+                ? $_POST['supportInfoFieldLanguageId'] : 0
+            );
+        $supportInfoFieldOrder =
+            (!empty($_POST['supportInfoFieldOrder'])
+                ? $_POST['supportInfoFieldOrder'] : 0
+            );
+        $objInfoField = new InfoField(
+            $supportInfoFieldName,
+            $supportInfoFieldType,
+            $supportInfoFieldLanguageId,
+            $supportInfoFieldMandatory,
+            $supportInfoFieldMultiple,
+            $supportInfoFieldStatus,
+            $supportInfoFieldOrder,
+            $supportInfoFieldId
+        );
+        if (!$objInfoField) {
+if (MY_DEBUG) echo("infoFieldStore(): ERROR: Failed to create InfoField object!<br />");
+            return false;
+        }
+if (MY_DEBUG) { echo("infoFieldStore(): ");var_export($objInfoField);echo("<br />"); }
+        if ($objInfoField->store()) {
+            $this->addMessage($_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL']);
+            // Clear the ID of the Info Field, so the User
+            // can create a new one after that.
+            $this->supportInfoFieldId = 0;
+            // *MUST* invalidate the tree array after
+            // changing the data!
+            $this->objInfoFields->invalidateInfoFieldArray();
+            return true;
+        }
+        $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED']);
+        return false;
+    }
+
+
+    /**
+     * Store all changes made to the Info Fields shown.
+     * @return  boolean             True on success, false otherwise
+     * @global  array       $_ARRAYLANG     Language array
+     * @global  mixed       $objInit        Init object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function infoFieldsStore()
+    {
+        global $_ARRAYLANG, $objInit;
+
+if (MY_DEBUG) { echo("infoFieldStore(): INFO: Entered.<br />"); }
+
+        $arrInfoField =
+            $this->objInfoFields->getInfoFieldArray(
+                $this->supportLanguageId, false
+            );
+        $return = true;
+
+        foreach ($_POST['supportInfoFieldArrayId'] as $id) {
+            $index = 0;
+            while (   $index < count($arrInfoField)
+                   && $arrInfoField[$index]['id'] != $id) {
+                ++$index;
+            }
+            if ($index == count($arrInfoField)) {
+                continue;
+            }
+            $postOrder = $_POST['supportInfoFieldArrayOrder'][$id];
+            $postMandatory =
+                (!empty($_POST['supportInfoFieldArrayMandatory'][$id])
+                    ? true : false
+                );
+            $postMultiple =
+                (!empty($_POST['supportInfoFieldArrayMultiple'][$id])
+                    ? true : false
+                );
+            $postStatus =
+                (!empty($_POST['supportInfoFieldArrayStatus'][$id])
+                    ? true : false
+                );
+            $order  = $arrInfoField[$index]['order'];
+            $mandatory = $arrInfoField[$index]['mandatory'];
+            $multiple = $arrInfoField[$index]['multiple'];
+            $status = $arrInfoField[$index]['status'];
+if (MY_DEBUG) { echo("infoFieldStore(): INFO: id=$id, order=$order, mandatory=$mandatory, multiple=$multiple, status=$status<br />"); }
+if (MY_DEBUG) { echo("infoFieldStore(): INFO: id=$id, postOrder=$postOrder, postMandatory=$postMandatory, postMultiple=$postMultiple, postStatus=$postStatus<br />"); }
+            if (   !empty($_POST['supportInfoFieldArrayId'][$id])
+                && (   $order  != $postOrder
+                    || $mandatory != $postMandatory
+                    || $multiple != $postMultiple
+                    || $status != $postStatus)
+            ) {
+if (MY_DEBUG) { echo("infoFieldStore(): INFO: updating id=$id<br />"); }
+                $objInfoField = InfoField::getById($id);
+                if (!$objInfoField) {
+if (MY_DEBUG) { echo("infoFieldStore(): ERROR: Failed to get InfoField with id=$id!<br />"); }
+                    $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED']);
+                    $return = false;
+                } else {
+                    $objInfoField->setOrder($postOrder);
+                    $objInfoField->setMandatory($postMandatory);
+                    $objInfoField->setMultiple($postMultiple);
+                    $objInfoField->setStatus($postStatus);
+                    if (!$objInfoField->store()) {
+if (MY_DEBUG) { echo("infoFieldStore(): ERROR: Failed to update InfoField with id=$id!<br />"); }
+                        $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED'].
+                            ", ID $id -- ".$objInfoField->getName());
+                        $return = false;
+                    } else {
+                        // *MUST* invalidate the InfoField array
+                        // after changing the data!
+                        $this->objInfoFields->invalidateInfoFieldArray();
+                    }
+                }
+            }
+        }
+        if ($return) {
+            $this->addMessage($_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL']);
+        } else {
+            $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED']);
+        }
+        return $return;
+    }
+
 }
 
 ?>

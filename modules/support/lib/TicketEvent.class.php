@@ -193,6 +193,9 @@ class TicketEvent
      *      Tickets can only be delegated to another person by the owner.
      *
      * Note that this variable *SHOULD* of course be static.
+     *
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @var     array
      */
     var $arrSea = array(
         SUPPORT_TICKET_STATUS_UNKNOWN => array(
@@ -491,6 +494,7 @@ class TicketEvent
     /**
      * Get this TicketEvents' ID
      * @return  integer     The TicketEvent ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getId()
     {
@@ -500,6 +504,7 @@ class TicketEvent
     /**
      * Get the event code from this TicketEvent
      * @return  integer     The event code
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getEvent()
     {
@@ -509,6 +514,7 @@ class TicketEvent
     /**
      * Get the value changed by this TicketEvent
      * @return  string      The changed value
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getValue()
     {
@@ -518,6 +524,7 @@ class TicketEvent
     /**
      * Get the ID of the User that caused the TicketEvent
      * @return  integer     The User ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getUserId()
     {
@@ -527,6 +534,7 @@ class TicketEvent
     /**
      * Get the old Ticket status.
      * @return  integer     The old Ticket status
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getOldStatus()
     {
@@ -536,6 +544,7 @@ class TicketEvent
     /**
      * Get the new Ticket status that results from this TicketEvent.
      * @return  integer     The new Ticket status
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getNewStatus()
     {
@@ -545,6 +554,7 @@ class TicketEvent
     /**
      * Get this TicketEvents' timestamp
      * @return  string      The TicketEvent timestamp
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getTimestamp()
     {
@@ -858,7 +868,6 @@ if (MY_DEBUG) echo("TicketEvent::ticketHasNewMessages(): ERROR CODE 72-84268-GFX
      * be or have been made for this TicketEvent!
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function delete()
@@ -893,7 +902,6 @@ if (MY_DEBUG) echo("TicketEvent::delete(): Error: Failed to delete the TicketEve
      *                                          this method is called statically.
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function deleteByTicketId($ticketId=0)
@@ -930,7 +938,6 @@ if (MY_DEBUG) echo("TicketEvent::deleteByTicketId(ticketId=$ticketId): Error: Fa
      * INSERT.
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function insert()
@@ -940,7 +947,11 @@ if (MY_DEBUG) echo("TicketEvent::deleteByTicketId(ticketId=$ticketId): Error: Fa
         $ticketId = $this->objTicket->getId();
         $query = "
             INSERT INTO ".DBPREFIX."module_support_ticket_event (
-                   ticket_id, `event`, `value`, user_id, `status`
+                   ticket_id,
+                   `event`,
+                   `value`,
+                   user_id,
+                   `status`
             ) VALUES (
                    $ticketId,
                    $this->event,
@@ -989,7 +1000,7 @@ if (MY_DEBUG) echo("TicketEvent::refreshTimestamp(): ERROR: query failed, objRes
 if (MY_DEBUG) echo("TicketEvent::refreshTimestamp(): ERROR: no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
-        $this->timestamp = $objResult->fields('timestamp');
+        $this->timestamp = contrexx_stripslashes($objResult->fields('timestamp'));
 if (MY_DEBUG) echo("TicketEvent::refreshTimestamp(): INFO: timestamp is '$this->timestamp'<br />");
         return true;
     }
@@ -1032,7 +1043,7 @@ if (MY_DEBUG) echo("TicketEvent::getById($id): no result: ".$objResult->RecordCo
             $objResult->fields('value'),
             $objResult->fields('user_id'),
             $objResult->fields('status'),
-            $objResult->fields('timestamp'),
+            contrexx_stripslashes($objResult->fields('timestamp')),
             $objResult->fields('id')
         );
         return $objTicketEvent;
@@ -1067,7 +1078,6 @@ if (MY_DEBUG) echo("TicketEvent::getById($id): no result: ".$objResult->RecordCo
      *                                          on success, false otherwise
      * @global      mixed       $objDatabase    Database object
      * @global      array       $_CONFIG        Global configuration array
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -1082,10 +1092,10 @@ if (MY_DEBUG) echo("TicketEvent::getById($id): no result: ".$objResult->RecordCo
             SELECT id
               FROM ".DBPREFIX."module_support_ticket_event
              WHERE 1
-              ".($ticketId  ? " AND ticket_id=$ticketId" : '')."
-              ".($event     ? " AND event=$event"        : '')."
-              ".($value     ? " AND value='$value'"      : '')."
-              ".($userId    ? " AND user_id='$userId'"   : '')."
+              ".($ticketId ? "AND ticket_id=$ticketId" : '')."
+              ".($event    ? "AND event=$event"        : '')."
+              ".($value    ? "AND value='$value'"      : '')."
+              ".($userId   ? "AND user_id='$userId'"   : '')."
           ORDER BY $order
         ";
         $objResult = $objDatabase->SelectLimit($query, $limit, $offset);
@@ -1230,6 +1240,8 @@ if (MY_DEBUG) echo("TicketEvent::actionClose(): ERROR: The current User isn't th
      * The $value variable carries the new Support Category ID.
      * Note that this, as any of the action*() methods, *MUST NOT* be called
      * for TicketEvents that have already been insert()ed into the database!
+     * @return  boolean     True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function actionSupportCategoryChange()
     {
@@ -1258,6 +1270,8 @@ if (MY_DEBUG) echo("TicketEvent::actionSupportCategoryChange(): ERROR: The curre
      * the Ticket is in either OPEN or WAIT state.
      * Note that this, as any of the action*() methods, *MUST NOT* be called
      * for TicketEvents that have already been insert()ed into the database!
+     * @return  boolean     True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function actionReply()
     {
@@ -1379,6 +1393,7 @@ if (MY_DEBUG) echo("TicketEvent::actionTransfer(): ERROR: Passed the switch bloc
      * for TicketEvents that have already been insert()ed into the database!
      * @return  boolean             True if the Ticket has no new Messages,
      *                              false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function actionMessageView()
     {
@@ -1447,6 +1462,8 @@ if (MY_DEBUG) echo("TicketEvent::actionMessageView(): INFO: marking NEW Message 
      *
      * Note that this, as any of the action*() methods, *MUST NOT* be called
      * for TicketEvents that have already been insert()ed into the database!
+     * @return  boolean     True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function actionOtherChange()
     {
@@ -1472,6 +1489,8 @@ if (MY_DEBUG) echo("TicketEvent::actionOtherChange(): ERROR: The current User is
      * The $value variable contains the Message ID.
      * Note that this, as any of the action*() methods, *MUST NOT* be called
      * for TicketEvents that have already been insert()ed into the database!
+     * @return  boolean     True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function actionMessageNew()
     {
@@ -1489,6 +1508,8 @@ if (MY_DEBUG) echo("TicketEvent::actionMessageNew(): ERROR: No or invalid messag
      * The $value variable contains the Message ID.
      * Note that this, as any of the action*() methods, *MUST NOT* be called
      * for TicketEvents that have already been insert()ed into the database!
+     * @return  boolean     True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function actionMessageErase()
     {
@@ -1506,6 +1527,8 @@ if (MY_DEBUG) echo("TicketEvent::actionMessageNew(): ERROR: No or invalid messag
      * The $value variable contains the old Ticket ID.
      * Note that this, as any of the action*() methods, *MUST NOT* be called
      * for TicketEvents that have already been insert()ed into the database!
+     * @return  boolean     True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function actionReference()
     {
@@ -1516,3 +1539,5 @@ if (MY_DEBUG) echo("TicketEvent::actionMessageNew(): ERROR: No or invalid old Ti
         return true;
     }
 }
+
+?>

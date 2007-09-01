@@ -32,6 +32,8 @@ class Settings
 
     /**
      * Constructor (PHP4)
+     *
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function Settings()
     {
@@ -40,6 +42,8 @@ class Settings
 
     /**
      * Constructor (PHP5)
+     *
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct()
     {
@@ -52,6 +56,7 @@ class Settings
      * Note that not all of the methods report their success or failure back here (yet),
      * so you should not rely on the result of this method.
      * @return  boolean                     True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function storeSettings()
     {
@@ -67,6 +72,7 @@ class Settings
      * Store general settings
      *
      * @return  boolean     true on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function _storeGeneral()
     {

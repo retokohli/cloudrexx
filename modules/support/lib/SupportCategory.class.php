@@ -67,7 +67,7 @@ class SupportCategory
      * Support Category status
      *
      * From table modules_support_category
-     * @var integer
+     * @var boolean
      */
     var $status;
 
@@ -108,12 +108,11 @@ class SupportCategory
 
     /**
      * Constructor (PHP4)
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
      * @see         __construct()
      */
-    function SupportCategory($name, $languageId, $parentId, $status=1,
+    function SupportCategory($name, $languageId, $parentId, $status=true,
         $order=0, $id=0)
     {
         $this->__construct($name, $languageId, $parentId, $status,
@@ -122,11 +121,10 @@ class SupportCategory
 
     /**
      * Constructor (PHP5)
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
      */
-    function __construct($name, $languageId, $parentId, $status=1,
+    function __construct($name, $languageId, $parentId, $status=true,
         $order=0, $id=0)
     {
         // No Support Category may be its own parent
@@ -136,25 +134,28 @@ class SupportCategory
         $this->name       = strip_tags($name);
         $this->languageId = intval($languageId);
         $this->parentId   = intval($parentId);
-        $this->status     = intval($status);
+        $this->status     = ($status ? true : false);
         $this->order      = intval($order);
         $this->id         = intval($id);
-echo("__construct(name=$name, lang=$languageId, parent=$parentId, status=$status, order=$order, id=$id): made ");var_export($this);echo("<br />");
+        $this->arrName    = false;
+//echo("SupportCategory::__construct(name=$name, lang=$languageId, parent=$parentId, status=$status, order=$order, id=$id): made ");var_export($this);echo("<br />");
     }
 
 
     /**
      * Get this Support Category's ID
      * @return  integer     The Support Category ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getId()
     {
-        return $this->Id;
+        return $this->id;
     }
 
     /**
      * Get this Support Category's parent ID
      * @return  integer     The Support Category parent ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getParentId()
     {
@@ -163,6 +164,7 @@ echo("__construct(name=$name, lang=$languageId, parent=$parentId, status=$status
     /**
      * Set this Support Category's parent ID
      * @param   integer     The Support Category parent ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function setParentId($parentId)
     {
@@ -172,6 +174,7 @@ echo("__construct(name=$name, lang=$languageId, parent=$parentId, status=$status
     /**
      * Get this Support Category's status
      * @return  integer     The Support Category status
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getStatus()
     {
@@ -180,15 +183,17 @@ echo("__construct(name=$name, lang=$languageId, parent=$parentId, status=$status
     /**
      * Set this Support Category's status
      * @param   integer     The Support Category status
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function setStatus($status)
     {
-        $this->status = intval($status);
+        $this->status = ($status ? true : false);
     }
 
     /**
      * Get this Support Category's sorting order
      * @return  integer     The Support Category sorting order
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getOrder()
     {
@@ -197,6 +202,7 @@ echo("__construct(name=$name, lang=$languageId, parent=$parentId, status=$status
     /**
      * Set this Support Category's sorting order
      * @param   integer     The Support Category sorting order
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function setOrder($order)
     {
@@ -206,6 +212,7 @@ echo("__construct(name=$name, lang=$languageId, parent=$parentId, status=$status
     /**
      * Get this Support Category's name
      * @return  string      The Support Category name
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getName()
     {
@@ -214,6 +221,7 @@ echo("__construct(name=$name, lang=$languageId, parent=$parentId, status=$status
     /**
      * Set this Support Category's name
      * @param   string      The Support Category name
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function setName($name)
     {
@@ -221,8 +229,46 @@ echo("__construct(name=$name, lang=$languageId, parent=$parentId, status=$status
     }
 
     /**
+     * Get the array of names
+     *
+     * The array looks like this: array( ID => Name, ... ).
+     * Note that it is only used if there actually is more than
+     * just one entry for a single language.  Otherwise, it
+     * defaults to false.
+     * @return  mixed       The Support Category name array, if available,
+     *                      false otherwise (single language entry)
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getNameArray()
+    {
+        return $this->arrName;
+    }
+    /**
+     * Set the array of names
+     *
+     * The array must look like this: array( ID => Name, ... ).
+     * If the argument is not an array, or boolean false,
+     * the method does nothing.
+     * Use the false value to invalidate the array.
+     * @param   mixed       The Support Category name array, or false
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function setNameArray($arrName)
+    {
+        if (is_array($arrName)) {
+            $this->arrName = array();
+            foreach ($arrName as $id => $name) {
+                $this->arrName[$id] = strip_tags($name);
+            }
+        } elseif ($arrName === false) {
+            $this->arrName = false;
+        }
+    }
+
+    /**
      * Get this Support Category's language ID
      * @return  integer     The Support Category language ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getLanguageId()
     {
@@ -231,6 +277,7 @@ echo("__construct(name=$name, lang=$languageId, parent=$parentId, status=$status
     /**
      * Set this Support Category's language ID
      * @param   integer     The Support Category language ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function setLanguageId($languageId)
     {
@@ -244,7 +291,6 @@ echo("__construct(name=$name, lang=$languageId, parent=$parentId, status=$status
      * Note that this does NOT create a copy in any way, but simply clears
      * the Support Category ID.  Upon storing this object, a new ID is created.
      * @return      void
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function makeClone() {
@@ -263,7 +309,6 @@ echo("__construct(name=$name, lang=$languageId, parent=$parentId, status=$status
      * Note that all child categories are deleted as well!
      * @return      boolean                 True on success, false otherwise
      * @global      mixed   $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function delete($languageId=0)
@@ -285,29 +330,29 @@ echo("Support Category::delete($languageId): Error: This Support Category is mis
         	    return false;
         	}
         }
-        $return = true;
         $query = "
             DELETE FROM ".DBPREFIX."module_support_category_language
              WHERE support_category_id=$this->id
-        ";
-        if ($languageId) {
-            $query .= "AND language_id=$languageId";
-        } else {
+               ".($languageId ? "AND language_id=$languageId" : '');
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+echo("Support Category::delete($languageId): Error: Failed to delete the Support Category language entry/-ies from the database for ID $this->id!<br />");
+            return false;
+        }
+        // If this record cannot be retrieved again from the database,
+        // that means that the last of its language entries has been
+        // deleted above.  In that case, remove the main entry as well.
+        if (!SupportCategory::getById($this->id, 0, true)) {
             $objResult = $objDatabase->Execute("
                 DELETE FROM ".DBPREFIX."module_support_category
                  WHERE id=$this->id
             ");
             if (!$objResult) {
 echo("Support Category::delete($languageId): Error: Failed to delete the Support Category from the database<br />");
-                $return = false;
+                return false;
             }
         }
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-echo("Support Category::delete($languageId): Error: Failed to delete the Support Category language entry from the database<br />");
-            return false;
-        }
-        return $return;
+        return true;
     }
 
 
@@ -317,7 +362,6 @@ echo("Support Category::delete($languageId): Error: Failed to delete the Support
      * @return      array                       All child objects on success,
      *                                          false on failure.
      * @global      mixed   $objDatabase        Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getChildren()
@@ -358,7 +402,6 @@ echo("getChildren(): parent: $this->id, child: ".$objResult->fields['id']."<br /
      *
      * Either updates (id > 0) or inserts (id == 0) the object.
      * @return      boolean     True on success, false otherwise
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function store()
@@ -375,7 +418,6 @@ echo("getChildren(): parent: $this->id, child: ".$objResult->fields['id']."<br /
      *
      * @return      boolean                     True on success, false otherwise
      * @global      mixed   $objDatabase        Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function update()
@@ -385,7 +427,7 @@ echo("update(): ");var_export($this);echo("<br />");
         $query = "
             UPDATE ".DBPREFIX."module_support_category
                SET parent_id=$this->parentId,
-                   `status`=$this->status,
+                   `status`=".($this->status ? 1 : 0).",
                    `order`=$this->order
              WHERE id=$this->id
         ";
@@ -404,13 +446,29 @@ echo("update(): ");var_export($this);echo("<br />");
      *
      * @return      boolean                     True on success, false otherwise
      * @global      mixed   $objDatabase        Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function updateLanguage()
     {
         global $objDatabase;
 
+        // Firstly, check whether the record already exists
+        $query = "
+            SELECT 1
+              FROM ".DBPREFIX."module_support_category_language
+             WHERE support_category_id=$this->id
+               AND language_id=$this->languageId
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return false;
+        }
+        // If it doesn't exist, INSERT it.
+        if ($objResult->RecordCount() == 0) {
+            return $this->insertLanguage();
+        }
+
+        // Otherwise, proceed with the UPDATE.
         $query = "
             UPDATE ".DBPREFIX."module_support_category_language
                SET `name`='".contrexx_addslashes($this->name)."'
@@ -419,9 +477,7 @@ echo("update(): ");var_export($this);echo("<br />");
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-            // Maybe a new language has just been added.
-            // Try inserting the entry as well.
-            return $this->insertLanguage();
+            return false;
         }
 //echo("Support Category::update(): done<br />");
         return true;
@@ -433,7 +489,6 @@ echo("update(): ");var_export($this);echo("<br />");
      *
      * @return      boolean                     True on success, false otherwise
      * @global      mixed   $objDatabase        Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function insert()
@@ -448,7 +503,7 @@ echo("insert(): ");var_export($this);echo("<br />");
                    `order`
             ) VALUES (
                    $this->parentId,
-                   $this->status,
+                   ".($this->status ? 1 : 0).",
                    $this->order
             )
         ";
@@ -469,7 +524,6 @@ echo("insert(): ");var_export($this);echo("<br />");
      *
      * @return      boolean                     True on success, false otherwise
      * @global      mixed   $objDatabase        Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function insertLanguage()
@@ -503,7 +557,6 @@ echo("insert(): ");var_export($this);echo("<br />");
      * that actually set the $arrName array.
      * Also note that this method does not store the Support Category itself!
      * @return      boolean         True on success, false otherwise
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function storeAllLanguages()
@@ -539,14 +592,16 @@ echo("insert(): ");var_export($this);echo("<br />");
      * @static
      * @param       integer     $id             The Support Category ID
      * @param       integer     $languageId     The optional language ID
+     * @param       boolean     $flagAllLanguages   If true, all available
+     *                                          languages are returned.
+     *                                          Defaults to false.
      * @return      SupportCategory             The Support Category object
      *                                          on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
-    function getById($id, $languageId=0)
+    function getById($id, $languageId=0, $flagAllLanguages=false)
     {
         global $objDatabase;
 
@@ -556,10 +611,10 @@ echo("insert(): ");var_export($this);echo("<br />");
         INNER JOIN ".DBPREFIX."module_support_category_language
                 ON id=support_category_id
              WHERE id=$id
-        ".($languageId
-            ? "AND language_id=$languageId"
-            : 'ORDER BY language_id ASC'
-        );
+               ".($languageId && !$flagAllLanguages
+                    ? "AND language_id=$languageId"
+                    : 'ORDER BY language_id ASC'
+                 );
 //echo("SupportCategory::getById($id, $languageId): query: $query<br />");
         $objResult = $objDatabase->Execute($query);
 //echo("SupportCategory::getById($id, $languageId): objResult: '$objResult'<br />");
@@ -572,22 +627,28 @@ echo("SupportCategory::getById($id, $languageId): no result: ".$objResult->Recor
             return false;
         }
 //echo("SupportCategory::getById($id, $languageId): ID is ".$objResult->fields('id')."<br />");
-        $objSupportCategory = new SupportCategory(
-            contrexx_stripslashes($objResult->fields('name')),
-            $objResult->fields('language_id'),
-            $objResult->fields('parent_id'),
-            $objResult->fields('status'),
-            $objResult->fields('order'),
-            $objResult->fields('id')
-        );
-//echo("SupportCategory::getById($id, $languageId): my ID is ".$objSupportCategory->getId()."<br />");
-        if ($objResult->RecordCount() > 1) {
-            while (!$objResult->EOF) {
-                $objSupportCategory->arrName[$objResult->fields('language_id')] =
-                    contrexx_stripslashes($objResult->fields('name'));
-                $objResult->MoveNext();
+        $arrName = array();
+        $objSupportCategory = false;
+        while (!$objResult->EOF) {
+            if (   $languageId == $objResult->fields('language_id')
+                || ($languageId <= 0 && !$objSupportCategory)) {
+                $objSupportCategory = new SupportCategory(
+                    contrexx_stripslashes($objResult->fields('name')),
+                    $objResult->fields('language_id'),
+                    $objResult->fields('parent_id'),
+                    $objResult->fields('status'),
+                    $objResult->fields('order'),
+                    $objResult->fields('id')
+                );
             }
+            $arrName[$objResult->fields('language_id')] =
+                contrexx_stripslashes($objResult->fields('name'));
+            $objResult->MoveNext();
         }
+        if (count($arrName)) {
+            $objSupportCategory->arrName = $arrName;
+        }
+//echo("SupportCategory::getById($id, $languageId): my ID is ".$objSupportCategory->getId()."<br />");
         return $objSupportCategory;
     }
 
@@ -603,7 +664,6 @@ echo("SupportCategory::getById($id, $languageId): no result: ".$objResult->Recor
      * @return      string                      The Support Category name
      *                                          on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
