@@ -130,17 +130,9 @@ class Message
     var $status = false;
 
     /**
-     * Set to true whenever the status of this Message changes.
-     *
-     * Defaults to false.
-     * @var boolean
-    var $statusChanged = false;
-     */
-
-    /**
      * The status text array
      *
-     * *SHOULD* be static
+     * @todo    *SHOULD* be static.
      * @var     array
      */
     var $arrStatusString;
@@ -148,7 +140,6 @@ class Message
 
     /**
      * Constructor (PHP4)
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
      * @see         __construct()
@@ -164,7 +155,6 @@ class Message
     /**
      * Constructor (PHP5)
      * @global      array   $_ARRAYLANG     Language array
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
      * @todo        PHP5: Make $this->arrStatusString static!
@@ -203,6 +193,7 @@ class Message
     /**
      * Get this Messages' ID
      * @return  integer     The Message ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getId()
     {
@@ -212,110 +203,69 @@ class Message
     /**
      * Get this Messages' Ticket ID
      * @return  integer     The Ticket ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getTicketId()
     {
 if (MY_DEBUG) echo("Message::getTicketId(): returning $this->ticketId<br />");
         return $this->ticketId;
     }
-    /**
-     * Set this Messages' Ticket ID
-     * @param   integer     The  Ticket ID
-    function setTicketId($ticketId)
-    {
-        $this->ticketId = intval($ticketId);
-    }
-     */
 
     /**
      * Get this Messages' source (e-mail address)
      * @return  string      The Message source
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getFrom()
     {
         return $this->from;
     }
-    /**
-     * Set this Messages' source (e-mail address)
-     * @param   string      The Message source
-    function setFrom($from)
-    {
-        $this->from = strip_tags($from);
-    }
-     */
 
     /**
      * Get this Messages' subject line
      * @return  string      The Message subject line
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getSubject()
     {
         return $this->subject;
     }
-    /**
-     * Set this Messages' subject line
-     * @param   string      The Message subject line
-    function setSubject($subject)
-    {
-        $this->subject = strip_tags($subject);
-    }
-     */
 
     /**
      * Get this Messages' body
      * @return  string      The Message body
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getBody()
     {
         return $this->body;
     }
-    /**
-     * Set this Messages' body
-     * @param   string      The Message body
-    function setBody($body)
-    {
-        $this->body = strip_tags($body);
-    }
-     */
 
     /**
      * Get this Messages' date
      * @return  string      The Message date
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getDate()
     {
         return $this->date;
     }
-    /**
-     * Set this Messages' date
-     * @param   string      The Message date
-    function setDate($date)
-    {
-        $this->date = $date;
-    }
-     */
 
     /**
      * Get this Messages' timestamp
      * @return  string      The Message timestamp
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getTimestamp()
     {
         return $this->timestamp;
     }
-    /**
-     * Set this Messages' timestamp
-     * @param   string      The Message timestamp
-    function setTimestamp($timestamp)
-    {
-        $this->timestamp = $timestamp;
-    }
-     */
 
 
     /**
      * Get this Messages' status
      * @return  integer     The Message status
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getStatus()
     {
@@ -328,19 +278,11 @@ if (MY_DEBUG) echo("Message::getTicketId(): returning $this->ticketId<br />");
         }
         return $this->status;
     }
-    /**
-     * Set this Messages' status
-     * @param   string      The Message status
-    function setStatus($status)
-    {
-        $this->status = intval($status);
-        $this->statusChanged = true;
-    }
-     */
 
     /**
      * Get this Messages' status as a string
      * @return  string      The Message status string
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getStatusString()
     {
@@ -357,7 +299,6 @@ if (MY_DEBUG) echo("Message::getTicketId(): returning $this->ticketId<br />");
      * is deleted as well!
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function delete()
@@ -386,7 +327,6 @@ if (MY_DEBUG) echo("Message::delete(): Error: Failed to delete the Message from 
      *
      * Either updates (id > 0) or inserts (id == 0) the object.
      * @return      boolean     True on success, false otherwise
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function store()
@@ -404,7 +344,6 @@ if (MY_DEBUG) echo("Message::delete(): Error: Failed to delete the Message from 
      * Note that currently, only the status field may be updated.
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function update()
@@ -432,7 +371,6 @@ if (MY_DEBUG) echo("Message::delete(): Error: Failed to delete the Message from 
      * value of 1 (NEW), as specified in the table definition.
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function insert()
@@ -441,13 +379,17 @@ if (MY_DEBUG) echo("Message::delete(): Error: Failed to delete the Message from 
 
         $query = "
             INSERT INTO ".DBPREFIX."module_support_message (
-                   ticket_id, `from`, subject, body, `date`
+                   ticket_id,
+                   `from`,
+                   subject,
+                   body,
+                   `date`
             ) VALUES (
                    $this->ticketId,
-                   '".$this->from."',
-                   '".$this->subject."',
-                   '".$this->body."',
-                   '".$this->date."'
+                   '".contrexx_addslashes($this->from)."',
+                   '".contrexx_addslashes($this->subject)."',
+                   '".contrexx_addslashes($this->body)."',
+                   '".contrexx_addslashes($this->date)."'
             )
         ";
         $objResult = $objDatabase->Execute($query);
@@ -468,6 +410,7 @@ if (MY_DEBUG) echo("Message::delete(): Error: Failed to delete the Message from 
      * This *MUST* be called by insert() after INSERTing any new
      * Message object!
      * @return  boolean         True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function refreshTimestamp()
     {
@@ -489,7 +432,7 @@ if (MY_DEBUG) echo("Message::refreshTimestamp(): query failed, objResult: '$objR
 if (MY_DEBUG) echo("Message::refreshTimestamp(): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
-        $this->timestamp = $objResult->fields('timestamp');
+        $this->timestamp = contrexx_stripslashes($objResult->fields('timestamp'));
         return true;
     }
 
@@ -504,7 +447,6 @@ if (MY_DEBUG) echo("Message::refreshTimestamp(): no result: ".$objResult->Record
      * @param       integer     $ticketId       The Ticket ID
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -536,7 +478,6 @@ if (MY_DEBUG) echo("Message::deleteByTicketId(ticketId=$ticketId): ERROR: Failed
      * @return      Message                      The Message object
      *                                          on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -562,11 +503,11 @@ if (MY_DEBUG) echo("Message::getById($id): no result: ".$objResult->RecordCount(
         }
         $objMessage = new Message(
             $objResult->fields('ticket_id'),
-            $objResult->fields('from'),
-            $objResult->fields('subject'),
-            $objResult->fields('body'),
-            $objResult->fields('date'),
-            $objResult->fields('timestamp'),
+            contrexx_stripslashes($objResult->fields('from')),
+            contrexx_stripslashes($objResult->fields('subject')),
+            contrexx_stripslashes($objResult->fields('body')),
+            contrexx_stripslashes($objResult->fields('date')),
+            contrexx_stripslashes($objResult->fields('timestamp')),
             $objResult->fields('id')
         );
 if (MY_DEBUG) { echo("Message::getById($id): made Message: ");var_export($objMessage);echo("<br />"); }
@@ -610,7 +551,6 @@ if (MY_DEBUG) { echo("Message::getById($id): made Message: ");var_export($objMes
      * @global      mixed       $objDatabase    Database object
      * @global      array       $_CONFIG        Global configuration array
      *                                          on success, false otherwise
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -625,11 +565,11 @@ if (MY_DEBUG) { echo("Message::getById($id): made Message: ");var_export($objMes
             SELECT id
               FROM ".DBPREFIX."module_support_message
              WHERE 1
-              ".($ticketId  ? "AND ticket_id=$ticketId" : '')."
-              ".($status    ? "AND status=$status"      : '')."
-              ".($from      ? "AND from='$from'"        : '')."
-              ".($subject   ? "AND subject='$subject'"  : '')."
-              ".($date      ? "AND date='$date'"        : '')."
+               ".($ticketId ? "AND ticket_id=$ticketId" : '')."
+               ".($status   ? "AND status=$status" : '')."
+               ".($from     ? "AND from='".contrexx_addslashes($from)."'" : '')."
+               ".($subject  ? "AND subject='".contrexx_addslashes($subject)."'" : '')."
+               ".($date     ? "AND date='".contrexx_addslashes($date)."'" : '')."
           ORDER BY $order
         ";
         $objResult = $objDatabase->SelectLimit($query, $limit, $offset);
@@ -681,7 +621,6 @@ if (MY_DEBUG) { echo("Message::getById($id): made Message: ");var_export($objMes
      *                                          IDs returned
      * @return      array                       The array of Message objects
      *                                          on success, false otherwise
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -739,11 +678,11 @@ if (MY_DEBUG) echo("Message::getMessageArray(array=$arrMessageId): ERROR: got no
             SELECT COUNT(*) as numof
               FROM ".DBPREFIX."module_support_message
              WHERE 1
-              ".($ticketId  ? "AND ticket_id=$ticketId" : '')."
-              ".($status    ? "AND status=$status"      : '')."
-              ".($from      ? "AND from='$from'"        : '')."
-              ".($subject   ? "AND subject='$subject'"  : '')."
-              ".($date      ? "AND date='$date'"        : '');
+               ".($ticketId ? "AND ticket_id=$ticketId" : '')."
+               ".($status   ? "AND status=$status" : '')."
+               ".($from     ? "AND from='".contrexx_addslashes($from)."'" : '')."
+               ".($subject  ? "AND subject='".contrexx_addslashes($subject)."'" : '')."
+               ".($date     ? "AND date='".contrexx_addslashes($date)."'" : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -763,6 +702,7 @@ if (MY_DEBUG) echo("Message::getMessageArray(array=$arrMessageId): ERROR: got no
      * @return  mixed                   The latest Message ID on success,
      *                                  false otherwise
      * @global  mixed   $objDatabase    Database object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getLatestByTicketId($ticketId)
     {
@@ -772,7 +712,7 @@ if (MY_DEBUG) echo("Message::getMessageArray(array=$arrMessageId): ERROR: got no
             SELECT id
               FROM ".DBPREFIX."module_support_message
              WHERE ticket_id=$ticketId
-          ORDER BY 'date' DESC
+          ORDER BY `date` DESC
         ";
         $objResult = $objDatabase->SelectLimit($query, 1);
         if (!$objResult) {

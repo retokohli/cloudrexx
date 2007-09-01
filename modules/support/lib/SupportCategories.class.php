@@ -10,6 +10,26 @@
  * @subpackage  module_support
  */
 
+/*
+
+CREATE TABLE `contrexx_module_support_category` (
+  `id`        int(11)    unsigned NOT NULL auto_increment,
+  `parent_id` int(11)    unsigned NOT NULL default '0',
+  `status`    tinyint(1) unsigned NOT NULL default '1',
+  `order`     int(11)    unsigned NOT NULL default '0',
+  PRIMARY KEY     (`id`),
+  KEY `parent_id` (`parent_id`),
+  KEY `status`    (`status`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_support_category_language` (
+  `support_category_id` int(10)      unsigned NOT NULL,
+  `language_id`         int(10)      unsigned NOT NULL,
+  `name`                varchar(255)          NOT NULL,
+  PRIMARY KEY (`support_category_id`,`language_id`)
+) ENGINE=MyISAM;
+
+*/
 
 /**
  * Support Categories
@@ -109,6 +129,7 @@ class SupportCategories
     /**
      * Get the Support Categories' language ID
      * @return  integer     The language ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getLanguageId()
     {
@@ -117,6 +138,7 @@ class SupportCategories
     /**
      * Set this Support Categories' language ID
      * @param   integer     The language ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function setLanguageId($languageId)
     {
@@ -276,32 +298,38 @@ if (MY_DEBUG) { echo("getSupportCategoryNameArray(parent=$parentId, recurse=$fla
         $parentId=0, $level=0
     ) {
         global $objDatabase;
+//if (MY_DEBUG) echo("supportcategories::buildSupportCategoryTreeArray(parentId=$parentId, level=$level): INFO: Entered.<br />");
 
         $query = "
-            SELECT *
+            SELECT DISTINCT id
               FROM ".DBPREFIX."module_support_category
-        INNER JOIN ".DBPREFIX."module_support_category_language
+         LEFT JOIN ".DBPREFIX."module_support_category_language
                 ON id=support_category_id
              WHERE parent_id=$parentId
-               ".($this->flagActiveOnly ? " AND status=1" : '')."
-               ".($this->languageId     ? " AND language_id=$this->languageId" : '')."
-          ORDER BY id ASC
+               ".($this->flagActiveOnly ? 'AND status=1' : '')."
+               ".($this->languageId     ? "AND language_id=$this->languageId" : '')."
+          ORDER BY `order` ASC, language_id ASC
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) { // || $objResult->RecordCount() == 0) {
+//if (MY_DEBUG) echo("supportcategories::buildSupportCategoryTreeArray(parentId=$parentId, level=$level): ERROR: query failed: $query!<br />");
             return false;
         }
         // return array
         $arrSupportCategoryTree = array();
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];
+            $objSupportCategory =
+                SupportCategory::getById($id, $this->languageId, true);
+//if (MY_DEBUG) echo("supportcategories::buildSupportCategoryTreeArray(parentId=$parentId, level=$level): INFO: made object ");var_export($objSupportCategory);echo(".<br />");
             $arrSupportCategory = array(
                 'id'         => $id,
-                'parentId'   => $objResult->fields['parent_id'],
-                'status'     => $objResult->fields['status'],
-                'order'      => $objResult->fields['order'],
-                'languageId' => $objResult->fields['language_id'],
-                'name'       => $objResult->fields['name'],
+                'parentId'   => $objSupportCategory->getParentId(),
+                'status'     => $objSupportCategory->getStatus(),
+                'order'      => $objSupportCategory->getOrder(),
+                'languageId' => $objSupportCategory->getLanguageId(),
+                'name'       => $objSupportCategory->getName(),
+                'arrName'    => $objSupportCategory->getNameArray(),
                 'level'      => $level,
             );
             $arrSupportCategoryTree[] = $arrSupportCategory;
@@ -314,6 +342,18 @@ if (MY_DEBUG) { echo("getSupportCategoryNameArray(parent=$parentId, recurse=$fla
             $objResult->MoveNext();
         }
         return $arrSupportCategoryTree;
+    }
+
+
+    /**
+     * Invalidate the Support Category tree array
+     *
+     * This must be done after the data in the database table has been
+     * changed by either an INSERT, UPDATE, or DELETE.
+     */
+    function invalidateSupportCategoryTreeArray()
+    {
+        $this->arrSupportCategoryTree = false;
     }
 
 
@@ -342,7 +382,7 @@ if (MY_DEBUG) { echo("getSupportCategoryNameArray(parent=$parentId, recurse=$fla
             $id    = $arrField['id'];
             $name  = $arrField['name'];
             $level = $arrField['level'];
-if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): id $id, name $name<br />");
+//if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): id $id, name $name<br />");
             $menu .=
                 "<option value='$id'".
                 ($selectedId == $id ? ' selected="selected"' : '').
@@ -353,7 +393,7 @@ if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$men
         if ($menuName) {
             $menu = "<select id='$menuName' name='$menuName'>\n$menu\n</select>\n";
         }
-if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): made menu: ".htmlentities($menu)."<br />");
+//if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): made menu: ".htmlentities($menu)."<br />");
         return $menu;
     }
 

@@ -3,7 +3,7 @@
 function ticketDelete(id)
 {
   if (confirm('{TXT_SUPPORT_TICKET_CONFIRM_DELETE}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')) {
-    window.location.replace("index.php?cmd=support&act=ticketDelete&id="+id);
+    window.location.replace("index.php?cmd=support&act=ticketDelete&supportTicketId="+id);
   }
 }
 
@@ -24,9 +24,9 @@ function categoryDelete(id)
 {
   if (confirm('{TXT_SUPPORT_CATEGORY_DELETE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}'))
     window.location.replace(
-        "index.php?cmd=support&act=categoryDelete&id="+id+
-//        "&offset={SUPPORT_CATEGORY_OFFSET}"+
-        "&supportTicketLanguageId="+document.getElementById('supportTicketLanguageId').value
+        "index.php?cmd=support&act=categoryDelete&supportCategoryId="+id+
+//        "&supportCategoryOffset={SUPPORT_CATEGORY_OFFSET}"+
+        "&supportLanguageId="+document.getElementById('supportLanguageId').value
     );
 }
 
@@ -38,8 +38,8 @@ function supportCategoryDoAction(strAction, strForm, strCheckbox, objSelect)
         if (confirm('{TXT_SUPPORT_CATEGORIES_DELETE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')){
           document.forms[strForm].action =
             "index.php?cmd=support&act=categoriesDelete"+
-//            "&offset={SUPPORT_CATEGORY_OFFSET}"+
-            "&supportTicketLanguageId="+document.getElementById('supportTicketLanguageId').value;
+//            "&supportCategoryOffset={SUPPORT_CATEGORY_OFFSET}"+
+            "&supportLanguageId="+document.getElementById('supportLanguageId').value;
           document.forms[strForm].submit();
         }
         break;

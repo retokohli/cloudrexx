@@ -131,7 +131,6 @@ class SupportCommon
 {
     /**
      * Constructor (PHP4)
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
      * @see         __construct()
@@ -143,7 +142,6 @@ class SupportCommon
 
     /**
      * Constructor (PHP5)
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
      */

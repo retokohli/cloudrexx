@@ -161,7 +161,6 @@ class Ticket
 
     /**
      * Constructor (PHP4)
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
      * @see         __construct()
@@ -179,7 +178,6 @@ class Ticket
     /**
      * Constructor (PHP5)
      * @global      array   $_ARRAYLANG     Language array
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
      * @todo        PHP5: Make $this->arrStatusString and
@@ -208,6 +206,7 @@ if (MY_DEBUG) { echo("Ticket::__construct(email=$email, source=$source, supportC
     /**
      * Get this Tickets' ID
      * @return  integer     The Ticket ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getId()
     {
@@ -217,6 +216,7 @@ if (MY_DEBUG) { echo("Ticket::__construct(email=$email, source=$source, supportC
     /**
      * Get this Tickets' e-mail address
      * @return  string      The Ticket e-mail address
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getEmail()
     {
@@ -226,6 +226,7 @@ if (MY_DEBUG) { echo("Ticket::__construct(email=$email, source=$source, supportC
     /**
      * Get this Tickets' source
      * @return  integer     The Ticket source
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getSource()
     {
@@ -235,6 +236,7 @@ if (MY_DEBUG) { echo("Ticket::__construct(email=$email, source=$source, supportC
     /**
      * Get this Tickets' SupportCategory ID
      * @return  integer     The Ticket SupportCategory ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getSupportCategoryId()
     {
@@ -244,6 +246,7 @@ if (MY_DEBUG) { echo("Ticket::__construct(email=$email, source=$source, supportC
     /**
      * Get this Tickets' language ID
      * @return  integer     The Ticket language ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getLanguageId()
     {
@@ -253,6 +256,7 @@ if (MY_DEBUG) { echo("Ticket::__construct(email=$email, source=$source, supportC
     /**
      * Get this Tickets' timestamp
      * @return  string      The Ticket timestamp
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getTimestamp()
     {
@@ -420,7 +424,7 @@ if (MY_DEBUG) echo("Ticket::delete(): Error: Failed to delete TicketEvents assoc
                    support_category_id,
                    language_id
             ) VALUES (
-                   '$this->email',
+                   '".contrexx_addslashes($this->email)."',
                    $this->source,
                    $this->supportCategoryId,
                    $this->languageId
@@ -469,8 +473,7 @@ if (MY_DEBUG) echo("Ticket::refreshTimestamp(): query failed, objResult: '$objRe
 if (MY_DEBUG) echo("Ticket::refreshTimestamp(): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
-//        $this->status    = $objResult->fields('status');
-        $this->timestamp = $objResult->fields('timestamp');
+        $this->timestamp = contrexx_stripslashes($objResult->fields('timestamp'));
 if (MY_DEBUG) echo("Ticket::refreshTimestamp(): done!<br />");
         return true;
     }
@@ -485,6 +488,7 @@ if (MY_DEBUG) echo("Ticket::refreshTimestamp(): done!<br />");
      * were made.  Returns false on errors only.
      * @param   integer $supportCategoryId  The new Support Category ID
      * @return  boolean                     True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function updateSupportCategoryId($supportCategoryId)
     {
@@ -523,6 +527,7 @@ if (MY_DEBUG) echo("Ticket::refreshTimestamp(): done!<br />");
      * were made.  Returns false on errors only.
      * @param   integer $ownerId            The new owner ID
      * @return  boolean                     True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function updateOwnerId($ownerId)
     {
@@ -564,6 +569,7 @@ if (MY_DEBUG) echo("Ticket::refreshTimestamp(): done!<br />");
      *
      * Note: This is currently unimplemented, and thus always fails.
      * @return  boolean                     Always false.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function updateOther() {
         return false;
@@ -577,7 +583,7 @@ if (MY_DEBUG) echo("Ticket::refreshTimestamp(): done!<br />");
      * create a MESSAGE_NEW entry and to update the Ticket status.
      * If the Ticket has already been closed, this creates a new Ticket
      * and a REFERENCE to the old one.
-     * The optional $supportCategoryId, $supportTicketLanguageId,
+     * The optional $supportCategoryId, $supportLanguageId,
      * and $supportTicketSource arguments are only considered in case
      * a new Ticket is created.  If they are missing, the values from
      * the old Ticket are copied.  Otherwise, they are ignored, and the
@@ -589,12 +595,13 @@ if (MY_DEBUG) echo("Ticket::refreshTimestamp(): done!<br />");
      * @param   string  $supportMessageBody     The Message text
      * @return  boolean                         True on success,
      *                                          false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function addMessage(
         $supportMessageFrom, $supportMessageSubject,
         $supportMessageBody, $supportMessageDate=0
 /*
-        $supportCategoryId=0, $supportTicketLanguageId=0,
+        $supportCategoryId=0, $supportLanguageId=0,
         $supportTicketSource=0
 */
     ) {
@@ -606,7 +613,7 @@ if (MY_DEBUG) echo("Ticket::addMessage(
 ): INFO: entered<br />");
 /*
         supportCategoryId=$supportCategoryId,
-        supportTicketLanguageId=$supportTicketLanguageId,
+        supportLanguageId=$supportLanguageId,
         supportTicketSource=$supportTicketSource,
 */
         if ($supportMessageDate == 0) {
@@ -621,8 +628,8 @@ if (MY_DEBUG) echo("Ticket::addMessage(
             if ($supportCategoryId == 0) {
                 $supportCategoryId = $this->supportCategoryId;
             }
-            if ($supportTicketLanguageId == 0) {
-                $supportTicketLanguageId = $this->languageId;
+            if ($supportLanguageId == 0) {
+                $supportLanguageId = $this->languageId;
             }
             if ($supportTicketSource == 0) {
                 $supportTicketSource = $this->source;
@@ -707,6 +714,7 @@ if (MY_DEBUG) echo("Ticket::addMessage(): ERROR: Adding REFERENCE TicketEvent re
      * @param   string  $supportMessageBody     The Message text
      * @return  boolean                         True on success,
      *                                          false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function addReply(
         $supportMessageFrom, $supportMessageSubject,
@@ -773,6 +781,7 @@ if (MY_DEBUG) echo("Ticket::addReply(): ERROR: Failed to roll back Message inser
      * future owners of the Ticket.  The Message can be restored, however.
      * @param   integer     $messageId      The Message ID
      * @return  boolean                     True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function deleteMessage($messageId)
     {
@@ -803,6 +812,7 @@ if (MY_DEBUG) echo("Ticket::deleteMessage(messageId=$messageId): INFO: process()
      * has seen it, if and only if he is the current owner of the Ticket.
      * @param   integer     $messageId      The Message ID
      * @return  boolean                     True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function updateView($messageId)
     {
@@ -826,6 +836,7 @@ if (MY_DEBUG) echo("Ticket::updateView(messageId=$messageId): INFO: process() re
      *
      * An appropriate TicketEvent record is added.
      * @return  boolean                     True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function close() {
         $objEvent = new TicketEvent(
@@ -873,12 +884,11 @@ if (MY_DEBUG) echo("Ticket::getById($id): no result: ".$objResult->RecordCount()
             return false;
         }
         $objTicket = new Ticket(
-            $objResult->fields('email'),
+            contrexx_stripslashes($objResult->fields('email')),
             $objResult->fields('source'),
             $objResult->fields('support_category_id'),
             $objResult->fields('language_id'),
-//            $objResult->fields('owner_id'),
-            $objResult->fields('timestamp'),
+            contrexx_stripslashes($objResult->fields('timestamp')),
             $objResult->fields('id')
         );
         return $objTicket;
@@ -938,10 +948,10 @@ if (MY_DEBUG) echo("Ticket::getById($id): no result: ".$objResult->RecordCount()
             SELECT id
               FROM ".DBPREFIX."module_support_ticket
              WHERE 1
-              ".($supportCategoryId == false ? '' : " AND support_category_id=$supportCategoryId")."
-              ".($languageId        == false ? '' : " AND language_id=$languageId")."
-              ".($source            <  0     ? '' : " AND source=$source")."
-              ".($email             == false ? '' : " AND email=$email")."
+               ".($supportCategoryId == false ? '' : "AND support_category_id=$supportCategoryId")."
+               ".($languageId        == false ? '' : "AND language_id=$languageId")."
+               ".($source            <  0     ? '' : "AND source=$source")."
+               ".($email             == false ? '' : "AND email='".contrexx_addslashes($email)."'")."
           ".($order ? "ORDER BY $order" : '');
         $objResult = $objDatabase->SelectLimit(
             $query, $limit, $offset
@@ -966,7 +976,7 @@ if (MY_DEBUG) echo("getTicketIdArray(supportCategoryId=$supportCategoryId, langu
                         :   TicketEvent::getTicketOwnerId($id) == $ownerId
                     )
             ) {
-                $arrTicketId[] = $objResult->fields['id'];
+                $arrTicketId[] = $id;
             }
             $objResult->MoveNext();
         }
