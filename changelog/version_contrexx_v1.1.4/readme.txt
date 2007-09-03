@@ -15,7 +15,6 @@ Neue MARKER für Frontend:
 - RECOM_CAPTCHA_OFFSET
 
 Nachfolgend noch ein Codebeispiel zum Einbau des neuen Captcha:
-
 [HTML]
 <tr>
     <td>[[RECOM_TXT_CAPTCHA]]:</td>
@@ -39,100 +38,7 @@ Nachfolgend die neuen Contentseiten fürs Directory:
 
 section=directory&cmd=edit
 [HTML]
-<b></b><script language="JavaScript">
-function add(from,dest,add,remove)
-{
-    if ( from.selectedIndex < 0)
-	{
-		if (from.options[0] != null)
-			from.options[0].selected = true;
-		from.focus();
-		return false;
-	}
-	else
-	{
-		for (var i=0; i<from.length; i++)
-		{
-			if (from.options[i].selected)
-			{
-		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
-   			}
-		}
-	    for (var i=from.length-1; i>=0; i--)
-		{
-			if (from.options[i].selected)
-			{
-		       from.options[i] = null;
-   			}
-		}
-	}
-    disableButtons(from,dest,add,remove);
-}
 
-
-function remove(from,dest,add,remove)
-{
-	if ( dest.selectedIndex < 0)
-	{
-		if (dest.options[0] != null)
-			dest.options[0].selected = true;
-		dest.focus();
-		return false;
-	}
-	else
-	{
-		for (var i=0; i<dest.options.length; i++)
-		{
-			if (dest.options[i].selected)
-			{
-		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-   			}
-		}
-	    for (var i=dest.options.length-1; i>=0; i--)
-		{
-			if (dest.options[i].selected)
-			{
-		       dest.options[i] = null;
-   			}
-		}
-	}
-	disableButtons(from,dest,add,remove);
-}
-
-function disableButtons(from,dest,add,remove)
-{
-	if (from.options.length > 0 )
-	{
-		add.disabled = 0;
-	}
-	else
-		add.disabled = 1;
-
-	if (dest.options.length > 0)
-		remove.disabled = 0;
-	else
-		remove.disabled = 1;
-}
-
-function selectAll(CONTROL)
-{
-	for(var i = 0;i < CONTROL.length;i++)
-    {
-		CONTROL.options[i].selected = true;
-	}
-}
-
-function deselectAll(CONTROL)
-{
-	for(var i = 0;i < CONTROL.length;i++)
-	{
-		CONTROL.options[i].selected = false;
-	}
-}
-
-[[DIRECTORY_JAVASCRIPT]]
-
-</script>
 [[DIRECTORY_SEARCH]]
 <div id="directoryNavtree">
 <a href="?section=directory">[[TXT_DIRECTORY_DIR]]</a>[[DIRECTORY_CATEGORY_NAVI]]
@@ -236,103 +142,6 @@ function deselectAll(CONTROL)
 
 section=directory&cmd=add
 [HTML]
-<script language="JavaScript">
-<!--
-function add(from,dest,add,remove)
-{
-    if ( from.selectedIndex < 0)
-	{
-		if (from.options[0] != null)
-			from.options[0].selected = true;
-		from.focus();
-		return false;
-	}
-	else
-	{
-		for (var i=0; i<from.length; i++)
-		{
-			if (from.options[i].selected)
-			{
-		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
-   			}
-		}
-	    for (var i=from.length-1; i>=0; i--)
-		{
-			if (from.options[i].selected)
-			{
-		       from.options[i] = null;
-   			}
-		}
-	}
-    disableButtons(from,dest,add,remove);
-}
-
-
-function remove(from,dest,add,remove)
-{
-	if ( dest.selectedIndex < 0)
-	{
-		if (dest.options[0] != null)
-			dest.options[0].selected = true;
-		dest.focus();
-		return false;
-	}
-	else
-	{
-		for (var i=0; i<dest.options.length; i++)
-		{
-			if (dest.options[i].selected)
-			{
-		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-   			}
-		}
-	    for (var i=dest.options.length-1; i>=0; i--)
-		{
-			if (dest.options[i].selected)
-			{
-		       dest.options[i] = null;
-   			}
-		}
-	}
-	disableButtons(from,dest,add,remove);
-}
-
-function disableButtons(from,dest,add,remove)
-{
-	if (from.options.length > 0 )
-	{
-		add.disabled = 0;
-	}
-	else
-		add.disabled = 1;
-
-	if (dest.options.length > 0)
-		remove.disabled = 0;
-	else
-		remove.disabled = 1;
-}
-
-function selectAll(CONTROL)
-{
-	for(var i = 0;i < CONTROL.length;i++)
-    {
-		CONTROL.options[i].selected = true;
-	}
-}
-
-function deselectAll(CONTROL)
-{
-	for(var i = 0;i < CONTROL.length;i++)
-	{
-		CONTROL.options[i].selected = false;
-	}
-}
-
-
-[[DIRECTORY_JAVASCRIPT]]
-
--->
-</script>
 [[DIRECTORY_SEARCH]]
 <div id="directoryNavtree">
 <a href="?section=directory">[[TXT_DIRECTORY_DIR]]</a>[[DIRECTORY_CATEGORY_NAVI]]
@@ -431,3 +240,90 @@ function deselectAll(CONTROL)
 </form>
 <!-- END directoryInputFields -->
 [/HTML]
+
+
+Kontaktemodul
+-------------
+Das neue Kontaktemodul generiert keine Tabellenbasierten Layouts mehr.
+Die folgenden Styles müssen hinzugefügt werden, damit die Darstellung korrekt 
+ist. (siehe http://contrexx.com/docs/wiki?title=FAQ:Kontaktformular)
+--------------------------------------------------------------------------------
+/* CALENDAR */
+form.contactForm p {
+width: 300px;
+clear: left;
+margin: 0;
+padding: 2px 0 3px 0;
+padding-left: 155px;
+height: 1%;
+}
+
+form.contactForm p label.noCaption {
+float: left;
+width: 150px;
+margin-left: 2px;
+margin-top: 2px;
+}
+
+form.contactForm .contactFormGroup {
+float: left;
+margin-top: -15px !important;
+}
+
+form.contactForm p input.contactFormClass_checkbox {
+float: left;
+}
+
+form.contactForm p input.contactFormClass_checkboxGroup {
+clear: left;
+float: left;
+}
+
+form.contactForm p input.contactFormClass_radio {
+clear: left;
+float: left;
+}
+
+form.contactForm p label, .contactForm p span {
+font-weight: bold;
+float: left;
+margin-left: -155px;
+width: 150px;
+}
+
+form.contactForm input[type="text"] {
+width: 180px;
+}
+
+form.contactForm img.captcha {
+float: left;
+}
+
+form.contactForm .is_required {
+color: red;
+}
+
+form.contactForm textarea {
+width: 250px;
+height: 150px;
+}
+
+form.contactForm #contactFormCaptcha {
+margin-left: 147px;
+}
+
+
+form.contactForm .contactFormClass_button {
+margin-left: 0px;
+}
+
+form.contactForm  #contactFormCaptcha {
+margin-left: 3px !important;
+margin-top: 5px !important;
+}
+--------------------------------------------------------------------------------
+
+
+
+
+
