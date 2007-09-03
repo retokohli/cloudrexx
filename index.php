@@ -173,7 +173,6 @@ $history = isset($_REQUEST['history']) ? intval($_GET['history']) : 0;
 $pageId  = $objInit->getPageID($page, $section, $command, $history);
 $is_home = $objInit->is_home;
 
-$objNavbar  = &new Navigation($pageId);
 $objCounter = &new statsLibrary();
 $objCounter->checkForSpider();
 $themesPages = $objInit->getTemplates();
@@ -270,6 +269,9 @@ if (!empty($page_redirect)){
     header("Location: " . $page_redirect);
     exit;
 }
+
+// Initialize the navigation
+$objNavbar  = &new Navigation($pageId);
 
 //-------------------------------------------------------
 // Start page or default page for no section
