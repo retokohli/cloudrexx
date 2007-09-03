@@ -72,7 +72,7 @@ class Navigation
     */
     function _initialize()
     {
-    	global $objDatabase;
+    	global $objDatabase, $objPerm;
 
 		$objResult = $objDatabase->Execute("SELECT n.cmd AS cmd,
 			                   n.catid AS catid,
@@ -92,7 +92,19 @@ class Navigation
            				   AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
            				   AND n.activestatus='1'
            				   AND n.is_validated='1'
-			          ORDER BY n.parcat DESC, n.displayorder ASC");
+           				   ".(
+							is_object($objPerm) ?
+								// user is authenticated
+								(
+									!$objPerm->allAccess ?
+										 // user is not administrator
+										'AND (n.protected=0'.(count($objPerm->getDynamicAccessIds()) ? ' OR n.frontend_access_id IN ('.implode(', ', $objPerm->getDynamicAccessIds()).')' : '').')' :
+										// user is administrator
+										''
+								)
+								: ''
+							)."
+						ORDER BY n.parcat DESC, n.displayorder ASC");
 
 
 		//check for preview and if theme exists in database

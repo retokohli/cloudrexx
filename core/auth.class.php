@@ -227,6 +227,9 @@ class Auth
         }
         $sqlWhereString = substr($sqlWhereString, 0, strlen($sqlWhereString)-4);
 
+		$_SESSION['auth']['static_access_ids'] = array();
+		$_SESSION['auth']['dynamic_access_ids'] = array();
+
         if (count($arrUserGroups)>0) {
             // get static right ids
             $objResult = $objDatabase->Execute("SELECT access_id FROM ".DBPREFIX."access_group_static_ids WHERE ".$sqlWhereString);

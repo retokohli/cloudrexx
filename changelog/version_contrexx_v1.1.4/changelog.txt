@@ -70,6 +70,9 @@ Allgemein
 - Russische und Französische Übersetzung des Grundsystems erweitert.
 - Ein Benutzer ist nun auch auf nicht geschützten Seiten authentifiziert,
   sofern sich dieser zuvor authentifiziert hat.
+- Nachdem sich ein Benutzer im Frontend Authentifizier hat, werden nur noch die
+  Menüpunkte in der Navigation angezeigt, auf welche der Benutzer auch Zugriff
+  hat.
 
 Webinstaller
 - MySQL Server Version Überprüfung anstatt der Client Version.
