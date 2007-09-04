@@ -188,14 +188,17 @@ function showOrHide(strElement)
 	if(addressorSelect == 2){
 		document.getElementById(strElement).style.display = 'block';
 		document.getElementById('mailTab').style.display = 'block';
+		document.getElementById('mailTab2').style.display = 'none';
 		document.getElementById('mailAgain').style.display = 'block';
 	} else if(addressorSelect == 1) {
 		document.getElementById('mailTab').style.display = 'block';
+		document.getElementById('mailTab2').style.display = 'none';
 		document.getElementById(strElement).style.display = 'none';
 		document.getElementById('mailAgain').style.display = 'block';
 	} else {
 		document.getElementById(strElement).style.display = 'none';
 		document.getElementById('mailTab').style.display = 'none';
+		document.getElementById('mailTab2').style.display = 'block';
 		document.getElementById('mailAgain').style.display = 'none';
 	}
 }
@@ -226,6 +229,7 @@ function showOrHide(strElement)
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 Text[0]=['','{TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER_INFO}'];
 Text[1]=['','{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_INFO}'];
+Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
 // -->
 </script>
 
@@ -507,10 +511,17 @@ Text[1]=['','{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_INFO}'];
   <!-- END sendMailAgain -->
   </div>
   <br />
+  <div id="mailTab2" style="display:block">
+	<ul id="tabmenu">
+		<li><a id="registrationTab_formular" class="active" href="javascript:{}" onclick="selectTab('formular')" title="{TXT_CALENDAR_FORMULAR}">{TXT_CALENDAR_FORMULAR}</a></li>
+		<li><a id="registrationTab_notification" href="javascript:{}" onclick="selectTab('notification')" title="{TXT_CALENDAR_NOTIFICATION}">{TXT_CALENDAR_NOTIFICATION}</a></li>
+	</ul>
+  </div>
   <div id="mailTab" style="display:none">
 	<ul id="tabmenu">
 		<li><a id="registrationTab_formular" class="active" href="javascript:{}" onclick="selectTab('formular')" title="{TXT_CALENDAR_FORMULAR}">{TXT_CALENDAR_FORMULAR}</a></li>
 		<li><a id="registrationTab_mail" href="javascript:{}" onclick="selectTab('mail')" title="{TXT_CALENDAR_MAIL_TEMPLATE}">{TXT_CALENDAR_MAIL_TEMPLATE}</a></li>
+		<li><a id="registrationTab_notification" href="javascript:{}" onclick="selectTab('notification')" title="{TXT_CALENDAR_NOTIFICATION}">{TXT_CALENDAR_NOTIFICATION}</a></li>
 	</ul>
   </div>
   <div id="formular" class="registrationTab" style="display:block">
@@ -601,6 +612,24 @@ Text[1]=['','{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_INFO}'];
 	<tr class="row2">
 		<td width="120" nowrap="nowrap" valign="top">{TXT_CALENDAR_TEXT}</td>
 		<td nowrap="nowrap"><textarea name="registrationMailContent" style="width:468px; overflow: auto;" rows='15'>{CALENDAR_MAIL_CONTENT}</textarea></td>
+	</tr>
+  </table>
+  </div>
+
+  <div id="notification" class="registrationTab" style="display:none">
+  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    <tr>
+      <th colspan="2" nowrap="nowrap">
+        <div align="left">{TXT_CALENDAR_NOTIFICATION}</div>
+      </th>
+    </tr>
+	<tr class="row1">
+		<td width="120" nowrap="nowrap">{TXT_CALENDAR_NOTIFICATION_ACTIVATE}</td>
+		<td nowrap="nowrap"><input type="checkbox" id="inputNotification" name='inputNotification' value="1" {CALENDAR_NOTIFICATION_ACTIVATED}/></td>
+	</tr>
+	<tr class="row2">
+		<td width="120" nowrap="nowrap">{TXT_CALENDAR_NOTIFICATION_ADDRESS}</td>
+		<td nowrap="nowrap"><input type="text" name='inputNotificationAddress' style="width: 198px;" value="{CALENDAR_NOTIFICATION_ADDRESS}" />&nbsp;&nbsp;<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
 	</tr>
   </table>
   </div>
