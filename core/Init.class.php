@@ -62,6 +62,7 @@ class InitCMS
 		$objResult = $objDatabase->Execute("SELECT id,
 									themesid,
 									print_themes_id,
+									pdf_themes_id,
 									lang,
 		                            name,
 									charset,
@@ -76,6 +77,7 @@ class InitCMS
 				    'id'         => $objResult->fields['id'],
 				    'themesid'   => $objResult->fields['themesid'],
 				    'print_themes_id' => $objResult->fields['print_themes_id'],
+				    'pdf_themes_id' => $objResult->fields['pdf_themes_id'],
 				    'lang'       => $objResult->fields['lang'],
 				    'name'       => $objResult->fields['name'],
 				    'charset'    => $objResult->fields['charset'],
@@ -151,6 +153,8 @@ class InitCMS
 		$this->frontendLangId = $frontendLangId;
 		if (isset($_GET['printview']) && $_GET['printview'] == 1) {
 		    $this->currentThemesId = $this->arrLang[$frontendLangId]['print_themes_id'];
+		}elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
+			$this->currentThemesId = $this->arrLang[$frontendLangId]['pdf_themes_id'];
 		} else {
 		    $this->currentThemesId = $this->arrLang[$frontendLangId]['themesid'];
 		}
@@ -687,6 +691,18 @@ class InitCMS
 		        }
 		}
 		$retval = (count($_GET) == 0) ? $_SERVER['REQUEST_URI']."?printview=1" : $_SERVER['REQUEST_URI']."&printview=1";
+		return htmlspecialchars($retval, ENT_QUOTES, CONTREXX_CHARSET);
+	}
+	
+	function getPDFUri() {
+		if (!isset($_SERVER['REQUEST_URI'])) {
+		        $arr = explode("/", $_SERVER['PHP_SELF']);
+		        $_SERVER['REQUEST_URI'] = "/" . $arr[count($arr)-1];
+		        if (isset($_SERVER['argv'][0]) && $_SERVER['argv'][0]!="") {
+		                $_SERVER['REQUEST_URI'] .= "?" . $_SERVER['argv'][0];
+		        }
+		}
+		$retval = (count($_GET) == 0) ? $_SERVER['REQUEST_URI']."?pdfview=1" : $_SERVER['REQUEST_URI']."&pdfview=1";
 		return htmlspecialchars($retval, ENT_QUOTES, CONTREXX_CHARSET);
 	}
 
