@@ -39,4 +39,3 @@ FCKConfig.FlashBrowserURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKE
 FCKConfig.LinkUploadURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&act=FCKEditorUpload&standalone=true&type=webpages';
 FCKConfig.ImageUploadURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&act=FCKEditorUpload&standalone=true';
 FCKConfig.FlashUploadURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&act=FCKEditorUpload&standalone=true';
-
