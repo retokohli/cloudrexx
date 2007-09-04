@@ -778,7 +778,9 @@ class calendarLibrary
 							public,
 							mailContent,
 							mailTitle,
-							num
+							num,
+							notification,
+							notification_address
 		    		FROM 	".DBPREFIX."module_calendar
 		    	   WHERE 	id = '".$id."'";
 
@@ -990,6 +992,15 @@ class calendarLibrary
 			$registrationsAddresserSelectGroup		= 'selected="selected"';
 		}
 
+		switch ($objResultNote->fields['notification']){
+			case 0:
+				$notification	 = '';
+				break;
+			case 1:
+				$notification	 = 'checked="checked"';
+				break;
+		}
+
 		//count reg
 		$reg_signoff = $this->_countRegistrations($objResultNote->fields['id']);
 
@@ -1061,6 +1072,9 @@ class calendarLibrary
 
 			'CALENDAR_MAIL_TITLE' 			=> htmlentities($objResultNote->fields['mailTitle'], ENT_QUOTES, CONTREXX_CHARSET),
 			'CALENDAR_MAIL_CONTENT' 		=> htmlentities($objResultNote->fields['mailContent'], ENT_QUOTES, CONTREXX_CHARSET),
+
+			'CALENDAR_NOTIFICATION_ACTIVATED' 	=> $notification,
+			'CALENDAR_NOTIFICATION_ADDRESS' 	=> htmlentities($objResultNote->fields['notification_address'], ENT_QUOTES, CONTREXX_CHARSET),
 		));
 
 		if (($objResultNote->fields['registration'] != 1 || $objResultNote->fields['public'] != 1) ||  $objResultNote->fields['num'] < $this->_countSubscriber($objResultNote->fields['id']) && $objResultNote->fields['num'] != 0 && $objResultNote->fields['num'] != '') {
@@ -1610,7 +1624,7 @@ class calendarLibrary
      * @param int $noteId
      * @param int $regId
      */
-	function _sendConfirmation($userId, $noteId, $regId)
+	function _sendConfirmation($user, $noteId, $regId)
 	{
 		global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
@@ -1640,14 +1654,25 @@ class calendarLibrary
 		$objResultNote 	= $objDatabase->SelectLimit($queryNote, 1);
 
 		//get user data
-		$queryUser = "SELECT 	id,
-								firstname,
-								lastname,
-								email
-			    		FROM 	".DBPREFIX."access_users
-			    	   WHERE 	id = '".$userId."'";
+		if (is_numeric($user)) {
+			$queryUser = "SELECT 	id,
+									firstname,
+									lastname,
+									email
+				    		FROM 	".DBPREFIX."access_users
+				    	   WHERE 	id = '".$user."'";
 
-		$objResultUser 	= $objDatabase->SelectLimit($queryUser, 1);
+			$objResultUser 	= $objDatabase->SelectLimit($queryUser, 1);
+
+			$firstname		= $objResultUser->fields['firstname'];
+			$lastname		= $objResultUser->fields['lastname'];
+			$toMail 		= $objResultUser->fields['email'];
+		} else {
+			$firstname		= "";
+			$lastname		= "";
+			$toMail 		= $user;
+		}
+
 
 		//get reg data
 		$queryReg = "SELECT 	id,
@@ -1675,8 +1700,6 @@ class calendarLibrary
 
 			$url		= $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET;
 			$date		= date(ASCMS_DATE_FORMAT);
-			$firstname	= $objResultUser->fields['firstname'];
-			$lastname	= $objResultUser->fields['lastname'];
 			$title		= $objResultNote->fields['name'];
 			$startdate	= date("Y-m-d H:i", $objResultNote->fields['startdate']);
 			$enddate 	= date("Y-m-d H:i", $objResultNote->fields['enddate']);
@@ -1702,9 +1725,105 @@ class calendarLibrary
 			$objMail->Subject = $mailTitle;
 			$objMail->IsHTML(false);
 			$objMail->Body = $mailContent;
-			$objMail->AddAddress($objResultUser->fields['email']);
+			$objMail->AddAddress($toMail);
 			$objMail->Send();
 			$objMail->ClearAddresses();
+		}
+	}
+
+
+	function _sendNotification($mail, $firstname, $lastname, $noteId, $regId)
+	{
+		global $_CONFIG, $objDatabase, $_ARRAYLANG;
+
+		//get note data
+		$queryNote 		= "SELECT 	id,
+									name,
+									notification,
+									notification_address
+				    		FROM 	".DBPREFIX."module_calendar
+				    	   WHERE 	id = '".$noteId."'";
+
+		$objResultNote 	= $objDatabase->SelectLimit($queryNote, 1);
+
+		//get mail template
+		$query 			= "SELECT setvalue
+		              	 	 FROM ".DBPREFIX."module_calendar_settings
+			            	WHERE setid = '5'";
+
+		$objResult 		= $objDatabase->SelectLimit($query, 1);
+		$mailTitle 		= $objResult->fields['setvalue'];
+
+		$query 			= "SELECT setvalue
+		              	 	 FROM ".DBPREFIX."module_calendar_settings
+			            	WHERE setid = '6'";
+
+		$objResult 		= $objDatabase->SelectLimit($query, 1);
+		$mailContent 	= $objResult->fields['setvalue'];
+
+		//get reg data
+		$queryReg = "SELECT 	id,
+								type
+			    		FROM 	".DBPREFIX."module_calendar_registrations
+			    	   WHERE 	id = '".$regId."'";
+
+		$objResultReg 	= $objDatabase->SelectLimit($queryReg, 1);
+
+
+
+		//get mail obj
+		if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+			if ($objResultNote->fields['notification'] == 1) {
+				$objMail = new phpmailer();
+
+				if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+					$objSmtpSettings = new SmtpSettings();
+					if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+						$objMail->IsSMTP();
+						$objMail->Host = $arrSmtp['hostname'];
+						$objMail->Port = $arrSmtp['port'];
+						$objMail->SMTPAuth = true;
+						$objMail->Username = $arrSmtp['username'];
+						$objMail->Password = $arrSmtp['password'];
+					}
+				}
+
+				$url			=  "http://".$_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET;
+				$date			= date(ASCMS_DATE_FORMAT);
+				$type 			= $objResultReg->fields['type'] == 1 ? $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'] : $_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'];
+				$title			= $objResultNote->fields['name'];
+				$addresses		= explode(",", $objResultNote->fields['notification_address']);
+
+				//replace placeholder
+				$array_1 = array('[[FIRSTNAME]]', '[[LASTNAME]]', '[[TITLE]]', '[[E-MAIL]]', '[[URL]]', '[[DATE]]', '[[REG_TYPE]]');
+				$array_2 = array($firstname, $lastname, $title, $mail, $url, $date, $type);
+
+				for($x = 0; $x < 8; $x++){
+				  $mailTitle = str_replace($array_1[$x], $array_2[$x], $mailTitle);
+				}
+
+				for($x = 0; $x < 8; $x++){
+				  $mailContent = str_replace($array_1[$x], $array_2[$x], $mailContent);
+				}
+
+
+				//send mail
+				$objMail->CharSet = CONTREXX_CHARSET;
+				$objMail->From = $_CONFIG['coreAdminEmail'];
+				$objMail->FromName = $_CONFIG['coreAdminName'];
+				$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+				$objMail->Subject = $mailTitle;
+				$objMail->IsHTML(false);
+				$objMail->Body = $mailContent;
+
+				//add addresses
+				foreach ($addresses as $key => $email) {
+					$objMail->AddAddress($email);
+				}
+
+				$objMail->Send();
+				$objMail->ClearAddresses();
+			}
 		}
 	}
 }

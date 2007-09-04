@@ -47,6 +47,11 @@ class calendarManager extends calendarLibrary
         // links
 		$this->pageTitle = $_ARRAYLANG['TXT_CALENDAR'];
 
+		$_ARRAYLANG['TXT_CALENDAR_MAIL_PUBLICATION'] = "Publikation";
+		$_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ACTIVATE'] = "Benachrichtigung aktivieren";
+		$_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ADDRESS'] = "Empfänger";
+		$_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO'] = "Es können beliebig viele Empfänger angegeben werden. Die E-Mail Adressen müssen mit \",\" getrennt werden.";
+
     	$objTemplate->setVariable("CONTENT_NAVIGATION","
             <a href='?cmd=calendar'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW']." </a>
     		<a href='?cmd=calendar&amp;act=new'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_ENTRY']." </a>
@@ -721,7 +726,7 @@ class calendarManager extends calendarLibrary
 	 */
 	function modifyNote($id=null)
 	{
-	    global $objDatabase, $_ARRAYLANG, $_LANGID, $_CORELANG;
+	    global $objDatabase, $_ARRAYLANG, $_LANGID, $_CORELANG, $_CONFIG;
 
 	    if(!empty($id)) {
 	    	//edit note
@@ -808,6 +813,8 @@ class calendarManager extends calendarLibrary
 				'CALENDAR_REGISTRATIONS_GROUPS_SELECTED' 	=> $this->_getUserGroups('', 1),
 				'CALENDAR_MAIL_TITLE' 						=> $mailTitle,
 				'CALENDAR_MAIL_CONTENT' 					=> $mailContent,
+				'CALENDAR_NOTIFICATION_ACTIVATED' 			=> 'checked="checked"',
+				'CALENDAR_NOTIFICATION_ADDRESS' 			=> $_CONFIG['coreAdminEmail'],
 		    ));
 
 		   $this->_getFormular('', 'backend');
@@ -890,6 +897,10 @@ class calendarManager extends calendarLibrary
 			'TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER_INFO'	=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER_INFO'],
 			'TXT_CALENDAR_SEND_MAIL_AGAIN'	=> $_ARRAYLANG['TXT_CALENDAR_SEND_MAIL_AGAIN'],
 			'TXT_CALENDAR_REGISTRATIONS_ADDRESSER_INFO'	=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_ADDRESSER_INFO'],
+			'TXT_CALENDAR_NOTIFICATION' 				=> $_ARRAYLANG['TXT_CALENDAR_MAIL_NOTIFICATION'],
+			'TXT_CALENDAR_NOTIFICATION_ACTIVATE' 		=> $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ACTIVATE'],
+			'TXT_CALENDAR_NOTIFICATION_ADDRESS' 		=> $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ADDRESS'],
+			'TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO' 	=> $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO'],
 		));
 	}
 
@@ -959,6 +970,13 @@ class calendarManager extends calendarLibrary
 		$mailTitle		= contrexx_addslashes(contrexx_strip_tags($_POST['registrationMailTitle']));
 		$mailContent	= contrexx_addslashes(contrexx_strip_tags($_POST['registrationMailContent']));
 		$mailSendAgain	= intval($_POST['inputSendMailAgain']);
+
+		//notification
+		$notification	= intval($_POST['inputNotification']);
+
+		if ($notification == 1) {
+			$notificationAddress = contrexx_addslashes(contrexx_strip_tags($_POST['inputNotificationAddress']));
+		}
 
 		if (!empty($link)) {
 			if (!preg_match("%^(?:ftp|http|https):\/\/%", $link)) {
@@ -1046,7 +1064,9 @@ class calendarManager extends calendarLibrary
 																	public = '".$public."',
 																	mailTitle = '".$mailTitle."',
 																	mailContent = '".$mailContent."',
-																	num = '".$registrationSubscriber."'
+																	num = '".$registrationSubscriber."',
+																	notification = '".$notification."',
+																	notification_address = '".$notificationAddress."'
 															WHERE   id = '".$id."'";
 				$objResult = $objDatabase->Execute($query);
 
@@ -1136,7 +1156,9 @@ class calendarManager extends calendarLibrary
 																mailTitle,
 																mailContent,
 																`key`,
-																num)
+																num,
+																notification,
+																notification_address)
 														VALUES ('$active',
 																'$catid',
 																'$startdate',
@@ -1167,7 +1189,9 @@ class calendarManager extends calendarLibrary
 																'$mailTitle',
 																'$mailContent',
 																'$key',
-																'$registrationSubscriber')";
+																'$registrationSubscriber',
+																'$notification',
+																'$notificationAddress')";
 			$objResult = $objDatabase->Execute($query);
 
 			if ($objResult !== false) {
@@ -1603,14 +1627,14 @@ class calendarManager extends calendarLibrary
 			            	WHERE setid = '1'";
 
 		$objResult 		= $objDatabase->SelectLimit($query, 1);
-		$mailNotTitle 		= $objResult->fields['setvalue'];
+		$mailTitle 		= $objResult->fields['setvalue'];
 
 		$query 			= "SELECT setvalue
 		              	 	 FROM ".DBPREFIX."module_calendar_settings
 			            	WHERE setid = '2'";
 
 		$objResult 		= $objDatabase->SelectLimit($query, 1);
-		$mailNotContent 	= $objResult->fields['setvalue'];
+		$mailContent 	= $objResult->fields['setvalue'];
 
 		$query 			= "SELECT setvalue
 		              	 	 FROM ".DBPREFIX."module_calendar_settings
@@ -1625,6 +1649,20 @@ class calendarManager extends calendarLibrary
 
 		$objResult 		= $objDatabase->SelectLimit($query, 1);
 		$mailConContent = $objResult->fields['setvalue'];
+
+		$query 			= "SELECT setvalue
+		              	 	 FROM ".DBPREFIX."module_calendar_settings
+			            	WHERE setid = '5'";
+
+		$objResult 		= $objDatabase->SelectLimit($query, 1);
+		$mailNotTitle 		= $objResult->fields['setvalue'];
+
+		$query 			= "SELECT setvalue
+		              	 	 FROM ".DBPREFIX."module_calendar_settings
+			            	WHERE setid = '6'";
+
+		$objResult 		= $objDatabase->SelectLimit($query, 1);
+		$mailNotContent 	= $objResult->fields['setvalue'];
 
 		//Parse
 		$this->_objTpl->setVariable(array(
@@ -1643,11 +1681,14 @@ class calendarManager extends calendarLibrary
 	        'TXT_CALENDAR_MAIL_TEMPLATE'		=> $_ARRAYLANG['TXT_CALENDAR_MAIL_TEMPLATE'],
 			'TXT_CALENDAR_TITLE'				=> $_ARRAYLANG['TXT_CALENDAR_TITLE'],
 			'TXT_CALENDAR_TEXT'					=> $_ARRAYLANG['TXT_CALENDAR_TEXT'],
+			'CALENDAR_MAIL_TITLE'				=> $mailTitle,
+			'CALENDAR_MAIL_CONTENT'				=> $mailContent,
 			'CALENDAR_NOT_MAIL_TITLE'			=> $mailNotTitle,
 			'CALENDAR_NOT_MAIL_CONTENT'			=> $mailNotContent,
 			'CALENDAR_CON_MAIL_TITLE'			=> $mailConTitle,
 			'CALENDAR_CON_MAIL_CONTENT'			=> $mailConContent,
 			'TXT_CALENDAR_PLACEHOLDERS'			=> $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDERS'],
+			'TXT_CALENDAR_EMAIL' 				=> $_ARRAYLANG['TXT_CALENDAR_MAIL'],
 			'TXT_CALENDAR_FIRSTNAME'			=> $_ARRAYLANG['TXT_CALENDAR_FIRSTNAME'],
 			'TXT_CALENDAR_LASTNAME'				=> $_ARRAYLANG['TXT_CALENDAR_LASTNAME'],
 			'TXT_CALENDAR_REG_LINK'				=> $_ARRAYLANG['TXT_CALENDAR_REG_LINK'],
@@ -1660,6 +1701,7 @@ class calendarManager extends calendarLibrary
 			'TXT_CALENDAR_HOST_URL'				=> $_ARRAYLANG['TXT_CALENDAR_HOST_URL'],
 			'TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'			=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'],
 			'TXT_CALENDAR_REGISTRATION_TYPE'				=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_TYPE'],
+			'TXT_CALENDAR_MAIL_PUBLICATION'					=> $_ARRAYLANG['TXT_CALENDAR_MAIL_PUBLICATION'],
 			'TXT_CALENDAR_MAIL_NOTIFICATION'				=> $_ARRAYLANG['TXT_CALENDAR_MAIL_NOTIFICATION'],
 			'TXT_CALENDAR_MAIL_CONFIRMATION'				=> $_ARRAYLANG['TXT_CALENDAR_MAIL_CONFIRMATION'],
 	    ));
@@ -1794,12 +1836,12 @@ class calendarManager extends calendarLibrary
 		$objDatabase->Execute($query);
 
 		$query = "UPDATE ".DBPREFIX."module_calendar_settings
-				SET setvalue = '".contrexx_addslashes($_POST['registrationNotMailTitle'])."'
+				SET setvalue = '".contrexx_addslashes($_POST['registrationMailTitle'])."'
 				WHERE setid = '1'";
 		$objDatabase->Execute($query);
 
 		$query = "UPDATE ".DBPREFIX."module_calendar_settings
-				SET setvalue = '".contrexx_addslashes($_POST['registrationNotMailContent'])."'
+				SET setvalue = '".contrexx_addslashes($_POST['registrationMailContent'])."'
 				WHERE setid = '2'";
 		$objDatabase->Execute($query);
 
@@ -1811,6 +1853,16 @@ class calendarManager extends calendarLibrary
 		$query = "UPDATE ".DBPREFIX."module_calendar_settings
 				SET setvalue = '".contrexx_addslashes($_POST['registrationConMailContent'])."'
 				WHERE setid = '4'";
+		$objDatabase->Execute($query);
+
+		$query = "UPDATE ".DBPREFIX."module_calendar_settings
+				SET setvalue = '".contrexx_addslashes($_POST['registrationNotMailTitle'])."'
+				WHERE setid = '5'";
+		$objDatabase->Execute($query);
+
+		$query = "UPDATE ".DBPREFIX."module_calendar_settings
+				SET setvalue = '".contrexx_addslashes($_POST['registrationNotMailContent'])."'
+				WHERE setid = '6'";
 		$objDatabase->Execute($query);
 
 

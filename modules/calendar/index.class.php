@@ -784,11 +784,37 @@ class Calendar extends calendarLibrary
 				}
 
 				if ($objResultFields !== false) {
+					//email
+					$query = "SELECT id FROM ".DBPREFIX."module_calendar_form_fields WHERE note_id='".$noteId."' AND `key`='6' LIMIT 1";
+				    $objResult = $objDatabase->Execute($query);
+					if ($objResult !== false) {
+						$mailId = $objResult->fields['id'];
+					}
+
+					//firstane
+					$query = "SELECT id FROM ".DBPREFIX."module_calendar_form_fields WHERE note_id='".$noteId."' AND `key`='1' LIMIT 1";
+				    $objResult = $objDatabase->Execute($query);
+					if ($objResult !== false) {
+						$firstnameId = $objResult->fields['id'];
+					}
+
+					//lastname
+					$query = "SELECT id FROM ".DBPREFIX."module_calendar_form_fields WHERE note_id='".$noteId."' AND `key`='2' LIMIT 1";
+				    $objResult = $objDatabase->Execute($query);
+					if ($objResult !== false) {
+						$lastnameId = $objResult->fields['id'];
+					}
 
 					if (!empty($_POST['userid'])) {
 						$userId = intval($_POST['userid']);
 						$this->_sendConfirmation($userId, $noteId, $regId);
+					} else {
+						if (!empty($_POST['signForm'][$mailId])) {
+							$this->_sendConfirmation($_POST['signForm'][$mailId], $noteId, $regId);
+						}
 					}
+
+					$this->_sendNotification($_POST['signForm'][$mailId], $_POST['signForm'][$firstnameId], $_POST['signForm'][$lastnameId], $noteId, $regId);
 
 					$this->_objTpl->setVariable(array(
 						'CALENDAR_REGISTRATIONS_STATUS'          => $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFUL'],
