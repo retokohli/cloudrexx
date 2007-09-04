@@ -1,3 +1,4 @@
+
 <?php require_once('../config/configuration.php') ?>
 /*
  * FCKeditor config file
