@@ -1451,6 +1451,7 @@ $objTemplate->setVariable(array(
     'CONTENT_TITLE'         => $page_title,
     'CSS_NAME'              => $pageCssName,
     'PRINT_URL'             => $objInit->getPrintUri(),
+    'PDF_URL'             => $objInit->getPDFUri(),
     'PAGE_URL'              => $objInit->getPageUri(),
     'CURRENT_URL'           => $objInit->getCurrentPageUri(),
     'DATE'                  => showFormattedDate(),
@@ -1479,8 +1480,9 @@ $parsingtime = explode(' ', microtime());
 $time = round(((float)$parsingtime[0] + (float)$parsingtime[1]) - ((float)$starttime[0] + (float)$starttime[1]), 5);
 $objTemplate->setVariable('PARSING_TIME', $time);
 
-//Allow PRINT_URL in sidebar
+//Allow PRINT_URL & PDF_URL in sidebar
 $themesPages['sidebar'] = str_replace('{PRINT_URL}',$objInit->getPrintUri(), $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{PDF_URL}',$objInit->getPDFUri(), $themesPages['sidebar']);
 
 $objTemplate->setVariable(array(
     'SIDEBAR_FILE'     => $themesPages['sidebar'],
@@ -1494,6 +1496,13 @@ if (!empty($moduleStyleFile)) {
     ));
 }
 
-$objTemplate->show();
+if(isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
+	require_once ASCMS_CORE_PATH.'/pdf.class.php';
+	 $objPDF = &new PDF();
+	 $objPDF->content = $objTemplate->get();
+	 $objPDF->Create();
+}else{
+	$objTemplate->show();
+}
 $objCache->endCache();
 ?>
