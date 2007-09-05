@@ -3396,7 +3396,6 @@ class newsletter extends NewsletterLib
 							GROUP BY tblUser.id
 							ORDER BY emaildate DESC";
 		}
-//		$objResult = $objDatabase->SelectLimit($query, $limit, $pos);
 
 		//show only one record set if _REQUEST['id'] is set (meaning the client comes from user details)
 		if(!empty($_REQUEST['id']) && $_GET['delete'] != 'exe' && $_GET['bulkdelete'] != 'exe'){
