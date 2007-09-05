@@ -1496,7 +1496,7 @@ if (!empty($moduleStyleFile)) {
     ));
 }
 
-if(isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
+if(isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1){
 	require_once ASCMS_CORE_PATH.'/pdf.class.php';
 	 $objPDF = &new PDF();
 	 $objPDF->content = $objTemplate->get();
