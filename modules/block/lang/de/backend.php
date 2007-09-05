@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 30 Aug 2007 10:22:49 +0200
+* generated date Wed, 05 Sep 2007 17:51:51 +0200
 **/
 
 $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'] = "Block %s bearbeiten";
@@ -25,10 +25,10 @@ $_ARRAYLANG['TXT_BLOCK_SUBMIT_RANDOM'] = "Markierte zum Zufallsgenerator hinzuf�
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_RANDOM_OFF'] = "Markierte aus Zufallsgenerator entfernen";
 $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'] = "Alles markieren";
 $_ARRAYLANG['TXT_BLOCK_DESELECT_ALL'] = "Markierung löschen";
-$_ARRAYLANG['TXT_BLOCK_RANDOM'] = "im Zufallsgenerator";
+$_ARRAYLANG['TXT_BLOCK_RANDOM'] = "Im Zufallsgenerator";
 $_ARRAYLANG['TXT_BLOCK_DELETE_SELECTED_BLOCKS'] = "Möchten Sie die ausgewählten Blöcke wirklich löschen?";
 $_ARRAYLANG['TXT_BLOCK_NO_NAME'] = "[kein Name]";
-$_ARRAYLANG['TXT_BLOCK_USE_BLOCK_RANDOM'] = "Zufallgenerator verwenden";
+$_ARRAYLANG['TXT_BLOCK_USE_BLOCK_RANDOM'] = "Zufallsgenerator verwenden";
 $_ARRAYLANG['TXT_BLOCK_USE_BLOCK_RANDOM_PLACEHOLDER'] = "Plazhalter für Zufallgenerator [[BLOCK_RANDOMIZER]]";
 $_ARRAYLANG['TXT_BLOCK_ACTIVE'] = "Aktiv";
 $_ARRAYLANG['TXT_BLOCK_INACTIVE'] = "Inaktiv";
@@ -51,7 +51,7 @@ $_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL'] = "Markierte zum globalen Block hinzufüg
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL_OFF'] = "Markierte vom globalen Block entfernen";
 $_ARRAYLANG['TXT_BLOCK_SHOW_IN_GLOBAL'] = "im globalen Block anzeigen";
 $_ARRAYLANG['TXT_BLOCK_STATUS'] = "Status";
-$_ARRAYLANG['TXT_BLOCK_BLOCK'] = "Block";
+$_ARRAYLANG['TXT_BLOCK_BLOCK'] = "Platzhalter";
 $_ARRAYLANG['TXT_BLOCK_ACTIVATE'] = "aktivieren";
 $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_ON_ALL_'] = "Block auf jeder Seite dieser Sprache anzeigen";
 $_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'] = "Frontend Seiten";

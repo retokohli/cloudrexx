@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 30 Aug 2007 10:22:49 +0200
+* generated date Wed, 05 Sep 2007 17:51:51 +0200
 **/
 
 $_ARRAYLANG['TXT_CALENDAR_DATE'] = "Date";
@@ -222,4 +222,8 @@ $_ARRAYLANG['TXT_CALENDAR_MAIL_NOTIFICATION'] = "Benachrichtigung";
 $_ARRAYLANG['TXT_CALENDAR_MAIL_CONFIRMATION'] = "Confirmation";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_ADDRESSER_INFO'] = "Werden Benutzergruppen ausgewählt, wird jedem Benutzer dieser Gruppe autom. ein E-Mail mit dem direkten Link zur Anmeldung verschickt. Wird die Anmeldung als öffentlich definiert, erscheint ein Link zur Anmeldung direkt beim Termin.";
 $_ARRAYLANG['TXT_CALENDAR_CSV_FILE'] = "CSV File";
+$_ARRAYLANG['TXT_CALENDAR_MAIL_PUBLICATION'] = "Publikation";
+$_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ACTIVATE'] = "Benachrichtigung aktivieren";
+$_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ADDRESS'] = "Empfänger";
+$_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO'] = "Es können beliebig viele Empfänger angegeben werden. Die E-Mail Adressen müssen mit ',' getrennt werden.";
 ?>
