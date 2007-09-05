@@ -15,7 +15,7 @@
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
-if (1) {
+if (0) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 } else {
@@ -57,9 +57,6 @@ if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
 }
 
 require_once '../core/API.php';
-
-global $_CONFIG;
-
 //-------------------------------------------------------
 // Initialize database object
 //-------------------------------------------------------
