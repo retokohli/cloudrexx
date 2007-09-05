@@ -47,11 +47,6 @@ class calendarManager extends calendarLibrary
         // links
 		$this->pageTitle = $_ARRAYLANG['TXT_CALENDAR'];
 
-		$_ARRAYLANG['TXT_CALENDAR_MAIL_PUBLICATION'] = "Publikation";
-		$_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ACTIVATE'] = "Benachrichtigung aktivieren";
-		$_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ADDRESS'] = "Empfänger";
-		$_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO'] = "Es können beliebig viele Empfänger angegeben werden. Die E-Mail Adressen müssen mit \",\" getrennt werden.";
-
     	$objTemplate->setVariable("CONTENT_NAVIGATION","
             <a href='?cmd=calendar'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW']." </a>
     		<a href='?cmd=calendar&amp;act=new'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_ENTRY']." </a>
