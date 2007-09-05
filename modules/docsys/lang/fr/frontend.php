@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 30 Aug 2007 10:22:49 +0200
+* generated date Wed, 05 Sep 2007 17:51:51 +0200
 **/
 
 $_ARRAYLANG['TXT_AUTHOR'] = "Author";
