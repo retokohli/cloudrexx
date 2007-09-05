@@ -794,7 +794,7 @@ class ContentManager
 	{
 		global $objDatabase, $objPerm;
 
-		$objResult = $objDatabase->SelectLimit('SELECT backend_access_id FROM '.DBPREFIX.'content_navigation WHERE catid='.$pageId.' AND backend_access_id!=0');
+		$objResult = $objDatabase->SelectLimit('SELECT backend_access_id FROM '.DBPREFIX.'content_navigation WHERE catid='.$pageId.' AND backend_access_id!=0', 1);
 		if ($objResult !== false) {
 			if ($objResult->RecordCount() == 1 && !$objPerm->checkAccess($objResult->fields['backend_access_id'], 'dynamic')) {
 				header('Location: index.php?cmd=noaccess');

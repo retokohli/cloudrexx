@@ -157,7 +157,7 @@ class NewsletterLib {
 	{
 		global $objDatabase;
 
-		$objRecipient = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_addslashes($email)."' AND id!=".$recipientId);
+		$objRecipient = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_addslashes($email)."' AND id!=".$recipientId, 1);
 		if ($objRecipient !== false && $objRecipient->RecordCount() == 0) {
 			return true;
 		} else {
@@ -298,7 +298,7 @@ class NewsletterLib {
 	{
 		global $objDatabase;
 
-		$objUser = $objDatabase->SelectLimit('SELECT `email` FROM `'.DBPREFIX.'module_newsletter_user` WHERE id='.$id);
+		$objUser = $objDatabase->SelectLimit('SELECT `email` FROM `'.DBPREFIX.'module_newsletter_user` WHERE id='.$id, 1);
 		if ($objUser !== false && $objUser->RecordCount() == 1) {
 			if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_user WHERE id=".$id) !== false) {
 				$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=".$id);

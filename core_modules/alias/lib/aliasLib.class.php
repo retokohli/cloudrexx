@@ -509,7 +509,7 @@ class aliasLib
 			return false;
 		}
 
-		$objResult = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_alias_source` WHERE `id` != ".intval($sourceId)." AND `url` = '".addslashes($url)."'");
+		$objResult = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_alias_source` WHERE `id` != ".intval($sourceId)." AND `url` = '".addslashes($url)."'", 1);
 		if ($objResult !== false && $objResult->RecordCount() == 0) {
 			return true;
 		} else{
@@ -521,7 +521,7 @@ class aliasLib
 	{
 		global $objDatabase;
 
-		$objResult = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_alias_target` WHERE `id` != ".intval($targetId)." AND `url` = '".addslashes($url)."'");
+		$objResult = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_alias_target` WHERE `id` != ".intval($targetId)." AND `url` = '".addslashes($url)."'", 1);
 		if ($objResult !== false && $objResult->RecordCount() == 0) {
 			return true;
 		} else{
