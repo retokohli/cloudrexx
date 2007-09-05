@@ -2040,13 +2040,13 @@ class calendarManager extends calendarLibrary
 
 		if ($objResultFields !== false) {
 			while (!$objResultFields->EOF) {
-				$arrFormFields[$objResultFields->fields['id']] = $objResultFields->fields['name'];
+				$arrFormFields[$objResultFields->fields['id']] = htmlentities($objResultFields->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
 				$objResultFields->MoveNext();
 			}
 		}
 
 		// Because we return a csv, we need to set the correct header
-		header("Content-Type: text/comma-separated-values", true);
+		header("Content-Type: text/comma-separated-values; charset=".CONTREXX_CHARSET, true);
 		header("Content-Disposition: attachment; filename=\"$filename\"", true);
 
 		$value = '';
@@ -2065,13 +2065,13 @@ class calendarManager extends calendarLibrary
 			while (!$objResultReg->EOF)
 			{
 				print (date("d.m.Y H:i:s", $objResultReg->fields['time']).$this->_csvSeparator);
-				print ($objResultReg->fields['type'] == 1 ? $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'].$this->_csvSeparator : $_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'].$this->_csvSeparator);
+				print ($objResultReg->fields['type'] == 1 ?  $this->_escapeCsvValue($_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION']).$this->_csvSeparator :  $this->_escapeCsvValue($_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF']).$this->_csvSeparator);
 
 				foreach ($arrFormFields as $arrFieldId => $arrFieldName) {
 					$queryData 		= "SELECT `data` FROM ".DBPREFIX."module_calendar_form_data WHERE field_id=".$arrFieldId." AND reg_id=".$objResultReg->fields['id']."";
 					$objResultData 	= $objDatabase->SelectLimit($queryData, 1);
 
-					print ($objResultData->fields['data'].$this->_csvSeparator);
+					print ($this->_escapeCsvValue($objResultData->fields['data']).$this->_csvSeparator);
 				}
 
 				print ("\r\n");
@@ -2097,7 +2097,7 @@ class calendarManager extends calendarLibrary
 		if ($valueModified != $value || preg_match('/['.$this->_csvSeparator.'\n]+/', $value)) {
 			$value = '"'.$valueModified.'"';
 		}
-		return $value;
+		return strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_decode($value) : $value;
 	}
 
 }
