@@ -342,7 +342,7 @@ if (MY_DEBUG) echo("getAttachmentIdArray(messageId=$messageId): ERROR: query fai
             $arrAttachmentId[] = $objResult->fields['id'];
             $objResult->MoveNext();
         }
-if (MY_DEBUG) echo("getAttachmentIdArray(messageId=$messageId): INFO: returning array: ");var_export($arrAttachmentId);echo("<br />");
+if (MY_DEBUG) { echo("getAttachmentIdArray(messageId=$messageId): INFO: returning array: ");var_export($arrAttachmentId);echo("<br />"); }
         return $arrAttachmentId;
     }
 

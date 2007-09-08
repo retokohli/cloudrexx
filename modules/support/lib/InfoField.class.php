@@ -884,48 +884,6 @@ if (MY_DEBUG) echo("InfoField::getById($id, $languageId): no result: ".$objResul
 
 
     /**
-     * Select a InfoField name by ID from the database.
-     *
-     * Only the language corresponding to the $languageId parameter is read
-     * from the database.
-     * @static
-     * @param       integer     $id             The InfoField ID
-     * @param       integer     $languageId     The language ID
-     * @return      string                      The InfoField name
-     *                                          on success, false otherwise
-     * @global      mixed       $objDatabase    Database object
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    //static
-    function getNameById($id, $languageId)
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT name
-              FROM ".DBPREFIX."module_support_info_field
-        INNER JOIN ".DBPREFIX."module_support_info_field_language
-                ON id=info_field_id
-             WHERE id=$id
-               AND language_id=$languageId
-        ";
-//if (MY_DEBUG) echo("InfoField::getNameById($id, $languageId): query: $query<br />");
-        $objResult = $objDatabase->Execute($query);
-//if (MY_DEBUG) echo("InfoField::getNameById($id, $languageId): objResult: '$objResult'<br />");
-        if (!$objResult) {
-if (MY_DEBUG) echo("InfoField::getNameById($id, $languageId): ERROR: Query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
-            return false;
-        }
-        if ($objResult->RecordCount() == 0) {
-if (MY_DEBUG) echo("InfoField::getNameById($id, $languageId): ERROR: No result: ".$objResult->RecordCount()."<br />");
-            return false;
-        }
-//if (MY_DEBUG) echo("InfoField::getNameById($id, $languageId): ID is ".$objResult->fields('id')."<br />");
-        return contrexx_stripslashes($objResult->fields['name']);
-    }
-
-
-    /**
      * Verify that the given value fits the field type
      *
      * @param   mixed   $fieldValue     The value to test

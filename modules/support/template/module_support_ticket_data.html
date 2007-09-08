@@ -1,3 +1,21 @@
+<script type="text/javascript">
+<!--
+function ticketClose()
+{
+  if (confirm('{TXT_SUPPORT_TICKET_CLOSE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')) {
+    window.location.replace("index.php?cmd=support&act=ticketClose&supportTicketId={SUPPORT_TICKET_ID}");
+  }
+}
+
+function ticketDelete()
+{
+  if (confirm('{TXT_SUPPORT_TICKET_DELETE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')) {
+    window.location.replace("index.php?cmd=support&act=ticketDelete&supportTicketId={SUPPORT_TICKET_ID}");
+  }
+}
+// -->
+</script>
+
 <form name="formSupportTicketData" method="post" action="?cmd=support&amp;act=tickets">
   <table summary="" class="adminlist" border=0 width="100%" cellpadding="2" cellspacing="0">
     <tr>
@@ -39,9 +57,12 @@
     </tr>
   </table>
   <br />
-  <!-- BEGIN messageButton -->
-  <input type="button" id="commit" name="commit" value="{TXT_SUPPORT_STORE}"
-    onclick="supportTicketDoAction('commit')">&nbsp;&nbsp;
+  <!-- BEGIN closeButton -->
+  <input type="button" name="close" value="{TXT_SUPPORT_TICKET_CLOSE}"
+    onclick="ticketClose()">&nbsp;&nbsp;
+  <!-- END closeButton -->
+  <input type="button" name="delete" value="{TXT_SUPPORT_DELETE}"
+    onclick="ticketDelete()">&nbsp;&nbsp;
   <br />
-  <!-- END messageButton -->
+  <br />
 </form>

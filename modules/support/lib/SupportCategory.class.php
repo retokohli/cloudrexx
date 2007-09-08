@@ -138,7 +138,7 @@ class SupportCategory
         $this->order      = intval($order);
         $this->id         = intval($id);
         $this->arrName    = false;
-//echo("SupportCategory::__construct(name=$name, lang=$languageId, parent=$parentId, status=$status, order=$order, id=$id): made ");var_export($this);echo("<br />");
+//if (MY_DEBUG) { echo("SupportCategory::__construct(name=$name, lang=$languageId, parent=$parentId, status=$status, order=$order, id=$id): made ");var_export($this);echo("<br />"); }
     }
 
 
@@ -317,7 +317,7 @@ class SupportCategory
 //echo("Debug: Support Category::delete(): entered<br />");
 
         if (!$this->id) {
-echo("Support Category::delete($languageId): Error: This Support Category is missing the ID<br />");
+if (MY_DEBUG) echo("Support Category::delete($languageId): Error: This Support Category is missing the ID<br />");
             return false;
         }
         // delete child categories first
@@ -336,7 +336,7 @@ echo("Support Category::delete($languageId): Error: This Support Category is mis
                ".($languageId ? "AND language_id=$languageId" : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-echo("Support Category::delete($languageId): Error: Failed to delete the Support Category language entry/-ies from the database for ID $this->id!<br />");
+if (MY_DEBUG) echo("Support Category::delete($languageId): Error: Failed to delete the Support Category language entry/-ies from the database for ID $this->id!<br />");
             return false;
         }
         // If this record cannot be retrieved again from the database,
@@ -348,7 +348,7 @@ echo("Support Category::delete($languageId): Error: Failed to delete the Support
                  WHERE id=$this->id
             ");
             if (!$objResult) {
-echo("Support Category::delete($languageId): Error: Failed to delete the Support Category from the database<br />");
+if (MY_DEBUG) echo("Support Category::delete($languageId): Error: Failed to delete the Support Category from the database<br />");
                 return false;
             }
         }
@@ -369,7 +369,7 @@ echo("Support Category::delete($languageId): Error: Failed to delete the Support
         global $objDatabase;
 
         if (!$this->id) {
-echo("getChildren(): Error: This Support Category is missing the ID<br />");
+if (MY_DEBUG) echo("getChildren(): Error: This Support Category is missing the ID<br />");
             return false;
         }
         $query = "
@@ -390,7 +390,7 @@ echo("getChildren(): Error: This Support Category is missing the ID<br />");
                 $objResult->fields['id'],
                 $this->languageId
             );
-echo("getChildren(): parent: $this->id, child: ".$objResult->fields['id']."<br />");
+if (MY_DEBUG) echo("getChildren(): parent: $this->id, child: ".$objResult->fields['id']."<br />");
             $objResult->MoveNext();
         }
         return $arrChildren;
@@ -423,7 +423,7 @@ echo("getChildren(): parent: $this->id, child: ".$objResult->fields['id']."<br /
     function update()
     {
         global $objDatabase;
-echo("update(): ");var_export($this);echo("<br />");
+if (MY_DEBUG) { echo("update(): ");var_export($this);echo("<br />"); }
         $query = "
             UPDATE ".DBPREFIX."module_support_category
                SET parent_id=$this->parentId,
@@ -494,7 +494,7 @@ echo("update(): ");var_export($this);echo("<br />");
     function insert()
     {
         global $objDatabase;
-echo("insert(): ");var_export($this);echo("<br />");
+if (MY_DEBUG) { echo("insert(): ");var_export($this);echo("<br />"); }
 
         $query = "
             INSERT INTO ".DBPREFIX."module_support_category (
@@ -619,11 +619,11 @@ echo("insert(): ");var_export($this);echo("<br />");
         $objResult = $objDatabase->Execute($query);
 //echo("SupportCategory::getById($id, $languageId): objResult: '$objResult'<br />");
         if (!$objResult) {
-echo("SupportCategory::getById($id, $languageId): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
+if (MY_DEBUG) echo("SupportCategory::getById($id, $languageId): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
             return false;
         }
         if ($objResult->RecordCount() == 0) {
-echo("SupportCategory::getById($id, $languageId): no result: ".$objResult->RecordCount()."<br />");
+if (MY_DEBUG) echo("SupportCategory::getById($id, $languageId): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
 //echo("SupportCategory::getById($id, $languageId): ID is ".$objResult->fields('id')."<br />");
@@ -683,11 +683,11 @@ echo("SupportCategory::getById($id, $languageId): no result: ".$objResult->Recor
         $objResult = $objDatabase->Execute($query);
 //echo("SupportCategory::getNameById($id, $languageId): objResult: '$objResult'<br />");
         if (!$objResult) {
-echo("SupportCategory::getNameById($id, $languageId): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
+if (MY_DEBUG) echo("SupportCategory::getNameById($id, $languageId): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
             return false;
         }
         if ($objResult->RecordCount() == 0) {
-echo("SupportCategory::getNameById($id, $languageId): no result: ".$objResult->RecordCount()."<br />");
+if (MY_DEBUG) echo("SupportCategory::getNameById($id, $languageId): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
 //echo("SupportCategory::getNameById($id, $languageId): ID is ".$objResult->fields('id')."<br />");

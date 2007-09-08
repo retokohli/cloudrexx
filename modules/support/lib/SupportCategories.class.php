@@ -233,14 +233,11 @@ if (MY_DEBUG) { echo("getSupportCategoryNameArray(parent=$parentId, recurse=$fla
      *                                      Defaults to true.
      * @return  array                       The array of Support Categories
      *                                      on success, false otherwise.
-     * @global  mixed   $objDatabase        Database object
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getSupportCategoryTreeArray(
         $languageId, $flagActiveOnly=true)
     {
-        global $objDatabase;
-
         // if it has already been initialized with the correct language
         // and flag, just return it
         if (   $languageId == $this->languageId
@@ -321,7 +318,7 @@ if (MY_DEBUG) { echo("getSupportCategoryNameArray(parent=$parentId, recurse=$fla
             $id = $objResult->fields['id'];
             $objSupportCategory =
                 SupportCategory::getById($id, $this->languageId, true);
-//if (MY_DEBUG) echo("supportcategories::buildSupportCategoryTreeArray(parentId=$parentId, level=$level): INFO: made object ");var_export($objSupportCategory);echo(".<br />");
+//if (MY_DEBUG) { echo("supportcategories::buildSupportCategoryTreeArray(parentId=$parentId, level=$level): INFO: made object ");var_export($objSupportCategory);echo(".<br />"); }
             $arrSupportCategory = array(
                 'id'         => $id,
                 'parentId'   => $objSupportCategory->getParentId(),
@@ -409,10 +406,13 @@ if (MY_DEBUG) { echo("getSupportCategoryNameArray(parent=$parentId, recurse=$fla
      * @param   integer     $parentCategoryId   The parent Support Category ID
      * @param   integer     $selectedCategoryId The selected Support Category ID
      * @return  string                          The dropdown menu HTML code
+     * @global  array       $_ARRAYLANG         Language array
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getMenu($parentCategoryId=0, $selectedCategoryId=0)
     {
+        global $_ARRAYLANG;
+
         $arrSupportCategoryTree =
             $this->getSupportCategoryTreeArray($this->languageId, true);
         // debug
@@ -423,22 +423,36 @@ if (MY_DEBUG) echo("SupportCategories::getMenu(parent=$parentCategoryId, selecte
             return false;
         }
 
-        $strOptions = '';
+        $strMenu = '';
+        $flagMatchSelected = false;
         foreach ($arrSupportCategoryTree as $arrSupportCategory) {
             if ($arrSupportCategory['parentId'] == $parentCategoryId) {
                 $id   = $arrSupportCategory['id'];
                 $name = $arrSupportCategory['name'];
-                $strOptions .=
-                   "<option value='$id'".
-                   ($id == $selectedCategoryId
-                       ? ' selected="selected"'
-                       : ''
-                   ).'>'.
-                   htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET).
-                   "</option>\n";
+                $strMenu .= "<option value='$id'";
+                if ($id == $selectedCategoryId) {
+                    $strMenu .= ' selected="selected"';
+                    $flagMatchSelected = true;
+                }
+                $strMenu .=
+                    '>'.
+                    htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET).
+                    "</option>\n";
             }
         }
-        return $strOptions;
+        if (!$flagMatchSelected) {
+            $strMenu =
+                '<option value="0" selected="selected">'.
+                htmlentities(
+                    $_ARRAYLANG['TXT_SUPPORT_REQUEST_PLEASE_CHOOSE'],
+                    ENT_QUOTES, CONTREXX_CHARSET).
+                "</option>\n".
+                $strMenu;
+        }
+        return
+            '<select id="supportCategoryId" name="supportCategoryId"
+            onchange="JavaScript:supportContinue();">'.
+            $strMenu."</select>\n";
     }}
 
 ?>

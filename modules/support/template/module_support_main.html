@@ -1,12 +1,5 @@
 <script type="text/javascript">
 <!--
-function ticketDelete(id)
-{
-  if (confirm('{TXT_SUPPORT_TICKET_CONFIRM_DELETE}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')) {
-    window.location.replace("index.php?cmd=support&act=ticketDelete&supportTicketId="+id);
-  }
-}
-
 function supportTicketDoAction(strAction, strForm, strCheckbox, objSelect)
 {
   switch(strAction) {

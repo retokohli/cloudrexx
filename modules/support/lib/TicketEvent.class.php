@@ -456,7 +456,7 @@ class TicketEvent
      */
     function __construct(
         $objTicket, $event, $value,
-        $userId=false, $oldStatus=false, $timestamp='', $id=0
+        $userId=0, $oldStatus=false, $timestamp='', $id=0
     ) {
         $this->objTicket = $objTicket;
         $this->event     = $event;
@@ -472,7 +472,8 @@ class TicketEvent
         $this->userId    = $userId;
         $this->oldStatus = $oldStatus;
         if ($this->id <= 0) {
-            $this->userId    = Auth::getUserId();
+// TODO: This only works in the Backend
+//            $this->userId    = Auth::getUserId();
             $this->oldStatus =
                 $this->getTicketStatus($this->objTicket->getId());
         }
@@ -486,7 +487,7 @@ class TicketEvent
         // -- Which means that every state-event combination causing it
         // has to be avoided!
         if ($this->newStatus == SUPPORT_TICKET_EVENT_UNKNOWN) {
-//if (MY_DEBUG) { echo("TicketEvent::__construct(objTicket=");var_export($objTicket);echo(", event=$event, value=$value, timestamp=$timestamp', id=$id): WARNING: Event is causing an UNKNOWN status!<br />"); }
+if (MY_DEBUG) { echo("TicketEvent::__construct(objTicket=");var_export($objTicket);echo(", event=$event, value=$value, timestamp=$timestamp', id=$id): WARNING: Event is causing an UNKNOWN status!<br />"); }
         }
     }
 
@@ -1415,7 +1416,8 @@ if (MY_DEBUG) echo("TicketEvent::actionTransfer(): ERROR: NEW Ticket already has
             $objTicketEvent = new TicketEvent(
                 $this->objTicket,
                 SUPPORT_TICKET_EVENT_CHANGE_OWNER,
-                $this->userId
+                $this->userId,
+                Auth::getUserId()
             );
             // If the owner has been set successfully, the VIEW may also
             // be processed.

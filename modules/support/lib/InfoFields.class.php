@@ -30,10 +30,24 @@ class InfoFields
      *
      * This is initialized on the first call to
      * {@link getInfoFieldArray()}.
+     * It contains the complete InfoFields data and is ordered
+     * by the order field.
      * It avoids many database accesses and speeds up the page setup.
      * @var array
      */
-    var $arrInfoField;
+    var $arrInfoField = false;
+
+    /**
+     * Info Fields index array
+     *
+     * This is initialized on the first call to
+     * {@link getInfoFieldArray()}.
+     * It looks like:  array( ID => index, ... )
+     * where ID is the InfoField ID, and index is the index of
+     * that InfoField in the $arrInfoField array.
+     * @var array
+     */
+    var $arrInfoFieldIndex = false;
 
     /**
      * Info Fields language ID
@@ -97,15 +111,24 @@ class InfoFields
     }
 
 
+    /**
+     * Invalidates the $arrInfoField and $arrInfoFieldIndex arrays
+     *
+     * This must be called after each change to the InfoFields database
+     * table, so that the arrays are forced to be reinitialized with the
+     * current data.
+     * @return  boolean                 True.  Always.
+     */
     function invalidateInfoFieldArray()
     {
         $this->arrInfoField = false;
+        $this->arrInfoFieldIndex = false;
         return true;
     }
 
 
     /**
-     * Returns an array of the Info Fields' data.
+     * Returns the array of the Info Fields data.
      *
      * If the array has been initialized before, simply returns it.
      * Otherwise, the array is set up on the fly first.
@@ -122,8 +145,7 @@ class InfoFields
      */
     function getInfoFieldArray($languageId, $flagActiveOnly=true)
     {
-        global $objDatabase;
-echo("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flagActiveOnly): INFO: Entered.<br />");
+if (MY_DEBUG) echo("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flagActiveOnly): INFO: Entered.<br />");
         // if it has already been initialized with the correct language
         // and flag, just return it
         if (   is_array($this->arrInfoField)
@@ -132,24 +154,24 @@ echo("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flag
             return $this->arrInfoField;
         }
 
-echo("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flagActiveOnly): INFO: Creating new array.<br />");
+if (MY_DEBUG) echo("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flagActiveOnly): INFO: Creating new array.<br />");
         // The Info Field name array is invalidated by this!
-        $this->arrInfoFieldName = false;
         $this->languageId = $languageId;
         $this->flagActiveOnly = $flagActiveOnly;
 
         // (re-)initialize it
-        $this->arrInfoField =
-            $this->buildInfoFieldArray();
-
+        if (!$this->buildInfoFieldArray()) {
+            return false;
+        }
         return $this->arrInfoField;
     }
 
 
     /**
-     * Returns an array of the Info Fields' data.
+     * Builds arrays of the Info Fields' data.
      *
-     * Returns Info Field data for the language ID
+     * Initializes both arrInfoField and arrInfoFieldIndex, if necessary.
+     * arrInfoField contains Info Field data for the language ID
      * and active status as specified by the $languageId and $flagActiveOnly
      * object variables, respectively.
      * The array has the following form:
@@ -166,12 +188,16 @@ echo("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flag
      *    ),
      *    ...
      *  )
-     * Note that the index is in no way related to the Info Fields,
-     * but represents their place within the array according to the
-     * sorting order.
+     *
+     * arrInfoFieldIndex maps the InfoField ID to the corresponding index
+     * in arrInfoField, like:
+     *  array( ID => index, ... )
+     *
+     * Note that the index value is in no way related to the Info Fields
+     * themselves, but only represents their place within the array
+     * according to the sorting order.
      * @access  protected
-     * @return  array                       The array of Info Fields
-     *                                      on success, false otherwise.
+     * @return  boolean                     True on success, false otherwise.
      * @global  mixed   $objDatabase        Database object
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
@@ -194,11 +220,13 @@ echo("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flag
             return false;
         }
         // return array
-        $arrInfoField = array();
+        $this->arrInfoField = array();
+        $this->arrInfoFieldIndex = array();
+        $index = 0;
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];
             $objInfoField = InfoField::getById($id, $this->languageId, true);
-            $arrInfoField[] = array(
+            $this->arrInfoField[++$index] = array(
                 'id'         => $id,
                 'status'     => $objInfoField->getStatus(),
                 'order'      => $objInfoField->getOrder(),
@@ -209,9 +237,35 @@ echo("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flag
                 'name'       => $objInfoField->getName(),
                 'arrName'    => $objInfoField->getNameArray(),
             );
+            $this->arrInfoFieldIndex[$id] = $index;
             $objResult->MoveNext();
         }
-        return $arrInfoField;
+        return true;
+    }
+
+
+    /**
+     * Returns an array with data for a single InfoField
+     * selected by its ID.
+     *
+     * The language is specified by the $languageId object variable.
+     * Note that this method requires that the $arrInfoField and
+     * $arrInfoFieldIndex object variables have been initialized
+     * with the correct language.  If they are uninitialized, this
+     * method will fail and return false.
+     * @param       integer     $id             The InfoField ID
+     * @return      mixed                       The InfoField array
+     *                                          on success, false otherwise
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    //static
+    function getArrayById($id)
+    {
+        if (!$this->arrInfoField) {
+if (MY_DEBUG) echo("InfoFields::getArrayById($id): ERROR: InfoField array is missing!<br />");
+            return false;
+        }
+        return $this->arrInfoField[$this->arrInfoFieldIndex[$id]];
     }
 
 
@@ -284,6 +338,131 @@ if (MY_DEBUG) echo("InfoFields::getTypeMenu(select=$selectedType, name=$menuName
         }
 if (MY_DEBUG) echo("InfoFields::getTypeMenu(select=$selectedType, name=$menuName): made menu: ".htmlentities($menu)."<br />");
         return $menu;
+    }
+
+
+    /**
+     * Returns the HTML code for the InfoField as specified by the
+     * array provided.
+     *
+     * Note that the array contains additional elements to the ones
+     * returned by {@link getInfoFieldArray()}.
+     * 'index' *MUST* be set to a unique value for any InfoFields of the
+     * same kind (same InfoField ID).  This is needed to distinguish
+     * individual InfoFields being created if the 'multiple' flag is true.
+     * The array element 'value' may contain the initial value
+     * of the HTML input element being created.
+     * See {@link getInfoFieldArray()} and {@link buildInfoFieldArray()}
+     * for details on the other array elements.
+     * @param   array   $arrInfoField   The array describing the InfoField
+     * @return  string                  The HTML code for the InfoField
+     * @global  array   $_ARRAYLANG     Language array
+     */
+    function getHtml($arrInfoField)
+    {
+        global $_ARRAYLANG;
+
+if (MY_DEBUG) { echo("arrInfoField: ");var_export($arrInfoField);echo("<br />"); }
+
+        $id = $arrInfoField['id'];
+        $index = (!empty($arrInfoField['index']) ? $arrInfoField['index'] : 0);
+        $strHtml = '
+            <div>'. // bgcolor="#'.number_format($id, 0, '', '').number_format($index, 0, '', '').'">'.
+              $arrInfoField['name'].
+              ($arrInfoField['mandatory']
+                ? $_ARRAYLANG['TXT_SUPPORT_INFOFIELD_MANDATORY']
+                : ''
+              ).'
+            </div>
+            <div>'. // bgcolor="#'.number_format($index, 0, '', '').number_format($id, 0, '', '').'">
+              '<input type="'.
+                ($arrInfoField['type'] == SUPPORT_INFO_FIELD_TYPE_FILE
+                  ? 'file'
+                  : 'text'
+                ).'"'.
+                ' id="arrSupportInfoField['.$id.']'."[".$index."]".'"'.
+                ' name="arrSupportInfoField['.$id.']'."[".$index."]".'"'.
+                ' value="'.$arrInfoField['value'].
+                '" tabindex="4" onchange="JavaScript:supportContinue();" />'.
+                ($arrInfoField['multiple']
+                  ? '&nbsp;<input type="button" name="addInfoField" value="+"'.
+                    ' onclick="JavaScript:cloneInfoField('.
+                        $id.', '.$index.');" />'.
+                    '&nbsp;<input type="button" name="delInfoField" value="-"'.
+                    ' onclick="JavaScript:deleteInfoField('.
+                        $id.', '.$index.');" />'
+                  : ''
+                ).'
+            </div>';
+        return $strHtml;
+    }
+
+
+    /**
+     * Verifies that the values contained in the array are complete
+     * according to the InfoFields definition.
+     *
+     * That is, mandatory fields must contain a non-empty value.
+     * Note that this method requires that the $arrInfoField and
+     * $arrInfoFieldIndex object variables have been initialized
+     * with the correct language.  If they are uninitialized, this
+     * method will fail and return false.
+     * @param   array   $arrInfoField   The array with InfoFields data
+     *                                  as returned in the POST request
+     * @return  boolean                 True if the data is complete,
+     *                                  false otherwise
+     */
+    function isComplete($arrInfoFieldsPost)
+    {
+        if (!$this->arrInfoField) {
+if (MY_DEBUG) echo("InfoFields::isComplete(): ERROR: InfoField array is missing!<br />");
+            return false;
+        }
+        $isComplete = true;
+        foreach ($this->arrInfoField as $arrInfoField) {
+            if (!$arrInfoField['mandatory']) {
+                continue;
+            }
+            foreach ($arrInfoFieldsPost as $id => $arrInstance) {
+                foreach ($arrInstance as $index => $value) {
+// TODO: Verify the value range (numbers, strings, ...)
+                    if (!empty($value)) {
+                        continue 3;
+                    }
+                }
+            }
+            $isComplete = false;
+        }
+        return $isComplete;
+    }
+
+
+    /**
+     * Converts the InfoField data from the posted array into
+     * human readable text form, ready to be included with the Ticket
+     *
+     * Note that this method requires that the $arrInfoField and
+     * $arrInfoFieldIndex object variables have been initialized
+     * with the correct language.  If they are uninitialized, this
+     * method will fail and return false.
+     * @param   array   $arrInfoFieldPost   The posted InfoField array
+     * @global  array   $_ARRAYLANG     Language array
+     */
+    function arrayToText($arrInfoFieldsPost, $languageId)
+    {
+        global $_ARRAYLANG;
+
+        if (!$this->arrInfoField) {
+if (MY_DEBUG) echo("InfoFields::arrayToText(): ERROR: InfoField array is missing!<br />");
+            return false;
+        }
+        $strInfoFields = "\n\n".$_ARRAYLANG['TXT_SUPPORT_INFOFIELDS']."\n";
+        foreach ($arrInfoFieldsPost as $id => $arrInfoFieldPost) {
+            $arrInfoField = $this->getArrayById($id);
+            $strInfoFields .=
+                $arrInfoField['name'].': '.join(', ', $arrInfoFieldPost);
+        }
+        return $strInfoFields;
     }
 
 }
