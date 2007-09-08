@@ -389,8 +389,6 @@ if (MY_DEBUG) echo("Ticket::delete(): Error: Failed to delete TicketEvents assoc
              WHERE id=$this->id
         ";
 /*
-                   `status`=$this->status,
-                   owner_id=$this->ownerId
                    source=$this->source,
                    language_id=$this->languageId,
 */
@@ -497,7 +495,8 @@ if (MY_DEBUG) echo("Ticket::refreshTimestamp(): done!<br />");
             $objEvent = new TicketEvent(
                 $this,
                 SUPPORT_TICKET_EVENT_CHANGE_CATEGORY,
-                $supportCategoryId
+                $supportCategoryId,
+                Auth::getUserId()
             );
             // Process the TicketEvent, returns the new Ticket status
             $newStatus = $objEvent->process();
@@ -536,7 +535,8 @@ if (MY_DEBUG) echo("Ticket::refreshTimestamp(): done!<br />");
             $objEvent = new TicketEvent(
                 $this,
                 SUPPORT_TICKET_EVENT_CHANGE_OWNER,
-                $ownerId
+                $ownerId,
+                Auth::getUserId()
             );
             // Process the TicketEvent, returns the new Ticket status
             $newStatus = $objEvent->process();
@@ -682,7 +682,8 @@ if (MY_DEBUG) echo("Ticket::addMessage(): ERROR: Adding Message results in UNKNO
             $objEvent = new TicketEvent(
                 $objTicket,                     // New Ticket object
                 SUPPORT_TICKET_EVENT_REFERENCE,
-                $this->id                       // Old Ticket ID
+                $this->id,                       // Old Ticket ID
+                Auth::getUserId()
             );
             if (!$objEvent) {
 if (MY_DEBUG) echo("Ticket::addMessage(): ERROR: Failed to create REFERENCE TicketEvent, ticketId ".$objTicket->getId().", reference ticketId $this->id<br />");
@@ -747,7 +748,8 @@ if (MY_DEBUG) echo("Ticket::addReply(): ERROR: Failed to insert() the new Messag
         $objEvent = new TicketEvent(
             $this,
             SUPPORT_TICKET_EVENT_REPLY,
-            $objMessage->getId()
+            $objMessage->getId(),
+            Auth::getUserId()
         );
         if (!$objEvent) {
 if (MY_DEBUG) echo("Ticket::addReply(): ERROR: Failed to create MESSAGE_REPLY TicketEvent (ticketId ".$this->getId().", messageId ".$objMessage->getId().")!<br />");
@@ -788,7 +790,8 @@ if (MY_DEBUG) echo("Ticket::addReply(): ERROR: Failed to roll back Message inser
         $objEvent = new TicketEvent(
             $this,
             SUPPORT_TICKET_EVENT_MESSAGE_DELETE,
-            $messageId
+            $messageId,
+            Auth::getUserId()
         );
         $newStatus = $objEvent->process();
         if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
@@ -819,7 +822,8 @@ if (MY_DEBUG) echo("Ticket::deleteMessage(messageId=$messageId): INFO: process()
         $objEvent = new TicketEvent(
             $this,
             SUPPORT_TICKET_EVENT_MESSAGE_VIEW,
-            $messageId
+            $messageId,
+            Auth::getUserId()
         );
         $newStatus = $objEvent->process();
         if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
@@ -842,7 +846,8 @@ if (MY_DEBUG) echo("Ticket::updateView(messageId=$messageId): INFO: process() re
         $objEvent = new TicketEvent(
             $this,
             SUPPORT_TICKET_EVENT_CLOSE,
-            0
+            0,
+            Auth::getUserId()
         );
         $newStatus = $objEvent->process();
         if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {

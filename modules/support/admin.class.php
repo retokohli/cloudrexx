@@ -727,11 +727,11 @@ if (MY_DEBUG) echo("ticketChange(): WARNING: illegal Support Category ID $suppor
                 $flagChangedCategory = true;
             }
         }
-        if ($supportTicketOwnerId <= 0) {
-if (MY_DEBUG) echo("ticketChange(): WARNING: illegal Ticket owner ID $supportTicketOwnerId!<br />");
+        if ($this->supportTicketOwnerId <= 0) {
+if (MY_DEBUG) echo("ticketChange(): WARNING: illegal Ticket owner ID $this->supportTicketOwnerId!<br />");
         } else {
             $flagSuccessOwner    =
-                $objTicket->updateOwnerId($supportTicketOwnerId);
+                $objTicket->updateOwnerId($this->supportTicketOwnerId);
             if ($flagSuccessOwner) {
                 $flagChangedOwner = true;
             }
@@ -852,7 +852,7 @@ if (MY_DEBUG) { echo("categoriesDelete(): \$_POST: ");var_export($_POST);echo("<
             $objSupportCategory =
                 SupportCategory::getById($id, $arrLanguageId[$id]);
             if (!$objSupportCategory) {
-if (MY_DEBUG) { echo("Support::categoriesDelete(): ERROR: Failed to get Suppoprt Category with ID $id, lang $languageId!<br />"); }
+if (MY_DEBUG) { echo("Support::categoriesDelete(): ERROR: Failed to get Suppoprt Category with ID $id, lang {$arrLanguageId[$id]}!<br />"); }
                 return false;
             }
             if (!$objSupportCategory->delete($arrLanguageId[$id])) {
@@ -1106,7 +1106,7 @@ if (MY_DEBUG) echo("failed to get Support Category tree<br />");
                 	$objTemplate->parseCurrentBlock();
                 }
             } else {
-echo("Support::categoryRow(...): ERROR: Missing Name array!<br />");
+if (MY_DEBUG) echo("Support::categoryRow(...): ERROR: Missing Name array!<br />");
             }
         }
         return $objTemplate->get();
@@ -1198,7 +1198,7 @@ if (MY_DEBUG) echo("categoryStore(): ERROR: Failed to create SupportCategory obj
             );
         $return = true;
 
-//echo("Support::categoriesStore(): INFO: lang=$this->supportLanguageId, tree=");var_export($arrSupportCategoryTree);echo(".<br />");
+//if (MY_DEBUG) { echo("Support::categoriesStore(): INFO: lang=$this->supportLanguageId, tree=");var_export($arrSupportCategoryTree);echo(".<br />"); }
         foreach ($arrSupportCategoryTree as $arrSupportCategory) {
             $id     = $arrSupportCategory['id'];
             $postOrder  =
@@ -1211,7 +1211,7 @@ if (MY_DEBUG) echo("categoryStore(): ERROR: Failed to create SupportCategory obj
                     ? $_POST['supportCategoryArrayStatus'][$id]
                     : 0
                 );
-//echo("Support::categoriesStore(): INFO: id=$id, order=$order, postOrder=$postOrder, status=$status, postStatus=$postStatus.<br />");
+//if (MY_DEBUG) echo("Support::categoriesStore(): INFO: id=$id, order=$order, postOrder=$postOrder, status=$status, postStatus=$postStatus.<br />");
             if (   !empty($_POST['supportCategoryArrayId'][$id])
                 && (   $postOrder  != $arrSupportCategory['order']
                     || $postStatus != $arrSupportCategory['status'])
@@ -1219,7 +1219,7 @@ if (MY_DEBUG) echo("categoryStore(): ERROR: Failed to create SupportCategory obj
 //echo("Support::categoriesStore(): INFO: Updating id=$id.<br />");
                 $objSupportCategory = SupportCategory::getById($id);
                 if (!$objSupportCategory) {
-echo("Support::categoriesStore(): ERROR: Failed to get Support Category id=$id!<br />");
+if (MY_DEBUG) echo("Support::categoriesStore(): ERROR: Failed to get Support Category id=$id!<br />");
                     $this->addError($_ARRAYLANG['TXT_SUPPORT_UPDATE_FAILED']);
                     $return = false;
                 } else {
@@ -1353,6 +1353,12 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
             'SUPPORT_TICKET_CATEGORY_ID' => $supportCategoryId,
             'SUPPORT_TICKET_CATEGORY'    => $supportCategoryName,
             'TXT_SUPPORT_TICKET_ID'              => $_ARRAYLANG['TXT_SUPPORT_TICKET_ID'],
+            'TXT_SUPPORT_TICKET_CLOSE'           => $_ARRAYLANG['TXT_SUPPORT_TICKET_CLOSE'],
+            'TXT_SUPPORT_TICKET_DETAIL'          => $_ARRAYLANG['TXT_SUPPORT_TICKET_DETAIL'],
+            'TXT_SUPPORT_TICKET_INFO'            => $_ARRAYLANG['TXT_SUPPORT_TICKET_INFO'],
+//            'TXT_SUPPORT_TICKET_CHANGE_CONFIRM'  => $_ARRAYLANG['TXT_SUPPORT_TICKET_CHANGE_CONFIRM'],
+            'TXT_SUPPORT_TICKET_DELETE_CONFIRM'  => $_ARRAYLANG['TXT_SUPPORT_TICKET_DELETE_CONFIRM'],
+            'TXT_SUPPORT_TICKET_CLOSE_CONFIRM'   => $_ARRAYLANG['TXT_SUPPORT_TICKET_CLOSE_CONFIRM'],
             'TXT_SUPPORT_FROM'                   => $_ARRAYLANG['TXT_SUPPORT_FROM'],
             'TXT_SUPPORT_DATE'                   => $_ARRAYLANG['TXT_SUPPORT_DATE'],
             'TXT_SUPPORT_LANGUAGE'               => $_ARRAYLANG['TXT_SUPPORT_LANGUAGE'],
@@ -1360,13 +1366,10 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
             'TXT_SUPPORT_CATEGORY'               => $_ARRAYLANG['TXT_SUPPORT_CATEGORY'],
             'TXT_SUPPORT_OWNER'                  => $_ARRAYLANG['TXT_SUPPORT_OWNER'],
             'TXT_SUPPORT_SOURCE'                 => $_ARRAYLANG['TXT_SUPPORT_TICKET_SOURCE'],
-            'TXT_SUPPORT_TICKET_DETAIL'          => $_ARRAYLANG['TXT_SUPPORT_TICKET_DETAIL'],
-            'TXT_SUPPORT_TICKET_INFO'            => $_ARRAYLANG['TXT_SUPPORT_TICKET_INFO'],
-            'TXT_SUPPORT_TICKET_DELETE_CONFIRM'  => $_ARRAYLANG['TXT_SUPPORT_TICKET_DELETE_CONFIRM'],
             'TXT_SUPPORT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_SUPPORT_ACTION_IS_IRREVERSIBLE'],
             'TXT_SUPPORT_DELETE'                 => $_ARRAYLANG['TXT_SUPPORT_DELETE'],
             'TXT_SUPPORT_EDIT'                   => $_ARRAYLANG['TXT_SUPPORT_EDIT'],
-            'TXT_SUPPORT_TICKET_CHANGE_CONFIRM'  => $_ARRAYLANG['TXT_SUPPORT_TICKET_CHANGE_CONFIRM'],
+            'TXT_SUPPORT_DELETE'                 => $_ARRAYLANG['TXT_SUPPORT_DELETE'],
         ));
         return $objTemplate->get();
     }
@@ -1769,12 +1772,12 @@ if (MY_DEBUG) echo("Support::messageData(): ERROR: Could not get Message with ID
 
         $supportTicketId = $objMessage->getTicketId();
         if (!$supportTicketId > 0) {
-if (MY_DEBUG) echo("Support::messageData(supportMessageId=$supportMessageId, flagQuoteBody=$flagQuoteBody): ERROR: Message object contains invalid Ticket ID ($supportTicketId)!<br />");
+if (MY_DEBUG) echo("Support::messageData(supportMessageId=$supportMessageId): ERROR: Message object contains invalid Ticket ID ($supportTicketId)!<br />");
             return false;
         }
         $objTicket = Ticket::getById($objMessage->getTicketId());
         if (!$supportTicketId > 0) {
-if (MY_DEBUG) echo("Support::messageData(supportMessageId=$supportMessageId, flagQuoteBody=$flagQuoteBody): ERROR: Could not get Ticket with ID ($supportTicketId)!<br />");
+if (MY_DEBUG) echo("Support::messageData(supportMessageId=$supportMessageId): ERROR: Could not get Ticket with ID ($supportTicketId)!<br />");
             return false;
         }
 
@@ -2251,7 +2254,7 @@ if (MY_DEBUG) echo("failed to get Info Field tree<br />");
                 $languageId = $this->supportLanguageId;
             }
             // Some InfoField is selected by ID
-if (MY_DEBUG) echo("infoFieldsEdit(): id is ");var_export($this->supportInfoFieldId);echo("<br />");
+if (MY_DEBUG) { echo("infoFieldsEdit(): id is ");var_export($this->supportInfoFieldId);echo("<br />"); }
             // Find the array index corresponding to the ID
             $index = 0;
             while (   $index < count($arrInfoFields)
@@ -2384,7 +2387,7 @@ if (MY_DEBUG) echo("infoFieldsEdit(): id is ");var_export($this->supportInfoFiel
                 	$objTemplate->parseCurrentBlock();
                 }
             } else {
-echo("Support::infoFieldRow(...): ERROR: Missing Name array!<br />");
+if (MY_DEBUG) echo("Support::infoFieldRow(...): ERROR: Missing Name array!<br />");
             }
         }
         return $objTemplate->get();
@@ -2480,21 +2483,10 @@ if (MY_DEBUG) { echo("infoFieldStore(): ");var_export($objInfoField);echo("<br /
 
 if (MY_DEBUG) { echo("infoFieldStore(): INFO: Entered.<br />"); }
 
-        $arrInfoField =
-            $this->objInfoFields->getInfoFieldArray(
-                $this->supportLanguageId, false
-            );
         $return = true;
+        $flagChanged = false;
 
         foreach ($_POST['supportInfoFieldArrayId'] as $id) {
-            $index = 0;
-            while (   $index < count($arrInfoField)
-                   && $arrInfoField[$index]['id'] != $id) {
-                ++$index;
-            }
-            if ($index == count($arrInfoField)) {
-                continue;
-            }
             $postOrder = $_POST['supportInfoFieldArrayOrder'][$id];
             $postMandatory =
                 (!empty($_POST['supportInfoFieldArrayMandatory'][$id])
@@ -2508,10 +2500,11 @@ if (MY_DEBUG) { echo("infoFieldStore(): INFO: Entered.<br />"); }
                 (!empty($_POST['supportInfoFieldArrayStatus'][$id])
                     ? true : false
                 );
-            $order  = $arrInfoField[$index]['order'];
-            $mandatory = $arrInfoField[$index]['mandatory'];
-            $multiple = $arrInfoField[$index]['multiple'];
-            $status = $arrInfoField[$index]['status'];
+            $arrInfoField = $this->objInfoFields->getArrayById($id);
+            $order  = $arrInfoField['order'];
+            $mandatory = $arrInfoField['mandatory'];
+            $multiple = $arrInfoField['multiple'];
+            $status = $arrInfoField['status'];
 if (MY_DEBUG) { echo("infoFieldStore(): INFO: id=$id, order=$order, mandatory=$mandatory, multiple=$multiple, status=$status<br />"); }
 if (MY_DEBUG) { echo("infoFieldStore(): INFO: id=$id, postOrder=$postOrder, postMandatory=$postMandatory, postMultiple=$postMultiple, postStatus=$postStatus<br />"); }
             if (   !empty($_POST['supportInfoFieldArrayId'][$id])
@@ -2537,12 +2530,15 @@ if (MY_DEBUG) { echo("infoFieldStore(): ERROR: Failed to update InfoField with i
                             ", ID $id -- ".$objInfoField->getName());
                         $return = false;
                     } else {
-                        // *MUST* invalidate the InfoField array
-                        // after changing the data!
-                        $this->objInfoFields->invalidateInfoFieldArray();
+                        $flagChanged = true;
                     }
                 }
             }
+        }
+        if ($flagChanged) {
+            // *MUST* invalidate the InfoField array
+            // after changing the data!
+            $this->objInfoFields->invalidateInfoFieldArray();
         }
         if ($return) {
             $this->addMessage($_ARRAYLANG['TXT_SUPPORT_UPDATE_SUCCESSFUL']);
