@@ -38,7 +38,6 @@ Kontaktmanager
   HTML mit Paragraphen und Labels.
 - Es kann eine Kopie des Formulars an den Absender geschickt werden.
 
-
 Seitenempfehlungen
 - Die Seitenempfehlungen werden nun mit einem CAPTCHA geschützt. Dazu muss
   das Standardtemplate für die Seitenempfehlungen allerdings zurückgesetzt
@@ -53,6 +52,12 @@ Media Manager/Bilderverwaltung
 - Es werden mehr Zeichen erlaubt in Dateinamen.
 - Dateien können in einem Schritt überschrieben werden beim Upload.
 
+Podcast
+- Es kann ein Youtube Link angegeben werden, welcher dann als Medium im
+  Podcastmodul erfasst wird.
+- Die neusten Videos beliebiger Kategorien können auf der Startseite angezeigt
+  werden.
+- Jedem Medium kann ein Vorschaubild zugeordnet werden.
 
 ****************************************
 * Changes ******************************
@@ -90,12 +95,6 @@ Kontakt
 - Die Formulare werden jetzt von einer Legende (mit Rahmen) umschlossen.
 - Die Styles sind nicht mehr fest im Code verankert.
 - Es kann eine Kopie des Formulars an den Absender geschickt werden.
-
-Podcast
-- Es kann ein Youtube Link angegeben werden, welcher dann als Medium im
-  Podcastmodul erfasst wird.
-- Die neusten Videos beliebiger Kategorien können auf der Startseite angezeigt
-  werden.
   
 Verzeichnis
 - Im Verzeichnis wurde die Typselektion (File, RSS or Link) aufgehoben und
