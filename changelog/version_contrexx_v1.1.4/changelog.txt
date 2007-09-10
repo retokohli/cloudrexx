@@ -5,14 +5,14 @@
 ****************************************
 * New Features *************************
 ****************************************
-// 01.05.2007 Shop - Hersteller
+Online Shop
 - Verwaltung von Hersteller. Im Admin steht ein neues Administrationsmenü
-  "Hersteller" zur Verfügung. Frontend-Marker "SHOP_MENU" wurde durch ein
+  "Hersteller" zur Verfügung. Frontend-Platzhalter [[SHOP_MENU]] wurde durch ein
   weiteres Dropdown "Hersteller" erweitert (Falls Hersteller im Shop-Modul
   erfasst wurden).
-  Es stehen zwei weitere Frontend-Marker zur Verfügung:
-  SHOP_MANUFACTURER_NAME und SHOP_MANUFACTURER_URL.
-  SHOP_MANUFACTURER_URL wird als Link angezeigt (target="_blank").
+  Es stehen zwei weitere Frontend-Platzhalter zur Verfügung:
+  [[SHOP_MANUFACTURER_NAME]] und [[SHOP_MANUFACTURER_URL]].
+  [[SHOP_MANUFACTURER_URL]] wird als Link angezeigt (target="_blank").
 
 Gästebuch
 - Konfigurationsoption damit alle Einträge in jeder Sprache angezeigt werden.
@@ -21,8 +21,8 @@ Suche
 - Die Suchfunktion durchsucht zusätzlich die Kalendereinträge.
 
 Core
-- Neue Option 'languageDetection' in den Grundeinsellungen, welche
-  bewirkt, dass die Contentsprache basierend auf den Browser-Sprachen
+- Neue Option 'languageDetection' in den Grundeinstellungen, welche
+  bewirkt, dass die Content Sprache basierend auf den Browser-Sprachen
   (accept-languages) ausgewählt wird oder immer die Standardsprache verwendet
   wird.
 - Neuer Platzhalter für die Zeitanzeige. Eingebunden im Design erzeugt der
@@ -45,8 +45,8 @@ Seitenempfehlungen
 
 Datenbank Manager
 - Es gibt neu einen Datenbank Manager zur Verwaltung der Datenbank. Dieser
-  erlaubt die Optmierung von Datenbanken. Ausserdem können SQL / CVS Backups
-  erzeugt und SQL-Quries ausgeführt werden.
+  erlaubt die Optimierung von Datenbanken. Ausserdem können SQL / CVS Backups
+  erzeugt und SQL-Queries ausgeführt werden.
 
 Media Manager/Bilderverwaltung
 - Es werden mehr Zeichen erlaubt in Dateinamen.
@@ -68,13 +68,13 @@ Shop
   der Konfigurationsdatei (config/configuration.php) aktiviert ist.)
 - Die Versendung von Mails an den Shopbetreiber nach einer
   Bestellung erfolgt nun direkt nach der Auftragsbestätigung.
-- Die Mehrwertsteuernummer jedes Landes wirt akzeptiert.
+- Die Mehrwertsteuernummer jedes Landes wird akzeptiert.
 - Die Inhaltsseite AGB wurde durch die globale AGB Seite
   (www.ihre-domain.com/index.php?section=agb) ersetzt. 
 
 Allgemein
 - Das Changelog wurde auf max. 80 Zeilen breite beschränkt.
-- Russische und Französische Übersetzung des Grundsystems erweitert.
+- Russische und französische Übersetzung des Grundsystems erweitert.
 - Ein Benutzer ist nun auch auf nicht geschützten Seiten authentifiziert,
   sofern sich dieser zuvor authentifiziert hat.
 - Nachdem sich ein Benutzer im Frontend Authentifizier hat, werden nur noch die
@@ -99,8 +99,8 @@ Kontakt
 - Es kann eine Kopie des Formulars an den Absender geschickt werden.
   
 Verzeichnis
-- Im Verzeichnis wurde die Typselektion (File, RSS or Link) aufgehoben und
-  statessen 3 neue Platzhalter hinzugefügt:
+- Im Verzeichnis wurde die Typselektion (File, RSS oder Link) aufgehoben und
+  stattessen drei neue Platzhalter hinzugefügt:
 	[DIRECTORY_FEED_ATTACHMENT]]
 	[[DIRECTORY_FEED_LINK]]
 	[[DIRECTORY_FEED_RSS_LINK]]
@@ -112,16 +112,6 @@ WYSIWYG-Editor
 Volltextsuche
 - Geschützte Inhaltsseiten, auf welche der Besucher zugriff hat, werden in das
   Suchergebnis einbezogen.
-
-Directory
-Im Verzeichnis wurde die Typselektion (File, RSS or Link) aufgehoben und stattdessen 3 neue Platzhalter hinzugefügt:
-	- [[DIRECTORY_FEED_ATTACHMENT]]
-	- [[DIRECTORY_FEED_LINK]]
-	- [[DIRECTORY_FEED_RSS_LINK]]
-Aufgrund dieser Anpassung müssen folgende Contentseiten angepasst werden:
-	- section=directory&cmd=detail
-	- section=directory&cmd=edit
-	- section=directory&cmd=add
 
 
 ****************************************
@@ -162,7 +152,7 @@ News-Syndication
 Allgemein
 - Die HTML-Struktur beim Navigationstyp "Nested Navigation" wird korrekt
   ausgegeben.
-- Mit dem Safari kann auf geschüzte Bereichte zugegriffen werden.
+- Mit dem Safari kann auf geschützte Bereiche zugegriffen werden.
 
 Newsletter
 - Zuweisung der Anrede bei einem Empfänger.
@@ -173,7 +163,7 @@ Gallery
   Programmausführung bei zu grossen Bilder nicht unerwartet abgebrochen wird.
 
 Media Manager/Bilderverwaltung
-- Die Bilderbearbeitung spiechert die Bilder nun wieder korrekt
+- Die Bilderbearbeitung speichert die Bilder nun wieder korrekt
 
 Sitemap
 - Es werden nur die Seiten aufgelistet, auf welche der Benutzer zugreifen darf.
