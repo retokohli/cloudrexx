@@ -557,7 +557,7 @@ class podcastManager extends podcastLib
 
 			if(!empty($mediumYoutubeID)){
 				$mediumTitle = $this->_getYoutubeTitle($mediumYoutubeID);
-				$mediumThumbnail = $this->_saveYoutubeThumbnail($mediumYoutubeID);
+				$mediumThumbnail = ASCMS_PATH_OFFSET.$this->_saveYoutubeThumbnail($mediumYoutubeID);
 				$mediumTemplate = &$this->_getYoutubeTemplate();
 				$mediumWidth = $this->_youTubeDefaultWidth;
 				$mediumSize = 0;
@@ -591,7 +591,7 @@ class podcastManager extends podcastLib
 			'PODCAST_MEDIUM_HEIGHT'				=> $mediumHeight,
 			'PODCAST_MEDIUM_PLAYLENGHT'			=> $this->_getShortPlaylenghtFormatOfTimestamp($mediumPlaylenght),
 			'PODCAST_MEDIUM_FILESIZE'			=> $mediumSize,
-			'PODCAST_MEDIUM_THUMBNAIL_SRC'		=> !empty($mediumThumbnail) ? ASCMS_PATH_OFFSET . $mediumThumbnail : $this->_noThumbnail,
+			'PODCAST_MEDIUM_THUMBNAIL_SRC'		=> !empty($mediumThumbnail) ? $mediumThumbnail : $this->_noThumbnail,
 			'PODCAST_MEDIUM_STATUS'				=> $mediumStatus == 1 ? 'checked="checked"' : '',
 			'PODCAST_MEDIUM_YOUTUBE_DISABLED'	=> !empty($mediumYoutubeID) ? 'disabled="disabled"' : '',
 			'PODCAST_MEDIUM_YOUTUBE_ID'			=> !empty($mediumYoutubeID) ? $mediumYoutubeID : ''
