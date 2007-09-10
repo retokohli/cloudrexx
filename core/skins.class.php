@@ -158,7 +158,7 @@ class skins
 
     function __construct()
     {
-    	global  $_CORELANG, $_FTPCONFIG, $objTemplate, $objDatabase;
+    	global  $_CORELANG, $objTemplate, $objDatabase;
 
     	$this->_xmlParserCharacterEncoding = CONTREXX_CHARSET;
         //add preview.gif to required files
@@ -199,54 +199,48 @@ class skins
     /**
     * Gets the requested page
     *
-    * @global	 array     $_CORELANG
+    * @global object $objTemplate
     * @return    string    parsed content
     */
     function getPage()
     {
-    	global $_CORELANG, $objTemplate, $objPerm;
-    	if(!isset($_GET['act'])) {
+    	global $objTemplate;
+
+    	if
+    	(!isset($_GET['act'])) {
     	    $_GET['act']="";
     	}
         switch($_GET['act']){
 			case "activate":
-			    $objPerm->checkAccess(46, 'static');
 			    $this->_activate();
 			break;
 			case "examples":
-			    $objPerm->checkAccess(47, 'static');
 			    $this->examples();
 			break;
 			case "manage":
-				$objPerm->checkAccess(102, 'static');
 				$this->_manage();
 			break;
 			case "upload":
-			    $objPerm->checkAccess(47, 'static');
 			    $this->upload();
 			    $this->overview();
 			break;
 			case "update":
-			    $objPerm->checkAccess(47, 'static');
 			    $this->update();
 			    $this->overview();
 			break;
 			case "newDir":
-			    $objPerm->checkAccess(47, 'static');
 			    $this->newdir();
+
 			break;
 			case "createDir":
-				$objPerm->checkAccess(47, 'static');
 				$this->createdir();
 				//$this->overview();
 			break;
 			case "newFile":
-			    $objPerm->checkAccess(47, 'static');
 			    $this->newfile();
 			    $this->overview();
 			break;
 			default:
-			    $objPerm->checkAccess(47, 'static');
 			    $this->newfile();
 			    $this->delfile();
 			    $this->deldir();
@@ -266,7 +260,10 @@ class skins
     */
     function overview()
     {
-		global $_CONFIG, $_CORELANG, $objTemplate;
+		global $_CORELANG, $objTemplate, $objPerm;
+
+		$objPerm->checkAccess(47, 'static');
+
 	    // initialize variables
 		$objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_content', 'skins_content.html');
 		$this->pageTitle = $_CORELANG['TXT_OVERVIEW'];
@@ -299,7 +296,10 @@ class skins
      */
     function _manage()
     {
-    	global $_CONFIG, $_CORELANG, $objTemplate, $objDatabase;
+    	global $_CORELANG, $objTemplate, $objDatabase, $objPerm;
+
+    	$objPerm->checkAccess(102, 'static');
+
     	$objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_manage', 'skins_manage.html');
     	$this->pageTitle = $_CORELANG['TXT_THEME_IMPORT_EXPORT'];
 	    //check GETs for action
@@ -610,7 +610,7 @@ class skins
     function _importFile()
     {
     	require_once(ASCMS_LIBRARY_PATH.'/pclzip/pclzip.lib.php');
-		global $_CONFIG, $_CORELANG;
+		global $_CORELANG;
 		$this->_cleantmp();
 		switch($_GET['import']){
 			case 'remote':
@@ -687,7 +687,7 @@ class skins
     function _exportFile()
     {
     	require_once(ASCMS_LIBRARY_PATH.'/pclzip/pclzip.lib.php');
-		global $_CONFIG, $_CORELANG;
+		global $_CORELANG;
 		//clean up tmp folder
 		$this->_cleantmp();
 		//path traversal security check
@@ -751,7 +751,10 @@ class skins
     */
 	function _activate()
     {
-		global $_CONFIG, $objDatabase, $_CORELANG, $objTemplate;
+		global $objDatabase, $_CORELANG, $objTemplate, $objPerm;
+
+		$objPerm->checkAccess(46, 'static');
+
 		$objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_active', 'skins_activate.html');
 		$this->pageTitle = $_CORELANG['TXT_ACTIVATE_DESIGN'];
 		$objTemplate->setVariable(array(
@@ -814,7 +817,10 @@ class skins
     */
     function examples()
     {
-		global $_CONFIG, $_CORELANG, $objTemplate;
+		global $_CORELANG, $objTemplate, $objPerm;
+
+		$objPerm->checkAccess(47, 'static');
+
 	    // initialize variables
 		$objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_examples', 'skins_examples.html');
 		$this->pageTitle = $_CORELANG['TXT_DESIGN_VARIABLES_LIST'];
@@ -835,7 +841,10 @@ class skins
     */
     function newdir()
     {
-		global $_CONFIG, $_CORELANG, $objTemplate;
+		global $_CORELANG, $objTemplate, $objPerm;
+
+		$objPerm->checkAccess(47, 'static');
+
 	 	$this->webPath = $this->arrWebPaths[0];
 		// initialize variables
 		$objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_create', 'skins_create.html');
@@ -866,7 +875,10 @@ class skins
     */
     function createdir()
     {
-		global $_CONFIG, $_CORELANG, $objTemplate;
+		global $_CORELANG, $objTemplate, $objPerm;
+
+		$objPerm->checkAccess(47, 'static');
+
 		if($_POST['dbName'] != "") {
 			if(($_POST['dirName']!= "") && ($_POST['existingdirName'] == "")) {
 				$dirName = $this->replaceCharacters($_POST['dirName']);
@@ -875,30 +887,37 @@ class skins
         			if($this->dirLog != "error") {
         				$this->_objFile->setChmod($this->path, $this->webPath, $dirName);
         				$this->insertIntoDb($_POST['dbName'], $this->dirLog, $_POST['fromDB']);
-    					$this->_createDefaultFiles($this->dirLog);
+    					$this->_createDefaultFiles($this->dirLog) ? $this->overview() : $this->newdir();
         			}
         		} elseif($_POST['fromTheme'] != "" && $_POST['fromDB'] == "") {
         			$this->dirLog=$this->_objFile->copyDir($this->path, $this->webPath, $_POST['fromTheme'], $this->path, $this->webPath, $dirName);
         			if($this->dirLog != "error") {
         				$this->insertIntoDb($_POST['dbName'], $this->dirLog, $_POST['fromDB']);
         			}
+        			$this->strOkMessage  = $_POST['dbName']." ". $_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
+        			$_POST['themes'] = $_POST['dbName'];
+        			$this->overview();
         		} elseif($_POST['fromTheme'] == "" && $_POST['fromDB'] != "") {
         			$this->dirLog=$this->_objFile->mkDir($this->path, $this->webPath, $dirName);
         			if($this->dirLog != "error") {
         				$this->insertIntoDb($_POST['dbName'], $this->dirLog, $_POST['fromDB']);
     					$this->createFilesFromDB($this->dirLog, intval($_POST['fromDB']));
         			}
+        			$this->newdir();
         		}
 			} elseif(($_POST['dirName'] == "") && ($_POST['existingdirName'] != "")) {
 				$this->insertIntoDb($_POST['dbName'], $_POST['existingdirName']);
 				$this->setChmodDir($_POST['existingdirName']);
-				$status = $_POST['existingdirName']." ". $_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
-				$this->strOkMessage  = $status;
+				$this->strOkMessage  = $_POST['existingdirName']." ". $_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
+				$_POST['themes'] = $_POST['existingdirName'];
+				$this->overview();
 			} else {
 				$this->strErrMessage = $_CORELANG['TXT_STATUS_CHECK_INPUTS'];
+				$this->newdir();
 			}
 		} else {
 			$this->strErrMessage = $_CORELANG['TXT_STATUS_CHECK_INPUTS'];
+			$this->newdir();
 		}
     }
 
@@ -933,7 +952,7 @@ class skins
     */
 	function getDropdownNotInDb()
 	{
-		global $_CONFIG, $objDatabase, $_CORELANG;
+		global $objDatabase;
 		$activatedThemes = array();
 		$objResult = $objDatabase->Execute("SELECT id,foldername FROM ".DBPREFIX."skins ORDER BY id");
 		$i=0;
@@ -968,6 +987,10 @@ class skins
     */
     function update()
     {
+    	global $objPerm;
+
+    	$objPerm->checkAccess(47, 'static');
+
 	    $themes = $_POST['themes'];
 	    $themesPage = $_POST['themesPage'];
 	    $pageContent = contrexx_stripslashes($_POST['content']);
@@ -1010,7 +1033,10 @@ class skins
     */
     function newfile()
     {
-		global $_CONFIG, $_CORELANG;
+		global $_CORELANG, $objPerm;
+
+		$objPerm->checkAccess(47, 'static');
+
 		$themes = isset($_POST['themes']) ? $_POST['themes'] : '';
         $themesFile = isset($_POST['themesNewFileName']) ? $this->replaceCharacters($_POST['themesNewFileName']) : '';
         if(($themesFile!="") AND ($themes!="")) {
@@ -1028,7 +1054,10 @@ class skins
     */
     function delfile()
     {
-    	global $_CONFIG, $_CORELANG;
+    	global $_CORELANG, $objPerm;
+
+    	$objPerm->checkAccess(47, 'static');
+
 		$themesFile = isset($_POST['themesDelFileName']) ? $_POST['themesDelFileName'] : '';
 		$themes = isset($_POST['themes']) ? $_POST['themes'] : '';
 		//path traversal security check
@@ -1056,7 +1085,10 @@ class skins
     */
     function deldir($nocheck = false)
     {
-		global $_CONFIG, $objDatabase, $_CORELANG;
+		global $objDatabase, $_CORELANG, $objPerm;
+
+		$objPerm->checkAccess(47, 'static');
+
 		$themes = isset($_POST['themesDelName']) ? $_POST['themesDelName'] : '';
 		if($themes == '' && !empty($_GET['delete'])){
 			$themes = addslashes($_GET['delete']);
@@ -1129,7 +1161,7 @@ class skins
     */
 	function _getDropdownActivated($themesId)
 	{
-		global $_CONFIG, $_CORELANG, $objDatabase;
+		global $objDatabase;
 		$objResult = $objDatabase->Execute("SELECT id,themesname FROM ".DBPREFIX."skins ORDER BY id");
 		if ($objResult !== false) {
 			while (!$objResult->EOF) {
@@ -1155,7 +1187,7 @@ class skins
     */
 	function getThemesDropdown($themes = NULL)
 	{
-		global $_CONFIG, $objDatabase, $_CORELANG;
+		global $objDatabase, $_CORELANG;
 		$themelist=array();
 		if(!isset($themes)) {
             $themes = $this->selectTheme();
@@ -1212,7 +1244,7 @@ class skins
     */
 	function _getThemesDropdownDelete()
 	{
-		global $_CONFIG, $objDatabase, $_CORELANG;
+		global $objDatabase;
 		$activatedThemes = array();
 		$objResult = $objDatabase->Execute("SELECT id,themesid,print_themes_id,is_default FROM ".DBPREFIX."languages ORDER BY id");
 		$i=0;
@@ -1250,7 +1282,7 @@ class skins
     */
 	function getFilesDropdown($themes="", $themesPage="")
 	{
-		global $_CONFIG, $_CORELANG;
+		global $_CORELANG;
 		if(!isset($themes)) {
             $themes = $this->selectTheme();
 		}
@@ -1319,7 +1351,7 @@ class skins
     */
 	function getFilesDropdownDel($themes="")
 	{
-		global $_CONFIG, $_CORELANG;
+		global $_CORELANG;
 		if(!isset($themes)) {
             $themes = $this->selectTheme();
 		}
@@ -1361,7 +1393,7 @@ class skins
     */
 	function getFilesContent($themes="", $themesPage="")
 	{
-		global $_CONFIG, $objDatabase, $_CORELANG, $objTemplate;
+		global $objDatabase, $objTemplate;
 		if(!isset($themes)) {
             $themes = $this->selectTheme();
 		}
@@ -1400,7 +1432,6 @@ class skins
     */
     function replaceCharacters($string)
     {
-    	global $_CONFIG, $_CORELANG;
         // replace $change with ''
         $change = array('+', '¦', '"', '@', '*', '#', '°', '%', '§', '&', '¬', '/', '|', '(', '¢', ')', '=', '?', '\'', '´', '`', '^', '~', '!', '¨', '[', ']', '{', '}', '£', '$', '-', '<', '>', '\\', ';', ',', ':');
         // replace $signs1 with $signs
@@ -1432,7 +1463,7 @@ class skins
     */
     function selectTheme()
     {
-    	global $_CONFIG, $objDatabase, $_CORELANG;
+    	global $objDatabase;
 
     	$objResult = $objDatabase->Execute("SELECT id,themesid,is_default,print_themes_id FROM ".DBPREFIX."languages WHERE is_default='true' ORDER BY id");
     	if ($objResult !== false) {
@@ -1460,7 +1491,7 @@ class skins
      */
     function getDefaultPrintTheme()
     {
-   		global $_CONFIG, $objDatabase, $_CORELANG;
+   		global $objDatabase, $_CORELANG;
     	$objResultID = $objDatabase->SelectLimit("SELECT `print_themes_id` FROM ".DBPREFIX."languages WHERE is_default='true'", 1);
     	if ($objResultID !== false && $objResultID->RecordCount() > 0) {
     		$objResult = $objDatabase->SelectLimit("SELECT `foldername` FROM ".DBPREFIX."skins WHERE id=".$objResultID->fields['print_themes_id']." ORDER BY id", 1);
@@ -1471,7 +1502,7 @@ class skins
 		$this->strErrMessage = $_CORELANG['TXT_NO_DEFAULT_THEME'];
 		return false;
     }
-    
+
     /**
      * return the foldername of the default pdf_theme
      *
@@ -1479,7 +1510,7 @@ class skins
      */
     function getDefaultPDFTheme()
     {
-   		global $_CONFIG, $objDatabase, $_CORELANG;
+   		global $objDatabase, $_CORELANG;
     	$objResultID = $objDatabase->SelectLimit("SELECT `pdf_themes_id` FROM ".DBPREFIX."languages WHERE is_default='true'", 1);
     	if ($objResultID !== false && $objResultID->RecordCount() > 0) {
     		$objResult = $objDatabase->SelectLimit("SELECT `foldername` FROM ".DBPREFIX."skins WHERE id=".$objResultID->fields['pdf_themes_id']." ORDER BY id", 1);
@@ -1544,7 +1575,8 @@ class skins
         	return false;
     	}else{
     		$this->strOkMessage  = $themes ."  ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
-    		$this->newdir();
+    		$_POST['themes'] = $themes;
+    		return true;
     	}
     }
 
@@ -1556,7 +1588,7 @@ class skins
     */
     function checkTable($table)
     {
-	    global $_CONFIG, $objDatabase, $_CORELANG;
+	    global $objDatabase;
 		$arrTables = array();
 		// get tables in database
 		$arrTables = $objDatabase->MetaTables('TABLES');
@@ -1606,7 +1638,7 @@ class skins
      */
     function createFilesFromDB($themes, $fromDB)
     {
-    	global $_CONFIG, $objDatabase, $_CORELANG;
+    	global $objDatabase, $_CORELANG;
 
     	$themePages = array();
 
@@ -1646,7 +1678,7 @@ class skins
 			   	}
 			   	fclose($handle);
 			   	$this->strOkMessage = $_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
-
+			   	$this->overview();
 			} else {
 			    $this->strErrMessage = $_CORELANG['TXT_STATUS_CANNOT_WRITE'];
 			}
@@ -1717,7 +1749,7 @@ class skins
     */
     function dropTable($table)
     {
-    	global $_CONFIG, $objDatabase, $_CORELANG;
+    	global $objDatabase;
 
 		$objResult = $objDatabase->Execute("SELECT id FROM ".$this->oldTable." ORDER BY id");
 		if ($objResult !== false) {
@@ -1736,7 +1768,6 @@ class skins
      */
     function _getXML($themes)
     {
-    	global $_CORELANG;
     	$xmlFilePath = ASCMS_THEMES_PATH.DIRECTORY_SEPARATOR.$themes.DIRECTORY_SEPARATOR.'info.xml';
     	$xml_parser = xml_parser_create($this->_xmlParserCharacterEncoding);
     	xml_set_object($xml_parser, $this);

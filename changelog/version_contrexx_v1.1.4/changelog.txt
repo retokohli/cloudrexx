@@ -179,3 +179,8 @@ Sitemap
 Gästebuch
 - Das Erstellungsdatum eines Eintrages wird bei dessen Aktualisierung nicht
   mehr geändert. 
+
+Layout & Design Verwaltung
+- Nachdem Erstellen eines neuen Layouts wird entweder das neu erstellte Layout
+  ausgewählt in der Übersicht angezeigt, oder wenn die Erstellung fehl schlug,
+  wieder der Dialog zum Erstellen eines neuen Layouts angezeigt. 
