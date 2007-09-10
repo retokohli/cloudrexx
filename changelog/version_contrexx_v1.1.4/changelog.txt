@@ -69,6 +69,8 @@ Shop
 - Die Versendung von Mails an den Shopbetreiber nach einer
   Bestellung erfolgt nun direkt nach der Auftragsbestätigung.
 - Die Mehrwertsteuernummer jedes Landes wirt akzeptiert.
+- Die Inhaltsseite AGB wurde durch die globale AGB Seite
+  (www.ihre-domain.com/index.php?section=agb) ersetzt. 
 
 Allgemein
 - Das Changelog wurde auf max. 80 Zeilen breite beschränkt.
