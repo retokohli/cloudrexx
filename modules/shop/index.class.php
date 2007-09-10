@@ -377,9 +377,6 @@ class Shop extends ShopLibrary
 
         if (isset($_GET['act'])) {
             switch($_GET['act']) {
-                case 'terms':
-                    $this->terms();
-                    break;
                 case 'success':
                     $this->success();
                     break;
@@ -3178,47 +3175,6 @@ right after the customer logs in!
             'SHOP_ADDRESS'                => $shopAddress,
         ));
     }
-
-
-    /**
-     * Set up the page with the terms and conditions
-     */
-    function terms()
-    {
-        global $_ARRAYLANG;
-        if ($this->objTemplate->blockExists('shopShipper')) {
-            $arrShipment = $this->objShipment->getShipmentConditions();
-            foreach ($arrShipment as $strShipperName => $arrContent) {
-                $strCountries  = join(', ', $arrContent['countries']);
-                $arrConditions = $arrContent['conditions'];
-                $this->objTemplate->setCurrentBlock('shopShipment');
-                foreach ($arrConditions as $arrData) {
-                    $this->objTemplate->setVariable(array(
-                        'SHOP_MAX_WEIGHT' => $arrData['max_weight'],
-                        'SHOP_COST_FREE'  => $arrData['price_free'],
-                        'SHOP_COST'       => $arrData['cost'],
-                        'SHOP_UNIT'       => $this->aCurrencyUnitName,
-                    ));
-                    $this->objTemplate->parseCurrentBlock();
-                }
-                $this->objTemplate->setCurrentBlock('shopShipper');
-                $this->objTemplate->setVariable(array(
-                    'SHOP_SHIPPER'   => $strShipperName,
-                    'SHOP_COUNTRIES' => $strCountries,
-                ));
-            $this->objTemplate->setVariable(array(
-                'TXT_SHOP_SHIPMENT_CONDITIONS' => $_ARRAYLANG['TXT_SHOP_SHIPMENT_CONDITIONS'],
-                'TXT_SHIPPING_METHOD'          => $_ARRAYLANG['TXT_SHIPPING_METHOD'],
-                'TXT_SHOP_SHIPMENT_COUNTRIES'  => $_ARRAYLANG['TXT_SHOP_SHIPMENT_COUNTRIES'],
-                'TXT_SHIPPING_MAX_WEIGHT'      => $_ARRAYLANG['TXT_SHIPPING_MAX_WEIGHT'],
-                'TXT_FREE_OF_CHARGE'           => $_ARRAYLANG['TXT_FREE_OF_CHARGE'],
-                'TXT_FEE'                      => $_ARRAYLANG['TXT_FEE'],
-            ));
-            $this->objTemplate->parseCurrentBlock();
-            }
-        }
-    }
-
 
     /**
      * Set up the common fields of the payment page
