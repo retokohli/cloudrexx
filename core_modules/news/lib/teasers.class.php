@@ -99,7 +99,7 @@ class Teasers extends newsLibrary
 			$langId = $_LANGID;
 		}
 
-		$objResult = $objDatabase->Execute("SELECT 	news.id AS id,
+		$objResult = $objDatabase->Execute("SELECT	 news.id AS id,
 									                 news.date AS date,
 									                 news.userid AS userid,
 									                 news.title AS title,
@@ -109,20 +109,19 @@ class Teasers extends newsLibrary
 									                 cat.name AS category_name,
 									                 news.teaser_text AS teaser_text,
 									                 news.teaser_show_link AS teaser_show_link,
-									                 news.teaser_image_path AS teaser_image_path,
+									                 news.teaser_image_path AS teaser_image_path".
+									                 ($this->administrate == false ? ",
 									                 users.id AS usId,
 													 users.username AS username,
 													 users.firstname AS firstname,
-													 users.lastname AS lastname
-									            FROM ".DBPREFIX."module_news AS news,
-									                 ".DBPREFIX."module_news_categories AS cat,
-									                 ".DBPREFIX."access_users AS users
-									           WHERE news.lang=".$langId."
-									             AND news.catid=cat.catid
+													 users.lastname AS lastname" : '')."
+									            FROM ".DBPREFIX."module_news AS news
+										INNER JOIN   ".DBPREFIX."module_news_categories AS cat on cat.catid = news.catid "
+										.($this->administrate == false ? " INNER JOIN ".DBPREFIX."access_users AS users on users.id = news.userid " : '').
+									           " WHERE news.lang=".$langId."
 									             ".($this->administrate == false ? "
 									             AND news.validated='1'
 									             AND news.status='1'
-									             AND news.userid=users.id
 									             AND (news.startdate<=CURDATE() OR news.startdate='0000-00-00') AND (news.enddate>=CURDATE() OR news.enddate='0000-00-00')" : "" )."
 									        ORDER BY date DESC");
 
@@ -145,11 +144,15 @@ class Teasers extends newsLibrary
     				$extUrl = "";
     			}
 
-    			if(!empty($objResult->fields['firstname']) && !empty($objResult->fields['lastname'])) {
-    				$author = $objResult->fields['firstname']." ".$objResult->fields['lastname'];
-    			} else {
-    				$author = $objResult->fields['username'];
-    			}
+    			if($this->administrate == false){
+	    			if(!empty($objResult->fields['firstname']) && !empty($objResult->fields['lastname'])) {
+	    				$author = $objResult->fields['firstname']." ".$objResult->fields['lastname'];
+	    			} else {
+	    				$author = $objResult->fields['username'];
+	    			}
+	    		} else {
+	    			$author = '';
+	    		}
 
 				$this->arrTeasers[$objResult->fields['id']] = array(
     				'id'					=> $objResult->fields['id'],
