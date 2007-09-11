@@ -191,9 +191,6 @@ class skins
 	    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."skins");
     	$this->oldTable = DBPREFIX."themes";
         $this->_objFile->setChmod($this->path, $this->webPath, "");
-        if(!empty($_REQUEST['themes']) && !strstr($_REQUEST['themes'], '..')){
-	        $this->_createDefaultFiles($_REQUEST['themes'], true);
-        }
     }
 
     /**
