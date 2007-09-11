@@ -232,7 +232,7 @@ class newsletter extends NewsletterLib
 				'USERS_BIRTHDAY_MONTH_NAME'	=> $this->months[$i],
 				'SELECTED_MONTH'			=> $selected
 			));
-			if($this->_objTpl->blockExists('birthday_day')){
+			if($this->_objTpl->blockExists('birthday_month')){
 				$this->_objTpl->parse('birthday_month');
 			}
 		}
@@ -243,7 +243,7 @@ class newsletter extends NewsletterLib
 				'USERS_BIRTHDAY_YEAR' 		=> $i,
 				'SELECTED_YEAR'				=> $selected
 			));
-			if($this->_objTpl->blockExists('birthday_day')){
+			if($this->_objTpl->blockExists('birthday_year')){
 				$this->_objTpl->parse('birthday_year');
 			}
 		}
