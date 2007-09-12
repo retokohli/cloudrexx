@@ -113,6 +113,9 @@ Volltextsuche
 - Geschützte Inhaltsseiten, auf welche der Besucher zugriff hat, werden in das
   Suchergebnis einbezogen.
 
+PDF-Ansicht
+- Neue Template-Ansicht für PDF-Generierung. Im "Layout & Design" kann das PDF-Template verwaltet werden und ein neuer Platzhalter [PDF_URL] wurde hinzugefügt.
+
 
 ****************************************
 * Bugfixes *****************************
