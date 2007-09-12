@@ -27,7 +27,8 @@ class Permission
 
 
 
-	function Permission($permType='frontend') {
+	function Permission($permType='frontend')
+	{
 		$this->type=$permType;
 
 		if(isset($_SESSION['auth']['is_admin']) && $_SESSION['auth']['is_admin']==1){
@@ -45,7 +46,8 @@ class Permission
 	 * @param string $type
 	 * @return boolean
 	 */
-	function checkAccess($accessId, $type) {
+	function checkAccess($accessId, $type, $return = false)
+	{
 		if ($this->allAccess) {
 			return true;
 		} elseif (($type == 'static' || $type == 'dynamic') && isset($_SESSION['auth'][$type.'_access_ids']) && !empty($_SESSION['auth'][$type.'_access_ids'])) {
@@ -53,11 +55,35 @@ class Permission
 				return true;
 			}
 		}
+		if (!$return) {
+			$this->noAccess();
+		}
+		return false;
+	}
+
+	function noAccess()
+	{
 		if ($this->type == 'backend') {
 			header("Location: index.php?cmd=noaccess");
 			exit;
 		}
-		return false;
+	}
+
+	function getAccessGroups($accessId, $type)
+	{
+		global $objDatabase;
+
+		$arrGroups = array();
+
+		$objGroup = $objDatabase->Execute('SELECT `group_id` FROM `'.DBPREFIX.'access_group_'.$type.'_ids` WHERE `access_id` = '.$accessId);
+		if ($objGroup !== false) {
+			while (!$objGroup->EOF) {
+				$arrGroups[] = $objGroup->fields['group_id'];
+				$objGroup->MoveNext();
+			}
+		}
+
+		return $arrGroups;
 	}
 
 	/**
