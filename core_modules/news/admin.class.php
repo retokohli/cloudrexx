@@ -493,10 +493,11 @@ class newsManager extends newsLibrary {
     /**
     * adds a news entry
     *
-    * @param     integer   $newsid -> the id of the news entry
-    * @return    boolean   result
+    * @global	array $_CONFIG
+    * @global	array $_ARRAYLANG
     */
-    function add(){
+    function add()
+    {
 	    global $_ARRAYLANG, $_CONFIG;
 
     	$this->_objTpl->loadTemplateFile('module_news_modify.html',true,true);
@@ -509,8 +510,6 @@ class newsManager extends newsLibrary {
 		foreach ($objTeaser->arrTeaserFrameNames as $frameName => $frameId) {
 			$frameIds .= "<option value=\"".$frameId."\">".$frameName."</option>\n";
 		}
-
-
 
 	    $this->_objTpl->setVariable(array(
 	        'TXT_NEWS_MESSAGE'    	 		=> $_ARRAYLANG['TXT_NEWS_MESSAGE'],
@@ -588,9 +587,6 @@ class newsManager extends newsLibrary {
     	    $this->overview();
         }
     }
-
-
-
 
     /**
     * Deletes a news entry
@@ -750,6 +746,9 @@ class newsManager extends newsLibrary {
 	    	$associatedFrameIds = "";
 	    	$arrAssociatedFrameIds = explode(';', $objTeaser->arrTeasers[$newsid]['teaser_frames']);
 	    	foreach ($arrAssociatedFrameIds as $teaserFrameId) {
+	    		if (empty($teaserFrameId)) {
+	    			continue;
+	    		}
 	    		$associatedFrameIds .= "<option value=\"".$teaserFrameId."\">".$objTeaser->arrTeaserFrames[$teaserFrameId]['name']."</option>\n";
 	    	}
 			foreach ($objTeaser->arrTeaserFrameNames as $frameName => $frameId) {
@@ -849,17 +848,12 @@ class newsManager extends newsLibrary {
 			$newsTeaserShowLink = isset($_POST['newsTeaserShowLink']) ? intval($_POST['newsTeaserShowLink']) : 0;
 
 			$newsTeaserImagePath = contrexx_strip_tags($_POST['newsTeaserImagePath']);
+			$newsTeaserFrames = '';
 
-			if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
+			if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {print_r($_POST['newsTeaserFramesAsso']);
 		    	foreach ($_POST['newsTeaserFramesAsso'] as $frameId) {
-		    		if (isset($newsTeaserFrames)) {
-		    			$newsTeaserFrames .= ";".intval($frameId);
-		    		} else {
-		    			$newsTeaserFrames = intval($frameId);
-		    		}
+	    			intval($frameId) > 0 ? $newsTeaserFrames .= ";".intval($frameId) : false;
 		    	}
-		    } else {
-		    	$newsTeaserFrames = "";
 		    }
 
 		    $startDate = contrexx_strip_tags($_POST['startDate']);
@@ -1005,19 +999,13 @@ class newsManager extends newsLibrary {
 	    $newsTeaserText 		= contrexx_addslashes($_POST['newsTeaserText']);
 	    $newsTeaserImagePath 	= contrexx_strip_tags($_POST['newsTeaserImagePath']);
 	    $newsTeaserShowLink 	= isset($_POST['newsTeaserShowLink']) ? intval($_POST['newsTeaserShowLink']) : 0;
+	    $newsTeaserFrames		= '';
 
-	    if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
+		if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {print_r($_POST['newsTeaserFramesAsso']);
 	    	foreach ($_POST['newsTeaserFramesAsso'] as $frameId) {
-	    		if (isset($newsTeaserFrames)) {
-	    			$newsTeaserFrames .= ";".intval($frameId);
-	    		} else {
-	    			$newsTeaserFrames = intval($frameId);
-	    		}
+    			intval($frameId) > 0 ? $newsTeaserFrames .= ";".intval($frameId) : false;
 	    	}
-	    } else {
-	    	$newsTeaserFrames = "";
 	    }
-
 
 	    if(empty($status)) {
 	        $status = 0;
