@@ -5,8 +5,8 @@
  * CMS Administration
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Engineering Team
- * @version       $Id:    Exp $
+ * @author      Comvation Engineering Team
+ * @version     $Id:    Exp $
  * @package     contrexx
  * @subpackage  admin
  * @todo        Edit PHP DocBlocks!
@@ -53,10 +53,11 @@ $incVersionStatus = include_once('../config/version.php');
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
     header("Location: ../installer/index.php");
 } elseif ($incSettingsStatus === false || $incVersionStatus === false) {
-	die('System halted: Unable to load basic configuration!');
+    die('System halted: Unable to load basic configuration!');
 }
 
-require_once '../core/API.php';
+require_once('../core/API.php');
+
 //-------------------------------------------------------
 // Initialize database object
 //-------------------------------------------------------
@@ -158,7 +159,7 @@ if (!$objAuth->checkAuth()) {
             'TXT_USER_NAME'           => $_CORELANG['TXT_USER_NAME'],
             'TXT_PASSWORD'            => $_CORELANG['TXT_PASSWORD'],
             'TXT_LOGIN'               => $_CORELANG['TXT_LOGIN'],
-            'TXT_PASSWORD_LOST'			=> $_CORELANG['TXT_PASSWORD_LOST'],
+            'TXT_PASSWORD_LOST'       => $_CORELANG['TXT_PASSWORD_LOST'],
             'UID'                     => isset($_COOKIE['username']) ? $_COOKIE['username'] : '',
             'TITLE'                   => $_CORELANG['TXT_LOGIN'],
             'LOGIN_IMAGE'             => $loginSecurityCode,
@@ -177,10 +178,10 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $objTemplate->loadTemplateFile('index.html');
     $objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
     $objTemplate->setVariable(
-    	array(
-    		'TXT_PAGE_ID'		=> $_CORELANG['TXT_PAGE_ID'],
-    		'CONTREXX_CHARSET'	=> CONTREXX_CHARSET
-    	)
+        array(
+            'TXT_PAGE_ID'      => $_CORELANG['TXT_PAGE_ID'],
+            'CONTREXX_CHARSET' => CONTREXX_CHARSET
+        )
     );
     $objTemplate->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
 }
@@ -198,9 +199,9 @@ switch($cmd) {
         $objEgov->getPage();
         break;
 
-	    //-----------------------------------------------------------------------------------------------
-	    // banner management
-	    //-----------------------------------------------------------------------------------------------
+        //-----------------------------------------------------------------------------------------------
+        // banner management
+        //-----------------------------------------------------------------------------------------------
     case "banner":
         // $objPerm->checkAccess(??, 'static');
         $modulespath = ASCMS_CORE_MODULE_PATH . "/banner/admin.class.php";
@@ -380,14 +381,14 @@ switch($cmd) {
         //-----------------------------------------------------------------------------------------------
         // Immo-management
         //-----------------------------------------------------------------------------------------------
-	case "immo":
-		$modulespath = ASCMS_MODULE_PATH . "/immo/admin.class.php";
-		if (file_exists($modulespath)) require_once($modulespath);
-		else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-	    $subMenuTitle = $_CORELANG['TXT_IMMO_MANAGEMENT'];
-		$objImmo = &new Immo();
-		$objImmo->getPage();
-	break;
+    case "immo":
+        $modulespath = ASCMS_MODULE_PATH . "/immo/admin.class.php";
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_IMMO_MANAGEMENT'];
+        $objImmo = &new Immo();
+        $objImmo->getPage();
+    break;
 
         //-----------------------------------------------------------------------------------------------
         // Livecam
@@ -455,30 +456,30 @@ switch($cmd) {
         break;
 
 
-		//-----------------------------------------------------------------------------------------------
-		// development
-		//-----------------------------------------------------------------------------------------------
-	case "development":
-		     $objPerm->checkAccess(81, 'static');
-		  $modulespath = ASCMS_CORE_MODULE_PATH . "/development/admin.class.php";
-		  if (file_exists($modulespath)) require_once($modulespath);
-		  else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-		  $subMenuTitle = $_CORELANG['TXT_DEVELOPMENT'];
-		  $objDevelopment = &new Development();
-		     $objDevelopment->getPage();
-		 break;
+        //-----------------------------------------------------------------------------------------------
+        // development
+        //-----------------------------------------------------------------------------------------------
+    case "development":
+             $objPerm->checkAccess(81, 'static');
+          $modulespath = ASCMS_CORE_MODULE_PATH . "/development/admin.class.php";
+          if (file_exists($modulespath)) require_once($modulespath);
+          else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+          $subMenuTitle = $_CORELANG['TXT_DEVELOPMENT'];
+          $objDevelopment = &new Development();
+             $objDevelopment->getPage();
+         break;
 
         //-----------------------------------------------------------------------------------------------
         // database manager
         //-----------------------------------------------------------------------------------------------
-	case 'dbm':
-	    $modulespath = ASCMS_CORE_PATH.'/DatabaseManager.class.php';
-	    if (file_exists($modulespath)) include($modulespath);
-	    else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-	    $subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
-	    $objDatabaseManager = &new DatabaseManager();
-	    $objDatabaseManager->getPage();
-		break;
+    case 'dbm':
+        $modulespath = ASCMS_CORE_PATH.'/DatabaseManager.class.php';
+        if (file_exists($modulespath)) include($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
+        $objDatabaseManager = &new DatabaseManager();
+        $objDatabaseManager->getPage();
+        break;
 
         //----------------------------------------------------------------------------------------------
         // stats
@@ -496,15 +497,15 @@ switch($cmd) {
         //----------------------------------------------------------------------------------------------
         // alias
         //----------------------------------------------------------------------------------------------
-	case "alias":
-		$objPerm->checkAccess(115, 'static');
-		$modulespath = ASCMS_CORE_MODULE_PATH . "/alias/admin.class.php";
-		if (file_exists($modulespath)) include($modulespath);
-		else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-		$subMenuTitle = $_CORELANG['TXT_ALIAS_ADMINISTRATION'];
-		$objAlias = &new AliasAdmin();
-		$objAlias->getPage();
-		break;
+    case "alias":
+        $objPerm->checkAccess(115, 'static');
+        $modulespath = ASCMS_CORE_MODULE_PATH . "/alias/admin.class.php";
+        if (file_exists($modulespath)) include($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_ALIAS_ADMINISTRATION'];
+        $objAlias = &new AliasAdmin();
+        $objAlias->getPage();
+        break;
 
         //-----------------------------------------------------------------------------------------------
         // nettools
@@ -588,7 +589,7 @@ switch($cmd) {
         // survey
         //-----------------------------------------------------------------------------------------------
     case "survey":
-    	$objPerm->checkAccess(111, 'static');
+        $objPerm->checkAccess(111, 'static');
         $modulespath = ASCMS_MODULE_PATH . "/survey/admin.class.php";
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -636,7 +637,7 @@ switch($cmd) {
         // forum
         //-----------------------------------------------------------------------------------------------
     case "forum":
-    	$objPerm->checkAccess(106, 'static');
+        $objPerm->checkAccess(106, 'static');
         $modulespath = ASCMS_MODULE_PATH . "/forum/admin.class.php";
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -750,10 +751,10 @@ switch($cmd) {
         //Temporary no-acces-file and comment
         $subMenuTitle=$_CORELANG['TXT_ACCESS_DENIED'];
         $objTemplate->setVariable(array(
-        'CONTENT_TITLE'				=> $_CORELANG['TXT_ACCESS_DENIED'],
-        'CONTENT_NAVIGATION'		=> $_CONFIG['coreCmsName'],
-        'CONTENT_STATUS_MESSAGE'	=> '',
-        'ADMIN_CONTENT'				=> "<img src='images/stop_hand.gif' alt='' /><br /><br />".$_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']
+        'CONTENT_TITLE'          => $_CORELANG['TXT_ACCESS_DENIED'],
+        'CONTENT_NAVIGATION'     => $_CONFIG['coreCmsName'],
+        'CONTENT_STATUS_MESSAGE' => '',
+        'ADMIN_CONTENT'          => "<img src='images/stop_hand.gif' alt='' /><br /><br />".$_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']
         ));
         break;
 
@@ -789,16 +790,16 @@ $parsingTime = round(((float)$finishTime[0] + (float)$finishTime[1]) - ((float)$
 $objAdminNav = &new adminMenu();
 $objAdminNav->getAdminNavbar();
 $objTemplate->setVariable(array(
-'SUB_MENU_TITLE' => $subMenuTitle,
-'FRONTEND_LANG_MENU' => $objInit->getUserFrontendLangMenu(),
-'TXT_GENERATED_IN' => $_CORELANG['TXT_GENERATED_IN'],
-'TXT_SECONDS' => $_CORELANG['TXT_SECONDS'],
-'TXT_LOGOUT_WARNING' => $_CORELANG['TXT_LOGOUT_WARNING'],
-'PARSING_TIME'=> $parsingTime,
-'LOGGED_NAME' => $_SESSION['auth']['name'],
-'TXT_LOGGED_IN_AS' => $_CORELANG['TXT_LOGGED_IN_AS'],
-'TXT_LOG_OUT' => $_CORELANG['TXT_LOG_OUT'],
-'CONTENT_WYSIWYG_CODE' => get_wysiwyg_code()
+    'SUB_MENU_TITLE'       => $subMenuTitle,
+    'FRONTEND_LANG_MENU'   => $objInit->getUserFrontendLangMenu(),
+    'TXT_GENERATED_IN'     => $_CORELANG['TXT_GENERATED_IN'],
+    'TXT_SECONDS'          => $_CORELANG['TXT_SECONDS'],
+    'TXT_LOGOUT_WARNING'   => $_CORELANG['TXT_LOGOUT_WARNING'],
+    'PARSING_TIME'         => $parsingTime,
+    'LOGGED_NAME'          => $_SESSION['auth']['name'],
+    'TXT_LOGGED_IN_AS'     => $_CORELANG['TXT_LOGGED_IN_AS'],
+    'TXT_LOG_OUT'          => $_CORELANG['TXT_LOG_OUT'],
+    'CONTENT_WYSIWYG_CODE' => get_wysiwyg_code()
 ));
 
 if (isset($objTemplate->_variables['CONTENT_STATUS_MESSAGE']) && !empty($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
@@ -806,11 +807,12 @@ if (isset($objTemplate->_variables['CONTENT_STATUS_MESSAGE']) && !empty($objTemp
 }
 
 if (!empty($objTemplate->_variables['CONTENT_OK_MESSAGE'])) {
-	if (!isset($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
-		$objTemplate->_variables['CONTENT_STATUS_MESSAGE'] = '';
-	}
+    if (!isset($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
+        $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] = '';
+    }
     $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] .= "<div id=\"okbox\" style='overflow:auto'>".$objTemplate->_variables['CONTENT_OK_MESSAGE']."</div><br />";
 }
 
 $objTemplate->show();
+
 ?>
