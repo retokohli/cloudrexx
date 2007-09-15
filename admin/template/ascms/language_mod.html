@@ -22,13 +22,13 @@ return true;
 }
 
 function copyValues(id, strValue){
-	if(id > 1){	
+	if(id > 1){
 		for(i=id;i<{LAST_ID};i++){
 			try{
 				if(document.getElementsByName('content['+i+']')[0].value == ''){
 					document.getElementsByName('content['+i+']')[0].value = strValue
 				}
-				
+
 			}catch(e){}
 		}
 	}
@@ -52,9 +52,9 @@ function check(id){
 function clearInputs(){
 	for(i=2;i<{LAST_ID};i++){
 		try{
-			document.getElementsByName('content['+i+']')[0].value = '';			
+			document.getElementsByName('content['+i+']')[0].value = '';
 		}catch(e){}
-	}	
+	}
 }
 
 
@@ -62,7 +62,7 @@ function clearInputs(){
 </script>
 <form name="languageForm" method="post" action="index.php?cmd=language&amp;act=mod" onsubmit="return formCheck(this);" >
 <input type="hidden" name="id" value="{LANGUAGE_VARIABLE_ID}" />
-<table cellspacing="0" cellpadding="3" border="0" style="vertical-align:top;" width="100%" class="adminlist">
+<table summary="" cellspacing="0" cellpadding="3" border="0" style="vertical-align:top;" width="100%" class="adminlist">
 <tr>
 <th width="15%" colspan="4"><b>{TXT_LANGUAGE_SETTING}</b></th>
 </tr>
@@ -95,7 +95,7 @@ function clearInputs(){
 <!--</form>-->
 
 <!--<form name="languageArraylangPasteForm" method="post" action="index.php?cmd=language&amp;act=mod">-->
-<table cellspacing="0" cellpadding="3" border="0" style="vertical-align:top;" width="100%" class="adminlist">
+<table summary="" cellspacing="0" cellpadding="3" border="0" style="vertical-align:top;" width="100%" class="adminlist">
 <tr>
 <th colspan="2">
 	Sprachvariablen von $_ARRAYLANG[] importieren

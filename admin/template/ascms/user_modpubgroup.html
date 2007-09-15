@@ -95,7 +95,7 @@ function deselectAll(CONTROL)
                                                                       selectAll(document.form.elements['notSelectedUsers[]']);
                                                                       selectAll(document.form.elements['notSelectedPages[]']);">
 <input type="hidden" name="groupId" value="{USER_GROUP_ID}" />
-  <table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
+  <table summary="" class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
     <tr>
       <th nowrap="nowrap" colspan="2">
         <div align="left">{TXT_ADD_GROUP} </div>
@@ -118,7 +118,7 @@ function deselectAll(CONTROL)
     <tr class="row1">
       <td nowrap="nowrap" width="17%" valign="top">{TXT_USERS}</td>
       <td>
-        <table width="100%" border="0">
+        <table summary="" width="100%" border="0">
           <tr>
             <td width="13%">{TXT_EXISTING_USERS}
               <select name="notSelectedUsers[]" size="10" style="width:200px;" multiple="multiple">
@@ -157,7 +157,7 @@ function deselectAll(CONTROL)
 	<li><a id="pubGroupTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_PERMISSIONS}">{TXT_PERMISSIONS}</a></li>
 </ul>
 <div id="content1" class="pubGroupTab" style="display:block">
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+  <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
     <tr>
       <th colspan="2">
         <div align="left">{TXT_PROTECT_RANGES}</div>
@@ -166,7 +166,7 @@ function deselectAll(CONTROL)
     <tr class="row1">
       <td width="17%" nowrap="nowrap" valign="top">&nbsp;&nbsp;</td>
       <td nowrap="nowrap">
-        <table width="100%" border="0">
+        <table summary="" width="100%" border="0">
           <tr>
             <td width="13%">{TXT_EXISTING_RANGES}
               <select name="notSelectedPages[]" size="12" style="width:200px;" multiple="multiple">
@@ -201,7 +201,7 @@ function deselectAll(CONTROL)
   </table>
 </div>
 <div id="content2" class="pubGroupTab" style="display: none">
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+	<table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
  		<tr>
       		<th width="90%" nowrap="nowrap">{TXT_MODULE}</th>
 			<th nowrap="nowrap" width="10%" style="text-align:center;">{TXT_ALLOW}</th>
