@@ -258,10 +258,14 @@ class Currency
                     ? $this->activeStyleName
                     : $this->inactiveStyleName
                 );
-                $arrCurNavbar[] = "<a class=\"".$style."\" href=\"".
-                    $_SERVER['REQUEST_URI']."&amp;currency=".$id.
-                    "\" title=\"".$arrCurrency['code']."\">".
-                    $arrCurrency['code']."</a>";
+                $arrCurNavbar[] =
+                    '<a class="'.$style.'" href="'.
+                    htmlspecialchars(
+                        $_SERVER['REQUEST_URI'], ENT_QUOTES, CONTREXX_CHARSET
+                    ).
+                    '&amp;currency='.$id.'" title="'.$arrCurrency['code'].'">'.
+                    $arrCurrency['code'].
+                    '</a>';
             }
         }
         return join("&nbsp;|&nbsp;\n", $arrCurNavbar);
