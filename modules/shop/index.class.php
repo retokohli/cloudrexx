@@ -55,24 +55,24 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategory.class.php';
  */
 function shopUseSession()
 {
-	if (!empty($_COOKIE['PHPSESSID'])) {
-		return true;
-	} else {
-	    $command = '';
-	    if (!empty($_GET['cmd'])) {
-	        $command = $_GET['cmd'];
-	    } elseif (!empty($_GET['act'])) {
-	        $command = $_GET['act'];
-	    }
-	    if (in_array($command, array('', 'discounts', 'details', 'terms'))) {
-	        if ($command == 'details' && isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart') {
-	            return true;
-	        }
-	        return false;
-	    } else {
-	        return true;
-	    }
-	}
+    if (!empty($_COOKIE['PHPSESSID'])) {
+        return true;
+    } else {
+        $command = '';
+        if (!empty($_GET['cmd'])) {
+            $command = $_GET['cmd'];
+        } elseif (!empty($_GET['act'])) {
+            $command = $_GET['act'];
+        }
+        if (in_array($command, array('', 'discounts', 'details', 'terms'))) {
+            if ($command == 'details' && isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart') {
+                return true;
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
 
 
@@ -492,51 +492,34 @@ class Shop extends ShopLibrary
         }
         $treeArray = $this->_makeArrCategories();
         $arrayTreeParents = $this->_makeArrCurrentCategories($currentCatId);
-        $thisTree = 0;
         $topLevelId = 0;
-        $i_style = 1;
-
-        foreach ($treeArray as $k => $v) {
+        foreach ($treeArray as $categoryId => $level) {
             $expand = false;
-            $level = intval($v);
-            $pcat = $this->arrParentCategoriesId[$k];
+            $pcat = $this->arrParentCategoriesId[$categoryId];
             if ($level == 0) {
                 $expand = true;
                 $topLevelId = $currentCatId;
             } else {
-                $pcat = $this->arrParentCategoriesId[$k];
-                if ($k==$currentCatId) {
-                    $thisTree = 1;
-                } else {
-                    $thisTree = 0;
-                }
-                if (in_array ($pcat, $arrayTreeParents) || $pcat == $topLevelId || $thisTree) {
+                $pcat = $this->arrParentCategoriesId[$categoryId];
+                if (   in_array($pcat, $arrayTreeParents)
+                    || ($pcat == $topLevelId)
+                    || ($categoryId == $currentCatId)
+                ) {
                    $expand = true;
                 }
             }
             if ($expand) {
-                $width ="";
-                $style ="";
-                //$style_no = "";
-                $styleLevel = 0;
-                if ($level!=0) {
-                    $count= $level*3;
-                    for ($i = 1; $i <= $count; $i++) {$width .="&nbsp;&nbsp;";}
-                } else {
-                    //$style_no = "_$i_style";
-                    $i_style++;
-                }
-                $styleLevel = $level+1;
-                //$style = "shopnav$styleLevel$style_no";
-                $style = "shopnavbar".$styleLevel;
-                if ($currentCatId==$k) {
+                $style = 'shopnavbar'.($level+1);
+                if ($currentCatId == $categoryId) {
                     $style .= "_active";
                 }
                 $objTpl->setVariable(array(
                     'SHOP_CATEGORY_STYLE'  => $style,
-                    'SHOP_CATEGORY_ID'     => $k,
-                    'SHOP_CATEGORY_OFFSET' => $width,
-                    'SHOP_CATEGORY_NAME'   => str_replace('"', '&quot;', $this->arrCategoriesName[$k]),
+                    'SHOP_CATEGORY_ID'     => $categoryId,
+                    'SHOP_CATEGORY_OFFSET' =>
+                        str_repeat('&nbsp;&nbsp;', 3*$level),
+                    'SHOP_CATEGORY_NAME'   =>
+                        str_replace('"', '&quot;', $this->arrCategoriesName[$categoryId]),
                 ));
                 $objTpl->parseCurrentBlock("shopNavbar");
             }
@@ -600,19 +583,19 @@ class Shop extends ShopLibrary
                     $cartTpl = preg_replace('@(<!--\s+BEGIN\s+(shopJsCartProducts)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', '[[SHOP_JS_CART_PRODUCTS]]', $cartTpl);
                 }
 
-                $jsCart = $arrMatch[1].$_ARRAYLANG['TXT_SHOP_CART_IS_LOADING'].$arrMatch[4]."\n";
-                $jsCart .= "<script type=\"text/javascript\" src=\"modules/shop/lib/html2dom.js\"></script>\n";
-
-                $jsCart .= "<script type=\"text/javascript\">\n";
-                $jsCart .= "// <![CDATA[\n";
-                $jsCart .= "cartTpl = '".preg_replace(array("/'/", '/[\n\r]/', '/\//'), array("\\'", '\n','\\/'), $cartTpl)."';\n";
-                $jsCart .= "cartProductsTpl = '".preg_replace(array("/'/", '/[\n\r]/'), array("\\'", '\n'), $cartProductsTpl)."';\n";
-                $jsCart .= "if (typeof(objCart) != 'undefined') {shopGenerateCart();};\n";
-                $jsCart .= "// ]]>\n";
-                $jsCart .= "</script>\n";
+                $jsCart =
+                    $arrMatch[1].$_ARRAYLANG['TXT_SHOP_CART_IS_LOADING'].$arrMatch[4]."\n".
+                    "<script type=\"text/javascript\" src=\"modules/shop/lib/html2dom.js\"></script>\n".
+                    "<script type=\"text/javascript\">\n".
+                    "// <![CDATA[\n".
+                    "cartTpl = '".preg_replace(array("/'/", '/[\n\r]/', '/\//'), array("\\'", '\n','\\/'), $cartTpl)."';\n".
+                    "cartProductsTpl = '".preg_replace(array("/'/", '/[\n\r]/'), array("\\'", '\n'), $cartProductsTpl)."';\n".
+                    "if (typeof(objCart) != 'undefined') {shopGenerateCart();};\n".
+                    "// ]]>\n".
+                    "</script>\n";
                 if ($_REQUEST['section'] != 'shop') {
-					$jsCart .= Shop::getJavascriptCode();
-				}
+                    $jsCart .= Shop::getJavascriptCode();
+                }
             }
         }
         return $jsCart;
@@ -996,13 +979,15 @@ class Shop extends ShopLibrary
         }
 */
 
-        // initialize variabes
+        // initialize variables
         $pos        = 0;
         $paging     = '';
-        $class      = '';
         $detailLink = '';
         $catId      = isset($_REQUEST['catId']) ? intval($_REQUEST['catId']) : 0;
-        $ManufacturerId = isset($_REQUEST['ManufacturerId']) ? intval($_REQUEST['ManufacturerId']) : 0;
+        $manufacturerId = (!empty($_REQUEST['manufacturerId'])
+                ?   intval($_REQUEST['manufacturerId'])
+                :   0
+        );
         $term       = isset($_REQUEST['term'])  ? stripslashes(trim($_REQUEST['term'])) : '';
 
         $treeArray = $this->_makeArrCategories();
@@ -1037,14 +1022,17 @@ class Shop extends ShopLibrary
             $productId = $_SESSION['shop']['cart']['products'][$productId]['id'];
         }
 
-        $shopMenuOptions = $this->getCatMenu($catId);
-        $shopMenu = '<form action="index.php?section=shop" method="post">';
-        $shopMenu .= '<input type="text" name="term" value="'.htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET).'" /><br />';
-        $shopMenu .= '<select name="catId">';
-        $shopMenu .= '<option value="0">'.$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].'</option>';
-        $shopMenu .= $shopMenuOptions.'</select><br />';
-        $shopMenu .= $this->_GetManufacturerSelect();
-        $shopMenu .= '<input type="submit" name="Submit" value="'.$_ARRAYLANG['TXT_SEARCH'].'" /></form>';
+       $shopMenu =
+            '<form action="index.php?section=shop" method="post">'.
+            '<input type="text" name="term" value="'.
+            htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET).'" /><br />'.
+            '<select name="catId">'.
+            '<option value="0">'.$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].'</option>'.
+            $this->getCatMenu($catId).
+            '</select><br />'.
+            $this->_getManufacturerMenu($manufacturerId).
+            '<input type="submit" name="Submit" value="'.
+            $_ARRAYLANG['TXT_SEARCH'].'" /></form>';
         $this->objTemplate->setVariable("SHOP_MENU", $shopMenu);
         $this->objTemplate->setVariable("SHOP_CART_INFO", $this->showCartInfo());
 
@@ -1064,8 +1052,8 @@ class Shop extends ShopLibrary
         }
 
         $q1_manufacturer = '';
-        if ($ManufacturerId > 0) {
-           $q1_manufacturer = " AND manufacturer=$ManufacturerId ";
+        if ($manufacturerId > 0) {
+           $q1_manufacturer = " AND manufacturer=$manufacturerId ";
         }
 
         if (!empty($term)) {
@@ -1148,9 +1136,9 @@ class Shop extends ShopLibrary
         $this->objTemplate->setCurrentBlock('shopProductRow');
         if ($count > 0) {
             $formId = 0;
+            $i = 0;
             while (!$objResult->EOF) {
                 $productSubmitFunction = "";
-                // if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
                 $arrPictures = $this->_getShopImagesFromBase64String($objResult->fields['picture']);
                 $havePicture = false;
                 foreach ($arrPictures as $index => $image) {
@@ -1209,13 +1197,38 @@ class Shop extends ShopLibrary
 //                }
 
                 // Show the stock
-                $stock = ($objResult->fields['stock_visibility']==1) ? $_ARRAYLANG['TXT_STOCK'].': '.intval($objResult->fields['stock']) : "";
+                $stock = ($objResult->fields['stock_visibility'] == 1) ? $_ARRAYLANG['TXT_STOCK'].': '.intval($objResult->fields['stock']) : "";
 
-                $manufacturerName 	= $objResult->fields['manufacturer'] > 0 ? $this->_GetManufacturer($objResult->fields['manufacturer'], 'name') : "";
-                $manufacturerUrl 	= $this->_GetManufacturer($objResult->fields['manufacturer'], 'url') != '' ? "<a href=\"".$this->_GetManufacturer($objResult->fields['manufacturer'], 'url')."\" title=\"".$this->_GetManufacturer($objResult->fields['manufacturer'], 'url')."\" target=\"_blank\">".$this->_GetManufacturer($objResult->fields['manufacturer'], 'url')."</a>" : "";
+                $manufacturerName = '';
+                $manufacturerUrl  = '';
+                if ($objResult->fields['manufacturer'] > 0) {
+                    $manufacturerName =
+                        $this->_getManufacturerName(
+                            $objResult->fields['manufacturer']
+                        );
+                    $manufacturerUrl  =
+                        $this->_getManufacturerUrl(
+                            $objResult->fields['manufacturer']
+                        );
+                    if ($manufacturerUrl) {
+                        $manufacturerUrl =
+                            '<a href="'.$manufacturerUrl.'</a>';
+                    }
+                }
 
                 // Show the manufacturer hyperlink
-                $manufacturerLink = strlen($objResult->fields['manufacturer_url'])>10 ? "<a href=\"".$objResult->fields['manufacturer_url']."\" title=\"".$_ARRAYLANG['TXT_MANUFACTURER_URL']."\" target=\"_blank\">".$_ARRAYLANG['TXT_MANUFACTURER_URL']."</a>" : "";
+// TODO: This is the old Product field for the Manufacturer URI.
+// This is now extended by the Manufacturer table and should thus
+// get a new purpose.  As it is product specific, it could be
+// renamed and reused as a link to individual Products!
+                $manufacturerLink =
+                    (strlen($objResult->fields['manufacturer_url']) > 10
+                        ?   '<a href="'.$objResult->fields['manufacturer_url'].
+                            '" title="'.$_ARRAYLANG['TXT_MANUFACTURER_URL'].
+                            '" target="_blank">'.
+                            $_ARRAYLANG['TXT_MANUFACTURER_URL'].'</a>'
+                        :   ''
+                    );
 
                 // Show the price
                 $price = $this->_getProductPrice($objResult->fields['normalprice'], $objResult->fields['resellerprice']);
@@ -1255,7 +1268,7 @@ class Shop extends ShopLibrary
                 //call product options and set the submit name with the return value
                 $shopProductFormName = "shopProductForm$formId";
                 $this->objTemplate->setVariable(array(
-                    'SHOP_ROWCLASS'                   => $class,
+                    'SHOP_ROWCLASS'                   => (++$i % 2 ? 'row2' : 'row1'),
                     'SHOP_PRODUCT_ID'                 => $objResult->fields['id'],
                     'SHOP_PRODUCT_CUSTOM_ID'          => str_replace('"', '&quot;', $objResult->fields['product_id']),
                     'SHOP_PRODUCT_TITLE'              => str_replace('"', '&quot;', $objResult->fields['title']),
@@ -1296,92 +1309,161 @@ class Shop extends ShopLibrary
     }
 
 
-    function productOptions($product_Id, $formName, $cartProdId = false)
+    /**
+     * Set up the HTML elements for all the Product Attributes of any Product.
+     *
+     * The following types of Attributes are supported:
+     * 0    Dropdown menu, customers may select no (the default) or one option.
+     * 1    Radio buttons, customers need to select one option.
+     * 2    Checkboxes, customers may select no, one or several options.
+     * 3    Dropdown menu, customers need to select one option.
+     * Types 1 and 3 are functionally identical, they only differ by
+     * the kind of widget being used.
+     * The individual Product Attributes carry a unique ID enabling the
+     * JavaScript code contained within the Shop page to verify that
+     * all mandatory choices have been made before any Product can
+     * be added to the cart.
+     * @param   integer     $product_Id     The Product ID
+     * @param   string      $formName       The name of the HTML form containing
+     *                                      the Product and options
+     * @param   integer     $cartProdId     The optional cart Product ID,
+     *                                      false if not applicable.
+     * @return  string                      The string with the HTML code
+     */
+    function productOptions($product_Id, $formName, $cartProdId=false)
     {
         global $_ARRAYLANG;
 
         // check if the product option block is set in the template
-        if ($this->objTemplate->blockExists('shopProductOptionsRow') && $this->objTemplate->blockExists('shopProductOptionsValuesRow')) {
+        if (   $this->objTemplate->blockExists('shopProductOptionsRow')
+            && $this->objTemplate->blockExists('shopProductOptionsValuesRow')) {
             $domId = 0;
-            $checkOptionIds = "";
+            $checkOptionIds = '';
 
             if ($cartProdId !== false) {
-                $product_Id = $_SESSION['shop']['cart']['products'][$cartProdId]['id'];
+                $product_Id =
+                    $_SESSION['shop']['cart']['products'][$cartProdId]['id'];
             }
 
-            //start products options block
+            // start products options block
             $this->objTemplate->setCurrentBlock('shopProductOptionsRow');
 
-            //start products options values block
+            // start products options values block
             $this->objTemplate->setCurrentBlock('shopProductOptionsValuesRow');
 
-            //check options
+            // check options
             if (!isset($this->arrProductAttributes[$product_Id])) {
-                //hideblocks
                 $this->objTemplate->hideBlock("shopProductOptionsRow");
                 $this->objTemplate->hideBlock("shopProductOptionsValuesRow");
             } else {
-                foreach ($this->arrProductAttributes[$product_Id] as $optionId => $arrOptionDetails) {
-                    $selectValues = "";
-
+                foreach ($this->arrProductAttributes[$product_Id]
+                            as $optionId => $arrOptionDetails) {
+                    $selectValues = '';
                     // create head of option menu/checkbox/radiobutton
                     switch ($arrOptionDetails['type']) {
-                        case '0':
-                            $selectValues = "<select name=\"productOption[".$optionId."]\" id=\"productOption-".$product_Id."-{$optionId}-{$domId}\" style=\"width:180px;\">\n";
-                            $selectValues .= "<option value=\"0\">".$arrOptionDetails['name']."&nbsp;".$_ARRAYLANG['TXT_CHOOSE']."</option>\n";
-                            break;
-                        case '1':
-                            $selectValues = "<input type=\"hidden\" id=\"productOption-".$product_Id."-{$optionId}\" value=\"{$arrOptionDetails['name']}\" />\n";
-                            $checkOptionIds .= "$optionId;";
-                            break;
-
-                        case '3':
-                            $selectValues = "<input type=\"hidden\" id=\"productOption-".$product_Id."-{$optionId}\" value=\"{$arrOptionDetails['name']}\" />\n";
-                            $selectValues .= "<select name=\"productOption[".$optionId."]\" id=\"productOption-".$product_Id."-{$optionId}-{$domId}\" style=\"width:180px;\">\n";
-                            $selectValues .= "<option value=\"0\">".$arrOptionDetails['name']."&nbsp;".$_ARRAYLANG['TXT_CHOOSE']."</option>\n";
-                            $checkOptionIds .= "$optionId;";
-                            break;
+                      case '0': // Dropdown menu (optional attribute)
+                      // There is no hidden input field here, as there is no
+                      // mandatory choice, the status need not be verified.
+                        $selectValues =
+                            '<select name="productOption['.$optionId.
+                            ']" id="productOption-'.
+                            $product_Id.'-'.$optionId.'-'.$domId.
+                            '" style="width:180px;">'."\n".
+                            '<option value="0">'.
+                            $arrOptionDetails['name'].'&nbsp;'.
+                            $_ARRAYLANG['TXT_CHOOSE']."</option>\n";
+                        break;
+                      case '1': // Radio buttons
+                        // The hidden input field carries the name of the
+                        // Product Attribute.
+                        $selectValues =
+                            '<input type="hidden" id="productOption-'.
+                            $product_Id.'-'.$optionId.
+                            '" value="'.$arrOptionDetails['name'].
+                            '" />'."\n";
+                        $checkOptionIds .= "$optionId;";
+                        break;
+                      // No container for checkboxes (2), as there is no
+                      // mandatory choice, their status need not be verified.
+                      case '3': // Dropdown menu (mandatory attribute)
+                        $selectValues =
+                            '<input type="hidden" id="productOption-'.
+                            $product_Id.'-'.$optionId.
+                            '" value="'.$arrOptionDetails['name'].'" />'."\n".
+                            '<select name="productOption['.$optionId.
+                            ']" id="productOption-'.
+                            $product_Id.'-'.$optionId.'-'.$domId.
+                            '" style="width:180px;">'."\n".
+                            '<option value="0">'.
+                            $arrOptionDetails['name'].'&nbsp;'.
+                            $_ARRAYLANG['TXT_CHOOSE']."</option>\n";
+                        $checkOptionIds .= "$optionId;";
+                        break;
                     }
 
                     $i = 0;
                     foreach ($arrOptionDetails['values'] as $valueId => $arrValues) {
-                        $valuePrice = "";
-                        $selected = false;
-
-                        //price prefix
+                        $valuePrice = '';
+                        $selected   = false;
+                        // price prefix
                         if ($arrValues['price'] != '') {
                             if ($arrValues['price'] != '0.00') {
                                 $currencyPrice = $this->objCurrency->getCurrencyPrice($arrValues['price']);
                                 $valuePrice    = '&nbsp;&nbsp;('.$arrValues['price_prefix'].'&nbsp;'.$currencyPrice.'&nbsp;'.$this->aCurrencyUnitName.')';
                             }
                         }
-
-                        // mark the option value as selected if it was already selected and this site was requested from the cart
-                        if ($cartProdId !== false && isset($_SESSION['shop']['cart']['products'][$cartProdId]['options'][$optionId])) {
+                        // mark the option value as selected if it was before
+                        // and this site was requested from the cart
+                        if (   $cartProdId !== false
+                            && isset($_SESSION['shop']['cart']['products'][$cartProdId]['options'][$optionId])) {
                             if (in_array($valueId, $_SESSION['shop']['cart']['products'][$cartProdId]['options'][$optionId])) {
                                 $selected = true;
                             }
                         }
-
                         // create option menu/checkbox/radiobutton
                         switch ($arrOptionDetails['type']) {
-                            case '0':
-                                $selectValues .= "<option value=\"$valueId\" ".($selected == true ? "selected=\"selected\"" : "")." >".$arrValues['value'].$valuePrice."</option>\n";
-                                break;
-                            case '1':
-                                $selectValues .= "<input type=\"radio\" name=\"productOption[".$optionId."]\" id=\"productOption-".$product_Id."-{$optionId}-{$domId}\" value=\"$valueId\" ".($selected == true ? "checked=\"checked\"" : "")." /><label for=\"productOption-".$product_Id."-{$optionId}-{$domId}\">&nbsp;".$arrValues['value'].$valuePrice."</label><br />\n";
-                                break;
-                            case '2':
-                                $selectValues .= "<input type=\"checkbox\" name=\"productOption[".$optionId."][$i]\" id=\"productOption-".$product_Id."-{$optionId}-{$domId}\" value=\"$valueId\" ".($selected == true ? "checked=\"checked\"" : "")." /><label for=\"productOption-".$product_Id."-{$optionId}-{$domId}\">&nbsp;".$arrValues['value'].$valuePrice."</label><br />\n";
-                                break;
-                            case '3':
-                                $selectValues .= "<option value=\"$valueId\" ".($selected == true ? "selected=\"selected\"" : "")." >".$arrValues['value'].$valuePrice."</option>\n";
-                                break;
+                          case '0': // Dropdown menu (optional attribute)
+                            $selectValues .=
+                                '<option value="'.$valueId.'" '.
+                                ($selected ? 'selected="selected"' : '').
+                                ' >'.$arrValues['value'].$valuePrice.
+                                "</option>\n";
+                            break;
+                          case '1': // Radio buttons
+                            $selectValues .=
+                                '<input type="radio" name="productOption['.
+                                optionId.']" id="productOption-'.
+                                $product_Id.'-'.$optionId.'-'.$domId.
+                                '" value="'.$valueId.'"'.
+                                ($selected ? ' checked="checked"' : '').
+                                ' /><label for="productOption-'.
+                                $product_Id.'-'.$optionId.'-'.$domId.
+                                '">&nbsp;'.$arrValues['value'].$valuePrice.
+                                "</label><br />\n";
+                            break;
+                          case '2': // Checkboxes
+                            $selectValues .=
+                                '<input type="checkbox" name="productOption['.
+                                $optionId.']['.$i.']" id="productOption-'.
+                                $product_Id.'-'.$optionId.'-'.$domId.
+                                '" value="'.$valueId.'"'.
+                                ($selected ? ' checked="checked"' : '').
+                                ' /><label for="productOption-'.
+                                $product_Id.'-'.$optionId.'-'.$domId.
+                                '">&nbsp;'.$arrValues['value'].$valuePrice.
+                                "</label><br />\n";
+                            break;
+                          case '3': // Dropdown menu (mandatory attribute)
+                            $selectValues .=
+                                '<option value="'.$valueId.'"'.
+                                ($selected ? ' selected="selected"' : '').
+                                ' >'.$arrValues['value'].$valuePrice.
+                                "</option>\n";
+                            break;
                         }
                         $i++;
                         $domId++;
                     }
-
                     // create foot of option menu/checkbox/radiobutton
                     switch ($arrOptionDetails['type']) {
                         case '0':
@@ -1410,7 +1492,11 @@ class Shop extends ShopLibrary
                     }
                     $this->objTemplate->setVariable(array(
                         'SHOP_PRODUCT_OPTIONS_NAME'  => $arrOptionDetails['name'],
-                        'SHOP_PRODUCT_OPTIONS_TITLE' => "<a href=\"javascript:{}\" onclick=\"toggleOptions($product_Id)\" title=\"".$_ARRAYLANG['TXT_OPTIONS']."\">".$_ARRAYLANG['TXT_OPTIONS']."</a>\n",
+                        'SHOP_PRODUCT_OPTIONS_TITLE' =>
+                            '<a href="javascript:{}" onclick="toggleOptions('.
+                            $product_Id.')" title="'.
+                            $_ARRAYLANG['TXT_OPTIONS'].'">'.
+                            $_ARRAYLANG['TXT_OPTIONS']."</a>\n",
                     ));
 
                     $this->objTemplate->parse('shopProductOptionsValuesRow');
@@ -1419,7 +1505,11 @@ class Shop extends ShopLibrary
                 $this->objTemplate->parse('shopProductOptionsRow');
             }
         }
-        return "return checkProductOption('shopProductForm{$formName}',$product_Id,'".substr($checkOptionIds,0,strlen($checkOptionIds)-1)."');";
+//echo("Shop::productOptions(product_Id=$product_Id, formName=$formName, cartProdId=$cartProdId): Made code:<br />return checkProductOption('shopProductForm$formName', $product_Id, '".substr($checkOptionIds, 0, strlen($checkOptionIds)-1)."');<br />");
+        return
+            "return checkProductOption('shopProductForm$formName', ".
+            "$product_Id, '".
+            substr($checkOptionIds, 0, strlen($checkOptionIds)-1)."');";
     }
 
 
@@ -1520,8 +1610,8 @@ class Shop extends ShopLibrary
     function showCartInfo()
     {
         global $_ARRAYLANG;
-        $cartInfo = "";
 
+        $cartInfo = '';
         if (isset($_SESSION['shop'])) {
             $cartInfo = $_ARRAYLANG['TXT_EMPTY_SHOPPING_CART'];
             if (isset($_SESSION['shop']['cart']) && $this->calculateItems($_SESSION['shop']['cart'])>0) {
@@ -1576,13 +1666,15 @@ class Shop extends ShopLibrary
      * @param   boolean $is_special_offer   A flag indicating a special offer (true)
      * @return  double                      The price converted to the active currency
      */
-    function _getProductPrice($normalPrice, $resellerPrice="0.00", $discountPrice="0.00", $is_special_offer=0)
+    function _getProductPrice(
+        $normalPrice, $resellerPrice='0.00',
+        $discountPrice='0.00', $is_special_offer=0)
     {
-        if ($is_special_offer==1 AND $discountPrice!="0.00") {
+        if ($is_special_offer == 1 AND $discountPrice != '0.00') {
             $price = $discountPrice;
         }
         else {
-            if ($this->is_reseller==1 AND $resellerPrice!="0.00") {
+            if ($this->is_reseller == 1 AND $resellerPrice != '0.00') {
                 $price = $resellerPrice;
             } else {
                 $price = $normalPrice;
@@ -1680,54 +1772,57 @@ function toggleOptions(productId)
 
 function checkProductOption(objForm, productId, strProductOptionIds)
 {
+    // The list of Product Attribute IDs, joined by semicolons.
     var arrOptionIds = strProductOptionIds.split(\";\");
+    // Assume that the selection is okay
     var status = true;
+    // Remember invalid or missing choices in order to prompt the user
     var arrFailOptions = new Array();
-    var optionName = '';
-// local variables!
-//    var formEl = '';
-//    var elId = '';
     var elType = '';
 
     // check each option
     for (i = 0; i < arrOptionIds.length; i++) {
+        // The name of the Product Attribute currently being processed.
+        // Only set for attributes with mandatory choice
+        // (types 1 (Radiobutton), and 3 (Dropdown menu).
+        optionName = '';
         checkStatus = false;
-
         // get options from form
         for (el = 0; el < document.forms[objForm].elements.length; el++) {
             // check if the element has a id attribute
-            var formEl = document.forms[objForm].elements[el];
-            if (formEl.getAttribute('id')) {
-                // check if the element belongs to the option
+            var formElement = document.forms[objForm].elements[el];
+            if (formElement.getAttribute('id')) {
+                // check whether the element belongs to the option
                 var searchName = 'productOption-'+productId+'-'+arrOptionIds[i];
-                var elId = formEl.getAttribute('id');
-                if (elId.substr(0,searchName.length) == searchName) {
+                var elementId = formElement.getAttribute('id');
+                if (elementId.substr(0, searchName.length) == searchName) {
                     // check if the element has a type attribute
-                    if (formEl.type) {
-                        elType = formEl.type;
+                    if (formElement.type) {
+                        elType = formElement.type;
                         switch (elType) {
                             case 'radio':
-                                if (formEl.checked == true) {
+                                if (formElement.checked == true) {
                                     checkStatus = true;
                                 }
                                 break;
-
                             case 'select-one':
-                                if (formEl.value > 0) {
+                                if (formElement.value > 0) {
                                     checkStatus = true;
                                 }
                                 break;
-
                             case 'hidden':
-                                optionName = formEl.value;
+                                optionName = formElement.value;
                                 break;
                         }
-
                     }
                 }
             }
         } // end for
-        if (checkStatus == false && (elType == 'radio' || elType == 'select-one')) {
+        // If the option name is empty, the Product Attribute is not
+        // a mandatory choice.
+        if (   optionName != \"\"
+            && checkStatus == false
+            && (elType == 'radio' || elType == 'select-one')) {
             status = false;
             arrFailOptions.push(optionName);
         }
@@ -1768,15 +1863,15 @@ function addProductToCart(objForm)
 
     // get productId
     for (i = 0; i < document.forms[objForm].getElementsByTagName('input').length; i++) {
-        formEl = document.forms[objForm].getElementsByTagName('input')[i];
-        if (typeof(formEl.name) != 'undefined') {
-            if (formEl.name == 'productId') {
-                objProduct.id = formEl.value;
+        formElement = document.forms[objForm].getElementsByTagName('input')[i];
+        if (typeof(formElement.name) != 'undefined') {
+            if (formElement.name == 'productId') {
+                objProduct.id = formElement.value;
             }
-            if (formEl.name == 'productTitle') {
-                objProduct.title = formEl.value;
+            if (formElement.name == 'productTitle') {
+                objProduct.title = formElement.value;
             }
-            arrUpdateProduct = updateProductRe.exec(formEl.name);
+            arrUpdateProduct = updateProductRe.exec(formElement.name);
             if (arrUpdateProduct != null) {
                 updateProduct = '&updateProduct='+arrUpdateProduct[1];
             }
@@ -1785,30 +1880,30 @@ function addProductToCart(objForm)
 
     // get product options of the new product
     for (el = 0; el < document.forms[objForm].elements.length; el++) {
-        var formEl = document.forms[objForm].elements[el];
+        var formElement = document.forms[objForm].elements[el];
 
-        arrName = productOptionRe.exec(formEl.getAttribute('name'));
+        arrName = productOptionRe.exec(formElement.getAttribute('name'));
         if (arrName != null) {
             optionId = arrName[1];
 
-            switch (formEl.type) {
+            switch (formElement.type) {
                 case 'radio':
-                    if (formEl.checked == true) {
-                        objProduct.options[optionId] = formEl.value;
+                    if (formElement.checked == true) {
+                        objProduct.options[optionId] = formElement.value;
                     }
                     break;
 
                 case 'checkbox':
-                    if (formEl.checked == true) {
+                    if (formElement.checked == true) {
                         if (typeof(objProduct.options[optionId]) == 'undefined') {
                             objProduct.options[optionId] = new Array();
                         }
-                        objProduct.options[optionId].push(formEl.value);
+                        objProduct.options[optionId].push(formElement.value);
                     }
                     break;
 
                 case 'select-one':
-                    objProduct.options[optionId] = formEl.value;
+                    objProduct.options[optionId] = formElement.value;
                     break;
 
                 default:
@@ -1880,7 +1975,7 @@ function shopUpdateCart()
         } catch(e) {}
         request_active = false;
     } else {
-    	return false;
+        return false;
     }
 }
 
@@ -1960,34 +2055,37 @@ sendReq('', 1);
      */
     function doShopCatMenu($parcat=0, $level, $selectedid)
     {
-        $result = '';
+        $strMenu = '';
         $list = $this->arrCategoriesTable[$parcat];
         if (is_array($list)) {
-            while (list($key,$val)=each($list)) {
-                $output   = str_repeat('&nbsp;', $level*3);
-                $selected = '';
-                if ($selectedid == $key) {
-                    $selected= 'selected="selected"';
-                }
-                $val = htmlentities($val, ENT_QUOTES, CONTREXX_CHARSET);
-                $result.= "<option value=\"$key\" $selected>$output$val</option>\n";
+            foreach ($list as $id => $name) {
+                $output = str_repeat('&nbsp;', $level*3);
+                $name   = htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET);
+                $strMenu .=
+                    '<option value="'.$id.'"'.
+                    ($selectedid == $id ? ' selected="selected"' : '').
+                    ">$output$name</option>\n";
 // fix: the following line produces infinite loops if parent == child
-//                if (isset($this->arrCategoriesTable[$key])) {
-                if ( ($key != $parcat) &&
-                   (isset($this->arrCategoriesTable[$key])) ) {
-                    $result.= $this->doShopCatMenu($key, $level+1, $selectedid);
+//                if (isset($this->arrCategoriesTable[$id])) {
+                if ( ($id != $parcat) &&
+                   (isset($this->arrCategoriesTable[$id])) ) {
+                    $strMenu .=
+                        $this->doShopCatMenu($id, $level+1, $selectedid);
                 }
             }
         }
-        return $result;
+        return $strMenu;
     }
 
 
     /**
-     * Function protectShop
+     * Authenticate a Customer
      *
-     * @global    object     $objDatabase
-     * @return    boolean    result
+     * @global  mixed   $objDatabase    Database object
+     * @global  mixed   $sessionObj     Session object
+     * @return  boolean                 True if the Customer could be
+     *                                  authenticated successfully,
+     *                                  false otherwise.
      * @access private
      */
     function _authenticate()
@@ -2009,8 +2107,8 @@ sendReq('', 1);
                 return true;
             }
         }
-        $sessionObj->cmsSessionUserUpdate("unknown");
-        $sessionObj->cmsSessionStatusUpdate("shop");
+        $sessionObj->cmsSessionUserUpdate('unknown');
+        $sessionObj->cmsSessionStatusUpdate('shop');
         return false;
     }
 
@@ -2105,9 +2203,8 @@ sendReq('', 1);
                 'itemcount'  => $_SESSION['shop']['cart']['items'],
                 'unit'       => $this->aCurrencyUnitName
             );
-
             $objJson = new Services_JSON();
-            die($objJson->encode($arrCart));
+            die ($objJson->encode($arrCart));
         }
     }
 
@@ -2147,11 +2244,11 @@ sendReq('', 1);
         if (is_array($arrNewProduct) && isset($arrNewProduct['id'])) {
             // Add new product to cart
             $isNewProduct = true;
-            if (count($_SESSION['shop']['cart']['products'])>0) {
+            if (count($_SESSION['shop']['cart']['products']) > 0) {
                 foreach ($_SESSION['shop']['cart']['products'] as $cartProdId => $arrProduct) {
                     // check if the same product is already in the cart
                     if ($arrProduct['id'] == $arrNewProduct['id'] && (!isset($oldCartProdId) || $oldCartProdId != $cartProdId)) {
-                        if (isset($arrNewProduct['options']) && count($arrNewProduct['options']>0)) {
+                        if (isset($arrNewProduct['options']) && count($arrNewProduct['options'] > 0)) {
                             $arrCartProductOptions = array_keys($arrProduct['options']);
                             $arrProductOptions = array_keys($arrNewProduct['options']);
                             // check for the same options
@@ -2211,7 +2308,7 @@ sendReq('', 1);
 
             //options array
             $_SESSION['shop']['cart']['products'][$cartProdId]['options'] = array();
-            if (isset($arrNewProduct['options']) && count($arrNewProduct['options'])>0) {
+            if (isset($arrNewProduct['options']) && count($arrNewProduct['options']) > 0) {
                 foreach ($arrNewProduct['options'] as $optionId => $valueId) {
                     if (!isset($_SESSION['shop']['cart']['products'][$cartProdId]['options'][$optionId])) {
                         $_SESSION['shop']['cart']['products'][$cartProdId]['options'][intval($optionId)] = array();
@@ -2290,11 +2387,10 @@ sendReq('', 1);
                 if ($objResult && $objResult->RecordCount() == 1) {
                     $productOptions      = '';
                     $productOptionsPrice =  0;
-
                     // get option names
                     foreach ($_SESSION['shop']['cart']['products'][$cartProdId]['options'] as $optionId => $arrValueIds) {
                         foreach ($arrValueIds as $valueId) {
-                            $productOptions .= '['.$this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['value'].'] ';
+                            $productOptions .= ' ['.$this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['value'].'] ';
                             $productOptionsPrice += $this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['price_prefix'] == "+" ? $this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['price'] : -$this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['price'];
                         }
                     }
@@ -2344,7 +2440,7 @@ sendReq('', 1);
                     ));
                     // require shipment if the distribution type is 'delivery'
                     if (!$shipment && $objResult->fields['handler'] == 'delivery') {
-                    	$shipment = true;
+                        $shipment = true;
                     }
                 } else {
                     unset($_SESSION['shop']['cart']['products'][$cartProdId]);
@@ -2754,7 +2850,7 @@ sendReq('', 1);
         }
 
         // hide currency navbar
-        $this->_hideCurrencyNavbar=true;
+        $this->_hideCurrencyNavbar = true;
 
         $_SESSION['shop']['customer_note'] = isset($_POST['customer_note']) ? htmlspecialchars($_POST['customer_note'], ENT_QUOTES, CONTREXX_CHARSET) : "";
         if (isset($_POST['check'])) {
@@ -3985,51 +4081,101 @@ $_SESSION['shop']['grand_total_price'].' '.$this->aCurrencyUnitName."\n".
 
 
     /**
-     * get manufacturer select options for "$shopmenu" (SearchForm)
+     * Get the Manufacturer dropdown menu HTML code string.
      *
+     * Used in the Product search form, see {@link products()}
+     * @static
+     * @param   integer $selectedId     The optional preselected Manufacturer ID
+     * @return  string                  The Manufacturer dropdown menu HTML code
+     * @global  mixed   $objDatabase    Database object
+     * @global  array   $_ARRAYLANG     Language array
+     * @todo    Move this to the Manufacturer class!
      */
-    function _GetManufacturerSelect(){
-    	global $objDatabase, $_ARRAYLANG, $objDatabase;
-    	$ManufacturerSelect = '<select name="ManufacturerId" style="width: 220px;">';
-        $ManufacturerSelect .= '<option value="0">'.$_ARRAYLANG["TXT_ALL_MANUFACTURER"].'</option>';
-        $query = 'SELECT id, name, url FROM '.DBPREFIX.'module_shop_manufacturer ORDER BY name';
-	    $objResult = $objDatabase->Execute($query);
-	    $Count = 0;
-	    while ($objResult && !$objResult->EOF) {
-	    	if (isset($_REQUEST["ManufacturerId"])){
-		    	if (intval($_REQUEST["ManufacturerId"])==$objResult->fields['id']){
-		    		$SelectedText = 'selected';
-		    	}else{
-		    		$SelectedText = '';
-		    	}
-	    	}else{
-	    		$SelectedText = '';
-	    	}
-	    	$ManufacturerSelect .= '<option value="'.$objResult->fields['id'].'" '.$SelectedText.'>'.$objResult->fields['name'].'</option>';
-	    	$Count++;
-	        $objResult->MoveNext();
-	    }
-        $ManufacturerSelect .= '</select><br />';
-        if ($Count>0){
-        	return $ManufacturerSelect;
-        }else{
-        	return '';
+    //static
+    function _getManufacturerMenu($selectedId=0)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $query = '
+            SELECT id, name, url
+              FROM '.DBPREFIX.'module_shop_manufacturer
+          ORDER BY name';
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            $this->errorHandling();
         }
+
+        $strMenu = '';
+        while (!$objResult->EOF) {
+            $id = $objResult->fields['id'];
+            $strMenu .=
+                '<option value="'.$objResult->fields['id'].'"'.
+                ($selectedId == $id ? ' selected="selected"' : '').
+                '>'.$objResult->fields['name'].'</option>';
+            $objResult->MoveNext();
+        }
+
+        return ($strMenu
+            ?   '<select name="manufacturerId" style="width: 220px;">'.
+                '<option value="0">'.$_ARRAYLANG["TXT_ALL_MANUFACTURER"].
+                '</option>'.$strMenu.'</select><br />'
+            :   ''
+        );
     }
 
+
     /**
-     * get manufacturer name or url
+     * Returns the name of the Manufacturer with the given ID
      *
+     * @static
+     * @param   integer $id             The Manufacturer ID
+     * @return  string                  The Manufacturer name on success,
+     *                                  or the empty string on failure
+     * @global  mixed   $objDatabase    Database object
+     * @todo    Move this to the Manufacturer class!
      */
-     function _GetManufacturer($Manufacturer, $Field='name'){
-     	global $objDatabase;
-     	$objResult = $objDatabase->SelectLimit("SELECT ".$Field." FROM ".DBPREFIX."module_shop_manufacturer WHERE id = ".$Manufacturer, 1);
-            if ($objResult !== false && $objResult->RecordCount()==1) {
-            	return $objResult->fields[$Field];
-            }else{
-            	return '';
-            }
-     }
+    //static
+    function _getManufacturerName($id)
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            SELECT name
+              FROM ".DBPREFIX."module_shop_manufacturer
+             WHERE id=$id
+        ");
+        if ($objResult) {
+            return $objResult->fields['name'];
+        }
+        return '';
+    }
+
+
+    /**
+     * Returns the URL of the Manufacturers' homepage for the given ID
+     *
+     * @static
+     * @param   integer $id             The Manufacturer ID
+     * @return  string                  The Manufacturer URL on success,
+     *                                  or the empty string on failure
+     * @global  mixed   $objDatabase    Database object
+     * @todo    Move this to the Manufacturer class!
+     */
+    //static
+    function _getManufacturerUrl($id)
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            SELECT url
+              FROM ".DBPREFIX."module_shop_manufacturer
+             WHERE id=$id
+        ");
+        if ($objResult) {
+            return $objResult->fields['url'];
+        }
+        return '';
+    }
 }
 
 ?>
