@@ -583,58 +583,27 @@ if (MY_DEBUG) echo("Ticket::refreshTimestamp(): done!<br />");
      * create a MESSAGE_NEW entry and to update the Ticket status.
      * If the Ticket has already been closed, this creates a new Ticket
      * and a REFERENCE to the old one.
-     * The optional $supportCategoryId, $supportLanguageId,
-     * and $supportTicketSource arguments are only considered in case
-     * a new Ticket is created.  If they are missing, the values from
-     * the old Ticket are copied.  Otherwise, they are ignored, and the
-     * respective values of the existing Ticket are left untouched.
-     * The optional $supportMessageDate argument will be set to the current
+     * The optional $supportMessageDate argument is set to the current
      * date and time if empty.
      * @param   string  $supportMessageFrom     The Messages' e-mail field
      * @param   string  $supportMessageSubject  The Message subject
      * @param   string  $supportMessageBody     The Message text
-     * @return  boolean                         True on success,
-     *                                          false otherwise.
+     * @return  integer                         The ID of the new Message
+     *                                          on success, 0 (zero) otherwise.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function addMessage(
         $supportMessageFrom, $supportMessageSubject,
-        $supportMessageBody, $supportMessageDate=0
-/*
-        $supportCategoryId=0, $supportLanguageId=0,
-        $supportTicketSource=0
-*/
+        $supportMessageBody, $supportMessageDate=''
     ) {
-if (MY_DEBUG) echo("Ticket::addMessage(
-        supportMessageFrom=$supportMessageFrom,
-        supportMessageSubject=$supportMessageSubject,
-        supportMessageBody=$supportMessageBody,
-        supportMessageDate=$supportMessageDate
-): INFO: entered<br />");
-/*
-        supportCategoryId=$supportCategoryId,
-        supportLanguageId=$supportLanguageId,
-        supportTicketSource=$supportTicketSource,
-*/
-        if ($supportMessageDate == 0) {
+if (MY_DEBUG) echo("Ticket::addMessage(supportMessageFrom=$supportMessageFrom, supportMessageSubject=$supportMessageSubject, supportMessageBody=$supportMessageBody, supportMessageDate=$supportMessageDate): INFO: entered<br />");
+        if (empty($supportMessageDate)) {
             $supportMessageDate = date('Y-m-d H:i:s');
         }
         $objTicket = $this;
         $ticketStatus = TicketEvent::getTicketStatus($this->id);
         if ($ticketStatus == SUPPORT_TICKET_STATUS_CLOSED) {
             // The Ticket has already been closed.
-            // Copy old Ticket values.
-/*
-            if ($supportCategoryId == 0) {
-                $supportCategoryId = $this->supportCategoryId;
-            }
-            if ($supportLanguageId == 0) {
-                $supportLanguageId = $this->languageId;
-            }
-            if ($supportTicketSource == 0) {
-                $supportTicketSource = $this->source;
-            }
-*/
             // Create the new Ticket.
             $objTicket = new Ticket(
                 $$this->email,
@@ -643,7 +612,7 @@ if (MY_DEBUG) echo("Ticket::addMessage(
                 $this->languageId
             );
             if (!$objTicket->insert()) {
-                return false;
+                return 0;
             }
         }
         // Create the new Message object
@@ -658,7 +627,7 @@ if (MY_DEBUG) echo("Ticket::addMessage(
         // (Otherwise, we wouldn't have a valid Message ID).
         if (!$objMessage->insert()) {
 if (MY_DEBUG) echo("Ticket::addMessage(): ERROR: Failed to insert() the new Message, ticketId ".$objTicket->getId()."<br />");
-            return false;
+            return 0;
         }
         // Create the TicketEvent
         $objEvent = new TicketEvent(
@@ -668,14 +637,16 @@ if (MY_DEBUG) echo("Ticket::addMessage(): ERROR: Failed to insert() the new Mess
         );
         if (!$objEvent) {
 if (MY_DEBUG) echo("Ticket::addMessage(): ERROR: Failed to create MESSAGE TicketEvent, ticketId ".$objTicket->getId().", messageId ".$objMessage->getId()."<br />");
-            return false;
+            $objMessage->delete();
+            return 0;
         }
         // Process the MESSAGE TicketEvent.  Returns the new Ticket status.
         $newStatus = $objEvent->process();
         if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
 if (MY_DEBUG) echo("Ticket::addMessage(): ERROR: Adding Message results in UNKNOWN state - rolling back!  ticketId ".$objTicket->getId().", messageId ".$objMessage->getId()."<br />");
             // On failure, try to roll back
-            return $objMessage->delete();
+            $objMessage->delete();
+            return 0;
         }
         // If a new Ticket was created above, add a REFERENCE to the old one.
         if ($this != $objTicket) {
@@ -687,7 +658,7 @@ if (MY_DEBUG) echo("Ticket::addMessage(): ERROR: Adding Message results in UNKNO
             );
             if (!$objEvent) {
 if (MY_DEBUG) echo("Ticket::addMessage(): ERROR: Failed to create REFERENCE TicketEvent, ticketId ".$objTicket->getId().", reference ticketId $this->id<br />");
-                return false;
+                return 0;
             }
             // Process the REFERENCE TicketEvent.
             // Note that this will not change either Tickets' status.
@@ -695,10 +666,10 @@ if (MY_DEBUG) echo("Ticket::addMessage(): ERROR: Failed to create REFERENCE Tick
             if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
 if (MY_DEBUG) echo("Ticket::addMessage(): ERROR: Adding REFERENCE TicketEvent results in UNKNOWN state!  ticketId ".$objTicket->getId().", ref. Ticket ID $this->id<br />");
                 // Nothing to roll back upon failure
-                return false;
+                return 0;
             }
         }
-        return true;
+        return $objMessage->getId();
     }
 
 

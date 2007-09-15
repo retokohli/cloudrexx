@@ -145,7 +145,7 @@ class InfoFields
      */
     function getInfoFieldArray($languageId, $flagActiveOnly=true)
     {
-if (MY_DEBUG) echo("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flagActiveOnly): INFO: Entered.<br />");
+//if (MY_DEBUG) echo("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flagActiveOnly): INFO: Entered.<br />");
         // if it has already been initialized with the correct language
         // and flag, just return it
         if (   is_array($this->arrInfoField)
@@ -154,7 +154,7 @@ if (MY_DEBUG) echo("infofields::getInfoFieldArray(languageId=$languageId, flagAc
             return $this->arrInfoField;
         }
 
-if (MY_DEBUG) echo("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flagActiveOnly): INFO: Creating new array.<br />");
+//if (MY_DEBUG) echo("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flagActiveOnly): INFO: Creating new array.<br />");
         // The Info Field name array is invalidated by this!
         $this->languageId = $languageId;
         $this->flagActiveOnly = $flagActiveOnly;
@@ -362,39 +362,67 @@ if (MY_DEBUG) echo("InfoFields::getTypeMenu(select=$selectedType, name=$menuName
     {
         global $_ARRAYLANG;
 
-if (MY_DEBUG) { echo("arrInfoField: ");var_export($arrInfoField);echo("<br />"); }
+//if (MY_DEBUG) { echo("InfoFields::getHtml(): ");var_export($arrInfoField);echo("<br />"); }
 
         $id = $arrInfoField['id'];
         $index = (!empty($arrInfoField['index']) ? $arrInfoField['index'] : 0);
         $strHtml = '
-            <div>'. // bgcolor="#'.number_format($id, 0, '', '').number_format($index, 0, '', '').'">'.
+            <div id="txt-'.$id.'-'.$index.'">'.
               $arrInfoField['name'].
               ($arrInfoField['mandatory']
                 ? $_ARRAYLANG['TXT_SUPPORT_INFOFIELD_MANDATORY']
                 : ''
               ).'
             </div>
-            <div>'. // bgcolor="#'.number_format($index, 0, '', '').number_format($id, 0, '', '').'">
+            <div id="inp-'.$id.'-'.$index.'">'.
+              // *NO* whitespace in the case of the file field!
+              // Everything between the enclosing <div> tag and the
+              // actual InfoField input tag must be skipped as child #0
+              // in both the cases of text and file inputs!
+              ($arrInfoField['type'] == SUPPORT_INFO_FIELD_TYPE_FILE
+                ? '<input type="hidden" name="MAX_FILE_SIZE" value="'.
+                  InfoFields::ini2int(ini_get('post_max_size')).'" />'
+                : ' ').
               '<input type="'.
-                ($arrInfoField['type'] == SUPPORT_INFO_FIELD_TYPE_FILE
-                  ? 'file'
-                  : 'text'
-                ).'"'.
-                ' id="arrSupportInfoField['.$id.']'."[".$index."]".'"'.
+              ($arrInfoField['type'] == SUPPORT_INFO_FIELD_TYPE_FILE
+                  ? 'file' : 'text'
+              ).'"'.
+                ' id="arrSupportInfoField_'.$id.'_'.$index.'"'.
                 ' name="arrSupportInfoField['.$id.']'."[".$index."]".'"'.
                 ' value="'.$arrInfoField['value'].
                 '" tabindex="4" onchange="JavaScript:supportContinue();" />'.
-                ($arrInfoField['multiple']
-                  ? '&nbsp;<input type="button" name="addInfoField" value="+"'.
-                    ' onclick="JavaScript:cloneInfoField('.
-                        $id.', '.$index.');" />'.
-                    '&nbsp;<input type="button" name="delInfoField" value="-"'.
-                    ' onclick="JavaScript:deleteInfoField('.
-                        $id.', '.$index.');" />'
-                  : ''
-                ).'
+              ($arrInfoField['multiple']
+                ? '&nbsp;<input type="button" name="addInfoField" value="+"'.
+                  ' onclick="JavaScript:cloneInfoField('.
+                      $id.', '.$index.');" />'.
+                  '&nbsp;<input type="button" name="delInfoField" value="-"'.
+                  ' onclick="JavaScript:deleteInfoField('.
+                      $id.', '.$index.');" />'
+                : ''
+              ).'
             </div>';
         return $strHtml;
+    }
+
+
+    /**
+     * Converts php.ini memory settings strings to their integer equivalent.
+     * @param   string  $strMemory      The setting string
+     * @return  integer                 The integer value
+     */
+    function ini2int($strMemory) {
+        $strMemory = trim($strMemory);
+        $last = strtolower($strMemory{strlen($strMemory)-1});
+        switch($last) {
+            // The 'G' modifier is available since PHP 5.1.0
+            case 'g':
+                $strMemory *= 1024;
+            case 'm':
+                $strMemory *= 1024;
+            case 'k':
+                $strMemory *= 1024;
+        }
+        return $strMemory;
     }
 
 
@@ -405,33 +433,52 @@ if (MY_DEBUG) { echo("arrInfoField: ");var_export($arrInfoField);echo("<br />");
      * That is, mandatory fields must contain a non-empty value.
      * Note that this method requires that the $arrInfoField and
      * $arrInfoFieldIndex object variables have been initialized
-     * with the correct language.  If they are uninitialized, this
+     * using the correct language ID.  If they are uninitialized, this
      * method will fail and return false.
-     * @param   array   $arrInfoField   The array with InfoFields data
-     *                                  as returned in the POST request
      * @return  boolean                 True if the data is complete,
      *                                  false otherwise
      */
-    function isComplete($arrInfoFieldsPost)
+    function isComplete()
     {
         if (!$this->arrInfoField) {
 if (MY_DEBUG) echo("InfoFields::isComplete(): ERROR: InfoField array is missing!<br />");
             return false;
         }
+        $arrInfoFieldsPost =
+            (isset($_REQUEST['arrSupportInfoField'])
+                ? $_REQUEST['arrSupportInfoField'] : array()
+            );
+        $arrInfoFieldsPost += $_FILES['arrSupportInfoField'];
+if (MY_DEBUG) echo("InfoFields::isComplete(): INFO: made array ");var_export($arrInfoFieldsPost);echo("<br />");
         $isComplete = true;
+        $uploadSuccess = true;
+if (MY_DEBUG) { echo("InfoFields::isComplete(): FILES: ");var_export($_FILES);echo("<br />"); }
         foreach ($this->arrInfoField as $arrInfoField) {
+            // Don't bother about non-mandatory fields
             if (!$arrInfoField['mandatory']) {
                 continue;
             }
-            foreach ($arrInfoFieldsPost as $id => $arrInstance) {
-                foreach ($arrInstance as $index => $value) {
+            $id = $arrInfoField['id'];
+            if ($arrInfoField['type'] == SUPPORT_INFO_FIELD_TYPE_FILE) {
+                // Verify all attachments.
+                // If they were not uploaded, the customer needs to be notified.
+                foreach ($arrInfoFieldsPost['error'][$id] as $index => $error) {
+                    if ($error != UPLOAD_ERR_OK) {
+                        $name = $arrInfoFieldsPost['name'][$id][$index];
+//                        $this->addMessage($name.': '.$_ARRAYLANG['TXT_PHP_UPLOAD_ERR_'.$error]);
+if (MY_DEBUG) echo("InfoFields::isComplete(): $name: ERROR: $error (".$_ARRAYLANG['TXT_PHP_UPLOAD_ERR_'.$error].')<br />');
+                        $uploadSuccess = false;
+                    }
+                }
+            } else {
+                foreach ($arrInfoFieldsPost[$id] as $index => $infoFieldValue) {
 // TODO: Verify the value range (numbers, strings, ...)
-                    if (!empty($value)) {
-                        continue 3;
+                    if (empty($infoFieldValue)) {
+if (MY_DEBUG) echo("InfoFields::isComplete(): WARNING: $id-$index has no value!<br />");
+                        $isComplete = false;
                     }
                 }
             }
-            $isComplete = false;
         }
         return $isComplete;
     }

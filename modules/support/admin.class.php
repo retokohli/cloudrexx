@@ -615,11 +615,12 @@ if (MY_DEBUG) echo("messageCommit(): ERROR: No or invalid language ID ($this->su
         $objTicket->store();
 if (MY_DEBUG) { echo("messageCommit(): INFO: Stored new Ticket: ");var_export($objTicket);echo("<br />"); }
         // Adding a Message to the Ticket will create a TicketEvent.
-        return $objTicket->addMessage(
+        $messageId = $objTicket->addMessage(
             $supportMessageFrom,
             $supportMessageSubject,
             $supportMessageBody
         );
+        return ($messageId ? true : false);
     }
 
 
