@@ -7,11 +7,11 @@ function deleteLog(id)
 }
 </script>
 <form name="form1" method="post" action="?cmd=log">
-<table class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
+<table summary="" class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
   <tr valign=top>
       <td width="91%">{LOG_PAGING}</td>
-      <td nowrap="nowrap" width="9%"> 
-        <div align="right"> 
+      <td nowrap="nowrap" width="9%">
+        <div align="right">
           <input type="text" name="term" value="{LOG_SEARCHTERM}" />
           <input type="submit" name="submit" value="{TXT_SEARCH}" />
         </div>
@@ -19,8 +19,8 @@ function deleteLog(id)
   </tr>
 </table>
 </form>
-<table class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
-  <tr valign=top> 
+<table summary="" class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
+  <tr valign=top>
     <th nowrap="nowrap" width="10%"><div align="left">{TXT_LOGTIME}</div></th>
     <th nowrap="nowrap" width="8%"><div align="left">{TXT_USERNAME}</div></th>
     <th width="22%"><div align="left">{TXT_HOSTNAME}</div></th>
@@ -29,7 +29,7 @@ function deleteLog(id)
     <th nowrap="nowrap" width="5%"><div align="left">{TXT_ACTION}</div></th>
   </tr>
   <!-- BEGIN logRow -->
-  <tr valign="top" class="{LOG_ROWCLASS}"> 
+  <tr valign="top" class="{LOG_ROWCLASS}">
     <td nowrap="nowrap">{LOG_TIME}</td>
     <td nowrap="nowrap"><a href="index.php?cmd=log&act=stats&amp;logId={LOG_USERID}"><img src="images/icons/logged_as.gif" alt="User Stats" border="0" /></a>&nbsp;<a href="index.php?cmd=log&amp;act=stats&amp;logId={LOG_USERID}">{LOG_USERNAME}</a></td>
     <td>{LOG_REMOTE_HOST}</td>

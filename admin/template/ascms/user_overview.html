@@ -8,19 +8,19 @@ function activateUser(userId)
 	} else {
 		window.location.replace("index.php?cmd=user&act=activate&userId="+userId);
 	}
-	
+
 }
 
 -->
 </script>
-<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-  <tr> 
-    <th colspan="9"> 
-      <div align="left">{TXT_USER_LIST}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+<table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+  <tr>
+    <th colspan="9">
+      <div align="left">{TXT_USER_LIST}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <a href='?cmd=user&amp;useract=inactive'>{TXT_USER_LINK_INACTIVE}</a></div>
     </th>
   </tr>
-  <tr class="row1"> 
+  <tr class="row1">
     <td width="15%"><b>{TXT_USER_NAME}</b></td>
     <td width="15%"><b>{TXT_FIRST_NAME}</b></td>
     <td width="15%"><b>{TXT_LAST_NAME}</b></td>
@@ -30,12 +30,12 @@ function activateUser(userId)
     <td colspan="2"><b>{TXT_ACTION}</b></td>
   </tr>
   <!-- BEGIN user_row -->
-  <tr class="{USERS_ROWCLASS}"> 
+  <tr class="{USERS_ROWCLASS}">
     <td><a href="index.php?cmd=user&amp;act=edituser&amp;userId={USERS_EDIT_ID}" title="{TXT_EDIT_USER_ACCOUNT}">{USERS_USERNAME}</a></td>
     <td>{USERS_FIRSTNAME}</td>
     <td>{USERS_LASTNAME}</td>
     <td><a href="mailto:{USERS_EMAIL}">{USERS_EMAIL}</a></td>
-    <td>{USERS_LANGUAGE}</td>   
+    <td>{USERS_LANGUAGE}</td>
     <td>{USERS_ADMIN_STATUS}</td>
     <td nowrap="nowrap"><div align="right"><a href="index.php?cmd=user&amp;act=edituser&amp;userId={USERS_EDIT_ID}" title="{TXT_EDIT_USER_ACCOUNT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT_USER_ACCOUNT}" /></a></div></td>
     <td nowrap="nowrap"><div align="right">
@@ -44,11 +44,11 @@ function activateUser(userId)
     <!-- END user_active -->
     <!-- BEGIN user_inactive -->
     <a href="javascript:{}" onclick="activateUser({USERS_ID})" title="{TXT_ACTIVATE_USER_ACCOUNT}"><img src="images/icons/check.gif" border="0" alt="{TXT_ACTIVATE_USER_ACCOUNT}" /></a>
-    <!-- END user_inactive -->    
+    <!-- END user_inactive -->
     </div></td>
   </tr>
 <!-- END user_row -->
 </table>
 <!-- END user_overview.html -->
 <br />
-{USERS_PAGING} 
+{USERS_PAGING}

@@ -17,36 +17,36 @@ function checkPw()
 	}
 }
 </script>
-<table cellspacing="0" cellpadding="4" width="100%" border="0">
-<tr> 
+<table summary="" cellspacing="0" cellpadding="4" width="100%" border="0">
+<tr>
 <td valign="top">
-<div> 
+<div>
 <form method="post" action="index.php" name="new_form">
 <br />
-<table cellspacing="0" cellpadding="2" width="100%" border="0">
-<tr> 
+<table summary="" cellspacing="0" cellpadding="2" width="100%" border="0">
+<tr>
 <td width="20%" nowrap="nowrap">{TXT_USER_NAME}:</td>
-<td width="28%"> 
+<td width="28%">
 <input style="width:100%;" tabindex="2" name="USERNAME" value="{USER_NAME}" />
 <input type="hidden" name="RESTOREKEY" value="{RESTORE_KEY}" />
 </td>
 <td rowspan="3" width="52%">&nbsp;&nbsp;<img src="template/ascms/images/icons/32x32/login_key.gif" align="middle" alt="login key" /></td>
 </tr>
-<tr> 
+<tr>
 <td width="20%" nowrap="nowrap">{TXT_PASSWORD}:</td>
-<td width="28%"> 
+<td width="28%">
 <input type="password" name="NEWPASSWORD" value="" style="width:100%;"/>
 </td>
 </tr>
-<tr> 
+<tr>
 <td width="20%" nowrap="nowrap">{TXT_CONFIRM_PASSWORD}:</td>
-<td width="28%"> 
+<td width="28%">
 <input type="password" name="CONFIRM_NEWPASSWORD" value="" style="width:100%;"/>
 </td>
 </tr>
-<tr> 
+<tr>
 <td width="20%">&nbsp;</td>
-<td width="28%"> 
+<td width="28%">
 <input type="button" tabindex="4" name="submit_button" value="{TXT_RESTORE}" onclick="checkPw()" />
 </td>
 </tr>
