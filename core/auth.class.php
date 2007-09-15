@@ -17,6 +17,11 @@
  * @package     contrexx
  * @subpackage  core
  * @version		1.0.0
+ * @todo        Think about moving this stuff to a proper User class,
+ *              which would be of much more use in many places.
+ *              In fact, it could be linked with Shop::Customer
+ *              and any other frontend User group.
+ *              Plenty of redundancy here!
  */
 class Auth
 {
@@ -83,7 +88,7 @@ class Auth
                 ///////////////////////////////////
                 // Frontend Authentification
                 ///////////////////////////////////
-                if($this->checkUserData() && $this->checkType()) {
+                if ($this->checkUserData() && $this->checkType()) {
                     $sessionObj->cmsSessionUserUpdate($_SESSION['auth']['username']);
                     return true;
                 }
@@ -289,6 +294,136 @@ class Auth
         }
         return false;
     }
+
+
+    /**
+     * Returns the full name for the given User ID.
+     *
+     * @static
+     * @param   integer $id             The User ID
+     * @global  mixed   $objDatabase    Database object
+     * @return  string                  The users' full name, or false on
+     *                                  failure, or if the user doesn't exist.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    //static
+    function getFullName($id)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT firstname, lastname
+              FROM ".DBPREFIX."access_users
+             WHERE id=$id
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult || $objResult->EOF) {
+            return false;
+        }
+        return
+            $objResult->fields['firstname'].' '.
+            $objResult->fields['lastname'];
+    }
+
+
+    /**
+     * Returns the e-mail address for the given User ID.
+     *
+     * @static
+     * @param   integer $id             The User ID
+     * @global  mixed   $objDatabase    Database object
+     * @return  string                  The users' e-mail, or false on
+     *                                  failure, or if the user doesn't exist.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    //static
+    function getEmail($id)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT email
+              FROM ".DBPREFIX."access_users
+             WHERE id=$id
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult || $objResult->EOF) {
+            return false;
+        }
+        return $objResult->fields['email'];
+    }
+
+
+    /**
+     * Returns an array of all user IDs.
+     *
+     * @static
+     * @return  array                   The array of all matching user IDs,
+     *                                  or false on failure.
+     * @global  mixed   $objDatabase    Database object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @todo    Extend this in order to get IDs of users fulfilling
+     *          criteria specified in the parameters, like access
+     *          to a certain module.
+     */
+    //static
+    function getUserIdArray() // ($criteria='')
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT id
+              FROM ".DBPREFIX."access_users
+        ";// WHERE [criteria]
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+echo("Auth::getUserIdArray(): query failed: $query<br />");
+            return false;
+        }
+        $arrUserId = array();
+        while (!$objResult->EOF) {
+            $arrUserId[] = $objResult->fields['id'];
+echo("Auth::getUserIdArray(): ID ".$objResult->fields['id']."<br />");
+            $objResult->MoveNext();
+        }
+        return $arrUserId;
+    }
+
+
+    /**
+     * Verfify that the given ID belongs to the current User
+     * @static
+     * @return  boolean             True if the IDs are equal, false otherwise
+     */
+    //static
+    function isCurrentUserId($id) {
+        if (!$_SESSION['auth']['userid'] > 0) {
+echo("Auth::isCurrentUserId(id=$id): ERROR: No or invalid current User ID '".$_SESSION['auth']['userid']."'!<br />");
+            return false;
+        }
+        if (!$id > 0) {
+echo("Auth::isCurrentUserId(id=$id): ERROR: No or invalid ID given!<br />");
+            return false;
+        }
+        if ($id == $_SESSION['auth']['userid']) {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Return the current User ID
+     * @return  mixed               The User ID, or false if the ID is invalid
+     */
+    function getUserId() {
+        if (!$_SESSION['auth']['userid'] > 0) {
+echo("Auth::getUserId(): ERROR: No or invalid current User ID '".$_SESSION['auth']['userid']."'!<br />");
+            return false;
+        }
+        return $_SESSION['auth']['userid'];
+    }
+
 
     /**
      * Log the user session.
