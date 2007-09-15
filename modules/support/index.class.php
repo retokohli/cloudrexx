@@ -530,7 +530,7 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
             }
 //if (MY_DEBUG) { echo("messageCommit(): INFO: Stored new Ticket: ");var_export($objTicket);echo("<br />"); }
             // Adding a Message to the Ticket will create a TicketEvent.
-            if (!$objTicket->addMessage(
+            $messageId = $objTicket->addMessage(
                 $this->supportEmail,
                 $this->supportSubject,
                 $this->supportBody.
@@ -538,8 +538,25 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
                     $this->arrSupportInfoField,
                     $objInit->getFrontendLangId()
                 )
-            )) {
+            );
+            if ($messageId == 0) {
                 return 0;
+            }
+            foreach ($_FILES as $arrFile) {
+                $error = $arrFile['error'];
+                if ($error == UPLOAD_ERR_OK) {
+                    $tmpName = $arrFile["tmp_name"];
+                    $name    = $arrFile["name"];
+                    $type    = $arrFile["type"];
+                    $content = file_get_contents($tmpName);
+                    $objAttachment = new Attachment(
+                        $messageId,
+                        $name,
+                        $type,
+                        $content
+                    );
+                    $objAttachment->store();
+                }
             }
             return $objTicket->getId();
         }
@@ -585,6 +602,24 @@ if (MY_DEBUG) echo("$placeholderName<br />");
 //echo("Support::supportRequest(): INFO: End of list.<br />");
         return true;
     }
+
+
+    /**
+     * Adds the string to the status messages.
+     *
+     * If necessary, inserts a line break tag (<br />) between
+     * messages.
+     * @param   string  $strMessage       The message to add
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function addMessage($strMessage)
+    {
+        $this->statusMessage .=
+            ($this->statusMessage ? '<br />' : '').
+            $strMessage;
+    }
+
+
 
 }
 

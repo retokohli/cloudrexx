@@ -221,20 +221,22 @@ class InfoField
         $this->id         = intval($id);
         $this->arrName    = false;
 
+        $this->arrSupportCategoryId = false;
         // If the ID is set already, get the array of associated
         // Support Category IDs and store it in this object.
         if ($this->id > 0) {
             $this->arrSupportCategoryId = $this->getSupportCategoryIdArray();
             if (!$this->arrSupportCategoryId) {
 if (MY_DEBUG) { echo("__construct(name=$name, type=$type, lang=$languageId, mandatory=$mandatory, multiple=$multiple, status=$status, order=$order, id=$id): ERROR: Failed to get related Support Categories!<br />"); }
-                // Initialze the array
-                $this->arrSupportCategoryId = array();
+                // Leave the array variable on false to indicate that
+                // it must be ignored.
             }
         } else {
-            // Initialze the array
+            // Initialze with the empty array to indicate that no
+            // SupportCategories are associated with this InfoField yet.
             $this->arrSupportCategoryId = array();
         }
-if (MY_DEBUG) { echo("__construct(name=$name, type=$type, lang=$languageId, mandatory=$mandatory, multiple=$multiple, status=$status, order=$order, id=$id): made ");var_export($this);echo("<br />"); }
+//if (MY_DEBUG) { echo("__construct(name=$name, type=$type, lang=$languageId, mandatory=$mandatory, multiple=$multiple, status=$status, order=$order, id=$id): made ");var_export($this);echo("<br />"); }
     }
 
 
@@ -649,7 +651,7 @@ if (MY_DEBUG) echo("InfoField::updateRelations(): done<br />");
      *
      * @param   integer $supportCategoryId  The Support Category ID
      * @return  boolean                     True on success, false otherwise
-     * @global      mixed   $objDatabase    Database object
+     * @global  mixed   $objDatabase        Database object
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function addRelation($supportCategoryId)
