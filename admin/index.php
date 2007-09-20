@@ -176,7 +176,9 @@ if (!$objAuth->checkAuth()) {
 //-----------------------------------------------------------------------------------------------
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $objTemplate->loadTemplateFile('index.html');
-    $objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
+    if ($objPerm->checkAccess(35, 'static', true)) {
+    	$objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
+    }
     $objTemplate->setVariable(
         array(
             'TXT_PAGE_ID'      => $_CORELANG['TXT_PAGE_ID'],
@@ -473,13 +475,87 @@ switch($cmd) {
         // database manager
         //-----------------------------------------------------------------------------------------------
     case 'dbm':
-        $modulespath = ASCMS_CORE_PATH.'/DatabaseManager.class.php';
-        if (file_exists($modulespath)) include($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
-        $objDatabaseManager = &new DatabaseManager();
-        $objDatabaseManager->getPage();
-        break;
+    case 'backup':
+    case 'systemUpdate':
+    	if (CONTREXX_PHP5) {
+	        $modulespath = ASCMS_CORE_PATH.'/DatabaseManager.class.php';
+	        if (file_exists($modulespath)) include($modulespath);
+	        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+	        $subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
+	        $objDatabaseManager = &new DatabaseManager();
+	        $objDatabaseManager->getPage();
+    	} else {
+    		// This part will be removed as soon as PHP4 support has been stopped!
+    		$objPerm->checkAccess(20, 'static');
+    		switch ($cmd) {
+    			case 'systemUpdate':
+					$modulespath = ASCMS_CORE_MODULE_PATH . "/systemUpdate/admin.class.php";
+					if (file_exists($modulespath)) include($modulespath);
+					else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+					$subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
+					$systemUpdate = &new systemUpdate();
+					$systemUpdate->getContent();
+					break;
+
+    			default:
+			        $modulespath = ASCMS_CORE_PATH . "/backup.class.php";
+			        if (file_exists($modulespath)) include($modulespath);
+			        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+			        $subMenuTitle= $_CORELANG['TXT_DATABASE_MANAGER'];
+			        $statustxt = "";
+
+			        if(!isset($_GET['act'])){
+			            $_GET['act']="";
+			        }
+
+			        if (!empty($_GET['act'])) {
+			        	if (!$objPerm->allAccess) {
+			        		$objPerm->noAccess();
+			        	}
+
+				        switch($_GET['act']){
+				            case "create":
+				                $strOkMessage = backup_create();
+				                break;
+
+				            case "restore":
+				                $strOkMessage = backup_restore();
+				                break;
+
+				            case "delete":
+				                $strOkMessage  =backup_delete();
+				                break;
+
+				            case "view":
+				                $othertxt = backup_view();
+				                break;
+
+				            case "viewtables":
+				                $othertxt = backup_viewTables();
+				                break;
+
+				            case "download":
+				                backup_download();
+				                break;
+				        }
+			        }
+
+			        $objTemplate->setVariable(array(
+			        'CONTENT_OK_MESSAGE'		=> $strOkMessage,
+			        'CONTENT_STATUS_MESSAGE'	=> $strErrMessage,
+			        'CONTENT_TITLE'				=> $_CORELANG['TXT_OVERVIEW'],
+			        'CONTENT_NAVIGATION'		=> "<a href='?cmd=backup'>".$_CORELANG['TXT_OVERVIEW']."</a> <a href='?cmd=systemUpdate'>".$_ARRAYLANG['TXT_DBM_SQL_TITLE']."</a>"
+			        ));
+
+			        if (isset($othertxt)){
+			            $objTemplate->setVariable('ADMIN_CONTENT',$othertxt);
+			        } else {
+			            backup_showList();
+			        }
+			       	break;
+    		}
+    	}
+    	break;
 
         //----------------------------------------------------------------------------------------------
         // stats

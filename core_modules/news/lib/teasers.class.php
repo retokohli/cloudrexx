@@ -292,7 +292,7 @@ class Teasers extends newsLibrary
 							$teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\<!-- BEGIN teaser_link -->[\S\s]*<!-- END teaser_link -->([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.'${2}', $teaserFrame);
 						}
 						$teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_IMAGE_PATH\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.$this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_image_path'].'${2}', $teaserFrame);
-						$teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_TEXT\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.$this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_text'].'${2}', $teaserFrame);
+						$teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_TEXT\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.htmlentities($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_text'], ENT_QUOTES, CONTREXX_CHARSET).'${2}', $teaserFrame);
 						$teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_AUTHOR\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.$this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['author'].'${2}', $teaserFrame);
 						$teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_EXT_URL\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.$this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['ext_url'].'${2}', $teaserFrame);
 					} elseif ($this->administrate) {

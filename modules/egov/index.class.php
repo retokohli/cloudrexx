@@ -174,7 +174,7 @@ class eGov extends eGovLibrary
 				}
 
 				if($this->GetProduktValue("product_message", $product_id)!=""){
-					$AlertMessageTxt = html_entity_decode($this->GetProduktValue("product_message", $product_id), ENT_QUOTES, CONTREXX_CHARSET);
+					$AlertMessageTxt = preg_replace(array('/(\n|\r\n)/' ,'/<br\s?\/?>/i'), '\n', addslashes(html_entity_decode($this->GetProduktValue("product_message", $product_id), ENT_QUOTES, CONTREXX_CHARSET)));
 					$ReturnValue = 'alert("'.$AlertMessageTxt.'");'.chr(10);
 				}
 				if($this->GetProduktValue("product_target_url", $product_id)!=""){

@@ -109,7 +109,7 @@ class calHeadlines
 						"CALENDAR_EVENT_STARTTIME"		=> date("H:i", $objResult->fields['startdate']),
 						"CALENDAR_EVENT_STARTDATE"		=> date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['startdate']),
 						"CALENDAR_EVENT_NAME"			=> stripslashes(htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)),
-						"CALENDAR_EVENT_THUMB" 			=> "<img src='".$objResult->fields['pic'].".thumb' border='0' alt='".$objResult->fields['name']."' />",
+						"CALENDAR_EVENT_THUMB" 			=> "<img src='".$objResult->fields['pic'].".thumb' border='0' alt='".htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)."' />",
 						"CALENDAR_EVENT_THUMB_SOURCE" 	=> $objResult->fields['pic'],
 						"CALENDAR_EVENT_ID" 			=> $objResult->fields['id'],
 						"CALENDAR_EVENT_COMMENT"		=> $objResult->fields['comment'],

@@ -577,7 +577,7 @@ class DatabaseManager {
 			'FILE_SIZE'		=>	$this->convertBytesToKBytes($objFWSystem->getMaxUploadFileSize()),
 		));
 
-		if (isset($_POST['frmDatabaseQuery_Submit']) && count($arrSqlQueries = $this->parseInput())) {
+		if (isset($_POST['frmDatabaseQuery_Submited']) && count($arrSqlQueries = $this->parseInput())) {
 			$output = array();
 			foreach ($arrSqlQueries as $sqlQuery) {
 				$output[] = $this->highlightSqlSyntax($sqlQuery).'<br />'.$this->executeQuery($sqlQuery);
@@ -726,9 +726,9 @@ class DatabaseManager {
 
 		$input = '';
 
-		if (!empty($_FILES['frmDatabaseQuery_File']['type']) && $_FILES['frmDatabaseQuery_File']['error'] == 0) {
+		if (isset($_FILES['frmDatabaseQuery_File']) && $_FILES['frmDatabaseQuery_File']['error'] == 0) {
 			//Check for right file-type
-			if ($_FILES['frmDatabaseQuery_File']['type'] != $this->_arrMimeTypes['sql']) {
+			if (!preg_match('/(\.[^.]+)$/', $_FILES['frmDatabaseQuery_File']['name'], $extension) || !in_array($extension[1], $this->_arrFileEndings)) {
 				$this->_strErrMessage = sprintf($_CORELANG['TXT_DBM_SQL_ERROR_TYPE'], $_FILES['frmDatabaseQuery_File']['type']);
 				return;
 			}
