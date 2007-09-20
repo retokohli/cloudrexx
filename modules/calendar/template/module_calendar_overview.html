@@ -1,6 +1,6 @@
 <!-- START calendar_show_all.html -->
 <script language="JavaScript" type="text/javascript">
-<!--
+// <![CDATA[
 function deleteNote(Id)
 {
 	if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
@@ -33,7 +33,7 @@ function selectMultiAction()
 		}
 	}
 }
-// -->
+// ]]>
 </script>
 
 <table style="width: 100%; border-spacing: 0px;" class="adminlist" cellspacing="0" cellpadding="0">
@@ -90,9 +90,9 @@ function selectMultiAction()
 									{TXT_CALENDAR_SEARCH}:
 								</td>
 								<td style="border: 0px;">
-									<form action="?cmd=calendar&amp;act=overview" method="post" name="newCalendarNote">
-										 <input type="text" name="inputKeyword" value="{TXT_CALENDAR_KEYWORD}" style="width: 200px" onclick="this.value=''" />
-										<input type="submit" value="{TXT_SEARCH}" name="search" />
+									<form action="index.php?cmd=calendar&amp;act=overview" method="post" name="newCalendarNote">
+										 <input type="text" name="inputKeyword" id="searchInputKeyword" value="{TXT_CALENDAR_KEYWORD}" style="width: 200px" onclick="this.value=''" />
+										<input type="submit" value="{TXT_SEARCH}" name="search" onmousedown="document.getElementById('searchInputKeyword').value = ''" />
 									</form>
 								</td>
 							</tr>
@@ -104,7 +104,7 @@ function selectMultiAction()
 				</tr>
 				<tr>
 					<td style="border: 0px;">
-						<form name="frmEventList" method="post" action="?cmd=calendar&amp;act=event_actions">
+						<form name="frmEventList" method="post" action="index.php?cmd=calendar&amp;act=event_actions">
 						<table class="adminlist" style="width: 100%; border-spacing: 0px; margin: 0px;" cellpadding="3" cellspacing="0">
 							<tr>
 								<th colspan="10">
