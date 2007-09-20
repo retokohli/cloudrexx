@@ -1,30 +1,20 @@
 ////////////////////////////////////////
-// CHANGELOG 1.1.3-1.1.4 ///////////////
+// CHANGELOG 1.1.3-1.2.0 ///////////////
 ////////////////////////////////////////
 
 ****************************************
-* New Features *************************
+* Neue Funktionen **********************
 ****************************************
-Online Shop
-- Verwaltung von Hersteller. Im Admin steht ein neues Administrationsmenü
-  "Hersteller" zur Verfügung. Frontend-Platzhalter [[SHOP_MENU]] wurde durch ein
-  weiteres Dropdown "Hersteller" erweitert (Falls Hersteller im Shop-Modul
-  erfasst wurden).
-  Es stehen zwei weitere Frontend-Platzhalter zur Verfügung:
-  [[SHOP_MANUFACTURER_NAME]] und [[SHOP_MANUFACTURER_URL]].
-  [[SHOP_MANUFACTURER_URL]] wird als Link angezeigt (target="_blank").
-
-Gästebuch
-- Konfigurationsoption damit alle Einträge in jeder Sprache angezeigt werden.
-
-Suche
+Globale Volltextsuche
 - Die Suchfunktion durchsucht zusätzlich die Kalendereinträge.
 
-Core
+Allgemeine Einstellungen
 - Neue Option 'languageDetection' in den Grundeinstellungen, welche
   bewirkt, dass die Content Sprache basierend auf den Browser-Sprachen
   (accept-languages) ausgewählt wird oder immer die Standardsprache verwendet
   wird.
+  
+Layout & Design
 - Neuer Platzhalter für die Zeitanzeige. Eingebunden im Design erzeugt der
   Platzhalter [[TIME]] die Ausgabe der aktuellen Uhrzeit im folgenden
   Format: HH:MM .
@@ -35,19 +25,16 @@ Core
   [[SUBNAVBAR2_FILE]]
   [[SUBNAVBAR3_FILE]]
 
-Kontaktmanager
+Kontakte Manager
 - Ein Kontaktformular kann mit einem CAPTCHA-Schutz geschützt werden.
 - Es werden keine Tabellen mehr verwendet, sondern semantisch korrektes
   HTML mit Paragraphen und Labels.
 - Es kann eine Kopie des Formulars an den Absender geschickt werden.
 
-Seitenempfehlungen
-- Die Seitenempfehlungen werden nun mit einem CAPTCHA geschützt. Dazu muss
-  das Standardtemplate für die Seitenempfehlungen allerdings zurückgesetzt
-  werden.
-
 Datenbank Manager
-- Es gibt neu einen Datenbank Manager zur Verwaltung der Datenbank. Dieser
+- Ab PHP5:
+  Es gibt neu einen Datenbank Manager zur Verwaltung der Datenbank (ersetzt die
+  Bereiche Datenbank sichern und System Update). Dieser
   erlaubt die Optimierung von Datenbanken. Ausserdem können SQL / CVS Backups
   erzeugt und SQL-Queries ausgeführt werden.
 
@@ -55,26 +42,33 @@ Media Manager/Bilderverwaltung
 - Es werden mehr Zeichen erlaubt in Dateinamen.
 - Dateien können in einem Schritt überschrieben werden beim Upload.
 
-Podcast
+Modul: Gästebuch
+- Konfigurationsoption damit alle Einträge in jeder Sprache angezeigt werden.
+
+Modul: Online Shop
+- Verwaltung von Hersteller. Im Admin steht ein neues Administrationsmenü
+  "Hersteller" zur Verfügung. Frontend-Platzhalter [[SHOP_MENU]] wurde durch ein
+  weiteres Dropdown "Hersteller" erweitert (Falls Hersteller im Shop-Modul
+  erfasst wurden).
+  Es stehen zwei weitere Frontend-Platzhalter zur Verfügung:
+  [[SHOP_MANUFACTURER_NAME]] und [[SHOP_MANUFACTURER_URL]].
+  [[SHOP_MANUFACTURER_URL]] wird als Link angezeigt (target="_blank").
+
+Modul: Podcast
 - Es kann ein Youtube Link angegeben werden, welcher dann als Medium im
   Podcastmodul erfasst wird.
 - Die neusten Videos beliebiger Kategorien können auf der Startseite angezeigt
   werden.
 - Jedem Medium kann ein Vorschaubild zugeordnet werden.
 
-****************************************
-* Changes ******************************
-****************************************
-Shop
-- Der JavaScript Warenkorb wird nun auf jeder Seite ausserhalb des Shops
-  angezeigt (Sofern die Einstellung $_CONFIGURATION['custom']['shopnavbar'] in
-  der Konfigurationsdatei (config/configuration.php) aktiviert ist.)
-- Die Versendung von Mails an den Shopbetreiber nach einer
-  Bestellung erfolgt nun direkt nach der Auftragsbestätigung.
-- Die Mehrwertsteuernummer jedes Landes wird akzeptiert.
-- Die Inhaltsseite AGB wurde durch die globale AGB Seite
-  (www.ihre-domain.com/index.php?section=agb) ersetzt. 
+Modul: Seitenempfehlungen
+- Die Seitenempfehlungen werden nun mit einem CAPTCHA geschützt. Dazu muss
+  das Standardtemplate für die Seitenempfehlungen allerdings zurückgesetzt
+  werden.
 
+****************************************
+* Änderungen ***************************
+****************************************
 Allgemein
 - Das Changelog wurde auf max. 80 Zeilen breite beschränkt.
 - Russische und französische Übersetzung des Grundsystems erweitert.
@@ -83,6 +77,15 @@ Allgemein
 - Nachdem sich ein Benutzer im Frontend Authentifizier hat, werden nur noch die
   Menüpunkte in der Navigation angezeigt, auf welche der Benutzer auch Zugriff
   hat.
+- Die Eingabemaske zum schnellen Bearbeiten einer Inhaltsseite mittels dessen ID
+  unter der Hauptnavigation im Backend wird nur angezeigt, wenn der Benutzer
+  die Berechtigung besitzt Inhaltsseiten zu bearbeiten.
+- Die Hauptmenüpunkte (Content Management / Module / Administration /
+  System Informationen / Hilfe & Support) werden nur angezeigt, sofern der
+  Benutzer auf mindestens  auf eine der darunter liegenden Unterpunkte Zugriff
+  hat.
+- Auf den Bereich "Content Verlauf" können nur Benutzer mit der entsprechenden
+  Berechtigung zugreifen.
 
 Webinstaller
 - MySQL Server Version Überprüfung anstatt der Client Version.
@@ -90,40 +93,109 @@ Webinstaller
 Update System
 - Der Contrexx Session-Handler (Datenbankablage) wird verwendet.
 
-Newsletter
-- Export wurde angepasst (one-click export). Es können einzelne Listen oder
-  alles auf einmal exportiert werden. Es werden alle Felder inkl. `status` als
-  CSV Datei exportiert und als Download an den Browser gesendet.
-
-Kontakt
+Kontakte Manager
 - Die Darstellung generierter E-Mails (nur Text) wurde verbessert (rechtsbündig)
 - Die Formulare werden jetzt von einer Legende (mit Rahmen) umschlossen.
 - Die Styles sind nicht mehr fest im Code verankert.
-- Es kann eine Kopie des Formulars an den Absender geschickt werden.
-  
-Verzeichnis
-- Im Verzeichnis wurde die Typselektion (File, RSS oder Link) aufgehoben und
-  stattessen drei neue Platzhalter hinzugefügt:
-	[DIRECTORY_FEED_ATTACHMENT]]
-	[[DIRECTORY_FEED_LINK]]
-	[[DIRECTORY_FEED_RSS_LINK]]
 
 WYSIWYG-Editor
 - Neue Version 2.4.3 des FCKeditors. Weitere Informationen unter:
   http://www.fckeditor.net/whatsnew/
 
-Volltextsuche
+Globale Volltextsuche
 - Geschützte Inhaltsseiten, auf welche der Besucher zugriff hat, werden in das
   Suchergebnis einbezogen.
 
 PDF-Ansicht
-- Neue Template-Ansicht für PDF-Generierung. Im "Layout & Design" kann das PDF-Template verwaltet werden und ein neuer Platzhalter [PDF_URL] wurde hinzugefügt.
+- Neue Template-Ansicht für PDF-Generierung. Im "Layout & Design" kann das
+  PDF-Template verwaltet werden und ein neuer Platzhalter [PDF_URL] wurde
+  hinzugefügt.
 
+Modul: Newsletter
+- Export wurde angepasst (one-click export). Es können einzelne Listen oder
+  alles auf einmal exportiert werden. Es werden alle Felder inkl. `status` als
+  CSV Datei exportiert und als Download an den Browser gesendet.
+
+Modul: Online Shop
+- Der JavaScript Warenkorb wird nun auf jeder Seite ausserhalb des Shops
+  angezeigt (Sofern die Einstellung $_CONFIGURATION['custom']['shopnavbar'] in
+  der Konfigurationsdatei (config/configuration.php) aktiviert ist.)
+- Die Versendung von Mails an den Shopbetreiber nach einer
+  Bestellung erfolgt nun direkt nach der Auftragsbestätigung.
+- Die Mehrwertsteuernummer jedes Landes wird akzeptiert.
+- Die Inhaltsseite AGB wurde durch die globale AGB Seite
+  (www.ihre-domain.com/index.php?section=agb) ersetzt. 
+  
+Modul: Verzeichnis
+- Die Typselektion (File, RSS oder Link) wurde aufgehoben und stattessen drei
+  neue Platzhalter hinzugefügt:
+	[DIRECTORY_FEED_ATTACHMENT]]
+	[[DIRECTORY_FEED_LINK]]
+	[[DIRECTORY_FEED_RSS_LINK]]
 
 ****************************************
-* Bugfixes *****************************
+* Behobene Fehler **********************
 ****************************************
-Shop
+Allgemein
+- Die HTML-Struktur beim Navigationstyp "Nested Navigation" wird korrekt
+  ausgegeben.
+- Mit dem Safari kann auf geschützte Bereiche zugegriffen werden.
+
+Alias Verwaltung
+- Die Paging Navigation bei der Alias Übersicht wird angezeigt.
+
+Kontakte Manager
+- Der CSV-Export funktioniert nun mit unlimitierter erfasster Anzahl Einträge.
+- Der Form Text wird nun auch versteckt, wenn das Formular beim Feedback nicht
+  mehr angezeigt werden soll.
+
+Layout & Design Verwaltung
+- Nachdem Erstellen eines neuen Layouts wird entweder das neu erstellte Layout
+  ausgewählt in der Übersicht angezeigt, oder wenn die Erstellung fehl schlug,
+  wieder der Dialog zum Erstellen eines neuen Layouts angezeigt.
+
+Media Manager/Bilderverwaltung
+- Die Bilderbearbeitung speichert die Bilder nun wieder korrekt
+
+News Manager
+- Komplette URI's bei Teaserbild Auswahlfunktion
+- Eine News Meldung kann nur erstellt werden, sofern zuvor mindestens eine
+  Kategorie erfasst wurde.
+- Die Ausgabe des Teaser Textes einer News Meldung ist nun XHTML konform.
+
+Update System
+- Das Update der Bildergalerie funktioniert auch wenn der MySQL Mode
+  NO_AUTO_VALUE_ON_ZERO aktiviert ist.
+
+Modul: Adressverwaltung
+- Korrekte Darstellung bei Verschachtelten Kategorien.
+
+Modul: Bildergalerie
+- [[GALLERY_LATEST]] funktioniert nun wieder.
+- Fallback Mechanismus bei der Erstellung von Thumbnails, damit die
+  Programmausführung bei zu grossen Bilder nicht unerwartet abgebrochen wird.
+
+Modul: Gästebuch
+- Das Erstellungsdatum eines Eintrages wird bei dessen Aktualisierung nicht
+  mehr geändert. 
+
+Modul: Kalender
+- Im Internet Explorer funktioniert das Erfassen des Enddatums eines Termins.
+
+Modul: News-Syndication
+- Die RSS Feed werden unter PHP4 mit der Latin1 Variante korrekt eingelesen.
+- Redundante Einträge von NewsML Dokumenten werden erkannt und entfernt.
+- Die Einträge eines RSS Feeds werden korrekt verlinkt.
+
+Modul: Newsletter
+- Zuweisung der Anrede bei einem Empfänger.
+
+Modul: Online Desk
+- Reservierungen vom Januar bis September werden im Kalender angezeigt.
+- Rückgabemeldungen mit Zeilenumbrüchen werden nach einer Bestellung korrekt
+  ausgegeben.
+
+Modul: Online Shop
 - Zugewiesene Merkmale können einem Produkt wieder entfernt werden.
 - Automatisch generierte Links enthalten nun die Angabe der index.php.
 - Darstellungsfehler (Unicode / Latin1)
@@ -132,53 +204,6 @@ Shop
 - Der JavaScript Warenkorb funktioniert auch, wenn ein anderes Skript Prototypes
   erweitert. 
 
-Kontaktmanager
-- Der CSV-Export funktioniert nun mit unlimitierter erfasster Anzahl Einträge.
-- Der Form Text wird nun auch versteckt, wenn das Formular beim Feedback nicht
-  mehr angezeigt werden soll.
-
-News
-- Komplette URI's bei Teaserbild Auswahlfunktion
-
-Update System
-- Das Update der Bildergalerie funktioniert auch wenn der MySQL Mode
-  NO_AUTO_VALUE_ON_ZERO aktiviert ist.
-
-Alias Verwaltung
-- Die Paging Navigation bei der Alias Übersicht wird angezeigt.
-
-Adressverwaltung
-- Korrekte Darstellung bei Verschachtelten Kategorien.
-
-News-Syndication
-- Die RSS Feed werden unter PHP4 mit der Latin1 Variante korrekt eingelesen.
-- Redundante Einträge von NewsML Dokumenten werden erkannt und entfernt.
-- Die Einträge eines RSS Feeds werden korrekt verlinkt.
-
-Allgemein
-- Die HTML-Struktur beim Navigationstyp "Nested Navigation" wird korrekt
-  ausgegeben.
-- Mit dem Safari kann auf geschützte Bereiche zugegriffen werden.
-
-Newsletter
-- Zuweisung der Anrede bei einem Empfänger.
-
-Gallery
-- [[GALLERY_LATEST]] funktioniert nun wieder.
-- Fallback Mechanismus bei der Erstellung von Thumbnails, damit die
-  Programmausführung bei zu grossen Bilder nicht unerwartet abgebrochen wird.
-
-Media Manager/Bilderverwaltung
-- Die Bilderbearbeitung speichert die Bilder nun wieder korrekt
-
-Sitemap
+Modul: Sitemap
 - Es werden nur die Seiten aufgelistet, auf welche der Benutzer zugreifen darf.
 
-Gästebuch
-- Das Erstellungsdatum eines Eintrages wird bei dessen Aktualisierung nicht
-  mehr geändert. 
-
-Layout & Design Verwaltung
-- Nachdem Erstellen eines neuen Layouts wird entweder das neu erstellte Layout
-  ausgewählt in der Übersicht angezeigt, oder wenn die Erstellung fehl schlug,
-  wieder der Dialog zum Erstellen eines neuen Layouts angezeigt. 

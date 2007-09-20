@@ -269,9 +269,7 @@ class calendarManager extends calendarLibrary
 		}
 
 		if (isset($_POST['search'])) {
-			echo "suche";
-			$keyword = htmlentities(addslashes($_POST['inputKeyword']), ENT_QUOTES, CONTREXX_CHARSET);
-			echo $keyword;
+			$keyword = htmlentities(contrexx_addslashes($_POST['inputKeyword']), ENT_QUOTES, CONTREXX_CHARSET);
 			$query = "SELECT active, id, name, catid, startdate, enddate
 					  	FROM ".DBPREFIX."module_calendar
 					  	WHERE (`name` LIKE '%$keyword%' OR
