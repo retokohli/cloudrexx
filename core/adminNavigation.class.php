@@ -94,58 +94,51 @@ class adminMenu
         }
     }
 
-    /**
-    * gets the administration menu by user rights
-    *
-    * creates the navigation by userright
-    *
-    * @global    array      $_CORELANG
-    * @global    array      $_SESSION
-    * @param     string     $navScetion
-    * @return    array      $navigation
-    */
+	/**
+	 * gets the administration menu by user rights
+	 *
+	 * creates the navigation by userright
+	 *
+	 * @global array $_CORELANG
+	 * @global object $objTemplate
+	 * @global object $objModules
+	 */
     function getMenu()
     {
         global $objModules, $_CORELANG, $objTemplate;
-
-        // initialise variables
-        $navigation ="";
 
         $objTemplate->addBlockfile('NAVIGATION_OUTPUT', 'navigation_output', 'index_navigation.html');
         reset($this->arrMenuItems);
 
         foreach ( $this->arrMenuGroups as $group_id => $group_data ) {
-            $navigationStyle = "none";
-            $objTemplate->setVariable(array(
-                'NAVIGATION_GROUP_NAME'    => htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
-                'NAVIGATION_ID'            => $group_id,
-                'TXT_LOGOUT'            => $_CORELANG['TXT_LOGOUT']
-            ));
-
-            // Module group menu and module check!
+        	// Module group menu and module check!
             if ($group_id==2 && !$objModules->existsModuleFolders) {
                 continue;
             }
 
-            if (isset($_COOKIE['navigation_'.$group_id])) {
-               $navigationStyle = $_COOKIE['navigation_'.$group_id];
-            }
-
-            $objTemplate->setVariable('NAVIGATION_STYLE',$navigationStyle);
-
+            $navigation = '';
             foreach ($this->arrMenuItems as $areaId => $link_data) {
                 // checks if the links are childs of this area ID
                 if ($link_data[0] == $group_id) {
                     if ($this->moduleExists($link_data[4])) {
-                        $navigation.= "<li><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>&raquo;&nbsp;".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
+                        $navigation .= "<li><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>&raquo;&nbsp;".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                     }
                 }
-                $objTemplate->setGlobalVariable('NAVIGATION_MENU',$navigation);
             }
-            $navigation = "";
-            $objTemplate->parse('navigationRow');
+
+            if (!empty($navigation)) {
+				$objTemplate->setVariable(array(
+					'NAVIGATION_GROUP_NAME'	=> htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
+					'NAVIGATION_ID'			=> $group_id,
+					'NAVIGATION_MENU'		=> $navigation,
+					'NAVIGATION_STYLE'		=> isset($_COOKIE['navigation_'.$group_id]) ? $_COOKIE['navigation_'.$group_id] : 'none'
+				));
+	            $objTemplate->parse('navigationRow');
+            }
         }
-        $objTemplate->parse('navigation_output');
+
+		$objTemplate->setVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
+		$objTemplate->parse('navigation_output');
     }
 
     /**

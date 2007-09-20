@@ -286,6 +286,16 @@ class newsManager extends newsLibrary {
     {
     	global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
+    	if (!count($this->getCategories())) {
+    		return $this->manageCategories();
+    	}
+
+		$query = 'SELECT 1 FROM `'.DBPREFIX.'module_news` WHERE `lang` = '.$this->langId;
+		$objNewsCount = $objDatabase->SelectLimit($query, 1);
+		if ($objNewsCount === false || $objNewsCount->RecordCount() == 0) {
+			return $this->add();
+		}
+
     	// initialize variables
     	$paging = "";
 
@@ -500,6 +510,10 @@ class newsManager extends newsLibrary {
     {
 	    global $_ARRAYLANG, $_CONFIG;
 
+	    if (!count($this->getCategories())) {
+    		return $this->manageCategories();
+    	}
+
     	$this->_objTpl->loadTemplateFile('module_news_modify.html',true,true);
 		$this->pageTitle = $_ARRAYLANG['TXT_CREATE_NEWS'];
 
@@ -646,6 +660,10 @@ class newsManager extends newsLibrary {
     function edit()
     {
     	global $objDatabase,$_ARRAYLANG, $_CONFIG;
+
+    	if (!count($this->getCategories())) {
+    		return $this->manageCategories();
+    	}
 
 		$status = "";
 		$startDate = "";
@@ -818,6 +836,10 @@ class newsManager extends newsLibrary {
     */
     function update(){
 	    global $objDatabase, $_ARRAYLANG, $_CONFIG;
+
+	    if (!count($this->getCategories())) {
+    		return $this->manageCategories();
+    	}
 
 	    if (isset($_GET['newsId'])) {
 	    	$objValidator = &new FWValidator();
@@ -1054,7 +1076,8 @@ class newsManager extends newsLibrary {
     * @global    array      $_ARRAYLANG[news*]
     * @param     string     $pageContent
     */
-    function manageCategories(){
+    function manageCategories()
+    {
     	global $objDatabase, $_ARRAYLANG;
 
     	$this->_objTpl->loadTemplateFile('module_news_category.html',true,true);

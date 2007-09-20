@@ -177,7 +177,7 @@ class InitCMS
 	{
 		global $_CONFIG;
 		if('on' == $_CONFIG['languageDetection']){
-			$arrAcceptedLanguages = &$this->_getClientAcceptedLanguages();
+			$arrAcceptedLanguages = $this->_getClientAcceptedLanguages();
 			foreach (array_keys($arrAcceptedLanguages) as $language) {
 				if (in_array($language, array_keys($this->arrLangNames))) {
 					return $this->arrLangNames[$language];
@@ -693,7 +693,7 @@ class InitCMS
 		$retval = (count($_GET) == 0) ? $_SERVER['REQUEST_URI']."?printview=1" : $_SERVER['REQUEST_URI']."&printview=1";
 		return htmlspecialchars($retval, ENT_QUOTES, CONTREXX_CHARSET);
 	}
-	
+
 	function getPDFUri() {
 		if (!isset($_SERVER['REQUEST_URI'])) {
 		        $arr = explode("/", $_SERVER['PHP_SELF']);

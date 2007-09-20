@@ -114,6 +114,7 @@ class ContentWorkflow {
     		break;
 			case 'unvalidated':
     		default:
+    			$objPerm->checkAccess(75, 'static');
     			$this->showHistory('unvalidated');
 
     	}

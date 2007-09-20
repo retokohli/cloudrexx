@@ -51,17 +51,16 @@ class systemUpdate
 	 */
 	function __construct()
 	{
-    	global $objTemplate, $_ARRAYLANG;
+    	global $objTemplate, $_ARRAYLANG, $_CORELANG, $objPerm;
 
-		if (!$_SESSION['auth']['is_admin']) {
-			header("Location: index.php?cmd=noaccess");
-			exit;
+		if (!$objPerm->allAccess) {
+			$objPerm->noAccess();
 		}
 
     	$this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/systemUpdate/template');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-		$objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=systemUpdate&amp;act=database'>".$_ARRAYLANG['TXT_DATABASE']."</a>");
+		$objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=backup'>".$_CORELANG['TXT_OVERVIEW']."</a> <a href='?cmd=systemUpdate'>".$_ARRAYLANG['TXT_DBM_SQL_TITLE']."</a>");
 	}
 
 
@@ -121,7 +120,7 @@ class systemUpdate
 		$maxUploadFilesize = number_format($objFWSystem->getMaxUploadFileSize()/1024)." KB";
 
     	$this->_objTpl->loadTemplateFile('module_systemUpdate_database.html',true,true);
-    	$this->pageTitle = $_ARRAYLANG['TXT_DATABASE'];
+    	$this->pageTitle = $_ARRAYLANG['TXT_DBM_SQL_TITLE'];
 
     	// set language variables
     	$this->_objTpl->setVariable(array(
