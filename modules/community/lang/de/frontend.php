@@ -1,16 +1,16 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 05 Sep 2007 17:51:51 +0200
+* generated date Fri, 21 Sep 2007 20:32:11 +0200
 **/
 
-$_ARRAYLANG['TXT_LOGIN_NAME'] = "Login Benutzername";
-$_ARRAYLANG['TXT_LOGIN_PASSWORD'] = "Login Passwort";
+$_ARRAYLANG['TXT_LOGIN_NAME'] = "Bitte wählen Sie einen Benutzernamen:";
+$_ARRAYLANG['TXT_LOGIN_PASSWORD'] = "Bitte geben Sie Ihr gewünschtes Passwort ein (min. 6 Zeichen):";
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
 $_ARRAYLANG['TXT_VERIFY_PASSWORD'] = "Passwort bestätigen";
 $_ARRAYLANG['TXT_LAST_NAME'] = "Nachname";
 $_ARRAYLANG['TXT_FIRST_NAME'] = "Vorname";
-$_ARRAYLANG['TXT_EMAIL'] = "E-Mail Adresse";
+$_ARRAYLANG['TXT_EMAIL'] = "Ihre E-Mail Adresse:";
 $_ARRAYLANG['TXT_REGISTER'] = "Registrieren";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "Diese Felder sind erforderlich.";
 $_ARRAYLANG['TXT_PASSWORD_NOT_USERNAME_TEXT'] = "Das Passwort und der Benutzername können nicht identisch sein! ";
@@ -20,7 +20,7 @@ $_ARRAYLANG['TXT_INVALID_PASSWORD'] = "Das Passwort ist ungültig (min. 6 Zeiche
 $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Bitte füllen Sie alle erforderlichen Felder aus.";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Fehler beim Ausführen der Datenbankabfrage!";
 $_ARRAYLANG['TXT_CONFIRM_REGISTRATION'] = "Sie müssen Ihre Registration bei %HOST% bestätigen";
-$_ARRAYLANG['TXT_CONFIRM_REGISTRATION_MAIL'] = "Hallo %USERNAME%\r\n\r\nVielen Dank für Ihre Anmeldung bei %HOST%. Ihr Konto wurde erstellt und muss noch aktiviert werden, bevor Sie es benützen können.\r\nUm es zu aktivieren, können Sie auf den folgenden Link klicken, oder kopieren Sie den Link und fügen Sie ihn in Ihrem Browserfenster ein :\r\n\r\n%ACTIVATION_LINK%\r\n\r\nNach der Aktivierung können Sie sich auf %HOST_LINK% mit dem folgenden Benutzernamen und Passwort einloggen:\r\n\r\nBenutzername - %USERNAME%\r\nPasswort - %PASSWORD%\r\n";
+$_ARRAYLANG['TXT_CONFIRM_REGISTRATION_MAIL'] = "Hallo %USERNAME%rnrnVielen Dank für Ihre Anmeldung bei %HOST%. Ihr Konto wurde erstellt und muss noch aktiviert werden, bevor Sie es benützen können.rnUm es zu aktivieren, können Sie auf den folgenden Link klicken, oder kopieren Sie den Link und fügen Sie ihn in Ihrem Browserfenster ein :rnrn%ACTIVATION_LINK%rnrnNach der Aktivierung können Sie sich auf %HOST_LINK% mit dem folgenden Benutzernamen und Passwort einloggen:rnrnBenutzername - %USERNAME%rnPasswort - %PASSWORD%rn";
 $_ARRAYLANG['TXT_EMAIL_ALREADY_USED'] = "Diese E-mail Adresse wird bereits von einem anderen Benutzer benutzt!";
 $_ARRAYLANG['TXT_USERNAME_ALREADY_USED'] = "Dieser Benutzername wird bereits verwendet!";
 $_ARRAYLANG['TXT_ACCOUNT_SUCCESSFULLY_ACTIVATED'] = "Glückwunsch! Ihr Benutzerkonto wurde erfolgreich aktiviert.";
