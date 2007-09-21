@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 05 Sep 2007 17:51:51 +0200
+* generated date Fri, 21 Sep 2007 20:32:11 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
@@ -32,7 +32,6 @@ $_ARRAYLANG['TXT_ADMINISTRATION'] = "Administration";
 $_ARRAYLANG['TXT_CONTENT_MANAGEMENT'] = "Content Management";
 $_ARRAYLANG['TXT_CONTENT_MANAGER'] = "Content Manager";
 $_ARRAYLANG['TXT_SELECT_FILE'] = "Datei auswählen";
-$_ARRAYLANG['TXT_BACKUP'] = "Datenbank sichern";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Datensatz wirklich löschen?";
 $_ARRAYLANG['TXT_DATE'] = "Datum";
 $_ARRAYLANG['TXT_DESIGN_MANAGEMENT'] = "Layout & Design";
@@ -295,11 +294,6 @@ $_ARRAYLANG['TXT_DELETE_GROUPS'] = "Gruppen löschen";
 $_ARRAYLANG['TXT_ADD_GROUPS'] = "Gruppen erstellen";
 $_ARRAYLANG['TXT_EDIT_GROUPS'] = "Gruppen editieren";
 $_ARRAYLANG['TXT_RESET_STATS'] = "Statistiken zurücksetzen";
-$_ARRAYLANG['TXT_CREATE_BACKUPS'] = "Sicherungen erstellen";
-$_ARRAYLANG['TXT_RESTORE_BACKUP'] = "Sicherungen wiederherstellen";
-$_ARRAYLANG['TXT_DELETE_BACKUPS'] = "Sicherungen löschen";
-$_ARRAYLANG['TXT_DOWNLOAD_BACKUPS'] = "Sicherungen herunterladen";
-$_ARRAYLANG['TXT_VIEW_BACKUPS'] = "Sicherungen ansehen";
 $_ARRAYLANG['TXT_ACTIVATE_SKINS'] = "Designs aktivieren";
 $_ARRAYLANG['TXT_EDIT_SKINS'] = "Designs bearbeiten";
 $_ARRAYLANG['TXT_EDIT_LANGUAGE_SETTINGS'] = "Sprachvariablen mutieren";
@@ -388,7 +382,6 @@ $_ARRAYLANG['TXT_LOGOUT'] = "Abmelden";
 $_ARRAYLANG['TXT_SUPPORT_FORUM'] = "Support Forum";
 $_ARRAYLANG['TXT_DOWNLOAD_MANAGER'] = "Downloadmanager";
 $_ARRAYLANG['TXT_DOWNLOAD_MODULE_DESCRIPTION'] = "Mit dem DownloadManager können Sie Ihre Downloads bequem verwalten. Mit Registrier- und Zähler Funktionen";
-$_ARRAYLANG['TXT_SYSTEM_UPDATE'] = "System Update";
 $_ARRAYLANG['TXT_EXECUTE_SQL_QUERY'] = "SQL-Befehl(e) ausführen";
 $_ARRAYLANG['TXT_OR_FILE'] = "oder Datei:";
 $_ARRAYLANG['TXT_EXECUTE'] = "Ausführen";
@@ -732,13 +725,14 @@ $_ARRAYLANG['TXT_DBM_SHOW_TABLE_HTML_TITLE'] = "HTML-Darstellung";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_DUMP_TITLE'] = "SQL-Dump";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_WRONG_PREFIX'] = "Fehler: Sie können nur auf Tabellen von Contrexx zugreifen.";
 $_ARRAYLANG['TXT_DBM_SQL_CODE'] = "SQL-Befehl ausführen";
-$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Hinweis: Alle Abfragen müssen aus systemtechnischen Gründen immer mit einem Semikolon (\";\") und einem Zeilenumbruch abgeschlossen werden. Nachfolgend ein Beispiel:<pre>SELECT * FROM Table;\'.\"n\".\'SELECT * FROM AnotherTable;</pre>";
+$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Hinweis: Alle Abfragen müssen aus systemtechnischen Gründen immer mit einem Semikolon (\";\") abgeschlossen werden. Nachfolgend ein Beispiel:<pre>SELECT * FROM Table;</pre>
+Durch betätigen der Tastenkombination Umschalt+Enter werden die Abfragen ausgeführt.";
 $_ARRAYLANG['TXT_DBM_SQL_FILE'] = "SQL-Datei ausführen";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_TYPES'] = "Erlaubte Dateitypen";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_SIZE'] = "Erlaubte Dateigrösse";
 $_ARRAYLANG['TXT_DBM_SQL_EXECUTED'] = "Ausgeführte Abfrage";
 $_ARRAYLANG['TXT_DBM_SQL_ERROR_EMPTY'] = "Sie haben eine ungültige SQL-Query eingegeben.";
-$_ARRAYLANG['TXT_DBM_SQL_ERROR_TYPE'] = "Ihr heraufgeladenes File besitzt einen ungültiger Datentyp: \'\'!";
+$_ARRAYLANG['TXT_DBM_SQL_ERROR_TYPE'] = "Ihr heraufgeladenes File besitzt einen ungültiger Datentyp: '%s'!";
 $_ARRAYLANG['TXT_DBM_EXPORT_TITLE'] = "Sicherung erstellen";
 $_ARRAYLANG['TXT_DBM_EXPORT_DESCRIPTION'] = "Kommentar";
 $_ARRAYLANG['TXT_DBM_EXPORT_TYPE'] = "Export Typ";

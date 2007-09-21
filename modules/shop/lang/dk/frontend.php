@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 05 Sep 2007 17:51:51 +0200
+* generated date Fri, 21 Sep 2007 20:32:11 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Beholdning";
@@ -62,7 +62,7 @@ $_ARRAYLANG['TXT_COMMENTS'] = "Meddelelse";
 $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ADDRESS_CUSTOMER'] = "Kundeadresse";
 $_ARRAYLANG['TXT_TAC'] = "Vilkår og handelsbetingelser";
-$_ARRAYLANG['TXT_ACCEPT_TAC'] = "Jeg bekræfte at de indtastede data er korrekt og at jeg kender og har læst<a href=\"index.php?section=shop&amp;cmd=terms\" target=\"_blank\">vilkår og handelsbetingelserne</a> og at jeg accepterer dem.";
+$_ARRAYLANG['TXT_ACCEPT_TAC'] = "Jeg bekræfte at de indtastede data er korrekt og at jeg kender og har læst<a href=\"index.php?section=agb\" target=\"_blank\">vilkår og handelsbetingelserne</a> og at jeg accepterer dem.";
 $_ARRAYLANG['TXT_TOTAL_PRICE'] = "Pris total";
 $_ARRAYLANG['TXT_ORDER_INFOS'] = "Bestillingsinformationer";
 $_ARRAYLANG['TXT_ORDER_PREPARED'] = "Din bestiling er nu klar til betalingen.";

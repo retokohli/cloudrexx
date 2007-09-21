@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 05 Sep 2007 17:51:51 +0200
+* generated date Fri, 21 Sep 2007 20:32:11 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "In Stock";
@@ -62,7 +62,7 @@ $_ARRAYLANG['TXT_COMMENTS'] = "Comments";
 $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ADDRESS_CUSTOMER'] = "Customer Address";
 $_ARRAYLANG['TXT_TAC'] = "Terms and conditions";
-$_ARRAYLANG['TXT_ACCEPT_TAC'] = "I confirm the correctness of the entered data and I know the <a href=\"index.php?section=shop&cmd=terms\" target=\"_blank\">terms and conditions</a> and accept them.";
+$_ARRAYLANG['TXT_ACCEPT_TAC'] = "I confirm the correctness of the entered data and I know the <a href=\"index.php?section=agb\" target=\"_blank\">terms and conditions</a> and accept them.";
 $_ARRAYLANG['TXT_TOTAL_PRICE'] = "Total Price";
 $_ARRAYLANG['TXT_ORDER_INFOS'] = "Order informations";
 $_ARRAYLANG['TXT_ORDER_PREPARED'] = "The order is now prepared for the payment.";
@@ -95,12 +95,12 @@ $_ARRAYLANG['TXT_PAYPAL_SUBMIT_BUTTON'] = "Pay with Paypal";
 $_ARRAYLANG['TXT_PAYPAL_SUBMIT'] = "You will be automatically forward to Paypal.  If you are not forwarded please click here:";
 $_ARRAYLANG['TXT_SHOP_PASSWORD_CHANGED_SUCCESSFULLY'] = "Your password has benn successfully changed.";
 $_ARRAYLANG['TXT_SHOP_WRONG_CURRENT_PASSWORD'] = "Incorrect password.";
-$_ARRAYLANG['TXT_SHOP_PASSWORD_NOT_CONFIRMED'] = "The confirmed password doesn't match with the new password!";
+$_ARRAYLANG['TXT_SHOP_PASSWORD_NOT_CONFIRMED'] = "The confirmed password doesn\'t match with the new password!";
 $_ARRAYLANG['TXT_SHOP_ENTER_CURRENT_PASSWORD'] = "Please enter the current password.";
 $_ARRAYLANG['TXT_SHOP_SPECIFY_NEW_PASSWORD'] = "You must specify a new password!";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DETAILS_SENT_SUCCESSFULLY'] = "Your account details have been successfully sent to the specified email address!";
-$_ARRAYLANG['TXT_SHOP_UNABLE_TO_SEND_EMAIL'] = "The email message couldn't be sent!";
-$_ARRAYLANG['TXT_SHOP_UNABLE_SET_NEW_PASSWORD'] = "The password couldn't be changed!";
+$_ARRAYLANG['TXT_SHOP_UNABLE_TO_SEND_EMAIL'] = "The email message couldn\'t be sent!";
+$_ARRAYLANG['TXT_SHOP_UNABLE_SET_NEW_PASSWORD'] = "The password couldn\'t be changed!";
 $_ARRAYLANG['TXT_SHOP_NO_ACCOUNT_WITH_EMAIL'] = "The is no user account with the specified email address!";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] = "Product Code";
 $_ARRAYLANG['TXT_SHOP_IMAGE'] = "Image";
@@ -125,7 +125,7 @@ $_ARRAYLANG['TXT_ACCOUNT_HOLDER'] = "Account Owner";
 $_ARRAYLANG['TXT_ACCOUNT_BANK'] = "Bank Name";
 $_ARRAYLANG['TXT_ACCOUNT_BLZ'] = "Bank Code";
 $_ARRAYLANG['TXT_PAYMENT_LSV'] = "Direct Bank Debit";
-$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = " Wichtig: Füllen Sie <a href='?section=shop&cmd=einzug' target='_blank'>das Formular 'Einzugsermächtigung'</a> aus, und faxen oder schicken Sie es ausgefüllt und unterzeichnet an uns. Dort finden Sie auch unsere Faxnummer und Anschrift.<br />Wenn wir den Rechnungsbetrag Ihrem Konto belasten können, werden wir Ihnen die Bestellung zustellen.<br />";
+$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = " Wichtig: Füllen Sie <a href=\'?section=shop&cmd=einzug\' target=\'_blank\'>das Formular \'Einzugsermächtigung\'</a> aus, und faxen oder schicken Sie es ausgefüllt und unterzeichnet an uns. Dort finden Sie auch unsere Faxnummer und Anschrift.<br />Wenn wir den Rechnungsbetrag Ihrem Konto belasten können, werden wir Ihnen die Bestellung zustellen.<br />";
 $_ARRAYLANG['TXT_PAYMENT_LSV_FEE'] = "Gebühr für LSV";
 $_ARRAYLANG['TXT_ERROR_INSERTING_ORDER_ITEM_ATTRIBUTE'] = "Error while inserting order items attributes";
 $_ARRAYLANG['TXT_ERROR_INSERTING_ORDER_ITEM'] = "Error while inserting order item";
@@ -171,10 +171,10 @@ $_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'] = "Geben Sie die E-Mail Adresse für Ih
 $_ARRAYLANG['SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
 $_ARRAYLANG['SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";
 $_ARRAYLANG['SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Übersicht über Ihre bisherigen Bestellungen.";
-$_ARRAYLANG['SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "I'm already existing customer.";
+$_ARRAYLANG['SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "I\'m already existing customer.";
 $_ARRAYLANG['SHOP_ACCOUNT_LOGIN'] = "Anmelden >>";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
-$_ARRAYLANG['TXT_SHOP_ACCOUNT_NEW_CUSTOMER'] = "I'm new customer.";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_NEW_CUSTOMER'] = "I\'m new customer.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Übersicht über Ihre bisherigen Bestellungen.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Existing customer.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Login >>";
@@ -197,7 +197,7 @@ $_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "annuliert";
 $_ARRAYLANG['TXT_SHOP_ORDER_STILL_IN_CART'] = "Ihre Bestellung bleibt im Warenkorb.";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Back to the Online Shop";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Change Payment Type";
-$_ARRAYLANG['TXT_SHOP_SAFERPAY_INIT_ERROR'] = "Payment using SaferPay couldn't be initialized!";
+$_ARRAYLANG['TXT_SHOP_SAFERPAY_INIT_ERROR'] = "Payment using SaferPay couldn\'t be initialized!";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_FAILED'] = "Die Bezahlung ist fehlgeschlagen.";
 $_ARRAYLANG['TXT_SHOP_ORDER_PENDING'] = "pendent";
 $_ARRAYLANG['TXT_SHOP_ORDER_CONFIRMED'] = "bestätigt";

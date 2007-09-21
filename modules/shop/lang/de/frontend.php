@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 05 Sep 2007 17:51:51 +0200
+* generated date Fri, 21 Sep 2007 20:32:11 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
@@ -62,7 +62,7 @@ $_ARRAYLANG['TXT_COMMENTS'] = "Mitteilungen";
 $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ADDRESS_CUSTOMER'] = "Kundenadresse";
 $_ARRAYLANG['TXT_TAC'] = "Allgemeine Geschäftsbedingungen";
-$_ARRAYLANG['TXT_ACCEPT_TAC'] = "Ich bestätige die Richtigkeit der gemachten Angaben und die <a href=\"index.php?section=shop&cmd=terms\" target=\"_blank\">Geschäftsbedingungen</a> zu kennen und akzeptiere diese.";
+$_ARRAYLANG['TXT_ACCEPT_TAC'] = "Ich bestätige die Richtigkeit der gemachten Angaben und die <a href=\"index.php?section=agb\" target=\"_blank\">Geschäftsbedingungen</a> zu kennen und akzeptiere diese.";
 $_ARRAYLANG['TXT_TOTAL_PRICE'] = "Gesamtpreis";
 $_ARRAYLANG['TXT_ORDER_INFOS'] = "Bestellinformationen";
 $_ARRAYLANG['TXT_ORDER_PREPARED'] = "Die Bestellung ist nun für die Zahlung vorbereitet.";
@@ -189,15 +189,15 @@ $_ARRAYLANG['TXT_CODE'] = "Code";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS'] = "Neueste Produkte im Online Shop:";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_NONE_FOUND'] = "Keine Produkte gefunden.";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_FAILED'] = "Fehler bei der Produkte Abfrage";
-$_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "&Uuml;bersicht";
-$_ARRAYLANG['TXT_SHOP_BACK'] = "Zur&uuml;ck";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "Übersicht";
+$_ARRAYLANG['TXT_SHOP_BACK'] = "Zurück";
 $_ARRAYLANG['TXT_SHOP_GOTO_DETAIL_VIEW'] = "zur Detailansicht / &agrav; la ...";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_CANCELLED'] = "Die Bezahlung wurde abgebrochen.";
 $_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "annuliert";
 $_ARRAYLANG['TXT_SHOP_ORDER_STILL_IN_CART'] = "Ihre Bestellung bleibt im Warenkorb.";
-$_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Zur&uuml;ck zum Online Shop";
-$_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Art der Bezahlung &auml;ndern";
-$_ARRAYLANG['TXT_SHOP_SAFERPAY_INIT_ERROR'] = "Payment using SaferPay couldn't be initialized!";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Zurück zum Online Shop";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Art der Bezahlung ändern";
+$_ARRAYLANG['TXT_SHOP_SAFERPAY_INIT_ERROR'] = "Payment using SaferPay couldn\'t be initialized!";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_FAILED'] = "Die Bezahlung ist fehlgeschlagen.";
 $_ARRAYLANG['TXT_SHOP_ORDER_PENDING'] = "pendent";
 $_ARRAYLANG['TXT_SHOP_ORDER_CONFIRMED'] = "bestätigt";
