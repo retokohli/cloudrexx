@@ -90,7 +90,7 @@ class Recommend extends RecommendLibrary
 			'RECOM_TXT_MALE'				=> $_ARRAYLANG['TXT_MALE_FRONTEND'],
 			'RECOM_TXT_CAPTCHA'				=> $_ARRAYLANG['TXT_RECOMMEND_CAPTCHA']
 		));
-			
+
 		$this->_objTpl->setVariable(array(
 			'RECOM_REFERER'					=> $_SERVER['HTTP_REFERER'],
 			'RECOM_FEMALE_CHECKED'  		=> 'checked',
@@ -99,7 +99,7 @@ class Recommend extends RecommendLibrary
 			'RECOM_FEMALE_SALUTATION_TEXT' 	=> $this->getFemaleSalutation($_LANGID),
 			'RECOM_MALE_SALUTATION_TEXT' 	=> $this->getMaleSalutation($_LANGID)
 		));
-		
+
 		//Spam-Protection
 		require_once ASCMS_LIBRARY_PATH . '/spamprotection/captcha.class.php';
 		$objCaptcha = new Captcha();
@@ -107,13 +107,13 @@ class Recommend extends RecommendLibrary
 		$offset = $objCaptcha->getOffset();
 		$alt = $objCaptcha->getAlt();
 		$url = $objCaptcha->getUrl();
-		
+
 		$this->_objTpl->setVariable(array(
 			'RECOM_CAPTCHA_URL'		=> $url,
 			'RECOM_CAPTCHA_ALT'		=> $alt,
 			'RECOM_CAPTCHA_OFFSET'	=> $offset
 		));
-		
+
 		$this->_objTpl->parse('recommend_form');
 	}
 
@@ -152,7 +152,7 @@ class Recommend extends RecommendLibrary
 		if (empty($_POST['comment'])) {
 			$this->_pageMessage .= $_ARRAYLANG['TXT_STATUS_COMMENT'].' '.$_ARRAYLANG['TXT_IS_EMPTY'].'<br />';
 		}
-		
+
 		require_once ASCMS_LIBRARY_PATH . '/spamprotection/captcha.class.php';
 		$objCaptcha = new Captcha();
 		if (!$objCaptcha->compare($_POST['captchaCode'], $_POST['captchaOffset'])) {
@@ -180,7 +180,7 @@ class Recommend extends RecommendLibrary
 				'RECOM_FEMALE_SALUTATION_TEXT' 	=> $this->getFemaleSalutation($_LANGID),
 				'RECOM_MALE_SALUTATION_TEXT' 	=> $this->getMaleSalutation($_LANGID)
 			));
-			
+
 			$this->_objTpl->setVariable(array(
 				'RECOM_TXT_RECEIVER_NAME'		=> $_ARRAYLANG['TXT_RECEIVERNAME_FRONTEND'],
 				'RECOM_TXT_RECEIVER_MAIL'		=> $_ARRAYLANG['TXT_RECEIVERMAIL_FRONTEND'],
@@ -194,17 +194,17 @@ class Recommend extends RecommendLibrary
 				'RECOM_TEXT'					=> $_ARRAYLANG['TXT_INTRODUCTION'],
 				'RECOM_TXT_CAPTCHA'				=> $_ARRAYLANG['TXT_RECOMMEND_CAPTCHA']
 			));
-				
+
 			$offset = $objCaptcha->getOffset();
 			$alt = $objCaptcha->getAlt();
 			$url = $objCaptcha->getUrl();
-			
+
 			$this->_objTpl->setVariable(array(
 				'RECOM_CAPTCHA_URL'		=> $url,
 				'RECOM_CAPTCHA_ALT'		=> $alt,
 				'RECOM_CAPTCHA_OFFSET'	=> $offset
-			));			
-			
+			));
+
 			$this->_objTpl->parseCurrentBlock('recommend_form');
 			$this->_objTpl->parse();
 		} else {
