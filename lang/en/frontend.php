@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 21 Sep 2007 20:32:11 +0200
+* generated date Fri, 28 Sep 2007 15:08:31 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Characters)";
@@ -56,7 +56,7 @@ $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "The two passwords do not match.";
 $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "Cannot send email to %EMAIL%!";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Reset password";
 $_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "Please enter your email address. A message will be sent to you shortly with further instructions.";
-$_ARRAYLANG['TXT_RESTORE_PASSWORD_MAIL'] = "Dear %USERNAME%,\r\n\r\nTo choose a new password, please go to the following URL and enter your new password.\r\n\r\nPLEASE NOTE: This URL will expire in 60 minutes from the time the email was sent. If you need more time, simply enter your email address again.rnrnYour URL is:\r\n%URL%\r\n\r\n\r\nRegards,\r\n%SENDER%";
+$_ARRAYLANG['TXT_RESTORE_PASSWORD_MAIL'] = "Dear %USERNAME%,\\n\\nTo choose a new password, please go to the following URL and enter your new password.\\n\\nPLEASE NOTE: This URL will expire in 60 minutes from the time the email was sent. If you need more time, simply enter your email address again.\\n\\nYour URL is:\\n%URL%\\n\\n\\nRegards,\\n%SENDER%";
 $_ARRAYLANG['TXT_LOST_PASSWORD_MAIL_SENT'] = "An email with further instructions has been sent to %EMAIL%.";
 $_ARRAYLANG['TXT_ACCOUNT_WITH_EMAIL_DOES_NOT_EXIST'] = "A user account with this email address does not exist!";
 $_ARRAYLANG['TXT_SET_PASSWORD_TEXT'] = "Please fill in your desired password, and repeat it for confirmation.";

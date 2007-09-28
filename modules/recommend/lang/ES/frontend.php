@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 21 Sep 2007 20:32:11 +0200
+* generated date Fri, 28 Sep 2007 15:08:31 +0200
 **/
 
 $_ARRAYLANG['TXT_STATUS_RECEIVER_NAME'] = "Empfänger Name";
@@ -21,6 +21,6 @@ $_ARRAYLANG['TXT_COMMENT_FRONTEND'] = "Kommentar";
 $_ARRAYLANG['TXT_PREVIEW_FRONTEND'] = "Vorschau";
 $_ARRAYLANG['TXT_FEMALE_FRONTEND'] = "Weiblich";
 $_ARRAYLANG['TXT_MALE_FRONTEND'] = "Männlich";
-$_ARRAYLANG['TXT_INTRODUCTION'] = "Möchten Sie diese Seite weiterempfehlen, füllen Sie einfach das folgende Formular aus   und klicken anschliessend auf &quot;Absenden&quot;. Der/die Empfänger/in wird per E-Mail auf   diese Seite aufmerksam gemacht.";
-$_ARRAYLANG['TXT_RECOMMEND_CAPTCHA'] = "";
+$_ARRAYLANG['TXT_INTRODUCTION'] = "Möchten Sie diese Seite weiterempfehlen, füllen Sie einfach das folgende Formular aus   und klicken anschliessend auf "Absenden". Der/die Empfänger/in wird per E-Mail auf   diese Seite aufmerksam gemacht.";
+$_ARRAYLANG['TXT_RECOMMEND_CAPTCHA'] = "Sicherheitscode";
 ?>

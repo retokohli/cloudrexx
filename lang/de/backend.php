@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 21 Sep 2007 20:32:11 +0200
+* generated date Fri, 28 Sep 2007 15:08:31 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
@@ -89,7 +89,7 @@ $_ARRAYLANG['TXT_STATS'] = "Statistik";
 $_ARRAYLANG['TXT_PROTECTION_CHANGE'] = "Frontend Zugangsberechtigung";
 $_ARRAYLANG['TXT_SYSTEM_SETTINGS'] = "Grundeinstellungen";
 $_ARRAYLANG['TXT_CHOOSE_TEMPLATE_GROUP'] = "Template Gruppe auswählen";
-$_ARRAYLANG['TXT_THUMBNAIL_GALLERY'] = "Bilder Galerie";
+$_ARRAYLANG['TXT_THUMBNAIL_GALLERY'] = "Bildergalerie";
 $_ARRAYLANG['TXT_ADD_LANGUAGE_VARIABLES'] = "Sprachvariable hinzufügen";
 $_ARRAYLANG['TXT_VARIABLE_LIST'] = "Sprachvariablen Liste";
 $_ARRAYLANG['TXT_FROM'] = "von";
@@ -412,7 +412,7 @@ $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "Konnte keine Email an %EMAIL% gesendet werd
 $_ARRAYLANG['TXT_ACTIVATE_DEACTIVATE_USERS'] = "Benutzer aktivieren / deaktivieren";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Passwort zurücksetzen";
 $_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "Geben Sie bitte Ihre E-Mail Adresse an. Eine Nachricht mit weiteren Anweisungen wird Ihnen dann in kürze zugesandt.";
-$_ARRAYLANG['TXT_RESTORE_PASSWORD_MAIL'] = "Hallo %USERNAME%,rnrnUm ein neues Passwort zu wählen, müssen Sie auf die unten aufgeführte URL gehen und dort Ihr neues Passwort eingeben.rnrnWICHTIG: Die Gültigkeit der URL wird nach 60 Minuten verfallen, nachdem diese E-Mail abgeschickt wurde. Falls Sie mehr Zeit benötigen, geben Sie Ihre E-Mail Adresse einfach ein weiteres Mal ein.rnrnIhre URL:rn%URL%rnrnrnMit freundlichen Grüssen,rn%SENDER%";
+$_ARRAYLANG['TXT_RESTORE_PASSWORD_MAIL'] = "Hallo %USERNAME%,\\n\\nUm ein neues Passwort zu wählen, müssen Sie auf die unten aufgeführte URL gehen und dort Ihr neues Passwort eingeben.\\n\\nWICHTIG: Die Gültigkeit der URL wird nach 60 Minuten verfallen, nachdem diese E-Mail abgeschickt wurde. Falls Sie mehr Zeit benötigen, geben Sie Ihre E-Mail Adresse einfach ein weiteres Mal ein.\\n\\nIhre URL:\\n%URL%\\n\\n\\nMit freundlichen Grüssen,\\n%SENDER%";
 $_ARRAYLANG['TXT_LOST_PASSWORD_MAIL_SENT'] = "Eine E-Mail mit weiteren Anweisungen wurde an %EMAIL% gesendet.";
 $_ARRAYLANG['TXT_ACCOUNT_WITH_EMAIL_DOES_NOT_EXIST'] = "Ein Benutzerkonto mit dieser E-Mail Adresse existiert nicht!";
 $_ARRAYLANG['TXT_SET_PASSWORD_TEXT'] = "Geben Sie bitte Ihr gewünschtes Passwort ein und wiederholen Sie es um es zu bestätigen.";
@@ -732,7 +732,7 @@ $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_TYPES'] = "Erlaubte Dateitypen";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_SIZE'] = "Erlaubte Dateigrösse";
 $_ARRAYLANG['TXT_DBM_SQL_EXECUTED'] = "Ausgeführte Abfrage";
 $_ARRAYLANG['TXT_DBM_SQL_ERROR_EMPTY'] = "Sie haben eine ungültige SQL-Query eingegeben.";
-$_ARRAYLANG['TXT_DBM_SQL_ERROR_TYPE'] = "Ihr heraufgeladenes File besitzt einen ungültiger Datentyp: '%s'!";
+$_ARRAYLANG['TXT_DBM_SQL_ERROR_TYPE'] = "Ihr heraufgeladenes File besitzt einen ungültiger Datentyp: \'%s\'!";
 $_ARRAYLANG['TXT_DBM_EXPORT_TITLE'] = "Sicherung erstellen";
 $_ARRAYLANG['TXT_DBM_EXPORT_DESCRIPTION'] = "Kommentar";
 $_ARRAYLANG['TXT_DBM_EXPORT_TYPE'] = "Export Typ";

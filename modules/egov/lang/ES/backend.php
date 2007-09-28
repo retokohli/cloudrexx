@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 21 Sep 2007 20:32:11 +0200
+* generated date Fri, 28 Sep 2007 15:08:31 +0200
 **/
 
 $_ARRAYLANG['TXT_PRODUCTS'] = "Products";
@@ -36,7 +36,7 @@ $_ARRAYLANG['TXT_EGOV_ADD_NEW_PRODUCT'] = "Add new product";
 $_ARRAYLANG['TXT_EGOV_EDIT_PRODUCT'] = "Edit product";
 $_ARRAYLANG['TXT_PRODUCT_NAME'] = "Product name";
 $_ARRAYLANG['TXT_EGOV_RECEIVER_ADDRESSES'] = "Reciver address";
-$_ARRAYLANG['TXT_EGOV_LIMITED_PER_DAY'] = "";
+$_ARRAYLANG['TXT_EGOV_LIMITED_PER_DAY'] = "Produkt mit Datumseingabe (Kalender im Frontend anzeigen)";
 $_ARRAYLANG['TXT_EGOV_RESERVED_DAYS'] = "Reserved days";
 $_ARRAYLANG['TXT_EGOV_NO_RESERVATIONS'] = "No reservations";
 $_ARRAYLANG['TXT_EGOV_PRODUCT_QUANTITY'] = "Available quantity per day ";
@@ -83,14 +83,14 @@ $_ARRAYLANG['TXT_EGOV_PRODUCTS_CHOICE_MENU'] = "Products menu";
 $_ARRAYLANG['TXT_EGOV_SETTINGS_UPDATED_SUCCESSFUL'] = "Successful updated";
 $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_1'] = "Kalenderlegende für freie Tage";
 $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_2'] = "Kalenderlegende für teilweise reservierte Tage";
-$_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_3'] = "";
+$_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_3'] = "Kalederlegende für reservierte Tage";
 $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_BACKGROUND'] = "Background color";
 $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_BORDERCOLOR'] = "Border color";
 $_ARRAYLANG['TXT_EGOV_STTINGS_DATE_LABEL'] = "Date label";
 $_ARRAYLANG['TXT_EGOV_STTINGS_DATE_ENTRY_DESC'] = "Datum-entry desc";
 $_ARRAYLANG['TXT_BROWSE'] = "Browse";
 $_ARRAYLANG['TXT_EGOV_SOURCECODE'] = "Show source code";
-$_ARRAYLANG['TXT_EGOV_PRODUCT_AUTO'] = "";
+$_ARRAYLANG['TXT_EGOV_PRODUCT_AUTO'] = "Order status";
 $_ARRAYLANG['TXT_EGOV_PRODUCT_ELECTRO'] = "Electro-product";
 $_ARRAYLANG['TXT_EGOV_PRODUCT_SELECT_FILE'] = "Select file";
 $_ARRAYLANG['TXT_MARKED'] = "marked";
@@ -99,7 +99,7 @@ $_ARRAYLANG['TXT_IMGALT_DELETE'] = "Delete";
 $_ARRAYLANG['TXT_EGOV_SELECTED'] = "Selected";
 $_ARRAYLANG['TXT_EGOV_NOT_SELECTED'] = "Not selected";
 $_ARRAYLANG['TXT_EGOV_QUANTITY'] = "Quantity";
-$_ARRAYLANG['TXT_EGOV_ORDER_STATE_AUTOMAIL'] = "";
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_AUTOMAIL'] = "Bestellung wird automatisch angenommen und per E-Mail bestätigt.";
 $_ARRAYLANG['TXT_EGOV_SUBJECT'] = "Subject";
 $_ARRAYLANG['EGOV_TXT_STATE_CHANGE'] = "State change";
 $_ARRAYLANG['EGOV_TXT_ORDER_ENTRY'] = "Order entry";
@@ -113,7 +113,7 @@ $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'] = "Product successfully saved
 $_ARRAYLANG['TXT_EGOV_VIEW_ORDERS'] = "View orders";
 $_ARRAYLANG['TXT_EGOV_BASIC_DATA'] = "Basic data";
 $_ARRAYLANG['TXT_EGOV_EXTENDED_OPTIONS'] = "Extended options";
-$_ARRAYLANG['TXT_EGOV_FORM_FIELD_UNIQUE_MSG'] = "";
+$_ARRAYLANG['TXT_EGOV_FORM_FIELD_UNIQUE_MSG'] = "Jeder Name eines Feldes muss eindeutig sein!";
 $_ARRAYLANG['TXT_EGOV_FILE_ERROR'] = "A bad file was indicated and removed";
 $_ARRAYLANG['TXT_EGOV_PAYMENTS'] = "Zahlungsarten";
 $_ARRAYLANG['TXT_EGOV_ACTIVATE_PAYPAL'] = "PayPal aktivieren";

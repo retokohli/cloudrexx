@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 21 Sep 2007 20:32:11 +0200
+* generated date Fri, 28 Sep 2007 15:08:31 +0200
 **/
 
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Create New Themes";

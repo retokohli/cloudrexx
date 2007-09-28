@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 21 Sep 2007 20:32:11 +0200
+* generated date Fri, 28 Sep 2007 15:08:31 +0200
 **/
 
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'] = "Name";
@@ -73,11 +73,11 @@ $_ARRAYLANG['TXT_SHOW_PICTURE_NAME'] = "Bildnamen anzeigen";
 $_ARRAYLANG['TXT_FILESIZE'] = "Dateigrösse";
 $_ARRAYLANG['TXT_IMAGE_NAME'] = "Bildname";
 $_ARRAYLANG['TXT_GALLERY_TITLE'] = "Bildergalerie";
-$_ARRAYLANG['TXT_GALLERY_MENU_CATEGORY_DETAILS'] = "Eigenschaften der Galerie";
+$_ARRAYLANG['TXT_GALLERY_MENU_CATEGORY_DETAILS'] = "Eigenschaften der Bildergalerie";
 $_ARRAYLANG['TXT_GALLERY_MENU_PICTURE_DETAILS'] = "Bildeigenschaften";
 $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM'] = "Bilder heraufladen";
 $_ARRAYLANG['TXT_GALLERY_DELETE_CATEGORY_MESSAGE'] = "Kategorie wirklich löschen? Achtung, wenn es sich dabei um eine Hauptkategorie handelt, werden alle Unterkategorien auch gelöscht!";
-$_ARRAYLANG['TXT_GALLERY_GALLERYNAME'] = "Galerienname";
+$_ARRAYLANG['TXT_GALLERY_GALLERYNAME'] = "Bildergaleriename";
 $_ARRAYLANG['TXT_GALLERY_OVERVIEW_DESCRIPTION'] = "Beschreibung";
 $_ARRAYLANG['TXT_IMAGE_COUNT'] = "Anzahl Bilder";
 $_ARRAYLANG['TXT_REQUIRED_DISK_SPACE'] = "Benötigter Speicher [kB]";
@@ -89,7 +89,7 @@ $_ARRAYLANG['TXT_IMAGE_LINK_HELP'] = "Achtung: Um eine Bildbeschreibung hinzuzuf
 $_ARRAYLANG['TXT_IMAGE_LINK'] = "Bildlink";
 $_ARRAYLANG['TXT_IMAGE_SIZE_SHOW'] = "Bildgrösse zeigen";
 $_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
-$_ARRAYLANG['TXT_GALLERY'] = "Galerie";
+$_ARRAYLANG['TXT_GALLERY'] = "Bildergalerie";
 $_ARRAYLANG['TXT_SIZE'] = "Dateigrösse";
 $_ARRAYLANG['TXT_GALLERY_IMPORT_PICTURES'] = "Bilder importieren";
 $_ARRAYLANG['TXT_GALLERY_FORMAT_SUPPORT'] = "Auf Ihrem System werden folgende Bildformate unterstützt:";
@@ -169,8 +169,8 @@ $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_DE_ACTIVATE'] = "Bild aktivieren / deaktivi
 $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SET_CATIMG'] = "Als Kategoriebild festlegen";
 $_ARRAYLANG['TXT_GALLERY_SETTINGS_PAGING'] = "Bilder pro Seite (Paging)";
 $_ARRAYLANG['TXT_GALLERY_UPLOAD_ERROR_WIDTH'] = "Fehler: Die Breite des Bildes hat die Systemvorgabe von  Pixel überschritten.";
-$_ARRAYLANG['TXT_GALLERY_SETTINGS_HOME_LAST'] = "'Neuestes Bild'-Funktion aktivieren";
-$_ARRAYLANG['TXT_GALLERY_SETTINGS_HOME_RANDOM'] = "'Zufälliges Bild'-Funktion aktivieren";
+$_ARRAYLANG['TXT_GALLERY_SETTINGS_HOME_LAST'] = "\'Neuestes Bild\'-Funktion aktivieren";
+$_ARRAYLANG['TXT_GALLERY_SETTINGS_HOME_RANDOM'] = "\'Zufälliges Bild\'-Funktion aktivieren";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Art der Überschrift";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_HIERARCHY'] = "hierarchisch";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_FLAT'] = "flach";
