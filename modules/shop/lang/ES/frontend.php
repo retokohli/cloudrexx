@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 21 Sep 2007 20:32:11 +0200
+* generated date Fri, 28 Sep 2007 15:08:31 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
@@ -105,7 +105,7 @@ $_ARRAYLANG['TXT_SHOP_NO_ACCOUNT_WITH_EMAIL'] = "Es konnte kein Benutzerkonto mi
 $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] = "Produkt Code";
 $_ARRAYLANG['TXT_SHOP_IMAGE'] = "Image";
 $_ARRAYLANG['TXT_SHOP_CART_IS_LOADING'] = "Cart is loading...";
-$_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'] = "The cart couldn't be loaded!";
+$_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'] = "The cart couldn\'t be loaded!";
 $_ARRAYLANG['TXT_TAX_NOT_SET'] = "Kein MwSt.-Satz zugeordnet";
 $_ARRAYLANG['TXT_TAX_RATES'] = "MwSt.-Sätze";
 $_ARRAYLANG['TXT_HP'] = "Reseller";
@@ -138,7 +138,7 @@ $_ARRAYLANG['TXT_SHOP_LSV_EE_TITLE'] = "Einzugsermächtigung";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_INFO'] = "Füllen Sie bitte dieses Formular in Ihrem Browser <b>vollständig</b> aus.  Drucken Sie es anschliessend";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_ADDRESS'] = "Unsere Adresse:";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_FAX'] = "Fax:";
-$_ARRAYLANG['TXT_SHOP_LSV_EE_TEXT'] = "Hiermit ermächtige(n) ich/wir {TXT_SHOP_COMPANY} widerruflich, die von mir/uns zu entrichtenden";
+$_ARRAYLANG['TXT_SHOP_LSV_EE_TEXT'] = "Hiermit ermächtige(n) ich/wir  widerruflich, die von mir/uns zu entrichtenden";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_RECIPIENT'] = "Zahlungsempfänger:";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_REASON'] = "Zahlungsgrund:";
 $_ARRAYLANG['TXT_SHOP_LSV_EE_DESCRIPTION'] = "(Artikelbezeichnung)";
@@ -172,12 +172,12 @@ $_ARRAYLANG['SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
 $_ARRAYLANG['SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";
 $_ARRAYLANG['SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Übersicht über Ihre bisherigen Bestellungen.";
 $_ARRAYLANG['SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
-$_ARRAYLANG['SHOP_ACCOUNT_LOGIN'] = "Anmelden &gt;&gt;";
+$_ARRAYLANG['SHOP_ACCOUNT_LOGIN'] = "Anmelden >>";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Übersicht über Ihre bisherigen Bestellungen.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
-$_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Anmelden &gt;&gt;";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Anmelden >>";
 $_ARRAYLANG['TXT_SHOP_CATEGORIES'] = "Kategorien:";
 $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'] = "Produkte in der Kategorie";
 $_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'] = "Weiter zur Kategorie";
@@ -189,15 +189,15 @@ $_ARRAYLANG['TXT_CODE'] = "Code";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS'] = "Neueste Produkte im Online Shop:";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_NONE_FOUND'] = "Keine Produkte gefunden.";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_FAILED'] = "Fehler bei der Produkte Abfrage";
-$_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "&Uuml;bersicht";
-$_ARRAYLANG['TXT_SHOP_BACK'] = "Zur&uuml;ck";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "Übersicht";
+$_ARRAYLANG['TXT_SHOP_BACK'] = "Zurück";
 $_ARRAYLANG['TXT_SHOP_GOTO_DETAIL_VIEW'] = "zur Detailansicht / &agrav; la ...";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_CANCELLED'] = "Die Bezahlung wurde abgebrochen.";
 $_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "annuliert";
 $_ARRAYLANG['TXT_SHOP_ORDER_STILL_IN_CART'] = "Ihre Bestellung bleibt im Warenkorb.";
-$_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Zur&uuml;ck zum Online Shop";
-$_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Art der Bezahlung &auml;ndern";
-$_ARRAYLANG['TXT_SHOP_SAFERPAY_INIT_ERROR'] = "Payment using SaferPay couldn't be initialized!";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Zurück zum Online Shop";
+$_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Art der Bezahlung ändern";
+$_ARRAYLANG['TXT_SHOP_SAFERPAY_INIT_ERROR'] = "Payment using SaferPay couldn\'t be initialized!";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_FAILED'] = "Die Bezahlung ist fehlgeschlagen.";
 $_ARRAYLANG['TXT_SHOP_ORDER_PENDING'] = "pendent";
 $_ARRAYLANG['TXT_SHOP_ORDER_CONFIRMED'] = "bestätigt";

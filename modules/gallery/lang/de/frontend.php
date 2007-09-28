@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 21 Sep 2007 20:32:11 +0200
+* generated date Fri, 28 Sep 2007 15:08:31 +0200
 **/
 
 $_ARRAYLANG['TXT_GALLERY_EXTERNAL_SUB_CATS'] = "Unterkategorien";
@@ -18,7 +18,7 @@ $_ARRAYLANG['TXT_USER_DEFINED'] = "Benutzerdefiniert";
 $_ARRAYLANG['TXT_IMAGE_NAME'] = "Bildname";
 $_ARRAYLANG['TXT_IMAGE_COUNT'] = "Anzahl Bilder";
 $_ARRAYLANG['TXT_CATEGORY'] = "Kategorie";
-$_ARRAYLANG['TXT_GALLERY'] = "Galerie";
+$_ARRAYLANG['TXT_GALLERY'] = "Bildergalerie";
 $_ARRAYLANG['TXT_SIZE'] = "Dateigrösse";
 $_ARRAYLANG['TXT_VOTING_TITLE'] = "Bildbewertungen";
 $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'] = "Aktuelle Bewertung";

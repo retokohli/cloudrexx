@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 21 Sep 2007 20:32:11 +0200
+* generated date Fri, 28 Sep 2007 15:08:31 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(minimaal 6 karakters)";
@@ -56,7 +56,7 @@ $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "De twee wachtwoorden komen niet overeen!";
 $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "Kan geen e-mail verzenden naar %EMAIL%!";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Reset wachtwoord";
 $_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "Vul uw e-mailadres in. Een bericht met verdere instructies zal spoedig verstuurd worden.";
-$_ARRAYLANG['TXT_RESTORE_PASSWORD_MAIL'] = "Beste %USERNAME%,\r\n\r\nOm een nieuw wachtwoord te kiezen, ga naar the onderstaande link en geef het nieuwe wachtwoord op.\r\n\r\nLet op: deze link zal binnen 60 minuten vervallen nadat hij is verstuurd. rnrnUw link is:\r\n%URL%\r\n\r\n\r\nGroet,\r\n%SENDER%";
+$_ARRAYLANG['TXT_RESTORE_PASSWORD_MAIL'] = "Beste %USERNAME%,\\n\\nOm een nieuw wachtwoord te kiezen, ga naar the onderstaande link en geef het nieuwe wachtwoord op.\\n\\nLet op: deze link zal binnen 60 minuten vervallen nadat hij is verstuurd.\\n\\nUw link is:\\n%URL%\\n\\n\\nGroet,\\n%SENDER%";
 $_ARRAYLANG['TXT_LOST_PASSWORD_MAIL_SENT'] = "Een e-mailbericht met meer informatie is verstuurd naar %EMAIL%.";
 $_ARRAYLANG['TXT_ACCOUNT_WITH_EMAIL_DOES_NOT_EXIST'] = "Een gebruikersaccount met dit e-mailadres bestaat al!";
 $_ARRAYLANG['TXT_SET_PASSWORD_TEXT'] = "Vul uw gewenste wachtwoord in en herhaal dit ter controle.";

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 21 Sep 2007 20:32:11 +0200
+* generated date Fri, 28 Sep 2007 15:08:31 +0200
 **/
 
 $_ARRAYLANG['TXT_DELETE_MARKED'] = "Markierte löschen";
@@ -115,7 +115,7 @@ $_ARRAYLANG['TXT_NEWS_LONG_DATE_DESCRIPTION'] = "Datum mit Zeitangabe";
 $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'] = "Link zur Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'] = "Kategorie der Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-Klasse: row1 oder row2";
-$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block zur definierung einer News meldung. Starttag: &lt;!-- BEGIN newsrow --&gt; Endtag: &lt;!-- END newsrow --&gt;";
+$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block zur definierung einer News meldung. Starttag: <!-- BEGIN newsrow --> Endtag: <!-- END newsrow -->";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Die folgenden Platzhalter stehen bei den Seiten zur Verfügung, welche zur <b>section</b> news gehören und als <b>cmd</b> details haben.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Titel der Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Text der Newsmeldung";
@@ -127,7 +127,7 @@ $_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "In der Designvorlage <b>headl
 $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Pfad zum Bild der Newsmeldung";
 $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'] = "Kurzer Text der Newsmeldung";
 $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "Die Teaserboxen können im Design oder im Content eingebunden werden.<br />Verwenden Sie die Platzhalter die bei der Teaseradministration angezeigt werden,<br />um die Boxen einzubinden.";
-$_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Block zur definierung eines Teasers. Starttag: &lt;!-- BEGIN teaser_n --&gt; Endtag: &lt;!-- END teaser_n --&gt;. n ist die Box Nummer, beginnend bei 1";
+$_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Block zur definierung eines Teasers. Starttag: <!-- BEGIN teaser_n --> Endtag: <!-- END teaser_n -->. n ist die Box Nummer, beginnend bei 1";
 $_ARRAYLANG['TXT_CONTINUE'] = "weiter";
 $_ARRAYLANG['TXT_NUMBER_OF_CHARS'] = "Anzahl Zeichen";
 $_ARRAYLANG['TXT_IMAGE'] = "Bild";
