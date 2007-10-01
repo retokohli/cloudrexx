@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Fri, 28 Sep 2007 15:08:31 +0200
+* generated date Mon, 01 Oct 2007 11:30:31 +0200
 **/
 
 $_ARRAYLANG['TXT_CALENDAR_DATE'] = "Datum";
