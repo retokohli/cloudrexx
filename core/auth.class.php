@@ -561,7 +561,6 @@ echo("Auth::getUserId(): ERROR: No or invalid current User ID '".$_SESSION['auth
                             $objMail->IsHTML(false);
                             $objMail->Body = $message;
                             $objMail->AddAddress($sendto);
-                            $objMail->Send();
                         }
 
                         if ($objMail && $objMail->Send()) {

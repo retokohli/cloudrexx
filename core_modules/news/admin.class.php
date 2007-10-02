@@ -172,13 +172,13 @@ class newsManager extends newsLibrary {
 
         $this->_saveSettings();
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=news'>".$_ARRAYLANG['TXT_NEWS_MANAGER']."</a>
-			<a href='?cmd=news&amp;act=add'>".$_ARRAYLANG['TXT_CREATE_NEWS']."</a>
-			<a href='?cmd=news&amp;act=newscat'>".$_ARRAYLANG['TXT_CATEGORY_MANAGER']."</a>
-			<a href='?cmd=news&amp;act=ticker'>".$_ARRAYLANG['TXT_NEWS_NEWSTICKER']."</a>
-			".($_CONFIG['newsTeasersStatus'] == '1' ? "<a href='?cmd=news&amp;act=teasers'>".$_ARRAYLANG['TXT_TEASERS']."</a>" : "")."
-			<a href='?cmd=news&amp;act=placeholders'>".$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY']."</a>
-			<a href='?cmd=news&amp;act=settings'>".$_ARRAYLANG['TXT_NEWS_SETTINGS']."</a>"
+        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=news'>".$_ARRAYLANG['TXT_NEWS_MANAGER']."</a>
+			<a href='index.php?cmd=news&amp;act=add'>".$_ARRAYLANG['TXT_CREATE_NEWS']."</a>
+			<a href='index.php?cmd=news&amp;act=newscat'>".$_ARRAYLANG['TXT_CATEGORY_MANAGER']."</a>
+			<a href='index.php?cmd=news&amp;act=ticker'>".$_ARRAYLANG['TXT_NEWS_NEWSTICKER']."</a>
+			".($_CONFIG['newsTeasersStatus'] == '1' ? "<a href='index.php?cmd=news&amp;act=teasers'>".$_ARRAYLANG['TXT_TEASERS']."</a>" : "")."
+			<a href='index.php?cmd=news&amp;act=placeholders'>".$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY']."</a>
+			<a href='index.php?cmd=news&amp;act=settings'>".$_ARRAYLANG['TXT_NEWS_SETTINGS']."</a>"
 		);
 
         $this->pageTitle = $_ARRAYLANG['TXT_NEWS_MANAGER'];
@@ -1014,8 +1014,8 @@ class newsManager extends newsLibrary {
 	    $newsurl2 				= $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
 	    $newscat 				= intval($_POST['newsCat']);
 	    $userid 				= intval($_SESSION['auth']['userid']);
-	    $startDate 				= contrexx_strip_tags($_POST['startDate']);
-	    $endDate 				= contrexx_strip_tags($_POST['endDate']);
+	    $startDate				= (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['startDate'])) ? '0000-00-00' : $_POST['startDate'];
+		$endDate				= (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['endDate'])) ? '0000-00-00' : $_POST['endDate'];
 	    $status 				= intval($_POST['status']);
 	    $newsTeaserOnly 		= isset($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
 	    $newsTeaserText 		= contrexx_addslashes($_POST['newsTeaserText']);

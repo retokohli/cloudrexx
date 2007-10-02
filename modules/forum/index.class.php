@@ -851,7 +851,7 @@ class Forum extends ForumLibrary {
 						$this->_objTpl->setVariable(array(
 							'FORUM_SUBCATEGORY_ROWCLASS'		=>	($intCounter++ % 2) + 1,
 							'FORUM_SUBCATEGORY_SPACER'			=>	(intval($arrValues['level'])-1)*25,
-							'FORUM_SUBCATEGORY_ICON'			=>	'<img src="images/modules/forum/comment.gif" border="0" />',
+							'FORUM_SUBCATEGORY_ICON'			=>	'<img src="images/modules/forum/comment.gif" alt="comment.gif" border="0" />',
 							'FORUM_SUBCATEGORY_ID'				=>	$arrValues['id'],
 							'FORUM_SUBCATEGORY_NAME'			=>	$arrValues['name'],
 							'FORUM_SUBCATEGORY_DESC'			=>	$arrValues['description'],
@@ -939,7 +939,7 @@ class Forum extends ForumLibrary {
 						$this->_objTpl->setVariable(array(
 							'FORUM_SUBCATEGORY_ROWCLASS'		=>	($intCounter++ % 2) + 1,
 							'FORUM_SUBCATEGORY_SPACER'			=>	(intval($arrValues['level'])-1)*25,
-							'FORUM_SUBCATEGORY_ICON'			=>	'<img src="images/modules/forum/comment.gif" border="0" />',
+							'FORUM_SUBCATEGORY_ICON'			=>	'<img src="images/modules/forum/comment.gif" alt="comment.gif" border="0" />',
 							'FORUM_SUBCATEGORY_ID'				=>	$arrValues['id'],
 							'FORUM_SUBCATEGORY_NAME'			=>	$arrValues['name'],
 							'FORUM_SUBCATEGORY_DESC'			=>	$arrValues['description'],

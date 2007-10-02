@@ -269,7 +269,7 @@ class news extends newsLibrary {
 		$objResult = $objDatabase->Execute($query);
 		$count = $objResult->RecordCount();
 		if ($count>intval($_CONFIG['corePagingLimit'])) {
-		    $paging = getPaging($count, $pos, "&amp;section=news", $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
+		    $paging = getPaging($count, $pos, "&amp;section=news&amp;category=".$selected, $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
 		}
 		$this->_objTpl->setVariable("NEWS_PAGING", $paging);
 		$objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
