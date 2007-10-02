@@ -15,7 +15,7 @@
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
-if (0) {
+if (1) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 } else {
@@ -887,6 +887,23 @@ if (!empty($objTemplate->_variables['CONTENT_OK_MESSAGE'])) {
         $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] = '';
     }
     $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] .= "<div id=\"okbox\" style='overflow:auto'>".$objTemplate->_variables['CONTENT_OK_MESSAGE']."</div><br />";
+}
+
+// Style parsing
+if (file_exists(ASCMS_ADMIN_TEMPLATE_PATH."/css/".$cmd.".css")) {
+    // check if there's a css file in the core section
+    $objTemplate->setVariable("ADD_STYLE_URL", ASCMS_ADMIN_TEMPLATE_WEB_PATH."/css/".$cmd.".css");
+    $objTemplate->parse("additional_style");
+} elseif (file_exists(ASCMS_MODULE_PATH."/".$cmd."/template/backend.css")) {
+    // of maybe in the according module directory
+    $objTemplate->setVariable("ADD_STYLE_URL", ASCMS_MODULE_WEB_PATH."/".$cmd."/template/backend.css");   
+    $objTemplate->parse("additional_style");
+} elseif (file_exists(ASCMS_CORE_MODULE_PATH."/".$cmd."/template/backend.css")) {
+    // or in the core modul directory
+    $objTemplate->setVariable("ADD_STYLE_URL", ASCMS_CORE_MODULE_WEB_PATH."/".$cmd."/template/backend.css");   
+    $objTemplate->parse("additional_style");
+} else {
+    $objTemplate->hideBlock("additional_style");
 }
 
 $objTemplate->show();
