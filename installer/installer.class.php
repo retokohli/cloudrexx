@@ -1178,7 +1178,8 @@ class Installer
 			if (isset($_SESSION['installer']['setPermissions']) && $_SESSION['installer']['setPermissions'] == true
 				&& (!$_SESSION['installer']['config']['createDatabase'] || ($_SESSION['installer']['config']['createDatabase'] && (isset($_SESSION['installer']['createDatabase']) && $_SESSION['installer']['createDatabase'])))
 				&& isset($_SESSION['installer']['createDatabaseTables']) && $_SESSION['installer']['createDatabaseTables']
-				&& isset($_SESSION['installer']['checkDatabaseTables']) && $_SESSION['installer']['checkDatabaseTables'])
+				&& isset($_SESSION['installer']['checkDatabaseTables']) && $_SESSION['installer']['checkDatabaseTables']
+				&& isset($_SESSION['installer']['createVersionFile']) && $_SESSION['installer']['createVersionFile'])
 			{
 				$_SESSION['installer']['step']++;
 			}

@@ -15,7 +15,7 @@
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
-if (1) {
+if (0) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 } else {
@@ -896,11 +896,11 @@ if (file_exists(ASCMS_ADMIN_TEMPLATE_PATH."/css/".$cmd.".css")) {
     $objTemplate->parse("additional_style");
 } elseif (file_exists(ASCMS_MODULE_PATH."/".$cmd."/template/backend.css")) {
     // of maybe in the according module directory
-    $objTemplate->setVariable("ADD_STYLE_URL", ASCMS_MODULE_WEB_PATH."/".$cmd."/template/backend.css");   
+    $objTemplate->setVariable("ADD_STYLE_URL", ASCMS_MODULE_WEB_PATH."/".$cmd."/template/backend.css");
     $objTemplate->parse("additional_style");
 } elseif (file_exists(ASCMS_CORE_MODULE_PATH."/".$cmd."/template/backend.css")) {
     // or in the core modul directory
-    $objTemplate->setVariable("ADD_STYLE_URL", ASCMS_CORE_MODULE_WEB_PATH."/".$cmd."/template/backend.css");   
+    $objTemplate->setVariable("ADD_STYLE_URL", ASCMS_CORE_MODULE_WEB_PATH."/".$cmd."/template/backend.css");
     $objTemplate->parse("additional_style");
 } else {
     $objTemplate->hideBlock("additional_style");

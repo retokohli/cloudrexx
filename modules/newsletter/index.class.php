@@ -257,10 +257,10 @@ class newsletter extends NewsletterLib
 		$message = '';
 
 		if (($objUser = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE code='".contrexx_addslashes($_REQUEST['code'])."' AND email='".contrexx_addslashes($_REQUEST['mail'])."'", 1)) && $objUser->RecordCount() == 1) {
-			$objSystem = $objDatabase->Execute("SELECT sysname, sysvalue FROM ".DBPREFIX."module_newsletter_system");
+			$objSystem = $objDatabase->Execute("SELECT `setname`, `setvalue` FROM `".DBPREFIX."module_newsletter_settings`");
 			if ($objSystem !== false) {
 				while (!$objSystem->EOF) {
-					$arrSystem[$objSystem->fields['sysname']] = $objSystem->fields['sysvalue'];
+					$arrSystem[$objSystem->fields['setname']] = $objSystem->fields['setvalue'];
 					$objSystem->MoveNext();
 				}
 			}

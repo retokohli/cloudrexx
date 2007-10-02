@@ -517,8 +517,8 @@ class ContactManager extends ContactLib
 		}
 
 		$formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
-		
-				
+
+
 		$this->_objTpl->loadTemplateFile('module_contact_form_modify.html');
 		$this->_pageTitle = (!$copy && $formId != 0) ? $_ARRAYLANG['TXT_CONTACT_MODIFY_CONTACT_FORM'] : $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
 
@@ -628,12 +628,12 @@ class ContactManager extends ContactLib
 				}
 
 				$this->_objTpl->setVariable(array(
-					'CONTACT_FORM_FIELD_NAME'				=> $arrField['name'],
+					'CONTACT_FORM_FIELD_NAME'				=> htmlentities($arrField['name'], ENT_QUOTES, CONTREXX_CHARSET),
 					'CONTACT_FORM_FIELD_ID'					=> $fieldId,
 					'CONTACT_FORM_FIELD_TYPE_MENU'			=> $this->_getFormFieldTypesMenu('contactFormFieldType['.$fieldId.']', $arrField['type'], 'id="contactFormFieldType_'.$fieldId.'" style="width:110px;" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
 					'CONTACT_FORM_FIELD_CHECK_MENU'			=> $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType['.$fieldId.']', 'contactFormFieldCheckType_'.$fieldId, $arrField['type'], $arrField['check_type']),
 					'CONTACT_FORM_FIELD_CHECK_BOX'			=> $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired['.$fieldId.']', 'contactFormFieldRequired_'.$fieldId, $arrField['type'], $checked),
-					'CONTACT_FORM_FIELD_ATTRIBUTES'			=> $this->_getFormFieldAttribute($fieldId, $arrField['type'], $arrField['attributes'])
+					'CONTACT_FORM_FIELD_ATTRIBUTES'			=> $this->_getFormFieldAttribute($fieldId, $arrField['type'], htmlentities($arrField['attributes'], ENT_QUOTES, CONTREXX_CHARSET))
 				));
 				$this->_objTpl->parse('contact_form_field_list');
 
@@ -694,7 +694,7 @@ class ContactManager extends ContactLib
 		}
 		return false;
 	}
-	
+
 	function _getContentSiteParCat($formId)
 	{
 		global $objDatabase;
@@ -707,7 +707,7 @@ class ContactManager extends ContactLib
 		}
 		return false;
 	}
-	
+
 	function _getFormFieldAttribute($id, $type, $attr)
 	{
 		global $_ARRAYLANG;
@@ -974,9 +974,9 @@ class ContactManager extends ContactLib
 
 		if (isset($_POST['contactFormFieldName']) && is_array($_POST['contactFormFieldName'])) {
 			foreach ($_POST['contactFormFieldName'] as $id => $fieldName) {
-				$fieldName = htmlentities(strip_tags(contrexx_stripslashes($fieldName)), ENT_QUOTES, CONTREXX_CHARSET);
+				$fieldName = strip_tags(contrexx_stripslashes($fieldName));
 				$type = isset($_POST['contactFormFieldType'][$id]) && array_key_exists(contrexx_stripslashes($_POST['contactFormFieldType'][$id]), $this->_arrFormFieldTypes) ? contrexx_stripslashes($_POST['contactFormFieldType'][$id]) : key($this->_arrFormFieldTypes);
-				$attributes = isset($_POST['contactFormFieldAttribute'][$id]) && !empty($_POST['contactFormFieldAttribute'][$id]) ? ($type == 'text' || $type == 'label' || $type == 'file' || $type == 'textarea' || $type == 'hidden' || $type == 'radio' || $type == 'checkboxGroup' || $type == 'password' || $type == 'select' ? htmlentities(strip_tags(contrexx_stripslashes($_POST['contactFormFieldAttribute'][$id])), ENT_QUOTES, CONTREXX_CHARSET) : intval($_POST['contactFormFieldAttribute'][$id])) : '';
+				$attributes = isset($_POST['contactFormFieldAttribute'][$id]) && !empty($_POST['contactFormFieldAttribute'][$id]) ? ($type == 'text' || $type == 'label' || $type == 'file' || $type == 'textarea' || $type == 'hidden' || $type == 'radio' || $type == 'checkboxGroup' || $type == 'password' || $type == 'select' ? strip_tags(contrexx_stripslashes($_POST['contactFormFieldAttribute'][$id])) : intval($_POST['contactFormFieldAttribute'][$id])) : '';
 				$is_required = isset($_POST['contactFormFieldRequired'][$id]) ? 1 : 0;
 				$checkType = isset($_POST['contactFormFieldCheckType'][$id]) ? intval($_POST['contactFormFieldCheckType'][$id]) : 1;
 
@@ -1145,10 +1145,10 @@ class ContactManager extends ContactLib
 	function _getSourceCode($id, $preview = false, $show = false)
 	{
 		global $_ARRAYLANG, $objInit, $objDatabase;
-		
+
 		$arrFields = $this->getFormFields($id);
 		$sourcecode = array();
-		
+
 		if ($show) {
 			$sourcecode[] = "[[CONTACT_FEEDBACK_TEXT]]";
 		} else {
@@ -1164,17 +1164,17 @@ class ContactManager extends ContactLib
 		$sourcecode[] = "<legend>".$this->arrForms[$id]['name']."</legend>";
 		$sourcecode[] = '<form action="'.($preview ? '../' : '')."index.php?section=contact&amp;cmd=".$id.'" ';
 		$sourcecode[] = 'method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();" id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'">';
-				
-		
+
+
 		foreach ($arrFields as $fieldId => $arrField) {
 			if ($arrField['is_required']) {
 				$required = '<strong class="is_required">*</strong>';
 			} else {
 				$required = "";
 			}
-			
+
 			$sourcecode[] = '<p> <label for="contactFormFieldId_'.$fieldId.'">'.(($arrField['type'] != 'hidden' && $arrField['type'] != 'label') ? $arrField['name'] : '&nbsp;')." ".$required.'</label>';
-			
+
 			switch ($arrField['type']) {
 				case 'text':
 					$sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($arrField['attributes'] == '' ? '{'.$fieldId.'_VALUE}' : $arrField['attributes']).'" />';
@@ -1246,15 +1246,15 @@ class ContactManager extends ContactLib
 				$offset = $captcha->getOffset();
 				$alt = $captcha->getAlt();
 				$url = $captcha->getUrl();
-				
+
 				$frontendLang = $objInit->userFrontendLangId;
 				$themeId = $objInit->arrLang[$frontendLang]['themesid'];
-				
+
 				if(($objRS = $objDatabase->SelectLimit("SELECT `foldername` FROM `".DBPREFIX."skins` WHERE `id` = ".$themeId, 1)) !== false){
 					$themePath = $objRS->fields['foldername'];
 				}
-				
-				$sourcecode[] = '<link href="../themes/'.$themePath.'/buildin_style.css" rel="stylesheet" type="text/css" />';				
+
+				$sourcecode[] = '<link href="../themes/'.$themePath.'/buildin_style.css" rel="stylesheet" type="text/css" />';
 				$sourcecode[] = '<p><span>'.$_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION']."</span><br />";
 				$sourcecode[] = '<img class="captcha" src="'.$url.'" alt="'.$alt.'" /></p>';
 				$sourcecode[] = '<div style="color: red;"></div>';
@@ -1273,7 +1273,7 @@ class ContactManager extends ContactLib
 			$sourcecode[] = '<input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
 			$sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="[[CONTACT_CAPTCHA_OFFSET]]" />';
 			$sourcecode[] = "</p>";
-			$sourcecode[] = "<!-- END contact_form_captcha -->";			
+			$sourcecode[] = "<!-- END contact_form_captcha -->";
 		} else {
 			$sourcecode[] = "<!-- BEGIN contact_form_captcha -->";
 			$sourcecode[] = '<div style="color: red;">{CONTACT_CAPTCHA_ERROR}</div>';
@@ -1284,7 +1284,7 @@ class ContactManager extends ContactLib
 			$sourcecode[] = '<input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
 			$sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="{CONTACT_CAPTCHA_OFFSET}" />';
 			$sourcecode[] = "</p>";
-			$sourcecode[] = "<!-- END contact_form_captcha -->";						
+			$sourcecode[] = "<!-- END contact_form_captcha -->";
 		}
 
 		$sourcecode[] = "<p>";

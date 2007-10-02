@@ -248,9 +248,9 @@ class ContactLib
 
 		foreach ($arrFields as $fieldId => $arrField) {
 			if (isset($arrFormFields[$fieldId])) {
-				$this->_updateFormField($fieldId, addslashes($arrField['name']), $arrField['type'], addslashes($arrField['attributes']), $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
+				$this->_updateFormField($fieldId, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
 			} else {
-				$this->_addFormField($id, addslashes($arrField['name']), $arrField['type'], addslashes($arrField['attributes']), $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
+				$this->_addFormField($id, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
 			}
 		}
 
@@ -300,14 +300,14 @@ class ContactLib
 	{
 		global $objDatabase;
 
-		$objDatabase->Execute("UPDATE ".DBPREFIX."module_contact_form_field SET name='".$name."', type='".$type."', attributes='".addslashes($attributes)."', is_required='".$isRequired."', check_type='".$checkType."', order_id=".$orderId." WHERE id=".$id);
+		$objDatabase->Execute("UPDATE ".DBPREFIX."module_contact_form_field SET name='".addslashes($name)."', type='".$type."', attributes='".addslashes($attributes)."', is_required='".$isRequired."', check_type='".$checkType."', order_id=".$orderId." WHERE id=".$id);
 	}
 
 	function _addFormField($formId, $name, $type, $attributes, $orderId, $isRequired, $checkType)
 	{
 		global $objDatabase;
 
-		$objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_field (`id_form`, `name`, `type`, `attributes`, `order_id`, `is_required`, `check_type`) VALUES (".$formId.", '".$name."', '".$type."', '".addslashes($attributes)."', ".$orderId.", '".$isRequired."', '".$checkType."')");
+		$objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_field (`id_form`, `name`, `type`, `attributes`, `order_id`, `is_required`, `check_type`) VALUES (".$formId.", '".addslashes($name)."', '".$type."', '".addslashes($attributes)."', ".$orderId.", '".$isRequired."', '".$checkType."')");
 	}
 
 	function _deleteFormField($id)
