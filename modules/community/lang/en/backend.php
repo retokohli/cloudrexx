@@ -1,14 +1,14 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 01 Oct 2007 11:30:31 +0200
+* generated date Wed, 03 Oct 2007 11:37:35 +0200
 **/
 
 $_ARRAYLANG['TXT_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_STORE'] = "Store";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database query error!";
 $_ARRAYLANG['TXT_USER_ADMINISTRATION'] = "User Administration";
-$_ARRAYLANG['TXT_GROUP_SETTINGS_TEXT'] = "Choose the groups to which a new registered user should belong to.<br /><br />Hint: A user, who isn't associated to a group, isn't able to login into the system!";
+$_ARRAYLANG['TXT_GROUP_SETTINGS_TEXT'] = "Choose the groups to which a new registered user should belong to.<br /><br />Hint: A user, who isn\'t associated to a group, isn\'t able to login into the system!";
 $_ARRAYLANG['TXT_AVAILABLE_GROUPS'] = "Available Groups";
 $_ARRAYLANG['TXT_SELECT_ALL'] = "Select all";
 $_ARRAYLANG['TXT_DELETE_MARK'] = "Delete mark";

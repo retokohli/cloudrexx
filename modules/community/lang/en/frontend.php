@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 01 Oct 2007 11:30:31 +0200
+* generated date Wed, 03 Oct 2007 11:37:35 +0200
 **/
 
 $_ARRAYLANG['TXT_LOGIN_NAME'] = "Login username";
@@ -20,7 +20,7 @@ $_ARRAYLANG['TXT_INVALID_PASSWORD'] = "Password is invalid (min. 6 chars).";
 $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Please fill out all required fields.";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database query error!";
 $_ARRAYLANG['TXT_CONFIRM_REGISTRATION'] = "You need to confirm your registration at %HOST%";
-$_ARRAYLANG['TXT_CONFIRM_REGISTRATION_MAIL'] = "Hello %USERNAME%\r\n\r\nThank you for registering at %HOST%. Your account has been created and must be activated before you can use it.\r\nTo activate the account you have to click on the following link or copy-paste it in your browser :\r\n\r\n%ACTIVATION_LINK%\r\n\r\nAfter activation you may login to %HOST_LINK% using the following username and password:\r\n\r\nUsername - %USERNAME%\r\n";
+$_ARRAYLANG['TXT_CONFIRM_REGISTRATION_MAIL'] = "Hello %USERNAME%\\n\\nThank you for registering at %HOST%. Your account has been created and must be activated before you can use it.\\nTo activate the account you have to click on the following link or copy-paste it in your browser :\\n\\n%ACTIVATION_LINK%\\n\\nAfter activation you may login to %HOST_LINK% using the following username and password:\\n\\nUsername - %USERNAME%\\nPasswort - %PASSWORD%";
 $_ARRAYLANG['TXT_EMAIL_ALREADY_USED'] = "This e-mail address is already used by another user!";
 $_ARRAYLANG['TXT_USERNAME_ALREADY_USED'] = "This username is already used!";
 $_ARRAYLANG['TXT_ACCOUNT_SUCCESSFULLY_ACTIVATED'] = "Congratulation! Your user account has been successfully activated.";
@@ -29,8 +29,8 @@ $_ARRAYLANG['TXT_ACCOUNT_ACTIVATION_NOT_POSSIBLE'] = "Registration error: Accoun
 $_ARRAYLANG['TXT_USER_ACCOUNT_SUCCESSFULLY_CREATED'] = "Your user account has been successfully created.";
 $_ARRAYLANG['TXT_ACTIVATION_BY_USER_MSG'] = "You will receive a confirmation mail soon. You have then to activate your user account%TIMEOUT% by using the indicated link.";
 $_ARRAYLANG['TXT_ACTIVATION_BY_SYSTEM'] = "You will receive a confirmation mail, as soon as your user account was activated at %HOST%.";
-$_ARRAYLANG['TXT_COULD_NOT_SEND_EMAIL'] = "Couldn't send a confirmation mail!<br />Please contact the administrator %EMAIL% for further information.";
-$_ARRAYLANG['TXT_COULD_NOT_SEND_ACTIVATION_MAIL'] = "Registration error: couldn't send a confirmation mail";
+$_ARRAYLANG['TXT_COULD_NOT_SEND_EMAIL'] = "Couldn\'t send a confirmation mail!<br />Please contact the administrator %EMAIL% for further information.";
+$_ARRAYLANG['TXT_COULD_NOT_SEND_ACTIVATION_MAIL'] = "Registration error: couldn\'t send a confirmation mail";
 $_ARRAYLANG['TXT_ACTIVATION_TIME_EXPIRED'] = "This user account cannot be activated no more because the activation period ran off.";
 $_ARRAYLANG['TXT_REGISTER_NEW_ACCOUNT'] = "Click here to start a new registration";
 $_ARRAYLANG['TXT_ACTIVATION_TIMEOUT'] = " within %TIMEOUT%";

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 01 Oct 2007 11:30:31 +0200
+* generated date Wed, 03 Oct 2007 11:37:35 +0200
 **/
 
 $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "De næste terminer:";
