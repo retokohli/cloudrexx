@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 01 Oct 2007 11:30:31 +0200
+* generated date Wed, 03 Oct 2007 11:37:35 +0200
 **/
 
 $_ARRAYLANG['TXT_SUBSCRIBER_LIST'] = "Subscriber list";
@@ -360,7 +360,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_MAIL_AUTH_FAILED'] = "Die Authentifizierung beim E-M
 $_ARRAYLANG['TXT_NEWSLETTER_FROM_ADDR_REJECTED'] = "Die Absender Adresse %s wurde von Mailserver abgelehnt!";
 $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_FAILED'] = "Die E-Mail Adresse %s ist ungültig!";
 $_ARRAYLANG['TXT_NEWSLETTER_DELETE_EMAIL_ADDRESS'] = "E-Mail Adresse löschen";
-$_ARRAYLANG['TXT_NEWSLETTER_LOCAL_SMTP_FAILED'] = "The e-mail couldn’t be sent through the SMTP-service of this server!";
+$_ARRAYLANG['TXT_NEWSLETTER_LOCAL_SMTP_FAILED'] = "The e-mail couldn't be sent through the SMTP-service of this server!";
 $_ARRAYLANG['TXT_STATE_OF_SUBSCRIBED_USER'] = "Zustand ausgetragener Empfänger";
 $_ARRAYLANG['TXT_NEWSLETTER_CONNECT_SMTP_FAILED'] = "Unable To Connect To Mail Server!";
 $_ARRAYLANG['TXT_NEWSLETTER_EXPORT_ALL_LISTS'] = "Export All Lists Into Excel";

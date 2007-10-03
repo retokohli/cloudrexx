@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 01 Oct 2007 11:30:31 +0200
+* generated date Wed, 03 Oct 2007 11:37:35 +0200
 **/
 
 $_ARRAYLANG['TXT_LOGIN_NAME'] = "Login brugernavn";
@@ -20,7 +20,7 @@ $_ARRAYLANG['TXT_INVALID_PASSWORD'] = "Kodeordet er ikke gyldig (min. 6 tegn).";
 $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Udfyld venligst alle nødvendige felter.";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database fejl!";
 $_ARRAYLANG['TXT_CONFIRM_REGISTRATION'] = "Sie müssen Ihre Registration bei %HOST% bestätigen";
-$_ARRAYLANG['TXT_CONFIRM_REGISTRATION_MAIL'] = "Hallo %USERNAME%\r\n\r\nVielen Dank für Ihre Anmeldung bei %HOST%. Ihr Konto wurde erstellt und muss noch aktiviert werden, bevor Sie es benützen können.\r\nUm es zu aktivieren können Sie auf den folgenden Link klicken, oder kopieren Sie den Link und fügen Sie Ihn in Ihrem Browser ein :\r\n\r\n%ACTIVATION_LINK%\r\n\r\nNach der Aktivierung können Sie sich auf %HOST_LINK% mit dem folgenden Benutzernamen und Passwort einloggen:\r\n\r\nBenutzername - %USERNAME%\r\nPasswort - %PASSWORD%\r\n";
+$_ARRAYLANG['TXT_CONFIRM_REGISTRATION_MAIL'] = "Hello %USERNAME%\\n\\nThank you for registering at %HOST%. Your account has been created and must be activated before you can use it.\\nTo activate the account you have to click on the following link or copy-paste it in your browser :\\n\\n%ACTIVATION_LINK%\\n\\nAfter activation you may login to %HOST_LINK% using the following username and password:\\n\\nUsername - %USERNAME%\\nPasswort - %PASSWORD%";
 $_ARRAYLANG['TXT_EMAIL_ALREADY_USED'] = "Diese E-mail Adresse wird bereits von einem anderen Benutzer benutzt!";
 $_ARRAYLANG['TXT_USERNAME_ALREADY_USED'] = "Dieser Benutzername wird bereits verwendet!";
 $_ARRAYLANG['TXT_ACCOUNT_SUCCESSFULLY_ACTIVATED'] = "Glückwunsch! Ihr Benutzerkonto wurde erfolgreich aktiviert.";
