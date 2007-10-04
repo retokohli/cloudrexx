@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Wed, 03 Oct 2007 11:37:35 +0200
+* generated date Thu, 04 Oct 2007 13:41:45 +0200
 **/
 
 $_ARRAYLANG['TXT_WHOIS'] = "Whois";
