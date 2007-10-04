@@ -966,7 +966,7 @@ class Installer
 			} else {
 				$arrDirectories = explode('/', $_SERVER['SCRIPT_NAME']);
 				for ($i = 0;$i < count($arrDirectories)-2;$i++) {
-					if (!empty($arrDirectories[$i])) {
+					if ($arrDirectories[$i] !== '') {
 						$offsetPath .= '/'.$arrDirectories[$i];
 					}
 				}
@@ -978,11 +978,11 @@ class Installer
 				$documentRoot = $_SESSION['installer']['config']['documentRoot'];
 			} else {
 				$scriptPath = str_replace('\\', '/', __FILE__);
-				if (preg_match("/(.*)(\/[\d\D]*){2}$/", $scriptPath, $arrMatches) == 1) {
+				if (preg_match("/(.*)(?:\/[\d\D]*){2}$/", $scriptPath, $arrMatches) == 1) {
 					$scriptPath = $arrMatches[1];
 				}
 
-				if (preg_match("=(.*)".$offsetPath."=", $scriptPath, $arrMatches) == 1) {
+				if (preg_match("#(.*)".preg_replace(array('#\\\#', '#\^#', '#\$#', '#\.#', '#\[#', '#\]#', '#\|#', '#\(#', '#\)#', '#\?#', '#\*#', '#\+#', '#\{#', '#\}#'), '\\\\$0', $offsetPath)."#", $scriptPath, $arrMatches) == 1) {
 					$documentRoot = $arrMatches[1];
 				}
 				$_SESSION['installer']['config']['documentRoot'] = $documentRoot;
