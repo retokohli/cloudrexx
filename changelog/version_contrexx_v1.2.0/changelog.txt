@@ -140,6 +140,7 @@ Allgemein
 - Die HTML-Struktur beim Navigationstyp "Nested Navigation" wird korrekt
   ausgegeben.
 - Mit dem Safari kann auf geschützte Bereiche zugegriffen werden.
+- Funktion "Passwort vergessen" sendet nur noch einmal das E-Mail.
 
 Alias Verwaltung
 - Die Paging Navigation bei der Alias Übersicht wird angezeigt.
@@ -148,11 +149,14 @@ Kontakte Manager
 - Der CSV-Export funktioniert nun mit unlimitierter erfasster Anzahl Einträge.
 - Der Form Text wird nun auch versteckt, wenn das Formular beim Feedback nicht
   mehr angezeigt werden soll.
+- Die Namen der Formularfelder werden in der E-Mail Nachricht korrekt
+  dargestellt. 
 
 Layout & Design Verwaltung
 - Nachdem Erstellen eines neuen Layouts wird entweder das neu erstellte Layout
   ausgewählt in der Übersicht angezeigt, oder wenn die Erstellung fehl schlug,
   wieder der Dialog zum Erstellen eines neuen Layouts angezeigt.
+- JavaScript Fehler beim Löschen eines Designs behoben.
 
 Media Manager/Bilderverwaltung
 - Die Bilderbearbeitung speichert die Bilder nun wieder korrekt
@@ -162,6 +166,8 @@ News Manager
 - Eine News Meldung kann nur erstellt werden, sofern zuvor mindestens eine
   Kategorie erfasst wurde.
 - Die Ausgabe des Teaser Textes einer News Meldung ist nun XHTML konform.
+- Bei der Auflistung der Newsmeldungen einer ausgewählten Kategorie funktioniert
+  das Paging.
 
 Update System
 - Das Update der Bildergalerie funktioniert auch wenn der MySQL Mode
@@ -189,6 +195,9 @@ Modul: News-Syndication
 
 Modul: Newsletter
 - Zuweisung der Anrede bei einem Empfänger.
+- Das automatische Löschen von Empfängern funktioniert, wenn die Option
+  "Gelöscht" bei der System Konfiguration "Zustand ausgetragener Empfänger"
+  gewählt wurde.
 
 Modul: Online Desk
 - Reservierungen vom Januar bis September werden im Kalender angezeigt.
