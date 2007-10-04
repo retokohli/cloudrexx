@@ -1228,7 +1228,7 @@ class CommonFunctions
 				$strHeader .= "* Do not try to edit it manually!\n";
 				$strHeader .= "*/\n\n";
 
-				$strFooter .= "?>";
+				$strFooter = "?>";
 
 			//Get module-names
 				$objResult = $objDb->Execute("SELECT id, name FROM `".$_SESSION['installer']['config']['dbTablePrefix']."modules`");
