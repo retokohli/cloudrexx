@@ -265,7 +265,7 @@ class Product
     ) {
         // Warn / debug
         if (!intval($catId)) {
-            echo("WARNING: Product::__construct(): called with illegal category ID<br />");
+            return false;
         }
 
         // Assign & check
@@ -1076,10 +1076,8 @@ class Product
     function delete($flagDeleteImages=false)
     {
         global $objDatabase;
-//echo("Debug: Product::delete(): INFO: entered, ID $this->id<br />");
 
         if (!$this->id) {
-//echo("Product::delete(): Error: This Product is missing the Product ID<br />");
             return false;
         }
 
@@ -1088,11 +1086,9 @@ class Product
             // split picture data into single pictures
             $arrPictures = split(':', $this->pictures);
             foreach ($arrPictures as $strPicture) {
-//echo("Debug: Product::delete(): strPicture: '$strPicture'<br />");
                 if ($strPicture != '') {
                     // split picture into name, width, height
                     $arrPicture = explode('?', $strPicture);
-//echo("Debug: Product::delete(): picture: '".$arrPicture[0]."'<br />");
 
                     // verify that no other Product uses the same picture
                     $query = "SELECT picture FROM ".DBPREFIX."module_shop_products WHERE picture LIKE '%".$arrPicture[0]."%'";
@@ -1113,22 +1109,16 @@ class Product
                         preg_match('/(.+)(\.\w+)$/', $strFileName, $fileArr);
                         $pictureName = $fileArr[1].$fileArr[2];
                         $thumbName = $pictureName.'.thumb';
-//echo("Debug: Product::delete(): pictureName $pictureName, thumbName $thumbName<br />");
-//echo("Debug: Product::delete(): split filename: ");var_export($fileArr);echo("<br />thumbname: $thumbName<br />");
                         if (!@unlink(ASCMS_PATH."$thumbName"  )) { // ".ASCMS_SHOP_IMAGES_PATH."/
-//echo("Product::delete(): Warning: Failed to delete the thumbnail file '".ASCMS_PATH."$thumbName'<br />");
                             // should continue despite the warning - maybe the super user
                             // has just "rm -rf *"ed the picture for us. ;)
                             //return true;
                         }
-//echo("Debug: Product::delete(): deleted thumbnail '".ASCMS_PATH."$thumbName'<br />");
                         if (!@unlink(ASCMS_PATH."$pictureName")) {
-//echo("Product::delete(): Warning: Failed to delete the picture file '".ASCMS_PATH."$pictureName'<br />");
                             // should continue despite the warning - maybe the super user
                             // has just "rm -rf *"ed the picture for us. ;)
                             //return true;
                         }
-//echo("Debug: Product::delete(): deleted picture '".ASCMS_PATH."$pictureName'<br />");
                     }
                 }
             }
@@ -1139,7 +1129,6 @@ class Product
              WHERE product_id=$this->id
         ");
         if (!$objResult) {
-//echo("Product::delete(): Error: Failed to delete the Product Attributes from the database<br />");
             return false;
         }
         $objResult = $objDatabase->Execute("
@@ -1147,10 +1136,8 @@ class Product
              WHERE id=$this->id
         ");
         if (!$objResult) {
-//echo("Product::delete(): Error: Failed to delete the Product from the database<br />");
             return false;
         }
-//echo("Product::delete(): INFO: Deleted Product ID $this->id from the database.<br />");
         return true;
     }
 
@@ -1172,14 +1159,11 @@ class Product
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("Product::recordExists(): query error<br />");
             return false;
         }
         if ($objResult->RecordCount() == 1) {
-//echo("Product::recordExists(): ID $this->id: Yes<br />");
             return true;
         }
-//echo("Product::recordExists(): ID $this->id: No<br />");
         return false;
     }
 
@@ -1208,16 +1192,13 @@ class Product
             }
         }
         // Store ProductAttributes, if any
-//echo("Product::store(): INFO: Product ID $this->id: Attribute values: ");var_export($this->arrProductAttributeValue);echo("<br />");
         if (is_array($this->arrProductAttributeValue)) {
             foreach ($this->arrProductAttributeValue as $arrValue) {
-//echo("Product::store(): INFO: Adding Attribute value ID ".$arrValue['valueId']." to Product ID ".$this->getId().", order ".$arrValue['order']."<br />");
                 if (!ProductAttributes::addValueToProduct(
                     $arrValue['valueId'],
                     $this->id,
                     $arrValue['order']
                 )) {
-//echo("Product::store(): ERROR: Adding Attribute value ID ".$arrValue['valueId']." to Product ID ".$this->getId().", order ".$arrValue['order']." failed!<br />");
                     return false;
                 }
             }
@@ -1274,7 +1255,6 @@ class Product
         if (!$objResult) {
             return false;
         }
-//echo("Product::update(): done<br />");
         return true;
     }
 
@@ -1330,7 +1310,6 @@ class Product
 //                thumbnail_percent, thumbnail_quality,
 //                $this->thumbnailPercent, $this->thumbnailQuality,
         $objResult = $objDatabase->Execute($query);
-//echo("Debug: Product::insert(): query: $query<br />result: '$objResult'<br />");
         if (!$objResult) {
             return false;
         }
@@ -1358,15 +1337,11 @@ class Product
         global $objDatabase;
 
         $query = "SELECT * FROM ".DBPREFIX."module_shop_products WHERE id=$id";
-//echo("Product::getById($id): query: $query<br />");
         $objResult = $objDatabase->Execute($query);
-//echo("Product::getById($id): objResult: '$objResult'<br />");
         if (!$objResult) {
-//echo("Product::getById($id): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
             return false;
         }
         if ($objResult->RecordCount() != 1) {
-//echo("Product::getById($id): query result miscount: ".$objResult->RecordCount()."<br />");
             return false;
         }
         // constructor also read ProductAttributes if ID > 0
@@ -1461,17 +1436,5 @@ class Product
         return true;
     }
 }
-
-/*
-// TEST
-$objProduct = new Product('xyz', 1, 'test', '', 1.00, 1, 1, 1);
-$objProduct->setFlags('FLAG');
-$objProduct->store();
-//var_export($objProduct);echo("<br />");
-$id = $objProduct->getId();
-Product::getById($id);
-//var_export($objProduct);echo("<br />");
-die();
-*/
 
 ?>

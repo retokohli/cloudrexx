@@ -275,12 +275,6 @@ class ProductAttribute
             'order'   => $order,
             'id'      => $id,          // changed by insertValue()
         );
-/*
-        // insert into database, and update ID
-        return ProductAttribute::_insertValue(
-            $this->arrValue[end(array_keys($this->arrValue))], $this->id
-        );
-*/
     }
 
 
@@ -299,10 +293,6 @@ class ProductAttribute
         $this->arrValue[$index]['order']  = $order;
         // insert into database, and update ID
         $this->_updateValue($this->arrValue[$index]);
-        if (!$this->arrValue[$index]['id'] > 0) {
-// heavy debug
-die("ERROR: value id not set after update/insert<br />");
-        }
     }
 
 
@@ -488,7 +478,6 @@ die("ERROR: value id not set after update/insert<br />");
             if (!$this->_insertValue($value)) {
                 return false;
             }
-//echo("debug: ProductAttribute::insert(): value_id ".$value['id']." (must be != 0)<br />");
         }
         return true;
     }
@@ -520,7 +509,6 @@ die("ERROR: value id not set after update/insert<br />");
             return false;
         }
         $arrValue['id'] = $objDatabase->Insert_ID();
-//echo("ProductAttribute::_insertValue(): inserted, got ID {$arrValue['id']}<br />");
         return true;
     }
 
@@ -736,7 +724,6 @@ die("ERROR: value id not set after update/insert<br />");
                 ON value.name_id = name.id
           ORDER BY nameTxt ASC, valueTxt ASC
         ";
-//unused  value.name_id AS valueNameId,
 
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
@@ -778,8 +765,6 @@ die("ERROR: value id not set after update/insert<br />");
             $arrProductAttribute[$nameId]['order'] = intval($order);
             $objResult->MoveNext();
         }
-//var_export($arrProductAttribute);//die();
-
         return $arrProductAttribute;
     }
 
@@ -799,7 +784,6 @@ die("ERROR: value id not set after update/insert<br />");
      */
     function _storeNewAttributeOption()
     {
-//echo("WARNING: obsolete static method ProductAttribute::_storeNewAttributeOption() called<br />");
         global $objDatabase;
 
         //$statusMessage = "";
@@ -953,47 +937,5 @@ die("ERROR: value id not set after update/insert<br />");
     }
 
 }
-
-/*
-$objProductAttribute = new ProductAttribute('Grösse', 0);
-$objProductAttribute->addValue('S', 9.95, '-');
-$objProductAttribute->addValue('M', 0.00, '+');
-$objProductAttribute->addValue('L', 9.95, '+');
-//echo("new PA:<br />".$objProductAttribute->toString());
-
-//echo("id: ".$objProductAttribute->getId()."<br />");
-$objProductAttribute->setName('Neuer Name');
-//echo("changed name: ".$objProductAttribute->getName()."<br />");
-$objProductAttribute->setType(1);
-//echo("changed type: ".$objProductAttribute->getType()."<br />");
-
-$objProductAttribute->store();
-//echo("stored:<br />".$objProductAttribute->toString());
-die();
-$arrValues = $objProductAttribute->getValueArray();
-//echo("value array: ");var_export($arrValues);echo("<br />");
-// OK to here
-
-// todo from here
-updateValue($valueId, $value, $price, $prefix)
-deleteValueById($id)
-_deleteValueById($id)
-delete()
-update()
-_updateValue($value)
-insert()
-_insertValue(&$value, $nameId)
-getByNameId($nameId, $arrProductAttributeValueId='')
-getByValueId($valueId)
-getNameIdByValueId($valueId)
-getAttributeArray()
-getAttributeDisplayTypeMenu($attributeId, $displayTypeId='0')
-getAttributeInputBoxes($attributeId, $name, $content, $maxlength, $style='')
-getAttributePricePrefixMenu($attributeId, $name, $pricePrefix)
-getAttributeValueMenu($attributeId, $name, $selectedId, $onchange, $style)
-// todo: getAttributeJSVars()
-// and more...
-*/
-
 
 ?>

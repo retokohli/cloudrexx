@@ -4,7 +4,7 @@
  * Discount
  *
  * Optional calculation of discounts in the Shop.
- * Note: This is a custom version for eiselin-sport.ch
+ * Note: This is to be customized for individual online shops.
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
  * @author      Reto Kohli <reto.kohli@astalavista.ch>
  * @access      public
@@ -15,7 +15,7 @@
 
 /*
 
--- alterations to customer table
+-- Possible alterations to customer table
 
 ALTER TABLE `contrexx_module_shop_customers` ADD `discount` VARCHAR( 10 ) NOT NULL ,
 ADD `percent` FLOAT( 3, 2 ) NOT NULL DEFAULT '0',
@@ -25,18 +25,18 @@ ADD `picturename` VARCHAR( 255 ) NOT NULL ,
 ADD `homepage` VARCHAR( 255 ) NOT NULL ;
 
 
--- alterations to products table
+-- Possible alterations to products table
 
 ALTER TABLE `contrexx_module_shop_products` ADD `discount` VARCHAR( 10 ) NOT NULL ;
 
 
--- alterations to order table
+-- Possible alterations to order table
 
 ALTER TABLE `contrexx_module_shop_orders`
 CHANGE `order_status` `order_status` TINYINT(2) UNSIGNED NOT NULL DEFAULT '0';
 
 
--- new discount table
+-- Possible new discount table
 
 CREATE TABLE `contrexx_module_shop_discounts` (
 `code` VARCHAR( 10 ) NOT NULL ,
@@ -159,7 +159,6 @@ class Discount
             $this->newTotalOrderAmount * 3 / 100,
             2, '.', ''
         );
-//echo("Discount::__construct($customerId, $orderAmount): INFO: totalOrderAmount=$this->totalOrderAmount, newTotalOrderAmount=$this->newTotalOrderAmount,<br /> discountAmount=$this->discountAmount, newDiscountAmount=$this->newDiscountAmount<br />");
     }
 
 
@@ -194,10 +193,8 @@ class Discount
                 AND order_status=".SHOP_ORDER_STATUS_COMPLETED."
                  OR order_status=".SHOP_ORDER_STATUS_PAID
         ;
-//echo("Discount::_totalOrderAmount(): INFO: Query: $query<br />");
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("Discount::_totalOrderAmount(): ERROR: Query failed: $query<br />");
             return false;
         }
         $orderTotal = 0;
