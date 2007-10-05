@@ -101,8 +101,6 @@ class Products
                         WHERE $fieldName LIKE '%".
                         addslashes($pattern)."%'";
         	    }
-        	} else {
-//echo("Product::getWildcardQuery(): WARNING: Unknown field name '$fieldName' ignored!<br />");
         	}
         }
         return $query;
@@ -124,11 +122,8 @@ class Products
         global $objDatabase;
 
         $query = $this->getWildcardQuery($arrPattern);
-//echo("Product::getByWildcard($id): query: $query<br />");
         $objResult = $objDatabase->Execute($query);
-//echo("Product::getByWildcard($id): objResult: '$objResult'<br />");
         if (!$objResult) {
-//echo("Product::getByWildcard($id): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
             return false;
         }
         $arrProduct = array();
@@ -283,23 +278,18 @@ class Products
     //static
     function deleteByShopCategory($catId, $flagDeleteImages=false)
     {
-//echo("Debug: Product::deleteByShopCategory(): catId $catId<br />");
         $arrProductId = Products::getIdArrayByShopCategory($catId);
-//echo("Debug: Product::deleteByShopCategory(): catId: $catId, arrProducts: ");var_export($arrProductId);echo("<br />");
         if (!is_array($arrProductId)) {
             return false;
         }
         foreach ($arrProductId as $productId) {
             $objProduct = Product::getById($productId);
             if (!$objProduct) {
-//echo("Product::deleteByShopCategory(): Error: Failed to get Product with ID $productId!<br />");
                 return false;
             }
             if (!$objProduct->delete($flagDeleteImages)) {
-//echo("Product::deleteByShopCategory(): Error: Failed to delete Product with ID $productId<br />");
                 return false;
             }
-//echo("Debug: Product::deleteByShopCategory(): Deleted ");var_export($objProduct);echo("<br />");
         }
         return true;
     }
@@ -458,10 +448,12 @@ class Products
      * @return  string                  Empty string on success, a string
      *                                  with error messages otherwise.
      * @global  mixed       $objDatabase    Database object
+     * @global  array       $_ARRAYLANG     Language array
      */
     function makeThumbnailsById($arrId)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
+
         require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
 
         if (!is_array($arrId)) {
@@ -478,13 +470,13 @@ class Products
         foreach ($arrId as $id) {
             if ($id <= 0) {
                 $strError .= ($strError ? '<br />' : '').
-                    "Ungültige Produkt ID '$id'!";
+                    sprintf($_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'], $id);
                 continue;
             }
             $objProduct = Product::getById($id);
             if (!$objProduct) {
                 $strError .= ($strError ? '<br />' : '').
-                    "Ungültige Produkt ID '$id' - Konnte Produkt nicht finden!";
+                    sprintf($_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'], $id);
                 continue;
             }
             $imageName = $objProduct->getPictures();
@@ -494,7 +486,10 @@ class Products
             if (   $imageName == ''
                 || !preg_match('/\.(?:jpg|jpeg|gif|png)$/', $imageName)) {
                 $strError .= ($strError ? '<br />' : '').
-                    "Nicht unterstütztes Bildformat: '$imageName' (Produkt ID $id)!";
+                    sprintf(
+                        $_ARRAYLANG['TXT_SHOP_UNSUPPORTED_IMAGE_FORMAT'],
+                        $imageName, $id
+                    );
                 continue;
             }
             // if the picture is missing, skip it.
@@ -531,7 +526,6 @@ class Products
             // The database needs to be updated, however, as all Products
             // have been imported.
             if ($thumbResult) {
-//echo("makeProductThumbnailsById(): got image size: $width/$height<br />");
                 $shopPicture =
                     base64_encode($imageName).
                     '?'.base64_encode($width).
@@ -546,63 +540,55 @@ class Products
         if (count($arrMissingProductPicture)) {
             ksort($arrMissingProductPicture);
             $strError .= ($strError ? '<br />' : '').
-                "Fehlende Bilder (Produkt ID - Bildname): ".
+                $_ARRAYLANG['TXT_SHOP_MISSING_PRODUCT_IMAGES'].' '.
                 join(', ', array_keys($arrMissingProductPicture));
         }
         if (count($arrFailedCreatingThumb)) {
             sort($arrFailedCreatingThumb);
             $strError .= ($strError ? '<br />' : '').
-                "Fehler beim erzeugen des Thumbnails bei Produkt ID: ".
+                $_ARRAYLANG['TXT_SHOP_ERROR_CREATING_PRODUCT_THUMBNAIL'].' '.
                 join(', ', $arrFailedCreatingThumb);
         }
         return $strError;
     }
 
 
-// eiselin
     /**
-     * Change the flags of all Products and their parent Artikel ShopCategories
-     * with the same product_id.
+     * Apply the flags of all Products to the virtual ShopCategories
      *
-     * The imported data contains several instances of the same Product.
-     * By design of the import, identical Products have the same
-     * product_id.  This allows us to identify them and change the flags of
-     * all identical Products in one go.
-     * Also note that their immediate parent ShopCategories (aka "Artikel")
-     * are identical as well, and *MUST* contain the same Products (originating
-     * from the same "Detail" entries in the imported XML file).  They carry
-     * the same flags and *MUST* be updated along with all of the contained
-     * Products.
-     * Thus, all Products within the same "Artikel" ShopCategory carry the
-     * same flags as the containing ShopCategory itself.
-     * @param   integer     $productId  The custom Product ID
+     * Any Product and ShopCategory carrying one or more of the names
+     * of any ShopCategory marked as "__VIRTUAL__" is cloned and added
+     * to that category.  Those having any such flags removed are deleted
+     * from the respective category.  Identical copies of the same Products
+     * are recognized by their "product_id" (the Product code).
+     *
+     * Note that in this current version, only the flags of Products are
+     * tested and applied.  Products are cloned and added together with
+     * their immediate parent ShopCategories (aka "Article").
+     *
+     * Thus, all Products within the same "Article" ShopCategory carry the
+     * same flags, as does the containing ShopCategory itself.
+     * @param   integer     $customId   The Product code (*NOT* the ID)
      * @param   string      $strFlags   The new flags for the Product
      */
-    function changeFlagsByProductCode($customId, $strNewFlags)
+    function changeFlagsByProductCode($productCode, $strNewFlags)
     {
         // Get all available flags.  These are represented by the names
         // of virtual root ShopCategories.
-        $arrVirtual = ShopCategories::getVirtualCategoryNameArray();
+        $arrVirtual = ShopCategories::getVirtualCategoryIdNameArray();
         // The array contains the names as well as the IDs of the groups.
         // Create a new array with the names only.
         $arrGroup = array();
         foreach ($arrVirtual as $arr) {
         	$arrGroup[] = $arr['name'];
         }
-//var_export($arrGroup);die();
 
         // Get the affected identical Products
-        $arrProduct = Products::getByCustomId($customId);
+        $arrProduct = Products::getByCustomId($productCode);
         if (!is_array($arrProduct)) {
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): ERROR: Could not get Products by Code $customId!<br />");
             // No way we can do anything useful without them.
             return false;
         }
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Got Products: ");
-foreach ($arrProduct as $objProduct) {
-    echo("'".$objProduct->getName()."', ");
-}
-//echo("<br />");
 
         // Get the Product flags.  As they're all the same, we'll use the
         // first one here.
@@ -610,7 +596,6 @@ foreach ($arrProduct as $objProduct) {
         // Its database entry will be updated along the way, however.
         $_objProduct = $arrProduct[0];
         $strOldFlags = $_objProduct->getFlags();
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Old flags: $strOldFlags.<br />");
         // Flag indicating whether the Artikel has been cloned already
         // for all new flags set.
         $flagCloned = false;
@@ -618,14 +603,11 @@ foreach ($arrProduct as $objProduct) {
         // Now apply the changes to all those identical Products, their parent
         // ShopCategories, and all sibling Products within them.
         foreach ($arrProduct as $objProduct) {
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Processing Product ID ".$objProduct->getId().".<br />");
             // Get the containing "Artikel" ShopCategory.
         	$catId = $objProduct->getShopCategoryId();
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Product is in ShopCategory $catId.<br />");
             $objArtikelCategory = ShopCategory::getById($catId);
             if (!$objArtikelCategory) {
                 // This should not happen!
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): ERROR: Artikel ShopCategory got missing!<br />");
                 continue;
             }
 
@@ -634,46 +616,33 @@ foreach ($arrProduct as $objProduct) {
                 ShopCategory::getById($objArtikelCategory->getParentId());
             if (!$objSubGroupCategory) {
                 // This should not happen!
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): ERROR: Subgroup ShopCategory got missing!<br />");
                 continue;
             }
             $subgroupName = $objSubGroupCategory->getName();
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Got subgroup ShopCategory ID ".$objSubGroupCategory->getId().", name '$subgroupName'.<br />");
 
             // Get grandparent (group, root ShopCategory)
             $objRootCategory =
                 ShopCategory::getById($objSubGroupCategory->getParentId());
             if (!$objRootCategory) {
                 // This should not happen!
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): ERROR: Root ShopCategory got missing!<br />");
                 continue;
             }
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Got root/group ShopCategory ID ".$objRootCategory->getId().".<br />");
 
             // Apply the new flags to all Products and Artikel ShopCategories.
             // Update the flags of the original "Artikel" ShopCategory first
             $objArtikelCategory->setFlags($strNewFlags);
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Set flags '$strNewFlags' to Artikel ShopCategory -> ".$objArtikelCategory->getFlags()."<br />");
             $objArtikelCategory->store();
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Updated Artikel ShopCategory ID $catId.<br />");
 
             // Get all sibling Products affected by the same flags
             $arrSiblingProducts = Products::getByShopCategory(
                 $objArtikelCategory->getId()
             );
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Got all siblings: ");
-foreach ($arrSiblingProducts as $objProduct) {
-    echo("'".$objProduct->getName()."', ");
-}
-//echo("<br />");
 
             // Set the new flag set for all Products within the Artikel
             // ShopCategory.
             foreach ($arrSiblingProducts as $objProduct) {
                 $objProduct->setFlags($strNewFlags);
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Set flags '$strNewFlags' to Product ID ".$objProduct->getId()."-> ".$objProduct->getFlags()."<br />");
                 $objProduct->store();
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Updated Product ID ".$objProduct->getId()."<br />");
             }
 
             // Check whether this group is affected by the changes.
@@ -681,26 +650,21 @@ foreach ($arrSiblingProducts as $objProduct) {
             // may have to be removed.
             $strFlag = $objRootCategory->getName();
             if (preg_match("/$strFlag/", $strNewFlags)) {
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Flag '$strFlag' still in new Flags $strNewFlags. Skipped.<br />");
                 // The flag is still there, don't bother.
                 continue;
             }
 
             // Also check whether this is a virtual root ShopCategory.
             if (in_array($strFlag, $arrGroup)) {
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Root ShopCategory name matches flag '$strFlag'.<br />");
                 // It is one of the virtual roots, and the flag is missing.
                 // So the The Artikel has to be removed from this group.
                 $objArtikelCategory->delete();
                 $objArtikelCategory = false;
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Deleted Artikel ShopCategory ID $catId.<br />");
                 // And if the subgroup happens to contain no more
                 // "Artikel", delete it as well.
                 $arrChildren = $objSubGroupCategory->getChildrenIdArray();
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Subgroup ShopCategory ID ".$objSubGroupCategory->getId()." contains ".count($arrChildren)." Artikel ShopCategories.<br />");
                 if (count($arrChildren) == 0) {
                     $objSubGroupCategory->delete();
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Subgroup ShopCategory deleted as well.<br />");
                 }
                 continue;
             }
@@ -718,16 +682,13 @@ foreach ($arrSiblingProducts as $objProduct) {
             foreach ($arrGroup as $strFlag) {
                 if (!preg_match("/$strFlag/", $strNewFlags)) {
                     // That flag is not present in the new flag set.
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Flag $strFlag is not present in the new flag set $strNewFlags.<br />");
                     continue;
                 }
                 if (preg_match("/$strFlag/", $strOldFlags)) {
                     // But it has been before.  The respective branch has
                     // been truncated above already.
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Flag $strFlag is present in the old flag set $strOldFlags.<br />");
                     continue;
                 }
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Flag $strFlag is new.<br />");
 
                 // That is a new flag for which we have to clone the Artikel.
                 // Get the affected grandparent (group, root ShopCategory)
@@ -735,22 +696,18 @@ foreach ($arrSiblingProducts as $objProduct) {
                     ShopCategories::getChildNamed(0, $strFlag, false);
                 if (!$objTargetRootCategory) {
                     // This should not happen!
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): ERROR: Root ShopCategory got missing!<br />");
                     continue;
                 }
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Got root/group ShopCategory ID ".$objRootCategory->getId().".<br />");
                 // Check whether the subgroup exists already
                 $objTargetSubGroupCategory =
                     ShopCategories::getChildNamed(
                         $objTargetRootCategory->getId(), $subgroupName, false
                     );
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Got subgroup ShopCategory ID ".$objSubGroupCategory->getId().".<br />");
                 if (!$objTargetSubGroupCategory) {
                     // Nope, add the subgroup.
                     $objSubGroupCategory->makeClone();
                     $objSubGroupCategory->setParentId($objTargetRootCategory->getId());
                     $objSubGroupCategory->store();
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Cloned missing subgroup ShopCategory named $subgroupName.<br />");
                     $objTargetSubGroupCategory = $objSubGroupCategory;
                 }
 
@@ -763,7 +720,6 @@ foreach ($arrSiblingProducts as $objProduct) {
                     );
                 if ($objTargetArtikelCategory) {
                     // The Artikel Category already exists.
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Artikel ShopCategory exists in subgroup already<br />");
                 } else {
                     // Nope, clone the "Artikel" ShopCategory and add it to the
                     // subgroup.  Note that the flags have been set already
@@ -773,11 +729,8 @@ foreach ($arrSiblingProducts as $objProduct) {
                     // unchanged. That's why the flags have already been
                     // changed right at the beginning of the process.
                     $objArtikelCategory->makeClone(true, true);
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Cloned Artikel ShopCategory ID $catId -> ".$objArtikelCategory->getId().".<br />");
                     $objArtikelCategory->setParentId($objTargetSubGroupCategory->getId());
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Changed ShopCategory parent ID ".$objArtikelCategory->getParentId().".<br />");
                     $objArtikelCategory->store();
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Updated Artikel ShopCategory ID ".$objArtikelCategory->getId().".<br />");
                     $objTargetArtikelCategory = $objArtikelCategory;
                 }
             } // foreach $arrGroup
@@ -786,105 +739,5 @@ foreach ($arrSiblingProducts as $objProduct) {
         return true;
     }
 }
-
-/*
-            // Find flags that have been removed in the new flag set
-            foreach ($arrVirtual as $arrName) {
-                $strFlag = trim($arrName['name']);
-                if ($strFlag == '') {
-                    continue;
-                }
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Processing flag '$strFlag'.<br />");
-
-                // Make sure the Artikel ShopCategory is still valid
-                if (!$objArtikelCategory) {
-                    continue;
-                }
-                // The parent of the "Artikel" ShopCategory (subgroup) may also
-                // be repeated in one or more of the "virtual" root
-                // ShopCategories.
-                // We have to test whether this one is contained by one of
-                // those, and remove it.
-
-                // Now if the name of the root ShopCategory is the same as
-                // the flag just removed above, this "Artikel" along with
-                // all contained Products will vanish.
-                if ($objRootCategory->getName() == $strFlag) {
-                } else {
-                    // The "Artikel" ShopCategory is still here.
-                    // Update its flags.
-                    $objArtikelCategory->removeFlag($strFlag);
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Removed flag '$strFlag' from Artikel ShopCategory -> ".$objArtikelCategory->getFlags()."<br />");
-                    $objArtikelCategory->store();
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Updated Artikel ShopCategory $catId.<br />");
-                    // Also update the Products
-                    foreach ($arrSiblingProducts as $objProduct) {
-                    	$objProduct->removeFlag($strFlag);
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Removed flag '$strFlag' from Product -> ".$objProduct->getFlags()."<br />");
-                    	$objProduct->store();
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Updated contained Products in Artikel ShopCategory $catId.<br />");
-                    }
-                }
-            }
-        } // $arrProducts
-
-        // We're not so sure now about which Prodcuts and ShopCategories are
-        // still alive.  Thus, all the data is refreshed and changes applied
-        // to the survivors of the first part only.
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Adding flags now.<br />");
-
-        // Get the affected identical Products
-        $arrProduct = Products::getByCustomId($customId);
-        if (!is_array($arrProduct)) {
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): ERROR: Could not get Products by Code $customId!<br />");
-            // No way we can do anything useful without them.
-            return false;
-        }
-
-        // Now apply the changes to all their sibling Products and their parent
-        // ShopCategories.
-        foreach ($arrProduct as $objProduct) {
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Processing Product ID ".$objProduct->getId().".<br />");
-            // Get the containing "Artikel" ShopCategory.
-        	$catId = $objProduct->getShopCategoryId();
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Product is in ShopCategory $catId.<br />");
-            $objArtikelCategory = ShopCategory::getById($catId);
-
-            // Find flags that have been added
-            foreach (split(' ', $strNewFlags) as $strFlag) {
-                $strFlag = trim($strFlag);
-                if ($strFlag == '') {
-                    continue;
-                }
-                // Note that we use the reference Product here.
-                if ($_objProduct->testFlag($strFlag)) {
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Reference Product is already present in group '$strFlag'.<br />");
-                    // Already present. Next flag.
-                    continue;
-                }
-
-                // Otherwise, we have to add the flag to this Product,
-                // its siblings and parent, and add one clone of each,
-                // maybe even the subgroup, to that root ShopCategory.
-
-                // We'll get along by getting the parent subgroup ShopCategory
-                // name, and try to find that in the affected root.
-                $objSubGroupCategory =
-                    ShopCategory::getById($objArtikelCategory->getParentId());
-//echo("Products::changeFlagsByProductCode($customId, $strNewFlags): INFO: Got subgroup ShopCategory ID ".$objSubGroupCategory->getId().".<br />");
-                $subgroupName = $objSubGroupCategory->getName();
-*/
-
-/*
-// TEST
-$objProduct = new Product('xyz', 1, 'test', '', 1.00, 1, 1, 1);
-$objProduct->setFlags('FLAG');
-$objProduct->store();
-//var_export($objProduct);echo("<br />");
-$id = $objProduct->getId();
-Product::getById($id);
-//var_export($objProduct);echo("<br />");
-die();
-*/
 
 ?>

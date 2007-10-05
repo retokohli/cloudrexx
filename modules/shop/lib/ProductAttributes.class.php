@@ -278,11 +278,9 @@ class ProductAttributes  // friend Product
     function addValueToProduct($valueId, $productId, $order=0)
     {
         global $objDatabase;
-//echo("ProductAttributes::addValueToProduct(valueId=$valueId, productId=$productId, order=$order): INFO: Entered.<br />");
 
         $nameId = ProductAttribute::getNameIdByValueId($valueId);
         if ($nameId <= 0) {
-//echo("ProductAttributes::addValueToProduct(valueId=$valueId, productId=$productId, order=$order): ERROR: Illegal value ID $valueId!<br />");
             return false;
         }
 
@@ -302,7 +300,6 @@ class ProductAttributes  // friend Product
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("ProductAttribute::addValueToProduct(valueId=$valueId, productId=$productId, order=$order): ERROR: Query failed!<br />$query<br />");
             return false;
         }
         return true;
@@ -451,28 +448,6 @@ class ProductAttributes  // friend Product
         }
         return $menu;
     }
-/*
-    function getAttributePricePrefixMenu($attributeId, $name, $pricePrefix='+')
-    {
-        $select = true;
-        $menu = '';
-        foreach (ProductAttribute::getByNameId($attributeId) as $objProductAttribute) {
-
-            $menu .= "<select style='width:50px;display:".
-                ($select ? 'inline' : 'none').
-                ";' name='{$name}[$attributeId]' id='{$name}[$attributeId]' size='1'>\n".
-                "<option value='+' ".
-                ($select && $pricePrefix != '-' ? "selected='selected'" : '').
-                ">+</option>\n".
-                "<option value='-' ".
-                ($select && $pricePrefix == '-' ? "selected='selected'" : '').
-                ">-</option>\n".
-                "</select>\n";
-            $select = false;
-        }
-        return $menu;
-    }
-*/
 
 
     /**
@@ -509,13 +484,14 @@ class ProductAttributes  // friend Product
                 $arrValue['prefix'].$arrValue['price'].
                 " $this->defaultCurrency)</option>\n";
         }
-        $menu .= '</select>';
-        $menu .= "<br /><a href='javascript:{}' ".
-            "id='attributeValueMenuLink[$attributeId]' style='display:none;' ".
-            "onclick='removeSelectedValues($attributeId)' ".
-            "title='Ausgewählten Wert entfernen' ".
-            "alt='Ausgewählten Wert entfernen'>".
-            "Ausgewählten Wert entfernen</a>";
+        $menu .=
+            '</select>'.
+            '<br /><a href="javascript:{}" '.
+            'id="attributeValueMenuLink[$attributeId]" style="display:none;" '.
+            'onclick="removeSelectedValues($attributeId)" '.
+            'title="'.$_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'].'" '.
+            'alt="'.$_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'].'">'.
+            $_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'].'</a>';
         return $menu;
     }
 
@@ -536,7 +512,6 @@ class ProductAttributes  // friend Product
             $arrValue = current($arrValues['values']);
             $jsVars .= "attributeValueId[$attributeId] = ".$arrValue['id'].";\n";
         }
-//echo("jsVars:<br />$jsVars<br />");
         return $jsVars;
     }
 

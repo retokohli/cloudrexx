@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class Shop manager
  *
@@ -15,32 +16,64 @@
 /**
  * @ignore
  */
-require_once ASCMS_MODULE_PATH . '/shop/shopLib.class.php';
-require_once ASCMS_MODULE_PATH . '/shop/lib/shop_image.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/shopLib.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/shop_image.class.php';
 require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
-require_once ASCMS_MODULE_PATH . '/shop/lib/Currency.class.php';
-require_once ASCMS_MODULE_PATH . '/shop/lib/Exchange.class.php';
-require_once ASCMS_MODULE_PATH . '/shop/lib/Settings.class.php';
-require_once ASCMS_MODULE_PATH . '/shop/lib/Payment.class.php';
-require_once ASCMS_MODULE_PATH . '/shop/lib/Shipment.class.php';
-require_once ASCMS_MODULE_PATH . '/shop/payments/saferpay/Saferpay.class.php';
-require_once ASCMS_MODULE_PATH . '/shop/lib/CSVimport.class.php';
-require_once ASCMS_MODULE_PATH . '/shop/lib/Csv_bv.class.php';
-/**
- * Value Added Tax (VAT)
- */
-require_once ASCMS_MODULE_PATH . '/shop/lib/Vat.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/Exchange.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/Payment.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/Shipment.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/payments/saferpay/Saferpay.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/CSVimport.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/Csv_bv.class.php';
 /**
  * Weight
  */
-require_once ASCMS_MODULE_PATH . '/shop/lib/Weight.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/Weight.class.php';
 /**
- * Distribution
+ * Value Added Tax (VAT) database layer
  */
-require_once ASCMS_MODULE_PATH . '/shop/lib/Distribution.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/Vat.class.php';
+/**
+ * Distribution database layer
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/Distribution.class.php';
+/**
+ * Customer database layer
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/Customers.class.php';
+/**
+ * Customers helper object
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/Customers.class.php';
+/**
+ * ProductAttribute database layer
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/ProductAttribute.class.php';
+/**
+ * ProductAttributes helper class
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/ProductAttributes.class.php';
+/**
+ * ShopCategory database layer
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategory.class.php';
+/**
+ * ShopCategories helper class
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategories.class.php';
+/**
+ * Product database layer
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
+/**
+ * Products helper class
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/Products.class.php';
 
 /**
- * Administration of the shop
+ * Administration of the Shop
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
@@ -52,80 +85,78 @@ require_once ASCMS_MODULE_PATH . '/shop/lib/Distribution.class.php';
 class shopmanager extends ShopLibrary {
     var $_objTpl;
     var $strErrMessage = '';
-    var $strOkMessage = '';
+    var $strOkMessage  = '';
     var $pageTitle;
-    var $noPictureName         = "no_picture.gif";
+    var $noPictureName         = 'no_picture.gif';
+    var $_defaultImage         = '';
+    var $thumbnailNameSuffix   = '.thumb';
     var $categoryTreeName      = array();
     var $categoryTreeSorting   = array();
     var $categoryTreeStatus    = array();
-    var $thumbnailNameSuffix   = ".thumb";
     var $shopImagePath;
     var $shopImageWebPath;
     var $langId;
     var $arrProductText = array();
-    var $_defaultImage = '';
 
     // ProductAttributes
     var $defaultAttributeOption = 0;
     var $arrAttributes = array();
-    var $defaultCurrency = "";
+    var $defaultCurrency = '';
     var $highestIndex = 0;
 
     /**
-     * Array of all Products attributes
-     * @access public
-     * @var array
+     * Array of all Product Attributes
+     * @access  public
+     * @var     array
      */
     var $arrProductAttributes = array();
-    // end ProductAttributes
 
     /**
      * Currency object
-     * @access public
-     * @var object Currency
+     * @access  public
+     * @var     Currency
      */
     var $objCurrency;
 
     /**
      * Exchange object
-     * @access public
-     * @var    object    Exchange
+     * @access  public
+     * @var     Exchange
      */
     var $objExchange;
 
     /**
      * Settings object
-     * @access public
-     * @var object [$objSettings] settings object
+     * @access  public
+     * @var     Settings
      */
     var $objSettings;
 
     /**
-     * Object of the payment offerer
-     * @access private
-     * @var array
-     * @see Payment.class.php
+     * Payment object
+     * @access  private
+     * @var     Payment
      */
     var $objPayment;
 
     /**
      * Shipment object
-     * @access public
-     * @var array
+     * @access  public
+     * @var     Shipment
      */
     var $objShipment;
 
     /**
      * Distribution object
      * @access  public
-     * @var     array
+     * @var     Disctribution
      */
     var $objDistribution;
 
     /**
      * Order Status
-     * @access public
-     * @var    array    OrderStatus
+     * @access  public
+     * @var     array
      */
     var $arrOrderStatus = array();
 
@@ -134,14 +165,27 @@ class shopmanager extends ShopLibrary {
     /**
      * VAT object
      * @access  private
-     * @var     mixed   VAT object
+     * @var     Vat
      */
     var $objVat;
 
+    /**
+     * ShopCategories helper object
+     * @access  public
+     * @var     ShopCategories
+     */
+    var $objShopCategories;
 
-    // must be coordinated with the astalavista_module_shop_payment database table!
+
     // BUGGY SOLUTION!
-    var $paymentHandlers = array('Saferpay', 'Paypal', 'PostFinance_DebitDirect', 'Internal', 'Internal_CreditCard');
+    // Must be in sync with the *_module_shop_payment database table!
+    var $paymentHandlers = array(
+        'Saferpay',
+        'Paypal',
+        'PostFinance_DebitDirect',
+        'Internal',
+        'Internal_CreditCard'
+    );
 
 
     /**
@@ -182,8 +226,8 @@ class shopmanager extends ShopLibrary {
         $this->langId=$objInit->userFrontendLangId;
 
         // both include ASCMS_PATH_OFFSET!
-        $this->shopImagePath = ASCMS_SHOP_IMAGES_PATH . '/';
-        $this->shopImageWebPath = ASCMS_SHOP_IMAGES_WEB_PATH . '/';
+        $this->shopImagePath = ASCMS_SHOP_IMAGES_PATH.'/';
+        $this->shopImageWebPath = ASCMS_SHOP_IMAGES_WEB_PATH.'/';
 
         $this->_defaultImage = $this->shopImageWebPath.$this->noPictureName;
 
@@ -202,6 +246,7 @@ class shopmanager extends ShopLibrary {
         );
 
 
+        // TODO: Must be made static for PHP5
         $this->arrOrderStatus = array(
             SHOP_ORDER_STATUS_PENDING   => $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_PENDING'],     // Pending
             SHOP_ORDER_STATUS_CONFIRMED => $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_CONFIRMED'],   // Confirmed
@@ -217,49 +262,49 @@ class shopmanager extends ShopLibrary {
         // added return value. If empty, no error occurred
         $success = $this->objSettings->storeSettings();
         if ($success) {
-            $this->strOkMessage .= $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+            $this->addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
         } elseif (($success === false)) {
-            $this->strErrMessage .= $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
-        } else {
-            // $success may also be '', in which case no setting has been changed.
+            $this->addError($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
         }
+        // $success may also be '', in which case no setting has been changed.
 
         // Currency object
-        //$this->_initCurrencies();
         $this->objCurrency = new Currency();
-        // $this->aCurrencyUnitName = $this->objCurrency->getActiveCurrencySymbol();
 
         // Exchange object
         $this->objExchange = new Exchange();
 
         // Payment object
-        // see Payment.class.php
         $this->objPayment = new Payment();
 
         // Shipment object
-        // see Shipment.class.php
         $this->objShipment = new Shipment(1);
 
         $this->objCSVimport = new CSVimport();
 
-        // initialize array of all countries
         $this->_initCountries();
-
         $this->_initConfiguration();
-        // replaced by Shipment.class!
-        //$this->_initShipment();
         $this->_initPayment();
 
         // VAT object
-        // Used in many places, thus it's instantiated right away
+        // Used in many places, thus it's instantiated right away.
         // NOTE: There is one such object in the Settings class as well, which
-        // is used for deleting, updating and adding. After this process, it is outdated,
-        // therefore we create a new one here, AFTER setting up the Settings object!
-        $this->objVat = new Vat();
+        // is used for deleting, updating and adding. After this process,
+        // it is outdated.  Therefore we create a new one here,
+        // AFTER setting up the Settings object!
+        $this->objVat = &new Vat();
 
         // Distribution object
         // Knows all the distribution types, and creates the menu.
-        $this->objDistribution = new Distribution();
+        $this->objDistribution = &new Distribution();
+
+        // Products object
+        // The helper for every task related to Products.
+        $this->objProducts = &new Products();
+
+        // ShopCategories object
+        // The helper for every task related to ShopCategories.
+        $this->objShopCategories = &new ShopCategories();
     }
 
 
@@ -271,122 +316,122 @@ class shopmanager extends ShopLibrary {
         global $objTemplate, $_ARRAYLANG;
 
         if (isset($_SESSION['shop']['strOkMessage'])) {
-            $this->strOkMessage = $_SESSION['shop']['strOkMessage'];
+            $this->addMessage($_SESSION['shop']['strOkMessage']);
             unset($_SESSION['shop']['strOkMessage']);
         }
 
         if (!isset($_GET['act'])) {
-            $_GET['act']="";
+            $_GET['act'] = '';
         }
         switch ($_GET['act']) {
-            case "settings":
+            case 'settings':
                 $this->_showSettings();
                 break;
-            case "exchange":
+            case 'exchange':
                 $this->showExchange();
                 break;
-            case "cat":
+            case 'cat':
                 $this->showCategories();
                 break;
-            case "newcat":
+            case 'newcat':
                 $this->addModCategory();
                 $this->showCategories();
                 break;
-            case "modAllCategories":
+            case 'modAllCategories':
                 $this->modAllCategories();
                 $this->showCategories();
                 break;
-            case "delProduct":
+            case 'delProduct':
                 $this->pageTitle = $_ARRAYLANG['TXT_PRODUCT_CATALOG'];
                 $this->delProduct();
                 $this->_products();
                 break;
-            case "delcat":
+            case 'delcat':
                 $this->delCategory();
                 $this->showCategories();
                 break;
-            case "edit":
+            case 'edit':
                 $this->pageTitle = $_ARRAYLANG['TXT_CATEGORIES'];
                 $this->modModules();
                 $this->showModules();
                 break;
-            case "products":
+            case 'products':
                 $this->_products();
                 break;
-            case "orders":
+            case 'orders':
                 $this->shopShowOrders();
                 break;
-            case "orderdetails":
+            case 'orderdetails':
                 $this->pageTitle = $_ARRAYLANG['TXT_ORDER_DETAILS'];
-                $this->shopShowOrderdetails("module_shop_order_details.html",0);
+                $this->shopShowOrderdetails('module_shop_order_details.html',0);
                 break;
-            case "editorder":
+            case 'editorder':
                 if (isset($_REQUEST['shopSaveOrderChanges'])) {
                     $this->pageTitle = $_ARRAYLANG['TXT_ORDER_DETAILS'];
                     $this->shopStoreOrderdetails();
-                    $this->shopShowOrderdetails("module_shop_order_details.html",0);
+                    $this->shopShowOrderdetails('module_shop_order_details.html',0);
                 } else {
                     $this->pageTitle = $_ARRAYLANG['TXT_EDIT_ORDER'];
-                    $this->shopShowOrderdetails("module_shop_order_edit.html",1);
+                    $this->shopShowOrderdetails('module_shop_order_edit.html',1);
                 }
                 break;
-            case "delorder":
+            case 'delorder':
                 $this->shopDeleteOrder();
                 $this->shopShowOrders();
                 break;
-            case "customers":
+            case 'customers':
                 $this->pageTitle = $_ARRAYLANG['TXT_CUSTOMERS_PARTNERS'];
                 $this->shopShowCustomers();
                 break;
-            case "customerdetails":
+            case 'customerdetails':
                 $this->pageTitle = $_ARRAYLANG['TXT_CUSTOMER_DETAILS'];
                 $this->shopShowCustomerDetails();
                 break;
-            case "neweditcustomer":
+            case 'neweditcustomer':
                 $this->shopNewEditCustomer();
                 break;
-            case "delcustomer":
+            case 'delcustomer':
                 $this->pageTitle = $_ARRAYLANG['TXT_CUSTOMERS_PARTNERS'];
                 $this->shopDeleteCustomer();
                 $this->shopShowCustomers();
                 break;
-            case "statistics":
+            case 'statistics':
                 $this->pageTitle = $_ARRAYLANG['TXT_STATISTIC'];
                 $this->shopOrderStatistics();
                 break;
-            case "pricelist":
+            case 'pricelist':
                 $this->pageTitle = $_ARRAYLANG['TXT_PDF_OVERVIEW'];
                 $this->shopPricelistOverview();
                 break;
-            case "pricelist_new":
+            case 'pricelist_new':
                 $this->pageTitle = $_ARRAYLANG['TXT_MAKE_NEW_PRICELIST'];
                 $this->shopPricelistNew();
                 break;
-            case "pricelist_insert":
+            case 'pricelist_insert':
                 $this->pageTitle = $_ARRAYLANG['TXT_PDF_OVERVIEW'];
                 $this->shopPricelistInsert();
                 $this->shopPricelistOverview();
                 break;
-            case "pricelist_edit":
+            case 'pricelist_edit':
                 $this->pageTitle = $_ARRAYLANG['TXT_PDF_OVERVIEW'];
                 $pricelistID = intval($_GET['id']);
                 $this->shopPricelistEdit($pricelistID);
                 break;
-            case "pricelist_update":
+            case 'pricelist_update':
                 $this->pageTitle = $_ARRAYLANG['TXT_PDF_OVERVIEW'];
                 $pricelistID = intval($_GET['id']);
                 $this->shopPriceListUpdate($pricelistID);
                 $this->shopPricelistOverview();
                 break;
-            case "pricelist_delete":
+            case 'pricelist_delete':
                 $this->pageTitle = $_ARRAYLANG['TXT_PDF_OVERVIEW'];
                 $this->shopPricelistDelete();
                 $this->shopPricelistOverview();
                 break;
-            case "import":
+            case 'import':
                 $this->_import();
                 break;
-            case "manufacturer":
+            case 'manufacturer':
                 $this->_manufacturer();
                 break;
             default:
@@ -427,9 +472,9 @@ class shopmanager extends ShopLibrary {
                 ";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) {
-                    $this->strOkMessage  = $_ARRAYLANG['TXT_SHOP_MANUFACTURER_INSERT_SUCCESS'];
+                    $this->addMessage($_ARRAYLANG['TXT_SHOP_MANUFACTURER_INSERT_SUCCESS']);
                 } else {
-                    $this->strErrMessage = $_ARRAYLANG['TXT_SHOP_MANUFACTURER_INSERT_FAILED'];
+                    $this->addError($_ARRAYLANG['TXT_SHOP_MANUFACTURER_INSERT_FAILED']);
                 }
             }
 
@@ -442,9 +487,9 @@ class shopmanager extends ShopLibrary {
                 ";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) {
-                    $this->strOkMessage  = $_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_SUCCESS'];
+                    $this->addMessage($_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_SUCCESS']);
                 } else {
-                    $this->strErrMessage = $_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_FAILED'];
+                    $this->addError($_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_FAILED']);
                 }
             }
 
@@ -455,9 +500,9 @@ class shopmanager extends ShopLibrary {
                 ";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) {
-                    $this->strOkMessage  = $_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_SUCCESS'];
+                    $this->addMessage($_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_SUCCESS']);
                 } else {
-                    $this->strErrMessage = $_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED'];
+                    $this->addError($_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED']);
                 }
             }
 
@@ -468,9 +513,9 @@ class shopmanager extends ShopLibrary {
                          WHERE id=".intval($selectedId);
                     $objResult = $objDatabase->Execute($query);
                     if ($objResult) {
-                        $this->strOkMessage  = $_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_SUCCESS'];
+                        $this->addMessage($_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_SUCCESS']);
                     } else {
-                        $this->strErrMessage = $_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED'];
+                        $this->addError($_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED']);
                     }
                 }
             }
@@ -487,7 +532,6 @@ class shopmanager extends ShopLibrary {
             $this->errorHandling();
         }
 
-        $arrSelectedCountries = array();
         while (!$objResult->EOF) {
             $this->_objTpl->setVariable(array(
                 'VALUE_ID'      => $objResult->fields['id'],
@@ -551,6 +595,7 @@ class shopmanager extends ShopLibrary {
 
     /**
      * Import and Export data from/to csv
+     * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
      */
     function _import()
     {
@@ -567,10 +612,10 @@ class shopmanager extends ShopLibrary {
         // Delete template
         if (isset($_REQUEST["deleteImg"]) && $_REQUEST["deleteImg"] == 'exe') {
             $query = "DELETE FROM ".DBPREFIX."module_shop_importimg WHERE img_id=".$_REQUEST["img"]."";
-            if (($objResult = $objDatabase->Execute($query)) !== false) {
-                $this->strOkMessage = $_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_DELETED'];
+            if ($objDatabase->Execute($query) !== false) {
+                $this->addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_DELETED']);
             } else {
-                $this->strErrMessage = $_ARRAYLANG['TXT_SHOP_IMPORT_ERROR_DELETE'];
+                $this->addError($_ARRAYLANG['TXT_SHOP_IMPORT_ERROR_DELETE']);
             }
             unset($this->objCSVimport->arrImportImg);
             $this->objCSVimport->InitArray();
@@ -581,10 +626,10 @@ class shopmanager extends ShopLibrary {
             $query = "INSERT INTO ".DBPREFIX."module_shop_importimg (img_name, img_cats, img_fields_file, img_fields_db) ".
                 "VALUES ('".$_REQUEST['ImgName']."', '".$_REQUEST['category']."', '".
                 $_REQUEST['pairs_left_keys']."', '".$_REQUEST['pairs_right_keys']."')";
-            if (($objResult = $objDatabase->Execute($query)) !== false) {
-                $this->strOkMessage = $_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_SAVED'];
+            if ($objDatabase->Execute($query)) {
+                $this->addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_SAVED']);
             } else {
-                $this->strErrMessage = $_ARRAYLANG['TXT_SHOP_IMPORT_ERROR_SAVE'];
+                $this->addError($_ARRAYLANG['TXT_SHOP_IMPORT_ERROR_SAVE']);
             }
             unset($this->objCSVimport->arrImportImg);
             $this->objCSVimport->InitArray();
@@ -605,22 +650,22 @@ class shopmanager extends ShopLibrary {
                 $objDatabase->Execute($query);
             }
             $objCsv = new Csv_bv($_FILES["importFileCategories"]["tmp_name"]);
-            $ImportedLines = 0;
+            $importedLines = 0;
             $line = $objCsv->NextLine();
             while ($line) {
                 // the first entry is considered to be a root category!
-                // if it doesn't exist, it's created by GetCatID().
+                // if it doesn't exist, it's created by getCategoryId().
                 $parentCatId = 0;
                 foreach ($line as $catName) {
-                    $parentCatId = $this->objCSVimport->GetCatID(
+                    $parentCatId = $this->objCSVimport->getCategoryId(
                         $catName,
                         $parentCatId
                     );
                 }
-                ++$ImportedLines;
+                ++$importedLines;
                 $line = $objCsv->NextLine();
             }
-            $this->strOkMessage .= $_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_IMPORTED_CATEGORIES'].': '.$ImportedLines;
+            $this->addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_IMPORTED_CATEGORIES'].': '.$importedLines);
         }
 
         // Import
@@ -636,7 +681,7 @@ class shopmanager extends ShopLibrary {
                 $objDatabase->Execute($query);
             }
 
-            $FileContent = $this->objCSVimport->GetFileContent();
+            $strFileContent = $this->objCSVimport->GetFileContent();
 
             $query = '
                 SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db
@@ -644,105 +689,102 @@ class shopmanager extends ShopLibrary {
                  WHERE img_id='.$_REQUEST["ImportImage"];
             $objResult = $objDatabase->Execute($query);
 
-            $Categories = split(';', $objResult->fields['img_cats']);
-            $FirstLine = $FileContent[0];
-            $KategorieReihe = array();
-            for ($x=0; $x < count($Categories); $x++) {
-                if ($Categories[$x] != '') {
-                    while ($SpaltenName = current($FirstLine)) {
-                        if ($SpaltenName == $Categories[$x]) {
-                            array_push($KategorieReihe, key($FirstLine));
+            $arrCategoryName = split(';', $objResult->fields['img_cats']);
+            $strFirstLine = $strFileContent[0];
+            $arrCategoryColumnIndex = array();
+            for ($x=0; $x < count($arrCategoryName); $x++) {
+                if ($arrCategoryName[$x] != '') {
+                    foreach ($strFirstLine as $index => $strColumnName) {
+                        if ($strColumnName == $arrCategoryName[$x]) {
+                            array_push($arrCategoryColumnIndex, $index);
                         }
-                        next($FirstLine);
                     }
-                    reset($FirstLine);
                 }
             }
 
-            $TmplFields = split(';', $objResult->fields['img_fields_file']);
-            $DBfieldsTmpl = array();
-            for ($x=0; $x < count($TmplFields); $x++) {
-                if ($TmplFields[$x]!='') {
-                    while ($SpaltenName = current($FirstLine)) {
-                        if ($SpaltenName == $TmplFields[$x]) {
-                            array_push($DBfieldsTmpl, key($FirstLine));
+            $arrTemplateFieldName =
+                split(';', $objResult->fields['img_fields_file']);
+            $arrDatabaseFieldIndex = array();
+            for ($x=0; $x < count($arrTemplateFieldName); $x++) {
+                if ($arrTemplateFieldName[$x] != '') {
+                    foreach ($strFirstLine as $index => $strColumnName) {
+                        if ($strColumnName == $arrTemplateFieldName[$x]) {
+                            array_push($arrDatabaseFieldIndex, $index);
                         }
-                        next($FirstLine);
                     }
-                    reset($FirstLine);
                 }
             }
 
-            $ProdFields = split(';', $objResult->fields['img_fields_db']);
-            $FieldsDBArray = array();
-            for ($x=0; $x < count($ProdFields); $x++) {
-                if ($ProdFields[$x]!='') {
-                    $DBname = $this->objCSVimport->DBfieldsName($ProdFields[$x]);
-                    if (!isset($FieldsDBArray[$DBname])) {
-                        $FieldsDBArray[$DBname] = $x;
+            $arrProductFieldName = split(';', $objResult->fields['img_fields_db']);
+            $arrProductDatabaseFieldName = array();
+            for ($x=0; $x < count($arrProductFieldName); $x++) {
+                if ($arrProductFieldName[$x] != '') {
+                    $DBname = $this->objCSVimport->DBfieldsName($arrProductFieldName[$x]);
+                    if (empty($arrProductDatabaseFieldName[$DBname])) {
+                        $arrProductDatabaseFieldName[$DBname] = $x;
                     } else {
-                        $FieldsDBArray[$DBname] .= ';'.$x;
+                        $arrProductDatabaseFieldName[$DBname] .= ';'.$x;
                     }
                 }
             }
 
             $sql_query = array();
-            for ($x=1; $x < count($FileContent); $x++) {
-                if (is_array($FileContent[$x])) {
-                    $SpaltenNamen = '(';
-                    $SpaltenValues = '(';
+            for ($x=1; $x < count($strFileContent); $x++) {
+                if (is_array($strFileContent[$x])) {
+                    $strColumnNames = '(';
+                    $strColumnValues = '(';
                     $Komma = '';
-                    $Counter = 0;
-                    foreach ($FieldsDBArray as $key => $value) {
-                        if ($Counter>0) {
+                    $counter = 0;
+                    foreach ($arrProductDatabaseFieldName as $index => $strFieldName) {
+                        if ($counter>0) {
                             $Komma = ',';
                         }
-                        $SpaltenNamen .= $Komma.$key;
-                        if (strpos($value, ';')) {
-                            $Prod2line = split(';', $value);
+                        $strColumnNames .= $Komma.$index;
+                        if (strpos($strFieldName, ';')) {
+                            $Prod2line = split(';', $strFieldName);
                             $SpaltenValuesTmp = '';
                             for ($z=0; $z < count($Prod2line); $z++) {
                                 if ($Prod2line[$z]!='') {
-                                    $SpaltenValuesTmp .= $FileContent[$x][$DBfieldsTmpl[$Prod2line[$z]]]."<br />";
+                                    $SpaltenValuesTmp .= $strFileContent[$x][$arrDatabaseFieldIndex[$Prod2line[$z]]]."<br />";
                                 }
                             }
-                            if ($SpaltenValues!='') {
-                                $SpaltenValues .= $Komma.'"'.addslashes($SpaltenValuesTmp).'"';
+                            if ($strColumnValues) {
+                                $strColumnValues .= $Komma.'"'.addslashes($SpaltenValuesTmp).'"';
                             }
                         } else {
-                            $SpaltenValues .= $Komma.'"'.addslashes($FileContent[$x][$DBfieldsTmpl[$value]]).'"';
+                            $strColumnValues .= $Komma.'"'.addslashes($strFileContent[$x][$arrDatabaseFieldIndex[$strFieldName]]).'"';
                         }
-                        $Counter++;
+                        $counter++;
                     }
-                    $CatID = 0;
-                    for ($cat=0; $cat < count($KategorieReihe); $cat++) {
-                        $CatName = $FileContent[$x][$KategorieReihe[$cat]];
-                        if ($CatName != '') {
-                            $CatID = $this->objCSVimport->GetCatID($CatName, $CatID);
+                    $catId = 0;
+                    for ($cat=0; $cat < count($arrCategoryColumnIndex); $cat++) {
+                        $catName = $strFileContent[$x][$arrCategoryColumnIndex[$cat]];
+                        if ($catName != '') {
+                            $catId = $this->objCSVimport->getCategoryId($catName, $catId);
                         } else {
-                            $CatID = $this->objCSVimport->GetFirstCat();
+                            $catId = $this->objCSVimport->GetFirstCat();
                         }
                     }
-                    if ($CatID == 0) {
-                        $CatID = $CatID = $this->objCSVimport->GetFirstCat();
+                    if ($catId == 0) {
+                        $catId = $catId = $this->objCSVimport->GetFirstCat();
                     }
-                    $SpaltenNamen .= ', catid)';
-                    $SpaltenValues .= ', '.$CatID.')';
-                    array_push($sql_query, "INSERT INTO ".DBPREFIX."module_shop_products ".$SpaltenNamen." values".$SpaltenValues);
+                    $strColumnNames .= ', catid)';
+                    $strColumnValues .= ", $catId)";
+                    array_push($sql_query, "INSERT INTO ".DBPREFIX."module_shop_products ".$strColumnNames." values".$strColumnValues);
                 }
             }
-            $ImportedLines  = 0;
-            $ErrorLines     = 0;
-            // array of IDs of newly inserted records
+            $importedLines  = 0;
+            $errorLines     = 0;
+            // Array of IDs of newly inserted records
             $arrId = array();
             for ($x=0; $x < count($sql_query); $x++) {
                 if ($sql_query[$x] != '') {
                     $objResult = $objDatabase->Execute($sql_query[$x]);
                     if ($objResult) {
                         $arrId[] = $objDatabase->Insert_ID();
-                        $ImportedLines++;
+                        $importedLines++;
                     } else {
-                        $ErrorLines++;
+                        $errorLines++;
                     }
                 }
             }
@@ -750,8 +792,10 @@ class shopmanager extends ShopLibrary {
             // Fix picture field and create thumbnails
             $this->makeProductThumbnailsById($arrId);
 
-            $this->strOkMessage     .= $_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_IMPORTED_PRODUCTS'].': '.$ImportedLines;
-            $this->strErrMessage    .= $_ARRAYLANG['TXT_SHOP_IMPORT_NOT_SUCCESSFULLY_IMPORTED_PRODUCTS'].': '.$ErrorLines;
+            $this->addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_IMPORTED_PRODUCTS'].': '.$importedLines);
+            if ($errorLines) {
+                $this->addError($_ARRAYLANG['TXT_SHOP_IMPORT_NOT_SUCCESSFULLY_IMPORTED_PRODUCTS'].': '.$errorLines);
+            }
         } // end import
 
         if (isset($_REQUEST["mode"]) && $_REQUEST["mode"] == "ImportImg") {
@@ -958,7 +1002,7 @@ class shopmanager extends ShopLibrary {
                 echo($fileContent);
                 exit();
             } else {
-                $this->strErrMessage = $_ARRAYLANG['TXT_SHOP_EXPORT_ERROR'];
+                $this->addError($_ARRAYLANG['TXT_SHOP_EXPORT_ERROR']);
                 $this->strOkMessage  = '';
             }
         } else {
@@ -1063,88 +1107,6 @@ class shopmanager extends ShopLibrary {
 
 
     /**
-     * Create thumbnails and update corresponding Product records
-     *
-     * Scans all Products with their IDs listed in the array.  If a non-empty
-     * picture string is encountered, tries to load the file of the same name
-     * and to create a thumbnail.  If it succeeds, it also updates the
-     * original records' picture field with the fixed entry.
-     * Note that only single file names are supported!
-     * Also note that this method only returns false upon encountering
-     * a database error.  It silently skips records which contain no or
-     * invalid image names, thumbnails that cannot be created, and records
-     * which refuse to be updated!
-     * The reasoning behind this is that this method is currently only called
-     * from within the {@link _import()} method.  The focus lies on importing
-     * Products; whether or not thumbnails can be created is secondary, as the
-     * process can be repeated if there is a problem.
-     * @param   array   $arrId  Array of Product IDs
-     * @return  boolean         True on success, false otherwise.
-     *                          Note that everything except an illegal
-     *                          argument (a non-array) is considered a
-     *                          success!
-     * @todo    Implement a simple and elegant way to notify the user when
-     *          errors occur while creating the thumbnails
-     */
-    function makeProductThumbnailsById($arrId)
-    {
-        global $objDatabase;
-        require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
-
-        if (!is_array($arrId)) {
-            return false;
-        }
-        $objImageManager = new ImageManager();
-        foreach ($arrId as $Id) {
-            $shopPicture = '';
-            $query = "
-                SELECT picture
-                FROM ".DBPREFIX."module_shop_products
-                WHERE id=$Id
-            ";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-                continue;
-            }
-            $imageName = $objResult->fields['picture'];
-            // only try to create thumbs from entries that contain a
-            // plain text file name (i.e. from an import)
-            if (   $imageName == ''
-                || !preg_match('/\.(?:jpg|jpeg|gif|png)$/', $imageName)) {
-                continue;
-            }
-            // delete old thumb - now integrated into _createThumbWhq()
-            //unlink($this->shopImagePath.$imageName.$this->thumbnailNameSuffix);
-            // reset the ImageManager
-            $objImageManager->imageCheck = 1;
-            // create thumbnail
-            if ($objImageManager->_createThumbWhq(
-                $this->shopImagePath,
-                $this->shopImageWebPath,
-                $imageName,
-                $_CONFIG['shop_thumbnail_max_width'],
-                $_CONFIG['shop_thumbnail_max_height'],
-                $_CONFIG['shop_thumbnail_quality']
-            )) {
-                $width  = $objImageManager->orgImageWidth;
-                $height = $objImageManager->orgImageHeight;
-                $shopPicture =
-                    base64_encode($imageName).
-                    '?'.base64_encode($width).
-                    '?'.base64_encode($height).'::';
-                $query = "
-                    UPDATE ".DBPREFIX."module_shop_products
-                    SET picture='$shopPicture'
-                    WHERE id=$Id
-                ";
-                $objResult = $objDatabase->Execute($query);
-            }
-        }
-        return true;
-    }
-
-
-    /**
      * Show product attributes page
      *
      * Show the settings for the attributes of the products
@@ -1155,14 +1117,11 @@ class shopmanager extends ShopLibrary {
         global $_ARRAYLANG;
 
         $arrCurrency = array();
-
         $this->pageTitle = $_ARRAYLANG['TXT_PRODUCT_CHARACTERISTICS'];
         $this->_objTpl->addBlockfile('SHOP_PRODUCTS_FILE', 'shop_products_block', 'module_shop_product_attributes.html');
-
         $arrCurrency = $this->objCurrency->getCurrencyArray();
         $this->defaultCurrency = $arrCurrency[$this->objCurrency->defaultCurrencyId]['symbol'];
-
-        $this->strErrMessage = $this->_showAttributeOptions();
+        $this->addError($this->_showAttributeOptions());
     }
 
 
@@ -1181,8 +1140,7 @@ class shopmanager extends ShopLibrary {
         /*
         $arrCurrency = $this->objCurrency->getCurrencyArray();
         $this->defaultCurrency = $arrCurrency[$this->objCurrency->defaultCurrencyId]['symbol'];
-
-        $this->strErrMessage = $this->_showAttributeOptions();
+        $this->addError($this->_showAttributeOptions());
         */
     }
 
@@ -1269,19 +1227,17 @@ class shopmanager extends ShopLibrary {
 
         // delete option
         if (isset($_GET['delId']) && !empty($_GET['delId'])) {
-            $this->strErrMessage .= $this->_deleteAttributeOption($_GET['delId']);
+            $this->addError($this->_deleteAttributeOption($_GET['delId']));
         } elseif (!empty($_GET['delProduct']) && isset($_POST['selectedOptionId']) && !empty($_POST['selectedOptionId'])) {
-            $this->strErrMessage .= $this->_deleteAttributeOption($_POST['selectedOptionId']);
+            $this->addError($this->_deleteAttributeOption($_POST['selectedOptionId']));
         }
-
         // store new option
         if (isset($_POST['addAttributeOption']) && !empty($_POST['addAttributeOption'])) {
-            $this->strErrMessage .= $this->_storeNewAttributeOption();
+            $this->addError($this->_storeNewAttributeOption());
         }
-
         // update attribute options
         if (isset($_POST['updateAttributeOptions']) && !empty($_POST['updateAttributeOptions'])) {
-            $this->strErrMessage .= $this->_updateAttributeOptions();
+            $this->addError($this->_updateAttributeOptions());
         }
 
         // set language variables
@@ -1702,7 +1658,6 @@ class shopmanager extends ShopLibrary {
         $menu .= "<br /><a href=\"javascript:{}\" id=\"attributeValueMenuLink[$attributeId]\" style=\"display:none;\" onclick=\"removeSelectedValues($attributeId)\" title=\"".$_ARRAYLANG['TXT_REMOVE_SELECTED_VALUE']."\" alt=\"".$_ARRAYLANG['TXT_REMOVE_SELECTED_VALUE']."\">".$_ARRAYLANG['TXT_REMOVE_SELECTED_VALUE']."</a>";
         return $menu;
     }
-    // end ProductAttributes functions
 
 
     /**
@@ -1842,22 +1797,21 @@ class shopmanager extends ShopLibrary {
                 $this->_objTpl->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_currency.html');
                 $this->_objTpl->setCurrentBlock('shopCurrency');
                 $arrCur = $this->objCurrency->getCurrencyArray();
-                foreach ($arrCur as $key => $val) {
-                    $class = (($i % 2) == 0) ? "row2" : "row1";
-                    $statusCheck =(intval($val['status']) == 1) ? "checked=\"checked\"" : "";
-                    $standardCheck =(intval($val['is_default']) == 1) ? "checked=\"checked\"" : "";
+                foreach ($arrCur as $currency) {
+                    $class = (++$i % 2 ? 'row1' : 'row2');
+                    $statusCheck = ($currency['status'] ? 'checked="checked"' : '');
+                    $standardCheck = ($currency['is_default'] ? 'checked="checked"' : '');
                     $this->_objTpl->setVariable(array(
                         'SHOP_CURRENCY_STYLE'    => $class,
-                        'SHOP_CURRENCY_ID'       => $val['id'],
-                        'SHOP_CURRENCY_CODE'     => $val['code'],
-                        'SHOP_CURRENCY_SYMBOL'   => $val['symbol'],
-                        'SHOP_CURRENCY_NAME'     => $val['name'],
-                        'SHOP_CURRENCY_RATE'     => $val['rate'],
+                        'SHOP_CURRENCY_ID'       => $currency['id'],
+                        'SHOP_CURRENCY_CODE'     => $currency['code'],
+                        'SHOP_CURRENCY_SYMBOL'   => $currency['symbol'],
+                        'SHOP_CURRENCY_NAME'     => $currency['name'],
+                        'SHOP_CURRENCY_RATE'     => $currency['rate'],
                         'SHOP_CURRENCY_ACTIVE'   => $statusCheck,
                         'SHOP_CURRENCY_STANDARD' => $standardCheck
                     ));
                     $this->_objTpl->parseCurrentBlock();
-                    $i++;
                 }
                 // end show currencies
                 break;
@@ -1988,17 +1942,15 @@ class shopmanager extends ShopLibrary {
                 $this->_objTpl->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_zones.html');
                 //$this->_objTpl->setCurrentBlock('shopZones');
                 $arrZones = $this->_getZones();
+                $selectFirst = '';
                 foreach ($arrZones as $zId => $zValues) {
-
                     if ($zId != 1) {
                         if (!$selectFirst) {
                             $selectFirst = $zId;
                         }
                         $strZoneOptions .= "<option value=\"".$zId."\" ".($selectFirst == $zId ? "selected=\"selected\"" : "").">".$zValues['zones_name']."</option>\n";
-
                         $strSelectedCountries = NULL;
                         $strCountryList = NULL;
-
                         $query = "SELECT r.countries_id AS countries_id, c.countries_name AS countries_name ".
                                  "FROM ".DBPREFIX."module_shop_rel_countries AS r, ".
                                          DBPREFIX."module_shop_countries AS c ".
@@ -2146,18 +2098,19 @@ class shopmanager extends ShopLibrary {
                             $shopMailTo    = trim($shopMailTo);
                             $blnMailResult = $this->shopSendMail($shopMailTo,$shopMailFrom,$shopMailFromText,$shopMailSubject,$shopMailBody,"");
                             if ($blnMailResult) {
-                                $this->strOkMessage  .= " ".sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'],$shopMailTo)."<br />";
+                                $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
                             } else {
-                                $this->strErrMessage .= $_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']."<br />";
+                                $this->addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
                             }
                         }
                     } else {
-                        $this->strErrMessage = $_ARRAYLANG['TXT_PLEASE_SET_RECEIPTOR_ADDRESS'];
+                        $this->addError($_ARRAYLANG['TXT_PLEASE_SET_RECEIPTOR_ADDRESS']);
                     }
                 }
 
                 // Get all templates
                 $objResult = $objDatabase->Execute("SELECT id, tpl_id, lang_id FROM ".DBPREFIX."module_shop_mail_content");
+                $arrTemplateMails = array();
                 while (!$objResult->EOF) {
                     if (!isset($arrTemplateMails[$objResult->fields['tpl_id']])) {
                         $arrTemplateMails[$objResult->fields['tpl_id']] = array();
@@ -2477,7 +2430,6 @@ class shopmanager extends ShopLibrary {
     {
         global $objDatabase, $_ARRAYLANG;
 
-        //initialize variables
         $i=1;
         $this->pageTitle = $_ARRAYLANG['TXT_CATEGORIES'];
         $this->_objTpl->loadTemplateFile('module_shop_categories.html', true, true);
@@ -2510,32 +2462,38 @@ class shopmanager extends ShopLibrary {
         ));
 
         $this->doCategoryTree();
-        $this->_objTpl->setVariable("SHOP_TOTAL_CATEGORIES", count($this->categoryTreeName));
+        $this->_objTpl->setVariable('SHOP_TOTAL_CATEGORIES', count($this->categoryTreeName));
 
         // Modify the selected category
         if (!empty($_REQUEST['modCatId'])) {
-            $this->_objTpl->setVariable("SHOP_SELECTED_CAT_NAME", stripslashes($this->categoryTreeName[$_REQUEST['modCatId']]));
-            $this->_objTpl->setVariable("SHOP_MOD_CAT_ID", $_REQUEST['modCatId']);
-            $this->_objTpl->setVariable("SHOP_CAT_MENU", $this->getCatMenu($_REQUEST['modCatId']));
-            $this->_objTpl->setVariable("TXT_ADD_NEW_SHOP_GROUP", $_ARRAYLANG['TXT_EDIT_ PRODUCT_GROUP']);
+            $this->_objTpl->setVariable(array(
+                'SHOP_MOD_CAT_ID' => $_REQUEST['modCatId'],
+                'SHOP_SELECTED_CAT_NAME' => stripslashes($this->categoryTreeName[$_REQUEST['modCatId']]),
+                'SHOP_CAT_MENU' =>
+                    $this->objShopCategories->getShopCategoriesMenu($_REQUEST['modCatId'], false),
+                'TXT_ADD_NEW_SHOP_GROUP' => $_ARRAYLANG['TXT_EDIT_ PRODUCT_GROUP'],
+            ));
         } else {
-            $this->_objTpl->setVariable("SHOP_MOD_CAT_ID", "");
-            $this->_objTpl->setVariable("SHOP_SELECTED_CAT_NAME", "");
-            $this->_objTpl->setVariable("SHOP_CAT_MENU", $this->getCatMenu());
-            $this->_objTpl->setVariable("TXT_ADD_NEW_SHOP_GROUP", $_ARRAYLANG['TXT_ADD_NEW_PRODUCT_GROUP']);
+            $this->_objTpl->setVariable(array(
+                'SHOP_MOD_CAT_ID' => '',
+                'SHOP_SELECTED_CAT_NAME' => '',
+                'SHOP_CAT_MENU' =>
+                    $this->objShopCategories->getShopCategoriesMenu(0, false),
+                'TXT_ADD_NEW_SHOP_GROUP' => $_ARRAYLANG['TXT_ADD_NEW_PRODUCT_GROUP'],
+            ));
         }
 
         if (is_array($this->categoryTreeName)) {
-            $this->_objTpl->setCurrentBlock("catRow");
+            $this->_objTpl->setCurrentBlock('catRow');
             while (list($key, $val) = each($this->categoryTreeName)) {
-                if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
-                $catstatus = "checked=\"checked\"";
-                $this->_objTpl->setVariable("SHOP_CAT_STATUS_PICTURE", "status_green.gif");
+                if (($i % 2) == 0) {$class='row1';} else {$class='row2';}
+                $catstatus = 'checked="checked"';
+                $this->_objTpl->setVariable('SHOP_CAT_STATUS_PICTURE', 'status_green.gif');
                 if ($this->categoryTreeStatus[$key] == 0) {
-                    $catstatus = "";
-                    $this->_objTpl->setVariable("SHOP_CAT_STATUS_PICTURE", "status_red.gif");
+                    $catstatus = '';
+                    $this->_objTpl->setVariable('SHOP_CAT_STATUS_PICTURE', 'status_red.gif');
                 }
-                $spacer = str_repeat("|----", $this->categoryTreeLevel[$key]);
+                $spacer = str_repeat('|----', $this->categoryTreeLevel[$key]);
                 $this->_objTpl->setVariable(array(
                     'SHOP_ROWCLASS'       => $class,
                     'SHOP_CAT_ID'         => $key,
@@ -2545,7 +2503,7 @@ class shopmanager extends ShopLibrary {
                     'SHOP_CAT_LEVEL'      => $this->categoryTreeLevel[$key],
                     'SHOP_CAT_LEVELSPACE' => $spacer,
                 ));
-                $this->_objTpl->parse("catRow");
+                $this->_objTpl->parse('catRow');
                 $i++;
             }
         }
@@ -2556,46 +2514,37 @@ class shopmanager extends ShopLibrary {
      * Do shop categories menu
      *
      * @version  1.0      initial version
-     * @param    integer  $parcat
+     * @param    integer  $parentId
      * @param    integer  $level
-     * @param    integer  $selectedid
      * @return   string   $result
      */
-    function doCategoryTree($parcat=0, $level=0)
+    function doCategoryTree($parentId=0, $level=0)
     {
         global $objDatabase;
 
-        $query =
-            "SELECT catid, parentid, catname, catsorting, catstatus ".
-            "FROM ".DBPREFIX."module_shop_categories ".
-            "ORDER BY parentid ASC, catsorting ASC";
+        $query = "
+            SELECT catid, parentid, catname, catsorting, catstatus
+              FROM ".DBPREFIX."module_shop_categories
+             WHERE parentId=$parentId
+          ORDER BY parentid ASC, catsorting ASC
+        ";
         if (($objResult = $objDatabase->Execute($query)) === false) {
             $this->errorHandling();
             return false;
         }
         while (!$objResult->EOF) {
-            $catTable[$objResult->fields['parentid']][$objResult->fields['catid']]=stripslashes($objResult->fields['catname']);
-            $catSorting[$objResult->fields['catid']]=$objResult->fields['catsorting'];
-            $catStatus[$objResult->fields['catid']]=$objResult->fields['catstatus'];
+            $catId = $objResult->fields['catid'];
+            $this->categoryTreeName[$catId] =
+                stripslashes($objResult->fields['catname']);
+            $this->categoryTreeSorting[$catId] =
+                $objResult->fields['catsorting'];
+            $this->categoryTreeStatus[$catId] =
+                $objResult->fields['catstatus'];
+            $this->categoryTreeLevel[$catId] = $level;
+            $this->doCategoryTree($catId, $level+1);
             $objResult->MoveNext();
         }
-
-        $list=$catTable[$parcat];
-        if (is_array($list)) {
-            while (list($key,$val) = each($list)) {
-                $this->categoryTreeName[$key]= $val;
-                $this->categoryTreeSorting[$key]= $catSorting[$key];
-                $this->categoryTreeStatus[$key]= $catStatus[$key];
-                $this->categoryTreeLevel[$key]= $level;
-
-// fix: the following line produces infinite loops if parent == child
-//                if (isset($catTable[$key])) {
-                if (   ($key != $parcat)
-                    && (isset($catTable[$key]))) {
-                    $this->doCategoryTree($key, $level+1);
-                }
-            }
-        }
+        return true;
     }
 
 
@@ -2603,59 +2552,53 @@ class shopmanager extends ShopLibrary {
      * Do shop categories menu
      *
      * @version  1.0      initial version
-     * @param    integer  $parcat
+     * @param    integer  $parentId
      * @param    integer  $level
-     * @param    integer  $selectedid
      * @return   string   $result
      */
-    function doCategoryTreeActiveOnly($parcat=0,$level=0)
+    function doCategoryTreeActiveOnly($parentId=0, $level=0)
     {
         global $objDatabase;
 
         $query =
             "SELECT catid, parentid, catname, catsorting, catstatus ".
             "FROM ".DBPREFIX."module_shop_categories ".
-            "WHERE catstatus=1 ".
+            "WHERE catstatus=1 AND parentId=$parentId".
             "ORDER BY parentid ASC, catsorting ASC";
         if (($objResult = $objDatabase->Execute($query)) === false) {
             $this->errorHandling();
             return false;
         }
         while (!$objResult->EOF) {
-            $catTable[$objResult->fields['parentid']][$objResult->fields['catid']] = stripslashes($objResult->fields['catname']);
-            $catSorting[$objResult->fields['catid']] = $objResult->fields['catsorting'];
-            $catStatus[$objResult->fields['catid']] = $objResult->fields['catstatus'];
+            $catId = $objResult->fields['catid'];
+            $this->categoryTreeName[$catId] =
+                stripslashes($objResult->fields['catname']);
+            $this->categoryTreeSorting[$catId] =
+                $objResult->fields['catsorting'];
+            $this->categoryTreeStatus[$catId] =
+                $objResult->fields['catstatus'];
+            $this->categoryTreeLevel[$catId] = $level;
+            $this->doCategoryTree($catId, $level+1);
             $objResult->MoveNext();
         }
-
-        $list = $catTable[$parcat];
-        if (is_array($list)) {
-            while (list($key,$val)=each($list)) {
-                $this->categoryTreeName[$key]= $val;
-                $this->categoryTreeSorting[$key]= $catSorting[$key];
-                $this->categoryTreeStatus[$key]= $catStatus[$key];
-                $this->categoryTreeLevel[$key]= $level;
-
-// fix: the following line produces infinite loops if parent == child
-//                if (isset($catTable[$key])) {
-                if ( ($key != $parcat) &&
-                     (isset($catTable[$key])) ) {
-                    $this->doCategoryTreeActiveOnly($key,$level+1);
-                }
-            }
-        }
+        return true;
     }
 
 
+    /**
+     * Insert or update a ShopCategory with data provided in the request.
+     * @return  boolean                 True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
+     */
     function addModCategory()
     {
         global $objDatabase;
 
-        if (isset($_REQUEST[newCatName]) && !empty($_REQUEST[newCatName])) {
+        if (!empty($_REQUEST['newCatName'])) {
             $name      = contrexx_addslashes(strip_tags($_REQUEST['newCatName']));
             $status    = intval($_REQUEST['catStatus']);
             $parentid  = intval($_REQUEST['catParentId']);
-            if (isset($_REQUEST[modCatId]) && $_REQUEST[modCatId]) {
+            if (!empty($_REQUEST['modCatId'])) {
                 // Modify category
                 $id = $_REQUEST[modCatId];
                 $query = "
@@ -2663,10 +2606,10 @@ class shopmanager extends ShopLibrary {
                        SET catname='$name',
                            catstatus=$status
                 ".
-                // check validity of the IDs of the category and its parent.
-                // if the values are identical, leave the parent ID alone!
+                // Check validity of the IDs of the category and its parent.
+                // If the values are identical, leave the parent ID alone!
                 ($id != $parentid
-                    ? ", parentid=$parentid "
+                    ? ", parentid=$parentid"
                     : ''
                 )."
                      WHERE catid=$id
@@ -2693,6 +2636,11 @@ class shopmanager extends ShopLibrary {
     }
 
 
+    /**
+     * Update all ShopCategories with the data provided by the request.
+     * @return  boolean                 True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
+     */
     function modAllCategories()
     {
         global $objDatabase;
@@ -2724,16 +2672,30 @@ class shopmanager extends ShopLibrary {
     }
 
 
-    function delCategory($categoryId = "")
+    /**
+     * Delete a ShopCategory.
+     *
+     * Only succeeds if there are no subcategories, and if all contained
+     * Products can be deleted as well.  Products that are present in any
+     * order won't be deleted.
+     * @param   integer     $categoryId     The optional ShopCategory ID.
+     *                                      If this is no valid ID, the
+     *                                      ID is taken from the request
+     *                                      parameters $_GET['id'] or
+     *                                      $_POST['selectedCatId'], in this
+     *                                      order.
+     * @return  boolean                     True on success, false otherwise.
+     */
+    function delCategory($categoryId=0)
     {
         global $objDatabase, $_ARRAYLANG;
 
         $arrCategoryId = array();
         $blnDeletedCat = false;
 
-        if (empty($categoryId)) {
+        if (!$categoryId) {
             if (isset($_GET['id']) && !empty($_GET['id'])) {
-                array_push($arrCategoryId,$_GET['id']);
+                array_push($arrCategoryId, $_GET['id']);
             } elseif (isset($_POST['selectedCatId']) && !empty($_POST['selectedCatId'])) {
                 $arrCategoryId = $_POST['selectedCatId'];
             }
@@ -2746,24 +2708,18 @@ class shopmanager extends ShopLibrary {
 
             foreach ($arrCategoryId as $cId) {
                 $arrProducts = array();
-                $arrCheckIds = array();
                 $blnDelCat = true;
-                // check whether a subcategory exits
+                // Check whether this category has subcategories
                 $query = "SELECT catid FROM ".DBPREFIX."module_shop_categories WHERE 1 AND parentid=".intval($cId);
                 $objResult = $objDatabase->Execute($query);
-                if ($objResult->RecordCount() >= 1) {
-                    while (!$objResult->EOF) {
-                        $blnDelCat = false;
-                        $this->strErrMessage .= $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE']."&nbsp;(".$_ARRAYLANG['TXT_CATEGORY']."&nbsp;".$cId.")<br />";
-                        break;
-// never reached
-//                        $objResult->MoveNext();
-                    }
+                if ($objResult->RecordCount() > 0) {
+                    $blnDelCat = false;
+                    $this->addError($_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE']."&nbsp;(".$_ARRAYLANG['TXT_CATEGORY']."&nbsp;".$cId.")");
                 }
 
-                // continue if the category can be deleted
+                // Check whether the category can be deleted
                 if ($blnDelCat) {
-                    // check if products exits in this category
+                    // Check whether products exist in this category
                     $query = "
                         SELECT id FROM ".DBPREFIX."module_shop_products
                          WHERE 1 AND catid=".intval($cId);
@@ -2773,14 +2729,15 @@ class shopmanager extends ShopLibrary {
                         $objResult->MoveNext();
                     }
 
-                    // delete products of the category
-                    if (count($arrProducts)>0) {
+                    // Delete the products in the category
+                    if (count($arrProducts) > 0) {
                         foreach ($arrProducts as $id) {
-                            // check if we have orders with this product id
-                            $query = "SELECT productid FROM ".DBPREFIX."module_shop_order_items WHERE productid=".$id;
-                            $objResult = $objDatabase->SelectLimit($query, 1);
-                            if ($objResult->RecordCount()>=1) {
-                                $this->strErrMessage .= $_ARRAYLANG['TXT_COULD_NOT_DELETE_ALL_PRODUCTS']."&nbsp;(".$_ARRAYLANG['TXT_CATEGORY']."&nbsp;".$cId.")<br />";
+                            // Check whether there are orders with this
+                            // product ID
+                            $query = "SELECT 1 FROM ".DBPREFIX."module_shop_order_items WHERE productid=".$id;
+                            $objResult = $objDatabase->Execute($query);
+                            if ($objResult->RecordCount() > 0) {
+                                $this->addError($_ARRAYLANG['TXT_COULD_NOT_DELETE_ALL_PRODUCTS']."&nbsp;(".$_ARRAYLANG['TXT_CATEGORY']."&nbsp;".$cId.")");
                                 $blnDelCat = false;
                             } else {
                                 $this->delProduct($id);
@@ -2788,7 +2745,7 @@ class shopmanager extends ShopLibrary {
                         }
                     }
 
-                    // finally delete the category
+                    // Delete the category
                     if ($blnDelCat) {
                         $query = "DELETE FROM ".DBPREFIX."module_shop_categories WHERE catid=".intval($cId);
                         if (!$objDatabase->Execute($query)) {
@@ -2800,7 +2757,7 @@ class shopmanager extends ShopLibrary {
                 }
             }
             if ($blnDeletedCat) {
-                $this->strOkMessage .= $_ARRAYLANG['TXT_DELETED_CATEGORY_AND_PRODUCTS']."<br />";
+                $this->addMessage($_ARRAYLANG['TXT_DELETED_CATEGORY_AND_PRODUCTS']);
             }
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_categories");
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products");
@@ -2811,12 +2768,12 @@ class shopmanager extends ShopLibrary {
     }
 
 
-    function delProduct($productId='')
+    function delProduct($productId=0)
     {
         global $objDatabase;
         $arrProductId = array();
 
-        if (empty($productId)) {
+        if (!$productId) {
             if (isset($_REQUEST['id']) && !empty($_REQUEST['id'])) {
                 array_push($arrProductId, $_REQUEST['id']);
             } elseif (isset($_REQUEST['selectedProductId']) && !empty($_REQUEST['selectedProductId'])) {
@@ -2865,17 +2822,17 @@ class shopmanager extends ShopLibrary {
 
     function delFile($file)
     {
-        $delete = @unlink($file);
+        @unlink($file);
         clearstatcache();
         if (@file_exists($file)) {
             $filesys = eregi_replace("/","\\",$file);
-            $delete = @system("del $filesys");
+            @system("del $filesys");
             clearstatcache();
 
             // don't work in safemode
             if (@file_exists($file)) {
-                $delete = @chmod ($file, 0775);
-                $delete = @unlink($file);
+                @chmod ($file, 0775);
+                @unlink($file);
             }
         }
         clearstatcache();
@@ -2893,10 +2850,11 @@ class shopmanager extends ShopLibrary {
      * Add and edit products
      * @access  public
      * @return  string
+     * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
      */
     function manageProduct()
     {
-        global $objDatabase, $_ARRAYLANG, $_FILES, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_FILES;
 
         // init default values
         $shopProductId            =  0;
@@ -2928,11 +2886,8 @@ class shopmanager extends ShopLibrary {
         //$shopImageOverwrite       =  0;
         //$shopTempThumbnailName    = "";
         //$shopImageWidth           = intval($_POST['shopImageWidth']);
-        $arrAttributes            = array();
-        $arrProductOptions        = array();
-        $insertId                 =  0;
 
-// Todo: Is $shopTempThumbnailName, and its session equivalent,
+// TODO: Is $shopTempThumbnailName, and its session equivalent,
 // still in use anywhere?
         if (isset($_SESSION['shopPM']['TempThumbnailName'])) {
             $shopTempThumbnailName = $_SESSION['shopPM']['TempThumbnailName'];
@@ -2940,9 +2895,11 @@ class shopmanager extends ShopLibrary {
         }
 
         $shopProductId = (isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
+        $objProduct = false;
 
-        // set product data if form is sent
+        // Store Product data if form is sent
         if (isset($_POST['shopProductName'])) {
+
             $shopProductName          = contrexx_addslashes(strip_tags($_POST['shopProductName']));
             $shopProductIdentifier    = contrexx_addslashes(strip_tags($_POST['shopProductIdentifier']));
             $shopCatMenu              = intval($_POST['shopCatMenu']);
@@ -2960,7 +2917,11 @@ class shopmanager extends ShopLibrary {
             $shopShortDescription     = contrexx_addslashes($_POST['shopShortDescription']);
             $shopDescription          = contrexx_addslashes($_POST['shopDescription']);
             $shopStock                = intval($_POST['shopStock']);
-            $shopStockVisibility      = intval($_POST['shopStockVisibility']);
+            $shopStockVisibility      =
+                (isset($_POST['shopStockVisibility'])
+                    ? $_POST['shopStockVisibility']
+                    : 0
+                );
             $shopManufacturerUrl      = htmlspecialchars(contrexx_addslashes(strip_tags($_POST['shopManufacturerUrl'])), ENT_QUOTES, CONTREXX_CHARSET);
             $shopArticleActive        = intval($_POST['shopArticleActive']);
             $shopB2B                  = intval($_POST['shopB2B']);
@@ -2975,6 +2936,11 @@ class shopmanager extends ShopLibrary {
 //            $shopImageName            = contrexx_addslashes(strip_tags($_POST['shopImageName']));
 //            $shopImageOverwrite       = intval($_POST['shopImageOverwrite']);
             $shopManufacturerId       = intval($_POST["shopManufacturerId"]);
+            $shopFlags                =
+                (isset($_POST['shopFlags'])
+                    ? join(' ', $_POST['shopFlags'])
+                    : ''
+                );
 
             // check incoming picture file paths
             for ($i = 1; $i <= 3; $i++) {
@@ -2983,15 +2949,17 @@ class shopmanager extends ShopLibrary {
                     // copy image to shop image folder
                     $imageFile = basename($_POST['productImage'.$i]);
                     if (file_exists(ASCMS_PATH.$this->shopImageWebPath.$imageFile)) {
-                        $this->strErrMessage .=
+                        $this->addError(
                             $this->shopImageWebPath.$imageFile.': '.
-                            $_ARRAYLANG['TXT_SHOP_FILE_EXISTS'].'<br />';
+                            $_ARRAYLANG['TXT_SHOP_FILE_EXISTS']
+                        );
                     }
                     if (!copy(ASCMS_PATH.$imageDir.$imageFile,
                         ASCMS_PATH.$this->shopImageWebPath.$imageFile)) {
-                        $this->strErrMessage .=
+                        $this->addError(
                             $imageDir.$imageFile.': '.
-                            $_ARRAYLANG['TXT_SHOP_COULD_NOT_COPY_FILE'].'<br />';
+                            $_ARRAYLANG['TXT_SHOP_COULD_NOT_COPY_FILE']
+                        );
                     }
                 }
             }
@@ -3009,140 +2977,80 @@ class shopmanager extends ShopLibrary {
         }
 
         if (isset($_POST['shopStoreProduct'])) {
-            // Product was edited and is about to be stored
+            // Product was edited and is about to be stored.
 
-            // add new product
+            // Note that the flags of the Product *MUST NOT* be changed
+            // when inserting or updating the Product data, as the original
+            // flags are needed for their own update later.
+
+            // Add a new product
             if ($shopProductId == 0) {
-                $query = "INSERT INTO ".DBPREFIX."module_shop_products ".
-                    "(product_id, title, catid, normalprice, resellerprice, is_special_offer, discountprice, ".
-                    "vat_id, weight, handler, ".
-                    "shortdesc, description, stock, stock_visibility, picture, status, b2b, b2c, ".
-                    "startdate, enddate, thumbnail_percent, thumbnail_quality, ".
-                    "manufacturer, manufacturer_url) ".
-                    "VALUES('$shopProductIdentifier', '$shopProductName', $shopCatMenu, $shopCustomerPrice,
-                    $shopResellerPrice, $shopSpecialOffer, $shopDiscount, ".
-                    "$shopTaxId, $shopWeight, '$shopDistribution', ".
-                    "'$shopShortDescription', '$shopDescription', ".
-                    "$shopStock, $shopStockVisibility, '$shopImageName', $shopArticleActive, $shopB2B, $shopB2C, ".
-                    "'$shopStartdate', '$shopEnddate', '$shopThumbnailPercentSize', $shopImageQuality, ".
-                    "$shopManufacturerId, '$shopManufacturerUrl')";
-                $objResult = $objDatabase->Execute($query);
-                $insertId = $objDatabase->Insert_Id();
+                $objProduct = new Product(
+                    $shopProductIdentifier,
+                    $shopCatMenu,
+                    $shopProductName,
+                    $shopDistribution,
+                    $shopCustomerPrice,
+                    $shopArticleActive,
+                    0,
+                    $shopWeight
+                );
+            } else {
+                // Update product
+                $objProduct = Product::getById($shopProductId);
 
-                // add new product attributes
-                if (isset($_POST['productOptionsValues'])) {
-                    foreach ($_POST['productOptionsValues'] as $attributesValueId => $attributesNameId) {
-                        $query = "INSERT INTO ".DBPREFIX."module_shop_products_attributes
-                                                    (product_id, attributes_name_id, attributes_value_id, sort_id)
-                                             VALUES (".$insertId.",".intval($attributesNameId).",".intval($attributesValueId).",".intval($_POST['productOptionsSortId'][$attributesNameId]).")";
-                        $objDatabase->Execute($query);
-                    }
+                $objProduct->setCode($shopProductIdentifier);
+                $objProduct->setShopCategoryId($shopCatMenu);
+                $objProduct->setName($shopProductName);
+                $objProduct->setDistribution($shopDistribution);
+                $objProduct->setPrice($shopCustomerPrice);
+                $objProduct->setStatus($shopArticleActive);
+                $objProduct->setWeight($shopWeight);
+
+                // Remove old Product Attributes.
+                // They are re-added below.
+                $objProduct->clearAttributes();
+            }
+
+            $objProduct->setResellerPrice($shopResellerPrice);
+            $objProduct->setSpecialOffer($shopSpecialOffer);
+            $objProduct->setDiscountPrice($shopDiscount);
+            $objProduct->setVatId($shopTaxId);
+            $objProduct->setShortDesc($shopShortDescription);
+            $objProduct->setDescription($shopDescription);
+            $objProduct->setStock($shopStock);
+            $objProduct->setStockVisible($shopStockVisibility);
+            $objProduct->setExternalLink($shopManufacturerUrl);
+            $objProduct->setB2B($shopB2B);
+            $objProduct->setB2C($shopB2C);
+            $objProduct->setStartDate($shopStartdate);
+            $objProduct->setEndDate($shopEnddate);
+            $objProduct->setManufacturerId($shopManufacturerId);
+            $objProduct->setPictures($shopImageName);
+
+            // Add new product attributes
+            if (isset($_POST['productOptionsValues'])
+             && is_array($_POST['productOptionsValues'])) {
+                foreach ($_POST['productOptionsValues'] as $valueId => $nameId) {
+                    $order = intval($_POST['productOptionsSortId'][$nameId]);
+                    $objProduct->addAttribute(intval($valueId), $order);
                 }
-                $_SESSION['shop']['strOkMessage'] = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
-            } else { // update product
-                $query = "UPDATE ".DBPREFIX."module_shop_products ".
-                "SET product_id='$shopProductIdentifier', ".
-                "title='$shopProductName', ".
-                "catid=$shopCatMenu, ".
-                "normalprice=$shopCustomerPrice, ".
-                "resellerprice=$shopResellerPrice, ".
-                "shortdesc='$shopShortDescription', ".
-                "description='$shopDescription', ".
-                "stock=$shopStock, ".
-                "stock_visibility=$shopStockVisibility, ".
-                "picture='$shopImageName', ".
-                "discountprice=$shopDiscount, ".
-                "is_special_offer=$shopSpecialOffer, ".
-                "status=$shopArticleActive, ".
-                "b2b=$shopB2B, ".
-                "b2c=$shopB2C, ".
-                "startdate='$shopStartdate', ".
-                "enddate='$shopEnddate', ".
-// these are unused!
-//                "thumbnail_percent=$shopThumbnailPercentSize, ".
-//                "thumbnail_quality=$shopImageQuality, ".
-                "manufacturer=$shopManufacturerId, ".
-                "manufacturer_url='$shopManufacturerUrl', ".
-                "vat_id=$shopTaxId, ".
-                "weight=$shopWeight, ".
-                "handler='$shopDistribution' ".
-                "WHERE id=$shopProductId";
-                $objDatabase->Execute($query);
-                $insertId = $objDatabase->Insert_Id();
+            }
 
-                // start update products attributes
-                $query = "SELECT attribute_id, attributes_name_id, attributes_value_id, sort_id ".
-                         "FROM ".DBPREFIX."module_shop_products_attributes ".
-                         "WHERE product_id=$shopProductId";
-                $objResult = $objDatabase->Execute($query);
+            $objProduct->store();
 
-                while (!$objResult->EOF) {
-                    $arrAttributes[$objResult->fields['attributes_value_id']] = array(
-                        'name_id' => $objResult->fields['attributes_name_id'],
-                        'sort_id' => $objResult->fields['sort_id']
-                    );
-                    $objResult->MoveNext();
-                }
+            // Add/remove Categories and Products to/from
+            // virtual ShopCategories.
+            // Note that this *MUST* be called *AFTER* the Product is updated
+            // or inserted.
+            Products::changeFlagsByProductCode(
+                $shopProductIdentifier, $shopFlags
+            );
 
-                if (isset($_POST['productOptionsValues']) && is_array($_POST['productOptionsValues'])) {
-                    foreach ($_POST['productOptionsValues'] as $valueId => $nameId) {
-                        $arrProductOptions[$valueId] = array(
-                            'name_id' => intval($nameId),
-                            'sort_id' => intval($_POST['productOptionsSortId'][$nameId])
-                        );
-                    }
-                }
-                if (count($arrAttributes)>0) {
-                    $deleteOptions = array_diff_assoc($arrAttributes, $arrProductOptions);
-                    foreach ($deleteOptions as $attributesValueId => $attributesNameId) {
-                        $query = "
-                            DELETE FROM ".DBPREFIX."module_shop_products_attributes
-                             WHERE product_id=$shopProductId
-                               AND attributes_value_id=".intval($attributesValueId);
-                        $objResult = $objDatabase->Execute($query);
-                    }
-                    if (count($arrProductOptions)>0) {
-                        $addOptions = array_diff_assoc($arrProductOptions, $arrAttributes);
-                        foreach ($addOptions as $attributesValueId => $arrAttributeDetails) {
-                            $query = "
-                                INSERT INTO ".DBPREFIX."module_shop_products_attributes (
-                                    product_id, attributes_name_id, attributes_value_id, sort_id
-                                ) VALUES (
-                                    $shopProductId, ".
-                                    intval($arrAttributeDetails['name_id']).', '.
-                                    intval($attributesValueId).', '.
-                                    $arrAttributeDetails['sort_id'].') ';
-                            $objResult = $objDatabase->Execute($query);
-                        }
-
-                        foreach ($arrProductOptions as $attributesValueId => $arrAttributeDetails) {
-                            if ($arrAttributeDetails['sort_id'] != $arrAttributes[$attributesValueId]['sort_id']) {
-                                $query = "
-                                    UPDATE ".DBPREFIX."module_shop_products_attributes
-                                       SET sort_id=".$arrAttributeDetails['sort_id']."
-                                     WHERE product_id=$shopProductId
-                                       AND attributes_value_id=".intval($attributesValueId);
-                                $objResult = $objDatabase->Execute($query);
-                            }
-                        }
-                    }
-                } else {
-                    if (count($arrProductOptions) > 0) {
-                        foreach ($arrProductOptions as $attributesValueId => $arrAttributeDetails) {
-                            $query = "
-                                INSERT INTO ".DBPREFIX."module_shop_products_attributes (
-                                    product_id, attributes_name_id, attributes_value_id, sort_id
-                                ) VALUES (
-                                    $shopProductId, ".
-                                    intval($arrAttributeDetails['name_id']).', '.
-                                    intval($attributesValueId).', '.
-                                    $arrAttributeDetails['sort_id'].')';
-                            $objResult = $objDatabase->Execute($query);
-                        }
-                    }
-                }
-                // end update products attributes
+            if ($shopProductId > 0) {
                 $_SESSION['shop']['strOkMessage'] = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+            } else {
+                $_SESSION['shop']['strOkMessage'] = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
             }
 
             if (   !empty($shopTempThumbnailName)
@@ -3150,7 +3058,7 @@ class shopmanager extends ShopLibrary {
                 @unlink($this->shopImagePath.$shopTempThumbnailName);
             }
 
-            $objImage = new ImageManager();
+            $objImage = &new ImageManager();
             $arrImages = $this->_getShopImagesFromBase64String($shopImageName);
             // create thumbnails if not available
             foreach ($arrImages as $arrImage) {
@@ -3166,7 +3074,7 @@ class shopmanager extends ShopLibrary {
                         $this->arrConfig['shop_thumbnail_max_height']['value'],
                         $this->arrConfig['shop_thumbnail_quality']['value']
                     )) {
-                        $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'], $arrImage['img']).'<br />';
+                        $this->addError(sprintf($_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'], $arrImage['img']));
                     }
                 }
             }
@@ -3176,7 +3084,9 @@ class shopmanager extends ShopLibrary {
                     header("Location: ?cmd=shop&act=products&tpl=manage");
                     break;
                 case "newTemplate":
-                    header("Location: ?cmd=shop&act=products&tpl=manage&id=$insertId&new=1");
+                    header("Location: ?cmd=shop&act=products&tpl=manage&id=".
+                        $objProduct->getId()."&new=1"
+                    );
                     break;
                 default:
                     header("Location: ?cmd=shop&act=products");
@@ -3248,17 +3158,18 @@ class shopmanager extends ShopLibrary {
         // if new entry, set default values
         if (!isset($_REQUEST['id'])) { //OR $_REQUEST['new']
             $this->_objTpl->setVariable(array(
-            'SHOP_CAT_MENU'                      => $this->getCatMenu($shopCatMenu),
-            'SHOP_PRODUCT_CUSTOM_ID'             => '',
-            'SHOP_DATE'                          => date("Y-m-d H:m"),
-            'SHOP_ARTICLE_ACTIVE'                => $shopArticleActive,
-            'SHOP_B2B'                           => $shopB2B,
-            'SHOP_B2C'                           => $shopB2C,
-            'SHOP_THUMBNAIL_LINK'                => "",
-            'SHOP_SELECTED_THUMBNAIL_PERCENTAGE' => "<option value=\"".$shopThumbnailPercentSize."\" selected=\"selected\">$shopThumbnailPercentSize%</option>",
-            'SHOP_SELECTED_THUMBNAIL_QUALITY'    => "<option value=\"".$shopImageQuality."\" selected=\"selected\">$shopImageQuality%</option>",
-            'SHOP_COMMENT_START'                 => "<!--",
-            'SHOP_COMMENT_END'                   => "-->",
+                'SHOP_CAT_MENU'                      =>
+                    $this->objShopCategories->getShopCategoriesMenu($shopCatMenu, false),
+                'SHOP_PRODUCT_CUSTOM_ID'             => '',
+                'SHOP_DATE'                          => date("Y-m-d H:m"),
+                'SHOP_ARTICLE_ACTIVE'                => $shopArticleActive,
+                'SHOP_B2B'                           => $shopB2B,
+                'SHOP_B2C'                           => $shopB2C,
+                'SHOP_THUMBNAIL_LINK'                => "",
+//                'SHOP_SELECTED_THUMBNAIL_PERCENTAGE' => "<option value=\"".$shopThumbnailPercentSize."\" selected=\"selected\">$shopThumbnailPercentSize%</option>",
+//                'SHOP_SELECTED_THUMBNAIL_QUALITY'    => "<option value=\"".$shopImageQuality."\" selected=\"selected\">$shopImageQuality%</option>",
+                'SHOP_COMMENT_START'                 => "<!--",
+                'SHOP_COMMENT_END'                   => "-->",
             ));
             $this->_getAttributeList();
         } else {
@@ -3266,163 +3177,145 @@ class shopmanager extends ShopLibrary {
             $this->_getAttributeList($shopProductId);
         }
 
-        // Edit products
-        // begin database request edit mode
-        if (   $shopProductId > 0
-//            && isset($_REQUEST['edit']) && $_REQUEST['edit'] != 1
-        ) {
-            $query = "SELECT * FROM ".DBPREFIX."module_shop_products WHERE id=$shopProductId";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-                $this->errorHandling();
-            }
-            if (!$objResult->EOF) {
-                $shopProductId            = $objResult->fields['id'];
-                $shopProductIdentifier    = $objResult->fields['product_id'];
-                $shopProductName          = $objResult->fields['title'];
-                $shopCatMenu              = $objResult->fields['catid'];
-                $shopCustomerPrice        = $objResult->fields['normalprice'];
-                $shopResellerPrice        = $objResult->fields['resellerprice'];
-                $shopSpecialOffer         = $objResult->fields['is_special_offer'];
-                $shopDiscount             = $objResult->fields['discountprice'];
-                $shopTaxId                = $objResult->fields['vat_id'];
-                $shopWeight               = $objResult->fields['weight'];
-                $shopDistribution         = $objResult->fields['handler'];
-                $shopShortDescription     = $objResult->fields['shortdesc'];
-                $shopDescription          = $objResult->fields['description'];
-                $shopStock                = $objResult->fields['stock'];
-                $shopStockVisibility      = $objResult->fields['stock_visibility'];
-                $shopArticleActive        = $objResult->fields['status'];
-                $shopB2B                  = $objResult->fields['b2b'];
-                $shopB2C                  = $objResult->fields['b2c'];
-                $shopStartdate            = $objResult->fields['startdate'];
-                $shopEnddate              = $objResult->fields['enddate'];
-                $shopImageName            = $objResult->fields['picture'];
-                $shopManufacturerUrl      = $objResult->fields['manufacturer_url'];
-                $shopManufacturerId       = $objResult->fields['manufacturer'];
-                $shopThumbnailPercentSize = $objResult->fields['thumbnail_percent'];
-                $shopImageQuality         = $objResult->fields['thumbnail_quality'];
-            }
-            if (isset($_REQUEST['new']) && $_REQUEST['new']) {
-                $shopProductId = 0;
-            }
+        // Edit product
+        if ($shopProductId > 0) {
+            $objProduct = Product::getById($shopProductId);
+        }
+        if (!$objProduct) {
+            $objProduct = new Product('', 0, '', '', 0, 0, 0, 0);
         }
 
-        if ($shopB2B == 1) {
+        if ($objProduct->isB2B()) {
             $shopB2B = 'checked="checked"';
         }
-        if ($shopB2C == 1) {
+        if ($objProduct->isB2C()) {
             $shopB2C = 'checked="checked"';
         }
-        if ($shopArticleActive == 1) {
+        if ($objProduct->getStatus()) {
             $shopArticleActive = 'checked="checked"';
         }
-        if ($shopStockVisibility == 1) {
+        if ($objProduct->isStockVisible()) {
             $shopStockVisibility = 'checked="checked"';
         }
-        if ($shopSpecialOffer == 1) {
+        if ($objProduct->isSpecialOffer) {
             $shopSpecialOffer = 'checked="checked"';
         } else {
             $shopSpecialOffer = '';
         }
 
-/*  unused
-        if ($shopImageOverwrite == 1) {
-            $this->_objTpl->setVariable('SHOP_IMAGE_OVERWRITE_SELECTED_1', 'selected="selected"');
-            $this->_objTpl->setVariable('SHOP_IMAGE_OVERWRITE_SELECTED_0', '');
-        } else {
-            $this->_objTpl->setVariable('SHOP_IMAGE_OVERWRITE_SELECTED_0', 'selected="selected"');
-            $this->_objTpl->setVariable('SHOP_IMAGE_OVERWRITE_SELECTED_1', '');
-        }
-        $shopPreviewImageHeight = $shopImageHeight + 25;
-        $shopPreviewImageWidth  = $shopImageWidth  + 25;
-        //$shopImagePath          = $this->shopImageWebPath.$shopImageName;
-        $shopThumbnailImagePath = $this->shopImageWebPath.$shopTempThumbnailName;
-*/
-
-        $shopDescription = stripslashes($shopDescription);
         // extract product image infos (path, width, height)
-        $arrImages = $this->_getShopImagesFromBase64String($shopImageName);
+        $arrImages = $this->_getShopImagesFromBase64String(
+            $objProduct->getPictures()
+        );
 
-        $this->_objTpl->setVariable(array(
-        // replaced by SHOP_PRODUCT_ID
-        //'SHOP_ID'                     => $shopProductId,
-        'SHOP_PRODUCT_ID'             => $shopProductId,
-        'SHOP_PRODUCT_CUSTOM_ID'      => $shopProductIdentifier,
-        'SHOP_DATE'                   => date("Y-m-d H:m"),
-        'SHOP_PRODUCT_NAME'           => htmlentities($shopProductName, ENT_QUOTES, CONTREXX_CHARSET),
-        'SHOP_CAT_MENU'               => $this->getCatMenu($shopCatMenu),
-        'SHOP_CUSTOMER_PRICE'         => $shopCustomerPrice,
-        'SHOP_RESELLER_PRICE'         => $shopResellerPrice,
-        'SHOP_TAX'                    => $this->objVat->getLongMenuString($shopTaxId, 'shopTaxId', "style='width: 220px'"),
-        'SHOP_WEIGHT'                 => Weight::getWeightString($shopWeight),
-        'SHOP_DISTRIBUTION_MENU'      => $this->objDistribution->getDistributionMenu($shopDistribution, 'distribution', "style='width: 220px'"),
-        'SHOP_SHORT_DESCRIPTION'      => get_wysiwyg_editor('shopShortDescription', $shopShortDescription, 'shop'),
-        'SHOP_DESCRIPTION'            => get_wysiwyg_editor('shopDescription', $shopDescription, 'shop'),
-        'SHOP_STOCK'                  => $shopStock,
-        'SHOP_MANUFACTURER_URL'       => htmlentities($shopManufacturerUrl, ENT_QUOTES, CONTREXX_CHARSET),
-        'SHOP_DISCOUNT'               => $shopDiscount,
-        'SHOP_STARTDATE'              => $shopStartdate,
-        'SHOP_ENDDATE'                => $shopEnddate,
-        'SHOP_ARTICLE_ACTIVE'         => $shopArticleActive,
-        'SHOP_B2B'                    => $shopB2B,
-        'SHOP_B2C'                    => $shopB2C,
-        'SHOP_SPECIAL_OFFER'          => $shopSpecialOffer,
-        'SHOP_STOCK_VISIBILITY'       => $shopStockVisibility,
-        'SHOP_MANUFACTURER_SELECT'    =>
-            $this->getManufacturerMenu($shopManufacturerId),
-        'SHOP_PICTURE1_IMG_SRC'       =>
-            (!empty($arrImages[1]['img']) && is_file($this->shopImagePath.$arrImages[1]['img'].$this->thumbnailNameSuffix)
-                ? $this->shopImageWebPath.$arrImages[1]['img'].$this->thumbnailNameSuffix
-                : $this->_defaultImage
-            ),
-        'SHOP_PICTURE2_IMG_SRC'       =>
-            (!empty($arrImages[2]['img']) && is_file($this->shopImagePath.$arrImages[2]['img'].$this->thumbnailNameSuffix)
-                ? $this->shopImageWebPath.$arrImages[2]['img'].$this->thumbnailNameSuffix
-                : $this->_defaultImage
-            ),
-        'SHOP_PICTURE3_IMG_SRC'       =>
-            (!empty($arrImages[3]['img']) && is_file($this->shopImagePath.$arrImages[3]['img'].$this->thumbnailNameSuffix)
-                ? $this->shopImageWebPath.$arrImages[3]['img'].$this->thumbnailNameSuffix
-                : $this->_defaultImage
-            ),
-        'SHOP_PICTURE1_IMG_SRC_NO_THUMB' =>
-            (!empty($arrImages[1]['img']) && is_file($this->shopImagePath.$arrImages[1]['img'])
-                ? $this->shopImageWebPath.$arrImages[1]['img']
-                : $this->_defaultImage
-            ),
-        'SHOP_PICTURE2_IMG_SRC_NO_THUMB' =>
-            (!empty($arrImages[2]['img']) && is_file($this->shopImagePath.$arrImages[2]['img'])
-                ? $this->shopImageWebPath.$arrImages[2]['img']
-                : $this->_defaultImage
-            ),
-        'SHOP_PICTURE3_IMG_SRC_NO_THUMB' =>
-            (!empty($arrImages[3]['img']) && is_file($this->shopImagePath.$arrImages[3]['img'])
-                ? $this->shopImageWebPath.$arrImages[3]['img']
-                : $this->_defaultImage
-            ),
-        'SHOP_PICTURE1_IMG_WIDTH'  => $arrImages[1]['width'],
-        'SHOP_PICTURE1_IMG_HEIGHT' => $arrImages[1]['height'],
-        'SHOP_PICTURE2_IMG_WIDTH'  => $arrImages[2]['width'],
-        'SHOP_PICTURE2_IMG_HEIGHT' => $arrImages[2]['height'],
-        'SHOP_PICTURE3_IMG_WIDTH'  => $arrImages[3]['width'],
-        'SHOP_PICTURE3_IMG_HEIGHT' => $arrImages[3]['height'],
-        ));
-
-/*
-        if (empty($shopImageName)) {
+        $shopFlagsSelection =
+            ShopCategories::getVirtualCategoriesSelectionForFlags(
+                $objProduct->getFlags()
+            );
+        if ($shopFlagsSelection) {
             $this->_objTpl->setVariable(array(
-            'SHOP_COMMENT_START' => "<!--",
-            'SHOP_COMMENT_END'   => "-->",
+                'TXT_SHOP_FLAGS'       => $_ARRAYLANG['TXT_SHOP_FLAGS'],
+                'SHOP_FLAGS_SELECTION' => $shopFlagsSelection,
             ));
         }
-*/
+
+        $this->_objTpl->setVariable(array(
+            'SHOP_PRODUCT_ID'             =>
+                (isset($_REQUEST['new']) ? 0 : $objProduct->getId()),
+            'SHOP_PRODUCT_CUSTOM_ID'      => $objProduct->getCode(),
+            'SHOP_DATE'                   => date("Y-m-d H:m"),
+            'SHOP_PRODUCT_NAME'           => $objProduct->getName(),
+            'SHOP_CAT_MENU'               =>
+                $this->objShopCategories->getShopCategoriesMenu(
+                    $objProduct->getShopCategoryId(), false
+                ),
+            'SHOP_CUSTOMER_PRICE'         => $objProduct->getPrice(),
+            'SHOP_RESELLER_PRICE'         => $objProduct->getResellerPrice(),
+            'SHOP_TAX'                    =>
+                $this->objVat->getLongMenuString(
+                    $objProduct->getVatId(), 'shopTaxId', "style='width: 220px'"
+                ),
+            'SHOP_WEIGHT'                 =>
+                Weight::getWeightString($objProduct->getWeight()),
+            'SHOP_DISTRIBUTION_MENU'      =>
+                $this->objDistribution->getDistributionMenu(
+                    $objProduct->getDistribution(),
+                    'distribution',
+                    "style='width: 220px'"
+                ),
+            'SHOP_SHORT_DESCRIPTION'      =>
+                get_wysiwyg_editor(
+                    'shopShortDescription',
+                    $objProduct->getShortDesc(),
+                    'shop'
+                ),
+            'SHOP_DESCRIPTION'            =>
+                get_wysiwyg_editor(
+                    'shopDescription',
+                    $objProduct->getDescription(),
+                    'shop'
+                ),
+            'SHOP_STOCK'                  => $objProduct->getStock(),
+            'SHOP_MANUFACTURER_URL'       =>
+                htmlentities(
+                    $objProduct->getExternalLink(),
+                    ENT_QUOTES, CONTREXX_CHARSET
+                ),
+            'SHOP_DISCOUNT'               => $objProduct->getDiscountPrice(),
+            'SHOP_STARTDATE'              => $objProduct->getStartDate(),
+            'SHOP_ENDDATE'                => $objProduct->getEndDate(),
+            'SHOP_ARTICLE_ACTIVE'         => $shopArticleActive,
+            'SHOP_B2B'                    => $shopB2B,
+            'SHOP_B2C'                    => $shopB2C,
+            'SHOP_SPECIAL_OFFER'          => $shopSpecialOffer,
+            'SHOP_STOCK_VISIBILITY'       => $shopStockVisibility,
+            'SHOP_MANUFACTURER_SELECT'    =>
+                $this->getManufacturerMenu($objProduct->getManufacturerId()),
+            'SHOP_PICTURE1_IMG_SRC'       =>
+                (!empty($arrImages[1]['img']) && is_file($this->shopImagePath.$arrImages[1]['img'].$this->thumbnailNameSuffix)
+                    ? $this->shopImageWebPath.$arrImages[1]['img'].$this->thumbnailNameSuffix
+                    : $this->_defaultImage
+                ),
+            'SHOP_PICTURE2_IMG_SRC'       =>
+                (!empty($arrImages[2]['img']) && is_file($this->shopImagePath.$arrImages[2]['img'].$this->thumbnailNameSuffix)
+                    ? $this->shopImageWebPath.$arrImages[2]['img'].$this->thumbnailNameSuffix
+                    : $this->_defaultImage
+                ),
+            'SHOP_PICTURE3_IMG_SRC'       =>
+                (!empty($arrImages[3]['img']) && is_file($this->shopImagePath.$arrImages[3]['img'].$this->thumbnailNameSuffix)
+                    ? $this->shopImageWebPath.$arrImages[3]['img'].$this->thumbnailNameSuffix
+                    : $this->_defaultImage
+                ),
+            'SHOP_PICTURE1_IMG_SRC_NO_THUMB' =>
+                (!empty($arrImages[1]['img']) && is_file($this->shopImagePath.$arrImages[1]['img'])
+                    ? $this->shopImageWebPath.$arrImages[1]['img']
+                    : $this->_defaultImage
+                ),
+            'SHOP_PICTURE2_IMG_SRC_NO_THUMB' =>
+                (!empty($arrImages[2]['img']) && is_file($this->shopImagePath.$arrImages[2]['img'])
+                    ? $this->shopImageWebPath.$arrImages[2]['img']
+                    : $this->_defaultImage
+                ),
+            'SHOP_PICTURE3_IMG_SRC_NO_THUMB' =>
+                (!empty($arrImages[3]['img']) && is_file($this->shopImagePath.$arrImages[3]['img'])
+                    ? $this->shopImageWebPath.$arrImages[3]['img']
+                    : $this->_defaultImage
+                ),
+            'SHOP_PICTURE1_IMG_WIDTH'  => $arrImages[1]['width'],
+            'SHOP_PICTURE1_IMG_HEIGHT' => $arrImages[1]['height'],
+            'SHOP_PICTURE2_IMG_WIDTH'  => $arrImages[2]['width'],
+            'SHOP_PICTURE2_IMG_HEIGHT' => $arrImages[2]['height'],
+            'SHOP_PICTURE3_IMG_WIDTH'  => $arrImages[3]['width'],
+            'SHOP_PICTURE3_IMG_HEIGHT' => $arrImages[3]['height'],
+        ));
+
         if ($shopProductId == 0) {
             $this->_objTpl->setVariable(array(
             'SHOP_ID_COMMENT_START' => "<!--",
             'SHOP_ID_COMMENT_END'   => "-->",
             ));
         }
+
     }
 
 
@@ -3435,12 +3328,13 @@ class shopmanager extends ShopLibrary {
      * @global    var    $objDatabase
      * @global    array    $_ARRAYLANG
      * @global    array    $_CONFIG
+     * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
      */
     function shopShowOrders()
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-        $i=0; // used for rowclass
+        $i = 0; // Used for rowclass
         $shopSearchPattern = '';
         $arrCurrency = $this->objCurrency->getCurrencyArray();
 
@@ -3448,27 +3342,28 @@ class shopmanager extends ShopLibrary {
         if (isset($_GET['changeOrderStatus']) &&
             intval($_GET['changeOrderStatus']) >= 0 &&
             intval($_GET['changeOrderStatus']) <= SHOP_ORDER_STATUS_COUNT &&
-            isset($_GET['orderId']) &&
             !empty($_GET['orderId'])) {
-            $query = "UPDATE ".DBPREFIX."module_shop_orders ".
-                     "SET order_status='".intval($_GET['changeOrderStatus'])."', ".
-                         "modified_by ='".$_SESSION['auth']['username']."', ".
-                         "last_modified = now() ".
-                   "WHERE orderid=".intval($_GET['orderId']);
+            $query = "
+                UPDATE ".DBPREFIX."module_shop_orders
+                   SET order_status='".intval($_GET['changeOrderStatus'])."',
+                       modified_by ='".$_SESSION['auth']['username']."',
+                       last_modified=NOW()
+                 WHERE orderid=".intval($_GET['orderId']);
             $objDatabase->Execute($query);
         }
 
-        // send an email to the customer
+        // Send an email to the customer
         if (   isset($_GET['changeOrderStatus'])
             && $_GET['changeOrderStatus'] == SHOP_ORDER_STATUS_COMPLETED
             && isset($_GET['shopSendMail']) && !empty($_GET['shopSendMail'])) {
-            $query = "SELECT c.email, o.last_modified FROM ".
-            DBPREFIX."module_shop_customers AS c, ".
-            DBPREFIX."module_shop_orders AS o ".
-            "WHERE o.customerid=c.customerid ".
-            "AND o.orderid=".intval($_GET['orderId']);
-
-            if ($objResult = $objDatabase->SelectLimit($query, 1)) {
+            $query = "
+                SELECT c.email, o.last_modified
+                  FROM ".DBPREFIX."module_shop_customers c,
+                       ".DBPREFIX."module_shop_orders o
+                 WHERE o.customerid=c.customerid
+                   AND o.orderid=".intval($_GET['orderId']);
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) {
                 $shopMailTo = $objResult->fields['email'];
                 $shopLastModified = $objResult->fields['last_modified'];
             }
@@ -3480,9 +3375,9 @@ class shopmanager extends ShopLibrary {
             $shopMailSubject = str_replace("<DATE>",$shopLastModified,$shopMailSubject);
             $result = $this->shopSendmail($shopMailTo,$shopMailFrom,$shopMailFromText,$shopMailSubject,$shopMailBody,"");
             if ($result) {
-                $this->strOkMessage .= " ".sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'],$shopMailTo)."\n";
+                $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
             } else {
-                $this->strErrMessage .= $_ARRAYLANG['TXT_MESSAGE_SEND_ERROR'];
+                $this->addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
             }
         }
 
@@ -3490,7 +3385,57 @@ class shopmanager extends ShopLibrary {
         $this->pageTitle = $_ARRAYLANG['TXT_ORDERS'];
         $this->_objTpl->loadTemplateFile('module_shop_orders.html', true, true);
 
-        // begin language variables
+        // Set up filter and display options
+        $shopCustomerOrder = 'order_date DESC';
+        $shopOrderStatus = -1;
+        $shopCustomerType = -1;
+        $shopSearchTerm = '';
+        if (isset($_POST['shopOrderStatus'])
+         && $_POST['shopOrderStatus'] >= 0
+         && $_POST['shopOrderStatus'] <= SHOP_ORDER_STATUS_COUNT) {
+            $shopOrderStatus = intval($_POST['shopOrderStatus']);
+            $shopSearchPattern = " AND order_status='$shopOrderStatus'";
+        }
+        if (isset($_POST['shopCustomerType'])) {
+            $shopCustomerType = $_POST['shopCustomerType'];
+            if ($shopCustomerType == 1) {
+                $shopSearchPattern .= ' AND is_reseller=1';
+            }
+        }
+        if (!empty($_POST['shopSearchTerm'])) {
+            $shopSearchTerm = htmlspecialchars(
+                $_POST['shopSearchTerm'], ENT_QUOTES, CONTREXX_CHARSET
+            );
+            $shopSearchPattern .=
+                " AND (company LIKE '%$shopSearchTerm%'
+                    OR firstname LIKE '%$shopSearchTerm%'
+                    OR lastname LIKE '%$shopSearchTerm%'
+                    OR address LIKE '%$shopSearchTerm%'
+                    OR city LIKE '%$shopSearchTerm%'
+                    OR phone LIKE '%$shopSearchTerm%'
+                    OR email LIKE '%$shopSearchTerm%')";
+        }
+        if ($_POST['shopListLetter'] != '') {
+            $shopLetter = htmlspecialchars(
+                $_POST['shopListLetter'], ENT_QUOTES, CONTREXX_CHARSET
+            );
+            $shopListOrder = addslashes(strip_tags($_POST['shopListSort']));
+            $shopSearchPattern .= " AND LEFT($shopListOrder, 1)='$shopLetter'";
+        }
+        if (isset($_POST['shopListSort'])) {
+            $shopCustomerOrder =
+                addslashes(strip_tags($_POST['shopListSort']))." DESC";
+        }
+        // let the user choose whether to see pending orders or not
+        if (!isset($_POST['shopShowPendingOrders'])) {
+            $shopSearchPattern .=
+                " AND order_status>".SHOP_ORDER_STATUS_PENDING;
+        } else {
+            $this->_objTpl->setVariable(
+                'SHOP_SHOW_PENDING_ORDERS_CHECKED', ' checked="checked"'
+            );
+        }
+
         $this->_objTpl->setVariable(array(
             'TXT_CUSTOMER_TYP'              => $_ARRAYLANG['TXT_CUSTOMER_TYP'],
             'TXT_CUSTOMER'                  => $_ARRAYLANG['TXT_CUSTOMER'],
@@ -3508,13 +3453,22 @@ class shopmanager extends ShopLibrary {
             'TXT_ACTION_IS_IRREVERSIBLE'    => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
             'TXT_CONFIRM_CHANGE_STATUS'     => $_ARRAYLANG['TXT_CONFIRM_CHANGE_STATUS'],
             'TXT_SEARCH'                    => $_ARRAYLANG['TXT_SEARCH'],
-            'TXT_SEND_TEMPLATE_TO_CUSTOMER' => str_replace('TXT_ORDER_COMPLETE',$_ARRAYLANG['TXT_ORDER_COMPLETE'],$_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER']),
+            'TXT_SEND_TEMPLATE_TO_CUSTOMER' =>
+                str_replace('TXT_ORDER_COMPLETE',
+                            $_ARRAYLANG['TXT_ORDER_COMPLETE'],
+                            $_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER']
+                ),
             'TXT_MARKED'                    => $_ARRAYLANG['TXT_MARKED'],
             'TXT_SELECT_ALL'                => $_ARRAYLANG['TXT_SELECT_ALL'],
             'TXT_REMOVE_SELECTION'          => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
             'TXT_SELECT_ACTION'             => $_ARRAYLANG['TXT_SELECT_ACTION'],
             'TXT_MAKE_SELECTION'            => $_ARRAYLANG['TXT_MAKE_SELECTION'],
             'TXT_SHOP_SHOW_PENDING_ORDERS'  => $_ARRAYLANG['TXT_SHOP_SHOW_PENDING_ORDERS'],
+            'SHOP_SEARCH_TERM'              => $shopSearchTerm,
+            'SHOP_ORDER_STATUS_MENU'        =>
+                $this->getOrderStatusMenu($shopOrderStatus),
+            'SHOP_CUSTOMER_TYPE_MENU'       =>
+                Customers::getCustomerTypeMenu($shopCustomerType),
         ));
         $this->_objTpl->setGlobalVariable(array(
             'TXT_STATUS'       => $_ARRAYLANG['TXT_STATUS'],
@@ -3524,65 +3478,21 @@ class shopmanager extends ShopLibrary {
             'SHOP_CURRENCY'    => $arrCurrency[$this->objCurrency->defaultCurrencyId]['symbol']
         ));
 
-        // create "search order status" listbox
-        $strShopOrderSearchStatus = '<option value="5" selected="selected">-- '.$_ARRAYLANG['TXT_STATUS']." --</option>\n";
-        foreach ($this->arrOrderStatus as $orderId => $orderStatus) {
-            $strShopOrderSearchStatus .= "<option value='$orderId'>$orderStatus</option>\n";
-        }
-        $this->_objTpl->setVariable(array('SHOP_ORDER_SEARCH_STATUS' => $strShopOrderSearchStatus));
-
-        // check whether a search has been requested
-        $shopCustomerOrder = "date DESC";
-        if (isset($_POST['shopSearchOrders']) OR isset($_POST['shopListLetter'])) {
-            if (   $_POST['shopOrderStatus'] >= 0
-                && $_POST['shopOrderStatus'] <= SHOP_ORDER_STATUS_COUNT) {
-                $shopOrderStatus = intval($_POST['shopOrderStatus']);
-                $shopSearchPattern = " AND order_status='$shopOrderStatus'";
-            }
-
-            if ($_POST['shopCustomer'] <= 1) {
-                $shopCustomer = intval($_POST['shopCustomer']);
-                $shopSearchPattern .= " AND is_reseller=$shopCustomer";
-            }
-            if (!empty($_POST['shopSearchTerm'])) {
-                $searchTerm = htmlspecialchars($_POST['shopSearchTerm'], ENT_QUOTES, CONTREXX_CHARSET);
-                $shopSearchPattern .= " AND (company LIKE '%$searchTerm%' OR firstname LIKE '%$searchTerm%' OR lastname LIKE '%$searchTerm%' OR address LIKE '%$searchTerm%'  OR city LIKE '%$searchTerm%' OR phone LIKE '%$searchTerm%' OR email LIKE '%$searchTerm%')";
-            }
-            if ($_POST['shopListLetter'] != '') {
-                $shopLetter = htmlspecialchars($_POST['shopListLetter'], ENT_QUOTES, CONTREXX_CHARSET);
-                $shopListOrder = addslashes(strip_tags($_POST['shopListSort']));
-                $shopSearchPattern .= " AND LEFT($shopListOrder, 1)='$shopLetter' ";
-            }
-            if (isset($_POST['shopListSort'])) {
-                $shopCustomerOrder = addslashes(strip_tags($_POST['shopListSort']))." DESC";
-            }
-            // let the user choose whether to see pending orders or not
-            if (!isset($_POST['shopShowPendingOrders'])) {
-                $shopSearchPattern = " AND order_status!='0'";
-            } else {
-                $this->_objTpl->setVariable(
-                    'SHOP_SHOW_PENDING_ORDERS_CHECKED', 'checked="checked"'
-                );
-            }
-        }
-
-        // create sql query
         $query = "
             SELECT orderid, firstname, lastname, company,
                    currency_order_sum, selected_currency_id,
                    order_date, customer_note, order_status
               FROM ".DBPREFIX."module_shop_customers c,
                    ".DBPREFIX."module_shop_orders o
-             WHERE c.customerid=o.customerid $shopSearchPattern
-          ORDER BY order_date DESC
+             WHERE c.customerid=o.customerid
+                   $shopSearchPattern
+          ORDER BY $shopCustomerOrder
         ";
-
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-            // if query has errors, call errorhandling
             $this->errorHandling();
         } else {
-            $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+            $pos = (isset($_GET['pos']) ? intval($_GET['pos']) : 0);
             $count = $objResult->RecordCount();
             $shopPagingLimit = intval($_CONFIG['corePagingLimit']);
             $viewPaging = $count > $shopPagingLimit ? true : false;
@@ -3632,13 +3542,14 @@ class shopmanager extends ShopLibrary {
                         'SHOP_ORDER_SUM'    =>
                             $this->objCurrency->getDefaultCurrencyPrice(
                                 $objResult->fields['currency_order_sum']),
-                        'SHOP_ORDER_STATUS' => $this->_getOrderStatusMenu(
+                        'SHOP_ORDER_STATUS' => $this->getOrderStatusMenu(
+                            $objResult->fields['order_status'],
                             'shopOrderStatusId['.
                                 $objResult->fields['orderid'].']',
-                            $objResult->fields['order_status'],
                             'changeOrderStatus('.
                                 $objResult->fields['orderid'].','.
-                                $objResult->fields['order_status'].',this.value)'
+                                $objResult->fields['order_status'].
+                                ', this.value)'
                         )
                     ));
                     $this->_objTpl->parse('orderRow');
@@ -3659,6 +3570,7 @@ class shopmanager extends ShopLibrary {
      * @param   integer $type           1: edit order, 0: just display it
      * @global  mixed   $objDatabase    Database
      * @global  array   $_ARRAYLANG     Language array
+     * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
      */
     function shopShowOrderdetails($templateName, $type)
     {
@@ -3728,9 +3640,9 @@ class shopmanager extends ShopLibrary {
             'TXT_TOTAL_WEIGHT'         => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
             'TXT_NET_PRICE'            => $_ARRAYLANG['TXT_NET_PRICE'],
             'TXT_WARNING_SHIPPER_WEIGHT' => $_ARRAYLANG['TXT_WARNING_SHIPPER_WEIGHT'],
-            ));
+        ));
 
-            $this->_objTpl->setGlobalVariable(array(
+        $this->_objTpl->setGlobalVariable(array(
             'TXT_VIEW_DETAILS'         => $_ARRAYLANG['TXT_VIEW_DETAILS']
         ));
 
@@ -3782,7 +3694,7 @@ class shopmanager extends ShopLibrary {
             if (!$objResult->EOF) {
                 $selectedCurrencyId                  = $objResult->fields['selected_currency_id'];
                 $shopCurrencyOrderSum                = $objResult->fields['currency_order_sum'];
-                $shopShippingPrice                   = $objResult->fields['currency_ship_price'];
+//                $shopShippingPrice                   = $objResult->fields['currency_ship_price'];
                 $shopMailTo                          = $objResult->fields['email'];
                 $shopLastModified                    = $objResult->fields['last_modified'];
                 $countryId                           = $objResult->fields['country_id'];
@@ -3798,8 +3710,12 @@ class shopmanager extends ShopLibrary {
                 'SHOP_ORDERID'          => $objResult->fields['orderid'],
                 'SHOP_DATE'             => $objResult->fields['order_date'],
                 'SHOP_ORDER_STATUS'     => ($type == 1
-                    ?   $this->_getOrderStatusMenu('shopOrderStatusId', $orderStatus, 'swapSendToStatus(this.value)')
-                    :   $this->arrOrderStatus[$orderStatus]),
+                    ? $this->getOrderStatusMenu(
+                        $orderStatus,
+                        'shopOrderStatusId',
+                        'swapSendToStatus(this.value)'
+                      )
+                    : $this->arrOrderStatus[$orderStatus]),
                 'SHOP_SEND_MAIL_STYLE'  =>
                     ($orderStatus == SHOP_ORDER_STATUS_CONFIRMED
                         ? 'display: inline;'
@@ -4185,8 +4101,6 @@ class shopmanager extends ShopLibrary {
     function shopStoreOrderdetails()
     {
         global $objDatabase, $_ARRAYLANG;
-        //initalize vars
-        $shopOrderSum = 0;
         $shopOrderId = intval($_POST['orderid']);
 
         //begin language variables
@@ -4209,10 +4123,10 @@ class shopmanager extends ShopLibrary {
             $shopMailSubject = str_replace("<DATE>",$_POST['shopLastModified'],$shopMailSubject);
             $result = $this->shopSendmail($shopMailTo,$shopMailFrom,$shopMailFromText,$shopMailSubject,$shopMailBody,"");
             if ($result) {
-                $this->strOkMessage .= " ".sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'],$shopMailTo)."\n";
+                $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
             }
             else {
-                $this->strErrMessage .= $_ARRAYLANG['TXT_MESSAGE_SEND_ERROR'];
+                $this->addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
             }
         }
 
@@ -4299,7 +4213,7 @@ class shopmanager extends ShopLibrary {
             // if query has errors, call errorhandling
             $this->errorHandling();
         } else  {
-            $this->strOkMessage .= $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+            $this->addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
         }
     }
 
@@ -4311,25 +4225,25 @@ class shopmanager extends ShopLibrary {
      * @param    integer  $selectedid
      * @return   string   $result
      */
-    function shopDeleteOrder($shopOrderId = "")
+    function shopDeleteOrder($shopOrderId=0)
     {
         global $objDatabase, $_ARRAYLANG;
 
         $arrOrderId = array();
 
         // prepare the array $arrOrderId with the ids of the orders to delete
-        if (empty($shopOrderId)) {
+        if (!$shopOrderId) {
             if (isset($_GET['orderId']) && !empty($_GET['orderId'])) {
                 array_push($arrOrderId,$_GET['orderId']);
             } elseif (isset($_POST['selectedOrderId']) && !empty($_POST['selectedOrderId'])) {
                 $arrOrderId = $_POST['selectedOrderId'];
             }
         } else {
-            array_push($arrOrderId,$shopOrderId);
+            array_push($arrOrderId, $shopOrderId);
         }
 
         // delete each selected order
-        if (count($arrOrderId)>0) {
+        if (count($arrOrderId) > 0) {
             foreach ($arrOrderId as $oId) {
                 $query = "DELETE FROM ".DBPREFIX."module_shop_order_items_attributes WHERE order_id = ".intval($oId);
                 if ($objDatabase->Execute($query)) {
@@ -4339,7 +4253,7 @@ class shopmanager extends ShopLibrary {
                         if ($objDatabase->Execute($query)) {
                             $query = "DELETE FROM ".DBPREFIX."module_shop_orders WHERE orderid = ".intval($oId);
                             if ($objDatabase->Execute($query)) {
-                                $this->strOkMessage = $_ARRAYLANG['TXT_ORDER_DELETED'];
+                                $this->addMessage($_ARRAYLANG['TXT_ORDER_DELETED']);
                             } else {
                                 $this->errorHandling();
                             }
@@ -4354,7 +4268,7 @@ class shopmanager extends ShopLibrary {
                 }
             } // foreach
         }
-        $this->strOkMessage .= $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+        $this->addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
         return true;
     }
 
@@ -4366,11 +4280,8 @@ class shopmanager extends ShopLibrary {
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-        //initalize vars
-        $shopOrderSum = 0;
-        $shopReseller = 0;
-        $pos=0;
-        $i=0;
+        $pos = 0;
+        $i   = 0;
 
         //set template
         $this->_objTpl->loadTemplateFile("module_shop_customers.html", true, true);
@@ -4427,9 +4338,16 @@ class shopmanager extends ShopLibrary {
                 $shopSearchPattern .= " AND is_reseller = $shopCustomer";
             }
             if ($_POST['shopSearchTerm'] != '') {
-                $searchTerm = htmlspecialchars($_POST['shopSearchTerm'], ENT_QUOTES, CONTREXX_CHARSET);
-                $shopSearchPattern .= " AND ( customerid LIKE '%$searchTerm%' OR  company LIKE '%$searchTerm%' OR firstname LIKE '%$searchTerm%' OR lastname LIKE '%$searchTerm%' OR address LIKE '%$searchTerm%'  OR city LIKE '%$searchTerm%' OR phone LIKE '%$searchTerm%' OR email LIKE '%$searchTerm%' )";
-
+                $shopSearchTerm = htmlspecialchars($_POST['shopSearchTerm'], ENT_QUOTES, CONTREXX_CHARSET);
+                $shopSearchPattern .=
+                    " AND (customerid LIKE '%$shopSearchTerm%'
+                        OR company LIKE '%$shopSearchTerm%'
+                        OR firstname LIKE '%$shopSearchTerm%'
+                        OR lastname LIKE '%$shopSearchTerm%'
+                        OR address LIKE '%$shopSearchTerm%'
+                        OR city LIKE '%$shopSearchTerm%'
+                        OR phone LIKE '%$shopSearchTerm%'
+                        OR email LIKE '%$shopSearchTerm%')";
             }
             if ($_POST['shopListLetter'] != '') {
                 $shopLetter = htmlspecialchars($_POST['shopListLetter'], ENT_QUOTES, CONTREXX_CHARSET);
@@ -4516,8 +4434,7 @@ class shopmanager extends ShopLibrary {
             $arrCustomerId = $_POST['selectedCustomerId'];
         }
 
-        $message = "";
-        if (count($arrCustomerId)>0) {
+        if (count($arrCustomerId) > 0) {
             foreach ($arrCustomerId as $cId) {
                 $query = "SELECT orderid FROM ".DBPREFIX."module_shop_orders
                       WHERE customerid = ".intval($cId);
@@ -4526,14 +4443,14 @@ class shopmanager extends ShopLibrary {
                     while (!$objResult->EOF) {
                         $shopOrderId = $objResult->fields['orderid'];
                         $this->shopDeleteOrder($shopOrderId);
-                        $message = $_ARRAYLANG['TXT_ALL_ORDERS_DELETED'];
                         $objResult->MoveNext();
                     }
+                    $this->addMessage($_ARRAYLANG['TXT_ALL_ORDERS_DELETED']);
                 }
                 $query = "DELETE FROM ".DBPREFIX."module_shop_customers
                       WHERE customerid = ".intval($cId);
                 if ($objDatabase->Execute($query)) {
-                    $this->strOkMessage = $_ARRAYLANG['TXT_CUSTOMER_DELETED']." ".$message;
+                    $this->addMessage($_ARRAYLANG['TXT_CUSTOMER_DELETED']);
                 } else {
                     $this->errorHandling();
                 }
@@ -4659,7 +4576,7 @@ class shopmanager extends ShopLibrary {
                         //if query has errors, call errorhandling
                         $this->errorHandling();
                     } else {
-                        $this->strOkMessage .= $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']."\n";
+                        $this->addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
                     }
                     //check if the logindata must be sent
                     if (isset($_POST['shopSendLoginData'])) {
@@ -4677,17 +4594,17 @@ class shopmanager extends ShopLibrary {
                         $shopMailBody = str_replace("<CUSTOMER_LASTNAME>", $shopLastname, $shopMailBody);
                         $result = $this->shopSendmail($shopMailTo,$shopMailFrom,$shopMailFromText,$shopMailSubject,$shopMailBody,"");
                         if ($result) {
-                            $this->strOkMessage .= sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'],$shopMailTo)."\n";
+                            $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
                         } else {
-                            $this->strErrMessage .= $_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']."\n";
+                            $this->addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
                             return false;
                         }
                     }
                 } else {
-                    $this->strErrMessage .= $_ARRAYLANG['TXT_USERNAME_USED_BY_OTHER_CUSTOMER'];
+                    $this->addError($_ARRAYLANG['TXT_USERNAME_USED_BY_OTHER_CUSTOMER']);
                 }
             } else {
-                $this->strErrMessage .= $_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER'];
+                $this->addError($_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER']);
             }
         } //end if
 
@@ -4773,6 +4690,7 @@ class shopmanager extends ShopLibrary {
                 $objResult->MoveNext();
             }
         }
+        return true;
     }
 
 
@@ -4903,8 +4821,9 @@ class shopmanager extends ShopLibrary {
     /**
      * Add a new customer to the Database.
      *
-     * Sets Ok/Err messages with status.
+     * Sets Ok/Err messages according to the outcome.
      * @return  boolean     True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
      */
     function shopAddCustomer()
     {
@@ -4958,7 +4877,7 @@ class shopmanager extends ShopLibrary {
                     $this->errorHandling();
                 } else {
                     $customerid = $objDatabase->Insert_ID();
-                    $this->strOkMessage .= $_ARRAYLANG['TXT_SHOP_INSERTED_CUSTOMER'].", ID $customerid\n";
+                    $this->addMessage($_ARRAYLANG['TXT_SHOP_INSERTED_CUSTOMER'].", ID $customerid");
                 }
                 //check if the logindata must be sent
                 if (isset($_POST['shopSendLoginData'])) {
@@ -4976,84 +4895,21 @@ class shopmanager extends ShopLibrary {
                     $shopMailBody = str_replace("<CUSTOMER_LASTNAME>", $shopLastname, $shopMailBody);
                     $result = $this->shopSendmail($shopMailTo,$shopMailFrom,$shopMailFromText,$shopMailSubject,$shopMailBody,"");
                     if ($result) {
-                        $this->strOkMessage .= sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'],$shopMailTo)."\n";
+                        $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
                     } else {
-                        $this->strErrMessage .= $_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']."\n";
+                        $this->addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
                         return false;
                     }
                 }
             } else {
-                $this->strErrMessage .= $_ARRAYLANG['TXT_USERNAME_USED_BY_OTHER_CUSTOMER'];
+                $this->addError($_ARRAYLANG['TXT_USERNAME_USED_BY_OTHER_CUSTOMER']);
                 return false;
             }
         } else {
-            $this->strErrMessage .= $_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER'];
+            $this->addError($_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER']);
             return false;
         }
         return true;
-    }
-
-
-    /**
-     * Get dropdown menue
-     *
-     * Gets backe a dropdown menu like  <option value='catid'>Catname</option>
-     *
-     * @param    integer  $selectedid
-     * @return   string   $result
-     */
-    function getCatMenu($selectedid=0)
-    {
-        $result = $this->doShopCatMenu($parcat=0, 0,$selectedid);
-        return $result;
-    }
-
-
-    /**
-     * Returns the shop categories menu
-     *
-     * @version  1.0      initial version
-     * @param    integer  $parcat
-     * @param    integer  $level
-     * @param    integer  $selectedid
-     * @return   string   $result
-     * @todo    Optional argument $parcat *MUST NOT* be the first argument!
-     */
-    function doShopCatMenu($parcat=0,$level,$selectedid)
-    {
-        global $objDatabase;
-
-        $result="";
-        $query = "SELECT catid, parentid, catname ".
-            "FROM ".DBPREFIX."module_shop_categories ".
-            "ORDER BY parentid ASC, catsorting ASC";
-        if (($objResult = $objDatabase->Execute($query)) === false) {
-            $this->errorHandling();
-            return false;
-        }
-        while (!$objResult->EOF) {
-            $navtable[$objResult->fields['parentid']][$objResult->fields['catid']] = stripslashes($objResult->fields['catname']);
-            $objResult->MoveNext();
-        }
-
-        $list=$navtable[$parcat];
-        if (is_array($list)) {
-            while (list($key,$val)=each($list)) {
-                $selected = '';
-                $output = str_repeat('...', $level);
-                if ($selectedid == $key) {
-                    $selected = "selected='selected'";
-                }
-                $result.= "<option value='$key' $selected>$output".htmlentities($val, ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
-// fix: the following line produces infinite loops if parent == child
-//                if (isset($navtable[$key])) {
-                if ( ($key != $parcat) &&
-                     (isset($navtable[$key])) ) {
-                    $result.= $this->doShopCatMenu($key,$level+1,$selectedid);
-                }
-            }
-        }
-        return $result;
     }
 
 
@@ -5157,14 +5013,19 @@ class shopmanager extends ShopLibrary {
 
         $_SESSION['shopP']['shopSearchTerm'] = mysql_escape_string(stripslashes(trim($_REQUEST['shopSearchTerm'])));
 
-        $this->_objTpl->setVariable("SHOP_CAT_MENU", $this->getCatMenu($selectedid=$_SESSION['shopP']['catId']));
-        $this->_objTpl->setVariable("SHOP_SEARCH_TERM", $_REQUEST['shopSearchTerm']);
+        $this->_objTpl->setVariable(array(
+            "SHOP_CAT_MENU" =>
+                $this->objShopCategories->getShopCategoriesMenu(
+                    $_SESSION['shopP']['catId'], false
+                ),
+            "SHOP_SEARCH_TERM" => $_REQUEST['shopSearchTerm'],
+        ));
 
-        $q_search = "";
-        $q1_category = "";
-        $q2_category = "";
+        $q_search    = '';
+        $q1_category = '';
+        $q2_category = '';
         if ($_SESSION['shopP']['catId'] != 0) {
-            $q1_category = "," .DBPREFIX."module_shop_categories AS c";
+            $q1_category = ','.DBPREFIX.'module_shop_categories c';
             $q2_category = "AND ( p.catid = c.catid AND c.catid = {$_SESSION['shopP']['catId']}) ";
         }
 
@@ -5175,14 +5036,14 @@ class shopmanager extends ShopLibrary {
             "OR p.id LIKE '%{$_SESSION['shopP']['shopSearchTerm']}%' ".
             "OR p.product_id LIKE '%{$_SESSION['shopP']['shopSearchTerm']}%')";
         }
-        $shopQuerySpecialoffer = "";
+        $shopQuerySpecialoffer = '';
         if (isset($_REQUEST['specialoffer'])) {
-            $shopQuerySpecialoffer    = " AND p.is_special_offer = 1 ";
+            $shopQuerySpecialoffer    = ' AND p.is_special_offer = 1 ';
         }
 
         // begin store changed values
         if (isset($_REQUEST['shopSaveProductAttributes'])) {
-            foreach ($_POST['shopProductId'] AS $id => $elem) {
+            foreach (array_keys($_POST['shopProductId']) as $id) {
                 $shopProductIdentifier = addslashes(strip_tags($_POST['identifier'][$id]));
                 $shopProductIdentifierOld = $_POST['identifierOld'][$id];
                 $shopSortOrder        = intval($_POST['shopSortOrder'][$id]);
@@ -5221,7 +5082,7 @@ class shopmanager extends ShopLibrary {
                         // the NULL weight will be silently ignored by the database.
                         if ($shopWeight === 'NULL') {
                             // 'NULL', the format was invalid. cast error
-                            $this->strErrMessage = $_ARRAYLANG['TXT_WEIGHT_INVALID_IGNORED'];
+                            $this->addError($_ARRAYLANG['TXT_WEIGHT_INVALID_IGNORED']);
                         } else {
                             // if getWeight() returns any other value, the format is valid.
                             // verify that the numeric value has changed as well; might
@@ -5271,7 +5132,7 @@ class shopmanager extends ShopLibrary {
                         $this->errorHandling();
                         return false;
                     } else {
-                        $this->strOkMessage =  $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+                        $this->addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
                     }
                 }
             }
@@ -5282,7 +5143,7 @@ class shopmanager extends ShopLibrary {
                 "p.shortdesc, p.stock, p.discountprice, p.is_special_offer, p.status, p.sort_order, ".
                 "p.vat_id, p.weight, p.handler ".
             "FROM ".DBPREFIX."module_shop_products AS p $q1_category ".
-            "WHERE 1 " . $q2_category . $q_search . $shopQuerySpecialoffer .
+            "WHERE 1 ".$q2_category.$q_search.$shopQuerySpecialoffer .
             "ORDER BY p.sort_order ASC, p.id DESC";
 
         if (!($objResult = $objDatabase->Execute($q))) {
@@ -5299,8 +5160,8 @@ class shopmanager extends ShopLibrary {
                     $pos,
                     "&amp;cmd=shop&amp;act=products&amp;catId=".
                         $_SESSION['shopP']['catId'],
-                        "<b>".$_ARRAYLANG['TXT_PRODUCTS']."</b>",
-                    $viewPaging
+                        "<b>".$_ARRAYLANG['TXT_PRODUCTS']."</b>"
+//                    ,$viewPaging
                 )
             );
         }
@@ -5360,6 +5221,7 @@ class shopmanager extends ShopLibrary {
             $i++;
             $objResult->MoveNext();
         }
+        return true;
     }
 
 
@@ -5405,19 +5267,19 @@ class shopmanager extends ShopLibrary {
         'TXT_ORDER_SUM'           => $_ARRAYLANG['TXT_ORDER_SUM'],
         'TXT_SUM'                 => $_ARRAYLANG['TXT_SUM'],
         ));
-        //get the first orderdate, if its empty, no order has been made!
+        // Get the first order date, if its empty, no order has been made yet!
         $query = "SELECT DATE_FORMAT(order_date,'%Y') AS year, DATE_FORMAT(order_date,'%m') AS month
                   FROM ".DBPREFIX."module_shop_orders
                   WHERE order_status = '1' OR order_status = '4'
                   ORDER BY order_date asc";
-        if ($objResult = $objDatabase->SelectLimit($query, 1)) {
-            if (!$objResult->EOF) {
-                $shopOrders = true;
-                $shopOrderStartyear = $objResult->fields['year'];
-                $shopOrderStartmonth = $objResult->fields['month'];
-            }
-        } else {
+        $objResult = $objDatabase->SelectLimit($query, 1);
+        if (!$objResult) {
             $this->errorHandling();
+        }
+        if (!$objResult->EOF) {
+            $shopOrders = true;
+            $shopOrderStartyear = $objResult->fields['year'];
+            $shopOrderStartmonth = $objResult->fields['month'];
         }
         if ($shopOrders) { //some orders has been made
             //query to get the ordersum, total orders, best month
@@ -5464,7 +5326,8 @@ class shopmanager extends ShopLibrary {
                              ".DBPREFIX."module_shop_orders AS B
                       WHERE A.orderid = B.orderid
                       AND (B.order_status = '1' OR B.order_status = '4')";
-            if ($objResult = $objDatabase->SelectLimit($query, 1)) {
+            $objResult = $objDatabase->SelectLimit($query, 1);
+            if ($objResult) {
                 if (!$objResult->EOF) {
                     $shopTotalSoldProducts = $objResult->fields['shopTotalSoldProducts'];
                     $objResult->MoveNext();
@@ -5557,6 +5420,7 @@ class shopmanager extends ShopLibrary {
                            ORDER BY year, month DESC";
             }
 
+            $arrayResults = array();
             if (($objResult = $objDatabase->Execute($query)) === false) {    //execute the query again with paging limit set
                 $this->errorHandling();
             } else {
@@ -5564,7 +5428,6 @@ class shopmanager extends ShopLibrary {
                     while (!$objResult->EOF) {
                         // set currency id
                         $this->objCurrency->activeCurrencyId = $objResult->fields['selected_currency_id'];
-
                         $key = $objResult->fields['id'];
                         $arrayResults[$key]['column2'] = $arrayResults[$key]['column2'] + $objResult->fields['shopColumn2'];
                         $arrayResults[$key]['column1'] = "<a href='?cmd=shop&amp;act=products&amp;tpl=manage&amp;id=".$objResult->fields['id']."' title=\"".$objResult->fields['title']."\">".$objResult->fields['title']."</a>";
@@ -5574,7 +5437,7 @@ class shopmanager extends ShopLibrary {
                         $objResult->MoveNext();
                     }
                     if (is_array($arrayResults)) {
-                        foreach ($arrayResults AS $column1 => $entry) {
+                        foreach ($arrayResults AS $entry) {
                             $sumColumn2 = $sumColumn2 + $entry['column2'];
                             $sumColumn3 = $sumColumn3 + $entry['column3'];
                             $sumColumn4 = $sumColumn4 + $entry['column4'];
@@ -5621,7 +5484,7 @@ class shopmanager extends ShopLibrary {
                 $arrCurrency = $this->objCurrency->getCurrencyArray();
                 $i=0; //used for row-class
                 if (is_array($arrayResults)) {
-                    foreach ($arrayResults AS $column1 => $entry) {
+                    foreach ($arrayResults as $entry) {
                         if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
                         $this->_objTpl->setVariable(array(
                         'SHOP_ROWCLASS'  => $class,
@@ -5674,7 +5537,6 @@ class shopmanager extends ShopLibrary {
     {
         global $_ARRAYLANG;
 
-        $selected = '';
         $strMenu  = '';
         $months   = explode(',', $_ARRAYLANG['TXT_MONTH_ARRAY']);
         foreach ($months as $index => $name) {
@@ -5693,7 +5555,6 @@ class shopmanager extends ShopLibrary {
 
     function shop_getYearDropdwonMenu($shopStartYear, $selectedOption='')
     {
-        $selected    = '';
         $strMenu     = '';
         $shopYearNow = date('Y');
         while ($shopStartYear <= $shopYearNow) {
@@ -5717,7 +5578,7 @@ class shopmanager extends ShopLibrary {
     function errorHandling()
     {
         global $_ARRAYLANG;
-        $this->strErrMessage .= $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'].'<br />';
+        $this->addError($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
     }
 
 
@@ -5875,7 +5736,7 @@ class shopmanager extends ShopLibrary {
                 $this->_objTpl->setVariable("PDF_CATEGORY_DISABLED",'');
                 $this->_objTpl->setVariable("PDF_CATEGORY_CHECKED",''); //empty the field
 
-                foreach ($selectedCategories as $checkedKey => $checkedValue) {
+                foreach ($selectedCategories as $checkedValue) {
                     if ($objResult->fields['catid'] == $checkedValue) { // this field is checked
                         $this->_objTpl->setVariable("PDF_CATEGORY_CHECKED",'checked');
                     }
@@ -5920,8 +5781,7 @@ class shopmanager extends ShopLibrary {
 
             foreach ($arrSelectedMainCats as $key => $value) {
                 $this->doCategoryTreeActiveOnly($value);
-
-                foreach ($this->categoryTreeName as $catKey => $catValue) {
+                foreach (array_keys($this->categoryTreeName) as $catKey) {
                     $selectedCategories .= $catKey.",";
                 }
                 $selectedCategories .= $value.","; //I also have to add the maincategory!! IMPORTANT
@@ -5938,22 +5798,21 @@ class shopmanager extends ShopLibrary {
             $_POST['pricelistName'] = $_ARRAYLANG['TXT_NO_NAME'];
         }
 
-        $query = "INSERT INTO ".DBPREFIX."module_shop_pricelists ".
-        "SET id=          '', ".
-        "name=        '".addslashes(strip_tags($_POST['pricelistName']))."', ".
-        "lang_id=      ".intval($_POST['langId']).", ".
-        "border_on=    ".intval($_POST['borderOn']).", ".
-        "header_on=    ".intval($_POST['headerOn']).", ".
-        "header_left= '".addslashes(trim($_POST['headerTextLeft']))."', ".
-        "header_right='".addslashes(trim($_POST['headerTextRight']))."', ".
-        "footer_on=    ".intval($_POST['footerOn']).", ".
-        "footer_left= '".addslashes(trim($_POST['footerTextLeft']))."', ".
-        "footer_right='".addslashes(trim($_POST['footerTextRight']))."', ".
-        "categories=  '".addslashes($selectedCategories)."'";
-
+        $query = "
+            INSERT INTO ".DBPREFIX."module_shop_pricelists
+            SET id='',
+                name='".addslashes(strip_tags($_POST['pricelistName']))."',
+                lang_id=".intval($_POST['langId']).",
+                border_on=".intval($_POST['borderOn']).",
+                header_on=".intval($_POST['headerOn']).",
+                header_left='".addslashes(trim($_POST['headerTextLeft']))."',
+                header_right='".addslashes(trim($_POST['headerTextRight']))."',
+                footer_on=".intval($_POST['footerOn']).",
+                footer_left='".addslashes(trim($_POST['footerTextLeft']))."',
+                footer_right='".addslashes(trim($_POST['footerTextRight']))."',
+                categories='".addslashes($selectedCategories)."'";
         $objDatabase->Execute($query);
-
-        $this->strOkMessage = $_ARRAYLANG['TXT_PRODUCT_LIST_CREATED_SUCCESSFUL'];
+        $this->addMessage($_ARRAYLANG['TXT_PRODUCT_LIST_CREATED_SUCCESSFUL']);
     }
 
 
@@ -6044,8 +5903,8 @@ class shopmanager extends ShopLibrary {
                 $arrMainCategories[$objResult->fields['catid']] = $objResult->fields['catid'];
                 $objResult->MoveNext();
             }
-            foreach ($selectedCategories as $key => $value) {
-                foreach ($arrMainCategories as $mainKey => $mainValue) {
+            foreach ($selectedCategories as $value) {
+                foreach ($arrMainCategories as $mainValue) {
                     if ($value == $mainValue) {
                         $arrSelectedCategories[$mainValue] = $mainValue;
                     }
@@ -6093,8 +5952,7 @@ class shopmanager extends ShopLibrary {
 
             foreach ($arrSelectedMainCats as $key => $value) {
                 $this->doCategoryTreeActiveOnly($value);
-
-                foreach ($this->categoryTreeName as $catKey => $catValue) {
+                foreach (array_keys($this->categoryTreeName) as $catKey) {
                     $selectedCategories .= $catKey.",";
                 }
                 $selectedCategories .= $value.","; //I also have to add the maincategory!! IMPORTANT
@@ -6124,7 +5982,7 @@ class shopmanager extends ShopLibrary {
                  "WHERE id=".$pricelistID;
         $objDatabase->Execute($query);
 
-        $this->strOkMessage = $_ARRAYLANG['TXT_PRODUCT_LIST_UPDATED_SUCCESSFUL'];
+        $this->addMessage($_ARRAYLANG['TXT_PRODUCT_LIST_UPDATED_SUCCESSFUL']);
     }
 
 
@@ -6134,26 +5992,29 @@ class shopmanager extends ShopLibrary {
      * @global  mixed   $objDatabase
      * @global  array   $_ARRAYLANG
      */
-    function shopPricelistDelete($pricelistID = "")
+    function shopPricelistDelete($pricelistID='')
     {
         global $objDatabase, $_ARRAYLANG;
 
         $arrPricelistId = array();
         if (empty($pricelistID)) {
             if (isset($_GET['id']) && !empty($_GET['id'])) {
-                array_push($arrPricelistId,$_GET['id']);
-            } elseif (isset($_POST['selectedPricelistId']) && !empty($_POST['selectedPricelistId'])) {
+                array_push($arrPricelistId, $_GET['id']);
+            } elseif (!empty($_POST['selectedPricelistId'])) {
                 $arrPricelistId = $_POST['selectedPricelistId'];
             }
         } else {
             array_push($arrPricelistId, $pricelistID);
         }
 
-        if (count($arrPricelistId)>0) {
+        if (count($arrPricelistId)) {
             foreach ($arrPricelistId as $plId) {
-                $query = "DELETE FROM ".DBPREFIX."module_shop_pricelists WHERE id=".intval($plId);
+                $query = "
+                    DELETE FROM ".DBPREFIX."module_shop_pricelists
+                     WHERE id=".intval($plId)
+                ;
                 if ($objDatabase->Execute($query)) {
-                    $this->strOkMessage = $_ARRAYLANG['TXT_PRICELIST_MESSAGE_DELETED'];
+                    $this->addMessage($_ARRAYLANG['TXT_PRICELIST_MESSAGE_DELETED']);
                 } else {
                     $this->errorHandling();
                 }
@@ -6169,6 +6030,7 @@ class shopmanager extends ShopLibrary {
      * @return  string                  The HTML code string
      * @global  mixed   $objDatabase
      * @global  array   $_ARRAYLANG
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function getManufacturerMenu($selectedId=0)
@@ -6199,6 +6061,41 @@ class shopmanager extends ShopLibrary {
         $strMenu .= '</select>';
         return $strMenu;
     }
+
+
+    /**
+     * Adds the string $strErrorMessage to the error messages.
+     *
+     * If necessary, inserts a line break tag (<br />) between
+     * error messages.
+     * @param   string  $strErrorMessage    The error message to add
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function addError($strErrorMessage)
+    {
+        $this->strErrMessage .=
+            ($this->strErrMessage != '' && $strErrorMessage != ''
+                ? '<br />' : ''
+            ).$strErrorMessage;
+    }
+
+
+    /**
+     * Adds the string $strOkMessage to the success messages.
+     *
+     * If necessary, inserts a line break tag (<br />) between
+     * messages.
+     * @param   string  $strOkMessage       The message to add
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function addMessage($strOkMessage)
+    {
+        $this->strOkMessage .=
+            ($this->strOkMessage != '' && $strOkMessage != ''
+                ? '<br />' : ''
+            ).$strOkMessage;
+    }
+
 }
 
 ?>

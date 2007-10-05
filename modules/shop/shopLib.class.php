@@ -91,14 +91,17 @@ class ShopLibrary
      */
     function _getShopImagesFromBase64String($base64Str)
     {
-        if(strpos($base64Str, ':') === false) {
+        // Pre-init array to avoid "undefined index" notices
+        $arrPictures = array(
+            1 => array('img' => '', 'width' => 0, 'height' => 0),
+            2 => array('img' => '', 'width' => 0, 'height' => 0),
+            3 => array('img' => '', 'width' => 0, 'height' => 0)
+        );
+        if (strpos($base64Str, ':') === false) {
             // have to return an array with the desired number of elements
             // and an empty file name in order to show the "dummy" picture(s)
-            return array(
-                1 => array('img' => ''),
-            );
+            return $arrPictures;
         }
-        $arrPictures = array();
         $i = 0;
         foreach (explode(':', $base64Str) as $imageData) {
             list($shopImage, $shopImage_width, $shopImage_height) = explode('?', $imageData);
@@ -111,7 +114,6 @@ class ShopLibrary
                 'height' => $shopImage_height,
             );
         }
-
         return $arrPictures;
     }
 
@@ -237,24 +239,38 @@ class ShopLibrary
     /**
      * Returns a dropdown menu string with all available order status.
      *
-     * @param   string  $menuName   Optional menu name
-     * @param   string  $selectedId Optional preselected status ID
-     * @param   string  $onchange   Optional onchange callback function
-     * @return  string  $menu       The dropdown menu string
+     * @param   string  $selectedId     Optional preselected status ID
+     * @param   string  $menuName       Optional menu name
+     * @param   string  $onchange       Optional onchange callback function
+     * @return  string  $menu           The dropdown menu string
+     * @global  array   $_ARRAYLANG     Language array
      */
-    function _getOrderStatusMenu($menuName='orderStatusId', $selectedId='', $onchange='')
+    function getOrderStatusMenu($selectedStatus=-1, $menuName='', $onchange='')
     {
-        $menu =
-            '<select name="'.$menuName.'" id="'.$menuName.'" '.
-            ($onchange != '' ? 'onchange="'.$onchange.'"' : '').">\n";
-        foreach ($this->arrOrderStatus as $statusId => $strStatus) {
-            $menu .= '<option value="'.$statusId.'" '.
-            ($selectedId == $statusId ? 'selected="selected"' : '').
-            '>'.$strStatus."</option>\n";
+        global $_ARRAYLANG;
+
+        $menu = '';
+        foreach ($this->arrOrderStatus as $status => $statusText) {
+            $menu .= '<option value="'.$status.'" '.
+            ($selectedStatus == $status ? 'selected="selected"' : '').
+            '>'.$statusText."</option>\n";
         }
-        $menu .= "</select>\n";
+        if ($menuName != '') {
+            $menu =
+                '<select name="'.$menuName.'" id="'.$menuName.'" '.
+                ($onchange != '' ? 'onchange="'.$onchange.'"' : '').
+                ">\n".$menu."</select>\n";
+        } else {
+            $menu =
+                '<option value="-1">-- '.
+                $_ARRAYLANG['TXT_STATUS'].
+                " --</option>\n".
+                $menu;
+        }
         return $menu;
     }
+
+
 
 
 /*  replaced by Shipment.class!

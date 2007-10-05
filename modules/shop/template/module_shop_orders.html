@@ -60,14 +60,13 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     </tr>
     <tr class=row1>
       <td>
-        <input type="text" name="shopSearchTerm" size="40" maxlength="255" />
-        <select name="shopCustomer">
-        	<option value="2" selected>-- {TXT_CUSTOMER_TYP} --</option>
-			<option value="0">{TXT_CUSTOMER}</option>
-			<option value="1">{TXT_RESELLER}</option>
+        <input type="text" name="shopSearchTerm" size="40" maxlength="255"
+          value="{SHOP_SEARCH_TERM}" />
+        <select name="shopCustomerType">
+          {SHOP_CUSTOMER_TYPE_MENU}
         </select>
         <select name="shopOrderStatus">
-        	{SHOP_ORDER_SEARCH_STATUS}
+        	{SHOP_ORDER_STATUS_MENU}
         </select>
         <input type="submit" name="shopSearchOrders" value="{TXT_SEARCH}" />
       </td>
@@ -81,7 +80,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         </select>
         &nbsp;&nbsp;&nbsp;
         <label for="shopShowPendingOrders">{TXT_SHOP_SHOW_PENDING_ORDERS}</label>
-        <input type="checkbox" {SHOP_SHOW_PENDING_ORDERS_CHECKED} id="shopShowPendingOrders" name="shopShowPendingOrders" onchange="document.formSearchOrders.submit();" />
+        <input type="checkbox"{SHOP_SHOW_PENDING_ORDERS_CHECKED} id="shopShowPendingOrders" name="shopShowPendingOrders" onchange="document.formSearchOrders.submit();" />
       </td>
     </tr>
     <tr class=row1>

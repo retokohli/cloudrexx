@@ -108,14 +108,12 @@ class ShopCategories
     {
         // Return the same array if it's already been initialized
         if (is_array($this->arrShopCategory)) {
-//echo("ShopCategories::getTreeArray(): INFO: Returning present array.<br />");
             return $this->arrShopCategory;
         }
         // Otherwise, initialize it now
         if ($this->buildTreeArray(
             $flagFull, $selectedId, $parentCategoryId, $flagActiveOnly, 0, $maxlevel
         )) {
-//echo("ShopCategories::getTreeArray(): INFO: Made array:<br />");var_export($this->arrShopCategory);echo("<br />");die();
             return $this->arrShopCategory;
         }
         // It failed, probably due to a value of $selectedId that doesn't
@@ -126,7 +124,6 @@ class ShopCategories
             );
         }
         // If that doesn't help...
-//echo("ShopCategories::getTreeArray(selectedId=$selectedId, parentCategoryId=$parentCategoryId, flagActiveOnly=$flagActiveOnly, maxlevel=$maxlevel): ERROR: Failed to initialize array for parent ShopCategory ID $parentCategoryId!<br />");
         return false;
     }
 
@@ -203,35 +200,15 @@ class ShopCategories
 
         // Set up the trail from the root (0, zero) to the selected ShopCategory
         if (!$this->buildTrailArray($selectedId)) {
-//echo("ShopCategories::buildTreeArray($parentCategoryId, $flagActiveOnly, $level, $maxlevel): ERROR! Failed to build trail array!<br />");
             return false;
         }
-//echo("ShopCategories::buildTreeArray($parentCategoryId, $flagActiveOnly, $level, $maxlevel): INFO: Made Trail: ");var_export($this->arrTrail);echo("<br />");
 
         if (!$this->buildTreeArrayRecursive(
             $flagFull, $selectedId, $parentCategoryId,
             $flagActiveOnly, $level, $maxlevel
         )) {
-//echo("ShopCategories::buildTreeArray($parentCategoryId, $flagActiveOnly, $level, $maxlevel): ERROR! Failed to build tree array!<br />");
             return false;
         }
-//echo("ShopCategories::buildTreeArray($parentCategoryId, $flagActiveOnly, $level, $maxlevel):<br />");var_export($this->arrShopCategory);echo("<br />");
-/*
-        $this->arrShopCategoryVirtual = array();
-        $this->arrShopCategoryVirtualIndex = array();
-        $arrVirtualCategories = $this->getVirtualCategoryArray(true);
-        foreach ($arrVirtualCategories as $arrVirtualCategory) {
-            if (!$this->buildTreeArrayVirtual(
-                $arrVirtualCategory['id'], $flagActiveOnly, $level, $maxlevel
-            )) {
-                return false;
-            }
-        }
-//echo("ShopCategories::buildTreeArray($parentCategoryId, $flagActiveOnly, $level, $maxlevel):<br />");
-//var_export($this->arrShopCategoryVirtual);
-//echo("<br />");die();
-        // Unite the two arrays
-*/
         return true;
     }
 
@@ -274,7 +251,6 @@ class ShopCategories
             );
         // Has there been an error?
         if ($arrShopCategory === false) {
-//echo("ShopCategories::buildTreeArray(parentCategoryId=$parentCategoryId, flagActiveOnly=$flagActiveOnly, level=$level, maxlevel=$maxlevel): ERROR: Failed to get child Category IDs!<br />");
             return false;
         }
         foreach ($arrShopCategory as $objShopCategory) {
@@ -290,25 +266,14 @@ class ShopCategories
                 'flags'    => $objShopCategory->flags,
                 'level'    => $level,
             );
-//echo("ShopCategories::buildTreeArray(): INFO: Made array: ");var_export($this->arrShopCategory[$index]);echo("<br />");
-//if ($objShopCategory->parentId) echo("ShopCategories::buildTreeArray(): INFO: ID $id, my index $index, parent index {$this->arrShopCategoryIndex[$objShopCategory->parentId]}<br />");
             $this->arrShopCategoryIndex[$id] = $index;
             // Get the grandchildren if desired
             if (($maxlevel == 0 || $level < $maxlevel)
              && ($flagFull || in_array($id, $this->arrTrail))) {
-//echo("ShopCategories::buildTreeArrayRecursive(parentCategoryId=$parentCategoryId, flagActiveOnly=$flagActiveOnly, level=$level, maxlevel=$maxlevel): INFO: Level $level, recursing down for ID $id<br />");
-/*
-                // Skip ShopCategories marked as virtual, these are filled separately.
-                if (!$objShopCategory->isVirtual()) {
-*/
-//echo("ShopCategories::buildTreeArray(parentCategoryId=$parentCategoryId, flagActiveOnly=$flagActiveOnly, level=$level, maxlevel=$maxlevel): INFO: Recursing down to ID $id<br />");
-                    $this->buildTreeArrayRecursive(
-                        $flagFull, $selectedId, $id,
-                        $flagActiveOnly, $level+1, $maxlevel
-                    );
-//                }
-            } else {
-//echo("ShopCategories::buildTreeArray(): INFO: Skipping recursion for ID $id<br />");
+                $this->buildTreeArrayRecursive(
+                    $flagFull, $selectedId, $id,
+                    $flagActiveOnly, $level+1, $maxlevel
+                );
             }
         }
         return true;
@@ -349,7 +314,6 @@ class ShopCategories
             ";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) {
-//echo("getChildCategoryIdArray($parentShopCategoryId, $flagActiveOnly): Query error: $query<br />");
                 return false;
             }
             $strIdList .= ($strIdList ? ',' : '').$tempList;
@@ -381,15 +345,12 @@ class ShopCategories
     {
         // Return the same array if it's already been initialized
         if (is_array($this->arrTrail)) {
-//echo("ShopCategories::getTrailArray(): INFO: Returning present array.<br />");
             return $this->arrTrail;
         }
         // Otherwise, initialize it now
         if (!$this->buildTrailArray($selectedId)) {
-//echo("ShopCategories::getTrailArray(): ERROR: Failed to initialize array!<br />");
             return false;
         }
-//echo("ShopCategories::getTrailArray(): INFO: Made array:<br />");var_export($this->arrShopCategory);echo("<br />");die();
         return $this->arrShopCategory;
     }
 
@@ -475,19 +436,15 @@ class ShopCategories
     //static
     function deleteAll($flagDeleteImages=false)
     {
-//echo("Debug: ShopCategories::delete(): entered<br />");
 
         $arrChildCategories = ShopCategories::getChildCategoryIdArray(0, false);
         foreach ($arrChildCategories as $id) {
             $objShopCategories = ShopCategory::getById($id);
             // delete Product records, delete images if desired.
             if (!Products::deleteByShopCategory($objShopCategories->id, $flagDeleteImages)) {
-//echo("ShopCategories::deleteAll(): ERROR: Failed to delete Products from ShopCategories $objShopCategories->id!<br />");
                 return false;
             }
-//echo("Debug: ShopCategories::delete(): deleted Products from ShopCategories $this->id<br />");
             if (!$objShopCategories->delete($flagDeleteImages)) {
-//echo("ShopCategories::deleteAll(): ERROR: Failed to delete ShopCategories ID $objShopCategories->id!<br />");
                 return false;
             }
         }
@@ -576,7 +533,6 @@ class ShopCategories
                 $parentCategoryId, $flagActiveOnly
             );
         if (!is_array($arrChildShopCategoriesId)) {
-//echo("ShopCategories::getChildCategoriesById(parentCategoryId=$parentCategoryId, flagActiveOnly=$flagActiveOnly): ERROR: Failed to get child Category IDs!<br />");
             return false;
         }
         $arrShopCategories = array();
@@ -584,7 +540,6 @@ class ShopCategories
             $arrShopCategories[] =
                 ShopCategory::getById($id);
         }
-//echo("getChildCategoriesById(): child categories:<br />");var_export($arrShopCategories);echo("<br />");
         return $arrShopCategories;
     }
 
@@ -649,14 +604,14 @@ class ShopCategories
     function getShopCategoriesMenu(
         $selectedId=0, $flagActiveOnly=true, $maxlevel=0
     ) {
+// TODO: Implement this in a way so that both the Shopnavbar and the Shopmenu
+// can be set up using only one call to buildTreeArray().
+// Unfortunately, the set of records used is not identical in both cases.
 //        if (!$this->arrShopCategory) {
-//echo("ShopCategories::getShopCategoriesMenu(selectedId=$selectedId, flagActiveOnly=$flagActiveOnly, maxlevel=$maxlevel): INFO: Building.<br />");
-            $this->buildTreeArray(
-                true, $selectedId, 0, $flagActiveOnly, 0, $maxlevel
-            );
+        $this->buildTreeArray(
+            true, $selectedId, 0, $flagActiveOnly, 0, $maxlevel
+        );
 //        }
-//echo("SC:<br />");var_export($this->arrShopCategory);echo("<br />");
-//echo("Trail:<br />");var_export($this->arrTrail);echo("<br />");
 
         // Check whether the ShopCategory with the selected ID is missing
         $trailIndex = count($this->arrTrail);
@@ -665,7 +620,6 @@ class ShopCategories
             && $trailIndex > 0) {
             // So we choose its highest level ancestor present.
             $selectedId = $this->arrTrail[--$trailIndex];
-//echo("ShopCategories::getShopCategoriesMenu(selectedId=$selectedId, flagActiveOnly=$flagActiveOnly, maxlevel=$maxlevel): INFO: Fixed selectedId to $selectedId (trailIndex $trailIndex) .<br />");
         }
         $strMenu = '';
         foreach ($this->arrShopCategory as $arrCategory) {
@@ -680,7 +634,6 @@ class ShopCategories
                 htmlentities($name).
                 "</option>\n";
         }
-//echo("ShopCategories::getShopCategoriesMenu(selectedId=$selectedId, flagActiveOnly=$flagActiveOnly, maxlevel=$maxlevel): INFO: Made '".htmlentities($strMenu)."'<br />");
         return $strMenu;
     }
 
@@ -705,23 +658,6 @@ class ShopCategories
     ) {
         global $objDatabase;
 
-/*
-        $queryFlags = '';
-        if ($parentShopCategoryId > 0) {
-            // Get the parent.  We need to check his flags.
-            $objShopCategory = ShopCategory::getById($parentShopCategoryId);
-            if (!$objShopCategory) {
-//echo("getChildCategoryIdArray($parentShopCategoryId, $flagActiveOnly): ERROR: Failed to get ShopCategory for ID $parentShopCategoryId!<br />");
-                return false;
-            }
-            $strFlags = $objShopCategory->getFlags();
-            if (preg_match('/__VIRTUAL__/', $strFlags)) {
-                // Get ShopCategories with the ID of that ShopCategory
-                // set in their flags as parent
-                $queryFlags = " OR flags LIKE '%parent:$parentShopCategoryId%'";
-            }
-        }
-*/
         $query = "
            SELECT catid
              FROM ".DBPREFIX."module_shop_categories
@@ -732,7 +668,6 @@ class ShopCategories
 
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("ShopCategories::getChildCategoryIdArray($parentShopCategoryId, $flagActiveOnly): Query error: $query<br />");
             return false;
         }
         $arrChildShopCategoryId = array();
@@ -740,7 +675,6 @@ class ShopCategories
             $arrChildShopCategoryId[] = $objResult->Fields('catid');
             $objResult->MoveNext();
         }
-//echo("getChildCategoryIdArray($parentShopCategoryId, $flagActiveOnly): child category ids:<br />");var_export($arrChildShopCategoryId);echo("<br />");
         return $arrChildShopCategoryId;
     }
 
@@ -779,11 +713,9 @@ class ShopCategories
 
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("ShopCategories::getChildNamed($parentId, $strName, $flagActiveOnly): ERROR: Query failed: $query<br />");
             return false;
         }
         if (!$objResult->RecordCount() > 1) {
-//echo("ShopCategories::getChildNamed($parentId, $strName, $flagActiveOnly): WARNING: More than one root ShopCategory of the same name exists!<br />");
             return false;
         }
         if (!$objResult->EOF) {
@@ -858,7 +790,7 @@ class ShopCategories
     }
 
 
-    function getVirtualCategoryNameArray()
+    function getVirtualCategoryIdNameArray()
     {
         global $objDatabase;
 
@@ -870,7 +802,6 @@ class ShopCategories
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("getVirtualCategoryArray($flagActiveOnly): Query error: $query<br />");
             return false;
         }
         $arrVirtual = array();
@@ -894,7 +825,7 @@ class ShopCategories
     function getVirtualCategoriesSelectionForFlags($strFlags)
     {
         $arrVirtualShopCategoryName =
-            ShopCategories::getVirtualCategoryNameArray();
+            ShopCategories::getVirtualCategoryIdNameArray();
 
         $strSelection = '';
         foreach ($arrVirtualShopCategoryName as $arrShopCategory) {
@@ -932,9 +863,12 @@ class ShopCategories
      * @param   integer     $arrId      The array of ShopCategory IDs
      * @return  string                  Empty string on success, a string
      *                                  with error messages otherwise.
+     * @global  array       $_ARRAYLANG     Language array
      */
     function makeThumbnailsById($arrId)
     {
+        global $_ARRAYLANG;
+
         require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
 
         if (!is_array($arrId)) {
@@ -951,13 +885,13 @@ class ShopCategories
         foreach ($arrId as $id) {
             if ($id <= 0) {
                 $strError .= ($strError ? '<br />' : '').
-                    "Ungültige Kategorie ID '$id'!";
+                    sprintf($_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'], $id);
                 continue;
             }
             $objShopCategory = ShopCategory::getById($id);
             if (!$objShopCategory) {
                 $strError .= ($strError ? '<br />' : '').
-                    "Ungültige Kategorie ID '$id' - Konnte Kategorie nicht finden!";
+                    sprintf($_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'], $id);
                 continue;
             }
             $imageName = $objShopCategory->getPicture();
@@ -967,7 +901,10 @@ class ShopCategories
             if (   $imageName == ''
                 || !preg_match('/\.(?:jpg|jpeg|gif|png)$/', $imageName)) {
                 $strError .= ($strError ? '<br />' : '').
-                    "Nicht unterstütztes Bildformat: '$imageName' (Kategorie ID $id)!";
+                    sprintf(
+                        $_ARRAYLANG['TXT_SHOP_UNSUPPORTED_IMAGE_FORMAT'],
+                        $imageName, $id
+                    );
                 continue;
             }
             // If the picture is missing, skip it.
@@ -1003,29 +940,20 @@ class ShopCategories
         if (count($arrMissingCategoryPicture)) {
             ksort($arrMissingCategoryPicture);
             $strError .= ($strError ? '<br />' : '').
-                "Fehlende Bilder (Kategorie ID - Bildname): ".
+                $_ARRAYLANG['TXT_SHOP_MISSING_CATEGORY_IMAGES'].' '.
                 join(', ', array_keys($arrMissingCategoryPicture));
         }
         if (count($arrFailedCreatingThumb)) {
             sort($arrFailedCreatingThumb);
             $strError .= ($strError ? '<br />' : '').
-                "Fehler beim erzeugen des Thumbnails bei Kategorie ID: ".
+                $_ARRAYLANG['TXT_SHOP_ERROR_CREATING_CATEGORY_THUMBNAIL'].' '.
                 join(', ', $arrFailedCreatingThumb);
         }
-//echo("$strError<br />");
         return $strError;
     }
 
 
 
 }
-
-
-/* test
-//echo("TEST: getcategoryTree(): <br />");
-//var_export(ShopCategories::getCategoryTree(0, 0, 0));
-//echo("<br />");
-//die();
-*/
 
 ?>
