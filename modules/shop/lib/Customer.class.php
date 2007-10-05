@@ -155,7 +155,7 @@ class Customer
      */
     var $registerDate;
     /**
-     * @var     integer     $activeStatus   The customers' active status (0: inactive, 1: active)
+     * @var     boolean     $activeStatus   The customers' active status (0: inactive, 1: active)
      * @access  private
      */
     var $activeStatus;
@@ -242,9 +242,9 @@ class Customer
         $this->userName       = '';
         $this->password       = '';
         $this->companyNote    = '';
-        $this->resellerStatus = 0;
+        $this->resellerStatus = false;
         $this->registerDate   = '';
-        $this->activeStatus   = 1;
+        $this->activeStatus   = true;
     }
 
 
@@ -287,7 +287,7 @@ class Customer
     }
     /**
      * Set the ID -- NOT ALLOWED
-     * @see{Customer::clone()}
+     * @see{Customer::makeClone()}
      */
 
     /**
@@ -634,24 +634,25 @@ class Customer
 
     /**
      * Get the reseller status
-     * @return  integer     1 if the customer is a reseller, 0 otherwise.
+     * @return  boolean                         True if the customer is a
+     *                                          reseller, false otherwise.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getResellerStatus()
+    function isReseller()
     {
         return $this->resellerStatus;
     }
     /**
      * Set the reseller status
      *
-     * The reseller status is set to 1 if the argument
-     * evaluates to boolean true, 0 otherwise.
-     * @param   integer     $resellerStatus    The reseller status value
+     * The reseller status is set to true if the argument
+     * evaluates to boolean true, false otherwise.
+     * @param   boolean     $resellerStatus    The reseller status value
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function setResellerStatus($resellerStatus)
     {
-        $this->resellerStatus = ($resellerStatus ? 1 : 0);
+        $this->resellerStatus = ($resellerStatus ? true : false);
     }
 
     /**
@@ -676,8 +677,8 @@ class Customer
     /**
      * Get the active status
      *
-     * The customer is inactive is his activeStatus is 0, active otherwise.
-     * @return  integer         The active status
+     * The customer is inactive if his activeStatus is false, active otherwise.
+     * @return  boolean         The active status
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getActiveStatus()
@@ -687,14 +688,14 @@ class Customer
     /**
      * Set the active status
      *
-     * The active status value is set to 1 if the argument evaluates to
-     * the boolean true value, 0 otherwise.
-     * @param   integer   $activeStatus    The active status
+     * The active status value is set to true if the argument evaluates to
+     * the boolean true value, false otherwise.
+     * @param   boolean     $activeStatus    The active status
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function setActiveStatus($activeStatus)
     {
-        $this->activeStatus = ($activeStatus ? 1 : 0);
+        $this->activeStatus = ($activeStatus ? true : false);
     }
 
 
@@ -781,9 +782,9 @@ class Customer
                 username='".contrexx_addslashes($this->userName)."',
                 password='".contrexx_addslashes($this->password)."',
                 company_note='".contrexx_addslashes($this->companyNote )."',
-                is_reseller=".$this->resellerStatus.",
+                is_reseller=".($this->resellerStatus ? 1 : 0).",
                 register_date='".contrexx_addslashes($this->registerDate)."',
-                customer_status=".$this->activeStatus."
+                customer_status=".($this->activeStatus ? 1 : 0)."
             WHERE customerid=".$this->id;
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
@@ -829,8 +830,8 @@ class Customer
                 '".contrexx_addslashes($this->userName)."',
                 '".contrexx_addslashes($this->password)."',
                 '".contrexx_addslashes($this->companyNote )."',
-                ".intval($this->resellerStatus).",
-                ".intval($this->activeStatus).",
+                ".($this->resellerStatus ? 1 : 0).",
+                ".($this->activeStatus ? 1 : 0).",
                 NOW()
             )
         ";
@@ -889,9 +890,9 @@ class Customer
         $objCustomer->userName = contrexx_stripslashes($objResult->Fields('username'));
         $objCustomer->password = contrexx_stripslashes($objResult->Fields('password'));
         $objCustomer->companyNote    = contrexx_stripslashes($objResult->Fields('company_note'));
-        $objCustomer->resellerStatus = ($objResult->Fields('is_reseller') ? 1 : 0);
+        $objCustomer->resellerStatus = ($objResult->Fields('is_reseller') ? true : false);
         $objCustomer->registerDate   = contrexx_stripslashes($objResult->Fields('register_date'));
-        $objCustomer->activeStatus   = ($objResult->Fields('customer_status') ? 1 : 0);
+        $objCustomer->activeStatus   = ($objResult->Fields('customer_status') ? true : false);
         return $objCustomer;
     }
 
@@ -968,9 +969,9 @@ class Customer
             userName  : ".$this->userName ."<br />
             password  : ".$this->password ."<br />
             companyNote : ".$this->companyNote."<br />
-            resellerStatus : ".$this->resellerStatus."<br />
+            resellerStatus : ".($this->resellerStatus ? 1 : 0)."<br />
             registerDate : ".$this->registerDate."<br />
-            activeStatus : ".$this->activeStatus."<br />
+            activeStatus : ".($this->activeStatus ? 1 : 0)."<br />
         ";
     }
 

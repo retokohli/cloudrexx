@@ -78,6 +78,22 @@ class Distribution {
 
 
     /**
+     * Verifies whether the string argument is the name of a valid
+     * Distribution type.
+     *
+     * @param   string      $string
+     * return   boolean                 True if it is valid, false otherwise
+     */
+    function isDistributionType($string)
+    {
+        if (array_search($string, $this->arrDistributionTypes) !== false) {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
      * Returns the default distribution type as string
      *
      * @return  string  The default distribution type

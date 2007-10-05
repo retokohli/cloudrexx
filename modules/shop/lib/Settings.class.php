@@ -881,7 +881,7 @@ class Settings {
      * If the $_GET field 'setVatAll is present, sets the VAT ID to the ID found
      * therein for all the products.
      *
-     * @todo    Add possibility to choose some products to change,
+     * @todo    Add the feature to choose some products to change,
      *          and add a parameter for this list of IDs
      * @return  boolean                     True on success, false otherwise.
      * @global  mixed       $objDatabase    Database object
