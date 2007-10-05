@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 04 Oct 2007 13:41:45 +0200
+* generated date Fri, 05 Oct 2007 12:19:59 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Bestillinger";
@@ -273,6 +273,7 @@ $_ARRAYLANG['TXT_MENU_OPTION'] = "Meny (keine oder eine Auswahl möglich)";
 $_ARRAYLANG['TXT_DISPLAY_AS'] = "Vis som";
 $_ARRAYLANG['TXT_SEQUENCE'] = "Rækkefølge";
 $_ARRAYLANG['TXT_REMARK'] = "Bemærkning";
+$_ARRAYLANG['TXT_SHOP_FLAGS'] = "Markierungen";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database fejl! Hivs fejlen opstår tit, bedes du at kontakte os.";
 $_ARRAYLANG['TXT_SHOP_INDEX'] = "Shop Index";
 $_ARRAYLANG['TXT_CATEGORIES'] = "Kategorier";
@@ -494,7 +495,6 @@ $_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_SUCCESS'] = "Hersteller wurde erfolgre
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_FAILED'] = "Fehler beim aktualisieren";
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_SUCCESS'] = "Hersteller wurde(n) erfolgreich gelöscht";
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER_DELETE_FAILED'] = "Fehler beim löschen";
-$_ARRAYLANG['TXT_ALL_MANUFACTURER'] = "Alle Hersteller";
 $_ARRAYLANG['TXT_SHOP_CUSTOMER_HOMEPAGE'] = "Homepage";
 $_ARRAYLANG['TXT_SHOP_CUSTOMER_PICTURE_NAME'] = "Logo";
 $_ARRAYLANG['TXT_SHOP_PARENT_CATEGORY'] = "&Uuml;bergeordnete Kategorie";
@@ -523,4 +523,13 @@ $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_COMPLETED'] = "abgeschlossen";
 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_PAID'] = "bezahlt";
 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_SHIPPED'] = "versandt";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES_WARNING'] = "Beim hochladen werden alle vorhandenen Kategorien und Produkte aus der Datenbank gelöscht. Möchten Sie den Vorgang trotzdem starten?";
+$_ARRAYLANG['TXT_SHOP_MISSING_PRODUCT_IMAGES'] = "Fehlende Bilder (Produkt ID - Bildname):";
+$_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'] = "Ungültige Produkt ID '%s'!";
+$_ARRAYLANG['TXT_SHOP_UNSUPPORTED_IMAGE_FORMAT'] = "Nicht unterstütztes Bildformat: '%1\$s' (Produkt ID %2\$s)!";
+$_ARRAYLANG['TXT_SHOP_ERROR_CREATING_PRODUCT_THUMBNAIL'] = "Fehler beim erzeugen des Thumbnails: ";
+$_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'] = "Ungültige Kategorie ID '$id'!";
+$_ARRAYLANG['TXT_SHOP_MISSING_CATEGORY_IMAGES'] = "Fehlende Bilder (Kategorie ID - Bildname): ";
+$_ARRAYLANG['TXT_SHOP_ERROR_CREATING_CATEGORY_THUMBNAIL'] = "Fehler beim erzeugen des Thumbnails bei Kategorie ID: ";
+$_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'] = "Ausgewählten Wert entfernen";
+$_ARRAYLANG['TXT_SHOP_WARNING_MULTIPLE_CATEGORIES_WITH_SAME_NAME'] = "Warnung: Mehr als eine Kategorie mit dem selben Namen gefunden!";
 ?>

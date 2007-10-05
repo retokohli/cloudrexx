@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Thu, 04 Oct 2007 13:41:45 +0200
+* generated date Fri, 05 Oct 2007 12:19:59 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
@@ -79,6 +79,9 @@ $_ARRAYLANG['TXT_MANUFACTURER_URL'] = "Link zum Hersteller";
 $_ARRAYLANG['TXT_CHOOSE'] = "wählen";
 $_ARRAYLANG['TXT_OPTIONS'] = "Optionen";
 $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Bitte füllen Sie alle erforderlichen Felder aus.";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_METER'] = "Meter";
+$_ARRAYLANG['TXT_SHOP_CART_CONTENT'] = "Warenkorbinhalt:";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_COUNT'] = "Stück";
 $_ARRAYLANG['TXT_LOGGED_IN_AS'] = "Angemeldet als";
 $_ARRAYLANG['TXT_LOGGED_IN_AS_SHOP_GUEST'] = "Angemeldet als Gast";
 $_ARRAYLANG['TXT_SEE_LARGE_PICTURE'] = "Für eine grössere Darstellung klicken Sie auf das Bild.";
@@ -87,6 +90,7 @@ $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Fehler beim Ausführen der Datenbanka
 $_ARRAYLANG['TXT_INVALID_PASSWORD'] = "Das Passwort ist ungültig (min. 6 Zeichen).";
 $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "Ihre E-Mail Adresse ist ungültig!";
 $_ARRAYLANG['TXT_MAKE_DECISION_FOR_OPTIONS'] = "Sie müssen eine Auswahl für die folgenden Optionen treffen";
+$_ARRAYLANG['TXT_SHOP_SHOW_CART'] = "Zum Warenkorb";
 $_ARRAYLANG['TXT_ACCEPT_AGB'] = "Bitte bestätigen Sie die Akzeptanz der allgemeinen Geschäftsbedingungen.";
 $_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER'] = "Diese E-mail Adresse wird bereits von einem anderen Kunden benutzt!";
 $_ARRAYLANG['TXT_USERNAME_USED_BY_OTHER_CUSTOMER'] = "Dieser Benutzername wird bereits von einem anderen Kunden benutzt!";
@@ -189,6 +193,7 @@ $_ARRAYLANG['TXT_CODE'] = "Code";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS'] = "Neueste Produkte im Online Shop:";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_NONE_FOUND'] = "Keine Produkte gefunden.";
 $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_FAILED'] = "Fehler bei der Produkte Abfrage";
+$_ARRAYLANG['TXT_ALL_MANUFACTURER'] = "Alle Hersteller";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "&Uuml;bersicht";
 $_ARRAYLANG['TXT_SHOP_BACK'] = "Zur&uuml;ck";
 $_ARRAYLANG['TXT_SHOP_GOTO_DETAIL_VIEW'] = "zur Detailansicht / &agrav; la ...";
@@ -197,12 +202,13 @@ $_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "annuliert";
 $_ARRAYLANG['TXT_SHOP_ORDER_STILL_IN_CART'] = "Ihre Bestellung bleibt im Warenkorb.";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Zur&uuml;ck zum Online Shop";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Art der Bezahlung &auml;ndern";
-$_ARRAYLANG['TXT_SHOP_SAFERPAY_INIT_ERROR'] = "Payment using SaferPay couldn't be initialized!";
+$_ARRAYLANG['TXT_SHOP_SAFERPAY_INIT_ERROR'] = "Die Bezahlung mit SaferPay konnte nicht initialisiert werden.";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_FAILED'] = "Die Bezahlung ist fehlgeschlagen.";
-$_ARRAYLANG['TXT_SHOP_ORDER_PENDING'] = "pendent";
-$_ARRAYLANG['TXT_SHOP_ORDER_CONFIRMED'] = "bestätigt";
-$_ARRAYLANG['TXT_SHOP_ORDER_DELETED'] = "gelöscht";
-$_ARRAYLANG['TXT_SHOP_ORDER_COMPLETED'] = "abgeschlossen";
-$_ARRAYLANG['TXT_SHOP_ORDER_PAID'] = "bezahlt";
-$_ARRAYLANG['TXT_SHOP_ORDER_SHIPPED'] = "versandt";
+$_ARRAYLANG['TXT_SHOP_VIRTUAL_CATEGORY_OUTLET'] = "Outlet";
+$_ARRAYLANG['TXT_SHOP_VIRTUAL_CATEGORY_NEW'] = "Neuheiten";
+$_ARRAYLANG['TXT_SHOP_VIRTUAL_CATEGORY_PRESENT'] = "Geschenkideen";
+$_ARRAYLANG['TXT_SHOP_NORMALPRICE'] = "Preis:";
+$_ARRAYLANG['TXT_SHOP_DISCOUNTPRICE'] = "Sonderpreis:";
+$_ARRAYLANG['TXT_SHOP_DISCOUNT_TODAY'] = "Tagesrabatt:";
+$_ARRAYLANG['TXT_SHOP_PRICE_TODAY'] = "Tagespreis:";
 ?>
