@@ -11,6 +11,34 @@
  * @subpackage  module_shop
  */
 
+
+/*
+
+Modifications to the Database structure:
+
+ALTER TABLE `contrexx_module_shop_categories` ADD `picture` VARCHAR( 255 ) NULL;
+ALTER TABLE `contrexx_module_shop_categories` ADD `flags`   VARCHAR( 100 ) NULL;
+ALTER TABLE `contrexx_module_shop_categories` ADD INDEX (`flags`);
+
+Full structure:
+
+DROP TABLE IF EXISTS `contrexx_module_shop_categories`;
+
+CREATE TABLE `contrexx_module_shop_categories` (
+  `catid`       int(10)     unsigned NOT NULL auto_increment,
+  `parentid`    int(10)     unsigned NOT NULL default '0',
+  `catname`     varchar(255)         NOT NULL default '',
+  `catsorting`  smallint(6)          NOT NULL default '100',
+  `catstatus`   tinyint(1)           NOT NULL default '1',
+  `picture`     varchar(255)             NULL,
+  `flags`       varchar(100)             NULL,
+  PRIMARY KEY  (`catid`),
+  KEY `flags` (`flags`)
+) ENGINE=MyISAM;
+
+*/
+
+
 /**
  * Access to Products
  */
@@ -57,6 +85,16 @@ class ShopCategory
      * @access  private
      */
     var $sorting;
+    /**
+     * @var     string      $picture    ShopCategory picture name
+     * @access  private
+     */
+    var $picture;
+    /**
+     * @var     string      $flags      ShopCategory flags
+     * @access  private
+     */
+    var $flags;
 
 
     /**
@@ -97,15 +135,13 @@ class ShopCategory
         if (empty($catName)) {
             echo("WARNING: ShopCategory::__construct(): called with empty Category name<br />");
         }
-
+        $this->id = intval($catId);
         // Use access methods here, various checks included.
         $this->setName($catName);
         $this->setParentId($catParentId);
         $this->setStatus($catStatus);
         $this->setSorting($catSorting);
-        // Assign ID
-        $this->id = intval($catId);
-echo("__construct(): made<br />");var_export($this);echo("<br />");
+//echo("__construct(): made<br />");var_export($this);echo("<br />");
     }
 
 
@@ -135,9 +171,10 @@ echo("__construct(): made<br />");var_export($this);echo("<br />");
      * @return  boolean             True on success, false otherwise
      */
     function setName($catName) {
-/*        if (empty($newCatName)) {
+        if (empty($catName)) {
+//echo("ShopCategory::setParentId(): ERROR: Empty name!<br />");
             return false;
-        }*/
+        }
         $this->name = trim($catName);
         return true;
     }
@@ -158,6 +195,7 @@ echo("__construct(): made<br />");var_export($this);echo("<br />");
      */
     function setParentId($catParentId) {
         if ($catParentId == $this->id) {
+//echo("ShopCategory::setParentId(): ERROR: ID == parent ID ($this->id)!<br />");
             return false;
         }
         $this->parentId = $catParentId;
@@ -197,6 +235,162 @@ echo("__construct(): made<br />");var_export($this);echo("<br />");
         $this->sorting = ($catSorting >= 0 ? $catSorting : 0);
     }
 
+    /**
+     * Get the ShopCategory picture name
+     * @return  string              The ShopCategory picture name
+     */
+    function getPicture() {
+        return $this->picture;
+    }
+    /**
+     * Set the ShopCategory picture name
+     * @param   string              The ShopCategory picture name
+     * @return  boolean             Boolean true if the name was accepted,
+     *                              false otherwise
+     *                              (Always true for the time being).
+     */
+    function setPicture($picture) {
+        $this->picture = $picture;
+    }
+
+    /**
+     * Get the ShopCategories flags
+     * @return  string              The ShopCategories flags
+     */
+    function getFlags() {
+        return $this->flags;
+    }
+    /**
+     * Add a flag
+     *
+     * Note that the match is case insensitive.
+     * @param   string              The flag to be added
+     * @return  boolean             Boolean true if the flags were accepted
+     *                              or already present, false otherwise
+     *                              (always true for the time being).
+     */
+    function addFlag($flag) {
+        if (!preg_match("/$flag/i", $this->flags)) {
+            $this->flags .= ' '.$flag;
+        }
+        return true;
+    }
+    /**
+     * Remove a flag
+     *
+     * Note that the match is case insensitive.
+     * @param   string              The flag to be removed
+     * @return  boolean             Boolean true if the flags could be removed
+     *                              or wasn't present, false otherwise
+     *                              (always true for the time being).
+     */
+    function removeFlag($flag) {
+        $this->flags = trim(preg_replace("/\\s*$flag\\s*/i", ' ', $this->flags));
+        return true;
+    }
+    /**
+     * Set the ShopCategories flags
+     * @param   string              The ShopCategories flags
+     * @return  boolean             Boolean true if the flags were accepted,
+     *                              false otherwise
+     *                              (always true for the time being).
+     */
+    function setFlags($flags) {
+        $this->flags = $flags;
+        return true;
+    }
+    /**
+     * Test for a match with the ShopCategory flags.
+     *
+     * Note that the match is case insensitive.
+     * @param   string              The ShopCategory flag to test
+     * @return  boolean             Boolean true if the flag is set,
+     *                              false otherwise.
+     */
+    function testFlag($flag) {
+        return preg_match("/$flag/i", $this->flags);
+    }
+
+    /**
+     * Returns true if this ShopCategory is virtual
+     *
+     * Note: Virtual ShopCategories have the "__VIRTUAL__" flag set.
+     * The test performed in isVirtual() is case sensitive!
+     * @return  boolean             True if the ShopCategory is virtual,
+     *                              false otherwise.
+     */
+    function isVirtual()
+    {
+        return preg_match('/__VIRTUAL__/', $this->flags);
+    }
+
+
+    /**
+     * Test whether a record with the ID of this object is already present
+     * in the database.
+     * @return  boolean                 True if it exists, false otherwise
+     * @global  mixed   $objDatabase    Database object
+     */
+    function recordExists()
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT 1
+              FROM ".DBPREFIX."module_shop_categories
+             WHERE catid=$this->id
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+//echo("ShopCategory::recordExists(): query error<br />");
+            return false;
+        }
+        if ($objResult->RecordCount() == 1) {
+//echo("ShopCategory::recordExists(): ID $this->id: Yes<br />");
+            return true;
+        }
+//echo("ShopCategory::recordExists(): ID $this->id: No<br />");
+        return false;
+    }
+
+
+    /**
+     * Clone the ShopCategory
+     *
+     * Note that this does NOT create a copy in any way, but simply clears
+     * the ShopCategory ID.  Upon storing this object, a new ID is created.
+     * @return      void
+     * @copyright   CONTREXX CMS - COMVATION AG
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function makeClone($flagRecursive=false, $flagWithProducts=false)
+    {
+        $oldId = $this->id;
+        $this->id = 0;
+        $this->store();
+        $newId = $this->id;
+        if ($flagRecursive) {
+            foreach (ShopCategories::getChildCategoriesById($oldId)
+                    as $objShopCategory) {
+            	$objShopCategory->makeClone($flagRecursive, $flagWithProducts);
+            	$objShopCategory->setParentId($newId);
+            	if (!$objShopCategory->store()) {
+            	    return false;
+            	}
+            }
+        }
+        if ($flagWithProducts) {
+            foreach (Products::getByShopCategory($oldId) as $objProduct) {
+            	$objProduct->makeClone();
+            	$objProduct->setShopCategoryId($newId);
+            	if (!$objProduct->store()) {
+            	    return false;
+            	}
+            }
+        }
+        return true;
+    }
+
 
     /**
      * Stores the ShopCategory object in the database.
@@ -206,7 +400,7 @@ echo("__construct(): made<br />");var_export($this);echo("<br />");
      * @return  boolean     True on success, false otherwise
      */
     function store() {
-        if ($this->id > 0) {
+        if ($this->recordExists()) {
             return ($this->update());
         }
         return ($this->insert());
@@ -216,18 +410,21 @@ echo("__construct(): made<br />");var_export($this);echo("<br />");
     /**
      * Update this ShopCategory in the database.
      * Returns the result of the query.
-     *
-     * @return  boolean         True on success, false otherwise
+     * @return  boolean                 True on success, false otherwise
+     * @global  mixed   $objDatabase    Database object
      */
     function update()
     {
         global $objDatabase;
+
         return $objDatabase->Execute("
             UPDATE ".DBPREFIX."module_shop_categories
             SET catname='".addslashes($this->name)."',
                 parentid=$this->parentId,
                 catstatus=$this->status,
-                catsorting=$this->sorting
+                catsorting=$this->sorting,
+                picture='".addslashes($this->picture)."',
+                flags='".addslashes($this->flags)."'
             WHERE catid=$this->id
         ");
     }
@@ -236,24 +433,33 @@ echo("__construct(): made<br />");var_export($this);echo("<br />");
     /**
      * Insert this ShopCategory into the database.
      *
-     * On success, updates the Category ID.
-     * @return  boolean         True on success, false otherwise
+     * On success, updates this objects' Category ID.
+     * Uses the ID stored in this object, if greater than zero.
+     * @return  boolean                 True on success, false otherwise
+     * @global  mixed   $objDatabase    Database object
      */
     function insert()
     {
         global $objDatabase;
+//echo("ShopCategory::insert(): Parent ID: $this->parentId<br />");
+
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop_categories
-            (catname, parentid, catstatus, catsorting)
-            VALUES (
+            INSERT INTO ".DBPREFIX."module_shop_categories (
+                catname, parentid, catstatus, catsorting,
+                picture, flags
+                ".($this->id > 0 ? ', catid' : '')."
+            ) VALUES (
                 '".addslashes($this->name)."',
                 $this->parentId,
                 $this->status,
-                $this->sorting
+                $this->sorting,
+                '".addslashes($this->picture)."',
+                '".addslashes($this->flags)."'
+                ".($this->id > 0 ? ", $this->id" : '')."
             )";
-//echo("ShopCategory::insert(): query: $query<br />");
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
+//echo("ShopCategory::insert(): Query failed: $query<br />");
             return false;
         }
         $this->id = $objDatabase->Insert_ID();
@@ -265,34 +471,38 @@ echo("__construct(): made<br />");var_export($this);echo("<br />");
     /**
      * Delete this ShopCategory from the database.
      *
-     * Also removes associated subcategories, Products and images.
-     * @return  boolean         True on success, false otherwise
+     * Also removes associated subcategories and Products.
+     * Images will only be erased from the disc if the optional
+     * $flagDeleteImages parameter evaluates to true.
+     * @return  boolean                 True on success, false otherwise
+     * @global  mixed   $objDatabase    Database object
      */
-    function delete()
+    function delete($flagDeleteImages=false)
     {
         global $objDatabase;
-//echo("Debug: ShopCategory::delete(): entered<br />");
 
-//echo("Error: ShopCategory::delete(): my ID: $this->id<br />"); die();
-        // delete Products and images
-        if (!Product::deleteByShopCategory($this->id)) {
-echo("Error: ShopCategory::delete(): failed to delete Products from ShopCategory $this->id<br />");
+        // Delete Products and images
+        if (!Products::deleteByShopCategory($this->id, $flagDeleteImages)) {
+//echo("Error: ShopCategory::delete(): failed to delete Products from ShopCategory $this->id<br />");
             return false;
         }
 //echo("Debug: ShopCategory::delete(): deleted Products from ShopCategory $this->id<br />");
 
-        // remove sobcategories
+        // Delete subcategories
         foreach ($this->getChildCategories() as $subCategory) {
-            $subCategory->delete();
+            if (!$subCategory->delete($flagDeleteImages)) {
+//echo("Error: ShopCategory::delete(): failed to delete ShopCategory $this->id<br />");
+                return false;
+            }
         }
 
-        // remove category
+        // Delete Category
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop_categories
             WHERE catid=$this->id
         ");
         if (!$objResult) {
-echo("Error: ShopCategory::delete(): failed to delete ShopCategory $this->id<br />");
+//echo("Error: ShopCategory::delete(): failed to delete ShopCategory $this->id<br />");
             return false;
         }
 //echo("Debug: ShopCategory::delete(): deleted ShopCategory $this->id<br />");
@@ -310,15 +520,15 @@ echo("Error: ShopCategory::delete(): failed to delete ShopCategory $this->id<br 
     {
 //echo("ShopCategory::deleteChildNamed(): parentId: $catParentId, name: $catName<br />");
         $objShopCategory = new ShopCategory($catName, $catParentId, '', '', '');
-        $arrChild = $objShopCategory->selectWildcard();
+        $arrChild = $objShopCategory->getByWildcard();
         if (is_array($arrChild)) {
             if (count($arrChild) == 1) {
                 return $arrChild[0]->delete();
             } else {
-echo("ShopCategory::deleteChildNamed(): result miscount: ".count($arrChild)."<br />");
+//echo("ShopCategory::deleteChildNamed(): result miscount: ".count($arrChild)."<br />");
             }
         } else {
-echo("ShopCategory::deleteChildNamed(): child not found: ".count($arrChild)."<br />");
+//echo("ShopCategory::deleteChildNamed(): child not found: ".count($arrChild)."<br />");
         }
         return false;
     }
@@ -328,8 +538,12 @@ echo("ShopCategory::deleteChildNamed(): child not found: ".count($arrChild)."<br
      * Select a ShopCategory matching the wildcards from the database.
      *
      * Uses the values of $this ShopCategory as patterns for the match.
-     * Empty values will be ignored.
-     * @return  array   Array of the resulting ShopCategory objects
+     * Empty values will be ignored.  Tests for identity of the fields,
+     * except with the name (pattern match) and the flags (matching records
+     * must contain at least all of the flags present in the pattern).
+     * @return  array                   Array of the resulting
+     *                                  Shop Category objects
+     * @global  mixed   $objDatabase    Database object
      */
     function getByWildcard()
     {
@@ -343,19 +557,25 @@ echo("ShopCategory::deleteChildNamed(): child not found: ".count($arrChild)."<br
         (!empty($this->parentId) ? " AND parentid=$this->parentId"   : '').
         (!empty($this->status)   ? " AND catstatus=$this->status"    : '').
         (!empty($this->sorting)  ? " AND catsorting=$this->sorting"  : '');
-//echo("ShopCategory::selectWildcard(): query: $query<br />");
+        (!empty($this->picture)  ? " AND picture=$this->picture"     : '');
+        foreach (split(' ', $this->flags) as $flag) {
+        	$query .= " AND flags LIKE '%$flag%'";
+        }
+//echo("ShopCategory::getByWildcard(): query: $query<br />");
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-echo("ShopCategory::selectWildcard(): query error<br />");
+//echo("ShopCategory::getByWildcard(): query error<br />");
             return false;
         }
         $arrShopCategories = array();
         while (!$objResult->EOF) {
-            $arrShopCategories[] =
+            $objShopCategory =
                 ShopCategory::getById($objResult->Fields('catid'));
+//echo("ShopCategory::getByWildcard(): got ShopCategory: ");var_export($arrShopCategories);//echo("<br />");
+            $arrShopCategories[] = $objShopCategory;
             $objResult->MoveNext();
         }
-//echo("ShopCategory::selectWildcard(): got array:<br />");var_export($arrShopCategories);echo("<br />");
+//echo("ShopCategory::getByWildcard(): got array:<br />");var_export($arrShopCategories);echo("<br />");
         return $arrShopCategories;
    }
 
@@ -363,9 +583,10 @@ echo("ShopCategory::selectWildcard(): query error<br />");
     /**
      * Returns a ShopCategory selected by its ID from the database.
      * @static
-     * @param   integer         The ShopCategory ID
-     * @return  ShopCategory    The ShopCategory object on success,
-     *                          false otherwise.
+     * @param   integer                     The Shop Category ID
+     * @return  ShopCategory                The Shop Category object on success,
+     *                                      false otherwise.
+     * @global  mixed       $objDatabase    Database object
      */
     //static
     function getById($catId)
@@ -379,51 +600,16 @@ echo("ShopCategory::selectWildcard(): query error<br />");
         if (!$objResult || $objResult->RecordCount() == 0) {
             return false;
         }
-        return new ShopCategory(
+        $objShopCategory = new ShopCategory(
             $objResult->Fields('catname'),
             $objResult->Fields('parentid'),
             $objResult->Fields('catstatus'),
             $objResult->Fields('catsorting'),
             $objResult->Fields('catid')
         );
-    }
-
-
-    /**
-     * Returns an array of IDs of children of this ShopCategory.
-     * @param   integer $parentShopCategoryId   The parent Shop Category ID.
-     * @param   boolean $flagActiveOnly     Only return ShopCategories with
-     *                                      status==1 if true.
-     *                                      Defaults to false.
-     * @return  array                       An array of ShopCategory IDs
-     *                                      on success, false otherwise.
-     * @static
-     */
-    //static
-    function getChildCategoryIdArray(
-        $parentShopCategoryId=0, $flagActiveOnly=false
-    ) {
-        global $objDatabase;
-
-        $query = '
-           SELECT catid
-             FROM '.DBPREFIX."module_shop_categories
-            WHERE parentid=$parentShopCategoryId".
-                  ($flagActiveOnly ? ' AND catstatus=1' : '').'
-         ORDER BY catsorting ASC
-        ';
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-//echo("getChildCategoryIdArray($parentShopCategoryId, $flagActiveOnly): no child category ids!<br />");
-            return false;
-        }
-        $arrChildShopCategoryId = array();
-        while (!$objResult->EOF) {
-            $arrChildShopCategoryId[] = $objResult->Fields('catid');
-            $objResult->MoveNext();
-        }
-//echo("getChildCategoryIdArray($parentShopCategoryId, $flagActiveOnly): child category ids:<br />");var_export($arrChildShopCategoryId);echo("<br />");
-        return $arrChildShopCategoryId;
+        $objShopCategory->setPicture($objResult->Fields('picture'));
+        $objShopCategory->setFlags($objResult->Fields('flags'));
+        return $objShopCategory;
     }
 
 
@@ -432,279 +618,92 @@ echo("ShopCategory::selectWildcard(): query error<br />");
      * @param   boolean $flagActiveOnly     Only return ShopCategories with
      *                                      status==1 if true.
      *                                      Defaults to false.
-     * @return  array                       An array of ShopCategory objects
+     * @return  mixed                       An array of ShopCategory objects
      *                                      on success, false otherwise
      */
     function getChildCategories($flagActiveOnly=false)
     {
-        return ShopCategory::getChildCategoriesById($this->id, $flagActiveOnly);
-    }
-
-
-    /**
-     * Returns an array of children of the ShopCategory
-     * with ID $parentCategoryId.
-     * @static
-     * @param   integer $parentCategoryId   The parent ShopCategory ID
-     * @param   boolean $flagActiveOnly     Only return ShopCategories with
-     *                                      status==1 if true.
-     *                                      Defaults to false.
-     * @return  array                       An array of ShopCategory objects
-     *                                      on success, false on failure.
-     */
-    //static
-    function getChildCategoriesById($parentCategoryId=0, $flagActiveOnly=false)
-    {
-        global $objDatabase;
-
-        $arrChildShopCategoryId =
-            ShopCategory::getChildCategoryIdArray(
-                $parentCategoryId, $flagActiveOnly
-            );
-        if ($arrChildShopCategoryId === false) {
-//echo("no child category ids!<br />");
+        if ($this->id <= 0) {
+//echo("ShopCategory::getChildCategories($flagActiveOnly): ERROR: Missing or invalid ID: $id!<br />");
             return false;
         }
-        $arrShopCategories = array();
-        foreach ($arrChildShopCategoryId as $id) {
-            $arrShopCategories[] =
-                ShopCategory::getById($id);
-        }
-//echo("getChildCategoriesById(): child categories:<br />");var_export($arrShopCategories);echo("<br />");
-        return $arrShopCategories;
+        return ShopCategories::getChildCategoriesById($this->id, $flagActiveOnly);
     }
 
 
     /**
-     * Returns an array representing a tree of ShopCategories,
-     * not including the root chosen.
-     *
-     * The resulting array looks like:
-     * array(
-     *   parentId => array(
-     *     childId => array(
-     *       'sorting' => val,
-     *       'status'  => val,
-     *       'level'   => val,
-     *     ),
-     *     ... more children
-     *   ),
-     *   ... more parents
-     * )
-     * @static
-     * @version 1.1
-     * @param   integer $parentCategoryId   The optional root ShopCategory ID.
-     *                                      Defaults to 0 (zero).
-     * @param   boolean $flagActiveOnly     Only return ShopCategories
-     *                                      with status==1 if true.
-     *                                      Defaults to false.
-     * @param   integer $level              Optional nesting level, initially 0.
-     *                                      Defaults to 0 (zero).
-     * @return  array   $arrShopCategories  The array of ShopCategories,
-     *                                      or false on failure.
-     */
-    //static
-    function getCategoryTree($parentCategoryId=0, $flagActiveOnly=false, $level=0)
-    {
-        // Get the ShopCategory's children
-        $arrChildShopCategories =
-            ShopCategory::getChildCategoriesById(
-                $parentCategoryId, $flagActiveOnly
-            );
-        // has there been an error?
-        if ($arrCategoryTree === false) {
-            return false;
-        }
-        // initialize root tree
-        $arrCategoryTree = array();
-        // local parent subtree
-        $arrCategoryTree[$parentCategoryId] = array();
-        // the local parent's children
-        foreach ($arrChildShopCategories as $objChildShopCategory) {
-            $childCategoryId = $objChildShopCategory->getId();                 //echo("setting arrCategoryTree[$parentCategoryId][$childCategoryId]<br />");
-            $arrCategoryTree[$parentCategoryId][$childCategoryId] = array(
-                'sorting' => $objChildShopCategory->getSorting(),
-                'status'  => $objChildShopCategory->getStatus(),
-                'level'   => $level,
-            );
-            // get the grandchildren
-            foreach (ShopCategory::getCategoryTree(
-                        $childCategoryId, $flagActiveOnly, $level+1
-                    ) as $subCategoryId => $objSubCategory) {
-            	$arrCategoryTree[$objSubCategoryId] = $objSubCategory;
-            };
-        }
-        return $arrCategoryTree;
-    }
-
-
-    /**
-     * Returns the HTML code for a dropdown menu listing all ShopCategories.
-     *
-     * If the optional menu name string is non-empty, the <select> tag pair
-     * with the menu name will be included, plus an option for the root
-     * ShopCategory.  Otherwise, only the <option> tag list is returned.
-     * @static
-     * @global  array       $_ARRAYLANG     Language array
-     * @param   integer     $selectedid     The selected ShopCategory ID
-     * @param   string      $name           The optional menu name
-     * @return  string                      The HTML dropdown menu code
-     */
-    //static
-    function getShopCategoryMenuHierarchic($selectedId=0, $name='catId')
-    {
-        global $_ARRAYLANG;
-
-        $result =
-            ShopCategory::getShopCategoryMenuHierarchicRecurse(
-                0, 0, $selectedId
-            );
-        if ($name) {
-            $result =
-                "<select name='$name'>".
-    			"<option value='0'>{$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS']}</option>".
-                "$result</select>";
-        }
-        return $result;
-    }
-
-
-    /**
-     * Builds the ShopCategory menu recursively.
-     *
-     * Do not call this directly, use {@link getShopCategoryMenuHierarchic()}
-     * instead.
-     * @version  1.0      initial version
-     * @static
-     * @param    integer  $parcat       The parent ShopCategory ID.
-     * @param    integer  $level        The nesting level.
-     *                                  Should start at 0 (zero).
-     * @param    integer  $selectedid   The optional selected ShopCategory ID.
-     * @return   string                 The HTML code with all <option> tags,
-     *                                  or the empty string on failure.
-     */
-    //static
-    function getShopCategoryMenuHierarchicRecurse($parentCatId, $level, $selectedId=0)
-    {
-//echo("Debug: ShopCategory::getShopCategoryMenuHierarchicRecurse(parentCatId=$parentCatId, level=$level, selectedId=$selectedId)<br />");
-        global $objDatabase;
-
-        $arrChildShopCategories =
-            ShopCategory::getChildCategoriesById($parentCatId);
-        if (   !is_array($arrChildShopCategories
-            || count($arrChildShopCategories) == 0)) {
-echo("no child categories!<br />");
-            return '';
-        }
-        $result = '';
-        foreach ($arrChildShopCategories as $objShopCategory) {
-            $id   = $objShopCategory->getId();
-            $name = $objShopCategory->getName();
-            $result .=
-                "<option value='$id'".
-                ($selectedId == $id ? ' selected="selected"' : '').'>'.
-                str_repeat('.', $level*3).
-                htmlentities($name).
-                "</option>\n";
-            if ($id != $parentCatId) {
-                $result .=
-                    ShopCategory::getShopCategoryMenuHierarchicRecurse(
-                        $id, $level+1, $selectedId
-                    );
-            }
-        }
-        return $result;
-    }
-
-
-    /**
-     * Returns the parent category ID, or 0 (zero)
-     *
-     * If the ID given corresponds to a top level category,
-     * 0 (zero) is returned, as there is no parent.
-     * If the ID cannot be found, 0 (zero) is returned as well.
-     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * Return an array of all IDs of children ShopCateries.
+     * @return  mixed                   Array of the resulting Shop Category
+     *                                  IDs on success, false otherwise
      * @global  mixed   $objDatabase    Database object
-     * @param   integer $intCategoryId  The category ID
-     * @return  integer                 The parent category ID,
-     *                                  or 0 (zero) on failure.
-     * @static
      */
-    //static
-    function getParentCategoryId($intCategoryId)
+    function getChildrenIdArray()
     {
         global $objDatabase;
 
-        $query = '
-            SELECT parentid
-              FROM '.DBPREFIX."module_shop_categories
-             WHERE catid=$intCategoryId
+        $query = "
+            SELECT catid
+              FROM ".DBPREFIX."module_shop_categories
+             WHERE parentid=$this->id
           ORDER BY catsorting ASC
         ";
+//echo("ShopCategory::getChildrenIdArray(): query: $query<br />");
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->RecordCount == 0) {
-            return 0;
+        if (!$objResult) {
+//echo("ShopCategory::getChildrenIdArray(): ERROR: Query failed: $query<br />");
+            return false;
         }
-        return $objResult->Fields('parentid');
-    }
+        $arrShopCategoryID = array();
+        while (!$objResult->EOF) {
+            $arrShopCategoryID[] = $objResult->Fields('catid');
+            $objResult->MoveNext();
+        }
+//echo("ShopCategory::getChildrenIdArray(): got array:<br />");var_export($arrShopCategoryID);echo("<br />");
+        return $arrShopCategoryID;
+   }
 
 
     /**
-     * Get the next ShopCategory ID after $shopCategoryId according to
-     * the sorting order.
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     * @param   integer $shopCategoryId     The ShopCategory ID
-     * @return  integer                     The next ShopCategory ID
+     * Returns the child ShopCategory of this with the given name, if found.
+     *
+     * Returns false if the query fails, or if no child ShopCategory of
+     * that name can be found.
+     * Note that if there are two or more children of the same name (and with
+     * active status, if $flagActiveOnly is true), a warning will be echo()ed.
+     * This is by design.
      * @static
+     * @param   string      $strName        The child ShopCategory name
+     * @param   boolean     $flagActiveOnly If true, only active ShopCategories
+     *                                      are considered.
+     * @return  mixed                       The ShopCategory on success,
+     *                                      false otherwise.
      */
     //static
-    function getNextShopCategoryId($shopCategoryId=0)
+    function getChildNamed($strName, $flagActiveOnly=true)
     {
         global $objDatabase;
 
-        // Get the parent ShopCategory ID
-        $parentShopCategoryId =
-            ShopCategory::getParentCategoryId($shopCategoryId);
-        // Get the IDs of all active children
-        $arrChildShopCategoryId =
-            ShopCategory::getChildCategoryIdArray($parentShopCategoryId, true);
-        return
-            (isset($arrChildShopCategoryId[
-                        array_search($parentShopCategoryId, $arrChildShopCategoryId)+1
-                   ])
-                ? $arrChildShopCategoryId[
-                        array_search($parentShopCategoryId, $arrChildShopCategoryId)+1
-                  ]
-                : $arrChildShopCategoryId[0]
-            );
-    }
+        $query = "
+           SELECT catid
+             FROM ".DBPREFIX."module_shop_categories
+            WHERE ".($flagActiveOnly ? 'catstatus=1 AND' : '')."
+                  parentid=$this->parentId AND
+                  catname='".addslashes($strName)."'
+         ORDER BY catsorting ASC
+        ";
 
-
-    /**
-     * Get the ShopCategory ID trail array.
-     *
-     * Returns an array of ShopCategory IDs of the current $shopCategoryId,
-     * and all its ancestors.
-     * @param   integer  $shopCategoryId    The current ShopCategory ID
-     * @return  array                       The array of all ancestor
-     *                                      ShopCategories
-     */
-    function getAncestorIdArray($shopCategoryId=1)
-    //_makeArrCurrentCategories
-    {
-        $arrCategory = array();
-        while ($shopCategoryId != 0) {
-            $arrParentCategory = $this->arrParentCategoriesTable[$shopCategoryId];
-            if (!is_array($arrParentCategory)) {
-                $arrCategory[]       = 0;
-                $shopCategoryId = 0;
-            } else {
-                $result = each($arrParentCategory);
-                $arrCategory[]       = $result[0];
-                $shopCategoryId = $result[0];
-            }
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+//echo("ShopCategory::getChildNamed($strName, $flagActiveOnly): ERROR: Query failed: $query<br />");
+            return false;
         }
-        return $arrCategory;
+        if (!$objResult->RecordCount() > 1) {
+echo("ShopCategory::getChildNamed($strName, $flagActiveOnly): WARNING: More than one ShopCategory of the same name found!<br />");
+        }
+        if (!$objResult->EOF) {
+            return ShopCategory::getById($objResult->Fields('catid'));
+        }
+        return false;
     }
 
 
@@ -713,9 +712,9 @@ echo("no child categories!<br />");
 
 
 /* test
-echo("TEST: getcategoryTree(): <br />");
-var_export(ShopCategory::getCategoryTree(0, 0, 0));
-echo("<br />");
+//echo("TEST: getcategoryTree(): <br />");
+//var_export(ShopCategory::getCategoryTree(0, 0, 0));
+//echo("<br />");
 //die();
 */
 

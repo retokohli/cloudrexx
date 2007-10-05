@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Shop Product Attributes
+ * Shop Product Attribute
  *
  * @version     $Id: 0.0.1 alpha$
  * @package     contrexx
@@ -14,11 +14,16 @@
 /**
  * Product Attribute
  *
- * These may be associated with one or more Products.
- * Each attribute consists of a name and one or more values.
- * The type determines the relation between a Product and the attribute values,
- * that is, whether it is optional or mandatory, and whether only single or
- * multiple attributes may be chosen.  See {@link } for details.
+ * These may be associated with zero or more Products.
+ * Each attribute consists of a name part
+ * (module_shop_products_attributes_name) and zero or more value parts
+ * (module_shop_products_attributes_value).
+ * Each of the values can be associated with an arbitrary number of Products
+ * by inserting the respective record into the relations table
+ * module_shop_products_attributes.
+ * The type determines the kind of relation between a Product and the attribute
+ * values, that is, whether it is optional or mandatory, and whether single
+ * or multiple attributes may be chosen at a time.  See {@link ?} for details.
  * @version     $Id: 0.0.1 alpha$
  * @package     contrexx
  * @subpackage  module_shop
@@ -27,7 +32,7 @@
  * @todo        Test!
  */
 
-class ProductAttribute  // friend Product
+class ProductAttribute
 {
     // attributes: attribute_id, product_id, attributes_name_id, attributes_value_id, sort_id
     // names:      id, name, display_type
@@ -38,21 +43,41 @@ class ProductAttribute  // friend Product
      * @var integer
      */
     var $id;
+
+    /**
+     * The associated Product ID, if any, or false
+     */
+    var $productId = false;
+
     /**
      * The ProductAttribute name
      * @var string
      */
     var $name;
+
     /**
      * The ProductAttribute type
      * @var integer
      */
     var $type;
+
     /**
      * The ProductAttribute array of values
      * @var array
      */
     var $arrValue;
+
+    /**
+     * The value index
+     *
+     * The array has the form
+     * array ( ID => index, ... ),
+     * where ID is the ID of the Attribute value, and index is its
+     * offset in the Attribute value array ($arrValue object variable)
+     * @var array
+     */
+    var $arrValueIndex;
+
     /**
      * Sorting order
      *
@@ -61,117 +86,33 @@ class ProductAttribute  // friend Product
      */
     var $order;
 
+
     /**
      * Constructor (PHP4)
      *
      */
-    function ProductAttribute($name, $type, $id=0)
+    function ProductAttribute($name, $type, $id=0, $productId=false)
     {
-        $this->__construct($name, $type, $id);
+        $this->__construct($name, $type, $id, $productId);
     }
-
 
     /**
      * Constructor (PHP5)
      *
      * id, name, display_type (enum('0', '1', '2', '3'))
      */
-    function __construct($name, $type, $id=0)
+    function __construct($name, $type, $id=0, $productId=false)
     {
-        $this->name     = $name;
-        $this->type     = $type;
-        $this->id       = $id;
-        $this->arrValue = array();
+        $this->name      = $name;
+        $this->type      = $type;
+        $this->id        = $id;
+        $this->productId = $productId;
+        $this->arrValue  = array();
 /*
         if (!$this->id) {
             $this->store();
         }
 */
-    }
-
-
-    /**
-     * Returns an array of ProductAttribute value IDs.
-     *
-     * If the optional $productId argument is greater than zero,
-     * only IDs associated with this Product are returned,
-     * all value IDs found in the database otherwise.
-     * Note that this exact information has to be stored in the Product object
-     * to enable Product cloning along with ProductAttributes.
-     * @static
-     * @access  public
-     * @param   integer     $productId      The optional Product ID
-     * @return  array                       Array of ProductAttribute value IDs
-     */
-    //static
-    function getValueIdArray($productId=0)
-    {
-        global $objDatabase;
-
-        $query = ($productId ? "
-            SELECT id
-              FROM ".DBPREFIX."module_shop_products_attributes_value
-        INNER JOIN ".DBPREFIX."module_shop_products_attributes
-                ON attributes_value_id=id
-             WHERE product_id=$productId
-          ORDER BY id ASC
-        " : "
-            SELECT id
-              FROM ".DBPREFIX."module_shop_products_attributes_value
-          ORDER BY id ASC
-        ");
-
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        $arrValueId = array();
-        while (!$objResult->EOF) {
-            $arrValueId[] = $objResult->fields['id'];
-            $objResult->MoveNext();
-        }
-        return $arrValueId;
-    }
-
-
-    /**
-     * Add a ProductAttribute value to a Product.
-     *
-     * The optional argument determines the sorting order of the value.
-     * @static
-     * @param   integer     $productId      The Product ID
-     * @param   integer     $valueId        The ProductAttribute value ID
-     * @param   integer     $order          The optional sorting order
-     * @return  boolean                     True on success, false otherwise
-     * @copyright   CONTREXX CMS - COMVATION AG
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    //static
-    function addValueToProduct($valueId, $productId, $order)
-    {
-        global $objDatabase;
-
-        // fields: attribute_id, product_id, attributes_name_id, attributes_value_id, sort_id
-        $query = "
-            INSERT INTO ".DBPREFIX."module_shop_products_attributes (
-                product_id,
-                attributes_name_id,
-                attributes_value_id,
-                sort_id
-            ) VALUES (
-                $productId,
-                ".ProductAttribute::getNameIdByValueId($valueId).",
-                $valueId,
-                $order
-            )
-        ";
-//$objDatabase->debug = 1;
-        $objResult = $objDatabase->Execute($query);
-//$objDatabase->debug = 0;
-        if (!$objResult) {
-            return false;
-        }
-        return true;
     }
 
 
@@ -224,11 +165,12 @@ class ProductAttribute  // friend Product
     /**
      * Get the ProductAttribute sorting order
      *
-     * Note that this is ONLY set by our friend, the Product object.
-     * So if you don't have a ProductAttribute actually associated to
+     * Note that this is *SHOULD* only be set by our friend,
+     * the Product object.
+     * So if you have a ProductAttribute not actually associated to
      * a Product, you'll get a return value of boolean false.
      * @return  integer                 The ProductAttribute sorting order,
-     *                                  or false if unknown.
+     *                                  or false if not applicable.
      */
     function getOrder()
     {
@@ -239,6 +181,9 @@ class ProductAttribute  // friend Product
      *
      * Note that you can only set this to a valid integer value,
      * not reset to false or even unset state.
+     * This *SHOULD* only be set if the Attribute is indeed associated
+     * with a Product, as this value will only be stored in the
+     * relations table module_shop_products_attributes.
      * @param   integer                 The ProductAttribute sorting order
      */
     function setOrder($order)
@@ -249,60 +194,66 @@ class ProductAttribute  // friend Product
     }
 
     /**
-     * Get the ProductAttribute value array
-     * @return  array                   The ProductAttribute value array
+     * Returns an array of values for this ProductAttribute.
+     *
+     * Set the $flagReuse parameter to false after any Attribute properties
+     * have been changed.
+     * If the $productId object variable is greater than zero,
+     * only values associated with that Product are returned,
+     * all values found in the database otherwise.
+     * @access  public
+     * @param   boolean     $flagReuse      If true, returns the previously
+     *                                      initialized array, if any.
+     *                                      Reinitializes the array otherwise.
+     * @param   integer     $productId      The optional Product ID
+     * @return  array                       Array of ProductAttribute values
+     *                                      upon success, false otherwise.
+     * @global  mixed       $objDatabase    The Database object
      */
-    function getValueArray()
+    function getValueArray($flagReuse=true)
     {
-        return $this->arrValue;
+        global $objDatabase;
+
+        if ($flagReuse && $this->arrValue) {
+            return $this->arrValue;
+        }
+
+        $query = "
+            SELECT *
+              FROM ".DBPREFIX."module_shop_products_attributes_value
+              WHERE name_id=$this->id
+            ".($this->productId
+              ? "INNER JOIN ".DBPREFIX."module_shop_products_attributes
+                         ON attributes_value_id=id
+                      WHERE product_id=$this->productId
+                   ORDER BY sort_id ASC
+            " : '');
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return false;
+        }
+        $this->arrValue      = array();
+        $this->arrValueIndex = array();
+        $index = 0;
+        while (!$objResult->EOF) {
+            $arrValue = array();
+            $arrValue['id']     = $objResult->fields['id'];
+            $arrValue['nameId'] = $objResult->fields['name_id'];
+            $arrValue['value']  = $objResult->fields['value'];
+            $arrValue['price']  = $objResult->fields['price'];
+            $arrValue['prefix'] = $objResult->fields['price_prefix'];
+            $arrValue['order']  =
+                ($this->productId ? $objResult->fields['sort_id'] : 0);
+            $this->arrValue[++$index] = $arrValue;
+            $this->arrValueIndex[$arrValue['id']] = $index;
+            $objResult->MoveNext();
+        }
+        return $arrValue;
     }
     /**
      * Set the ProductAttribute value array -- NOT ALLOWED
      * Use addValue()/deleteValueById() instead.
      */
-
-    /**
-     * Returns the array index for the given value ID, or false.
-     *
-     * @param   integer     $valueId    The value ID to look for
-     * @return  integer                 The internal array index, or false.
-     */
-    function getValueIndexByValueId($valueId)
-    {
-        foreach ($this->arrValue as $index => $value) {
-            if ($value['id'] == $valueId) {
-                return $index;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Returns the array of ProductAttribute name IDs present in the database.
-     *
-     * @static
-     * @return  array       Array of all ProductAttribute name IDs on success,
-     *                      false otherwise
-     */
-    function getNameIdArray()
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT id
-              FROM ".DBPREFIX."module_shop_products_attributes_name
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        $arrNameId = array();
-        while (!$objResult->EOF) {
-            $arrNameId[] = $objResult->Fields('id');
-            $objResult->MoveNext();
-        }
-        return $arrNameId;
-    }
 
 
     /**
@@ -315,12 +266,13 @@ class ProductAttribute  // friend Product
      * @param   string  $prefix     The ProductAttribute value price prefix ('+' or '-')
      * @return  boolean             True on success, false otherwise
      */
-    function addValue($value, $price, $prefix, $id='')
+    function addValue($value, $price, $prefix, $order=0, $id='')
     {
         $this->arrValue[] = array(
             'value'   => $value,
             'price'   => $price,
             'prefix'  => $prefix,
+            'order'   => $order,
             'id'      => $id,          // changed by insertValue()
         );
 /*
@@ -337,16 +289,17 @@ class ProductAttribute  // friend Product
      *
      *
      */
-    function updateValue($valueId, $value, $price, $prefix)
+    function updateValue($valueId, $value, $price, $prefix, $order)
     {
         // fields: id, name_id, value, price, price_prefix (enum('+', '-'))
         $index = $this->getValueIndexByValueId($valueId);
         $this->arrValue[$index]['value']  = $value;
         $this->arrValue[$index]['price']  = $price;
         $this->arrValue[$index]['prefix'] = $prefix;
+        $this->arrValue[$index]['order']  = $order;
         // insert into database, and update ID
         $this->_updateValue($this->arrValue[$index]);
-        if (!$this->arrValue[$index]['id']) {
+        if (!$this->arrValue[$index]['id'] > 0) {
 // heavy debug
 die("ERROR: value id not set after update/insert<br />");
         }
@@ -354,55 +307,23 @@ die("ERROR: value id not set after update/insert<br />");
 
 
     /**
-     * Removes the ProductAttribute value with the given value ID from
-     * the database and the values array, if found.
-     *
-     * The values' ID will be set upon storing a ProductAttribute.
-     * Therefore, this function will only work after a new ProductAttribute
-     * has been stored, or if an existing object it was read from the database.
-     * False will be returned both if the value cannot be deleted from the
-     * database, and if it cannot be found in the values array.
-     * @param   integer     $id     The ProductAttribute' value ID
-     * @return  boolean             True on success, false otherwise.
-     */
-    function deleteValueById($id)
-    {
-        foreach ($this->arrValue as $index => $value) {
-            if ($value['id'] == $id) {
-                // delete from the database
-                if (!ProductAttribute::_deleteValueById($id)) {
-                    return false;
-                }
-                // delete from the array
-                unset($this->arrValue[$index]);
-                return true;
-            }
-        }
-        // not found
-        return false;
-    }
-
-    /**
      * Deletes the ProductAttribute value with the given value ID
      * from the database.
      *
-     * DO NOT, repeat, *DO* *NOT* call this method from the outside
-     * unless you know what you are doing.  See {@link deleteValueById()}
-     * for a hint on why.
-     * @access  protected
+     * Remember to reinitialize the value array after deleting any values!
      * @static
-     * @param   integer $id             The ProductAttribute value ID
-     * @global  mixed   $objDatabase    Database object;
-     * @return  boolean                 True on success, false otherwise.
+     * @param   integer     $id             The ProductAttribute value ID
+     * @return  boolean                     True on success, false otherwise.
+     * @global  mixed       $objDatabase    The Database object
      */
     //static
-    function _deleteValueById($id)
+    function deleteValueById($id)
     {
         global $objDatabase;
 
         $query = "
             DELETE FROM ".DBPREFIX."module_shop_products_attributes_value
-                  WHERE id = $id
+                  WHERE id=$id
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
@@ -421,17 +342,26 @@ die("ERROR: value id not set after update/insert<br />");
      * Keep in mind that any Products currently held in memory may cause
      * inconsistencies!  To be on the safe side, remove relations between
      * Products and these ProductAttribute first!
-     * @global  mixed   $objDatabase    Database object;
-     * @return  boolean                 True on success, false otherwise.
+     * @return  boolean                     True on success, false otherwise.
+     * @global  mixed       $objDatabase    The Database object
      */
     function delete()
     {
         global $objDatabase;
 
+        // delete referring attributes
+        $query = "
+            DELETE FROM ".DBPREFIX."module_shop_products_attributes
+                  WHERE attributes_name_id=$this->id
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return false;
+        }
         // delete values
         $query = "
             DELETE FROM ".DBPREFIX."module_shop_products_attributes_value
-                  WHERE name_id = $this->id
+                  WHERE name_id=$this->id
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
@@ -440,16 +370,7 @@ die("ERROR: value id not set after update/insert<br />");
         // delete name
         $query = "
             DELETE FROM ".DBPREFIX."module_shop_products_attributes_name
-                  WHERE id = $this->id
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        // delete referring attributes
-        $query = "
-            DELETE FROM ".DBPREFIX."module_shop_products_attributes
-                  WHERE attributes_name_id = $this->id
+                  WHERE id=$this->id
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
@@ -468,9 +389,9 @@ die("ERROR: value id not set after update/insert<br />");
     function store()
     {
         if ($this->id > 0) {
-            return ($this->update());
+            return $this->update();
         }
-        return ($this->insert());
+        return $this->insert();
     }
 
 
@@ -478,7 +399,8 @@ die("ERROR: value id not set after update/insert<br />");
      * Updates the ProductAttribute object in the database.
      *
      * Also updates (or inserts) all value entries contained.
-     * @return  boolean     True on success, false otherwise
+     * @return  boolean                     True on success, false otherwise
+     * @global  mixed       $objDatabase    The Database object
      */
     function update()
     {
@@ -486,7 +408,8 @@ die("ERROR: value id not set after update/insert<br />");
 
         $query = "
             UPDATE ".DBPREFIX."module_shop_products_attributes_name
-               SET name='".contrexx_addslashes($this->name)."'
+               SET name='".addslashes($this->name)."',
+                   display_type=$this->type
              WHERE id=$this->id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -502,7 +425,16 @@ die("ERROR: value id not set after update/insert<br />");
     }
 
 
-    function _updateValue($value)
+    /**
+     * Update the Attibute value record in the database
+     *
+     * The value array is passed by reference, as the ID may be updated
+     * in case it had not been set and {@link _insertValue()} was called.
+     * @param   array       $arrValue       The value array
+     * @return  boolean                     True on success, false otherwise
+     * @global  mixed       $objDatabase    The Database object
+     */
+    function _updateValue(&$arrValue)
     {
         global $objDatabase;
 
@@ -511,17 +443,17 @@ die("ERROR: value id not set after update/insert<br />");
         $query = "
             UPDATE ".DBPREFIX."module_shop_products_attributes_value
                SET name_id=$this->id,
-                   value='".contrexx_addslashes($value['value'])."',
-                   price=".floatval($value['price']).",
-                   price_prefix='".$value['prefix']."'
-             WHERE id=".$value['id'];
+                   value='".addslashes($arrValue['value'])."',
+                   price=".floatval($arrValue['price']).",
+                   price_prefix='".$arrValue['prefix']."'
+             WHERE id=".$arrValue['id'];
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
         }
         // not updated? -- insert!
         if ($objDatabase->Affected_Rows() == 0) {
-            return ProductAttribute::_insertValue($value, $this->id);
+            return $this->_insertValue($arrValue);
         }
         return true;
     }
@@ -531,17 +463,21 @@ die("ERROR: value id not set after update/insert<br />");
      * Inserts the ProductAttribute object into the database.
      *
      * Also inserts all value entries contained.
-     * @return  boolean     True on success, false otherwise
+     * @return  boolean                     True on success, false otherwise
+     * @global  mixed       $objDatabase    The Database object
      */
     function insert()
     {
         global $objDatabase;
 
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop_products_attributes_name
-                (name)
-            VALUES
-                ('".contrexx_addslashes($this->name)."')";
+            INSERT INTO ".DBPREFIX."module_shop_products_attributes_name (
+                name, display_type
+            ) VALUES (
+                '".addslashes($this->name)."',
+                $this->type
+            )
+        ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -549,7 +485,7 @@ die("ERROR: value id not set after update/insert<br />");
         $this->id = $objDatabase->Insert_ID();
 
         foreach ($this->arrValue as $value) {
-            if (!insertValue($value, $this->id)) {
+            if (!$this->_insertValue($value)) {
                 return false;
             }
 //echo("debug: ProductAttribute::insert(): value_id ".$value['id']." (must be != 0)<br />");
@@ -563,27 +499,28 @@ die("ERROR: value id not set after update/insert<br />");
      *
      * Updates the values' ID upon success.
      * @access  private
-     * @param   array   $value      The value array, by reference
-     * @param   integer $nameId     The associated name ID
-     * @return  boolean             True on success, false otherwise
+     * @param   array       $value          The value array, by reference
+     * @return  boolean                     True on success, false otherwise
+     * @global  mixed       $objDatabase    The Database object
      */
-    function _insertValue(&$value, $nameId)
+    function _insertValue(&$arrValue)
     {
         global $objDatabase;
 
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop_products_attributes_value
-                (name_id, value, price, price_prefix)
-            VALUES
-                ($nameId,
-                '".contrexx_addslashes($value['value'])."',
-                ".floatval($value['price']).",
-                '".contrexx_addslashes($value['prefix'])."')";
+            INSERT INTO ".DBPREFIX."module_shop_products_attributes_value (
+                name_id, value, price, price_prefix
+            ) VALUES (
+                $this->id,
+                '".addslashes($arrValue['value'])."',
+                ".floatval($arrValue['price']).",
+                '".addslashes($arrValue['prefix'])."')";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
         }
-        $value['id'] = $objDatabase->Insert_ID();
+        $arrValue['id'] = $objDatabase->Insert_ID();
+//echo("ProductAttribute::_insertValue(): inserted, got ID {$arrValue['id']}<br />");
         return true;
     }
 
@@ -669,12 +606,57 @@ die("ERROR: value id not set after update/insert<br />");
 
 
     /**
+     * Return an array of Attribute value IDs related to the given
+     * Product ID.
+     *
+     * The array has the form
+     * array(
+     *  Index => array(
+     *      valueId => value ID,
+     *      order   => sorting order,
+     *  ),
+     *  ...
+     * @param   integer     $productId      The Product ID
+     * @return  mixed                       The array of Attribute value IDs
+     *                                      upon success, false otherwise
+     * @global  mixed       $objDatabase    The Database object
+     */
+    function getValueIdArray($productId)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT 	attributes_value_id, sort_id
+              FROM ".DBPREFIX."module_shop_products_attributes
+             WHERE product_id=$productId
+          ORDER BY sort_id ASC
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return false;
+        }
+        $arrValueId = array();
+        while (!$objResult->EOF) {
+            $arrValueId[] = array(
+                'valueId' => $objResult->fields['attributes_value_id'],
+                'order'   => $objResult->fields['sort_id'],
+            );
+            $objResult->MoveNext();
+        }
+        return $arrValueId;
+    }
+
+
+    /**
      * Returns the name ID associated with the given value ID in the
      * value table.
      *
-     * @param   integer     $valueId    The value ID
-     * @return  integer                 The associated name ID
+     * @static
+     * @param   integer     $valueId        The value ID
+     * @return  integer                     The associated name ID
+     * @global  mixed       $objDatabase    The Database object
      */
+    // static
     function getNameIdByValueId($valueId)
     {
         global $objDatabase;
@@ -694,6 +676,37 @@ die("ERROR: value id not set after update/insert<br />");
 
 
     /**
+     * Return the value ID corresponding to the given value name,
+     * if found, false otherwise.
+     *
+     * If there is more than one value of the same name, only the
+     * first ID found is returned, with no guarantee that it will
+     * always return the same.
+     * This method is awkwardly named because of the equally awkward
+     * names given to the database fields.
+     * @param   string      $value          The Attribute value name
+     * @return  integer                     The first matching value ID found,
+     *                                      or false.
+     * @global  mixed       $objDatabase    The Database object
+     */
+    function getValueIdByName($value)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT id
+              FROM ".DBPREFIX."module_shop_products_attributes_value
+             WHERE value='".addslashes($value)."'
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult || $objResult->RecordCount() == 0) {
+            return false;
+        }
+        return $objResult->fields['id'];
+    }
+
+
+    /**
      * OBSOLETE -- Returns the array of all available Attributes.
      *
      * If the optional $productId argument is greater than zero,
@@ -703,6 +716,7 @@ die("ERROR: value id not set after update/insert<br />");
      *
      * @access  public
      * @param   integer     $productId      The optional Product ID
+     * @global  mixed       $objDatabase    The Database object
      */
     function getAttributeArray($productId=0)
     {
@@ -711,15 +725,15 @@ die("ERROR: value id not set after update/insert<br />");
         // get attributes
         $query = "
             SELECT name.id AS nameId,
-                   name.name AS nameTxt,
-                   name.display_type as type,
+                   name.name,
+                   name.display_type,
                    value.id AS valueId,
-                   value.value AS valueTxt,
-                   value.price AS price,
-                   value.price_prefix AS pricePrefix
-              FROM ".DBPREFIX."module_shop_products_attributes_name AS name,
-                   ".DBPREFIX."module_shop_products_attributes_value AS value
-             WHERE value.name_id = name.id
+                   value.value,
+                   value.price,
+                   value.price_prefix
+              FROM ".DBPREFIX."module_shop_products_attributes_name name
+        INNER JOIN ".DBPREFIX."module_shop_products_attributes_value value
+                ON value.name_id = name.id
           ORDER BY nameTxt ASC, valueTxt ASC
         ";
 //unused  value.name_id AS valueNameId,
@@ -734,9 +748,9 @@ die("ERROR: value id not set after update/insert<br />");
             $nameId = $objResult->fields['nameId'];
             if (!isset($arrProductAttribute[$nameId]['name'])) {
                 $arrProductAttribute[$nameId]['name'] =
-                    $objResult->fields['nameTxt'];
+                    $objResult->fields['name'];
                 $arrProductAttribute[$nameId]['type'] =
-                    $objResult->fields['type'];
+                    $objResult->fields['display_type'];
                 $arrProductAttribute[$nameId]['selected'] = false;
             }
             $valueId = $objResult->fields['valueId'];
@@ -754,9 +768,9 @@ die("ERROR: value id not set after update/insert<br />");
             $arrProductAttribute[$nameId]['values'][$valueId] =
                 array(
                     'id'       => $valueId,
-                    'value'    => $objResult->fields['valueTxt'],
+                    'value'    => $objResult->fields['value'],
                     'price'    => $objResult->fields['price'],
-                    'prefix'   => $objResult->fields['pricePrefix'],
+                    'prefix'   => $objResult->fields['price_prefix'],
                     'selected' => ($order === false ? 0 : 1),
                 );
             // use order value from last value record
@@ -764,180 +778,10 @@ die("ERROR: value id not set after update/insert<br />");
             $arrProductAttribute[$nameId]['order'] = intval($order);
             $objResult->MoveNext();
         }
-var_export($arrProductAttribute);//die();
+//var_export($arrProductAttribute);//die();
 
         return $arrProductAttribute;
     }
-
-
-    //static
-    function getAttributeDisplayTypeMenu($attributeId, $displayTypeId='0')
-    {
-        global $_ARRAYLANG;
-
-        return "<select name='attributeDisplayType[".$attributeId."]' size='1' style='width:170px;'>\n".
-            "<option value='0' ".($displayTypeId == '0' ? "selected='selected'" : '').">".$_ARRAYLANG['TXT_MENU_OPTION']."</option>\n".
-            "<option value='3' ".($displayTypeId == '3' ? "selected='selected'" : '').">".$_ARRAYLANG['TXT_SHOP_MENU_OPTION_DUTY']."</option>\n".
-            "<option value='1' ".($displayTypeId == '1' ? "selected='selected'" : '').">".$_ARRAYLANG['TXT_RADIOBUTTON_OPTION']."</option>\n".
-            "<option value='2' ".($displayTypeId == '2' ? "selected='selected'" : '').">".$_ARRAYLANG['TXT_CHECKBOXES_OPTION']."</option>\n".
-            "</select>\n";
-    }
-
-
-    /**
-     * Generate a list of the inputboxes with the values of an attribute option
-     *
-     * @static
-     * @access   private
-     * @param    integer     $attributeId    ID of the ProductAttribute name
-     * @param    string      $name           Name of the inputbox
-     * @param    string      $content        ProductAttribute value field
-     * @param    integer     $maxlength      Maximum length of the inputbox
-     * @param    string      $style          CSS style declaration for the inputbox
-     * @return   string      $inputBoxes     String with HTML code for the inputboxes
-     */
-    //static
-    function getAttributeInputBoxes($attributeId, $name, $content, $maxlength, $style='')
-    {
-        $inputBoxes = '';
-        $select     = true;
-
-        $objProductAttribute = ProductAttribute::getByNameId($attributeId);
-        foreach ($objProductAttribute->arrValue as $id => $arrValue) {
-            $inputBoxes .= "<input type='text' name='".$name."[$id]' ".
-                "id='".$name."[$id]' value='$arrValue[$content]' ".
-                "maxlength='$maxlength' style='display:".
-                ($select == true ? "inline" : "none").
-                ";$style' onchange='updateAttributeValueList($attributeId, $id)' />";
-            $select = false;
-        }
-        return $inputBoxes;
-    }
-
-
-    /**
-     * Returns HTML code for the ProductAttribute price prefix menus
-     *
-     * @static
-     * @param    integer     $attributeId    ID of the ProductAttribute name
-     * @param    string      $name           Name of the menu
-     * @param    string      $pricePrefix    Price prefix of the ProductAttribute value
-     * @return   string      $menu           The HTML code for the price prefix
-     */
-    function _getAttributePricePrefixMenu($attributeId, $name, $arrValues)
-    {
-        $select = true;
-        $menu = "";
-
-        foreach ($arrValues as $id => $arrValue) {
-            $menu .=
-                "<select style=\"width:50px;display:".
-                ($select == true ? "inline" : "none").
-                ";\" name=\"".$name."[$id]\" id=\"".$name."[$id]\" size=\"1\"".
-                "onchange='updateAttributeValueList($attributeId)'>\n".
-                "<option value=\"+\" ".
-                ($arrValue['price_prefix'] != "-" ? "selected=\"selected\"" : "").
-                ">+</option>\n".
-                "<option value=\"-\" ".
-                ($arrValue['price_prefix'] == "-" ? "selected=\"selected\"" : "").
-                ">-</option>\n".
-                "</select>\n";
-            if ($select) {
-                $select = false;
-            }
-        }
-        return $menu;
-    }
-/*
-    function getAttributePricePrefixMenu($attributeId, $name, $pricePrefix='+')
-    {
-        $select = true;
-        $menu = '';
-        foreach (ProductAttribute::getByNameId($attributeId) as $objProductAttribute) {
-
-            $menu .= "<select style='width:50px;display:".
-                ($select ? 'inline' : 'none').
-                ";' name='{$name}[$attributeId]' id='{$name}[$attributeId]' size='1'>\n".
-                "<option value='+' ".
-                ($select && $pricePrefix != '-' ? "selected='selected'" : '').
-                ">+</option>\n".
-                "<option value='-' ".
-                ($select && $pricePrefix == '-' ? "selected='selected'" : '').
-                ">-</option>\n".
-                "</select>\n";
-            $select = false;
-        }
-        return $menu;
-    }
-*/
-
-
-    /**
-     * Returns HTML code for the value menu for each ProductAttribute
-     *
-     * @param    integer     $attributeId    ID of the ProductAttribute name
-     * @param    string      $name           Name of the menu
-     * @param    integer     $selectedId     ID of the selected value
-     * @param    string      $onchange       Javascript onchange event of the menu
-     * @param    string      $style          CSS style declaration for the menu
-     * @return   string      $menu           Contains the value menus
-     */
-    function getAttributeValueMenu($attributeId, $name, $selectedId, $onchange, $style)
-    {
-        $objProductAttribute = ProductAttribute::getByNameId($attributeId);
-        if (!$objProductAttribute) {
-            return '';
-        }
-        if (!$selectedId) {
-            $selectedId = $objProductAttribute->arrValue[0]['id'];
-        }
-
-        $menu =
-            "<select name='".$name."[]' id='".$name."[]' size='1' ".
-            "onchange='$onchange' style='$style'>\n";
-
-        //if (is_array($objProductAttribute->arrValue))
-        foreach ($objProductAttribute->arrValue as $arrValue) {
-            $id = $arrValue['id'];
-            $menu .=
-                "<option value='$id' ".
-                ($selectedId == $id ? "selected='selected'" : '').'>'.
-                $arrValue['value'].' ('.
-                $arrValue['prefix'].$arrValue['price'].
-                " $this->defaultCurrency)</option>\n";
-        }
-        $menu .= '</select>';
-        $menu .= "<br /><a href='javascript:{}' ".
-            "id='attributeValueMenuLink[$attributeId]' style='display:none;' ".
-            "onclick='removeSelectedValues($attributeId)' ".
-            "title='Ausgewählten Wert entfernen' ".
-            "alt='Ausgewählten Wert entfernen'>".
-            "Ausgewählten Wert entfernen</a>";
-        return $menu;
-    }
-
-
-    /**
-     * Returns a string containing Javascript variables of the attributes
-     *
-     * @static
-     * @access    private
-     * @return    string    $jsVars    Javascript variables list
-     */
-    //static
-    function getAttributeJSVars()
-    {
-        $jsVars = '';
-        foreach (ProductAttribute::getAttributeArray() as $attributeId => $arrValues) {
-            reset($arrValues['values']);
-            $arrValue = current($arrValues['values']);
-            $jsVars .= "attributeValueId[$attributeId] = ".$arrValue['id'].";\n";
-        }
-echo("jsVars:<br />$jsVars<br />");
-        return $jsVars;
-    }
-
-
 
 
     ///////////////////////////////////////////////////////////////////////
@@ -955,7 +799,7 @@ echo("jsVars:<br />$jsVars<br />");
      */
     function _storeNewAttributeOption()
     {
-echo("WARNING: obsolete static method ProductAttribute::_storeNewAttributeOption() called<br />");
+//echo("WARNING: obsolete static method ProductAttribute::_storeNewAttributeOption() called<br />");
         global $objDatabase;
 
         //$statusMessage = "";
@@ -1006,361 +850,10 @@ echo("WARNING: obsolete static method ProductAttribute::_storeNewAttributeOption
     }
 
 
-    /**
-     * Update the attribute option/value list
-     *
-     * OBSOLETE
-     *
-     * @access    private
-     * @return    string    $statusMessage    Status message
-     */
-    function _updateAttributeOptions()
-    {
-echo("WARNING: obsolete static method ProductAttribute::_updateAttributeOptions() called<br />");
-        global $objDatabase;
-
-        $statusMessage = "";
-
-        $arrAttributesDb = array();
-        $arrAttributeList = array();
-        $arrAttributeValue = array();
-        $arrAttributePrice = array();
-        $arrAttributePricePrefix = array();
-
-        $arrAttributesDb = $this->arrAttributes;
-        $arrAttributeName = $_POST['optionName'];
-        $arrAttributeList = $_POST['attributeValueList'];
-        $arrAttributeValue = $_POST['attributeValue'];
-        $arrAttributePrice = $_POST['attributePrice'];
-        $arrAttributePricePrefix = $_POST['attributePricePrefix'];
-
-        // update attribute names
-        foreach ($arrAttributeName as $id => $name) {
-            if (isset($arrAttributesDb[$id])) {
-                if ($name != $arrAttributesDb[$id]['name']) {
-                    $query = "UPDATE ".DBPREFIX."module_shop_products_attributes_name Set name='".addslashes($name)."' WHERE id=".intval($id);
-                    $objDatabase->Execute($query);
-                }
-            }
-        }
-
-        foreach ($arrAttributeList as $attributeId => $arrAttributeValueIds) {
-            foreach ($arrAttributeValueIds as $id) {
-                if (isset($arrAttributesDb[$attributeId]['values'][$id])) {
-                    // update attribute value
-                    $updateString = "";
-                    if ($arrAttributeValue[$id] != $arrAttributesDb[$attributeId]['values'][$id]['value']) {
-                        $updateString .= "value = '".addslashes($arrAttributeValue[$id])."', ";
-                    }
-                    if ($arrAttributePrice[$id] != $arrAttributesDb[$attributeId]['values'][$id]['price']){
-                        $updateString .= " price = '".floatval($arrAttributePrice[$id])."', ";
-                    }
-                    if ($arrAttributePricePrefix[$id] != $arrAttributesDb[$attributeId]['values'][$id]['price_prefix']) {
-                        $updateString .= " price_prefix = '".addslashes($arrAttributePricePrefix[$id])."', ";
-                    }
-                    if (strlen($updateString)>0) {
-                        $query = "UPDATE ".DBPREFIX."module_shop_products_attributes_value Set ".substr($updateString,0,strlen($updateString)-2)." WHERE id=".$id;
-                        $objDatabase->Execute($query);
-                    }
-                } else {
-                    // insert new attribute value
-                    $query = "INSERT INTO ".DBPREFIX."module_shop_products_attributes_value (name_id, value, price, price_prefix) VALUES (".intval($attributeId).", '".addslashes($arrAttributeValue[$id])."', '".floatval($arrAttributePrice[$id])."', '".addslashes($arrAttributePricePrefix[$id])."')";
-                    $objDatabase->Execute($query);
-                }
-                unset($arrAttributesDb[$attributeId]['values'][$id]);
-            }
-        }
-
-        foreach ($arrAttributesDb as $arrAttributes) {
-            foreach ($arrAttributes['values'] as $arrValue) {
-                $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes WHERE attributes_value_id=".intval($arrValue['id']);
-                if ($objDatabase->Execute($query)) {
-                    $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes_value WHERE id=".intval($arrValue['id']);
-                    $objDatabase->Execute($query);
-                }
-            }
-        }
-
-        // delete the option if it has no options
-        $arrAttributeKeys = array_keys($this->arrAttributes);
-        foreach ($arrAttributeKeys as $attributeId) {
-            if (!array_key_exists($attributeId,$arrAttributeList)) {
-                $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes_name WHERE id=".intval($attributeId);
-                $objDatabase->Execute($query);
-            }
-        }
-
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes_value");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes_name");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes");
-
-        return $statusMessage;
-    }
-
-
-    /**
-    * Delete the selected attribute option(s)
-    *
-    * OBSOLETE
-    *
-    * @access    private
-    * @param    integer    $optionId    Id of the attribute option
-    * @return    string    Status message
-    */
-    function _deleteAttributeOption($optionId)
-    {
-echo("WARNING: obsolete static method ProductAttribute::_deleteAttributeOption() called<br />");
-        global $objDatabase;
-
-        if (!is_array($optionId)) {
-            $arrOptionIds = array($optionId);
-        } else {
-            $arrOptionIds = $optionId;
-        }
-
-        foreach ($arrOptionIds as $optionId) {
-            $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes WHERE attributes_name_id=".intval($optionId);
-            if ($objDatabase->Execute($query)) {
-                $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes_value WHERE name_id=".intval($optionId);
-                if ($objDatabase->Execue($query)) {
-                    $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes_name WHERE id=".intval($optionId);
-                    $objDatabase->query($query);
-                }
-            }
-        }
-        return "Option(s) deleted succesfull";
-    }
-
-
-    /**
-     * Initialize the array $this->arrAttributes
-     *
-     * OBSOLETE
-     *
-     * @access    private
-     */
-    function _initAttributes()
-    {
-        global $objDatabase;
-
-        // get attributes
-        $query =
-            "SELECT name.id AS nameId, ".
-                "name.name AS nameTxt, ".
-                "name.display_type AS displayType, ".
-                "value.id AS valueId, ".
-                "value.name_id AS valueNameId, ".
-                "value.value AS valueTxt, ".
-                "value.price AS price, ".
-                "value.price_prefix AS price_prefix ".
-            "FROM ".DBPREFIX."module_shop_products_attributes_name AS name, ".
-                    DBPREFIX."module_shop_products_attributes_value AS value ".
-            "WHERE value.name_id = name.id ".
-            "ORDER BY nameTxt, valueId ASC";
-
-        if (($objResult = $objDatabase->Execute($query)) !== false) {
-            while (!$objResult->EOF) {
-                if (!isset($this->arrAttributes[$objResult->fields['nameId']]['name'])) {
-                    $this->arrAttributes[$objResult->fields['nameId']]['name'] = $objResult->fields['nameTxt'];
-                    $this->arrAttributes[$objResult->fields['nameId']]['displayType'] = $objResult->fields['displayType'];
-                }
-                $this->arrAttributes[$objResult->fields['nameId']]['values'][$objResult->fields['valueId']] = array(
-                    'id'           => $objResult->fields['valueId'],
-                    'value'        => $objResult->fields['valueTxt'],
-                    'price'        => $objResult->fields['price'],
-                    'price_prefix' => $objResult->fields['price_prefix'],
-                    'selected'     => false
-                );
-                $this->highestIndex = $objResult->fields['valueId'] > $this->highestIndex
-                    ? $objResult->fields['valueId']
-                    : $this->highestIndex;
-                $objResult->MoveNext();
-            }
-        }
-    }
-
-
-    /**
-     * Generate the standard attribute option/value list or the one of a product
-     *
-     * BOGUS
-     *
-     * @todo    Create both a Product and a ProductAttribute method
-     *          to properly access this data.
-     * @access  private
-     * @param   string    $productId    Product Id of which its list will be displayed
-     */
-    function getAttributeList($productId=0)
-    {
-echo("WARNING: bogus method ProductAttribute::getAttributeList() called<br />");
-        global $objDatabase;
-        $this->_initAttributes();
-
-        if ($productId > 0) {
-            $query =
-                "SELECT attribute_id, product_id, attributes_name_id, attributes_value_id, sort_id " .
-                "FROM ".DBPREFIX."module_shop_products_attributes ".
-                "WHERE product_id=".intval($productId);
-            $objResult = $objDatabase->Execute($query);
-
-            while (!$objResult->EOF) {
-                $this->arrAttributes[$objResult->fields['attributes_name_id']]['sortid'] = $objResult->fields['sort_id'];
-                $this->arrAttributes[$objResult->fields['attributes_name_id']]['values'][$objResult->fields['attributes_value_id']]['selected'] = true;
-                $objResult->MoveNext();
-            }
-        }
-    }
-
-
-    /**
-     * Returns an array of ProductAttributes associated with a Product.
-     *
-     * Only ProductAttribute values actually linked to a Product will be returned.
-     * See {@link ProductAttribute}.
-     * @return  array           An array of ProductAttribute objects on success, or false.
-     * @copyright   CONTREXX CMS - COMVATION AG
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getProductAttributes()
-    {
-        global $objDatabase;
-
-        // cannot get attributes before Product has been stored.
-        // in fact, as long as the ID is invalid, there cannot be any.
-        if (!($this->id > 0)) {
-            return array();
-        }
-        // get associated attribute name ids
-        $query = "
-            SELECT DISTINCT attributes_name_id
-              FROM ".DBPREFIX."module_shop_products_attributes
-             WHERE product_id=$this->id
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        $arrProductAttributeId = array();
-        while (!$objResult->EOF) {
-            $attributeNameId = $objResult->fields['attributes_name_id'];
-//echo("getProductAttributes(): attributes_name_id (1): $attributeNameId<br />");
-            if ($attributeNameId) {
-                $arrProductAttributeId[$objResult->fields['attributes_name_id']] = array();
-            } else {
-//echo("skipped<br />");
-            }
-            $objResult->MoveNext();
-        }
-        // get associated ProductAttributes
-        $arrProductAttribute = array();
-        foreach (array_keys($arrProductAttributeId) as $attributeNameId) {
-//echo("getProductAttributes(): attributes_name_id (2): $attributeNameId<br />");
-            // get associated attribute value ids
-            // fields: attribute_id, product_id, attributes_name_id, attributes_value_id, sort_id
-            $query = "
-                SELECT DISTINCT attributes_value_id, sort_id
-                  FROM ".DBPREFIX."module_shop_products_attributes
-                 WHERE attributes_name_id=$attributeNameId
-                   AND product_id=$this->id
-                 ORDER BY sort_id ASC
-            ";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-                return false;
-            }
-            // pick ProductAttribute values associated with a Product
-            while (!$objResult->EOF) {
-                $arrProductAttributeId[$attributeNameId][] =
-                    $objResult->fields['attributes_value_id'];
-//echo("getProductAttributes(): attributes_value_id: ".$objResult->fields['attributes_value_id']."<br />");
-                $objResult->MoveNext();
-            }
-            // only returns ProductAttributes associated with a Product
-            $arrProductAttribute[] = ProductAttribute::getByNameId(
-                $attributeNameId, $arrProductAttributeId[$attributeNameId]
-            );
-        }
-        return $arrProductAttribute;
-    }
-
-
-    /**
-     * Returns the sort order of the value identified by its ID.
-     *
-     * If the ProductAttribute value is associated with the given Product ID,
-     * the respective sorting order value is returned.
-     * If the Product does not carry that value, false is returned instead.
-     * @param   integer     $valueId        The value ID
-     * @param   integer     $productId      The Product ID
-     * @return  integer                     The sorting order, or false.
-     * @copyright   CONTREXX CMS - COMVATION AG
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    //static
-    function GetValueOrderByProductId($valueId, $productId)
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT sort_id FROM ".DBPREFIX."module_shop_products_attributes
-             WHERE attributes_value_id=$valueId
-               AND product_id=$productId
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        // any result?
-        if (!$objResult->EOF) {
-            return $objResult->fields['sort_id'];
-        }
-        return false;
-    }
-
-
 ////////////////////////////////////////////////////////////////////////////
 // Expelled from the Product class.
 // To be rewritten as ProductAttribute methods
 ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Associates the given ProductAttribute with a Product.
-     *
-     * Note that all ProductAttribute values therein are added,
-     * so if you only want a subset of them, remove them beforehand
-     * or afterwards.
-     * @param   ProductAttribute    $objProductAttribute
-     *                                      The ProductAttribute object
-     * @return  boolean                     True on success, false otherwise
-     * @copyright   CONTREXX CMS - COMVATION AG
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function addProductAttribute($objProductAttribute)
-    {
-        global $objDatabase;
-
-        // fields: attribute_id, product_id, attributes_name_id, attributes_value_id, sort_id
-        $arrValue = $objProductAttribute->getValueArray();
-        foreach ($arrValue as $value) {
-            $query = "
-                INSERT INTO ".DBPREFIX."module_shop_products_attributes
-                    (product_id,
-                    attributes_name_id,
-                    attributes_value_id,
-                    sort_id)
-                VALUES
-                    ($this->id, ".
-                    $objProductAttribute->getNameId().', '.
-                    $value['id'].', '.
-                    $value['order'].')';
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 
     /**
      * Remove the ProductAttribute with the given ID from a Product.
@@ -1393,7 +886,7 @@ echo("WARNING: bogus method ProductAttribute::getAttributeList() called<br />");
      *
      * Note that the ProductAttributes are not removed from the Product
      * itself, but from the database ONLY.  This is used in order to
-     * simplyfy the update process, and mandatory to make {@link clone()}
+     * simplyfy the update process, and mandatory to make {@link makeClone()}
      * work properly.
      * @return  boolean                     True on success, false otherwise
      * @copyright   CONTREXX CMS - COMVATION AG
@@ -1461,54 +954,45 @@ echo("WARNING: bogus method ProductAttribute::getAttributeList() called<br />");
 
 }
 
-/* test
-    $objProductAttribute = new ProductAttribute('Grösse', 0);
-    $objProductAttribute->addValue('S', 9.95, '-');
-    $objProductAttribute->addValue('M', 0.00, '+');
-    $objProductAttribute->addValue('L', 9.95, '+');
-    echo("new PA:<br />".$objProductAttribute->toString());
+/*
+$objProductAttribute = new ProductAttribute('Grösse', 0);
+$objProductAttribute->addValue('S', 9.95, '-');
+$objProductAttribute->addValue('M', 0.00, '+');
+$objProductAttribute->addValue('L', 9.95, '+');
+//echo("new PA:<br />".$objProductAttribute->toString());
 
-    echo("id: ".$objProductAttribute->getId()."<br />");
-    $objProductAttribute->setName('Neuer Name');
-    echo("changed name: ".$objProductAttribute->getName()."<br />");
-    $objProductAttribute->setType(1);
-    echo("changed type: ".$objProductAttribute->getType()."<br />");
-    //echo("setName() result: ".($objProductAttribute->setName('Neuer Name') ? 'true' : 'false').'<br />');
+//echo("id: ".$objProductAttribute->getId()."<br />");
+$objProductAttribute->setName('Neuer Name');
+//echo("changed name: ".$objProductAttribute->getName()."<br />");
+$objProductAttribute->setType(1);
+//echo("changed type: ".$objProductAttribute->getType()."<br />");
 
-    $arrValues = $objProductAttribute->getValueArray();
-    echo("value array: ");var_export($arrValues);echo("<br />");
-    $arrValueIds = $objProductAttribute->getValueIdArray();
-    echo("value ID array: ");var_export($arrValueIds);echo("<br />");
-    $arrNameIds = $objProductAttribute->getNameIdArray();
-    echo("name ID array: ");var_export($arrNameIds);echo("<br />");
-    echo("indices:<br />");
-    foreach ($arrValueIds as $id) {
-        echo("id $id => ".$objProductAttribute->getValueIndexByValueId($id).'<br />');
-    }
-    $id = current($arrValueIds);
-    $objProductAttribute->updateValue($id, 'XL', 19.95, '+');
+$objProductAttribute->store();
+//echo("stored:<br />".$objProductAttribute->toString());
+die();
+$arrValues = $objProductAttribute->getValueArray();
+//echo("value array: ");var_export($arrValues);echo("<br />");
+// OK to here
 
-    die();
-
-    // todo from here
-    updateValue($valueId, $value, $price, $prefix)
-    deleteValueById($id)
-    _deleteValueById($id)
-    delete()
-    store()
-    update()
-    _updateValue($value)
-    insert()
-    _insertValue(&$value, $nameId)
-    getByNameId($nameId, $arrProductAttributeValueId='')
-    getByValueId($valueId)
-    getNameIdByValueId($valueId)
-    getAttributeArray()
-    getAttributeDisplayTypeMenu($attributeId, $displayTypeId='0')
-    getAttributeInputBoxes($attributeId, $name, $content, $maxlength, $style='')
-    getAttributePricePrefixMenu($attributeId, $name, $pricePrefix)
-    getAttributeValueMenu($attributeId, $name, $selectedId, $onchange, $style)
-    // todo: getAttributeJSVars()
+// todo from here
+updateValue($valueId, $value, $price, $prefix)
+deleteValueById($id)
+_deleteValueById($id)
+delete()
+update()
+_updateValue($value)
+insert()
+_insertValue(&$value, $nameId)
+getByNameId($nameId, $arrProductAttributeValueId='')
+getByValueId($valueId)
+getNameIdByValueId($valueId)
+getAttributeArray()
+getAttributeDisplayTypeMenu($attributeId, $displayTypeId='0')
+getAttributeInputBoxes($attributeId, $name, $content, $maxlength, $style='')
+getAttributePricePrefixMenu($attributeId, $name, $pricePrefix)
+getAttributeValueMenu($attributeId, $name, $selectedId, $onchange, $style)
+// todo: getAttributeJSVars()
+// and more...
 */
 
 

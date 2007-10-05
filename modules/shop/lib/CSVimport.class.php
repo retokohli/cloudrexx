@@ -7,24 +7,27 @@ class CSVimport {
     var $delimiter = '"';
     var $escapor   = '"';
 
+
     function CSVimport()
     {
         global $objDatabase;
 
-        $query =
-            "SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db ".
-            "FROM ".DBPREFIX."module_shop_importimg ORDER BY img_id";
+        $query = "
+            SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db
+              FROM ".DBPREFIX."module_shop_importimg ORDER BY img_id
+        ";
         $objResult = $objDatabase->Execute($query);
-        $ArrayCounter = 0;
-        while(!$objResult->EOF) {
-            $this->arrImportImg[$ArrayCounter] = array(
+        if (!$objResult) {
+            return;
+        }
+        while (!$objResult->EOF) {
+            $this->arrImportImg[] = array(
                 'id'          => $objResult->fields['img_id'],
                 'name'        => $objResult->fields['img_name'],
                 'cat'         => $objResult->fields['img_cats'],
                 'fields_file' => $objResult->fields['img_fields_file'],
                 'fields_db'   => $objResult->fields['img_fields_db']
             );
-            $ArrayCounter++;
             $objResult->MoveNext();
         }
     }
@@ -43,7 +46,7 @@ class CSVimport {
             "FROM ".DBPREFIX."module_shop_importimg ORDER BY img_id";
         $objResult = $objDatabase->Execute($query);
         $ArrayCounter = 0;
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             $this->arrImportImg[$ArrayCounter] = array(
                 'id'          => $objResult->fields['img_id'],
                 'name'        => $objResult->fields['img_name'],
@@ -158,26 +161,26 @@ class CSVimport {
      * If the ShopCategory cannot be found, a new sub-ShopCategory
      * with the given name is inserted and its ID returned.
      * @static
-     * @param   string      $CatName    The ShopCategory name
-     * @param   integer     $CatParent  The parent ShopCategory ID
+     * @param   string      $catName    The ShopCategory name
+     * @param   integer     $catParent  The parent ShopCategory ID
      * @return  integer                 The ID of the ShopCategory,
      *                                  or 0 on failure.
      * @author  Unknown <info@comvation.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
     //static
-    function GetCatID($CatName, $CatParent)
+    function getCategoryId($catName, $catParent)
     {
         global $objDatabase;
         $query =
             "SELECT catid FROM ".DBPREFIX."module_shop_categories ".
-            "WHERE catname='$CatName' AND parentid=$CatParent";
+            "WHERE catname='$catName' AND parentid=$catParent";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
             if ($objResult->RecordCount() > 0) {
                 return $objResult->fields['catid'];
             } else {
-                $catId = CSVimport::InsertNewCat($CatName, $CatParent);
+                $catId = CSVimport::InsertNewCat($catName, $catParent);
                 return $catId;
             }
         } else {
@@ -214,20 +217,20 @@ class CSVimport {
      * Insert a new ShopCategory into the database.
      *
      * @static
-     * @param   string      $CatName    The new ShopCategory name
-     * @param   integer     $CatParent  The parent ShopCategory ID
+     * @param   string      $catName    The new ShopCategory name
+     * @param   integer     $catParent  The parent ShopCategory ID
      * @return  integer                 The ID of the new ShopCategory,
      *                                  or 0 on failure.
      * @author  Unknown <info@comvation.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
     //static
-    function InsertNewCat($CatName, $CatParent)
+    function InsertNewCat($catName, $catParent)
     {
         global $objDatabase;
         $query =
             "INSERT INTO ".DBPREFIX."module_shop_categories ".
-            "(catname, parentid) VALUES ('".$CatName."','".$CatParent."')";
+            "(catname, parentid) VALUES ('".$catName."','".$catParent."')";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
             return $objDatabase->Insert_ID();
