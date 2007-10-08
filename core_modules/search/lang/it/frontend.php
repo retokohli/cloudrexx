@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Sun, 07 Oct 2007 03:16:01 +0200
+* generated date Mon, 08 Oct 2007 18:05:02 +0200
 **/
 
 $_ARRAYLANG['TXT_SEARCH_RESULTS'] = "Search results";
@@ -10,4 +10,5 @@ $_ARRAYLANG['TXT_RELEVANCE'] = "Relevance";
 $_ARRAYLANG['TXT_NO_SEARCH_RESULTS'] = "Mit dem Suchbegriff <strong>%s</strong> wurden keine Resultate gefunden.";
 $_ARRAYLANG['TXT_SEARCH'] = "Search";
 $_ARRAYLANG['TXT_PLEASE_ENTER_SEARCHTERM'] = "Please enter a search term.";
+$_ARRAYLANG['TXT_UNTITLED'] = "Untitled";
 ?>

@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Sun, 07 Oct 2007 03:16:01 +0200
+* generated date Mon, 08 Oct 2007 18:05:02 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "Пароль, мин. 6 знаков";
@@ -199,8 +199,8 @@ $_ARRAYLANG['TXT_LANGUAGE_NAME_REQUIRED'] = "Введите пожалуйста
 $_ARRAYLANG['TXT_APPLICATION_RANGE_REQUIRED'] = "Выберите пожалуйста области применения!";
 $_ARRAYLANG['TXT_MOD_LANGUAGE_VARIABLES'] = "Обновить языковую переменную величину";
 $_ARRAYLANG['TXT_CONFIRM_CHANGESTATUS'] = "Вы уверены, что хотите изменить статус этой страницы? (Видимый/Невидимый)";
-$_ARRAYLANG['TXT_VISIBLE'] = "Статус : видимый -> Изменить на невидимый";
-$_ARRAYLANG['TXT_INVISIBLY'] = "Статус : невидимый -> Изменить на видимый";
+$_ARRAYLANG['TXT_STATUS_VISIBLE'] = "Статус : видимый -> Изменить на невидимый";
+$_ARRAYLANG['TXT_STATUS_INVISIBLY'] = "Статус : невидимый -> Изменить на видимый";
 $_ARRAYLANG['TXT_MORE_OPTIONS'] = "Расширенные версии";
 $_ARRAYLANG['TXT_THEMES'] = "Образец дизайна";
 $_ARRAYLANG['TXT_CREATE_BACKEND_GROUP'] = "Создать группу Backend";
@@ -763,4 +763,5 @@ $_ARRAYLANG['TXT_DBM_DETAILS_ERROR_ID'] = "Ein Backup mit dieser ID existiert ni
 $_ARRAYLANG['TXT_CORE_SORTING_ORDER'] = "Sortierung";
 $_ARRAYLANG['TXT_ACTIVE_PDF_TEMPLATE'] = "Aktives PDF Template";
 $_ARRAYLANG['TXT_THEME_PDF'] = "PDF-Ansicht";
+$_ARRAYLANG['TXT_VISIBLE'] = "Visible";
 ?>
