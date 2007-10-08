@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Sun, 07 Oct 2007 03:16:01 +0200
+* generated date Mon, 08 Oct 2007 18:05:02 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 skrifttegn)";
@@ -199,8 +199,8 @@ $_ARRAYLANG['TXT_LANGUAGE_NAME_REQUIRED'] = "Valg venligst et navn til sprog var
 $_ARRAYLANG['TXT_APPLICATION_RANGE_REQUIRED'] = "Valg venligst anvendelsesområder!";
 $_ARRAYLANG['TXT_MOD_LANGUAGE_VARIABLES'] = "Forny sprogvariablen";
 $_ARRAYLANG['TXT_CONFIRM_CHANGESTATUS'] = "Vil du virkeligt ændre statussen af denne side? (synlig/usynlig)";
-$_ARRAYLANG['TXT_VISIBLE'] = "Status : synlig  -> ændre til usynlig";
-$_ARRAYLANG['TXT_INVISIBLY'] = "Status : usynlig  -> ændre til synlig";
+$_ARRAYLANG['TXT_STATUS_VISIBLE'] = "Status : synlig  -> ændre til usynlig";
+$_ARRAYLANG['TXT_STATUS_INVISIBLY'] = "Status : usynlig  -> ændre til synlig";
 $_ARRAYLANG['TXT_MORE_OPTIONS'] = "Flere optioner";
 $_ARRAYLANG['TXT_THEMES'] = "Design template";
 $_ARRAYLANG['TXT_CREATE_BACKEND_GROUP'] = "Tilføj backend gruppe";
@@ -762,4 +762,5 @@ $_ARRAYLANG['TXT_DBM_DETAILS_ERROR_ID'] = "Ein Backup mit dieser ID existiert ni
 $_ARRAYLANG['TXT_CORE_SORTING_ORDER'] = "Sortierung";
 $_ARRAYLANG['TXT_ACTIVE_PDF_TEMPLATE'] = "Aktives PDF Template";
 $_ARRAYLANG['TXT_THEME_PDF'] = "PDF-Ansicht";
+$_ARRAYLANG['TXT_VISIBLE'] = "Visible";
 ?>

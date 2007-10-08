@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Sun, 07 Oct 2007 03:16:01 +0200
+* generated date Mon, 08 Oct 2007 18:05:02 +0200
 **/
 
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Characters)";
@@ -199,8 +199,8 @@ $_ARRAYLANG['TXT_LANGUAGE_NAME_REQUIRED'] = "Language variable name is required!
 $_ARRAYLANG['TXT_APPLICATION_RANGE_REQUIRED'] = "The language application range is required";
 $_ARRAYLANG['TXT_MOD_LANGUAGE_VARIABLES'] = "Modify language variables";
 $_ARRAYLANG['TXT_CONFIRM_CHANGESTATUS'] = "Would you really want to change the status of this site? (visible/invisible)";
-$_ARRAYLANG['TXT_VISIBLE'] = "Stauts : visible -> Change to invisible";
-$_ARRAYLANG['TXT_INVISIBLY'] = "Status : unvisible  -> Change to visible";
+$_ARRAYLANG['TXT_STATUS_VISIBLE'] = "Stauts : visible -> Change to invisible";
+$_ARRAYLANG['TXT_STATUS_INVISIBLY'] = "Status : unvisible  -> Change to visible";
 $_ARRAYLANG['TXT_MORE_OPTIONS'] = "Additional Options";
 $_ARRAYLANG['TXT_THEMES'] = "Design template";
 $_ARRAYLANG['TXT_CREATE_BACKEND_GROUP'] = "Add Backend Group";
@@ -763,4 +763,5 @@ $_ARRAYLANG['TXT_DBM_DETAILS_ERROR_ID'] = "Ein Backup mit dieser ID existiert ni
 $_ARRAYLANG['TXT_CORE_SORTING_ORDER'] = "Sorting";
 $_ARRAYLANG['TXT_ACTIVE_PDF_TEMPLATE'] = "Active PDF Template";
 $_ARRAYLANG['TXT_THEME_PDF'] = "PDF-View";
+$_ARRAYLANG['TXT_VISIBLE'] = "Visible";
 ?>
