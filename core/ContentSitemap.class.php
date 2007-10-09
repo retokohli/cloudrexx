@@ -268,15 +268,15 @@ class ContentSitemap
 				}
 
 				// start active or inactive folder icon
-				$folderIcon = "<a href='javascript:changeStatus($key);'><img src='images/icons/folder_off".$requiredModule.$isRedirect.".gif' width=15 height='13' border='0' title='".$_CORELANG['TXT_INVISIBLY']."' alt='".$_CORELANG['TXT_INVISIBLY']."' /></a>&nbsp;";
+				$folderIcon = "<a href='javascript:changeStatus($key);'><img src='images/icons/folder_off".$requiredModule.$isRedirect.".gif' width=15 height='13' border='0' title='".$_CORELANG['TXT_STATUS_INVISIBLY']."' alt='".$_CORELANG['TXT_STATUS_INVISIBLY']."' /></a>&nbsp;";
 				if ($this->navProtected[$key]) {
-					$folderIcon = "<a href='javascript:changeStatus($key);'><img src='images/icons/folder_off_locked".$requiredModule.".gif' width='15' border='0' height='13' title='".$_CORELANG['TXT_INVISIBLY']."' alt='".$_CORELANG['TXT_INVISIBLY']."' /></a>&nbsp;";
+					$folderIcon = "<a href='javascript:changeStatus($key);'><img src='images/icons/folder_off_locked".$requiredModule.".gif' width='15' border='0' height='13' title='".$_CORELANG['TXT_STATUS_INVISIBLY']."' alt='".$_CORELANG['TXT_STATUS_INVISIBLY']."' /></a>&nbsp;";
 				}
 
 				if ($this->navDisplaystatus[$key]=="on") {
-					$folderIcon = "<a href='javascript:changeStatus($key);'><img src='images/icons/folder_on".$requiredModule.$isRedirect.".gif' width='15' height='13' border='0' title='".$_CORELANG['TXT_VISIBLE']."' alt='".$_CORELANG['TXT_VISIBLE']."' /></a>&nbsp;";
+					$folderIcon = "<a href='javascript:changeStatus($key);'><img src='images/icons/folder_on".$requiredModule.$isRedirect.".gif' width='15' height='13' border='0' title='".$_CORELANG['TXT_STATUS_VISIBLE']."' alt='".$_CORELANG['TXT_STATUS_VISIBLE']."' /></a>&nbsp;";
 					if ($this->navProtected[$key]){
-						$folderIcon = "<a href='javascript:changeStatus($key);'><img src='images/icons/folder_on_locked".$requiredModule.".gif' width='15' height='13' border='0' title='".$_CORELANG['TXT_VISIBLE']."' alt='".$_CORELANG['TXT_VISIBLE']."' /></a>&nbsp;";
+						$folderIcon = "<a href='javascript:changeStatus($key);'><img src='images/icons/folder_on_locked".$requiredModule.".gif' width='15' height='13' border='0' title='".$_CORELANG['TXT_STATUS_VISIBLE']."' alt='".$_CORELANG['TXT_STATUS_VISIBLE']."' /></a>&nbsp;";
 					}
 				} // end active or inactive folder icon
 

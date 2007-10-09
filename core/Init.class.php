@@ -682,39 +682,27 @@ class InitCMS
 
 
 
-	function getPrintUri() {
-		if (!isset($_SERVER['REQUEST_URI'])) {
-		        $arr = explode("/", $_SERVER['PHP_SELF']);
-		        $_SERVER['REQUEST_URI'] = "/" . $arr[count($arr)-1];
-		        if (isset($_SERVER['argv'][0]) && $_SERVER['argv'][0]!="") {
-		                $_SERVER['REQUEST_URI'] .= "?" . $_SERVER['argv'][0];
-		        }
-		}
-		$retval = (count($_GET) == 0) ? $_SERVER['REQUEST_URI']."?printview=1" : $_SERVER['REQUEST_URI']."&printview=1";
-		return htmlspecialchars($retval, ENT_QUOTES, CONTREXX_CHARSET);
+	function getPrintUri()
+	{
+		return htmlspecialchars(CONTREXX_DIRECTORY_INDEX.'?'.(!empty($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'].'&' : '').'printview=1', ENT_QUOTES, CONTREXX_CHARSET);
 	}
 
-	function getPDFUri() {
-		if (!isset($_SERVER['REQUEST_URI'])) {
-		        $arr = explode("/", $_SERVER['PHP_SELF']);
-		        $_SERVER['REQUEST_URI'] = "/" . $arr[count($arr)-1];
-		        if (isset($_SERVER['argv'][0]) && $_SERVER['argv'][0]!="") {
-		                $_SERVER['REQUEST_URI'] .= "?" . $_SERVER['argv'][0];
-		        }
-		}
-		$retval = (count($_GET) == 0) ? $_SERVER['REQUEST_URI']."?pdfview=1" : $_SERVER['REQUEST_URI']."&pdfview=1";
-		return htmlspecialchars($retval, ENT_QUOTES, CONTREXX_CHARSET);
+	function getPDFUri()
+	{
+		return htmlspecialchars(CONTREXX_DIRECTORY_INDEX.'?'.(!empty($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'].'&' : '').'pdfview=1', ENT_QUOTES, CONTREXX_CHARSET);
 	}
 
 
 
-	function getPageUri() {
+	function getPageUri()
+	{
 		return ASCMS_PROTOCOL."://". $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		//return $_SERVER['SCRIPT_URI'];
 	}
 
 
-	function getCurrentPageUri() {
+	function getCurrentPageUri()
+	{
 		return htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES, CONTREXX_CHARSET);
 	}
 }

@@ -425,8 +425,6 @@ class Gallery {
             $strImageTitle = substr($strImageTitle, 0, strrpos($strImageTitle, '.'));
         }
 
-        $objTpl->setGlobalVariable('ASCMS_BACKEND_PATH', ASCMS_BACKEND_PATH);
-
         // set language variables
         $objTpl->setVariable(array(
             'TXT_CLOSE_WINDOW'    => $_ARRAYLANG['TXT_CLOSE_WINDOW'],
