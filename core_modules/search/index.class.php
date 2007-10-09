@@ -413,7 +413,7 @@ function search_searchQuery($section, $searchTerm)
  */
 function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
 {
-    global $_CONFIG, $objDatabase;
+    global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
     $arraySearchResults = array();
     $objResult = $objDatabase->Execute($query);
@@ -479,7 +479,7 @@ function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
 	        $score>=1 ? $scorePercent=100 : $scorePercent=intval($score*100);
 	        //Muss noch geändert werden, sobald das Ranking bei News funktioniert!!!
 	        $score==0 ? $scorePercent=25 : $scorePercent=$scorePercent;
-	        $searchtitle=$objResult->fields['title'];
+	        $searchtitle=!empty($objResult->fields['title']) ? $objResult->fields['title'] : $_ARRAYLANG['TXT_UNTITLED'];
 	        $arraySearchResults[$i]=array("Score"=>$scorePercent,
 	                                      "Title"=>$searchtitle,
 	                                      "Content"=>$shortcontent,

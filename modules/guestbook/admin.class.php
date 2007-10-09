@@ -226,29 +226,27 @@ class GuestbookManager extends GuestbookLibrary
 		$error = "";
 
 		if (!empty($_POST['nickname']) AND !empty($_POST['comment'])) {
-			$nick  = htmlspecialchars(strip_tags($_POST['nickname']),ENT_QUOTES, CONTREXX_CHARSET);
-			$gender  = htmlspecialchars(strip_tags($_POST['malefemale']), ENT_QUOTES, CONTREXX_CHARSET);
-			$mail = (isset($_POST['email'])&& strlen($_POST['email'])>7) ?  htmlspecialchars(strip_tags($_POST['email']), ENT_QUOTES, CONTREXX_CHARSET) : "";
-			$url = (isset($_POST['url'])&& strlen($_POST['url'])>7) ?  htmlspecialchars(strip_tags($_POST['url']), ENT_QUOTES, CONTREXX_CHARSET) : "";
-			$comment = nl2br($this->addHyperlinking(htmlspecialchars(strip_tags($_POST['comment']),ENT_QUOTES, CONTREXX_CHARSET)));
-			$location = htmlspecialchars(strip_tags($_POST['location']),ENT_QUOTES, CONTREXX_CHARSET);
-			$ip = empty($_POST['ip']) ? $_SERVER['REMOTE_ADDR'] : htmlspecialchars(strip_tags($_POST['ip']), ENT_QUOTES, CONTREXX_CHARSET);
-			$datetime = time();
+			$nick  = contrexx_addslashes(strip_tags($_POST['nickname']));
+			$gender  = contrexx_addslashes(strip_tags($_POST['malefemale']));
+			$mail = isset($_POST['email']) ? contrexx_addslashes($_POST['email']) : '';
+			$url = (isset($_POST['url'])&& strlen($_POST['url'])>7) ?  contrexx_addslashes(strip_tags($_POST['url'])) : '';
+			$comment = contrexx_addslashes(nl2br($this->addHyperlinking(strip_tags($_POST['comment']))));
+			$location = contrexx_addslashes(strip_tags($_POST['location']));
+			$ip = empty($_POST['ip']) ? $_SERVER['REMOTE_ADDR'] : contrexx_addslashes(strip_tags($_POST['ip']));
+
+			$objValidator = new FWValidator();
 
 			if (!empty($url)) {
 				if (!$this->isUrl($url)) {
 					$error.= $_ARRAYLANG['TXT_INVALID_INTERNET_ADDRESS']."<br />";
 				}
 			}
-			if (!empty($mail)){
-				if (!$this->isEmail($mail)) {
-					$error.= $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']."<br />";
-				}
+			if (!$objValidator->isEmail($mail)) {
+				$error.= $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']."<br />";
 			}
 			if (empty($error)) {
 			    $query = "INSERT INTO ".DBPREFIX."module_guestbook
-			                           (id,
-									    nickname,
+			                           (nickname,
 									    gender,
 									    url,
 									    datetime,
@@ -257,8 +255,7 @@ class GuestbookManager extends GuestbookLibrary
 									    ip,
 									    location,
 									    lang_id)
-					            VALUES ('',
-			                            '$nick',
+					            VALUES ('$nick',
 									    '$gender',
 									    '$url',
 									    NOW(),
@@ -331,24 +328,24 @@ class GuestbookManager extends GuestbookLibrary
 			             WHERE id = ".intval($_GET['id']);
 			$objResult = $objDatabase->SelectLimit($query, 1);
 
-			while(!$objResult->EOF) {
+			while (!$objResult->EOF) {
 				switch($objResult->fields["gender"]) {
 					case "M" : $gender_m = "checked"; break;
 					case "F" : $gender_f = "checked"; break;
 					default	 : $gender_m = ""; $gender_f = ""; break;
 				}
 				$this->_objTpl->setVariable(array(
-					   'GUESTBOOK_NICK'      => $objResult->fields["nickname"],
-					   'GUESTBOOK_CHECKED_M' => $gender_m,
-					   'GUESTBOOK_CHECKED_F' => $gender_f,
-					   'GUESTBOOK_URL'       => $objResult->fields["url"],
-					   'GUESTBOOK_LOCATION'  => $objResult->fields["location"],
-					   'GUESTBOOK_MAIL'      => $objResult->fields["email"],
-					   'GUESTBOOK_COMMENT'   => $objResult->fields["comment"],
-					   'GUESTBOOK_IP'		 => $objResult->fields["ip"],
-					   'GUESTBOOK_DATE'	     => $objResult->fields["datetime"],
-					   'GUESTBOOK_ID'        => $objResult->fields["id"],
-					));
+					'GUESTBOOK_NICK'      => htmlentities($objResult->fields["nickname"], ENT_QUOTES, CONTREXX_CHARSET),
+					'GUESTBOOK_CHECKED_M' => $gender_m,
+					'GUESTBOOK_CHECKED_F' => $gender_f,
+					'GUESTBOOK_URL'       => htmlentities($objResult->fields["url"], ENT_QUOTES, CONTREXX_CHARSET),
+					'GUESTBOOK_LOCATION'  => htmlentities($objResult->fields["location"], ENT_QUOTES, CONTREXX_CHARSET),
+					'GUESTBOOK_MAIL'      => htmlentities($objResult->fields["email"], ENT_QUOTES, CONTREXX_CHARSET),
+					'GUESTBOOK_COMMENT'   => $objResult->fields["comment"],
+					'GUESTBOOK_IP'		 => htmlentities($objResult->fields["ip"], ENT_QUOTES, CONTREXX_CHARSET),
+					'GUESTBOOK_DATE'	     => $objResult->fields["datetime"],
+					'GUESTBOOK_ID'        => $objResult->fields["id"]
+				));
 				$objResult->MoveNext();
 			}
 		}
@@ -454,15 +451,15 @@ class GuestbookManager extends GuestbookLibrary
 			$this->_objTpl->setVariable(array(
 					   'GUESTBOOK_ROWCLASS' => $rowclass,
 					   'GUESTBOOK_STATUS'	=> $statusIcon,
-					   'GUESTBOOK_NICK'	    => $objResult->fields["nickname"],
+					   'GUESTBOOK_NICK'	    => htmlentities($objResult->fields["nickname"], ENT_QUOTES, CONTREXX_CHARSET),
 					   'GUESTBOOK_GENDER'	=> $gender,
 					   'GUESTBOOK_URL'		=> $url,
-					   'GUESTBOOK_LOCATION'	=> $objResult->fields["location"],
+					   'GUESTBOOK_LOCATION'	=> htmlentities($objResult->fields["location"], ENT_QUOTES, CONTREXX_CHARSET),
 					   'GUESTBOOK_DATE'		=> $objResult->fields["datetime"],
 					   'GUESTBOOK_MAIL'		=> $mail,
 					   'GUESTBOOK_COMMENT'	=> nl2br($objResult->fields["comment"]),
 					   'GUESTBOOK_ID'		=> $objResult->fields["id"],
-					   'GUESTBOOK_IP'		=> "<a href='?cmd=nettools&amp;tpl=whois&amp;address=".$objResult->fields["ip"]."' alt='".$_ARRAYLANG['TXT_SHOW_DETAILS']."' title='".$_ARRAYLANG['TXT_SHOW_DETAILS']."'>".$objResult->fields["ip"]."</a>"
+					   'GUESTBOOK_IP'		=> "<a href='?cmd=nettools&amp;tpl=whois&amp;address=".htmlentities($objResult->fields["ip"], ENT_QUOTES, CONTREXX_CHARSET)."' alt='".$_ARRAYLANG['TXT_SHOW_DETAILS']."' title='".$_ARRAYLANG['TXT_SHOW_DETAILS']."'>".htmlentities($objResult->fields["ip"], ENT_QUOTES, CONTREXX_CHARSET)."</a>"
 			));
 			$this->_objTpl->parse('guestbook_row');
 			$i++;
@@ -489,21 +486,23 @@ class GuestbookManager extends GuestbookLibrary
 		$error = "";
 
 		if (!empty($guestbookId)) {
-			$nick	  = htmlspecialchars(strip_tags($_POST['nickname']),ENT_QUOTES, CONTREXX_CHARSET);
-			$gender   = htmlspecialchars(strip_tags($_POST['malefemale']), ENT_QUOTES, CONTREXX_CHARSET);
-			$mail = (isset($_POST['email'])&& strlen($_POST['email'])>7) ?  htmlspecialchars(strip_tags($_POST['email']), ENT_QUOTES, CONTREXX_CHARSET) : "";
-			$url = (isset($_POST['url'])&& strlen($_POST['url'])>7) ?  htmlspecialchars(strip_tags($_POST['url']), ENT_QUOTES, CONTREXX_CHARSET) : "";
-			$comment  = htmlspecialchars(strip_tags($_POST['comment']),ENT_QUOTES, CONTREXX_CHARSET);
-			$location = htmlspecialchars(strip_tags($_POST['location']),ENT_QUOTES, CONTREXX_CHARSET);
-			$ip 	  = htmlspecialchars(strip_tags($_POST['ip']), ENT_QUOTES, CONTREXX_CHARSET);
-			$date     = htmlspecialchars(strip_tags($_POST['datetime']), ENT_QUOTES, CONTREXX_CHARSET);
+			$nick	  = contrexx_addslashes(strip_tags($_POST['nickname']));
+			$gender   = contrexx_addslashes(strip_tags($_POST['malefemale']));
+			$mail = isset($_POST['email']) ?  contrexx_addslashes(strip_tags($_POST['email'])) : '';
+			$url = (isset($_POST['url'])&& strlen($_POST['url'])>7) ?  contrexx_addslashes(strip_tags($_POST['url'])) : "";
+			$comment  = contrexx_addslashes(strip_tags($_POST['comment']));
+			$location = contrexx_addslashes(strip_tags($_POST['location']));
+			$ip 	  = contrexx_addslashes(strip_tags($_POST['ip']));
+			$date     = contrexx_addslashes(strip_tags($_POST['datetime']));
+
+			$objValidator = new FWValidator();
 
 			if(!empty($url)) {
 			    if (!$this->isUrl($url)) {
 				    $error.= $_ARRAYLANG['TXT_INVALID_INTERNET_ADDRESS']."<br />";
 				}
 			}
-			if(!$this->isEmail($mail)) {
+			if(!$objValidator->isEmail($mail)) {
 			    $error.= $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']."<br />";
 			}
 			if(!empty($nick) && !empty($comment) && empty($error)) {
