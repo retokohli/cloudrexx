@@ -50,7 +50,7 @@ class newsLibrary
         $objResult = $objDatabase->Execute($query);
 	    while (!$objResult->EOF) {
 		    $selected = ($selectedOption==$objResult->fields['catid']) ? "selected" : "";
-		    $strMenu .="<option value=\"".$objResult->fields['catid']."\"selected>".stripslashes($objResult->fields['name'])."</option>\n";
+		    $strMenu .="<option value=\"".$objResult->fields['catid']."\" $selected>".stripslashes($objResult->fields['name'])."</option>\n";
 		    $objResult->MoveNext();
 	    }
 	    return $strMenu;
