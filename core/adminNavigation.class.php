@@ -83,12 +83,14 @@ class adminMenu
                 if ($objResult->fields['type'] == "group") {
                     $this->arrMenuGroups[$objResult->fields['area_id']] = $objResult->fields['area_name'];
                 }
-                $this->arrMenuItems[$objResult->fields['area_id']] = array($objResult->fields['parent_area_id'],
-                    $_CORELANG[$objResult->fields['area_name']],
-                    $objResult->fields['uri'],
-                    $objResult->fields['target'],
-                    $objResult->fields['module_name']
-                );
+                $this->arrMenuItems[$objResult->fields['area_id']] =
+                    array(
+                        $objResult->fields['parent_area_id'],
+                        $_CORELANG[$objResult->fields['area_name']],
+                        $objResult->fields['uri'],
+                        $objResult->fields['target'],
+                        $objResult->fields['module_name']
+                    );
                 $objResult->MoveNext();
             }
         }
