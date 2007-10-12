@@ -13,7 +13,7 @@ Allgemeine Einstellungen
   bewirkt, dass die Content Sprache basierend auf den Browser-Sprachen
   (accept-languages) ausgewählt wird oder immer die Standardsprache verwendet
   wird.
-  
+
 Layout & Design
 - Neuer Platzhalter für die Zeitanzeige. Eingebunden im Design erzeugt der
   Platzhalter [[TIME]] die Ausgabe der aktuellen Uhrzeit im folgenden
@@ -53,6 +53,10 @@ Modul: Online Shop
   Es stehen zwei weitere Frontend-Platzhalter zur Verfügung:
   [[SHOP_MANUFACTURER_NAME]] und [[SHOP_MANUFACTURER_URL]].
   [[SHOP_MANUFACTURER_URL]] wird als Link angezeigt (target="_blank").
+- Die möglichen Status von Bestellungen wurden erweitert; neu kann unterschieden
+  werden, ob eine Bestellung bereits versandt oder bezahlt wurde.
+  Der Status einer neuen Bestellung wird anhand der Versandart der Produkte
+  und der Bezahlmethode automatisch auf den richtigen Wert gesetzt.
 
 Modul: Podcast
 - Es kann ein Youtube Link angegeben werden, welcher dann als Medium im
@@ -124,8 +128,8 @@ Modul: Online Shop
   Bestellung erfolgt nun direkt nach der Auftragsbestätigung.
 - Die Mehrwertsteuernummer jedes Landes wird akzeptiert.
 - Die Inhaltsseite AGB wurde durch die globale AGB Seite
-  (www.ihre-domain.com/index.php?section=agb) ersetzt. 
-  
+  (www.ihre-domain.com/index.php?section=agb) ersetzt.
+
 Modul: Verzeichnis
 - Die Typselektion (File, RSS oder Link) wurde aufgehoben und stattessen drei
   neue Platzhalter hinzugefügt:
@@ -150,7 +154,7 @@ Kontakte Manager
 - Der Form Text wird nun auch versteckt, wenn das Formular beim Feedback nicht
   mehr angezeigt werden soll.
 - Die Namen der Formularfelder werden in der E-Mail Nachricht korrekt
-  dargestellt. 
+  dargestellt.
 
 Layout & Design Verwaltung
 - Nachdem Erstellen eines neuen Layouts wird entweder das neu erstellte Layout
@@ -183,7 +187,7 @@ Modul: Bildergalerie
 
 Modul: Gästebuch
 - Das Erstellungsdatum eines Eintrages wird bei dessen Aktualisierung nicht
-  mehr geändert. 
+  mehr geändert.
 
 Modul: Kalender
 - Im Internet Explorer funktioniert das Erfassen des Enddatums eines Termins.
@@ -211,7 +215,7 @@ Modul: Online Shop
 - Als Produkt Code können Alphanumerische Zeichen verwendet werden.
 - Produkte von inaktiven Kategorien werden nicht mehr aufgelistet.
 - Der JavaScript Warenkorb funktioniert auch, wenn ein anderes Skript Prototypes
-  erweitert. 
+  erweitert.
 
 Modul: Sitemap
 - Es werden nur die Seiten aufgelistet, auf welche der Benutzer zugreifen darf.
