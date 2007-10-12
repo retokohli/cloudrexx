@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 08 Oct 2007 18:05:02 +0200
+* generated date Fri, 12 Oct 2007 14:05:51 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
@@ -129,7 +129,7 @@ $_ARRAYLANG['TXT_ACCOUNT_HOLDER'] = "Kontoinhaber";
 $_ARRAYLANG['TXT_ACCOUNT_BANK'] = "Kreditinstitut";
 $_ARRAYLANG['TXT_ACCOUNT_BLZ'] = "Bankleitzahl (BLZ)";
 $_ARRAYLANG['TXT_PAYMENT_LSV'] = "Lastschrift (LSV)";
-$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = "Wichtig: Füllen Sie <a href='?section=shop&cmd=einzug' target='_blank'>das Formular 'Einzugsermächtigung'</a> aus, und faxen oder schicken Sie es ausgefüllt und unterzeichnet an uns. Dort finden Sie auch unsere Faxnummer und Anschrift.<br />Wenn wir den Rechnungsbetrag Ihrem Konto belasten können, werden wir Ihnen die Bestellung zustellen.<br />";
+$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = "Wichtig: Füllen Sie <a href=\'?section=shop&cmd=einzug\' target=\'_blank\'>das Formular \'Einzugsermächtigung\'</a> aus, und faxen oder schicken Sie es ausgefüllt und unterzeichnet an uns. Dort finden Sie auch unsere Faxnummer und Anschrift.<br />Wenn wir den Rechnungsbetrag Ihrem Konto belasten können, werden wir Ihnen die Bestellung zustellen.<br />";
 $_ARRAYLANG['TXT_PAYMENT_LSV_FEE'] = "Gebühr für LSV";
 $_ARRAYLANG['TXT_ERROR_INSERTING_ORDER_ITEM_ATTRIBUTE'] = "Fehler beim Einfügen der Attribute";
 $_ARRAYLANG['TXT_ERROR_INSERTING_ORDER_ITEM'] = "Fehler beim Einfügen der Bestellung";
@@ -196,7 +196,7 @@ $_ARRAYLANG['TXT_SHOP_LATEST_PRODUCTS_FAILED'] = "Fehler bei der Produkte Abfrag
 $_ARRAYLANG['TXT_ALL_MANUFACTURER'] = "Alle Hersteller";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "Übersicht";
 $_ARRAYLANG['TXT_SHOP_BACK'] = "Zurück";
-$_ARRAYLANG['TXT_SHOP_GOTO_DETAIL_VIEW'] = "zur Detailansicht / &agrav; la ...";
+$_ARRAYLANG['TXT_SHOP_GOTO_DETAIL_VIEW'] = "zur Detailansicht";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_CANCELLED'] = "Die Bezahlung wurde abgebrochen.";
 $_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "annuliert";
 $_ARRAYLANG['TXT_SHOP_ORDER_STILL_IN_CART'] = "Ihre Bestellung bleibt im Warenkorb.";
@@ -207,8 +207,8 @@ $_ARRAYLANG['TXT_SHOP_PAYMENT_FAILED'] = "Die Bezahlung ist fehlgeschlagen.";
 $_ARRAYLANG['TXT_SHOP_VIRTUAL_CATEGORY_OUTLET'] = "Outlet";
 $_ARRAYLANG['TXT_SHOP_VIRTUAL_CATEGORY_NEW'] = "Neuheiten";
 $_ARRAYLANG['TXT_SHOP_VIRTUAL_CATEGORY_PRESENT'] = "Geschenkideen";
-$_ARRAYLANG['TXT_SHOP_NORMALPRICE'] = "Preis:";
-$_ARRAYLANG['TXT_SHOP_DISCOUNTPRICE'] = "Sonderpreis:";
+$_ARRAYLANG['TXT_SHOP_NORMALPRICE'] = "Preis";
+$_ARRAYLANG['TXT_SHOP_DISCOUNTPRICE'] = "Discountpreis";
 $_ARRAYLANG['TXT_SHOP_DISCOUNT_TODAY'] = "Tagesrabatt:";
 $_ARRAYLANG['TXT_SHOP_PRICE_TODAY'] = "Tagespreis:";
 ?>

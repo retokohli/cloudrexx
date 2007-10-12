@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 08 Oct 2007 18:05:02 +0200
+* generated date Fri, 12 Oct 2007 14:05:51 +0200
 **/
 
 $_ARRAYLANG['TXT_STOCK'] = "Beholdning";
@@ -207,8 +207,8 @@ $_ARRAYLANG['TXT_SHOP_PAYMENT_FAILED'] = "Die Bezahlung ist fehlgeschlagen.";
 $_ARRAYLANG['TXT_SHOP_VIRTUAL_CATEGORY_OUTLET'] = "Outlet";
 $_ARRAYLANG['TXT_SHOP_VIRTUAL_CATEGORY_NEW'] = "Neuheiten";
 $_ARRAYLANG['TXT_SHOP_VIRTUAL_CATEGORY_PRESENT'] = "Geschenkideen";
-$_ARRAYLANG['TXT_SHOP_NORMALPRICE'] = "Preis:";
-$_ARRAYLANG['TXT_SHOP_DISCOUNTPRICE'] = "Sonderpreis:";
+$_ARRAYLANG['TXT_SHOP_NORMALPRICE'] = "Preis";
+$_ARRAYLANG['TXT_SHOP_DISCOUNTPRICE'] = "Discountpreis";
 $_ARRAYLANG['TXT_SHOP_DISCOUNT_TODAY'] = "Tagesrabatt:";
 $_ARRAYLANG['TXT_SHOP_PRICE_TODAY'] = "Tagespreis:";
 ?>

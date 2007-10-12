@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 08 Oct 2007 18:05:02 +0200
+* generated date Fri, 12 Oct 2007 14:05:51 +0200
 **/
 
 $_ARRAYLANG['TXT_ORDERS'] = "Bestellungen";
@@ -273,7 +273,7 @@ $_ARRAYLANG['TXT_MENU_OPTION'] = "Menu (keine oder eine Auswahl möglich)";
 $_ARRAYLANG['TXT_DISPLAY_AS'] = "Display as";
 $_ARRAYLANG['TXT_SEQUENCE'] = "Sequence";
 $_ARRAYLANG['TXT_REMARK'] = "Remark";
-$_ARRAYLANG['TXT_SHOP_FLAGS'] = "Markierungen";
+$_ARRAYLANG['TXT_SHOP_FLAGS'] = "Markierung";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Fehler beim Ausführen der Datenbankabfrage! Falls der Fehler vermehrt auftauchen sollte, melden Sie sich bitte bei uns.";
 $_ARRAYLANG['TXT_SHOP_INDEX'] = "Shop Index";
 $_ARRAYLANG['TXT_CATEGORIES'] = "Kategorien";
@@ -525,11 +525,16 @@ $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_SHIPPED'] = "versandt";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES_WARNING'] = "Beim hochladen werden alle vorhandenen Kategorien und Produkte aus der Datenbank gelöscht. Möchten Sie den Vorgang trotzdem starten?";
 $_ARRAYLANG['TXT_SHOP_MISSING_PRODUCT_IMAGES'] = "Fehlende Bilder (Produkt ID - Bildname):";
 $_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'] = "Ungültige Produkt ID '%s'!";
-$_ARRAYLANG['TXT_SHOP_UNSUPPORTED_IMAGE_FORMAT'] = "Nicht unterstütztes Bildformat: '%1\$s' (Produkt ID %2\$s)!";
+$_ARRAYLANG['TXT_SHOP_UNSUPPORTED_IMAGE_FORMAT'] = "Bildformat wird nicht unterstützt: '\2$s' (Kategorie ID \1$s)";
 $_ARRAYLANG['TXT_SHOP_ERROR_CREATING_PRODUCT_THUMBNAIL'] = "Fehler beim erzeugen des Thumbnails: ";
-$_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'] = "Ungültige Kategorie ID '$id'!";
-$_ARRAYLANG['TXT_SHOP_MISSING_CATEGORY_IMAGES'] = "Fehlende Bilder (Kategorie ID - Bildname): ";
-$_ARRAYLANG['TXT_SHOP_ERROR_CREATING_CATEGORY_THUMBNAIL'] = "Fehler beim erzeugen des Thumbnails bei Kategorie ID: ";
+$_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'] = "Ungültige Kategorie ID %s";
+$_ARRAYLANG['TXT_SHOP_MISSING_CATEGORY_IMAGES'] = "Kategorie Bilddatei nicht gefunden: '\2$s' (Kategorie ID \1$s)";
+$_ARRAYLANG['TXT_SHOP_ERROR_CREATING_CATEGORY_THUMBNAIL'] = "Fehler beim erzeugen des Thumbnails für Kategorie ID %s";
 $_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'] = "Ausgewählten Wert entfernen";
 $_ARRAYLANG['TXT_SHOP_WARNING_MULTIPLE_CATEGORIES_WITH_SAME_NAME'] = "Warnung: Mehr als eine Kategorie mit dem selben Namen gefunden!";
+$_ARRAYLANG['TXT_SHOP_CATEGORY_IMAGE'] = "Kategoriebild";
+$_ARRAYLANG['TXT_SHOP_CATEGORY_VIRTUAL'] = "Virtuell";
+$_ARRAYLANG['TXT_SHOP_CATEGORY_PARENT'] = "Einfügen in";
+$_ARRAYLANG['TXT_EDIT_PRODUCT_GROUP'] = "Produktegruppe bearbeiten";
+$_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD'] = "Fehler beim aktualisieren der Daten";
 ?>

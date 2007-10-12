@@ -1,7 +1,7 @@
 <?php
 /**
 * Contrexx CMS
-* generated date Mon, 08 Oct 2007 18:05:02 +0200
+* generated date Fri, 12 Oct 2007 14:05:51 +0200
 **/
 
 $_ARRAYLANG['TXT_OPEN_TICKET'] = "Ticket erstellen";
