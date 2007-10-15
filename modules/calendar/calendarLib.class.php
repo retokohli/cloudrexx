@@ -780,7 +780,7 @@ class calendarLibrary
 							mailTitle,
 							num,
 							notification,
-							notification_address
+							notification_address,
 		    		FROM 	".DBPREFIX."module_calendar
 		    	   WHERE 	id = '".$id."'";
 
