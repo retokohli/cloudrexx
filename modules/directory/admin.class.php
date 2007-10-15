@@ -120,7 +120,7 @@ class rssDirectory extends directoryLibrary
 			break;
 
 			case "del":
-				$objPerm->checkAccess(92, 'static');
+				$objPerm->checkAccess(97, 'static');
 		        $this->delete();
 		        $this->showCategories();
 			break;
@@ -132,7 +132,7 @@ class rssDirectory extends directoryLibrary
 			break;
 
 			case "edit":
-				$objPerm->checkAccess(92, 'static');
+				$objPerm->checkAccess(97, 'static');
 		        $this->editCategorie();
 			break;
 
@@ -143,7 +143,7 @@ class rssDirectory extends directoryLibrary
 			break;
 
 			case "confirm":
-				$objPerm->checkAccess(93, 'static');
+				$objPerm->checkAccess(94, 'static');
 				$this->showConfirm();
 			break;
 
@@ -153,7 +153,7 @@ class rssDirectory extends directoryLibrary
 			break;
 
 			case "confirmfile":
-				$objPerm->checkAccess(93, 'static');
+				$objPerm->checkAccess(96, 'static');
 				$this->confirmEntry_step1();
 				$this->showConfirm();
 			break;
@@ -193,25 +193,25 @@ class rssDirectory extends directoryLibrary
 			    $this->showSettings();
 			    break;
 			case "levels":
-				$objPerm->checkAccess(92, 'static');
+				$objPerm->checkAccess(97, 'static');
 			    $this->showLevels();
 			    break;
 			case "addlevel":
-				$objPerm->checkAccess(92, 'static');
+				$objPerm->checkAccess(97, 'static');
 			    $this->addLevel();
 			    $this->showLevels();
 			    break;
 			case "editlevel":
-				$objPerm->checkAccess(92, 'static');
+				$objPerm->checkAccess(97, 'static');
 		        $this->editLevel();
 			break;
 			case "dellevel":
-				$objPerm->checkAccess(92, 'static');
+				$objPerm->checkAccess(97, 'static');
 		        $this->delete();
 		        $this->showLevels();
 			break;
 			case "levelOrder":
-				$objPerm->checkAccess(92, 'static');
+				$objPerm->checkAccess(97, 'static');
 		        $this->levelOrder();
 		        $this->showLevels();
 			break;
@@ -227,7 +227,7 @@ class rssDirectory extends directoryLibrary
 					$objResult = $objDatabase->Execute($query);
 
 				    if ($objResult !== false && $objResult->RecordCount()==1) {
-				    	$objPerm->checkAccess(93, 'static');
+				    	$objPerm->checkAccess(96, 'static');
 					    $this->showConfirm();
 					}else{
 						$this->showCategories();
