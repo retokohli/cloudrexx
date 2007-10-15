@@ -70,6 +70,11 @@ Modul: Seitenempfehlungen
   das Standardtemplate für die Seitenempfehlungen allerdings zurückgesetzt
   werden.
 
+Modul: Kalender
+- Zusätzliche Felder für Ort und Veranstalter
+- Zudem kann eine autom. An- und Abmeldung aktiviert werden, welche es den Benutzern erlaubt sich über ein, vorher derfiniertes Formular aunzumelden. Diese An- und abmeldungen können im Backend verwaltet und Exportiert (CSV) werden.
+- Neue Gestalltung der Contentseiten
+
 ****************************************
 * Änderungen ***************************
 ****************************************

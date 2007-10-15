@@ -241,14 +241,99 @@ section=directory&cmd=add
 <!-- END directoryInputFields -->
 [/HTML]
 
+Kalender Modul
+----------------
+Neu kann im Kalendermodul eine Anmeldungeneriert werden. Dazu benötigt es eine zusätzliche Contentseite. Es wird empfohlen, dass Modul neu zu installieren und folgenden Style ins buildin_style.css hinzuzufügen.
+
+#calendar {
+        float: left;
+        height: auto !important;
+	padding: 0px 0px 15px 0px;
+}
+
+
+#calendarBoxes {
+        float: left;
+        width: 205px;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+        height: auto !important;
+}
+
+#calendarSearch {
+        float: none;
+        width: 454px;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 15px 0px;
+        height: auto !important;
+}
+
+#calendarSelectView {
+        float: left;
+        width: 454px;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 15px 0px;
+        height: auto !important;
+}
+
+
+#calendarNotesList {
+        float: left;
+        width: 454px;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+        height: auto !important;
+	border-top:1px solid #e5e5e5;
+}
+
+#calendarNotesList table tr.title td {
+	border-bottom:0px solid #e5e5e5;
+	background-color: #E9E9E9;
+}
+
+
+#calendarNotesList table tr.row2 td {
+	border-bottom:1px solid #e5e5e5;
+	background-color: #f9f9f9;
+}
+
+#calendarNotesList table tr.row1 td {
+	border-bottom:1px solid #e5e5e5;
+}
+
+
+#calendarSelectcat {
+        width: 190px;
+}
+
+#calendarLogo {
+        float: left;
+        height: auto !important;
+	padding: 0px 0px 15px 0px;
+}
+
+#calendarLogo img {
+	margin: 0px 20px 0px 0px;
+}
+
+.calendarNote {
+        float: left;
+        height: auto !important;
+	padding: 0px 0px 15px 0px;
+}
+
+
+
+
+
 
 Kontaktemodul
 -------------
 Das neue Kontaktemodul generiert keine Tabellenbasierten Layouts mehr.
-Die folgenden Styles müssen hinzugefügt werden, damit die Darstellung korrekt 
+Die folgenden Styles müssen hinzugefügt werden, damit die Darstellung korrekt
 ist. (siehe http://contrexx.com/docs/wiki?title=FAQ:Kontaktformular)
 --------------------------------------------------------------------------------
-/* CALENDAR */
+/* CONTACT */
 form.contactForm p {
 width: 300px;
 clear: left;
