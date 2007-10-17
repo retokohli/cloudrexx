@@ -761,4 +761,6 @@ $_ARRAYLANG['TXT_CORE_SORTING_ORDER'] = "Sortierung";
 $_ARRAYLANG['TXT_ACTIVE_PDF_TEMPLATE'] = "Aktives PDF Template";
 $_ARRAYLANG['TXT_THEME_PDF'] = "PDF-Ansicht";
 $_ARRAYLANG['TXT_VISIBLE'] = "Sichtbar";
+$_ARRAYLANG['TXT_DOWNLOADS'] = "Downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_MODULE_DESCRIPTION'] = "Nach Kategorien strukturierte Downloadliste mit Dateininformationen (Beschreibung, Grösse, Screenshot, Bewertung)";
 ?>
