@@ -84,4 +84,5 @@ $_ARRAYLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "Database niet beschikbaar!";
 $_ARRAYLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Het is niet mogelijk om een connectie met de databaseserver te maken!";
 $_ARRAYLANG['TXT_DELETED'] = "verwijderd";
 $_ARRAYLANG['TXT_PRIVACY_STATEMENT'] = "Privacy Statement";
+$_ARRAYLANG['TXT_DOWNLOADS'] = "Downloads";
 ?>
