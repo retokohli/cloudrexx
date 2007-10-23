@@ -195,13 +195,7 @@ class Immo extends ImmoLib
 			$this->_objTpl->setVariable('IMMO_ID', intval($_REQUEST['immoid']));
 		}
 
-
 		if(!empty($_REQUEST['submitContactForm'])){
-
-
-
-
-
 			$immoid 			= intval($_REQUEST['contactFormField_immoid']);//hidden field: immoid
 			$name 				= !empty($_REQUEST['contactFormField_name']) ? contrexx_addslashes(contrexx_strip_tags($_REQUEST['contactFormField_name'])) : '';
 			$firstname 			= !empty($_REQUEST['contactFormField_vorname']) ? contrexx_addslashes(contrexx_strip_tags($_REQUEST['contactFormField_vorname'])) : '';
@@ -217,8 +211,6 @@ class Immo extends ImmoLib
 			$inspection 		= !empty($_REQUEST['contactFormField_besichtigung']) ? contrexx_addslashes(contrexx_strip_tags($_REQUEST['contactFormField_besichtigung'])) : '';
 			$contact_via_phone 	= !empty($_REQUEST['contactFormField_kontakttelefon']) ? contrexx_addslashes(contrexx_strip_tags($_REQUEST['contactFormField_kontakttelefon'])) : '';
 			$comment	 		= !empty($_REQUEST['contactFormField_bemerkungen']) ? contrexx_addslashes(contrexx_strip_tags($_REQUEST['contactFormField_bemerkungen'])) : '';
-
-
 
 			$query = "INSERT INTO ".DBPREFIX."module_immo_interest VALUES (	NULL, $immoid, '$name', '$firstname',
 																			'$street', '$zip', '$location', '$email',
@@ -256,12 +248,25 @@ class Immo extends ImmoLib
 			foreach ($emails as $email) {
 				$mailer->AddAddress($email);
 			}
-
+			
+			if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+				$objSmtpSettings = new SmtpSettings();
+				if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+					$mailer->IsSMTP();
+					$mailer->Host = $arrSmtp['hostname'];
+					$mailer->Port = $arrSmtp['port'];
+					$mailer->SMTPAuth = true;
+					$mailer->Username = $arrSmtp['username'];
+					$mailer->Password = $arrSmtp['password'];
+				}
+			}
+			
+			$mailer->CharSet = CONTREXX_CHARSET;
 		    $mailer->From = contrexx_addslashes($_REQUEST['contactFormField_email']);
 			$mailer->FromName = 'Interessent';
-			$mailer->Subject = 'Neuer Interessent für '.$ref_note.' Ref-Nr.: '.$reference;
+			$mailer->Subject = 'Neuer Interessent fÃ¼r '.$ref_note.' Ref-Nr.: '.$reference;
 			$mailer->IsHTML(false);
-			$mailer->Body = 'Jemand interessiert sich für das Objekt '.$ref_note.' Ref-Nr.: '.$reference."\n \nhttp://".$_CONFIG['domainUrl'].ASCMS_BACKEND_PATH."/index.php?cmd=immo&act=stats";
+			$mailer->Body = 'Jemand interessiert sich fÃ¼r das Objekt '.$ref_note.' Ref-Nr.: '.$reference."\n \nhttp://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/admin/index.php?cmd=immo&act=stats\n";
 			$mailer->Body .= $_ARRAYLANG['TXT_IMMO_E_MAIL'].': '.contrexx_addslashes($_REQUEST['contactFormField_email'])."\n";
 			$mailer->Body .= $_ARRAYLANG['TXT_IMMO_NAME'].': '.$name."\n";
 			$mailer->Body .= $_ARRAYLANG['TXT_IMMO_FIRSTNAME'].': '.$firstname."\n";
