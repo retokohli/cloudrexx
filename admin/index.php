@@ -841,6 +841,18 @@ switch($cmd) {
         $objAuth->logout();
         exit;
         break;
+        
+		//-----------------------------------------------------------------------------------------------
+        // downloads
+        //-----------------------------------------------------------------------------------------------
+	case "downloads":
+	    $modulespath = ASCMS_MODULE_PATH . "/downloads/admin.class.php";
+	    if (file_exists($modulespath)) require_once($modulespath);
+	    else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+	    $subMenuTitle = $_CORELANG['TXT_DOWNLOADS'];
+	    $objDownloadsModule = &new downloads();
+	    $objDownloadsModule->getPage();
+	break;  
 
         //-----------------------------------------------------------------------------------------------
         // show default admin page

@@ -1666,7 +1666,8 @@ function Output($name='',$dest='')
 			$dest='I';
 		}
 		else
-			$dest='F';
+			//$dest='F'; funzt nicht!! 
+			$dest='I';
 	}
 	switch($dest)
 	{

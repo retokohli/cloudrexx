@@ -1294,6 +1294,17 @@ switch ($section) {
         $objSupport = new support($page_content);
         $objTemplate->setVariable("CONTENT_TEXT", $objSupport->getPage());
         break;
+        
+//-------------------------------------------------------
+// Download Module
+//-------------------------------------------------------
+	case "downloads":
+	    $modulespath = "modules/downloads/index.class.php";
+	    if (file_exists($modulespath)) require_once($modulespath);
+	    else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+	    $objDownloadsModule = &new downloads($page_content);
+	    $objTemplate->setVariable('CONTENT_TEXT', $objDownloadsModule->getPage());
+	break; 
 
 //-------------------------------------------------------
 // default case
@@ -1498,8 +1509,9 @@ if (!empty($moduleStyleFile)) {
 
 if(isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1){
 	require_once ASCMS_CORE_PATH.'/pdf.class.php';
-	 $objPDF = &new PDF();
-	 $objPDF->content = $objTemplate->get();
+	 $objPDF 			= &new PDF();
+	 $objPDF->title		= $page_title;
+	 $objPDF->content 	= $objTemplate->get();
 	 $objPDF->Create();
 }else{
 	$objTemplate->show();
