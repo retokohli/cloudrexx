@@ -23,6 +23,12 @@ class PDF extends HTML2FPDF
 	var $content;
 	
 	/**
+    * string $title
+    * File name
+    */
+	var $title;
+	
+	/**
     * string $orientation 
     * pageorientation
     */
@@ -51,7 +57,7 @@ class PDF extends HTML2FPDF
 		$this->pdf_orientation 	= 'P';
 		$this->pdf_unit 		= 'mm';
 		$this->pdf_format 		= 'A4';
-		$this->pdf_autor		= 'Contrexx - Web Content Management System (WCMS)';
+		$this->pdf_autor		= $_CONFIG['coreCmsName'];
 	}
 	
 	function Create()
@@ -64,7 +70,7 @@ class PDF extends HTML2FPDF
 		$pdf->DisplayPreferences('HideWindowUI');
 		$pdf->AddPage();
 		$pdf->WriteHTML($this->content);
-		$pdf->Output();
+		$pdf->Output($this->title);
 		
 	}
 	
