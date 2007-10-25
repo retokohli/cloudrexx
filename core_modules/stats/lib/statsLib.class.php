@@ -131,7 +131,7 @@ class statsLibrary
 			}
 
 			$counterTag = "<!-- Counter  START -->\n";
-			$counterTag .= "<script language=\"JavaScript\" type=\"text/javascript\">\n";
+			$counterTag .= "<script type=\"text/javascript\">\n";
 			$counterTag .= "<!--\n";
 			$counterTag .= "referer = (document.referrer) ? escape(document.referrer) : \"\";\n";
 			$counterTag .= "v = navigator.appName;\n";
@@ -1012,7 +1012,7 @@ class statsLibrary
 			}
 
 			if ($onlineTimeoutStatus != $this->arrConfig['online_timeout']['status']) {
-				// status wurde geändert
+				// status wurde geï¿½ndert
 				if (!$onlineTimeoutStatus) {
 					// deaktiviert
 					$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = 0 WHERE `name` = 'online_timeout'";
