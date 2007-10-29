@@ -784,9 +784,10 @@ class rssDirectory extends directoryLibrary
     */
 	function feedDetails($id, $cid, $lid)
 	{
-		global $objDatabase, $_ARRAYLANG, $tempalte;
+		global $objDatabase, $_ARRAYLANG, $tempalte, $_CONFIG;
 
 		$this->_objTpl->setTemplate($this->pageContent, true, true);
+		
 		$setVariable = array();
 
 		//check popular & hits
@@ -804,9 +805,33 @@ class rssDirectory extends directoryLibrary
 			'DIRECTORY_CATEGORY_NAVI' 			=> $this->navtree,
 		));
 
+		if($this->_isGoogleMapEnabled('frontend')){
+			$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', ASCMS_MODULE_WEB_PATH.'/directory/template/module_directory_googlemap_include.html');
+			$this->_objTpl->setVariable(array(
+				'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
+				'DIRECTORY_START_X'			=> 'null',
+				'DIRECTORY_START_Y'			=> 'null',
+				'DIRECTORY_START_ZOOM'		=> 'null',
+				'DIRECTORY_ENTRY_NAME'		=> 'null',
+				'DIRECTORY_ENTRY_COMPANY'	=> 'null',
+				'DIRECTORY_ENTRY_STREET'	=> 'null',
+				'DIRECTORY_ENTRY_ZIP'		=> 'null',
+				'DIRECTORY_ENTRY_LOCATION'	=> 'null',
+				'DIRECTORY_MAP_LON_BACKEND'	=> $this->googleMapStartPoint['lon'],
+				'DIRECTORY_MAP_LAT_BACKEND'	=> $this->googleMapStartPoint['lat'],
+				'DIRECTORY_MAP_ZOOM_BACKEND'=> $this->googleMapStartPoint['zoom'],			
+			));
+			if($this->_objTpl->blockExists('direcoryGoogleMapJavascript')){
+				$this->_objTpl->parse('direcoryGoogleMapJavascript');
+			}
+		}
+
+		
 		//get content
 		$this->getContent($id, $cid, $lid);
 
+		
+		
 		//get attributes
 		$this->getAttributes($id);
 
@@ -904,7 +929,6 @@ class rssDirectory extends directoryLibrary
 		//get feed content
 	 	$objResult 		= $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_dir WHERE id = '".contrexx_addslashes($id)."'");
 	 	$arrSettings 	= $this->getSettings();
-
 	 	if($objResult !== false){
 			while(!$objResult->EOF){
 				$arrFeedContent['id'] 				= stripslashes($objResult->fields['id']);
@@ -929,6 +953,18 @@ class rssDirectory extends directoryLibrary
 				$arrFeedContent['street'] 				= $objResult->fields['street'];
 				$arrFeedContent['zip'] 					= $objResult->fields['zip'];
 				$arrFeedContent['phone'] 				= $objResult->fields['phone'];
+				
+				$arrFeedContent['longitude'] 			= $objResult->fields['longitude'];
+				$arrFeedContent['latitude'] 			= $objResult->fields['latitude'];
+				$arrFeedContent["lon"]					= substr($objResult->fields['longitude'], 0, strpos($objResult->fields['longitude'], '.'));
+				$arrFeedContent["lon_fraction"]			= substr($objResult->fields['longitude'], 	 strpos($objResult->fields['longitude'], '.')+1);
+				$arrFeedContent["lat"]					= substr($objResult->fields['latitude'],  0, strpos($objResult->fields['latitude'], '.'));
+				$arrFeedContent["lat_fraction"]			= substr($objResult->fields['latitude'], 	 strpos($objResult->fields['latitude'], '.')+1);
+				
+				$arrFeedContent['zoom'] 				= $objResult->fields['zoom'];
+				$arrFeedContent['country'] 				= $objResult->fields['country'];				
+				$arrFeedContent['googlemap'] 			= "googlemap";				
+			
 				$arrFeedContent['contact'] 				= $objResult->fields['contact'];
 				$arrFeedContent['hits'] 				= $objResult->fields['hits'];
 				$arrFeedContent['xml_refresh'] 			= $objResult->fields['xml_refresh'];
@@ -989,6 +1025,7 @@ class rssDirectory extends directoryLibrary
 			}
 	 	}
 
+	 	
 	 	//get active fields
 	 	$objResult = $objDatabase->Execute("SELECT id, title, name FROM ".DBPREFIX."module_directory_inputfields WHERE active_backend='1' ORDER BY sort");
 		if($objResult !== false){
@@ -1000,7 +1037,6 @@ class rssDirectory extends directoryLibrary
 				$objResult->MoveNext();
 			}
 		}
-
 		//check fields
 		if($arrFieldsActive != ""){
 			foreach($arrFieldsActive['name'] as $fieldKey => $fieldName){
@@ -1084,6 +1120,21 @@ class rssDirectory extends directoryLibrary
 						$content = '<a href="'.$this->mediaWebPath."uploads/".$arrFeedContent[$fieldName].'" target="_blank">'.$arrFeedContent[$fieldName].'</a>&nbsp;<i>('.$info.' KB)</i>';
 					}
 
+					if ($fieldName == "googlemap"){
+						
+						$inputValueField = '<input type="hidden" name="inputValue[lon]" value="'.$arrFeedContent["lon"].'" style="width:22px;" maxlength="3">';
+		    		 	$inputValueField .= '<input type="hidden" name="inputValue[lon_fraction]" value="'.$arrFeedContent["lon_fraction"].'" style="width:92px;" maxlength="15"> ';
+		    		 	$inputValueField .= '<input type="hidden" name="inputValue[lat]" value="'.$arrFeedContent["lat"].'" style="width:22px;" maxlength="15">';
+		    		 	$inputValueField .= '<input type="hidden" name="inputValue[lat_fraction]" value="'.$arrFeedContent["lat_fraction"].'" style="width:92px;" maxlength="15"> ';
+		    		 	$inputValueField .= '<input type="hidden" name="inputValue[zoom]" value="'.$arrFeedContent["zoom"].'" style="width:15px;" maxlength="2">';
+						
+		    		 	$inputValueField .= '<div id="gmap" style="margin:2px; border:1px solid;width: 400px; height: 300px;"></div>';
+	
+		    		 	$inputValueField .= '<div id="loclayer" style="-moz-opacity: 0.85; filter: alpha(opacity=85); background-color: #dedede;padding:2px; border:1px solid;width: 198px; height: 42px; position:relative; top: -270px; left: 200px; "></div>';
+						
+						$content = 	$inputValueField;					
+					}
+					
 					//get author
 					if($fieldName == "addedby"){
 						$content = $this->getAuthor($arrFeedContent[$fieldName]);
@@ -1146,7 +1197,6 @@ class rssDirectory extends directoryLibrary
 							$content = $arrFeedContent[$fieldName];
 						}
 					}
-
 					$setVariable["DIRECTORY_FEED_".strtoupper($fieldName)] = nl2br($content);
 					$setVariable["TXT_DIRECTORY_FEED_".strtoupper($fieldName)] = $name;
 				}
@@ -1361,6 +1411,28 @@ class rssDirectory extends directoryLibrary
 				$this->_objTpl->hideBlock('directoryLevels');
 			}
 
+			if($this->_isGoogleMapEnabled('frontend')){
+				$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', ASCMS_MODULE_WEB_PATH.'/directory/template/module_directory_googlemap_include.html');
+				$this->_objTpl->setVariable(array(
+					'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
+					'DIRECTORY_START_X'			=> 'null',
+					'DIRECTORY_START_Y'			=> 'null',
+					'DIRECTORY_START_ZOOM'		=> 'null',
+					'DIRECTORY_ENTRY_NAME'		=> 'null',
+					'DIRECTORY_ENTRY_COMPANY'	=> 'null',
+					'DIRECTORY_ENTRY_STREET'	=> 'null',
+					'DIRECTORY_ENTRY_ZIP'		=> 'null',
+					'DIRECTORY_ENTRY_LOCATION'	=> 'null',
+					'DIRECTORY_MAP_LON_BACKEND'	=> $this->googleMapStartPoint['lon'],
+					'DIRECTORY_MAP_LAT_BACKEND'	=> $this->googleMapStartPoint['lat'],
+					'DIRECTORY_MAP_ZOOM_BACKEND'=> $this->googleMapStartPoint['zoom'],			
+				));
+				if($this->_objTpl->blockExists('direcoryGoogleMapJavascript')){
+					$this->_objTpl->parse('direcoryGoogleMapJavascript');
+				}
+			}
+			
+			
 			$this->_objTpl->hideBlock('directoryMessage');
 			$this->_objTpl->parse('directoryInputFields');
 		}
@@ -1442,7 +1514,7 @@ class rssDirectory extends directoryLibrary
 
 	function editFeed()
 	{
-		global $objDatabase, $_ARRAYLANG, $template, $objAuth, $objPerm;
+		global $objDatabase, $_ARRAYLANG, $template, $objAuth, $objPerm, $_CONFIG;
 
 		$status = "error";
 
@@ -1562,6 +1634,28 @@ class rssDirectory extends directoryLibrary
 				$this->_objTpl->hideBlock('directoryLevels');
 			}
 
+			
+			if($this->_isGoogleMapEnabled('frontend')){
+				$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', ASCMS_MODULE_WEB_PATH.'/directory/template/module_directory_googlemap_include.html');
+				$this->_objTpl->setVariable(array(
+					'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
+					'DIRECTORY_START_X'			=> 'null',
+					'DIRECTORY_START_Y'			=> 'null',
+					'DIRECTORY_START_ZOOM'		=> 'null',
+					'DIRECTORY_ENTRY_NAME'		=> 'null',
+					'DIRECTORY_ENTRY_COMPANY'	=> 'null',
+					'DIRECTORY_ENTRY_STREET'	=> 'null',
+					'DIRECTORY_ENTRY_ZIP'		=> 'null',
+					'DIRECTORY_ENTRY_LOCATION'	=> 'null',
+					'DIRECTORY_MAP_LON_BACKEND'	=> $this->googleMapStartPoint['lon'],
+					'DIRECTORY_MAP_LAT_BACKEND'	=> $this->googleMapStartPoint['lat'],
+					'DIRECTORY_MAP_ZOOM_BACKEND'=> $this->googleMapStartPoint['zoom'],			
+				));
+				if($this->_objTpl->blockExists('direcoryGoogleMapJavascript')){
+					$this->_objTpl->parse('direcoryGoogleMapJavascript');
+				}
+			}
+			
 			$this->_objTpl->hideBlock('directoryMessage');
 			$this->_objTpl->parse('directoryInputFields');
 		}
@@ -1928,8 +2022,6 @@ class rssDirectory extends directoryLibrary
 					$objResult->MoveNext();
 				}
 			}
-
-			//echo $link;
 
 			header("Location: ".$link);
 			exit;

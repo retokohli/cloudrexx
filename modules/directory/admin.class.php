@@ -2,11 +2,18 @@
 /**
  * Directory
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Janik Tschanz <janik.tschanz@comvation.com>
+ * @author      Janik Tschanz <janik.tschanz@comvation.com>
  * @package     contrexx
  * @subpackage  module_directory
  * @todo        Edit PHP DocBlocks!
  */
+
+$_ARRAYLANG['TXT_DIR_GEO_SUCCESS'] = "Adresse gefunden!";
+$_ARRAYLANG['TXT_DIR_GEO_MISSING'] = "Adresse fehlt oder hat keinen Wert";
+$_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'] = "Adresse unbekannt";
+$_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'] = "Adresse ist nicht verfügbar";
+$_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'] = "Falscher Google API Key";
+$_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'] = "Adresse nicht gefunden";
 
 /**
  * Includes
@@ -16,6 +23,7 @@ require_once ASCMS_MODULE_PATH . '/directory/lib/xmlfeed.class.php';
 require_once ASCMS_LIBRARY_PATH . '/FRAMEWORK/File.class.php';
 require_once ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php';
 require_once ASCMS_CORE_PATH.'/'.'settings.class.php';
+
 
 /**
  * Directory
@@ -1735,6 +1743,11 @@ class rssDirectory extends directoryLibrary
 		$platforms = $this->getPlatforms('', 1);
 
 		$this->_objTpl->loadTemplateFile('module_directory_entry_add.html',true,true);
+
+		if($this->_isGoogleMapEnabled()){
+			$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'module_directory_googlemap_include.html');
+		}
+		
 		$this->pageTitle = $_ARRAYLANG['TXT_DIR_ADD_ENTREE'];
 
 		//get inputfields
@@ -1758,14 +1771,31 @@ class rssDirectory extends directoryLibrary
 		    'TXT_PLEASE_SELECT'			=> $_ARRAYLANG['TXT_DIRECTORY_PLEASE_CHOSE'],
 		    'TXT_SELECT'				=> $_ARRAYLANG['TXT_DIRECTORY_SELECT_ALL'],
 		    'TXT_DESELECT'				=> $_ARRAYLANG['TXT_DIRECTORY_DESELECT_ALL'],
+		    'TXT_DIR_GEO_NOT_FOUND'		=> $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
+		    'TXT_DIR_GEO_SUCCESS'		=> $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
+		    'TXT_DIR_GEO_MISSING'		=> $_ARRAYLANG['TXT_DIR_GEO_MISSING'],
+		    'TXT_DIR_GEO_UNKNOWN'		=> $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'],
+		    'TXT_DIR_GEO_UNAVAILABLE'	=> $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'],
+		    'TXT_DIR_GEO_BAD_KEY'		=> $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'],
 		    'ADDED_BY'					=> $userName,
 		    'CATEGORY'					=> $categories,
 		    'LEVELS'					=> $levels,
 		    'LANGUAGE'  				=> $languages,
 		    'OS'  						=> $platforms,
-
+			'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
+			'DIRECTORY_START_X'			=> 'null',
+			'DIRECTORY_START_Y'			=> 'null',
+			'DIRECTORY_START_ZOOM'		=> 'null',
+			'DIRECTORY_ENTRY_NAME'		=> 'null',
+			'DIRECTORY_ENTRY_COMPANY'	=> 'null',
+			'DIRECTORY_ENTRY_STREET'	=> 'null',
+			'DIRECTORY_ENTRY_ZIP'		=> 'null',
+			'DIRECTORY_ENTRY_LOCATION'	=> 'null',
+			'DIRECTORY_MAP_LON_BACKEND'		=> $this->googleMapStartPoint['lon'],
+			'DIRECTORY_MAP_LAT_BACKEND'		=> $this->googleMapStartPoint['lat'],
+			'DIRECTORY_MAP_ZOOM_BACKEND'	=> $this->googleMapStartPoint['zoom'],
 		));
-
+		
 		if($this->settings['levels']['value']=='1'){
 			$this->_objTpl->parse('levels');
 		}else{
@@ -2066,7 +2096,7 @@ class rssDirectory extends directoryLibrary
 				$objResult->MoveNext();
 			}
 		}
-
+	
 		if($premium == 1){
 			$premium = "checked";
 		}else{
@@ -2082,11 +2112,14 @@ class rssDirectory extends directoryLibrary
 	    // initialize variables
 		$this->_objTpl->loadTemplateFile('module_directory_entry_edit.html',true,true);
 		$this->pageTitle =  $_ARRAYLANG['TXT_DIR_EDIT_FILE'];
-
+			
 		//get inputfields
 		$this->getInputfields("", "edit", $id, "backend");
 
-
+		if($this->_isGoogleMapEnabled()){
+			$this->_objTpl->addBlockfile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'module_directory_googlemap_include.html');
+		}
+		
 		$this->_objTpl->setVariable(array(
 		    'TXT_NAME' 					=> $_ARRAYLANG['TXT_DIR_NEW_ENTREE'],
 		    'TXT_EDIT_ENTREE' 			=> $_ARRAYLANG['TXT_DIRECTORY_EDIT_FEED'],
@@ -2108,6 +2141,18 @@ class rssDirectory extends directoryLibrary
 		    'DIRECTORY_PREMIUM'			=> $premium,
 		    'TXT_DIRECTORY_PREMIUM'		=> $_ARRAYLANG['TXT_PREMIUM'],
 		    'TXT_LEVEL'					=> $_ARRAYLANG['TXT_LEVEL'],
+		    'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
+			'DIRECTORY_START_X'			=> 'null',
+			'DIRECTORY_START_Y'			=> 'null',
+			'DIRECTORY_START_ZOOM'		=> 'null',
+			'DIRECTORY_ENTRY_NAME'		=> 'null',
+			'DIRECTORY_ENTRY_COMPANY'	=> 'null',
+			'DIRECTORY_ENTRY_STREET'	=> 'null',
+			'DIRECTORY_ENTRY_ZIP'		=> 'null',
+			'DIRECTORY_ENTRY_LOCATION'	=> 'null',
+			'DIRECTORY_MAP_LON_BACKEND'	=> $this->googleMapStartPoint['lon'],
+			'DIRECTORY_MAP_LAT_BACKEND'	=> $this->googleMapStartPoint['lat'],
+			'DIRECTORY_MAP_ZOOM_BACKEND'=> $this->googleMapStartPoint['zoom'],
 		));
 
 		if($this->settings['levels']['value']=='1'){
@@ -2440,25 +2485,25 @@ class rssDirectory extends directoryLibrary
 
 		//get settings
 		$i=0;
-      	$objReslut = $objDatabase->Execute("SELECT setid,setname,setvalue,settyp FROM ".DBPREFIX."module_directory_settings WHERE settyp != '0' AND setid != '30' ORDER BY settyp DESC");
-      	if($objReslut !== false){
-			while(!$objReslut->EOF){
+      	$objResult = $objDatabase->Execute("SELECT setid,setname,setvalue,settyp FROM ".DBPREFIX."module_directory_settings WHERE settyp != '0' AND setid != '30' ORDER BY settyp DESC");
+      	if($objResult !== false){
+			while(!$objResult->EOF){
 				$allow_url_fopen = '';
 				$this->_objTpl->setCurrentBlock('settingsOutput');
-				if ($objReslut->fields['settyp']== 1){
-		            $setValueField = "<input type=\"text\" name=\"setvalue[".$objReslut->fields['setid']."]\" value=\"".$objReslut->fields['setvalue']."\" size='50' maxlength='250'>";
-				}elseif ($objReslut->fields['settyp']== 2){
+				if ($objResult->fields['settyp']== 1){
+		            $setValueField = "<input type=\"text\" name=\"setvalue[".$objResult->fields['setid']."]\" value=\"".$objResult->fields['setvalue']."\" size='50' maxlength='250'>";
+				}elseif ($objResult->fields['settyp']== 2){
 					$true = "";
 					$false = "";
-					if($objReslut->fields['setvalue'] == 1){
+					if($objResult->fields['setvalue'] == 1){
 						$true = "checked";
 					}else{
 						$false = "checked";
 					}
-					if (ini_get('allow_url_fopen') == false && $objReslut->fields['setid'] == 19) {
+					if (ini_get('allow_url_fopen') == false && $objResult->fields['setid'] == 19) {
 						$allow_url_fopen = "<font color='#ff0000'><i>(Please set the variable 'allow_url_fopen' to the value 1)</i></font>";
 					}
-		            $setValueField = "<input type=\"radio\" name=\"setvalue[".$objReslut->fields['setid']."]\" value=\"1\" ".$true.">&nbsp;Aktiviert&nbsp;<input type=\"radio\" name=\"setvalue[".$objReslut->fields['setid']."]\" value=\"0\"".$false.">&nbsp;Deaktiviert&nbsp;&nbsp;&nbsp;".$allow_url_fopen;
+		            $setValueField = "<input type=\"radio\" name=\"setvalue[".$objResult->fields['setid']."]\" value=\"1\" ".$true.">&nbsp;Aktiviert&nbsp;<input type=\"radio\" name=\"setvalue[".$objResult->fields['setid']."]\" value=\"0\"".$false.">&nbsp;Deaktiviert&nbsp;&nbsp;&nbsp;".$allow_url_fopen;
 				}
 
 				($i % 2)? $class = "row2" : $class = "row1";
@@ -2467,11 +2512,11 @@ class rssDirectory extends directoryLibrary
 				$this->_objTpl->setVariable(array(
 					'SETTINGS_ROWCLASS'		=> $class,
 					'SETTINGS_SETVALUE'		=> $setValueField,
-					'SETTINGS_DESCRIPTION'  => $_ARRAYLANG['TXT_'.strtoupper($objReslut->fields['setname'])],
+					'SETTINGS_DESCRIPTION'  => $_ARRAYLANG['TXT_'.strtoupper($objResult->fields['setname'])],
 				));
 				$this->_objTpl->parseCurrentBlock('settingsOutput');
 				$i++;
-				$objReslut->MoveNext();
+				$objResult->MoveNext();
 			}
       	}
 
@@ -2494,21 +2539,21 @@ class rssDirectory extends directoryLibrary
 
 		//get settings
 		$i=0;
-      	$objReslut = $objDatabase->Execute("SELECT setid,setname,setvalue,settyp FROM ".DBPREFIX."module_directory_settings_google ORDER BY setid");
-      	if($objReslut !== false){
-			while(!$objReslut->EOF){
+      	$objResult = $objDatabase->Execute("SELECT setid,setname,setvalue,settyp FROM ".DBPREFIX."module_directory_settings_google ORDER BY setid");
+      	if($objResult !== false){
+			while(!$objResult->EOF){
 				$this->_objTpl->setCurrentBlock('settingsOutput');
-				if ($objReslut->fields['settyp']== 1){
-		            $setValueField = "<input type=\"text\" name=\"setvalue[".$objReslut->fields['setid']."]\" value=\"".$objReslut->fields['setvalue']."\" size='90' maxlength='250'>";
-				}elseif ($objReslut->fields['settyp']== 2){
+				if ($objResult->fields['settyp']== 1){
+		            $setValueField = "<input type=\"text\" name=\"setvalue[".$objResult->fields['setid']."]\" value=\"".$objResult->fields['setvalue']."\" size='90' maxlength='250'>";
+				}elseif ($objResult->fields['settyp']== 2){
 					$true = "";
 					$false = "";
-					if($objReslut->fields['setvalue'] == 1){
+					if($objResult->fields['setvalue'] == 1){
 						$true = "checked";
 					}else{
 						$false = "checked";
 					}
-		            $setValueField = "<input type=\"radio\" name=\"setvalue[".$objReslut->fields['setid']."]\" value=\"1\" ".$true.">&nbsp;true&nbsp;<input type=\"radio\" name=\"setvalue[".$objReslut->fields['setid']."]\" value=\"0\"".$false.">&nbsp;false&nbsp;";
+		            $setValueField = "<input type=\"radio\" name=\"setvalue[".$objResult->fields['setid']."]\" value=\"1\" ".$true.">&nbsp;true&nbsp;<input type=\"radio\" name=\"setvalue[".$objResult->fields['setid']."]\" value=\"0\"".$false.">&nbsp;false&nbsp;";
 				}
 
 				($i % 2)? $class = "row2" : $class = "row1";
@@ -2517,11 +2562,11 @@ class rssDirectory extends directoryLibrary
 				$this->_objTpl->setVariable(array(
 					'SETTINGS_ROWCLASS'		=> $class,
 					'SETTINGS_SETVALUE'		=> $setValueField,
-					'SETTINGS_DESCRIPTION'  => $_ARRAYLANG['TXT_'.strtoupper($objReslut->fields['setname'])],
+					'SETTINGS_DESCRIPTION'  => $_ARRAYLANG['TXT_'.strtoupper($objResult->fields['setname'])],
 				));
 				$this->_objTpl->parseCurrentBlock('settingsOutput');
 				$i++;
-				$objReslut->MoveNext();
+				$objResult->MoveNext();
 			}
       	}
 
@@ -2552,41 +2597,41 @@ class rssDirectory extends directoryLibrary
 
 		//get inputs
 		$i=1;
-      	$objReslut = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_inputfields ORDER BY active DESC, active_backend DESC,sort, typ, name");
-		if($objReslut !== false){
-			while(!$objReslut->EOF){
+      	$objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_inputfields ORDER BY active DESC, active_backend DESC,sort, typ, name");
+		if($objResult !== false){
+			while(!$objResult->EOF){
 				$checked  = "";
 				$disabled = "";
 				$this->_objTpl->setCurrentBlock('settingsOutput');
 
 				//search
-				if($objReslut->fields['exp_search'] == 1){
-					if($objReslut->fields['is_search'] == 1){
+				if($objResult->fields['exp_search'] == 1){
+					if($objResult->fields['is_search'] == 1){
 						$checked 	= "checked";
 					}
-					$setSearch = "<input type=\"checkbox\" name=\"setSearch[".$objReslut->fields['id']."]\" value=\"1\" ".$checked.">";
+					$setSearch = "<input type=\"checkbox\" name=\"setSearch[".$objResult->fields['id']."]\" value=\"1\" ".$checked.">";
 				}else{
 					$setSearch = "&nbsp;";
 				}
 
-				if($objReslut->fields['name'] == "title" || $objReslut->fields['name'] == "description"){
+				if($objResult->fields['name'] == "title" || $objResult->fields['name'] == "description"){
 					$setSearch = '<input type="checkbox" disabled checked>';
 					$disabled  = "disabled";
 				}
 
 				//required
-				if($objReslut->fields['is_required'] == 1){
+				if($objResult->fields['is_required'] == 1){
 					$checked 	= "checked";
 				}else{
 					$checked 	= "";
 				}
-				$setRequired = "<input type=\"checkbox\" name=\"setRequired[".$objReslut->fields['id']."]\" value=\"1\" ".$checked." ".$disabled.">";
+				$setRequired = "<input type=\"checkbox\" name=\"setRequired[".$objResult->fields['id']."]\" value=\"1\" ".$checked." ".$disabled.">";
 
 				//order
-				$setSortField	= "<input type=\"text\" name=\"setSort[".$objReslut->fields['id']."]\" value=\"".$objReslut->fields['sort']."\" size='2' maxlength='4'>";
+				$setSortField	= "<input type=\"text\" name=\"setSort[".$objResult->fields['id']."]\" value=\"".$objResult->fields['sort']."\" size='2' maxlength='4'>";
 
 				//backgroundcolor
-				if($objReslut->fields['active'] == 1){
+				if($objResult->fields['active'] == 1){
 					$checked 	= "checked";
 					$rowColor 	= "#d8ffca";
 				}else{
@@ -2595,41 +2640,32 @@ class rssDirectory extends directoryLibrary
 				}
 
 				//status
-				$setStatusField	= "<input type=\"checkbox\" name=\"setStatus[".$objReslut->fields['id']."]\" value=\"1\" ".$disabled." ".$checked.">";
+				$setStatusField	= "<input type=\"checkbox\" name=\"setStatus[".$objResult->fields['id']."]\" value=\"1\" ".$disabled." ".$checked.">";
 
 
 				//type
-				switch ($objReslut->fields['typ']) {
+				switch ($objResult->fields['typ']) {
 					case '1':
+					case '5':
+					case '13':
 						$setType = "<img src='".$this->imageWebPath ."directory/input.gif' border='0' title='Inputfield' alt='Inputfield' />";
 					break;
 					case '2':
-						$setType = "<img src='".$this->imageWebPath ."directory/area.gif' border='0' title='Textarea' alt='Textarea' />";
-					break;
-					case '3':
-						$setType = "<img src='".$this->imageWebPath ."directory/dropdown.gif' border='0' title='Dropdownmenu' alt='Dropdownmenu' />";
-					break;
-					case '4':
-						$setType = "<img src='".$this->imageWebPath ."directory/image.gif' border='0' title='Bilddatei' alt='Bilddatei' />";
-					break;
-					case '5':
-						$setType = "<img src='".$this->imageWebPath ."directory/input.gif' border='0' title='Inputfield' alt='Inputfield' />";
-					break;
 					case '6':
 						$setType = "<img src='".$this->imageWebPath ."directory/area.gif' border='0' title='Textarea' alt='Textarea' />";
 					break;
+					case '3':
 					case '8':
 						$setType = "<img src='".$this->imageWebPath ."directory/dropdown.gif' border='0' title='Dropdownmenu' alt='Dropdownmenu' />";
 					break;
+					case '4':
 					case '7':
-						$setType = "<img src='".$this->imageWebPath ."directory/image.gif' border='0' title='Galeriebild' alt='Galeriebild' />";
+						$setType = "<img src='".$this->imageWebPath ."directory/image.gif' border='0' title='Bilddatei' alt='Bilddatei' />";
 					break;
 					case '9':
 						$setType = "<img src='".$this->imageWebPath ."directory/voting.gif' border='0' title='Voting' alt='Voting' />";
 					break;
 					case '10':
-						$setType = "<img src='".$this->imageWebPath ."directory/upload.gif' border='0' title='Upload' alt='Upload' />";
-					break;
 					case '11':
 						$setType = "<img src='".$this->imageWebPath ."directory/upload.gif' border='0' title='Upload' alt='Upload' />";
 					break;
@@ -2639,24 +2675,24 @@ class rssDirectory extends directoryLibrary
 				}
 
 				//status backend
-				if($objReslut->fields['active_backend'] == 1){
+				if($objResult->fields['active_backend'] == 1){
 					$checked 	= "checked";
 				}else{
 					$checked 	= "";
 				}
 
-				$setStatusBackendField	= "<input type=\"checkbox\" name=\"setStatusBackend[".$objReslut->fields['id']."]\" value=\"1\" ".$disabled." ".$checked.">";
+				$setStatusBackendField	= "<input type=\"checkbox\" name=\"setStatusBackend[".$objResult->fields['id']."]\" value=\"1\" ".$disabled." ".$checked.">";
 
 
 				//is dropdown
-				if ($objReslut->fields['typ'] == 3 || $objReslut->fields['typ'] == 8 || $objReslut->fields['typ'] == 9) {
+				if ($objResult->fields['typ'] == 3 || $objResult->fields['typ'] == 8 || $objResult->fields['typ'] == 9) {
 					$dropdown = '';
-					$objReslutDropdown = $objDatabase->Execute("SELECT setid, setvalue FROM ".DBPREFIX."module_directory_settings WHERE setname = '".$objReslut->fields['name']."'");
+					$objResultDropdown = $objDatabase->Execute("SELECT setid, setvalue FROM ".DBPREFIX."module_directory_settings WHERE setname = '".$objResult->fields['name']."'");
 
-					if($objReslutDropdown !== false){
-						while(!$objReslutDropdown->EOF){
-							$textarea = "<textarea name=\"setDropdown[".$objReslutDropdown->fields['setid']."]\" style=\"width:440px; overflow: auto;\" rows='5'>".$objReslutDropdown->fields['setvalue']."</textarea>";
-							$objReslutDropdown->MoveNext();
+					if($objResultDropdown !== false){
+						while(!$objResultDropdown->EOF){
+							$textarea = "<textarea name=\"setDropdown[".$objResultDropdown->fields['setid']."]\" style=\"width:440px; overflow: auto;\" rows='5'>".$objResultDropdown->fields['setvalue']."</textarea>";
+							$objResultDropdown->MoveNext();
 						}
 			      	}
 					$dropdown = '<tr class="'.$class.'" style="background-color: '.$rowColor.';">
@@ -2671,10 +2707,10 @@ class rssDirectory extends directoryLibrary
 				}
 
 				//is spez field
-				if ($objReslut->fields['typ'] >= 5 &&  $objReslut->fields['typ'] <= 10 ) {
-					$setName = "<input type=\"text\" name=\"setSpezFields[".$objReslut->fields['id']."]\" value=\"".$objReslut->fields['title']."\" style=\"width:130px;\" maxlength='250'>";
+				if ($objResult->fields['typ'] >= 5 &&  $objResult->fields['typ'] <= 10 ) {
+					$setName = "<input type=\"text\" name=\"setSpezFields[".$objResult->fields['id']."]\" value=\"".$objResult->fields['title']."\" style=\"width:130px;\" maxlength='250'>";
 				} else {
-					$setName = $_ARRAYLANG[$objReslut->fields['title']];
+					$setName = $_ARRAYLANG[$objResult->fields['title']];
 				}
 
 				($i % 2)? $class = "row2" : $class = "row1";
@@ -2692,15 +2728,14 @@ class rssDirectory extends directoryLibrary
 					'ROW_COLOR'  				=> $rowColor,
 					'DROPDOWN_CONTENT'  		=> $dropdown,
 					'ROW_STYLE'  				=> $rowStyle,
-					'FIELD_PLACEHOLDER_TXT' 	=> "[[TXT_DIRECTORY_FEED_".strtoupper($objReslut->fields['name'])."]]",
-					'FIELD_PLACEHOLDER'  		=> "[[DIRECTORY_FEED_".strtoupper($objReslut->fields['name'])."]]",
+					'FIELD_PLACEHOLDER_TXT' 	=> "[[TXT_DIRECTORY_FEED_".strtoupper($objResult->fields['name'])."]]",
+					'FIELD_PLACEHOLDER'  		=> "[[DIRECTORY_FEED_".strtoupper($objResult->fields['name'])."]]",
 				));
 				$this->_objTpl->parseCurrentBlock('settingsOutput');
 				$i++;
-				$objReslut->MoveNext();
+				$objResult->MoveNext();
 			}
 		}
-
 		$this->_objTpl->parse('requests_block');
 	}
 
@@ -2714,27 +2749,27 @@ class rssDirectory extends directoryLibrary
 		$this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_directory_settings_mail.html');
 
 		//get content
-		$objReslut = $objDatabase->Execute("SELECT title, content FROM ".DBPREFIX."module_directory_mail WHERE id = '1'");
-      	if($objReslut !== false){
-			while(!$objReslut->EOF){
-				$mailConfirmContent = $objReslut->fields['content'];
-				$mailConfirmTitle = $objReslut->fields['title'];
-				$objReslut->MoveNext();
+		$objResult = $objDatabase->Execute("SELECT title, content FROM ".DBPREFIX."module_directory_mail WHERE id = '1'");
+      	if($objResult !== false){
+			while(!$objResult->EOF){
+				$mailConfirmContent = $objResult->fields['content'];
+				$mailConfirmTitle = $objResult->fields['title'];
+				$objResult->MoveNext();
 			}
       	}
 
-      	$objReslut = $objDatabase->Execute("SELECT title, content FROM ".DBPREFIX."module_directory_mail WHERE id = '2'");
-      	if($objReslut !== false){
-			while(!$objReslut->EOF){
-				$mailRememberContent = $objReslut->fields['content'];
-				$mailRememberTitle = $objReslut->fields['title'];
-				$objReslut->MoveNext();
+      	$objResult = $objDatabase->Execute("SELECT title, content FROM ".DBPREFIX."module_directory_mail WHERE id = '2'");
+      	if($objResult !== false){
+			while(!$objResult->EOF){
+				$mailRememberContent = $objResult->fields['content'];
+				$mailRememberTitle = $objResult->fields['title'];
+				$objResult->MoveNext();
 			}
       	}
 
-      	$objReslut = $objDatabase->Execute("SELECT setvalue FROM ".DBPREFIX."module_directory_settings WHERE setid = '30'");
-      	if($objReslut !== false){
-		    $mailRememberAdress = $objReslut->fields['setvalue'];
+      	$objResult = $objDatabase->Execute("SELECT setvalue FROM ".DBPREFIX."module_directory_settings WHERE setid = '30'");
+      	if($objResult !== false){
+		    $mailRememberAdress = $objResult->fields['setvalue'];
       	}
 
 		$this->_objTpl->setVariable(array(
@@ -2844,9 +2879,9 @@ class rssDirectory extends directoryLibrary
 			foreach ($_POST['setvalue'] as $id => $value) {
 				//update settings
 				if (ini_get('allow_url_fopen') == false && $id == 19) {
-					$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_settings SET setvalue='0' WHERE setid=".intval($id));
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_settings SET setvalue='0' WHERE setid=".intval($id));
 				} else {
-					$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_settings SET setvalue='".contrexx_addslashes($value)."' WHERE setid=".intval($id));
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_settings SET setvalue='".contrexx_addslashes($value)."' WHERE setid=".intval($id));
 				}
 
 			}
@@ -2857,7 +2892,7 @@ class rssDirectory extends directoryLibrary
 			//get post data
 			foreach ($_POST['setvalue'] as $id => $value) {
 				//update settings
-				$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_settings_google SET setvalue='".contrexx_addslashes($value)."' WHERE setid=".intval($id));
+				$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_settings_google SET setvalue='".contrexx_addslashes($value)."' WHERE setid=".intval($id));
 			}
 			$this->strOkMessage = $_ARRAYLANG['TXT_DIR_SETTINGS_SUCCESFULL_SAVE'];
 		}
@@ -2880,32 +2915,84 @@ class rssDirectory extends directoryLibrary
 
 		if (isset($_POST['set_mail_submit'])){
 			//update settings
-			$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_mail SET title='".contrexx_addslashes($_POST['mailConfirmTitle'])."', content='".$_POST['mailConfirmContent']."' WHERE id='1'");
-			$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_mail SET title='".contrexx_addslashes($_POST['mailRememberTitle'])."', content='".$_POST['mailRememberContent']."' WHERE id='2'");
-			$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_settings SET setvalue='".contrexx_addslashes($_POST['mailRememberAdress'])."' WHERE setid='30'");
+			$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_mail SET title='".contrexx_addslashes($_POST['mailConfirmTitle'])."', content='".$_POST['mailConfirmContent']."' WHERE id='1'");
+			$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_mail SET title='".contrexx_addslashes($_POST['mailRememberTitle'])."', content='".$_POST['mailRememberContent']."' WHERE id='2'");
+			$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_settings SET setvalue='".contrexx_addslashes($_POST['mailRememberAdress'])."' WHERE setid='30'");
 			$this->strOkMessage = $_ARRAYLANG['TXT_DIR_SETTINGS_SUCCESFULL_SAVE'];
 		}
 
 		if (isset($_POST['set_inputs_submit'])){
 			//update settings
-			$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' Where id !='1'");
-			$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET is_search='0' Where id !='1'");
-			$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET is_required='0' Where id !='1' AND id !='2'");
-			$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='0' Where id !='1' AND id !='2'");
+			$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' Where id !='1'");
+			$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET is_search='0' Where id !='1'");
+			$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET is_required='0' Where id !='1' AND id !='2'");
+			$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='0' Where id !='1' AND id !='2'");
 
 			//get post data
 			if($_POST['setStatus'] != ""){
+				$addressElements = 0;
+				$googleMapIsEnabled = false;
 				foreach ($_POST['setStatus'] as $id => $value) {
 					//update settings
-					$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='".contrexx_addslashes($value)."' WHERE id=".intval($id));
+					$objResult = $objDatabase->Execute("SELECT `name` FROM ".DBPREFIX."module_directory_inputfields WHERE id=".intval($id));
+					$name = $objResult->fields['name'];
+					switch ($name) {
+						case 'country':
+						case 'zip':
+						case 'street':
+						case 'city':
+							$addressElements++;
+							break;
+						case 'googlemap':
+							$googleMapIsEnabled = true;
+							break;							
+						default:
+					}
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='".contrexx_addslashes($value)."' WHERE id=".intval($id)); 
+				}			
+				if($googleMapIsEnabled && $addressElements == 4){
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='country'");				
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='zip'");				
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='street'");				
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='city'");				
+				}elseif (!$googleMapIsEnabled && $addressElements < 4){
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' WHERE name='googlemap'");				
+				}elseif ($googleMapIsEnabled && $addressElements < 4){
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' WHERE name='googlemap'");				
 				}
 			}
 
 			//get post data
 			if($_POST['setStatusBackend'] != ""){
+				$addressElements = 0;
+				$googleMapIsEnabled = false;
 				foreach ($_POST['setStatusBackend'] as $id => $value) {
 					//update settings
-					$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='".contrexx_addslashes($value)."' WHERE id=".intval($id));
+					$objResult = $objDatabase->Execute("SELECT `name` FROM ".DBPREFIX."module_directory_inputfields WHERE id=".intval($id));
+					$name = $objResult->fields['name'];
+					switch ($name) {
+						case 'country':
+						case 'zip':
+						case 'street':
+						case 'city':
+							$addressElements++;
+							break;
+						case 'googlemap':
+							$googleMapIsEnabled = true;
+							break;							
+						default:
+					}
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='".contrexx_addslashes($value)."' WHERE id=".intval($id));
+				}
+				if($googleMapIsEnabled && $addressElements == 4){
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='country'");				
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='zip'");				
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='street'");				
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='city'");				
+				}elseif (!$googleMapIsEnabled && $addressElements < 4){
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='0' WHERE name='googlemap'");				
+				}elseif ($googleMapIsEnabled && $addressElements < 4){
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' WHERE name='googlemap'");				
 				}
 			}
 
@@ -2915,7 +3002,7 @@ class rssDirectory extends directoryLibrary
 					$sort = $sort;
 
 					//update settings
-					$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET sort=".intval($sort)." WHERE id=".intval($id));
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET sort=".intval($sort)." WHERE id=".intval($id));
 				}
 			}
 
@@ -2924,7 +3011,7 @@ class rssDirectory extends directoryLibrary
 				foreach ($_POST['setSearch'] as $id => $search) {
 
 					//update settings
-					$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET is_search=".$search." WHERE id=".intval($id));
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET is_search=".$search." WHERE id=".intval($id));
 				}
 			}
 
@@ -2933,7 +3020,7 @@ class rssDirectory extends directoryLibrary
 				foreach ($_POST['setRequired'] as $id => $required) {
 
 					//update settings
-					$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET is_required=". $required." WHERE id=".intval($id));
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET is_required=". $required." WHERE id=".intval($id));
 				}
 			}
 
@@ -2948,12 +3035,12 @@ class rssDirectory extends directoryLibrary
 			//get dropdown data
 			foreach ($_POST['setDropdown'] as $id => $value) {
 				//update settings
-				$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_settings SET setvalue='".contrexx_addslashes($value)."' WHERE setid=".intval($id));
+				$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_settings SET setvalue='".contrexx_addslashes($value)."' WHERE setid=".intval($id));
 			}
 
 			//update settings
-			$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='title'");
-			$objReslut = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='description'");
+			$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='title'");
+			$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='description'");
 
 			$this->strOkMessage = $_ARRAYLANG['TXT_DIR_SETTINGS_SUCCESFULL_SAVE'];
 		}
@@ -2963,8 +3050,8 @@ class rssDirectory extends directoryLibrary
 		global $objDatabase, $_ARRAYLANG;
 
 		if(isset($id)){
-			$objReslut = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_vote WHERE feed_id ='$id'");
-			if($objReslut !== false){
+			$objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_vote WHERE feed_id ='$id'");
+			if($objResult !== false){
 				$this->showFiles('','');
 				$this->strOkMessage = $_ARRAYLANG['TXT_DIRECTORY_VOTING_RESTORED'];
 			}
