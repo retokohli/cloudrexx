@@ -72,6 +72,7 @@ class Teasers extends newsLibrary
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
 		$this->_initialize();
+
 	}
 
 
@@ -90,7 +91,7 @@ class Teasers extends newsLibrary
 	function initializeTeasers()
 	{
 		global $objDatabase, $objInit, $_LANGID;
-
+$objDatabase->debug=1;
 		$this->arrTeasers = array();
 
 		if ($this->administrate) {

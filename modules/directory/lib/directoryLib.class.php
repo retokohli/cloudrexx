@@ -8,6 +8,23 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+$_ARRAYLANG['TXT_DIR_F_GOOGLEMAP'] = "Google Map";
+$_ARRAYLANG['TXT_DIR_F_COUNTRY'] = "Land";
+$_ARRAYLANG['TXT_DIR_LON'] = "Längengrad";
+$_ARRAYLANG['TXT_DIR_LAT'] = "Breitengrad";
+$_ARRAYLANG['TXT_DIR_ZOOM'] = "Zoom";
+$_ARRAYLANG['TXT_DIR_SEARCH_ADDRESS'] = "Adresse suchen";
+
+
+
+$_ARRAYLANG['TXT_DIR_GEO_SUCCESS'] = "Adresse gefunden!";
+$_ARRAYLANG['TXT_DIR_GEO_MISSING'] = "Adresse fehlt oder hat keinen Wert";
+$_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'] = "Adresse unbekannt";
+$_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'] = "Adresse ist nicht verfügbar";
+$_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'] = "Falscher Google API Key";
+$_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'] = "Adresse nicht gefunden";
+
+
 /**
  * Includes
  */
@@ -37,6 +54,7 @@ class directoryLibrary
 	var $rssLatestDescription =  "The latest Directory entries";
 	var $categories = array();
 
+	var $googleMapStartPoint = array('lat' => 46, 'lon' => 8, 'zoom' => 1);
 
 	/**
     * Constructor
@@ -816,15 +834,22 @@ class directoryLibrary
 	function addFeed()
 	{
 		global $objDatabase, $_ARRAYLANG;
-
 		$arrSettings = $this->getSettings();
-
 		//get post data
 		if($file != "error"){
 
 			$query = "INSERT INTO ".DBPREFIX."module_directory_dir SET ";
 
 			foreach($_POST["inputValue"] as $inputName => $inputValue){
+
+				switch ($inputName){
+					case 'lat':
+					case 'lat_fraction':
+					case 'lon':
+					case 'lon_fraction':
+					case 'zoom':
+						continue 2;
+				}
 
 				//check links
 				if($inputName == "relatedlinks" || $inputName == "homepage" || $inputName == "link"){
@@ -910,7 +935,7 @@ class directoryLibrary
 				}
 			}
 
-			$query .= "rss_file='".$rss_file."', date='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', status='".intval($entryStatus)."', provider='".gethostbyaddr($_SERVER['REMOTE_ADDR'])."', ip='".$_SERVER['REMOTE_ADDR']."',  validatedate='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', xml_refresh='".mktime("now")."'";
+			$query .= "rss_file='".$rss_file."', date='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', status='".intval($entryStatus)."', provider='".gethostbyaddr($_SERVER['REMOTE_ADDR'])."', ip='".$_SERVER['REMOTE_ADDR']."',  validatedate='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', xml_refresh='".mktime("now")."', longitude='".intval($_REQUEST['inputValue']['lon']).'.'.intval($_POST['inputValue']['lon_fraction'])."', latitude='".intval($_REQUEST['inputValue']['lat']).'.'.intval($_REQUEST['inputValue']['lat_fraction'])."', zoom='".intval($_REQUEST['inputValue']['zoom'])."'";
 
 			//add entry
 			$objResult = $objDatabase->query($query);
@@ -1286,6 +1311,17 @@ class directoryLibrary
 					$arrInputfieldsValue['concept'] 			= $objResult->fields['concept'];
 					$arrInputfieldsValue['map'] 				= $objResult->fields['map'];
 					$arrInputfieldsValue['lokal'] 				= $objResult->fields['lokal'];
+
+					$arrInputfieldsValue['longitude'] 			= $objResult->fields['longitude'];
+					$arrInputfieldsValue['latitude'] 			= $objResult->fields['latitude'];
+					$arrInputfieldsValue["lon"]					= substr($objResult->fields['longitude'], 0, strpos($objResult->fields['longitude'], '.'));
+					$arrInputfieldsValue["lon_fraction"]		= substr($objResult->fields['longitude'], 	 strpos($objResult->fields['longitude'], '.')+1);
+					$arrInputfieldsValue["lat"]					= substr($objResult->fields['latitude'],  0, strpos($objResult->fields['latitude'], '.'));
+					$arrInputfieldsValue["lat_fraction"]		= substr($objResult->fields['latitude'], 	 strpos($objResult->fields['latitude'], '.')+1);
+
+					$arrInputfieldsValue['zoom'] 				= $objResult->fields['zoom'];
+					$arrInputfieldsValue['country'] 			= $objResult->fields['country'];
+
 					$arrInputfieldsValue['spez_field_1'] 		= $objResult->fields['spez_field_1'];
 					$arrInputfieldsValue['spez_field_2'] 		= $objResult->fields['spez_field_2'];
 					$arrInputfieldsValue['spez_field_3'] 		= $objResult->fields['spez_field_3'];
@@ -1323,6 +1359,7 @@ class directoryLibrary
 			$arrInputfieldsValue['platform'] 			= $this->getPlatforms($arrInputfieldsValue['platform']);
 			$arrInputfieldsValue['language'] 			= $this->getLanguages($arrInputfieldsValue['language']);
 			$arrInputfieldsValue['canton'] 				= $this->getCantons($arrInputfieldsValue['canton']);
+			$arrInputfieldsValue['country']				= $this->getCountry($arrInputfieldsValue['country']);
 			$arrInputfieldsValue['spez_field_21'] 		= $this->getSpezDropdown($arrInputfieldsValue['spez_field_21'], 'spez_field_21');
 			$arrInputfieldsValue['spez_field_22'] 		= $this->getSpezDropdown($arrInputfieldsValue['spez_field_22'], 'spez_field_22');
 			$arrInputfieldsValue['spez_field_23'] 		= $this->getSpezVotes($arrInputfieldsValue['spez_field_23'], 'spez_field_23');
@@ -1488,26 +1525,36 @@ class directoryLibrary
 	    		case '12':
 	    		 	$inputValueField .= "<input type=\"text\" name=\"inputValue[".$inputName."]\" value=\"".$arrInputfieldsValue[$inputName]."\" style=\"width:".$width."px;\" maxlength='250'>";
 	    		 	break;
+
+	    		case '13':
+	    		 	$inputValueField .= $_ARRAYLANG['TXT_DIR_LON'].': <input type="text" name="inputValue[lon]" value="'.$arrInputfieldsValue["lon"].'" style="width:22px;" maxlength="3">';
+	    		 	$inputValueField .= '.<input type="text" name="inputValue[lon_fraction]" value="'.$arrInputfieldsValue["lon_fraction"].'" style="width:92px;" maxlength="15"> ';
+	    		 	$inputValueField .= $_ARRAYLANG['TXT_DIR_LAT'].': <input type="text" name="inputValue[lat]" value="'.$arrInputfieldsValue["lat"].'" style="width:22px;" maxlength="15">';
+	    		 	$inputValueField .= '.<input type="text" name="inputValue[lat_fraction]" value="'.$arrInputfieldsValue["lat_fraction"].'" style="width:92px;" maxlength="15"> ';
+	    		 	$inputValueField .= $_ARRAYLANG['TXT_DIR_ZOOM'].': <input type="text" name="inputValue[zoom]" value="'.$arrInputfieldsValue["zoom"].'" style="width:15px;" maxlength="2">';
+	    		 	$inputValueField .= '<a href="javascript:void(0);" onclick="getAddress();"> '.$_ARRAYLANG['TXT_DIR_SEARCH_ADDRESS'].'</a><br />';
+	    		 	$inputValueField .= '<span id="geostatus"></span>';
+	    		 	$inputValueField .= '<div id="gmap" style="margin:2px; border:1px solid;width: 400px; height: 300px;"></div>';
+
+	    		 	$inputValueField .= '<div id="loclayer" style="-moz-opacity: 0.85; filter: alpha(opacity=85); background-color: #dedede;padding:2px; border:1px solid;width: 198px; height: 42px; position:relative; top: -270px; left: 200px; "></div>';
+	    			break;
 			}
 
 
-			$requiered = "";
-			if($arrInputfieldsActive['is_required'][$inputKey] == 1){
-				$requiered 		 = "<font color='red'>*</font>";
-
+			$required = "";
+			if($arrInputfieldsActive['is_required'][$inputKey] == 1 && strtolower($inputName) != 'googlemap'){
+				$required 		 = "<font color='red'>*</font>";
 				$javascript 	.= 'if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
 										errorMsg = errorMsg + "- '.$fieldName.'\n";
+									}';
 									}
-
-									';
-			}
 
 	    	// initialize variables
 			$this->_objTpl->setVariable(array(
 				'FIELD_ROW'					=> $class,
 				'FIELD_VALUE'				=> $inputValueField,
 				'FIELD_NAME'  				=> $fieldName,
-				'FIELD_REQUIRED'  			=> $requiered,
+				'FIELD_REQUIRED'  			=> $required,
 				'DIRECTORY_FORM_ONSUBMIT'  	=> $formOnSubmit,
 			));
 
@@ -1529,6 +1576,19 @@ class directoryLibrary
 		$this->_objTpl->setVariable(array(
 			'DIRECTORY_JAVASCRIPT'  => $javascript,
 		));
+    }
+
+    function _isGoogleMapEnabled($what = 'backend'){
+    	global $objDatabase;
+    	$what = ($what == 'backend') ? '_backend' : '';
+    	$query = "	SELECT `active".$what."` as isactive
+    				FROM `".DBPREFIX."module_directory_inputfields`
+    				WHERE `name` = 'googlemap' AND `typ` = 13";
+    	$objRS = $objDatabase->SelectLimit($query, 1);
+    	if($objRS === false){
+    		die(__FILE__.':'.__LINE__.' '.$objDatabase->ErrorMsg());
+    	}
+    	return $objRS->fields['isactive'];
     }
 
     function getSettings(){
@@ -1698,13 +1758,22 @@ class directoryLibrary
 	function updateFile($addedby)
 	{
 		global $_CONFIG, $objDatabase, $_ARRAYLANG;
-
 		//get post data
 		if(isset($_POST['edit_submit'])){
 			$dirId 		= intval($_POST['edit_id']);
 			$query 		= "UPDATE ".DBPREFIX."module_directory_dir SET ";
 
 			foreach($_POST["inputValue"] as $inputName => $inputValue){
+
+				switch ($inputName){
+					case 'lat':
+					case 'lat_fraction':
+					case 'lon':
+					case 'lon_fraction':
+					case 'zoom':
+						continue 2;
+				}
+
 				//check links
 				if($inputName == "relatedlinks" || $inputName == "homepage" || $inputName == "link"){
 					if(substr($inputValue, 0,7) != "http://" && $inputValue != ""){
@@ -1833,8 +1902,8 @@ class directoryLibrary
 				}
 			}
 
-
-			$query .= " premium='".$_POST["premium"]."', status='".intval($entryStatus)."',  validatedate='".mktime("now")."' WHERE id='".$dirId."'";
+			//numbers could be too big for intavl(), use contrexx_addslashes() instead...
+			$query .= " premium='".$_POST["premium"]."', status='".intval($entryStatus)."',  validatedate='".mktime("now")."', longitude='".contrexx_addslashes($_REQUEST['inputValue']['lon']).'.'.contrexx_addslashes($_POST['inputValue']['lon_fraction'])."', latitude='".contrexx_addslashes($_REQUEST['inputValue']['lat']).'.'.contrexx_addslashes($_REQUEST['inputValue']['lat_fraction'])."', zoom='".intval($_REQUEST['inputValue']['zoom'])."' WHERE id='".$dirId."'";
 
 			//edit entry
 			$objResult = $objDatabase->Execute($query);
@@ -2073,8 +2142,6 @@ class directoryLibrary
 
 		return $options;
 	}
-
-
 
 
 	/**
