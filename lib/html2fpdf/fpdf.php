@@ -2172,7 +2172,8 @@ function _parsepng($file)
 	if($ct==0) $colspace='DeviceGray';
 	elseif($ct==2) $colspace='DeviceRGB';
 	elseif($ct==3) $colspace='Indexed';
-	else $this->Error('Alpha channel not supported: '.$file);
+	//else $this->Error('Alpha channel not supported: '.$file);
+	else $colspace='DeviceGray';
 	if(ord(fread($f,1))!=0)	$this->Error('Unknown compression method: '.$file);
 	if(ord(fread($f,1))!=0)	$this->Error('Unknown filter method: '.$file);
 	if(ord(fread($f,1))!=0)	$this->Error('Interlacing not supported: '.$file);
