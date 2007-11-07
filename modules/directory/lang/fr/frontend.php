@@ -205,4 +205,16 @@ $_ARRAYLANG['TXT_USEMENT_TEXT'] = "In der Designvorlage <b>directory.html</b>. D
 $_ARRAYLANG['TXT_DIRECTORY_DEACTIVATE'] = "Deaktivieren";
 $_ARRAYLANG['TXT_SHOW_DIR_HOMECONTENT'] = "Verzeichnis auf Startseite anzeigen";
 $_ARRAYLANG['TXT_DIRECTORY_RSS_FEED'] = "RSS Link";
+$_ARRAYLANG['TXT_DIR_F_GOOGLEMAP'] = "Google Map";
+$_ARRAYLANG['TXT_DIR_F_COUNTRY'] = "Land";
+$_ARRAYLANG['TXT_DIR_LON'] = "Längengrad";
+$_ARRAYLANG['TXT_DIR_LAT'] = "Breitengrad";
+$_ARRAYLANG['TXT_DIR_ZOOM'] = "Zoom";
+$_ARRAYLANG['TXT_DIR_SEARCH_ADDRESS'] = "Adresse suchen";
+$_ARRAYLANG['TXT_DIR_GEO_SUCCESS'] = "Adresse gefunden!";
+$_ARRAYLANG['TXT_DIR_GEO_MISSING'] = "Adresse fehlt oder hat keinen Wert";
+$_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'] = "Adresse unbekannt";
+$_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'] = "Adresse ist nicht verfügbar";
+$_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'] = "Falscher Google API Key";
+$_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'] = "Adresse nicht gefunden";
 ?>

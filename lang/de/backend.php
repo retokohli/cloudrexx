@@ -763,4 +763,6 @@ $_ARRAYLANG['TXT_THEME_PDF'] = "PDF-Ansicht";
 $_ARRAYLANG['TXT_VISIBLE'] = "Sichtbar";
 $_ARRAYLANG['TXT_DOWNLOADS'] = "Downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_MODULE_DESCRIPTION'] = "Nach Kategorien strukturierte Downloadliste mit Dateininformationen (Beschreibung, Grösse, Screenshot, Bewertung)";
+$_ARRAYLANG['TXT_GOOGLE_MAPS_API_KEY_HELP'] = "Globaler Google-Maps API Schlüssel für die Standard-Domain";
+$_ARRAYLANG['TXT_GOOGLE_MAPS_API_KEY'] = "Google-Maps API Schlüssel";
 ?>
