@@ -1129,6 +1129,40 @@ class directoryLibrary
     }
 
 
+    /**
+	 * return the HTML <option>s for the country dropdown menu
+	 *
+	 * @param unknown_type $countryID
+	 * @return unknown
+	 */
+	function getCountry($countryVal){
+		global $_CONFIG, $objDatabase;
+
+		//get all languages
+		$objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_settings WHERE setname = 'country'");
+		if($objResult !== false){
+			while(!$objResult->EOF){
+				$country 			= $objResult->fields['setvalue'];
+				$objResult->MoveNext();
+			}
+		}
+
+		//explode languages
+		$this->getCountry = explode(",", $country);
+
+		//make languages dropdown
+		foreach($this->getCountry as $countryKey => $countryName){
+			$checked = "";
+			if ($countryName == $countryVal) {
+				$checked = "selected";
+			}
+			$country .= "<option value='".$countryName."' $checked>".$countryName."</option>";
+		}
+
+		return $country;
+	}
+
+
 
     /**
     * create rss latest
@@ -1238,6 +1272,7 @@ class directoryLibrary
 			$arrInputfieldsValue['language'] 			= $this->getLanguages($_POST['inputValue']['language']);
 			$arrInputfieldsValue['platform'] 			= $this->getPlatforms($_POST['inputValue']['platform']);
 			$arrInputfieldsValue['canton'] 				= $this->getCantons($_POST['inputValue']['canton']);
+			$arrInputfieldsValue['country'] 			= $this->getCountry($_POST['inputValue']['country']);
 			$arrInputfieldsValue['spez_field_21'] 		= $this->getSpezDropdown($_POST['inputValue']['spez_field_21'], 'spez_field_21');
 			$arrInputfieldsValue['spez_field_22'] 		= $this->getSpezDropdown($_POST['inputValue']['spez_field_22'], 'spez_field_22');
 			$arrInputfieldsValue['spez_field_23'] 		= $this->getSpezVotes($_POST['inputValue']['spez_field_23'], 'spez_field_23');
@@ -1366,6 +1401,101 @@ class directoryLibrary
 		}else{
 			$formOnSubmit = "selectAll(document.addForm.elements['selectedCat[]']); return CheckFields();";
 		}
+
+		$javascript = <<< EOF
+<script language="JavaScript">
+/* <![CDATA[ */
+function add(from,dest,add,remove)
+{
+    if ( from.selectedIndex < 0)
+	{
+		if (from.options[0] != null)
+			from.options[0].selected = true;
+		from.focus();
+		return false;
+	}
+	else
+	{
+		for (var i=0; i<from.length; i++)
+		{
+			if (from.options[i].selected)
+			{
+		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
+   			}
+		}
+	    for (var i=from.length-1; i>=0; i--)
+		{
+			if (from.options[i].selected)
+			{
+		       from.options[i] = null;
+   			}
+		}
+	}
+    disableButtons(from,dest,add,remove);
+}
+
+
+function remove(from,dest,add,remove)
+{
+	if ( dest.selectedIndex < 0)
+	{
+		if (dest.options[0] != null)
+			dest.options[0].selected = true;
+		dest.focus();
+		return false;
+	}
+	else
+	{
+		for (var i=0; i<dest.options.length; i++)
+		{
+			if (dest.options[i].selected)
+			{
+		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+   			}
+		}
+	    for (var i=dest.options.length-1; i>=0; i--)
+		{
+			if (dest.options[i].selected)
+			{
+		       dest.options[i] = null;
+   			}
+		}
+	}
+	disableButtons(from,dest,add,remove);
+}
+
+function disableButtons(from,dest,add,remove)
+{
+	if (from.options.length > 0 )
+	{
+		add.disabled = 0;
+	}
+	else
+		add.disabled = 1;
+
+	if (dest.options.length > 0)
+		remove.disabled = 0;
+	else
+		remove.disabled = 1;
+}
+
+function selectAll(CONTROL)
+{
+	for(var i = 0;i < CONTROL.length;i++)
+    {
+		CONTROL.options[i].selected = true;
+	}
+}
+
+function deselectAll(CONTROL)
+{
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = false;
+	}
+}
+
+EOF;
 
 		//default required fields
 		$javascript 	.= 'function CheckFields() {
@@ -1553,7 +1683,9 @@ class directoryLibrary
 						}else{
 							return true;
 						}
-					}';
+					}
+		/* ]]> */
+		</script>';
 
 	    // initialize variables
 		$this->_objTpl->setVariable(array(
@@ -1561,6 +1693,12 @@ class directoryLibrary
 		));
     }
 
+	/**
+	 * check if googlemap is enabled
+	 *
+	 * @param string backend or frontend
+	 * @return boolean isGoogleMapEnabled
+	 */
     function _isGoogleMapEnabled($what = 'backend'){
     	global $objDatabase;
     	$what = ($what == 'backend') ? '_backend' : '';
