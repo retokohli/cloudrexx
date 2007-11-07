@@ -160,6 +160,8 @@ class settingsManager {
             'TXT_SEARCH_VISIBLE_CONTENT_ONLY' 	=> $_CORELANG['TXT_SEARCH_VISIBLE_CONTENT_ONLY'],
             'TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'=> $_CORELANG['TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'],
             'TXT_SYSTEM_DEFAULT_LANGUAGE_HELP' 	=> $_CORELANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'],
+            'TXT_GOOGLE_MAPS_API_KEY_HELP'      => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY_HELP'],
+            'TXT_GOOGLE_MAPS_API_KEY'           => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY'],
         ));
 
         $objResult = $objDatabase->Execute('SELECT setid,
@@ -196,6 +198,7 @@ class settingsManager {
             'SETTINGS_SEARCH_VISIBLE_CONTENT_OFF' => ($arrSettings['searchVisibleContentOnly'] == 'off') ? 'checked' : '',
             'SETTINGS_DETECT_BROWSER_LANGUAGE_ON' => ($arrSettings['languageDetection'] == 'on') ? 'checked' : '',
             'SETTINGS_DETECT_BROWSER_LANGUAGE_OFF'=> ($arrSettings['languageDetection'] == 'off') ? 'checked' : '',
+            'SETTINGS_GOOGLE_MAPS_API_KEY'        => htmlentities($arrSettings['googleMapsAPIKey'], ENT_QUOTES, CONTREXX_CHARSET),
         ));
     }
 
