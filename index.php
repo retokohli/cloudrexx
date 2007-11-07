@@ -1294,7 +1294,7 @@ switch ($section) {
         $objSupport = new support($page_content);
         $objTemplate->setVariable("CONTENT_TEXT", $objSupport->getPage());
         break;
-        
+
 //-------------------------------------------------------
 // Download Module
 //-------------------------------------------------------
@@ -1304,7 +1304,7 @@ switch ($section) {
 	    else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
 	    $objDownloadsModule = &new downloads($page_content);
 	    $objTemplate->setVariable('CONTENT_TEXT', $objDownloadsModule->getPage());
-	break; 
+	break;
 
 //-------------------------------------------------------
 // default case
