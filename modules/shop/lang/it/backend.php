@@ -533,7 +533,7 @@ $_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'] = "Ausgewählten Wert entfernen";
 $_ARRAYLANG['TXT_SHOP_WARNING_MULTIPLE_CATEGORIES_WITH_SAME_NAME'] = "Warnung: Mehr als eine Kategorie mit dem selben Namen gefunden!";
 $_ARRAYLANG['TXT_SHOP_CATEGORY_IMAGE'] = "Kategoriebild";
 $_ARRAYLANG['TXT_SHOP_CATEGORY_VIRTUAL'] = "Virtuell";
-$_ARRAYLANG['TXT_SHOP_CATEGORY_PARENT'] = "Einfügen in";
+$_ARRAYLANG['TXT_SHOP_CATEGORY_PARENT'] = "Übergeordnete Kategorie";
 $_ARRAYLANG['TXT_EDIT_PRODUCT_GROUP'] = "Produktegruppe bearbeiten";
 $_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD'] = "Fehler beim aktualisieren der Daten";
 ?>
