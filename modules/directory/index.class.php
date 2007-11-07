@@ -810,7 +810,7 @@ class rssDirectory extends directoryLibrary
 		));
 
 		if($this->_isGoogleMapEnabled('frontend')){
-			$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', ASCMS_MODULE_WEB_PATH.'/directory/template/module_directory_googlemap_include.html');
+			$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript','modules/directory/template/module_directory_googlemap_include.html');
 			$this->_objTpl->setVariable(array(
 				'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
 				'DIRECTORY_START_X'			=> 'null',
@@ -1416,7 +1416,7 @@ class rssDirectory extends directoryLibrary
 			}
 
 			if($this->_isGoogleMapEnabled('frontend')){
-				$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', ASCMS_MODULE_WEB_PATH.'/directory/template/module_directory_googlemap_include.html');
+				$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'modules/directory/template/module_directory_googlemap_include.html');
 				$this->_objTpl->setVariable(array(
 					'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
 					'DIRECTORY_START_X'			=> 'null',
@@ -1640,7 +1640,7 @@ class rssDirectory extends directoryLibrary
 
 
 			if($this->_isGoogleMapEnabled('frontend')){
-				$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', ASCMS_MODULE_WEB_PATH.'/directory/template/module_directory_googlemap_include.html');
+				$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'modules/directory/template/module_directory_googlemap_include.html');
 				$this->_objTpl->setVariable(array(
 					'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
 					'DIRECTORY_START_X'			=> 'null',
