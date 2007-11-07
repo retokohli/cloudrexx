@@ -1124,7 +1124,7 @@ class rssDirectory extends directoryLibrary
 						$content = '<a href="'.$this->mediaWebPath."uploads/".$arrFeedContent[$fieldName].'" target="_blank">'.$arrFeedContent[$fieldName].'</a>&nbsp;<i>('.$info.' KB)</i>';
 					}
 
-					if ($fieldName == "googlemap"){
+					if (strtolower($fieldName) == "googlemap"){
 
 						$inputValueField = '<input type="hidden" name="inputValue[lon]" value="'.$arrFeedContent["lon"].'" style="width:22px;" maxlength="3">';
 		    		 	$inputValueField .= '<input type="hidden" name="inputValue[lon_fraction]" value="'.$arrFeedContent["lon_fraction"].'" style="width:92px;" maxlength="15"> ';
