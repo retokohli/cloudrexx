@@ -8,13 +8,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-$_ARRAYLANG['TXT_DIR_GEO_SUCCESS'] = "Adresse gefunden!";
-$_ARRAYLANG['TXT_DIR_GEO_MISSING'] = "Adresse fehlt oder hat keinen Wert";
-$_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'] = "Adresse unbekannt";
-$_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'] = "Adresse ist nicht verfügbar";
-$_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'] = "Falscher Google API Key";
-$_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'] = "Adresse nicht gefunden";
-
 /**
  * Includes
  */
@@ -23,7 +16,6 @@ require_once ASCMS_MODULE_PATH . '/directory/lib/xmlfeed.class.php';
 require_once ASCMS_LIBRARY_PATH . '/FRAMEWORK/File.class.php';
 require_once ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php';
 require_once ASCMS_CORE_PATH.'/'.'settings.class.php';
-
 
 /**
  * Directory
@@ -1747,7 +1739,7 @@ class rssDirectory extends directoryLibrary
 		if($this->_isGoogleMapEnabled()){
 			$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'module_directory_googlemap_include.html');
 		}
-		
+
 		$this->pageTitle = $_ARRAYLANG['TXT_DIR_ADD_ENTREE'];
 
 		//get inputfields
@@ -1795,7 +1787,7 @@ class rssDirectory extends directoryLibrary
 			'DIRECTORY_MAP_LAT_BACKEND'		=> $this->googleMapStartPoint['lat'],
 			'DIRECTORY_MAP_ZOOM_BACKEND'	=> $this->googleMapStartPoint['zoom'],
 		));
-		
+
 		if($this->settings['levels']['value']=='1'){
 			$this->_objTpl->parse('levels');
 		}else{
@@ -2096,7 +2088,7 @@ class rssDirectory extends directoryLibrary
 				$objResult->MoveNext();
 			}
 		}
-	
+
 		if($premium == 1){
 			$premium = "checked";
 		}else{
@@ -2112,14 +2104,14 @@ class rssDirectory extends directoryLibrary
 	    // initialize variables
 		$this->_objTpl->loadTemplateFile('module_directory_entry_edit.html',true,true);
 		$this->pageTitle =  $_ARRAYLANG['TXT_DIR_EDIT_FILE'];
-			
+
 		//get inputfields
 		$this->getInputfields("", "edit", $id, "backend");
 
 		if($this->_isGoogleMapEnabled()){
 			$this->_objTpl->addBlockfile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'module_directory_googlemap_include.html');
 		}
-		
+
 		$this->_objTpl->setVariable(array(
 		    'TXT_NAME' 					=> $_ARRAYLANG['TXT_DIR_NEW_ENTREE'],
 		    'TXT_EDIT_ENTREE' 			=> $_ARRAYLANG['TXT_DIRECTORY_EDIT_FEED'],
@@ -2945,20 +2937,20 @@ class rssDirectory extends directoryLibrary
 							break;
 						case 'googlemap':
 							$googleMapIsEnabled = true;
-							break;							
+							break;
 						default:
 					}
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='".contrexx_addslashes($value)."' WHERE id=".intval($id)); 
-				}			
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='".contrexx_addslashes($value)."' WHERE id=".intval($id));
+				}
 				if($googleMapIsEnabled && $addressElements == 4){
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='country'");				
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='zip'");				
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='street'");				
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='city'");				
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='country'");
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='zip'");
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='street'");
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='city'");
 				}elseif (!$googleMapIsEnabled && $addressElements < 4){
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' WHERE name='googlemap'");				
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' WHERE name='googlemap'");
 				}elseif ($googleMapIsEnabled && $addressElements < 4){
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' WHERE name='googlemap'");				
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' WHERE name='googlemap'");
 				}
 			}
 
@@ -2979,20 +2971,20 @@ class rssDirectory extends directoryLibrary
 							break;
 						case 'googlemap':
 							$googleMapIsEnabled = true;
-							break;							
+							break;
 						default:
 					}
 					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='".contrexx_addslashes($value)."' WHERE id=".intval($id));
 				}
 				if($googleMapIsEnabled && $addressElements == 4){
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='country'");				
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='zip'");				
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='street'");				
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='city'");				
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='country'");
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='zip'");
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='street'");
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='city'");
 				}elseif (!$googleMapIsEnabled && $addressElements < 4){
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='0' WHERE name='googlemap'");				
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='0' WHERE name='googlemap'");
 				}elseif ($googleMapIsEnabled && $addressElements < 4){
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' WHERE name='googlemap'");				
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' WHERE name='googlemap'");
 				}
 			}
 
