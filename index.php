@@ -661,6 +661,7 @@ if (file_exists($modulespath)) {
 //-------------------------------------------------------
 // get latest podcast entries
 //-------------------------------------------------------
+$podcastFirstBlock = false;
 if ($_CONFIG['podcastHomeContent'] == '1') {
 	$modulespath = "modules/podcast/homeContent.class.php";
 	if (file_exists($modulespath)) {
@@ -693,13 +694,13 @@ if ($_CONFIG['podcastHomeContent'] == '1') {
 			$page_template = str_replace('{PODCAST_FILE}', $objPodcast->getContent(), $page_template);
 		}
 		if ($podcastHomeContentInThemesPage) {
-			$blockFirst = false;
+			$podcastFirstBlock = false;
 			if(strpos($_SERVER['REQUEST_URI'], 'section=podcast')){
 				$podcastBlockPos = strpos($themesPages['index'], '{PODCAST_FILE}');
 				$contentPos 	 = strpos($themesPages['index'], '{CONTENT_FILE}');
-				$blockFirst 	 = $podcastBlockPos < $contentPos ? true : false;
+				$podcastFirstBlock 	 = $podcastBlockPos < $contentPos ? true : false;
 			}
-			$themesPages['index'] = str_replace('{PODCAST_FILE}', $objPodcast->getContent($blockFirst), $themesPages['index']);
+			$themesPages['index'] = str_replace('{PODCAST_FILE}', $objPodcast->getContent($podcastFirstBlock), $themesPages['index']);
 		}
 
 	}
@@ -1199,7 +1200,7 @@ switch ($section) {
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objPodcast = &new podcast($page_content);
-        $objTemplate->setVariable("CONTENT_TEXT", $objPodcast->getPage($blockFirst));
+        $objTemplate->setVariable("CONTENT_TEXT", $objPodcast->getPage($podcastFirstBlock));
         break;
 
 //-------------------------------------------------------

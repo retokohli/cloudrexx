@@ -13,8 +13,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 require_once ASCMS_MODULE_PATH.'/podcast/lib/podcastLib.class.php';
-$_ARRAYLANG['TXT_PODCAST_PLAY'] = "Abspielen";
-$_ARRAYLANG['TXT_PODCAST_MEDIA_VIEWS'] = "Aufrufe";
 
 class podcast extends podcastLib
 {
@@ -55,8 +53,24 @@ class podcast extends podcastLib
 	*/
 	function getPage($blockFirst = false)
 	{
-		global $_ARRAYLANG, $_CONFIG, $_LANGID;
+		switch($_GET['cmd']){
+			case 'selectSource':
+				$this->_selectMediumSource();
+			break;
+			case 'modifyMedium':
+				$this->_modifyMedium();
+			break;
+			default:
+				$this->showMedium($blockFirst);
+		}
 
+
+
+		return $this->_objTpl->get();
+	}
+
+	function showMedium($blockFirst = false){
+		global $_ARRAYLANG, $_CONFIG, $_LANGID;
 		$categoryId = isset($_REQUEST['cid']) ? (intval($_REQUEST['cid']) == 0 ? false : intval($_REQUEST['cid'])) : false;
 		$mediumId = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 		if($mediumId > 0){
@@ -185,8 +199,7 @@ EOF;
 EOF;
 
 		$this->_objTpl->setVariable('PODCAST_JAVASCRIPT', $podcastJavascript);
-
-		return $this->_objTpl->get();
 	}
+
 }
 ?>

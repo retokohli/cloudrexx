@@ -33,10 +33,10 @@
 						<input type="text" value="{PODCAST_REMOTE_SOURCE}" name="podcast_medium_remote_source" style="width:435px;" />
 					</div>
 					<div id="podcast_medium_source_youtube_box" style="display:{PODCAST_SELECT_YOUTUBE_MEDIUM_BOX};">
-						<input onkeyup="checkYoutubeSource();" type="text" value="{PODCAST_YOUTUBE_SOURCE}" name="podcast_medium_youtube_source" id="podcast_medium_youtube_source" style="width:435px;" />
-						<img alt="{TXT_PODCAST_YOUTUBE_ID_INVALID}" title="{TXT_PODCAST_YOUTUBE_ID_INVALID}" src="images/icons/delete.gif" id="youtube_invalid" style="vertical-align: middle;" />
-						<img alt="{TXT_PODCAST_YOUTUBE_ID_VALID}" title="{TXT_PODCAST_YOUTUBE_ID_VALID}" src="images/icons/check.gif" id="youtube_valid" style="vertical-align: middle; display: none;" />
-						<span id="youtubeIDverification"></span>
+						<img alt="{TXT_PODCAST_YOUTUBE_ID_INVALID}" title="{TXT_PODCAST_YOUTUBE_ID_INVALID}" src="images/icons/delete.gif" id="youtube_invalid" style="vertical-align: middle; margin-bottom: 2px;" />
+						<img alt="{TXT_PODCAST_YOUTUBE_ID_VALID}" title="{TXT_PODCAST_YOUTUBE_ID_VALID}" src="images/icons/check.gif" id="youtube_valid" style="vertical-align: middle; display: none; margin-bottom: 2px;" />
+						<span id="youtubeIDverification"></span><br />
+						<textarea onkeyup="checkYoutubeSource();" name="podcast_medium_youtube_source" id="podcast_medium_youtube_source" style="width:635px; height: 172px;" />{PODCAST_YOUTUBE_SOURCE}</textarea>
 						<input id="youtubeID" name="youtubeID" type="hidden" />
 					</div>
 				</td>
@@ -68,7 +68,7 @@ var selectSourceInit = function(){
 	youtubeIdCharacters = '{PODCAST_YOUTUBE_ID_CHARACTERS}'; //Allowed characters in youtube ID							   vvvvvvvvvvv
 	youtubeIdLength = {PODCAST_YOUTUBE_ID_LENGTH}; //Length of youtube ID (for validation, e.g. http://youtube.com/watch?v=ZqpWFzLWWBQ&mode=user&search=)
                                                                                                      //                    ^^^^^^^^^^^
-	strRegex = ".*[\\?&]v=("+youtubeIdCharacters+"{"+youtubeIdLength+"}).*";
+	strRegex = "{PODCAST_YOUTUBE_REGEX_JS}";
 	urlRegex = new RegExp(strRegex, "i");
 
 	elInputSubmit        = document.getElementById("srcSubmit");

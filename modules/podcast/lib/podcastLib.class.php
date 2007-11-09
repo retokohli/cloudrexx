@@ -31,12 +31,71 @@ class podcastLib
 	 */
 	var $_arrSettings = array();
 
+	/**
+	 * The default thumbnail picture
+	 *
+	 * @access private
+	 * @var string path to the default thumbnail, relative to the backend admin path
+	 */
+	var $_defaultThumbnail = 'images/content/podcast/no_picture.gif';
+
+	/**
+	 * allowed characters in a YouTube Video ID (regex class)
+	 *
+	 * @access private
+	 * @var string allowed characters in a YouTube Video ID
+	 */
+	var $_youTubeAllowedCharacters = '[a-zA-Z0-9_-]';
+
+	/**
+	 * length of a YouTube Video ID used in the ID regex
+	 *
+	 * @access private
+	 * @var string length of a YouTube Video ID
+	 */
+	var $_youTubeIdLenght = '11';
+
+	/**
+	 * Youtube ID Regex
+	 *
+	 * @access private
+	 * @var string
+	 */
+	var $_youTubeIdRegex;
+
+	/**
+	 * Youtube ID Regex for Javascript
+	 *
+	 * @access private
+	 * @var string
+	 */
+	var $_youTubeIdRegexJS;
+
+	/**
+	 * YouTube default flashobject width
+	 *
+	 * @access private
+	 * @var int
+	 */
+	var $_youTubeDefaultWidth = 425;
+
+	/**
+	 * YouTube default flashobject height
+	 *
+	 * @access private
+	 * @var int
+	 */
+	var $_youTubeDefaultHeight = 350;
+
 	function podcastLib(){
 		$this->__construct();
 	}
 
 	function __construct(){
 		$this->_arrSettings = $this->_getSettings();
+    	$this->_youTubeIdRegex 	 = "#.*[\?&/]v[=/](".$this->_youTubeAllowedCharacters."{".$this->_youTubeIdLenght."}).*#";
+    	//youtubeIdCharacters and youtubeIdLength are JS variables.
+    	$this->_youTubeIdRegexJS = '.*[\\?&/]v[=/]("+youtubeIdCharacters+"{"+youtubeIdLength+"}).*';
 	}
 
 	function _getMedia($ofCategory = false, $isActive = false, $limit = 0)
@@ -798,5 +857,552 @@ class podcastLib
 EOF;
 	}
 
+	/**
+	 * select medium source
+	 *
+	 * @return void
+	 */
+	function _selectMediumSource()
+	{
+		global $_ARRAYLANG;
+		$youtubeIdError = false;
+		if (isset($_POST['podcast_select_source']) && in_array($_POST['podcast_medium_source_type'], array('local', 'remote', 'youtube'))) {
+			$sourceType = $_POST['podcast_medium_source_type'];
+			if ($sourceType == 'local') {
+				$source = isset($_POST['podcast_medium_local_source']) ? $_POST['podcast_medium_local_source'] : '';
+			} elseif($sourceType == 'remote') {
+				$source = isset($_POST['podcast_medium_remote_source']) ? $_POST['podcast_medium_remote_source'] : '';
+			} else{
+				$source = isset($_POST['podcast_medium_youtube_source']) ? $_POST['podcast_medium_youtube_source'] : '';
+				preg_match("#".$this->_youTubeAllowedCharacters."{".$this->_youTubeIdLenght."}#", $_POST['youtubeID'], $match);
+				if(strlen($match[0]) != $this->_youTubeIdLenght){
+					$youtubeIdError = true;
+				}
+			}
+
+			if (!empty($source) && !$youtubeIdError) {
+				return $this->_modifyMedium();
+			} elseif ($youtubeIdError){
+				$this->_strErrMessage = $_ARRAYLANG['TXT_PODCAST_YOUTUBE_SPECIFY_ID'];
+			} else {
+				$this->_strErrMessage = $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_ERR_MSG'];
+			}
+		} else {
+			$sourceType = 'local';
+			$source = '';
+		}
+
+		if($_REQUEST['section'] != 'podcast'){
+			$this->_objTpl->loadTemplatefile('module_podcast_select_medium_source.html');
+			$this->_pageTitle = $_ARRAYLANG['TXT_PODCAST_ADD_MEDIUM'];
+		}
+
+		$this->_objTpl->setVariable(array(
+			'TXT_PODCAST_SELECT_SOURCE'		=> $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE'],
+			'TXT_PODCAST_SELECT_SOURCE_TXT'	=> $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'],
+			'TXT_PODCAST_LOCAL'				=> $_ARRAYLANG['TXT_PODCAST_LOCAL'],
+			'TXT_PODCAST_ADD_MEDIUM'		=> $_ARRAYLANG['TXT_PODCAST_ADD_MEDIUM'],
+			'TXT_PODCAST_STEP'				=> $_ARRAYLANG['TXT_PODCAST_STEP'],
+			'TXT_PODCAST_REMOTE'			=> $_ARRAYLANG['TXT_PODCAST_REMOTE'],
+			'TXT_PODCAST_YOUTUBE'			=> $_ARRAYLANG['TXT_PODCAST_YOUTUBE'],
+			'TXT_PODCAST_BROWSE'			=> $_ARRAYLANG['TXT_PODCAST_BROWSE'],
+			'TXT_PODCAST_NEXT'				=> $_ARRAYLANG['TXT_PODCAST_NEXT'],
+			'TXT_PODCAST_YOUTUBE_ID_VALID'	=> $_ARRAYLANG['TXT_PODCAST_YOUTUBE_ID_VALID'],
+			'TXT_PODCAST_YOUTUBE_ID_INVALID'=> $_ARRAYLANG['TXT_PODCAST_YOUTUBE_ID_INVALID'],
+			'TXT_PODCAST_YOUTUBE_SPECIFY_ID'=> $_ARRAYLANG['TXT_PODCAST_YOUTUBE_SPECIFY_ID']
+		));
+
+		$this->_objTpl->setVariable(array(
+			'PODCAST_SELECT_LOCAL_MEDIUM'		=> $sourceType == 'local' ? 'checked="checked"' : '',
+			'PODCAST_SELECT_LOCAL_MEDIUM_BOX'	=> $sourceType == 'local' ? 'block' : 'none',
+			'PODCAST_SELECT_REMOTE_MEDIUM'		=> $sourceType == 'remote' ? 'checked="checked"' : '',
+			'PODCAST_SELECT_REMOTE_MEDIUM_BOX'	=> $sourceType == 'remote' ? 'block' : 'none',
+			'PODCAST_SELECT_YOUTUBE_MEDIUM'		=> $sourceType == 'youtube' ? 'checked="checked"' : '',
+			'PODCAST_SELECT_YOUTUBE_MEDIUM_BOX'	=> $sourceType == 'youtube' ? 'block' : 'none',
+			'PODCAST_LOCAL_SOURCE'				=> $sourceType == 'local' ? $source : '',
+			'PODCAST_REMOTE_SOURCE'				=> $sourceType == 'remote' ? $source : 'http://',
+			'PODCAST_YOUTUBE_SOURCE'			=> $sourceType == 'youtube' ? $source : '',
+			'PODCAST_YOUTUBE_ID_CHARACTERS'		=> $this->_youTubeAllowedCharacters,
+			'PODCAST_YOUTUBE_ID_LENGTH'			=> $this->_youTubeIdLenght,
+			'PODCAST_YOUTUBE_REGEX_JS'			=> $this->_youTubeIdRegexJS
+		));
+	}
+
+	function _modifyMedium()
+	{
+		global $_ARRAYLANG, $_CONFIG, $objLanguage;
+		if(is_null($objLanguage)){
+			$objLanguage = &new FWLanguage();
+		}
+		$mediumId = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+		$mediumTitle = '';
+		$mediumYoutubeID = '';
+		$mediumAuthor = '';
+		$mediumDescription = '';
+		$mediumSource = '';
+		$mediumThumbnail = '';
+		$mediumTemplate = '';
+		$mediumWidth = 0;
+		$mediumHeight = 0;
+		$mediumPlaylenght = 0;
+		$mediumSize = 0;
+		$mediumStatus = 1;
+		$mediumCategories = array();
+		$saveStatus = true;
+
+		if($_REQUEST['section'] != 'podcast'){
+			//load backend template
+			$this->_objTpl->loadTemplatefile('module_podcast_modify_medium.html');
+		}else{
+			//load frontend content as template
+			global $objDatabase;
+			$query = "	SELECT `content`
+						FROM `".DBPREFIX."content`
+						WHERE `id` = (
+							SELECT `catid`
+							FROM `".DBPREFIX."content_navigation`
+							WHERE `cmd` = 'modifyMedium'
+							AND module = (
+								SELECT `id`
+								FROM `".DBPREFIX."modules`
+								WHERE `name` = 'podcast'
+							)
+						)";
+			$objRS = $objDatabase->SelectLimit($query, 1);
+			//overwrite template, since _modifyMedium is called in the same request as the _selectMediumSource
+			$this->_objTpl->setTemplate($objRS->fields['content']);
+		}
+
+		$this->_pageTitle = $mediumId > 0 ? $_ARRAYLANG['TXT_PODCAST_MODIFY_MEDIUM'] : $_ARRAYLANG['TXT_PODCAST_ADD_MEDIUM'];
+
+		$this->_objTpl->setVariable(array(
+			'TXT_PODCAST_TITLE'				=> $_ARRAYLANG['TXT_PODCAST_TITLE'],
+			'TXT_PODCAST_DESCRIPTION'		=> $_ARRAYLANG['TXT_PODCAST_DESCRIPTION'],
+			'TXT_PODCAST_SOURCE'			=> $_ARRAYLANG['TXT_PODCAST_SOURCE'],
+			'TXT_PODCAST_TEMPLATE'			=> $_ARRAYLANG['TXT_PODCAST_TEMPLATE'],
+			'TXT_PODCAST_DIMENSIONS'		=> $_ARRAYLANG['TXT_PODCAST_DIMENSIONS'],
+			'TXT_PODCAST_PIXEL_WIDTH'		=> $_ARRAYLANG['TXT_PODCAST_PIXEL_WIDTH'],
+			'TXT_PODCAST_PIXEL_HEIGHT'		=> $_ARRAYLANG['TXT_PODCAST_PIXEL_HEIGHT'],
+			'TXT_PODCAST_CATEGORIES'		=> $_ARRAYLANG['TXT_PODCAST_CATEGORIES'],
+			'TXT_PODCAST_STATUS'			=> $_ARRAYLANG['TXT_PODCAST_STATUS'],
+			'TXT_PODCAST_ACTIVE'			=> $_ARRAYLANG['TXT_PODCAST_ACTIVE'],
+			'TXT_PODCAST_SAVE'				=> $_ARRAYLANG['TXT_PODCAST_SAVE'],
+			'TXT_PODCAST_PLAYLENGHT'		=> $_ARRAYLANG['TXT_PODCAST_PLAYLENGHT'],
+			'TXT_PODCAST_PLAYLENGHT_FORMAT'	=> $_ARRAYLANG['TXT_PODCAST_PLAYLENGHT_FORMAT'],
+			'TXT_PODCAST_FILESIZE'			=> $_ARRAYLANG['TXT_PODCAST_FILESIZE'],
+			'TXT_PODCAST_BYTES'				=> $_ARRAYLANG['TXT_PODCAST_BYTES'],
+			'TXT_PODCAST_AUTHOR'			=> $_ARRAYLANG['TXT_PODCAST_AUTHOR'],
+			'TXT_PODCAST_EDIT_OR_ADD_IMAGE'	=> $_ARRAYLANG['TXT_PODCAST_EDIT_OR_ADD_IMAGE'],
+			'TXT_PODCAST_THUMBNAIL'			=> $_ARRAYLANG['TXT_PODCAST_THUMBNAIL'],
+			'TXT_PODCAST_SHOW_FILE'			=> $_ARRAYLANG['TXT_PODCAST_SHOW_FILE']
+		));
+
+		if (isset($_POST['podcast_medium_save'])) {
+			if (isset($_POST['podcast_medium_title'])) {
+				$mediumTitle = trim($_POST['podcast_medium_title']);
+			}
+			if (isset($_POST['podcast_medium_author'])) {
+				$mediumAuthor = trim($_POST['podcast_medium_author']);
+			}
+			if (isset($_POST['podcast_medium_description'])) {
+				$mediumDescription = trim($_POST['podcast_medium_description']);
+			}
+			if (isset($_POST['podcast_medium_template'])) {
+				$mediumTemplate = intval($_POST['podcast_medium_template']);
+			}
+
+			$mediumWidth = isset($_POST['podcast_medium_width']) ? intval($_POST['podcast_medium_width']) : 0;
+			$mediumHeight = isset($_POST['podcast_medium_height']) ? intval($_POST['podcast_medium_height']) : 0;
+			$mediumSize = isset($_POST['podcast_medium_filesize']) ? intval($_POST['podcast_medium_filesize']) : 0;
+
+			if (!empty($_POST['podcast_medium_playlenght'])) {
+				if (preg_match('/^(([0-9]*):)?(([0-9]*):)?([0-9]*)$/', $_POST['podcast_medium_playlenght'], $arrPlaylenght)) {
+					$minutes = empty($arrPlaylenght[3]) ? $arrPlaylenght[2] : $arrPlaylenght[4];
+					$hours = empty($arrPlaylenght[3]) ? $arrPlaylenght[4] : $arrPlaylenght[2];
+					$mediumPlaylenght = $hours * 3600 + $minutes * 60 + $arrPlaylenght[5];
+				}
+			}
+
+			if (isset($_POST['podcast_medium_source'])) {
+				$mediumSource = trim($_POST['podcast_medium_source']);
+			}
+
+			if (isset($_POST['podcast_medium_thumbnail'])) {
+				$mediumThumbnail = trim($_POST['podcast_medium_thumbnail']);
+			}
+
+			if (isset($_POST['podcast_youtubeID'])) {
+				$mediumYoutubeID = trim($_POST['podcast_youtubeID']);
+				$mediumSize = 0;
+				$mediumTemplate = $this->_getYoutubeTemplate();
+			}
+			$mediumStatus = $_REQUEST['section'] != 'podcast'
+							? (isset($_POST['podcast_medium_status']) ? intval($_POST['podcast_medium_status']) : 0)
+							: ($this->_arrSettings['auto_validate'] ? 1 : 0);
+
+			if (isset($_POST['podcast_medium_associated_category'])) {
+				foreach ($_POST['podcast_medium_associated_category'] as $categoryId => $status) {
+					if (intval($status) == 1) {
+						array_push($mediumCategories, intval($categoryId));
+					}
+				}
+			}
+
+			if (empty($mediumTitle)) {
+				$saveStatus = false;
+				$this->_strErrMessage .= $_ARRAYLANG['TXT_PODCAST_EMPTY_MEDIUM_TITLE_MSG']."<br />\n";
+			} /*elseif (!$this->_isUniqueMediumTitle($mediumTitle, $mediumId)) {
+				$saveStatus = false;
+				$this->_strErrMessage .= $_ARRAYLANG['TXT_PODCAST_DUPLICATE_MEDIUM_TITLE_MSG']."<br />\n";
+			}*/
+
+			if (empty($mediumTemplate)) {
+				$saveStatus = false;
+				$this->_strErrMessage .= $_ARRAYLANG['TXT_PODCAST_EMPTY_MEDIUM_TEMPLATE_MSG']."<br />\n";
+			}
+
+			if ($saveStatus) {
+				if ($mediumId > 0 && $_REQUEST['section'] != 'podcast') {
+					if ($this->_updateMedium($mediumId, $mediumTitle, $mediumYoutubeID, $mediumAuthor, $mediumDescription, $mediumThumbnail, $mediumTemplate, $mediumWidth, $mediumHeight, $mediumPlaylenght, $mediumSize, $mediumCategories, $mediumStatus)) {
+						$this->_strOkMessage = $_ARRAYLANG['TXT_PODCAST_MEDIUM_ADDED_SUCCESSFULL'];
+						$objCache = &new Cache();
+						$objCache->deleteAllFiles();
+						$this->_createRSS();
+						return $this->_media();
+					} else {
+						$this->_strErrMessage = $_ARRAYLANG['TXT_PODCAST_MEDIUM_ADDED_FAILED'];
+					}
+				} else {
+					if ($this->_addMedium($mediumTitle, $mediumYoutubeID, $mediumAuthor, $mediumDescription, $mediumSource, $mediumThumbnail, $mediumTemplate, $mediumWidth, $mediumHeight, $mediumPlaylenght, $mediumSize, $mediumCategories, $mediumStatus)) {
+						$objCache = &new Cache();
+						$objCache->deleteAllFiles();
+						$this->_createRSS();
+
+						if($_REQUEST['section'] != 'podcast'){
+							$this->_strOkMessage = $_ARRAYLANG['TXT_PODCAST_MEDIUM_UPDATED_SUCCESSFULL'];
+							return $this->_media();
+						}else{
+							if($this->_objTpl->blockExists('podcastThanks')){
+								$this->_objTpl->touchBlock('podcastThanks');
+							}
+
+							if($this->_objTpl->blockExists('podcastForm')){
+								$this->_objTpl->hideBlock('podcastForm');
+							}
+							return true;
+						}
+					} else {
+						$this->_strErrMessage = $_ARRAYLANG['TXT_PODCAST_MEDIUM_UPDATED_FAILED'];
+					}
+				}
+			}
+		} elseif ($mediumId > 0 && ($arrMedium = &$this->_getMedium($mediumId)) !== false && $_REQUEST['section'] != 'podcast') {
+			$mediumTitle = $arrMedium['title'];
+			$mediumAuthor = $arrMedium['author'];
+			$mediumDescription = $arrMedium['description'];
+			$mediumYoutubeID = $arrMedium['youtube_id'];
+			$mediumSource = $arrMedium['source'];
+			$mediumThumbnail = $arrMedium['thumbnail'];
+			$mediumTemplate = $arrMedium['template_id'];
+			$mediumWidth = $arrMedium['width'];
+			$mediumHeight = $arrMedium['height'];
+			$mediumStatus = $arrMedium['status'];
+			$mediumCategories = $arrMedium['category'];
+			$mediumPlaylenght = $arrMedium['playlenght'];
+			$mediumSize = $arrMedium['size'];
+		} elseif ($mediumId == 0) {
+			$mediumSource = '';
+			if (isset($_POST['podcast_medium_source_type']) && in_array($_POST['podcast_medium_source_type'], array('local', 'remote', 'youtube'))) {
+				if ($_POST['podcast_medium_source_type'] == 'local') {
+					if (isset($_POST['podcast_medium_local_source'])) {
+						if (($hasOffsetPath = strpos($_POST['podcast_medium_local_source'], ASCMS_PATH_OFFSET)) === 0) {
+							$mediumSource =  ASCMS_PROTOCOL.'://%domain%%offset%'.substr($_POST['podcast_medium_local_source'], strlen(ASCMS_PATH_OFFSET));
+						} else {
+							$mediumSource =  ASCMS_PROTOCOL.'://%domain%%offset%'.$_POST['podcast_medium_local_source'];
+						}
+					}
+				} elseif ($_POST['podcast_medium_source_type'] == 'youtube') {
+				    $mediumYoutubeID = contrexx_addslashes(trim($_POST['youtubeID']));
+    				$mediumSource = 'http://youtube.com/v/'.$mediumYoutubeID;
+				} elseif (isset($_POST['podcast_medium_remote_source'])) {
+					$mediumSource = $_POST['podcast_medium_remote_source'];
+				}
+			}
+
+			if (empty($mediumSource)) {
+				return $this->_selectMediumSource();
+			}
+
+			if(!empty($mediumYoutubeID)){
+				$mediumTitle = $this->_getYoutubeTitle($mediumYoutubeID);
+				$mediumThumbnail = ASCMS_PATH_OFFSET.$this->_saveYoutubeThumbnail($mediumYoutubeID);
+				$mediumTemplate = &$this->_getYoutubeTemplate();
+				$mediumDescription = &$this->_getYoutubeDescription($mediumYoutubeID);
+				$mediumWidth = $this->_youTubeDefaultWidth;
+				$mediumSize = 0;
+				$mediumHeight = $this->_youTubeDefaultHeight;
+			}else{
+				$mediumTitle = ($lastSlash = strrpos($mediumSource, '/')) !== false ? substr($mediumSource, $lastSlash+1) : $mediumSource;
+				$mediumTemplate = &$this->_getSuitableTemplate($mediumSource);
+				$dimensions = isset($_POST['podcast_medium_local_source']) ? @getimagesize(ASCMS_PATH.$_POST['podcast_medium_local_source']) : false;
+				if ($dimensions) {
+					$mediumWidth = $dimensions[0];
+					$mediumHeight = $dimensions[1];
+				} else {
+					$mediumWidth = $this->_arrSettings['default_width'];
+					$mediumHeight = $this->_arrSettings['default_height'];
+				}
+				$mediumSize = isset($_POST['podcast_medium_local_source']) ? filesize(ASCMS_PATH.$_POST['podcast_medium_local_source']) : 0;
+				$mediumSource = htmlentities(str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $mediumSource), ENT_QUOTES, CONTREXX_CHARSET);
+			}
+		}
+
+		$this->_objTpl->setVariable(array(
+			'PODCAST_MODIFY_TITLE'				=> $mediumId > 0 ? $_ARRAYLANG['TXT_PODCAST_MODIFY_MEDIUM'] : $_ARRAYLANG['TXT_PODCAST_ADD_MEDIUM'].' ('.$_ARRAYLANG['TXT_PODCAST_STEP'].' 2: '.$_ARRAYLANG['TXT_PODCAST_CONFIG_MEDIUM'].')',
+			'PODCAST_MEDIUM_ID'					=> $mediumId,
+			'PODCAST_MEDIUM_TITLE'				=> htmlentities($mediumTitle, ENT_QUOTES, CONTREXX_CHARSET),
+			'PODCAST_MEDIUM_AUTHOR'				=> htmlentities($mediumAuthor, ENT_QUOTES, CONTREXX_CHARSET),
+			'PODCAST_MEDIUM_DESCRIPTION'		=> htmlentities($mediumDescription, ENT_QUOTES, CONTREXX_CHARSET),
+			'PODCAST_MEDIUM_SOURCE'				=> $mediumSource,
+			'PODCAST_MEDIUM_SOURCE_URL'			=> htmlentities($mediumSource, ENT_QUOTES, CONTREXX_CHARSET),
+			'PODCAST_MEDIUM_TEMPLATE_MENU'		=> $this->_getTemplateMenu($mediumTemplate, 'name="podcast_medium_template" style="width:450px;"'),
+			'PODCAST_MEDIUM_WIDTH'				=> $mediumWidth,
+			'PODCAST_MEDIUM_HEIGHT'				=> $mediumHeight,
+			'PODCAST_MEDIUM_PLAYLENGHT'			=> $this->_getShortPlaylenghtFormatOfTimestamp($mediumPlaylenght),
+			'PODCAST_MEDIUM_FILESIZE'			=> $mediumSize,
+			'PODCAST_MEDIUM_THUMBNAIL_SRC'		=> !empty($mediumThumbnail) ? $mediumThumbnail : $this->_noThumbnail,
+			'PODCAST_MEDIUM_STATUS'				=> $mediumStatus == 1 ? 'checked="checked"' : '',
+			'PODCAST_MEDIUM_YOUTUBE_DISABLED'	=> !empty($mediumYoutubeID) ? 'disabled="disabled"' : '',
+			'PODCAST_MEDIUM_YOUTUBE_ID'			=> !empty($mediumYoutubeID) ? $mediumYoutubeID : ''
+		));
+
+		$arrCategories = &$this->_getCategories();
+		$categoryNr = 0;
+		$arrLanguages = &$objLanguage->getLanguageArray();
+
+		foreach ($arrCategories as $categoryId => $arrCategory) {
+			$column = $categoryNr % 3;
+			$arrCatLangIds = &$this->_getLangIdsOfCategory($categoryId);
+			array_walk($arrCatLangIds, create_function('&$cat, $k, $arrLanguages', '$cat = $arrLanguages[$cat]["lang"];'), $arrLanguages);
+			$arrCategory['title'] .= ' ('.implode(', ', $arrCatLangIds).')';
+
+			$this->_objTpl->setVariable(array(
+				'PODCAST_CATEGORY_ID'					=> $categoryId,
+				'PODCAST_CATEGORY_ASSOCIATED' 			=> in_array($categoryId, $mediumCategories) ? 'checked="checked"' : '',
+				'PODCAST_SHOW_MEDIA_OF_CATEGORY_TXT'	=> sprintf($_ARRAYLANG['TXT_PODCAST_SHOW_MEDIA_OF_CATEGORY'], $arrCategory['title']),
+				'PODCAST_CATEGORY_NAME'					=> $arrCategory['title']
+			));
+			$this->_objTpl->parse('podcast_medium_associated_category_'.$column);
+
+			$categoryNr++;
+		}
+	}
+
+
+	/**
+	 * saves the thumbnail preview of the specified youtube video
+	 *
+	 * @param string $youTubeID youtube video ID
+	 * @return string path to the newly created thumbnail picture
+	 */
+	function _saveYoutubeThumbnail($youTubeID)
+	{
+		$httpRequest = '';
+		$response = '';
+		$mediumTitle = '';
+		$s = @fsockopen('img.youtube.com', 80, $errno, $errmsg, 5);
+		if(is_resource($s)){
+			$httpRequest = 	"GET /vi/%s/default.jpg HTTP/1.1\r\n".
+							"Host: img.youtube.com\r\n".
+							"User-Agent: ".$_SERVER['HTTP_USER_AGENT']."\r\n".
+							"Accept: ".$_SERVER['HTTP_ACCEPT']."\r\n".
+							"Accept-Language: ".$_SERVER['HTTP_ACCEPT_LANGUAGE']."\r\n".
+							"Accept-Encoding: \r\n".
+							"Accept-Charset: ".$_SERVER['HTTP_ACCEPT_CHARSET'].";q=0.7,*\r\n".
+							"Cache-Control: max-age=0\r\n".
+							"Connection: close\r\n\r\n";
+			fwrite($s, sprintf($httpRequest, $youTubeID));
+			fflush($s);
+
+			$response = fread($s, 512);
+			preg_match('#Content-Length: ([0-9]+)#', $response, $match);
+			$contentLength = $match[1];
+			while(!feof($s)){
+				$response .= fread($s, 512);
+			}
+			@fclose($s);
+			$response = substr($response, -$contentLength);
+			$mediumThumbnail = '/images/content/podcast/youtube_thumbnails/youtube_'.$youTubeID.'.jpg';
+			$hImg = fopen(ASCMS_DOCUMENT_ROOT.$mediumThumbnail, 'w');
+			fwrite($hImg, $response, $contentLength);
+			fclose($hImg);
+		}
+		return $mediumThumbnail;
+	}
+
+	/**
+	 * return the title of the specified youtube video
+	 *
+	 * @param string $youTubeID youtube video ID
+	 * @return string youtube video title
+	 */
+	function _getYoutubeTitle($youTubeID)
+	{
+		$httpRequest = '';
+		$response = '';
+		$mediumTitle = '';
+		$s = @fsockopen('www.youtube.com', 80, $errno, $errmsg, 5);
+		if(is_resource($s)){
+			$httpRequest = 	"GET /watch?v=".$youTubeID." HTTP/1.1\r\n".
+							"Host: www.youtube.com\r\n".
+							"User-Agent: ".$_SERVER['HTTP_USER_AGENT']."\r\n".
+							"Accept: ".$_SERVER['HTTP_ACCEPT']."\r\n".
+							"Accept-Language: ".$_SERVER['HTTP_ACCEPT_LANGUAGE']."\r\n".
+							"Accept-Encoding: \r\n".
+							"Accept-Charset: ".$_SERVER['HTTP_ACCEPT_CHARSET'].";q=0.7,*\r\n".
+							"Cache-Control: max-age=0\r\n".
+							"Connection: close\r\n\r\n";
+			fwrite($s, $httpRequest);
+			fflush($s);
+			while(!feof($s)){
+				$response .= fread($s, 512);
+			}
+			@fclose($s);
+			preg_match('#<title>YouTube - ([^<]+)</title>#', $response, $match);
+			$mediumTitle = $match[1];
+		}
+		return $mediumTitle;
+	}
+
+	/**
+	 * return the description of the specified youtube video
+	 *
+	 * @param string $youTubeID youtube video ID
+	 * @return string youtube video description
+	 */
+	function _getYoutubeDescription($youTubeID)
+	{
+		return '';
+		$httpRequest = '';
+		$response = '';
+		$mediumDescription = '';
+		$s = @fsockopen('www.youtube.com', 80, $errno, $errmsg, 5);
+		if(is_resource($s)){
+			$httpRequest = 	"GET /watch?v=".$youTubeID." HTTP/1.1\r\n".
+							"Host: www.youtube.com\r\n".
+							"User-Agent: ".$_SERVER['HTTP_USER_AGENT']."\r\n".
+							"Accept: ".$_SERVER['HTTP_ACCEPT']."\r\n".
+							"Accept-Language: ".$_SERVER['HTTP_ACCEPT_LANGUAGE']."\r\n".
+							"Accept-Encoding: \r\n".
+							"Accept-Charset: ".$_SERVER['HTTP_ACCEPT_CHARSET'].";q=0.7,*\r\n".
+							"Cache-Control: max-age=0\r\n".
+							"Connection: close\r\n\r\n";
+			fwrite($s, $httpRequest);
+			fflush($s);
+			while(!feof($s)){
+				$response .= fread($s, 512);
+			}
+			@fclose($s);
+			preg_match('¬expand-content">(.*?)\).*?<a¬im', $response, $match);
+			$mediumDescription = $match[1];
+		}
+		return $mediumDescription;
+	}
+
+
+	function _createRSS()
+	{
+		global $_CONFIG, $objLanguage, $objDatabase;
+		$this->_arrSettings = &$this->_getSettings();
+		$arrMedia = array();
+		$objMedium = $objDatabase->Execute("
+			SELECT tblMedium.id,
+				   tblMedium.title,
+				   tblMedium.author,
+				   tblMedium.description,
+				   tblMedium.source,
+				   tblMedium.size,
+				   tblMedium.date_added,
+				   tblCategory.id AS categoryId,
+				   tblCategory.title AS categoryTitle
+			FROM ".DBPREFIX."module_podcast_medium AS tblMedium
+			LEFT JOIN ".DBPREFIX."module_podcast_rel_medium_category AS tblRel ON tblRel.medium_id=tblMedium.id
+			LEFT JOIN ".DBPREFIX."module_podcast_category AS tblCategory ON tblCategory.id=tblRel.category_id
+			WHERE tblMedium.status=1
+			ORDER BY tblMedium.date_added DESC");
+		if ($objMedium !== false) {
+			while (!$objMedium->EOF) {
+				if (!isset($arrMedia[$objMedium->fields['id']])) {
+					$arrMedia[$objMedium->fields['id']] = array(
+						'title'			=> $objMedium->fields['title'],
+						'author'		=> $objMedium->fields['author'],
+						'description'	=> $objMedium->fields['description'],
+						'source'		=> str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']),
+						'size'			=> $objMedium->fields['size'],
+						'date_added'	=> $objMedium->fields['date_added'],
+						'categories'	=> array()
+					);
+				}
+				if (!empty($objMedium->fields['id'])) {
+					$arrMedia[$objMedium->fields['id']]['categories'][$objMedium->fields['categoryId']] = $objMedium->fields['categoryTitle'];
+				}
+
+				$objMedium->MoveNext();
+			}
+		}
+
+		require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
+
+		$objRSSWriter = new RSSWriter();
+
+		$objRSSWriter->characterEncoding = CONTREXX_CHARSET;
+		$objRSSWriter->channelTitle = $this->_arrSettings['feed_title'];
+		$objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=podcast';
+		$objRSSWriter->channelDescription = $this->_arrSettings['feed_description'];
+		$objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
+
+		if (!empty($this->_arrSettings['feed_image'])) {
+			$objRSSWriter->channelImageUrl = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).$this->_arrSettings['feed_image'];
+			$objRSSWriter->channelImageTitle = $objRSSWriter->channelTitle;
+			$objRSSWriter->channelImageLink = $objRSSWriter->channelLink;
+		}
+		$objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
+
+		$itemLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/index.php?section=podcast&amp;id=";
+		$categoryLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/index.php?section=podcast&amp;cid=";
+
+		// create podcast feed
+		$objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/podcast.xml';
+		foreach ($arrMedia as $mediumId => $arrMedium) {
+			$arrCategories = array();
+			foreach ($arrMedium['categories'] as $categoryId => $categoryTitle) {
+				array_push($arrCategories, array(
+					'domain'	=> htmlspecialchars($categoryLink.$categoryId, ENT_QUOTES, CONTREXX_CHARSET),
+					'title'		=> htmlspecialchars($categoryTitle, ENT_QUOTES, CONTREXX_CHARSET)
+				));
+			}
+
+			$objRSSWriter->addItem(
+				htmlspecialchars($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
+				$itemLink.$mediumId,
+				htmlspecialchars($arrMedium['description'], ENT_QUOTES, CONTREXX_CHARSET),
+				htmlspecialchars($arrMedium['author'], ENT_QUOTES, CONTREXX_CHARSET),
+				$arrCategories,
+				'',
+				array('url' => htmlspecialchars($arrMedium['source'], ENT_QUOTES, CONTREXX_CHARSET), 'length' => !empty($arrMedium['size']) ? $arrMedium['size'] : 'N/A', 'type' => 'application/x-video'),
+				'',
+				$arrMedium['date_added']
+			);
+		}
+		$status = $objRSSWriter->write();
+
+		if (count($objRSSWriter->arrErrorMsg) > 0) {
+			$this->_strErrMessage .= implode('<br />', $objRSSWriter->arrErrorMsg);
+		}
+		if (count($objRSSWriter->arrWarningMsg) > 0) {
+			$this->_strErrMessage .= implode('<br />', $objRSSWriter->arrWarningMsg);
+		}
+		return $status;
+	}
 }
 ?>
