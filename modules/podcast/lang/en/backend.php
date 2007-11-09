@@ -62,6 +62,7 @@ $_ARRAYLANG['TXT_PODCAST_SHOW_HTML_SOURCE_CODE'] = "Show HTML Source Code";
 $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE'] = "Source Code";
 $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE_OF_MEDIUM'] = "Show Source Code of medium %s";
 $_ARRAYLANG['TXT_PODCAST_SELECT_ALL'] = "Select all";
+$_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE'] = "Quelle ausw";
 $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'] = "Geben Sie entweder ein lokales Medium an, dass Sie zur Podcast Bibliothek hinzufügen möchten,<br />oder geben Sie direkt die URL eines Mediums an.<br /><br />Sie können auch einen YouTube Link direkt zum Video angeben. (Bsp: http://youtube.com/watch?v=abcdef12345)<br />Dieser Link kann auf der YouTube Videoseite aus der URL-Box rechts oder von der Browser-Adressleiste kopiert und hier eingefügt werden.";
 $_ARRAYLANG['TXT_PODCAST_SHOW_MEDIUM'] = "Show medium";
 $_ARRAYLANG['TXT_PODCAST_MEDIUM'] = "Medium";
