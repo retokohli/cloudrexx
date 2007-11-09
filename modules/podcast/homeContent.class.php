@@ -14,10 +14,6 @@
  */
 require_once ASCMS_MODULE_PATH.'/podcast/lib/podcastLib.class.php';
 
-$_ARRAYLANG['TXT_PODCAST_PLAY'] = "Abspielen";
-$_ARRAYLANG['TXT_PODCAST_MEDIA_VIEWS'] = "Aufrufe";
-
-
 /**
  * podcast home content
  *
