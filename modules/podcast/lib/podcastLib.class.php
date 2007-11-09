@@ -87,6 +87,14 @@ class podcastLib
 	 */
 	var $_youTubeDefaultHeight = 350;
 
+	/**
+	 * categories for the public. If empty, all will be available to the community
+	 *
+	 * @var array
+	 */
+	var $_communityCategories = array();
+
+
 	function podcastLib(){
 		$this->__construct();
 	}
@@ -1181,6 +1189,12 @@ EOF;
 		$arrLanguages = &$objLanguage->getLanguageArray();
 
 		foreach ($arrCategories as $categoryId => $arrCategory) {
+			if($_REQUEST['section'] == 'podcast'){
+				if(!in_array($categoryId, $this->_communityCategories) && !empty($this->_communityCategories)){
+					continue;
+				}
+			}
+
 			$column = $categoryNr % 3;
 			$arrCatLangIds = &$this->_getLangIdsOfCategory($categoryId);
 			array_walk($arrCatLangIds, create_function('&$cat, $k, $arrLanguages', '$cat = $arrLanguages[$cat]["lang"];'), $arrLanguages);
