@@ -766,4 +766,13 @@ $_ARRAYLANG['TXT_DOWNLOADS'] = "Downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_MODULE_DESCRIPTION'] = "";
 $_ARRAYLANG['TXT_GOOGLE_MAPS_API_KEY_HELP'] = "Globaler Google-Maps API Schlüssel für die Standard-Domain";
 $_ARRAYLANG['TXT_GOOGLE_MAPS_API_KEY'] = "Google-Maps API Schlüssel";
+$_ARRAYLANG['TXT_BLOG_MODULE'] = "Blog";
+$_ARRAYLANG['TXT_BLOG_MODULE_DESCRIPTION'] = "Erm&ouml;glicht das Erfassen und Verwalten von Blog-Meldungen.";
+$_ARRAYLANG['TXT_BLOG_ENTRY_ADD_TITLE'] = "Meldung verfassen";
+$_ARRAYLANG['TXT_BLOG_ENTRY_MANAGE_TITLE'] = "Meldungen verwalten";
+$_ARRAYLANG['TXT_BLOG_CATEGORY_MANAGE_TITLE'] = "Kategorien verwalten";
+$_ARRAYLANG['TXT_BLOG_CATEGORY_ADD_TITLE'] = "Kategorie hinzuf&uuml;gen";
+$_ARRAYLANG['TXT_BLOG_SETTINGS_TITLE'] = "Einstellungen";
+$_ARRAYLANG['TXT_BLOG_BLOCK_TITLE'] = "Platzhalter";
+$_ARRAYLANG['TXT_BLOG_NETWORKS_TITLE'] = "Netzwerke verwalten";
 ?>
