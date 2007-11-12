@@ -95,7 +95,7 @@ class Immo extends ImmoLib
 		global $objDatabase;
 		$this->frontLang = (isset($_GET['immoLang'])) ? intval($_GET['immoLang']) : 1;
 		$objRS=$objDatabase->Execute("	SELECT count(1) as cnt FROM ".DBPREFIX."module_immo_fieldname WHERE
-										lang_id = 1 AND lower(name) LIKE '%aufzählung%'");
+										lang_id = 1 AND lower(name) LIKE '%aufzï¿½hlung%'");
 		$this->_listingCount = $objRS->fields['cnt'];
 		$this->_objTpl = &new HTML_Template_Sigma('.');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -480,7 +480,7 @@ class Immo extends ImmoLib
 															AND img.field_id = (
 																SELECT field_id
 																FROM '.DBPREFIX.'module_immo_fieldname
-																WHERE name = "übersichtsbild" )
+																WHERE name = "ï¿½bersichtsbild" )
 															)
 				WHERE special_offer = 1
 				AND visibility != "disabled"
@@ -624,9 +624,9 @@ class Immo extends ImmoLib
 	 */
 	function _getListing(){
 		for($i=1; $i<=$this->_listingCount;$i++){
-			$list = $this->_getFieldFromText('Aufzählung'.$i);
+			$list = $this->_getFieldFromText('Aufzï¿½hlung'.$i);
 			if(!empty($list)){
-				$this->_objTpl->setVariable('IMMO_LISTING', $this->_getFieldFromText('Aufzählung'.$i));
+				$this->_objTpl->setVariable('IMMO_LISTING', $this->_getFieldFromText('Aufzï¿½hlung'.$i));
 				$this->_objTpl->parse("listing");
 			}
 		}
@@ -674,7 +674,7 @@ class Immo extends ImmoLib
    			'IMMO_DETAILS_JAVASCRIPT' 	=> $this->_getDetailsJS(),
 		));
 
-		$img = $this->_getFieldFromText('Übersichtsbild', 'img');
+		$img = $this->_getFieldFromText('ï¿½bersichtsbild', 'img');
 		$imgOverviewKey = $this->_currFieldID;
 		$imgdim = $this->_getImageDim($img, 540);
 		$homepageLink = trim($this->_getFieldFromText('Link auf Homepage'));
@@ -909,7 +909,7 @@ class Immo extends ImmoLib
 																AND img.field_id = (
 																	SELECT field_id
 																	FROM '.DBPREFIX.'module_immo_fieldname
-																	WHERE name = "übersichtsbild" )
+																	WHERE name = "ï¿½bersichtsbild" )
 																)
 					WHERE  ( visibility = "listing"';
                     if(!empty($_REQUEST['ref_nr'])){
@@ -987,7 +987,7 @@ class Immo extends ImmoLib
 																AND f.field_id = (
 																	SELECT field_id
 																	FROM ".DBPREFIX."module_immo_fieldname
-																	WHERE name = 'ausländer-bewilligung'
+																	WHERE name = 'auslï¿½nder-bewilligung'
 																	AND lang_id = 1 )
 																AND f.lang_id = ".$this->frontLang." )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS g ON ( immo.id = g.immo_id
@@ -1001,7 +1001,7 @@ class Immo extends ImmoLib
 																AND img.field_id = (
 																	SELECT field_id
 																	FROM ".DBPREFIX."module_immo_fieldname
-																	WHERE name = 'übersichtsbild' )
+																	WHERE name = 'ï¿½bersichtsbild' )
 																)
 						WHERE TRUE
 						";
@@ -1134,7 +1134,7 @@ class Immo extends ImmoLib
 	 * @return void
 	 */
 	function _showMap() {
-	    global $objDatabase, $_ARRAYLANG;
+	    global $objDatabase, $_ARRAYLANG, $_CONFIG;
 		$this->_objTpl->loadTemplateFile("modules/immo/template/frontend_map_template.html");
 	    /*
 	       Check if something has to be highlighted
@@ -1147,7 +1147,7 @@ class Immo extends ImmoLib
 	    */
         $subQueryPart = "";
         $first = true;
-        preg_match_all("/%([A-Z0-9ÄÜÖ]+[^%])%/", $this->arrSettings['message'], $matches);
+        preg_match_all("/%([A-Z0-9ï¿½ï¿½ï¿½]+[^%])%/", $this->arrSettings['message'], $matches);
         setlocale(LC_ALL, "de_CH");
         foreach ($matches[1] as $match) {
             if ($first) {
@@ -1263,8 +1263,10 @@ class Immo extends ImmoLib
 	        $startZoom = $this->arrSettings['zoom_frontend'];
 	    }
 
+	    $googleKey = (empty($this->arrSettings['GOOGLE_API_KEY_'.$_SERVER['SERVER_NAME']])) ? $_CONFIG['googleMapsAPIKey'] : $this->arrSettings['GOOGLE_API_KEY_'.$_SERVER['SERVER_NAME']];
+	    print $googleKey;
         $this->_objTpl->setVariable(array(
-            'IMMO_GOOGLE_API_KEY'       => $this->arrSettings['GOOGLE_API_KEY_'.$_SERVER['SERVER_NAME']],
+            'IMMO_GOOGLE_API_KEY'       => $googleKey,
             'IMMO_START_X'              => $startX,
             'IMMO_START_Y'              => $startY,
             'IMMO_START_ZOOM'           => $startZoom,
