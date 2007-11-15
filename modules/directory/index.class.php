@@ -809,6 +809,9 @@ class rssDirectory extends directoryLibrary
 			'DIRECTORY_CATEGORY_NAVI' 			=> $this->navtree,
 		));
 
+		$objResult 	= $objDatabase->Execute("SELECT `country` FROM ".DBPREFIX."module_directory_dir WHERE id = '".intval($id)."'");
+		$country 	= $objResult->fields['country'];
+
 		if($this->_isGoogleMapEnabled('frontend')){
 			$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript','modules/directory/template/module_directory_googlemap_include.html');
 			$this->_objTpl->setVariable(array(
@@ -824,12 +827,12 @@ class rssDirectory extends directoryLibrary
 				'DIRECTORY_MAP_LON_BACKEND'	=> $this->googleMapStartPoint['lon'],
 				'DIRECTORY_MAP_LAT_BACKEND'	=> $this->googleMapStartPoint['lat'],
 				'DIRECTORY_MAP_ZOOM_BACKEND'=> $this->googleMapStartPoint['zoom'],
+				'DIRECTORY_COUNTRY_OPTIONS' => $this->getCountry($country),
 			));
 			if($this->_objTpl->blockExists('direcoryGoogleMapJavascript')){
 				$this->_objTpl->parse('direcoryGoogleMapJavascript');
 			}
 		}
-
 
 		//get content
 		$this->getContent($id, $cid, $lid);

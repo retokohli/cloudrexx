@@ -95,7 +95,8 @@ var load = function() {
     	map.addControl(new GLargeMapControl());
     	map.addControl(new GMapTypeControl());
     	map.addControl(new GOverviewMapControl(new GSize(95,95)));
-    	if(elLon.value != '' && elLat.value != ''){
+    	if( (elLon.value != '' && elLon.value != 0 && elLat.value != '' && elLat.value != 0) &&
+    		(elLonFrac.value != '' && elLonFrac.value != 0 && elLatFrac.value != '' && elLatFrac.value != 0)){
     		lon = elLon.value;
     		lonf = elLonFrac.value;
     		lat = elLat.value;
@@ -107,7 +108,7 @@ var load = function() {
     	}else{
     		map.setCenter(new GLatLng({DIRECTORY_MAP_LAT_BACKEND}, {DIRECTORY_MAP_LON_BACKEND}), {DIRECTORY_MAP_ZOOM_BACKEND});
     		point = map.getCenter();
-    		document.getElementById("loclayer").innerHTML = getStatusString(point.x.toString(), point.y.toString());
+			x = setTimeout('getAddress()', 500);
     	}
 
     	point = map.getCenter();
@@ -121,7 +122,6 @@ var load = function() {
     	      map.addOverlay(marker);
     	      document.getElementById("loclayer").innerHTML = getStatusString(point.x.toString(), point.y.toString())
     	});
-
         geocoder = new GClientGeocoder();
     }else{
     	alert("{TXT_DIRECOTRY_BROWSER_NOT_SUPPORTED}");
@@ -154,12 +154,12 @@ var getAddress = function() {
 var getGeoCodeData = function(data){
 	try{
 		if(data.Status.code == G_GEO_SUCCESS){
-		try{
-			document.getElementById("geostatus").innerHTML = reasons[data.Status.code];
-			point = new GLatLng(data.Placemark[0].Point.coordinates[1], data.Placemark[0].Point.coordinates[0]);
-			suggestions = /\s([^,\ ])+/.exec(data.Placemark[0].address)[1];
-			map.setCenter(point, 14);
-		}catch(e){}
+			try{
+				document.getElementById("geostatus").innerHTML = reasons[data.Status.code];
+				point = new GLatLng(data.Placemark[0].Point.coordinates[1], data.Placemark[0].Point.coordinates[0]);
+				suggestions = /\s([^,\ ])+/.exec(data.Placemark[0].address)[1];
+				map.setCenter(point, 14);
+			}catch(e){}
 		}else{
 			document.getElementById("geostatus").innerHTML = address+" {TXT_DIR_GEO_NOT_FOUND}";
 		}
