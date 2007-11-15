@@ -814,8 +814,15 @@ class rssDirectory extends directoryLibrary
 
 		if($this->_isGoogleMapEnabled('frontend')){
 			$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript','modules/directory/template/module_directory_googlemap_include.html');
+
 			$this->_objTpl->setVariable(array(
 				'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
+				'TXT_DIR_GEO_NOT_FOUND'		=> $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
+			    'TXT_DIR_GEO_SUCCESS'		=> $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
+			    'TXT_DIR_GEO_MISSING'		=> $_ARRAYLANG['TXT_DIR_GEO_MISSING'],
+			    'TXT_DIR_GEO_UNKNOWN'		=> $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'],
+			    'TXT_DIR_GEO_UNAVAILABLE'	=> $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'],
+			    'TXT_DIR_GEO_BAD_KEY'		=> $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'],
 				'DIRECTORY_START_X'			=> 'null',
 				'DIRECTORY_START_Y'			=> 'null',
 				'DIRECTORY_START_ZOOM'		=> 'null',
@@ -1422,6 +1429,12 @@ class rssDirectory extends directoryLibrary
 				$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'modules/directory/template/module_directory_googlemap_include.html');
 				$this->_objTpl->setVariable(array(
 					'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
+					'TXT_DIR_GEO_NOT_FOUND'		=> $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
+				    'TXT_DIR_GEO_SUCCESS'		=> $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
+				    'TXT_DIR_GEO_MISSING'		=> $_ARRAYLANG['TXT_DIR_GEO_MISSING'],
+				    'TXT_DIR_GEO_UNKNOWN'		=> $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'],
+				    'TXT_DIR_GEO_UNAVAILABLE'	=> $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'],
+				    'TXT_DIR_GEO_BAD_KEY'		=> $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'],
 					'DIRECTORY_START_X'			=> 'null',
 					'DIRECTORY_START_Y'			=> 'null',
 					'DIRECTORY_START_ZOOM'		=> 'null',
@@ -1646,6 +1659,12 @@ class rssDirectory extends directoryLibrary
 				$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'modules/directory/template/module_directory_googlemap_include.html');
 				$this->_objTpl->setVariable(array(
 					'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
+					'TXT_DIR_GEO_NOT_FOUND'		=> $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
+				    'TXT_DIR_GEO_SUCCESS'		=> $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
+				    'TXT_DIR_GEO_MISSING'		=> $_ARRAYLANG['TXT_DIR_GEO_MISSING'],
+				    'TXT_DIR_GEO_UNKNOWN'		=> $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'],
+				    'TXT_DIR_GEO_UNAVAILABLE'	=> $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'],
+				    'TXT_DIR_GEO_BAD_KEY'		=> $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'],
 					'DIRECTORY_START_X'			=> 'null',
 					'DIRECTORY_START_Y'			=> 'null',
 					'DIRECTORY_START_ZOOM'		=> 'null',

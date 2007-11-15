@@ -108,7 +108,9 @@ var load = function() {
     	}else{
     		map.setCenter(new GLatLng({DIRECTORY_MAP_LAT_BACKEND}, {DIRECTORY_MAP_LON_BACKEND}), {DIRECTORY_MAP_ZOOM_BACKEND});
     		point = map.getCenter();
-			x = setTimeout('getAddress()', 500);
+    		if(!location.href.match(/cmd=add/) && !location.href.match(/act=new/)){
+				x = setTimeout('getAddress()', 0);
+    		}
     	}
 
     	point = map.getCenter();
@@ -155,13 +157,17 @@ var getGeoCodeData = function(data){
 	try{
 		if(data.Status.code == G_GEO_SUCCESS){
 			try{
-				document.getElementById("geostatus").innerHTML = reasons[data.Status.code];
+				if(!location.href.match(/cmd=detail/)){
+					document.getElementById("geostatus").innerHTML = reasons[data.Status.code];
+				}
 				point = new GLatLng(data.Placemark[0].Point.coordinates[1], data.Placemark[0].Point.coordinates[0]);
 				suggestions = /\s([^,\ ])+/.exec(data.Placemark[0].address)[1];
 				map.setCenter(point, 14);
 			}catch(e){}
 		}else{
-			document.getElementById("geostatus").innerHTML = address+" {TXT_DIR_GEO_NOT_FOUND}";
+			if(!location.href.match(/cmd=detail/)){
+				document.getElementById("geostatus").innerHTML = address+" {TXT_DIR_GEO_NOT_FOUND}";
+			}
 		}
 	}catch(e){}
 }
