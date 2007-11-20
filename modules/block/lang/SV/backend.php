@@ -55,4 +55,7 @@ $_ARRAYLANG['TXT_BLOCK_ACTIVATE'] = "aktivieren";
 $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_ON_ALL_'] = "Block auf jeder Seite dieser Sprache anzeigen";
 $_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'] = "Frontend Seiten";
 $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'] = "Block in dieser Sprache anzeigen";
+$_ARRAYLANG['TXT_BLOCK_DEACTIVATE'] = "deaktivieren";
+$_ARRAYLANG['TXT_SHOW_ON_ALL_PAGES'] = "Auf jeder Seite";
+$_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'] = "Seiten ausw";
 ?>

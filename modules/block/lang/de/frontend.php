@@ -3,5 +3,5 @@
 * Contrexx CMS
 **/
 
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "Übersicht";
+$_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "";
 ?>
