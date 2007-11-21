@@ -18,7 +18,6 @@
 
 class Payment
 {
-
     /**
      * Array of available payment methods
      * @var     array

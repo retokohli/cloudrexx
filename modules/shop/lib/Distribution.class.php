@@ -17,8 +17,8 @@
  * @package     contrexx
  * @subpackage  module_shop
  */
-class Distribution {
-
+class Distribution
+{
     /**
      * The types of distribution
      *

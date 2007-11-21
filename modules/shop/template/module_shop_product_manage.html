@@ -4,7 +4,7 @@
 
 var fieldID;
 var langID;
-var langcount=2
+var langcount = 2
 var elInputID;
 var elinputid;
 var value;
@@ -23,9 +23,9 @@ function reloadPage()
 
 function setDateToday(txtValue)
 {
-    with(document.shop_article) {
-        if(txtValue.value==""){
-            txtValue.value=date.value;
+    with (document.shop_article) {
+        if (txtValue.value == "") {
+            txtValue.value = date.value;
         }
     }
 }
@@ -38,20 +38,20 @@ function openWindow(theURL,winName,features)
 var openBrowser = function openBrowser(url, id, attrs)
 {
         fieldID=id;
-        try{
-            if(!browserPopup.closed){
+        try {
+            if(!browserPopup.closed) {
                 return browserPopup.focus();
             }
-        }catch(e){}
-        if (!window.focus){
+        } catch(e) {}
+        if (!window.focus) {
             return true;
         }
-          browserPopup = window.open(url, "", attrs);
-          browserPopup.focus();
-          return false;
+        browserPopup = window.open(url, "", attrs);
+        browserPopup.focus();
+        return false;
 }
 
-var SetUrl = function(url, width, height, alt) {
+var setUrl = function(url, width, height, alt) {
     notDefined[fieldID] = true;
     elInput = document.getElementById("hi_"+fieldID);
     elInput.setAttribute('type', 'hidden');
@@ -59,9 +59,9 @@ var SetUrl = function(url, width, height, alt) {
     elInput.setAttribute('id', 'hi_'+fieldID);
     elInput.setAttribute('value', url);
 
-    if(document.getElementById('lnk_'+fieldID) == null){
+    if (document.getElementById('lnk_'+fieldID) == null) {
         notDefined[fieldID] = true;
-    }else{
+    } else {
         notDefined[fieldID] = false;
     }
 
@@ -75,17 +75,16 @@ var SetUrl = function(url, width, height, alt) {
 //    }
     img = document.getElementById("img"+fieldID);
     img.src = '/'+url;
+    fact = 1;
     if (width > height) {
-        fact = 60 / width;
-        img.style.width  = width*fact+'px';
-        img.style.height = height*fact+'px';
+        fact = 80 / width;
     } else {
-        fact = 60 / height;
-        img.style.height = height*fact+'px';
-        img.style.width  = width*fact+'px';
+        fact = 80 / height;
     }
+    img.style.width  = width*fact+'px';
+    img.style.height = height*fact+'px';
 
-    //set resized width and height in hidden fields
+    // set resized width and height in hidden fields
     elInput_w = document.getElementById('hi_'+fieldID+'_w');
     elInput_w.setAttribute('type', 'hidden');
     elInput_w.setAttribute('name', 'productImage'+fieldID+'_width');

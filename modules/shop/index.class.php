@@ -229,7 +229,7 @@ class Shop extends ShopLibrary
         if (0) {
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
-            global $objDatabase; $objDatabase->debug = 1;
+            $objDatabase->debug = 1;
         } else {
             error_reporting(0);
             ini_set('display_errors', 0);
@@ -524,22 +524,24 @@ class Shop extends ShopLibrary
         if (isset($_REQUEST['catId'])) {
             $selectedCatId = intval($_REQUEST['catId']);
         }
-        $treeArray = $this->objShopCategories->getTreeArray(
-            false, $selectedCatId, 0, true, 0
-        );
-        $treeArrayIndex = $this->objShopCategories->getTreeIndexArray();
 
-        // The trail of visible ShopCategories,
+        // Array of all visible ShopCategories
+        $arrShopCategoryTree = $this->objShopCategories->getTreeArray(
+            false, true, true, $selectedCatId, 0, 3
+        );
+        // The trail of IDs to the selected ShopCategory,
         // built along with the tree array when calling getTreeArray().
         $arrTrail = $this->objShopCategories->getTrailArray($selectedCatId);
 
-        // Add the Shop Categories
-        foreach ($treeArray as $arrShopCategory) {
-            $id       = $arrShopCategory['id'];
+        // Build the display of ShopCategories
+        foreach ($arrShopCategoryTree as $arrShopCategory) {
             $level    = $arrShopCategory['level'];
-            // Only the visible ShopCategories are stored in $arrTrail.
-
             // Skip levels too deep: if ($level >= 2) { continue; }
+            $id       = $arrShopCategory['id'];
+
+            // Only the visible ShopCategories are stored in
+            // $arrShopCategoryTree.  $arrTrail contains the full list
+            // of IDs from root to selected, however.
 
             $style = '';
             if (in_array($id, $arrTrail)) {
@@ -787,7 +789,8 @@ if (typeof(objCart) != 'undefined') {shopGenerateCart();};
             }
             // Show the parent ShopCategorys' image, if available
             $imageName = $objShopCategory->getPicture();
-            if ($imageName) {
+            if ($imageName
+             && $this->objTemplate->blockExists('shopCategoryImage')) {
                 $this->objTemplate->setCurrentBlock('shopCategoryImage');
                 $this->objTemplate->setVariable(array(
                     'SHOP_CATEGORY_IMAGE'     =>
@@ -812,7 +815,7 @@ if (typeof(objCart) != 'undefined') {shopGenerateCart();};
             $imageName = $objShopCategory->getPicture();
             $thumbnailPath = $this->_defaultImage;
             if ($imageName) {
-                $imageName = 'category/'.$imageName;
+                $imageName = $imageName;
             } else {
                 // Look for a picture in the Products.
                 $imageName = Products::getPictureByCategoryId($id);
@@ -838,9 +841,8 @@ if (typeof(objCart) != 'undefined') {shopGenerateCart();};
             ));
             // Add flag images for flagged ShopCategories
         	$strImage = '';
-        	$arrVirtual = ShopCategories::getVirtualCategoryIdNameArray();
-            foreach ($arrVirtual as $arrIdName) {
-                $strFlag = $arrIdName['name'];
+        	$arrVirtual = ShopCategories::getVirtualCategoryNameArray();
+            foreach ($arrVirtual as $strFlag) {
             	if ($objShopCategory->testFlag($strFlag)) {
             	    $strImage .=
                 	    '<img src="images/content/'.$strFlag.
@@ -1016,16 +1018,20 @@ if (typeof(objCart) != 'undefined') {shopGenerateCart();};
 // TODO: What is this supposed to do?  It's never used.
 //        $this->rowSplitter = 1;
 
-// categories list
-        $catId =
-            (isset($_REQUEST['catId'])     ? $_REQUEST['catId']     :  0);
+        $flagLastFive =
+            (isset($_REQUEST['lastFive'])  ? true                   : false);
         $productId =
-            (isset($_REQUEST['productId']) ? $_REQUEST['productId'] :  0);
+            (isset($_REQUEST['productId']) ? $_REQUEST['productId'] : 0);
+        $catId =
+            (isset($_REQUEST['catId'])     ? $_REQUEST['catId']     : 0);
+        $manufacturerId =
+            (isset($_REQUEST['manId'])     ? $_REQUEST['manId']     : 0);
         $term =
             (isset($_REQUEST['term'])
-                ? stripslashes(trim($_REQUEST['term']))
-                : ''
+                ? stripslashes(trim($_REQUEST['term'])) : ''
             );
+        $pos =
+            (isset($_REQUEST['pos'])       ? $_REQUEST['pos']       : 0);
         if ($productId > 0) {
             $objProduct = Product::getById($productId);
             if ($objProduct) {
@@ -1037,36 +1043,7 @@ if (typeof(objCart) != 'undefined') {shopGenerateCart();};
         } elseif ($term == '') {
             $this->showCategories(0);
         }
-        $pos        = 0;
-        $paging     = '';
-        $detailLink = '';
-        $manufacturerId =
-            (isset($_REQUEST['manufacturerId'])
-                ? intval($_REQUEST['manufacturerId'])
-                : 0
-            );
 
-/*  This appears to be highly untested, and plain wrong according to
-    the new specifications.
-        // Check payment validation
-        // Return URI after payment was successful
-        if (isset($_GET['handler']) && !empty($_GET['handler'])) {
-            switch ($_GET['handler']) {
-                case 'yellowpay':
-                    $this->updateOrderStatus(
-                        $_POST['txtOrderIDShop'],
-                        $_POST['SessionId']
-                    );
-                    exit;
-            }
-        }
-*/
-
-        $treeArray =
-            $this->objShopCategories->getTreeArray(false, $catId, 0, true, 0);
-        if (!is_array($treeArray)) {
-            die("No tree array!<br />");
-        }
         if ($this->objTemplate->blockExists('shopNextCategoryLink')) {
             $nextCat = ShopCategories::getNextShopCategoriesId($catId);
             $objShopCategory = ShopCategory::getById($nextCat);
@@ -1088,6 +1065,7 @@ if (typeof(objCart) != 'undefined') {shopGenerateCart();};
             'TXT_SHOP_DISCOUNTPRICE'     => $_ARRAYLANG['TXT_SHOP_DISCOUNTPRICE'],
             'SHOP_JAVASCRIPT_CODE'       => $this->getJavascriptCode(),
         ));
+// Moved to getShopPage()
 //        $this->objTemplate->setVariable('SHOPNAVBAR_FILE', $this->getShopNavbar($themesPages['shopnavbar']));
 
         if (isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart') {
@@ -1110,360 +1088,308 @@ if (typeof(objCart) != 'undefined') {shopGenerateCart();};
         $this->objTemplate->setVariable("SHOP_MENU", $shopMenu);
         $this->objTemplate->setVariable("SHOP_CART_INFO", $this->showCartInfo());
 
-        $querySearchterm = '';
-        $querySpecialoffer = 'AND (is_special_offer=1)';
-        $queryCategory = '';
-        $queryManufacturer = '';
-        $pagingTermQuery = '';
-        $pagingCatIdQuery = '';
-
+        $flagSpecialoffer = true;
+        $pagingCatId = '';
+        $pagingManId = '';
+        $pagingTerm  = '';
         if ($catId > 0 && $term == '') {
-            $querySpecialoffer = '';
-            $pagingCatIdQuery = "&amp;catId=$catId";
-            $queryCategory = "AND p.catid=$catId";
+            $flagSpecialoffer = false;
+            $pagingCat = "&amp;catId=$catId";
         }
-
+        if ($manufacturerId > 0) {
+            $flagSpecialoffer = false;
+            $pagingManId =
+                "&amp;manId=$manufacturerId";
+        }
         if ($term != '') {
-            $querySpecialoffer = '';
-            $querySearchterm = "
-               AND (
-                      p.title LIKE '%".mysql_escape_string($term)."%'
-                   OR p.description LIKE '%".mysql_escape_string($term)."%'
-                   OR p.shortdesc LIKE '%".mysql_escape_string($term)."%'
-                   OR p.product_id LIKE '%".mysql_escape_string($term)."%'
-                   OR p.id LIKE '%".mysql_escape_string($term)."%'
-               )
-            ";
-            // If a valid ShopCategory is chosen, restrict the search to this
-            // category and subcategories.
-            if ($catId > 0) {
-                $queryCategory =
-                    'AND catid IN ('.
-                    ShopCategories::getSearchCategoryIdString($catId, true).
-                    ')';
-            }
-            $pagingTermQuery =
+            $flagSpecialoffer = false;
+            $pagingTerm =
                 '&amp;term='.htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET);
         }
 
-        if ($manufacturerId > 0) {
-            $querySpecialoffer = '';
-            $queryManufacturer = "AND manufacturer=$manufacturerId";
-        }
-
-        $objResult = '';
         $count = 0;
-        if (isset($_GET['cmd']) && $_GET['cmd'] == 'lastFive') {
-            $query = "
-                SELECT p.*
-                  FROM ".DBPREFIX."module_shop_products AS p
-            INNER JOIN `".DBPREFIX."module_shop_categories` AS c
-                 USING (catid)
-                 WHERE status=1 AND catstatus=1
-              ORDER BY p.id DESC
-            ";
-            $objResult = $objDatabase->SelectLimit($query, 5);
-            $count = $objResult->RecordCount();
-        } else {
-            if ($productId != 0) {
-                $query = "
-                    SELECT p.*
-                      FROM ".DBPREFIX."module_shop_products AS p
-                INNER JOIN `".DBPREFIX."module_shop_categories` AS c
-                     USING (catid)
-                     WHERE status=1 AND catstatus=1
-                           AND p.id=$productId
-                ";
-            } else {
-                $query = "
-                    SELECT p.*
-                      FROM ".DBPREFIX."module_shop_products AS p
-                INNER JOIN `".DBPREFIX."module_shop_categories` AS c
-                     USING (catid)
-                     WHERE status=1 AND catstatus=1
-                           $querySpecialoffer $queryCategory $querySearchterm $queryManufacturer
-                     ORDER BY p.sort_order ASC, p.id DESC
-                ";
-            }
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-                $this->errorHandling();
-            }
-            $count = $objResult->RecordCount();
-            if ($count == 0) {
-                $paging = $_ARRAYLANG['TXT_SELECT_SUB_GROUP'];
-            } elseif ($_CONFIG['corePagingLimit']) { // $_CONFIG from /config/settings.php
-                $pos = (isset($_GET['pos']) ? intval($_GET['pos']) : 0);
-                $paging = getPaging(
-                    $count,
-                    $pos,
-                    '&amp;section=shop'.$pagingCatIdQuery.$pagingTermQuery,
-                    '',
-                    true);
-                $objResult = $objDatabase->SelectLimit(
-                    $query, $_CONFIG['corePagingLimit'], $pos
-                );
-                if (!$objResult) {
-                    $this->errorHandling();
-                    return false;
-                }
-            }
-            if (isset($this->arrCategoriesName[$catId])) {
-                $this->objTemplate->setVariable(array(
-                    'TXT_PRODUCTS_IN_CATEGORY' => $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'],
-                    'SHOP_CATEGORY_NAME'       => str_replace('"', '&quot;', $this->arrCategoriesName[$catId]),
-                ));
-            }
+        // The Product count is passed by reference and set to the total
+        // number of records, though only as many as specified by the core
+        // paging limit are returned in the array.
+        $arrProduct = Products::getByShopParams(
+            $count, false, $flagSpecialoffer, $flagLastFive,
+            $productId, $catId, $manufacturerId,
+            $term, $pos
+        );
+
+        $paging     = '';
+        $detailLink = '';
+        if ($count == 0) {
+            $paging = $_ARRAYLANG['TXT_SELECT_SUB_GROUP'];
+        } elseif ($_CONFIG['corePagingLimit']) { // From /config/settings.php
+            $paging = getPaging(
+                $count,
+                $pos,
+                '&amp;section=shop'.$pagingCatIdQuery.$pagingTermQuery,
+                '',
+                true
+            );
+        }
+        if (isset($this->arrCategoriesName[$catId])) {
             $this->objTemplate->setVariable(array(
-                'SHOP_PRODUCT_PAGING' => $paging,
-                'SHOP_PRODUCT_TOTAL'  => $count,
+                'TXT_PRODUCTS_IN_CATEGORY' => $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'],
+                'SHOP_CATEGORY_NAME'       => str_replace('"', '&quot;', $this->arrCategoriesName[$catId]),
             ));
         }
+        $this->objTemplate->setVariable(array(
+            'SHOP_PRODUCT_PAGING' => $paging,
+            'SHOP_PRODUCT_TOTAL'  => $count,
+        ));
 
+        if ($count == 0) {
+            $this->objTemplate->hideBlock('shopProductRow');
+            return true;
+        }
         $this->objTemplate->setCurrentBlock('shopProductRow');
-        if ($count) {
+        foreach ($arrProduct as $objProduct) {
             $formId = 0;
-            $i = 0;
-            while (!$objResult->EOF) {
-                $objProduct = Product::getById($objResult->fields['id']);
-                $productSubmitFunction = '';
-                $arrPictures = $this->_getShopImagesFromBase64String($objProduct->getPictures());
-                $havePicture = false;
-                $thumbnailPath = '';
-                $pictureLink = '';
-                $arrProductImages = array();
-                foreach ($arrPictures as $index => $image) {
-                    if (empty($image['img'])
-                     || $image['img'] == $this->noPictureName) {
-                        // We have at least one picture on display already.
-                        // No need to show "no picture" three times!
-                        if ($havePicture) { continue; }
-                        $thumbnailPath = $this->_defaultImage;
-                        $pictureLink = ''; //"javascript:alert('".$_ARRAYLANG['TXT_NO_PICTURE_AVAILABLE']."');";
-                    } elseif (
-                        $image['width'] && $image['height']) {
-                        $thumbnailPath = $this->shopImageWebPath.$image['img'].$this->thumbnailNameSuffix;
-                        $pictureLink = "javascript:viewPicture('".$this->shopImageWebPath.$image['img']."','width=".($image['width']+25).",height=".($image['height']+25)."')";
-                    } else {
-                        $thumbnailPath = $this->shopImageWebPath.$image['img'].$this->thumbnailNameSuffix;
-                        $pictureLink = '';
-                    }
-                    $arrProductImages[] = array(
-                        'THUMBNAIL'       => $thumbnailPath,
-                        'THUMBNAIL_LINK'  => $pictureLink,
-                        'POPUP_LINK'      => $pictureLink,
-                        'POPUP_LINK_NAME' => $_ARRAYLANG['TXT_SHOP_IMAGE'].' '.$index,
-                    );
-                    $havePicture = true;
+            $productSubmitFunction = '';
+            $arrPictures = $this->_getShopImagesFromBase64String($objProduct->getPictures());
+            $havePicture = false;
+            $thumbnailPath = '';
+            $pictureLink = '';
+            $arrProductImages = array();
+            foreach ($arrPictures as $index => $image) {
+                if (empty($image['img'])
+                 || $image['img'] == $this->noPictureName) {
+                    // We have at least one picture on display already.
+                    // No need to show "no picture" three times!
+                    if ($havePicture) { continue; }
+                    $thumbnailPath = $this->_defaultImage;
+                    $pictureLink = ''; //"javascript:alert('".$_ARRAYLANG['TXT_NO_PICTURE_AVAILABLE']."');";
+                } elseif (
+                    $image['width'] && $image['height']) {
+                    $thumbnailPath = $this->shopImageWebPath.$image['img'].$this->thumbnailNameSuffix;
+                    $pictureLink = "javascript:viewPicture('".$this->shopImageWebPath.$image['img']."','width=".($image['width']+25).",height=".($image['height']+25)."')";
+                } else {
+                    $thumbnailPath = $this->shopImageWebPath.$image['img'].$this->thumbnailNameSuffix;
+                    $pictureLink = '';
                 }
-                foreach ($arrProductImages as $arrProductImage) {
+                $arrProductImages[] = array(
+                    'THUMBNAIL'       => $thumbnailPath,
+                    'THUMBNAIL_LINK'  => $pictureLink,
+                    'POPUP_LINK'      => $pictureLink,
+                    'POPUP_LINK_NAME' => $_ARRAYLANG['TXT_SHOP_IMAGE'].' '.$index,
+                );
+                $havePicture = true;
+            }
+            foreach ($arrProductImages as $arrProductImage) {
+                $this->objTemplate->setVariable(array(
+                    'SHOP_PRODUCT_THUMBNAIL' => $arrProductImage['THUMBNAIL'],
+                ));
+                if ($arrProductImage['THUMBNAIL_LINK']) {
                     $this->objTemplate->setVariable(array(
-                        'SHOP_PRODUCT_THUMBNAIL' => $arrProductImage['THUMBNAIL'],
+                        'SHOP_PRODUCT_THUMBNAIL_LINK' => $arrProductImage['THUMBNAIL_LINK'],
+                        'TXT_SEE_LARGE_PICTURE'       => $_ARRAYLANG['TXT_SEE_LARGE_PICTURE'],
                     ));
-                    if ($arrProductImage['THUMBNAIL_LINK']) {
-                        $this->objTemplate->setVariable(array(
-                            'SHOP_PRODUCT_THUMBNAIL_LINK' => $arrProductImage['THUMBNAIL_LINK'],
-                            'TXT_SEE_LARGE_PICTURE'       => $_ARRAYLANG['TXT_SEE_LARGE_PICTURE'],
-                        ));
-                        if ($this->objTemplate->blockExists('productImageLinkEnd')) {
-                            $this->objTemplate->touchBlock('productImageLinkEnd');
-                        }
-                    } else {
-                        $this->objTemplate->setVariable(array(
-                            'TXT_SEE_LARGE_PICTURE' => $objProduct->getName(),
-                        ));
+                    if ($this->objTemplate->blockExists('productImageLinkEnd')) {
+                        $this->objTemplate->touchBlock('productImageLinkEnd');
                     }
+                } else {
+                    $this->objTemplate->setVariable(array(
+                        'TXT_SEE_LARGE_PICTURE' => $objProduct->getName(),
+                    ));
+                }
+                if ($this->objTemplate->blockExists('productImage')) {
                     $this->objTemplate->parse('productImage');
                 }
-                foreach ($arrProductImages as $arrProductImage) {
-                    if ($arrProductImage['POPUP_LINK']) {
-                        $this->objTemplate->setVariable(
-                            'SHOP_PRODUCT_POPUP_LINK', $arrProductImage['POPUP_LINK']
-                        );
-                        if ($this->objTemplate->blockExists('productPopupLinkEnd')) {
-                            $this->objTemplate->touchBlock('productPopupLinkEnd');
-                        }
-                    }
+            }
+            foreach ($arrProductImages as $arrProductImage) {
+                if ($arrProductImage['POPUP_LINK']) {
                     $this->objTemplate->setVariable(
-                        'SHOP_PRODUCT_POPUP_LINK_NAME', $arrProductImage['POPUP_LINK_NAME']
+                        'SHOP_PRODUCT_POPUP_LINK', $arrProductImage['POPUP_LINK']
                     );
-                    if ($this->objTemplate->blockExists('productImageLink')) {
-                        $this->objTemplate->parse('productImageLink');
+                    if ($this->objTemplate->blockExists('productPopupLinkEnd')) {
+                        $this->objTemplate->touchBlock('productPopupLinkEnd');
                     }
                 }
-
-                $stock =
-                    ($objProduct->isStockVisible()
-                        ? $_ARRAYLANG['TXT_STOCK'].': '.
-                          intval($objProduct->getStock())
-                        : ''
-                    );
-
-                $manufacturerName = '';
-                $manufacturerUrl  = '';
-                $manufacturerId   = $objProduct->getManufacturerId();
-                if ($manufacturerId) {
-                    $manufacturerName =
-                        $this->_getManufacturerName($manufacturerId);
-                    $manufacturerUrl  =
-                        $this->_getManufacturerUrl($manufacturerId);
-                    if ($manufacturerUrl) {
-                        $manufacturerUrl =
-                            '<a href="'.$manufacturerUrl.'</a>';
-                    }
+                $this->objTemplate->setVariable(
+                    'SHOP_PRODUCT_POPUP_LINK_NAME', $arrProductImage['POPUP_LINK_NAME']
+                );
+                if ($this->objTemplate->blockExists('productImageLink')) {
+                    $this->objTemplate->parse('productImageLink');
                 }
+            }
+
+            $stock = ($objProduct->isStockVisible()
+                ? $_ARRAYLANG['TXT_STOCK'].': '.
+                  intval($objProduct->getStock())
+                : ''
+            );
+
+            $manufacturerName = '';
+            $manufacturerUrl  = '';
+            $manufacturerId   = $objProduct->getManufacturerId();
+            if ($manufacturerId) {
+                $manufacturerName =
+                    $this->_getManufacturerName($manufacturerId);
+                $manufacturerUrl  =
+                    $this->_getManufacturerUrl($manufacturerId);
+                if ($manufacturerUrl) {
+                    $manufacturerUrl =
+                        '<a href="'.$manufacturerUrl.'</a>';
+                }
+            }
 
 // TODO: This is the old Product field for the Manufacturer URI.
 // This is now extended by the Manufacturer table and should thus
 // get a new purpose.  As it is product specific, it could be
 // renamed and reused as a link to individual Products!
-                $manufacturerLink =
-                    (strlen($objProduct->getExternalLink())
-                        ? '<a href="'.$objProduct->getExternalLink().
-                          '" title="'.$_ARRAYLANG['TXT_MANUFACTURER_URL'].
-                          '" target="_blank">'.
-                          $_ARRAYLANG['TXT_MANUFACTURER_URL'].'</a>'
-                        : ''
-                    );
+            $manufacturerLink = (strlen($objProduct->getExternalLink())
+                ? '<a href="'.$objProduct->getExternalLink().
+                  '" title="'.$_ARRAYLANG['TXT_MANUFACTURER_URL'].
+                  '" target="_blank">'.
+                  $_ARRAYLANG['TXT_MANUFACTURER_URL'].'</a>'
+                : ''
+            );
 
-                $price = $this->objCurrency->getCurrencyPrice(
-                    $objProduct->getCustomerPrice($this->objCustomer)
-                );
-                $discountPrice = $objProduct->getDiscountPrice();
-                if ($discountPrice) {
-                    $price = "<s>$price</s>";
-                    $discountPrice =
-                        $this->objCurrency->getCurrencyPrice($discountPrice);
-                }
-
-                $shortDescription = $objProduct->getShortDesc();
-                $longDescription  = $objProduct->getDescription();
-
-                $detailLink = false;
-                if ($productId == 0 && !empty($longDescription)) {
-                    $detailLink = '<a href="index.php?section=shop&amp;cmd=details&amp;productId='.$objResult->fields['id'].'" title="'.$_ARRAYLANG['TXT_MORE_INFORMATIONS'].'">'.$_ARRAYLANG['TXT_MORE_INFORMATIONS'].'</a>';
-                }
-
-                $productWeight = $objProduct->getWeight();
-
-                // Check/parse Product flags
-                // See Product::testFlag() for the final implementation!
-                $flagMeter = $objProduct->testFlag('__METER__');
-
-                // Submit button name
-                if (isset($_GET['cmd']) && $_GET['cmd'] == 'details'
-                 && isset($_GET['referer']) && $_GET['referer'] == 'cart') {
-                    $productSubmitName = "updateProduct[$cartProdId]";
-                    $productSubmitFunction = $this->productOptions(
-                        $objResult->fields['id'], $formId, $cartProdId
-                    );
-                } else {
-                    $productSubmitName = 'addProduct';
-                    $productSubmitFunction = $this->productOptions(
-                        $objResult->fields['id'], $formId
-                    );
-                }
-                $shopProductFormName = "shopProductForm$formId";
-                ++$formId;
-
-                $this->objTemplate->setVariable(array(
-                    'SHOP_ROWCLASS'                   => (++$i % 2 ? 'row2' : 'row1'),
-                    'SHOP_PRODUCT_ID'                 => $objProduct->getId(),
-                    'SHOP_PRODUCT_CUSTOM_ID'          => str_replace('"', '&quot;', $objProduct->getCode()),
-                    'SHOP_PRODUCT_TITLE'              => str_replace('"', '&quot;', $objProduct->getName()),
-                    'SHOP_PRODUCT_DESCRIPTION'        => str_replace('"', '&quot;', $shortDescription),
-                    'SHOP_PRODUCT_DETAILDESCRIPTION'  => str_replace('"', '&quot;', $longDescription),
-                    'SHOP_MANUFACTURER_NAME'          => $manufacturerName,
-                    'SHOP_MANUFACTURER_URL'           => $manufacturerUrl,
-                    'SHOP_MANUFACTURER_LINK'          => $manufacturerLink,
-                    'SHOP_PRODUCT_FORM_NAME'          => $shopProductFormName,
-                    'SHOP_PRODUCT_SUBMIT_NAME'        => $productSubmitName,
-                    'SHOP_PRODUCT_SUBMIT_FUNCTION'    => $productSubmitFunction,
-                    // Meter flag
-                    'TXT_SHOP_PRODUCT_COUNT'          =>
-                        ($flagMeter
-                            ? $_ARRAYLANG['TXT_SHOP_PRODUCT_METER']
-                            : $_ARRAYLANG['TXT_SHOP_PRODUCT_COUNT']
-                        ),
-                ));
-                if ($price) {
-                    $this->objTemplate->setVariable(array(
-                        'SHOP_PRODUCT_PRICE'              => ($price ? $price : ''),
-                        'SHOP_PRODUCT_PRICE_UNIT'         => ($price ? $this->aCurrencyUnitName : ''),
-                    ));
-                }
-                // Only set discount price if it's actually in use,
-                // avoids empty <font> tag HTML warning
-                if ($discountPrice) {
-                    $this->objTemplate->setVariable(array(
-                        'SHOP_PRODUCT_DISCOUNTPRICE'      => $discountPrice,
-                        'SHOP_PRODUCT_DISCOUNTPRICE_UNIT' => $this->aCurrencyUnitName,
-                    ));
-                }
-                if ($objProduct->isOutlet()) {
-                    $this->objTemplate->setVariable(array(
-                        'TXT_SHOP_DISCOUNT_TODAY'   =>
-                            $_ARRAYLANG['TXT_SHOP_DISCOUNT_TODAY'],
-                        'SHOP_DISCOUNT_TODAY'       =>
-                            $objProduct->getOutletDiscountRate().'%',
-                        'TXT_SHOP_PRICE_TODAY'      =>
-                            $_ARRAYLANG['TXT_SHOP_PRICE_TODAY'],
-                        'SHOP_PRICE_TODAY'          =>
-                            $this->objCurrency->getCurrencyPrice(
-                                $objProduct->getDiscountedPrice()
-                            ),
-                        'SHOP_PRICE_TODAY_UNIT'     =>
-                            $this->aCurrencyUnitName,
-                    ));
-                }
-                if ($objProduct->isStockVisible) {
-                    $this->objTemplate->setVariable(array(
-                        'SHOP_PRODUCT_STOCK'              => $stock,
-                    ));
-                }
-                if ($detailLink) {
-                    $this->objTemplate->setVariable(array(
-                        'SHOP_PRODUCT_DETAILLINK'         => $detailLink,
-                    ));
-                }
-                if ($productWeight > 0) {
-                    $this->objTemplate->setVariable(array(
-                        'TXT_SHOP_PRODUCT_WEIGHT'   => $_ARRAYLANG['TXT_SHOP_PRODUCT_WEIGHT'],
-                        'SHOP_PRODUCT_WEIGHT'       => Weight::getWeightString($productWeight),
-                    ));
-                }
-                if ($this->objVat->isEnabled()) {
-                    $this->objTemplate->setVariable(array(
-                        'SHOP_PRODUCT_TAX_PREFIX' =>
-                            ($this->objVat->isIncluded()
-                                ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
-                                : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
-                             ),
-                        'SHOP_PRODUCT_TAX'        =>
-                            $this->objVat->getShort($objResult->fields['vat_id'])
-                    ));
-                }
-
-                // Add flag images for flagged Products
-            	$strImage = '';
-                foreach (array('Outlet', 'Neuheiten', 'Geschenkideen') as $strFlag) {
-                	if ($objProduct->testFlag($strFlag)) {
-                	    $strImage .=
-                    	    '<img src="images/content/'.$strFlag.
-                            '.jpg" alt="'.$strFlag.'" />';
-                	}
-                }
-                if ($strImage) {
-                    $this->objTemplate->setVariable(
-                        'SHOP_PRODUCT_FLAG_IMAGE', $strImage
-                    );
-                }
-
-                $this->objTemplate->parse('shopProductRow');
-                $objResult->MoveNext();
+            $price = $this->objCurrency->getCurrencyPrice(
+                $objProduct->getCustomerPrice($this->objCustomer)
+            );
+            $discountPrice = $objProduct->getDiscountPrice();
+            if ($discountPrice) {
+                $price = "<s>$price</s>";
+                $discountPrice =
+                    $this->objCurrency->getCurrencyPrice($discountPrice);
             }
-        } else {
-            $this->objTemplate->hideBlock('shopProductRow');
+
+            $shortDescription = $objProduct->getShortDesc();
+            $longDescription  = $objProduct->getDescription();
+
+            $detailLink = false;
+            if ($productId == 0 && !empty($longDescription)) {
+                $detailLink = '<a href="index.php?section=shop&amp;cmd=details&amp;productId='.$objResult->fields['id'].'" title="'.$_ARRAYLANG['TXT_MORE_INFORMATIONS'].'">'.$_ARRAYLANG['TXT_MORE_INFORMATIONS'].'</a>';
+            }
+
+            $productWeight = $objProduct->getWeight();
+
+            // Check Product flags.
+            // Only the meter flag is currently implemented and in use.
+            $flagMeter = $objProduct->testFlag('__METER__');
+
+            // Submit button name
+            if (isset($_GET['cmd']) && $_GET['cmd'] == 'details'
+             && isset($_GET['referer']) && $_GET['referer'] == 'cart') {
+                $productSubmitName = "updateProduct[$cartProdId]";
+                $productSubmitFunction = $this->productOptions(
+                    $objResult->fields['id'], $formId, $cartProdId
+                );
+            } else {
+                $productSubmitName = 'addProduct';
+                $productSubmitFunction = $this->productOptions(
+                    $objResult->fields['id'], $formId
+                );
+            }
+            $shopProductFormName = "shopProductForm$formId";
+
+            $this->objTemplate->setVariable(array(
+                'SHOP_ROWCLASS'                   => (++$formId % 2 ? 'row2' : 'row1'),
+                'SHOP_PRODUCT_ID'                 => $objProduct->getId(),
+                'SHOP_PRODUCT_CUSTOM_ID'          => str_replace('"', '&quot;', $objProduct->getCode()),
+                'SHOP_PRODUCT_TITLE'              => str_replace('"', '&quot;', $objProduct->getName()),
+
+// Either
+//              'SHOP_PRODUCT_DESCRIPTION'        => str_replace('"', '&quot;', $shortDescription),
+//              'SHOP_PRODUCT_DETAILDESCRIPTION'  => str_replace('"', '&quot;', $longDescription),
+// or
+                'SHOP_PRODUCT_DESCRIPTION'        => $shortDescription,
+                'SHOP_PRODUCT_DETAILDESCRIPTION'  => $longDescription,
+
+                'SHOP_MANUFACTURER_NAME'          => $manufacturerName,
+                'SHOP_MANUFACTURER_URL'           => $manufacturerUrl,
+                'SHOP_MANUFACTURER_LINK'          => $manufacturerLink,
+                'SHOP_PRODUCT_FORM_NAME'          => $shopProductFormName,
+                'SHOP_PRODUCT_SUBMIT_NAME'        => $productSubmitName,
+                'SHOP_PRODUCT_SUBMIT_FUNCTION'    => $productSubmitFunction,
+                // Meter flag
+                'TXT_SHOP_PRODUCT_COUNT'          =>
+                    ($flagMeter
+                        ? $_ARRAYLANG['TXT_SHOP_PRODUCT_METER']
+                        : $_ARRAYLANG['TXT_SHOP_PRODUCT_COUNT']
+                    ),
+            ));
+            if ($price) {
+                $this->objTemplate->setVariable(array(
+                    'SHOP_PRODUCT_PRICE'      => ($price ? $price : ''),
+                    'SHOP_PRODUCT_PRICE_UNIT' => ($price ? $this->aCurrencyUnitName : ''),
+                ));
+            }
+            // Only show the discount price if it's actually in use,
+            // avoid an "empty <font> tag" HTML warning
+            if ($discountPrice) {
+                $this->objTemplate->setVariable(array(
+                    'SHOP_PRODUCT_DISCOUNTPRICE'      => $discountPrice,
+                    'SHOP_PRODUCT_DISCOUNTPRICE_UNIT' => $this->aCurrencyUnitName,
+                ));
+            }
+            // Special outlet ShopCategory with discounts varying daily.
+            // TODO: This should be implemented in a more generic way.
+            if ($objProduct->isOutlet()) {
+                $this->objTemplate->setVariable(array(
+                    'TXT_SHOP_DISCOUNT_TODAY'   =>
+                        $_ARRAYLANG['TXT_SHOP_DISCOUNT_TODAY'],
+                    'SHOP_DISCOUNT_TODAY'       =>
+                        $objProduct->getOutletDiscountRate().'%',
+                    'TXT_SHOP_PRICE_TODAY'      =>
+                        $_ARRAYLANG['TXT_SHOP_PRICE_TODAY'],
+                    'SHOP_PRICE_TODAY'          =>
+                        $this->objCurrency->getCurrencyPrice(
+                            $objProduct->getDiscountedPrice()
+                        ),
+                    'SHOP_PRICE_TODAY_UNIT'     =>
+                        $this->aCurrencyUnitName,
+                ));
+            }
+            if ($objProduct->isStockVisible) {
+                $this->objTemplate->setVariable(array(
+                    'SHOP_PRODUCT_STOCK' => $stock,
+                ));
+            }
+            if ($detailLink) {
+                $this->objTemplate->setVariable(array(
+                    'SHOP_PRODUCT_DETAILLINK' => $detailLink,
+                ));
+            }
+            if ($productWeight > 0) {
+                $this->objTemplate->setVariable(array(
+                    'TXT_SHOP_PRODUCT_WEIGHT' => $_ARRAYLANG['TXT_SHOP_PRODUCT_WEIGHT'],
+                    'SHOP_PRODUCT_WEIGHT'     => Weight::getWeightString($productWeight),
+                ));
+            }
+            if ($this->objVat->isEnabled()) {
+                $this->objTemplate->setVariable(array(
+                    'SHOP_PRODUCT_TAX_PREFIX' =>
+                        ($this->objVat->isIncluded()
+                            ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
+                            : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
+                         ),
+                    'SHOP_PRODUCT_TAX'        =>
+                        $this->objVat->getShort($objResult->fields['vat_id'])
+                ));
+            }
+
+            // Add flag images for flagged Products
+        	$strImage = '';
+        	$strFlags = $objProduct->getFlags();
+        	$arrVirtual = ShopCategories::getVirtualCategoryNameArray();
+            foreach (split(' ', $strFlags) as $strFlag) {
+                if (in_array($strFlag, $arrVirtual)) {
+            	    $strImage .=
+                	    '<img src="images/content/'.$strFlag.
+                        '.jpg" alt="'.$strFlag.'" />';
+            	}
+            }
+            if ($strImage) {
+                $this->objTemplate->setVariable(
+                    'SHOP_PRODUCT_FLAG_IMAGE', $strImage
+                );
+            }
+            $this->objTemplate->parse('shopProductRow');
         }
         return true;
     }
@@ -4258,7 +4184,7 @@ $_SESSION['shop']['grand_total_price'].' '.$this->aCurrencyUnitName."\n".
 
         return ($strMenu
             ? '<select name="manufacturerId" style="width: 180px;">'.
-              '<option value="0">'.$_ARRAYLANG["TXT_ALL_MANUFACTURER"].
+              '<option value="0">'.$_ARRAYLANG['TXT_ALL_MANUFACTURER'].
               '</option>'.$strMenu.'</select>'
             : ''
         );

@@ -10,7 +10,8 @@
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */
-class Settings {
+class Settings
+{
     /**
      * ADORecordSet
      * @access private

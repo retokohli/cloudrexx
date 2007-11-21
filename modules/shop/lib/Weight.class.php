@@ -20,8 +20,8 @@
  * @package     contrexx
  * @subpackage  module_shop
  */
-class Weight {
-
+class Weight
+{
     /**
      * The weight units in an array
      * @static

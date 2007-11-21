@@ -707,7 +707,8 @@ class Customer
      * @return  void
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function makeClone() {
+    function makeClone()
+    {
         $this->id = '';
     }
 
