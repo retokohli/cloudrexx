@@ -76,10 +76,10 @@ class Product
      */
     var $price;
     /**
-     * @var     integer         $sorting            Sorting order of the Product
+     * @var     integer         $order              Sorting order of the Product
      * @access  private
      */
-    var $sorting;
+    var $order;
     /**
      * @var     integer         $weight             Product weight (in grams)
      * @access  private
@@ -220,20 +220,19 @@ class Product
      * @param   string  $distribution   The Distribution type
      * @param   double  $price          The Product price
      * @param   integer $status         The status of the Product (0 or 1)
-     * @param   integer $sorting        The sorting order
+     * @param   integer $order          The sorting order
      * @param   integer $weight         The Product weight
      * @param   integer $id             The optional Product ID to be updated
      * @return  Product                 The Product
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function Product(
         $code, $catId, $name, $distribution, $price,
-        $status, $sorting, $weight, $id=0
+        $status, $order, $weight, $id=0
     ) {
         $this->__construct(
             $code, $catId, $name, $distribution, $price,
-            $status, $sorting, $weight, $id
+            $status, $order, $weight, $id
         );
     }
 
@@ -252,33 +251,27 @@ class Product
      * @param   string  $distribution   The Distribution type
      * @param   double  $price          The Product price
      * @param   integer $status         The status of the Product (0 or 1)
-     * @param   integer $sorting        The sorting order
+     * @param   integer $order          The sorting order
      * @param   integer $weight         The Product weight
      * @param   integer $id             The optional Product ID to be updated
      * @return  Product                 The Product
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct(
         $code, $catId, $name, $distribution, $price,
-        $status, $sorting, $weight, $id=0
+        $status, $order, $weight, $id=0
     ) {
-        // Warn / debug
-        if (!intval($catId)) {
-            return false;
-        }
-
         // Assign & check
         $this->code         = strip_tags($code);
         $this->catId        = intval($catId);
         $this->name         = strip_tags($name);
         $this->distribution = strip_tags($distribution);
         $this->price        = floatval($price);
-        $this->sorting      = intval($sorting);
+        $this->order        = intval($order);
         $this->weight       = intval($weight);
         $this->id           = intval($id);
         $this->setStatus($status);
-        if ($this->sorting <= 0) { $this->sorting = 0; }
+        if ($this->order <= 0) { $this->order = 0; }
 
         // Default values for everything else
         $this->pictures         = '';
@@ -313,7 +306,6 @@ class Product
     /**
      * Get the ID
      * @return  integer                             Product ID
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getId()
@@ -328,7 +320,6 @@ class Product
     /**
      * Get the Product code
      * @return  string                              Product code
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getCode()
@@ -338,18 +329,16 @@ class Product
     /**
      * Set the Product code
      * @param   string          $code               Product code
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setCode($code)
     {
-        $this->code = $code;
+        $this->code = strip_tags($code);
     }
 
     /**
      * Get the Product name
      * @return  string                              Product name
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getName()
@@ -359,7 +348,6 @@ class Product
     /**
      * Set the Product name
      * @param   string          $name               Product name
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setName($name)
@@ -370,7 +358,6 @@ class Product
     /**
      * Get the ShopCategory ID
      * @return  integer                             ShopCategory ID
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getShopCategoryId()
@@ -380,7 +367,6 @@ class Product
     /**
      * Set the ShopCategory ID
      * @param   integer         $shopCategoryId     ShopCategory ID
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setShopCategoryId($shopCategoryId)
@@ -391,7 +377,6 @@ class Product
     /**
      * Get the Product price
      * @return  double                              Product price
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getPrice()
@@ -401,7 +386,6 @@ class Product
     /**
      * Set the Product price
      * @param   double          $price              Product price
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setPrice($price)
@@ -412,7 +396,6 @@ class Product
     /**
      * Get the Product sorting order
      * @return  integer                             Sorting order
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getOrder()
@@ -422,7 +405,6 @@ class Product
     /**
      * Set the Product sorting order
      * @param   integer         $order              Sorting order
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setOrder($order)
@@ -433,7 +415,6 @@ class Product
     /**
      * Get the Distribution type
      * @return  string                              Distribution type
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getDistribution()
@@ -443,7 +424,6 @@ class Product
     /**
      * Set the Distribution type
      * @param   string          $distribution       Distribution type
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setDistribution($distribution)
@@ -460,7 +440,6 @@ class Product
     /**
      * Get the status
      * @return  boolean                             Status
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getStatus()
@@ -470,7 +449,6 @@ class Product
     /**
      * Set the status
      * @param   boolean         $status              Status
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setStatus($status)
@@ -481,7 +459,6 @@ class Product
     /**
      * Get the pictures
      * @return  string                              Encoded picture string
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getPictures()
@@ -491,7 +468,6 @@ class Product
     /**
      * Set the pictures
      * @param   string          $pictures           Encoded picture string
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setPictures($pictures)
@@ -502,7 +478,6 @@ class Product
     /**
      * Get the reseller price
      * @return  double                              Reseller price
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getResellerPrice()
@@ -512,7 +487,6 @@ class Product
     /**
      * Set the reseller price
      * @param   double          $resellerPrice      Reseller price
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setResellerPrice($resellerPrice)
@@ -523,7 +497,6 @@ class Product
     /**
      * Get the short description
      * @return  string                              Short description
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getShortDesc()
@@ -533,7 +506,6 @@ class Product
     /**
      * Set the short description
      * @param   string          $shortDesc          Short description
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setShortDesc($shortDesc)
@@ -544,7 +516,6 @@ class Product
     /**
      * Get the description
      * @return  string                              Long description
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getDescription()
@@ -554,7 +525,6 @@ class Product
     /**
      * Set the description
      * @param   string          $description        Long description
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setDescription($description)
@@ -565,7 +535,6 @@ class Product
     /**
      * Get the stock
      * @return  integer                             Stock
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getStock()
@@ -575,7 +544,6 @@ class Product
     /**
      * Set the stock
      * @param   integer         $stock              Stock
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setStock($stock)
@@ -586,7 +554,6 @@ class Product
     /**
      * Get the stock visibility
      * @return  boolean                             Stock visibility
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function isStockVisible()
@@ -596,7 +563,6 @@ class Product
     /**
      * Set the stock visibility
      * @param   boolean         $isStockVisible     Stock visibility
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setStockVisible($isStockVisible)
@@ -607,7 +573,6 @@ class Product
     /**
      * Get the discount price
      * @return  double                              Discount price
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getDiscountPrice()
@@ -617,7 +582,6 @@ class Product
     /**
      * Set the discount price
      * @param   double          $discountPrice      Discount price
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setDiscountPrice($discountPrice)
@@ -628,7 +592,6 @@ class Product
     /**
      * Get the special offer flag
      * @return  boolean                             Is special offer
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function isSpecialOffer()
@@ -638,7 +601,6 @@ class Product
     /**
      * Set the special offer flag
      * @param   boolean         $isSpecialOffer     Is special offer
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setSpecialOffer($isSpecialOffer)
@@ -651,8 +613,10 @@ class Product
      *
      * Note that this is an alias for {@link getProperty1()}.
      * @return  string              The ShopCategory flags
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getFlags() {
+    function getFlags()
+    {
         return $this->flags;
     }
     /**
@@ -663,8 +627,10 @@ class Product
      * @return  boolean             Boolean true if the flags were accepted
      *                              or already present, false otherwise
      *                              (always true for the time being).
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function addFlag($flag) {
+    function addFlag($flag)
+    {
         if (!preg_match("/$flag/i", $this->flags)) {
             $this->flags .= ' '.$flag;
         }
@@ -678,9 +644,11 @@ class Product
      * @return  boolean             Boolean true if the flags could be removed
      *                              or wasn't present, false otherwise
      *                              (always true for the time being).
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function removeFlag($flag) {
-        $this->flags = trim(preg_replace("/\s*$flag\s*/i", ' ', $this->flags));
+    function removeFlag($flag)
+    {
+        $this->flags = trim(preg_replace("/\\s*$flag\\s*/i", ' ', $this->flags));
         return true;
     }
     /**
@@ -691,8 +659,10 @@ class Product
      * @return  boolean             Boolean true if the flags were accepted,
      *                              false otherwise
      *                              (Always true for the time being).
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setFlags($flags) {
+    function setFlags($flags)
+    {
         $this->flags = $flags;
     }
 
@@ -703,15 +673,16 @@ class Product
      * @param   string              The ShopCategory flag to test
      * @return  boolean             Boolean true if the flag is set,
      *                              false otherwise.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function testFlag($flag) {
+    function testFlag($flag)
+    {
         return preg_match("/$flag/i", $this->flags);
     }
 
     /**
      * Get the property 1
      * @return  string                              Product property 1
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getProperty1()
@@ -721,7 +692,6 @@ class Product
     /**
      * Set the property 1
      * @param   string          $property1          Product property 1
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setProperty1($property1)
@@ -732,7 +702,6 @@ class Product
     /**
      * Get the property 2
      * @return  string                              Product property 2
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getProperty2()
@@ -742,7 +711,6 @@ class Product
     /**
      * Set the property 2
      * @param   string          $property2          Product property 2
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setProperty2($property2)
@@ -753,7 +721,6 @@ class Product
     /**
      * Get the B2B flag
      * @return  boolean                             Is B2B
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function isB2B()
@@ -763,7 +730,6 @@ class Product
     /**
      * Set the B2B flag
      * @param   boolean         $isB2B              Is B2B
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setB2B($isB2B)
@@ -774,7 +740,6 @@ class Product
     /**
      * Get the B2C flag
      * @return  boolean                             Is B2C
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function isB2C()
@@ -784,7 +749,6 @@ class Product
     /**
      * Set the B2C flag
      * @param   boolean         $isB2C              Is B2C
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setB2C($isB2C)
@@ -795,7 +759,6 @@ class Product
     /**
      * Get the start date
      * @return  string                              Start date
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getStartDate()
@@ -805,7 +768,6 @@ class Product
     /**
      * Set the start date
      * @param   string          $startDate          Start date
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setStartDate($startDate)
@@ -816,7 +778,6 @@ class Product
     /**
      * Get the end date
      * @return  string                              End date
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getEndDate()
@@ -826,7 +787,6 @@ class Product
     /**
      * Set the end date
      * @param   string          $endDate            End date
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setEndDate($endDate)
@@ -837,7 +797,6 @@ class Product
     /**
      * Get the thumbnail size percentage
      * @return  integer                             Thumbnail size percentage
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getThumbnailPercent()
@@ -847,7 +806,6 @@ class Product
     /**
      * Set the thumbnail size percentage
      * @param   integer         $thumbnailPercent   Thumbnail size percentage
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setThumbnailPercent($thumbnailPercent)
@@ -858,7 +816,6 @@ class Product
     /**
      * Get the thumbnail quality percentage
      * @return  integer                             Thumbnail quality percentage
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getThumbnailQuality()
@@ -868,7 +825,6 @@ class Product
     /**
      * Set the thumbnail quality percentage
      * @param   integer         $thumbnailQuality   Thumbnail quality percentage
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setThumbnailQuality($thumbnailQuality)
@@ -879,7 +835,6 @@ class Product
     /**
      * Get the Manufacturer ID
      * @return  integer                             Manufacturer ID
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getManufacturerId()
@@ -889,7 +844,6 @@ class Product
     /**
      * Set the Manufacturer ID
      * @param   integer         $manufacturer       Manufacturer ID
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setManufacturerId($manufacturerId)
@@ -900,7 +854,6 @@ class Product
     /**
      * Get the external link
      * @return  string                              External link
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getExternalLink()
@@ -910,7 +863,6 @@ class Product
     /**
      * Set the external link
      * @param   string          $externalLink       External link
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setExternalLink($externalLink)
@@ -921,7 +873,6 @@ class Product
     /**
      * Get the VAT Id
      * @return  string                              VAT Id
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getVatId()
@@ -931,7 +882,6 @@ class Product
     /**
      * Set the VAT Id
      * @param   string          $vatId              VAT Id
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setVatId($vatId)
@@ -942,7 +892,6 @@ class Product
     /**
      * Get the weight
      * @return  string                              Weight
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getWeight()
@@ -952,7 +901,6 @@ class Product
     /**
      * Set the weight
      * @param   string          $weight             Weight
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function setWeight($weight)
@@ -968,6 +916,7 @@ class Product
      * no reseller price will be returned.
      * @param   Customer    $objCustomer    The optional Customer object.
      * @return  double                      The Product price
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getCustomerPrice($objCustomer=false)
     {
@@ -982,17 +931,16 @@ class Product
      * Return the current Product discounted price for any Product.
      * @return  mixed                       The Product discount price,
      *                                      or false if there is no discount.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getDiscountedPrice()
     {
         if ($this->hasDiscount()) {
             $price = $this->price;
             if ($this->isSpecialOffer) {
-                $flagIsDiscount = true;
                 $price = $this->discountPrice;
             }
             if ($this->testFlag('Outlet')) {
-                $flagIsDiscount = true;
                 $discountRate = $this->getOutletDiscountRate();
                 $price = number_format(
                     $price * (100 - $discountRate) / 100,
@@ -1012,6 +960,7 @@ class Product
      * Use {@link getDiscountPrice()} to get the correct discount price.
      * @return  boolean                 True if there is a discount,
      *                                  false otherwise.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function hasDiscount()
     {
@@ -1023,6 +972,7 @@ class Product
      * Returns boolean true if this Product is in the "Outlet" Category.
      * @return  boolean                 True if this is in the "Outlet",
      *                                  false otherwise.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function isOutlet()
     {
@@ -1037,6 +987,7 @@ class Product
      * The rules for the discount are: 21% at the first date of the month,
      * plus an additional 1% per day, for a maximum rate of 51% on the 31st.
      * @return  integer                 The current Outlet discount rate
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getOutletDiscountRate()
     {
@@ -1053,10 +1004,10 @@ class Product
      * Also note that all ProductAttributes *MUST* be link()ed after every
      * insert() in order for this to work properly!
      * @return      void
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function makeClone() {
+    function makeClone()
+    {
         $this->id = 0;
     }
 
@@ -1070,7 +1021,6 @@ class Product
      * @todo        The handling of pictures is buggy.  Pictures used by other
      *              Products are only recognised if all file names are identical
      *              and in the same order!
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function delete($flagDeleteImages=false)
@@ -1109,16 +1059,9 @@ class Product
                         preg_match('/(.+)(\.\w+)$/', $strFileName, $fileArr);
                         $pictureName = $fileArr[1].$fileArr[2];
                         $thumbName = $pictureName.'.thumb';
-                        if (!@unlink(ASCMS_PATH."$thumbName"  )) { // ".ASCMS_SHOP_IMAGES_PATH."/
-                            // should continue despite the warning - maybe the super user
-                            // has just "rm -rf *"ed the picture for us. ;)
-                            //return true;
-                        }
-                        if (!@unlink(ASCMS_PATH."$pictureName")) {
-                            // should continue despite the warning - maybe the super user
-                            // has just "rm -rf *"ed the picture for us. ;)
-                            //return true;
-                        }
+                        // Continue even if deleting the images fails
+                        @unlink(ASCMS_PATH.$thumbName);
+                        @unlink(ASCMS_PATH.$pictureName);
                     }
                 }
             }
@@ -1147,6 +1090,7 @@ class Product
      * in the database.
      * @return  boolean                     True if it exists, false otherwise
      * @global  mixed       $objDatabase    Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function recordExists()
     {
@@ -1174,7 +1118,6 @@ class Product
      * Either updates or inserts the object, depending on the outcome
      * of the call to {@link recordExists()}.
      * @return      boolean     True on success, false otherwise
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function store()
@@ -1213,7 +1156,6 @@ class Product
      *
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function update()
@@ -1246,7 +1188,7 @@ class Product
                 thumbnail_quality=$this->thumbnailQuality,
                 manufacturer=$this->manufacturerId,
                 external_link='".addslashes($this->externalLink)."',
-                sort_order=$this->sorting,
+                sort_order=$this->order,
                 vat_id=$this->vatId,
                 weight=$this->weight,
                 flags='".addslashes($this->flags)."'
@@ -1264,10 +1206,7 @@ class Product
      *
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
-     * @todo        add sorting order to cloning, append order when
-     *              adding ProductAttribute values here!
      */
     function insert()
     {
@@ -1303,7 +1242,7 @@ class Product
                 '$this->startDate', '$this->endDate',
                 $this->manufacturerId, '".
                 addslashes($this->externalLink)."',
-                $this->sorting, $this->vatId, $this->weight,
+                $this->order, $this->vatId, $this->weight,
                 '".addslashes($this->flags)."'
             )";
 // No longer in use:
@@ -1328,7 +1267,6 @@ class Product
      * @return      Product                     The Product object on success,
      *                                          false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -1391,6 +1329,7 @@ class Product
      * @param   integer     $valueId    The Product Attribute value ID
      * @param   integer     $order      The sorting order value
      * @return  boolean                 True. Always.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function addAttribute($valueId, $order)
     {
@@ -1410,6 +1349,7 @@ class Product
      * Also note that this method always returns true. It cannot fail. :)
      * @param   integer     $valueId    The Product Attribute value ID
      * @return  boolean                 True. Always.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function deleteAttribute($valueId)
     {
@@ -1429,11 +1369,46 @@ class Product
      * Note that the relations are only permanently destroyed after
      * the object is store()d.
      * @return  boolean                 True on success, false otherwise
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function clearAttributes()
     {
         $this->arrProductAttributeValue = array();
         return true;
+    }
+
+
+    /**
+     * Return the five products least recently added to the database.
+     *
+     * Note that this just selects the five Products with the greatest ID,
+     * thus this will yield unexpected results if the IDs are set
+     * by any other means than the AUTO_INCREMENT mechanism.
+     * @return  array                   The array of the five Product objects
+     * @global  mixed   $objDatabase    Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function lastFive()
+    {
+        global $objDatabase;
+
+        // select last five products added to the database
+        $query = "
+            SELECT id, DISTINCT product_id
+              FROM ".DBPREFIX."module_shop_products
+             WHERE status=1
+          ORDER BY id DESC
+        ";
+        $objResult = $objDatabase->SelectLimit($query, 5);
+        if (!$objResult) {
+            return false;
+        }
+        $arrProduct = array();
+        while (!$objResult->EOF) {
+            $arrProduct[] = Product::getById($objResult->Fields('id'));
+            $objResult->MoveNext();
+        }
+        return $arrProduct;
     }
 }
 

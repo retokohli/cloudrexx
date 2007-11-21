@@ -66,21 +66,22 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
           {SHOP_CUSTOMER_TYPE_MENU}
         </select>
         <select name="shopOrderStatus">
-        	{SHOP_ORDER_STATUS_MENU}
+          {SHOP_ORDER_STATUS_MENU}
         </select>
         <input type="submit" name="shopSearchOrders" value="{TXT_SEARCH}" />
       </td>
     </tr>
     <tr class=row1>
       <td>{TXT_SORT_ORDER}
-        <select name="shopListSort">
-          <option value="lastname" selected>{TXT_LAST_NAME}</option>
-          <option value="firstname">{TXT_FIRST_NAME}</option>
-          <option value="company">{TXT_COMPANY}</option>
+        <select name="shopListSort"
+          onchange="document.formSearchOrders.submit();">
+          {SHOP_CUSTOMER_SORT_MENU}
         </select>
         &nbsp;&nbsp;&nbsp;
         <label for="shopShowPendingOrders">{TXT_SHOP_SHOW_PENDING_ORDERS}</label>
-        <input type="checkbox"{SHOP_SHOW_PENDING_ORDERS_CHECKED} id="shopShowPendingOrders" name="shopShowPendingOrders" onchange="document.formSearchOrders.submit();" />
+        <input type="checkbox"{SHOP_SHOW_PENDING_ORDERS_CHECKED}
+          id="shopShowPendingOrders" name="shopShowPendingOrders"
+          onchange="document.formSearchOrders.submit();" />
       </td>
     </tr>
     <tr class=row1>

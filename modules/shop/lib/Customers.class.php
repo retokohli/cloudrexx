@@ -62,37 +62,37 @@ class Customers
             $strMenu .=
                 '<option value="'.$index.'"'.
                 ($selectedType == $index ? ' selected="selected"' : '').
-                '>'.$_ARRAYLANG[$strType].'</option>';
+                '>'.
+                (   $index == -1
+                    ? '-- '.$_ARRAYLANG[$strType].' --'
+                    : $_ARRAYLANG[$strType]
+                ).
+                '</option>';
         }
         return $strMenu;
     }
 
 
     /**
-     * Returns a string with HTML code for the Customer type dropdown menu.
-     * @param   integer     $selectedType   The optional preselected type
+     * Returns a string with HTML code for the Customer sorting dropdown menu.
+     * @param   integer     $selectedField  The optional preselected field name
      * @return  string                      The Menu HTML code
      */
-    function getCustomerSortMenu($selectedField=-1)
+    function getCustomerSortMenu($selectedField='')
     {
         global $_ARRAYLANG;
 
-/*
-<option value="lastname" selected>{TXT_LAST_NAME}</option>
-<option value="firstname">{TXT_FIRST_NAME}</option>
-<option value="company">{TXT_COMPANY}</option>
-*/
-        $arrType = array(
-            -1 => 'TXT_CUSTOMER_TYP',
-             0 => 'TXT_CUSTOMER',
-             1 => 'TXT_RESELLER'
+        $arrField = array(
+            'lastname'  => 'TXT_LAST_NAME',
+            'firstname' => 'TXT_FIRST_NAME',
+            'company'   => 'TXT_COMPANY'
         );
         $strMenu = '';
-        foreach ($arrType as $index => $strType) {
+        foreach ($arrField as $index => $strField) {
             $strMenu .=
                 '<option value="'.$index.'"'.
-                ($selectedType == $index ? ' selected="selected"' : '').
-                '>'.$_ARRAYLANG[$strType].'</option>';
+                ($selectedField == $index ? ' selected="selected"' : '').
+                '>'.$_ARRAYLANG[$strField].'</option>';
         }
         return $strMenu;
     }

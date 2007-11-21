@@ -146,7 +146,8 @@ class Vat
      *
      * @return  float   The default VAT rate
      */
-    function getDefaultRate() {
+    function getDefaultRate()
+    {
         return $this->vatDefaultRate;
     }
 
@@ -156,7 +157,8 @@ class Vat
      *
      * @return  integer The default VAT ID
      */
-    function getDefaultId() {
+    function getDefaultId()
+    {
         return $this->vatDefaultId;
     }
 

@@ -137,7 +137,8 @@ class Discount
      * @param   integer     $customerId     The current Customer ID
      * @return  Discount
      */
-    function Discount($customerId) {
+    function Discount($customerId)
+    {
         $this->__construct($customerId);
     }
 

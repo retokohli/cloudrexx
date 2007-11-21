@@ -14,7 +14,8 @@
  * @subpackage  module_shop
  */
 
-class Shipment {
+class Shipment
+{
     /**
      * Array of all available shipment methods
      * -- UNUSED

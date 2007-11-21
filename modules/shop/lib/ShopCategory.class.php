@@ -76,7 +76,7 @@ class ShopCategory
      */
     var $parentId;
     /**
-     * @var     integer     $status     Status of the ShopCategory
+     * @var     boolean     $status     Status of the ShopCategory
      * @access  private
      */
     var $status;
@@ -109,6 +109,7 @@ class ShopCategory
      * @param   integer $catSorting     The sorting order
      * @param   integer $catId          The optional category ID to be updated
      * @return  ShopCategory            The ShopCategory
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function ShopCategory($catName, $catParentId, $catStatus, $catSorting, $catId=0)
     {
@@ -128,6 +129,7 @@ class ShopCategory
      * @param   integer $catSorting     The sorting order
      * @param   integer $catId          The optional category ID to be updated
      * @return  ShopCategory            The ShopCategory
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct(
         $catName, $catParentId, $catStatus, $catSorting, $catId=0
@@ -144,8 +146,10 @@ class ShopCategory
     /**
      * Get the ShopCategory ID
      * @return  integer             The ShopCategory ID
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getId() {
+    function getId()
+    {
         return $this->id;
     }
     /**
@@ -155,8 +159,10 @@ class ShopCategory
     /**
      * Get the ShopCategory name
      * @return  string              The ShopCategory name
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getName() {
+    function getName()
+    {
         return $this->name;
     }
     /**
@@ -165,8 +171,10 @@ class ShopCategory
      * Returns false iff the given name is empty.
      * @param   string              The ShopCategory name
      * @return  boolean             True on success, false otherwise
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setName($catName) {
+    function setName($catName)
+    {
         if (empty($catName)) {
             return false;
         }
@@ -177,19 +185,25 @@ class ShopCategory
     /**
      * Get the parent ShopCategory ID
      * @return  integer             The parent ShopCategory ID
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getParentId() {
+    function getParentId()
+    {
         return $this->parentId;
     }
     /**
      * Set the parent ShopCategory ID.
      *
-     * Returns false iff the given parent ID equals the objects' ID.
+     * If the ID of this object is already set, returns false if the given
+     * parent ID equals the ID.
      * @param   integer             The parent ShopCategory ID
      * @return  boolean             True on success, false otherwise
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setParentId($catParentId) {
-        if ($catParentId == $this->id) {
+    function setParentId($catParentId)
+    {
+        $catParentId = intval($catParentId);
+        if ($this->id > 0 && $catParentId == $this->id) {
             return false;
         }
         $this->parentId = $catParentId;
@@ -199,41 +213,52 @@ class ShopCategory
     /**
      * Get the ShopCategory status
      * @return  integer             The ShopCategory status
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getStatus() {
+    function getStatus()
+    {
         return $this->status;
     }
     /**
      * Set the ShopCategory status
      * @param   integer             The ShopCategory status
      * @return  boolean             Boolean true. Always.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setStatus($catStatus) {
-        $this->status = ($catStatus == 0 ? 0 : 1);
+    function setStatus($catStatus)
+    {
+        $this->status = ($catStatus ? true : false);
         return true;
     }
 
     /**
      * Get the ShopCategory sorting order
      * @return  integer             The ShopCategory sorting order
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getSorting() {
+    function getSorting()
+    {
         return $this->sorting;
     }
     /**
      * Set the ShopCategory sorting order
      * @param   integer             The ShopCategory sorting order
      * @return  boolean             Boolean true. Always.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setSorting($catSorting) {
-        $this->sorting = ($catSorting >= 0 ? $catSorting : 0);
+    function setSorting($catSorting)
+    {
+        $this->sorting = ($catSorting > 0 ? $catSorting : 0);
+        return true;
     }
 
     /**
      * Get the ShopCategory picture name
      * @return  string              The ShopCategory picture name
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getPicture() {
+    function getPicture()
+    {
         return $this->picture;
     }
     /**
@@ -242,16 +267,21 @@ class ShopCategory
      * @return  boolean             Boolean true if the name was accepted,
      *                              false otherwise
      *                              (Always true for the time being).
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setPicture($picture) {
+    function setPicture($picture)
+    {
         $this->picture = $picture;
+        return true;
     }
 
     /**
      * Get the ShopCategories flags
      * @return  string              The ShopCategories flags
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getFlags() {
+    function getFlags()
+    {
         return $this->flags;
     }
     /**
@@ -262,9 +292,11 @@ class ShopCategory
      * @return  boolean             Boolean true if the flags were accepted
      *                              or already present, false otherwise
      *                              (always true for the time being).
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function addFlag($flag) {
-        if (!preg_match("/$flag/i", $this->flags)) {
+    function addFlag($flag)
+    {
+        if (!$this->testFlag($flag)) {
             $this->flags .= ' '.$flag;
         }
         return true;
@@ -277,8 +309,10 @@ class ShopCategory
      * @return  boolean             Boolean true if the flags could be removed
      *                              or wasn't present, false otherwise
      *                              (always true for the time being).
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function removeFlag($flag) {
+    function removeFlag($flag)
+    {
         $this->flags = trim(preg_replace("/\\s*$flag\\s*/i", ' ', $this->flags));
         return true;
     }
@@ -288,8 +322,10 @@ class ShopCategory
      * @return  boolean             Boolean true if the flags were accepted,
      *                              false otherwise
      *                              (always true for the time being).
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setFlags($flags) {
+    function setFlags($flags)
+    {
         $this->flags = $flags;
         return true;
     }
@@ -300,11 +336,12 @@ class ShopCategory
      * @param   string              The ShopCategory flag to test
      * @return  boolean             Boolean true if the flag is set,
      *                              false otherwise.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function testFlag($flag) {
+    function testFlag($flag)
+    {
         return preg_match("/$flag/i", $this->flags);
     }
-
     /**
      * Returns true if this ShopCategory is virtual
      *
@@ -312,10 +349,27 @@ class ShopCategory
      * The test performed in isVirtual() is case sensitive!
      * @return  boolean             True if the ShopCategory is virtual,
      *                              false otherwise.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function isVirtual()
     {
         return preg_match('/__VIRTUAL__/', $this->flags);
+    }
+    /**
+     * Make this ShopCategory virtual if the argument evaluates to boolean
+     * true.  If it evaluates to false, however, the virtual status is
+     * cleared.
+     * @return  boolean             True on success, false otherwise
+     *                              (depends of the result of the call
+     *                              to {@link addFlag()}).
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function setVirtual($flagVirtual)
+    {
+        if ($flagVirtual) {
+            return $this->addFlag('__VIRTUAL__');
+        }
+        return $this->removeFlag('__VIRTUAL__');
     }
 
 
@@ -324,6 +378,7 @@ class ShopCategory
      * in the database.
      * @return  boolean                 True if it exists, false otherwise
      * @global  mixed   $objDatabase    Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function recordExists()
     {
@@ -387,10 +442,11 @@ class ShopCategory
      * Stores the ShopCategory object in the database.
      *
      * Either updates (id > 0) or inserts (id == 0) the object.
-     *
      * @return  boolean     True on success, false otherwise
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function store() {
+    function store()
+    {
         if ($this->recordExists()) {
             return ($this->update());
         }
@@ -403,21 +459,27 @@ class ShopCategory
      * Returns the result of the query.
      * @return  boolean                 True on success, false otherwise
      * @global  mixed   $objDatabase    Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function update()
     {
         global $objDatabase;
 
-        return $objDatabase->Execute("
+        $query = "
             UPDATE ".DBPREFIX."module_shop_categories
             SET catname='".addslashes($this->name)."',
                 parentid=$this->parentId,
-                catstatus=$this->status,
+                catstatus=".($this->status ? 1 : 0).",
                 catsorting=$this->sorting,
                 picture='".addslashes($this->picture)."',
                 flags='".addslashes($this->flags)."'
             WHERE catid=$this->id
-        ");
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+echo("ShopCategory::update(): ERROR: Query failed: $query<br />");
+        }
+        return $objResult;
     }
 
 
@@ -428,6 +490,7 @@ class ShopCategory
      * Uses the ID stored in this object, if greater than zero.
      * @return  boolean                 True on success, false otherwise
      * @global  mixed   $objDatabase    Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function insert()
     {
@@ -441,7 +504,7 @@ class ShopCategory
             ) VALUES (
                 '".addslashes($this->name)."',
                 $this->parentId,
-                $this->status,
+                ".($this->status ? 1 : 0).",
                 $this->sorting,
                 '".addslashes($this->picture)."',
                 '".addslashes($this->flags)."'
@@ -449,6 +512,7 @@ class ShopCategory
             )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
+echo("ShopCategory::insert(): ERROR: Query failed: $query<br />");
             return false;
         }
         $this->id = $objDatabase->Insert_ID();
@@ -464,6 +528,7 @@ class ShopCategory
      * $flagDeleteImages parameter evaluates to true.
      * @return  boolean                 True on success, false otherwise
      * @global  mixed   $objDatabase    Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function delete($flagDeleteImages=false)
     {
@@ -498,6 +563,7 @@ class ShopCategory
      * contained by the ShopCategory specified by $catParentId.
      * @param   integer     $catId      The parent ShopCategory ID
      * @param   string      $catName    The ShopCategory name to delete
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function deleteChildNamed($catParentId, $catName)
     {
@@ -520,6 +586,7 @@ class ShopCategory
      * @return  array                   Array of the resulting
      *                                  Shop Category objects
      * @global  mixed   $objDatabase    Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getByWildcard()
     {
@@ -528,12 +595,15 @@ class ShopCategory
             SELECT catid
               FROM '.DBPREFIX.'module_shop_categories
              WHERE 1 '.
-        (!empty($this->id)       ? " AND catid=$this->id"            : '').
-        (!empty($this->name)     ? " AND catname LIKE '%$this->name%'" : '').
-        (!empty($this->parentId) ? " AND parentid=$this->parentId"   : '').
-        (!empty($this->status)   ? " AND catstatus=$this->status"    : '').
-        (!empty($this->sorting)  ? " AND catsorting=$this->sorting"  : '');
-        (!empty($this->picture)  ? " AND picture=$this->picture"     : '');
+        (!empty($this->id)       ? " AND catid=$this->id"                 : '').
+        (!empty($this->name)     ? " AND catname LIKE '%$this->name%'"    : '').
+        (!empty($this->parentId) ? " AND parentid=$this->parentId"        : '').
+// TODO: This implementation does not allow any value other than boolean values
+// true or false.  As false is considered to be empty, this won't work in that
+// case.  We better ignore the status for the time being.
+//        (!empty($this->status)   ? " AND catstatus=$this->status"         : '').
+        (!empty($this->sorting)  ? " AND catsorting=$this->sorting"       : '').
+        (!empty($this->picture)  ? " AND picture LIKE '%$this->picture%'" : '');
         foreach (split(' ', $this->flags) as $flag) {
         	$query .= " AND flags LIKE '%$flag%'";
         }
@@ -559,6 +629,7 @@ class ShopCategory
      * @return  ShopCategory                The Shop Category object on success,
      *                                      false otherwise.
      * @global  mixed       $objDatabase    Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function getById($catId)
@@ -592,13 +663,16 @@ class ShopCategory
      *                                      Defaults to false.
      * @return  mixed                       An array of ShopCategory objects
      *                                      on success, false otherwise
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getChildCategories($flagActiveOnly=false)
     {
         if ($this->id <= 0) {
             return false;
         }
-        return ShopCategories::getChildCategoriesById($this->id, $flagActiveOnly);
+        return ShopCategories::getChildCategoriesById(
+            $this->id, $flagActiveOnly
+        );
     }
 
 
@@ -607,6 +681,7 @@ class ShopCategory
      * @return  mixed                   Array of the resulting Shop Category
      *                                  IDs on success, false otherwise
      * @global  mixed   $objDatabase    Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getChildrenIdArray()
     {
@@ -647,6 +722,7 @@ class ShopCategory
      *                                      false otherwise.
      * @global  mixed       $objDatabase    Database object
      * @global  array       $_ARRAYLANG     Language array
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function getChildNamed($strName, $flagActiveOnly=true)

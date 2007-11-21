@@ -22,8 +22,8 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
  */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Products.class.php';
 
-define('SHOP_CATEGORY_IMAGE_PATH',      ASCMS_SHOP_IMAGES_PATH.'/category/');
-define('SHOP_CATEGORY_IMAGE_WEB_PATH',  ASCMS_SHOP_IMAGES_WEB_PATH.'/category/');
+define('SHOP_CATEGORY_IMAGE_PATH',      ASCMS_SHOP_IMAGES_PATH.'/');
+define('SHOP_CATEGORY_IMAGE_WEB_PATH',  ASCMS_SHOP_IMAGES_WEB_PATH.'/');
 
 
 /**
@@ -76,6 +76,31 @@ class ShopCategories
      */
     var $arrTrail;
 
+
+    /**
+     * Create a new ShopCategories object(PHP4)
+     * @return  ShopCategories              The ShopCategories object
+     * @todo    Make this multilingual!
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function ShopCategories()
+    {
+        $this->__construct();
+    }
+
+
+    /**
+     * Create a new ShopCategories object(PHP4)
+     * @return  ShopCategories            The ShopCategories object
+     * @todo    Make this multilingual!
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function __construct()
+    {
+        $this->objProducts = &new Products();
+    }
+
+
     /**
      * Returns an array representing a tree of ShopCategories,
      * not including the root chosen.
@@ -86,6 +111,13 @@ class ShopCategories
      * @param   boolean $flagFull           If true, the full tree is built,
      *                                      only the parts visible for
      *                                      $selectedId otherwise.
+     *                                      Defaults to false.
+     * @param   boolean $flagActiveOnly     Only return ShopCategories
+     *                                      with status == true if true.
+     *                                      Defaults to false.
+     * @param   boolean $flagVirtual        If true, also returns the virtual
+     *                                      content of ShopCategories marked
+     *                                      as virtual.  Defaults to false.
      * @param   integer $selectedId         The optional selected ShopCategory
      *                                      ID.  If set and greater than zero,
      *                                      only the ShopCategories needed
@@ -93,34 +125,35 @@ class ShopCategories
      *                                      returned.
      * @param   integer $parentCategoryId   The optional root ShopCategories ID.
      *                                      Defaults to 0 (zero).
-     * @param   boolean $flagActiveOnly     Only return ShopCategories
-     *                                      with status == true if true.
-     *                                      Defaults to false.
      * @param   integer $maxlevel           The optional maximum nesting level.
      *                                      0 (zero) means all.
      *                                      Defaults to 0 (zero).
      * @return  mixed                       The array of ShopCategories on
      *                                      success, false on failure.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getTreeArray(
-        $flagFull=false, $selectedId=0, $parentCategoryId=0,
-        $flagActiveOnly=true, $maxlevel=0)
-    {
+        $flagFull=false, $flagActiveOnly=true, $flagVirtual=true,
+        $selectedId=0, $parentCategoryId=0, $maxlevel=0
+    ) {
         // Return the same array if it's already been initialized
         if (is_array($this->arrShopCategory)) {
             return $this->arrShopCategory;
         }
         // Otherwise, initialize it now
         if ($this->buildTreeArray(
-            $flagFull, $selectedId, $parentCategoryId, $flagActiveOnly, 0, $maxlevel
+            $flagFull, $flagActiveOnly, $flagVirtual,
+            $selectedId, $parentCategoryId, $maxlevel
         )) {
             return $this->arrShopCategory;
         }
         // It failed, probably due to a value of $selectedId that doesn't
         // exist.  Retry without it.
+echo("$selectedId<br />");
         if ($selectedId > 0) {
-            return $this->getTreeArray(
-                $flagFull, 0, $parentCategoryId, $flagActiveOnly, $maxlevel
+            return $this->buildTreeArray(
+                $flagFull, $flagActiveOnly, $flagVirtual,
+                0, $parentCategoryId, $maxlevel
             );
         }
         // If that doesn't help...
@@ -140,6 +173,7 @@ class ShopCategories
      * @version 1.1
      * @return  mixed                       The ShopCategoriy index array on
      *                                      success, false on failure.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getTreeIndexArray()
     {
@@ -162,9 +196,10 @@ class ShopCategories
      *    'name'     => 'Category name',
      *    'parentId' => parent ID
      *    'sorting'  => order value,
-     *    'status'   => status flag,
+     *    'status'   => status flag (boolean),
      *    'picture'  => 'picture name',
-     *    'flags'    => 'Category flags',
+     *    'flags'    => 'Category flags' (string),
+     *    'virtual'  => virtual flag status (boolean),
      *    'level'    => nesting level,
      * ),
      * ... more parents
@@ -173,6 +208,13 @@ class ShopCategories
      * @param   boolean $flagFull           If true, the full tree is built,
      *                                      only the parts visible for
      *                                      $selectedId otherwise.
+     *                                      Defaults to false.
+     * @param   boolean $flagActiveOnly     Only return ShopCategories
+     *                                      with status == true if true.
+     *                                      Defaults to false.
+     * @param   boolean $flagVirtual        If true, also returns the virtual
+     *                                      content of ShopCategories marked
+     *                                      as virtual.  Defaults to false.
      * @param   integer $selectedId         The optional selected ShopCategory
      *                                      ID.  If set and greater than zero,
      *                                      only the ShopCategories needed
@@ -180,20 +222,15 @@ class ShopCategories
      *                                      returned.
      * @param   integer $parentCategoryId   The optional root ShopCategories ID.
      *                                      Defaults to 0 (zero).
-     * @param   boolean $flagActiveOnly     Only return ShopCategories
-     *                                      with status == true if true.
-     *                                      Defaults to false.
-     * @param   integer $level              The optional nesting level,
-     *                                      initially 0.
-     *                                      Defaults to 0 (zero).
      * @param   integer $maxlevel           The optional maximum nesting level.
      *                                      0 (zero) means all.
      *                                      Defaults to 0 (zero).
      * @return  boolean                     True on success, false otherwise.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function buildTreeArray(
-        $flagFull=false, $selectedId=0, $parentCategoryId=0,
-        $flagActiveOnly=true, $level=0, $maxlevel=0
+        $flagFull=false, $flagActiveOnly=true, $flagVirtual=true,
+        $selectedId=0, $parentCategoryId=0, $maxlevel=0
     ) {
         $this->arrShopCategory = array();
         $this->arrShopCategoryIndex = array();
@@ -204,8 +241,8 @@ class ShopCategories
         }
 
         if (!$this->buildTreeArrayRecursive(
-            $flagFull, $selectedId, $parentCategoryId,
-            $flagActiveOnly, $level, $maxlevel
+            $flagFull, $flagActiveOnly, $flagVirtual,
+            $selectedId, $parentCategoryId, $maxlevel
         )) {
             return false;
         }
@@ -222,6 +259,13 @@ class ShopCategories
      * @param   boolean $flagFull           If true, the full tree is built,
      *                                      only the parts visible for
      *                                      $selectedId otherwise.
+     *                                      Defaults to false.
+     * @param   boolean $flagActiveOnly     Only return ShopCategories
+     *                                      with status == true if true.
+     *                                      Defaults to false.
+     * @param   boolean $flagVirtual        If true, also returns the virtual
+     *                                      content of ShopCategories marked
+     *                                      as virtual.  Defaults to false.
      * @param   integer $selectedId         The optional selected ShopCategory
      *                                      ID.  If set and greater than zero,
      *                                      only the ShopCategories needed
@@ -229,25 +273,23 @@ class ShopCategories
      *                                      returned.
      * @param   integer $parentCategoryId   The optional root ShopCategories ID.
      *                                      Defaults to 0 (zero).
-     * @param   boolean $flagActiveOnly     Only return ShopCategories
-     *                                      with status == true if true.
-     *                                      Defaults to false.
-     * @param   integer $level              The optional nesting level,
-     *                                      initially 0.
-     *                                      Defaults to 0 (zero).
      * @param   integer $maxlevel           The optional maximum nesting level.
      *                                      0 (zero) means all.
      *                                      Defaults to 0 (zero).
+     * @param   integer $level              The optional nesting level,
+     *                                      initially 0.
+     *                                      Defaults to 0 (zero).
      * @return  boolean                     True on success, false otherwise.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function buildTreeArrayRecursive(
-        $flagFull=false, $selectedId=0, $parentCategoryId=0,
-        $flagActiveOnly=true, $level=0, $maxlevel=0
+        $flagFull=false, $flagActiveOnly=true, $flagVirtual=true,
+        $selectedId=0, $parentCategoryId=0, $maxlevel=0, $level=0
     ) {
         // Get the ShopCategories's children
         $arrShopCategory =
             ShopCategories::getChildCategoriesById(
-                $parentCategoryId, $flagActiveOnly
+                $parentCategoryId, $flagActiveOnly, $flagVirtual
             );
         // Has there been an error?
         if ($arrShopCategory === false) {
@@ -264,15 +306,20 @@ class ShopCategories
                 'status'   => $objShopCategory->status,
                 'picture'  => $objShopCategory->picture,
                 'flags'    => $objShopCategory->flags,
+                'virtual'  => $objShopCategory->isVirtual(),
                 'level'    => $level,
             );
             $this->arrShopCategoryIndex[$id] = $index;
-            // Get the grandchildren if desired
+            // Get the grandchildren if
+            // - the maximum depth has not been exceeded and
+            // - the full list has been requested, or the current ShopCategory
+            //   is an ancestor of the selected one or the selected itself.
             if (($maxlevel == 0 || $level < $maxlevel)
-             && ($flagFull || in_array($id, $this->arrTrail))) {
+             && ($flagFull || in_array($id, $this->arrTrail))
+             && (!$objShopCategory->isVirtual() || $flagVirtual)) {
                 $this->buildTreeArrayRecursive(
-                    $flagFull, $selectedId, $id,
-                    $flagActiveOnly, $level+1, $maxlevel
+                    $flagFull, $flagActiveOnly, $flagVirtual,
+                    $selectedId, $id, $maxlevel, $level+1
                 );
             }
         }
@@ -295,6 +342,7 @@ class ShopCategories
      * @return  string                      The ShopCategory ID list
      *                                      on success, false otherwise.
      * @global  mixed   $objDatabase        Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getSearchCategoryIdString(
         $parentCategoryId=0, $flagActiveOnly=true
@@ -340,6 +388,7 @@ class ShopCategories
      * @param   integer $selectedId         The selected ShopCategory ID.
      * @return  mixed                       The array of ShopCategory IDs
      *                                      on success, false on failure.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getTrailArray($selectedId=0)
     {
@@ -364,6 +413,7 @@ class ShopCategories
      * @return  mixed                       The array of all ancestor
      *                                      ShopCategories on success,
      *                                      false otherwise.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     // was: _makeArrCurrentCategories
     function buildTrailArray($shopCategoryId)
@@ -393,6 +443,7 @@ class ShopCategories
      * Do this after changing the database tables or in order to get
      * a different subset of the Shop Categories the next time
      * {@link ShopCategories::getTreeArray()} is called.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function invalidateTreeArray()
     {
@@ -402,24 +453,37 @@ class ShopCategories
 
 
     /**
-     * Create a new ShopCategories object(PHP4)
-     * @return  ShopCategories            The ShopCategories object
-     * @todo    Make this multilingual!
+     * Returns the number of elements in the ShopCategory array of this object.
+     *
+     * If the array has not been initialized before, boolean false is returned.
+     * @return  mixed                       The element count, or false.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function ShopCategories()
+    function getTreeNodeCount()
     {
-        $this->__construct();
+        if (!is_array($this->arrShopCategory)) {
+            return false;
+        }
+        return count($this->arrShopCategory);
     }
 
 
     /**
-     * Create a new ShopCategories object(PHP4)
-     * @return  ShopCategories            The ShopCategories object
-     * @todo    Make this multilingual!
+     * Returns the array of ShopCategory data for the given ID.
+     *
+     * If the ShopCategory array is not initialized, or if an invalid ID
+     * is provided, returns boolean false.
+     * @param   integer     $id         The ShopCategory ID
+     * @return  mixed                   The ShopCategory data array, or false.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function __construct()
+    function getArrayById($id)
     {
-        $this->objProducts = &new Products();
+        if (!isset($this->arrShopCategoryIndex[$id])) {
+            return false;
+        }
+        $index = $this->arrShopCategoryIndex[$id];
+        return $this->arrShopCategory[$index];
     }
 
 
@@ -432,6 +496,7 @@ class ShopCategories
      * @static
      * @return  boolean         True on success, false otherwise
      * @todo    Adopt this to using the $arrCategories object variable
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function deleteAll($flagDeleteImages=false)
@@ -467,6 +532,7 @@ class ShopCategories
      * @return  string                  The product thumbnail path on success,
      *                                  the empty string otherwise.
      * @global  mixed   $objDatabase    Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function getPictureById($catId=0, $flagActiveOnly=true)
@@ -485,7 +551,7 @@ class ShopCategories
         if ($objResult && $objResult->RecordCount() > 0) {
             // Got a picture
             $imageName = stripslashes($objResult->fields['picture']);
-            return 'category/'.$imageName;
+            return $imageName;
         }
 
         // Otherwise, look for images in Products within the children
@@ -522,15 +588,17 @@ class ShopCategories
      *                                      Defaults to false.
      * @return  array                       An array of ShopCategories objects
      *                                      on success, false on failure.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
-    function getChildCategoriesById($parentCategoryId=0, $flagActiveOnly=true)
-    {
+    function getChildCategoriesById(
+        $parentCategoryId=0, $flagActiveOnly=true, $flagVirtual=true
+    ) {
         global $objDatabase;
 
         $arrChildShopCategoriesId =
             ShopCategories::getChildCategoryIdArray(
-                $parentCategoryId, $flagActiveOnly
+                $parentCategoryId, $flagActiveOnly, $flagVirtual
             );
         if (!is_array($arrChildShopCategoriesId)) {
             return false;
@@ -549,6 +617,7 @@ class ShopCategories
      *
      * @param unknown_type $id
      * @return unknown
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getCategoryById($id)
     {
@@ -568,6 +637,7 @@ class ShopCategories
      * @param   string      $name           The optional menu name,
      *                                      defaults to 'catId'.
      * @return  string                      The HTML dropdown menu code
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getShopCategoriesMenuNamed($selectedId=0, $name='catId')
     {
@@ -591,7 +661,6 @@ class ShopCategories
      * The <select> tag pair is not included, nor the option for the root
      * ShopCategory.
      * @version 1.0     initial version
-     * @static
      * @param   integer $selectedid     The optional selected ShopCategories ID.
      * @param   boolean $flagActiveOnly If true, only active ShopCategories
      *                                  are included, all otherwise.
@@ -599,11 +668,12 @@ class ShopCategories
      *                                  defaults to 0 (zero), meaning all.
      * @return  string                  The HTML code with all <option> tags,
      *                                  or the empty string on failure.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
     function getShopCategoriesMenu(
         $selectedId=0, $flagActiveOnly=true, $maxlevel=0
     ) {
+//echo("ShopCategories::getShopCategoriesMenu(): ".($flagActiveOnly ? 'true' : 'false')."<br />");
 // TODO: Implement this in a way so that both the Shopnavbar and the Shopmenu
 // can be set up using only one call to buildTreeArray().
 // Unfortunately, the set of records used is not identical in both cases.
@@ -614,17 +684,18 @@ class ShopCategories
 //        }
 
         // Check whether the ShopCategory with the selected ID is missing
+        // in the index (and thus in the tree as well)
         $trailIndex = count($this->arrTrail);
-        while ($selectedId
+        while ($selectedId > 0
+            && $trailIndex > 0
             && !isset($this->arrShopCategoryIndex[$selectedId])
-            && $trailIndex > 0) {
+        ) {
             // So we choose its highest level ancestor present.
             $selectedId = $this->arrTrail[--$trailIndex];
         }
         $strMenu = '';
         foreach ($this->arrShopCategory as $arrCategory) {
             $level = $arrCategory['level'];
-            //if ($level > $maxlevel) { continue; }
             $id    = $arrCategory['id'];
             $name  = $arrCategory['name'];
             $strMenu .=
@@ -651,10 +722,11 @@ class ShopCategories
      *                                      on success, false otherwise.
      * @static
      * @global  mixed   $objDatabase        Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function getChildCategoryIdArray(
-        $parentShopCategoryId=0, $flagActiveOnly=true
+        $parentShopCategoryId=0, $flagActiveOnly=true, $flagVirtual=true
     ) {
         global $objDatabase;
 
@@ -696,6 +768,7 @@ class ShopCategories
      *                                      are considered.
      * @return  mixed                       The ShopCategory on success,
      *                                      false otherwise.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function getChildNamed($parentId, $strName, $flagActiveOnly=true)
@@ -726,45 +799,35 @@ class ShopCategories
 
 
     /**
-     * Returns the parent category ID, or 0 (zero)
+     * Returns the parent category ID of the ShopCategory specified by its ID,
      *
      * If the ID given corresponds to a top level category,
      * 0 (zero) is returned, as there is no parent.
-     * If the ID cannot be found, 0 (zero) is returned as well.
-     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * If the ID cannot be found, boolean false is returned.
      * @global  mixed   $objDatabase    Database object
      * @param   integer $shopCategoryId The ShopCategory ID
-     * @return  integer                 The parent category ID,
-     *                                  or 0 (zero) on failure.
-     * @static
+     * @return  mixed                   The parent category ID,
+     *                                  or boolean false on failure.
      * @global  mixed   $objDatabase    Database object
-     * @todo    Adopt this to using the $arrCategories object variable
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
     function getParentCategoryId($shopCategoryId)
     {
-        global $objDatabase;
-
-        $query = '
-            SELECT parentid
-              FROM '.DBPREFIX."module_shop_categories
-             WHERE catid=$shopCategoryId
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->RecordCount == 0) {
-            return 0;
+        $arrShopCategory = $this->getArrayById($shopCategoryId);
+        if (!$arrShopCategory) {
+            return false;
         }
-        return $objResult->Fields('parentid');
+        return $arrShopCategory['parentId'];
     }
 
 
     /**
      * Get the next ShopCategories ID after $shopCategoryId according to
      * the sorting order.
-     * @author  Reto Kohli <reto.kohli@comvation.com>
      * @param   integer $shopCategoryId     The ShopCategories ID
      * @return  integer                     The next ShopCategories ID
      * @static
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function getNextShopCategoriesId($shopCategoryId=0)
@@ -790,6 +853,51 @@ class ShopCategories
     }
 
 
+    /**
+     * Returns an array with the names of all ShopCategories marked as virtual.
+     *
+     * Note that the names are ordered according to the sorting order field.
+     * @return  array               The array of virtual ShopCategory names
+     */
+    function getVirtualCategoryNameArray()
+    {
+        global $objDatabase;
+
+        $query = "
+           SELECT catname
+             FROM ".DBPREFIX."module_shop_categories
+            WHERE flags LIKE '%__VIRTUAL__%'
+         ORDER BY catsorting ASC
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return false;
+        }
+        $arrVirtual = array();
+        while (!$objResult->EOF) {
+            $arrVirtual[] = $objResult->Fields('catname');
+            $objResult->MoveNext();
+        }
+        return $arrVirtual;
+    }
+
+
+    /**
+     * Returns an array with the IDs and names of all ShopCategories marked
+     * as virtual.
+     *
+     * The array structure is
+     *  array(
+     *      index => array(
+     *          'id'    => The ShopCategory ID
+     *          'name'  => The ShopCategory name
+     *      ),
+     *      ... [more]
+     *  )
+     * Note that the array elements are ordered according to the
+     * sorting order field.
+     * @return  array               The array of virtual ShopCategory IDs/names
+     */
     function getVirtualCategoryIdNameArray()
     {
         global $objDatabase;
@@ -821,6 +929,7 @@ class ShopCategories
      * selection checkboxes.
      * @param   string      $strFlags       The Product Flags
      * @return  string                      The HTML checkboxes string
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getVirtualCategoriesSelectionForFlags($strFlags)
     {
@@ -844,7 +953,7 @@ class ShopCategories
 
 
     /**
-     * Create thumbnails and update the corresponding ShopCategory records
+     * Create thumbnail and update the corresponding ShopCategory records
      *
      * Scans the ShopCategories with the given IDs.  If a non-empty picture
      * string with a reasonable extension is encountered, determines whether
@@ -860,99 +969,70 @@ class ShopCategories
      * from within some {@link _import()} methods.  The focus lies on importing;
      * whether or not thumbnails can be created is secondary, as the
      * process can be repeated if there is a problem.
-     * @param   integer     $arrId      The array of ShopCategory IDs
+     * @param   integer     $id         The ShopCategory ID
      * @return  string                  Empty string on success, a string
      *                                  with error messages otherwise.
      * @global  array       $_ARRAYLANG     Language array
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function makeThumbnailsById($arrId)
+    function makeThumbnailById($id)
     {
         global $_ARRAYLANG;
 
+        if ($id <= 0) {
+            return sprintf($_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'], $id);
+        }
+        $objShopCategory = ShopCategory::getById($id);
+        if (!$objShopCategory) {
+            return sprintf($_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'], $id);
+        }
+        $imageName = $objShopCategory->getPicture();
+        $imagePath = SHOP_CATEGORY_IMAGE_PATH.'/'.$imageName;
+        // Only try to create thumbs from entries that contain a
+        // plain text file name (i.e. from an import)
+        if (   $imageName == ''
+            || !preg_match('/\.(?:jpe?g|gif|png)$/', $imageName)) {
+            return sprintf(
+                $_ARRAYLANG['TXT_SHOP_UNSUPPORTED_IMAGE_FORMAT'],
+                $id, $imageName
+            );
+        }
+        // If the picture is missing, skip it.
+        if (!file_exists($imagePath)) {
+            return sprintf(
+                $_ARRAYLANG['TXT_SHOP_MISSING_CATEGORY_IMAGES'],
+                $id, $imageName
+            );
+        }
+        $thumbResult = true;
+        // If the thumbnail exists and is newer than the picture,
+        // don't create it again.
+        if (file_exists($imagePath.'.thumb')
+         && filemtime($imagePath.'.thumb') > filemtime($imagePath)) {
+            return '';
+        }
+        // Already included by the Shop.
         require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
-
-        if (!is_array($arrId)) {
-            //$this->addMessage("Keine Kategorie IDs zum erstellen der Thumbnails vorhanden ($id).");
-            return false;
+        $objImageManager = &new ImageManager();
+        // Create thumbnail.
+        // Deleting the old thumb beforehand is integrated into
+        // _createThumbWhq().
+echo("ShopCategories::makeThumbnailById(): config<br />");var_export($this->arrConfig);echo("<br />");
+        if (!$objImageManager->_createThumbWhq(
+            SHOP_CATEGORY_IMAGE_PATH,
+            SHOP_CATEGORY_IMAGE_WEB_PATH,
+            $imageName,
+            $this->arrConfig['shop_thumbnail_max_width']['value'],
+            $this->arrConfig['shop_thumbnail_max_height']['value'],
+            $this->arrConfig['shop_thumbnail_quality']['value']
+        )) {
+            return sprintf(
+                $_ARRAYLANG['TXT_SHOP_ERROR_CREATING_CATEGORY_THUMBNAIL'],
+                $id
+            );
         }
-
-        // Collect and group errors
-        $arrMissingCategoryPicture = array();
-        $arrFailedCreatingThumb    = array();
-        $strError = '';
-
-        $objImageManager = new ImageManager();
-        foreach ($arrId as $id) {
-            if ($id <= 0) {
-                $strError .= ($strError ? '<br />' : '').
-                    sprintf($_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'], $id);
-                continue;
-            }
-            $objShopCategory = ShopCategory::getById($id);
-            if (!$objShopCategory) {
-                $strError .= ($strError ? '<br />' : '').
-                    sprintf($_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'], $id);
-                continue;
-            }
-            $imageName = $objShopCategory->getPicture();
-            $imagePath = SHOP_CATEGORY_IMAGE_PATH.'/'.$imageName;
-            // only try to create thumbs from entries that contain a
-            // plain text file name (i.e. from an import)
-            if (   $imageName == ''
-                || !preg_match('/\.(?:jpg|jpeg|gif|png)$/', $imageName)) {
-                $strError .= ($strError ? '<br />' : '').
-                    sprintf(
-                        $_ARRAYLANG['TXT_SHOP_UNSUPPORTED_IMAGE_FORMAT'],
-                        $imageName, $id
-                    );
-                continue;
-            }
-            // If the picture is missing, skip it.
-            if (!file_exists($imagePath)) {
-                $arrMissingCategoryPicture["$id - $imageName"] = 1;
-                continue;
-            }
-            $thumbResult = true;
-            // If the thumbnail exists and is newer than the picture,
-            // don't create it again.
-            if (file_exists($imagePath.'.thumb')
-             && filemtime($imagePath.'.thumb') > filemtime($imagePath)) {
-                //$this->addMessage("Hinweis: Thumbnail für Kategorie ID '$id' existiert bereits");
-            } else {
-                // Create thumbnail, get the original size.
-                // Deleting the old thumb beforehand is integrated into
-                // _createThumbWhq().
-                $thumbResult = $objImageManager->_createThumbWhq(
-                    SHOP_CATEGORY_IMAGE_PATH,
-                    SHOP_CATEGORY_IMAGE_WEB_PATH,
-                    $imageName,
-                    $this->arrConfig['shop_thumbnail_max_width']['value'],
-                    $this->arrConfig['shop_thumbnail_max_height']['value'],
-                    95 //$this->arrConfig['shop_thumbnail_quality']['value']
-                );
-            }
-            // The database needs to be updated, however, as all Categories
-            // have been imported.
-            if (!$thumbResult) {
-                $arrFailedCreatingThumb[] = $id;
-            }
-        }
-        if (count($arrMissingCategoryPicture)) {
-            ksort($arrMissingCategoryPicture);
-            $strError .= ($strError ? '<br />' : '').
-                $_ARRAYLANG['TXT_SHOP_MISSING_CATEGORY_IMAGES'].' '.
-                join(', ', array_keys($arrMissingCategoryPicture));
-        }
-        if (count($arrFailedCreatingThumb)) {
-            sort($arrFailedCreatingThumb);
-            $strError .= ($strError ? '<br />' : '').
-                $_ARRAYLANG['TXT_SHOP_ERROR_CREATING_CATEGORY_THUMBNAIL'].' '.
-                join(', ', $arrFailedCreatingThumb);
-        }
-        return $strError;
+        return '';
     }
-
-
 
 }
 

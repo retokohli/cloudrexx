@@ -1,7 +1,7 @@
 <?php
 
-class CSVimport {
-
+class CSVimport
+{
     var $arrImportImg = array();
     var $separator = ';';
     var $delimiter = '"';

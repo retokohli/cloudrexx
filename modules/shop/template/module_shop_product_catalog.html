@@ -3,16 +3,16 @@
 <!-- // confirm delete product
 function deleteProduct(id)
 {
-	if(confirm('{TXT_CONFIRM_DELETE_PRODUCT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+	if (confirm('{TXT_CONFIRM_DELETE_PRODUCT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
 		window.location.replace("index.php?cmd=shop&act=delProduct&id="+id);
 }
 
 function shopProductsDoAction(obj,act)
 {
-	if(shopProductsIsChecked('selectedProductId[]') == true){
-		switch(act){
+	if (shopProductsIsChecked('selectedProductId[]') == true) {
+		switch(act) {
 			case 'del':
-				if(confirm('{TXT_CONFIRM_DELETE_PRODUCT}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
+				if (confirm('{TXT_CONFIRM_DELETE_PRODUCT}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
 					document.formCatalog.action = "index.php?cmd=shop&act=delProduct";
 					document.formCatalog.submit();
 				}
@@ -27,20 +27,15 @@ function shopProductsDoAction(obj,act)
 function shopProductsIsChecked(fieldName)
 {
     var x = 0;
-    for(var i = 0; i < document.formCatalog.elements.length; i++)
-    {
+    for (var i = 0; i < document.formCatalog.elements.length; i++) {
         var e = document.formCatalog.elements[i];
-        if(e.name == fieldName && e.checked == true)
-        {
+        if (e.name == fieldName && e.checked == true) {
             x++;
         }
     }
-    if(x > 0)
-    {
+    if (x > 0) {
         return true;
-    }
-    else
-    {
+    } else {
         return false;
     }
 }
@@ -94,7 +89,7 @@ function shopProductsIsChecked(fieldName)
 				<td>{SHOP_PRODUCT_ID}<input type="hidden" name="shopProductId[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_ID}" /></td>
 				<td><img src="images/icons/{SHOP_PRODUCT_STATUS_PICTURE}" alt="{TXT_PRODUCT_STATUS}" title="{TXT_PRODUCT_STATUS}" /></td>
 				<td><input type="text" name="shopSortOrder[{SHOP_PRODUCT_ID}]" size="5" maxlength="5" value="{SHOP_SORT_ORDER}" /><input type="hidden" name="shopSortOrderOld[{SHOP_PRODUCT_ID}]" value="{SHOP_SORT_ORDER}" /></td>
-				<td><a href="?cmd=shop&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}" title="{SHOP_PRODUCT_NAME1}">{SHOP_PRODUCT_NAME2}</a></td>
+				<td><a href="?cmd=shop&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}" title="{SHOP_PRODUCT_NAME}">{SHOP_PRODUCT_NAME}</a></td>
 				<td><input maxlength="255" name="identifier[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" size="10" /><input type="hidden" name="identifierOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" /></td>
 				<td width="7%"><input type="checkbox" name="specialOffer[{SHOP_PRODUCT_ID}]" value="1" {SHOP_PRODUCT_SPECIAL_OFFER} /></td>
 				<td width="5%"><input maxlength=10 name="discount[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_DISCOUNT}" size="6" /><input type="hidden" name="discountOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_DISCOUNT}" />

@@ -1,6 +1,6 @@
 <?php
 /**
- * Shop Products
+ * Products helper class
  *
  * @version     $Id: 1.0.1$
  * @package     contrexx
@@ -14,11 +14,10 @@ define('PRODUCT_IMAGE_PATH',        ASCMS_SHOP_IMAGES_PATH.'/');
 define('PRODUCT_IMAGE_WEB_PATH',    ASCMS_SHOP_IMAGES_WEB_PATH.'/');
 
 /**
- * Product as available in the Shop.
+ * Product helper object
  *
- * Includes access methods and data layer.
- * Do not, I repeat, do not access private fields, or even try
- * to access the database directly!
+ * Provides methods for accessing sets of Products, displaying menus
+ * and the like.
  * @version     $Id: 1.0.1 $
  * @package     contrexx
  * @subpackage  module_shop
@@ -45,19 +44,11 @@ class Products
         'sort_order', 'vat_id', 'weight', 'flags'
     );
 
-    /**
-     * Default picture name
-     * @static
-     * @var     string
-     */
-    //static
-    var $defaultThumbnail = "no_picture.gif";
 
     /**
      * Create a Products helper object (PHP4)
      * @access  public
      * @return  Products                The helper
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function Products()
@@ -68,7 +59,6 @@ class Products
     /**
      * Create a Products helper object (PHP5)
      * @return  Products                The helper
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct()
@@ -83,25 +73,24 @@ class Products
      *                                          to look for
      * @return      string                      The query string
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getWildcardQuery($arrPattern)
     {
         $query = '';
         foreach ($arrPattern as $fieldName => $pattern) {
-        	if (in_array($fieldName, $this->arrFieldName)) {
-        	    if ($query) {
+            if (in_array($fieldName, $this->arrFieldName)) {
+                if ($query) {
                     $query .= "
                         OR $fieldName LIKE '%".
                         addslashes($pattern)."%'";
-        	    } else {
+                } else {
                     $query  = "
                         SELECT id FROM ".DBPREFIX."module_shop_products
                         WHERE $fieldName LIKE '%".
                         addslashes($pattern)."%'";
-        	    }
-        	}
+                }
+            }
         }
         return $query;
     }
@@ -114,7 +103,6 @@ class Products
      * @return      array                       An array of Products on success,
      *                                          false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getByWildcard($arrPattern)
@@ -135,17 +123,24 @@ class Products
     }
 
 
-    function getByCustomId($customId=0)
+    /**
+     * Returns an array of Product objects sharing the same Product code.
+     * @param   string      $customId   The Product code
+     * @return  mixed                   The array of matching Product objects
+     *                                  on success, false otherwise.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getByCustomId($customId)
     {
         global $objDatabase;
 
-        if (!$customId) {
+        if (empty($customId)) {
             // No way.
             return false;
         }
         $query = "
             SELECT id FROM ".DBPREFIX."module_shop_products
-             WHERE product_id=$customId
+             WHERE product_id='$customId'
           ORDER BY id ASC
         ";
         $objResult = $objDatabase->Execute($query);
@@ -165,6 +160,11 @@ class Products
      * Returns an array of Products selected by parameters as available in
      * the Shop.
      * @static
+     * @param       integer     $count          This reference parameter serves
+     *                                          as a return value.  It is set
+     *                                          to the total number of Product
+     *                                          records matching the given
+     *                                          criteria.
      * @param       integer     $productId      The Product ID
      * @param       integer     $shopCategoryId The ShopCategory ID
      * @param       integer     $manufacturerId The Manufacturer ID
@@ -175,13 +175,14 @@ class Products
      * @return      array                       Array of Product objects,
      *                                          or false if none were found
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function getByShopParams(
+        &$count,
+        $flagBackend=false, $flagSpecialoffer=false, $flagLastFive=false,
         $productId=0, $shopCategoryId=0, $manufacturerId=0,
-        $pattern='', $offset=0, $lastFive=0
+        $pattern='', $offset=0
     ) {
         global $objDatabase, $_CONFIG;
 
@@ -189,69 +190,83 @@ class Products
             // select single Product by ID
             return array(Product::getById($productId));
         }
-        if ($lastFive) {
-            // select last five products added to the database
-            $query = "
-                SELECT id FROM ".DBPREFIX."module_shop_products
-                 WHERE status=1
-              ORDER BY product_id DESC
-            ";
-            $objResult = $objDatabase->SelectLimit($query, 5);
-            if (!$objResult) {
-                return false;
-            }
-            $arrProduct = array();
-            while (!$objResult->EOF) {
-                $arrProduct[] = Product::getById($objResult->Fields('id'));
-                $objResult->MoveNext();
-            }
-            return $arrProduct;
+        if ($flagLastFive) {
+            return Product::lastFive();
         }
         // Standard full featured query
-        $q_search         = '';
-        $q_special_offer  = 'AND (is_special_offer = 1)';
-        $q2_category      = '';
-
+        $querySearch       = '';
+        $queryCategory     = '';
+        $queryManufacturer = '';
         if ($shopCategoryId > 0) {
             // Select Products by ShopCategory ID
-            $q_special_offer = '';
-            $q2_category = "AND flags LIKE '%parent:$shopCategoryId%'";
+            $queryCategory = "AND c.catid=$shopCategoryId";
         }
         if ($manufacturerId > 0) {
             // Select Products by Manufacturer ID
-            $q_special_offer = '';
-            $q_manufacturer = "AND manufacturer=$manufacturerId";
+            $queryManufacturer = "AND manufacturer=$manufacturerId";
         }
         if (!empty($pattern)) {
-            // select Products by search pattern
-            $q_special_offer = '';
-            $q_search = "
+            // Select Products by search pattern
+            $querySearch = "
                 AND (  title LIKE '%$pattern%'
                     OR description LIKE '%$pattern%'
                     OR shortdesc LIKE '%$pattern%'
                     OR product_id LIKE '%$pattern%')
                     OR id LIKE '%$pattern%')
             ";
+            // Add a list of comma separated ShopCategory IDs to be searched.
+            // Only active ShopCategories are included in the frontend.
+            $queryCategory =
+                'AND c.catid IN ('.
+                ShopCategories::getSearchCategoryIdString(
+                    $shopCategoryId, !$flagBackend).
+                ')';
         }
+        $querySpecialoffer =
+            ($flagSpecialoffer ? 'AND (is_special_offer=1)' : '');
+        // The subquery in this query groups the Products by their Product
+        // code, which allows us to hide the cloned Products in virtual
+        // ShopCategories.
+        // Note that this only works reliably with IDs created by means of
+        // the auto_increment mechanism!
         $query = "
-            SELECT id FROM ".DBPREFIX."module_shop_products AS p
-             WHERE status=1
-                   $q_special_offer
-                   $q2_category
-                   $q_manufacturer
-                   $q_search
+              FROM ".DBPREFIX."module_shop_products
+             WHERE id IN (
+                SELECT id
+                  FROM ".DBPREFIX."module_shop_products AS p,
+                       ".DBPREFIX."module_shop_categories AS c
+                 WHERE c.catid=p.catid
+                       ".($flagBackend ? '' : 'AND status=1 AND catstatus=1')."
+                       $queryCategory
+                       $queryManufacturer
+                       $querySpecialoffer
+                       $querySearch
+              GROUP BY product_id
+              ORDER BY id ASC
+                   )
           ORDER BY sort_order ASC, id DESC
         ";
-        if ($_CONFIG['corePagingLimit']) { // $_CONFIG from /config/settings.php
+
+        // Count the number of available Products
+        $objResult = $objDatabase->Execute('SELECT COUNT(*) AS count'.$query);
+        if (!$objResult) {
+echo("doofer query: $query<br />");
+            return false;
+        }
+        $count = $objResult->fields['count'];
+
+        // Set up the Product array
+        if ($_CONFIG['corePagingLimit']) { // From /config/settings.php
             $objResult = $objDatabase->SelectLimit(
-                $query, $_CONFIG['corePagingLimit'], $offset
+                'SELECT id'.$query, $_CONFIG['corePagingLimit'], $offset
             );
         } else {
-            $objResult = $objDatabase->Execute($query);
+            $objResult = $objDatabase->Execute('SELECT id'.$query);
         }
         if (!$objResult) {
             return false;
         }
+//echo("got $count records<br />");var_export($objResult);echo("<br />");
         $arrProduct = array();
         while (!$objResult->EOF) {
             $arrProduct[] = Product::getById($objResult->Fields('id'));
@@ -272,7 +287,6 @@ class Products
      * @param       integer     $catid          The ShopCategory ID
      * @return      boolean                     True on success, false otherwise
      * @global      mixed       $objDatabase    Database object
-     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -282,16 +296,82 @@ class Products
         if (!is_array($arrProductId)) {
             return false;
         }
+        // Look whether this is within a virtual ShopCategory
+        $virtualContainer = '';
+        $parentId = $catId;
+        do {
+            $objShopCategory = ShopCategory::getById($parentId);
+            if (!$objShopCategory) {
+                return false;
+            }
+            if ($objShopCategory->isVirtual()) {
+                // The name of any virtual ShopCategory is used to mark
+                // Products within
+                $virtualContainer = $objShopCategory->getName();
+                break;
+            }
+            $parentId = $objShopCategory->getParentId();
+        } while ($parentId != 0);
+
+        // Remove the Products in one way or another
         foreach ($arrProductId as $productId) {
             $objProduct = Product::getById($productId);
             if (!$objProduct) {
                 return false;
             }
-            if (!$objProduct->delete($flagDeleteImages)) {
-                return false;
+            if ($virtualContainer != ''
+             && $objProduct->getFlags() != '') {
+                // Virtual ShopCategories and their content depends on
+                // the Product objects' flags.
+                foreach ($arrProductId as $objProduct) {
+                    $objProduct->removeFlag($virtualContainer);
+                    if (!Products::changeFlagsByProductCode(
+                        $objProduct->getCode(),
+                        $objProduct->getFlags()
+                    )) {
+                        return false;
+                    }
+                }
+            } else {
+                // Normal, non-virtual ShopCategory.
+                // Remove all Products having the same Product code.
+                if (!Products::deleteByCode(
+                    $objProduct->getCode(),
+                    $flagDeleteImages)
+                ) {
+                    return false;
+                }
             }
         }
         return true;
+    }
+
+
+    /**
+     * Delete Products bearing the given Product code from the database.
+     * @param   integer     $productCode        The Product code
+     * @param   boolean     $flagDeleteImages   If true, Product images are
+     *                                          deleted as well
+     * @return  boolean                         True on success, false otherwise
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function deleteByCode($productCode, $flagDeleteImages)
+    {
+        $arrProduct = Products::getByCustomId($productCode);
+        if ($arrProduct === false) {
+echo("no Products for code $productCode<br />");
+            return false;
+        }
+        $result = true;
+        foreach ($arrProduct as $objProduct) {
+            if (!$objProduct->delete($flagDeleteImages)) {
+echo("deleting Product ".$objProduct->getId()." failed<br />");
+                $result = false;
+            } else {
+echo("deleting Product ".$objProduct->getId()." succeeded<br />");
+            }
+        }
+        return $result;
     }
 
 
@@ -302,6 +382,7 @@ class Products
      * @param   integer     $catId      The ShopCategory ID
      * @return  mixed                   The array of Product IDs on success,
      *                                  false otherwise.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function getIdArrayByShopCategory($catId)
@@ -334,6 +415,7 @@ class Products
      * @param   integer     $catId      The ShopCategory ID
      * @return  mixed                   The array of Product IDs on success,
      *                                  false otherwise.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function getByShopCategory($catId)
@@ -366,6 +448,7 @@ class Products
      * @return      string                      The image name, or the
      *                                          empty string.
      * @global      mixed       $objDatabase    Database object
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function getPictureByCategoryId($catId)
@@ -400,6 +483,7 @@ class Products
      * @param   string  $strName    The name of the flag to match
      * @return  mixed               The array of ShopCategory IDs on success,
      *                              false otherwise.
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
     function getShopCategoryIdArrayByFlag($strName)
@@ -449,6 +533,7 @@ class Products
      *                                  with error messages otherwise.
      * @global  mixed       $objDatabase    Database object
      * @global  array       $_ARRAYLANG     Language array
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function makeThumbnailsById($arrId)
     {
@@ -570,18 +655,13 @@ class Products
      * same flags, as does the containing ShopCategory itself.
      * @param   integer     $customId   The Product code (*NOT* the ID)
      * @param   string      $strFlags   The new flags for the Product
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function changeFlagsByProductCode($productCode, $strNewFlags)
     {
         // Get all available flags.  These are represented by the names
         // of virtual root ShopCategories.
-        $arrVirtual = ShopCategories::getVirtualCategoryIdNameArray();
-        // The array contains the names as well as the IDs of the groups.
-        // Create a new array with the names only.
-        $arrGroup = array();
-        foreach ($arrVirtual as $arr) {
-        	$arrGroup[] = $arr['name'];
-        }
+        $arrVirtual = ShopCategories::getVirtualCategoryNameArray();
 
         // Get the affected identical Products
         $arrProduct = Products::getByCustomId($productCode);
@@ -604,7 +684,7 @@ class Products
         // ShopCategories, and all sibling Products within them.
         foreach ($arrProduct as $objProduct) {
             // Get the containing "Artikel" ShopCategory.
-        	$catId = $objProduct->getShopCategoryId();
+            $catId = $objProduct->getShopCategoryId();
             $objArtikelCategory = ShopCategory::getById($catId);
             if (!$objArtikelCategory) {
                 // This should not happen!
@@ -655,7 +735,7 @@ class Products
             }
 
             // Also check whether this is a virtual root ShopCategory.
-            if (in_array($strFlag, $arrGroup)) {
+            if (in_array($strFlag, $arrVirtual)) {
                 // It is one of the virtual roots, and the flag is missing.
                 // So the The Artikel has to be removed from this group.
                 $objArtikelCategory->delete();
@@ -679,7 +759,7 @@ class Products
             }
 
             // Find out what flags have been added.
-            foreach ($arrGroup as $strFlag) {
+            foreach ($arrVirtual as $strFlag) {
                 if (!preg_match("/$strFlag/", $strNewFlags)) {
                     // That flag is not present in the new flag set.
                     continue;
@@ -733,7 +813,7 @@ class Products
                     $objArtikelCategory->store();
                     $objTargetArtikelCategory = $objArtikelCategory;
                 }
-            } // foreach $arrGroup
+            } // foreach $arrVirtual
         } // foreach $arrProduct
         // And we're done!
         return true;
