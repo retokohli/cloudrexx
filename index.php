@@ -203,7 +203,7 @@ if ($objResult === false || $objResult->EOF) {
         // If the error module is not installed, show this
         die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
     } else {
-        header("Location: ?section=error&id=404");
+        header("Location: index.php?section=error&id=404");
     }
     exit;
 } else {
@@ -236,7 +236,7 @@ if ($objResult === false || $objResult->EOF) {
 //-------------------------------------------------------
 // authentification for protected pages
 //-------------------------------------------------------
-if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && !isset($_REQUEST['section']) || $_REQUEST['section'] != 'login') {
+if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_REQUEST['section']) || $_REQUEST['section'] != 'login')) {
     $sessionObj=&new cmsSession();
     $sessionObj->cmsSessionStatusUpdate($status="frontend");
 

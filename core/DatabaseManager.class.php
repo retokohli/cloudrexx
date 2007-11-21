@@ -9,7 +9,7 @@ require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
 *
 * CMS Database Manager
 *
-* @copyright	CONTREXX CMS - Astalavista IT Engineering GmbH Thun
+* @copyright	CONTREXX CMS - COMVATION AG
 * @author		Thomas Kaelin <thomas.kaelin@astalvista.ch>
 * @access		public
 * @module		DatabaseManager
@@ -1248,7 +1248,7 @@ class DatabaseManager {
 * This abstract class is the base class for all Backup-Types (SQL, CSV). It delivers standard functionality like "new line" and
 * "tabulators" for its subclasses.
 *
-* @copyright	CONTREXX CMS - Astalavista IT Engineering GmbH Thun
+* @copyright	CONTREXX CMS - COMVATION AG
 * @author		Thomas Kaelin <thomas.kaelin@astalvista.ch>
 * @access		public
 * @module		DatabaseManager
@@ -1342,7 +1342,7 @@ abstract class BackupBase {
 *
 * This class extends the BackupBase and implements the functionality for the SQL-Export.
 *
-* @copyright	CONTREXX CMS - Astalavista IT Engineering GmbH Thun
+* @copyright	CONTREXX CMS - COMVATION AG
 * @author		Thomas Kaelin <thomas.kaelin@astalvista.ch>
 * @access		public
 * @module		DatabaseManager
@@ -1541,7 +1541,7 @@ final class SQLBackup extends BackupBase  {
 *
 * This class extends the BackupBase and implements the functionality for the CSV-Export.
 *
-* @copyright	CONTREXX CMS - Astalavista IT Engineering GmbH Thun
+* @copyright	CONTREXX CMS - COMVATION AG
 * @author		Thomas Kaelin <thomas.kaelin@astalvista.ch>
 * @access		public
 * @module		DatabaseManager

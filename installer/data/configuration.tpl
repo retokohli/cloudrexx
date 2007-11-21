@@ -26,7 +26,7 @@ $_DBCONFIG['tablePrefix'] = '%DB_TABLE_PREFIX%'; // Database table prefix
 $_DBCONFIG['user'] = '%DB_USER%'; // Database username
 $_DBCONFIG['password'] = '%DB_PASSWORD%'; // Database password
 $_DBCONFIG['dbType'] = 'mysql';	// Database type (e.g. mysql,postgres ..)
-$_DBCONFIG['charset'] = 'utf8'; // Charset (default, latin1, utf8, ..)
+$_DBCONFIG['charset'] = '%DB_CHARSET%'; // Charset (default, latin1, utf8, ..)
 
 /**
 * -------------------------------------------------------------------------
@@ -56,13 +56,13 @@ $_FTPCONFIG['path']	= '%FTP_PATH%'; // Ftp path to cms
 * -------------------------------------------------------------------------
 */
 $_CONFIGURATION['custom']['shopnavbar'] = false; // true|false
-$_CONFIGURATION['custom']['shopJsCart'] = false; // true|false
+$_CONFIGURATION['custom']['shopJsCart'] = true; // true|false
 
 /**
 * Set character encoding
 */
-$_CONFIG['coreCharacterEncoding'] = 'UTF-8'; // example 'UTF-8'
-@ini_set('default_charset', $_CONFIG['coreCharacterEncoding']);
+$_CONFIG['coreCharacterEncoding'] = '%CHARSET%'; // example 'UTF-8'
+@header('content-type: text/html; charset='.$_CONFIG['coreCharacterEncoding']);
 
 /**
 * -------------------------------------------------------------------------

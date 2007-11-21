@@ -101,17 +101,17 @@ class calendarLibrary
 
 				if ($objResult->fields['access'] == 1) {
 					if (!$this->communityModul == '1') {
-						header('Location: index.php?section=calendar');
+						header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=calendar');
 						exit;
 					}else{
 						if ($objAuth->checkAuth()) {
 							if (!$objPerm->checkAccess(116, 'static')) {
-								header("Location: ?section=login&cmd=noaccess");
+								header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
 								exit;
 							}
 						}else {
 							$link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-							header("Location: ?section=login&redirect=".$link);
+							header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
 							exit;
 						}
 					}
@@ -526,10 +526,10 @@ class calendarLibrary
             'CALENDAR_COMMENT'           	=> $comment,
             'CALENDAR_ID'                	=> $id,
             'CALENDAR_CAT'              	=> stripslashes($objResult2->fields['name']),
-            'CALENDAR_ICAL_EXPORT'      	=> '<a href="?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.$id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
+            'CALENDAR_ICAL_EXPORT'      	=> '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.$id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
             									'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].' <img style="padding-top: -1px;" border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
             								</a>',
-            'CALENDAR_ICAL_EXPORT_IMG'      => '<a href="?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.$id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
+            'CALENDAR_ICAL_EXPORT_IMG'      => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.$id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
             									<img style="padding-bottom: -5px;" border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
             								</a>',
         ));
@@ -780,7 +780,7 @@ class calendarLibrary
 							mailTitle,
 							num,
 							notification,
-							notification_address,
+							notification_address
 		    		FROM 	".DBPREFIX."module_calendar
 		    	   WHERE 	id = '".$id."'";
 
@@ -1068,7 +1068,7 @@ class calendarLibrary
 			'CALENDAR_REGISTRATIONS_ADDRESSER_SELECT_GROUP'	=> $registrationsAddresserSelectGroup,
 			'CALENDAR_REGISTRATIONS_GROUPS_UNSELECTED' 		=> $this->_getUserGroups($objResultNote->fields['id'], 0),
 			'CALENDAR_REGISTRATIONS_GROUPS_SELECTED' 		=> $this->_getUserGroups($objResultNote->fields['id'], 1),
-			'CALENDAR_REGISTRATION_LINK'					=> '<a href="?section=calendar&amp;cmd=sign&amp;id='.$objResultNote->fields['id'].'">'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_LINK'].'</a>',
+			'CALENDAR_REGISTRATION_LINK'					=> '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=sign&amp;id='.$objResultNote->fields['id'].'">'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_LINK'].'</a>',
 
 			'CALENDAR_MAIL_TITLE' 			=> htmlentities($objResultNote->fields['mailTitle'], ENT_QUOTES, CONTREXX_CHARSET),
 			'CALENDAR_MAIL_CONTENT' 		=> htmlentities($objResultNote->fields['mailContent'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -1583,7 +1583,7 @@ class calendarLibrary
 				$date		= date(ASCMS_DATE_FORMAT);
 				$firstname	= $arrUser['firstname'];
 				$lastname	= $arrUser['lastname'];
-				$link		= "http://".$url."/index.php?section=calendar&cmd=sign&key=".$key;
+				$link		= "http://".$url."/".CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=sign&key=".$key;
 				$title		= $objResultNote->fields['name'];
 				$startdate	= date("Y-m-d H:i", $objResultNote->fields['startdate']);
 				$enddate 	= date("Y-m-d H:i", $objResultNote->fields['enddate']);

@@ -30,11 +30,11 @@ $contrexxURI = "http://www.contrexx.com/";
 $useUtf8 = true;
 
 $_CONFIG['coreCmsName']	     	= 'Contrexx® Web Content Management System';
-$_CONFIG['coreCmsVersion']	  	= '1.1.3';
-$_CONFIG['coreCmsStatus']	  	= 'Unstable';
+$_CONFIG['coreCmsVersion']	  	= '1.2.0';
+$_CONFIG['coreCmsStatus']	  	= 'RC1';
 $_CONFIG['coreCmsEdition']		= 'Premium';
-$_CONFIG['coreCmsCodeName']	  	= 'None';
-$_CONFIG['coreCmsReleaseDate'] 	= '16.05.07';
+$_CONFIG['coreCmsCodeName']	  	= 'Cow Feeder';
+$_CONFIG['coreCmsReleaseDate'] 	= '22.10.2007';
 
 $arrDefaultConfig = array(
 	'dbHostname'	=> 'localhost',
@@ -114,7 +114,12 @@ $arrDatabaseTables = array(
 	'module_block_rel_pages',
 	'module_block_settings',
 	'module_calendar',
+	'module_calendar_access',
 	'module_calendar_categories',
+	'module_calendar_form_data',
+	'module_calendar_form_fields',
+	'module_calendar_registrations',
+	'module_calendar_settings',
 	'module_calendar_style',
 	'community_config',
 	'module_contact_form',
@@ -227,6 +232,7 @@ $arrDatabaseTables = array(
 	'module_shop_lsv',
 	'module_shop_mail',
 	'module_shop_mail_content',
+	'module_shop_manufacturer',
 	'module_shop_orders',
 	'module_shop_order_items',
 	'module_shop_order_items_attributes',

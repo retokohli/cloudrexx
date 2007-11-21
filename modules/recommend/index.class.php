@@ -4,8 +4,8 @@
  *
  * Recommend module class
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
- * @author		Astalavista Development Team <thun@astalvista.ch>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author		Comvation Development Team
  * @access		public
  * @version		1.0.0
  * @package     contrexx

@@ -175,14 +175,14 @@ class memberDir extends MemberDirLibrary
     		    $_GET['search'] = "";
     		}
 
-    		$keyword = (isset($_GET['keyword'])) ? $_GET['keyword'] : "";
+    		$keyword = (isset($_GET['keyword'])) ? contrexx_addslashes($_GET['keyword']) : "";
 
     		$sort = contrexx_addslashes($_GET['sort']);
 
     		$this->_objTpl->setGlobalVariable(array(
     		    "MEMBERDIR_DIRID"      => $dirid,
     			"MEMBERDIR_CHAR_LIST"	=> $this->_getCharList("?section=memberdir&amp;id=".$dirid."&amp;sort=$sort"),
-    			"MEMBERDIR_KEYWORD"		=> (empty($_GET['keyword'])) ? "" : $_GET['keyword'],
+    			"MEMBERDIR_KEYWORD"		=> (empty($_GET['keyword'])) ? "" : htmlentities(contrexx_stripslashes($_GET['keyword']), ENT_QUOTES, CONTREXX_CHARSET),
     			"MEMBERDIR_SEARCH"		=> $_ARRAYLANG['TXT_SEARCH'],
     			"MEMBERDIR_DESCRIPTION" => nl2br($this->directories[$dirid]['description'])."<br /><br />",
     			"MEMBERDIR_DROPDOWN"    => $this->dirList("id", $dirid, 200)
@@ -254,7 +254,7 @@ class memberDir extends MemberDirLibrary
 
     		if ($objResult) {
 				$count = $objResult->RecordCount();
-				$paging = getPaging($count, $pos, "&amp;section=memberdir&amp;id=$dirid&amp;sort=$sort&amp;search={$_GET['search']}&amp;keyword=$keyword", "<b>".$_ARRAYLANG['TXT_MEMBERDIR_ENTRIES']."</b>", true, $_CONFIG['corePagingLimit']);
+				$paging = getPaging($count, $pos, "&amp;section=memberdir&amp;id=$dirid&amp;sort=$sort&amp;search=".htmlentities(contrexx_stripslashes($_GET['search']), ENT_QUOTES, CONTREXX_CHARSET)."&amp;keyword=$keyword", "<b>".$_ARRAYLANG['TXT_MEMBERDIR_ENTRIES']."</b>", true, $_CONFIG['corePagingLimit']);
 
 				$this->_objTpl->setVariable("MEMBERDIR_PAGING", $paging);
 
@@ -332,7 +332,7 @@ class memberDir extends MemberDirLibrary
 
 		$this->_objTpl->setTemplate($this->pageContent, true, true);
 
-		$id = $_GET['mid'];
+		$id = intval($_GET['mid']);
 
 		$query = "SELECT * FROM ".DBPREFIX."module_memberdir_values
 				 WHERE id = '".$id."'";

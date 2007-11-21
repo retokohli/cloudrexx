@@ -351,15 +351,15 @@ class rssDirectory extends directoryLibrary
 				$count = $this->count($levelKey, '');
 
 				$class= $parentId==0 ? "catLink" : "subcatLink";
-				$this->arrRows[$i] 	.= "<a class='catLink' href='?section=directory&amp;lid=".$levelKey."'>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
-				$this->arrRowsIndex[strtoupper(htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET).$levelKey)] = strtoupper(substr(htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1))."<a class='catLink' href='?section=directory&amp;lid=".$levelKey."'>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
+				$this->arrRows[$i] 	.= "<a class='catLink' href='".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;lid=".$levelKey."'>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
+				$this->arrRowsIndex[strtoupper(htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET).$levelKey)] = strtoupper(substr(htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1))."<a class='catLink' href='".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;lid=".$levelKey."'>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
 
 				//get sublevel
 				if($this->levels['parentid'][$levelKey] == 0){
 					$objResult = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."module_directory_levels WHERE status = '1' AND parentid =".contrexx_addslashes($levelKey)." ORDER BY displayorder LIMIT ".contrexx_addslashes($this->subLimit)."");
 					if($objResult !== false){
 						while(!$objResult->EOF){
-							$this->arrRows[$i] .= "<a class='subcatLink' href='?section=directory&amp;lid=".$objResult->fields['id']."''>".htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)."</a>, ";
+							$this->arrRows[$i] .= "<a class='subcatLink' href='".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;lid=".$objResult->fields['id']."''>".htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)."</a>, ";
 							$objResult->MoveNext();
 						}
 					}
@@ -449,8 +449,8 @@ class rssDirectory extends directoryLibrary
 				$count = $this->count($_GET['lid'], $catKey);
 
 				$class= $parentId==0 ? "catLink" : "subcatLink";
-				$this->arrRows[$i] .= "<a class='catLink' href='?section=directory".$levelLink."&amp;cid=".$catKey."'>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
-				$this->arrRowsIndex[strtoupper(htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET).$catKey)] = strtoupper(substr(htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1))."<a class='catLink' href='?section=directory".$levelLink."&amp;cid=".$catKey."'>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
+				$this->arrRows[$i] .= "<a class='catLink' href='".CONTREXX_DIRECTORY_INDEX."?section=directory".$levelLink."&amp;cid=".$catKey."'>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
+				$this->arrRowsIndex[strtoupper(htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET).$catKey)] = strtoupper(substr(htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1))."<a class='catLink' href='".CONTREXX_DIRECTORY_INDEX."?section=directory".$levelLink."&amp;cid=".$catKey."'>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
 
 
 				//get subcategories
@@ -458,7 +458,7 @@ class rssDirectory extends directoryLibrary
 					$objResult = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."module_directory_categories WHERE status = '1' AND parentid =".contrexx_addslashes($catKey)." ORDER BY displayorder LIMIT ".contrexx_addslashes($this->subLimit)."");
 					if($objResult !== false){
 						while(!$objResult->EOF){
-							$this->arrRows[$i] .= "<a class='subcatLink' href='?section=directory".$levelLink."&amp;cid=".$objResult->fields['id']."''>".htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)."</a>, ";
+							$this->arrRows[$i] .= "<a class='subcatLink' href='".CONTREXX_DIRECTORY_INDEX."?section=directory".$levelLink."&amp;cid=".$objResult->fields['id']."''>".htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)."</a>, ";
 							$objResult->MoveNext();
 						}
 					}
@@ -1241,9 +1241,9 @@ class rssDirectory extends directoryLibrary
 		$setVariable["DIRECTORY_FEED_SHORT_DESCRIPTION"] 	= $parts[0].$points;
 		$setVariable["DIRECTORY_FEED_ID"] 					= $arrFeedContent['id'];
 		$setVariable["DIRECTORY_FEED_DETAIL"] 				= $_ARRAYLANG['TXT_DIRECTORY_DETAIL'];
-		$setVariable["DIRECTORY_FEED_DETAIL_LINK"] 			= "index.php?section=directory&amp;cmd=detail&amp;id=".$arrFeedContent['id'].$lid.$cid;
+		$setVariable["DIRECTORY_FEED_DETAIL_LINK"] 			= CONTREXX_DIRECTORY_INDEX."?section=directory&amp;cmd=detail&amp;id=".$arrFeedContent['id'].$lid.$cid;
 		$setVariable["DIRECTORY_FEED_EDIT"] 				= $_ARRAYLANG['TXT_DIRECTORY_EDIT'];
-		$setVariable["DIRECTORY_FEED_EDIT_LINK"] 			= "index.php?section=directory&amp;cmd=edit&amp;id=".$arrFeedContent['id'];
+		$setVariable["DIRECTORY_FEED_EDIT_LINK"] 			= CONTREXX_DIRECTORY_INDEX."?section=directory&amp;cmd=edit&amp;id=".$arrFeedContent['id'];
 		$setVariable["DIRECTORY_FEED_HITS"] 				= $arrFeedContent['hits'];
 
 		if($arrFeedContent['premium'] == '1'){
@@ -1296,7 +1296,7 @@ class rssDirectory extends directoryLibrary
 				$this->rssImage = "<img src=".$img['url']." alt='' /><br />";
 			}
 
-			$image 	= "<a href='?section=directory&amp;linkid=".$feedID."' target='_blank'><img src='/images/modules/directory/rss.gif' border='0' alt='Source' /></a>&nbsp;";
+			$image 	= "<a href='".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;linkid=".$feedID."' target='_blank'><img src='/images/modules/directory/rss.gif' border='0' alt='Source' /></a>&nbsp;";
 			$feeds 	= "<b>".$this->rssTitle."</b><br />".$_ARRAYLANG['TXT_DIR_LAST_UPDATE'].": ".$this->rssRefresh."<br />";
 
 		}
@@ -1341,17 +1341,17 @@ class rssDirectory extends directoryLibrary
 		$status="error";
 
 		if (!$this->settings['addFeed']['value'] == '1' || (!$this->communityModul && $this->settings['addFeed_only_community']['value'] == '1')) {
-			header('Location: index.php?section=directory');
+			header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=directory');
 			exit;
 		}elseif($this->settings['addFeed_only_community']['value'] == '1'){
 			if ($objAuth->checkAuth()) {
 				if (!$objPerm->checkAccess(96, 'static')) {
-					header("Location: ?section=login&cmd=noaccess");
+					header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
 					exit;
 				}
 			}else {
 				$link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-				header("Location: ?section=login&redirect=".$link);
+				header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
 				exit;
 			}
 		}
@@ -1359,7 +1359,7 @@ class rssDirectory extends directoryLibrary
 		$this->_objTpl->setTemplate($this->pageContent, true, true);
 
 		//set navigation
-		$verlauf = "&nbsp;&raquo;&nbsp;<a href='?section=directory&amp;cmd=add'>".$_ARRAYLANG['TXT_DIR_F_NEW_ENTREE']."</a>";
+		$verlauf = "&nbsp;&raquo;&nbsp;<a href='".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;cmd=add'>".$_ARRAYLANG['TXT_DIR_F_NEW_ENTREE']."</a>";
 
 		//get search
 		$this->getSearch();
@@ -1397,7 +1397,7 @@ class rssDirectory extends directoryLibrary
 			// set variables
 			$this->_objTpl->setVariable(array(
 				'DIRECTORY_FEED_ADDED'			=> $_ARRAYLANG['DIRECTORY_FEED_ADDED'],
-				'TXT_DIRECTORY_BACK'			=> '<a href="?section=directory">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
+				'TXT_DIRECTORY_BACK'			=> '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=directory">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
 			));
 
 
@@ -1464,25 +1464,25 @@ class rssDirectory extends directoryLibrary
 		global $objDatabase, $_ARRAYLANG, $template, $objAuth, $objPerm, $_CONFIG;
 
 		if (!$this->communityModul && $this->settings['addFeed_only_community']['value'] == '1') {
-			header('Location: index.php?section=directory');
+			header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=directory');
 			exit;
 		}
 
 		if ($objAuth->checkAuth()) {
 			if (!$objPerm->checkAccess(94, 'static')) {
-				header("Location: ?section=login&cmd=noaccess");
+				header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
 				exit;
 			}
 		}else {
 			$link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-			header("Location: ?section=login&redirect=".$link);
+			header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
 			exit;
 		}
 
 		$this->_objTpl->setTemplate($this->pageContent, true, true);
 
 		//get navigation
-		$verlauf = "&nbsp;&raquo;&nbsp;<a href='?section=directory&amp;cmd=myfeeds'>".$_ARRAYLANG['TXT_DIRECTORY_MY_FEEDS']."</a>";
+		$verlauf = "&nbsp;&raquo;&nbsp;<a href='".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;cmd=myfeeds'>".$_ARRAYLANG['TXT_DIRECTORY_MY_FEEDS']."</a>";
 
 		//get search
 		$this->getSearch();
@@ -1539,18 +1539,18 @@ class rssDirectory extends directoryLibrary
 		$status = "error";
 
 		if (!$this->settings['editFeed']['value'] == '1' || (!$this->communityModul && $this->settings['addFeed_only_community']['value'] == '1')) {
-			header('Location: index.php?section=directory&cmd=myfeeds');
+			header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=directory&cmd=myfeeds');
 			exit;
 		}
 
 		if ($objAuth->checkAuth()) {
 			if (!$objPerm->checkAccess(94, 'static')) {
-				header("Location: ?section=login&cmd=noaccess");
+				header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
 				exit;
 			}
 		}else {
 			$link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-			header("Location: ?section=login&redirect=".$link);
+			header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
 			exit;
 		}
 
@@ -1563,7 +1563,7 @@ class rssDirectory extends directoryLibrary
 		}
 
 		if ($_GET['id'] == '' && $_POST['edit_id'] == '') {
-			header('Location: index.php?section=directory&cmd=myfeeds');
+			header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=directory&cmd=myfeeds');
 			exit;
 		}
 
@@ -1577,13 +1577,13 @@ class rssDirectory extends directoryLibrary
 		}
 
 		if ($author != $_SESSION['auth']['userid']) {
-			header("Location: index.php?section=directory&cmd=myfeeds");
+			header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=directory&cmd=myfeeds");
 		}
 
 
 
 		//get navigation
-		$verlauf = "&nbsp;&raquo;&nbsp;<a href='?section=directory&amp;cmd=myfeeds'>".$_ARRAYLANG['TXT_DIRECTORY_MY_FEEDS']."</a>&nbsp;&raquo;&nbsp;<a href='?section=directory&amp;cmd=edit&amp;id=".$id."'>".$_ARRAYLANG['TXT_DIRECTORY_EDIT_FEED']."</a>";
+		$verlauf = "&nbsp;&raquo;&nbsp;<a href='".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;cmd=myfeeds'>".$_ARRAYLANG['TXT_DIRECTORY_MY_FEEDS']."</a>&nbsp;&raquo;&nbsp;<a href='".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;cmd=edit&amp;id=".$id."'>".$_ARRAYLANG['TXT_DIRECTORY_EDIT_FEED']."</a>";
 
 		//get search
 		$this->getSearch();
@@ -1619,7 +1619,7 @@ class rssDirectory extends directoryLibrary
 			// set variables
 			$this->_objTpl->setVariable(array(
 				'DIRECTORY_FEED_UPDATED'		=> $_ARRAYLANG['TXT_DIRECTORY_UPDATE_SUCCESSFULL'],
-				'TXT_DIRECTORY_BACK'			=> '<a href="?section=directory&cmd=myfeeds">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
+				'TXT_DIRECTORY_BACK'			=> '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=directory&cmd=myfeeds">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
 			));
 
 			$this->_objTpl->parse('directoryMessage');
@@ -1720,7 +1720,7 @@ class rssDirectory extends directoryLibrary
 		$searchTerm			= substr($tmpTerm, 0, -1);
 
 		//set tree
-		$tree = "&nbsp;&raquo;&nbsp;<a href='?section=directory&amp;cmd=search'>".$_ARRAYLANG['TXT_DIR_F_SEARCH']."</a>";
+		$tree = "&nbsp;&raquo;&nbsp;<a href='".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;cmd=search'>".$_ARRAYLANG['TXT_DIR_F_SEARCH']."</a>";
 
 		//get search
 		$this->getSearch();
@@ -1975,7 +1975,7 @@ class rssDirectory extends directoryLibrary
 		{
 			if($err = $objGoogleSearch->getError())
 			{
-				header("Location: ?section=directory&cmd=search");
+				header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=directory&cmd=search");
 				exit;
 			}
 		}
@@ -2189,7 +2189,7 @@ class rssDirectory extends directoryLibrary
 			}
 
 			$title	= $_ARRAYLANG['TXT_DIRECTORY_VOTING_SUCCESFULL'];
-			$link	= '<a href="?section=directory&cmd=detail&id='.$id.'" target="_blank">'.$feedTitle.'</a>';
+			$link	= '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=directory&cmd=detail&id='.$id.'" target="_blank">'.$feedTitle.'</a>';
 			$text	= str_replace('%LINK%', $link, $_ARRAYLANG['TXT_DIRECTORY_VOTING_SUCCESFULL_TEXT']);
 			$text	= str_replace('%VOTE%', $voteNEW, $text);
 		}else{
@@ -2209,7 +2209,7 @@ class rssDirectory extends directoryLibrary
 			'DIRECTORY_CATEGORY_NAVI'    	=> $this->navtree,
 			'DIRECTORY_VOTE_TITLE'    		=> $title,
 			'DIRECTORY_VOTE_TEXT'    		=> $text,
-			'DIRECTORY_BACK'    			=> '<a href="?section=directory&lid='.$lid.'&cid='.$cid.'" target="_self">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
+			'DIRECTORY_BACK'    			=> '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=directory&lid='.$lid.'&cid='.$cid.'" target="_self">'.$_ARRAYLANG['TXT_DIRECTORY_BACK'].'</a>',
 			'TXT_DIRECTORY_DIR' 			=> $_ARRAYLANG['TXT_DIR_DIRECTORY'],
 		));
 
@@ -2232,7 +2232,7 @@ class rssDirectory extends directoryLibrary
     	$voteImg		= "";
 
 		for ($x = 1; $x <= 10; $x++){
-			$voteImg .= '<a href="?section=directory&amp;cmd=vote&amp;id='.$id.'&amp;cid='.$cid.'&amp;lid='.$lid.'&amp;vote='.$x.'"><img src="'.$this->imageWebPath.'directory/'.$x.'.gif" border="0" alt="" /></a>&nbsp;';
+			$voteImg .= '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=directory&amp;cmd=vote&amp;id='.$id.'&amp;cid='.$cid.'&amp;lid='.$lid.'&amp;vote='.$x.'"><img src="'.$this->imageWebPath.'directory/'.$x.'.gif" border="0" alt="" /></a>&nbsp;';
 		}
 
 		// set variables
@@ -2290,7 +2290,7 @@ class rssDirectory extends directoryLibrary
 		$this->_objTpl->setTemplate($this->pageContent, true, true);
 
 		//get navigation
-		$verlauf = "&nbsp;&raquo;&nbsp;<a href='?section=directory&amp;cmd=latest'>".$_ARRAYLANG['TXT_DIRECTORY_LATEST_FEEDS']."</a>";
+		$verlauf = "&nbsp;&raquo;&nbsp;<a href='".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;cmd=latest'>".$_ARRAYLANG['TXT_DIRECTORY_LATEST_FEEDS']."</a>";
 
 		//get search
 		$this->getSearch();
@@ -2367,7 +2367,7 @@ class rssDirectory extends directoryLibrary
 		$this->getNavtreeCategories($cid);
 
 		foreach($this->navtreeLevels as $levelKey => $levelName){
-			$navTreeLevel = "&nbsp;&raquo;&nbsp;<a href='?section=directory&amp;lid=".$levelKey."'>".$levelName."</a>".$navTreeLevel;
+			$navTreeLevel = "&nbsp;&raquo;&nbsp;<a href='".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;lid=".$levelKey."'>".$levelName."</a>".$navTreeLevel;
 		}
 
 		foreach($this->navtreeCategories as $catKey => $catName){
@@ -2375,7 +2375,7 @@ class rssDirectory extends directoryLibrary
 				$levelLink = "&amp;lid=".$lid;
 			}
 
-			$navTreeCat = "&nbsp;&raquo;&nbsp;<a href='?section=directory".$levelLink."&amp;cid=".$catKey."'>".$catName."</a>".$navTreeCat;
+			$navTreeCat = "&nbsp;&raquo;&nbsp;<a href='".CONTREXX_DIRECTORY_INDEX."?section=directory".$levelLink."&amp;cid=".$catKey."'>".$catName."</a>".$navTreeCat;
 		}
 
 

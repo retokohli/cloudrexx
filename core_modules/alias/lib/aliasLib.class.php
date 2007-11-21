@@ -331,8 +331,8 @@ class aliasLib
 	{
 		require_once ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php';
 
-		if (!file_exists(ASCMS_DOCUMENT_ROOT.'/.htaccess')) {
-			touch(ASCMS_DOCUMENT_ROOT.'/.htaccess');
+		if (!$this->_createHtAccessFile()) {
+			return false;
 		}
 
 		$objHtAccess = new File_HtAccess(ASCMS_DOCUMENT_ROOT.'/.htaccess');
@@ -570,6 +570,11 @@ class aliasLib
 		}
 
 		return $arrUsedAliases;
+	}
+
+	function _createHtAccessFile()
+	{
+		return file_exists(ASCMS_DOCUMENT_ROOT.'/.htaccess') || touch(ASCMS_DOCUMENT_ROOT.'/.htaccess');
 	}
 }
 ?>

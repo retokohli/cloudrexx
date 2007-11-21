@@ -82,12 +82,12 @@ class galleryManager extends GalleryLibrary
            $this->getSettings();
         $this->checkImages();
 
-        $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="?cmd=gallery">'.$_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'].'</a>
-                                                            <a href="?cmd=gallery&amp;act=new_cat">'.$_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'].'</a>
-                                                            <a href="?cmd=gallery&amp;act=upload_form">'.$_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD'].'</a>
-                                                            <a href="?cmd=gallery&amp;act=import_picture">'.$_ARRAYLANG['TXT_GALLERY_MENU_IMPORT'].'</a>
-                                                            <a href="?cmd=gallery&amp;act=validate_form&amp;type='.$this->arrSettings['validation_standard_type'].'">'.$_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'].'</a>
-                                                            <a href="?cmd=gallery&amp;act=settings">'.$_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'].'</a>');
+        $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery">'.$_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'].'</a>
+                                                            <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=new_cat">'.$_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'].'</a>
+                                                            <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=upload_form">'.$_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD'].'</a>
+                                                            <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=import_picture">'.$_ARRAYLANG['TXT_GALLERY_MENU_IMPORT'].'</a>
+                                                            <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=validate_form&amp;type='.$this->arrSettings['validation_standard_type'].'">'.$_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'].'</a>
+                                                            <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=settings">'.$_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'].'</a>');
     }
 
 
@@ -496,7 +496,7 @@ class galleryManager extends GalleryLibrary
                     'OVERVIEW_ID'            =>    $intMainKey,
                     'OVERVIEW_ICON'            =>    $strFolderIcon,
                     'OVERVIEW_SORTING'        =>    $objResult->fields['sorting'],
-                    'OVERVIEW_NAME'            =>    ($arrImageCount[$intMainKey]>0) ? '<a href="?cmd=gallery&amp;act=cat_details&amp;id='.$intMainKey.'" target="_self">'.$arrCategoryLang['name'].'</a>' :  $arrCategoryLang['name'],
+                    'OVERVIEW_NAME'            =>    ($arrImageCount[$intMainKey]>0) ? '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=cat_details&amp;id='.$intMainKey.'" target="_self">'.$arrCategoryLang['name'].'</a>' :  $arrCategoryLang['name'],
                     'OVERVIEW_DESCRIPTION'    =>    $arrCategoryLang['desc'],
                     'OVERVIEW_COUNT_IMAGES'    =>    $arrImageCount[$intMainKey],
                     'OVERVIEW_IMAGE_SIZE'    =>    $arrImageSize[$intMainKey]
@@ -537,7 +537,7 @@ class galleryManager extends GalleryLibrary
                             'OVERVIEW_ID'            =>    $objResult->fields['id'],
                             'OVERVIEW_ICON'            =>    $strFolderIcon,
                             'OVERVIEW_SORTING'        =>    $objResult->fields['sorting'],
-                            'OVERVIEW_NAME'            =>    ($arrImageCount[$intMainKey]>0) ? '<a href="?cmd=gallery&amp;act=cat_details&amp;id='.$objResult->fields['id'].'" target="_self">'.$arrCategoryLang['name'].'</a>' :  $arrCategoryLang['name'],
+                            'OVERVIEW_NAME'            =>    ($arrImageCount[$intMainKey]>0) ? '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=cat_details&amp;id='.$objResult->fields['id'].'" target="_self">'.$arrCategoryLang['name'].'</a>' :  $arrCategoryLang['name'],
                             'OVERVIEW_DESCRIPTION'    =>    $arrCategoryLang['desc'],
                             'OVERVIEW_COUNT_IMAGES'    =>    $arrImageCount[$objResult->fields['id']],
                             'OVERVIEW_IMAGE_SIZE'    =>    $arrImageSize[$objResult->fields['id']]
@@ -1270,7 +1270,7 @@ class galleryManager extends GalleryLibrary
                     $objResult->MoveNext();
                 }
                 foreach ($arrMainCategories as $intMainCatKey => $strMainCatValue) {
-                    $strOutputSelect         .= '<option value="?cmd=gallery&amp;act=change_category_picture&amp;id='.$intOutputId.'&amp;catid='.$intMainCatKey.'">'.$strMainCatValue.'</option>';
+                    $strOutputSelect         .= '<option value="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=change_category_picture&amp;id='.$intOutputId.'&amp;catid='.$intMainCatKey.'">'.$strMainCatValue.'</option>';
                     $strMultiActionSelect     .= '<option value="'.$intMainCatKey.'">'.$strMainCatValue.'</option>';
                     $objResult = $objDatabase->Execute('SELECT         id
                                                         FROM         '.DBPREFIX.'module_gallery_categories
@@ -1285,7 +1285,7 @@ class galleryManager extends GalleryLibrary
                                                                             name="name"
                                                                     LIMIT    1
                                                                 ');
-                            $strOutputSelect         .= '<option value="?cmd=gallery&amp;act=change_category_picture&amp;id='.$intOutputId.'&amp;catid='.$objResult->fields['id'].'">&nbsp;&nbsp;&nbsp;'.$objSubResult->fields['value'].'</option>';
+                            $strOutputSelect         .= '<option value="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=change_category_picture&amp;id='.$intOutputId.'&amp;catid='.$objResult->fields['id'].'">&nbsp;&nbsp;&nbsp;'.$objSubResult->fields['value'].'</option>';
                             $strMultiActionSelect     .= '<option value="'.$objResult->fields['id'].'">&nbsp;&nbsp;&nbsp;'.$objSubResult->fields['value'].'</option>';
                             $objResult->MoveNext();
                         }

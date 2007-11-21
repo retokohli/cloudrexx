@@ -5,7 +5,7 @@
  * Version informations
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author       Astalavista Developer Team <info@comvation.com>
+ * @author      Comvation Development Team
  * @version		1.0.0
  * @package     contrexx
  * @subpackage  config

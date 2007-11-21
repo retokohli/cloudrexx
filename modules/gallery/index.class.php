@@ -76,7 +76,7 @@ class Gallery {
         if (isset($_GET['pId']) && !empty($_GET['pId'])) {
         	if (isset($_POST['frmGalComAdd_PicId'])) {
                 $this->addComment();
-                header('location:index.php?section=gallery'.html_entity_decode($this->strCmd, ENT_QUOTES, CONTREXX_CHARSET).'&cid='.
+                header('location:'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.html_entity_decode($this->strCmd, ENT_QUOTES, CONTREXX_CHARSET).'&cid='.
                     intval($_POST['frmGalComAdd_GalId']).'&pId='.
                     intval($_POST['frmGalComAdd_PicId']));
                 exit;
@@ -84,7 +84,7 @@ class Gallery {
 
             if (isset($_GET['mark'])) {
                 $this->countVoting($_GET['pId'],$_GET['mark']);
-                header('location:index.php?section=gallery'.html_entity_decode($this->strCmd, ENT_QUOTES, CONTREXX_CHARSET).'&cid='.
+                header('location:'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.html_entity_decode($this->strCmd, ENT_QUOTES, CONTREXX_CHARSET).'&cid='.
                     intval($_GET['cid']).'&pId='.intval($_GET['pId']));
                 exit;
             }
@@ -147,7 +147,7 @@ class Gallery {
             $imageName = $objSubResult->fields['name'];
             $imageDesc = $objSubResult->fields['desc'];
             $imageSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
-            $strImageWebPath = ASCMS_PROTOCOL .'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=gallery'.$this->strCmd.'&amp;cid='.$intCatId.'&amp;pId='.$intPicId;
+            $strImageWebPath = ASCMS_PROTOCOL .'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.$this->strCmd.'&amp;cid='.$intCatId.'&amp;pId='.$intPicId;
             $objResult->MoveNext();
         }
 
@@ -391,7 +391,7 @@ class Gallery {
             $imageName = $objSubResult->fields['name'];
             $imageDesc = $objSubResult->fields['desc'];
             $imageSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
-            $strImageWebPath = ASCMS_PROTOCOL .'://'.$_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET.'/index.php?section=gallery'.$this->strCmd.'&amp;cid='.$intCatId.'&amp;pId='.$intPicId;
+            $strImageWebPath = ASCMS_PROTOCOL .'://'.$_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.$this->strCmd.'&amp;cid='.$intCatId.'&amp;pId='.$intPicId;
             $objResult->MoveNext();
         }
 
@@ -454,6 +454,8 @@ class Gallery {
             'IMAGE_DESCRIPTION'     => $_ARRAYLANG['TXT_IMAGE_NAME'].': '.$imageName.'<br />'.$_ARRAYLANG['TXT_FILESIZE'].': '.$imageSize.' kB<br />'.$_ARRAYLANG['TXT_RESOLUTION'].': '.$imageReso[0].'x'.$imageReso[1].' Pixel',
             'IMAGE_DESC'            => (!empty($imageDesc)) ? $imageDesc.'<br /><br />' : '',
         ));
+
+        $objTpl->setGlobalVariable('CONTREXX_DIRECTORY_INDEX', CONTREXX_DIRECTORY_INDEX);
 
         //voting
         if ($objTpl->blockExists('votingTab')) {
@@ -581,7 +583,7 @@ class Gallery {
     {
         global $_ARRAYLANG, $objDatabase;
 
-        $strOutput = '<a href="?section=gallery" target="_self">'.$_ARRAYLANG['TXT_GALLERY'].'</a>';
+        $strOutput = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery" target="_self">'.$_ARRAYLANG['TXT_GALLERY'].'</a>';
 
         if (isset($_GET['cid'])) {
             $intCatId = intval($_GET['cid']);
@@ -605,10 +607,10 @@ class Gallery {
             }
 
             if (isset($strCategory2)) { // this is a subcategory
-                $strOutput .= ' / <a href="?section=gallery&amp;cid='.$intParentId.'" title="'.$strCategory2.'" target="_self">'.$strCategory2.'</a>';
-                $strOutput .= ' / <a href="?section=gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self">'.$strCategory1.'</a>';
+                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$intParentId.'" title="'.$strCategory2.'" target="_self">'.$strCategory2.'</a>';
+                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self">'.$strCategory1.'</a>';
             } else {
-                $strOutput .= ' / <a href="?section=gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self">'.$strCategory1.'</a>';
+                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self">'.$strCategory1.'</a>';
             }
         }
         return $strOutput;
@@ -635,7 +637,7 @@ class Gallery {
                 if ($objResult) {
                     $strOutput = '| ';
                     do {
-                        $strOutput .= "<a href='?section=gallery&amp;cid=".
+                        $strOutput .= "<a href='".CONTREXX_DIRECTORY_INDEX."?section=gallery&amp;cid=".
                             $objResult->Fields('id').
                             "' title='".$objResult->Fields('value').
                             "' target='_self'>".$objResult->Fields('value')."</a> | ";
@@ -769,14 +771,14 @@ class Gallery {
                     // no pictures in this gallery, show the empty-image
                     $strName     = $arrCategoryLang['name'];
                     $strDesc    = $arrCategoryLang['desc'];
-                    $strImage     = '<a href="?section=gallery&amp;cid='.$objResult->fields['id'].$this->strCmd.'" target="_self">';
+                    $strImage     = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$objResult->fields['id'].$this->strCmd.'" target="_self">';
                     $strImage     .= '<img border="0" alt="'.$arrCategoryLang['name'].'" src="images/modules/gallery/no_images.gif" /></a>';
                     $strInfo     = $_ARRAYLANG['TXT_IMAGE_COUNT'].': 0';
                     $strInfo     .= '<br />'.$_ARRAYLANG['TXT_SIZE'].': 0kB';
                 } else {
                     $strName    = $arrCategoryLang['name'];
                     $strDesc    = $arrCategoryLang['desc'];
-                    $strImage     = '<a href="?section=gallery&amp;cid='.$objResult->fields['id'].$this->strCmd.'" target="_self">';
+                    $strImage     = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$objResult->fields['id'].$this->strCmd.'" target="_self">';
                     $strImage     .= '<img border="0" alt="'.$arrCategoryLang['name'].'" src="'.$arrCategoryImages[$objResult->fields['id']].'" /></a>';
                     $strInfo     = $_ARRAYLANG['TXT_IMAGE_COUNT'].': '.$arrCategoryImageCounter[$objResult->fields['id']];
                     $strInfo     .= '<br />'.$_ARRAYLANG['TXT_SIZE'].': '.$arrCategorySizes[$objResult->fields['id']].'kB';
@@ -861,7 +863,7 @@ class Gallery {
 
                 if ($this->arrSettings['enable_popups'] == "on") {
                     $strImageOutput = '<a href="javascript:openWindow(\'';
-                    $strImageOutput .= '?section=gallery'.$this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.$objResult->fields['id'];
+                    $strImageOutput .= CONTREXX_DIRECTORY_INDEX.'?section=gallery'.$this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.$objResult->fields['id'];
                     $strImageOutput .= '\',\'\',\'width=';
                     $strImageOutput .= $imageReso[0]+25;
                     $strImageOutput .= ',height=';
@@ -875,7 +877,7 @@ class Gallery {
                     $strImageOutput .= $imageName;
                     $strImageOutput .= '" /></a>';
                 } else {
-                    $strImageOutput = '<a href=?section=gallery'.$this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.$objResult->fields['id'].'>';
+                    $strImageOutput = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.$this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.$objResult->fields['id'].'">';
                     $strImageOutput .= '<img border="0" title="'.$imageName.'" src="'.$imageThumbPath.'"';
                     $strImageOutput .= 'alt="'.$imageName.'" /></a>';
 

@@ -34,6 +34,9 @@ Allgemein
 - Neue Template-Ansicht für PDF-Generierung. Im "Layout & Design" kann das
   PDF-Template verwaltet werden und ein neuer Platzhalter [PDF_URL] wurde
   hinzugefügt.
+  
+Alias Verwaltung
+- Aliase können nur bei vorhandener .htaccess Datei verwaltet werden.
 
 Layout & Design
 - Neuer Platzhalter für die Zeitanzeige. Eingebunden im Design erzeugt der
@@ -60,7 +63,7 @@ Datenbank Manager
   Es gibt neu einen Datenbank Manager zur Verwaltung der Datenbank (ersetzt die
   Bereiche Datenbank sichern und System Update). Dieser
   erlaubt die Optimierung von Datenbanken. Ausserdem können SQL / CVS Backups
-  erzeugt und SQL-Queries ausgeführt werden.
+  erzeugt und SQL-Abfragen ausgeführt werden.
 
 Webinstaller
 - MySQL Server Version Überprüfung anstatt der Client Version.
@@ -85,11 +88,11 @@ Modul: Gästebuch
 
 Modul: Kalender
 - Zusätzliche Felder für Ort und Veranstalter
-- Zudem kann eine autom. An- und Abmeldung aktiviert werden, welche es den
-  Benutzern erlaubt sich über ein, vorher derfiniertes Formular aunzumelden.
-  Diese An- und abmeldungen können im Backend verwaltet und Exportiert (CSV)
+- Zudem kann eine automatische An- und Abmeldung aktiviert werden, welche es den
+  Benutzern erlaubt sich über ein, vorher definiertes Formular anzumelden.
+  Diese An- und Abmeldungen können im Backend verwaltet und Exportiert (CSV)
   werden.
-- Neue Gestalltung der Contentseiten
+- Neue Gestaltung der Inhaltsseiten
 
 Modul: Newsletter
 - Export wurde angepasst (one-click export). Es können einzelne Listen oder
@@ -179,6 +182,7 @@ Update System
 
 Modul: Adressverwaltung
 - Korrekte Darstellung bei Verschachtelten Kategorien.
+- SQL-Injections Schutz
 
 Modul: Bildergalerie
 - [[GALLERY_LATEST]] funktioniert nun wieder.
@@ -191,6 +195,7 @@ Modul: Gästebuch
 
 Modul: Kalender
 - Im Internet Explorer funktioniert das Erfassen des Enddatums eines Termins.
+- Navigation bei der Inhaltsseite "Drei Boxen Ansicht (cmd=boxes)" funktioniert.
 
 Modul: News-Syndication
 - Die RSS Feed werden unter PHP4 mit der Latin1 Variante korrekt eingelesen.
