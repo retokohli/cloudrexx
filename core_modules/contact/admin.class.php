@@ -57,8 +57,8 @@ class ContactManager extends ContactLib
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/contact/template');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-    	$objTemplate->setVariable("CONTENT_NAVIGATION", "	<a href='index.php?cmd=contact' title=".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].">".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']."</a>
-    														<a href='index.php?cmd=contact&amp;act=settings' title=".$_ARRAYLANG['TXT_CONTACT_SETTINGS'].">".$_ARRAYLANG['TXT_CONTACT_SETTINGS']."</a>");
+    	$objTemplate->setVariable("CONTENT_NAVIGATION", "	<a href='".CONTREXX_DIRECTORY_INDEX."?cmd=contact' title=".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].">".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']."</a>
+    														<a href='".CONTREXX_DIRECTORY_INDEX."?cmd=contact&amp;act=settings' title=".$_ARRAYLANG['TXT_CONTACT_SETTINGS'].">".$_ARRAYLANG['TXT_CONTACT_SETTINGS']."</a>");
 
     	$this->_arrFormFieldTypes = array(
     		'text'			=> $_ARRAYLANG['TXT_CONTACT_TEXTBOX'],
@@ -383,9 +383,9 @@ class ContactManager extends ContactLib
 
 						if (isset($arrEntry['data'][$col])) {
 							if (isset($arrFormFields[$arrFormFieldNames[$col]]) && $arrFormFields[$arrFormFieldNames[$col]]['type'] == 'file') {
-								$value = '<a href="'.ASCMS_PATH_OFFSET.$arrEntry['data'][$col].'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.$arrEntry['data'][$col].'</a>';
+								$value = '<a href="'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
 							} else {
-								$value = $arrEntry['data'][$col];
+								$value = htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET);
 							}
 						} else {
 							$value = '&nbsp;';
@@ -1308,7 +1308,7 @@ class ContactManager extends ContactLib
 					break;
 
 				case 'file':
-					$sourcecode .= isset($arrEntry['data'][$arrField['name']]) ? '<a href="'.ASCMS_PATH_OFFSET.$arrEntry['data'][$arrField['name']].'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.$arrEntry['data'][$arrField['name']].'</a>' : '&nbsp;';
+					$sourcecode .= isset($arrEntry['data'][$arrField['name']]) ? '<a href="'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET).'</a>' : '&nbsp;';
 					break;
 
 				case 'text':
@@ -1319,7 +1319,7 @@ class ContactManager extends ContactLib
 				case 'radio':
 				case 'select':
 				case 'textarea':
-					$sourcecode .= isset($arrEntry['data'][$arrField['name']]) ? nl2br($arrEntry['data'][$arrField['name']]) : '&nbsp;';
+					$sourcecode .= isset($arrEntry['data'][$arrField['name']]) ? nl2br(htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
 					break;
 			}
 

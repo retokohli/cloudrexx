@@ -871,8 +871,9 @@ class CommonFunctions
 		}
 	}
 
-	function createDatabaseTables() {
-		global $_ARRLANG, $sqlDumpFile, $dbType, $dbPrefix, $_CONFIG, $arrDatabaseTables;
+	function executeSQLQueries($type)
+	{
+		global $_ARRLANG, $sqlDumpFile, $dbType, $dbPrefix, $_CONFIG, $arrDatabaseTables, $useUtf8;
 
 		$sqlQuery = "";
 		$buffer = "";
@@ -885,7 +886,9 @@ class CommonFunctions
 			return $statusMsg;
 		} else {
 			// insert sql dump file
-			$fp = @fopen ($_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$sqlDumpFile.'_'.strtolower($_CONFIG['coreCmsEdition']).'.sql', "r");
+			$sqlDump = $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$sqlDumpFile.'_'.strtolower($_CONFIG['coreCmsEdition']).'_'.$type.'.sql';
+
+			$fp = @fopen ($sqlDump, "r");
 			if ($fp !== false) {
 				while (!feof($fp)) {
 					$buffer = fgets($fp);
@@ -895,14 +898,14 @@ class CommonFunctions
 							$sqlQuery = preg_replace($dbPrefixRegexp, '`'.$_SESSION['installer']['config']['dbTablePrefix'].'$1`', $sqlQuery);
 							$result = @$objDb->Execute($sqlQuery);
 							if ($result === false) {
-								$statusMsg .= "<br />".$sqlQuery."<br /> (".$objDb->ErrorMsg().")<br />";
+								$statusMsg .= "<br />".htmlentities($sqlQuery, ENT_QUOTES, ($useUtf8 ? 'UTF-8' : 'ISO-8859-1'))."<br /> (".$objDb->ErrorMsg().")<br />";
 							}
 							$sqlQuery = "";
 						}
 					}
 				}
 			} else {
-				return str_replace("[FILENAME]", $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$sqlDumpFile.'_'.strtolower($_CONFIG['coreCmsEdition']).'.sql', $_ARRLANG['TXT_COULD_NOT_READ_SQL_DUMP_FILE']."<br />");
+				return str_replace("[FILENAME]", $sqlDump, $_ARRLANG['TXT_COULD_NOT_READ_SQL_DUMP_FILE']."<br />");
 			}
 			if (empty($statusMsg)) {
 				return true;
@@ -910,6 +913,16 @@ class CommonFunctions
 				return $_ARRLANG['TXT_SQL_QUERY_ERROR'].$statusMsg;
 			}
 		}
+	}
+
+	function createDatabaseTables()
+	{
+		return $this->executeSQLQueries('structure');
+	}
+
+	function insertDatabaseData()
+	{
+		return $this->executeSQLQueries('data');
 	}
 
 	function checkDatabaseTables() {

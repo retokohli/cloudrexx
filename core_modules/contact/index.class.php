@@ -56,6 +56,13 @@ class Contact extends ContactLib
 	);
 
 	/**
+	 * List with the names of the formular fields
+	 *
+	 * @var array
+	 */
+	var $arrFormFields = array();
+
+	/**
 	 * Template object
 	 *
 	 * This object contains an instance of the HTML_Template_Sigma class
@@ -124,13 +131,16 @@ class Contact extends ContactLib
 
 	    		if (!$showThanks) {
 	    			$this->_showFeedback($arrFormData);
-	    		}else{
-	    			if($this->objTemplate->blockExists("formText")){
+	    		} else {
+	    			if ($this->objTemplate->blockExists("formText")) {
 	    				$this->objTemplate->hideBlock("formText");
 	    			}
 	    		}
 	    	}
     	} else {
+    		if ($this->objTemplate->blockExists('formText')) {
+				$this->objTemplate->touchBlock('formText');
+			}
     		$this->_getParams();
     	}
 
@@ -191,6 +201,9 @@ class Contact extends ContactLib
 			$arrFormData['id'] = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
 			if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'])) {
 				$arrFormData['fields'] = $this->getFormFields($arrFormData['id']);
+				foreach ($arrFormData['fields'] as $field) {
+					$this->arrFormFields[] = $field['name'];
+				}
 			} else {
 				$arrFormData['id'] = 0;
 				$arrFormData['emails'] = explode(',', $_CONFIG['contactFormEmail']);
@@ -484,6 +497,8 @@ class Contact extends ContactLib
 				}
 			}
 
+			uksort($arrFormData['data'], array($this, '_sortFormData'));
+
 			foreach ($arrFormData['data'] as $key => $value) {
 				$tabCount = ceil((strlen($key)+1) / 6);
 				$tabs = 7 - $tabCount;
@@ -546,6 +561,27 @@ class Contact extends ContactLib
 	}
 
 	/**
+	 * Sort the form input data
+	 *
+	 * Sorts the input data of the form according of the field's order.
+	 * This method is used as the comparison function of uksort.
+	 *
+	 * @param string $a
+	 * @param string $b
+	 * @return integer
+	 */
+	function _sortFormData($a, $b)
+	{
+		if (array_search($a, $this->arrFormFields) < array_search($b, $this->arrFormFields)) {
+			return -1;
+		} elseif (array_search($a, $this->arrFormFields) > array_search($b, $this->arrFormFields)) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	/**
 	 * Searches for a valid e-mail address
 	 *
 	 * Returns the first e-mail address that occours in the given string $string
@@ -572,14 +608,41 @@ class Contact extends ContactLib
 	 */
 	function _showFeedback($arrFormData)
 	{
+		global $_ARRAYLANG;
+
 		$feedback = $arrFormData['feedback'];
 
-		if (isset($arrFormData['fields'])) {
+		if (isset($arrFormData['fields']) && preg_match_all(
+			'#\[\[('.
+				implode(
+					'|',
+					array_unique(
+						array_merge(
+							$this->arrFormFields,
+							array_keys($arrFormData['data'])
+						)
+					)
+				)
+			.')\]\]#',
+			html_entity_decode($feedback, ENT_QUOTES, CONTREXX_CHARSET),
+			$arrMatch)
+		) {
 			foreach ($arrFormData['fields'] as $key => $field) {
-				if (isset($_POST['contactFormField_'.$key])) {
-					$name = $field['name'];
-					$value = contrexx_strip_tags($_POST['contactFormField_'.$key]);
-					$feedback = str_replace('[['.$name.']]', $value, $feedback);
+				if (in_array($field['name'], $arrMatch[1])) {
+					switch ($field['type']) {
+						case 'checkbox':
+							$value = isset($arrFormData['data'][$field['name']]) ? $_ARRAYLANG['TXT_CONTACT_YES'] : $_ARRAYLANG['TXT_CONTACT_NO'];
+							break;
+
+						case 'textarea':
+							$value = nl2br(htmlentities((isset($arrFormData['data'][$field['name']]) ? $arrFormData['data'][$field['name']] : ''), ENT_QUOTES, CONTREXX_CHARSET));
+							break;
+
+						default:
+							$value = htmlentities((isset($arrFormData['data'][$field['name']]) ? $arrFormData['data'][$field['name']] : ''), ENT_QUOTES, CONTREXX_CHARSET);
+							break;
+					}
+					$feedback = str_replace('[['.htmlentities($field['name'], ENT_QUOTES, CONTREXX_CHARSET).']]', $value, $feedback);
 				}
 			}
 		}

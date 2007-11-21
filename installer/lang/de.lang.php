@@ -121,6 +121,7 @@ $_ARRLANG['TXT_FAILED'] = "Fehlgeschlagen";
 $_ARRLANG['TXT_CREATE_DATABASE'] = "Datenbank erstellen";
 $_ARRLANG['TXT_DATABASE_CREATED'] = "Datenbank erstellt";
 $_ARRLANG['TXT_CREATE_DATABASE_TABLES'] = "Datenbanktabellen erstellt";
+$_ARRLANG['TXT_INSERT_DATABASE_DATA'] = "Dummy Daten installiert";
 $_ARRLANG['TXT_TABLE_NOT_AVAILABLE'] = "Tabelle \"[TABLE]\" ist nicht vorhanden";
 $_ARRLANG['TXT_CREATE_DATABAES_TABLE_MANUALLY'] = "Erstellen Sie die nötige(n) Tabelle(n) und fügen Sie zusätzlich den Inhalt in die Tabelle(n) ein mit Hilfe der <a href=\"[FILEPATH]\" title=\"SQL-Datei\">SQL-Datei</a>!";
 $_ARRLANG['TXT_CHECK_DATABASE_TABLES'] = "Datenbank Struktur überprüft";

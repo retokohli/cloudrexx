@@ -11,6 +11,8 @@ Globale Volltextsuche
   Suchergebnis einbezogen.
 
 Allgemein
+- Die Administrationskonsole wird neu über die Adresse
+  http://www.ihredomain.ch/cadmin aufgerufen
 - Das Changelog wurde auf max. 80 Zeilen breite beschränkt.
 - Russische und französische Übersetzung des Grundsystems erweitert.
 - Ein Benutzer ist nun auch auf nicht geschützten Seiten authentifiziert,
@@ -21,6 +23,8 @@ Allgemein
 - Die Eingabemaske zum schnellen Bearbeiten einer Inhaltsseite mittels dessen ID
   unter der Hauptnavigation im Backend wird nur angezeigt, wenn der Benutzer
   die Berechtigung besitzt Inhaltsseiten zu bearbeiten.
+- Die Eigenschaft "Meta Schlüsselwörter" einer Inhaltsseite wurde auf eine 
+  maximale Lange von rund 65 Tausend Zeichen erweitert (2^16 - 1)
 - Die Hauptmenüpunkte (Content Management / Module / Administration /
   System Informationen / Hilfe & Support) werden nur angezeigt, sofern der
   Benutzer auf mindestens  auf eine der darunter liegenden Unterpunkte Zugriff
@@ -57,6 +61,8 @@ Kontakte Manager
 - Die Darstellung generierter E-Mails (nur Text) wurde verbessert (rechtsbündig)
 - Die Formulare werden jetzt von einer Legende (mit Rahmen) umschlossen.
 - Die Styles sind nicht mehr fest im Code verankert.
+- Die eingegebenen Daten werden in der E-Mail Nachricht gemäss den erfassten
+  Formularfelder sortiert.
 
 Datenbank Manager
 - Ab PHP5:
@@ -67,6 +73,7 @@ Datenbank Manager
 
 Webinstaller
 - MySQL Server Version Überprüfung anstatt der Client Version.
+- Der Datenbank Dump ist in zwei Dateien getrennt (Struktur und Daten).
 
 WYSIWYG-Editor
 - Neue Version 2.4.3 des FCKeditors. Weitere Informationen unter:
@@ -148,9 +155,13 @@ Allgemein
   ausgegeben.
 - Mit dem Safari kann auf geschützte Bereiche zugegriffen werden.
 - Funktion "Passwort vergessen" sendet nur noch einmal das E-Mail.
+- Bei Verwendung eines zeitlich nicht begrenzten Aktivierungszeitraums werden
+  nicht validiert Benutzer nicht gelöscht, sofern sich ein anderer Besucher
+  versucht zu registrieren.
 
 Alias Verwaltung
 - Die Paging Navigation bei der Alias Übersicht wird angezeigt.
+- Die Ziel Adressen eines Aliases werden nicht mehr HTML codiert gespeichert.
 
 Kontakte Manager
 - Der CSV-Export funktioniert nun mit unlimitierter erfasster Anzahl Einträge.
@@ -158,6 +169,9 @@ Kontakte Manager
   mehr angezeigt werden soll.
 - Die Namen der Formularfelder werden in der E-Mail Nachricht korrekt
   dargestellt.
+- Wird ein Formularfeld leer gelassen, wird dessen Platzhalter beim Anzeigen des
+  Feedback Textes nicht mehr ausgegeben. Beim Feldtyp Kontrollkästchen wird
+  entweder, je nach getätigter Auswahl, "Ja" oder "Nein" angezeigt. 
 
 Layout & Design Verwaltung
 - Nachdem Erstellen eines neuen Layouts wird entweder das neu erstellte Layout
@@ -179,6 +193,8 @@ News Manager
 Update System
 - Das Update der Bildergalerie funktioniert auch wenn der MySQL Mode
   NO_AUTO_VALUE_ON_ZERO aktiviert ist.
+- Die Sprachzuweisung der Kontaktformulare funktioniert mit dem
+  Internet Explorer.
 
 Modul: Adressverwaltung
 - Korrekte Darstellung bei Verschachtelten Kategorien.
@@ -188,6 +204,8 @@ Modul: Bildergalerie
 - [[GALLERY_LATEST]] funktioniert nun wieder.
 - Fallback Mechanismus bei der Erstellung von Thumbnails, damit die
   Programmausführung bei zu grossen Bilder nicht unerwartet abgebrochen wird.
+- Beim Bereich "Bilder bestätigen" werden alle Kategorien aufgelistet und nicht
+  nur die Aktiven.
 
 Modul: Gästebuch
 - Das Erstellungsdatum eines Eintrages wird bei dessen Aktualisierung nicht
@@ -196,6 +214,8 @@ Modul: Gästebuch
 Modul: Kalender
 - Im Internet Explorer funktioniert das Erfassen des Enddatums eines Termins.
 - Navigation bei der Inhaltsseite "Drei Boxen Ansicht (cmd=boxes)" funktioniert.
+- Bei der "Drei Boxen"-Ansicht werden die Links zu den einzelnen Tagen korrekt
+  ausgegeben.
 
 Modul: News-Syndication
 - Die RSS Feed werden unter PHP4 mit der Latin1 Variante korrekt eingelesen.

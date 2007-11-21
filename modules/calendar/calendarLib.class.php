@@ -644,7 +644,7 @@ class calendarLibrary
                     $eventEndMonth = date("m", $enddate);
 
                     // do only something when the event is in the current month
-                    if ($eventMonth == $month || $eventEndMonth == $month) {
+                    if ($eventMonth <= $month && $eventEndMonth >= $month) {
                         // if the event is longer than one day but every day is in the same month
                         if ($eventEndDay > $eventDay && $eventMonth == $eventEndMonth) {
                             $curday = $eventDay;
@@ -673,6 +673,11 @@ class calendarLibrary
 
                                     $curday--;
                                 }
+                            } elseif ($eventMonth < $month && $eventEndMonth > $month) {
+                            	foreach (range(0,31,1) as $curday) {
+                            		$eventurl = $url."&amp;yearID=$eventYear&amp;monthID=$month&amp;dayID=$curday";
+                                    $cal->setEvent("$eventYear", "$month", "$curday", false, $eventurl);
+                            	}
                             }
                         } else {
                             $eventurl = $url."&amp;yearID=$eventYear&amp;monthID=$month&amp;dayID=$eventDay";
