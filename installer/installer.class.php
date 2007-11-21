@@ -1179,6 +1179,7 @@ class Installer
 				&& (!$_SESSION['installer']['config']['createDatabase'] || ($_SESSION['installer']['config']['createDatabase'] && (isset($_SESSION['installer']['createDatabase']) && $_SESSION['installer']['createDatabase'])))
 				&& isset($_SESSION['installer']['createDatabaseTables']) && $_SESSION['installer']['createDatabaseTables']
 				&& isset($_SESSION['installer']['checkDatabaseTables']) && $_SESSION['installer']['checkDatabaseTables']
+				&& isset($_SESSION['installer']['insertDatabaseData']) && $_SESSION['installer']['insertDatabaseData']
 				&& isset($_SESSION['installer']['createVersionFile']) && $_SESSION['installer']['createVersionFile'])
 			{
 				$_SESSION['installer']['step']++;
@@ -1195,7 +1196,7 @@ class Installer
 	* @global	object	$objCommon
 	* @global	object	$objTpl
 	* @global	array	$_ARRLANG
-	* @see	_setPermissions(), _createDatabase(), _createDatabaseTables(), _checkDatabaseTables(), _setInstallationStatus()
+	* @see	_setPermissions(), _createDatabase(), _createDatabaseTables(), _checkDatabaseTables(), _insertDatabaseData(), _setInstallationStatus()
 	*/
 	function _getInstallationPage() {
 		global $objCommon, $_ARRLANG, $objTpl, $useUtf8;
@@ -1227,6 +1228,11 @@ class Installer
 			$this->_setInstallationStatus($result, $_ARRLANG['TXT_CHECK_DATABASE_TABLES']);
 		}
 
+		// insert database data
+		if ($result === true) {
+			$result = $this->_insertDatabaseData();
+			$this->_setInstallationStatus($result, $_ARRLANG['TXT_INSERT_DATABASE_DATA']);
+		}
 
 		// create version file
 		if ($result === true) {
@@ -1347,6 +1353,31 @@ class Installer
 				return $result;
 			} else {
 				$_SESSION['installer']['checkDatabaseTables'] = true;
+				return true;
+			}
+		}
+	}
+
+	/**
+	* insert data into database
+	*
+	* insert standard/demo data into the database
+	*
+	* @access	private
+	* @global	object	$objCommon
+	* @return 	mixed	true on success, error message on failure
+	*/
+	function _insertDatabaseData() {
+		global $objCommon;
+
+		if (isset($_SESSION['installer']['insertDatabaseData']) && $_SESSION['installer']['insertDatabaseData']) {
+			return true;
+		} else {
+			$result = $objCommon->insertDatabaseData();
+			if ($result !== true) {
+				return $result;
+			} else {
+				$_SESSION['installer']['insertDatabaseData'] = true;
 				return true;
 			}
 		}
@@ -1710,7 +1741,7 @@ class Installer
 			}
 
 			$webUrl = 'http://'.$_SERVER['SERVER_NAME'].$port.$_SESSION['installer']['config']['offsetPath'].'/';
-			$adminUrl = 'http://'.$_SERVER['SERVER_NAME'].$port.$_SESSION['installer']['config']['offsetPath'].'/admin/';
+			$adminUrl = 'http://'.$_SERVER['SERVER_NAME'].$port.$_SESSION['installer']['config']['offsetPath'].'/cadmin/';
 
 			$congratulationsMsg = $_ARRLANG['TXT_CONGRATULATIONS_MESSAGE'];
 			$congratulationsMsg = str_replace("[VERSION]", $_CONFIG['coreCmsVersion'], $congratulationsMsg);

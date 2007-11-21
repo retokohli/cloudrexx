@@ -104,7 +104,7 @@ class aliasLib
 						$arrAliases[$arrLocalAliases[$objAlias->fields['catid']]]['title'] = $objAlias->fields['catname'];
 						$arrAliases[$arrLocalAliases[$objAlias->fields['catid']]]['pageUrl'] = ASCMS_PATH_OFFSET.'/index.php'
 							.(!empty($objAlias->fields['name']) ? '?section='.$objAlias->fields['name'] : '?page='.$objAlias->fields['catid'])
-							.(empty($objAlias->fields['cmd']) ? '' : '&amp;cmd='.$objAlias->fields['cmd']);
+							.(empty($objAlias->fields['cmd']) ? '' : '&cmd='.$objAlias->fields['cmd']);
 
 						$objAlias->MoveNext();
 					}

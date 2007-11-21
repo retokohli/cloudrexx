@@ -2302,8 +2302,7 @@ class galleryManager extends GalleryLibrary
                 //here starts the category-menu
                 $objResult = $objDatabase->Execute('SELECT         id
                                                     FROM         '.DBPREFIX.'module_gallery_categories
-                                                    WHERE         pid=0 AND
-                                                                status="1"
+                                                    WHERE         pid=0
                                                     ORDER BY     sorting');
                 if ($objResult->recordCount() > 0) {
                     while (!$objResult->EOF) {
@@ -2335,8 +2334,7 @@ class galleryManager extends GalleryLibrary
 
                         $objResult = $objDatabase->Execute('SELECT         id
                                                             FROM         '.DBPREFIX.'module_gallery_categories
-                                                            WHERE         pid='.$intMainCatKey.' AND
-                                                                        status="1"
+                                                            WHERE         pid='.$intMainCatKey.'
                                                             ORDER BY     sorting');
                         if ($objResult->recordCount() > 0) {
                             while (!$objResult->EOF) {
@@ -2429,8 +2427,7 @@ class galleryManager extends GalleryLibrary
             //here starts the category-menu
                 $objResult = $objDatabase->Execute('SELECT         id
                                                     FROM         '.DBPREFIX.'module_gallery_categories
-                                                    WHERE         pid=0 AND
-                                                                status="1"
+                                                    WHERE         pid=0
                                                     ORDER BY     sorting');
 
                 if ($objResult->RecordCount() > 0) {
@@ -2458,8 +2455,7 @@ class galleryManager extends GalleryLibrary
 
                         $objResult = $objDatabase->Execute('SELECT         id
                                                             FROM         '.DBPREFIX.'module_gallery_categories
-                                                            WHERE         pid='.$intMainCatKey.' AND
-                                                                        status="1"
+                                                            WHERE         pid='.$intMainCatKey.'
                                                             ORDER BY     sorting');
                         if ($objResult->RecordCount() > 0) {
                             while (!$objResult->EOF) {

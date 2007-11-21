@@ -227,7 +227,20 @@ class FWUser
 	{
 		global $objDatabase;
 
-		$objDatabase->Execute("DELETE FROM ".DBPREFIX."access_users WHERE active=0 AND restore_key!='' AND restore_key_time<".time());
+		static $userActivationTimeoutStatus = null;
+
+		if (!isset($userActivationTimeoutStatus)) {
+			$objConfig = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."community_config` WHERE `name` = 'user_activation_timeout' AND `status` = 1", 1);
+			if ($objConfig !== false && $objConfig->RecordCount() == 1) {
+				$userActivationTimeoutStatus = true;
+			} else {
+				$userActivationTimeoutStatus = false;
+			}
+		}
+
+		if ($userActivationTimeoutStatus) {
+			$objDatabase->Execute("DELETE FROM ".DBPREFIX."access_users WHERE active=0 AND restore_key!='' AND restore_key_time<".time());
+		}
 	}
 
 	/**
