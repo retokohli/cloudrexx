@@ -1,6 +1,6 @@
 <?php
 
-define('MY_DEBUG', 3);
+define('MY_DEBUG', 0);
 
 /**
  * Support system including Tickets, Knowledge Base and Mail support.
@@ -2256,39 +2256,32 @@ if (MY_DEBUG) echo("failed to get Info Field tree<br />");
             }
             // Some InfoField is selected by ID
 if (MY_DEBUG) { echo("infoFieldsEdit(): id is ");var_export($this->supportInfoFieldId);echo("<br />"); }
-            // Find the array index corresponding to the ID
-            $index = 0;
-            while (   $index < count($arrInfoFields)
-                   && $arrInfoFields[$index]['id'] != $this->supportInfoFieldId) {
-                ++$index;
-            }
-            // Found the matching index
-            if ($index < count($arrInfoFields)) {
-                // Edit the existing Info Field
-                $objTemplate->setVariable(array(
-                    'SUPPORT_INFO_FIELD_ID'                =>
-                        $this->supportInfoFieldId,
-                    'SUPPORT_INFO_FIELD_STATUS_CHECKED'    =>
-                        ($arrInfoFields[$index]['status']    ? ' checked="checked"' : ''),
-                    'SUPPORT_INFO_FIELD_MANDATORY_CHECKED' =>
-                        ($arrInfoFields[$index]['mandatory'] ? ' checked="checked"' : ''),
-                    'SUPPORT_INFO_FIELD_MULTIPLE_CHECKED'  =>
-                        ($arrInfoFields[$index]['multiple']  ? ' checked="checked"' : ''),
-                    'SUPPORT_INFO_FIELD_TYPE_MENU'         =>
-                        InfoFields::getTypeMenu(
-                            $arrInfoFields[$index]['type'],
-                            'supportInfoFieldType'),
-                    'SUPPORT_INFO_FIELD_ORDER'             =>
-                        $arrInfoFields[$index]['order'],
-                    'SUPPORT_INFO_FIELD_LANGUAGE_MENU'     =>
-                        $this->objLanguage->getMenu(
-                            $languageId,
-                            'supportInfoFieldLanguageId'
-                        ),
-                    'SUPPORT_INFO_FIELD_NAME'              =>
-                        $arrInfoFields[$index]['arrName'][$languageId],
-                ));
-            }
+            $arrInfoField =
+                $this->objInfoFields->getArrayById($this->supportInfoFieldId);
+            // Edit the existing Info Field
+            $objTemplate->setVariable(array(
+                'SUPPORT_INFO_FIELD_ID'                =>
+                    $this->supportInfoFieldId,
+                'SUPPORT_INFO_FIELD_STATUS_CHECKED'    =>
+                    ($arrInfoField['status']    ? ' checked="checked"' : ''),
+                'SUPPORT_INFO_FIELD_MANDATORY_CHECKED' =>
+                    ($arrInfoField['mandatory'] ? ' checked="checked"' : ''),
+                'SUPPORT_INFO_FIELD_MULTIPLE_CHECKED'  =>
+                    ($arrInfoField['multiple']  ? ' checked="checked"' : ''),
+                'SUPPORT_INFO_FIELD_TYPE_MENU'         =>
+                    InfoFields::getTypeMenu(
+                        $arrInfoField['type'],
+                        'supportInfoFieldType'),
+                'SUPPORT_INFO_FIELD_ORDER'             =>
+                    $arrInfoField['order'],
+                'SUPPORT_INFO_FIELD_LANGUAGE_MENU'     =>
+                    $this->objLanguage->getMenu(
+                        $languageId,
+                        'supportInfoFieldLanguageId'
+                    ),
+                'SUPPORT_INFO_FIELD_NAME'              =>
+                    $arrInfoField['arrName'][$languageId],
+            ));
         } else {
             // Default values
             $objTemplate->setVariable(array(

@@ -360,8 +360,8 @@ if (MY_DEBUG) { echo("getSupportCategoryNameArray(parent=$parentId, recurse=$fla
      * Does only contain the <select> tag pair if the optional $menuName
      * is specified and evaluates to a true value.
      * This is meant for the backend, as it contains all Support Categories
-     * ordered and indented.  It should be used to select parent Support
-     * Categories.
+     * ordered and indented.  It is intended to be used for selecting parent
+     * SupportCategories.
      * @param   integer $languageId The language ID of the Support Categories
      *                              to be used
      * @param   integer $selectedId The optional preselected Support Category ID
@@ -373,14 +373,14 @@ if (MY_DEBUG) { echo("getSupportCategoryNameArray(parent=$parentId, recurse=$fla
      */
     function getAdminMenu($languageId, $selectedId=0, $menuName='')
     {
-        $menu = '';
+        $strMenu = '';
         foreach ($this->getSupportCategoryTreeArray($languageId, false)
                 as $arrField) {
             $id    = $arrField['id'];
             $name  = $arrField['name'];
             $level = $arrField['level'];
 //if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): id $id, name $name<br />");
-            $menu .=
+            $strMenu .=
                 "<option value='$id'".
                 ($selectedId == $id ? ' selected="selected"' : '').
                 '>'.
@@ -388,17 +388,18 @@ if (MY_DEBUG) { echo("getSupportCategoryNameArray(parent=$parentId, recurse=$fla
                 "$name</option>\n";
         }
         if ($menuName) {
-            $menu = "<select id='$menuName' name='$menuName'>\n$menu\n</select>\n";
+            $strMenu = "<select id='$menuName' name='$menuName'>\n$strMenu\n</select>\n";
         }
-//if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): made menu: ".htmlentities($menu)."<br />");
-        return $menu;
+//if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): made menu: ".htmlentities($strMenu)."<br />");
+        return $strMenu;
     }
 
 
     /**
      * Returns HTML code for the Support Categories dropdown menu.
      *
-     * Does not contain the <select> tag pair.
+     * Does always contain the <select> tag pair, with the name attribute
+     * set to 'supportCategoryId'.
      * This is meant for the frontend, as it only contains the active
      * children Support Categories of the given parent ID.
      * It should be used to let the customer select the Support Category/-ies
@@ -409,6 +410,44 @@ if (MY_DEBUG) { echo("getSupportCategoryNameArray(parent=$parentId, recurse=$fla
      * @global  array       $_ARRAYLANG         Language array
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
+    function getMenu($parentCategoryId=0, $selectedCategoryId=0)
+    {
+        global $_ARRAYLANG;
+
+        $strMenu = '';
+        $flagMatchSelected = false;
+        foreach ($this->getSupportCategoryTreeArray($this->languageId)
+                as $arrField) {
+            $id    = $arrField['id'];
+            $name  = $arrField['name'];
+            $level = $arrField['level'];
+//if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): id $id, name $name<br />");
+            $strMenu .=
+                "<option value='$id'";
+            if ($id == $selectedCategoryId) {
+                $strMenu .= ' selected="selected"';
+                $flagMatchSelected = true;
+            }
+            $strMenu .=
+                '>'.
+                ($level ? str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $level-1).'+-&nbsp;' : '').
+                "$name</option>\n";
+        }
+        if (!$flagMatchSelected) {
+            $strMenu =
+                '<option value="0" selected="selected">'.
+                htmlentities(
+                    $_ARRAYLANG['TXT_SUPPORT_REQUEST_PLEASE_CHOOSE'],
+                    ENT_QUOTES, CONTREXX_CHARSET).
+                "</option>\n".
+                $strMenu;
+        }
+        return
+            '<select id="supportCategoryId" name="supportCategoryId"
+            onchange="JavaScript:supportContinue();">'.
+            $strMenu."</select>\n";
+    }
+/*
     function getMenu($parentCategoryId=0, $selectedCategoryId=0)
     {
         global $_ARRAYLANG;
@@ -426,7 +465,7 @@ if (MY_DEBUG) echo("SupportCategories::getMenu(parent=$parentCategoryId, selecte
         $strMenu = '';
         $flagMatchSelected = false;
         foreach ($arrSupportCategoryTree as $arrSupportCategory) {
-            if ($arrSupportCategory['parentId'] == $parentCategoryId) {
+//            if ($arrSupportCategory['parentId'] == $parentCategoryId) {
                 $id   = $arrSupportCategory['id'];
                 $name = $arrSupportCategory['name'];
                 $strMenu .= "<option value='$id'";
@@ -438,7 +477,7 @@ if (MY_DEBUG) echo("SupportCategories::getMenu(parent=$parentCategoryId, selecte
                     '>'.
                     htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET).
                     "</option>\n";
-            }
+//            }
         }
         if (!$flagMatchSelected) {
             $strMenu =
@@ -453,6 +492,8 @@ if (MY_DEBUG) echo("SupportCategories::getMenu(parent=$parentCategoryId, selecte
             '<select id="supportCategoryId" name="supportCategoryId"
             onchange="JavaScript:supportContinue();">'.
             $strMenu."</select>\n";
-    }}
+    }
+*/
 
+}
 ?>
