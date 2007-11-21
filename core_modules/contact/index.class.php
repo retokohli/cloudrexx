@@ -274,13 +274,7 @@ class Contact extends ContactLib
 
 					case UPLOAD_ERR_NO_FILE:
 						//Es wurde keine Datei hochgeladen.
-						$id = intval(substr($file, 17));
-						if (isset($arrFields[$id])) {
-							$key = $arrFields[$id]['name'];
-						} else {
-							$key = contrexx_strip_tags($file);
-						}
-						$arrFiles[$key] = $fileName;
+						continue;
 						break;
 
 					default:

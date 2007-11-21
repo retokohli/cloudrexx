@@ -663,7 +663,7 @@ function mkMonthNavUrl($year, $month)
 	    } else {
 	    	$glueMonthNav="&amp;";
 	    }
-		return "<a href=\"".htmlentities($this->urlMonthNav.$glueMonthNav.$this->yearID."=".$year."&amp;".$this->monthID."=".$month, ENT_QUOTES, CONTREXX_CHARSET)."\">";
+		return "<a href=\"".$this->urlMonthNav.$glueMonthNav.$this->yearID."=".$year."&amp;".$this->monthID."=".$month."\">";
 	} else {
 		return $this->mkUrl($year, $month);
 	}

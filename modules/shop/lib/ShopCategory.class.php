@@ -3,7 +3,7 @@
 /**
  * Shop Product Category
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
  * @version     $Id: 1.0.1 $
@@ -48,7 +48,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
 /**
  * Container for Products in the Shop.
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
  * @version     $Id: 1.0.1 $

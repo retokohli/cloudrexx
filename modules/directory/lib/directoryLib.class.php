@@ -1055,7 +1055,7 @@ class directoryLibrary
 			}
 
 			$url	= $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET;;
-			$link	= "http://".$url."/index.php?section=directory&cmd=detail&id=".$feedId;
+			$link	= "http://".$url."/".CONTREXX_DIRECTORY_INDEX."?section=directory&cmd=detail&id=".$feedId;
 			$now 	= date(ASCMS_DATE_FORMAT);
 
 			//replase placeholder
@@ -1200,7 +1200,7 @@ class directoryLibrary
 			$objRSS->channelDescription = $this->rssLatestDescription;
 			$objRSS->channelWebmaster = $_CONFIG['coreAdminEmail'];
 			$objRSS->newsLimit = $limit;
-			$objRSS->channelLink = ASCMS_PROTOCOL."://".$_SERVER['SERVER_NAME']."/index.php?section=directory";
+			$objRSS->channelLink = ASCMS_PROTOCOL."://".$_SERVER['SERVER_NAME']."/".CONTREXX_DIRECTORY_INDEX."?section=directory";
 
 			$objRSS->create();
     	}

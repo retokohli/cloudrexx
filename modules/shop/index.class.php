@@ -75,6 +75,8 @@ function shopUseSession()
 {
     if (!empty($_COOKIE['PHPSESSID'])) {
         return true;
+    } elseif (!empty($_REQUEST['currency'])) {
+    	return true;
     } else {
         $command = '';
         if (!empty($_GET['cmd'])) {
@@ -82,11 +84,13 @@ function shopUseSession()
         } elseif (!empty($_GET['act'])) {
             $command = $_GET['act'];
         }
-        if (in_array($command, array('', 'discounts', 'details', 'terms'))) {
+        if (in_array($command, array('', 'discounts', 'details', 'terms', 'cart'))) {
             if (    //$command == 'details' &&
                 isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart'
                 ) {
                 return true;
+            } elseif ($command == 'cart' && (isset($_REQUEST['productId']) || (isset($_GET['remoteJs']) && $_GET['remoteJs'] == 'addProduct' && !empty($_GET['product'])))) {
+            	return true;
             }
             return false;
         } else {

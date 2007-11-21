@@ -1,7 +1,7 @@
 <?php
 /**
  * Calendar
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
  * @subpackage  module_calendar
@@ -18,7 +18,7 @@ require_once ASCMS_CORE_PATH.'/settings.class.php';
  * Calendar
  *
  * Class to manage cms calendar
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
  * @subpackage  module_calendar

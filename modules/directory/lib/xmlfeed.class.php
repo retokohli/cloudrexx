@@ -1,4 +1,4 @@
-<?PHP
+<?php
 /**
  * RSS Feed
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -59,7 +59,7 @@ ASCMS_DIRECTORY_FEED_PATH
 		$this->channelCopyright = "http://".$_SERVER['SERVER_NAME'];
 		$this->channelGenerator = $_CONFIG['coreCmsName'];
 		$this->channelLanguage  = "English";
-		$this->itemLink = "http://".$_SERVER['SERVER_NAME']."/index.php?section=directory&amp;cmd=detail&amp;id=";
+		$this->itemLink = "http://".$_SERVER['SERVER_NAME']."/".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;cmd=detail&amp;id=";
 		$this->fileName = "directory_latest.xml";
 	}
 

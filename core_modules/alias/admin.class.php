@@ -207,6 +207,10 @@ class AliasAdmin extends aliasLib
 	{
 		global $_ARRAYLANG, $_CONFIG;
 
+		if (!$this->_createHtAccessFile()) {
+			return $this->_list();
+		}
+
 		$aliasId = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 		$arrSourceUrls = array();
 

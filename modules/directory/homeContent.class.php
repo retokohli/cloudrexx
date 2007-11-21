@@ -1,4 +1,4 @@
-<?PHP
+<?php
 /**
  * Home content
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -189,8 +189,8 @@ class dirHomeContent extends directoryLibrary
 				$count = $this->count($levelKey, '');
 
 				$class= $parentId==0 ? "catLink" : "subcatLink";
-				$this->arrRows[$i] .= "<a class='catLink' href='?section=directory&amp;lid=".$levelKey."''>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
-				array_push($this->arrRowsIndex, substr(htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1)."<a class='catLink' href='?section=directory&amp;lid=".$levelKey."''>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />");
+				$this->arrRows[$i] .= "<a class='catLink' href='".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;lid=".$levelKey."''>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
+				array_push($this->arrRowsIndex, substr(htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1)."<a class='catLink' href='".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;lid=".$levelKey."''>".htmlentities($levelName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />");
 
 
 				//get level
@@ -198,7 +198,7 @@ class dirHomeContent extends directoryLibrary
 					$objResult = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."module_directory_levels WHERE status = '1' AND parentid =".contrexx_addslashes($levelKey)." ORDER BY displayorder LIMIT ".contrexx_addslashes($this->subLimit)."");
 					if($objResult !== false){
 						while(!$objResult->EOF){
-							$this->arrRows[$i] .= "<a class='subcatLink' href='?section=directory&amp;lid=".$objResult->fields['id']."''>".htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)."</a>, ";
+							$this->arrRows[$i] .= "<a class='subcatLink' href='".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;lid=".$objResult->fields['id']."''>".htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)."</a>, ";
 							$objResult->MoveNext();
 						}
 					}
@@ -273,8 +273,8 @@ class dirHomeContent extends directoryLibrary
 				$count = $this->count($_GET['lid'], $catKey);
 
 				$class= $parentId==0 ? "catLink" : "subcatLink";
-				$this->arrRows[$i] .= "<a class='catLink' href='?section=directory".$levelLink."&amp;cid=".$catKey."''>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
-				array_push($this->arrRowsIndex, substr(htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1)."<a class='catLink' href='?section=directory".$levelLink."&amp;cid=".$catKey."''>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />");
+				$this->arrRows[$i] .= "<a class='catLink' href='".CONTREXX_DIRECTORY_INDEX."?section=directory".$levelLink."&amp;cid=".$catKey."''>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />";
+				array_push($this->arrRowsIndex, substr(htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET), 0, 1)."<a class='catLink' href='".CONTREXX_DIRECTORY_INDEX."?section=directory".$levelLink."&amp;cid=".$catKey."''>".htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET)."</a>&nbsp;(".$count.")<br />");
 
 
 				//get subcategories
@@ -282,7 +282,7 @@ class dirHomeContent extends directoryLibrary
 					$objResult = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."module_directory_categories WHERE status = '1' AND parentid =".contrexx_addslashes($catKey)." ORDER BY displayorder LIMIT ".contrexx_addslashes($this->subLimit)."");
 					if($objResult !== false){
 						while(!$objResult->EOF){
-							$this->arrRows[$i] .= "<a class='subcatLink' href='?section=directory".$levelLink."&amp;cid=".$objResult->fields['id']."''>".htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)."</a>, ";
+							$this->arrRows[$i] .= "<a class='subcatLink' href='".CONTREXX_DIRECTORY_INDEX."?section=directory".$levelLink."&amp;cid=".$objResult->fields['id']."''>".htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)."</a>, ";
 							$objResult->MoveNext();
 						}
 					}

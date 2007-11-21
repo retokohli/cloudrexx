@@ -1174,6 +1174,14 @@ class CommonFunctions
 				}
 			}
 
+			if (in_array($_SESSION['installer']['config']['dbTablePrefix'].'module_egov_products', $arrTables)) {
+				$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."module_egov_products`
+							 SET `product_target_email` = '".$_SESSION['installer']['sysConfig']['adminEmail']."'";
+				if (!@$objDb->Execute($query)) {
+					$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL']."<br />";
+				}
+			}
+
 			/*
 			// set rss title
 			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."module_news_settings`

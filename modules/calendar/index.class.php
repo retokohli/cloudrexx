@@ -147,7 +147,7 @@ class Calendar extends calendarLibrary
     {
     	global $objDatabase, $_ARRAYLANG, $_CONFIG, $objAuth, $objPerm, $_LANGID;
 
-    	$this->url = "?section=calendar";
+    	$this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar";
 
     	$this->_objTpl->setTemplate($this->pageContent);
 
@@ -197,7 +197,7 @@ class Calendar extends calendarLibrary
 				$year 			= $_GET['yearID'];
 				$startdate 		= mktime(00, 00, 00, $month, $day, $year);
 				$enddate 		= mktime(23, 59, 59, $month, $day, $year);
-				$listTitle		= '<a href="?section=calendar&amp;catid='.$_GET['catid'].'&amp;yearID='.$year.'&amp;monthID='.$month.'&amp;dayID='.$day.'" target="_self" >'.$day.'. '.$monthNames[$month-1].' '.$_GET['yearID'].'</a>';
+				$listTitle		= '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;catid='.$_GET['catid'].'&amp;yearID='.$year.'&amp;monthID='.$month.'&amp;dayID='.$day.'" target="_self" >'.$day.'. '.$monthNames[$month-1].' '.$_GET['yearID'].'</a>';
 
 				$calendarbox = $this->getBoxes(3, $year, $month, $day);
 
@@ -206,7 +206,7 @@ class Calendar extends calendarLibrary
 				$year 			= $_GET['yearID'];
 				$startdate 		= mktime(00, 00, 00, $month, 01, $year);
 				$enddate 		= mktime(23, 59, 59, $month, 31, $year);
-				$listTitle		= '<a href="?section=calendar&amp;catid='.$_GET['catid'].'&amp;yearID='.$year.'&amp;monthID='.$month.'" target="_self" >'.$monthNames[$month-1].' '.$_GET['yearID'].'</a>';
+				$listTitle		= '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;catid='.$_GET['catid'].'&amp;yearID='.$year.'&amp;monthID='.$month.'" target="_self" >'.$monthNames[$month-1].' '.$_GET['yearID'].'</a>';
 
 				$calendarbox 	= $this->getBoxes(3, $year, $month);
 
@@ -359,7 +359,7 @@ class Calendar extends calendarLibrary
 		}
 
 		if(intval($_GET['catid']) == 0){
-			$exportLinks = '<a href="?section=calendar&amp;cmd=event&amp;export=all"
+			$exportLinks = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=all"
 							   title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'">
             					'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'
             					<img style="padding-top: -1px;" border="0"
@@ -368,7 +368,7 @@ class Calendar extends calendarLibrary
             						 title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'" />
 							</a>';
 
-			$exportImg = '<a href="?section=calendar&amp;cmd=event&amp;export=all"
+			$exportImg = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=all"
 							   title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'">
             					<img style="padding-top: 10px;" border="0"
             						 src="images/modules/calendar/ical_export.gif"
@@ -377,7 +377,7 @@ class Calendar extends calendarLibrary
 							</a>';
 
 		}else{
-			$exportLinks = '<a href="?section=calendar&amp;cmd=event&amp;export=category&amp;id='.intval($_REQUEST['catid']).'"
+			$exportLinks = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=category&amp;id='.intval($_REQUEST['catid']).'"
 							   title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'">
             					'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'
             					<img style="padding-top: -1px;" border="0"
@@ -386,7 +386,7 @@ class Calendar extends calendarLibrary
             						 title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'" />
             				</a>';
 
-			$exportImg = '<a href="?section=calendar&amp;cmd=event&amp;export=category&amp;id='.intval($_REQUEST['catid']).'"
+			$exportImg = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=category&amp;id='.intval($_REQUEST['catid']).'"
 							   title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'">
             					<img style="padding-top: 10px;" border="0"
             						 src="images/modules/calendar/ical_export.gif"
@@ -440,8 +440,8 @@ class Calendar extends calendarLibrary
 	{
 	    global $_ARRAYLANG, $_LANGID, $objDatabase;
 
-	    $this->url = "?section=calendar&cmd=boxes&act=list";
-	    $this->monthnavurl = "?section=calendar&cmd=boxes";
+	    $this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes&act=list";
+	    $this->monthnavurl = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes";
 
 	    // http://www.contrexx.com/index.php?section=calendar&month=01&year=2006&catid=1
 		$this->_objTpl->setTemplate($this->pageContent);
@@ -560,7 +560,7 @@ class Calendar extends calendarLibrary
 		}
 
 
-		$java_script  = "<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\nfunction goTo()\n{\nwindow.location.href = \"?section=calendar&catid=".$_GET['catid']."&month=\"+document.goToForm.goToMonth.value+\"&year=\"+document.goToForm.goToYear.value;\n}\n\n\n";
+		$java_script  = "<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\nfunction goTo()\n{\nwindow.location.href = \"".CONTREXX_DIRECTORY_INDEX."?section=calendar&catid=".$_GET['catid']."&month=\"+document.goToForm.goToMonth.value+\"&year=\"+document.goToForm.goToYear.value;\n}\n\n\n";
 		$java_script .= "function categories()\n{\nwindow.location.href = \"".$requestUri."&catid=\"+document.selectCategory.inputCategory.value;\n}\n// -->\n</script>";
 
 
@@ -604,7 +604,7 @@ class Calendar extends calendarLibrary
 			$cur_date 	= $monthnames[$month-1]." ".$year;
 
 		} else {
-			header("Location: ?section=calendar&cmd=boxes");
+			header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes");
 			exit;
 		}
 
@@ -652,7 +652,7 @@ class Calendar extends calendarLibrary
 		global $_ARRAYLANG;
 
 		if (!isset($_GET['id'])) {
-			header("Location: ?section=calendar");
+			header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar");
 			exit;
 		}
 		$this->_objTpl->setTemplate($this->pageContent);
@@ -687,10 +687,10 @@ class Calendar extends calendarLibrary
             'TXT_CALENDAR_REGISTRATION'     => $_ARRAYLANG['TXT_CALENDAR_REGISTRATION'],
             'TXT_CALENDAR_REGISTRATION_INFO'=> $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_INFO'],
 
-            'CALENDAR_ICAL_EXPORT'      	=> '<a href="?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.intval($_GET['id']).'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
+            'CALENDAR_ICAL_EXPORT'      	=> '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.intval($_GET['id']).'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
             									'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].' <img style="padding-top: -1px;" border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
             								</a>',
-            'CALENDAR_ICAL_EXPORT_IMG'      => '<a href="?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.intval($_GET['id']).'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
+            'CALENDAR_ICAL_EXPORT_IMG'      => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.intval($_GET['id']).'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
             									<img style="padding-top: 10px;" border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
             								</a>',
         ));

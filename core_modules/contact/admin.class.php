@@ -1486,7 +1486,7 @@ class ContactManager extends ContactLib
 			$currentTime = time();
 			$content = addslashes($this->_getSourceCode($formId));
 
-	  		$q1 = "INSERT INTO ".DBPREFIX."content_navigation (catid,
+	  		$q1 = "INSERT INTO ".DBPREFIX."content_navigation (
 								  		catname,
 								  		displayorder,
 								  		displaystatus,
@@ -1496,7 +1496,6 @@ class ContactManager extends ContactLib
 								  		lang,
 								  		module
 								  		) VALUES(
-								  		'',
 								  		'".$catname."',
 								  		'1',
 								  		'on',
