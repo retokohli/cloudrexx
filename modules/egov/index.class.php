@@ -386,10 +386,10 @@ class eGov extends eGovLibrary
 	{
 		global $objDatabase, $_ARRAYLANG, $_CONFIG;
 		if($_REQUEST["send"]=="exe"){
-			$SaveReturn = '<script language="JavaScript" type="text/javascript">'.chr(10);
-			$SaveReturn .= '<!--'.chr(10);
+			$SaveReturn = '<script type="text/javascript">'.chr(10);
+			$SaveReturn .= '// <![CDATA['.chr(10);
 			$SaveReturn .= $this->_saveOrder();
-			$SaveReturn .= '// -->'.chr(10);
+			$SaveReturn .= '// ]]>'.chr(10);
 			$SaveReturn .= '</script>'.chr(10);
 		}else{
 			$SaveReturn = '';
@@ -409,7 +409,7 @@ class eGov extends eGovLibrary
 					'EGOV_PRODUCT_TITLE' 		        => $objResult->fields['product_name'],
 					'EGOV_PRODUCT_ID'		            => $objResult->fields['product_id'],
 					'EGOV_PRODUCT_DESC'					=> $objResult->fields['product_desc'],
-					'EGOV_PRODUCT_LINK'				    => "index.php?section=egov&cmd=detail&id=".$objResult->fields['product_id']
+					'EGOV_PRODUCT_LINK'				    => "index.php?section=egov&amp;cmd=detail&amp;id=".$objResult->fields['product_id']
 				));
 				$this->objTemplate->parse('egovProducts');
 				$objResult->MoveNext();
@@ -435,10 +435,10 @@ class eGov extends eGovLibrary
 				if($_REQUEST["payment"]=="cancel"){
 					$ReturnValue = 'alert("'.$_ARRAYLANG['TXT_EGOV_PAYPAL_CANCEL'].'");'.chr(10);
 				}
-				$Return = chr(10).chr(10).'<script language="JavaScript" type="text/javascript">'.chr(10);
-				$Return .= '<!--'.chr(10);
+				$Return = chr(10).chr(10).'<script type="text/javascript">'.chr(10);
+				$Return .= '// <![CDATA['.chr(10);
 				$Return .= $ReturnValue;
-				$Return .= '// -->'.chr(10);
+				$Return .= '// ]]>'.chr(10);
 				$Return .= '</script>'.chr(10);
 
 				$AddSource = $Return;

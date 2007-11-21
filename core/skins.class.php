@@ -1243,12 +1243,13 @@ class skins
 	{
 		global $objDatabase;
 		$activatedThemes = array();
-		$objResult = $objDatabase->Execute("SELECT id,themesid,print_themes_id,is_default FROM ".DBPREFIX."languages ORDER BY id");
+		$objResult = $objDatabase->Execute("SELECT id,themesid,print_themes_id,pdf_themes_id,is_default FROM ".DBPREFIX."languages ORDER BY id");
 		$i=0;
 		if ($objResult !== false) {
 			while (!$objResult->EOF) {
-				$activatedThemes[$i] = $objResult->fields['themesid'];
-				$activatedPrintThemes[$i] = $objResult->fields['print_themes_id'];
+				$activatedThemes[] = $objResult->fields['themesid'];
+				$activatedThemes[] = $objResult->fields['print_themes_id'];
+				$activatedThemes[] = $objResult->fields['pdf_themes_id'];
 				$i++;
 				$objResult->MoveNext();
 			}
@@ -1256,7 +1257,7 @@ class skins
 		$objResult = $objDatabase->Execute("SELECT id,themesname,foldername FROM ".DBPREFIX."skins ORDER BY id");
 		if ($objResult !== false) {
 			while (!$objResult->EOF) {
-				if(!in_array($objResult->fields['id'], $activatedThemes) && !in_array($objResult->fields['id'], $activatedPrintThemes)) {
+				if (!in_array($objResult->fields['id'], $activatedThemes)) {
 					$selected="";
 					if (!isset($tdm)) {
 						$tdm = "";
