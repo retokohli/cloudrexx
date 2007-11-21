@@ -231,9 +231,7 @@ class Support
             new SupportCategories($objInit->getFrontendLangId());
         $this->objInfoFields =
             new InfoFields($objInit->getFrontendLangId());
-
-if (MY_DEBUG) { echo("POST: ");var_export($_POST);echo("<br />"); }
-
+if (MY_DEBUG) { echo("Support::__construct(): POST: ");var_export($_POST);echo("<br />"); }
     }
 
 
@@ -293,54 +291,54 @@ if (MY_DEBUG) { echo("POST: ");var_export($_POST);echo("<br />"); }
 
         // The status is at its default, START, before this.
         if (!empty($_REQUEST['supportCategoryId'])) {
-if (MY_DEBUG) echo("got category id, ");
+if (MY_DEBUG) echo("Support::supportRequest(): got category id, ");
             $this->supportCategoryId = intval($_REQUEST['supportCategoryId']);
             if ($this->supportCategoryId > 0) {
                 $this->supportStatus |= SUPPORT_REQUEST_STATUS_CATEGORY;
-if (MY_DEBUG) echo("status is now $this->supportStatus, ");
+if (MY_DEBUG) echo("Support::supportRequest():status is now $this->supportStatus, ");
             }
         }
         if (!empty($_REQUEST['supportSubject'])) {
-if (MY_DEBUG) echo("got subject, ");
+if (MY_DEBUG) echo("Support::supportRequest():got subject, ");
             $this->supportSubject = $_REQUEST['supportSubject'];
             $this->supportStatus |= SUPPORT_REQUEST_STATUS_SUBJECT;
-if (MY_DEBUG) echo("status is now $this->supportStatus, ");
+if (MY_DEBUG) echo("Support::supportRequest():status is now $this->supportStatus, ");
         }
         if (!empty($_REQUEST['supportBody'])) {
-if (MY_DEBUG) echo("got body, ");
+if (MY_DEBUG) echo("Support::supportRequest():got body, ");
             $this->supportBody = $_REQUEST['supportBody'];
             $this->supportStatus |= SUPPORT_REQUEST_STATUS_MESSAGE;
-if (MY_DEBUG) echo("status is now $this->supportStatus, ");
+if (MY_DEBUG) echo("Support::supportRequest():status is now $this->supportStatus, ");
         }
         if (isset($_REQUEST['arrSupportInfoField'])) {
-if (MY_DEBUG) echo("got infofield/s, ");
+if (MY_DEBUG) echo("Support::supportRequest():got infofield/s, ");
             $this->arrSupportInfoField = $_REQUEST['arrSupportInfoField'];
-if (MY_DEBUG) { echo("arrIF: ");var_export($this->arrSupportInfoField);echo("<br />"); }
+if (MY_DEBUG) { echo("Support::supportRequest():arrIF: ");var_export($this->arrSupportInfoField);echo("<br />"); }
             if ($this->objInfoFields->isComplete($this->arrSupportInfoField)) {
                 $this->supportStatus |= SUPPORT_REQUEST_STATUS_INFOFIELD;
             }
-if (MY_DEBUG) echo("status is now $this->supportStatus, ");
+if (MY_DEBUG) echo("Support::supportRequest():status is now $this->supportStatus, ");
         }
         if (!empty($_REQUEST['supportName'])) {
-if (MY_DEBUG) echo("got name, ");
+if (MY_DEBUG) echo("Support::supportRequest():got name, ");
             $this->supportName = $_REQUEST['supportName'];
             $this->supportStatus |= SUPPORT_REQUEST_STATUS_NAME;
-if (MY_DEBUG) echo("status is now $this->supportStatus, ");
+if (MY_DEBUG) echo("Support::supportRequest():status is now $this->supportStatus, ");
         }
         if (!empty($_REQUEST['supportEmail'])) {
-if (MY_DEBUG) echo("got email, ");
+if (MY_DEBUG) echo("Support::supportRequest():got email, ");
             $this->supportEmail = $_REQUEST['supportEmail'];
             $this->supportStatus |= SUPPORT_REQUEST_STATUS_EMAIL;
-if (MY_DEBUG) echo("status is now $this->supportStatus, ");
+if (MY_DEBUG) echo("Support::supportRequest():status is now $this->supportStatus, ");
         }
         if (!empty($_REQUEST['supportTicketId'])) {
-if (MY_DEBUG) echo("got ticket id, ");
+if (MY_DEBUG) echo("Support::supportRequest():got ticket id, ");
             $this->supportTicketId = $_REQUEST['supportTicketId'];
             $this->supportStatus |= SUPPORT_REQUEST_STATUS_TICKET;
-if (MY_DEBUG) echo("status is now $this->supportStatus, ");
+if (MY_DEBUG) echo("Support::supportRequest():status is now $this->supportStatus, ");
         }
 if (MY_DEBUG) echo("<br />");
-if (MY_DEBUG) echo("Support::__construct(): INFO: Support status is $this->supportStatus.<br />");
+if (MY_DEBUG) echo("Support::supportRequest(): INFO: Support status is $this->supportStatus.<br />");
 
         $ticketId = 0;
 if (MY_DEBUG) echo("Support::supportRequest(): status is $this->supportStatus.<br />");
@@ -350,9 +348,7 @@ if (MY_DEBUG) echo("Support::supportRequest(): Requesting Ticket.<br />");
             $ticketId = $this->requestTicket();
 if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
         }
-
 //$this->dumpTemplate($this->objTemplate);
-
 
         $this->objTemplate->setVariable(array(
             'TXT_SUPPORT_REQUEST_CONTINUE'      =>
@@ -405,13 +401,16 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
             $this->objTemplate->hideBlock('requestComplete');
         }
 
-
         // Index inside of infofieldRow
         $infoFieldIndex = 0;
         // The array of all available InfoFields
-        foreach ($this->objInfoFields->getInfoFieldArray(
+        $arrInfoFields = $this->objInfoFields->getInfoFieldArray(
                         $objInit->getFrontendLangId()
-                    ) as $arrInfoField) {
+        );
+        foreach ($arrInfoFields as $count => $arrInfoField) {
+            // Is it the last InfoField?
+            $flagIsLast = ($count == count($arrInfoFields));
+//echo("Support::supportRequest(): flagIsLast '$flagIsLast', count $count of ".(count($arrInfoFields))."<br />");
             // The current InfoField ID
             $infoFieldId = $arrInfoField['id'];
             // Re-index all InfoFields
@@ -428,12 +427,15 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
                 // Yes, so keep the non-empty values
                 foreach ($this->arrSupportInfoField[$infoFieldId] as $value) {
                     // Only resend non-empty fields
-//echo("Have InfoField ID $infoFieldId, value $value<br />");
+//echo("Support::supportRequest(): Have InfoField ID $infoFieldId, value $value<br />");
                     if (!empty($value)) {
                         $arrInfoField['value'] = $value;
                         $this->objTemplate->setVariable(array(
+                            // Only in the last of the InfoFields the
+                            // continue function shall be mentioned in the
+                            // onchange attribute
                             'SUPPORT_REQUEST_INFOFIELD' =>
-                                InfoFields::getHtml($arrInfoField),
+                                InfoFields::getHtml($arrInfoField, $flagIsLast),
                             'SUPPORT_REQUEST_INFOFIELD_ID' => $infoFieldId,
                             'SUPPORT_REQUEST_INFOFIELD_INDEX' => $infoFieldIndex,
                         ));
@@ -447,7 +449,7 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
                 $arrInfoField['value'] = '';
                 $this->objTemplate->setVariable(array(
                     'SUPPORT_REQUEST_INFOFIELD' =>
-                        InfoFields::getHtml($arrInfoField),
+                        InfoFields::getHtml($arrInfoField, $flagIsLast),
                     'SUPPORT_REQUEST_INFOFIELD_ID' => $infoFieldId,
                     'SUPPORT_REQUEST_INFOFIELD_INDEX' => $infoFieldIndex,
                 ));
@@ -562,10 +564,6 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
         }
         return 0;
     }
-
-
-
-
 
 
     /**

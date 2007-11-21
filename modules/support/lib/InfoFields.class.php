@@ -196,6 +196,7 @@ class InfoFields
      * Note that the index value is in no way related to the Info Fields
      * themselves, but only represents their place within the array
      * according to the sorting order.
+     * Also note that the Index starts at 1 (one).
      * @access  protected
      * @return  boolean                     True on success, false otherwise.
      * @global  mixed   $objDatabase        Database object
@@ -355,10 +356,13 @@ if (MY_DEBUG) echo("InfoFields::getTypeMenu(select=$selectedType, name=$menuName
      * See {@link getInfoFieldArray()} and {@link buildInfoFieldArray()}
      * for details on the other array elements.
      * @param   array   $arrInfoField   The array describing the InfoField
+     * @param   boolean $flagContinue   Flag indicating whether to include
+     *                                  the continue function call in the
+     *                                  onchange attribute, defaults to true
      * @return  string                  The HTML code for the InfoField
      * @global  array   $_ARRAYLANG     Language array
      */
-    function getHtml($arrInfoField)
+    function getHtml($arrInfoField, $flagContinue=true)
     {
         global $_ARRAYLANG;
 
@@ -390,7 +394,9 @@ if (MY_DEBUG) echo("InfoFields::getTypeMenu(select=$selectedType, name=$menuName
                 ' id="arrSupportInfoField_'.$id.'_'.$index.'"'.
                 ' name="arrSupportInfoField['.$id.']'."[".$index."]".'"'.
                 ' value="'.$arrInfoField['value'].
-                '" tabindex="4" onchange="JavaScript:supportContinue();" />'.
+                '" tabindex="4" '.
+                ($flagContinue ? 'onchange="JavaScript:supportContinue();"' : '').
+                ' />'.
               ($arrInfoField['multiple']
                 ? '&nbsp;<input type="button" name="addInfoField" value="+"'.
                   ' onclick="JavaScript:cloneInfoField('.
@@ -407,6 +413,8 @@ if (MY_DEBUG) echo("InfoFields::getTypeMenu(select=$selectedType, name=$menuName
 
     /**
      * Converts php.ini memory settings strings to their integer equivalent.
+     *
+     * This should be placed in some Settings class in the core.
      * @param   string  $strMemory      The setting string
      * @return  integer                 The integer value
      */

@@ -79,6 +79,7 @@ define('SUPPORT_INFO_FIELD_TYPE_', );
 /**
  * The names of the Info Field types
  */
+global $_ARRAYLANG;
 $arrInfoFieldNames = array(
     $_ARRAYLANG['TXT_SUPPORT_INFO_FIELD_TYPE_UNKNOWN'],
     $_ARRAYLANG['TXT_SUPPORT_INFO_FIELD_TYPE_STRING'],
@@ -204,6 +205,7 @@ class InfoField
 
     /**
      * Constructor (PHP5)
+     *
      * @author      Reto Kohli <reto.kohli@comvation.com>
      * @version     0.0.1
      */
@@ -220,22 +222,8 @@ class InfoField
         $this->order      = intval($order);
         $this->id         = intval($id);
         $this->arrName    = false;
-
-        $this->arrSupportCategoryId = false;
-        // If the ID is set already, get the array of associated
-        // Support Category IDs and store it in this object.
-        if ($this->id > 0) {
-            $this->arrSupportCategoryId = $this->getSupportCategoryIdArray();
-            if (!$this->arrSupportCategoryId) {
-if (MY_DEBUG) { echo("__construct(name=$name, type=$type, lang=$languageId, mandatory=$mandatory, multiple=$multiple, status=$status, order=$order, id=$id): ERROR: Failed to get related Support Categories!<br />"); }
-                // Leave the array variable on false to indicate that
-                // it must be ignored.
-            }
-        } else {
-            // Initialze with the empty array to indicate that no
-            // SupportCategories are associated with this InfoField yet.
-            $this->arrSupportCategoryId = array();
-        }
+        // No Support Categories are associated with this yet.
+        $this->arrSupportCategoryId = array();
 //if (MY_DEBUG) { echo("__construct(name=$name, type=$type, lang=$languageId, mandatory=$mandatory, multiple=$multiple, status=$status, order=$order, id=$id): made ");var_export($this);echo("<br />"); }
     }
 
@@ -822,6 +810,7 @@ if (MY_DEBUG) echo("InfoField::insert(): done<br />");
      * InfoField from the database.  Otherwise, all languages
      * are loaded and stored in the $arrName array, and the $name variable
      * is set to the language with the lowest ID.
+     * Also initializes the array of associated Support Category IDs.
      * @static
      * @param       integer     $id             The InfoField ID
      * @param       integer     $languageId     The optional language ID
@@ -879,6 +868,16 @@ if (MY_DEBUG) echo("InfoField::getById($id, $languageId): no result: ".$objResul
         }
         if (count($arrName)) {
             $objInfoField->arrName = $arrName;
+        }
+        // Get the array of associated Support Category IDs
+        $objInfoField->arrSupportCategoryId =
+            $objInfoField->getSupportCategoryIdArray();
+        if (!$objInfoField->arrSupportCategoryId) {
+if (MY_DEBUG) { echo("InfoField::getById($id): WARNING: Failed to get related Support Categories!<br />"); }
+            // Set the array variable to false to indicate that
+            // it must be ignored.  The InfoField is used in all
+            // Support Categories.
+            $objInfoField->arrSupportCategoryId = false;
         }
 //if (MY_DEBUG) echo("InfoField::getById($id, $languageId): my ID is ".$objInfoField->getId()."<br />");
         return $objInfoField;
