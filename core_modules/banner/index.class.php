@@ -24,16 +24,17 @@ require_once ASCMS_CORE_MODULE_PATH . '/banner/bannerLib.class.php';
  */
 class Banner extends bannerLibrary
 {
+    var $arrGroups = array();
 
-	/**
-    * Constructor
-    *
-    * @param  string
-    * @access public
-    */
+    /**
+     * Constructor
+     *
+     * @param  string
+     * @access public
+     */
     function Banner()
     {
-    	$this->__construct();
+        $this->__construct();
     }
 
     /**
@@ -44,172 +45,168 @@ class Banner extends bannerLibrary
      */
     function __construct()
     {
-	    global $_LANGID;
-	    $this->_getBannerGroupStatus();
-	    $this->langId = $_LANGID;
-	}
+        global $_LANGID;
+        $this->_getBannerGroupStatus();
+        $this->langId = $_LANGID;
+    }
 
 
-	/**
-    * Initialized the banner group array
-    *
-    * @global    object     $objDatabase
-    */
+    /**
+     * Initialized the banner group array
+     *
+     * @global    object     $objDatabase
+     */
     function _getBannerGroupStatus()
     {
-    	global $objDatabase;
-        $query = "SELECT id,status FROM ".DBPREFIX."module_banner_groups";
+        global $objDatabase;
+        $query = "SELECT id, status FROM ".DBPREFIX."module_banner_groups";
         $objResult = $objDatabase->Execute($query);
-        if ($objResult !== false) {
-		    while (!$objResult->EOF) {
-			    $this->arrGroups[$objResult->fields['id']] = $objResult->fields['status'];
-			    $objResult->MoveNext();
-		    }
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $this->arrGroups[$objResult->fields['id']] = $objResult->fields['status'];
+                $objResult->MoveNext();
+            }
         }
     }
 
 
 
-	/**
-	* Get page
-	*
-	* @access public
-    * @global object $objDatabase
-	* @return string bannerCode
-	*/
+    /**
+     * Get page
+     *
+     * @access public
+     * @global object $objDatabase
+     * @return string bannerCode
+     */
     function getBannerCode($groupId, $pageId)
     {
-    	global $objDatabase;
+        global $objDatabase;
 
-    	$groupId = intval($groupId);
-		$pageId= intval($pageId);
+        $groupId = intval($groupId);
+        $pageId  = intval($pageId);
 
-		$debugMessage = "";
+        $debugMessage = '';
 
-		if($this->arrGroups[$groupId]==1) {
-			///////////////////////////////////
-			// The Banner group is active
-			///////////////////////////////////
-			if(isset($_GET['teaserId'])) {
-				$teaserId=intval($_GET['teaserId']);
+        if (!empty($this->arrGroups[$groupId])) {
+            ///////////////////////////////////
+            // The Banner group is active
+            ///////////////////////////////////
+            if (isset($_GET['teaserId'])) {
+                $teaserId=intval($_GET['teaserId']);
 
-				$query = "SELECT system.banner_code AS banner_code,
-								 system.id AS id
-				            FROM ".DBPREFIX."module_banner_relations AS relation,
-				                 ".DBPREFIX."module_banner_system AS system
-				           WHERE relation.group_id = ".$groupId."
-				             AND relation.page_id = ".$teaserId."
-				             AND relation.banner_id = system.id
-				             AND relation.type='teaser'";
-			} elseif(isset($_GET['lid'])) {
-				$levelId=intval($_GET['lid']);
+                $query = "SELECT system.banner_code AS banner_code,
+                                 system.id AS id
+                            FROM ".DBPREFIX."module_banner_relations AS relation,
+                                 ".DBPREFIX."module_banner_system AS system
+                           WHERE relation.group_id = ".$groupId."
+                             AND relation.page_id = ".$teaserId."
+                             AND relation.banner_id = system.id
+                             AND relation.type='teaser'";
+            } elseif (isset($_GET['lid'])) {
+                $levelId=intval($_GET['lid']);
 
-				$query = "SELECT system.banner_code AS banner_code,
-								 system.id AS id
-				            FROM ".DBPREFIX."module_banner_relations AS relation,
-				                 ".DBPREFIX."module_banner_system AS system
-				           WHERE relation.group_id = ".$groupId."
-				             AND relation.page_id = ".$levelId."
-				             AND relation.banner_id = system.id
-				             AND relation.type='level'";
-			} else {
-				$query = "SELECT system.banner_code AS banner_code,
-							     system.id AS id
-				            FROM ".DBPREFIX."module_banner_relations AS relation,
-				                 ".DBPREFIX."module_banner_system AS system
-				           WHERE relation.group_id = ".$groupId."
-				             AND relation.page_id = ".$pageId."
-				             AND relation.banner_id = system.id
-				             AND relation.type='content'
-				           ";
-			}
+                $query = "SELECT system.banner_code AS banner_code,
+                                 system.id AS id
+                            FROM ".DBPREFIX."module_banner_relations AS relation,
+                                 ".DBPREFIX."module_banner_system AS system
+                           WHERE relation.group_id = ".$groupId."
+                             AND relation.page_id = ".$levelId."
+                             AND relation.banner_id = system.id
+                             AND relation.type='level'";
+            } else {
+                $query = "SELECT system.banner_code AS banner_code,
+                                 system.id AS id
+                            FROM ".DBPREFIX."module_banner_relations AS relation,
+                                 ".DBPREFIX."module_banner_system AS system
+                           WHERE relation.group_id = ".$groupId."
+                             AND relation.page_id = ".$pageId."
+                             AND relation.banner_id = system.id
+                             AND relation.type='content'
+                           ";
+            }
 
-			$objResult = $objDatabase->Execute($query);
-			$counBanner = $objResult->RecordCount();
+            $objResult = $objDatabase->Execute($query);
+            $counBanner = $objResult->RecordCount();
 
-			if ($objResult !== false && $counBanner>=1) {
-				$arrRandom = array();
+            if ($objResult !== false && $counBanner>=1) {
+                $arrRandom = array();
 
-				while (!$objResult->EOF) {
-					$arrRandom[$objResult->fields['id']] = stripslashes($objResult->fields['banner_code']);
-					$objResult->MoveNext();
-				}
+                while (!$objResult->EOF) {
+                    $arrRandom[$objResult->fields['id']] = stripslashes($objResult->fields['banner_code']);
+                    $objResult->MoveNext();
+                }
 
-				$ranId = @array_rand($arrRandom, 1);
+                $ranId = @array_rand($arrRandom, 1);
 
-				$this->updateViews($ranId);
+                $this->updateViews($ranId);
 
-				$bannerCode = $arrRandom[$ranId];
-				$bannerCode = str_replace('<a ', '<a onclick="bannerClicks(\''.$ranId.'\')" ', $bannerCode);
+                $bannerCode = $arrRandom[$ranId];
+                $bannerCode = str_replace('<a ', '<a onclick="bannerClicks(\''.$ranId.'\')" ', $bannerCode);
 
-				return $debugMessage.$bannerCode;
-			} else {
-				///////////////////////////////////
-				// show the default banner for this group
-				///////////////////////////////////
-				$query = "SELECT id, banner_code FROM ".DBPREFIX."module_banner_system WHERE parent_id = ".$groupId." AND is_default=1";
-				$objResult = $objDatabase->SelectLimit($query, 1);
-				if ($objResult !== false) {
+                return $debugMessage.$bannerCode;
+            } else {
+                ///////////////////////////////////
+                // show the default banner for this group
+                ///////////////////////////////////
+                $query = "SELECT id, banner_code FROM ".DBPREFIX."module_banner_system WHERE parent_id = ".$groupId." AND is_default=1";
+                $objResult = $objDatabase->SelectLimit($query, 1);
+                if ($objResult !== false) {
 
-					$this->updateViews($objResult->fields['id']);
+                    $this->updateViews($objResult->fields['id']);
 
-					$bannerCode = $bannerCode = stripslashes($objResult->fields['banner_code']);
-					$bannerCode = str_replace('<a ', '<a onclick="bannerClicks(\''.$objResult->fields['id'].'\')" ', $bannerCode);
+                    $bannerCode = $bannerCode = stripslashes($objResult->fields['banner_code']);
+                    $bannerCode = str_replace('<a ', '<a onclick="bannerClicks(\''.$objResult->fields['id'].'\')" ', $bannerCode);
 
-					return $debugMessage.$bannerCode;
-				} else {
-					return $debugMessage;
-				}
-			}
-		} else {
-			///////////////////////////////////
-			// The Banner group is inactive
-			///////////////////////////////////
-			return $debugMessage;
-		}
+                    return $debugMessage.$bannerCode;
+                }
+            }
+        //} else {
+            ///////////////////////////////////
+            // The Banner group is inactive
+            ///////////////////////////////////
+        }
+        return $debugMessage;
     }
 
 
     function updateViews($bannerId)
     {
-    	global $objDatabase;
+        global $objDatabase;
 
-    	$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_banner_system
-    							SET		views=views+1
-    							WHERE	id='.$bannerId.'
-    							LIMIT	1
-    						');
+        $objDatabase->Execute("
+            UPDATE ".DBPREFIX."module_banner_system
+               SET views=views+1
+             WHERE id=$bannerId
+        ");
     }
 
 
     function updateClicks($bannerId)
     {
-    	global $objDatabase;
-    	$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_banner_system
-    							SET		clicks=clicks+1
-    							WHERE	id='.$bannerId.'
-    							LIMIT	1
-    						');
+        global $objDatabase;
+        $objDatabase->Execute("
+            UPDATE ".DBPREFIX."module_banner_system
+               SET clicks=clicks+1
+             WHERE id=$bannerId
+        ");
     }
 
 
     function getBannerJS()
     {
-    	$javaScript = "
+        return "
 <script language='JavaScript'>
 <!--
 
 function bannerClicks(bannerId)
 {
-	img=document.createElement('img');
-	img.src='?bannerId='+bannerId;
-	img='';
+    img=document.createElement('img');
+    img.src='?bannerId='+bannerId;
+    img='';
 }
 
 //-->
 </script>";
-
-    	return $javaScript;
     }
 }
 ?>
