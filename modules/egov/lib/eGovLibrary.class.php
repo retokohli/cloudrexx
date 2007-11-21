@@ -394,8 +394,7 @@ class eGovLibrary {
 	function _getJsSourceCode($id, $formFields, $preview = false, $show = false)
 	{
 		$code = "<script type=\"text/javascript\">\n";
-		$code .= "/* <![CDATA[ */\n";
-
+		$code .= "// <![CDATA[\n";
 		$code .= "fields = new Array();\n";
 		$this->initCheckTypes();
 		foreach ($formFields as $key => $field) {
@@ -543,7 +542,7 @@ class eGovLibrary {
 		$code .= "	}\n";
 		$code .= "}\n\n";
 
-		$code .= "/* ]]> */\n";
+		$code .= "// ]]>\n";
 		$code .= "</script>\n";
 		return $code;
 	}

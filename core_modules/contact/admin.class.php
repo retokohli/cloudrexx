@@ -1149,11 +1149,7 @@ class ContactManager extends ContactLib
 		$arrFields = $this->getFormFields($id);
 		$sourcecode = array();
 
-		if ($show) {
-			$sourcecode[] = "[[CONTACT_FEEDBACK_TEXT]]";
-		} else {
-			$sourcecode[] = "{CONTACT_FEEDBACK_TEXT}";
-		}
+		$sourcecode[] = "{CONTACT_FEEDBACK_TEXT}";
 		$sourcecode[] = "<!-- BEGIN formText -->".$this->arrForms[$id]['text'] . "<!-- END formText --><br /><br />";
 		$sourcecode[] = '<div id="contactFormError" style="color: red; display: none;">';
 		$sourcecode[] = $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'];
@@ -1189,7 +1185,7 @@ class ContactManager extends ContactLib
 					break;
 
 				case 'checkboxGroup':
-					$sourcecode[] = '<p class="contactFormGroup">';
+					$sourcecode[] = '<p class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
 					$options = explode(',', $arrField['attributes']);
 					foreach ($options as $index => $option) {
 						$sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.$option.'</label><br />';
@@ -1214,7 +1210,7 @@ class ContactManager extends ContactLib
 					break;
 
 				case 'radio':
-					$sourcecode[] = '<p class="contactFormGroup">';
+					$sourcecode[] = '<p class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
 					$options = explode(',', $arrField['attributes']);
 					foreach ($options as $index => $option) {
 						$sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.$option.'</label><br />';
@@ -1224,7 +1220,7 @@ class ContactManager extends ContactLib
 
 				case 'select':
 					$options = explode(',', $arrField['attributes']);
-					$sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'">';
+					$sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
 					foreach ($options as $index => $option) {
 						$sourcecode[] = "<option>".$option."</option>";
 					}
@@ -1232,7 +1228,7 @@ class ContactManager extends ContactLib
 					break;
 
 				case 'textarea':
-					$sourcecode[] = '<textarea class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'">{'.$fieldId.'_VALUE}</textarea>';
+					$sourcecode[] = '<textarea class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" rows="5" cols="20">{'.$fieldId.'_VALUE}</textarea>';
 					break;
 			}
 			$sourcecode[] = "</p>";
@@ -1263,17 +1259,6 @@ class ContactManager extends ContactLib
 				$sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="'.$offset.'" />';
 				$sourcecode[] = "</p>";
 			}
-		} elseif ($show) {
-			$sourcecode[] = "<!-- BEGIN contact_form_captcha -->";
-			$sourcecode[] = '<div style="color: red;">[[CONTACT_CAPTCHA_ERROR]]</div>';
-			$sourcecode[] = "<p>";
-			$sourcecode[] = "[[TXT_CONTACT_CAPTCHA_DESCRIPTION]]<br />";
-			$sourcecode[] = '</p>';
-			$sourcecode[] = '<p><span>CAPTCHA</span><img class="captcha" src="[[CONTACT_CAPTCHA_URL]]" alt="[[CONTACT_CAPTCHA_ALT]]" />';
-			$sourcecode[] = '<input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
-			$sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="[[CONTACT_CAPTCHA_OFFSET]]" />';
-			$sourcecode[] = "</p>";
-			$sourcecode[] = "<!-- END contact_form_captcha -->";
 		} else {
 			$sourcecode[] = "<!-- BEGIN contact_form_captcha -->";
 			$sourcecode[] = '<div style="color: red;">{CONTACT_CAPTCHA_ERROR}</div>';
@@ -1295,6 +1280,10 @@ class ContactManager extends ContactLib
 		$sourcecode[] = "<!-- END contact_form -->";
 
 		$sourcecode[] = $this->_getJsSourceCode($id, $arrFields, $preview, $show);
+
+		if ($show) {
+			$sourcecode = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $sourcecode);
+		}
 
 		return implode("\n", $sourcecode);
 	}

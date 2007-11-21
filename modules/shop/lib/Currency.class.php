@@ -254,7 +254,7 @@ class Currency
         $arrCurNavbar = array();
         foreach ($this->arrCurrency as $id => $arrCurrency) {
             if ($arrCurrency['status'] == 1) {
-                $style = ($arrCurrency['is_default'] == 1
+                $style = ($id == $this->activeCurrencyId
                     ? $this->activeStyleName
                     : $this->inactiveStyleName
                 );

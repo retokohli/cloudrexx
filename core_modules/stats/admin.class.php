@@ -333,7 +333,7 @@ class stats extends statsLibrary
 		// set statistic graph
 		if (count($this->arrRequests)>0) {
 			$this->_objTpl->setVariable(array(
-				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_today" width="600" height="250" />'
+				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_today" width="600" height="250" alt="'.$_ARRAYLANG['TXT_VIEW_DETAILS'].'" />'
 			));
 		} else {
 			$this->_objTpl->setVariable(array(
@@ -421,7 +421,7 @@ class stats extends statsLibrary
 		// set statistic graph
 		if (count($this->arrRequests)>0) {
 			$this->_objTpl->setVariable(array(
-				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_days" width="600" height="250" />',
+				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_days" width="600" height="250" alt="'.$_ARRAYLANG['TXT_VIEW_DETAILS'].'" />',
 			));
 		} else {
 			$this->_objTpl->setVariable(array(
@@ -499,7 +499,7 @@ class stats extends statsLibrary
 		// set statistic graph
 		if (count($this->arrRequests)>0) {
 			$this->_objTpl->setVariable(array(
-				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_months" width="600" height="250" />',
+				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_months" width="600" height="250" alt="'.$_ARRAYLANG['TXT_VIEW_DETAILS'].'" />',
 			));
 		} else {
 			$this->_objTpl->setVariable(array(
@@ -577,7 +577,7 @@ class stats extends statsLibrary
 		// set statistic graph
 		if (count($this->arrRequests)>0) {
 			$this->_objTpl->setVariable(array(
-				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_years" width="600" height="250" />',
+				'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_years" width="600" height="250" alt="'.$_ARRAYLANG['TXT_VIEW_DETAILS'].'" />',
 			));
 		} else {
 			$this->_objTpl->setVariable(array(
@@ -620,7 +620,7 @@ class stats extends statsLibrary
 	    		$this->_objTpl->setVariable(array(
 	    			'STATS_REFERER_ROW_CLASS'	=> $rowClass % 2 == 0 ? "row2" : "row1",
 	    			'STATS_REFERER_TIME'		=> date('d-m-Y H:i:s', $arrReferer['timestamp']),
-	    			'STATS_REFERER_URI'			=> "<a href=\"".$arrReferer['uri']."\" alt=\"".$arrReferer['uri']."\" title=\"".$arrReferer['uri']."\" target=\"_blank\">".$arrReferer['uri']."</a>"
+	    			'STATS_REFERER_URI'			=> '<a href="'.$arrReferer['uri'].'" title="'.$arrReferer['uri'].'" target="_blank">'.$arrReferer['uri'].'</a>'
 	    		));
 	    		$this->_objTpl->parse('stats_referer_list');
 	    		$rowClass++;
@@ -637,7 +637,7 @@ class stats extends statsLibrary
 	    		$this->_objTpl->setVariable(array(
 	    			'STATS_REFERER_TOP_ROW_CLASS'	=> $rowClass % 2 == 0 ? "row2" : "row1",
 	    			'STATS_REFERER_TOP_COUNT'		=> $arrReferer['count'],
-	    			'STATS_REFERER_TOP_URI'			=> "<a href=\"".$arrReferer['uri']."\" alt=\"".$arrReferer['uri']."\" title=\"".$arrReferer['uri']."\" target=\"_blank\">".$arrReferer['uri']."</a>"
+	    			'STATS_REFERER_TOP_URI'			=> '<a href="'.$arrReferer['uri'].'" title="'.$arrReferer['uri'].'" target="_blank">'.$arrReferer['uri'].'</a>'
 	    		));
 	    		$this->_objTpl->parse('stats_referer_top_list');
 	    		$rowClass++;
@@ -897,13 +897,13 @@ class stats extends statsLibrary
 		if ($this->browserSum>0) {
 			$rowClass = 0;
 			foreach ($this->arrBrowsers as $name => $count) {
-				if ($name == "unknown") {
+				if (!strlen($name)) {
 					$name = $_ARRAYLANG['TXT_UNKNOWN'];
 				}
 				$this->_objTpl->setVariable(array(
 					'STATS_CLIENTS_BROWSER_ROW_CLASS'	=> $rowClass % 2 == 0 ? "row2" : "row1",
-					'STATS_CLIENTS_BROWSER_NAME'		=> $name,
-					'STATS_CLIENTS_BROWSER_COUNT'		=> $this->_makePercentBar(200,10,100/$this->browserSum*$count,100,1,$name).' '.round(100/$this->browserSum*$count,2).'% ('.$count.')'
+					'STATS_CLIENTS_BROWSER_NAME'		=> htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET),
+					'STATS_CLIENTS_BROWSER_COUNT'		=> $this->_makePercentBar(200,10,100/$this->browserSum*$count,100,1,htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET)).' '.round(100/$this->browserSum*$count,2).'% ('.$count.')'
 				));
 				$this->_objTpl->parse('stats_clients_browsers');
 				$rowClass++;
@@ -929,14 +929,14 @@ class stats extends statsLibrary
     	if ($this->operatingSystemsSum>0) {
     		$rowClass = 0;
     		foreach ($this->arrOperatingSystems as $name => $count) {
-				if ($name == "unknown") {
+				if (!strlen($name)) {
 					$name = $_ARRAYLANG['TXT_UNKNOWN'];
 				}
 
 				$this->_objTpl->setVariable(array(
 					'STATS_CLIENTS_OS_ROW_CLASS'	=> $rowClass % 2 == 0 ? "row2" : "row1",
-					'STATS_CLIENTS_OS_NAME'			=> $name,
-					'STATS_CLIENTS_OS_COUNT'		=> $this->_makePercentBar(200,10,100/$this->operatingSystemsSum*$count,100,1,$name).' '.round(100/$this->operatingSystemsSum*$count,2).'% ('.$count.')'
+					'STATS_CLIENTS_OS_NAME'			=> htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET),
+					'STATS_CLIENTS_OS_COUNT'		=> $this->_makePercentBar(200,10,100/$this->operatingSystemsSum*$count,100,1,htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET)).' '.round(100/$this->operatingSystemsSum*$count,2).'% ('.$count.')'
 				));
 				$this->_objTpl->parse('stats_clients_os');
 				$rowClass++;
@@ -951,10 +951,14 @@ class stats extends statsLibrary
     	if ($this->screenResolutionSum>0) {
     		$rowClass = 0;
     		foreach ($this->arrScreenResolutions as $resolution => $count) {
+    			if (!strlen($resolution)) {
+					$resolution = $_ARRAYLANG['TXT_UNKNOWN'];
+				}
+
     			$this->_objTpl->setVariable(array(
     				'STATS_CLIENTS_RESOLUTION_ROW_CLASS'	=> $rowClass % 2 == 0 ? "row2" : "row1",
-    				'STATS_CLIENTS_RESOLUTION_NAME'	=> $resolution,
-    				'STATS_CLIENTS_RESOLUTION_COUNT'		=> $this->_makePercentBar(200,10,100/$this->screenResolutionSum*$count,100,1,$resolution).' '.round(100/$this->screenResolutionSum*$count,2).'% ('.$count.')'
+    				'STATS_CLIENTS_RESOLUTION_NAME'			=> htmlentities($resolution, ENT_QUOTES, CONTREXX_CHARSET),
+    				'STATS_CLIENTS_RESOLUTION_COUNT'		=> $this->_makePercentBar(200,10,100/$this->screenResolutionSum*$count,100,1,htmlentities($resolution, ENT_QUOTES, CONTREXX_CHARSET)).' '.round(100/$this->screenResolutionSum*$count,2).'% ('.$count.')'
     			));
     			$this->_objTpl->parse('stats_clients_resolution');
     			$rowClass++;
@@ -971,8 +975,8 @@ class stats extends statsLibrary
     		foreach ($this->arrColourDepths as $depth => $count) {
     			$this->_objTpl->setVariable(array(
     				'STATS_CLIENTS_COLOUR_ROW_CLASS'	=> $rowClass % 2 == 0 ? "row2" : "row1",
-    				'STATS_CLIENTS_COLOUR_NAME'			=> $depth.' '.$_ARRAYLANG['TXT_BIT'].(array_key_exists($depth,$this->arrColourDefinitions) ? " (".$_ARRAYLANG[$this->arrColourDefinitions[$depth]].")" : ""),
-    				'STATS_CLIENTS_COLOUR_COUNT'		=> $this->_makePercentBar(200,10,100/$this->colourDepthSum*$count,100,1,$depth.' '.$_ARRAYLANG['TXT_BIT']).' '.round(100/$this->colourDepthSum*$count,2).'% ('.$count.')'
+    				'STATS_CLIENTS_COLOUR_NAME'			=> ($depth ? $depth.' '.$_ARRAYLANG['TXT_BIT'] : $_ARRAYLANG['TXT_UNKNOWN']).(array_key_exists($depth,$this->arrColourDefinitions) ? " (".$_ARRAYLANG[$this->arrColourDefinitions[$depth]].")" : ""),
+    				'STATS_CLIENTS_COLOUR_COUNT'		=> $this->_makePercentBar(200,10,100/$this->colourDepthSum*$count,100,1,($depth ? $depth.' '.$_ARRAYLANG['TXT_BIT'] : $_ARRAYLANG['TXT_UNKNOWN'])).' '.round(100/$this->colourDepthSum*$count,2).'% ('.$count.')'
     			));
     			$this->_objTpl->parse('stats_clients_colour');
     			$rowClass++;
@@ -988,10 +992,14 @@ class stats extends statsLibrary
     		$rowClass = 0;
 
     		foreach ($this->arrHostnames as $hostname => $count) {
+    			if (!strlen($hostname)) {
+					$hostname = $_ARRAYLANG['TXT_UNKNOWN'];
+				}
+
 				$this->_objTpl->setVariable(array(
 					'STATS_CLIENTS_HOSTNAME_ROW_CLASS'	=> $rowClass % 2 == 0 ? "row2" : "row1",
-					'STATS_CLIENTS_HOSTNAME'			=> $hostname,
-					'STATS_CLIENTS_HOSTNAME_COUNT'		=> $this->_makePercentBar(200,10,100/$this->hostnamesSum*$count,100,1,$hostname).' '.round(100/$this->hostnamesSum*$count,2).'% ('.$count.')'
+					'STATS_CLIENTS_HOSTNAME'			=> htmlentities($hostname, ENT_QUOTES, CONTREXX_CHARSET),
+					'STATS_CLIENTS_HOSTNAME_COUNT'		=> $this->_makePercentBar(200,10,100/$this->hostnamesSum*$count,100,1,htmlentities($hostname, ENT_QUOTES, CONTREXX_CHARSET)).' '.round(100/$this->hostnamesSum*$count,2).'% ('.$count.')'
 				));
 				$this->_objTpl->parse('stats_clients_hostnames_list');
 				$rowClass++;
@@ -1023,7 +1031,7 @@ class stats extends statsLibrary
     			}
 				$this->_objTpl->setVariable(array(
 					'STATS_CLIENTS_COUNTRY_ROW_CLASS'	=> $rowClass % 2 == 0 ? "row2" : "row1",
-					'STATS_CLIENTS_COUNTRY'				=> "<img src=\"".ASCMS_CORE_MODULE_WEB_PATH."/stats/flags/".$flag.".gif\" style=\"width:18px;height:12px;\">&nbsp;".$country,
+					'STATS_CLIENTS_COUNTRY'				=> '<img src="'.ASCMS_CORE_MODULE_WEB_PATH.'/stats/flags/'.$flag.'.gif" style="width:18px;height:12px;" alt="'.$country.'" />&nbsp;'.$country,
 					'STATS_CLIENTS_COUNTRY_COUNT'		=> $this->_makePercentBar(200,10,100/$this->countriesSum*$count,100,1,$country).' '.round(100/$this->countriesSum*$count,2).'% ('.$count.')'
 				));
 				$this->_objTpl->parse('stats_clients_countries_list');

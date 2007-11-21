@@ -192,14 +192,10 @@ class counter
     function _checkCallMethod() {
 		if (isset($_GET['mode'])) {
 		    $mode = $_GET['mode'];
-		    unset($_GET['mode']);
 		    if ($mode == "script") {
 		    	$this->pageId = intval($_GET['pageId']);
-		        unset($_GET['pageId']);
-		        $this->screenResolution = get_magic_quotes_gpc() ? $_GET['screen'] : addslashes($_GET['screen']);
-		        unset($_GET['screen']);
-		        $this->colorDepth = get_magic_quotes_gpc() ? $_GET['color_depth'] : addslashes($_GET['color_depth']);
-		        unset($_GET['color_depth']);
+		        $this->screenResolution = !empty($_GET['screen']) ? (get_magic_quotes_gpc() ? $_GET['screen'] : addslashes($_GET['screen'])) : '';
+		        $this->colorDepth = !empty($_GET['color_depth']) ? intval($_GET['color_depth']) : 0;
 		        $this->javascriptEnabled = 1;
 		    }
 		}
@@ -489,13 +485,11 @@ class counter
     	global $objDb;
 
     	$browser = !empty($this->mobilePhone) ? $this->mobilePhone : $this->_getBrowser();
-    	if (!empty($browser)) {
-			$query = "UPDATE `".DBPREFIX."stats_browser` SET `count` = `count` + 1 WHERE `name` = '".substr($browser,0,255)."'";
+		$query = "UPDATE `".DBPREFIX."stats_browser` SET `count` = `count` + 1 WHERE `name` = '".substr($browser,0,255)."'";
+		$objDb->Execute($query);
+		if ($objDb->Affected_Rows() == 0) {
+			$query = "INSERT INTO `".DBPREFIX."stats_browser` (`name`, `count`) VALUES ('".substr($browser,0,255)."', 1)";
 			$objDb->Execute($query);
-			if ($objDb->Affected_Rows() == 0) {
-				$query = "INSERT INTO `".DBPREFIX."stats_browser` (`name`, `count`) VALUES ('".substr($browser,0,255)."', 1)";
-				$objDb->Execute($query);
-			}
 		}
     }
 
@@ -521,7 +515,7 @@ class counter
 				}
 			}
 		}
-		return "unknown";
+		return '';
     }
 
     /**
@@ -536,14 +530,12 @@ class counter
     	global $objDb;
 
     	$operatingSystem = !empty($this->mobilePhone) ? $this->mobilePhone : $this->_getOperatingSystem();
-    	if (!empty($operatingSystem)) {
-    		$query = "UPDATE `".DBPREFIX."stats_operatingsystem` SET `count` = `count` + 1 WHERE `name` = '".substr($operatingSystem,0,255)."'";
+		$query = "UPDATE `".DBPREFIX."stats_operatingsystem` SET `count` = `count` + 1 WHERE `name` = '".substr($operatingSystem,0,255)."'";
+		$objDb->Execute($query);
+		if ($objDb->Affected_Rows() == 0) {
+			$query = "INSERT INTO `".DBPREFIX."stats_operatingsystem` (`name`, `count`) VALUES ('".substr($operatingSystem,0,255)."', 1)";
 			$objDb->Execute($query);
-			if ($objDb->Affected_Rows() == 0) {
-				$query = "INSERT INTO `".DBPREFIX."stats_operatingsystem` (`name`, `count`) VALUES ('".substr($operatingSystem,0,255)."', 1)";
-    			$objDb->Execute($query);
-			}
-    	}
+		}
     }
 
     /**
@@ -566,9 +558,6 @@ class counter
 					break;
 				}
 			}
-		}
-		if (empty($operationgSystem)) {
-			$operationgSystem = "unknown";
 		}
 		return $operationgSystem;
     }

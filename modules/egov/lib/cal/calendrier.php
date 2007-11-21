@@ -5,35 +5,35 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 	Global $link_on_day, $PHP_SELF, $params;
 	Global $HTTP_POST_VARS, $HTTP_GET_VARS;
 	Global $calendar_txt;
-	
+
 	$calendar_txt['german']['monthes']	    = array('', 'Januar', 'Februar', 'M&auml;rz', 'April', 'Mai', 'Juni', 'Juli',
 											'August', 'September', 'Oktober','November', 'Dezember');
 	$calendar_txt['german']['days']         = array('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag','Freitag','Samstag', 'Sonntag');
 	$calendar_txt['german']['first_day']    = 0;
 	$calendar_txt['german']['misc']         = array('Vorhergehender Monat', 'Folgender Monat', 'Vorabend', 'Am n&auml;chsten Tag');
 
-	$param_d['calendar_id']			= 1; 
-	$param_d['calendar_columns'] 	= 5; 
-	$param_d['show_day'] 			= 1; 
-	$param_d['show_month']			= 1; 
-	$param_d['nav_link']			= 1; 
+	$param_d['calendar_id']			= 1;
+	$param_d['calendar_columns'] 	= 5;
+	$param_d['show_day'] 			= 1;
+	$param_d['show_month']			= 1;
+	$param_d['nav_link']			= 1;
 	$param_d['link_after_date']		= 1;
-	$param_d['link_before_date']	= 0; 
+	$param_d['link_before_date']	= 0;
 
-	$param_d['link_on_day']			= $PHP_SELF.'?date=%%dd%%'; 
-	$param_d['font_face']			= 'Verdana, Arial, Helvetica'; 
-	$param_d['font_size']			= 10; 
-	
-	$param_d['bg_color']			= $backgroundcolor; 
+	$param_d['link_on_day']			= $PHP_SELF.'?date=%%dd%%';
+	$param_d['font_face']			= 'Verdana, Arial, Helvetica';
+	$param_d['font_size']			= 10;
+
+	$param_d['bg_color']			= $backgroundcolor;
 	$param_d['today_bg_color']		= '#A0C0C0';
 	$param_d['font_today_color']	= '#888888';
 	$param_d['font_color']			= '#000000';
 	$param_d['font_nav_bg_color']	= $border;
-	
+
 	$param_d['font_nav_color']		= '#FFFFFF';
 	$param_d['font_header_color']	= '#FFFFFF';
 	$param_d['border_color']		= $border;
-	$param_d['use_img']				= 1; 
+	$param_d['use_img']				= 1;
 
 	$param_d['lang']				= 'german';
 	$param_d['font_highlight_color']= '#FF0000';
@@ -49,7 +49,7 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
     $param_d['cell_height']         = 20;
     $param_d['short_day_name']      = 1;
     $param_d['link_on_hour']        = $PHP_SELF.'?hour=%%hh%%';
-	
+
 	while (list($key, $val) = each($param_d)) {
 		if (isset($params[$key])) {
 			$param[$key] = $params[$key];
@@ -58,10 +58,10 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 			$param[$key] = $param_d[$key];
 		}
 	}
-	
+
 	$monthes_name = $calendar_txt[$param['lang']]['monthes'];
 	$param['calendar_columns'] = ($param['show_day']) ? 7 : $param['calendar_columns'];
-    
+
     $date = priv_reg_glob_calendar('date');
 	if ($date == '') {
 		$timestamp = time();
@@ -72,8 +72,8 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 		$year		= substr($date, 0 ,4);
 		$timestamp 	= mktime(0, 0, 0, $month, $day, $year);
 	}
-    
-    
+
+
 	$current_day 		= date("d", $timestamp);
 	$current_month 		= date('n', $timestamp);
 	$current_month_2	= date('m', $timestamp);
@@ -81,17 +81,17 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
     $first_decalage 	= date("w", mktime(0, 0, 0, $current_month, 1, $current_year));
 
 	$first_decalage		= ( $first_decalage == 0 ) ? 7 : $first_decalage;
-	
-	
+
+
 	$current_day_index	= date('w', $timestamp) + $calendar_txt[$param['lang']]['first_day'] - 1;
-	$current_day_index	= ($current_day_index == -1) ? 7 : $current_day_index;	
+	$current_day_index	= ($current_day_index == -1) ? 7 : $current_day_index;
 	$current_day_name	= $calendar_txt[$param['lang']]['days'][$current_day_index];
 	//$current_month_name = $monthes_name[$current_month];
 	$current_month_name = $calendar_txt['german']['monthes'][$current_month];
 	$nb_days_month 		= date("t", $timestamp);
-	
+
 	$current_timestamp 	= mktime(23,59,59,date("m"), date("d"), date("Y"));
-	
+
 	### CSS
 	$output  = '<style type="text/css">'."\n";
 	$output .= '<!--'."\n";
@@ -107,8 +107,8 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 	$output .= '	.calendarTable'.$param['calendar_id'].' {  background-color: '.$param['bg_color'].'; border: 1px solid '.$param['border_color'].'}'."\n";
 	$output .= '-->'."\n";
 	$output .= '</style>'."\n";
-	$output .= '<script language="JavaScript" type="text/javascript">'."\n";
-	$output .= '<!-- //'."\n";
+	$output .= '<script type="text/javascript">'."\n";
+	$output .= '// <![CDATA['."\n";
 	$output .= ''."\n";
 	$output .= ''."\n";
 	$output .= 'function SetDate(Datum){'."\n";
@@ -139,12 +139,12 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 	$output .= ''."\n";
 	$output .= ''."\n";
 	$output .= ''."\n";
-	$output .= '// -->'."\n";
+	$output .= '// ]]>'."\n";
 	$output .= '</script>'."\n";
 	$output .= '<table cellspacing="0" cellpadding="0" border="0">';
 	$output .= '<tr><td valign="top">';
 	$output .= '<table border="0" class="calendarTable'.$param['calendar_id'].'" cellpadding="2" cellspacing="1">'."\n";
-	
+
 	if ($param['show_month'] == 1) {
 		$output .= '<tr>'."\n";
 		$output .= '	<td colspan="'.$param['calendar_columns'].'" align="center" class="calendarTop'.$param['calendar_id'].'">'."\n";
@@ -165,43 +165,43 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 		$output .= '<tr align="center">'."\n";
 		$first_day = $calendar_txt[$param['lang']]['first_day'];
 		for ($i = $first_day; $i < 7 + $first_day; $i++) {
-			
+
 			$index = ( $i >= 7) ? (7 + $i): $i;
 			$index = ($i < 0) ? (7 + $i) : $i;
-		    
+
             $day_name = ( $param['short_day_name'] == 1 ) ? substr($calendar_txt[$param['lang']]['days'][$index], 0, 1) : $calendar_txt[$param['lang']]['days'][$index];
 			$output .= '	<td class="calendarHeader'.$param['calendar_id'].'"><b>'.$day_name.'</b></td>'."\n";
 		}
-		
-		$output .= '</tr>'."\n";	
+
+		$output .= '</tr>'."\n";
 		$first_decalage = $first_decalage - $calendar_txt[$param['lang']]['first_day'];
 		$first_decalage = ( $first_decalage > 7 ) ? $first_decalage - 7 : $first_decalage;
 	}
 	else {
-		$first_decalage = 0;	
+		$first_decalage = 0;
 	}
-	
+
 	$output .= '<tr align="center">';
 	$int_counter = 0;
-	
+
 	if ( $param['day_mode'] == 1 ) {
 		list($hour_start, $min_start) 	= explode(':', $param['time_start']);
 		list($hour_end, $min_end)		= explode(':', $param['time_stop']);
 		$ts_start 	= ( $hour_start * 60 ) + $min_start;
 		$ts_end		= ( $hour_end * 60 ) + $min_end;
 		$nb_steps	= ceil( ($ts_end - $ts_start) / $param['time_step'] );
-		
+
 		for ( $i = 0; $i <= $nb_steps; $i++ ) {
             $current_ts		= ($ts_start) + $i * $param['time_step'];
 			$current_hour 	= floor($current_ts / 60);
 			$current_min 	= $current_ts % 60;
 			$current_hour 	= (strlen($current_hour) < 2) ? '0'.$current_hour : $current_hour;
 			$current_min 	= (strlen($current_min) < 2) ? '0'.$current_min : $current_min;
-		
+
    			$highlight_current  = ( isset($param['highlight'][date('Ymd', $timestamp).$current_hour.$current_min]) );
             $css_2_use          = ( $highlight_current ) ? 'HL' : 'Days';
             $txt_2_use          = ( $highlight_current && $param['highlight_type'] == 'text') ? $param['highlight'][date('Ymd', $timestamp).$current_hour.$current_min] : '';
- 
+
 			$output .= '<tr>'."\n";
             if ( $param['link_on_hour'] != '') {
                 $output .= '	<td class="calendar'.$css_2_use.$param['calendar_id'].'" width="10%"><a href="'.str_replace('%%hh%%', date('Ymd', $timestamp).$current_hour.$current_min, $param['link_on_hour']).'">'.$current_hour.':'.$current_min.'</a></td>'."\n";
@@ -210,9 +210,9 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
                 $output .= '	<td class="calendar'.$css_2_use.$param['calendar_id'].'" width="10%">'.$current_hour.':'.$current_min.'</td>'."\n";
             }
 			$output .= '    <td class="calendar'.$css_2_use.$param['calendar_id'].'">'.$txt_2_use.'</td>	'."\n";
-			$output .= '</tr>'."\n";	
+			$output .= '</tr>'."\n";
 		}
-		
+
 	}
 	else {
 		for ($i = 1; $i < $first_decalage; $i++) {
@@ -221,21 +221,21 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 		}
 		for ($i = 1; $i <= $nb_days_month; $i++) {
 
-			$i_2 = ($i < 10) ? '0'.$i : $i;		
-		    $highlight_current = ( isset($param['highlight'][date('Ym', $timestamp).$i_2]) );	
+			$i_2 = ($i < 10) ? '0'.$i : $i;
+		    $highlight_current = ( isset($param['highlight'][date('Ym', $timestamp).$i_2]) );
 
 			if ( ($i + $first_decalage) % $param['calendar_columns'] == 2 && $i != 1) {
 				$output .= '<tr align="center">'."\n";
 				$int_counter = 0;
 			}
-			
+
 			$css_2_use = ( $highlight_current ) ? 'HL' : 'Days';
             $txt_2_use = ( $highlight_current && $param['highlight_type'] == 'text') ? '<br>'.$param['highlight'][date('Ym', $timestamp).$i_2] : '';
-            
-            
+
+
             $day_link = "<a href=\"javascript:SetDate('".$i.".".$current_month.".".$current_year."')\">".$i."</a>";
-            
-            
+
+
             if ($i == $current_day) {
 				// zustand
 					if(isset($ArrayRD[$current_year][$current_month_2][$i])){
@@ -255,12 +255,12 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 			}
 			elseif ($param['link_on_day'] != '') {
 				$loop_timestamp = mktime(0,0,0, $current_month, $i, $current_year);
-				
+
 				if (( ($param['link_after_date'] == 0) && ($current_timestamp < $loop_timestamp)) || (($param['link_before_date'] == 0) && ($current_timestamp >= $loop_timestamp)) ){
 					$output .= '<td class="calendar'.$css_2_use.$param['calendar_id'].'">'.$i.$txt_2_use.'</td>'."\n";
 				}
 				else {
-					
+
 					// zustand
 					if(isset($ArrayRD[$current_year][$current_month_2][$i])){
 						if($ArrayRD[$current_year][$current_month_2][$i] < $Anzahl){
@@ -280,16 +280,16 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 			}
 			else {
 				$output .= '<td class="calendar'.$css_2_use.$param['calendar_id'].'">'.$i.'</td>'."\n";
-			}	
+			}
 			$int_counter++;
-			
+
 			### Row end
 			if (  ($i + $first_decalage) % ($param['calendar_columns'] ) == 1 ) {
-				$output .= '</tr>'."\n";	
+				$output .= '</tr>'."\n";
 			}
 		}
 		$cell_missing = $param['calendar_columns'] - $int_counter;
-		
+
 		for ($i = 0; $i < $cell_missing; $i++) {
 			$output .= '<td class="calendarDays'.$param['calendar_id'].'">&nbsp;</td>'."\n";
 		}
@@ -297,59 +297,55 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 	}
 
 	if ($param['nav_link'] == 1) {
-		$previous_month = date("Ymd", 	
-								mktime( 12, 
-										0, 
-										0, 
+		$previous_month = date("Ymd",
+								mktime( 12,
+										0,
+										0,
 										($current_month - 1),
 										$current_day,
 										$current_year
 									   )
 								);
-								
-		$previous_day 	= date("Ymd", 	
-								mktime( 12, 
-										0, 
-										0, 
+
+		$previous_day 	= date("Ymd",
+								mktime( 12,
+										0,
+										0,
 										$current_month,
 										$current_day - 1,
 										$current_year
 									   )
 								);
-		$next_day 		= date("Ymd", 	
-								mktime( 1, 
-										12, 
-										0, 
+		$next_day 		= date("Ymd",
+								mktime( 1,
+										12,
+										0,
 										$current_month,
 										$current_day + 1,
 										$current_year
 									   )
 								);
-		$next_month		= date("Ymd", 	
-								mktime( 1, 
-										12, 
-										0, 
+		$next_month		= date("Ymd",
+								mktime( 1,
+										12,
+										0,
 										$current_month + 1,
 										$current_day,
 										$current_year
 									   )
 								);
-		
+
 
 		if ($param['use_img']) {
-			$g 	= '<img src="g.gif" border="0">';
-			$gg = '<img src="/modules/egov/images/gg.gif" border="0" />';
-			$d 	= '<img src="d.gif" border="0">';
-			$dd = '<img src="/modules/egov/images/dd.gif" border="0" />';
+			$gg = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/egov/gg.gif" border="0" />';
+			$dd = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/egov/dd.gif" border="0" />';
 		}
 		else {
-			$g 	= '&lt;';
 			$gg = '&lt;&lt;';
-			$d = '&gt;';
 			$dd = '&gt;&gt;';
 		}
 
-		if ( ($param['link_after_date'] == 0) 
+		if ( ($param['link_after_date'] == 0)
 				&& ($current_timestamp < mktime(0,0,0, $current_month, $current_day+1, $current_year))
 			) {
 			$next_day_link = '&nbsp;';
@@ -358,7 +354,7 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 			$next_day_link 		= '&nbsp;';
 		}
 
-		if ( ($param['link_before_date'] == 0) 
+		if ( ($param['link_before_date'] == 0)
 				&& ($current_timestamp > mktime(0,0,0, $current_month, $current_day-1, $current_year))
 			){
 			$previous_day_link = '&nbsp;';
@@ -366,25 +362,25 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 		else {
 			$previous_day_link 		= '&nbsp;';
 		}
-		
-		if ( ($param['link_after_date'] == 0) 
+
+		if ( ($param['link_after_date'] == 0)
 				&& ($current_timestamp < mktime(0,0,0, $current_month+1, $current_day, $current_year))
 			) {
-			$next_month_link = '&nbsp;';		
+			$next_month_link = '&nbsp;';
 		}
 		else {
 			$next_month_link 	= '<a href="'.$PHP_SELF.'?section=egov&cmd=detail&id='.$_REQUEST["id"].'&date='.$next_month.'" title="'.$calendar_txt[$param['lang']]['misc'][1].'">'.$dd.'</a>'."\n";
 		}
 
-		if  ( ($param['link_before_date'] == 0) 
+		if  ( ($param['link_before_date'] == 0)
 				&& ($current_timestamp >= mktime(0,0,0, $current_month, $current_day, $current_year))
 			){
-			$previous_month_link = '&nbsp;';		
+			$previous_month_link = '&nbsp;';
 		}
 		else {
 			$previous_month_link 	= '<a href="'.$PHP_SELF.'?section=egov&cmd=detail&id='.$_REQUEST["id"].'&date='.$previous_month.'" title="'.$calendar_txt[$param['lang']]['misc'][0].'">'.$gg.'</a>'."\n";
 		}
-		
+
 		$output .= '<tr>'."\n";
 		$output .= '	<td colspan="'.$param['calendar_columns'].'" class="calendarDays'.$param['calendar_id'].'">'."\n";
 		$output .= '		<table width="100%" border="0" >';
@@ -405,7 +401,7 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 		$output .= '		</table>';
 		$output .= '	</td>'."\n";
 		$output .= '</tr>'."\n";
-		
+
 	}
 	$output .= '</table>'."\n";
 	$output .= '</td>';
@@ -421,22 +417,22 @@ function calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $DatumDesc
 	$output .= '<br />'.$DatumLabel.' <input type="text" name="contactFormField_1000" id="CalDate" value="" style="width: 70px;" readonly /><br />'.$DatumDesc;
 	$output .= '<br /><br />'.$AnzahlTxT.': '.$AnzahlDropdown;
 	$output .= '</td></tr></table><br />'."\n";
-	$output .= '<script language="JavaScript" type="text/javascript">'."\n";
-	$output .= '<!-- //'."\n";
+	$output .= '<script type="text/javascript">'."\n";
+	$output .= '// <![CDATA['."\n";
 	$output .= ''."\n";
 	$output .= 'if(document.getElementById("CalDate").value==""){'."\n";
 	$output .= 'document.getElementById("CalDate").value="'.$DatumJS.'"'."\n";
 	$output .= '}'."\n";
 	$output .= ''."\n";
 	$output .= 'ChengeDropDown(""+document.getElementById("CalDate").value+"");';
-	$output .= '// -->'."\n";
+	$output .= "\n// ]]>\n";
 	$output .= '</script>'."\n";
 	return $output;
 }
 
 function priv_reg_glob_calendar($var) {
 	Global $HTTP_GET_VARS, $HTTP_POST_VARS;
-	
+
 	if (isset($HTTP_GET_VARS[$var])) {
 		return $HTTP_GET_VARS[$var];
 	}
@@ -445,7 +441,7 @@ function priv_reg_glob_calendar($var) {
 	}
 	else {
 		return '';
-	}	
+	}
 }
 
 ?>

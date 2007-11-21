@@ -782,7 +782,10 @@ $boolShop = false;
 //-------------------------------------------------------
 
 $page_content = str_replace('{PAGE_URL}',  $objInit->getPageUri(), $page_content);
+$page_content = str_replace('{PRINT_URL}',  $objInit->getPrintUri(), $page_content);
+$page_content = str_replace('{PDF_URL}',  $objInit->getPDFUri(), $page_content);
 $page_content = str_replace('{TITLE}',  $page_title, $page_content);
+
 
 //-------------------------------------------------------
 // start module switches

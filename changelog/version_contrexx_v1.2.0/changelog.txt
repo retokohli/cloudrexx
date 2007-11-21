@@ -3,81 +3,13 @@
 ////////////////////////////////////////
 
 ****************************************
-* Neue Funktionen **********************
+* Neue Funktionen / Änderungen *********
 ****************************************
 Globale Volltextsuche
 - Die Suchfunktion durchsucht zusätzlich die Kalendereinträge.
+- Geschützte Inhaltsseiten, auf welche der Besucher zugriff hat, werden in das
+  Suchergebnis einbezogen.
 
-Allgemeine Einstellungen
-- Neue Option 'languageDetection' in den Grundeinstellungen, welche
-  bewirkt, dass die Content Sprache basierend auf den Browser-Sprachen
-  (accept-languages) ausgewählt wird oder immer die Standardsprache verwendet
-  wird.
-
-Layout & Design
-- Neuer Platzhalter für die Zeitanzeige. Eingebunden im Design erzeugt der
-  Platzhalter [[TIME]] die Ausgabe der aktuellen Uhrzeit im folgenden
-  Format: HH:MM .
-- Neue Navigationsplatzhalter. Standardmässig gibt es nun 4 Platzhalter die es
-  ermöglichen die Navigation an 4 verschiedenen Stellen im Design einzubinden.
-  [[NAVBAR_FILE]]
-  [[SUBNAVBAR_FILE]]
-  [[SUBNAVBAR2_FILE]]
-  [[SUBNAVBAR3_FILE]]
-
-Kontakte Manager
-- Ein Kontaktformular kann mit einem CAPTCHA-Schutz geschützt werden.
-- Es werden keine Tabellen mehr verwendet, sondern semantisch korrektes
-  HTML mit Paragraphen und Labels.
-- Es kann eine Kopie des Formulars an den Absender geschickt werden.
-
-Datenbank Manager
-- Ab PHP5:
-  Es gibt neu einen Datenbank Manager zur Verwaltung der Datenbank (ersetzt die
-  Bereiche Datenbank sichern und System Update). Dieser
-  erlaubt die Optimierung von Datenbanken. Ausserdem können SQL / CVS Backups
-  erzeugt und SQL-Queries ausgeführt werden.
-
-Media Manager/Bilderverwaltung
-- Es werden mehr Zeichen erlaubt in Dateinamen.
-- Dateien können in einem Schritt überschrieben werden beim Upload.
-
-Modul: Gästebuch
-- Konfigurationsoption damit alle Einträge in jeder Sprache angezeigt werden.
-
-Modul: Online Shop
-- Verwaltung von Hersteller. Im Admin steht ein neues Administrationsmenü
-  "Hersteller" zur Verfügung. Frontend-Platzhalter [[SHOP_MENU]] wurde durch ein
-  weiteres Dropdown "Hersteller" erweitert (Falls Hersteller im Shop-Modul
-  erfasst wurden).
-  Es stehen zwei weitere Frontend-Platzhalter zur Verfügung:
-  [[SHOP_MANUFACTURER_NAME]] und [[SHOP_MANUFACTURER_URL]].
-  [[SHOP_MANUFACTURER_URL]] wird als Link angezeigt (target="_blank").
-- Die möglichen Status von Bestellungen wurden erweitert; neu kann unterschieden
-  werden, ob eine Bestellung bereits versandt oder bezahlt wurde.
-  Der Status einer neuen Bestellung wird anhand der Versandart der Produkte
-  und der Bezahlmethode automatisch auf den richtigen Wert gesetzt.
-
-Modul: Podcast
-- Es kann ein Youtube Link angegeben werden, welcher dann als Medium im
-  Podcastmodul erfasst wird.
-- Die neusten Videos beliebiger Kategorien können auf der Startseite angezeigt
-  werden.
-- Jedem Medium kann ein Vorschaubild zugeordnet werden.
-
-Modul: Seitenempfehlungen
-- Die Seitenempfehlungen werden nun mit einem CAPTCHA geschützt. Dazu muss
-  das Standardtemplate für die Seitenempfehlungen allerdings zurückgesetzt
-  werden.
-
-Modul: Kalender
-- Zusätzliche Felder für Ort und Veranstalter
-- Zudem kann eine autom. An- und Abmeldung aktiviert werden, welche es den Benutzern erlaubt sich über ein, vorher derfiniertes Formular aunzumelden. Diese An- und abmeldungen können im Backend verwaltet und Exportiert (CSV) werden.
-- Neue Gestalltung der Contentseiten
-
-****************************************
-* Änderungen ***************************
-****************************************
 Allgemein
 - Das Changelog wurde auf max. 80 Zeilen breite beschränkt.
 - Russische und französische Übersetzung des Grundsystems erweitert.
@@ -95,30 +27,69 @@ Allgemein
   hat.
 - Auf den Bereich "Content Verlauf" können nur Benutzer mit der entsprechenden
   Berechtigung zugreifen.
+- Neue Option 'languageDetection' in den Grundeinstellungen, welche
+  bewirkt, dass die Content Sprache basierend auf den Browser-Sprachen
+  (accept-languages) ausgewählt wird oder immer die Standardsprache verwendet
+  wird.
+- Neue Template-Ansicht für PDF-Generierung. Im "Layout & Design" kann das
+  PDF-Template verwaltet werden und ein neuer Platzhalter [PDF_URL] wurde
+  hinzugefügt.
 
-Webinstaller
-- MySQL Server Version Überprüfung anstatt der Client Version.
-
-Update System
-- Der Contrexx Session-Handler (Datenbankablage) wird verwendet.
+Layout & Design
+- Neuer Platzhalter für die Zeitanzeige. Eingebunden im Design erzeugt der
+  Platzhalter [[TIME]] die Ausgabe der aktuellen Uhrzeit im folgenden
+  Format: HH:MM .
+- Neue Navigationsplatzhalter. Standardmässig gibt es nun 4 Platzhalter die es
+  ermöglichen die Navigation an 4 verschiedenen Stellen im Design einzubinden.
+  [[NAVBAR_FILE]]
+  [[SUBNAVBAR_FILE]]
+  [[SUBNAVBAR2_FILE]]
+  [[SUBNAVBAR3_FILE]]
 
 Kontakte Manager
+- Ein Kontaktformular kann mit einem CAPTCHA-Schutz geschützt werden.
+- Es werden keine Tabellen mehr verwendet, sondern semantisch korrektes
+  HTML mit Paragraphen und Labels.
+- Es kann eine Kopie des Formulars an den Absender geschickt werden.
 - Die Darstellung generierter E-Mails (nur Text) wurde verbessert (rechtsbündig)
 - Die Formulare werden jetzt von einer Legende (mit Rahmen) umschlossen.
 - Die Styles sind nicht mehr fest im Code verankert.
+
+Datenbank Manager
+- Ab PHP5:
+  Es gibt neu einen Datenbank Manager zur Verwaltung der Datenbank (ersetzt die
+  Bereiche Datenbank sichern und System Update). Dieser
+  erlaubt die Optimierung von Datenbanken. Ausserdem können SQL / CVS Backups
+  erzeugt und SQL-Queries ausgeführt werden.
+
+Webinstaller
+- MySQL Server Version Überprüfung anstatt der Client Version.
 
 WYSIWYG-Editor
 - Neue Version 2.4.3 des FCKeditors. Weitere Informationen unter:
   http://www.fckeditor.net/whatsnew/
 
-Globale Volltextsuche
-- Geschützte Inhaltsseiten, auf welche der Besucher zugriff hat, werden in das
-  Suchergebnis einbezogen.
+Update System
+- Der Contrexx Session-Handler (Datenbankablage) wird verwendet.
 
-PDF-Ansicht
-- Neue Template-Ansicht für PDF-Generierung. Im "Layout & Design" kann das
-  PDF-Template verwaltet werden und ein neuer Platzhalter [PDF_URL] wurde
-  hinzugefügt.
+Statistik
+- Nicht erkannte Daten (Betriebssystem, Browser, Bildschirmauflösung, Farbtiefe,
+  Domäne) der Besucher werden als "Unbekannt" aufgeführt.
+
+Media Manager/Bilderverwaltung
+- Es werden mehr Zeichen erlaubt in Dateinamen.
+- Dateien können in einem Schritt überschrieben werden beim Upload.
+
+Modul: Gästebuch
+- Konfigurationsoption damit alle Einträge in jeder Sprache angezeigt werden.
+
+Modul: Kalender
+- Zusätzliche Felder für Ort und Veranstalter
+- Zudem kann eine autom. An- und Abmeldung aktiviert werden, welche es den
+  Benutzern erlaubt sich über ein, vorher derfiniertes Formular aunzumelden.
+  Diese An- und abmeldungen können im Backend verwaltet und Exportiert (CSV)
+  werden.
+- Neue Gestalltung der Contentseiten
 
 Modul: Newsletter
 - Export wurde angepasst (one-click export). Es können einzelne Listen oder
@@ -126,6 +97,17 @@ Modul: Newsletter
   CSV Datei exportiert und als Download an den Browser gesendet.
 
 Modul: Online Shop
+- Verwaltung von Hersteller. Im Admin steht ein neues Administrationsmenü
+  "Hersteller" zur Verfügung. Frontend-Platzhalter [[SHOP_MENU]] wurde durch ein
+  weiteres Dropdown "Hersteller" erweitert (Falls Hersteller im Shop-Modul
+  erfasst wurden).
+  Es stehen zwei weitere Frontend-Platzhalter zur Verfügung:
+  [[SHOP_MANUFACTURER_NAME]] und [[SHOP_MANUFACTURER_URL]].
+  [[SHOP_MANUFACTURER_URL]] wird als Link angezeigt (target="_blank").
+- Die möglichen Status von Bestellungen wurden erweitert; neu kann unterschieden
+  werden, ob eine Bestellung bereits versandt oder bezahlt wurde.
+  Der Status einer neuen Bestellung wird anhand der Versandart der Produkte
+  und der Bezahlmethode automatisch auf den richtigen Wert gesetzt.
 - Der JavaScript Warenkorb wird nun auf jeder Seite ausserhalb des Shops
   angezeigt (Sofern die Einstellung $_CONFIGURATION['custom']['shopnavbar'] in
   der Konfigurationsdatei (config/configuration.php) aktiviert ist.)
@@ -135,12 +117,25 @@ Modul: Online Shop
 - Die Inhaltsseite AGB wurde durch die globale AGB Seite
   (www.ihre-domain.com/index.php?section=agb) ersetzt.
 
+Modul: Podcast
+- Es kann ein Youtube Link angegeben werden, welcher dann als Medium im
+  Podcastmodul erfasst wird.
+- Die neusten Videos beliebiger Kategorien können auf der Startseite angezeigt
+  werden.
+- Jedem Medium kann ein Vorschaubild zugeordnet werden.
+
+Modul: Seitenempfehlungen
+- Die Seitenempfehlungen werden nun mit einem CAPTCHA geschützt. Dazu muss
+  das Standardtemplate für die Seitenempfehlungen allerdings zurückgesetzt
+  werden.
+
 Modul: Verzeichnis
 - Die Typselektion (File, RSS oder Link) wurde aufgehoben und stattessen drei
   neue Platzhalter hinzugefügt:
 	[DIRECTORY_FEED_ATTACHMENT]]
 	[[DIRECTORY_FEED_LINK]]
 	[[DIRECTORY_FEED_RSS_LINK]]
+
 
 ****************************************
 * Behobene Fehler **********************
@@ -212,6 +207,8 @@ Modul: Online Desk
 - Reservierungen vom Januar bis September werden im Kalender angezeigt.
 - Rückgabemeldungen mit Zeilenumbrüchen werden nach einer Bestellung korrekt
   ausgegeben.
+- Der Produktkalender funktioniert korrekt, wenn das System relativ zum
+  DocumentRoot in einem Unterverzeichnis liegt. 
 
 Modul: Online Shop
 - Zugewiesene Merkmale können einem Produkt wieder entfernt werden.
