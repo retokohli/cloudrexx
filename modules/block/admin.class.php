@@ -456,17 +456,22 @@ class blockManager extends blockLibrary
 	        	 $langStatus = substr($langStatus, 0,-2);
 	        }
 
+
 			$this->_objTpl->setVariable(array(
 				'BLOCK_LANG_ID'						=> $langId,
 				'BLOCK_LANG_ID2'					=> $langId,
 				'BLOCK_LANG_ASSOCIATED'				=> in_array($langId, $blockAssociatedLangIds) ? 'checked="checked"' : '',
+				'BLOCK_LANG_NOT_ASSOCIATED'			=> in_array($langId, $blockAssociatedLangIds) ? '' : 'checked="checked"',
 				'BLOCK_SHOW_ON_ALL_PAGES'			=> $langAllPages == 1 ? 'checked="checked"' : '',
+				'BLOCK_SHOW_ON_SELECTED_PAGES'		=> $langAllPages != 1 ? 'checked="checked"' : '',
 				'BLOCK_LANG_NAME'					=> $arrLanguage['name'],
 				'BLOCK_LANG_STATUS'					=> '('.$langStatus.')',
 				'BLOCK_SELECTED_LANG_SHORTCUT'		=> $arrLanguage['lang'],
+				'BLOCK_SELECTED_LANG_SHORTCUT2'		=> $arrLanguage['lang'],
 				'BLOCK_SELECTED_LANG_NAME'			=> $arrLanguage['name'],
 				'TXT_BLOCK_ACTIVATE'				=> $_ARRAYLANG['TXT_BLOCK_ACTIVATE'],
 				'TXT_BLOCK_SHOW_ON_ALL_PAGES'		=> $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_ON_ALL_'],
+				'TXT_BLOCK_SHOW_ON_SELECTED_PAGES'	=> $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_SELECTED_ALL_'],
 				'TXT_BLOCK_FRONTEND_PAGES'			=> $_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'],
 				'TXT_BLOCK_LANG_SHOW'				=> $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'],
 				'BLOCK_PAGES_DISPLAY'				=> $langAllPages == 1 ? 'none' : 'block',
@@ -487,16 +492,15 @@ class blockManager extends blockLibrary
 			'TXT_BLOCK_NAME'				=> $_ARRAYLANG['TXT_BLOCK_NAME'],
 			'TXT_BLOCK_RANDOM'				=> $_ARRAYLANG['TXT_BLOCK_RANDOM'],
 			'TXT_BLOCK_RANDOM'				=> $_ARRAYLANG['TXT_BLOCK_RANDOM'],
-			'TXT_BLOCK_RANDOM_1'			=> $_ARRAYLANG['TXT_BLOCK_BLOCK']." #1",
-			'TXT_BLOCK_RANDOM_2'			=> $_ARRAYLANG['TXT_BLOCK_BLOCK']." #2",
-			'TXT_BLOCK_RANDOM_3'			=> $_ARRAYLANG['TXT_BLOCK_BLOCK']." #3",
 			'TXT_BLOCK_GLOBAL'				=> $_ARRAYLANG['TXT_BLOCK_SHOW_IN_GLOBAL'],
 			'TXT_BLOCK_FRONTEND_LANGUAGES'	=> $_ARRAYLANG['TXT_BLOCK_FRONTEND_LANGUAGES'],
 			'TXT_BLOCK_SAVE'				=> $_ARRAYLANG['TXT_BLOCK_SAVE'],
+			'TXT_BLOCK_DEACTIVATE'			=> $_ARRAYLANG['TXT_BLOCK_DEACTIVATE'],
+			'TXT_SHOW_ON_ALL_PAGES'			=> $_ARRAYLANG['TXT_SHOW_ON_ALL_PAGES'],
+			'TXT_SHOW_ON_SELECTED_PAGES'	=> $_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'],
 			'BLOCK_FORM_ONSUBMIT'			=> $formOnSubmit,
 		));
 	}
-
 
 	/**
 	* del block

@@ -93,29 +93,30 @@ class blockLibrary
 
 		if ($objDatabase->Execute($query) !== false) {
 
-			foreach ($blockAssociatedLangIds as $key => $langId) {
+			foreach ($blockAssociatedLangIds as $langId => $value) {
+				if($value == 1) {
+					$arrSelectedPages 		= $_POST[$langId.'_selectedPages'];
+					$blockId 				= $objDatabase->Insert_ID();
+					$showOnAllPages			= $_POST['block_show_on_all_pages'][$langId];
 
-				$arrSelectedPages 		= $_POST[$langId.'_selectedPages'];
-				$blockId 				= $objDatabase->Insert_ID();
-				$showOnAllPages			= $_POST['block_show_on_all_pages'][$langId];
+					if ($showOnAllPages != 1) {
+						foreach ($arrSelectedPages as $key => $pageId) {
+							$objDatabase->Execute('	INSERT
+													  INTO	'.DBPREFIX.'module_block_rel_pages
+												       SET	block_id='.$blockId.', page_id='.$pageId.', lang_id='.$langId.'
+											');
+						}
 
-				if ($showOnAllPages != 1) {
-					foreach ($arrSelectedPages as $key => $pageId) {
 						$objDatabase->Execute('	INSERT
-												  INTO	'.DBPREFIX.'module_block_rel_pages
-											       SET	block_id='.$blockId.', page_id='.$pageId.', lang_id='.$langId.'
-										');
+												  INTO	'.DBPREFIX.'module_block_rel_lang
+												   SET	block_id='.$blockId.', lang_id='.$langId.', all_pages=0
+											');
+					} else {
+						$objDatabase->Execute('	INSERT
+												  INTO	'.DBPREFIX.'module_block_rel_lang
+												   SET	block_id='.$blockId.', lang_id='.$langId.', all_pages=1
+											');
 					}
-
-					$objDatabase->Execute('	INSERT
-											  INTO	'.DBPREFIX.'module_block_rel_lang
-											   SET	block_id='.$blockId.', lang_id='.$langId.', all_pages=0
-										');
-				} else {
-					$objDatabase->Execute('	INSERT
-											  INTO	'.DBPREFIX.'module_block_rel_lang
-											   SET	block_id='.$blockId.', lang_id='.$langId.', all_pages=1
-										');
 				}
 			}
 			return true;
@@ -143,28 +144,33 @@ class blockLibrary
 		if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_block_blocks SET content='".contrexx_addslashes($content)."', name='".contrexx_addslashes($name)."', random='".$blockRandom."', random_2='".$blockRandom2."', random_3='".$blockRandom3."', global='".$blockGlobal."' WHERE id=".$id) !== false) {
 			if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE block_id=".$id) !== false) {
 				if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_lang WHERE block_id=".$id) !== false) {
-					foreach ($blockAssociatedLangIds as $key => $langId) {
-						$arrSelectedPages 		= $_POST[$langId.'_selectedPages'];
-						$blockId 				= $id;
-						$showOnAllPages			= $_POST['block_show_on_all_pages'][$langId];
 
-						if ($showOnAllPages != 1) {
-							foreach ($arrSelectedPages as $key => $pageId) {
+
+
+					foreach ($blockAssociatedLangIds as $langId => $value) {
+						if($value == 1) {
+							$arrSelectedPages 		= $_POST[$langId.'_selectedPages'];
+							$blockId 				= $id;
+							$showOnAllPages			= $_POST['block_show_on_all_pages'][$langId];
+
+							if ($showOnAllPages != 1) {
+								foreach ($arrSelectedPages as $key => $pageId) {
+									$objDatabase->Execute('	INSERT
+															  INTO	'.DBPREFIX.'module_block_rel_pages
+														       SET	block_id='.$blockId.', page_id='.$pageId.', lang_id='.$langId.'
+													');
+								}
+
 								$objDatabase->Execute('	INSERT
-														  INTO	'.DBPREFIX.'module_block_rel_pages
-													       SET	block_id='.$blockId.', page_id='.$pageId.', lang_id='.$langId.'
-												');
+														  INTO	'.DBPREFIX.'module_block_rel_lang
+														   SET	block_id='.$blockId.', lang_id='.$langId.', all_pages=0
+													');
+							} else {
+								$objDatabase->Execute('	INSERT
+														  INTO	'.DBPREFIX.'module_block_rel_lang
+														   SET	block_id='.$blockId.', lang_id='.$langId.', all_pages=1
+													');
 							}
-
-							$objDatabase->Execute('	INSERT
-													  INTO	'.DBPREFIX.'module_block_rel_lang
-													   SET	block_id='.$blockId.', lang_id='.$langId.', all_pages=0
-												');
-						} else {
-							$objDatabase->Execute('	INSERT
-													  INTO	'.DBPREFIX.'module_block_rel_lang
-													   SET	block_id='.$blockId.', lang_id='.$langId.', all_pages=1
-												');
 						}
 					}
 				}
@@ -300,7 +306,7 @@ class blockLibrary
 
 		$objResult = $objDatabase->Execute("SELECT	value
 	    									FROM	".DBPREFIX."module_block_settings
-	    									WHERE	name='blockGlobalSeperator'
+	    									WHERE	name='blockGlobalSeperator LIMIT 1'
 	    									");
 	    if ($objResult !== false) {
     		while (!$objResult->EOF) {
@@ -309,12 +315,12 @@ class blockLibrary
     		}
     	}
 
-		$query = "SELECT block_id FROM ".DBPREFIX."module_block_rel_pages WHERE block_id!=''";
+		$query = "SELECT block_id FROM ".DBPREFIX."module_block_rel_pages WHERE block_id !=''";
 		$objCheck = $objDatabase->SelectLimit($query, 1);
 
 		if ($objCheck->RecordCount() == 0) {
 			$tables = DBPREFIX."module_block_rel_lang AS tblLang";
-			$where	= "";
+			$where	= " AND tblLang.all_pages='1'";
 		} else {
 			$tables = DBPREFIX."module_block_rel_lang AS tblLang,
 					".DBPREFIX."module_block_rel_pages AS tblPage";
