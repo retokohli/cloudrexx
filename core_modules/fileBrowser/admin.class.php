@@ -45,9 +45,11 @@ class FileBrowser {
         'media2'	=> 'TXT_FILEBROWSER_MEDIA_2',
         'media3'	=> 'TXT_FILEBROWSER_MEDIA_3',
         'media4'	=> 'TXT_FILEBROWSER_MEDIA_4',
-        'shop'	    => 'TXT_FILEBROWSER_SHOP'
+        'shop'	    => 'TXT_FILEBROWSER_SHOP',
+        'blog'	    => 'TXT_FILEBROWSER_BLOG'
     );
     var $_shopEnabled;
+    var $_blogEnabled;
 
 
 
@@ -77,7 +79,8 @@ class FileBrowser {
 		$this->_path = $this->_getPath();
 		$this->_mediaType = $this->_getMediaType();
 
-		$this->_shopEnabled = $this->_checkForShop();
+		$this->_shopEnabled = $this->_checkForModule('shop');
+		$this->_blogEnabled = $this->_checkForModule('blog');
 
 		$this->_checkUpload();
 		$this->_initFiles();
@@ -89,9 +92,9 @@ class FileBrowser {
 	 *
 	 * @return bool
 	 */
-    function _checkForShop(){
+    function _checkForModule($strModuleName){
         global $objDatabase;
-        if( ($objRS = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."modules WHERE name = 'shop' AND status = 'y'")) != false){
+        if( ($objRS = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."modules WHERE name = '".$strModuleName."' AND status = 'y'")) != false){
             if($objRS->RecordCount() > 0){
                 return true;
             }
@@ -214,6 +217,9 @@ class FileBrowser {
 			case 'shop':
 				$strWebPath = ASCMS_SHOP_IMAGES_WEB_PATH.$this->_path;
 			break;
+			case 'blog':
+				$strWebPath = ASCMS_BLOG_IMAGES_WEB_PATH.$this->_path;
+			break;
 			default:
 				$strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
 		}
@@ -325,6 +331,10 @@ class FileBrowser {
 			case 'shop':
                 $strPath 	= ASCMS_SHOP_IMAGES_PATH.$this->_path;
 				$strWebPath = ASCMS_SHOP_IMAGES_WEB_PATH.$this->_path;
+			break;
+			case 'blog':
+                $strPath 	= ASCMS_BLOG_IMAGES_PATH.$this->_path;
+				$strWebPath = ASCMS_BLOG_IMAGES_WEB_PATH.$this->_path;
 			break;
 			default:
 				$strPath 	= ASCMS_CONTENT_IMAGE_PATH.$this->_path;
@@ -538,6 +548,9 @@ class FileBrowser {
 				case 'shop':
 					$this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_SHOP_IMAGES_WEB_PATH);
 				break;
+				case 'blog':
+					$this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_BLOG_IMAGES_WEB_PATH);
+				break;
 				default:
 					$this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_CONTENT_IMAGE_WEB_PATH);
 			}
@@ -590,6 +603,9 @@ class FileBrowser {
 			break;
 			case 'shop':
 			    $strPath = ASCMS_SHOP_IMAGES_PATH.$this->_path;
+			break;
+			case 'blog':
+			    $strPath = ASCMS_BLOG_IMAGES_PATH.$this->_path;
 			break;
 			default:
 				$strPath = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
@@ -671,9 +687,8 @@ class FileBrowser {
 
     	$menu = "<select name=\"".$name."\" ".$attrs.">";
     	foreach ($this->_arrMediaTypes as $type => $text) {
-    	    if($type == 'shop' && !$this->_shopEnabled){
-    	        continue;
-    	    }
+    	    if($type == 'shop' && !$this->_shopEnabled){ continue; }
+    	    if($type == 'blog' && !$this->_blogEnabled){ continue; }
 			$menu .= "<option value=\"".$type."\"".($selectedType == $type ? " selected=\"selected\"" : "").">".$_ARRAYLANG[$text]."</option>\n";
     	}
 		$menu .= "</select>";
