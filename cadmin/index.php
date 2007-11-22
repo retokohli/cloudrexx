@@ -820,6 +820,22 @@ switch($cmd) {
         $objSupport->getPage();
         break;
 
+    /**
+     * Blog Module
+     * @author  Thomas Kaelin <thomas.kaelin@comvation.com>
+     * @since   1.2.0
+     * @version 1.0
+     */
+    case "blog":
+    	$objPerm->checkAccess(119, 'static');
+        $modulespath = ASCMS_MODULE_PATH . "/blog/admin.class.php";
+        if (file_exists($modulespath)) include($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle  = $_CORELANG['TXT_BLOG_MODULE'];
+        $objBlog  = &new BlogAdmin();
+        $objBlog->getPage();
+        break;
+        
         //-----------------------------------------------------------------------------------------------
         // access denied
         //-----------------------------------------------------------------------------------------------
