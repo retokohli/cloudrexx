@@ -197,7 +197,7 @@ $_ARRAYLANG['TXT_SHOP_BACK_TO_OVERVIEW'] = "Übersicht";
 $_ARRAYLANG['TXT_SHOP_BACK'] = "Zurück";
 $_ARRAYLANG['TXT_SHOP_GOTO_DETAIL_VIEW'] = "zur Detailansicht / &agrav; la ...";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_CANCELLED'] = "Die Bezahlung wurde abgebrochen.";
-$_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "annuliert";
+$_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "Ihre Bestellung wurde annuliert.";
 $_ARRAYLANG['TXT_SHOP_ORDER_STILL_IN_CART'] = "Ihre Bestellung bleibt im Warenkorb.";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Zur&uuml;ck zum Online Shop";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Art der Bezahlung &auml;ndern";
@@ -210,4 +210,6 @@ $_ARRAYLANG['TXT_SHOP_NORMALPRICE'] = "Preis";
 $_ARRAYLANG['TXT_SHOP_DISCOUNTPRICE'] = "Discountpreis";
 $_ARRAYLANG['TXT_SHOP_DISCOUNT_TODAY'] = "Tagesrabatt:";
 $_ARRAYLANG['TXT_SHOP_PRICE_TODAY'] = "Tagespreis:";
+$_ARRAYLANG['TXT_ERROR_QUERYING_STOCK'] = "Fehler: Der Bestand kann nicht abgefragt werden";
+$_ARRAYLANG['TXT_ERROR_UPDATING_STOCK'] = "Fehler: Der Bestand kann nicht aktualisiert werden";
 ?>

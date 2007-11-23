@@ -503,7 +503,6 @@ $_ARRAYLANG['TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES'] = "Bestehende
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES_TIPS'] = "Klicken Sie auf 'Durchsuchen' und wählen sie die zu importierende Datei. Starten sie den Import durch einen Klick auf 'Importieren'. Aktivieren Sie das Kästchen 'Bestehende Produkte und Kategorien vor dem importieren löschen' nur, wenn Sie alle bestehenden Produkte und Kategorien vor dem Import löschen wollen!";
 $_ARRAYLANG['TXT_SHOP_IMPORT_PRODUCTS'] = "Produkte importieren";
 $_ARRAYLANG['TXT_SHOP_SHOW_PENDING_ORDERS'] = "Pendente Bestellungen anzeigen";
-$_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "annuliert";
 $_ARRAYLANG['TXT_SHOP_IMAGE_SETTINGS'] = "Einstellungen f&uuml;r Bilder";
 $_ARRAYLANG['TXT_SHOP_THUMBNAIL_MAX_WIDTH'] = "Maximale Breite der Thumbnails";
 $_ARRAYLANG['TXT_SHOP_THUMBNAIL_MAX_HEIGHT'] = "Maximale H&ouml;he der Thumbnails";
