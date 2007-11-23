@@ -83,7 +83,10 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Products.class.php';
  * @subpackage  module_shop
  */
 class shopmanager extends ShopLibrary {
-    var $_objTpl;
+    /**
+     * @var HTML_Template_Sigma
+     */
+    var $_objTpl ;
     var $strErrMessage = '';
     var $strOkMessage  = '';
     var $pageTitle;
@@ -2635,9 +2638,7 @@ class shopmanager extends ShopLibrary {
     {
         global $_ARRAYLANG;
 
-echo("Shop::addModCategory(): INFO: Entered.<br />");
         if (empty($_POST['modCatName'])) {
-echo("Shop::addModCategory(): INFO: Empty.<br />");
             return true;
         }
         $name      = strip_tags($_POST['modCatName']);
@@ -2647,7 +2648,6 @@ echo("Shop::addModCategory(): INFO: Empty.<br />");
         $parentid  = $_POST['modCatParentId'];
         $picture   = $_POST['modCatImageHref'];
         if ($id > 0) {
-echo("Shop::addModCategory(): INFO: Update.<br />");
             // Update existing ShopCategory
             $objShopCategory = ShopCategory::getById($id);
             if (!$objShopCategory) {
@@ -2661,7 +2661,6 @@ echo("Shop::addModCategory(): INFO: Update.<br />");
             $objShopCategory->setName($name);
             $objShopCategory->setStatus($status);
         } else {
-echo("Shop::addModCategory(): INFO: Insert.<br />");
             // Add new ShopCategory
             $objShopCategory = new ShopCategory(
                 $name, $parentid, $status, 0
@@ -2951,7 +2950,7 @@ echo("Shop::addModCategory(): INFO: Insert.<br />");
                     : 0
                 );
             $shopDiscount             = floatval($_POST['shopDiscount']);
-            $shopTaxId                = $_POST['shopTaxId'];
+            $shopTaxId                = (isset($_POST['shopTaxId']) ? $_POST['shopTaxId'] : 0);
             $shopWeight               = Weight::getWeight($_POST['shopWeight']);
             $shopDistribution         = $_POST['distribution'];
             $shopShortDescription     = contrexx_addslashes($_POST['shopShortDescription']);
@@ -3034,10 +3033,15 @@ echo("Shop::addModCategory(): INFO: Insert.<br />");
                     $shopWeight
                 );
                 $objProduct->store();
+                $shopProductId = $objProduct->getId();
             }
 
             // Apply the changes to all Products with the same Product code.
-            $arrProduct = Products::getByCustomId($shopProductIdentifier);
+            if ($shopProductIdentifier != '') {
+                $arrProduct = Products::getByCustomId($shopProductIdentifier);
+            } else {
+                $arrProduct = array($objProduct);
+            }
             if (!is_array($arrProduct)) {
                 return false;
             }
@@ -3128,20 +3132,18 @@ echo("Shop::addModCategory(): INFO: Insert.<br />");
             switch ($_POST['shopAfterStoreAction']) {
                 case "newEmpty":
                     header("Location: ?cmd=shop&act=products&tpl=manage");
-                    break;
+                    exit();
                 case "newTemplate":
                     header("Location: ?cmd=shop&act=products&tpl=manage&id=".
                         $objProduct->getId()."&new=1"
                     );
-                    break;
+                    exit();
                 default:
                     header("Location: ?cmd=shop&act=products");
                     // prevent further output, go back to product overview
-                    die();
-                    break;
+                    exit();
             }
         }
-
         // set template
         $this->_objTpl->addBlockfile('SHOP_PRODUCTS_FILE', 'shop_products_block', 'module_shop_product_manage.html');
 
@@ -3639,7 +3641,7 @@ echo("Shop::addModCategory(): INFO: Insert.<br />");
         $total_vat_amount = 0;
 
         // set template -- may be one of
-        //  'module_shop_order_details.html', or
+        //  'module_shop_order_details.html'
         //  'module_shop_order_edit.html'
         $this->_objTpl->loadTemplateFile($templateName, true, true);
 
@@ -3947,7 +3949,7 @@ echo("Shop::addModCategory(): INFO: Insert.<br />");
                         $strJsArrProduct .=
                             "arrProducts[".$arrProduct['id']."] = new Array();\n".
                             "arrProducts[".$arrProduct['id']."]['id'] = ".$arrProduct['id'].";\n".
-                            "arrProducts[".$arrProduct['id']."]['product_id'] = ".$arrProduct['product_id'].";\n".
+                            "arrProducts[".$arrProduct['id']."]['product_id'] = '".$arrProduct['product_id']."';\n".
                             "arrProducts[".$arrProduct['id']."]['title'] = '".addslashes($arrProduct['title'])."';\n".
                             "arrProducts[".$arrProduct['id']."]['percent'] = '".$arrProduct['percent']."';\n".
                             "arrProducts[".$arrProduct['id']."]['weight'] = '".$arrProduct['weight']."';\n";
@@ -4059,7 +4061,7 @@ echo("Shop::addModCategory(): INFO: Insert.<br />");
 
                 $weight = $objResult->fields['weight'];
                 if (intval($weight) > 0) {
-                    $total_weight += $weight;
+                    $total_weight += $weight*$productQuantity;
                 }
 
                 // get product code (aka custom id)
@@ -4986,10 +4988,6 @@ echo("Shop::addModCategory(): INFO: Insert.<br />");
             $tpl = '';
         }
         switch ($tpl) {
-            case 'catalog':
-                $this->pageTitle = $_ARRAYLANG['TXT_PRODUCT_CATALOG'];
-                $this->showProducts();
-                break;
             case 'download':
                 $this->_showProductDownloadOptions();
                 break;
@@ -5001,6 +4999,7 @@ echo("Shop::addModCategory(): INFO: Insert.<br />");
                 $this->manageProduct();
                 break;
             default:
+                // Alternative: $this->pageTitle = $_ARRAYLANG['TXT_PRODUCT_CATALOG'];
                 $this->pageTitle = $_ARRAYLANG['TXT_PRODUCT_CHARACTERISTICS'];
                 $this->showProducts();
                 break;
@@ -5286,7 +5285,6 @@ echo("Shop::addModCategory(): INFO: Insert.<br />");
                     $objProduct->setVatId($shopTaxId);
                     $objProduct->setDistribution($shopDistribution);
                     $objProduct->setWeight($shopWeight);
-echo("Updating Product ".$objProduct->getId()."<br />");
                     if (!$objProduct->store()) {
                         $arrError[$shopProductIdentifier] = true;
                     }

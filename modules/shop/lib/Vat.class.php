@@ -107,16 +107,33 @@ class Vat
         $query = "SELECT id, percent, class ".
                  "FROM ".DBPREFIX."module_shop_vat";
         $objResult = $objDatabase->Execute($query);
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                $id = $objResult->fields['id'];
-                $this->arrVatClass[$id] = $objResult->fields['class'];
-                $this->arrVatRate[$id]  = $objResult->fields['percent'];
-                $objResult->MoveNext();
-            }
-        } else {
-            // no record found
+        if (!$objResult) {
             die ("Failed to init VAT arrays<br />");
+        }
+/*
+        if ($objResult->EOF) {
+            // No VAT rates!  This will make the Shop fail in some cases
+            // (like adding new Products).  Add a dummy rate to prevent this.
+            $query = "
+                INSERT INTO ".DBPREFIX."module_shop_vat (
+                    id, percent, class
+                ) VALUES (
+                    1, 0, 'No VAT rates available -- Please disable VAT'
+                )
+            ";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) {
+                // no record found
+                die ("Failed to init VAT arrays<br />");
+            }
+            return $this->init();
+        }
+*/
+        while (!$objResult->EOF) {
+            $id = $objResult->fields['id'];
+            $this->arrVatClass[$id] = $objResult->fields['class'];
+            $this->arrVatRate[$id]  = $objResult->fields['percent'];
+            $objResult->MoveNext();
         }
 
         $query = "SELECT * FROM ".DBPREFIX."module_shop_config WHERE name='tax_enabled'";
@@ -138,6 +155,7 @@ class Vat
         } else { die ("Failed to get default VAT ID<br />"); }
 
         $this->vatDefaultRate = $this->getRate($this->vatDefaultId);
+        return true;
     }
 
 
@@ -282,8 +300,8 @@ class Vat
         if (isset($this->arrVatRate[$vatId])) {
             return $this->arrVatRate[$vatId];
         }
-        // no entry found
-        return '';
+       // No entry found.  But some sensible value is required by the Shop.
+        return '0.0';
     }
 
 

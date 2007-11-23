@@ -14,7 +14,7 @@
 
 /*
 
-Modifications to the Database structure:
+Modifications to the Contrexx V1.1 Database structure:
 
 ALTER TABLE `contrexx_module_shop_categories` ADD `picture` VARCHAR( 255 ) NULL;
 ALTER TABLE `contrexx_module_shop_categories` ADD `flags`   VARCHAR( 100 ) NULL;

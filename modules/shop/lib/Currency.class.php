@@ -218,12 +218,12 @@ class Currency
     function getDefaultCurrencyPrice($price)
     {
         if ($this->activeCurrencyId == $this->defaultCurrencyId) {
-            return $this->formatPrice(round($price));
+            return $this->formatPrice($price);
         } else {
             $rate = $this->arrCurrency[$this->activeCurrencyId]['rate'];
             $defaultRate = $this->arrCurrency[$this->defaultCurrencyId]['rate'];
             // getting 0.05 increments
-            return $this->formatPrice(round(20*$price*$defaultRate/$rate)/20);
+            return $this->formatPrice((20*$price*$defaultRate/$rate)/20);
         }
     }
 

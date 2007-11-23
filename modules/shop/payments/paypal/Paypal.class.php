@@ -82,8 +82,8 @@ class PayPal
 
         $sum = md5('contrexx'.$_SERVER['HTTP_HOST'].intval($amount).$orderid);
         $host = ASCMS_PROTOCOL.'://'.$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET;
-        $return = $host. '/index.php?section=shop&amp;cmd=success&amp;handler=paypal&amp;orderid=$orderid';
-        $cancel_return = $host.'/index.php?section=shop&amp;cmd=cancel";//&amp;orderid=$orderid';
+        $return = $host. '/index.php?section=shop&amp;cmd=success&amp;handler=paypal&amp;result=1&amp;orderid='.$orderid;
+        $cancel_return = $host.'/index.php?section=shop&amp;cmd=success&amp;result=2&amp;orderid='.$orderid;
         $notify_url = $host.'/index.php?section=shop&amp;act=paypalIpnCheck';
 
         $retval = "<script language='JavaScript' type='text/javascript'>
