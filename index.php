@@ -780,92 +780,92 @@ if (file_exists($modulespath)) {
      */
     require_once($modulespath);
     $objBlogHome = &new BlogHomeContent($themesPages['blog_content']);
-    
+
     if ($objBlogHome->blockFunktionIsActivated()) {
-    	//Blog-File   	
+    	//Blog-File
 	    $blogHomeContentInContent	= $objBlogHome->searchKeywordInContent('BLOG_FILE', $page_content);
 	    $blogHomeContentInTemplate	= $objBlogHome->searchKeywordInContent('BLOG_FILE', $page_template);
 	    $blogHomeContentInTheme		= $objBlogHome->searchKeywordInContent('BLOG_FILE', $themesPages['index']);
 	    $blogHomeContentInSidebar	= $objBlogHome->searchKeywordInContent('BLOG_FILE', $themesPages['sidebar']);
-	    
+
 	    if ($blogHomeContentInContent || $blogHomeContentInTemplate || $blogHomeContentInTheme || $blogHomeContentInSidebar) {
 	    	$strContentSource = $objBlogHome->getLatestEntries();
-	    	    		    	
+
 	    	$page_content			= $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $page_content, $blogHomeContentInContent);
 	    	$page_template			= $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $page_template, $blogHomeContentInTemplate);
 	    	$themesPages['index'] 	= $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $themesPages['index'], $blogHomeContentInTheme);
 	    	$themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $themesPages['sidebar'], $blogHomeContentInSidebar);
 	    }
-	    
+
 	    //Blog-Calendar
 	    $blogHomeCalendarInContent 	= $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $page_content);
 	    $blogHomeCalendarInTemplate = $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $page_template);
 	    $blogHomeCalendarInTheme	= $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $themesPages['index']);
 	    $blogHomeCalendarInSidebar	= $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $themesPages['sidebar']);
-	
+
 	    if ($blogHomeCalendarInContent || $blogHomeCalendarInTemplate || $blogHomeCalendarInTheme || $blogHomeCalendarInSidebar) {
 	    	$strCalendarSource = $objBlogHome->getHomeCalendar();
-	    	    	
+
 	    	$page_content			= $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $page_content, $blogHomeCalendarInContent);
 	    	$page_template			= $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $page_template, $blogHomeCalendarInTemplate);
 	    	$themesPages['index'] 	= $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $themesPages['index'], $blogHomeCalendarInTheme);
 	    	$themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $themesPages['sidebar'], $blogHomeCalendarInSidebar);
 	    }
-	 
+
 	    //Blog-TagCloud
 	    $blogHomeTagCloudInContent 	= $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $page_content);
 	    $blogHomeTagCloudInTemplate = $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $page_template);
 	    $blogHomeTagCloudInTheme	= $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $themesPages['index']);
 	    $blogHomeTagCloudInSidebar	= $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $themesPages['sidebar']);
-	
+
 	    if ($blogHomeTagCloudInContent || $blogHomeTagCloudInTemplate || $blogHomeTagCloudInTheme || $blogHomeTagCloudInSidebar) {
 	    	$strTagCloudSource = $objBlogHome->getHomeTagCloud();
-	    	    	
+
 	    	$page_content			= $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $page_content, $blogHomeTagCloudInContent);
 	    	$page_template			= $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $page_template, $blogHomeTagCloudInTemplate);
 	    	$themesPages['index'] 	= $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $themesPages['index'], $blogHomeTagCloudInTheme);
 	    	$themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $themesPages['sidebar'], $blogHomeTagCloudInSidebar);
 	    }
-	    
+
 	    //Blog-TagCloud
 	    $blogHomeTagHitlistInContent	= $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $page_content);
 	    $blogHomeTagHitlistInTemplate 	= $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $page_template);
 	    $blogHomeTagHitlistInTheme		= $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $themesPages['index']);
 	    $blogHomeTagHitlistInSidebar	= $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $themesPages['sidebar']);
-	
+
 	    if ($blogHomeTagHitlistInContent || $blogHomeTagHitlistInTemplate || $blogHomeTagHitlistInTheme || $blogHomeTagHitlistInSidebar) {
 	    	$strTagHitlistSource = $objBlogHome->getHomeTagHitlist();
-	    	    	
+
 	    	$page_content			= $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $page_content, $blogHomeTagHitlistInContent);
 	    	$page_template			= $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $page_template, $blogHomeTagHitlistInTemplate);
 	    	$themesPages['index'] 	= $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $themesPages['index'], $blogHomeTagHitlistInTheme);
 	    	$themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $themesPages['sidebar'], $blogHomeTagHitlistInSidebar);
 	    }
-	    
+
 	    //Blog-Categories (Select)
 	    $blogHomeCategorySelectInContent 	= $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $page_content);
 	    $blogHomeCategorySelectInTemplate 	= $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $page_template);
 	    $blogHomeCategorySelectInTheme		= $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $themesPages['index']);
 	    $blogHomeCategorySelectInSidebar	= $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $themesPages['sidebar']);
-	
+
 	    if ($blogHomeCategorySelectInContent || $blogHomeCategorySelectInTemplate || $blogHomeCategorySelectInTheme || $blogHomeCategorySelectInSidebar) {
 	    	$strCategoriesSelect = $objBlogHome->getHomeCategoriesSelect();
-	    	    	
+
 	    	$page_content			= $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $page_content, $blogHomeCategorySelectInContent);
 	    	$page_template			= $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $page_template, $blogHomeCategorySelectInTemplate);
 	    	$themesPages['index'] 	= $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $themesPages['index'], $blogHomeCategorySelectInTheme);
 	    	$themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $themesPages['sidebar'], $blogHomeCategorySelectInSidebar);
 	    }
-	    
+
 	    //Blog-Categories (List)
 	    $blogHomeCategoryListInContent 	= $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $page_content);
 	    $blogHomeCategoryListInTemplate = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $page_template);
 	    $blogHomeCategoryListInTheme	= $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $themesPages['index']);
 	    $blogHomeCategoryListInSidebar	= $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $themesPages['sidebar']);
-	
+
 	    if ($blogHomeCategoryListInContent || $blogHomeCategoryListInTemplate || $blogHomeCategoryListInTheme || $blogHomeCategoryListInSidebar) {
 	    	$strCategoriesList = $objBlogHome->getHomeCategoriesList();
-	    	    	
+
 	    	$page_content			= $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $page_content, $blogHomeCategoryListInContent);
 	    	$page_template			= $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $page_template, $blogHomeCategoryListInTemplate);
 	    	$themesPages['index'] 	= $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $themesPages['index'], $blogHomeCategoryListInTheme);
@@ -1342,7 +1342,7 @@ switch ($section) {
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
-        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');        
+        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
         $objBlog = &new Blog($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objBlog->getPage());
         break;
