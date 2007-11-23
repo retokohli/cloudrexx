@@ -504,7 +504,6 @@ $_ARRAYLANG['TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES'] = "Overwrite 
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES_TIPS'] = "Click Browse to select the file you wish to import from your local machine.  Activate the Category Overwrite checkbox to overwrite all existing category data.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_PRODUCTS'] = "Import Products";
 $_ARRAYLANG['TXT_SHOP_SHOW_PENDING_ORDERS'] = "Pendente Bestellungen anzeigen";
-$_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "annuliert";
 $_ARRAYLANG['TXT_SHOP_IMAGE_SETTINGS'] = "Einstellungen für Bilder";
 $_ARRAYLANG['TXT_SHOP_THUMBNAIL_MAX_WIDTH'] = "Maximale Breite der Thumbnails";
 $_ARRAYLANG['TXT_SHOP_THUMBNAIL_MAX_HEIGHT'] = "Maximale Höhe der Thumbnails";
