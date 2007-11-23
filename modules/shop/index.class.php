@@ -579,12 +579,6 @@ class Shop extends ShopLibrary
     {
         global $_ARRAYLANG;
 
-/*
-cartTpl = '[[SHOP_JS_PRODUCT_COUNT]] Produkt(e)<br />Total [[SHOP_JS_TOTAL_PRICE]] [[SHOP_JS_TOTAL_PRICE_UNIT]]';
-cartProductsTpl = '[[SHOP_JS_PRODUCT_QUANTITY]] x [[SHOP_JS_PRODUCT_TITLE]] ([[SHOP_JS_PRODUCT_PRICE]] [[SHOP_JS_TOTAL_PRICE_UNIT]])';
-if (typeof(objCart) != 'undefined') {shopGenerateCart();};
-*/
-
         $jsCart = '';
         $cartProductsTpl = '';
         if (empty($_REQUEST['section'])
@@ -3419,263 +3413,290 @@ right after the customer logs in!
             // (and has thus not yet been confirmed)
             if (isset($_SESSION['shop']['orderId'])) {
                 $this->addMessage($_ARRAYLANG['TXT_ORDER_ALREADY_PLACED']);
-            } else {
-                // no more confirmation
-                $this->objTemplate->hideBlock("shopConfirm");
-                // store the customer, register the order
-                $customer_ip      = htmlspecialchars($_SERVER['REMOTE_ADDR'], ENT_QUOTES, CONTREXX_CHARSET);
-                $customer_host    = htmlspecialchars(@gethostbyaddr($_SERVER['REMOTE_ADDR']), ENT_QUOTES, CONTREXX_CHARSET);
-                $customer_lang    = htmlspecialchars(getenv('HTTP_ACCEPT_LANGUAGE'), ENT_QUOTES, CONTREXX_CHARSET);
-                $customer_browser = htmlspecialchars(getenv('HTTP_USER_AGENT'), ENT_QUOTES, CONTREXX_CHARSET);
-                if (!$this->objCustomer) {
-                    // new customer
-                    $this->objCustomer = new Customer(
-                        $_SESSION['shop']['prefix'],
-                        $_SESSION['shop']['firstname'],
-                        $_SESSION['shop']['lastname'],
-                        $_SESSION['shop']['company'],
-                        $_SESSION['shop']['address'],
-                        $_SESSION['shop']['city'],
-                        $_SESSION['shop']['zip'],
-                        $_SESSION['shop']['countryId'],
-                        $_SESSION['shop']['phone'],
-                        $_SESSION['shop']['fax']
-                    );
-                    $this->objCustomer->setUserName($_SESSION['shop']['email']);
-                    $this->objCustomer->setEmail($_SESSION['shop']['email']);
-                    $this->objCustomer->setPassword($_SESSION['shop']['password']);
-                    $this->objCustomer->setActiveStatus(1);
+                return false;
+            }
+
+            // no more confirmation
+            $this->objTemplate->hideBlock("shopConfirm");
+            // store the customer, register the order
+            $customer_ip      = htmlspecialchars($_SERVER['REMOTE_ADDR'], ENT_QUOTES, CONTREXX_CHARSET);
+            $customer_host    = htmlspecialchars(@gethostbyaddr($_SERVER['REMOTE_ADDR']), ENT_QUOTES, CONTREXX_CHARSET);
+            $customer_lang    = htmlspecialchars(getenv('HTTP_ACCEPT_LANGUAGE'), ENT_QUOTES, CONTREXX_CHARSET);
+            $customer_browser = htmlspecialchars(getenv('HTTP_USER_AGENT'), ENT_QUOTES, CONTREXX_CHARSET);
+            if (!$this->objCustomer) {
+                // new customer
+                $this->objCustomer = new Customer(
+                    $_SESSION['shop']['prefix'],
+                    $_SESSION['shop']['firstname'],
+                    $_SESSION['shop']['lastname'],
+                    $_SESSION['shop']['company'],
+                    $_SESSION['shop']['address'],
+                    $_SESSION['shop']['city'],
+                    $_SESSION['shop']['zip'],
+                    $_SESSION['shop']['countryId'],
+                    $_SESSION['shop']['phone'],
+                    $_SESSION['shop']['fax']
+                );
+                $this->objCustomer->setUserName($_SESSION['shop']['email']);
+                $this->objCustomer->setEmail($_SESSION['shop']['email']);
+                $this->objCustomer->setPassword($_SESSION['shop']['password']);
+                $this->objCustomer->setActiveStatus(1);
 
 //todo: this might belong somewhere else
-                    $_SESSION['shop']['username'] = trim($_SESSION['shop']['email'], " \t");
-                } else {
-                    // update the Customer object from the session array
-                    // (she may have edited it)
-                    $this->objCustomer->setPrefix($_SESSION['shop']['prefix']);
-                    $this->objCustomer->setFirstName($_SESSION['shop']['firstname']);
-                    $this->objCustomer->setLastName($_SESSION['shop']['lastname']);
-                    $this->objCustomer->setCompany($_SESSION['shop']['company']);
-                    $this->objCustomer->setAddress($_SESSION['shop']['address']);
-                    $this->objCustomer->setCity($_SESSION['shop']['city']);
-                    $this->objCustomer->setZip($_SESSION['shop']['zip']);
-                    $this->objCustomer->setCountryId($_SESSION['shop']['countryId']);
-                    $this->objCustomer->setPhone($_SESSION['shop']['phone']);
-                    $this->objCustomer->setFax($_SESSION['shop']['fax']);
-                }
+                $_SESSION['shop']['username'] = trim($_SESSION['shop']['email'], " \t");
+            } else {
+                // update the Customer object from the session array
+                // (she may have edited it)
+                $this->objCustomer->setPrefix($_SESSION['shop']['prefix']);
+                $this->objCustomer->setFirstName($_SESSION['shop']['firstname']);
+                $this->objCustomer->setLastName($_SESSION['shop']['lastname']);
+                $this->objCustomer->setCompany($_SESSION['shop']['company']);
+                $this->objCustomer->setAddress($_SESSION['shop']['address']);
+                $this->objCustomer->setCity($_SESSION['shop']['city']);
+                $this->objCustomer->setZip($_SESSION['shop']['zip']);
+                $this->objCustomer->setCountryId($_SESSION['shop']['countryId']);
+                $this->objCustomer->setPhone($_SESSION['shop']['phone']);
+                $this->objCustomer->setFax($_SESSION['shop']['fax']);
+            }
 // todo: this information definitely belongs to the order object!
-                $this->objCustomer->setCcNumber(isset($_SESSION['shop']['ccnumber']) ? $_SESSION['shop']['ccnumber'] : '');
-                $this->objCustomer->setCcDate  (isset($_SESSION['shop']['ccdate'])   ? $_SESSION['shop']['ccdate']   : '');
-                $this->objCustomer->setCcName  (isset($_SESSION['shop']['ccname'])   ? $_SESSION['shop']['ccname']   : '');
-                $this->objCustomer->setCcCode  (isset($_SESSION['shop']['cvcCode'])  ? $_SESSION['shop']['cvcCode']  : '');
-                // insert or update the customer
-                $this->objCustomer->store();
+            $this->objCustomer->setCcNumber(isset($_SESSION['shop']['ccnumber']) ? $_SESSION['shop']['ccnumber'] : '');
+            $this->objCustomer->setCcDate  (isset($_SESSION['shop']['ccdate'])   ? $_SESSION['shop']['ccdate']   : '');
+            $this->objCustomer->setCcName  (isset($_SESSION['shop']['ccname'])   ? $_SESSION['shop']['ccname']   : '');
+            $this->objCustomer->setCcCode  (isset($_SESSION['shop']['cvcCode'])  ? $_SESSION['shop']['cvcCode']  : '');
+            // insert or update the customer
+            $this->objCustomer->store();
 
 // todo: is this really needed?
-                $_SESSION['shop']['customerid'] = $this->objCustomer->getId();
+            $_SESSION['shop']['customerid'] = $this->objCustomer->getId();
 
-                // Add to order table
+            // Add to order table
+            $query = "
+                INSERT INTO ".DBPREFIX."module_shop_orders (
+                    customerid, selected_currency_id, currency_order_sum,
+                    order_date, order_status, ship_company, ship_prefix,
+                    ship_firstname, ship_lastname, ship_address, ship_city,
+                    ship_zip, ship_country_id, ship_phone, currency_ship_price,
+                    shipping_id, payment_id, currency_payment_price,
+                    customer_ip, customer_host, customer_lang,
+                    customer_browser, customer_note
+                ) VALUES (
+                ".$this->objCustomer->getId().",
+                '{$_SESSION['shop']['currencyId']}',
+                '{$_SESSION['shop']['grand_total_price']}',
+                NOW(),
+                '0',
+                '".trim($_SESSION['shop']['company2']," \t")."',
+                '".trim($_SESSION['shop']['prefix2']," \t")."',
+                '".trim($_SESSION['shop']['firstname2']," \t")."',
+                '".trim($_SESSION['shop']['lastname2']," \t")."',
+                '".trim($_SESSION['shop']['address2']," \t")."',
+                '".trim($_SESSION['shop']['city2']," \t")."',
+                '".trim($_SESSION['shop']['zip2']," \t")."',
+                '".intval($_SESSION['shop']['countryId2'])."',
+                '".trim($_SESSION['shop']['phone2']," \t")."',
+                '{$_SESSION['shop']['shipment_price']}', ".
+                (   isset($_SESSION['shop']['shipperId'])
+                 && $_SESSION['shop']['shipperId']
+                    ? $_SESSION['shop']['shipperId']
+                    : 0
+                ).",
+                {$_SESSION['shop']['paymentId']},
+                '{$_SESSION['shop']['payment_price']}',
+                '$customer_ip',
+                '$customer_host',
+                '$customer_lang',
+                '$customer_browser',
+                '{$_SESSION['shop']['customer_note']}')
+            ";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) {
+                // $orderId is unset!
+                $this->addMessage($_ARRAYLANG['TXT_ERROR_STORING_CUSTOMER_DATA']);
+                return false;
+            }
+            $orderid = $objDatabase->Insert_ID();
+            $_SESSION['shop']['orderid'] = $orderid;
+            // The products will be tested one by one below.
+            // If any single one of them requires delivery, this
+            // flag will be set to true.
+            // This is used to determine the order status at the
+            // end of the shopping process.
+            $_SESSION['shop']['isDelivery'] = false;
+
+            foreach ($_SESSION['shop']['cart']['products'] as $arrProduct) {
                 $query = "
-                    INSERT INTO ".DBPREFIX."module_shop_orders (
-                        customerid, selected_currency_id, currency_order_sum,
-                        order_date, order_status, ship_company, ship_prefix,
-                        ship_firstname, ship_lastname, ship_address, ship_city,
-                        ship_zip, ship_country_id, ship_phone, currency_ship_price,
-                        shipping_id, payment_id, currency_payment_price,
-                        customer_ip, customer_host, customer_lang,
-                        customer_browser, customer_note
-                    ) VALUES (
-                    ".$this->objCustomer->getId().",
-                    '{$_SESSION['shop']['currencyId']}',
-                    '{$_SESSION['shop']['grand_total_price']}',
-                    NOW(),
-                    '0',
-                    '".trim($_SESSION['shop']['company2']," \t")."',
-                    '".trim($_SESSION['shop']['prefix2']," \t")."',
-                    '".trim($_SESSION['shop']['firstname2']," \t")."',
-                    '".trim($_SESSION['shop']['lastname2']," \t")."',
-                    '".trim($_SESSION['shop']['address2']," \t")."',
-                    '".trim($_SESSION['shop']['city2']," \t")."',
-                    '".trim($_SESSION['shop']['zip2']," \t")."',
-                    '".intval($_SESSION['shop']['countryId2'])."',
-                    '".trim($_SESSION['shop']['phone2']," \t")."',
-                    '{$_SESSION['shop']['shipment_price']}', ".
-                    (   isset($_SESSION['shop']['shipperId'])
-                     && $_SESSION['shop']['shipperId']
-                        ? $_SESSION['shop']['shipperId']
+                    SELECT title, normalprice, resellerprice,
+                           discountprice, is_special_offer,
+                           vat_id, weight, handler
+                      FROM ".DBPREFIX."module_shop_products
+                     WHERE status=1 AND id=".$arrProduct['id'];
+                $objResult = $objDatabase->Execute($query);
+                if (!$objResult) {
+                    unset($_SESSION['shop']['orderid']);
+                    $this->addMessage($_ARRAYLANG['TXT_ERROR_LOOKING_UP_ORDER']);
+                    return false;
+                }
+                $productId       = $arrProduct['id'];
+                $productName     = addslashes($objResult->fields['title']);
+                $productPrice    =
+                    $this->_getProductPrice(
+                        $objResult->fields['normalprice'],
+                        $objResult->fields['resellerprice'],
+                        $objResult->fields['discountprice'],
+                        $objResult->fields['is_special_offer']
+                    ) +
+                    (isset($arrProduct['optionPrice'])
+                        ? $arrProduct['optionPrice']
                         : 0
-                    ).",
-                    {$_SESSION['shop']['paymentId']},
-                    '{$_SESSION['shop']['payment_price']}',
-                    '$customer_ip',
-                    '$customer_host',
-                    '$customer_lang',
-                    '$customer_browser',
-                    '{$_SESSION['shop']['customer_note']}')
+                    );
+                $productQuantity = $arrProduct['quantity'];
+                $productVatId    = $objResult->fields['vat_id'];
+                $productVatRate  = ($productVatId ? $this->objVat->getRate($productVatId) : '0.00');
+echo("vat id $productVatId, rate $productVatRate<br />");
+                $productWeight   = $objResult->fields['weight']; // grams
+                if ($productWeight == '') { $productWeight = 0; }
+                // Test the distribution method for delivery
+                $productDistribution = $objResult->fields['handler'];
+                if ($productDistribution == 'delivery') {
+                    $_SESSION['shop']['isDelivery'] = true;
+                }
+                // Add to order items table
+                $query = "
+                    INSERT INTO ".DBPREFIX."module_shop_order_items (
+                        orderid, productid, product_name,
+                        price, quantity, vat_percent, weight
+                    ) VALUES (
+                        $orderid, $productId, '$productName',
+                        $productPrice, $productQuantity,
+                        $productVatRate, $productWeight
+                    )
                 ";
                 $objResult = $objDatabase->Execute($query);
-                if ($objResult) {
-                    $orderid = $objDatabase->Insert_ID();
-                    $_SESSION['shop']['orderid'] = $orderid;
-                    // The products will be tested one by one below.
-                    // If any single one of them requires delivery, this
-                    // flag will be set to true.
-                    // This is used to determine the order status at the
-                    // end of the shopping process.
-                    $_SESSION['shop']['isDelivery'] = false;
-
-                    foreach ($_SESSION['shop']['cart']['products'] as $arrProduct) {
-                        $query = "
-                            SELECT title, normalprice, resellerprice,
-                                   discountprice, is_special_offer,
-                                   vat_id, weight, handler
-                              FROM ".DBPREFIX."module_shop_products
-                             WHERE status=1 AND id=".$arrProduct['id'];
+                if (!$objResult) {
+                    unset($_SESSION['shop']['orderid']);
+                    $this->addMessage($_ARRAYLANG['TXT_ERROR_INSERTING_ORDER_ITEM']);
+                    return false;
+                }
+                $orderItemsId = $objDatabase->Insert_ID();
+                foreach ($arrProduct['options'] as $optionId => $arrValueIds) {
+                    foreach ($arrValueIds as $valueId) {
+                        // add product attributes to order items attribute table
+                        $query = "INSERT INTO ".DBPREFIX."module_shop_order_items_attributes ".
+                            "SET order_items_id=$orderItemsId, ".
+                                "order_id=$orderid, ".
+                                "product_id=".$arrProduct['id'].", ".
+                                "product_option_name='".$this->arrProductAttributes[$arrProduct['id']][$optionId]['name']."', ".
+                                "product_option_value='".$this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['value']."', ".
+                                "product_option_values_price='".$this->objCurrency->getCurrencyPrice($this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['price'])."', ".
+                                "price_prefix='".$this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['price_prefix']."'";
                         $objResult = $objDatabase->Execute($query);
-                        if ($objResult) {
-                            $productId       = $arrProduct['id'];
-                            $productName     = addslashes($objResult->fields['title']);
-                            $productPrice    =
-                                $this->_getProductPrice(
-                                    $objResult->fields['normalprice'],
-                                    $objResult->fields['resellerprice'],
-                                    $objResult->fields['discountprice'],
-                                    $objResult->fields['is_special_offer']
-                                ) +
-                                (isset($arrProduct['optionPrice'])
-                                    ? $arrProduct['optionPrice']
-                                    : 0
-                                );
-                            $productQuantity = $arrProduct['quantity'];
-                            $productVatId    = $objResult->fields['vat_id'];
-                            $productVatRate  = ($productVatId ? $this->objVat->getRate($productVatId) : '0.00');
-                            $productWeight   = $objResult->fields['weight']; // grams
-                            if ($productWeight == '') { $productWeight = 0; }
-                            // Test the distribution method for delivery
-                            $productDistribution = $objResult->fields['handler'];
-                            if ($productDistribution == 'delivery') {
-                                $_SESSION['shop']['isDelivery'] = true;
-                            }
-                            // Add to order items table
-                            $query = "
-                                INSERT INTO ".DBPREFIX."module_shop_order_items (
-                                    orderid, productid, product_name,
-                                    price, quantity, vat_percent, weight
-                                ) VALUES (
-                                    $orderid, $productId, '$productName',
-                                    $productPrice, $productQuantity,
-                                    $productVatRate, $productWeight
-                                )
-                            ";
-                            $objResult = $objDatabase->Execute($query);
-                            if ($objResult) {
-                                $orderItemsId = $objDatabase->Insert_ID();
-                                foreach ($arrProduct['options'] as $optionId => $arrValueIds) {
-                                    foreach ($arrValueIds as $valueId) {
-                                        // add product attributes to order items attribute table
-                                        $query = "INSERT INTO ".DBPREFIX."module_shop_order_items_attributes ".
-                                            "SET order_items_id=$orderItemsId, ".
-                                                "order_id=$orderid, ".
-                                                "product_id=".$arrProduct['id'].", ".
-                                                "product_option_name='".$this->arrProductAttributes[$arrProduct['id']][$optionId]['name']."', ".
-                                                "product_option_value='".$this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['value']."', ".
-                                                "product_option_values_price='".$this->objCurrency->getCurrencyPrice($this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['price'])."', ".
-                                                "price_prefix='".$this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['price_prefix']."'";
-                                        $objResult = $objDatabase->Execute($query);
-                                        if (!$objResult) {
-                                            unset($_SESSION['shop']['orderid']);
-                                            $this->addMessage($_ARRAYLANG['TXT_ERROR_INSERTING_ORDER_ITEM_ATTRIBUTE']);
-                                        }
-                                    }
-                                }
-                            } else {
-                                unset($_SESSION['shop']['orderid']);
-                                $this->addMessage($_ARRAYLANG['TXT_ERROR_INSERTING_ORDER_ITEM']);
-                            }
-                        } else {
+                        if (!$objResult) {
                             unset($_SESSION['shop']['orderid']);
-                            $this->addMessage($_ARRAYLANG['TXT_ERROR_LOOKING_UP_ORDER']);
+                            $this->addMessage($_ARRAYLANG['TXT_ERROR_INSERTING_ORDER_ITEM_ATTRIBUTE']);
+                            return false;
                         }
-                    } // foreach product in cart
-
-                    $processorId = $this->objPayment->arrPaymentObject[$_SESSION['shop']['paymentId']]['processor_id'];
-                    $processorName = $this->objProcessing->getPaymentProcessorName($processorId);
-                     // other payment methods
-                    $objLanguage = new FWLanguage();
-                    $this->objProcessing->initProcessor(
-                        $processorId,
-                        $this->objCurrency->getActiveCurrencyCode(),
-                        $objLanguage->getLanguageParameter($this->langId, 'lang')
-                    );
-
-                    // if the processor is Internal_LSV, and there is account information,
-                    // store the information
-                    if ($processorName == 'Internal_LSV') {
-                        if (isset($_SESSION['shop']['account_holder']) && $_SESSION['shop']['account_holder']
-                         && isset($_SESSION['shop']['account_bank'])   && $_SESSION['shop']['account_bank']
-                         && isset($_SESSION['shop']['account_blz'])    && $_SESSION['shop']['account_blz']   ) {
-                            $query = "INSERT INTO contrexx_module_shop_lsv ".
-                                "(order_id, holder, bank, blz) VALUES (".
-                                $orderid.", '".
-                                contrexx_addslashes($_SESSION['shop']['account_holder'])."', '".
-                                contrexx_addslashes($_SESSION['shop']['account_bank'])."', '".
-                                contrexx_addslashes($_SESSION['shop']['account_blz'])."')";
-                            $objResult = $objDatabase->Execute($query);
-                            if (!$objResult) {
-                                unset($_SESSION['shop']['orderid']);
-                                $this->addMessage($_ARRAYLANG['TXT_ERROR_INSERTING_ACCOUNT_INFORMATION']);
-                            }
-                         } else {
-                             // failure!
-                             unset($_SESSION['shop']['orderid']);
-                             $this->addMessage($_ARRAYLANG['TXT_ERROR_ACCOUNT_INFORMATION_NOT_AVAILABLE']);
-                         }
                     }
+                }
 
-                    $_SESSION['shop']['orderid_checkin'] = $orderid;
-                    $strProcessorType =
-                        $this->objProcessing->getCurrentPaymentProcessorType();
+                // Update Product stock
+                $query = "
+                    SELECT stock
+                      FROM ".DBPREFIX."module_shop_products
+                     WHERE id=$productId
+                ";
+                $objResult = $objDatabase->Execute($query);
+                if (!$objResult || $objResult->EOF) {
+                    // The order does not fail because of that!
+                    $this->addMessage($_ARRAYLANG['TXT_ERROR_QUERYING_STOCK']); // Fehler: Bestand kann nicht abgefragt werden
+                }
+                $stock = $objResult->fields['stock'];
+                $stock -= $productQuantity;
+                $query = "
+                    UPDATE ".DBPREFIX."module_shop_products
+                       SET stock=$stock
+                     WHERE id=$productId
+                ";
+                $objResult = $objDatabase->Execute($query);
+                if (!$objResult) {
+                    // The order does not fail because of that!
+                    $this->addMessage($_ARRAYLANG['TXT_ERROR_UPDATING_STOCK']); // Fehler: Bestand kann nicht aktualisiert werden"
+                }
+            } // foreach product in cart
 
-                    // Test whether the selected payment method can be
-                    // considered an instant or deferred one.
-                    // This is used to set the order status at the end
-                    // of the shopping process.
-                    $_SESSION['shop']['isInstantPayment'] = false;
-                    if ($strProcessorType == 'external') {
-                        // For the sake of simplicity, all external payment
-                        // methods are considered to be 'instant'.
-                        // All currently implemented internal methods require
-                        // further action from the merchant, and thus are
-                        // considered to be 'deferred'.
-                        $_SESSION['shop']['isInstantPayment'] = true;
+            $processorId = $this->objPayment->arrPaymentObject[$_SESSION['shop']['paymentId']]['processor_id'];
+            $processorName = $this->objProcessing->getPaymentProcessorName($processorId);
+             // other payment methods
+            $objLanguage = new FWLanguage();
+            $this->objProcessing->initProcessor(
+                $processorId,
+                $this->objCurrency->getActiveCurrencyCode(),
+                $objLanguage->getLanguageParameter($this->langId, 'lang')
+            );
+
+            // if the processor is Internal_LSV, and there is account information,
+            // store the information
+            if ($processorName == 'Internal_LSV') {
+                if (isset($_SESSION['shop']['account_holder']) && $_SESSION['shop']['account_holder']
+                 && isset($_SESSION['shop']['account_bank'])   && $_SESSION['shop']['account_bank']
+                 && isset($_SESSION['shop']['account_blz'])    && $_SESSION['shop']['account_blz']   ) {
+                    $query = "INSERT INTO contrexx_module_shop_lsv ".
+                        "(order_id, holder, bank, blz) VALUES (".
+                        $orderid.", '".
+                        contrexx_addslashes($_SESSION['shop']['account_holder'])."', '".
+                        contrexx_addslashes($_SESSION['shop']['account_bank'])."', '".
+                        contrexx_addslashes($_SESSION['shop']['account_blz'])."')";
+                    $objResult = $objDatabase->Execute($query);
+                    if (!$objResult) {
+                        unset($_SESSION['shop']['orderid']);
+                        $this->addMessage($_ARRAYLANG['TXT_ERROR_INSERTING_ACCOUNT_INFORMATION']);
                     }
+                 } else {
+                     // failure!
+                     unset($_SESSION['shop']['orderid']);
+                     $this->addMessage($_ARRAYLANG['TXT_ERROR_ACCOUNT_INFORMATION_NOT_AVAILABLE']);
+                 }
+            }
+
+            $_SESSION['shop']['orderid_checkin'] = $orderid;
+            $strProcessorType =
+                $this->objProcessing->getCurrentPaymentProcessorType();
+
+            // Test whether the selected payment method can be
+            // considered an instant or deferred one.
+            // This is used to set the order status at the end
+            // of the shopping process.
+            $_SESSION['shop']['isInstantPayment'] = false;
+            if ($strProcessorType == 'external') {
+                // For the sake of simplicity, all external payment
+                // methods are considered to be 'instant'.
+                // All currently implemented internal methods require
+                // further action from the merchant, and thus are
+                // considered to be 'deferred'.
+                $_SESSION['shop']['isInstantPayment'] = true;
+            }
 
 /* -> *MUST* be updated on success() page, like all other payment methods
-                    if ($strProcessorType == 'internal') {
-                        $this->updateOrderStatus($orderid);
-                    }
+            if ($strProcessorType == 'internal') {
+                $this->updateOrderStatus($orderid);
+            }
 */
 
-                    // Show payment processing page.
-                    // Note that some internal payments are redirected away
-                    // from this page in checkOut():
-                    // 'Internal', 'Internal_LSV'
-                    $this->objTemplate->setVariable(
-                        'SHOP_PAYMENT_PROCESSING',
-                        $this->objProcessing->checkOut()
-                    );
+            // Show payment processing page.
+            // Note that some internal payments are redirected away
+            // from this page in checkOut():
+            // 'Internal', 'Internal_LSV'
+            $this->objTemplate->setVariable(
+                'SHOP_PAYMENT_PROCESSING',
+                $this->objProcessing->checkOut()
+            );
 
-                    // for all payment methods showing a form here,
-                    // clear the order ID.
-                    // The order may be resubmitted and the payment retried.
-                    unset($_SESSION['shop']['orderid']);
-                } else { // if ($objResult) (order)
-                    // $orderId is unset!
-                    $this->addMessage($_ARRAYLANG['TXT_ERROR_STORING_CUSTOMER_DATA']);
-                }
-                // Custom.
-                // Enable if Discount class is customized and in use.
-                //$this->showCustomerDiscount($_SESSION['shop']['cart']['total_price']);
-            }
+            // for all payment methods showing a form here,
+            // clear the order ID.
+            // The order may be resubmitted and the payment retried.
+            unset($_SESSION['shop']['orderid']);
+            // Custom.
+            // Enable if Discount class is customized and in use.
+            //$this->showCustomerDiscount($_SESSION['shop']['cart']['total_price']);
         } else {
             // Show confirmation page.
             $this->objTemplate->hideBlock("shopProcess");
@@ -3702,18 +3723,18 @@ right after the customer logs in!
                         $priceOptions = 0;
                     }
 
-                    if (isset($arrProduct['options'])) {
+                    $productOptions = '';
+                    if (is_array($arrProduct['options'])
+                     && count($arrProduct['options']) > 0) {
                         $productOptions = '<br /><i>';
                         foreach ($arrProduct['options'] as $optionId => $arrValueIds) {
                             $productOptions .= '-'.$this->arrProductAttributes[$arrProduct['id']][$optionId]['name'].': ';
                             foreach ($arrValueIds as $valueId) {
                                 $productOptions .= $this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['value'].'; ';
                             }
-                            $productOptions = substr($productOptions,0,strlen($productOptions)-2).'<br />';
+                            $productOptions = substr($productOptions, 0, strlen($productOptions)-2).'<br />';
                         }
-                        $productOptions = substr($productOptions,0,strlen($productOptions)-6).'</i>';
-                    } else {
-                        $productOptions = '';
+                        $productOptions = substr($productOptions, 0, strlen($productOptions)-9).'</i>';
                     }
 
                     $weight     = $objResult->fields['weight']; // grams
@@ -4154,7 +4175,15 @@ $_SESSION['shop']['grand_total_price'].' '.$this->aCurrencyUnitName."\n".
     /**
      * Get the Manufacturer dropdown menu HTML code string.
      *
-     * Used in the Product search form, see {@link products()}
+     * Used in the Product search form, see {@link products()}.
+     *
+     * Create the table like this:
+     * CREATE TABLE `contrexx_module_shop_manufacturer` (
+     *   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+     *   `name` VARCHAR(255) NOT NULL,
+     *   `url` VARCHAR(255) NOT NULL
+     * ) ENGINE = MYISAM
+     *
      * @static
      * @param   integer $selectedId     The optional preselected Manufacturer ID
      * @return  string                  The Manufacturer dropdown menu HTML code

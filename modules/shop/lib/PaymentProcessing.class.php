@@ -29,7 +29,7 @@ require_once ASCMS_MODULE_PATH.'/shop/payments/dummy/Dummy.class.php';
  *
  * These are the requirements of the current specification
  * for any external payment service provider class:
- * - Any payment method must be implemented in its own class, with its
+ * - Any payment method *MUST* be implemented in its own class, with its
  *   constructor and/or methods being called from PaymentProcessing.class.php
  *   using only the two methods checkIn() and checkOut().
  * - Any data needed by the payment service class *MUST* be provided
@@ -60,6 +60,7 @@ require_once ASCMS_MODULE_PATH.'/shop/payments/dummy/Dummy.class.php';
  *      page as a reply to such a request.
  * @package     contrexx
  * @subpackage  module_shop
+ * @author      Reto Kohli <reto.kohli@comvation.com>
  * @copyright   CONTREXX CMS - COMVATION AG
  */
 class PaymentProcessing

@@ -1,19 +1,20 @@
 <!-- START shop_products.html -->
 <script language="javascript" type="text/javascript">
 <!-- //
-function swapBlockStatus( div,status )
+function swapBlockStatus(div, status)
 {
-	if(status == 1){
-	    document.getElementById( div ).style.display ='block';
-	}else{
-	    document.getElementById( div ).style.display ='none';
-	}
+  if (status == 1) {
+      document.getElementById( div ).style.display ='block';
+  } else {
+      document.getElementById( div ).style.display ='none';
+  }
 }
 
-function swapBlock( div )
+function swapBlock(div)
 {
-	displayType = ( document.getElementById( div ).style.display == 'none' ) ? 'block' : 'none';
-	document.getElementById( div ).style.display = displayType;
+  displayType =
+    (document.getElementById(div).style.display == 'none' ? 'block' : 'none');
+  document.getElementById(div).style.display = displayType;
 }
 // -->
 </script>
@@ -25,6 +26,7 @@ function swapBlock( div )
 <!-- <li><a href="?cmd=shop&amp;act=products&amp;tpl=download" title="{TXT_DOWNLOAD_OPTIONS}">{TXT_DOWNLOAD_OPTIONS}</a></li> -->
 </ul>
 </div>
-<br />{SHOP_PRODUCTS_FILE}
+<br />
+{SHOP_PRODUCTS_FILE}
 <br />
 <!-- END shop_products.html -->
