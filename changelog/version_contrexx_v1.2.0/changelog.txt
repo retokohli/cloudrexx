@@ -145,6 +145,15 @@ Modul: Verzeichnis
 	[DIRECTORY_FEED_ATTACHMENT]]
 	[[DIRECTORY_FEED_LINK]]
 	[[DIRECTORY_FEED_RSS_LINK]]
+	
+Modul: Blog
+- Es ist eine erste Version des Blog-Moduls verfügbar.
+- Kategorien können erstellt werden
+- Meldungen können zu Kategorien zugeteilt werden
+- Meldungen können mit Schlüsselwörtern (Tags) versehen werden
+- Bookmark-Netzwerke können verwaltet werden
+- Besucher können Meldungen kommentieren und bewerten
+- RSS-Feeds für Meldungen, Kategorien und Kommentare werden erstellt.
 
 
 ****************************************
