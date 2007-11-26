@@ -369,14 +369,19 @@ class PaymentProcessing
             $objSaferpay->isTest = true;
         }
 
+        $serverBase =
+            $_SERVER['SERVER_NAME'].
+            (ASCMS_PATH_OFFSET != '' ? '' : '/').
+            ASCMS_PATH_OFFSET.
+            (ASCMS_PATH_OFFSET != '' ? '/' : '');
         $arrShopOrder = array(
             'AMOUNT'      => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
             'CURRENCY'    => $this->_currencyCode,
             'ORDERID'     => $_SESSION['shop']['orderid'],
             'ACCOUNTID'   => $this->arrConfig['saferpay_id']['value'],
-            'SUCCESSLINK' => urlencode('http://'.$_SERVER['SERVER_NAME'].'/index.php?section=shop&cmd=success&handler=saferpay'),
-            'FAILLINK'    => urlencode('http://'.$_SERVER['SERVER_NAME'].'/index.php?section=shop&cmd=cart'),
-            'BACKLINK'    => urlencode('http://'.$_SERVER['SERVER_NAME'].'/index.php?section=shop&cmd=cart'),
+            'SUCCESSLINK' => urlencode('http://'.$serverBase.'index.php?section=shop&cmd=success&result=1&handler=saferpay'),
+            'FAILLINK'    => urlencode('http://'.$serverBase.'index.php?section=shop&cmd=success&result=0&handler=saferpay'),
+            'BACKLINK'    => urlencode('http://'.$serverBase.'index.php?section=shop&cmd=success&result=2&handler=saferpay'),
             'DESCRIPTION' => urlencode('"'.$_ARRAYLANG['TXT_ORDER_NR'].' '.$_SESSION['shop']['orderid'].'"'),
             'LANGID'      => $this->_languageCode,
             'PROVIDERSET' => $arrCards
@@ -388,52 +393,45 @@ class PaymentProcessing
         // i.e. on connection problems
         if (   !$payInitUrl
             || strtoupper(substr($payInitUrl, 0, 5)) == 'ERROR') {
-            $return .=
+            return
                 "<font color='red'><b>".
                 "The Saferpay Payment processor couldn't be initialized!".
                 "<br />$payInitUrl</b></font>";
-        } else {
-            $return .= "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
-            switch ($this->arrConfig['saferpay_window_option']['value']){
-                case 0: // iframe
-                    $return .=
-                        $_ARRAYLANG['TXT_ORDER_PREPARED']."<br/><br/>\n".
-                        "<iframe src='$payInitUrl' width='580' height='400' scrolling='no' marginheight='0' marginwidth='0' frameborder='0' name='saferpay'></iframe>\n";
-                    break;
-                case 1: // popup
-                    $return .=
-                        $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
-                        "<script language='javascript' type='text/javascript'>
-                         function openSaferpay()
-                         {
-                             strUrl = '$payInitUrl';
-                             if (strUrl.indexOf(\"WINDOWMODE=Standalone\") == -1){
-                                 strUrl += \"&WINDOWMODE=Standalone\";
-                             }
-                             oWin = window.open(
-                                                 strUrl,
-                                                 'SaferpayTerminal',
-                                                 'scrollbars=1,resizable=0,toolbar=0,location=0,directories=0,status=1,menubar=0,width=580,height=400'
-                             );
-                             if (oWin==null || typeof(oWin)==\"undefined\") {
-                                 alert(\"The payment couldn't be initialized, because it seems that you are using a popup blocker!\");
-                             }
-                         }
-                         </script>\n".
-                        "<input type='button' name='order_now' value='".
-                        $_ARRAYLANG['TXT_ORDER_NOW'].
-                        "' onclick='openSaferpay()' />\n";
-                    break;
-                case 2: // new window
-                    $return .=
-                        $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
-                        "<form method='post' action='$payInitUrl'>\n<input type='Submit' value='".
-                        $_ARRAYLANG['TXT_ORDER_NOW'].
-                        "'>\n</form>\n";
-                    break;
-            }
         }
-        return $return;
+        $return .= "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
+        switch ($this->arrConfig['saferpay_window_option']['value']){
+            case 0: // iframe
+                return
+                    $_ARRAYLANG['TXT_ORDER_PREPARED']."<br/><br/>\n".
+                    "<iframe src='$payInitUrl' width='580' height='400' scrolling='no' marginheight='0' marginwidth='0' frameborder='0' name='saferpay'></iframe>\n";
+            case 1: // popup
+                return
+                    $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
+                    "<script language='javascript' type='text/javascript'>
+                     function openSaferpay()
+                     {
+                         strUrl = '$payInitUrl';
+                         if (strUrl.indexOf(\"WINDOWMODE=Standalone\") == -1){
+                             strUrl += \"&WINDOWMODE=Standalone\";
+                         }
+                         oWin = window.open(strUrl, 'SaferpayTerminal',
+                                       'scrollbars=1,resizable=0,toolbar=0,location=0,directories=0,status=1,menubar=0,width=580,height=400'
+                         );
+                         if (oWin==null || typeof(oWin)==\"undefined\") {
+                             alert(\"The payment couldn't be initialized, because it seems that you are using a popup blocker!\");
+                         }
+                     }
+                     </script>\n".
+                    "<input type='button' name='order_now' value='".
+                    $_ARRAYLANG['TXT_ORDER_NOW'].
+                    "' onclick='openSaferpay()' />\n";
+            default:  //case 2: // new window
+        }
+        return
+            $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
+            "<form method='post' action='$payInitUrl'>\n<input type='Submit' value='".
+            $_ARRAYLANG['TXT_ORDER_NOW'].
+            "'>\n</form>\n";
     }
 
 
