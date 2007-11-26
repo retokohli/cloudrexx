@@ -929,7 +929,7 @@ class Shop extends ShopLibrary
      */
     function getCategoriesOld($parentId)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         if ($parentId == '') {
             $parentId = 0;
@@ -1092,7 +1092,7 @@ class Shop extends ShopLibrary
         $pagingTerm  = '';
         if ($catId > 0 && $term == '') {
             $flagSpecialoffer = false;
-            $pagingCat = "&amp;catId=$catId";
+            $pagingCatId = "&amp;catId=$catId";
         }
         if ($manufacturerId > 0) {
             $flagSpecialoffer = false;
@@ -1123,7 +1123,7 @@ class Shop extends ShopLibrary
             $paging = getPaging(
                 $count,
                 $pos,
-                '&amp;section=shop'.$pagingCatIdQuery.$pagingTermQuery,
+                '&amp;section=shop'.$pagingCatId.$pagingManId.$pagingTerm,
                 '',
                 true
             );
@@ -1261,7 +1261,11 @@ class Shop extends ShopLibrary
 
             $detailLink = false;
             if ($productId == 0 && !empty($longDescription)) {
-                $detailLink = '<a href="index.php?section=shop&amp;cmd=details&amp;productId='.$objResult->fields['id'].'" title="'.$_ARRAYLANG['TXT_MORE_INFORMATIONS'].'">'.$_ARRAYLANG['TXT_MORE_INFORMATIONS'].'</a>';
+                $detailLink =
+                    '<a href="index.php?section=shop&amp;cmd=details&amp;productId='.
+                    $objProduct->getId().
+                    '" title="'.$_ARRAYLANG['TXT_MORE_INFORMATIONS'].'">'.
+                    $_ARRAYLANG['TXT_MORE_INFORMATIONS'].'</a>';
             }
 
             $productWeight = $objProduct->getWeight();
@@ -1275,12 +1279,12 @@ class Shop extends ShopLibrary
              && isset($_GET['referer']) && $_GET['referer'] == 'cart') {
                 $productSubmitName = "updateProduct[$cartProdId]";
                 $productSubmitFunction = $this->productOptions(
-                    $objResult->fields['id'], $formId, $cartProdId
+                    $objProduct->getId(), $formId, $cartProdId
                 );
             } else {
                 $productSubmitName = 'addProduct';
                 $productSubmitFunction = $this->productOptions(
-                    $objResult->fields['id'], $formId
+                    $objProduct->getId(), $formId
                 );
             }
             $shopProductFormName = "shopProductForm$formId";
@@ -1367,7 +1371,7 @@ class Shop extends ShopLibrary
                             : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
                          ),
                     'SHOP_PRODUCT_TAX'        =>
-                        $this->objVat->getShort($objResult->fields['vat_id'])
+                        $this->objVat->getShort($objProduct->getVatId())
                 ));
             }
 
@@ -1945,6 +1949,8 @@ function addProductToCart(objForm)
     updateProductRe = /updateProduct\\[([0-9]+)\\]/;
     updateProduct = '';
 
+    // Default to one product in case the quantity field is not used
+    objProduct.quantity = 1;
     // get productId
     for (i = 0; i < document.forms[objForm].getElementsByTagName('input').length; i++) {
         formElement = document.forms[objForm].getElementsByTagName('input')[i];
@@ -2081,12 +2087,10 @@ function shopGenerateCart()
         }
 
         cart = cartTpl.replace('[[SHOP_JS_CART_PRODUCTS]]', cart);
-        cart = cart.replace('[[SHOP_JS_PRODUCT_COUNT]]', objCart.itemcount);
+        cart = cart.replace('[[SHOP_JS_PRDOCUT_COUNT]]', objCart.itemcount);
         cart = cart.replace('[[SHOP_JS_TOTAL_PRICE]]', objCart.totalprice);
         cart = cart.replace('[[SHOP_JS_TOTAL_PRICE_UNIT]]', objCart.unit);
 
-        document.getElementById('shopJsCart').innerHTML = cart;
-/*
         try {
             if (html2dom.getDOM(cart, 'shopJsCart') !== false) {
                 document.getElementById('shopJsCart').innerHTML = '';
@@ -2097,7 +2101,6 @@ function shopGenerateCart()
         } catch(e) {
             document.getElementById('shopJsCart').innerHTML = '".$_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART']."';
         }
-*/
     } else {
         document.getElementById('shopJsCart').innerHTML = '".$_ARRAYLANG['TXT_EMPTY_SHOPPING_CART']."';
     }
@@ -2106,7 +2109,6 @@ function shopGenerateCart()
 sendReq('', 1);
 
 ")."
-
 // ]]>
 </script>
 ";
@@ -2118,6 +2120,54 @@ sendReq('', 1);
     {
         global $_ARRAYLANG;
         $this->addMessage($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
+    }
+
+
+    /**
+     * Get dropdown menu
+     *
+     * Gets back a dropdown menu like  <option value='catid'>Catname</option>
+     *
+     * @param    integer  $selectedid
+     * @return   string   $result
+     */
+    function getCatMenu($selectedid=0)
+    {
+         $result = $this->doShopCatMenu(0, 0, $selectedid);
+         return $result;
+    }
+
+
+    /**
+     * Do shop categories menu
+     *
+     * @param    integer  $parcat
+     * @param    integer  $level
+     * @param    integer  $selectedid
+     * @return   string   $result
+     */
+    function doShopCatMenu($parcat=0, $level, $selectedid)
+    {
+        $strMenu = '';
+        $list = $this->arrCategoriesTable[$parcat];
+        if (is_array($list)) {
+            foreach ($list as $id => $name) {
+                $output = str_repeat('&nbsp;', $level*3);
+                $name   = htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET);
+                $strMenu .=
+                    '<option value="'.$id.'"'.
+                    ($selectedid == $id ? ' selected="selected"' : '').
+                    ">$output$name</option>\n";
+// fix: the following line produces infinite loops if parent == child
+//                if (isset($this->arrCategoriesTable[$id])) {
+                if ( ($id != $parcat) &&
+                   (isset($this->arrCategoriesTable[$id])) ) {
+                    $strMenu .=
+                        $this->doShopCatMenu($id, $level+1, $selectedid);
+                }
+            }
+        }
+        return $strMenu;
     }
 
 
@@ -3537,7 +3587,7 @@ right after the customer logs in!
                     return false;
                 }
                 $productId       = $arrProduct['id'];
-                $productName     = addslashes($objResult->fields['title']);
+                $productName     = $objResult->fields['title'];
                 $productPrice    =
                     $this->_getProductPrice(
                         $objResult->fields['normalprice'],
@@ -3552,7 +3602,6 @@ right after the customer logs in!
                 $productQuantity = $arrProduct['quantity'];
                 $productVatId    = $objResult->fields['vat_id'];
                 $productVatRate  = ($productVatId ? $this->objVat->getRate($productVatId) : '0.00');
-echo("vat id $productVatId, rate $productVatRate<br />");
                 $productWeight   = $objResult->fields['weight']; // grams
                 if ($productWeight == '') { $productWeight = 0; }
                 // Test the distribution method for delivery
@@ -3584,7 +3633,7 @@ echo("vat id $productVatId, rate $productVatRate<br />");
                         $query = "INSERT INTO ".DBPREFIX."module_shop_order_items_attributes ".
                             "SET order_items_id=$orderItemsId, ".
                                 "order_id=$orderid, ".
-                                "product_id=".$arrProduct['id'].", ".
+                                "product_id=$productId, ".
                                 "product_option_name='".$this->arrProductAttributes[$arrProduct['id']][$optionId]['name']."', ".
                                 "product_option_value='".$this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['value']."', ".
                                 "product_option_values_price='".$this->objCurrency->getCurrencyPrice($this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['price'])."', ".
@@ -3600,20 +3649,8 @@ echo("vat id $productVatId, rate $productVatRate<br />");
 
                 // Update Product stock
                 $query = "
-                    SELECT stock
-                      FROM ".DBPREFIX."module_shop_products
-                     WHERE id=$productId
-                ";
-                $objResult = $objDatabase->Execute($query);
-                if (!$objResult || $objResult->EOF) {
-                    // The order does not fail because of that!
-                    $this->addMessage($_ARRAYLANG['TXT_ERROR_QUERYING_STOCK']); // Fehler: Bestand kann nicht abgefragt werden
-                }
-                $stock = $objResult->fields['stock'];
-                $stock -= $productQuantity;
-                $query = "
                     UPDATE ".DBPREFIX."module_shop_products
-                       SET stock=$stock
+                       SET stock=stock-$productQuantity
                      WHERE id=$productId
                 ";
                 $objResult = $objDatabase->Execute($query);
@@ -3838,6 +3875,7 @@ echo("vat id $productVatId, rate $productVatRate<br />");
             // Enable if Discount class is customized and in use.
             //$this->showCustomerDiscount($_SESSION['shop']['cart']['total_price']);
         } // end if process
+        return true;
     }
 
 

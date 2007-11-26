@@ -5208,7 +5208,7 @@ class shopmanager extends ShopLibrary {
             $shopStockOld         = $_POST['stockOld'][$id];
             $shopStatus           = (isset($_POST['active'][$id]) ? 1 : 0);
             $shopStatusOld        = $_POST['activeOld'][$id];
-            $shopTaxId            = $_POST['taxId'][$id];
+            $shopTaxId            = (isset($_POST['taxId'][$id]) ? $_POST['taxId'][$id] : 0);
             $shopTaxIdOld         = $_POST['taxIdOld'][$id];
             $shopDistribution     = $_POST['distribution'][$id];
             $shopDistributionOld  = $_POST['distributionOld'][$id];
