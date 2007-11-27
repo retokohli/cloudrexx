@@ -546,7 +546,7 @@ class rssDirectory extends directoryLibrary
 		//create query
 		$query	="SELECT    files.id AS id
 					FROM    ".$db." ".DBPREFIX."module_directory_dir AS files
-                            ".$where."
+                            ".$where." AND status='1'
                    GROUP BY files.id
                    ORDER BY files.spezial DESC, ".$order."";
 
