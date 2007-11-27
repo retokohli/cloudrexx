@@ -212,4 +212,5 @@ $_ARRAYLANG['TXT_SHOP_DISCOUNT_TODAY'] = "Tagesrabatt:";
 $_ARRAYLANG['TXT_SHOP_PRICE_TODAY'] = "Tagespreis:";
 $_ARRAYLANG['TXT_ERROR_QUERYING_STOCK'] = "Fehler: Der Bestand kann nicht abgefragt werden";
 $_ARRAYLANG['TXT_ERROR_UPDATING_STOCK'] = "Fehler: Der Bestand kann nicht aktualisiert werden";
+$_ARRAYLANG['TXT_SHOP_CART_PRODUCTS_VALUE'] = "Artikel im Wert von";
 ?>
