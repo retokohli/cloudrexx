@@ -32,6 +32,7 @@ require_once ASCMS_MODULE_PATH."/immo/ImmoLib.class.php";
 
 class Immo extends ImmoLib
 {
+    
 	/**
 	* PEAR Sigma Template object
 	*
@@ -95,11 +96,14 @@ class Immo extends ImmoLib
 		global $objDatabase;
 		$this->frontLang = (isset($_GET['immoLang'])) ? intval($_GET['immoLang']) : 1;
 		$objRS=$objDatabase->Execute("	SELECT count(1) as cnt FROM ".DBPREFIX."module_immo_fieldname WHERE
-										lang_id = 1 AND lower(name) LIKE '%aufzählung%'");
+										lang_id = 1 AND lower(name) LIKE '%aufzÃ¤hlung%'");
 		$this->_listingCount = $objRS->fields['cnt'];
 		$this->_objTpl = &new HTML_Template_Sigma('.');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 		$this->_objTpl->setTemplate($pageContent);
+		
+		mysql_set_charset("utf8"); //this is important for umlauts
+	
 
 		parent::__construct();
 	}
@@ -159,6 +163,9 @@ class Immo extends ImmoLib
 		return $this->_getFieldFromText('Kopfzeile');
 	}
 
+	/**
+	 * Standalone code for showing the images
+	 */
 	function _showImageViewer(){
 		global $_ARRAYLANG;
 		$this->_objTpl->loadTemplateFile("modules/immo/template/frontend_images_viewer.html");
@@ -174,7 +181,7 @@ class Immo extends ImmoLib
 		  	   'IMMO_IMAGE_WIDTH'      => $image['width'],
 		  	   'IMMO_IMAGE_HEIGHT'	   => $image['height'],
 		  	   'IMMO_IMAGE_NAME'	   => $image['name'],
-	   	       'IMMO_IMAGE_CONTENT'	   => $image['content'],
+	   	       'IMMO_IMAGE_CONTENT'	   => str_replace("\r\n", "", $image['content']),
 	   	       'IMMO_CURRENT_INDEX'    => intval($_GET['index']),
 	   	       'IMMO_IMAGE_FIELD_ID'   => $image['field_id'],
 	   	    ));
@@ -187,6 +194,11 @@ class Immo extends ImmoLib
 	}
 
 
+	/**
+	 * Show the form when someone is interested
+	 *
+	 * @return unknown
+	 */
 	function _showInterestForm(){
 		global $objDatabase, $_ARRAYLANG, $_CONFIG;
 		require_once(ASCMS_LIBRARY_PATH.DIRECTORY_SEPARATOR.'phpmailer'.DIRECTORY_SEPARATOR."class.phpmailer.php");
@@ -480,7 +492,7 @@ class Immo extends ImmoLib
 															AND img.field_id = (
 																SELECT field_id
 																FROM '.DBPREFIX.'module_immo_fieldname
-																WHERE name = "übersichtsbild" )
+																WHERE name = "Ã¼bersichtsbild" )
 															)
 				WHERE special_offer = 1
 				AND visibility != "disabled"
@@ -623,12 +635,17 @@ class Immo extends ImmoLib
 	 * @return void
 	 */
 	function _getListing(){
+	    $listing = false;
 		for($i=1; $i<=$this->_listingCount;$i++){
-			$list = $this->_getFieldFromText('Aufzählung'.$i);
+			$list = $this->_getFieldFromText('AufzÃ¤hlung'.$i);
 			if(!empty($list)){
-				$this->_objTpl->setVariable('IMMO_LISTING', $this->_getFieldFromText('Aufzählung'.$i));
-				$this->_objTpl->parse("listing");
+			    $listing = true;
+				$this->_objTpl->setVariable('IMMO_LISTING', $this->_getFieldFromText('AufzÃ¤hlung'.$i));
+				$this->_objTpl->parse("listing_entry");
 			}
+		}
+		if ($listing) {
+		    $this->_objTpl->parse('listing');
 		}
 	}
 
@@ -674,7 +691,8 @@ class Immo extends ImmoLib
    			'IMMO_DETAILS_JAVASCRIPT' 	=> $this->_getDetailsJS(),
 		));
 
-		$img = $this->_getFieldFromText('Übersichtsbild', 'img');
+		$img = $this->_getFieldFromText('Ãœbersichtsbild', 'img');
+	
 		$imgOverviewKey = $this->_currFieldID;
 		$imgdim = $this->_getImageDim($img, 540);
 		$homepageLink = trim($this->_getFieldFromText('Link auf Homepage'));
@@ -788,7 +806,7 @@ class Immo extends ImmoLib
 						$this->_objTpl->setVariable(array(
 							'IMMO_LINK_ICON_SRC'		=>	$this->_getIcon($iconType),
 							'IMMO_FIELD_NAME'			=>	htmlentities($field['names'][$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
-							'IMMO_FIELD_CONTENT'		=>	$field['type']=='protected_link' ? '?section=immo&amp;cmd=getPDF&amp;id='.$immoID.'_'.$fieldKey : $field['content'][$this->frontLang],
+							'IMMO_FIELD_CONTENT'		=>	htmlspecialchars($field['type']=='protected_link' ? '?section=immo&amp;cmd=getPDF&amp;id='.$immoID.'_'.$fieldKey : $field['content'][$this->frontLang]),
 						));
 
 
@@ -909,7 +927,7 @@ class Immo extends ImmoLib
 																AND img.field_id = (
 																	SELECT field_id
 																	FROM '.DBPREFIX.'module_immo_fieldname
-																	WHERE name = "übersichtsbild" )
+																	WHERE name = "Ã¼bersichtsbild" )
 																)
 					WHERE  ( visibility = "listing"';
                     if(!empty($_REQUEST['ref_nr'])){
@@ -987,7 +1005,7 @@ class Immo extends ImmoLib
 																AND f.field_id = (
 																	SELECT field_id
 																	FROM ".DBPREFIX."module_immo_fieldname
-																	WHERE name = 'ausländer-bewilligung'
+																	WHERE name = 'auslï¿½nder-bewilligung'
 																	AND lang_id = 1 )
 																AND f.lang_id = ".$this->frontLang." )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS g ON ( immo.id = g.immo_id
@@ -1001,7 +1019,7 @@ class Immo extends ImmoLib
 																AND img.field_id = (
 																	SELECT field_id
 																	FROM ".DBPREFIX."module_immo_fieldname
-																	WHERE name = 'übersichtsbild' )
+																	WHERE name = 'Ã¼bersichtsbild' )
 																)
 						WHERE TRUE
 						";
@@ -1057,7 +1075,12 @@ class Immo extends ImmoLib
 	    }
 
 	    $objRS = $objDatabase->Execute($query);
-	    if($objRS){
+	    if($objRS !== false){
+	        if($objRS->RecordCount() == 0){
+	    	    $this->_objTpl->touchBlock("no_results");
+				$this->_objTpl->parse("no_results");
+				return false;
+	    	}
 	    	while(!$objRS->EOF){
 	    			$imgdim = '';
 	    			$img = $objRS->fields['imgsrc'];
@@ -1147,7 +1170,7 @@ class Immo extends ImmoLib
 	    */
         $subQueryPart = "";
         $first = true;
-        preg_match_all("/%([A-Z0-9ÄÖÜäöü]+[^%])%/", $this->arrSettings['message'], $matches);
+        preg_match_all("/%([A-Z0-9Ã¤Ã¶Ã¼]+[^%])%/", $this->arrSettings['message'], $matches);
         setlocale(LC_ALL, "de_CH");
         foreach ($matches[1] as $match) {
             if ($first) {
@@ -1217,7 +1240,7 @@ class Immo extends ImmoLib
                             LEFT OUTER JOIN ".DBPREFIX."module_immo_image AS `image` ON image.field_id = content.field_id
                             AND image.immo_id = '".$objResult->fields['id']."'
                             LEFT OUTER JOIN ".DBPREFIX."module_immo_field AS `field` ON content.field_id = field.id";
-				die($query);
+				
                 $objResult2 = $objDatabase->Execute($query);
                 while (!$objResult2->EOF) {
                     $data[strtolower($objResult2->fields['field_name'])] = ($objResult2->fields['type'] == "img" || $objResult2->fields['type'] == "panorama") ? ((!empty($objResult2->fields['uri'])) ? $objResult2->fields['uri']: ASCMS_BACKEND_PATH."/images/icons/pixel.gif") : $objResult2->fields['value'];
@@ -1274,9 +1297,17 @@ class Immo extends ImmoLib
             'IMMO_TXT_LOOK'             => $_ARRAYLANG['TXT_IMMO_LOOK']
         ));
 
-//        $this->_objTpl->parse("googlemap");
-
-		$this->_objTpl->show();
+        if (!empty($_GET['bigone']) && $_GET['bigone'] == 1) {
+            $this->_objTpl->touchBlock("big");
+            $this->_objTpl->parse("big");
+        } else {
+            $this->_objTpl->touchBlock("small");
+            $this->_objTpl->parse("small");
+        }
+        
+        $this->_objTpl->getBlockList();
+        $this->_objTpl->parse("map");
+		$this->_objTpl->show("map");
 		die;
 	}
 
@@ -1310,7 +1341,7 @@ EOF;
 			}
 		}catch(e){}
 
-		url='{$domainUrl}/?section=immo&standalone=1&highlight='+id;
+		url='http://{$domainUrl}/?section=immo&standalone=1&bigone=1&highlight='+id;
 		if (!window.focus){
 			return true;
 		}

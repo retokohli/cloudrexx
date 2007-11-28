@@ -401,6 +401,7 @@ class InitCMS
 		@$this->templates['forum_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/forum.html');
 		@$this->templates['podcast_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/podcast.html');
 		@$this->templates['blog_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html');
+		@$this->templates['immo'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html');
 
 	  	return $this->templates;
 	}

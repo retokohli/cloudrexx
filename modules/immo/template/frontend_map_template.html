@@ -1,3 +1,4 @@
+<!-- BEGIN map -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -48,16 +49,16 @@ var loadMap = function() {
     	map.addControl(new GMapTypeControl());
 		map.addControl(new GOverviewMapControl(new GSize(200,100)));
 		map.setCenter(new GLatLng(startX, startY), startZoom);
-		sIcon = new GIcon(G_DEFAULT_ICON, "http://immothunersee.ch/modules/immo/saxericon.gif");
-		cIcon = new GIcon(G_DEFAULT_ICON, "http://immothunersee.ch/modules/immo/villacasaicon.gif");
-		sIcon.iconSize = new GSize(47, 35);
-		cIcon.iconSize = new GSize(47, 35);
-	    sIcon.shadowSize = new GSize(0, 0);
-		cIcon.shadowSize = new GSize(0, 0);
-		sIcon.shadow = "";
-		cIcon.shadow = "";
-        sIcon.imageMap = [0,1,13,37,38,28,34,7];
-        cIcon.imageMap = [0,1,13,37,38,28,34,7];
+		//sIcon = new GIcon(G_DEFAULT_ICON, "");
+		//cIcon = new GIcon(G_DEFAULT_ICON, "");
+		//sIcon.iconSize = new GSize(47, 35);
+		//cIcon.iconSize = new GSize(47, 35);
+	    //sIcon.shadowSize = new GSize(0, 0);
+		//cIcon.shadowSize = new GSize(0, 0);
+		//sIcon.shadow = "";
+		//cIcon.shadow = "";
+        //sIcon.imageMap = [0,1,13,37,38,28,34,7];
+        //cIcon.imageMap = [0,1,13,37,38,28,34,7];
 		// Set markers		
 		for (var i = 0; i < markers.length; i++) {
 			map.addOverlay(createMarker(i));
@@ -75,6 +76,7 @@ var loadMap = function() {
         
     	//switch maptype to normal if zoom bigger than 14 (no images available for this zoom location)
     	//else show hybrid
+    	
         GEvent.addListener(map, "zoomend", function() {
     	    zoom = map.getZoom();
 			if(zoom > 14){
@@ -89,13 +91,14 @@ var loadMap = function() {
 var createMarker = function(i) {
 	var point = new GLatLng(markers[i]['long'], markers[i]['lat']);
 	var message = createMessage(i);
-	var icon = null;
+	/*var icon = null;
 	if (markers[i]['logo'] == 'saxer') {
 		icon = sIcon;
 	} else {
 		icon = cIcon;
-	}
-	var house = new GMarker(point, icon);
+	}*/
+	//var house = new GMarker(point, icon);
+	var house = new GMarker(point);
 	GEvent.addListener(house, "click", function() {
 		house.openInfoWindowHtml(message);
 	});
@@ -121,7 +124,14 @@ var showObj = function(id){
 </script>
 </head>
 <body onload="loadMap();">
-<div id="gmap" style="width: 800px; height: 600px"></div>
+<!-- BEGIN small -->
+<div id="gmap" style="width: 535px; height: 600px"></div>
+<!-- END small -->
+
+<!-- BEGIN big -->
+<div id="gmap" style="width: 810px; height: 600px"></div>
+<!-- END big -->
 
 </body>
 </html>
+<!-- END map -->

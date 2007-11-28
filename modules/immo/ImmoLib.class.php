@@ -104,6 +104,7 @@ class ImmoLib{
 	*/
 	function __construct()
 	{
+	    
 		define('DS', DIRECTORY_SEPARATOR);
 		$this->_getLanguages();
 		$this->_getSettings();
@@ -117,7 +118,8 @@ class ImmoLib{
      * @param $immoID ID of the object (only fetches rows of that object, all if omitted)
      * @param $count whether fieldtypes shall be count, if bigger than 0 (also specifies the frontend language) 
      */
-    function _getFieldNames($immoID = 0, $count = 0){
+    function _getFieldNames($immoID = 0, $count = 0)
+    {
     	global $objDatabase;
 
     	$objRS = $objDatabase->Execute("	SELECT id, field_id, lang_id, name
@@ -161,7 +163,7 @@ class ImmoLib{
                 
 				$content['active'] = $objRSContent->fields['active'];
 				
-                $img = ($immoID > 0) ? $this->_getImageInfo($objRS->fields['id'], $immoID) : array('uri' => '') ;
+                $img = ($immoID > 0) ? $this->_getImageInfo($objRS->fields['id'], $immoID) : array('uri' => '');
                 if($count > 0 && $content['active'] == 1 && trim($names[$count]) != '' && !in_array($names[$count] ,$this->_usedFields)){
                 	switch($objRS->fields['type']){
                			case 'text':
@@ -187,13 +189,16 @@ class ImmoLib{
     				'img'		=> $img['uri'],
     				'mandatory' => $objRS->fields['mandatory']
     			);
+    			//print_r($this->fieldNames[$objRS->fields['id']]);
     			$objRS->MoveNext();
     		}
     	}
     }
 
-    function _getImageInfo($fieldID, $immoID){
+    function _getImageInfo($fieldID, $immoID)
+    {
     	global $objDatabase;
+    	
     	$query = "	SELECT id, field_id, uri
     				FROM ".DBPREFIX."module_immo_image
     				WHERE field_id = $fieldID
@@ -214,7 +219,8 @@ class ImmoLib{
      * @return unknown
      */
 
-    function _getLanguages(){
+    function _getLanguages()
+    {
     	global $objDatabase;
     	$query = "	SELECT id, language
         				FROM ".DBPREFIX."module_immo_languages";
@@ -238,7 +244,8 @@ class ImmoLib{
 	 * @return ID on success, false on failure
 	 */
 	
-	function _getFieldFromText($str, $type = 'content'){
+	function _getFieldFromText($str, $type = 'content')
+	{	    
 		array_walk($this->fieldNames, array($this, '_searchField'), $str);
 		if($type == 'content'){
 			return $this->fieldNames[$this->_currFieldID]['content'][$this->frontLang];
@@ -261,13 +268,15 @@ class ImmoLib{
 	 * @param int $key
 	 * @param string $fieldName
 	 */
-	function _searchField($field, $key, $fieldName){
+	function _searchField($field, $key, $fieldName)
+	{
 		if(trim(strtolower($field['names'][1])) == trim(strtolower($fieldName))){
 			$this->_currFieldID = $key;
 		}
 	}
     
-    function _getSettings() {
+    function _getSettings() 
+    {
         global $objDatabase;
         $this->arrSettings = array();
         $query = "  SELECT `setname`, `setvalue`
@@ -291,7 +300,8 @@ class ImmoLib{
      * @return string domain2
      */
 
-    function _getDomain($domain){
+    function _getDomain($domain)
+    {
     	$dparts = explode(".", $domain);
     	switch(count($dparts)){
     		case 1:
@@ -311,11 +321,13 @@ class ImmoLib{
     	}
     }
     
-    function arrStrToLower(&$item, $key) {
+    function arrStrToLower(&$item, $key) 
+    {
        $item = strtolower($item);
     }
 
-    function filterImmoType($var) {
+    function filterImmoType($var) 
+    {
         if (substr($var, 0, 20) == "TXT_IMMO_OBJECTTYPE_") {
             return true;
         }
