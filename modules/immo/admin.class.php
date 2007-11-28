@@ -1,4 +1,8 @@
 <?php
+
+$_ARRAYLANG['TXT_IMMO_HEADLINER'] = "Rechts auf der Homepage anzeigen";
+
+
 /**
  * Immo
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -71,7 +75,7 @@ class Immo extends ImmoLib{
 	*/
 	function __construct()
 	{
-		global $objTemplate, $_ARRAYLANG;
+		global $objTemplate, $_ARRAYLANG, $objDatabase;
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/immo/template');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -86,7 +90,9 @@ class Immo extends ImmoLib{
     	);
 
     	$this->_objFile =& new File();
-
+    	
+    	mysql_set_charset("utf8"); //this is important for umlauts
+    	
     	// Run parent constructor
     	parent::__construct();
 	}
@@ -1304,7 +1310,7 @@ class Immo extends ImmoLib{
     																AND a.field_id = (
     																	SELECT field_id
     																	FROM ".DBPREFIX."module_immo_fieldname
-    																	WHERE name = 'ausländer-bewilligung'
+    																	WHERE name = 'auslï¿½nder-bewilligung'
     																	AND lang_id = 1 )
     																AND a.lang_id = 1 )
                     LEFT JOIN ".DBPREFIX."module_immo_content AS b ON ( immo.id = b.immo_id
@@ -1335,7 +1341,7 @@ class Immo extends ImmoLib{
         																AND a.field_id = (
         																	SELECT field_id
         																	FROM ".DBPREFIX."module_immo_fieldname
-        																	WHERE name = 'ausländer-bewilligung'
+        																	WHERE name = 'auslï¿½nder-bewilligung'
         																	AND lang_id = 1 )
         																AND a.lang_id = 1 )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS b ON ( immo.id = b.immo_id
@@ -1549,7 +1555,7 @@ class Immo extends ImmoLib{
         																AND a.field_id = (
         																	SELECT field_id
         																	FROM ".DBPREFIX."module_immo_fieldname
-        																	WHERE name = 'ausländer-bewilligung'
+        																	WHERE name = 'auslï¿½nder-bewilligung'
         																	AND lang_id = 1 )
         																AND a.lang_id = 1 )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS b ON ( immo.id = b.immo_id
@@ -1583,7 +1589,7 @@ class Immo extends ImmoLib{
         																AND a.field_id = (
         																	SELECT field_id
         																	FROM ".DBPREFIX."module_immo_fieldname
-        																	WHERE name = 'ausländer-bewilligung'
+        																	WHERE name = 'auslï¿½nder-bewilligung'
         																	AND lang_id = 1 )
         																AND a.lang_id = 1 )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS b ON ( immo.id = b.immo_id
@@ -1883,6 +1889,7 @@ WHERE id = $immoID )";
             $new_building = (!empty($_POST['new_building'])) ? contrexx_addslashes(strip_tags($_POST['new_building'])) : "";
             $property_type = (!empty($_POST['property_type'])) ? contrexx_addslashes(strip_tags($_POST['property_type'])) : "";
             $zoom = (!empty($_POST['zoom'])) ? contrexx_addslashes(strip_tags($_POST['zoom'])) : "";
+            $headliner = (!empty($_POST['headliner'])) ? time() : false;
 
             if (!empty($_POST['longitude'])) {
                 $longitude = contrexx_addslashes(strip_tags($_POST['longitude'])).".";
@@ -1919,7 +1926,8 @@ WHERE id = $immoID )";
                                 `property_type` = '".$property_type."',
                                 `longitude` =  '".$longitude."',
                                 `latitude` = '".$latitude."',
-                                `zoom` = '".$zoom."'
+                                `zoom` = '".$zoom."',
+                                `headliner` = '".$headliner."'
                             WHERE `id` = '".$immoID."'";
                 if ($objDatabase->Execute($query)) {
                     $this->_getFieldNames($immoID);
@@ -2193,6 +2201,7 @@ WHERE id = $immoID )";
             'TXT_IMMO_GET_PROPOSAL_LIST'		=>	$_ARRAYLANG['TXT_IMMO_GET_PROPOSAL_LIST'],
             'TXT_IMMO_MANDATORY_FIELDS_ARE_EMPTY' 	=>	$_ARRAYLANG['TXT_IMMO_MANDATORY_FIELDS_ARE_EMPTY'],
             'TXT_IMMO_EDIT_OR_ADD_IMAGE' 	    =>	$_ARRAYLANG['TXT_IMMO_EDIT_OR_ADD_IMAGE'],
+            "TXT_IMMO_HEADLINER"                =>  $_ARRAYLANG['TXT_IMMO_HEADLINER']
 
 		));
 		if(!file_exists(ASCMS_CONTENT_IMAGE_PATH.DS.'immo'.DS.'images'.DS.($this->arrSettings['last_inserted_immo_id']+1))){
@@ -2236,6 +2245,7 @@ WHERE id = $immoID )";
                     'IMMO_SPECIAL_OFFER_SELECT_'.(($objResult->fields['special_offer']) ? "YES" : "NO")  => $strSelected,
                     'IMMO_LOGO_SELECTED_'.strtoupper($objResult->fields['logo']) => $strSelected,
                     'IMMO_VISIBLE_SELECT_'.strtoupper($objResult->fields['visibility']) => $strSelected,
+                    'IMMO_HEADLINER_SELECT' => ($objResult->fields['headliner']) ? "checked=\"checked\"" : ""
     		    ));
 		    }
 		}
@@ -2708,13 +2718,29 @@ WHERE id = $immoID )";
      */
     function _updateSetting($key, $val) {
         global $objDatabase;
-		$val = contrexx_addslashes($val);
-        if ($this->arrSettings[$key] != $val) {
-            $query = "  UPDATE ".DBPREFIX."module_immo_settings
-                        SET `setvalue` = '".$val."'
-                        WHERE `setname` = '".$key."'";
+        
+        $query = "SELECT `setvalue` FROM ".DBPREFIX."module_immo_settings
+                  WHERE `setname` = '".$key."'";
+        $objRs = $objDatabase->Execute($query);
+        if ($objRs->RecordCount() == 0) {
+            $val = contrexx_addslashes($val);
+            $query = "  INSERT INTO ".DBPREFIX."module_immo_settings
+                        (`setname`, `setvalue`)
+                        VALUES
+                        ('".$key."', '".$val."')
+                        ";
             if (!$objDatabase->Execute($query)) {
                 return false;
+            }
+        } else {
+    		$val = contrexx_addslashes($val);
+            if ($this->arrSettings[$key] != $val) {
+                $query = "  UPDATE ".DBPREFIX."module_immo_settings
+                            SET `setvalue` = '".$val."'
+                            WHERE `setname` = '".$key."'";
+                if (!$objDatabase->Execute($query)) {
+                    return false;
+                }
             }
         }
         return true;

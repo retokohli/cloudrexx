@@ -66,6 +66,9 @@ if (0) {
     error_reporting(0);
     ini_set('display_errors', 0);
 }
+		//iconv_set_encoding("output_encoding", "utf-8");
+		//iconv_set_encoding("input_encoding", "utf-8");
+		//iconv_set_encoding("internal_encoding", "utf-8");
 
 $starttime = explode(' ', microtime());
 
@@ -507,6 +510,24 @@ if (file_exists($modulespath)) {
     $themesPages['home'] = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $themesPages['home']);
     $page_template = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $page_template);
 }
+
+//-------------------------------------------------------
+// Get immo headline
+//-------------------------------------------------------
+$modulespath = "modules/immo/headlines.class.php";
+if (file_exists($modulespath)) {
+    /**
+     * @ignore
+     */
+    include_once($modulespath);
+    $immoHeadlines = &new immoHeadlines($themesPages['immo']);
+    
+    $page_content = str_replace('{IMMO_FILE}', $immoHeadlines->getHeadlines(), $page_content);
+    $themesPages['index'] = str_replace('{IMMO_FILE}', $immoHeadlines->getHeadlines(), $themesPages['index']);
+    $themesPages['home'] = str_replace('{IMMO_FILE}', $immoHeadlines->getHeadlines(), $themesPages['home']);
+    $page_template = str_replace('{IMMO_FILE}', $immoHeadlines->getHeadlines(), $page_template);
+}
+
 
 
 //-------------------------------------------------------
