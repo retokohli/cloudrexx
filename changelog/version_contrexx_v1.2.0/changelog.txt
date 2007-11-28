@@ -23,7 +23,7 @@ Allgemein
 - Die Eingabemaske zum schnellen Bearbeiten einer Inhaltsseite mittels dessen ID
   unter der Hauptnavigation im Backend wird nur angezeigt, wenn der Benutzer
   die Berechtigung besitzt Inhaltsseiten zu bearbeiten.
-- Die Eigenschaft "Meta Schlüsselwörter" einer Inhaltsseite wurde auf eine 
+- Die Eigenschaft "Meta Schlüsselwörter" einer Inhaltsseite wurde auf eine
   maximale Lange von rund 65 Tausend Zeichen erweitert (2^16 - 1)
 - Die Hauptmenüpunkte (Content Management / Module / Administration /
   System Informationen / Hilfe & Support) werden nur angezeigt, sofern der
@@ -38,7 +38,7 @@ Allgemein
 - Neue Template-Ansicht für PDF-Generierung. Im "Layout & Design" kann das
   PDF-Template verwaltet werden und ein neuer Platzhalter [PDF_URL] wurde
   hinzugefügt.
-  
+
 Alias Verwaltung
 - Aliase können nur bei vorhandener .htaccess Datei verwaltet werden.
 
@@ -145,7 +145,7 @@ Modul: Verzeichnis
 	[DIRECTORY_FEED_ATTACHMENT]]
 	[[DIRECTORY_FEED_LINK]]
 	[[DIRECTORY_FEED_RSS_LINK]]
-	
+
 Modul: Blog
 - Es ist eine erste Version des Blog-Moduls verfügbar.
 - Kategorien können erstellt werden
@@ -180,7 +180,7 @@ Kontakte Manager
   dargestellt.
 - Wird ein Formularfeld leer gelassen, wird dessen Platzhalter beim Anzeigen des
   Feedback Textes nicht mehr ausgegeben. Beim Feldtyp Kontrollkästchen wird
-  entweder, je nach getätigter Auswahl, "Ja" oder "Nein" angezeigt. 
+  entweder, je nach getätigter Auswahl, "Ja" oder "Nein" angezeigt.
 
 Layout & Design Verwaltung
 - Nachdem Erstellen eines neuen Layouts wird entweder das neu erstellte Layout
@@ -242,7 +242,7 @@ Modul: Online Desk
 - Rückgabemeldungen mit Zeilenumbrüchen werden nach einer Bestellung korrekt
   ausgegeben.
 - Der Produktkalender funktioniert korrekt, wenn das System relativ zum
-  DocumentRoot in einem Unterverzeichnis liegt. 
+  DocumentRoot in einem Unterverzeichnis liegt.
 
 Modul: Online Shop
 - Zugewiesene Merkmale können einem Produkt wieder entfernt werden.
@@ -256,3 +256,6 @@ Modul: Online Shop
 Modul: Sitemap
 - Es werden nur die Seiten aufgelistet, auf welche der Benutzer zugreifen darf.
 
+Modul: Block System
+- Die Benutzeroberfläche fürs Erstellen und Editieren der einzelnen Blöcke wurde verbesser und intuitiver gestalltet.
+- Anzeige der Blöcle im globalen Platzhalter wurde verbessert und funktioniert nun fehlerfrei.
