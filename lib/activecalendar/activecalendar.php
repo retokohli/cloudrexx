@@ -329,10 +329,16 @@ $showNoMonthDays = true: days, that do not belong to the current month, will be 
 (note: these 'noMonthDays' will not contain any events or eventcontents!)
 ********************************************************************************
 */
-function showMonth($showNoMonthDays=false){
+//!! modified
+function showMonth($showNoMonthDays=false, $linkedTitle=false){
 $this->showNoMonthDays=$showNoMonthDays;
 $out=$this->mkMonthHead(); // this should remain first: opens table tag
-$out.=$this->mkMonthTitle(); // tr tag: month title and navigation
+if ($linkedTitle) {
+    // the month title should be linked
+    $out.=$this->mkLinkedMonthTitle();
+} else {
+    $out.=$this->mkMonthTitle(); // tr tag: month title and navigation
+}
 $out.=$this->mkDatePicker(); // tr tag: month date picker (month and year selection)
 $out.=$this->mkWeekDays(); // tr tag: the weekday names
 	if ($this->showNoMonthDays==false) $out.=$this->mkMonthBody(); // tr tags: the days of the month
@@ -340,6 +346,7 @@ $out.=$this->mkWeekDays(); // tr tag: the weekday names
 $out.=$this->mkMonthFoot(); // this should remain last: closes table tag
 return $out;
 }
+
 /*
 ----------------------
 @START PRIVATE METHODS
@@ -473,6 +480,64 @@ function mkMonthTitle(){
 		$out.=$this->monthNavForw."</a></td></tr>\n";
 	}
 return $out;
+}
+/* added this function */
+function mkLinkedMonthTitle(){
+	if (!$this->monthNav){
+		// Modified!!
+		// Added a link for the monthname
+		$out="<tr><td class=\"".$this->cssMonthTitle."\" colspan=\"7\" nowrap>";
+		$out.=$this->mkUrl($this->actyear, $this->actmonth);
+		$out.=$this->getMonthName().$this->monthYearDivider."&nbsp;".$this->actyear;
+		$out.="</a></td></tr>\n";
+	}
+	else{
+		// Modified!!
+		// Added a link for the monthname
+		$out="<tr><td class=\"".$this->cssMonthNav."\" colspan=\"1\">";
+		if ($this->actmonth==1) $out.=$this->mkMonthNavUrl($this->actyear-1,"12");
+		else $out.=$this->mkMonthNavUrl($this->actyear,$this->actmonth-1);
+
+		$out.=$this->monthNavBack."</a></td>";
+		$out.="<td class=\"".$this->cssMonthTitle."\" colspan=\"5\" nowrap>";
+		$out.=$this->mkUrl($this->actyear, $this->actmonth);
+		$out.=htmlentities($this->getMonthName().$this->monthYearDivider.$this->actyear, ENT_QUOTES, CONTREXX_CHARSET)."</a></td>";
+		$out.="<td class=\"".$this->cssMonthNav."\" colspan=\"1\">";
+
+		if ($this->actmonth==12) $out.=$this->mkMonthNavUrl($this->actyear+1,"1");
+		else $out.=$this->mkMonthNavUrl($this->actyear,$this->actmonth+1);
+		$out.=$this->monthNavForw."</a></td></tr>\n";
+	}
+return $out;
+}
+
+
+function mkMonthTitleLinked(){
+    if (!$this->monthNav){
+		// Modified!!
+		// Added a link for the monthname
+		$out="<tr><td class=\"".$this->cssMonthTitle."\" colspan=\"7\" nowrap>";
+		$out.=$this->mkUrl($this->actyear, $this->actmonth);
+		$out.=$this->getMonthName().$this->monthYearDivider."&nbsp;".$this->actyear;
+		$out.="</a></td></tr>\n";
+	}
+	else{
+		// Modified!!
+		// Added a link for the monthname
+		$out="<tr><td class=\"".$this->cssMonthNav."\" colspan=\"1\">";
+		if ($this->actmonth==1) $out.=$this->mkMonthNavUrl($this->actyear-1,"12");
+		else $out.=$this->mkMonthNavUrl($this->actyear,$this->actmonth-1);
+
+		$out.=$this->monthNavBack."</a></td>";
+		$out.="<td class=\"".$this->cssMonthTitle."\" colspan=\"5\" nowrap>";
+		$out.=$this->mkUrl($this->actyear, $this->actmonth);
+		$out.=htmlentities($this->getMonthName().$this->monthYearDivider.$this->actyear, ENT_QUOTES, CONTREXX_CHARSET)."</a></td>";
+		$out.="<td class=\"".$this->cssMonthNav."\" colspan=\"1\">";
+
+		if ($this->actmonth==12) $out.=$this->mkMonthNavUrl($this->actyear+1,"1");
+		else $out.=$this->mkMonthNavUrl($this->actyear,$this->actmonth+1);
+		$out.=$this->monthNavForw."</a></td></tr>\n";
+	}
 }
 /*
 ********************************************************************************
@@ -645,6 +710,22 @@ $dayLink="<a href=\"".$this->url.$glue.$this->yearID."=".$year."&amp;".$this->mo
 	if ($year && !$month && !$day) return $yearNavLink;
 	if ($year && $month && !$day) return $monthNavLink;
 }
+
+/* modified */
+function mkMonthNavUrl($year, $month)
+{
+	if ($this->urlMonthNav != false) {
+	    if (strpos($this->urlMonthNav,"?") === false) {
+	    	$glueMonthNav="?";
+	    } else {
+	    	$glueMonthNav="&amp;";
+	    }
+		return "<a href=\"".$this->urlMonthNav.$glueMonthNav.$this->yearID."=".$year."&amp;".$this->monthID."=".$month."\">";
+	} else {
+		return $this->mkUrl($year, $month);
+	}
+}
+
 /*
 ********************************************************************************
 PRIVATE mkEventContent() -> creates the table for the event content

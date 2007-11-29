@@ -12,7 +12,7 @@
 /**
  * Includes
  */
-require_once dirname(__FILE__) . "/lib/activecalendar/activecalendar.php";
+require_once ASCMS_LIBRARY_PATH."/activecalendar/activecalendar.php";
 
 /**
  * Calendar
@@ -687,7 +687,7 @@ class calendarLibrary
                 }
                 $objResult->MoveNext();
             }
-            $retval .= $cal->showMonth();
+            $retval .= $cal->showMonth(false, true);
 
             if ($month == 12) {
                 $year++;
