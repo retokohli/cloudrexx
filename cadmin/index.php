@@ -67,6 +67,8 @@ if ($objDatabase === false) {
     die('Database error.');
 }
 
+//$objDatabase->debug = 1;
+
 //global $objDatabase; $objDatabase->debug = 1;
 
 //-------------------------------------------------------
@@ -679,8 +681,18 @@ switch($cmd) {
         // calendar
         //-----------------------------------------------------------------------------------------------
     case "calendar":
-        $objPerm->checkAccess(16, 'static');
-        $modulespath = ASCMS_MODULE_PATH . "/calendar/admin.class.php";
+    case "calendar2":
+        if ($cmd == "calendar") {
+            $objPerm->checkAccess(16, 'static');
+            $modulespath = ASCMS_MODULE_PATH . "/calendar/admin.class.php";
+            $mandate = 1;
+        } else {
+            $mandate = intval(substr($cmd, -1));
+            $objPerm->checkAccess(47, 'static');
+            $modulespath = ASCMS_MODULE_PATH . "/calendar".$mandate."/admin.class.php";
+            
+        }
+        define("CALENDAR_MANDATE", $mandate);
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle  = $_CORELANG['TXT_CALENDAR'];

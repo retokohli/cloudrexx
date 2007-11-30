@@ -4,7 +4,7 @@
 function deleteNote(Id)
 {
 	if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
-		window.location.replace("?cmd=calendar&act=delete&id="+Id);
+		window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=delete&id="+Id);
 }
 function category()
 {
@@ -22,11 +22,11 @@ function selectMultiAction()
 				}
 			break;
 			case 'activate':
-				action='?cmd=calendar&act=activate';
+				action='?cmd=calendar{CALENDAR_MANDATE}&act=activate';
 				submit();
 			break;
 			case 'deactivate':
-				action='?cmd=calendar&act=deactivate';
+				action='?cmd=calendar{CALENDAR_MANDATE}&act=deactivate';
 				submit();
 			break;
 			default: //do nothing
@@ -90,7 +90,7 @@ function selectMultiAction()
 									{TXT_CALENDAR_SEARCH}:
 								</td>
 								<td style="border: 0px;">
-									<form action="index.php?cmd=calendar&amp;act=overview" method="post" name="newCalendarNote">
+									<form action="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=overview" method="post" name="newCalendarNote">
 										 <input type="text" name="inputKeyword" id="searchInputKeyword" value="{TXT_CALENDAR_KEYWORD}" style="width: 200px" onclick="this.value=''" />
 										<input type="submit" value="{TXT_SEARCH}" name="search" onmousedown="document.getElementById('searchInputKeyword').value = ''" />
 									</form>
@@ -104,7 +104,7 @@ function selectMultiAction()
 				</tr>
 				<tr>
 					<td style="border: 0px;">
-						<form name="frmEventList" method="post" action="index.php?cmd=calendar&amp;act=event_actions">
+						<form name="frmEventList" method="post" action="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=event_actions">
 						<table class="adminlist" style="width: 100%; border-spacing: 0px; margin: 0px;" cellpadding="3" cellspacing="0">
 							<tr>
 								<th colspan="10">
@@ -131,13 +131,13 @@ function selectMultiAction()
 								<td style="width: 40px; text-align: center;"><img src="images/icons/led_{CALENDAR_ACTIVE_ICON}.gif" border="0" alt="{CALENDAR_EVENT_LED}" title="{CALENDAR_EVENT_LED}" /></td>
 								<td style="width: 110px">{CALENDAR_EVENT_STARTDATE}</td>
 								<td style="width: 110px">{CALENDAR_EVENT_ENDDATE}</td>
-								<td><a href="?cmd=calendar&amp;act=event&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_TITLE}</a></td>
-								<td><a href="?cmd=calendar&amp;act=reg&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_COUNT_REG} / {CALENDAR_EVENT_COUNT_SIGNOFF}</a></td>
+								<td><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=event&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_TITLE}</a></td>
+								<td><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=reg&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_COUNT_REG} / {CALENDAR_EVENT_COUNT_SIGNOFF}</a></td>
 								<td style="width: 150px">{CALENDAR_EVENT_COUNT_SUBSCRIBER}</td>
-								<td style="width: 150px"><a href="?cmd=calendar&amp;act=getCSV&amp;id={CALENDAR_EVENT_ID}"><img src="images/icons/xls.gif" alt="{TXT_CALENDAR_CSV_FILE}" title="{TXT_CALENDAR_CSV_FILE}" border="0"/></a></td>
+								<td style="width: 150px"><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=getCSV&amp;id={CALENDAR_EVENT_ID}"><img src="images/icons/xls.gif" alt="{TXT_CALENDAR_CSV_FILE}" title="{TXT_CALENDAR_CSV_FILE}" border="0"/></a></td>
 								<td style="width: 150px">{CALENDAR_EVENT_CAT}</td>
 								<td style="width: 40px; text-align: right;">
-									<a href="?cmd=calendar&amp;act=edit&amp;id={CALENDAR_EVENT_ID}" title="{TXT_CALENDAR_EDIT}">
+									<a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=edit&amp;id={CALENDAR_EVENT_ID}" title="{TXT_CALENDAR_EDIT}">
 										<img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_CALENDAR_EDIT}" />
 									</a><a href="javascript:deleteNote({CALENDAR_EVENT_ID})" title="{TXT_CALENADR_DELETE}">
 										<img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_CALENDAR_DELETE}" />

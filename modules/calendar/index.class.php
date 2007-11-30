@@ -13,7 +13,11 @@
 /**
  * Includes
  */
-require_once ASCMS_MODULE_PATH . '/calendar/calendarLib.class.php';
+if (CALENDAR_MANDATE == 1) {
+    require_once ASCMS_MODULE_PATH . '/calendar/calendarLib.class.php';
+} else {
+    require_once ASCMS_MODULE_PATH . '/calendar'.CALENDAR_MANDATE.'/calendarLib.class.php';
+}
 require_once ASCMS_CORE_PATH.'/modulemanager.class.php';
 
 /**
@@ -54,7 +58,7 @@ class Calendar extends calendarLibrary
 	 * Construct the Calendar functions
 	 *
 	 * @access	public
-	 * @param    string $pageContent
+	 * @param string $pageContent
 	 */
     function __construct($pageContent)
     {
@@ -105,7 +109,7 @@ class Calendar extends calendarLibrary
 							break;
 
 						case 'category':
-							if($id > 0){
+							if ($id > 0) {
 								$this->_iCalExport('category', $id);
 							}
 							break;
@@ -146,7 +150,8 @@ class Calendar extends calendarLibrary
     function _standardView()
     {
     	global $objDatabase, $_ARRAYLANG, $_CONFIG, $objAuth, $objPerm, $_LANGID;
-
+    	
+    	
     	$this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar";
 
     	$this->_objTpl->setTemplate($this->pageContent);
@@ -157,13 +162,15 @@ class Calendar extends calendarLibrary
         //check access
         $auth = $this->_checkAccess();
 
+        
+        
 		if ($auth == true) {
 			$where = "";
 		} else {
 			$where = " AND access='0' ";
 		}
 
-    	if ($_GET['act'] == "search") {
+    	if (!empty($_GET['act']) && $_GET['act'] == "search") {
 
     		$datearr = explode("-", $_POST['startDate']);
     		$startdate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
@@ -179,6 +186,7 @@ class Calendar extends calendarLibrary
 				LEFT JOIN ".DBPREFIX."module_calendar_categories as cat ON
 					(cat.id = cal.catid)
 			  	WHERE cat.lang = $_LANGID
+			    AND mod_mandate = ".$this->mandate."
 			  	AND (cal.`name` LIKE '%$keyword%' OR
 			  	cal.`comment` LIKE '%$keyword%' OR
 			  	cal.`placeName` LIKE '%$keyword%') AND
@@ -226,6 +234,7 @@ class Calendar extends calendarLibrary
 				$query = "SELECT id, catid, name, startdate, enddate, placeName
 					FROM ".DBPREFIX."module_calendar
 					WHERE catid={$_GET['catid']} AND
+					mod_mandate = ".$this->mandate." AND
 					active = 1 AND
 					((startdate > $startdate) OR
 					(enddate > $startdate)) $where
@@ -236,6 +245,7 @@ class Calendar extends calendarLibrary
 				$query = "SELECT id, catid, name, startdate, enddate, placeName
 					FROM ".DBPREFIX."module_calendar
 					WHERE active = 1 AND
+					mod_mandate = ".$this->mandate." AND
 					((startdate > $startdate) OR
 					(enddate > $startdate)) $where
 					ORDER BY startdate ASC
@@ -245,6 +255,7 @@ class Calendar extends calendarLibrary
 				$query = "SELECT id, catid, name, startdate, enddate, placeName
 					FROM ".DBPREFIX."module_calendar
 					WHERE catid = {$_GET['catid']} AND
+					mod_mandate = ".$this->mandate." AND
 					active = 1 AND
 					((startdate BETWEEN $startdate AND $enddate) OR
 					(enddate BETWEEN $startdate AND $enddate) OR
@@ -255,12 +266,12 @@ class Calendar extends calendarLibrary
 				$query = "SELECT id, catid, name, startdate, enddate, placeName
 					FROM ".DBPREFIX."module_calendar
 					WHERE active = 1 AND
+					mod_mandate = ".$this->mandate." AND
 					((startdate BETWEEN $startdate AND $enddate) OR
 					(enddate BETWEEN $startdate AND $enddate) OR
 					(startdate < $startdate AND enddate > $startdate)) $where
 					ORDER BY startdate ASC";
 			}
-
     	}
 
     	if (empty($_POST['startDate'])) {
@@ -278,9 +289,9 @@ class Calendar extends calendarLibrary
     	$this->_objTpl->setVariable(array(
     		"CALENDAR"					=> $calendarbox,
     		"TXT_CALENDAR_ALL_CAT"		=> $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
-    		"CALENDAR_CATEGORIES"		=> $this->category_list($_GET['catid']),
+    		"CALENDAR_CATEGORIES"		=> $this->category_list((isset($_GET['catid']) ? $_GET['catid'] : "")),
     		"CALENDAR_JAVASCRIPT"		=> $this->getJS(),
-    		"CALENDAR_SEARCHED_KEYWORD" => stripslashes($_POST['keyword']),
+    		"CALENDAR_SEARCHED_KEYWORD" => stripslashes((isset($_POST['keyword']) ? $_POST['keyword'] : "")),
     		"CALENDAR_DATEPICKER_START"	=> $datepicker_startdate,
     		"CALENDAR_DATEPICKER_END"	=> $datepicker_enddate,
     		"TXT_CALENDAR_FROM"			=> $_ARRAYLANG['TXT_CALENDAR_FROM'],
@@ -302,42 +313,46 @@ class Calendar extends calendarLibrary
     	global $objDatabase, $_ARRAYLANG, $_LANGID;
 
     	$objResult = $objDatabase->Execute($query);
-		$count = $objResult->RecordCount();
-		$i=0;
-
-		$arrCats = array();
-		$catQuery = "	SELECT `id`
-						FROM `".DBPREFIX."module_calendar_categories`
-						WHERE `lang` = ".$_LANGID;
-		if(($objRSCats = $objDatabase->Execute($catQuery)) !== false){
-			while(!$objRSCats->EOF){
-				$arrCats[] = $objRSCats->fields['id'];
-				$objRSCats->MoveNext();
-			}
-		}
-
-		if ($count >= 1) {
-			while (!$objResult->EOF) {
-				if(!in_array($objResult->fields['catid'], $arrCats)){
-					$objResult->MoveNext();
-					continue;
-				}
-				//load data
-				$this->getNoteData($objResult->fields['id'], "show", 1);
-
-				$this->_objTpl->setVariable(array(
-					"CALENDAR_ROW"	 		=> $i % 2 == 0 ? "row1" : "row2",
-				));
-
-				$i++;
-
-				$this->_objTpl->parse("event");
-				$objResult->MoveNext();
-			}
-    	} else {
-    		$this->_objTpl->setVariable(array(
-				"TXT_CALENDAR_NO_EVENTS"	 => $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'],
-			));
+    	if ($objResult !== false) {
+    		$count = $objResult->RecordCount();
+    		$i=0;
+    
+    		$arrCats = array();
+    		
+    		$catQuery = "	SELECT `id`
+    						FROM `".DBPREFIX."module_calendar_categories`
+    						WHERE `lang` = ".$_LANGID." AND
+    						mod_mandate = ".$this->mandate;
+    		if(($objRSCats = $objDatabase->Execute($catQuery)) !== false){
+    			while(!$objRSCats->EOF){
+    				$arrCats[] = $objRSCats->fields['id'];
+    				$objRSCats->MoveNext();
+    			}
+    		}
+    
+    		if ($count >= 1) {
+    			while (!$objResult->EOF) {
+    				if(!in_array($objResult->fields['catid'], $arrCats)){
+    					$objResult->MoveNext();
+    					continue;
+    				}
+    				//load data
+    				$this->getNoteData($objResult->fields['id'], "show", 1);
+    
+    				$this->_objTpl->setVariable(array(
+    					"CALENDAR_ROW"	 		=> $i % 2 == 0 ? "row1" : "row2",
+    				));
+    
+    				$i++;
+    
+    				$this->_objTpl->parse("event");
+    				$objResult->MoveNext();
+    			}
+        	} else {
+        		$this->_objTpl->setVariable(array(
+    				"TXT_CALENDAR_NO_EVENTS"	 => $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'],
+    			));
+        	}
     	}
     }
 
@@ -413,6 +428,7 @@ class Calendar extends calendarLibrary
 			$query = "SELECT id, catid, name, startdate, enddate, placeName
 						FROM ".DBPREFIX."module_calendar
 						WHERE active = 1 AND
+						mod_mandate = ".$this->mandate." AND
 						(startdate > $startdate OR
 						enddate > $startdate) $where
 						ORDER BY startdate $orderBy";
@@ -420,6 +436,7 @@ class Calendar extends calendarLibrary
 			$query = "SELECT id, catid, name, startdate, enddate, placeName
 						FROM ".DBPREFIX."module_calendar
 						WHERE catid = ".addslashes($_GET['catid'])."
+			            AND mod_mandate = ".$this->mandate."
 						AND active = 1
 						AND (startdate > $startdate OR
 						enddate > $startdate) $where
@@ -470,6 +487,7 @@ class Calendar extends calendarLibrary
 		    	          FROM ".DBPREFIX."module_calendar_categories
 		        	     WHERE id = '".intval($_GET['catid'])."'
 			               AND lang = '".$_LANGID."'
+			               AND mod_mandate = ".$this->mandate."
 			               AND status = '1'";
 			$objResult = $objDatabase->SelectLimit($query, 1);
 
@@ -491,6 +509,7 @@ class Calendar extends calendarLibrary
 		              FROM ".DBPREFIX."module_calendar_categories
 		             WHERE lang = '".$_LANGID."'
 		               AND status = '1'
+		               AND mod_mandate = ".$this->mandate."
 		          ORDER BY pos";
 
 		$objResult = $objDatabase->Execute($query);
@@ -517,6 +536,7 @@ class Calendar extends calendarLibrary
 			$_GET['catid'] = 0;
 		}
 
+		// TODO what is this for???
 		if (isset($_GET['catid']) and $_GET['catid'] != 0) {
 		    $catslang = "AND catid = '".intval($_GET['catid'])."'";
 		} else {
@@ -534,6 +554,7 @@ class Calendar extends calendarLibrary
 				$catslang = '';
 			}
 		}
+		//
 
 		if (isset($_GET['yearID']) && isset($_GET['monthID']) &&  isset($_GET['dayID'])) {
 			$calendarbox = $this->getBoxes(3, $_GET['yearID'], $_GET['monthID'], $_GET['dayID']);
@@ -604,7 +625,11 @@ class Calendar extends calendarLibrary
 			$cur_date 	= $monthnames[$month-1]." ".$year;
 
 		} else {
-			header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes");
+		    if ($this->mandate>1) {
+		        header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandate."&cmd=boxes");
+		    } else {
+		        header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes");
+		    }
 			exit;
 		}
 
@@ -622,6 +647,7 @@ class Calendar extends calendarLibrary
 			$query = "SELECT * FROM ".DBPREFIX."module_calendar
 				WHERE catid = {$_GET['catid']} AND
 				active = 1 AND
+				mod_mandate = ".$this->mandate." AND
 				((startdate BETWEEN $startdate AND $enddate) OR
 				(enddate BETWEEN $startdate AND $enddate) OR
 				(startdate < $startdate AND enddate > $startdate))
@@ -629,6 +655,7 @@ class Calendar extends calendarLibrary
 		} else {
 			$query = "SELECT * FROM ".DBPREFIX."module_calendar
 				WHERE active = 1 AND
+				mod_mandate = ".$this->mandate." AND
 				((startdate BETWEEN $startdate AND $enddate) OR
 				(enddate BETWEEN $startdate AND $enddate) OR
 				(startdate < $startdate AND enddate > $startdate))
@@ -652,7 +679,11 @@ class Calendar extends calendarLibrary
 		global $_ARRAYLANG;
 
 		if (!isset($_GET['id'])) {
-			header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar");
+		    if ($this->mandate == 1) {
+                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar");
+		    } else {
+		        header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandate);
+		    }
 			exit;
 		}
 		$this->_objTpl->setTemplate($this->pageContent);
@@ -785,21 +816,36 @@ class Calendar extends calendarLibrary
 
 				if ($objResultFields !== false) {
 					//email
-					$query = "SELECT id FROM ".DBPREFIX."module_calendar_form_fields WHERE note_id='".$noteId."' AND `key`='6' LIMIT 1";
+					$query = " SELECT id 
+					           FROM ".DBPREFIX."module_calendar_form_fields 
+					           WHERE note_id='".$noteId."' 
+					           AND `key`='6' 
+					           AND `mod_mandate` = ".$this->mandate." 
+					           LIMIT 1";
 				    $objResult = $objDatabase->Execute($query);
 					if ($objResult !== false) {
 						$mailId = $objResult->fields['id'];
 					}
 
 					//firstane
-					$query = "SELECT id FROM ".DBPREFIX."module_calendar_form_fields WHERE note_id='".$noteId."' AND `key`='1' LIMIT 1";
+					$query = " SELECT id 
+					           FROM ".DBPREFIX."module_calendar_form_fields 
+					           WHERE note_id='".$noteId."' 
+					           AND `key`='1' 
+					           AND `mod_mandate` = ".$this->mandate." 
+					           LIMIT 1";
 				    $objResult = $objDatabase->Execute($query);
 					if ($objResult !== false) {
 						$firstnameId = $objResult->fields['id'];
 					}
 
 					//lastname
-					$query = "SELECT id FROM ".DBPREFIX."module_calendar_form_fields WHERE note_id='".$noteId."' AND `key`='2' LIMIT 1";
+					$query = " SELECT id 
+					           FROM ".DBPREFIX."module_calendar_form_fields 
+					           WHERE note_id='".$noteId."' 
+					           AND `key`='2' 
+					           AND `mod_mandate` = ".$this->mandate."
+					           LIMIT 1";
 				    $objResult = $objDatabase->Execute($query);
 					if ($objResult !== false) {
 						$lastnameId = $objResult->fields['id'];
@@ -843,9 +889,10 @@ class Calendar extends calendarLibrary
 				}
 
 				//get note details
-				$query 			= "SELECT `id`, `key`, `public`, `groups`, `num`
-				              	 	 FROM ".DBPREFIX."module_calendar
-					            	WHERE id = '".$noteId."'";
+				$query 			= " SELECT `id`, `key`, `public`, `groups`, `num`
+                                    FROM ".DBPREFIX."module_calendar
+                                    WHERE id = '".$noteId."'
+                                    AND `mod_mandate` = ".$this->mandate."";
 
 				$objResult 		= $objDatabase->SelectLimit($query, 1);
 
@@ -859,9 +906,10 @@ class Calendar extends calendarLibrary
 					if ($notePublic == 1 || ($noteKeyGet == $noteKey)) {
 						if (!empty($userId)) {
 							//get user details
-							$queryUser 		= "SELECT id,email,firstname,lastname,residence,profession,interests,webpage,company,zip,phone,mobile,street,langId,groups
-							              	 	 FROM ".DBPREFIX."access_users
-								            	WHERE id = '".$userId."' AND active = '1'";
+							$queryUser 		= " SELECT id,email,firstname,lastname,residence,profession,interests,webpage,company,zip,phone,mobile,street,langId,groups
+							              	 	FROM ".DBPREFIX."access_users
+								            	WHERE id = '".$userId."' AND active = '1'
+								            	AND `mod_mandate` = ".$this->mandate."";
 
 							$objResultUser 	= $objDatabase->SelectLimit($queryUser, 1);
 

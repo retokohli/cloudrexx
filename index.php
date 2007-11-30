@@ -1252,15 +1252,25 @@ switch ($section) {
 // Calendar Module
 //-------------------------------------------------------
     case "calendar":
-        $modulespath = "modules/calendar/index.class.php";
+    case "calendar2":
+        if ($section == "calendar") {
+            $modulespath = "modules/calendar/index.class.php";
+            $moduleStyleFile = "modules/calendar/frontend_style.css";
+            $mandate = 1;
+        } else {
+            $mandate = intval(substr($section, -1));
+            $modulespath = "modules/calendar".$mandate."/index.class.php";
+            $moduleStyleFile = "modules/calendar".$mandate."/frontend_style.css";
+        }
         /**
          * @ignore
          */
+        define("CALENDAR_MANDATE", $mandate);
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objCalendar = &new Calendar($page_content);
+        $objCalendar = &new Calendar($page_content, $mandate);
         $objTemplate->setVariable("CONTENT_TEXT", $objCalendar->getCalendarPage());
-        $moduleStyleFile = "modules/calendar/frontend_style.css";
+        
         break;
 
 //-------------------------------------------------------

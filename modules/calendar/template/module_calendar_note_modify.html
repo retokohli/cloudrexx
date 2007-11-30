@@ -233,7 +233,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
 // -->
 </script>
 
-<form action="index.php?cmd=calendar&amp;act={CALENDAR_FORM_ACTION}" method="post" id="modifyCalendarNote" name="modifyCalendarNote" onsubmit="SelectAllList(document.modifyCalendarNote.elements['selectedGroups[]']); return checkNote();">
+<form action="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act={CALENDAR_FORM_ACTION}" method="post" id="modifyCalendarNote" name="modifyCalendarNote" onsubmit="SelectAllList(document.modifyCalendarNote.elements['selectedGroups[]']); return checkNote();">
 
 <input type="hidden" name='inputEventId' value="{CALENDAR_ID}" />
 
