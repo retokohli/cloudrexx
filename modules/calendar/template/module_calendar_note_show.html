@@ -5,7 +5,7 @@
 function deleteNote(Id)
 {
     if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
-        window.location.replace("?cmd=calendar&act=all&id="+Id);
+        window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=all&id="+Id);
 }
 // -->
 </script>
@@ -125,7 +125,7 @@ function deleteNote(Id)
 		    </tr>
 		    <tr class="row1">
 		      <td valign="top" width="180">{TXT_CALENDAR_REGISTRATIONS}</td>
-		      <td valign="top"><a href="?cmd=calendar&amp;act=reg&amp;id={CALENDAR_ID}">{CALENDAR_EVENT_COUNT_REG} / {CALENDAR_EVENT_COUNT_SIGNOFF}</a></td>
+		      <td valign="top"><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=reg&amp;id={CALENDAR_ID}">{CALENDAR_EVENT_COUNT_REG} / {CALENDAR_EVENT_COUNT_SIGNOFF}</a></td>
 		    </tr>
 		    <tr class="row2">
 		      <td valign="top" width="180">{TXT_CALENDAR_SUBSCRIBER}</td>
