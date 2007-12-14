@@ -905,7 +905,7 @@ class Forum extends ForumLibrary {
 
 		if (count($arrForums) > 0) {
 
-			$this->_showLatestEntries($this->_getLastestEntries());
+			$this->_showLatestEntries($this->_getLatestEntries());
 
 			$boolIsFirst	= true;
 

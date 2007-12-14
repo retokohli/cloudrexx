@@ -994,11 +994,11 @@ class ForumLibrary {
 	 *
 	 * @return array $arrLatestEntries
 	 */
-	function _getLastestEntries(){
+	function _getLatestEntries(){
 		global $objDatabase, $_ARRAYLANG;
 		$index = 0;
 		$query = "	SELECT `id`, `category_id`, `thread_id`, `subject`, `user_id`, `time_created` FROM `".DBPREFIX."module_forum_postings`
-					ORDER by `time_created` DESC";
+					GROUP BY `thread_id` ORDER by `time_created` DESC";
 		if(($objRS = $objDatabase->SelectLimit($query, $this->_arrSettings['latest_entries_count'])) !== false){
 			while(!$objRS->EOF){
 				$arrLatestEntries[$index]['subject'] = !empty($objRS->fields['subject']) ? $objRS->fields['subject'] : $_ARRAYLANG['TXT_FORUM_NO_SUBJECT'];
