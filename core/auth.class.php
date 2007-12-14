@@ -426,6 +426,20 @@ echo("Auth::getUserId(): ERROR: No or invalid current User ID '".$_SESSION['auth
 
 
     /**
+     * Returns the current username
+     * @return  mixed               The username, or false if this is
+     *                              unavailable or invalid
+     */
+    function getUsername() {
+        if (isset($_SESSION['auth']['username'])) {
+            return $_SESSION['auth']['username'];
+        }
+echo("Auth::getUsername(): ERROR: No or invalid current username!<br />");
+        return false;
+    }
+
+
+    /**
      * Log the user session.
      *
      * Create a log entry in the database containing the users' details.
