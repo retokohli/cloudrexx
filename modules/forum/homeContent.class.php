@@ -57,7 +57,7 @@ class ForumHomeContent extends ForumLibrary {
 	{
 		global $_CONFIG, $objDatabase, $_ARRAYLANG;
 		$this->_objTpl->setTemplate($this->_pageContent,true,true);
-		$this->_showLatestEntries($this->_getLastestEntries());
+		$this->_showLatestEntries($this->_getLatestEntries());
 		return $this->_objTpl->get();
 	}
 }
