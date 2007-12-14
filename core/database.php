@@ -28,7 +28,7 @@
  */
 function getDatabaseObject(&$errorMsg, $newInstance = false)
 {
-	global $_ARRLANG, $_DBCONFIG, $ADODB_FETCH_MODE;
+	global $_DBCONFIG, $ADODB_FETCH_MODE;
 
 	static $objDatabase;
 
@@ -44,9 +44,9 @@ function getDatabaseObject(&$errorMsg, $newInstance = false)
 		$errorNo = $objDb->ErrorNo();
 		if ($errorNo != 0) {
 			if ($errorNo == 1049) {
-				$errorMsg .= str_replace("[DATABASE]", $_DBCONFIG['database'], $_ARRLANG['TXT_DATABASE_DOES_NOT_EXISTS']."<br />");
+				$errorMsg = 'The database is unavailable';
 			} else {
-				$errorMsg .=  $objDb->ErrorMsg()."<br />";
+				$errorMsg =  $objDb->ErrorMsg()."<br />";
 			}
 			unset($objDb);
 			return false;
@@ -60,7 +60,7 @@ function getDatabaseObject(&$errorMsg, $newInstance = false)
 				return $objDb;
 			}
 		} else {
-			$errorMsg .= $_ARRLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER']."<i>&nbsp;(".$objDb->ErrorMsg().")</i><br />";
+			$errorMsg = 'Cannot connect to database server<i>&nbsp;('.$objDb->ErrorMsg().')</i>';
 			unset($objDb);
 		}
 		return false;
