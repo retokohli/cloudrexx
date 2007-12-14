@@ -257,5 +257,7 @@ Modul: Sitemap
 - Es werden nur die Seiten aufgelistet, auf welche der Benutzer zugreifen darf.
 
 Modul: Block System
-- Die Benutzeroberfläche fürs Erstellen und Editieren der einzelnen Blöcke wurde verbesser und intuitiver gestalltet.
-- Anzeige der Blöcle im globalen Platzhalter wurde verbessert und funktioniert nun fehlerfrei.
+- Die Benutzeroberfläche fürs Erstellen und Editieren der einzelnen Blöcke wurde
+  verbessert und intuitiver gestaltet.
+- Anzeige der Blöcke im globalen Platzhalter wurde verbessert und funktioniert
+  nun fehlerfrei.
