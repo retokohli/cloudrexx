@@ -48,11 +48,20 @@ class Blog extends BlogLibrary  {
 		BlogLibrary::__constructor();
 
 		$this->_intLanguageId = intval($_LANGID);
-		$this->_intCurrentUserId = (isset($_SESSION['auth']['userid'])) ? intval($_SESSION['auth']['userid']) : 0;
+		$this->_intCurrentUserId = 0;
 		
 	    $this->_objTpl = &new HTML_Template_Sigma('.');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 		$this->_objTpl->setTemplate($strPageContent);
+	}
+	
+	
+	/**
+	 * Must be called before the user-id is accessed. Tries to load the user-id from the session.
+	 *
+	 */
+	function initUserId() {
+		$this->_intCurrentUserId = (isset($_SESSION['auth']['userid'])) ? intval($_SESSION['auth']['userid']) : 0;
 	}
 
 
@@ -145,6 +154,7 @@ class Blog extends BlogLibrary  {
 	function showDetails($intMessageId) {
 		global $_ARRAYLANG, $objDatabase, $_CONFIG;
 			
+		$this->initUserId();
 		$intMessageId = intval($intMessageId);	
 			
 		if ($intMessageId < 1) {
@@ -289,9 +299,12 @@ class Blog extends BlogLibrary  {
 				//Anonymous comments allowed or user is logged in	
 			
 				//Fill Add-Comment-Form
-				require_once ASCMS_CORE_PATH.'/wysiwyg.class.php';
+				require ASCMS_CORE_PATH.'/wysiwyg.class.php';
+				global $wysiwygEditor, $FCKeditorBasePath;
+				$wysiwygEditor = "FCKeditor";
+				$FCKeditorBasePath = "/editor/fckeditor/";
+				
 				require_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-
 				$objCaptcha = new Captcha();
 				
 				//Check for logged-in user
@@ -415,6 +428,8 @@ class Blog extends BlogLibrary  {
 	 */	
 	function addComment() {
 		global $objDatabase, $_ARRAYLANG, $_CONFIG;
+		
+		$this->initUserId();
 		
 		//Check for activated function	
 		if (!$this->_arrSettings['blog_comments_activated']) {
