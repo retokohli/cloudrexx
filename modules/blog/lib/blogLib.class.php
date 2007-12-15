@@ -668,8 +668,8 @@ class BlogLibrary {
 	function getPostedByString($strUsername, $strDate) {
 		global $_ARRAYLANG;
 
-		$strPostedString = str_replace('{USER}',$strUsername, $_ARRAYLANG['TXT_BLOG_LIB_POSTED_BY']);
-		$strPostedString = str_replace('{DATE}',$strDate, $strPostedString);
+		$strPostedString = str_replace('[USER]',$strUsername, $_ARRAYLANG['TXT_BLOG_LIB_POSTED_BY']);
+		$strPostedString = str_replace('[DATE]',$strDate, $strPostedString);
 
 		return $strPostedString;
 	}
