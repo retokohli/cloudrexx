@@ -261,3 +261,14 @@ Modul: Block System
   verbessert und intuitiver gestaltet.
 - Anzeige der Blöcke im globalen Platzhalter wurde verbessert und funktioniert
   nun fehlerfrei.
+  
+Modul: Immobilien
+- Die Suche funktionierte nicht richtig.
+- Wenn bei einer Suche keine Objekte gefunden werden im Frontend kommt jetzt 
+  eine Rückmeldung.
+- Es werden nun verschiedene Google-Maps verwendet für das Popup und die eingebettete
+  Anzeige.
+- Die Icons für Saxerimmobilien/Immothunersee sind jetzt entfernt.
+- Die Showobj-Seite ist nun validiert.
+- Der Google-Key wird jetzt korrekt gespeichert.
+- Hardcodete URLs wurden entfernt.
