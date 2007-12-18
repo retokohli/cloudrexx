@@ -41,4 +41,5 @@ $_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS'] = "Gefundene Einträge";
 $_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS_CATEGORIES'] = "Kategorien";
 $_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS_KEYWORDS'] = "Schlüsselwörter";
 $_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS_NONE'] = "Zur Ihrer Suche konnten keine passenden Einträge gefunden werden.";
+$_ARRAYLANG['TXT_BLOG_LIB_POSTED_BY'] = "gepostet von [USER] um [DATE]";
 ?>
