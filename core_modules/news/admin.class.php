@@ -728,7 +728,7 @@ class newsManager extends newsLibrary {
 			$newsCat=$objResult->fields['catid'];
 			$id = $objResult->fields['id'];
 			$newsText = stripslashes($objResult->fields['text']);
-			$teaserText = stripslashes($objResult->fields['teaser_text']);
+			$teaserText = $objResult->fields['teaser_text'];
 			$teaserShowLink = $objResult->fields['teaser_show_link'];
 
 			if($objResult->fields['status']==1){
@@ -872,14 +872,15 @@ class newsManager extends newsLibrary {
 			$newsTeaserImagePath = contrexx_strip_tags($_POST['newsTeaserImagePath']);
 			$newsTeaserFrames = '';
 
-			if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {print_r($_POST['newsTeaserFramesAsso']);
+			if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
 		    	foreach ($_POST['newsTeaserFramesAsso'] as $frameId) {
 	    			intval($frameId) > 0 ? $newsTeaserFrames .= ";".intval($frameId) : false;
 		    	}
 		    }
 
-		    $startDate = contrexx_strip_tags($_POST['startDate']);
-		    $endDate = contrexx_strip_tags($_POST['endDate']);
+		    $startDate		= (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['startDate'])) ? '0000-00-00' : $_POST['startDate'];
+			$endDate		= (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['endDate'])) ? '0000-00-00' : $_POST['endDate'];
+
 
 		    // $finishednewstext = $newstext."<br>".$_ARRAYLANG['TXT_LAST_EDIT'].": ".$date;
 		    $objResult = $objDatabase->Execute("UPDATE 	".DBPREFIX."module_news
@@ -1023,7 +1024,7 @@ class newsManager extends newsLibrary {
 	    $newsTeaserShowLink 	= isset($_POST['newsTeaserShowLink']) ? intval($_POST['newsTeaserShowLink']) : 0;
 	    $newsTeaserFrames		= '';
 
-		if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {print_r($_POST['newsTeaserFramesAsso']);
+		if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
 	    	foreach ($_POST['newsTeaserFramesAsso'] as $frameId) {
     			intval($frameId) > 0 ? $newsTeaserFrames .= ";".intval($frameId) : false;
 	    	}
@@ -1031,8 +1032,8 @@ class newsManager extends newsLibrary {
 
 	    if(empty($status)) {
 	        $status = 0;
-	        $startDate = "";
-	        $endDate = "";
+	        $startDate = "0000-00-00";
+	        $endDate = "0000-00-00";
 	    }
 
 	    $objResult = $objDatabase->Execute('INSERT

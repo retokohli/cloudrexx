@@ -76,47 +76,45 @@ class GalleryHomeContent extends GalleryLibrary {
 	/**
 	 * Returns an randomized image from database
 	 *
-	 * @global	array	$_CONFIG
-	 * @global 	array	$_ARRAYLANG
 	 * @global 	object	$objDatabase
 	 * @return 	string 	Complete <img>-tag for a randomized image
 	 */
-	function getRandomImage() {
-		global $objDatabase, $_CONFIG, $_ARRAYLANG;
+	function getRandomImage()
+	{
+		global $objDatabase;
 
-		$objResult = $objDatabase->Execute('SELECT		pics.id as id
-											FROM		'.DBPREFIX.'module_gallery_pictures		AS pics
-											INNER JOIN	'.DBPREFIX.'module_gallery_categories 	AS categories	ON categories.id = pics.catid
-											WHERE	categories.status="1" AND
-													pics.validated="1" AND
-													pics.status="1"
-										');
+		$objResult = $objDatabase->SelectLimit('SELECT		SUM(1) AS picCount
+												FROM		'.DBPREFIX.'module_gallery_pictures 		AS pics
+												INNER JOIN	'.DBPREFIX.'module_gallery_language_pics 	AS lang	ON pics.id = lang.picture_id
+												INNER JOIN	'.DBPREFIX.'module_gallery_categories		AS categories ON categories.id = pics.catid
+												WHERE	categories.status="1" AND
+														pics.validated="1" AND
+														pics.status="1" AND
+														lang.lang_id = '.$this->_intLangId, 1);
 
-		if ($objResult->RecordCount() == 0) {
+		if ($objResult === false || $objResult->RecordCount() == 0) {
 			return '';
 		} else {
-			$arrValues = array();
-			while (!$objResult->EOF) {
-				$arrValues[count($arrValues)] = $objResult->fields['id'];
-				$objResult->MoveNext();
-			}
+			$picNr = mt_rand(0, $objResult->fields['picCount']-1);
 
-			mt_srand((double)microtime()*1000000);
-			$intRandomId = $arrValues[mt_rand(0,count($arrValues)-1)];
+			$objResult = $objDatabase->SelectLimit("SELECT value FROM ".DBPREFIX."module_gallery_settings WHERE name='paging'", 1);
+			$paging = $objResult->fields['value'];
 
-			$objResult = $objDatabase->Execute('SELECT		pics.catid	AS CATID,
+			$objResult = $objDatabase->SelectLimit('SELECT	pics.catid	AS CATID,
 															pics.path	AS PATH,
 															lang.name	AS NAME
 												FROM		'.DBPREFIX.'module_gallery_pictures 		AS pics
 												INNER JOIN	'.DBPREFIX.'module_gallery_language_pics 	AS lang	ON pics.id = lang.picture_id
-												WHERE	pics.id='.$intRandomId.'	AND
+												INNER JOIN	'.DBPREFIX.'module_gallery_categories		AS categories ON categories.id = pics.catid
+												WHERE	categories.status="1" AND
+														pics.validated="1" AND
+														pics.status="1" AND
 														lang.lang_id = '.$this->_intLangId.'
-												LIMIT	1
-											');
+												ORDER BY pics.sorting', 1, $picNr);
 
-			if ($objResult->RecordCount() == 1) {
-				$strReturn = 	'<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$objResult->fields['CATID'].'" target="_self">';
-				$strReturn .=	'<img border="0" alt="'.$objResult->fields['NAME'].'" title="'.$objResult->fields['NAME'].'" src="'.$this->_strWebPath.$objResult->fields['PATH'].'" /></a>';
+			if ($objResult !== false) {
+				$strReturn = 	'<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$objResult->fields['CATID'].($picNr >= $paging ? '&amp;pos='.floor(($picNr) / $paging) : '').'" target="_self">';
+				$strReturn .=	'<img border="0" alt="'.htmlentities($objResult->fields['NAME'], ENT_QUOTES, CONTREXX_CHARSET).'" title="'.htmlentities($objResult->fields['NAME'], ENT_QUOTES, CONTREXX_CHARSET).'" src="'.$this->_strWebPath.$objResult->fields['PATH'].'" /></a>';
 				return $strReturn;
 			} else {
 				return '';
@@ -136,7 +134,10 @@ class GalleryHomeContent extends GalleryLibrary {
 	function getLastImage() {
 		global $objDatabase, $_CONFIG, $_ARRAYLANG;
 
-		$objResult = $objDatabase->Execute('SELECT		pics.catid	AS CATID,
+		$picNr = 0;
+
+		$objResult = $objDatabase->Execute('SELECT		pics.id,
+														pics.catid	AS CATID,
 														pics.path	AS PATH,
 														lang.name	AS NAME
 											FROM		'.DBPREFIX.'module_gallery_pictures 		AS pics
@@ -151,7 +152,30 @@ class GalleryHomeContent extends GalleryLibrary {
 										');
 
 		if ($objResult->RecordCount() == 1) {
-			$strReturn = 	'<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$objResult->fields['CATID'].'" target="_self">';
+			$objPaging = $objDatabase->SelectLimit("SELECT value FROM ".DBPREFIX."module_gallery_settings WHERE name='paging'", 1);
+			$paging = $objPaging->fields['value'];
+
+			$objPos = $objDatabase->Execute('SELECT		pics.id
+												FROM		'.DBPREFIX.'module_gallery_pictures 		AS pics
+												INNER JOIN	'.DBPREFIX.'module_gallery_language_pics 	AS lang 		ON pics.id = lang.picture_id
+												INNER JOIN 	'.DBPREFIX.'module_gallery_categories 		AS categories 	ON pics.catid = categories.id
+												WHERE		categories.status = "1"		AND
+															pics.validated = "1"		AND
+															pics.status = "1"			AND
+															lang.lang_id = '.$this->_intLangId.'
+												ORDER BY	pics.sorting');
+			if ($objPos !== false) {
+				while (!$objPos->EOF) {
+					if ($objPos->fields['id'] == $objResult->fields['id']) {
+						break;
+					} else {
+						$picNr++;
+					}
+					$objPos->MoveNext();
+				}
+			}
+
+			$strReturn = 	'<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery&amp;cid='.$objResult->fields['CATID'].($picNr >= $paging ? '&amp;pos='.floor(($picNr) / $paging) : '').'" target="_self">';
 			$strReturn .=	'<img border="0" alt="'.$objResult->fields['NAME'].'" title="'.$objResult->fields['NAME'].'" src="'.$this->_strWebPath.$objResult->fields['PATH'].'" /></a>';
 			return $strReturn;
 		} else {

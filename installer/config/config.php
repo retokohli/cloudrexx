@@ -63,7 +63,7 @@ $arrLanguages = array(
 );
 
 $arrFiles = array(
-	'/admin/backup' => array(
+	'/cadmin/backup' => array(
 		'mode'		=> '0777',
 		'mode_oct'	=> 0777
 	),

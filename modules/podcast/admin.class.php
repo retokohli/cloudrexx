@@ -202,11 +202,11 @@ class podcastManager extends podcastLib
 			$this->_objTpl->setVariable('PODCAST_MEDIA_TITLE_TXT',$_ARRAYLANG['TXT_PODCAST_MEDIA']);
 		}
 
-		$arrMedia = &$this->_getMedia($categoryId);
+		$pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+		$arrMedia = &$this->_getMedia($categoryId, false, $_CONFIG['corePagingLimit'], $pos);
 		$mediaCount = &$this->_getMediaCount($categoryId);
 
 		if ($mediaCount > $_CONFIG['corePagingLimit']) {
-			$pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 			$paging = getPaging($mediaCount, $pos, '&amp;cmd=podcast&amp;categoryId='.$categoryId, $_ARRAYLANG['TXT_PODCAST_MEDIA']);
 			$this->_objTpl->setVariable('PODCAST_PAGING', $paging."<br /><br />\n");
 		}

@@ -9,6 +9,8 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+require_once ASCMS_MODULE_PATH . '/calendar/calendarLib.class.php';
+
 /**
  * Headline news
  *
@@ -20,7 +22,7 @@
  * @package     contrexx
  * @subpackage  module_calendar
  */
-class calHeadlines
+class calHeadlines extends calendarLibrary
 {
 	var $_pageContent;
 	var $_objTemplate;
@@ -42,7 +44,7 @@ class calHeadlines
 
 	function getHeadlines()
 	{
-		global $_CONFIG, $objDatabase, $_LANGID;
+		global $_CONFIG, $objDatabase, $_LANGID, $objAuth, $objPerm;
 
 		$this->_objTemplate->setTemplate($this->_pageContent,true,true);
 
@@ -58,8 +60,19 @@ class calHeadlines
 
 		$this->_objTemplate->setCurrentBlock('calendar_headlines_row');
 
+
+
 		if ($_CONFIG['calendarheadlines']) {
 			$today = time();
+
+			//check access
+        	$auth = $this->_checkAccess();
+
+			if ($auth == true) {
+				$access = "";
+			} else {
+				$access = " AND access='0' ";
+			}
 
 			if ($_CONFIG['calendarheadlinescat'] == "0") {
 				$query = '	SELECT 	id
@@ -78,7 +91,7 @@ class calHeadlines
 					$query = "SELECT id, catid, startdate, pic, comment, enddate, name FROM ".DBPREFIX."module_calendar
 							  WHERE enddate > $today  AND
 							  active = 1
-							  ".$strWhere."
+							  ".$strWhere.$access."
 							  ORDER BY startdate ASC
 						  	LIMIT 0,".$_CONFIG['calendarheadlinescount'];
 				}
@@ -87,6 +100,7 @@ class calHeadlines
 				  WHERE catid = {$_CONFIG['calendarheadlinescat']}
 				  AND enddate > $today AND
 				  active = 1
+				  ".$access."
 				  ORDER BY startdate ASC
 			  	LIMIT 0,".$_CONFIG['calendarheadlinescount'];
 			}

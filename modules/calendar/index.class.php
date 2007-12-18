@@ -18,7 +18,6 @@ if (CALENDAR_MANDATE == 1) {
 } else {
     require_once ASCMS_MODULE_PATH . '/calendar'.CALENDAR_MANDATE.'/calendarLib.class.php';
 }
-require_once ASCMS_CORE_PATH.'/modulemanager.class.php';
 
 /**
  * Calendar
@@ -40,7 +39,6 @@ class Calendar extends calendarLibrary
      * @see  xml_parser_create()
      */
 
-    var $communityModul;
 
 	/**
 	* PHP5 Constructor
@@ -66,15 +64,6 @@ class Calendar extends calendarLibrary
 
     	$this->calendarLibrary($_SERVER['SCRIPT_NAME']."?section=calendar");
 	    $this->pageContent = $pageContent;
-
-	    //check community modul
-		$objModulManager = &new modulemanager();
-		$arrInstalledModules = $objModulManager->getModules();
-		if (in_array(23, $arrInstalledModules)) {
-			$this->communityModul = true;
-		} else {
-			$this->communityModul = false;
-		}
 	}
 
 
@@ -96,9 +85,8 @@ class Calendar extends calendarLibrary
     		case 'event':
     			$id = intval($_REQUEST['id']);
 
-				//check access
-    			$this->_checkAccess($id);
-
+    			//check access
+    			//if ($this->_checkAccess($id)){
 				//check export
 				if(isset($_REQUEST['export'])){
 					switch($_REQUEST['export']){
@@ -361,7 +349,7 @@ class Calendar extends calendarLibrary
      */
 	function _showEventList()
 	{
-		global $objDatabase, $_ARRAYLANG, $_CONFIG, $objAuth, $objPerm;
+		global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
 		$this->_objTpl->setTemplate($this->pageContent);
 
@@ -633,6 +621,13 @@ class Calendar extends calendarLibrary
 			exit;
 		}
 
+		//check access
+		$auth = $this->_checkAccess();
+		if ($auth == true) {
+			$where = "";
+		} else {
+			$where = " AND access='0' ";
+		}
 
 		$this->_objTpl->setVariable(array(
 			"TXT_CALENDAR_STARTDATE" => $_ARRAYLANG['TXT_CALENDAR_STARTDATE'],
@@ -650,7 +645,7 @@ class Calendar extends calendarLibrary
 				mod_mandate = ".$this->mandate." AND
 				((startdate BETWEEN $startdate AND $enddate) OR
 				(enddate BETWEEN $startdate AND $enddate) OR
-				(startdate < $startdate AND enddate > $startdate))
+				(startdate < $startdate AND enddate > $startdate)) ".$where."
 				ORDER BY startdate ASC";
 		} else {
 			$query = "SELECT * FROM ".DBPREFIX."module_calendar
@@ -658,7 +653,7 @@ class Calendar extends calendarLibrary
 				mod_mandate = ".$this->mandate." AND
 				((startdate BETWEEN $startdate AND $enddate) OR
 				(enddate BETWEEN $startdate AND $enddate) OR
-				(startdate < $startdate AND enddate > $startdate))
+				(startdate < $startdate AND enddate > $startdate)) ".$where."
 				ORDER BY startdate ASC";
 		}
 
@@ -676,7 +671,7 @@ class Calendar extends calendarLibrary
      */
 	function showEvent()
 	{
-		global $_ARRAYLANG;
+		global $_ARRAYLANG, $objAuth, $objPerm;
 
 		if (!isset($_GET['id'])) {
 		    if ($this->mandate == 1) {
@@ -688,7 +683,14 @@ class Calendar extends calendarLibrary
 		}
 		$this->_objTpl->setTemplate($this->pageContent);
 
-		$this->getNoteData(intval($_GET['id']), "show", 0);
+		$access = $this->getNoteData(intval($_GET['id']), "show", 0);
+
+		if ($access == true) {
+			if (!$this->_checkAccess(intval($_GET['id']))) {
+				header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=calendar");
+				exit;
+			}
+		}
 
 		$this->_objTpl->setVariable(array(
 			'TXT_CALENDAR_CAT'            	=> $_ARRAYLANG['TXT_CALENDAR_CAT'],
