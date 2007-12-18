@@ -997,7 +997,7 @@ class ForumLibrary {
 	function _getLatestEntries(){
 		global $objDatabase, $_ARRAYLANG;
 		$index = 0;
-		$query = "	SELECT `id`, `category_id`, `thread_id`, `subject`, `user_id`, `time_created` FROM `".DBPREFIX."module_forum_postings`
+		$query = "	SELECT `id`, `category_id`, `thread_id`, `subject`, `user_id`, max(`time_created`) as `time_created` FROM `".DBPREFIX."module_forum_postings`
 					GROUP BY `thread_id` ORDER by `time_created` DESC";
 		if(($objRS = $objDatabase->SelectLimit($query, $this->_arrSettings['latest_entries_count'])) !== false){
 			while(!$objRS->EOF){
