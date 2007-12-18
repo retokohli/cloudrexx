@@ -249,6 +249,7 @@ Modul: News-Syndication
 - Die RSS Feed werden unter PHP4 mit der Latin1 Variante korrekt eingelesen.
 - Redundante Einträge von NewsML Dokumenten werden erkannt und entfernt.
 - Die Einträge eines RSS Feeds werden korrekt verlinkt.
+- RSS Feeds welche URL Modifiers im Link enthalten werden korrekt eingelesen.
 
 Modul: Newsletter
 - Zuweisung der Anrede bei einem Empfänger.
@@ -281,9 +282,7 @@ Modul: Sitemap
 Modul: Podcast
 - Die neusten Einträge auf der Startseite werden von dem URL Modifier "pos=x"
   nicht beeinträchtigt.
-
-
-  
+ 
 Modul: Immobilien
 - Die Suche funktionierte nicht richtig.
 - Wenn bei einer Suche keine Objekte gefunden werden im Frontend kommt jetzt 
