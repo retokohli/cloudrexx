@@ -157,7 +157,8 @@ EOF;
 			$categories = $categoryId;
 		}
 		if ($this->_objTpl->blockExists('podcast_media')) {
-			$arrMedia = &$this->_getMedia($categories, true);
+			$pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+			$arrMedia = &$this->_getMedia($categories, true, $_CONFIG['corePagingLimit'], $pos);
 			if (count($arrMedia) > 0) {
 				foreach ($arrMedia as $mediumId => $arrMedium) {
 					$this->_objTpl->setVariable(array(
@@ -181,7 +182,6 @@ EOF;
 			$mediaCount = &$this->_getMediaCount($categoryId, true);
 
 			if ($mediaCount > $_CONFIG['corePagingLimit']) {
-				$pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 				$paging = getPaging($mediaCount, $pos, '&amp;section=podcast&amp;cid='.$categoryId, $_ARRAYLANG['TXT_PODCAST_MEDIA']);
 				$this->_objTpl->setVariable('PODCAST_PAGING', $paging);
 			}

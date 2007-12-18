@@ -389,7 +389,7 @@ class newsletter extends NewsletterLib
 									array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK']);
 									$showForm = false;
 								} else {
-									$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_addslashes($recipientEmail)."'");
+									$objDatabase->Execute("DELETE tblU, tblR FROM ".DBPREFIX."module_newsletter_user AS tblU, ".DBPREFIX."module_newsletter_rel_user_cat AS tblR WHERE tblU.email='".contrexx_addslashes($recipientEmail)."' AND tblR.user = tblU.id");
 									array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL']);
 								}
 							} else {

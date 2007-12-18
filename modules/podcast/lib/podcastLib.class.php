@@ -106,12 +106,11 @@ class podcastLib
     	$this->_youTubeIdRegexJS = '.*[\\?&/]v[=/]("+youtubeIdCharacters+"{"+youtubeIdLength+"}).*';
 	}
 
-	function _getMedia($ofCategory = false, $isActive = false, $limit = 0)
+	function _getMedia($ofCategory = false, $isActive = false, $limit = 0, $pos = 0)
 	{
 		global $objDatabase, $_CONFIG, $_LANGID;
 		$arrMedia = array();
 		$cat = false;
-		$pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 		$sqlLimit = ($limit == 0) ? $_CONFIG['corePagingLimit'] : $limit;
 		if(is_array($ofCategory)){
 			$cat = implode(',', $ofCategory);

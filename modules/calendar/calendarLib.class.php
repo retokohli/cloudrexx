@@ -100,12 +100,10 @@ class calendarLibrary
     {
     	global $objDatabase, $objAuth, $objPerm;
     	
-    	if (empty($this->communityModul)) {
-    	    $this->communityModul = "";
-    	}
 
     	if(!empty($_COOKIE['PHPSESSID'])) {
 	    	if (isset($id)) {
+
 		    	//check access
 				$query = "SELECT access
 							FROM ".DBPREFIX."module_calendar
@@ -115,12 +113,9 @@ class calendarLibrary
 				$objResult = $objDatabase->SelectLimit($query, 1);
 
 				if ($objResult->fields['access'] == 1) {
-					if (!$this->communityModul == '1') {
-                        header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=calendar'.$this->mandateLink);
-						exit;
-					}else{
 						if ($objAuth->checkAuth()) {
 							if (!$objPerm->checkAccess(116, 'static')) {
+							echo 5;
 								header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
 								exit;
 							}
@@ -130,12 +125,7 @@ class calendarLibrary
 							exit;
 						}
 					}
-				}
 	    	} else {
-	    		if (!$this->communityModul == '1') {
-	    			return false;
-					exit;
-				}else{
 					if ($objAuth->checkAuth()) {
 						if (!$objPerm->checkAccess(116, 'static')) {
 							return false;
@@ -146,7 +136,6 @@ class calendarLibrary
 						exit;
 					}
 				}
-	    	}
 
 			return true;
     	} else {
@@ -988,10 +977,12 @@ class calendarLibrary
 			case 0:
 				$public	 		= 'selected="selected"';
 				$community 		= '';
+				$return 		= false;
 				break;
 			case 1:
 				$community	 	= 'selected="selected"';
 				$public 		= '';
+				$return 		= true;
 				break;
 		}
 
@@ -1117,6 +1108,8 @@ class calendarLibrary
 				$this->_objTpl->hideBlock('calendarRegistration');
 			}
 		}
+
+		return $return;
 	}
 
 

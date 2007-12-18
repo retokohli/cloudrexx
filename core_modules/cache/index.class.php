@@ -1,6 +1,6 @@
 <?php
 /**
- * Cache 
+ * Cache
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.1
@@ -16,7 +16,7 @@ require_once ASCMS_CORE_MODULE_PATH.'/cache/lib/Exceptions.lib.php';
 require_once ASCMS_CORE_MODULE_PATH.'/cache/lib/cacheLib.class.php';
 
 /**
- * Cache 
+ * Cache
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.1
@@ -42,7 +42,7 @@ class Cache extends cacheLib {
 	function Cache() {
 		global $_CONFIG;
 
-		if($_CONFIG['cacheEnabled'] == 'on') {
+		if($_CONFIG['cacheEnabled'] == 'on' && (!isset($_REQUEST['caching']) || $_REQUEST['caching'] != '0')) {
 			if (is_dir(ASCMS_CACHE_PATH)) {
 				if (is_writable(ASCMS_CACHE_PATH)) {
 					$this->strCachePath = ASCMS_CACHE_PATH.'/';

@@ -38,6 +38,9 @@ Allgemein
 - Neue Template-Ansicht für PDF-Generierung. Im "Layout & Design" kann das
   PDF-Template verwaltet werden und ein neuer Platzhalter [PDF_URL] wurde
   hinzugefügt.
+- Mit dem URL Modifier caching=0 kann das Caching System deaktiviert werden,
+  damit die aufgerufene Seite aus der Datenbank und nicht aus dem Cache
+  ausgegeben wird.
 
 Alias Verwaltung
 - Aliase können nur bei vorhandener .htaccess Datei verwaltet werden.
@@ -90,6 +93,15 @@ Media Manager/Bilderverwaltung
 - Es werden mehr Zeichen erlaubt in Dateinamen.
 - Dateien können in einem Schritt überschrieben werden beim Upload.
 
+Modul: Bildergalerie
+- Die Platzhalter [[GALLERY_RANDOM]] und [[GALLERY_LATEST]] verweisen auf die
+  entsprechende Kategorienseite auf welcher das ausgegebenen Bild aufgelistet
+  wird.
+
+Modul: Block System
+- Die Benutzeroberfläche fürs Erstellen und Editieren der einzelnen Blöcke wurde
+  verbessert und intuitiver gestaltet.
+
 Modul: Gästebuch
 - Konfigurationsoption damit alle Einträge in jeder Sprache angezeigt werden.
 
@@ -100,6 +112,9 @@ Modul: Kalender
   Diese An- und Abmeldungen können im Backend verwaltet und Exportiert (CSV)
   werden.
 - Neue Gestaltung der Inhaltsseiten
+
+Modul: News-Syndication
+- Die Redundanzüberprüfung der NewsML Dokumente erfolgt direkt in der Datenbank.
 
 Modul: Newsletter
 - Export wurde angepasst (one-click export). Es können einzelne Listen oder
@@ -216,6 +231,10 @@ Modul: Bildergalerie
 - Beim Bereich "Bilder bestätigen" werden alle Kategorien aufgelistet und nicht
   nur die Aktiven.
 
+Modul: Block System
+- Anzeige der Blöcke im globalen Platzhalter wurde verbessert und funktioniert
+  nun fehlerfrei.
+
 Modul: Gästebuch
 - Das Erstellungsdatum eines Eintrages wird bei dessen Aktualisierung nicht
   mehr geändert.
@@ -236,6 +255,9 @@ Modul: Newsletter
 - Das automatische Löschen von Empfängern funktioniert, wenn die Option
   "Gelöscht" bei der System Konfiguration "Zustand ausgetragener Empfänger"
   gewählt wurde.
+- Kann, nachdem sich ein Empfänger registriert hat, kein Bestätigungs-E-Mail
+  verwendet werden, wird nicht nur der Empfänger, sondern auch dessen
+  Beziehungen zu den Listen gelöscht.
 
 Modul: Online Desk
 - Reservierungen vom Januar bis September werden im Kalender angezeigt.
@@ -256,11 +278,11 @@ Modul: Online Shop
 Modul: Sitemap
 - Es werden nur die Seiten aufgelistet, auf welche der Benutzer zugreifen darf.
 
-Modul: Block System
-- Die Benutzeroberfläche fürs Erstellen und Editieren der einzelnen Blöcke wurde
-  verbessert und intuitiver gestaltet.
-- Anzeige der Blöcke im globalen Platzhalter wurde verbessert und funktioniert
-  nun fehlerfrei.
+Modul: Podcast
+- Die neusten Einträge auf der Startseite werden von dem URL Modifier "pos=x"
+  nicht beeinträchtigt.
+
+
   
 Modul: Immobilien
 - Die Suche funktionierte nicht richtig.
