@@ -76,6 +76,7 @@ class newsHeadlines{
 				$this->_objTemplate->setVariable("HEADLINE_LINK", (empty($objResult->fields['redirect'])) ? "<a href=\"?section=news&amp;cmd=details&amp;newsid=".$objResult->fields['id']."\" title=\"".htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET)."\">".htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET)."</a>" : '<a href="'.$objResult->fields['redirect'].'" title="'.htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET).'</a>');
 				$this->_objTemplate->setVariable("HEADLINE_IMAGE_PATH", $objResult->fields['teaser_image_path']);
 				$this->_objTemplate->setVariable("HEADLINE_TEXT", nl2br($objResult->fields['teaser_text']));
+				$this->_objTemplate->setVariable("HEADLINE_ID", intval($objResult->fields['id']));
 				$this->_objTemplate->parseCurrentBlock();
 				$objResult->MoveNext();
 			}
