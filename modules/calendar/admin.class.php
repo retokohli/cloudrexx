@@ -1042,7 +1042,7 @@ class calendarManager extends calendarLibrary
 			$groups					= "";
 			$all_groups				= 0;
 			$public					= 0;
-			$registrationSubscriber	= "";
+			$registrationSubscriber	= 0;
 		}
 
 	    if(!empty($id)) {
@@ -1100,10 +1100,10 @@ class calendarManager extends calendarLibrary
 						if ($objResultFields !== false) {
 							//input fields
 							foreach ($registrationArrFieldStatus as $fieldKey => $fieldStatus) {
-								$fieldId		= $registrationArrFieldIds[$fieldKey];
+								$fieldId		= intval($registrationArrFieldIds[$fieldKey]);
 								$fieldName		= $registrationArrFieldName[$fieldKey];
 								$fieldType		= $registrationArrFieldType[$fieldKey];
-								$fieldRequired	= $registrationArrFieldRequired[$fieldKey];
+								$fieldRequired	= intval($registrationArrFieldRequired[$fieldKey]);
 								$fieldOrder		= $registrationArrFieldOrder[$fieldKey];
 
 								$query = "INSERT INTO ".DBPREFIX."module_calendar_form_fields (`id`,

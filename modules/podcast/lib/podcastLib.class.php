@@ -1038,7 +1038,7 @@ EOF;
 				$mediumThumbnail = trim($_POST['podcast_medium_thumbnail']);
 			}
 
-			if (isset($_POST['podcast_youtubeID'])) {
+			if (!empty($_POST['podcast_youtubeID'])) {
 				$mediumYoutubeID = trim($_POST['podcast_youtubeID']);
 				$mediumSize = 0;
 				$mediumTemplate = $this->_getYoutubeTemplate();

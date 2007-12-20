@@ -94,7 +94,7 @@ class FileBrowser {
 	 */
     function _checkForModule($strModuleName){
         global $objDatabase;
-        if( ($objRS = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."modules WHERE name = '".$strModuleName."' AND status = 'y'")) != false){
+        if( ($objRS = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."modules WHERE name = '".$strModuleName."' AND status = 'y'", 1)) != false){
             if($objRS->RecordCount() > 0){
                 return true;
             }

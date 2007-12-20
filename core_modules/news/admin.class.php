@@ -7,6 +7,7 @@
  * @package     contrexx
  * @subpackage  core_module_news
  * @todo        Edit PHP DocBlocks!
+ * 				The news entry management is bulky! It should be rewritten in OOP
  */
 
 /**
@@ -508,13 +509,87 @@ class newsManager extends newsLibrary {
     */
     function add()
     {
-	    global $_ARRAYLANG, $_CONFIG;
+	    global $_ARRAYLANG, $_CONFIG, $objDatabase;
 
 	    if (!count($this->getCategories())) {
     		return $this->manageCategories();
     	}
 
-    	$this->_objTpl->loadTemplateFile('module_news_modify.html',true,true);
+	    $objValidator = &new FWValidator();
+
+	    if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['newsDate'], $arrDate)) {
+	    	$date = mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
+	    } else {
+	    	$date = time();
+	    }
+	    $newstitle 				= contrexx_strip_tags($_POST['newsTitle']);
+	    $newstext 				= contrexx_addslashes($_POST['newsText']);
+	    $newstext 				= $this->filterBodyTag($newstext);
+	    $newsredirect 			= contrexx_strip_tags($_POST['newsRedirect']);
+	    $newssource				= $objValidator->getUrl(contrexx_strip_tags($_POST['newsSource']));
+	    $newsurl1 				= $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl1']));
+	    $newsurl2 				= $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
+	    $newscat 				= intval($_POST['newsCat']);
+	    $userid 				= intval($_SESSION['auth']['userid']);
+	    $startDate				= (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['startDate'])) ? '0000-00-00' : $_POST['startDate'];
+		$endDate				= (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['endDate'])) ? '0000-00-00' : $_POST['endDate'];
+	    $status 				= intval($_POST['status']);
+	    $newsTeaserOnly 		= isset($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
+	    $newsTeaserText 		= contrexx_addslashes($_POST['newsTeaserText']);
+	    $newsTeaserImagePath 	= contrexx_strip_tags($_POST['newsTeaserImagePath']);
+	    $newsTeaserShowLink 	= isset($_POST['newsTeaserShowLink']) ? intval($_POST['newsTeaserShowLink']) : intval(!count($_POST));
+	    $newsTeaserFrames		= '';
+	    $arrNewsTeaserFrames = array();
+
+		if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
+	    	foreach ($_POST['newsTeaserFramesAsso'] as $frameId) {
+	    		$arrNewsTeaserFrames[] = intval($frameId);
+    			intval($frameId) > 0 ? $newsTeaserFrames .= ";".intval($frameId) : false;
+	    	}
+	    }
+
+	    if(empty($status)) {
+	        $status = 0;
+	        $startDate = "0000-00-00";
+	        $endDate = "0000-00-00";
+	    }
+
+	    if (!empty($newstitle)){
+    	    $objResult = $objDatabase->Execute('INSERT
+	    									INTO '.DBPREFIX.'module_news
+	    									SET	date='.$date.',
+											    title="'.$newstitle.'",
+											    text="'.$newstext.'",
+											    redirect="'.$newsredirect.'",
+											    source="'.$newssource.'",
+											    url1="'.$newsurl1.'",
+											    url2="'.$newsurl2.'",
+											    catid='.$newscat.',
+											    lang='.$this->langId.',
+												startdate="'.$startDate.'",
+												enddate="'.$endDate.'",
+												status='.$status.',
+												validated="1",
+												teaser_only="'.$newsTeaserOnly.'",
+												teaser_frames="'.$newsTeaserFrames.'",
+												teaser_text="'.$newsTeaserText.'",
+												teaser_show_link="'.$newsTeaserShowLink.'",
+												teaser_image_path="'.$newsTeaserImagePath.'",
+											    userid='.$userid.',
+											    changelog='.$date
+	    								);
+
+	        if ($objResult !== false) {
+	    	    $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
+				$this->createRSS();
+    	    	return $this->overview();
+	        } else {
+	        	$this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+	        }
+        }
+
+
+    	$this->_objTpl->loadTemplateFile('module_news_modify.html');
 		$this->pageTitle = $_ARRAYLANG['TXT_CREATE_NEWS'];
 
 		require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
@@ -522,7 +597,11 @@ class newsManager extends newsLibrary {
 
     	$frameIds = "";
 		foreach ($objTeaser->arrTeaserFrameNames as $frameName => $frameId) {
-			$frameIds .= "<option value=\"".$frameId."\">".$frameName."</option>\n";
+			if (in_array($frameId, $arrNewsTeaserFrames)) {
+				$associatedFrameIds .= "<option value=\"".$frameId."\">".$frameName."</option>\n";
+			} else {
+				$frameIds .= "<option value=\"".$frameId."\">".$frameName."</option>\n";
+			}
 		}
 
 	    $this->_objTpl->setVariable(array(
@@ -554,25 +633,30 @@ class newsManager extends newsLibrary {
 	        'TXT_NEWS_INSERT_LINK'			=> $_ARRAYLANG['TXT_NEWS_INSERT_LINK'],
 	        'TXT_NEWS_BASIC_DATA'			=> $_ARRAYLANG['TXT_BASIC_DATA'],
 			'TXT_NEWS_MORE_OPTIONS'			=> $_ARRAYLANG['TXT_MORE_OPTIONS'],
-			'NEWS_TEXT'           	 		=> get_wysiwyg_editor('newsText', '', 'active'),
+			'NEWS_TEXT'           	 		=> get_wysiwyg_editor('newsText', contrexx_stripslashes($newstext), 'active'),
+			'NEWS_TITLE'					=> contrexx_stripslashes(htmlspecialchars($newstitle, ENT_QUOTES, CONTREXX_CHARSET)),
 			'NEWS_FORM_ACTION'       		=> "add",
 			'NEWS_STORED_FORM_ACTION'		=> "add",
-			'NEWS_STATUS'         	 		=> "checked",
+			'NEWS_STATUS'         	 		=> $status ? 'checked="checked"' : '',
 			'NEWS_ID'         		 		=> "0",
 			'NEWS_TOP_TITLE'         		=> $_ARRAYLANG['TXT_CREATE_NEWS'],
-			'NEWS_CAT_MENU'          		=> $this->getCategoryMenu($this->langId),
-			'NEWS_STARTDATE'         		=> "",
-			'NEWS_ENDDATE'           		=> "",
-			'NEWS_DATE'              		=> date("Y-m-d"),
+			'NEWS_CAT_MENU'          		=> $this->getCategoryMenu($this->langId, $newscat),
+			'NEWS_STARTDATE'         		=> $startDate,
+			'NEWS_ENDDATE'           		=> $endDate,
+			'NEWS_DATE'              		=> date('H:i:s d.m.Y',$objResult->fields['date']),
 			'NEWS_CREATE_DATE'		 		=> date(ASCMS_DATE_FORMAT),
+			'NEWS_SOURCE'					=> htmlentities($newssource, ENT_QUOTES, CONTREXX_CHARSET),
+			'NEWS_URL1'						=> htmlentities($newsurl1, ENT_QUOTES, CONTREXX_CHARSET),
+			'NEWS_URL2'						=> htmlentities($newsurl2, ENT_QUOTES, CONTREXX_CHARSET),
 			'NEWS_SUBMIT_NAME_TEXT'	 		=> $_ARRAYLANG['TXT_STORE'],
-			'NEWS_TEASER_SHOW_LINK_CHECKED'	=> 'checked="checked"',
-			'NEWS_TEASER_TEXT'				=> '',
-			'NEWS_TEASER_TEXT_LENGTH'		=> '0',
-			'NEWS_TYPE_SELECTION_CONTENT'	=> 'style="display: block;"',
-			'NEWS_TYPE_SELECTION_REDIRECT'	=> 'style="display: none;"',
-			'NEWS_TYPE_CHECKED_CONTENT'		=> 'checked="checked"',
-			'NEWS_TYPE_CHECKED_REDIRECT'	=> ''
+			'NEWS_TEASER_SHOW_LINK_CHECKED'	=> $newsTeaserShowLink ? 'checked="checked"' : '',
+			'NEWS_TEASER_TEXT'				=> htmlentities(contrexx_stripslashes($newsTeaserText), ENT_QUOTES, CONTREXX_CHARSET),
+			'NEWS_TEASER_TEXT_LENGTH'		=> strlen($newsTeaserText),
+			'NEWS_TYPE_SELECTION_CONTENT'	=> empty($newsredirect) ? 'style="display: block;"' : 'style="display: none"',
+			'NEWS_TYPE_SELECTION_REDIRECT'	=> empty($newsredirect) ? 'style="display: none;"' : 'style="display: block"',
+			'NEWS_TYPE_CHECKED_CONTENT'		=> empty($newsredirect) ? 'checked="checked"' : '',
+			'NEWS_TYPE_CHECKED_REDIRECT'	=> empty($newsredirect) ? '' : 'checked="checked"',
+			'NEWS_TEASER_IMAGE_PATH'		=> htmlentities($newsTeaserImagePath, ENT_QUOTES, CONTREXX_CHARSET),
 		));
 
 		if ($_CONFIG['newsTeasersStatus'] == '1') {
@@ -586,20 +670,14 @@ class newsManager extends newsLibrary {
 		        'TXT_DESELECT_ALL'				=> $_ARRAYLANG['TXT_DESELECT_ALL'],
 		        'TXT_ASSOCIATED_BOXES'			=> $_ARRAYLANG['TXT_ASSOCIATED_BOXES'],
 				'NEWS_HEADLINES_TEASERS_TXT'	=> $_ARRAYLANG['TXT_HEADLINES'].' / '.$_ARRAYLANG['TXT_TEASERS'],
-				'NEWS_USE_ONLY_TEASER_CHECKED'	=> "",
+				'NEWS_USE_ONLY_TEASER_CHECKED'	=> $newsTeaserOnly ? 'checked="checked"' : '',
 				'NEWS_TEASER_FRAMES'			=> $frameIds,
-				'NEWS_TEASER_ASSOCIATED_FRAMES'	=> ''
+				'NEWS_TEASER_ASSOCIATED_FRAMES'	=> $associatedFrameIds
 			));
 		} else {
 			$this->_objTpl->hideBlock('newsTeaserOptions');
 			$this->_objTpl->setVariable('NEWS_HEADLINES_TEASERS_TXT', $_ARRAYLANG['TXT_HEADLINES']);
 		}
-
-		if (isset($_POST['newsTitle']) AND !empty($_POST['newsTitle'])){
-    	    $this->insert();
-    	    $this->createRSS();
-    	    $this->overview();
-        }
     }
 
     /**
@@ -986,89 +1064,6 @@ class newsManager extends newsLibrary {
     		}
     	}
     }
-
-
-
-    /**
-    * Insert news
-    *
-    * @global	 object    $objDatabase
-    * @global	 array     $_POST[*]
-    * @return    boolean   result
-    */
-    function insert(){
-	    global $objDatabase, $_ARRAYLANG;
-
-	    $objValidator = &new FWValidator();
-
-	    if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['newsDate'], $arrDate)) {
-	    	$date = mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
-	    } else {
-	    	$date = time();
-	    }
-	    $newstitle 				= contrexx_strip_tags($_POST['newsTitle']);
-	    $newstext 				= contrexx_addslashes($_POST['newsText']);
-	    $newstext 				= $this->filterBodyTag($newstext);
-	    $newsredirect 			= contrexx_strip_tags($_POST['newsRedirect']);
-	    $newssource				= $objValidator->getUrl(contrexx_strip_tags($_POST['newsSource']));
-	    $newsurl1 				= $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl1']));
-	    $newsurl2 				= $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
-	    $newscat 				= intval($_POST['newsCat']);
-	    $userid 				= intval($_SESSION['auth']['userid']);
-	    $startDate				= (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['startDate'])) ? '0000-00-00' : $_POST['startDate'];
-		$endDate				= (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['endDate'])) ? '0000-00-00' : $_POST['endDate'];
-	    $status 				= intval($_POST['status']);
-	    $newsTeaserOnly 		= isset($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
-	    $newsTeaserText 		= contrexx_addslashes($_POST['newsTeaserText']);
-	    $newsTeaserImagePath 	= contrexx_strip_tags($_POST['newsTeaserImagePath']);
-	    $newsTeaserShowLink 	= isset($_POST['newsTeaserShowLink']) ? intval($_POST['newsTeaserShowLink']) : 0;
-	    $newsTeaserFrames		= '';
-
-		if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
-	    	foreach ($_POST['newsTeaserFramesAsso'] as $frameId) {
-    			intval($frameId) > 0 ? $newsTeaserFrames .= ";".intval($frameId) : false;
-	    	}
-	    }
-
-	    if(empty($status)) {
-	        $status = 0;
-	        $startDate = "0000-00-00";
-	        $endDate = "0000-00-00";
-	    }
-
-	    $objResult = $objDatabase->Execute('INSERT
-	    									INTO '.DBPREFIX.'module_news
-	    									SET	date='.$date.',
-											    title="'.$newstitle.'",
-											    text="'.$newstext.'",
-											    redirect="'.$newsredirect.'",
-											    source="'.$newssource.'",
-											    url1="'.$newsurl1.'",
-											    url2="'.$newsurl2.'",
-											    catid='.$newscat.',
-											    lang='.$this->langId.',
-												startdate="'.$startDate.'",
-												enddate="'.$endDate.'",
-												status='.$status.',
-												validated="1",
-												teaser_only="'.$newsTeaserOnly.'",
-												teaser_frames="'.$newsTeaserFrames.'",
-												teaser_text="'.$newsTeaserText.'",
-												teaser_show_link='.$newsTeaserShowLink.',
-												teaser_image_path="'.$newsTeaserImagePath.'",
-											    userid='.$userid.',
-											    changelog='.$date
-	    								);
-
-        if ($objResult !== false){
-    	    $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
-        } else{
-        	$this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
-        }
-    }
-
-
-
 
     /**
     * Add or edit the news categories
