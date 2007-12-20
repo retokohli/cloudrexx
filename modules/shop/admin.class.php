@@ -2923,8 +2923,8 @@ class shopmanager extends ShopLibrary {
         $shopArticleActive        = 1;
         $shopB2B                  = 1;
         $shopB2C                  = 1;
-        $shopStartdate            = '';
-        $shopEnddate              = '';
+        $shopStartdate            = '0000-00-00 00:00:00';
+        $shopEnddate              = '0000-00-00 00:00:00';
         $shopImageName            = '';
 
 // TODO: Is $shopTempThumbnailName, and its session equivalent,
@@ -2963,8 +2963,8 @@ class shopmanager extends ShopLibrary {
                 (isset($_POST['shopArticleActive']) ? 1 : 0);
             $shopB2B                  = intval($_POST['shopB2B']);
             $shopB2C                  = intval($_POST['shopB2C']);
-            $shopStartdate            = !empty($_POST['shopStartdate']) ? contrexx_addslashes($_POST['shopStartdate']) : 0;
-            $shopEnddate              = !empty($_POST['shopEnddate']) ? contrexx_addslashes($_POST['shopEnddate']) : 0;
+            $shopStartdate            = !empty($_POST['shopStartdate']) ? contrexx_addslashes($_POST['shopStartdate']) : '0000-00-00 00:00:00';
+            $shopEnddate              = !empty($_POST['shopEnddate']) ? contrexx_addslashes($_POST['shopEnddate']) : '0000-00-00 00:00:00';
             // begin image attributes
             // these are all unused!
 //            $shopImageWidth           = intval($_POST['shopImageWidth']);

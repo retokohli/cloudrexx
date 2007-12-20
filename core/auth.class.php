@@ -459,7 +459,7 @@ echo("Auth::getUsername(): ERROR: No or invalid current username!<br />");
                                         SET userid=".intval($_SESSION['auth']['userid']).",
                                             datetime = ".$objDatabase->DBTimeStamp(time()).",
                                             useragent = '".$httpUserAgent."',
-                                            userlanguage = '".$httpAcceptLanguage."',
+                                            userlanguage = '".substr($httpAcceptLanguage, 0, 25)."',
                                             remote_addr = '".strip_tags($_SERVER['REMOTE_ADDR'])."',
                                             remote_host = '".$remote_host."',
                                             http_x_forwarded_for = '".(isset($_SESSION['HTTP_X_FORWARDED_FOR']) ? strip_tags($_SERVER['HTTP_X_FORWARDED_FOR']) : '')."',

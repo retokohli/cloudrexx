@@ -3470,9 +3470,9 @@ right after the customer logs in!
             $this->objTemplate->hideBlock("shopConfirm");
             // store the customer, register the order
             $customer_ip      = htmlspecialchars($_SERVER['REMOTE_ADDR'], ENT_QUOTES, CONTREXX_CHARSET);
-            $customer_host    = htmlspecialchars(@gethostbyaddr($_SERVER['REMOTE_ADDR']), ENT_QUOTES, CONTREXX_CHARSET);
-            $customer_lang    = htmlspecialchars(getenv('HTTP_ACCEPT_LANGUAGE'), ENT_QUOTES, CONTREXX_CHARSET);
-            $customer_browser = htmlspecialchars(getenv('HTTP_USER_AGENT'), ENT_QUOTES, CONTREXX_CHARSET);
+            $customer_host    = substr(htmlspecialchars(@gethostbyaddr($_SERVER['REMOTE_ADDR']), ENT_QUOTES, CONTREXX_CHARSET), 0, 100);
+            $customer_lang    = substr(htmlspecialchars(getenv('HTTP_ACCEPT_LANGUAGE'), ENT_QUOTES, CONTREXX_CHARSET), 0, 255);
+            $customer_browser = substr(htmlspecialchars(getenv('HTTP_USER_AGENT'), ENT_QUOTES, CONTREXX_CHARSET), 0, 100);
             if (!$this->objCustomer) {
                 // new customer
                 $this->objCustomer = new Customer(
@@ -3601,7 +3601,7 @@ right after the customer logs in!
                     );
                 $productQuantity = $arrProduct['quantity'];
                 $productVatId    = $objResult->fields['vat_id'];
-                $productVatRate  = ($productVatId ? $this->objVat->getRate($productVatId) : '0.00');
+                $productVatRate  = ($productVatId && $this->objVat->getRate($productVatId) ? $this->objVat->getRate($productVatId) : '0.00');
                 $productWeight   = $objResult->fields['weight']; // grams
                 if ($productWeight == '') { $productWeight = 0; }
                 // Test the distribution method for delivery
@@ -3616,8 +3616,8 @@ right after the customer logs in!
                         price, quantity, vat_percent, weight
                     ) VALUES (
                         $orderid, $productId, '$productName',
-                        $productPrice, $productQuantity,
-                        $productVatRate, $productWeight
+                        '$productPrice', '$productQuantity',
+                        '$productVatRate', '$productWeight'
                     )
                 ";
                 $objResult = $objDatabase->Execute($query);
