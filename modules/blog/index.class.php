@@ -321,9 +321,9 @@ class Blog extends BlogLibrary  {
 				
 				$this->_objTpl->setVariable(array(
 					'BLOG_DETAILS_COMMENT_ADD_MESSAGE_ID'		=>	$intMessageId,
-					'BLOG_DETAILS_COMMENT_ADD_NAME'				=>	($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_Name" value="'.$strName.'" style="width: 200px;" />' : $arrUserInfos['name'],
-					'BLOG_DETAILS_COMMENT_ADD_EMAIL'			=>	($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_EMail" value="'.$strEMail.'" style="width: 200px;" />' : $arrUserInfos['email'],
-					'BLOG_DETAILS_COMMENT_ADD_WWW'				=>	($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_WWW" value="'.$strWWW.'" style="width: 200px;" />' : $arrUserInfos['www'],
+					'BLOG_DETAILS_COMMENT_ADD_NAME'				=>	($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_Name" value="'.$strName.'" class="blogCommentInput" />' : $arrUserInfos['name'],
+					'BLOG_DETAILS_COMMENT_ADD_EMAIL'			=>	($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_EMail" value="'.$strEMail.'" class="blogCommentInput" />' : $arrUserInfos['email'],
+					'BLOG_DETAILS_COMMENT_ADD_WWW'				=>	($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_WWW" value="'.$strWWW.'" class="blogCommentInput" />' : $arrUserInfos['www'],
 					'BLOG_DETAILS_COMMENT_ADD_SUBJECT'			=>	$strSubject,
 					'BLOG_DETAILS_COMMENT_ADD_COMMENT'			=>	$strEditor,
 					'BLOG_DETAILS_COMMENT_ADD_SPAM_URL'			=>	$objCaptcha->getUrl(),
