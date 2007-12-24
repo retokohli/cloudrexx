@@ -1743,7 +1743,7 @@ class BlogAdmin extends BlogLibrary {
     			$this->_objTpl->setVariable(array(
     				'OVERVIEW_NETWORK_ROWCLASS'			=>	($intEntryCounter % 2 == 1) ? 'row1' : 'row2',
     				'OVERVIEW_NETWORK_ID'				=>	$intNetworkId,
-    				'OVERVIEW_NETWORK_ICON'				=>	$arrNetworkValues['icon_img'],
+    				'OVERVIEW_NETWORK_ICON'				=>	'<img src="../'.$arrNetworkValues['icon'].'" title="'.$arrNetworkValues['name'].'" alt="'.$arrNetworkValues['name'].'" />',
     				'OVERVIEW_NETWORK_NAME'				=>	$arrNetworkValues['name'],
     				'OVERVIEW_NETWORK_URL'				=>	$arrNetworkValues['submit'],
     				'OVERVIEW_NETWORK_LANGUAGES'		=>	$strActivatedLanguages
