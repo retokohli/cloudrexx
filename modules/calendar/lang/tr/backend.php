@@ -214,7 +214,7 @@ $_ARRAYLANG['TXT_CALENDAR_HOST_URL'] = "Url";
 $_ARRAYLANG['TXT_SUBMIT_SIGN_OFF'] = "Markierte abmelden";
 $_ARRAYLANG['TXT_SUBMIT_SIGN_ON'] = "Markierte anmelden";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'] = "Anzahl Teilnehmer";
-$_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER_INFO'] = "Für unbegrenzte Anzahl Teilnehmer den Wert 0 eingeben oder das Feld leer lassen.";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER_INFO'] = "Für unbegrenzte Anzahl Teilnehmer den Wert \"0\" eingeben oder das Feld leer lassen.";
 $_ARRAYLANG['TXT_CALENDAR_SEND_MAIL_AGAIN'] = "E-Mail erneut senden";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_TYPE'] = "Anmeldung/Abmeldung";
 $_ARRAYLANG['TXT_CALENDAR_MAIL_NOTIFICATION'] = "Benachrichtigung";
@@ -224,5 +224,5 @@ $_ARRAYLANG['TXT_CALENDAR_CSV_FILE'] = "CSV Datei";
 $_ARRAYLANG['TXT_CALENDAR_MAIL_PUBLICATION'] = "Publikation";
 $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ACTIVATE'] = "Benachrichtigung aktivieren";
 $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ADDRESS'] = "Empfänger";
-$_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO'] = "Es können beliebig viele Empfänger angegeben werden. Die E-Mail Adressen müssen mit \',\' getrennt werden.";
+$_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO'] = "Es können beliebig viele Empfänger angegeben werden. Die E-Mail Adressen müssen mit ',' getrennt werden.";
 ?>

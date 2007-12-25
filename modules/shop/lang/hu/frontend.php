@@ -61,7 +61,7 @@ $_ARRAYLANG['TXT_COMMENTS'] = "Mitteilungen";
 $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ADDRESS_CUSTOMER'] = "Kundenadresse";
 $_ARRAYLANG['TXT_TAC'] = "Allgemeine Geschäftsbedingungen";
-$_ARRAYLANG['TXT_ACCEPT_TAC'] = "Ich bestätige die Richtigkeit der gemachten Angaben und die <a href=\"index.php?section=agb\" target=\"_blank\">Geschäftsbedingungen</a> zu kennen und akzeptiere diese.";
+$_ARRAYLANG['TXT_ACCEPT_TAC'] = "I confirm the correctness of the entered data and I know the <a href=\"index.php?section=agb\" target=\"_blank\">terms and conditions</a> and accept them.";
 $_ARRAYLANG['TXT_TOTAL_PRICE'] = "Gesamtpreis";
 $_ARRAYLANG['TXT_ORDER_INFOS'] = "Bestellinformationen";
 $_ARRAYLANG['TXT_ORDER_PREPARED'] = "Die Bestellung ist nun für die Zahlung vorbereitet.";

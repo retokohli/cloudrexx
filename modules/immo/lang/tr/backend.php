@@ -83,7 +83,7 @@ $_ARRAYLANG['TXT_IMMO_CONFIRM_DELETE_OBJECT'] = "Wollen Sie dieses Objekt wirkli
 $_ARRAYLANG['TXT_IMMO_CONFIRM_DELETE_CONTACT'] = "Wollen Sie diesen Eintrag wirklich löschen?";
 $_ARRAYLANG['TXT_IMMO_CANNOT_UNDO_OPERATION'] = "Dieser Vorgang kann nicht rückgängig gemacht werden!";
 $_ARRAYLANG['TXT_IMMO_COPY'] = "Kopieren";
-$_ARRAYLANG['TXT_IMMO_GOOGLE_KEY_INFO'] = "<a target=\"_blank\" href=\"http://www.google.com/apis/maps/signup.html\"> Infos zu Google Map API KEY </a>";
+$_ARRAYLANG['TXT_IMMO_GOOGLE_KEY_INFO'] = "<a target=\"_blank\" href=\"http://www.google.com/apis/maps/signup.html\"> Infos zu Google Map API KEY <\/a>";
 $_ARRAYLANG['TXT_IMMO_ICON_MESSAGE'] = "Google Map Iconnachrichten-Vorlage";
 $_ARRAYLANG['TXT_IMMO_SETTINGS_ICON_MESSAGE_DESC'] = "Dies ist die Vorlage für die Nachrichten, die erscheinen wenn man auf der Map auf ein Objekt klickt.<br /><br />Hier können Platzhalter eingesetzt werden, z.B. %ADRESSE%. Zwischen die % kommt in Grossbuchstaben der Name des Feldes, welches eingesetzt werden soll.<br /><br />Folgende Parameter sind bereits fest vorgegeben: %REFERENCE% (Referenznummer),  %OBJECT_TYPE% (Objektart), %NEW_BUILDING% (Neubau-Projek), %PROPERTY_TYPE% (Eigentumsart), %LONGITUDE% (Längengrad), %LATITUDE%, (Breitengrad).";
 $_ARRAYLANG['TXT_IMMO_SPECIAL_OFFER'] = "Spezialangebot";
