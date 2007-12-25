@@ -38,12 +38,12 @@ $_ARRAYLANG['TXT_ALIAS_NO_ALIASES_MSG'] = "Es sind keine Aliase definiert!";
 $_ARRAYLANG['TXT_ALIAS_REQUIREMENTS_DESC'] = "The alias administration does only work on an <strong>apache</strong> webserver with the extension <strong>mod_rewrite</strong> enabled.<br />Zusätzlich muss noch die Verwendung von <strong>.htaccess</strong> Dateien vom Server her erlaubt sein.";
 $_ARRAYLANG['TXT_ALIAS_USE_ALIAS_ADMINISTRATION'] = "Use alias administration";
 $_ARRAYLANG['TXT_ALIAS_APACHE_MISSING'] = "Da Sie einen anderen Webserver als den Apache verwenden, funktioniert die Alias Verwaltung auf diesem Server nicht!";
-$_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "Da die Erweiterung <strong>mod_rewrite</strong> auf diesem Server nicht aktiviert wurde, funktioniert die Alias Verwaltung nicht!";
+$_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "Es konnte nicht ermittelt werden ob auf diesem Server die Erweiterung <strong>mod_rewrite</strong> aktiv ist.<br />Aus Risikogründen kann daher die Alias Verwaltung nicht aktiviert werden, da ansonsten die Webseite nicht mehr erreichbar wäre, wenn die Erweiterung <strong>mod_rewrite</strong> auf diesem Server fehlen würde.<br /><br />Wenn Sie aber sicher sind, dass auf diesem Server die Erweiterung <strong>mod_rewrite</strong> zur Verfügung steht, können Sie die Alias Verwaltung manuell aktivieren, indem Sie im Hauptverzeichnis dieser Webseite eine Datei mit dem Namen <strong>.htaccess</strong> anlegen und den folgenden Inhalt einfügen:<br /><div style=\"margin:10px;\"><code>RewriteEngine On</code></div>Das nächste Mal, wenn Sie sich dann in die Alias Verwaltung begeben, wird diese automatisch aktiviert.";
 $_ARRAYLANG['TXT_ALIAS_HTACCESS_HINT'] = "Versichern Sie sich also, dass auf diesem Server die Verwendung von .htaccess Dateien unterstützt wird.";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_SUCCESSFULLY_APPLYED'] = "The configuration has been successfully applied.";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_FAILED_APPLY'] = "An error occured while saving the configuration!";
-$_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST'] = "The target page doesn\'t exist anymore!";
-$_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "The alias %s couldn\'t be used, because it is physically present!";
+$_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST'] = "The target page doesn't exist anymore!";
+$_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "The alias %s couldn't be used, because it is physically present!";
 $_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'] = "An alias for the page %s has already been defined!";
-$_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG'] = "This alias isn\'t active anymore!<br />Click on this icon to reactive it.";
+$_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG'] = "This alias isn't active anymore!<br />Click on this icon to reactive it.";
 ?>

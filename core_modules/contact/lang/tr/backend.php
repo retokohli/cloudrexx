@@ -123,6 +123,6 @@ $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "CAPTCHA-Schutz";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Durch Aktivieren dieser Option werden die Besucher gezwungen eine bildlich dargestellte Zeichenfolge abzutippen, damit sie die Kontaktanfrage absenden können. Dies ermöglicht es, dass eine Grosszahl an Einträgen, welche automatisch von Spambots generiert wurden, blockiert werden können.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Durch das Aktivieren dieser Option, wird zusätzlich eine Kopie der angegebenen Formulardaten an den Absender geschickt.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Kopie an Absender";
-$_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "Wird ein eigener CSS-Stil verwendet, so hat dieses Forumlar die ID und CSS-Klasse <strong>\'contactForm_$FormularNummer\'</strong> z.B. contactForm_2, standardmässig sind für diese Attribute nur \'contactForm\' gesetzt";
+$_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "Wird ein eigener CSS-Stil verwendet, so hat dieses Forumlar die ID und CSS-Klasse <strong>'contactForm_$FormularNummer'</strong> z.B. contactForm_2, standardmässig sind für diese Attribute nur 'contactForm' gesetzt";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'] = "Eigenen Stil verwenden";
 ?>

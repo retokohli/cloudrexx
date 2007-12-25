@@ -5,7 +5,7 @@
 
 $_ARRAYLANG['TXT_PODCAST_ADD_MEDIUM'] = "Medium hinzufügen";
 $_ARRAYLANG['TXT_PODCAST_CATEGORIES'] = "Kategorien";
-$_ARRAYLANG['TXT_PODCAST_SHOW_MEDIA_OF_CATEGORY'] = "Medien der Kategorie \'%s\' anzeigen";
+$_ARRAYLANG['TXT_PODCAST_SHOW_MEDIA_OF_CATEGORY'] = "Medien der Kategorie '%s' anzeigen";
 $_ARRAYLANG['TXT_PODCAST_MEDIA'] = "Medien";
 $_ARRAYLANG['TXT_PODCAST_STATUS'] = "Status";
 $_ARRAYLANG['TXT_PODCAST_TITLE'] = "Titel";

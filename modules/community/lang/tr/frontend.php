@@ -19,8 +19,8 @@ $_ARRAYLANG['TXT_INVALID_PASSWORD'] = "Şifre geçersiz (En az 6 karakter).";
 $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Lütfen zorunlu bölümleri doldurun.";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Veritabanı sorgulamasında hata var!";
 $_ARRAYLANG['TXT_CONFIRM_REGISTRATION'] = "%HOST%dan Kaydınızı onaylamalısınız";
-$_ARRAYLANG['TXT_CONFIRM_REGISTRATION_MAIL'] = "Merhaba %USERNAME%\\n\\n %HOST%a kayıt olduğunuz için teşekkürler. Hesabınızı kullanabilmeniz için öncelikle hesabınız onaylanıp etkinlenmesi gerekiyor.\\nEtkinlemek için şu linki: %ACTIVATION_LINK% Browserpenceresine kopyalayıp  girin :\\n\\n
-Etkinlendikten sonra %HOST_LINK% \\n\\n şu : %USERNAME% Kullanıcı isimiyle ve şu : %PASSWORD% şifreyle giriş yapabilirsiniz.";
+$_ARRAYLANG['TXT_CONFIRM_REGISTRATION_MAIL'] = "Merhaba %USERNAME%\n\n %HOST%a kayıt olduğunuz için teşekkürler. Hesabınızı kullanabilmeniz için öncelikle hesabınız onaylanıp etkinlenmesi gerekiyor.\nEtkinlemek için şu linki: %ACTIVATION_LINK% Browserpenceresine kopyalayıp  girin :\n\n
+Etkinlendikten sonra %HOST_LINK% \n\n şu : %USERNAME% Kullanıcı isimiyle ve şu : %PASSWORD% şifreyle giriş yapabilirsiniz.";
 $_ARRAYLANG['TXT_EMAIL_ALREADY_USED'] = "Bu E-mail Adressi başka Kullancı kullanıyor!";
 $_ARRAYLANG['TXT_USERNAME_ALREADY_USED'] = "Bu Kullanıcı ismi zaten var!";
 $_ARRAYLANG['TXT_ACCOUNT_SUCCESSFULLY_ACTIVATED'] = "Tebrikler! Kullanıcı hesabınız etkinlendi.";
