@@ -277,7 +277,7 @@ class Community extends Community_Library
 			}
 
 			if ($status) {
-				if ($objDatabase->Execute("UPDATE ".DBPREFIX."access_users SET active=1, restore_key='', restore_key_time='' WHERE username='".$username."' AND restore_key='".$activationKey."'") !== false) {
+				if ($objDatabase->Execute("UPDATE ".DBPREFIX."access_users SET active=1, restore_key='', restore_key_time='0' WHERE username='".$username."' AND restore_key='".$activationKey."'") !== false) {
 					if ($objDatabase->Affected_Rows() == 1) {
 						$this->_statusMessage = $_ARRAYLANG['TXT_ACCOUNT_SUCCESSFULLY_ACTIVATED'];
 					} else {
@@ -454,7 +454,7 @@ class Community extends Community_Library
 	{
 		global $objDatabase;
 
-		$objResult = $objDatabase->SelectLimit("SELECT email, firstname, lastname, street, zip, phone, mobile, residence, profession, interests, webpage, company FROM ".DBPREFIX."access_users WHERE username='".contrexx_addslashes($_SESSION['auth']['username'])."'");
+		$objResult = $objDatabase->SelectLimit("SELECT email, firstname, lastname, street, zip, phone, mobile, residence, profession, interests, webpage, company FROM ".DBPREFIX."access_users WHERE username='".contrexx_addslashes($_SESSION['auth']['username'])."'", 1);
 		if ($objResult !== false) {
 			$this->_objTpl->setVariable(array(
 				'COMMUNITY_FIRSTNAME'	=> $objResult->fields['firstname'],

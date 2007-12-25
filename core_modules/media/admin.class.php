@@ -185,7 +185,7 @@ class MediaManager extends MediaLibrary {
 	 */
     function _checkForShop(){
         global $objDatabase;
-        if( ($objRS = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."modules WHERE name = 'shop' AND status = 'y'")) != false){
+        if( ($objRS = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."modules WHERE name = 'shop' AND status = 'y'", 1)) != false){
             if($objRS->RecordCount() > 0){
                 return true;
             }
@@ -517,7 +517,7 @@ class MediaManager extends MediaLibrary {
     	    'TXT_MEDIA_UPLOAD_FILES'    => $_ARRAYLANG['TXT_MEDIA_UPLOAD_FILES'],
     	    'MEDIA_UPLOAD_FILES_ACTION' => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=upload&amp;path=' . $this->webPath,
     	    'TXT_MEDIA_UPLOAD'          => $_ARRAYLANG['TXT_MEDIA_UPLOAD'],
-    	    'TXT_MEDIA_FORCE_OVERWRITE' => $_ARRAYLANG['TXT_MEDIA_FORCE_OVERWRITE'],    	    
+    	    'TXT_MEDIA_FORCE_OVERWRITE' => $_ARRAYLANG['TXT_MEDIA_FORCE_OVERWRITE'],
     	));
 
     	$this->_objTpl->setVariable(array(  // parse dir content

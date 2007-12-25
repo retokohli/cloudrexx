@@ -2224,9 +2224,9 @@ sendReq('', 1);
         }
         $this->_addProductToCart($arrProduct, $oldCartProdId);
         $this->_updateCartProductsQuantity();
-        $this->_gotoLoginPage();
-        // *MUST NOT* return if continue is set
         $arrProducts = $this->_parseCart();
+        // *MUST NOT* return if continue is set
+        $this->_gotoLoginPage();
 
         if (empty($_GET['remoteJs'])) {
             $this->_showCart($arrProducts);

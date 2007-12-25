@@ -2482,18 +2482,20 @@ class ContentManager
     	}
 
 		//block relation
-    	$objResult = $objDatabase->Execute('SELECT	block_id
-    										FROM	'.DBPREFIX.'module_block_rel_pages
-    										WHERE	page_id='.$pageId.'
-    									');
+		if ($pageId) {
+	    	$objResult = $objDatabase->Execute('SELECT	block_id
+	    										FROM	'.DBPREFIX.'module_block_rel_pages
+	    										WHERE	page_id='.$pageId.'
+	    									');
 
 
-    	if ($objResult !== false) {
-    		while (!$objResult->EOF) {
-    			$arrRelationBlocks[$objResult->fields['block_id']] = '';
-    			$objResult->MoveNext();
-    		}
-    	}
+	    	if ($objResult !== false) {
+	    		while (!$objResult->EOF) {
+	    			$arrRelationBlocks[$objResult->fields['block_id']] = '';
+	    			$objResult->MoveNext();
+	    		}
+	    	}
+		}
 
 
 		foreach ($arrBlocks as $arrData) {
