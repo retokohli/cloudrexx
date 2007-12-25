@@ -629,7 +629,7 @@ echo("Auth::getUsername(): ERROR: No or invalid current username!<br />");
                         $statusMessage .= $_CORELANG['TXT_PW_DONOT_MATCH']."<br />";
                     } else {
                         $password = md5($_POST['password']);
-                        if ($objDatabase->Execute("UPDATE ".DBPREFIX."access_users SET password='".$password."', restore_key='', restore_key_time='' WHERE username='".$_POST['username']."' AND restore_key='".$_POST['restore_key']."' AND active=1") !== false) {
+                        if ($objDatabase->Execute("UPDATE ".DBPREFIX."access_users SET password='".$password."', restore_key='', restore_key_time='0' WHERE username='".$_POST['username']."' AND restore_key='".$_POST['restore_key']."' AND active=1") !== false) {
                             $statusMessage = $_CORELANG['TXT_PASSWORD_CHANGED_SUCCESSFULLY'];
                             if ($objTemplate->blockExists('login_reset_password')) {
                                 $objTemplate->hideBlock('login_reset_password');
