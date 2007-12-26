@@ -1115,16 +1115,12 @@ class DatabaseManager {
 	{
 		global $objDatabase, $_CONFIG, $_CORELANG;
 
-		if ($_FILES['frmDatabaseImport_File']['type'] != $this->_arrMimeTypes['sql']) {
-			$this->_strErrMessage = str_replace('{TYPE}', $_FILES['frmDatabaseImport_File']['type'], $_CORELANG['TXT_DBM_IMPORT_ERROR_TYPE']);
-			return;
-		}
-
 		$intTimeStamp = time();
 		$strFileName = $intTimeStamp.$this->_arrFileEndings['sql'];
 
 		$arrFileRows = file($_FILES['frmDatabaseImport_File']['tmp_name']);
 
+		//No check for mime-type or file-type necessary because of check for the contrexx-header
 		//Check for Contrexx-File
 		if (!preg_match('/# Version:.*/', $arrFileRows[2]) || !preg_match('/# Edition:.*/', $arrFileRows[3])) {
 			$this->_strErrMessage = $_CORELANG['TXT_DBM_IMPORT_ERROR_NO_CONTREXX'];
