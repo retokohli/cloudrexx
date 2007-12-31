@@ -213,6 +213,11 @@ News Manager
 - Die Ausgabe des Teaser Textes einer News Meldung ist nun XHTML konform.
 - Bei der Auflistung der Newsmeldungen einer ausgewählten Kategorie funktioniert
   das Paging.
+- Bis anhin konnten im Frontend nur die Meldungen jeweils einer einzelnen 
+  Kategorie aufgelistet werden (index.php?section=news&category=1). Neu ist es
+  auch möglich, die Meldungen aus mehreren Kategorien auflisten zu lassen. Dazu
+  können die gewünschten Kategorie mittels Komma getrennt übergeben werden
+  (index.php?section=news&category=1,2,3)
 
 Update System
 - Das Update der Bildergalerie funktioniert auch wenn der MySQL Mode
