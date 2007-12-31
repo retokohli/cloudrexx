@@ -224,11 +224,26 @@ class news extends newsLibrary {
 
 		$this->_objTpl->setTemplate($this->pageContent);
 
-		if (!empty($_REQUEST['category']) || (($_REQUEST['category'] = intval($_REQUEST['cmd'])) > 0)) {
-			$selected 	= intval($_REQUEST['category']);
-			$newsfilter = ' AND n.catid='.$selected.' ';
+		if (!empty($_REQUEST['category'])) {
+			$newsfilter = ' AND ';
+			$boolFirst = true;
+			
+			$arrCategories = explode(',',$_REQUEST['category']);
+			
+			if (count($arrCategories) == 1) {
+				$selected = $arrCategories[0];
+			}
+			
+			foreach ($arrCategories as $intKey => $intCategoryId) {
+				if (!$boolFirst) {
+					$newsfilter .= 'OR ';
+				}
+				
+				$newsfilter .= 'n.catid='.intval($intCategoryId).' ';
+				$boolFirst = false;
+			}
 		}
-
+		
 		$catMenu 	=  '<select onchange="this.form.submit()" name="category">'."\n";
 		$catMenu 	.= '<option value="" selected="selected">'.$_ARRAYLANG['TXT_CATEGORY'].'</option>'."\n";
 		$catMenu 	.= $this->getCategoryMenu($this->langId, $selected)."\n";
@@ -253,23 +268,23 @@ class news extends newsLibrary {
 								us.username			AS username,
 								us.firstname		AS firstname,
 								us.lastname			AS lastname
-		            FROM 		'.DBPREFIX.'module_news AS n,
-		                 		'.DBPREFIX.'module_news_categories AS nc,
-		                 		'.DBPREFIX.'access_users AS us
+		            FROM 		'.DBPREFIX.'module_news AS n
+		            INNER JOIN  '.DBPREFIX.'module_news_categories AS nc
+		            ON			n.catid=nc.catid
+		            INNER JOIN  '.DBPREFIX.'access_users AS us
+		            ON			n.userid = us.id
 		           	WHERE 		status = 1
 		            			AND n.lang='.$this->langId.'
-		             			AND n.catid=nc.catid
 	                 			AND (n.startdate<=CURDATE() OR n.startdate="0000-00-00")
 		                 		AND (n.enddate>=CURDATE() OR n.enddate="0000-00-00")
-		                 		AND n.userid = us.id
 		                 		'.$newsfilter.'
 		        	ORDER BY 	newsdate DESC';
-
+		
 		/***start paging ****/
 		$objResult = $objDatabase->Execute($query);
 		$count = $objResult->RecordCount();
 		if ($count>intval($_CONFIG['corePagingLimit'])) {
-		    $paging = getPaging($count, $pos, "&amp;section=news&amp;category=".$selected, $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
+		    $paging = getPaging($count, $pos, "&amp;section=news", $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
 		}
 		$this->_objTpl->setVariable("NEWS_PAGING", $paging);
 		$objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
