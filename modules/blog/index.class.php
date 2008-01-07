@@ -2,7 +2,7 @@
 /**
  * Blog
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Kaelin <thomas.kaelin@comvation.com>              
+ * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version	    $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_blog
@@ -16,7 +16,7 @@ require_once ASCMS_MODULE_PATH.'/blog/lib/blogLib.class.php';
 /**
  * BlogAdmin
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Kaelin <thomas.kaelin@comvation.com>              
+ * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version	    $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_blog
@@ -27,7 +27,7 @@ class Blog extends BlogLibrary  {
 	var $_intVotingDaysBeforeExpire = 1;
 	var $_strStatusMessage = '';
 	var $_strErrorMessage = '';
-	
+
 	/**
 	* Constructor-Fix for non PHP5-Servers
     *
@@ -49,13 +49,13 @@ class Blog extends BlogLibrary  {
 
 		$this->_intLanguageId = intval($_LANGID);
 		$this->_intCurrentUserId = 0;
-		
+
 	    $this->_objTpl = &new HTML_Template_Sigma('.');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 		$this->_objTpl->setTemplate($strPageContent);
 	}
-	
-	
+
+
 	/**
 	 * Must be called before the user-id is accessed. Tries to load the user-id from the session.
 	 *
@@ -89,12 +89,12 @@ class Blog extends BlogLibrary  {
     			$this->showEntries();
     			break;
     	}
-    	    	
+
     	return $this->_objTpl->get();
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Shows all existing entries of the blog in descending order.
 	 *
@@ -102,11 +102,11 @@ class Blog extends BlogLibrary  {
 	 */
 	function showEntries() {
 		global $_ARRAYLANG;
-		
+
 		$arrEntries = $this->createEntryArray($this->_intLanguageId);
-				
+
 		foreach ($arrEntries as $intEntryId => $arrEntryValues) {
-			
+
 			$this->_objTpl->setVariable(array(
 				'TXT_BLOG_CATEGORIES'	=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS_CATEGORIES'],
 				'TXT_BLOG_TAGS'			=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS_KEYWORDS'],
@@ -114,7 +114,7 @@ class Blog extends BlogLibrary  {
 				'TXT_BLOG_VOTING_DO'	=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_VOTING_DO'],
 				'TXT_BLOG_COMMENTS'		=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_COMMENTS'],
 			));
-												
+
 			$this->_objTpl->setVariable(array(
 				'BLOG_ENTRIES_ID'			=>	$intEntryId,
 				'BLOG_ENTRIES_TITLE'		=>	$arrEntryValues['subject'],
@@ -129,20 +129,20 @@ class Blog extends BlogLibrary  {
 				'BLOG_ENTRIES_TAGS'			=>	$this->getLinkedTags($arrEntryValues['translation'][$this->_intLanguageId]['tags']),
 				'BLOG_ENTRIES_SPACER'		=>	($this->_arrSettings['blog_voting_activated'] && $this->_arrSettings['blog_comments_activated']) ? '&nbsp;&nbsp;|&nbsp;&nbsp;' : ''
 			));
-			
+
 			if (!$this->_arrSettings['blog_voting_activated']) {
 				$this->_objTpl->hideBlock('showVotingPart');
 			}
-			
+
 			if (!$this->_arrSettings['blog_comments_activated']) {
 				$this->_objTpl->hideBlock('showCommentPart');
 			}
-			
+
 			$this->_objTpl->parse('showBlogEntries');
 		}
 	}
-	
-	
+
+
 	/**
 	 * Shows detail-page (content, voting & comments) for a single message. It checks also for new comments (POST) or votings (GET).
 	 *
@@ -153,26 +153,26 @@ class Blog extends BlogLibrary  {
 	 */
 	function showDetails($intMessageId) {
 		global $_ARRAYLANG, $objDatabase, $_CONFIG;
-			
+
 		$this->initUserId();
-		$intMessageId = intval($intMessageId);	
-			
+		$intMessageId = intval($intMessageId);
+
 		if ($intMessageId < 1) {
 			header("Location: index.php?section=blog");
 		}
-		
+
 		//Empty form-values
 		$strName	= '';
 		$strEMail	= '';
 		$strWWW		= '';
 		$strSubject = '';
 		$strComment	= '';
-		
+
 		//Check for new votings
 		if (isset($_GET['vote'])) {
 			$this->addVoting($intMessageId, $_GET['vote']);
 		}
-		
+
 		//Check for new comments
 		if (isset($_POST['frmAddComment_MessageId'])) {
 			$this->addComment();
@@ -185,30 +185,30 @@ class Blog extends BlogLibrary  {
 				$strComment		= $_POST['frmAddComment_Comment'];
 			}
 		}
-		
+
 		//Count new hit
 		$this->addHit($intMessageId);
-		
+
 		//After processing new actions: show page
 		$arrEntries = $this->createEntryArray($this->_intLanguageId);
-		
+
 		//Loop over socializing-networks
 		$strNetworks = '';
 		$arrNetworks = $this->createNetworkArray();
-		
+
 		if (count($arrNetworks) > 0) {
 			$strPageUrl = urlencode('http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=blog&cmd=details&id='.$intMessageId);
-			
+
 			foreach ($arrNetworks as $intNetworkId => $arrNetworkValues) {
 				if (key_exists($this->_intLanguageId, $arrNetworkValues['status'])) {
 					$strUrl = str_replace('[URL]', $strPageUrl, $arrNetworkValues['submit']);
 					$strUrl = str_replace('[SUBJECT]', $arrEntries[$intMessageId]['subject'], $strUrl);
-					
+
 					$strNetworks .= '<a href="'.$strUrl.'" title="'.$arrNetworkValues['name'].' ('.$arrNetworkValues['www'].')" target="_blank">'.$arrNetworkValues['icon_img'].'</a>&nbsp;';
 				}
 			}
-		}		
-				
+		}
+
 		//Show message-part
 		$this->_objTpl->setVariable(array(
 			'BLOG_DETAILS_ID'			=>	$intMessageId,
@@ -217,8 +217,8 @@ class Blog extends BlogLibrary  {
 			'BLOG_DETAILS_CONTENT'		=>	$arrEntries[$intMessageId]['translation'][$this->_intLanguageId]['content'],
 			'BLOG_DETAILS_IMAGE'		=>	($arrEntries[$intMessageId]['translation'][$this->_intLanguageId]['image'] != '') ? '<img src="'.$arrEntries[$intMessageId]['translation'][$this->_intLanguageId]['image'].'" title="'.$arrEntries[$intMessageId]['subject'].'" alt="'.$arrEntries[$intMessageId]['subject'].'" />' : '',
 			'BLOG_DETAILS_NETWORKS'		=>	$strNetworks
-		));		
-		
+		));
+
 		//Show voting-part
 		if ($this->_arrSettings['blog_voting_activated']) {
 			$this->_objTpl->setVariable(array(
@@ -227,8 +227,8 @@ class Blog extends BlogLibrary  {
 				'TXT_VOTING_AVG'			=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_VOTING_AVG'],
 				'TXT_VOTING_COUNT'			=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_VOTING_COUNT'],
 				'TXT_VOTING_USER'			=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_VOTING_USER'],
-			));		
-			
+			));
+
 			$this->_objTpl->setVariable(array(
 				'BLOG_DETAILS_VOTING_BAR'	=>	$this->getRatingBar($intMessageId),
 				'BLOG_DETAILS_VOTING_AVG'	=>	'&#216;&nbsp;'.$arrEntries[$intMessageId]['votes_avg'],
@@ -238,11 +238,11 @@ class Blog extends BlogLibrary  {
 		} else {
 			$this->_objTpl->hideBlock('votingPart');
 		}
-		
-		//Show comment-part		
+
+		//Show comment-part
 		if ($this->_arrSettings['blog_comments_activated']) {
 			//comments are activated
-			
+
 			$this->_objTpl->setVariable(array(
 				'TXT_COMMENTS'				=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_COMMENTS'],
 				'TXT_COMMENT_ADD'			=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD'],
@@ -255,12 +255,12 @@ class Blog extends BlogLibrary  {
 				'TXT_COMMENT_ADD_SPAM_DESC'	=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SPAM_DESC'],
 				'TXT_COMMENT_ADD_RESET'		=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_RESET'],
 				'TXT_COMMENT_ADD_SUBMIT'	=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SUBMIT'],
-			));				
-			
+			));
+
 			$this->_objTpl->setVariable(array(
 				'BLOG_DETAILS_COMMENTS_JAVASCRIPT'	=>	$this->getJavascript('comments')
-			));			
-						
+			));
+
 			$objCommentsResult = $objDatabase->Execute('SELECT 		comment_id,
 																	time_created,
 																	user_id,
@@ -275,50 +275,50 @@ class Blog extends BlogLibrary  {
 																	is_active="1"
 														ORDER BY	time_created ASC, comment_id ASC
 													');
-			
+
 			if ($objCommentsResult->RecordCount() > 0) {
 				while (!$objCommentsResult->EOF) {
-								
+
 					$this->_objTpl->setVariable(array(
 						'BLOG_DETAILS_COMMENT_ID'		=>	$objCommentsResult->fields['comment_id'],
 						'BLOG_DETAILS_COMMENT_TITLE'	=>	htmlentities(stripslashes($objCommentsResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET),
 						'BLOG_DETAILS_COMMENT_POSTED'	=>	$this->getPostedByString((($objCommentsResult->fields['user_id'] == 0) ? $objCommentsResult->fields['user_name'] : $this->getUserName($objCommentsResult->fields['user_id'])), date(ASCMS_DATE_FORMAT,$objCommentsResult->fields['time_created'])),
 						'BLOG_DETAILS_COMMENT_CONTENT'	=>	stripslashes($objCommentsResult->fields['comment'])
 					));
-					
+
 					$this->_objTpl->parse('showCommentRows');
-					
+
 					$objCommentsResult->MoveNext();
 				}
 			} else {
 				$this->_objTpl->setVariable('TXT_COMMENTS_NONE_EXISTING', $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_NONE_EXISTING']);
 				$this->_objTpl->parse('showNoCommentRows');
 			}
-			
+
 			if ($this->_arrSettings['blog_comments_anonymous'] || $this->_intCurrentUserId != 0) {
-				//Anonymous comments allowed or user is logged in	
-			
+				//Anonymous comments allowed or user is logged in
+
 				//Fill Add-Comment-Form
 				require ASCMS_CORE_PATH.'/wysiwyg.class.php';
 				global $wysiwygEditor, $FCKeditorBasePath;
 				$wysiwygEditor = "FCKeditor";
 				$FCKeditorBasePath = "/editor/fckeditor/";
-				
+
 				require_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
 				$objCaptcha = new Captcha();
-				
+
 				//Check for logged-in user
 				if ($this->_intCurrentUserId > 0) {
 					$arrUserInfos = $this->getUserData($this->_intCurrentUserId);
 				}
-				
+
 				//Determine the desired editor
 				if ($this->_arrSettings['blog_comments_editor'] == 'wysiwyg') {
 					$strEditor = get_wysiwyg_editor('frmAddComment_Comment', $strComment, 'news');
 				} else {
 					$strEditor = '<textarea name="frmAddComment_Comment" rows="12" cols="80" class="blogCommentTextarea">'.$strComment.'</textarea>';
 				}
-				
+
 				$this->_objTpl->setVariable(array(
 					'BLOG_DETAILS_COMMENT_ADD_MESSAGE_ID'		=>	$intMessageId,
 					'BLOG_DETAILS_COMMENT_ADD_NAME'				=>	($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_Name" value="'.$strName.'" class="blogCommentInput" />' : $arrUserInfos['name'],
@@ -339,23 +339,23 @@ class Blog extends BlogLibrary  {
 			//Comments dectivated - hide comment block
 			$this->_objTpl->hideBlock('commentPart');
 		}
-		
+
 		//Finally parse info / error messages
 		if (empty($this->_strStatusMessage)) {
 			$this->_objTpl->hideBlock('showOkay');
 		} else {
 			$this->_objTpl->setVariable('BLOG_DETAILS_COMMENT_OKAY', $this->_strStatusMessage);
 		}
-		
+
 		if (empty($this->_strErrorMessage)) {
 			$this->_objTpl->hideBlock('showError');
 		} else {
 			$this->_objTpl->setVariable('BLOG_DETAILS_COMMENT_ERROR', $this->_strErrorMessage);
 		}
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Count a new visitor for a message. Increments the field "hit" by one.
 	 *
@@ -364,9 +364,9 @@ class Blog extends BlogLibrary  {
 	 */
 	function addHit($intMessageId) {
 		global $objDatabase;
-		
+
 		$intMessageId = intval($intMessageId);
-		
+
 		if ($intMessageId > 0 && !$this->hasUserJustCommented() && !$this->hasUserAlreadyVoted($intMessageId)) {
 			$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_blog_messages
 									SET		hits = hits + 1
@@ -375,9 +375,9 @@ class Blog extends BlogLibrary  {
 								');
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Insert a new voting for a message into database.
 	 *
@@ -388,22 +388,22 @@ class Blog extends BlogLibrary  {
 	 */
 	function addVoting($intMessageId, $intVoting) {
 		global $objDatabase, $_ARRAYLANG;
-		
+
 		$intMessageId = intval($intMessageId);
 		$intVoting = intval($intVoting);
-		
-		//Check for activated function	
+
+		//Check for activated function
 		if (!$this->_arrSettings['blog_voting_activated']) {
 			$this->_strErrorMessage = $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_VOTING_INSERT_ERROR_ACTIVATED'];
 			return;
-		}		
-		
+		}
+
 		//Check for previous voting
 		if ($this->hasUserAlreadyVoted($intMessageId)) {
 			$this->_strErrorMessage = $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_VOTING_INSERT_ERROR_PREVIOUS'];
 			return;
 		}
-		
+
 		if ($intMessageId > 0 && $intVoting >= 1 && $intVoting <= 10) {
 			$objDatabase->Execute('	INSERT INTO	'.DBPREFIX.'module_blog_votes
 									SET	message_id = '.$intMessageId.',
@@ -411,13 +411,13 @@ class Blog extends BlogLibrary  {
 										ip_address = "'.$_SERVER['REMOTE_ADDR'].'",
 										vote = "'.$intVoting.'"
 								');
-			
+
 			setcookie('BlogVoting['.$intMessageId.']', $intVoting);
 			$this->_strStatusMessage = $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_VOTING_INSERT_SUCCESS'];
 		}
 	}
-	
-	
+
+
 	/**
 	 * Insert a new comment for a message into database, if the function is activated. Furthermore, all input values are validated.
 	 * Sends also the notification mail to the administrator, if it is enabled in options.
@@ -425,45 +425,45 @@ class Blog extends BlogLibrary  {
 	 * @global 	object		$objDatabase
 	 * @global 	array		$_ARRAYLANG
 	 * @global 	array		$_CONFIG
-	 */	
+	 */
 	function addComment() {
 		global $objDatabase, $_ARRAYLANG, $_CONFIG;
-		
+
 		$this->initUserId();
-		
-		//Check for activated function	
+
+		//Check for activated function
 		if (!$this->_arrSettings['blog_comments_activated']) {
 			$this->_strErrorMessage = $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_ERROR_ACTIVATED'];
 			return;
 		}
-		
+
 		if ($this->hasUserJustCommented()) {
 			$this->_strErrorMessage = str_replace('[SECONDS]', intval($this->_arrSettings['blog_comments_timeout']), $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_ERROR_TIMEOUT']);
 			return;
 		}
-		
+
 		//Create validator-object
 		require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
-		$objValidator = new FWValidator();		
-		
+		$objValidator = new FWValidator();
+
 		//Create spam-object
 		require_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-		$objCaptcha = new Captcha();		
-		
+		$objCaptcha = new Captcha();
+
 		//Get general-input
 		$intMessageId 	= intval($_POST['frmAddComment_MessageId']);
 		$strSubject		= contrexx_addslashes(strip_tags($_POST['frmAddComment_Subject']));
 		$strComment		= contrexx_addslashes($_POST['frmAddComment_Comment']);
 		$strOffset		= $_POST['frmAddComment_Offset'];
 		$strCaptcha		= strtoupper($_POST['frmAddComment_Captcha']);
-		
+
 		//Check for editor
 		if ($this->_arrSettings['blog_comments_editor'] == 'textarea') {
 			$strComment = strip_tags($strComment);
 		} else {
 			$strEditor = '<textarea name="frmAddComment_Comment" class="blogCommentTextarea">'.$strComment.'</textarea>';
-		}		
-		
+		}
+
 		//Get specified-input
 		if ($this->_intCurrentUserId == 0) {
 			$intUserId	= 0;
@@ -474,26 +474,26 @@ class Blog extends BlogLibrary  {
 			$intUserId	= $this->_intCurrentUserId;
 			$strName 	= '';
 			$strEMail	= '';
-			$strWWW		= '';		
+			$strWWW		= '';
 		}
-						
+
 		//Get options
 		$intIsActive = intval($this->_arrSettings['blog_comments_autoactivate']);
 		$intIsNotification = intval($this->_arrSettings['blog_comments_notification']);
-		
+
 		//Validate general-input
 		if ($intMessageId <= 0) { 								$this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_MID']); }
 		if (empty($strSubject)) {								$this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SUBJECT']); }
 		if (empty($strComment)) {								$this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_COMMENT']); }
 		if (!$objCaptcha->compare($strCaptcha, $strOffset)) {	$this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SPAM']); }
-		
+
 		//Validate specified-input
 		if ($this->_intCurrentUserId == 0) {
 			if (empty($strName)) {									$this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_NAME']); }
 			if (empty($strEMail)) {									$this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_EMAIL']); }
-			if (!$objValidator->isEmail($strEMail)) {				$this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_EMAIL']); }			
+			if (!$objValidator->isEmail($strEMail)) {				$this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_EMAIL']); }
 		}
-		
+
 		//Now check error-string
 		if (empty($this->_strErrorMessage)) {
 			//No errors, insert entry
@@ -510,40 +510,54 @@ class Blog extends BlogLibrary  {
 											subject = "'.$strSubject.'",
 											comment = "'.$strComment.'"
 								');
-			
+
 			//Set a cookie with the current timestamp. Avoids flooding.
 			setcookie('BlogCommentLast', time());
-			
+
 			$this->_strStatusMessage = $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_SUCCESS'];
-			
+
 			$this->writeCommentRSS();
-			
+
 			if ($intIsNotification) {
 				//Send notification to administrator
-				require_once(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php');
+				if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+					$objMail = new phpmailer();
 
-				if ($this->_intCurrentUserId > 0) {
-					$strName = $this->getUserName($this->_intCurrentUserId);					
+					if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+						$objSmtpSettings = new SmtpSettings();
+						if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+							$objMail->IsSMTP();
+							$objMail->Host = $arrSmtp['hostname'];
+							$objMail->Port = $arrSmtp['port'];
+							$objMail->SMTPAuth = true;
+							$objMail->Username = $arrSmtp['username'];
+							$objMail->Password = $arrSmtp['password'];
+						}
+					}
+
+					if ($this->_intCurrentUserId > 0) {
+						$strName = $this->getUserName($this->_intCurrentUserId);
+					}
+
+					$strMailSubject = str_replace('[SUBJECT]', $strSubject, $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_MAIL_SUBJECT']);
+					$strMailBody	= str_replace('[USERNAME]', $strName, $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_MAIL_BODY']);
+					$strMailBody	= str_replace('[SUBJECT]', $strSubject, $strMailBody);
+					$strMailBody	= str_replace('[COMMENT]', $strComment, $strMailBody);
+
+					$objMail->CharSet = CONTREXX_CHARSET;
+					$objMail->From = $_CONFIG['coreAdminEmail'];
+					$objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
+					$objMail->AddAddress($_CONFIG['coreAdminEmail']);
+					$objMail->Subject 	= $strMailSubject;
+					$objMail->IsHTML(false);
+					$objMail->Body    	= $strMailBody;
+					$objMail->Send();
 				}
-				
-				$strMailSubject = str_replace('[SUBJECT]', $strSubject, $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_MAIL_SUBJECT']);
-				$strMailBody	= str_replace('[USERNAME]', $strName, $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_MAIL_BODY']);
-				$strMailBody	= str_replace('[SUBJECT]', $strSubject, $strMailBody);
-				$strMailBody	= str_replace('[COMMENT]', $strComment, $strMailBody);				
-				
-				$objMail =& new PHPMailer();
-				$objMail->IsHTML(false);
-				$objMail->From 		= $_CONFIG['coreAdminEmail'];
-				$objMail->FromName 	= $_CONFIG['coreGlobalPageTitle'];
-				$objMail->AddAddress($_CONFIG['coreAdminEmail']);
-				$objMail->Subject 	= $strMailSubject;
-				$objMail->Body    	= $strMailBody;
-				$objMail->Send();
 			}
 		}
 	}
-		
-	
+
+
 	/**
 	 * Creates an voting bar (123...10) for a specific message.
 	 *
@@ -553,26 +567,26 @@ class Blog extends BlogLibrary  {
 	 */
 	function getVotingBar($intMessageId) {
 		global $_ARRAYLANG;
-		
+
 		$strReturn = '';
 		$intMessageId = intval($intMessageId);
-		
+
 		//Check for valid number
-		if ($intMessageId == 0) { 
+		if ($intMessageId == 0) {
 			return '';
 		}
-		
+
 		for ($i = 1; $i <= 10; ++$i) {
 			$strReturn .= '<a href="?section=blog&amp;cmd=details&amp;id='.$intMessageId.'&amp;vote='.$i.'" title="'.$_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_VOTING_DO'].': '.$i.'">';
 			$strReturn .= '<img title="'.$_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_VOTING_DO'].': '.$i.'" alt="'.$_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_VOTING_DO'].': '.$i.'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/blog/voting/'.$i.'.gif" border="0" />';
 			$strReturn .= '</a>';
 		}
-		
+
 		return $strReturn;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Check if the current user has already voted for this message.
 	 *
@@ -581,15 +595,15 @@ class Blog extends BlogLibrary  {
 	 */
 	function hasUserAlreadyVoted($intMessageId) {
 		global $objDatabase;
-		
+
 		$intMessageId = intval($intMessageId);
-		
+
 		//Check first the cookie
 		if (isset($_COOKIE['BlogVoting'][$intMessageId])) {
 			return true;
 		}
-		
-		//Now check database		
+
+		//Now check database
 		$objVotingResult = $objDatabase->Execute('	SELECT	vote_id
 													FROM	'.DBPREFIX.'module_blog_votes
 													WHERE	message_id='.$intMessageId.' AND
@@ -597,16 +611,16 @@ class Blog extends BlogLibrary  {
 															time_voted > '.(time() - $this->_intVotingDaysBeforeExpire*24*60*60).'
 													LIMIT	1
 												');
-		
+
 		if ($objVotingResult->RecordCount() == 1) {
 			return true;
 		}
-		
+
 		//Nothing found, i guess the user didn't vote before.
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Check if the current user has already written a comment within the definied timeout-time (settings-value).
 	 *
@@ -614,34 +628,34 @@ class Blog extends BlogLibrary  {
 	 */
 	function hasUserJustCommented() {
 		global $objDatabase;
-		
+
 		//Check cookie first
 		if (isset($_COOKIE['BlogCommentLast'])) {
 			$intLastCommentTime = intval($_COOKIE['BlogCommentLast']);
-			
+
 			if (time() < $intLastCommentTime + intval($this->_arrSettings['blog_comments_timeout'])) {
 				//The current system-time is smaller than the time in the cookie plus timeout-time, so the user just wrote a comment
 				return true;
 			}
 		}
-		
-		//Now check database (make sure the user didn't delete the cookie		
+
+		//Now check database (make sure the user didn't delete the cookie
 		$objCommentResult = $objDatabase->Execute('	SELECT	comment_id
 													FROM	'.DBPREFIX.'module_blog_comments
 													WHERE	ip_address="'.$_SERVER['REMOTE_ADDR'].'" AND
 															time_created > '.(time() - intval($this->_arrSettings['blog_comments_timeout'])).'
 													LIMIT	1
 												');
-		
+
 		if ($objCommentResult->RecordCount() == 1) {
 			return true;
 		}
-		
+
 		//Nothing found, i guess the user didn't comment within within the timeout-period.
 		return false;
-	}	
-	
-	
+	}
+
+
 	/**
 	 * Returns the voting given by the actual user. You should use "hasUserAlreadyVoted()" first to check for an existing voting.
 	 *
@@ -650,15 +664,15 @@ class Blog extends BlogLibrary  {
 	 */
 	function getUserVotingForMessage($intMessageId) {
 		global $objDatabase;
-		
+
 		$intMessageId = intval($intMessageId);
-		
+
 		//Check first the cookie
 		if (isset($_COOKIE['BlogVoting'][$intMessageId])) {
 			return intval($_COOKIE['BlogVoting'][$intMessageId]);
 		}
-		
-		//Now check database		
+
+		//Now check database
 		$objVotingResult = $objDatabase->Execute('	SELECT	vote
 													FROM	'.DBPREFIX.'module_blog_votes
 													WHERE	message_id='.$intMessageId.' AND
@@ -666,41 +680,41 @@ class Blog extends BlogLibrary  {
 															time_voted > '.(time() - $this->_intVotingDaysBeforeExpire*24*60*60).'
 													LIMIT	1
 												');
-		
+
 		if ($objVotingResult->RecordCount() == 1) {
 			return intval($objVotingResult->fields['vote']);
 		}
-		
+
 		//Nothing found, i guess the user didn't vote before.
-		return 0;	
+		return 0;
 	}
-		
-	
+
+
 	/**
 	 * Create an error-string for validation of input.
 	 *
 	 * @global 	array		$_ARRAYLANG
 	 * @return 	string		Error string for validation of input.
-	 */	
+	 */
 	function getFormError($strFieldName) {
 		global $_ARRAYLANG;
-		
+
 		return str_replace('[FIELD]', $strFieldName, $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_ERROR']);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Shows the "Tag Cloud"-page for all existing keywords.
 	 *
 	 */
-	function showTagCloud() {			
+	function showTagCloud() {
 			$this->_objTpl->setVariable('BLOG_TAG_CLOUD', $this->getTagCloud());
 			$this->_objTpl->setVariable('BLOG_TAG_HITLIST', $this->getTagHitlist());
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Shows the "Search"-page for the blog-module.
 	 *
@@ -709,7 +723,7 @@ class Blog extends BlogLibrary  {
 	 */
 	function showSearch() {
 		global $_ARRAYLANG, $objDatabase;
-						
+
 		$this->_objTpl->setVariable(array(
 			'TXT_SEARCH_MODUS'				=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_MODUS'],
 			'TXT_SEARCH_MODUS_KEYWORD'		=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_MODUS_KEYWORD'],
@@ -717,21 +731,21 @@ class Blog extends BlogLibrary  {
 			'TXT_SEARCH_SUBMIT'				=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_SUBMIT'],
 			'TXT_SEARCH_RESULTS'			=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS']
 		));
-		
+
 		//Maybe the user selected an modus before
 		$strSelectedModus = (isset($_GET['mode'])) ? $_GET['mode'] : 'keyword';
 		$strSelectedModus = ($strSelectedModus == 'date') ? 'date' : 'keyword';
-		
+
 		//Collect values from GET or POST
 		$strKeywordString 	= '';
 		$intKeywordCategory = 0;
-		
+
 		if (isset($_POST['frmDoSearch_Keyword_String'])) {		$strKeywordString = $_POST['frmDoSearch_Keyword_String'];
 		} else if(isset($_GET['term'])) {						$strKeywordString = $_GET['term']; }
-		
+
 		if (isset($_POST['frmDoSearch_Keyword_Category'])) {	$intKeywordCategory = intval($_POST['frmDoSearch_Keyword_Category']);
 		} else if(isset($_GET['category'])) {					$intKeywordCategory = intval($_GET['category']); }
-	
+
 		//Fill keyword-search-form
 		$this->_objTpl->setVariable(array(
 			'BLOG_SEARCH_JAVASCRIPT'				=>	$this->getJavascript('search'),
@@ -742,31 +756,31 @@ class Blog extends BlogLibrary  {
 			'BLOG_SEARCH_KEYWORD_STRING'			=>	htmlentities($strKeywordString, ENT_QUOTES, CONTREXX_CHARSET),
 			'BLOG_SEARCH_KEYWORD_CATEGORIES'		=>	$this->getCategoryDropDown('frmDoSearch_Keyword_Category',$intKeywordCategory),
 		));
-		
+
 		//Fill date-search-form
 		$intYear 	= (isset($_GET['yearID'])) 	? intval($_GET['yearID']) 	: date('Y', time());
 		$intMonth 	= (isset($_GET['monthID'])) ? intval($_GET['monthID']) 	: date('m', time());
 		$intDay 	= (isset($_GET['dayID'])) 	? intval($_GET['dayID']) 	: 0;
-				
+
 		$this->_objTpl->setVariable(array(
 			'BLOG_SEARCH_DATE_CALENDAR'	=>	$this->getCalendar($intYear,$intMonth,$intDay)
 		));
-				
-		
+
+
 		//Do search if needed
 		$arrResults = array();
-		
+
 		if (empty($strKeywordString) && $intKeywordCategory == 0) {
 			if ($intYear == 0 || $intMonth == 0 || $intDay == 0) {
 				$this->_objTpl->hideBlock('ResultPart');
 			} else {
 				//Do search for date
 				$arrEntries = $this->createEntryArray($this->_intLanguageId);
-				
+
 				$intTimestampStarting = mktime(0,0,0,$intMonth,$intDay,$intYear);
 				$intTimestampEnding = mktime(23,59,59,$intMonth,$intDay,$intYear);
-				
-				if (count($arrEntries) > 0) {				
+
+				if (count($arrEntries) > 0) {
 					foreach ($arrEntries as $intEntryId => $arrEntryValues) {
 						if ($this->timestampIsInRange($arrEntryValues['time_created_ts'],$intTimestampStarting,$intTimestampEnding)) {
 							$arrResults[count($arrResults)] = $intEntryId;
@@ -777,31 +791,31 @@ class Blog extends BlogLibrary  {
 		} else {
 			//Do search for keyword
 			$arrEntries = $this->createEntryArray($this->_intLanguageId);
-			
-			if (count($arrEntries) > 0) {				
+
+			if (count($arrEntries) > 0) {
 				foreach ($arrEntries as $intEntryId => $arrEntryValues) {
 					//Check for matches of all keywords
 					if ($this->allKeywordsFound($strKeywordString, $arrEntryValues['subject'], $arrEntryValues['translation'][$this->_intLanguageId]['content'], $arrEntryValues['translation'][$this->_intLanguageId]['tags']) &&
-						$this->categoryMatches($intKeywordCategory, $arrEntryValues['categories'][$this->_intLanguageId])) 
+						$this->categoryMatches($intKeywordCategory, $arrEntryValues['categories'][$this->_intLanguageId]))
 					{
 						$arrResults[count($arrResults)] = $intEntryId;
 					}
 				}
 			}
 		}
-		
+
 		//Show results if any search was done and something has been found
 		if (count($arrResults) == 0) {
 			$this->_objTpl->setVariable('TXT_SEARCH_RESULTS_NONE', $_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS_NONE']);
-			$this->_objTpl->parse('showNoResults');				
+			$this->_objTpl->parse('showNoResults');
 		} else {
 			foreach ($arrResults as $intKey => $intEntryId) {
 				$this->_objTpl->setVariable(array(
 					'TXT_SEARCH_RESULTS_DATE'		=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_MODUS_DATE'],
 					'TXT_SEARCH_RESULTS_CATEGORY'	=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS_CATEGORIES'],
-					'TXT_SEARCH_RESULTS_KEYWORDS'	=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS_KEYWORDS']						
+					'TXT_SEARCH_RESULTS_KEYWORDS'	=>	$_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS_KEYWORDS']
 				));
-				
+
 				$this->_objTpl->setVariable(array(
 					'BLOG_SEARCH_RESULTS_MID'			=>	$intEntryId,
 					'BLOG_SEARCH_RESULTS_SUBJECT'		=>	$arrEntries[$intEntryId]['subject'],
@@ -810,15 +824,15 @@ class Blog extends BlogLibrary  {
 					'BLOG_SEARCH_RESULTS_TAGS'			=>	$this->getLinkedTags($arrEntries[$intEntryId]['translation'][$this->_intLanguageId]['tags']),
 					'BLOG_SEARCH_RESULTS_INTRODUCTION'	=>	$this->getIntroductionText($arrEntries[$intEntryId]['translation'][$this->_intLanguageId]['content'])
 				));
-				
+
 				$this->_objTpl->parse('showResults');
-			}	
+			}
 		}
-		
+
 
 	}
-		
-	
+
+
 	/**
 	 * Shows the "Search"-page for the blog-module.
 	 *
@@ -832,19 +846,19 @@ class Blog extends BlogLibrary  {
 		$arrSearchWords = explode(' ', htmlentities($strSearchString, ENT_QUOTES, CONTREXX_CHARSET));
 		$strContent = strip_tags($strContent);
 
-		foreach ($arrSearchWords as $intKey => $strSearchWord) {					
+		foreach ($arrSearchWords as $intKey => $strSearchWord) {
 			if (preg_match('/.*'.$strSearchWord.'.*/i', $strSubject)) { continue; }
 			if (preg_match('/.*'.$strSearchWord.'.*/i', $strContent)) { continue; }
 			if (preg_match('/.*'.$strSearchWord.'.*/i', $strTags)) { continue; }
-			
+
 			//if we come to this point, the keyword has not be found.
 			return false;
 		}
-		
+
 		return true;
 	}
-	
-	
+
+
 	/**
 	 * Checks, if the timestamp in the first parameter ($intTimestamp) is within the range of the 2nd (begin) and 3rd (end).
 	 *
@@ -860,7 +874,7 @@ class Blog extends BlogLibrary  {
 			return false;
 		}
 	}
-	
+
 
 	/**
 	 * Returns needed javascripts for the forum-module
@@ -870,7 +884,7 @@ class Blog extends BlogLibrary  {
 	 */
 	function getJavascript($strType = '') {
 		$strJavaScript = '';
-		
+
 		switch ($strType) {
 			case 'comments':
 				$strJavaScript = '	<script type="text/javascript" language="JavaScript">
@@ -878,7 +892,7 @@ class Blog extends BlogLibrary  {
 										function toggleComment(commentId){
 											objDiv 	= document.getElementById("comment_"+commentId);
 											objImg 	= document.getElementById("comment_"+commentId+"_img");
-		
+
 											if (objDiv.style.display == "block") {
 										    	objDiv.style.display = "none";
 										    	objImg.src = "'.ASCMS_MODULE_IMAGE_WEB_PATH.'/blog/arrow_down.gif";
@@ -897,7 +911,7 @@ class Blog extends BlogLibrary  {
 											objRadioKeyword = document.getElementById("searchModus_RadioKeyword");
 											objDivKeyword 	= document.getElementById("searchModus_DivKeyword");
 											objDivDate 		= document.getElementById("searchModus_DivDate");
-		
+
 											if (objRadioKeyword.checked == true) {
 										    	objDivKeyword.style.display = "block";
 										    	objDivDate.style.display = "none";
@@ -907,10 +921,10 @@ class Blog extends BlogLibrary  {
 										    }
 										 }
 									//]]>
-									</script>';				
+									</script>';
 				break;
 		}
-		
+
 		return $strJavaScript;
 	}
 }
