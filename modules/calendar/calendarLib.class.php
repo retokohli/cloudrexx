@@ -51,7 +51,7 @@ class calendarLibrary
     var $showOnlyActive = true;
 
    	var $_cachedCatNames = array();
-   	
+
    	var $mandate;
    	var $mandateLink;
 
@@ -78,7 +78,7 @@ class calendarLibrary
         if ($this->mandate == 1) {
             $this->mandateLink = "";
         } else {
-            $this->mandateLink = $this->mandate;    
+            $this->mandateLink = $this->mandate;
         }
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/calendar'.$this->mandateLink.'/template');
@@ -99,7 +99,7 @@ class calendarLibrary
     function _checkAccess($id=null)
     {
     	global $objDatabase, $objAuth, $objPerm;
-    	
+
 
     	if(!empty($_COOKIE['PHPSESSID'])) {
 	    	if (isset($id)) {
@@ -617,7 +617,7 @@ class calendarLibrary
                 // The modification makes a link on the monthname
                 $cal->urlNav=$url;
             }
-            
+
             // for seperate variable for the month links
             if (!empty($this->monthnavurl)) {
                 $cal->urlMonthNav = htmlentities($this->monthnavurl, ENT_QUOTES, CONTREXX_CHARSET);
@@ -630,7 +630,7 @@ class calendarLibrary
 				$where 		= " AND access='0' ";
 				$whereCat 	= "access='0' AND ";
 			}
-			
+
             // get events
             if (empty($catid)) {
                 $query = "SELECT * FROM ".DBPREFIX."module_calendar WHERE mod_mandate = ".$this->mandate."".$where;
@@ -639,7 +639,7 @@ class calendarLibrary
                           WHERE $whereCat catid=$catid AND mod_mandate = ".$this->mandate."";
             }
 
-            
+
             $objResult = $objDatabase->Execute($query);
 
             while (!$objResult->EOF) {
@@ -1261,7 +1261,7 @@ class calendarLibrary
 		$objResultCount = $objDatabase->Execute($query);
 		$countReg		= $objResultCount->RecordCount();
         $countEscort = 0;
-		
+
 		//add escort
 		if ($objResultCount !== false) {
 			while(!$objResultCount->EOF) {
