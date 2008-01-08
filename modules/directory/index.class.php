@@ -1067,7 +1067,13 @@ class rssDirectory extends directoryLibrary
 						$width		= $info[0]+20;
 						$height		= $info[1]+20;
 
-						$setVariable["DIRECTORY_FEED_LOGO_THUMB"] = '<a href="'.$this->mediaWebPath."images/".$arrFeedContent[$fieldName].'" onclick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$width.',height='.$height.',status\'); return false"><img src="'.$this->mediaWebPath.'thumbs/'.$arrFeedContent[$fieldName].'" border="0" alt="'.$arrFeedContent['title'].'" /></a>&nbsp;&nbsp;';
+						if (!file_exists($this->mediaPath.'thumbs/'.$arrFeedContent[$fieldName])) {
+							$path = "images/";
+						} else {
+							$path = "thumbs/";
+						}
+
+						$setVariable["DIRECTORY_FEED_LOGO_THUMB"] = '<a href="'.$this->mediaWebPath."images/".$arrFeedContent[$fieldName].'" onclick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$width.',height='.$height.',status\'); return false"><img src="'.$this->mediaWebPath.$path.$arrFeedContent[$fieldName].'" border="0" alt="'.$arrFeedContent['title'].'" /></a>&nbsp;&nbsp;';
 					}
 
 					//rss link
