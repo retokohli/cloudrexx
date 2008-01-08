@@ -58,6 +58,7 @@ $_ARRAYLANG['TXT_DIR_META_DESC'] = "Meta Desc";
 $_ARRAYLANG['TXT_DIR_REQUIRED_FIELDS'] = "These Fields are required.";
 $_ARRAYLANG['TXT_DIR_ADD'] = "Add";
 $_ARRAYLANG['TXT_DIR_META_KEYS'] = "Meta Keys";
+$_ARRAYLANG['TXT_DIR_DEL'] = "Delete";
 $_ARRAYLANG['TXT_DIR_EDIT'] = "Edit";
 $_ARRAYLANG['TXT_DIR_LIST'] = "List";
 $_ARRAYLANG['TXT_DIR_COLLAPS'] = "Collaps all";
