@@ -93,34 +93,45 @@ class makeGraph
 		$arrBarPlot2 = array();
 
 		// get statistics
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` , `count`
+		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` ,FROM_UNIXTIME(`timestamp`, '%d' ) AS `day`,  `count`
 			FROM `".DBPREFIX."stats_visitors_summary`
-			WHERE FROM_UNIXTIME( `timestamp` , '%d-%m-%Y' ) = '".date('d-m-Y')."' AND `type` = 'hour' AND `count` > 0";
+			WHERE `timestamp` >= '".(time()-86400)."' AND `type` = 'hour' AND `count` > 0 limit 24";
 		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
-				$arrBarPlot1[$arrResult['hour']] = $arrResult['count'];
+				$arrBarPlot1[$arrResult['hour']][$arrResult['day']] = $arrResult['count'];
 			}
 		}
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` , `count`
+		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` ,FROM_UNIXTIME(`timestamp`, '%d' ) AS `day`,  `count`
 			FROM `".DBPREFIX."stats_requests_summary`
-			WHERE FROM_UNIXTIME( `timestamp` , '%d-%m-%Y' ) = '".date('d-m-Y')."' AND `type` = 'hour' AND `count` > 0";
+			WHERE `timestamp` >= '".(time()-86400)."' AND `type` = 'hour' AND `count` > 0 limit 24";
 		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
-				$arrBarPlot2[$arrResult['hour']] = $arrResult['count'];
+				$arrBarPlot2[$arrResult['hour']][$arrResult['day']] = $arrResult['count'];
 			}
 		}
 
+		$currentHour = date('H');
+		if ($currentHour < 23) {
+			$arrRange[(date('d') == 1 ? date('t', time()-86400) : date('d')-1)] = range($currentHour+1, 23, 1);
+		}
+		$arrRange[date('d')] = range(0, $currentHour, 1);
+
 		// generate arrays for the bars
-		for ($hour=1;$hour<=24;$hour++) {
-			if (!isset($arrBarPlot1[sprintf("%02s",$hour)])){
-				$arrBarPlot1[sprintf("%02s",$hour)] = 0;
+		foreach ($arrRange as $day => $arrHours) {
+			$strDay = sprintf("%02s",$day);
+			foreach ($arrHours as $hour) {
+				$strHour = sprintf("%02s",$hour);
+
+				if (!isset($arrBarPlot1[$strHour][$strDay])){
+					$arrBarPlot1[$strHour][$strDay] = 0;
+				}
+				if (!isset($arrBarPlot2[$strHour][$strDay])){
+					$arrBarPlot2[$strHour][$strDay] = 0;
+				}
+				$arrData[$strHour.$strDay] = array($strHour, $arrBarPlot1[$strHour][$strDay], $arrBarPlot2[$strHour][$strDay]);
 			}
-			if (!isset($arrBarPlot2[sprintf("%02s",$hour)])){
-				$arrBarPlot2[sprintf("%02s",$hour)] = 0;
-			}
-			$arrData[$hour] = array($hour, $arrBarPlot1[sprintf("%02s",$hour)], $arrBarPlot2[sprintf("%02s",$hour)]);
 		}
 
 		$this->graphChartTitle = date('j').'. '.date('M');
@@ -140,38 +151,49 @@ class makeGraph
 		$arrData = array();
 
 		// get statistics
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%d' ) AS `day` , `count`
+		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%d' ) AS `day`, FROM_UNIXTIME(`timestamp`, '%m' ) AS `month` , `count`
 			FROM `".DBPREFIX."stats_visitors_summary`
-			WHERE `type` = 'day' AND `count` > 0 AND FROM_UNIXTIME( `timestamp` , '%m-%Y' ) = '".date('m-Y')."'";
+			WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".(time()-3456000)."'";
 		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
-				$arrBarPlot1[$arrResult['day']] = $arrResult['count'];
+				$arrBarPlot1[$arrResult['day']][$arrResult['month']] = $arrResult['count'];
 			}
 		}
 
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%d' ) AS `day` , `count`
+		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%d' ) AS `day`, FROM_UNIXTIME(`timestamp`, '%m' ) AS `month` , `count`
 			FROM `".DBPREFIX."stats_requests_summary`
-			WHERE `type` = 'day' AND `count` > 0 AND FROM_UNIXTIME( `timestamp` , '%m-%Y' ) = '".date('m-Y')."'";
+			WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".(time()-3456000)."'";
 		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
-				$arrBarPlot2[$arrResult['day']] = $arrResult['count'];
+				$arrBarPlot2[$arrResult['day']][$arrResult['month']] = $arrResult['count'];
 			}
 		}
+
+		if (date('d') < date('t')) {
+			$arrRange[(date('m') == 1 ? 12 : date('m')-1)] = range(date('d')+1, date('t'), 1);
+		}
+		$arrRange[date('m')] = range(1, date('d'), 1);
 
 		// generate arrays for the bars
-		for ($day=1;$day<=date('t');$day++) {
-			if (!isset($arrBarPlot1[sprintf("%02s",$day)])){
-				$arrBarPlot1[sprintf("%02s",$day)] = 0;
+		foreach ($arrRange as $month => $arrDays) {
+			$strMonth = sprintf("%02s",$month);
+			foreach ($arrDays as $day) {
+				$strDay = sprintf("%02s",$day);
+
+				if (!isset($arrBarPlot1[$strDay][$strMonth])){
+					$arrBarPlot1[$strDay][$strMonth] = 0;
+				}
+				if (!isset($arrBarPlot2[$strDay][$strMonth])){
+					$arrBarPlot2[$strDay][$strMonth] = 0;
+				}
+				$arrData[$strDay.$strMonth] = array($strDay.' '.date('M',mktime(0,0,0,$month,1,date('Y'))), $arrBarPlot1[$strDay][$strMonth], $arrBarPlot2[$strDay][$strMonth]);
 			}
-			if (!isset($arrBarPlot2[sprintf("%02s",$day)])){
-				$arrBarPlot2[sprintf("%02s",$day)] = 0;
-			}
-			$arrData[$day] = array(sprintf("%02s",$day), $arrBarPlot1[sprintf("%02s",$day)], $arrBarPlot2[sprintf("%02s",$day)]);
 		}
 
 		$arrMonth = explode(',',$_ARRAYLANG['TXT_MONTH_ARRAY']);
+		$this->graphAxisXMaxStringSize = 7;
 		$this->graphChartTitle = $arrMonth[date('n')-1];
 		$this->graphArrLegendText = array($_ARRAYLANG['TXT_VISITORS'], $_ARRAYLANG['TXT_PAGE_VIEWS']);
 		$this->graphTitleAxisX = $_ARRAYLANG['TXT_DAY'];
@@ -189,38 +211,47 @@ class makeGraph
 		$arrData = array();
 
 		// get statistics
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%m' ) AS `month` , `count`
+		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%m' ) AS `month` , FROM_UNIXTIME(`timestamp`, '%y' ) AS `year`, `count`
 			FROM `".DBPREFIX."stats_visitors_summary`
-			WHERE `type` = 'month' AND `count` > 0 AND FROM_UNIXTIME( `timestamp` , '%Y' ) = '".date('Y')."'";
+			WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-1)."'";
 		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
-				$arrBarPlot1[$arrResult['month']] = $arrResult['count'];
+				$arrBarPlot1[$arrResult['month']][$arrResult['year']] = $arrResult['count'];
 			}
 		}
 
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%m' ) AS `month` , `count`
+		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%m' ) AS `month` , FROM_UNIXTIME(`timestamp`, '%y' ) AS `year`, `count`
 			FROM `".DBPREFIX."stats_requests_summary`
-			WHERE `type` = 'month' AND `count` > 0 AND FROM_UNIXTIME( `timestamp` , '%Y' ) = '".date('Y')."'";
+			WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-1)."'";
 		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
-				$arrBarPlot2[$arrResult['month']] = $arrResult['count'];
+				$arrBarPlot2[$arrResult['month']][$arrResult['year']] = $arrResult['count'];
 			}
 		}
+
+		if (date('m')<12) {
+			$arrRange[date('y')-1] = range(date('m')+1, 12, 1);
+		}
+		$arrRange[date('y')] = range(1, date('m'), 1);
 
 		// generate arrays for the bars
-		for ($month=1;$month<=12;$month++) {
-			if (!isset($arrBarPlot1[sprintf("%02s",$month)])){
-				$arrBarPlot1[sprintf("%02s",$month)] = 0;
+		foreach ($arrRange as $year => $arrMonths) {
+			$strYear = sprintf("%02s", $year);
+			foreach ($arrMonths as $month) {
+				$strMonth = sprintf("%02s",$month);
+				if (!isset($arrBarPlot1[$strMonth][$strYear])){
+					$arrBarPlot1[$strMonth][$strYear] = 0;
+				}
+				if (!isset($arrBarPlot2[$strMonth][$strYear])){
+					$arrBarPlot2[$strMonth][$strYear] = 0;
+				}
+				$arrData[$strMonth.$strYear] = array(' '.date('M',mktime(0,0,0,$month,1,date('Y'))).' '.$strYear, $arrBarPlot1[$strMonth][$strYear], $arrBarPlot2[$strMonth][$strYear]);
 			}
-			if (!isset($arrBarPlot2[sprintf("%02s",$month)])){
-				$arrBarPlot2[sprintf("%02s",$month)] = 0;
-			}
-			$arrData[$month] = array(' '.date('M',mktime(0,0,0,$month,1,date('Y'))), $arrBarPlot1[sprintf("%02s",$month)], $arrBarPlot2[sprintf("%02s",$month)]);
 		}
 
-		$this->graphAxisXMaxStringSize = 5;
+		$this->graphAxisXMaxStringSize = 7;
 		$this->graphArrLegendText = array($_ARRAYLANG['TXT_VISITORS'], $_ARRAYLANG['TXT_PAGE_VIEWS']);
 		$this->graphChartTitle = date('Y');
 		$this->graphTitleAxisX = $_ARRAYLANG['TXT_MONTH'];

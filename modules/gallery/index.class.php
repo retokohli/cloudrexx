@@ -789,7 +789,7 @@ class Gallery {
                     'GALLERY_CATEGORY_NAME'        => $strName,
                     'GALLERY_CATEGORY_IMAGE'       => $strImage,
                     'GALLERY_CATEGORY_INFO'        => $strInfo,
-                    'GALLERY_CATEGORY_DESCRIPTION' => $strDesc
+                    'GALLERY_CATEGORY_DESCRIPTION' => nl2br($strDesc)
                 ));
                 $this->_objTpl->parse('galleryCategoryList');
                 $i++;
@@ -806,7 +806,7 @@ class Gallery {
         $objResult = $objDatabase->Execute(
             "SELECT value FROM ".DBPREFIX."module_gallery_language ".
             "WHERE gallery_id=$intParentId AND lang_id=$this->langId AND name='desc'");
-        $strCategoryComment = $objResult->fields['value'];
+        $strCategoryComment = nl2br($objResult->fields['value']);
 
         $objResult = $objDatabase->Execute(
             "SELECT comment,voting FROM ".DBPREFIX."module_gallery_categories ".

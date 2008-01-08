@@ -88,6 +88,8 @@ Update System
 Statistik
 - Nicht erkannte Daten (Betriebssystem, Browser, Bildschirmauflösung, Farbtiefe,
   Domäne) der Besucher werden als "Unbekannt" aufgeführt.
+- Die Darstellung der "Besucher und Seitenaufrufe" wurde geändert. Neu werden
+  die letzen 24 Stunden, 30 Tage oder 12 Monaten angezeigt.
 
 Media Manager/Bilderverwaltung
 - Es werden mehr Zeichen erlaubt in Dateinamen.
@@ -97,6 +99,7 @@ Modul: Bildergalerie
 - Die Platzhalter [[GALLERY_RANDOM]] und [[GALLERY_LATEST]] verweisen auf die
   entsprechende Kategorienseite auf welcher das ausgegebenen Bild aufgelistet
   wird.
+- Zeilenumbrüche bei der Beschreibung einer Kategorie werden angezeigt.
 
 Modul: Block System
 - Die Benutzeroberfläche fürs Erstellen und Editieren der einzelnen Blöcke wurde
