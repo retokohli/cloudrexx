@@ -301,7 +301,15 @@ class stats extends statsLibrary
 
     	// set statistic details
     	$rowClass = 1;
-		for ($hour=0;$hour<=date('H');$hour++) {
+
+    	$currentHour = date('H');
+    	$arrRange = array();
+		if ($currentHour < 23) {
+			$arrRange = range($currentHour+1, 23, 1);
+		}
+		$arrRange = array_merge($arrRange, range(0, $currentHour, 1));
+
+		foreach ($arrRange as $hour) {
 			$pHour = str_pad($hour, 2, 0, STR_PAD_LEFT);
 			if (isset($this->arrRequests[$pHour])) {
 				$visitors = $this->arrRequests[$pHour]['visitors'];
@@ -380,32 +388,39 @@ class stats extends statsLibrary
     	// set statistic details
     	$rowClass = 1;
     	$arrMonths = explode(',',$_ARRAYLANG['TXT_MONTH_ARRAY']);
-    	$arrDays = explode(',',$_ARRAYLANG['TXT_DAY_ARRAY']);
+    	$arrDayNames = explode(',',$_ARRAYLANG['TXT_DAY_ARRAY']);
+		$arrRange = array();
+    	if (date('d') < date('t')) {
+			$arrRange[$arrMonths[(date('m') == 1 ? 11 : date('m')-2)]] = range(date('d')+1, date('t'), 1);
+		}
+		$arrRange[$arrMonths[date('m')-1]] = range(1, date('d'), 1);
 
-		for ($day=1;$day<=date('j');$day++) {
-			if (isset($this->arrRequests[$day])) {
-				$visitors = $this->arrRequests[$day]['visitors'];
-				$requests = $this->arrRequests[$day]['requests'];
-			} else {
-				$visitors = 0;
-				$requests = 0;
+		foreach ($arrRange as $month => $arrDays) {
+			foreach ($arrDays as $day) {
+				if (isset($this->arrRequests[$day])) {
+					$visitors = $this->arrRequests[$day]['visitors'];
+					$requests = $this->arrRequests[$day]['requests'];
+				} else {
+					$visitors = 0;
+					$requests = 0;
+				}
+
+				$weekday = $arrDayNames[date('w',mktime(0,0,0,date('m'),$day,date('Y')))];
+				if (date('w',mktime(0,0,0,date('m'),$day,date('Y'))) == 0) {
+					$weekday = "<span style=\"color: #ff0000;\">".$weekday."</span>";
+				}
+
+	    		$this->_objTpl->setVariable(array(
+	    			'STATS_REQUESTS_ROW_CLASS'	=> $rowClass%2 == 1 ? "row2" : "row1",
+	    			'STATS_REQUESTS_WEEKDAY'	=> $weekday,
+	    			'STATS_REQUESTS_DATE'		=> $day.'.&nbsp;'.$month,
+	    			'STATS_REQUESTS_VISITORS'	=> empty($visitors) ? 0 : $visitors,
+	    			'STATS_REQUESTS_PAGE_VIEWS'	=> empty($requests) ? 0 : $requests
+	    		));
+	    		$this->_objTpl->parse('stats_requests_days');
+
+	    		$rowClass++;
 			}
-
-			$weekday = $arrDays[date('w',mktime(0,0,0,date('m'),$day,date('Y')))];
-			if (date('w',mktime(0,0,0,date('m'),$day,date('Y'))) == 0) {
-				$weekday = "<span style=\"color: #ff0000;\">".$weekday."</span>";
-			}
-
-    		$this->_objTpl->setVariable(array(
-    			'STATS_REQUESTS_ROW_CLASS'	=> $rowClass%2 == 1 ? "row2" : "row1",
-    			'STATS_REQUESTS_WEEKDAY'	=> $weekday,
-    			'STATS_REQUESTS_DATE'		=> $day.'.&nbsp;'.$arrMonths[date('m')-1],
-    			'STATS_REQUESTS_VISITORS'	=> empty($visitors) ? 0 : $visitors,
-    			'STATS_REQUESTS_PAGE_VIEWS'	=> empty($requests) ? 0 : $requests
-    		));
-    		$this->_objTpl->parse('stats_requests_days');
-
-    		$rowClass++;
 		}
 
 		// set total statistic details
@@ -467,24 +482,32 @@ class stats extends statsLibrary
 
     	// set statistic details
     	$rowClass = 1;
-    	$arrMonths = explode(',',$_ARRAYLANG['TXT_MONTH_ARRAY']);
-		for ($month=1;$month<=date('m');$month++) {
-			if (isset($this->arrRequests[$month])) {
-				$visitors = $this->arrRequests[$month]['visitors'];
-				$requests = $this->arrRequests[$month]['requests'];
-			} else {
-				$visitors = 0;
-				$requests = 0;
-			}
-    		$this->_objTpl->setVariable(array(
-    			'STATS_REQUESTS_ROW_CLASS'	=> $rowClass%2 == 1 ? "row2" : "row1",
-    			'STATS_REQUESTS_TIME'		=> $arrMonths[$month-1],
-    			'STATS_REQUESTS_VISITORS'	=> empty($visitors) ? 0 : $visitors,
-    			'STATS_REQUESTS_PAGE_VIEWS'	=> empty($requests) ? 0 : $requests
-    		));
-    		$this->_objTpl->parse('stats_requests_months');
+    	$arrMonthNames = explode(',',$_ARRAYLANG['TXT_MONTH_ARRAY']);
+    	$arrRange = array();
+    	if (date('m')<12) {
+			$arrRange[date('y')-1] = range(date('m')+1, 12, 1);
+		}
+		$arrRange[date('y')] = range(1, date('m'), 1);
 
-    		$rowClass++;
+		foreach ($arrRange as $year => $arrMonths) {
+			foreach ($arrMonths as $month) {
+				if (isset($this->arrRequests[sprintf("%02s", $year)][$month])) {
+					$visitors = $this->arrRequests[sprintf("%02s", $year)][$month]['visitors'];
+					$requests = $this->arrRequests[sprintf("%02s", $year)][$month]['requests'];
+				} else {
+					$visitors = 0;
+					$requests = 0;
+				}
+	    		$this->_objTpl->setVariable(array(
+	    			'STATS_REQUESTS_ROW_CLASS'	=> $rowClass%2 == 1 ? "row2" : "row1",
+	    			'STATS_REQUESTS_TIME'		=> $arrMonthNames[$month-1].' '.date('Y', mktime(0,0,0,1,1,$year)),
+	    			'STATS_REQUESTS_VISITORS'	=> empty($visitors) ? 0 : $visitors,
+	    			'STATS_REQUESTS_PAGE_VIEWS'	=> empty($requests) ? 0 : $requests
+	    		));
+	    		$this->_objTpl->parse('stats_requests_months');
+
+	    		$rowClass++;
+			}
 		}
 
 		// set total statistic details

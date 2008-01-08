@@ -380,7 +380,7 @@ class statsLibrary
 		// get statistics
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` , `count`
 			FROM `".DBPREFIX."stats_visitors_summary`
-			WHERE `type` = 'hour' AND `count` > 0 AND FROM_UNIXTIME( `timestamp` , '%d-%m-%Y' ) = '".date('d-m-Y')."'";
+			WHERE `type` = 'hour' AND `count` > 0 AND `timestamp` >= '".(time()-86400)."'";
 		$objResult = $objDatabase->Execute($query);
 		while (!$objResult->EOF) {
 			$this->arrRequests[$objResult->fields['hour']]['visitors'] = $objResult->fields['count'];
@@ -390,7 +390,7 @@ class statsLibrary
 
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` , `count`
 			FROM `".DBPREFIX."stats_requests_summary`
-			WHERE `type` = 'hour' AND `count` > 0 AND FROM_UNIXTIME( `timestamp` , '%d-%m-%Y' ) = '".date('d-m-Y')."'";
+			WHERE `type` = 'hour' AND `count` > 0 AND `timestamp` >= '".(time()-86400)."'";
 		$objResult = $objDatabase->Execute($query);
 		while (!$objResult->EOF) {
 			$this->arrRequests[$objResult->fields['hour']]['requests'] = $objResult->fields['count'];
@@ -428,7 +428,7 @@ class statsLibrary
 		// get statistics
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%e' ) AS `day` , `count`
 					FROM `".DBPREFIX."stats_visitors_summary`
-		 				   WHERE `type` = 'day' AND `count` > 0 AND FROM_UNIXTIME( `timestamp` , '%m-%Y' ) = '".date('m-Y')."'";
+		 				   WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".(time()-3456000)."'";
 		$objResult = $objDatabase->Execute($query);
 		while (!$objResult->EOF) {
 			$this->arrRequests[$objResult->fields['day']]['visitors'] = $objResult->fields['count'];
@@ -438,7 +438,7 @@ class statsLibrary
 
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%e' ) AS `day` , `count`
 					FROM `".DBPREFIX."stats_requests_summary`
-		 				   WHERE `type` = 'day' AND `count` > 0 AND FROM_UNIXTIME( `timestamp` , '%m-%Y' ) = '".date('m-Y')."'";
+		 				   WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".(time()-3456000)."'";
 		$objResult = $objDatabase->Execute($query);
 		while (!$objResult->EOF) {
 			$this->arrRequests[$objResult->fields['day']]['requests'] = $objResult->fields['count'];
@@ -454,22 +454,22 @@ class statsLibrary
 		$this->_removeOutdatedEntries();
 
 		// get statistics
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%c' ) AS `month` , `count`
+		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%c' ) AS `month` , FROM_UNIXTIME(`timestamp`, '%y' ) AS `year` , `count`
 			FROM `".DBPREFIX."stats_visitors_summary`
-			WHERE `type` = 'month' AND `count` > 0 AND FROM_UNIXTIME( `timestamp` , '%Y' ) = '".date('Y')."'";
+			WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-1)."'";
 		$objResult = $objDatabase->Execute($query);
 		while (!$objResult->EOF) {
-			$this->arrRequests[$objResult->fields['month']]['visitors'] = $objResult->fields['count'];
+			$this->arrRequests[$objResult->fields['year']][$objResult->fields['month']]['visitors'] = $objResult->fields['count'];
 			$this->totalVisitors += $objResult->fields['count'];
 			$objResult->MoveNext();
 		}
 
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%c' ) AS `month` , `count`
+		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%c' ) AS `month` , FROM_UNIXTIME(`timestamp`, '%y' ) AS `year` ,`count`
 			FROM `".DBPREFIX."stats_requests_summary`
-			WHERE `type` = 'month' AND `count` > 0 AND FROM_UNIXTIME( `timestamp` , '%Y' ) = '".date('Y')."'";
+			WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-1)."'";
 		$objResult = $objDatabase->Execute($query);
 		while (!$objResult->EOF) {
-			$this->arrRequests[$objResult->fields['month']]['requests'] = $objResult->fields['count'];
+			$this->arrRequests[$objResult->fields['year']][$objResult->fields['month']]['requests'] = $objResult->fields['count'];
 			$this->totalRequests += $objResult->fields['count'];
 			$objResult->MoveNext();
 		}
