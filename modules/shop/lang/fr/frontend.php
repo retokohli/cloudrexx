@@ -72,6 +72,7 @@ $_ARRAYLANG['TXT_INSTEAD_OF'] = "instead of";
 $_ARRAYLANG['TXT_NO_TAX'] = "Nicht Taxpflichtig";
 $_ARRAYLANG['TXT_CVC_CODE'] = "CVC-Code";
 $_ARRAYLANG['TXT_MORE_INFORMATIONS'] = "More info";
+$_ARRAYLANG['TXT_SHOP_ID'] = "ID";
 $_ARRAYLANG['TXT_ORDER_LINK_PREPARED'] = "The order is now prepared for the payment. Click on the following button, in order to arrive at the payment gateway to transact your payment there.";
 $_ARRAYLANG['TXT_SELECT_SUB_GROUP'] = "Please select a sub-group.";
 $_ARRAYLANG['TXT_MANUFACTURER_URL'] = "Manufacturer link";

@@ -72,6 +72,7 @@ $_ARRAYLANG['TXT_INSTEAD_OF'] = "i stedet for";
 $_ARRAYLANG['TXT_NO_TAX'] = "Ikke gebyrpligtig";
 $_ARRAYLANG['TXT_CVC_CODE'] = "CVC-kode";
 $_ARRAYLANG['TXT_MORE_INFORMATIONS'] = "Flere informationer";
+$_ARRAYLANG['TXT_SHOP_ID'] = "ID";
 $_ARRAYLANG['TXT_ORDER_LINK_PREPARED'] = "Denne bestilling er nu klar til betalingen. Klik venligst på nedstående link/knap for at blive sent tilbage til betalings-gateway. Der kan du gennemføre din betailng";
 $_ARRAYLANG['TXT_SELECT_SUB_GROUP'] = "Valg venliste en undergruppe";
 $_ARRAYLANG['TXT_MANUFACTURER_URL'] = "Link til producenten";
