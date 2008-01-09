@@ -224,26 +224,26 @@ class news extends newsLibrary {
 
 		$this->_objTpl->setTemplate($this->pageContent);
 
-		if (!empty($_REQUEST['category'])) {
+		if (!empty($_REQUEST['category']) || (($_REQUEST['category'] = intval($_REQUEST['cmd'])) > 0)) {
 			$newsfilter = ' AND ';
 			$boolFirst = true;
-			
+
 			$arrCategories = explode(',',$_REQUEST['category']);
-			
+
 			if (count($arrCategories) == 1) {
 				$selected = $arrCategories[0];
 			}
-			
-			foreach ($arrCategories as $intKey => $intCategoryId) {
+
+			foreach ($arrCategories as $intCategoryId) {
 				if (!$boolFirst) {
 					$newsfilter .= 'OR ';
 				}
-				
+
 				$newsfilter .= 'n.catid='.intval($intCategoryId).' ';
 				$boolFirst = false;
 			}
 		}
-		
+
 		$catMenu 	=  '<select onchange="this.form.submit()" name="category">'."\n";
 		$catMenu 	.= '<option value="" selected="selected">'.$_ARRAYLANG['TXT_CATEGORY'].'</option>'."\n";
 		$catMenu 	.= $this->getCategoryMenu($this->langId, $selected)."\n";
@@ -279,7 +279,7 @@ class news extends newsLibrary {
 		                 		AND (n.enddate>=CURDATE() OR n.enddate="0000-00-00")
 		                 		'.$newsfilter.'
 		        	ORDER BY 	newsdate DESC';
-		
+
 		/***start paging ****/
 		$objResult = $objDatabase->Execute($query);
 		$count = $objResult->RecordCount();
