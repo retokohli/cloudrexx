@@ -79,7 +79,7 @@ Webinstaller
 - Der Datenbank Dump ist in zwei Dateien getrennt (Struktur und Daten).
 
 WYSIWYG-Editor
-- Neue Version 2.5 des FCKeditors. Weitere Informationen unter:
+- Neue Version 2.5.1 des FCKeditors. Weitere Informationen unter:
   http://www.fckeditor.net/whatsnew/
 
 Update System
