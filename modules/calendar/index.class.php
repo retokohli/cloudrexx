@@ -891,7 +891,7 @@ class Calendar extends calendarLibrary
 				}
 
 				//get note details
-				$query 			= " SELECT `id`, `key`, `public`, `groups`, `num`
+				$query 			= "SELECT `id`, `key`, `public`, `all_groups`, `groups`, `num`
                                     FROM ".DBPREFIX."module_calendar
                                     WHERE id = '".$noteId."'
                                     AND `mod_mandate` = ".$this->mandate."";
@@ -916,6 +916,9 @@ class Calendar extends calendarLibrary
 							$objResultUser 	= $objDatabase->SelectLimit($queryUser, 1);
 
 							if ($objResultUser !== false) {
+								if ($objResult->fields['all_groups']) {
+									$x=1;
+								} else {
 								$arrUserGroups	=  explode(",",$objResultUser->fields['groups']);
 								$arrNoteGroups	=  explode(";",$noteGroups);
 
@@ -924,6 +927,7 @@ class Calendar extends calendarLibrary
 									if (in_array($groupId, $arrNoteGroups)) {
 										$x++;
 									}
+								}
 								}
 
 								if ($x>0) {
