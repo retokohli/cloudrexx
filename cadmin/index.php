@@ -687,11 +687,14 @@ switch($cmd) {
             $modulespath = ASCMS_MODULE_PATH . "/calendar/admin.class.php";
             $mandate = 1;
         } else {
+            $objRs = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."
+                                            WHERE name = 'calendar.".$mandate."'");
+            print $objRs->fields['id'];
             $mandate = intval(substr($cmd, -1));
-            $objPerm->checkAccess(47, 'static');
+            $objPerm->checkAccess($objRs->fields['id'], 'static');
             $modulespath = ASCMS_MODULE_PATH . "/calendar".$mandate."/admin.class.php";
-            
         }
+        
         define("CALENDAR_MANDATE", $mandate);
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);

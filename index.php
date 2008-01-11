@@ -1476,7 +1476,7 @@ if (isset($_CONFIGURATION['custom']['shopnavbar']) AND $_CONFIGURATION['custom']
 // Calendar
 //-------------------------------------------------------
 // print_r($objTemplate->getPlaceholderList());
-/*
+
 $calendarCheck1 = $objTemplate->placeholderExists('CALENDAR');
 $calendarCheck2 = $objTemplate->placeholderExists('CALENDAR_EVENTS');
 if(!empty($calendarCheck1) OR !empty($calendarCheck2)) {
@@ -1485,7 +1485,7 @@ if(!empty($calendarCheck1) OR !empty($calendarCheck2)) {
         /**
          * @ignore
          */
-/*
+
         require_once($modulespath);
         $objHomeCalendar = &new HomeCalendar();
         if(!empty($calendarCheck1)) {
@@ -1496,7 +1496,7 @@ if(!empty($calendarCheck1) OR !empty($calendarCheck2)) {
         }
     }
 }
-*/
+
 
 
 //-------------------------------------------------------

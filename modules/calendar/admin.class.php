@@ -4,7 +4,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
- * @subpackage  module_calendar
+ * @subpackage  module_calendar".$this->mandateLink."
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -25,7 +25,7 @@ require_once ASCMS_CORE_PATH.'/settings.class.php';
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
- * @subpackage  module_calendar
+ * @subpackage  module_calendar".$this->mandateLink."
  */
 class calendarManager extends calendarLibrary
 {
@@ -147,11 +147,7 @@ class calendarManager extends calendarLibrary
 			case 'saveSettings':
 				$this->saveSettings();
 				$this->setStdCat();
-				if ($this->mandate == 1) {
-				    header("Location: ?cmd=calendar".$this->mandateLink."&act=settings");
-				} else {
-				    header("Location: ?cmd=calendar".$this->mandateLink."&act=settings".$this->mandate);
-				}
+				header("Location: ?cmd=calendar".$this->mandateLink."&act=settings");
 				exit;
 				break;
 
@@ -209,8 +205,7 @@ class calendarManager extends calendarLibrary
 		// Stuff for the category selection
 		$requestUri = str_replace('&catid='.$catid, '', $_SERVER['REQUEST_URI']);
 	    $query = " SELECT id,name,lang 
-	               FROM ".DBPREFIX."module_calendar_categories 
-	               WHERE `mod_mandate` = ".$this->mandate."
+	               FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories 
 	               ORDER BY pos";
 	    $objResult = $objDatabase->Execute($query);
 	    if ($objResult !== false) {
@@ -283,51 +278,46 @@ class calendarManager extends calendarLibrary
 		if (isset($_POST['search'])) {
 			$keyword = htmlentities(contrexx_addslashes($_POST['inputKeyword']), ENT_QUOTES, CONTREXX_CHARSET);
 			$query = "SELECT active, id, name, catid, startdate, enddate
-					  	FROM ".DBPREFIX."module_calendar
+					  	FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 					  	WHERE (`name` LIKE '%$keyword%' OR
 					  	`comment` LIKE '%$keyword%' OR
 					  	`id` LIKE '%$keyword%')
-					  	AND `mod_mandate` = ".$this->mandate."
 					    ORDER BY startdate";
 		} else {
 			if ($select_next_ten && !empty($_GET['catid'])) {
 				$query = "SELECT active, id, name, catid, startdate, enddate
-					FROM ".DBPREFIX."module_calendar
+					FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 					WHERE catid={$_GET['catid']} AND
 					((startdate > $startdate) OR
 					(enddate > $startdate))
-					AND `mod_mandate` = ".$this->mandate."
 					ORDER BY startdate ASC
 					LIMIT 0,10
 					";
 
 			} elseif ($select_next_ten && empty($_GET['catid'])) {
 				$query = "SELECT active, id, name, catid, startdate, enddate
-					FROM ".DBPREFIX."module_calendar
+					FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 					WHERE ((startdate > $startdate) OR
 					(enddate > $startdate))
-					AND `mod_mandate` = ".$this->mandate."
 					ORDER BY startdate ASC
 					LIMIT 0,10
 					";
 
 			} elseif (!$select_next_ten && !empty($_GET['catid'])) {
 				$query = "SELECT active, id, name, catid, startdate, enddate
-					FROM ".DBPREFIX."module_calendar
+					FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 					WHERE catid = {$_GET['catid']} AND
 					((startdate BETWEEN $startdate AND $enddate) OR
 					(enddate BETWEEN $startdate AND $enddate) OR
 					(startdate < $startdate AND enddate > $startdate))
-					AND `mod_mandate` = ".$this->mandate."
 					ORDER BY startdate ASC";
 
 			} elseif (!$select_next_ten && empty($_GET['catid'])) {
 				$query = "SELECT active, id, name, catid, startdate, enddate
-					FROM ".DBPREFIX."module_calendar
+					FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 					WHERE ((startdate BETWEEN $startdate AND $enddate) OR
 					(enddate BETWEEN $startdate AND $enddate) OR
 					(startdate < $startdate AND enddate > $startdate))
-					AND `mod_mandate` = ".$this->mandate."
 					ORDER BY startdate ASC";
 			}
 		}
@@ -460,9 +450,8 @@ class calendarManager extends calendarLibrary
 
 		//get fields
 		$query = "SELECT id
-		            FROM ".DBPREFIX."module_calendar_registrations
+		            FROM ".DBPREFIX."module_calendar".$this->mandateLink."_registrations
 		           WHERE note_id='".$id."'
-		           AND `mod_mandate` = ".$this->mandate."
 		           ORDER BY time";
 
 		$objResult 	= $objDatabase->Execute($query);
@@ -560,7 +549,7 @@ class calendarManager extends calendarLibrary
 
 		if (!empty($_POST['selectedEventId'])) {
 			foreach ($_POST['selectedEventId'] as $eventid) {
-				$query = "DELETE FROM ".DBPREFIX."module_calendar WHERE id=$eventid";
+				$query = "DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink." WHERE id=$eventid";
 
 				$objResultDel = $objDatabase->Execute($query);
 
@@ -626,7 +615,7 @@ class calendarManager extends calendarLibrary
 	{
 		global $objDatabase, $_ARRAYLANG, $_LANGID;
 
-		$objResultDel = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_calendar WHERE id = ".intval($id));
+		$objResultDel = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink." WHERE id = ".intval($id));
 
 		if ($objResultDel !== false) {
 			$this->deleteFormular($id);
@@ -776,8 +765,7 @@ class calendarManager extends calendarLibrary
 			$query = "SELECT 	id,
 		                       	name,
 			                   	lang
-		                  FROM 	".DBPREFIX."module_calendar_categories
-		                  WHERE   `mod_mandate` = ".$this->mandate."
+		                  FROM 	".DBPREFIX."module_calendar".$this->mandateLink."_categories
 		              ORDER BY 	'pos'";
 
 			$objResultCat = $objDatabase->Execute($query);
@@ -803,17 +791,15 @@ class calendarManager extends calendarLibrary
 
 		    //get mail template
 			$query 			= "SELECT setvalue
-			              	 	 FROM ".DBPREFIX."module_calendar_settings
-				            	WHERE setid = '1'
-				            	AND `mod_mandate` = ".$this->mandate."";
+			              	 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+				            	WHERE setid = '1'";
 
 			$objResult 		= $objDatabase->SelectLimit($query, 1);
 			$mailTitle 		= $objResult->fields['setvalue'];
 
 			$query 			= "SELECT setvalue
-			              	 	 FROM ".DBPREFIX."module_calendar_settings
-				            	WHERE setid = '2'
-				            	AND `mod_mandate` = ".$this->mandate."";
+			              	 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+				            	WHERE setid = '2'";
 
 			$objResult 		= $objDatabase->SelectLimit($query, 1);
 			$mailContent 	= $objResult->fields['setvalue'];
@@ -1047,14 +1033,13 @@ class calendarManager extends calendarLibrary
 
 	    if(!empty($id)) {
 	    	$query = "SELECT id
-		                FROM ".DBPREFIX."module_calendar
-		               WHERE id = '".addslashes($id)."'
-		               AND `mod_mandate` = ".$this->mandate."";
+		                FROM ".DBPREFIX."module_calendar".$this->mandateLink."
+		               WHERE id = '".addslashes($id)."'";
 
 	    	$objResult = $objDatabase->Execute($query);
 
 	    	if ($objDatabase->Affected_Rows() > 0) {
-				$query = "UPDATE ".DBPREFIX."module_calendar SET   	active = '".$active."',
+				$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink." SET   	active = '".$active."',
 																	catid = '".$catid."',
 																	startdate = '".$startdate."',
 																	enddate = '".$enddate."',
@@ -1086,15 +1071,14 @@ class calendarManager extends calendarLibrary
 																	num = '".$registrationSubscriber."',
 																	notification = '".$notification."',
 																	notification_address = '".$notificationAddress."'
-															WHERE   id = '".$id."'
-															AND `mod_mandate` = ".$this->mandate."";
+															WHERE   id = '".$id."'";
 				$objResult = $objDatabase->Execute($query);
 
 				if ($objResult !== false) {
 
 					if ($registration == 1) {
 
-						$query = "DELETE FROM ".DBPREFIX."module_calendar_form_fields WHERE note_id='".$id."'";
+						$query = "DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields WHERE note_id='".$id."'";
 						$objResultFields = $objDatabase->Execute($query);
 
 						if ($objResultFields !== false) {
@@ -1106,22 +1090,20 @@ class calendarManager extends calendarLibrary
 								$fieldRequired	= intval($registrationArrFieldRequired[$fieldKey]);
 								$fieldOrder		= $registrationArrFieldOrder[$fieldKey];
 
-								$query = "INSERT INTO ".DBPREFIX."module_calendar_form_fields (`id`,
+								$query = "INSERT INTO ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields (`id`,
 																						       `note_id`,
 																							   `name`,
 																							   `type`,
 																							   `required`,
 																							   `order`,
-																							   `key`,
-																							   `mod_mandate`)
+																							   `key`)
 																		   			   VALUES ('$fieldId',
 																		   			   		   '$id',
 																		   			   		   '$fieldName',
 																		   			   		   '$fieldType',
 																		   			   		   '$fieldRequired',
 																		   			   		   '$fieldOrder',
-																				               '$fieldKey',
-																				               '".$this->mandate."')";
+																				               '$fieldKey')";
 								$objResultFields = $objDatabase->Execute($query);
 							}
 						}
@@ -1148,7 +1130,7 @@ class calendarManager extends calendarLibrary
 	    	$md5 = md5(uniqid(rand()));
 	    	$key = substr($md5,0,10);
 
-			$query = "INSERT INTO ".DBPREFIX."module_calendar  (active,
+			$query = "INSERT INTO ".DBPREFIX."module_calendar".$this->mandateLink."  (active,
 																catid,
 																startdate,
 																enddate,
@@ -1180,8 +1162,7 @@ class calendarManager extends calendarLibrary
 																`key`,
 																num,
 																notification,
-																notification_address,
-																`mod_mandate`)
+																notification_address)
 														VALUES ('$active',
 																'$catid',
 																'$startdate',
@@ -1214,8 +1195,8 @@ class calendarManager extends calendarLibrary
 																'$key',
 																'$registrationSubscriber',
 																'$notification',
-																'$notificationAddress',
-																".$this->mandate.")";
+																'$notificationAddress'
+																)";
 			$objResult = $objDatabase->Execute($query);
 
 			if ($objResult !== false) {
@@ -1231,20 +1212,18 @@ class calendarManager extends calendarLibrary
 						$fieldRequired	= $registrationArrFieldRequired[$fieldKey];
 						$fieldOrder		= $registrationArrFieldOrder[$fieldKey];
 
-						$query = "INSERT INTO ".DBPREFIX."module_calendar_form_fields (`note_id`,
+						$query = "INSERT INTO ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields (`note_id`,
 																					   `name`,
 																					   `type`,
 																					   `required`,
 																					   `order`,
-																					   `key`,
-																					   `mod_mandate`)
+																					   `key`)
 																   			   VALUES ('$noteId',
 																   			   		   '$fieldName',
 																   			   		   '$fieldType',
 																   			   		   '$fieldRequired',
 																   			   		   '$fieldOrder',
-																		               '$fieldKey',
-																		               '".$this->mandate."')";
+																		               '$fieldKey')";
 						$objResultFields = $objDatabase->Execute($query);
 
 					}
@@ -1275,18 +1254,16 @@ class calendarManager extends calendarLibrary
 	    	if ($_POST['name'] != '' and $_POST['status'] != '' and $_POST['lang']){
 	    		$_POST['name'] = CONTREXX_ESCAPE_GPC ? strip_tags($_POST['name']) : addslashes(strip_tags($_POST['name']));
 			    $query = "SELECT id
-				              FROM ".DBPREFIX."module_calendar_categories
-				      WHERE BINARY name = '".$_POST['name']."'
-				      AND `mod_mandate` = ".$this->mandate."";
+				              FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
+				      WHERE BINARY name = '".$_POST['name']."'";
 
 			    $objResult = $objDatabase->Execute($query);
 
 				if ($objDatabase->Affected_Rows() == 0){
-		    		$query = "INSERT INTO ".DBPREFIX."module_calendar_categories
+		    		$query = "INSERT INTO ".DBPREFIX."module_calendar".$this->mandateLink."_categories
 		    		                    SET name = '".$_POST['name']."',
 		    							    status = '".intval($_POST['status'])."',
-		    		                        lang = '".intval($_POST['lang'])."',
-		    		                        mod_mandate = '".$this->mandate."'";
+		    		                        lang = '".intval($_POST['lang'])."'";
 		    		$objDatabase->Execute($query);
 		    		$this->strOkMessage = $_ARRAYLANG['TXT_CALENDAR_MESSAGE_NEW_CATRGORY'];
 				}else{
@@ -1306,16 +1283,14 @@ class calendarManager extends calendarLibrary
 
 				foreach($ids as $id){
 					$query = "SELECT id
-					              FROM ".DBPREFIX."module_calendar
-					             WHERE catid = '".intval($id)."'
-					             AND `mod_mandate` = ".$this->mandate."";
+					              FROM ".DBPREFIX."module_calendar".$this->mandateLink."
+					             WHERE catid = '".intval($id)."'";
 
 					$objResult = $objDatabase->Execute($query);
 
 					if ($objDatabase->Affected_Rows() == 0){
-						$query = "DELETE FROM ".DBPREFIX."module_calendar_categories
-				                          WHERE id = '".intval($id)."'
-				                          AND `mod_mandate` = ".$this->mandate."";
+						$query = "DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
+				                          WHERE id = '".intval($id)."'";
 						$objDatabase->SelectLimit($query, 1);
 					} else{
 						$x++;
@@ -1329,14 +1304,12 @@ class calendarManager extends calendarLibrary
 					$this->strOkMessage = $_ARRAYLANG['TXT_CALENDAR_CAT_DELETE'];
 				}
 
-				$query = "SELECT id FROM ".DBPREFIX."module_calendar_categories
-				            WHERE `mod_mandate` = ".$this->mandate."";
+				$query = "SELECT id FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories";
 
 				$objResult = $objDatabase->Execute($query);
 
 				if ($objDatabase->Affected_Rows() == 0){
-					$query = "DELETE FROM ".DBPREFIX."module_calendar_categories
-					           WHERE `mod_mandate` = ".$this->mandate."";
+					$query = "DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories";
 					$objDatabase->Execute($query);
 				}
 			}
@@ -1353,10 +1326,9 @@ class calendarManager extends calendarLibrary
 				}
 
 				foreach($ids as $id){
-					$query = "UPDATE ".DBPREFIX."module_calendar_categories
+					$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink."_categories
 					               SET status = '".$to."'
-					             WHERE id = '".intval($id)."'
-					             AND `mod_mandate` = ".$this->mandate."";
+					             WHERE id = '".intval($id)."'";
 					$objDatabase->SelectLimit($query, 1);
 				}
 
@@ -1368,10 +1340,9 @@ class calendarManager extends calendarLibrary
 		//sort
 		if (isset($_GET['chg']) and $_GET['chg'] == 1 and $_POST['form_sort'] == 1){
 			for ($x = 0; $x < count($_POST['form_id']); $x++){
-				$query = "UPDATE ".DBPREFIX."module_calendar_categories
+				$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink."_categories
 				               SET pos = '".intval($_POST['form_pos'][$x])."'
-				             WHERE id = '".intval($_POST['form_id'][$x])."'
-				             AND `mod_mandate` = ".$this->mandate."";
+				             WHERE id = '".intval($_POST['form_id'][$x])."'";
 				$objDatabase->Execute($query);
 			}
 			$this->strOkMessage = $_ARRAYLANG['TXT_CALENDAR_SORTING_COMPLETE'];
@@ -1418,8 +1389,7 @@ class calendarManager extends calendarLibrary
 		));
 
 		//table
-	    $query = " SELECT * FROM ".DBPREFIX."module_calendar_categories 
-	               WHERE `mod_mandate` = ".$this->mandate."
+	    $query = " SELECT * FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories 
 	               ORDER BY pos, id DESC";
 	    $objResult = $objDatabase->Execute($query);
 	    $i = 0;
@@ -1430,9 +1400,8 @@ class calendarManager extends calendarLibrary
 				($objResult->fields['status'] == 1) ? $status = 'green' : $status = 'red';
 
 				$query = "SELECT id
-				               FROM ".DBPREFIX."module_calendar
-				              WHERE catid = '".intval($objResult->fields['id'])."'
-				              AND `mod_mandate` = ".$this->mandate."";
+				               FROM ".DBPREFIX."module_calendar".$this->mandateLink."
+				              WHERE catid = '".intval($objResult->fields['id'])."'";
 				$objResult2	= $objDatabase->Execute($query);
 				$records = $objDatabase->Affected_Rows();
 
@@ -1480,20 +1449,18 @@ class calendarManager extends calendarLibrary
 			if ($_POST['id'] != '' and $_POST['name'] != '' and $_POST['status'] != '' and $_POST['lang']) {
 				$_POST['name'] = CONTREXX_ESCAPE_GPC ? strip_tags($_POST['name']) : addslashes(strip_tags($_POST['name']));
 				$query = "SELECT id
-				              FROM ".DBPREFIX."module_calendar_categories
+				              FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
 				      WHERE BINARY name = '".$_POST['name']."'
-				               AND id <> '".intval($_POST['id'])."'
-				               AND `mod_mandate` = ".$this->mandate."";
+				               AND id <> '".intval($_POST['id'])."'";
 
 				$objResult = $objDatabase->Execute($query);
 
 				if ($objDatabase->affected_rows() == 0){
-					$query = "UPDATE ".DBPREFIX."module_calendar_categories
+					$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink."_categories
 								   SET name = '".$_POST['name']."',
 					                   status = '".intval($_POST['status'])."',
 					                   lang = '".intval($_POST['lang'])."'
-					             WHERE id = '".intval($_POST['id'])."'
-					             AND `mod_mandate` = ".$this->mandate."";
+					             WHERE id = '".intval($_POST['id'])."'";
 					$objDatabase->Execute($query);
 
 					$this->strOkMessage = $_ARRAYLANG['TXT_CALENDAR_MESSAGE_SUCCESSFULL_EDIT_CAT'];
@@ -1524,9 +1491,8 @@ class calendarManager extends calendarLibrary
 			                   name,
 			                   status,
 			                   lang
-			              FROM ".DBPREFIX."module_calendar_categories
-			             WHERE id = '".intval($_GET['id'])."'
-			             AND `mod_mandate` = ".$this->mandate."";
+			              FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
+			             WHERE id = '".intval($_GET['id'])."'";
 
 			$objResult = $objDatabase->SelectLimit($query, 1);
 
@@ -1598,8 +1564,7 @@ class calendarManager extends calendarLibrary
 		}
 
 		$query = "
-			SELECT * FROM ".DBPREFIX."module_calendar
-			WHERE `mod_mandate` = ".$this->mandate."
+			SELECT * FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 			ORDER BY startdate ASC, priority ASC, id ASC";
 
 		$objResult = $objDatabase->Execute($query);
@@ -1639,20 +1604,19 @@ class calendarManager extends calendarLibrary
 	{
 	    global $objDatabase, $_ARRAYLANG, $_LANGID, $_CONFIG;
 
-		if ($_CONFIG['calendarheadlines']) {
+		if ($_CONFIG['calendar'.$this->mandateLink.'headlines']) {
 			$headlines_checked = "checked=\"checked\"";
 		} else {
 			$headlines_checked = "";
 		}
 
 		// makes the category list
-    	$query = "SELECT id,name,lang FROM ".DBPREFIX."module_calendar_categories 
-    	           WHERE `mod_mandate` = ".$this->mandate."
+    	$query = "SELECT id,name,lang FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories 
     	           ORDER BY pos";
 		$objResult = $objDatabase->Execute($query);
 
 		while (!$objResult->EOF) {
-			if ($objResult->fields['id'] == $_CONFIG['calendarheadlinescat']) {
+			if ($objResult->fields['id'] == $_CONFIG['calendar'.$this->mandateLink.'headlinescat']) {
 				$selected = " selected=\"selected\"";
 			} else {
 				$selected = "";
@@ -1662,57 +1626,49 @@ class calendarManager extends calendarLibrary
 			$objResult->MoveNext();
 		}
 
-		$query 		= "SELECT id,name,lang FROM ".DBPREFIX."module_calendar_categories 
-		                  WHERE `mod_mandate` = ".$this->mandate."
-		                  AND `mod_mandate` = ".$this->mandate."
+		$query 		= "SELECT id,name,lang FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories 
 		                  ORDER BY pos";
 		$objResult 	= $objDatabase->Execute($query);
 
 		//get mail templates
 		$query 			= "SELECT setvalue
-		              	 	 FROM ".DBPREFIX."module_calendar_settings
-			            	WHERE setid = '1'
-			            	AND `mod_mandate` = ".$this->mandate."";
+		              	 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+			            	WHERE setid = '1'";
 
 		$objResult 		= $objDatabase->SelectLimit($query, 1);
 		$mailTitle 		= $objResult->fields['setvalue'];
 
 		$query 			= "SELECT setvalue
-		              	 	 FROM ".DBPREFIX."module_calendar_settings
-			            	WHERE setid = '2'
-			            	AND `mod_mandate` = ".$this->mandate."";
+		              	 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+			            	WHERE setid = '2'";
 
 		$objResult 		= $objDatabase->SelectLimit($query, 1);
 		$mailContent 	= $objResult->fields['setvalue'];
 
 		$query 			= "SELECT setvalue
-		              	 	 FROM ".DBPREFIX."module_calendar_settings
-			            	WHERE setid = '3'
-			            	AND `mod_mandate` = ".$this->mandate."";
+		              	 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+			            	WHERE setid = '3'";
 
 		$objResult 		= $objDatabase->SelectLimit($query, 1);
 		$mailConTitle 	= $objResult->fields['setvalue'];
 
 		$query 			= "SELECT setvalue
-		              	 	 FROM ".DBPREFIX."module_calendar_settings
-			            	WHERE setid = '4'
-			            	AND `mod_mandate` = ".$this->mandate."";
+		              	 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+			            	WHERE setid = '4'";
 
 		$objResult 		= $objDatabase->SelectLimit($query, 1);
 		$mailConContent = $objResult->fields['setvalue'];
 
 		$query 			= "SELECT setvalue
-		              	 	 FROM ".DBPREFIX."module_calendar_settings
-			            	WHERE setid = '5'
-			            	AND `mod_mandate` = ".$this->mandate."";
+		              	 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+			            	WHERE setid = '5'";
 
 		$objResult 		= $objDatabase->SelectLimit($query, 1);
 		$mailNotTitle 		= $objResult->fields['setvalue'];
 
 		$query 			= "SELECT setvalue
-		              	 	 FROM ".DBPREFIX."module_calendar_settings
-			            	WHERE setid = '6'
-			            	AND `mod_mandate` = ".$this->mandate."";
+		              	 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+			            	WHERE setid = '6'";
 
 		$objResult 		= $objDatabase->SelectLimit($query, 1);
 		$mailNotContent 	= $objResult->fields['setvalue'];
@@ -1724,13 +1680,13 @@ class calendarManager extends calendarLibrary
 	        'TXT_CALENDAR_SET_HEADLINES'		=> $_ARRAYLANG['TXT_CALENDAR_SET_HEADLINES'],
 	        'CALENDAR_HEADLINES_CHECKED'		=> $headlines_checked,
 	        'TXT_CALENDAR_SET_HEADLINESCOUNT'	=> $_ARRAYLANG['TXT_CALENDAR_SET_HEADLINESCOUNT'],
-	        'CALENDAR_HEADLINESCOUNT'			=> $_CONFIG['calendarheadlinescount'],
+	        'CALENDAR_HEADLINESCOUNT'			=> $_CONFIG['calendar'.$this->mandateLink.'headlinescount'],
 	        'TXT_SUBMIT'						=> $_ARRAYLANG['TXT_SUBMIT'],
 	        'TXT_CALENDAR_ALL_CAT'				=> $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
 	        'TXT_CALENDAR_SET_HEADLINESCAT'	  	=> $_ARRAYLANG['TXT_CALENDAR_SET_HEADLINESCAT'],
 	        'CALENDAR_CATEGORIES'				=> $calendar_categories,
 	        'TXT_CALENDAR_SET_STDCOUNT'			=> $_ARRAYLANG['TXT_CALENDAR_SET_STDCOUNT'],
-	        'CALENDAR_STANDARDNUMBER'			=> $_CONFIG['calendardefaultcount'],
+	        'CALENDAR_STANDARDNUMBER'			=> $_CONFIG['calendar'.$this->mandateLink.'defaultcount'],
 	        'TXT_CALENDAR_MAIL_TEMPLATE'		=> $_ARRAYLANG['TXT_CALENDAR_MAIL_TEMPLATE'],
 			'TXT_CALENDAR_TITLE'				=> $_ARRAYLANG['TXT_CALENDAR_TITLE'],
 			'TXT_CALENDAR_TEXT'					=> $_ARRAYLANG['TXT_CALENDAR_TEXT'],
@@ -1763,9 +1719,8 @@ class calendarManager extends calendarLibrary
 
 //		set standard
 		$query 		= "SELECT stdCat
-		              	 FROM ".DBPREFIX."module_calendar_style
-			            WHERE id = '2'
-			            AND `mod_mandate` = ".$this->mandate."";
+		              	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_style
+			            WHERE id = '2'";
 
 		$objResult 	= $objDatabase->SelectLimit($query, 1);
 
@@ -1799,10 +1754,9 @@ class calendarManager extends calendarLibrary
 				if (array_search($objResult->fields['id'], $lang) != false) {
 					$query = "SELECT id,
 					                    name
-					               FROM ".DBPREFIX."module_calendar_categories
+					               FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
 					              WHERE lang = '".$objResult->fields['id']."'
 					                AND status = '1'
-					                AND `mod_mandate` = ".$this->mandate."
 					           ORDER BY pos";
 					$objResult2 = $objDatabase->Execute($query);
 
@@ -1845,10 +1799,9 @@ class calendarManager extends calendarLibrary
 	    $string = trim($string);
 
 		$query = "
-		    UPDATE ".DBPREFIX."module_calendar_style
+		    UPDATE ".DBPREFIX."module_calendar".$this->mandateLink."_style
 		    SET stdCat = '".$string."'
-			WHERE id = '2'
-			AND `mod_mandate` = ".$this->mandate."";
+			WHERE id = '2'";
 
 		$objDatabase->Execute($query);
 
@@ -1871,61 +1824,102 @@ class calendarManager extends calendarLibrary
 			$val = "1";
 		}
 
-		// TODO
-		$query = "UPDATE ".DBPREFIX."settings
-				SET setvalue = '$val'
-				WHERE setname = 'calendarheadlines'";
+		$query = "SELECT setvalue 
+		          FROM ".DBPREFIX."settings
+		          WHERE setname = 'calendar".$this->mandateLink."headlines'";
+		$objRs = $objDatabase->Execute($query);
+		if ($objRs->RecordCount() == 0) {
+		    $query = "INSERT INTO ".DBPREFIX."settings
+		              (setname, setvalue)
+		              VALUES
+		              ('calendar".$this->mandateLink."headlines',
+		               '".$val."')";
+		} else {
+    		$query = "UPDATE ".DBPREFIX."settings
+    				SET setvalue = '$val'
+    				WHERE setname = 'calendar".$this->mandateLink."headlines'";
+	    }
 		$objDatabase->Execute($query);
 
-		$query = "UPDATE ".DBPREFIX."settings
-				SET setvalue = '".intval($_POST['headlinescount'])."'
-				WHERE setname = 'calendarheadlinescount'";
+		$query = "SELECT setvalue 
+		          FROM ".DBPREFIX."settings
+		          WHERE setname = 'calendar".$this->mandateLink."headlinescount'";
+		$objRs = $objDatabase->Execute($query);
+		if ($objRs->RecordCount() == 0) {
+		    $query = "INSERT INTO ".DBPREFIX."settings
+		              (setname, setvalue)
+		              VALUES
+		              ('calendar".$this->mandateLink."headlinescount',
+		               '".intval($_POST['headlinescount'])."')";
+		} else {
+    		$query = "UPDATE ".DBPREFIX."settings
+    				SET setvalue = '".intval($_POST['headlinescount'])."'
+    				WHERE setname = 'calendar".$this->mandateLink."headlinescount'";
+		}
 		$objDatabase->Execute($query);
 
-		$query = "UPDATE ".DBPREFIX."settings
-				SET setvalue = ".intval($_POST['headlinescat'])."
-				WHERE setname = 'calendarheadlinescat'";
+		$query = "SELECT setvalue
+		          FROM ".DBPREFIX."settings
+		          WHERE setname = 'calendar".$this->mandateLink."headlinescat'";
+		$objRs = $objDatabase->Execute($query);
+		if ($objRs->RecordCount() == 0) {
+		    $query = "INSERT INTO ".DBPREFIX."settings
+		              (setname, setvalue)
+		              VALUES
+		              ('calendar".$this->mandateLink."headlinescat',
+		               '".intval($_POST['headlinescat'])."')";
+		} else {
+    		$query = "UPDATE ".DBPREFIX."settings
+    				SET setvalue = ".intval($_POST['headlinescat'])."
+    				WHERE setname = 'calendar".$this->mandateLink."headlinescat'";    
+		}
 		$objDatabase->Execute($query);
 
-		$query = "UPDATE ".DBPREFIX."settings
-				SET setvalue = ".intval($_POST['defaultlistcount'])."
-				WHERE setname = 'calendardefaultcount'";
+		$query = "SELECT setvalue
+		          FROM ".DBPREFIX."settings
+		          WHERE setname = 'calendar".$this->mandateLink."defaultcount'";
+		$objRs = $objDatabase->Execute($query);
+		if ($objRs->RecordCount() == 0) {
+		    $query = "INSERT INTO ".DBPREFIX."settings
+		              (setname, setvalue)
+		              VALUES
+		              ('calendar".$this->mandateLink."defaultcount',
+		               '".intval($_POST['defaultlistcount'])."')";
+		} else {
+    		$query = "UPDATE ".DBPREFIX."settings
+    				SET setvalue = ".intval($_POST['defaultlistcount'])."
+    				WHERE setname = 'calendar".$this->mandateLink."defaultcount'";    
+		}
 		$objDatabase->Execute($query);
 
-		$query = "UPDATE ".DBPREFIX."module_calendar_settings
+		$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink."_settings
 				SET setvalue = '".contrexx_addslashes($_POST['registrationMailTitle'])."'
-				WHERE setid = '1'
-				AND `mod_mandate` = ".$this->mandate."";
+				WHERE setid = '1'";
 		$objDatabase->Execute($query);
 
-		$query = "UPDATE ".DBPREFIX."module_calendar_settings
+		$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink."_settings
 				SET setvalue = '".contrexx_addslashes($_POST['registrationMailContent'])."'
-				WHERE setid = '2'
-				AND `mod_mandate` = ".$this->mandate."";
+				WHERE setid = '2'";
 		$objDatabase->Execute($query);
 
-		$query = "UPDATE ".DBPREFIX."module_calendar_settings
+		$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink."_settings
 				SET setvalue = '".contrexx_addslashes($_POST['registrationConMailTitle'])."'
-				WHERE setid = '3'
-				AND `mod_mandate` = ".$this->mandate."";
+				WHERE setid = '3'";
 		$objDatabase->Execute($query);
 
-		$query = "UPDATE ".DBPREFIX."module_calendar_settings
+		$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink."_settings
 				SET setvalue = '".contrexx_addslashes($_POST['registrationConMailContent'])."'
-				WHERE setid = '4'
-				AND `mod_mandate` = ".$this->mandate."";
+				WHERE setid = '4'";
 		$objDatabase->Execute($query);
 
-		$query = "UPDATE ".DBPREFIX."module_calendar_settings
+		$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink."_settings
 				SET setvalue = '".contrexx_addslashes($_POST['registrationNotMailTitle'])."'
-				WHERE setid = '5'
-				AND `mod_mandate` = ".$this->mandate."";
+				WHERE setid = '5'";
 		$objDatabase->Execute($query);
 
-		$query = "UPDATE ".DBPREFIX."module_calendar_settings
+		$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink."_settings
 				SET setvalue = '".contrexx_addslashes($_POST['registrationNotMailContent'])."'
-				WHERE setid = '6'
-				AND `mod_mandate` = ".$this->mandate."";
+				WHERE setid = '6'";
 		$objDatabase->Execute($query);
 
 
@@ -1976,8 +1970,7 @@ class calendarManager extends calendarLibrary
 		$arrStatusNote = $_POST['selectedEventId'];
 		if($arrStatusNote != null){
 			foreach ($arrStatusNote as $noteId){
-				$query = "UPDATE ".DBPREFIX."module_calendar SET active='1' WHERE id=$noteId
-				            AND `mod_mandate` = ".$this->mandate."";
+				$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink." SET active='1' WHERE id=$noteId";
 				$objDatabase->Execute($query);
 			}
 		}
@@ -1998,8 +1991,7 @@ class calendarManager extends calendarLibrary
 		$arrStatusNote = $_POST['selectedEventId'];
 		if($arrStatusNote != null){
 			foreach ($arrStatusNote as $noteId){
-				$query = "UPDATE ".DBPREFIX."module_calendar SET active='0' WHERE id=$noteId
-				            AND `mod_mandate` = ".$this->mandate."";
+				$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink." SET active='0' WHERE id=$noteId";
 				$objDatabase->Execute($query);
 			}
 		}
@@ -2016,8 +2008,7 @@ class calendarManager extends calendarLibrary
 		global $objDatabase;
 
 		foreach ($_POST['selectedRegId'] as $arrKey => $arrId) {
-			$query = "UPDATE ".DBPREFIX."module_calendar_registrations SET type=$type WHERE id=$arrId
-			             AND `mod_mandate` = ".$this->mandate."";
+			$query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink."_registrations SET type=$type WHERE id=$arrId";
 			$objDatabase->Execute($query);
 		}
 	}
@@ -2035,24 +2026,20 @@ class calendarManager extends calendarLibrary
 		if ($regId == 0) {
 			foreach ($_POST['selectedRegId'] as $arrKey => $arrId) {
 				//del registration
-				$query = "DELETE FROM ".DBPREFIX."module_calendar_registrations WHERE id='".$arrId."'
-				            AND `mod_mandate` = ".$this->mandate."";
+				$query = "DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink."_registrations WHERE id='".$arrId."'";
 				$objResultDelete = $objDatabase->Execute($query);
 
 				//del data
-				$query = "DELETE FROM ".DBPREFIX."module_calendar_form_data WHERE reg_id='".$arrId."'
-				            AND `mod_mandate` = ".$this->mandate."";
+				$query = "DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_data WHERE reg_id='".$arrId."'";
 				$objResultDelete = $objDatabase->Execute($query);
 			}
 		} else {
 			//del registration
-			$query = "DELETE FROM ".DBPREFIX."module_calendar_registrations WHERE id='".$regId."'
-			                 AND `mod_mandate` = ".$this->mandate."";
+			$query = "DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink."_registrations WHERE id='".$regId."'";
 			$objResultDelete = $objDatabase->Execute($query);
 
 			//del data
-			$query = "DELETE FROM ".DBPREFIX."module_calendar_form_data WHERE reg_id='".$regId."'
-			                 AND `mod_mandate` = ".$this->mandate."";
+			$query = "DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_data WHERE reg_id='".$regId."'";
 			$objResultDelete = $objDatabase->Execute($query);
 		}
 	}
@@ -2068,15 +2055,13 @@ class calendarManager extends calendarLibrary
 		global $objDatabase;
 
 		//del formular
-		$query = "DELETE FROM ".DBPREFIX."module_calendar_form_fields WHERE note_id='".$noteId."'
-		                  AND `mod_mandate` = ".$this->mandate."";
+		$query = "DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields WHERE note_id='".$noteId."'";
 		$objResultDelete = $objDatabase->Execute($query);
 
 		//del registrations
 		$queryReg 		= "SELECT id
-							 FROM ".DBPREFIX."module_calendar_registrations
-				   		    WHERE note_id = '".$noteId."'
-				   		    AND `mod_mandate` = ".$this->mandate."";
+							 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_registrations
+				   		    WHERE note_id = '".$noteId."'";
 
 		$objResultReg 	= $objDatabase->Execute($queryReg);
 
@@ -2106,17 +2091,15 @@ class calendarManager extends calendarLibrary
 		}
 
 		//note title
-		$queryNote 		= "SELECT `name` FROM ".DBPREFIX."module_calendar WHERE id=".$id."
-		                      AND `mod_mandate` = ".$this->mandate."";
+		$queryNote 		= "SELECT `name` FROM ".DBPREFIX."module_calendar".$this->mandateLink." WHERE id=".$id."";
 		$objResultNote 	= $objDatabase->SelectLimit($queryNote, 1);
 
 		$filename = $objResultNote->fields['name'].".csv";
 
 		//note form fields
 		$queryFields 	= "SELECT id,`name` 
-		                   FROM ".DBPREFIX."module_calendar_form_fields 
+		                   FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields 
 		                   WHERE note_id=".$id." 
-		                   AND `mod_mandate` = ".$this->mandate."
 		                   ORDER BY `order`, `key`";
 		$objResultFields 	= $objDatabase->Execute($queryFields);
 
@@ -2142,9 +2125,8 @@ class calendarManager extends calendarLibrary
 		print ("\r\n");
 
 		$queryReg 		= "SELECT id,time,host,ip_address,type 
-		                   FROM ".DBPREFIX."module_calendar_registrations 
+		                   FROM ".DBPREFIX."module_calendar".$this->mandateLink."_registrations 
 		                   WHERE note_id=".$id." 
-		                   AND `mod_mandate` = ".$this->mandate."
 		                   ORDER BY `time` DESC, `type` DESC";
 		$objResultReg 	= $objDatabase->Execute($queryReg);
 		if ($objResultReg !== false) {
@@ -2155,10 +2137,9 @@ class calendarManager extends calendarLibrary
 
 				foreach ($arrFormFields as $arrFieldId => $arrFieldName) {
 					$queryData 		= "SELECT `data` 
-					                   FROM ".DBPREFIX."module_calendar_form_data 
+					                   FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_data 
 					                   WHERE field_id=".$arrFieldId." 
-					                   AND reg_id=".$objResultReg->fields['id']."
-					                   AND `mod_mandate` = ".$this->mandate."";
+					                   AND reg_id=".$objResultReg->fields['id'];
 					$objResultData 	= $objDatabase->SelectLimit($queryData, 1);
 
 					print ($this->_escapeCsvValue($objResultData->fields['data']).$this->_csvSeparator);
