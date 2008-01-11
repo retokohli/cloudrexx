@@ -5,7 +5,7 @@
  * @author 		Comvation Development Team <info@comvation.com>
  * @version 	1.1.0
  * @package     contrexx
- * @subpackage  module_calendar
+ * @subpackage  module_calendar".$this->mandateLink."
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -23,8 +23,11 @@ require_once ASCMS_LIBRARY_PATH."/activecalendar/activecalendar.php";
  * @access public
  * @version 1.1.0
  * @package     contrexx
- * @subpackage  module_calendar
+ * @subpackage  module_calendar".$this->mandateLink."
  */
+if (!class_exists("calendarLibrary")) {
+    
+
 class calendarLibrary
 {
 	var $_filename = '';
@@ -85,7 +88,7 @@ class calendarLibrary
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setGlobalVariable("CALENDAR_MANDATE", $this->mandateLink);
 
-        $this->url = $url;
+        $this->url = $url.$this->mandateLink;
     }
 
 
@@ -106,9 +109,8 @@ class calendarLibrary
 
 		    	//check access
 				$query = "SELECT access
-							FROM ".DBPREFIX."module_calendar
-				  		   WHERE id = '".$id."'
-				  		   AND mod_mandate = ".$this->mandate."";
+							FROM ".DBPREFIX."module_calendar".$this->mandateLink."
+				  		   WHERE id = '".$id."'";
 
 				$objResult = $objDatabase->SelectLimit($query, 1);
 
@@ -270,8 +272,7 @@ class calendarLibrary
 
 		$query = "	SELECT 	`id`, `catid`, 	`startdate`, 	`enddate`,	`priority`,
     						`name`, 	`comment`,		`placeName`,	`link`
-    				FROM `".DBPREFIX."module_calendar`
-    				WHERE mod_mandate = ".$this->mandate."";
+    				FROM `".DBPREFIX."module_calendar".$this->mandateLink."`";
 
 		if(($objRS = $objDatabase->Execute($query)) !== false){
     		if($objRS->RecordCount() < 1){
@@ -317,9 +318,8 @@ class calendarLibrary
 
 		$query = "	SELECT 	`catid`, 	`startdate`, 	`enddate`,	`priority`,
     						`name`, 	`comment`,		`placeName`,	`link`
-    				FROM `".DBPREFIX."module_calendar`
-    				WHERE  `id` = ".$eventID."
-    				AND mod_mandate = ".$this->mandate."";
+    				FROM `".DBPREFIX."module_calendar".$this->mandateLink."`
+    				WHERE  `id` = ".$eventID."";
     	if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
     		if($objRS->RecordCount() < 1){
     			return false;
@@ -358,9 +358,8 @@ class calendarLibrary
     function getEventsFromCategoryByID($categoryID){
     	global $objDatabase, $_ARRAYLANG;
 
-    	$query = "	SELECT `id` FROM `".DBPREFIX."module_calendar`
-    				WHERE `catid` = ".$categoryID."
-    				AND mod_mandate = ".$this->mandate."";
+    	$query = "	SELECT `id` FROM `".DBPREFIX."module_calendar".$this->mandateLink."`
+    				WHERE `catid` = ".$categoryID."";
     	if(($objRS = $objDatabase->Execute($query)) !== false){
     		if($objRS->RecordCount() < 1){
     			return false;
@@ -387,9 +386,8 @@ class calendarLibrary
     function getCategoryNameFromCategoryId($catId){
 		global $objDatabase, $_ARRAYLANG;
 
-    	$query = "	SELECT `name` FROM `".DBPREFIX."module_calendar_categories`
-    				WHERE `id` = ".$catId."
-    				mod_mandate = ".$this->mandate."";
+    	$query = "	SELECT `name` FROM `".DBPREFIX."module_calendar".$this->mandateLink."_categories`
+    				WHERE `id` = ".$catId."";
     	if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
     		if($objRS->RecordCount() < 1){
     			return false;
@@ -411,12 +409,11 @@ class calendarLibrary
     function _getCategoryNameByEventId($eventID){
     	global $objDatabase, $_LANGID;
 
-    	$query = "	SELECT `c`.`name` FROM `".DBPREFIX."module_calendar` AS `e`
-    				INNER JOIN `".DBPREFIX."module_calendar_categories` AS `c`
+    	$query = "	SELECT `c`.`name` FROM `".DBPREFIX."module_calendar".$this->mandateLink."` AS `e`
+    				INNER JOIN `".DBPREFIX."module_calendar".$this->mandateLink."_categories` AS `c`
     				ON (`e`.`catid` = `c`.`id`)
     				WHERE `lang` = ".$_LANGID."
-    				AND `e`.`id` = ".$eventID."
-    				mod_mandate = ".$this->mandate."";
+    				AND `e`.`id` = ".$eventID."";
     	if( ($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
     		if($objRS->RecordCount() < 1){
     			return false;
@@ -465,9 +462,8 @@ class calendarLibrary
                            comment,
                            placeName,
                            info
-                      FROM ".DBPREFIX."module_calendar
-                     WHERE id = '".intval($id)."'
-                     AND mod_mandate = ".$this->mandate."";
+                      FROM ".DBPREFIX."module_calendar".$this->mandateLink."
+                     WHERE id = '".intval($id)."'";
 
         $objResult = $objDatabase->Execute($query);
 
@@ -506,9 +502,8 @@ class calendarLibrary
         }
 
         $query = "SELECT name
-                       FROM ".DBPREFIX."module_calendar_categories
-                      WHERE id = '".$objResult->fields['catid']."'
-                      AND mod_mandate = ".$this->mandate."";
+                       FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
+                      WHERE id = '".$objResult->fields['catid']."'";
         $objResult2 = $objDatabase->SelectLimit($query);
 
         // parse to template
@@ -627,16 +622,16 @@ class calendarLibrary
             $auth = $this->_checkAccess();
             $where = "";
 			if ($auth == false) {
-				$where 		= " AND access='0' ";
+				$where 		= " WHERE access='0' ";
 				$whereCat 	= "access='0' AND ";
 			}
 
             // get events
             if (empty($catid)) {
-                $query = "SELECT * FROM ".DBPREFIX."module_calendar WHERE mod_mandate = ".$this->mandate."".$where;
+                $query = "SELECT * FROM ".DBPREFIX."module_calendar".$this->mandateLink."".$where;
             } else {
-                $query = "SELECT * FROM ".DBPREFIX."module_calendar
-                          WHERE $whereCat catid=$catid AND mod_mandate = ".$this->mandate."";
+                $query = "SELECT * FROM ".DBPREFIX."module_calendar".$this->mandateLink."
+                          WHERE $whereCat catid=$catid";
             }
 
 
@@ -729,10 +724,9 @@ class calendarLibrary
 		        <option value=\"0\">".$_ARRAYLANG['TXT_CALENDAR_ALL_CAT']."</option>";
 
 		// makes the category list
-		$query = "SELECT id,name,lang FROM ".DBPREFIX."module_calendar_categories
+		$query = "SELECT id,name,lang FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
 			  WHERE status = '1'".
 				  (!empty($_LANGID) && intval($_LANGID > 0) ? " AND lang = ".$_LANGID : '')."
-		      AND mod_mandate = ".$this->mandate."
 			  ORDER BY pos";
 		$objResult = $objDatabase->Execute($query);
 
@@ -798,10 +792,9 @@ class calendarLibrary
 							num,
 							notification,
 							notification_address
-		    		FROM 	".DBPREFIX."module_calendar
-		    	   WHERE 	id = '".$id."'
-		    	   AND      mod_mandate = ".$this->mandate."";
-
+		    		FROM 	".DBPREFIX."module_calendar".$this->mandateLink."
+		    	   WHERE 	id = '".$id."'";
+		
 		$objResultNote 	= $objDatabase->SelectLimit($query, 1);
 
 		//date and time
@@ -858,9 +851,8 @@ class calendarLibrary
 			//categorie
 			$query = "SELECT 	id,
 			                	name
-			               FROM ".DBPREFIX."module_calendar_categories
-			            WHERE id='".$objResultNote->fields['catid']."'
-			            AND mod_mandate = ".$this->mandate."";
+			               FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
+			            WHERE id='".$objResultNote->fields['catid']."'";
 
 			$objResultCat = $objDatabase->Execute($query);
 
@@ -938,8 +930,7 @@ class calendarLibrary
 			$query = "SELECT 	id,
 			                	name,
 			                    lang
-			               FROM ".DBPREFIX."module_calendar_categories
-			               WHERE mod_mandate = ".$this->mandate."
+			               FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
 			            ORDER BY pos";
 
 			$objResultCat = $objDatabase->Execute($query);
@@ -1123,9 +1114,8 @@ class calendarLibrary
 
 		//get reg data
 		$queryReg = "SELECT id,note_id,time,host,ip_address,type
-		               FROM ".DBPREFIX."module_calendar_registrations
-		              WHERE id='".$regId."'
-		              AND mod_mandate = ".$this->mandate."";
+		               FROM ".DBPREFIX."module_calendar".$this->mandateLink."_registrations
+		              WHERE id='".$regId."'";
 
 		$objResultReg = $objDatabase->SelectLimit($queryReg, 1);
 
@@ -1153,9 +1143,8 @@ class calendarLibrary
 
 		//get fields
 		$queryField = "SELECT id, note_id, name, type, required
-		            	 FROM ".DBPREFIX."module_calendar_form_fields
-		           		WHERE note_id='".$objResultReg->fields['note_id']."'
-		           		AND mod_mandate = ".$this->mandate."";
+		            	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
+		           		WHERE note_id='".$objResultReg->fields['note_id']."'";
 
 		$objResultField = $objDatabase->Execute($queryField);
 
@@ -1164,9 +1153,8 @@ class calendarLibrary
 
 				//get field data
 				$queryData = "SELECT reg_id, field_id, data
-				                FROM ".DBPREFIX."module_calendar_form_data
-				               WHERE field_id='".$objResultField->fields['id']."' AND reg_id='".$regId."'
-				               AND mod_mandate = ".$this->mandate."";
+				                FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_data
+				               WHERE field_id='".$objResultField->fields['id']."' AND reg_id='".$regId."'";
 
 				$objResultData = $objDatabase->SelectLimit($queryData, 1);
 
@@ -1210,9 +1198,8 @@ class calendarLibrary
 
 		//registrations
 		$query = "SELECT id, type
-					FROM ".DBPREFIX."module_calendar_registrations
-				   WHERE note_id = '".$id."'
-				   AND mod_mandate = ".$this->mandate."";
+					FROM ".DBPREFIX."module_calendar".$this->mandateLink."_registrations
+				   WHERE note_id = '".$id."'";
 
 		$objResultCount = $objDatabase->Execute($query);
 
@@ -1245,18 +1232,16 @@ class calendarLibrary
 
 		//get field key
 		$queryFieldId = "SELECT id
-						   FROM ".DBPREFIX."module_calendar_form_fields
-				          WHERE note_id = '".$id."' AND `key`='13'
-				          AND mod_mandate = ".$this->mandate."";
+						   FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
+				          WHERE note_id = '".$id."' AND `key`='13'";
 
 		$objResultFieldId 	= $objDatabase->SelectLimit($queryFieldId, 1);
 		$fieldId			= $objResultFieldId->fields['id'];
 
 		//get registrations
 		$query = "SELECT id, type
-					FROM ".DBPREFIX."module_calendar_registrations
-				   WHERE note_id = '".$id."' AND type='1'
-				   AND mod_mandate = ".$this->mandate."";
+					FROM ".DBPREFIX."module_calendar".$this->mandateLink."_registrations
+				   WHERE note_id = '".$id."' AND type='1'";
 
 		$objResultCount = $objDatabase->Execute($query);
 		$countReg		= $objResultCount->RecordCount();
@@ -1266,9 +1251,8 @@ class calendarLibrary
 		if ($objResultCount !== false) {
 			while(!$objResultCount->EOF) {
 				$queryEscort 	= "SELECT data
-									 FROM ".DBPREFIX."module_calendar_form_data
-						   			WHERE reg_id = '".$objResultCount->fields['id']."' AND field_id='".$fieldId."'
-						   			AND mod_mandate = ".$this->mandate."";
+									 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_data
+						   			WHERE reg_id = '".$objResultCount->fields['id']."' AND field_id='".$fieldId."'";
 
 				$objResultEscort 	= $objDatabase->SelectLimit($queryEscort, 1);
 
@@ -1295,9 +1279,8 @@ class calendarLibrary
 
 		//get selected groups
 		$queryGroups 		= "SELECT groups
-							 	 FROM ".DBPREFIX."module_calendar
-				   				WHERE id = '".$noteId."'
-				   				AND mod_mandate = ".$this->mandate."";
+							 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."
+				   				WHERE id = '".$noteId."'";
 
 		$objResultGroups 	= $objDatabase->Execute($queryGroups);
 
@@ -1367,9 +1350,8 @@ class calendarLibrary
 		if ($frmType == "backend") {
 			for ($i=1; $i <= 20; $i++) {
 				$queryField 		= "SELECT `id`,`note_id`,`name`,`type`,`required`,`order`,`key`
-									 	 FROM ".DBPREFIX."module_calendar_form_fields
-						   				WHERE note_id = '".$noteId."' AND `key`='".$i."'
-						   				AND mod_mandate = ".$this->mandate."";
+									 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
+						   				WHERE note_id = '".$noteId."' AND `key`='".$i."'";
 
 				$objResultField 	= $objDatabase->SelectLimit($queryField, 1);
 
@@ -1440,8 +1422,7 @@ class calendarLibrary
 					'CALENDAR_FIELD_STATUS'			  		=> $status,
 					'CALENDAR_FIELD_STATUS_IMG'			  	=> $statusImg,
 					'CALENDAR_FIELD_REQUIRED'			  	=> $required,
-					'CALENDAR_FIELD_KEY'				  	=> $i,
-					'CALENDAR_FIELD_VALUE'				  	=> $value,
+					'CALENDAR_FIELD_KEY'				  	=> $i
 				));
 				$this->_objTpl->parse("calendarRegFields");
 
@@ -1451,9 +1432,8 @@ class calendarLibrary
 			}
 		} else {
 			$queryField 		= "SELECT `id`,`note_id`,`name`,`type`,`required`,`order`,`key`
-								 	 FROM ".DBPREFIX."module_calendar_form_fields
+								 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
 					   				WHERE note_id = '".$noteId."'
-					   				AND mod_mandate = ".$this->mandate."
 					   			 ORDER BY `order`, `id`";
 
 			$objResultField 	= $objDatabase->Execute($queryField);
@@ -1533,9 +1513,8 @@ class calendarLibrary
 
 		//get mail template
 		$query 			= "SELECT mailTitle, mailContent
-		              	 	 FROM ".DBPREFIX."module_calendar
-			            	WHERE id = '".$noteId."'
-			            	AND mod_mandate = ".$this->mandate."";
+		              	 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."
+			            	WHERE id = '".$noteId."'";
 
 		$objResult 		= $objDatabase->SelectLimit($query, 1);
 		$mailTitle 		= $objResult->fields['mailTitle'];
@@ -1553,9 +1532,8 @@ class calendarLibrary
 							mailTitle,
 							num,
 							`key`
-		    		FROM 	".DBPREFIX."module_calendar
-		    	   WHERE 	id = '".$noteId."'
-		    	   AND      mod_mandate = ".$this->mandate."";
+		    		FROM 	".DBPREFIX."module_calendar".$this->mandateLink."
+		    	   WHERE 	id = '".$noteId."'";
 
 
 
@@ -1671,17 +1649,15 @@ class calendarLibrary
 
 		//get mail template
 		$query 			= "SELECT setvalue
-		              	 	 FROM ".DBPREFIX."module_calendar_settings
-			            	WHERE setid = '3'
-			            	AND mod_mandate = ".$this->mandate."";
+		              	 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+			            	WHERE setid = '3'";
 
 		$objResult 		= $objDatabase->SelectLimit($query, 1);
 		$mailTitle 	= $objResult->fields['setvalue'];
 
 		$query 			= "SELECT setvalue
-		              	 	 FROM ".DBPREFIX."module_calendar_settings
-			            	WHERE setid = '4'
-			            	AND mod_mandate = ".$this->mandate."";
+		              	 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+			            	WHERE setid = '4'";
 
 		$objResult 		= $objDatabase->SelectLimit($query, 1);
 		$mailContent = $objResult->fields['setvalue'];
@@ -1691,9 +1667,8 @@ class calendarLibrary
 								startdate,
 								enddate,
 								name
-			    		FROM 	".DBPREFIX."module_calendar
-			    	   WHERE 	id = '".$noteId."'
-			    	   AND      mod_mandate = ".$this->mandate."";
+			    		FROM 	".DBPREFIX."module_calendar".$this->mandateLink."
+			    	   WHERE 	id = '".$noteId."'";
 
 		$objResultNote 	= $objDatabase->SelectLimit($queryNote, 1);
 
@@ -1721,9 +1696,8 @@ class calendarLibrary
 		//get reg data
 		$queryReg = "SELECT 	id,
 								type
-			    		FROM 	".DBPREFIX."module_calendar_registrations
-			    	   WHERE 	id = '".$regId."'
-			    	   AND      mod_mandate = ".$this->mandate."";
+			    		FROM 	".DBPREFIX."module_calendar".$this->mandateLink."_registrations
+			    	   WHERE 	id = '".$regId."'";
 
 		$objResultReg 	= $objDatabase->SelectLimit($queryReg, 1);
 
@@ -1786,25 +1760,22 @@ class calendarLibrary
 									name,
 									notification,
 									notification_address
-				    		FROM 	".DBPREFIX."module_calendar
-				    	   WHERE 	id = '".$noteId."'
-				    	   AND mod_mandate = ".$this->mandate."";
+				    		FROM 	".DBPREFIX."module_calendar".$this->mandateLink."
+				    	   WHERE 	id = '".$noteId."'";
 
 		$objResultNote 	= $objDatabase->SelectLimit($queryNote, 1);
 
 		//get mail template
 		$query 			= "SELECT setvalue
-		              	 	 FROM ".DBPREFIX."module_calendar_settings
-			            	WHERE setid = '5'
-			            	AND mod_mandate = ".$this->mandate."";
+		              	 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+			            	WHERE setid = '5'";
 
 		$objResult 		= $objDatabase->SelectLimit($query, 1);
 		$mailTitle 		= $objResult->fields['setvalue'];
 
 		$query 			= "SELECT setvalue
-		              	 	 FROM ".DBPREFIX."module_calendar_settings
-			            	WHERE setid = '6'
-			            	AND mod_mandate = ".$this->mandate."";
+		              	 	 FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+			            	WHERE setid = '6'";
 
 		$objResult 		= $objDatabase->SelectLimit($query, 1);
 		$mailContent 	= $objResult->fields['setvalue'];
@@ -1812,9 +1783,8 @@ class calendarLibrary
 		//get reg data
 		$queryReg = "SELECT 	id,
 								type
-			    		FROM 	".DBPREFIX."module_calendar_registrations
-			    	   WHERE 	id = '".$regId."'
-			    	   AND      mod_mandate = ".$this->mandate."";
+			    		FROM 	".DBPREFIX."module_calendar".$this->mandateLink."_registrations
+			    	   WHERE 	id = '".$regId."'";
 
 		$objResultReg 	= $objDatabase->SelectLimit($queryReg, 1);
 
@@ -1875,5 +1845,6 @@ class calendarLibrary
 			}
 		}
 	}
+}
 }
 ?>

@@ -5,7 +5,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  module_calendar
+ * @subpackage  module_calendar".$this->mandateLink."
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -28,7 +28,7 @@ if (CALENDAR_MANDATE == 1) {
  * @access      public
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  module_calendar
+ * @subpackage  module_calendar".$this->mandateLink."
  */
 class Calendar extends calendarLibrary
 {
@@ -170,11 +170,10 @@ class Calendar extends calendarLibrary
 
 			$query = "SELECT cal.id, cal.catid, cal.name, cal.startdate, cal.enddate, cal.placeName,
 				MATCH (cal.name,cal.comment,cal.placeName) AGAINST ('%$keyword%') AS score
-				FROM ".DBPREFIX."module_calendar as cal
-				LEFT JOIN ".DBPREFIX."module_calendar_categories as cat ON
+				FROM ".DBPREFIX."module_calendar".$this->mandateLink." as cal
+				LEFT JOIN ".DBPREFIX."module_calendar".$this->mandateLink."_categories as cat ON
 					(cat.id = cal.catid)
 			  	WHERE cat.lang = $_LANGID
-			    AND mod_mandate = ".$this->mandate."
 			  	AND (cal.`name` LIKE '%$keyword%' OR
 			  	cal.`comment` LIKE '%$keyword%' OR
 			  	cal.`placeName` LIKE '%$keyword%') AND
@@ -220,9 +219,8 @@ class Calendar extends calendarLibrary
 
 			if ($select_next_ten && !empty($_GET['catid'])) {
 				$query = "SELECT id, catid, name, startdate, enddate, placeName
-					FROM ".DBPREFIX."module_calendar
+					FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 					WHERE catid={$_GET['catid']} AND
-					mod_mandate = ".$this->mandate." AND
 					active = 1 AND
 					((startdate > $startdate) OR
 					(enddate > $startdate)) $where
@@ -231,9 +229,8 @@ class Calendar extends calendarLibrary
 
 			} elseif ($select_next_ten && empty($_GET['catid'])) {
 				$query = "SELECT id, catid, name, startdate, enddate, placeName
-					FROM ".DBPREFIX."module_calendar
+					FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 					WHERE active = 1 AND
-					mod_mandate = ".$this->mandate." AND
 					((startdate > $startdate) OR
 					(enddate > $startdate)) $where
 					ORDER BY startdate ASC
@@ -241,9 +238,7 @@ class Calendar extends calendarLibrary
 
 			} elseif (!$select_next_ten && !empty($_GET['catid'])) {
 				$query = "SELECT id, catid, name, startdate, enddate, placeName
-					FROM ".DBPREFIX."module_calendar
-					WHERE catid = {$_GET['catid']} AND
-					mod_mandate = ".$this->mandate." AND
+					FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 					active = 1 AND
 					((startdate BETWEEN $startdate AND $enddate) OR
 					(enddate BETWEEN $startdate AND $enddate) OR
@@ -252,9 +247,7 @@ class Calendar extends calendarLibrary
 
 			} elseif (!$select_next_ten && empty($_GET['catid'])) {
 				$query = "SELECT id, catid, name, startdate, enddate, placeName
-					FROM ".DBPREFIX."module_calendar
-					WHERE active = 1 AND
-					mod_mandate = ".$this->mandate." AND
+					FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 					((startdate BETWEEN $startdate AND $enddate) OR
 					(enddate BETWEEN $startdate AND $enddate) OR
 					(startdate < $startdate AND enddate > $startdate)) $where
@@ -308,9 +301,8 @@ class Calendar extends calendarLibrary
     		$arrCats = array();
     		
     		$catQuery = "	SELECT `id`
-    						FROM `".DBPREFIX."module_calendar_categories`
-    						WHERE `lang` = ".$_LANGID." AND
-    						mod_mandate = ".$this->mandate;
+    						FROM `".DBPREFIX."module_calendar".$this->mandateLink."_categories`
+    						WHERE `lang` = ".$_LANGID." AND";
     		if(($objRSCats = $objDatabase->Execute($catQuery)) !== false){
     			while(!$objRSCats->EOF){
     				$arrCats[] = $objRSCats->fields['id'];
@@ -414,17 +406,15 @@ class Calendar extends calendarLibrary
 
 		if (empty($_GET['catid'])) {
 			$query = "SELECT id, catid, name, startdate, enddate, placeName
-						FROM ".DBPREFIX."module_calendar
+						FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 						WHERE active = 1 AND
-						mod_mandate = ".$this->mandate." AND
 						(startdate > $startdate OR
 						enddate > $startdate) $where
 						ORDER BY startdate $orderBy";
 		} else {
 			$query = "SELECT id, catid, name, startdate, enddate, placeName
-						FROM ".DBPREFIX."module_calendar
+						FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 						WHERE catid = ".addslashes($_GET['catid'])."
-			            AND mod_mandate = ".$this->mandate."
 						AND active = 1
 						AND (startdate > $startdate OR
 						enddate > $startdate) $where
@@ -453,7 +443,7 @@ class Calendar extends calendarLibrary
 
 		// get std cat
 		if (!isset($_GET['catid']) or empty($_GET['catid'])) {
-			$query = "SELECT stdCat FROM ".DBPREFIX."module_calendar_style WHERE id = '2'";
+			$query = "SELECT stdCat FROM ".DBPREFIX."module_calendar".$this->mandateLink."_style WHERE id = '2'";
 			$objResult = $objDatabase->SelectLimit($query, 1);
 
 		    $array1 = explode(' ', stripslashes($objResult->fields["stdCat"]));
@@ -472,10 +462,9 @@ class Calendar extends calendarLibrary
 
 		if ($_GET['catid'] != 0) {
 			$query = "SELECT id
-		    	          FROM ".DBPREFIX."module_calendar_categories
+		    	          FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
 		        	     WHERE id = '".intval($_GET['catid'])."'
 			               AND lang = '".$_LANGID."'
-			               AND mod_mandate = ".$this->mandate."
 			               AND status = '1'";
 			$objResult = $objDatabase->SelectLimit($query, 1);
 
@@ -494,10 +483,9 @@ class Calendar extends calendarLibrary
 
 		$query = "SELECT id,
 		                   name
-		              FROM ".DBPREFIX."module_calendar_categories
+		              FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
 		             WHERE lang = '".$_LANGID."'
 		               AND status = '1'
-		               AND mod_mandate = ".$this->mandate."
 		          ORDER BY pos";
 
 		$objResult = $objDatabase->Execute($query);
@@ -639,18 +627,16 @@ class Calendar extends calendarLibrary
 		));
 
 		if (!empty($_GET['catid'])) {
-			$query = "SELECT * FROM ".DBPREFIX."module_calendar
+			$query = "SELECT * FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 				WHERE catid = {$_GET['catid']} AND
 				active = 1 AND
-				mod_mandate = ".$this->mandate." AND
 				((startdate BETWEEN $startdate AND $enddate) OR
 				(enddate BETWEEN $startdate AND $enddate) OR
 				(startdate < $startdate AND enddate > $startdate)) ".$where."
 				ORDER BY startdate ASC";
 		} else {
-			$query = "SELECT * FROM ".DBPREFIX."module_calendar
+			$query = "SELECT * FROM ".DBPREFIX."module_calendar".$this->mandateLink."
 				WHERE active = 1 AND
-				mod_mandate = ".$this->mandate." AND
 				((startdate BETWEEN $startdate AND $enddate) OR
 				(enddate BETWEEN $startdate AND $enddate) OR
 				(startdate < $startdate AND enddate > $startdate)) ".$where."
@@ -787,7 +773,7 @@ class Calendar extends calendarLibrary
 			$ip		= "";
 			$host 	= "";
 
-			$query = "INSERT INTO ".DBPREFIX."module_calendar_registrations   (`note_id`,
+			$query = "INSERT INTO ".DBPREFIX."module_calendar".$this->mandateLink."_registrations   (`note_id`,
 																		       `time`,
 																		   	   `host`,
 																			   `ip_address`,
@@ -807,7 +793,7 @@ class Calendar extends calendarLibrary
 
 					$fieldData = contrexx_addslashes(contrexx_strip_tags($fieldData));
 
-					$query = "INSERT INTO ".DBPREFIX."module_calendar_form_data       (`reg_id`,
+					$query = "INSERT INTO ".DBPREFIX."module_calendar".$this->mandateLink."_form_data       (`reg_id`,
 																				       `field_id`,
 																					   `data`)
 																   			   VALUES ('$regId',
@@ -819,10 +805,9 @@ class Calendar extends calendarLibrary
 				if ($objResultFields !== false) {
 					//email
 					$query = " SELECT id 
-					           FROM ".DBPREFIX."module_calendar_form_fields 
+					           FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields 
 					           WHERE note_id='".$noteId."' 
 					           AND `key`='6' 
-					           AND `mod_mandate` = ".$this->mandate." 
 					           LIMIT 1";
 				    $objResult = $objDatabase->Execute($query);
 					if ($objResult !== false) {
@@ -831,10 +816,9 @@ class Calendar extends calendarLibrary
 
 					//firstane
 					$query = " SELECT id 
-					           FROM ".DBPREFIX."module_calendar_form_fields 
+					           FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields 
 					           WHERE note_id='".$noteId."' 
 					           AND `key`='1' 
-					           AND `mod_mandate` = ".$this->mandate." 
 					           LIMIT 1";
 				    $objResult = $objDatabase->Execute($query);
 					if ($objResult !== false) {
@@ -843,10 +827,9 @@ class Calendar extends calendarLibrary
 
 					//lastname
 					$query = " SELECT id 
-					           FROM ".DBPREFIX."module_calendar_form_fields 
+					           FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields 
 					           WHERE note_id='".$noteId."' 
 					           AND `key`='2' 
-					           AND `mod_mandate` = ".$this->mandate."
 					           LIMIT 1";
 				    $objResult = $objDatabase->Execute($query);
 					if ($objResult !== false) {
@@ -892,9 +875,8 @@ class Calendar extends calendarLibrary
 
 				//get note details
 				$query 			= "SELECT `id`, `key`, `public`, `all_groups`, `groups`, `num`
-                                    FROM ".DBPREFIX."module_calendar
-                                    WHERE id = '".$noteId."'
-                                    AND `mod_mandate` = ".$this->mandate."";
+                                    FROM ".DBPREFIX."module_calendar".$this->mandateLink."
+                                    WHERE id = '".$noteId."'";
 
 				$objResult 		= $objDatabase->SelectLimit($query, 1);
 
@@ -910,8 +892,7 @@ class Calendar extends calendarLibrary
 							//get user details
 							$queryUser 		= " SELECT id,email,firstname,lastname,residence,profession,interests,webpage,company,zip,phone,mobile,street,langId,groups
 							              	 	FROM ".DBPREFIX."access_users
-								            	WHERE id = '".$userId."' AND active = '1'
-								            	AND `mod_mandate` = ".$this->mandate."";
+								            	WHERE id = '".$userId."' AND active = '1'";
 
 							$objResultUser 	= $objDatabase->SelectLimit($queryUser, 1);
 

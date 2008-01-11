@@ -1,4 +1,7 @@
 <?php
+
+$_ARRAYLANG['TXT_CAT_ACCESS_DENIED'] = "Sie haben keinen Zugriff auf diese Kategorie";
+
 /**
  * Gallery
  *
@@ -702,6 +705,12 @@ class Gallery {
         $intParentId = intval($intParentId);
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
+        
+        if ($this->checkAuth($intParentId) == false) {
+            $this->_objTpl->setVariable("ACCESS_DENIED", $_ARRAYLANG['TXT_CAT_ACCESS_DENIED']);
+            $this->_objTpl->parse("deny_access");
+            return;
+        }
 
         // hide image detail block
         //$this->_objTpl->hideBlock('galleryImage');
@@ -965,6 +974,58 @@ class Gallery {
         }
 
         $this->_objTpl->parse('galleryCategories');
+    }
+    
+    /**
+     * Check category authorisation
+     * 
+     * Check if the user is permitted to access the
+     * current category
+     * @param unknown_type $id
+     * @return unknown
+     */
+    function checkAuth($id)
+    {
+        global $objDatabase;
+        
+        if ($id == 0) {
+            return true;
+        }
+        
+        if (isset($_SESSION['auth']['is_admin']) && $_SESSION['auth']['is_admin'] == 1) {
+            return true;
+        }
+        
+        $query = "  SELECT secure
+                    FROM ".DBPREFIX."module_gallery_categories
+                    WHERE id = ".$id;
+        $objRs = $objDatabase->Execute($query);
+        if ($objRs === false) {
+            return false;
+        }
+        if (intval($objRs->fields['secure']) === 1) {
+            // it's a protected category. check auth
+            if (isset($_SESSION['auth']['groups'])) {
+                $userGroups = $_SESSION['auth']['groups']; 
+            } else {
+                return false;
+            }
+            
+            $query = "  SELECT groupid
+                        FROM ".DBPREFIX."module_gallery_categories_access
+                        WHERE catid = ".$id;
+            $objRs = $objDatabase->Execute($query);
+            if ($objRs === false) {
+                return false;
+            }
+            while (!$objRs->EOF) {
+                if (array_search($objRs->fields['groupid'], $userGroups) !== false) {
+                    return true;
+                }
+                $objRs->MoveNext();
+            }
+        }
+        return false;
     }
 
 

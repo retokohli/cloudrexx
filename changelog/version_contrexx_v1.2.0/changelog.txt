@@ -173,6 +173,9 @@ Modul: Blog
 - Besucher können Meldungen kommentieren und bewerten
 - RSS-Feeds für Meldungen, Kategorien und Kommentare werden erstellt.
 
+Modul: Kalender
+- So erweitert, dass einfach eine Kopie davon erstellt werden kann (zwei Mandanten)
+
 
 ****************************************
 * Behobene Fehler **********************
