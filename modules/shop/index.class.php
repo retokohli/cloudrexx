@@ -85,9 +85,10 @@ function shopUseSession()
             $command = $_GET['act'];
         }
         if (in_array($command, array('', 'discounts', 'details', 'terms', 'cart'))) {
-            if (    //$command == 'details' &&
-                isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart'
-                ) {
+            if (   $command == 'details'
+                && isset($_REQUEST['referer'])
+                && $_REQUEST['referer'] == 'cart'
+            ) {
                 return true;
             } elseif ($command == 'cart' && (isset($_REQUEST['productId']) || (isset($_GET['remoteJs']) && $_GET['remoteJs'] == 'addProduct' && !empty($_GET['product'])))) {
             	return true;
@@ -216,18 +217,6 @@ class Shop extends ShopLibrary
      */
     function Shop($pageContent)
     {
-        $this->__construct($pageContent);
-    }
-
-
-    /**
-     * PHP5 constructor
-     *
-     * @param  string
-     * @access public
-     */
-    function __construct($pageContent='')
-    {
         global $_LANGID, $objDatabase;
 
         if (0) {
@@ -272,10 +261,10 @@ class Shop extends ShopLibrary
 
         // VAT object -- Create this only after the configuration
         // ($this->arrConfig) has been set up!
-        $this->objVat = &new Vat();
+        $this->objVat = new Vat();
 
         // The ShopCategories helper object
-        $this->objShopCategories = &new ShopCategories();
+        $this->objShopCategories = new ShopCategories();
 
         // initialize the product options names and values array
         $this->initProductAttributes();
@@ -1660,7 +1649,7 @@ class Shop extends ShopLibrary
 
         for ($i=1; $i <= $count; $i = $i+2) {
             if (!empty($arrTitle[$i+1])) {
-                $this->objTemplate->setCurrentBlock("shopProductRow2");
+                $this->objTemplate->setCurrentBlock('shopProductRow2');
                 $this->objTemplate->setVariable(array(
                     'SHOP_PRODUCT_TITLE'                => str_replace('"', '&quot;', $arrTitle[$i+1]),
                     'SHOP_PRODUCT_THUMBNAIL'            => $arrThumbnailPath[$i+1],
@@ -1671,10 +1660,10 @@ class Shop extends ShopLibrary
                     'SHOP_PRODUCT_PRICE_UNIT'           => $this->aCurrencyUnitName,
                     'SHOP_PRODUCT_DISCOUNTPRICE_UNIT'   => $this->aCurrencyUnitName,
                     'SHOP_PRODUCT_DETAILLINK'           => $arrDetailLink[$i+1],
-                    ));
-                $this->objTemplate->parse("shopProductRow2");
+                ));
+                $this->objTemplate->parse('shopProductRow2');
             }
-            $this->objTemplate->setCurrentBlock("shopProductRow1");
+            $this->objTemplate->setCurrentBlock('shopProductRow1');
             $this->objTemplate->setVariable(array(
                 'SHOP_PRODUCT_TITLE'                => str_replace('"', '&quot;', $arrTitle[$i]),
                 'SHOP_PRODUCT_THUMBNAIL'            => $arrThumbnailPath[$i],
@@ -1685,8 +1674,8 @@ class Shop extends ShopLibrary
                 'SHOP_PRODUCT_PRICE_UNIT'           => $this->aCurrencyUnitName,
                 'SHOP_PRODUCT_DISCOUNTPRICE_UNIT'   => $this->aCurrencyUnitName,
                 'SHOP_PRODUCT_DETAILLINK'           => $arrDetailLink[$i],
-                ));
-            $this->objTemplate->parse("shopProductRow1");
+            ));
+            $this->objTemplate->parse('shopProductRow1');
         }
         return true;
     }
@@ -3889,14 +3878,14 @@ right after the customer logs in!
     {
         global $_ARRAYLANG;
 
-        // hide currency navbar
+        // Hide the currency navbar
         $this->_hideCurrencyNavbar = true;
 
-        // default new order status: As long as it's pending,
+        // Default new order status: As long as it's pending (0, zero),
         // updateOrderStatus() will choose the new value automatically.
         $newOrderStatus = SHOP_ORDER_STATUS_PENDING;
 
-        // if no order ID backup is present, redirect to the shop start page.
+        // If no order ID backup is present, redirect to the shop start page.
         // this check is necessary in order to avoid this page being
         // reloaded, which will fail in any case!
         if (!isset($_SESSION['shop']['orderid_checkin'])) {
@@ -3904,24 +3893,24 @@ right after the customer logs in!
             exit;
         }
         $orderId = $this->objProcessing->checkIn();
-        // the order ID has been backed up for other external payments
-        // that might not be able to return our order ID
+        // The order ID has been backed up for other external payments
+        // that might not be able to return our order ID.
         if (!$orderId) {
             // Zero or false:
             // The payment failed or was cancelled.
-            // It's all the same to the order, as it is cancelled in any case.
+            // The order is cancelled in both cases.
             $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
         }
         if ($orderId === true || !intval($orderId)) {
             // True or integer > 0.
-            // Internal payment methods: update automatically.
-            // External payment methods: completed successfully;
-            // update automatically.
+            // Internal payment method: update status in any case.
+            // External payment method: update status, as it completed
+            // successfully.
             $orderId = $_SESSION['shop']['orderid_checkin'];
         }
 
         // Check the returned order ID.
-        // We must have a valid order ID, or zero, or false.
+        // We need a valid order ID from here.
         // The respective order state, if available, is updated
         // in updateOrderStatus().
         if (intval($orderId) > 0) {
@@ -3994,18 +3983,22 @@ right after the customer logs in!
         if (!$objResult) {
             return SHOP_ORDER_STATUS_PENDING;
         }
-
-        if ($objResult->fields['order_status'] == 0) {
+        // We need to accept both pending and confirmed order states here,
+        // as the Paypal class may already have updated it to the latter value.
+        if (   $objResult->fields['order_status'] == SHOP_ORDER_STATUS_PENDING
+            || $objResult->fields['order_status'] == SHOP_ORDER_STATUS_CONFIRMED
+        ) {
             // If the optional new order status argument is zero, determine
             // the new status automatically.
             if (!$newOrderStatus) {
                 // The new order status is determined by two factors:
                 // - The method of payment (instant/deferred), and
                 // - The method of delivery (if any).
-                // If the payment is instant (currenty, all external payments
-                // processors are considered to be instant), and there is no
-                // delivery needed (because it's all downloads), the order status
-                // is flipped to 'completed' right away.
+                // If the payment takes place instantly (currently, all
+                // external payments processors are considered to do so),
+                // and there is no delivery needed (because it's all
+                // downloads), the order status is switched to 'completed'
+                // right away.
                 // If only one of these conditions is met, the status is set to
                 // 'paid', or 'delivered' respectively.
                 // If neither condition is met, the status is set to 'confirmed'.
@@ -4039,9 +4032,10 @@ right after the customer logs in!
                 return $newOrderStatus;
             }
             // The query failed.
-            return SHOP_ORDER_STATUS_PENDING;
+            // Pending status is returned below.
         }
-        // The status of the order is not equal to zero.
+        // The status of the order is neither pending nor confirmed,
+        // or an error occurred above.
         return SHOP_ORDER_STATUS_PENDING;
     }
 
