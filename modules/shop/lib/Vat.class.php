@@ -139,19 +139,19 @@ class Vat
         $query = "SELECT * FROM ".DBPREFIX."module_shop_config WHERE name='tax_enabled'";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF) {
-            $this->vatEnabled = $objResult->Fields('value');
+            $this->vatEnabled = $objResult->fields['value'];
         } else { die ("Failed to get VAT enabled flag<br />"); }
 
         $query = "SELECT * FROM ".DBPREFIX."module_shop_config WHERE name='tax_included'";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF) {
-            $this->vatIncluded = $objResult->Fields('value');
+            $this->vatIncluded = $objResult->fields['value'];
         } else { die ("Failed to get VAT included flag<br />"); }
 
         $query = "SELECT * FROM ".DBPREFIX."module_shop_config WHERE name='tax_default_id'";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF) {
-            $this->vatDefaultId = $objResult->Fields('value');
+            $this->vatDefaultId = $objResult->fields['value'];
         } else { die ("Failed to get default VAT ID<br />"); }
 
         $this->vatDefaultRate = $this->getRate($this->vatDefaultId);
@@ -234,8 +234,6 @@ class Vat
      */
     function getShortMenuString($selected='', $menuname='', $selectAttributes='')
     {
-        global $_ARRAYLANG;
-
         $string = '';
         foreach ($this->arrVatRate as $id => $rate) {
             $string .= "<option value='$id'";
@@ -269,8 +267,6 @@ class Vat
      */
     function getLongMenuString($selected='', $menuname='', $selectAttributes='')
     {
-        global $_ARRAYLANG;
-
         $string = '';
         foreach ($this->arrVatRate as $id => $rate) {
             $string .= "<option value='$id'";

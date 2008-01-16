@@ -162,9 +162,9 @@ class ProductAttributes  // friend Product
         $index = 0;
         while (!$objResult->EOF) {
             $arrName = array();
-            $arrName['id'] = $objResult->Fields('id');
-            $arrName['name'] = $objResult->Fields('name');
-            $arrName['type'] = $objResult->Fields('display_type');
+            $arrName['id'] = $objResult->fields['id'];
+            $arrName['name'] = $objResult->fields['name'];
+            $arrName['type'] = $objResult->fields['display_type'];
             $this->arrName[++$index] = $arrName;
             $this->arrNameIndex[$arrName['id']] = $index;
             $objResult->MoveNext();
@@ -247,11 +247,11 @@ class ProductAttributes  // friend Product
         $index = 0;
         while (!$objResult->EOF) {
             $arrRelation = array();
-            $arrRelation['id']        = $objResult->Fields('attribute_id');
-            $arrRelation['productId'] = $objResult->Fields('product_id');
-            $arrRelation['nameId']    = $objResult->Fields('attributes_name_id');
-            $arrRelation['valueId']   = $objResult->Fields('attributes_value_id');
-            $arrRelation['order']     = $objResult->Fields('sort_id');
+            $arrRelation['id']        = $objResult->fields['attribute_id'];
+            $arrRelation['productId'] = $objResult->fields['product_id'];
+            $arrRelation['nameId']    = $objResult->fields['attributes_name_id'];
+            $arrRelation['valueId']   = $objResult->fields['attributes_value_id'];
+            $arrRelation['order']     = $objResult->fields['sort_id'];
             $this->arrRelation[++$index] = $arrRelation;
             $this->arrRelationIndex[$arrRelation['id']] = $index;
             $objResult->MoveNext();
@@ -405,7 +405,7 @@ class ProductAttributes  // friend Product
         foreach ($objProductAttribute->arrValue as $id => $arrValue) {
             $inputBoxes .=
                 "<input type='text' name='$name[$id]' ".
-                "id='$name_$id' value='$arrValue[$content]' ".
+                "id='{$name}_{$id}' value='$arrValue[$content]' ".
                 "maxlength='$maxlength' style='display:".
                 ($select == true ? "inline" : "none").
                 ";$style' onchange='updateAttributeValueList($attributeId, $id)' />";
@@ -453,15 +453,18 @@ class ProductAttributes  // friend Product
     /**
      * Returns HTML code for the value menu for each ProductAttribute
      *
-     * @param    integer     $attributeId    ID of the ProductAttribute name
-     * @param    string      $name           Name of the menu
-     * @param    integer     $selectedId     ID of the selected value
-     * @param    string      $onchange       Javascript onchange event of the menu
-     * @param    string      $style          CSS style declaration for the menu
-     * @return   string      $menu           Contains the value menus
+     * @global  array       $_ARRAYLANG     Language array
+     * @param   integer     $attributeId    ID of the ProductAttribute name
+     * @param   string      $name           Name of the menu
+     * @param   integer     $selectedId     ID of the selected value
+     * @param   string      $onchange       Javascript onchange event of the menu
+     * @param   string      $style          CSS style declaration for the menu
+     * @return  string      $menu           Contains the value menus
      */
     function getAttributeValueMenu($attributeId, $name, $selectedId, $onchange, $style)
     {
+        global $_ARRAYLANG;
+
         $objProductAttribute = ProductAttribute::getByNameId($attributeId);
         if (!$objProductAttribute) {
             return '';
