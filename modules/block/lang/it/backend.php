@@ -58,4 +58,10 @@ $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'] = "Block in dieser Sprache 
 $_ARRAYLANG['TXT_BLOCK_DEACTIVATE'] = "deaktivieren";
 $_ARRAYLANG['TXT_SHOW_ON_ALL_PAGES'] = "Auf jeder Seite";
 $_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'] = "Seiten ausw";
+$_ARRAYLANG['TXT_BLOCK_SHOW_ON_ALL_PAGES'] = "Block auf jeder Seite dieser Sprache anzeigen";
+$_ARRAYLANG['TXT_BLOCK_FRONTEND_PAGES'] = "Frontend Seiten";
+$_ARRAYLANG['TXT_BLOCK_LANG_SHOW'] = "Block in dieser Sprache anzeigen";
+$_ARRAYLANG['TXT_BLOCK_BLOCK_NO'] = "Block #%s";
+$_ARRAYLANG['TXT_BLOCK_BLOCK_ALL'] = "alle";
+$_ARRAYLANG['TXT_BLOCK_BLOCK_NONE'] = "-";
 ?>
