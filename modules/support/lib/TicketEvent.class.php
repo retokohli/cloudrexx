@@ -1001,7 +1001,7 @@ if (MY_DEBUG) echo("TicketEvent::refreshTimestamp(): ERROR: query failed, objRes
 if (MY_DEBUG) echo("TicketEvent::refreshTimestamp(): ERROR: no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
-        $this->timestamp = contrexx_stripslashes($objResult->fields('timestamp'));
+        $this->timestamp = contrexx_stripslashes($objResult->fields['timestamp']);
 if (MY_DEBUG) echo("TicketEvent::refreshTimestamp(): INFO: timestamp is '$this->timestamp'<br />");
         return true;
     }
@@ -1039,13 +1039,13 @@ if (MY_DEBUG) echo("TicketEvent::getById($id): no result: ".$objResult->RecordCo
         }
 // TODO: add some checks here for NULL and zero values!
         $objTicketEvent = new TicketEvent(
-            Ticket::getById($objResult->fields('ticket_id')),
-            $objResult->fields('event'),
-            $objResult->fields('value'),
-            $objResult->fields('user_id'),
-            $objResult->fields('status'),
-            contrexx_stripslashes($objResult->fields('timestamp')),
-            $objResult->fields('id')
+            Ticket::getById($objResult->fields['ticket_id']),
+            $objResult->fields['event'],
+            $objResult->fields['value'],
+            $objResult->fields['user_id'],
+            $objResult->fields['status'],
+            contrexx_stripslashes($objResult->fields['timestamp']),
+            $objResult->fields['id']
         );
         return $objTicketEvent;
     }

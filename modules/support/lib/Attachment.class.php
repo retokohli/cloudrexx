@@ -302,11 +302,11 @@ if (MY_DEBUG) echo("Attachment::getById($id): no result: ".$objResult->RecordCou
             return false;
         }
         $objAttachment = new Attachment(
-            $objResult->fields('message_id'),
-            contrexx_stripslashes($objResult->fields('name')),
-            contrexx_stripslashes($objResult->fields('type')),
-            contrexx_stripslashes($objResult->fields('content')),
-            $objResult->fields('id')
+            $objResult->fields['message_id'],
+            contrexx_stripslashes($objResult->fields['name']),
+            contrexx_stripslashes($objResult->fields['type']),
+            contrexx_stripslashes($objResult->fields['content']),
+            $objResult->fields['id']
         );
         return $objAttachment;
     }

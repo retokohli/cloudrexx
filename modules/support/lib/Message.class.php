@@ -432,7 +432,7 @@ if (MY_DEBUG) echo("Message::refreshTimestamp(): query failed, objResult: '$objR
 if (MY_DEBUG) echo("Message::refreshTimestamp(): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
-        $this->timestamp = contrexx_stripslashes($objResult->fields('timestamp'));
+        $this->timestamp = contrexx_stripslashes($objResult->fields['timestamp']);
         return true;
     }
 
@@ -502,13 +502,13 @@ if (MY_DEBUG) echo("Message::getById($id): no result: ".$objResult->RecordCount(
             return false;
         }
         $objMessage = new Message(
-            $objResult->fields('ticket_id'),
-            contrexx_stripslashes($objResult->fields('from')),
-            contrexx_stripslashes($objResult->fields('subject')),
-            contrexx_stripslashes($objResult->fields('body')),
-            contrexx_stripslashes($objResult->fields('date')),
-            contrexx_stripslashes($objResult->fields('timestamp')),
-            $objResult->fields('id')
+            $objResult->fields['ticket_id'],
+            contrexx_stripslashes($objResult->fields['from']),
+            contrexx_stripslashes($objResult->fields['subject']),
+            contrexx_stripslashes($objResult->fields['body']),
+            contrexx_stripslashes($objResult->fields['date']),
+            contrexx_stripslashes($objResult->fields['timestamp']),
+            $objResult->fields['id']
         );
 if (MY_DEBUG) { echo("Message::getById($id): made Message: ");var_export($objMessage);echo("<br />"); }
         return $objMessage;
