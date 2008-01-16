@@ -632,7 +632,7 @@ class Gallery {
                 "SELECT pid FROM ".DBPREFIX."module_gallery_categories ".
                 "WHERE id=$intCatId");
             if ($objResult) {
-                $intParentId = intval($objResult->Fields('pid'));
+                $intParentId = intval($objResult->fields['pid']);
                 $query = "SELECT id, value FROM ".DBPREFIX."module_gallery_categories ".
                     "INNER JOIN ".DBPREFIX."module_gallery_language ON id=gallery_id ".
                     "WHERE lang_id=$this->langId AND name='name' AND pid=$intParentId";
@@ -641,9 +641,9 @@ class Gallery {
                     $strOutput = '| ';
                     do {
                         $strOutput .= "<a href='".CONTREXX_DIRECTORY_INDEX."?section=gallery&amp;cid=".
-                            $objResult->Fields('id').
-                            "' title='".$objResult->Fields('value').
-                            "' target='_self'>".$objResult->Fields('value')."</a> | ";
+                            $objResult->fields['id'].
+                            "' title='".$objResult->fields['value'].
+                            "' target='_self'>".$objResult->fields['value']."</a> | ";
                     } while ($objResult->MoveNext());
                     return $strOutput;
                 }
@@ -669,8 +669,8 @@ class Gallery {
                     "WHERE id=$intCatId";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) {
-                    if ($objResult->Fields('pid') != 0) {
-                        $intCatId = $objResult->Fields('pid');
+                    if ($objResult->fields['pid'] != 0) {
+                        $intCatId = $objResult->fields['pid'];
                     } else {
                         $running = false;
                     }
@@ -682,7 +682,7 @@ class Gallery {
                 "AND name='name' LIMIT 1";
             $objResult = $objDatabase->Execute($query);
             if ($objResult) {
-                $galleryName = $objResult->Fields('value');
+                $galleryName = $objResult->fields['value'];
                 return $galleryName;
             }
         }
