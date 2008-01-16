@@ -22,20 +22,20 @@
  */
 class GalleryLibrary
 {
-	
+
 	/**
     * Gets the gallery settings
     *
-    * @global  object  $objDatabase                                                                             
-    */ 
+    * @global  object  $objDatabase
+    */
     function getSettings()
-    {   	
+    {
     	global $objDatabase;
     	$objResult = $objDatabase->Execute("SELECT name,value FROM ".DBPREFIX."module_gallery_settings");
     	while (!$objResult->EOF) {
-    		$this->arrSettings[$objResult->fields('name')] = $objResult->fields['value'];
+    		$this->arrSettings[$objResult->fields['name']] = $objResult->fields['value'];
     		$objResult->MoveNext();
-    	}   
-    } 
+    	}
+    }
 }
 ?>
