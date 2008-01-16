@@ -626,23 +626,23 @@ if (MY_DEBUG) echo("SupportCategory::getById($id, $languageId): query failed, ob
 if (MY_DEBUG) echo("SupportCategory::getById($id, $languageId): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
-//echo("SupportCategory::getById($id, $languageId): ID is ".$objResult->fields('id')."<br />");
+//echo("SupportCategory::getById($id, $languageId): ID is ".$objResult->fields['id']."<br />");
         $arrName = array();
         $objSupportCategory = false;
         while (!$objResult->EOF) {
-            if (   $languageId == $objResult->fields('language_id')
+            if (   $languageId == $objResult->fields['language_id']
                 || ($languageId <= 0 && !$objSupportCategory)) {
                 $objSupportCategory = new SupportCategory(
-                    contrexx_stripslashes($objResult->fields('name')),
-                    $objResult->fields('language_id'),
-                    $objResult->fields('parent_id'),
-                    $objResult->fields('status'),
-                    $objResult->fields('order'),
-                    $objResult->fields('id')
+                    contrexx_stripslashes($objResult->fields['name']),
+                    $objResult->fields['language_id'],
+                    $objResult->fields['parent_id'],
+                    $objResult->fields['status'],
+                    $objResult->fields['order'],
+                    $objResult->fields['id']
                 );
             }
-            $arrName[$objResult->fields('language_id')] =
-                contrexx_stripslashes($objResult->fields('name'));
+            $arrName[$objResult->fields['language_id']] =
+                contrexx_stripslashes($objResult->fields['name']);
             $objResult->MoveNext();
         }
         if (count($arrName)) {
@@ -690,7 +690,7 @@ if (MY_DEBUG) echo("SupportCategory::getNameById($id, $languageId): query failed
 if (MY_DEBUG) echo("SupportCategory::getNameById($id, $languageId): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
-//echo("SupportCategory::getNameById($id, $languageId): ID is ".$objResult->fields('id')."<br />");
+//echo("SupportCategory::getNameById($id, $languageId): ID is ".$objResult->fields['id']."<br />");
         return contrexx_stripslashes($objResult->fields['name']);
     }
 

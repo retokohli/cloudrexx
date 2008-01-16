@@ -471,7 +471,7 @@ if (MY_DEBUG) echo("Ticket::refreshTimestamp(): query failed, objResult: '$objRe
 if (MY_DEBUG) echo("Ticket::refreshTimestamp(): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
-        $this->timestamp = contrexx_stripslashes($objResult->fields('timestamp'));
+        $this->timestamp = contrexx_stripslashes($objResult->fields['timestamp']);
 if (MY_DEBUG) echo("Ticket::refreshTimestamp(): done!<br />");
         return true;
     }
@@ -860,12 +860,12 @@ if (MY_DEBUG) echo("Ticket::getById($id): no result: ".$objResult->RecordCount()
             return false;
         }
         $objTicket = new Ticket(
-            contrexx_stripslashes($objResult->fields('email')),
-            $objResult->fields('source'),
-            $objResult->fields('support_category_id'),
-            $objResult->fields('language_id'),
-            contrexx_stripslashes($objResult->fields('timestamp')),
-            $objResult->fields('id')
+            contrexx_stripslashes($objResult->fields['email']),
+            $objResult->fields['source'],
+            $objResult->fields['support_category_id'],
+            $objResult->fields['language_id'],
+            contrexx_stripslashes($objResult->fields['timestamp']),
+            $objResult->fields['id']
         );
         return $objTicket;
     }

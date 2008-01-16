@@ -845,25 +845,25 @@ if (MY_DEBUG) echo("InfoField::getById($id, $languageId): query failed, objResul
 if (MY_DEBUG) echo("InfoField::getById($id, $languageId): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
-//if (MY_DEBUG) echo("InfoField::getById($id, $languageId): ID is ".$objResult->fields('id')."<br />");
+//if (MY_DEBUG) echo("InfoField::getById($id, $languageId): ID is ".$objResult->fields['id']."<br />");
         $arrName = array();
         $objInfoField = false;
         while (!$objResult->EOF) {
-            if (   $languageId == $objResult->fields('language_id')
+            if (   $languageId == $objResult->fields['language_id']
                 || ($languageId <= 0 && !$objInfoField)) {
                 $objInfoField = new InfoField(
-                    contrexx_stripslashes($objResult->fields('name')),
-                    $objResult->fields('type'),
-                    $objResult->fields('language_id'),
-                    $objResult->fields('mandatory'),
-                    $objResult->fields('multiple'),
-                    $objResult->fields('status'),
-                    $objResult->fields('order'),
-                    $objResult->fields('id')
+                    contrexx_stripslashes($objResult->fields['name']),
+                    $objResult->fields['type'],
+                    $objResult->fields['language_id'],
+                    $objResult->fields['mandatory'],
+                    $objResult->fields['multiple'],
+                    $objResult->fields['status'],
+                    $objResult->fields['order'],
+                    $objResult->fields['id']
                 );
             }
-            $arrName[$objResult->fields('language_id')] =
-                contrexx_stripslashes($objResult->fields('name'));
+            $arrName[$objResult->fields['language_id']] =
+                contrexx_stripslashes($objResult->fields['name']);
             $objResult->MoveNext();
         }
         if (count($arrName)) {

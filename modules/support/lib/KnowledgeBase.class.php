@@ -476,14 +476,14 @@ if (MY_DEBUG) echo("KnowledgeBase::getById($id, $languageId): query failed, objR
 if (MY_DEBUG) echo("KnowledgeBase::getById($id, $languageId): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
-//if (MY_DEBUG) echo("KnowledgeBase::getById($id, $languageId): ID is ".$objResult->fields('id')."<br />");
+//if (MY_DEBUG) echo("KnowledgeBase::getById($id, $languageId): ID is ".$objResult->fields['id']."<br />");
         $objKnowledgeBase = new KnowledgeBase(
-            contrexx_stripslashes($objResult->fields('subject')),
-            contrexx_stripslashes($objResult->fields('body')),
-            $objResult->fields('support_category_id'),
-            $objResult->fields('language_id'),
-            $objResult->fields('status'),
-            $objResult->fields('id')
+            contrexx_stripslashes($objResult->fields['subject']),
+            contrexx_stripslashes($objResult->fields['body']),
+            $objResult->fields['support_category_id'],
+            $objResult->fields['language_id'],
+            $objResult->fields['status'],
+            $objResult->fields['id']
         );
 //if (MY_DEBUG) echo("KnowledgeBase::getById($id, $languageId): my ID is ".$objKnowledgeBase->getId()."<br />");
         return $objKnowledgeBase;
@@ -527,7 +527,7 @@ if (MY_DEBUG) echo("KnowledgeBase::getSubjectById($id, $languageId): query faile
 if (MY_DEBUG) echo("KnowledgeBase::getSubjectById($id, $languageId): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
-//if (MY_DEBUG) echo("KnowledgeBase::getSubjectById($id, $languageId): ID is ".$objResult->fields('id')."<br />");
+//if (MY_DEBUG) echo("KnowledgeBase::getSubjectById($id, $languageId): ID is ".$objResult->fields['id']."<br />");
         return contrexx_stripslashes($objResult->fields['subject']);
     }
 
