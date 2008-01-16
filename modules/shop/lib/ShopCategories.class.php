@@ -372,7 +372,7 @@ echo("$selectedId<br />");
             while (!$objResult->EOF) {
                 $tempList .=
                     ($tempList ? ',' : '').
-                    $objResult->Fields('catid');
+                    $objResult->fields['catid'];
                 $objResult->MoveNext();
             }
         }
@@ -726,7 +726,7 @@ echo("$selectedId<br />");
      */
     //static
     function getChildCategoryIdArray(
-        $parentShopCategoryId=0, $flagActiveOnly=true, $flagVirtual=true
+        $parentShopCategoryId=0, $flagActiveOnly=true //, $flagVirtual=true
     ) {
         global $objDatabase;
 
@@ -744,7 +744,7 @@ echo("$selectedId<br />");
         }
         $arrChildShopCategoryId = array();
         while (!$objResult->EOF) {
-            $arrChildShopCategoryId[] = $objResult->Fields('catid');
+            $arrChildShopCategoryId[] = $objResult->fields['catid'];
             $objResult->MoveNext();
         }
         return $arrChildShopCategoryId;
@@ -792,7 +792,7 @@ echo("$selectedId<br />");
             return false;
         }
         if (!$objResult->EOF) {
-            return ShopCategory::getById($objResult->Fields('catid'));
+            return ShopCategory::getById($objResult->fields['catid']);
         }
         return false;
     }
@@ -875,7 +875,7 @@ echo("$selectedId<br />");
         }
         $arrVirtual = array();
         while (!$objResult->EOF) {
-            $arrVirtual[] = $objResult->Fields('catname');
+            $arrVirtual[] = $objResult->fields['catname'];
             $objResult->MoveNext();
         }
         return $arrVirtual;
@@ -915,8 +915,8 @@ echo("$selectedId<br />");
         $arrVirtual = array();
         while (!$objResult->EOF) {
             $arrVirtual[] = array(
-                'id'   => $objResult->Fields('catid'),
-                'name' => $objResult->Fields('catname'),
+                'id'   => $objResult->fields['catid'],
+                'name' => $objResult->fields['catname'],
             );
             $objResult->MoveNext();
         }
@@ -1004,7 +1004,6 @@ echo("$selectedId<br />");
                 $id, $imageName
             );
         }
-        $thumbResult = true;
         // If the thumbnail exists and is newer than the picture,
         // don't create it again.
         if (file_exists($imagePath.'.thumb')

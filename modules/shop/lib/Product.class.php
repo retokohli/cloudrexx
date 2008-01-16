@@ -1284,36 +1284,36 @@ class Product
         }
         // constructor also read ProductAttributes if ID > 0
         $objProduct = new Product(
-            $objResult->Fields('product_id'),
-            $objResult->Fields('catid'),
-            stripslashes($objResult->Fields('title')),
-            $objResult->Fields('handler'),
-            $objResult->Fields('normalprice'),
-            $objResult->Fields('status'),
-            $objResult->Fields('sort_order'),
-            $objResult->Fields('weight'),
-            $objResult->Fields('id')
+            $objResult->fields['product_id'],
+            $objResult->fields['catid'],
+            stripslashes($objResult->fields['title']),
+            $objResult->fields['handler'],
+            $objResult->fields['normalprice'],
+            $objResult->fields['status'],
+            $objResult->fields['sort_order'],
+            $objResult->fields['weight'],
+            $objResult->fields['id']
         );
-        $objProduct->pictures         = $objResult->Fields('picture');
-        $objProduct->resellerPrice    = $objResult->Fields('resellerprice');
-        $objProduct->shortDesc        = stripslashes($objResult->Fields('shortdesc'));
-        $objProduct->description      = stripslashes($objResult->Fields('description'));
-        $objProduct->stock            = $objResult->Fields('stock');
-        $objProduct->setStockVisible($objResult->Fields('stock_visibility'));
-        $objProduct->discountPrice    = $objResult->Fields('discountprice');
-        $objProduct->setSpecialOffer($objResult->Fields('is_special_offer'));
-        $objProduct->property1        = stripslashes($objResult->Fields('property1'));
-        $objProduct->property2        = stripslashes($objResult->Fields('property2'));
-        $objProduct->setB2B($objResult->Fields('b2b'));
-        $objProduct->setB2C($objResult->Fields('b2c'));
-        $objProduct->startDate        = $objResult->Fields('startdate');
-        $objProduct->endDate          = $objResult->Fields('enddate');
-        $objProduct->thumbnailPercent = $objResult->Fields('thumbnail_percent');
-        $objProduct->thumbnailQuality = $objResult->Fields('thumbnail_quality');
-        $objProduct->manufacturerId   = $objResult->Fields('manufacturer');
-        $objProduct->externalLink     = stripslashes($objResult->Fields('external_link'));
-        $objProduct->vatId            = $objResult->Fields('vat_id');
-        $objProduct->flags            = stripslashes($objResult->Fields('flags'));
+        $objProduct->pictures         = $objResult->fields['picture'];
+        $objProduct->resellerPrice    = $objResult->fields['resellerprice'];
+        $objProduct->shortDesc        = stripslashes($objResult->fields['shortdesc']);
+        $objProduct->description      = stripslashes($objResult->fields['description']);
+        $objProduct->stock            = $objResult->fields['stock'];
+        $objProduct->setStockVisible($objResult->fields['stock_visibility']);
+        $objProduct->discountPrice    = $objResult->fields['discountprice'];
+        $objProduct->setSpecialOffer($objResult->fields['is_special_offer']);
+        $objProduct->property1        = stripslashes($objResult->fields['property1']);
+        $objProduct->property2        = stripslashes($objResult->fields['property2']);
+        $objProduct->setB2B($objResult->fields['b2b']);
+        $objProduct->setB2C($objResult->fields['b2c']);
+        $objProduct->startDate        = $objResult->fields['startdate'];
+        $objProduct->endDate          = $objResult->fields['enddate'];
+        $objProduct->thumbnailPercent = $objResult->fields['thumbnail_percent'];
+        $objProduct->thumbnailQuality = $objResult->fields['thumbnail_quality'];
+        $objProduct->manufacturerId   = $objResult->fields['manufacturer'];
+        $objProduct->externalLink     = stripslashes($objResult->fields['external_link']);
+        $objProduct->vatId            = $objResult->fields['vat_id'];
+        $objProduct->flags            = stripslashes($objResult->fields['flags']);
         // also fetch the ProductAttribute value IDs
         $objProduct->arrProductAttributeValue =
             ProductAttributes::getProductValueArray($objProduct->id);
@@ -1405,7 +1405,7 @@ class Product
         }
         $arrProduct = array();
         while (!$objResult->EOF) {
-            $arrProduct[] = Product::getById($objResult->Fields('id'));
+            $arrProduct[] = Product::getById($objResult->fields['id']);
             $objResult->MoveNext();
         }
         return $arrProduct;

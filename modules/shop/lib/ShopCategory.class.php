@@ -614,7 +614,7 @@ echo("ShopCategory::insert(): ERROR: Query failed: $query<br />");
         $arrShopCategories = array();
         while (!$objResult->EOF) {
             $objShopCategory =
-                ShopCategory::getById($objResult->Fields('catid'));
+                ShopCategory::getById($objResult->fields['catid']);
             $arrShopCategories[] = $objShopCategory;
             $objResult->MoveNext();
         }
@@ -644,14 +644,14 @@ echo("ShopCategory::insert(): ERROR: Query failed: $query<br />");
             return false;
         }
         $objShopCategory = new ShopCategory(
-            $objResult->Fields('catname'),
-            $objResult->Fields('parentid'),
-            $objResult->Fields('catstatus'),
-            $objResult->Fields('catsorting'),
-            $objResult->Fields('catid')
+            $objResult->fields['catname'],
+            $objResult->fields['parentid'],
+            $objResult->fields['catstatus'],
+            $objResult->fields['catsorting'],
+            $objResult->fields['catid']
         );
-        $objShopCategory->setPicture($objResult->Fields('picture'));
-        $objShopCategory->setFlags($objResult->Fields('flags'));
+        $objShopCategory->setPicture($objResult->fields['picture']);
+        $objShopCategory->setFlags($objResult->fields['flags']);
         return $objShopCategory;
     }
 
@@ -699,7 +699,7 @@ echo("ShopCategory::insert(): ERROR: Query failed: $query<br />");
         }
         $arrShopCategoryID = array();
         while (!$objResult->EOF) {
-            $arrShopCategoryID[] = $objResult->Fields('catid');
+            $arrShopCategoryID[] = $objResult->fields['catid'];
             $objResult->MoveNext();
         }
         return $arrShopCategoryID;
@@ -750,7 +750,7 @@ echo("ShopCategory::insert(): ERROR: Query failed: $query<br />");
             );
         }
         if (!$objResult->EOF) {
-            return ShopCategory::getById($objResult->Fields('catid'));
+            return ShopCategory::getById($objResult->fields['catid']);
         }
         return false;
     }
