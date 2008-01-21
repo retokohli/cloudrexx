@@ -1288,7 +1288,7 @@ class Market extends marketLibrary
 			}
 
 			if($_GET['price'] != ''){
-				$query_search 		.="AND price < '".$_GET['price']."' ";
+				$query_search 		.="AND price <= ".$_GET['price']." ";
 				$searchTermExp		.= "&amp;price=".$_GET['price'];
 			}
 	    }
@@ -1318,7 +1318,6 @@ class Market extends marketLibrary
 	                     ".$query_search."
 						AND status = '1'
 				   ORDER BY score DESC, enddate DESC";
-
 
 			/////// START PAGING ///////
 			$pos= intval($_GET['pos']);
