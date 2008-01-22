@@ -132,7 +132,7 @@ class Guestbook extends GuestbookLibrary
 			$gender = ($objResult->fields["gender"]=="M") ? $_ARRAYLANG['guestbookGenderMale'] : $_ARRAYLANG['guestbookGenderFemale']; // N/A
 
 			if ($objResult->fields['url']!=""){
-				$this->_objTpl->setVariable("GUESTBOOK_URL", "<a href='".$objResult->fields['url']."'><img alt='".$objResult->fields['url']."' src='".ASCMS_MODULE_IMAGE_WEB_PATH."/guestbook/www.gif' align='baseline' border='0' /></a>");
+				$this->_objTpl->setVariable('GUESTBOOK_URL', '<a href="'.$objResult->fields['url'].'"><img alt="'.$objResult->fields['url'].'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/guestbook/www.gif" align="baseline" border="0" /></a>');
 			}
 			if ($objResult->fields['email']!=""){
 				if ($this->arrSettings['guestbook_replace_at']) {
@@ -141,7 +141,7 @@ class Guestbook extends GuestbookLibrary
 					$email = $objResult->fields['email'];
 				}
 
-				$this->_objTpl->setVariable("GUESTBOOK_EMAIL", "<a href='mailto:".$email."'><img alt='".$objResult->fields["email"]."' src='".ASCMS_MODULE_IMAGE_WEB_PATH."/guestbook/email.gif' align='baseline' border='0' /></a>");
+				$this->_objTpl->setVariable('GUESTBOOK_EMAIL', '<a href="mailto:'.$email.'"><img alt="'.$email.'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/guestbook/email.gif" align="baseline" border="0" /></a>');
 
 			}
 
