@@ -180,16 +180,16 @@ class MediaLibrary{
     }
 
 
-
-
+    /**
+     * Send a file for downloading
+     *
+     */
 	function _downloadMedia(){
 		// The file is already checked (media paths only)
 		$file = $this->path . $this->getFile;
 		//First, see if the file exists
 		if (!is_file($file)) { die("<b>404 File not found!</b>"); }
-
-		//Gather relevent info about file
-		$len = filesize($file);
+		
 		$filename = basename($file);
 		$file_extension = strtolower(substr(strrchr($filename,"."),1));
 
@@ -198,7 +198,9 @@ class MediaLibrary{
 			case "pdf": $ctype="application/pdf"; break;
 			case "exe": $ctype="application/octet-stream"; break;
 			case "zip": $ctype="application/zip"; break;
+	        case "docx" :
 			case "doc": $ctype="application/msword"; break;
+			case "xlsx": 
 			case "xls": $ctype="application/vnd.ms-excel"; break;
 			case "ppt": $ctype="application/vnd.ms-powerpoint"; break;
 			case "gif": $ctype="image/gif"; break;
@@ -221,24 +223,14 @@ class MediaLibrary{
 
 			default: $ctype="application/force-download";
 		}
-
-		//Begin writing headers
-		header("Pragma: public");
-		header("Expires: 0");
-		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-		header("Cache-Control: public");
-		header("Content-Description: File Transfer");
-
-		//Use the switch-generated Content-Type
-		header("Content-Type: $ctype");
-
-		//Force the download
-		$header="Content-Disposition: attachment; filename=".$filename.";";
-		header($header );
-		header("Content-Transfer-Encoding: binary");
-		header("Content-Length: ".$len);
-		@readfile($file);
-		exit;
+		
+		require_once ASCMS_LIBRARY_PATH . '/PEAR/Download.php';
+		
+		$dl = new HTTP_Download(array(
+		  "file"                  => $file,
+		  "contenttype"           => $ctype
+		));
+		$dl->send();
 	}
 
 
