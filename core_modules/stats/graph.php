@@ -114,9 +114,9 @@ class makeGraph
 
 		$currentHour = date('H');
 		if ($currentHour < 23) {
-			$arrRange[(date('d') == 1 ? date('t', time()-86400) : date('d')-1)] = range($currentHour+1, 23, 1);
+			$arrRange[(date('d') == 1 ? date('t', time()-86400) : date('d')-1)] = range($currentHour+1, 23);
 		}
-		$arrRange[date('d')] = range(0, $currentHour, 1);
+		$arrRange[date('d')] = range(0, $currentHour);
 
 		// generate arrays for the bars
 		foreach ($arrRange as $day => $arrHours) {
@@ -172,9 +172,9 @@ class makeGraph
 		}
 
 		if (date('d') < date('t')) {
-			$arrRange[(date('m') == 1 ? 12 : date('m')-1)] = range(date('d')+1, date('t'), 1);
+			$arrRange[(date('m') == 1 ? 12 : date('m')-1)] = range(date('d')+1, date('t'));
 		}
-		$arrRange[date('m')] = range(1, date('d'), 1);
+		$arrRange[date('m')] = range(1, date('d'));
 
 		// generate arrays for the bars
 		foreach ($arrRange as $month => $arrDays) {
@@ -232,9 +232,9 @@ class makeGraph
 		}
 
 		if (date('m')<12) {
-			$arrRange[date('y')-1] = range(date('m')+1, 12, 1);
+			$arrRange[date('y')-1] = range(date('m')+1, 12);
 		}
-		$arrRange[date('y')] = range(1, date('m'), 1);
+		$arrRange[date('y')] = range(1, date('m'));
 
 		// generate arrays for the bars
 		foreach ($arrRange as $year => $arrMonths) {
