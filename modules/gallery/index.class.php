@@ -1,7 +1,5 @@
 <?php
 
-$_ARRAYLANG['TXT_CAT_ACCESS_DENIED'] = "Sie haben keinen Zugriff auf diese Kategorie";
-
 /**
  * Gallery
  *
@@ -118,6 +116,18 @@ class Gallery {
         $intPicId    = intval($intPicId);
         $intCatId    = intval($_GET['cid']);
         $this->_objTpl->setTemplate($this->pageContent);
+        
+        
+        // we need to read the category id out of the database to prevent abusement
+        $intCatId = $this->getCategoryId($intPicId);
+        $categoryProtected = $this->categoryIsProtected($intCatId);
+        if ($categoryProtected > 0) {
+            if (!$objPerm->checkAccess($categoryProtected, 'dynamic')) {
+    	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
+    	            header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
+    	            exit;
+    	    }
+	    }
 
         // hide category list
         $this->_objTpl->hideBlock('galleryCategories');
@@ -356,11 +366,22 @@ class Gallery {
     */
     function showPicture($intPicId)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $objPerm;
 
         $arrPictures = array();
         $intPicId    = intval($intPicId);
         $intCatId    = intval($_GET['cid']);
+        
+        // we need to read the category id out of the database to prevent abusement
+        $intCatId = $this->getCategoryId($intPicId);
+        $categoryProtected = $this->categoryIsProtected($intCatId);
+        if ($categoryProtected > 0) {
+            if (!$objPerm->checkAccess($categoryProtected, 'dynamic')) {
+    	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
+    	            header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
+    	            exit;
+    	    }
+	    }        
 
         // POPUP Code
         $objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
@@ -623,7 +644,8 @@ class Gallery {
      * Not unlike {@link getCategoryTree()}, but instead of a tree, this returns
      * a list of siblings of the current gallery
      */
-    function getSiblingList() {
+    function getSiblingList() 
+    {
         global $objDatabase;
 
         if (isset($_GET['cid'])) {
@@ -657,7 +679,8 @@ class Gallery {
      * Returns the name of the currently visible top level gallery
      * @return  string          The gallery name, or '' if not applicable
      */
-    function getTopGalleryName() {
+    function getTopGalleryName() 
+    {
         global $objDatabase;
 
         if (isset($_GET['cid'])) {
@@ -699,21 +722,27 @@ class Gallery {
      * @global  object  $objDatabase
      * @param   var     $intParentId
      */
-    function showCategoryOverview($intParentId=0) {
-        global $objDatabase, $_ARRAYLANG;
+    function showCategoryOverview($intParentId=0) 
+    {
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        
+        $objPerm =&new Permission($type='frontend');
 
         $intParentId = intval($intParentId);
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         
-        if ($this->checkAuth($intParentId) == false) {
-            $this->_objTpl->setVariable("ACCESS_DENIED", $_ARRAYLANG['TXT_CAT_ACCESS_DENIED']);
-            $this->_objTpl->parse("deny_access");
-            return;
-        }
+        $categoryProtected = $this->categoryIsProtected($intParentId);
+        if ($categoryProtected > 0) {
+            if (!$objPerm->checkAccess($categoryProtected, 'dynamic')) {
+    	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
+    	            header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
+    	            exit;
+    	    }
+	    }
 
         // hide image detail block
-        //$this->_objTpl->hideBlock('galleryImage');
+        // $this->_objTpl->hideBlock('galleryImage');
 
         if ($this->arrSettings['header_type'] == 'hierarchy') {
             $this->_objTpl->setVariable(array(
@@ -996,14 +1025,14 @@ class Gallery {
             return true;
         }
         
-        $query = "  SELECT secure
+        $query = "  SELECT protected
                     FROM ".DBPREFIX."module_gallery_categories
                     WHERE id = ".$id;
         $objRs = $objDatabase->Execute($query);
         if ($objRs === false) {
             return false;
         }
-        if (intval($objRs->fields['secure']) === 1) {
+        if (intval($objRs->fields['protected']) === 1) {
             // it's a protected category. check auth
             if (isset($_SESSION['auth']['groups'])) {
                 $userGroups = $_SESSION['auth']['groups']; 
@@ -1024,6 +1053,8 @@ class Gallery {
                 }
                 $objRs->MoveNext();
             }
+        } else {
+            return true;
         }
         return false;
     }
@@ -1137,6 +1168,48 @@ END;
 
             $objCache->deleteAllFiles();
         }
+    }
+    
+    /**
+     * Check if a category is marked 'protected'. Return the access id
+     *
+     * @param unknown_type $id
+     * @return unknown
+     */
+    private function categoryIsProtected($id, $type="frontend")
+    {
+        if ($id == 0) {
+            // top category
+            return 0;
+        }
+        
+        global $objDatabase;
+        $query = "  SELECT  ".$type."Protected as protected, 
+                            ".$type."_access_id as access_id
+                    FROM ".DBPREFIX."module_gallery_categories 
+                    WHERE id = ".$id;
+        $objRs = $objDatabase->Execute($query);
+        if ($objRs) {
+            if ($objRs->fields['protected']) {
+                return $objRs->fields['access_id'];
+            } else {
+                return 0;
+            }
+        } else {
+            // the check didn't work. hide 
+            return 0;
+        }
+        
+    }
+    
+    private function getCategoryId($id)
+    {
+        global $objDatabase;
+        
+        $query = "  SELECT catid FROM ".DBPREFIX."module_gallery_pictures
+                    WHERE id = ".$id;
+        $objRs = $objDatabase->Execute($query);
+        return $objRs->fields['catid'];
     }
 }
 ?>

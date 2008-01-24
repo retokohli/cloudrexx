@@ -20,15 +20,24 @@
  * @package     contrexx
  * @subpackage  module_gallery
  */
+
+require_once ASCMS_MODULE_PATH . '/gallery/sql.class.php';
+
 class GalleryLibrary
 {
-
+    protected $sql;
+    
+    public function __construct()
+    {
+        $this->sql = new GallerySql();
+    }
+	
 	/**
     * Gets the gallery settings
     *
     * @global  object  $objDatabase
     */
-    function getSettings()
+    public function getSettings()
     {
     	global $objDatabase;
     	$objResult = $objDatabase->Execute("SELECT name,value FROM ".DBPREFIX."module_gallery_settings");

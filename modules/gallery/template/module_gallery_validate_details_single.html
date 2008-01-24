@@ -126,21 +126,19 @@ function copyText(strType,strValue) {
 <tr>
 	<td nowrap="nowrap">{TXT_DETAILS_CATEGORY}</td>
 	<td colspan="3">
-		<select name="validate_category">
-			<option value="0">{TXT_DETAILS_CATEGORYSELECT}</option>
+		<select name="validate_category" {CAT_DROPDOWN_DISABLED}>
+            <option value="0">{TXT_DETAILS_CATEGORYSELECT}</option>
 			<option value="0">----------------------------</option>
-			<!-- BEGIN showCategories -->
-			{DETAILS_CATEGORY_HIDE_S}
-			<option value="{CATEGORY_ID}" {CATEGORY_SELECTED}>{CATEGORY_SPACER}{CATEGORY_NAME}</option>
-			{DETAILS_CATEGORY_HIDE_E}
-			<!-- END showCategories -->
+            <!-- BEGIN showCategories -->
+            <option value="{CAT_DROPDOWN_VALUE}" {CAT_DROPDOWN_SELECTED}>{CAT_DROPDOWN_INDENT}{CAT_DROPDOWN_NAME}</option>
+		    <!-- END showCategories -->
 		</select>
 	</td>
 </tr>
 <tr class="row1">
 	<td norwap>{TXT_DETAILS_ACTIVE}</td>
 	<td colspan="3">
-		<input type="checkbox" name="validate_active" value="1" {DETAILS_ACTIVE_SELECTED} /> {TXT_DETAILS_ACTIVE}
+		<input type="checkbox" id="validate_active" name="validate_active" value="1" {DETAILS_ACTIVE_SELECTED} /> <label for="validate_active">{TXT_DETAILS_ACTIVE}</label>
 	</td>
 </tr>
 <tr>
@@ -158,12 +156,12 @@ function copyText(strType,strValue) {
 <tr>
 	<td nowrap="nowrap">{TXT_DETAILS_NEW_SIZE_THUMB}</td>
 	<td nowrap="nowrap">
-		<input type="radio" name="validate_thumb_size_selection" value="abs" {DETAILS_SIZE_SELECTION_ABS} onClick="disableSubmitButton();enableAbs();" /> <!--   -->
-		&nbsp;{TXT_DETAILS_THUMB_SIZE_ABS}
+		<input type="radio" id="details_size_selection_abs" name="validate_thumb_size_selection" value="abs" {DETAILS_SIZE_SELECTION_ABS} onClick="disableSubmitButton();enableAbs();" /> <!--   -->
+		&nbsp;<label for="details_size_selection_abs">{TXT_DETAILS_THUMB_SIZE_ABS}</label>
 	</td>
 	<td nowrap="nowrap" colspan="2">
-		<input type="radio" name="validate_thumb_size_selection" value="proz" {DETAILS_SIZE_SELECTION_PROZ} onclick="disableSubmitButton();enableProz();" /> <!--  -->
-		&nbsp;{TXT_DETAILS_THUMB_SIZE_PROZ}
+		<input type="radio" id="details_size_selection_proz" name="validate_thumb_size_selection" value="proz" {DETAILS_SIZE_SELECTION_PROZ} onclick="disableSubmitButton();enableProz();" /> <!--  -->
+		&nbsp;<label for="details_size_selection_proz">{TXT_DETAILS_THUMB_SIZE_PROZ}</label>
 	</td>
 </tr>
 <tr>

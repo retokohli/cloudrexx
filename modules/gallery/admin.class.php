@@ -9,6 +9,18 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+$_ARRAYLANG['TXT_TAB_GENERAL'] = "Allgemeine Einstellungen";
+$_ARRAYLANG['TXT_GALLERY_MENU_EDIT'] = "Kategorie editieren";
+$_ARRAYLANG['TXT_FRONTEND_ACCESS'] = "Frontend Zugangsberechtigungen";
+$_ARRAYLANG['TXT_PUBLIC_ACCESS'] = "Kategorie ist Ã¶ffentlich";
+$_ARRAYLANG['TXT_RESTRICTED_ACCESS'] = "Kategorie ist PasswortgeschÃ¼tzt";
+$_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'] = "Auf der Datenbankebene ist ein Fehler aufgetreten.";
+$_ARRAYLANG['TXT_BACKEND_ACCESS'] = "Backend Zugangsberechtigungen";
+$_ARRAYLANG['TXT_RESTRICTED_ACCESS_BACKEND'] = "Rechte einschrÃ¤nken";
+$_ARRAYLANG['TXT_NO_RESTRICTIONS'] = "Freigeben fÃ¼r alle Backend Gruppen";
+$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ORDER'] = "Sortierung";
+$_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_ACCESS_ERROR'] = "Sie haben keinen Zugriff auf diese Kategorie!";
+
 /**
  * Includes
  */
@@ -51,14 +63,14 @@ class galleryManager extends GalleryLibrary
     * @global     object        $objInit
     * @global    array        $_ARRAYLANG
     */
-    function galleryManager()
+    function __construct()
     {
         global $_ARRAYLANG, $objTemplate, $objInit;
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        $this->intLangId=$objInit->userFrontendintLangId;
+        $this->intLangId=$objInit->userFrontendLangId;
 
         $this->strImagePath = ASCMS_GALLERY_PATH . '/';
         $this->strImageWebPath = ASCMS_GALLERY_WEB_PATH . '/';
@@ -69,17 +81,17 @@ class galleryManager extends GalleryLibrary
 
         if (imagetypes() & IMG_GIF) {
            $this->boolGifEnabled = true;
-           }
+        }
 
-           if (imagetypes() &  IMG_JPG) {
+        if (imagetypes() &  IMG_JPG) {
            $this->boolJpgEnabled = true;
-           }
+        }
 
-           if (imagetypes() & IMG_PNG) {
+        if (imagetypes() & IMG_PNG) {
            $this->boolPngEnabled = true;
-           }
+        }
 
-           $this->getSettings();
+        $this->getSettings();
         $this->checkImages();
 
         $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery">'.$_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'].'</a>
@@ -88,6 +100,7 @@ class galleryManager extends GalleryLibrary
                                                             <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=import_picture">'.$_ARRAYLANG['TXT_GALLERY_MENU_IMPORT'].'</a>
                                                             <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=validate_form&amp;type='.$this->arrSettings['validation_standard_type'].'">'.$_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'].'</a>
                                                             <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=settings">'.$_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'].'</a>');
+        parent::__construct();
     }
 
 
@@ -102,7 +115,7 @@ class galleryManager extends GalleryLibrary
     */
     function getPage()
     {
-        global $objTemplate,$objPerm,$_ARRAYLANG,$_GET,$_POST;
+        global $objTemplate, $objPerm, $_ARRAYLANG, $_GET,$_POST;
 
         if(!isset($_GET['act'])) {
             $_GET['act']='';
@@ -179,7 +192,7 @@ class galleryManager extends GalleryLibrary
                 $this->overview();
             break;
             case 'edit_category':
-                $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
+                $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_EDIT'];
                 $this->editCategory(intval($_GET['id']));
             break;
             case 'update_category':
@@ -353,10 +366,10 @@ class galleryManager extends GalleryLibrary
                 break;
         }
         $objTemplate->setVariable(array(
-            'CONTENT_TITLE'                => $this->strPageTitle,
+            'CONTENT_TITLE'             => $this->strPageTitle,
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
             'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
-            'ADMIN_CONTENT'                => $this->_objTpl->get()
+            'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
     }
 
@@ -410,23 +423,23 @@ class galleryManager extends GalleryLibrary
         $this->_objTpl->loadTemplateFile('module_gallery_overview.html',true,true);
 
         $this->_objTpl->setVariable(array(
-            'TXT_DELETE_CATEGORY_MSG'     =>    $_ARRAYLANG['TXT_GALLERY_DELETE_CATEGORY_MESSAGE'],
-            'TXT_DELETE_CATEGORY_ALL'    =>    $_ARRAYLANG['TXT_GALLERY_DELETE_ALL_CATEGORY_MESSAGE'],
-            'TXT_NAME'                    =>    $_ARRAYLANG['TXT_GALLERY_GALLERYNAME'],
-            'TXT_DESC'                    =>    $_ARRAYLANG['TXT_GALLERY_OVERVIEW_DESCRIPTION'],
-            'TXT_IMAGECOUNT'            =>    $_ARRAYLANG['TXT_IMAGE_COUNT'],
-            'TXT_SPACE'                    =>    $_ARRAYLANG['TXT_GALLERY_SPACE'],
-            'TXT_BUTTON_SAVESORT'        =>    $_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_SORT'],
-            'TXT_IMG_EDIT_ALT'            =>    $_ARRAYLANG['TXT_EDIT'],
-            'TXT_IMG_DEL_ALT'            =>    $_ARRAYLANG['TXT_DELETE'],
-            'TXT_STATUS'                =>    $_ARRAYLANG['TXT_STATUS'],
-            'TXT_ACTION'                =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ACTION'],
-            'TXT_SELECT_ALL'            =>    $_ARRAYLANG['TXT_SELECT_ALL'],
-            'TXT_DESELECT_ALL'            =>    $_ARRAYLANG['TXT_DESELECT_ALL'],
-            'TXT_SUBMIT_SELECT'            =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_SELECT'],
-            'TXT_SUBMIT_DELETE'            =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DELETE'],
-            'TXT_SUBMIT_ACTIVATE'        =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_ACTIVATE'],
-            'TXT_SUBMIT_DEACTIVATE'        =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DEACTIVATE'],
+            'TXT_DELETE_CATEGORY_MSG'   => $_ARRAYLANG['TXT_GALLERY_DELETE_CATEGORY_MESSAGE'],
+            'TXT_DELETE_CATEGORY_ALL'   => $_ARRAYLANG['TXT_GALLERY_DELETE_ALL_CATEGORY_MESSAGE'],
+            'TXT_NAME'                  => $_ARRAYLANG['TXT_GALLERY_GALLERYNAME'],
+            'TXT_DESC'                  => $_ARRAYLANG['TXT_GALLERY_OVERVIEW_DESCRIPTION'],
+            'TXT_IMAGECOUNT'            => $_ARRAYLANG['TXT_IMAGE_COUNT'],
+            'TXT_SPACE'                 => $_ARRAYLANG['TXT_GALLERY_SPACE'],
+            'TXT_BUTTON_SAVESORT'       => $_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_SORT'],
+            'TXT_IMG_EDIT_ALT'          => $_ARRAYLANG['TXT_EDIT'],
+            'TXT_IMG_DEL_ALT'           => $_ARRAYLANG['TXT_DELETE'],
+            'TXT_STATUS'                => $_ARRAYLANG['TXT_STATUS'],
+            'TXT_ACTION'                => $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ACTION'],
+            'TXT_SELECT_ALL'            => $_ARRAYLANG['TXT_SELECT_ALL'],
+            'TXT_DESELECT_ALL'          => $_ARRAYLANG['TXT_DESELECT_ALL'],
+            'TXT_SUBMIT_SELECT'         => $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_SELECT'],
+            'TXT_SUBMIT_DELETE'         => $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DELETE'],
+            'TXT_SUBMIT_ACTIVATE'       => $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_ACTIVATE'],
+            'TXT_SUBMIT_DEACTIVATE'     => $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DEACTIVATE'],
            ));
 
            $objResult = $objDatabase->Execute('SELECT     id
@@ -470,7 +483,7 @@ class galleryManager extends GalleryLibrary
 
             foreach ($arrMaincats as $intMainKey => $strMainValue){
                 $objResult = $objDatabase->Execute('SELECT     sorting,
-                                                            status
+                                                            status, backendProtected, backend_access_id
                                                     FROM     '.DBPREFIX.'module_gallery_categories
                                                             WHERE id='.$intMainKey);
 
@@ -489,17 +502,31 @@ class galleryManager extends GalleryLibrary
 
                 $intRowColor = ($intRowCounter % 2 == 0) ? 0 : 1;
                 $strFolderIcon = ($objResult->fields['status'] == 0) ? 'led_red' : 'led_green';
+                
+                if ($objResult->fields['backendProtected']) {
+                    try {
+                        $allowed = ($this->checkAccess($objResult->fields['backend_access_id'])) ? true : false;
+                    } catch (DatabaseError $e) {
+                        $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
+                        $this->strErrMessage .= $e;
+                        return;
+                    }
+                } else {
+                    $allowed = true;
+                }
+                
 
                 $this->_objTpl->setVariable(array(
-                    'OVERVIEW_ROWCLASS'        =>    $intRowColor,
-                    'OVERVIEW_SUBCATEGORY'    =>    '',
-                    'OVERVIEW_ID'            =>    $intMainKey,
-                    'OVERVIEW_ICON'            =>    $strFolderIcon,
-                    'OVERVIEW_SORTING'        =>    $objResult->fields['sorting'],
-                    'OVERVIEW_NAME'            =>    ($arrImageCount[$intMainKey]>0) ? '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=cat_details&amp;id='.$intMainKey.'" target="_self">'.$arrCategoryLang['name'].'</a>' :  $arrCategoryLang['name'],
-                    'OVERVIEW_DESCRIPTION'    =>    $arrCategoryLang['desc'],
-                    'OVERVIEW_COUNT_IMAGES'    =>    $arrImageCount[$intMainKey],
-                    'OVERVIEW_IMAGE_SIZE'    =>    $arrImageSize[$intMainKey]
+                    'OVERVIEW_ROWCLASS'         => $intRowColor,
+                    'OVERVIEW_SUBCATEGORY'      => '',
+                    'OVERVIEW_ID'               => $intMainKey,
+                    'OVERVIEW_ICON'             => $strFolderIcon,
+                    'OVERVIEW_SORTING'          => $objResult->fields['sorting'],
+                    'OVERVIEW_NAME'             => ($arrImageCount[$intMainKey]>0) ? '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=cat_details&amp;id='.$intMainKey.'" target="_self">'.$arrCategoryLang['name'].'</a>' :  $arrCategoryLang['name'],
+                    'OVERVIEW_DESCRIPTION'      => $arrCategoryLang['desc'],
+                    'OVERVIEW_COUNT_IMAGES'     => $arrImageCount[$intMainKey],
+                    'OVERVIEW_IMAGE_SIZE'       => $arrImageSize[$intMainKey],
+                    'OVERVIEW_ACTION_DISPLAY'   => (!$allowed) ? "style=\"display: none;\"" : ""
                 ));
 
                 $this->_objTpl->parse('showCategories');
@@ -553,32 +580,68 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Shows the 'Insert new category'-Form
-    *
-    * @global    object        $objDatabase
-    * @global    array        $_ARRAYLANG
-    */
+     * Shows the 'Insert new category'-Form
+     *
+     * @global    object        $objDatabase
+     * @global    array        $_ARRAYLANG
+     */
     function newCategory()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $objPerm;
+        
         $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'];
-        $this->_objTpl->loadTemplateFile('module_gallery_new_category.html',true,true);
+        $this->_objTpl->loadTemplateFile('module_gallery_edit_category.html',true,true);
 
         $this->_objTpl->setVariable(array(
-            'TXT_TITLE'                =>    $_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'],
-            'TXT_NAME'                =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'],
-            'TXT_EXTENDED'            =>    $_ARRAYLANG['TXT_GALLERY_EXTENDED'],
-            'TXT_CATEGORYTYPE'        =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE'],
-            'TXT_CATEGORYTYPE_NEW'    =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE_NEW'],
-            'TXT_CATEGORYTYPE_SUB'    =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE_SUB'],
-            'TXT_DESCRIPTION'        =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_DESCRIPTION'],
-            'TXT_STATUS'            =>    $_ARRAYLANG['TXT_STATUS'],
-            'TXT_STATUS_ON'            =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_ON'],
-            'TXT_STATUS_OFF'        =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_OFF'],
-            'TXT_COMMENT'            =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_COMMENT'],
-            'TXT_VOTING'            =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_VOTING'],
-            'TXT_BUTTON_SUBMIT'        =>    $_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_SORT']
-
+            'TXT_TITLE'                     =>  $_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'],
+            'TXT_NAME'                      =>  $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'],
+            'TXT_EXTENDED'                  =>  $_ARRAYLANG['TXT_GALLERY_EXTENDED'],
+            'TXT_CATEGORYTYPE'              =>  $_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE'],
+            'TXT_CATEGORYTYPE_NEW'          =>  $_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE_NEW'],
+            'TXT_CATEGORYTYPE_SUB'          =>  $_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE_SUB'],
+            'TXT_DESCRIPTION'               =>  $_ARRAYLANG['TXT_GALLERY_CATEGORY_DESCRIPTION'],
+            'TXT_STATUS'                    =>  $_ARRAYLANG['TXT_STATUS'],
+            'TXT_STATUS_ON'                 =>  $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_ON'],
+            'TXT_STATUS_OFF'                =>  $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_OFF'],
+            'TXT_COMMENT'                   =>  $_ARRAYLANG['TXT_GALLERY_CATEGORY_COMMENT'],
+            'TXT_VOTING'                    =>  $_ARRAYLANG['TXT_GALLERY_CATEGORY_VOTING'],
+            'TXT_BUTTON_SUBMIT'             =>  $_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_SORT'],
+            'TXT_TAB_FRONTEND_ACCESS'       =>  $_ARRAYLANG['TXT_FRONTEND_ACCESS'],
+            'TXT_TAB_GENERAL'               =>  $_ARRAYLANG['TXT_TAB_GENERAL'],
+            'TXT_FRONTEND_ACCESS'           =>  $_ARRAYLANG['TXT_FRONTEND_ACCESS'],
+            'TXT_PUBLIC_ACCESS'             =>  $_ARRAYLANG['TXT_PUBLIC_ACCESS'],
+            'TXT_RESTRICTED_ACCESS'         =>  $_ARRAYLANG['TXT_RESTRICTED_ACCESS'],
+            'TXT_TAB_BACKEND_ACCESS'        =>  $_ARRAYLANG['TXT_BACKEND_ACCESS'],
+            'TXT_BACKEND_ACCESS'            =>  $_ARRAYLANG['TXT_BACKEND_ACCESS'],
+            'TXT_RESTRICTED_ACCESS_BACKEND' =>  $_ARRAYLANG['TXT_RESTRICTED_ACCESS_BACKEND'],
+            'TXT_NO_RESTRICTIONS'           =>  $_ARRAYLANG['TXT_NO_RESTRICTIONS']
+        ));
+        
+        // get the groups for the permission boxes
+        $arrExistingFrontendGroups = $this->sql->getAllGroups();
+        $existingFrontendGroups = "";
+        foreach ($arrExistingFrontendGroups as $id => $name) {
+            $existingFrontendGroups .= '<option value="'.$id.'">'.$name."</option>\n";
+        }
+       
+        $arrExistingBackendGroups = $this->sql->getAllGroups("backend");
+        $existingBackendGroups = "";
+        foreach ($arrExistingBackendGroups as $id => $name) {
+            $existingBackendGroups .= "<option value=\"".$id."\">".$name."</option>\n";
+        }
+        
+        $this->_objTpl->setVariable(array(
+            'VALUE_FRONTEND_EXISTING_GROUPS'    => $existingFrontendGroups,
+            'VALUE_BACKEND_EXISTING_GROUPS'     => $existingBackendGroups,
+            'FRONTEND_MAPPING_DISPLAY'          => "none",
+            'BACKEND_MAPPING_DISPLAY'           => "none",
+            'PUBLIC_ACCESS_CHECKED_FRONTEND'    => "checked=\"checked\"",
+            'PUBLIC_ACCESS_CHECKED_BACKEND'     => "checked=\"checked\"",
+            'VALUE_TYPE_MAIN'                   => 'checked=\"checked\"',
+            'VALUE_STATE_ON'                    => 'checked=\"checked\"',
+            'VALUE_COMMENT_ON'                  => 'checked=\"checked\"',
+            'VALUE_VOTING_ON'                   => 'checked=\"checked\"',
+            'FORM_ACT'                          => 'insert_category'
         ));
 
         $objResult = $objDatabase->Execute('    SELECT        id,
@@ -589,8 +652,8 @@ class galleryManager extends GalleryLibrary
         if ($objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
                 $this->_objTpl->setVariable(array(
-                    'NAMEFIELDS_LID'        =>    $objResult->fields['id'],
-                    'DESCFIELDS_LID'        =>    $objResult->fields['id'],
+                    'NAMEFIELDS_LID'         =>    $objResult->fields['id'],
+                    'DESCFIELDS_LID'         =>    $objResult->fields['id'],
                     'NAMEFIELDS_LANGUAGE'    =>    $objResult->fields['name'],
                     'DESCFIELDS_LANGUAGE'    =>    $objResult->fields['name']
                 ));
@@ -602,84 +665,126 @@ class galleryManager extends GalleryLibrary
             $this->_objTpl->hideBlock('showNameFields');
         }
 
-        $objResult = $objDatabase->Execute('SELECT         id
-                                            FROM         '.DBPREFIX.'module_gallery_categories
-                                            WHERE        pid=0
-                                            ORDER BY     sorting ASC');
-        if ($objResult->RecordCount() == 0) { // no rows
+        // parse the category dropdown
+        try {
+            $this->parseCategoryDropdown(-1, true);
+        } catch (DatabaseError $e) {
             $this->_objTpl->hideBlock('showCategories');
-        } else {
-            while (!$objResult->EOF) {
-                $objSubResult = $objDatabase->Execute('    SELECT    value
-                                                        FROM    '.DBPREFIX.'module_gallery_language
-                                                        WHERE    gallery_id='.$objResult->fields['id'].' AND
-                                                                lang_id='.intval($_SESSION['auth']['lang']).' AND
-                                                                name="name"
-                                                        LIMIT    1
-                                                    ');
-                $this->_objTpl->setVariable(array(
-                    'NEW_CATEGORY_ID'    =>    $objResult->fields['id'],
-                    'NEW_CATEGORY_NAME'    =>    $objSubResult->fields['value']
-                ));
-                $this->_objTpl->parse('showCategories');
-                $objResult->MoveNext();
-            }
+            $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
+            $this->strErrMessage .= $e;
+            return;
         }
     }
+    
+    /**
+     * Parse a category dropdown recursively. If you want nothing selected, you should
+     * pass -1 for the selected value.
+     *
+     * @param int $selected
+     * @param int $disabled
+     */
+    private function parseCategoryDropdown($selected=-1, $disabled=false, $name="showCategories", $parent_id=0, $level=0)
+    {
+        $categories = $this->sql->getCategoriesArray($_SESSION['auth']['lang'], $parent_id);
+        
+        if ($disabled) {
+            $this->_objTpl->setVariable("CAT_DROPDOWN_DISABLED", "disabled=\"disabled\"");
+        }
+        foreach ($categories as $cat) {
+            // check if we have access to this category
+            if ($cat['backendProtected']) {
+                $allowed = ($this->checkAccess($cat['backend_access_id'])) ? true : false;
+            } else {
+                $allowed = true;
+            }
+            if ($allowed) {
+                $this->_objTpl->setVariable(array(
+                    'CAT_DROPDOWN_VALUE'    => $cat['id'],
+                    'CAT_DROPDOWN_NAME'     => $cat['name'],
+                    'CAT_DROPDOWN_SELECTED' => ($cat['id'] == $selected) ? "selected=\"selected\"" : "",
+                    'CAT_DROPDOWN_INDENT'   => str_repeat("...", $level)
+                ));
+            }
+            $this->_objTpl->parse($name);
+            // parse subcategories when available
+            $this->parseCategoryDropdown($selected, $disabled, $name, $cat['id'], $level+1);
+        }
+    }
+    
 
 
     /**
-    * Inserts a new category into the database
-    *
-    * @global    object        $objDatabase
-    * @global    array        $_ARRAYLANG
-    */
+     * Inserts a new category into the database
+     *
+     * @global    object        $objDatabase
+     * @global    array        $_ARRAYLANG
+     */
     function insertCategory()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
+        
+        $pid = ($_POST['category_type'] == "main") ? 0 : intval($_POST['select_category_id']);
+        if ($pid > 0) {
+            if (!$this->checkCategoryAccess($pid)) {
+                return;
+            }
+        }
+       
+        $status = $_POST['category_status'];
+        $comment = $_POST['category_comment'];
+        $voting = $_POST['category_voting'];
+        $frontendProtected = $_POST['category_protected_frontend'];
+        $backendProtected = $_POST['category_protected_backend'];
+        $frontend_access_id = ++$_CONFIG['lastAccessId'];
+        $backend_access_id = ++$_CONFIG['lastAccessId'];
 
-        if ($_POST['category_type'] == 'new'){
-            $intPidToInsert = 0;
-        } else{
-            $intPidToInsert = intval($_POST['select_category_id']);
+        try {
+            $galId = $this->sql->insertNewCategory($pid, $status, $comment, $voting, $frontendProtected, $backendProtected, $frontend_access_id, $backend_access_id);
+            // set new privileges if wanted
+            if ($_POST['category_protected_frontend'] && isset($_POST['assignedFrontendGroups'])) {
+                foreach ($_POST['assignedFrontendGroups'] as $group) {
+                    $this->sql->insertAccessId($frontend_access_id, $group);
+                }
+            }
+            
+            if ($_POST['category_protected_backend'] && isset($_POST['assignedBackendGroups'])) {
+                foreach ($_POST['assignedBackendGroups'] as $group) {
+                    $this->sql->insertAccessId($backend_access_id, $group);
+                }
+            }
+            
+            $this->updateAccessId($_CONFIG['lastAccessId']);
+        } catch (DatabaseError $e) {
+            $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
+            $this->strErrMessage .= $e;
+            return;
         }
 
-        $objDatabase->Execute('    INSERT
-                                INTO     '.DBPREFIX.'module_gallery_categories
-                                SET     pid='.$intPidToInsert.',
-                                        status="'.intval($_POST['category_status']).'",
-                                        comment="'.intval($_POST['category_comment']).'",
-                                        voting="'.intval($_POST['category_voting']).'"');
-        $intGalId = $objDatabase->insert_id();
-
-        foreach ($_POST as $strKey => $strValue)
-        {
-            if (substr($strKey,0,strlen('category_name_')) == 'category_name_'    ||
-                substr($strKey,0,strlen('category_desc_')) == 'category_desc_')
-            {
+        foreach ($_POST as $strKey => $strValue) {
+            if (preg_match("/^(category_name_|category_desc_)/", $strKey)) {
                 $arrExplode = explode('_',$strKey);
                 $arrValues[$arrExplode[2]][$arrExplode[1]] = htmlspecialchars(strip_tags($strValue), ENT_QUOTES, CONTREXX_CHARSET);
             }
         }
 
-        foreach ($arrValues as $intLangId => $arrInner)
-        {
+        // this stays until more about the database layout is known
+        foreach ($arrValues as $intLangId => $arrInner) {
             if (empty($arrInner['name'])) {
                 $arrInner['name'] = $_ARRAYLANG['TXT_GALLERY_CATEGORY_NO_NAME'];
             }
 
             $objDatabase->Execute('    INSERT
                                     INTO    '.DBPREFIX.'module_gallery_language
-                                    SET        gallery_id='.$intGalId.',
+                                    SET        gallery_id='.$galId.',
                                             lang_id='.$intLangId.',
                                             name="name",
                                             value="'.$arrInner['name'].'"
                                 ');
             $objDatabase->Execute('    INSERT
                                     INTO    '.DBPREFIX.'module_gallery_language
-                                    SET        gallery_id='.$intGalId.',
+                                    SET        gallery_id='.$galId.',
                                             lang_id='.$intLangId.',
                                             name="desc",
                                             value="'.$arrInner['desc'].'"
@@ -769,16 +874,25 @@ class galleryManager extends GalleryLibrary
     /**
     * Delete a Category
     *
-    * @global    object        $objDatabase
-    * @global    array        $_ARRAYLANG
-    * @global    array        $_CONFIG
-    * @param    integer        $intCategoryId
+    * @global    object $objDatabase
+    * @global    array  $_ARRAYLANG
+    * @global    array  $_CONFIG
+    * @param    integer $intCategoryId
     */
     function deleteCategory($intCategoryId)
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $intCategoryId = intval($intCategoryId);
+        try {
+            if (!$this->checkCategoryAccess($intCategoryId)) {
+                return;
+            }
+        } catch (DatabaseError $e) {
+            $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
+            $this->strErrMessage .= $e;
+            return;
+        }
 
         $objResult = $objDatabase->Execute('SELECT     id
                                             FROM     '.DBPREFIX.'module_gallery_categories
@@ -837,21 +951,42 @@ class galleryManager extends GalleryLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
+        // check access
+        try {
+            if (!$this->checkCategoryAccess($intCategoryId)) {
+                $this->overview();
+                return;
+            }
+        } catch (DatabaseError $e) {
+            $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
+            $this->strErrMessage .= $e;
+            return;
+        }
         $this->_objTpl->loadTemplateFile('module_gallery_edit_category.html',true,true);
         $this->_objTpl->setVariable(array(
-            'TXT_TITLE'                =>    $_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'],
-            'TXT_NAME'                =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'],
-            'TXT_EXTENDED'            =>    $_ARRAYLANG['TXT_GALLERY_EXTENDED'],
-            'TXT_CATEGORYTYPE'        =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE'],
-            'TXT_CATEGORYTYPE_NEW'    =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE_NEW'],
-            'TXT_CATEGORYTYPE_SUB'    =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE_SUB'],
-            'TXT_DESCRIPTION'        =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_DESCRIPTION'],
-            'TXT_STATUS'            =>    $_ARRAYLANG['TXT_STATUS'],
-            'TXT_STATUS_ON'            =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_ON'],
-            'TXT_STATUS_OFF'        =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_OFF'],
-            'TXT_COMMENT'            =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_COMMENT'],
-            'TXT_VOTING'            =>    $_ARRAYLANG['TXT_GALLERY_CATEGORY_VOTING'],
-            'TXT_BUTTON_SUBMIT'        =>    $_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_CATEGORY']
+            'TXT_TITLE'                     => $_ARRAYLANG['TXT_GALLERY_MENU_EDIT_CATEGORY'],
+            'TXT_NAME'                      => $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'],
+            'TXT_EXTENDED'                  => $_ARRAYLANG['TXT_GALLERY_EXTENDED'],
+            'TXT_CATEGORYTYPE'              => $_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE'],
+            'TXT_CATEGORYTYPE_NEW'          => $_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE_NEW'],
+            'TXT_CATEGORYTYPE_SUB'          => $_ARRAYLANG['TXT_GALLERY_CATEGORY_TYPE_SUB'],
+            'TXT_DESCRIPTION'               => $_ARRAYLANG['TXT_GALLERY_CATEGORY_DESCRIPTION'],
+            'TXT_STATUS'                    => $_ARRAYLANG['TXT_STATUS'],
+            'TXT_STATUS_ON'                 => $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_ON'],
+            'TXT_STATUS_OFF'                => $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_OFF'],
+            'TXT_COMMENT'                   => $_ARRAYLANG['TXT_GALLERY_CATEGORY_COMMENT'],
+            'TXT_VOTING'                    => $_ARRAYLANG['TXT_GALLERY_CATEGORY_VOTING'],
+            'TXT_BUTTON_SUBMIT'             => $_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_CATEGORY'],
+            'TXT_TAB_FRONTEND_ACCESS'       => $_ARRAYLANG['TXT_FRONTEND_ACCESS'],
+            'TXT_TAB_GENERAL'               => $_ARRAYLANG['TXT_TAB_GENERAL'],
+            'TXT_FRONTEND_ACCESS'           => $_ARRAYLANG['TXT_FRONTEND_ACCESS'],
+            'TXT_PUBLIC_ACCESS'             => $_ARRAYLANG['TXT_PUBLIC_ACCESS'],
+            'TXT_RESTRICTED_ACCESS'         => $_ARRAYLANG['TXT_RESTRICTED_ACCESS'],
+            'FORM_ACT'                      => 'update_category',
+            'TXT_TAB_BACKEND_ACCESS'        => $_ARRAYLANG['TXT_BACKEND_ACCESS'],
+            'TXT_BACKEND_ACCESS'            => $_ARRAYLANG['TXT_BACKEND_ACCESS'],
+            'TXT_RESTRICTED_ACCESS_BACKEND' => $_ARRAYLANG['TXT_RESTRICTED_ACCESS_BACKEND'],
+            'TXT_NO_RESTRICTIONS'           => $_ARRAYLANG['TXT_NO_RESTRICTIONS']
         ));
 
         $objResult = $objDatabase->Execute('    SELECT        id,
@@ -896,20 +1031,40 @@ class galleryManager extends GalleryLibrary
         } else {
             $this->_objTpl->hideBlock('showNameFields');
         }
+        
+        try {
+            list($existingFrontendGroups, $assignedFrontendGroups) = $this->getGroupLists($intCategoryId, 'frontend');
+            list($existingBackendGroups, $assignedBackendGroups) = $this->getGroupLists($intCategoryId, 'backend');
+        } catch (DatabaseError $e) {
+            echo $e;
+        }
 
         $objResult = $objDatabase->Execute('SELECT     pid,
                                                     status,
                                                     comment,
-                                                    voting
+                                                    voting,
+                                                    frontendProtected,
+                                                    backendProtected
                                             FROM     '.DBPREFIX.'module_gallery_categories
                                             WHERE     id='.$intCategoryId);
 
         $this->_objTpl->setVariable(array(
-            'VALUE_ID'        =>    $intCategoryId,
-            'VALUE_NAME'    =>    $strNameDefault,
-            'VALUE_DESC'    =>    $strDescDefault
+            'VALUE_ID'                              => $intCategoryId,
+            'VALUE_NAME'                            => $strNameDefault,
+            'VALUE_DESC'                            => $strDescDefault,
+            'VALUE_FRONTEND_EXISTING_GROUPS'        => $existingFrontendGroups,
+            'VALUE_FRONTEND_ASSIGNED_GROUPS'        => $assignedFrontendGroups,
+            'VALUE_BACKEND_EXISTING_GROUPS'         => $existingBackendGroups,
+            'VALUE_BACKEND_ASSIGNED_GROUPS'         => $assignedBackendGroups,
+            'FRONTEND_MAPPING_DISPLAY'              => ($objResult->fields['frontendProtected']) ? "block" : "none",
+            'BACKEND_MAPPING_DISPLAY'               => ($objResult->fields['backendProtected']) ? "block" : "none",
+            'PUBLIC_ACCESS_CHECKED_FRONTEND'        => ($objResult->fields['frontendProtected']) ? "" : "checked=\"checked\"",
+            'PUBLIC_ACCESS_CHECKED_BACKEND'         => ($objResult->fields['backendProtected']) ? "" : "checked=\"checked\"",
+            'RESTRICTED_ACCESS_CHECKED_FRONTEND'    => ($objResult->fields['frontendProtected']) ? "checked=\"checked\"" : "",
+            'RESTRICTED_ACCESS_CHECKED_BACKEND'     => ($objResult->fields['backendProtected']) ? "checked=\"checked\"" : ""
         ));
 
+        $pid = $objResult->fields['pid'];
         if ($objResult->fields['pid'] == 0){
               $this->_objTpl->setVariable(array(
                 'VALUE_TYPE_MAIN'            =>    'checked',
@@ -990,8 +1145,15 @@ class galleryManager extends GalleryLibrary
                 $objResult->MoveNext();
             }
         }
+        
+        try {
+            $this->parseCategoryDropdown($intCategoryPid, ($pid == 0) ? true : false);
+        } catch (DatabaseError $e) {
+            $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
+            $this->strErrMessage .= $e;
+            return;
+        }
     }
-
 
     /**
     * Updates an category in the database
@@ -1000,65 +1162,90 @@ class galleryManager extends GalleryLibrary
     * @global    object        $objDatabase
     * @param    integer        $intCategoryId
     */
-    function updateCategory($intCategoryId)
+    function updateCategory($categoryId)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-        $intCategoryId = intval($intCategoryId);
-
-        if ($_POST['category_type'] == 'main') {
-            $intInsertPid = 0;
-        } else {
-            $intInsertPid = intval($_POST['select_category_id']);
-        }
-
-        $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_categories
-                                SET     pid='.$intInsertPid.',
-                                        status="'.intval($_POST['category_status']).'",
-                                        comment="'.intval($_POST['category_comment']).'",
-                                        voting="'.intval($_POST['category_voting']).'"
-                                WHERE     id='.$intCategoryId);
-
-        if ($intInsertPid != 0) {
-            $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_categories
-                                    SET        pid=0,
-                                            sorting=99,
-                                            status="0",
-                                            comment="0",
-                                            voting="0"
-                                    WHERE     pid='.$intCategoryId);
-        }
-
-        foreach ($_POST as $strKey => $strValue)
-        {
-            if (substr($strKey,0,strlen('category_name_')) == 'category_name_'    ||
-                substr($strKey,0,strlen('category_desc_')) == 'category_desc_')
-            {
+        $categoryId = intval($categoryId);
+        
+        foreach ($_POST as $strKey => $strValue) {
+            if (preg_match("/^(category\_name\_|category\_desc\_)/", $strKey)) {
                 $arrExplode = explode('_',$strKey);
                 $arrValues[$arrExplode[2]][$arrExplode[1]] = htmlspecialchars(strip_tags($strValue), ENT_QUOTES, CONTREXX_CHARSET);
             }
         }
+        
+        $insertStatus = $_POST['category_status'];
+        $insertComment = $_POST['category_comment'];
+        $insertVoting = $_POST['category_voting'];
+        $insertVoting = $_POST['category_voting'];
+        $insertFrontendProtected = $_POST['category_protected_frontend'];
+        $insertBackendProtected = $_POST['category_protected_backend'];
+        
+        try {
+            // check access
+            $insertPid = ($_POST['category_type'] == 'main') ? 0 : intval($_POST['select_category_id']); 
+            if ($insertPid > 0) {
+                if (!$this->checkCategoryAccess($insertPid)) {
+                    return;
+                }
+            }
+            
+            // Update the category
+            $this->sql->updateCategory($categoryId, $insertPid, $insertStatus, $insertComment, $insertVoting, $insertFrontendProtected, $insertBackendProtected);
+            
+            // delete old privileges
+            list($frontend_access_id) = $this->sql->getPrivileges($categoryId, "frontend");
+            list($backend_access_id) = $this->sql->getPrivileges($categoryId, "backend");
+            $this->sql->deleteAccessIds($frontend_access_id);
+            $this->sql->deleteAccessIds($backend_access_id);
+            
+            // set new privileges if wanted
+            if ($_POST['category_protected_frontend'] && isset($_POST['assignedFrontendGroups'])) {
+                foreach ($_POST['assignedFrontendGroups'] as $group) {
+                    $this->sql->insertAccessId($frontend_access_id, $group);
+                }
+            }
+            if ($_POST['category_protected_backend'] && isset($_POST['assignedBackendGroups'])) {
+                foreach ($_POST['assignedBackendGroups'] as $group) {
+                    $this->sql->insertAccessId($backend_access_id, $group);
+                }
+            }
+            
+            /*foreach ($arrValues as $langId => $values) {
+                if (empty($arrInner['name'])) {
+                    // set standard category name if none is given
+                    $arrInner['name'] = $_ARRAYLANG['TXT_GALLERY_CATEGORY_NO_NAME'];
+                }
+            }*/
+            
+        } catch (DatabaseError $e) {
+            $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
+            $this->strErrMessage .= $e;
+            return;
+        }
 
+        // this stays until further information about the database layout is known
         foreach ($arrValues as $intLangId => $arrInner)
         {
             if (empty($arrInner['name'])) {
                 $arrInner['name'] = $_ARRAYLANG['TXT_GALLERY_CATEGORY_NO_NAME'];
             }
 
-            $objDatabase->Execute('    UPDATE    '.DBPREFIX.'module_gallery_language
-                                    SET        value="'.$arrInner['name'].'"
-                                    WHERE    gallery_id='.intval($intCategoryId).' AND
-                                            lang_id='.$intLangId.' AND
-                                            name="name"
-                                    LIMIT    1
+            $objDatabase->Execute(' UPDATE    '.DBPREFIX.'module_gallery_language
+                                    SET       value="'.$arrInner['name'].'"
+                                    WHERE     gallery_id='.intval($categoryId).' AND
+                                              lang_id='.$intLangId.' AND
+                                              name="name"
+                                    LIMIT     1
                                 ');
 
-            $objDatabase->Execute('    UPDATE    '.DBPREFIX.'module_gallery_language
-                                    SET        value="'.$arrInner['desc'].'"
-                                    WHERE    gallery_id='.intval($intCategoryId).' AND
-                                            lang_id='.$intLangId.' AND
-                                            name="desc"
-                                    LIMIT    1
+            $objDatabase->Execute(' UPDATE    '.DBPREFIX.'module_gallery_language
+                                    SET       value="'.$arrInner['desc'].'"
+                                    WHERE     gallery_id='.intval($categoryId).' AND
+                                              lang_id='.$intLangId.' AND
+                                              name="desc"
+                                    LIMIT     1
                                 ');
         }
         $this->strOkMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_CATEGORY_UPDATED'];
@@ -1076,36 +1263,46 @@ class galleryManager extends GalleryLibrary
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-        $this->_objTpl->loadTemplateFile('module_gallery_category_details.html', true, true);
+        try {
+            if (!$this->checkCategoryAccess($intCatId)) {
+                $this->overview();
+                return;
+            }
+        } catch (DatabaseError $e) {
+            $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
+            $this->strErrMessage .= $e;
+            return;
+        }
+
+        $this->_objTpl->loadTemplateFile('module_gallery_category_details.html', true, true);       
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_TITLE_NAME'            =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_NAME'],
-            'TXT_TITLE_ORDER'              =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ORDER'],
-            'TXT_TITLE_ACTION'            =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ACTION'],
-            'TXT_TITLE_ATTR'             =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ATTR'],
-            'TXT_TITLE_OTHER'             =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_OTHER'],
-            'TXT_TITLE_CATEGORY'        =>    $_ARRAYLANG['TXT_CATEGORY'],
-            'TXT_ACTIVATE_PICTURE'        =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_DE_ACTIVATE'],
-            'TXT_SET_CATIMG'            =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SET_CATIMG'],
-            'TXT_RESET_PICTURE'            =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_RESET_PICTURE_MSG'],
-            'TXT_DELETE_PICTURE'        =>    $_ARRAYLANG['TXT_GALLERY_DELETE_IMAGE_MSG'],
-            'TXT_DELETE_PICTURE_ALL'    =>    $_ARRAYLANG['TXT_GALLERY_DELETE_IMAGE_ALL_MSG'],
-            'TXT_IMG_ROTATE_ALT'        =>    $_ARRAYLANG['TXT_GALLERY_ROTATE'],
-            'TXT_IMG_RESET_ALT'            =>    $_ARRAYLANG['TXT_RESET'],
-            'TXT_IMG_EDIT_ALT'            =>    $_ARRAYLANG['TXT_EDIT'],
-            'TXT_IMG_DELETE_ALT'        =>    $_ARRAYLANG['TXT_DELETE'],
-            'TXT_BUTTON_SAVESORT'         =>    $_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_SORT'],
-            'TXT_ORIG_CAPT'                =>  $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ORIG_CAPT'],
-            'TXT_THUMB_CAPT'            =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_THUMB_CAPT'],
-            'TXT_THUMB_QUALITY_CAPT'    =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_THUMB_QUALITY_CAPT'],
-            'TXT_TITLE_STATUS'            =>    $_ARRAYLANG['TXT_GALLERY_STATUS'],
-            'TXT_SELECT_ALL'            =>    $_ARRAYLANG['TXT_SELECT_ALL'],
-            'TXT_DESELECT_ALL'            =>    $_ARRAYLANG['TXT_DESELECT_ALL'],
-            'TXT_SUBMIT_SELECT'            =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_SELECT'],
-            'TXT_SUBMIT_DELETE'            =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DELETE'],
-            'TXT_SUBMIT_ACTIVATE'        =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_ACTIVATE'],
-            'TXT_SUBMIT_DEACTIVATE'        =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DEACTIVATE'],
-            'TXT_SUBMIT_RESET'            =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_RESET'],
-            'TXT_SUBMIT_MOVE'            =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_MOVE'],
+            'TXT_TITLE_NAME'                =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_NAME'],
+            'TXT_TITLE_ORDER'               =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ORDER'],
+            'TXT_TITLE_ACTION'              =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ACTION'],
+            'TXT_TITLE_ATTR'                =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ATTR'],
+            'TXT_TITLE_OTHER'               =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_OTHER'],
+            'TXT_TITLE_CATEGORY'            =>    $_ARRAYLANG['TXT_CATEGORY'],
+            'TXT_ACTIVATE_PICTURE'          =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_DE_ACTIVATE'],
+            'TXT_SET_CATIMG'                =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SET_CATIMG'],
+            'TXT_RESET_PICTURE'             =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_RESET_PICTURE_MSG'],
+            'TXT_DELETE_PICTURE'            =>    $_ARRAYLANG['TXT_GALLERY_DELETE_IMAGE_MSG'],
+            'TXT_DELETE_PICTURE_ALL'        =>    $_ARRAYLANG['TXT_GALLERY_DELETE_IMAGE_ALL_MSG'],
+            'TXT_IMG_ROTATE_ALT'            =>    $_ARRAYLANG['TXT_GALLERY_ROTATE'],
+            'TXT_IMG_RESET_ALT'             =>    $_ARRAYLANG['TXT_RESET'],
+            'TXT_IMG_EDIT_ALT'              =>    $_ARRAYLANG['TXT_EDIT'],
+            'TXT_IMG_DELETE_ALT'            =>    $_ARRAYLANG['TXT_DELETE'],
+            'TXT_BUTTON_SAVESORT'           =>    $_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_SORT'],
+            'TXT_ORIG_CAPT'                 =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ORIG_CAPT'],
+            'TXT_THUMB_CAPT'                =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_THUMB_CAPT'],
+            'TXT_THUMB_QUALITY_CAPT'        =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_THUMB_QUALITY_CAPT'],
+            'TXT_SELECT_ALL'                =>    $_ARRAYLANG['TXT_SELECT_ALL'],
+            'TXT_DESELECT_ALL'              =>    $_ARRAYLANG['TXT_DESELECT_ALL'],
+            'TXT_SUBMIT_SELECT'             =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_SELECT'],
+            'TXT_SUBMIT_DELETE'             =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DELETE'],
+            'TXT_SUBMIT_ACTIVATE'           =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_ACTIVATE'],
+            'TXT_SUBMIT_DEACTIVATE'         =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DEACTIVATE'],
+            'TXT_SUBMIT_RESET'              =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_RESET'],
+            'TXT_SUBMIT_MOVE'               =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_MOVE'],
         ));
 
         $objResult = $objDatabase->Execute('SELECT     value
@@ -1200,17 +1397,17 @@ class galleryManager extends GalleryLibrary
                 $intOutputId = $objResult->fields['id'];
                 $strOutputSorting = $objResult->fields['sorting'];
 
-                $arrOrigFileInfo     = getimagesize($this->strImagePath.$objResult->fields['path']);
-                $arrThumbFileInfo     = getimagesize($this->strThumbnailPath.$objResult->fields['path']);
+                $arrOrigFileInfo        = getimagesize($this->strImagePath.$objResult->fields['path']);
+                $arrThumbFileInfo       = getimagesize($this->strThumbnailPath.$objResult->fields['path']);
 
                 $strOutputThumbpath     = $this->strThumbnailWebPath.$objResult->fields['path'];
-                $strOutputOrigpath         = $this->strImageWebPath.$objResult->fields['path'];
-                $strOutputName             = $objSubResult->fields['name'];
-                $strOutputLastedit         = date('d.m.Y',$objResult->fields['lastedit']);
-                $strOutputOrigReso         = $arrOrigFileInfo[0].'x'.$arrOrigFileInfo[1];
+                $strOutputOrigpath      = $this->strImageWebPath.$objResult->fields['path'];
+                $strOutputName          = $objSubResult->fields['name'];
+                $strOutputLastedit      = date('d.m.Y',$objResult->fields['lastedit']);
+                $strOutputOrigReso      = $arrOrigFileInfo[0].'x'.$arrOrigFileInfo[1];
                 $strOutputOrigWidth     = $arrOrigFileInfo[0]+20;
-                $strOutputOrigHeight     = $arrOrigFileInfo[1]+25;
-                $strOutputOrigSize         = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
+                $strOutputOrigHeight    = $arrOrigFileInfo[1]+25;
+                $strOutputOrigSize      = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
                 $strOutputThumbReso     = $arrThumbFileInfo[0].'x'.$arrThumbFileInfo[1];
                 $strOutputThumbSize     = round(filesize($this->strThumbnailPath.$objResult->fields['path'])/1024,2);
 
@@ -1228,6 +1425,9 @@ class galleryManager extends GalleryLibrary
                                                             WHERE    picid='.$objResult->fields['id'].'
                                                         ');
                     $strOutputCommentCount = $objSubResult->RecordCount().' '.$_ARRAYLANG['TXT_GALLERY_COMMENTS'].'<br />';
+                } else {
+                    // show nothing
+                    $strOutputCommentCount = "";
                 }
 
                 if ($this->arrSettings['show_voting'] == 'on' && $boolVoting) {
@@ -1246,81 +1446,47 @@ class galleryManager extends GalleryLibrary
                     } else {
                         $outputVotingAverage = ', &Oslash; 0.0';
                     }
+                } else{
+                    // show nothing
+                    $strOutputVotingCount = "";
+                    $outputVotingAverage = "";
+                }
+                
+                // parse the dropdown for the categories
+                try {
+                    $this->parseCategoryDropdown($intCatId, false);
+                } catch (DatabaseError $e) {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
+                    $this->strErrMessage .= $e;
+                    return;
                 }
 
-                $strOutputSelect         =    '<select name="newCategory'.$objResult->fields['id'].'" onchange="window.location= this.options[this.selectedIndex].value">';
-                $strOutputSelect         .=    '<option value="0">---------------------------</option>';
-                $strMultiActionSelect     =    '';
-                $strMultiActionSelect     .=    '<option value="0">---------------------------</option>';
-                //here starts the category-menu
-                $objResult = $objDatabase->Execute('SELECT         id
-                                                    FROM         '.DBPREFIX.'module_gallery_categories
-                                                    WHERE         pid=0 AND
-                                                                status="1"
-                                                    ORDER BY     sorting');
-                while (!$objResult->EOF) {
-                    $objSubResult = $objDatabase->Execute('    SELECT    value
-                                                            FROM    '.DBPREFIX.'module_gallery_language
-                                                            WHERE    gallery_id='.$objResult->fields['id'].' AND
-                                                                    lang_id='.intval($_SESSION['auth']['lang']).' AND
-                                                                    name="name"
-                                                            LIMIT    1
-                                                        ');
-                    $arrMainCategories[$objResult->fields['id']] = $objSubResult->fields['value'];
-                    $objResult->MoveNext();
-                }
-                foreach ($arrMainCategories as $intMainCatKey => $strMainCatValue) {
-                    $strOutputSelect         .= '<option value="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=change_category_picture&amp;id='.$intOutputId.'&amp;catid='.$intMainCatKey.'">'.$strMainCatValue.'</option>';
-                    $strMultiActionSelect     .= '<option value="'.$intMainCatKey.'">'.$strMainCatValue.'</option>';
-                    $objResult = $objDatabase->Execute('SELECT         id
-                                                        FROM         '.DBPREFIX.'module_gallery_categories
-                                                        WHERE         pid='.$intMainCatKey.' AND status="1"
-                                                        ORDER BY sorting');
-                    if ($objResult->RecordCount() > 0) {
-                        while (!$objResult->EOF) {
-                            $objSubResult = $objDatabase->Execute('    SELECT    value
-                                                                    FROM    '.DBPREFIX.'module_gallery_language
-                                                                    WHERE    gallery_id='.$objResult->fields['id'].' AND
-                                                                            lang_id='.intval($_SESSION['auth']['lang']).' AND
-                                                                            name="name"
-                                                                    LIMIT    1
-                                                                ');
-                            $strOutputSelect         .= '<option value="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=change_category_picture&amp;id='.$intOutputId.'&amp;catid='.$objResult->fields['id'].'">&nbsp;&nbsp;&nbsp;'.$objSubResult->fields['value'].'</option>';
-                            $strMultiActionSelect     .= '<option value="'.$objResult->fields['id'].'">&nbsp;&nbsp;&nbsp;'.$objSubResult->fields['value'].'</option>';
-                            $objResult->MoveNext();
-                        }
-                    }
-                }
-                // here ends the category-menu
-                $strOutputSelect .= '</select>';
-
-                 $this->_objTpl->setVariable(array(
-                    'IMAGES_ID'                    =>    $intOutputId,
-                    'IMAGES_THUMB_PATH'            =>    $strOutputThumbpath,
-                    'IMAGE_ORIG_PATH'            =>    $strOutputOrigpath,
-                    'IMAGES_ACTIVE_ICON'        =>    $outputActiveIcon,
-                    'IMAGES_CATIMG_ICON'        =>    $outputCatimgIcon,
-                    'IMAGES_HIDE_LINKICON_S'    =>    $outputLinkIconS,
-                    'IMAGES_HIDE_LINKICON_E'    =>    $outputLinkIconE,
-                    'IMAGES_NAME'                =>    $strOutputName,
-                    'IMAGES_LASTEDIT'            =>    $strOutputLastedit,
-                    'IMAGES_ORIG_RESO'            =>    $strOutputOrigReso,
-                    'IMAGES_ORIG_WIDTH'            =>    $strOutputOrigWidth,
-                    'IMAGES_ORIG_HEIGHT'        =>    $strOutputOrigHeight,
-                    'IMAGES_ORIG_SIZE'            =>    $strOutputOrigSize,
-                    'IMAGES_THUMB_RESO'            =>    $strOutputThumbReso,
-                    'IMAGES_THUMB_SIZE'            =>    $strOutputThumbSize,
-                    'IMAGES_TYPE_METHOD'        =>    $strOutputTypeMethod,
-                    'IMAGES_TYPE_SIZE'            =>    $strOutputTypeSize,
-                    'IMAGES_CATEGORY_SELECT'    =>    $strOutputSelect,
-                    'IMAGES_SORTING'            =>    $strOutputSorting,
-                    'IMAGES_COMMENT_COUNT'        =>    $strOutputCommentCount,
-                    'IMAGES_VOTING_COUNT'        =>    $strOutputVotingCount,
-                    'IMAGES_VOTING_AVERAGE'        =>    $outputVotingAverage
+                $this->_objTpl->setVariable(array(
+                    'IMAGES_ID'                     =>    $intOutputId,
+                    'IMAGES_THUMB_PATH'             =>    $strOutputThumbpath,
+                    'IMAGE_ORIG_PATH'               =>    $strOutputOrigpath,
+                    'IMAGES_ACTIVE_ICON'            =>    $outputActiveIcon,
+                    'IMAGES_CATIMG_ICON'            =>    $outputCatimgIcon,
+                    'IMAGES_HIDE_LINKICON_S'        =>    $outputLinkIconS,
+                    'IMAGES_HIDE_LINKICON_E'        =>    $outputLinkIconE,
+                    'IMAGES_NAME'                   =>    $strOutputName,
+                    'IMAGES_LASTEDIT'               =>    $strOutputLastedit,
+                    'IMAGES_ORIG_RESO'              =>    $strOutputOrigReso,
+                    'IMAGES_ORIG_WIDTH'             =>    $strOutputOrigWidth,
+                    'IMAGES_ORIG_HEIGHT'            =>    $strOutputOrigHeight,
+                    'IMAGES_ORIG_SIZE'              =>    $strOutputOrigSize,
+                    'IMAGES_THUMB_RESO'             =>    $strOutputThumbReso,
+                    'IMAGES_THUMB_SIZE'             =>    $strOutputThumbSize,
+                    'IMAGES_TYPE_METHOD'            =>    $strOutputTypeMethod,
+                    'IMAGES_TYPE_SIZE'              =>    $strOutputTypeSize,
+                    'IMAGES_SORTING'                =>    $strOutputSorting,
+                    'IMAGES_COMMENT_COUNT'          =>    $strOutputCommentCount,
+                    'IMAGES_VOTING_COUNT'           =>    $strOutputVotingCount,
+                    'IMAGES_VOTING_AVERAGE'         =>    $outputVotingAverage
                 ));
                 $this->_objTpl->parseCurrentBlock();
             }
-            $this->_objTpl->setVariable('IMAGES_MULTIACTION_MOVE_SELECT',$strMultiActionSelect);
+//            $this->_objTpl->setVariable('IMAGES_MULTIACTION_MOVE_SELECT',$strMultiActionSelect);
         }
     }
 
@@ -1404,17 +1570,31 @@ class galleryManager extends GalleryLibrary
     * @param    integer        $intImageId
     * @param    integer        $intNewCatId
     */
-    function changeCategoryOfPicture($intImageId,$intNewCatId)
+    function changeCategoryOfPicture($intImageId, $intNewCatId)
     {
         global $objDatabase,$_ARRAYLANG;
+        
+        // check if the user is allowed to move a picture to this category
+        try { 
+            $id = $this->sql->getPictureCategory($intImageId);
+            if (!$this->checkCategoryAccess($intNewCatId)) {                   
+                $_GET['catid'] = $id;
+                return;
+            }
+        } catch (DatabaseError $e) {
+            echo "error";
+            $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
+            $this->strErrMessage .= $e;
+            return;
+        }
 
         $intImageId = intval($intImageId);
         $intNewCatId = intval($intNewCatId);
 
-        $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_pictures
+        $objDatabase->Execute(' UPDATE  '.DBPREFIX.'module_gallery_pictures
                                 SET     catid='.$intNewCatId.',
                                         lastedit='.time().'
-                                WHERE     id='.$intImageId);
+                                WHERE   id='.$intImageId);
         $this->strOkMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_PICTURE_CATEGORY_CHANGED'];
     }
 
@@ -2100,29 +2280,28 @@ class galleryManager extends GalleryLibrary
     /**
     * Shows the validation-page
     *
-    * @global    object        $objDatabase
+    * @global    object       $objDatabase
     * @global    array        $_ARRAYLANG
     * @global    array        $_CONFIG
     * @global    array        $_GET
     */
     function showValidateForm()
     {
-        global $_ARRAYLANG,$objDatabase,$_CONFIG,$_GET;
+        global $_ARRAYLANG, $objDatabase, $_CONFIG, $_GET;
 
         $this->_objTpl->loadTemplateFile('module_gallery_validate_main.html',true,true);
          $this->_objTpl->setVariable(array(
             'TXT_TITLE'                        => $_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'],
-            'TXT_NOTVALIDATED'                => $_ARRAYLANG['TXT_GALLERY_VALIDATE_NOT_VALIDATED'],
-            'TXT_VALIDATE_METHOD_SINGLE'     => $_ARRAYLANG['TXT_GALLERY_VALIDATE_METHOD_SINGLE'],
-            'TXT_VALIDATE_METHOD_ALL'         => $_ARRAYLANG['TXT_GALLERY_VALIDATE_METHOD_ALL'],
+            'TXT_NOTVALIDATED'                 => $_ARRAYLANG['TXT_GALLERY_VALIDATE_NOT_VALIDATED'],
+            'TXT_VALIDATE_METHOD_SINGLE'       => $_ARRAYLANG['TXT_GALLERY_VALIDATE_METHOD_SINGLE'],
+            'TXT_VALIDATE_METHOD_ALL'          => $_ARRAYLANG['TXT_GALLERY_VALIDATE_METHOD_ALL'],
         ));
 
         if (!isset($_GET['type'])) {
             $_GET['type'] = $this->arrSettings['validation_standard_type'];
         }
 
-        switch ($_GET['type'])
-        {
+        switch ($_GET['type']) {
             case 'all':
                 $this->_objTpl->setVariable(array(
                     'VALIDATE_METHOD_SINGLE_SELECTED'    => '',
@@ -2144,29 +2323,29 @@ class galleryManager extends GalleryLibrary
         if ($objResult->RecordCount() > 0) {
             // only a single picture
             if ($_GET['type'] == 'single') {
-                 $this->_objTpl->loadTemplateFile('module_gallery_validate_details_single.html',true,true);
+                $this->_objTpl->loadTemplateFile('module_gallery_validate_details_single.html',true,true);
                 $this->_objTpl->setVariable(array(
-                    'TXT_DETAILS_TITLE'                    =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_PICTURE_DETAILS'],
-                    'TXT_DETAILS_NAME'                    =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_NAME'],
-                    'TXT_DETAILS_UPLOADDATE'            =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_UPLOAD_DATE'],
-                    'TXT_DETAILS_CATEGORY'                =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_CATEGORY'],
-                    'TXT_DETAILS_CATEGORYSELECT'        =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_CATEGORY_SELECT'],
-                    'TXT_DETAILS_ACTIVE'                =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_ACTIVE'],
-                    'TXT_DETAILS_SIZE_ORIG'                =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_SIZE_ORG'],
-                    'TXT_DETAILS_HEIGHT_WIDTH_ORIG'        =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_HEIGHT_WIDTH_ORIG'],
-                    'TXT_DETAILS_SIZE_THUMB'            =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_SIZE_THUMB'],
-                    'TXT_DETAILS_HEIGHT_WIDTH_THUMB'    =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_HEIGHT_WIDTH_THUMB'],
-                    'TXT_DETAILS_NEW_SIZE_THUMB'        =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE'],
-                    'TXT_DETAILS_NEW_QUALITY_THUMB'        =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_QUALITY'],
-                    'TXT_DETAILS_THUMB_SIZE_ABS'        =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS'],
-                    'TXT_DETAILS_THUMB_SIZE_PROZ'        =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_PER'],
-                    'TXT_DETAILS_THUMB_SIZE_ABS_WIDTH'    =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS_WIDTH'],
-                    'TXT_DETAILS_THUMB_SIZE_ABS_HEIGHT'    =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS_HEIGHT'],
-                    'TXT_DETAILS_THUMB_PREVIEW'            =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_PREVIEW'],
-                    'TXT_DETAILS_BUTTON_UPDATE'            =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_UPDATE'],
-                    'TXT_DETAILS_BUTTON_SUBMIT'            =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_SUBMIT'],
-                    'TXT_DETAILS_BUTTON_DELETE'            =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_DELETE'],
-                    'TXT_EXTENDED'                        =>    $_ARRAYLANG['TXT_GALLERY_EXTENDED']
+                    'TXT_DETAILS_TITLE'                     => $_ARRAYLANG['TXT_GALLERY_VALIDATE_PICTURE_DETAILS'],
+                    'TXT_DETAILS_NAME'                      => $_ARRAYLANG['TXT_GALLERY_VALIDATE_NAME'],
+                    'TXT_DETAILS_UPLOADDATE'                => $_ARRAYLANG['TXT_GALLERY_VALIDATE_UPLOAD_DATE'],
+                    'TXT_DETAILS_CATEGORY'                  => $_ARRAYLANG['TXT_GALLERY_VALIDATE_CATEGORY'],
+                    'TXT_DETAILS_CATEGORYSELECT'            => $_ARRAYLANG['TXT_GALLERY_VALIDATE_CATEGORY_SELECT'],
+                    'TXT_DETAILS_ACTIVE'                    => $_ARRAYLANG['TXT_GALLERY_VALIDATE_ACTIVE'],
+                    'TXT_DETAILS_SIZE_ORIG'                 => $_ARRAYLANG['TXT_GALLERY_VALIDATE_SIZE_ORG'],
+                    'TXT_DETAILS_HEIGHT_WIDTH_ORIG'         => $_ARRAYLANG['TXT_GALLERY_VALIDATE_HEIGHT_WIDTH_ORIG'],
+                    'TXT_DETAILS_SIZE_THUMB'                => $_ARRAYLANG['TXT_GALLERY_VALIDATE_SIZE_THUMB'],
+                    'TXT_DETAILS_HEIGHT_WIDTH_THUMB'        => $_ARRAYLANG['TXT_GALLERY_VALIDATE_HEIGHT_WIDTH_THUMB'],
+                    'TXT_DETAILS_NEW_SIZE_THUMB'            => $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE'],
+                    'TXT_DETAILS_NEW_QUALITY_THUMB'         => $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_QUALITY'],
+                    'TXT_DETAILS_THUMB_SIZE_ABS'            => $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS'],
+                    'TXT_DETAILS_THUMB_SIZE_PROZ'           => $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_PER'],
+                    'TXT_DETAILS_THUMB_SIZE_ABS_WIDTH'      => $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS_WIDTH'],
+                    'TXT_DETAILS_THUMB_SIZE_ABS_HEIGHT'     => $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS_HEIGHT'],
+                    'TXT_DETAILS_THUMB_PREVIEW'             => $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_PREVIEW'],
+                    'TXT_DETAILS_BUTTON_UPDATE'             => $_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_UPDATE'],
+                    'TXT_DETAILS_BUTTON_SUBMIT'             => $_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_SUBMIT'],
+                    'TXT_DETAILS_BUTTON_DELETE'             => $_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_DELETE'],
+                    'TXT_EXTENDED'                          => $_ARRAYLANG['TXT_GALLERY_EXTENDED']
                 ));
 
                 $objResult = $objDatabase->Execute('SELECT         *
@@ -2181,15 +2360,15 @@ class galleryManager extends GalleryLibrary
                                                     ');
                 if ($objSubResult->RecordCount() > 0) {
                     while (!$objSubResult->EOF) {
-                        $objSubSubResult = $objDatabase->Execute('    SELECT    name
-                                                                    FROM    '.DBPREFIX.'module_gallery_language_pics
+                        $objSubSubResult = $objDatabase->Execute('  SELECT   name
+                                                                    FROM     '.DBPREFIX.'module_gallery_language_pics
                                                                     WHERE    picture_id='.$objResult->fields['id'].' AND
-                                                                            lang_id='.$objSubResult->fields['id'].'
+                                                                             lang_id='.$objSubResult->fields['id'].'
                                                                     LIMIT    1');
                         $this->_objTpl->setVariable(array(
-                            'NAMEFIELDS_VALUE'        =>    $objSubSubResult->fields['name'],
-                            'NAMEFIELDS_LID'        =>    $objSubResult->fields['id'],
-                            'NAMEFIELDS_LANGUAGE'    =>    $objSubResult->fields['name'],
+                            'NAMEFIELDS_VALUE'          =>    $objSubSubResult->fields['name'],
+                            'NAMEFIELDS_LID'            =>    $objSubResult->fields['id'],
+                            'NAMEFIELDS_LANGUAGE'       =>    $objSubResult->fields['name'],
                         ));
                         $this->_objTpl->parse('showNameFields');
                         $objSubResult->MoveNext();
@@ -2198,11 +2377,11 @@ class galleryManager extends GalleryLibrary
                     $this->_objTpl->hideBlock('showNameFields');
                 }
 
-                $objSubResult = $objDatabase->Execute('    SELECT    name
+                $objSubResult = $objDatabase->Execute(' SELECT  name
                                                         FROM    '.DBPREFIX.'module_gallery_language_pics
-                                                        WHERE    picture_id='.$objResult->fields['id'].' AND
+                                                        WHERE   picture_id='.$objResult->fields['id'].' AND
                                                                 lang_id='.intval($_SESSION['auth']['lang']).'
-                                                        LIMIT    1
+                                                        LIMIT   1
                                                     ');
 
                 $strDetailsActive     = ($objResult->fields['status'] == '1') ? 'checked' : '';
@@ -2254,12 +2433,12 @@ class galleryManager extends GalleryLibrary
                 if ($objResult->fields['size_type'] == 'proz')
                 { // the image sizes are proportional
                     $this->_objTpl->setVariable(array(
-                        'DETAILS_SIZE_SELECTION_PROZ'        =>    'checked',
-                        'DETAILS_SIZE_SELECTION_ABS'        =>    '',
-                        'DETAILS_SIZE_ABS_WIDTH_DISABLED'    =>    'disabled',
-                        'DETAILS_SIZE_ABS_HEIGHT_DISABLED'    =>    'disabled',
-                        'DETAILS_SIZE_ABS_PROP_DISABLED'    =>    'disabled',
-                        'DETAILS_SIZE_PROZ_WIDTH_DISABLED'    =>    '',
+                        'DETAILS_SIZE_SELECTION_PROZ'           =>    'checked',
+                        'DETAILS_SIZE_SELECTION_ABS'            =>    '',
+                        'DETAILS_SIZE_ABS_WIDTH_DISABLED'       =>    'disabled',
+                        'DETAILS_SIZE_ABS_HEIGHT_DISABLED'      =>    'disabled',
+                        'DETAILS_SIZE_ABS_PROP_DISABLED'        =>    'disabled',
+                        'DETAILS_SIZE_PROZ_WIDTH_DISABLED'      =>    '',
                     ));
 
                     $intNewThumWidth     = floor(($objResult->fields['size_proz']/100) * $arrImageInfos[0]);
@@ -2269,12 +2448,12 @@ class galleryManager extends GalleryLibrary
                 else
                 {
                     $this->_objTpl->setVariable(array(
-                        'DETAILS_SIZE_SELECTION_PROZ'        =>    '',
-                        'DETAILS_SIZE_SELECTION_ABS'        =>    'checked',
-                        'DETAILS_SIZE_ABS_WIDTH_DISABLED'    =>    '',
-                        'DETAILS_SIZE_ABS_HEIGHT_DISABLED'    =>    '',
-                        'DETAILS_SIZE_PROZ_WIDTH_DISABLED'    =>    'disabled',
-                        'DETAILS_SIZE_ABS_PROP_DISABLED'    =>    ''
+                        'DETAILS_SIZE_SELECTION_PROZ'           =>    '',
+                        'DETAILS_SIZE_SELECTION_ABS'            =>    'checked',
+                        'DETAILS_SIZE_ABS_WIDTH_DISABLED'       =>    '',
+                        'DETAILS_SIZE_ABS_HEIGHT_DISABLED'      =>    '',
+                        'DETAILS_SIZE_PROZ_WIDTH_DISABLED'      =>    'disabled',
+                        'DETAILS_SIZE_ABS_PROP_DISABLED'        =>    ''
                     ));
 
                     $intNewThumWidth     = $objResult->fields['size_abs_w'];
@@ -2286,209 +2465,86 @@ class galleryManager extends GalleryLibrary
                 $this->createImages_JPG_GIF_PNG($this->strImagePath, $this->strThumbnailPath, $objResult->fields['path'], "temp_".$intNewThumbRandValue."_".$objResult->fields['path'], $intNewThumWidth, $intNewThumbHeight, $intNewThumbQuality);
 
                 $this->_objTpl->setVariable(array(
-                    'DETAILS_ID'                    =>     $objResult->fields['id'],
-                    'DETAILS_NAME'                    =>    $objSubResult->fields['name'],
-                    'DETAILS_UPLOADDATE'            =>    date('d.m.Y - h:i:s',$objResult->fields['lastedit']),
-                    'DETAILS_ACTIVE_SELECTED'        =>    $strDetailsActive,
-                    'DETAILS_SIZE_ORIG'                =>    round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2),
-                    'DETAILS_SIZE_THUMB'            =>    round(filesize($this->strThumbnailPath.'temp_'.$intNewThumbRandValue.'_'.$objResult->fields['path'])/1024,2),
-                    'DETAILS_WIDTH_ORIG'            =>    $arrImageInfos[0],
-                    'DETAILS_HEIGHT_ORIG'            =>    $arrImageInfos[1],
-                    'DETAILS_WIDTH_THUMB'            =>    $intNewThumWidth,
-                    'DETAILS_HEIGHT_THUMB'            =>    $intNewThumbHeight,
-                    'DETAILS_THUMB_PREVIEW_PATH'    =>    $this->strThumbnailWebPath.'temp_'.$intNewThumbRandValue.'_'.$objResult->fields['path']
+                    'DETAILS_ID'                        =>     $objResult->fields['id'],
+                    'DETAILS_NAME'                      =>    $objSubResult->fields['name'],
+                    'DETAILS_UPLOADDATE'                =>    date('d.m.Y - h:i:s',$objResult->fields['lastedit']),
+                    'DETAILS_ACTIVE_SELECTED'           =>    $strDetailsActive,
+                    'DETAILS_SIZE_ORIG'                 =>    round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2),
+                    'DETAILS_SIZE_THUMB'                =>    round(filesize($this->strThumbnailPath.'temp_'.$intNewThumbRandValue.'_'.$objResult->fields['path'])/1024,2),
+                    'DETAILS_WIDTH_ORIG'                =>    $arrImageInfos[0],
+                    'DETAILS_HEIGHT_ORIG'               =>    $arrImageInfos[1],
+                    'DETAILS_WIDTH_THUMB'               =>    $intNewThumWidth,
+                    'DETAILS_HEIGHT_THUMB'              =>    $intNewThumbHeight,
+                    'DETAILS_THUMB_PREVIEW_PATH'        =>    $this->strThumbnailWebPath.'temp_'.$intNewThumbRandValue.'_'.$objResult->fields['path']
                 ));
 
-                //here starts the category-menu
-                $objResult = $objDatabase->Execute('SELECT         id
-                                                    FROM         '.DBPREFIX.'module_gallery_categories
-                                                    WHERE         pid=0
-                                                    ORDER BY     sorting');
-                if ($objResult->recordCount() > 0) {
-                    while (!$objResult->EOF) {
-                    $objSubResult = $objDatabase->Execute('    SELECT    value
-                                                            FROM    '.DBPREFIX.'module_gallery_language
-                                                            WHERE    gallery_id='.$objResult->fields['id'].' AND
-                                                                    lang_id='.intval($_SESSION['auth']['lang']).' AND
-                                                                    name="name"
-                                                            LIMIT    1
-                                                        ');
-                    $arrMainCategories[$objResult->fields['id']] = $objSubResult->fields['value'];
-                        $objResult->MoveNext();
-                    }
-
-                    foreach ($arrMainCategories as $intMainCatKey => $strMainCatValue){
-                        if ($intImageCatId == $intMainCatKey){
-                            $strCatSelected = 'selected';
-                        } else {
-                            $strCatSelected = '';
-                        }
-
-                        $this->_objTpl->setVariable(array(
-                            'CATEGORY_ID'         => $intMainCatKey,
-                            'CATEGORY_NAME'     => $strMainCatValue,
-                            'CATEGORY_SPACER'     => '',
-                            'CATEGORY_SELECTED'    => $strCatSelected
-                        ));
-                        $this->_objTpl->parse('showCategories');
-
-                        $objResult = $objDatabase->Execute('SELECT         id
-                                                            FROM         '.DBPREFIX.'module_gallery_categories
-                                                            WHERE         pid='.$intMainCatKey.'
-                                                            ORDER BY     sorting');
-                        if ($objResult->recordCount() > 0) {
-                            while (!$objResult->EOF) {
-                                    $objSubResult = $objDatabase->Execute('    SELECT    value
-                                                                            FROM    '.DBPREFIX.'module_gallery_language
-                                                                            WHERE    gallery_id='.$objResult->fields['id'].' AND
-                                                                                    lang_id='.intval($_SESSION['auth']['lang']).' AND
-                                                                                    name="name"
-                                                                            LIMIT    1
-                                                                        ');
-                                if ($intImageCatId == $objResult->fields['id']) {
-                                    $strCatSelected = 'selected';
-                                } else {
-                                    $strCatSelected = '';
-                                }
-                                $this->_objTpl->setVariable(array(
-                                    'CATEGORY_ID'        =>    $objResult->fields['id'],
-                                    'CATEGORY_NAME'        =>    $objSubResult->fields['value'],
-                                    'CATEGORY_SPACER'    =>    '&nbsp;&nbsp;&nbsp;',
-                                    'CATEGORY_SELECTED'    =>    $strCatSelected
-                                ));
-                                $this->_objTpl->parse('showCategories');
-                                $objResult->MoveNext();
-                            }
-                        }
-                    }
-                } else {
-                    $this->_objTpl->setVariable(array(
-                        'CATEGORY_ID'            =>    0,
-                        'CATEGORY_NAME'            =>    '',
-                        'CATEGORY_SPACER'        =>    '',
-                        'CATEGORY_SELECTED'        =>    ''
-                    ));
+                try {
+                    $this->parseCategoryDropdown();
+                } catch (DatabaseError $e) {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
+                    $this->strErrMessage .= $e;
+                    return;
                 }
-                // here ends the category-menu
-                $this->_objTpl->parse('showCategories');
-            }
-            else // multiple pictures on one page
-            {
+            } else {
+                // multiple pictures on one page
                 $this->_objTpl->loadTemplateFile('module_gallery_validate_details_all.html',true,true);
                 $this->_objTpl->setVariable(array(
                     'TXT_TITLE_NAME'                    =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_NAME'],
-                    'TXT_TITLE_UPLOADDATE'                =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_UPLOAD_DATE'],
-                    'TXT_TITLE_SIZE_O'                    =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_SIZE_ORG'],
-                    'TXT_TITLE_RESO_O'                    =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_HEIGHT_WIDTH_ORIG'],
-                    'TXT_TITLE_SIZE_T'                    =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_SIZE_THUMB'],
-                    'TXT_TITLE_RESO_T'                    =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_HEIGHT_WIDTH_THUMB'],
+                    'TXT_TITLE_UPLOADDATE'              =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_UPLOAD_DATE'],
+                    'TXT_TITLE_SIZE_O'                  =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_SIZE_ORG'],
+                    'TXT_TITLE_RESO_O'                  =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_HEIGHT_WIDTH_ORIG'],
+                    'TXT_TITLE_SIZE_T'                  =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_SIZE_THUMB'],
+                    'TXT_TITLE_RESO_T'                  =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_HEIGHT_WIDTH_THUMB'],
                     'TXT_TITLE_CATEGORY'                =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_CATEGORY'],
-                    'TXT_TITLE_ACTIVE'                    =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_ACTIVE'],
-                    'TXT_DELETE_IMAGE_MSG'                =>    $_ARRAYLANG['TXT_GALLERY_DELETE_IMAGE_MSG'],
-                    'TXT_WRONG_CATEGORIES_MSG'            =>    $_ARRAYLANG['TXT_GALLERY_WRONG_CATEGORIES_MSG'],
-                    'TXT_SETTINGS_FILENAME'                =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_ALL_SET_FILENAME'],
+                    'TXT_TITLE_ACTIVE'                  =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_ACTIVE'],
+                    'TXT_DELETE_IMAGE_MSG'              =>    $_ARRAYLANG['TXT_GALLERY_DELETE_IMAGE_MSG'],
+                    'TXT_WRONG_CATEGORIES_MSG'          =>    $_ARRAYLANG['TXT_GALLERY_WRONG_CATEGORIES_MSG'],
+                    'TXT_SETTINGS_FILENAME'             =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_ALL_SET_FILENAME'],
                     'TXT_SETTINGS_TITLE'                =>    $_ARRAYLANG['TXT_SETTINGS'],
-                    'TXT_SETTINGS_ACTIVE'                =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_ALL_SET_ACTIVE'],
-                    'TXT_SETTINGS_CATEGORY'                =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_ALL_SET_CATEGORY'],
+                    'TXT_SETTINGS_ACTIVE'               =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_ALL_SET_ACTIVE'],
+                    'TXT_SETTINGS_CATEGORY'             =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_ALL_SET_CATEGORY'],
                     'TXT_SETTINGS_THUMBSIZE_ABS'        =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS'],
-                    'TXT_SETTINGS_THUMBSIZE_PROZ'        =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_PER'],
-                    'TXT_SETTINGS_TITLE_THUMBSIZE'        =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE'],
-                    'TXT_SETTINGS_THUMBSIZE_ABS_WIDTH'    =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS_WIDTH'],
-                    'TXT_SETTINGS_THUMBSIZE_ABS_HEIGHT'    =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS_HEIGHT'],
-                    'TXT_SETTINGS_TITLE_THUMBQUALITY'    =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_QUALITY'],
-                    'TXT_DETAILS_BUTTON_UPDATE'            =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_UPDATE'],
-                    'TXT_DETAILS_BUTTON_SUBMIT'            =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_SUBMIT'],
+                    'TXT_SETTINGS_THUMBSIZE_PROZ'       =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_PER'],
+                    'TXT_SETTINGS_TITLE_THUMBSIZE'      =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE'],
+                    'TXT_SETTINGS_THUMBSIZE_ABS_WIDTH'  =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS_WIDTH'],
+                    'TXT_SETTINGS_THUMBSIZE_ABS_HEIGHT' =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_SIZE_ABS_HEIGHT'],
+                    'TXT_SETTINGS_TITLE_THUMBQUALITY'   =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_THUMB_QUALITY'],
+                    'TXT_DETAILS_BUTTON_UPDATE'         =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_UPDATE'],
+                    'TXT_DETAILS_BUTTON_SUBMIT'         =>    $_ARRAYLANG['TXT_GALLERY_VALIDATE_BUTTON_SUBMIT'],
                 ));
                 $this->_objTpl->setGlobalVariable('TXT_DETAILS_CATEGORYSELECT', $_ARRAYLANG['TXT_GALLERY_VALIDATE_CATEGORY_SELECT']);
-            if ($this->arrSettings['standard_size_type'] == 'abs')
-            {
-                $this->_objTpl->setVariable( array(
-                    'SETTINGS_SELECTED_ABS'                =>    'checked',
-                    'SETTINGS_SELECTED_PROZ'            =>    '',
-                    'SETTINGS_THUMBSIZE_ABS_WIDTH_DIS'    => '',
-                    'SETTINGS_THUMBSIZE_ABS_HEIGHT_DIS'    =>    '',
-                    'SETTINGS_THUMBSIZE_PROZ_DIS'        =>    'disabled',
-                ));
-            }
-            else
-            {
-                $this->_objTpl->setVariable( array(
-                    'SETTINGS_SELECTED_ABS'                =>    '',
-                    'SETTINGS_SELECTED_PROZ'            =>    'checked',
-                    'SETTINGS_THUMBSIZE_ABS_WIDTH_DIS'    =>    'disabled',
-                    'SETTINGS_THUMBSIZE_ABS_HEIGHT_DIS'    =>    'disabled',
-                    'SETTINGS_THUMBSIZE_PROZ_DIS'        =>    '',
-                ));
-            }
-            $this->_objTpl->setVariable( array(
-                'SETTINGS_THUMBSIZE_ABS_WIDTH'    =>    $this->arrSettings['standard_width_abs'],
-                'SETTINGS_THUMBSIZE_ABS_HEIGHT'    =>    $this->arrSettings['standard_height_abs']
-            ));
-            //here starts the category-menu
-                $objResult = $objDatabase->Execute('SELECT         id
-                                                    FROM         '.DBPREFIX.'module_gallery_categories
-                                                    WHERE         pid=0
-                                                    ORDER BY     sorting');
-
-                if ($objResult->RecordCount() > 0) {
-                    while (!$objResult->EOF) {
-                        $objSubResult = $objDatabase->Execute('    SELECT    value
-                                                                FROM    '.DBPREFIX.'module_gallery_language
-                                                                WHERE    gallery_id='.$objResult->fields['id'].' AND
-                                                                        lang_id='.intval($_SESSION['auth']['lang']).' AND
-                                                                        name="name"
-                                                                LIMIT    1
-                                                            ');
-                        $arrMainCategories[$objResult->fields['id']] = $objSubResult->fields['value'];
-                        $objResult->MoveNext();
-                    }
-
-                    foreach ($arrMainCategories as $intMainCatKey => $strMainCatValue)
-                    {
-                        $this->_objTpl->setVariable(array(
-                            'CATEGORY_ID'        =>    $intMainCatKey,
-                            'CATEGORY_NAME'        =>    $strMainCatValue,
-                            'CATEGORY_SPACER'    =>    '',
-                        ));
-                        $this->_objTpl->parse("showCategoriesSettings");
-                        $strTempDD .= '<option value="'.$intMainCatKey.'">'.$strMainCatValue.'</option>';
-
-                        $objResult = $objDatabase->Execute('SELECT         id
-                                                            FROM         '.DBPREFIX.'module_gallery_categories
-                                                            WHERE         pid='.$intMainCatKey.'
-                                                            ORDER BY     sorting');
-                        if ($objResult->RecordCount() > 0) {
-                            while (!$objResult->EOF) {
-                                    $objSubResult = $objDatabase->Execute('    SELECT    value
-                                                                            FROM    '.DBPREFIX.'module_gallery_language
-                                                                            WHERE    gallery_id='.$objResult->fields['id'].' AND
-                                                                                    lang_id='.intval($_SESSION['auth']['lang']).' AND
-                                                                                    name="name"
-                                                                            LIMIT    1
-                                                                        ');
-
-                                $strTempDD .= '<option value="'.$objResult->fields['id'].'">&nbsp;&nbsp;&nbsp;'.$objSubResult->fields['value'].'</option>';
-
-
-                                $this->_objTpl->setVariable(array(
-                                    'CATEGORY_ID'        =>    $objResult->fields['id'],
-                                    'CATEGORY_NAME'        =>    $objSubResult->fields['value'],
-                                    'CATEGORY_SPACER'    =>    '&nbsp;&nbsp;&nbsp;',
-                                ));
-                                $this->_objTpl->parse('showCategoriesSettings');
-                                $objResult->MoveNext();
-                            }
-                        }
-                    }
-                } else {
-                    $this->_objTpl->setVariable(array(
-                        'CATEGORY_ID'        =>    '',
-                        'CATEGORY_NAME'        =>    '',
-                        'CATEGORY_SPACER'    =>    '',
+                if ($this->arrSettings['standard_size_type'] == 'abs')
+                {
+                    $this->_objTpl->setVariable( array(
+                        'SETTINGS_SELECTED_ABS'             =>  'checked',
+                        'SETTINGS_SELECTED_PROZ'            =>  '',
+                        'SETTINGS_THUMBSIZE_ABS_WIDTH_DIS'  =>  '',
+                        'SETTINGS_THUMBSIZE_ABS_HEIGHT_DIS' =>  '',
+                        'SETTINGS_THUMBSIZE_PROZ_DIS'       =>  'disabled',
                     ));
                 }
-            // here ends the category-menu
-            // here start the quality-dropdown
+                else
+                {
+                    $this->_objTpl->setVariable( array(
+                        'SETTINGS_SELECTED_ABS'             =>    '',
+                        'SETTINGS_SELECTED_PROZ'            =>    'checked',
+                        'SETTINGS_THUMBSIZE_ABS_WIDTH_DIS'  =>    'disabled',
+                        'SETTINGS_THUMBSIZE_ABS_HEIGHT_DIS' =>    'disabled',
+                        'SETTINGS_THUMBSIZE_PROZ_DIS'       =>    '',
+                    ));
+                }
+                $this->_objTpl->setVariable( array(
+                    'SETTINGS_THUMBSIZE_ABS_WIDTH'    =>    $this->arrSettings['standard_width_abs'],
+                    'SETTINGS_THUMBSIZE_ABS_HEIGHT'    =>    $this->arrSettings['standard_height_abs']
+                ));
+                try {
+                    $this->parseCategoryDropdown();
+                } catch (DatabaseError $e) {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
+                    $this->strErrMessage .= $e;
+                    return;
+                }
+                // here start the quality-dropdown
                 $this->_objTpl->setCurrentBlock('showThumbQuality');
 
                 for ($i = 5; $i <= 100; $i=$i+5)
@@ -2505,8 +2561,8 @@ class galleryManager extends GalleryLibrary
                     }
                     $this->_objTpl->parseCurrentBlock();
                 }
-            // here ends the quality-dropdown
-            // here starts the thumbsize-proz dropdown
+                // here ends the quality-dropdown
+                // here starts the thumbsize-proz dropdown
                 $this->_objTpl->setCurrentBlock('showThumbSizeProz');
                 $boolCheckerThumbFileSize = false;
                 for ($i = 5; $i <= 100; $i=$i+5)
@@ -2521,7 +2577,7 @@ class galleryManager extends GalleryLibrary
                     }
                     $this->_objTpl->parseCurrentBlock();
                 }
-            // here ends the thumbsize-proz dropdown
+                // here ends the thumbsize-proz dropdown
                 $handleDirectory = opendir($this->strThumbnailPath);
                 while ($strFile = readdir ($handleDirectory)) {
                     if (substr($strFile,0,5) == 'temp_') {
@@ -2578,17 +2634,16 @@ class galleryManager extends GalleryLibrary
                 $intRowColor = 0;
                 foreach ($arrImageCounter as $intIdKey) {
                     $this->_objTpl->setVariable(array(
-                        'IMAGES_ROWCLASS'        => ($intRowColor % 2),
-                        'IMAGES_ID'                =>    $intIdKey,
-                        'IMAGES_THUMB_SOURCE'    =>    $arrImageInfo[$intIdKey]['random_path'],
-                        'IMAGES_NAME'            =>    $arrImageInfo[$intIdKey]['name'],
-                        'IMAGES_UPLOADDATE'        =>     $arrImageInfo[$intIdKey]['uploadtime'],
-                        'IMAGES_SIZE_O'            =>    $arrImageInfo[$intIdKey]['size_o'],
-                        'IMAGES_RESO_O'            =>     $arrImageInfo[$intIdKey]['reso_o'],
-                        'IMAGES_SIZE_T'            =>    $arrImageInfo[$intIdKey]['size_t'],
-                        'IMAGES_RESO_T'            =>    $arrImageInfo[$intIdKey]['reso_t'],
-                        'IMAGES_CATEGORIES_OPS'    =>    $strTempDD,
-                        'TXT_EXTENDED'            =>    $_ARRAYLANG['TXT_GALLERY_EXTENDED']
+                        'IMAGES_ROWCLASS'           => ($intRowColor % 2),
+                        'IMAGES_ID'                 => $intIdKey,
+                        'IMAGES_THUMB_SOURCE'       => $arrImageInfo[$intIdKey]['random_path'],
+                        'IMAGES_NAME'               => $arrImageInfo[$intIdKey]['name'],
+                        'IMAGES_UPLOADDATE'         => $arrImageInfo[$intIdKey]['uploadtime'],
+                        'IMAGES_SIZE_O'             => $arrImageInfo[$intIdKey]['size_o'],
+                        'IMAGES_RESO_O'             => $arrImageInfo[$intIdKey]['reso_o'],
+                        'IMAGES_SIZE_T'             => $arrImageInfo[$intIdKey]['size_t'],
+                        'IMAGES_RESO_T'             => $arrImageInfo[$intIdKey]['reso_t'],
+                        'TXT_EXTENDED'              => $_ARRAYLANG['TXT_GALLERY_EXTENDED']
                     ));
 
                     $objResult = $objDatabase->Execute('    SELECT        id,
@@ -2599,10 +2654,10 @@ class galleryManager extends GalleryLibrary
                     if ($objResult->RecordCount() > 0) {
                         while (!$objResult->EOF) {
                             $this->_objTpl->setVariable(array(
-                                'NAMEFIELDS_IMID'        =>    $intIdKey,
-                                'NAMEFIELDS_IMVALUE'    =>    $arrNames[$intIdKey][$objResult->fields['id']],
-                                'NAMEFIELDS_LID'        =>    $objResult->fields['id'],
-                                'NAMEFIELDS_LANGUAGE'    =>    $objResult->fields['name'],
+                                'NAMEFIELDS_IMID'       => $intIdKey,
+                                'NAMEFIELDS_IMVALUE'    => $arrNames[$intIdKey][$objResult->fields['id']],
+                                'NAMEFIELDS_LID'        => $objResult->fields['id'],
+                                'NAMEFIELDS_LANGUAGE'   => $objResult->fields['name'],
                             ));
                             $this->_objTpl->parse('showNameFields');
                             $objResult->MoveNext();
@@ -2616,6 +2671,13 @@ class galleryManager extends GalleryLibrary
                         $this->_objTpl->parse('javascriptBlock'.$i);
                     }
 
+                    try {
+                        $this->parseCategoryDropdown(-1, true, "showCategoriesPerImage");
+                    } catch (DatabaseError $e) {
+                        $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
+                        $this->strErrMessage .= $e;
+                        return;
+                    }
                     $this->_objTpl->parse('showImages');
 
                     $intTempImageId .= $intIdKey.','; //needed some lines below
@@ -2624,9 +2686,7 @@ class galleryManager extends GalleryLibrary
                 $intTempImageId = substr($intTempImageId,0,strlen($intTempImageId)-1);
                 $this->_objTpl->setVariable('HIDDEN_ALL_IMAGES_IDS',$intTempImageId);
             }
-        }
-        else
-        {
+        } else {
             $this->_objTpl->setVariable('VALIDATE_SHOWDETAILS','');
         }
     }
@@ -2798,7 +2858,7 @@ class galleryManager extends GalleryLibrary
                     //language var
                     $arrExplode = explode('_',$strKey,3);
                     $strValue = get_magic_quotes_gpc() ? strip_tags($strValue) : addslashes(strip_tags($strValue));
-                    $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_language_pics
+                    $objDatabase->Execute(' UPDATE     '.DBPREFIX.'module_gallery_language_pics
                                             SET     name="'.$strValue.'"
                                             WHERE     picture_id='.intval($arrExplode[1]).' AND
                                                     lang_id='.intval($arrExplode[2]).'
@@ -2811,26 +2871,41 @@ class galleryManager extends GalleryLibrary
             // set the selected ones to active
             foreach ($arrId as $intKey => $strValue)
             {
-                $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_pictures
+                $objDatabase->Execute(' UPDATE     '.DBPREFIX.'module_gallery_pictures
                                         SET     status="'.intval($_POST['imageActive'.$strValue]).'"
                                         WHERE     id='.intval($strValue));
             }
         }
-
-        if ($_POST['settingsCategory'] != 1) {
-            // the user definies the category by himself
-            foreach ($arrId as $intKey => $strValue) {
-                $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_pictures
-                                        SET     catid='.intval($_POST['imageCategory'.$strValue]).'
-                                        WHERE     id='.intval($strValue));
+        /////////////////////////////
+        try {
+            if ($_POST['settingsCategory'] != 1) {
+                // the user definies the category by himself
+                foreach ($arrId as $intKey => $strValue) {
+                    $catid = $_POST['imageCategory'.$strValue];
+                    if (!$this->checkCategoryAccess($catid)) {
+                        return;
+                    }
+                    $objDatabase->Execute(' UPDATE     '.DBPREFIX.'module_gallery_pictures
+                                            SET     catid='.intval($_POST['imageCategory'.$strValue]).'
+                                            WHERE     id='.intval($strValue));
+                }
+            } else { // all in the same group
+                $catid = $_POST['imageCategoryAll'];
+                if (!$this->checkCategoryAccess($catid)) {
+                    return;
+                }
+                foreach ($arrId as $intKey => $strValue) {
+                    $objDatabase->Execute(' UPDATE     '.DBPREFIX.'module_gallery_pictures
+                                            SET     catid='.intval($_POST['imageCategoryAll']).'
+                                            WHERE     id='.intval($strValue));
+                }
             }
-        } else { // all in the same group
-            foreach ($arrId as $intKey => $strValue) {
-                $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_pictures
-                                        SET     catid='.intval($_POST['imageCategoryAll']).'
-                                        WHERE     id='.intval($strValue));
-            }
+        } catch (DatabaseError $e) {
+            $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
+            $this->strErrMessage .= $e;
+            return;
         }
+        /////////////
 
         if (isset($_POST['update_button'])) {
             // the user clicked on the update button, now i have to calculate the new values sizes for the database
@@ -2881,6 +2956,7 @@ class galleryManager extends GalleryLibrary
         } else {
             // the user clicked on the insert button
             foreach ($arrId as $intKey => $strValue) {
+                
                 $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_pictures
                                         SET     validated="1",
                                                 lastedit='.time().'
@@ -2964,7 +3040,7 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Rotates an image clockwise by 90°
+    * Rotates an image clockwise by 90ï¿½
     *
     * @global    object        $objDatabase
     * @global     array        $_ARRAYLANG
@@ -3366,9 +3442,9 @@ class galleryManager extends GalleryLibrary
     function createImages_JPG_GIF_PNG($strPathOld, $strPathNew, $strFileOld, $strFileNew, $intNewWidth, $intNewHeight, $intQuality)
     {
         //copy image
-        $intSize    = getimagesize($strPathOld.$strFileOld); //ermittelt die Größe des Bildes
+        $intSize    = getimagesize($strPathOld.$strFileOld); //ermittelt die Grï¿½ï¿½e des Bildes
         $intWidth    = $intSize[0]; //die Breite des Bildes
-        $intHeight    = $intSize[1]; //die Höhe des Bildes
+        $intHeight    = $intSize[1]; //die Hï¿½he des Bildes
         $strType    = $intSize[2]; //type des Bildes
         @touch($strPathNew.$strFileNew);
 
@@ -3623,5 +3699,88 @@ class galleryManager extends GalleryLibrary
         }
 
     }
+    
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $id
+     * @param unknown_type $type
+     * @return unknown
+     */
+    private function getGroupLists($id, $type="frontend")
+    {
+        $accessGroups = $this->sql->getAccessGroups($type, false, $id);
+        $allGroups = $this->sql->getAllGroups($type);
+        $assignedGroups = "";
+        $existingGroups = "";
+        foreach ($allGroups as $id => $name) {
+            if (in_array($id, $accessGroups)) {
+                $assignedGroups .= '<option value="'.$id.'">'.$name."</option>\n";
+            } else {
+                $existingGroups .= '<option value="'.$id.'">'.$name."</option>\n";
+            }
+        }
+        return Array($existingGroups, $assignedGroups);
+    }
+    
+    /**
+     * Enter description here...
+     *
+     * @param unknown_type $id
+     * @return unknown
+     */
+    private function checkCategoryAccess($id)
+    {
+        global $_ARRAYLANG;
+        
+        list($access_id, $protected) = $this->sql->getPrivileges($id, "backend");
+        if ($protected) {
+            if (!$this->checkAccess($access_id)) {
+                $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_ACCESS_ERROR'];
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Check access
+     *
+     * @param int $access_id
+     * @return int
+     */
+    private function checkAccess($access_id)
+    {
+        if ($_SESSION['auth']['is_admin']) {
+            return true;
+        }
+        
+        $accessGroups = $this->sql->getAccessGroups("backend", $access_id);
+        $userGroups = $_SESSION['auth']['groups'];
+        foreach ($accessGroups as $group) {
+            if (in_array(intval($group), $userGroups)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Save the last access id
+     *
+     * @param intval $id
+     */
+    private function updateAccessId($id)
+    {
+        $this->sql->updateAccessId($id);
+        
+        require_once(ASCMS_CORE_PATH.'/settings.class.php');
+            $objSettings = &new settingsManager();
+            $objSettings->writeSettingsFile();
+    }
 }
+
+
 ?>
