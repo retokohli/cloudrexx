@@ -193,14 +193,14 @@ function copyText(strType,strValue) {
     </tr>
     <tr class="row2"> 
       <td nowrap="nowrap"> 
-        <input type="checkbox" name="settingsFilename" value="1" checked="checked" onclick="imageNameFields()" />
-        &nbsp;{TXT_SETTINGS_FILENAME}</td>
+        <input type="checkbox" id="settingsFilename" name="settingsFilename" value="1" checked="checked" onclick="imageNameFields()" />
+        &nbsp;<label for="settingsFilename">{TXT_SETTINGS_FILENAME}</label></td>
       <td nowrap="nowrap"> 
-        <input type="radio" name="settingsThumbSize" value="abs" onclick="enableAbs();settingsChanged();" {SETTINGS_SELECTED_ABS} />
-        &nbsp;{TXT_SETTINGS_THUMBSIZE_ABS}</td>
+        <input type="radio" id="radioThumbSizeAbs" name="settingsThumbSize" value="abs" onclick="enableAbs();settingsChanged();" {SETTINGS_SELECTED_ABS} />
+        &nbsp;<label for="radioThumbSizeAbs">{TXT_SETTINGS_THUMBSIZE_ABS}</label></td>
       <td nowrap="nowrap"> 
-        <input type="radio" name="settingsThumbSize" value="proz" onclick="enableProz();settingsChanged();" {SETTINGS_SELECTED_PROZ} />
-        &nbsp;{TXT_SETTINGS_THUMBSIZE_PROZ}</td>
+        <input type="radio" id="radioThumbSizeProz" name="settingsThumbSize" value="proz" onclick="enableProz();settingsChanged();" {SETTINGS_SELECTED_PROZ} />
+        &nbsp;<label for="radioThumbSizeProz">{TXT_SETTINGS_THUMBSIZE_PROZ}</label></td>
       <td nowrap="nowrap"> 
         <select name="settingsThumbQuality" onchange="settingsChanged()">
           <!-- BEGIN showThumbQuality -->
@@ -211,8 +211,8 @@ function copyText(strType,strValue) {
     </tr>
 <tr class="row1"> 
 <td nowrap="nowrap"> 
-<input type="checkbox" name="settingsActive" value="1" checked="checked" onclick="imageActiveBoxes()" />
-&nbsp;{TXT_SETTINGS_ACTIVE}</td>
+<input type="checkbox" id="settingsActive" name="settingsActive" value="1" checked="checked" onclick="imageActiveBoxes()" />
+&nbsp;<label for="settingsActive">{TXT_SETTINGS_ACTIVE}</label></td>
 <td nowrap="nowrap"> 
 <input type="text" name="settingsThumbSizeAbsWidth" maxlength="4" size="5" onchange="settingsChanged();checkAbsHeight();" value="{SETTINGS_THUMBSIZE_ABS_WIDTH}" {SETTINGS_THUMBSIZE_ABS_WIDTH_DIS} />
 &nbsp;{TXT_SETTINGS_THUMBSIZE_ABS_WIDTH}</td>
@@ -226,16 +226,14 @@ function copyText(strType,strValue) {
 </tr>
 <tr> 
 <td> 
-<input type="checkbox" name="settingsCategory" value="1" checked="checked" onclick="imageCategorySelects()" />
-&nbsp;{TXT_SETTINGS_CATEGORY} 
-<select name="imageCategoryAll">
-<option value="0">{TXT_DETAILS_CATEGORYSELECT}</option>
-<option value="0">----------------------------</option>
-<!-- BEGIN showCategoriesSettings -->
-{DETAILS_CATEGORY_HIDE_S}
-<option value="{CATEGORY_ID}">{CATEGORY_SPACER}{CATEGORY_NAME}</option>
-{DETAILS_CATEGORY_HIDE_E}
-<!-- END showCategoriesSettings -->
+<input type="checkbox" id="settingsCategory" name="settingsCategory" value="1" checked="checked" onclick="imageCategorySelects()" />
+&nbsp;<label for="settingsCategory">{TXT_SETTINGS_CATEGORY}</label>
+<select name="imageCategoryAll" {CAT_DROPDOWN_DISABLED}>
+    <option value="0">{TXT_DETAILS_CATEGORYSELECT}</option>
+    <option value="0">----------------------------</option>
+	<!-- BEGIN showCategories -->
+	<option value="{CAT_DROPDOWN_VALUE}" {CAT_DROPDOWN_SELECTED}>{CAT_DROPDOWN_INDENT}{CAT_DROPDOWN_NAME}</option>
+	<!-- END showCategories -->
 </select>
 </td>
 <td nowrap="nowrap"> 
@@ -292,10 +290,12 @@ function copyText(strType,strValue) {
       <td valign="top">{IMAGES_SIZE_O}kB&nbsp;({IMAGES_RESO_O})</td>
       <td valign="top">{IMAGES_SIZE_T}kb&nbsp;({IMAGES_RESO_T})</td>
       <td valign="top"> 
-        <select name="imageCategory{IMAGES_ID}" disabled="disabled">
-          <option value="0">{TXT_DETAILS_CATEGORYSELECT}</option>
-          <option value="0">----------------------------</option>
-          {IMAGES_CATEGORIES_OPS}
+        <select name="imageCategory{IMAGES_ID}" {CAT_DROPDOWN_DISABLED}>
+            <option value="0">{TXT_DETAILS_CATEGORYSELECT}</option>
+            <option value="0">----------------------------</option>
+        	<!-- BEGIN showCategoriesPerImage -->
+        	<option value="{CAT_DROPDOWN_VALUE}" {CAT_DROPDOWN_SELECTED}>{CAT_DROPDOWN_INDENT}{CAT_DROPDOWN_NAME}</option>
+        	<!-- END showCategoriesPerImage -->
         </select>
       </td>
       <td valign="top" align="center"> 

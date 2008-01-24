@@ -53,7 +53,7 @@ function selectMultiAction()
 		<td align="center">{OVERVIEW_COUNT_IMAGES}&nbsp;</td>
 		<td align="center">{OVERVIEW_IMAGE_SIZE} kb&nbsp;</td>
 		<td align="right" nowrap="nowrap">
-			<div align="right">
+			<div align="right" {OVERVIEW_ACTION_DISPLAY}>
 				<a href="?cmd=gallery&amp;act=edit_category&amp;id={OVERVIEW_ID}" target="_self"><img alt="{TXT_IMG_EDIT_ALT}" title="{TXT_IMG_EDIT_ALT}" src="images/icons/edit.gif" border="0" /></a> 
 				<a href="javascript:deleteCategory({OVERVIEW_ID});" target="_self"><img alt="{TXT_IMG_DEL_ALT}" src="images/icons/delete.gif" border="0" title="{TXT_IMG_DEL_ALT}" /></a> 
 			</div>

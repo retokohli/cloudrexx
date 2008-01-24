@@ -94,7 +94,13 @@
 				<a href="?cmd=gallery&amp;act=edit_picture&amp;id={IMAGES_ID}&amp;active=comment" target="_self" title="{IMAGES_COMMENT_COUNT}">{IMAGES_COMMENT_COUNT}</a>
 				<a href="?cmd=gallery&amp;act=edit_picture&amp;id={IMAGES_ID}&amp;active=voting" target="_self" title="{IMAGES_VOTING_COUNT}{IMAGES_VOTING_AVERAGE}">{IMAGES_VOTING_COUNT}{IMAGES_VOTING_AVERAGE}</a>
 			</td>
-			<td nowrap="nowrap" valign="top">{IMAGES_CATEGORY_SELECT}</td>
+            <td nowrap="nowrap" valign="top">
+                <select name="newCategory{IMAGES_ID}" {CAT_DROPDOWN_DISABLED} onchange="window.location='?cmd=gallery&amp;act=change_category_picture&amp;id={IMAGES_ID}&amp;catid='+this.options[this.selectedIndex].value">
+					<!-- BEGIN showCategories -->
+					<option value="{CAT_DROPDOWN_VALUE}" {CAT_DROPDOWN_SELECTED}>{CAT_DROPDOWN_INDENT}{CAT_DROPDOWN_NAME}</option>
+					<!-- END showCategories -->
+				</select>
+            </td>
 			<td nowrap="nowrap" align="right" valign="top">
 				<div align="right">
 					{IMAGES_HIDE_LINKICON_S}
