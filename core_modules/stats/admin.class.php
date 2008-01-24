@@ -305,9 +305,9 @@ class stats extends statsLibrary
     	$currentHour = date('H');
     	$arrRange = array();
 		if ($currentHour < 23) {
-			$arrRange = range($currentHour+1, 23, 1);
+			$arrRange = range($currentHour+1, 23);
 		}
-		$arrRange = array_merge($arrRange, range(0, $currentHour, 1));
+		$arrRange = array_merge($arrRange, range(0, $currentHour));
 
 		foreach ($arrRange as $hour) {
 			$pHour = str_pad($hour, 2, 0, STR_PAD_LEFT);
@@ -391,9 +391,9 @@ class stats extends statsLibrary
     	$arrDayNames = explode(',',$_ARRAYLANG['TXT_DAY_ARRAY']);
 		$arrRange = array();
     	if (date('d') < date('t')) {
-			$arrRange[$arrMonths[(date('m') == 1 ? 11 : date('m')-2)]] = range(date('d')+1, date('t'), 1);
+			$arrRange[$arrMonths[(date('m') == 1 ? 11 : date('m')-2)]] = range(date('d')+1, date('t'));
 		}
-		$arrRange[$arrMonths[date('m')-1]] = range(1, date('d'), 1);
+		$arrRange[$arrMonths[date('m')-1]] = range(1, date('d'));
 
 		foreach ($arrRange as $month => $arrDays) {
 			foreach ($arrDays as $day) {
@@ -485,9 +485,9 @@ class stats extends statsLibrary
     	$arrMonthNames = explode(',',$_ARRAYLANG['TXT_MONTH_ARRAY']);
     	$arrRange = array();
     	if (date('m')<12) {
-			$arrRange[date('y')-1] = range(date('m')+1, 12, 1);
+			$arrRange[date('y')-1] = range(date('m')+1, 12);
 		}
-		$arrRange[date('y')] = range(1, date('m'), 1);
+		$arrRange[date('y')] = range(1, date('m'));
 
 		foreach ($arrRange as $year => $arrMonths) {
 			foreach ($arrMonths as $month) {
