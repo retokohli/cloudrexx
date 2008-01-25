@@ -3946,6 +3946,10 @@ right after the customer logs in!
         $this->destroyCart();
         // clear backup ID, avoid success() from being run again
         unset($_SESSION['shop']['orderid_checkin']);
+        // Avoid any output if the result is negative
+        if (isset($_REQUEST['result']) && ($_REQUEST['result'] < 0)) {
+            die('');
+        }
     }
 
 

@@ -60,13 +60,16 @@ class Dummy
     function getForm()
     {
         $orderid    = $_SESSION['shop']['orderid'];
+        $confirmURI = "index.php?section=shop&amp;cmd=success&amp;handler=dummy&amp;orderid=$orderid&amp;result=-1";
         $failureURI = "index.php?section=shop&amp;cmd=success&amp;handler=dummy&amp;orderid=$orderid&amp;result=0";
         $successURI = "index.php?section=shop&amp;cmd=success&amp;handler=dummy&amp;orderid=$orderid&amp;result=1";
         $cancelURI  = "index.php?section=shop&amp;cmd=success&amp;handler=dummy&amp;orderid=$orderid&amp;result=2";
         return <<<_
 Please choose one:
 <hr />
-<a href='$successURI'>Successful payment</a>
+<a href='$confirmURI'>Confirm payment (silent)</a>
+<br />
+<a href='$successURI'>Successful payment (show success page)</a>
 <br />
 <a href='$failureURI'>Failed payment</a>
 <br />
