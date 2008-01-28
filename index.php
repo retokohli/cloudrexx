@@ -1604,7 +1604,7 @@ $objTemplate->setVariable(array(
     'PAGE_URL'              => $objInit->getPageUri(),
     'CURRENT_URL'           => $objInit->getCurrentPageUri(),
     'DATE'                  => showFormattedDate(),
-    'TIME'                  => date("h:m", time()),
+    'TIME'                  => date("H:i", time()),
     'NAVTREE'               => $objNavbar->getTrail(),
     'SUBNAVBAR_FILE'        => $objNavbar->getNavigation($themesPages['subnavbar'],$boolShop),
     'SUBNAVBAR2_FILE'       => $objNavbar->getNavigation($themesPages['subnavbar2'],$boolShop),
