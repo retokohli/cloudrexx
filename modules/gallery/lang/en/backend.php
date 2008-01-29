@@ -182,4 +182,15 @@ $_ARRAYLANG['TXT_GALLERY_FILE_NAME'] = "Filename";
 $_ARRAYLANG['TXT_GALLERY_FILE_TYPE'] = "Filetype";
 $_ARRAYLANG['TXT_GALLERY_COULD_NOT_CREATE_THUMBNAIL'] = "Could not create thumbnail";
 $_ARRAYLANG['TXT_GALLERY_IMAGE_EXISTS'] = "Image Already Exists";
+$_ARRAYLANG['TXT_TAB_GENERAL'] = "Allgemeine Einstellungen";
+$_ARRAYLANG['TXT_GALLERY_MENU_EDIT'] = "Kategorie editieren";
+$_ARRAYLANG['TXT_FRONTEND_ACCESS'] = "Frontend Zugangsberechtigungen";
+$_ARRAYLANG['TXT_PUBLIC_ACCESS'] = "Kategorie ist öffentlich";
+$_ARRAYLANG['TXT_RESTRICTED_ACCESS'] = "Kategorie ist Passwortgeschützt";
+$_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'] = "Auf der Datenbankebene ist ein Fehler aufgetreten.";
+$_ARRAYLANG['TXT_BACKEND_ACCESS'] = "Backend Zugangsberechtigungen";
+$_ARRAYLANG['TXT_RESTRICTED_ACCESS_BACKEND'] = "Rechte einschränken";
+$_ARRAYLANG['TXT_NO_RESTRICTIONS'] = "Freigeben für alle Backend Gruppen";
+$_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ORDER'] = "Sortierung";
+$_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_ACCESS_ERROR'] = "Sie haben keinen Zugriff auf diese Kategorie!";
 ?>
