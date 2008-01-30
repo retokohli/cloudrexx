@@ -75,11 +75,6 @@ class memberDir extends MemberDirLibrary
     		$_GET['cmd'] = '';
     	}
 
-//        switch ($_GET['cmd']) {
-//        	default:
-//        		$this->_show();
-//        }
-
 		if (isset($_GET['mid'])) {
 			$this->_show();
 		} elseif($_GET['exportvcf']){
@@ -106,14 +101,14 @@ class memberDir extends MemberDirLibrary
 	{
 		global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-		$this->setDirs(0,true);
+		$this->setDirs(0, true);
 
 		$this->_objTpl->setTemplate($this->pageContent, true, true);
 
 		$dirid = intval($_GET['id']);
 
 		$this->_objTpl->setGlobalVariable(array(
-		  "TXT_OVERVIEW"			=> $_ARRAYLANG['TXT_OVERVIEW']
+            "TXT_OVERVIEW"  => $_ARRAYLANG['TXT_OVERVIEW']
 		));
 
         $treeid = $dirid;
@@ -148,7 +143,12 @@ class memberDir extends MemberDirLibrary
     		      'TXT_MEMBERDIR_EXPORT_CONTACT_AS_VCARD'	=> $_ARRAYLANG['TXT_MEMBERDIR_EXPORT_CONTACT_AS_VCARD'],
     		    ));
 		    }
+		    
             foreach ($this->directories as $dirkey => $directory) {
+                // check language
+                if ($directory['lang'] != 0 && $directory['lang'] != $this->langId) {
+                    continue;
+                }
                 if ($directory['active'] && $directory['parentdir'] == $dirid && $dirkey != 0) {
                     $this->_objTpl->setVariable(array(
     					"MEMBERDIR_DIR_ID"		=> $dirkey,
@@ -180,12 +180,12 @@ class memberDir extends MemberDirLibrary
     		$sort = contrexx_addslashes($_GET['sort']);
 
     		$this->_objTpl->setGlobalVariable(array(
-    		    "MEMBERDIR_DIRID"      => $dirid,
-    			"MEMBERDIR_CHAR_LIST"	=> $this->_getCharList("?section=memberdir&amp;id=".$dirid."&amp;sort=$sort"),
-    			"MEMBERDIR_KEYWORD"		=> (empty($_GET['keyword'])) ? "" : htmlentities(contrexx_stripslashes($_GET['keyword']), ENT_QUOTES, CONTREXX_CHARSET),
-    			"MEMBERDIR_SEARCH"		=> $_ARRAYLANG['TXT_SEARCH'],
-    			"MEMBERDIR_DESCRIPTION" => nl2br($this->directories[$dirid]['description'])."<br /><br />",
-    			"MEMBERDIR_DROPDOWN"    => $this->dirList("id", $dirid, 200)
+    		    "MEMBERDIR_DIRID"         => $dirid,
+    			"MEMBERDIR_CHAR_LIST"     => $this->_getCharList("?section=memberdir&amp;id=".$dirid."&amp;sort=$sort"),
+    			"MEMBERDIR_KEYWORD"		  => (empty($_GET['keyword'])) ? "" : htmlentities(contrexx_stripslashes($_GET['keyword']), ENT_QUOTES, CONTREXX_CHARSET),
+    			"MEMBERDIR_SEARCH"		  => $_ARRAYLANG['TXT_SEARCH'],
+    			"MEMBERDIR_DESCRIPTION"   => nl2br($this->directories[$dirid]['description'])."<br /><br />",
+    			"MEMBERDIR_DROPDOWN"      => $this->dirList("id", $dirid, 200)
     		));
 
     		$sortField = $this->directories[$dirid]['sort'];
@@ -294,11 +294,10 @@ class memberDir extends MemberDirLibrary
 						}
 
 						 $name = ($key <= 12 ) ? strtoupper($field['name']) : $key;
-		        $this->_objTpl->setVariable(array(
-                    "MEMBERDIR_FIELD_".$name => ($key > 12) ? nl2br($objResult->fields[$key]) : $this->checkStr($objResult->fields[$key])
-		        ));
-
-
+        		        $this->_objTpl->setVariable(array(
+                            "MEMBERDIR_FIELD_".$name => ($key > 12) ? nl2br($objResult->fields[$key]) : $this->checkStr($objResult->fields[$key])
+        		        ));
+                        
 						$this->_objTpl->setVariable($replace);
 						$this->_objTpl->setVariable(array(
 							"MEMBERDIR_ROW"		=> $rowid,
@@ -410,15 +409,48 @@ class memberDir extends MemberDirLibrary
 
 		$this->_objTpl->parse("memberdir_detail_view");
 	}
-
+	/*
+    private function _categoryList()
+    {
+        global $objDatabase;
+        
+        $parList = array();
+        foreach ($this->directories as $key => $dir) {
+            $parList[$dir['parentdir']][] = $key;
+        }
+        
+        $catTree = $this->buildCategoryTree($parList);
+        
+    }
+    
+    private function parseCategoryList($catTree)
+    {
+        foreach ($catTree as $key => $cat) {
+            $this->_objTpl->setVariable(array(
+	             "MEMBERDIR_PARENT_ID"     => $cat['parentdir'],
+	             "MEMBERDIR_PADDING_LEFT"  => $cat['level'] * 20
+	        ));
+	        $this->_objTpl->parse("")
+        }
+    }*/
+    
+	/**
+	 * Show the list of categories
+	 * 
+	 * this is crap
+	 */
+	
 	function _categoryList()
 	{
 		global $objDatabase;
-
+        
 		$lastlevel = 0;
 		$arrKeys = array_keys($this->directories);
 
 		foreach ($this->directories as $dirkey => $directory) {
+		    if ($directory['lang'] != $this->langId && $directory['lang'] != 0) {
+		        continue;
+		    }
 			if ($directory['active']) {
 			    if ($directory['level'] > $lastlevel) {
 			    	// open sub level
@@ -477,6 +509,25 @@ class memberDir extends MemberDirLibrary
 	{
         $name = strtoupper($name);
         return "FIELD_".$name;
+	}
+	
+	/**
+	 * Build a category tree recursively
+	 *
+	 * @param int $parList
+	 * @param int $parent
+	 * @return array
+	 */
+	private function buildCategoryTree($parList, $parent=0)
+	{
+	    $arr = array();
+	    foreach ($parList[$parent] as $value) {
+	        $id = array_push($arr, $this->directories[$value]);
+	        if ($this->directories[$value]['has_children']) {
+	           $arr[$id-1]['children'] = $this->buildCategoryTree($parList, $value);
+	        }
+	    }
+	    return $arr;
 	}
 }
 ?>

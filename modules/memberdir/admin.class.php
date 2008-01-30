@@ -10,6 +10,8 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+$_ARRAYLANG['TXT_ALL_LANGUAGES'] = "Alle Sprachen";
+
 /**
  * Includes
  */
@@ -67,14 +69,6 @@ class MemberDirManager extends MemberDirLibrary
 														<a href=\"?cmd=memberdir&amp;act=export&amp;everything=1\">".$_ARRAYLANG['TXT_DOWNLOAD']."</a>
 														<a href=\"?cmd=memberdir&amp;act=placeholders\">".$_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR']."</a>
 														<a href=\"?cmd=memberdir&amp;act=settings\">".$_ARRAYLANG['TXT_SETTINGS']."</a>");
-	}
-
-	/**
-	* @ignore
-	*/
-	function MemberDirManager()
-	{
-    	$this->__construct();
 	}
 
     /**
@@ -224,29 +218,29 @@ class MemberDirManager extends MemberDirLibrary
 		$this->pageTitle = $_ARRAYLANG['TXT_OVERVIEW'];
 
 		$this->_objTpl->setGlobalVariable(array(
-			"TXT_CONFIRM_DELETE_DATA"	=> $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
+			"TXT_CONFIRM_DELETE_DATA"    => $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
 			"TXT_ACTION_IS_IRREVERSIBLE" => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
-			"TXT_DELETE_CATEGORY_ALL"	=> $_ARRAYLANG['TXT_DELETE_CATEGORY_ALL'],
-			"TXT_MANAGE_ENTRIES"	=> $_ARRAYLANG['TXT_OVERVIEW'],
-			"TXT_SUBMIT_SELECT"		=> $_ARRAYLANG['TXT_SUBMIT_SELECT'],
-			"TXT_SUBMIT_DELETE"		=> $_ARRAYLANG['TXT_SUBMIT_DELETE'],
-			"TXT_SUBMIT_EXPORT"		=> $_ARRAYLANG['TXT_SUBMIT_EXPORT'],
-			"TXT_SELECT_ALL"		=> $_ARRAYLANG['TXT_SELECT_ALL'],
-			"TXT_DESELECT_ALL"		=> $_ARRAYLANG['TXT_DESELECT_ALL'],
-			"TXT_NAME"				=> $_ARRAYLANG['TXT_NAME'],
-			"TXT_ACTIONS"			=> $_ARRAYLANG['TXT_ACTION'],
-			"TXT_DESCRIPTION"		=> $_ARRAYLANG['TXT_DESCRIPTION'],
-			"TXT_ENTRIES"			=> $_ARRAYLANG['TXT_ENTRIES'],
-			"TXT_FILTER"			=> $_ARRAYLANG['TXT_FILTER'],
-	 		"DIRECTORY_LIST"		=> $this->dirList('id', null, 100),
-			"TXT_SEARCH"			=> $_ARRAYLANG['TXT_SEARCH'],
-			"TXT_KEYWORD"			=> (empty($_GET['keyword'])) ? "" : $_GET['keyword'],
-			"TXT_STATUS"			=> $_ARRAYLANG['TXT_STATUS'],
-			"TXT_CSV_FILE"			=> $_ARRAYLANG['TXT_CSV_FILE'],
-			"TXT_DOWNLOAD"			=> $_ARRAYLANG['TXT_DOWNLOAD'],
-			"TXT_ID"                => $_ARRAYLANG['TXT_ID'],
-			"TXT_DOWNLOAD_QUESTION"  => $_ARRAYLANG['TXT_DOWNLOAD_QUESTION'],
-			'TXT_MEMBERDIR_LANGUAGE'	=> $_ARRAYLANG['TXT_MEMBERDIR_LANGUAGE']
+			"TXT_DELETE_CATEGORY_ALL"	 => $_ARRAYLANG['TXT_DELETE_CATEGORY_ALL'],
+			"TXT_MANAGE_ENTRIES"         => $_ARRAYLANG['TXT_OVERVIEW'],
+			"TXT_SUBMIT_SELECT"          => $_ARRAYLANG['TXT_SUBMIT_SELECT'],
+			"TXT_SUBMIT_DELETE"          => $_ARRAYLANG['TXT_SUBMIT_DELETE'],
+			"TXT_SUBMIT_EXPORT"          => $_ARRAYLANG['TXT_SUBMIT_EXPORT'],
+			"TXT_SELECT_ALL"             => $_ARRAYLANG['TXT_SELECT_ALL'],
+			"TXT_DESELECT_ALL"           => $_ARRAYLANG['TXT_DESELECT_ALL'],
+			"TXT_NAME"                   => $_ARRAYLANG['TXT_NAME'],
+			"TXT_ACTIONS"                => $_ARRAYLANG['TXT_ACTION'],
+			"TXT_DESCRIPTION"            => $_ARRAYLANG['TXT_DESCRIPTION'],
+			"TXT_ENTRIES"                => $_ARRAYLANG['TXT_ENTRIES'],
+			"TXT_FILTER"                 => $_ARRAYLANG['TXT_FILTER'],
+            "DIRECTORY_LIST"             => $this->dirList('id', null, 100),
+			"TXT_SEARCH"                 => $_ARRAYLANG['TXT_SEARCH'],
+			"TXT_KEYWORD"                => (empty($_GET['keyword'])) ? "" : $_GET['keyword'],
+			"TXT_STATUS"                 => $_ARRAYLANG['TXT_STATUS'],
+			"TXT_CSV_FILE"               => $_ARRAYLANG['TXT_CSV_FILE'],
+			"TXT_DOWNLOAD"               => $_ARRAYLANG['TXT_DOWNLOAD'],
+			"TXT_ID"                     => $_ARRAYLANG['TXT_ID'],
+			"TXT_DOWNLOAD_QUESTION"      => $_ARRAYLANG['TXT_DOWNLOAD_QUESTION'],
+			'TXT_MEMBERDIR_LANGUAGE'     => $_ARRAYLANG['TXT_MEMBERDIR_LANGUAGE']
 		));
 
 		$rowid = 2;
@@ -269,19 +263,25 @@ class MemberDirManager extends MemberDirLibrary
                 $parentdir = $this->directories[$parentdir]['parentdir'];
             }
 
+            
+            if ($value['lang'] == 0) {
+                $lang = $_ARRAYLANG['TXT_ALL_LANGUAGES'];
+            } else {
+                $lang =  $objLanguage->arrLanguage[$value['lang']]['lang'];
+            }
             $this->_objTpl->setVariable(array(
-				"MEMBERDIR_DIRID"		=> $key,
-				"MEMBERDIR_DIRNAME"		=> $value['name'],
-				"MEMBERDIR_ROW"			=> "row".$rowid,
-				"MEMBERDIR_DESC"		=> nl2br($value['description']),
-				"MEMBERDIR_ENTRYCOUNT"  => $entryCount,
-				"MEMBERDIR_ACTIVE"		=> ($value['active']) ? "green" : "red",
-				"MEMBERDIR_MARGIN"      => $margin,
-				"MEMBERDIR_PARENTS"     => $parentdirlist,
-				"MEMBERDIR_DISPLAY"     => ($value['parentdir'] == 0) ? "table-row" : "none",
-				"MEMBERDIR_HAS_CHILDREN" => $value['has_children'],
-				"MEMBERDIR_LEVEL"       => $value['level'],
-				'MEMBERDIR_LANGUAGE'	=> htmlentities($objLanguage->arrLanguage[$value['lang']]['name'], ENT_QUOTES, CONTREXX_CHARSET).' ('.$objLanguage->arrLanguage[$value['lang']]['lang'].')'
+				"MEMBERDIR_DIRID"           => $key,
+				"MEMBERDIR_DIRNAME"	        => $value['name'],
+				"MEMBERDIR_ROW"             => "row".$rowid,
+				"MEMBERDIR_DESC"            => nl2br($value['description']),
+				"MEMBERDIR_ENTRYCOUNT"      => $entryCount,
+				"MEMBERDIR_ACTIVE"          => ($value['active']) ? "green" : "red",
+				"MEMBERDIR_MARGIN"          => $margin,
+				"MEMBERDIR_PARENTS"         => $parentdirlist,
+				"MEMBERDIR_DISPLAY"         => ($value['parentdir'] == 0) ? "table-row" : "none",
+				"MEMBERDIR_HAS_CHILDREN"    => $value['has_children'],
+				"MEMBERDIR_LEVEL"           => $value['level'],
+				'MEMBERDIR_LANGUAGE'        => htmlentities($objLanguage->arrLanguage[$value['lang']]['name'], ENT_QUOTES, CONTREXX_CHARSET).' ('.$lang.')'
 			));
 
 			if ($value['has_children']) {
@@ -401,11 +401,12 @@ class MemberDirManager extends MemberDirLibrary
 	 */
 	function _getLanguageMenu($attrs, $selectedLangId = 0)
 	{
-		global $objLanguage;
+		global $objLanguage, $_ARRAYLANG;
 
 		$menu = '<select '.$attrs.'>';
+		$menu .= '<option value="0">'.$_ARRAYLANG['TXT_ALL_LANGUAGES'].'</option>';
 		foreach ($objLanguage->getLanguageArray() as $langId => $arrLanguage) {
-			$menu .= '<option value="'.$langId.'"'.((empty($selectedLangId) && $arrLanguage['is_default'] == 'true' || $langId == $selectedLangId) ? ' selected="selected"' : '').'>'.htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET).' ('.$arrLanguage['lang'].')</option>';
+			$menu .= '<option value="'.$langId.'"'.(($langId == $selectedLangId) ? ' selected="selected"' : '').'>'.htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET).' ('.$arrLanguage['lang'].')</option>';
 		}
 		$menu .= '</select>';
 
@@ -429,7 +430,7 @@ class MemberDirManager extends MemberDirLibrary
 		$sort = intval($_POST['sortSelection']);
 		$langId = isset($_POST['memberdirLangId']) ? intval($_POST['memberdirLangId']) : 0;
 
-		if (!in_array($langId, array_keys($objLanguage->arrLanguage))) {
+		if (!in_array($langId, array_keys($objLanguage->arrLanguage)) && $langId != 0) {
 			$langId = $objLanguage->defaultLanguageId;
 		}
 
@@ -642,7 +643,6 @@ class MemberDirManager extends MemberDirLibrary
     {
     	global $objDatabase, $_ARRAYLANG, $objLanguage;
 
-
 		$dirid = (empty($dirid)) ? intval($_GET['id']) : $dirid;
 
 		$query = "SELECT field FROM ".DBPREFIX."module_memberdir_name
@@ -676,7 +676,8 @@ class MemberDirManager extends MemberDirLibrary
 		$parentdir = ($parentdir == $dirid) ? $this->directories[$dirid]['parentdir'] : $parentdir;
 		$displaymode = contrexx_addslashes($_POST['displaymode']);
 		$sort = intval($_POST['sortSelection']);
-		$langId = in_array(intval($_POST['memberdirLangId']), array_keys($objLanguage->arrLanguage)) ? intval($_POST['memberdirLangId']) : $objLanguage->defaultLanguageId;
+		$lang_keys = array_keys($objLanguage->arrLanguage);
+		$langId = (in_array(intval($_POST['memberdirLangId']), array_keys($objLanguage->arrLanguage)) || $_POST['memberdirLangId'] == 0) ? intval($_POST['memberdirLangId']) : $lang_keys[0];
 		$query = "UPDATE ".DBPREFIX."module_memberdir_directories
 				  SET `name` = '$name',
 				  `description` = '$description',
@@ -1172,7 +1173,7 @@ class MemberDirManager extends MemberDirLibrary
 				    '".$values[17]."', '".$values[18]."',
 				    '".$this->langId."'
 				   )";
-
+		
 		if ($objDatabase->Execute($query)) {
             $memberid = $objDatabase->Insert_ID();
 
