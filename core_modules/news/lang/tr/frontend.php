@@ -36,4 +36,7 @@ $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'] = "Teaser Text";
 $_ARRAYLANG['TXT_NEWS_TEASER_IMAGE'] = "Teaser Bild";
 $_ARRAYLANG['TXT_NEWS_NEWS_URL'] = "News URL";
 $_ARRAYLANG['TXT_SUBMIT'] = "Anmelden";
+$_ARRAYLANG['TXT_NOTIFY_ADDRESS'] = "Hallo";
+$_ARRAYLANG['TXT_NOTIFY_SUBJECT'] = "News-Meldung zu bestätigen";
+$_ARRAYLANG['TXT_NOTIFY_MESSAGE'] = "Es wurde eine neue News-Meldung eingetragen, die noch freigeschalten werden muss. Unter nachfolgender URL können Sie dies tun:";
 ?>

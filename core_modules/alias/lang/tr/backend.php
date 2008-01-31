@@ -46,4 +46,5 @@ $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST'] = "Bu hedef sayfa yok!";
 $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "%s Takma isim  uygulanamaz, çünkü fiziksel olarak zaten mevcut!";
 $_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'] = "%s Sayfası için zaten takma isim var!";
 $_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG'] = "Bu Takma isim etkin değil!<br />Etkinlemek için bu sembole basın.";
+$_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON'] = "Use as default:";
 ?>

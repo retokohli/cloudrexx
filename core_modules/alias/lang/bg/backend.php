@@ -46,4 +46,5 @@ $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST'] = "Die Zielseite existiert nicht 
 $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "Das Alias %s kann nicht verwendet werden, da es physikalisch vorhanden ist!";
 $_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'] = "Ein Alias für die Seite %s existiert bereits!";
 $_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG'] = "Dieses Alias ist nicht mehr aktiv!<br />Klicken Sie auf dieses Symbol um das Alias wieder zu aktivieren.";
+$_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON'] = "Use as default:";
 ?>
