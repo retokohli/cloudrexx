@@ -1328,6 +1328,11 @@ class newsManager extends newsLibrary {
 		                      SET value='".intval($_POST['headlinesLimit'])."'
 		                    WHERE name = 'news_headlines_limit'");
 
+			// Notify-user. 0 = disabled.
+			$this->_store_settings_item('news_notify_user', intval($_POST['newsNotifySelectedUser']));
+			// Notify-Group. 0 = disabled.
+			$this->_store_settings_item('news_notify_group', intval($_POST['newsNotifySelectedGroup']));
+
 		    $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='1' WHERE name = 'news_settings_activated'");
 
 		    $submitNews = isset($_POST['newsSubmitNews']) ? intval($_POST['newsSubmitNews']) : 0;
@@ -1349,8 +1354,26 @@ class newsManager extends newsLibrary {
 			$objSettings = &new settingsManager();
 		    $objSettings->writeSettingsFile();
     	}
-    }
+	}
 
+	function _store_settings_item($name_in_db, $value) {
+    	global $objDatabase;
+		$objDatabase->Execute("
+			UPDATE ".DBPREFIX."module_news_settings
+			SET    value = '$value'
+			WHERE  name  = '$name_in_db';"
+		);
+		if ($objDatabase->Affected_Rows() == 0) {
+			$objDatabase->Execute("
+				DELETE FROM ".DBPREFIX."module_news_settings 
+				WHERE name = '$name_in_db';"
+			);
+			$objDatabase->Execute("
+				INSERT INTO ".DBPREFIX."module_news_settings (name,          value)
+				VALUES                                       ('$name_in_db', '$value');"
+			);
+		}
+	}
 
     function settings(){
     	global $objDatabase, $_ARRAYLANG, $_CONFIG;
@@ -1399,9 +1422,58 @@ class newsManager extends newsLibrary {
 		    'TXT_ALLOW_USERS_SUBMIT_NEWS'			=> $_ARRAYLANG['TXT_ALLOW_USERS_SUBMIT_NEWS'],
 		    'TXT_ALLOW_ONLY_MEMBERS_SUBMIT_NEWS'	=> $_ARRAYLANG['TXT_ALLOW_ONLY_MEMBERS_SUBMIT_NEWS'],
 		    'TXT_AUTO_ACTIVATE_SUBMITTED_NEWS'		=> $_ARRAYLANG['TXT_AUTO_ACTIVATE_SUBMITTED_NEWS'],
-		    'TXT_USE_TEASERS'						=> $_ARRAYLANG['TXT_USE_TEASERS']
+		    'TXT_USE_TEASERS'						=> $_ARRAYLANG['TXT_USE_TEASERS'],
+		    'TXT_NOTIFY_GROUP'						=> $_ARRAYLANG['TXT_NOTIFY_GROUP'],
+		    'TXT_NOTIFY_USER'						=> $_ARRAYLANG['TXT_NOTIFY_USER'],
+		    'TXT_DEACTIVATE'						=> $_ARRAYLANG['TXT_DEACTIVATE'],
+			'NEWS_NOTIFY_GROUP_LIST'                => $this->_generate_notify_group_list(),
+			'NEWS_NOTIFY_USER_LIST'                 => $this->_generate_notify_user_list()
 		));
-    }
+	}
+	function _generate_notify_group_list() {
+		$active_grp = $this->arrSettings['news_notify_group'];
+		if (!empty($_POST['newsNotifySelectedGroup'])) {
+			$active_grp = intval($_POST['newsNotifySelectedGroup']);
+		}
+		return $this->_generate_notify_list('group_id', 'group_name', 'access_user_groups', $active_grp);
+	}
+	function _generate_notify_user_list() {
+		$active_user= $this->arrSettings['news_notify_user'];
+		if (!empty($_POST['newsNotifySelectedUser'])) {
+			$active_user = intval($_POST['newsNotifySelectedUser']);
+		}
+		return $this->_generate_notify_list('id', 'username', 'access_users', $active_user);
+	}
+
+	/**
+	 * Generates a list of <option> lines, including a "disable" entry on top of the list.
+	 * For this to work, the function needs to know the following parameters:
+	 * @param id_col    The column of the table that contains the "value" part of the option
+	 * @param label_col The column that will be displayed to the user.
+	 * @param table     The table from where to select data. without pefix!
+	 * @param active_id The id which should be pre-selected.
+	 */
+	function _generate_notify_list($id_col, $label_col, $table, $active_id) {
+    	global $_ARRAYLANG, $objDatabase;
+		$res = array();
+
+		$none_selected = $active_id == 0 ? 'selected' : '';
+		$res[] = "<option value=\"0\" $none_selected>(".$_ARRAYLANG['TXT_DEACTIVATE'].")</option>";
+
+    	$query = "SELECT `$id_col`, `$label_col` FROM `".DBPREFIX."$table` ORDER BY `$label_col`";
+    	$result = $objDatabase->Execute($query);
+    	if ($result !== false) {
+    		while (!$result->EOF) {
+				$id       = $result->fields[$id_col];
+				$name     = $result->fields[$label_col];
+				$selected = $id == $active_id ? 'selected' : '';
+
+				$res[] = "<option value=\"$id\" $selected>$name</option>";
+    			$result->MoveNext();
+    		}
+    	}
+		return join("\n\t", $res);
+	}
 
     function _ticker()
     {

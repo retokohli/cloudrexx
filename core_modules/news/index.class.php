@@ -332,6 +332,92 @@ class news extends newsLibrary {
 	    }
 	}
 
+	function _notify_by_email($news_id) {
+		global $objDatabase;
+		$user_id  = intval($this->arrSettings['news_notify_user']);
+		$group_id = intval($this->arrSettings['news_notify_group']);
+		$users_in_group = array();
+
+		if ($group_id > 0) {
+			// Retreive userids from the activated group..
+			$res = $objDatabase->Execute('
+				SELECT id FROM '.DBPREFIX."access_users 
+				WHERE  groups =      '$group_id'
+			    	OR groups LIKE   '$group_id,%'
+			    	OR groups LIKE '%,$group_id'
+			    	OR groups LIKE '%,$group_id,%'"
+			);
+			while (!$res->EOF) {
+				$users_in_group[] = $res->fields['id'];
+				$res->MoveNext();
+			} 
+		}
+		
+		if ($user_id > 0) {
+			$users_in_group[] = $user_id;
+		}
+
+		// Now we have fetched all user IDs that 
+		// are to be notified. Now send those emails!
+		foreach ($users_in_group as $user_id) {
+			$this->_notify_user_by_email($user_id, $news_id);
+		}
+	}
+
+	function _notify_user_by_email($user_id, $news_id) {
+		global $objDatabase, $_ARRAYLANG, $_CONFIG;
+		// First, get username and email address.
+		try {
+			$res = $objDatabase->Execute('
+				SELECT firstname, lastname, email, username 
+				FROM '.DBPREFIX."access_users 
+				WHERE  id = $user_id"
+			);
+		}
+		catch (Exception $e) {
+		}
+		
+		if($res->EOF) {
+			return false;
+		}
+		$user  = $res->fields['username'];
+		$first = $res->fields['firstname'];
+		$last  = $res->fields['lastname'];
+		$email = $res->fields['email'];
+
+		// Adress user with username if no first, lastname is defined.
+		$name = ($first && $last) ? "$first $last" : $user;
+
+		$mail = "$name <$email>";
+
+		$msg  = $_ARRAYLANG['TXT_NOTIFY_ADDRESS'] . " $name\n\n";
+		// Split the message text into lines
+		$words = preg_split('/\s+/s', $_ARRAYLANG['TXT_NOTIFY_MESSAGE']);
+		$line = '';
+		for ($idx = 0; $idx < sizeof($words); $idx++) {
+			if (strlen($line . ' ' . $words[$idx]) < 80) {
+				// Line not full yet
+				if ($line) $line .= ' ' . $words[$idx];
+				else       $line =        $words[$idx];
+			}
+			else {
+				// Line is full. add to message and empty.
+				$msg .= "$line\n";
+				$line = $words[$idx];
+			}
+		}
+		$msg .= "$line\n";
+		$msg .= "  http://".$_SERVER['SERVER_NAME'].  $serverPort.ASCMS_PATH_OFFSET . "/cadmin/index.php?cmd=news" 
+			. "&act=edit&newsId=$news_id&validate=true";
+		$msg .= "\n\n";
+		$msg .= $_CONFIG['coreAdminName'];
+
+		$sender_mail = $_CONFIG['coreAdminName'] . ' <' . $_CONFIG['coreAdminEmail'] . '>';
+		//print "<b>(Testing) This mail would have been sent:</b><pre>$mail\n$msg\n\n</pre>";
+		mail($mail, $_ARRAYLANG['TXT_NOTIFY_SUBJECT'], $msg, "From: $sender_mail");
+		return true;
+	}
+
 	/**
 	* Get the submit page
 	*
@@ -409,6 +495,9 @@ class news extends newsLibrary {
 					$newsUrl2 = $_POST['newsUrl2'];
 					$newsCat = $_POST['newsCat'];
 					$newsText = $_POST['newsText'];
+				}
+				else {
+					$this->_notify_by_email($insertStatus);
 				}
 			} else {
 				$newsTitle = $_POST['newsTitle'];
@@ -546,7 +635,8 @@ class news extends newsLibrary {
 
         if ($objResult !== false){
     	    $this->_submitMessage = $_ARRAYLANG['TXT_NEWS_SUCCESSFULLY_SUBMITED']."<br /><br />";
-    	    return true;
+			$ins_id = $objDatabase->Insert_ID();
+    	    return $ins_id;
         } else{
         	$this->_submitMessage = $_ARRAYLANG['TXT_NEWS_SUBMIT_ERROR']."<br /><br />";
         	return false;
