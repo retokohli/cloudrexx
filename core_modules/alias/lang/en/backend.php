@@ -46,4 +46,5 @@ $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST'] = "The target page doesn't exist 
 $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "The alias %s couldn't be used, because it is physically present!";
 $_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'] = "An alias for the page %s has already been defined!";
 $_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG'] = "This alias isn't active anymore!<br />Click on this icon to reactive it.";
+$_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON'] = "Use as default:";
 ?>

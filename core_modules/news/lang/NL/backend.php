@@ -186,4 +186,6 @@ $_ARRAYLANG['TXT_NEWS_DEFINE_LINK_ALT_TEXT'] = "Definieer tekst dat gebruikt zal
 $_ARRAYLANG['TXT_NEWS_INSERT_LINK'] = "Link invoegen";
 $_ARRAYLANG['TXT_NEWS_OVERVIEW'] = "Overzicht";
 $_ARRAYLANG['TXT_HEADLINE_ID_DESCRIPTION'] = "ID der Newsmeldung";
+$_ARRAYLANG['TXT_NOTIFY_GROUP'] = "Gruppe benachrichtigen:";
+$_ARRAYLANG['TXT_NOTIFY_USER'] = "Benutzer benachrichtigen:";
 ?>
