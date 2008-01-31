@@ -34,9 +34,22 @@ function SetUrl(url, width, height, alt) {
 		<tr class="row2">
 			<td width="15%" style="vertical-align: top;">{TXT_SUBMIT_NEWS}</td>
 			<td>
-				<input type="checkbox" name="newsSubmitNews" {NEWS_SUBMIT_NEWS} id="newsSubmitNews" value="1" /><label for="newsSubmitNews">&nbsp;{TXT_ALLOW_USERS_SUBMIT_NEWS}</label><br />
-				<input type="checkbox" name="newsSubmitOnlyCommunity" {NEWS_SUBMIT_ONLY_COMMUNITY} id="newsSubmitOnlyCommunity" value="1" /><label for="newsSubmitOnlyCommunity">&nbsp;{TXT_ALLOW_ONLY_MEMBERS_SUBMIT_NEWS}</label><br />
-				<input type="checkbox" name="newsActivateSubmittedNews" {NEWS_ACTIVATE_SUBMITTED_NEWS} id="newsActivateSubmittedNews" value="1" /><label for="newsActivateSubmittedNews">&nbsp;{TXT_AUTO_ACTIVATE_SUBMITTED_NEWS}</label>
+				<input type="checkbox" name="newsSubmitNews" {NEWS_SUBMIT_NEWS} id="newsSubmitNews" value="1" />
+					<label for="newsSubmitNews">&nbsp;{TXT_ALLOW_USERS_SUBMIT_NEWS}</label><br />
+				<input type="checkbox" name="newsSubmitOnlyCommunity" {NEWS_SUBMIT_ONLY_COMMUNITY} id="newsSubmitOnlyCommunity" value="1" />
+					<label for="newsSubmitOnlyCommunity">&nbsp;{TXT_ALLOW_ONLY_MEMBERS_SUBMIT_NEWS}</label><br />
+				<input type="checkbox" name="newsActivateSubmittedNews" {NEWS_ACTIVATE_SUBMITTED_NEWS} id="newsActivateSubmittedNews" value="1" />
+					<label for="newsActivateSubmittedNews">&nbsp;{TXT_AUTO_ACTIVATE_SUBMITTED_NEWS}</label><br />
+
+				<label for="newsNotifySelectedGroup">&nbsp;{TXT_NOTIFY_GROUP}</label>
+					<select name="newsNotifySelectedGroup" {NEWS_NOTIFY_SELECTED_GROUP} id="newsNotifySelectedGroup">
+						{NEWS_NOTIFY_GROUP_LIST}
+					</select><br />
+				<label for="newsNotifySelectedUser">&nbsp;{TXT_NOTIFY_USER}</label>
+					<select name="newsNotifySelectedUser" {NEWS_NOTIFY_SELECTED_GROUP} id="newsNotifySelectedUser">
+						{NEWS_NOTIFY_USER_LIST}
+					</select><br />
+
 			</td>
 		</tr>
 		<tr class="row1">
