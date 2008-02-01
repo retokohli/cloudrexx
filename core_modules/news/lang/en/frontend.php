@@ -35,7 +35,7 @@ $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'] = "Teaser Text";
 $_ARRAYLANG['TXT_NEWS_TEASER_IMAGE'] = "Teaser image";
 $_ARRAYLANG['TXT_NEWS_NEWS_URL'] = "News URL";
 $_ARRAYLANG['TXT_SUBMIT'] = "Submit";
-$_ARRAYLANG['TXT_NOTIFY_ADDRESS'] = "Hallo";
-$_ARRAYLANG['TXT_NOTIFY_SUBJECT'] = "News-Meldung zu bestätigen";
-$_ARRAYLANG['TXT_NOTIFY_MESSAGE'] = "Es wurde eine neue News-Meldung eingetragen, die noch freigeschalten werden muss. Unter nachfolgender URL können Sie dies tun:";
+$_ARRAYLANG['TXT_NOTIFY_ADDRESS'] = "Hello";
+$_ARRAYLANG['TXT_NOTIFY_SUBJECT'] = "News entry waiting for confirmation";
+$_ARRAYLANG['TXT_NOTIFY_MESSAGE'] = "A news entry was added. You can review the entry at the following URL:";
 ?>

@@ -188,6 +188,6 @@ $_ARRAYLANG['TXT_NEWS_DEFINE_LINK_ALT_TEXT'] = "Define a text that should be use
 $_ARRAYLANG['TXT_NEWS_INSERT_LINK'] = "Insert link";
 $_ARRAYLANG['TXT_NEWS_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_HEADLINE_ID_DESCRIPTION'] = "ID der Newsmeldung";
-$_ARRAYLANG['TXT_NOTIFY_GROUP'] = "Gruppe benachrichtigen:";
-$_ARRAYLANG['TXT_NOTIFY_USER'] = "Benutzer benachrichtigen:";
+$_ARRAYLANG['TXT_NOTIFY_GROUP'] = "Notify group:";
+$_ARRAYLANG['TXT_NOTIFY_USER'] = "Notify user:";
 ?>
