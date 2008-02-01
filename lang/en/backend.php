@@ -803,4 +803,13 @@ $_ARRAYLANG['TXT_TARGET_OVERVIEW'] = "Content Manager";
 $_ARRAYLANG['TXT_TARGET_NEW_PAGE'] = "Neue Seite erstellen";
 $_ARRAYLANG['TXT_TARGET_PAGE_AFTER_STORING'] = "Ziel nach dem speichern:";
 $_ARRAYLANG['TXT_CONTENT_LOST_N_FOUND_DESCRIPTION'] = "Wiederhergestellte Seiten werden hier abgelegt.";
+$_ARRAYLANG['TXT_USER_SEARCH'] = "Suchen";
+$_ARRAYLANG['TXT_USER_GROUP_FILTER'] = "Gruppenfilter";
+$_ARRAYLANG['TXT_USER_SEARCH_TERM'] = "Suchbegriff";
+$_ARRAYLANG['TXT_USER_ALL'] = "Alle";
+$_ARRAYLANG['TXT_USER_USERNAME'] = "Benutzername";
+$_ARRAYLANG['TXT_USER_EMAIL'] = "E-Mail";
+$_ARRAYLANG['TXT_USER_FIRSTNAME'] = "Vorname";
+$_ARRAYLANG['TXT_USER_LASTNAME'] = "Nachname";
+$_ARRAYLANG['TXT_USER_GROUP_INVERT_RESULT'] = "Gruppenfilter umkehren";
 ?>
