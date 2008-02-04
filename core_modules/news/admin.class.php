@@ -1059,8 +1059,10 @@ class newsManager extends newsLibrary {
     									WHERE	id='.$intNewsId.'
     									LIMIT	1
     								');
-
-    			 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+    			
+    			$this->createRSS();
+    			
+    			$this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
     		}
     	}
     }
