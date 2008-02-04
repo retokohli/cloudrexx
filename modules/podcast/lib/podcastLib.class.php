@@ -21,7 +21,7 @@ class podcastLib
 	 * @access private
 	 * @var $_noThumbnail string path to default image, without offset
 	 */
-	var $_noThumbnail = '/images/content/podcast/no_picture.gif';
+	var $_noThumbnail = '/images/podcast/no_picture.gif';
 
 	/**
 	 * settings array
@@ -37,7 +37,7 @@ class podcastLib
 	 * @access private
 	 * @var string path to the default thumbnail, relative to the backend admin path
 	 */
-	var $_defaultThumbnail = 'images/content/podcast/no_picture.gif';
+	var $_defaultThumbnail = 'images/podcast/no_picture.gif';
 
 	/**
 	 * allowed characters in a YouTube Video ID (regex class)
@@ -1245,7 +1245,7 @@ EOF;
 			}
 			@fclose($s);
 			$response = substr($response, -$contentLength);
-			$mediumThumbnail = '/images/content/podcast/youtube_thumbnails/youtube_'.$youTubeID.'.jpg';
+			$mediumThumbnail = '/images/podcast/youtube_thumbnails/youtube_'.$youTubeID.'.jpg';
 			$hImg = fopen(ASCMS_DOCUMENT_ROOT.$mediumThumbnail, 'w');
 			fwrite($hImg, $response, $contentLength);
 			fclose($hImg);

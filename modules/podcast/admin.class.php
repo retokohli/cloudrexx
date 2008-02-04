@@ -76,6 +76,7 @@ class podcastManager extends podcastLib
     													<a href='index.php?cmd=podcast&amp;act=templates'>".$_ARRAYLANG['TXT_PODCAST_TEMPLATES']."</a>
     													<a href='index.php?cmd=podcast&amp;act=settings'>".$_ARRAYLANG['TXT_PODCAST_SETTINGS']."</a>"
     													);
+		$this->_youTubeIdRegex = "#.*[\?&]v=(".$this->_youTubeAllowedCharacters."{".$this->_youTubeIdLenght."}).*#";
     	parent::__construct();
 	}
 
