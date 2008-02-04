@@ -82,9 +82,9 @@
 
 	var openBrowser = function openBrowser(url, attrs) {
 		if(elInputThumbnailPath.value != ''){
-			pathRegExp =/\/images\/content\/(.+)\/.+/;
+			pathRegExp =/\/images\/podcast\/?(.+)\/.+/;
 			pathRegExp.exec(elInputThumbnailPath.value);
-			url='index.php?cmd=fileBrowser&standalone=true&type=files&path=/'+RegExp.$1;
+			url='index.php?cmd=fileBrowser&standalone=true&type=podcast&path=/'+RegExp.$1;
 		}
 		try{
 			if(!browserPopup.closed){

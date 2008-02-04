@@ -46,10 +46,12 @@ class FileBrowser {
         'media3'	=> 'TXT_FILEBROWSER_MEDIA_3',
         'media4'	=> 'TXT_FILEBROWSER_MEDIA_4',
         'shop'	    => 'TXT_FILEBROWSER_SHOP',
-        'blog'	    => 'TXT_FILEBROWSER_BLOG'
+        'blog'	    => 'TXT_FILEBROWSER_BLOG',
+        'podcast'   => 'TXT_FILEBROWSER_PODCAST'
     );
     var $_shopEnabled;
     var $_blogEnabled;
+    var $_podcastEnabled;
 
 
 
@@ -81,6 +83,7 @@ class FileBrowser {
 
 		$this->_shopEnabled = $this->_checkForModule('shop');
 		$this->_blogEnabled = $this->_checkForModule('blog');
+		$this->_podcastEnabled = $this->_checkForModule('podcast');
 
 		$this->_checkUpload();
 		$this->_initFiles();
@@ -220,6 +223,9 @@ class FileBrowser {
 			case 'blog':
 				$strWebPath = ASCMS_BLOG_IMAGES_WEB_PATH.$this->_path;
 			break;
+			case 'podcast':
+				$strWebPath = ASCMS_PODCAST_IMAGES_WEB_PATH.$this->_path;
+			break;
 			default:
 				$strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
 		}
@@ -335,6 +341,10 @@ class FileBrowser {
 			case 'blog':
                 $strPath 	= ASCMS_BLOG_IMAGES_PATH.$this->_path;
 				$strWebPath = ASCMS_BLOG_IMAGES_WEB_PATH.$this->_path;
+			break;
+			case 'podcast':
+                $strPath 	= ASCMS_PODCAST_IMAGES_PATH.$this->_path;
+				$strWebPath = ASCMS_PODCAST_IMAGES_WEB_PATH.$this->_path;
 			break;
 			default:
 				$strPath 	= ASCMS_CONTENT_IMAGE_PATH.$this->_path;
@@ -551,6 +561,9 @@ class FileBrowser {
 				case 'blog':
 					$this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_BLOG_IMAGES_WEB_PATH);
 				break;
+				case 'podcast':
+					$this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_PODCAST_IMAGES_WEB_PATH);
+				break;
 				default:
 					$this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_CONTENT_IMAGE_WEB_PATH);
 			}
@@ -606,6 +619,9 @@ class FileBrowser {
 			break;
 			case 'blog':
 			    $strPath = ASCMS_BLOG_IMAGES_PATH.$this->_path;
+			break;
+			case 'podcast':
+			    $strPath = ASCMS_PODCAST_IMAGES_PATH.$this->_path;
 			break;
 			default:
 				$strPath = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
@@ -689,6 +705,7 @@ class FileBrowser {
     	foreach ($this->_arrMediaTypes as $type => $text) {
     	    if($type == 'shop' && !$this->_shopEnabled){ continue; }
     	    if($type == 'blog' && !$this->_blogEnabled){ continue; }
+      	    if($type == 'podcast' && !$this->_podcastEnabled){ continue; }
 			$menu .= "<option value=\"".$type."\"".($selectedType == $type ? " selected=\"selected\"" : "").">".$_ARRAYLANG[$text]."</option>\n";
     	}
 		$menu .= "</select>";
