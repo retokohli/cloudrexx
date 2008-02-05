@@ -41,5 +41,17 @@ $_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS'] = "Gefundene Einträge";
 $_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS_CATEGORIES'] = "Kategorien";
 $_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS_KEYWORDS'] = "Schlüsselwörter";
 $_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS_NONE'] = "Zur Ihrer Suche konnten keine passenden Einträge gefunden werden.";
+$_ARRAYLANG['TXT_BLOG_HOME_CATEGORIES'] = "Kategorien";
+$_ARRAYLANG['TXT_BLOG_HOME_KEYWORDS'] = "Schlüsselwörter";
+$_ARRAYLANG['TXT_BLOG_HOME_VOTING'] = "Bewertung";
+$_ARRAYLANG['TXT_BLOG_HOME_COMMENTS'] = "Kommentar(e)";
+$_ARRAYLANG['TXT_BLOG_HOME_LINK'] = "Link";
+$_ARRAYLANG['TXT_BLOG_HOME_OPEN'] = "Zum Eintrag";
 $_ARRAYLANG['TXT_BLOG_LIB_POSTED_BY'] = "gepostet von [USER] um [DATE]";
+$_ARRAYLANG['TXT_BLOG_LIB_CALENDAR_WEEKDAYS'] = "So,Mo,Di,Mi,Do,Fr,Sa";
+$_ARRAYLANG['TXT_BLOG_LIB_CALENDAR_MONTHS'] = "Januar,Februar,Maerz,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember";
+$_ARRAYLANG['TXT_BLOG_LIB_RATING'] = "Bewertung";
+$_ARRAYLANG['TXT_BLOG_LIB_ALL_CATEGORIES'] = "Alle Kategorien";
+$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'] = "Blog Meldungen";
+$_ARRAYLANG['TXT_BLOG_LIB_RSS_COMMENTS_TITLE'] = "Blog Kommentare";
 ?>
