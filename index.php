@@ -810,6 +810,7 @@ if (file_exists($modulespath)) {
 	    $blogHomeContentInSidebar	= $objBlogHome->searchKeywordInContent('BLOG_FILE', $themesPages['sidebar']);
 
 	    if ($blogHomeContentInContent || $blogHomeContentInTemplate || $blogHomeContentInTheme || $blogHomeContentInSidebar) {
+	    	$_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('blog'));
 	    	$strContentSource = $objBlogHome->getLatestEntries();
 
 	    	$page_content			= $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $page_content, $blogHomeContentInContent);
