@@ -1779,7 +1779,6 @@ class rssDirectory extends directoryLibrary
 		if($_GET['check'] == 'norm'){
 			$query_search = " 	OR files.date LIKE ('%$searchTerm%')
 		             			OR files.relatedlinks LIKE ('%$searchTerm%')
-						        OR files.size LIKE ('%$searchTerm%')
 					            OR files.link LIKE ('%$searchTerm%')
 					            OR files.platform LIKE ('%$searchTerm%')
 					            OR files.language LIKE ('%$searchTerm%')
@@ -1812,7 +1811,7 @@ class rssDirectory extends directoryLibrary
 							files.link AS link,
 	                  MATCH (files.description) AGAINST ('%$searchTerm%') AS score
 	                   FROM ".$db."".DBPREFIX."module_directory_dir AS files
-	                  WHERE ((files.title LIKE ('%$searchTerm%') OR files.description LIKE ('%$searchTerm%') OR files.filename LIKE ('%$searchTerm%') OR files.searchkeys LIKE ('%$searchTerm%'))
+	                  WHERE ((files.title LIKE ('%$searchTerm%') OR files.description LIKE ('%$searchTerm%') OR files.searchkeys LIKE ('%$searchTerm%'))
 	                     ".$query_search.")
 						AND files.status != 0
 				   GROUP BY files.id
