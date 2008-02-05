@@ -1908,7 +1908,7 @@ class rssDirectory extends directoryLibrary
 		}elseif ($_REQUEST['term']){
 			//search term
 			$term= htmlspecialchars($_REQUEST['term'], ENT_QUOTES, CONTREXX_CHARSET);
-			$where.=" AND (files.title LIKE '%".$term."%' OR files.filename LIKE '%".$term."%' OR files.description LIKE '%".$term."%') ";
+			$where.=" AND (files.title LIKE '%".$term."%' OR files.searchkeys LIKE '%".$term."%' OR files.description LIKE '%".$term."%') ";
 		}
 		else{
 			$where='';
