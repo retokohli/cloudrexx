@@ -234,13 +234,13 @@ class BlogHomeContent extends BlogLibrary  {
 			}
 		}
 		
-		//Also try to fill the other variables (calendar, categories-dropdown, tag-cloud)
-		@$this->_objTpl->setVariable('BLOG_CALENDAR', $this->getHomeCalendar());
-		@$this->_objTpl->setVariable('BLOG_CATEGORIES', $this->getCategoryDropDown('frmDoSearch_Keyword_Category', 0, true));
-		@$this->_objTpl->setVariable('BLOG_TAGCLOUD', $this->getTagCloud());
+		//Also try to fill the other variables
+		if ($this->searchKeywordInContent('BLOG_CALENDAR', $this->_strPageContent)) 			{	$this->_objTpl->setVariable('BLOG_CALENDAR', $this->getHomeCalendar());						}
+		if ($this->searchKeywordInContent('BLOG_TAG_CLOUD', $this->_strPageContent)) 			{	$this->_objTpl->setVariable('BLOG_TAG_CLOUD', $this->getTagCloud());						}
+		if ($this->searchKeywordInContent('BLOG_TAG_HITLIST', $this->_strPageContent)) 			{	$this->_objTpl->setVariable('BLOG_TAG_HITLIST', $this->getHomeTagHitlist());				}
+		if ($this->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $this->_strPageContent)) 	{	$this->_objTpl->setVariable('BLOG_CATEGORIES_SELECT', $this->getHomeCategoriesSelect());	}
+		if ($this->searchKeywordInContent('BLOG_CATEGORIES_LIST', $this->_strPageContent)) 		{	$this->_objTpl->setVariable('BLOG_CATEGORIES_LIST', $this->getHomeCategoriesList());		}
 		
 		return $this->_objTpl->get();
-	}	
-	
-	
+	}
 }
