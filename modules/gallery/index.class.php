@@ -316,7 +316,7 @@ class Gallery {
             ));
 
             if ($objResult->RecordCount() == 0) { // no comments, hide the block
-                //$this->_objTpl->hideBlock('showComments');
+                $this->_objTpl->hideBlock('showComments');
             } else {
                 $i=0;
                 while (!$objResult->EOF) {
@@ -345,7 +345,7 @@ class Gallery {
                         'COMMENTS_ROWCLASS' => $intRowClass
                     ));
 
-                    //$this->_objTpl->parse('showComments');
+                    $this->_objTpl->parse('showComments');
                     $objResult->MoveNext();
                     $i++;
                 }
@@ -555,7 +555,7 @@ class Gallery {
             ));
 
             if ($objResult->RecordCount() == 0) { // no comments, hide the block
-                //$objTpl->hideBlock('showComments');
+                $objTpl->hideBlock('showComments');
             } else {
                 $i=0;
                 while (!$objResult->EOF) {
