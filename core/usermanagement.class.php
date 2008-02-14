@@ -1936,7 +1936,60 @@ class userManagement
 	}
 
 
+		/**
+	 * create <select> dropdown of all groups in $arrGroups with their ID as <option> value and their name as <option> name
+	 *
+	 * @param array 	$arrGroups array containing the groups as id => name
+	 * @param integer 	$id this ID will be the selected option in the dropdown
+	 * @param string 	$attributes additional attributes for <select>
+	 * @return string 	HTML <select> dropdown
+	 */
+	function _createGroupDropDown($arrGroups = false, $id = 0, $attributes = '')
+	{
+		global $_CORELANG;
+		if($arrGroups === false){
+			$arrGroups = $this->_getGroups();
+		}
 
+		$htmlDD = '<select '.$attributes.'>';
+		$sel = 'selected="selected"';
+		$htmlDD .= '<option style="border-bottom: 1px solid black;" value="0" '.($id == 0 ? $sel : '').' >'.$_CORELANG['TXT_USER_ALL'].'</option>';
+		foreach ($arrGroups as $groupId => $arrGroup) {
+			$htmlDD .= '<option value="'.$groupId.'" '.($id == $groupId ? $sel : '').'>'.$arrGroup['name'].'</option>';
+		}
+		$htmlDD .= '</select>';
+		return $htmlDD;
+	}
+
+	/**
+	 * get system groups
+	 *
+	 * @return array contains all groups of the system
+	 */
+	function _getGroups()
+	{
+		global $objDatabase;
+		$query = "SELECT `group_id`, `group_name`, `group_description`, `is_active`, `type` FROM `".DBPREFIX."access_user_groups`";
+		if(($objRS = $objDatabase->Execute($query)) === false){
+			$this->strErrMessage = $objDatabase->ErrorMsg();
+			return false;
+		}
+		$arrGroups = array();
+		while(!$objRS->EOF){
+			$arrGroups[$objRS->fields['group_id']] = array(	'name' 				=> $objRS->fields['group_name'],
+															'group_description' => $objRS->fields['group_description'],
+															'is_active'			=> $objRS->fields['is_active'],
+															'type' 				=> $objRS->fields['type']);
+			$objRS->MoveNext();
+		}
+		return $arrGroups;
+	}
+
+
+	/**
+	 * displays user overview and handles search and sort requests
+	 *
+	 */
     function userOverview()
     {
 		global $_CONFIG, $objDatabase, $_CORELANG, $objTemplate;
@@ -1955,6 +2008,64 @@ class userManagement
 			$useract = "&useract=inactive";
 		}
 
+				$arrCriteria = array("email", "username", "firstname", "lastname");
+		$arrGroups = $this->_getGroups();
+		$_SESSION['usersearch']['groupfilter'] 	= isset($_SESSION['usersearch']['groupfilter'])
+												? intval($_REQUEST['groupId'])
+												: 0;
+		$groupCondition = '';
+		if($_SESSION['usersearch']['groupfilter'] > 0){
+			$groupIdFilter = $_SESSION['usersearch']['groupfilter'];
+			$groupCondition = sprintf("AND u.groups "
+									 .($_REQUEST['grpinv'] == 1 ? 'NOT ' : '')
+									 ."REGEXP '(^%d$|^%d[^0-9]|[^0-9]%d[^0-9]|[^0-9]%d$)'"
+									 , $groupIdFilter, $groupIdFilter, $groupIdFilter, $groupIdFilter);
+		}
+		$_SESSION['usersearch']['criteria'] 	= isset($_SESSION['usersearch']['criteria'])
+												? contrexx_addslashes(trim($_REQUEST['user_search_criteria']))
+												: '';
+		$_SESSION['usersearch']['searchterm'] 	= isset($_SESSION['usersearch']['searchterm'])
+												? contrexx_addslashes(trim($_REQUEST['user_searchterm']))
+												: '';
+		$search = '';
+		$searchCriteria = $_SESSION['usersearch']['criteria'];
+		$searchTerm = $_SESSION['usersearch']['searchterm'] ;
+		if(!empty($searchCriteria) && !empty($searchTerm) && in_array($searchCriteria, $arrCriteria)){
+			$search = ' AND u.'.$searchCriteria.' LIKE '."'%".$searchTerm."%'";
+		}
+		if($searchCriteria == 'all'){
+			$search = ' AND (
+								u.username LIKE "%'.$searchTerm.'%"
+							OR	u.email LIKE "%'.$searchTerm.'%"
+							OR  u.firstname LIKE "%'.$searchTerm.'%"
+							OR	u.lastname LIKE "%'.$searchTerm.'%"
+						)';
+		}
+
+		if(empty($_GET['pgn']))
+			$_SESSION['usersearch']['sort'][$_REQUEST['by']] = $_SESSION['usersearch']['sort'][$_REQUEST['by']] == 'ASC' ? 'DESC' : 'ASC';
+		switch ($_REQUEST['by']){
+			case 'firstname':
+				$sort = " ORDER BY u.firstname ".$_SESSION['usersearch']['sort'][$_REQUEST['by']];
+			break;
+			case 'lastname':
+				$sort = " ORDER BY u.lastname ".$_SESSION['usersearch']['sort'][$_REQUEST['by']];
+			break;
+			case 'email':
+				$sort = " ORDER BY u.email ".$_SESSION['usersearch']['sort'][$_REQUEST['by']];
+			break;
+			case 'admin':
+				$sort = " ORDER BY u.is_admin ".$_SESSION['usersearch']['sort'][$_REQUEST['by']];
+			break;
+			case 'language':
+				$sort = " ORDER BY u.langId ".$_SESSION['usersearch']['sort'][$_REQUEST['by']];
+			break;
+			case 'username':
+				$sort = " ORDER BY u.username ".$_SESSION['usersearch']['sort'][$_REQUEST['by']];
+			break;
+		}
+
+
 		$objTemplate->setVariable(array(
             'TXT_USER_NAME'        		=> $_CORELANG['TXT_USERNAME'],
             'TXT_USER_LIST'        		=> $_CORELANG['TXT_USER_LIST'],
@@ -1964,8 +2075,29 @@ class userManagement
             'TXT_LANGUAGE'         		=> $_CORELANG['TXT_LANGUAGE'],
             'TXT_ADMINISTRATOR'    		=> $_CORELANG['TXT_ADMIN_STATUS'],
             'TXT_ACTION'           	 	=> $_CORELANG['TXT_ACTION'],
-            'TXT_USER_LINK_INACTIVE' 	=> $_CORELANG['TXT_USER_LINK_INACTIVE'],
-            'TXT_SEND_ACTIVATION_USER_EMAIL'	=> $_CORELANG['TXT_SEND_ACTIVATION_USER_EMAIL']
+                        'TXT_USER_SEARCH'          	=> $_CORELANG['TXT_USER_SEARCH'],
+            'TXT_USER_GROUP_FILTER'   	=> $_CORELANG['TXT_USER_GROUP_FILTER'],
+            'TXT_USER_SEARCH_TERM'    	=> $_CORELANG['TXT_USER_SEARCH_TERM'],
+            'TXT_USER_ALL'           	=> $_CORELANG['TXT_USER_ALL'],
+            'TXT_USER_USERNAME'       	=> $_CORELANG['TXT_USER_USERNAME'],
+            'TXT_USER_EMAIL'          	=> $_CORELANG['TXT_USER_EMAIL'],
+            'TXT_USER_FIRSTNAME'      	=> $_CORELANG['TXT_USER_FIRSTNAME'],
+            'TXT_USER_LASTNAME'      	=> $_CORELANG['TXT_USER_LASTNAME'],
+            'TXT_USER_GROUP_INVERT_RESULT' => $_CORELANG['TXT_USER_GROUP_INVERT_RESULT'],
+            'TXT_USER_LINK_INACTIVE' 	=> $status == 0  ? 'show active accounts' : 'show inactive accounts',
+            'TXT_SEND_ACTIVATION_USER_EMAIL'	=> $_CORELANG['TXT_SEND_ACTIVATION_USER_EMAIL'],
+            'USER_SORT_POS'				=> isset($_GET['pos']) ? intval($_GET['pos']) : 0,
+            'USER_STATUS'				=> $status == 0 ? 'inactive' : '',
+            'USER_STATUS_SWITCH'		=> $status == 0 ? '' : 'inactive',
+            'USER_SORT_BY'				=> $_REQUEST['by'],
+            'USER_FILTER_GROUP_ID'		=> $groupIdFilter,
+            'SEARCH_TERM'				=> contrexx_stripslashes($searchTerm),
+            'SEARCH_CRITERIA'			=> contrexx_stripslashes($searchCriteria),
+            'USER_SEARCH_SELECTED_'
+            .strtoupper($searchCriteria)=> 'selected="selected"',
+            'GRPINV_CHECKED'			=> $_REQUEST['grpinv'] == 1 ? 'checked="checked"' : '',
+            'GRPINV_ENABLED'			=> intval($_REQUEST['grpinv']),
+            'USER_CATEGORY_DROPDOWN'	=> $this->_createGroupDropDown($arrGroups, $groupIdFilter, 'name="groupId" onchange="filterGroup();" id="id_group_filter"'),
         ));
 
         $objTemplate->setGlobalVariable(array(
@@ -1985,9 +2117,11 @@ class userManagement
 		                   l.name AS language
 		              FROM ".DBPREFIX."access_users AS u,
 		                   ".DBPREFIX."languages AS l
-		             WHERE u.langId=l.id
-		               AND u.active=".$status."
-		         ORDER BY is_admin";
+   		             WHERE u.langId=l.id"." "
+					.$groupCondition
+					.$search
+		            ."  AND u.active=".$status
+		            .$sort;
 
 		$objResult = $objDatabase->Execute($query);
 		if ($objResult !== false) {
@@ -1997,7 +2131,13 @@ class userManagement
 		    $pos = intval($_GET['pos']);
 		}
 		if ($count>intval($_CONFIG['corePagingLimit'])){
-			$paging = getPaging($count, $pos, "&cmd=user".$useract, "<b>".$_CORELANG['TXT_USER']."</b>", true);
+			$queryString = 	 '&amp;user_search_criteria='.$searchCriteria
+				.'&amp;user_searchterm='.$searchTerm
+				.'&amp;by='.$_REQUEST['by']
+				.'&amp;grpinv='.intval($_REQUEST['grpinv'])
+				.'&amp;groupId='.$groupIdFilter
+				.'&amp;pgn=1';
+			$paging = getPaging($count, $pos, "&cmd=user".$queryString.$useract, "<b>".$_CORELANG['TXT_USER']."</b>", true);
 		}
 		/** end paging **/
 
