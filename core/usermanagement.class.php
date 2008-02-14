@@ -2063,11 +2063,15 @@ class userManagement
 			case 'username':
 				$sort = " ORDER BY u.username ".$_SESSION['usersearch']['sort'][$_REQUEST['by']];
 			break;
+			case 'regdate':
+				$sort = " ORDER BY u.regdate ".$_SESSION['usersearch']['sort'][$_REQUEST['by']];
+			break;
 		}
 
 
 		$objTemplate->setVariable(array(
             'TXT_USER_NAME'        		=> $_CORELANG['TXT_USERNAME'],
+            'TXT_REGDATE'        		=> $_CORELANG['TXT_REGDATE'],
             'TXT_USER_LIST'        		=> $_CORELANG['TXT_USER_LIST'],
             'TXT_FIRST_NAME'       		=> $_CORELANG['TXT_FIRST_NAME'],
             'TXT_LAST_NAME'        		=> $_CORELANG['TXT_LAST_NAME'],
@@ -2075,7 +2079,7 @@ class userManagement
             'TXT_LANGUAGE'         		=> $_CORELANG['TXT_LANGUAGE'],
             'TXT_ADMINISTRATOR'    		=> $_CORELANG['TXT_ADMIN_STATUS'],
             'TXT_ACTION'           	 	=> $_CORELANG['TXT_ACTION'],
-                        'TXT_USER_SEARCH'          	=> $_CORELANG['TXT_USER_SEARCH'],
+            'TXT_USER_SEARCH'          	=> $_CORELANG['TXT_USER_SEARCH'],
             'TXT_USER_GROUP_FILTER'   	=> $_CORELANG['TXT_USER_GROUP_FILTER'],
             'TXT_USER_SEARCH_TERM'    	=> $_CORELANG['TXT_USER_SEARCH_TERM'],
             'TXT_USER_ALL'           	=> $_CORELANG['TXT_USER_ALL'],
@@ -2111,6 +2115,7 @@ class userManagement
 		                   u.is_admin AS is_admin,
 		                   u.username As username,
 		                   u.email AS email,
+		                   u.regdate AS regdate,
 		                   u.firstname AS firstname,
 		                   u.lastname AS lastname,
 		                   u.groups AS groups,
@@ -2163,6 +2168,7 @@ class userManagement
 					'USERS_EMAIL'			=> stripslashes($objResult->fields['email']),
 					'USERS_FIRSTNAME'		=> empty($objResult->fields['firstname']) ? "&nbsp;" : stripslashes($objResult->fields['firstname']),
 					'USERS_LASTNAME'		=> empty($objResult->fields['lastname']) ? "&nbsp;" : stripslashes($objResult->fields['lastname']),
+					'USERS_JOIN_DATE'		=> date(ASCMS_DATE_FILE_FORMAT, strtotime($objResult->fields['regdate'])),
 					'USERS_LANGUAGE'		=> stripslashes($objResult->fields['language']),
 					'USERS_ADMIN_STATUS'	=> $is_admin
 				));
