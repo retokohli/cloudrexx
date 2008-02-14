@@ -75,12 +75,14 @@ var filterGroup = function(){
   </tr>
   <tr class="row1">
    <!-- ?cmd=access&act=user&groupId=4&sort=desc&by=username -->
-    <td width="15%"><a href="index.php?cmd=user&amp;pos={USER_SORT_POS}&amp;groupId={USER_FILTER_GROUP_ID}&amp;by=username&amp;grpinv={GRPINV_ENABLED}&amp;user_search_criteria={SEARCH_CRITERIA}&amp;user_searchterm={SEARCH_TERM}&useract={USER_STATUS}"><b>{TXT_USER_NAME}</b></a></td>
-    <td width="15%"><a href="index.php?cmd=user&amp;pos={USER_SORT_POS}&amp;groupId={USER_FILTER_GROUP_ID}&amp;by=firstname&amp;grpinv={GRPINV_ENABLED}&amp;user_search_criteria={SEARCH_CRITERIA}&amp;user_searchterm={SEARCH_TERM}&useract={USER_STATUS}"><b>{TXT_FIRST_NAME}</b></a></td>
-    <td width="15%"><a href="index.php?cmd=user&amp;pos={USER_SORT_POS}&amp;groupId={USER_FILTER_GROUP_ID}&amp;by=lastname&amp;grpinv={GRPINV_ENABLED}&amp;user_search_criteria={SEARCH_CRITERIA}&amp;user_searchterm={SEARCH_TERM}&useract={USER_STATUS}"><b>{TXT_LAST_NAME}</b></a></td>
-    <td width="17%"><a href="index.php?cmd=user&amp;pos={USER_SORT_POS}&amp;groupId={USER_FILTER_GROUP_ID}&amp;by=email&amp;grpinv={GRPINV_ENABLED}&amp;user_search_criteria={SEARCH_CRITERIA}&amp;user_searchterm={SEARCH_TERM}&useract={USER_STATUS}"><b>{TXT_EMAIL}</b></a></td>
+    <td width="12%"><a href="index.php?cmd=user&amp;pos={USER_SORT_POS}&amp;groupId={USER_FILTER_GROUP_ID}&amp;by=username&amp;grpinv={GRPINV_ENABLED}&amp;user_search_criteria={SEARCH_CRITERIA}&amp;user_searchterm={SEARCH_TERM}&useract={USER_STATUS}"><b>{TXT_USER_NAME}</b></a></td>
+    <td width="12%"><a href="index.php?cmd=user&amp;pos={USER_SORT_POS}&amp;groupId={USER_FILTER_GROUP_ID}&amp;by=firstname&amp;grpinv={GRPINV_ENABLED}&amp;user_search_criteria={SEARCH_CRITERIA}&amp;user_searchterm={SEARCH_TERM}&useract={USER_STATUS}"><b>{TXT_FIRST_NAME}</b></a></td>
+    <td width="12%"><a href="index.php?cmd=user&amp;pos={USER_SORT_POS}&amp;groupId={USER_FILTER_GROUP_ID}&amp;by=lastname&amp;grpinv={GRPINV_ENABLED}&amp;user_search_criteria={SEARCH_CRITERIA}&amp;user_searchterm={SEARCH_TERM}&useract={USER_STATUS}"><b>{TXT_LAST_NAME}</b></a></td>
+    <td width="14%"><a href="index.php?cmd=user&amp;pos={USER_SORT_POS}&amp;groupId={USER_FILTER_GROUP_ID}&amp;by=email&amp;grpinv={GRPINV_ENABLED}&amp;user_search_criteria={SEARCH_CRITERIA}&amp;user_searchterm={SEARCH_TERM}&useract={USER_STATUS}"><b>{TXT_EMAIL}</b></a></td>
     <td width="16%"><a href="index.php?cmd=user&amp;pos={USER_SORT_POS}&amp;groupId={USER_FILTER_GROUP_ID}&amp;by=language&amp;grpinv={GRPINV_ENABLED}&amp;user_search_criteria={SEARCH_CRITERIA}&amp;user_searchterm={SEARCH_TERM}&useract={USER_STATUS}"><b>{TXT_LANGUAGE}</b></a></td>
     <td width="17%"><a href="index.php?cmd=user&amp;pos={USER_SORT_POS}&amp;groupId={USER_FILTER_GROUP_ID}&amp;by=admin&amp;grpinv={GRPINV_ENABLED}&amp;user_search_criteria={SEARCH_CRITERIA}&amp;user_searchterm={SEARCH_TERM}&useract={USER_STATUS}"><b>{TXT_ADMINISTRATOR}</b></a></td>
+    <td width="12%"><a href="index.php?cmd=user&amp;pos={USER_SORT_POS}&amp;groupId={USER_FILTER_GROUP_ID}&amp;by=regdate&amp;grpinv={GRPINV_ENABLED}&amp;user_search_criteria={SEARCH_CRITERIA}&amp;user_searchterm={SEARCH_TERM}&useract={USER_STATUS}"><b>{TXT_REGDATE}</b></a></td>
+
     <td colspan="2"><b>{TXT_ACTION}</b></td>
   </tr>
   <!-- BEGIN user_row -->
@@ -91,6 +93,7 @@ var filterGroup = function(){
     <td><a href="mailto:{USERS_EMAIL}">{USERS_EMAIL}</a></td>
     <td>{USERS_LANGUAGE}</td>
     <td>{USERS_ADMIN_STATUS}</td>
+    <td>{USERS_JOIN_DATE}</td>
     <td nowrap="nowrap"><div align="right"><a href="index.php?cmd=user&amp;act=edituser&amp;userId={USERS_EDIT_ID}" title="{TXT_EDIT_USER_ACCOUNT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT_USER_ACCOUNT}" /></a></div></td>
     <td nowrap="nowrap"><div align="right">
     <!-- BEGIN user_active -->
