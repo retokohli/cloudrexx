@@ -2,7 +2,7 @@
 /**
  * Captcha
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch>
+ * @author      Thomas Kaelin <thomas.kaelin@comvation.ch>
  * @access      public
  * @version     1.2.0
  * @package     contrexx
@@ -21,6 +21,9 @@ class Captcha {
     var $intRandomLength = 5;
     var $intSaltLength = 20;
     var $intMaximumCharacters = 20;
+    
+    var $intImageWidth = 120;
+    var $intNumberOfBackgrounds = 7;
 
 	/**
 	* Constructor-Fix for non PHP5-Servers
@@ -49,7 +52,7 @@ class Captcha {
 	    $this->strAbsolutePath 	= ASCMS_DOCUMENT_ROOT.'/images/spamprotection/';
 	    $this->strWebPath 		= ASCMS_PATH_OFFSET.'/images/spamprotection/';
 	    
-	     $this->createImage();
+	    $this->createImage();
     }
 
     /**
@@ -102,7 +105,6 @@ class Captcha {
      * @return	string		Created filename with the format ".jpg"
      */
     function createFilename() {
-    	
     	do {
     		$strFileName = md5(time().$this->strRandomString).'.jpg';
     	} while (is_file($this->strAbsolutePath.$strFileName));
@@ -116,51 +118,60 @@ class Captcha {
 	 *
 	 */
     function createImage() {
-        $intBackground = rand(1, 7);
-        $handleImage = imagecreatefromjpeg($this->strBackgroundDir.$intBackground.'.jpg');
-        
-        $arrColors 	= array(	imagecolorallocate($handleImage, 0, 0, 0),		//black
-        						imagecolorallocate($handleImage, 255, 0, 0), 	//red
-        						imagecolorallocate($handleImage, 0, 180, 0), 	//darkgreen
-        						imagecolorallocate($handleImage, 0, 105, 172),	//blue
-        						imagecolorallocate($handleImage, 145, 19, 120)	//purple
-        				);
-        				
+    	$intWidth 			= $this->intImageWidth;
+    	$intHeight 			= $intWidth / 3;
+    	$intFontSize 		= floor($intWidth / strlen($this->strRandomString)) - 2;
+    	$intAngel 			= 15;
+    	$intVerticalMove 	= floor($intHeight/7);
+    	
+    	$image = imagecreatetruecolor($intWidth, $intHeight);
+    	
+        $arrFontColors 	= array(imagecolorallocate($image, 0, 0, 0),		//black
+								imagecolorallocate($image, 255, 0, 0), 		//red
+								imagecolorallocate($image, 0, 180, 0), 		//darkgreen
+								imagecolorallocate($image, 0, 105, 172),	//blue
+								imagecolorallocate($image, 145, 19, 120)	//purple
+							);
+														
         $arrFonts	= array(	$this->strFontDir.'coprgtb.ttf',
         						$this->strFontDir.'ltypeb.ttf',
         				);
-        
+        				
+		//Draw background
+        $imagebg = imagecreatefromjpeg($this->strBackgroundDir.rand(1, $this->intNumberOfBackgrounds).'.jpg');
+		imagesettile($image, $imagebg);
+		imagefilledrectangle($image, 0, 0, $intWidth, $intHeight, IMG_COLOR_TILED);
+    	
+    	//Draw string
     	for ($i = 0; $i < strlen($this->strRandomString); ++$i) {
-    		$intColor 	= rand(0, count($arrColors)-1);
+    		$intColor 	= rand(0, count($arrFontColors)-1);
     		$intFont	= rand(0, count($arrFonts)-1);
-    		$intAngel 	= rand(-10, 10);
-    		$intYMove 	= rand(-6, +6);
+    		$intAngel 	= rand(-$intAngel, $intAngel);
+    		$intYMove 	= rand(-$intVerticalMove, $intVerticalMove);
     		
-	        imagettftext($handleImage, 11, $intAngel, (1+$i*12), 20 + $intYMove, $arrColors[$intColor], $arrFonts[$intFont], substr($this->strRandomString,$i,1));
+	        imagettftext(	$image, 
+	        				$intFontSize, 
+	        				$intAngel, 
+	        				(6+$intFontSize*$i), 
+	        				($intHeight/2+$intFontSize/2+$intYMove), 
+	        				$arrFontColors[$intColor], 
+	        				$arrFonts[$intFont], 
+	        				substr($this->strRandomString,$i,1)
+	        			);
     	}
-        
-        imagejpeg($handleImage, $this->strAbsolutePath.$this->strFilename, 90);
-        imagedestroy($handleImage);
+    	
+    	//Create Image
+        imagejpeg($image, $this->strAbsolutePath.$this->strFilename, 90);
+        imagedestroy($image);
     }
     
     
 	/**
-	 * Because of security-problems: returns an empty string.
+	 * Because of security-problems: returns just an "spamprotection" string.
 	 *
 	 * @return	string		Alt tag for the image
 	 */
-    function getAlt() {
-    	/*
-    	$strReturn = '';
-    	$intLen = strlen($this->strRandomString);
-    	
-    	for ($i = 0; $i < $intLen; ++$i) {
-    		$strReturn .= substr($this->strRandomString,$i,1).'-';
-    	}
-    	
-       return substr($strReturn,0,-1);
-       */
-    	
+    function getAlt() {    	
        return 'Spamprotection';
 	}
 
@@ -194,6 +205,7 @@ class Captcha {
 	 * @return	boolean		true, if the md5-hash of the number was equals to the hashvalue of the hidden field
 	 */
     function compare($strEnteredString, $strOffset) {
+    	$strEnteredString = strtoupper($strEnteredString);
     	$arrOffsetParts = explode(';', $strOffset, 2);
     	
     	return ($arrOffsetParts[1] == md5($strEnteredString.$arrOffsetParts[0])) ? true : false;
