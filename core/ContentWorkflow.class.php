@@ -55,6 +55,7 @@ class ContentWorkflow {
 		                   			 <a href="index.php?cmd=workflow&amp;act=updated">'.$_CORELANG['TXT_UPDATED_PAGES'].'</a>
 		                   			 <a href="index.php?cmd=workflow&amp;act=deleted">'.$_CORELANG['TXT_DELETED_PAGES'].'</a>
 		                   			 <a href="index.php?cmd=workflow&amp;act=unvalidated">'.$_CORELANG['TXT_WORKFLOW_VALIDATE'].'</a>
+		                   			 <a href="index.php?cmd=workflow&amp;act=showClean">'.$_CORELANG['TXT_WORKFLOW_CLEAN_TITLE'].'</a>
 		                   		');
 
 		$this->objGoogleSitemap = new GoogleSitemap();
@@ -112,6 +113,15 @@ class ContentWorkflow {
     			$this->validatePage($_GET['id'],$_GET['acc']);
     			$this->showHistory('unvalidated');
     		break;
+    		case 'showClean':
+    			$objPerm->checkAccess(126, 'static');
+    			$this->showClean();
+    			break;
+    		case 'cleanHistory':
+    			$objPerm->checkAccess(126, 'static');
+    			$this->cleanHistory($_GET['days']);
+    			$this->showClean();
+    			break;
 			case 'unvalidated':
     		default:
     			$objPerm->checkAccess(75, 'static');
@@ -780,6 +790,123 @@ class ContentWorkflow {
 			//write google-sitemap
 			$this->objGoogleSitemap->writeFile();
 		}
+	}
+
+	
+	/**
+    * Show logfile-entries (new, updated or deleted)
+    *
+    * @global 	object		Template
+    * @global 	object		Database
+    * @global 	array		Core language
+    */
+    function showClean() {
+		global $objTemplate, $objDatabase, $_CORELANG;
+
+		$objTemplate->addBlockfile('ADMIN_CONTENT', 'content_history_clean', 'content_history_clean.html');
+		$objTemplate->setVariable(array(
+			'TXT_HISTORY_CLEAN_TITLE'		=> $_CORELANG['TXT_WORKFLOW_CLEAN_TITLE'],
+		    'TXT_HISTORY_CLEAN_DESCRIPTION'	=> $_CORELANG['TXT_WORKFLOW_CLEAN_DESCRIPTION'],
+		    'TXT_HISTORY_CLEAN_OCCUPIED'	=> $_CORELANG['TXT_WORKFLOW_CLEAN_OCCUPIED'],
+		    'TXT_HISTORY_CLEAN_MIN_AGE'		=> $_CORELANG['TXT_WORKFLOW_CLEAN_MINIMUM_AGE'],
+		    'TXT_HISTORY_CLEAN_DAYS'		=> $_CORELANG['TXT_WORKFLOW_CLEAN_DAYS'],
+		    'TXT_HISTORY_CLEAN_SUBMIT'		=> $_CORELANG['TXT_EXECUTE'],
+			'TXT_HISTORY_CLEAN_JS_CONFIRM'	=> $_CORELANG['TXT_WORKFLOW_CLEAN_CONFIRM']
+		));
+		
+		//Figure out how much space is occupied by the workflow
+		$intBytes = 0;
+		
+		$objResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'content_history";');
+		$intBytes += $objResult->fields['Data_length'];
+		$intBytes += $objResult->fields['Index_length'];
+		
+		$objResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'content_navigation_history";');
+		$intBytes += $objResult->fields['Data_length'];
+		$intBytes += $objResult->fields['Index_length'];
+		
+		$objResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'content_logfile";');
+		$intBytes += $objResult->fields['Data_length'];
+		$intBytes += $objResult->fields['Index_length'];
+		
+		$objTemplate->setVariable('HISTORY_CLEAN_OCCUPIED', round($intBytes / 1024, 2));
+		
+		//Get old values
+		$intDays = (isset($_GET['days'])) ? intval($_GET['days']) : 30;
+		$intDays = ($intDays < 1) ? 1 : $intDays;
+		
+		$objTemplate->setVariable('HISTORY_CLEAN_DAYS', $intDays);
+	}
+
+	/**
+	 * Removes old workflow entries which are older than $intNumberOfDays.
+	 *
+	 * @global 	object		$objDatabase
+	 * @global 	array		$_CORELANG
+	 * @param	integer		$intNumberOfDays: Entries older than this value will be removed
+	 */
+	function cleanHistory($intNumberOfDays) {
+		global $objDatabase, $_CORELANG;
+		
+		$intNumberOfDays = intval($intNumberOfDays);
+		if ($intNumberOfDays < 1) {
+			$intNumberOfDays = 1;
+		}
+		
+		$intTimeStamp = time()-($intNumberOfDays*24*60*60);
+		
+		//Look for deleted pages older than XX days
+		$objResult = $objDatabase->Execute('SELECT		log.history_id as id
+											FROM		'.DBPREFIX.'content_logfile AS log
+											INNER JOIN	'.DBPREFIX.'content_navigation_history AS nav
+											ON			log.history_id = nav.id
+											WHERE		log.action="delete" And
+														nav.changelog < '.$intTimeStamp);
+		
+		while (!$objResult->EOF) {
+			$objDatabase->Execute('	DELETE
+									FROM    '.DBPREFIX.'content_logfile
+									WHERE    history_id='.$objResult->fields['id']);
+		
+			$objDatabase->Execute('	DELETE
+									FROM    '.DBPREFIX.'content_navigation_history
+									WHERE    id='.$objResult->fields['id'].'
+									LIMIT    1');
+		
+			$objDatabase->Execute('	DELETE
+									FROM    '.DBPREFIX.'content_history
+									WHERE    id='.$objResult->fields['id'].'
+									LIMIT    1');       
+		
+			$objResult->MoveNext();
+		}        
+		
+		//Look for not active entries older than XX days
+		$objResult = $objDatabase->Execute('SELECT	id
+											FROM	'.DBPREFIX.'content_navigation_history
+											WHERE	is_active="0" AND
+													changelog < '.$intTimeStamp);
+		
+		while (!$objResult->EOF) {
+			$objDatabase->Execute('	DELETE
+									FROM	'.DBPREFIX.'content_logfile
+									WHERE	history_id='.$objResult->fields['id'].' AND
+											(action="update" OR action="new")');
+		
+			$objDatabase->Execute('	DELETE
+									FROM    '.DBPREFIX.'content_navigation_history
+									WHERE    id='.$objResult->fields['id'].'
+									LIMIT    1');
+		
+			$objDatabase->Execute('	DELETE
+									FROM    '.DBPREFIX.'content_history
+									WHERE    id='.$objResult->fields['id'].'
+									LIMIT    1');
+		
+			$objResult->MoveNext();
+		}
+		
+		$this->strOkMessage = str_replace('[DAYS]', $intNumberOfDays, $_CORELANG['TXT_WORKFLOW_CLEAN_SUCCESS']);
 	}
 }
 ?>
