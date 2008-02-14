@@ -812,4 +812,11 @@ $_ARRAYLANG['TXT_USER_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_USER_FIRSTNAME'] = "Vorname";
 $_ARRAYLANG['TXT_USER_LASTNAME'] = "Nachname";
 $_ARRAYLANG['TXT_USER_GROUP_INVERT_RESULT'] = "Gruppenfilter umkehren";
+$_ARRAYLANG['TXT_WORKFLOW_CLEAN_TITLE'] = "Verlauf leeren";
+$_ARRAYLANG['TXT_WORKFLOW_CLEAN_DESCRIPTION'] = "Hier können Sie Einträge, welche älter als ein bestimmtes Datum sind, aus dem Verlauf entfernen lassen. Wir empfehlen Ihnen, den Verlauf nur dann zu löschen, wenn Ihre Datenbank sehr viel Speicher belegt. In diesem Fall ist es ratsam, ältere Einträge aus der Datenbank löschen zu lassen. Geben Sie im nachfolgend Feld an, wie viele Tage alt die Archivversionen mindestens sein müssen, um gelöscht werden zu können. Beachten Sie, dass die gerade aktiven Verlaufsversionen nicht gelöscht werden können. Somit ist es möglich, dass Sie auch nach Durchführung der Operation noch Verlaufsdaten vorhanden sind. Es handelt sich dabei um keinen Fehler.";
+$_ARRAYLANG['TXT_WORKFLOW_CLEAN_OCCUPIED'] = "Belegter Datenbankspeicher";
+$_ARRAYLANG['TXT_WORKFLOW_CLEAN_MINIMUM_AGE'] = "Minimales Alter";
+$_ARRAYLANG['TXT_WORKFLOW_CLEAN_DAYS'] = "Tag(e)";
+$_ARRAYLANG['TXT_WORKFLOW_CLEAN_CONFIRM'] = "Sind Sie sicher, dass Sie den Verlauf leeren möchten?\nAchtung: Diese Aktion kann nicht rückgängig gemacht werden!";
+$_ARRAYLANG['TXT_WORKFLOW_CLEAN_SUCCESS'] = "Alle Einträge älter als [DAYS] Tage wurden erfolgreich entfernt.";
 ?>
