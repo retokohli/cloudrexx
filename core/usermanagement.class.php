@@ -600,9 +600,7 @@ class userManagement
 					'GROUP_EDIT_LINK'	=> $groupEditLink,
 					'GROUP_PAGES'		=> $grouppages
 				));
-				if(intval($objResult->fields['group_id']) > 0){
-					$objTemplate->parse('groupRow');
-				}
+				$objTemplate->parse('groupRow');
 				$i++;
 				$objResult->MoveNext();
 			}
