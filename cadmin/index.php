@@ -694,7 +694,7 @@ switch($cmd) {
             $objPerm->checkAccess($objRs->fields['id'], 'static');
             $modulespath = ASCMS_MODULE_PATH . "/calendar".$mandate."/admin.class.php";
         }
-        
+
         define("CALENDAR_MANDATE", $mandate);
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -851,7 +851,7 @@ switch($cmd) {
         $objBlog  = &new BlogAdmin();
         $objBlog->getPage();
         break;
-        
+
         //-----------------------------------------------------------------------------------------------
         // access denied
         //-----------------------------------------------------------------------------------------------
@@ -873,7 +873,7 @@ switch($cmd) {
         $objAuth->logout();
         exit;
         break;
-        
+
 		//-----------------------------------------------------------------------------------------------
         // downloads
         //-----------------------------------------------------------------------------------------------
@@ -884,7 +884,7 @@ switch($cmd) {
 	    $subMenuTitle = $_CORELANG['TXT_DOWNLOADS'];
 	    $objDownloadsModule = &new downloads();
 	    $objDownloadsModule->getPage();
-	break;  
+	break;
 
         //-----------------------------------------------------------------------------------------------
         // show default admin page

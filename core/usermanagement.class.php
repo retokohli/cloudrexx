@@ -29,6 +29,7 @@ class userManagement
 	var $strOkMessage = '';
  	var $todayEmailAlreadySent = 0;
  	var $months = array();
+ 	var $_csvSeparator = ';';
 
 	/**
     * Constructor
@@ -84,6 +85,10 @@ class userManagement
 			break;
 			case "settings":
 				$this->showSettings();
+			break;
+			case "export":
+				$_GET['groupId'] = !empty($_GET['groupId']) ? intval($_GET['groupId']) : 0;
+				$this->_exportUsers($_GET['groupId']);
 			break;
 			case "updateuser":
 			    $objPerm->checkAccess(31, 'static');
@@ -161,6 +166,59 @@ class userManagement
 		));
     }
 
+
+    /**
+     * export users of a group as CSV
+     *
+     * @param integer $groupId
+     */
+    function _exportUsers($groupId = 0)
+    {
+    	global $objDatabase;
+		$groupId = intval($groupId);
+    	$objRS = $objDatabase->SelectLimit("SELECT group_name FROM ".DBPREFIX."access_user_groups WHERE group_id = $groupId", 1);
+		header("Content-Type: text/comma-separated-values", true);
+		header("Content-Disposition: attachment; filename=\"".str_replace(array(' ',',','.','\'','"'), '_', $objRS->fields['group_name']).'.csv"', true);
+
+		$value = '';
+		$arrFields = array ('username', 'firstname', 'lastname', 'email', 'residence', 'profession', 'webpage', 'company', 'zip', 'street', 'phone', 'mobile', 'langId', 'is_admin', 'active');
+		foreach ($arrFormFields as $arrField) {
+			print $this->_escapeCsvValue($arrField['name']).$this->_csvSeparator;
+		}
+
+    	$query = sprintf("SELECT username, firstname, lastname, email, residence, profession, webpage, company, zip, street, phone, mobile, langId, is_admin, active
+    				FROM ".DBPREFIX."access_users
+    				WHERE groups REGEXP '(^%d$|^%d[^0-9]|[^0-9]%d[^0-9]|[^0-9]%d$)'", $groupId,$groupId,$groupId,$groupId);
+		$objRS = $objDatabase->Execute($query);
+		if ($objRS !== false) {
+			while (!$objRS->EOF) {
+					foreach ($objRS->fields as $value) {
+						print $this->_escapeCsvValue($value).$this->_csvSeparator;
+					}
+					print "\n";
+					$objRS->MoveNext();
+			}
+		}
+
+		exit();
+	}
+
+	/**
+	 * Escape a value that it could be inserted into a csv file.
+	 *
+	 * @param string $value
+	 * @return string
+	 */
+	function _escapeCsvValue(&$value)
+	{
+		$value = preg_replace('/\r\n/', "\n", $value);
+		$valueModified = str_replace('"', '""', $value);
+
+		if ($valueModified != $value || preg_match('/['.$this->_csvSeparator.'\n]+/', $value)) {
+			$value = '"'.$valueModified.'"';
+		}
+		return $value;
+	}
 
 	function getCurrentBirthdays(){
     	global $objDatabase, $_CONFIG;
@@ -463,11 +521,6 @@ class userManagement
 	}
 
 
-
-
-
-
-
 	/**
 	* Shows the group
 	*
@@ -482,58 +535,9 @@ class userManagement
 		$objTemplate->addBlockfile('ADMIN_CONTENT', 'user_group_overview', 'user_group_overview.html');
 		$this->pageTitle = $_CORELANG['TXT_GROUPS'];
 
-		// init variables
-		$fromusers="";
-		$i=1;
-
-	    $objResult = $objDatabase->Execute("SELECT group_id,
-	                       group_name,
-	                       group_description,
-	                       is_active,
-	                       type
-	                  FROM ".DBPREFIX."access_user_groups
-	              ORDER BY group_id");
-	    if ($objResult !== false) {
-		    while (!$objResult->EOF) {
-				($i % 2) ? $class  = 'row1' : $class  = 'row2';
-				($objResult->fields['is_active'] == 1) ? $status = 'green' : $status = 'red';
-
-				$objTemplate->setVariable(array(
-					'USERS_ROWCLASS'	=> $class,
-					'GROUP_NAME'		=> $objResult->fields['group_name'],
-					'GROUP_ID'			=> $objResult->fields['group_id'],
-					'GROUP_DESCRIPTION'	=> $objResult->fields['group_description'],
-					'GROUP_STATUS'		=> $status,
-					'GROUP_TYPE'		=> $objResult->fields['type']
-				));
-
-				$groupusers= $this->getUsersInGroup($objResult->fields['group_id']);
-				$grouppages = "-";
-				$groupEditLink ="index.php?cmd=user&amp;act=modgroup&amp;groupId=".$objResult->fields['group_id'];
-
-				if($objResult->fields['type']=="frontend")
-				{
-		            $grouppages= count($this->getPagesInGroup($objResult->fields['group_id']));
-		            $groupEditLink ="index.php?cmd=user&amp;act=modpubgroup&amp;groupId=".$objResult->fields['group_id'];
-				}
-				$users = array();
-		        foreach($groupusers AS $username) {
-		        	$users[] = $username;
-		        }
-		        $groupusers=implode("<br />",$users);
-
-				$objTemplate->setVariable(array(
-					'GROUP_EDIT_LINK'	=> $groupEditLink,
-					'GROUP_USERS'		=> $groupusers,
-					'GROUP_PAGES'		=> $grouppages
-				));
-				$objTemplate->parse('groupRow');
-				$i++;
-				$objResult->MoveNext();
-			}
-	    }
-
 		$objTemplate->setVariable(array(
+			'TXT_AMOUNT'                   => $_CORELANG['TXT_AMOUNT'],
+			'TXT_EXPORT'                   => $_CORELANG['TXT_EXPORT'],
 			'TXT_GROUP_NAME'               => $_CORELANG['TXT_GROUP_NAME'],
 			'TXT_TYPE'                     => $_CORELANG['TXT_TYPE'],
 			'TXT_GROUP_ID'                 => $_CORELANG['TXT_GROUP_ID'],
@@ -555,6 +559,56 @@ class userManagement
 			'TXT_CONFIRM_DELETE_DATA'      => $_CORELANG['TXT_CONFIRM_DELETE_DATA'],
 			'TXT_ACTION_IS_IRREVERSIBLE'   => $_CORELANG['TXT_ACTION_IS_IRREVERSIBLE'],
 		));
+
+		// init variables
+		$fromusers="";
+		$i=1;
+
+	    $objResult = $objDatabase->Execute("SELECT group_id,
+	                       group_name,
+	                       group_description,
+	                       is_active,
+	                       type
+	                  FROM ".DBPREFIX."access_user_groups
+	              ORDER BY group_id");
+	    if ($objResult !== false) {
+		    while (!$objResult->EOF) {
+				($i % 2) ? $class  = 'row1' : $class  = 'row2';
+				($objResult->fields['is_active'] == 1) ? $status = 'green' : $status = 'red';
+				$groupusers= $this->getUsersInGroup($objResult->fields['group_id']);
+				$amount = count($groupusers);
+				$objTemplate->setVariable(array(
+					'USERS_ROWCLASS'	=> $class,
+					'GROUP_NAME'		=> $objResult->fields['group_name'],
+					'GROUP_ID'			=> $objResult->fields['group_id'],
+					'GROUP_DESCRIPTION'	=> $objResult->fields['group_description'],
+					'GROUP_STATUS'		=> $status,
+					'GROUP_AMOUNT'		=> $amount,
+					'GROUP_TYPE'		=> $objResult->fields['type']
+				));
+
+				$grouppages = "-";
+				$groupEditLink ="index.php?cmd=user&amp;act=modgroup&amp;groupId=".$objResult->fields['group_id'];
+
+				if($objResult->fields['type']=="frontend")
+				{
+		            $grouppages= count($this->getPagesInGroup($objResult->fields['group_id']));
+		            $groupEditLink ="index.php?cmd=user&amp;act=modpubgroup&amp;groupId=".$objResult->fields['group_id'];
+				}
+
+				$objTemplate->setVariable(array(
+					'GROUP_EDIT_LINK'	=> $groupEditLink,
+					'GROUP_PAGES'		=> $grouppages
+				));
+				if(intval($objResult->fields['group_id']) > 0){
+					$objTemplate->parse('groupRow');
+				}
+				$i++;
+				$objResult->MoveNext();
+			}
+	    }
+
+
 		$objTemplate->setVariable('GROUPS_EDIT_FROMUSER',$fromusers);
 	}
 
@@ -1346,7 +1400,7 @@ class userManagement
 			'TXT_USERS'                    => $_CORELANG['TXT_USER'],
 			'TXT_PERMISSIONS'              => $_CORELANG['TXT_PERMISSIONS'],
 			'TXT_ALLOW'                    => $_CORELANG['TXT_ALLOW'],
-			'TXT_AREAS'                    => $_CORELANG['TXT_AREAS']
+			'TXT_AREAS'                    => $_CORELANG['TXT_AREAS'],
 		));
 	}
 
