@@ -536,6 +536,7 @@ class userManagement
 		$this->pageTitle = $_CORELANG['TXT_GROUPS'];
 
 		$objTemplate->setVariable(array(
+  			'TXT_PAGES'                    => $_CORELANG['TXT_PAGES'],
 			'TXT_AMOUNT'                   => $_CORELANG['TXT_AMOUNT'],
 			'TXT_EXPORT'                   => $_CORELANG['TXT_EXPORT'],
 			'TXT_GROUP_NAME'               => $_CORELANG['TXT_GROUP_NAME'],
