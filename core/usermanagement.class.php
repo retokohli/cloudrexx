@@ -182,9 +182,10 @@ class userManagement
 
 		$value = '';
 		$arrFields = array ('username', 'firstname', 'lastname', 'email', 'residence', 'profession', 'webpage', 'company', 'zip', 'street', 'phone', 'mobile', 'langId', 'is_admin', 'active');
-		foreach ($arrFormFields as $arrField) {
-			print $this->_escapeCsvValue($arrField['name']).$this->_csvSeparator;
+		foreach ($arrFields as $field) {
+			print $this->_escapeCsvValue($field).$this->_csvSeparator;
 		}
+		print "\n";
 
     	$query = sprintf("SELECT username, firstname, lastname, email, residence, profession, webpage, company, zip, street, phone, mobile, langId, is_admin, active
     				FROM ".DBPREFIX."access_users
