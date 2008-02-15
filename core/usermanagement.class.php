@@ -2168,7 +2168,7 @@ class userManagement
 					'USERS_EMAIL'			=> stripslashes($objResult->fields['email']),
 					'USERS_FIRSTNAME'		=> empty($objResult->fields['firstname']) ? "&nbsp;" : stripslashes($objResult->fields['firstname']),
 					'USERS_LASTNAME'		=> empty($objResult->fields['lastname']) ? "&nbsp;" : stripslashes($objResult->fields['lastname']),
-					'USERS_JOIN_DATE'		=> date(ASCMS_DATE_FILE_FORMAT, strtotime($objResult->fields['regdate'])),
+					'USERS_JOIN_DATE'		=> date(ASCMS_DATE_SHORT_FORMAT, strtotime($objResult->fields['regdate'])),
 					'USERS_LANGUAGE'		=> stripslashes($objResult->fields['language']),
 					'USERS_ADMIN_STATUS'	=> $is_admin
 				));
