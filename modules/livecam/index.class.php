@@ -194,6 +194,24 @@ class Livecam extends LivecamLibrary
     		'LIVECAM_IMAGE_TEXT'	=> isset($_GET['file']) ? contrexx_strip_tags($_GET['file']) : 'Aktuelles Webcam Bild'
     	));
     }
+
+
+	/**
+	 * Sort helper for sorting the thumbnails by time
+	 */
+	function _sort_thumbs($a, $b) {
+		$timea = $a['time'];
+		$timeb = $b['time'];
+
+		// No equal times to be expected, therefore
+		// we don't check for equality.
+		if ($timea>$timeb) {
+			return 1;
+		}
+		return -1;
+	}
+
+
     
     /**
     * Show archive
@@ -210,6 +228,9 @@ class Livecam extends LivecamLibrary
     	if (count($this->_arrArchiveThumbs)>0) {
     		$countPerRow;
     		$picNr = 1;
+
+			usort($this->_arrArchiveThumbs, array($this, '_sort_thumbs'));
+
     		foreach ($this->_arrArchiveThumbs as $arrThumbnail) {
     			if (!isset($countPerRow)) {
     				if (!$this->_objTpl->blockExists($this->_pictureTemplatePlaceholder.$picNr)) {
