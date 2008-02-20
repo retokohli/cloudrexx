@@ -323,7 +323,8 @@ class blockLibrary
 
 		$objResult = $objDatabase->Execute("SELECT	value
 	    									FROM	".DBPREFIX."module_block_settings
-	    									WHERE	name='blockGlobalSeperator LIMIT 1'
+	    									WHERE	name='blockGlobalSeperator'
+	    									LIMIT	1
 	    									");
 	    if ($objResult !== false) {
     		while (!$objResult->EOF) {
