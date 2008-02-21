@@ -32,7 +32,7 @@ class Livecam extends LivecamLibrary
 	* @var object
 	*/
     var $_objTpl;
-    
+
     /**
     * Status message
     *
@@ -40,15 +40,15 @@ class Livecam extends LivecamLibrary
     * @var string
     */
     var $statusMessage;
-    
+
     /**
-    * Archive thumbnail links 
+    * Archive thumbnail links
     *
     * @access private
     * @var array
     */
     var $_arrArchiveThumbs = array();
-    
+
     /**
     * Action
     *
@@ -56,7 +56,7 @@ class Livecam extends LivecamLibrary
     * @var string
     */
     var $_action = '';
-    
+
     /**
     * Picture template placeholder
     *
@@ -64,7 +64,7 @@ class Livecam extends LivecamLibrary
     * @var string
     */
     var $_pictureTemplatePlaceholder = 'livecamArchivePicture';
-    
+
     /**
     * Date
     *
@@ -72,37 +72,37 @@ class Livecam extends LivecamLibrary
     * @var string
     */
     var $date;
-    
+
 	/**
     * Constructor
     *
     * @param  string $pageContent
     * @access public
-    */   
+    */
     function Livecam($pageContent)
-    { 
-    	$this->__construct($pageContent);    
+    {
+    	$this->__construct($pageContent);
     }
-    
+
     /**
      * PHP5 constructor
      * @param  string  $pageContent
      * @access public
      */
     function __construct($pageContent)
-    {  
+    {
 	    $this->pageContent = $pageContent;
-	    
+
 	    $this->_objTpl = &new HTML_Template_Sigma('.');
-		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);  	
-    	
+		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+
 		$this->_getAction();
 		$this->_getDate();
-		
+
 		// get the livecam settings
     	$this->getSettings();
 	}
-	
+
 	/**
 	* Get action
 	*
@@ -120,7 +120,7 @@ class Livecam extends LivecamLibrary
 			}
 		}
 	}
-	
+
 	/**
 	* Get date
 	*
@@ -136,11 +136,11 @@ class Livecam extends LivecamLibrary
 			$d = date("d");
 			$m = date("m");
 			$y = date("Y");
-			
+
 			$this->date = $y."-".$m."-".$d;
 		}
 	}
-	
+
 	/**
 	* Get page
 	*
@@ -152,34 +152,34 @@ class Livecam extends LivecamLibrary
 	function getPage()
 	{
 		$this->_objTpl->setTemplate($this->pageContent);
-		
+
 		$this->_objTpl->setVariable('LIVECAM_JAVASCRIPT', $this->_getJavascript());
 		$this->_objTpl->setGlobalVariable('LIVECAM_DATE', $this->date);
-		
+
     	switch ($this->_action) {
     	case 'today':
     		$this->_objTpl->hideBlock('livecamPicture');
     		$this->_showArchive($this->date);
     		break;
-    		
+
 		case 'archive':
 			$this->_objTpl->hideBlock('livecamPicture');
 	    	$this->_showArchive($this->date);
 	    	break;
-	    	
+
 	    default:
 	    	$this->_objTpl->hideBlock('livecamArchive');
 	    	$this->_showPicture();
 	        break;
     	}
-    	
+
     	if (isset($this->statusMessage)) {
 			$this->_objTpl->setVariable('LIVECAM_STATUS_MESSAGE', $this->statusMessage);
     	}
-    	
-    	return $this->_objTpl->get(); 
+
+    	return $this->_objTpl->get();
     }
-    
+
     /**
     * Show picture
     *
@@ -189,9 +189,19 @@ class Livecam extends LivecamLibrary
     */
     function _showPicture()
     {
+    	/*if($this->arrSettings['lightboxActivate'] == 1) {
+			$lightboxActive = 'checked="checked"';
+			$lightboxInctive = '';
+		} else {
+			$lightboxActive = '';
+			$lightboxInctive = 'checked="checked"';
+		}*/
+
     	$this->_objTpl->setVariable(array(
-    		'LIVECAM_CURRENT_IMAGE'	=> isset($_GET['file']) ? ASCMS_PATH_OFFSET.$this->arrSettings['archivePath'].'/'.$_GET['file'] : $this->arrSettings['currentImageUrl'],
-    		'LIVECAM_IMAGE_TEXT'	=> isset($_GET['file']) ? contrexx_strip_tags($_GET['file']) : 'Aktuelles Webcam Bild'
+    		'LIVECAM_CURRENT_IMAGE'		=> isset($_GET['file']) ? ASCMS_PATH_OFFSET.$this->arrSettings['archivePath'].'/'.$_GET['file'] : $this->arrSettings['currentImageUrl'],
+    		'LIVECAM_IMAGE_TEXT'		=> isset($_GET['file']) ? contrexx_strip_tags($_GET['file']) : 'Aktuelles Webcam Bild',
+    		'LIVECAM_IMAGE_LIGHTBOX'	=> $this->arrSettings['lightboxActivate'] == 1 ? 'rel="lightboxgallery"' : '',
+    		'LIVECAM_IMAGE_LINK'		=> $this->arrSettings['lightboxActivate'] == 1 ? $this->arrSettings['currentImageUrl'] : '?section=livecam&amp;act=today'
     	));
     }
 
@@ -212,7 +222,7 @@ class Livecam extends LivecamLibrary
 	}
 
 
-    
+
     /**
     * Show archive
     *
@@ -224,7 +234,7 @@ class Livecam extends LivecamLibrary
     function _showArchive($date)
     {
     	$this->_getThumbs();
-    	
+
     	if (count($this->_arrArchiveThumbs)>0) {
     		$countPerRow;
     		$picNr = 1;
@@ -235,24 +245,25 @@ class Livecam extends LivecamLibrary
     			if (!isset($countPerRow)) {
     				if (!$this->_objTpl->blockExists($this->_pictureTemplatePlaceholder.$picNr)) {
     					$this->_objTpl->parse('livecamArchiveRow');
-    					
+
     					$countPerRow = $picNr-1;
     					$picNr = 1;
     				}
     			}
-    			
+
 				$this->_objTpl->setVariable(array(
-					'LIVECAM_PICTURE_URL'	=> $arrThumbnail['link_url'],
-					'LIVECAM_PICTURE_TIME'	=> $arrThumbnail['time'],
-					'LIVECAM_THUMBNAIL_URL'	=> $arrThumbnail['image_url']
+					'LIVECAM_PICTURE_URL'		=> $arrThumbnail['link_url'],
+					'LIVECAM_PICTURE_TIME'		=> $arrThumbnail['time'],
+					'LIVECAM_THUMBNAIL_URL'		=> $arrThumbnail['image_url'],
+					'LIVECAM_IMAGE_LIGHTBOX'	=> $this->arrSettings['lightboxActivate'] == 1 ? 'rel="lightboxgallery"' : '',
 				));
 				$this->_objTpl->parse($this->_pictureTemplatePlaceholder.$picNr);
-				
+
 				if (isset($countPerRow) && $picNr == $countPerRow) {
 					$picNr = 0;
 					$this->_objTpl->parse('livecamArchiveRow');
 				}
-				
+
     			$picNr++;
     		}
     		$this->_objTpl->parse('livecamArchive');
@@ -261,7 +272,7 @@ class Livecam extends LivecamLibrary
     		$this->_objTpl->hideBlock('livecamArchive');
     	}
     }
-    
+
     /**
     * Get thumbnails
     *
@@ -272,62 +283,68 @@ class Livecam extends LivecamLibrary
     */
 	function _getThumbs() {
 		require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-		
+
 		$path = ASCMS_DOCUMENT_ROOT.$this->arrSettings['archivePath'].'/'.$this->date.'/';
 		$objDirectory = @opendir($path);
 		$objFile = &new File();
 		$chmoded = false;
-		
+
 		if ($objDirectory) {
 			while ($file = readdir ($objDirectory)) {
 				if ($file != "." && $file != "..") {
 					//check and create thumbs
 					$thumb = ASCMS_DOCUMENT_ROOT.$this->arrSettings['thumbnailPath'].'/tn_'.$this->date.'_'.$file;
-					
+
 					if(!file_exists($thumb)){
 						if (!$chmoded) {
 							$objFile->setChmod(ASCMS_DOCUMENT_ROOT.$this->arrSettings['archivePath'], ASCMS_PATH_OFFSET, $this->arrSettings['thumbnailPath']);
 							$chmoded = true;
 						}
-						
+
 						//create thumb
 						$im1 = @imagecreatefromjpeg($path.$file); //erstellt ein Abbild im Speicher
 						if ($im1) {  /* Prüfen, ob fehlgeschlagen */
-					        // check_jpeg($thumb, $fix=false );    			
-							$size = getimagesize($path.$file); //ermittelt die Größe des Bildes 						
-							$breite = $size[0]; //die Breite des Bildes 
-							$hoehe = $size[1]; //die Höhe des Bildes 
-							$breite_neu = $size[0]/5; //die breite des Thumbnails 
-							$hoehe_neu = $size[1]/5; //die Höhe des Thumbnails 
-							
-							//$im2=imagecreate($breite_neu,$hoehe_neu); //Thumbnail im Speicher erstellen 
+					        // check_jpeg($thumb, $fix=false );
+							$size = getimagesize($path.$file); //ermittelt die Größe des Bildes
+							$breite = $size[0]; //die Breite des Bildes
+							$hoehe = $size[1]; //die Höhe des Bildes
+							$breite_neu = $size[0]/5; //die breite des Thumbnails
+							$hoehe_neu = $size[1]/5; //die Höhe des Thumbnails
+
+							//$im2=imagecreate($breite_neu,$hoehe_neu); //Thumbnail im Speicher erstellen
 							$im2 = @imagecreatetruecolor($breite_neu,$hoehe_neu);
-							
-							imagecopyresized($im2, $im1, 0,0, 0,0,$breite_neu,$hoehe_neu, $breite,$hoehe);  
-							imagejpeg($im2, $thumb); //Thumbnail speichern 
-							
-							imagedestroy($im1); //Speicherabbild wieder löschen 
+
+							imagecopyresized($im2, $im1, 0,0, 0,0,$breite_neu,$hoehe_neu, $breite,$hoehe);
+							imagejpeg($im2, $thumb); //Thumbnail speichern
+
+							imagedestroy($im1); //Speicherabbild wieder löschen
 							imagedestroy($im2); //Speicherabbild wieder löschen
 						}
 					}
-							
+
 					//show pictures
 					$hour = substr($file,4,2);
 					$min = "";
 					$time = $hour.$min."&nbsp;Uhr";
-					
+
+					if($this->arrSettings['lightboxActivate'] == 1) {
+						$linkUrl = ASCMS_PATH_OFFSET.$this->arrSettings['archivePath'].'/'.$this->date.'/'.$file;
+					} else {
+						$linkUrl = '?section=livecam&amp;file='.$this->date.'/'.$file;
+					}
+
 					$arrThumbnail = array(
-						'link_url'	=> '?section=livecam&amp;file='.$this->date.'/'.$file,
+						'link_url'	=> $linkUrl,
 						'image_url'	=> $this->arrSettings['thumbnailPath']."/tn_".$this->date."_".$file,
 						'time'		=> $time
-					);	
+					);
 					array_push($this->_arrArchiveThumbs, $arrThumbnail);
 				}
 			}
 			closedir($objDirectory);
 		}
 	}
-	
+
 	/**
 	* Get javascript
 	*
