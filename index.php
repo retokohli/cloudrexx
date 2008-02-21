@@ -521,7 +521,7 @@ if (file_exists($modulespath)) {
      */
     include_once($modulespath);
     $immoHeadlines = &new immoHeadlines($themesPages['immo']);
-    
+
     $page_content = str_replace('{IMMO_FILE}', $immoHeadlines->getHeadlines(), $page_content);
     $themesPages['index'] = str_replace('{IMMO_FILE}', $immoHeadlines->getHeadlines(), $themesPages['index']);
     $themesPages['home'] = str_replace('{IMMO_FILE}', $immoHeadlines->getHeadlines(), $themesPages['home']);
@@ -1027,6 +1027,7 @@ switch ($section) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objLivecam = &new Livecam($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objLivecam->getPage());
+        $moduleStyleFile = "lib/lightbox/style/lightbox.css";
         break;
 
 //-------------------------------------------------------
@@ -1271,7 +1272,7 @@ switch ($section) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objCalendar = &new Calendar($page_content, $mandate);
         $objTemplate->setVariable("CONTENT_TEXT", $objCalendar->getCalendarPage());
-        
+
         break;
 
 //-------------------------------------------------------
@@ -1638,6 +1639,11 @@ $objTemplate->setVariable(array(
     'SIDEBAR_FILE'     => $themesPages['sidebar'],
     'JAVASCRIPT_FILE'  => $themesPages['javascript'],
     'BUILDIN_STYLE_FILE'  => $themesPages['buildin_style']
+));
+
+$objTemplate->setVariable(array(
+    'JAVASCRIPT_LIGHTBOX' => '<script type="text/javascript" src="lib/lightbox/javascript/mootools.js"></script>
+							<script type="text/javascript" src="lib/lightbox/javascript/slimbox.js"></script>'
 ));
 
 if (!empty($moduleStyleFile)) {
