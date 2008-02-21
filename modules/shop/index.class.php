@@ -1508,7 +1508,7 @@ class Shop extends ShopLibrary
                           case '1': // Radio buttons
                             $selectValues .=
                                 '<input type="radio" name="productOption['.
-                                optionId.']" id="productOption-'.
+                                $optionId.']" id="productOption-'.
                                 $product_Id.'-'.$optionId.'-'.$domId.
                                 '" value="'.$valueId.'"'.
                                 ($selected ? ' checked="checked"' : '').
