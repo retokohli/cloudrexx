@@ -10,4 +10,6 @@ $_ARRAYLANG['TXT_CURRENT_IMAGE_URL'] = "";
 $_ARRAYLANG['TXT_THUMBNAIL_PATH'] = "";
 $_ARRAYLANG['TXT_EMPTY_FIELDS'] = "";
 $_ARRAYLANG['TXT_UPDATE_FAILED'] = "";
+$_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX'] = "activate LightBox";
+$_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX_INFO'] = "Damit die LightBox funktioniert, muss im Designtemplate folgender Platzhalter im Header der index.htm Datei eingefügt werden: [[JAVASCRIPT_LIGHTBOX]]";
 ?>
