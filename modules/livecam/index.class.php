@@ -324,8 +324,9 @@ class Livecam extends LivecamLibrary
 
 					//show pictures
 					$hour = substr($file,4,2);
-					$min = "";
-					$time = $hour.$min."&nbsp;Uhr";
+					$min = substr($file,13,2);
+					$min = !empty($min) ? $min : "00";
+					$time = $hour.":".$min."&nbsp;Uhr";
 
 					if($this->arrSettings['lightboxActivate'] == 1) {
 						$linkUrl = ASCMS_PATH_OFFSET.$this->arrSettings['archivePath'].'/'.$this->date.'/'.$file;
