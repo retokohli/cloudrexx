@@ -176,6 +176,12 @@ Modul: Blog
 Modul: Kalender
 - So erweitert, dass einfach eine Kopie davon erstellt werden kann (zwei Mandanten)
 
+Modul: Webcam
+- Es werden nun auch Thumbnails/Bilder angezeigt, die nicht zur vollen Stunden
+aufgenommen worden sind.
+Die Bilder müssen von der Webcam nach diesem Schema benannt werden:
+hoursXXminutesXX.jpg (hours08minutes25.jpg --> 08:25 Uhr)
+
 
 ****************************************
 * Behobene Fehler **********************
