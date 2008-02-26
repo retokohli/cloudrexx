@@ -66,9 +66,9 @@ if (0) {
     error_reporting(0);
     ini_set('display_errors', 0);
 }
-		//iconv_set_encoding("output_encoding", "utf-8");
-		//iconv_set_encoding("input_encoding", "utf-8");
-		//iconv_set_encoding("internal_encoding", "utf-8");
+//iconv_set_encoding("output_encoding", "utf-8");
+//iconv_set_encoding("input_encoding", "utf-8");
+//iconv_set_encoding("internal_encoding", "utf-8");
 
 $starttime = explode(' ', microtime());
 
@@ -99,7 +99,7 @@ if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
     header("Location: installer/index.php");
     die(1);
 } elseif ($incSettingsStatus === false || $incVersionStatus === false) {
-	die('System halted: Unable to load basic configuration!');
+    die('System halted: Unable to load basic configuration!');
 }
 
 //-------------------------------------------------------
@@ -122,7 +122,10 @@ $errorMsg = '';
 $objDatabase = getDatabaseObject($errorMsg);
 
 if ($objDatabase === false) {
-    die('Database error.');
+    die(
+        'Database error.'.
+        ($errorMsg != '' ? "<br />Message: $errorMsg" : '')
+    );
 }
 //$objDatabase->debug = 1;
 
@@ -226,16 +229,16 @@ if ($objResult === false || $objResult->EOF) {
     $page_template  = $themesPages['content'];
 
     if ($history) {
-		$objPageProtection = $objDatabase->SelectLimit('SELECT backend_access_id FROM '.DBPREFIX.'content_navigation WHERE catid='.$objResult->fields['catid'].' AND backend_access_id!=0', 1);
-		if ($objPageProtection !== false) {
-			if ($objPageProtection->RecordCount() == 1) {
-				$page_protected = 1;
-				$page_access_id = $objPageProtection->fields['backend_access_id'];
-			}
-		} else {
-			$page_protected = 1;
-		}
-	}
+        $objPageProtection = $objDatabase->SelectLimit('SELECT backend_access_id FROM '.DBPREFIX.'content_navigation WHERE catid='.$objResult->fields['catid'].' AND backend_access_id!=0', 1);
+        if ($objPageProtection !== false) {
+            if ($objPageProtection->RecordCount() == 1) {
+                $page_protected = 1;
+                $page_access_id = $objPageProtection->fields['backend_access_id'];
+            }
+        } else {
+            $page_protected = 1;
+        }
+    }
 }
 
 //-------------------------------------------------------
@@ -249,19 +252,19 @@ if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_
     if ($objAuth->checkAuth()) {
         $objPerm =&new Permission($type='frontend');
         if ($page_protected) {
-	        if (!$objPerm->checkAccess($page_access_id, 'dynamic')) {
-	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-	            header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
-	            exit;
-	        }
+            if (!$objPerm->checkAccess($page_access_id, 'dynamic')) {
+                $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
+                header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
+                exit;
+            }
         }
         if ($history && !$objPerm->checkAccess(78, 'static')) {
-			$link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-			header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
-			exit;
+            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
+            header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
+            exit;
         }
     } elseif (!empty($_COOKIE['PHPSESSID']) && !$page_protected) {
-    	unset($_COOKIE['PHPSESSID']);
+        unset($_COOKIE['PHPSESSID']);
     } else {
         $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
         header ("Location: index.php?section=login&redirect=".$link);
@@ -379,10 +382,10 @@ if (file_exists($modulespath)) {
      * @ignore
      */
     if (preg_match_all('/{POPUP_JS_FUNCTION}/ms', $themesPages['index'], $arrMatches)) {
-		require_once $modulespath;
-		$objPopup = &new popup();
+        require_once $modulespath;
+        $objPopup = &new popup();
 
-    	if (preg_match_all('/{POPUP}/ms', $themesPages['index'], $arrMatches)) {
+        if (preg_match_all('/{POPUP}/ms', $themesPages['index'], $arrMatches)) {
             $objPopup->setPopup($themesPages['index'], $pageId);
         }
 
@@ -428,7 +431,7 @@ if ($_CONFIG['blockStatus'] == '1') {
         }
 
         if ($_CONFIG['blockRandom'] == '1') {
-        	//randomizer block 1
+            //randomizer block 1
             if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/ms', $page_content, $arrMatches)) {
                 $objBlock->setBlockRandom($page_content, 1);
             }
@@ -498,10 +501,10 @@ if (file_exists($modulespath)) {
     include_once($modulespath);
 
     if(!empty($_COOKIE['PHPSESSID'])) {
-	    if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
-	    $sessionObj->cmsSessionStatusUpdate($status="frontend");
-	    if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
-	    if (!isset($objPerm) || !is_object($objPerm)) $objPerm = &new Permission();
+        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
+        $sessionObj->cmsSessionStatusUpdate($status="frontend");
+        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
+        if (!isset($objPerm) || !is_object($objPerm)) $objPerm = &new Permission();
     }
 
     $calHeadlinesObj = &new calHeadlines($themesPages['calendar_headlines']);
@@ -686,47 +689,47 @@ if (file_exists($modulespath)) {
 //-------------------------------------------------------
 $podcastFirstBlock = false;
 if ($_CONFIG['podcastHomeContent'] == '1') {
-	$modulespath = "modules/podcast/homeContent.class.php";
-	if (file_exists($modulespath)) {
-		/**
-		 * @ignore
-		 */
-		require_once($modulespath);
+    $modulespath = "modules/podcast/homeContent.class.php";
+    if (file_exists($modulespath)) {
+        /**
+         * @ignore
+         */
+        require_once($modulespath);
 
-		$podcastHomeContentInPageContent = false;
-		$podcastHomeContentInPageTemplate = false;
-		$podcastHomeContentInThemesPage = false;
+        $podcastHomeContentInPageContent = false;
+        $podcastHomeContentInPageTemplate = false;
+        $podcastHomeContentInThemesPage = false;
 
-		if (strpos($page_content, '{PODCAST_FILE}') !== false) {
-			$podcastHomeContentInPageContent = true;
-		}
-		if (strpos($page_template, '{PODCAST_FILE}') !== false) {
-			$podcastHomeContentInPageTemplate = true;
-		}
-		if (strpos($themesPages['index'], '{PODCAST_FILE}') !== false) {
-			$podcastHomeContentInThemesPage = true;
-		}
-		if ($podcastHomeContentInPageContent || $podcastHomeContentInPageTemplate || $podcastHomeContentInThemesPage) {
-			$_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('podcast'));
-			$objPodcast = &new podcastHomeContent($themesPages['podcast_content']);
-		}
-		if ($podcastHomeContentInPageContent) {
-			$page_content = str_replace('{PODCAST_FILE}', $objPodcast->getContent(), $page_content);
-		}
-		if ($podcastHomeContentInPageTemplate) {
-			$page_template = str_replace('{PODCAST_FILE}', $objPodcast->getContent(), $page_template);
-		}
-		if ($podcastHomeContentInThemesPage) {
-			$podcastFirstBlock = false;
-			if(strpos($_SERVER['REQUEST_URI'], 'section=podcast')){
-				$podcastBlockPos = strpos($themesPages['index'], '{PODCAST_FILE}');
-				$contentPos 	 = strpos($themesPages['index'], '{CONTENT_FILE}');
-				$podcastFirstBlock 	 = $podcastBlockPos < $contentPos ? true : false;
-			}
-			$themesPages['index'] = str_replace('{PODCAST_FILE}', $objPodcast->getContent($podcastFirstBlock), $themesPages['index']);
-		}
+        if (strpos($page_content, '{PODCAST_FILE}') !== false) {
+            $podcastHomeContentInPageContent = true;
+        }
+        if (strpos($page_template, '{PODCAST_FILE}') !== false) {
+            $podcastHomeContentInPageTemplate = true;
+        }
+        if (strpos($themesPages['index'], '{PODCAST_FILE}') !== false) {
+            $podcastHomeContentInThemesPage = true;
+        }
+        if ($podcastHomeContentInPageContent || $podcastHomeContentInPageTemplate || $podcastHomeContentInThemesPage) {
+            $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('podcast'));
+            $objPodcast = &new podcastHomeContent($themesPages['podcast_content']);
+        }
+        if ($podcastHomeContentInPageContent) {
+            $page_content = str_replace('{PODCAST_FILE}', $objPodcast->getContent(), $page_content);
+        }
+        if ($podcastHomeContentInPageTemplate) {
+            $page_template = str_replace('{PODCAST_FILE}', $objPodcast->getContent(), $page_template);
+        }
+        if ($podcastHomeContentInThemesPage) {
+            $podcastFirstBlock = false;
+            if(strpos($_SERVER['REQUEST_URI'], 'section=podcast')){
+                $podcastBlockPos = strpos($themesPages['index'], '{PODCAST_FILE}');
+                $contentPos      = strpos($themesPages['index'], '{CONTENT_FILE}');
+                $podcastFirstBlock      = $podcastBlockPos < $contentPos ? true : false;
+            }
+            $themesPages['index'] = str_replace('{PODCAST_FILE}', $objPodcast->getContent($podcastFirstBlock), $themesPages['index']);
+        }
 
-	}
+    }
 }
 
 //-------------------------------------------------------
@@ -767,25 +770,25 @@ if (   $_CONFIGURATION['custom']['shopJsCart']
 //-------------------------------------------------------
 $modulespath = "modules/voting/index.class.php";
 if (file_exists($modulespath)) {
-	require_once($modulespath);
-	$_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('voting'));
+    require_once($modulespath);
+    $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('voting'));
 //
-//	if ($objTemplate->blockExists('voting_result')) {
-//		$objTemplate->_blocks['voting_result'] = setVotingResult($objTemplate->_blocks['voting_result']);
-//	}
+//    if ($objTemplate->blockExists('voting_result')) {
+//        $objTemplate->_blocks['voting_result'] = setVotingResult($objTemplate->_blocks['voting_result']);
+//    }
 //
-	if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['sidebar'], $regs, PREG_SET_ORDER)) {
-		$themesPages['sidebar'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $themesPages['sidebar']);
-	}
-	if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['index'], $regs, PREG_SET_ORDER)) {
-		$themesPages['index'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $themesPages['index']);
-	}
-	if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $page_content, $regs, PREG_SET_ORDER)) {
-		$page_content = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $page_content);
-	}
-	if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $page_template, $regs, PREG_SET_ORDER)) {
-		$page_template = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $page_template);
-	}
+    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['sidebar'], $regs, PREG_SET_ORDER)) {
+        $themesPages['sidebar'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $themesPages['sidebar']);
+    }
+    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['index'], $regs, PREG_SET_ORDER)) {
+        $themesPages['index'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $themesPages['index']);
+    }
+    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $page_content, $regs, PREG_SET_ORDER)) {
+        $page_content = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $page_content);
+    }
+    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $page_template, $regs, PREG_SET_ORDER)) {
+        $page_template = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $page_template);
+    }
 
 }
 
@@ -803,96 +806,90 @@ if (file_exists($modulespath)) {
     $objBlogHome = &new BlogHomeContent($themesPages['blog_content']);
 
     if ($objBlogHome->blockFunktionIsActivated()) {
-    	//Blog-File
-	    $blogHomeContentInContent	= $objBlogHome->searchKeywordInContent('BLOG_FILE', $page_content);
-	    $blogHomeContentInTemplate	= $objBlogHome->searchKeywordInContent('BLOG_FILE', $page_template);
-	    $blogHomeContentInTheme		= $objBlogHome->searchKeywordInContent('BLOG_FILE', $themesPages['index']);
-	    $blogHomeContentInSidebar	= $objBlogHome->searchKeywordInContent('BLOG_FILE', $themesPages['sidebar']);
+        //Blog-File
+        $blogHomeContentInContent    = $objBlogHome->searchKeywordInContent('BLOG_FILE', $page_content);
+        $blogHomeContentInTemplate    = $objBlogHome->searchKeywordInContent('BLOG_FILE', $page_template);
+        $blogHomeContentInTheme        = $objBlogHome->searchKeywordInContent('BLOG_FILE', $themesPages['index']);
+        $blogHomeContentInSidebar    = $objBlogHome->searchKeywordInContent('BLOG_FILE', $themesPages['sidebar']);
 
-	    if ($blogHomeContentInContent || $blogHomeContentInTemplate || $blogHomeContentInTheme || $blogHomeContentInSidebar) {
-	    	$_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('blog'));
-	    	$strContentSource = $objBlogHome->getLatestEntries();
+        if ($blogHomeContentInContent || $blogHomeContentInTemplate || $blogHomeContentInTheme || $blogHomeContentInSidebar) {
+            $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('blog'));
+            $strContentSource = $objBlogHome->getLatestEntries();
+            $page_content            = $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $page_content, $blogHomeContentInContent);
+            $page_template            = $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $page_template, $blogHomeContentInTemplate);
+            $themesPages['index']     = $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $themesPages['index'], $blogHomeContentInTheme);
+            $themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $themesPages['sidebar'], $blogHomeContentInSidebar);
+        }
 
-	    	$page_content			= $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $page_content, $blogHomeContentInContent);
-	    	$page_template			= $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $page_template, $blogHomeContentInTemplate);
-	    	$themesPages['index'] 	= $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $themesPages['index'], $blogHomeContentInTheme);
-	    	$themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $themesPages['sidebar'], $blogHomeContentInSidebar);
-	    }
+        //Blog-Calendar
+        $blogHomeCalendarInContent     = $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $page_content);
+        $blogHomeCalendarInTemplate = $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $page_template);
+        $blogHomeCalendarInTheme    = $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $themesPages['index']);
+        $blogHomeCalendarInSidebar    = $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $themesPages['sidebar']);
 
-	    //Blog-Calendar
-	    $blogHomeCalendarInContent 	= $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $page_content);
-	    $blogHomeCalendarInTemplate = $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $page_template);
-	    $blogHomeCalendarInTheme	= $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $themesPages['index']);
-	    $blogHomeCalendarInSidebar	= $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $themesPages['sidebar']);
+        if ($blogHomeCalendarInContent || $blogHomeCalendarInTemplate || $blogHomeCalendarInTheme || $blogHomeCalendarInSidebar) {
+            $strCalendarSource = $objBlogHome->getHomeCalendar();
+            $page_content            = $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $page_content, $blogHomeCalendarInContent);
+            $page_template            = $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $page_template, $blogHomeCalendarInTemplate);
+            $themesPages['index']     = $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $themesPages['index'], $blogHomeCalendarInTheme);
+            $themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $themesPages['sidebar'], $blogHomeCalendarInSidebar);
+        }
 
-	    if ($blogHomeCalendarInContent || $blogHomeCalendarInTemplate || $blogHomeCalendarInTheme || $blogHomeCalendarInSidebar) {
-	    	$strCalendarSource = $objBlogHome->getHomeCalendar();
+        //Blog-TagCloud
+        $blogHomeTagCloudInContent     = $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $page_content);
+        $blogHomeTagCloudInTemplate = $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $page_template);
+        $blogHomeTagCloudInTheme    = $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $themesPages['index']);
+        $blogHomeTagCloudInSidebar    = $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $themesPages['sidebar']);
 
-	    	$page_content			= $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $page_content, $blogHomeCalendarInContent);
-	    	$page_template			= $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $page_template, $blogHomeCalendarInTemplate);
-	    	$themesPages['index'] 	= $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $themesPages['index'], $blogHomeCalendarInTheme);
-	    	$themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $themesPages['sidebar'], $blogHomeCalendarInSidebar);
-	    }
+        if ($blogHomeTagCloudInContent || $blogHomeTagCloudInTemplate || $blogHomeTagCloudInTheme || $blogHomeTagCloudInSidebar) {
+            $strTagCloudSource = $objBlogHome->getHomeTagCloud();
+            $page_content            = $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $page_content, $blogHomeTagCloudInContent);
+            $page_template            = $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $page_template, $blogHomeTagCloudInTemplate);
+            $themesPages['index']     = $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $themesPages['index'], $blogHomeTagCloudInTheme);
+            $themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $themesPages['sidebar'], $blogHomeTagCloudInSidebar);
+        }
 
-	    //Blog-TagCloud
-	    $blogHomeTagCloudInContent 	= $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $page_content);
-	    $blogHomeTagCloudInTemplate = $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $page_template);
-	    $blogHomeTagCloudInTheme	= $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $themesPages['index']);
-	    $blogHomeTagCloudInSidebar	= $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $themesPages['sidebar']);
+        //Blog-TagCloud
+        $blogHomeTagHitlistInContent    = $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $page_content);
+        $blogHomeTagHitlistInTemplate     = $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $page_template);
+        $blogHomeTagHitlistInTheme        = $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $themesPages['index']);
+        $blogHomeTagHitlistInSidebar    = $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $themesPages['sidebar']);
 
-	    if ($blogHomeTagCloudInContent || $blogHomeTagCloudInTemplate || $blogHomeTagCloudInTheme || $blogHomeTagCloudInSidebar) {
-	    	$strTagCloudSource = $objBlogHome->getHomeTagCloud();
+        if ($blogHomeTagHitlistInContent || $blogHomeTagHitlistInTemplate || $blogHomeTagHitlistInTheme || $blogHomeTagHitlistInSidebar) {
+            $strTagHitlistSource = $objBlogHome->getHomeTagHitlist();
+            $page_content            = $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $page_content, $blogHomeTagHitlistInContent);
+            $page_template            = $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $page_template, $blogHomeTagHitlistInTemplate);
+            $themesPages['index']     = $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $themesPages['index'], $blogHomeTagHitlistInTheme);
+            $themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $themesPages['sidebar'], $blogHomeTagHitlistInSidebar);
+        }
 
-	    	$page_content			= $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $page_content, $blogHomeTagCloudInContent);
-	    	$page_template			= $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $page_template, $blogHomeTagCloudInTemplate);
-	    	$themesPages['index'] 	= $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $themesPages['index'], $blogHomeTagCloudInTheme);
-	    	$themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $themesPages['sidebar'], $blogHomeTagCloudInSidebar);
-	    }
+        //Blog-Categories (Select)
+        $blogHomeCategorySelectInContent     = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $page_content);
+        $blogHomeCategorySelectInTemplate     = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $page_template);
+        $blogHomeCategorySelectInTheme        = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $themesPages['index']);
+        $blogHomeCategorySelectInSidebar    = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $themesPages['sidebar']);
 
-	    //Blog-TagCloud
-	    $blogHomeTagHitlistInContent	= $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $page_content);
-	    $blogHomeTagHitlistInTemplate 	= $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $page_template);
-	    $blogHomeTagHitlistInTheme		= $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $themesPages['index']);
-	    $blogHomeTagHitlistInSidebar	= $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $themesPages['sidebar']);
+        if ($blogHomeCategorySelectInContent || $blogHomeCategorySelectInTemplate || $blogHomeCategorySelectInTheme || $blogHomeCategorySelectInSidebar) {
+            $strCategoriesSelect = $objBlogHome->getHomeCategoriesSelect();
+            $page_content            = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $page_content, $blogHomeCategorySelectInContent);
+            $page_template            = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $page_template, $blogHomeCategorySelectInTemplate);
+            $themesPages['index']     = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $themesPages['index'], $blogHomeCategorySelectInTheme);
+            $themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $themesPages['sidebar'], $blogHomeCategorySelectInSidebar);
+        }
 
-	    if ($blogHomeTagHitlistInContent || $blogHomeTagHitlistInTemplate || $blogHomeTagHitlistInTheme || $blogHomeTagHitlistInSidebar) {
-	    	$strTagHitlistSource = $objBlogHome->getHomeTagHitlist();
+        //Blog-Categories (List)
+        $blogHomeCategoryListInContent     = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $page_content);
+        $blogHomeCategoryListInTemplate = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $page_template);
+        $blogHomeCategoryListInTheme    = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $themesPages['index']);
+        $blogHomeCategoryListInSidebar    = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $themesPages['sidebar']);
 
-	    	$page_content			= $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $page_content, $blogHomeTagHitlistInContent);
-	    	$page_template			= $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $page_template, $blogHomeTagHitlistInTemplate);
-	    	$themesPages['index'] 	= $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $themesPages['index'], $blogHomeTagHitlistInTheme);
-	    	$themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $themesPages['sidebar'], $blogHomeTagHitlistInSidebar);
-	    }
-
-	    //Blog-Categories (Select)
-	    $blogHomeCategorySelectInContent 	= $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $page_content);
-	    $blogHomeCategorySelectInTemplate 	= $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $page_template);
-	    $blogHomeCategorySelectInTheme		= $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $themesPages['index']);
-	    $blogHomeCategorySelectInSidebar	= $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $themesPages['sidebar']);
-
-	    if ($blogHomeCategorySelectInContent || $blogHomeCategorySelectInTemplate || $blogHomeCategorySelectInTheme || $blogHomeCategorySelectInSidebar) {
-	    	$strCategoriesSelect = $objBlogHome->getHomeCategoriesSelect();
-
-	    	$page_content			= $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $page_content, $blogHomeCategorySelectInContent);
-	    	$page_template			= $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $page_template, $blogHomeCategorySelectInTemplate);
-	    	$themesPages['index'] 	= $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $themesPages['index'], $blogHomeCategorySelectInTheme);
-	    	$themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $themesPages['sidebar'], $blogHomeCategorySelectInSidebar);
-	    }
-
-	    //Blog-Categories (List)
-	    $blogHomeCategoryListInContent 	= $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $page_content);
-	    $blogHomeCategoryListInTemplate = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $page_template);
-	    $blogHomeCategoryListInTheme	= $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $themesPages['index']);
-	    $blogHomeCategoryListInSidebar	= $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $themesPages['sidebar']);
-
-	    if ($blogHomeCategoryListInContent || $blogHomeCategoryListInTemplate || $blogHomeCategoryListInTheme || $blogHomeCategoryListInSidebar) {
-	    	$strCategoriesList = $objBlogHome->getHomeCategoriesList();
-
-	    	$page_content			= $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $page_content, $blogHomeCategoryListInContent);
-	    	$page_template			= $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $page_template, $blogHomeCategoryListInTemplate);
-	    	$themesPages['index'] 	= $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $themesPages['index'], $blogHomeCategoryListInTheme);
-	    	$themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $themesPages['sidebar'], $blogHomeCategoryListInSidebar);
-	    }
+        if ($blogHomeCategoryListInContent || $blogHomeCategoryListInTemplate || $blogHomeCategoryListInTheme || $blogHomeCategoryListInSidebar) {
+            $strCategoriesList = $objBlogHome->getHomeCategoriesList();
+            $page_content            = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $page_content, $blogHomeCategoryListInContent);
+            $page_template            = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $page_template, $blogHomeCategoryListInTemplate);
+            $themesPages['index']     = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $themesPages['index'], $blogHomeCategoryListInTheme);
+            $themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $themesPages['sidebar'], $blogHomeCategoryListInSidebar);
+        }
     }
 }
 
@@ -1384,7 +1381,7 @@ switch ($section) {
 // logout
 //-------------------------------------------------------
     case "logout":
-    	if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = &new cmsSession();
+        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = &new cmsSession();
         $objAuth =&new Auth($type='public');
         $objAuth->logout();
         break;
@@ -1438,13 +1435,13 @@ switch ($section) {
 //-------------------------------------------------------
 // Download Module
 //-------------------------------------------------------
-	case "downloads":
-	    $modulespath = "modules/downloads/index.class.php";
-	    if (file_exists($modulespath)) require_once($modulespath);
-	    else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-	    $objDownloadsModule = &new downloads($page_content);
-	    $objTemplate->setVariable('CONTENT_TEXT', $objDownloadsModule->getPage());
-	break;
+    case "downloads":
+        $modulespath = "modules/downloads/index.class.php";
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objDownloadsModule = &new downloads($page_content);
+        $objTemplate->setVariable('CONTENT_TEXT', $objDownloadsModule->getPage());
+    break;
 
 //-------------------------------------------------------
 // default case
@@ -1511,9 +1508,9 @@ if(!empty($calendarCheck1) OR !empty($calendarCheck2)) {
 $directoryCheck = array();
 
 for($i = 1; $i <= 10; $i++){
-	if($objTemplate->blockExists('directoryLatest_row_'.$i)){
-		array_push($directoryCheck, $i);
-	}
+    if($objTemplate->blockExists('directoryLatest_row_'.$i)){
+        array_push($directoryCheck, $i);
+    }
 }
 
 if(!empty($directoryCheck)) {
@@ -1643,7 +1640,7 @@ $objTemplate->setVariable(array(
 
 $objTemplate->setVariable(array(
     'JAVASCRIPT_LIGHTBOX' => '<script type="text/javascript" src="lib/lightbox/javascript/mootools.js"></script>
-							<script type="text/javascript" src="lib/lightbox/javascript/slimbox.js"></script>'
+                            <script type="text/javascript" src="lib/lightbox/javascript/slimbox.js"></script>'
 ));
 
 if (!empty($moduleStyleFile)) {
@@ -1653,13 +1650,13 @@ if (!empty($moduleStyleFile)) {
 }
 
 if(isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1){
-	require_once ASCMS_CORE_PATH.'/pdf.class.php';
-	 $objPDF 			= &new PDF();
-	 $objPDF->title		= $page_title;
-	 $objPDF->content 	= $objTemplate->get();
-	 $objPDF->Create();
+    require_once ASCMS_CORE_PATH.'/pdf.class.php';
+     $objPDF             = &new PDF();
+     $objPDF->title        = $page_title;
+     $objPDF->content     = $objTemplate->get();
+     $objPDF->Create();
 }else{
-	$objTemplate->show();
+    $objTemplate->show();
 }
 $objCache->endCache();
 ?>
