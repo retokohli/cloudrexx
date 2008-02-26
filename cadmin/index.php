@@ -1,4 +1,7 @@
 <?php
+
+define('_DEBUG', 0);
+
 /**
  * Modul Admin Index
  *
@@ -15,7 +18,7 @@
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
-if (0) {
+if (_DEBUG) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 } else {
@@ -66,10 +69,11 @@ $objDatabase = getDatabaseObject($errorMsg);
 if ($objDatabase === false) {
     die('Database error.');
 }
-
-//$objDatabase->debug = 1;
-
-//global $objDatabase; $objDatabase->debug = 1;
+if (_DEBUG) {
+    $objDatabase->debug = 1;
+} else {
+    $objDatabase->debug = 0;
+}
 
 //-------------------------------------------------------
 // Load settings and configuration
@@ -179,7 +183,7 @@ if (!$objAuth->checkAuth()) {
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $objTemplate->loadTemplateFile('index.html');
     if ($objPerm->checkAccess(35, 'static', true)) {
-    	$objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
+        $objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
     }
     $objTemplate->setVariable(
         array(
@@ -195,7 +199,7 @@ switch($cmd) {
         // e-government
         //-----------------------------------------------------------------------------------------------
     case "egov":
-    	$objPerm->checkAccess(109, 'static');
+        $objPerm->checkAccess(109, 'static');
         $modulespath = ASCMS_MODULE_PATH . "/egov/admin.class.php";
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -480,85 +484,85 @@ switch($cmd) {
     case 'dbm':
     case 'backup':
     case 'systemUpdate':
-    	if (CONTREXX_PHP5) {
-	        $modulespath = ASCMS_CORE_PATH.'/DatabaseManager.class.php';
-	        if (file_exists($modulespath)) include($modulespath);
-	        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-	        $subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
-	        $objDatabaseManager = &new DatabaseManager();
-	        $objDatabaseManager->getPage();
-    	} else {
-    		// This part will be removed as soon as PHP4 support has been stopped!
-    		$objPerm->checkAccess(20, 'static');
-    		switch ($cmd) {
-    			case 'systemUpdate':
-					$modulespath = ASCMS_CORE_MODULE_PATH . "/systemUpdate/admin.class.php";
-					if (file_exists($modulespath)) include($modulespath);
-					else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-					$subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
-					$systemUpdate = &new systemUpdate();
-					$systemUpdate->getContent();
-					break;
+        if (CONTREXX_PHP5) {
+            $modulespath = ASCMS_CORE_PATH.'/DatabaseManager.class.php';
+            if (file_exists($modulespath)) include($modulespath);
+            else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+            $subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
+            $objDatabaseManager = &new DatabaseManager();
+            $objDatabaseManager->getPage();
+        } else {
+            // This part will be removed as soon as PHP4 support has been stopped!
+            $objPerm->checkAccess(20, 'static');
+            switch ($cmd) {
+                case 'systemUpdate':
+                    $modulespath = ASCMS_CORE_MODULE_PATH . "/systemUpdate/admin.class.php";
+                    if (file_exists($modulespath)) include($modulespath);
+                    else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                    $subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
+                    $systemUpdate = &new systemUpdate();
+                    $systemUpdate->getContent();
+                    break;
 
-    			default:
-			        $modulespath = ASCMS_CORE_PATH . "/backup.class.php";
-			        if (file_exists($modulespath)) include($modulespath);
-			        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-			        $subMenuTitle= $_CORELANG['TXT_DATABASE_MANAGER'];
-			        $statustxt = "";
+                default:
+                    $modulespath = ASCMS_CORE_PATH . "/backup.class.php";
+                    if (file_exists($modulespath)) include($modulespath);
+                    else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                    $subMenuTitle= $_CORELANG['TXT_DATABASE_MANAGER'];
+                    $statustxt = "";
 
-			        if(!isset($_GET['act'])){
-			            $_GET['act']="";
-			        }
+                    if(!isset($_GET['act'])){
+                        $_GET['act']="";
+                    }
 
-			        if (!empty($_GET['act'])) {
-			        	if (!$objPerm->allAccess) {
-			        		$objPerm->noAccess();
-			        	}
+                    if (!empty($_GET['act'])) {
+                        if (!$objPerm->allAccess) {
+                            $objPerm->noAccess();
+                        }
 
-				        switch($_GET['act']){
-				            case "create":
-				                $strOkMessage = backup_create();
-				                break;
+                        switch($_GET['act']){
+                            case "create":
+                                $strOkMessage = backup_create();
+                                break;
 
-				            case "restore":
-				                $strOkMessage = backup_restore();
-				                break;
+                            case "restore":
+                                $strOkMessage = backup_restore();
+                                break;
 
-				            case "delete":
-				                $strOkMessage  =backup_delete();
-				                break;
+                            case "delete":
+                                $strOkMessage  =backup_delete();
+                                break;
 
-				            case "view":
-				                $othertxt = backup_view();
-				                break;
+                            case "view":
+                                $othertxt = backup_view();
+                                break;
 
-				            case "viewtables":
-				                $othertxt = backup_viewTables();
-				                break;
+                            case "viewtables":
+                                $othertxt = backup_viewTables();
+                                break;
 
-				            case "download":
-				                backup_download();
-				                break;
-				        }
-			        }
+                            case "download":
+                                backup_download();
+                                break;
+                        }
+                    }
 
-			        $objTemplate->setVariable(array(
-			        'CONTENT_OK_MESSAGE'		=> $strOkMessage,
-			        'CONTENT_STATUS_MESSAGE'	=> $strErrMessage,
-			        'CONTENT_TITLE'				=> $_CORELANG['TXT_OVERVIEW'],
-			        'CONTENT_NAVIGATION'		=> "<a href='?cmd=backup'>".$_CORELANG['TXT_OVERVIEW']."</a> <a href='?cmd=systemUpdate'>".$_ARRAYLANG['TXT_DBM_SQL_TITLE']."</a>"
-			        ));
+                    $objTemplate->setVariable(array(
+                    'CONTENT_OK_MESSAGE' => $strOkMessage,
+                    'CONTENT_STATUS_MESSAGE' => $strErrMessage,
+                    'CONTENT_TITLE' => $_CORELANG['TXT_OVERVIEW'],
+                    'CONTENT_NAVIGATION' => "<a href='?cmd=backup'>".$_CORELANG['TXT_OVERVIEW']."</a> <a href='?cmd=systemUpdate'>".$_ARRAYLANG['TXT_DBM_SQL_TITLE']."</a>"
+                    ));
 
-			        if (isset($othertxt)){
-			            $objTemplate->setVariable('ADMIN_CONTENT',$othertxt);
-			        } else {
-			            backup_showList();
-			        }
-			       	break;
-    		}
-    	}
-    	break;
+                    if (isset($othertxt)){
+                        $objTemplate->setVariable('ADMIN_CONTENT',$othertxt);
+                    } else {
+                        backup_showList();
+                    }
+                       break;
+            }
+        }
+        break;
 
         //----------------------------------------------------------------------------------------------
         // stats
@@ -843,7 +847,7 @@ switch($cmd) {
      * @version 1.0
      */
     case "blog":
-    	$objPerm->checkAccess(119, 'static');
+        $objPerm->checkAccess(119, 'static');
         $modulespath = ASCMS_MODULE_PATH . "/blog/admin.class.php";
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -874,17 +878,17 @@ switch($cmd) {
         exit;
         break;
 
-		//-----------------------------------------------------------------------------------------------
+        //-----------------------------------------------------------------------------------------------
         // downloads
         //-----------------------------------------------------------------------------------------------
-	case "downloads":
-	    $modulespath = ASCMS_MODULE_PATH . "/downloads/admin.class.php";
-	    if (file_exists($modulespath)) require_once($modulespath);
-	    else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-	    $subMenuTitle = $_CORELANG['TXT_DOWNLOADS'];
-	    $objDownloadsModule = &new downloads();
-	    $objDownloadsModule->getPage();
-	break;
+    case "downloads":
+        $modulespath = ASCMS_MODULE_PATH . "/downloads/admin.class.php";
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_DOWNLOADS'];
+        $objDownloadsModule = &new downloads();
+        $objDownloadsModule->getPage();
+    break;
 
         //-----------------------------------------------------------------------------------------------
         // show default admin page
