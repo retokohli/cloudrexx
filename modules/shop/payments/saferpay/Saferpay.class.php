@@ -3,6 +3,13 @@
 class Saferpay
 {
     /**
+     * 'Is test' flag
+     * @access  public
+     * @var     boolean
+     */
+    var $isTest = false;
+
+    /**
      * Temporary data
      * @access  private
      * @var     array
@@ -33,7 +40,7 @@ class Saferpay
     var $gateway = array(
         'payInit'     => 'https://www.saferpay.com/hosting/CreatePayInit.asp',
         'payConfirm'  => 'https://www.saferpay.com/hosting/VerifyPayConfirm.asp',
-        'payComplete' => 'https://www.saferpay.com/hosting/PayComplete.asp'
+        'payComplete' => 'https://www.saferpay.com/hosting/PayComplete.asp',
     );
 
     /**
@@ -41,14 +48,14 @@ class Saferpay
      * @access  private
      * @var     array
      */
-    var $arrCurrency = array('CHF', 'CZK', 'DKK', 'EUR', 'GBP', 'PLN', 'SEK', 'USD');
+    var $arrCurrency = array('CHF', 'CZK', 'DKK', 'EUR', 'GBP', 'PLN', 'SEK', 'USD',);
 
     /**
      * Language codes
      * @access  private
      * @var     array
      */
-    var $arrLangId = array('en', 'de', 'fr', 'it');
+    var $arrLangId = array('en', 'de', 'fr', 'it',);
 
     /**
      * Keys needed for the respective operations
@@ -61,16 +68,16 @@ class Saferpay
             'CURRENCY',
             'ACCOUNTID',
             'SUCCESSLINK',
-            'DESCRIPTION'
+            'DESCRIPTION',
         ),
         'payConfirm'  => array(
             'DATA',
-            'SIGNATURE'
+            'SIGNATURE',
         ),
         'payComplete' => array(
             'ACCOUNTID',
             'ID',
-            'TOKEN'
+            'TOKEN',
         )
     );
 
@@ -106,15 +113,8 @@ class Saferpay
     var $arrWindowOption = array(
         0 => 'TXT_IFRAME',
         1 => 'TXT_POPUP',
-        2 => 'TXT_NEW_WINDOW'
+        2 => 'TXT_NEW_WINDOW',
     );
-
-    /**
-     * 'Is test' flag
-     * @access  public
-     * @var     boolean
-     */
-    var $isTest = false;
 
     /**
      * Payment providers
@@ -275,7 +275,7 @@ class Saferpay
         'VISA UBS EUR'                   => 51,
         'VISA UBS GBP'                   => 310,
         'VISA UBS Purchasing'            => 63,
-        'VISA UBS USD'                   => 13
+        'VISA UBS USD'                   => 13,
     );
 
 
@@ -315,10 +315,9 @@ class Saferpay
             }
         }
         if (count($this->arrError) == 0) {
-            return substr($this->attributes, 0, strlen($this->attributes)-1);
-        } else {
-            return '';
+            return $this->attributes;
         }
+        return '';
     }
 
 
@@ -332,12 +331,12 @@ class Saferpay
      */
     function payInit($arrShopOrder)
     {
-        $this->arrShopOrder      = $arrShopOrder;
-        $this->attributes        = $this->getAttributeList('payInit');
+        $this->arrShopOrder = $arrShopOrder;
+        $this->attributes = $this->getAttributeList('payInit');
         // Fixed: suppressed warnings if no network is available
         // or any other connection problem occurs
         $this->arrTemp['result'] =
-            @join('', file($this->gateway['payInit'].'?'.$this->attributes));
+            file_get_contents($this->gateway['payInit'].'?'.$this->attributes);
         return $this->arrTemp['result'];
     }
 
@@ -351,23 +350,19 @@ class Saferpay
     function payConfirm()
     {
         parse_str($_SERVER['QUERY_STRING']);
-
         $this->arrShopOrder['DATA']      = urlencode($DATA);
         $this->arrShopOrder['SIGNATURE'] = urlencode($SIGNATURE);
-
         $this->attributes = $this->getAttributeList('payConfirm');
         $this->arrTemp['result'] =
-            join('', file($this->gateway['payConfirm'].'?'.$this->attributes));
-
+            file_get_contents($this->gateway['payConfirm'].'?'.$this->attributes);
         if (substr($this->arrTemp['result'], 0, 2) == 'OK') {
             parse_str(substr($this->arrTemp['result'], 3));
-            $this->arrTemp['id']    = $ID;
+            $this->arrTemp['id'] = $ID;
             $this->arrTemp['token'] = $TOKEN;
             return true;
-        } else {
-            $this->arrError[] = $this->arrTemp['result'];
-            return false;
         }
+        $this->arrError[] = $this->arrTemp['result'];
+        return false;
     }
 
 
@@ -381,20 +376,16 @@ class Saferpay
     function payComplete($arrShopOrder)
     {
         $this->arrShopOrder = $arrShopOrder;
-
-        $this->arrShopOrder['ID']    = $this->arrTemp['id'];
+        $this->arrShopOrder['ID'] = $this->arrTemp['id'];
         $this->arrShopOrder['TOKEN'] = $this->arrTemp['token'];
-
         $this->attributes = $this->getAttributeList('payComplete');
         $this->arrTemp['result'] =
-            join('', file($this->gateway['payComplete'].'?'.$this->attributes));
-
+            file_get_contents($this->gateway['payComplete'].'?'.$this->attributes);
         if (substr($this->arrTemp['result'], 0, 2) == 'OK') {
             return true;
-        } else {
-            $this->arrError[] = $this->arrTemp['result'];
-            return false;
         }
+        $this->arrError[] = $this->arrTemp['result'];
+        return false;
     }
 
 
@@ -428,10 +419,9 @@ class Saferpay
     {
         if (array_key_exists($attribute,$this->arrShopOrder)) {
             return true;
-        } else {
-            $this->arrError[] = $attribute." isn't set!";
-            return false;
         }
+        $this->arrError[] = $attribute." isn't set!";
+        return false;
     }
 
 
@@ -450,19 +440,15 @@ class Saferpay
                 if ($this->arrShopOrder[$attribute] <= 0) {
                     $this->arrError[] = $attribute." isn't valid.";
                     return false;
-                } else {
-                    return true;
                 }
-                break;
+                return true;
             case 'CURRENCY':
                 if (in_array(strtoupper($this->arrShopOrder[$attribute]),$this->arrCurrency)) {
                     $this->arrShopOrder[$attribute] = strtoupper($this->arrShopOrder[$attribute]);
                     return true;
-                } else {
-                    $this->arrError[] = $attribute." isn't valid.";
-                    return false;
                 }
-                break;
+                $this->arrError[] = $attribute." isn't valid.";
+                return false;
             case 'ACCOUNTID':
                 if($this->isTest) {
                     $this->arrShopOrder[$attribute] = $this->testAccountId;
@@ -470,64 +456,50 @@ class Saferpay
                 if ($this->arrShopOrder[$attribute] == '') {
                     $this->arrError[] = $attribute." isn't set";
                     return false;
-                } else {
-                    return true;
                 }
-                break;
+                return true;
             case 'ORDERID':
                 if (strlen($this->arrShopOrder[$attribute]) > 80) {
                     $this->arrShopOrder[$attribute] = substr($this->arrShopOrder[$attribute],0,80);
                     $this->arrWarning[] = $attribute.' was cut to 80 characters.';
                 }
                 return true;
-                break;
             case 'SUCCESSLINK':
                 if ($this->arrShopOrder[$attribute] == null) {
                     $this->arrError[] = $attribute." isn't set";
                     return false;
-                } else {
-                    return true;
                 }
-                break;
+                return true;
             case 'FAILLINK':
                 if ($this->arrShopOrder[$attribute] == null) {
                     $this->arrWarning[] = $attribute." isn't set";
                     return false;
-                } else {
-                    return true;
                 }
-                break;
+                return true;
             case 'BACKLINK':
                 if ($this->arrShopOrder[$attribute] == null) {
                     $this->arrWarning[] = $attribute." isn't set";
                     return false;
-                } else {
-                    return true;
                 }
-                break;
+                return true;
             case 'DESCRIPTION':
                 return true;
-                break;
             case 'ALLOWCOLLECT':
                 if ($this->arrShopOrder[$attribute] != 'yes') {
                     $this->arrShopOrder[$attribute] = 'yes';
                     $this->arrWarning[] = $attribute.' was set to "yes"';
                 }
                 return true;
-                break;
             case 'DELIVERY':
                 if ($this->arrShopOrder[$attribute] != 'yes') {
                     $this->arrShopOrder[$attribute] = 'yes';
                     $this->arrWarning[] = $attribute.' was set to "yes"';
                 }
                 return true;
-                break;
             case 'NOTIFYADDRESS':
                 return true;
-                break;
             case 'TOLERANCE':
                 return true;
-                break;
             case 'LANGID':
                 if (in_array(strtolower($this->arrShopOrder[$attribute]),$this->arrLangId)) {
                     $this->arrShopOrder[$attribute] = strtolower($this->arrShopOrder[$attribute]);
@@ -536,37 +508,26 @@ class Saferpay
                     $this->arrWarning[] = $attribute.' was set to default value "'.$this->arrLangId['0'].'".';
                 }
                 return true;
-                break;
             case 'DURATION':
                 if (strlen($this->arrShopOrder[$attribute]) != 14) {
                     $this->arrWarning[] = $attribute." isn't valid.";
                     return false;
-                } else {
-                    return true;
                 }
-                break;
+                return true;
             case 'DATA':
                 return true;
-                break;
             case 'SIGNATURE':
                 return true;
-                break;
             case 'ID':
                 return true;
-                break;
             case 'TOKEN':
                 return true;
-                break;
             case 'EXPIRATION':
                 return true;
-                break;
             case 'PROVIDERID':
                 return true;
-                break;
             case 'PROVIDERNAME':
                 return true;
-                break;
-
             case 'PROVIDERSET':
                 // see http://www.saferpay.com/help/ProviderTable.asp
                 if (is_array($this->arrShopOrder[$attribute])) {
@@ -586,17 +547,12 @@ class Saferpay
                     $this->arrShopOrder[$attribute] = '';
                 }
                 return true;
-                break;
-
             case 'PAYMENTAPPLICATION':
                 return true;
-                break;
             case 'ACTION':
                 return true;
-                break;
             default:
-            return true;
-                break;
+                return true;
         }
     }
 
@@ -611,7 +567,9 @@ class Saferpay
      */
     function addAttribute($attribute)
     {
-        $this->attributes .= $attribute.'='.$this->arrShopOrder[$attribute].'&';
+        $this->attributes .=
+            ($this->attributes != '' ? '&' : '').
+            $attribute.'='.$this->arrShopOrder[$attribute];
         unset($this->arrShopOrder[$attribute]);
     }
 }

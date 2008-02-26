@@ -871,28 +871,28 @@ class Customer
             return false;
         }
         $objCustomer = new Customer(
-            contrexx_stripslashes($objResult->fields['prefix']),
-            contrexx_stripslashes($objResult->fields['firstname']),
-            contrexx_stripslashes($objResult->fields['lastname']),
-            contrexx_stripslashes($objResult->fields['company']),
-            contrexx_stripslashes($objResult->fields['address']),
-            contrexx_stripslashes($objResult->fields['city']),
-            contrexx_stripslashes($objResult->fields['zip']),
+            $objResult->fields['prefix'],
+            $objResult->fields['firstname'],
+            $objResult->fields['lastname'],
+            $objResult->fields['company'],
+            $objResult->fields['address'],
+            $objResult->fields['city'],
+            $objResult->fields['zip'],
             $objResult->fields['country_id'],
-            contrexx_stripslashes($objResult->fields['phone']),
-            contrexx_stripslashes($objResult->fields['fax']),
+            $objResult->fields['phone'],
+            $objResult->fields['fax'],
             $objResult->fields['customerid']
         );
-        $objCustomer->email    = contrexx_stripslashes($objResult->fields['email']);
-        $objCustomer->ccNumber = contrexx_stripslashes($objResult->fields['ccnumber']);
-        $objCustomer->ccDate   = contrexx_stripslashes($objResult->fields['ccdate']);
-        $objCustomer->ccName   = contrexx_stripslashes($objResult->fields['ccname']);
-        $objCustomer->ccCode   = contrexx_stripslashes($objResult->fields['cvc_code']);
-        $objCustomer->userName = contrexx_stripslashes($objResult->fields['username']);
-        $objCustomer->password = contrexx_stripslashes($objResult->fields['password']);
-        $objCustomer->companyNote    = contrexx_stripslashes($objResult->fields['company_note']);
+        $objCustomer->email    = $objResult->fields['email'];
+        $objCustomer->ccNumber = $objResult->fields['ccnumber'];
+        $objCustomer->ccDate   = $objResult->fields['ccdate'];
+        $objCustomer->ccName   = $objResult->fields['ccname'];
+        $objCustomer->ccCode   = $objResult->fields['cvc_code'];
+        $objCustomer->userName = $objResult->fields['username'];
+        $objCustomer->password = $objResult->fields['password'];
+        $objCustomer->companyNote    = $objResult->fields['company_note'];
         $objCustomer->resellerStatus = ($objResult->fields['is_reseller'] ? true : false);
-        $objCustomer->registerDate   = contrexx_stripslashes($objResult->fields['register_date']);
+        $objCustomer->registerDate   = $objResult->fields['register_date'];
         $objCustomer->activeStatus   = ($objResult->fields['customer_status'] ? true : false);
         return $objCustomer;
     }

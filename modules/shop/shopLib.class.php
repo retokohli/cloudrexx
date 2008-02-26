@@ -137,10 +137,11 @@ class ShopLibrary
     function _getRelCountries()
     {
         global $objDatabase;
-        $query("SELECT zones_id, countries_id FROM ".DBPREFIX."module_shop_rel_countries ORDER BY id");
+
+        $query = "SELECT zones_id, countries_id FROM ".DBPREFIX."module_shop_rel_countries ORDER BY id";
         $objResult = $objDatabase->Execute($query);
-        while (!$objResult->EOF) {
-            $arrRelCountries[]=array($objResult->fields['zones_id'],$objResult->fields['countries_id']);
+        while ($objResult && !$objResult->EOF) {
+            $arrRelCountries[]=array($objResult->fields['zones_id'], $objResult->fields['countries_id']);
             $objResult->MoveNext();
         }
         return $arrRelCountries;
@@ -269,8 +270,6 @@ class ShopLibrary
         }
         return $menu;
     }
-
-
 
 
 /*  replaced by Shipment.class!
@@ -403,83 +402,86 @@ class ShopLibrary
 
     /**
      * Set up and send an email from the shop.
-     *
-     * @return boolean  The return value of the {@link phpmailer::Send()} function.
+     * @static
+     * @param   string    $shopMailTo           Recipient mail address
+     * @param   string    $shopMailFrom         Sender mail address
+     * @param   string    $shopMailFromText     Sender name
+     * @param   string    $shopMailSubject      Message subject
+     * @param   string    $shopMailBody         Message body
+     * @return  boolean                         True if the mail could be sent,
+     *                                          false otherwise
      */
-    function shopSendmail($shopMailTo,$shopMailFrom,$shopMailFromText,$shopMailSubject,$shopMailBody,$shopMailBcc="" )
+    //static
+    function shopSendmail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody)
     {
-    	global $_CONFIG;
+        global $_CONFIG;
 
         // replace cr/lf by lf only
         $shopMailBody = preg_replace('/\015\012/', "\012", $shopMailBody);
 
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-			$objMail = new phpmailer();
+            $objMail = new phpmailer();
 
-			if (   isset($_CONFIG['coreSmtpServer'])
-			    && $_CONFIG['coreSmtpServer'] > 0
-			    && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-				$objSmtpSettings = new SmtpSettings();
-				if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-					$objMail->IsSMTP();
-					$objMail->Host = $arrSmtp['hostname'];
-					$objMail->Port = $arrSmtp['port'];
-					$objMail->SMTPAuth = true;
-					$objMail->Username = $arrSmtp['username'];
-					$objMail->Password = $arrSmtp['password'];
-				}
-			}
-			$objMail->CharSet = CONTREXX_CHARSET;
-			$objMail->From = preg_replace('/\015\012/', "\012", $shopMailFrom);
-			$objMail->FromName = preg_replace('/\015\012/', "\012", $shopMailFromText);
-			$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
-			$objMail->Subject = $shopMailSubject;
-			$objMail->IsHTML(false);
-			$objMail->Body = $shopMailBody;
-			$objMail->AddAddress($shopMailTo);
-			if ($objMail->Send()) {
-				return true;
-			}
-		}
-		return false;
+            if (   isset($_CONFIG['coreSmtpServer'])
+                && $_CONFIG['coreSmtpServer'] > 0
+                && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                $objSmtpSettings = new SmtpSettings();
+                if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                    $objMail->IsSMTP();
+                    $objMail->Host = $arrSmtp['hostname'];
+                    $objMail->Port = $arrSmtp['port'];
+                    $objMail->SMTPAuth = true;
+                    $objMail->Username = $arrSmtp['username'];
+                    $objMail->Password = $arrSmtp['password'];
+                }
+            }
+            $objMail->CharSet = CONTREXX_CHARSET;
+            $objMail->From = preg_replace('/\015\012/', "\012", $shopMailFrom);
+            $objMail->FromName = preg_replace('/\015\012/', "\012", $shopMailFromText);
+            $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+            $objMail->Subject = $shopMailSubject;
+            $objMail->IsHTML(false);
+            $objMail->Body = $shopMailBody;
+            $objMail->AddAddress($shopMailTo);
+            if ($objMail->Send()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
     /**
-     * Set up and fill in a mail template
+     * Pick a mail template from the database
      *
-     * Get the selected mail template and associated fields from the database
-     * and fill in the elements of the arrShopMailTemplate class variable.
-     * Considers the language ID stored in the {@link langId} class variable.
-     *
+     * Get the selected mail template and associated fields from the database.
+     * @static
      * @param   integer $shopTemplateId     The mail template ID
-     * @global          $objDatabase        Database object
-     * @return  boolean                     True on success, false otherwise
+     * @param   integer $langId             The language ID
+     * @global  mixed   $objDatabase        Database object
+     * @return  mixed                       The mail template array on success,
+     *                                      false otherwise
      */
-    function shopSetMailtemplate($shopTemplateId)
+    //static
+    function shopSetMailtemplate($shopTemplateId, $langId)
     {
         global $objDatabase;
 
-        $query = "SELECT content.from_mail AS from_mail,
-                         content.xsender AS xsender,
-                         content.subject AS subject,
-                         content.message AS message
-                    FROM ".DBPREFIX."module_shop_mail AS mail,
-                         ".DBPREFIX."module_shop_mail_content AS content
-                   WHERE mail.id=content.tpl_id
-                     AND content.lang_id=".intval($this->langId)."
-                     AND mail.id =".intval($shopTemplateId);
-       if (($objResult = $objDatabase->Execute($query)) !== false) {
-           if (!$objResult->EOF) {
-                $this->arrShopMailTemplate['mail_from']=$objResult->fields['from_mail'];
-                $this->arrShopMailTemplate['mail_x_sender'] = $objResult->fields['xsender'];
-                $this->arrShopMailTemplate['mail_subject'] = $objResult->fields['subject'];
-                $this->arrShopMailTemplate['mail_body'] = $objResult->fields['message'];
-           }
-           return true;
-       } else {
-           return false;
-       }
+        $query = "
+            SELECT from_mail, xsender, subject, message
+              FROM ".DBPREFIX."module_shop_mail_content
+             WHERE tpl_id=$shopTemplateId
+               AND lang_id=$langId
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            $arrShopMailTemplate['mail_from'] = $objResult->fields['from_mail'];
+            $arrShopMailTemplate['mail_x_sender'] = $objResult->fields['xsender'];
+            $arrShopMailTemplate['mail_subject'] = $objResult->fields['subject'];
+            $arrShopMailTemplate['mail_body'] = $objResult->fields['message'];
+            return $arrShopMailTemplate;
+        }
+        return false;
     }
 
 
@@ -513,15 +515,15 @@ class ShopLibrary
      */
     function shopCheckEmail($string)
     {
-        if( eregi( "^" . "[a-z0-9]+([_\\.-][a-z0-9]+)*" .    //user
-            "@" . "([a-z0-9]+([\.-][a-z0-9]+)*)+" .            //domain
-            "\\.[a-z]{2,4}" .                                 //sld, tld
-            "$", $string)
-        ) {
+        if (preg_match(
+            '/^[a-z0-9]+([-_\.a-z0-9]+)*'.  //user
+            '@([a-z0-9]+([-\.a-z0-9]+)*)+'. //domain
+            '\.[a-z]{2,4}$/',               //sld, tld
+            $string
+        )) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
 

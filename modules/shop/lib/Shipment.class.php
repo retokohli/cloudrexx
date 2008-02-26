@@ -71,7 +71,7 @@ class Shipment
             "FROM ".DBPREFIX."module_shop_shipper ".
             ($ignoreStatus ? '' : 'WHERE status=1 ').
             "ORDER BY id ASC");
-        if ($objResult !== false) {
+        if ($objResult) {
             while (!$objResult->EOF) {
                 $sid = $objResult->fields['id'];
                 $this->arrShippers[$sid] = array(
@@ -88,7 +88,7 @@ class Shipment
                 "INNER JOIN ".DBPREFIX."module_shop_shipper s ".
                 "ON s.id=shipper_id ".
                 ($ignoreStatus ? '' : 'WHERE status=1'));
-            if ($objResult !== false) {
+            if ($objResult) {
                 while (!$objResult->EOF) {
                     $sid = $objResult->fields['shipper_id'];
                     $cid = $objResult->fields['id'];
@@ -149,18 +149,20 @@ class Shipment
         //$strJsArrays = "arrShippers = new Array();\narrShipments = new Array();\n";
         $strJsArrays = "arrShipments = new Array();\n";
         // insert shippers by id
-        foreach ($this->arrShippers as $sid => $arrShipper) {
+        foreach (array_keys($this->arrShippers) as $sid) {
             //$strJsArrays .= "arrShippers[$sid] = new Array('".
                 //$this->arrShippers[$sid]['name']."', ".$this->arrShippers[$sid]['status'].");\n";
             // insert shipments by shipper id
             $strJsArrays .= "arrShipments[$sid] = new Array();\n";
             $i = 0;
-            foreach ($this->arrShipments[$sid] as $cid => $arrShipment) {
-                $strJsArrays .=
-                    "arrShipments[$sid][".$i++."] = new Array('$cid', '".
-                    $arrShipment['max_weight']."', '".   // string
-                    $objCurrency->getCurrencyPrice($arrShipment['price_free'])."', '".
-                    $objCurrency->getCurrencyPrice($arrShipment['cost'])."');\n";
+            if (isset($this->arrShipments[$sid])) {
+                foreach ($this->arrShipments[$sid] as $cid => $arrShipment) {
+                    $strJsArrays .=
+                        "arrShipments[$sid][".$i++."] = new Array('$cid', '".
+                        $arrShipment['max_weight']."', '".   // string
+                        $objCurrency->getCurrencyPrice($arrShipment['price_free'])."', '".
+                        $objCurrency->getCurrencyPrice($arrShipment['cost'])."');\n";
+                }
             }
         }
         return $strJsArrays;
@@ -193,7 +195,7 @@ class Shipment
         $objResult = $objDatabase->Execute($query);
         while ($objResult && !$objResult->EOF) {
             $shipper = $objResult->fields['shipper_id'];
-            if(isset($this->arrShippers[$shipper])){
+            if(isset($this->arrShippers[$shipper])) {
                 $arrShipperId[]=$shipper;
             }
             $objResult->MoveNext();
@@ -228,7 +230,7 @@ class Shipment
         );
         $arrId = $this->getCountriesRelatedShippingIdArray($countryId);
         $haveShipper = false;
-        foreach ($this->arrShippers as $sid => $arrShipper){
+        foreach (array_keys($this->arrShippers) as $sid) {
             // only show suitable shipments in the menu if the user is on the payment page,
             // check the availability of the shipment in her country,
             // and verify that the shipper will be able to handle the freight.
@@ -303,14 +305,19 @@ class Shipment
      * @param   boolean $isActive   Marking the Shipper as active -- or not
      * @param   integer $zone       The zone the Shipper is in
      * @return  boolean             The result of DB->Execute()
+     * @todo    Add zone to database table and this class!
      */
-    function addShipper($name, $isActive, $zone)
+    function addShipper($name, $isActive) // , $zone)
     {
         global $objDatabase;
-        $objResult = $objDatabase->Execute(
-            "INSERT INTO ".DBPREFIX."module_shop_shipper (name, status) ".
-            "VALUES ('".addslashes($name)."', $isActive)"
-        );
+
+        $objResult = $objDatabase->Execute("
+            INSERT INTO ".DBPREFIX."module_shop_shipper (
+                name, status
+            ) VALUES (
+                '".addslashes($name)."', $isActive
+            )
+        ");
         return $objResult;
     }
 
@@ -342,6 +349,7 @@ class Shipment
      * @param   double  $cost           The cost of delivery
      * @param   double  $price_free     The minimum order value to get a free delivery
      * @param   integer $max_weight     The maximum weight of the delivery
+     * @return  boolean                 True on success, false otherwise
      */
     function updateShipment($cid, $sid, $cost, $price_free, $max_weight)
     {
@@ -354,7 +362,7 @@ class Shipment
                 "max_weight=$max_weight ".
             "WHERE id = $cid"
         );
-        return $objResult;
+        return ($objResult ? true : false);
     }
 
 
@@ -366,6 +374,7 @@ class Shipment
      * to the new one, and delete the old.
      * @param   integer $svalue     The ID of the Shipper
      * @param   boolean $isActive   Marking the Shipper as active -- or not
+     * @return  boolean                 True on success, false otherwise
      */
     function updateShipper($sid, $isActive)
     {
@@ -373,7 +382,7 @@ class Shipment
         $objResult = $objDatabase->Execute(
             "UPDATE ".DBPREFIX."module_shop_shipper SET status=$isActive WHERE id = $sid"
         );
-        return $objResult;
+        return ($objResult ? true : false);
     }
 
 
@@ -394,8 +403,6 @@ class Shipment
      */
     function calculateShipmentPrice($shipperId, $price, $weight)
     {
-        $shipmentPrice = 0;
-
         // are there conditions available from this shipper?
         // otherwise, don't even try to find one. return
         if (!isset($this->arrShipments[$shipperId])) return -1;
@@ -469,7 +476,7 @@ class Shipment
         // and the conditions look like: array(max_weight, cost_free, cost)
 
         // return this
-        $arrResult;
+        $arrResult = array();
         foreach ($this->arrShippers as $sid => $shipper) {
             // get countries covered by this shipper
             $query ="SELECT DISTINCT c.countries_name FROM ".
@@ -495,7 +502,7 @@ class Shipment
                 } // end while
                 // now add the conditions, ordered by weight
                 $arrConditions = array();
-                foreach ($this->arrShipments[$sid] as $cid => $arrCond) {
+                foreach ($this->arrShipments[$sid] as $arrCond) {
                     $arrConditions[$arrCond['max_weight']] = array(
                         'max_weight' => ($arrCond['max_weight'] > 0
                             ? $arrCond['max_weight']
@@ -516,12 +523,37 @@ class Shipment
                     'countries'  => $arrCountries,
                     'conditions' => $arrConditions,
                 );
-            } else {
-            // no countries!?
             } // if objresult
+            //else { // no countries!? }
         } // foreach shipper
         return $arrResult;
     }
+
+
+    /**
+     * Get the shipper name for the ID given
+     * @static
+     * @global  mixed     $objDatabase    Database object
+     * @param   integer   $shipperId      The shipper ID
+     * @return  mixed                     The shipper name on success,
+     *                                    false otherwise
+     * @since   1.2.1
+     */
+    function getNameById($shipperId)
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            SELECT name
+              FROM ".DBPREFIX."module_shop_shipper
+             WHERE id=$shipperId
+        ");
+        if ($objResult && !$objResult->EOF) {
+            return $objResult->fields['name'];
+        }
+        return false;
+    }
+
 }
 
 ?>
