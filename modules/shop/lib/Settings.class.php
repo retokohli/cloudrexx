@@ -173,7 +173,8 @@ class Settings
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
-                                    SET value='".addslashes($_POST['yellowpay_id'])."', status=".intval($_POST['yellowpay_status'])."
+                                    SET value='".addslashes($_POST['yellowpay_id'])."',
+                                        status=".(!empty($_POST['yellowpay_status']) ? 1 : 0)."
                                     WHERE name='yellowpay_id'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
@@ -188,7 +189,8 @@ class Settings
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
-                                    SET value='".addslashes($_POST['saferpay_id'])."', status=".intval($_POST['saferpay_status'])."
+                                    SET value='".addslashes($_POST['saferpay_id'])."',
+                                        status=".(!empty($_POST['saferpay_status']) ? 1 : 0)."
                                     WHERE name='saferpay_id'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
@@ -208,7 +210,8 @@ class Settings
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
-                                    SET value='".addslashes($_POST['paypal_account_email'])."', status=".intval($_POST['paypal_status'])."
+                                    SET value='".addslashes($_POST['paypal_account_email'])."',
+                                        status=".(!empty($_POST['paypal_status']) ? 1 : 0)."
                                     WHERE name='paypal_account_email'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
@@ -244,7 +247,7 @@ class Settings
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
-                                    SET status=".intval($_POST['payment_lsv_status'])."
+                                    SET status=".(!empty($_POST['payment_lsv_status']) ? 1 : 0)."
                                     WHERE name='payment_lsv_status'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
@@ -549,10 +552,12 @@ class Settings
             // $svalue is the changed one.
             foreach ($_POST['shipperId'] as $sid => $svalue) {
                 // update the status field in the Shipper
+                $shipperActive =
+                    (isset($_POST['shipperActive'][$sid]) ? true : false);
                 // note: we must use the (possibly changed) shipper id from $svalue as ID here!
                 $success &= Shipment::updateShipper(
                     $svalue,
-                    intval($_POST['shipperActive'][$sid])
+                    intval($shipperActive)
                 );
 
                 // lastly, update the zones
@@ -733,7 +738,7 @@ class Settings
             }
         }
         if(isset($_GET['delMailId']) && !empty($_GET['delMailId'])){
-            $objLanguage = &new FWLanguage();
+            $objLanguage = new FWLanguage();
             $arrLanguage = $objLanguage->arrLanguage;
             foreach ($arrLanguage as $langValues){
                 if($langValues['is_default']){
@@ -757,15 +762,19 @@ class Settings
     {
         global $objDatabase;
         if(isset($_POST['mails']) && !empty($_POST['mails'])){
-            if($_POST['tplId'] == 0 || (isset($_POST['shopMailSaveNew']) && !empty($_POST['shopMailSaveNew']))){
-
-                $query = "INSERT INTO ".DBPREFIX."module_shop_mail (tplname, protected) VALUES ('".addslashes($_POST['shopMailTemplate'])."',0)";
+            if (   $_POST['tplId'] == 0
+                || (   isset($_POST['shopMailSaveNew']))) {
+                $query = "
+                    INSERT INTO ".DBPREFIX."module_shop_mail (
+                        tplname, protected
+                    ) VALUES (
+                        '".contrexx_addslashes($_POST['shopMailTemplate'])."', 0)
+                ";
                 $objDatabase->Execute($query);
                 $tlpId = $objDatabase->Insert_ID();
 
-                $objLanguage = &new FWLanguage();
+                $objLanguage = new FWLanguage();
                 $arrLanguage = $objLanguage->arrLanguage;
-
                 foreach ($arrLanguage as $langValues){
                     if($langValues['is_default']){
                         $defaultLang = $langValues['id'];
@@ -773,15 +782,17 @@ class Settings
                     }
                 }
 
-                $query = "INSERT INTO ".DBPREFIX."module_shop_mail_content ".
-                "(tpl_id, lang_id, from_mail, xsender, subject, message) VALUES (".
-                intval($tlpId).", $defaultLang, '".
-                addslashes($_POST['shopMailFromAddress'])."', '".
-                addslashes($_POST['shopMailFromName'])."', '".
-                addslashes($_POST['shopMailSubject'])."', '".
-                addslashes($_POST['shopMailBody'])."')";
+                $query = "
+                    INSERT INTO ".DBPREFIX."module_shop_mail_content (
+                        tpl_id, lang_id, from_mail, xsender, subject, message
+                    ) VALUES (
+                        ".intval($tlpId).", $defaultLang,
+                        '".contrexx_addslashes($_POST['shopMailFromAddress'])."',
+                        '".contrexx_addslashes($_POST['shopMailFromName'])."',
+                        '".contrexx_addslashes($_POST['shopMailSubject'])."',
+                        '".contrexx_addslashes($_POST['shopMailBody'])."'
+                    )";
                 $objDatabase->Execute($query);
-
                 $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_mail");
                 $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_mail_content");
             }
@@ -795,34 +806,42 @@ class Settings
     function _storeMails()
     {
         global $objDatabase;
-        if(isset($_POST['mails']) && !empty($_POST['mails'])){
-            if(!isset($_POST['shopMailSaveNew']) && ((isset($_POST['shopMailFromName']) && !empty($_POST['shopMailFromName']))
-                || (isset($_POST['shopMailSubject']) && !empty($_POST['shopMailSubject']))
-                || (isset($_POST['shopMailBody']) && !empty($_POST['shopMailBody']))))
+
+        if (isset($_POST['mails'])) {
+            if (empty($_POST['shopMailSaveNew'])
+                && !empty($_POST['shopMailFromName'])
+                && !empty($_POST['shopMailSubject'])
+                && !empty($_POST['shopMailBody']))
             {
-                if(isset($_POST['mailId']) && !empty($_POST['mailId']))
-                {
-                    $query = "UPDATE ".DBPREFIX."module_shop_mail_content
-                                              Set from_mail='".addslashes($_POST['shopMailFromAddress'])."',
-                                                  xsender='".addslashes($_POST['shopMailFromName'])."',
-                                                  subject='".addslashes($_POST['shopMailSubject'])."',
-                                                  message='".addslashes($_POST['shopMailBody'])."'
-                                            WHERE id=".intval($_POST['mailId']);
+                if (!empty($_POST['mailId'])) {
+                    $query = "
+                        UPDATE ".DBPREFIX."module_shop_mail_content
+                           SET from_mail='".contrexx_addslashes($_POST['shopMailFromAddress'])."',
+                               xsender='".contrexx_addslashes($_POST['shopMailFromName'])."',
+                               subject='".contrexx_addslashes($_POST['shopMailSubject'])."',
+                               message='".contrexx_addslashes($_POST['shopMailBody'])."'
+                         WHERE id=".intval($_POST['mailId']);
                     $objDatabase->Execute($query);
                 } else {
                     $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop_mail_content ".
                     "(tpl_id, lang_id, from_mail, xsender, subject, message) VALUES (".
                     intval($_POST['tplId']).", ".intval($_POST['langId']).", '".
-                    addslashes($_POST['shopMailFromAddress'])."', '".
-                    addslashes($_POST['shopMailFromName'])."', '".
-                    addslashes($_POST['shopMailSubject'])."', '".
-                    addslashes($_POST['shopMailBody'])."')");
+                    contrexx_addslashes($_POST['shopMailFromAddress'])."', '".
+                    contrexx_addslashes($_POST['shopMailFromName'])."', '".
+                    contrexx_addslashes($_POST['shopMailSubject'])."', '".
+                    contrexx_addslashes($_POST['shopMailBody'])."')");
                 }
                 $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_mail_content");
-                $objResult = $objDatabase->Execute("SELECT protected FROM ".DBPREFIX."module_shop_mail WHERE id=".intval($_POST['tplId']));
-                if(!$objResult->EOF){
-                    if(!$objResult->fields['protected']){
-                        $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_mail Set tplname='". addslashes($_POST['shopMailTemplate'])."' WHERE id=".intval($_POST['tplId']));
+                $objResult = $objDatabase->Execute("
+                    SELECT protected
+                      FROM ".DBPREFIX."module_shop_mail
+                     WHERE id=".intval($_POST['tplId']));
+                if (!$objResult->EOF) {
+                    if (!$objResult->fields['protected']) {
+                        $objDatabase->Execute("
+                            UPDATE ".DBPREFIX."module_shop_mail
+                               SET tplname='".contrexx_addslashes($_POST['shopMailTemplate'])."'
+                             WHERE id=".intval($_POST['tplId']));
                         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_mail");
                     }
                 }
@@ -882,7 +901,7 @@ class Settings
      * If the $_GET field 'setVatAll is present, sets the VAT ID to the ID found
      * therein for all the products.
      *
-     * @todo    Add the feature to choose some products to change,
+     * @todo    Add possibility to choose some products to change,
      *          and add a parameter for this list of IDs
      * @return  boolean                     True on success, false otherwise.
      * @global  mixed       $objDatabase    Database object
