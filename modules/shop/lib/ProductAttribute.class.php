@@ -544,7 +544,7 @@ class ProductAttribute
         // new ($name, $type, $id='')
         if (!$objResult->EOF) {
             $objProductAttribute = new ProductAttribute(
-                contrexx_stripslashes($objResult->fields['name']),
+                $objResult->fields['name'],
                 $objResult->fields['display_type'],
                 $nameId
             );
@@ -565,7 +565,7 @@ class ProductAttribute
             }
             while (!$objResult->EOF) {
                 $objProductAttribute->addValue(
-                    contrexx_stripslashes($objResult->fields['value']),
+                    $objResult->fields['value'],
                     $objResult->fields['price'],
                     $objResult->fields['price_prefix'],
                     $objResult->fields['id']

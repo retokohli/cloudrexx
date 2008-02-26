@@ -1286,7 +1286,7 @@ class Product
         $objProduct = new Product(
             $objResult->fields['product_id'],
             $objResult->fields['catid'],
-            stripslashes($objResult->fields['title']),
+            $objResult->fields['title'],
             $objResult->fields['handler'],
             $objResult->fields['normalprice'],
             $objResult->fields['status'],
@@ -1296,14 +1296,14 @@ class Product
         );
         $objProduct->pictures         = $objResult->fields['picture'];
         $objProduct->resellerPrice    = $objResult->fields['resellerprice'];
-        $objProduct->shortDesc        = stripslashes($objResult->fields['shortdesc']);
-        $objProduct->description      = stripslashes($objResult->fields['description']);
+        $objProduct->shortDesc        = $objResult->fields['shortdesc'];
+        $objProduct->description      = $objResult->fields['description'];
         $objProduct->stock            = $objResult->fields['stock'];
         $objProduct->setStockVisible($objResult->fields['stock_visibility']);
         $objProduct->discountPrice    = $objResult->fields['discountprice'];
         $objProduct->setSpecialOffer($objResult->fields['is_special_offer']);
-        $objProduct->property1        = stripslashes($objResult->fields['property1']);
-        $objProduct->property2        = stripslashes($objResult->fields['property2']);
+        $objProduct->property1        = $objResult->fields['property1'];
+        $objProduct->property2        = $objResult->fields['property2'];
         $objProduct->setB2B($objResult->fields['b2b']);
         $objProduct->setB2C($objResult->fields['b2c']);
         $objProduct->startDate        = $objResult->fields['startdate'];
@@ -1311,9 +1311,9 @@ class Product
         $objProduct->thumbnailPercent = $objResult->fields['thumbnail_percent'];
         $objProduct->thumbnailQuality = $objResult->fields['thumbnail_quality'];
         $objProduct->manufacturerId   = $objResult->fields['manufacturer'];
-        $objProduct->externalLink     = stripslashes($objResult->fields['external_link']);
+        $objProduct->externalLink     = $objResult->fields['external_link'];
         $objProduct->vatId            = $objResult->fields['vat_id'];
-        $objProduct->flags            = stripslashes($objResult->fields['flags']);
+        $objProduct->flags            = $objResult->fields['flags'];
         // also fetch the ProductAttribute value IDs
         $objProduct->arrProductAttributeValue =
             ProductAttributes::getProductValueArray($objProduct->id);

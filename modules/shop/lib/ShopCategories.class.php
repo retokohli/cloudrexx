@@ -550,7 +550,7 @@ echo("$selectedId<br />");
         $objResult = $objDatabase->Execute($query);
         if ($objResult && $objResult->RecordCount() > 0) {
             // Got a picture
-            $imageName = stripslashes($objResult->fields['picture']);
+            $imageName = $objResult->fields['picture'];
             return $imageName;
         }
 
