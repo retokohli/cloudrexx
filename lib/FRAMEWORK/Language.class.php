@@ -70,6 +70,7 @@ class FWLanguage
         return $this->arrLanguage;
     }
 
+
     /**
      * Returns single language related fields
      *
@@ -112,6 +113,81 @@ class FWLanguage
 //echo("getMenu(select=$selectedId, name=$menuName, onchange=$onchange): made menu: ".htmlentities($menu)."<br />");
         return $menu;
     }
+
+
+    /**
+     * Return the language ID for the ISO 639-1 code specified.
+     *
+     * If the code cannot be found, returns the default language.
+     * If that isn't set either, returns the first language encountered.
+     * If none can be found, returns boolean false.
+     * Note that you can supply the complete string from the Accept-Language
+     * HTTP header.  This method will take care of chopping it into pieces
+     * and trying to pick a suitable language.
+     * However, it will not pick the most suitable one according to RFC2616
+     * and others, but only tries to find the first language range it sees
+     * able to serve.
+     * @static
+     * @param   string    $langCode         The ISO 639-1 language code
+     * @return  mixed                       The language ID on success,
+     *                                      false otherwise
+     * @global  mixed     $objDatabase      Database object
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getLangIdByIso639_1($langCode)
+    {
+        global $objDatabase;
+
+        // Something like "fr; q=1.0, en-gb; q=0.5"
+        $arrLangCode = preg_split('/,\s*/', $langCode);
+        $strLangCode = "'".join("', '", preg_replace('/(?:-\w+)?(?:;\s*q(?:\=\d?\.?\d*)?)?/i', '', $arrLangCode))."'";
+//echo("FWLanguage::getLangIdByIso639_1($langCode): Found languages: $strLangCode<br />");
+
+        $objResult = $objDatabase->Execute("
+            SELECT id
+              FROM ".DBPREFIX."languages
+             WHERE lang IN ($strLangCode)
+        ");
+        if ($objResult && $objResult->RecordCount() > 0) {
+            return $objResult->fields['id'];
+        }
+        // The code was not found.  Pick the default.
+        $objResult = $objDatabase->Execute("
+            SELECT id
+              FROM ".DBPREFIX."languages
+             WHERE is_default='true'
+        ");
+        if ($objResult && $objResult->RecordCount() > 0) {
+            return $objResult->fields['id'];
+        }
+        // Still nothing.  Pick the first language available.
+        $objResult = $objDatabase->Execute("
+            SELECT id
+              FROM ".DBPREFIX."languages
+        ");
+        if ($objResult && $objResult->RecordCount() > 0) {
+            return $objResult->fields['id'];
+        }
+        // Give up.
+        return false;
+    }
+
 }
+
+/* TEST
+
+$arrLang = array(
+    'de', 'en', 'fr, en', 'en, it', 'it, kr', 'gr, zh',
+    'de, en', 'en, de', 'de-ch',
+    'de-de, en-gb', 'en-gb, de-de',
+    'de; q=0.1, en; q=0.9', 'de-de; q=0.1, de-ch; q=0.9',
+);
+foreach ($arrLang as $strLangCode) {
+    echo("Code $strLangCode -> ID ".FWLanguage::getLangIdByIso639_1($strLangCode)."<br />");
+}
+die("Died.");
+
+*/
+
 
 ?>
