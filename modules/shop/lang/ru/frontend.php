@@ -222,4 +222,6 @@ $_ARRAYLANG['TXT_SHOP_PAYMENT_CREDITCARD_CODE'] = "Verifikationsnummer (auf der 
 $_ARRAYLANG['TXT_SHOP_PAYMENT_CREDITCARD_DATE'] = "Karte gÃ¼ltig bis (Monat/Jahr)";
 $_ARRAYLANG['TXT_SHOP_CHOOSE_MONTH'] = "Monat";
 $_ARRAYLANG['TXT_SHOP_CHOOSE_YEAR'] = "Jahr";
+$_ARRAYLANG['TXT_SHOP_ORDER_WILL_BE_CONFIRMED'] = "Sie werden umgehend eine E-Mail mit den Details Ihrer Bestellung erhalten, sobald die Bestätigung eingetroffen ist.";
+$_ARRAYLANG['TXT_SHOP_UNKNOWN_CUSTOMER_ACCOUNT'] = "Diese Kontoangaben sind ungültig";
 ?>
