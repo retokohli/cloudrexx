@@ -201,7 +201,7 @@ class Currency
     {
         $rate = $this->arrCurrency[$this->activeCurrencyId]['rate'];
         // getting 0.05 increments
-        return $this->formatPrice(round(20*$price*$rate)/20);
+        return self::formatPrice(round(20*$price*$rate)/20);
     }
 
 
@@ -218,12 +218,12 @@ class Currency
     function getDefaultCurrencyPrice($price)
     {
         if ($this->activeCurrencyId == $this->defaultCurrencyId) {
-            return $this->formatPrice($price);
+            return self::formatPrice($price);
         } else {
             $rate = $this->arrCurrency[$this->activeCurrencyId]['rate'];
             $defaultRate = $this->arrCurrency[$this->defaultCurrencyId]['rate'];
             // getting 0.05 increments
-            return $this->formatPrice((20*$price*$defaultRate/$rate)/20);
+            return self::formatPrice(round(20*$price*$defaultRate/$rate)/20);
         }
     }
 
@@ -234,9 +234,11 @@ class Currency
      * using no thousands, and '.' as decimal separator.
      * @todo    Localize!  Create language and country dependant
      *          settings in the database, and make this behave accordingly.
+     * @static
      * @param   double  $price  The amount
      * @return  double          The formatted amount
      */
+    //static
     function formatPrice($price)
     {
         return number_format($price ,2 , '.', '');
@@ -270,6 +272,35 @@ class Currency
         }
         return join("&nbsp;|&nbsp;\n", $arrCurNavbar);
     }
+
+
+    /**
+     * Return the currency code for the ID given
+     * @static
+     * @param   integer   $currencyId   The currency ID
+     * @return  mixed                   The currency code on success,
+     *                                  false otherwise
+     * @global  mixed     $objDatabase  Database object
+     */
+    //static
+    function getCodeById($currencyId)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT code
+              FROM ".DBPREFIX."module_shop_currencies
+            WHERE id=$currencyId
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            return $objResult->fields['code'];
+        }
+        return false;
+    }
+
+
+
 }
 
 ?>

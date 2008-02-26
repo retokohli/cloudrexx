@@ -155,6 +155,31 @@ class Payment
 
 
     /**
+     * Get the payment name for the ID given
+     * @static
+     * @global  mixed     $objDatabase    Database object
+     * @param   integer   $paymentId      The payment ID
+     * @return  mixed                     The payment name on success,
+     *                                    false otherwise
+     * @since   1.2.1
+     */
+    function getNameById($paymentId)
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            SELECT name
+              FROM ".DBPREFIX."module_shop_payment
+             WHERE id=$paymentId
+        ");
+        if ($objResult && !$objResult->EOF) {
+            return $objResult->fields['name'];
+        }
+        return false;
+    }
+
+
+    /**
      * Returns the name of the payment processor with the given ID,
      * or '' if it couldn't be found, or if an error was encountered.
      * @return  string                  The name of the payment processor
@@ -176,6 +201,32 @@ class Payment
             return '';
         }
         return $objResult->fields['name'];
+    }
+
+
+    /**
+     * Returns the ID of the payment processor for the given payment ID
+     * @static
+     * @param   integer   $paymentId    The payment ID
+     * @return  integer                 The payment processor ID on success,
+     *                                  false otherwise
+     * @global  mixed   $objDatabase    Database object
+     */
+    //static
+    function getPaymentProcessorId($paymentId)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT processor_id
+              FROM ".DBPREFIX."module_shop_payment
+             WHERE id=$paymentId
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult) {
+            return $objResult->fields['processor_id'];
+        }
+        return false;
     }
 }
 

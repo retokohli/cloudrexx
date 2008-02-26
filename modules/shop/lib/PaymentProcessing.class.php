@@ -296,6 +296,7 @@ class PaymentProcessing
      */
     function checkOut()
     {
+        $return = '';
         switch ($this->getPaymentProcessorName()) {
             case 'Internal':
                 /* Redirect browser */
@@ -313,6 +314,8 @@ class PaymentProcessing
             case 'Internal_Debit':
                 $return = $this->_Internal_DebitProcessor();
                 break;
+// Added
+            case 'Saferpay':
             case 'Saferpay_All_Cards':
                 $return = $this->_SaferpayProcessor();
                 break;
@@ -328,7 +331,7 @@ class PaymentProcessing
             case 'Paypal':
                 $return = $this->_PayPalProcessor();
                 break;
-            case 'Dummy':
+            case 'dummy_processor':
                 $return = Dummy::getForm();
                 break;
         }
@@ -388,7 +391,6 @@ class PaymentProcessing
         );
 
         $payInitUrl = $objSaferpay->payInit($arrShopOrder);
-        $return = '';
         // Fixed: Added check for empty return string,
         // i.e. on connection problems
         if (   !$payInitUrl
@@ -398,14 +400,16 @@ class PaymentProcessing
                 "The Saferpay Payment processor couldn't be initialized!".
                 "<br />$payInitUrl</b></font>";
         }
-        $return .= "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
+        $return = "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
         switch ($this->arrConfig['saferpay_window_option']['value']){
             case 0: // iframe
                 return
+                    $return.
                     $_ARRAYLANG['TXT_ORDER_PREPARED']."<br/><br/>\n".
                     "<iframe src='$payInitUrl' width='580' height='400' scrolling='no' marginheight='0' marginwidth='0' frameborder='0' name='saferpay'></iframe>\n";
             case 1: // popup
                 return
+                    $return.
                     $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
                     "<script language='javascript' type='text/javascript'>
                      function openSaferpay()
@@ -428,6 +432,7 @@ class PaymentProcessing
             default:  //case 2: // new window
         }
         return
+            $return.
             $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
             "<form method='post' action='$payInitUrl'>\n<input type='Submit' value='".
             $_ARRAYLANG['TXT_ORDER_NOW'].
