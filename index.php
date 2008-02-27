@@ -487,6 +487,7 @@ if (file_exists($modulespath)) include_once($modulespath);
 $newsHeadlinesObj = &new newsHeadlines($themesPages['headlines']);
 $page_content = str_replace('{HEADLINES_FILE}', $newsHeadlinesObj->getHomeHeadlines(), $page_content);
 $themesPages['index'] = str_replace('{HEADLINES_FILE}', $newsHeadlinesObj->getHomeHeadlines(), $themesPages['index']);
+$themesPages['sidebar'] = str_replace('{HEADLINES_FILE}', $newsHeadlinesObj->getHomeHeadlines(), $themesPages['sidebar']);
 $page_template = str_replace('{HEADLINES_FILE}', $newsHeadlinesObj->getHomeHeadlines(), $page_template);
 
 
