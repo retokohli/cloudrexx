@@ -105,12 +105,9 @@ class Guestbook extends GuestbookLibrary
 		$pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
 
 		/** start paging **/
-		$query = "SELECT *
-			FROM ".DBPREFIX."module_guestbook
-			WHERE "
-			.($this->arrSettings['guestbook_only_lang_entries'] ? "lang_id='$this->langId' AND " : '')
-			."status = 1
-			ORDER BY id DESC";
+		$query = "	SELECT 		id
+					FROM 		".DBPREFIX."module_guestbook
+					WHERE 		".($this->arrSettings['guestbook_only_lang_entries'] ? "lang_id='$this->langId' AND " : '')."status = 1";
 		$objResult = $objDatabase->Execute($query);
 		$count = $objResult->RecordCount();
 		$paging = getPaging($count, $pos, "&amp;section=guestbook", "<b>".$_ARRAYLANG['TXT_GUESTBOOK_ENTRIES']."</b>", false);
@@ -119,12 +116,19 @@ class Guestbook extends GuestbookLibrary
 		$this->_objTpl->setVariable("GUESTBOOK_PAGING", $paging);
         $this->_objTpl->setVariable("GUESTBOOK_TOTAL_ENTRIES", $count);
 
-		$query = "SELECT *
-			FROM ".DBPREFIX."module_guestbook
-			WHERE "
-			.($this->arrSettings['guestbook_only_lang_entries'] ? "lang_id='$this->langId' AND " : '')
-			."status = 1
-			ORDER BY id DESC";
+		$query = "	SELECT 		id,
+								nickname,
+								gender,
+								url,
+								email,
+								comment,
+								ip,
+								location,
+								datetime,
+								UNIX_TIMESTAMP(datetime) AS uTimestamp
+					FROM 		".DBPREFIX."module_guestbook
+					WHERE 		".($this->arrSettings['guestbook_only_lang_entries'] ? "lang_id='$this->langId' AND " : '')."status = 1
+					ORDER BY 	id DESC";
 		$objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
 
 		while (!$objResult->EOF) {
@@ -150,7 +154,7 @@ class Guestbook extends GuestbookLibrary
 					   'GUESTBOOK_NICK'	      => htmlentities($objResult->fields["nickname"], ENT_QUOTES, CONTREXX_CHARSET),
 					   'GUESTBOOK_GENDER'	  => $gender,
 					   'GUESTBOOK_LOCATION'	  => htmlentities($objResult->fields["location"], ENT_QUOTES, CONTREXX_CHARSET),
-					   'GUESTBOOK_DATE'		  => $objResult->fields["datetime"],
+					   'GUESTBOOK_DATE'		  => date(ASCMS_DATE_FORMAT, $objResult->fields["uTimestamp"]),
 					   'GUESTBOOK_COMMENT'	  => nl2br($objResult->fields["comment"]),
 					   'GUESTBOOK_ID'		  => $objResult->fields["id"],
 					   'GUESTBOOK_IP'		  => $objResult->fields["ip"]
