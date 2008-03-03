@@ -7,7 +7,7 @@
  * field and direction.
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     0.9.0
+ * @version     0.9.1
  * @package     contrexx
  * @subpackage  core
  */
@@ -17,6 +17,7 @@ define('SORTING_ORDER_PARAMETER_NAME', 'x_order');
 /**
  * Provides methods to create sorted tables
  *
+ * 20080303 Fixed some bugs, added method getOrderField().
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     0.9.0
@@ -26,13 +27,13 @@ define('SORTING_ORDER_PARAMETER_NAME', 'x_order');
 class Sorting
 {
     /**
-     * The bae page URI to use.
+     * The base page URI to use.
      *
      * The sorting parameters will be appended to this string and used
      * to build the header array.
      * @var string
      */
-    var $baseUri;
+    private $baseUri;
 
     /**
      * The array of database field names corresponding to the header
@@ -41,7 +42,7 @@ class Sorting
      * Note that the first element will be the default.
      * @var array
      */
-    var $arrFieldName;
+    private $arrFieldName;
 
     /**
      * The array of header field names.
@@ -49,7 +50,7 @@ class Sorting
      * Note that the first element will be the default.
      * @var array
      */
-    var $arrHeaderName;
+    private $arrHeaderName;
 
     /**
      * Flag indicating the default order
@@ -57,19 +58,19 @@ class Sorting
      * if true, the default order is ascending, or descending otherwise.
      * @var boolean
      */
-    var $flagDefaultAsc;
+    private $flagDefaultAsc;
 
     /**
      * The order field name.  See {@link setOrder()}.
      * @var string
      */
-    var $orderField;
+    private $orderField;
 
     /**
      * The order direction.  See {@link setOrder()}.
      * @var string
      */
-    var $orderDirection;
+    private $orderDirection;
 
 
     /**
@@ -84,25 +85,6 @@ class Sorting
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function Sorting(
-        $baseUri, $arrFieldName, $arrHeaderName, $flagDefaultAsc=true
-    ) {
-        __construct(
-            $baseUri, $arrFieldName, $arrHeaderName, $flagDefaultAsc
-        );
-    }
-
-    /**
-     * Constructor (PHP5)
-     *
-     * @param   string  $baseURI        The base page URI.
-     * @param   array   $arrFieldName   The acceptable field names.
-     * @param   array   $arrHeaderName  The header names for displaying.
-     * @param   boolean $flagDefaultAsc The flag indicating the default order
-     *                                  direction. Defaults to true (ascending).
-     * @return  Sorting
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function __construct(
         $baseUri, $arrFieldName, $arrHeaderName, $flagDefaultAsc=true
     ) {
         $this->baseUri        = $baseUri;
@@ -136,11 +118,9 @@ class Sorting
      */
     function getHeaderArray()
     {
-        global $_ARRAYLANG;
-
         $arrHeader = array();
-        for ($count = 0; $count < count($this->arrFieldName); ++$count) {
-            $arrHeader[] = $this->getHeaderForField($field);
+        foreach ($this->arrFieldName as $fieldName) {
+            $arrHeader[] = $this->getHeaderForField($fieldName);
         }
         return $arrHeader;
     }
@@ -292,7 +272,6 @@ echo("Sorting::getHeaderForField(fieldName=$fieldName): ERROR: unknown field nam
      */
     function getOrderDirectionReverse()
     {
-        $orderDirectionReverse = '';
         switch ($this->orderDirection) {
           case 'ASC':
             return 'DESC';
@@ -304,6 +283,16 @@ echo("Sorting::getHeaderForField(fieldName=$fieldName): ERROR: unknown field nam
                 ? 'DESC'
                 : 'ASC'
             );
+    }
+
+
+    /**
+     * Returns the current order field name
+     * @return  string      The field name
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getOrderField() {
+        return $this->orderField;
     }
 
 }
