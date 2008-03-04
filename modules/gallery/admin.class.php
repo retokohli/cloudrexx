@@ -2239,12 +2239,12 @@ class galleryManager extends GalleryLibrary
         $objDatabase->Execute('    INSERT
                                 INTO     '.DBPREFIX.'module_gallery_pictures
                                 SET     path="'.$strImagePath.'",
-                                        lastedit='.time().',
-                                        quality='.$this->arrSettings['standard_quality'].',
+                                        lastedit="'.time().'",
+                                        quality="'.$this->arrSettings['standard_quality'].'",
                                         size_type="'.$this->arrSettings['standard_size_type'].'",
-                                        size_proz='.$this->arrSettings['standard_size_proz'].',
-                                        size_abs_h='.$intNewHeight.',
-                                        size_abs_w='.$intNewWidth);
+                                        size_proz="'.$this->arrSettings['standard_size_proz'].'",
+                                        size_abs_h="'.$intNewHeight.'",
+                                        size_abs_w="'.$intNewWidth.'"');
 
         $intPictureId = $objDatabase->insert_id();
         $objResult = $objDatabase->Execute('    SELECT        id
@@ -3444,24 +3444,22 @@ class galleryManager extends GalleryLibrary
 
         if (is_array($intSize)) {
         	$memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
-        	if (empty($memoryLimit)) {
-        		// set default php memory limit of 8MBytes
-        		$memoryLimit = 8*pow(1024, 2);
-        	}
+        	// a $memoryLimit of zero means that there is no limit. so let's try it and hope that the host system has enough memory
+        	if (!empty($memoryLimit)) {
+	           	$potentialRequiredMemory = $intSize[0] * $intSize[1] * ($intSize['bits']/8) * $intSize['channels'] * 1.8;
+	        	if (function_exists('memory_get_usage')) {
+	        		$potentialRequiredMemory += memory_get_usage();
+	        	} else {
+	        		// add a default of 3MBytes
+	        		$potentialRequiredMemory += 3*pow(1024, 2);
+	        	}
 
-        	$potentialRequiredMemory = $intSize[0] * $intSize[1] * ($intSize['bits']/8) * $intSize['channels'] * 1.8;
-        	if (function_exists('memory_get_usage')) {
-        		$potentialRequiredMemory += memory_get_usage();
-        	} else {
-        		// add a default of 3MBytes
-        		$potentialRequiredMemory += 3*pow(1024, 2);
-        	}
-
-        	if ($potentialRequiredMemory > $memoryLimit) {
-        		// try to set a higher memory_limit
-        		if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
-        			return false;
-        		}
+	        	if ($potentialRequiredMemory > $memoryLimit) {
+	        		// try to set a higher memory_limit
+	        		if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
+	        			return false;
+	        		}
+	        	}
         	}
         } else {
         	return false;
