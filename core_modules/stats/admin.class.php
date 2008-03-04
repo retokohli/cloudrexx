@@ -267,7 +267,7 @@ class stats extends statsLibrary
     	$this->_objTpl->parse('requests_block');
     }
 
-    /**
+     /**
     * Show requests today
     *
     * Show the page requests and visitors of today
@@ -485,8 +485,9 @@ class stats extends statsLibrary
     	$arrMonthNames = explode(',',$_ARRAYLANG['TXT_MONTH_ARRAY']);
     	$arrRange = array();
     	if (date('m')<12) {
-			$arrRange[date('y')-1] = range(date('m')+1, 12);
+			$arrRange[date('y')-2] = range(date('m')+1, 12);
 		}
+		$arrRange[date('y')-1] = range(1, 12);
 		$arrRange[date('y')] = range(1, date('m'));
 
 		foreach ($arrRange as $year => $arrMonths) {
