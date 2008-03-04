@@ -319,11 +319,11 @@ class CommonFunctions
 		return phpversion();
 	}
 
-	function checkMysqlVersion($installedMySQLVersion) {
+	function checkMysqlVersion($installedMySQLVersion, $requiredVersion = null) {
 		global $requiredMySQLVersion;
 
 		$arrInstalledVersion = explode('.', $installedMySQLVersion);
-		$arrRequiredVersion = explode('.', $requiredMySQLVersion);
+		$arrRequiredVersion = explode('.', empty($requiredVersion) ? $requiredMySQLVersion : $requiredVersion);
 
 		$maxSubVersion = count($arrInstalledVersion) > count($arrRequiredVersion) ? count($arrInstalledVersion) : count($arrRequiredVersion);
 		for ($nr = 0; $nr < $maxSubVersion; $nr++) {
@@ -840,7 +840,9 @@ class CommonFunctions
 		$db = ADONewConnection($dbType);
 		@$db->Connect($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword']);
 
-		$result = @$db->Execute("CREATE DATABASE `".$_SESSION['installer']['config']['dbDatabaseName']."` DEFAULT CHARACTER SET ".($useUtf8 ? "utf8 COLLATE ".$_SESSION['installer']['config']['dbCollation'] : "latin1"));
+		$arrServerInfo = $db->ServerInfo();
+
+		$result = @$db->Execute("CREATE DATABASE `".$_SESSION['installer']['config']['dbDatabaseName']."`".($this->checkMysqlVersion($arrServerInfo['version'], '4.1.1') ? " DEFAULT CHARACTER SET ".($useUtf8 ? "utf8 COLLATE ".$_SESSION['installer']['config']['dbCollation'] : "latin1") : null));
 
 		if ($result === false) {
 			return $_ARRLANG['TXT_COULD_NOT_CREATE_DATABASE']."<br />";;
