@@ -2217,6 +2217,7 @@ class ContentManager
                     foreach ($arrGroups as $groupId) {
                         $objDatabase->Execute("INSERT INTO ".DBPREFIX."access_group_dynamic_ids (`access_id`, `group_id`) VALUES (".$lastRightId.", ".intval($groupId).")");
                     }
+					$_SESSION['auth']['dynamic_access_ids'][] = $lastRightId;
                 } else {
                     $lastRightId--;
                 }
@@ -2237,6 +2238,7 @@ class ContentManager
                                 foreach ($arrGroups as $groupId) {
                                     $objDatabase->Execute("INSERT INTO ".DBPREFIX."access_group_dynamic_ids (`access_id`, `group_id`) VALUES (".$lastRightId.", ".intval($groupId).")");
                                 }
+								$_SESSION['auth']['dynamic_access_ids'][] = $lastRightId;
                             } else {
                                 $lastRightId--;
                             }
