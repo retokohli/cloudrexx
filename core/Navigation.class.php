@@ -149,7 +149,7 @@ class Navigation
 
 				$this->data[$objResult->fields['catid']]= array(
 				    'catid'    => $objResult->fields['catid'],
-				    'url'      => htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES, CONTREXX_CHARSET).$link.(($currentThemesId && !strpos($this->data[$id]['url'],'preview')) ? '&amp;preview='.$currentThemesId : ''),
+				    'url'      => htmlentities(ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX, ENT_QUOTES, CONTREXX_CHARSET).$link.(($currentThemesId && !strpos($this->data[$id]['url'],'preview')) ? '&amp;preview='.$currentThemesId : ''),
 				    'catname'  => stripslashes($objResult->fields['catname']),
 				    'target'   => $objResult->fields['target'],
 				    'css_name' => $objResult->fields['css_name'],
