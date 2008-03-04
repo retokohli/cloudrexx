@@ -213,7 +213,7 @@ class makeGraph
 		// get statistics
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%m' ) AS `month` , FROM_UNIXTIME(`timestamp`, '%y' ) AS `year`, `count`
 			FROM `".DBPREFIX."stats_visitors_summary`
-			WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-1)."'";
+			WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-2)."'";
 		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
@@ -223,7 +223,7 @@ class makeGraph
 
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%m' ) AS `month` , FROM_UNIXTIME(`timestamp`, '%y' ) AS `year`, `count`
 			FROM `".DBPREFIX."stats_requests_summary`
-			WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-1)."'";
+			WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-2)."'";
 		$result = $objDatabase->Execute($query);
 		if ($result) {
 			while ($arrResult = $result->FetchRow()) {
@@ -232,8 +232,9 @@ class makeGraph
 		}
 
 		if (date('m')<12) {
-			$arrRange[date('y')-1] = range(date('m')+1, 12);
+			$arrRange[date('y')-2] = range(date('m')+1, 12);
 		}
+		$arrRange[date('y')-1] = range(date('m')+1, 12);
 		$arrRange[date('y')] = range(1, date('m'));
 
 		// generate arrays for the bars

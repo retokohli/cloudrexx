@@ -456,7 +456,7 @@ class statsLibrary
 		// get statistics
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%c' ) AS `month` , FROM_UNIXTIME(`timestamp`, '%y' ) AS `year` , `count`
 			FROM `".DBPREFIX."stats_visitors_summary`
-			WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-1)."'";
+			WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-2)."'";
 		$objResult = $objDatabase->Execute($query);
 		while (!$objResult->EOF) {
 			$this->arrRequests[$objResult->fields['year']][$objResult->fields['month']]['visitors'] = $objResult->fields['count'];
@@ -466,7 +466,7 @@ class statsLibrary
 
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%c' ) AS `month` , FROM_UNIXTIME(`timestamp`, '%y' ) AS `year` ,`count`
 			FROM `".DBPREFIX."stats_requests_summary`
-			WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-1)."'";
+			WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-2)."'";
 		$objResult = $objDatabase->Execute($query);
 		while (!$objResult->EOF) {
 			$this->arrRequests[$objResult->fields['year']][$objResult->fields['month']]['requests'] = $objResult->fields['count'];
