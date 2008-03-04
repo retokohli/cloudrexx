@@ -136,12 +136,12 @@ class InitCMS
 
         if (!empty($_GET['langId'])) {
             $frontendLangId = intval($_GET['langId']);
-            $setCookie = true;
+	    	$setCookie = true;
         } elseif (!empty($_COOKIE['langId'])) {
             $frontendLangId = intval($_COOKIE['langId']);
             $setCookie = true;
         } else {
-            $frontendLangId = $this->_selectBestLanguage();
+	       	$frontendLangId = $this->_selectBestLanguage();
         }
         if ($this->arrLang[$frontendLangId]['frontend'] != 1) {
             $frontendLangId = $this->defaultFrontendLangId;
@@ -657,9 +657,9 @@ class InitCMS
             if ($this->arrLang[$id]['frontend']==1) {
                 $i++;
                 if ($id==$this->userFrontendLangId) {
-                    $return .= "<option value='".$id."' selected='selected'>Frontend [".$value['name']."]</option>\n";
+				    $return .= "<option value='".$id."' selected='selected'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
                 } else {
-                    $return .= "<option value='".$id."'>Frontend [".$value['name']."]</option>\n";
+				    $return .= "<option value='".$id."'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
                 }
             }
         }
