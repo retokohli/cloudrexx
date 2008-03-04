@@ -128,6 +128,8 @@ class Community extends Community_Library
 			$_POST['password2'] = contrexx_strip_tags($_POST['password2']);
 			$_POST['residence'] = contrexx_strip_tags($_POST['residence']);
 			$_POST['zip'] = contrexx_strip_tags($_POST['zip']);
+			$_POST['firstname'] = contrexx_strip_tags($_POST['firstname']);
+			$_POST['lastname'] = contrexx_strip_tags($_POST['lastname']);
 
 			if (empty($_POST['username']) || empty($_POST['email']) || empty($_POST['password']) || empty($_POST['password2']) || empty($_POST['residence']) || empty($_POST['zip'])) {
 				$this->_statusMessage .= $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS']."<br />";
@@ -168,7 +170,7 @@ class Community extends Community_Library
 				if ($this->arrConfig['user_activation']['status']) {
 					$activationKey = md5($_POST['username'].$_POST['password'].time());
 
-					if ($objUser->addUser($_POST['username'], 0, $_POST['password'], $_POST['email'], "", "",  $_POST['residence'],  $_POST['zip'], $_LANGID, $groups, 0, $activationKey, time() + ($this->arrConfig['user_activation_timeout']['value'] * 3600)) !== false) {
+					if ($objUser->addUser($_POST['username'], 0, $_POST['password'], $_POST['email'], $_POST['firstname'], $_POST['lastname'],  $_POST['residence'],  $_POST['zip'], $_LANGID, $groups, 0, $activationKey, time() + ($this->arrConfig['user_activation_timeout']['value'] * 3600)) !== false) {
 						$sendto = $_POST['email'];
 						$subject = str_replace("%HOST%", $_CONFIG['domainUrl'], $_ARRAYLANG['TXT_CONFIRM_REGISTRATION']);
 						$activationLink = "http://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/index.php?section=community&cmd=activate&username=".$_POST['username']."&activationKey=".$activationKey;
@@ -221,7 +223,7 @@ class Community extends Community_Library
 						$this->_statusMessage .= $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
 					}
 				} else {
-					if ($objUser->addUser($_POST['username'], 0, $_POST['password'], $_POST['email'], "", "", $_POST['residence'],  $_POST['zip'], $_LANGID, $groups, 0, $activationKey) !== false) {
+					if ($objUser->addUser($_POST['username'], 0, $_POST['password'], $_POST['email'], $_POST['firstname'], $_POST['lastname'], $_POST['residence'],  $_POST['zip'], $_LANGID, $groups, 0, $activationKey) !== false) {
 						$this->_statusMessage .= $_ARRAYLANG['TXT_USER_ACCOUNT_SUCCESSFULLY_CREATED']."<br /><br />";
 						$this->_statusMessage .= str_replace("%HOST%", $_CONFIG['domainUrl'], $_ARRAYLANG['TXT_ACTIVATION_BY_SYSTEM']);
 					} else {
@@ -415,12 +417,16 @@ class Community extends Community_Library
 		$email = "";
 		$zip = "";
 		$residence = "";
+		$firstname = '';
+		$lastname = '';
 
 		if (isset($_POST['register'])) {
 			$username = htmlentities($_POST['username'], ENT_QUOTES, CONTREXX_CHARSET);
 			$email = htmlentities($_POST['email'], ENT_QUOTES, CONTREXX_CHARSET);
 			$zip = htmlentities($_POST['zip'], ENT_QUOTES, CONTREXX_CHARSET);
 			$residence = htmlentities($_POST['residence'], ENT_QUOTES, CONTREXX_CHARSET);
+            $firstname = htmlentities($_POST['firstname'], ENT_QUOTES, CONTREXX_CHARSET);
+			$lastname = htmlentities($_POST['lastname'], ENT_QUOTES, CONTREXX_CHARSET);
 		}
 
 		$this->_objTpl->setVariable(array(
