@@ -253,21 +253,21 @@ if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_
         $objPerm =&new Permission($type='frontend');
         if ($page_protected) {
             if (!$objPerm->checkAccess($page_access_id, 'dynamic')) {
-                $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-                header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
+	            $link=base64_encode(ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
+	            header ("Location: ".ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
                 exit;
             }
         }
         if ($history && !$objPerm->checkAccess(78, 'static')) {
-            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-            header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
+			$link=base64_encode(ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
+			header ("Location: ".ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
             exit;
         }
     } elseif (!empty($_COOKIE['PHPSESSID']) && !$page_protected) {
         unset($_COOKIE['PHPSESSID']);
     } else {
-        $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-        header ("Location: index.php?section=login&redirect=".$link);
+        $link=base64_encode(ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
+        header ("Location: ".ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
         exit;
     }
     $loginStatus = $objAuth->status();
@@ -1442,7 +1442,7 @@ switch ($section) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objDownloadsModule = &new downloads($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objDownloadsModule->getPage());
-    break;
+	break;
 
 //-------------------------------------------------------
 // default case

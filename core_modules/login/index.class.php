@@ -164,7 +164,7 @@ class Login
 		}
 
 		if ($objAuth->checkAuth() && (!isset($_REQUEST['relogin']) || $_REQUEST['relogin'] != 'true')) {
-			header('Location: '.(empty($redirect) ? 'index.php' : base64_decode($redirect)));
+			header('Location: '.(empty($redirect) ? ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX : base64_decode($redirect)));
 			exit;
 		} else {
 			if (isset($_POST['login'])) {

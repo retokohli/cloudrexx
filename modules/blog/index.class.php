@@ -197,7 +197,7 @@ class Blog extends BlogLibrary  {
 		$arrNetworks = $this->createNetworkArray();
 
 		if (count($arrNetworks) > 0) {
-			$strPageUrl = urlencode('http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=blog&cmd=details&id='.$intMessageId);
+			$strPageUrl = urlencode('http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog&cmd=details&id='.$intMessageId);
 
 			foreach ($arrNetworks as $intNetworkId => $arrNetworkValues) {
 				if (key_exists($this->_intLanguageId, $arrNetworkValues['status'])) {

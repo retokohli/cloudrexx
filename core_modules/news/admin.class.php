@@ -1059,10 +1059,10 @@ class newsManager extends newsLibrary {
     									WHERE	id='.$intNewsId.'
     									LIMIT	1
     								');
-    			
+
     			$this->createRSS();
     			
-    			$this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+    			 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
     		}
     	}
     }
@@ -1201,7 +1201,7 @@ class newsManager extends newsLibrary {
 
 			$objRSSWriter->characterEncoding = CONTREXX_CHARSET;
 			$objRSSWriter->channelTitle = $this->arrSettings['news_feed_title'];
-			$objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=news';
+			$objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'/index.php?section=news';
 			$objRSSWriter->channelDescription = $this->arrSettings['news_feed_description'];
 			$objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang');
 			$objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
@@ -1213,7 +1213,7 @@ class newsManager extends newsLibrary {
 			}
 			$objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
-			$itemLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/index.php?section=news&amp;cmd=details&amp;newsid=";
+			$itemLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/".$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang')."/index.php?section=news&amp;cmd=details&amp;newsid=";
 
 			$query = "SELECT tblNews.id, tblNews.date, tblNews.title, tblNews.text, tblNews.redirect, tblNews.source, tblNews.catid AS categoryId, tblNews.teaser_frames AS teaser_frames, tblNews.teaser_text, tblCategory.name AS category
 							FROM ".DBPREFIX."module_news AS tblNews, ".DBPREFIX."module_news_categories AS tblCategory
@@ -1247,7 +1247,7 @@ class newsManager extends newsLibrary {
 					(empty($arrNewsItem['redirect'])) ? ($itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? "&amp;teaserId=".$arrNewsItem['teaser_frames'][0] : "")) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
 					htmlspecialchars($arrNewsItem['text'], ENT_QUOTES, CONTREXX_CHARSET),
 					'',
-					array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/index.php?section=news&amp;category=".$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
+					array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/".$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang')."/index.php?section=news&amp;category=".$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
 					'',
 					'',
 					'',
@@ -1266,7 +1266,7 @@ class newsManager extends newsLibrary {
 					$itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? "&amp;teaserId=".$arrNewsItem['teaser_frames'][0] : ""),
 					'',
 					'',
-					array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/index.php?section=news&amp;category=".$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
+					array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/".$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang')."/index.php?section=news&amp;category=".$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
 					'',
 					'',
 					'',
