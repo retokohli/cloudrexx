@@ -121,7 +121,7 @@ class podcastLib
 			$cat = $ofCategory;
 		}
 
-		$objMedium = $objDatabase->SelectLimit("
+		$objMedium = $objDatabase->SelectLimit('
 			SELECT tblMedium.id,
 				   tblMedium.title,
 				   tblMedium.youtube_id,
