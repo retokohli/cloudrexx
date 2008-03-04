@@ -136,10 +136,12 @@ class podcastLib
 				   tblMedium.status,
 				   tblMedium.date_added,
 				   tblMedium.template_id
-			FROM ".DBPREFIX."module_podcast_medium AS tblMedium".
-			(!empty($cat) ? ", ".DBPREFIX."module_podcast_rel_medium_category AS tblRel WHERE tblMedium.id=tblRel.medium_id AND tblRel.category_id IN (".$cat.")" : "").
-			($isActive ? (!empty($cat) ? " AND " : " WHERE ")."tblMedium.status=1" : "").
-			" ORDER BY tblMedium.date_added DESC", $sqlLimit, $pos);
+			FROM '.(!empty($cat) ? DBPREFIX.'module_podcast_rel_medium_category AS tblRel INNER JOIN ' : '').DBPREFIX.'module_podcast_medium AS tblMedium '.
+			(!empty($cat) ? ' ON tblMedium.id=tblRel.medium_id ' : '').
+			($isActive || !empty($cat) ? ' WHERE ' : '').
+			(!empty($cat) ? ' tblRel.category_id IN ('.$cat.') ' : '').
+			($isActive ? (!empty($cat) ? ' AND ' : '').' tblMedium.status=1 ' : '').
+			' ORDER BY tblMedium.date_added DESC', $sqlLimit, $pos);
 		if ($objMedium != false) {
 			while (!$objMedium->EOF) {
 				if(!empty($objMedium->fields['youtube_id'])){
@@ -720,8 +722,8 @@ class podcastLib
 		}
 
 		return str_replace(
-			array('[[MEDIUM_WIDTH]]', '[[MEDIUM_HEIGHT]]', '[[MEDIUM_URL]]'),
-			array($arrMedium['width'], $arrMedium['height'], $arrMedium['source']),
+			array('[[MEDIUM_WIDTH]]', '[[MEDIUM_HEIGHT]]', '[[MEDIUM_URL]]', '[[ASCMS_PATH_OFFSET]]'),
+			array($arrMedium['width'], $arrMedium['height'], $arrMedium['source'], ASCMS_PATH_OFFSET),
 			$template);
 	}
 
