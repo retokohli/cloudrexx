@@ -173,7 +173,7 @@ class Community extends Community_Library
 					if ($objUser->addUser($_POST['username'], 0, $_POST['password'], $_POST['email'], $_POST['firstname'], $_POST['lastname'],  $_POST['residence'],  $_POST['zip'], $_LANGID, $groups, 0, $activationKey, time() + ($this->arrConfig['user_activation_timeout']['value'] * 3600)) !== false) {
 						$sendto = $_POST['email'];
 						$subject = str_replace("%HOST%", $_CONFIG['domainUrl'], $_ARRAYLANG['TXT_CONFIRM_REGISTRATION']);
-						$activationLink = "http://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/index.php?section=community&cmd=activate&username=".$_POST['username']."&activationKey=".$activationKey;
+						$activationLink = "http://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX."?section=community&cmd=activate&username=".$_POST['username']."&activationKey=".$activationKey;
 						$hostLink = "http://".$_CONFIG['domainUrl'];
 						$message = str_replace(array("%HOST%","%USERNAME%","%PASSWORD%", "%ACTIVATION_LINK%", "%HOST_LINK%"), array($_CONFIG['domainUrl'], $_POST['username'], $_POST['password'], $activationLink, $hostLink), $_ARRAYLANG['TXT_CONFIRM_REGISTRATION_MAIL']);
 
@@ -388,7 +388,7 @@ class Community extends Community_Library
 
 
 		} else {
-			header('Location: index.php?section=login&redirect='.base64_encode(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=community&cmd=profile'));
+			header('Location: index.php?section=login&redirect='.base64_encode(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?section=community&cmd=profile'));
 			exit;
 		}
 	}

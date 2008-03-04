@@ -540,7 +540,7 @@ class newsletter extends NewsletterLib
 
 		$arrParsedTxts = str_replace(
 			array('[[sex]]', '[[title]]', '[[firstname]]', '[[lastname]]', '[[code]]', '[[url]]', '[[date]]'),
-			array($recipientSexTxt, $recipientTitleTxt, $recipientFirstname, $recipientLastname, ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=newsletter&cmd=confirm&email='.$recipientEmail, $_CONFIG['domainUrl'], date(ASCMS_DATE_FORMAT)),
+			array($recipientSexTxt, $recipientTitleTxt, $recipientFirstname, $recipientLastname, ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?section=newsletter&cmd=confirm&email='.$recipientEmail, $_CONFIG['domainUrl'], date(ASCMS_DATE_FORMAT)),
 			array($objConfirmMail->fields['title'], $objConfirmMail->fields['content'])
 		);
 

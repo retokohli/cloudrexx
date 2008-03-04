@@ -134,9 +134,13 @@ class InitCMS
         // Frontend language initialization
         $setCookie = false;
 
-        if (!empty($_GET['langId'])) {
-            $frontendLangId = intval($_GET['langId']);
+		if (!empty($_REQUEST['setLang'])) {
+	    	$frontendLangId = intval($_REQUEST['setLang']);
 	    	$setCookie = true;
+	    } elseif (!empty($_GET['langId'])) {
+            $frontendLangId = intval($_GET['langId']);
+	    } elseif (!empty($_POST['langId'])) {
+		    $frontendLangId = intval($_POST['langId']);
         } elseif (!empty($_COOKIE['langId'])) {
             $frontendLangId = intval($_COOKIE['langId']);
             $setCookie = true;
@@ -146,6 +150,15 @@ class InitCMS
         if ($this->arrLang[$frontendLangId]['frontend'] != 1) {
             $frontendLangId = $this->defaultFrontendLangId;
         }
+
+		if ($setCookie) {
+			setcookie ("langId", $this->arrLang[$frontendLangId]['lang'], time()+3600*24*30, '/');
+		}
+
+		if ($this->mode == 'frontend' && empty($_SERVER['REDIRECT_CONTREXX_LANG_PREFIX'])) {
+			header('Location: /'.$this->arrLang[$frontendLangId]['lang']);
+			exit;
+		}
 
         $this->frontendLangId = $frontendLangId;
         if (isset($_GET['printview']) && $_GET['printview'] == 1) {
@@ -157,11 +170,7 @@ class InitCMS
         }
 
         $this->frontendLangCharset = $this->arrLang[$frontendLangId]['charset'];
-
-        if ($setCookie) {
-            setcookie ("langId", $frontendLangId, time()+3600*24*30);
         }
-    }
 
 
     /**

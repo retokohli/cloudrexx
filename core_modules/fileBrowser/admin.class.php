@@ -457,7 +457,7 @@ class FileBrowser {
 	*/
 	function _setContent()
 	{
-		global $objDatabase, $objPerm;
+		global $objDatabase, $objPerm, $_FRONTEND_LANGID, $objLanguage;
 
 		$this->_objTpl->addBlockfile('FILEBROWSER_CONTENT', 'fileBrowser_content', 'module_fileBrowser_content.html');
 
@@ -481,7 +481,7 @@ class FileBrowser {
 				$c = $arrPage['cmd'];
 				$section = ($s=="") ? "" : "&amp;section=$s";
 				$cmd = ($c=="") ? "" : "&amp;cmd=$c";
-				$link = ASCMS_PATH_OFFSET.'/index.php'.((!empty($s)) ? "?section=".$s.$cmd : "?page=".$arrPage['catid'].$section.$cmd);
+				$link = ASCMS_PATH_OFFSET.'/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'/index.php'.((!empty($s)) ? "?section=".$s.$cmd : "?page=".$arrPage['catid'].$section.$cmd);
 
 				$this->_objTpl->setVariable(array(
 					'FILEBROWSER_ROW_CLASS'			=> $rowNr%2 == 0 ? "row1" : "row2",

@@ -56,10 +56,10 @@ ASCMS_DIRECTORY_FEED_PATH
 */
 
 		$this->filePath = ASCMS_DIRECTORY_FEED_PATH . '/';
-		$this->channelCopyright = "http://".$_SERVER['SERVER_NAME'];
+		$this->channelCopyright = "http://".$_CONFIG['domainUrl'];
 		$this->channelGenerator = $_CONFIG['coreCmsName'];
 		$this->channelLanguage  = "English";
-		$this->itemLink = "http://".$_SERVER['SERVER_NAME']."/".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;cmd=detail&amp;id=";
+		$this->itemLink = "http://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/".CONTREXX_DIRECTORY_INDEX."?section=directory&amp;cmd=detail&amp;id=";
 		$this->fileName = "directory_latest.xml";
 	}
 

@@ -148,23 +148,23 @@ class Paging
         }
 
         $array_paging['total'] = $this->row;
-        $array_paging['first'] = "<a href=\"". $_SERVER['PHP_SELF'] ."?pos=0".$this->ext_argv ."\">";
+        $array_paging['first'] = "<a href=\"index.php?pos=0".$this->ext_argv ."\">";
 
         if ($this->row % $this->result_per_page ==0) {
            $corr_value=$this->result_per_page;
         } else {
            $corr_value=$this->row % $this->result_per_page;
         }
-        $array_paging['last'] = "<a href=\"". $_SERVER['PHP_SELF'] ."?pos=". ($this->row - $corr_value).$this->ext_argv ."\">";
+        $array_paging['last'] = "<a href=\"index.php?pos=". ($this->row - $corr_value).$this->ext_argv ."\">";
 
         if ($this->cur_position != 0) {
-          $array_paging['previous_link'] = "<a href=\"". $_SERVER['PHP_SELF'] ."?pos=". ( $this->cur_position - $this->result_per_page ).$this->ext_argv ."\">";
+          $array_paging['previous_link'] = "<a href=\"index.php?pos=". ( $this->cur_position - $this->result_per_page ).$this->ext_argv ."\">";
         }
 
         if (($this->row - $this->cur_position ) > $this->result_per_page)
         {
             $int_new_position = $this->cur_position + $this->result_per_page;
-            $array_paging['next_link'] = "<a href=\"". $_SERVER['PHP_SELF'] ."?pos=$int_new_position". $this->ext_argv ."\">";
+            $array_paging['next_link'] = "<a href=\"index.php?pos=$int_new_position". $this->ext_argv ."\">";
         }
         return $array_paging;
     }
@@ -182,7 +182,7 @@ class Paging
                 $array_all_page[$i] = "<b>". ($i+1) ."</b>";
             } else {
                 $int_new_position   = $i * $this->result_per_page;
-                $array_all_page[$i] = "<a href=\"". $_SERVER['PHP_SELF'] ."?pos=$int_new_position$this->ext_argv\">". ($i+1) ."</a>";
+                $array_all_page[$i] = "<a href=\"index.php?pos=$int_new_position$this->ext_argv\">". ($i+1) ."</a>";
             }
         }
         return $array_all_page;

@@ -1031,23 +1031,24 @@ class BlogLibrary {
 	 * @global 	array		$_ARRAYLANG
 	 */
 	function writeMessageRSS() {
-		global $_CONFIG, $_ARRAYLANG;
+		global $_CONFIG, $_ARRAYLANG, $objLanguage;
 
 		if (intval($this->_arrSettings['blog_rss_activated'])) {
 
 			require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
-			$strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=blog&amp;cmd=details&amp;id=';
 
 			foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
 				$arrEntries = $this->createEntryArray($intLanguageId, 0, intval($this->_arrSettings['blog_rss_messages']) );
+				$strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang').'/index.php?section=blog&amp;cmd=details&amp;id=';
 
 				if (count($arrEntries) > 0) {
 					$objRSSWriter = new RSSWriter();
 
 					$objRSSWriter->characterEncoding = CONTREXX_CHARSET;
 					$objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
-					$objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=blog';
+					$objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang').'/index.php?section=blog';
 					$objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
+					$objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($intLanguageId, 'lang');
 					$objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
 					$objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
@@ -1085,14 +1086,15 @@ class BlogLibrary {
 	 * @global 	object		$objDatabase
 	 */
 	function writeCommentRSS() {
-		global $_CONFIG, $_ARRAYLANG, $objDatabase;
+		global $_CONFIG, $_ARRAYLANG, $objDatabase, $objLanguage;
 
 		if (intval($this->_arrSettings['blog_rss_activated'])) {
 
 			require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
-			$strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=blog&amp;cmd=details&amp;id={ID}#comments';
 
 			foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
+				$strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang').'/index.php?section=blog&amp;cmd=details&amp;id={ID}#comments';
+
 				$objResult = $objDatabase->Execute('SELECT		message_id,
 																time_created,
 																user_id,
@@ -1111,9 +1113,10 @@ class BlogLibrary {
 
 					$objRSSWriter->characterEncoding = CONTREXX_CHARSET;
 					$objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_COMMENTS_TITLE'];
-					$objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=blog';
+					$objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang').'/index.php?section=blog';
 					$objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_COMMENTS_TITLE'];
 					$objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
+					$objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($intLanguageId, 'lang');
 					$objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
 					while (!$objResult->EOF) {
@@ -1152,17 +1155,18 @@ class BlogLibrary {
 	 * @global 	array		$_ARRAYLANG
 	 */
 	function writeCategoryRSS() {
-		global $_CONFIG, $_ARRAYLANG;
+		global $_CONFIG, $_ARRAYLANG, $objLanguage;
 
 		if (intval($this->_arrSettings['blog_rss_activated'])) {
 
 			require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
-			$strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=blog&amp;cmd=details&amp;id=';
 
 			$arrCategories = $this->createCategoryArray();
 
 			//Iterate over all languages
 			foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
+				$strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang').'/index.php?section=blog&amp;cmd=details&amp;id=';
+
 				$arrEntries = $this->createEntryArray($intLanguageId);
 
 				//If there exist entries in this language go on, otherwise skip
@@ -1179,9 +1183,10 @@ class BlogLibrary {
 							$objRSSWriter = new RSSWriter();
 							$objRSSWriter->characterEncoding = CONTREXX_CHARSET;
 							$objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
-							$objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=blog';
+							$objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang').'/index.php?section=blog';
 							$objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'].' ('.$arrCategoryTranslation[$intLanguageId]['name'].')';
 							$objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
+							$objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($intLanguageId, 'lang');
 							$objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
 							//Find assigned messages

@@ -1200,7 +1200,7 @@ class directoryLibrary
 			$objRSS->channelDescription = $this->rssLatestDescription;
 			$objRSS->channelWebmaster = $_CONFIG['coreAdminEmail'];
 			$objRSS->newsLimit = $limit;
-			$objRSS->channelLink = ASCMS_PROTOCOL."://".$_SERVER['SERVER_NAME']."/".CONTREXX_DIRECTORY_INDEX."?section=directory";
+            $objRSS->channelLink = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/".CONTREXX_DIRECTORY_INDEX."?section=directory";
 
 			$objRSS->create();
     	}
