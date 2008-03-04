@@ -44,7 +44,8 @@ var openPreview = function(id){
 }
 
 var confirmDelete = function(theme){
-	return confirm('{TXT_THEME_CONFIRM_DELETE}');
+    msg = '{TXT_THEME_CONFIRM_DELETE}';
+	return confirm(msg.replace('%s', theme));
 }
 
 var importArchive = function(){
