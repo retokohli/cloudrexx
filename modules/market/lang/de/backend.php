@@ -76,4 +76,6 @@ $_ARRAYLANG['TXT_MARKET_SET_EDIT_ENTRY'] = "Besuchern erlauben Inserate zu editi
 $_ARRAYLANG['TXT_MARKET_SET_INDEXVIEW'] = "Index-Ansicht";
 $_ARRAYLANG['TXT_MARKET_SET_MAXDAYS_ON'] = "Beschränkte Anzeigedauer";
 $_ARRAYLANG['TXT_MARKET_SET_EXP_SEARCH_PRICE'] = "Auswahlfelder für erweiterte Suche nach 'Preis bis'";
+$_ARRAYLANG['TXT_MARKET_ADVERTISER'] = "Inserent";
+$_ARRAYLANG['TXT_MARKET_SET_CODE_MODE'] = "Inserate mittels Freischalltcode aktivieren";
 ?>
