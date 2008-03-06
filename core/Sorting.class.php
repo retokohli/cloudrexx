@@ -7,7 +7,7 @@
  * field and direction.
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     0.9.1
+ * @version     0.9.0
  * @package     contrexx
  * @subpackage  core
  */
@@ -17,7 +17,6 @@ define('SORTING_ORDER_PARAMETER_NAME', 'x_order');
 /**
  * Provides methods to create sorted tables
  *
- * 20080303 Fixed some bugs, added method getOrderField().
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     0.9.0
@@ -215,7 +214,8 @@ echo("Sorting::getHeaderForField(fieldName=$fieldName): ERROR: unknown field nam
      * The returned string contains both the parameter name, 'order',
      * and the current order string value.
      * It is ready to be used in an URI in a link.
-     * @return  string          URI encoded order string
+     * @param   string  $field    The optional order field
+     * @return  string            URI encoded order string
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getOrderUriEncoded($field='')
