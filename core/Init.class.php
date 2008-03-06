@@ -52,26 +52,19 @@ class InitCMS
      * Constructor
      *
      */
-    function InitCMS($mode="frontend")
+    function InitCMS($mode='frontend')
     {
         global $objDatabase;
 
-        $this->is_home=false;
-        $this->mode=$mode;
+        $this->is_home = false;
+        $this->mode = $mode;
 
-        $objResult = $objDatabase->Execute("SELECT id,
-                                    themesid,
-                                    print_themes_id,
-                                    pdf_themes_id,
-                                    lang,
-                                    name,
-                                    charset,
-                                    backend,
-                                    frontend,
-                                    is_default
-                               FROM ".DBPREFIX."languages");
-
-        if ($objResult !== false) {
+        $objResult = $objDatabase->Execute("
+            SELECT id, themesid, print_themes_id, pdf_themes_id,
+                   lang, name, charset, backend, frontend, is_default
+              FROM ".DBPREFIX."languages
+        ");
+        if ($objResult) {
             while (!$objResult->EOF) {
                 $this->arrLang[$objResult->fields['id']]= array(
                     'id'         => $objResult->fields['id'],
@@ -92,7 +85,7 @@ class InitCMS
                 $objResult->MoveNext();
             }
         }
-        if ($mode == "frontend") {
+        if ($mode == 'frontend') {
             //$this->_initBackendLanguage();
             $this->getUserFrontendLangId();
         }
@@ -101,15 +94,11 @@ class InitCMS
     }
 
 
+    /**
+     * Backend language initialization
+     */
     function _initBackendLanguage()
     {
-        // Backend language initialization
-        $userId=0;
-
-        if (isset($_SESSION['auth']['userid'])) {
-            $userId = intval($_SESSION['auth']['userid']);
-        }
-
         if (!empty($_SESSION['auth']['lang'])) {
             $backendLangId = intval($_SESSION['auth']['lang']);
         } elseif (!empty($_COOKIE['backendLangId'])) {
@@ -117,15 +106,13 @@ class InitCMS
         } else {
             $backendLangId = $this->defaultBackendLangId;
         }
-
         if ($this->arrLang[$backendLangId]['backend'] != 1) {
             $backendLangId = $this->defaultBackendLangId;
         }
-
         $this->backendLangId = $this->arrLang[$backendLangId]['id'];
         $this->currentThemesId = $this->arrLang[$backendLangId]['themesid'];
         $this->backendLangCharset = $this->arrLang[$backendLangId]['charset'];
-        setcookie ("backendLangId", $backendLangId, time()+3600*24*30);
+        setcookie ('backendLangId', $backendLangId, time()+3600*24*30);
     }
 
 
@@ -134,36 +121,36 @@ class InitCMS
         // Frontend language initialization
         $setCookie = false;
 
-		if (!empty($_REQUEST['setLang'])) {
-	    	$frontendLangId = intval($_REQUEST['setLang']);
-	    	$setCookie = true;
-	    } elseif (!empty($_GET['langId'])) {
+        if (!empty($_REQUEST['setLang'])) {
+            $frontendLangId = intval($_REQUEST['setLang']);
+            $setCookie = true;
+        } elseif (!empty($_GET['langId'])) {
             $frontendLangId = intval($_GET['langId']);
-	    } elseif (!empty($_POST['langId'])) {
-		    $frontendLangId = intval($_POST['langId']);
+        } elseif (!empty($_POST['langId'])) {
+            $frontendLangId = intval($_POST['langId']);
         } elseif (!empty($_COOKIE['langId'])) {
             $frontendLangId = intval($_COOKIE['langId']);
             $setCookie = true;
         } else {
-	       	$frontendLangId = $this->_selectBestLanguage();
+               $frontendLangId = $this->_selectBestLanguage();
         }
-        if ($this->arrLang[$frontendLangId]['frontend'] != 1) {
+        if (empty($this->arrLang[$frontendLangId]['frontend'])) {
             $frontendLangId = $this->defaultFrontendLangId;
         }
 
-		if ($setCookie) {
-			setcookie ("langId", $this->arrLang[$frontendLangId]['lang'], time()+3600*24*30, '/');
-		}
+        if ($setCookie) {
+            setcookie ("langId", $this->arrLang[$frontendLangId]['lang'], time()+3600*24*30, '/');
+        }
 
-		if ($this->mode == 'frontend' && empty($_SERVER['REDIRECT_CONTREXX_LANG_PREFIX'])) {
-			header('Location: /'.$this->arrLang[$frontendLangId]['lang']);
-			exit;
-		}
+        if ($this->mode == 'frontend' && empty($_SERVER['REDIRECT_CONTREXX_LANG_PREFIX'])) {
+            header('Location: /'.$this->arrLang[$frontendLangId]['lang']);
+            exit;
+        }
 
         $this->frontendLangId = $frontendLangId;
         if (isset($_GET['printview']) && $_GET['printview'] == 1) {
             $this->currentThemesId = $this->arrLang[$frontendLangId]['print_themes_id'];
-        }elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1) {
+        } elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1) {
             $this->currentThemesId = $this->arrLang[$frontendLangId]['pdf_themes_id'];
         } else {
             $this->currentThemesId = $this->arrLang[$frontendLangId]['themesid'];
@@ -209,16 +196,13 @@ class InitCMS
     {
         $arrLanguages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
         $arrAcceptedLanguages = array();
-
         foreach ($arrLanguages as $languageString) {
             $arrLanguage = explode(';q=', trim($languageString));
             $language = trim($arrLanguage[0]);
             $quality = isset($arrLanguage[1]) ? trim($arrLanguage[1]) : 1;
             $arrAcceptedLanguages[$language] = (float) $quality;
         }
-
         arsort($arrAcceptedLanguages, SORT_NUMERIC);
-
         return $arrAcceptedLanguages;
     }
 
@@ -232,15 +216,15 @@ class InitCMS
      */
     function getUserFrontendLangId()
     {
-        if (isset($_POST['userFrontendLangId']) AND !empty($_POST['userFrontendLangId'])) {
-            $id=intval($_POST['userFrontendLangId']);
-        } elseif (isset($_SESSION['userFrontendLangId']) AND !empty($_SESSION['userFrontendLangId'])) {
+        if (isset($_POST['userFrontendLangId']) && !empty($_POST['userFrontendLangId'])) {
+            $id = intval($_POST['userFrontendLangId']);
+        } elseif (isset($_SESSION['userFrontendLangId']) && !empty($_SESSION['userFrontendLangId'])) {
             $id = intval($_SESSION['userFrontendLangId']);
         } else {
             $id = $this->defaultFrontendLangId;
         }
 
-        if ($this->arrLang[$id]['frontend']!=1) {
+        if ($this->arrLang[$id]['frontend'] != 1) {
             $id=$this->defaultFrontendLangId;
         }
 
@@ -258,13 +242,13 @@ class InitCMS
 
     function getDefaultBackendLangId()
     {
-          return $this->defaultFrontendLangId;
+        return $this->defaultFrontendLangId;
     }
 
 
     function getFrontendLangId()
     {
-          return $this->frontendLangId;
+        return $this->frontendLangId;
     }
 
 
@@ -276,7 +260,7 @@ class InitCMS
 
     function getBackendLangId()
     {
-          return $this->backendLangId;
+        return $this->backendLangId;
     }
 
 
@@ -302,7 +286,7 @@ class InitCMS
     {
         if (empty($this->frontendLangCharset)) {
             return CONTREXX_CHARSET;
-        }else{
+        } else {
             return $this->frontendLangCharset;
         }
     }
@@ -318,7 +302,7 @@ class InitCMS
     {
         if (empty($this->backendLangCharset)) {
             return CONTREXX_CHARSET;
-        }else{
+        } else {
             return $this->backendLangCharset;
         }
     }
@@ -332,7 +316,7 @@ class InitCMS
      */
     function getFrontendDefaultLangId()
     {
-          return $this->defaultFrontendLangId;
+        return $this->defaultFrontendLangId;
     }
 
 
@@ -344,7 +328,7 @@ class InitCMS
      */
     function getBackendDefaultLangId()
     {
-          return $this->defaultBackendLangId;
+        return $this->defaultBackendLangId;
     }
 
 
@@ -358,21 +342,22 @@ class InitCMS
     {
         global $objDatabase;
         if (isset($_GET['preview']) && intval($_GET['preview'])) {
-            $objRS=$objDatabase->Execute("SELECT id
-                                        FROM ".DBPREFIX."skins
-                                        WHERE id = ".intval($_GET['preview'])."
-                                        LIMIT 1");
+            $objRS = $objDatabase->Execute("
+                SELECT id
+                  FROM ".DBPREFIX."skins
+                 WHERE id=".intval($_GET['preview'])
+            );
             if ($objRS->RecordCount()==1) {
                 $this->currentThemesId=intval($_GET['preview']);
             }
         }
 
-        $objResult = $objDatabase->SelectLimit("SELECT id,
-                                    themesname,
-                                    foldername
-                               FROM ".DBPREFIX."skins
-                              WHERE id = '$this->currentThemesId'",1);
-        if ($objResult !== false) {
+        $objResult = $objDatabase->Execute("
+            SELECT id, themesname, foldername
+              FROM ".DBPREFIX."skins
+             WHERE id=$this->currentThemesId
+        ");
+        if ($objResult) {
             while (!$objResult->EOF) {
                 $themesPath = $objResult->fields['foldername'];
                 $objResult->MoveNext();
@@ -412,13 +397,13 @@ class InitCMS
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                if (strlen($objResult->fields['name'])>0) {
+                if (strlen($objResult->fields['name']) > 0) {
                     switch($objResult->fields['name']) {
                         case 'core':
                             $this->arrModulePath[$objResult->fields['name']] = ASCMS_DOCUMENT_ROOT.'/lang/';
                             break;
                         case 'home':
-                            // home is not a real modul
+                            // home is not a real module
                             break;
                         default:
                         $this->arrModulePath[$objResult->fields['name']] = ($objResult->fields['is_core'] == 1 ? ASCMS_CORE_MODULE_PATH : ASCMS_MODULE_PATH).'/'.$objResult->fields['name'].'/lang/';
@@ -437,13 +422,12 @@ class InitCMS
      *
      * @return    array   $arrayLanguageSettings
      */
-    function loadLanguageData($module = '')
+    function loadLanguageData($module='')
     {
         global $objInit, $_CORELANG, $_CONFIG, $objDatabase;
 
         $_ARRAYLANG = array();
-
-        if ($objInit->mode == "backend") {
+        if ($objInit->mode == 'backend') {
             $langId = $this->backendLangId;
         } else {
             $langId = $this->frontendLangId;
@@ -451,25 +435,25 @@ class InitCMS
 
         // check which module will be loaded
         if (empty($module)) {
-            if ($objInit->mode == "backend") {
+            if ($objInit->mode == 'backend') {
                 $module = isset($_REQUEST['cmd']) ? addslashes(strip_tags($_REQUEST['cmd'])) : 'core';
             } else {
                 $module = isset($_REQUEST['section']) ? addslashes(strip_tags($_REQUEST['section'])) : 'core';
             }
         }
 
-        if (ereg("media.?", $module)) {
-            $module = "media";
+        if (ereg('media.?', $module)) {
+            $module = 'media';
         }
 
         // change module for core components
-        if (!array_key_exists($module,$objInit->arrModulePath) && $module != "media") {
+        if (!array_key_exists($module,$objInit->arrModulePath) && $module != 'media') {
             $module = '';
         } else {
             // check if the language file exist
             $path = $objInit->arrModulePath[$module].$objInit->arrLang[$langId]['lang'].'/'.$objInit->mode.'.php';
                if (!file_exists($path)) {
-                $langId = $objInit->mode == "backend" ? $objInit->getBackendDefaultLangId() : $objInit->getFrontendDefaultLangId();
+                $langId = $objInit->mode == 'backend' ? $objInit->getBackendDefaultLangId() : $objInit->getFrontendDefaultLangId();
                 $path = $objInit->arrModulePath[$module].$objInit->arrLang[$langId]['lang'].'/'.$objInit->mode.'.php';
                 if (!file_exists($path)) {
                     $path = '';
@@ -480,14 +464,12 @@ class InitCMS
         // load variables
         if (empty($module)) {
             return $_CORELANG;
-
-
         } else {
             if (!empty($path)) {
                 //require_once($path);
                 require($path);
                 // remove escape characters
-                foreach ($_ARRAYLANG as $langTxtId => $langTxt) {
+                foreach (array_keys($_ARRAYLANG) as $langTxtId) {
                     $_ARRAYLANG[$langTxtId] = ereg_replace("\\\"", "\"", $_ARRAYLANG[$langTxtId]);
                     if (isset($_CONFIG['langDebugIds']) && $_CONFIG['langDebugIds'] == 'on') {
                         $objRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."modules WHERE name = '$module' LIMIT 1");
@@ -514,12 +496,12 @@ class InitCMS
      *
      * gets the current pageId
      *
-     * @global     object        $objDatabase
-     * @param     integer    $catID
-     * @param     string        $command
-     * @return    integer    $catID
+     * @global  mixed     $objDatabase
+     * @param   integer   $catID
+     * @param   string    $command
+     * @return  integer   $catID
      */
-    function getPageID($catID = 0, $section='', $command='', $historyId=0)
+    function getPageID($catID=0, $section='', $command='', $historyId=0)
     {
         global $objDatabase;
 
@@ -630,7 +612,7 @@ class InitCMS
      * @access private
      * @param optional string $themesId
      */
-    function _setCustomizedThemesId($themesId="")
+    function _setCustomizedThemesId($themesId='')
     {
         global $objDatabase;
 
@@ -654,21 +636,20 @@ class InitCMS
     function getUserFrontendLangMenu()
     {
         $i = 0;
+        $arrVars = array();
         if (isset($_SERVER['QUERY_STRING'])) {
-            parse_str($_SERVER['QUERY_STRING'], $vars);
+            parse_str($_SERVER['QUERY_STRING'], $arrVars);
         }
-        $query = isset($vars['cmd']) ? "?cmd=".$vars['cmd'] : "";
-
+        $query = isset($arrVars['cmd']) ? "?cmd=".$arrVars['cmd'] : "";
         $return = "\n<form action='index.php".$query."' method='post' name='userFrontendLangIdForm'>\n";
         $return .= "<select name='userFrontendLangId' size='1' onchange=\"document.forms['userFrontendLangIdForm'].submit()\">\n";
-
         foreach($this->arrLang as $id=>$value) {
             if ($this->arrLang[$id]['frontend']==1) {
                 $i++;
                 if ($id==$this->userFrontendLangId) {
-				    $return .= "<option value='".$id."' selected='selected'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
+                    $return .= "<option value='".$id."' selected='selected'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
                 } else {
-				    $return .= "<option value='".$id."'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
+                    $return .= "<option value='".$id."'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
                 }
             }
         }
