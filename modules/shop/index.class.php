@@ -3057,11 +3057,9 @@ sendReq('', 1);
                 $_SESSION['shop']['shipperId'],
                 "document.forms['shopForm'].submit()"
             );
-
             return $menu;
-        } else {
-            return '';
         }
+        return '';
     }
 
 
@@ -3915,6 +3913,7 @@ right after the customer logs in!
             && !empty($_SESSION['shop']['orderid_checkin'])) {
             // Internal payment method: update status in any case.
             $orderId = $_SESSION['shop']['orderid_checkin'];
+            $result = 1;
         }
         if (!$orderId
            || (   isset($_SESSION['shop']['orderid_checkin'])

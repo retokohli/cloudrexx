@@ -16,24 +16,22 @@
 
 Modifications to the Contrexx V1.1 Database structure:
 
-ALTER TABLE `contrexx_module_shop_categories` ADD `picture` VARCHAR( 255 ) NULL;
-ALTER TABLE `contrexx_module_shop_categories` ADD `flags`   VARCHAR( 100 ) NULL;
-ALTER TABLE `contrexx_module_shop_categories` ADD INDEX (`flags`);
+ALTER TABLE ".DBPREFIX."module_shop_categories ADD picture VARCHAR (255) NOT NULL DEFAULT '';
+ALTER TABLE ".DBPREFIX."module_shop_categories ADD flags   VARCHAR (100) NOT NULL DEFAULT '';
+ALTER TABLE ".DBPREFIX."module_shop_categories ADD FULLTEXT (flags);
 
 Full structure:
 
-DROP TABLE IF EXISTS `contrexx_module_shop_categories`;
-
-CREATE TABLE `contrexx_module_shop_categories` (
-  `catid`       int(10)     unsigned NOT NULL auto_increment,
-  `parentid`    int(10)     unsigned NOT NULL default '0',
-  `catname`     varchar(255)         NOT NULL default '',
-  `catsorting`  smallint(6)          NOT NULL default '100',
-  `catstatus`   tinyint(1)           NOT NULL default '1',
-  `picture`     varchar(255)             NULL,
-  `flags`       varchar(100)             NULL,
-  PRIMARY KEY  (`catid`),
-  KEY `flags` (`flags`)
+DROP TABLE IF EXISTS ".DBPREFIX."module_shop_categories;
+CREATE TABLE ".DBPREFIX."module_shop_categories (
+  catid       INT(10)     UNSIGNED NOT NULL auto_increment PRIMARY KEY,
+  parentid    INT(10)     UNSIGNED NOT NULL DEFAULT '0',
+  catname     VARCHAR(255)         NOT NULL DEFAULT '',
+  catsorting  SMALLINT(6)          NOT NULL DEFAULT '100',
+  catstatus   TINYINT(1)           NOT NULL DEFAULT '1',
+  picture     VARCHAR(255)         NOT NULL DEFAULT '',
+  flags       VARCHAR(100)         NOT NULL DEFAULT '',
+  FULLTEXT flags (flags)
 ) ENGINE=MyISAM;
 
 */

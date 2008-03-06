@@ -81,9 +81,9 @@ class Currency
                 'is_default' => $objResult->fields['is_default']
             );
 
-            if ($objResult->fields['is_default']==1) {
-                $this->defaultCurrencyId    =$objResult->fields['id'];
-                $this->defaultCurrencySymbol=$objResult->fields['symbol'];
+            if ($objResult->fields['is_default'] == 1) {
+                $this->defaultCurrencyId = $objResult->fields['id'];
+                $this->defaultCurrencySymbol = $objResult->fields['symbol'];
             }
             $objResult->MoveNext();
         }
@@ -97,7 +97,7 @@ class Currency
     function _init()
     {
         if (isset($_REQUEST['currency'])) {
-            $sId =  intval($_REQUEST['currency']);
+            $sId = intval($_REQUEST['currency']);
             $_SESSION['shop']['currencyId'] = isset($this->arrCurrency[$sId]) ? $sId : $this->defaultCurrencyId;
         } else {
             if (!isset($_SESSION['shop']['currencyId'])) {
@@ -241,7 +241,7 @@ class Currency
     //static
     function formatPrice($price)
     {
-        return number_format($price ,2 , '.', '');
+        return number_format($price, 2, '.', '');
     }
 
 
