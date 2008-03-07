@@ -170,6 +170,12 @@ function updateWeight() {
 function updateShipment(){
     // who's shipping it?
     var sid = document.forms.shopOrderEdit.shipperId.value;
+    // Bail out if sid is not valid -- that means that no shipment is
+    // selected, and possibly not needed anyway.
+    if (sid == 0) {
+        document.forms.shopOrderEdit.shopShippingPrice.value = 0;
+        return;
+    }
     // copy the price from the global variable
     var price = Number(document.forms.shopOrderEdit.shopNetPrice.value);
     // get the total weight
@@ -205,7 +211,6 @@ function updateShipment(){
                 // so the shipping has to be paid for in any case.
                 cost = shipments[i][3];
             }
-
             // we found a kind of shipment that can handle the order, but maybe
             // it's too expensive. - keep the cheapest way to deliver it
             if (cost < lowest_cost) {
@@ -442,7 +447,7 @@ function swapSendToStatus(orderId) {
             <td width="10%" nowrap="nowrap"><b>{TXT_NUMBER}</b></td>
             <td width="10%" nowrap="nowrap"><b>{TXT_PRODUCT_ID}</b></td>
             <td width="40%" nowrap="nowrap"><b>{TXT_PRODUCT_NAME}</b></td>
-        <td width="10%" nowrap='nowrap'><div style="text-align:center;"><b>{TXT_WEIGHT}</b></div></td>
+            <td width="10%" nowrap='nowrap'><div style="text-align:center;"><b>{TXT_WEIGHT}</b></div></td>
             <td width="10%" nowrap="nowrap"><div style="text-align:center;"><b>{TXT_PRODUCT_PRICE}</b></div></td>
             <td width="10%" nowrap="nowrap"><div style="text-align:center;"><b>{TXT_TAX_RATE}</b></div></td>
             <td width="10%" nowrap="nowrap"><div style="text-align:center;"><b>{TXT_SUM}</b></div></td>
