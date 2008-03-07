@@ -331,7 +331,7 @@ class PaymentProcessing
             case 'Paypal':
                 $return = $this->_PayPalProcessor();
                 break;
-            case 'dummy_processor':
+            case 'Dummy':
                 $return = Dummy::getForm();
                 break;
         }

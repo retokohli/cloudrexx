@@ -3,18 +3,18 @@
 <!-- //
 function reloadPage()
 {
-	//save_in_textarea_all(); // needed for wysiwyg 
-	document.shop_article.submit();
+  //save_in_textarea_all(); // needed for wysiwyg 
+  document.shop_article.submit();
 }
 
 function setDateToday(txtValue)
 {
     with(document.shop_article)
     {
-	   if(txtValue.value=="")
-	   {
-	     txtValue.value=date.value;
-	   }
+     if(txtValue.value=="")
+     {
+       txtValue.value=date.value;
+     }
     }
 }
 
@@ -41,14 +41,14 @@ function openWindow(theURL,winName,features)
       <td nowrap width="17%">{TXT_ID}</td>
       <td nowrap width="83%">{SHOP_ID}</td>
     </tr>
-	{SHOP_ID_COMMENT_END}
+  {SHOP_ID_COMMENT_END}
     <tr valign="top" class="row1"> 
       <td nowrap width="17%">{TXT_PRODUCT_NAME}</td>
       <td nowrap width="83%"> 
         <input maxlength=255 name="shopProductName" size="40" value="{SHOP_PRODUCT_NAME}" />
         {TXT_CATEGORY} 
         <select name="shopCatMenu">
-		{SHOP_CAT_MENU}
+    {SHOP_CAT_MENU}
         </select>
         &nbsp; </td>
     </tr> 
@@ -93,7 +93,7 @@ function openWindow(theURL,winName,features)
         <input maxlength="255" name="shopManufacturerUrl" size="40" value="{SHOP_MANUFACTURER_URL}"> 
         ( {TXT_WITH_HTTP} ) 
       </td>
-    </tr>	
+    </tr>  
     <tr valign="top" class="row1"> 
       <td nowrap width="17%">{TXT_STOCK}</td>
       <td width="83%"> 
@@ -139,7 +139,7 @@ function openWindow(theURL,winName,features)
       <td width="17%" valign="top">{TXT_THUMBNAIL_SETTINGS}</td>
       <td width="83%"> {TXT_THUMBNAIL_SIZE} 
         <select name="shopThumbnailPercentSize" onChange="reloadPage()">
-		 {SHOP_SELECTED_THUMBNAIL_PERCENTAGE}
+     {SHOP_SELECTED_THUMBNAIL_PERCENTAGE}
           <option value="5">5%</option>
           <option value="10">10%</option>
           <option value="15">15%</option>
@@ -163,7 +163,7 @@ function openWindow(theURL,winName,features)
         </select>
         {TXT_QUALITIY} 
         <select name="shopImageQuality" onChange="reloadPage()">
-		{SHOP_SELECTED_THUMBNAIL_QUALITY}
+    {SHOP_SELECTED_THUMBNAIL_QUALITY}
           <option value="10">10%</option>
           <option value="20">20%</option>
           <option value="30">30%</option>
@@ -208,7 +208,7 @@ function openWindow(theURL,winName,features)
         <input type="text" name="shopStartdate" size="20" maxlength="20" onClick="setDateToday(shopStartdate)" value="{SHOP_STARTDATE}">
          {TXT_END_DATE}:
         <input type="text" name="shopEnddate" size="20" maxlength="20" onClick="setDateToday(shopEnddate)" value="{SHOP_ENDDATE}">
-		 -->
+     -->
       </td>
     </tr>
   </table>

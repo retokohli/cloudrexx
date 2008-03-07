@@ -21,6 +21,14 @@ define('SHOP_ORDER_STATUS_SHIPPED',   6);
 // Total number.  Keep this up to date!
 define('SHOP_ORDER_STATUS_COUNT',     7);
 
+// Payment result constant values
+define('SHOP_PAYMENT_RESULT_SUCCESS_SILENT', -1);
+define('SHOP_PAYMENT_RESULT_FAIL',            0);
+define('SHOP_PAYMENT_RESULT_SUCCESS',         1);
+define('SHOP_PAYMENT_RESULT_CANCEL',          2);
+// Total number.  Keep this up to date!
+define('SHOP_PAYMENT_RESULT_COUNT',           3);
+
 /**
  * All the helping hands needed to run the shop
  *

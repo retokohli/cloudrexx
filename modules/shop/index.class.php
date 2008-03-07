@@ -727,7 +727,7 @@ class Shop extends ShopLibrary
 
                     if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_customers SET password='".md5($password)."' WHERE customerid=".$objResult->fields['customerid']) !== false) {
                         // Select template for sending login data
-                        $arrShopMailtemplate = self::shopSetMailtemplate(3, $this->langId);
+                        $arrShopMailtemplate = Shop::shopSetMailtemplate(3, $this->langId);
                         $shopMailFrom = $arrShopMailtemplate['mail_from'];
                         $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
                         $shopMailSubject = $arrShopMailtemplate['mail_subject'];
@@ -737,7 +737,7 @@ class Shop extends ShopLibrary
                         $shopMailBody = str_replace("<PASSWORD>", $password, $shopMailBody);
                         $shopMailBody = str_replace("<CUSTOMER_PREFIX>", $objResult->fields['prefix'], $shopMailBody);
                         $shopMailBody = str_replace("<CUSTOMER_LASTNAME>", $objResult->fields['lastname'], $shopMailBody);
-                        $result = self::shopSendMail($mail, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
+                        $result = Shop::shopSendMail($mail, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
 
                         if ($result) {
                             $status = $_ARRAYLANG['TXT_SHOP_ACCOUNT_DETAILS_SENT_SUCCESSFULLY'];
@@ -3898,22 +3898,35 @@ right after the customer logs in!
     {
         global $_ARRAYLANG;
 
+        // The payment result is mandatory.
+        // If it's missing, the order is cancelled.
+        $result =
+            (isset($_GET['result'])
+                ? $_GET['result'] : SHOP_PAYMENT_RESULT_CANCEL
+            );
+
+        // The payment handler
+        $handler = (isset($_GET['handler']) ? $_GET['handler'] : '');
+        // The handler parameter is mandatory!
+        // If it's missing, the order is cancelled.
+        // Also, this method *MUST NOT* be called by the PayPal IPN handler.
+        if (   $handler == ''
+            || $handler == 'PaypalIPN') {
+//echo("Success: Called without handler or by PayPal IPN /$handler/<br />");
+            $result = SHOP_PAYMENT_RESULT_CANCEL;
+        }
+
         // Hide the currency navbar
         $this->_hideCurrencyNavbar = true;
 
-        // The payment result
-        $result = (isset($_REQUEST['result']) ? $_REQUEST['result'] : 2);
-
-        // Default new order status: As long as it's pending (0, zero),
-        // updateOrderStatus() will choose the new value automatically.
-        $newOrderStatus = SHOP_ORDER_STATUS_PENDING;
 
         $orderId = $this->objProcessing->checkIn();
+        // True is returned for internal payment types only.
         if (   $orderId === true
             && !empty($_SESSION['shop']['orderid_checkin'])) {
-            // Internal payment method: update status in any case.
+            // Internal payment method: update the status in any case.
             $orderId = $_SESSION['shop']['orderid_checkin'];
-            $result = 1;
+            $result = SHOP_PAYMENT_RESULT_SUCCESS;
         }
         if (!$orderId
            || (   isset($_SESSION['shop']['orderid_checkin'])
@@ -3923,7 +3936,7 @@ right after the customer logs in!
             // The order is cancelled in both cases.
             // If both IDs are set but different, the request might be
             // fake.  Cancel the order with the ID from the session!
-            $result = 2;
+            $result = SHOP_PAYMENT_RESULT_CANCEL;
             if (!empty($_SESSION['shop']['orderid_checkin'])) {
                 $orderId = $_SESSION['shop']['orderid_checkin'];
             } else {
@@ -3935,12 +3948,16 @@ right after the customer logs in!
         // The respective order state, if available, is updated
         // in updateOrderStatus().
         if (intval($orderId) > 0) {
-            if (abs($result) == 2 || $result == 0) {
-                // Cancel the order:  Reset the handler, so orders
-                // can be updated for any provider, including PayPal.
+            // Default new order status: As long as it's pending (0, zero),
+            // updateOrderStatus() will choose the new value automatically.
+            $newOrderStatus = SHOP_ORDER_STATUS_PENDING;
+            if (   $result == SHOP_PAYMENT_RESULT_FAIL
+                || $result == SHOP_PAYMENT_RESULT_CANCEL) {
+                // Cancel the order both if the payment failed or if it
+                // has been cancelled.
                 $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
             }
-            $newOrderStatus = $this->updateOrderStatus($orderId, $newOrderStatus);
+            $newOrderStatus = $this->updateOrderStatus($orderId, $newOrderStatus, $handler);
             switch ($newOrderStatus) {
                 case SHOP_ORDER_STATUS_CONFIRMED:
                 case SHOP_ORDER_STATUS_PAID:
@@ -4001,12 +4018,17 @@ right after the customer logs in!
      *                              accordingly, zero otherwise
      */
     //static
-    function updateOrderStatus($orderId, $newOrderStatus=0)
+    function updateOrderStatus($orderId, $newOrderStatus=0, $handler='')
     {
         global $objDatabase;
 
+        if ($handler == '') {
+//echo("WARNING: Handler is empty /$handler/<br />");
+            return SHOP_ORDER_STATUS_CANCELLED;
+        }
         $orderId = intval($orderId);
         if ($orderId == 0) {
+//echo("WARNING: Order ID is zero /$orderId/<br />");
             return SHOP_ORDER_STATUS_CANCELLED;
         }
         $query = "
@@ -4020,21 +4042,46 @@ right after the customer logs in!
         }
         $orderStatus = $objResult->fields['order_status'];
 
-        // We change pending order status here automatically,
-        // and non-pending order status only if the new order status
-        // is set to a non-pending value as well.
-        // Never reset a non-pending status to pending!
-        if (   $orderStatus != SHOP_ORDER_STATUS_PENDING
-            && $newOrderStatus == SHOP_ORDER_STATUS_PENDING) {
+        // Never change a non-pending status!
+        // Whether a payment was successful or not, the status must be
+        // left alone.
+        if ($orderStatus != SHOP_ORDER_STATUS_PENDING) {
             // The status of the order is not pending.
-            // This is due to a wrong order ID or a page reload in most cases.
-            // No order status is changed automatically if the information
-            // available is not consistent!  Leave it as it is.
+            // This may be due to a wrong order ID, a page reload,
+            // or a PayPal IPN that has been received already.
+            // No order status is changed automatically in these cases!
+            // Leave it as it is.
             return $orderStatus;
         }
+
+        $paymentId = $objResult->fields['payment_id'];
+        $processorId = Payment::getPaymentProcessorId($paymentId);
+        $processorName = PaymentProcessing::getPaymentProcessorName($processorId);
+        // The payment processor *MUST* match the handler
+        // returned.  In the case of PayPal, the order status is only
+        // updated if this method is called by Paypal::ipnCheck() with the
+        // 'PaypalIPN' handler argument or if the new order status is
+        // set to force the order to be cancelled.
+        if ($processorName == 'Paypal') {
+            if (   $handler != 'PaypalIPN'
+                && $newOrderStatus != SHOP_ORDER_STATUS_CANCELLED
+            ) {
+//echo("WARNING: Ignoring PayPal handler /$handler/<br />");
+                return $orderStatus;
+            }
+        } elseif (!preg_match("/^$handler/i", $processorName)) {
+//echo("WARNING: Handler $handler does not match Processor $processorName<br />");
+            return SHOP_ORDER_STATUS_CANCELLED;
+        }
+//echo("INFO: Handler $handler matches Processor $processorName<br />");
+
         // Only if the optional new order status argument is zero,
         // determine the new status automatically.
         if ($newOrderStatus == SHOP_ORDER_STATUS_PENDING) {
+
+            $processorType = PaymentProcessing::getCurrentPaymentProcessorType($processorId);
+            $shippingId = $objResult->fields['shipping_id'];
+
             // The new order status is determined by two properties:
             // - The method of payment (instant/deferred), and
             // - The method of delivery (if any).
@@ -4047,10 +4094,7 @@ right after the customer logs in!
             // 'paid', or 'delivered' respectively.
             // If neither condition is met, the status is set to 'confirmed'.
             $newOrderStatus = SHOP_ORDER_STATUS_CONFIRMED;
-            $paymentId = $objResult->fields['payment_id'];
-            $processorId = Payment::getPaymentProcessorId($paymentId);
-            $processorType = PaymentProcessing::getCurrentPaymentProcessorType($processorId);
-            $shippingId = $objResult->fields['shipping_id'];
+
             if ($processorType == 'external') {
                 // External payment types are considered instant.
                 // See $_SESSION['shop']['isInstantPayment'].
@@ -4130,7 +4174,7 @@ right after the customer logs in!
         $customerLang = $objResult->fields['customer_lang'];
         $langId = FWLanguage::getLangIdByIso639_1($customerLang);
         // Select template for order confirmation
-        $arrShopMailtemplate = self::shopSetMailtemplate(1, $langId);
+        $arrShopMailtemplate = Shop::shopSetMailtemplate(1, $langId);
         $mailTo = $objResult->fields['email'];
         $mailFrom = $arrShopMailtemplate['mail_from'];
         $mailFromText = $arrShopMailtemplate['mail_x_sender'];
@@ -4138,9 +4182,9 @@ right after the customer logs in!
         $mailBody = $arrShopMailtemplate['mail_body'];
         $today = date('d.m.Y');
         $mailSubject = str_replace('<DATE>', $today, $mailSubject);
-        $mailBody = self::_generateEmailBody($mailBody, $orderId);
+        $mailBody = Shop::_generateEmailBody($mailBody, $orderId);
         $return = true;
-        if (!self::shopSendmail($mailTo, $mailFrom, $mailFromText, $mailSubject, $mailBody)) {
+        if (!Shop::shopSendmail($mailTo, $mailFrom, $mailFromText, $mailSubject, $mailBody)) {
             $return = false;
         }
         // Get mail address(es) for confirmation mails
@@ -4153,7 +4197,7 @@ right after the customer logs in!
         if ($objResult && !$objResult->EOF) {
             $copies = explode(',', trim($objResult->fields['value']));
             foreach($copies as $sendTo) {
-                self::shopSendMail($sendTo, $mailFrom, $mailFromText, $mailSubject, $mailBody);
+                Shop::shopSendMail($sendTo, $mailFrom, $mailFromText, $mailSubject, $mailBody);
             }
         }
         return $return;

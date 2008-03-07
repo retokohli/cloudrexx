@@ -34,17 +34,17 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         <td nowrap="nowrap" width="5%"><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>
         <td nowrap="nowrap" width="5%">&nbsp;</td>
       </tr>
-	  <!-- BEGIN shopPayment -->
+    <!-- BEGIN shopPayment -->
       <tr class="{SHOP_PAYMENT_STYLE}">
         <td nowrap="nowrap"><input name="paymentName[{SHOP_PAYMENT_ID}]" type="text" value="{SHOP_PAYMENT_NAME}" size="30" maxlength="50" /></td>
-		<td nowrap="nowrap"><input type="text" name="paymentCosts[{SHOP_PAYMENT_ID}]" value="{SHOP_PAYMENT_COST}" size="15" maxlength="50" /></td>
-		<td nowrap="nowrap"><input type="text" name="paymentCostsFreeSum[{SHOP_PAYMENT_ID}]" value="{SHOP_PAYMENT_COST_FREE_SUM}" size="15" maxlength="50" /></td>
+    <td nowrap="nowrap"><input type="text" name="paymentCosts[{SHOP_PAYMENT_ID}]" value="{SHOP_PAYMENT_COST}" size="15" maxlength="50" /></td>
+    <td nowrap="nowrap"><input type="text" name="paymentCostsFreeSum[{SHOP_PAYMENT_ID}]" value="{SHOP_PAYMENT_COST_FREE_SUM}" size="15" maxlength="50" /></td>
         <td nowrap="nowrap">{SHOP_PAYMENT_HANDLER}</td>
-		<td nowrap="nowrap">{SHOP_ZONE_SELECTION}</td>
+    <td nowrap="nowrap">{SHOP_ZONE_SELECTION}</td>
         <td nowrap="nowrap"><div align="center"><input type="checkbox" name="paymentActive[{SHOP_PAYMENT_ID}]" value="1" {SHOP_PAYMENT_STATUS} /></div></td>
         <td nowrap="nowrap"><div style="text-align:right"><a href="javascript:deletePayment('{SHOP_PAYMENT_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
       </tr>
-	  <!-- END shopPayment -->
+    <!-- END shopPayment -->
     </table>
 <br />
 <input type="submit" name="payment" value="{TXT_STORE}" />
@@ -67,10 +67,10 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
       </tr>
       <tr class="row2">
         <td nowrap="nowrap"><b><input name="paymentName_new" type="text" value="" size="30" maxlength="50" /></b></td>
-		<td nowrap="nowrap"><input type="text" name="paymentCosts_new" value="0.00" size="15" maxlength="50" /></td>
-		<td nowrap="nowrap"><input type="text" name="paymentCostsFreeSumNew" value="0.00" size="15" maxlength="50" /></td>
+    <td nowrap="nowrap"><input type="text" name="paymentCosts_new" value="0.00" size="15" maxlength="50" /></td>
+    <td nowrap="nowrap"><input type="text" name="paymentCostsFreeSumNew" value="0.00" size="15" maxlength="50" /></td>
         <td nowrap="nowrap">{SHOP_PAYMENT_HANDLER_NEW}</td>
-		<td nowrap="nowrap">{SHOP_ZONE_SELECTION_NEW}</td>
+    <td nowrap="nowrap">{SHOP_ZONE_SELECTION_NEW}</td>
         <td nowrap="nowrap"><div align="center"><input type="checkbox" name="paymentActive_new" value="1" checked="checked" /></div></td>
       </tr>
     </table>

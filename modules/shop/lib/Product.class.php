@@ -1354,10 +1354,10 @@ class Product
     function deleteAttribute($valueId)
     {
         foreach ($this->arrProductAttributeValue as $index => $arrValue) {
-        	if ($arrValue['valueId'] == $valueId) {
+            if ($arrValue['valueId'] == $valueId) {
                 array_splice($this->arrProductAttributeValue, $index, 1);
                 return true;
-        	}
+            }
         }
         return true;
     }

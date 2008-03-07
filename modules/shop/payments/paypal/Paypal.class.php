@@ -6,7 +6,7 @@
     1   Use PayPal Sandbox, create log files
     2   Use test suite, create log files
 */
-define('_PAYPAL_DEBUG', 1);
+define('_PAYPAL_DEBUG', 0);
 
 /**
  * Interface for the PayPal form
@@ -22,8 +22,6 @@ define('_PAYPAL_DEBUG', 1);
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */
-
-
 class PayPal
 {
     /**
@@ -276,13 +274,16 @@ if (_PAYPAL_DEBUG) @fwrite($log, "got $res\r\n");
                 if (   $paypalAccountEmail == $receiver_email
                     && $payment_amount == $amount
                     && $payment_currency == $currencyCode) {
-                    $newOrderStatus = 1; // confirmed
+                    // Update the order status to a value determined
+                    // automatically.
+                    $newOrderStatus = SHOP_ORDER_STATUS_PENDING;
 if (_PAYPAL_DEBUG) @fwrite($log, "VERIFIED\r\nquery $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n");
                     break;
                 }
             }
             if (preg_match('/^INVALID/', $res)) {
-                $newOrderStatus = 3; // cancelled
+                // The payment failed.
+                $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
 if (_PAYPAL_DEBUG) @fwrite($log, "INVALID\r\nquery $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n");
                 break;
             }
@@ -299,10 +300,10 @@ if (_PAYPAL_DEBUG) {
   @fwrite($log, "finished, leaving\r\n");
   @fclose($log);
 }
-        // This method is now called statically from within here.
+        // This method is now called from within here.
         // The IPN may be received after the customer has left both
         // the PayPal site and the Shop!
-        Shop::updateOrderStatus($orderid, $newOrderStatus);
+        Shop::updateOrderStatus($orderid, $newOrderStatus, 'PaypalIPN');
     }
 
 

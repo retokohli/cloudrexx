@@ -9,19 +9,19 @@ function deleteOrder(orderId)
 
 function shopOrdersDoAction(strForm,strCheckbox,objSelect,strAct)
 {
-	if(checkboxIsChecked(strForm,strCheckbox) == true){
-		switch(strAct){
-			case 'del':
-				if(confirm('{TXT_CONFIRM_DELETE_ORDER}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
-					document.forms[strForm].action = "index.php?cmd=shop&act=delorder";
-					document.forms[strForm].submit();
-				}
-				break;
-		}
-	} else {
-		alert("{TXT_MAKE_SELECTION}");
-	}
-	objSelect.value = 0;
+  if(checkboxIsChecked(strForm,strCheckbox) == true){
+    switch(strAct){
+      case 'del':
+        if(confirm('{TXT_CONFIRM_DELETE_ORDER}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
+          document.forms[strForm].action = "index.php?cmd=shop&act=delorder";
+          document.forms[strForm].submit();
+        }
+        break;
+    }
+  } else {
+    alert("{TXT_MAKE_SELECTION}");
+  }
+  objSelect.value = 0;
 }
 
 function sendForm(letter)
@@ -32,17 +32,20 @@ function sendForm(letter)
 
 function changeOrderStatus(orderId,orderStatus,newOrderStatus)
 {
-	if(confirm('{TXT_CONFIRM_CHANGE_STATUS}')){
-		strURI = "index.php?cmd=shop&act=orders&orderId="+orderId+"&changeOrderStatus="+newOrderStatus;
-		if(newOrderStatus == 4){
-			if(confirm('{TXT_SEND_TEMPLATE_TO_CUSTOMER}?')){
-				strURI += "&shopSendMail=1";
-			}
-		}
-		window.location.replace(strURI);
-	} else {
-		document.getElementById("shopOrderStatusId["+orderId+"]").setAttribute("value", orderStatus);
-	}
+  if(confirm('{TXT_CONFIRM_CHANGE_STATUS}')){
+    strURI = "index.php?cmd=shop&act=orders&orderId="+orderId+"&changeOrderStatus="+newOrderStatus;
+    if (   newOrderStatus == 1
+        || newOrderStatus == 4
+        || newOrderStatus == 5
+        || newOrderStatus == 6) {
+      if(confirm('{TXT_SEND_TEMPLATE_TO_CUSTOMER}?')){
+        strURI += "&shopSendMail=1";
+      }
+    }
+    window.location.replace(strURI);
+  } else {
+    document.getElementById("shopOrderStatusId["+orderId+"]").setAttribute("value", orderStatus);
+  }
 }
 
 <!-- BEGIN tipMessageRow -->
@@ -99,7 +102,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         ] [ <a href="javascript:sendForm('W')">W</a> ] [ <a href="javascript:sendForm('X')">X</a>
         ] [ <a href="javascript:sendForm('Y')">Y</a> ] [ <a href="javascript:sendForm('Z')">Z</a>
         ] [ <a href="javascript:sendForm('')">Alle </a> ]
-		<input type="hidden" name="shopListLetter" />
+    <input type="hidden" name="shopListLetter" />
       </td>
     </tr>
   </table>
@@ -108,37 +111,37 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <!-- BEGIN orderTable -->
 {SHOP_ORDER_PAGING}
 <form name="shopSelectOrders" method="post" action="?cmd=shop&amp;act=orders">
-	<table class="adminlist" border=0 width="100%" cellpadding="2" cellspacing="0">
-		<tr>
-			<th nowrap="nowrap" style="text-align:center;">#</th>
-			<th nowrap="nowrap" width="2%">{TXT_ID}&nbsp;</th>
-			<th nowrap="nowrap" width="11%">{TXT_DATE}&nbsp;</th>
-			<th nowrap="nowrap" width="7%"> {TXT_STATUS}&nbsp;</th>
-			<th nowrap="nowrap" width="22%">{TXT_NAME}&nbsp;</th>
-			<th nowrap="nowrap" width="5%">&nbsp;</th>
-			<th style="text-align:left;">{TXT_ORDER_SUM}&nbsp;</th>
-			<th nowrap="nowrap" width="56%" style="text-align:right;">{TXT_ACTION}</th>
-		</tr>
-		<!-- BEGIN orderRow -->
-			<tr class="{SHOP_ROWCLASS}">
-				<td nowrap="nowrap"><input type="checkbox" name="selectedOrderId[]" value="{SHOP_ORDERID}" /></td>
-				<td nowrap="nowrap">{SHOP_ORDERID}&nbsp;</td>
-				<td nowrap="nowrap">{SHOP_DATE}&nbsp;&nbsp;</td>
-				<td nowrap="nowrap">{SHOP_ORDER_STATUS}&nbsp;&nbsp;</td>
-				<td nowrap="nowrap"><a href="?cmd=shop&amp;act=orderdetails&amp;orderid={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}">{SHOP_NAME}</a></td>
-				<td nowrap="nowrap">{SHOP_TIP_LINK}&nbsp;</td>
-				<td nowrap="nowrap"><div style="text-align:left;">{SHOP_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</div></td>
-				<td><div style="text-align:right;"><a href="?cmd=shop&amp;act=orderdetails&amp;orderid={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}"><img src="images/icons/press.gif" alt="{TXT_VIEW_DETAILS}" border="0" /></a>&nbsp;<a href="?cmd=shop&amp;act=editorder&amp;orderid={SHOP_ORDERID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a><a href="javascript:deleteOrder('{SHOP_ORDERID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
-			</tr>
-		<!-- END orderRow -->
-	</table>
-	<img src="images/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
-	<a href="javascript:{}" onclick="changeCheckboxes('shopSelectOrders','selectedOrderId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
-	<a href="javascript:{}" onclick="changeCheckboxes('shopSelectOrders','selectedOrderId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
-	<select name="selectAction" onchange="shopOrdersDoAction('shopSelectOrders','selectedOrderId[]',this,this.value)">
-		<option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
-		<option value="del">{TXT_DELETE}</option>
-	</select>
+  <table class="adminlist" border=0 width="100%" cellpadding="2" cellspacing="0">
+    <tr>
+      <th nowrap="nowrap" style="text-align:center;">#</th>
+      <th nowrap="nowrap" width="2%">{TXT_ID}&nbsp;</th>
+      <th nowrap="nowrap" width="11%">{TXT_DATE}&nbsp;</th>
+      <th nowrap="nowrap" width="7%"> {TXT_STATUS}&nbsp;</th>
+      <th nowrap="nowrap" width="22%">{TXT_NAME}&nbsp;</th>
+      <th nowrap="nowrap" width="5%">&nbsp;</th>
+      <th style="text-align:left;">{TXT_ORDER_SUM}&nbsp;</th>
+      <th nowrap="nowrap" width="56%" style="text-align:right;">{TXT_ACTION}</th>
+    </tr>
+    <!-- BEGIN orderRow -->
+      <tr class="{SHOP_ROWCLASS}">
+        <td nowrap="nowrap"><input type="checkbox" name="selectedOrderId[]" value="{SHOP_ORDERID}" /></td>
+        <td nowrap="nowrap">{SHOP_ORDERID}&nbsp;</td>
+        <td nowrap="nowrap">{SHOP_DATE}&nbsp;&nbsp;</td>
+        <td nowrap="nowrap">{SHOP_ORDER_STATUS}&nbsp;&nbsp;</td>
+        <td nowrap="nowrap"><a href="?cmd=shop&amp;act=orderdetails&amp;orderid={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}">{SHOP_NAME}</a></td>
+        <td nowrap="nowrap">{SHOP_TIP_LINK}&nbsp;</td>
+        <td nowrap="nowrap"><div style="text-align:left;">{SHOP_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</div></td>
+        <td><div style="text-align:right;"><a href="?cmd=shop&amp;act=orderdetails&amp;orderid={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}"><img src="images/icons/press.gif" alt="{TXT_VIEW_DETAILS}" border="0" /></a>&nbsp;<a href="?cmd=shop&amp;act=editorder&amp;orderid={SHOP_ORDERID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a><a href="javascript:deleteOrder('{SHOP_ORDERID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
+      </tr>
+    <!-- END orderRow -->
+  </table>
+  <img src="images/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
+  <a href="javascript:{}" onclick="changeCheckboxes('shopSelectOrders','selectedOrderId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
+  <a href="javascript:{}" onclick="changeCheckboxes('shopSelectOrders','selectedOrderId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
+  <select name="selectAction" onchange="shopOrdersDoAction('shopSelectOrders','selectedOrderId[]',this,this.value)">
+    <option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
+    <option value="del">{TXT_DELETE}</option>
+  </select>
 </form>
 <!-- END orderTable -->
 <p>{SHOP_ORDER_PAGING}&nbsp;</p>

@@ -201,7 +201,7 @@ class Currency
     {
         $rate = $this->arrCurrency[$this->activeCurrencyId]['rate'];
         // getting 0.05 increments
-        return self::formatPrice(round(20*$price*$rate)/20);
+        return Currency::formatPrice(round(20*$price*$rate)/20);
     }
 
 
@@ -218,12 +218,12 @@ class Currency
     function getDefaultCurrencyPrice($price)
     {
         if ($this->activeCurrencyId == $this->defaultCurrencyId) {
-            return self::formatPrice($price);
+            return Currency::formatPrice($price);
         } else {
             $rate = $this->arrCurrency[$this->activeCurrencyId]['rate'];
             $defaultRate = $this->arrCurrency[$this->defaultCurrencyId]['rate'];
             // getting 0.05 increments
-            return self::formatPrice(round(20*$price*$defaultRate/$rate)/20);
+            return Currency::formatPrice(round(20*$price*$defaultRate/$rate)/20);
         }
     }
 

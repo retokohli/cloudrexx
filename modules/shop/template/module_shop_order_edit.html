@@ -395,7 +395,7 @@ function swapSendToStatus(orderId) {
         </tr>
         <tr class="row1">
             <td nowrap="nowrap" width="15%">{TXT_PAYMENT_TYPE}</td>
-    		<td nowrap='nowrap'>{SHOP_PAYMENTTYPE}&nbsp({SHOP_PAYMENT_HANDLER})</td>
+        <td nowrap='nowrap'>{SHOP_PAYMENTTYPE}&nbsp({SHOP_PAYMENT_HANDLER})</td>
         </tr>
 
 <!-- BEGIN creditCard -->
@@ -419,20 +419,20 @@ function swapSendToStatus(orderId) {
 
 <!-- BEGIN lsv -->
         <tr class="row2">
-    		<td nowrap='nowrap'>{TXT_ACCOUNT_HOLDER}</td>
-    		<td nowrap='nowrap'>{SHOP_ACCOUNT_HOLDER}&nbsp;</td>
-    	</tr>
-    	<tr class="row1">
-    		<td nowrap='nowrap'>{TXT_ACCOUNT_BANK}</td>
-    		<td nowrap='nowrap'>{SHOP_ACCOUNT_BANK}&nbsp;</td>
-    	</tr>
-    	<tr class="row2">
-    		<td nowrap='nowrap'>{TXT_ACCOUNT_BLZ}</td>
-    		<td nowrap='nowrap'>{SHOP_ACCOUNT_BLZ}&nbsp;</td>
-    	</tr>
+        <td nowrap='nowrap'>{TXT_ACCOUNT_HOLDER}</td>
+        <td nowrap='nowrap'>{SHOP_ACCOUNT_HOLDER}&nbsp;</td>
+      </tr>
+      <tr class="row1">
+        <td nowrap='nowrap'>{TXT_ACCOUNT_BANK}</td>
+        <td nowrap='nowrap'>{SHOP_ACCOUNT_BANK}&nbsp;</td>
+      </tr>
+      <tr class="row2">
+        <td nowrap='nowrap'>{TXT_ACCOUNT_BLZ}</td>
+        <td nowrap='nowrap'>{SHOP_ACCOUNT_BLZ}&nbsp;</td>
+      </tr>
 <!-- END lsv -->
 
-	</table>
+  </table>
     <br />
     <table border="0" width="100%" class="adminlist" cellspacing="0" cellpadding="2">
         <tr>
@@ -442,10 +442,10 @@ function swapSendToStatus(orderId) {
             <td width="10%" nowrap="nowrap"><b>{TXT_NUMBER}</b></td>
             <td width="10%" nowrap="nowrap"><b>{TXT_PRODUCT_ID}</b></td>
             <td width="40%" nowrap="nowrap"><b>{TXT_PRODUCT_NAME}</b></td>
-    		<td width="10%" nowrap='nowrap'><div style="text-align:center;"><b>{TXT_WEIGHT}</b></div></td>
-            <td width="15%" nowrap="nowrap"><div style="text-align:center;"><b>{TXT_PRODUCT_PRICE}</b></div></td>
+        <td width="10%" nowrap='nowrap'><div style="text-align:center;"><b>{TXT_WEIGHT}</b></div></td>
+            <td width="10%" nowrap="nowrap"><div style="text-align:center;"><b>{TXT_PRODUCT_PRICE}</b></div></td>
             <td width="10%" nowrap="nowrap"><div style="text-align:center;"><b>{TXT_TAX_RATE}</b></div></td>
-            <td width="15%" nowrap="nowrap"><div style="text-align:center;"><b>{TXT_SUM}</b></div></td>
+            <td width="10%" nowrap="nowrap"><div style="text-align:center;"><b>{TXT_SUM}</b></div></td>
         </tr>
 <!-- BEGIN orderdetailsRow -->
         <tr id="{SHOP_P_ID}" class="{SHOP_ROWCLASS}">
@@ -460,21 +460,21 @@ function swapSendToStatus(orderId) {
                     {SHOP_PRODUCT_IDS_MENU}
                 </select>
             </td>
-            <td nowrap="nowrap">
+            <td nowrap="nowrap"><div style="text-align:left;">
                 <input type="text" size="50" id="shopProductName[{SHOP_P_ID}]" name="shopProductName[{SHOP_P_ID}]" value="{SHOP_PRODUCT_NAME}" />
-            </td>
-            <td nowrap="nowrap">
+            </div></td>
+            <td nowrap="nowrap"><div style="text-align:right;">
                 <input class="inputCurrency" type="text" id="shopProductWeight[{SHOP_P_ID}]" name="shopProductWeight[{SHOP_P_ID}]" value="{SHOP_PRODUCT_WEIGHT}" onchange="javascript:calcPrice({SHOP_P_ID})" />&nbsp;
-            </td>
-            <td nowrap="nowrap">
+            </div></td>
+            <td nowrap="nowrap"><div style="text-align:right;">
                 <input class="inputCurrency" type="text" id="shopProductPrice[{SHOP_P_ID}]" name="shopProductPrice[{SHOP_P_ID}]" value="{SHOP_PRODUCT_PRICE}" onchange="javascript:calcPrice({SHOP_P_ID})" />&nbsp;{SHOP_CURRENCY}
-            </td>
-            <td nowrap="nowrap">
+            </div></td>
+            <td nowrap="nowrap"><div style="text-align:right;">
                 <input class="inputCurrency" type="text" id="shopProductTaxPercent[{SHOP_P_ID}]" name="shopProductTaxPercent[{SHOP_P_ID}]" value="{SHOP_PRODUCT_TAX_RATE}" onchange="javascript:calcPrice({SHOP_P_ID})" />&nbsp;%
-            </td>
-            <td nowrap="nowrap">
+            </div></td>
+            <td nowrap="nowrap"><div style="text-align:right;">
                 <input readonly class="inputCurrency" type="text" id="shopProductSum[{SHOP_P_ID}]" name="shopProductSum[{SHOP_P_ID}]" value="{SHOP_PRODUCT_SUM}" />&nbsp;{SHOP_CURRENCY}
-            </td>
+            </div></td>
         </tr>
 <!-- END orderdetailsRow -->
         <tr id="0" class="{SHOP_ROWCLASS_NEW}">
@@ -488,16 +488,16 @@ function swapSendToStatus(orderId) {
                     {SHOP_PRODUCT_IDS_MENU_NEW}
                 </select>
             </td>
-            <td nowrap="nowrap">
+            <td nowrap="nowrap"><div style="text-align:left;">
                 <input type="text" size="50" id="shopProductName['new']" name="shopProductName['new']" value="" />
-            </td>
-            <td nowrap="nowrap"><div style="text-align:center;">
+            </div></td>
+            <td nowrap="nowrap"><div style="text-align:right;">
                 <input class="inputCurrency" type="text" id="shopProductWeight['new']" name="shopProductWeight['new']" value="0 g" onchange="javascript:calcPrice({SHOP_P_ID})" />&nbsp;
             </div></td>
-            <td nowrap="nowrap"><div style="text-align:center;">
+            <td nowrap="nowrap"><div style="text-align:right;">
                 <input class="inputCurrency" type="text" id="shopProductPrice['new']" name="shopProductPrice['new']" onchange="javascript:calcPrice('new')" value="0.00" />&nbsp;{SHOP_CURRENCY}
             </div></td>
-            <td nowrap="nowrap"><div style="text-align:center;">
+            <td nowrap="nowrap"><div style="text-align:right;">
                 <input class="inputCurrency" type="text" id="shopProductTaxPercent['new']" name="shopProductTaxPercent['new']" onchange="javascript:calcPrice('new')" value="0.00" />&nbsp;%
             </div></td>
             <td nowrap="nowrap"><div style="text-align:right;">
