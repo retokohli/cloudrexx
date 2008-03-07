@@ -504,7 +504,6 @@ $_ARRAYLANG['TXT_SHOP_IMAGE_SETTINGS'] = "Image Settings";
 $_ARRAYLANG['TXT_SHOP_THUMBNAIL_MAX_WIDTH'] = "Maximale Breite der Thumbnails";
 $_ARRAYLANG['TXT_SHOP_THUMBNAIL_MAX_HEIGHT'] = "Maximale Höhe der Thumbnails";
 $_ARRAYLANG['TXT_SHOP_THUMBNAIL_QUALITY'] = "Qualität der Thumbnails";
-$_ARRAYLANG['TXT_SHOP_ORDER_PENDING'] = "pendent";
 $_ARRAYLANG['TXT_SHOP_ORDER_CONFIRMED'] = "confirmed";
 $_ARRAYLANG['TXT_SHOP_ORDER_DELETED'] = "Deleted";
 $_ARRAYLANG['TXT_SHOP_ORDER_COMPLETED'] = "completed";
