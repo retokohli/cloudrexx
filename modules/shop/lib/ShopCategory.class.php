@@ -416,20 +416,20 @@ class ShopCategory
         if ($flagRecursive) {
             foreach (ShopCategories::getChildCategoriesById($oldId)
                     as $objShopCategory) {
-            	$objShopCategory->makeClone($flagRecursive, $flagWithProducts);
-            	$objShopCategory->setParentId($newId);
-            	if (!$objShopCategory->store()) {
-            	    return false;
-            	}
+                $objShopCategory->makeClone($flagRecursive, $flagWithProducts);
+                $objShopCategory->setParentId($newId);
+                if (!$objShopCategory->store()) {
+                    return false;
+                }
             }
         }
         if ($flagWithProducts) {
             foreach (Products::getByShopCategory($oldId) as $objProduct) {
-            	$objProduct->makeClone();
-            	$objProduct->setShopCategoryId($newId);
-            	if (!$objProduct->store()) {
-            	    return false;
-            	}
+                $objProduct->makeClone();
+                $objProduct->setShopCategoryId($newId);
+                if (!$objProduct->store()) {
+                    return false;
+                }
             }
         }
         return true;
@@ -603,7 +603,7 @@ echo("ShopCategory::insert(): ERROR: Query failed: $query<br />");
         (!empty($this->sorting)  ? " AND catsorting=$this->sorting"       : '').
         (!empty($this->picture)  ? " AND picture LIKE '%$this->picture%'" : '');
         foreach (split(' ', $this->flags) as $flag) {
-        	$query .= " AND flags LIKE '%$flag%'";
+            $query .= " AND flags LIKE '%$flag%'";
         }
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {

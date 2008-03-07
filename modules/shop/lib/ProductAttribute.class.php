@@ -614,7 +614,7 @@ class ProductAttribute
         global $objDatabase;
 
         $query = "
-            SELECT 	attributes_value_id, sort_id
+            SELECT     attributes_value_id, sort_id
               FROM ".DBPREFIX."module_shop_products_attributes
              WHERE product_id=$productId
           ORDER BY sort_id ASC

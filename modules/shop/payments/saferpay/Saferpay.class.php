@@ -111,7 +111,7 @@ class Saferpay
      * @var     array
      */
     var $arrWindowOption = array(
-        0 => 'TXT_IFRAME',
+//        0 => 'TXT_IFRAME',
         1 => 'TXT_POPUP',
         2 => 'TXT_NEW_WINDOW',
     );

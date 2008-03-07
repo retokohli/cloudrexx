@@ -3,80 +3,80 @@
 <!-- //
 function swapBlockStatus( div,status )
 {
-	if(status == 1)
-	{
-	    document.getElementById( div ).style.display ='block';
-	}
-	else
-	{
-	    document.getElementById( div ).style.display ='none';
-	}
+  if(status == 1)
+  {
+      document.getElementById( div ).style.display ='block';
+  }
+  else
+  {
+      document.getElementById( div ).style.display ='none';
+  }
 }
 
 function swapBlock( div )
 {
-	displayType = ( document.getElementById( div ).style.display == 'none' ) ? 'block' : 'none';
-	document.getElementById( div ).style.display = displayType;
+  displayType = ( document.getElementById( div ).style.display == 'none' ) ? 'block' : 'none';
+  document.getElementById( div ).style.display = displayType;
 }
 
 
 function submit_form()
 {
-	for (i=document.shopForm.elements['list1[]'].length-1; i >= 0 ; i--)
-	{
-		document.shopForm.elements['list1[]'].options[i].selected=true;
-	}
-	for (i=document.shopForm.elements['list2[]'].length-1; i >= 0 ; i--)
-	{
-		document.shopForm.elements['list2[]'].options[i].selected=true;
-	}
-	document.shopForm.submit();
+  for (i=document.shopForm.elements['list1[]'].length-1; i >= 0 ; i--)
+  {
+    document.shopForm.elements['list1[]'].options[i].selected=true;
+  }
+  for (i=document.shopForm.elements['list2[]'].length-1; i >= 0 ; i--)
+  {
+    document.shopForm.elements['list2[]'].options[i].selected=true;
+  }
+  document.shopForm.submit();
 }
 
 
 function sortSelect(obj)
 {
-	var o = new Array();
-	if (obj.options==null) { return; }
-	for (var i=0; i<obj.options.length; i++) {
-		o[o.length] = new Option( obj.options[i].text, obj.options[i].value, obj.options[i].defaultSelected, obj.options[i].selected) ;
-		}
-	if (o.length==0) { return; }
-	o = o.sort(
-		function(a,b) {
-			if ((a.text+"") < (b.text+"")) { return -1; }
-			if ((a.text+"") > (b.text+"")) { return 1; }
-			return 0;
-			}
+  var o = new Array();
+  if (obj.options==null) { return; }
+  for (var i=0; i<obj.options.length; i++) {
+    o[o.length] = new Option( obj.options[i].text, obj.options[i].value, obj.options[i].defaultSelected, obj.options[i].selected) ;
+    }
+  if (o.length==0) { return; }
+  o = o.sort(
+    function(a,b) {
+      if ((a.text+"") < (b.text+"")) { return -1; }
+      if ((a.text+"") > (b.text+"")) { return 1; }
+      return 0;
+      }
       );
 
-	for (var i=0; i<o.length; i++) {
-		obj.options[i] = new Option(o[i].text, o[i].value, o[i].defaultSelected, o[i].selected);
-		}
+  for (var i=0; i<o.length; i++) {
+    obj.options[i] = new Option(o[i].text, o[i].value, o[i].defaultSelected, o[i].selected);
+    }
 }
 
 function moveSelectedOptions(from,to)
 {
-	// Move them over
-	for (var i=0; i<from.options.length; i++) {
-		var o = from.options[i];
-		if (o.selected) {
-			to.options[to.options.length] = new Option( o.text, o.value, false, false);
-			}
-		}
-	// Delete them from original
-	for (var i=(from.options.length-1); i>=0; i--) {
-		var o = from.options[i];
-		if (o.selected) {
-			from.options[i] = null;
-			}
-		}
-	if ((arguments.length<3) || (arguments[2]==true)) {
-		sortSelect(from);
-		sortSelect(to);
-		}
-	from.selectedIndex = -1;
-	to.selectedIndex = -1;
+  // Move them over
+  for (var i=0; i<from.options.length; i++) {
+    var o = from.options[i];
+    if (o.selected) {
+      to.options[to.options.length] = new Option( o.text, o.value, false, false);
+      }
+    }
+  // Delete them from original
+  for (var i=(from.options.length-1); i>=0; i--) {
+    var o = from.options[i];
+    if (o.selected) {
+      from.options[i] = null;
+      }
+    }
+  if ((arguments.length<3) || (arguments[2]==true)) {
+    sortSelect(from);
+    sortSelect(to);
+    }
+  from.selectedIndex = -1;
+  to.selectedIndex = -1;
 }
 
 // -->
@@ -231,14 +231,14 @@ function moveSelectedOptions(from,to)
         <td nowrap="nowrap" width="10%"><strong>{TXT_LANGUAGE}</strong></td>
         <td nowrap="nowrap" width="5%"><div align="center"><strong>{TXT_ACTIVATED}</strong></div></td>
       </tr>
-	  <!-- BEGIN shopPayment -->
+    <!-- BEGIN shopPayment -->
       <tr class="{SHOP_PAYMENT_STYLE}">
         <td nowrap="nowrap"><b><input name="paymentName[]" type="text" id="paymentName[]" value="{SHOP_PAYMENT_NAME}" size="30" maxlength="50" /></b></td>
         <td nowrap="nowrap">{SHOP_PAYMENT_HANDLER}</td>
-		<td nowrap="nowrap" width="10%">{SHOP_PAYMENT_LANG_ID}</td>
+    <td nowrap="nowrap" width="10%">{SHOP_PAYMENT_LANG_ID}</td>
         <td nowrap="nowrap"><div align="center"><input type="checkbox" name="paymentActive" value="1" {SHOP_PAYMENT_STATUS} /></div></td>
       </tr>
-	  <!-- END shopPayment -->
+    <!-- END shopPayment -->
     </table>
     <br />
 <input type="submit" name="Submit" value="{TXT_STORE}" />

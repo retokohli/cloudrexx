@@ -2192,7 +2192,7 @@ class shopmanager extends ShopLibrary {
                         $shopMailBody      = str_replace('<DATE>', date("d.m.Y"), $_POST['shopMailBody']);
                         foreach ($arrMailTo as $shopMailTo) {
                             $shopMailTo    = trim($shopMailTo);
-                            $blnMailResult = self::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
+                            $blnMailResult = Shop::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
                             if ($blnMailResult) {
                                 $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
                             } else {
@@ -2609,7 +2609,7 @@ class shopmanager extends ShopLibrary {
 
         $this->_objTpl->setCurrentBlock('catRow');
         foreach ($arrShopCategories as $arrShopCategory) {
-         	$id = $arrShopCategory['id'];
+             $id = $arrShopCategory['id'];
             $this->_objTpl->setVariable(array(
                 'SHOP_ROWCLASS'       => (++$i % 2 ? 'row2' : 'row1'),
                 'SHOP_CAT_ID'         => $id,
@@ -3475,7 +3475,7 @@ class shopmanager extends ShopLibrary {
 
         // Update the order status if valid
         if (isset($_GET['changeOrderStatus']) &&
-            intval($_GET['changeOrderStatus']) >= 0 &&
+            intval($_GET['changeOrderStatus']) >= SHOP_ORDER_STATUS_PENDING &&
             intval($_GET['changeOrderStatus']) <= SHOP_ORDER_STATUS_COUNT &&
             !empty($_GET['orderId'])) {
             $query = "
@@ -3488,9 +3488,8 @@ class shopmanager extends ShopLibrary {
         }
 
         // Send an email to the customer
-        if (   isset($_GET['changeOrderStatus'])
-            && $_GET['changeOrderStatus'] == SHOP_ORDER_STATUS_COMPLETED
-            && isset($_GET['shopSendMail']) && !empty($_GET['shopSendMail'])) {
+        if (   !empty($_GET['shopSendMail'])
+            && !empty($_GET['orderId'])) {
             $query = "
                 SELECT c.email, o.last_modified, customer_lang
                   FROM ".DBPREFIX."module_shop_customers c,
@@ -3504,13 +3503,13 @@ class shopmanager extends ShopLibrary {
             }
             $customerLang = $objResult->fields['customer_lang'];
             $langId = FWLanguage::getLangIdByIso639_1($customerLang);
-            $arrShopMailtemplate = self::shopSetMailtemplate(2, $langId);
+            $arrShopMailtemplate = Shop::shopSetMailtemplate(2, $langId);
             $shopMailFrom = $arrShopMailtemplate['mail_from'];
             $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
             $shopMailSubject = $arrShopMailtemplate['mail_subject'];
             $shopMailBody = $arrShopMailtemplate['mail_body'];
             $shopMailSubject = str_replace("<DATE>", $shopLastModified, $shopMailSubject);
-            $result = self::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
+            $result = Shop::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
             if ($result) {
                 $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
             } else {
@@ -4332,14 +4331,14 @@ class shopmanager extends ShopLibrary {
                 return false;
             }
             $langId = FWLanguage::getLangIdByIso639_1($objResult->fields['customer_lang']);
-            $arrShopMailtemplate = self::shopSetMailtemplate(2, $langId);
+            $arrShopMailtemplate = Shop::shopSetMailtemplate(2, $langId);
             $shopMailTo = $_POST['shopMailTo'];
             $shopMailFrom = $arrShopMailtemplate['mail_from'];
             $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
             $shopMailSubject = $arrShopMailtemplate['mail_subject'];
             $shopMailBody = $arrShopMailtemplate['mail_body'];
             $shopMailSubject = str_replace("<DATE>", $_POST['shopLastModified'], $shopMailSubject);
-            $result = self::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
+            $result = Shop::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
             if ($result) {
                 $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
             }
@@ -4367,7 +4366,7 @@ class shopmanager extends ShopLibrary {
                 if ($objResult !== false) {
                     $query = "DELETE FROM ".DBPREFIX."module_shop_order_items_attributes ".
                     "WHERE order_items_id = ".
-                    intval(substr(stripslashes($elem),1,-1));
+                    intval(substr(contrexx_stripslashes($elem),1,-1));
                     $objResult = $objDatabase->Execute($query);
                 }
             } elseif ($_POST['shopProductList'][$elem] != 0 && stripslashes($elem) == "'new'") {
@@ -4809,7 +4808,7 @@ class shopmanager extends ShopLibrary {
                         }
                         $langId = FWLanguage::getLangIdByIso639_1($objResult->fields['customer_lang']);
                         // Select template for sending login data
-                        $arrShopMailtemplate = self::shopSetMailtemplate(3, $langId);
+                        $arrShopMailtemplate = Shop::shopSetMailtemplate(3, $langId);
                         $shopMailTo = $_POST['shopEmail'];
                         $shopMailFrom = $arrShopMailtemplate['mail_from'];
                         $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
@@ -4821,7 +4820,7 @@ class shopmanager extends ShopLibrary {
                         // added
                         $shopMailBody = str_replace("<CUSTOMER_PREFIX>", $shopPrefix, $shopMailBody);
                         $shopMailBody = str_replace("<CUSTOMER_LASTNAME>", $shopLastname, $shopMailBody);
-                        $result = self::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
+                        $result = Shop::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
                         if ($result) {
                             $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
                         } else {
@@ -5111,7 +5110,7 @@ class shopmanager extends ShopLibrary {
                 //check if the logindata must be sent
                 if (isset($_POST['shopSendLoginData'])) {
                     // Select template for sending login data
-                    $arrShopMailtemplate = self::shopSetMailtemplate(3, $_FRONTEND_LANGID);
+                    $arrShopMailtemplate = Shop::shopSetMailtemplate(3, $_FRONTEND_LANGID);
                     $shopMailTo = $_POST['shopEmail'];
                     $shopMailFrom = $arrShopMailtemplate['mail_from'];
                     $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
@@ -5123,7 +5122,7 @@ class shopmanager extends ShopLibrary {
                     // added
                     $shopMailBody = str_replace("<CUSTOMER_PREFIX>", $shopPrefix, $shopMailBody);
                     $shopMailBody = str_replace("<CUSTOMER_LASTNAME>", $shopLastname, $shopMailBody);
-                    $result = self::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
+                    $result = Shop::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
                     if ($result) {
                         $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
                     } else {
@@ -5641,10 +5640,10 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
 
             //if an timeperiod is set, set the start and stop date
             if (isset($_REQUEST['shopSubmitDate'])) {
-                $this->_objTpl->setVariable("SHOP_START_MONTH", $this->shop_getMonthDropdwonMenu(intval($_REQUEST[shopStartMonth])));
-                $this->_objTpl->setVariable("SHOP_END_MONTH", $this->shop_getMonthDropdwonMenu(intval($_REQUEST[shopStopMonth])));
-                $this->_objTpl->setVariable("SHOP_START_YEAR", $this->shop_getYearDropdwonMenu($shopOrderStartyear,intval($_REQUEST[shopStartYear])));
-                $this->_objTpl->setVariable("SHOP_END_YEAR", $this->shop_getYearDropdwonMenu($shopOrderStartyear,intval($_REQUEST[shopStopYear])));
+                $this->_objTpl->setVariable('SHOP_START_MONTH',$this->shop_getMonthDropdwonMenu(intval($_REQUEST['shopStartMonth'])));
+                $this->_objTpl->setVariable('SHOP_END_MONTH',$this->shop_getMonthDropdwonMenu(intval($_REQUEST['shopStopMonth'])));
+                $this->_objTpl->setVariable('SHOP_START_YEAR',$this->shop_getYearDropdwonMenu($shopOrderStartyear,intval($_REQUEST['shopStartYear'])));
+                $this->_objTpl->setVariable('SHOP_END_YEAR',$this->shop_getYearDropdwonMenu($shopOrderStartyear,intval($_REQUEST['shopStopYear'])));
                 $shopStartDate = intval($_REQUEST['shopStartYear'])."-".sprintf("%02s",intval($_REQUEST['shopStartMonth']))."-01 00:00:00";
                 $shopStopDate = intval($_REQUEST['shopStopYear'])."-".sprintf("%02s",intval($_REQUEST['shopStopMonth']))."-".date('t',mktime(0,0,0,intval($_REQUEST['shopStopMonth']),1,intval($_REQUEST['shopStopYear'])))." 23:59:59";
             } else {   //set timeperiod to max. one year
@@ -5734,6 +5733,14 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
                         // set currency id
                         $this->objCurrency->activeCurrencyId = $objResult->fields['selected_currency_id'];
                         $key = $objResult->fields['id'];
+                        if (!isset($arrayResults[$key])) {
+                            $arrayResults[$key] = array(
+                                'column1' => '',
+                                'column2' => 0,
+                                'column3' => 0,
+                                'column4' => 0,
+                            );
+                        }
                         $arrayResults[$key]['column2'] = $arrayResults[$key]['column2'] + $objResult->fields['shopColumn2'];
                         $arrayResults[$key]['column1'] = "<a href='?cmd=shop&amp;act=products&amp;tpl=manage&amp;id=".$objResult->fields['id']."' title=\"".$objResult->fields['title']."\">".$objResult->fields['title']."</a>";
                         $arrayResults[$key]['column3'] = $objResult->fields['shopColumn3'];
@@ -5758,6 +5765,14 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
 
                         $key = $objResult->fields['id'];
                         $shopCustomerName = ltrim($objResult->fields['prefix']." ".$objResult->fields['firstname']." ".$objResult->fields['lastname']);
+                        if (!isset($arrayResults[$key])) {
+                            $arrayResults[$key] = array(
+                                'column1' => '',
+                                'column2' => 0,
+                                'column3' => 0,
+                                'column4' => 0,
+                            );
+                        }
                         $arrayResults[$key]['column1'] = "<a href='index.php?cmd=shop&amp;act=customerdetails&amp;customerid=".$objResult->fields['id']."'>$shopCustomerName</a>";
                         $arrayResults[$key]['column2'] = $objResult->fields['shopColumn2'];
                         $arrayResults[$key]['column3'] += $objResult->fields['shopColumn3'];
@@ -5773,6 +5788,14 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
                         $this->objCurrency->activeCurrencyId = $objResult->fields['selected_currency_id'];
 
                         $key = $objResult->fields['year'].".".$objResult->fields['month'];
+                        if (!isset($arrayResults[$key])) {
+                            $arrayResults[$key] = array(
+                                'column1' => '',
+                                'column2' => 0,
+                                'column3' => 0,
+                                'column4' => 0,
+                            );
+                        }
                         $arrayResults[$key]['column1'] = $arrayMonths[intval($objResult->fields['month'])-1]." ".$objResult->fields['year'];
                         $arrayResults[$key]['column2'] = $arrayResults[$key]['column2'] +1;
                         $arrayResults[$key]['column3'] = $arrayResults[$key]['column3'] + $objResult->fields['shopColumn3'];
