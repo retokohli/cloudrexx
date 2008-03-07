@@ -107,33 +107,16 @@ class Vat
         $query = "SELECT id, percent, class ".
                  "FROM ".DBPREFIX."module_shop_vat";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            die ("Failed to init VAT arrays<br />");
-        }
-/*
-        if ($objResult->EOF) {
-            // No VAT rates!  This will make the Shop fail in some cases
-            // (like adding new Products).  Add a dummy rate to prevent this.
-            $query = "
-                INSERT INTO ".DBPREFIX."module_shop_vat (
-                    id, percent, class
-                ) VALUES (
-                    1, 0, 'No VAT rates available -- Please disable VAT'
-                )
-            ";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-                // no record found
-                die ("Failed to init VAT arrays<br />");
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $id = $objResult->fields['id'];
+                $this->arrVatClass[$id] = $objResult->fields['class'];
+                $this->arrVatRate[$id]  = $objResult->fields['percent'];
+                $objResult->MoveNext();
             }
-            return $this->init();
-        }
-*/
-        while (!$objResult->EOF) {
-            $id = $objResult->fields['id'];
-            $this->arrVatClass[$id] = $objResult->fields['class'];
-            $this->arrVatRate[$id]  = $objResult->fields['percent'];
-            $objResult->MoveNext();
+        } else {
+            // no record found
+            die ("Failed to init VAT arrays<br />");
         }
 
         $query = "SELECT * FROM ".DBPREFIX."module_shop_config WHERE name='tax_enabled'";

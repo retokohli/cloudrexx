@@ -113,7 +113,10 @@ class Shipment
      */
     function getShipperName($shipperId)
     {
-        return $this->arrShippers[$shipperId]['name'];
+        if ($shipperId && isset($this->arrShippers[$shipperId]['name'])) {
+            return $this->arrShippers[$shipperId]['name'];
+        }
+        return '';
     }
 
 
@@ -144,15 +147,16 @@ class Shipment
      */
     function getJSArrays($objCurrency)
     {
-        // set shippers and shipment cost javascript arrays
-        // Shippers are not used for calculating the shipment costs
+        // Set up shipment cost javascript arrays
+        // Shippers are not needed for calculating the shipment costs
         //$strJsArrays = "arrShippers = new Array();\narrShipments = new Array();\n";
         $strJsArrays = "arrShipments = new Array();\n";
-        // insert shippers by id
+        // Insert shippers by id
         foreach (array_keys($this->arrShippers) as $sid) {
             //$strJsArrays .= "arrShippers[$sid] = new Array('".
-                //$this->arrShippers[$sid]['name']."', ".$this->arrShippers[$sid]['status'].");\n";
-            // insert shipments by shipper id
+            //    $this->arrShippers[$sid]['name']."', ".
+            //    $this->arrShippers[$sid]['status'].");\n";
+            // Insert shipments by shipper id
             $strJsArrays .= "arrShipments[$sid] = new Array();\n";
             $i = 0;
             if (isset($this->arrShipments[$sid])) {

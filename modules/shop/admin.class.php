@@ -2350,9 +2350,9 @@ class shopmanager extends ShopLibrary {
                                     'SHOP_MAIL_FROM_SEND' => $objResult->fields['from_mail'],
                                 ));
                             } else {
-                                $this->_objTpl->setVariable(array(
-                                    'SHOP_MAIL_FROM_SEND'    => $this->arrConfig['email']['value']
-                                ));
+                                $this->_objTpl->setVariable(
+                                  'SHOP_MAIL_FROM_SEND', $this->arrConfig['email']['value']
+                                );
                             }
                             break;
                     }
@@ -3703,7 +3703,6 @@ class shopmanager extends ShopLibrary {
                 while (!$objResult->EOF) {
                     // PHP5! $tipNote = (strlen($objResult['customer_note'])>0) ? php_strip_whitespace($objResult['customer_note']) : '';
                     $tipNote = $objResult->fields['customer_note'];
-                    $tipNote = $tipNote;
                     $tipLink = (!empty($tipNote)
                         ? '<img src="images/icons/comment.gif" onmouseout="htm()" onmouseover="stm(Text['.
                           $objResult->fields['orderid'].'],Style[0])" width="11" height="10" alt="" title="" />'
@@ -5800,7 +5799,7 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
                         $arrayResults[$key]['column2'] = $arrayResults[$key]['column2'] +1;
                         $arrayResults[$key]['column3'] = $arrayResults[$key]['column3'] + $objResult->fields['shopColumn3'];
                         $arrayResults[$key]['column4'] = $arrayResults[$key]['column4'] + $this->objCurrency->getDefaultCurrencyPrice($objResult->fields['sum']);
-                        $sumColumn2 = $sumColumn2  +1;
+                        $sumColumn2 = $sumColumn2 + 1;
                         $sumColumn3 = $sumColumn3 + $objResult->fields['shopColumn3'];
                         $sumColumn4 = $sumColumn4 + $this->objCurrency->getDefaultCurrencyPrice($objResult->fields['sum']);
                         $objResult->MoveNext();
