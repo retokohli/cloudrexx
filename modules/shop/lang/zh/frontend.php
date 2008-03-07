@@ -204,6 +204,7 @@ $_ARRAYLANG['TXT_SHOP_BACK_TO_SHOP'] = "Back to the Online Shop";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_PAYMENT'] = "Change payment type";
 $_ARRAYLANG['TXT_SHOP_SAFERPAY_INIT_ERROR'] = "The payment process using SaferPay could not be initialized.";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_FAILED'] = "The payment process failed.";
+$_ARRAYLANG['TXT_SHOP_ORDER_PENDING'] = "Ihre Transaktion wurde vom Zahlungsdienstleister noch nicht bestätigt.";
 $_ARRAYLANG['TXT_SHOP_VIRTUAL_CATEGORY_OUTLET'] = "Outlet";
 $_ARRAYLANG['TXT_SHOP_VIRTUAL_CATEGORY_NEW'] = "Neuheiten";
 $_ARRAYLANG['TXT_SHOP_VIRTUAL_CATEGORY_PRESENT'] = "Wishing list";
