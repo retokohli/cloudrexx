@@ -225,8 +225,10 @@ CREATE TABLE `contrexx_module_alias_source` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `target_id` int(10) unsigned NOT NULL,
   `url` varchar(255) NOT NULL,
+  `isdefault` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `url` (`url`)
+  UNIQUE KEY `url` (`url`),
+  KEY `isdefault` (`isdefault`)
 ) TYPE=MyISAM;
 
 CREATE TABLE `contrexx_module_alias_target` (
