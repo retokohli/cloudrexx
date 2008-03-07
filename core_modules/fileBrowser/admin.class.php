@@ -483,9 +483,14 @@ class FileBrowser {
 				$cmd = ($c=="") ? "" : "&amp;cmd=$c";
 				$link = ASCMS_PATH_OFFSET.'/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'/index.php'.((!empty($s)) ? "?section=".$s.$cmd : "?page=".$arrPage['catid'].$section.$cmd);
 
+				$url = "'".$link."'".($getPageId ? ','.$arrPage['catid'] : '')."";
+				if($arrPage['alias']) {
+					$url = "'" . ASCMS_PATH_OFFSET . '/' . $arrPage['alias'] . "'";
+				}
+
 				$this->_objTpl->setVariable(array(
 					'FILEBROWSER_ROW_CLASS'			=> $rowNr%2 == 0 ? "row1" : "row2",
-					'FILEBROWSER_FILE_PATH_CLICK'	=> "javascript:{setUrl('".$link."'".($getPageId ? ','.$arrPage['catid'] : '').")}",
+					'FILEBROWSER_FILE_PATH_CLICK'	=> "javascript:{setUrl($url)}",
 					'FILEBROWSER_FILE_NAME'			=> $arrPage['catname'],
 					'FILEBROWSER_FILESIZE'			=> '&nbsp;',
 					'FILEBROWSER_FILE_ICON'			=> $this->_iconPath.'htm.gif',

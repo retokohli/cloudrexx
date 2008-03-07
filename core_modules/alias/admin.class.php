@@ -226,27 +226,35 @@ class AliasAdmin extends aliasLib
 
 			$arrAlias['sources'] = array();
 			if (!empty($_POST['alias_aliases']) && is_array($_POST['alias_aliases'])) {
+				$nr = 0;
 				foreach ($_POST['alias_aliases'] as $sourceId => $aliasSource) {
 					$aliasSource = trim(contrexx_stripslashes($aliasSource));
 					if (!empty($aliasSource)) {
 						$arrAlias['sources'][] = array(
-							'id'	=> intval($sourceId),
-							'url'	=> $aliasSource
+							'id'	    => intval($sourceId),
+							'url'	    => $aliasSource,
+							'isdefault' => $_POST['alias_use_default'] == "$sourceId" ? 1 : 0
 						);
 					}
+					$nr++;
 				}
 			}
 
 			if (!empty($_POST['alias_aliases_new']) && is_array($_POST['alias_aliases_new'])) {
-				foreach ($_POST['alias_aliases_new'] as $newAliasSource) {
+
+				foreach ($_POST['alias_aliases_new'] as $id => $newAliasSource) {
 					$newAliasSource = trim(contrexx_stripslashes($newAliasSource));
+					
 					if (!empty($newAliasSource)) {
 						if (file_exists(ASCMS_DOCUMENT_ROOT.'/'.$newAliasSource)) {
 							$this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'], htmlentities($newAliasSource, ENT_QUOTES, CONTREXX_CHARSET));
 							continue;
 						}
-
-						$arrAlias['sources'][] = array('url' => $newAliasSource);
+						
+						$arrAlias['sources'][] = array(
+							'url'       => $newAliasSource, 
+							'isdefault' => $_POST['alias_use_default'] == "newalias_$id" ? 1 : 0
+						);
 					}
 				}
 			}
@@ -312,12 +320,14 @@ class AliasAdmin extends aliasLib
 			'TXT_ALIAS_CONFIRM_REMOVE_ALIAS'	=> $_ARRAYLANG['TXT_ALIAS_CONFIRM_REMOVE_ALIAS'],
 			'TXT_ALIAS_ADD_ANOTHER_ALIAS'		=> $_ARRAYLANG['TXT_ALIAS_ADD_ANOTHER_ALIAS'],
 			'TXT_ALIAS_CANCEL'					=> $_ARRAYLANG['TXT_ALIAS_CANCEL'],
-			'TXT_ALIAS_SAVE'					=> $_ARRAYLANG['TXT_ALIAS_SAVE']
+			'TXT_ALIAS_SAVE'					=> $_ARRAYLANG['TXT_ALIAS_SAVE'],
+			'TXT_ALIAS_STANDARD_RADIOBUTTON'    => $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON']
 		));
 
 		$this->_objTpl->setGlobalVariable(array(
 			'TXT_ALIAS_DELETE'					=> $_ARRAYLANG['TXT_ALIAS_DELETE'],
-			'ALIAS_DOMAIN_URL'				=> 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'
+			'ALIAS_DOMAIN_URL'				=> 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/',
+			'TXT_ALIAS_STANDARD_RADIOBUTTON'    => $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON']
 		));
 
 		$this->_objTpl->setVariable(array(
@@ -339,6 +349,7 @@ class AliasAdmin extends aliasLib
 				'ALIAS_DOMAIN_URL'		=> 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/',
 				'ALIAS_ALIAS_ID'		=> !empty($arrAliasSource['id']) ? $arrAliasSource['id'] : '',
 				'ALIAS_ALIAS_NR'		=> $nr++,
+				'ALIAS_IS_DEFAULT'      => $arrAliasSource['isdefault'] == 1 ? 'checked' : '',
 				'ALIAS_ALIAS_PREFIX'	=> empty($arrAliasSource['id']) ? '_new' : '',
 				'ALIAS_ALIAS_URL'		=> htmlentities($arrAliasSource['url'], ENT_QUOTES, CONTREXX_CHARSET)
 			));

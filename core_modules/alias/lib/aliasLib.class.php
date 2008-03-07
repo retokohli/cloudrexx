@@ -50,11 +50,12 @@ class aliasLib
 
 		$query = "
 			SELECT
-				t.`id` AS targetId,
-				t.`type` AS targetType,
-				t.`url` AS targetUrl,
-				s.`id` AS sourceId,
-				s.`url` AS sourceUrl
+				t.`id`        AS targetId,
+				t.`type`      AS targetType,
+				t.`url`       AS targetUrl,
+				s.`id`        AS sourceId,
+				s.`isdefault` AS isdefault,
+				s.`url`       AS sourceUrl
 			FROM `".DBPREFIX."module_alias_target` AS t
 			INNER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`
 			ORDER BY sourceUrl ASC";
@@ -79,8 +80,9 @@ class aliasLib
 					}
 				}
 				array_push($arrAliases[$objAlias->fields['targetId']]['sources'], array(
-					'id'	=> $objAlias->fields['sourceId'],
-					'url'	=> $objAlias->fields['sourceUrl']
+					'id'	    => $objAlias->fields['sourceId'],
+					'isdefault' => $objAlias->fields['isdefault'],
+					'url'	    => $objAlias->fields['sourceUrl']
 				));
 
 				$objAlias->MoveNext();
@@ -141,6 +143,7 @@ class aliasLib
 				t.`type` AS targetType,
 				t.`url` AS targetUrl,
 				s.`id` AS sourceId,
+				s.`isdefault` AS isdefault,
 				s.`url` AS sourceUrl
 			FROM `".DBPREFIX."module_alias_target` AS t
 			LEFT OUTER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`
@@ -159,8 +162,9 @@ class aliasLib
 				}
 
 				array_push($arrAlias['sources'], array(
-					'id'	=> $objAlias->fields['sourceId'],
-					'url'	=> $objAlias->fields['sourceUrl']
+					'id'	    => $objAlias->fields['sourceId'],
+					'isdefault' => $objAlias->fields['isdefault'], 
+					'url'	    => $objAlias->fields['sourceUrl']
 				));
 
 				$objAlias->MoveNext();
@@ -202,7 +206,6 @@ class aliasLib
 	function _addAlias($arrAlias)
 	{
 		global $objDatabase;
-
 		if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_alias_target` (`type`, `url`) VALUES ('".addslashes($arrAlias['type'])."','".addslashes($arrAlias['url'])."')") !== false) {
 			return $this->_setAliasSources($objDatabase->Insert_ID(), $arrAlias, '');
 		} else {
@@ -214,7 +217,17 @@ class aliasLib
 	{
 		global $objDatabase;
 
-		if (($arrOldAlias = $this->_getAlias($aliasId)) !== false && $objDatabase->Execute("UPDATE `".DBPREFIX."module_alias_target` SET `type` = '".addslashes($arrAlias['type'])."', `url` = '".addslashes($arrAlias['url'])."' WHERE `id` = ".intval($aliasId)) !== false) {
+		$upd_query = "
+			UPDATE `".DBPREFIX."module_alias_target` 
+			SET `type`      = '".addslashes($arrAlias['type'])."', 
+				`url`       = '".addslashes($arrAlias['url'])."' 
+			WHERE `id` =       ".intval    ($aliasId);
+
+		if (
+			($arrOldAlias = $this->_getAlias($aliasId)) !== false 
+			&& $objDatabase->Execute($upd_query) !== false
+		) {
+
 			return $this->_setAliasSources($aliasId, $arrAlias, ($arrOldAlias['type'] == 'local' ? $arrOldAlias['pageUrl'] : $arrOldAlias['url']));
 		} else {
 			return false;
@@ -233,8 +246,17 @@ class aliasLib
 				$stillPresent = false;
 				foreach ($arrAlias['sources'] as $arrSource) {
 					if (!empty($arrSource['id']) && $arrSource['id'] == $arrOldSource['id']) {
-						if ($arrSource['url'] != $arrOldSource['url']) {
-							if ($objDatabase->Execute("UPDATE `".DBPREFIX."module_alias_source` SET `url` = '".addslashes($arrSource['url'])."' WHERE `id` = ".intval($arrSource['id'])." AND `target_id` = ".intval($aliasId)) !== false) {
+						if (($arrSource['isdefault'] != $arrOldSource['isdefault'] ) or  ($arrSource['url'] != $arrOldSource['url'])) {
+							$qry_update = "
+								UPDATE `".DBPREFIX."module_alias_source` 
+									SET `url`       = '".addslashes($arrSource['url'])      ."',
+										`isdefault` = '".intval    ($arrSource['isdefault'])."' 
+								WHERE `id` = ".intval($arrSource['id'])." 
+									AND `target_id` = ".intval($aliasId)
+								;
+
+
+							if ($objDatabase->Execute($qry_update) !== false) {
 								$arrRemovedAliases[] = $arrOldSource['url'];
 							} else {
 								$error = true;
@@ -257,7 +279,14 @@ class aliasLib
 
 		foreach ($arrAlias['sources'] as $arrSource) {
 			if (empty($arrSource['id'])) {
-				if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_alias_source` (`target_id`, `url`) VALUES (".intval($aliasId).", '".addslashes($arrSource['url'])."')") === false) {
+				$alias_id  = intval($aliasId);
+				$isdefault = intval($arrSource['isdefault']);
+				$url       = addslashes($arrSource['url']);
+				$qry_insert = "
+					INSERT INTO `".DBPREFIX."module_alias_source` (`target_id`, `url`, `isdefault`) 
+					VALUES ($alias_id, '$url', $isdefault)
+					";
+				if ($objDatabase->Execute($qry_insert) === false) {
 					$error = true;
 				}
 			}

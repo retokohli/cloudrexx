@@ -36,9 +36,12 @@ function alias_delete_alias(id, alias)
 newAliasNr = 0;
 function alias_add_alias()
 {
+	console.log("alias_add_alias()");
 	elBox = document.getElementById('alias_box_new').cloneNode(true);
 	elBox.setAttribute('id', 'alias_box_new_'+newAliasNr);
 	elBox.style.display = 'block';
+	elBox.childNodes[3].setAttribute('value', 'newalias_'+newAliasNr);
+	elBox.childNodes[3].setAttribute('name', 'alias_use_default');
 	document.getElementById('alias_main_box').appendChild(elBox);
 	newAliasNr++;
 }
@@ -70,13 +73,19 @@ function alias_add_alias()
 				<div id="alias_main_box">
 				<!-- BEGIN alias_list -->
 					<div id="alias_box_{ALIAS_ALIAS_NR}" style="margin:0px 0px 1px 0px;">
-						{ALIAS_DOMAIN_URL}<input type="text" name="alias_aliases{ALIAS_ALIAS_PREFIX}[{ALIAS_ALIAS_ID}]" id="alias_aliases_{ALIAS_ALIAS_NR}" value="{ALIAS_ALIAS_URL}" style="width:200px;" /><a href="javascript:void(0);" onclick="alias_delete_alias(this.parentNode.id,'{ALIAS_DOMAIN_URL}'+document.getElementById('alias_aliases_{ALIAS_ALIAS_NR}').value)" title="{TXT_ALIAS_DELETE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ALIAS_DELETE}" align="absmiddle" /></a>
+						{ALIAS_DOMAIN_URL}<input type="text" name="alias_aliases{ALIAS_ALIAS_PREFIX}[{ALIAS_ALIAS_ID}]" id="alias_aliases_{ALIAS_ALIAS_NR}" value="{ALIAS_ALIAS_URL}" style="width:200px;" />
+						{TXT_ALIAS_STANDARD_RADIOBUTTON}
+						<input type="radio" name="alias_use_default" {ALIAS_IS_DEFAULT} value="{ALIAS_ALIAS_ID}" />
+						<a href="javascript:void(0);" onclick="alias_delete_alias(this.parentNode.id,'{ALIAS_DOMAIN_URL}'+document.getElementById('alias_aliases_{ALIAS_ALIAS_NR}').value)" title="{TXT_ALIAS_DELETE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ALIAS_DELETE}" align="absmiddle" /></a>
 					</div>
 				<!-- END alias_list -->
 				</div>
 				<br />
 				<div id="alias_box_new" style="display:none;margin:0px 0px 1px 0px;">
-					{ALIAS_DOMAIN_URL}<input type="text" name="alias_aliases_new[]" value="" style="width:200px;" /><a href="javascript:void(0);" onclick="alias_delete_alias(this.parentNode.id,'{ALIAS_DOMAIN_URL}'+this.previousSibling.value)" title="{TXT_ALIAS_DELETE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ALIAS_DELETE}" /></a>
+					{ALIAS_DOMAIN_URL}<input type="text" name="alias_aliases_new[]" value="" style="width:200px;" />
+					{TXT_ALIAS_STANDARD_RADIOBUTTON}
+					<input type="radio" name="alias_use_default_tmpl" value="" />
+					<a href="javascript:void(0);" onclick="alias_delete_alias(this.parentNode.id,'{ALIAS_DOMAIN_URL}'+this.previousSibling.value)" title="{TXT_ALIAS_DELETE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ALIAS_DELETE}" /></a>
 				</div>
 				<input type="button" value="{TXT_ALIAS_ADD_ANOTHER_ALIAS}" onclick="alias_add_alias()" />
 			</td>
