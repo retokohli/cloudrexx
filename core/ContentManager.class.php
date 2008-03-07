@@ -1133,7 +1133,6 @@ class ContentManager
                                                             conTable.metatitle            AS conMetaTitle,
                                                             conTable.metadesc            AS conMetaDesc,
                                                             conTable.metakeys            AS conMetaKeywords,
-                                                            conTable.content            AS conContent,
                                                             conTable.css_name            AS conCssName,
                                                             conTable.redirect            AS conRedirect,
                                                             conTable.expertmode            AS conExpertMode,
@@ -1239,8 +1238,7 @@ class ContentManager
                         'CHANGELOG_SOURCEMODE'        =>    strtoupper($objResult->fields['conExpertMode']),
                         'CHANGELOG_CACHINGSTATUS'    =>    ($objResult->fields['navCachingStatus'] == 1) ? 'Y' : 'N',
                         'CHANGELOG_FRONTEND'        =>    stripslashes($strFrontendGroups),
-                        'CHANGELOG_BACKEND'            =>    stripslashes($strBackendGroups),
-                        'CHANGELOG_CONTENT'            =>    stripslashes(htmlspecialchars($objResult->fields['conContent'], ENT_QUOTES, CONTREXX_CHARSET)),
+						'CHANGELOG_BACKEND'			=>	stripslashes($strBackendGroups)
                     ));
                     $objTemplate->parse('showChanges');
                     $objResult->MoveNext();
