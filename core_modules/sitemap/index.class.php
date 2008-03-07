@@ -77,9 +77,15 @@ class sitemap
 		                 n.target AS target,
 		                 n.parcat AS parcat,
 		                 n.displayorder AS displayorder,
-		                 m.name AS section
-		            FROM ".DBPREFIX."content_navigation AS n,
+						 m.name AS section,
+						 a_s.url AS alias_url
+		            FROM ".DBPREFIX."content_navigation AS n
+						LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
+						LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s 
+								ON  a_t.id        = a_s.target_id
+								AND a_s.isdefault = 1,
 		                 ".DBPREFIX."modules AS m
+
 		           WHERE (n.module=m.id AND n.displaystatus = 'on' AND n.activestatus = '1' AND n.lang=".$_LANGID.")
 		             ".(
 						!is_object($objPerm) ?
@@ -105,7 +111,11 @@ class sitemap
 				$c = $objResult->fields['cmd'];
 				$section = ( ($s=="") ? "" : "&amp;section=$s" );
 				$cmd     = ( ($c=="") ? "" : "&amp;cmd=$c" );
-				if (!empty($s)) {
+
+				if ($alias = $objResult->fields['alias_url']) {
+					$link = $alias;
+				}
+				elseif (!empty($s)) {
 				    $link = "?section=".$s.$cmd;
 				} else {
 				    $link = "?page=".$objResult->fields['catid'].$section.$cmd;

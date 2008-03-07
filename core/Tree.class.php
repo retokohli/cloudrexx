@@ -66,24 +66,33 @@ class ContentTree
 			}
 		}
 
-		$objResult = $objDatabase->Execute( "SELECT catid,
-							parcat,
-							catname,
-							displayorder,
-							displaystatus,
-							username,
-							FROM_UNIXTIME(changelog,'%d.%m.%Y %T') AS changelog,
-							cmd,
-							lang,
-							module,
-							startdate,
-							enddate,
-							protected,
-							frontend_access_id,
-							backend_access_id
-		               FROM ".DBPREFIX."content_navigation
+
+		$sql =  "
+			SELECT          n.catid                                  AS catid         ,
+							n.parcat                                 AS parcat        ,
+							n.catname                                AS catname       ,
+							n.displayorder                           AS displayorder  ,
+							n.displaystatus                          AS displaystatus ,
+							n.username                               AS username      ,
+							FROM_UNIXTIME(n.changelog,'%d.%m.%Y %T') AS changelog,
+							n.cmd                                    AS cmd               ,
+							n.lang                                   AS lang              ,
+							n.module                                 AS module            ,
+							n.startdate                              AS startdate         ,
+							n.enddate                                AS enddate           ,
+							n.protected                              AS protected         ,
+							n.frontend_access_id                     AS frontend_access_id,
+							n.backend_access_id                      AS backend_access_id,
+							a_s.url                                  AS alias_url
+		               FROM ".DBPREFIX."content_navigation AS n
+							LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
+							LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s 
+								ON  a_t.id        = a_s.target_id
+								AND a_s.isdefault = 1
+
 		              WHERE lang=".$langId."
-		           ORDER BY parcat ASC, displayorder ASC");
+		           ORDER BY parcat ASC, displayorder ASC";
+		$objResult = $objDatabase->Execute($sql);
 		if ($objResult !== false) {
 			while (!$objResult->EOF) {
 				$this->node[$objResult->fields['catid']]= array(
@@ -101,7 +110,8 @@ class ContentTree
 				    'enddate' => $objResult->fields['enddate'],
 				    'protected' => $objResult->fields['protected'],
 				    'frontend_access_id' => $objResult->fields['frontend_access_id'],
-				    'backend_access_id' => $objResult->fields['backend_access_id']
+				    'backend_access_id' => $objResult->fields['backend_access_id'],
+					'alias'             => $objResult->fields['alias_url'] 
 				    );
 
 				$this->table[$objResult->fields['parcat']][$objResult->fields['catid']]= array(
@@ -120,6 +130,7 @@ class ContentTree
 				    'protected' => $objResult->fields['protected'],
 				    'frontend_access_id' => $objResult->fields['frontend_access_id'],
 				    'backend_access_id' => $objResult->fields['backend_access_id'],
+					'alias'             => $objResult->fields['alias_url'] ,
 				    'level' => '0'
 				    );
 				$objResult->MoveNext();

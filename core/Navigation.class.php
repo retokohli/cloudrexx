@@ -74,22 +74,28 @@ class Navigation
     {
     	global $objDatabase, $objPerm;
 
-		$objResult = $objDatabase->Execute("SELECT n.cmd AS cmd,
-			                   n.catid AS catid,
-			                   n.catname AS catname,
-			                   n.target AS target,
-			                   n.parcat AS parcat,
-			                   n.css_name AS css_name,
-			                   n.displayorder AS displayorder,
-			                   m.name AS section,
-			                   n.displaystatus AS displaystatus
-			              FROM ".DBPREFIX."content_navigation AS n,
-			                   ".DBPREFIX."modules AS m
-			             WHERE n.module=m.id
+		$query = "SELECT n.cmd AS cmd,
+						  n.catid         AS catid,
+						  n.catname       AS catname,
+						  n.target        AS target,
+						  n.parcat        AS parcat,
+						  n.css_name      AS css_name,
+						  n.displayorder  AS displayorder,
+						  m.name          AS section,
+						  n.displaystatus AS displaystatus,
+						  a_s.url         AS alias_url,
+						  min(a_s.id)     AS alias_id
+					FROM ".DBPREFIX."content_navigation                   AS n
+					      INNER JOIN ".DBPREFIX."modules                  AS m   ON n.module=m.id 
+						  LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
+						  LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s 
+						  	ON  a_t.id        = a_s.target_id
+							AND a_s.isdefault = 1
+					WHERE n.module=m.id
 			               AND (n.displaystatus = 'on' OR n.catid='".$this->pageId."')
 			               AND n.lang='".$this->langId."'
 			               AND (n.startdate<=CURDATE() OR n.startdate='0000-00-00')
-           				   AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
+           				   AND (n.enddate  >=CURDATE() OR n.enddate  ='0000-00-00')
            				   AND n.activestatus='1'
            				   AND n.is_validated='1'
            				   ".(
@@ -104,8 +110,9 @@ class Navigation
 								)
 								: ''
 							)."
-						ORDER BY n.parcat DESC, n.displayorder ASC");
-
+						GROUP BY n.catid
+						ORDER BY n.parcat DESC, n.displayorder ASC";
+		$objResult = $objDatabase->Execute($query);
 
 		//check for preview and if theme exists in database
 		$currentThemesId='';
@@ -145,11 +152,22 @@ class Navigation
 				$c=$objResult->fields['cmd'];
 				$section = ($s=="") ? "" : "&amp;section=$s";
 				$cmd = ($c=="") ? "" : "&amp;cmd=$c";
-				$link = (!empty($s)) ? "?section=".$s.$cmd : "?page=".$objResult->fields['catid'].$section.$cmd;
+
+				// Create alias link if alias is present for this page...
+				if ($objResult->fields['alias_url']) {
+					$menu_url = self::mkurl('/'.$objResult->fields['alias_url']);
+				}
+				else {
+					$link = (!empty($s)) ? "?section=".$s.$cmd : "?page=".$objResult->fields['catid'].$section.$cmd;
+					$menu_url = htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES, CONTREXX_CHARSET)
+						.$link
+						.(($currentThemesId && !strpos($this->data[$id]['url'],'preview')) ? '&amp;preview='.$currentThemesId : '');
+				}
+
 
 				$this->data[$objResult->fields['catid']]= array(
 				    'catid'    => $objResult->fields['catid'],
-				    'url'      => htmlentities(ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX, ENT_QUOTES, CONTREXX_CHARSET).$link.(($currentThemesId && !strpos($this->data[$id]['url'],'preview')) ? '&amp;preview='.$currentThemesId : ''),
+				    'url'      => $menu_url,
 				    'catname'  => stripslashes($objResult->fields['catname']),
 				    'target'   => $objResult->fields['target'],
 				    'css_name' => $objResult->fields['css_name'],
@@ -601,6 +619,13 @@ class Navigation
 	}
 
 
+	static function mkurl($absolute_local_path) { 
+		global $_CONFIG;
+		return "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 
+			? "" 
+			: ":".intval($_SERVER['SERVER_PORT'])
+		).ASCMS_PATH_OFFSET.$absolute_local_path;
+	}
 
 	function _debug($obj){
 		  echo "<pre>";
