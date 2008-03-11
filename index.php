@@ -1,4 +1,7 @@
 <?php
+
+define('_DEBUG', 1);
+
 /**
  * The main page for the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -59,7 +62,7 @@
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
-if (0) {
+if (_DEBUG) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 } else {
@@ -127,7 +130,11 @@ if ($objDatabase === false) {
         ($errorMsg != '' ? "<br />Message: $errorMsg" : '')
     );
 }
-//$objDatabase->debug = 1;
+if (_DEBUG) {
+    $objDatabase->debug = 1;
+} else {
+    $objDatabase->debug = 0;
+}
 
 //-------------------------------------------------------
 // Caching-System
@@ -136,14 +143,14 @@ if ($objDatabase === false) {
  * Include the cache module.  The cache is initialized right afterwards.
  */
 require_once ASCMS_CORE_MODULE_PATH.'/cache/index.class.php';
-$objCache = &new Cache();
+$objCache = new Cache();
 $objCache->startCache();
 
 //-------------------------------------------------------
 // Load settings and configuration
 //-------------------------------------------------------
 
-$objInit = &new InitCMS();
+$objInit = new InitCMS();
 $_LANGID = $objInit->getFrontendLangId();
 $_CORELANG = $objInit->loadLanguageData('core');
 $_ARRAYLANG = $objInit->loadLanguageData();
@@ -152,25 +159,22 @@ $_ARRAYLANG = $objInit->loadLanguageData();
 // Webapp Intrusion Detection System
 //-------------------------------------------------------
 
-$objSecurity = &new Security;
+$objSecurity = new Security;
 $_GET = $objSecurity->detectIntrusion($_GET);
 $_POST = $objSecurity->detectIntrusion($_POST);
 $_COOKIE = $objSecurity->detectIntrusion($_COOKIE);
 $_REQUEST = $objSecurity->detectIntrusion($_REQUEST);
 
-
 //-------------------------------------------------------
 // Check Referer -> Redirect
 //-------------------------------------------------------
 require_once ASCMS_CORE_PATH.'/redirect.class.php';
-//$objRedirect = &new redirect();
-
+//$objRedirect = new redirect();
 
 //-------------------------------------------------------
 // initialize objects
 //-------------------------------------------------------
-$objTemplate = &new HTML_Template_Sigma(ASCMS_THEMES_PATH);
-
+$objTemplate = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
 $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
 $section = isset($_REQUEST['section']) ? contrexx_addslashes($_REQUEST['section']) : '';
@@ -178,13 +182,30 @@ $command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
 $page    = isset($_REQUEST['page']) ? intval($_GET['page']) : 0;
 $history = isset($_REQUEST['history']) ? intval($_GET['history']) : 0;
 
-$pageId  = $objInit->getPageID($page, $section, $command, $history);
+// To clone any module, use an optional integer cmd suffix.
+// E.g.: "shop2", "gallery5", etc.
+// Mind that you *MUST* copy all necessary database tables, and fix any
+// references to your module (section and cmd parameters, database tables)
+// using the MODULE_INDEX constant in the right place both in your code
+// *AND* templates!
+// See the Shop module for an example.
+$arrMatch = array();
+$plainSection = $section;
+if (preg_match('/^(\w+)(\d+)$/', $section, $arrMatch)) {
+    // The plain section/module name, used below
+    $plainSection = $arrMatch[1];
+}
+// The module index
+$moduleIndex = (empty($arrMatch[2]) ? '' : $arrMatch[2]);
+define('MODULE_INDEX', $moduleIndex);
+
+$pageId  = $objInit->getPageID($page, $plainSection, $command, $history);
 $is_home = $objInit->is_home;
 
-$objCounter = &new statsLibrary();
+$objCounter = new statsLibrary();
 $objCounter->checkForSpider();
 $themesPages = $objInit->getTemplates();
-$query="SELECT c.content,
+$query = "SELECT c.content,
                c.title,
                n.catname,
                c.redirect,
@@ -207,7 +228,7 @@ $query="SELECT c.content,
 $objResult = $objDatabase->SelectLimit($query, 1);
 
 if ($objResult === false || $objResult->EOF) {
-    if ($section == "error") {
+    if ($plainSection == "error") {
         // If the error module is not installed, show this
         die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
     } else {
@@ -245,22 +266,22 @@ if ($objResult === false || $objResult->EOF) {
 // authentification for protected pages
 //-------------------------------------------------------
 if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_REQUEST['section']) || $_REQUEST['section'] != 'login')) {
-    $sessionObj=&new cmsSession();
+    $sessionObj=new cmsSession();
     $sessionObj->cmsSessionStatusUpdate($status="frontend");
 
-    $objAuth = &new Auth($type='frontend');
+    $objAuth = new Auth($type='frontend');
     if ($objAuth->checkAuth()) {
-        $objPerm =&new Permission($type='frontend');
+        $objPerm =new Permission($type='frontend');
         if ($page_protected) {
             if (!$objPerm->checkAccess($page_access_id, 'dynamic')) {
-	            $link=base64_encode(ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-	            header ("Location: ".ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
+                $link=base64_encode(ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
+                header ("Location: ".ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
                 exit;
             }
         }
         if ($history && !$objPerm->checkAccess(78, 'static')) {
-			$link=base64_encode(ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-			header ("Location: ".ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
+            $link=base64_encode(ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
+            header ("Location: ".ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
             exit;
         }
     } elseif (!empty($_COOKIE['PHPSESSID']) && !$page_protected) {
@@ -279,7 +300,7 @@ if (!empty($page_redirect)){
 }
 
 // Initialize the navigation
-$objNavbar  = &new Navigation($pageId);
+$objNavbar  = new Navigation($pageId);
 
 //-------------------------------------------------------
 // Start page or default page for no section
@@ -289,6 +310,7 @@ if ($is_home){
 }
 
 
+$arrMatches = array();
 //-------------------------------------------------------
 // Set news teasers
 //-------------------------------------------------------
@@ -301,7 +323,7 @@ if ($_CONFIG['newsTeasersStatus'] == '1') {
              * @ignore
              */
             include_once($modulespath);
-            $objTeasers = &new Teasers();
+            $objTeasers = new Teasers();
             $objTeasers->setTeaserFrames($arrMatches[1], $page_content);
         }
     }
@@ -314,7 +336,7 @@ if ($_CONFIG['newsTeasersStatus'] == '1') {
              * @ignore
              */
             include_once($modulespath);
-            $objTeasers = &new Teasers();
+            $objTeasers = new Teasers();
             $objTeasers->setTeaserFrames($arrMatches[1], $page_template);
         }
     }
@@ -327,7 +349,7 @@ if ($_CONFIG['newsTeasersStatus'] == '1') {
              * @ignore
              */
             include_once($modulespath);
-            $objTeasers = &new Teasers();
+            $objTeasers = new Teasers();
             $objTeasers->setTeaserFrames($arrMatches[1], $themesPages['index']);
         }
     }
@@ -344,7 +366,7 @@ if ($_CONFIG['feedNewsMLStatus'] == '1') {
              * @ignore
              */
             require_once $modulespath;
-            $objNewsML = &new NewsML();
+            $objNewsML = new NewsML();
             $objNewsML->setNews($arrMatches[1], $page_content);
         }
     }
@@ -355,7 +377,7 @@ if ($_CONFIG['feedNewsMLStatus'] == '1') {
              * @ignore
              */
             require_once $modulespath;
-            $objNewsML = &new NewsML();
+            $objNewsML = new NewsML();
             $objNewsML->setNews($arrMatches[1], $page_template);
         }
     }
@@ -366,7 +388,7 @@ if ($_CONFIG['feedNewsMLStatus'] == '1') {
              * @ignore
              */
             require_once $modulespath;
-            $objNewsML = &new NewsML();
+            $objNewsML = new NewsML();
             $objNewsML->setNews($arrMatches[1], $themesPages['index']);
         }
     }
@@ -383,7 +405,7 @@ if (file_exists($modulespath)) {
      */
     if (preg_match_all('/{POPUP_JS_FUNCTION}/ms', $themesPages['index'], $arrMatches)) {
         require_once $modulespath;
-        $objPopup = &new popup();
+        $objPopup = new popup();
 
         if (preg_match_all('/{POPUP}/ms', $themesPages['index'], $arrMatches)) {
             $objPopup->setPopup($themesPages['index'], $pageId);
@@ -403,7 +425,7 @@ if ($_CONFIG['blockStatus'] == '1') {
          * @ignore
          */
         require_once $modulespath;
-        $objBlock = &new block();
+        $objBlock = new block();
         if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/ms', $page_content, $arrMatches)) {
             $objBlock->setBlock($arrMatches[1], $page_content);
         }
@@ -484,7 +506,7 @@ $modulespath = "core_modules/news/lib/headlines.class.php";
  * @ignore
  */
 if (file_exists($modulespath)) include_once($modulespath);
-$newsHeadlinesObj = &new newsHeadlines($themesPages['headlines']);
+$newsHeadlinesObj = new newsHeadlines($themesPages['headlines']);
 $page_content = str_replace('{HEADLINES_FILE}', $newsHeadlinesObj->getHomeHeadlines(), $page_content);
 $themesPages['index'] = str_replace('{HEADLINES_FILE}', $newsHeadlinesObj->getHomeHeadlines(), $themesPages['index']);
 $themesPages['sidebar'] = str_replace('{HEADLINES_FILE}', $newsHeadlinesObj->getHomeHeadlines(), $themesPages['sidebar']);
@@ -502,13 +524,13 @@ if (file_exists($modulespath)) {
     include_once($modulespath);
 
     if(!empty($_COOKIE['PHPSESSID'])) {
-        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
+        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=new cmsSession();
         $sessionObj->cmsSessionStatusUpdate($status="frontend");
-        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
-        if (!isset($objPerm) || !is_object($objPerm)) $objPerm = &new Permission();
+        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = new Auth($type = 'frontend');
+        if (!isset($objPerm) || !is_object($objPerm)) $objPerm = new Permission();
     }
 
-    $calHeadlinesObj = &new calHeadlines($themesPages['calendar_headlines']);
+    $calHeadlinesObj = new calHeadlines($themesPages['calendar_headlines']);
     $page_content = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $page_content);
     $themesPages['index'] = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $themesPages['index']);
     $themesPages['home'] = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $themesPages['home']);
@@ -524,7 +546,7 @@ if (file_exists($modulespath)) {
      * @ignore
      */
     include_once($modulespath);
-    $immoHeadlines = &new immoHeadlines($themesPages['immo']);
+    $immoHeadlines = new immoHeadlines($themesPages['immo']);
 
     $page_content = str_replace('{IMMO_FILE}', $immoHeadlines->getHeadlines(), $page_content);
     $themesPages['index'] = str_replace('{IMMO_FILE}', $immoHeadlines->getHeadlines(), $themesPages['index']);
@@ -545,7 +567,7 @@ if (file_exists($modulespath)) {
      */
     require_once($modulespath);
     $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('newsletter'));
-    $newsletter = &new newsletter('');
+    $newsletter = new newsletter('');
     if (preg_match_all('/{NEWSLETTER_BLOCK}/ms', $page_content, $arrMatches)) {
         $newsletter->setBlock($page_content);
     }
@@ -586,7 +608,7 @@ if ($_CONFIG['directoryHomeContent'] == '1') {
 
         if ($directoryHomeContentInPageContent || $directoryHomeContentInPageTemplate || $directoryHomeContentInThemesPage) {
             $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('directory'));
-            $dirObj = &new dirHomeContent($themesPages['directory_content']);
+            $dirObj = new dirHomeContent($themesPages['directory_content']);
         }
 
         if ($directoryHomeContentInPageContent) {
@@ -627,7 +649,7 @@ if ($_CONFIG['forumHomeContent'] == '1') {
         }
         if ($forumHomeContentInPageContent || $forumHomeContentInPageTemplate || $forumHomeContentInThemesPage) {
             $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('forum'));
-            $objForum = &new ForumHomeContent($themesPages['forum_content']);
+            $objForum = new ForumHomeContent($themesPages['forum_content']);
         }
         if ($forumHomeContentInPageContent) {
             $page_content = str_replace('{FORUM_FILE}', $objForum->getContent(), $page_content);
@@ -651,7 +673,7 @@ if (file_exists($modulespath)) {
      * @ignore
      */
     require_once($modulespath);
-    $objGalleryHome = &new GalleryHomeContent();
+    $objGalleryHome = new GalleryHomeContent();
 
     if ($objGalleryHome->checkRandom()) {
 
@@ -712,7 +734,7 @@ if ($_CONFIG['podcastHomeContent'] == '1') {
         }
         if ($podcastHomeContentInPageContent || $podcastHomeContentInPageTemplate || $podcastHomeContentInThemesPage) {
             $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('podcast'));
-            $objPodcast = &new podcastHomeContent($themesPages['podcast_content']);
+            $objPodcast = new podcastHomeContent($themesPages['podcast_content']);
         }
         if ($podcastHomeContentInPageContent) {
             $page_content = str_replace('{PODCAST_FILE}', $objPodcast->getContent(), $page_content);
@@ -748,20 +770,20 @@ if (   $_CONFIGURATION['custom']['shopJsCart']
         require_once($modulespath);
         $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('shop'));
 
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['sidebar'], $regs, PREG_SET_ORDER)) {
-            $themesPages['sidebar'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($regs[0][2]), $themesPages['sidebar']);
+        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['sidebar'], $arrMatches, PREG_SET_ORDER)) {
+            $themesPages['sidebar'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($arrMatches[0][2]), $themesPages['sidebar']);
         }
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['shopnavbar'], $regs, PREG_SET_ORDER)) {
-            $themesPages['shopnavbar'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($regs[0][2]), $themesPages['shopnavbar']);
+        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['shopnavbar'], $arrMatches, PREG_SET_ORDER)) {
+            $themesPages['shopnavbar'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($arrMatches[0][2]), $themesPages['shopnavbar']);
         }
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['index'], $regs, PREG_SET_ORDER)) {
-            $themesPages['index'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($regs[0][2]), $themesPages['index']);
+        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['index'], $arrMatches, PREG_SET_ORDER)) {
+            $themesPages['index'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($arrMatches[0][2]), $themesPages['index']);
         }
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $page_content, $regs, PREG_SET_ORDER)) {
-            $page_content = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($regs[0][2]), $page_content);
+        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $page_content, $arrMatches, PREG_SET_ORDER)) {
+            $page_content = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($arrMatches[0][2]), $page_content);
         }
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $page_template, $regs, PREG_SET_ORDER)) {
-            $page_template = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($regs[0][2]), $page_template);
+        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $page_template, $arrMatches, PREG_SET_ORDER)) {
+            $page_template = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($arrMatches[0][2]), $page_template);
         }
     }
 }
@@ -778,17 +800,17 @@ if (file_exists($modulespath)) {
 //        $objTemplate->_blocks['voting_result'] = setVotingResult($objTemplate->_blocks['voting_result']);
 //    }
 //
-    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['sidebar'], $regs, PREG_SET_ORDER)) {
-        $themesPages['sidebar'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $themesPages['sidebar']);
+    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['sidebar'], $arrMatches, PREG_SET_ORDER)) {
+        $themesPages['sidebar'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($arrMatches[0][2]), $themesPages['sidebar']);
     }
-    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['index'], $regs, PREG_SET_ORDER)) {
-        $themesPages['index'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $themesPages['index']);
+    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['index'], $arrMatches, PREG_SET_ORDER)) {
+        $themesPages['index'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($arrMatches[0][2]), $themesPages['index']);
     }
-    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $page_content, $regs, PREG_SET_ORDER)) {
-        $page_content = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $page_content);
+    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $page_content, $arrMatches, PREG_SET_ORDER)) {
+        $page_content = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($arrMatches[0][2]), $page_content);
     }
-    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $page_template, $regs, PREG_SET_ORDER)) {
-        $page_template = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($regs[0][2]), $page_template);
+    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $page_template, $arrMatches, PREG_SET_ORDER)) {
+        $page_template = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($arrMatches[0][2]), $page_template);
     }
 
 }
@@ -804,7 +826,7 @@ if (file_exists($modulespath)) {
      * @ignore
      */
     require_once($modulespath);
-    $objBlogHome = &new BlogHomeContent($themesPages['blog_content']);
+    $objBlogHome = new BlogHomeContent($themesPages['blog_content']);
 
     if ($objBlogHome->blockFunktionIsActivated()) {
         //Blog-File
@@ -918,7 +940,7 @@ $page_content = str_replace('{TITLE}',  $page_title, $page_content);
 //-------------------------------------------------------
 // start module switches
 //-------------------------------------------------------
-switch ($section) {
+switch ($plainSection) {
 
 //-------------------------------------------------------
 // Login module
@@ -931,10 +953,10 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
-        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type='frontend');
-        if (!isset($objPerm) || !is_object($objPerm)) $objPerm =&new Permission($type='frontend');
-        $objLogin = &new Login($page_content);
+        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=new cmsSession();
+        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = new Auth($type='frontend');
+        if (!isset($objPerm) || !is_object($objPerm)) $objPerm =new Permission($type='frontend');
+        $objLogin = new Login($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objLogin->getContent());
         break;
 
@@ -948,7 +970,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objNetTools = &new NetTools($page_content);
+        $objNetTools = new NetTools($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objNetTools->getPage());
         break;
 
@@ -980,9 +1002,9 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
-        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
-        $communityObj = &new Community($page_content);
+        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=new cmsSession();
+        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = new Auth($type = 'frontend');
+        $communityObj = new Community($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $communityObj->getCommunityPage());
         break;
 
@@ -997,17 +1019,17 @@ switch ($section) {
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         if (isset($_GET['cmd']) && $_GET['cmd'] == "submit") {
-            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
+            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=new cmsSession();
             $sessionObj->cmsSessionStatusUpdate($status="frontend");
-            if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
-            if (!isset($objPerm) || !is_object($objPerm)) $objPerm = &new Permission();
+            if (!isset($objAuth) || !is_object($objAuth)) $objAuth = new Auth($type = 'frontend');
+            if (!isset($objPerm) || !is_object($objPerm)) $objPerm = new Permission();
             /**
              * @ignore
              */
             require_once ASCMS_CORE_PATH.'/wysiwyg.class.php';
         }
 
-        $newsObj= &new news($page_content);
+        $newsObj= new news($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $newsObj->getNewsPage());
         $newsObj->getPageTitle($page_title);
         $page_title = $newsObj->newsTitle;
@@ -1023,7 +1045,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objLivecam = &new Livecam($page_content);
+        $objLivecam = new Livecam($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objLivecam->getPage());
         $moduleStyleFile = "lib/lightbox/style/lightbox.css";
         break;
@@ -1038,7 +1060,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objGuestbook = &new Guestbook($page_content);
+        $objGuestbook = new Guestbook($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objGuestbook->getPage());
         break;
 
@@ -1052,7 +1074,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objMemberDir = &new memberDir($page_content);
+        $objMemberDir = new memberDir($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objMemberDir->getPage());
         break;
 
@@ -1066,7 +1088,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objDownload = &new Download($page_content);
+        $objDownload = new Download($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objDownload->getPage());
         break;
 
@@ -1080,7 +1102,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objRecommend = &new Recommend($page_content);
+        $objRecommend = new Recommend($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objRecommend->getPage());
         break;
 
@@ -1094,7 +1116,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $docSysObj= &new docSys($page_content);
+        $docSysObj= new docSys($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $docSysObj->getDocSysPage());
         $docSysObj->getPageTitle($page_title);
         $page_title = $docSysObj->docSysTitle;
@@ -1125,7 +1147,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $contactObj= &new Contact($page_content);
+        $contactObj= new Contact($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $contactObj->getContactPage());
         $moduleStyleFile = "core_modules/contact/frontend_style.css";
         break;
@@ -1147,7 +1169,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $sitemap = &new sitemap($page_content);
+        $sitemap = new sitemap($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $sitemap->getSitemapContent());
         break;
 
@@ -1158,14 +1180,14 @@ switch ($section) {
     case "media2":
     case "media3":
     case "media4":
-        if(!isset($sessionObj)|| !is_object($sessionObj)) $sessionObj = &new cmsSession();
+        if(!isset($sessionObj)|| !is_object($sessionObj)) $sessionObj = new cmsSession();
         $modulespath = ASCMS_CORE_MODULE_PATH . '/media/index.class.php';
         /**
          * @ignore
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objMedia = &new MediaManager($page_content, $section);
+        $objMedia = new MediaManager($page_content, $plainSection);
         $objTemplate->setVariable('CONTENT_TEXT', $objMedia->getMediaPage());
         break;
 
@@ -1179,7 +1201,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $newsletter = &new newsletter($page_content);
+        $newsletter = new newsletter($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $newsletter->getPage());
         break;
 
@@ -1193,7 +1215,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objGallery = &new Gallery($page_content);
+        $objGallery = new Gallery($page_content);
         $objTemplate->setVariable("CONTENT_TEXT", $objGallery->getPage());
 
         // Optional change: Show gallery name instead of page title
@@ -1227,7 +1249,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objFeed = &new feed($page_content);
+        $objFeed = new feed($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objFeed->getFeedPage());
         break;
 
@@ -1241,7 +1263,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objImmo = &new Immo($page_content);
+        $objImmo = new Immo($page_content);
         $objTemplate->setVariable("CONTENT_TEXT", $objImmo->getPage());
         if(!empty($_GET['cmd']) && $_GET['cmd'] == 'showObj'){
             $page_title = $objImmo->getPageTitle($page_title);
@@ -1251,26 +1273,17 @@ switch ($section) {
 //-------------------------------------------------------
 // Calendar Module
 //-------------------------------------------------------
-    case "calendar":
-    case "calendar2":
-        if ($section == "calendar") {
-            $modulespath = "modules/calendar/index.class.php";
-            $moduleStyleFile = "modules/calendar/frontend_style.css";
-            $mandate = 1;
-        } else {
-            $mandate = intval(substr($section, -1));
-            $modulespath = "modules/calendar".$mandate."/index.class.php";
-            $moduleStyleFile = "modules/calendar".$mandate."/frontend_style.css";
-        }
+    case 'calendar':
+        $modulespath = 'modules/calendar'.MODULE_INDEX.'/index.class.php';
+        $moduleStyleFile = 'modules/calendar'.MODULE_INDEX.'/frontend_style.css';
+        define('CALENDAR_MANDATE', MODULE_INDEX);
         /**
          * @ignore
          */
-        define("CALENDAR_MANDATE", $mandate);
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objCalendar = &new Calendar($page_content, $mandate);
-        $objTemplate->setVariable("CONTENT_TEXT", $objCalendar->getCalendarPage());
-
+        $objCalendar = new Calendar($page_content, MODULE_INDEX);
+        $objTemplate->setVariable('CONTENT_TEXT', $objCalendar->getCalendarPage());
         break;
 
 //-------------------------------------------------------
@@ -1283,7 +1296,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objReservationModule = &new reservations($page_content);
+        $objReservationModule = new reservations($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objReservationModule->getPage());
         $moduleStyleFile = "modules/reservation/frontend_style.css";
         break;
@@ -1299,12 +1312,12 @@ switch ($section) {
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
 
-        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
+        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=new cmsSession();
         $sessionObj->cmsSessionStatusUpdate($status="frontend");
-        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
-        if (!isset($objPerm) || !is_object($objPerm)) $objPerm = &new Permission();
+        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = new Auth($type = 'frontend');
+        if (!isset($objPerm) || !is_object($objPerm)) $objPerm = new Permission();
 
-        $directory = &new rssDirectory($page_content);
+        $directory = new rssDirectory($page_content);
         $objTemplate->setVariable("CONTENT_TEXT", $directory->getPage());
 
         $page_metatitle = $directory->getPageTitle();
@@ -1322,12 +1335,12 @@ switch ($section) {
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
 
-        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
+        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=new cmsSession();
         $sessionObj->cmsSessionStatusUpdate($status="frontend");
-        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
-        if (!isset($objPerm) || !is_object($objPerm)) $objPerm = &new Permission();
+        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = new Auth($type = 'frontend');
+        if (!isset($objPerm) || !is_object($objPerm)) $objPerm = new Permission();
 
-        $market = &new Market($page_content);
+        $market = new Market($page_content);
         $objTemplate->setVariable("CONTENT_TEXT", $market->getPage());
         break;
 
@@ -1341,7 +1354,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objPodcast = &new podcast($page_content);
+        $objPodcast = new podcast($page_content);
         $objTemplate->setVariable("CONTENT_TEXT", $objPodcast->getPage($podcastFirstBlock));
         break;
 
@@ -1355,9 +1368,9 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = &new cmsSession();
-        if (!isset($objPerm) || !is_object($objPerm)) $objPerm = &new Permission($type='frontend');
-        $objForum = &new Forum($page_content);
+        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
+        if (!isset($objPerm) || !is_object($objPerm)) $objPerm = new Permission($type='frontend');
+        $objForum = new Forum($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objForum->getPage());
 //        $moduleStyleFile = "modules/forum/css/frontend_style.css";
         break;
@@ -1372,9 +1385,9 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
-        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
-        $objBlog = &new Blog($page_content);
+        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=new cmsSession();
+        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = new Auth($type = 'frontend');
+        $objBlog = new Blog($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objBlog->getPage());
         break;
 
@@ -1382,8 +1395,8 @@ switch ($section) {
 // logout
 //-------------------------------------------------------
     case "logout":
-        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = &new cmsSession();
-        $objAuth =&new Auth($type='public');
+        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
+        $objAuth =new Auth($type='public');
         $objAuth->logout();
         break;
 
@@ -1397,7 +1410,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $errorObj= &new error($page_content);
+        $errorObj= new error($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $errorObj->getErrorPage());
         break;
 
@@ -1411,7 +1424,7 @@ switch ($section) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objEgov = &new eGov($page_content);
+        $objEgov = new eGov($page_content);
         $objTemplate->setVariable("CONTENT_TEXT", $objEgov->getPage());
         break;
 
@@ -1440,9 +1453,9 @@ switch ($section) {
         $modulespath = "modules/downloads/index.class.php";
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objDownloadsModule = &new downloads($page_content);
+        $objDownloadsModule = new downloads($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objDownloadsModule->getPage());
-	break;
+    break;
 
 //-------------------------------------------------------
 // default case
@@ -1462,7 +1475,7 @@ if (isset($_CONFIGURATION['custom']['shopnavbar']) AND $_CONFIGURATION['custom']
              * @ignore
              */
             require_once($modulespath);
-            if (!is_object($sessionObj)) $sessionObj=&new cmsSession();
+            if (!is_object($sessionObj)) $sessionObj=new cmsSession();
             $_ARRAYSHOPLANG = $objInit->loadLanguageData('shop');
             $_ARRAYLANG = array_merge($_ARRAYLANG, $_ARRAYSHOPLANG);
             $boolShop = true;
@@ -1487,7 +1500,7 @@ if(!empty($calendarCheck1) OR !empty($calendarCheck2)) {
          */
 
         require_once($modulespath);
-        $objHomeCalendar = &new HomeCalendar();
+        $objHomeCalendar = new HomeCalendar();
         if(!empty($calendarCheck1)) {
             $objTemplate->setVariable('CALENDAR', $objHomeCalendar->getHomeCalendar());
         }
@@ -1521,7 +1534,7 @@ if(!empty($directoryCheck)) {
          * @ignore
          */
         require_once($modulespath);
-        $objDirectory = &new rssDirectory('');
+        $objDirectory = new rssDirectory('');
         if(!empty($directoryCheck)) {
             $objTemplate->setVariable('TXT_DIRECTORY_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
                $objDirectory->getBlockLatest($directoryCheck);
@@ -1541,7 +1554,7 @@ if(!empty($marketCheck)) {
          * @ignore
          */
         require_once($modulespath);
-        $objMarket = &new Market('');
+        $objMarket = new Market('');
         if(!empty($marketCheck)) {
             $objTemplate->setVariable('TXT_MARKET_LATEST', $_CORELANG['TXT_MARKET_LATEST']);
                $objMarket->getBlockLatest();
@@ -1560,7 +1573,7 @@ if ($_CONFIG['bannerStatus'] == '1') {
          * @ignore
          */
         include_once($modulespath);
-        $objBanner = &new Banner();
+        $objBanner = new Banner();
 
         $objTemplate->setVariable(array(
         'BANNER_GROUP_1'    => $objBanner->getBannerCode(1, $pageId),
@@ -1588,38 +1601,39 @@ if ($_CONFIG['bannerStatus'] == '1') {
 if(!isset($loginStatus)) $loginStatus='';
 
 $objTemplate->setVariable(array(
-    'CHARSET'               => $objInit->getFrontendLangCharset(),
-    'TITLE'                 => $page_title,
-    'METATITLE'             => $page_metatitle,
-    'NAVTITLE'              => $page_catname,
-    'GLOBAL_TITLE'          => $_CONFIG['coreGlobalPageTitle'],
-    'DOMAIN_URL'            => $_CONFIG['domainUrl'],
-    'METAKEYS'              => $page_keywords,
-    'METADESC'              => $page_desc,
-    'METAROBOTS'            => $page_robots,
-    'CONTENT_TITLE'         => $page_title,
-    'CSS_NAME'              => $pageCssName,
-    'PRINT_URL'             => $objInit->getPrintUri(),
-    'PDF_URL'             => $objInit->getPDFUri(),
-    'PAGE_URL'              => $objInit->getPageUri(),
-    'CURRENT_URL'           => $objInit->getCurrentPageUri(),
-    'DATE'                  => showFormattedDate(),
-    'TIME'                  => date("H:i", time()),
-    'NAVTREE'               => $objNavbar->getTrail(),
-    'SUBNAVBAR_FILE'        => $objNavbar->getNavigation($themesPages['subnavbar'],$boolShop),
-    'SUBNAVBAR2_FILE'       => $objNavbar->getNavigation($themesPages['subnavbar2'],$boolShop),
-    'SUBNAVBAR3_FILE'       => $objNavbar->getNavigation($themesPages['subnavbar3'],$boolShop),
-    'NAVBAR_FILE'           => $objNavbar->getNavigation($themesPages['navbar'],$boolShop),
-    'ONLINE_USERS'          => $objCounter->getOnlineUsers(),
-    'VISITOR_NUMBER'        => $objCounter->getVisitorNumber(),
-    'COUNTER'               => $objCounter->getCounterTag(),
-    'BANNER'                => isset($objBanner) ? $objBanner->getBannerJS() : '',
-    'VERSION'               => $_CONFIG['coreCmsName'],
-    'LANGUAGE_NAVBAR'       => $objNavbar->getFrontendLangNavigation(),
-    'ACTIVE_LANGUAGE_NAME'  => $objInit->getFrontendLangName(),
-    'LOGGING_STATUS'        => $loginStatus,
-    'RANDOM'                => md5(microtime()),
-    'TXT_SEARCH'            => $_CORELANG['TXT_SEARCH']
+    'CHARSET'              => $objInit->getFrontendLangCharset(),
+    'TITLE'                => $page_title,
+    'METATITLE'            => $page_metatitle,
+    'NAVTITLE'             => $page_catname,
+    'GLOBAL_TITLE'         => $_CONFIG['coreGlobalPageTitle'],
+    'DOMAIN_URL'           => $_CONFIG['domainUrl'],
+    'METAKEYS'             => $page_keywords,
+    'METADESC'             => $page_desc,
+    'METAROBOTS'           => $page_robots,
+    'CONTENT_TITLE'        => $page_title,
+    'CSS_NAME'             => $pageCssName,
+    'PRINT_URL'            => $objInit->getPrintUri(),
+    'PDF_URL'              => $objInit->getPDFUri(),
+    'PAGE_URL'             => $objInit->getPageUri(),
+    'CURRENT_URL'          => $objInit->getCurrentPageUri(),
+    'DATE'                 => showFormattedDate(),
+    'TIME'                 => date("H:i", time()),
+    'NAVTREE'              => $objNavbar->getTrail(),
+    'SUBNAVBAR_FILE'       => $objNavbar->getNavigation($themesPages['subnavbar'],$boolShop),
+    'SUBNAVBAR2_FILE'      => $objNavbar->getNavigation($themesPages['subnavbar2'],$boolShop),
+    'SUBNAVBAR3_FILE'      => $objNavbar->getNavigation($themesPages['subnavbar3'],$boolShop),
+    'NAVBAR_FILE'          => $objNavbar->getNavigation($themesPages['navbar'],$boolShop),
+    'ONLINE_USERS'         => $objCounter->getOnlineUsers(),
+    'VISITOR_NUMBER'       => $objCounter->getVisitorNumber(),
+    'COUNTER'              => $objCounter->getCounterTag(),
+    'BANNER'               => isset($objBanner) ? $objBanner->getBannerJS() : '',
+    'VERSION'              => $_CONFIG['coreCmsName'],
+    'LANGUAGE_NAVBAR'      => $objNavbar->getFrontendLangNavigation(),
+    'ACTIVE_LANGUAGE_NAME' => $objInit->getFrontendLangName(),
+    'LOGGING_STATUS'       => $loginStatus,
+    'RANDOM'               => md5(microtime()),
+    'TXT_SEARCH'           => $_CORELANG['TXT_SEARCH'],
+    'MODULE_INDEX'         => MODULE_INDEX,
 ));
 
 //-------------------------------------------------------
@@ -1652,7 +1666,7 @@ if (!empty($moduleStyleFile)) {
 
 if(isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1){
     require_once ASCMS_CORE_PATH.'/pdf.class.php';
-     $objPDF             = &new PDF();
+     $objPDF             = new PDF();
      $objPDF->title        = $page_title;
      $objPDF->content     = $objTemplate->get();
      $objPDF->Create();
