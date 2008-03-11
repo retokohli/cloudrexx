@@ -73,7 +73,7 @@ class ShopLibrary
     function _getZones()
     {
         global $objDatabase;
-        $query = "SELECT zones_id, zones_name, activation_status FROM ".DBPREFIX."module_shop_zones ORDER BY zones_name";
+        $query = "SELECT zones_id, zones_name, activation_status FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones ORDER BY zones_name";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
             $arrZones[$objResult->fields['zones_id']] = array(
@@ -146,7 +146,7 @@ class ShopLibrary
     {
         global $objDatabase;
 
-        $query = "SELECT zones_id, countries_id FROM ".DBPREFIX."module_shop_rel_countries ORDER BY id";
+        $query = "SELECT zones_id, countries_id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries ORDER BY id";
         $objResult = $objDatabase->Execute($query);
         while ($objResult && !$objResult->EOF) {
             $arrRelCountries[]=array($objResult->fields['zones_id'], $objResult->fields['countries_id']);
@@ -163,7 +163,7 @@ class ShopLibrary
         $menu = "<input type='hidden' name='old_$menuName' value='$selectedId' />\n".
                 "\n<select name='$menuName'".
                 (!empty($onchange) ? " onchange='$onchange'" : '') .">\n";
-        $query = "SELECT zones_id, zones_name FROM ".DBPREFIX."module_shop_zones WHERE activation_status=1";
+        $query = "SELECT zones_id, zones_name FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones WHERE activation_status=1";
         $objResult = $objDatabase->Execute($query);
         while(!$objResult->EOF) {
             $menu .=
@@ -199,7 +199,7 @@ class ShopLibrary
         $menu = "\n<select name=\"".$menuName."\" ".$onchange.">\n";
 
         $query = "SELECT countries_id, countries_name ".
-            "FROM ".DBPREFIX."module_shop_countries ".
+            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries ".
             "WHERE activation_status=1";
         $objResult = $objDatabase->Execute($query);
 
@@ -287,7 +287,7 @@ class ShopLibrary
         global $objDatabase;
 
          $query = "SELECT id, name, costs, costs_free_sum, status ".
-            "FROM ".DBPREFIX."module_shop_shipment ".
+            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipment ".
             "ORDER BY id";
          $objResult = $objDatabase->Execute($query);
          while(!$objResult->EOF) {
@@ -313,7 +313,7 @@ class ShopLibrary
                            countries_iso_code_2,
                            countries_iso_code_3,
                             activation_status
-                      FROM ".DBPREFIX."module_shop_countries
+                      FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
                       ORDER BY countries_id";
 
          $objResult = $objDatabase->Execute($query);
@@ -336,7 +336,7 @@ class ShopLibrary
         global $objDatabase;
 
          $query = "SELECT id, name, processor_id, costs, costs_free_sum, sort_order, status ".
-                  "FROM ".DBPREFIX."module_shop_payment ".
+                  "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment ".
                   "ORDER BY sort_order";
          $objResult = $objDatabase->Execute($query);
          while(!$objResult->EOF) {
@@ -367,7 +367,7 @@ class ShopLibrary
         $menu = "\n<select name=\"".$menuName."\">\n";
         // paymentHandlers array from the shopmanager class
 
-        $query = "SELECT id, name FROM ".DBPREFIX."module_shop_payment_processors WHERE status=1 ORDER BY name";
+        $query = "SELECT id, name FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment_processors WHERE status=1 ORDER BY name";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
             $selected = ($selectedhandlerName==$objResult->fields['id']) ? "selected=\"selected\"" : "";
@@ -389,7 +389,7 @@ class ShopLibrary
     {
         global $objDatabase;
 
-        $query = "SELECT id, name, value, status FROM ".DBPREFIX."module_shop_config ORDER BY id";
+        $query = "SELECT id, name, value, status FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config ORDER BY id";
         $objResult = $objDatabase->Execute($query);
         while(!$objResult->EOF) {
             $this->arrConfig[$objResult->fields['name']] = array(
@@ -477,7 +477,7 @@ class ShopLibrary
 
         $query = "
             SELECT from_mail, xsender, subject, message
-              FROM ".DBPREFIX."module_shop_mail_content
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content
              WHERE tpl_id=$shopTemplateId
                AND lang_id=$langId
         ";
@@ -549,9 +549,9 @@ class ShopLibrary
         global $objDatabase;
 
         if ($customerId != 0) {
-            $objResult = $objDatabase->SelectLimit("SELECT customerid FROM ".DBPREFIX."module_shop_customers WHERE email='".$email."' AND customerid !=".$customerId, 1);
+            $objResult = $objDatabase->SelectLimit("SELECT customerid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers WHERE email='".$email."' AND customerid !=".$customerId, 1);
         } else {
-            $objResult = $objDatabase->SelectLimit("SELECT customerid FROM ".DBPREFIX."module_shop_customers WHERE email='".$email."'", 1);
+            $objResult = $objDatabase->SelectLimit("SELECT customerid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers WHERE email='".$email."'", 1);
         }
         if ($objResult !== false && $objResult->RecordCount() == 0) {
             return true;
@@ -574,9 +574,9 @@ class ShopLibrary
         global $objDatabase;
 
         if ($customerId != 0) {
-            $objResult = $objDatabase->SelectLimit("SELECT customerid FROM ".DBPREFIX."module_shop_customers WHERE username='".$username."' AND customerid !=".$customerId, 1);
+            $objResult = $objDatabase->SelectLimit("SELECT customerid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers WHERE username='".$username."' AND customerid !=".$customerId, 1);
         } else {
-            $objResult = $objDatabase->SelectLimit("SELECT customerid FROM ".DBPREFIX."module_shop_customers WHERE username='".$username."'", 1);
+            $objResult = $objDatabase->SelectLimit("SELECT customerid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers WHERE username='".$username."'", 1);
         }
         if ($objResult !== false && $objResult->RecordCount() == 0) {
             return true;

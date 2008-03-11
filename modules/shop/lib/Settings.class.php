@@ -113,7 +113,7 @@ class Settings
                            countries_iso_code_2,
                            countries_iso_code_3,
                             activation_status
-                      FROM ".DBPREFIX."module_shop_countries
+                      FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
                       ORDER BY countries_id";
 
          $objResult = $objDatabase->Execute($query);
@@ -141,134 +141,134 @@ class Settings
         global $objDatabase;
 
         if(isset($_POST['general']) && !empty($_POST['general'])) {
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".addslashes($_POST['email'])."'
                                     WHERE name='email'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".addslashes($_POST['confirmation_emails'])."'
                                     WHERE name='confirmation_emails'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
             // added: shop company name and address
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".addslashes($_POST['shop_company'])."'
                                     WHERE name='shop_company'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".addslashes($_POST['shop_address'])."'
                                     WHERE name='shop_address'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".addslashes($_POST['telephone'])."'
                                     WHERE name='telephone'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".addslashes($_POST['fax'])."'
                                     WHERE name='fax'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".addslashes($_POST['yellowpay_id'])."',
                                         status=".(!empty($_POST['yellowpay_status']) ? 1 : 0)."
                                     WHERE name='yellowpay_id'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".addslashes($_POST['yellowpay_hash_seed'])."'
                                     WHERE name='yellowpay_hash_seed'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".addslashes($_POST['yellowpay_delivery_payment_type'])."'
                                     WHERE name='yellowpay_delivery_payment_type'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".addslashes($_POST['saferpay_id'])."',
                                         status=".(!empty($_POST['saferpay_status']) ? 1 : 0)."
                                     WHERE name='saferpay_id'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value=".intval($_POST['saferpay_finalize_payment'])."
                                     WHERE name='saferpay_finalize_payment'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                      SET status='".intval($_POST['saferpay_use_test_account'])."'
                                    WHERE name='saferpay_use_test_account'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                      SET value='".intval($_POST['saferpay_window_option'])."'
                                    WHERE name='saferpay_window_option'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".addslashes($_POST['paypal_account_email'])."',
                                         status=".(!empty($_POST['paypal_status']) ? 1 : 0)."
                                     WHERE name='paypal_account_email'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".addslashes($_POST['tax_number'])."'
                                     WHERE name='tax_number'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".intval($_POST['tax_enabled'])."'
                                     WHERE name='tax_enabled'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
             // default vat rate
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".intval($_POST['tax_default_id'])."'
                                     WHERE name='tax_default_id'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".intval($_POST['tax_included'])."'
                                     WHERE name='tax_included'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".intval($_POST['country_id'])."'
                                     WHERE name='country_id'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='".contrexx_addslashes($_POST['paypal_default_currency'])."'
                                     WHERE name='paypal_default_currency'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET status=".(!empty($_POST['payment_lsv_status']) ? 1 : 0)."
                                     WHERE name='payment_lsv_status'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
 
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value=".intval($_POST['shop_thumbnail_max_width'])."
                                     WHERE name='shop_thumbnail_max_width'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value=".intval($_POST['shop_thumbnail_max_height'])."
                                     WHERE name='shop_thumbnail_max_height'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_config
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value=".intval($_POST['shop_thumbnail_quality'])."
                                     WHERE name='shop_thumbnail_quality'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
 
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_config");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_config");
             return true;
         }
         return false;
@@ -282,8 +282,8 @@ class Settings
     {
         global $objDatabase;
         if(isset($_GET['currencyId']) && !empty($_GET['currencyId'])) {
-            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop_currencies WHERE id=".intval($_GET['currencyId'])." AND is_default=0");
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_currencies");
+            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies WHERE id=".intval($_GET['currencyId'])." AND is_default=0");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies");
         }
     }
 
@@ -298,7 +298,7 @@ class Settings
             $_POST['currencyActiveNew'] = isset($_POST['currencyActiveNew']) ? 1 : 0;
             $_POST['currencyDefaultNew'] = isset($_POST['currencyDefaultNew']) ? 1 : 0;
 
-            $query = "INSERT INTO ".DBPREFIX."module_shop_currencies
+            $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_currencies
                                         (code, symbol, name, rate, status, is_default)
                                  VALUES ('".addslashes($_POST['currencyCodeNew'])."',
                                          '".addslashes($_POST['currencySymbolNew'])."',
@@ -313,9 +313,9 @@ class Settings
             }
             $cId = $objDatabase->Insert_Id();
             if($_POST['currencyDefaultNew']) {
-                $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_currencies Set is_default=0 WHERE id!=".intval($cId));
+                $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies Set is_default=0 WHERE id!=".intval($cId));
             }
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_currencies");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies");
             return true;
         }
         return false;
@@ -336,7 +336,7 @@ class Settings
                  // default currency must be activated
                  $is_active = ($is_default==1 && $status==0)?1:$status;
 
-                $query = "UPDATE ".DBPREFIX."module_shop_currencies
+                $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies
                                        SET code='".addslashes($value)."',
                                            symbol='".addslashes($_POST['currencySymbol'][$cId])."',
                                            name='".addslashes($_POST['currencyName'][$cId])."',
@@ -348,7 +348,7 @@ class Settings
                 $objDatabase->Execute($query);
             } // end foreach
 
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_currencies");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies");
         }
     }
 
@@ -360,13 +360,13 @@ class Settings
     {
         global $objDatabase;
         if(isset($_GET['paymentId']) && !empty($_GET['paymentId'])) {
-            $objResult = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_shop_payment", 2, 0);
+            $objResult = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment", 2, 0);
             if($objResult->RecordCount() == 2) {
-                $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop_payment WHERE id=".intval($_GET['paymentId']));
-                $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop_rel_payment WHERE payment_id=".intval($_GET['paymentId']));
+                $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment WHERE id=".intval($_GET['paymentId']));
+                $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment WHERE payment_id=".intval($_GET['paymentId']));
 
-                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_payment");
-                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_rel_payment");
+                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_payment");
+                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment");
             }
         }
     }
@@ -381,7 +381,7 @@ class Settings
         if(isset($_POST['payment_add']) && !empty($_POST['payment_add'])) {
             $_POST['paymentActive_new'] = isset($_POST['paymentActive_new']) ? 1 : 0;
 
-            $query = "INSERT INTO ".DBPREFIX."module_shop_payment (".
+            $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_payment (".
                 "name, processor_id, costs, costs_free_sum, status) VALUES ('".
                 addslashes($_POST['paymentName_new'])."', '".
                 intval($_POST['paymentHandler_new'])."', '".
@@ -390,9 +390,9 @@ class Settings
                 intval($_POST['paymentActive_new']).")";
             $objDatabase->Execute($query);
             $pId = $objDatabase->Insert_ID();
-            $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop_rel_payment (zones_id, payment_id) VALUES (".intval($_POST['paymentZone_new']).",".intval($pId).")");
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_payment");
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_rel_payment");
+            $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment (zones_id, payment_id) VALUES (".intval($_POST['paymentZone_new']).",".intval($pId).")");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_payment");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment");
         }
     }
 
@@ -407,7 +407,7 @@ class Settings
             foreach ($_POST['paymentName'] as $pId => $value) {
                 $_POST['paymentActive'][$pId] = isset($_POST['paymentActive'][$pId]) ? 1 : 0;
 
-                $query = "UPDATE ".DBPREFIX."module_shop_payment ".
+                $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_payment ".
                     "SET name='".addslashes($value).
                     "', processor_id='".intval($_POST['paymentHandler'][$pId]).
                     "', costs='".addslashes($_POST['paymentCosts'][$pId]).
@@ -416,15 +416,15 @@ class Settings
                     "' WHERE id=".intval($pId);
                 $objDatabase->Execute($query);
                 if($_POST['old_paymentZone'][$pId] != $_POST['paymentZone'][$pId]) {
-                    $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_rel_payment Set zones_id='".intval($_POST['paymentZone'][$pId])."' WHERE payment_id=".intval($pId));
+                    $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment Set zones_id='".intval($_POST['paymentZone'][$pId])."' WHERE payment_id=".intval($pId));
                     if(!$objDatabase->Affected_Rows()) {
-                        $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop_rel_payment
+                        $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment
                                               (zones_id, payment_id) VALUES (".intval($_POST['paymentZone'][$pId]).", ".intval($pId).")");
                     }
                 }
             }
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_payment");
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_rel_payment");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_payment");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment");
         }
     }
 
@@ -475,7 +475,7 @@ class Settings
 // -- not decided yet.
                 $sid = intval($objDatabase->Insert_ID());
                 $objResult = $objDatabase->Execute(
-                    "INSERT INTO ".DBPREFIX."module_shop_rel_shipment (zones_id, shipment_id) ".
+                    "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment (zones_id, shipment_id) ".
                     "VALUES (".intval($_POST['shipmentZoneNew']).", $sid)");
                 return $objResult;
             }
@@ -566,14 +566,14 @@ class Settings
                     // also use the (possibly changed) svalue where necessary.
                     // note that shipment_id here actually refers to a shipper!
                     $query =
-                        "UPDATE ".DBPREFIX."module_shop_rel_shipment ".
+                        "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment ".
                         "SET zones_id=".intval($_POST['shipmentZone'][$sid]).
                         " WHERE shipment_id=$svalue";
                         $objResult = $objDatabase->Execute($query);
                     // no such record yet? insert a new one
                     if(!$objDatabase->Affected_Rows()) {
                         $query =
-                            "INSERT INTO ".DBPREFIX."module_shop_rel_shipment (zones_id, shipment_id) ".
+                            "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment (zones_id, shipment_id) ".
                             "VALUES (".intval($_POST['shipmentZone'][$sid]).", $svalue)";   //
                         $objResult = $objDatabase->Execute($query);
                         if (!$objResult) {
@@ -603,7 +603,7 @@ class Settings
             foreach ($this->arrCountries as $cValues) {
                 if($cValues['activation_status'] == ($updateList == 'list1' ? 1 : 0)) {
                     if(!in_array($cValues['countries_id'],$_POST[$updateList])) {
-                        $query = "UPDATE ".DBPREFIX."module_shop_countries
+                        $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
                                                     Set activation_status=".($updateList == 'list1' ? 0 : 1)."
                                                     WHERE countries_id=".intval($cValues['countries_id']);
                         $objDatabase->Execute($query);
@@ -613,12 +613,12 @@ class Settings
                 }
             }
             foreach ($_POST[$updateList] as $cId) {
-                $query = "UPDATE ".DBPREFIX."module_shop_countries
+                $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
                                             Set activation_status=".($updateList == 'list1' ? 1 : 0)."
                                             WHERE countries_id=".intval($cId);
                 $objDatabase->Execute($query);
             }
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_countries");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_countries");
         }
     }
 
@@ -631,18 +631,18 @@ class Settings
         global $objDatabase;
         if(isset($_GET['zonesId']) && !empty($_GET['zonesId'])) {
             // Delete zone
-            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop_zones WHERE zones_id=".intval($_GET['zonesId']));
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_zones");
+            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones WHERE zones_id=".intval($_GET['zonesId']));
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");
 
             // Delete country relations
-            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop_rel_countries WHERE zones_id=".intval($_GET['zonesId']));
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_rel_countries");
+            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries WHERE zones_id=".intval($_GET['zonesId']));
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
 
             // Update relations
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_rel_payment Set zones_id=1 WHERE zones_id=".intval($_GET['zonesId']));
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_rel_payment");
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_rel_shipment Set zones_id=1 WHERE zones_id=".intval($_GET['zonesId']));
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_rel_shipment");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment Set zones_id=1 WHERE zones_id=".intval($_GET['zonesId']));
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment Set zones_id=1 WHERE zones_id=".intval($_GET['zonesId']));
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment");
         }
     }
 
@@ -654,16 +654,16 @@ class Settings
     {
         global $objDatabase;
         if(isset($_POST['zones_new']) && !empty($_POST['zones_new'])) {
-            $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop_zones (zones_name, activation_status) VALUES ('".addslashes($_POST['zone_name_new'])."',".(isset($_POST['zone_active_new']) ? 1 : 0).")");
+            $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_zones (zones_name, activation_status) VALUES ('".addslashes($_POST['zone_name_new'])."',".(isset($_POST['zone_active_new']) ? 1 : 0).")");
             $zId = $objDatabase->Insert_ID();
 
             if(isset($_POST['selected_countries'])) {
                 foreach ($_POST['selected_countries'] as $cId) {
-                    $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop_rel_countries (zones_id, countries_id) VALUES (".intval($zId).",".intval($cId).")");
+                    $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (zones_id, countries_id) VALUES (".intval($zId).",".intval($cId).")");
                 }
-                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_rel_countries");
+                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
             }
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_zones");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");
         }
     }
 
@@ -675,7 +675,7 @@ class Settings
     {
         global $objDatabase;
         if(isset($_POST['zones']) && !empty($_POST['zones'])) {
-            $query= "SELECT zones_id, countries_id FROM ".DBPREFIX."module_shop_rel_countries";
+            $query= "SELECT zones_id, countries_id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries";
             $objResult = $objDatabase->Execute($query);
             if ($objResult !== false) {
                 $arrRelCountries = array();
@@ -691,7 +691,7 @@ class Settings
 
                 if(isset($_POST['zone_list']) && !empty($_POST['zone_list'])) {
                     foreach ($_POST['zone_list'] as $zId) {
-                        $query = "UPDATE ".DBPREFIX."module_shop_zones SET ".
+                        $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_zones SET ".
                             "zones_name='".addslashes($_POST['zone_name'][$zId])."', ".
                             "activation_status=".(isset($_POST['zone_active'][$zId]) ? 1 : 0).
                             "WHERE zones_id=".intval($zId);
@@ -701,7 +701,7 @@ class Settings
                             foreach ($arrRelCountries[$zId] as $cId) {
                                 if (!in_array($cId, $_POST['selected_countries'][$zId])) {
                                     $objDatabase->Execute(
-                                        "DELETE FROM ".DBPREFIX."module_shop_rel_countries ".
+                                        "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries ".
                                         "WHERE zones_id=$zId AND countries_id=$cId");
                                 } else {
                                     unset($_POST['selected_countries'][$zId][array_search($cId, $_POST['selected_countries'][$zId])]);
@@ -711,14 +711,14 @@ class Settings
                         if (isset($_POST['selected_countries'][$zId])) {
                             foreach ($_POST['selected_countries'][$zId] as $cId) {
                                 $objDatabase->Execute(
-                                    "INSERT INTO ".DBPREFIX."module_shop_rel_countries ".
+                                    "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries ".
                                     "(zones_id, countries_id) VALUES ".
                                     "($zId, $cId)");
                             }
                         }
                     }
-                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_zones");
-                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_rel_countries");
+                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");
+                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
                 }
             }
         }
@@ -732,9 +732,9 @@ class Settings
     {
         global $objDatabase;
         if(isset($_GET['delTplId']) && !empty($_GET['delTplId'])){
-            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop_mail WHERE id=".intval($_GET['delTplId'])." AND protected!=1");
+            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail WHERE id=".intval($_GET['delTplId'])." AND protected!=1");
             if($objDatabase->affected_rows() == 1){
-                $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop_mail_content WHERE tpl_id=".intval($_GET['delTplId']));
+                $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content WHERE tpl_id=".intval($_GET['delTplId']));
             }
         }
         if(isset($_GET['delMailId']) && !empty($_GET['delMailId'])){
@@ -746,11 +746,11 @@ class Settings
                     break;
                 }
             }
-            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop_mail_content WHERE id=".intval($_GET['delMailId'])." AND lang_id!=".$defaultLang);
+            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content WHERE id=".intval($_GET['delMailId'])." AND lang_id!=".$defaultLang);
         }
         if((isset($_GET['delTplId']) && !empty($_GET['delTplId'])) || (isset($_GET['delMailId']) && !empty($_GET['delMailId']))){
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_mail");
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_mail_content");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content");
         }
     }
 
@@ -765,7 +765,7 @@ class Settings
             if (   $_POST['tplId'] == 0
                 || (   isset($_POST['shopMailSaveNew']))) {
                 $query = "
-                    INSERT INTO ".DBPREFIX."module_shop_mail (
+                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_mail (
                         tplname, protected
                     ) VALUES (
                         '".contrexx_addslashes($_POST['shopMailTemplate'])."', 0)
@@ -783,7 +783,7 @@ class Settings
                 }
 
                 $query = "
-                    INSERT INTO ".DBPREFIX."module_shop_mail_content (
+                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content (
                         tpl_id, lang_id, from_mail, xsender, subject, message
                     ) VALUES (
                         ".intval($tlpId).", $defaultLang,
@@ -793,8 +793,8 @@ class Settings
                         '".contrexx_addslashes($_POST['shopMailBody'])."'
                     )";
                 $objDatabase->Execute($query);
-                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_mail");
-                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_mail_content");
+                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail");
+                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content");
             }
         }
     }
@@ -815,7 +815,7 @@ class Settings
             {
                 if (!empty($_POST['mailId'])) {
                     $query = "
-                        UPDATE ".DBPREFIX."module_shop_mail_content
+                        UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content
                            SET from_mail='".contrexx_addslashes($_POST['shopMailFromAddress'])."',
                                xsender='".contrexx_addslashes($_POST['shopMailFromName'])."',
                                subject='".contrexx_addslashes($_POST['shopMailSubject'])."',
@@ -823,7 +823,7 @@ class Settings
                          WHERE id=".intval($_POST['mailId']);
                     $objDatabase->Execute($query);
                 } else {
-                    $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop_mail_content ".
+                    $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content ".
                     "(tpl_id, lang_id, from_mail, xsender, subject, message) VALUES (".
                     intval($_POST['tplId']).", ".intval($_POST['langId']).", '".
                     contrexx_addslashes($_POST['shopMailFromAddress'])."', '".
@@ -831,18 +831,18 @@ class Settings
                     contrexx_addslashes($_POST['shopMailSubject'])."', '".
                     contrexx_addslashes($_POST['shopMailBody'])."')");
                 }
-                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_mail_content");
+                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content");
                 $objResult = $objDatabase->Execute("
                     SELECT protected
-                      FROM ".DBPREFIX."module_shop_mail
+                      FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail
                      WHERE id=".intval($_POST['tplId']));
                 if (!$objResult->EOF) {
                     if (!$objResult->fields['protected']) {
                         $objDatabase->Execute("
-                            UPDATE ".DBPREFIX."module_shop_mail
+                            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_mail
                                SET tplname='".contrexx_addslashes($_POST['shopMailTemplate'])."'
                              WHERE id=".intval($_POST['tplId']));
-                        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_mail");
+                        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail");
                     }
                 }
             }
@@ -912,11 +912,11 @@ class Settings
         $vatId = '';
         if (isset($_GET['setVatAll'])) {
             $vatId = $_GET['setVatAll'];
-            $query = "UPDATE ".DBPREFIX."module_shop_products SET vat_id=$vatId";
+            $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products SET vat_id=$vatId";
         }
         if (isset($_GET['setVatUnset'])) {
             $vatId = $_GET['setVatUnset'];
-            $query = "UPDATE ".DBPREFIX."module_shop_products SET vat_id=$vatId ".
+            $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products SET vat_id=$vatId ".
                 "WHERE vat_id IS NULL";
         }
         if ($vatId) {

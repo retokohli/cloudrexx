@@ -8,14 +8,14 @@ function delMail(mailId)
     alert("{TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE}");
   } else {
     if(confirm("{TXT_CONFIRM_DELETE_TEMPLATE_LANGUAGE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
-      window.location.replace("index.php?cmd=shop&act=settings&tpl=mail&delMailId="+mailId);
+      window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&delMailId="+mailId);
   }
 }
 
 function delTpl(tplId)
 {
   if(confirm("{TXT_CONFIRM_DELETE_TEMPLATE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
-    window.location.replace("index.php?cmd=shop&act=settings&tpl=mail&delTplId="+tplId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&delTplId="+tplId);
 }
 
 function sendMail()
@@ -35,7 +35,7 @@ function sendMail()
 
 function loadTpl(tplId,langId,strTab)
 {
-  strUri = "index.php?cmd=shop&act=settings&tpl=mail&tplId="+tplId+"&langId="+langId+"&strTab="+strTab;
+  strUri = "index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&tplId="+tplId+"&langId="+langId+"&strTab="+strTab;
   if(document.getElementById('portMail')){
     if(document.shopFormEdit.elements['portMail'].checked == true){
       strUri += "&portLangId="+document.shopFormEdit.elements['loadedLangId'].value;
@@ -263,7 +263,7 @@ function loadTpl(tplId,langId,strTab)
 
 <!-- start shopMailEdit div -->
 <div id="shopMailEdit" class="mailTab" style="{SHOP_MAIL_EDIT_STYLE}">
-  <form name="shopFormEdit" method="post" action="index.php?cmd=shop&amp;act=settings&amp;tpl=mail">
+  <form name="shopFormEdit" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=mail">
     <input type="hidden" id="loadedLangId" name="loadedLangId" value="{SHOP_LOADD_LANGUAGE_ID}" />
     <input type="hidden" name="mailId" value="{SHOP_MAIL_ID}" />
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
@@ -361,7 +361,7 @@ function loadTpl(tplId,langId,strTab)
 
 <!-- start shopMailSend div -->
 <div id="shopMailSend" class="mailTab" style="{SHOP_MAIL_SEND_STYLE}">
-<form name="shopFormSend" method="post" action="index.php?cmd=shop&amp;act=settings&amp;tpl=mail" onsubmit="return sendMail();">
+<form name="shopFormSend" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=mail" onsubmit="return sendMail();">
 <input type="hidden" name="mailId" value="{SHOP_MAIL_ID_SEND}" />
 <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
   <tr>

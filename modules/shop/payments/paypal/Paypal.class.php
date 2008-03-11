@@ -87,9 +87,9 @@ class PayPal
         $amount = $_SESSION['shop']['grand_total_price'];
 
         $host = ASCMS_PROTOCOL.'://'.$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET;
-        $return = $host.'/index.php?section=shop&amp;cmd=success&amp;handler=paypal&amp;result=1&amp;orderid='.$orderid;
-        $cancel_return = $host.'/index.php?section=shop&amp;cmd=success&amp;handler=paypal&amp;result=2&amp;orderid='.$orderid;
-        $notify_url = $host.'/index.php?section=shop&amp;act=paypalIpnCheck';
+        $return = $host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=1&amp;orderid='.$orderid;
+        $cancel_return = $host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=2&amp;orderid='.$orderid;
+        $notify_url = $host.'/index.php?section=shop'.MODULE_INDEX.'&amp;act=paypalIpnCheck';
 
         $retval = "<script language='JavaScript' type='text/javascript'>
             // <![CDATA[
@@ -107,7 +107,7 @@ class PayPal
               : (_PAYPAL_DEBUG == 1
                   ? "\n<form name='paypal' action='https://www.sandbox.paypal.com/ch/cgi-bin/webscr' method='post'>\n"
                   // _PAYPAL_DEBUG == 2 or higher
-                  : "\n<form name='paypal' action='$host/index.php?section=shop&amp;act=testIpn' method='post'>\n"
+                  : "\n<form name='paypal' action='$host/index.php?section=shop".MODULE_INDEX."&amp;act=testIpn' method='post'>\n"
             ));
         $retval .= $this->getInput('cmd', '_xclick');
         $retval .= $this->getInput('business', $business);
@@ -141,7 +141,7 @@ class PayPal
     {
         global $objDatabase;
         $query = "
-            SELECT value FROM ".DBPREFIX."module_shop_config
+            SELECT value FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
              WHERE name='paypal_account_email'
         ";
         $objResult = $objDatabase->Execute($query);
@@ -177,7 +177,7 @@ class PayPal
         }
         $query = "
             SELECT order_status
-              FROM ".DBPREFIX."module_shop_orders
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
              WHERE orderid=$orderid
         ";
         $objResult = $objDatabase->Execute($query);
@@ -229,7 +229,7 @@ if (_PAYPAL_DEBUG) @fwrite($log, "no fp, errno $errno, error $errstr\r\nexiting\
         $header  =
             (_PAYPAL_DEBUG < 2
                 ? "POST /cgi-bin/webscr HTTP/1.0\r\n"
-                : "POST ".ASCMS_PATH_OFFSET."/index.php?section=shop&act=testIpnValidate HTTP/1.0\r\n"
+                : "POST ".ASCMS_PATH_OFFSET."/index.php?section=shop".MODULE_INDEX."&act=testIpnValidate HTTP/1.0\r\n"
             ).
             "Content-Type: application/x-www-form-urlencoded\r\n".
             "Content-Length: ".strlen($req)."\r\n\r\n";
@@ -248,19 +248,19 @@ if (_PAYPAL_DEBUG) @fwrite($log, "sent\r\n$header$req\r\n\r\n");
         $receiver_email = $_POST['receiver_email'];
         $orderid = $_POST['custom'];
 
-        $query = "SELECT `value` FROM ".DBPREFIX."module_shop_config
+        $query = "SELECT `value` FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
                   WHERE `name`='paypal_account_email'";
         $objResult = $objDatabase->Execute($query);
 if (_PAYPAL_DEBUG) @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
         $paypalAccountEmail = $objResult->fields['value'];
 
-        $query = "SELECT currency_order_sum, selected_currency_id FROM ".DBPREFIX."module_shop_orders WHERE orderid=$orderid";
+        $query = "SELECT currency_order_sum, selected_currency_id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders WHERE orderid=$orderid";
         $objResult = $objDatabase->Execute($query);
 if (_PAYPAL_DEBUG) @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
         $currencyId = $objResult->fields['selected_currency_id'];
         $amount = $objResult->fields['currency_order_sum'];
 
-        $query = "SELECT code FROM ".DBPREFIX."module_shop_currencies WHERE id=$currencyId";
+        $query = "SELECT code FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies WHERE id=$currencyId";
         $objResult = $objDatabase->Execute($query);
 if (_PAYPAL_DEBUG) @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
         $currencyCode = $objResult->fields['code'];
@@ -292,7 +292,7 @@ if (_PAYPAL_DEBUG) @fwrite($log, "INVALID\r\nquery $query\r\nresult ".($objResul
 
 if (_PAYPAL_DEBUG) {
   echo "The response from IPN was: <b>".$res."</b><br><br>";
-  $query = "SELECT order_status FROM ".DBPREFIX."module_shop_orders WHERE orderid=$orderid";
+  $query = "SELECT order_status FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders WHERE orderid=$orderid";
   $objResult = $objDatabase->Execute($query);
   @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
   $orderStatus = $objResult->fields['order_status'];
@@ -317,7 +317,7 @@ if (_PAYPAL_DEBUG) {
     {
         global $objDatabase;
 
-        $query = "SELECT `value` FROM ".DBPREFIX."module_shop_config
+        $query = "SELECT `value` FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
                   WHERE `name`='paypal_account_email'";
         $objResult = $objDatabase->Execute($query);
         $paypalAccountEmail = $objResult->fields['value'];
@@ -327,7 +327,7 @@ $log = @fopen(ASCMS_DOCUMENT_ROOT.'/testIpn.txt', 'w');
 
         $currencyId = 1; // CHF
         $amount = '99.00';
-        $query = "SELECT code FROM ".DBPREFIX."module_shop_currencies WHERE id=$currencyId";
+        $query = "SELECT code FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies WHERE id=$currencyId";
         $objResult = $objDatabase->Execute($query);
         $currencyCode = $objResult->fields['code'];
         // Create order entry
@@ -381,7 +381,7 @@ die ("Error: Failed to insert order<br />$query<br />");
         }
         // Post IPN to shop
         $header  =
-            "POST ".ASCMS_PATH_OFFSET."/index.php?section=shop&act=paypalIpnCheck HTTP/1.0\r\n".
+            "POST ".ASCMS_PATH_OFFSET."/index.php?section=shop".MODULE_INDEX."&act=paypalIpnCheck HTTP/1.0\r\n".
             "Content-Type: application/x-www-form-urlencoded\r\n".
             "Content-Length: ".strlen($req)."\r\n\r\n";
         fwrite($fp, "$header$req");
@@ -397,20 +397,20 @@ die ("Error: Failed to insert order<br />$query<br />");
 die('
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html><head><title>IPN Test</title></head><body>
-<form method="post" action="'.ASCMS_PATH_OFFSET.'/index.php?section=shop&act=paypalIpnCheck">
+<form method="post" action="'.ASCMS_PATH_OFFSET.'/index.php?section=shop'.MODULE_INDEX.'&act=paypalIpnCheck">
 <input type="hidden" name="mc_gross" value="'.$amount.'" />
 <input type="hidden" name="mc_currency" value="'.$currencyCode.'" />
 <input type="hidden" name="receiver_email" value="'.$paypalAccountEmail.'" />
 <input type="hidden" name="custom" value="'.$orderid.'" />
 <input type="submit" name="ipn" value="IPN senden" />
 </form>
-<a href="'.$host.'/index.php?section=shop&amp;cmd=success&amp;handler=paypal&amp;result=1&amp;orderid='.$orderid.'">
+<a href="'.$host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=1&amp;orderid='.$orderid.'">
   Erfolgreiche Zahlung, zurück zum Shop
 </a><br />
-<a href="'.$host.'/index.php?section=shop&amp;cmd=success&amp;handler=paypal&amp;result=2&amp;orderid='.$orderid.'">
+<a href="'.$host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=2&amp;orderid='.$orderid.'">
   Zahlung annulieren, zurück zum Shop
 </a><br />
-<a href="'.$host.'/index.php?section=shop&amp;cmd=success&amp;handler=paypal&amp;result=0&amp;orderid='.$orderid.'">
+<a href="'.$host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=0&amp;orderid='.$orderid.'">
   Zahlung abbrechen, zurück zum Shop
 </a><br />
 </body></html>
@@ -431,19 +431,19 @@ $log = @fopen(ASCMS_DOCUMENT_ROOT.'/ipnValidateLog.txt', 'w');
 
         $orderid = $_POST['custom'];
 
-        $query = "SELECT `value` FROM ".DBPREFIX."module_shop_config
+        $query = "SELECT `value` FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
                   WHERE `name`='paypal_account_email'";
         $objResult = $objDatabase->Execute($query);
 @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
         $paypalAccountEmail = $objResult->fields['value'];
 
-        $query = "SELECT currency_order_sum, selected_currency_id FROM ".DBPREFIX."module_shop_orders WHERE orderid=$orderid";
+        $query = "SELECT currency_order_sum, selected_currency_id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders WHERE orderid=$orderid";
         $objResult = $objDatabase->Execute($query);
 @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
         $currencyId = $objResult->fields['selected_currency_id'];
         $amount = $objResult->fields['currency_order_sum'];
 
-        $query = "SELECT code FROM ".DBPREFIX."module_shop_currencies WHERE id=$currencyId";
+        $query = "SELECT code FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies WHERE id=$currencyId";
         $objResult = $objDatabase->Execute($query);
 @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
         $currencyCode = $objResult->fields['code'];

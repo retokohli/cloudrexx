@@ -260,7 +260,7 @@ class Customer
 
         $query = "
             SELECT customerid
-            FROM ".DBPREFIX."module_shop_customers
+            FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
             WHERE username='$userName'
               AND password='$password'
         ";
@@ -727,7 +727,7 @@ class Customer
             return false;
         }
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop_customers
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
             WHERE customerid=$this->id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -764,7 +764,7 @@ class Customer
         global $objDatabase;
 
         $query = "
-            UPDATE ".DBPREFIX."module_shop_customers
+            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_customers
             SET prefix='".contrexx_addslashes($this->prefix)."',
                 firstname='".contrexx_addslashes($this->firstName)."',
                 lastname='".contrexx_addslashes($this->lastName)."',
@@ -806,7 +806,7 @@ class Customer
         global $objDatabase;
 
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop_customers (
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_customers (
                 prefix, firstname, lastname, company, address, city, zip,
                 country_id, phone, fax, email,
                 ccnumber, ccdate, ccname, cvc_code,
@@ -860,7 +860,7 @@ class Customer
 
         $query = "
             SELECT *
-            FROM ".DBPREFIX."module_shop_customers
+            FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
             WHERE customerid=$id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -925,7 +925,7 @@ class Customer
                         contrexx_addslashes($pattern)."%'";
                 } else {
                     $query  = "
-                        SELECT id FROM ".DBPREFIX."module_shop_customers
+                        SELECT id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
                         WHERE ".$this->fieldNames[$fieldName]." LIKE '%".
                         contrexx_addslashes($pattern)."%'";
                 }

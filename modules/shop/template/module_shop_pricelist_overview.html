@@ -4,12 +4,12 @@
 function deleteList(plid)
 {
     if(confirm('{TXT_DELETE_PRICELIST_MSG}'))
-        window.location.replace("index.php?cmd=shop&act=pricelist_delete&id="+plid);
+        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=pricelist_delete&id="+plid);
 }
 
 function newPricelist()
 {
-  window.location.replace("index.php?cmd=shop&act=pricelist_new");
+  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=pricelist_new");
 }
 
 function shopPricelistDoAction(strForm,strCheckbox,objSelect,strAct)
@@ -18,7 +18,7 @@ function shopPricelistDoAction(strForm,strCheckbox,objSelect,strAct)
     switch(strAct){
       case 'del':
         if(confirm('{TXT_DELETE_PRICELIST_MSG}')){
-          document.forms[strForm].action = "index.php?cmd=shop&act=pricelist_delete";
+          document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=pricelist_delete";
           document.forms[strForm].submit();
         }
         break;
@@ -31,7 +31,7 @@ function shopPricelistDoAction(strForm,strCheckbox,objSelect,strAct)
 // -->
 </script>
 <!-- BEGIN shopPricelistOverview -->
-<form name="shopSelectPricelist" method="post" action="?cmd=shop&amp;act=pricelist">
+<form name="shopSelectPricelist" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=pricelist">
   <table width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
     <tr>
       <th width="1%"nowrap="nowrap" style="text-align:center;">#</th>
@@ -47,7 +47,7 @@ function shopPricelistDoAction(strForm,strCheckbox,objSelect,strAct)
       <td nowrap="nowrap">{PRICELIST_OVERVIEW_NAME}</td>
       <td nowrap="nowrap">{PRICELIST_OVERVIEW_PDFLINK}</td>
       <td nowrap="nowrap"><div style="text-align:right;">
-        <a href="?cmd=shop&amp;act=pricelist_edit&amp;id={PRICELIST_OVERVIEW_ID}" target="_self" title="{TXT_EDIT}"><img border="0" src="images/icons/edit.gif" width="16" height="16" alt="{TXT_EDIT}" /></a>
+        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=pricelist_edit&amp;id={PRICELIST_OVERVIEW_ID}" target="_self" title="{TXT_EDIT}"><img border="0" src="images/icons/edit.gif" width="16" height="16" alt="{TXT_EDIT}" /></a>
         <a href="javascript:deleteList({PRICELIST_OVERVIEW_ID})" target="_self" title="{TXT_DELETE}"><img border="0" src="images/icons/delete.gif" width="16" height="16" alt="{TXT_DELETE}" /></a>
       </div></td>
     </tr>

@@ -16,14 +16,14 @@
 
 Modifications to the Contrexx V1.1 Database structure:
 
-ALTER TABLE ".DBPREFIX."module_shop_categories ADD picture VARCHAR (255) NOT NULL DEFAULT '';
-ALTER TABLE ".DBPREFIX."module_shop_categories ADD flags   VARCHAR (100) NOT NULL DEFAULT '';
-ALTER TABLE ".DBPREFIX."module_shop_categories ADD FULLTEXT (flags);
+ALTER TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_categories ADD picture VARCHAR (255) NOT NULL DEFAULT '';
+ALTER TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_categories ADD flags   VARCHAR (100) NOT NULL DEFAULT '';
+ALTER TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_categories ADD FULLTEXT (flags);
 
 Full structure:
 
-DROP TABLE IF EXISTS ".DBPREFIX."module_shop_categories;
-CREATE TABLE ".DBPREFIX."module_shop_categories (
+DROP TABLE IF EXISTS ".DBPREFIX."module_shop".MODULE_INDEX."_categories;
+CREATE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_categories (
   catid       INT(10)     UNSIGNED NOT NULL auto_increment PRIMARY KEY,
   parentid    INT(10)     UNSIGNED NOT NULL DEFAULT '0',
   catname     VARCHAR(255)         NOT NULL DEFAULT '',
@@ -53,8 +53,8 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        From time to time, do something like this:
- *              $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_categories");
- *              $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products");
+ *              $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_categories");
+ *              $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products");
  */
 class ShopCategory
 {
@@ -384,7 +384,7 @@ class ShopCategory
 
         $query = "
             SELECT 1
-              FROM ".DBPREFIX."module_shop_categories
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
              WHERE catid=$this->id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -464,7 +464,7 @@ class ShopCategory
         global $objDatabase;
 
         $query = "
-            UPDATE ".DBPREFIX."module_shop_categories
+            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_categories
             SET catname='".addslashes($this->name)."',
                 parentid=$this->parentId,
                 catstatus=".($this->status ? 1 : 0).",
@@ -495,7 +495,7 @@ echo("ShopCategory::update(): ERROR: Query failed: $query<br />");
         global $objDatabase;
 
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop_categories (
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_categories (
                 catname, parentid, catstatus, catsorting,
                 picture, flags
                 ".($this->id > 0 ? ', catid' : '')."
@@ -546,7 +546,7 @@ echo("ShopCategory::insert(): ERROR: Query failed: $query<br />");
 
         // Delete Category
         $objResult = $objDatabase->Execute("
-            DELETE FROM ".DBPREFIX."module_shop_categories
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
             WHERE catid=$this->id
         ");
         if (!$objResult) {
@@ -635,7 +635,7 @@ echo("ShopCategory::insert(): ERROR: Query failed: $query<br />");
         global $objDatabase;
         $objResult = $objDatabase->Execute("
             SELECT *
-              FROM ".DBPREFIX."module_shop_categories
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
              WHERE catid=$catId
         ");
         if (!$objResult || $objResult->RecordCount() == 0) {
@@ -687,7 +687,7 @@ echo("ShopCategory::insert(): ERROR: Query failed: $query<br />");
 
         $query = "
             SELECT catid
-              FROM ".DBPREFIX."module_shop_categories
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
              WHERE parentid=$this->id
           ORDER BY catsorting ASC
         ";
@@ -729,7 +729,7 @@ echo("ShopCategory::insert(): ERROR: Query failed: $query<br />");
 
         $query = "
            SELECT catid
-             FROM ".DBPREFIX."module_shop_categories
+             FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
             WHERE ".($flagActiveOnly ? 'catstatus=1 AND' : '')."
                   parentid=$this->parentId AND
                   catname='".addslashes($strName)."'

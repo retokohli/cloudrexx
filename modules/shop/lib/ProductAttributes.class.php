@@ -146,9 +146,9 @@ class ProductAttributes  // friend Product
 
         $query = "
             SELECT DISTINCT id, name, display_type
-              FROM ".DBPREFIX."module_shop_products_attributes_name
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
             ".($productId
-              ? "INNER JOIN ".DBPREFIX."module_shop_products_attributes
+              ? "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
                          ON attributes_name_id=id
                       WHERE product_id=$productId
                    ORDER BY sort_id ASC
@@ -187,7 +187,7 @@ class ProductAttributes  // friend Product
 
         $query = "
             SELECT attributes_value_id, sort_id
-              FROM ".DBPREFIX."module_shop_products_attributes
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
              WHERE product_id=$productId
           ORDER BY sort_id ASC
         ";
@@ -234,7 +234,7 @@ class ProductAttributes  // friend Product
 
         $query = "
             SELECT *
-              FROM ".DBPREFIX."module_shop_products_attributes
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
         ".($productId ? "WHERE product_id=$productId" : '')."
           ORDER BY name_id ASC, sort_id ASC
         ";
@@ -286,7 +286,7 @@ class ProductAttributes  // friend Product
 
         // fields: attribute_id, product_id, attributes_name_id, attributes_value_id, sort_id
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop_products_attributes (
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes (
                 product_id,
                 attributes_name_id,
                 attributes_value_id,
@@ -318,7 +318,7 @@ class ProductAttributes  // friend Product
         global $objDatabase;
 
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop_products_attributes
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
              WHERE product_id=$productId
         ";
         $objResult = $objDatabase->Execute($query);
@@ -340,17 +340,17 @@ class ProductAttributes  // friend Product
     {
         global $objDatabase;
 
-        $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes";
+        $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
         }
-        $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes_value";
+        $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
         }
-        $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes_name";
+        $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;

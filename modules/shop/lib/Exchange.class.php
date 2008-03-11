@@ -137,19 +137,15 @@ class Exchange
            $this->strMethod = $method;
         $this->arrExchangeStep[$this->strMethod] = $step;
 
-                        // Check if we are in the right step
-
+/*  TODO: This seems obsolete.  As does the whole class.
+        // Check if we are in the right step
         if($this->arrExchangeStep['import'] != $this->arrExchangeSteps['import'][0]) {
 //$this->checkStep('import');
         }
         if(!$this->arrExchangeStep['export'] != $this->arrExchangeSteps['export'][0]) {
-    //        $this->checkStep('export');
+//$this->checkStep('export');
         }
-
-
-
-
-
+*/
 
         // Selects the export page and executes the export function
         $this->selectPage('export',$this->arrExchangeStep['export']);
@@ -230,10 +226,10 @@ class Exchange
 
                 switch($_SESSION['shop_exchange_export']['table']['name'])
                 {
-                    case DBPREFIX."module_shop_products":
+                    case DBPREFIX."module_shop".MODULE_INDEX."_products":
                         // Gets the product selection list
                         $query = "SELECT catid, parentid, catname
-                                  FROM ".DBPREFIX."module_shop_categories";
+                                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories";
                         if(!($objResult = $objDatabase->Execute($query))) {
                             $i=0;
                             while(!$objResult->EOF) {
@@ -285,7 +281,7 @@ class Exchange
                         ));
 
                 switch($_SESSION['shop_exchange_export']['table']['name']) {
-                    case DBPREFIX."module_shop_products":
+                    case DBPREFIX."module_shop".MODULE_INDEX."_products":
                         $this->_objTpl->setCurrentBlock('categorieList_selectCols');
                         for($i=0;$i<count($_REQUEST['categories']);$i++) {
                             $_SESSION['shop_exchange_export']['products']['categories'][$i] = array(
@@ -334,7 +330,7 @@ class Exchange
                             $link .= $_SESSION['shop_exchange_export']['cols'][$i];
                         }
                         switch($_SESSION['shop_exchange_export']['table']['name']) {
-                            case DBPREFIX."module_shop_products":
+                            case DBPREFIX."module_shop".MODULE_INDEX."_products":
                                 $link .=" FROM ".$_SESSION['shop_exchange_export']['table']['name']." WHERE ";
                                 $first = true;
                                 for($i=0;$i<count($_SESSION['shop_exchange_export']['products']['categories']);$i++) {

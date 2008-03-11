@@ -4,7 +4,7 @@
 function deleteCategory(catId)
 {
   if(confirm('{TXT_CONFIRM_DELETE_SHOP_CATEGORIES}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop&act=delcat&id="+catId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delcat&id="+catId);
 }
 
 function shopCatDoAction(strForm,strCheckbox,objSelect,strAct)
@@ -13,7 +13,7 @@ function shopCatDoAction(strForm,strCheckbox,objSelect,strAct)
     switch(strAct){
       case 'del':
         if(confirm('{TXT_CONFIRM_DELETE_SHOP_CATEGORIES}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
-          document.forms[strForm].action = "index.php?cmd=shop&act=delcat";
+          document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=delcat";
           document.forms[strForm].submit();
         }
         break;
@@ -55,7 +55,7 @@ function SetUrl(url, width, height, alt)
 }
 // -->
 </script>
-<form name="shopForm1" method="post" action="?cmd=shop&amp;act=newcat">
+<form name="shopForm1" method="post" action="?cmd=shop{MODULE_INDEX}&amp;act=newcat">
   <table width="100%" border="0" cellspacing="0" cellpadding="0" class="adminlist">
     <tr>
       <th colspan="2">{TXT_ADD_NEW_SHOP_GROUP}</th>
@@ -116,7 +116,7 @@ function SetUrl(url, width, height, alt)
               {TXT_SHOP_CATEGORY_IMAGE}<br />
               <a href="javascript:void(0);" name="modCatImageLink" id="lnk"
                 title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}"
-                onclick="openBrowser('?cmd=fileBrowser&amp;standalone=true&amp;type=shop', '1', 'width=800,height=640,resizable=yes,status=no,scrollbars=yes');">
+                onclick="openBrowser('?cmd=fileBrowser&amp;standalone=true&amp;type=shop{MODULE_INDEX}', '1', 'width=800,height=640,resizable=yes,status=no,scrollbars=yes');">
                 <img id="img"
                   style="border:none;width:{SHOP_IMAGE_WIDTH}px;height:{SHOP_IMAGE_HEIGHT}px;"
                   src="{SHOP_PICTURE_IMG_HREF}" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}"
@@ -134,7 +134,7 @@ function SetUrl(url, width, height, alt)
   </table>
 </form>
 <br />
-<form name="shopSelectCat" method="post" action="?cmd=shop&amp;act=modAllCategories">
+<form name="shopSelectCat" method="post" action="?cmd=shop{MODULE_INDEX}&amp;act=modAllCategories">
   <table width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
     <tr>
       <th colspan="6">{TXT_ARTICLEGROUPS}:&nbsp;({TXT_TOTAL}&nbsp;{SHOP_TOTAL_CATEGORIES})</th>
@@ -162,13 +162,13 @@ function SetUrl(url, width, height, alt)
             value="{SHOP_CAT_SORTING}" size="3" maxlength="4" />
           &nbsp;
           <b>
-            <a href="?cmd=shop&amp;act=cat&amp;modCatId={SHOP_CAT_ID}"
+            <a href="?cmd=shop{MODULE_INDEX}&amp;act=cat&amp;modCatId={SHOP_CAT_ID}"
               title="{SHOP_CAT_NAME}">
               {SHOP_CAT_NAME}
             </a>
           </b>
           &nbsp;
-          <a href="?cmd=shop&amp;act=products&amp;catId={SHOP_CAT_ID}"
+          <a href="?cmd=shop{MODULE_INDEX}&amp;act=products&amp;catId={SHOP_CAT_ID}"
             title="{TXT_PREVIEW}">
             <img src="images/icons/details.gif"
               width="14" height="16" border="0"
@@ -193,7 +193,7 @@ function SetUrl(url, width, height, alt)
         </td>
         <td nowrap="nowrap">
           <div style="text-align:right;">
-            <a href="?cmd=shop&amp;act=cat&amp;modCatId={SHOP_CAT_ID}"
+            <a href="?cmd=shop{MODULE_INDEX}&amp;act=cat&amp;modCatId={SHOP_CAT_ID}"
               title="{TXT_EDIT}">
               <img src="images/icons/edit.gif" alt="{TXT_EDIT}"
                 border="0" />

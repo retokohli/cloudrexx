@@ -3,10 +3,77 @@
 define('_SHOP_DEBUG', 0);
 /*
 Modifications to Products table:
-
-ALTER TABLE `contrexx_module_shop_products` ADD `flags` VARCHAR( 100 ) NULL ;
-ALTER TABLE `contrexx_module_shop_products` ADD INDEX ( `flags` ) ;
+  ALTER TABLE `contrexx_module_shop_products` ADD `flags` VARCHAR( 100 ) NULL ;
+  ALTER TABLE `contrexx_module_shop_products` ADD INDEX ( `flags` ) ;
 */
+
+/*
+
+Customization for Shop (or any other module) cloning
+
+Below, "#" always stands for the module index number, and * represents
+the variable remainder of any table name, parameter line or the like.
+Perform the following steps for each new instance:
+
+- Copy all necessary database tables, naming them like
+      DBPREFIX."module_shop#_*"
+  E.g.: The table contrexx_module_shop_categories is copied to
+  contrexx_module_shop2_categories.
+  Copy the structure in any case; the table content may be copied, or not.
+
+- Fix the code to be able to access the cloned tables.  Use the constant
+  MODULE_INDEX to refer to different instances:
+      From: ".DBPREFIX."module_shop*
+      To:   ".DBPREFIX."module_shop".MODULE_INDEX."*
+  Note: Mind the quotes (" or ')!
+
+- Fix any URI referring to any shop page, both in the code and all the
+  templates (frontend and backend!) like this:
+  - Code:
+      From: index.php?section=shop*
+      To:   index.php?section=shop".MODULE_INDEX."*
+
+    Note: Mind the quotes (" or ')!
+
+    You also have to add a line to your constructor (or getPage() method,
+    or wherever appropriate) in your module that sets the MODULE_INDEX
+    placeholder in every template *just after loading it*.
+    In any case, make sure that it is set *before* any blocks are parsed
+    that rely on it!
+      // Global module index for clones
+      $this->objTemplate->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
+
+  - Templates:
+      From: index.php?section=shop*
+      To:   index.php?section=shop{MODULE_INDEX}*
+
+- Clone the module and backend area
+    INSERT INTO `contrexx_backend_areas` VALUES(0, 2, 'navigation', 'TXT_SHOP#', 1, 'index.php?cmd=shop#', '_self', 116, 0, [1]13);
+    INSERT INTO `contrexx_modules` VALUES(116, 'shop#', 'TXT_SHOP#_MODULE_DESCRIPTION', 'y', 0, 0);
+
+    [1] Note:  If you need to be able to configure access rights independently
+               for individual clones, add 1000*MODULE_INDEX to the original ID.
+               Fix the rights verification in the code that loads your module:
+
+
+- Add the new language variables from the previous step to lang/xy/backend.php
+
+- Copy the frontend templates, change their module parameter to match the
+  new module index.
+
+- Add backend user permissions for the cloned module as desired
+
+And finally:
+
+- Test:
+  - You can see and access all instances of the Shop in the modules
+    section of the backend.
+  - You can create or change a Product, Category, Setting, etc. in any
+    Shop without changing the content of any other instance.
+  - You can access all the Shops and complete a purchase.
+
+ */
+
 
 /**
  * The Shop
@@ -238,6 +305,8 @@ class Shop extends ShopLibrary
         $this->objTemplate = new HTML_Template_Sigma('.');
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($this->pageContent, true, true);
+        // Global module index for clones
+        $this->_objTpl->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
 
         // Currency object
         $this->objCurrency = new Currency();
@@ -273,7 +342,7 @@ class Shop extends ShopLibrary
         $this->objProcessing = new PaymentProcessing($this->arrConfig);
 
         $query = "SELECT catid, parentid, catname ".
-            "FROM ".DBPREFIX."module_shop_categories ".
+            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
             "WHERE catstatus=1 ".
             "ORDER BY parentid ASC, catsorting ASC";
         $objResult = $objDatabase->Execute($query);
@@ -312,9 +381,9 @@ class Shop extends ShopLibrary
                          value.value AS valueTxt,
                          value.price AS price,
                          value.price_prefix AS pricePrefix
-                    FROM ".DBPREFIX."module_shop_products_attributes AS attributes,
-                         ".DBPREFIX."module_shop_products_attributes_name AS name,
-                         ".DBPREFIX."module_shop_products_attributes_value AS value
+                    FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes AS attributes,
+                         ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name AS name,
+                         ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value AS value
                    WHERE attributes.attributes_name_id = name.id
                      AND attributes.attributes_value_id = value.id
                    ORDER BY sort_id, attrValId ASC";
@@ -656,7 +725,7 @@ class Shop extends ShopLibrary
         global $objDatabase, $_ARRAYLANG;
 
         if (!isset($_SESSION['shop']['username'])) {
-            header('Location: index.php?section=shop&cmd=login');
+            header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=login');
             exit;
         }
 
@@ -673,7 +742,7 @@ class Shop extends ShopLibrary
                 if (isset($_POST['shopCurrentPassword']) && !empty($_POST['shopCurrentPassword'])) {
                     if (isset($_POST['shopConfirmPassword']) && $_POST['shopNewPassword'] == $_POST['shopConfirmPassword']) {
                         if (strlen($_POST['shopNewPassword']) >= 6) {
-                            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_customers SET `password`='".md5(contrexx_stripslashes($_POST['shopNewPassword']))."' WHERE username='".addslashes($_SESSION['shop']['username'])."' AND `password`='".md5(contrexx_stripslashes($_POST['shopCurrentPassword']))."'");
+                            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_customers SET `password`='".md5(contrexx_stripslashes($_POST['shopNewPassword']))."' WHERE username='".addslashes($_SESSION['shop']['username'])."' AND `password`='".md5(contrexx_stripslashes($_POST['shopCurrentPassword']))."'");
                             if ($objDatabase->Affected_Rows() == 1) {
                                 $status = $_ARRAYLANG['TXT_SHOP_PASSWORD_CHANGED_SUCCESSFULLY'];
                             } else {
@@ -714,7 +783,7 @@ class Shop extends ShopLibrary
             $query = "SELECT customerid,
                              username,
                              prefix,
-                             lastname FROM ".DBPREFIX."module_shop_customers WHERE email='".$mail."'";
+                             lastname FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers WHERE email='".$mail."'";
             $objResult = $objDatabase->SelectLimit($query, 1);
             if ($objResult !== false) {
                 if ($objResult->RecordCount() == 1) {
@@ -725,7 +794,7 @@ class Shop extends ShopLibrary
                         $password .= substr($chars, rand(0, 80), 1);
                     }
 
-                    if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_shop_customers SET password='".md5($password)."' WHERE customerid=".$objResult->fields['customerid']) !== false) {
+                    if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_customers SET password='".md5($password)."' WHERE customerid=".$objResult->fields['customerid']) !== false) {
                         // Select template for sending login data
                         $arrShopMailtemplate = Shop::shopSetMailtemplate(3, $this->langId);
                         $shopMailFrom = $arrShopMailtemplate['mail_from'];
@@ -834,8 +903,8 @@ class Shop extends ShopLibrary
                 'SHOP_PRODUCT_THUMBNAIL'        => $thumbnailPath,
                 'TXT_ADD_TO_CARD'               => $_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'],
                 'SHOP_PRODUCT_DETAILLINK_IMAGE' =>
-                    "index.php?section=shop&amp;catId=$id",
-                'SHOP_PRODUCT_SUBMIT_FUNCTION'  => "location.replace('index.php?section=shop&catId=$id')",
+                    "index.php?section=shop".MODULE_INDEX."&amp;catId=$id",
+                'SHOP_PRODUCT_SUBMIT_FUNCTION'  => "location.replace('index.php?section=shop'.MODULE_INDEX.'&catId=$id')",
                 'SHOP_PRODUCT_SUBMIT_TYPE'      => "button",
             ));
             // Add flag images for flagged ShopCategories
@@ -883,7 +952,7 @@ class Shop extends ShopLibrary
         // Look for pictures in products from that category first
         $queryProduct = "
             SELECT picture
-              FROM ".DBPREFIX."module_shop_products
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
              WHERE catid=$catId
                AND picture!=''
           ORDER BY sort_order
@@ -900,7 +969,7 @@ class Shop extends ShopLibrary
         // no picture in that category, try its subcategories
         $querySubCat = "
             SELECT catid
-              FROM ".DBPREFIX."module_shop_categories
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
              WHERE parentid=$catId
         ";
         $objResultSubCat = $objDatabase->Execute($querySubCat);
@@ -937,7 +1006,7 @@ class Shop extends ShopLibrary
         }
 
         $query = "SELECT catid, catname
-                    FROM ".DBPREFIX."module_shop_categories
+                    FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
                    WHERE parentid=".$parentId.' AND catstatus != 0
                    ORDER BY catsorting ASC, catname ASC';
         $objResult = $objDatabase->Execute($query);
@@ -953,7 +1022,7 @@ class Shop extends ShopLibrary
                 $catName       = $objResult->fields['catname'];
 
                 if ($parentId == 0) {
-                    $querySubCat = "SELECT catid FROM ".DBPREFIX."module_shop_categories ".
+                    $querySubCat = "SELECT catid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
                                    "WHERE parentid=".$catId_Pic;
                     $objResultSubCat = $objDatabase->SelectLimit($querySubCat, 1);
                     if (!$objResultSubCat->EOF) {
@@ -962,7 +1031,7 @@ class Shop extends ShopLibrary
                 }
 
                 $queryProduct = "SELECT picture ".
-                    "FROM ".DBPREFIX."module_shop_products ".
+                    "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products ".
                     "WHERE catid=".$catId_Pic." ORDER BY sort_order";
                 $objResultProduct = $objDatabase->SelectLimit($queryProduct, 1);
                 if ($objResultProduct) {
@@ -982,8 +1051,8 @@ class Shop extends ShopLibrary
                     'SHOP_PRODUCT_TITLE'            => str_replace('"', '&quot;', $catName),
                     'SHOP_PRODUCT_THUMBNAIL'        => $thumbnailPath,
                     'TXT_ADD_TO_CARD'               => $_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'],
-                    'SHOP_PRODUCT_DETAILLINK_IMAGE' => "index.php?section=shop&amp;catId=".$catId_Link,
-                    'SHOP_PRODUCT_SUBMIT_FUNCTION'  => "location.replace('index.php?section=shop&catId=".$catId_Link."')",
+                    'SHOP_PRODUCT_DETAILLINK_IMAGE' => "index.php?section=shop".MODULE_INDEX."&amp;catId=".$catId_Link,
+                    'SHOP_PRODUCT_SUBMIT_FUNCTION'  => "location.replace('index.php?section=shop".MODULE_INDEX."&catId=".$catId_Link."')",
                     'SHOP_PRODUCT_SUBMIT_TYPE'      => "button",
                 ));
 
@@ -1073,7 +1142,7 @@ class Shop extends ShopLibrary
         }
 
         $shopMenu =
-            '<form action="index.php?section=shop" method="post">'.
+            '<form action="index.php?section=shop'.MODULE_INDEX.'" method="post">'.
             '<input type="text" name="term" value="'.
             htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET).
             '" style="width:160px;" />'.
@@ -1124,7 +1193,7 @@ class Shop extends ShopLibrary
             $paging = getPaging(
                 $count,
                 $pos,
-                '&amp;section=shop'.$pagingCatId.$pagingManId.$pagingTerm,
+                '&amp;section=shop'.MODULE_INDEX.''.$pagingCatId.$pagingManId.$pagingTerm,
                 '',
                 true
             );
@@ -1263,7 +1332,7 @@ class Shop extends ShopLibrary
             $detailLink = false;
             if ($productId == 0 && !empty($longDescription)) {
                 $detailLink =
-                    '<a href="index.php?section=shop&amp;cmd=details&amp;productId='.
+                    '<a href="index.php?section=shop'.MODULE_INDEX.'&amp;cmd=details&amp;productId='.
                     $objProduct->getId().
                     '" title="'.$_ARRAYLANG['TXT_MORE_INFORMATIONS'].'">'.
                     $_ARRAYLANG['TXT_MORE_INFORMATIONS'].'</a>';
@@ -1609,8 +1678,8 @@ class Shop extends ShopLibrary
         ////////////////////////////////////////////
 
         $q = "SELECT *
-                FROM ".DBPREFIX."module_shop_products AS p
-                INNER JOIN ".DBPREFIX."module_shop_categories AS c USING (catid)
+                FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products AS p
+                INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_categories AS c USING (catid)
                WHERE p.is_special_offer = 1
                  AND p.status = 1
                  AND c.catstatus=1
@@ -1648,7 +1717,7 @@ class Shop extends ShopLibrary
                 $arrPrice[$i] = "<s>".$price."</s>";
                 $arrDiscountPrice[$i] = $this->objCurrency->getCurrencyPrice($objResult->fields['discountprice']);
             }
-            $arrDetailLink[$i] = "index.php?section=shop&amp;cmd=details&amp;productId=".$objResult->fields['id'];
+            $arrDetailLink[$i] = "index.php?section=shop".MODULE_INDEX."&amp;cmd=details&amp;productId=".$objResult->fields['id'];
             $arrTitle[$i] = $objResult->fields['title'];
             $i++;
             $objResult->MoveNext();
@@ -1704,7 +1773,7 @@ class Shop extends ShopLibrary
                 $cartInfo = $_ARRAYLANG['TXT_SHOPPING_CART'].' '.$this->calculateItems($_SESSION['shop']['cart']).
                             " ".$_ARRAYLANG['TXT_SHOPPING_CART_VALUE'].' '.$this->_calculatePrice($_SESSION['shop']['cart']).
                             " ".$this->aCurrencyUnitName;
-                $cartInfo = "<a href=\"index.php?section=shop&amp;cmd=cart\" title=\"".$cartInfo."\">$cartInfo</a>";
+                $cartInfo = "<a href=\"index.php?section=shop".MODULE_INDEX."&amp;cmd=cart\" title=\"".$cartInfo."\">$cartInfo</a>";
             }
         }
         return $cartInfo;
@@ -1732,7 +1801,7 @@ class Shop extends ShopLibrary
                                    resellerprice,
                                    discountprice,
                                    is_special_offer
-                              FROM ".DBPREFIX."module_shop_products
+                              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
                              WHERE id = ".$arrProduct['id'], 1);
                 if ($objResult !== false && $objResult->RecordCount() == 1) {
                     $item_price = $this->_getProductPrice($objResult->fields['normalprice'], $objResult->fields['resellerprice'], $objResult->fields['discountprice'], $objResult->fields['is_special_offer']);
@@ -2047,7 +2116,7 @@ function sendReq(data, type)
 
     if (type == 1) {
         // add product
-        objHttp.open('get', 'index.php?section=shop&cmd=cart&remoteJs=addProduct'+data, true);
+        objHttp.open('get', 'index.php?section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct'+data, true);
         objHttp.onreadystatechange = shopUpdateCart;
     } else {//if ..
         //more requests here...
@@ -2455,7 +2524,7 @@ sendReq('', 1);
     {
         // go to the next step
         if (isset($_POST['continue'])) {
-            header("Location: index.php?section=shop&cmd=login");
+            header("Location: index.php?section=shop".MODULE_INDEX."&cmd=login");
             exit;
         }
     }
@@ -2487,7 +2556,7 @@ sendReq('', 1);
                     SELECT title, catid, product_id, handler,
                            normalprice, resellerprice, discountprice,
                            is_special_offer, vat_id, weight
-                      FROM ".DBPREFIX."module_shop_products
+                      FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
                      WHERE status=1 AND id=".$arrProduct['id']
                 );
                 if ($objResult && $objResult->RecordCount() == 1) {
@@ -2672,7 +2741,7 @@ sendReq('', 1);
 
         if ($this->objCustomer) {
             // redirect to the checkout page
-            header('Location: index.php?section=shop&cmd=account');
+            header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=account');
             exit;
         } else {
             $loginUsername = '';
@@ -2687,10 +2756,10 @@ sendReq('', 1);
                 if ($this->_authenticate()) {
                     if (isset($_REQUEST['redirect'])
                      && $_REQUEST['redirect'] == 'shop') {
-                        header('Location: index.php?section=shop');
+                        header('Location: index.php?section=shop'.MODULE_INDEX.'');
                         exit;
                     } else {
-                        header('Location: index.php?section=shop&cmd=account');
+                        header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=account');
                         exit;
                     }
                 } else {
@@ -2708,7 +2777,7 @@ sendReq('', 1);
                 'TXT_EMAIL_ADDRESS'                  => $_ARRAYLANG['TXT_EMAIL_ADDRESS'],
                 'TXT_PASSWORD'                       => $_ARRAYLANG['TXT_PASSWORD'],
                 'SHOP_LOGIN_EMAIL'                   => $loginUsername,
-                'SHOP_LOGIN_ACTION'                  => '?section=shop&amp;cmd=login',
+                'SHOP_LOGIN_ACTION'                  => '?section=shop'.MODULE_INDEX.'&amp;cmd=login',
 // TODO: Change the name of this placeholder to SHOP_STATUS and remove this.
                 'SHOP_LOGIN_STATUS'                  => $this->statusMessage,
             ));
@@ -2798,9 +2867,9 @@ sendReq('', 1);
 
         if ($objResult) {
             if ($objResult->RecordCount() == 1) {
-                header("Location: index.php?section=shop&cmd=payment");
+                header("Location: index.php?section=shop".MODULE_INDEX."&cmd=payment");
             } else {
-                header("Location: index.php?section=shop&cmd=confirm");
+                header("Location: index.php?section=shop".MODULE_INDEX."&cmd=confirm");
             }
             exit;
         }
@@ -2855,7 +2924,7 @@ sendReq('', 1);
                     $this->arrCountries[$this->objCustomer->getCountryId()]['countries_name'],
                 'SHOP_ACCOUNT_PHONE'         => $this->objCustomer->getPhone(),
                 'SHOP_ACCOUNT_FAX'           => $this->objCustomer->getFax(),
-                'SHOP_ACCOUNT_ACTION'        => "?section=shop&amp;cmd=payment"
+                'SHOP_ACCOUNT_ACTION'        => "?section=shop".MODULE_INDEX."&amp;cmd=payment"
             ));
             $this->objTemplate->hideBlock('account_details');
         } else {
@@ -2921,7 +2990,7 @@ sendReq('', 1);
 
         $this->objTemplate->setVariable(array(
             'SHOP_ACCOUNT_STATUS' => $status,
-            'SHOP_ACCOUNT_ACTION' => "?section=shop&amp;cmd=account"
+            'SHOP_ACCOUNT_ACTION' => "?section=shop".MODULE_INDEX."&amp;cmd=account"
         ));
     }
 
@@ -2953,7 +3022,7 @@ sendReq('', 1);
     {
         // Reloading or loading without sessions
         if (!isset($_SESSION['shop']['cart'])) {
-            header("Location: index.php?section=shop");
+            header("Location: index.php?section=shop".MODULE_INDEX."");
             exit;
         }
 
@@ -3002,7 +3071,7 @@ sendReq('', 1);
             if (isset($_SESSION['shop']['currencyIdPrev'])) {
                 $_SESSION['shop']['currencyId'] = $_SESSION['shop']['currencyIdPrev'];
                 unset($_SESSION['shop']['currencyIdPrev']);
-                header('Location: index.php?section=shop&cmd=payment');
+                header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
                 exit;
             }
         } else {
@@ -3013,7 +3082,7 @@ sendReq('', 1);
                     if ($arrCurrency['status'] && $arrCurrency['code'] == $this->arrConfig['paypal_default_currency']['value']) {
                         $_SESSION['shop']['currencyIdPrev'] = $_SESSION['shop']['currencyId'];
                         $_SESSION['shop']['currencyId'] = $arrCurrency['id'];
-                        header('Location: index.php?section=shop&cmd=payment');
+                        header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
                         exit;
                     }
                 }
@@ -3227,7 +3296,7 @@ sendReq('', 1);
 
             if ($agbStatus && $shipmentStatus && $paymentStatus) {
                 // everything is set and valid
-                header("Location: index.php?section=shop&cmd=confirm");
+                header("Location: index.php?section=shop".MODULE_INDEX."&cmd=confirm");
                 exit;
             } else {
                 // something is missing od invalid
@@ -3449,7 +3518,7 @@ right after the customer logs in!
 
         // if the cart is missing, return to the shop
         if (!isset($_SESSION['shop']['cart'])) {
-            header("Location: index.php?section=shop");
+            header("Location: index.php?section=shop".MODULE_INDEX."");
             exit;
         }
         // hide currency navbar
@@ -3520,7 +3589,7 @@ right after the customer logs in!
 
             // Add to order table
             $query = "
-                INSERT INTO ".DBPREFIX."module_shop_orders (
+                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_orders (
                     customerid, selected_currency_id, currency_order_sum,
                     order_date, order_status, ship_company, ship_prefix,
                     ship_firstname, ship_lastname, ship_address, ship_city,
@@ -3577,7 +3646,7 @@ right after the customer logs in!
                     SELECT title, normalprice, resellerprice,
                            discountprice, is_special_offer,
                            vat_id, weight, handler
-                      FROM ".DBPREFIX."module_shop_products
+                      FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
                      WHERE status=1 AND id=".$arrProduct['id'];
                 $objResult = $objDatabase->Execute($query);
                 if (!$objResult) {
@@ -3610,7 +3679,7 @@ right after the customer logs in!
                 }
                 // Add to order items table
                 $query = "
-                    INSERT INTO ".DBPREFIX."module_shop_order_items (
+                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_order_items (
                         orderid, productid, product_name,
                         price, quantity, vat_percent, weight
                     ) VALUES (
@@ -3629,7 +3698,7 @@ right after the customer logs in!
                 foreach ($arrProduct['options'] as $optionId => $arrValueIds) {
                     foreach ($arrValueIds as $valueId) {
                         // add product attributes to order items attribute table
-                        $query = "INSERT INTO ".DBPREFIX."module_shop_order_items_attributes ".
+                        $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes ".
                             "SET order_items_id=$orderItemsId, ".
                                 "order_id=$orderid, ".
                                 "product_id=$productId, ".
@@ -3648,7 +3717,7 @@ right after the customer logs in!
 
                 // Update Product stock
                 $query = "
-                    UPDATE ".DBPREFIX."module_shop_products
+                    UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
                        SET stock=stock-$productQuantity
                      WHERE id=$productId
                 ";
@@ -3743,7 +3812,7 @@ right after the customer logs in!
                            normalprice, resellerprice,
                            discountprice, is_special_offer,
                            vat_id, weight
-                      FROM ".DBPREFIX."module_shop_products
+                      FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
                      WHERE status=1 AND id=".$arrProduct['id']
                 );
                 if ($objResult) {
@@ -4033,7 +4102,7 @@ right after the customer logs in!
         }
         $query = "
             SELECT order_status, payment_id, shipping_id
-              FROM ".DBPREFIX."module_shop_orders
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
              WHERE orderid=$orderId
         ";
         $objResult = $objDatabase->Execute($query);
@@ -4118,7 +4187,7 @@ right after the customer logs in!
         }
 
         $query = "
-            UPDATE ".DBPREFIX."module_shop_orders
+            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_orders
                SET order_status='$newOrderStatus'
              WHERE orderid=$orderId
         ";
@@ -4161,8 +4230,8 @@ right after the customer logs in!
         // Determine the customer language ID
         $query = "
             SELECT email, customer_lang
-              FROM ".DBPREFIX."module_shop_orders
-             INNER JOIN ".DBPREFIX."module_shop_customers
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
+             INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers
              USING (customerid)
              WHERE orderid=$orderId
         ";
@@ -4190,7 +4259,7 @@ right after the customer logs in!
         // Get mail address(es) for confirmation mails
         $query = "
             SELECT value
-              FROM ".DBPREFIX."module_shop_config
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
              WHERE name='confirmation_emails'
         ";
         $objResult = $objDatabase->Execute($query);
@@ -4244,8 +4313,8 @@ right after the customer logs in!
                    shipping_id, currency_ship_price,
                    payment_id, currency_payment_price,
                    customer_note
-              FROM ".DBPREFIX."module_shop_orders AS o
-             INNER JOIN ".DBPREFIX."module_shop_customers AS c
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS o
+             INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers AS c
              USING (customerid)
              WHERE orderid=$orderId
         ";
@@ -4266,7 +4335,7 @@ right after the customer logs in!
         //              price, quantity, vat_percent, weight
         $query = "
             SELECT order_items_id, productid, product_name, price, quantity
-              FROM ".DBPREFIX."module_shop_order_items
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items
              WHERE orderid=$orderId
         ";
         $objResultItem = $objDatabase->Execute($query);
@@ -4288,7 +4357,7 @@ right after the customer logs in!
             // Pick missing Product data
             $objResultProduct = $objDatabase->Execute("
                SELECT product_id
-                 FROM ".DBPREFIX."module_shop_products
+                 FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
                 WHERE id=$productId
             ");
             if (!$objResultProduct || $objResultProduct->RecordCount() == 0) {
@@ -4300,7 +4369,7 @@ right after the customer logs in!
             // Pick the order items attributes from the database
             $query = "
                 SELECT product_option_name, product_option_value
-                  FROM ".DBPREFIX."module_shop_order_items_attributes
+                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes
                  WHERE order_items_id=$orderItemId
                  ORDER BY product_option_name ASC
             ";
@@ -4391,7 +4460,7 @@ $orderSum."\n".
         $countryNameShipping = '';
         $query = "
             SELECT countries_name
-              FROM ".DBPREFIX."module_shop_countries
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
              WHERE countries_id=".$objResultOrder->fields['country_id'];
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF) {
@@ -4399,7 +4468,7 @@ $orderSum."\n".
         }
         $query = "
             SELECT countries_name
-              FROM ".DBPREFIX."module_shop_countries
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
              WHERE countries_id=".$objResultOrder->fields['ship_country_id'];
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF) {
@@ -4510,7 +4579,7 @@ $orderSum."\n".
 
         $objResult = $objDatabase->Execute("
             SELECT name
-              FROM ".DBPREFIX."module_shop_manufacturer
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
              WHERE id=$id
         ");
         if ($objResult) {
@@ -4537,7 +4606,7 @@ $orderSum."\n".
 
         $objResult = $objDatabase->Execute("
             SELECT url
-              FROM ".DBPREFIX."module_shop_manufacturer
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
              WHERE id=$id
         ");
         if ($objResult) {

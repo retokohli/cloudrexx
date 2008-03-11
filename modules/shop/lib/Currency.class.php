@@ -64,7 +64,7 @@ class Currency
 
         $query =
             "SELECT id, code, symbol, name, rate, sort_order, status, is_default ".
-            "FROM ".DBPREFIX."module_shop_currencies ".
+            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies ".
             "ORDER BY id";
 
         $objResult = $objDatabase->Execute($query);
@@ -289,7 +289,7 @@ class Currency
 
         $query = "
             SELECT code
-              FROM ".DBPREFIX."module_shop_currencies
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies
             WHERE id=$currencyId
         ";
         $objResult = $objDatabase->Execute($query);

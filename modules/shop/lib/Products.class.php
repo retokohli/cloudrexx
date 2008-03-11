@@ -86,7 +86,7 @@ class Products
                         addslashes($pattern)."%'";
                 } else {
                     $query  = "
-                        SELECT id FROM ".DBPREFIX."module_shop_products
+                        SELECT id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
                         WHERE $fieldName LIKE '%".
                         addslashes($pattern)."%'";
                 }
@@ -139,7 +139,7 @@ class Products
             return false;
         }
         $query = "
-            SELECT id FROM ".DBPREFIX."module_shop_products
+            SELECT id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
              WHERE product_id='$customId'
           ORDER BY id ASC
         ";
@@ -230,11 +230,11 @@ class Products
         // Note that this only works reliably with IDs created by means of
         // the auto_increment mechanism!
         $query = "
-              FROM ".DBPREFIX."module_shop_products
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
              WHERE id IN (
                 SELECT id
-                  FROM ".DBPREFIX."module_shop_products AS p,
-                       ".DBPREFIX."module_shop_categories AS c
+                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products AS p,
+                       ".DBPREFIX."module_shop".MODULE_INDEX."_categories AS c
                  WHERE c.catid=p.catid
                        ".($flagBackend ? '' : 'AND status=1 AND catstatus=1')."
                        $queryCategory
@@ -391,7 +391,7 @@ echo("deleting Product ".$objProduct->getId()." succeeded<br />");
 
         $query = "
             SELECT id
-              FROM ".DBPREFIX."module_shop_products
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
              WHERE catid=$catId
           ORDER BY sort_order ASC
         ";
@@ -424,7 +424,7 @@ echo("deleting Product ".$objProduct->getId()." succeeded<br />");
 
         $query = "
             SELECT id
-              FROM ".DBPREFIX."module_shop_products
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
              WHERE catid=$catId
           ORDER BY sort_order ASC
         ";
@@ -457,7 +457,7 @@ echo("deleting Product ".$objProduct->getId()." succeeded<br />");
 
         $query = "
             SELECT picture
-              FROM ".DBPREFIX."module_shop_products
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
              WHERE catid=$catId
                AND picture!=''
           ORDER BY sort_order
@@ -492,7 +492,7 @@ echo("deleting Product ".$objProduct->getId()." succeeded<br />");
 
         $query = "
             SELECT DISTINCT catId
-              FROM ".DBPREFIX."module_shop_products
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
              WHERE flags LIKE '%$strName%'
           ORDER BY catId ASC
         ";

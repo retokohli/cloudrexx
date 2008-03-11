@@ -1041,7 +1041,7 @@ class Product
                     $arrPicture = explode('?', $strPicture);
 
                     // verify that no other Product uses the same picture
-                    $query = "SELECT picture FROM ".DBPREFIX."module_shop_products WHERE picture LIKE '%".$arrPicture[0]."%'";
+                    $query = "SELECT picture FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products WHERE picture LIKE '%".$arrPicture[0]."%'";
                     $objResult = $objDatabase->Execute($query);
                     if ($objResult->RecordCount() == 1) {
                         // $arrPicture[0] contains the file name
@@ -1068,14 +1068,14 @@ class Product
         }
 
         $objResult = $objDatabase->Execute("
-            DELETE FROM ".DBPREFIX."module_shop_products_attributes
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
              WHERE product_id=$this->id
         ");
         if (!$objResult) {
             return false;
         }
         $objResult = $objDatabase->Execute("
-            DELETE FROM ".DBPREFIX."module_shop_products
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
              WHERE id=$this->id
         ");
         if (!$objResult) {
@@ -1098,7 +1098,7 @@ class Product
 
         $query = "
             SELECT 1
-              FROM ".DBPREFIX."module_shop_products
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
              WHERE id=$this->id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -1163,7 +1163,7 @@ class Product
         global $objDatabase;
 
         $query = "
-            UPDATE ".DBPREFIX."module_shop_products
+            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
             SET product_id='".addslashes($this->code)."',
                 picture='$this->pictures',
                 title='".addslashes($this->name)."',
@@ -1213,7 +1213,7 @@ class Product
         global $objDatabase;
 
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop_products (
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products (
                 product_id, picture, title, catid, handler,
                 normalprice, resellerprice, shortdesc, description,
                 stock, stock_visibility, discountprice, is_special_offer,
@@ -1274,7 +1274,7 @@ class Product
     {
         global $objDatabase;
 
-        $query = "SELECT * FROM ".DBPREFIX."module_shop_products WHERE id=$id";
+        $query = "SELECT * FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products WHERE id=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -1395,7 +1395,7 @@ class Product
         // select last five products added to the database
         $query = "
             SELECT id, DISTINCT product_id
-              FROM ".DBPREFIX."module_shop_products
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
              WHERE status=1
           ORDER BY id DESC
         ";

@@ -115,13 +115,13 @@
 
     function DeleteImg(ImgID) {
         if (confirm("{TXT_SHOP_IMPORT_TEMPLATE_REALLY_DELETE}")){
-            document.location.href = '{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop&act=import&deleteImg=exe&img='+ImgID;
+            document.location.href = '{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop{MODULE_INDEX}&act=import&deleteImg=exe&img='+ImgID;
         }
     }
 
     function MakeExport(groupCode) {
         if (confirm("{TXT_SHOP_EXPORT_WARNING}")) {
-            document.location = "?cmd=shop&act=import&group="+groupCode;
+            document.location = "?cmd=shop{MODULE_INDEX}&act=import&group="+groupCode;
         }
     }
 
@@ -140,7 +140,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 </ul>
 
 <div id="import1" class="generalTab" style="display:{SELECTED_LAYER_IMPORT}">
-<form name="frmImportCategories" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop&amp;act=import" method="post" enctype="multipart/form-data">
+<form name="frmImportCategories" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop{MODULE_INDEX}&amp;act=import" method="post" enctype="multipart/form-data">
     <input type="hidden" name="exe" value="ImportCategories" />
     <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
         <tr>
@@ -169,7 +169,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 
 <br />
 
-<form name="frmImportProducts" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop&amp;act=import" method="post" enctype="multipart/form-data">
+<form name="frmImportProducts" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop{MODULE_INDEX}&amp;act=import" method="post" enctype="multipart/form-data">
     <input type="hidden" name="exe" value="importFileProducts" />
     <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
         <tr>
@@ -200,7 +200,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 </div>
 
 <!-- Begin FieldsSelect -->
-<form name="frmSelectFields" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop&amp;act=import" method="post">
+<form name="frmSelectFields" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop{MODULE_INDEX}&amp;act=import" method="post">
 <input type="hidden" name="exe" value="SaveImg" />
 <input type="hidden" name="pairs_left_keys" id="pairs_left_keys" value="" />
 <input type="hidden" name="pairs_right_keys" id="pairs_right_keys" value="" />
@@ -298,7 +298,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     </table>
 </div>
 <div id="import5" class="generalTab" style="display: none;">
-    <form name="frmUpload" enctype="multipart/form-data" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop&amp;act=import" method="post">
+    <form name="frmUpload" enctype="multipart/form-data" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop{MODULE_INDEX}&amp;act=import" method="post">
     <input type="hidden" name="cmd" value="shop" />
     <input type="hidden" name="act" value="import" />
     <input type="hidden" name="mode" value="ImportImg" />

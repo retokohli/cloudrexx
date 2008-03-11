@@ -10,14 +10,14 @@
         alert("{TXT_SHOP_INSERT_NEW_MANUFACTURER_ERROR}");
       }
     }
-    
+
     function shopCatDoAction(strForm,strCheckbox,objSelect,strAct)
     {
       if(checkboxIsChecked(strForm,strCheckbox) == true){
         switch(strAct){
           case 'del':
             if(confirm('{TXT_SHOP_CONFIRM_DELETE_MANUFACTURER}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
-              document.forms[strForm].action = "index.php?cmd=shop&act=manufacturer&exe=deleteList";
+              document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=manufacturer&exe=deleteList";
               document.forms[strForm].submit();
             }
             break;
@@ -27,16 +27,16 @@
       }
       objSelect.value = 0;
     }
-    
+
     function deleteManufacturer(manufacturerID){
       if(confirm('{TXT_SHOP_CONFIRM_DELETE_MANUFACTURER}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
-        window.location.replace("index.php?cmd=shop&act=manufacturer&exe=delete&id="+manufacturerID);
+        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=manufacturer&exe=delete&id="+manufacturerID);
     }
     }
   // -->
 </script>
 
-<form name="frmNewManufacturer" method="post" action="?cmd=shop&amp;act=manufacturer">
+<form name="frmNewManufacturer" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=manufacturer">
   <input type="hidden" name="exe" value="{EXE_MODE}" />
   <input type="hidden" name="id" value="{VALUE_ID}" />
   <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
@@ -55,7 +55,7 @@
 
 <br />
 
-<form name="frmManufacturer" method="post" action="?cmd=shop&amp;act=manufacturer">
+<form name="frmManufacturer" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=manufacturer">
   <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
       <th colspan="4">{TXT_SHOP_MANUFACTURER}</th>
@@ -72,7 +72,7 @@
         <td width="3%">{VALUE_ID}</td>
         <td width="95%">{VALUE_NAME}</td>
         <td width="1%"><div style="text-align:right;">
-          <a href="?cmd=shop&amp;act=manufacturer&amp;id={VALUE_ID}&amp;mode=update" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a>
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=manufacturer&amp;id={VALUE_ID}&amp;mode=update" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a>
           <a href="javascript:deleteManufacturer('{VALUE_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a>
         </div></td>
       </tr>

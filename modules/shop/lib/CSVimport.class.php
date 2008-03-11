@@ -14,7 +14,7 @@ class CSVimport
 
         $query = "
             SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db
-              FROM ".DBPREFIX."module_shop_importimg ORDER BY img_id
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_importimg ORDER BY img_id
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
@@ -43,7 +43,7 @@ class CSVimport
 
         $query =
             "SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db ".
-            "FROM ".DBPREFIX."module_shop_importimg ORDER BY img_id";
+            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_importimg ORDER BY img_id";
         $objResult = $objDatabase->Execute($query);
         $ArrayCounter = 0;
         while (!$objResult->EOF) {
@@ -70,7 +70,7 @@ class CSVimport
 
     function GetFileFields()
     {
-        $csv_source = &new csv_bv($_FILES["CSVfile"]["tmp_name"], $this->separator, $this->delimiter, $this->escapor);
+        $csv_source = new csv_bv($_FILES["CSVfile"]["tmp_name"], $this->separator, $this->delimiter, $this->escapor);
         $csv_source->SkipEmptyRows(TRUE);
         $csv_source->TrimFields(TRUE);
         $FileContent = $csv_source->csv2Array();
@@ -112,7 +112,7 @@ class CSVimport
 
     function GetFileContent()
     {
-        $csv_source = &new csv_bv($_FILES["importfile"]["tmp_name"], $this->separator, $this->delimiter, $this->escapor);
+        $csv_source = new csv_bv($_FILES["importfile"]["tmp_name"], $this->separator, $this->delimiter, $this->escapor);
         $csv_source->SkipEmptyRows(true);
         $csv_source->TrimFields(true);
         $FileContent = $csv_source->csv2Array();
@@ -173,7 +173,7 @@ class CSVimport
     {
         global $objDatabase;
         $query =
-            "SELECT catid FROM ".DBPREFIX."module_shop_categories ".
+            "SELECT catid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
             "WHERE catname='$catName' AND parentid=$catParent";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
@@ -203,7 +203,7 @@ class CSVimport
     function GetFirstCat()
     {
         global $objDatabase;
-        $query = "SELECT catid FROM ".DBPREFIX."module_shop_categories";
+        $query = "SELECT catid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories";
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult->RecordCount() > 0) {
             return $objResult->fields["catid"];
@@ -229,7 +229,7 @@ class CSVimport
     {
         global $objDatabase;
         $query =
-            "INSERT INTO ".DBPREFIX."module_shop_categories ".
+            "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
             "(catname, parentid) VALUES ('".$catName."','".$catParent."')";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {

@@ -68,7 +68,7 @@ class Shipment
         // get the shippers first
         $objResult = $objDatabase->Execute(
             "SELECT id, name, status ".
-            "FROM ".DBPREFIX."module_shop_shipper ".
+            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipper ".
             ($ignoreStatus ? '' : 'WHERE status=1 ').
             "ORDER BY id ASC");
         if ($objResult) {
@@ -84,8 +84,8 @@ class Shipment
             // now get the associated shipment conditions from shipment_cost
             $objResult = $objDatabase->Execute(
                 "SELECT c.id, c.shipper_id, c.max_weight, c.cost, c.price_free ".
-                "FROM ".DBPREFIX."module_shop_shipment_cost c ".
-                "INNER JOIN ".DBPREFIX."module_shop_shipper s ".
+                "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost c ".
+                "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_shipper s ".
                 "ON s.id=shipper_id ".
                 ($ignoreStatus ? '' : 'WHERE status=1'));
             if ($objResult) {
@@ -189,9 +189,9 @@ class Shipment
         $arrShipperId = array();
         // mind that s.shipper_id actually points to a shipper, not a shipment!
         $query ="SELECT s.shipment_id as shipper_id ".
-                         "FROM ".DBPREFIX."module_shop_rel_countries AS c, ".
-                                 DBPREFIX."module_shop_zones AS z, ".
-                                 DBPREFIX."module_shop_rel_shipment AS s ".
+                         "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries AS c, ".
+                                 DBPREFIX."module_shop".MODULE_INDEX."_zones AS z, ".
+                                 DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment AS s ".
                         "WHERE c.countries_id=".intval($countryId).
                           " AND z.activation_status=1 ".
                           "AND z.zones_id=c.zones_id ".
@@ -269,15 +269,15 @@ class Shipment
     function deleteShipper($sid)
     {
         global $objDatabase;
-        $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop_shipper WHERE id=".$sid);
+        $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipper WHERE id=".$sid);
         if ($objResult) {
-            $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop_shipment_cost WHERE shipper_id=".$sid);
+            $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost WHERE shipper_id=".$sid);
             if ($objResult) {
-                $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop_rel_shipment WHERE shipment_id=".$sid);
+                $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment WHERE shipment_id=".$sid);
                 if ($objResult) {
-                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_shipper");
-                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_shipment_cost");
-                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_rel_shipment");
+                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_shipper");
+                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost");
+                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment");
                     return true;
                 } else {
                 }
@@ -297,7 +297,7 @@ class Shipment
     function deleteShipment($cid)
     {
         global $objDatabase;
-        $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop_shipment_cost WHERE id=$cid");
+        $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost WHERE id=$cid");
         return $objResult;
     }
 
@@ -316,7 +316,7 @@ class Shipment
         global $objDatabase;
 
         $objResult = $objDatabase->Execute("
-            INSERT INTO ".DBPREFIX."module_shop_shipper (
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_shipper (
                 name, status
             ) VALUES (
                 '".addslashes($name)."', $isActive
@@ -338,7 +338,7 @@ class Shipment
     {
         global $objDatabase;
         $objResult = $objDatabase->Execute(
-            "INSERT INTO ".DBPREFIX."module_shop_shipment_cost (shipper_id, cost, price_free, max_weight) ".
+            "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost (shipper_id, cost, price_free, max_weight) ".
             "VALUES ($sid, $cost, $price_free, $max_weight)"
         );
         return $objResult;
@@ -359,7 +359,7 @@ class Shipment
     {
         global $objDatabase;
         $objResult = $objDatabase->Execute(
-            "UPDATE ".DBPREFIX."module_shop_shipment_cost SET ".
+            "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost SET ".
                 "shipper_id=$sid, ".
                 "cost=$cost, ".
                 "price_free=$price_free, ".
@@ -384,7 +384,7 @@ class Shipment
     {
         global $objDatabase;
         $objResult = $objDatabase->Execute(
-            "UPDATE ".DBPREFIX."module_shop_shipper SET status=$isActive WHERE id = $sid"
+            "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_shipper SET status=$isActive WHERE id = $sid"
         );
         return ($objResult ? true : false);
     }
@@ -484,11 +484,11 @@ class Shipment
         foreach ($this->arrShippers as $sid => $shipper) {
             // get countries covered by this shipper
             $query ="SELECT DISTINCT c.countries_name FROM ".
-                DBPREFIX."module_shop_countries AS c, ".
-                DBPREFIX."module_shop_rel_countries AS rc, ".
-                DBPREFIX."module_shop_zones AS z, ".
-                DBPREFIX."module_shop_rel_shipment AS rs, ".
-                DBPREFIX."module_shop_shipper AS s ".
+                DBPREFIX."module_shop".MODULE_INDEX."_countries AS c, ".
+                DBPREFIX."module_shop".MODULE_INDEX."_rel_countries AS rc, ".
+                DBPREFIX."module_shop".MODULE_INDEX."_zones AS z, ".
+                DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment AS rs, ".
+                DBPREFIX."module_shop".MODULE_INDEX."_shipper AS s ".
                 "WHERE rc.countries_id=c.countries_id ".
                 "AND z.zones_id=rc.zones_id ".
                 "AND rs.zones_id=z.zones_id ".
@@ -549,7 +549,7 @@ class Shipment
 
         $objResult = $objDatabase->Execute("
             SELECT name
-              FROM ".DBPREFIX."module_shop_shipper
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipper
              WHERE id=$shipperId
         ");
         if ($objResult && !$objResult->EOF) {

@@ -43,13 +43,13 @@ function storeChanges()
       }
     }
   }
-  document.getElementById('shopSelectOptions').action = "index.php?cmd=shop&act=products&tpl=attributes";
+  document.getElementById('shopSelectOptions').action = "index.php?cmd=shop{MODULE_INDEX}&act=products&tpl=attributes";
 }
 
 function deleteOption(id)
 {
   if(confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop&act=products&tpl=attributes&delId="+id);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=products&tpl=attributes&delId="+id);
 }
 
 function swapEdit(id)
@@ -184,7 +184,7 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
     switch(strAct){
       case 'del':
         if(confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
-          document.getElementById('shopSelectOptions').action = "index.php?cmd=shop&act=products&tpl=attributes&delProduct=1";
+          document.getElementById('shopSelectOptions').action = "index.php?cmd=shop{MODULE_INDEX}&act=products&tpl=attributes&delProduct=1";
           document.getElementById('shopSelectOptions').submit();
         }
         break;
@@ -261,7 +261,7 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
 <!-- end shopContent1 div -->
 <!-- start shopContent2 div -->
 <div id="shopContent2" class="attributeTab" style="display:none">
-  <form action="?cmd=shop&amp;act=products&amp;tpl=attributes" method="post" name="shopProductsForm" onsubmit="return storeNewOption()">
+  <form action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=attributes" method="post" name="shopProductsForm" onsubmit="return storeNewOption()">
     <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
       <tr>
         <th nowrap="nowrap" width="15%">&nbsp;{TXT_NAME}</th>

@@ -245,16 +245,16 @@ class shopmanager extends ShopLibrary {
 
         $objTemplate->setVariable(
             'CONTENT_NAVIGATION',
-            "<a href='?cmd=shop'>".$_ARRAYLANG['TXT_SHOP_INDEX']."</a>".
-            "<a href='?cmd=shop&amp;act=cat'>".$_ARRAYLANG['TXT_CATEGORIES']."</a>".
-            "<a href='?cmd=shop&amp;act=products'>".$_ARRAYLANG['TXT_PRODUCTS']."</a>".
-            "<a href='?cmd=shop&amp;act=manufacturer'>".$_ARRAYLANG['TXT_SHOP_MANUFACTURER']."</a>".
-            "<a href='?cmd=shop&amp;act=customers'>".$_ARRAYLANG['TXT_CUSTOMERS_PARTNERS']."</a>".
-            "<a href='?cmd=shop&amp;act=orders'>".$_ARRAYLANG['TXT_ORDERS']."</a>".
-            "<a href='?cmd=shop&amp;act=statistics'>".$_ARRAYLANG['TXT_STATISTIC']."</a>".
-            "<a href='?cmd=shop&amp;act=import'>".$_ARRAYLANG['TXT_IMPORT_EXPORT']."</a>".
-            "<a href='?cmd=shop&amp;act=pricelist'>".$_ARRAYLANG['TXT_PDF_OVERVIEW']."</a>".
-            "<a href='?cmd=shop&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>"
+            "<a href='index.php?cmd=shop".MODULE_INDEX."'>".$_ARRAYLANG['TXT_SHOP_INDEX']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=cat'>".$_ARRAYLANG['TXT_CATEGORIES']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=products'>".$_ARRAYLANG['TXT_PRODUCTS']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=manufacturer'>".$_ARRAYLANG['TXT_SHOP_MANUFACTURER']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=customers'>".$_ARRAYLANG['TXT_CUSTOMERS_PARTNERS']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=orders'>".$_ARRAYLANG['TXT_ORDERS']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=statistics'>".$_ARRAYLANG['TXT_STATISTIC']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=import'>".$_ARRAYLANG['TXT_IMPORT_EXPORT']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=pricelist'>".$_ARRAYLANG['TXT_PDF_OVERVIEW']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>"
         );
 
         // TODO: Must be made static for PHP5
@@ -479,7 +479,7 @@ class shopmanager extends ShopLibrary {
             // insert new manufacturer
             if ($_REQUEST['exe'] == 'insert') {
                 $query = "
-                    INSERT INTO ".DBPREFIX."module_shop_manufacturer
+                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
                                 (name, url) VALUES ('$name', '$url')
                 ";
                 $objResult = $objDatabase->Execute($query);
@@ -493,7 +493,7 @@ class shopmanager extends ShopLibrary {
             // update manufacturer
             if ($_REQUEST['exe'] == 'update' && $id > 0) {
                 $query = "
-                    UPDATE ".DBPREFIX."module_shop_manufacturer
+                    UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
                        SET name='$name', url='$url'
                      WHERE id=$id
                 ";
@@ -507,7 +507,7 @@ class shopmanager extends ShopLibrary {
 
             if ($_REQUEST['exe'] == 'delete' && $id > 0) {
                 $query = "
-                    DELETE FROM ".DBPREFIX."module_shop_manufacturer
+                    DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
                      WHERE id=$id
                 ";
                 $objResult = $objDatabase->Execute($query);
@@ -521,7 +521,7 @@ class shopmanager extends ShopLibrary {
             if ($_REQUEST['exe'] == 'deleteList') {
                 foreach ($_POST['selectedManufacturerId'] as $selectedId) {
                     $query = "
-                        DELETE FROM ".DBPREFIX."module_shop_manufacturer
+                        DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
                          WHERE id=".intval($selectedId);
                     $objResult = $objDatabase->Execute($query);
                     if ($objResult) {
@@ -536,7 +536,7 @@ class shopmanager extends ShopLibrary {
         $i = 1;
         $query = '
             SELECT id, name, url
-              FROM '.DBPREFIX.'module_shop_manufacturer
+              FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_manufacturer
           ORDER BY name
         ';
         $objResult = $objDatabase->Execute($query);
@@ -562,7 +562,7 @@ class shopmanager extends ShopLibrary {
             // Update the selected Manufacturer
             $query = '
                 SELECT id, name, url
-                  FROM '.DBPREFIX."module_shop_manufacturer
+                  FROM '.DBPREFIX."module_shop".MODULE_INDEX."_manufacturer
                  WHERE id=$id
             ";
             $objResult = $objDatabase->Execute($query);
@@ -623,7 +623,7 @@ class shopmanager extends ShopLibrary {
 
         // Delete template
         if (isset($_REQUEST["deleteImg"]) && $_REQUEST["deleteImg"] == 'exe') {
-            $query = "DELETE FROM ".DBPREFIX."module_shop_importimg WHERE img_id=".$_REQUEST["img"]."";
+            $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_importimg WHERE img_id=".$_REQUEST["img"]."";
             if ($objDatabase->Execute($query) !== false) {
                 $this->addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_DELETED']);
             } else {
@@ -635,7 +635,7 @@ class shopmanager extends ShopLibrary {
 
         // Save template
         if (isset($_REQUEST['exe']) && $_REQUEST['exe'] == 'SaveImg') {
-            $query = "INSERT INTO ".DBPREFIX."module_shop_importimg (img_name, img_cats, img_fields_file, img_fields_db) ".
+            $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_importimg (img_name, img_cats, img_fields_file, img_fields_db) ".
                 "VALUES ('".$_REQUEST['ImgName']."', '".$_REQUEST['category']."', '".
                 $_REQUEST['pairs_left_keys']."', '".$_REQUEST['pairs_right_keys']."')";
             if ($objDatabase->Execute($query)) {
@@ -654,11 +654,11 @@ class shopmanager extends ShopLibrary {
             // mind that this necessarily also clears all products and
             // their associated attributes!
             if (isset($_POST['clearCategories']) && $_POST['clearCategories']) {
-                $query = 'DELETE FROM '.DBPREFIX.'module_shop_products';
+                $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products';
                 $objDatabase->Execute($query);
-                $query = 'DELETE FROM '.DBPREFIX.'module_shop_products_attributes';
+                $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products_attributes';
                 $objDatabase->Execute($query);
-                $query = 'DELETE FROM '.DBPREFIX.'module_shop_categories';
+                $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories';
                 $objDatabase->Execute($query);
             }
             $objCsv = new Csv_bv($_FILES["importFileCategories"]["tmp_name"]);
@@ -684,12 +684,12 @@ class shopmanager extends ShopLibrary {
         if (isset($_REQUEST["exe"]) && $_REQUEST["exe"] == "importFileProducts") {
 
             if (isset($_POST['clearProducts']) && $_POST['clearProducts']) {
-                $query = 'DELETE FROM '.DBPREFIX.'module_shop_products';
+                $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products';
                 $objDatabase->Execute($query);
-                $query = 'DELETE FROM '.DBPREFIX.'module_shop_products_attributes';
+                $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products_attributes';
                 $objDatabase->Execute($query);
                 // the categories need not be removed, but it is done by design!
-                $query = 'DELETE FROM '.DBPREFIX.'module_shop_categories';
+                $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories';
                 $objDatabase->Execute($query);
             }
 
@@ -697,7 +697,7 @@ class shopmanager extends ShopLibrary {
 
             $query = '
                 SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db
-                  FROM '.DBPREFIX.'module_shop_importimg
+                  FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_importimg
                  WHERE img_id='.$_REQUEST["ImportImage"];
             $objResult = $objDatabase->Execute($query);
 
@@ -782,7 +782,7 @@ class shopmanager extends ShopLibrary {
                     }
                     $strColumnNames .= ', catid)';
                     $strColumnValues .= ", $catId)";
-                    array_push($sql_query, "INSERT INTO ".DBPREFIX."module_shop_products ".$strColumnNames." values".$strColumnValues);
+                    array_push($sql_query, "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products ".$strColumnNames." values".$strColumnValues);
                 }
             }
             $importedLines  = 0;
@@ -875,7 +875,7 @@ class shopmanager extends ShopLibrary {
                         "property1, property2, status, b2b, b2c, startdate, enddate, ".
                         "thumbnail_percent, thumbnail_quality, manufacturer_url, external_link, ".
                         "sort_order, vat_id, weight ".
-                        "FROM ".DBPREFIX."module_shop_products ".
+                        "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products ".
                         "ORDER BY id ASC";
                 break;
                 // products - custom:
@@ -900,19 +900,19 @@ class shopmanager extends ShopLibrary {
                         "p.shortdesc, p.description, p.stock, p.stock_visibility, ".
                         "p.status, p.b2b, p.b2c, p.startdate, p.enddate, ".
                         "p.manufacturer_url, p.external_link, p.sort_order, ".
-                        "".DBPREFIX."module_shop_manufacturer.name as manufacturer_name, ".DBPREFIX."module_shop_manufacturer.url as manufacturer_website, ".
+                        "".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer.name as manufacturer_name, ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer.url as manufacturer_website, ".
                         "p.vat_id, v.percent as vat_percent, p.weight ".
-                        "FROM ".DBPREFIX."module_shop_products p ".
+                        "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products p ".
                         // c1.catid *MUST NOT* be NULL
-                        "INNER JOIN ".DBPREFIX."module_shop_categories c1 ".
+                        "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_categories c1 ".
                         "ON p.catid=c1.catid ".
                         // c2.catid *MAY* be NULL (if c1.catid is root)
-                        "LEFT JOIN ".DBPREFIX."module_shop_categories c2 ".
+                        "LEFT JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_categories c2 ".
                         "ON c1.parentid=c2.catid ".
                         // vat_id, OTOH, *MAY* be NULL
-                        "LEFT JOIN ".DBPREFIX."module_shop_vat v ON vat_id = v.id ".
+                        "LEFT JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_vat v ON vat_id = v.id ".
                         // manufacturer
-                        "LEFT JOIN ".DBPREFIX."module_shop_manufacturer ON ".DBPREFIX."module_shop_manufacturer.id = p.manufacturer ".
+                        "LEFT JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer ON ".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer.id = p.manufacturer ".
                         "ORDER BY catid ASC, product_id ASC";
                 break;
                 // customer - plain fields:
@@ -928,7 +928,7 @@ class shopmanager extends ShopLibrary {
                         "address, city, zip, country_id, phone, fax, email, ".
                         "ccnumber, ccdate, ccname, cvc_code, company_note, ".
                         "is_reseller, register_date, customer_status ".
-                        "FROM ".DBPREFIX."module_shop_customers ".
+                        "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers ".
                         "ORDER BY lastname ASC, firstname ASC";
                 break;
                 // customer - custom:
@@ -942,8 +942,8 @@ class shopmanager extends ShopLibrary {
                         "SELECT c.customerid, c.username, c.firstname, c.lastname, c.prefix, c.company, ".
                         "c.address, c.zip, c.city, n.countries_name, ".
                         "c.phone, c.fax, c.email, c.is_reseller, c.register_date ".
-                        "FROM ".DBPREFIX."module_shop_customers c ".
-                        "INNER JOIN ".DBPREFIX."module_shop_countries n ON c.country_id=n.countries_id ".
+                        "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers c ".
+                        "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_countries n ON c.country_id=n.countries_id ".
                         "ORDER BY c.lastname ASC, c.firstname ASC";
                 break;
                 // orders - plain fields:
@@ -963,7 +963,7 @@ class shopmanager extends ShopLibrary {
                         "tax_price, currency_ship_price, shipping_id, payment_id, currency_payment_price, ".
                         "customer_ip, customer_host, customer_lang, customer_browser, customer_note, ".
                         "last_modified, modified_by ".
-                        "FROM ".DBPREFIX."module_shop_orders ORDER BY orderid ASC";
+                        "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders ORDER BY orderid ASC";
                 break;
                 // orders - custom:
                 case 'rorder':
@@ -988,13 +988,13 @@ class shopmanager extends ShopLibrary {
                         "c.phone, c.fax, c.email, c.is_reseller, c.register_date, ".
                         "u.code AS currency_code, s.name AS shipper_name, p.name AS payment_name, ".
                         "l.holder, l.bank, l.blz ".
-                        "FROM ".DBPREFIX."module_shop_orders o ".
-                        "INNER JOIN ".DBPREFIX."module_shop_customers c ON o.customerid=c.customerid ".
-                        "INNER JOIN ".DBPREFIX."module_shop_countries n ON c.country_id=n.countries_id ".
-                        "INNER JOIN ".DBPREFIX."module_shop_currencies u ON o.selected_currency_id=u.id ".
-                        "INNER JOIN ".DBPREFIX."module_shop_shipper s ON o.shipping_id=s.id ".
-                        "INNER JOIN ".DBPREFIX."module_shop_payment p ON o.payment_id=p.id ".
-                        "LEFT JOIN ".DBPREFIX."module_shop_lsv l ON o.orderid=l.order_id ".
+                        "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders o ".
+                        "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers c ON o.customerid=c.customerid ".
+                        "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_countries n ON c.country_id=n.countries_id ".
+                        "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_currencies u ON o.selected_currency_id=u.id ".
+                        "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_shipper s ON o.shipping_id=s.id ".
+                        "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_payment p ON o.payment_id=p.id ".
+                        "LEFT JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_lsv l ON o.orderid=l.order_id ".
                         "ORDER BY orderid ASC";
                 break;
             } // switch
@@ -1155,7 +1155,7 @@ class shopmanager extends ShopLibrary {
             $shopPicture = '';
             $query = "
                 SELECT picture
-                FROM ".DBPREFIX."module_shop_products
+                FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
                 WHERE id=$Id
             ";
             $objResult = $objDatabase->Execute($query);
@@ -1189,7 +1189,7 @@ class shopmanager extends ShopLibrary {
                     '?'.base64_encode($width).
                     '?'.base64_encode($height).'::';
                 $query = "
-                    UPDATE ".DBPREFIX."module_shop_products
+                    UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
                     SET picture='$shopPicture'
                     WHERE id=$Id
                 ";
@@ -1256,7 +1256,7 @@ class shopmanager extends ShopLibrary {
         if ($productId > 0) {
             $query =
                 "SELECT attribute_id, product_id, attributes_name_id, attributes_value_id, sort_id " .
-                "FROM ".DBPREFIX."module_shop_products_attributes ".
+                "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes ".
                 "WHERE product_id=".intval($productId);
             $objResult = $objDatabase->Execute($query);
 
@@ -1431,8 +1431,8 @@ class shopmanager extends ShopLibrary {
                 "value.value AS valueTxt, ".
                 "value.price AS price, ".
                 "value.price_prefix AS price_prefix ".
-            "FROM ".DBPREFIX."module_shop_products_attributes_name AS name, ".
-                    DBPREFIX."module_shop_products_attributes_value AS value ".
+            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name AS name, ".
+                    DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value AS value ".
             "WHERE value.name_id = name.id ".
             "ORDER BY nameTxt, valueId ASC";
 
@@ -1489,20 +1489,20 @@ class shopmanager extends ShopLibrary {
         $arrAttributePrice = $_POST['attributePrice'];
         $arrAttributePricePrefix = $_POST['attributePricePrefix'];
 
-        $query = "INSERT INTO ".DBPREFIX."module_shop_products_attributes_name (name, display_type) VALUES ('".addslashes($_POST['optionName'][0])."','".intval($_POST['attributeDisplayType'][0])."')";
+        $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name (name, display_type) VALUES ('".addslashes($_POST['optionName'][0])."','".intval($_POST['attributeDisplayType'][0])."')";
 
         if ($objDatabase->Execute($query) !== false) {
             $nameId = $objDatabase->Insert_Id();
 
             foreach ($arrAttributeList[0] as $id) {
                 // insert new attribute value
-                $query = "INSERT INTO ".DBPREFIX."module_shop_products_attributes_value (name_id, value, price, price_prefix) VALUES ($nameId, '".addslashes($arrAttributeValue[$id])."', '".floatval($arrAttributePrice[$id])."', '".addslashes($arrAttributePricePrefix[$id])."')";
+                $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value (name_id, value, price, price_prefix) VALUES ($nameId, '".addslashes($arrAttributeValue[$id])."', '".floatval($arrAttributePrice[$id])."', '".addslashes($arrAttributePricePrefix[$id])."')";
                 $objDatabase->Execute($query);
             }
         }
 
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes_value");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes_name");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name");
 
         return $statusMessage;
     }
@@ -1539,7 +1539,7 @@ class shopmanager extends ShopLibrary {
         foreach ($arrAttributeName as $id => $name) {
             if (isset($arrAttributesDb[$id])) {
                 if ($name != $arrAttributesDb[$id]['name'] || $_POST['attributeDisplayType'][$id] != $arrAttributesDb[$id]['displayType']) {
-                    $query = "UPDATE ".DBPREFIX."module_shop_products_attributes_name Set name='".addslashes($name)."', display_type='".intval($_POST['attributeDisplayType'][$id])."' WHERE id=".intval($id);
+                    $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name Set name='".addslashes($name)."', display_type='".intval($_POST['attributeDisplayType'][$id])."' WHERE id=".intval($id);
                     $objDatabase->Execute($query);
                 }
             }
@@ -1560,12 +1560,12 @@ class shopmanager extends ShopLibrary {
                         $updateString .= " price_prefix = '".addslashes($arrAttributePricePrefix[$id])."', ";
                     }
                     if (strlen($updateString)>0) {
-                        $query = "UPDATE ".DBPREFIX."module_shop_products_attributes_value Set ".substr($updateString,0,strlen($updateString)-2)." WHERE id=".intval($id);
+                        $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value Set ".substr($updateString,0,strlen($updateString)-2)." WHERE id=".intval($id);
                         $objDatabase->Execute($query);
                     }
                 } else {
                     // insert new attribute value
-                    $query = "INSERT INTO ".DBPREFIX."module_shop_products_attributes_value (name_id, value, price, price_prefix) VALUES (".intval($attributeId).", '".addslashes($arrAttributeValue[$id])."', '".floatval($arrAttributePrice[$id])."', '".addslashes($arrAttributePricePrefix[$id])."')";
+                    $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value (name_id, value, price, price_prefix) VALUES (".intval($attributeId).", '".addslashes($arrAttributeValue[$id])."', '".floatval($arrAttributePrice[$id])."', '".addslashes($arrAttributePricePrefix[$id])."')";
                     $objDatabase->Execute($query);
                 }
                 unset($arrAttributesDb[$attributeId]['values'][$id]);
@@ -1574,9 +1574,9 @@ class shopmanager extends ShopLibrary {
 
         foreach ($arrAttributesDb as $arrAttributes) {
             foreach ($arrAttributes['values'] as $arrValue) {
-                $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes WHERE attributes_value_id=".intval($arrValue['id']);
+                $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes WHERE attributes_value_id=".intval($arrValue['id']);
                 if ($objDatabase->Execute($query)) {
-                    $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes_value WHERE id=".intval($arrValue['id']);
+                    $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value WHERE id=".intval($arrValue['id']);
                     $objDatabase->Execute($query);
                 }
             }
@@ -1586,14 +1586,14 @@ class shopmanager extends ShopLibrary {
         $arrAttributeKeys = array_keys($this->arrAttributes);
         foreach ($arrAttributeKeys as $attributeId) {
             if (!array_key_exists($attributeId, $arrAttributeList)) {
-                $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes_name WHERE id=".intval($attributeId);
+                $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name WHERE id=".intval($attributeId);
                 $objDatabase->Execute($query);
             }
         }
 
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes_value");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes_name");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes");
 
         return $statusMessage;
     }
@@ -1619,11 +1619,11 @@ class shopmanager extends ShopLibrary {
         }
 
         foreach ($arrOptionIds as $optionId) {
-            $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes WHERE attributes_name_id=".intval($optionId);
+            $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes WHERE attributes_name_id=".intval($optionId);
             if ($objDatabase->Execute($query)) {
-                $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes_value WHERE name_id=".intval($optionId);
+                $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value WHERE name_id=".intval($optionId);
                 if ($objDatabase->Execute($query)) {
-                    $query = "DELETE FROM ".DBPREFIX."module_shop_products_attributes_name WHERE id=".intval($optionId);
+                    $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name WHERE id=".intval($optionId);
                     $objDatabase->Execute($query);
                 }
             }
@@ -1916,8 +1916,8 @@ class shopmanager extends ShopLibrary {
                 $this->_objTpl->setCurrentBlock('shopPayment');
                 foreach ($this->arrPayment as $id => $data) {
                     $query = "SELECT r.zones_id as zone_id ".
-                             "FROM ".DBPREFIX."module_shop_rel_payment AS r, ".
-                                     DBPREFIX."module_shop_zones AS z ".
+                             "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment AS r, ".
+                                     DBPREFIX."module_shop".MODULE_INDEX."_zones AS z ".
                               "WHERE z.activation_status=1 ".
                                 "AND z.zones_id=r.zones_id ".
                                 "AND r.payment_id=".$data['id'];
@@ -1963,8 +1963,8 @@ class shopmanager extends ShopLibrary {
                 $i=0;
                 foreach ($arrShippers as $sid => $arrShipper) {
                     $query = "SELECT r.zones_id as zone_id ".
-                             "FROM ".DBPREFIX."module_shop_rel_shipment AS r, ".
-                                     DBPREFIX."module_shop_zones AS z ".
+                             "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment AS r, ".
+                                     DBPREFIX."module_shop".MODULE_INDEX."_zones AS z ".
                             "WHERE z.activation_status=1 ".
                               "AND z.zones_id=r.zones_id ".
                               "AND r.shipment_id=$sid";
@@ -2048,8 +2048,8 @@ class shopmanager extends ShopLibrary {
                         $strSelectedCountries = NULL;
                         $strCountryList = NULL;
                         $query = "SELECT r.countries_id AS countries_id, c.countries_name AS countries_name ".
-                                 "FROM ".DBPREFIX."module_shop_rel_countries AS r, ".
-                                         DBPREFIX."module_shop_countries AS c ".
+                                 "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries AS r, ".
+                                         DBPREFIX."module_shop".MODULE_INDEX."_countries AS c ".
                                   "WHERE r.zones_id=$zId ".
                                     "AND c.countries_id=r.countries_id ".
                                     "AND c.activation_status=1 ".
@@ -2064,13 +2064,13 @@ class shopmanager extends ShopLibrary {
 
                         if (count($arrSelectedCountries)>0) {
                             $query = "SELECT countries_id, countries_name ".
-                                     "FROM ".DBPREFIX."module_shop_countries ".
+                                     "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries ".
                                      "WHERE activation_status=1 ".
                                        "AND countries_id!=".implode(" AND countries_id!=", $arrSelectedCountries).
                                      " ORDER BY countries_name";
                         } else {
                             $query = "SELECT countries_id, countries_name ".
-                                     "FROM ".DBPREFIX."module_shop_countries ".
+                                     "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries ".
                                       "WHERE activation_status=1 ".
                                    "ORDER BY countries_name";
                         }
@@ -2205,7 +2205,7 @@ class shopmanager extends ShopLibrary {
                 }
 
                 // Get all templates
-                $objResult = $objDatabase->Execute("SELECT id, tpl_id, lang_id FROM ".DBPREFIX."module_shop_mail_content");
+                $objResult = $objDatabase->Execute("SELECT id, tpl_id, lang_id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content");
                 $arrTemplateMails = array();
                 while (!$objResult->EOF) {
                     if (!isset($arrTemplateMails[$objResult->fields['tpl_id']])) {
@@ -2227,7 +2227,7 @@ class shopmanager extends ShopLibrary {
                 }
 
                 // Generate template rows of the template list with the language status
-                $objResult = $objDatabase->Execute("SELECT id, tplname, protected FROM ".DBPREFIX."module_shop_mail");
+                $objResult = $objDatabase->Execute("SELECT id, tplname, protected FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail");
                 $i=1;
                 // Generate each row
                 while (!$objResult->EOF) {
@@ -2295,7 +2295,7 @@ class shopmanager extends ShopLibrary {
                                 $langMenu .= "&nbsp;<input type=\"checkbox\" id=\"portMail\" name=\"portMail\" value=\"1\" />&nbsp;".$_ARRAYLANG['TXT_COPY_TO_NEW_LANGUAGE'];
 
                                 // Get the content of the template
-                                $query = "SELECT id, from_mail, xsender, subject, message FROM ".DBPREFIX."module_shop_mail_content WHERE tpl_id=".intval($_GET['tplId'])." AND lang_id=".intval($langId);
+                                $query = "SELECT id, from_mail, xsender, subject, message FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content WHERE tpl_id=".intval($_GET['tplId'])." AND lang_id=".intval($langId);
                                 $objResult = $objDatabase->Execute($query);
                                 if (!$objResult->EOF) {
                                     $this->_objTpl->setVariable(array(
@@ -2337,7 +2337,7 @@ class shopmanager extends ShopLibrary {
                             $langId = (isset($_GET['langId']) ? intval($_GET['langId']) : '');
                             $query = "
                                 SELECT id, from_mail, xsender, subject, message
-                                  FROM ".DBPREFIX."module_shop_mail_content
+                                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content
                                  WHERE ".($tplId ? "tpl_id=$tplId AND " : '').
                                          ($langId ? "lang_id=$langId AND " : '')."1";
                             $objResult = $objDatabase->Execute($query);
@@ -2655,7 +2655,7 @@ class shopmanager extends ShopLibrary {
 
         $query = "
             SELECT catid, parentid, catname, catsorting, catstatus
-              FROM ".DBPREFIX."module_shop_categories
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
              WHERE parentId=$parentId
           ORDER BY parentid ASC, catsorting ASC
         ";
@@ -2693,7 +2693,7 @@ class shopmanager extends ShopLibrary {
 
         $query =
             "SELECT catid, parentid, catname, catsorting, catstatus ".
-            "FROM ".DBPREFIX."module_shop_categories ".
+            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
             "WHERE catstatus=1 AND parentId=$parentId".
             "ORDER BY parentid ASC, catsorting ASC";
         if (($objResult = $objDatabase->Execute($query)) === false) {
@@ -2849,7 +2849,7 @@ class shopmanager extends ShopLibrary {
                 $arrProducts = array();
                 $blnDelCat = true;
                 // Check whether this category has subcategories
-                $query = "SELECT catid FROM ".DBPREFIX."module_shop_categories WHERE 1 AND parentid=".intval($cId);
+                $query = "SELECT catid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories WHERE 1 AND parentid=".intval($cId);
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult->RecordCount() > 0) {
                     $blnDelCat = false;
@@ -2860,7 +2860,7 @@ class shopmanager extends ShopLibrary {
                 if ($blnDelCat) {
                     // Check whether products exist in this category
                     $query = "
-                        SELECT id FROM ".DBPREFIX."module_shop_products
+                        SELECT id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
                          WHERE 1 AND catid=".intval($cId);
                     $objResult = $objDatabase->Execute($query);
                     while (!$objResult->EOF) {
@@ -2873,7 +2873,7 @@ class shopmanager extends ShopLibrary {
                         foreach ($arrProducts as $id) {
                             // Check whether there are orders with this
                             // product ID
-                            $query = "SELECT 1 FROM ".DBPREFIX."module_shop_order_items WHERE productid=".$id;
+                            $query = "SELECT 1 FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items WHERE productid=".$id;
                             $objResult = $objDatabase->Execute($query);
                             if ($objResult->RecordCount() > 0) {
                                 $this->addError($_ARRAYLANG['TXT_COULD_NOT_DELETE_ALL_PRODUCTS']."&nbsp;(".$_ARRAYLANG['TXT_CATEGORY']."&nbsp;".$cId.")");
@@ -2886,7 +2886,7 @@ class shopmanager extends ShopLibrary {
 
                     // Delete the category
                     if ($blnDelCat) {
-                        $query = "DELETE FROM ".DBPREFIX."module_shop_categories WHERE catid=".intval($cId);
+                        $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories WHERE catid=".intval($cId);
                         if (!$objDatabase->Execute($query)) {
                             $this->errorHandling();
                         } else {
@@ -2898,8 +2898,8 @@ class shopmanager extends ShopLibrary {
             if ($blnDeletedCat) {
                 $this->addMessage($_ARRAYLANG['TXT_DELETED_CATEGORY_AND_PRODUCTS']);
             }
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_categories");
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_categories");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products");
             return true;
         } else {
             return false;
@@ -3218,15 +3218,15 @@ class shopmanager extends ShopLibrary {
 
             switch ($_POST['shopAfterStoreAction']) {
                 case "newEmpty":
-                    header("Location: ?cmd=shop&act=products&tpl=manage");
+                    header("Location: index.php?cmd=shop".MODULE_INDEX."&act=products&tpl=manage");
                     exit();
                 case "newTemplate":
-                    header("Location: ?cmd=shop&act=products&tpl=manage&id=".
+                    header("Location: index.php?cmd=shop".MODULE_INDEX."&act=products&tpl=manage&id=".
                         $objProduct->getId()."&new=1"
                     );
                     exit();
                 default:
-                    header("Location: ?cmd=shop&act=products");
+                    header("Location: index.php?cmd=shop".MODULE_INDEX."&act=products");
                     // prevent further output, go back to product overview
                     exit();
             }
@@ -3479,7 +3479,7 @@ class shopmanager extends ShopLibrary {
             intval($_GET['changeOrderStatus']) <= SHOP_ORDER_STATUS_COUNT &&
             !empty($_GET['orderId'])) {
             $query = "
-                UPDATE ".DBPREFIX."module_shop_orders
+                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_orders
                    SET order_status='".intval($_GET['changeOrderStatus'])."',
                        modified_by ='".$_SESSION['auth']['username']."',
                        last_modified=NOW()
@@ -3492,8 +3492,8 @@ class shopmanager extends ShopLibrary {
             && !empty($_GET['orderId'])) {
             $query = "
                 SELECT c.email, o.last_modified, customer_lang
-                  FROM ".DBPREFIX."module_shop_customers c,
-                       ".DBPREFIX."module_shop_orders o
+                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers c,
+                       ".DBPREFIX."module_shop".MODULE_INDEX."_orders o
                  WHERE o.customerid=c.customerid
                    AND o.orderid=".intval($_GET['orderId']);
             $objResult = $objDatabase->Execute($query);
@@ -3669,8 +3669,8 @@ class shopmanager extends ShopLibrary {
             SELECT orderid, firstname, lastname, company,
                    currency_order_sum, selected_currency_id,
                    order_date, customer_note, order_status
-              FROM ".DBPREFIX."module_shop_customers c,
-                   ".DBPREFIX."module_shop_orders o
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers c,
+                   ".DBPREFIX."module_shop".MODULE_INDEX."_orders o
              WHERE c.customerid=o.customerid
                    $shopSearchPattern
           ORDER BY $shopCustomerOrder
@@ -3686,7 +3686,7 @@ class shopmanager extends ShopLibrary {
             $paging = getPaging(
                 $count,
                 $pos,
-                '&amp;cmd=shop&amp;act=orders',
+                '&amp;cmd=shop'.MODULE_INDEX.'&amp;act=orders',
                 $_ARRAYLANG['TXT_ORDERS'],
                 $viewPaging
             );
@@ -3875,7 +3875,7 @@ class shopmanager extends ShopLibrary {
             "c.customerid, c.prefix, c.company, c.firstname, c.lastname, c.address, c.zip, c.city, ".
             "c.country_id, c.phone, c.fax, c.ccnumber, c.cvc_code, c.ccdate, c.ccname, ".
             "c.company_note, c.email, c.is_reseller ".
-            "FROM  ".DBPREFIX."module_shop_customers AS c, ".DBPREFIX."module_shop_orders AS o ".
+            "FROM  ".DBPREFIX."module_shop".MODULE_INDEX."_customers AS c, ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS o ".
             "WHERE c.customerid = o.customerid AND o.orderid = $shopOrderId";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
@@ -4058,7 +4058,7 @@ class shopmanager extends ShopLibrary {
                     SELECT id, product_id, title,
                         resellerprice, normalprice, discountprice, is_special_offer,
                         weight, vat_id
-                    FROM '.DBPREFIX.'module_shop_products
+                    FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products
                     WHERE status=1
                 ';
                 $objResult = $objDatabase->Execute($query);
@@ -4120,7 +4120,7 @@ class shopmanager extends ShopLibrary {
 
         // get product options
         $query = "SELECT order_items_id, product_option_name, product_option_value ".
-            "FROM ".DBPREFIX."module_shop_order_items_attributes ".
+            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes ".
             "WHERE order_id=".$shopOrderId;
         $arrProductOptions = array();
         $objResult = $objDatabase->Execute($query);
@@ -4140,7 +4140,7 @@ class shopmanager extends ShopLibrary {
 
         // set up the order details
         $query = "SELECT order_items_id, product_name, productid, price, quantity, vat_percent, weight ".
-        "FROM ".DBPREFIX."module_shop_order_items ".
+        "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items ".
         "WHERE orderid = $shopOrderId";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
@@ -4210,7 +4210,7 @@ class shopmanager extends ShopLibrary {
 
                 // get product code (aka custom id)
                 $query = "
-                    SELECT product_id FROM ".DBPREFIX."module_shop_products
+                    SELECT product_id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
                     WHERE id=".$objResult->fields['productid'];
                 $objResult2 = $objDatabase->Execute($query);
                 $productCode = '';
@@ -4320,8 +4320,8 @@ class shopmanager extends ShopLibrary {
             // Determine customer language
             $query = "
                 SELECT customer_lang
-                  FROM ".DBPREFIX."module_shop_orders
-                 INNER JOIN ".DBPREFIX."module_shop_customers
+                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
+                 INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers
                  USING (customerid)
                  WHERE orderid=$shopOrderId
             ";
@@ -4359,11 +4359,11 @@ class shopmanager extends ShopLibrary {
         foreach ($_REQUEST['shopProductId'] AS $elem => $pId) {
             if ($_POST['shopProductList'][$elem] == 0 && stripslashes($elem) != "'new'") {
                 // delete the product from the list
-                $query = "DELETE FROM ".DBPREFIX."module_shop_order_items ".
+                $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items ".
                     "WHERE order_items_id = $elem";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult !== false) {
-                    $query = "DELETE FROM ".DBPREFIX."module_shop_order_items_attributes ".
+                    $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes ".
                     "WHERE order_items_id = ".
                     intval(substr(contrexx_stripslashes($elem),1,-1));
                     $objResult = $objDatabase->Execute($query);
@@ -4375,7 +4375,7 @@ class shopmanager extends ShopLibrary {
                 $shopTotalOrderSum += $shopProductPrice * $shopProductQuantity;
                 $shopProductTaxPercent = floatval($_REQUEST['shopProductTaxPercent'][$elem]);
                 $shopProductWeight = Weight::getWeight($_REQUEST['shopProductWeight'][$elem]);
-                $query = "INSERT INTO ".DBPREFIX."module_shop_order_items ".
+                $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_order_items ".
                     "(orderid, productid, product_name, price, quantity, vat_percent, weight) ".
                     "VALUES ($shopOrderId, $pId, '".
                     contrexx_strip_tags($_POST['shopProductName'][$elem]).
@@ -4389,7 +4389,7 @@ class shopmanager extends ShopLibrary {
                 $shopTotalOrderSum += $shopProductPrice * $shopProductQuantity;
                 $shopProductTaxPercent = floatval($_REQUEST['shopProductTaxPercent'][$elem]);
                 $shopProductWeight = Weight::getWeight($_REQUEST['shopProductWeight'][$elem]);
-                $query = "UPDATE ".DBPREFIX."module_shop_order_items SET ".
+                $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_order_items SET ".
                         "price = $shopProductPrice".
                         ", quantity = $shopProductQuantity".
                         ", productid = ".intval($_POST['shopProductList'][$elem]).
@@ -4403,7 +4403,7 @@ class shopmanager extends ShopLibrary {
 
         // store the order details
         $query = "
-            UPDATE ".DBPREFIX."module_shop_orders
+            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_orders
                SET currency_order_sum=".floatval($shopTotalOrderSum).",
                    currency_ship_price=".floatval($_POST['shopShippingPrice']).",
                    currency_payment_price=".floatval($_POST['shopPaymentPrice']).",
@@ -4462,13 +4462,13 @@ class shopmanager extends ShopLibrary {
         // delete each selected order
         if (count($arrOrderId) > 0) {
             foreach ($arrOrderId as $oId) {
-                $query = "DELETE FROM ".DBPREFIX."module_shop_order_items_attributes WHERE order_id=".intval($oId);
+                $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes WHERE order_id=".intval($oId);
                 if ($objDatabase->Execute($query)) {
-                    $query = "DELETE FROM ".DBPREFIX."module_shop_order_items WHERE orderid=".intval($oId);
+                    $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items WHERE orderid=".intval($oId);
                     if ($objDatabase->Execute($query)) {
-                        $query = "DELETE FROM ".DBPREFIX."module_shop_lsv WHERE order_id=".intval($oId);
+                        $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_lsv WHERE order_id=".intval($oId);
                         if ($objDatabase->Execute($query)) {
-                            $query = "DELETE FROM ".DBPREFIX."module_shop_orders WHERE orderid=".intval($oId);
+                            $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders WHERE orderid=".intval($oId);
                             if (!$objDatabase->Execute($query)) {
                                 $this->errorHandling();
                             }
@@ -4577,7 +4577,7 @@ class shopmanager extends ShopLibrary {
         $query = "
             SELECT customerid, company, firstname, lastname,
                    address, city, zip, phone, email, customer_status
-              FROM ".DBPREFIX."module_shop_customers
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
              WHERE 1 $shopSearchPattern
           ORDER BY $shopCustomerOrder
         ";
@@ -4595,7 +4595,7 @@ class shopmanager extends ShopLibrary {
             if ($count > $shopPagingLimit) { //if count contains more entrys than the paging limit, set paging to true
                 $viewPaging = true;
             }
-            $paging = getPaging($count, $pos, "&amp;cmd=shop&amp;act=customers", "<b>".$_ARRAYLANG['TXT_CUSTOMERS_ENTRIES']."</b>", $viewPaging);
+            $paging = getPaging($count, $pos, "&amp;cmd=shop".MODULE_INDEX."&amp;act=customers", "<b>".$_ARRAYLANG['TXT_CUSTOMERS_ENTRIES']."</b>", $viewPaging);
             //$query .= " LIMIT $pos, $shopPagingLimit";
         }
         if (!($objResult = $objDatabase->SelectLimit($query, $shopPagingLimit, $pos))) {
@@ -4651,7 +4651,7 @@ class shopmanager extends ShopLibrary {
 
         if (count($arrCustomerId) > 0) {
             foreach ($arrCustomerId as $cId) {
-                $query = "SELECT orderid FROM ".DBPREFIX."module_shop_orders
+                $query = "SELECT orderid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
                       WHERE customerid = ".intval($cId);
 
                 if (($objResult = $objDatabase->Execute($query)) !== false) {
@@ -4662,7 +4662,7 @@ class shopmanager extends ShopLibrary {
                     }
                     $this->addMessage($_ARRAYLANG['TXT_ALL_ORDERS_DELETED']);
                 }
-                $query = "DELETE FROM ".DBPREFIX."module_shop_customers
+                $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
                       WHERE customerid = ".intval($cId);
                 if ($objDatabase->Execute($query)) {
                     $this->addMessage($_ARRAYLANG['TXT_CUSTOMER_DELETED']);
@@ -4764,7 +4764,7 @@ class shopmanager extends ShopLibrary {
                         $shopUdatePassword = ",password = '$shopMd5Password' ";
                     }
 
-                    $query = "UPDATE ".DBPREFIX."module_shop_customers
+                    $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_customers
                               SET username = '".$shopUsername."' $shopUdatePassword ,
                                       prefix = '".$shopPrefix."',
                                       company ='".$shopCompany."',
@@ -4798,7 +4798,7 @@ class shopmanager extends ShopLibrary {
                         // Determine customer language
                         $query = "
                             SELECT customer_lang
-                              FROM ".DBPREFIX."module_shop_customers
+                              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
                              WHERE customerid=$customerid
                         ";
                         $objResult = $objDatabase->Execute($query);
@@ -4836,7 +4836,7 @@ class shopmanager extends ShopLibrary {
         } //end if
 
         //set the customer informations
-        $query = "SELECT * FROM ".DBPREFIX."module_shop_customers ".
+        $query = "SELECT * FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers ".
                  "WHERE customerid=$customerid";
         if (($objResult = $objDatabase->Execute($query)) === false) {
             //if query has errors, call errorhandling
@@ -4887,7 +4887,7 @@ class shopmanager extends ShopLibrary {
         }//end else
         //set the orders
         $query = "SELECT order_date,orderid,order_status, selected_currency_id, currency_order_sum ".
-                  "FROM ".DBPREFIX."module_shop_orders ".
+                  "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders ".
                   "WHERE customerid = $customerid ".
                   "ORDER BY order_date DESC";
         $objResult = $objDatabase->Execute($query);
@@ -4991,7 +4991,7 @@ class shopmanager extends ShopLibrary {
         // set the customer informations
         if ($customerid > 0) {
             $query = "SELECT *
-                  FROM ".DBPREFIX."module_shop_customers
+                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
                   WHERE customerid = $customerid
                   ORDER BY lastname ASC";
             if (($objResult = $objDatabase->Execute($query)) === false) {
@@ -5083,7 +5083,7 @@ class shopmanager extends ShopLibrary {
 
                 // insert the customer data
                 $query = "
-                    INSERT INTO ".DBPREFIX."module_shop_customers
+                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_customers
                         (username, password, prefix, company, firstname,
                         lastname, address, city, zip, country_id,
                         phone, fax, email,
@@ -5172,7 +5172,7 @@ class shopmanager extends ShopLibrary {
 
         $result="";
         $query = "SELECT catid, parentid, catname ".
-            "FROM ".DBPREFIX."module_shop_categories ".
+            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
             "ORDER BY parentid ASC, catsorting ASC";
         if (($objResult = $objDatabase->Execute($query)) === false) {
             $this->errorHandling();
@@ -5327,7 +5327,7 @@ class shopmanager extends ShopLibrary {
                 getPaging(
                     $count,
                     $pos,
-                    '&amp;cmd=shop&amp;act=products&amp;catId='.
+                    '&amp;cmd=shop'.MODULE_INDEX.'&amp;act=products&amp;catId='.
                         $catId,
                         '<b>'.$_ARRAYLANG['TXT_PRODUCTS'].'</b>',
                     true
@@ -5572,7 +5572,7 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
         ));
         // Get the first order date, if its empty, no order has been made yet!
         $query = "SELECT DATE_FORMAT(order_date,'%Y') AS year, DATE_FORMAT(order_date,'%m') AS month
-                  FROM ".DBPREFIX."module_shop_orders
+                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
                   WHERE order_status = '1' OR order_status = '4'
                   ORDER BY order_date asc";
         $objResult = $objDatabase->SelectLimit($query, 1);
@@ -5590,7 +5590,7 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
                              currency_order_sum,
                              DATE_FORMAT(order_date,'%m') AS month,
                              DATE_FORMAT(order_date,'%Y') AS year
-                        FROM ".DBPREFIX."module_shop_orders
+                        FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
                        WHERE order_status = '1' OR order_status = '4'
                        ORDER BY order_date DESC";
             if (($objResult = $objDatabase->Execute($query)) !== false) {
@@ -5625,8 +5625,8 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
 
             //get the total sum of sold products
             $query = "SELECT sum(A.quantity) AS shopTotalSoldProducts
-                      FROM ".DBPREFIX."module_shop_order_items AS A,
-                             ".DBPREFIX."module_shop_orders AS B
+                      FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
+                             ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS B
                       WHERE A.orderid = B.orderid
                       AND (B.order_status = '1' OR B.order_status = '4')";
             $objResult = $objDatabase->SelectLimit($query, 1);
@@ -5672,9 +5672,9 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
                 'SHOP_CUSTOMERS_SELECTED' => "",
                 ));
                 $query =  "SELECT A.quantity AS shopColumn2, A.productid AS id, A.price AS sum, B.title AS title, B.stock AS shopColumn3, C.selected_currency_id
-                          FROM  ".DBPREFIX."module_shop_order_items AS A,
-                                ".DBPREFIX."module_shop_products AS B,
-                                ".DBPREFIX."module_shop_orders AS C
+                          FROM  ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
+                                ".DBPREFIX."module_shop".MODULE_INDEX."_products AS B,
+                                ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS C
                           WHERE A.productid = B.id AND A.orderid = C.orderid
                           AND C.order_date >= '$shopStartDate'
                           AND C.order_date <= '$shopStopDate'
@@ -5691,9 +5691,9 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
                 'SHOP_CUSTOMERS_SELECTED' => "selected=\"selected\"",
                 ));
                 $query = "SELECT A.currency_order_sum AS sum, A.selected_currency_id AS currency_id, C.company AS shopColumn2,sum(B.quantity) AS shopColumn3, C.lastname As lastname, C.firstname AS firstname, C.prefix AS prefix, C.customerid AS id
-                           FROM  ".DBPREFIX."module_shop_orders AS A,
-                                ".DBPREFIX."module_shop_order_items AS B,
-                                ".DBPREFIX."module_shop_customers AS C
+                           FROM  ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS A,
+                                ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS B,
+                                ".DBPREFIX."module_shop".MODULE_INDEX."_customers AS C
                            WHERE A.orderid = B.orderid
                           AND A.customerid = C.customerid
                           AND A.order_date >= '$shopStartDate'
@@ -5713,8 +5713,8 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
                 'SHOP_CUSTOMERS_SELECTED' => "",
                 ));
                 $query = "SELECT sum(A.quantity) AS shopColumn3, count(A.orderid) AS shopColumn2, B.selected_currency_id, B.currency_order_sum AS sum, DATE_FORMAT(B.order_date,'%m') AS month, DATE_FORMAT(B.order_date,'%Y') AS year
-                           FROM ".DBPREFIX."module_shop_order_items AS A,
-                               ".DBPREFIX."module_shop_orders AS B
+                           FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
+                               ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS B
                           WHERE A.orderid = B.orderid
                           AND B.order_date >= '$shopStartDate'
                           AND B.order_date <= '$shopStopDate'
@@ -5741,7 +5741,7 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
                             );
                         }
                         $arrayResults[$key]['column2'] = $arrayResults[$key]['column2'] + $objResult->fields['shopColumn2'];
-                        $arrayResults[$key]['column1'] = "<a href='?cmd=shop&amp;act=products&amp;tpl=manage&amp;id=".$objResult->fields['id']."' title=\"".$objResult->fields['title']."\">".$objResult->fields['title']."</a>";
+                        $arrayResults[$key]['column1'] = "<a href='?cmd=shop".MODULE_INDEX."&amp;act=products&amp;tpl=manage&amp;id=".$objResult->fields['id']."' title=\"".$objResult->fields['title']."\">".$objResult->fields['title']."</a>";
                         $arrayResults[$key]['column3'] = $objResult->fields['shopColumn3'];
                         $arrayResults[$key]['column4'] = $arrayResults[$key]['column4'] + $objResult->fields['shopColumn2'] * $this->objCurrency->getDefaultCurrencyPrice($objResult->fields['sum']);
 
@@ -5772,7 +5772,7 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
                                 'column4' => 0,
                             );
                         }
-                        $arrayResults[$key]['column1'] = "<a href='index.php?cmd=shop&amp;act=customerdetails&amp;customerid=".$objResult->fields['id']."'>$shopCustomerName</a>";
+                        $arrayResults[$key]['column1'] = "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=customerdetails&amp;customerid=".$objResult->fields['id']."'>$shopCustomerName</a>";
                         $arrayResults[$key]['column2'] = $objResult->fields['shopColumn2'];
                         $arrayResults[$key]['column3'] += $objResult->fields['shopColumn3'];
                         $arrayResults[$key]['column4'] += $this->objCurrency->getDefaultCurrencyPrice($objResult->fields['sum']);
@@ -5942,7 +5942,7 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
 
         $row_color = 0;
 
-        $query = "SELECT id, name FROM ".DBPREFIX."module_shop_pricelists ORDER BY name ASC";
+        $query = "SELECT id, name FROM ".DBPREFIX."module_shop".MODULE_INDEX."_pricelists ORDER BY name ASC";
         $objResult = $objDatabase->Execute($query);
         if ($objResult->RecordCount() > 0) { // there's a row in the database
             $this->_objTpl->setCurrentBlock("showPricelists");
@@ -6049,7 +6049,7 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
 
         $row_color = 0;
         $query = "SELECT catid,catname ".
-                 "FROM ".DBPREFIX."module_shop_categories ".
+                 "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
                  "WHERE parentid=0 ".
                  "ORDER BY catsorting ASC";
         $objResult = $objDatabase->Execute($query);
@@ -6125,7 +6125,7 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
         }
 
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop_pricelists
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_pricelists
             SET id='',
                 name='".addslashes(strip_tags($_POST['pricelistName']))."',
                 lang_id=".intval($_POST['langId']).",
@@ -6171,7 +6171,7 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
             'TXT_STORE_PRODUCT_LIST' => $_ARRAYLANG['TXT_STORE_PRODUCT_LIST']
         ));
 
-        $objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_shop_pricelists WHERE id=".$pricelistID);
+        $objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_shop".MODULE_INDEX."_pricelists WHERE id=".$pricelistID);
 
         $langId = $objResult->fields['lang_id'];
         $this->_objTpl->setVariable("SHOP_PRICELIST_DETAILS_ACT",'pricelist_update&amp;id='.$objResult->fields['id']);
@@ -6222,7 +6222,7 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
 
             $selectedCategories = explode(',', $objResult->fields['categories']);
             $query = "SELECT catid ".
-                     "FROM ".DBPREFIX."module_shop_categories ".
+                     "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
                      "WHERE parentid = 0";
             $objResult = $objDatabase->Execute($query);
             while (!$objResult->EOF) {
@@ -6294,7 +6294,7 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
             $_POST['pricelistName'] = $_ARRAYLANG['TXT_NO_NAME'];
         }
 
-        $query = "UPDATE ".DBPREFIX."module_shop_pricelists ".
+        $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_pricelists ".
                  "SET name=         '".addslashes(strip_tags($_POST['pricelistName']))."', ".
                      "lang_id=       ".intval($_POST['langId']).", ".
                      "border_on=     ".intval($_POST['borderOn']).", ".
@@ -6336,7 +6336,7 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
         if (count($arrPricelistId)>0) {
             foreach ($arrPricelistId as $plId) {
                 $query = "
-                    DELETE FROM ".DBPREFIX."module_shop_pricelists
+                    DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_pricelists
                      WHERE id=".intval($plId)
                 ;
                 if ($objDatabase->Execute($query)) {
@@ -6365,7 +6365,7 @@ echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
 
         $query = '
             SELECT id, name, url
-              FROM '.DBPREFIX.'module_shop_manufacturer
+              FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_manufacturer
           ORDER BY name
         ';
         $objResult = $objDatabase->Execute($query);
