@@ -197,7 +197,7 @@ class PaymentProcessing
         }
         $query = "
             SELECT name
-              FROM ".DBPREFIX."module_shop_payment_processors
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment_processors
              WHERE id=$processorId
         ";
         $objResult = $objDatabase->Execute($query);
@@ -236,7 +236,7 @@ class PaymentProcessing
 
         $query = "
             SELECT type
-              FROM ".DBPREFIX."module_shop_payment_processors
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment_processors
              WHERE id=$processorId
         ";
         $objResult = $objDatabase->Execute($query);
@@ -273,7 +273,7 @@ class PaymentProcessing
         }
         $query = "
             SELECT picture
-              FROM ".DBPREFIX."module_shop_payment_processors
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment_processors
              WHERE id=$processorId
         ";
         $objResult = $objDatabase->Execute($query);
@@ -300,12 +300,12 @@ class PaymentProcessing
         switch ($this->getPaymentProcessorName()) {
             case 'Internal':
                 /* Redirect browser */
-                header('location: index.php?section=shop&cmd=success&handler=Internal');
+                header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&handler=Internal');
                 exit;
                 break;
             case 'Internal_LSV':
                 /* Redirect browser */
-                header('location: index.php?section=shop&cmd=success&handler=Internal');
+                header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&handler=Internal');
                 exit;
                 break;
             case 'Internal_CreditCard':
@@ -382,9 +382,9 @@ class PaymentProcessing
             'CURRENCY'    => $this->_currencyCode,
             'ORDERID'     => $_SESSION['shop']['orderid'],
             'ACCOUNTID'   => $this->arrConfig['saferpay_id']['value'],
-            'SUCCESSLINK' => urlencode('http://'.$serverBase.'index.php?section=shop&cmd=success&result=1&handler=saferpay'),
-            'FAILLINK'    => urlencode('http://'.$serverBase.'index.php?section=shop&cmd=success&result=0&handler=saferpay'),
-            'BACKLINK'    => urlencode('http://'.$serverBase.'index.php?section=shop&cmd=success&result=2&handler=saferpay'),
+            'SUCCESSLINK' => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=saferpay'),
+            'FAILLINK'    => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=0&handler=saferpay'),
+            'BACKLINK'    => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=2&handler=saferpay'),
             'DESCRIPTION' => urlencode('"'.$_ARRAYLANG['TXT_ORDER_NR'].' '.$_SESSION['shop']['orderid'].'"'),
             'LANGID'      => $this->_languageCode,
             'PROVIDERSET' => $arrCards

@@ -18,10 +18,10 @@ require_once ASCMS_CORE_PATH .'/API.php';
 require_once ASCMS_LIBRARY_PATH.'/ezpdf/class.pdf.php';
 require_once ASCMS_LIBRARY_PATH.'/ezpdf/class.ezpdf.php';
 
-
+$errorMsg = '';
 $objDatabase = getDatabaseObject($errorMsg);
 if ($objDatabase === false) {
-    die('Database error.');
+    die('Database error: '.$errorMsg);
 }
 
 
@@ -71,7 +71,7 @@ class pdfCreator
         $this->_objDatabase = $objDatabase;
 
         $this->pdfID = $plid;
-        $this->_objResult = $this->_objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_shop_pricelists WHERE id=".$plid);
+        $this->_objResult = $this->_objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_shop".MODULE_INDEX."_pricelists WHERE id=".$plid);
         $this->pdfNAME = strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($this->_objResult->fields['name']) : $this->_objResult->fields['name'];
         $this->pdfLANG_ID = $this->_objResult->fields['lang_id'];
         $this->pdfBORDER_ON = $this->_objResult->fields['border_on'];
@@ -93,14 +93,14 @@ class pdfCreator
         $this->langCategoryName = strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($_ARRAYLANG['TXT_CATEGORY']) : $_ARRAYLANG['TXT_CATEGORY'];
 
         // set currency symbol
-        $this->_objResult = $this->_objDatabase->Execute("SELECT symbol FROM ".DBPREFIX."module_shop_currencies WHERE is_default=1");
+        $this->_objResult = $this->_objDatabase->Execute("SELECT symbol FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies WHERE is_default=1");
         if(!$this->_objResult->EOF){
             $this->currencySymbol = $this->_objResult->fields['symbol'];
         }
 
         $this->_objResult = $this->_objDatabase->Execute("SELECT pro.id,pro.product_id,pro.title,pro.catid,pro.normalprice,pro.status,pro.is_special_offer,cat.catname,cat.catid
-                          FROM ".DBPREFIX."module_shop_products as pro,
-                                ".DBPREFIX."module_shop_categories as cat
+                          FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products as pro,
+                                ".DBPREFIX."module_shop".MODULE_INDEX."_categories as cat
                           WHERE pro.catid = cat.catid AND pro.status=1
                           ORDER BY pro.id DESC");
         while (!$this->_objResult->EOF) {
@@ -116,8 +116,8 @@ class pdfCreator
 
         //mark special offers
         $this->_objResult = $this->_objDatabase->Execute("SELECT pro.id,pro.product_id,pro.title,pro.catid,pro.discountprice,pro.status,cat.catname,cat.catid
-                          FROM ".DBPREFIX."module_shop_products as pro,
-                                ".DBPREFIX."module_shop_categories as cat
+                          FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products as pro,
+                                ".DBPREFIX."module_shop".MODULE_INDEX."_categories as cat
                           WHERE pro.catid = cat.catid AND pro.status=1 AND pro.is_special_offer=1
                           ORDER BY pro.id DESC");
 
@@ -227,40 +227,40 @@ class pdfCreator
             $this->pdf->closeObject();
             $this->pdf->addObject($headerForAllPages,'all');
         }
-//Create the footer.. or not
-        if ($this->pdfFOOTER_ON == 1)
-        { // footer should be shown
+        // Create the footer.. or not
+        if ($this->pdfFOOTER_ON == 1) { // footer should be shown
             $footerForAllPages = $this->pdf->openObject();
             $this->pdf->saveState();
-                $tempY = $marginBottom-5;
-                if ($this->pdfBORDER_ON == 1) {
-                    $this->pdf->setStrokeColor(0,0,0);
-                    $this->pdf->line(10,$tempY,585.28,$tempY);
+            $tempY = $marginBottom-5;
+            if ($this->pdfBORDER_ON == 1) {
+                $this->pdf->setStrokeColor(0,0,0);
+                $this->pdf->line(10,$tempY,585.28,$tempY);
+            }
+            // I need the length of the longest word
+            $longestWord = '';
+            for ($i = $biggerCountBottom; $i >= 0;$i--) {
+                if ($longestWord < strlen($arrayFooterRight[$i])) {
+                    $longestWord = strlen($arrayFooterRight[$i]);
                 }
-                //I need the length of the longest word
-                for ($i = $biggerCountBottom; $i >= 0;$i--) {
-                    if ($longestWord < strlen($arrayFooterRight[$i])) {
-                        $longestWord = strlen($arrayFooterRight[$i]);
-                    }
+            }
+
+            for ($i = $biggerCountBottom-1;$i >= 0; $i--) {
+                if ($arrayFooterLeft[$i] == '<--PAGENUMBER-->') {
+                    $pageNumbersX = 65;
+                    $pageNumbersY = $tempY-18-($i*$this->pdfFontHeightFooter);
+                    $pageNumbersFont = $this->pdfFontHeight;
+                } else {
+                    $this->pdf->addText(25,$tempY-18-($i*$this->pdfFontHeightFooter),$this->pdfFontHeightFooter,$arrayFooterLeft[$i]);
                 }
 
-                   for ($i = $biggerCountBottom-1;$i >= 0; $i--) {
-                        if ($arrayFooterLeft[$i] == '<--PAGENUMBER-->') {
-                            $pageNumbersX = 65;
-                            $pageNumbersY = $tempY-18-($i*$this->pdfFontHeightFooter);
-                            $pageNumbersFont = $this->pdfFontHeight;
-                        } else {
-                            $this->pdf->addText(25,$tempY-18-($i*$this->pdfFontHeightFooter),$this->pdfFontHeightFooter,$arrayFooterLeft[$i]);
-                        }
-
-                        if ($arrayFooterRight[$i] == '<--PAGENUMBER-->') {
-                            $pageNumbersX = 595.28-25;
-                            $pageNumbersY = $tempY-18-($i*$this->pdfFontHeightFooter);
-                            $pageNumbersFont = $this->pdfFontHeight;
-                        } else {
-                            $this->pdf->addText(595.28-($longestWord*7)-20,$tempY-18-($i*$this->pdfFontHeightFooter),$this->pdfFontHeightFooter,$arrayFooterRight[$i]);
-                        }
+                if ($arrayFooterRight[$i] == '<--PAGENUMBER-->') {
+                    $pageNumbersX = 595.28-25;
+                    $pageNumbersY = $tempY-18-($i*$this->pdfFontHeightFooter);
+                    $pageNumbersFont = $this->pdfFontHeight;
+                } else {
+                    $this->pdf->addText(595.28-($longestWord*7)-20,$tempY-18-($i*$this->pdfFontHeightFooter),$this->pdfFontHeightFooter,$arrayFooterRight[$i]);
                 }
+            }
 
             $this->pdf->restoreState();
             $this->pdf->closeObject();
@@ -278,7 +278,7 @@ class pdfCreator
         }
 
         if ($this->pdfCATEGORIES == '*') { //all products
-            $this->_objResult = $this->_objDatabase->Execute("SELECT catid FROM ".DBPREFIX."module_shop_categories ORDER BY catid");
+            $this->_objResult = $this->_objDatabase->Execute("SELECT catid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories ORDER BY catid");
             while (!$this->_objResult->EOF) {
                 $i++;
                 $catArray[$i] = $this->_objResult->fields['catid'];
@@ -287,7 +287,7 @@ class pdfCreator
         } else {
             $catArray = explode(",",$this->pdfCATEGORIES);
         }
-        foreach ($catArray as $catKey => $catValue) {
+        foreach ($catArray as $catValue) {
             foreach ($this->arrProductCat as $ProductCatKey => $ProductCatValue) {
                 if ($ProductCatValue == $catValue) {
                     $arrOutput[$ProductCatKey] = $this->arrProducts[$ProductCatKey];

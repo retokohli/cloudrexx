@@ -4,7 +4,7 @@
 function deleteCurrency(cId)
 {
   if(confirm('{TXT_CONFIRM_DELETE_CURRENCY}\n{TXT_ACTION_IS_IRREVERSIBLE}!'))
-    window.location.replace("index.php?cmd=shop&act=settings&tpl=currency&currencyId="+cId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=currency&currencyId="+cId);
 }
 
 function updateCurrencyCode(selectElement)
@@ -85,7 +85,7 @@ function updateExchangeRates(selectedElement)
 <li><a id="currencyTab_shopContent1" class="active" href="javascript:{}" onclick="selectTab('shopContent1')" title="{TXT_CURRENCIES}">{TXT_CURRENCIES}</a></li>
 <li><a id="currencyTab_shopContent2" href="javascript:{}" onclick="selectTab('shopContent2')" title="W&auml;hrung hinzuf&uuml;gen">{TXT_ADD}</a></li>
 </ul>
-<form name="shopForm" method="post" action="?cmd=shop&amp;act=settings&amp;tpl=currency">
+<form name="shopForm" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=currency">
 <!-- start shopContent1 div -->
 <div id="shopContent1" class="currencyTab" style="display:block">
 <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">

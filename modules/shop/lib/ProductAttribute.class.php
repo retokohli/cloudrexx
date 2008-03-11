@@ -220,10 +220,10 @@ class ProductAttribute
 
         $query = "
             SELECT *
-              FROM ".DBPREFIX."module_shop_products_attributes_value
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
               WHERE name_id=$this->id
             ".($this->productId
-              ? "INNER JOIN ".DBPREFIX."module_shop_products_attributes
+              ? "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
                          ON attributes_value_id=id
                       WHERE product_id=$this->productId
                    ORDER BY sort_id ASC
@@ -312,7 +312,7 @@ class ProductAttribute
         global $objDatabase;
 
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop_products_attributes_value
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
                   WHERE id=$id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -341,7 +341,7 @@ class ProductAttribute
 
         // delete referring attributes
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop_products_attributes
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
                   WHERE attributes_name_id=$this->id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -350,7 +350,7 @@ class ProductAttribute
         }
         // delete values
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop_products_attributes_value
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
                   WHERE name_id=$this->id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -359,7 +359,7 @@ class ProductAttribute
         }
         // delete name
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop_products_attributes_name
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
                   WHERE id=$this->id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -397,7 +397,7 @@ class ProductAttribute
         global $objDatabase;
 
         $query = "
-            UPDATE ".DBPREFIX."module_shop_products_attributes_name
+            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
                SET name='".addslashes($this->name)."',
                    display_type=$this->type
              WHERE id=$this->id
@@ -431,7 +431,7 @@ class ProductAttribute
         // mind: value entries in the array may be *new* and have to
         // be inserted, even though the object itself has got a valid ID!
         $query = "
-            UPDATE ".DBPREFIX."module_shop_products_attributes_value
+            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
                SET name_id=$this->id,
                    value='".addslashes($arrValue['value'])."',
                    price=".floatval($arrValue['price']).",
@@ -461,7 +461,7 @@ class ProductAttribute
         global $objDatabase;
 
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop_products_attributes_name (
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name (
                 name, display_type
             ) VALUES (
                 '".addslashes($this->name)."',
@@ -497,7 +497,7 @@ class ProductAttribute
         global $objDatabase;
 
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop_products_attributes_value (
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value (
                 name_id, value, price, price_prefix
             ) VALUES (
                 $this->id,
@@ -534,7 +534,7 @@ class ProductAttribute
         // fields: id, name, display_type (enum('0', '1', '2', '3'))
         $query = "
             SELECT name, display_type
-              FROM ".DBPREFIX."module_shop_products_attributes_name
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
              WHERE id=$nameId
         ";
         $objResult = $objDatabase->Execute($query);
@@ -553,7 +553,7 @@ class ProductAttribute
             // get selected or all associated values
             $query = "
                 SELECT id, value, price, price_prefix
-                  FROM ".DBPREFIX."module_shop_products_attributes_value
+                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
                  WHERE name_id=$nameId ".
                 (is_array($arrProductAttributeValueId)
                     ? 'AND id IN ('.join(', ', $arrProductAttributeValueId).') '
@@ -615,7 +615,7 @@ class ProductAttribute
 
         $query = "
             SELECT     attributes_value_id, sort_id
-              FROM ".DBPREFIX."module_shop_products_attributes
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
              WHERE product_id=$productId
           ORDER BY sort_id ASC
         ";
@@ -652,7 +652,7 @@ class ProductAttribute
         // fields: id, name_id, value, price, price_prefix (enum('+', '-'))
         $query = "
             SELECT name_id
-              FROM ".DBPREFIX."module_shop_products_attributes_value
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
              WHERE id=$valueId
         ";
         $objResult = $objDatabase->Execute($query);
@@ -683,7 +683,7 @@ class ProductAttribute
 
         $query = "
             SELECT id
-              FROM ".DBPREFIX."module_shop_products_attributes_value
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
              WHERE value='".addslashes($value)."'
         ";
         $objResult = $objDatabase->Execute($query);
@@ -719,8 +719,8 @@ class ProductAttribute
                    value.value,
                    value.price,
                    value.price_prefix
-              FROM ".DBPREFIX."module_shop_products_attributes_name name
-        INNER JOIN ".DBPREFIX."module_shop_products_attributes_value value
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name name
+        INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value value
                 ON value.name_id = name.id
           ORDER BY nameTxt ASC, valueTxt ASC
         ";
@@ -805,7 +805,7 @@ class ProductAttribute
         $arrAttributePrice = $_POST['attributePrice'];
         $arrAttributePricePrefix = $_POST['attributePricePrefix'];
 
-        $query = "INSERT INTO ".DBPREFIX."module_shop_products_attributes_name (name)
+        $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name (name)
             VALUES ('".addslashes($_POST['optionName'][0])."')";
 
         $objResult = $objDatabase->Execute($query);
@@ -817,7 +817,7 @@ class ProductAttribute
         foreach ($arrAttributeList[0] as $id) {
             // insert new attribute value
             $query = "
-                INSERT INTO ".DBPREFIX."module_shop_products_attributes_value
+                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
                 (name_id, value, price, price_prefix) VALUES
                 ($nameId, '".
                 addslashes($arrAttributeValue[$id])."', '".
@@ -827,8 +827,8 @@ class ProductAttribute
             $objDatabase->Execute($query);
         }
 
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes_value");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes_name");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name");
 
         return '';
     }
@@ -854,7 +854,7 @@ class ProductAttribute
 
         // fields: attribute_id, product_id, attributes_name_id, attributes_value_id, sort_id
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop_products_attributes
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
             WHERE attributes_name_id=$productAttributeNameId
         ";
         $objResult = $objDatabase->Execute($query);
@@ -882,7 +882,7 @@ class ProductAttribute
 
         // fields: attribute_id, product_id, attributes_name_id, attributes_value_id, sort_id
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop_products_attributes
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
             WHERE product_id=$this->id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -910,7 +910,7 @@ class ProductAttribute
 
         // fields: attribute_id, product_id, attributes_name_id, attributes_value_id, sort_id
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop_products_attributes
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
             WHERE attributes_value_id=$productAttributeValueId
               AND product_id=$this->id
         ";

@@ -296,7 +296,7 @@ function swapSendToStatus(orderId) {
 -->
 </style>
 <br />
-<form id="shopOrderEdit" name="shopOrderEdit" method="post" action="?cmd=shop&amp;act=editorder">
+<form id="shopOrderEdit" name="shopOrderEdit" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=editorder">
     <table width="100%" border="0" class="adminlist" cellpadding="2" cellspacing="0">
         <colgroup><col width="15%" /><col width="35%" /><col width="15%" /><col width="35%" /></colgroup>
         <tr>
@@ -334,7 +334,7 @@ function swapSendToStatus(orderId) {
         </tr>
         <tr class="row1">
             <td nowrap="nowrap">{TXT_COMPANY}</td>
-            <td nowrap="nowrap"><a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customerid={SHOP_CUSTOMER_ID}">{SHOP_COMPANY}</a>&nbsp;</td>
+            <td nowrap="nowrap"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer&amp;customerid={SHOP_CUSTOMER_ID}">{SHOP_COMPANY}</a>&nbsp;</td>
             <td nowrap="nowrap">{TXT_COMPANY}</td>
             <td nowrap="nowrap"><input type="text" name="shopShipCompany" value="{SHOP_SHIP_COMPANY}" /></td>
         </tr>
@@ -346,13 +346,13 @@ function swapSendToStatus(orderId) {
         </tr>
         <tr class="row1">
             <td nowrap="nowrap">{TXT_LAST_NAME}</td>
-            <td nowrap="nowrap"><a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customerid={SHOP_CUSTOMER_ID}">{SHOP_LASTNAME}</a>&nbsp;</td>
+            <td nowrap="nowrap"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer&amp;customerid={SHOP_CUSTOMER_ID}">{SHOP_LASTNAME}</a>&nbsp;</td>
             <td nowrap="nowrap">{TXT_LAST_NAME}</td>
             <td nowrap="nowrap"><input type="text" name="shopShipLastname" value="{SHOP_SHIP_LASTNAME}" /></td>
         </tr>
         <tr class="row2">
             <td nowrap="nowrap">{TXT_FIRST_NAME}</td>
-            <td nowrap="nowrap"><a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customerid={SHOP_CUSTOMER_ID}">{SHOP_FIRSTNAME}</a>&nbsp;</td>
+            <td nowrap="nowrap"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer&amp;customerid={SHOP_CUSTOMER_ID}">{SHOP_FIRSTNAME}</a>&nbsp;</td>
             <td nowrap="nowrap">{TXT_FIRST_NAME}</td>
             <td nowrap="nowrap"><input type="text" name="shopShipFirstname" value="{SHOP_SHIP_FIRSTNAME}" /></td>
         </tr>
@@ -388,7 +388,7 @@ function swapSendToStatus(orderId) {
         </tr>
         <tr class="row2">
             <td nowrap="nowrap">{TXT_EMAIL}<input type="hidden" name="shopMailTo" value="{SHOP_EMAIL}" /></td>
-            <td nowrap="nowrap"><a href="index.php?cmd=shop&act=settings&tpl=mail&strTab=shopMailSend&shopMailTo={SHOP_EMAIL}">{SHOP_EMAIL}</a>&nbsp;</td>
+            <td nowrap="nowrap"><a href="index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&strTab=shopMailSend&shopMailTo={SHOP_EMAIL}">{SHOP_EMAIL}</a>&nbsp;</td>
             <td nowrap="nowrap">{TXT_SHIPPING_METHOD}</td>
             <td nowrap="nowrap">{SHOP_SHIPPING_TYP_MENU}</td>
         </tr>

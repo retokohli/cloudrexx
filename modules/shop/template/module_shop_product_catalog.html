@@ -4,7 +4,7 @@
 function deleteProduct(id)
 {
   if (confirm('{TXT_CONFIRM_DELETE_PRODUCT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop&act=delProduct&id="+id);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delProduct&id="+id);
 }
 
 function shopProductsDoAction(obj,act)
@@ -13,7 +13,7 @@ function shopProductsDoAction(obj,act)
     switch(act) {
       case 'del':
         if (confirm('{TXT_CONFIRM_DELETE_PRODUCT}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
-          document.formCatalog.action = "index.php?cmd=shop&act=delProduct";
+          document.formCatalog.action = "index.php?cmd=shop{MODULE_INDEX}&act=delProduct";
           document.formCatalog.submit();
         }
         break;
@@ -40,7 +40,7 @@ function shopProductsIsChecked(fieldName)
 }
 // -->
 </script>
-<form name="formSearch" method="post" action="?cmd=shop&amp;act=products">
+<form name="formSearch" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products">
   <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
       <th colspan="2">{TXT_SEARCH}</th>
@@ -54,12 +54,12 @@ function shopProductsIsChecked(fieldName)
         </select>
         <input type="submit" name="submit" value="{TXT_SEARCH}" />
       </td>
-      <td><div style="text-align:right;"><a href="?cmd=shop&amp;act=products&amp;specialoffer=1" title="{TXT_VIEW_SPECIAL_OFFERS}">{TXT_VIEW_SPECIAL_OFFERS}</a></div></td>
+      <td><div style="text-align:right;"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;specialoffer=1" title="{TXT_VIEW_SPECIAL_OFFERS}">{TXT_VIEW_SPECIAL_OFFERS}</a></div></td>
     </tr>
   </table>
 </form>
 <br />
-<form name="formCatalog" method="post" action="?cmd=shop&amp;act=products">
+<form name="formCatalog" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products">
   {SHOP_PRODUCT_PAGING}<br />
   <table width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
     <tr>
@@ -88,7 +88,7 @@ function shopProductsIsChecked(fieldName)
         <td>{SHOP_PRODUCT_ID}<input type="hidden" name="shopProductId[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_ID}" /></td>
         <td><img src="images/icons/{SHOP_PRODUCT_STATUS_PICTURE}" alt="{TXT_PRODUCT_STATUS}" title="{TXT_PRODUCT_STATUS}" /></td>
         <td><input type="text" name="shopSortOrder[{SHOP_PRODUCT_ID}]" size="5" maxlength="5" value="{SHOP_SORT_ORDER}" /><input type="hidden" name="shopSortOrderOld[{SHOP_PRODUCT_ID}]" value="{SHOP_SORT_ORDER}" /></td>
-        <td><a href="?cmd=shop&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}" title="{SHOP_PRODUCT_NAME}">{SHOP_PRODUCT_NAME}</a></td>
+        <td><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}" title="{SHOP_PRODUCT_NAME}">{SHOP_PRODUCT_NAME}</a></td>
         <td><input maxlength="255" name="identifier[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" size="10" /><input type="hidden" name="identifierOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" /></td>
         <td width="7%"><input type="checkbox" name="specialOffer[{SHOP_PRODUCT_ID}]" value="1" {SHOP_PRODUCT_SPECIAL_OFFER} /></td>
         <td width="5%"><input maxlength=10 name="discount[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_DISCOUNT}" size="6" /><input type="hidden" name="discountOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_DISCOUNT}" />
@@ -101,8 +101,8 @@ function shopProductsIsChecked(fieldName)
         <td><input type="text" name="stock[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_STOCK}" size="5" maxlength="5" /><input type="hidden" name="stockOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_STOCK}" /></td>
         <td><input type="checkbox" name="active[{SHOP_PRODUCT_ID}]" value="1" {SHOP_PRODUCT_STATUS} /><input type="hidden" name="activeOld[{SHOP_PRODUCT_ID}]" value="{SHOP_ACTIVE_VALUE_OLD}" /></td>
         <td nowrap="nowrap"><div style="text-align:right;">
-          <a href="?cmd=shop&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}&amp;new=1" title="{TXT_AS_TEMPLATE}"><img src="images/icons/press.gif" alt="{TXT_AS_TEMPLATE}" border="0" /></a>&nbsp;
-          <a href="?cmd=shop&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a>&nbsp;
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}&amp;new=1" title="{TXT_AS_TEMPLATE}"><img src="images/icons/press.gif" alt="{TXT_AS_TEMPLATE}" border="0" /></a>&nbsp;
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a>&nbsp;
           <a href="javascript:deleteProduct('{SHOP_PRODUCT_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a>
         </div></td>
       </tr>

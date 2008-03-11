@@ -39,7 +39,7 @@ function checkObject(objForm,objElement)
 }
 
 function getElementsId(objForm,objElement)
-{  
+{
   for(var i=0;i<document.forms[objForm].elements.length;i++)
   {
     if(document.forms[objForm].elements[i].name == objElement)
@@ -103,10 +103,10 @@ function selectall(objForm,objElement,step)
 <!-- BEGIN export_selectTable -->
 <!-- start Export div -->
 <div id="shopExport" class="switchcontent" style="{EXPORT_STYLE}">
-<form name="shopFormExport" method="post" enctype="multipart/form-data" action="index.php?cmd=shop&amp;act=exchange" onsubmit="return checkObject('shopFormExport','table')">
+<form name="shopFormExport" method="post" enctype="multipart/form-data" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=exchange" onsubmit="return checkObject('shopFormExport','table')">
 <input type="hidden" name="handler" value="export_selectCategories" />
 <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
-    <tr> 
+    <tr>
       <th><b>{TXT_EXPORT}</b></th>
     </tr>
   <tr>
@@ -128,10 +128,10 @@ function selectall(objForm,objElement,step)
 <!-- BEGIN export_selectCategories -->
 <!-- start Export div -->
 <div id="shopExport" class="switchcontent" style="{EXPORT_STYLE}">
-<form name="shopFormExport" method="post" enctype="multipart/form-data" action="index.php?cmd=shop&amp;act=exchange" onsubmit="return checkObject('shopFormExport','categories[]')">
+<form name="shopFormExport" method="post" enctype="multipart/form-data" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=exchange" onsubmit="return checkObject('shopFormExport','categories[]')">
 <input type="hidden" name="handler" value="export_selectCols" />
 <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
-    <tr> 
+    <tr>
       <th colspan="2"><b>{TXT_EXPORT}</b></th>
     </tr>
     <tr class="row1">
@@ -149,10 +149,10 @@ function selectall(objForm,objElement,step)
 <!-- BEGIN export_selectCols -->
 <!-- start Export div -->
 <div id="shopExport" class="switchcontent" style="{EXPORT_STYLE}">
-<form name="shopFormExport" method="post" enctype="multipart/form-data" action="index.php?cmd=shop&amp;act=exchange" onsubmit="return checkObject('shopFormExport','cols[]')">
+<form name="shopFormExport" method="post" enctype="multipart/form-data" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=exchange" onsubmit="return checkObject('shopFormExport','cols[]')">
 <input type="hidden" name="handler" value="export_download" />
 <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
-  <tr> 
+  <tr>
     <th><b>{TXT_EXPORT}</b></th>
   </tr>
   <tr>
@@ -183,10 +183,10 @@ function selectall(objForm,objElement,step)
 <!-- BEGIN export_download -->
 <!-- start Export div -->
 <div id="shopExport" class="switchcontent" style="{EXPORT_STYLE}">
-<form name="shopFormExport" method="post" enctype="multipart/form-data" action="index.php?cmd=shop&amp;act=exchange">
+<form name="shopFormExport" method="post" enctype="multipart/form-data" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=exchange">
 <input type="hidden" name="handler" value="export_selectTable" />
 <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
-    <tr> 
+    <tr>
       <th><b>{TXT_EXPORT}: {TXT_DOWNLOAD}</b></th>
     </tr>
     <tr class="row1">
@@ -203,10 +203,10 @@ function selectall(objForm,objElement,step)
 <!-- BEGIN import_selectTable -->
 <!-- start Import div -->
 <div id="shopImport" class="switchcontent" style="{IMPORT_STYLE}">
-<form name="shopFormImport" method="post" enctype="multipart/form-data" action="index.php?cmd=shop&amp;act=exchange" onsubmit="return checkObject('shopFormImport','table')">
+<form name="shopFormImport" method="post" enctype="multipart/form-data" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=exchange" onsubmit="return checkObject('shopFormImport','table')">
 <input type="hidden" name="handler" value="import_selectFiletype" />
 <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
-    <tr> 
+    <tr>
       <th><b>{TXT_IMPORT}</b></th>
     </tr>
     <!-- BEGIN tablesImport -->
@@ -222,16 +222,16 @@ function selectall(objForm,objElement,step)
   <input type="submit" name="submit" value="{TXT_NEXT}" />
   </form>
 </div>
-<!-- end Import div --> 
+<!-- end Import div -->
 <!-- END import_selectTable -->
 
 <!-- BEGIN import_selectFiletype -->
 <!-- start Import div -->
 <div id="shopImport" class="switchcontent" style="{IMPORT_STYLE}">
-<form name="shopFormImport" method="post" enctype="multipart/form-data" action="index.php?cmd=shop&amp;act=exchange">
+<form name="shopFormImport" method="post" enctype="multipart/form-data" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=exchange">
 <input type="hidden" name="handler" value="import_importOptions" />
 <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
-    <tr> 
+    <tr>
       <th><b>{TXT_IMPORT}</b></th>
     </tr>
     <tr class="row1">
@@ -253,16 +253,16 @@ function selectall(objForm,objElement,step)
   <input type="submit" name="submit" value="{TXT_NEXT}" />
   </form>
 </div>
-<!-- end Import div --> 
+<!-- end Import div -->
 <!-- END import_selectFiletype -->
 
 <!-- BEGIN import_importOptions -->
 <!-- start Import div -->
 <div id="shopImport" class="switchcontent" style="{IMPORT_STYLE}">
-<form name="shopFormImport" method="post" enctype="multipart/form-data" action="index.php?cmd=shop&amp;act=exchange">
+<form name="shopFormImport" method="post" enctype="multipart/form-data" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=exchange">
 <input type="hidden" name="handler" value="import_importRecords" />
 <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
-    <tr> 
+    <tr>
       <th colspan="2"><b>{TXT_IMPORT}</b></th>
     </tr>
     <tr>
@@ -304,7 +304,7 @@ function selectall(objForm,objElement,step)
   <input type="submit" name="submit" value="{TXT_IMPORT}" />
   </form>
 </div>
-<!-- end Import div --> 
+<!-- end Import div -->
 <!-- END import_importOptions -->
 <br />
 <!-- END module_shop_exchange.html -->

@@ -97,7 +97,7 @@ class ShopCategories
      */
     function __construct()
     {
-        $this->objProducts = &new Products();
+        $this->objProducts = new Products();
     }
 
 
@@ -355,7 +355,7 @@ echo("$selectedId<br />");
             // Get the ShopCategories' children
             $query = "
                SELECT catid
-                 FROM ".DBPREFIX."module_shop_categories
+                 FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
                 WHERE ".($flagActiveOnly ? 'catstatus=1 AND' : '')."
                       parentid IN ($tempList)
              ORDER BY catsorting ASC
@@ -542,7 +542,7 @@ echo("$selectedId<br />");
         // Look for an image in child Categories
         $query = "
             SELECT picture, catid
-              FROM ".DBPREFIX."module_shop_categories
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
              WHERE parentid=$catId
                AND picture!=''
           ORDER BY catsorting ASC
@@ -732,7 +732,7 @@ echo("$selectedId<br />");
 
         $query = "
            SELECT catid
-             FROM ".DBPREFIX."module_shop_categories
+             FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
             WHERE ".($flagActiveOnly ? 'catstatus=1 AND' : '')."
                   parentid=$parentShopCategoryId
          ORDER BY catsorting ASC
@@ -777,7 +777,7 @@ echo("$selectedId<br />");
 
         $query = "
            SELECT catid
-             FROM ".DBPREFIX."module_shop_categories
+             FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
             WHERE ".($flagActiveOnly ? 'catstatus=1 AND' : '')."
                   parentid=$parentId AND
                   catname='".addslashes($strName)."'
@@ -865,7 +865,7 @@ echo("$selectedId<br />");
 
         $query = "
            SELECT catname
-             FROM ".DBPREFIX."module_shop_categories
+             FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
             WHERE flags LIKE '%__VIRTUAL__%'
          ORDER BY catsorting ASC
         ";
@@ -904,7 +904,7 @@ echo("$selectedId<br />");
 
         $query = "
            SELECT catid, catname
-             FROM ".DBPREFIX."module_shop_categories
+             FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
             WHERE flags LIKE '%__VIRTUAL__%'
          ORDER BY catsorting ASC
         ";
@@ -1012,7 +1012,7 @@ echo("$selectedId<br />");
         }
         // Already included by the Shop.
         require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
-        $objImageManager = &new ImageManager();
+        $objImageManager = new ImageManager();
         // Create thumbnail.
         // Deleting the old thumb beforehand is integrated into
         // _createThumbWhq().

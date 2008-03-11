@@ -4,7 +4,7 @@
 function deleteOrder(orderId)
 {
     if(confirm('{TXT_CONFIRM_DELETE_ORDER}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=shop&act=delorder&orderId="+orderId);
+        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delorder&orderId="+orderId);
 }
 
 function shopOrdersDoAction(strForm,strCheckbox,objSelect,strAct)
@@ -13,7 +13,7 @@ function shopOrdersDoAction(strForm,strCheckbox,objSelect,strAct)
     switch(strAct){
       case 'del':
         if(confirm('{TXT_CONFIRM_DELETE_ORDER}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
-          document.forms[strForm].action = "index.php?cmd=shop&act=delorder";
+          document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=delorder";
           document.forms[strForm].submit();
         }
         break;
@@ -33,7 +33,7 @@ function sendForm(letter)
 function changeOrderStatus(orderId,orderStatus,newOrderStatus)
 {
   if(confirm('{TXT_CONFIRM_CHANGE_STATUS}')){
-    strURI = "index.php?cmd=shop&act=orders&orderId="+orderId+"&changeOrderStatus="+newOrderStatus;
+    strURI = "index.php?cmd=shop{MODULE_INDEX}&act=orders&orderId="+orderId+"&changeOrderStatus="+newOrderStatus;
     if (   newOrderStatus == 1
         || newOrderStatus == 4
         || newOrderStatus == 5
@@ -54,7 +54,7 @@ Text[{SHOP_TIP_ID}]=["","{SHOP_TIP_NOTE}"];
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,10,-20];
 //-->
 </script>
-<form name="formSearchOrders" method="post" action="?cmd=shop&amp;act=orders">
+<form name="formSearchOrders" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=orders">
   <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
       <th style="text-align: left">
@@ -110,7 +110,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 </form>
 <!-- BEGIN orderTable -->
 {SHOP_ORDER_PAGING}
-<form name="shopSelectOrders" method="post" action="?cmd=shop&amp;act=orders">
+<form name="shopSelectOrders" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=orders">
   <table class="adminlist" border=0 width="100%" cellpadding="2" cellspacing="0">
     <tr>
       <th nowrap="nowrap" style="text-align:center;">#</th>
@@ -128,10 +128,10 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         <td nowrap="nowrap">{SHOP_ORDERID}&nbsp;</td>
         <td nowrap="nowrap">{SHOP_DATE}&nbsp;&nbsp;</td>
         <td nowrap="nowrap">{SHOP_ORDER_STATUS}&nbsp;&nbsp;</td>
-        <td nowrap="nowrap"><a href="?cmd=shop&amp;act=orderdetails&amp;orderid={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}">{SHOP_NAME}</a></td>
+        <td nowrap="nowrap"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;orderid={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}">{SHOP_NAME}</a></td>
         <td nowrap="nowrap">{SHOP_TIP_LINK}&nbsp;</td>
         <td nowrap="nowrap"><div style="text-align:left;">{SHOP_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</div></td>
-        <td><div style="text-align:right;"><a href="?cmd=shop&amp;act=orderdetails&amp;orderid={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}"><img src="images/icons/press.gif" alt="{TXT_VIEW_DETAILS}" border="0" /></a>&nbsp;<a href="?cmd=shop&amp;act=editorder&amp;orderid={SHOP_ORDERID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a><a href="javascript:deleteOrder('{SHOP_ORDERID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
+        <td><div style="text-align:right;"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;orderid={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}"><img src="images/icons/press.gif" alt="{TXT_VIEW_DETAILS}" border="0" /></a>&nbsp;<a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=editorder&amp;orderid={SHOP_ORDERID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a><a href="javascript:deleteOrder('{SHOP_ORDERID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
       </tr>
     <!-- END orderRow -->
   </table>

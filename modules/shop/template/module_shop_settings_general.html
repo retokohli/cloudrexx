@@ -4,21 +4,21 @@
 function deleteVat(vatId)
 {
     if(confirm("{TXT_TAX_CONFIRM_DELETE}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
-        window.location.replace("index.php?cmd=shop&act=settings&vatid=" + vatId);
+        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&vatid=" + vatId);
     }
 }
 function setVatAll()
 {
     if(confirm("{TXT_TAX_CONFIRM_SET_ALL}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
         var vatId = document.forms.shopForm.tax_default_id.value;
-        window.location.replace("index.php?cmd=shop&act=settings&setVatAll=" + vatId);
+        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&setVatAll=" + vatId);
     }
 }
 function setVatUnset()
 {
     if(confirm("{TXT_TAX_CONFIRM_SET_UNSET}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
         var vatId = document.forms.shopForm.tax_default_id.value;
-        window.location.replace("index.php?cmd=shop&act=settings&setVatUnset=" + vatId);
+        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&setVatUnset=" + vatId);
     }
 }
 //Text[0]=["","{}"];
@@ -50,7 +50,7 @@ function setVatUnset()
 <li><a id="generalTab_shopContent3" href="javascript:{}" onclick="selectTab('shopContent3')" title="{TXT_TAXES}">{TXT_TAXES}</a></li>
 <li><a id="generalTab_shopContent4" href="javascript:{}" onclick="selectTab('shopContent4')" title="{TXT_SHOP_IMAGE_SETTINGS}">{TXT_SHOP_IMAGE_SETTINGS}</a></li>
 </ul>
-<form name="shopForm" method="post" action="?cmd=shop&amp;act=settings&amp;tpl=general">
+<form name="shopForm" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=general">
 <!-- start shopContent1 div -->
 <div id="shopContent1" class="generalTab" style="display:block">
   <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">

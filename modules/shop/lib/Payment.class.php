@@ -46,7 +46,7 @@ class Payment
         $query = "
             SELECT id, name, processor_id, costs, costs_free_sum,
                    sort_order, status
-              FROM ".DBPREFIX."module_shop_payment
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment
           ORDER BY id
         ";
         $objResult = $objDatabase->Execute($query);
@@ -95,9 +95,9 @@ class Payment
         $arrPaymentId = array();
         $query = "
             SELECT p.payment_id as payment_id
-              FROM ".DBPREFIX."module_shop_rel_countries AS c,
-                   ".DBPREFIX."module_shop_zones AS z,
-                   ".DBPREFIX."module_shop_rel_payment AS p
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries AS c,
+                   ".DBPREFIX."module_shop".MODULE_INDEX."_zones AS z,
+                   ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment AS p
              WHERE c.countries_id=".intval($countryId)."
                AND z.activation_status=1
                AND (z.zones_id=c.zones_id
@@ -169,7 +169,7 @@ class Payment
 
         $objResult = $objDatabase->Execute("
             SELECT name
-              FROM ".DBPREFIX."module_shop_payment
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment
              WHERE id=$paymentId
         ");
         if ($objResult && !$objResult->EOF) {
@@ -193,7 +193,7 @@ class Payment
         global $objDatabase;
         $query = "
             SELECT name
-              FROM ".DBPREFIX."module_shop_payment_processors
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment_processors
              WHERE id=$processorId
         ";
         $objResult = $objDatabase->Execute($query);
@@ -219,7 +219,7 @@ class Payment
 
         $query = "
             SELECT processor_id
-              FROM ".DBPREFIX."module_shop_payment
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment
              WHERE id=$paymentId
         ";
         $objResult = $objDatabase->Execute($query);

@@ -105,7 +105,7 @@ class Vat
         global $objDatabase;
 
         $query = "SELECT id, percent, class ".
-                 "FROM ".DBPREFIX."module_shop_vat";
+                 "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
             while (!$objResult->EOF) {
@@ -119,19 +119,19 @@ class Vat
             die ("Failed to init VAT arrays<br />");
         }
 
-        $query = "SELECT * FROM ".DBPREFIX."module_shop_config WHERE name='tax_enabled'";
+        $query = "SELECT * FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config WHERE name='tax_enabled'";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF) {
             $this->vatEnabled = $objResult->fields['value'];
         } else { die ("Failed to get VAT enabled flag<br />"); }
 
-        $query = "SELECT * FROM ".DBPREFIX."module_shop_config WHERE name='tax_included'";
+        $query = "SELECT * FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config WHERE name='tax_included'";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF) {
             $this->vatIncluded = $objResult->fields['value'];
         } else { die ("Failed to get VAT included flag<br />"); }
 
-        $query = "SELECT * FROM ".DBPREFIX."module_shop_config WHERE name='tax_default_id'";
+        $query = "SELECT * FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config WHERE name='tax_default_id'";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF) {
             $this->vatDefaultId = $objResult->fields['value'];
@@ -396,7 +396,7 @@ class Vat
                     if ($this->arrVatClass[$id] != $class ||
                         $this->arrVatRate[$id]  != $rate  )
                     {
-                        $query = "UPDATE ".DBPREFIX."module_shop_vat " .
+                        $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_vat " .
                             "SET class='$class', percent=$rate " .
                             "WHERE id=$id";
                         $objResult = $objDatabase->Execute($query);
@@ -434,7 +434,7 @@ class Vat
         global $objDatabase;
         $vatRate = doubleval($vatRate);
         if ($vatRate >= 0) {
-            $query = "INSERT INTO ".DBPREFIX."module_shop_vat " .
+            $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_vat " .
                 "(class, percent) VALUES ('$vatClass', $vatRate)";
             $objResult = $objDatabase->Execute($query);
             if ($objResult) return true;
@@ -460,7 +460,7 @@ class Vat
         global $objDatabase;
         $vatId = intval($vatId);
         if ($vatId > 0) {
-            $query = "DELETE FROM ".DBPREFIX."module_shop_vat WHERE id=$vatId";
+            $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat WHERE id=$vatId";
             $objResult = $objDatabase->Execute($query);
             if ($objResult) return true;
         }
@@ -518,8 +518,8 @@ class Vat
     function getAssociatedTaxRate($productId)
     {
         global $objDatabase;
-        $query = "SELECT percent FROM ".DBPREFIX."module_shop_vat vat ".
-                 "INNER JOIN ".DBPREFIX."module_shop_products products ".
+        $query = "SELECT percent FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat vat ".
+                 "INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_products products ".
                  "ON vat.id = products.vat_id ".
                  "WHERE products.id = ".$productId;
         $objResult = $objDatabase->Execute($query);

@@ -14,7 +14,7 @@ function shopTemplateAction()
 <li><a class="active" href="javascript:{}" onClick="expandcontent('shopMailContent1')" title="{TXT_PAYMENT_TYPE}">{TXT_MAIL_TEMPLATES}</a></li>
 <li><a href="javascript:{}" onClick="expandcontent('shopMailContent2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
 </ul>
-<form name="shopFormMailSend" method="post" action="?cmd=shop&act=mail">
+<form name="shopFormMailSend" method="post" action="index.php?cmd=shop{MODULE_INDEX}&act=mail">
 <span class="red">{CONTENT_STATUS}</span>
 <!-- start shopMailContent1 div -->
 <div id="shopMailContent1" class="switchcontent" style="display:block">

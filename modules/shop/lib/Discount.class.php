@@ -188,8 +188,8 @@ class Discount
         }
         $query = "
              SELECT SUM(price * quantity) AS orderprice
-               FROM ".DBPREFIX."module_shop_orders AS o
-         INNER JOIN ".DBPREFIX."module_shop_order_items AS oi USING (orderid)
+               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS o
+         INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS oi USING (orderid)
               WHERE customerid=$this->customerId
                 AND order_status=".SHOP_ORDER_STATUS_COMPLETED."
                  OR order_status=".SHOP_ORDER_STATUS_PAID
