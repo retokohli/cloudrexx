@@ -562,7 +562,7 @@ class ContentManager
      */
     function showNewPage()
     {
-        global $objDatabase, $_CORELANG, $objTemplate;
+	    global $objDatabase, $_CORELANG, $objTemplate, $objPerm;
 
         // init variables
         $contenthtml='';
@@ -720,6 +720,7 @@ class ContentManager
             'CONTENT_DISPLAYSTATUS'                => "checked",
             'CONTENT_CACHING_STATUS'               => 'checked',
             'CONTENT_CAT_MENU'                     => $this->getPageMenu(),
+			'CONTENT_CAT_MENU_NEW_PAGE'            => !$objPerm->checkAccess(127, 'static', true) ? 'disabled="disabled" style="color:graytext;"' : null,
             'CONTENT_FORM_ACTION'                  => "add",
             'CONTENT_ROBOTS'                       => "checked",
             'CONTENT_THEMES_MENU'                  => $this->_getThemesMenu(),
@@ -820,7 +821,7 @@ class ContentManager
      */
     function showEditPage($pageId = '')
     {
-        global $objDatabase, $_CORELANG, $objTemplate;
+		global $objDatabase, $_CORELANG, $objTemplate, $objPerm;
 
         $existingBackendGroups = '';
         $existingGroups = '';
@@ -1003,18 +1004,19 @@ class ContentManager
                 //$target = "xyz";
 
                 $objTemplate->setVariable(array(
-                    'CONTENT_MENU_NAME'       => $catname,
-                    'CONTENT_CAT_MENU'          => $this->getPageMenu($objResult->fields['catid']),
-                    'CONTENT_TARGET'          => $target,
-                    'CONTENT_SHOW_CMD'        => $cmd,
-                    'CONTENT_MODULE_MENU'     => $this->_getModuleMenu($moduleId),
-                    'CONTENT_DISPLAYSTATUS'   => $displaystatus,
-                    'CONTENT_CACHING_STATUS'  => $cachingStatus,
-                    'CONTENT_STARTDATE'          => $startDate,
-                    'CONTENT_CATID'           => $pageId,
-                    'CONTENT_ENDDATE'          => $endDate,
-                    'CONTENT_THEMES_MENU'     => $this->_getThemesMenu($themesId),
-                    'NAVIGATION_CSS_NAME'        => htmlentities($objResult->fields['css_name'], ENT_QUOTES, CONTREXX_CHARSET),
+					'CONTENT_MENU_NAME'       	=> $catname,
+					'CONTENT_CAT_MENU'	      	=> $this->getPageMenu($objResult->fields['catid']),
+					'CONTENT_CAT_MENU_NEW_PAGE'	=> !$objPerm->checkAccess(127, 'static', true) ? 'disabled="disabled" style="color:graytext;"' : null,
+					'CONTENT_TARGET'          	=> $target,
+					'CONTENT_SHOW_CMD'        	=> $cmd,
+					'CONTENT_MODULE_MENU'     	=> $this->_getModuleMenu($moduleId),
+					'CONTENT_DISPLAYSTATUS'   	=> $displaystatus,
+					'CONTENT_CACHING_STATUS'  	=> $cachingStatus,
+					'CONTENT_STARTDATE'	      	=> $startDate,
+					'CONTENT_CATID'           	=> $pageId,
+					'CONTENT_ENDDATE'	      	=> $endDate,
+					'CONTENT_THEMES_MENU'     	=> $this->_getThemesMenu($themesId),
+					'NAVIGATION_CSS_NAME'  	  	=> htmlentities($objResult->fields['css_name'], ENT_QUOTES, CONTREXX_CHARSET),
                 ));
             }
 
@@ -1500,9 +1502,15 @@ class ContentManager
      */
     function addPage()
     {
-        global $objDatabase, $_CORELANG, $_CONFIG;
+		global $objDatabase, $_CORELANG, $_CONFIG, $objPerm;
 
-        $parcat = !empty($_POST['category']) ? intval($_POST['category']) : 0;
+		if (!empty($_POST['category'])) {
+			$parcat = intval($_POST['category']);
+		} else {
+			$objPerm->checkAccess(127, 'static');
+			$parcat = 0;
+		}
+
         $displaystatus = ( $_POST['displaystatus'] == "on" ) ? "on" : "off";
         $cachingstatus = (intval($_POST['cachingstatus']) == 1) ? 1 : 0;
         $expertmode = ( $_POST['expertmode'] == "y" ) ? "y" : "n";
@@ -1543,7 +1551,7 @@ class ContentManager
 
         $protected = 0;
         $objResult = $objDatabase->Execute("
-            SELECT protected, themes_id
+            SELECT protected, themes_id, backend_access_id
               FROM ".DBPREFIX."content_navigation
              WHERE catid=".$parcat
         );
@@ -1554,7 +1562,11 @@ class ContentManager
             if ($themesId == 0) {
                 $themesId = $objResult->fields['themes_id'];
             }
-        }
+			$backendAccessId = $objResult->fields['backend_access_id'];
+			if ($backendAccessId) {
+				$objPerm->checkAccess($backendAccessId, 'dynamic');
+			}
+		}
 
         $contentredirect = $redirect;
         $contenthtml=$this->_getBodyContent($contenthtml);
@@ -1996,8 +2008,8 @@ class ContentManager
     {
         global $objDatabase;
 
-        $objResult = $objDatabase->Execute("
-            SELECT catid, parcat, catname
+		$objResult = $objDatabase->Execute("
+            SELECT catid, parcat, catname, backend_access_id
               FROM ".DBPREFIX."content_navigation
              WHERE lang=".$this->langId."
           ORDER BY parcat ASC, displayorder ASC
@@ -2006,7 +2018,10 @@ class ContentManager
             return "content::navigation() database error";
         }
         while (!$objResult->EOF) {
-            $this->_navtable[$objResult->fields['parcat']][$objResult->fields['catid']] = htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET);
+		    $this->_navtable[$objResult->fields['parcat']][$objResult->fields['catid']] = array(
+		    	'name'		=> htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET),
+		    	'access_id'	=> $objResult->fields['backend_access_id']
+		    );
             $objResult->MoveNext();
         }
         $result = $this->_getNavigationMenu(0, 0, $selectedid);
@@ -2024,7 +2039,9 @@ class ContentManager
      */
     function _getNavigationMenu($parcat=0, $level, $selectedid)
     {
-        $result='';
+		global $objPerm;
+
+		$result='';
 
         $list = $this->_navtable[$parcat];
         if (is_array($list)) {
@@ -2034,7 +2051,7 @@ class ContentManager
                 if ($selectedid == $key) {
                     $selected= 'selected="selected"';
                 }
-                $result.= "<option value='$key' $selected>$output$val</option>\n";
+				$result.= '<option value="'.$key.'" '.$selected.($val['access_id'] && !$objPerm->checkAccess($val['access_id'], 'dynamic', true) ? ' disabled="disabled" style="color:graytext;"' : null).'>'.$output.$val['name'].'</option>'."\n";
                 if (isset($this->_navtable[$key])) {
                     $result .= $this->_getNavigationMenu($key, $level+1, $selectedid);
                 }
@@ -2380,8 +2397,9 @@ class ContentManager
      * @return  boolean     True if the parent category ID is valid,
      *                      false otherwise (circular reference detected)
      */
-    function checkParcat($intPageId, $intPid, $boolFirst=true) {
-        global $objDatabase;
+	function checkParcat($intPageId,$intPid,$boolFirst=true)
+	{
+		global $objDatabase, $objPerm;
 
         $intPageId = intval($intPageId);
         $intPid    = intval($intPid);
@@ -2393,20 +2411,26 @@ class ContentManager
             }
         }
 
-        if ($intPid != 0) {
+		if ($intPid == 0 && $boolFirst && !$objPerm->checkAccess(127, 'static', true)) {
+			// user is not allowed to create a new page on the first level
+			return false;
+		} elseif ($intPid != 0) {
             if ($intPageId == $intPid) {
                 // The new category is a subcategory of itself;
                 // do not allow that.
                 return false;
             } else {
                 // Subcategory, go ahead
-                $objResult = $objDatabase->Execute('
-                    SELECT parcat
+				$objResult = $objDatabase->Execute('
+                	SELECT	parcat, backend_access_id
                       FROM '.DBPREFIX.'content_navigation
                      WHERE catid='.$intPid
                 );
                 if ($objResult->RecordCount() != 0) {
                     $row = $objResult->FetchRow();
+					if ($boolFirst && $row['backend_access_id'] && !$objPerm->checkAccess($row['backend_access_id'], 'dynamic', true)) {
+						return false;
+					}
                     return $this->checkParcat($intPageId, $row['parcat'], false);
                 }
             }

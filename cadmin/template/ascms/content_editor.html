@@ -258,8 +258,10 @@ function openWindow(theURL,winName,features){
 					<td width="85%">
 						<div style="display:inline; float:left;">
 							<input type="text" name="newpage" size="40" onchange="setText()" maxlength="100" value="{CONTENT_MENU_NAME}" style="margin-right:5px;" />
-							<select name="category" style="margin-right:5px;">
-								<option value="" selected="selected">{TXT_NEW_CATEGORY}</option>
+							<select name="category" style="margin-right:5px;"
+								onfocus="this.lastSelectedOption=this.selectedIndex"
+								onchange="if (this.options[this.selectedIndex].disabled) {this.selectedIndex = this.lastSelectedOption;}">
+								<option value="" selected="selected" {CONTENT_CAT_MENU_NEW_PAGE}>{TXT_NEW_CATEGORY}</option>
 								{CONTENT_CAT_MENU}
 							</select>
 							{TXT_TARGET}
