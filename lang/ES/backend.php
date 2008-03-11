@@ -821,4 +821,5 @@ $_ARRAYLANG['TXT_WORKFLOW_CLEAN_SUCCESS'] = "Todas las entradas m&aacutes antigu
 $_ARRAYLANG['TXT_REGDATE'] = "Fecha";
 $_ARRAYLANG['TXT_PAGES'] = "Seiten";
 $_ARRAYLANG['TXT_AMOUNT'] = "Cantidad";
+$_ARRAYLANG['TXT_NEW_PAGE_ON_FIRST_LEVEL'] = "Create new page on the  upper most level of the page tree";
 ?>
