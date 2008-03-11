@@ -139,6 +139,8 @@ INSERT INTO `contrexx_access_group_static_ids` (`access_id`, `group_id`) VALUES 
 INSERT INTO `contrexx_access_group_static_ids` (`access_id`, `group_id`) VALUES (122,2);
 INSERT INTO `contrexx_access_group_static_ids` (`access_id`, `group_id`) VALUES (123,2);
 INSERT INTO `contrexx_access_group_static_ids` (`access_id`, `group_id`) VALUES (125,2);
+INSERT INTO `contrexx_access_group_static_ids` (`access_id`, `group_id`) VALUES (127,1);
+INSERT INTO `contrexx_access_group_static_ids` (`access_id`, `group_id`) VALUES (127,2);
 INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_description`, `is_active`, `type`) VALUES (1,'Standard Administrator','-',1,'backend');
 INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_description`, `is_active`, `type`) VALUES (2,'Demo','Demo Benutzergruppe ohne Schreibrechte',1,'backend');
 INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_description`, `is_active`, `type`) VALUES (3,'Community','Community users',1,'frontend');
@@ -240,6 +242,7 @@ INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `area
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (124,119,'function','TXT_BLOG_SETTINGS_TITLE',1,'index.php?cmd=blog&act=settings','_self',47,6,124);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (125,119,'function','TXT_BLOG_NETWORKS_TITLE',1,'index.php?cmd=blog&act=networks','_self',47,5,125);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (126,75,'function','TXT_WORKFLOW_CLEAN_TITLE',1,'index.php?cmd=blog&act=networks','_self',0,7,126);
+INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (127,5,'function','TXT_NEW_PAGE_ON_FIRST_LEVEL',1,'','_self',1,1,127);
 INSERT INTO `contrexx_community_config` (`id`, `name`, `value`, `status`) VALUES (1,'community_groups','3',1);
 INSERT INTO `contrexx_community_config` (`id`, `name`, `value`, `status`) VALUES (2,'user_activation','',0);
 INSERT INTO `contrexx_community_config` (`id`, `name`, `value`, `status`) VALUES (3,'user_activation_timeout','1',0);
