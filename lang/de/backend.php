@@ -820,4 +820,5 @@ $_ARRAYLANG['TXT_WORKFLOW_CLEAN_SUCCESS'] = "Alle Einträge älter als [DAYS] Ta
 $_ARRAYLANG['TXT_REGDATE'] = "Datum";
 $_ARRAYLANG['TXT_PAGES'] = "Seiten";
 $_ARRAYLANG['TXT_AMOUNT'] = "Anzahl";
+$_ARRAYLANG['TXT_NEW_PAGE_ON_FIRST_LEVEL'] = "Neue Seite auf der ersten Strukturebene erstellen";
 ?>

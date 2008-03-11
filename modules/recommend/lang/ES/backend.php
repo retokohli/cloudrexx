@@ -3,20 +3,20 @@
 * Contrexx CMS
 **/
 
-$_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
-$_ARRAYLANG['TXT_BODY'] = "Nachrichtentext";
-$_ARRAYLANG['TXT_SUBJECT'] = "Betreff";
-$_ARRAYLANG['TXT_SUBMIT'] = "Speichern";
-$_ARRAYLANG['TXT_AVAILABLE_VARS'] = "Verfügbare Platzhalter";
-$_ARRAYLANG['TXT_SENDERNAME'] = "Name von demjenigen der die Seite empfiehlt";
-$_ARRAYLANG['TXT_SENDERMAIL'] = "E-Mail Adresse von demjenigen der die Seite empfiehlt";
-$_ARRAYLANG['TXT_RECEIVERMAIL'] = "E-Mail Adresse vom Empfänger";
-$_ARRAYLANG['TXT_RECEIVERNAME'] = "Name vom Empfänger";
-$_ARRAYLANG['TXT_URL'] = "URL (Adresse) der Website";
-$_ARRAYLANG['TXT_COMMENT'] = "Kommentar von demjenigen der die Seite empfiehlt";
-$_ARRAYLANG['TXT_ERROR'] = "Datensatz konnte nicht gespeichert werden. Überprüfen Sie ob kein Feld leer ist!";
-$_ARRAYLANG['TXT_STATUS_OK'] = "Änderungen wurden erfolgreich gespeichert";
-$_ARRAYLANG['TXT_SALUTATION_FEMALE'] = "Anrede für weibliche Personen";
-$_ARRAYLANG['TXT_SALUTATION_MALE'] = "Anrede für männliche Personen";
-$_ARRAYLANG['TXT_SALUTATION'] = "Anrede";
+$_ARRAYLANG['TXT_SETTINGS'] = "Propiedades";
+$_ARRAYLANG['TXT_BODY'] = "Cuerpo del mensaje";
+$_ARRAYLANG['TXT_SUBJECT'] = "Asunto";
+$_ARRAYLANG['TXT_SUBMIT'] = "Guardar";
+$_ARRAYLANG['TXT_AVAILABLE_VARS'] = "Variables disponibles";
+$_ARRAYLANG['TXT_SENDERNAME'] = "Nombre de quien recomienda el sitio";
+$_ARRAYLANG['TXT_SENDERMAIL'] = "E-Mail de quien recomienda el sitio";
+$_ARRAYLANG['TXT_RECEIVERMAIL'] = "E-Mail address of the receiver";
+$_ARRAYLANG['TXT_RECEIVERNAME'] = "Nombre del receptor";
+$_ARRAYLANG['TXT_URL'] = "Direcci&oacute; de la web";
+$_ARRAYLANG['TXT_COMMENT'] = "Comentario";
+$_ARRAYLANG['TXT_ERROR'] = "Los datos no pueden ser guardados. Comprueba si alg&uacute;n campo est&aacute; vac&iacute;o.";
+$_ARRAYLANG['TXT_STATUS_OK'] = "Los cambios se guardaron con e&oacute;xito";
+$_ARRAYLANG['TXT_SALUTATION_FEMALE'] = "Saludo para mujeres";
+$_ARRAYLANG['TXT_SALUTATION_MALE'] = "Saludo para hombres";
+$_ARRAYLANG['TXT_SALUTATION'] = "Saludo";
 ?>

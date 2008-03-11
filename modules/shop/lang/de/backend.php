@@ -420,7 +420,7 @@ $_ARRAYLANG['TXT_ACCOUNT_HOLDER'] = "Kontoinhaber";
 $_ARRAYLANG['TXT_ACCOUNT_BANK'] = "Kreditinstitut";
 $_ARRAYLANG['TXT_ACCOUNT_BLZ'] = "Bankleitzahl (BLZ)";
 $_ARRAYLANG['TXT_PAYMENT_LSV'] = "Lastschrift (LSV)";
-$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = "Wichtig: Füllen Sie <a href='?section=shop&cmd=einzug' target='_blank'>das Formular 'Einzugsermächtigung'</a> aus, und faxen oder schicken Sie es ausgefüllt und unterzeichnet an uns. Dort finden Sie auch unsere Faxnummer und Anschrift.<br />Wenn wir den Rechnungsbetrag Ihrem Konto belasten können, werden wir Ihnen die Bestellung zustellen.<br />";
+$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = "Wichtig: Füllen Sie <a href='index.php?section=shop{MODULE_INDEX}&cmd=einzug' target='_blank'>das Formular 'Einzugsermächtigung'</a> aus, und faxen oder schicken Sie es ausgefüllt und unterzeichnet an uns. Dort finden Sie auch unsere Faxnummer und Anschrift.<br />Wenn wir den Rechnungsbetrag Ihrem Konto belasten können, werden wir Ihnen die Bestellung zustellen.<br />";
 $_ARRAYLANG['TXT_PAYMENT_LSV_FEE'] = "Gebühr für LSV";
 $_ARRAYLANG['TXT_MAX_WEIGHT_TIP'] = "Geben Sie an, bis zu welchem Gewicht der Versand zu diesen Konditionen möglich ist, oder 0 g für beliebiges Gewicht.";
 $_ARRAYLANG['TXT_CONTACT_COMPANY'] = "Firma";
