@@ -227,13 +227,14 @@ class marketLibrary
         }
 
         //get mail content n title
-        $objResult = $objDatabase->Execute("SELECT title, content, active, mailcc FROM ".DBPREFIX."module_market_mail WHERE id='2'");
+        $objResult = $objDatabase->Execute("SELECT title, content, active, mailcc, mailto FROM ".DBPREFIX."module_market_mail WHERE id='2'");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                $mailTitle        = $objResult->fields['title'];
-                $mailContent    = $objResult->fields['content'];
-                $mailCC            = $objResult->fields['mailcc'];
-                $mailOn            = $objResult->fields['active'];
+                $mailTitle        	= $objResult->fields['title'];
+                $mailContent    	= $objResult->fields['content'];
+                $mailCC            	= $objResult->fields['mailcc'];
+                $mailTo            	= $objResult->fields['mailcc'];
+                $mailOn            	= $objResult->fields['active'];
                 $objResult->MoveNext();
             };
         }
@@ -257,8 +258,8 @@ class marketLibrary
         }
 
         //create mail
-        $fromName    = "Administrator - ".$url;
-        $fromMail    = "";
+        $fromName    = $_CONFIG['coreAdminName']." - ".$url;
+        $fromMail    = $_CONFIG['coreAdminEmail'];
         $subject     = $mailTitle;
         $message     = $mailContent;
 
@@ -285,8 +286,14 @@ class marketLibrary
             $objMail->IsHTML(false);
             $objMail->Body = $message;
 
+            if($mailTo == 'admin'){
+            	$addressee = $fromMail;
+            } else {
+            	$addressee = $entryMail;
+            }
+
             if($mailOn == 1){
-                $objMail->AddAddress($entryMail);
+                $objMail->AddAddress($addressee);
                 $objMail->Send();
                 $objMail->ClearAddresses();
             }
@@ -302,6 +309,111 @@ class marketLibrary
             }
         }
     }
+
+
+    function sendMail($entryId){
+
+		global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
+
+		//entrydata
+		$objResult = $objDatabase->Execute("SELECT id, title, name, userid, email FROM ".DBPREFIX."module_market WHERE id='".contrexx_addslashes($entryId)."' LIMIT 1");
+	    if ($objResult !== false) {
+			while (!$objResult->EOF) {
+				$entryMail			= $objResult->fields['email'];
+				$entryName			= $objResult->fields['name'];
+				$entryTitle			= $objResult->fields['title'];
+				$entryUserid		= $objResult->fields['userid'];
+				$objResult->MoveNext();
+			};
+		}
+
+		//assesuserdata
+		$objResult = $objDatabase->Execute("SELECT email, username FROM ".DBPREFIX."access_users WHERE id='".$entryUserid."' LIMIT 1");
+	    if ($objResult !== false) {
+			while (!$objResult->EOF) {
+				$userMail			= $objResult->fields['email'];
+				$userUsername		= $objResult->fields['username'];
+				$objResult->MoveNext();
+			};
+		}
+
+		//get mail content n title
+		$objResult = $objDatabase->Execute("SELECT title, content, active, mailcc FROM ".DBPREFIX."module_market_mail WHERE id='1'");
+	    if ($objResult !== false) {
+			while (!$objResult->EOF) {
+				$mailTitle		= $objResult->fields['title'];
+				$mailContent	= $objResult->fields['content'];
+				$mailCC			= $objResult->fields['mailcc'];
+				$mailOn			= $objResult->fields['active'];
+				$objResult->MoveNext();
+			};
+		}
+
+
+		if($mailOn == 1){
+			$array = explode('; ',$mailCC);
+			$url	= $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET;
+			$link	= "http://".$url."/index.php?section=market&cmd=detail&id=".$entryId;
+			$now 	= date(ASCMS_DATE_FORMAT);
+
+			//replase placeholder
+			$array_1 = array('[[EMAIL]]', '[[NAME]]', '[[TITLE]]', '[[ID]]', '[[LINK]]', '[[URL]]', '[[DATE]]', '[[USERNAME]]');
+			$array_2 = array($entryMail, $entryName, $entryTitle, $entryId, $link, $url, $now, $userUsername);
+
+
+			for($x = 0; $x < 8; $x++){
+			  $mailTitle = str_replace($array_1[$x], $array_2[$x], $mailTitle);
+			}
+
+			for($x = 0; $x < 8; $x++){
+			  $mailContent = str_replace($array_1[$x], $array_2[$x], $mailContent);
+			}
+
+			//create mail
+			$to         = $entryMail;
+			$fromName    = $_CONFIG['coreAdminName']." - ".$url;
+        	$fromMail    = $_CONFIG['coreAdminEmail'];
+			$subject 	= $mailTitle;
+			$message 	= $mailContent;
+
+
+			if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+				$objMail = new phpmailer();
+
+				if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+					$objSmtpSettings = new SmtpSettings();
+					if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+						$objMail->IsSMTP();
+						$objMail->Host = $arrSmtp['hostname'];
+						$objMail->Port = $arrSmtp['port'];
+						$objMail->SMTPAuth = true;
+						$objMail->Username = $arrSmtp['username'];
+						$objMail->Password = $arrSmtp['password'];
+					}
+				}
+
+				$objMail->CharSet = CONTREXX_CHARSET;
+				$objMail->From = $fromMail;
+				$objMail->FromName = $fromName;
+				$objMail->AddReplyTo($fromMail);
+				$objMail->Subject = $subject;
+				$objMail->IsHTML(false);
+				$objMail->Body = $message;
+				$objMail->AddAddress($to);
+				$objMail->Send();
+				$objMail->ClearAddresses();
+
+				foreach($array as $arrKey => $toCC) {
+					// Email message
+					if (!empty($toCC)) {
+						$objMail->AddAddress($toCC);
+						$objMail->Send();
+						$objMail->ClearAddresses();
+					}
+				}
+			}
+		}
+	}
 
 
 

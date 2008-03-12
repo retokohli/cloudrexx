@@ -121,11 +121,11 @@ class Market extends marketLibrary
                 $this->statusEntry();
                 $this->entries();
             break;
-            case 'statusEntry':
+            /*case 'statusEntry':
                 $objPerm->checkAccess(98, 'static');
                 $this->deleteEntry();
                 $this->entries();
-            break;
+            break;*/
             case 'deleteEntry':
                 $objPerm->checkAccess(98, 'static');
                 $this->deleteEntry();
@@ -701,6 +701,8 @@ class Market extends marketLibrary
                 }else{
                     $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market SET status='1' WHERE id = '".$id."'");
                 }
+
+                $this->sendMail($id);
             }else{
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market SET status='0' WHERE id = '".$id."'");
             }
@@ -708,9 +710,9 @@ class Market extends marketLibrary
 
         if ($objResult !== false) {
             $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_STATUS_CHANGED'];
-           }else{
-               $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
-           }
+       	}else{
+           $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+      	 }
     }
 
 
@@ -1161,8 +1163,17 @@ class Market extends marketLibrary
           }
 
           if (isset($_POST['submitSettings'])) {
+
             foreach ($_POST['setvalue'] as $id => $value) {
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_settings SET value='".contrexx_addslashes($value)."' WHERE id=".intval($id));
+
+	            if ($id == 11) {
+	            	if ($value == '0') {
+	            		$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_mail SET mailto='admin' WHERE id='2'");
+	            	} else {
+	            		$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_mail SET mailto='advertiser' WHERE id='2'");
+	            	}
+	            }
             }
 
             if ($objResult !== false) {
@@ -1186,7 +1197,7 @@ class Market extends marketLibrary
     */
     function mailSettings() {
 
-        global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
         // initialize variables
         $this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_market_settings_mail.html');
@@ -1263,25 +1274,26 @@ class Market extends marketLibrary
         $this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_market_settings_mail_code.html');
 
         //get content
-        $objResult = $objDatabase->Execute("SELECT title, content, active, mailcc FROM ".DBPREFIX."module_market_mail WHERE id = '2'");
-          if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $mailContent     = $objResult->fields['content'];
-                $mailTitle         = $objResult->fields['title'];
-                $mailCC         = $objResult->fields['mailcc'];
-                $mailActive         = $objResult->fields['active'];
-                $objResult->MoveNext();
-            }
-          }
+        $objResult = $objDatabase->Execute("SELECT title, content, mailto, mailcc FROM ".DBPREFIX."module_market_mail WHERE id = '2'");
+		if ($objResult !== false) {
+			while (!$objResult->EOF) {
+				$mailContent     	= $objResult->fields['content'];
+				$mailTitle         	= $objResult->fields['title'];
+				$mailTo         	= $objResult->fields['mailto'];
+				$mailCC        		= $objResult->fields['mailcc'];
+				$objResult->MoveNext();
+			}
+		}
 
-          $mailActive == 1 ? $checked = 'checked' : $checked = '';
+        $mailTo == 'admin' ? $admin = 'checked' : $admin = '';
+        $mailTo == 'advertiser' || $mailTo == '' ? $advertiser = 'checked' : $advertiser = '';
 
         $this->_objTpl->setVariable(array(
             'TXT_SAVE'        => $_CORELANG['TXT_SAVE'],
             'TXT_EMAIL_TITLE' => $_CORELANG['TXT_EMAIL'],
             'TXT_PLACEHOLDER' => $_ARRAYLANG['TXT_MARKET_PLACEHOLDER'],
             'TXT_SETTINGS'    => $_CORELANG['TXT_SETTINGS'],
-            'TXT_MAIL_ON'     => $_ARRAYLANG['TXT_MARKET_CODE_SEND'],
+            'TXT_MAIL_CC'     => $_ARRAYLANG['TXT_MARKET_ADDITIONAL_RECIPENT'],
             'TXT_MAIL_TO'     => $_ARRAYLANG['TXT_MARKET_CODE_CLEARING_CODE'],
             'TXT_CONTENT'     => $_CORELANG['TXT_CONTENT'],
             'TXT_SUBJECT'     => $_ARRAYLANG['TXT_MARKET_SUBJECT'],
@@ -1292,18 +1304,28 @@ class Market extends marketLibrary
             'TXT_USERNAME'    => $_CORELANG['TXT_USERNAME'],
             'TXT_ID'          => $_ARRAYLANG['TXT_MARKET_ADVERTISEMENT_ID'],
             'TXT_TITLE'       => $_ARRAYLANG['TXT_MARKET_ADVERTISEMENT_TITLE'],
-            'TXT_DATE'        => $_CORELANG['TXT_DATE']
+            'TXT_DATE'        => $_CORELANG['TXT_DATE'],
+            'TXT_ADMIN'       => $_CORELANG['TXT_ADMIN_STATUS'],
+            'TXT_ADVERTISER'  => $_ARRAYLANG['TXT_MARKET_ADVERTISER']
         ));
 
         $this->_objTpl->setVariable(array(
-            'MAIL_CONTENT' => $mailContent,
-            'MAIL_TITLE'   => $mailTitle,
-            'MAIL_TO'      => $mailCC,
-            'MAIL_ON'      => $checked
+            'MAIL_CONTENT' 				=> $mailContent,
+            'MAIL_TITLE'   				=> $mailTitle,
+            'MAIL_TO_ADVERTISER'      	=> $advertiser,
+            'MAIL_TO_ADMIN'      		=> $admin,
+            'MAIL_CC'      				=> $mailCC
         ));
 
         if (isset($_POST['submitSettings'])) {
-            $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_mail SET title='".$_POST['mailTitle']."', content='".$_POST['mailContent']."', mailcc='".$_POST['mailCC']."', active='".$_POST['mailOn']."' WHERE id='2'");
+            $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_mail SET title='".$_POST['mailTitle']."', content='".$_POST['mailContent']."', mailcc='".$_POST['mailCC']."', active='1', mailto='".$_POST['mailTo']."' WHERE id='2'");
+
+            if ($_POST['mailTo'] == 'admin') {
+            	$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_settings SET value='0' WHERE id='11'");
+            } else {
+            	$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_settings SET value='1' WHERE id='11'");
+            }
+
             if ($objResult !== false) {
                 header('Location: ?cmd=market&act=settings&tpl=email_code');
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'];
