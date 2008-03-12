@@ -11,6 +11,12 @@ Allgemein
   Wird der Variable z.B. der Wert "en" zugewiesen, wird allen, durch das System
   generierte, Links diesen Wert als Präfix zugeteilt:
   http://www.example.com/en/index.php?section=home
+- Die Grösse des Spamschutz-Bildes wurde angepasst. Die Schrift ist somit besser
+  lesbar.
+
+Content Verlauf
+- Alte Einträge im Content Verlauf können nun über eine Funktion gelöscht
+  werden.
 
 Statistik
 - Der Bereich "Monatliche Besucher und Seitenaufrufe" listet die letzten zwei
@@ -19,13 +25,13 @@ Statistik
 Modul: Community
 - Die Profil Eigenschaften Vor- und Nachname können bei der Registrierung
   angegeben werden.
-
-Modul: Podcast
-- Mit dem Platzhalter [[ASCMS_PATH_OFFSET]] kann der Offset Pfad (Verzeichnis
-  unter dem die Website läuft) ausgegeben werden.
-  Läuft die Website z.B. unter http://www.example.com/web/ so wird der
-  Platzhalter den Wert "/cms" enthalten.
-- Das Textfeld zum Erfassen der Vorlagen wurde visuell vergrössert.
+  
+Modul: Directory
+- Anzahl Einträge pro Seite (Paging) kann frei definiert werden.
+  
+Modul: Gästebuch
+- Die Datums- und Zeitangabe können nun über die Konfigurationsdateien angepasst
+  werden.
 
 Modul: Livecam
 - Die Grösse des Anzeigebildes und der Thumbnails kann optional eingestellt werden.
@@ -34,14 +40,23 @@ Modul: Livecam
 Modul: Market
 - Der Aufschaltmechanismus kann klar definiert werden. Variante 1 mittels aufschaltschlüssel, Variante 2 durch Admin.
 
-Modul: Directory
-- Anzahl Einträge pro Seite (Paging) kann frei definiert werden.
-
+Modul: Podcast
+- Mit dem Platzhalter [[ASCMS_PATH_OFFSET]] kann der Offset Pfad (Verzeichnis
+  unter dem die Website läuft) ausgegeben werden.
+  Läuft die Website z.B. unter http://www.example.com/web/ so wird der
+  Platzhalter den Wert "/cms" enthalten.
+- Das Textfeld zum Erfassen der Vorlagen wurde visuell vergrössert.
 
 ****************************************
 * Behobene Fehler **********************
 ****************************************
 Allgemein
+- Der Platzhalter [[TIME]] gab in der Version 1.2 anstatt der aktuellen Uhrzeit
+  die Anzahl Stunden sowie den aktuellen Monat aus. Dies wurde korrigiert, neu
+  wird nun wie erwartet die aktuelle Uhrzeit (Stunden und Minuten) geliefert.
+- Der Schutz gegen Spamattacken wurde verbessert. Für Bots ist es nun ein
+  vielfaches schwieriger, unerwünschte Werbung über die Formulare auf der Seite
+  zu platzieren.
 - Befindet sich die Website in einem Unterordner relativ zur Domain,
   funktioniert die Navigation auch beim Einsatz eines IIS.
 - Die Einträge im "Benutzer Frontend Sprache" Menü in der oberen rechten Ecke im
