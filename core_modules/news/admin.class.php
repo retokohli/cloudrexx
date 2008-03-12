@@ -1061,7 +1061,7 @@ class newsManager extends newsLibrary {
     								');
 
     			$this->createRSS();
-    			
+
     			 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
     		}
     	}
@@ -1367,7 +1367,7 @@ class newsManager extends newsLibrary {
 		);
 		if ($objDatabase->Affected_Rows() == 0) {
 			$objDatabase->Execute("
-				DELETE FROM ".DBPREFIX."module_news_settings 
+				DELETE FROM ".DBPREFIX."module_news_settings
 				WHERE name = '$name_in_db';"
 			);
 			$objDatabase->Execute("
