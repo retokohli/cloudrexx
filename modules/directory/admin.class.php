@@ -1833,8 +1833,6 @@ class rssDirectory extends directoryLibrary
 	{
 		global $_CONFIG, $objDatabase, $_ARRAYLANG, $template, $objDatabase;
 
-
-
 	    if(isset($catId)){
 	    	$catIdSort = "&amp;cid=".$catId;
 	    }
@@ -1842,12 +1840,6 @@ class rssDirectory extends directoryLibrary
 	    if(isset($catId)){
 	    	$levelIdSort = "&amp;lid=".$levelId;
 	    }
-
-	    //check position for paging
-	    if (!isset($_GET['pos']))
-		{
-			$_GET['pos']='';
-		}
 
 		// initialize variables
 		$this->_objTpl->loadTemplateFile('module_directory_files.html',true,true);
@@ -1897,7 +1889,6 @@ class rssDirectory extends directoryLibrary
 			$_SESSION['directory']['sort']= "files.id desc";
 		}
 
-		$pos= intval($_GET['pos']);
 
 		if ($catId != '') {
 			$where	= " AND files.id = rel_cat.dir_id AND rel_cat.cat_id = '".$catId."'";
@@ -1914,8 +1905,6 @@ class rssDirectory extends directoryLibrary
 			$where='';
 		}
 
-
-
 		//create query
 		$query="SELECT 	 files.title AS title,
 						 files.id AS id,
@@ -1930,17 +1919,13 @@ class rssDirectory extends directoryLibrary
 				   ORDER BY ".$_SESSION['directory']['sort']."";
 
 		////// paging start /////////
-		$objResult = $objDatabase->Execute($query);
-		$count = $objResult->RecordCount();
-		if(!is_numeric($pos)){
-		  $pos = 0;
-	    }
-	    if ($count>intval($_CONFIG['corePagingLimit'])) {
-			$paging = getPaging($count, $pos, "&amp;cmd=directory&amp;act=files&amp;term=".$term.$catIdSort.$levelIdSort, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true);
-	    }
+		$pagingLimit 	= intval($this->settings['pagingLimit']['value']);
+		$objResult 		= $objDatabase->Execute($query);
+		$count 			= $objResult->RecordCount();
+		$pos 			= intval($_GET['pos']);
+		$paging 		= getPaging($count, $pos, "&amp;cmd=directory&amp;act=files&amp;term=".$term.$catIdSort.$levelIdSort, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
 		////// paging end /////////
 
-		$pagingLimit = intval($_CONFIG['corePagingLimit']);
 	    $objResult = $objDatabase->SelectLimit($query, $pagingLimit, $pos);
 	    $count = $objResult->RecordCount();
 
@@ -1981,7 +1966,7 @@ class rssDirectory extends directoryLibrary
 				}
 
 		    	//check paging
-		    	if (!$count>intval($_CONFIG['corePagingLimit'])){
+		    	if (!$count>$pagingLimit){
 					$paging = "";
 				}
 

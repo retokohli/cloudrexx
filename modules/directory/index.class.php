@@ -509,12 +509,6 @@ class rssDirectory extends directoryLibrary
 	{
 		global $objDatabase, $_ARRAYLANG, $template;
 
-		//check position for paging
-	    if (!isset($_GET['pos']))
-		{
-			$_GET['pos']='';
-		}
-
 		if(isset($cid)){
 	    	$catLink = "&amp;cid=".$cid;
 	    }
@@ -551,30 +545,14 @@ class rssDirectory extends directoryLibrary
                    ORDER BY files.spezial DESC, ".$order."";
 
 		////// paging start /////////
-		$objResult = $objDatabase->Execute($query);
-		$count = $objResult->RecordCount();
-		if(!is_numeric($pos)){
-		  $pos = 0;
-	    }
-	    if ($count>intval(35)) {
-			$paging = getPaging($count, $pos, "&amp;section=directory".$levelLink.$catLink, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true);
-	    }
+		$pagingLimit 	= intval($this->settings['pagingLimit']['value']);
+		$objResult 		= $objDatabase->Execute($query);
+		$count 			= $objResult->RecordCount();
+		$pos 			= intval($_GET['pos']);
+		$paging 		= getPaging($count, $pos, "&amp;section=directory".$levelLink.$catLink, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
 		////// paging end /////////
 
-
-		// set variables
-		$this->_objTpl->setVariable(array(
-			'SEARCH_PAGING'    			=> $paging,
-			'DIRECTORY_CAT_ID'    		=> $cid,
-			'DIRECTORY_LEVEL_ID'   		=> $lid,
-			'DIRECTORY_MAIN_CAT_ID'    	=> $cid,
-			'DIRECTORY_MAIN_LEVEL_ID'   => $lid,
-		));
-
-
-		$pagingLimit = intval(35);
 	    $objResult = $objDatabase->SelectLimit($query, $pagingLimit, $pos);
-	    $count = $objResult->RecordCount();
 
 		if ($objResult !== false) {
 			while(!$objResult->EOF){
@@ -592,7 +570,7 @@ class rssDirectory extends directoryLibrary
 				$this->getAttributes($objResult->fields['id']);
 
 				//check paging
-		    	if (!$count>intval($_CONFIG['corePagingLimit'])){
+		    	if ($count<$pagingLimit){
 					$paging = "";
 				}
 
@@ -602,6 +580,14 @@ class rssDirectory extends directoryLibrary
 			}
 		}
 
+		// set variables
+		$this->_objTpl->setVariable(array(
+			'SEARCH_PAGING'    			=> $paging,
+			'DIRECTORY_CAT_ID'    		=> $cid,
+			'DIRECTORY_LEVEL_ID'   		=> $lid,
+			'DIRECTORY_MAIN_CAT_ID'    	=> $cid,
+			'DIRECTORY_MAIN_LEVEL_ID'   => $lid,
+		));
 
 
 		if ($count == 0) {
@@ -1493,23 +1479,28 @@ class rssDirectory extends directoryLibrary
 		//get search
 		$this->getSearch();
 
-		$objCount = $objDatabase->Execute("SELECT COUNT(1) AS entryCount FROM ".DBPREFIX."module_directory_dir WHERE status = '1' AND addedby = ".intval($_SESSION['auth']['userid'])." ORDER BY spezial DESC");
-		$pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
-		if ($objCount !== false) {
-			if ($objCount->fields['entryCount'] > $_CONFIG['corePagingLimit']) {
-				$paging = getPaging($objCount->fields['entryCount'], $pos, "&amp;section=directory&amp;cmd=myfeeds", "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", false, $_CONFIG['corePagingLimit']);
-			}
+		$objCount 		= $objDatabase->Execute("SELECT COUNT(1) AS entryCount FROM ".DBPREFIX."module_directory_dir WHERE status = '1' AND addedby = ".intval($_SESSION['auth']['userid'])." ORDER BY spezial DESC");
+
+		////// paging start /////////
+		$pagingLimit 	= intval($this->settings['pagingLimit']['value']);
+		$count 			= $objCount->fields['entryCount'];
+		$pos 			= intval($_GET['pos']);
+		$paging 		= getPaging($count, $pos, "&amp;section=directory&amp;cmd=myfeeds", "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
+		////// paging end /////////
+
+		if ($count < $pagingLimit) {
+			$paging = "";
 		}
 
 		// set variables
 		$this->_objTpl->setVariable(array(
 			'DIRECTORY_CATEGORY_NAVI'    	=> $verlauf,
 			'TXT_DIRECTORY_DIR' 			=> $_ARRAYLANG['TXT_DIR_DIRECTORY'],
-			'DIRECTORY_PAGING'				=> $paging
+			'SEARCH_PAGING'					=> $paging
 		));
 
 		$id = $_SESSION['auth']['userid'];
-		$objResult = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_directory_dir WHERE status = '1' AND addedby = ".contrexx_addslashes($id)." ORDER BY spezial DESC", $_CONFIG['corePagingLimit'], $pos);
+		$objResult = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_directory_dir WHERE status = '1' AND addedby = ".contrexx_addslashes($id)." ORDER BY spezial DESC", $pagingLimit, $pos);
 		$count = $objResult->RecordCount();
 		if($objResult !== false){
 			while(!$objResult->EOF){
@@ -1817,28 +1808,15 @@ class rssDirectory extends directoryLibrary
 				   GROUP BY files.id
 				   ORDER BY files.spezial DESC, score DESC";
 
-			$pos= intval($_GET['pos']);
-
 			////// paging start /////////
-			$objResult = $objDatabase->Execute($query);
-			$count = $objResult->RecordCount();
-			if(!is_numeric($pos)){
-			  $pos = 0;
-		    }
-
-		    $term	= $searchTermOrg;
-		    $check	= contrexx_addslashes($_GET['check']);
-
-		    if ($count>intval(35)) {
-				$paging = getPaging($count, $pos, "&amp;section=directory&amp;cmd=search&amp;term=".$term."&amp;check=".$check.$searchTermExp, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true);
-		    }
+			$pagingLimit 	= intval($this->settings['pagingLimit']['value']);
+			$objResult 		= $objDatabase->Execute($query);
+			$count 			= $objResult->RecordCount();
+			$pos 			= intval($_GET['pos']);
+			$paging 		= getPaging($count, $pos, "&amp;section=directory&amp;cmd=search&amp;term=".$term."&amp;check=".$check.$searchTermExp, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
 			////// paging end /////////
 
-
-			$pagingLimit = intval(35);
 		    $objResult = $objDatabase->SelectLimit($query, $pagingLimit, $pos);
-		    $count = $objResult->RecordCount();
-
 
 		    //show Feeds
 		    if ($objResult !== false) {
@@ -1859,7 +1837,7 @@ class rssDirectory extends directoryLibrary
 					$this->_objTpl->parse('showResults');
 
 					//check paging
-			    	if (!$count>intval($_CONFIG['corePagingLimit'])){
+			    	if ($count<$pagingLimit){
 						$paging = "";
 					}
 
