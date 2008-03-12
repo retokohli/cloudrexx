@@ -577,9 +577,6 @@ class Market extends marketLibrary
 
 	 	global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
-	 	$_ARRAYLANG['TXT_MARKET_PRICE_MAX'] = "Preis bis";
-	 	$_ARRAYLANG['TXT_MARKET_ALL_PRICES'] = "egal";
-
 	 	$options = '';
 
 	 	if  ($this->settings['indexview']['value'] == 1) {
