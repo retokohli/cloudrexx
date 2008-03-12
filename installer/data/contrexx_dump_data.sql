@@ -769,6 +769,7 @@ INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (37,'spez_field_24','',0);
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (38,'encodeFilename','1',2);
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (39,'country',',Schweiz,Deutschland,Österreich,England',0);
+INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (40,'pagingLimit', '20', '1');
 INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (1,'googleSeach','0',2);
 INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (2,'googleResults','',1);
 INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (26,'googleId','',1);
@@ -4227,6 +4228,7 @@ INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `descripti
 INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (8,'indexview','0','TXT_MARKET_SET_INDEXVIEW',2);
 INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (9,'maxdayStatus','0','TXT_MARKET_SET_MAXDAYS_ON',2);
 INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (10,'searchPrice','100,200,500,1000,2000,5000','TXT_MARKET_SET_EXP_SEARCH_PRICE',3);
+INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (11 , 'codeMode', '1', 'TXT_MARKET_SET_CODE_MODE', '2');
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (1,'spez_field_1','',1,1,0);
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (2,'spez_field_2','',1,1,0);
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (3,'spez_field_3','',1,1,0);

@@ -1500,6 +1500,7 @@ CREATE TABLE `contrexx_module_market_mail` (
   `id` int(4) unsigned NOT NULL auto_increment,
   `title` varchar(255) NOT NULL default '',
   `content` longtext NOT NULL,
+  `mailto` varchar(10) NOT NULL,
   `mailcc` mediumtext NOT NULL,
   `active` int(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
