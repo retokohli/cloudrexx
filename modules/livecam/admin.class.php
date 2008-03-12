@@ -134,8 +134,12 @@ class LivecamManager extends LivecamLibrary
 			'TXT_LIGHTBOX_INACTIVE'	=> $_CORELANG['TXT_DEACTIVATED'],
 			'TXT_ACTIVATE_LIGHTBOX'	=> $_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX'],
 			'TXT_ACTIVATE_LIGHTBOX_INFO'	=> $_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX_INFO'],
-			'LIGHTBOX_ACTIVE'		=> $lightboxActive,
-			'LIGHTBOX_INACTIVE'		=> $lightboxInctive
+			'LIGHTBOX_ACTIVE'				=> $lightboxActive,
+			'LIGHTBOX_INACTIVE'				=> $lightboxInctive,
+			'TXT_CURRENT_IMAGE_MAX_SIZE'	=> $_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'],
+						'CURRENT_IMAGE_MAX_SIZE'		=> $this->arrSettings['currentMaxSize'],
+			'TXT_THUMBNAIL_MAX_SIZE'		=> $_ARRAYLANG['TXT_THUMBNAIL_MAX_SIZE'],
+			'THUMBNAIL_MAX_SIZE'			=> $this->arrSettings['thumbMaxSize']
 		));
 
 		$this->_objTpl->setVariable('BLOCK_USE_BLOCK_SYSTEM', $_CONFIG['blockStatus'] == '1' ? 'checked="checked"' : '');
@@ -156,6 +160,8 @@ class LivecamManager extends LivecamLibrary
 		$archivePath = $_POST['archivePath'];
 		$thumbnailPath = $_POST['thumbnailPath'];
 		$lightboxStatus = $_POST['activateLightbox'];
+		$thumbMaxSize = $_POST['thumbnailMaxSize'];
+		$currentMaxSize = $_POST['currentImageMaxSize'];
 
 		$error = false;
 
@@ -175,6 +181,14 @@ class LivecamManager extends LivecamLibrary
 			}
 
 			if (!$this->_save("lightboxActivate", $lightboxStatus)) {
+				$error = true;
+			}
+
+			if (!$this->_save("thumbMaxSize", $thumbMaxSize)) {
+				$error = true;
+			}
+
+			if (!$this->_save("currentMaxSize", $currentMaxSize)) {
 				$error = true;
 			}
 		}
