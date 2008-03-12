@@ -1,8 +1,8 @@
 <?php
 /**
  * RSSWriter
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @author Astalavista Development Team <thun@astalavista.ch>
  * @version 2.0.0
  * @package     contrexx
  * @subpackage  lib_framework
@@ -13,8 +13,8 @@
  * RSSWriter
  *
  * Creates RSS files
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @author Astalavista Development Team <thun@astalavista.ch>
  * @access public
  * @version 2.0.0
  * @package     contrexx
@@ -413,6 +413,31 @@ XMLJSOUTPUT;
 	}
 
 	/**
+	 * Add custom channel elements
+	 *
+	 * Adds all the custom channel elements to the feed.
+	 *
+	 * @acces private
+	 * @return boolean
+	 */
+	function _addCustomChannelElements($array = array())
+	{
+		foreach ($array as $name => $value) {
+			if(is_array($value)) {
+				$element .= $this->_visualElementLevel()."<".$name.">\n";
+				$this->_xmlElementLevel++;
+				$element .= $this->_addCustomChannelElements($value);
+				$this->_xmlElementLevel--;
+				$element .= $this->_visualElementLevel()."</".$name.">\n";
+			} else {
+				$element .= $this->_visualElementLevel()."<".$name.">".$value."</".$name.">\n";
+			}
+		}
+
+		return $element;
+	}
+
+	/**
 	 * Parse items
 	 *
 	 * Parse the items of the feed and adds them to it.
@@ -452,6 +477,10 @@ XMLJSOUTPUT;
 
 				if (!empty($arrItem['source']['url']) && !empty($arrItem['source']['title'])) {
 					$this->xmlDocument .= $this->_visualElementLevel()."<source url=\"".$arrItem['source']['url']."\">".$arrItem['source']['title']."</source>\n";
+				}
+
+				if (!empty($arrItem['arrCustom'])) {
+					$this->xmlDocument .= $this->_addCustomChannelElements($arrItem['arrCustom']);
 				}
 
 				$this->_xmlElementLevel--;
