@@ -149,7 +149,6 @@ class ShopCategories
         }
         // It failed, probably due to a value of $selectedId that doesn't
         // exist.  Retry without it.
-echo("$selectedId<br />");
         if ($selectedId > 0) {
             return $this->buildTreeArray(
                 $flagFull, $flagActiveOnly, $flagVirtual,
@@ -679,7 +678,7 @@ echo("$selectedId<br />");
 // Unfortunately, the set of records used is not identical in both cases.
 //        if (!$this->arrShopCategory) {
         $this->buildTreeArray(
-            true, $selectedId, 0, $flagActiveOnly, 0, $maxlevel
+            true, true, true, $selectedId, 0, $maxlevel
         );
 //        }
 
@@ -1016,7 +1015,6 @@ echo("$selectedId<br />");
         // Create thumbnail.
         // Deleting the old thumb beforehand is integrated into
         // _createThumbWhq().
-echo("ShopCategories::makeThumbnailById(): config<br />");var_export($this->arrConfig);echo("<br />");
         if (!$objImageManager->_createThumbWhq(
             SHOP_CATEGORY_IMAGE_PATH,
             SHOP_CATEGORY_IMAGE_WEB_PATH,
