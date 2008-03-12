@@ -1087,25 +1087,25 @@ class Market extends marketLibrary
 			}
 
 			//get paypal
-			$objReslut = $objDatabase->Execute("SELECT active, profile FROM ".DBPREFIX."module_market_paypal WHERE id = '1'");
-	      	if($objReslut !== false){
-				while(!$objReslut->EOF){
-					$paypalActive 		= $objReslut->fields['active'];
-					$paypalProfile 		= $objReslut->fields['profile'];
-					$objReslut->MoveNext();
+			$objResult = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_market_settings WHERE id = '11'");
+	      	if($objResult !== false){
+				while(!$objResult->EOF){
+					$codeMode 		= $objResult->fields['value'];
+					$objResult->MoveNext();
 				}
 	      	}
 
-	      	if($paypalActive == '1' && $paypalProfile != ''){
-				$this->_objPayPal 	= &new PayPal();
-	      		$PayPalForm 		= $this->_objPayPal->getForm($id);
-				$this->_objTpl->parse('paypal');
+	      	if($codeMode == '0'){
+	      		$this->_objTpl->touchBlock('infoText');
+	      		$this->_objTpl->hideBlock('codeForm');
 	      	}else{
 	      		$confirmForm	= '<form action="index.php?section=market&cmd=confirm" method="post" name="marketSearch" id="marketAGB">
                 				   <input type="hidden" name="id" value="'.$id.'" >
                 				   <input id="regkey" name="regkey" value="" size="25" maxlength="100" />&nbsp;<input id="submit" type="submit" value="Freischalten" name="submit" />
                 				   </form>';
-	      		$this->_objTpl->parse('form');
+
+	      		$this->_objTpl->parse('codeForm');
+	      		$this->_objTpl->hideBlock('infoText');
 	      	}
 
 			// set variables
@@ -1114,7 +1114,6 @@ class Market extends marketLibrary
 				'TXT_MARKET_AGB'			=> $_ARRAYLANG['TXT_MARKET_AGB'],
 				'TXT_MARKET_CONFIRM'		=> $_ARRAYLANG['TXT_MARKET_AGB_ACCEPT'],
 				'MARKET_ERROR_CONFIRM'		=> $error,
-				'MARKET_PAYPAL'				=> $PayPalForm,
 				'MARKET_FORM'				=> $confirmForm,
 			));
 
@@ -1124,109 +1123,6 @@ class Market extends marketLibrary
 	}
 
 
-	function sendMail($entryId){
-
-		global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
-
-		//entrydata
-		$objResult = $objDatabase->Execute("SELECT id, title, name, userid, email FROM ".DBPREFIX."module_market WHERE id='".contrexx_addslashes($entryId)."' LIMIT 1");
-	    if ($objResult !== false) {
-			while (!$objResult->EOF) {
-				$entryMail			= $objResult->fields['email'];
-				$entryName			= $objResult->fields['name'];
-				$entryTitle			= $objResult->fields['title'];
-				$entryUserid		= $objResult->fields['userid'];
-				$objResult->MoveNext();
-			};
-		}
-
-		//assesuserdata
-		$objResult = $objDatabase->Execute("SELECT email, username FROM ".DBPREFIX."access_users WHERE id='".$entryUserid."' LIMIT 1");
-	    if ($objResult !== false) {
-			while (!$objResult->EOF) {
-				$userMail			= $objResult->fields['email'];
-				$userUsername		= $objResult->fields['username'];
-				$objResult->MoveNext();
-			};
-		}
-
-		//get mail content n title
-		$objResult = $objDatabase->Execute("SELECT title, content, active, mailcc FROM ".DBPREFIX."module_market_mail WHERE id='1'");
-	    if ($objResult !== false) {
-			while (!$objResult->EOF) {
-				$mailTitle		= $objResult->fields['title'];
-				$mailContent	= $objResult->fields['content'];
-				$mailCC			= $objResult->fields['mailcc'];
-				$mailOn			= $objResult->fields['active'];
-				$objResult->MoveNext();
-			};
-		}
-
-
-		if($mailOn == 1){
-			$array = explode('; ',$mailCC);
-			$url	= $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET;
-			$link	= "http://".$url."/index.php?section=market&cmd=detail&id=".$entryId;
-			$now 	= date(ASCMS_DATE_FORMAT);
-
-			//replase placeholder
-			$array_1 = array('[[EMAIL]]', '[[NAME]]', '[[TITLE]]', '[[ID]]', '[[LINK]]', '[[URL]]', '[[DATE]]', '[[USERNAME]]');
-			$array_2 = array($entryMail, $entryName, $entryTitle, $entryId, $link, $url, $now, $userUsername);
-
-
-			for($x = 0; $x < 8; $x++){
-			  $mailTitle = str_replace($array_1[$x], $array_2[$x], $mailTitle);
-			}
-
-			for($x = 0; $x < 8; $x++){
-			  $mailContent = str_replace($array_1[$x], $array_2[$x], $mailContent);
-			}
-
-			//create mail
-			$to         = $entryMail;
-			$fromName	= $_CORELANG['TXT_ADMIN_STATUS'].' - '.$url;
-			$fromMail	= "";
-			$subject 	= $mailTitle;
-			$message 	= $mailContent;
-
-
-			if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-				$objMail = new phpmailer();
-
-				if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-					$objSmtpSettings = new SmtpSettings();
-					if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-						$objMail->IsSMTP();
-						$objMail->Host = $arrSmtp['hostname'];
-						$objMail->Port = $arrSmtp['port'];
-						$objMail->SMTPAuth = true;
-						$objMail->Username = $arrSmtp['username'];
-						$objMail->Password = $arrSmtp['password'];
-					}
-				}
-
-				$objMail->CharSet = CONTREXX_CHARSET;
-				$objMail->From = $fromMail;
-				$objMail->FromName = $fromName;
-				$objMail->AddReplyTo($fromMail);
-				$objMail->Subject = $subject;
-				$objMail->IsHTML(false);
-				$objMail->Body = $message;
-				$objMail->AddAddress($to);
-				$objMail->Send();
-				$objMail->ClearAddresses();
-
-				foreach($array as $arrKey => $toCC) {
-					// Email message
-					if (!empty($toCC)) {
-						$objMail->AddAddress($toCC);
-						$objMail->Send();
-						$objMail->ClearAddresses();
-					}
-				}
-			}
-		}
-	}
 
 	function searchEntry(){
 
