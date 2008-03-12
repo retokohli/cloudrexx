@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_community
+ */
 $_ARRAYLANG['TXT_LOGIN_NAME'] = "Usuario";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD'] = "Contrase&ntilde;a";
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(m&iacute;nimo 6 caracteres)";

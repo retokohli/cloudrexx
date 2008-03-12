@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_recommend
+ */
 $_ARRAYLANG['TXT_STATUS_RECEIVER_NAME'] = "Receiver name";
 $_ARRAYLANG['TXT_STATUS_RECEIVER_MAIL'] = "Receiver e-mail address";
 $_ARRAYLANG['TXT_STATUS_COMMENT'] = "Comment";

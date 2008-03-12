@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_newsletter
+ */
 $_ARRAYLANG['TXT_SUBSCRIBER_LIST'] = "Abonnementsliste";
 $_ARRAYLANG['TXT_EDIT_SUBSCRIBER_LIST'] = "Rediger abonnementer";
 $_ARRAYLANG['TXT_SAVE_AS_NEW_NEWSLETTER'] = "Gem som ny nyhedsbrev";

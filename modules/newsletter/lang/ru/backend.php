@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_newsletter
+ */
 $_ARRAYLANG['TXT_SUBSCRIBER_LIST'] = "Abonnenten Liste";
 $_ARRAYLANG['TXT_EDIT_SUBSCRIBER_LIST'] = "Abonnenteneinträge bearbeiten";
 $_ARRAYLANG['TXT_SAVE_AS_NEW_NEWSLETTER'] = "Als neuen Newsletter speichern";

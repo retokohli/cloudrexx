@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_immo
+ */
 $_ARRAYLANG['TXT_IMMO_SEARCH'] = "Suchen";
 $_ARRAYLANG['TXT_IMMO_NAME'] = "Name";
 $_ARRAYLANG['TXT_IMMO_DELETE'] = "Löschen";

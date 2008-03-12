@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_voting
+ */
 $_ARRAYLANG['TXT_VOTING_MANAGER'] = "Umfragen";
 $_ARRAYLANG['TXT_VOTING_RESULTS'] = "Umfragenresultate ansehen";
 $_ARRAYLANG['TXT_VOTING_ADD'] = "Umfrage hinzufügen";

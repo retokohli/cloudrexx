@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_calendar
+ */
 $_ARRAYLANG['TXT_CALENDAR_DATE'] = "Date";
 $_ARRAYLANG['TXT_CALENDAR_BACK'] = "Back";
 $_ARRAYLANG['TXT_CALENDAR_STYLE_MODIFIED'] = "Adjustments have been modified successfully.";

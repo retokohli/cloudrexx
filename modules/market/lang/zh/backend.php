@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_market
+ */
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Advertisements";
 $_ARRAYLANG['TXT_NEW_CATEGORIE'] = "New Category";
 $_ARRAYLANG['TXT_ENTRIES'] = "Advertisements";

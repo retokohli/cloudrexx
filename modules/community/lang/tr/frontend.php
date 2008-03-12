@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_community
+ */
 $_ARRAYLANG['TXT_LOGIN_NAME'] = "Lütfen Kullanıcı ismi seçin:";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD'] = "Lütfen istediğiniz Şifreyi girin (En az 6 karakter):";
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(en az . 6 Karakter)";

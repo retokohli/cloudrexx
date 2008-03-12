@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  core_module_contact
+ */
 $_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM'] = "Ceci sont les informations transférées depuis le formulaire de contact du site web";
 $_ARRAYLANG['TXT_CONTACT_FORM'] = "Nouvelle entrée dans le formulaire de contact sur";
 $_ARRAYLANG['TXT_CONTACT_DATE'] = "Date";

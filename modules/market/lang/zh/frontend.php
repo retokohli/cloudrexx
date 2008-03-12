@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_market
+ */
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Advertisements";
 $_ARRAYLANG['TXT_ENTRIES'] = "Advertisements";
 $_ARRAYLANG['TXT_NEW_ENTRY'] = "new Advertisement";
@@ -59,4 +62,6 @@ $_ARRAYLANG['TXT_MARKET_PAYPAL_SUCCESS'] = "Payment with PayPal successfully pro
 $_ARRAYLANG['TXT_MARKET_ADD_SUCCESS'] = "The advertisement has been added successfully.";
 $_ARRAYLANG['TXT_MARKET_DELETE_SUCCESS'] = "The advertisement has been deleted successfully.";
 $_ARRAYLANG['TXT_MARKET_IMAGE_DELETE_ERROR'] = "Error while deleting image.";
+$_ARRAYLANG['TXT_MARKET_PRICE_MAX'] = "Preis bis";
+$_ARRAYLANG['TXT_MARKET_ALL_PRICES'] = "egal";
 ?>

@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_directory
+ */
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Neues Design erstellen";
 $_ARRAYLANG['TXT_DIR_FILETYP'] = "Filetyp";
 $_ARRAYLANG['TXT_DIR_CATEGORIE'] = "Categorie";

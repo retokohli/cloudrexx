@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_forum
+ */
 $_ARRAYLANG['TXT_FORUM_NO_POSTINGS'] = "Kein Beitrag vorhanden.";
 $_ARRAYLANG['TXT_FORUM_OVERVIEW_FORUM'] = "Forum";
 $_ARRAYLANG['TXT_FORUM_OVERVIEW_LASTPOST'] = "Letzter Beitrag";

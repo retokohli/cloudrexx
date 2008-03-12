@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_directory
+ */
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Neues Design erstellen";
 $_ARRAYLANG['TXT_FEED_SUCCESSFULL_CONFIRM'] = "Feed successfull confirm";
 $_ARRAYLANG['TXT_DIR_MAIL_NEW_ACCOUNT'] = "New Account on";
@@ -295,4 +298,5 @@ $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'] = "Adresse unbekannt";
 $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'] = "Adresse ist nicht verfügbar";
 $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'] = "Falscher Google API Key";
 $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'] = "Adresse nicht gefunden";
+$_ARRAYLANG['TXT_PAGINGLIMIT'] = "Paging Limit ";
 ?>

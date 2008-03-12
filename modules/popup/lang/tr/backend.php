@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_popup
+ */
 $_ARRAYLANG['TXT_POPUP_OVERVIEW'] = "Genel Bakış";
 $_ARRAYLANG['TXT_PUPUP_ADD_PUPUP'] = "PopUp ekle";
 $_ARRAYLANG['TXT_POPUP_SETTINGS'] = "Ayarlar";

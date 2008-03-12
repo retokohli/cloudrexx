@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_memberdir
+ */
 $_ARRAYLANG['TXT_OPEN_TICKET'] = "Create Ticket";
 $_ARRAYLANG['TXT_DIRECTORY'] = "Directory";
 $_ARRAYLANG['TXT_SEARCH'] = "Search";

@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_memberdir
+ */
 $_ARRAYLANG['TXT_TICKET_MODULE_DESCRIPTION'] = "Support ticket system";
 $_ARRAYLANG['TXT_MEMBERDIR_ID'] = "ID";
 $_ARRAYLANG['TXT_NAME'] = "Name";

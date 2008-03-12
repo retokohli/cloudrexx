@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_guestbook
+ */
 $_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY'] = "Misafirdefteri kaydı ekle";
 $_ARRAYLANG['TXT_NAME'] = "İsim";
 $_ARRAYLANG['TXT_COMMENT'] = "Yorum";

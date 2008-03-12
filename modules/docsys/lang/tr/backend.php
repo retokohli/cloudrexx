@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_docsys
+ */
 $_ARRAYLANG['TXT_CATEGORY_MANAGER'] = "Kategori Yöneticisi";
 $_ARRAYLANG['TXT_DOC_SYS_MANAGER'] = "Döküman Sistemi";
 $_ARRAYLANG['TXT_CREATE_DOCUMENT'] = "Döküman oluştur";

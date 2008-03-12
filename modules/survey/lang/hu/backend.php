@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_survey
+ */
 $_ARRAYLANG['TXT_SURVEY_INSERT_SUCCESS_VOTING'] = "Die Abstimmung wurde erfolgreich hinzugefügt.";
 $_ARRAYLANG['TXT_SURVEY_INSERT_SUCCESS_SURVEY'] = "Die Umfrage wurde erfolgreich hinzugefügt.";
 $_ARRAYLANG['TXT_SURVEY_PLACEHOLDER'] = "Platzhalter";

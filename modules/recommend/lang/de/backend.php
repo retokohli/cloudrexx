@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_recommend
+ */
 $_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_BODY'] = "Nachrichtentext";
 $_ARRAYLANG['TXT_SUBJECT'] = "Betreff";

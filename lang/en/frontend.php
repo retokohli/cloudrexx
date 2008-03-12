@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  core_module_core
+ */
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Characters)";
 $_ARRAYLANG['TXT_ACTIVE'] = "Active";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "These fields are required.";

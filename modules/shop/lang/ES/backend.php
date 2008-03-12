@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_shop
+ */
 $_ARRAYLANG['TXT_ORDERS'] = "Bestellungen";
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
 $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'] = "Alle Produktegruppen";

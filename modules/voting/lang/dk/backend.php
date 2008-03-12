@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_voting
+ */
 $_ARRAYLANG['TXT_VOTING_MANAGER'] = "Rundspørgelser";
 $_ARRAYLANG['TXT_VOTING_RESULTS'] = "Se resultater af rundspørgelsen";
 $_ARRAYLANG['TXT_VOTING_ADD'] = "Tilføj rundspørgelse";

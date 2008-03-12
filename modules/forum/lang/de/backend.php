@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_forum
+ */
 $_ARRAYLANG['TXT_FORUM_CATEGORY_NAME'] = "Name der Kategorie / Forum";
 $_ARRAYLANG['TXT_FORUM_CATEGORY_DESCRIPTION'] = "Beschreibung";
 $_ARRAYLANG['TXT_FORUM_CATEGORY_POSTINGS'] = "Anzahl Beiträge";

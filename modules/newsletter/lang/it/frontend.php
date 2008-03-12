@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_newsletter
+ */
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Bestätigung erfolgreich! Sie werden ab sofort den Newsletter erhalten.";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_ERROR'] = "Die angegebenen Daten treffen nicht zu. <br>Bitte überprüfen Sie die ID und die angemeldete e-mail Adresse aus dem Newsletter.";
 $_ARRAYLANG['TXT_NEWSLETTER_SEND_TO_ALL_SUBSCRIBERS_SUCCESSFUL'] = "Der Newsletter wurde an alle Abonnenten gesendet";

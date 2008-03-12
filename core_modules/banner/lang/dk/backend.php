@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  core_module_banner
+ */
 $_ARRAYLANG['TXT_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_BANNER_ADD_SELECT_ALL'] = "";
 $_ARRAYLANG['TXT_BANNER_ADD_TITLE'] = "";

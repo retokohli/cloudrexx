@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_calendar
+ */
 $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "De næste terminer:";
 $_ARRAYLANG['TXT_CALENDAR_SHOW'] = "vis";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'] = "Der blev ikke fundet nogle terminer...";

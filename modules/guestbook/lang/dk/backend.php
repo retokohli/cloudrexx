@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_guestbook
+ */
 $_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY'] = "Tilføj postering til gæstebogen";
 $_ARRAYLANG['TXT_NAME'] = "Navn";
 $_ARRAYLANG['TXT_COMMENT'] = "Komentar";

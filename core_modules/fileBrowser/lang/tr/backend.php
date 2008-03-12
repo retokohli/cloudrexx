@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  core_module_fileBrowser
+ */
 $_ARRAYLANG['TXT_CLOSE'] = "Kapat";
 $_ARRAYLANG['TXT_FILEBROWSER_MEDIA_1'] = "Medyaarşivi #1";
 $_ARRAYLANG['TXT_FILEBROWSER_MEDIA_2'] = "Medyaarşivi #2";

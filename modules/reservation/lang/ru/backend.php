@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_reservation
+ */
 $_ARRAYLANG['TXT_AVAILABLE'] = "Click here to reserve";
 $_ARRAYLANG['TXT_OCCUPIED'] = "This date is already reserved but not confirmed!";
 $_ARRAYLANG['TXT_CONFIRMED'] = "This date is not available anymore.";

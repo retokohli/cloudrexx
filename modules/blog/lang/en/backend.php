@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_blog
+ */
 $_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_TITLE'] = "General";
 $_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_INTRODUCTION'] = "Number of characters in introdcution";
 $_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_INTRODUCTION_HELP'] = "This value defines the number of characters used in the introduction. If you want to show the complete text instead of an shortened text you have to use the value 0.";
