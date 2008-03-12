@@ -189,19 +189,23 @@ class Livecam extends LivecamLibrary
     */
     function _showPicture()
     {
-    	/*if($this->arrSettings['lightboxActivate'] == 1) {
-			$lightboxActive = 'checked="checked"';
-			$lightboxInctive = '';
-		} else {
-			$lightboxActive = '';
-			$lightboxInctive = 'checked="checked"';
-		}*/
+    	if ($this->arrSettings['lightboxActivate'] == 1) {
+    		$imageLink = $this->arrSettings['currentImageUrl'];
+    	} else {
+    		if (isset($_GET['file'])) {
+    			$archiveDate = substr($_GET['file'], 0, 10);
+    			$imageLink = 'index.php?section=livecam&act=archive&date='.$archiveDate;
+    		} else {
+    			$imageLink = '?section=livecam&amp;act=today';
+    		}
+    	}
 
-    	$this->_objTpl->setVariable(array(
+		$this->_objTpl->setVariable(array(
     		'LIVECAM_CURRENT_IMAGE'		=> isset($_GET['file']) ? ASCMS_PATH_OFFSET.$this->arrSettings['archivePath'].'/'.$_GET['file'] : $this->arrSettings['currentImageUrl'],
     		'LIVECAM_IMAGE_TEXT'		=> isset($_GET['file']) ? contrexx_strip_tags($_GET['file']) : 'Aktuelles Webcam Bild',
     		'LIVECAM_IMAGE_LIGHTBOX'	=> $this->arrSettings['lightboxActivate'] == 1 ? 'rel="lightboxgallery"' : '',
-    		'LIVECAM_IMAGE_LINK'		=> $this->arrSettings['lightboxActivate'] == 1 ? $this->arrSettings['currentImageUrl'] : '?section=livecam&amp;act=today'
+    		'LIVECAM_IMAGE_LINK'		=> $imageLink,
+    		'LIVECAM_IMAGE_SIZE'		=> $this->arrSettings['currentMaxSize'],
     	));
     }
 
@@ -255,6 +259,7 @@ class Livecam extends LivecamLibrary
 					'LIVECAM_PICTURE_URL'		=> $arrThumbnail['link_url'],
 					'LIVECAM_PICTURE_TIME'		=> $arrThumbnail['time'],
 					'LIVECAM_THUMBNAIL_URL'		=> $arrThumbnail['image_url'],
+					'LIVECAM_THUMBNAIL_SIZE'	=> $this->arrSettings['thumbMaxSize'],
 					'LIVECAM_IMAGE_LIGHTBOX'	=> $this->arrSettings['lightboxActivate'] == 1 ? 'rel="lightboxgallery"' : '',
 				));
 				$this->_objTpl->parse($this->_pictureTemplatePlaceholder.$picNr);
@@ -308,8 +313,11 @@ class Livecam extends LivecamLibrary
 							$size = getimagesize($path.$file); //ermittelt die Größe des Bildes
 							$breite = $size[0]; //die Breite des Bildes
 							$hoehe = $size[1]; //die Höhe des Bildes
-							$breite_neu = $size[0]/5; //die breite des Thumbnails
-							$hoehe_neu = $size[1]/5; //die Höhe des Thumbnails
+
+
+							$breite_neu = $this->arrSettings['thumbMaxSize']; //die breite des Thumbnails
+							$factor = $breite/$this->arrSettings['thumbMaxSize']; //berechnungsfaktor
+							$hoehe_neu = $size[1]/$factor; //die Höhe des Thumbnails
 
 							//$im2=imagecreate($breite_neu,$hoehe_neu); //Thumbnail im Speicher erstellen
 							$im2 = @imagecreatetruecolor($breite_neu,$hoehe_neu);
