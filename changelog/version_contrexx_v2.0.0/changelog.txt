@@ -11,7 +11,7 @@ Allgemein
   Wird der Variable z.B. der Wert "en" zugewiesen, wird allen, durch das System
   generierte, Links diesen Wert als Präfix zugeteilt:
   http://www.example.com/en/index.php?section=home
-  
+
 Statistik
 - Der Bereich "Monatliche Besucher und Seitenaufrufe" listet die letzten zwei
   Jahre.
@@ -19,13 +19,23 @@ Statistik
 Modul: Community
 - Die Profil Eigenschaften Vor- und Nachname können bei der Registrierung
   angegeben werden.
-  
+
 Modul: Podcast
 - Mit dem Platzhalter [[ASCMS_PATH_OFFSET]] kann der Offset Pfad (Verzeichnis
   unter dem die Website läuft) ausgegeben werden.
   Läuft die Website z.B. unter http://www.example.com/web/ so wird der
   Platzhalter den Wert "/cms" enthalten.
 - Das Textfeld zum Erfassen der Vorlagen wurde visuell vergrössert.
+
+Modul: Livecam
+- Die Grösse des Anzeigebildes und der Thumbnails kann optional eingestellt werden.
+- Für sämtliche Bilder im Livecam Modul kan die LightBox aktiviert werden.
+
+Modul: Market
+- Der Aufschaltmechanismus kann klar definiert werden. Variante 1 mittels aufschaltschlüssel, Variante 2 durch Admin.
+
+Modul: Directory
+- Anzahl Einträge pro Seite (Paging) kann frei definiert werden.
 
 
 ****************************************
@@ -36,7 +46,7 @@ Allgemein
   funktioniert die Navigation auch beim Einsatz eines IIS.
 - Die Einträge im "Benutzer Frontend Sprache" Menü in der oberen rechten Ecke im
   Backend werden korrekt dargestellt.
-  
+
 Content Manager
 - Wird eine Inhaltsseite vor unerlaubten Modifikationen geschützt, so wird nach
   dem Speichern der Seite nicht die Fehlermeldung "Zugriff verweigert"
@@ -57,6 +67,9 @@ Modul: Gallery
 - SQL Syntax Fehler beim Bilderimport, sowie ist der Speicherüberlaufs Schutz
   auch kompatibel mit Windows:
   http://www.contrexx.com/forum/showthread.php?p=13349
-  
+
 Modul: Podcast
 - Datenbank Abfragen optimiert.
+
+Modul: Directory
+- Pagingfehler wurde behoben.
