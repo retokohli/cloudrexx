@@ -1,6 +1,7 @@
 <?php
 
 define('_SHOP_DEBUG', 0);
+
 /*
 Modifications to Products table:
   ALTER TABLE `contrexx_module_shop_products` ADD `flags` VARCHAR( 100 ) NULL ;
@@ -43,7 +44,7 @@ Perform the following steps for each new instance:
       // Global module index for clones
       $this->objTemplate->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
 
-  - Templates:
+  - Templates and language variables:
       From: index.php?section=shop*
       To:   index.php?section=shop{MODULE_INDEX}*
 
@@ -306,7 +307,7 @@ class Shop extends ShopLibrary
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($this->pageContent, true, true);
         // Global module index for clones
-        $this->_objTpl->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
+        $this->objTemplate->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
 
         // Currency object
         $this->objCurrency = new Currency();
@@ -1148,7 +1149,7 @@ class Shop extends ShopLibrary
             '" style="width:160px;" />'.
             '<select name="catId" style="width:300px;">'.
             '<option value="0">'.$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].'</option>'.
-            $this->objShopCategories->getShopCategoriesMenu($catId, true, 1).
+            $this->objShopCategories->getShopCategoriesMenu($catId, true, 0).
             '</select>'.
             $this->_getManufacturerMenu($manufacturerId).
             '<input type="submit" name="Submit" value="'.
@@ -1362,16 +1363,10 @@ class Shop extends ShopLibrary
             $this->objTemplate->setVariable(array(
                 'SHOP_ROWCLASS'                   => (++$formId % 2 ? 'row2' : 'row1'),
                 'SHOP_PRODUCT_ID'                 => $objProduct->getId(),
-                'SHOP_PRODUCT_CUSTOM_ID'          => str_replace('"', '&quot;', $objProduct->getCode()),
-                'SHOP_PRODUCT_TITLE'              => str_replace('"', '&quot;', $objProduct->getName()),
-
-// Either
-//              'SHOP_PRODUCT_DESCRIPTION'        => str_replace('"', '&quot;', $shortDescription),
-//              'SHOP_PRODUCT_DETAILDESCRIPTION'  => str_replace('"', '&quot;', $longDescription),
-// or
+                'SHOP_PRODUCT_CUSTOM_ID'          => htmlentities($objProduct->getCode(), ENT_QUOTES, CONTREXX_CHARSET),
+                'SHOP_PRODUCT_TITLE'              => htmlentities($objProduct->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                 'SHOP_PRODUCT_DESCRIPTION'        => $shortDescription,
                 'SHOP_PRODUCT_DETAILDESCRIPTION'  => $longDescription,
-
                 'SHOP_MANUFACTURER_NAME'          => $manufacturerName,
                 'SHOP_MANUFACTURER_URL'           => $manufacturerUrl,
                 'SHOP_MANUFACTURER_LINK'          => $manufacturerLink,
@@ -4405,7 +4400,7 @@ right after the customer logs in!
                     $orderItemPrice*$orderItemQuantity
                 ).' '.
                 $strCurrencyCode."\n";
-            ++$orderItemCount;
+            $orderItemCount += $orderItemQuantity;
             $priceTotalItems += $orderItemPrice*$orderItemQuantity;
             $objResultItem->MoveNext();
         }
@@ -4422,6 +4417,8 @@ right after the customer logs in!
                 $objResultOrder->fields['tax_price']
             ).' '.$strCurrencyCode;
         }
+        $priceTotalItems =
+            Currency::formatPrice($priceTotalItems).' '.$strCurrencyCode;
         $orderSum =
             $objResultOrder->fields['currency_order_sum'].' '.
             $strCurrencyCode;
@@ -4439,7 +4436,7 @@ $_ARRAYLANG['TXT_TOTAL']."\n".
 $cartTxt.
 "-----------------------------------------------------------------\n".
 $_ARRAYLANG['TXT_INTER_TOTAL'].': '.$orderItemCount.' '.
-$_ARRAYLANG['TXT_PRODUCT_S'].' '.$priceTotalItems.' '. $strCurrencyCode."\n".
+$_ARRAYLANG['TXT_PRODUCT_S'].' '.$priceTotalItems."\n".
 "-----------------------------------------------------------------\n".
 $_ARRAYLANG['TXT_SHIPPING_METHOD'].': '.
 Shipment::getNameById($objResultOrder->fields['shipping_id']).' '.

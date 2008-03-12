@@ -250,7 +250,6 @@ class Products
         // Count the number of available Products
         $objResult = $objDatabase->Execute('SELECT COUNT(*) AS count'.$query);
         if (!$objResult) {
-echo("doofer query: $query<br />");
             return false;
         }
         $count = $objResult->fields['count'];
@@ -359,16 +358,16 @@ echo("doofer query: $query<br />");
     {
         $arrProduct = Products::getByCustomId($productCode);
         if ($arrProduct === false) {
-echo("no Products for code $productCode<br />");
+//echo("no Products for code $productCode<br />");
             return false;
         }
         $result = true;
         foreach ($arrProduct as $objProduct) {
             if (!$objProduct->delete($flagDeleteImages)) {
-echo("deleting Product ".$objProduct->getId()." failed<br />");
+//echo("deleting Product ".$objProduct->getId()." failed<br />");
                 $result = false;
             } else {
-echo("deleting Product ".$objProduct->getId()." succeeded<br />");
+//echo("deleting Product ".$objProduct->getId()." succeeded<br />");
             }
         }
         return $result;

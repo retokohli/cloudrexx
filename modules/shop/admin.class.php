@@ -5473,7 +5473,6 @@ class shopmanager extends ShopLibrary {
                 $shopWeight = Weight::getWeight($shopWeightOld);
             }
 
-echo("specialoffer: $shopSpecialOffer, old: $shopSpecialOfferOld<br />");
             // Check if any one value has been changed
             if (   $shopProductIdentifier != $shopProductIdentifierOld
                 || $shopSortOrder != $shopSortOrderOld
