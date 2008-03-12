@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_recommend
+ */
 $_ARRAYLANG['TXT_SETTINGS'] = "Propiedades";
 $_ARRAYLANG['TXT_BODY'] = "Cuerpo del mensaje";
 $_ARRAYLANG['TXT_SUBJECT'] = "Asunto";

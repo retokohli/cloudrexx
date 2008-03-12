@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  core_module_media
+ */
 $_ARRAYLANG['TXT_PREVIEW'] = "Preview";
 $_ARRAYLANG['TXT_MEDIA_FILE_NAME'] = "Filnavn";
 $_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Filstørrelse";

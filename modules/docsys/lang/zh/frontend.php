@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_docsys
+ */
 $_ARRAYLANG['TXT_AUTHOR'] = "Author";
 $_ARRAYLANG['TXT_DATE'] = "Date";
 $_ARRAYLANG['TXT_TITLE'] = "Title";

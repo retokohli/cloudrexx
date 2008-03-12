@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_blog
+ */
 $_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_VOTING'] = "Rating";
 $_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_VOTING_DO'] = "Rate this message";
 $_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_COMMENTS'] = "Comments";

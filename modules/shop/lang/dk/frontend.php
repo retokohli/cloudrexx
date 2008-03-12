@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_shop
+ */
 $_ARRAYLANG['TXT_STOCK'] = "Beholdning";
 $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'] = "Alle produktgrupper";
 $_ARRAYLANG['TXT_SHOPPING_CART'] = "Indkøbskurv:";

@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_voting
+ */
 $_ARRAYLANG['TXT_NAME'] = "İsim";
 $_ARRAYLANG['TXT_RESET'] = "geri dönüştür";
 $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'] = "Veri başarıyla silindi";

@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_gallery
+ */
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_NAME'] = "Navn";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_DESCRIPTION'] = "Beskrivelse";
 $_ARRAYLANG['TXT_STATUS'] = "Status";

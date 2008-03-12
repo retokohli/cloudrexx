@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_gallery
+ */
 $_ARRAYLANG['TXT_GALLERY_EXTERNAL_SUB_CATS'] = "Unterkategorien";
 $_ARRAYLANG['TXT_CLOSE_WINDOW'] = "Fenster schliessen";
 $_ARRAYLANG['TXT_ZOOM_OUT'] = "Wegzoomen";

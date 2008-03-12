@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_feed
+ */
 $_ARRAYLANG['TXT_FEED_INSERT_NEW_FEED'] = "News Feed hinzufügen";
 $_ARRAYLANG['TXT_FEED_CATEGORY'] = "Category";
 $_ARRAYLANG['TXT_FEED_CHOOSE_CATEGORY'] = "choose category";

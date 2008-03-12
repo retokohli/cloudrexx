@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_calendar
+ */
 $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "Die nächsten Termine:";
 $_ARRAYLANG['TXT_CALENDAR_SHOW'] = "anzeigen";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'] = "Es wurden keine Termine gefunden...";

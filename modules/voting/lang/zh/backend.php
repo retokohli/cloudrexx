@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_voting
+ */
 $_ARRAYLANG['TXT_VOTING_MANAGER'] = "Votings";
 $_ARRAYLANG['TXT_VOTING_RESULTS'] = "See Poll Results";
 $_ARRAYLANG['TXT_VOTING_ADD'] = "Add Poll";

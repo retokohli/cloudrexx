@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_livecam
+ */
 $_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_ARCHIVE_PATH'] = "Archivpfad";
 $_ARRAYLANG['TXT_SAVE'] = "Speichern";

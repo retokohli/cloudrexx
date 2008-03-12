@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_market
+ */
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Advertisements";
 $_ARRAYLANG['TXT_NEW_CATEGORIE'] = "New Category";
 $_ARRAYLANG['TXT_ENTRIES'] = "Advertisements";
@@ -68,8 +71,8 @@ $_ARRAYLANG['TXT_MARKET_PLACEHOLDER_CONTENT'] = "Platzhalter für Inhalt";
 $_ARRAYLANG['TXT_MARKET_PLACEHOLDER_TITLE'] = "Platzhalter für Titel";
 $_ARRAYLANG['TXT_MARKET_SET_MAXDAYS'] = "max. Anzeigedauer (Tage)";
 $_ARRAYLANG['TXT_MARKET_SET_DESCRIPTION'] = "Kategoriebeschreibung anzeigen";
-$_ARRAYLANG['TXT_MARKET_SET_PAGING'] = "Anzahl Inserate pro Seite";
-$_ARRAYLANG['TXT_MARKET_SET_CURRENCY'] = "Währung";
+$_ARRAYLANG['TXT_MARKET_SET_PAGING'] = "Number of Advertisements per page";
+$_ARRAYLANG['TXT_MARKET_SET_CURRENCY'] = "Currency";
 $_ARRAYLANG['TXT_MARKET_SET_ADD_ENTRY_ONLY_COMMUNITY'] = "Nur Mitglieder dürfen Inserate hinzufügen (Community-Modul)";
 $_ARRAYLANG['TXT_MARKET_SET_ADD_ENTRY'] = "Besuchern erlauben Inserate hinzuzufügen";
 $_ARRAYLANG['TXT_MARKET_SET_EDIT_ENTRY'] = "Besuchern erlauben Inserate zu editieren";

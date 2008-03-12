@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_market
+ */
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Inserate";
 $_ARRAYLANG['TXT_ENTRIES'] = "Inserate";
 $_ARRAYLANG['TXT_NEW_ENTRY'] = "Neues Inserat";
@@ -59,4 +62,6 @@ $_ARRAYLANG['TXT_MARKET_PAYPAL_SUCCESS'] = "Die Gebühren wurden erfolgreich mit
 $_ARRAYLANG['TXT_MARKET_ADD_SUCCESS'] = "Das Inserat wurde erfolgreich hinzugefügt.";
 $_ARRAYLANG['TXT_MARKET_DELETE_SUCCESS'] = "Das Inserat wurde erfolgreich gelöscht.";
 $_ARRAYLANG['TXT_MARKET_IMAGE_DELETE_ERROR'] = "Fehler beim Löschen der Bilddatei.";
+$_ARRAYLANG['TXT_MARKET_PRICE_MAX'] = "Preis bis";
+$_ARRAYLANG['TXT_MARKET_ALL_PRICES'] = "egal";
 ?>

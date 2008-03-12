@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_survey
+ */
 $_ARRAYLANG['TXT_SURVEY_INSERT_SUCCESS_VOTING'] = "Oylama / Anket başarıyla eklendi.";
 $_ARRAYLANG['TXT_SURVEY_INSERT_SUCCESS_SURVEY'] = "Anket başarıyla eklendi.";
 $_ARRAYLANG['TXT_SURVEY_PLACEHOLDER'] = "Yertucu";

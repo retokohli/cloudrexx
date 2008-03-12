@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_community
+ */
 $_ARRAYLANG['TXT_LOGIN_NAME'] = "Bitte wählen Sie einen Benutzernamen:";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD'] = "Bitte geben Sie Ihr gewünschtes Passwort ein (min. 6 Zeichen):";
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";

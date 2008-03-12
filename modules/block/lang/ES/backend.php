@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_block
+ */
 $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'] = "Modificar Bloque de Contenidos %s";
 $_ARRAYLANG['TXT_BLOCK_ADD_BLOCK'] = "A&ntilde;adir Bloque de Contenidos";
 $_ARRAYLANG['TXT_BLOCK_BLOCKS'] = "Bloques de Contenido";

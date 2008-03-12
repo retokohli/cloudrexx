@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_blog
+ */
 $_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_TITLE'] = "Allgemein";
 $_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_INTRODUCTION'] = "Anzahl Zeichen in Einleitungstext";
 $_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_INTRODUCTION_HELP'] = "Dieser Wert legt die Anzahl der Zeichen im Einleitungstext fest. Wenn Sie immer den kompletten Text anzeigen lassen wollen, so setzen Sie hier die Zahl 0 ein.";

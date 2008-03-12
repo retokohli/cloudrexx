@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_voting
+ */
 $_ARRAYLANG['TXT_VOTING_MANAGER'] = "Anket Yöneticisi";
 $_ARRAYLANG['TXT_VOTING_RESULTS'] = "Anket sonuçlarına bak";
 $_ARRAYLANG['TXT_VOTING_ADD'] = "Anket ekle";

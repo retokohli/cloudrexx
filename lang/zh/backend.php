@@ -1,9 +1,12 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
-$_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Characters)";
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  core_module_core
+ */
+$_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "（最少6位数字或字母）";
 $_ARRAYLANG['TXT_ACTION'] = "Actions";
 $_ARRAYLANG['TXT_ACTIVE'] = "Active";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "These fields are required.";
@@ -115,7 +118,7 @@ $_ARRAYLANG['TXT_DAY_ARRAY'] = "Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,
 $_ARRAYLANG['TXT_HOSTNAME'] = "Hostname";
 $_ARRAYLANG['TXT_ADMINISTRATION_PAGES'] = "Backend";
 $_ARRAYLANG['TXT_APPLICATION_RANGE'] = "Application Range";
-$_ARRAYLANG['TXT_USER_NOT_DELETED'] = "<b>Could not delete user.<br />There must be at least one or more active administrators!</b>";
+$_ARRAYLANG['TXT_USER_NOT_DELETED'] = "<b>无法删除用户。<br />必需有一或多为管理员！</b>";
 $_ARRAYLANG['TXT_COLLAPS_LINK'] = "Close All";
 $_ARRAYLANG['TXT_PAGE_NOT_DELETED_DELETE_SUBCATEGORIES_FIRST'] = "The site could not be deleted. Please delete all the sub-categories first!";
 $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'] = "The data record was deleted successfully!";
@@ -362,13 +365,14 @@ $_ARRAYLANG['TXT_NEW_PW_SUCCESS'] = "Password successfully changed";
 $_ARRAYLANG['TXT_NEW_PW_ERROR'] = "Password could not be changed";
 $_ARRAYLANG['TXT_RESTORE_MAIL_TITLE'] = "Restore your password";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART1'] = "Someone has for your";
-$_ARRAYLANG['TXT_RESTORE_MAIL_PART2'] = " CMS User Account, Username: ";
-$_ARRAYLANG['TXT_RESTORE_MAIL_PART3'] = ", have requested a reset of your password. You can ignore this e-mail if you haven't requested this password change. This e-mail was only sent to the above user account.";
+$_ARRAYLANG['TXT_RESTORE_MAIL_PART2'] = " CMS帐号，用户名：";
+$_ARRAYLANG['TXT_RESTORE_MAIL_PART3'] = "，要求更改密码。如果您没有发出过该要求，您可忽略这封e-mail。
+此e-mail仅发给上述用户。";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART4'] = "You don't have to worry about your user account. Please use the follwing link to get a new password:";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART5'] = "The postpone was requested by:";
 $_ARRAYLANG['TXT_NEWPW_MAIL_TITLE'] = "Your password was changed";
 $_ARRAYLANG['TXT_NEWPW_MAIL_PART1'] = "Your Password";
-$_ARRAYLANG['TXT_NEWPW_MAIL_PART2'] = " CMS User Account, Username: ";
+$_ARRAYLANG['TXT_NEWPW_MAIL_PART2'] = " CMS帐号，用户名：";
 $_ARRAYLANG['TXT_NEWPW_MAIL_PART3'] = "has been successfully changed. For security reasons your password is not displayed.";
 $_ARRAYLANG['TXT_NEWPW_MAIL_USER'] = "Username: ";
 $_ARRAYLANG['TXT_NEWPW_MAIL_PART4'] = "If this change failed, you can request a new password.";
@@ -576,7 +580,7 @@ $_ARRAYLANG['TXT_THEME_NO_URL_SPECIFIED'] = "No URL given";
 $_ARRAYLANG['TXT_THEME_NO_FILE_SPECIFIED'] = "No file selected";
 $_ARRAYLANG['TXT_THEME_ARCHIVE_ERROR'] = "Archive Error";
 $_ARRAYLANG['TXT_THEME_HTTP_CONNECTION_FAILED'] = "No HTTP connection";
-$_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'] = "  cannot be created";
+$_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'] = "  无法创建";
 $_ARRAYLANG['TXT_THEME_SEND_ARCHIVE'] = "Send archive";
 $_ARRAYLANG['TXT_THEME_IMPORT_ARCHIVE'] = "Import archive";
 $_ARRAYLANG['TXT_LOGOUT_WARNING'] = "We recommend to clear your browser cache for security reason.  Do you really want to logout the administration console?  ";
@@ -746,7 +750,7 @@ $_ARRAYLANG['TXT_DBM_EXPORT_COMMENTS'] = "Note: <font style=\"color: green; font
 $_ARRAYLANG['TXT_DBM_EXPORT_RESTORE'] = "Load Backup";
 $_ARRAYLANG['TXT_DBM_EXPORT_ERROR'] = "Backup failed: the target folder '' requires more rights (777).";
 $_ARRAYLANG['TXT_DBM_EXPORT_ERROR_SELECTION'] = "Backup failed: You did not mark any tables to export.";
-$_ARRAYLANG['TXT_DBM_EXPORT_SUCCESS'] = "A backup of the database has been created and saved as ''.";
+$_ARRAYLANG['TXT_DBM_EXPORT_SUCCESS'] = "数据库备份以创建并保存为''。";
 $_ARRAYLANG['TXT_DBM_EXPORT_DELETE_SUCCESS'] = "The backup was removed successfully.";
 $_ARRAYLANG['TXT_DBM_EXPORT_DELETE_ERROR'] = "could not delete backup.";
 $_ARRAYLANG['TXT_DBM_IMPORT'] = "Import Backup";

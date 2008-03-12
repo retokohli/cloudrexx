@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  core_module_alias
+ */
 $_ARRAYLANG['TXT_ALIAS_ALIASES'] = "Aliases";
 $_ARRAYLANG['TXT_ALIAS_ALIAS'] = "Alias";
 $_ARRAYLANG['TXT_ALIAS_SETTINGS'] = "Settings";

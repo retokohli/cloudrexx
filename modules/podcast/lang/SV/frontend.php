@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_podcast
+ */
 $_ARRAYLANG['TXT_PODCAST_ADD_MEDIUM'] = "Medium hinzufügen";
 $_ARRAYLANG['TXT_PODCAST_CATEGORIES'] = "Kategorien";
 $_ARRAYLANG['TXT_PODCAST_SHOW_MEDIA_OF_CATEGORY'] = "Medien der Kategorie '%s' anzeigen";

@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_voting
+ */
 $_ARRAYLANG['TXT_NAME'] = "Name";
 $_ARRAYLANG['TXT_RESET'] = "Zurücksetzen";
 $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'] = "Der Datensatz wurde erfolgreich gespeichert";

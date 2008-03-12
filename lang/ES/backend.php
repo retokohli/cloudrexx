@@ -1,8 +1,11 @@
 <?php
 /**
-* Contrexx CMS
-**/
-
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  core_module_core
+ */
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(minimo 6 caracteres)";
 $_ARRAYLANG['TXT_ACTION'] = "Funciones";
 $_ARRAYLANG['TXT_ACTIVE'] = "Activo";
