@@ -40,12 +40,12 @@ $_ARRAYLANG['TXT_SELECT_ALL'] = "Marker alt";
 $_ARRAYLANG['TXT_DESELECT_ALL'] = "Slet markering";
 $_ARRAYLANG['TXT_SUBMIT_SELECT'] = "Aktion wählen";
 $_ARRAYLANG['TXT_SUBMIT_DELETE'] = "Markierte löschen";
-$_ARRAYLANG['TXT_SUBMIT_ACTIVATE'] = "";
-$_ARRAYLANG['TXT_SUBMIT_DEACTIVATE'] = "";
+$_ARRAYLANG['TXT_SUBMIT_ACTIVATE'] = "Activate";
+$_ARRAYLANG['TXT_SUBMIT_DEACTIVATE'] = "Deactivate";
 $_ARRAYLANG['TXT_GUESTBOOK_ACTION'] = "Action";
 $_ARRAYLANG['TXT_DELETE_CATEGORY_ALL'] = "Do you really want to delete all selected entries?";
-$_ARRAYLANG['TXT_DATA_RECORD_MULTI_DELETE_ERROR'] = "";
-$_ARRAYLANG['TXT_REPLACE_AT'] = "";
+$_ARRAYLANG['TXT_DATA_RECORD_MULTI_DELETE_ERROR'] = "Error while deleting one or more datasets";
+$_ARRAYLANG['TXT_REPLACE_AT'] = "Replace the @ in E-Mail addresses";
 $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATE_OVERVIEW'] = "Template Übersicht";
 $_ARRAYLANG['TXT_GUESTBOOK_ONLY_LANG_ENTRIES'] = "Only show entries of the current language";
 ?>
