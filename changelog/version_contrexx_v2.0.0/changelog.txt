@@ -47,6 +47,9 @@ Modul: Podcast
   Platzhalter den Wert "/cms" enthalten.
 - Das Textfeld zum Erfassen der Vorlagen wurde visuell vergrössert.
 
+Modul: Gallery
+- Kategorien können nun auf Gruppenbasis geschützt werden.
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************
