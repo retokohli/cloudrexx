@@ -248,6 +248,7 @@ $_ARRAYLANG['TXT_ISO_CODE'] = "ISO Code";
 $_ARRAYLANG['TXT_NOT_APPLICABLE_SHORT_FORM'] = "k.A.";
 $_ARRAYLANG['TXT_NO_TEMPLATE'] = "Keine Vorlage";
 $_ARRAYLANG['TXT_WITH_HTTP'] = "mit http://";
+$_ARRAYLANG['TXT_OPTIONS'] = "Optionen";
 $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Bitte füllen Sie alle erforderlichen Felder aus.";
 $_ARRAYLANG['TXT_PRODUCT_CHARACTERISTICS'] = "Produktemerkmale";
 $_ARRAYLANG['TXT_DEFINE_NAME_FOR_OPTION'] = "Sie müssen einen Namen für die Option definieren!";

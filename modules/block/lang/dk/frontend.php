@@ -6,5 +6,5 @@
  * @package     contrexx
  * @subpackage  module_block
  */
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "";
+$_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "Overview";
 ?>

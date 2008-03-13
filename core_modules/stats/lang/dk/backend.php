@@ -140,6 +140,6 @@ $_ARRAYLANG['TXT_SUMMARY'] = "Zusammenfassung";
 $_ARRAYLANG['TXT_SHOW_LIMIT_VISITOR_DETAILS'] = "Anzahl Einträge, die bei den Besucherdetails angezeigt werden sollen. (1 - 1000)";
 $_ARRAYLANG['TXT_PAGING_LIMIT'] = "Anzeigelimit für Statistikauswertung";
 $_ARRAYLANG['TXT_PAGING_LIMIT_VISITOR_DETAILS'] = "Anzeigelimit für Besucherdetails";
-$_ARRAYLANG['TXT_IMAGE_EDIT_SHOW'] = "";
+$_ARRAYLANG['TXT_IMAGE_EDIT_SHOW'] = "Show";
 $_ARRAYLANG['TXT_STATS_COUNT_VISIOTR_NUMBER'] = "Nummer des aktuellen Besuchers berechnen. Diese Option muss aktiviert sein, falls Sie den Platzhalter [[VISITOR_NUMBER]] im Frontend verwenden wollen.";
 ?>
