@@ -322,9 +322,8 @@ class Shop extends ShopLibrary
         // initialize the countries array
         $this->_initCountries();
 
-        if (shopUseSession()) {
-            $this->_authenticate();
-        }
+        // Check session and user data, log in if present
+        $this->_authenticate();
 
         $this->_initConfiguration();
         $this->_initPayment();
@@ -2265,8 +2264,10 @@ sendReq('', 1);
                 return true;
             }
         }
-        $sessionObj->cmsSessionUserUpdate('unknown');
-        $sessionObj->cmsSessionStatusUpdate('shop');
+        if (!empty($sessionObj)) {
+            $sessionObj->cmsSessionUserUpdate('unknown');
+            $sessionObj->cmsSessionStatusUpdate('shop');
+        }
         return false;
     }
 
@@ -2734,13 +2735,19 @@ sendReq('', 1);
     {
         global $_ARRAYLANG;
 
+        $redirect = (isset($_REQUEST['redirect']) ? $_REQUEST['redirect'] : '');
+        // The Customer object is initialized upon successful authentication.
         if ($this->objCustomer) {
+            if ($redirect == 'shop') {
+                header('Location: index.php?section=shop'.MODULE_INDEX);
+                exit;
+            } // Add more redirects here as needed.
             // redirect to the checkout page
             header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=account');
             exit;
         } else {
             $loginUsername = '';
-            if (!empty($_REQUEST['username']) AND !empty($_REQUEST['password'])) {
+            if (!empty($_REQUEST['username']) && !empty($_REQUEST['password'])) {
                 // check authentification
                 $_SESSION['shop']['username'] = htmlspecialchars(
                     addslashes(strip_tags($_REQUEST['username'])),
@@ -2749,14 +2756,7 @@ sendReq('', 1);
                     addslashes(strip_tags($_REQUEST['password']));
                 $loginUsername = $_SESSION['shop']['username'];
                 if ($this->_authenticate()) {
-                    if (isset($_REQUEST['redirect'])
-                     && $_REQUEST['redirect'] == 'shop') {
-                        header('Location: index.php?section=shop'.MODULE_INDEX.'');
-                        exit;
-                    } else {
-                        header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=account');
-                        exit;
-                    }
+                    $this->login();
                 } else {
                     $this->addMessage($_ARRAYLANG['TXT_SHOP_UNKNOWN_CUSTOMER_ACCOUNT']);
                 }
@@ -2772,9 +2772,10 @@ sendReq('', 1);
                 'TXT_EMAIL_ADDRESS'                  => $_ARRAYLANG['TXT_EMAIL_ADDRESS'],
                 'TXT_PASSWORD'                       => $_ARRAYLANG['TXT_PASSWORD'],
                 'SHOP_LOGIN_EMAIL'                   => $loginUsername,
-                'SHOP_LOGIN_ACTION'                  => '?section=shop'.MODULE_INDEX.'&amp;cmd=login',
+                'SHOP_LOGIN_ACTION'                  => 'index.php?section=shop'.MODULE_INDEX.'&amp;cmd=login',
 // TODO: Change the name of this placeholder to SHOP_STATUS and remove this.
                 'SHOP_LOGIN_STATUS'                  => $this->statusMessage,
+                'SHOP_REDIRECT'                      => "&redirect=$redirect",
             ));
         }
     }
