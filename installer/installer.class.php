@@ -27,6 +27,8 @@ class Installer
 	var $directoryTreeRowClassNr = 0;
 
 	var $step;
+	var $unattended;
+
 
 	var $arrSteps = array(
 		0	=> array(
@@ -75,6 +77,8 @@ class Installer
 		if ($objCommon->checkInstallationStatus()) {
 			header('Location: ../index.php');
 		}
+
+		$this->unattended = !empty($_SERVER['argv'][1]);
 
 		// set step
 		if (isset($_GET['cancel'])) {
