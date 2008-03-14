@@ -821,8 +821,8 @@ $_ARRAYLANG['TXT_WORKFLOW_CLEAN_MINIMUM_AGE'] = "Minimales Alter";
 $_ARRAYLANG['TXT_WORKFLOW_CLEAN_DAYS'] = "Dia(s)";
 $_ARRAYLANG['TXT_WORKFLOW_CLEAN_CONFIRM'] = "¿Realmente desea eliminar este flujo de trabajo?\n attn: esta acci&oacute;n no es reversible.";
 $_ARRAYLANG['TXT_WORKFLOW_CLEAN_SUCCESS'] = "Todas las entradas m&aacutes antiguo que [DAYS] dias han sido eliminados con exito.";
-$_ARRAYLANG['TXT_REGDATE'] = "Fecha";
+$_ARRAYLANG['TXT_REGDATE'] = "Datum";
 $_ARRAYLANG['TXT_PAGES'] = "Seiten";
-$_ARRAYLANG['TXT_AMOUNT'] = "Cantidad";
+$_ARRAYLANG['TXT_AMOUNT'] = "Anzahl";
 $_ARRAYLANG['TXT_NEW_PAGE_ON_FIRST_LEVEL'] = "Create new page on the  upper most level of the page tree";
 ?>
