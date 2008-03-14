@@ -3490,28 +3490,9 @@ class shopmanager extends ShopLibrary {
         // Send an email to the customer
         if (   !empty($_GET['shopSendMail'])
             && !empty($_GET['orderId'])) {
-            $query = "
-                SELECT c.email, o.last_modified, customer_lang
-                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers c,
-                       ".DBPREFIX."module_shop".MODULE_INDEX."_orders o
-                 WHERE o.customerid=c.customerid
-                   AND o.orderid=".intval($_GET['orderId']);
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
-                $shopMailTo = $objResult->fields['email'];
-                $shopLastModified = $objResult->fields['last_modified'];
-            }
-            $customerLang = $objResult->fields['customer_lang'];
-            $langId = FWLanguage::getLangIdByIso639_1($customerLang);
-            $arrShopMailtemplate = Shop::shopSetMailtemplate(2, $langId);
-            $shopMailFrom = $arrShopMailtemplate['mail_from'];
-            $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
-            $shopMailSubject = $arrShopMailtemplate['mail_subject'];
-            $shopMailBody = $arrShopMailtemplate['mail_body'];
-            $shopMailSubject = str_replace("<DATE>", $shopLastModified, $shopMailSubject);
-            $result = Shop::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
-            if ($result) {
-                $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
+            $result = shopmanager::sendConfirmationMail($_GET['orderId']);
+            if (!empty($result)) {
+                $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $result));
             } else {
                 $this->addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
             }
@@ -4314,38 +4295,6 @@ class shopmanager extends ShopLibrary {
             'TXT_NAME' => $_ARRAYLANG['TXT_NAME'],
         ));
 
-        // send an email to the customer
-        if (   $_POST['shopOrderStatusId'] == SHOP_ORDER_STATUS_CONFIRMED
-            && !empty($_POST['shopSendMail'])) {
-            // Determine customer language
-            $query = "
-                SELECT customer_lang
-                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-                 INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-                 USING (customerid)
-                 WHERE orderid=$shopOrderId
-            ";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult || $objResult->RecordCount() == 0) {
-                return false;
-            }
-            $langId = FWLanguage::getLangIdByIso639_1($objResult->fields['customer_lang']);
-            $arrShopMailtemplate = Shop::shopSetMailtemplate(2, $langId);
-            $shopMailTo = $_POST['shopMailTo'];
-            $shopMailFrom = $arrShopMailtemplate['mail_from'];
-            $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
-            $shopMailSubject = $arrShopMailtemplate['mail_subject'];
-            $shopMailBody = $arrShopMailtemplate['mail_body'];
-            $shopMailSubject = str_replace("<DATE>", $_POST['shopLastModified'], $shopMailSubject);
-            $result = Shop::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
-            if ($result) {
-                $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
-            }
-            else {
-                $this->addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
-            }
-        }
-
         // calculate the total order sum in the selected currency of the customer
         $shopTotalOrderSum = floatval($_POST['shopShippingPrice'])
         + floatval($_POST['shopPaymentPrice']);
@@ -4425,13 +4374,23 @@ class shopmanager extends ShopLibrary {
         ";
         // should not be changed, see above
         // ", payment_id = ".intval($_POST['paymentId']).
-        if ($objDatabase->Execute($query)) {
+        if (!$objDatabase->Execute($query)) {
+            $this->errorHandling();
+            return false;
+        } else {
             $this->addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
-            return true;
+            // Send an email to the customer, if requested
+            if (!empty($_POST['shopSendMail'])) {
+                $result = shopmanager::sendConfirmationMail($shopOrderId);
+                if (!empty($result)) {
+                    $this->addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $result));
+                } else {
+                    $this->addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
+                    return false;
+                }
+            }
         }
-        // if query has errors, call errorhandling
-        $this->errorHandling();
-        return false;
+        return true;
     }
 
 
@@ -6385,6 +6344,49 @@ class shopmanager extends ShopLibrary {
         }
         $strMenu .= '</select>';
         return $strMenu;
+    }
+
+
+    /**
+     * Send a confirmation mail to the Customer for the given Order ID.
+     * @param   integer   $orderId      The order ID
+     * @return  string                  The target e-mail address on success,
+     *                                  the empty string otherwise
+     */
+    function sendConfirmationMail($orderId)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT email, last_modified, customer_lang, order_status
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers c,
+                   ".DBPREFIX."module_shop".MODULE_INDEX."_orders o
+             WHERE o.customerid=c.customerid
+               AND o.orderid=$orderId";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return false;
+        }
+        $shopMailTo = $objResult->fields['email'];
+        $shopLastModified = $objResult->fields['last_modified'];
+        $customerLang = $objResult->fields['customer_lang'];
+        $orderStatus = $objResult->fields['order_status'];
+        $langId = FWLanguage::getLangIdByIso639_1($customerLang);
+        $arrShopMailtemplate = shopmanager::shopSetMailtemplate(2, $langId);
+        $shopMailFrom = $arrShopMailtemplate['mail_from'];
+        $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
+        $shopMailSubject = $arrShopMailtemplate['mail_subject'];
+        $shopMailSubject = str_replace('<DATE>', $shopLastModified, $shopMailSubject);
+        $shopMailSubject = str_replace('<ORDER_STATUS>', $orderStatus, $shopMailSubject);
+        $shopMailBody = $arrShopMailtemplate['mail_body'];
+        $shopMailBody = str_replace('<DATE>', $shopLastModified, $shopMailBody);
+        $shopMailBody = str_replace('<ORDER_STATUS>', $this->arrOrderStatus[$orderStatus], $shopMailBody);
+        if (shopmanager::shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody)) {
+echo("Success: sent mail to $shopMailTo<br />$shopMailBody<br />");
+            return $shopMailTo;
+        }
+echo("Failed to send mail to $shopMailTo<br />$shopMailBody<br />");
+        return '';
     }
 
 
