@@ -1032,6 +1032,10 @@ CREATE TABLE `contrexx_module_gallery_categories` (
   `status` set('0','1') NOT NULL default '1',
   `comment` set('0','1') NOT NULL default '0',
   `voting` set('0','1') NOT NULL default '0',
+  `frontendProtected` tinyint(1) NOT NULL default '0',
+  `backendProtected` tinyint(1) NOT NULL default '0',
+  `frontend_access_id` int(11) NOT NULL default '0',
+  `backend_access_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM;
 
@@ -2414,18 +2418,3 @@ CREATE TABLE `contrexx_voting_system` (
   `votes` int(11) default '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM;
-
-
-CREATE TABLE `contrexx_module_gallery_categories` (
-  `id` int(11) NOT NULL auto_increment,
-  `pid` int(11) NOT NULL default '0',
-  `sorting` tinyint(3) NOT NULL default '0',
-  `status` set('0','1') NOT NULL default '1',
-  `comment` set('0','1') NOT NULL default '0',
-  `voting` set('0','1') NOT NULL default '0',
-  `frontendProtected` tinyint(1) NOT NULL default '0',
-  `backendProtected` tinyint(1) NOT NULL default '0',
-  `frontend_access_id` int(11) NOT NULL default '0',
-  `backend_access_id` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM;
