@@ -591,42 +591,42 @@ class Shop extends ShopLibrary
         // end currencies
 
         if ($objTpl->blockExists('shopNavbar')) {
-	        $selectedCatId = 0;
-	        if (isset($_REQUEST['catId'])) {
-	            $selectedCatId = intval($_REQUEST['catId']);
-	        }
+            $selectedCatId = 0;
+            if (isset($_REQUEST['catId'])) {
+                $selectedCatId = intval($_REQUEST['catId']);
+            }
 
-	        // Array of all visible ShopCategories
-	        $arrShopCategoryTree = $this->objShopCategories->getTreeArray(
-	            false, true, true, $selectedCatId, 0, 3
-	        );
-	        // The trail of IDs to the selected ShopCategory,
-	        // built along with the tree array when calling getTreeArray().
-	        $arrTrail = $this->objShopCategories->getTrailArray($selectedCatId);
+            // Array of all visible ShopCategories
+            $arrShopCategoryTree = $this->objShopCategories->getTreeArray(
+                false, true, true, $selectedCatId, 0, 3
+            );
+            // The trail of IDs to the selected ShopCategory,
+            // built along with the tree array when calling getTreeArray().
+            $arrTrail = $this->objShopCategories->getTrailArray($selectedCatId);
 
-	        // Build the display of ShopCategories
-	        foreach ($arrShopCategoryTree as $arrShopCategory) {
-	            $level    = $arrShopCategory['level'];
-	            // Skip levels too deep: if ($level >= 2) { continue; }
-	            $id       = $arrShopCategory['id'];
+            // Build the display of ShopCategories
+            foreach ($arrShopCategoryTree as $arrShopCategory) {
+                $level    = $arrShopCategory['level'];
+                // Skip levels too deep: if ($level >= 2) { continue; }
+                $id       = $arrShopCategory['id'];
 
-	            // Only the visible ShopCategories are stored in
-	            // $arrShopCategoryTree.  $arrTrail contains the full list
-	            // of IDs from root to selected, however.
+                // Only the visible ShopCategories are stored in
+                // $arrShopCategoryTree.  $arrTrail contains the full list
+                // of IDs from root to selected, however.
 
-	            $style = '';
-	            if (in_array($id, $arrTrail)) {
-	                $style .= 'active';
-	            }
-	            $objTpl->setVariable(array(
-	                'SHOP_CATEGORY_STYLE'  => $style,
-	                'SHOP_CATEGORY_ID'     => $id,
-	                'SHOP_CATEGORY_NAME'   =>
-	                    str_repeat('&nbsp;', 3*$level).
-	                    str_replace('"', '&quot;', $arrShopCategory['name']),
-	            ));
-	            $objTpl->parse("shopNavbar");
-	        }
+                $style = '';
+                if (in_array($id, $arrTrail)) {
+                    $style .= 'active';
+                }
+                $objTpl->setVariable(array(
+                    'SHOP_CATEGORY_STYLE'  => $style,
+                    'SHOP_CATEGORY_ID'     => $id,
+                    'SHOP_CATEGORY_NAME'   =>
+                        str_repeat('&nbsp;', 3*$level).
+                        str_replace('"', '&quot;', $arrShopCategory['name']),
+                ));
+                $objTpl->parse("shopNavbar");
+            }
         }
         $strContent = $objTpl->get();
         return $strContent;
@@ -3187,7 +3187,7 @@ sendReq('', 1);
                 if ($_SESSION['shop']['countryId'] == intval($this->arrConfig['country_id']['value'])) {
 
                     $_SESSION['shop']['tax_price'] = $_SESSION['shop']['cart']['total_tax_amount'];
-                    $_SESSION['shop']['grand_total_price']  = Currency::formatPrice(
+                    $_SESSION['shop']['grand_total_price']  = $this->objCurrency->getCurrencyPrice(
                         $_SESSION['shop']['total_price']    +
                         $_SESSION['shop']['payment_price']  +
                         $_SESSION['shop']['shipment_price']
@@ -3198,7 +3198,7 @@ sendReq('', 1);
                     // foreign country; subtract tax from total price taxes
                     // must use every single orderitem in the cart to calculate the VAT now
                     $_SESSION['shop']['tax_price'] = $_SESSION['shop']['cart']['total_tax_amount'];
-                    $_SESSION['shop']['grand_total_price']  = Currency::formatPrice(
+                    $_SESSION['shop']['grand_total_price']  = $this->objCurrency->getCurrencyPrice(
                         $_SESSION['shop']['total_price']    +
                         $_SESSION['shop']['payment_price']  +
                         $_SESSION['shop']['shipment_price'] -
@@ -3220,7 +3220,7 @@ sendReq('', 1);
                             $_SESSION['shop']['payment_price'] +
                             $_SESSION['shop']['shipment_price']
                         ));
-                    $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
+                    $_SESSION['shop']['grand_total_price'] = $this->objCurrency->getCurrencyPrice(
                         $_SESSION['shop']['total_price']    +
                         $_SESSION['shop']['payment_price']  +
                         $_SESSION['shop']['shipment_price'] +
@@ -3230,7 +3230,7 @@ sendReq('', 1);
                 } else {
                     // foreign country; do not add tax
                     $_SESSION['shop']['tax_price']         = "0.00";
-                    $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
+                    $_SESSION['shop']['grand_total_price'] = $this->objCurrency->getCurrencyPrice(
                         $_SESSION['shop']['total_price']   +
                         $_SESSION['shop']['payment_price'] +
                         $_SESSION['shop']['shipment_price']
@@ -3244,7 +3244,7 @@ sendReq('', 1);
             $_SESSION['shop']['tax_price']         = "0.00";
             $_SESSION['shop']['tax_products_txt']  = '';
             $_SESSION['shop']['tax_grand_txt']     = '';
-            $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
+            $_SESSION['shop']['grand_total_price'] = $this->objCurrency->getCurrencyPrice(
                 $_SESSION['shop']['total_price']   +
                 $_SESSION['shop']['payment_price'] +
                 $_SESSION['shop']['shipment_price']);
