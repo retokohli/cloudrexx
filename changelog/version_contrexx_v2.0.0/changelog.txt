@@ -91,3 +91,13 @@ Modul: Podcast
 
 Modul: Directory
 - Pagingfehler wurde behoben.
+
+Modul: Shop
+- Fehler bei der Verarbeitung von IPN bei PayPal wurde behoben.
+  Bestellungen werden auch bei verzögertem Eintreffen der Bestätigung über
+  die erfolgte Zahlung korrekt verarbeitet.
+- Währungen hinzufügen: Kürzel und Name der Währung werden bei der
+  Auswahl automatisch eingefügt.
+- Währungen bearbeiten: Die Standart Währung erhält immer den Kurs 1.000.
+  Beim setzen einer neuen Standart Währung werden die Wechselkurse automatisch
+  umgerechnet.
