@@ -73,4 +73,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_AUTHENTICATION_FAILED'] = "Authentication Failed!";
 $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL'] = "The Registration has not been completed because the activation email failed!";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] = "An error occurred while removing your e-mail address from the newsletter system!";
 $_ARRAYLANG['TXT_NEWSLETTER_SEX'] = "Sex";
+$_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Unknown";
 ?>

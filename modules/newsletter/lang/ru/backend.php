@@ -368,4 +368,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_CONNECT_SMTP_FAILED'] = "Unable to connect to mail s
 $_ARRAYLANG['TXT_NEWSLETTER_EXPORT_ALL_LISTS'] = "Export all lists into Excel";
 $_ARRAYLANG['TXT_NEWSLETTER_FILE_TYPE'] = "File type";
 $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'] = "Select a file that should be imported:";
+$_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Unknown";
 ?>
