@@ -18,6 +18,22 @@ Content Verlauf
 - Alte Einträge im Content Verlauf können nun über eine Funktion gelöscht
   werden.
 
+Content Manager: Übersicht
+- Ein Klick auf den Namen einer Seite führt neu nicht mehr in jedem Fall zum
+  bearbeiten der Seite.  Für Seiten, die zu bestimmten Modulen gehören,
+  führt dieser direkt zu deren Administration.  Das Icon "bearbeiten" führt
+  aber nach wie vor immer zur Seitenbearbeitung.
+  Seitennamen, deren "cmd" Parameter auf eines der folgenden Module gesetzt
+  sind, sind neu mit der Verwaltung des entsprechenden Moduls verknüpft:
+    news, calendar, community, directory, docsys, egov, feed,
+    forum, gallery, guestbook, livecam, market, media, memberdir, newsletter,
+    podcast, recommend, shop, voting, blog, contact.
+  Bei Medienarchiven wird zum entsprechenden Verzeichnis gesprungen, sofern
+  dieses angegeben ist.
+  Seiten mit dem cmd Wert "login" werden an die Benutzerverwaltung verwiesen.
+  Alle anderen Angaben für cmd werden ignoriert, der Seitenname bleibt mit
+  dem Seiteneditor verlinkt.
+
 Statistik
 - Der Bereich "Monatliche Besucher und Seitenaufrufe" listet die letzten zwei
   Jahre.
@@ -25,10 +41,10 @@ Statistik
 Modul: Community
 - Die Profil Eigenschaften Vor- und Nachname können bei der Registrierung
   angegeben werden.
-  
+
 Modul: Directory
 - Anzahl Einträge pro Seite (Paging) kann frei definiert werden.
-  
+
 Modul: Gästebuch
 - Die Datums- und Zeitangabe können nun über die Konfigurationsdateien angepasst
   werden.
