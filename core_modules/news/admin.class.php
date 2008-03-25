@@ -1215,9 +1215,24 @@ class newsManager extends newsLibrary {
 
 			$itemLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/".$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang')."/index.php?section=news&amp;cmd=details&amp;newsid=";
 
-			$query = "SELECT tblNews.id, tblNews.date, tblNews.title, tblNews.text, tblNews.redirect, tblNews.source, tblNews.catid AS categoryId, tblNews.teaser_frames AS teaser_frames, tblNews.teaser_text, tblCategory.name AS category
-							FROM ".DBPREFIX."module_news AS tblNews, ".DBPREFIX."module_news_categories AS tblCategory
-							WHERE tblNews.status=1 AND tblNews.lang = ".$_FRONTEND_LANGID." AND tblCategory.catid = tblNews.catid
+			$query = "
+				SELECT		tblNews.id,
+							tblNews.date,
+							tblNews.title,
+							tblNews.text,
+							tblNews.redirect,
+							tblNews.source,
+							tblNews.catid AS categoryId,
+							tblNews.teaser_frames AS teaser_frames,
+							tblNews.teaser_text,
+							tblCategory.name AS category
+				FROM		".DBPREFIX."module_news AS tblNews
+				INNER JOIN	".DBPREFIX."module_news_categories AS tblCategory
+				USING		(catid)
+				WHERE		tblNews.status=1
+					AND		tblNews.lang = ".$_FRONTEND_LANGID."
+					AND		(tblNews.startdate <= CURDATE() OR tblNews.startdate = '0000-00-00')
+					AND		(tblNews.enddate >= CURDATE() OR tblNews.enddate = '0000-00-00')
 							ORDER BY tblNews.date DESC";
 
 			if (($objResult = $objDatabase->SelectLimit($query, 20)) !== false && $objResult->RecordCount() > 0) {
