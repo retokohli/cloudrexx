@@ -243,11 +243,13 @@ class NewsletterLib {
 
 	function _getRecipientTitleMenu($selected = 0, $attrs)
 	{
+		global $_ARRAYLANG;
+
 		$menu = '<select'.(!empty($attrs) ? ' '.$attrs : '').">\n";
 
 		$arrTitles = $this->_getRecipientTitles();
 
-		$menu .= '<option value="0"'.($selected == 0 ? ' selected="selected"' : '').">Unbekannt</option>\n";
+		$menu .= '<option value="0"'.($selected == 0 ? ' selected="selected"' : '').'>'.$_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN']."</option>\n";
 		foreach ($arrTitles as $id => $title) {
 			$menu .= '<option value="'.$id.'"'.($selected == $id ? ' selected="selected"' : '').'>'.htmlentities($title, ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
 		}
