@@ -1952,7 +1952,7 @@ class newsletter extends NewsletterLib
 		$objValidator = &new FWValidator();
 
 		if (!empty($_POST['newsletter_test_mail']) && $objValidator->isEmail($_POST["newsletter_test_mail"])) {
-			if ($this->SendEmail(0, $mailId, $_POST["newsletter_test_mail"], 0)) {
+			if ($this->SendEmail(0, $mailId, $_POST["newsletter_test_mail"], 0) !== false) {
 				$this->_strOkMessage = str_replace("%s", $_POST["newsletter_test_mail"], $_ARRAYLANG['TXT_TESTMAIL_SEND_SUCCESSFUL']);
 				return true;
 			} else {
@@ -2061,19 +2061,35 @@ class newsletter extends NewsletterLib
 				} else {
 					$arrSettings = &$this->_getSettings();
 					$mails_per_run = $arrSettings['mails_per_run']['setvalue'];
+					$timeout = time() + (ini_get('max_execution_time') ? ini_get('max_execution_time') : 300 /* Default Apache and IIS Timeout */);
 
 					$objSend = $objDatabase->SelectLimit("SELECT tblUser.id, tblUser.email FROM ".DBPREFIX."module_newsletter_tmp_sending AS tblSend
 					RIGHT JOIN ".DBPREFIX."module_newsletter_user AS tblUser ON tblUser.email=tblSend.email
 					WHERE tblSend.sendt=0 AND tblSend.newsletter=".$mailId, $mails_per_run, 0);
 					if ($objSend !== false) {
 						while (!$objSend->EOF) {
-							if ($this->SendEmail($objSend->fields['id'], $mailId, $objSend->fields['email'], 1)) {
+							$beforeSend = time();
+
+							if (($count = $this->SendEmail($objSend->fields['id'], $mailId, $objSend->fields['email'], 1)) !== false) {
 								$this->_objTpl->setVariable('NEWSLETTER_MAIL_RELOAD_SEND_STATUS_FRAME', '<script type="text/javascript" language="javascript">setTimeout("newsletterSendMail()",1000);</script>');
 							}
+
+							// timeout prevention
+							if (time() >= $timeout - (time() - $beforeSend) * 2) {
+								break;
+							}
+
 							$objSend->MoveNext();
 						}
 					}
 				}
+
+				// update sent count
+				$statusBarWidth = round(200 / $mailRecipientCount * $count, 0);
+				$this->_objTpl->setVariable(array(
+					'NEWSLETTER_SENDT'				=> $count,
+					'NEWSLETTER_STATUSBAR_WIDTH'	=> $statusBarWidth
+				));
 
 				$this->_objTpl->touchBlock('newsletter_mail_stop_button');
 				$this->_objTpl->hideBlock('newsletter_mail_send_button');
@@ -2233,8 +2249,14 @@ class newsletter extends NewsletterLib
 
 		$mail->AddAddress($TargetEmail);
 
+		// mark recipient as in-action to prevent multiple tries of sending the newsletter to the same recipient
+		$query = "UPDATE ".DBPREFIX."module_newsletter_tmp_sending SET sendt=2 where email='".$TargetEmail."' AND newsletter=".$NewsletterID." AND sendt=0";
+        if ($objDatabase->Execute($query) === false || $objDatabase->Affected_Rows() == 0) {
+			return $count;
+		}
+
 		if ($mail->Send()) {
-			$ReturnVar = true;
+			$ReturnVar = $count++;
 			if($TmpEntry==1){
 				// Insert TMP-ENTRY Sended Email & Count++
 				// ---------------------------------------
@@ -2248,9 +2270,8 @@ class newsletter extends NewsletterLib
 					}
 				}
 
-				$count ++;
 				$objResultUPDATE 	= $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter
-														SET count='".$count."'
+														SET count=count+1
 														WHERE id=".$NewsletterID."");
 				$queryCheck 	= "SELECT 1 FROM ".DBPREFIX."module_newsletter_tmp_sending where newsletter=".$NewsletterID." and sendt=0";
 				$objResultCheck = $objDatabase->SelectLimit($queryCheck, 1);
@@ -2301,7 +2322,7 @@ class newsletter extends NewsletterLib
 					}
 				}
 
-				$ReturnVar = true;
+				$ReturnVar = $count;
 			}
 		}
 		$mail->ClearAddresses();
