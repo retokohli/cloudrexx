@@ -579,7 +579,7 @@ class calendarLibrary
      */
     function getBoxes($howmany, $year, $month=0, $day=0, $catid=NULL)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $objPerm, $objInit;
 
         $url = htmlentities($this->url, ENT_QUOTES, CONTREXX_CHARSET);
 
@@ -618,26 +618,22 @@ class calendarLibrary
                 $cal->urlMonthNav = htmlentities($this->monthnavurl, ENT_QUOTES, CONTREXX_CHARSET);
             }
 
-            //check access
-            $auth = $this->_checkAccess();
-            $where = "";
-			if ($auth == false) {
-				$where 		= " WHERE access='0' ";
-				$whereCat 	= "access='0' AND ";
-			}
-
             // get events
             if (empty($catid)) {
-                $query = "SELECT * FROM ".DBPREFIX."module_calendar".$this->mandateLink."".$where;
+                $query = "SELECT * FROM ".DBPREFIX."module_calendar".$this->mandateLink;
             } else {
                 $query = "SELECT * FROM ".DBPREFIX."module_calendar".$this->mandateLink."
-                          WHERE $whereCat catid=$catid";
+                          WHERE catid=$catid";
             }
 
 
             $objResult = $objDatabase->Execute($query);
 
             while (!$objResult->EOF) {
+            	if ($objResult->fields['access'] && $objInit->mode == 'frontend' && (!is_object($objPerm) || !$objPerm->checkAccess(116, 'static', true))) {
+            		$objResult->MoveNext();
+            		continue;
+            	}
                 if (($objResult->fields['active'] == 1 && $this->showOnlyActive) || !$this->showOnlyActive) {
                     $startdate = $objResult->fields['startdate'];
                     $enddate = $objResult->fields['enddate'];
