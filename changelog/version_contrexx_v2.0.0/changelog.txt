@@ -33,6 +33,9 @@ Content Manager: Übersicht
   Seiten mit dem cmd Wert "login" werden an die Benutzerverwaltung verwiesen.
   Alle anderen Angaben für cmd werden ignoriert, der Seitenname bleibt mit
   dem Seiteneditor verlinkt.
+- Die Berechtigung eine neue Seite anzulegen wurde mit der optionalen
+  Einschränkung erweiter, dass auf der ersten Struktur Ebene keine Seite
+  angelegt werden darf.
 
 Statistik
 - Der Bereich "Monatliche Besucher und Seitenaufrufe" listet die letzten zwei
@@ -50,11 +53,17 @@ Modul: Gästebuch
   werden.
 
 Modul: Livecam
-- Die Grösse des Anzeigebildes und der Thumbnails kann optional eingestellt werden.
+- Die Grösse des Anzeigebildes und der Thumbnails kann optional eingestellt
+  werden.
 - Für sämtliche Bilder im Livecam Modul kan die LightBox aktiviert werden.
 
 Modul: Market
-- Der Aufschaltmechanismus kann klar definiert werden. Variante 1 mittels aufschaltschlüssel, Variante 2 durch Admin.
+- Der Aufschaltmechanismus kann klar definiert werden. Variante 1 mittels
+  aufschaltschlüssel, Variante 2 durch Admin.
+
+Modul: Newsletter
+- Das System versucht automatisch frühzeitig ein bevorstehendes Timeout zu
+  erkennen um dieses abzufangen.
 
 Modul: Podcast
 - Mit dem Platzhalter [[ASCMS_PATH_OFFSET]] kann der Offset Pfad (Verzeichnis
@@ -85,15 +94,28 @@ Content Manager
 - Wird eine Inhaltsseite vor unerlaubten Modifikationen geschützt, so wird nach
   dem Speichern der Seite nicht die Fehlermeldung "Zugriff verweigert"
   angezeigt.
+- Ein Benutzer kann keine Unterseite einer Seite erstellen, auf welche er keine
+  Bearbeitungsrechte verfügt.
+- Optimierung des Speicherbedarfs bei einem grossen Content Verlauf.
 
 Layout & Design
 - Schaltfläche zum Löschen eines Themes funktioniert.
+
+Media Manager
+- Die generierte Ausgabe im Frontend funktioniert nun auch, wenn das System in
+  einem Unterverzeichnis relativ zum DocumentRoot liegt.
 
 Statistik
 - Der Bereich "Besucher und Seitenaufrufe" funktioniert auch unter PHP4.
 
 Webinstaller
 - Die Funktion "Datenbank erstellen" ist kompatibel mit der MySQL Version 4.0.
+
+Module: Community
+- Sonderzeichen der Profildaten werden auf der Profilseite korrekt dargestellt.
+
+Modul: Directory
+- Pagingfehler wurde behoben.
 
 Modul: Gallery
 - Die Verlinkung des Zufallsbildes verweist auf die richtige Seite der
@@ -102,11 +124,22 @@ Modul: Gallery
   auch kompatibel mit Windows:
   http://www.contrexx.com/forum/showthread.php?p=13349
 
+Modul: Kalender
+- Nicht Administratoren sind berechtig die Administrationskonsole des Kalenders
+  zu öffnen, sofern ihnen den Zugriff dazu erteilt wurde.
+
+Modul: News
+- Meldungen welche noch nicht publiziert wurden (innerhalt des definierten
+  Publizierungszeitraumes), werden im RSS Feed nicht veröffentlicht.
+
+Modul: Newsletter
+- Beim Versand werden Empfänger automatisch aus der Queue gelöscht, sofern das
+  E-Mail nicht an die angegebene Adresse versendet werden konnte (Sofern bei der
+  Option "Aktion bei unzustellbaren E-Mails" die Aktion "Keine Aktion
+  durchführen" ausgewählt wurde).
+
 Modul: Podcast
 - Datenbank Abfragen optimiert.
-
-Modul: Directory
-- Pagingfehler wurde behoben.
 
 Modul: Shop
 - Fehler bei der Verarbeitung von IPN bei PayPal wurde behoben.
