@@ -785,9 +785,27 @@ class Gallery {
         //$arrCategoryImages        ->        The First Picture of each category
         //$arrCategoryImageCounter    ->        Counts all images in one group
 
-        $query = "SELECT * FROM ".DBPREFIX."module_gallery_categories ".
-            "WHERE pid=$intParentId AND status='1' ORDER BY sorting ASC";
-        $objResult = $objDatabase->Execute($query);
+        //begin category-paging        
+        $intPos = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
+        $objResult = $objDatabase->Execute('SELECT	count(id) AS countValue
+        									FROM 	'.DBPREFIX.'module_gallery_categories
+	            							WHERE 	pid='.$intParentId.' AND 
+	            									status="1" 
+	            						');
+        $this->_objTpl->setVariable(array(
+            'GALLERY_CATEGORY_PAGING'     => getPaging($objResult->fields['countValue'], $intPos, '&amp;section=gallery&amp;cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_GALLERY'].'</b>',false,intval($_CONFIG['corePagingLimit']))
+            ));
+        //end category-paging        
+        
+        $objResult = $objDatabase->SelectLimit('SELECT 		* 
+	        									FROM 		'.DBPREFIX.'module_gallery_categories
+	            								WHERE 		pid='.$intParentId.' AND 
+	            											status="1" 
+	            								ORDER BY	sorting ASC',
+	            								intval($_CONFIG['corePagingLimit']), 
+	            								$intPos
+	            							);
+	            							
         if ($objResult->RecordCount() == 0) {
 
             // no categories in the database, hide the output

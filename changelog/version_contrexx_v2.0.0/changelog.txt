@@ -74,6 +74,9 @@ Modul: Podcast
 
 Modul: Gallery
 - Kategorien können nun auf Gruppenbasis geschützt werden.
+- Es existiert nun ein Platzhalter [[GALLERY_CATEGORY_PAGING]] mit welchem
+  in der Kategorienübersicht ein Paging eingefügt werden kann. Dadurch wird bei
+  einer Vielzahl an Gallerien die Übersicht gewahrt.
 
 ****************************************
 * Behobene Fehler **********************
@@ -127,6 +130,7 @@ Modul: Gallery
 Modul: Kalender
 - Nicht Administratoren sind berechtig die Administrationskonsole des Kalenders
   zu öffnen, sofern ihnen den Zugriff dazu erteilt wurde.
+- Berechtigungsproblem beim Zugriff auf einen Termin im Frontend wurde behoben.
 
 Modul: News
 - Meldungen welche noch nicht publiziert wurden (innerhalt des definierten
