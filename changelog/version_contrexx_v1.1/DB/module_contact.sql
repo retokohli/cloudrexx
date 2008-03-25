@@ -1,1 +1,0 @@
-ALTER TABLE `contrexx_module_contact_form` ADD `showForm` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `feedback` ;

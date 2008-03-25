@@ -1,1 +1,0 @@
-INSERT INTO `contrexx_settings` ( `setid` , `setname` , `setvalue` , `setmodule` ) VALUES (60, 'forumHomeContent', '0', 20);
