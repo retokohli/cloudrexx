@@ -1,2 +1,0 @@
-INSERT INTO `contrexx_modules` ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` )VALUES ('29', 'development', 'TXT_DEVELOPMENT_MODULE_DESCRIPTION', 'n', '0', '1');
-INSERT INTO `contrexx_backend_areas` ( `area_id` , `parent_area_id` , `type` , `area_name` , `is_active` , `uri` , `target` , `module_id` , `order_id` , `access_id` )VALUES ('', '3', 'navigation', 'TXT_SYSTEM_DEVELOPMENT', '1', 'index.php?cmd=development', '_self', '29', '0', '81');

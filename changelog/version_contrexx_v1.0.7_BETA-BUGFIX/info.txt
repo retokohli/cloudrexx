@@ -1,8 +1,0 @@
-************************************************
-* Neue Funktionen und Verbesserungen
-************************************************
-
-Bildergalerie:
-- In der Bildübersicht einer Kategorie können nun mehrere Bilder gleichzeitig zurückgesetzt werden
-- In der Bildübersicht einer Kategorie könenn nun mehrere Bilder gleichzeitig verschoben werden
-- PNG-Thumbnails werden nun in deutlich besserer Qualität erzeugt
