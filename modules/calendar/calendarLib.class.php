@@ -116,7 +116,7 @@ class calendarLibrary
 
 				if ($objResult->fields['access'] == 1) {
 						if ($objAuth->checkAuth()) {
-							if (!$objPerm->checkAccess(116, 'static')) {
+							if (!$objPerm->checkAccess(16, 'static')) {
 								header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
 								exit;
 							}
@@ -128,7 +128,7 @@ class calendarLibrary
 					}
 	    	} else {
 					if ($objAuth->checkAuth()) {
-						if (!$objPerm->checkAccess(116, 'static')) {
+						if (!$objPerm->checkAccess(16, 'static')) {
 							return false;
 							exit;
 						}
@@ -860,7 +860,7 @@ class calendarLibrary
 			}
 
 			//place map
-	        $arrInfo 	= getimagesize(ASCMS_PATH.$objResultNote->fields['placeMap']); //ermittelt die Größe des Bildes
+	        $arrInfo 	= getimagesize(ASCMS_PATH.$objResultNote->fields['placeMap']); //ermittelt die Grï¿½ï¿½e des Bildes
 	        $picWidth	= $arrInfo[0]+20;
 	        $picHeight	= $arrInfo[1]+20;
 
