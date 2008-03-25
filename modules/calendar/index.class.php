@@ -365,7 +365,7 @@ class Calendar extends calendarLibrary
 
 			$exportImg = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=all"
 							   title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'">
-            					<img style="padding-top: 10px;" border="0"
+            					<img border="0"
             						 src="images/modules/calendar/ical_export.gif"
             						 alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'"
             						 title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_ALL'].'" />
@@ -383,7 +383,7 @@ class Calendar extends calendarLibrary
 
 			$exportImg = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=category&amp;id='.intval($_REQUEST['catid']).'"
 							   title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'">
-            					<img style="padding-top: 10px;" border="0"
+            					<img border="0"
             						 src="images/modules/calendar/ical_export.gif"
             						 alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'"
             						 title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL'].'" />
@@ -710,7 +710,7 @@ class Calendar extends calendarLibrary
             									'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].' <img style="padding-top: -1px;" border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
             								</a>',
             'CALENDAR_ICAL_EXPORT_IMG'      => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event&amp;export=iCal&amp;id='.intval($_GET['id']).'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
-            									<img style="padding-top: 10px;" border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
+            									<img border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
             								</a>',
         ));
 
