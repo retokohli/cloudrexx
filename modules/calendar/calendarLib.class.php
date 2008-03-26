@@ -116,7 +116,7 @@ class calendarLibrary
 
 				if ($objResult->fields['access'] == 1) {
 						if ($objAuth->checkAuth()) {
-							if (!$objPerm->checkAccess(16, 'static')) {
+							if (!$objPerm->checkAccess(116, 'static')) {
 								header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
 								exit;
 							}
@@ -128,7 +128,7 @@ class calendarLibrary
 					}
 	    	} else {
 					if ($objAuth->checkAuth()) {
-						if (!$objPerm->checkAccess(16, 'static')) {
+						if (!$objPerm->checkAccess(116, 'static')) {
 							return false;
 							exit;
 						}

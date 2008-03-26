@@ -130,7 +130,6 @@ Modul: Gallery
 Modul: Kalender
 - Nicht Administratoren sind berechtig die Administrationskonsole des Kalenders
   zu öffnen, sofern ihnen den Zugriff dazu erteilt wurde.
-- Berechtigungsproblem beim Zugriff auf einen Termin im Frontend wurde behoben.
 
 Modul: News
 - Meldungen welche noch nicht publiziert wurden (innerhalt des definierten
