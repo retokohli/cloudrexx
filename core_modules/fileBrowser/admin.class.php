@@ -34,8 +34,10 @@ class FileBrowser {
 	var $_errMessage = array();
 	var $_arrFiles = array();
 	var $_arrDirectories = array();
-	var $_path = "";
+	var $_path = '';
 	var $_iconWebPath = '';
+	var $_frontendLanguageId = null;
+	var $_absoluteURIs = false;
 	var $_mediaType = '';
 	var $_arrWebpages = array();
 	var $_arrMediaTypes = array(
@@ -79,6 +81,8 @@ class FileBrowser {
 
 		$this->_iconPath = ASCMS_MODULE_IMAGE_WEB_PATH.'/fileBrowser/';
 		$this->_path = $this->_getPath();
+		$this->_setFrontendLanguageId();
+		$this->_checkURIReturnType();
 		$this->_mediaType = $this->_getMediaType();
 
 		$this->_shopEnabled = $this->_checkForModule('shop');
@@ -91,7 +95,7 @@ class FileBrowser {
 
 
 	/**
-	 * checks whether the shop module is available and active
+	 * checks whether the a module is available and active
 	 *
 	 * @return bool
 	 */
@@ -140,6 +144,24 @@ class FileBrowser {
 		}
 
 		return $path;
+	}
+
+	function _setFrontendLanguageId()
+	{
+		global $_FRONTEND_LANGID;
+
+		if (!empty($_REQUEST['langId'])) {
+			$this->_frontendLanguageId = intval($_REQUEST['langId']);
+		} else {
+			$this->_frontendLanguageId = $_FRONTEND_LANGID;
+		}
+	}
+
+	function _checkURIReturnType()
+	{
+		if (!empty($_REQUEST['absoluteURIs'])) {
+			$this->_absoluteURIs = (bool) $_REQUEST['absoluteURIs'];
+		}
 	}
 
 
@@ -429,7 +451,7 @@ class FileBrowser {
 		$this->_objTpl->addBlockfile('FILEBROWSER_NAVIGATION', 'fileBrowser_navigation', 'module_fileBrowser_navigation.html');
 
 		$this->_objTpl->setVariable(array(
-			'FILEBROWSER_MEDIA_TYPE_MENU'	=> $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\'index.php?cmd=fileBrowser&amp;standalone=true&amp;type=\'+this.value)" style="width:180px;"'),
+			'FILEBROWSER_MEDIA_TYPE_MENU'	=> $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\'index.php?cmd=fileBrowser&amp;standalone=true&amp;langId='.$this->_frontendLanguageId.'&amp;absoluteURIs='.$this->_absoluteURIs.'&amp;type=\'+this.value)" style="width:180px;"'),
 			'TXT_FILEBROWSER_PREVIEW'		=> $_ARRAYLANG['TXT_FILEBROWSER_PREVIEW']
 		));
 
@@ -438,7 +460,7 @@ class FileBrowser {
 			if (count($this->_arrDirectories) > 0) {
 				foreach ($this->_arrDirectories as $arrDirectory) {
 					$this->_objTpl->setVariable(array(
-						'FILEBROWSER_FILE_PATH'	=> "index.php?cmd=fileBrowser&amp;standalone=true&amp;type=".$this->_mediaType."&amp;path=".$arrDirectory['path'],
+						'FILEBROWSER_FILE_PATH'	=> "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;absoluteURIs={$this->_absoluteURIs}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}",
 						'FILEBROWSER_FILE_NAME'	=> $arrDirectory['name'],
 						'FILEBROWSER_FILE_ICON'	=> $arrDirectory['icon']
 					));
@@ -457,9 +479,10 @@ class FileBrowser {
 	*/
 	function _setContent()
 	{
-		global $objDatabase, $objPerm, $_FRONTEND_LANGID, $objLanguage;
+		global $objDatabase, $objPerm, $objLanguage, $_CONFIG;
 
 		$this->_objTpl->addBlockfile('FILEBROWSER_CONTENT', 'fileBrowser_content', 'module_fileBrowser_content.html');
+		$this->_objTpl->setVariable('FILEBROWSER_NOT_ABSOLUTE_URI', !$this->_absoluteURIs ? 'true' : 'false');
 
 		$rowNr = 0;
 
@@ -475,17 +498,23 @@ class FileBrowser {
 			}
 			$getPageId = (isset($_REQUEST['getPageId']) && $_REQUEST['getPageId'] == 'true') ? true : false;
 
-			$objContentTree = &new ContentTree();
+			$objContentTree = &new ContentTree($this->_frontendLanguageId);
+
+			$scriptPath = ($this->_absoluteURIs ?
+				$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.($_CONFIG['useVirtualLanguagePath'] == 'on' ?
+					$objLanguage->getLanguageParameter($this->_frontendLanguageId, 'lang').'/'
+				:	null)
+			:	null);
 			foreach ($objContentTree->getTree() as $arrPage) {
 				$s = isset($arrModules[$arrPage['moduleid']]) ? $arrModules[$arrPage['moduleid']] : '';
 				$c = $arrPage['cmd'];
 				$section = ($s=="") ? "" : "&amp;section=$s";
 				$cmd = ($c=="") ? "" : "&amp;cmd=$c";
-				$link = ASCMS_PATH_OFFSET.'/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'/index.php'.((!empty($s)) ? "?section=".$s.$cmd : "?page=".$arrPage['catid'].$section.$cmd);
+				$link = $scriptPath.CONTREXX_DIRECTORY_INDEX.((!empty($s)) ? "?section=".$s.$cmd : "?page=".$arrPage['catid'].$section.$cmd);
 
 				$url = "'".$link."'".($getPageId ? ','.$arrPage['catid'] : '')."";
 				if($arrPage['alias']) {
-					$url = "'" . ASCMS_PATH_OFFSET . '/' . $arrPage['alias'] . "'";
+					$url = "'" . $scriptPath . $arrPage['alias'] . "'";
 				}
 
 				$this->_objTpl->setVariable(array(
@@ -520,7 +549,7 @@ class FileBrowser {
 				foreach ($this->_arrDirectories as $arrDirectory) {
 					$this->_objTpl->setVariable(array(
 						'FILEBROWSER_ROW_CLASS'			=> $rowNr%2 == 0 ? "row1" : "row2",
-						'FILEBROWSER_FILE_PATH_CLICK'	=> "index.php?cmd=fileBrowser&amp;standalone=true&amp;type=".$this->_mediaType."&amp;path=".$arrDirectory['path'],
+						'FILEBROWSER_FILE_PATH_CLICK'	=> "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;absoluteURIs={$this->_absoluteURIs}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}",
 						'FILEBROWSER_FILE_NAME'			=> $arrDirectory['name'],
 						'FILEBROWSER_FILESIZE'			=> '&nbsp;',
 						'FILEBROWSER_FILE_ICON'			=> $arrDirectory['icon'],
@@ -710,7 +739,7 @@ class FileBrowser {
     	foreach ($this->_arrMediaTypes as $type => $text) {
     	    if($type == 'shop' && !$this->_shopEnabled){ continue; }
     	    if($type == 'blog' && !$this->_blogEnabled){ continue; }
-      	    if($type == 'podcast' && !$this->_podcastEnabled){ continue; }
+    	    if($type == 'podcast' && !$this->_podcastEnabled){ continue; }
 			$menu .= "<option value=\"".$type."\"".($selectedType == $type ? " selected=\"selected\"" : "").">".$_ARRAYLANG[$text]."</option>\n";
     	}
 		$menu .= "</select>";

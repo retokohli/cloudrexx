@@ -26,7 +26,7 @@ require_once ASCMS_LIBRARY_PATH."/activecalendar/activecalendar.php";
  * @subpackage  module_calendar".$this->mandateLink."
  */
 if (!class_exists("calendarLibrary")) {
-    
+
 
 class calendarLibrary
 {
@@ -790,7 +790,7 @@ class calendarLibrary
 							notification_address
 		    		FROM 	".DBPREFIX."module_calendar".$this->mandateLink."
 		    	   WHERE 	id = '".$id."'";
-		
+
 		$objResultNote 	= $objDatabase->SelectLimit($query, 1);
 
 		//date and time
@@ -869,7 +869,7 @@ class calendarLibrary
 	        $attachName		= substr($objResultNote->fields['attachment'], $attachNamePos+1, $attachNameLenght);
 
 		} else {
-			$ed = get_wysiwyg_editor('inputComment',$objResultNote->fields['comment'], 'active');
+			$ed = get_wysiwyg_editor('inputComment',$objResultNote->fields['comment']);
 
 			//calender boxes
 			$calendarbox = $this->getBoxes($numBoxes, $year, $month, $day);
@@ -1505,7 +1505,7 @@ class calendarLibrary
      */
 	function _sendRegistration($noteId)
 	{
-		global $_CONFIG, $objDatabase, $_ARRAYLANG;
+		global $_CONFIG, $objDatabase, $_ARRAYLANG, $objLanguage;
 
 		//get mail template
 		$query 			= "SELECT mailTitle, mailContent
@@ -1518,6 +1518,7 @@ class calendarLibrary
 
 		//get note data
 		$queryNote = "SELECT 	id,
+							catid,
 							startdate,
 							enddate,
 							name,
@@ -1573,6 +1574,11 @@ class calendarLibrary
 			}
 		}
 
+		$objCategory = $objDatabase->SelectLimit('SELECT lang FROM '.DBPREFIX.'module_calendar_categories WHERE id='.$objResultNote->fields['catid']);
+		if ($objCategory !== false) {
+			$languageId = $objCategory->fields['lang'];
+		}
+
 		//get mail obj
 		if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
 			$objMail = new phpmailer();
@@ -1594,11 +1600,11 @@ class calendarLibrary
 				$mailContentReloaded	= $mailContent;
 
 				$key		= base64_encode($noteId."#".$userId."#".$objResultNote->fields['key']);
-				$url		= $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET;
+				$url		= $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET;
 				$date		= date(ASCMS_DATE_FORMAT);
 				$firstname	= $arrUser['firstname'];
 				$lastname	= $arrUser['lastname'];
-				$link		= "http://".$url."/".CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandateLink."&cmd=sign&key=".$key;
+				$link		= "http://".$url."/".($_CONFIG['useVirtualLanguagePath'] == 'on' ? $objLanguage->getLanguageParameter($languageId, 'lang').'/' : null).CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandateLink."&cmd=sign&key=".$key;
 				$title		= $objResultNote->fields['name'];
 				$startdate	= date("Y-m-d H:i", $objResultNote->fields['startdate']);
 				$enddate 	= date("Y-m-d H:i", $objResultNote->fields['enddate']);
@@ -1713,7 +1719,7 @@ class calendarLibrary
 				}
 			}
 
-			$url		= $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET;
+			$url		= $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET;
 			$date		= date(ASCMS_DATE_FORMAT);
 			$title		= $objResultNote->fields['name'];
 			$startdate	= date("Y-m-d H:i", $objResultNote->fields['startdate']);
@@ -1803,7 +1809,7 @@ class calendarLibrary
 					}
 				}
 
-				$url			=  "http://".$_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET;
+				$url			=  "http://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET;
 				$date			= date(ASCMS_DATE_FORMAT);
 				$type 			= $objResultReg->fields['type'] == 1 ? $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'] : $_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'];
 				$title			= $objResultNote->fields['name'];

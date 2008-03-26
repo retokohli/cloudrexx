@@ -57,8 +57,8 @@ class ContactManager extends ContactLib
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/contact/template');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-    	$objTemplate->setVariable("CONTENT_NAVIGATION", "	<a href='".CONTREXX_DIRECTORY_INDEX."?cmd=contact' title=".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].">".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']."</a>
-    														<a href='".CONTREXX_DIRECTORY_INDEX."?cmd=contact&amp;act=settings' title=".$_ARRAYLANG['TXT_CONTACT_SETTINGS'].">".$_ARRAYLANG['TXT_CONTACT_SETTINGS']."</a>");
+    	$objTemplate->setVariable("CONTENT_NAVIGATION", "	<a href='index.php?cmd=contact' title=".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].">".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']."</a>
+    														<a href='index.php?cmd=contact&amp;act=settings' title=".$_ARRAYLANG['TXT_CONTACT_SETTINGS'].">".$_ARRAYLANG['TXT_CONTACT_SETTINGS']."</a>");
 
     	$this->_arrFormFieldTypes = array(
     		'text'			=> $_ARRAYLANG['TXT_CONTACT_TEXTBOX'],
@@ -510,7 +510,7 @@ class ContactManager extends ContactLib
 	 */
 	function _modifyForm($copy = false)
 	{
-		global $_ARRAYLANG, $_CONFIG, $objDatabase;
+		global $_ARRAYLANG, $_CONFIG, $objDatabase, $objLanguage, $_FRONTEND_LANGID;
 
 		if ($copy) {
 			$this->initContactForms(true);
@@ -643,9 +643,13 @@ class ContactManager extends ContactLib
 
 		if (isset($this->arrForms[$formId])) {
 			$actionTitle = $_ARRAYLANG['TXT_CONTACT_MODIFY_CONTACT_FORM'];
+			$lang = $this->arrForms[$formId]['lang'];
 		} else {
 			$actionTitle = $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
+			$lang = $_FRONTEND_LANGID;
 		}
+
+
 
 		$this->_objTpl->setVariable(array(
 			'CONTACT_FORM_NAME'								=> $formName,
@@ -660,8 +664,8 @@ class ContactManager extends ContactLib
 			'CONTACT_FORM_FIELD_CHECK_BOX_TPL'				=> $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired[0]', 'contactFormFieldRequired_0', 'text', false),
 			'CONTACT_ACTION_TITLE'							=> $actionTitle,
 			'CONTACT_FORM_ID'								=> $formId,
-			'CONTACT_FORM_TEXT'								=> get_wysiwyg_editor('contactFormText', $formText, 'shop'),
-			'CONTACT_FORM_FEEDBACK'							=> get_wysiwyg_editor('contactFormFeedback', $formFeedback, 'shop'),
+			'CONTACT_FORM_TEXT'								=> get_wysiwyg_editor('contactFormText', $formText, 'shop', $lang),
+			'CONTACT_FORM_FEEDBACK'							=> get_wysiwyg_editor('contactFormFeedback', $formFeedback, 'shop', $lang),
 			'CONTACT_FORM_SHOW_FORM_YES'					=> $formShowForm ? 'checked="checked"' : '',
 			'CONTACT_FORM_SHOW_FORM_NO'						=> $formShowForm ? '' : 'checked="checked"',
 			'CONTACT_FORM_USE_CAPTCHA_YES'					=> $formUseCaptcha ? 'checked="checked"' : '',

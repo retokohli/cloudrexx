@@ -590,7 +590,7 @@ class ContentManager
                 $contenthtml= $objResult->fields['content'];
                 $contenthtml = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$contenthtml);
                 $objTemplate->setVariable(array(
-                    'CONTENT_HTML'             => get_wysiwyg_editor('html', $contenthtml, 'active'),
+                    'CONTENT_HTML'             => get_wysiwyg_editor('html', $contenthtml),
                     'CONTENT_DESC'           => $objResult->fields['contentdesc'],
                     'CONTENT_META_TITLE'      => $objResult->fields['contenttitle'],
                     'CONTENT_KEY'              => $objResult->fields['contentkey'],
@@ -632,7 +632,7 @@ class ContentManager
             // Never used
             //$arrAssignedFrontendGroups = $this->_getAssignedGroups('frontend');
             $objTemplate->setVariable(array(
-                'CONTENT_HTML'        => get_wysiwyg_editor('html', $contenthtml, 'active'),
+                'CONTENT_HTML'        => get_wysiwyg_editor('html', $contenthtml),
                 'CONTENT_MODULE_MENU' => $this->_getModuleMenu(''),
                 'CONTENT_DATE'        => date('Y-m-d'),
                 'CONTENT_TABLE_STYLE' => $tablestatus
@@ -925,7 +925,7 @@ class ContentManager
                     $ed = get_wysiwyg_editor('html',$contenthtml, 'html');
                 } else {
                     $expertmodeValue = '';
-                    $ed = get_wysiwyg_editor('html',$contenthtml,'active');
+                    $ed = get_wysiwyg_editor('html',$contenthtml);
 
                 }
 
@@ -1257,7 +1257,7 @@ class ContentManager
      */
     function updatePage()
     {
-        global $objDatabase, $_CORELANG, $_CONFIG;
+        global $objDatabase, $_CORELANG;
 
         $pageId = intval($_POST['pageId']);
         $this->_checkModificationPermission($pageId);
@@ -1502,7 +1502,7 @@ class ContentManager
      */
     function addPage()
     {
-		global $objDatabase, $_CORELANG, $_CONFIG, $objPerm;
+		global $objDatabase, $_CORELANG, $objPerm;
 
 		if (!empty($_POST['category'])) {
 			$parcat = intval($_POST['category']);
@@ -1699,7 +1699,7 @@ class ContentManager
      */
     function deleteContent($pageId)
     {
-        global $objDatabase, $_CORELANG, $_CONFIG;
+        global $objDatabase, $_CORELANG;
 
         $pageId = intval($pageId);
         if ($pageId != 0) {

@@ -118,6 +118,8 @@ class InitCMS
 
     function _initFrontendLanguage()
     {
+		global $_CONFIG;
+
         // Frontend language initialization
         $setCookie = false;
 
@@ -134,7 +136,7 @@ class InitCMS
         } else {
                $frontendLangId = $this->_selectBestLanguage();
         }
-        if (empty($this->arrLang[$frontendLangId]['frontend'])) {
+		if ($this->arrLang[$frontendLangId]['frontend'] != 1) {
             $frontendLangId = $this->defaultFrontendLangId;
         }
 
@@ -142,8 +144,8 @@ class InitCMS
             setcookie ("langId", $this->arrLang[$frontendLangId]['lang'], time()+3600*24*30, '/');
         }
 
-        if ($this->mode == 'frontend' && empty($_SERVER['REDIRECT_CONTREXX_LANG_PREFIX'])) {
-            header('Location: /'.$this->arrLang[$frontendLangId]['lang']);
+		if ($_CONFIG['useVirtualLanguagePath'] == 'on' && $this->mode == 'frontend' && empty($_SERVER['REDIRECT_CONTREXX_LANG_PREFIX'])) {
+			header('Location: '.ASCMS_PATH_OFFSET.'/'.$this->arrLang[$frontendLangId]['lang']);
             exit;
         }
 
@@ -342,22 +344,23 @@ class InitCMS
     {
         global $objDatabase;
         if (isset($_GET['preview']) && intval($_GET['preview'])) {
-            $objRS = $objDatabase->Execute("
+            $objRS = $objDatabase->SelectLimit("
                 SELECT id
                   FROM ".DBPREFIX."skins
-                 WHERE id=".intval($_GET['preview'])
+                 WHERE id=".intval($_GET['preview']), 1
             );
             if ($objRS->RecordCount()==1) {
                 $this->currentThemesId=intval($_GET['preview']);
             }
         }
 
-        $objResult = $objDatabase->Execute("
-            SELECT id, themesname, foldername
-              FROM ".DBPREFIX."skins
-             WHERE id=$this->currentThemesId
-        ");
-        if ($objResult) {
+		$objResult = $objDatabase->SelectLimit("
+            SELECT  id,
+    				themesname,
+                    foldername
+            FROM    ".DBPREFIX."skins
+            WHERE   id = '$this->currentThemesId'",1);
+		if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $themesPath = $objResult->fields['foldername'];
                 $objResult->MoveNext();
@@ -660,13 +663,13 @@ class InitCMS
 
     function getPrintUri()
     {
-        return htmlspecialchars(CONTREXX_DIRECTORY_INDEX.'?'.(!empty($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'].'&' : '').'printview=1', ENT_QUOTES, CONTREXX_CHARSET);
+		return CONTREXX_DIRECTORY_INDEX.'?'.(!empty($_SERVER['QUERY_STRING']) ? htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES, CONTREXX_CHARSET).'&amp;' : '').'printview=1';
     }
 
 
     function getPDFUri()
     {
-        return htmlspecialchars(CONTREXX_DIRECTORY_INDEX.'?'.(!empty($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'].'&' : '').'pdfview=1', ENT_QUOTES, CONTREXX_CHARSET);
+		return CONTREXX_DIRECTORY_INDEX.'?'.(!empty($_SERVER['QUERY_STRING']) ? htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES, CONTREXX_CHARSET).'&amp;' : '').'pdfview=1';
     }
 
 

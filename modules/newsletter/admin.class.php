@@ -693,7 +693,7 @@ class newsletter extends NewsletterLib
 		$this->_objTpl->setVariable(array(
 			'NEWSLETTER_MAIL_ID'					=> $copy ? 0 : $mailId,
 			'NEWSLETTER_MAIL_SUBJECT'				=> htmlentities($mailSubject, ENT_QUOTES, CONTREXX_CHARSET),
-			'NEWSLETTER_MAIL_HTML_CONTENT'			=> $mailFormat != 'text' ? get_wysiwyg_editor('newsletter_mail_html_content', $mailHtmlContent) : '<input type="hidden" name="newsletter_mail_html_content" value="'.htmlentities($mailHtmlContent, ENT_QUOTES, CONTREXX_CHARSET).'" />',
+			'NEWSLETTER_MAIL_HTML_CONTENT'			=> $mailFormat != 'text' ? get_wysiwyg_editor('newsletter_mail_html_content', $mailHtmlContent, null, null, true) : '<input type="hidden" name="newsletter_mail_html_content" value="'.htmlentities($mailHtmlContent, ENT_QUOTES, CONTREXX_CHARSET).'" />',
 			'NEWSLETTER_MAIL_TEXT_CONTENT'			=> '<textarea name="newsletter_mail_text_content" style="width: 100%; height: 447px;">'.htmlentities($mailTextContent, ENT_QUOTES, CONTREXX_CHARSET).'</textarea>',
 			'NEWSLETTER_MAIL_HTML_CONTENT_STAUTS'	=> $mailFormat != 'text' ? 'block' : 'none',
 			'NEWSLETTER_MAIL_TEXT_CONTENT_STAUTS'	=> $mailFormat == 'text' ? 'block' : 'none',
@@ -1755,7 +1755,7 @@ class newsletter extends NewsletterLib
 			'NEWSLETTER_TEMPLATE_ID'			=> $id,
 			'NEWSLETTER_TEMPLATE_NAME'			=> htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET),
 			'NEWSLETTER_TEMPLATE_DESCRIPTION'	=> htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
-			'NEWSLETTER_TEMPLATE_HTML' 			=> get_wysiwyg_editor('template_edit_html', $html, 'fullpage'),
+			'NEWSLETTER_TEMPLATE_HTML' 			=> get_wysiwyg_editor('template_edit_html', $html, 'fullpage', null, true),
 			'NEWSLETTER_TEMPLATE_TEXT' 			=> htmlentities($text, ENT_QUOTES, CONTREXX_CHARSET),
 			'NEWSLETTER_TEMPLATE_TITLE_TEXT'	=> $id > 0 ? $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_TEMPLATE'] : $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATE_ADD']
 		));

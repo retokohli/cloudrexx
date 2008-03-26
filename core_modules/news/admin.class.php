@@ -633,7 +633,7 @@ class newsManager extends newsLibrary {
 	        'TXT_NEWS_INSERT_LINK'			=> $_ARRAYLANG['TXT_NEWS_INSERT_LINK'],
 	        'TXT_NEWS_BASIC_DATA'			=> $_ARRAYLANG['TXT_BASIC_DATA'],
 			'TXT_NEWS_MORE_OPTIONS'			=> $_ARRAYLANG['TXT_MORE_OPTIONS'],
-			'NEWS_TEXT'           	 		=> get_wysiwyg_editor('newsText', contrexx_stripslashes($newstext), 'active'),
+			'NEWS_TEXT'           	 		=> get_wysiwyg_editor('newsText', contrexx_stripslashes($newstext)),
 			'NEWS_TITLE'					=> contrexx_stripslashes(htmlspecialchars($newstitle, ENT_QUOTES, CONTREXX_CHARSET)),
 			'NEWS_FORM_ACTION'       		=> "add",
 			'NEWS_STORED_FORM_ACTION'		=> "add",
@@ -857,7 +857,7 @@ class newsManager extends newsLibrary {
 				'NEWS_ID'						=> $id,
 				'NEWS_STORED_ID'				=> $id,
 				'NEWS_TITLE'					=> htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET),
-				'NEWS_TEXT'						=> get_wysiwyg_editor('newsText', $newsText, 'active'),
+				'NEWS_TEXT'						=> get_wysiwyg_editor('newsText', $newsText),
 				'NEWS_REDIRECT'					=> htmlentities($objResult->fields['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
 				'NEWS_SOURCE'					=> htmlentities($objResult->fields['source'], ENT_QUOTES, CONTREXX_CHARSET),
 				'NEWS_URL1'						=> htmlentities($objResult->fields['url1'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -1201,7 +1201,7 @@ class newsManager extends newsLibrary {
 
 			$objRSSWriter->characterEncoding = CONTREXX_CHARSET;
 			$objRSSWriter->channelTitle = $this->arrSettings['news_feed_title'];
-			$objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'/index.php?section=news';
+			$objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news';
 			$objRSSWriter->channelDescription = $this->arrSettings['news_feed_description'];
 			$objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang');
 			$objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
@@ -1213,7 +1213,7 @@ class newsManager extends newsLibrary {
 			}
 			$objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
-			$itemLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/".$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang')."/index.php?section=news&amp;cmd=details&amp;newsid=";
+			$itemLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;cmd=details&amp;newsid=';
 
 			$query = "
 				SELECT		tblNews.id,
@@ -1259,10 +1259,10 @@ class newsManager extends newsLibrary {
 			foreach ($arrNews as $newsId => $arrNewsItem) {
 				$objRSSWriter->addItem(
 					htmlspecialchars($arrNewsItem['title'], ENT_QUOTES, CONTREXX_CHARSET),
-					(empty($arrNewsItem['redirect'])) ? ($itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? "&amp;teaserId=".$arrNewsItem['teaser_frames'][0] : "")) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
+					(empty($arrNewsItem['redirect'])) ? ($itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : '')) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
 					htmlspecialchars($arrNewsItem['text'], ENT_QUOTES, CONTREXX_CHARSET),
 					'',
-					array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/".$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang')."/index.php?section=news&amp;category=".$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
+					array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
 					'',
 					'',
 					'',
@@ -1281,7 +1281,7 @@ class newsManager extends newsLibrary {
 					$itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? "&amp;teaserId=".$arrNewsItem['teaser_frames'][0] : ""),
 					'',
 					'',
-					array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/".$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang')."/index.php?section=news&amp;category=".$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
+					array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
 					'',
 					'',
 					'',
@@ -1494,7 +1494,7 @@ class newsManager extends newsLibrary {
 
     function _ticker()
     {
-    	global $_ARRAYLANG, $_CONFIG, $objDatabase;
+    	global $_ARRAYLANG;
 
     	$this->_objTpl->loadTemplatefile('module_news_ticker.html');
 
@@ -1561,7 +1561,7 @@ class newsManager extends newsLibrary {
 
     function _modifyTicker()
     {
-    	global $_ARRAYLANG, $objLanguage, $objDatabase;
+    	global $_ARRAYLANG, $objDatabase;
 
     	$id = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
     	$pos = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
@@ -1696,7 +1696,7 @@ class newsManager extends newsLibrary {
 
     function _tickerOverview()
     {
-    	global $_ARRAYLANG, $_CONFIG, $objLanguage;
+    	global $_ARRAYLANG, $_CONFIG;
 
 		$this->pageTitle = $_ARRAYLANG['TXT_NEWS_TICKERS'];
 
@@ -2035,7 +2035,7 @@ class newsManager extends newsLibrary {
 
     function _updateTeaserFrameTemplate()
     {
-    	global $objDatabase, $_ARRAYLANG;
+    	global $_ARRAYLANG;
 
     	if (isset($_POST['saveTeaserFrameTemplate']) && isset($_GET['templateId']) && isset($_POST['teaserFrameTplDescription']) && isset($_POST['teaserFrameTplHtml'])) {
     		$templateId = intval($_GET['templateId']);

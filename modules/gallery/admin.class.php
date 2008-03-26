@@ -82,12 +82,12 @@ class galleryManager extends GalleryLibrary
         $this->getSettings();
         $this->checkImages();
 
-        $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery">'.$_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'].'</a>
-                                                            <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=new_cat">'.$_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'].'</a>
-                                                            <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=upload_form">'.$_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD'].'</a>
-                                                            <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=import_picture">'.$_ARRAYLANG['TXT_GALLERY_MENU_IMPORT'].'</a>
-                                                            <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=validate_form&amp;type='.$this->arrSettings['validation_standard_type'].'">'.$_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'].'</a>
-                                                            <a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=settings">'.$_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'].'</a>');
+        $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="index.php?cmd=gallery">'.$_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'].'</a>
+                                                            <a href="index.php?cmd=gallery&amp;act=new_cat">'.$_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'].'</a>
+                                                            <a href="index.php?cmd=gallery&amp;act=upload_form">'.$_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD'].'</a>
+                                                            <a href="index.php?cmd=gallery&amp;act=import_picture">'.$_ARRAYLANG['TXT_GALLERY_MENU_IMPORT'].'</a>
+                                                            <a href="index.php?cmd=gallery&amp;act=validate_form&amp;type='.$this->arrSettings['validation_standard_type'].'">'.$_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'].'</a>
+                                                            <a href="index.php?cmd=gallery&amp;act=settings">'.$_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'].'</a>');
         parent::__construct();
     }
 
@@ -490,7 +490,7 @@ class galleryManager extends GalleryLibrary
 
                 $intRowColor = ($intRowCounter % 2 == 0) ? 0 : 1;
                 $strFolderIcon = ($objResult->fields['status'] == 0) ? 'led_red' : 'led_green';
-                
+
                 if ($objResult->fields['backendProtected']) {
                     try {
                         $allowed = ($this->checkAccess($objResult->fields['backend_access_id'])) ? true : false;
@@ -502,7 +502,7 @@ class galleryManager extends GalleryLibrary
                 } else {
                     $allowed = true;
                 }
-                
+
 
                 $this->_objTpl->setVariable(array(
                     'OVERVIEW_ROWCLASS'         => $intRowColor,
@@ -510,7 +510,7 @@ class galleryManager extends GalleryLibrary
                     'OVERVIEW_ID'               => $intMainKey,
                     'OVERVIEW_ICON'             => $strFolderIcon,
                     'OVERVIEW_SORTING'          => $objResult->fields['sorting'],
-                    'OVERVIEW_NAME'             => ($arrImageCount[$intMainKey]>0) ? '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=cat_details&amp;id='.$intMainKey.'" target="_self">'.$arrCategoryLang['name'].'</a>' :  $arrCategoryLang['name'],
+                    'OVERVIEW_NAME'             => ($arrImageCount[$intMainKey]>0) ? '<a href="index.php?cmd=gallery&amp;act=cat_details&amp;id='.$intMainKey.'" target="_self">'.$arrCategoryLang['name'].'</a>' :  $arrCategoryLang['name'],
                     'OVERVIEW_DESCRIPTION'      => $arrCategoryLang['desc'],
                     'OVERVIEW_COUNT_IMAGES'     => $arrImageCount[$intMainKey],
                     'OVERVIEW_IMAGE_SIZE'       => $arrImageSize[$intMainKey],
@@ -552,7 +552,7 @@ class galleryManager extends GalleryLibrary
                             'OVERVIEW_ID'            =>    $objResult->fields['id'],
                             'OVERVIEW_ICON'            =>    $strFolderIcon,
                             'OVERVIEW_SORTING'        =>    $objResult->fields['sorting'],
-                            'OVERVIEW_NAME'            =>    ($arrImageCount[$intMainKey]>0) ? '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=gallery&amp;act=cat_details&amp;id='.$objResult->fields['id'].'" target="_self">'.$arrCategoryLang['name'].'</a>' :  $arrCategoryLang['name'],
+                            'OVERVIEW_NAME'            =>    ($arrImageCount[$intMainKey]>0) ? '<a href="index.php?cmd=gallery&amp;act=cat_details&amp;id='.$objResult->fields['id'].'" target="_self">'.$arrCategoryLang['name'].'</a>' :  $arrCategoryLang['name'],
                             'OVERVIEW_DESCRIPTION'    =>    $arrCategoryLang['desc'],
                             'OVERVIEW_COUNT_IMAGES'    =>    $arrImageCount[$objResult->fields['id']],
                             'OVERVIEW_IMAGE_SIZE'    =>    $arrImageSize[$objResult->fields['id']]
@@ -576,7 +576,7 @@ class galleryManager extends GalleryLibrary
     function newCategory()
     {
         global $objDatabase, $_ARRAYLANG, $objPerm;
-        
+
         $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'];
         $this->_objTpl->loadTemplateFile('module_gallery_edit_category.html',true,true);
 
@@ -604,20 +604,20 @@ class galleryManager extends GalleryLibrary
             'TXT_RESTRICTED_ACCESS_BACKEND' =>  $_ARRAYLANG['TXT_RESTRICTED_ACCESS_BACKEND'],
             'TXT_NO_RESTRICTIONS'           =>  $_ARRAYLANG['TXT_NO_RESTRICTIONS']
         ));
-        
+
         // get the groups for the permission boxes
         $arrExistingFrontendGroups = $this->sql->getAllGroups();
         $existingFrontendGroups = "";
         foreach ($arrExistingFrontendGroups as $id => $name) {
             $existingFrontendGroups .= '<option value="'.$id.'">'.$name."</option>\n";
         }
-       
+
         $arrExistingBackendGroups = $this->sql->getAllGroups("backend");
         $existingBackendGroups = "";
         foreach ($arrExistingBackendGroups as $id => $name) {
             $existingBackendGroups .= "<option value=\"".$id."\">".$name."</option>\n";
         }
-        
+
         $this->_objTpl->setVariable(array(
             'VALUE_FRONTEND_EXISTING_GROUPS'    => $existingFrontendGroups,
             'VALUE_BACKEND_EXISTING_GROUPS'     => $existingBackendGroups,
@@ -663,7 +663,7 @@ class galleryManager extends GalleryLibrary
             return;
         }
     }
-    
+
     /**
      * Parse a category dropdown recursively. If you want nothing selected, you should
      * pass -1 for the selected value.
@@ -674,7 +674,7 @@ class galleryManager extends GalleryLibrary
     private function parseCategoryDropdown($selected=-1, $disabled=false, $name="showCategories", $parent_id=0, $level=0)
     {
         $categories = $this->sql->getCategoriesArray($_SESSION['auth']['lang'], $parent_id);
-        
+
         if ($disabled) {
             $this->_objTpl->setVariable("CAT_DROPDOWN_DISABLED", "disabled=\"disabled\"");
         }
@@ -698,7 +698,7 @@ class galleryManager extends GalleryLibrary
             $this->parseCategoryDropdown($selected, $disabled, $name, $cat['id'], $level+1);
         }
     }
-    
+
 
 
     /**
@@ -712,14 +712,14 @@ class galleryManager extends GalleryLibrary
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
-        
+
         $pid = ($_POST['category_type'] == "main") ? 0 : intval($_POST['select_category_id']);
         if ($pid > 0) {
             if (!$this->checkCategoryAccess($pid)) {
                 return;
             }
         }
-       
+
         $status = $_POST['category_status'];
         $comment = $_POST['category_comment'];
         $voting = $_POST['category_voting'];
@@ -736,13 +736,13 @@ class galleryManager extends GalleryLibrary
                     $this->sql->insertAccessId($frontend_access_id, $group);
                 }
             }
-            
+
             if ($_POST['category_protected_backend'] && isset($_POST['assignedBackendGroups'])) {
                 foreach ($_POST['assignedBackendGroups'] as $group) {
                     $this->sql->insertAccessId($backend_access_id, $group);
                 }
             }
-            
+
             $this->updateAccessId($_CONFIG['lastAccessId']);
         } catch (DatabaseError $e) {
             $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
@@ -1019,7 +1019,7 @@ class galleryManager extends GalleryLibrary
         } else {
             $this->_objTpl->hideBlock('showNameFields');
         }
-        
+
         try {
             list($existingFrontendGroups, $assignedFrontendGroups) = $this->getGroupLists($intCategoryId, 'frontend');
             list($existingBackendGroups, $assignedBackendGroups) = $this->getGroupLists($intCategoryId, 'backend');
@@ -1133,7 +1133,7 @@ class galleryManager extends GalleryLibrary
                 $objResult->MoveNext();
             }
         }
-        
+
         try {
             $this->parseCategoryDropdown($intCategoryPid, ($pid == 0) ? true : false);
         } catch (DatabaseError $e) {
@@ -1155,39 +1155,39 @@ class galleryManager extends GalleryLibrary
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $categoryId = intval($categoryId);
-        
+
         foreach ($_POST as $strKey => $strValue) {
             if (preg_match("/^(category\_name\_|category\_desc\_)/", $strKey)) {
                 $arrExplode = explode('_',$strKey);
                 $arrValues[$arrExplode[2]][$arrExplode[1]] = htmlspecialchars(strip_tags($strValue), ENT_QUOTES, CONTREXX_CHARSET);
             }
         }
-        
+
         $insertStatus = $_POST['category_status'];
         $insertComment = $_POST['category_comment'];
         $insertVoting = $_POST['category_voting'];
         $insertVoting = $_POST['category_voting'];
         $insertFrontendProtected = $_POST['category_protected_frontend'];
         $insertBackendProtected = $_POST['category_protected_backend'];
-        
+
         try {
             // check access
-            $insertPid = ($_POST['category_type'] == 'main') ? 0 : intval($_POST['select_category_id']); 
+            $insertPid = ($_POST['category_type'] == 'main') ? 0 : intval($_POST['select_category_id']);
             if ($insertPid > 0) {
                 if (!$this->checkCategoryAccess($insertPid)) {
                     return;
                 }
             }
-            
+
             // Update the category
             $this->sql->updateCategory($categoryId, $insertPid, $insertStatus, $insertComment, $insertVoting, $insertFrontendProtected, $insertBackendProtected);
-            
+
             // delete old privileges
             list($frontend_access_id) = $this->sql->getPrivileges($categoryId, "frontend");
             list($backend_access_id) = $this->sql->getPrivileges($categoryId, "backend");
             $this->sql->deleteAccessIds($frontend_access_id);
             $this->sql->deleteAccessIds($backend_access_id);
-            
+
             // set new privileges if wanted
             if ($_POST['category_protected_frontend'] && isset($_POST['assignedFrontendGroups'])) {
                 foreach ($_POST['assignedFrontendGroups'] as $group) {
@@ -1199,14 +1199,14 @@ class galleryManager extends GalleryLibrary
                     $this->sql->insertAccessId($backend_access_id, $group);
                 }
             }
-            
+
             /*foreach ($arrValues as $langId => $values) {
                 if (empty($arrInner['name'])) {
                     // set standard category name if none is given
                     $arrInner['name'] = $_ARRAYLANG['TXT_GALLERY_CATEGORY_NO_NAME'];
                 }
             }*/
-            
+
         } catch (DatabaseError $e) {
             $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
             $this->strErrMessage .= $e;
@@ -1262,7 +1262,7 @@ class galleryManager extends GalleryLibrary
             return;
         }
 
-        $this->_objTpl->loadTemplateFile('module_gallery_category_details.html', true, true);       
+        $this->_objTpl->loadTemplateFile('module_gallery_category_details.html', true, true);
         $this->_objTpl->setGlobalVariable(array(
             'TXT_TITLE_NAME'                =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_NAME'],
             'TXT_TITLE_ORDER'               =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_ORDER'],
@@ -1439,7 +1439,7 @@ class galleryManager extends GalleryLibrary
                     $strOutputVotingCount = "";
                     $outputVotingAverage = "";
                 }
-                
+
                 // parse the dropdown for the categories
                 try {
                     $this->parseCategoryDropdown($intCatId, false);
@@ -1561,11 +1561,11 @@ class galleryManager extends GalleryLibrary
     function changeCategoryOfPicture($intImageId, $intNewCatId)
     {
         global $objDatabase,$_ARRAYLANG;
-        
+
         // check if the user is allowed to move a picture to this category
-        try { 
+        try {
             $id = $this->sql->getPictureCategory($intImageId);
-            if (!$this->checkCategoryAccess($intNewCatId)) {                   
+            if (!$this->checkCategoryAccess($intNewCatId)) {
                 $_GET['catid'] = $id;
                 return;
             }
@@ -2944,7 +2944,7 @@ class galleryManager extends GalleryLibrary
         } else {
             // the user clicked on the insert button
             foreach ($arrId as $intKey => $strValue) {
-                
+
                 $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_pictures
                                         SET     validated="1",
                                                 lastedit='.time().'
@@ -3685,7 +3685,7 @@ class galleryManager extends GalleryLibrary
         }
 
     }
-    
+
     /**
      * Enter description here...
      *
@@ -3708,7 +3708,7 @@ class galleryManager extends GalleryLibrary
         }
         return Array($existingGroups, $assignedGroups);
     }
-    
+
     /**
      * Enter description here...
      *
@@ -3718,7 +3718,7 @@ class galleryManager extends GalleryLibrary
     private function checkCategoryAccess($id)
     {
         global $_ARRAYLANG;
-        
+
         list($access_id, $protected) = $this->sql->getPrivileges($id, "backend");
         if ($protected) {
             if (!$this->checkAccess($access_id)) {
@@ -3726,10 +3726,10 @@ class galleryManager extends GalleryLibrary
                 return false;
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Check access
      *
@@ -3741,7 +3741,7 @@ class galleryManager extends GalleryLibrary
         if ($_SESSION['auth']['is_admin']) {
             return true;
         }
-        
+
         $accessGroups = $this->sql->getAccessGroups("backend", $access_id);
         $userGroups = $_SESSION['auth']['groups'];
         foreach ($accessGroups as $group) {
@@ -3749,10 +3749,10 @@ class galleryManager extends GalleryLibrary
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Save the last access id
      *
@@ -3761,7 +3761,7 @@ class galleryManager extends GalleryLibrary
     private function updateAccessId($id)
     {
         $this->sql->updateAccessId($id);
-        
+
         require_once(ASCMS_CORE_PATH.'/settings.class.php');
             $objSettings = &new settingsManager();
             $objSettings->writeSettingsFile();

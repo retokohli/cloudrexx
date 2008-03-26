@@ -116,15 +116,15 @@ class Gallery {
         $intPicId    = intval($intPicId);
         $intCatId    = intval($_GET['cid']);
         $this->_objTpl->setTemplate($this->pageContent);
-        
-        
+
+
         // we need to read the category id out of the database to prevent abusement
         $intCatId = $this->getCategoryId($intPicId);
         $categoryProtected = $this->categoryIsProtected($intCatId);
         if ($categoryProtected > 0) {
             if (!$objPerm->checkAccess($categoryProtected, 'dynamic')) {
     	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-    	            header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
+    	            header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
     	            exit;
     	    }
 	    }
@@ -160,7 +160,7 @@ class Gallery {
             $imageName = $objSubResult->fields['name'];
             $imageDesc = $objSubResult->fields['desc'];
             $imageSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
-            $strImageWebPath = ASCMS_PROTOCOL .'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.$this->strCmd.'&amp;cid='.$intCatId.'&amp;pId='.$intPicId;
+            $strImageWebPath = ASCMS_PROTOCOL .'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=gallery'.$this->strCmd.'&amp;cid='.$intCatId.'&amp;pId='.$intPicId;
             $objResult->MoveNext();
         }
 
@@ -371,17 +371,17 @@ class Gallery {
         $arrPictures = array();
         $intPicId    = intval($intPicId);
         $intCatId    = intval($_GET['cid']);
-        
+
         // we need to read the category id out of the database to prevent abusement
         $intCatId = $this->getCategoryId($intPicId);
         $categoryProtected = $this->categoryIsProtected($intCatId);
         if ($categoryProtected > 0) {
             if (!$objPerm->checkAccess($categoryProtected, 'dynamic')) {
     	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-    	            header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
+    	            header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
     	            exit;
     	    }
-	    }        
+	    }
 
         // POPUP Code
         $objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
@@ -415,7 +415,7 @@ class Gallery {
             $imageName = $objSubResult->fields['name'];
             $imageDesc = $objSubResult->fields['desc'];
             $imageSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
-            $strImageWebPath = ASCMS_PROTOCOL .'://'.$_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.$this->strCmd.'&amp;cid='.$intCatId.'&amp;pId='.$intPicId;
+            $strImageWebPath = ASCMS_PROTOCOL .'://'.$_SERVER['SERVER_NAME'].CONTREXX_SCRIPT_PATH.'?section=gallery'.$this->strCmd.'&amp;cid='.$intCatId.'&amp;pId='.$intPicId;
             $objResult->MoveNext();
         }
 
@@ -644,7 +644,7 @@ class Gallery {
      * Not unlike {@link getCategoryTree()}, but instead of a tree, this returns
      * a list of siblings of the current gallery
      */
-    function getSiblingList() 
+    function getSiblingList()
     {
         global $objDatabase;
 
@@ -679,7 +679,7 @@ class Gallery {
      * Returns the name of the currently visible top level gallery
      * @return  string          The gallery name, or '' if not applicable
      */
-    function getTopGalleryName() 
+    function getTopGalleryName()
     {
         global $objDatabase;
 
@@ -722,21 +722,21 @@ class Gallery {
      * @global  object  $objDatabase
      * @param   var     $intParentId
      */
-    function showCategoryOverview($intParentId=0) 
+    function showCategoryOverview($intParentId=0)
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
-        
+
         $objPerm =&new Permission($type='frontend');
 
         $intParentId = intval($intParentId);
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
-        
+
         $categoryProtected = $this->categoryIsProtected($intParentId);
         if ($categoryProtected > 0) {
             if (!$objPerm->checkAccess($categoryProtected, 'dynamic')) {
     	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-    	            header ("Location: index.php?section=login&cmd=noaccess&redirect=".$link);
+    	            header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
     	            exit;
     	    }
 	    }
@@ -785,27 +785,27 @@ class Gallery {
         //$arrCategoryImages        ->        The First Picture of each category
         //$arrCategoryImageCounter    ->        Counts all images in one group
 
-        //begin category-paging        
+        //begin category-paging
         $intPos = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
         $objResult = $objDatabase->Execute('SELECT	count(id) AS countValue
         									FROM 	'.DBPREFIX.'module_gallery_categories
-	            							WHERE 	pid='.$intParentId.' AND 
-	            									status="1" 
+	            							WHERE 	pid='.$intParentId.' AND
+	            									status="1"
 	            						');
         $this->_objTpl->setVariable(array(
             'GALLERY_CATEGORY_PAGING'     => getPaging($objResult->fields['countValue'], $intPos, '&amp;section=gallery&amp;cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_GALLERY'].'</b>',false,intval($_CONFIG['corePagingLimit']))
             ));
-        //end category-paging        
-        
-        $objResult = $objDatabase->SelectLimit('SELECT 		* 
+        //end category-paging
+
+        $objResult = $objDatabase->SelectLimit('SELECT 		*
 	        									FROM 		'.DBPREFIX.'module_gallery_categories
-	            								WHERE 		pid='.$intParentId.' AND 
-	            											status="1" 
+	            								WHERE 		pid='.$intParentId.' AND
+	            											status="1"
 	            								ORDER BY	sorting ASC',
-	            								intval($_CONFIG['corePagingLimit']), 
+	            								intval($_CONFIG['corePagingLimit']),
 	            								$intPos
 	            							);
-	            							
+
         if ($objResult->RecordCount() == 0) {
 
             // no categories in the database, hide the output
@@ -1022,10 +1022,10 @@ class Gallery {
 
         $this->_objTpl->parse('galleryCategories');
     }
-    
+
     /**
      * Check category authorisation
-     * 
+     *
      * Check if the user is permitted to access the
      * current category
      * @param unknown_type $id
@@ -1034,15 +1034,15 @@ class Gallery {
     function checkAuth($id)
     {
         global $objDatabase;
-        
+
         if ($id == 0) {
             return true;
         }
-        
+
         if (isset($_SESSION['auth']['is_admin']) && $_SESSION['auth']['is_admin'] == 1) {
             return true;
         }
-        
+
         $query = "  SELECT protected
                     FROM ".DBPREFIX."module_gallery_categories
                     WHERE id = ".$id;
@@ -1053,11 +1053,11 @@ class Gallery {
         if (intval($objRs->fields['protected']) === 1) {
             // it's a protected category. check auth
             if (isset($_SESSION['auth']['groups'])) {
-                $userGroups = $_SESSION['auth']['groups']; 
+                $userGroups = $_SESSION['auth']['groups'];
             } else {
                 return false;
             }
-            
+
             $query = "  SELECT groupid
                         FROM ".DBPREFIX."module_gallery_categories_access
                         WHERE catid = ".$id;
@@ -1187,7 +1187,7 @@ END;
             $objCache->deleteAllFiles();
         }
     }
-    
+
     /**
      * Check if a category is marked 'protected'. Return the access id
      *
@@ -1200,11 +1200,11 @@ END;
             // top category
             return 0;
         }
-        
+
         global $objDatabase;
-        $query = "  SELECT  ".$type."Protected as protected, 
+        $query = "  SELECT  ".$type."Protected as protected,
                             ".$type."_access_id as access_id
-                    FROM ".DBPREFIX."module_gallery_categories 
+                    FROM ".DBPREFIX."module_gallery_categories
                     WHERE id = ".$id;
         $objRs = $objDatabase->Execute($query);
         if ($objRs) {
@@ -1214,16 +1214,16 @@ END;
                 return 0;
             }
         } else {
-            // the check didn't work. hide 
+            // the check didn't work. hide
             return 0;
         }
-        
+
     }
-    
+
     private function getCategoryId($id)
     {
         global $objDatabase;
-        
+
         $query = "  SELECT catid FROM ".DBPREFIX."module_gallery_pictures
                     WHERE id = ".$id;
         $objRs = $objDatabase->Execute($query);
