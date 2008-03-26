@@ -14,7 +14,7 @@ function alias_change_source()
 
 function alias_get_fileBrowser()
 {
-	aliasPopup = window.open('?cmd=fileBrowser&standalone=true&getPageId=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+	aliasPopup = window.open('?cmd=fileBrowser&standalone=true&absoluteURIs=true&getPageId=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 	aliasPopup.focus();
 }
 
@@ -36,7 +36,6 @@ function alias_delete_alias(id, alias)
 newAliasNr = 0;
 function alias_add_alias()
 {
-	console.log("alias_add_alias()");
 	elBox = document.getElementById('alias_box_new').cloneNode(true);
 	elBox.setAttribute('id', 'alias_box_new_'+newAliasNr);
 	elBox.style.display = 'block';

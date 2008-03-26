@@ -2,7 +2,7 @@
 /**
  * Blog
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Kaelin <thomas.kaelin@comvation.com>              
+ * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version	    $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_blog
@@ -16,18 +16,18 @@ require_once ASCMS_MODULE_PATH.'/blog/lib/blogLib.class.php';
 /**
  * BlogAdmin
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Kaelin <thomas.kaelin@comvation.com>              
+ * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version	    $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_blog
  */
 class BlogAdmin extends BlogLibrary {
-	
+
 	var $_objTpl;
 	var $_strPageTitle	= '';
 	var $_strErrMessage = '';
 	var $_strOkMessage 	= '';
-	
+
 	/**
 	* Constructor-Fix for non PHP5-Servers
     *
@@ -35,8 +35,8 @@ class BlogAdmin extends BlogLibrary {
 	function BlogAdmin() {
 		$this->__constructor();
 	}
-	
-	
+
+
 	/**
 	* Constructor	-> Create the module-menu and an internal template-object
     *
@@ -46,14 +46,14 @@ class BlogAdmin extends BlogLibrary {
     */
 	function __constructor() {
 		global $objInit, $objTemplate, $_CORELANG;
-		
+
 		BlogLibrary::__constructor();
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/blog/template');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-		
+
  		$this->_intLanguageId = $objInit->userFrontendLangId;
- 		$this->_intCurrentUserId = intval($_SESSION['auth']['userid']);   	
-    	
+ 		$this->_intCurrentUserId = intval($_SESSION['auth']['userid']);
+
     	$objTemplate->setVariable('CONTENT_NAVIGATION','	<a href="?cmd=blog">'.$_CORELANG['TXT_BLOG_ENTRY_MANAGE_TITLE'].'</a>
     														<a href="?cmd=blog&amp;act=addEntry">'.$_CORELANG['TXT_BLOG_ENTRY_ADD_TITLE'].'</a>
     														<a href="?cmd=blog&amp;act=manageCategory">'.$_CORELANG['TXT_BLOG_CATEGORY_MANAGE_TITLE'].'</a>
@@ -62,7 +62,7 @@ class BlogAdmin extends BlogLibrary {
     														<a href="?cmd=blog&amp;act=settings">'.$_CORELANG['TXT_BLOG_SETTINGS_TITLE'].'</a>
     												');
 	}
-	
+
 
     /**
 	* Perform the right operation depending on the $_GET-params
@@ -72,11 +72,11 @@ class BlogAdmin extends BlogLibrary {
     */
     function getPage() {
     	global $objPerm, $objTemplate;
-    	
+
     	if(!isset($_GET['act'])) {
     	    $_GET['act']='';
     	}
-    	
+
     	switch($_GET['act']){
     		case 'addEntry':
     			$objPerm->checkAccess(121, 'static');
@@ -141,11 +141,11 @@ class BlogAdmin extends BlogLibrary {
     		case 'deleteComment':
     			$objPerm->checkAccess(120, 'static');
     			$intEntryId = $this->deleteComment($_GET['id']);
-    			$this->showComments($intEntryId);   		
+    			$this->showComments($intEntryId);
     			break;
     		case 'multiactionComment':
     			$objPerm->checkAccess(120, 'static');
-    			$intEntryId = $this->doCommentMultiAction($_POST['frmShowComments_MultiAction']);    			
+    			$intEntryId = $this->doCommentMultiAction($_POST['frmShowComments_MultiAction']);
     			$this->showComments($intEntryId);
     			break;
     		case 'manageCategory':
@@ -220,16 +220,16 @@ class BlogAdmin extends BlogLibrary {
     			$objPerm->checkAccess(120, 'static');
     			$this->showEntries();
     	}
-    	
+
 		$objTemplate->setVariable(array(
 			'CONTENT_TITLE'				=> $this->_strPageTitle,
 			'CONTENT_OK_MESSAGE'		=> $this->_strOkMessage,
 			'CONTENT_STATUS_MESSAGE'	=> $this->_strErrMessage,
 			'ADMIN_CONTENT'				=> $this->_objTpl->get()
-		));    
+		));
     }
-       
-   
+
+
     /**
      * Shows the categories-page of the blog-module.
      *
@@ -238,10 +238,10 @@ class BlogAdmin extends BlogLibrary {
      */
     function showCategories() {
     	global $_CORELANG, $_ARRAYLANG;
-    	
+
 		$this->_strPageTitle = $_CORELANG['TXT_BLOG_CATEGORY_MANAGE_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_blog_categories.html',true,true);
-    	
+
     	$this->_objTpl->setVariable(array(
     		'TXT_OVERVIEW_TITLE'				=>	$_CORELANG['TXT_BLOG_CATEGORY_MANAGE_TITLE'],
     		'TXT_OVERVIEW_SUBTITLE_NAME'		=>	$_ARRAYLANG['TXT_BLOG_CATEGORY_ADD_NAME'],
@@ -262,21 +262,21 @@ class BlogAdmin extends BlogLibrary {
     	));
 
     	$intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
-    	
+
     	//Show Categories
     	$arrCategories = $this->createCategoryArray($intPagingPosition, $this->getPagingLimit());
-    	
+
     	if (count($arrCategories) > 0) {
     		$intRowClass = 1;
-    		
+
     		foreach ($arrCategories as $intCategoryId => $arrLanguages) {
-    			
+
     			$this->_objTpl->setVariable(array(
     				'TXT_OVERVIEW_IMGALT_MESSAGES'		=>	$_ARRAYLANG['TXT_BLOG_CATEGORY_MANAGE_ASSIGNED_MESSAGES'],
 		    		'TXT_OVERVIEW_IMGALT_EDIT'			=>	$_ARRAYLANG['TXT_BLOG_CATEGORY_EDIT_TITLE'],
 		    		'TXT_OVERVIEW_IMGALT_DELETE'		=>	$_ARRAYLANG['TXT_BLOG_CATEGORY_DELETE_TITLE']
     			));
-    			
+
     			$strActivatedLanguages = '';
     			foreach($arrLanguages as $intLanguageId => $arrValues) {
     				if ($arrValues['is_active'] == 1 && array_key_exists($intLanguageId,$this->_arrLanguages)) {
@@ -284,43 +284,43 @@ class BlogAdmin extends BlogLibrary {
     				}
     			}
     			$strActivatedLanguages = substr($strActivatedLanguages,0,-2);
-    			    			
+
     			$this->_objTpl->setVariable(array(
     				'OVERVIEW_CATEGORY_ROWCLASS'	=>	($intRowClass % 2 == 0) ? 'row1' : 'row2',
     				'OVERVIEW_CATEGORY_ID'			=>	$intCategoryId,
     				'OVERVIEW_CATEGORY_NAME'		=>	$arrLanguages[$this->_intLanguageId]['name'],
     				'OVERVIEW_CATEGORY_LANGUAGES'	=>	$strActivatedLanguages
     			));
-    			
+
     			$this->_objTpl->parse('showCategories');
     			$intRowClass++;
     		}
-    		
+
 	   		//Show paging if needed
 	   		if ($this->countCategories() > $this->getPagingLimit()) {
 		   		$strPaging = getPaging($this->countCategories(), $intPagingPosition, '&amp;cmd=blog&amp;act=manageCategory', '<strong>'.$_ARRAYLANG['TXT_BLOG_ENTRY_ADD_CATEGORIES'].'</strong>', true, $this->getPagingLimit());
 		   		$this->_objTpl->setVariable('OVERVIEW_PAGING', $strPaging);
-	   		} 
+	   		}
     	} else {
     		$this->_objTpl->setVariable('TXT_OVERVIEW_NO_CATEGORIES_FOUND',$_ARRAYLANG['TXT_BLOG_CATEGORY_MANAGE_NO_CATEGORIES']);
     		$this->_objTpl->parse('noCategories');
     	}
-    	
+
     	//Show Add-Category Form
     	if (count($this->_arrLanguages) > 0) {
     		$intCounter = 0;
 	   		$arrLanguages = array(0 => '', 1 => '', 2 => '');
-	   		
+
 	    	foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
 	    		$arrLanguages[$intCounter%3] .= '<input checked="checked" type="checkbox" name="frmAddCategory_Languages[]" value="'.$intLanguageId.'" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
-	    		
+
 	    		$this->_objTpl->setVariable(array(
 	    			'ADD_NAME_LANGID'	=>	$intLanguageId,
 	    			'ADD_NAME_LANG'		=>	$arrTranslations['long'].' ['.$arrTranslations['short'].']'
 	    		));
-	    		
+
 	    		$this->_objTpl->parse('addCategoryNameFields');
-	    		
+
 	    		++$intCounter;
 	    	}
 
@@ -330,9 +330,9 @@ class BlogAdmin extends BlogLibrary {
 	   			'ADD_LANGUAGES_3'	=>	$arrLanguages[2]
 	   		));
     	}
-    }    
-    
-    
+    }
+
+
     /**
      * Adds a new category to the database. Collected data in POST is checked for valid values.
      *
@@ -341,7 +341,7 @@ class BlogAdmin extends BlogLibrary {
      */
     function insertCategory() {
     	global $objDatabase, $_ARRAYLANG;
-    	    	
+
     	if (isset($_POST['frmAddCategory_Languages']) && is_array($_POST['frmAddCategory_Languages'])) {
     		//Get next category-id
     		$objResult = $objDatabase->Execute('SELECT		MAX(category_id) AS currentId
@@ -349,7 +349,7 @@ class BlogAdmin extends BlogLibrary {
     											ORDER BY	category_id DESC
     										');
     		$intNextCategoryId = ($objResult->RecordCount() == 1) ? $objResult->fields['currentId'] + 1 : 1;
-    		
+
     		//Collect data
     		$arrValues = array();
     		foreach ($_POST as $strKey => $strValue) {
@@ -360,7 +360,7 @@ class BlogAdmin extends BlogLibrary {
     												);
     			}
     		}
-    		    		    		
+
     		foreach ($arrValues as $intLanguageId => $arrCategoryValues) {
     			$objDatabase->Execute('	INSERT INTO `'.DBPREFIX.'module_blog_categories`
     									SET	`category_id` = '.$intNextCategoryId.',
@@ -369,14 +369,14 @@ class BlogAdmin extends BlogLibrary {
     										`name` = "'.$arrCategoryValues['name'].'"
     								');
     		}
-    		
+
     		$this->_strOkMessage = $_ARRAYLANG['TXT_BLOG_CATEGORY_ADD_SUCCESSFULL'];
     	} else {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_CATEGORY_ADD_ERROR_ACTIVE'];
     	}
     }
-    
-    
+
+
     /**
      * Removes a category from the database.
      *
@@ -386,32 +386,32 @@ class BlogAdmin extends BlogLibrary {
      */
     function deleteCategory($intCategoryId) {
     	global $_ARRAYLANG, $objDatabase;
-    	
+
     	$intCategoryId = intval($intCategoryId);
-    	
-    	if ($intCategoryId > 0) {    		
+
+    	if ($intCategoryId > 0) {
     		$objDatabase->Execute('	DELETE
     								FROM '.DBPREFIX.'module_blog_categories
     								WHERE `category_id` = '.$intCategoryId.'
     							');
-    		
+
     		if (!$this->_boolInnoDb) {
     			$objDatabase->Execute('	DELETE
 										FROM '.DBPREFIX.'module_blog_message_to_category
 										WHERE `category_id` = '.$intCategoryId.'
 									');
     		}
-    		
+
     		$this->writeMessageRSS();
     		$this->writeCategoryRSS();
-    		
+
     		$this->_strOkMessage = $_ARRAYLANG['TXT_BLOG_CATEGORY_DELETE_SUCCESSFULL'];
     	} else {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_CATEGORY_DELETE_ERROR'];
     	}
     }
-    
-    
+
+
     /**
      * Performs the action for the dropdown-selection on the category page. The behaviour depends on the parameter.
      *
@@ -428,8 +428,8 @@ class BlogAdmin extends BlogLibrary {
     			//do nothing!
     	}
     }
-    
-    
+
+
     /**
      * Shows the edit-page for a specific category.
      *
@@ -440,10 +440,10 @@ class BlogAdmin extends BlogLibrary {
      */
     function editCategory($intCategoryId) {
     	global $_CORELANG, $_ARRAYLANG, $objDatabase;
-    	
+
 		$this->_strPageTitle = $_CORELANG['TXT_BLOG_CATEGORY_MANAGE_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_blog_categories_edit.html',true,true);
-    	
+
     	$this->_objTpl->setVariable(array(
     		'TXT_EDIT_TITLE'		=>	$_ARRAYLANG['TXT_BLOG_CATEGORY_EDIT_TITLE'],
     		'TXT_EDIT_NAME'			=>	$_ARRAYLANG['TXT_BLOG_CATEGORY_ADD_NAME'],
@@ -451,81 +451,81 @@ class BlogAdmin extends BlogLibrary {
     		'TXT_EDIT_LANGUAGES'	=>	$_ARRAYLANG['TXT_BLOG_CATEGORY_ADD_LANGUAGES'],
     		'TXT_EDIT_SUBMIT'		=>	$_CORELANG['TXT_SAVE']
     	));
-    	
+
     	$intCategoryId = intval($intCategoryId);
     	$arrCategories = $this->createCategoryArray();
-    	
+
     	if (array_key_exists($intCategoryId,$arrCategories)) {
-   		
+
     		$intCounter = 0;
 	   		$arrLanguages = array(0 => '', 1 => '', 2 => '');
-	   		
+
 	    	foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
 	    		$arrLanguages[$intCounter%3] .= '<input '.(($arrCategories[$intCategoryId][$intLanguageId]['is_active'] == 1) ? 'checked="checked"' : '').' type="checkbox" name="frmEditCategory_Languages[]" value="'.$intLanguageId.'" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
-	    		
+
 	    		$this->_objTpl->setVariable(array(
 	    			'EDIT_NAME_LANGID'	=>	$intLanguageId,
 	    			'EDIT_NAME_LANG'	=>	$arrTranslations['long'].' ['.$arrTranslations['short'].']',
 	    			'EDIT_NAME_VALUE'	=>	$arrCategories[$intCategoryId][$intLanguageId]['name']
 	    		));
-	    		
+
 	    		$this->_objTpl->parse('editCategoryNameFields');
-	    		
+
 	    		++$intCounter;
 	    	}
-	    	
+
 	   		$this->_objTpl->setVariable(array(
 	   			'EDIT_CATEGORY_ID'	=>	$intCategoryId,
 	   			'EDIT_NAME'			=>	$arrCategories[$intCategoryId][$this->_intLanguageId]['name'],
 	   			'EDIT_LANGUAGES_1'	=>	$arrLanguages[0],
 	   			'EDIT_LANGUAGES_2'	=>	$arrLanguages[1],
 	   			'EDIT_LANGUAGES_3'	=>	$arrLanguages[2]
-	   		));		
+	   		));
     	} else {
     		//Wrong category-id
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_CATEGORY_EDIT_ERROR_ID'];
     	}
-    }    
-    
-    
+    }
+
+
     /**
      * Updates an existing category.
      *
      * @global 	array		$_ARRAYLANG
      * @global 	object		$objDatabase
-     */    
+     */
     function updateCategory() {
     	global $_ARRAYLANG, $objDatabase;
-    	   	
+
     	if (isset($_POST['frmEditCategory_Languages']) && is_array($_POST['frmEditCategory_Languages'])) {
  			$intCategoryId = intval($_POST['frmEditCategory_Id']);
-    		
+
  			//Collect active-languages
     		foreach ($_POST['frmEditCategory_Languages'] as $intKey => $intLanguageId) {
 	    		$arrActiveLanguages[$intLanguageId] = true;
     		}
-    		
+
     		//Collect names & check for existing database-entry
     		foreach ($_POST as $strKey => $strValue) {
     			if (substr($strKey,0,strlen('frmEditCategory_Name_')) == 'frmEditCategory_Name_') {
     				$intLanguageId = substr($strKey,strlen('frmEditCategory_Name_'));
-    				
+
     				$objResult = $objDatabase->Execute('SELECT name
     													FROM	'.DBPREFIX.'module_blog_categories
 														WHERE	`category_id` = '.$intCategoryId.' AND
-    															`lang_id` = '.$intLanguageId.'    				
+    															`lang_id` = '.$intLanguageId.'
     													LIMIT	1
     												');
-    				
+
     				if ($objResult->RecordCount() == 0) {
     					//We have to create a new entry first
-		    			$objDatabase->Execute('	INSERT 
+		    			$objDatabase->Execute('	INSERT
 		    									INTO	`'.DBPREFIX.'module_blog_categories`
 		    									SET		`category_id` = '.$intCategoryId.',
 		    											`lang_id` = '.$intLanguageId.',
 		    											`is_active` = "'.(array_key_exists($intLanguageId,$arrActiveLanguages) ? '1' : '0').'",
 		    											`name` = "'.contrexx_addslashes(strip_tags($strValue)).'"
-		    								');    					
+		    								');
     				} else {
     					//We can update the existing entry
 		    			$objDatabase->Execute('	UPDATE	`'.DBPREFIX.'module_blog_categories`
@@ -534,20 +534,20 @@ class BlogAdmin extends BlogLibrary {
 												WHERE	`category_id` = '.$intCategoryId.' AND
 			    										`lang_id` = '.$intLanguageId.'
 			    								LIMIT	1
-		    								');       					
+		    								');
     				}
-    				
+
     			}
     		}
-    		
+
     		$this->_strOkMessage = $_ARRAYLANG['TXT_BLOG_CATEGORY_UPDATE_SUCCESSFULL'];
     	} else {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_CATEGORY_UPDATE_ERROR_ACTIVE'];
-    	}    		
+    	}
     }
-    
-    
-    
+
+
+
     /**
      * Shows an overview of all entries.
      *
@@ -556,10 +556,10 @@ class BlogAdmin extends BlogLibrary {
      */
     function showEntries() {
     	global $_CORELANG, $_ARRAYLANG;
-    	
+
     	$this->_strPageTitle = $_CORELANG['TXT_BLOG_ENTRY_MANAGE_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_blog_entries.html',true,true);
-    	
+
     	$this->_objTpl->setVariable(array(
 			'TXT_ENTRIES_TITLE'					=>	$_CORELANG['TXT_BLOG_ENTRY_MANAGE_TITLE'],
 			'TXT_ENTRIES_SUBTITLE_DATE'			=>	$_ARRAYLANG['TXT_BLOG_ENTRY_MANAGE_DATE'],
@@ -579,38 +579,38 @@ class BlogAdmin extends BlogLibrary {
     		'TXT_ENTRIES_SUBMIT_DELETE'			=>	$_ARRAYLANG['TXT_BLOG_CATEGORY_MANAGE_SUBMIT_DELETE'],
    			'TXT_ENTRIES_SUBMIT_DELETE_JS'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_MANAGE_SUBMIT_DELETE_JS']
    		));
-   		
+
    		$intSelectedCategory = (isset($_GET['catId'])) ? intval($_GET['catId']) : 0;
    		$intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
-   		
+
    		$arrEntries = $this->createEntryArray(0, $intPagingPosition, $this->getPagingLimit());
-   		
+
    		if (count($arrEntries) > 0) {
    			$intRowClass = 1;
-	   		
+
    			foreach ($arrEntries as $intEntryId => $arrEntryValues) {
-	   			
+
    				if ($intSelectedCategory > 0) {
    					//Filter for a specific category. If the category doesn't match: skip.
    					if (!$this->categoryMatches($intSelectedCategory, $arrEntryValues['categories'][$this->_intLanguageId])) {
    						continue;
    					}
    				}
-   				
+
 	   			$this->_objTpl->setVariable(array(
 	   				'TXT_IMGALT_EDIT'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_EDIT_TITLE'],
 	   				'TXT_IMGALT_DELETE'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_DELETE_TITLE']
 	   			));
-	   			
+
 	   			//Check active languages
 	   			$strActiveLanguages = '';
 	   			foreach ($arrEntryValues['translation'] as $intLangId => $arrEntryTranslations) {
 	   				if ($arrEntryTranslations['is_active'] && key_exists($intLangId,$this->_arrLanguages)) {
 	   					$strActiveLanguages .= '['.$this->_arrLanguages[$intLangId]['short'].']&nbsp;&nbsp;';
-	   				}	   				
+	   				}
 	   			}
 	   			$strActiveLanguages = substr($strActiveLanguages,0,-12);
-	   			
+
 	   			$this->_objTpl->setVariable(array(
 	   				'ENTRY_ROWCLASS'		=>	($intRowClass % 2 == 0) ? 'row1' : 'row2',
 	   				'ENTRY_ID'				=>	$intEntryId,
@@ -623,12 +623,12 @@ class BlogAdmin extends BlogLibrary {
 	   				'ENTRY_VOTES'			=>	'&#216;&nbsp;'.$arrEntryValues['votes_avg'].'&nbsp;/&nbsp;'.$arrEntryValues['votes'].' '.$_ARRAYLANG['TXT_BLOG_ENTRY_MANAGE_VOTES'],
 	   				'ENTRY_USER'			=>	$arrEntryValues['user_name']
 	   			));
-	   			
+
 	   			$this->_objTpl->parse('showEntries');
 
 	   			$intRowClass++;
 	   		}
-	   		
+
 	   		//Show paging if needed
 	   		if ($this->countEntries() > $this->getPagingLimit()) {
 		   		$strPaging = getPaging($this->countEntries(), $intPagingPosition, '&amp;cmd=blog', '<strong>'.$_ARRAYLANG['TXT_BLOG_ENTRY_MANAGE_PAGING'].'</strong>', true, $this->getPagingLimit());
@@ -638,41 +638,41 @@ class BlogAdmin extends BlogLibrary {
    			$this->_objTpl->setVariable('TXT_ENTRIES_NO_ENTRIES_FOUND', $_ARRAYLANG['TXT_BLOG_ENTRY_MANAGE_NO_ENTRIES']);
    			$this->_objTpl->parse('noEntries');
    		}
-    }    
-    
-    
-    
+    }
+
+
+
     /**
      * Shows the "Add Entry" page.
      *
      * @global	array		$_CORELANG
      * @global 	array		$_ARRAYLANG
-     */    
+     */
     function addEntry() {
-    	global $_CORELANG, $_ARRAYLANG;
-    	
+    	global $_CORELANG, $_ARRAYLANG, $_CONFIG, $objLanguage;
+
     	$this->_strPageTitle = $_CORELANG['TXT_BLOG_ENTRY_ADD_TITLE'];
-    	$this->_objTpl->loadTemplateFile('module_blog_entries_edit.html',true,true); 
-    	
+    	$this->_objTpl->loadTemplateFile('module_blog_entries_edit.html',true,true);
+
     	$this->_objTpl->setVariable(array(
     		'TXT_EDIT_LANGUAGES'	=>	$_ARRAYLANG['TXT_BLOG_CATEGORY_ADD_LANGUAGES'],
     		'TXT_EDIT_SUBMIT'		=>	$_CORELANG['TXT_SAVE']
-    	)); 
-    	
+    	));
+
     	$arrCategories = $this->createCategoryArray();
-	
+
     	//Show language-selection
     	if (count($this->_arrLanguages) > 0) {
     		$intLanguageCounter = 0;
 	   		$arrLanguages = array(0 => '', 1 => '', 2 => '');
 	   		$strJsTabToDiv = '';
-	   		
+
 	    	foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
-	    		
-	   			$arrLanguages[$intLanguageCounter%3] .= '<input checked="checked" type="checkbox" name="frmEditEntry_Languages[]" value="'.$intLanguageId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$arrTranslations['long'].'\');" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';	    		
-	    		
+
+	   			$arrLanguages[$intLanguageCounter%3] .= '<input checked="checked" type="checkbox" name="frmEditEntry_Languages[]" value="'.$intLanguageId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$arrTranslations['long'].'\');" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
+
 	    		$strJsTabToDiv .= 'arrTabToDiv["addEntry_'.$arrTranslations['long'].'"] = "'.$arrTranslations['long'].'";'."\n";
-	    		
+
 	    		//Parse the TABS at the top of the language-selection
 	    		$this->_objTpl->setVariable(array(
 	    			'TABS_LINK_ID'			=>	'addEntry_'.$arrTranslations['long'],
@@ -680,10 +680,10 @@ class BlogAdmin extends BlogLibrary {
 	    			'TABS_CLASS'			=>	($intLanguageCounter == 0) ? 'active' : 'inactive',
 	    			'TABS_DISPLAY_STYLE'	=>	'display: inline;',
 	    			'TABS_NAME'				=>	$arrTranslations['long']
-	    			
+
 	    		));
 	    		$this->_objTpl->parse('showLanguageTabs');
-	    		
+
 	    		//Parse the DIVS for every language
 	    		$this->_objTpl->setVariable(array(
 	    			'TXT_DIV_SUBJECT'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_ADD_SUBJECT'],
@@ -692,7 +692,7 @@ class BlogAdmin extends BlogLibrary {
 	    			'TXT_DIV_IMAGE_BROWSE'	=>	$_ARRAYLANG['TXT_BLOG_ENTRY_ADD_IMAGE_BROWSE'],
 	    			'TXT_DIV_CATEGORIES'	=>	$_ARRAYLANG['TXT_BLOG_ENTRY_ADD_CATEGORIES']
 	    		));
-	    		
+
 	    		//Filter out active categories for this language
 	    		$intCategoriesCounter = 0;
 	    		$arrCategoriesContent = array(0 => '', 1 => '', 2 => '');
@@ -702,7 +702,7 @@ class BlogAdmin extends BlogLibrary {
 	    				++$intCategoriesCounter;
 	    			}
 	    		}
-	    		
+
 	    		$this->_objTpl->setVariable(array(
 	    			'DIV_ID'			=>	$arrTranslations['long'],
 	    			'DIV_LANGUAGE_ID'	=>	$intLanguageId,
@@ -711,10 +711,10 @@ class BlogAdmin extends BlogLibrary {
 	    			'DIV_CATEGORIES_1'	=>	$arrCategoriesContent[0],
 	    			'DIV_CATEGORIES_2'	=>	$arrCategoriesContent[1],
 	    			'DIV_CATEGORIES_3'	=>	$arrCategoriesContent[2],
-	    			'DIV_CONTENT'		=>	get_wysiwyg_editor('frmEditEntry_Content_'.$intLanguageId, ''),
-	    		));	    		
+	    			'DIV_CONTENT'		=>	get_wysiwyg_editor('frmEditEntry_Content_'.$intLanguageId, null, null, $intLanguageId),
+	    		));
 	    		$this->_objTpl->parse('showLanguageDivs');
-	    		
+
 	    		++$intLanguageCounter;
 	    	}
 
@@ -727,9 +727,9 @@ class BlogAdmin extends BlogLibrary {
 	   			'EDIT_JS_TAB_TO_DIV'	=>	$strJsTabToDiv
 	   		));
     	}
-    }    
-    
-    
+    }
+
+
 
     /**
      * Adds a new entry to the database. Collected data in POST is checked for valid values.
@@ -739,9 +739,9 @@ class BlogAdmin extends BlogLibrary {
      */
     function insertEntry() {
     	global $_ARRAYLANG, $objDatabase;
-    	    	
+
     	if (isset($_POST['frmEditEntry_Languages']) && is_array($_POST['frmEditEntry_Languages'])) {
-    		
+
     		//Create entry with general-information for all languages
     		$objDatabase->Execute('	INSERT INTO '.DBPREFIX.'module_blog_messages
     								SET `user_id` = '.$this->_intCurrentUserId.',
@@ -751,18 +751,18 @@ class BlogAdmin extends BlogLibrary {
     							');
     		$intMessageId = $objDatabase->insert_id();
     		$this->insertEntryData($intMessageId);
-    		 		
+
     		$this->writeMessageRSS();
     		$this->writeCategoryRSS();
-    		
+
     		$this->_strOkMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_ADD_SUCCESSFULL'];
     	} else {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_ADD_ERROR_LANGUAGES'];
     	}
     }
-    
-    
-    
+
+
+
     /**
      * This function is used by the "insertEntry()" and "updateEntry()" function. It collects all values from
      * $_POST and creates the new entries in the database. This function was extracted from original source to be as
@@ -773,9 +773,9 @@ class BlogAdmin extends BlogLibrary {
      */
     function insertEntryData($intMessageId) {
     	global $objDatabase;
-    	
+
     	$intMessageId = intval($intMessageId);
-    	
+
 		//Collect data for every language
 		$arrValues = array();
 		foreach ($_POST as $strKey => $strValue) {
@@ -789,8 +789,8 @@ class BlogAdmin extends BlogLibrary {
 													'image'			=> contrexx_addslashes(strip_tags($_POST['frmEditEntry_Image_'.$intLanguageId]))
 												);
 			}
-		}    		
-		    		    		
+		}
+
 		//Insert collected data
 		foreach ($arrValues as $intLanguageId => $arrEntryValues) {
 			$objDatabase->Execute('	INSERT INTO '.DBPREFIX.'module_blog_messages_lang
@@ -802,7 +802,7 @@ class BlogAdmin extends BlogLibrary {
 										`tags` = "'.$arrEntryValues['keywords'].'",
 										`image` = "'.$arrEntryValues['image'].'"
 								');
-			
+
 			//Assign message to categories
 			if (is_array($arrEntryValues['categories'])) {
 				foreach ($arrEntryValues['categories'] as $intKey => $intCategoryId) {
@@ -813,47 +813,47 @@ class BlogAdmin extends BlogLibrary {
 										');
 				}
 			}
-		}    	
+		}
     }
-    
-    
+
+
     /**
      * Shows the "Edit Entry" page.
-     * 
+     *
      * @global	array		$_CORELANG
      * @global 	array		$_ARRAYLANG
      * @param 	integer		$intEntryId: The values of this entry will be loaded into the form.
      */
     function editEntry($intEntryId) {
-    	global $_CORELANG, $_ARRAYLANG;
-    	
+    	global $_CORELANG, $_ARRAYLANG, $_CONFIG, $objLanguage;
+
     	$this->_strPageTitle = $_ARRAYLANG['TXT_BLOG_ENTRY_EDIT_TITLE'];
-    	$this->_objTpl->loadTemplateFile('module_blog_entries_edit.html',true,true); 
-    	
+    	$this->_objTpl->loadTemplateFile('module_blog_entries_edit.html',true,true);
+
     	$this->_objTpl->setVariable(array(
     		'TXT_EDIT_LANGUAGES'	=>	$_ARRAYLANG['TXT_BLOG_CATEGORY_ADD_LANGUAGES'],
     		'TXT_EDIT_SUBMIT'		=>	$_CORELANG['TXT_SAVE']
-    	)); 
-    	
+    	));
+
     	$arrCategories = $this->createCategoryArray();
     	$arrEntries = $this->createEntryArray();
-    	   	
+
     	$intEntryId = intval($intEntryId);
-    	
+
     	if ($intEntryId > 0 && key_exists($intEntryId,$arrEntries)) {
 	    	if (count($this->_arrLanguages) > 0) {
 	    		$intLanguageCounter = 0;
 	    		$boolFirstLanguage = true;
 		   		$arrLanguages = array(0 => '', 1 => '', 2 => '');
 		   		$strJsTabToDiv = '';
-		   		
+
 		    	foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
-		    		
+
 		    		$boolLanguageIsActive = $arrEntries[$intEntryId]['translation'][$intLanguageId]['is_active'];
-		    		
+
 		   			$arrLanguages[$intLanguageCounter%3] .= '<input '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="frmEditEntry_Languages[]" value="'.$intLanguageId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$arrTranslations['long'].'\');" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
 		    		$strJsTabToDiv .= 'arrTabToDiv["addEntry_'.$arrTranslations['long'].'"] = "'.$arrTranslations['long'].'";'."\n";
-		    		
+
 		    		//Parse the TABS at the top of the language-selection
 		    		$this->_objTpl->setVariable(array(
 		    			'TABS_LINK_ID'			=>	'addEntry_'.$arrTranslations['long'],
@@ -861,10 +861,10 @@ class BlogAdmin extends BlogLibrary {
 		    			'TABS_CLASS'			=>	($boolFirstLanguage && $boolLanguageIsActive) ? 'active' : 'inactive',
 		    			'TABS_DISPLAY_STYLE'	=>	($boolLanguageIsActive) ? 'display: inline;' : 'display: none;',
 		    			'TABS_NAME'				=>	$arrTranslations['long']
-		    			
+
 		    		));
 		    		$this->_objTpl->parse('showLanguageTabs');
-		    		
+
 		    		//Parse the DIVS for every language
 		    		$this->_objTpl->setVariable(array(
 		    			'TXT_DIV_SUBJECT'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_ADD_SUBJECT'],
@@ -873,7 +873,7 @@ class BlogAdmin extends BlogLibrary {
 	    				'TXT_DIV_IMAGE_BROWSE'	=>	$_ARRAYLANG['TXT_BLOG_ENTRY_ADD_IMAGE_BROWSE'],
 		    			'TXT_DIV_CATEGORIES'	=>	$_ARRAYLANG['TXT_BLOG_ENTRY_ADD_CATEGORIES']
 		    		));
-		    		
+
 		    		//Filter out active categories for this language
 		    		$intCategoriesCounter = 0;
 		    		$arrCategoriesContent = array(0 => '', 1 => '', 2 => '');
@@ -883,7 +883,7 @@ class BlogAdmin extends BlogLibrary {
 		    				++$intCategoriesCounter;
 		    			}
 		    		}
-		    		
+
 		    		$this->_objTpl->setVariable(array(
 		    			'DIV_ID'			=>	$arrTranslations['long'],
 		    			'DIV_LANGUAGE_ID'	=>	$intLanguageId,
@@ -895,18 +895,18 @@ class BlogAdmin extends BlogLibrary {
 		    			'DIV_CATEGORIES_1'	=>	$arrCategoriesContent[0],
 		    			'DIV_CATEGORIES_2'	=>	$arrCategoriesContent[1],
 		    			'DIV_CATEGORIES_3'	=>	$arrCategoriesContent[2],
-		    			'DIV_CONTENT'		=>	get_wysiwyg_editor('frmEditEntry_Content_'.$intLanguageId, $arrEntries[$intEntryId]['translation'][$intLanguageId]['content']),
-		    		));	  
-		    		  		
+		    			'DIV_CONTENT'		=>	get_wysiwyg_editor('frmEditEntry_Content_'.$intLanguageId, $arrEntries[$intEntryId]['translation'][$intLanguageId]['content'], null, $intLanguageId),
+		    		));
+
 		    		$this->_objTpl->parse('showLanguageDivs');
-		    		
+
 		    		if ($boolLanguageIsActive) {
 		    			$boolFirstLanguage = false;
 		    		}
-		    		
+
 		    		++$intLanguageCounter;
 		    	}
-	
+
 		   		$this->_objTpl->setVariable(array(
 		   			'EDIT_POST_ACTION'		=>	'?cmd=blog&amp;act=updateEntry',
 		   			'EDIT_MESSAGE_ID'		=>	$intEntryId,
@@ -915,27 +915,27 @@ class BlogAdmin extends BlogLibrary {
 		   			'EDIT_LANGUAGES_3'		=>	$arrLanguages[2],
 		   			'EDIT_JS_TAB_TO_DIV'	=>	$strJsTabToDiv
 		   		));
-	    	}    		
+	    	}
     	} else {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_EDIT_ERROR_ID'];
     	}
     }
-      
-    
+
+
 
     /**
      * Collects and validates all values from the edit-entry-form. Updates values in database.
      *
      * @global 	array		$_ARRAYLANG
      * @global 	object		$objDatabase
-     */    
+     */
     function updateEntry() {
     	global $_ARRAYLANG, $objDatabase;
-    	
+
     	$intMessageId = intval($_POST['frmEditCategory_MessageId']);
-    	
+
     	if (isset($_POST['frmEditEntry_Languages']) && is_array($_POST['frmEditEntry_Languages']) && $intMessageId > 0) {
-    		
+
     		//Update general info
     		$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_blog_messages
     								SET 	`user_id` = '.$this->_intCurrentUserId.',
@@ -943,91 +943,91 @@ class BlogAdmin extends BlogLibrary {
     								WHERE	message_id='.$intMessageId.'
     								LIMIT	1
     							');
-    		
-    		
+
+
     		//Remove existing data for all languages
-    		$objDatabase->Execute('	DELETE	
+    		$objDatabase->Execute('	DELETE
     								FROM	'.DBPREFIX.'module_blog_messages_lang
     								WHERE	message_id='.$intMessageId.'
     							');
-    		
-    		$objDatabase->Execute('	DELETE	
+
+    		$objDatabase->Execute('	DELETE
     								FROM	'.DBPREFIX.'module_blog_message_to_category
     								WHERE	message_id='.$intMessageId.'
-    							');    		
-    		
+    							');
+
     		//Now insert new data
-    		$this->insertEntryData($intMessageId);  
-    	
+    		$this->insertEntryData($intMessageId);
+
     		$this->writeMessageRSS();
-    		$this->writeCategoryRSS();		
-    		
+    		$this->writeCategoryRSS();
+
     		$this->_strOkMessage =  $_ARRAYLANG['TXT_BLOG_ENTRY_UPDATE_SUCCESSFULL'];
     	} else {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_UPDATE_ERROR_LANGUAGES'];
     	}
-    }    
-    
-    
-    
+    }
+
+
+
     /**
      * Removes the entry with id = $intEntry from database.
      *
      * @global 	array		$_ARRAYLANG
      * @global 	object		$objDatabase
-     */    
+     */
     function deleteEntry($intEntryId) {
     	global $_ARRAYLANG, $objDatabase;
-    	
+
     	$intEntryId = intval($intEntryId);
-    	
+
     	if ($intEntryId > 0) {
-    		
-    		
+
+
     			$objDatabase->Execute('	DELETE
 	    								FROM	'.DBPREFIX.'module_blog_messages
 	    								WHERE	message_id='.$intEntryId.'
 	    								LIMIT	1
 	    							');
-    		
+
     		if (!$this->_boolInnoDb) {
 				$objDatabase->Execute('	DELETE
 										FROM	'.DBPREFIX.'module_blog_messages_lang
 										WHERE	message_id='.$intEntryId.'
 									');
-				
+
 				$objDatabase->Execute('	DELETE
 										FROM	'.DBPREFIX.'module_blog_message_to_category
 										WHERE	message_id='.$intEntryId.'
 									');
-				
+
 				$objDatabase->Execute('	DELETE
 										FROM	'.DBPREFIX.'module_blog_message_to_category
 										WHERE	message_id='.$intEntryId.'
 									');
-				
+
 				$objDatabase->Execute('	DELETE
 										FROM	'.DBPREFIX.'module_blog_votes
 										WHERE	message_id='.$intEntryId.'
 									');
-				
+
 				$objDatabase->Execute('	DELETE
 										FROM	'.DBPREFIX.'module_blog_comments
 										WHERE	message_id='.$intEntryId.'
 									');
     		}
-    		
+
     		$this->writeMessageRSS();
     		$this->writeCategoryRSS();
     		$this->writeCommentRSS();
-    		
+
     		$this->_strOkMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_DELETE_SUCCESSFULL'];
     	} else {
-    		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_DELETE_ERROR_ID'];	
+    		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_DELETE_ERROR_ID'];
     	}
     }
-    
-    
+
+
     /**
      * Performs the action for the dropdown-selection on the entry page. The behaviour depends on the parameter.
      *
@@ -1043,24 +1043,24 @@ class BlogAdmin extends BlogLibrary {
     		default:
     			//do nothing!
     	}
-    }    
-    
-    
+    }
+
+
     /**
      * Shows the "votes for entry" page.
-     * 
+     *
      * @global	array		$_CORELANG
      * @global 	array		$_ARRAYLANG
      * @global 	object		$objDatabase
      * @param 	integer		$intEntryId: The values of this entry will be loaded into the form.
      * @param 	string		$strActiveTab: Set's the currently active tab. Valid values are: stats, details.
-     */    
+     */
     function showVoting($intEntryId, $strActiveTab='stats') {
 		global $_CORELANG, $_ARRAYLANG, $objDatabase;
-    	
+
     	$this->_strPageTitle = $_ARRAYLANG['TXT_BLOG_ENTRY_VOTES_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_blog_entries_voting.html',true,true);
-    	    	
+
     	$this->_objTpl->setVariable(array(
     		'TXT_VOTES_TITLE'				=>	$_ARRAYLANG['TXT_BLOG_ENTRY_VOTES_TITLE'],
     		'TXT_VOTES_COUNT'				=>	$_ARRAYLANG['TXT_BLOG_ENTRY_VOTES_COUNT'],
@@ -1080,10 +1080,10 @@ class BlogAdmin extends BlogLibrary {
    			'TXT_DETAILS_SUBMIT_DELETE_JS'	=>	$_ARRAYLANG['TXT_BLOG_ENTRY_VOTES_SUBMIT_DELETE_JS'],
     		'TXT_BUTTON_BACK'				=>	ucfirst($_CORELANG['TXT_BACK'])
     	));
-    	
+
 		$intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
 		$strActiveTab = (isset($_GET['pos'])) ? 'details' : $strActiveTab;
-    	
+
     	switch ($strActiveTab) {
     		case 'details':
     			$this->_objTpl->setVariable(array(
@@ -1091,7 +1091,7 @@ class BlogAdmin extends BlogLibrary {
     				'TABS_DETAILS_CLASS'	=>	'active',
     				'DIVS_STATS_STYLE'		=>	'none',
     				'DIVS_DETAILS_STYLE'	=>	'block',
-    			));    			
+    			));
     			break;
     		default: //stats
     			$this->_objTpl->setVariable(array(
@@ -1101,29 +1101,29 @@ class BlogAdmin extends BlogLibrary {
     				'DIVS_DETAILS_STYLE'	=>	'none',
     			));
     	}
-    	
+
     	$intEntryId = intval($intEntryId);
     	$arrEntries = $this->createEntryArray();
-    	    	
+
     	if ($intEntryId > 0 && key_exists($intEntryId,$arrEntries)) {
-    		
+
     		$this->_objTpl->setVariable(array(
     			'VOTES_SUBJECT'		=>	$arrEntries[$intEntryId]['subject'],
     			'VOTES_COUNT'		=>	$arrEntries[$intEntryId]['votes'],
     			'VOTES_AVG'			=>	$arrEntries[$intEntryId]['votes_avg']
     		));
-    		    		    		
+
     		//Collect all votes for this language
 			$objVoteResult = $objDatabase->Execute('SELECT		vote_id
 													FROM		'.DBPREFIX.'module_blog_votes
 													WHERE		message_id='.$intEntryId.'
 												');
-			
+
 			if ($objVoteResult->RecordCount() > 0) {
 				//Prepare an empty array for statistics
     			$arrVotes = array(1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0, 6 => 0, 7 => 0, 8 => 0, 9 => 0, 10 => 0);
 				$intMaxWidth = 400;
-											
+
 				for ($i = 10; $i >= 1; $i--) {
 					$objVoteResult = $objDatabase->Execute('SELECT	COUNT(vote_id) AS countedVotes
 															FROM	'.DBPREFIX.'module_blog_votes
@@ -1133,7 +1133,7 @@ class BlogAdmin extends BlogLibrary {
 														');
 					$arrVotes[$i] = $objVoteResult->fields['countedVotes'];
 					$dblPercentage = $arrVotes[$i] / $arrEntries[$intEntryId]['votes'];
-					
+
 					$this->_objTpl->setVariable(array(
 						'STATS_ROWCLASS'	=>	($i % 2 == 0) ? 'row2' : 'row1',
 						'STATS_MARK'		=>	$i,
@@ -1141,10 +1141,10 @@ class BlogAdmin extends BlogLibrary {
 						'STATS_PERCENT'		=>	number_format($dblPercentage * 100,2,'.','').'%',
 						'STATS_COUNT'		=>	$arrVotes[$i]
 					));
-					
+
 					$this->_objTpl->parse('showStatistics');
 				}
-				
+
 				//Now show detailled statistics
 				$objVoteResult = $objDatabase->Execute('SELECT		vote_id,
 																	vote,
@@ -1155,9 +1155,9 @@ class BlogAdmin extends BlogLibrary {
 														ORDER BY	time_voted DESC, vote_id DESC
 														LIMIT 		'.$intPagingPosition.','.$this->getPagingLimit().'
 													');
-				
+
 				$intRowClass = 1;
-				
+
 				while (!$objVoteResult->EOF) {
 					$this->_objTpl->setVariable(array(
 						'DETAILS_ROWCLASS'	=>	($intRowClass % 2 == 0) ? 'row1' : 'row2',
@@ -1166,69 +1166,69 @@ class BlogAdmin extends BlogLibrary {
 						'DETAILS_IP'		=>	$objVoteResult->fields['ip_address'],
 						'DETAILS_VOTE'		=>	$objVoteResult->fields['vote'],
 					));
-					
+
 					$this->_objTpl->parse('showDetails');
-					
+
 					$objVoteResult->MoveNext();
 					++$intRowClass;
 				}
-				
+
 		   		//Show paging if needed
 		   		if ($this->countVotings($intEntryId) > $this->getPagingLimit()) {
 			   		$strPaging = getPaging($this->countVotings($intEntryId), $intPagingPosition, '&amp;cmd=blog&amp;act=showVoting&amp;id='.$intEntryId, '<strong>'.$_ARRAYLANG['TXT_BLOG_ENTRY_VOTES_DETAILS'].'</strong>', true, $this->getPagingLimit());
 			   		$this->_objTpl->setVariable('DETAILS_PAGING', $strPaging);
-		   		}				
-				
+		   		}
+
 			} else {
 				$this->_objTpl->setVariable('TXT_STATISTICS_NONE', $_ARRAYLANG['TXT_BLOG_ENTRY_VOTES_STATISTICS_NONE']);
 				$this->_objTpl->setVariable('TXT_DETAILS_NONE', $_ARRAYLANG['TXT_BLOG_ENTRY_VOTES_STATISTICS_NONE']);
-				
+
 				$this->_objTpl->parse('noStatistics');
 				$this->_objTpl->parse('noDetails');
 			}
-    		
+
     	} else {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_EDIT_ERROR_ID'];
     	}
     }
-    
-    
+
+
     /**
      * Removes a voting from database.
-     * 
+     *
      * @global 	array		$_ARRAYLANG
      * @global 	object		$objDatabase
      * @param 	integer		$intVotingId: The vote with this id will be deleted.
      * @return 	integer		$intEntryId: the vote was assigned to the message with this id.
-     */       
+     */
     function deleteVoting($intVotingId) {
     	global $_ARRAYLANG, $objDatabase;
-    	
+
     	$intVotingId = intval($intVotingId);
-    	
+
 		$objVoteResult = $objDatabase->Execute('SELECT		message_id
 												FROM		'.DBPREFIX.'module_blog_votes
 												WHERE		vote_id='.$intVotingId.'
 												LIMIT		1
 											');
-		
+
 		if ($intVotingId == 0 || $objVoteResult->RecordCount() != 1) {
 			return 0;
 		}
-		
+
 		$objDatabase->Execute('	DELETE
 								FROM		'.DBPREFIX.'module_blog_votes
 								WHERE		vote_id='.$intVotingId.'
 								LIMIT		1
 							');
-		
+
 		$this->_strOkMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_VOTES_DELETE_SUCCESSFULL'];
-		
+
 		return $objVoteResult->fields['message_id'];
     }
-    
-    
-    
+
+
+
     /**
      * Performs the action for the dropdown-selection on the voting page. The behaviour depends on the parameter.
      *
@@ -1237,7 +1237,7 @@ class BlogAdmin extends BlogLibrary {
      */
     function doVotingMultiAction($strAction='') {
     	$intMessageId = 0;
-    	
+
     	switch ($strAction) {
     		case 'delete':
     			foreach($_POST['selectedVotingsId'] as $intKey => $intVotingId) {
@@ -1247,26 +1247,26 @@ class BlogAdmin extends BlogLibrary {
     		default:
     			//do nothing!
     	}
-    	
+
     	return $intMessageId;
     }
 
-    
-    
+
+
     /**
      * Shows all existing comments of the entry with the id $intEntryId.
-     * 
+     *
      * @global	array		$_CORELANG
      * @global 	array		$_ARRAYLANG
      * @global 	object		$objDatabase
      * @param 	integer		$intEntryId: The comments of this entry will shown.
-     */    
+     */
     function showComments($intEntryId) {
 		global $_CORELANG, $_ARRAYLANG, $objDatabase;
-    	
+
     	$this->_strPageTitle = $_ARRAYLANG['TXT_BLOG_ENTRY_MANAGE_COMMENTS'];
     	$this->_objTpl->loadTemplateFile('module_blog_entries_comments.html',true,true);
-    	
+
     	$this->_objTpl->setVariable(array(
     		'TXT_COMMENTS_TITLE'				=>	$_ARRAYLANG['TXT_BLOG_ENTRY_MANAGE_COMMENTS'],
     		'TXT_COMMENTS_DATE'					=>	$_ARRAYLANG['TXT_BLOG_ENTRY_VOTES_DATE'],
@@ -1286,12 +1286,12 @@ class BlogAdmin extends BlogLibrary {
     		'TXT_COMMENTS_DELETE_JS'			=>	$_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_DELETE_JS'],
     		'TXT_COMMENTS_BUTTON_BACK'			=>	ucfirst($_CORELANG['TXT_BACK'])
     	));
-    	
+
     	$intEntryId = intval($intEntryId);
     	$intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
-    	
+
     	if ($intEntryId > 0) {
-    		
+
     		@$this->_objTpl->setVariable('COMMENTS_SUBJECT', $arrEntries[$intEntryId]['subject']);
 
     		$objCommentsResult = $objDatabase->Execute('SELECT 		comment_id,
@@ -1307,22 +1307,22 @@ class BlogAdmin extends BlogLibrary {
     													ORDER BY	time_created DESC, comment_id DESC
     													LIMIT 		'.$intPagingPosition.','.$this->getPagingLimit().'
     												');
-    		    		
+
     		if ($objCommentsResult->RecordCount() > 0) {
     			$intRowClass = 1;
-    			
+
     			while(!$objCommentsResult->EOF) {
-    				
+
     				$this->_objTpl->setVariable(array(
     					'TXT_IMGALT_STATUS'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_STATUS'],
     					'TXT_IMGALT_EDIT'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT'],
     					'TXT_IMGALT_DELETE'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_DELETE']
     				));
-    				
+
     				$strComment = stripslashes($objCommentsResult->fields['comment']);
     				$strComment = strip_tags($strComment);
     				$strComment = (strlen($strComment) > 60) ? substr($strComment,0,60).' ...' : $strComment;
-    				
+
     				$this->_objTpl->setVariable(array(
     					'COMMENT_ROWCLASS'		=>	($intRowClass % 2 == 0) ? 'row1' : 'row2',
     					'COMMENT_ID'			=>	$objCommentsResult->fields['comment_id'],
@@ -1333,17 +1333,17 @@ class BlogAdmin extends BlogLibrary {
     					'COMMENT_LANGUAGE'		=>	$this->_arrLanguages[$objCommentsResult->fields['lang_id']]['long'],
     					'COMMENT_USER'			=>	($objCommentsResult->fields['user_id'] != 0) ? ('<a href="index.php?cmd=user&amp;act=edituser&amp;userId='.$objCommentsResult->fields['user_id'].'" title="'.$this->getUserName($objCommentsResult->fields['user_id']).'">'.$this->getUserName($objCommentsResult->fields['user_id']).'</a>') : htmlentities(stripslashes($objCommentsResult->fields['user_name']),ENT_QUOTES, CONTREXX_CHARSET),
     				));
-    				
+
     				$this->_objTpl->parse('showComments');
     				$objCommentsResult->MoveNext();
     				++$intRowClass;
     			}
-    			
+
 		   		//Show paging if needed
 		   		if ($this->countComments($intEntryId) > $this->getPagingLimit()) {
 			   		$strPaging = getPaging($this->countComments($intEntryId), $intPagingPosition, '&amp;cmd=blog&amp;act=showComments&amp;id='.$intEntryId, '<strong>'.$_ARRAYLANG['TXT_BLOG_ENTRY_VOTES_DETAILS'].'</strong>', true, $this->getPagingLimit());
 			   		$this->_objTpl->setVariable('COMMENTS_PAGING', $strPaging);
-		   		}	    			
+		   		}
     		} else {
     			$this->_objTpl->setVariable('TXT_COMMENTS_NONE',$_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_NONE']);
     			$this->_objTpl->parse('noComments');
@@ -1352,83 +1352,83 @@ class BlogAdmin extends BlogLibrary {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_EDIT_ERROR_ID'];
     	}
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * Removes a comment from database.
-     * 
+     *
      * @global 	array		$_ARRAYLANG
      * @global 	object		$objDatabase
      * @param 	integer		$intCommentId: The comment with this id will be deleted.
      * @return 	integer		$intEntryId: the comment was assigned to the message with this id.
-     */       
+     */
     function deleteComment($intCommentId) {
     	global $_ARRAYLANG, $objDatabase;
-    	
+
     	$intCommentId = intval($intCommentId);
-    	
+
 		$objCommentResult = $objDatabase->Execute('	SELECT		message_id
 													FROM		'.DBPREFIX.'module_blog_comments
 													WHERE		comment_id='.$intCommentId.'
 													LIMIT		1
 												');
-		
+
 		if ($intCommentId == 0 || $objCommentResult->RecordCount() != 1) {
 			return 0;
 		}
-		
+
 		$objDatabase->Execute('	DELETE
 								FROM		'.DBPREFIX.'module_blog_comments
 								WHERE		comment_id='.$intCommentId.'
 								LIMIT		1
 							');
-		
+
 		$this->_strOkMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_DELETE_SUCCESSFULL'];
-		
+
 		$this->writeCommentRSS();
-		
-		return $objCommentResult->fields['message_id'];    
+
+		return $objCommentResult->fields['message_id'];
     }
-    
-    
-    
+
+
+
     /**
      * Inverts the status of the comment with the id $intCommentId.
-     * 
+     *
      * @global 	object		$objDatabase
      * @param 	integer		$intCommentId: the status of this comment will be inverted.
      * @return 	integer		The function returns the id of the message which this comment belongs to.
-     */        
+     */
     function invertCommentStatus($intCommentId) {
     	global $objDatabase;
-    	
+
     	$intCommentId = intval($intCommentId);
-    	    	
+
     	$objCommentResult = $objDatabase->Execute('	SELECT	is_active,
     														message_id
     												FROM	'.DBPREFIX.'module_blog_comments
     												WHERE	comment_id='.$intCommentId.'
     												LIMIT	1
     											');
-    	
+
     	$intNewStatus = ($objCommentResult->fields['is_active'] == 0) ? 1 : 0;
     	$intMessageId = intval($objCommentResult->fields['message_id']);
-    	
+
     	$objCommentResult = $objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_blog_comments
     												SET		is_active="'.$intNewStatus.'"
 													WHERE	comment_id='.$intCommentId.'
 													LIMIT	1
 												');
-    	
+
     	$this->writeCommentRSS();
-    	
+
     	return $intMessageId;
     }
-    
-    
-    
+
+
+
     /**
      * Performs the action for the dropdown-selection on the comment page. The behaviour depends on the parameter.
      *
@@ -1437,9 +1437,9 @@ class BlogAdmin extends BlogLibrary {
      */
     function doCommentMultiAction($strAction='') {
     	$intMessageId = 0;
-    	
+
     	foreach($_POST['selectedCommentsId'] as $intKey => $intCommentId) {
-    	
+
 	    	switch ($strAction) {
 	    		case 'activate':
 	    		case 'deactivate':
@@ -1452,26 +1452,26 @@ class BlogAdmin extends BlogLibrary {
 	    			//do nothing!
 	    	}
     	}
-    	
+
     	return $intMessageId;
-    }    
-    
-    
-    
+    }
+
+
+
     /**
      * Shows the edit-form for an comment.
-     * 
+     *
      * @global	array		$_CORELANG
      * @global 	array		$_ARRAYLANG
      * @global 	object		$objDatabase
      * @param 	integer		$intCommentId: the values of this comment will be loaded into the form
-     */    
+     */
     function editComment($intCommentId) {
 		global $_CORELANG, $_ARRAYLANG, $objDatabase;
-    	
+
     	$this->_strPageTitle = $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT'];
     	$this->_objTpl->loadTemplateFile('module_blog_entries_comments_edit.html',true,true);
-    	
+
     	$this->_objTpl->setVariable(array(
     		'TXT_COMMENT_EDIT_TITLE'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT'],
     		'TXT_COMMENT_EDIT_DATE'			=>	$_ARRAYLANG['TXT_BLOG_ENTRY_VOTES_DATE'],
@@ -1484,9 +1484,9 @@ class BlogAdmin extends BlogLibrary {
 			'TXT_COMMENT_EDIT_CONTENT'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_MANAGE_COMMENT'],
     		'TXT_COMMENT_EDIT_SUBMIT'		=>	$_CORELANG['TXT_SAVE']
     	));
-    	
+
     	$intCommentId = intval($intCommentId);
-    	
+
     	$objCommentResult = $objDatabase->Execute('	SELECT	is_active,
     														time_created,
     														ip_address,
@@ -1500,26 +1500,26 @@ class BlogAdmin extends BlogLibrary {
     												WHERE	comment_id='.$intCommentId.'
     												LIMIT	1
     											');
-    	
+
     	if ($intCommentId > 0 && $objCommentResult->RecordCount() == 1) {
-    		
+
     		if ($objCommentResult->fields['user_id'] == 0) {
     			$strUserStatus = $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT_USER_STATUS_UNREGISTERED'];
     			$strUserName = '<input type="text" name="frmEditComment_UserName" value="'.htmlentities(stripslashes($objCommentResult->fields['user_name']),ENT_QUOTES, CONTREXX_CHARSET).'" maxlength="50" style="width:30%;" />';
     			$strUserMail = '<input type="text" name="frmEditComment_UserMail" value="'.htmlentities(stripslashes($objCommentResult->fields['user_mail']),ENT_QUOTES, CONTREXX_CHARSET).'" maxlength="250" style="width:30%;" />';
     			$strUserWWW = '<input type="text" name="frmEditComment_UserWWW" value="'.htmlentities(stripslashes($objCommentResult->fields['user_www']),ENT_QUOTES, CONTREXX_CHARSET).'" maxlength="255" style="width:30%;" />';
-    			
+
     			$strUserMailIcon = '';
     			if (!empty($objCommentResult->fields['user_mail'])) {
     				$strTempMail = htmlentities(stripslashes($objCommentResult->fields['user_mail']),ENT_QUOTES, CONTREXX_CHARSET);
     				$strUserMailIcon = '<a href="mailto:'.$strTempMail.'" title="'.$strTempMail.'"><img src="images/icons/email.gif" border="0" alt="'.$strTempMail.'" title="'.$strTempMail.'" style="margin-bottom: -3px;" /></a>';
-    			}    			
-    			
+    			}
+
     			$strUserWWWIcon = '';
     			if (!empty($objCommentResult->fields['user_www'])) {
     				$strTempUrl = htmlentities(stripslashes($objCommentResult->fields['user_www']),ENT_QUOTES, CONTREXX_CHARSET);
     				$strUserWWWIcon = '<a href="'.$strTempUrl.'" target="_blank" title="'.$strTempUrl.'"><img src="images/icons/home.gif" border="0" alt="'.$strTempUrl.'" title="'.$strTempUrl.'" style="margin-bottom: -3px;" /></a>';
-    			}    			
+    			}
     		} else {
     			$objUserResult = $objDatabase->Execute('SELECT	username,
     															email,
@@ -1528,23 +1528,23 @@ class BlogAdmin extends BlogLibrary {
     													WHERE	id='.$objCommentResult->fields['user_id'].'
     													LIMIT	1
     												');
-    			
+
     			$strUserStatus = $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT_USER_STATUS_REGISTERED'];
     			$strUserName = '<a href="?cmd=user&amp;act=edituser&amp;userId='.$objCommentResult->fields['user_id'].'" title="'.htmlentities(stripslashes($objUserResult->fields['username']), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlentities(stripslashes($objUserResult->fields['username']), ENT_QUOTES, CONTREXX_CHARSET).'</a>';
     			$strUserMail = htmlentities(stripslashes($objUserResult->fields['email']), ENT_QUOTES, CONTREXX_CHARSET);
     			$strUserWWW = htmlentities(stripslashes($objUserResult->fields['webpage']), ENT_QUOTES, CONTREXX_CHARSET);
-    			
+
     			$strUserMailIcon = '';
     			if (!empty($strUserMail)) {
     				$strUserMailIcon = '<a href="mailto:'.$strUserMail.'" title="'.$strUserMail.'"><img src="images/icons/email.gif" border="0" alt="'.$strUserMail.'" title="'.$strUserMail.'" style="margin-bottom: -4px;" /></a>';
-    			}    			
-    			
+    			}
+
     			$strUserWWWIcon = '';
     			if (!empty($strUserWWW)) {
     				$strUserWWWIcon = '<a href="'.$strUserWWW.'" target="_blank" title="'.$strUserWWW.'"><img src="images/icons/home.gif" border="0" alt="'.$strUserWWW.'" title="'.$strUserWWW.'" style="margin-bottom: -4px;" /></a>';
-    			}     			
+    			}
     		}
-    		
+
 	    	$this->_objTpl->setVariable(array(
 	    		'COMMENT_EDIT_ID'		=>	$intCommentId,
 	    		'COMMENT_EDIT_DATE'		=>	date(ASCMS_DATE_FORMAT,$objCommentResult->fields['time_created']),
@@ -1561,37 +1561,37 @@ class BlogAdmin extends BlogLibrary {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT_ERROR'];
     	}
     }
-    
-    
-    
+
+
+
     /**
      * Validates and saves all values from $_POST into the database.
-     * 
+     *
      * @global	object		$objDatabase
      * @global 	array		$_ARRAYLANG
      * @return 	integer		The function returns the id of the message which the updated comment belongs to.
-     */    
+     */
     function updateCommement() {
     	global $objDatabase, $_ARRAYLANG;
-    	
+
     	//Collect values for both modes: registred and unregistered user
     	$intCommentId = intval($_POST['frmEditComment_Id']);
     	$strSubject = contrexx_addslashes($_POST['frmEditComment_Subject']);
     	$strComment = contrexx_addslashes($_POST['frmEditComment_Content']);
-    	
+
     	//Check for valid comment-id
     	$objCommentResult = $objDatabase->Execute('	SELECT	message_id
     												FROM	'.DBPREFIX.'module_blog_comments
     												WHERE	comment_id='.$intCommentId.'
     												LIMIT	1
     											');
-    	
+
     	if ($objCommentResult->RecordCount() == 0) {
     		//Wrong id, show error and return
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_UPDATE_ERROR'];
     		return 0;
     	}
-    	
+
     	//Update values for both modes
     	$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_blog_comments
     							SET		subject="'.$strSubject.'",
@@ -1599,38 +1599,38 @@ class BlogAdmin extends BlogLibrary {
     							WHERE	comment_id='.$intCommentId.'
     							LIMIT	1
     						');
-    	
+
     	//Check for an unregistered user, collect user-data and write them into the database
     	if (key_exists('frmEditComment_UserName',$_POST)) {
-    		
+
 			//Create validator-object
 			require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
-			$objValidator = new FWValidator();    		
-    		
+			$objValidator = new FWValidator();
+
     		$strUserName = contrexx_addslashes($_POST['frmEditComment_UserName']);
     		$strUserMail = contrexx_addslashes($_POST['frmEditComment_UserMail']);
     		$strUserWWW = $_POST['frmEditComment_UserWWW'];
     		$strUserWWW = $objValidator->getUrl($strUserWWW);
     		$strUserWWW = contrexx_addslashes($strUserWWW);
-    		
+
 	    	$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_blog_comments
 	    							SET		user_name="'.$strUserName.'",
 	    									user_mail="'.$strUserMail.'",
 	    									user_www="'.$strUserWWW.'"
 	    							WHERE	comment_id='.$intCommentId.'
 	    							LIMIT	1
-	    						');    		
+	    						');
     	}
-    	
+
     	$this->_strOkMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_UPDATE_SUCCESSFULL'];
-    	
+
     	$this->writeCommentRSS();
-    	
+
     	return $objCommentResult->fields['message_id'];
     }
-    
-    
-    
+
+
+
     /**
      * Shows the placeholder-page of the blog-module. Contains all usable Variables for the blog.html-File.
      *
@@ -1639,14 +1639,14 @@ class BlogAdmin extends BlogLibrary {
      */
     function showBlockVariables() {
     	global $_CORELANG, $_ARRAYLANG;
-    	
+
     	$this->_strPageTitle = $_CORELANG['TXT_BLOG_BLOCK_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_blog_block.html',true,true);
-    	
+
     	if ($this->_arrSettings['blog_block_activated'] == 0) {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_BLOCK_ERROR_DEACTIVATED'];
     	}
-    	 	
+
     	$this->_objTpl->setVariable(array(
     		'TXT_TEXT'							=>	$_ARRAYLANG['TXT_BLOG_BLOCK_TEXT'],
     		'TXT_CONTENT'						=>	$_ARRAYLANG['TXT_BLOG_BLOCK_CONTENT'],
@@ -1688,9 +1688,9 @@ class BlogAdmin extends BlogLibrary {
     		'TXT_USAGE_HELP' 					=>	$_ARRAYLANG['TXT_BLOG_SETTINGS_BLOCK_USAGE_HELP']
     	));
     }
-    
-    
-    
+
+
+
     /**
      * Shows an overview of all socializing networks which are currently existing in the database. In the second tab
      * an "add network"-form is shown.
@@ -1700,10 +1700,10 @@ class BlogAdmin extends BlogLibrary {
      */
     function showNetworks() {
     	global $_CORELANG, $_ARRAYLANG;
-    	
+
     	$this->_strPageTitle = $_CORELANG['TXT_BLOG_NETWORKS_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_blog_networks.html',true,true);
-    	
+
     	//Show existing networks
     	$this->_objTpl->setVariable(array(
     		'TXT_OVERVIEW_TITLE'				=>	$_CORELANG['TXT_BLOG_NETWORKS_TITLE'],
@@ -1719,27 +1719,27 @@ class BlogAdmin extends BlogLibrary {
     		'TXT_OVERVIEW_SUBMIT_DELETE'		=>	$_ARRAYLANG['TXT_BLOG_NETWORKS_OVERVIEW_SUBMIT_DELETE'],
    			'TXT_OVERVIEW_SUBMIT_DELETE_JS'		=>	$_ARRAYLANG['TXT_BLOG_NETWORKS_OVERVIEW_SUBMIT_DELETE_JS']
     	));
-    	
+
     	$intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
-    	$arrNetworks = $this->createNetworkArray($intPagingPosition, $this->getPagingLimit()); 
-    	
+    	$arrNetworks = $this->createNetworkArray($intPagingPosition, $this->getPagingLimit());
+
     	if (count($arrNetworks) > 0) {
     		$intEntryCounter = 0;
-    		
+
     		foreach ($arrNetworks as $intNetworkId => $arrNetworkValues) {
     			$this->_objTpl->setVariable(array(
 		    		'TXT_OVERVIEW_IMGALT_EDIT'			=>	$_ARRAYLANG['TXT_BLOG_NETWORKS_EDIT_TITLE'],
 		    		'TXT_OVERVIEW_IMGALT_DELETE'		=>	$_ARRAYLANG['TXT_BLOG_NETWORKS_DELETE_TITLE']
-    			));  
-    			
+    			));
+
     			$strActivatedLanguages = '';
     			foreach($arrNetworkValues['status'] as $intLanguageId => $intStatus) {
     				if ($intStatus == 1 && array_key_exists($intLanguageId,$this->_arrLanguages)) {
     					$strActivatedLanguages .= $this->_arrLanguages[$intLanguageId]['long'].' ['.$this->_arrLanguages[$intLanguageId]['short'].'], ';
     				}
     			}
-    			$strActivatedLanguages = substr($strActivatedLanguages,0,-2);    			
-    			
+    			$strActivatedLanguages = substr($strActivatedLanguages,0,-2);
+
     			$this->_objTpl->setVariable(array(
     				'OVERVIEW_NETWORK_ROWCLASS'			=>	($intEntryCounter % 2 == 1) ? 'row1' : 'row2',
     				'OVERVIEW_NETWORK_ID'				=>	$intNetworkId,
@@ -1748,23 +1748,23 @@ class BlogAdmin extends BlogLibrary {
     				'OVERVIEW_NETWORK_URL'				=>	$arrNetworkValues['submit'],
     				'OVERVIEW_NETWORK_LANGUAGES'		=>	$strActivatedLanguages
     			));
-    			
+
     			++$intEntryCounter;
-    			$this->_objTpl->parse('showNetworks');  			
+    			$this->_objTpl->parse('showNetworks');
     		}
-    		
+
 	   		//Show paging if needed
 	   		if ($this->countNetworks() > $this->getPagingLimit()) {
 		   		$strPaging = getPaging($this->countNetworks(), $intPagingPosition, '&amp;cmd=blog&amp;act=networks', '<strong>'.$_ARRAYLANG['TXT_BLOG_NETWORKS'].'</strong>', true, $this->getPagingLimit());
 		   		$this->_objTpl->setVariable('OVERVIEW_PAGING', $strPaging);
-	   		}     		
+	   		}
     	} else {
     		$this->_objTpl->setVariable('TXT_OVERVIEW_NO_NETWORKS_FOUND', $_ARRAYLANG['TXT_BLOG_NETWORKS_OVERVIEW_NONE']);
     		$this->_objTpl->parse('noNetworks');
     	}
-    	
+
     	//Show ADD form
-    	$this->_objTpl->setVariable(array( 		
+    	$this->_objTpl->setVariable(array(
     		'TXT_ADD_TITLE'						=>	$_ARRAYLANG['TXT_BLOG_NETWORKS_ADD_TITLE'],
     		'TXT_ADD_NAME'						=>	$_ARRAYLANG['TXT_BLOG_NETWORKS_ADD_NAME'],
     		'TXT_ADD_WWW'						=>	$_ARRAYLANG['TXT_BLOG_NETWORKS_ADD_WWW'],
@@ -1774,13 +1774,13 @@ class BlogAdmin extends BlogLibrary {
     		'TXT_ADD_LANGUAGES'					=>	$_ARRAYLANG['TXT_BLOG_CATEGORY_ADD_LANGUAGES'],
     		'TXT_ADD_SUBMIT'					=>	$_CORELANG['TXT_SAVE']
     	));
-    	
+
     	if (count($this->_arrLanguages) > 0) {
     		$intCounter = 0;
 	   		$arrLanguages = array(0 => '', 1 => '', 2 => '');
-	   		
+
 	    	foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
-	    		$arrLanguages[$intCounter%3] .= '<input checked="checked" type="checkbox" name="frmAddNetwork_Languages[]" value="'.$intLanguageId.'" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';	    		
+	    		$arrLanguages[$intCounter%3] .= '<input checked="checked" type="checkbox" name="frmAddNetwork_Languages[]" value="'.$intLanguageId.'" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
 	    		++$intCounter;
 	    	}
 
@@ -1791,34 +1791,34 @@ class BlogAdmin extends BlogLibrary {
 	   		));
     	}
     }
-    
-    
-    
+
+
+
     /**
      * Inserts a new socializing network into to the database. If fields aren't set properly an error message is
      * returned.
-     * 
+     *
      * @global	object		$objDatabase
      * @global 	array		$_ARRAYLANG
      *
      */
     function insertNetwork() {
     	global $objDatabase, $_ARRAYLANG;
-    	
+
     	$strName 		= contrexx_addslashes($_POST['frmAddNetwork_Name']);
     	$strWWW 		= contrexx_addslashes($_POST['frmAddNetwork_WWW']);
     	$strSubmitUrl 	= contrexx_addslashes($_POST['frmAddNetwork_SubmitUrl']);
     	$strIcon		= contrexx_addslashes($_POST['frmAddNetwork_Icon']);
     	$arrLanguages	= (!empty($_POST['frmAddNetwork_Languages'])) ? $_POST['frmAddNetwork_Languages'] : array();
-    	
+
     	if (!empty($strName) && !empty($strSubmitUrl)) {
-    		
+
     		require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
     		$objValidator = new FWValidator();
-    		
+
     		$strWWW 		= $objValidator->getUrl($strWWW);
     		$strSubmitUrl 	= $objValidator->getUrl($strSubmitUrl);
-    		
+
     		$objDatabase->Execute('	INSERT
     								INTO	'.DBPREFIX.'module_blog_networks
     								SET		name="'.$strName.'",
@@ -1826,26 +1826,26 @@ class BlogAdmin extends BlogLibrary {
     										url_link="'.$strSubmitUrl.'",
     										icon="'.$strIcon.'"
     							');
-    		
+
     		$intNetworkId = $objDatabase->insert_id();
-    		
+
     		if (is_array($arrLanguages) && count($arrLanguages) > 0) {
 	    		foreach ($arrLanguages as $intKey => $intLanguageId) {
-	    			$objDatabase->Execute('	INSERT	
+	    			$objDatabase->Execute('	INSERT
 	    									INTO	'.DBPREFIX.'module_blog_networks_lang
 	    									SET		network_id='.$intNetworkId.',
 	    											lang_id='.$intLanguageId.'
 	    								');
 	    		}
     		}
-    		
+
     		$this->_strOkMessage = $_ARRAYLANG['TXT_BLOG_NETWORKS_INSERT_SUCCESSFULL'];
     	} else {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_NETWORKS_INSERT_ERROR'];
-    	}  
+    	}
     }
-    
-    
+
+
     /**
      * Shows the edit-page for the network with the id $intNetworkId. If there is no entry with this id an error
      * message will be shown.
@@ -1855,11 +1855,11 @@ class BlogAdmin extends BlogLibrary {
      */
     function editNetwork($intNetworkId) {
     	global $_CORELANG, $_ARRAYLANG;
-    	    	
+
     	$this->_strPageTitle = $_ARRAYLANG['TXT_BLOG_NETWORKS_EDIT_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_blog_networks_edit.html',true,true);
-    	
-    	$this->_objTpl->setVariable(array( 		
+
+    	$this->_objTpl->setVariable(array(
     		'TXT_EDIT_TITLE'		=>	$_ARRAYLANG['TXT_BLOG_NETWORKS_EDIT_TITLE'],
     		'TXT_EDIT_NAME'			=>	$_ARRAYLANG['TXT_BLOG_NETWORKS_ADD_NAME'],
     		'TXT_EDIT_WWW'			=>	$_ARRAYLANG['TXT_BLOG_NETWORKS_ADD_WWW'],
@@ -1869,11 +1869,11 @@ class BlogAdmin extends BlogLibrary {
     		'TXT_EDIT_LANGUAGES'	=>	$_ARRAYLANG['TXT_BLOG_CATEGORY_ADD_LANGUAGES'],
     		'TXT_EDIT_SUBMIT'		=>	$_CORELANG['TXT_SAVE']
     	));
-    	
+
 		$intNetworkId = intval($intNetworkId);
     	$arrNetworks = $this->createNetworkArray();
-    	
-    	if ($intNetworkId > 0 && key_exists($intNetworkId, $arrNetworks)) {	
+
+    	if ($intNetworkId > 0 && key_exists($intNetworkId, $arrNetworks)) {
     		$this->_objTpl->setVariable(array(
 				'EDIT_ID'	=>	$intNetworkId,
 				'EDIT_NAME'	=>	$arrNetworks[$intNetworkId]['name'],
@@ -1881,16 +1881,16 @@ class BlogAdmin extends BlogLibrary {
 				'EDIT_URL'	=>	$arrNetworks[$intNetworkId]['submit'],
 				'EDIT_ICON'	=>	$arrNetworks[$intNetworkId]['icon'],
 			));
-			
+
     		if (count($this->_arrLanguages) > 0) {
 	    		$intCounter = 0;
 		   		$arrLanguages = array(0 => '', 1 => '', 2 => '');
-		   		
+
 		    	foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
-		    		$arrLanguages[$intCounter%3] .= '<input type="checkbox" name="frmAddNetwork_Languages[]" value="'.$intLanguageId.'" '.(key_exists($intLanguageId, $arrNetworks[$intNetworkId]['status']) ? 'checked="checked"' : '').' />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';	    		
+		    		$arrLanguages[$intCounter%3] .= '<input type="checkbox" name="frmAddNetwork_Languages[]" value="'.$intLanguageId.'" '.(key_exists($intLanguageId, $arrNetworks[$intNetworkId]['status']) ? 'checked="checked"' : '').' />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
 		    		++$intCounter;
 		    	}
-	
+
 		   		$this->_objTpl->setVariable(array(
 		   			'EDIT_LANGUAGES_1'	=>	$arrLanguages[0],
 		   			'EDIT_LANGUAGES_2'	=>	$arrLanguages[1],
@@ -1901,32 +1901,32 @@ class BlogAdmin extends BlogLibrary {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_NETWORKS_EDIT_ERROR'];
     	}
     }
-    
-    
+
+
     /**
      * Updates the values for an existing network.
-     * 
+     *
      * @global 	array		$_ARRAYLANG
      * @global 	object		$objDatabase
      */
     function updateNetwork() {
     	global $objDatabase, $_ARRAYLANG;
-    	
+
     	$intNetworkId	= intval($_POST['frmEditNetwork_Id']);
     	$strName 		= contrexx_addslashes($_POST['frmEditNetwork_Name']);
     	$strWWW 		= contrexx_addslashes($_POST['frmEditNetwork_WWW']);
     	$strSubmitUrl 	= contrexx_addslashes($_POST['frmEditNetwork_SubmitUrl']);
     	$strIcon		= contrexx_addslashes($_POST['frmEditNetwork_Icon']);
     	$arrLanguages	= $_POST['frmAddNetwork_Languages'];
-    	
+
     	if ($intNetworkId > 0 && !empty($strName) && !empty($strSubmitUrl)) {
-    		
+
     		require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
     		$objValidator = new FWValidator();
-    		
+
     		$strWWW 		= $objValidator->getUrl($strWWW);
     		$strSubmitUrl 	= $objValidator->getUrl($strSubmitUrl);
-    		
+
     		$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_blog_networks
     								SET		name="'.$strName.'",
     										url="'.$strWWW.'",
@@ -1940,25 +1940,25 @@ class BlogAdmin extends BlogLibrary {
 									FROM '.DBPREFIX.'module_blog_networks_lang
 									WHERE `network_id` = '.$intNetworkId.'
 								');
-    		   		
+
     		if (is_array($arrLanguages) && count($arrLanguages) > 0) {
 	    		foreach ($arrLanguages as $intKey => $intLanguageId) {
-	    			$objDatabase->Execute('	INSERT	
+	    			$objDatabase->Execute('	INSERT
 	    									INTO	'.DBPREFIX.'module_blog_networks_lang
 	    									SET		network_id='.$intNetworkId.',
 	    											lang_id='.$intLanguageId.'
 	    								');
 	    		}
     		}
-    		
+
     		$this->_strOkMessage = $_ARRAYLANG['TXT_BLOG_NETWORKS_UPDATE_SUCCESSFULL'];
     	} else {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_NETWORKS_UPDATE_ERROR'];
-    	}    	
+    	}
     }
-    
-    
-    
+
+
+
     /**
      * Removes a socializing network from the database.
      *
@@ -1968,31 +1968,31 @@ class BlogAdmin extends BlogLibrary {
      */
     function deleteNetwork($intNetworkId) {
     	global $_ARRAYLANG, $objDatabase;
-    	
+
     	$intNetworkId = intval($intNetworkId);
-    	
-    	if ($intNetworkId > 0) {    		
+
+    	if ($intNetworkId > 0) {
     		$objDatabase->Execute('	DELETE
     								FROM '.DBPREFIX.'module_blog_networks
     								WHERE `network_id` = '.$intNetworkId.'
     							');
-    		
+
     		if (!$this->_boolInnoDb) {
     			$objDatabase->Execute('	DELETE
 										FROM '.DBPREFIX.'module_blog_networks_lang
 										WHERE `network_id` = '.$intNetworkId.'
 									');
     		}
-    		    		
+
     		$this->_strOkMessage = $_ARRAYLANG['TXT_BLOG_NETWORKS_DELETE_SUCCESSFULL'];
     	} else {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_NETWORKS_DELETE_ERROR'];
     	}
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * Performs the action for the dropdown-selection on the network page. The behaviour depends on the parameter.
      *
@@ -2008,10 +2008,10 @@ class BlogAdmin extends BlogLibrary {
     		default:
     			//do nothing!
     	}
-    }    
-    
-    
-    
+    }
+
+
+
     /**
      * Shows the settings-page of the blog-module.
      *
@@ -2020,10 +2020,10 @@ class BlogAdmin extends BlogLibrary {
      */
     function showSettings() {
     	global $_CORELANG, $_ARRAYLANG;
-    	
+
     	$this->_strPageTitle = $_CORELANG['TXT_BLOG_SETTINGS_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_blog_settings.html',true,true);
-    	
+
     	$this->_objTpl->setVariable(array(
     		'TXT_GENERAL_TITLE'							=>	$_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_TITLE'],
     		'TXT_GENERAL_INTRODUCTION'					=>	$_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_INTRODUCTION'],
@@ -2055,7 +2055,7 @@ class BlogAdmin extends BlogLibrary {
     		'TXT_RSS_MESSAGES'							=>	$_ARRAYLANG['TXT_BLOG_SETTINGS_RSS_MESSAGES'],
     		'TXT_RSS_MESSAGES_HELP'						=>	$_ARRAYLANG['TXT_BLOG_SETTINGS_RSS_MESSAGES_HELP'],
     		'TXT_RSS_COMMENTS'							=>	$_ARRAYLANG['TXT_BLOG_SETTINGS_RSS_COMMENTS'],
-    		'TXT_RSS_COMMENTS_HELP'						=>	$_ARRAYLANG['TXT_BLOG_SETTINGS_RSS_COMMENTS_HELP'],							
+    		'TXT_RSS_COMMENTS_HELP'						=>	$_ARRAYLANG['TXT_BLOG_SETTINGS_RSS_COMMENTS_HELP'],
     		'TXT_BLOCK_TITLE'							=>	$_ARRAYLANG['TXT_BLOG_SETTINGS_BLOCK_TITLE'],
     		'TXT_BLOCK_ACTIVATE'						=>	$_ARRAYLANG['TXT_BLOG_SETTINGS_BLOCK_ACTIVATE'],
     		'TXT_BLOCK_ACTIVATE_HELP'					=>	$_ARRAYLANG['TXT_BLOG_SETTINGS_BLOCK_ACTIVATE_HELP'],
@@ -2065,7 +2065,7 @@ class BlogAdmin extends BlogLibrary {
     		'TXT_DEACTIVATED'							=>	$_CORELANG['TXT_DEACTIVATED'],
     		'TXT_BUTTON_SAVE'							=>	$_CORELANG['TXT_SAVE']
     	));
-    	
+
     	$this->_objTpl->setVariable(array(
     		'BLOG_SETTINGS_GENERAL_INTRODUCTION'			=>	intval($this->_arrSettings['blog_general_introduction']),
     		'BLOG_SETTINGS_COMMENTS_ALLOW_ON'				=>	($this->_arrSettings['blog_comments_activated'] == '1') ? 'checked="checked"' : '',
@@ -2091,18 +2091,18 @@ class BlogAdmin extends BlogLibrary {
     		'BLOG_SETTINGS_BLOCK_MESSAGES'					=>	intval($this->_arrSettings['blog_block_messages']),
     	));
     }
-    
-    
-    
+
+
+
     /**
      * Validate and save the settings from $_POST into the database.
-     * 
+     *
      * @global	object		$objDatabase
      * @global 	array		$_ARRAYLANG
      */
     function saveSettings() {
     	global $objDatabase, $_ARRAYLANG;
-    	    	
+
     	//On-Off-Settings can only be 0 or 1.
     	$arrOnOffValues = array('frmSettings_CommentsAllow'				=>	'blog_comments_activated',
     							'frmSettings_CommentsAllowAnonymous'	=>	'blog_comments_anonymous',
@@ -2112,7 +2112,7 @@ class BlogAdmin extends BlogLibrary {
     							'frmSettings_BlockActivated'			=>	'blog_block_activated',
     							'frmSettings_RssActivated'				=>	'blog_rss_activated'
     						);
-    	
+
     	//Integer-Settings [0 .. infinite]
     	$arrIntegerValues = array(	'frmSettings_CommentsTimeout'			=>	'blog_comments_timeout',
     								'frmSettings_GeneralIntroduction'		=>	'blog_general_introduction',
@@ -2121,12 +2121,12 @@ class BlogAdmin extends BlogLibrary {
     								'frmSettings_RssNumberOfComments'		=>	'blog_rss_comments',
     								'frmSettings_TagHitlist'				=>	'blog_tags_hitlist'
     						);
-    					
+
     	//Enum-Settings, must be a value of a given list
        	$arrEnumValues = array(	'frmSettings_CommentsEditor'	=>	'blog_comments_editor');
-       	$arrEnumPossibilities = array(	'frmSettings_CommentsEditor'	=>	'wysiwyg,textarea');		
-    	
-    				
+       	$arrEnumPossibilities = array(	'frmSettings_CommentsEditor'	=>	'wysiwyg,textarea');
+
+
     	foreach ($_POST as $strKey => $strValue) {
     			if (key_exists($strKey, $arrOnOffValues)) {
     				$objDatabase->Execute('	UPDATE '.DBPREFIX.'module_blog_settings
@@ -2134,14 +2134,14 @@ class BlogAdmin extends BlogLibrary {
     										WHERE `name` = "'.$arrOnOffValues[$strKey].'"
     									');
     			}
-    			
+
     			if (key_exists($strKey, $arrIntegerValues)) {
     				$objDatabase->Execute('	UPDATE '.DBPREFIX.'module_blog_settings
     										SET `value` = "'.abs(intval($strValue)).'"
     										WHERE `name` = "'.$arrIntegerValues[$strKey].'"
     									');
     			}
-    			
+
     			if (key_exists($strKey, $arrEnumValues)) {
     				$arrSplit = explode(',', $arrEnumPossibilities[$strKey]);
 
@@ -2155,7 +2155,7 @@ class BlogAdmin extends BlogLibrary {
     	}
 
     	$this->_arrSettings = $this->createSettingsArray();
-    	
+
     	$this->_strOkMessage = $_ARRAYLANG['TXT_BLOG_SETTINGS_SAVE_SUCCESSFULL'];
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-define('_DEBUG', 1);
+define('_DEBUG', 0);
 
 /**
  * The main page for the CMS
@@ -274,21 +274,21 @@ if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_
         $objPerm =new Permission($type='frontend');
         if ($page_protected) {
             if (!$objPerm->checkAccess($page_access_id, 'dynamic')) {
-                $link=base64_encode(ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-                header ("Location: ".ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
+                $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+                header ("Location: ".CONTREXX_SCRIPT_PATH."?section=login&cmd=noaccess&redirect=".$link);
                 exit;
             }
         }
         if ($history && !$objPerm->checkAccess(78, 'static')) {
-            $link=base64_encode(ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-            header ("Location: ".ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
+            $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+            header ("Location: ".CONTREXX_SCRIPT_PATH."?section=login&cmd=noaccess&redirect=".$link);
             exit;
         }
     } elseif (!empty($_COOKIE['PHPSESSID']) && !$page_protected) {
         unset($_COOKIE['PHPSESSID']);
     } else {
-        $link=base64_encode(ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-        header ("Location: ".ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
+        $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+        header ("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
         exit;
     }
     $loginStatus = $objAuth->status();

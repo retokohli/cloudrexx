@@ -86,9 +86,9 @@ class Navigation
 						  a_s.url         AS alias_url,
 						  min(a_s.id)     AS alias_id
 					FROM ".DBPREFIX."content_navigation                   AS n
-					      INNER JOIN ".DBPREFIX."modules                  AS m   ON n.module=m.id 
+					      INNER JOIN ".DBPREFIX."modules                  AS m   ON n.module=m.id
 						  LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
-						  LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s 
+						  LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
 						  	ON  a_t.id        = a_s.target_id
 							AND a_s.isdefault = 1
 					WHERE n.module=m.id
@@ -159,7 +159,7 @@ class Navigation
 				}
 				else {
 					$link = (!empty($s)) ? "?section=".$s.$cmd : "?page=".$objResult->fields['catid'].$section.$cmd;
-					$menu_url = htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES, CONTREXX_CHARSET)
+					$menu_url = CONTREXX_SCRIPT_PATH
 						.$link
 						.(($currentThemesId && !strpos($this->data[$id]['url'],'preview')) ? '&amp;preview='.$currentThemesId : '');
 				}
@@ -619,10 +619,10 @@ class Navigation
 	}
 
 
-	static function mkurl($absolute_local_path) { 
+	static function mkurl($absolute_local_path) {
 		global $_CONFIG;
-		return "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 
-			? "" 
+		return "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80
+			? ""
 			: ":".intval($_SERVER['SERVER_PORT'])
 		).ASCMS_PATH_OFFSET.$absolute_local_path;
 	}

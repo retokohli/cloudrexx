@@ -1007,16 +1007,18 @@ class directoryLibrary
 
 	function sendMail($id, $email)
 	{
-		global $_CONFIG, $objDatabase, $_ARRAYLANG;
+		global $_CONFIG, $objDatabase, $_ARRAYLANG, $objInit, $objLanguage;
 
 		$feedId = contrexx_addslashes($id);
+		$languageId = null;
 
 		//get user id
-		$objResult = $objDatabase->Execute("SELECT addedby, title FROM ".DBPREFIX."module_directory_dir WHERE id='".$feedId."' LIMIT 1");
+		$objResult = $objDatabase->Execute("SELECT addedby, title, language FROM ".DBPREFIX."module_directory_dir WHERE id='".$feedId."' LIMIT 1");
 	    if ($objResult !== false) {
 			while (!$objResult->EOF) {
 				$userId			= $objResult->fields['addedby'];
 				$feedTitle		= $objResult->fields['title'];
+				$languageId		= $objResult->fields['language'];
 				$objResult->MoveNext();
 			};
 		}
@@ -1054,13 +1056,17 @@ class directoryLibrary
 				};
 			}
 
-			$url	= $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET;;
-			$link	= "http://".$url."/".CONTREXX_DIRECTORY_INDEX."?section=directory&cmd=detail&id=".$feedId;
+			if ($objInit->mode == 'frontend') {
+            	$link    = "http://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=directory&cmd=detail&id=".$feedId;
+            } else {
+            	$link    = "http://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.($_CONFIG['useVirtualLanguagePath'] == 'on' ? $objLanguage->getLanguageParameter($languageId, 'lang').'/' : null).CONTREXX_DIRECTORY_INDEX."?section=directory&cmd=detail&id=".$feedId;
+            }
+
 			$now 	= date(ASCMS_DATE_FORMAT);
 
 			//replase placeholder
 			$array_1 = array('[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[TITLE]]', '[[LINK]]', '[[URL]]', '[[DATE]]');
-			$array_2 = array($userUsername, $userFirstname, $userLastname, $feedTitle, $link, $url, $now);
+			$array_2 = array($userUsername, $userFirstname, $userLastname, $feedTitle, $link, $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET, $now);
 
 			for($x = 0; $x < 7; $x++){
 			  $mailTitle = str_replace($array_1[$x], $array_2[$x], $mailTitle);
