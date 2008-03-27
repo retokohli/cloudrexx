@@ -3,7 +3,7 @@
  * Blog
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
- * @version	    $Id: index.inc.php,v 1.00 $
+ * @version	    $Id: index.inc.php,v 1.01 $
  * @package     contrexx
  * @subpackage  module_blog
  */
@@ -103,7 +103,15 @@ class Blog extends BlogLibrary  {
 	function showEntries() {
 		global $_ARRAYLANG;
 
-		$arrEntries = $this->createEntryArray($this->_intLanguageId);
+		/* Start Paging ------------------------------------ */
+		$intPos 			= (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
+		$intCount 			= $this->countEntries();
+		$intPerPage			= intval($this->_arrSettings['blog_block_messages']);
+		$strPagingSource 	= getPaging($this->countEntries(), $intPos, '&amp;section=blog', '<b>'.$_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS'].'</b>', false, $intPerPage);
+		$this->_objTpl->setVariable('BLOG_ENTRIES_PAGING', $strPagingSource);
+		/* End Paging -------------------------------------- */
+		
+		$arrEntries = $this->createEntryArray($this->_intLanguageId, $intPos, $intPerPage);
 
 		foreach ($arrEntries as $intEntryId => $arrEntryValues) {
 
