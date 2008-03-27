@@ -2620,6 +2620,11 @@ sendReq('', 1);
         $_SESSION['shop']['shipment']                 = $shipment;
         $_SESSION['shop']['cart']['total_price']      = Currency::formatPrice($total_price);//$this->_calculatePrice($_SESSION['shop']['cart']);
         $_SESSION['shop']['cart']['total_tax_amount'] = Currency::formatPrice($total_tax_amount);
+        // Round prices to 5 cents if the currency is CHF (*MUST* for Saferpay)
+        if ($this->aCurrencyUnitName == 'CHF') {
+            $_SESSION['shop']['cart']['total_price']      = Currency::formatPrice(round(20*$total_price)/20);
+            $_SESSION['shop']['cart']['total_tax_amount'] = Currency::formatPrice(round(20*$total_tax_amount)/20);
+        }
         $_SESSION['shop']['cart']['items']            = $this->calculateItems($_SESSION['shop']['cart']);
         $_SESSION['shop']['cart']['total_weight']     = $total_weight; // in grams!
         return $arrProducts;
@@ -3187,7 +3192,7 @@ sendReq('', 1);
                 if ($_SESSION['shop']['countryId'] == intval($this->arrConfig['country_id']['value'])) {
 
                     $_SESSION['shop']['tax_price'] = $_SESSION['shop']['cart']['total_tax_amount'];
-                    $_SESSION['shop']['grand_total_price']  = $this->objCurrency->getCurrencyPrice(
+                    $_SESSION['shop']['grand_total_price']  = Currency::formatPrice(
                         $_SESSION['shop']['total_price']    +
                         $_SESSION['shop']['payment_price']  +
                         $_SESSION['shop']['shipment_price']
@@ -3198,7 +3203,7 @@ sendReq('', 1);
                     // foreign country; subtract tax from total price taxes
                     // must use every single orderitem in the cart to calculate the VAT now
                     $_SESSION['shop']['tax_price'] = $_SESSION['shop']['cart']['total_tax_amount'];
-                    $_SESSION['shop']['grand_total_price']  = $this->objCurrency->getCurrencyPrice(
+                    $_SESSION['shop']['grand_total_price']  = Currency::formatPrice(
                         $_SESSION['shop']['total_price']    +
                         $_SESSION['shop']['payment_price']  +
                         $_SESSION['shop']['shipment_price'] -
@@ -3220,7 +3225,7 @@ sendReq('', 1);
                             $_SESSION['shop']['payment_price'] +
                             $_SESSION['shop']['shipment_price']
                         ));
-                    $_SESSION['shop']['grand_total_price'] = $this->objCurrency->getCurrencyPrice(
+                    $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
                         $_SESSION['shop']['total_price']    +
                         $_SESSION['shop']['payment_price']  +
                         $_SESSION['shop']['shipment_price'] +
@@ -3230,7 +3235,7 @@ sendReq('', 1);
                 } else {
                     // foreign country; do not add tax
                     $_SESSION['shop']['tax_price']         = "0.00";
-                    $_SESSION['shop']['grand_total_price'] = $this->objCurrency->getCurrencyPrice(
+                    $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
                         $_SESSION['shop']['total_price']   +
                         $_SESSION['shop']['payment_price'] +
                         $_SESSION['shop']['shipment_price']
@@ -3244,7 +3249,7 @@ sendReq('', 1);
             $_SESSION['shop']['tax_price']         = "0.00";
             $_SESSION['shop']['tax_products_txt']  = '';
             $_SESSION['shop']['tax_grand_txt']     = '';
-            $_SESSION['shop']['grand_total_price'] = $this->objCurrency->getCurrencyPrice(
+            $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
                 $_SESSION['shop']['total_price']   +
                 $_SESSION['shop']['payment_price'] +
                 $_SESSION['shop']['shipment_price']);
