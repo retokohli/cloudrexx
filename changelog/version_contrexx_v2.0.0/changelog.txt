@@ -41,6 +41,12 @@ Statistik
 - Der Bereich "Monatliche Besucher und Seitenaufrufe" listet die letzten zwei
   Jahre.
 
+Modul: Blog
+- Auf der Übersichtsseite der Meldungen (index.php?section=blog) war kein Paging
+  integriert. Dadurch wurden immer alle vorhandenen Meldungen angezeigt. Neu 
+  existiert der Platzhalter [[BLOG_ENTRIES_PAGING]], welcher das von anderen
+  Modulen bekannte Paging einblendet.
+
 Modul: Community
 - Die Profil Eigenschaften Vor- und Nachname können bei der Registrierung
   angegeben werden.
