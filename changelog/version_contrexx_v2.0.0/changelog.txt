@@ -98,6 +98,7 @@ Allgemein
   funktioniert die Navigation auch beim Einsatz eines IIS.
 - Die Einträge im "Benutzer Frontend Sprache" Menü in der oberen rechten Ecke im
   Backend werden korrekt dargestellt.
+- Die Suchfunktion findet nun auch wieder Einträge innerhalb des Kalenders.
 
 Content Manager
 - Wird eine Inhaltsseite vor unerlaubten Modifikationen geschützt, so wird nach

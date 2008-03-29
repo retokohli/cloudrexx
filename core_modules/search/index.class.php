@@ -376,11 +376,9 @@ function search_searchQuery($section, $searchTerm)
 						AND (
 								`name` LIKE ('%$searchTerm%')
 							OR 	`comment` LIKE ('%$searchTerm%')
-							OR 	`place` LIKE ('%$searchTerm%')
-							OR 	`info` LIKE ('%$searchTerm%')
+							OR 	`placeName` LIKE ('%$searchTerm%')
 						)";
 						break;
-
 		case "calendar_cats":
 			$query = "	SELECT id AS id,
 							 name AS title
@@ -477,7 +475,7 @@ function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
 	        //$shortcontent = preg_replace("'$term'i","<b><i>\\0</i></b>",$shortcontent);
 	        $score=$objResult->fields['score'];
 	        $score>=1 ? $scorePercent=100 : $scorePercent=intval($score*100);
-	        //Muss noch geändert werden, sobald das Ranking bei News funktioniert!!!
+	        //Muss noch geï¿½ndert werden, sobald das Ranking bei News funktioniert!!!
 	        $score==0 ? $scorePercent=25 : $scorePercent=$scorePercent;
 	        $searchtitle=!empty($objResult->fields['title']) ? $objResult->fields['title'] : $_ARRAYLANG['TXT_UNTITLED'];
 	        $arraySearchResults[$i]=array("Score"=>$scorePercent,
