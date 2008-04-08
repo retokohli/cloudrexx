@@ -645,7 +645,8 @@ $_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Datenschutzhinweis";
 $_ARRAYLANG['TXT_THEME_IMPORT_INFO'] = "Design importieren";
 $_ARRAYLANG['TXT_THEME_IMPORT_INFO_BODY'] = "Geben Sie oben die Quelle des Designs an. Es kann eine lokale ZIP-Datei hochgeladen werden oder es kann eine http://-Adresse zu einer externen ZIP-Datei angegeben werden";
 $_ARRAYLANG['TXT_THEME_ACTIVATE_INFO'] = "Aktivierte Sprachen";
-$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Ist eine Sprache mit rosa Farbe hinterlegt, so ist diese im Frontend bei den <a href=\"index.php?cmd=language\">Spracheinstellungen</a> aktiviert</a>";
+$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Languags highlighted in pink have been activated as a Frontend language in the <a href=\"index.php?cmd=language\">settings.</a>
+";
 $_ARRAYLANG['TXT_SKINS_PREVIEW'] = "Designvorschau";
 $_ARRAYLANG['TXT_SETTINGS_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_SETTINGS_SERVER_CONFIGURATION'] = "Serverkonfiguration";

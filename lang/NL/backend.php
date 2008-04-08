@@ -645,7 +645,7 @@ $_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Privacy";
 $_ARRAYLANG['TXT_THEME_IMPORT_INFO'] = "Design importeren";
 $_ARRAYLANG['TXT_THEME_IMPORT_INFO_BODY'] = "Geeft de bron van het design op. Dit kan een lokaal of extern (via een link) zip-bestand zijn.";
 $_ARRAYLANG['TXT_THEME_ACTIVATE_INFO'] = "Geactiveerde taal";
-$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Is een taal roze gekleurd, dan is deze in de Frontend bij de <a href=\"index.php?cmd=language\">Taalinstellingen</a> geactiveerd</a>";
+$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Is een taal roze gekleurd, dan is deze in de Frontend bij de <a href=\"index.php?cmd=language\">Taalinstellingen</a> geactiveerd";
 $_ARRAYLANG['TXT_SKINS_PREVIEW'] = "Designvoorbeeld";
 $_ARRAYLANG['TXT_SETTINGS_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_SETTINGS_SERVER_CONFIGURATION'] = "Serverconfiguratie";
