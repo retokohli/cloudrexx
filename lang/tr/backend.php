@@ -646,7 +646,7 @@ $_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Gizlilik Yönergesi Uyarısı";
 $_ARRAYLANG['TXT_THEME_IMPORT_INFO'] = "Desen ithal et";
 $_ARRAYLANG['TXT_THEME_IMPORT_INFO_BODY'] = "Yukarıya desenin kaynağını girin.Yerel ZIP-verisi gönderilebilinir veya http://-adresi harici ZIP-verisi de verilebilir.";
 $_ARRAYLANG['TXT_THEME_ACTIVATE_INFO'] = "Etkinlenen Diller";
-$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Eğer dil pembe renkte  ise, öyelyse Frontend de <a href=\"index.php?cmd=language\">Dilayarları</a> etkinlendi</a>";
+$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Eğer dil pembe renkte  ise, öyelyse Frontend de <a href=\"index.php?cmd=language\">Dilayarları</a> etkinlendi";
 $_ARRAYLANG['TXT_SKINS_PREVIEW'] = "Desen ön izlenim";
 $_ARRAYLANG['TXT_SETTINGS_EMAIL'] = "E-Mail (ayar)";
 $_ARRAYLANG['TXT_SETTINGS_SERVER_CONFIGURATION'] = "Sunucu ayarları";
