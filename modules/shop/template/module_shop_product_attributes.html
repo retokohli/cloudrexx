@@ -21,8 +21,7 @@ function storeNewOption()
 
   document.getElementById('attributeValueList[0][]').setAttribute('multiple','multiple');
   document.getElementById('attributeValueList[0][]').focus();
-  for(valueId=document.getElementById('attributeValueList[0][]').options.length-1;valueId>=0;valueId--)
-  {
+  for (valueId=document.getElementById('attributeValueList[0][]').options.length-1;valueId>=0;valueId--) {
     document.getElementById('attributeValueList[0][]').options[valueId].selected = true;
   }
   return true;
@@ -39,7 +38,6 @@ function storeChanges()
         for(valueId=document.getElementsByTagName('select')[selectboxNr].options.length-1;valueId>=0;valueId--) {
           document.getElementsByTagName('select')[selectboxNr].options[valueId].selected = true;
         }
-
       }
     }
   }
@@ -101,11 +99,9 @@ function removeSelectedValues(id)
       document.getElementById('attributeValueList['+id+'][]').options[i-1] = null;
     }
   }
-
   if (document.getElementById('attributeValueList['+id+'][]').options.length != 0) {
     document.getElementById('attributeValueList['+id+'][]').options[0].selected = true
   }
-
   setSelectedValue(id);
 }
 
@@ -113,69 +109,67 @@ function addValue(id)
 {
   // update the content of the attributeValueList
   updateAttributeValueList(id);
-
   index++;
 
   // create new inputboxes
   elValue = document.getElementById('attributeValueTpl').cloneNode(true);
-    elValue.setAttribute('id','attributeValue['+index+']');
-    elValue.setAttribute('name','attributeValue['+index+']');
+  elValue.setAttribute('id','attributeValue['+index+']');
+  elValue.setAttribute('name','attributeValue['+index+']');
   elValue.style.display = 'inline';
 
   elPrice = document.getElementById('attributePriceTpl').cloneNode(true);
-    elPrice.setAttribute('id','attributePrice['+index+']');
-    elPrice.setAttribute('name','attributePrice['+index+']');
-    elPrice.style.display = 'inline';
+  elPrice.setAttribute('id','attributePrice['+index+']');
+  elPrice.setAttribute('name','attributePrice['+index+']');
+  elPrice.style.display = 'inline';
 
-    elPricePrefix = document.getElementById('attributePricePrefixTpl').cloneNode(true);
-    elPricePrefix.setAttribute('id','attributePricePrefix['+index+']');
-    elPricePrefix.setAttribute('name','attributePricePrefix['+index+']');
-    elPricePrefix.style.display = 'inline';
+  elPricePrefix = document.getElementById('attributePricePrefixTpl').cloneNode(true);
+  elPricePrefix.setAttribute('id','attributePricePrefix['+index+']');
+  elPricePrefix.setAttribute('name','attributePricePrefix['+index+']');
+  elPricePrefix.style.display = 'inline';
 
-    // hide old elements
-    if (document.getElementById('attributeValue['+attributeValueId[id]+']')) {
-      document.getElementById('attributeValue['+attributeValueId[id]+']').style.display = "none";
-      document.getElementById('attributePrice['+attributeValueId[id]+']').style.display = "none";
-      document.getElementById('attributePricePrefix['+attributeValueId[id]+']').style.display = "none";
+  // hide old elements
+  if (document.getElementById('attributeValue['+attributeValueId[id]+']')) {
+    document.getElementById('attributeValue['+attributeValueId[id]+']').style.display = "none";
+    document.getElementById('attributePrice['+attributeValueId[id]+']').style.display = "none";
+    document.getElementById('attributePricePrefix['+attributeValueId[id]+']').style.display = "none";
+  }
+
+  // set new index
+  attributeValueId[id] = index;
+
+  // add new elements
+  document.getElementById('attributeValueInputboxes['+id+']').appendChild(elValue);
+  document.getElementById('attributePriceInputboxes['+id+']').appendChild(elPrice);
+  document.getElementById('attributePricePrefixMenus['+id+']').appendChild(elPricePrefix);
+
+  // update the content of the attributeValueList
+  document.getElementById('attributeValueList['+id+'][]').options[document.getElementById('attributeValueList['+id+'][]').options.length] = new Option('(+0.00 {SHOP_PRODUCT_ATTRIBUTE_CURRENCY})',index,false,false);
+  for (i=0;i<document.getElementById('attributeValueList['+id+'][]').options.length;i++) {
+    if (document.getElementById('attributeValueList['+id+'][]').options[i].value == index) {
+      document.getElementById('attributeValueList['+id+'][]').options[i].selected = true;
+    } else {
+      document.getElementById('attributeValueList['+id+'][]').options[i].selected = false;
     }
-
-    // set new index
-    attributeValueId[id] = index;
-
-    // add new elements
-    document.getElementById('attributeValueInputboxes['+id+']').appendChild(elValue);
-    document.getElementById('attributePriceInputboxes['+id+']').appendChild(elPrice);
-    document.getElementById('attributePricePrefixMenus['+id+']').appendChild(elPricePrefix);
-
-    // update the content of the attributeValueList
-    document.getElementById('attributeValueList['+id+'][]').options[document.getElementById('attributeValueList['+id+'][]').options.length] = new Option('(+0.00 {SHOP_PRODUCT_ATTRIBUTE_CURRENCY})',index,false,false);
-    for (i=0;i<document.getElementById('attributeValueList['+id+'][]').options.length;i++) {
-      if (document.getElementById('attributeValueList['+id+'][]').options[i].value == index) {
-        document.getElementById('attributeValueList['+id+'][]').options[i].selected = true;
-      } else {
-        document.getElementById('attributeValueList['+id+'][]').options[i].selected = false;
-      }
-    }
-    document.getElementById('attributeValue['+index+']').focus();
-    document.getElementById('attributeValue['+index+']').onchange = "updateAttributeValueList('"+id+"')";
-    document.getElementById('attributePrice['+index+']').onchange = "updateAttributeValueList('"+id+"')";
-    document.getElementById('attributePricePrefix['+index+']').onchange = "updateAttributeValueList('"+id+"')";
+  }
+  document.getElementById('attributeValue['+index+']').focus();
+  document.getElementById('attributeValue['+index+']').onchange = "updateAttributeValueList('"+id+"')";
+  document.getElementById('attributePrice['+index+']').onchange = "updateAttributeValueList('"+id+"')";
+  document.getElementById('attributePricePrefix['+index+']').onchange = "updateAttributeValueList('"+id+"')";
 
 
-    // set event handlers
-    arrElements[0] = 'attributeValue';
-    arrElements[1] = 'attributePrice';
-    arrElements[2] = 'attributePricePrefix';
+  // set event handlers
+  arrElements[0] = 'attributeValue';
+  arrElements[1] = 'attributePrice';
+  arrElements[2] = 'attributePricePrefix';
 
-    for (i=0;i<arrElements.length;i++) {
-      onChangeHandler[arrElements[i]+'['+index+']'] = new Function(document.getElementById(arrElements[i]+'['+index+']').onchange);
-
+  for (i=0;i<arrElements.length;i++) {
+    onChangeHandler[arrElements[i]+'['+index+']'] = new Function(document.getElementById(arrElements[i]+'['+index+']').onchange);
     if (document.getElementById(arrElements[i]+'['+index+']').addEventListener) {
         document.getElementById(arrElements[i]+'['+index+']').addEventListener('change', onChangeHandler[arrElements[i]+'['+index+']'], false );
     } else if (document.getElementById(arrElements[i]+'['+index+']').attachEvent) {
         document.getElementById(arrElements[i]+'['+index+']').attachEvent('onchange', onChangeHandler[arrElements[i]+'['+index+']']);
     }
-    }
+  }
 }
 
 function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)

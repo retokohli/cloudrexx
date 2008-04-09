@@ -740,12 +740,8 @@ echo("ShopCategory::insert(): ERROR: Query failed: $query<br />");
         if (!$objResult) {
             return false;
         }
-        if (!$objResult->RecordCount() > 1) {
-            echo(
-                "ShopCategory::getChildNamed($strName, $flagActiveOnly): ".
-                $_ARRAYLANG['TXT_SHOP_WARNING_MULTIPLE_CATEGORIES_WITH_SAME_NAME'].
-                '<br />'
-            );
+        if ($objResult->RecordCount() > 1) {
+            echo("ShopCategory::getChildNamed($strName, $flagActiveOnly): ".$_ARRAYLANG['TXT_SHOP_WARNING_MULTIPLE_CATEGORIES_WITH_SAME_NAME'].'<br />');
         }
         if (!$objResult->EOF) {
             return ShopCategory::getById($objResult->fields['catid']);

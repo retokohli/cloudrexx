@@ -33,7 +33,7 @@ class Products
      * See {@link getWildcardQuery()}
      * @var array   $arrFieldName
      */
-    var $arrFieldName = array(
+    private $arrFieldName = array(
         'id', 'product_id', 'picture', 'title', 'catid', 'handler',
         'normalprice', 'resellerprice', 'shortdesc', 'description',
         'stock', 'stock_visibility', 'discountprice', 'is_special_offer',
@@ -41,7 +41,7 @@ class Products
         'startdate', 'enddate',
         'thumbnail_percent', 'thumbnail_quality',
         'manufacturer', 'external_link',
-        'sort_order', 'vat_id', 'weight', 'flags'
+        'sort_order', 'vat_id', 'weight', 'flags', 'usergroups',
     );
 
 
@@ -53,17 +53,6 @@ class Products
      */
     function Products()
     {
-        $this->__construct();
-    }
-
-    /**
-     * Create a Products helper object (PHP5)
-     * @return  Products                The helper
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function __construct()
-    {
-
     }
 
 
@@ -240,9 +229,13 @@ class Products
                        $queryCategory
                        $queryManufacturer
                        $querySpecialoffer
-                       $querySearch
-              GROUP BY product_id
-              ORDER BY id ASC
+                       $querySearch ".
+// TODO: This only works when using virtual ShopCategories and
+// non-empty product_id fields (Product codes)!
+// This query needs to be extended to handle both empty codes (ungrouped) and
+// non-empty, non-unique codes (grouped).
+//              GROUP BY product_id
+              "ORDER BY id ASC
                    )
           ORDER BY sort_order ASC, id DESC
         ";
@@ -265,7 +258,6 @@ class Products
         if (!$objResult) {
             return false;
         }
-//echo("got $count records<br />");var_export($objResult);echo("<br />");
         $arrProduct = array();
         while (!$objResult->EOF) {
             $arrProduct[] = Product::getById($objResult->Fields('id'));
@@ -348,7 +340,8 @@ class Products
 
     /**
      * Delete Products bearing the given Product code from the database.
-     * @param   integer     $productCode        The Product code
+     * @param   integer     $productCode        The Product code. This *MUST*
+     *                                          be non-empty!
      * @param   boolean     $flagDeleteImages   If true, Product images are
      *                                          deleted as well
      * @return  boolean                         True on success, false otherwise
@@ -356,18 +349,17 @@ class Products
      */
     function deleteByCode($productCode, $flagDeleteImages)
     {
+        if (empty($productCode)) {
+            return false;
+        }
         $arrProduct = Products::getByCustomId($productCode);
         if ($arrProduct === false) {
-//echo("no Products for code $productCode<br />");
             return false;
         }
         $result = true;
         foreach ($arrProduct as $objProduct) {
             if (!$objProduct->delete($flagDeleteImages)) {
-//echo("deleting Product ".$objProduct->getId()." failed<br />");
                 $result = false;
-            } else {
-//echo("deleting Product ".$objProduct->getId()." succeeded<br />");
             }
         }
         return $result;
@@ -652,12 +644,16 @@ class Products
      *
      * Thus, all Products within the same "Article" ShopCategory carry the
      * same flags, as does the containing ShopCategory itself.
-     * @param   integer     $customId   The Product code (*NOT* the ID)
-     * @param   string      $strFlags   The new flags for the Product
+     * @param   integer     $productCode  The Product code (*NOT* the ID).
+     *                                    This must be non-empty!
+     * @param   string      $strFlags     The new flags for the Product
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function changeFlagsByProductCode($productCode, $strNewFlags)
     {
+        if (empty($productCode)) {
+            return false;
+        }
         // Get all available flags.  These are represented by the names
         // of virtual root ShopCategories.
         $arrVirtual = ShopCategories::getVirtualCategoryNameArray();
@@ -675,24 +671,24 @@ class Products
         // Its database entry will be updated along the way, however.
         $_objProduct = $arrProduct[0];
         $strOldFlags = $_objProduct->getFlags();
-        // Flag indicating whether the Artikel has been cloned already
+        // Flag indicating whether the article has been cloned already
         // for all new flags set.
         $flagCloned = false;
 
         // Now apply the changes to all those identical Products, their parent
         // ShopCategories, and all sibling Products within them.
         foreach ($arrProduct as $objProduct) {
-            // Get the containing "Artikel" ShopCategory.
+            // Get the containing article ShopCategory.
             $catId = $objProduct->getShopCategoryId();
-            $objArtikelCategory = ShopCategory::getById($catId);
-            if (!$objArtikelCategory) {
+            $objArticleCategory = ShopCategory::getById($catId);
+            if (!$objArticleCategory) {
                 // This should not happen!
                 continue;
             }
 
             // Get parent (subgroup)
             $objSubGroupCategory =
-                ShopCategory::getById($objArtikelCategory->getParentId());
+                ShopCategory::getById($objArticleCategory->getParentId());
             if (!$objSubGroupCategory) {
                 // This should not happen!
                 continue;
@@ -707,17 +703,17 @@ class Products
                 continue;
             }
 
-            // Apply the new flags to all Products and Artikel ShopCategories.
-            // Update the flags of the original "Artikel" ShopCategory first
-            $objArtikelCategory->setFlags($strNewFlags);
-            $objArtikelCategory->store();
+            // Apply the new flags to all Products and Article ShopCategories.
+            // Update the flags of the original Article ShopCategory first
+            $objArticleCategory->setFlags($strNewFlags);
+            $objArticleCategory->store();
 
             // Get all sibling Products affected by the same flags
             $arrSiblingProducts = Products::getByShopCategory(
-                $objArtikelCategory->getId()
+                $objArticleCategory->getId()
             );
 
-            // Set the new flag set for all Products within the Artikel
+            // Set the new flag set for all Products within the Article
             // ShopCategory.
             foreach ($arrSiblingProducts as $objProduct) {
                 $objProduct->setFlags($strNewFlags);
@@ -725,7 +721,7 @@ class Products
             }
 
             // Check whether this group is affected by the changes.
-            // If its name matches one of the flags, the Artikel and subgroup
+            // If its name matches one of the flags, the Article and subgroup
             // may have to be removed.
             $strFlag = $objRootCategory->getName();
             if (preg_match("/$strFlag/", $strNewFlags)) {
@@ -736,11 +732,11 @@ class Products
             // Also check whether this is a virtual root ShopCategory.
             if (in_array($strFlag, $arrVirtual)) {
                 // It is one of the virtual roots, and the flag is missing.
-                // So the The Artikel has to be removed from this group.
-                $objArtikelCategory->delete();
-                $objArtikelCategory = false;
+                // So the Article has to be removed from this group.
+                $objArticleCategory->delete();
+                $objArticleCategory = false;
                 // And if the subgroup happens to contain no more
-                // "Artikel", delete it as well.
+                // "Article", delete it as well.
                 $arrChildren = $objSubGroupCategory->getChildrenIdArray();
                 if (count($arrChildren) == 0) {
                     $objSubGroupCategory->delete();
@@ -750,7 +746,7 @@ class Products
 
             // Here, the virtual ShopCategory groups have been processed,
             // the only ones left are the "normal" ShopCategories.
-            // Clone one of the Artikel ShopCategories for each of the
+            // Clone one of the Article ShopCategories for each of the
             // new flags set.
             if ($flagCloned) {
                 // Already did that.
@@ -769,7 +765,7 @@ class Products
                     continue;
                 }
 
-                // That is a new flag for which we have to clone the Artikel.
+                // That is a new flag for which we have to clone the Article.
                 // Get the affected grandparent (group, root ShopCategory)
                 $objTargetRootCategory =
                     ShopCategories::getChildNamed(0, $strFlag, false);
@@ -790,27 +786,27 @@ class Products
                     $objTargetSubGroupCategory = $objSubGroupCategory;
                 }
 
-                // Check whether the Artikel ShopCategory exists already
-                $objTargetArtikelCategory =
+                // Check whether the Article ShopCategory exists already
+                $objTargetArticleCategory =
                     ShopCategories::getChildNamed(
                         $objTargetSubGroupCategory->getId(),
-                        $objArtikelCategory->getName(),
+                        $objArticleCategory->getName(),
                         false
                     );
-                if ($objTargetArtikelCategory) {
-                    // The Artikel Category already exists.
+                if ($objTargetArticleCategory) {
+                    // The Article Category already exists.
                 } else {
-                    // Nope, clone the "Artikel" ShopCategory and add it to the
+                    // Nope, clone the "Article" ShopCategory and add it to the
                     // subgroup.  Note that the flags have been set already
                     // and don't need to be changed again here.
                     // Also note that the cloning process includes all content
-                    // of the Artikel ShopCategory, but the flags will remain
+                    // of the Article ShopCategory, but the flags will remain
                     // unchanged. That's why the flags have already been
                     // changed right at the beginning of the process.
-                    $objArtikelCategory->makeClone(true, true);
-                    $objArtikelCategory->setParentId($objTargetSubGroupCategory->getId());
-                    $objArtikelCategory->store();
-                    $objTargetArtikelCategory = $objArtikelCategory;
+                    $objArticleCategory->makeClone(true, true);
+                    $objArticleCategory->setParentId($objTargetSubGroupCategory->getId());
+                    $objArticleCategory->store();
+                    $objTargetArticleCategory = $objArticleCategory;
                 }
             } // foreach $arrVirtual
         } // foreach $arrProduct

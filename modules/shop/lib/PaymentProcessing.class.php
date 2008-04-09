@@ -1,4 +1,7 @@
-<?PHP
+<?php
+
+define('_PAYMENT_DEBUG', 0);
+
 /**
  * Payment processing manager.
  * @package     contrexx
@@ -109,30 +112,15 @@ class PaymentProcessing
 
 
     /**
-     * Constructor (PHP4)
-     *
-     * Initialize the shipping options as an indexed array
-     * @param   array   $arrConfig  Configuration array
+     * Constructor
+     * @param   array   $arrConfig    Shop configuration array
      */
     function PaymentProcessing($arrConfig)
     {
-        $this->__construct($arrConfig);
-    }
-
-
-    /**
-     * Constructor (PHP5)
-     *
-     * Initialize the shipping options as an indexed array
-     * @param  string
-     * @return void
-     */
-    function __construct($arrConfig)
-    {
         global $objDatabase;
 
-        $this->arrConfig     = $arrConfig;
-        $this->_imagePath    = ASCMS_PATH_OFFSET.'/modules/shop/images/payments/';
+        $this->arrConfig = $arrConfig;
+        $this->_imagePath = ASCMS_PATH_OFFSET.'/modules/shop/images/payments/';
 
         $query = '
             SELECT id, type, name, description,
@@ -300,12 +288,12 @@ class PaymentProcessing
         switch ($this->getPaymentProcessorName()) {
             case 'Internal':
                 /* Redirect browser */
-                header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&handler=Internal');
+                header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
                 exit;
                 break;
             case 'Internal_LSV':
                 /* Redirect browser */
-                header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&handler=Internal');
+                header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
                 exit;
                 break;
             case 'Internal_CreditCard':
@@ -314,7 +302,6 @@ class PaymentProcessing
             case 'Internal_Debit':
                 $return = $this->_Internal_DebitProcessor();
                 break;
-// Added
             case 'Saferpay':
             case 'Saferpay_All_Cards':
                 $return = $this->_SaferpayProcessor();
@@ -325,6 +312,7 @@ class PaymentProcessing
             case 'Saferpay_Visa_Multipay_CAR':
                 $return = $this->_SaferpayProcessor(array('Visa Multipay CAR'));
                 break;
+            case 'Yellowpay':
             case 'PostFinance_DebitDirect':
                 $return = $this->_YellowpayProcessor();
                 break;
@@ -451,15 +439,15 @@ class PaymentProcessing
         $arrShopOrder = array(
             'txtShopId'           => $this->arrConfig['yellowpay_id']['value'],
             'txtOrderTotal'       => $_SESSION['shop']['grand_total_price'],
-            'ShopId'              => $this->arrConfig['yellowpay_shop_id'],
-            'Hash_seed'           => $this->arrConfig['yellowpay_hash_seed'],
+            'ShopId'              => $this->arrConfig['yellowpay_shop_id']['value'],
+            'Hash_seed'           => $this->arrConfig['yellowpay_hash_seed']['value'],
             'txtLangVersion'      => strtoupper($this->_languageCode),
             'txtArtCurrency'      => $this->_currencyCode,
             'txtOrderIDShop'      => $_SESSION['shop']['orderid'],
-            'PaymentType'         => 'DebitDirect',
-            'DeliveryPaymentType' => $this->arrConfig['yellowpay_delivery_payment_type']['value'],
-// Todo: This isn't set anywhere in the shop, and not even used anywhere in yellowpay.class.php
-            'SessionId'           => $_SESSION['shop']['PHPSESSID']
+            'deliveryPaymentType' => $this->arrConfig['yellowpay_delivery_payment_type']['value'],
+            'acceptedPaymentMethods' => $this->arrConfig['yellowpay_accepted_payment_methods']['value'],
+// TODO: This isn't set anywhere in the shop, and not even used anywhere in yellowpay.class.php
+//            'SessionId'           => $_SESSION['shop']['PHPSESSID']
         );
 
         $objYellowpay = new Yellowpay();
@@ -468,7 +456,12 @@ class PaymentProcessing
             $_ARRAYLANG['TXT_ORDER_NOW']
         );
         if (count($objYellowpay->arrError) > 0) {
-            return "<font color='red'><b>Yellowpay couldn't be initialized!</b></font>";
+            $strError = '';
+            if (_PAYMENT_DEBUG) {
+                $strError .= join('<br />', $objYellowpay->arrError).'<br />';
+            }
+            $strError = '<font color="red"><b>Yellowpay could not be initialized!</b></font>';
+            return $strError;
         }
         return $yellowpayForm;
     }
@@ -488,87 +481,71 @@ class PaymentProcessing
     /**
      * Check in the payment processor after the payment is complete.
      * @return  mixed   For external payment methods:
-     *                  - The integer order ID, if known, upon success,
-     *                  - boolean false if not known, or upon failure.
+     *                  The integer order ID, if known, upon success
      *                  For internal payment methods:
-     *                  - Boolean true, in order to make these skip the order
-     *                    status update, as this has already been done.
+     *                  Boolean true, in order to make these skip the order
+     *                  status update, as this has already been done.
+     *                  If the order ID is unknown or upon failure:
+     *                  Boolean false
      */
     function checkIn()
     {
-        if (isset($_GET['handler']) && !empty($_GET['handler'])) {
-            switch ($_GET['handler']) {
-                case 'saferpay':
-                    $objSaferpay  = new Saferpay();
-                    if ($this->arrConfig['saferpay_use_test_account']['status'] == 1) {
-                        $objSaferpay->isTest = true;
-                    } else {
-                        $arrShopOrder['ACCOUNTID'] = $this->arrConfig['saferpay_id']['value'];
-                    }
-                    $transaction = $objSaferpay->payConfirm();
-                    if (intval($this->arrConfig['saferpay_finalize_payment']['value']) == 1) {
-                        if ($objSaferpay->isTest == true) {
-                            $transaction = true;
-                        } else {
-                            $transaction = $objSaferpay->payComplete($arrShopOrder);
-                        }
-                    }
-                    if ($transaction) {
-                        return $objSaferpay->getOrderId();
-                    }
-                    break;
-                case 'paypal':
-                    // The order ID must be returned when the payment is done.
-                    // is this guaranteed to be a GET request?
-                    if (isset($_REQUEST['orderid'])) {
-                        return intval($_REQUEST['orderid']);
-                    }
-                    break;
-                // For the remaining types, there's no need to check in, so we
-                // return true and jump over the validation of the order ID
-                // directly to success!
-                case 'Internal':
-                case 'Internal_CreditCard':
-                case 'Internal_Debit':
-                case 'Internal_LSV':
-                    return true;
-                // Dummy payment.
-                // Returns a result similar to PayPal or Saferpay.
-                case 'dummy':
-                    $result = '';
-                    if (isset($_REQUEST['result'])) {
-                        $result = $_REQUEST['result'];
-                    }
-                    // returns the order ID on success, false otherwise
-                    return Dummy::commit($result);
-                default:
-                    break;
-                // Note: A backup of the order ID is kept in the session
-                // for payment methods that do not return it. This is used
-                // to cancel orders in all cases where false is returned.
-            }
-            // Anything else is wrong.
+        if (empty($_GET['handler'])) {
             return false;
         }
-        // 'PostFinance_DebitDirect':
-        // Guaranteed to be a POST request.
-        // The request *MUST* contain the order ID!
-        // Additional arguments:
-        // section=shop&cmd=success&handler=yellowpay&result=1
-/**
- * @todo    Yellowpay must be configured and this code rewritten to return and
- * handle the follwing requests:
- * POST after payment was made:
- *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=-1
- * GET after payment has completed successfully:
- *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=1
- * GET after payment has failed:
- *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=0
- * GET after payment has been cancelled:
- *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=2
- */
-        if (isset($_POST['txtOrderIDShop'])) {
-            return intval($_POST['txtOrderIDShop']);
+        switch ($_GET['handler']) {
+            case 'saferpay':
+                $objSaferpay  = new Saferpay();
+                if ($this->arrConfig['saferpay_use_test_account']['status'] == 1) {
+                    $objSaferpay->isTest = true;
+                } else {
+                    $arrShopOrder['ACCOUNTID'] = $this->arrConfig['saferpay_id']['value'];
+                }
+                $transaction = $objSaferpay->payConfirm();
+                if (intval($this->arrConfig['saferpay_finalize_payment']['value']) == 1) {
+                    if ($objSaferpay->isTest == true) {
+                        $transaction = true;
+                    } else {
+                        $transaction = $objSaferpay->payComplete($arrShopOrder);
+                    }
+                }
+                if ($transaction) {
+                    return $objSaferpay->getOrderId();
+                }
+                break;
+            case 'paypal':
+                // The order ID must be returned when the payment is done.
+                // is this guaranteed to be a GET request?
+                if (isset($_REQUEST['orderid'])) {
+                    return intval($_REQUEST['orderid']);
+                }
+                break;
+            case 'yellowpay':
+                if (isset($_POST['txtOrderIDShop'])) {
+                    return intval($_POST['txtOrderIDShop']);
+                }
+                break;
+            // For the remaining types, there's no need to check in, so we
+            // return true and jump over the validation of the order ID
+            // directly to success!
+            // Note: A backup of the order ID is kept in the session
+            // for payment methods that do not return it. This is used
+            // to cancel orders in all cases where false is returned.
+            case 'Internal':
+            case 'Internal_CreditCard':
+            case 'Internal_Debit':
+            case 'Internal_LSV':
+                return true;
+            // Dummy payment.
+            case 'dummy':
+                $result = '';
+                if (isset($_REQUEST['result'])) {
+                    $result = $_REQUEST['result'];
+                }
+                // returns the order ID on success, false otherwise
+                return Dummy::commit($result);
+            default:
+                break;
         }
         // Anything else is wrong.
         return false;

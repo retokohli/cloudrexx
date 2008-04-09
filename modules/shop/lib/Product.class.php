@@ -197,6 +197,13 @@ class Product
      */
     var $flags;
     /**
+     * The assigned (frontend) user group IDs
+     *
+     * Comma separated list
+     * @var string
+     */
+    var $usergroups;
+    /**
      * ProductAttribute value IDs array
      *
      * See {@link getProductAttributeValueIdArray()} for details.
@@ -207,7 +214,7 @@ class Product
 
 
     /**
-     * Add or replace a Product (PHP4)
+     * Create a Product
      *
      * If the optional argument $id is set, the corresponding
      * Product is updated.  Otherwise, a new Product is created.
@@ -227,37 +234,6 @@ class Product
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function Product(
-        $code, $catId, $name, $distribution, $price,
-        $status, $order, $weight, $id=0
-    ) {
-        $this->__construct(
-            $code, $catId, $name, $distribution, $price,
-            $status, $order, $weight, $id
-        );
-    }
-
-
-    /**
-     * Add or replace a Product (PHP5)
-     *
-     * If the optional argument $id is set, the corresponding
-     * Product is updated.  Otherwise, a new Product is created.
-     * Set the remaining object variables by calling the appropriate
-     * access methods.
-     * @access  public
-     * @param   string  $code           The Product code
-     * @param   integer $catId          The ShopCategory ID of the Product
-     * @param   string  $name           The Product name
-     * @param   string  $distribution   The Distribution type
-     * @param   double  $price          The Product price
-     * @param   integer $status         The status of the Product (0 or 1)
-     * @param   integer $order          The sorting order
-     * @param   integer $weight         The Product weight
-     * @param   integer $id             The optional Product ID to be updated
-     * @return  Product                 The Product
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function __construct(
         $code, $catId, $name, $distribution, $price,
         $status, $order, $weight, $id=0
     ) {
@@ -294,6 +270,7 @@ class Product
         $this->externalLink     = '';
         $this->vatId            =  0;
         $this->flags            = '';
+        $this->usergroups       = '';
 
         // Enable cloning of Products with ProductAttributes
         if ($this->id > 0) {
@@ -908,6 +885,27 @@ class Product
         $this->weight = intval($weight);
     }
 
+    /**
+     * Get the assigned user groups
+     * @return  string                               Comma separated list of
+     *                                               assigned user groups
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getUsergroups()
+    {
+        return $this->usergroups;
+    }
+    /**
+     * Set the assigned user groups
+     * @param   string          $usergroups         Comma separated list of
+     *                                              assigned user groups
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function setUsergroups($usergroups)
+    {
+        $this->usergroups = intval($usergroups);
+    }
+
 
     /**
      * Return the correct Product price for any Customer and Product.
@@ -1191,7 +1189,8 @@ class Product
                 sort_order=$this->order,
                 vat_id=$this->vatId,
                 weight=$this->weight,
-                flags='".addslashes($this->flags)."'
+                flags='".addslashes($this->flags)."',
+                usergroups='$this->usergroups'
           WHERE id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
@@ -1222,7 +1221,7 @@ class Product
                 b2b, b2c, startdate, enddate,
                 manufacturer, external_link,
                 sort_order, vat_id, weight,
-                flags
+                flags, usergroups
             ) VALUES ('".
                 addslashes($this->code)."', '$this->pictures', '".
                 addslashes($this->name)."', $this->catId,
@@ -1243,7 +1242,8 @@ class Product
                 $this->manufacturerId, '".
                 addslashes($this->externalLink)."',
                 $this->order, $this->vatId, $this->weight,
-                '".addslashes($this->flags)."'
+                '".addslashes($this->flags)."',
+                '$this->usergroups'
             )";
 // No longer in use:
 //                thumbnail_percent, thumbnail_quality,
@@ -1254,7 +1254,6 @@ class Product
         }
         // my brand new ID
         $this->id = $objDatabase->Insert_ID();
-
         return true;
     }
 
@@ -1314,6 +1313,7 @@ class Product
         $objProduct->externalLink     = $objResult->fields['external_link'];
         $objProduct->vatId            = $objResult->fields['vat_id'];
         $objProduct->flags            = $objResult->fields['flags'];
+        $objProduct->usergroups       = $objResult->fields['usergroups'];
         // also fetch the ProductAttribute value IDs
         $objProduct->arrProductAttributeValue =
             ProductAttributes::getProductValueArray($objProduct->id);
