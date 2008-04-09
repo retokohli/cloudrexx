@@ -104,17 +104,61 @@ function setVatUnset()
     </tr>
     <tr valign="top" class="row2">
       <td width="15%" nowrap="nowrap">{TXT_YELLOWPAY_POSTFINANCE}</td>
-      <td nowrap="nowrap"><label for="yellowpay_swapper">{TXT_EDIT}&nbsp;</label>
+      <td nowrap="nowrap">
+        <label for="yellowpay_swapper">{TXT_EDIT}&nbsp;</label>
         <input name="yellowpay_swapper" id="yellowpay_swapper" type="checkbox" onclick="swapBlock('yellowpay');" value="1" />&nbsp;
-        <div id="yellowpay" style="display:none;">{TXT_SHOP_ID}:&nbsp;
-          <input type="text" name="yellowpay_id" value="{SHOP_YELLOWPAY_ID}" size="15" maxlength="50" />
-          &nbsp;&nbsp;{TXT_HASH_SEED}:
-          <input type="text" name="yellowpay_hash_seed" value="{SHOP_YELLOWPAY_HASH_SEED}" size="15" maxlength="50" />
-          &nbsp;&nbsp;{TXT_AUTORIZATION}:
-          <select name="yellowpay_delivery_payment_type">
-            <option value="immediate" {SHOP_YELLOWPAY_IMMEDIATE_STATUS}>{TXT_IMMEDIATE}</option>
-            <option value="deferred" {SHOP_YELLOWPAY_DEFERRED_STATUS}>{TXT_DEFERRED}</option>
-          </select>
+        <div id="yellowpay" style="display:none;">
+          <table width="100%" summary="">
+            <tr>
+              <td width="20%">
+                {TXT_SHOP_ID}
+              </td>
+              <td width="80%">
+                <input type="text" name="yellowpay_id" value="{SHOP_YELLOWPAY_ID}" size="15" maxlength="50" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {TXT_HASH_SEED}
+              </td>
+              <td>
+                <input type="text" name="yellowpay_hash_seed" value="{SHOP_YELLOWPAY_HASH_SEED}" size="15" maxlength="50" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {TXT_AUTORIZATION}
+              </td>
+              <td>
+                <select name="yellowpay_delivery_payment_type">
+                  <option value="immediate" {SHOP_YELLOWPAY_IMMEDIATE_STATUS}>{TXT_IMMEDIATE}</option>
+                  <option value="deferred" {SHOP_YELLOWPAY_DEFERRED_STATUS}>{TXT_DEFERRED}</option>
+                </select>
+                <br />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {TXT_SHOP_ACCEPTED_PAYMENT_METHODS}
+              </td>
+              <td>
+                <input name="yellowpay_accepted_payment_methods[]" id="yellowpay_pm_1" type="checkbox"{SHOP_YELLOWPAY_CHECKED_POSTFINANCECARD} value="PostFinanceCard" />
+                <label for="yellowpay_pm_1">&nbsp;{TXT_SHOP_YELLOWPAY_POSTFINANCECARD}</label><br />
+                <input name="yellowpay_accepted_payment_methods[]" id="yellowpay_pm_2" type="checkbox"{SHOP_YELLOWPAY_CHECKED_YELLOWNET} value="yellownet" />
+                <label for="yellowpay_pm_2">&nbsp;{TXT_SHOP_YELLOWPAY_YELLOWNET}</label><br />
+                <input name="yellowpay_accepted_payment_methods[]" id="yellowpay_pm_3" type="checkbox"{SHOP_YELLOWPAY_CHECKED_MASTER} value="Master" />
+                <label for="yellowpay_pm_3">&nbsp;{TXT_SHOP_YELLOWPAY_MASTER}</label><br />
+                <input name="yellowpay_accepted_payment_methods[]" id="yellowpay_pm_4" type="checkbox"{SHOP_YELLOWPAY_CHECKED_VISA} value="Visa" />
+                <label for="yellowpay_pm_4">&nbsp;{TXT_SHOP_YELLOWPAY_VISA}</label><br />
+                <input name="yellowpay_accepted_payment_methods[]" id="yellowpay_pm_5" type="checkbox"{SHOP_YELLOWPAY_CHECKED_AMEX} value="Amex" />
+                <label for="yellowpay_pm_5">&nbsp;{TXT_SHOP_YELLOWPAY_AMEX}</label><br />
+                <input name="yellowpay_accepted_payment_methods[]" id="yellowpay_pm_6" type="checkbox"{SHOP_YELLOWPAY_CHECKED_DINERS} value="Diners" />
+                <label for="yellowpay_pm_6">&nbsp;{TXT_SHOP_YELLOWPAY_DINERS}</label><br />
+                <input name="yellowpay_accepted_payment_methods[]" id="yellowpay_pm_7" type="checkbox"{SHOP_YELLOWPAY_CHECKED_YELLOWBILL} value="yellowbill" />
+                <label for="yellowpay_pm_7">&nbsp;{TXT_SHOP_YELLOWPAY_YELLOWBILL}</label>
+              </td>
+            </tr>
+          </table>
         </div>
       </td>
       <td nowrap="nowrap"><div align="center"><input type="checkbox" name="yellowpay_status" value="1" {SHOP_YELLOWPAY_STATUS} /></div></td>

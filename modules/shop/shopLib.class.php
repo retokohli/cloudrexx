@@ -165,7 +165,7 @@ class ShopLibrary
                 (!empty($onchange) ? " onchange='$onchange'" : '') .">\n";
         $query = "SELECT zones_id, zones_name FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones WHERE activation_status=1";
         $objResult = $objDatabase->Execute($query);
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             $menu .=
                 "<option value='".$objResult->fields['zones_id']."'".
                 (intval($selectedId)==intval($objResult->fields['zones_id'])
@@ -245,87 +245,26 @@ class ShopLibrary
     }
 
 
-    /**
-     * Returns a dropdown menu string with all available order status.
-     *
-     * @param   string  $selectedId     Optional preselected status ID
-     * @param   string  $menuName       Optional menu name
-     * @param   string  $onchange       Optional onchange callback function
-     * @return  string  $menu           The dropdown menu string
-     * @global  array   $_ARRAYLANG     Language array
-     */
-    function getOrderStatusMenu($selectedStatus=-1, $menuName='', $onchange='')
-    {
-        global $_ARRAYLANG;
-
-        $menu = '';
-        foreach ($this->arrOrderStatus as $status => $statusText) {
-            $menu .= '<option value="'.$status.'" '.
-            ($selectedStatus == $status ? 'selected="selected"' : '').
-            '>'.$statusText."</option>\n";
-        }
-        if ($menuName != '') {
-            $menu =
-                '<select name="'.$menuName.'" id="'.$menuName.'" '.
-                ($onchange != '' ? 'onchange="'.$onchange.'"' : '').
-                ">\n".$menu."</select>\n";
-        } else {
-            $menu =
-                '<option value="-1">-- '.
-                $_ARRAYLANG['TXT_STATUS'].
-                " --</option>\n".
-                $menu;
-        }
-        return $menu;
-    }
-
-
-/*  replaced by Shipment.class!
-
-    function _initShipment()
-    {
-        global $objDatabase;
-
-         $query = "SELECT id, name, costs, costs_free_sum, status ".
-            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipment ".
-            "ORDER BY id";
-         $objResult = $objDatabase->Execute($query);
-         while(!$objResult->EOF) {
-            $this->arrShipment[$objResult->fields['id']]= array(
-                'id' => $objResult->fields['id'],
-                'name' => $objResult->fields['name'],
-                'costs' => $objResult->fields['costs'],
-                'costs_free_sum' => $objResult->fields['costs_free_sum'],
-                'status' => $objResult->fields['status']
-            );
-            $objResult->MoveNext();
-        }
-    }
-*/
-
-
     function _initCountries()
     {
         global $objDatabase;
 
-         $query = "SELECT countries_id,
-                            countries_name,
-                           countries_iso_code_2,
-                           countries_iso_code_3,
-                            activation_status
-                      FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
-                      ORDER BY countries_id";
-
+        $query = "
+            SELECT countries_id, countries_name,
+                   countries_iso_code_2, countries_iso_code_3,
+                   activation_status
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+             ORDER BY countries_id
+         ";
          $objResult = $objDatabase->Execute($query);
-
-         while(!$objResult->EOF) {
-            $this->arrCountries[$objResult->fields['countries_id']]= array(
-               'countries_id' => $objResult->fields['countries_id'],
-               'countries_name' => $objResult->fields['countries_name'],
-               'countries_iso_code_2' => $objResult->fields['countries_iso_code_2'],
-               'countries_iso_code_3' => $objResult->fields['countries_iso_code_3'],
-               'activation_status' => $objResult->fields['activation_status']
-               );
+         while (!$objResult->EOF) {
+            $this->arrCountries[$objResult->fields['countries_id']] = array(
+                'countries_id' => $objResult->fields['countries_id'],
+                'countries_name' => $objResult->fields['countries_name'],
+                'countries_iso_code_2' => $objResult->fields['countries_iso_code_2'],
+                'countries_iso_code_3' => $objResult->fields['countries_iso_code_3'],
+                'activation_status' => $objResult->fields['activation_status']
+            );
             $objResult->MoveNext();
         }
     }
@@ -339,13 +278,13 @@ class ShopLibrary
                   "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment ".
                   "ORDER BY sort_order";
          $objResult = $objDatabase->Execute($query);
-         while(!$objResult->EOF) {
-            $this->arrPayment[$objResult->fields['id']]= array(
+         while (!$objResult->EOF) {
+            $this->arrPayment[$objResult->fields['id']] = array(
                 'id' => $objResult->fields['id'],
                 'name' => $objResult->fields['name'],
                 'processor_id' => $objResult->fields['processor_id'],
-                'costs'    => $objResult->fields['costs'],
-                'costs_free_sum'    => $objResult->fields['costs_free_sum'],
+                'costs' => $objResult->fields['costs'],
+                'costs_free_sum' => $objResult->fields['costs_free_sum'],
                 'sort_order' => $objResult->fields['sort_order'],
                 'status' => $objResult->fields['status']
             );
@@ -357,21 +296,29 @@ class ShopLibrary
     /**
      * gets a select box with all the payment handlers
      *
-     * @param  string  optional $menuName
-     * @param  string  optional $selectedhandlerName
-     * @return string $menu
+     * @param   string  $menuName
+     * @param   string  $selectedId
+     * @return  string  $menu
      */
-    function _getPaymentHandlerMenu($menuName="paymentHandler", $selectedhandlerName="Internal")
+    function _getPaymentHandlerMenu($menuName='paymentHandler', $selectedId=0)
     {
         global $objDatabase;
-        $menu = "\n<select name=\"".$menuName."\">\n";
-        // paymentHandlers array from the shopmanager class
 
-        $query = "SELECT id, name FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment_processors WHERE status=1 ORDER BY name";
+        $menu = "\n<select name=\"".$menuName."\">\n";
+        $query = "
+            SELECT id, name
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment_processors
+             WHERE status=1
+             ORDER BY name
+        ";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
-            $selected = ($selectedhandlerName==$objResult->fields['id']) ? "selected=\"selected\"" : "";
-            $menu .= "<option value=\"".$objResult->fields['id']."\" ".$selected.">".$objResult->fields['name']."</option>\n";
+
+            $menu .=
+                '<option value="'.$objResult->fields['id'].'"'.
+                ($selectedId == $objResult->fields['id']
+                    ? ' selected="selected"' : ''
+                ).'>'.$objResult->fields['name']."</option>\n";
             $objResult->MoveNext();
         }
         $menu .= "</select>\n";
@@ -389,21 +336,23 @@ class ShopLibrary
     {
         global $objDatabase;
 
-        $query = "SELECT id, name, value, status FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config ORDER BY id";
+        $query = "
+            SELECT id, name, value, status
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
+        ";
         $objResult = $objDatabase->Execute($query);
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             $this->arrConfig[$objResult->fields['name']] = array(
                 'id'     => $objResult->fields['id'],
                 'value'  => $objResult->fields['value'],
-                'status' => $objResult->fields['status']
+                'status' => $objResult->fields['status'],
             );
             $objResult->MoveNext();
         }
-
         $this->arrConfig['js_cart'] = array(
             'id'     => 9999,
             'value'  => '',
-            'status' => '0'
+            'status' => '0',
         );
     }
 
@@ -429,7 +378,6 @@ class ShopLibrary
 
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
             $objMail = new phpmailer();
-
             if (   isset($_CONFIG['coreSmtpServer'])
                 && $_CONFIG['coreSmtpServer'] > 0
                 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
@@ -517,16 +465,18 @@ class ShopLibrary
      * "Non-ASCII characters must first be encoded according to UTF-8 [STD63],
      * and then each octet of the corresponding UTF-8 sequence must be percent-
      * encoded to be represented as URI characters".
+     * @todo    This doesn't really belong here.  Should be placed into a
+     *          proper core e-mail class as a static method.
      * @version 1.0
-     * @param  string  $string
-     * @return boolean result
+     * @param   string  $string
+     * @return  boolean
      */
     function shopCheckEmail($string)
     {
         if (preg_match(
-            '/^[a-z0-9]+([-_\.a-z0-9]+)*'.  //user
-            '@([a-z0-9]+([-\.a-z0-9]+)*)+'. //domain
-            '\.[a-z]{2,4}$/',               //sld, tld
+            '/^[a-z0-9]+([-_\.a-z0-9]+)*'.  // user
+            '@([a-z0-9]+([-\.a-z0-9]+)*)+'. // domain
+            '\.[a-z]{2,4}$/',               // sld, tld
             $string
         )) {
             return true;
@@ -544,16 +494,17 @@ class ShopLibrary
      * @param   integer $customerId     The customers' ID
      * @return  boolean                 True if the email address is unique, false otherwise
      */
-    function _checkEmailIntegrity($email, $customerId = 0)
+    function _checkEmailIntegrity($email, $customerId=0)
     {
         global $objDatabase;
 
-        if ($customerId != 0) {
-            $objResult = $objDatabase->SelectLimit("SELECT customerid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers WHERE email='".$email."' AND customerid !=".$customerId, 1);
-        } else {
-            $objResult = $objDatabase->SelectLimit("SELECT customerid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers WHERE email='".$email."'", 1);
-        }
-        if ($objResult !== false && $objResult->RecordCount() == 0) {
+        $objResult = $objDatabase->Execute("
+            SELECT customerid
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
+             WHERE email='$email'
+               ".($customerId > 0 ? "AND customerid!=$customerId" : '')
+        );
+        if ($objResult && $objResult->RecordCount() == 0) {
             return true;
         }
         return false;
@@ -564,24 +515,47 @@ class ShopLibrary
      * Checks that the username isn't already used by an other customer
      *
      * @access  private
-     * @global          $objDatabase    Database object
+     * @global  mixed   $objDatabase    Database object
      * @param   string  $username       The user name
      * @param   integer $customerId     The customers' ID
      * @return  boolean                 True if the user name is unique, false otherwise
      */
-    function _checkUsernameIntegrity($username, $customerId = 0)
+    function _checkUsernameIntegrity($username, $customerId=0)
     {
         global $objDatabase;
 
-        if ($customerId != 0) {
-            $objResult = $objDatabase->SelectLimit("SELECT customerid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers WHERE username='".$username."' AND customerid !=".$customerId, 1);
-        } else {
-            $objResult = $objDatabase->SelectLimit("SELECT customerid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers WHERE username='".$username."'", 1);
-        }
-        if ($objResult !== false && $objResult->RecordCount() == 0) {
+        $objResult = $objDatabase->Execute("
+            SELECT customerid
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
+             WHERE username='$username'
+               ".($customerId > 0 ? "AND customerid!=$customerId" : '')
+        );
+        if ($objResult && $objResult->RecordCount() == 0) {
             return true;
         }
         return false;
+    }
+
+
+    /**
+     * Convert the order ID and date to a custom order ID of the form
+     * A-xx-yyy, where xx is the two digit year and yyy is the order ID.
+     *
+     * This method may be customized to meet the needs of any shop owner.
+     * The custom order ID may be used for creating user accounts for
+     * protected downloads, for example.
+     * The order date provided must start with the current year in four digit
+     * notation, like the mySQL datetime format.
+     * @param   integer   $orderId        The order ID
+     * @param   string    $orderDateTime  The order date
+     * @return  string                    The custom order ID
+     */
+    function getCustomOrderId($orderId, $orderDateTime)
+    {
+        $year = preg_replace(
+            '/^\d\d(\d\d).+$/', '$1', $orderDateTime
+        );
+        return "A-$year-$orderId";
     }
 }
 

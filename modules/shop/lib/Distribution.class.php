@@ -109,25 +109,30 @@ class Distribution
      * dropdown menu.
      *
      * @param   string  $selected   The distribution type to preselect
-     * @param   string  $menuName   The name for the select element
+     * @param   string  $menuName   The name and ID for the select element
      * @param   string  $selectAttributes   Optional attributes for the select tag
      * @return  string              The dropdown menu code
      *
      */
-    function getDistributionMenu($selected='', $menuName='distribution', $selectAttributes='')
+    function getDistributionMenu(
+        $selected='', $menuName='shopDistribution',
+        $onChange='', $selectAttributes='')
     {
         global $_ARRAYLANG;
 
-        $menu = "<select name='$menuName'".
+        $menu = "<select name='$menuName' id='$menuName'".
             ($selectAttributes == '' ? '' : " $selectAttributes").
+            ($onChange         == '' ? '' : ' onchange="'.$onChange.'"').
             ">".
             ($selected == ''
-                ? "<option value='0' selected='selected'>".$_ARRAYLANG['TXT_SHOP_PLEASE_SELECT']."</option>\n"
+                ? "<option value='0' selected='selected'>".
+                  $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'].
+                  "</option>\n"
                 : ''
             );
         foreach ($this->arrDistributionTypes as $type) {
             $menu .= "<option value='$type'".
-                ($selected == $type ? " selected='selected'" : '').
+                ($selected == $type ? ' selected="selected"' : '').
                 '>'.
                 $_ARRAYLANG['TXT_DISTRIBUTION_'.strtoupper($type)].
                 "</option>\n";

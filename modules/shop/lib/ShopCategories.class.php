@@ -672,7 +672,6 @@ class ShopCategories
     function getShopCategoriesMenu(
         $selectedId=0, $flagActiveOnly=true, $maxlevel=0
     ) {
-//echo("ShopCategories::getShopCategoriesMenu(): ".($flagActiveOnly ? 'true' : 'false')."<br />");
 // TODO: Implement this in a way so that both the Shopnavbar and the Shopmenu
 // can be set up using only one call to buildTreeArray().
 // Unfortunately, the set of records used is not identical in both cases.

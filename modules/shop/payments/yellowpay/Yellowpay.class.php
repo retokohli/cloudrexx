@@ -31,8 +31,6 @@
  * GET after payment has been cancelled:
  *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=2
  */
-// error_reporting(E_ALL);
-
 class Yellowpay
 {
     /**
@@ -41,24 +39,24 @@ class Yellowpay
      * @var     string
      * @see     getForm(), addToForm()
      */
-    var $form;
+    private $form;
 
     /**
-     * Determine the transaction mode
+     * Enable test mode if true
      * @access  private
      * @var     boolean
      * @see     getForm()
      */
-    var $is_test = NULL;
+    private $is_test = true;
 
     /**
      * Information that was handed over to the class
      * @access  private
      * @var     array
-     * @see     Yellowpay(), __construct(), checkPaymentTypeKeys(),
-     *          checkOtherKeys(), checkKey(), addToForm(), ifExist()
+     * @see     Yellowpay(), __construct(), addPaymentTypeKeys(),
+     *          addOtherKeys(), checkKey(), addToForm()
      */
-    var $arrShopOrder = array();
+    private $arrShopOrder = array();
 
     /**
      * Error messages
@@ -66,15 +64,15 @@ class Yellowpay
      * @var     array
      * @see     getForm(), checkKey()
      */
-    var $arrError = array();
+    public $arrError = array();
 
     /**
      * Warning messages
      * @access  public
      * @var     array
-     * @see     checkPaymentTypeKeys(), checkKey()
+     * @see     addPaymentTypeKeys(), checkKey()
      */
-    var $arrWarning = array();
+    public $arrWarning = array();
 
     /**
      * Language codes
@@ -82,11 +80,11 @@ class Yellowpay
      * @var     array
      * @see     checkKey()
      */
-    var $arrLangVersion = array(
+    private $arrLangVersion = array(
         'DE' => 2055,
         'US' => 2057,
         'IT' => 2064,
-        'FR' => 4108
+        'FR' => 4108,
     );
 
     /**
@@ -95,7 +93,11 @@ class Yellowpay
      * @var     array
      * @see     checkKey()
      */
-    var $arrArtCurrency = array('CHF', 'USD', 'EUR');
+    private $arrArtCurrency = array(
+        'CHF',
+        'USD',
+        'EUR',
+    );
 
     /**
      * Delivery payment types
@@ -103,43 +105,45 @@ class Yellowpay
      * @var     array
      * @see     checkKey()
      */
-    var $arrDeliveryPaymentType = array('immediate', 'deferred');
+    private $arrDeliveryPaymentType = array(
+        'immediate',
+        'deferred',
+    );
 
     /**
      * Payment types
      * @access  private
      * @var     array
-     * @see     checkPaymentTypeKeys()
+     * @see     addPaymentTypeKeys()
      */
-    var $arrPaymentType = array(
-        'DebitDirect' => array(),
-        'yellownet'   => array(),
-        'Master'      => array(),
-        'Visa'        => array(),
-        'Amex'        => array(),
-        'Diners'      => array(),
-        'yellowbill'  => array(
+    private $arrPaymentType = array(
+        'PostFinanceCard' => array(),
+        'yellownet' => array(),
+        'Master' => array(),
+        'Visa' => array(),
+        'Amex' => array(),
+        'Diners' => array(),
+        'yellowbill' => array(
             'txtESR_Member',
             'txtBLastName',
             'txtBAddr1',
             'txtBZipCode',
-            'txtBCity'
-        )
+            'txtBCity',
+        ),
     );
+
+    /**
+     * Accepted payment methods; comma separated list, no whitespace!
+     * @var   string
+     */
+    private $strAcceptedPaymentMethods;
 
 
     /**
      * Constructor
      */
-    function Yellowpay($is_test=false)
+    function Yellowpay()
     {
-        $this->__construct($is_test);
-    }
-
-
-    function __construct($is_test=false)
-    {
-        $this->is_test = $is_test;
     }
 
 
@@ -147,28 +151,25 @@ class Yellowpay
      * Creates and returns the HTML-Form for requesting the yellowpay-service.
      *
      * @access  public
-     * @return  string  The HTML-Form
-     * @see     checkRequiredKeys(), checkPaymentTypeKeys(), checkOtherKeys()
+     * @return  string    The HTML-Form
+     * @see     addRequiredKeys(), addPaymentTypeKeys(), addOtherKeys()
      */
     function getForm($arrShopOrder, $submitValue='send')
     {
         $this->arrShopOrder = $arrShopOrder;
 
         if ($this->is_test) {
-            // in test modus
+            // Test mode
             $this->form ="<form action='https://yellowpaytest.postfinance.ch/checkout/Yellowpay.aspx?userctrl=Invisible' method='post'>\n";
         } else {
-            // active modus
+            // Live mode
             $this->form ="<form action='https://yellowpay.postfinance.ch/checkout/Yellowpay.aspx?userctrl=Invisible' method='post'>\n";
         }
-
-        $this->checkRequiredKeys();
-        $this->checkPaymentTypeKeys();
-        $this->checkOtherKeys();
-
+        $this->addRequiredKeys();
+        $this->addPaymentTypeKeys();
+        $this->addOtherKeys();
         $this->form .= "<input type='submit' name='submit' value='$submitValue' />\n";
         $this->form .= '</form>';
-
         return $this->form;
     }
 
@@ -179,13 +180,13 @@ class Yellowpay
      * @access  private
      * @see     checkKey()
      */
-    function checkRequiredKeys()
+    function addRequiredKeys()
     {
-        $this->getHash();
-        $this->checkKey('txtShopId');
-        $this->checkKey('txtLangVersion');
-        $this->checkKey('txtOrderTotal');
-        $this->checkKey('txtArtCurrency');
+        $this->addHash();
+        $this->addToForm('txtShopId');
+        $this->addToForm('txtLangVersion');
+        $this->addToForm('txtOrderTotal');
+        $this->addToForm('txtArtCurrency');
     }
 
 
@@ -195,27 +196,52 @@ class Yellowpay
      * Checks if all keys for the payment type were set correctly.
      *
      * @access  private
-     * @see     ifExist(), addToForm(), checkKey()
+     * @see     addToForm(), checkKey()
      */
-    function checkPaymentTypeKeys()
+    function addPaymentTypeKeys()
     {
-        if ($this->ifExist('PaymentType')) {
-            if (array_key_exists(
-                $this->arrShopOrder['PaymentType'],
-                $this->arrPaymentType)
-            ) {
-                $this->arrShopOrder['TxtUseDynPM'] = 'true';
-                $this->addToForm('TxtUseDynPM');
-                $this->arrShopOrder['txtPM_'.$this->arrShopOrder['PaymentType'].'_Status'] = 'true';
-                $this->addToForm('txtPM_'.$this->arrShopOrder['PaymentType'].'_Status');
-                foreach ($this->arrPaymentType[$this->arrShopOrder['PaymentType']] as $key) {
-                    $this->checkKey($key);
-                }
-            } else {
-                $this->arrWarning[] = 'PaymentType('.$this->arrShopOrder['PaymentType'].") isn't valid.";
-            }
-            unset($this->arrShopOrder['PaymentType']);
+        // Skip this if no payment methods are specified.
+        if (!isset($this->arrShopOrder['acceptedPaymentMethods'])) {
+            return;
         }
+        $arrAcceptedPM = explode(',', $this->arrShopOrder['acceptedPaymentMethods']);
+        if (empty($arrAcceptedPM)) {
+            return;
+        }
+
+        foreach ($arrAcceptedPM as $strPM) {
+            if (array_key_exists($strPM, $this->arrPaymentType)) {
+                $this->arrShopOrder["txtPM_{$strPM}_Status"] = 'true';
+                $this->addToForm("txtPM_{$strPM}_Status");
+            } else {
+                $this->arrError[] = "Payment type '$strPM' is unknown.";
+                return;
+            }
+        }
+        // Enable dynamic payment method selection
+        $this->arrShopOrder['txtUseDynPM'] = 'true';
+        $this->addToForm('txtUseDynPM');
+    }
+
+
+    /**
+     * Returns an array with all supported payment types.
+     *
+     * Note: This is still under development.
+     * @return  array         The payment type name strings
+     */
+    function getActivePaymentTypes()
+    {
+        //return array_keys($this->arrPaymentType);
+        return array(
+            'PostFinanceCard',
+            'yellownet',
+            'Master',
+            'Visa',
+            'Amex',
+            'Diners',
+            'yellowbill',
+        );
     }
 
 
@@ -227,159 +253,12 @@ class Yellowpay
      * @access  private
      * @see     checkKey()
      */
-    function checkOtherKeys()
+    function addOtherKeys()
     {
         unset($this->arrShopOrder['ShopId']);
         unset($this->arrShopOrder['Hash_seed']);
         foreach (array_keys($this->arrShopOrder) as $key) {
-            $this->checkKey($key);
-        }
-    }
-
-
-    /**
-     * Verifies the value of a key.
-     * If the key is correct, it is added to the HTML form.
-     *
-     * @access  private
-     * @param   string  Key to check for correctness
-     * @return  boolean True on success, false on failure
-     * @see     ifExist(), addToForm()
-     */
-    function checkKey($key)
-    {
-        if ($this->ifExist($key)) {
-            switch ($key) {
-                case 'txtShopId':
-                    if (strlen($this->arrShopOrder[$key]) > 30) {
-                        $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 30);
-                        $this->arrWarning[] = $key.' was cut to 30 characters.';
-                    } elseif ($this->arrShopOrder[$key] == '') {
-                        $this->arrError[] = $key." isn't valid.";
-                    }
-                    break;
-                case 'txtLangVersion':
-                    if (array_key_exists(strtoupper($this->arrShopOrder[$key]),$this->arrLangVersion)) {
-                        $this->arrShopOrder[$key] = $this->arrLangVersion[strtoupper($this->arrShopOrder[$key])];
-                    } else {
-                        $this->arrShopOrder[$key] = $this->arrLangVersion['US'];
-                        $this->arrWarning[] = $key.' was set to US';
-                    }
-                    break;
-                case 'txtOrderTotal':
-                    if (!ereg('^[0-9]+\.[0-9]{1,2}$',$this->arrShopOrder[$key])) {
-                        $this->arrShopOrder[$key] = Currency::formatPrice($this->arrShopOrder[$key]);
-                        $this->arrWarning[] = $key.' was reformated to '.$this->arrShopOrder[$key];
-                    }
-                    if ($this->arrShopOrder[$key] <= 0) {
-                        $this->arrError[] = $key." isn't valid.";
-                    }
-                    break;
-                case 'txtArtCurrency':
-                    if (!in_array(strtoupper($this->arrShopOrder[$key]),$this->arrArtCurrency)) {
-                        $this->arrShopOrder[$key] = $this->arrArtCurrency[0];
-                        $this->arrWarning[] = $key.' was set to '.$this->arrArtCurrency[0];
-                    }
-                    $this->arrShopOrder[$key] = strtoupper($this->arrShopOrder[$key]);
-                    break;
-                case 'txtOrderIDShop':
-                    if (strlen($this->arrShopOrder[$key]) > 18) {
-                        $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 18);
-                        $this->arrWarning[] = $key.' was cut to 18 characters.';
-                    }
-                    break;
-                case 'DeliveryPaymentType':
-                    if (!in_array($this->arrShopOrder[$key],$this->arrDeliveryPaymentType)) {
-                        $this->arrShopOrder[$key] = $this->arrDeliveryPaymentType['1'];
-                        $this->arrWarning[] = "$key was set to '{$this->arrDeliveryPaymentType['1']}'.";
-                    }
-                    break;
-                case 'txtESR_Member':
-                    if (!ereg('^[0-9]{1,2}-[0-9]{1,6}-[0-9]$',$this->arrShopOrder[$key])) {
-                        $this->arrError[] = $key." isn't valid.";
-                    }
-                    break;
-                case 'txtESR_Ref':
-                    if (!strlen($this->arrShopOrder[$key]) == 16 or !strlen($this->arrShopOrder[$key]) == 27) {
-                        $this->arrWarning[] = $key." isn't valid.";
-                    }
-                    break;
-                case 'txtShopPara':
-                    if (strlen($this->arrShopOrder[$key]) > 255) {
-                        $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 255);
-                        $this->arrWarning[] = $key.' was cut to 255 characters.';
-                    }
-                    break;
-                case 'txtBTitle':
-                    if (strlen($this->arrShopOrder[$key]) > 30) {
-                        $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 30);
-                        $this->arrWarning[] = $key.' was cut to 30 characters.';
-                    }
-                    break;
-                case 'txtBLastName':
-                    if (strlen($this->arrShopOrder[$key]) > 40) {
-                        $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
-                        $this->arrWarning[] = $key.' was cut to 40 characters.';
-                    }
-                    break;
-                case 'txtBFirstName':
-                    if (strlen($this->arrShopOrder[$key]) > 40) {
-                        $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
-                        $this->arrWarning[] = $key.' was cut to 40 characters.';
-                    }
-                    break;
-                case 'txtBAddr1':
-                    if (strlen($this->arrShopOrder[$key]) > 40) {
-                        $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
-                        $this->arrWarning[] = $key.' was cut to 40 characters.';
-                    }
-                    break;
-                case 'txtBZipCode':
-                    if (strlen($this->arrShopOrder[$key]) > 10) {
-                        $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 10);
-                        $this->arrWarning[] = $key.' was cut to 10 characters.';
-                    }
-                    break;
-                case 'txtBCity':
-                    if (strlen($this->arrShopOrder[$key]) > 40) {
-                        $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
-                        $this->arrWarning[] = $key.' was cut to 40 characters.';
-                    }
-                    break;
-                case 'txtBCountry':
-                    if (strlen($this->arrShopOrder[$key]) > 2) {
-                        $this->arrError[] = $key." isn't a valid 2 character ISO country code.";
-                    } else {
-                        $this->arrShopOrder[$key] = strtoupper($this->arrShopOrder[$key]);
-                    }
-                    break;
-                case 'txtBTel':
-                    if (strlen($this->arrShopOrder[$key]) > 40) {
-                        $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
-                        $this->arrWarning[] = $key.' was cut to 40 characters.';
-                    }
-                    break;
-                case 'txtBFax':
-                    if (strlen($this->arrShopOrder[$key]) > 40) {
-                        $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
-                        $this->arrWarning[] = $key.' was cut to 40 characters.';
-                    }
-                    break;
-                case 'txtBEmail':
-                    if (strlen($this->arrShopOrder[$key]) > 40) {
-                        $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
-                        $this->arrWarning[] = $key.' was cut to 40 characters.';
-                    }
-                    break;
-                default:
-                    $this->arrWarning[] = $key." isn't a valid key!";
-                    break;
-            }
             $this->addToForm($key);
-            return true;
-        } else {
-            $this->arrError[] = $key.' is needed for this operation!';
-            return false;
         }
     }
 
@@ -389,13 +268,13 @@ class Yellowpay
      *
      * @return  void
      */
-    function getHash()
+    function addHash()
     {
-        if ($this->arrShopOrder['ShopId'] == '') {
-            $this->arrError[] = "ShopId isn't valid";
+        if (empty($this->arrShopOrder['ShopId'])) {
+            $this->arrError[] = "Missing the ShopId parameter";
         }
         if ($this->arrShopOrder['Hash_seed'] == '') {
-            $this->arrError[] = "Hash_seed isn't valid";
+            $this->arrError[] = "Missing the Hash_seed parameter";
         }
         $this->arrShopOrder['txtHash'] = md5(
             $this->arrShopOrder['ShopId'].
@@ -410,29 +289,214 @@ class Yellowpay
     /**
      * Adds a key to the HTML form and removes it from the array arrShopOrder.
      *
-     * @param   string  Key to be added to the HTML form
-     * @return  void
+     * Verifies any key/value pair and only adds valid parameters.
+     * @param   string    $key    Key to be added to the HTML form
+     * @return  boolean           True on success, false otherwise
      */
     function addToForm($key)
     {
-        $this->form .= "<input type='hidden' name='$key' value='{$this->arrShopOrder[$key]}' />\n";
-        unset($this->arrShopOrder[$key]);
+        if ($this->checkKey($key)) {
+            $this->form .= "<input type='hidden' name='$key' value='{$this->arrShopOrder[$key]}' />\n";
+            unset($this->arrShopOrder[$key]);
+            return true;
+        }
+        return false;
     }
 
 
     /**
-     * Checks whether the given key exists in the array arrShopOrder.
-     * @param   string  Key to check for its existence
-     * @return  boolean True on success, false on failure
+     * Verifies a key/value pair.
+     *
+     * @access  private
+     * @param   string    $key    Key to check
+     * @return  boolean           True if both key and value are valid,
+     *                            false otherwise
+     * @see     addToForm()
      */
-    function ifExist($key)
+    function checkKey($key)
     {
-        if (array_key_exists($key, $this->arrShopOrder)) {
-            return true;
-        } else {
+        if (!array_key_exists($key, $this->arrShopOrder)) {
+            $this->arrError[] = "Missing mandatory key '$key'!";
             return false;
         }
+        switch ($key) {
+            case 'txtShopId':
+                if (empty($this->arrShopOrder[$key])) {
+                    $this->arrError[] = "$key isn't valid.";
+                    return false;
+                }
+                if (strlen($this->arrShopOrder[$key]) > 30) {
+                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 30);
+                    $this->arrWarning[] = "$key was cut to 30 characters.";
+                }
+                break;
+            case 'txtLangVersion':
+                if (array_key_exists(strtoupper($this->arrShopOrder[$key]), $this->arrLangVersion)) {
+                    $this->arrShopOrder[$key] = $this->arrLangVersion[strtoupper($this->arrShopOrder[$key])];
+                } else {
+                    $this->arrShopOrder[$key] = $this->arrLangVersion['US'];
+                    $this->arrWarning[] = "$key was set to US";
+                }
+                break;
+            case 'txtOrderTotal':
+                if (   empty($this->arrShopOrder[$key])
+                    || $this->arrShopOrder[$key] <= 0) {
+                    $this->arrError[] = "$key is missing or invalid.";
+                    return false;
+                }
+                if (!ereg('^[0-9]+\.[0-9]{1,2}$', $this->arrShopOrder[$key])) {
+                    $this->arrShopOrder[$key] = Currency::formatPrice($this->arrShopOrder[$key]);
+                    $this->arrWarning[] = "$key was reformatted to ".$this->arrShopOrder[$key];
+                }
+                break;
+            case 'txtArtCurrency':
+                if (empty($this->arrShopOrder[$key])) {
+                    $this->arrError[] = "$key is missing.";
+                    return false;
+                }
+                $this->arrShopOrder[$key] = strtoupper($this->arrShopOrder[$key]);
+                if (!in_array($this->arrShopOrder[$key], $this->arrArtCurrency)) {
+                    $this->arrShopOrder[$key] = $this->arrArtCurrency[0];
+                    $this->arrWarning[] = "$key was set to ".$this->arrArtCurrency[0];
+                }
+                break;
+            case 'txtOrderIDShop':
+                if (strlen($this->arrShopOrder[$key]) > 18) {
+                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 18);
+                    $this->arrWarning[] = "$key was cut to 18 characters.";
+                }
+                break;
+            case 'deliveryPaymentType':
+                if (!in_array($this->arrShopOrder[$key], $this->arrDeliveryPaymentType)) {
+                    $this->arrShopOrder[$key] = $this->arrDeliveryPaymentType['1'];
+                    $this->arrWarning[] = "$key was set to '{$this->arrDeliveryPaymentType['1']}'.";
+                }
+                break;
+            case 'txtESR_Member':
+                if (!ereg('^[0-9]{1,2}-[0-9]{1,6}-[0-9]$', $this->arrShopOrder[$key])) {
+                    $this->arrError[] = "$key isn't valid.";
+                    return false;
+                }
+                break;
+            case 'txtESR_Ref':
+                if (!strlen($this->arrShopOrder[$key]) == 16 or !strlen($this->arrShopOrder[$key]) == 27) {
+                    $this->arrWarning[] = "$key isn't valid.";
+                }
+                break;
+            case 'txtShopPara':
+                if (strlen($this->arrShopOrder[$key]) > 255) {
+                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 255);
+                    $this->arrWarning[] = "$key was cut to 255 characters.";
+                }
+                break;
+            case 'txtBTitle':
+                if (strlen($this->arrShopOrder[$key]) > 30) {
+                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 30);
+                    $this->arrWarning[] = "$key was cut to 30 characters.";
+                }
+                break;
+            case 'txtBLastName':
+                if (strlen($this->arrShopOrder[$key]) > 40) {
+                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
+                    $this->arrWarning[] = "$key was cut to 40 characters.";
+                }
+                break;
+            case 'txtBFirstName':
+                if (strlen($this->arrShopOrder[$key]) > 40) {
+                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
+                    $this->arrWarning[] = "$key was cut to 40 characters.";
+                }
+                break;
+            case 'txtBAddr1':
+                if (strlen($this->arrShopOrder[$key]) > 40) {
+                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
+                    $this->arrWarning[] = "$key was cut to 40 characters.";
+                }
+                break;
+            case 'txtBZipCode':
+                if (strlen($this->arrShopOrder[$key]) > 10) {
+                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 10);
+                    $this->arrWarning[] = $key.' was cut to 10 characters.';
+                }
+                break;
+            case 'txtBCity':
+                if (strlen($this->arrShopOrder[$key]) > 40) {
+                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
+                    $this->arrWarning[] = "$key was cut to 40 characters.";
+                }
+                break;
+            case 'txtBCountry':
+                if (strlen($this->arrShopOrder[$key]) != 2) {
+// TODO: Only valid ISO-3166 country codes are accepted by Yellowpay!
+// This should be verified.
+                    $this->arrError[] = "$key isn't a valid 2 character ISO country code.";
+                    return false;
+                }
+                $this->arrShopOrder[$key] = strtoupper($this->arrShopOrder[$key]);
+                break;
+            case 'txtBTel':
+                if (strlen($this->arrShopOrder[$key]) > 40) {
+                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
+                    $this->arrWarning[] = "$key was cut to 40 characters.";
+                }
+                break;
+            case 'txtBFax':
+                if (strlen($this->arrShopOrder[$key]) > 40) {
+                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
+                    $this->arrWarning[] = "$key was cut to 40 characters.";
+                }
+                break;
+            case 'txtBEmail':
+                if (strlen($this->arrShopOrder[$key]) > 40) {
+                    $this->arrShopOrder[$key] = substr($this->arrShopOrder[$key], 0, 40);
+                    $this->arrWarning[] = "$key was cut to 40 characters.";
+                }
+                break;
+
+            // Added 20080325, Reto Kohli:
+            case 'txtHash':
+                if (   empty($this->arrShopOrder[$key])
+                    || !preg_match('/^[0-9a-f]{32}$/', $this->arrShopOrder[$key])) {
+                    $this->arrError[] = "$key is invalid.";
+                    return false;
+                }
+                break;
+            case 'txtUsePopup':
+                if (   $this->arrShopOrder[$key] != 'true'
+                    && $this->arrShopOrder[$key] != 'false') {
+                    $this->arrShopOrder[$key] = 'true';
+                    $this->arrWarning[] = "$key was set to 'true'.";
+                }
+                break;
+            case 'txtUseWindow':
+                if (   $this->arrShopOrder[$key] != 'true'
+                    && $this->arrShopOrder[$key] != 'false') {
+                    $this->arrShopOrder[$key] = 'false';
+                    $this->arrWarning[] = "$key was set to 'false'.";
+                }
+                break;
+            case 'txtDestination':
+                if (   $this->arrShopOrder[$key] != 'pfpopup'
+                    && $this->arrShopOrder[$key] != 'pfwindow') {
+                    $this->arrShopOrder[$key] = 'pfpopup';
+                    $this->arrWarning[] = "$key was set to 'pfpopup'.";
+                }
+                break;
+            case 'txtHistoryBack':
+                if (   $this->arrShopOrder[$key] != 'true'
+                    && $this->arrShopOrder[$key] != 'false') {
+                    $this->arrShopOrder[$key] = 'false';
+                    $this->arrWarning[] = "$key was set to 'false'.";
+                }
+                break;
+
+            default:
+                $this->arrError[] = "$key is an unknown key!";
+                return false;
+        }
+        return true;
     }
+
 }
 
 ?>

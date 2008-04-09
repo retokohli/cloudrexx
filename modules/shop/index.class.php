@@ -3,12 +3,6 @@
 define('_SHOP_DEBUG', 0);
 
 /*
-Modifications to Products table:
-  ALTER TABLE `contrexx_module_shop_products` ADD `flags` VARCHAR( 100 ) NULL ;
-  ALTER TABLE `contrexx_module_shop_products` ADD INDEX ( `flags` ) ;
-*/
-
-/*
 
 Customization for Shop (or any other module) cloning
 
@@ -132,6 +126,10 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategories.class.php';
  * Discount: Custom calculations for discounts
  */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Discount.class.php';
+/**
+ * UserManagement: User account handling
+ */
+require_once ASCMS_CORE_PATH.'/usermanagement.class.php';
 
 
 /**
@@ -1174,10 +1172,10 @@ class Shop extends ShopLibrary
                 '&amp;term='.htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET);
         }
 
-        $count = 0;
         // The Product count is passed by reference and set to the total
         // number of records, though only as many as specified by the core
         // paging limit are returned in the array.
+        $count = '0';
         $arrProduct = Products::getByShopParams(
             $count, false, $flagSpecialoffer, $flagLastFive,
             $productId, $catId, $manufacturerId,
@@ -1218,8 +1216,6 @@ class Shop extends ShopLibrary
             $productSubmitFunction = '';
             $arrPictures = $this->_getShopImagesFromBase64String($objProduct->getPictures());
             $havePicture = false;
-            $thumbnailPath = '';
-            $pictureLink = '';
             $arrProductImages = array();
             foreach ($arrPictures as $index => $image) {
                 if (empty($image['img'])
@@ -1337,8 +1333,6 @@ class Shop extends ShopLibrary
                     $_ARRAYLANG['TXT_MORE_INFORMATIONS'].'</a>';
             }
 
-            $productWeight = $objProduct->getWeight();
-
             // Check Product flags.
             // Only the meter flag is currently implemented and in use.
             $flagMeter = $objProduct->testFlag('__METER__');
@@ -1420,6 +1414,12 @@ class Shop extends ShopLibrary
                     'SHOP_PRODUCT_DETAILLINK' => $detailLink,
                 ));
             }
+            $shopDistribution = $objProduct->getDistribution();
+            $productWeight = '';
+            if ($shopDistribution == 'delivery') {
+                $productWeight = $objProduct->getWeight();
+            }
+
             if ($productWeight > 0) {
                 $this->objTemplate->setVariable(array(
                     'TXT_SHOP_PRODUCT_WEIGHT' => $_ARRAYLANG['TXT_SHOP_PRODUCT_WEIGHT'],
@@ -2540,7 +2540,6 @@ sendReq('', 1);
         global $objDatabase, $_CONFIG;
 
         $arrProducts      = array();
-        $shipment         = false;
         $total_price      = 0;
         $total_tax_amount = 0;
         $total_weight     = 0;
@@ -2554,70 +2553,71 @@ sendReq('', 1);
                       FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
                      WHERE status=1 AND id=".$arrProduct['id']
                 );
-                if ($objResult && $objResult->RecordCount() == 1) {
-                    $productOptions      = '';
-                    $productOptionsPrice =  0;
-                    // get option names
-                    foreach ($_SESSION['shop']['cart']['products'][$cartProdId]['options'] as $optionId => $arrValueIds) {
-                        foreach ($arrValueIds as $valueId) {
-                            $productOptions .= ' ['.$this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['value'].'] ';
-                            $productOptionsPrice += $this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['price_prefix'] == "+" ? $this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['price'] : -$this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['price'];
-                        }
-                    }
-                    if ($productOptionsPrice != 0) {
-                        $_SESSION['shop']['cart']['products'][$cartProdId]['optionPrice'] = $this->objCurrency->getCurrencyPrice($productOptionsPrice);
-                        $priceOptions = $this->objCurrency->getCurrencyPrice($productOptionsPrice);
-                    } else {
-                        $priceOptions = 0;
-                    }
-                    $price = $this->_getProductPrice(
-                        $objResult->fields['normalprice'],
-                        $objResult->fields['resellerprice'],
-                        $objResult->fields['discountprice'],
-                        $objResult->fields['is_special_offer']
-                    );
-                    $quantity = $_SESSION['shop']['cart']['products'][$cartProdId]['quantity'];
-
-                    $itemprice  = $price + $priceOptions;
-                    $price      = $itemprice * $quantity;
-                    $itemweight = $objResult->fields['weight'];
-                    $weight     = $itemweight * $quantity;
-                    $tax_rate   = $this->objVat->getRate($objResult->fields['vat_id']);
-                    // calculate the amount if it's excluded; we'll add it later.
-                    // if it's included, we don't care.
-                    // if it's disabled, it's set to zero.
-                    $tax_amount = $this->objVat->amount($tax_rate, $price);
-
-                    $total_price      += $price;
-                    $total_tax_amount += $tax_amount;
-                    $total_weight     += $weight;
-
-                    array_push($arrProducts, array(
-                        'id'             => $arrProduct['id'],
-                        'product_id'     => $objResult->fields['product_id'],
-                        'cart_id'        => $cartProdId,
-                        'title'          => empty($_GET['remoteJs']) ? $objResult->fields['title'] : htmlspecialchars((strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? $objResult->fields['title'] : utf8_encode($objResult->fields['title']))),
-                        'options'        => $productOptions,
-                        'price'          => Currency::formatPrice($price),
-                        'price_unit'     => $this->aCurrencyUnitName,
-                        'quantity'       => $quantity,
-                        'itemprice'      => Currency::formatPrice($itemprice),
-                        'itemprice_unit' => $this->aCurrencyUnitName,
-                        'percent'        => $tax_rate,
-                        'tax_amount'     => Currency::formatPrice($tax_amount),
-                        'itemweight'     => $itemweight, // in grams!
-                        'weight'         => $weight,
-                    ));
-                    // require shipment if the distribution type is 'delivery'
-                    if (!$shipment && $objResult->fields['handler'] == 'delivery') {
-                        $shipment = true;
-                    }
-                } else {
+                if (!$objResult && $objResult->RecordCount() == 0) {
                     unset($_SESSION['shop']['cart']['products'][$cartProdId]);
+                    continue;
+                }
+                $productOptions      = '';
+                $productOptionsPrice =  0;
+                // get option names
+                foreach ($_SESSION['shop']['cart']['products'][$cartProdId]['options'] as $optionId => $arrValueIds) {
+                    foreach ($arrValueIds as $valueId) {
+                        $productOptions .= ' ['.$this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['value'].'] ';
+                        $productOptionsPrice += $this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['price_prefix'] == "+" ? $this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['price'] : -$this->arrProductAttributes[$arrProduct['id']][$optionId]['values'][$valueId]['price'];
+                    }
+                }
+                if ($productOptionsPrice != 0) {
+                    $_SESSION['shop']['cart']['products'][$cartProdId]['optionPrice'] = $this->objCurrency->getCurrencyPrice($productOptionsPrice);
+                    $priceOptions = $this->objCurrency->getCurrencyPrice($productOptionsPrice);
+                } else {
+                    $priceOptions = 0;
+                }
+                $price = $this->_getProductPrice(
+                    $objResult->fields['normalprice'],
+                    $objResult->fields['resellerprice'],
+                    $objResult->fields['discountprice'],
+                    $objResult->fields['is_special_offer']
+                );
+                $quantity = $_SESSION['shop']['cart']['products'][$cartProdId]['quantity'];
+
+                $itemprice  = $price + $priceOptions;
+                $price      = $itemprice * $quantity;
+                $handler = $objResult->fields['handler'];
+                $itemweight =
+                  ($handler == 'delivery' ? $objResult->fields['weight'] : 0);
+                $weight     = $itemweight * $quantity;
+                $tax_rate   = $this->objVat->getRate($objResult->fields['vat_id']);
+                // calculate the amount if it's excluded; we'll add it later.
+                // if it's included, we don't care.
+                // if it's disabled, it's set to zero.
+                $tax_amount = $this->objVat->amount($tax_rate, $price);
+
+                $total_price      += $price;
+                $total_tax_amount += $tax_amount;
+                $total_weight     += $weight;
+
+                array_push($arrProducts, array(
+                    'id'             => $arrProduct['id'],
+                    'product_id'     => $objResult->fields['product_id'],
+                    'cart_id'        => $cartProdId,
+                    'title'          => empty($_GET['remoteJs']) ? $objResult->fields['title'] : htmlspecialchars((strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? $objResult->fields['title'] : utf8_encode($objResult->fields['title']))),
+                    'options'        => $productOptions,
+                    'price'          => Currency::formatPrice($price),
+                    'price_unit'     => $this->aCurrencyUnitName,
+                    'quantity'       => $quantity,
+                    'itemprice'      => Currency::formatPrice($itemprice),
+                    'itemprice_unit' => $this->aCurrencyUnitName,
+                    'percent'        => $tax_rate,
+                    'tax_amount'     => Currency::formatPrice($tax_amount),
+                    'itemweight'     => $itemweight, // in grams!
+                    'weight'         => $weight,
+                ));
+                // require shipment if the distribution type is 'delivery'
+                if ($objResult->fields['handler'] == 'delivery') {
+                    $_SESSION['shop']['shipment'] = true;
                 }
             }
         }
-        $_SESSION['shop']['shipment']                 = $shipment;
         $_SESSION['shop']['cart']['total_price']      = Currency::formatPrice($total_price);//$this->_calculatePrice($_SESSION['shop']['cart']);
         $_SESSION['shop']['cart']['total_tax_amount'] = Currency::formatPrice($total_tax_amount);
         // Round prices to 5 cents if the currency is CHF (*MUST* for Saferpay)
@@ -2716,16 +2716,17 @@ sendReq('', 1);
 
             ));
         }
-        if ($_SESSION['shop']['shipment']) {
-            $this->objTemplate->setVariable(
-                'SHOP_COUNTRIES_MENU',
-                    $this->_getCountriesMenu(
-                        'countryId2',
-                        $_SESSION['shop']['countryId2'],
-                        "document.forms['shopForm'].submit()"
+        $this->objTemplate->setVariable(
+            'SHOP_COUNTRIES_MENU',
+                ($_SESSION['shop']['shipment']
+                  ? $this->_getCountriesMenu(
+                      'countryId2',
+                      $_SESSION['shop']['countryId2'],
+                      "document.forms['shopForm'].submit()"
                     )
-            );
-        }
+                  : '-'
+                )
+        );
     }
 
 
@@ -2922,6 +2923,7 @@ sendReq('', 1);
                 'SHOP_ACCOUNT_CITY'          => $this->objCustomer->getCity(),
                 'SHOP_ACCOUNT_COUNTRY'       =>
                     $this->arrCountries[$this->objCustomer->getCountryId()]['countries_name'],
+                'SHOP_ACCOUNT_EMAIL'         => $this->objCustomer->getEmail(),
                 'SHOP_ACCOUNT_PHONE'         => $this->objCustomer->getPhone(),
                 'SHOP_ACCOUNT_FAX'           => $this->objCustomer->getFax(),
                 'SHOP_ACCOUNT_ACTION'        => "?section=shop".MODULE_INDEX."&amp;cmd=payment"
@@ -3111,24 +3113,23 @@ sendReq('', 1);
      */
     function _getShipperMenu()
     {
-        if (isset($_SESSION['shop']['shipment']) && $_SESSION['shop']['shipment']) {
-            // get shipment stuff
-            $arrShipmentId = $this->objShipment->getCountriesRelatedShippingIdArray($_SESSION['shop']['countryId']);
-
-            if (!isset($_SESSION['shop']['shipperId']) || empty($_SESSION['shop']['shipperId'])) {
-                // get default shipment Id
-                $_SESSION['shop']['shipperId'] = current($arrShipmentId);
-            } else {
-                $_SESSION['shop']['shipperId'] = isset($_POST['shipperId']) ? intval($_POST['shipperId']) : $_SESSION['shop']['shipperId'];
-            }
-            $menu = $this->objShipment->getShipperMenu(
-                $_SESSION['shop']['countryId'],
-                $_SESSION['shop']['shipperId'],
-                "document.forms['shopForm'].submit()"
-            );
-            return $menu;
+        if (empty($_SESSION['shop']['shipment'])) {
+            return '';
         }
-        return '';
+        // get shipment stuff
+        $arrShipmentId = $this->objShipment->getCountriesRelatedShippingIdArray($_SESSION['shop']['countryId']);
+        if (!isset($_SESSION['shop']['shipperId']) || empty($_SESSION['shop']['shipperId'])) {
+            // get default shipment Id
+            $_SESSION['shop']['shipperId'] = current($arrShipmentId);
+        } else {
+            $_SESSION['shop']['shipperId'] = isset($_POST['shipperId']) ? intval($_POST['shipperId']) : $_SESSION['shop']['shipperId'];
+        }
+        $menu = $this->objShipment->getShipperMenu(
+            $_SESSION['shop']['countryId'],
+            $_SESSION['shop']['shipperId'],
+            "document.forms['shopForm'].submit()"
+        );
+        return $menu;
     }
 
 
@@ -3459,24 +3460,51 @@ right after the customer logs in!
     function _getPaymentPage($paymentStatus)
     {
         global $_ARRAYLANG;
+
+/* TODO: Future extension:  Only show rows actually needed.
+
+        if ($_SESSION['shop']['cart']['total_weight'] > 0) {
+*/
+            $this->objTemplate->setVariable(array(
+                'TXT_TOTAL_WEIGHT'        => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
+                'SHOP_TOTAL_WEIGHT'       => Weight::getWeightString($_SESSION['shop']['cart']['total_weight']),
+/*
+            ));
+        }
+        if ($_SESSION['shop']['shipment']) {
+            $this->objTemplate->setVariable(array(
+*/
+                'SHOP_SHIPMENT_PRICE'     => $_SESSION['shop']['shipment_price'],
+                'SHOP_SHIPMENT_MENU'      => $this->_getShipperMenu(),
+                'TXT_SHIPPING_METHODS'    => $_ARRAYLANG['TXT_SHIPPING_METHODS'],
+/*
+            ));
+        }
+
+        if (   $_SESSION['shop']['total_price']
+            || $_SESSION['shop']['shipment_price']
+            || $_SESSION['shop']['tax_price']) {
+            $this->objTemplate->setVariable(array(
+*/
+                'SHOP_PAYMENT_PRICE'      => $_SESSION['shop']['payment_price'],
+                'SHOP_PAYMENT_MENU'       => $this->_getPaymentMenu(),
+                'TXT_PAYMENT_TYPES'       => $_ARRAYLANG['TXT_PAYMENT_TYPES'],
+            ));
+/*
+        }
+*/
+
         $this->objTemplate->setVariable(array(
             'SHOP_UNIT'               => $this->aCurrencyUnitName,
             'SHOP_TOTALITEM'          => $_SESSION['shop']['items'],
-            'SHOP_SHIPMENT_PRICE'     => $_SESSION['shop']['shipment_price'],
-            'SHOP_PAYMENT_PRICE'      => $_SESSION['shop']['payment_price'],
             'SHOP_TOTALPRICE'         => $_SESSION['shop']['total_price'],
-            'SHOP_SHIPMENT_MENU'      => $this->_getShipperMenu(),
             'SHOP_GRAND_TOTAL'        => $_SESSION['shop']['grand_total_price'],
             'SHOP_CUSTOMERNOTE'       => $_SESSION['shop']['customer_note'],
             'SHOP_AGB'                => $_SESSION['shop']['agb'],
             'SHOP_STATUS'             => $paymentStatus,
-            'SHOP_PAYMENT_MENU'       => $this->_getPaymentMenu(),
-            'SHOP_TOTAL_WEIGHT'       => Weight::getWeightString($_SESSION['shop']['cart']['total_weight']),
             'TXT_PRODUCTS'            => $_ARRAYLANG['TXT_PRODUCTS'],
             'TXT_TOTALLY_GOODS'       => $_ARRAYLANG['TXT_TOTALLY_GOODS'],
             'TXT_PRODUCT_S'           => $_ARRAYLANG['TXT_PRODUCT_S'],
-            'TXT_SHIPPING_METHODS'    => $_ARRAYLANG['TXT_SHIPPING_METHODS'],
-            'TXT_PAYMENT_TYPES'       => $_ARRAYLANG['TXT_PAYMENT_TYPES'],
             'TXT_ORDER_SUM'           => $_ARRAYLANG['TXT_ORDER_SUM'],
             'TXT_COMMENTS'            => $_ARRAYLANG['TXT_COMMENTS'],
             'TXT_TAC'                 => $_ARRAYLANG['TXT_TAC'],
@@ -3484,7 +3512,6 @@ right after the customer logs in!
             'TXT_UPDATE'              => $_ARRAYLANG['TXT_UPDATE'],
             'TXT_NEXT'                => $_ARRAYLANG['TXT_NEXT'],
             'TXT_TOTAL_PRICE'         => $_ARRAYLANG['TXT_TOTAL_PRICE'],
-            'TXT_TOTAL_WEIGHT'        => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
         ));
         if ($this->objVat->isEnabled()) {
             $this->objTemplate->setVariable(array(
@@ -3670,13 +3697,14 @@ right after the customer logs in!
                 $productQuantity = $arrProduct['quantity'];
                 $productVatId    = $objResult->fields['vat_id'];
                 $productVatRate  = ($productVatId && $this->objVat->getRate($productVatId) ? $this->objVat->getRate($productVatId) : '0.00');
-                $productWeight   = $objResult->fields['weight']; // grams
-                if ($productWeight == '') { $productWeight = 0; }
                 // Test the distribution method for delivery
                 $productDistribution = $objResult->fields['handler'];
                 if ($productDistribution == 'delivery') {
                     $_SESSION['shop']['isDelivery'] = true;
                 }
+                $productWeight   = ($productDistribution == 'delivery'
+                    ? $objResult->fields['weight'] : 0); // grams
+                if ($productWeight == '') { $productWeight = 0; }
                 // Add to order items table
                 $query = "
                     INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_order_items (
@@ -3716,6 +3744,7 @@ right after the customer logs in!
                 }
 
                 // Update Product stock
+// TODO: Only decrease the count for non-electronic products
                 $query = "
                     UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
                        SET stock=stock-$productQuantity
@@ -3811,7 +3840,7 @@ right after the customer logs in!
                     SELECT product_id, title, catid,
                            normalprice, resellerprice,
                            discountprice, is_special_offer,
-                           vat_id, weight
+                           vat_id, weight, handler
                       FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
                      WHERE status=1 AND id=".$arrProduct['id']
                 );
@@ -3849,8 +3878,12 @@ right after the customer logs in!
                         $productOptions .= '</i>';
                     }
 
-                    $weight     = $objResult->fields['weight']; // grams
-                    $weight     = Weight::getWeightString($weight);
+                    // Test the distribution method for delivery
+                    $productDistribution = $objResult->fields['handler'];
+                    $weight = ($productDistribution == 'delivery'
+                        ? Weight::getWeightString($objResult->fields['weight'])
+                        : '-'
+                    );
                     $vatId      = $objResult->fields['vat_id'];
                     $vatRate    = $this->objVat->getRate($vatId);
                     $vatPercent = $this->objVat->getShort($vatId);
@@ -3981,21 +4014,22 @@ right after the customer logs in!
         // Also, this method *MUST NOT* be called by the PayPal IPN handler.
         if (   $handler == ''
             || $handler == 'PaypalIPN') {
-//echo("Success: Called without handler or by PayPal IPN /$handler/<br />");
             $result = SHOP_PAYMENT_RESULT_CANCEL;
         }
 
         // Hide the currency navbar
         $this->_hideCurrencyNavbar = true;
 
-
         $orderId = $this->objProcessing->checkIn();
         // True is returned for internal payment types only.
-        if (   $orderId === true
-            && !empty($_SESSION['shop']['orderid_checkin'])) {
-            // Internal payment method: update the status in any case.
-            $orderId = $_SESSION['shop']['orderid_checkin'];
-            $result = SHOP_PAYMENT_RESULT_SUCCESS;
+        if ($orderId === true) {
+            if (empty($_SESSION['shop']['orderid_checkin'])) {
+                $orderId = 0;
+            } else {
+                // Internal payment method: update the status in any case.
+                $orderId = $_SESSION['shop']['orderid_checkin'];
+                $result = SHOP_PAYMENT_RESULT_SUCCESS;
+            }
         }
         if (!$orderId
            || (   isset($_SESSION['shop']['orderid_checkin'])
@@ -4003,7 +4037,7 @@ right after the customer logs in!
             // Zero or false:
             // The payment failed miserably or was faked.
             // The order is cancelled in both cases.
-            // If both IDs are set but different, the request might be
+            // If both IDs are set but differ, the request might be
             // fake.  Cancel the order with the ID from the session!
             $result = SHOP_PAYMENT_RESULT_CANCEL;
             if (!empty($_SESSION['shop']['orderid_checkin'])) {
@@ -4092,12 +4126,10 @@ right after the customer logs in!
         global $objDatabase;
 
         if ($handler == '') {
-//echo("WARNING: Handler is empty /$handler/<br />");
             return SHOP_ORDER_STATUS_CANCELLED;
         }
         $orderId = intval($orderId);
         if ($orderId == 0) {
-//echo("WARNING: Order ID is zero /$orderId/<br />");
             return SHOP_ORDER_STATUS_CANCELLED;
         }
         $query = "
@@ -4135,22 +4167,15 @@ right after the customer logs in!
             if (   $handler != 'PaypalIPN'
                 && $newOrderStatus != SHOP_ORDER_STATUS_CANCELLED
             ) {
-//echo("WARNING: Ignoring PayPal handler /$handler/<br />");
                 return $orderStatus;
             }
         } elseif (!preg_match("/^$handler/i", $processorName)) {
-//echo("WARNING: Handler $handler does not match Processor $processorName<br />");
             return SHOP_ORDER_STATUS_CANCELLED;
         }
-//echo("INFO: Handler $handler matches Processor $processorName<br />");
 
         // Only if the optional new order status argument is zero,
         // determine the new status automatically.
         if ($newOrderStatus == SHOP_ORDER_STATUS_PENDING) {
-
-            $processorType = PaymentProcessing::getCurrentPaymentProcessorType($processorId);
-            $shippingId = $objResult->fields['shipping_id'];
-
             // The new order status is determined by two properties:
             // - The method of payment (instant/deferred), and
             // - The method of delivery (if any).
@@ -4163,7 +4188,10 @@ right after the customer logs in!
             // 'paid', or 'delivered' respectively.
             // If neither condition is met, the status is set to 'confirmed'.
             $newOrderStatus = SHOP_ORDER_STATUS_CONFIRMED;
-
+            $paymentId = $objResult->fields['payment_id'];
+            $processorId = Payment::getPaymentProcessorId($paymentId);
+            $processorType = PaymentProcessing::getCurrentPaymentProcessorType($processorId);
+            $shippingId = $objResult->fields['shipping_id'];
             if ($processorType == 'external') {
                 // External payment types are considered instant.
                 // See $_SESSION['shop']['isInstantPayment'].
@@ -4193,7 +4221,6 @@ right after the customer logs in!
         ";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
-
             if (   $newOrderStatus == SHOP_ORDER_STATUS_CONFIRMED
                 || $newOrderStatus == SHOP_ORDER_STATUS_PAID
                 || $newOrderStatus == SHOP_ORDER_STATUS_SHIPPED
@@ -4251,7 +4278,7 @@ right after the customer logs in!
         $mailBody = $arrShopMailtemplate['mail_body'];
         $today = date('d.m.Y');
         $mailSubject = str_replace('<DATE>', $today, $mailSubject);
-        $mailBody = Shop::_generateEmailBody($mailBody, $orderId);
+        $mailBody = Shop::_generateEmailBody($mailBody, $orderId, $langId);
         $return = true;
         if (!Shop::shopSendmail($mailTo, $mailFrom, $mailFromText, $mailSubject, $mailBody)) {
             $return = false;
@@ -4287,10 +4314,11 @@ right after the customer logs in!
      * @static
      * @param   string  $body         The e-mail template
      * @param   integer $orderId      The order ID
+     * @param   integer $langId       The language ID
      * @return  string                The e-mail body
      */
     //static
-    function _generateEmailBody($body, $orderId)
+    function _generateEmailBody($body, $orderId, $langId)
     {
         global $objDatabase, $_ARRAYLANG, $objDatabase;
 
@@ -4298,6 +4326,12 @@ right after the customer logs in!
         $orderTime = date(ASCMS_DATE_FORMAT);
         $cartTxt   = '';
         $taxTxt    = '';
+
+        $loginData =
+            $_ARRAYLANG['TXT_SHOP_URI_FOR_DOWNLOAD'].":\n".
+            'http://'.$_SERVER['SERVER_NAME'].
+            "/index.php?section=download\n";
+        $orderIdCustom = ShopLibrary::getCustomOrderId($orderId, date('Y'));
 
         // Pick the order from the database
         $query = "
@@ -4330,6 +4364,27 @@ right after the customer logs in!
         if (!$strCurrencyCode) {
             return false;
         }
+
+        // Pick names of countries from the database
+        $countryNameCustomer = '';
+        $countryNameShipping = '';
+        $query = "
+            SELECT countries_name
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+             WHERE countries_id=".$objResultOrder->fields['country_id'];
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            $countryNameCustomer = $objResult->fields['countries_name'];
+        }
+        $query = "
+            SELECT countries_name
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+             WHERE countries_id=".$objResultOrder->fields['ship_country_id'];
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            $countryNameShipping = $objResult->fields['countries_name'];
+        }
+
         // Pick the order items from the database
         // order items: order_items_id, orderid, productid, product_name,
         //              price, quantity, vat_percent, weight
@@ -4350,21 +4405,25 @@ right after the customer logs in!
             $orderItemId = $objResultItem->fields['order_items_id'];
             $productId = $objResultItem->fields['productid'];
             $orderItemName = substr($objResultItem->fields['product_name'], 0, 40);
-            $orderItemPrice    = $objResultItem->fields['price'];
+            $orderItemPrice = $objResultItem->fields['price'];
             $orderItemQuantity = $objResultItem->fields['quantity'];
 // TODO:      $orderItemVatPercent = $objResultItem->fields['vat_percent'];
 
             // Pick missing Product data
-            $objResultProduct = $objDatabase->Execute("
-               SELECT product_id
+            $query = "
+               SELECT product_id, handler, usergroups, weight
                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
                 WHERE id=$productId
-            ");
+            ";
+            $objResultProduct = $objDatabase->Execute($query);
             if (!$objResultProduct || $objResultProduct->RecordCount() == 0) {
                 $objResultItem->MoveNext();
                 continue;
             }
             $productCode = $objResultProduct->fields['product_id'];
+//            $productHandler = $objResultProduct->fields['handler'];
+//            $productUserGroupId = $objResultProduct->fields['usergroups'];
+//            $productWeight = $objResultProduct->fields['weight'];
 
             // Pick the order items attributes from the database
             $query = "
@@ -4396,6 +4455,7 @@ right after the customer logs in!
                 $productOptions .= ')';
             }
 
+            // Product details
             $cartTxt .=
                 $productId.' | '.$productCode.' | '.
                 $orderItemName.$productOptions.' | '.
@@ -4407,6 +4467,59 @@ right after the customer logs in!
                 $strCurrencyCode."\n";
             $orderItemCount += $orderItemQuantity;
             $priceTotalItems += $orderItemPrice*$orderItemQuantity;
+
+            // Add an account for every single instance of every Product
+            for ($instance = 1; $instance <= $orderItemQuantity; ++$instance) {
+                $validity = 0; // Default to unlimited validity
+                // In case there are protected downloads in the cart,
+                // collect the group IDs
+                $arrUsergroupId = array();
+                if ($objResultProduct->fields['handler'] == 'download') {
+                    $usergroupIds = $objResultProduct->fields['usergroups'];
+                    if ($usergroupIds != '') {
+                        $arrUsergroupId = explode(',', $usergroupIds);
+                        $validity = $objResultProduct->fields['weight'];
+                    }
+                }
+                // create an account that belongs to all collected
+                // user groups, if any.
+                if (count($arrUsergroupId) > 0) {
+                    // Replace the mail template body.
+                    // This one includes the <LOGIN_DATA> placeholder for
+                    // the user name and password for the download.
+                    $arrTemplate = self::shopSetMailtemplate(4, $langId);
+                    $body = $arrTemplate['mail_body'];
+                    // The login names are created from the order ID,
+                    // with product ID and instance number appended.
+                    $username = "$orderIdCustom-$productId-$instance";
+                    $userpass = uniqid();
+                    $userId = userManagement::addUserByParam(
+                        $username,
+                        $userpass,
+                        $objResultOrder->fields['email'],
+                        false, true, $arrUsergroupId,
+                        $validity,
+                        $this->langId,
+                        $objResultOrder->fields['firstname'],
+                        $objResultOrder->fields['lastname'],
+                        $objResultOrder->fields['company'],
+                        $objResultOrder->fields['address'],
+                        $objResultOrder->fields['zip'],
+                        $objResultOrder->fields['city'].', '.$countryNameCustomer,
+                        $objResultOrder->fields['phone'],
+                        '', '', '', ''
+                    );
+                    if (!$userId) {
+                        $this->statusMessage .= $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+                        return false;
+                    } else {
+                       $loginData .=
+                          $_ARRAYLANG['TXT_SHOP_LOGINNAME'].": $username\n".
+                          $_ARRAYLANG['TXT_PASSWORD'].": $userpass".
+                          "\n\n";
+                    }
+                }
+            }
             $objResultItem->MoveNext();
         }
 
@@ -4427,6 +4540,27 @@ right after the customer logs in!
         $orderSum =
             $objResultOrder->fields['currency_order_sum'].' '.
             $strCurrencyCode;
+
+        $shipperId =
+            (isset($_SESSION['shop']['shipperId'])
+                ? $_SESSION['shop']['shipperId']
+                : 0
+            );
+        $shipperName =
+            ($shipperId > 0
+                ? $this->objShipment->getShipperName($shipperId)
+                : ''
+            );
+        $paymentId =
+            (isset($_SESSION['shop']['paymentId'])
+                ? $_SESSION['shop']['paymentId']
+                : 0
+            );
+        $paymentName =
+            (isset($this->objPayment->arrPaymentObject[$paymentId])
+                ? $this->objPayment->arrPaymentObject[$paymentId]['name']
+                : ''
+            );
         $orderData =
 "-----------------------------------------------------------------\n".
 $_ARRAYLANG['TXT_ORDER_INFOS']."\n".
@@ -4441,14 +4575,17 @@ $_ARRAYLANG['TXT_TOTAL']."\n".
 $cartTxt.
 "-----------------------------------------------------------------\n".
 $_ARRAYLANG['TXT_INTER_TOTAL'].': '.$orderItemCount.' '.
-$_ARRAYLANG['TXT_PRODUCT_S'].' '.$priceTotalItems."\n".
+$_ARRAYLANG['TXT_PRODUCT_S'].' '.
+Currency::formatPrice($priceTotalItems).' '.
+$strCurrencyCode."\n".
 "-----------------------------------------------------------------\n".
+$_ARRAYLANG['TXT_PAYMENT_TYPE'].': '.$paymentName.' '.
 $_ARRAYLANG['TXT_SHIPPING_METHOD'].': '.
-Shipment::getNameById($objResultOrder->fields['shipping_id']).' '.
+$shipperName.' '.
 Currency::formatPrice($objResultOrder->fields['currency_ship_price']).' '.
 $strCurrencyCode."\n".
 $_ARRAYLANG['TXT_PAYMENT_TYPE'].': '.
-Payment::getNameById($objResultOrder->fields['payment_id']).' '.
+$paymentName.' '.
 Currency::formatPrice($objResultOrder->fields['currency_payment_price']).' '.
 $strCurrencyCode."\n".
 $taxTxt."\n".
@@ -4457,57 +4594,42 @@ $_ARRAYLANG['TXT_TOTAL_PRICE'].': '.
 $orderSum."\n".
 "-----------------------------------------------------------------\n";
 
-        // Pick names of countries from the database
-        $countryNameCustomer = '';
-        $countryNameShipping = '';
-        $query = "
-            SELECT countries_name
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
-             WHERE countries_id=".$objResultOrder->fields['country_id'];
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult && !$objResult->EOF) {
-            $countryNameCustomer = $objResult->fields['countries_name'];
-        }
-        $query = "
-            SELECT countries_name
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
-             WHERE countries_id=".$objResultOrder->fields['ship_country_id'];
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult && !$objResult->EOF) {
-            $countryNameShipping = $objResult->fields['countries_name'];
-        }
-
-        $search  = array ('<ORDER_ID>', '<DATE>',
-                          '<USERNAME>', '<PASSWORD>',
-                          '<ORDER_DATA>', '<ORDER_SUM>', '<ORDER_TIME>', '<REMARKS>',
-                          '<CUSTOMER_ID>', '<CUSTOMER_EMAIL>',
-                          '<CUSTOMER_COMPANY>', '<CUSTOMER_PREFIX>', '<CUSTOMER_FIRSTNAME>',
-                          '<CUSTOMER_LASTNAME>', '<CUSTOMER_ADDRESS>', '<CUSTOMER_ZIP>',
-                          '<CUSTOMER_CITY>', '<CUSTOMER_COUNTRY>', '<CUSTOMER_PHONE>',
-                          '<CUSTOMER_FAX>',
-                          '<SHIPPING_COMPANY>', '<SHIPPING_PREFIX>', '<SHIPPING_FIRSTNAME>',
-                          '<SHIPPING_LASTNAME>', '<SHIPPING_ADDRESS>', '<SHIPPING_ZIP>',
-                          '<SHIPPING_CITY>', '<SHIPPING_COUNTRY>', '<SHIPPING_PHONE>'
+        $search  = array (
+            '<ORDER_ID>', '<DATE>',
+            '<USERNAME>', '<PASSWORD>',
+            '<ORDER_DATA>', '<ORDER_SUM>', '<ORDER_TIME>', '<REMARKS>',
+            '<CUSTOMER_ID>', '<CUSTOMER_EMAIL>',
+            '<CUSTOMER_COMPANY>', '<CUSTOMER_PREFIX>', '<CUSTOMER_FIRSTNAME>',
+            '<CUSTOMER_LASTNAME>', '<CUSTOMER_ADDRESS>', '<CUSTOMER_ZIP>',
+            '<CUSTOMER_CITY>', '<CUSTOMER_COUNTRY>', '<CUSTOMER_PHONE>',
+            '<CUSTOMER_FAX>',
+            '<SHIPPING_COMPANY>', '<SHIPPING_PREFIX>', '<SHIPPING_FIRSTNAME>',
+            '<SHIPPING_LASTNAME>', '<SHIPPING_ADDRESS>', '<SHIPPING_ZIP>',
+            '<SHIPPING_CITY>', '<SHIPPING_COUNTRY>', '<SHIPPING_PHONE>',
+            '<LOGIN_DATA>',
         );
-        $replace = array ($orderId, $today,
-                          $objResultOrder->fields['username'],
-                          (isset($_SESSION['shop']['password'])
-                              ? $_SESSION['shop']['password'] : '******'),
-                          $orderData, $orderSum, $orderTime, $objResultOrder->fields['customer_note'],
-                          $objResultOrder->fields['customerid'], $objResultOrder->fields['email'],
-                          $objResultOrder->fields['company'], $objResultOrder->fields['prefix'],
-                          $objResultOrder->fields['firstname'], $objResultOrder->fields['lastname'],
-                          $objResultOrder->fields['address'], $objResultOrder->fields['zip'],
-                          $objResultOrder->fields['city'], $countryNameCustomer,
-                          $objResultOrder->fields['phone'], $objResultOrder->fields['fax'],
-                          $objResultOrder->fields['ship_company'], $objResultOrder->fields['ship_prefix'],
-                          $objResultOrder->fields['ship_firstname'], $objResultOrder->fields['ship_lastname'],
-                          $objResultOrder->fields['ship_address'], $objResultOrder->fields['ship_zip'],
-                          $objResultOrder->fields['ship_city'], $countryNameShipping,
-                          $objResultOrder->fields['ship_phone']
+        $replace = array (
+            $orderId, $today,
+            $objResultOrder->fields['username'],
+            (isset($_SESSION['shop']['password'])
+                ? $_SESSION['shop']['password'] : '******'),
+            $orderData, $orderSum, $orderTime, $objResultOrder->fields['customer_note'],
+            $objResultOrder->fields['customerid'], $objResultOrder->fields['email'],
+            $objResultOrder->fields['company'], $objResultOrder->fields['prefix'],
+            $objResultOrder->fields['firstname'], $objResultOrder->fields['lastname'],
+            $objResultOrder->fields['address'], $objResultOrder->fields['zip'],
+            $objResultOrder->fields['city'], $countryNameCustomer,
+            $objResultOrder->fields['phone'], $objResultOrder->fields['fax'],
+            $objResultOrder->fields['ship_company'], $objResultOrder->fields['ship_prefix'],
+            $objResultOrder->fields['ship_firstname'], $objResultOrder->fields['ship_lastname'],
+            $objResultOrder->fields['ship_address'], $objResultOrder->fields['ship_zip'],
+            $objResultOrder->fields['ship_city'], $countryNameShipping,
+            $objResultOrder->fields['ship_phone'],
+            ($loginData ? $_ARRAYLANG['TXT_SHOP_LOGINDATA']."\n\n".$loginData : ''),
         );
         $body = str_replace($search, $replace, $body);
-//echo("made mail body:<br />".str_replace("\n", '<br />', htmlentities($body))."<br />");
+        // Strip CRs
+        $body = str_replace("\r", '', $body); //echo("made mail body:<br />".str_replace("\n", '<br />', htmlentities($body))."<br />");
         return $body;
     }
 
@@ -4642,6 +4764,7 @@ $orderSum."\n".
      * @param   double  $orderAmount        The amount of the current order
      * @global  array   $_ARRAYLANG         Language array
      * @return  boolean                     True on success, false otherwise.
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function showCustomerDiscount($orderAmount)
     {
@@ -4675,6 +4798,74 @@ $orderSum."\n".
         }
         return true;
     }
+
+
+// noser
+    /**
+     * Deletes the order with the given ID.
+     *
+     * Also removes related order items, attributes, the customer, and the
+     * user accounts created for the downloads.
+     * @param   integer   $orderId        The order ID
+     * @return  boolean                   True on success, false otherwise
+     * @global  mixed     $objDatabase    Database object
+     */
+    function deleteOrder($orderId)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT customerid, order_date
+              FROM ".DBPREFIX."module_shop_orders
+             WHERE orderid=$orderId
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return false;
+        }
+        $customerId = $objResult->fields['customerid'];
+        $orderDate = $objResult->fields['order_date'];
+
+        $query = "
+            DELETE FROM ".DBPREFIX."module_shop_order_items_attributes
+             WHERE order_id=$orderId
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return false;
+        }
+
+        $query = "
+            DELETE FROM ".DBPREFIX."module_shop_order_items
+             WHERE orderid=$orderId
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return false;
+        }
+
+        $query = "
+            DELETE FROM ".DBPREFIX."module_shop_orders
+             WHERE orderid=$orderId
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return false;
+        }
+
+        $query = "
+            DELETE FROM ".DBPREFIX."module_shop_customers
+             WHERE customerid=$customerId
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return false;
+        }
+
+        $orderIdCustom = ShopLibrary::getCustomOrderId($orderId, $orderDate);
+        return userManagement::deleteUserByOrderId($orderIdCustom);
+    }
+
 
 }
 
