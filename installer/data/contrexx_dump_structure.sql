@@ -24,6 +24,7 @@ CREATE TABLE `contrexx_access_users` (
   `username` varchar(40) default NULL,
   `password` varchar(32) default NULL,
   `regdate` date default '2003-00-00',
+  `validity` int(10) unsigned default NULL,
   `email` varchar(255) default NULL,
   `firstname` varchar(150) default NULL,
   `lastname` varchar(150) default NULL,
@@ -32,18 +33,18 @@ CREATE TABLE `contrexx_access_users` (
   `interests` varchar(255) NOT NULL default '',
   `webpage` varchar(255) NOT NULL default '',
   `company` varchar(255) NOT NULL default '',
-  `zip` varchar(10) NOT NULL default '',
+  `zip` int(6) NOT NULL default '0',
   `phone` varchar(20) NOT NULL default '',
   `mobile` varchar(20) NOT NULL default '',
   `street` varchar(100) NOT NULL default '',
   `langId` int(2) unsigned NOT NULL default '0',
-  `active` tinyint(1) NOT NULL default '0',
+  `active` tinyint(1) unsigned NOT NULL default '0',
   `groups` varchar(50) NOT NULL default '0',
   `restore_key` varchar(32) NOT NULL default '',
   `restore_key_time` int(14) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `username` (`username`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 CREATE TABLE `contrexx_backend_areas` (
   `area_id` int(6) unsigned NOT NULL auto_increment,
@@ -2072,36 +2073,39 @@ CREATE TABLE `contrexx_module_shop_pricelists` (
 CREATE TABLE `contrexx_module_shop_products` (
   `id` smallint(10) unsigned NOT NULL auto_increment,
   `product_id` tinytext NOT NULL,
-  `picture` text,
-  `title` varchar(255) NOT NULL default '',
+  `picture` text collate utf8_unicode_ci,
+  `title` varchar(60) default NULL,
   `catid` int(10) unsigned NOT NULL default '1',
   `handler` enum('none','delivery','download') NOT NULL default 'delivery',
   `normalprice` decimal(6,2) NOT NULL default '0.00',
   `resellerprice` decimal(6,2) NOT NULL default '0.00',
   `shortdesc` text NOT NULL,
   `description` text,
-  `stock` smallint(6) NOT NULL default '10',
-  `stock_visibility` tinyint(1) NOT NULL default '1',
+  `stock` smallint(6) unsigned NOT NULL default '10',
+  `stock_visibility` tinyint(1) unsigned NOT NULL default '1',
   `discountprice` decimal(6,2) NOT NULL default '0.00',
-  `is_special_offer` tinyint(1) default '0',
+  `is_special_offer` tinyint(1) unsigned default '0',
   `property1` varchar(100) default '0',
   `property2` varchar(100) default '0',
-  `status` tinyint(1) default '1',
-  `b2b` tinyint(1) NOT NULL default '1',
-  `b2c` tinyint(1) NOT NULL default '1',
+  `status` tinyint(1) unsigned default '1',
+  `b2b` tinyint(1) unsigned NOT NULL default '1',
+  `b2c` tinyint(1) unsigned NOT NULL default '1',
   `startdate` datetime NOT NULL default '0000-00-00 00:00:00',
   `enddate` datetime NOT NULL default '0000-00-00 00:00:00',
-  `thumbnail_percent` tinyint(2) NOT NULL default '0',
-  `thumbnail_quality` tinyint(2) NOT NULL default '0',
-  `manufacturer` int(11) NOT NULL,
+  `thumbnail_percent` tinyint(2) unsigned NOT NULL default '0',
+  `thumbnail_quality` tinyint(2) unsigned NOT NULL default '0',
+  `manufacturer` int(11) unsigned NOT NULL,
   `manufacturer_url` varchar(255) NOT NULL default '',
   `external_link` varchar(255) NOT NULL default '',
   `sort_order` smallint(4) unsigned NOT NULL default '0',
   `vat_id` int(10) unsigned default NULL,
   `weight` int(10) unsigned default NULL,
+  `flags` varchar(100) default NULL,
+  `usergroups` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
+  KEY `flags` (`flags`),
   FULLTEXT KEY `shopindex` (`title`,`description`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 CREATE TABLE `contrexx_module_shop_products_attributes` (
   `attribute_id` int(11) unsigned NOT NULL auto_increment,
@@ -2383,6 +2387,11 @@ CREATE TABLE `contrexx_stats_visitors_summary` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`type`,`timestamp`)
 ) TYPE=MyISAM;
+
+CREATE TABLE `contrexx_user_validity` (
+  `validity` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`validity`)
+) ENGINE=MyISAM;
 
 CREATE TABLE `contrexx_voting_email` (
   `id` int(10) unsigned NOT NULL auto_increment,
