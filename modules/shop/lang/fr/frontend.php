@@ -78,7 +78,6 @@ $_ARRAYLANG['TXT_MORE_INFORMATIONS'] = "More info";
 $_ARRAYLANG['TXT_SHOP_ID'] = "ID";
 $_ARRAYLANG['TXT_ORDER_LINK_PREPARED'] = "The order is now prepared for the payment. Click on the following button, in order to arrive at the payment gateway to transact your payment there.";
 $_ARRAYLANG['TXT_SELECT_SUB_GROUP'] = "Please select a subgroup.";
-$_ARRAYLANG['TXT_MANUFACTURER_URL'] = "Manufacturer link";
 $_ARRAYLANG['TXT_CHOOSE'] = "choose";
 $_ARRAYLANG['TXT_OPTIONS'] = "Options";
 $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Please fill out all required fields.";
@@ -228,4 +227,7 @@ $_ARRAYLANG['TXT_SHOP_CHOOSE_MONTH'] = "Monat";
 $_ARRAYLANG['TXT_SHOP_CHOOSE_YEAR'] = "Jahr";
 $_ARRAYLANG['TXT_SHOP_ORDER_WILL_BE_CONFIRMED'] = "Sie werden umgehend eine E-Mail mit den Details Ihrer Bestellung erhalten, sobald die Bestätigung eingetroffen ist.";
 $_ARRAYLANG['TXT_SHOP_UNKNOWN_CUSTOMER_ACCOUNT'] = "Diese Kontoangaben sind ungültig";
+$_ARRAYLANG['TXT_SHOP_URI_FOR_DOWNLOAD'] = "Server Adresse:";
+$_ARRAYLANG['TXT_SHOP_LOGINNAME'] = "Benutzername:";
+$_ARRAYLANG['TXT_SHOP_LOGINDATA'] = "Die Zugangsdaten für den Download:";
 ?>
