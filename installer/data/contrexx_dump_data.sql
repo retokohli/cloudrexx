@@ -5176,6 +5176,16 @@ INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (18
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (19,'count_visitor_number','',1);
 INSERT INTO `contrexx_stats_javascript` (`id`, `support`, `count`) VALUES (1,'0',0);
 INSERT INTO `contrexx_stats_javascript` (`id`, `support`, `count`) VALUES (2,'1',0);
+INSERT INTO `contrexx_user_validity` (`validity`) VALUES (0);
+INSERT INTO `contrexx_user_validity` (`validity`) VALUES (1);
+INSERT INTO `contrexx_user_validity` (`validity`) VALUES (15);
+INSERT INTO `contrexx_user_validity` (`validity`) VALUES (31);
+INSERT INTO `contrexx_user_validity` (`validity`) VALUES (62);
+INSERT INTO `contrexx_user_validity` (`validity`) VALUES (92);
+INSERT INTO `contrexx_user_validity` (`validity`) VALUES (123);
+INSERT INTO `contrexx_user_validity` (`validity`) VALUES (184);
+INSERT INTO `contrexx_user_validity` (`validity`) VALUES (366);
+INSERT INTO `contrexx_user_validity` (`validity`) VALUES (731);
 INSERT INTO `contrexx_voting_results` (`id`, `voting_system_id`, `question`, `votes`) VALUES (21,6,'Hammermässig',5);
 INSERT INTO `contrexx_voting_results` (`id`, `voting_system_id`, `question`, `votes`) VALUES (22,6,'Verdammt gut',3);
 INSERT INTO `contrexx_voting_results` (`id`, `voting_system_id`, `question`, `votes`) VALUES (23,6,'Sehr schön',4);
