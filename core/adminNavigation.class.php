@@ -2,8 +2,8 @@
 /**
  * Admin CP navigation
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
- * @version		1.0.0
+ * @author        Comvation Development Team <info@comvation.com>
+ * @version        1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -14,9 +14,9 @@
  *
  * Class for the Admin CP navigation
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
- * @access		public
- * @version		1.0.0
+ * @author        Comvation Development Team <info@comvation.com>
+ * @access        public
+ * @version        1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -96,15 +96,15 @@ class adminMenu
         }
     }
 
-	/**
-	 * gets the administration menu by user rights
-	 *
-	 * creates the navigation by userright
-	 *
-	 * @global array $_CORELANG
-	 * @global object $objTemplate
-	 * @global object $objModules
-	 */
+    /**
+     * gets the administration menu by user rights
+     *
+     * creates the navigation by userright
+     *
+     * @global array $_CORELANG
+     * @global object $objTemplate
+     * @global object $objModules
+     */
     function getMenu()
     {
         global $objModules, $_CORELANG, $objTemplate;
@@ -113,13 +113,13 @@ class adminMenu
         reset($this->arrMenuItems);
 
         foreach ( $this->arrMenuGroups as $group_id => $group_data ) {
-        	// Module group menu and module check!
+            // Module group menu and module check!
             if ($group_id==2 && !$objModules->existsModuleFolders) {
                 continue;
             }
 
             $navigation = '';
-            foreach ($this->arrMenuItems as $areaId => $link_data) {
+            foreach ($this->arrMenuItems as $link_data) {
                 // checks if the links are childs of this area ID
                 if ($link_data[0] == $group_id) {
                     if ($this->moduleExists($link_data[4])) {
@@ -129,18 +129,18 @@ class adminMenu
             }
 
             if (!empty($navigation)) {
-				$objTemplate->setVariable(array(
-					'NAVIGATION_GROUP_NAME'	=> htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
-					'NAVIGATION_ID'			=> $group_id,
-					'NAVIGATION_MENU'		=> $navigation,
-					'NAVIGATION_STYLE'		=> isset($_COOKIE['navigation_'.$group_id]) ? $_COOKIE['navigation_'.$group_id] : 'none'
-				));
-	            $objTemplate->parse('navigationRow');
+                $objTemplate->setVariable(array(
+                    'NAVIGATION_GROUP_NAME'    => htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
+                    'NAVIGATION_ID'            => $group_id,
+                    'NAVIGATION_MENU'        => $navigation,
+                    'NAVIGATION_STYLE'        => isset($_COOKIE['navigation_'.$group_id]) ? $_COOKIE['navigation_'.$group_id] : 'none'
+                ));
+                $objTemplate->parse('navigationRow');
             }
         }
 
-		$objTemplate->setVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
-		$objTemplate->parse('navigation_output');
+        $objTemplate->setVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
+        $objTemplate->parse('navigation_output');
     }
 
     /**
