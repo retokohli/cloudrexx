@@ -147,6 +147,7 @@ class FWLanguage
             SELECT id
               FROM ".DBPREFIX."languages
              WHERE lang IN ($strLangCode)
+               AND frontend=1
         ");
         if ($objResult && $objResult->RecordCount() > 0) {
             return $objResult->fields['id'];
