@@ -279,7 +279,7 @@ class Vat
         if (isset($this->arrVatRate[$vatId])) {
             return $this->arrVatRate[$vatId];
         }
-       // No entry found.  But some sensible value is required by the Shop.
+        // No entry found.  But some sensible value is required by the Shop.
         return '0.0';
     }
 

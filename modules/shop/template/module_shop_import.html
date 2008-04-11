@@ -66,18 +66,19 @@
 
         var tmp = '';
         for (i = 0; i < selectLeft.length; i++) {
-            tmp += selectLeft[i].value;
-            tmp += ";";
+            tmp +=
+                (tmp == "" ? "" : ";")+
+                selectLeft[i].value;
         }
         leftKeys.value = tmp;
 
         tmp = '';
         for (i = 0; i < selectRight.length; i++) {
-            tmp += selectRight[i].value;
-            tmp += ";";
+            tmp +=
+                (tmp == "" ? "" : ";")+
+                selectRight[i].value;
         }
         rightKeys.value = tmp;
-
     }
 
     function SaveImage() {
@@ -115,7 +116,7 @@
 
     function DeleteImg(ImgID) {
         if (confirm("{TXT_SHOP_IMPORT_TEMPLATE_REALLY_DELETE}")){
-            document.location.href = '{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop{MODULE_INDEX}&act=import&deleteImg=exe&img='+ImgID;
+            document.location.href = '{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop{MODULE_INDEX}&act=import&deleteImg=1&img='+ImgID;
         }
     }
 
@@ -141,7 +142,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 
 <div id="import1" class="generalTab" style="display:{SELECTED_LAYER_IMPORT}">
 <form name="frmImportCategories" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop{MODULE_INDEX}&amp;act=import" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="exe" value="ImportCategories" />
+    <input type="hidden" name="ImportCategories" value="1" />
     <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
         <tr>
             <th colspan="2"><b>{TXT_SHOP_IMPORT_IMPORT_CATEGORIES}</b></th>
@@ -170,7 +171,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <br />
 
 <form name="frmImportProducts" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop{MODULE_INDEX}&amp;act=import" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="exe" value="importFileProducts" />
+    <input type="hidden" name="importFileProducts" value="1" />
     <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
         <tr>
             <th colspan="2"><b>{TXT_SHOP_IMPORT_PRODUCTS}</b></th>
@@ -201,7 +202,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 
 <!-- Begin FieldsSelect -->
 <form name="frmSelectFields" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop{MODULE_INDEX}&amp;act=import" method="post">
-<input type="hidden" name="exe" value="SaveImg" />
+<input type="hidden" name="SaveImg" value="1" />
 <input type="hidden" name="pairs_left_keys" id="pairs_left_keys" value="" />
 <input type="hidden" name="pairs_right_keys" id="pairs_right_keys" value="" />
 <input type="hidden" name="category" id="category" value="" />
@@ -292,17 +293,16 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         <!-- BEGIN imgRow -->
         <tr class="{CLASS_NAME}">
             <td>{IMG_NAME}</td>
-            <td><div style="text-align:right;"><a href="javascript:DeleteImg({IMG_ID});"><img src="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/images/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}" /></a></div></td>
+            <td><div style="text-align:right;"><a href="javascript:DeleteImg({IMG_ID});"><img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}" /></a></div></td>
         </tr>
         <!-- END imgRow -->
     </table>
 </div>
 <div id="import5" class="generalTab" style="display: none;">
-    <form name="frmUpload" enctype="multipart/form-data" action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop{MODULE_INDEX}&amp;act=import" method="post">
-    <input type="hidden" name="cmd" value="shop" />
-    <input type="hidden" name="act" value="import" />
+    <form name="frmUpload" enctype="multipart/form-data"
+      action="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/index.php?cmd=shop{MODULE_INDEX}&amp;act=import" method="post">
     <input type="hidden" name="mode" value="ImportImg" />
-    <input type="hidden" name="exe" value="SelectFields" />
+    <input type="hidden" name="SelectFields" value="1" />
     <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
         <tr>
             <th><b>{TXT_SHOP_IMPORT_MAKE_NEW_TEMPLATE}</b></th>
@@ -345,7 +345,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
             </td>
             <td colspan="2">
                 <a href="#" title="{TXT_EXPORT}" onclick="javascript:MakeExport('{SHOP_EXPORT_GROUP_CODE}');" >
-                    <img src="{SHOP_CMS_OFFSET}{ASCMS_BACKEND_PATH}/images/icons/csv.gif" alt="{TXT_EXPORT}" border="0" />
+                    <img src="images/icons/csv.gif" alt="{TXT_EXPORT}" border="0" />
                 </a>
             </td>
         </tr>

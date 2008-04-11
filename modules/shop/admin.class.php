@@ -166,6 +166,10 @@ class shopmanager extends ShopLibrary {
      */
     private $arrOrderStatus = array();
 
+    /**
+     * CSV Import class
+     * @var CSVimport
+     */
     private $objCSVimport;
 
     /**
@@ -603,41 +607,43 @@ class shopmanager extends ShopLibrary {
 
         $this->pageTitle = $_ARRAYLANG['TXT_SHOP_IMPORT_TITLE'];
         $this->_objTpl->loadTemplateFile('module_shop_import.html', true, true);
-        $this->_objTpl->SetGlobalVariable(array(
-            // cms offset fix for admin images/icons:
-            'SHOP_CMS_OFFSET'    => ASCMS_PATH_OFFSET,
-            'ASCMS_BACKEND_PATH' => ASCMS_BACKEND_PATH,
-        ));
 
         // Delete template
-        if (isset($_REQUEST["deleteImg"]) && $_REQUEST["deleteImg"] == 'exe') {
-            $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_importimg WHERE img_id=".$_REQUEST["img"]."";
-            if ($objDatabase->Execute($query) !== false) {
+        if (isset($_REQUEST['deleteImg'])) {
+            $query = "
+                DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_importimg
+                 WHERE img_id=".$_REQUEST['img'];
+            if ($objDatabase->Execute($query)) {
                 $this->addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_DELETED']);
             } else {
                 $this->addError($_ARRAYLANG['TXT_SHOP_IMPORT_ERROR_DELETE']);
             }
-            unset($this->objCSVimport->arrImportImg);
-            $this->objCSVimport->InitArray();
+            $this->objCSVimport->initTemplateArray();
         }
 
         // Save template
-        if (isset($_REQUEST['exe']) && $_REQUEST['exe'] == 'SaveImg') {
-            $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_importimg (img_name, img_cats, img_fields_file, img_fields_db) ".
-                "VALUES ('".$_REQUEST['ImgName']."', '".$_REQUEST['category']."', '".
-                $_REQUEST['pairs_left_keys']."', '".$_REQUEST['pairs_right_keys']."')";
+        if (isset($_REQUEST['SaveImg'])) {
+            $query = "
+                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_importimg (
+                    img_name, img_cats, img_fields_file, img_fields_db
+                ) VALUES (
+                    '".$_REQUEST['ImgName']."',
+                    '".$_REQUEST['category']."',
+                    '".$_REQUEST['pairs_left_keys']."',
+                    '".$_REQUEST['pairs_right_keys']."'
+                )
+            ";
             if ($objDatabase->Execute($query)) {
                 $this->addMessage($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_SAVED']);
             } else {
                 $this->addError($_ARRAYLANG['TXT_SHOP_IMPORT_ERROR_SAVE']);
             }
-            unset($this->objCSVimport->arrImportImg);
-            $this->objCSVimport->InitArray();
+            $this->objCSVimport->initTemplateArray();
         }
 
         // Import Categories
-        // this is not subject to change, so it's hardcoded
-        if (isset($_REQUEST['exe']) && $_REQUEST["exe"] == "ImportCategories") {
+        // This is not subject to change, so it's hardcoded
+        if (isset($_REQUEST['ImportCategories'])) {
             // delete existing categories on request only!
             // mind that this necessarily also clears all products and
             // their associated attributes!
@@ -649,18 +655,21 @@ class shopmanager extends ShopLibrary {
                 $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories';
                 $objDatabase->Execute($query);
             }
-            $objCsv = new Csv_bv($_FILES["importFileCategories"]["tmp_name"]);
+            $objCsv = new Csv_bv($_FILES['importFileCategories']['tmp_name']);
             $importedLines = 0;
+            $arrCategoryLevel = array(0,0,0,0,0,0,0,0,0,0);
             $line = $objCsv->NextLine();
             while ($line) {
-                // the first entry is considered to be a root category!
-                // if it doesn't exist, it's created by getCategoryId().
-                $parentCatId = 0;
+                $level = 0;
                 foreach ($line as $catName) {
-                    $parentCatId = $this->objCSVimport->getCategoryId(
-                        $catName,
-                        $parentCatId
-                    );
+                    ++$level;
+                    if (!empty($catName)) {
+                        $parentCatId = $this->objCSVimport->getCategoryId(
+                            $catName,
+                            $arrCategoryLevel[$level-1]
+                        );
+                        $arrCategoryLevel[$level] = $parentCatId;
+                    }
                 }
                 ++$importedLines;
                 $line = $objCsv->NextLine();
@@ -669,123 +678,115 @@ class shopmanager extends ShopLibrary {
         }
 
         // Import
-        if (isset($_REQUEST["exe"]) && $_REQUEST["exe"] == "importFileProducts") {
-
+        if (isset($_REQUEST['importFileProducts'])) {
             if (isset($_POST['clearProducts']) && $_POST['clearProducts']) {
                 $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products';
                 $objDatabase->Execute($query);
                 $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products_attributes';
                 $objDatabase->Execute($query);
-                // the categories need not be removed, but it is done by design!
+                // The categories need not be removed, but it is done by design!
                 $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories';
                 $objDatabase->Execute($query);
             }
-
-            $strFileContent = $this->objCSVimport->GetFileContent();
-
+            $arrFileContent = $this->objCSVimport->GetFileContent();
             $query = '
                 SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db
                   FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_importimg
                  WHERE img_id='.$_REQUEST["ImportImage"];
             $objResult = $objDatabase->Execute($query);
 
-            $arrCategoryName = split(';', $objResult->fields['img_cats']);
-            $strFirstLine = $strFileContent[0];
+            $arrCategoryName = preg_split(
+                '/;/', $objResult->fields['img_cats'], null, PREG_SPLIT_NO_EMPTY
+            );
+            $arrFirstLine = $arrFileContent[0];
             $arrCategoryColumnIndex = array();
-            for ($x=0; $x < count($arrCategoryName); $x++) {
-                if ($arrCategoryName[$x] != '') {
-                    foreach ($strFirstLine as $index => $strColumnName) {
-                        if ($strColumnName == $arrCategoryName[$x]) {
-                            array_push($arrCategoryColumnIndex, $index);
-                        }
+            for ($x=0; $x < count($arrCategoryName); ++$x) {
+                foreach ($arrFirstLine as $index => $strColumnName) {
+                    if ($strColumnName == $arrCategoryName[$x]) {
+                        $arrCategoryColumnIndex[] = $index;
                     }
                 }
             }
 
-            $arrTemplateFieldName =
-                split(';', $objResult->fields['img_fields_file']);
+            $arrTemplateFieldName = preg_split(
+                '/;/', $objResult->fields['img_fields_file'],
+                null, PREG_SPLIT_NO_EMPTY
+            );
             $arrDatabaseFieldIndex = array();
-            for ($x=0; $x < count($arrTemplateFieldName); $x++) {
-                if ($arrTemplateFieldName[$x] != '') {
-                    foreach ($strFirstLine as $index => $strColumnName) {
-                        if ($strColumnName == $arrTemplateFieldName[$x]) {
-                            array_push($arrDatabaseFieldIndex, $index);
-                        }
+            for ($x=0; $x < count($arrTemplateFieldName); ++$x) {
+                foreach ($arrFirstLine as $index => $strColumnName) {
+                    if ($strColumnName == $arrTemplateFieldName[$x]) {
+                        $arrDatabaseFieldIndex[] = $index;
                     }
                 }
             }
 
-            $arrProductFieldName = split(';', $objResult->fields['img_fields_db']);
+            $arrProductFieldName = preg_split(
+                '/;/', $objResult->fields['img_fields_db'],
+                null, PREG_SPLIT_NO_EMPTY
+            );
             $arrProductDatabaseFieldName = array();
-            for ($x=0; $x < count($arrProductFieldName); $x++) {
-                if ($arrProductFieldName[$x] != '') {
-                    $DBname = $this->objCSVimport->DBfieldsName($arrProductFieldName[$x]);
-                    if (empty($arrProductDatabaseFieldName[$DBname])) {
-                        $arrProductDatabaseFieldName[$DBname] = $x;
-                    } else {
-                        $arrProductDatabaseFieldName[$DBname] .= ';'.$x;
-                    }
-                }
+            for ($x = 0; $x < count($arrProductFieldName); ++$x) {
+                $DBname = $this->objCSVimport->DBfieldsName($arrProductFieldName[$x]);
+                $arrProductDatabaseFieldName[$DBname] =
+                    (isset($arrProductDatabaseFieldName[$DBname])
+                        ? $arrProductDatabaseFieldName[$DBname].';'
+                        : '').
+                    $x;
             }
 
-            $sql_query = array();
-            for ($x=1; $x < count($strFileContent); $x++) {
-                if (is_array($strFileContent[$x])) {
-                    $strColumnNames = '(';
-                    $strColumnValues = '(';
-                    $Komma = '';
-                    $counter = 0;
-                    foreach ($arrProductDatabaseFieldName as $index => $strFieldName) {
-                        if ($counter>0) {
-                            $Komma = ',';
-                        }
-                        $strColumnNames .= $Komma.$index;
-                        if (strpos($strFieldName, ';')) {
-                            $Prod2line = split(';', $strFieldName);
-                            $SpaltenValuesTmp = '';
-                            for ($z=0; $z < count($Prod2line); $z++) {
-                                if ($Prod2line[$z]!='') {
-                                    $SpaltenValuesTmp .= $strFileContent[$x][$arrDatabaseFieldIndex[$Prod2line[$z]]]."<br />";
-                                }
-                            }
-                            if ($strColumnValues) {
-                                $strColumnValues .= $Komma.'"'.addslashes($SpaltenValuesTmp).'"';
-                            }
-                        } else {
-                            $strColumnValues .= $Komma.'"'.addslashes($strFileContent[$x][$arrDatabaseFieldIndex[$strFieldName]]).'"';
-                        }
-                        $counter++;
-                    }
-                    $catId = 0;
-                    for ($cat=0; $cat < count($arrCategoryColumnIndex); $cat++) {
-                        $catName = $strFileContent[$x][$arrCategoryColumnIndex[$cat]];
-                        if ($catName != '') {
-                            $catId = $this->objCSVimport->getCategoryId($catName, $catId);
-                        } else {
-                            $catId = $this->objCSVimport->GetFirstCat();
-                        }
-                    }
-                    if ($catId == 0) {
-                        $catId = $catId = $this->objCSVimport->GetFirstCat();
-                    }
-                    $strColumnNames .= ', catid)';
-                    $strColumnValues .= ", $catId)";
-                    array_push($sql_query, "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products ".$strColumnNames." values".$strColumnValues);
-                }
-            }
             $importedLines  = 0;
             $errorLines     = 0;
             // Array of IDs of newly inserted records
             $arrId = array();
-            for ($x=0; $x < count($sql_query); $x++) {
-                if ($sql_query[$x] != '') {
-                    $objResult = $objDatabase->Execute($sql_query[$x]);
-                    if ($objResult) {
-                        $arrId[] = $objDatabase->Insert_ID();
-                        $importedLines++;
+            for ($x = 1; $x < count($arrFileContent); ++$x) {
+                $strColumnNames = '';
+                $strColumnValues = '';
+                $counter = 0;
+                foreach ($arrProductDatabaseFieldName as $index => $strFieldIndex) {
+                    $strColumnNames .=
+                        ($strColumnNames ? ',' : '').
+                        $index;
+                    if (strpos($strFieldIndex, ';')) {
+                        $Prod2line = split(';', $strFieldIndex);
+                        $SpaltenValuesTmp = '';
+                        for ($z = 0; $z < count($Prod2line); ++$z) {
+                            $SpaltenValuesTmp .=
+                                $arrFileContent[$x][$arrDatabaseFieldIndex[$Prod2line[$z]]].
+                                '<br />';
+                        }
+                        $strColumnValues .=
+                            ($strColumnValues ? ',' : '').
+                            '"'.addslashes($SpaltenValuesTmp).'"';
                     } else {
-                        $errorLines++;
+                        $strColumnValues .=
+                            ($strColumnValues ? ',' : '').
+                            '"'.addslashes($arrFileContent[$x][$arrDatabaseFieldIndex[$strFieldIndex]]).'"';
                     }
+                    ++$counter;
+                }
+                $catId = false;
+                for ($cat=0; $cat < count($arrCategoryColumnIndex); $cat++) {
+                    $catName = $arrFileContent[$x][$arrCategoryColumnIndex[$cat]];
+                    if (empty($catName)) {
+                        $catId = $this->objCSVimport->GetFirstCat();
+                    } else {
+                        $catId = $this->objCSVimport->getCategoryId($catName, $catId);
+                    }
+                }
+                if ($catId == 0) {
+                    $catId = $this->objCSVimport->GetFirstCat();
+                }
+                $query = "
+                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products
+                    ($strColumnNames, catid) VALUES ($strColumnValues, $catId)
+                ";
+                $objResult = $objDatabase->Execute($query);
+                if ($objResult) {
+                    $arrId[] = $objDatabase->Insert_ID();
+                    ++$importedLines;
+                } else {
+                    ++$errorLines;
                 }
             }
 
@@ -798,18 +799,17 @@ class shopmanager extends ShopLibrary {
             }
         } // end import
 
-        if (isset($_REQUEST["mode"]) && $_REQUEST["mode"] == "ImportImg") {
-            $JSSelectLayer = "selectTab('import2');";
+        if (isset($_REQUEST['mode']) && $_REQUEST['mode'] == 'ImportImg') {
+            $JSSelectLayer = 'selectTab("import2");';
         } else {
-            $JSSelectLayer = "selectTab('import1');";
+            $JSSelectLayer = 'selectTab("import1");';
         }
 
-        $arrImages = array();
-        $arrImages = $this->objCSVimport->GetImportImg();
         $Noimg = '';
         $ImportButtonStyle = '';
+        $arrTemplateArray = $this->objCSVimport->getTemplateArray();
         if (isset($_REQUEST["mode"]) && $_REQUEST["mode"] != "ImportImg") {
-            if (count($arrImages)<1) {
+            if (count($arrTemplateArray) == 0) {
                 $Noimg = $_ARRAYLANG['TXT_SHOP_IMPORT_NO_TEMPLATES_AVAILABLE'];
                 $ImportButtonStyle = 'style="display: none;"';
             } else {
@@ -817,20 +817,20 @@ class shopmanager extends ShopLibrary {
                 $ImportButtonStyle = '';
             }
         } else {
-            if (!isset($_REQUEST["exe"]) || $_REQUEST["exe"] != "SelectFields") {
+            if (!isset($_REQUEST['SelectFields'])) {
                 $JSnofiles     = "selectTab('import1');";
             } else {
                 if ($_FILES['CSVfile']['name'] == '') {
                     $JSnofiles  = "selectTab('import4');";
                 } else {
                     $JSnofiles  = "selectTab('import2');";
-                    $FileFields = $this->objCSVimport->GetFileFields();
+                    $FileFields = $this->objCSVimport->getFilefieldMenuOptions();
                     $FileFields = '
                          <select name="FileFields" id="file_field" style="width: 200px;" size="10">
                              '.$FileFields.'
                          </select>
                      ';
-                    $DBlist = $this->objCSVimport->GetDBFields();
+                    $DBlist = $this->objCSVimport->getAvailableNamesMenuOptions();
                     $DBlist = '
                          <select name="DbFields" id="given_field" style="width: 200px;" size="10">
                              '.$DBlist.'
@@ -842,7 +842,7 @@ class shopmanager extends ShopLibrary {
 
         // Export groups -- hardcoded
         // ------------------------------
-        if (isset($_REQUEST['group']) && $_REQUEST['group']) {
+        if (isset($_REQUEST['group'])) {
             $query = '';
             $fieldNames = '';
             switch ($_REQUEST['group']) {
@@ -1012,45 +1012,41 @@ class shopmanager extends ShopLibrary {
 
         // make sure that language entries exist for all of
         // TXT_SHOP_EXPORT_GROUP_*, TXT_SHOP_EXPORT_GROUP_*_TIP !!
-        $arrGroups = array("tproduct", "rproduct", "tcustomer", "rcustomer", "torder", "rorder");
-        $i = '';
+        $arrGroups = array('tproduct', 'rproduct', 'tcustomer', 'rcustomer', 'torder', 'rorder');
         $tipText = '';
-        for ($i = 0; $i < count($arrGroups); $i++) {
-            $this->_objTpl->setCurrentBlock("groupRow");
-            if ($i%2) { $class="row1"; } else { $class="row2"; }
+        for ($i = 0; $i < count($arrGroups); ++$i) {
+            $this->_objTpl->setCurrentBlock('groupRow');
             $this->_objTpl->setVariable(array(
                 'SHOP_EXPORT_GROUP'      => $_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_'.strtoupper($arrGroups[$i])],
                 'SHOP_EXPORT_GROUP_CODE' => $arrGroups[$i],
                 'SHOP_EXPORT_INDEX'      => $i,
                 'TXT_EXPORT'             => $_ARRAYLANG['TXT_EXPORT'],
-                'CLASS_NAME'             => $class
+                'CLASS_NAME'             => (++$i % 2 ? 'row2' : 'row2'),
             ));
-            $this->_objTpl->parse("groupRow");
+            $this->_objTpl->parse('groupRow');
             $tipText .= 'Text['.$i.']=["","'.$_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_'.strtoupper($arrGroups[$i]).'_TIP'].'"];';
         }
 
-        //$ImgList     = $this->objCSVimport->GetImgListDelete("[".$_ARRAYLANG['TXT_SHOP_IMPORT_DELETE']."]");
         $ImageChoice = $this->objCSVimport->GetImageChoice($Noimg);
-
-        $this->_objTpl->setCurrentBlock("imgRow");
-        for ($x=0; $x<count($this->objCSVimport->arrImportImg); $x++) {
-            if (($x % 2) == 0) {$class="row1";} else {$class="row2";}
+        $arrTemplateArray = $this->objCSVimport->getTemplateArray();
+        $this->_objTpl->setCurrentBlock('imgRow');
+        for ($x = 0; $x < count($arrTemplateArray); ++$x) {
             $this->_objTpl->setVariable(array(
-                'IMG_NAME'   => $this->objCSVimport->arrImportImg[$x]["name"],
-                'IMG_ID'     => $this->objCSVimport->arrImportImg[$x]["id"],
+                'IMG_NAME'   => $arrTemplateArray[$x]['name'],
+                'IMG_ID'     => $arrTemplateArray[$x]['id'],
                 'TXT_DELETE' => $_ARRAYLANG['TXT_SHOP_IMPORT_DELETE'],
-                'CLASS_NAME' => $class,
+                'CLASS_NAME' => ($x % 2 ? 'row2' : 'row1'),
                 // cms offset fix for admin images/icons:
                 'SHOP_CMS_OFFSET' => ASCMS_PATH_OFFSET,
             ));
-            $this->_objTpl->parse("imgRow");
+            $this->_objTpl->parse('imgRow');
         }
 
         $this->_objTpl->setVariable(array(
             'SELECT_LAYER_ONLOAD' => $JSSelectLayer,
             'NO_FILES'            => (isset($JSnofiles)  ? $JSnofiles  : ''),
             'FILE_FIELDS_LIST'    => (isset($FileFields) ? $FileFields : ''),
-            'DB_FIELDS_LIST'      => (isset($DBlist)     ? $DBlist     : '' ),
+            'DB_FIELDS_LIST'      => (isset($DBlist)     ? $DBlist     : ''),
             'IMAGE_CHOICE'        => $ImageChoice,
             'IMPORT_BUTTON_STYLE' => $ImportButtonStyle,
             'TXT_FUNCTIONS'       => $_ARRAYLANG['TXT_FUNCTIONS']
@@ -1080,6 +1076,10 @@ class shopmanager extends ShopLibrary {
             'TXT_SHOP_IMPORT_TEMPLATE_REALLY_DELETE' => $_ARRAYLANG['TXT_SHOP_IMPORT_TEMPLATE_REALLY_DELETE'],
             'TXT_SHOP_IMPORT_TEMPLATENAME'           => $_ARRAYLANG['TXT_SHOP_IMPORT_TEMPLATENAME'],
             'TXT_SHOP_IMPORT_FILE'                   => $_ARRAYLANG['TXT_SHOP_IMPORT_FILE'],
+            'TXT_SHOP_IMPORT_IMPORT_CATEGORIES'      => $_ARRAYLANG['TXT_SHOP_IMPORT_IMPORT_CATEGORIES'],
+            'TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES' => $_ARRAYLANG['TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES'],
+            'TXT_SHOP_IMPORT_CATEGORIES_TIPS'        => $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES_TIPS'],
+            'TXT_SHOP_IMPORT_PRODUCTS'               => $_ARRAYLANG['TXT_SHOP_IMPORT_PRODUCTS'],
             // export added
             'TXT_SHOP_EXPORT'                        => $_ARRAYLANG['TXT_SHOP_EXPORT'],
             'TXT_SHOP_EXPORT_DATA'                   => $_ARRAYLANG['TXT_SHOP_EXPORT_DATA'],
@@ -1097,11 +1097,6 @@ class shopmanager extends ShopLibrary {
             'TXT_SHOP_EXPORT_TIPS'                   => $_ARRAYLANG['TXT_SHOP_EXPORT_TIPS'],
             'TXT_SHOP_TIP'                           => $_ARRAYLANG['TXT_SHOP_TIP'],
             'TXT_CLEAR_DATABASE_BEFORE_IMPORTING'    => $_ARRAYLANG['TXT_CLEAR_DATABASE_BEFORE_IMPORTING'],
-// velok
-            'TXT_SHOP_IMPORT_IMPORT_CATEGORIES'      => $_ARRAYLANG['TXT_SHOP_IMPORT_IMPORT_CATEGORIES'],
-            'TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES' => $_ARRAYLANG['TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES'],
-            'TXT_SHOP_IMPORT_CATEGORIES_TIPS'        => $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES_TIPS'],
-            'TXT_SHOP_IMPORT_PRODUCTS'               => $_ARRAYLANG['TXT_SHOP_IMPORT_PRODUCTS'],
         ));
     }
 
@@ -1285,7 +1280,7 @@ class shopmanager extends ShopLibrary {
                     )
             ));
             $this->_objTpl->parse('attributeList');
-            $i++;
+            ++$i;
         }
     }
 
@@ -1310,7 +1305,7 @@ class shopmanager extends ShopLibrary {
         // delete option
         if (isset($_GET['delId']) && !empty($_GET['delId'])) {
             $this->addError($this->_deleteAttributeOption($_GET['delId']));
-        } elseif (!empty($_GET['delProduct']) && isset($_POST['selectedOptionId']) && !empty($_POST['selectedOptionId'])) {
+        } elseif (!empty($_GET['delProduct']) && !empty($_POST['selectedOptionId'])) {
             $this->addError($this->_deleteAttributeOption($_POST['selectedOptionId']));
         }
         // store new option
@@ -2240,7 +2235,7 @@ class shopmanager extends ShopLibrary {
                         }
                     }
                     // increment numbers of rows
-                    $i++;
+                    ++$i;
 
                     $this->_objTpl->setVariable(array(
                         'SHOP_TEMPLATE_ID'        => $objResult->fields['id'],
@@ -2427,7 +2422,7 @@ class shopmanager extends ShopLibrary {
                 // fill in the VAT fields of the template
                 $i = 0;
                 foreach ($this->objVat->getRateArray() as $id => $rate) {
-                    if (($i++ % 2) == 0) $class="row1"; else $class="row2";
+                    if ((++$i % 2) == 0) $class="row1"; else $class="row2";
                     $this->_objTpl->setVariable(array(
                     'SHOP_ROWCLASS'  => $class,
                     'SHOP_TAX_ID'    => $id,
@@ -2963,17 +2958,21 @@ class shopmanager extends ShopLibrary {
                 $arrProductId = $_REQUEST['selectedProductId'];
             }
         } else {
-            if ($productId > 0) {
-                $arrProductId[] = $productId;
-            }
+            $arrProductId[] = $productId;
         }
 
         $result = true;
         if (count($arrProductId) > 0) {
             foreach ($arrProductId as $id) {
                 $objProduct = Product::getById($id);
-                if (!Products::deleteByCode($objProduct->getCode(), false)) {
-                    $result = false;
+                if (!$objProduct) {
+                    continue;
+                }
+                $code = $objProduct->getCode();
+                if (empty($code)) {
+                    $result &= $objProduct->delete();
+                } else {
+                    $result &= !Products::deleteByCode($objProduct->getCode());
                 }
             }
         }
@@ -3103,7 +3102,7 @@ class shopmanager extends ShopLibrary {
                   : ''
                 );
             // check incoming picture file paths
-            for ($i = 1; $i <= 3; $i++) {
+            for ($i = 1; $i <= 3; ++$i) {
                 $imageDir = dirname($_POST['productImage'.$i]).'/';
                 if ($imageDir != $this->shopImageWebPath) {
                     // copy image to shop image folder
@@ -4673,7 +4672,7 @@ class shopmanager extends ShopLibrary {
                 'SHOP_CUSTOMER_STATUS_IMAGE' => $shopCustomerStatus,
                 ));
                 $this->_objTpl->parse('customersRow');
-                $i++;
+                ++$i;
                 $objResult->MoveNext();
             }
             $this->_objTpl->setVariable('SHOP_CUSTOMER_PAGING',$paging);
@@ -5864,7 +5863,7 @@ class shopmanager extends ShopLibrary {
 
                         ));
                         $this->_objTpl->parse("statisticRow");
-                        $i++;
+                        ++$i;
                     }
                 }
             }

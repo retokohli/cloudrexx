@@ -2,26 +2,58 @@
 
 class CSVimport
 {
-    var $arrImportImg = array();
-    var $separator = ';';
-    var $delimiter = '"';
-    var $escapor   = '"';
+    static private $separator = ';';
+    static private $delimiter = '"';
+    static private $escapor   = '"';
+
+    private $arrTemplateArray = false;
+    private $arrName2Fieldname = false;
 
 
     function CSVimport()
+    {
+        global $_ARRAYLANG;
+
+        $this->arrName2Fieldname = array(
+            $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] => 'product_id',
+            $_ARRAYLANG['TXT_SHOP_IMAGE'] => 'picture',
+            $_ARRAYLANG['TXT_PRODUCT_NAME'] => 'title',
+            $_ARRAYLANG['TXT_DISTRIBUTION'] => 'handler',
+            $_ARRAYLANG['TXT_CUSTOMER_PRICE'] => 'normalprice',
+            $_ARRAYLANG['TXT_RESELLER_PRICE'] => 'resellerprice',
+            $_ARRAYLANG['TXT_SHOP_PRICE_SPECIAL_OFFER'] => 'discountprice',
+            $_ARRAYLANG['TXT_SPECIAL_OFFER'] => 'is_special_offer',
+            $_ARRAYLANG['TXT_SHORT_DESCRIPTION'] => 'shortdesc',
+            $_ARRAYLANG['TXT_DESCRIPTION'] => 'description',
+            $_ARRAYLANG['TXT_STOCK'] => 'stock',
+            $_ARRAYLANG['TXT_B2B'] => 'b2b',
+            $_ARRAYLANG['TXT_B2C'] => 'b2c',
+            $_ARRAYLANG['TXT_WEIGHT'] => 'weight',
+        );
+
+        $this->initTemplateArray();
+    }
+
+
+    function getTemplateArray()
+    {
+        return $this->arrTemplateArray;
+    }
+
+
+    function initTemplateArray()
     {
         global $objDatabase;
 
         $query = "
             SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_importimg ORDER BY img_id
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_importimg
+             ORDER BY img_id
         ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return;
-        }
-        while (!$objResult->EOF) {
-            $this->arrImportImg[] = array(
+        $this->arrTemplateArray = array();
+        while ($objResult && !$objResult->EOF) {
+            $this->arrTemplateArray[] = array(
                 'id'          => $objResult->fields['img_id'],
                 'name'        => $objResult->fields['img_name'],
                 'cat'         => $objResult->fields['img_cats'],
@@ -32,87 +64,64 @@ class CSVimport
         }
     }
 
-    function GetImportImg()
-    {
-        return $this->arrImportImg;
-    }
-
-    function InitArray()
-    {
-        global $objDatabase;
-
-        $query =
-            "SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db ".
-            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_importimg ORDER BY img_id";
-        $objResult = $objDatabase->Execute($query);
-        $ArrayCounter = 0;
-        while (!$objResult->EOF) {
-            $this->arrImportImg[$ArrayCounter] = array(
-                'id'          => $objResult->fields['img_id'],
-                'name'        => $objResult->fields['img_name'],
-                'cat'         => $objResult->fields['img_cats'],
-                'fields_file' => $objResult->fields['img_fields_file'],
-                'fields_db'   => $objResult->fields['img_fields_db']
-            );
-            $ArrayCounter++;
-            $objResult->MoveNext();
-        }
-    }
 
     function GetImgListDelete($DeleteText)
     {
         $content = '';
-        for ($x=0; $x<count($this->arrImportImg); $x++) {
-            $content .= ''.$this->arrImportImg[$x]["name"].'</b> <a href="javascript:DeleteImg('.$this->arrImportImg[$x]["id"].');">'.$DeleteText.'</a><br />';
+        for ($x = 0; $x < count($this->arrTemplateArray); ++$x) {
+            $content .=
+                $this->arrTemplateArray[$x]['name'].
+                '<a href="javascript:DeleteImg('.
+                $this->arrTemplateArray[$x]['id'].');">'.
+                $DeleteText.'</a><br />';
         }
         return $content;
     }
 
-    function GetFileFields()
+
+    function getFilefieldMenuOptions()
     {
-        $csv_source = new csv_bv($_FILES["CSVfile"]["tmp_name"], $this->separator, $this->delimiter, $this->escapor);
-        $csv_source->SkipEmptyRows(TRUE);
-        $csv_source->TrimFields(TRUE);
-        $FileContent = $csv_source->csv2Array();
-        $FileFields = '';
-        $SelectedText = " selected='selected'";
-        for ($x=0; $x<count($FileContent[0]); $x++) {
-            $FileFields .= "<option name='$x'$SelectedText>".$FileContent[0][$x]."</option>\n";
-            $SelectedText = '';
+        $csv_source = new Csv_bv(
+            $_FILES['CSVfile']['tmp_name'],
+            CSVimport::$separator, CSVimport::$delimiter, CSVimport::$escapor
+        );
+        $csv_source->SkipEmptyRows(true);
+        $csv_source->TrimFields(true);
+        $arrFileContent = $csv_source->csv2Array();
+        $strOptions = '';
+        for ($x = 0; $x < count($arrFileContent[0]); ++$x) {
+            $strOptions .=
+                "<option name='$x'>".
+                $arrFileContent[0][$x].
+                "</option>\n";
         }
-        return $FileFields;
+        return $strOptions;
     }
 
-    function GetDBFields()
+
+    /**
+     * Return the menu options of available names that can be assigned
+     * to the fields of the file to be imported.
+     * @return  array           The available names
+     * @static
+     */
+    //static
+    function getAvailableNamesMenuOptions()
     {
-        $DBarray = array(
-             1 => 'PRODUCT ID',
-             2 => 'TITLE',
-             3 => 'HANDLER',
-             4 => 'NORMALPRICE',
-             5 => 'RESELLERPRICE',
-             6 => 'DISCOUNTPRICE',
-             7 => 'ISSPECIALOFFER',
-             8 => 'SHORTDESC',
-             9 => 'DESCRIPTION',
-            10 => 'STOCK',
-            11 => 'B2B',
-            12 => 'B2C',
-            13 => 'PICTURE',
-            14 => 'WEIGHT',
-        );
-        $DbFields = '';
-        $SelectedText = " selected='selected'";
-        for ($x=1; $x<=count($DBarray); $x++) {
-            $DbFields .= "<option value='".$DBarray[$x]."'$SelectedText>".$DBarray[$x]."</option>\n";
-            $SelectedText = '';
+        $strOptions = '';
+        foreach (array_keys($this->arrName2Fieldname) as $name) {
+            $strOptions .= "<option value=\"$name\">$name</option>\n";
         }
-        return $DbFields;
+        return $strOptions;
     }
+
 
     function GetFileContent()
     {
-        $csv_source = new csv_bv($_FILES["importfile"]["tmp_name"], $this->separator, $this->delimiter, $this->escapor);
+        $csv_source = new csv_bv(
+            $_FILES['importfile']['tmp_name'],
+            CSVimport::$separator, CSVimport::$delimiter, CSVimport::$escapor
+        );
         $csv_source->SkipEmptyRows(true);
         $csv_source->TrimFields(true);
         $FileContent = $csv_source->csv2Array();
@@ -123,69 +132,60 @@ class CSVimport
     {
         $content = '<select name="ImportImage">';
         if ($Noimg == '') {
-            for ($x=0; $x<count($this->arrImportImg); $x++) {
-                $content .= '<option value="'.$this->arrImportImg[$x]["id"].'">'.$this->arrImportImg[$x]["name"].'</option>';
+            for ($x=0; $x<count($this->arrTemplateArray); ++$x) {
+                $content .=
+                    '<option value="'.$this->arrTemplateArray[$x]['id'].'">'.
+                    $this->arrTemplateArray[$x]['name'].'</option>';
             }
         } else {
-            $content .= '<option value="">'.$Noimg.'';
+            $content .= '<option value="">'.$Noimg;
         }
         $content .= '</select>';
         return $content;
     }
 
-    function DBfieldsName($FieldDesc)
+
+    function DBfieldsName($name='')
     {
-        $FieldName = array();
-        $FieldName['PRODUCT ID']       = 'product_id';
-        $FieldName['PICTURE']          = 'picture';
-        $FieldName['TITLE']            = 'title';
-        $FieldName['HANDLER']          = 'handler';
-        $FieldName['NORMALPRICE']      = 'normalprice';
-        $FieldName['RESELLERPRICE']    = 'resellerprice';
-        $FieldName['DISCOUNTPRICE']    = 'discountprice';
-        $FieldName['ISSPECIALOFFER']   = 'is_special_offer';
-        $FieldName['SHORTDESC']        = 'shortdesc';
-        $FieldName['DESCRIPTION']      = 'description';
-        $FieldName['STOCK']            = 'stock';
-        $FieldName['B2B']              = 'b2b';
-        $FieldName['B2C']              = 'b2c';
-        $FieldName['WEIGHT']           = 'weight';
-        return $FieldName[$FieldDesc];
+        if (empty($name)) {
+            return $this->arrName2Fieldname;
+        }
+        return $this->arrName2Fieldname[$name];
     }
 
 
     /**
      * Returns the ID of the ShopCategory with the given name and
-     * parent ID.
+     * parent ID, if present.
      *
-     * If the ShopCategory cannot be found, a new sub-ShopCategory
+     * If the ShopCategory cannot be found, a new ShopCategory
      * with the given name is inserted and its ID returned.
      * @static
      * @param   string      $catName    The ShopCategory name
-     * @param   integer     $catParent  The parent ShopCategory ID
+     * @param   mixed       $catParent  The optional parent ShopCategory ID,
+     *                                  or false to ignore it (default)
      * @return  integer                 The ID of the ShopCategory,
      *                                  or 0 on failure.
      * @author  Unknown <info@comvation.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
     //static
-    function getCategoryId($catName, $catParent)
+    function getCategoryId($catName, $catParent=false)
     {
         global $objDatabase;
-        $query =
-            "SELECT catid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
-            "WHERE catname='$catName' AND parentid=$catParent";
+        $query = "
+            SELECT catid
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
+             WHERE catname='$catName'
+               ".($catParent === false ? '' : "AND parentid=$catParent");
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
             if ($objResult->RecordCount() > 0) {
                 return $objResult->fields['catid'];
-            } else {
-                $catId = CSVimport::InsertNewCat($catName, $catParent);
-                return $catId;
             }
-        } else {
-            return 0;
+            return CSVimport::InsertNewCat($catName, $catParent);
         }
+        return 0;
     }
 
 
