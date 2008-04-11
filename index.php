@@ -1003,7 +1003,7 @@ switch ($plainSection) {
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=new cmsSession();
-        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = new Auth($type = 'frontend');
+        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = new Auth('frontend');
         $communityObj = new Community($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $communityObj->getCommunityPage());
         break;
@@ -1509,7 +1509,6 @@ if(!empty($calendarCheck1) OR !empty($calendarCheck2)) {
         }
     }
 }
-
 
 
 //-------------------------------------------------------
