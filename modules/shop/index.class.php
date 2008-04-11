@@ -596,7 +596,7 @@ class Shop extends ShopLibrary
 
             // Array of all visible ShopCategories
             $arrShopCategoryTree = $this->objShopCategories->getTreeArray(
-                false, true, true, $selectedCatId, 0, 3
+                false, true, true, $selectedCatId, 0, 0
             );
             // The trail of IDs to the selected ShopCategory,
             // built along with the tree array when calling getTreeArray().
@@ -604,9 +604,9 @@ class Shop extends ShopLibrary
 
             // Build the display of ShopCategories
             foreach ($arrShopCategoryTree as $arrShopCategory) {
-                $level    = $arrShopCategory['level'];
+                $level = $arrShopCategory['level'];
                 // Skip levels too deep: if ($level >= 2) { continue; }
-                $id       = $arrShopCategory['id'];
+                $id = $arrShopCategory['id'];
 
                 // Only the visible ShopCategories are stored in
                 // $arrShopCategoryTree.  $arrTrail contains the full list
@@ -2551,9 +2551,10 @@ sendReq('', 1);
                            normalprice, resellerprice, discountprice,
                            is_special_offer, vat_id, weight
                       FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-                     WHERE status=1 AND id=".$arrProduct['id']
+                     WHERE status=1
+                       AND id=".$arrProduct['id']
                 );
-                if (!$objResult && $objResult->RecordCount() == 0) {
+                if (!$objResult || $objResult->RecordCount() == 0) {
                     unset($_SESSION['shop']['cart']['products'][$cartProdId]);
                     continue;
                 }
