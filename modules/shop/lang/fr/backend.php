@@ -557,4 +557,6 @@ $_ARRAYLANG['TXT_SHOP_CREATE_ACCOUNT_TIP'] = "Wenn diese Option den Wert 'ja' tr
 $_ARRAYLANG['TXT_SHOP_YES'] = "Ja";
 $_ARRAYLANG['TXT_SHOP_NO'] = "Nein";
 $_ARRAYLANG['TXT_SHOP_RESET'] = "Zurücksetzen";
+$_ARRAYLANG['TXT_SHOP_PRICE_SPECIAL_OFFER'] = "Aktionspreis";
+$_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_IMPORTED_CATEGORIES'] = "Erfolgreich importierte Kategorien";
 ?>
