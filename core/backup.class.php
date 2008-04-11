@@ -1,24 +1,25 @@
 <?php
+
 /**
  * Backup
  *
  * Functions to create and restore backups of the contrexx cms
  *
- * @copyright	CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
+ * @copyright    CONTREXX CMS - COMVATION AG
+ * @author        Comvation Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  core
- * @version		1.0.0
+ * @version        1.0.0
  * @todo        Make this an actual class (as the file name suggests)
  * @todo        Document Backup structure, management, schedule(?)
  */
-
 
 //Security-Check
 if (eregi("backup.class.php",$_SERVER['PHP_SELF'])) {
     Header("Location: index.php");
     die();
 }
+
 
 /**
  * Create a database backup
@@ -71,7 +72,6 @@ function backup_create()
 
     if (!empty($table_array)) {
         $implode_tables=implode(";",$table_array);
-        $i=0;
         foreach ($table_array as $table_name) {
             $table_name = get_magic_quotes_gpc() ? $table_name : addslashes($table_name);
             $newfile.= "\n# ----------------------------------------------------------\n#\n";
@@ -84,9 +84,10 @@ function backup_create()
         }
 
         $dumbfilename=$timestamp.".sql";
-        $fp=fopen( ASCMS_BACKUP_PATH .'/'.$dumbfilename,"w") OR die ("Could not create the database backup file.\n (Check the file permission chmod 777)");
-        fwrite ($fp,$newfile);
-        fclose ($fp);
+        $fp = fopen(ASCMS_BACKUP_PATH.'/'.$dumbfilename, "w");
+        if (!$fp) die ("Could not create the database backup file.\n (Check the file permission chmod 777)");
+        fwrite($fp, $newfile);
+        fclose($fp);
 
         $filesize = filesize (ASCMS_BACKUP_PATH. '/' .$dumbfilename);
 
@@ -105,6 +106,7 @@ function backup_create()
         return $_CORELANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'];
     }
 }
+
 
 /**
  * Restore database backup specified by its backup ID.
@@ -138,26 +140,25 @@ function backup_restore()
             $contents = preg_replace("/\r/s", "\n", $contents);
             $contents = preg_replace("/[\n]{2,}/s", "\n", $contents);
             $lines = explode("\n", $contents);
-            $queries = array();
             $in_query = 0;
             $i = 0;
             foreach ($lines as $line) {
                 $line = trim($line);
                 if (!$in_query) {
-                    if (preg_match("/^CREATE/i", $line)) {
-                        $in_query= 1;
-                        $split_file[$i]= $line;
-                    } elseif (!empty($line) && $line[0]!="#") {
-                        $split_file[$i]= preg_replace("/;$/i", "", $line);
+                    if (preg_match('/^CREATE/i', $line)) {
+                        $in_query = 1;
+                        $split_file[$i] = $line;
+                    } elseif (!empty($line) && $line[0] != '#') {
+                        $split_file[$i] = preg_replace('/;$/i', '', $line);
                         $i++;
                     }
                 } elseif ($in_query) {
-                    if (preg_match("/^[\)]/", $line)) {
+                    if (preg_match('/^[\)]/', $line)) {
                         $in_query = 0;
-                        $split_file[$i].= preg_replace("/;$/i", "", $line);
+                        $split_file[$i] .= preg_replace('/;$/i', '', $line);
                         $i++;
-                    } elseif (!empty($line) && $line[0]!="#") {
-                        $split_file[$i].= $line;
+                    } elseif (!empty($line) && $line[0] != '#') {
+                        $split_file[$i] .= $line;
                     }
                 }
             }
@@ -185,6 +186,7 @@ function backup_restore()
     return $msg;
 }
 
+
 /**
  * Delete a database backup specified by its backup ID.
  * The ID is provided by the 'backupid' element in the $_REQUEST array.
@@ -199,31 +201,28 @@ function backup_delete()
 {
     global $objDatabase,$_CORELANG;
 
-    $id=intval($_REQUEST["backupid"]);
+    $id = intval($_REQUEST["backupid"]);
     if (empty($id)) return $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
 
     $objResult = $objDatabase->Execute("SELECT date FROM ".DBPREFIX."backups WHERE id=".$id);
-    if ($objResult !== false) {
-        $filename = $objResult->fields['date'].".sql";
-        if (file_exists(ASCMS_BACKUP_PATH.'/'.$filename)) {
-            if (@unlink(ASCMS_BACKUP_PATH.'/'.$filename)) {
-                if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."backups WHERE id=".$id) !== false) {
-                   return $_CORELANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
-                } else {
-                    return $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
-                }
-            } else {
-                return $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
-            }
-        } else {
+    if (!$objResult) {
+        return false;
+    }
+    $filename = $objResult->fields['date'].".sql";
+    if (file_exists(ASCMS_BACKUP_PATH.'/'.$filename)) {
+        if (@unlink(ASCMS_BACKUP_PATH.'/'.$filename)) {
             if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."backups WHERE id=".$id) !== false) {
-               return $_CORELANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
-            } else {
-                return $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+                return $_CORELANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
             }
         }
+    } else {
+        if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."backups WHERE id=".$id) !== false) {
+           return $_CORELANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
+        }
     }
+    return $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
 }
+
 
 /**
  * View single backup table entry specified by its backup ID.
@@ -244,19 +243,21 @@ function backup_view()
 {
     global $objDatabase;
 
-    $id=intval($_REQUEST["backupid"]);
-    if (empty($id)) return "";
+    $id = intval($_REQUEST['backupid']);
+    if (empty($id)) return '';
     $objResult = $objDatabase->Execute("SELECT date FROM ".DBPREFIX."backups WHERE id=".$id);
-    if ($objResult !== false) {
-        $filename = $objResult->fields['date'].".sql";
-        ob_start();
-        @ob_implicit_flush(0);
-        readfile(ASCMS_BACKUP_PATH.'/'.$filename);
-        $contents = ob_get_contents();
-        ob_end_clean();
-        return "<pre>".preg_replace('/\{([A-Z0-9_]*?)\}/','[[\\1]]',htmlspecialchars($contents, ENT_QUOTES, CONTREXX_CHARSET))."</pre>";
+    if (!$objResult) {
+        return '';
     }
+    $filename = $objResult->fields['date'].'.sql';
+    ob_start();
+    @ob_implicit_flush(0);
+    readfile(ASCMS_BACKUP_PATH.'/'.$filename);
+    $contents = ob_get_contents();
+    ob_end_clean();
+    return '<pre>'.preg_replace('/\{([A-Z0-9_]*?)\}/','[[\\1]]',htmlspecialchars($contents, ENT_QUOTES, CONTREXX_CHARSET)).'</pre>';
 }
+
 
 /**
  * View a list of tables contained in a backup specified by its backup ID.
@@ -277,21 +278,22 @@ function backup_viewTables()
 {
     global $objDatabase,$_CORELANG;
 
-    $id=intval($_REQUEST["backupid"]);
+    $id = intval($_REQUEST['backupid']);
     if (empty($id)) {
-        return "";
+        return '';
     }
-
     $objResult = $objDatabase->Execute("SELECT usedtables FROM ".DBPREFIX."backups WHERE id=".$id);
-    if ($objResult !== false) {
-        $tables=explode(";",$objResult->fields["usedtables"]);
-        $output=$_CORELANG['TXT_TABLES'].":<br>";
-        foreach ($tables as $value) {
-            $output.="<br>".$value;
-        }
-        return $output;
+    if (!$objResult) {
+        return '';
     }
+    $tables = explode(';',$objResult->fields['usedtables']);
+    $output = $_CORELANG['TXT_TABLES'].':<br>';
+    foreach ($tables as $value) {
+        $output .= '<br>'.$value;
+    }
+    return $output;
 }
+
 
 /**
  * Download a backup file specified by its backup ID.
@@ -305,10 +307,7 @@ function backup_viewTables()
  * @global  array   Core language
  * @todo    Improve error handling, i.e.: What if the backup record does not
  *          exist?
- * @todo    Not consistent with other functions here.  Should return the
- *          file content instead of printing it.
- * @todo    Determine the return type...!
- * @return  bool/void   void or false
+ * @return  bool/void   exits on success, returns false otherwise
  */
 function backup_download()
 {
@@ -319,16 +318,18 @@ function backup_download()
         return false;
     }
     $objResult = $objDatabase->Execute("SELECT date FROM ".DBPREFIX."backups WHERE id=".$id);
-    if ($objResult !== false) {
-        $filename = $objResult->fields['date'].".sql";
-        $size = @filesize(ASCMS_BACKUP_PATH.'/'.$filename);
-        header("Content-type: application/x-unknown");
-        header("Content-length: $size\n");
-        header("Content-Disposition: attachment; filename=$filename\n");
-        readfile(ASCMS_BACKUP_PATH.'/'.$filename);
-        exit;
+    if (!$objResult) {
+        return false;
     }
+    $filename = $objResult->fields['date'].".sql";
+    $size = @filesize(ASCMS_BACKUP_PATH.'/'.$filename);
+    header("Content-type: application/x-unknown");
+    header("Content-length: $size\n");
+    header("Content-Disposition: attachment; filename=$filename\n");
+    readfile(ASCMS_BACKUP_PATH.'/'.$filename);
+    exit;
 }
+
 
 /**
  * Show a list of present backups
@@ -344,51 +345,27 @@ function backup_showList()
 {
     global $objTemplate, $_CORELANG, $objDatabase, $_DBCONFIG;
 
-    $tables = '';
-    $shoptables = '';
     $database_size_prefix = 0;
     $database_number_prefix = 0;
-
-    $objTemplate->addBlockfile('ADMIN_CONTENT', 'backup', "backup.html");
-
+    $tables = '';
     $table_array = $objDatabase->MetaTables('TABLES');
-    $defaulttables=array();
+    $defaulttables = array();
+    $shoptables = array();
 
     foreach ($table_array as $table) {
-        if (preg_match("/\b".DBPREFIX."/i", $table) && !preg_match("/\b".DBPREFIX."backups\b/i", $table)) {
-            $tables.="<option value='".$table."'>".$table."</option>";
+        if (    preg_match('/\b'.DBPREFIX.'/i', $table)
+            && !preg_match('/\b'.DBPREFIX.'backups\b/i', $table)) {
+            $tables .= '<option value="'.$table.'">'.$table.'</option>';
         }
-        if (preg_match("/".DBPREFIX."content_navigation\b/i", $table)
-         || preg_match("/".DBPREFIX."content\b/i", $table)) {
-            $defaulttables[]=$table;
-        } elseif (preg_match("/".DBPREFIX."module_shop_categories\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_config\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_countries\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_currencies\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_customers\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_mail\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_mail_content\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_order_items\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_order_items_attributes\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_orders\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_payment\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_payment_processors\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_pricelists\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_products\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_products_attributes\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_products_attributes_name\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_products_attributes_value\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_products_downloads\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_rel_countries\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_rel_payment\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_rel_shipment\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_shipment\b/i", $table)
-             || preg_match("/".DBPREFIX."module_shop_zones\b/i", $table))
-        {
+        if (   preg_match('/'.DBPREFIX.'content_navigation\b/i', $table)
+            || preg_match('/'.DBPREFIX.'content\b/i', $table)) {
+            $defaulttables[] = $table;
+        } elseif (preg_match('/'.DBPREFIX.'module_shop/', $table)) {
             $shoptables[] = $table;
         }
     }
 
+    $objTemplate->addBlockfile('ADMIN_CONTENT', 'backup', "backup.html");
     $objTemplate->setVariable(array(
         'TXT_BACKUP_LIST'            => $_CORELANG['TXT_BACKUP_LIST'],
         'TXT_DATE'                   => $_CORELANG['TXT_DATE'],
@@ -416,46 +393,37 @@ function backup_showList()
     $objResult = $objDatabase->Execute("
         SELECT id, date, description, usedtables, size
           FROM ".DBPREFIX."backups
-      ORDER BY date DESC
+         ORDER BY date DESC
     ");
     $j = 0;
     if ($objResult) {
         while (!$objResult->EOF) {
-            if (($j% 2)==0) {
-                $class="row2";
-            } else {
-                $class="row1";
-            }
-
-            $description = ($objResult->fields['description']=="") ? "-" : stripslashes($objResult->fields['description']);
+            $description = ($objResult->fields['description']=='') ? '-' : stripslashes($objResult->fields['description']);
             $filesize = size_format($objResult->fields['size']);
-            $tablecount = count(explode(";",$objResult->fields['usedtables']));
-
+            $tablecount = count(explode(';',$objResult->fields['usedtables']));
             $objTemplate->setVariable(array(
                 'BACKUP_ID'          => $objResult->fields['id'],
                 'BACKUP_DATE'        => date(ASCMS_DATE_FORMAT , $objResult->fields['date']),
                 'BACKUP_DESCRIPTION' => $description,
                 'BACKUP_TABLES'      => $tablecount,
                 'BACKUP_SIZE'        => $filesize,
-                'BACKUP_ROWCLASS'    => $class,
+                'BACKUP_ROWCLASS'    => (++$j % 2 ? 'row2' : 'row1'),
             ));
             $objTemplate->parse('backupRow');
-            $j++;
             $objResult->MoveNext();
         }
     }
-
     if ($j == 0) {
         $objTemplate->hideBlock('backupRow');
     }
-
     if ($_DBCONFIG['dbType'] == 'mysql') {
         $objResult = $objDatabase->Execute("SHOW TABLE STATUS");
         if ($objResult !== false) {
             $type = isset($objResult->fields['Type']) ? 'Type' : 'Engine';
             while (!$objResult->EOF) {
                 if (eregi('^(MyISAM|ISAM|HEAP|InnoDB)$', $objResult->fields[$type])) {
-                    if (preg_match("/\b".DBPREFIX."/", $objResult->fields['Name']) && !preg_match("/\b".DBPREFIX."backups\b/i", $objResult->fields['Name'])) {
+                    if (   preg_match('/\b'.DBPREFIX.'/', $objResult->fields['Name'])
+                        && !preg_match('/\b'.DBPREFIX.'backups\b/i', $objResult->fields['Name'])) {
                         $database_size_prefix+= $objResult->fields['Data_length']+$objResult->fields['Index_length'];
                         $database_number_prefix++;
                     }
@@ -470,9 +438,10 @@ function backup_showList()
         'CMS_SIZE'             => size_format($database_size_prefix)."( $database_number_prefix ".$_CORELANG['TXT_TABLES'].")",
         'BACKUP_TABLE_OPTIONS' => $tables,
         'DEFAULT_TABLES'       => implode(";",$defaulttables),
-        'SHOP_TABLES'          => is_array($shoptables) ? implode(";",$shoptables) : $shoptables
+        'SHOP_TABLES'          => implode(";",$shoptables),
     ));
 }
+
 
 /**
  * Extract table information for the given table from the database.
@@ -555,13 +524,13 @@ function backup_getDBTables($table)
         while (!$objResult->EOF) {
             $key_name = $objResult->fields['Key_name'];
             $seqindex = $objResult->fields['Seq_in_index'];
-            $uniquekeys[$key_name] = FALSE;
+            $uniquekeys[$key_name] = false;
             if ($objResult->fields['Non_unique'] == 0) {
-                $uniquekeys[$key_name] = TRUE;
+                $uniquekeys[$key_name] = true;
             }
-            $fulltextkeys[$key_name] = FALSE;
+            $fulltextkeys[$key_name] = false;
             if ($objResult->fields['Comment'] == 'FULLTEXT' || $objResult->fields['Index_type'] == 'FULLTEXT') {
-                $fulltextkeys[$key_name] = TRUE;
+                $fulltextkeys[$key_name] = true;
             }
             $tablekeys[$key_name][$seqindex] = '`'.$objResult->fields['Column_name'].'`';
             ksort($tablekeys[$key_name]);
@@ -590,6 +559,7 @@ function backup_getDBTables($table)
     $alltablesstructure .= str_replace(' ,', ',', $tablestructure);
     return $alltablesstructure;
 }
+
 
 /**
  * Extract table content for the given table from the database.
@@ -636,6 +606,7 @@ function backup_getDBContent($table)
     return $output;
 }
 
+
 /**
  * Format the integer file size value using appropriate units.
  *
@@ -646,17 +617,19 @@ function backup_getDBContent($table)
  * @version 1.0     initial version
  * @param   integer File size in bytes
  * @return  string  File size string with appropriate unit
- * @todo    Fix potential bug for filesizes >= 1 Terabyte.
+ * @todo    Fix potential bug for filesizes >= 1 Petabyte.
  *          Should determine the exponent first, then check against
  *          the array upper boundary.
  * @todo    Add singular form for 1 KB/MG/GB (or use short forms...)!
  */
 function size_format($filesize)
 {
-    $type = Array ('bytes', 'Kbytes', 'Mbytes', 'Gbytes');
-    for ($i=0; $filesize>1024; $i++) {
+    //$type = Array ('Byte', 'KByte', 'MByte', 'GByte', TByte);
+    $type = array ('B', 'KB', 'MB', 'GB', 'TB');
+    for ($i = 0; $filesize > 1024; ++$i) {
         $filesize/= 1024;
     }
     return (round ($filesize, 2)." $type[$i]");
 }
+
 ?>
