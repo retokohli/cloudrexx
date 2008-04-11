@@ -9,8 +9,8 @@ function deletePage(pageId)
 
 function deleteContent(contentId)
 {
-	if(confirm('{TXT_CONFIRM_DELETE_CONTENT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-		window.location.replace("index.php?cmd=content&act=deleteAll&contentId="+contentId);
+  if(confirm('{TXT_CONFIRM_DELETE_CONTENT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace("index.php?cmd=content&act=deleteAll&contentId="+contentId);
 }
 
 function repositoryPage(pageId)
@@ -24,26 +24,26 @@ function changeStatus(pageId)
     if(confirm('{TXT_CONFIRM_CHANGESTATUS}'))
         window.location.replace("index.php?cmd=content&act=changestatus&pageId="+pageId);
 }
-	function selectMultiAction()
-	{
-		with (document.form)
-		{
-			switch (frmContentSitemap_MultiAction.value) {
-				case 'activate':
-					submit();
-				break;
-				case 'deactivate':
-					submit();
-				break;
-				case 'delete':
-					if (confirm('{TXT_DELETE_ALL}')) {
-						submit();
-					}
-				break;
-				default: //do nothing
-			}
-		}
-	}
+  function selectMultiAction()
+  {
+    with (document.form)
+    {
+      switch (frmContentSitemap_MultiAction.value) {
+        case 'activate':
+          submit();
+        break;
+        case 'deactivate':
+          submit();
+        break;
+        case 'delete':
+          if (confirm('{TXT_DELETE_ALL}')) {
+            submit();
+          }
+        break;
+        default: //do nothing
+      }
+    }
+  }
 // -->
 </script>
 <form name="form" action="index.php?cmd=content&amp;act=mod" method="post">
@@ -91,7 +91,7 @@ function changeStatus(pageId)
 <input class="tree_input" maxlength="5" size="3" value="{SITEMAP_PAGE_DISPLAYORDER}" name="displayorder_new[{SITEMAP_PAGE_ID}]" />
 <input type="hidden" value="{SITEMAP_PAGE_DISPLAYORDER}" name="displayorder_old[{SITEMAP_PAGE_ID}]" />
 <input type="hidden" value="{SITEMAP_PAGE_ID}" name="catid[{SITEMAP_PAGE_ID}]" />
-<a href="index.php?cmd=content&amp;act=edit&amp;pageId={SITEMAP_PAGE_ID}"><b>{SITEMAP_PAGE_NAME}</b></a></div></td>
+<a href="index.php?{SITEMAP_PAGE_LINK}"><b>{SITEMAP_PAGE_NAME}</b></a></div></td>
 <td nowrap="nowrap"><i>{SITEMAP_PAGE_MODULE}&nbsp;{SITEMAP_PAGE_CMD}</i></td>
 <td nowrap="nowrap">{SITEMAP_PAGE_CHANGELOG}&nbsp;</td>
 <td nowrap="nowrap"><img src="images/icons/creator.gif" alt="" border="0" align="middle" />&nbsp;{SITEMAP_PAGE_USERNAME}</td>
@@ -105,20 +105,20 @@ function changeStatus(pageId)
 <br />
 <input type="submit" value="{TXT_SAVE_CHANGES}" name="Submit" style="margin-left:30px;" />
 <table summary="" cellpadding="2" cellspacing="0" border="0">
-	<tr>
-		<td>
-			<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-			<a href="#" onclick="changeCheckboxes('form','selectedPages[]',true); return false;">{TXT_SELECT_ALL}</a> /
-			<a href="#" onclick="changeCheckboxes('form','selectedPages[]',false); return false;">{TXT_DESELECT_ALL}</a>
-			<img src="images/icons/strike.gif" />
-			<select name="frmContentSitemap_MultiAction" onchange="selectMultiAction();">
-				<option value="0">{TXT_SUBMIT_SELECT}</option>
-				<option value="delete">{TXT_SUBMIT_DELETE}</option>
-				<option value="activate">{TXT_SUBMIT_ACTIVATE}</option>
-				<option value="deactivate">{TXT_SUBMIT_DEACTIVATE}</option>
-			</select>
-		</td>
-	</tr>
+  <tr>
+    <td>
+      <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+      <a href="#" onclick="changeCheckboxes('form','selectedPages[]',true); return false;">{TXT_SELECT_ALL}</a> /
+      <a href="#" onclick="changeCheckboxes('form','selectedPages[]',false); return false;">{TXT_DESELECT_ALL}</a>
+      <img src="images/icons/strike.gif" />
+      <select name="frmContentSitemap_MultiAction" onchange="selectMultiAction();">
+        <option value="0">{TXT_SUBMIT_SELECT}</option>
+        <option value="delete">{TXT_SUBMIT_DELETE}</option>
+        <option value="activate">{TXT_SUBMIT_ACTIVATE}</option>
+        <option value="deactivate">{TXT_SUBMIT_DEACTIVATE}</option>
+      </select>
+    </td>
+  </tr>
 </table>
 <br />
 <br />
