@@ -6,17 +6,17 @@
  * @package     contrexx
  * @subpackage  module_community
  */
-$_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
-$_ARRAYLANG['TXT_STORE'] = "Speichern";
-$_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Fehler beim Ausführen der Datenbankabfrage!";
-$_ARRAYLANG['TXT_USER_ADMINISTRATION'] = "Benutzerverwaltung";
-$_ARRAYLANG['TXT_GROUP_SETTINGS_TEXT'] = "Wählen Sie die Gruppen aus, zu welchen ein neu angemeldeter Benutzer dazugehören soll:<br /><br />Hinweis: Benutzer die keine Gruppenzugehörigkeit haben, sind nicht berechtigt sich am System anzumelden!";
-$_ARRAYLANG['TXT_AVAILABLE_GROUPS'] = "Vorhandene Gruppen";
-$_ARRAYLANG['TXT_SELECT_ALL'] = "Alles markieren";
-$_ARRAYLANG['TXT_DELETE_MARK'] = "Markierung löschen";
-$_ARRAYLANG['TXT_USER_ACCOUNT_ACTIVATION_METHOD_TEXT'] = "Aktivierungsmethode für das Benutzerkonto eines neu Registrieren Benutzers.";
-$_ARRAYLANG['TXT_TIME_PERIOD_ACTIVATION_TIME'] = "Zeitspanne in Stunden nachdem ein Benutzerkonto erstellt worden ist, bis es durch den Benutzer noch aktiviert werden kann.<br />(0 - 24 Stunden, 0 für unbegrenzt)";
-$_ARRAYLANG['TXT_ACTIVATION_BY_AUTHORIZED_PERSON'] = "Aktivierung durch eine autorisierte Person (siehe <i>Backendgruppenberechtigungen</i> unter <i>Benutzerverwaltung</i>).";
-$_ARRAYLANG['TXT_ACTIVATION_BY_USER'] = "Aktivierung durch den Benutzer.";
-$_ARRAYLANG['TXT_ASSIGNED_GROUPS'] = "Zugeordnete Gruppen";
+$_ARRAYLANG['TXT_SETTINGS'] = "Pramètres";
+$_ARRAYLANG['TXT_STORE'] = "Sauvegarder";
+$_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Erreur lors de l'interrogation de la base de données!";
+$_ARRAYLANG['TXT_USER_ADMINISTRATION'] = "Gestion des utilisateurs";
+$_ARRAYLANG['TXT_GROUP_SETTINGS_TEXT'] = "Sélectionner les groupes auxquels appartiendra un utilisateur nouvellement inscrit:<br /><br />Attention: Les utilisateurs qui n'appartiennent à aucun goupe ne sont pas autorisés à se connecter au système";
+$_ARRAYLANG['TXT_AVAILABLE_GROUPS'] = "Groupes disponibles";
+$_ARRAYLANG['TXT_SELECT_ALL'] = "Tout sélectionner";
+$_ARRAYLANG['TXT_DELETE_MARK'] = "Supprimer les éléments sélectionnés";
+$_ARRAYLANG['TXT_USER_ACCOUNT_ACTIVATION_METHOD_TEXT'] = "Système d'activation des nouveaux comptes utilisateurs";
+$_ARRAYLANG['TXT_TIME_PERIOD_ACTIVATION_TIME'] = "Délai en heures pendant lequel un compte peut être activé par l'utilisateur après création.<br />(0 - 24 heures, 0 pour illimité)";
+$_ARRAYLANG['TXT_ACTIVATION_BY_AUTHORIZED_PERSON'] = "Activation par un administrateur (voir <i>Droits d'accès du Backend</i> dans le menu <i>Gestion des utilisateurs</i>).";
+$_ARRAYLANG['TXT_ACTIVATION_BY_USER'] = "Activation par l'utilisateur.";
+$_ARRAYLANG['TXT_ASSIGNED_GROUPS'] = "Groupes affectés";
 ?>
