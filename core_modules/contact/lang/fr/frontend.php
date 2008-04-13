@@ -6,28 +6,28 @@
  * @package     contrexx
  * @subpackage  core_module_contact
  */
-$_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM'] = "Ceci sont les informations transférées depuis le formulaire de contact du site web";
-$_ARRAYLANG['TXT_CONTACT_FORM'] = "Nouvelle entrée dans le formulaire de contact sur";
+$_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM'] = "Données transmises du formulaire de contact du site Web";
+$_ARRAYLANG['TXT_CONTACT_FORM'] = "Nouveau message du formulaire de contact sur";
 $_ARRAYLANG['TXT_CONTACT_DATE'] = "Date";
-$_ARRAYLANG['TXT_CONTACT_HOSTNAME'] = "Nom du hôte";
+$_ARRAYLANG['TXT_CONTACT_HOSTNAME'] = "Host";
 $_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'] = "Adresse IP";
-$_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'] = "Langage du navigateur";
+$_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'] = "Langue du navigateur";
 $_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION'] = "Version du navigateur";
 $_ARRAYLANG['TXT_CONTACT_YES'] = "Oui";
 $_ARRAYLANG['TXT_CONTACT_NO'] = "Non";
-$_ARRAYLANG['TXT_CONTACT_UPLOADS'] = "Uploads";
+$_ARRAYLANG['TXT_CONTACT_UPLOADS'] = "Téléchargements";
 $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] = "Veuillez vérifier votre saisie!";
-$_ARRAYLANG['TXT_FEEDBACK_ERROR'] = "Une ou plusieurs erreurs sont survenues. Utilisez la touche \"Retour arrière\" de votre navigateur pour retourner au formulaire et vérifiez vos saisies!";
-$_ARRAYLANG['TXT_CONTACT_LANG'] = "Language";
+$_ARRAYLANG['TXT_FEEDBACK_ERROR'] = "Une ou plusieurs erreurs sont survenues. Utilisez la touche \"Précédent\" de votre navigateur pour retourner au formulaire et vérifiez vos saisies!";
+$_ARRAYLANG['TXT_CONTACT_LANG'] = "Langue";
 $_ARRAYLANG['TXT_CONTACT_ENTRIE_DETAILS'] = "Details";
-$_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES'] = "Entries";
-$_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD_FAILED'] = "The file %s couldn't be transmitted due to an error that occured!";
-$_ARRAYLANG['TXT_CONTACT_FILE_EXTENSION_NOT_ALLOWED'] = "The file %s was refused due its file extension which is not allowed!";
-$_ARRAYLANG['TXT_CONTACT_FAILED_SUBMIT_REQUEST'] = "The request wasn't transmitted due to an error that occured!";
-$_ARRAYLANG['TXT_CONTACT_FILE_SIZE_EXCEEDS_LIMIT'] = "Die Datei %s wurde nicht hinauf geladen, da Sie grösser als die maximal erlaubte Dateigrösse von %s Bytes ist!";
-$_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "Die Datei %s wurde nicht hinauf geladen, da Sie zu gross ist!";
-$_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Die Datei %s wurde nicht komplet hinauf geladen!";
-$_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Eine Datei wurde nicht hinauf geladen!";
-$_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Tippen Sie bitte die Zeichenfolge im dargestellten Bild in das Textfeld ein. Dies ist Notwendig, damit das System Sie von einem Spambot unterscheiden kann.";
-$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "The specified character string was wrong!";
+$_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES'] = "Messages";
+$_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD_FAILED'] = "Erreur lors de l'envoi du fichier %s!";
+$_ARRAYLANG['TXT_CONTACT_FILE_EXTENSION_NOT_ALLOWED'] = "Erreur: le fichier %s ne peut pas être accepté, car son extension n'est pas autorisée";
+$_ARRAYLANG['TXT_CONTACT_FAILED_SUBMIT_REQUEST'] = "Erreur lors de la transmission de la requête!";
+$_ARRAYLANG['TXT_CONTACT_FILE_SIZE_EXCEEDS_LIMIT'] = "Erreur lors de l'envoi du fichier: la taille du fichier ne peut pas excéder %s Bytes!";
+$_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "Erreur lors de l'envoi du fichier: la taille du fichier est trop importante!";
+$_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Erreur: le fichier %s n'a pas pu être envoyé complètement!";
+$_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Un fichier n'a pas pu être envoyé";
+$_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Veuillez saisir la séquence de caractères de l'image dans le champ ci-dessous. (Il s'agit d'une protection anti-spambot)";
+$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Saisie erronée du code CAPTCHA";
 ?>
