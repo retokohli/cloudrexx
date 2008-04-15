@@ -6,21 +6,21 @@
  * @package     contrexx
  * @subpackage  module_docsys
  */
-$_ARRAYLANG['TXT_AUTHOR'] = "Author";
-$_ARRAYLANG['TXT_DATE'] = "Datum";
-$_ARRAYLANG['TXT_TITLE'] = "Titel";
-$_ARRAYLANG['TXT_USER'] = "Benutzer";
-$_ARRAYLANG['TXT_CATEGORY'] = "Category";
-$_ARRAYLANG['TXT_DOCUMENTS'] = "Dokumente";
-$_ARRAYLANG['TXT_NAME'] = "Name";
-$_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] = "Wichtige Hyperlinks";
-$_ARRAYLANG['TXT_LAST_UPDATE'] = "Last update";
-$_ARRAYLANG['TXT_PERFORM'] = "Perform";
+$_ARRAYLANG['TXT_AUTHOR'] = "Auteur";
+$_ARRAYLANG['TXT_DATE'] = "Date";
+$_ARRAYLANG['TXT_TITLE'] = "Titre";
+$_ARRAYLANG['TXT_USER'] = "Utilisateur";
+$_ARRAYLANG['TXT_CATEGORY'] = "Catégorie";
+$_ARRAYLANG['TXT_DOCUMENTS'] = "Documents";
+$_ARRAYLANG['TXT_NAME'] = "Nom";
+$_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] = "Liens hypertexte importants";
+$_ARRAYLANG['TXT_LAST_UPDATE'] = "Dernière mise à jour";
+$_ARRAYLANG['TXT_PERFORM'] = "Exécuter";
 $_ARRAYLANG['TXT_SOURCE'] = "Source";
-$_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND'] = "No documents found";
-$_ARRAYLANG['TXT_DOCSYS_SORTING'] = "Sortierung";
-$_ARRAYLANG['TXT_DOCSYS_SORTING_ALPHA'] = "nach Alphabet";
-$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE'] = "nach Datum";
-$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE_ALPHA'] = "nach Datum und Alphabet";
-$_ARRAYLANG['TXT_DOCSYS_SORTTYPE'] = "Art der Sortierung";
+$_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND'] = "Aucun document trouvé";
+$_ARRAYLANG['TXT_DOCSYS_SORTING'] = "Tri";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_ALPHA'] = "alphabétique";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE'] = "chronologique";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE_ALPHA'] = "chronologique et alphabétique";
+$_ARRAYLANG['TXT_DOCSYS_SORTTYPE'] = "Type de tri";
 ?>
