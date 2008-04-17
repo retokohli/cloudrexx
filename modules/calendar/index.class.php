@@ -458,8 +458,6 @@ class Calendar extends calendarLibrary
 			if ($_GET['catid'] == '') {
 				$_GET['catid'] = 0;
 			}
-		} else {
-			$_GET['catid'] = 0;
 		}
 
 		if ($_GET['catid'] != 0) {

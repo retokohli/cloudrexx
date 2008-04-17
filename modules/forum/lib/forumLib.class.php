@@ -413,7 +413,7 @@ class ForumLibrary {
 										<a href="?section=community&amp;cmd=register">'.$_ARRAYLANG['TXT_FORUM_REGISTER'].'</a>';
 		}else{
 			$strForumCommunityLinks = '<a href="?section=forum&amp;cmd=notification">'.$_ARRAYLANG['TXT_FORUM_NOTIFICATION'].'</a> | <a href="?section=community&amp;cmd=profile">'.$_ARRAYLANG['TXT_FORUM_PROFILE'].'</a>
-									| <a href="?section=logout&amp;redirect='.((isset($_SERVER['REQUEST_URI'])) ? base64_encode($_SERVER['REQUEST_URI'])  : '?section=forum' ).'"> '.$_ARRAYLANG['TXT_FORUM_LOGOUT'].'</a>';
+									| <a href="?section=logout&amp;redirect='.((isset($_SERVER['REQUEST_URI'])) ? urlencode($_SERVER['REQUEST_URI'])  : '?section=forum' ).'"> '.$_ARRAYLANG['TXT_FORUM_LOGOUT'].'</a>';
 		}
 		$this->_objTpl->setVariable('FORUM_COMMUNITY_LINKS', $strForumCommunityLinks);
 	}

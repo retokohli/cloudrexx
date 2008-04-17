@@ -234,7 +234,7 @@ class makeGraph
 		if (date('m')<12) {
 			$arrRange[date('y')-2] = range(date('m')+1, 12);
 		}
-		$arrRange[date('y')-1] = range(date('m')+1, 12);
+		$arrRange[date('y')-1] = range(1, 12);
 		$arrRange[date('y')] = range(1, date('m'));
 
 		// generate arrays for the bars
