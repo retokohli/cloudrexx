@@ -13,6 +13,7 @@ Allgemein
   http://www.example.com/en/index.php?section=home
 - Die Grösse des Spamschutz-Bildes wurde angepasst. Die Schrift ist somit besser
   lesbar.
+- Englische Sprachversion kompletiert
 
 Content Verlauf
 - Alte Einträge im Content Verlauf können nun über eine Funktion gelöscht
@@ -107,6 +108,8 @@ Allgemein
 - Die Einträge im "Benutzer Frontend Sprache" Menü in der oberen rechten Ecke im
   Backend werden korrekt dargestellt.
 - Die Suchfunktion findet nun auch wieder Einträge innerhalb des Kalenders.
+- Die PDF Ansicht funktioniert zuverlässiger, unabhängig von der Webserver
+  Konfiguration.
 
 Content Manager
 - Wird eine Inhaltsseite vor unerlaubten Modifikationen geschützt, so wird nach
@@ -125,6 +128,8 @@ Media Manager
 
 Statistik
 - Der Bereich "Besucher und Seitenaufrufe" funktioniert auch unter PHP4.
+- Der Graph des Bereichs "Monatliche Besucher und Seitenaufrufe" beinhaltet alle
+  Monate innerhalb eines Intervalls von zwei Jahren.
 
 Webinstaller
 - Die Funktion "Datenbank erstellen" ist kompatibel mit der MySQL Version 4.0.
@@ -145,6 +150,8 @@ Modul: Gallery
 Modul: Kalender
 - Nicht Administratoren sind berechtig die Administrationskonsole des Kalenders
   zu öffnen, sofern ihnen den Zugriff dazu erteilt wurde.
+- Die Option "Alle Kategorien" des Kategorien-Auswahlmenüs auf der Seite
+  "Quartalsansicht (cmd=boxes)" kann ausgewählt werden.
 
 Modul: News
 - Meldungen welche noch nicht publiziert wurden (innerhalt des definierten
