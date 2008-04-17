@@ -411,7 +411,7 @@ class stats extends statsLibrary
 				}
 
 				$weekday = $arrDayNames[date('w',mktime(0,0,0,$month,$day,date('Y')- (date('m') == 1 && $month < date('m') ? 1 : 0)))];
-				if (date('w',mktime(0,0,0,date('m'),$day,date('Y'))) == 0) {
+				if (date('w',mktime(0,0,0,$month,$day,$month < date('m') ? $previousYear : date('Y'))) == 0) {
 					$weekday = "<span style=\"color: #ff0000;\">".$weekday."</span>";
 				}
 

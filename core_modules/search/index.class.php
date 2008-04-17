@@ -138,7 +138,7 @@ function search_getSearchPage($pos, $page_content)
     }
 
 
-    $paging = getPaging($countResults, $pos, "&amp;section=search&amp;term=$term", "<b>".$_ARRAYLANG['TXT_SEARCH_RESULTS']."</b>", true);
+    $paging = getPaging($countResults, $pos, "&amp;section=search&amp;term=".htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET), "<b>".$_ARRAYLANG['TXT_SEARCH_RESULTS']."</b>", true);
     $objTpl->setVariable("SEARCH_PAGING", "$paging");
     $term=htmlentities(stripslashes($term), ENT_QUOTES, CONTREXX_CHARSET);
     $objTpl->setVariable("SEARCH_TERM",$term);
