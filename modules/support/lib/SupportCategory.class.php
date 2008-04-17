@@ -326,9 +326,9 @@ if (MY_DEBUG) echo("Support Category::delete($languageId): Error: This Support C
             return false;
         }
         foreach ($arrChildSupportCategories as $objChild) {
-        	if (!$objChild->delete($languageId)) {
-        	    return false;
-        	}
+            if (!$objChild->delete($languageId)) {
+                return false;
+            }
         }
         $query = "
             DELETE FROM ".DBPREFIX."module_support_category_language

@@ -1082,7 +1082,7 @@ if (MY_DEBUG) echo("failed to get Support Category tree<br />");
                     if ($languageId == $arrSupportCategory['languageId']) {
                         continue;
                     }
-                	$objTemplate->setVariable(array(
+                    $objTemplate->setVariable(array(
                         'TXT_SUPPORT_CATEGORY_HAS_TICKETS' => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_HAS_TICKETS'],
                         'TXT_SUPPORT_CATEGORY_EDIT'        => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_EDIT'],
                         'TXT_SUPPORT_CATEGORY_DELETE'      => $_ARRAYLANG['TXT_SUPPORT_CATEGORY_DELETE'],
@@ -1103,8 +1103,8 @@ if (MY_DEBUG) echo("failed to get Support Category tree<br />");
                         'SUPPORT_CATEGORY_NAME'     => $name,
                         'SUPPORT_LANGUAGE_SHOW_ALL'         =>
                             ($this->supportLanguageShowAll ? '1' : ''),
-                	));
-                	$objTemplate->parseCurrentBlock();
+                    ));
+                    $objTemplate->parseCurrentBlock();
                 }
             } else {
 if (MY_DEBUG) echo("Support::categoryRow(...): ERROR: Missing Name array!<br />");
@@ -2363,7 +2363,7 @@ if (MY_DEBUG) { echo("infoFieldsEdit(): id is ");var_export($this->supportInfoFi
                     if ($languageId == $arrInfoField['languageId']) {
                         continue;
                     }
-                	$objTemplate->setVariable(array(
+                    $objTemplate->setVariable(array(
                         'SUPPORT_ROW_CLASS'                 =>
                             ($moduloRow % 2 ? 'row2' : 'row1'),
                         'SUPPORT_INFO_FIELD_ID'       => $arrInfoField['id'],
@@ -2377,8 +2377,8 @@ if (MY_DEBUG) { echo("infoFieldsEdit(): id is ");var_export($this->supportInfoFi
                         'SUPPORT_INFO_FIELD_OFFSET'   => $this->supportInfoFieldOffset,
                         'SUPPORT_LANGUAGE_SHOW_ALL'         =>
                             ($this->supportLanguageShowAll ? '1' : ''),
-                	));
-                	$objTemplate->parseCurrentBlock();
+                    ));
+                    $objTemplate->parseCurrentBlock();
                 }
             } else {
 if (MY_DEBUG) echo("Support::infoFieldRow(...): ERROR: Missing Name array!<br />");

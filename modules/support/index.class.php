@@ -587,7 +587,7 @@ if (MY_DEBUG) echo("== $block<br />");
             if (is_array($block)) {
                 foreach ($block as $index => $blockName) {
                     foreach ($blockName as $index => $block) {
-                    	$this->dumpTemplate($objTemplate, $blockName[$index]);
+                        $this->dumpTemplate($objTemplate, $blockName[$index]);
                     }
                 }
             } else {

@@ -208,7 +208,7 @@ if (MY_DEBUG) echo("getSupportCategoryNameArray(parent=$parentId, recurse=$flagR
                             $languageId, $id, $flagActiveOnly, true
                         );
                     foreach ($arrChildren as $id => $name) {
-                    	$arrResult[$id] = $name;
+                        $arrResult[$id] = $name;
                     }
                 }
             }

@@ -641,7 +641,7 @@ if (MY_DEBUG) echo("Message::getMessageArray(array=$arrMessageId): ERROR: got no
         $arrMessage = array();
         foreach ($arrMessageId as $messageId) {
 // TODO: Verify that the objects are in fact, er... objects.
-         	$arrMessage[] = Message::getById($messageId);
+             $arrMessage[] = Message::getById($messageId);
         }
         return $arrMessage;
     }
