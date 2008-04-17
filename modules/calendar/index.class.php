@@ -442,7 +442,7 @@ class Calendar extends calendarLibrary
 		$this->_objTpl->setTemplate($this->pageContent);
 
 		// get std cat
-		if (!isset($_GET['catid']) or empty($_GET['catid'])) {
+		if (!isset($_GET['catid'])) {
 			$query = "SELECT stdCat FROM ".DBPREFIX."module_calendar".$this->mandateLink."_style WHERE id = '2'";
 			$objResult = $objDatabase->SelectLimit($query, 1);
 
@@ -458,6 +458,8 @@ class Calendar extends calendarLibrary
 			if ($_GET['catid'] == '') {
 				$_GET['catid'] = 0;
 			}
+		} else {
+			$_GET['catid'] = 0;
 		}
 
 		if ($_GET['catid'] != 0) {
@@ -623,7 +625,8 @@ class Calendar extends calendarLibrary
 			"TXT_CALENDAR_TITLE"	 => $_ARRAYLANG['TXT_CALENDAR_TITLE'],
 			"CALENDAR_DATE"			 => $cur_date,
 			"CALENDAR_CATEGORIES"	 => $this->category_list($_GET['catid']),
-			"TXT_CALENDAR_ALL_CAT"	 => $_ARRAYLANG['TXT_CALENDAR_ALL_CAT']
+			"TXT_CALENDAR_ALL_CAT"	 => $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
+			"CALENDAR_JAVASCRIPT"	 => $this->getJS()
 		));
 
 		if (!empty($_GET['catid'])) {
