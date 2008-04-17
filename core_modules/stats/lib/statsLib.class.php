@@ -428,7 +428,15 @@ class statsLibrary
 		// get statistics
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%e' ) AS `day` , `count`
 					FROM `".DBPREFIX."stats_visitors_summary`
-		 				   WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".(time()-3456000)."'";
+		 				   WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".
+							mktime(
+								0,
+								0,
+								0,
+								$previousMonth = date('m') == 1 ? 12 : date('m') - 1,
+								$startDay = date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))) ? date('d') + 1 : 1,
+								$previousYear
+							)."'";
 		$objResult = $objDatabase->Execute($query);
 		while (!$objResult->EOF) {
 			$this->arrRequests[$objResult->fields['day']]['visitors'] = $objResult->fields['count'];
@@ -438,7 +446,15 @@ class statsLibrary
 
 		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%e' ) AS `day` , `count`
 					FROM `".DBPREFIX."stats_requests_summary`
-		 				   WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".(time()-3456000)."'";
+		 				   WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".
+							mktime(
+								0,
+								0,
+								0,
+								$previousMonth = date('m') == 1 ? 12 : date('m') - 1,
+								$startDay = date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))) ? date('d') + 1 : 1,
+								$previousYear
+							)."'";
 		$objResult = $objDatabase->Execute($query);
 		while (!$objResult->EOF) {
 			$this->arrRequests[$objResult->fields['day']]['requests'] = $objResult->fields['count'];
