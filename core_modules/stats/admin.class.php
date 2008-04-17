@@ -391,9 +391,14 @@ class stats extends statsLibrary
     	$arrDayNames = explode(',',$_ARRAYLANG['TXT_DAY_ARRAY']);
 		$arrRange = array();
     	if (date('d') < date('t')) {
-			$arrRange[$arrMonths[(date('m') == 1 ? 11 : date('m')-2)]] = range(date('d')+1, date('t'));
+			$arrRange[$previousMonth = (date('m') == 1 ? 12 : date('m')-1)] = range(
+				date('d') + 1 > ($daysOfPreviousMonth = date('t', mktime(0,0,0,$previousMonth,1,$previousYear,$previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))))
+					?	$daysOfPreviousMonth
+					:	date('d') + 1,
+				$daysOfPreviousMonth
+			);
 		}
-		$arrRange[$arrMonths[date('m')-1]] = range(1, date('d'));
+		$arrRange[date('m')] = range(1, date('d'));
 
 		foreach ($arrRange as $month => $arrDays) {
 			foreach ($arrDays as $day) {
@@ -405,7 +410,7 @@ class stats extends statsLibrary
 					$requests = 0;
 				}
 
-				$weekday = $arrDayNames[date('w',mktime(0,0,0,date('m'),$day,date('Y')))];
+				$weekday = $arrDayNames[date('w',mktime(0,0,0,$month,$day,date('Y')- (date('m') == 1 && $month < date('m') ? 1 : 0)))];
 				if (date('w',mktime(0,0,0,date('m'),$day,date('Y'))) == 0) {
 					$weekday = "<span style=\"color: #ff0000;\">".$weekday."</span>";
 				}
@@ -413,7 +418,7 @@ class stats extends statsLibrary
 	    		$this->_objTpl->setVariable(array(
 	    			'STATS_REQUESTS_ROW_CLASS'	=> $rowClass%2 == 1 ? "row2" : "row1",
 	    			'STATS_REQUESTS_WEEKDAY'	=> $weekday,
-	    			'STATS_REQUESTS_DATE'		=> $day.'.&nbsp;'.$month,
+	    			'STATS_REQUESTS_DATE'		=> $day.'.&nbsp;'.$arrMonths[$month-1],
 	    			'STATS_REQUESTS_VISITORS'	=> empty($visitors) ? 0 : $visitors,
 	    			'STATS_REQUESTS_PAGE_VIEWS'	=> empty($requests) ? 0 : $requests
 	    		));
