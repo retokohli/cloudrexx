@@ -2195,7 +2195,7 @@ echo("Query error, code dfgskljrthlw:<br />$query<br />");
             'TXT_USER_FIRSTNAME'           => $_CORELANG['TXT_USER_FIRSTNAME'],
             'TXT_USER_LASTNAME'            => $_CORELANG['TXT_USER_LASTNAME'],
             'TXT_USER_GROUP_INVERT_RESULT' => $_CORELANG['TXT_USER_GROUP_INVERT_RESULT'],
-            'TXT_USER_LINK_INACTIVE'       => $status == 0  ? 'show active accounts' : 'show inactive accounts',
+            'TXT_USER_LINK_INACTIVE' 	=> $status == 0  ? 'Show active accounts' : $_CORELANG['TXT_USER_LINK_INACTIVE'],
             'TXT_SEND_ACTIVATION_USER_EMAIL' => $_CORELANG['TXT_SEND_ACTIVATION_USER_EMAIL'],
             'TXT_USERS_VALIDITY'           => $_CORELANG['TXT_USERS_VALIDITY'],
 
