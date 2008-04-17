@@ -2249,10 +2249,12 @@ class newsletter extends NewsletterLib
 
 		$mail->AddAddress($TargetEmail);
 
-		// mark recipient as in-action to prevent multiple tries of sending the newsletter to the same recipient
-		$query = "UPDATE ".DBPREFIX."module_newsletter_tmp_sending SET sendt=2 where email='".$TargetEmail."' AND newsletter=".$NewsletterID." AND sendt=0";
-        if ($objDatabase->Execute($query) === false || $objDatabase->Affected_Rows() == 0) {
-			return $count;
+		if ($UserID) {
+			// mark recipient as in-action to prevent multiple tries of sending the newsletter to the same recipient
+			$query = "UPDATE ".DBPREFIX."module_newsletter_tmp_sending SET sendt=2 where email='".$TargetEmail."' AND newsletter=".$NewsletterID." AND sendt=0";
+	        if ($objDatabase->Execute($query) === false || $objDatabase->Affected_Rows() == 0) {
+				return $count;
+			}
 		}
 
 		if ($mail->Send()) {
