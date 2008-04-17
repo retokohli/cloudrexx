@@ -2074,7 +2074,7 @@ CREATE TABLE `contrexx_module_shop_products` (
   `id` smallint(10) unsigned NOT NULL auto_increment,
   `product_id` tinytext NOT NULL,
   `picture` text collate utf8_unicode_ci,
-  `title` varchar(60) default NULL,
+  `title` varchar(255) NOT NULL default '',
   `catid` int(10) unsigned NOT NULL default '1',
   `handler` enum('none','delivery','download') NOT NULL default 'delivery',
   `normalprice` decimal(6,2) NOT NULL default '0.00',
