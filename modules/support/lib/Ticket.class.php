@@ -276,7 +276,7 @@ if (MY_DEBUG) { echo("Ticket::__construct(email=$email, source=$source, supportC
 
         $status = TicketEvent::getTicketStatus($this->id);
 if (MY_DEBUG) echo("getStatusString(): INFO: status of Ticket (ID $this->id) is '$status'.<br />");
-    	return $arrTicketStatusString[$status];
+        return $arrTicketStatusString[$status];
     }
 
 
@@ -296,7 +296,7 @@ if (MY_DEBUG) echo("getStatusString(): INFO: status of Ticket (ID $this->id) is 
         if ($source === '') {
             return $arrTicketSourceString[$this->source];
         } else {
-        	return $arrTicketSourceString[$source];
+            return $arrTicketSourceString[$source];
         }
     }
 
