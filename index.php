@@ -1455,7 +1455,7 @@ switch ($plainSection) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objDownloadsModule = new downloads($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objDownloadsModule->getPage());
-    break;
+	break;
 
 //-------------------------------------------------------
 // default case
@@ -1666,7 +1666,7 @@ if (!empty($moduleStyleFile)) {
 if(isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1){
     require_once ASCMS_CORE_PATH.'/pdf.class.php';
      $objPDF             = new PDF();
-     $objPDF->title        = $page_title;
+	 $objPDF->title		= $page_title.(!empty($page_title) ? '.pdf' : null);
      $objPDF->content     = $objTemplate->get();
      $objPDF->Create();
 }else{
