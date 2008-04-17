@@ -2243,7 +2243,7 @@ CREATE TABLE `contrexx_skins` (
 
 CREATE TABLE `contrexx_stats_browser` (
   `id` int(6) unsigned NOT NULL auto_increment,
-  `name` varchar(255) NOT NULL default '',
+  `name` varchar(255) binary NOT NULL default '',
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`name`)
@@ -2267,7 +2267,7 @@ CREATE TABLE `contrexx_stats_config` (
 
 CREATE TABLE `contrexx_stats_country` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `country` varchar(100) NOT NULL default '',
+  `country` varchar(100) binary NOT NULL default '',
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`country`)
@@ -2275,7 +2275,7 @@ CREATE TABLE `contrexx_stats_country` (
 
 CREATE TABLE `contrexx_stats_hostname` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `hostname` varchar(255) NOT NULL default '',
+  `hostname` varchar(255) binary NOT NULL default '',
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`hostname`)
@@ -2290,7 +2290,7 @@ CREATE TABLE `contrexx_stats_javascript` (
 
 CREATE TABLE `contrexx_stats_operatingsystem` (
   `id` int(6) unsigned NOT NULL auto_increment,
-  `name` varchar(255) NOT NULL default '',
+  `name` varchar(255) binary NOT NULL default '',
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`name`)
@@ -2298,7 +2298,7 @@ CREATE TABLE `contrexx_stats_operatingsystem` (
 
 CREATE TABLE `contrexx_stats_referer` (
   `id` int(8) unsigned NOT NULL auto_increment,
-  `uri` varchar(255) NOT NULL default '',
+  `uri` varchar(255) binary NOT NULL default '',
   `timestamp` int(11) unsigned NOT NULL default '0',
   `count` mediumint(8) unsigned NOT NULL default '0',
   `sid` varchar(32) NOT NULL default '',
@@ -2310,7 +2310,7 @@ CREATE TABLE `contrexx_stats_requests` (
   `id` int(9) unsigned NOT NULL auto_increment,
   `timestamp` int(11) default '0',
   `pageId` int(6) unsigned NOT NULL default '0',
-  `page` varchar(255) NOT NULL default '',
+  `page` varchar(255) binary NOT NULL default '',
   `visits` int(9) unsigned NOT NULL default '0',
   `sid` varchar(32) NOT NULL default '',
   PRIMARY KEY  (`id`),
@@ -2336,7 +2336,7 @@ CREATE TABLE `contrexx_stats_screenresolution` (
 
 CREATE TABLE `contrexx_stats_search` (
   `id` int(5) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
+  `name` varchar(100) binary NOT NULL default '',
   `count` int(10) unsigned NOT NULL default '0',
   `sid` varchar(32) NOT NULL default '',
   `external` enum('0','1') NOT NULL default '0',
@@ -2347,7 +2347,7 @@ CREATE TABLE `contrexx_stats_search` (
 CREATE TABLE `contrexx_stats_spiders` (
   `id` int(9) unsigned NOT NULL auto_increment,
   `last_indexed` int(14) default NULL,
-  `page` varchar(100) default NULL,
+  `page` varchar(100) binary default NULL,
   `pageId` mediumint(6) unsigned NOT NULL default '0',
   `count` int(11) NOT NULL default '0',
   `spider_useragent` varchar(255) default NULL,
@@ -2359,7 +2359,7 @@ CREATE TABLE `contrexx_stats_spiders` (
 
 CREATE TABLE `contrexx_stats_spiders_summary` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(255) NOT NULL default '',
+  `name` varchar(255) binary NOT NULL default '',
   `timestamp` int(11) NOT NULL default '0',
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
