@@ -34,11 +34,19 @@ $basePath = realpath(dirname(__FILE__));
 
 define('ASCMS_LIBRARY_PATH', realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'lib'));
 
-require_once 'config/config.php';
+if (!@include_once($basePath.'/config/config.php')) {
+	die('Unable to load file '.$basePath.'/config/config.php');
+}
+
 @header('content-type: text/html; charset='.($useUtf8 ? 'UTF-8' : 'ISO-8859-1'));
-require_once '../lib/PEAR/HTML/Template/Sigma/Sigma.php';
-require_once 'common.class.php';
-require_once 'installer.class.php';
+
+if (!@include_once(ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php')) {
+	die('Unable to load file '.ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php');
+} elseif (!@include_once($basePath.'/common.class.php')) {
+	die('Unable to load file '.$basePath.'/common.class.php');
+} elseif (!@include_once($basePath.'/installer.class.php')) {
+	die('Unable to load file '.$basePath.'/installer.class.php');
+}
 
 $objCommon = new CommonFunctions;
 $objInstaller = new Installer;
