@@ -1140,16 +1140,8 @@ class Shop extends ShopLibrary
 
         $shopMenu =
             '<form action="index.php?section=shop'.MODULE_INDEX.'" method="post">'.
-            '<input type="text" name="term" value="'.
-            htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET).
-            '" style="width:160px;" />'.
-            '<select name="catId" style="width:300px;">'.
-            '<option value="0">'.$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].'</option>'.
-            $this->objShopCategories->getShopCategoriesMenu($catId, true, 0).
-            '</select>'.
-            $this->_getManufacturerMenu($manufacturerId).
-            '<input type="submit" name="Submit" value="'.
-            $_ARRAYLANG['TXT_SEARCH'].'" style="width:66px;" /></form>';
+            '<input type="text" name="term" value="'.htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET).'" style="width:150px;" />&nbsp;'.
+            '<select name="catId" style="width:150px;">'.'<option value="0">'.$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].'</option>'.$this->objShopCategories->getShopCategoriesMenu($catId, true, 0).'</select>&nbsp;'.$this->_getManufacturerMenu($manufacturerId).'<br /><input type="submit" name="Submit" value="'.$_ARRAYLANG['TXT_SEARCH'].'" style="width:66px;" /></form>';
         $this->objTemplate->setVariable("SHOP_MENU", $shopMenu);
         $this->objTemplate->setVariable("SHOP_CART_INFO", $this->showCartInfo());
 
@@ -1212,6 +1204,7 @@ class Shop extends ShopLibrary
         }
         $this->objTemplate->setCurrentBlock('shopProductRow');
         foreach ($arrProduct as $objProduct) {
+        	echo "1";
             $formId = 0;
             $productSubmitFunction = '';
             $arrPictures = $this->_getShopImagesFromBase64String($objProduct->getPictures());
@@ -2654,6 +2647,7 @@ sendReq('', 1);
                 // The fields that don't apply have been set to ''
                 // (empty string) already -- see _parseCart().
                 $this->objTemplate->setVariable(array(
+                	'SHOP_PRODUCT_ROW'            => (++$i % 2 ? 'row2' : 'row1'),
                     'SHOP_PRODUCT_ID'             => $arrProduct['id'],
                     'SHOP_PRODUCT_CUSTOM_ID'      => $arrProduct['product_id'],
                     'SHOP_PRODUCT_CART_ID'        => $arrProduct['cart_id'],
