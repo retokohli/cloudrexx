@@ -81,4 +81,11 @@ $_ARRAYLANG['TXT_MARKET_SET_MAXDAYS_ON'] = "Beschränkte Anzeigedauer";
 $_ARRAYLANG['TXT_MARKET_SET_EXP_SEARCH_PRICE'] = "Auswahlfelder für erweiterte Suche nach 'Preis bis'";
 $_ARRAYLANG['TXT_MARKET_ADVERTISER'] = "Inserent";
 $_ARRAYLANG['TXT_MARKET_SET_CODE_MODE'] = "Inserate mittels Freischalltcode aktivieren";
+$_ARRAYLANG['TXT_MARKET_LOCATION'] = "Standort";
+$_ARRAYLANG['TXT_MARKET_SET_LOCATION'] = "Standort anzeigen";
+$_ARRAYLANG['TXT_MARKET_SET_LOCATION_ADD'] = "Hinzufügen";
+$_ARRAYLANG['TXT_MARKET_SET_LOCATION_OVERVIEW'] = "Überblick";
+$_ARRAYLANG['TXT_MARKET_NEW_LOCATION'] = "Standort hinzufÃ¼gen";
+$_ARRAYLANG['TXT_MARKET_LOCATION_EDIT'] = "Editieren";
+$_ARRAYLANG['TXT_MARKET_LOCATION_SORTING_UPDATED'] = "Die Sortierung wurde Erfolgreich editiert.";
 ?>

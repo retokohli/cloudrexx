@@ -64,4 +64,6 @@ $_ARRAYLANG['TXT_MARKET_DELETE_SUCCESS'] = "The advertisement has been deleted s
 $_ARRAYLANG['TXT_MARKET_IMAGE_DELETE_ERROR'] = "Error while deleting image.";
 $_ARRAYLANG['TXT_MARKET_PRICE_MAX'] = "Preis bis";
 $_ARRAYLANG['TXT_MARKET_ALL_PRICES'] = "egal";
+$_ARRAYLANG['TXT_MARKET_LOCATION'] = "";
+$_ARRAYLANG['TXT_MARKET_LOCATIONS'] = "";
 ?>
