@@ -64,6 +64,6 @@ $_ARRAYLANG['TXT_MARKET_DELETE_SUCCESS'] = "La oferta ha sido borrada con &eacut
 $_ARRAYLANG['TXT_MARKET_IMAGE_DELETE_ERROR'] = "Se ha producido un error en el borrado de la imagen.";
 $_ARRAYLANG['TXT_MARKET_PRICE_MAX'] = "Max. precio";
 $_ARRAYLANG['TXT_MARKET_ALL_PRICES'] = "egal";
-$_ARRAYLANG['TXT_MARKET_LOCATION'] = "";
-$_ARRAYLANG['TXT_MARKET_LOCATIONS'] = "";
+$_ARRAYLANG['TXT_MARKET_LOCATION'] = "Location";
+$_ARRAYLANG['TXT_MARKET_LOCATIONS'] = "All Locations";
 ?>
