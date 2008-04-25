@@ -65,5 +65,5 @@ $_ARRAYLANG['TXT_MARKET_IMAGE_DELETE_ERROR'] = "Error while deleting image.";
 $_ARRAYLANG['TXT_MARKET_PRICE_MAX'] = "Preis bis";
 $_ARRAYLANG['TXT_MARKET_ALL_PRICES'] = "egal";
 $_ARRAYLANG['TXT_MARKET_LOCATION'] = "Location";
-$_ARRAYLANG['TXT_MARKET_LOCATIONS'] = "All locations";
+$_ARRAYLANG['TXT_MARKET_LOCATIONS'] = "All Locations";
 ?>

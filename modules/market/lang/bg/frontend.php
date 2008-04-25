@@ -64,6 +64,6 @@ $_ARRAYLANG['TXT_MARKET_DELETE_SUCCESS'] = "Das Inserat wurde erfolgreich gelös
 $_ARRAYLANG['TXT_MARKET_IMAGE_DELETE_ERROR'] = "Fehler beim Löschen der Bilddatei.";
 $_ARRAYLANG['TXT_MARKET_PRICE_MAX'] = "Preis bis";
 $_ARRAYLANG['TXT_MARKET_ALL_PRICES'] = "egal";
-$_ARRAYLANG['TXT_MARKET_LOCATION'] = "";
-$_ARRAYLANG['TXT_MARKET_LOCATIONS'] = "";
+$_ARRAYLANG['TXT_MARKET_LOCATION'] = "Location";
+$_ARRAYLANG['TXT_MARKET_LOCATIONS'] = "All Locations";
 ?>

@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  module_calendar
  */
-$_ARRAYLANG['TXT_CALENDAR_DATE'] = "Datum";
+$_ARRAYLANG['TXT_CALENDAR_DATE'] = "Дата";
 $_ARRAYLANG['TXT_CALENDAR_BACK'] = "Zurück";
 $_ARRAYLANG['TXT_CALENDAR_STYLE_MODIFIED'] = "Einstellungen wurden erfolgreich geändert.";
 $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "Die nächsten Termine:";

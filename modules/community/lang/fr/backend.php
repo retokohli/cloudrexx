@@ -7,7 +7,7 @@
  * @subpackage  module_community
  */
 $_ARRAYLANG['TXT_SETTINGS'] = "Pramètres";
-$_ARRAYLANG['TXT_STORE'] = "Sauvegarder";
+$_ARRAYLANG['TXT_STORE'] = "Enregistrer";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Erreur lors de l'interrogation de la base de données!";
 $_ARRAYLANG['TXT_USER_ADMINISTRATION'] = "Gestion des utilisateurs";
 $_ARRAYLANG['TXT_GROUP_SETTINGS_TEXT'] = "Sélectionner les groupes auxquels appartiendra un utilisateur nouvellement inscrit:<br /><br />Attention: Les utilisateurs qui n'appartiennent à aucun goupe ne sont pas autorisés à se connecter au système";
