@@ -6,26 +6,26 @@
  * @package     contrexx
  * @subpackage  module_guestbook
  */
-$_ARRAYLANG['TXT_NAME'] = "Name";
-$_ARRAYLANG['TXT_COMMENT'] = "Kommentar";
-$_ARRAYLANG['TXT_LOCATION'] = "Wohnort";
-$_ARRAYLANG['TXT_SEX'] = "Geschlecht";
+$_ARRAYLANG['TXT_NAME'] = "Nom";
+$_ARRAYLANG['TXT_COMMENT'] = "Commentaire";
+$_ARRAYLANG['TXT_LOCATION'] = "Lieu";
+$_ARRAYLANG['TXT_SEX'] = "Sexe";
 $_ARRAYLANG['TXT_EMAIL'] = "e-mail";
-$_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "Ihre e-mail Adresse ist ungültig!";
-$_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Bitte füllen Sie alle erforderlichen Felder aus.";
-$_ARRAYLANG['TXT_IP_ADDRESS'] = "IP Address";
-$_ARRAYLANG['TXT_RESET'] = "Reset";
-$_ARRAYLANG['TXT_INVALID_INTERNET_ADDRESS'] = "Fehlerhafte Internetadresse";
-$_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'] = "The data record was successfully stored";
+$_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "Adresse e-mail invalide!";
+$_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Veuillez compléter tous les champs requis.";
+$_ARRAYLANG['TXT_IP_ADDRESS'] = "Adresse IP";
+$_ARRAYLANG['TXT_RESET'] = "Réinitialiser";
+$_ARRAYLANG['TXT_INVALID_INTERNET_ADDRESS'] = "Adresse Web incorrecte";
+$_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'] = "Elment enregistré";
 $_ARRAYLANG['TXT_DATE'] = "Date";
-$_ARRAYLANG['TXT_GUESTBOOK_ENTRIES'] = "Gästebucheinträge";
-$_ARRAYLANG['TXT_CHECK_GUESTBOOK_ENTRY'] = "Bitte überprüfen Sie den Gästebucheintrag auf Ihrer Webseite.";
-$_ARRAYLANG['TXT_ENTRY_READS'] = "Der Eintrag lautet:";
-$_ARRAYLANG['TXT_NEW_GUESTBOOK_ENTRY'] = "Neuer Gästebucheintrag auf";
-$_ARRAYLANG['TXT_DATA_RECORD_STORED_ACTIVATE'] = "Please notice, that the administrator of this site will check every submitted entry before publishing on the page.";
-$_ARRAYLANG['txt_captcha'] = "Please enter the shown numbers";
-$_ARRAYLANG['TXT_ALT_STRING'] = "The value of this picture is: , without the whitespaces between the cyphers.";
-$_ARRAYLANG['captcha_error'] = "The entered number is incorrect!";
-$_ARRAYLANG['TXT_IS_INVALID'] = "is empty or not valid!";
-$_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "The inputted number is incorrect!";
+$_ARRAYLANG['TXT_GUESTBOOK_ENTRIES'] = "Messages";
+$_ARRAYLANG['TXT_CHECK_GUESTBOOK_ENTRY'] = "Veuillez valider le nouveau message dans le livre d'or sur votre site web.";
+$_ARRAYLANG['TXT_ENTRY_READS'] = "Message:";
+$_ARRAYLANG['TXT_NEW_GUESTBOOK_ENTRY'] = "Nouveau message sur";
+$_ARRAYLANG['TXT_DATA_RECORD_STORED_ACTIVATE'] = "Veuillez noter que les messages n'apparaîtront qu'après validation par un administrateur.";
+$_ARRAYLANG['txt_captcha'] = "Veuillez saisir les caractères visibles sur l'image";
+$_ARRAYLANG['TXT_ALT_STRING'] = "Le texte de cette image est: , sans espaces entre les caractères.";
+$_ARRAYLANG['captcha_error'] = "Les caractères saisis sont erronés!";
+$_ARRAYLANG['TXT_IS_INVALID'] = "est vide ou invalide!";
+$_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "Le nombre saisi est erroné!";
 ?>
