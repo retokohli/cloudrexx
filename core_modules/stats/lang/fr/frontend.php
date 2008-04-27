@@ -8,9 +8,9 @@
  */
 $_ARRAYLANG['TXT_CLIENT_DATA'] = "Client-Data (Useragent,Ip,Host)";
 $_ARRAYLANG['TXT_PROXY_DATA'] = "Proxy-Data(Host, Ip,Art, Useragent) ";
-$_ARRAYLANG['TXT_ANONYMOUS_PROXY'] = "Anonymer-Proxy";
+$_ARRAYLANG['TXT_ANONYMOUS_PROXY'] = "Proxy anonyme";
 $_ARRAYLANG['TXT_DAY'] = "Day";
-$_ARRAYLANG['TXT_BROWSER_AND_OPERATING_SYSTEMS'] = "Browser und Betriebssysteme";
+$_ARRAYLANG['TXT_BROWSER_AND_OPERATING_SYSTEMS'] = "Navigateur et système d'exploitation";
 $_ARRAYLANG['TXT_USER_STATISTIC'] = "Besucher Statistik";
 $_ARRAYLANG['TXT_PROXY_SERVERS'] = "Proxy Servers";
 $_ARRAYLANG['TXT_HOSTNAMES_AND_COUNTRIES'] = "Hostnamen und Länder";
