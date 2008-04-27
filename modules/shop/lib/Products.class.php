@@ -213,6 +213,19 @@ class Products
         }
         $querySpecialoffer =
             ($flagSpecialoffer ? 'AND (is_special_offer=1)' : '');
+
+        // Suppress showing all Products when there is nothing selected
+        // limiting the result.
+        // In this case, only the categories will be shown.
+        if (   empty($flagBackend)
+            && empty($queryCategory)
+            && empty($queryManufacturer)
+            && empty($querySpecialoffer)
+            && empty($querySearch)
+        ) {
+            return array();
+        }
+
         // The subquery in this query groups the Products by their Product
         // code, which allows us to hide the cloned Products in virtual
         // ShopCategories.
@@ -246,7 +259,6 @@ class Products
             return false;
         }
         $count = $objResult->fields['count'];
-
         // Set up the Product array
         if ($_CONFIG['corePagingLimit']) { // From /config/settings.php
             $objResult = $objDatabase->SelectLimit(

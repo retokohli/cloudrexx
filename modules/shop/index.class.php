@@ -1080,9 +1080,9 @@ class Shop extends ShopLibrary
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG, $themesPages;
 
-// TODO: What is this supposed to do?  It's never used.
-//        $this->rowSplitter = 1;
-
+        // This now defaults to false, but may be switched back on
+        // by popular request.
+        $flagSpecialoffer = false;//true;
         $flagLastFive =
             (isset($_REQUEST['lastFive'])  ? true                   : false);
         $productId =
@@ -1145,7 +1145,6 @@ class Shop extends ShopLibrary
         $this->objTemplate->setVariable("SHOP_MENU", $shopMenu);
         $this->objTemplate->setVariable("SHOP_CART_INFO", $this->showCartInfo());
 
-        $flagSpecialoffer = true;
         $pagingCatId = '';
         $pagingManId = '';
         $pagingTerm  = '';
@@ -1204,7 +1203,7 @@ class Shop extends ShopLibrary
         }
         $this->objTemplate->setCurrentBlock('shopProductRow');
         foreach ($arrProduct as $objProduct) {
-        	echo "1";
+            echo "1";
             $formId = 0;
             $productSubmitFunction = '';
             $arrPictures = $this->_getShopImagesFromBase64String($objProduct->getPictures());
@@ -2642,12 +2641,13 @@ sendReq('', 1);
         // hide currency navbar
         // $this->_hideCurrencyNavbar=true;
 
+        $i = 0;
         if (count($arrProducts)) {
             foreach ($arrProducts as $arrProduct) {
                 // The fields that don't apply have been set to ''
                 // (empty string) already -- see _parseCart().
                 $this->objTemplate->setVariable(array(
-                	'SHOP_PRODUCT_ROW'            => (++$i % 2 ? 'row2' : 'row1'),
+                    'SHOP_PRODUCT_ROW'            => (++$i % 2 ? 'row2' : 'row1'),
                     'SHOP_PRODUCT_ID'             => $arrProduct['id'],
                     'SHOP_PRODUCT_CUSTOM_ID'      => $arrProduct['product_id'],
                     'SHOP_PRODUCT_CART_ID'        => $arrProduct['cart_id'],
