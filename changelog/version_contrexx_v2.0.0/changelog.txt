@@ -140,6 +140,9 @@ Module: Community
 Modul: Directory
 - Pagingfehler wurde behoben.
 
+Modul: Dokumenten System
+- Festlegung der Start- und Endzeitpunkte funktioniert nun wieder.
+
 Modul: Gallery
 - Die Verlinkung des Zufallsbildes verweist auf die richtige Seite der
   zugehörigen Kategorie.
