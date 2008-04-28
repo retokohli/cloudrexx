@@ -268,6 +268,7 @@ class docSysManager extends docSysLibrary
 			'DOCSYS_STARTDATE'       => "",
 			'DOCSYS_ENDDATE' => "",
 			'DOCSYS_DATE'  => date(ASCMS_DATE_FORMAT, time()),
+			'DOCSYS_JS_DATE'	=> date('Y-m-d', $objResult->fields['date']),
             'TXT_AUTHOR' => $_ARRAYLANG['TXT_AUTHOR'],
             'DOCSYS_AUTHOR' => $_SESSION['auth']['username'],
 		));
@@ -406,6 +407,7 @@ class docSysManager extends docSysLibrary
 				'DOCSYS_ENDDATE'	=> $endDate,
 				'DOCSYS_STATUS'		=> $status,
 				'DOCSYS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
+				'DOCSYS_JS_DATE'	=> date('Y-m-d', $objResult->fields['date']),
 			));
 		}
 
@@ -435,9 +437,9 @@ class docSysManager extends docSysLibrary
 		    $date = date(ASCMS_DATE_FORMAT);
 		    $title = get_magic_quotes_gpc() ? strip_tags($_POST['docSysTitle']) : addslashes(strip_tags($_POST['docSysTitle']));
 		    $text = get_magic_quotes_gpc() ? $_POST['docSysText'] : addslashes($_POST['docSysText']);
-		    $title= str_replace("ß","ss",$title);
+		    $title= str_replace("ï¿½","ss",$title);
 		    $text = $this->filterBodyTag($text);
-		    $text = str_replace("ß","ss",$text);
+		    $text = str_replace("ï¿½","ss",$text);
 		    $source	= get_magic_quotes_gpc() ? strip_tags($_POST['docSysSource']) : addslashes(strip_tags($_POST['docSysSource']));
 		    $url1 = get_magic_quotes_gpc() ? strip_tags($_POST['docSysUrl1']) : addslashes(strip_tags($_POST['docSysUrl1']));
 		    $url2 = get_magic_quotes_gpc() ? strip_tags($_POST['docSysUrl2']) : addslashes(strip_tags($_POST['docSysUrl2']));
@@ -542,8 +544,8 @@ class docSysManager extends docSysLibrary
 	    $author = get_magic_quotes_gpc() ? strip_tags($_POST['author']) : addslashes(strip_tags($_POST['author']));
 	    $text = get_magic_quotes_gpc() ? $_POST['docSysText'] : addslashes($_POST['docSysText']);
 
-	    $title = str_replace("ß","ss",$title);
-	    $text = str_replace("ß","ss",$text);
+	    $title = str_replace("ï¿½","ss",$title);
+	    $text = str_replace("ï¿½","ss",$text);
 	    $text = $this->filterBodyTag($text);
 
 	    $source = get_magic_quotes_gpc() ? strip_tags($_POST['docSysSource']) : addslashes(strip_tags($_POST['docSysSource']));
