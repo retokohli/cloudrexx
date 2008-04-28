@@ -1,11 +1,5 @@
 <?php
 
-$_ARRAYLANG['TXT_CAM'] = "Kamera";
-$_ARRAYLANG['TXT_CAMS'] = "Kameras";
-$_ARRAYLANG['TXT_LIVECAM_NUMBER_OF_CAMS'] = "Anzahl Kameras";
-$_ARRAYLANG['TXT_LIVECAM_TO_MODULE'] = "Zur Frontend-Seite";
-$_ARRAYLANG['TXT_MAKE_A_FRONTEND_PAGE'] = "Für jede Webcam müssen Sie eine Content-Seite erstellen mit der Kamera-Nummber als cmd.";
-
 /**
  * Livecam
  * @copyright   CONTREXX CMS - COMVATION AG
