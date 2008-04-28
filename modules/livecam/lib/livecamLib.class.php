@@ -48,5 +48,61 @@ class LivecamLibrary
 	    }
 	    
     }
+    
+        
+    /**
+     * Get cam settings
+     *
+     * @param int $id
+     * @return array
+     */
+    public function getCamSettings($id=0)
+    {
+        global $objDatabase;
+
+        $id = intval($id);
+        
+        $query = "  SELECT  id,
+                            currentImagePath, 
+                            archivePath,
+                            thumbnailPath,
+                            maxImageWidth,
+                            thumbMaxSize,
+                            lightboxActivate
+                    FROM contrexx_module_livecam";
+        if ($id != 0) {
+            // select only one
+            $query .= " WHERE id = ".$id;
+        }
+        $result = $objDatabase->Execute($query);
+        if ($result === false) {
+            //throw new DatabaseError("error getting the camera setting");
+            return;
+        }
+        
+        $ret = array();
+        if ($result->RecordCount()) {
+            while (!$result->EOF) {
+                $cam = Array(
+                    "currentImagePath"          => $result->fields['currentImagePath'],
+                    "archivePath"               => $result->fields['archivePath'],
+                    "thumbnailPath"             => $result->fields['thumbnailPath'],
+                    "maxImageWidth"             => $result->fields['maxImageWidth'],
+                    "thumbMaxSize"              => $result->fields['thumbMaxSize'],
+                    "lightboxActivate"          => $result->fields['lightboxActivate']
+                );
+                $ret[$result->fields['id']] = $cam;
+                $result->MoveNext();
+            }
+        }
+        
+        if ($id == 0) {
+            // return all cams
+            return $ret;
+        } else {
+            // there is only one. return that
+            return array_pop($ret);
+        }
+    }
 }
 ?>

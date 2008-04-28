@@ -26,59 +26,68 @@ require_once ASCMS_MODULE_PATH.'/livecam/lib/livecamLib.class.php';
 class Livecam extends LivecamLibrary
 {
 	/**
-	* Template object
-	*
-	* @access private
-	* @var object
-	*/
+	 * Template object
+	 *
+	 * @access private
+	 * @var object
+	 */
     var $_objTpl;
 
     /**
-    * Status message
-    *
-    * @access public
-    * @var string
-    */
+     * Status message
+     *
+     * @access public
+     * @var string
+     */
     var $statusMessage;
 
     /**
-    * Archive thumbnail links
-    *
-    * @access private
-    * @var array
-    */
+     * Archive thumbnail links
+     *
+     * @access private
+     * @var array
+     */
     var $_arrArchiveThumbs = array();
 
     /**
-    * Action
-    *
-    * @access private
-    * @var string
-    */
+     * Action
+     *
+     * @access private
+     * @var string
+     */
     var $_action = '';
 
     /**
-    * Picture template placeholder
-    *
-    * @access private
-    * @var string
-    */
+     * Picture template placeholder
+     *
+     * @access private
+     * @var string
+     */
     var $_pictureTemplatePlaceholder = 'livecamArchivePicture';
 
     /**
-    * Date
-    *
-    * @access public
-    * @var string
-    */
+     * Date
+     *
+     * @access public
+     * @var string
+     */
     var $date;
 
+        
+    /**
+     * The current Cam
+     *
+     * @var int
+     */
+    private $cam = 1;
+
+    
 	/**
-    * Constructor
-    *
-    * @param  string $pageContent
-    * @access public
-    */
+     * Constructor
+     *
+     * @param  string $pageContent
+     * @access public
+     */
     function Livecam($pageContent)
     {
     	$this->__construct($pageContent);
@@ -104,14 +113,21 @@ class Livecam extends LivecamLibrary
 	}
 
 	/**
-	* Get action
-	*
-	* Get the action that should be executed
-	*
-	* @access private
-	*/
+	 * Get action
+	 *
+	 * Get the action that should be executed
+	 *
+	 * @access private
+	 */
 	function _getAction()
 	{
+	    if (isset($_GET['cmd'])) {
+	        $this->cam = intval($_GET['cmd']);
+	    } else {
+	        $this->cam = 1;
+	    }
+	    
+	    
 		if (isset($_REQUEST['act'])) {
 			if (is_array($_REQUEST['act'])) {
 				$this->_action = key($_REQUEST['act']);
@@ -122,12 +138,12 @@ class Livecam extends LivecamLibrary
 	}
 
 	/**
-	* Get date
-	*
-	* Get the date to be used
-	*
-	* @access private
-	*/
+	 * Get date
+	 *
+	 * Get the date to be used
+	 *
+	 * @access private
+	 */
 	function _getDate()
 	{
 		if ($this->_action == 'archive') {
@@ -142,18 +158,21 @@ class Livecam extends LivecamLibrary
 	}
 
 	/**
-	* Get page
-	*
-	* Get the livecam page
-	*
-	* @access public
-	* @return string
-	*/
+	 * Get page
+	 *
+	 * Get the livecam page
+	 *
+	 * @access public
+	 * @return string
+	 */
 	function getPage()
 	{
 		$this->_objTpl->setTemplate($this->pageContent);
 
-		$this->_objTpl->setVariable('LIVECAM_JAVASCRIPT', $this->_getJavascript());
+		$this->_objTpl->setVariable(array(
+            "LIVECAM_JAVASCRIPT"    => $this->_getJavascript(),
+            "CMD"                   => $this->cam 
+        ));
 		$this->_objTpl->setGlobalVariable('LIVECAM_DATE', $this->date);
 
     	switch ($this->_action) {
@@ -181,16 +200,19 @@ class Livecam extends LivecamLibrary
     }
 
     /**
-    * Show picture
-    *
-    * Either show the current picture of the livecam or one from the archive
-    *
-    * @access private
-    */
+     * Show picture
+     *
+     * Either show the current picture of the livecam or one from the archive
+     *
+     * @access private
+     */
     function _showPicture()
-    {
-    	if ($this->arrSettings['lightboxActivate'] == 1) {
-    		$imageLink = $this->arrSettings['currentImageUrl'];
+    {        
+        $this->camSettings = $this->getCamSettings($this->cam);
+        //var_dump($this->camSettings);
+        
+    	if ($this->camSettings['lightboxActivate'] == 1) {
+    		$imageLink = $this->camSettings['currentImageUrl'];
     	} else {
     		if (isset($_GET['file'])) {
     			$archiveDate = substr($_GET['file'], 0, 10);
@@ -199,13 +221,12 @@ class Livecam extends LivecamLibrary
     			$imageLink = '?section=livecam&amp;act=today';
     		}
     	}
-
 		$this->_objTpl->setVariable(array(
-    		'LIVECAM_CURRENT_IMAGE'		=> isset($_GET['file']) ? ASCMS_PATH_OFFSET.$this->arrSettings['archivePath'].'/'.$_GET['file'] : $this->arrSettings['currentImageUrl'],
+    		'LIVECAM_CURRENT_IMAGE'		=> isset($_GET['file']) ? ASCMS_PATH_OFFSET.$this->camSettings['archivePath'].'/'.$_GET['file'] : $this->camSettings['currentImagePath'],
     		'LIVECAM_IMAGE_TEXT'		=> isset($_GET['file']) ? contrexx_strip_tags($_GET['file']) : 'Aktuelles Webcam Bild',
-    		'LIVECAM_IMAGE_LIGHTBOX'	=> $this->arrSettings['lightboxActivate'] == 1 ? 'rel="lightboxgallery"' : '',
+    		'LIVECAM_IMAGE_LIGHTBOX'	=> $this->camSettings['lightboxActivate'] == 1 ? 'rel="lightboxgallery"' : '',
     		'LIVECAM_IMAGE_LINK'		=> $imageLink,
-    		'LIVECAM_IMAGE_SIZE'		=> $this->arrSettings['currentMaxSize'],
+    		'LIVECAM_IMAGE_SIZE'		=> $this->camSettings['currentMaxSize'],
     	));
     }
 
@@ -228,15 +249,16 @@ class Livecam extends LivecamLibrary
 
 
     /**
-    * Show archive
-    *
-    * Show the livecam archive from a specified date
-    *
-    * @access private
-    * @param string $date
-    */
+     * Show archive
+     *
+     * Show the livecam archive from a specified date
+     *
+     * @access private
+     * @param string $date
+     */
     function _showArchive($date)
     {
+        $this->camSettings = $this->getCamSettings($this->cam);
     	$this->_getThumbs();
 
     	if (count($this->_arrArchiveThumbs)>0) {
@@ -259,8 +281,8 @@ class Livecam extends LivecamLibrary
 					'LIVECAM_PICTURE_URL'		=> $arrThumbnail['link_url'],
 					'LIVECAM_PICTURE_TIME'		=> $arrThumbnail['time'],
 					'LIVECAM_THUMBNAIL_URL'		=> $arrThumbnail['image_url'],
-					'LIVECAM_THUMBNAIL_SIZE'	=> $this->arrSettings['thumbMaxSize'],
-					'LIVECAM_IMAGE_LIGHTBOX'	=> $this->arrSettings['lightboxActivate'] == 1 ? 'rel="lightboxgallery"' : '',
+					'LIVECAM_THUMBNAIL_SIZE'	=> $this->camSettings['thumbMaxSize'],
+					'LIVECAM_IMAGE_LIGHTBOX'	=> $this->camSettings['lightboxActivate'] == 1 ? 'rel="lightboxgallery"' : '',
 				));
 				$this->_objTpl->parse($this->_pictureTemplatePlaceholder.$picNr);
 
@@ -279,30 +301,31 @@ class Livecam extends LivecamLibrary
     }
 
     /**
-    * Get thumbnails
-    *
-    * Get the thumbnails from a day in the archive.
-    * Create the thumbnails if they don't already exists.
-    *
-    * @access private
-    */
-	function _getThumbs() {
+     * Get thumbnails
+     *
+     * Get the thumbnails from a day in the archive.
+     * Create the thumbnails if they don't already exists.
+     *
+     * @access private
+     */
+	function _getThumbs() 
+	{
 		require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 
-		$path = ASCMS_DOCUMENT_ROOT.$this->arrSettings['archivePath'].'/'.$this->date.'/';
+		$path = ASCMS_DOCUMENT_ROOT."/".$this->camSettings['archivePath'].'/'.$this->date.'/';
 		$objDirectory = @opendir($path);
 		$objFile = &new File();
 		$chmoded = false;
-
+		
 		if ($objDirectory) {
 			while ($file = readdir ($objDirectory)) {
 				if ($file != "." && $file != "..") {
 					//check and create thumbs
-					$thumb = ASCMS_DOCUMENT_ROOT.$this->arrSettings['thumbnailPath'].'/tn_'.$this->date.'_'.$file;
+					$thumb = ASCMS_DOCUMENT_ROOT.$this->camSettings['thumbnailPath'].'/tn_'.$this->date.'_'.$file;
 
 					if(!file_exists($thumb)){
 						if (!$chmoded) {
-							$objFile->setChmod(ASCMS_DOCUMENT_ROOT.$this->arrSettings['archivePath'], ASCMS_PATH_OFFSET, $this->arrSettings['thumbnailPath']);
+							$objFile->setChmod(ASCMS_DOCUMENT_ROOT.$this->camSettings['archivePath'], ASCMS_PATH_OFFSET, $this->camSettings['thumbnailPath']);
 							$chmoded = true;
 						}
 
@@ -315,8 +338,8 @@ class Livecam extends LivecamLibrary
 							$hoehe = $size[1]; //die Höhe des Bildes
 
 
-							$breite_neu = $this->arrSettings['thumbMaxSize']; //die breite des Thumbnails
-							$factor = $breite/$this->arrSettings['thumbMaxSize']; //berechnungsfaktor
+							$breite_neu = $this->camSettings['thumbMaxSize']; //die breite des Thumbnails
+							$factor = $breite/$this->camSettings['thumbMaxSize']; //berechnungsfaktor
 							$hoehe_neu = $size[1]/$factor; //die Höhe des Thumbnails
 
 							//$im2=imagecreate($breite_neu,$hoehe_neu); //Thumbnail im Speicher erstellen
@@ -336,15 +359,15 @@ class Livecam extends LivecamLibrary
 					$min = !empty($min) ? $min : "00";
 					$time = $hour.":".$min."&nbsp;Uhr";
 
-					if($this->arrSettings['lightboxActivate'] == 1) {
-						$linkUrl = ASCMS_PATH_OFFSET.$this->arrSettings['archivePath'].'/'.$this->date.'/'.$file;
+					if($this->camSettings['lightboxActivate'] == 1) {
+						$linkUrl = ASCMS_PATH_OFFSET.$this->camSettings['archivePath'].'/'.$this->date.'/'.$file;
 					} else {
 						$linkUrl = '?section=livecam&amp;file='.$this->date.'/'.$file;
 					}
 
 					$arrThumbnail = array(
 						'link_url'	=> $linkUrl,
-						'image_url'	=> $this->arrSettings['thumbnailPath']."/tn_".$this->date."_".$file,
+						'image_url'	=> $this->camSettings['thumbnailPath']."/tn_".$this->date."_".$file,
 						'time'		=> $time
 					);
 					array_push($this->_arrArchiveThumbs, $arrThumbnail);
@@ -364,8 +387,7 @@ class Livecam extends LivecamLibrary
 	*/
 	function _getJavaScript()
 	{
-		$strJavascript = '<script src="modules/livecam/datepicker/datepickercontrol.js" type="text/javascript"></script>
-          	<link href="modules/livecam/datepicker/datepickercontrol.css" rel="stylesheet" type="text/css" />';
+		$strJavascript = '<script src="modules/livecam/datepicker/datepickercontrol.js" type="text/javascript"></script>';
 		return $strJavascript;
 	}
 }

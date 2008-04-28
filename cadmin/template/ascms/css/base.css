@@ -216,7 +216,7 @@ table.adminlist th {
 }
 table.adminlist th A {
 	COLOR: white;
-	TEXT-DECORATION: underline
+	/*TEXT-DECORATION: underline*/
 }
 table.adminlist th A:active {
 	COLOR: white;
