@@ -1,21 +1,26 @@
 /**
- * DatePickerControl v.0.9
+ * DatePickerControl.v.1.1.1 beta
  *
  * Transform your input text control into a date-picker control.
  *
- * By Hugo Ortega_Hernandez - hugorteg{no_spam}@gmail.com
+ * By Hugo Ortega_Hernandez - hugorteg _no_spam_ at gmail dot com
+ *
+ * Last version of this code: http://dali.mty.itesm.mx/~hugo/js/datepickercontrol/
  *
  * Features:
  *   + Automatic input control conversion with a single attribute
- *     in the 'input' tag.
+ *     in the 'input' tag or a special 'id' attribute format.
  *   + Multiple date formats.
  *   + Layered calendar, without pop-up window.
  *   + Mouse and keyboard navigation.
+ *   + Variable first day of week.
+ *   + Min and Max dates.
+ *   + Easy i18n.
  *   + CSS support.
  *
- * License: GPL (that's, use this code as you wish, just keep it free)
+ * License: GPL (i.e., use this code as you wish, just keep it free)
  * Provided as is, without any warranty.
- * Fell free to use this code, but don't remove this disclaimer please.
+ * Feel free to use this code, but don't remove this disclaimer please.
  *
  * If you're going to use this library, please send me an email, and
  * would be great if you include a photo of your city :)
@@ -24,23 +29,20 @@
  * Credits:
  *
  * Functions to calculate days of a year and to generate the calendar code by:
- *    Kedar R. Bhave - softricks{no_spam}@hotmail.com
- *    ttp://www.softricks.com
+ *    Kedar R. Bhave - softricks at hotmail dot com
+ *    http://www.softricks.com
  *    = Modified by Hugo Ortega_H:
  *      + CSS style
  *      + Remove non useful code (original version with pop-up window)
+ *      + Clean job :-) (so hard!)
  *      + Add support for layered calendar
  *      + Many other stuff.
  *
  * Other code functions and lines to calculate objects' size & location by:
- *    Mircho Mirev - mo{no_spam}@momche.net
+ *    Mircho Mirev - mo at momche dot net
  *
- * TODO:
- *   1) Is a problem to make changes in the design of the calendar.
- *   2) A mask-edit type control
- *   3) Enter key behaviour as space key (to select the current date and avoid
- *      the form submit).
- *   4) At the moment, any idea is good ;)
+ * First day of week code by:
+ *    Massimiliano Ciancio  -  massimiliano at ciancio dot net
  *
  *
  *                                        Veracruz & Monterrey, Mexico, 2005.
@@ -49,163 +51,199 @@
 
 //-----------------------------------------------------------------------------
 // Some parameters for style and behaviour...
+// Is better to use global parameters to avoid problems with updates,
+// but if you want to override default values, here are the variables :-)
+// (see index.html to see how to use global parameters)
 
-Calendar.defaultFormat   = "YYYY-MM-DD";
-Calendar.offsetY         = 1;
-Calendar.offsetX         = 0;
-Calendar.todayText       = "Heute";
-Calendar.closeOnTodayBtn = true; // close if today button is pressed
-Calendar.buttonTitle     = "Webcam Kalender";
-Calendar.buttonPosition  = "in"; // or "out"
-Calendar.buttonOffsetX   = 0; // See below for some considerations about that values (for IE)
-Calendar.buttonOffsetY   = 0;
+DatePickerControl.defaultFormat   = "YYYY-MM-DD";
+DatePickerControl.submitFormat    = "";
+DatePickerControl.offsetY         = 1;
+DatePickerControl.offsetX         = 0;
+DatePickerControl.todayText       = "Heute";
+DatePickerControl.buttonTitle     = "Kalender";
+DatePickerControl.buttonPosition  = "in";  // or "out"
+DatePickerControl.buttonOffsetX   = 0;     // See below for some considerations about
+DatePickerControl.buttonOffsetY   = 0;     // that values (for IE)
+DatePickerControl.closeOnTodayBtn = true;  // close if today button is pressed?
+DatePickerControl.defaultTodaySel = true;  // If true and content is blank, today date will be selected
+DatePickerControl.autoShow        = true; // Auto show the calendar when the input grab the focus.
+DatePickerControl.firstWeekDay    = 1;     // First day of week: 0=Sunday, 1=Monday, ..., 6=Saturday
+DatePickerControl.weekend         = [0,6]; // Sunday and Saturday as weekend (maybe a 3-day weekend in France :D , I love it!...)
+DatePickerControl.weekNumber      = false; // Display or not the week number
 
-Calendar.Months =
+
+DatePickerControl.Months =
 //	["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 //	["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 //	["Janvier", "F&eacute;vrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Ao&ucirc;t", "Septembre", "Octobre", "Novembre", "D&eacute;cembre"];
-	["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+	["Januar", "Februar", "M&auml;rz", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+//	["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
 
-Calendar.Days =
+DatePickerControl.Days =
 //	["Dom", "Lun", "Mar", "Mi&eacute;", "Jue", "Vie", "S&aacute;b"];
 //	["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 //	["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
 	["Son", "Mon", "Die", "Mit", "Don", "Fre", "Sam"];
+//	["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
 
 
 //-----------------------------------------------------------------------------
 // Specific patches
 
-Calendar.useTrickyBG = false;
-// Some people ask me for IE strange behaviour... well, here's the patch
+DatePickerControl.useTrickyBG = false;
+// Some people ask me about IE strange behaviour... well, here's the patch
 // IE returns object position with one pixel more
-// <sarcasm>Patches for IE?, I can believe!</sarcasm>
+// <sarcasm>Patches for IE?, I can't believe!</sarcasm>
+// There area a LOT of problems with IE, because if you change, for example,
+// the body margin, all control's positions are wrong... agghh... I hate IE...
+// this is why all my projects have a technical requirement: Mozilla family :-)
 if (navigator.userAgent.indexOf("MSIE") > 1){
-	Calendar.useTrickyBG   = true;
-	Calendar.offsetY       = 0;
-	Calendar.offsetX       = -1;
-	Calendar.buttonOffsetX = -1;
-	Calendar.buttonOffsetY = -1;
-	// but if document is xhtml dtd, things are differents... :S
+	DatePickerControl.useTrickyBG   = true;
+	DatePickerControl.offsetY       = 0;
+	DatePickerControl.offsetX       = -1;
+	DatePickerControl.buttonOffsetX = -4;
+	DatePickerControl.buttonOffsetY = -2;
+	// but if document have xhtml dtd, things are different... :S
 	if (document.getElementsByTagName("html")[0].getAttribute("xmlns") != null){
-		Calendar.offsetY       = 16;
-		Calendar.offsetX       = 10;
-		Calendar.buttonOffsetX = 8;
-		Calendar.buttonOffsetY = 14;
+		DatePickerControl.offsetY       = 18;
+		DatePickerControl.offsetX       = 10;
+		DatePickerControl.buttonOffsetX = 0;
+		DatePickerControl.buttonOffsetY = -1;
 	}
 }
-
 
 //-----------------------------------------------------------------------------
 // Some constants and internal stuff
 
-Calendar.editIdPrefix   = "DPC_";
-Calendar.displayed      = false;
-Calendar.HIDE_TIMEOUT   = 200;
-Calendar.hideTimeout    = null;
-Calendar.buttonIdPrefix = "CALBUTTON";
-Calendar.dayIdPrefix    = "CALDAY";
-Calendar.currentDay     = 1;
-Calendar.originalValue  = "";
-Calendar.calFrameId     = "calendarframe";
-Calendar.submitByKey    = false;
-Calendar.dayOfWeek      = 0;
-// Non-Leap year month days..
-Calendar.DOMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-// Leap year month days..
-Calendar.lDOMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-// sunday and saturday as weekend
-Calendar.weekend = [0,6];
+DatePickerControl.editIdPrefix    = "DPC_";          // The prefix for edit's id
+DatePickerControl.displayed       = false;           // Is the calendar layer displayed?
+DatePickerControl.HIDE_TIMEOUT    = 200;             // Time in ms for hide the calendar layer
+DatePickerControl.hideTimeout     = null;            // The timeout identifier
+DatePickerControl.buttonIdPrefix  = "CALBUTTON";     // The prefix for the calendar button's id
+DatePickerControl.dayIdPrefix     = "CALDAY";        // The prefix for the calendar days frames' id
+DatePickerControl.currentDay      = 1;               // The current day of current month of current year :-)
+DatePickerControl.originalValue   = "";              // The original value of edit control
+DatePickerControl.calFrameId      = "calendarframe"; // The id for the calendar layer
+DatePickerControl.submitByKey     = false;           // Is submitting by keyboard?
+DatePickerControl.dayOfWeek       = 0;               // The current day of current week ...
+DatePickerControl.firstFocused    = false;           // Is the first time that the current edit control is focused?
+DatePickerControl.hideCauseBlur   = false;           // Was the calendar close by onblur event?
+DatePickerControl.onSubmitAsigned = false;           // Is form's onSubmit event asigned?
+DatePickerControl.minDate         = null;              // The minimum date for the current datepicker
+DatePickerControl.maxDate         = null;              // The maximum date for the current datepicker
+DatePickerControl.DOMonth         = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; // Non-leap year month days
+DatePickerControl.lDOMonth        = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; // Leap year month days
 
 
 //-----------------------------------------------------------------------------
-// The fun
+// The fun :-)
 
+
+//-----------------------------------------------------------------------------
 /**
- * Constructor
+ * Constructor (or something like that).
  */
-function Calendar()
+function DatePickerControl()
 {
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * Creates the calendar's div element and the button into the input-texts with
- * attibute datepicker="true".
+ * attibute datepicker="true" or id="DPC_foo_[format]"
  */
-Calendar.autoInit = function()
+DatePickerControl.init = function()
 {
+	// try to create the DatePickerControl.container:
 	if (!document.getElementById("CalendarPickerControl")){
-		Calendar.calBG = null;
-		if (Calendar.useTrickyBG){
+
+		// but first, take a look for global parameters:
+		this.setGlobalParams();
+
+		this.calBG = null;
+		if (this.useTrickyBG){
 			// Creates a tricky bg to hide the select controls (IE bug).
 			// We use a iframe element, because is one of the elements that can
 			// stay on top of select controls.
-			Calendar.calBG                = document.createElement("iframe");
-			Calendar.calBG.id             = "CalendarPickerControlBG";
-			Calendar.calBG.style.zIndex   = "49999"; // below calcontainer
-			Calendar.calBG.style.position = "absolute";
-			Calendar.calBG.style.display  = "none";
-			Calendar.calBG.style.border   = "0px solid transparent";
-			document.body.appendChild(Calendar.calBG);
+			// I don't like this solution, but IE is a pseudo-browser for developers
+			this.calBG                = document.createElement("iframe");
+			this.calBG.id             = "CalendarPickerControlBG";
+			this.calBG.style.zIndex   = "49999"; // below calcontainer
+			this.calBG.style.position = "absolute";
+			this.calBG.style.display  = "none";
+			this.calBG.style.border   = "0px solid transparent";
+			document.body.appendChild(this.calBG);
 		}
-		Calendar.calContainer                = document.createElement("div");
-		Calendar.calContainer.id             = "CalendarPickerControl";
-		Calendar.calContainer.style.zIndex   = "50000";
-		Calendar.calContainer.style.position = "absolute";
-		Calendar.calContainer.style.display  = "none";
-		document.body.appendChild(Calendar.calContainer);
+		this.calContainer                = document.createElement("div");
+		this.calContainer.id             = "CalendarPickerControl";
+		this.calContainer.style.zIndex   = "50000";
+		this.calContainer.style.position = "absolute";
+		this.calContainer.style.display  = "none";
+		document.body.appendChild(this.calContainer);
 
-		if (Calendar.calContainer.attachEvent){
-			Calendar.calContainer.attachEvent("onclick", Calendar.onContainerClick);
+		if (this.calContainer.addEventListener){
+			this.calContainer.addEventListener("click", DPC_onContainerClick, false);
+			window.addEventListener("resize", DPC_onWindowResize, false);
 		}
-		else if (Calendar.calContainer.addEventListener){
-			Calendar.calContainer.addEventListener("click", Calendar.onContainerClick, false);
+		else if (this.calContainer.attachEvent){
+			this.calContainer.attachEvent("onclick", DPC_onContainerClick);
+			window.attachEvent("onresize", DPC_onWindowResize);
 		}
 	}
-	// search for input controls that will be transformed into datepickercontrols
-	var inputsLength = document.getElementsByTagName("INPUT").length;
-	for (i = 0; i<inputsLength; i++){
-		if (document.getElementsByTagName("INPUT")[i].type.toLowerCase() == "text"){
-			var editctrl = document.getElementsByTagName("INPUT")[i];
-			var sLangAtt = editctrl.getAttribute("datepicker");
+	
+	// looking for input controls that will be transformed into DatePickerControl's.
+	var inputControls = document.getElementsByTagName("input");
+	var inputsLength  = inputControls.length;
+	for (i=0; i<inputsLength; i++){
+		if (inputControls[i].type.toLowerCase() == "text"){
+			var editctrl  = inputControls[i];
+			var dpcattr   = editctrl.getAttribute("datepicker");
 			var setEvents = false;
 			// if datepicker pseudo-attribute:
-			if (sLangAtt != null && sLangAtt == "true"){
+			if (dpcattr != null && dpcattr == "true"){
 				if (editctrl.id){
-					if (!Calendar.prototype.createButton(editctrl, false)) continue;
+					if (!this.createButton(editctrl, false)) continue;
 					setEvents = true;
 				}
 				else{
 					alert("Attribute 'id' is mandatory for DatePickerControl.");
 				}
 			}
-			// if fomatted id:
-			else if (editctrl.id && editctrl.id.indexOf(Calendar.editIdPrefix) == 0){
-				if (!Calendar.prototype.createButton(editctrl, true)) continue;
+			// if fomated id attr:
+			else if (editctrl.id && editctrl.id.indexOf(this.editIdPrefix) == 0){
+				if (!this.createButton(editctrl, true)) continue;
 				setEvents = true;
 			}
+			editctrl.setAttribute("isdatepicker", "true");
 			// add the events:
 			if (setEvents){
-				editctrl.setAttribute("maxlength", "10");
-				if (editctrl.attachEvent){
-					editctrl.attachEvent("onkeyup", Calendar.onEditControlKeyUp);
-					editctrl.attachEvent("onkeydown", Calendar.onEditControlKeyDown);
-					editctrl.attachEvent("onblur", Calendar.onEditControlBlur);
-					editctrl.attachEvent("onfocus", Calendar.onEditControlFocus);
+				if(editctrl.addEventListener){
+					editctrl.addEventListener("keyup", DPC_onEditControlKeyUp, false);
+					editctrl.addEventListener("keydown", DPC_onEditControlKeyDown, false);
+					editctrl.addEventListener("keypress", DPC_onEditControlKeyPress, false);
+					editctrl.addEventListener("blur", DPC_onEditControlBlur, false);
+					editctrl.addEventListener("focus", DPC_onEditControlFocus, false);
+					editctrl.addEventListener("change", DPC_onEditControlChange, false);
 				}
-				else if(editctrl.addEventListener){
-					editctrl.addEventListener("keyup", Calendar.onEditControlKeyUp, false);
-					editctrl.addEventListener("keydown", Calendar.onEditControlKeyDown, false);
-					editctrl.addEventListener("blur", Calendar.onEditControlBlur, false);
-					editctrl.addEventListener("focus", Calendar.onEditControlFocus, false);
+				else if (editctrl.attachEvent){
+					editctrl.attachEvent("onkeyup", DPC_onEditControlKeyUp);
+					editctrl.attachEvent("onkeydown", DPC_onEditControlKeyDown);
+					editctrl.attachEvent("onkeypress", DPC_onEditControlKeyPress);
+					editctrl.attachEvent("onblur", DPC_onEditControlBlur);
+					editctrl.attachEvent("onfocus", DPC_onEditControlFocus);
+					editctrl.attachEvent("onchange", DPC_onEditControlChange);
 				}
 				var theForm = editctrl.form;
-				if (theForm){
-					if (theForm.attachEvent){
-						theForm.attachEvent('onsubmit', Calendar.onFormSubmit);
+				if (!this.onSubmitAsigned && theForm){
+					this.onSubmitAsigned = true;
+					theForm.submitOrig = theForm.submit;
+					theForm.submit = DPC_formSubmit;
+					if (theForm.addEventListener){
+						theForm.addEventListener('submit', DPC_onFormSubmit, false);
 					}
-					else if (theForm.addEventListener){
-						theForm.addEventListener('submit', Calendar.onFormSubmit, false);
+					else if (theForm.attachEvent){
+						theForm.attachEvent('onsubmit', DPC_onFormSubmit);
 					}
 				}
 			}
@@ -213,175 +251,263 @@ Calendar.autoInit = function()
 	}
 }
 
-if (window.attachEvent){
-	window.attachEvent("onload", Calendar.autoInit);
-}
-else if (window.addEventListener){
-	window.addEventListener("load", Calendar.autoInit, false);
-}
 
-
+//-----------------------------------------------------------------------------
 /**
- * Creates the calendar button for an text-input control
+ * Set the global parameters.
+ */
+DatePickerControl.setGlobalParams = function()
+{
+	var obj = document.getElementById("DPC_DEFAULT_FORMAT");
+	if (obj) this.defaultFormat = obj.value;
+
+	obj = document.getElementById("DPC_SUBMIT_FORMAT");
+	if (obj) this.submitFormat = obj.value;
+	
+	obj = document.getElementById("DPC_FIRST_WEEK_DAY");
+	if (obj) this.firstWeekDay = (obj.value < 0 || obj.value > 6) ? 0 : parseInt(obj.value);
+	
+	obj = document.getElementById("DPC_WEEKEND_DAYS");
+	if (obj) eval("this.weekend = " + obj.value);
+	
+	obj = document.getElementById("DPC_AUTO_SHOW");
+	if (obj) this.autoShow = obj.value == "true";
+	
+	obj = document.getElementById("DPC_DEFAULT_TODAY");
+	if (obj) this.defaultTodaySel = obj.value == "true";
+	
+	obj = document.getElementById("DPC_CALENDAR_OFFSET_X");
+	if (obj) this.offsetX = parseInt(obj.value);
+	
+	obj = document.getElementById("DPC_CALENDAR_OFFSET_Y");
+	if (obj) this.offsetY = parseInt(obj.value);
+	
+	obj = document.getElementById("DPC_TODAY_TEXT");
+	if (obj) this.todayText = obj.value;
+	
+	obj = document.getElementById("DPC_BUTTON_TITLE");
+	if (obj) this.buttonTitle = obj.value;
+	
+	obj = document.getElementById("DPC_BUTTON_POSITION");
+	if (obj) this.buttonPosition = obj.value;
+	
+	obj = document.getElementById("DPC_BUTTON_OFFSET_X");
+	if (obj) this.buttonOffsetX = parseInt(obj.value);
+	
+	obj = document.getElementById("DPC_BUTTON_OFFSET_Y");
+	if (obj) this.buttonOffsetY = parseInt(obj.value);
+	
+	obj = document.getElementById("DPC_WEEK_NUMBER");
+	if (obj) this.weekNumber = obj.value == "true";
+	
+	obj = document.getElementById("DPC_MONTH_NAMES");
+	if (obj) eval("this.Months = " + obj.value);
+	
+	obj = document.getElementById("DPC_DAY_NAMES");
+	if (obj) eval("this.Days = " + obj.value);
+}
+
+
+//-----------------------------------------------------------------------------
+/**
+ * Wrapper for init()
+ */
+function DPC_autoInit()
+{
+	DatePickerControl.init();
+}
+
+if (window.addEventListener){
+	window.addEventListener("load", DPC_autoInit, false);
+}
+else if (window.attachEvent){
+	window.attachEvent("onload", DPC_autoInit);
+}
+
+
+//-----------------------------------------------------------------------------
+/**
+ * Creates the calendar button for a text-input control and assign some attributes.
  * @param input The associated text-input to create the button.
  * @param useId Specify if you want to use the Id of input control to obtain the format
  * @return true is the control has been created, otherwise false
  */
-Calendar.prototype.createButton = function(input, useId)
+DatePickerControl.createButton = function(input, useId)
 {
-	var newid = Calendar.buttonIdPrefix + input.id;
+	var newid = this.buttonIdPrefix + input.id;
 	if (document.getElementById(newid)) return false; // if exists previously....
-	// the format
+	// set the date format
 	var fmt = "";
 	if (useId){ // get the format from the control's id
 		var arr = input.id.split("_");
 		var last = arr[arr.length-1];
 		// a not so beauty validation :S
-		if ((last.indexOf("-")>0 || last.indexOf("/")>0) &&
-			last.indexOf("YY") >= 0 && last.indexOf("D") >= 0 &&
-			last.indexOf("M") >= 0){ // is a format
-				fmt = last;
+		if ((last.indexOf("-")>0 || last.indexOf("/")>0 || last.indexOf(".")>0) && 
+		     last.indexOf("YY") >= 0 && last.indexOf("D") >= 0 && last.indexOf("M") >= 0){ // is a format
+			fmt = last;
 		}
 		else{
-			fmt = Calendar.defaultFormat;
+			fmt = this.defaultFormat;
 		}
 	}
 	else{ // get the format from pseudo-attibute
 		fmt = input.getAttribute("datepicker_format");
-		if (fmt == null) fmt = Calendar.defaultFormat;
+		if (!fmt){
+			fmt = this.defaultFormat;
+		}
 	}
-	// Position
-	var nTop = getObject.getSize("offsetTop", input);
-	var nLeft = getObject.getSize("offsetLeft", input);
-	// Create the button
+	input.setAttribute("datepicker_format", fmt);
+	input.setAttribute("maxlength", fmt.length);
+	
+	// some new methods for datepickers
+	input.setMinDate = function(d){this.setAttribute("datepicker_min", d);}
+	input.setMaxDate = function(d){this.setAttribute("datepicker_max", d);}
+	
+	// Creates the button
 	var calButton = document.createElement("div");
 	calButton.id = newid;
-	calButton.title = Calendar.buttonTitle;
+	calButton.title = this.buttonTitle;
 	// Set some attributes to remember the text-input associated
 	// with this button and its format:
 	calButton.setAttribute("datepicker_inputid", input.id);
 	calButton.setAttribute("datepicker_format", fmt);
 	// Add the event listeners:
-	if (calButton.attachEvent){
-		calButton.attachEvent("onclick", Calendar.onButtonClick);
+	if(calButton.addEventListener){
+		calButton.addEventListener("click", DPC_onButtonClick, false);
 	}
-	else if(calButton.addEventListener){
-		calButton.addEventListener("click", Calendar.onButtonClick, false);
+	else if (calButton.attachEvent){
+		calButton.attachEvent("onclick", DPC_onButtonClick);
 	}
 	// add first to have access to the size properties
-	document.body.appendChild(calButton);
+	// if is possible, add to the input's parent node
+	// just in case we need to hide the button automatically
+	if (input.parentNode){
+		input.parentNode.appendChild(calButton);
+	}
+	else{
+		document.body.appendChild(calButton);
+	}
 	// Set the style and position:
-	calButton.className    = "calendarbutton";
+	var nTop               = getObject.getSize("offsetTop", input);
+	var nLeft              = getObject.getSize("offsetLeft", input);
+	
+	//different styles (img on/off)
+	if (input.id == "DPC_popupFrom_YYYY-MM-DD" || input.id == "DPC_popupTo_YYYY-MM-DD"){
+		calButton.className    = "none";
+	}else{
+		calButton.className    = "calendarbutton";
+	}
+	
 	calButton.style.zIndex = 10000;
 	calButton.style.cursor = "pointer";
-	calButton.style.top    = (nTop + Math.floor((input.offsetHeight-calButton.offsetHeight)/2) + Calendar.buttonOffsetY) + "px";
-	btnOffX                = Math.floor((input.offsetHeight - calButton.offsetHeight) / 2);
-	if (Calendar.buttonPosition == "in"){
-		calButton.style.left = (nLeft + input.offsetWidth - calButton.offsetWidth - btnOffX + Calendar.buttonOffsetX) + "px";
+	calButton.style.top    = (nTop + Math.floor((input.offsetHeight-calButton.offsetHeight)/2) + this.buttonOffsetY) + "px";
+	var btnOffX            = Math.floor((input.offsetHeight - calButton.offsetHeight) / 2);
+	if (this.buttonPosition == "in"){
+		calButton.style.left = (nLeft + input.offsetWidth - calButton.offsetWidth - btnOffX + this.buttonOffsetX) + "px";
 	}
 	else{ // "out"
-		calButton.style.left = (nLeft + input.offsetWidth + btnOffX + Calendar.buttonOffsetX) + "px";
+		calButton.style.left = (nLeft + input.offsetWidth + btnOffX + this.buttonOffsetX) + "px";
 	}
 	// everything is ok
 	return true;
 }
 
+
+//-----------------------------------------------------------------------------
 /**
- * Show the list
+ * Show the calendar
  */
-Calendar.show = function()
+DatePickerControl.show = function()
 {
-	if (!Calendar.displayed){
-		var input = Calendar.inputControl;
+	if (!this.displayed){
+		var input = this.inputControl;
 		if (input == null) return;
+		if (input.disabled) return; // just in case ;)
 		var top  = getObject.getSize("offsetTop", input);
 		var left = getObject.getSize("offsetLeft", input);
+		var calframe = document.getElementById(this.calFrameId);
 
-		Calendar.calContainer.style.top        = top + input.offsetHeight + Calendar.offsetY + "px";
-		Calendar.calContainer.style.left       = left + Calendar.offsetX + "px";
-		Calendar.calContainer.style.display    = "none";
-		Calendar.calContainer.style.visibility = "visible";
-		Calendar.calContainer.style.display    = "block";
-		if (Calendar.calBG){ // the ugly patch for IE
-			Calendar.calBG.style.top        = Calendar.calContainer.style.top;
-			Calendar.calBG.style.left       = Calendar.calContainer.style.left;
-			Calendar.calBG.style.display    = "none";
-			Calendar.calBG.style.visibility = "visible";
-			Calendar.calBG.style.display    = "block";
-			Calendar.calBG.style.width      = Calendar.calContainer.offsetWidth;
-			calframe = document.getElementById(Calendar.calFrameId);
+		this.calContainer.style.top        = top + input.offsetHeight + this.offsetY + "px";
+		this.calContainer.style.left       = left + this.offsetX + "px";
+		this.calContainer.style.display    = "none";
+		this.calContainer.style.visibility = "visible";
+		this.calContainer.style.display    = "block";
+		this.calContainer.style.height     = calframe.offsetHeight;
+		if (this.calBG){ // the ugly patch for IE
+			this.calBG.style.top        = this.calContainer.style.top;
+			this.calBG.style.left       = this.calContainer.style.left;
+			this.calBG.style.display    = "none";
+			this.calBG.style.visibility = "visible";
+			this.calBG.style.display    = "block";
+			this.calBG.style.width      = this.calContainer.offsetWidth;
 			if (calframe){
-				Calendar.calBG.style.height = calframe.offsetHeight;
+				this.calBG.style.height = calframe.offsetHeight;
 			}
 		}
-		Calendar.displayed = true;
+		this.displayed = true;
 		input.focus();
 	}
 }
 
 
+//-----------------------------------------------------------------------------
 /**
- * Hide the list
+ * Hide the calendar
  */
-Calendar.hide = function()
+DatePickerControl.hide = function()
 {
-	if (Calendar.displayed){
-		Calendar.calContainer.style.visibility = "hidden";
-		Calendar.calContainer.style.left = -1000; // some problems with overlaped controls
-		Calendar.calContainer.style.top = -1000;
-		if (Calendar.calBG){ // the ugly patch for IE
-			Calendar.calBG.style.visibility = "hidden";
-			Calendar.calBG.style.left = -1000;
-			Calendar.calBG.style.top = -1000;
+	if (this.displayed){
+		this.calContainer.style.visibility = "hidden";
+		this.calContainer.style.left = -1000; // some problems with overlaped controls
+		this.calContainer.style.top = -1000;
+		if (this.calBG){ // the ugly patch for IE
+			this.calBG.style.visibility = "hidden";
+			this.calBG.style.left = -1000;
+			this.calBG.style.top = -1000;
 		}
-		Calendar.inputControl.value = Calendar.originalValue;
-		Calendar.displayed = false;
+		this.inputControl.value = this.originalValue;
+		this.displayed = false;
 	}
 }
 
 
+//-----------------------------------------------------------------------------
 /**
  * Gets the name of a numbered month
  */
-Calendar.prototype.getMonthName = function(monthNumber)
+DatePickerControl.getMonthName = function(monthNumber)
 {
-	return Calendar.Months[monthNumber];
+	return this.Months[monthNumber];
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * Obtains the days of a given month and year
  */
-Calendar.prototype.getDaysOfMonth = function(monthNo, p_year)
+DatePickerControl.getDaysOfMonth = function(monthNo, p_year)
 {
-	/*
-	Check for leap year ..
-	1.Years evenly divisible by four are normally leap years, except for...
-	2.Years also evenly divisible by 100 are not leap years, except for...
-	3.Years also evenly divisible by 400 are leap years.
-	*/
-	if ((p_year % 4) == 0){
-		if ((p_year % 100) == 0 && (p_year % 400) != 0){
-			return Calendar.DOMonth[monthNo];
-		}
-		return Calendar.lDOMonth[monthNo];
+	if (this.isLeapYear(p_year)){
+		return this.lDOMonth[monthNo];
 	}
 	else{
-		return Calendar.DOMonth[monthNo];
+		return this.DOMonth[monthNo];
 	}
 }
 
-Calendar.calcMonthYear = function(p_Month, p_Year, incr)
+
+//-----------------------------------------------------------------------------
+/**
+ * Will return an 1-D array with 1st element being the calculated month
+ * and second being the calculated year after applying the month increment/decrement 
+ * as specified by 'incr' parameter. 'incr' will normally have 1/-1 to navigate thru 
+ * the months.
+ */
+DatePickerControl.calcMonthYear = function(p_Month, p_Year, incr)
 {
-	/*
-	Will return an 1-D array with 1st element being the calculated month
-	and second being the calculated year
-	after applying the month increment/decrement as specified by 'incr' parameter.
-	'incr' will normally have 1/-1 to navigate thru the months.
-	*/
 	var ret_arr = new Array();
 
 	if (incr == -1) {
-		// B A C K W A R D
 		if (p_Month == 0) {
 			ret_arr[0] = 11;
 			ret_arr[1] = parseInt(p_Year) - 1;
@@ -390,8 +516,8 @@ Calendar.calcMonthYear = function(p_Month, p_Year, incr)
 			ret_arr[0] = parseInt(p_Month) - 1;
 			ret_arr[1] = parseInt(p_Year);
 		}
-	} else if (incr == 1) {
-		// F O R W A R D
+	} 
+	else if (incr == 1) {
 		if (p_Month == 11) {
 			ret_arr[0] = 0;
 			ret_arr[1] = parseInt(p_Year) + 1;
@@ -405,67 +531,65 @@ Calendar.calcMonthYear = function(p_Month, p_Year, incr)
 	return ret_arr;
 }
 
+
+//-----------------------------------------------------------------------------
 /**
- * Gets the calendar code
+ * Gets the DatePickerControl HTML code
  */
-Calendar.prototype.getAllCode = function()
+DatePickerControl.getAllCode = function()
 {
 	var vCode = "";
-	var vHeader_Code = "";
-	var vData_Code = "";
-
-	vCode += "<table class='calframe' id='" + Calendar.calFrameId + "'>";
-
+	vCode += "<table class='calframe' id='" + this.calFrameId + "'>";
 	vCode += this.getHeaderCode();
 	vCode += this.getDaysHeaderCode();
 	vCode += this.getDaysCode();
-
 	vCode += "</table>";
-
 	return vCode;
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * The title and nav buttons
  */
-Calendar.prototype.getHeaderCode = function()
+DatePickerControl.getHeaderCode = function()
 {
-	// Show navigation buttons
-
-	var prevMMYYYY = Calendar.calcMonthYear(Calendar.month, Calendar.year, -1);
+	var prevMMYYYY = this.calcMonthYear(this.month, this.year, -1);
 	var prevMM = prevMMYYYY[0];
 	var prevYYYY = prevMMYYYY[1];
 
-	var nextMMYYYY = Calendar.calcMonthYear(Calendar.month, Calendar.year, 1);
+	var nextMMYYYY = this.calcMonthYear(this.month, this.year, 1);
 	var nextMM = nextMMYYYY[0];
 	var nextYYYY = nextMMYYYY[1];
 
 	var gNow = new Date();
 	var vCode = "";
+	
+	var numberCols = this.weekNumber ? 8 : 7;
 
-	vCode += "<tr><td colspan='7' class='monthname'>";
-	vCode += Calendar.monthName + "&nbsp;&nbsp;";
+	vCode += "<tr><td colspan='" + numberCols + "' class='monthname'>";
+	vCode += this.monthName + "&nbsp;&nbsp;";
 
-	vCode += "<span title='" + Calendar.Months[Calendar.month] + " " + (parseInt(Calendar.year)-1) + "' class='yearbutton' ";
-	vCode += "onclick='Calendar.build(" + Calendar.month + ", " + (parseInt(Calendar.year)-1)+");return false;'>&laquo;</span>";
-	vCode += "&nbsp;" + Calendar.year + "&nbsp;";
+	vCode += "<span title='" + this.Months[this.month] + " " + (parseInt(this.year)-1) + "' class='yearbutton' ";
+	vCode += "onclick='DatePickerControl.build(" + this.month + ", " + (parseInt(this.year)-1)+");return false;'>&laquo;</span>";
+	vCode += "&nbsp;" + this.year + "&nbsp;";
 
-	vCode += "<span title='"+Calendar.Months[Calendar.month] + " " + (parseInt(Calendar.year)+1) + "' class='yearbutton' ";
-	vCode += "onclick='Calendar.build(" + Calendar.month + ", " + (parseInt(Calendar.year)+1) + ");return false;'>&raquo;</span>";
+	vCode += "<span title='" + this.Months[this.month] + " " + (parseInt(this.year)+1) + "' class='yearbutton' ";
+	vCode += "onclick='DatePickerControl.build(" + this.month + ", " + (parseInt(this.year)+1) + ");return false;'>&raquo;</span>";
 	vCode += "</td></tr>";
 
-	vCode += "<tr><td colspan='7'>";
+	vCode += "<tr><td style='border-width:0px' colspan='" + numberCols + "'>";
 	vCode += "<table class='navigation' width='100%'><tr>";
 
-	vCode += "<td class='navbutton' title='" + Calendar.Months[prevMM] + " " + prevYYYY + "'";
-	vCode += "onclick='Calendar.build(" + prevMM + ", " + prevYYYY + ");return false;'>&lt;&lt;</td>";
+	vCode += "<td class='navbutton' title='" + this.Months[prevMM] + " " + prevYYYY + "' ";
+	vCode += "onclick='DatePickerControl.build(" + prevMM + ", " + prevYYYY + ");return false;'>&lt;&lt;</td>";
 
-	vCode += "<td class='navbutton' title='" + gNow.getDate() + " " + Calendar.Months[gNow.getMonth()] + " " + gNow.getFullYear() + "'";
-	vCode += "onclick='Calendar.build(" + gNow.getMonth() + ", " + gNow.getFullYear() + ");Calendar.selectToday();return false;'>";
-	vCode += Calendar.todayText + "</td>";
+	vCode += "<td class='navbutton' title='" + gNow.getDate() + " " + this.Months[gNow.getMonth()] + " " + gNow.getFullYear() + "' ";
+	vCode += "onclick='DatePickerControl.build(" + gNow.getMonth() + ", " + gNow.getFullYear() + ");DatePickerControl.selectToday();return false;'>";
+	vCode += this.todayText + "</td>";
 
-	vCode += "<td class='navbutton' title='" + Calendar.Months[nextMM] + " " + nextYYYY + "'";
-	vCode += "onclick='Calendar.build(" + nextMM + ", " + nextYYYY +	");return false;'>&gt;&gt;</td>";
+	vCode += "<td class='navbutton' title='" + this.Months[nextMM] + " " + nextYYYY + "' ";
+	vCode += "onclick='DatePickerControl.build(" + nextMM + ", " + nextYYYY +	");return false;'>&gt;&gt;</td>";
 
 	vCode += "</tr></table>";
 	vCode += "</td></tr>";
@@ -473,76 +597,96 @@ Calendar.prototype.getHeaderCode = function()
 	return vCode;
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * The days' name headers
  */
-Calendar.prototype.getDaysHeaderCode = function()
+DatePickerControl.getDaysHeaderCode = function()
 {
 	var vCode = "";
 
 	vCode = vCode + "<tr>";
-	vCode = vCode + "<td class='dayname' width='14%'>"+Calendar.Days[0]+"</td>";
-	vCode = vCode + "<td class='dayname' width='14%'>"+Calendar.Days[1]+"</td>";
-	vCode = vCode + "<td class='dayname' width='14%'>"+Calendar.Days[2]+"</td>";
-	vCode = vCode + "<td class='dayname' width='14%'>"+Calendar.Days[3]+"</td>";
-	vCode = vCode + "<td class='dayname' width='14%'>"+Calendar.Days[4]+"</td>";
-	vCode = vCode + "<td class='dayname' width='14%'>"+Calendar.Days[5]+"</td>";
-	vCode = vCode + "<td class='dayname' width='14%'>"+Calendar.Days[6]+"</td>";
+	if (this.weekNumber){
+		vCode += "<td class='weeknumber'>&nbsp;</td>"
+	}
+	for (i=this.firstWeekDay; i<this.firstWeekDay+7; i++){
+		vCode += "<td class='dayname' width='14%'>" + this.Days[i % 7] + "</td>";
+	}
 	vCode = vCode + "</tr>";
 
 	return vCode;
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * The days numbers code
  */
-Calendar.prototype.getDaysCode = function()
+DatePickerControl.getDaysCode = function()
 {
 	var vDate = new Date();
 	vDate.setDate(1);
-	vDate.setMonth(Calendar.month);
-	vDate.setFullYear(Calendar.year);
+	vDate.setMonth(this.month);
+	vDate.setFullYear(this.year);
 
 	var vFirstDay = vDate.getDay();
 	var vDay = 1;
-	var vLastDay = this.getDaysOfMonth(Calendar.month, Calendar.year);
+	var vLastDay = this.getDaysOfMonth(this.month, this.year);
 	var vOnLastDay = 0;
 	var vCode = "";
-	Calendar.dayOfWeek = vFirstDay;
+	this.dayOfWeek = vFirstDay;
 
-	/*
-	Get day for the 1st of the requested month/year..
-	Place as many blank cells before the 1st day of the month as necessary.
-	*/
-	var prevm = Calendar.month == 0 ? 11 : Calendar.month-1;
-	var prevy = this.prevm == 11 ? Calendar.year - 1 : Calendar.year;
+	var prevm = this.month == 0 ? 11 : this.month-1;
+	var prevy = this.prevm == 11 ? this.year - 1 : this.year;
 	prevmontdays = this.getDaysOfMonth(prevm, prevy);
-	vCode = vCode + "<tr>";
-	for (i=0; i<vFirstDay; i++) {
+	vFirstDay = (vFirstDay == 0 && this.firstWeekDay) ? 7 : vFirstDay;
+	
+	if (this.weekNumber){
+		var week = this.getWeekNumber(this.year, this.month, 1);
+	}
+	vCode += "<tr>";
+	if (this.weekNumber){
+		vCode += "<td class='weeknumber'>" + week + "</td>";
+	}
+	
+	// Write the last days of previous month
+	for (i=this.firstWeekDay; i<vFirstDay; i++) {
 		vCode = vCode + "<td class='dayothermonth'>" + (prevmontdays-vFirstDay+i+1) + "</td>";
 	}
 
 	// Write rest of the 1st week
-	for (j=vFirstDay; j<7; j++) {
-		classname = this.getDayClass(vDay, j);
-		vCode = vCode + "<td class='" + classname + "' class_orig='" + classname + "' " +
-			"onClick='Calendar.writeDate(" + vDay + ")' id='" + Calendar.dayIdPrefix + vDay + "'>" +
-			vDay +
-			"</td>";
-		vDay = vDay + 1;
+	for (j=vFirstDay-this.firstWeekDay; j<7; j++) {
+		if (this.isInRange(vDay)){
+			classname = this.getDayClass(vDay, j);
+			vCode += "<td class='" + classname + "' class_orig='" + classname + "' " +
+				"onClick='DatePickerControl.writeDate(" + vDay + ")' id='" + this.dayIdPrefix + vDay + "'>" + vDay + "</td>";
+		}
+		else{
+			vCode += "<td class='dayothermonth'>" + vDay + "</td>";
+		}
+		vDay++;
 	}
 	vCode = vCode + "</tr>";
 
 	// Write the rest of the weeks
 	for (k=2; k<7; k++){
-		vCode = vCode + "<TR>";
+		vCode = vCode + "<tr>";
+		if (this.weekNumber){
+			week++;
+			if (week >= 53) week = 1;
+			vCode += "<td class='weeknumber'>" + week + "</td>";
+		}
 		for (j=0; j<7; j++){
-			classname = this.getDayClass(vDay, j);
-			vCode = vCode + "<td class='" + classname  + "' class_orig='" +  classname + "' " +
-				"onClick='Calendar.writeDate(" + vDay + ")' id='" + Calendar.dayIdPrefix + vDay + "'>" +
-				vDay +
-				"</td>";
-			vDay = vDay + 1;
+			if (this.isInRange(vDay)){
+				classname = this.getDayClass(vDay, j);
+				vCode += "<td class='" + classname  + "' class_orig='" +  classname + "' " +
+					"onClick='DatePickerControl.writeDate(" + vDay + ")' id='" + this.dayIdPrefix + vDay + "'>" + vDay + "</td>";
+			}
+			else{
+				vCode += "<td class='dayothermonth'>" + vDay + "</td>";
+			}
+			vDay++;
 			if (vDay > vLastDay){
 				vOnLastDay = 1;
 				break;
@@ -550,45 +694,42 @@ Calendar.prototype.getDaysCode = function()
 		}
 
 		if (j == 6)
-			vCode = vCode + "</tr>";
+			vCode += "</tr>";
 		if (vOnLastDay == 1)
 			break;
 	}
 
-	// Fill up the rest of last week with proper blanks, so that we get proper square blocks
+	// Fill up the rest of last week
 	for (m=1; m<(7-j); m++){
-		if (Calendar.yearly)
-			vCode = vCode + "<td class='dayothermonth'></td>";
-		else
-			vCode = vCode + "<td class='dayothermonth'>" + m + "</td>";
+		vCode += "<td class='dayothermonth'>" + m + "</td>";
 	}
 
 	return vCode;
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * Get the class according if is 'today', the 'current' date at the control,
  * a 'weekend' day, or a 'normal' day.
  * @param vday The number of the day in the current month and year
- * @param dayofweek The number of the day within the week (1..7)
+ * @param dayofweek The number of the day within the week (0..6)
  */
-Calendar.prototype.getDayClass = function(vday, dayofweek)
+DatePickerControl.getDayClass = function(vday, dayofweek)
 {
 	var gNow      = new Date();
 	var vNowDay   = gNow.getDate();
 	var vNowMonth = gNow.getMonth();
 	var vNowYear  = gNow.getFullYear();
 
-	/*if (Calendar.currentDate && vday == Calendar.currentDate.getDate() && Calendar.month == Calendar.currentDate.getMonth() && Calendar.year == Calendar.currentDate.getFullYear()){
-		return "current";
-	}
-	else*/
-	if (vday == vNowDay && Calendar.month == vNowMonth && Calendar.year == vNowYear){
+	if (vday == vNowDay && this.month == vNowMonth && this.year == vNowYear){
 		return "today";
 	}
 	else{
-		for (i=0; i<Calendar.weekend.length; i++) {
-			if (dayofweek == Calendar.weekend[i]){
+		// transform the day acording the specified firts day of week
+		var realdayofweek = (7 + dayofweek + this.firstWeekDay) % 7;
+		for (i=0; i<this.weekend.length; i++){
+			if (realdayofweek == this.weekend[i]){
 				return "weekend";
 			}
 		}
@@ -596,22 +737,25 @@ Calendar.prototype.getDayClass = function(vday, dayofweek)
 	}
 }
 
+
+//-----------------------------------------------------------------------------
 /**
- * Gets the date string according to Calendar.format
- * The number of the day in the current month and year
+ * Gets the date string according to calendar's format
+ * @param p_day The number of the day in the current month and year
  */
-Calendar.prototype.formatData = function(p_day)
+DatePickerControl.formatData = function(p_day)
 {
 	var vData;
-	var vMonth = 1 + Calendar.month;
+	var vMonth = 1 + this.month;
 	vMonth = (vMonth.toString().length < 2) ? "0" + vMonth : vMonth;
-	var vMon = this.getMonthName(Calendar.month).substr(0,3).toUpperCase();
-	var vFMon = this.getMonthName(Calendar.month).toUpperCase();
-	var vY4 = new String(Calendar.year);
-	var vY2 = new String(Calendar.year).substr(2,2);
+	var vMon = this.getMonthName(this.month).substr(0,3).toUpperCase();
+	var vFMon = this.getMonthName(this.month).toUpperCase();
+	var vY4 = new String(this.year);
+	var vY2 = new String(this.year).substr(2,2);
 	var vDD = (p_day.toString().length < 2) ? "0" + p_day : p_day;
 
-	switch (Calendar.format) {
+	switch (this.format) {
+
 		case "MM/DD/YYYY" :
 			vData = vMonth + "/" + vDD + "/" + vY4;
 			break;
@@ -669,6 +813,13 @@ Calendar.prototype.formatData = function(p_day)
 		case "DD-MM-YY" :
 			vData = vDD + "-" + vMonth + "-" + vY2;
 			break;
+		
+		case "DD.MM.YYYY" :
+			vData = vDD + "." + vMonth + "." + vY4;
+			break;
+		case "DD.MM.YY" :
+			vData = vDD + "." + vMonth + "." + vY2;
+			break;
 
 		default :
 			vData = vMonth + "/" + vDD + "/" + vY4;
@@ -677,135 +828,241 @@ Calendar.prototype.formatData = function(p_day)
 	return vData;
 }
 
+
+//-----------------------------------------------------------------------------
+/**
+ * Try to get the date from the control according to the format:
+ * This function doesn't work with named months
+ * @return An object of class Date with the current date in the control (if succesfull) or
+ *  today if fails.
+ */
+DatePickerControl.getDateFromControl = function(ctrl)
+{
+	if (ctrl == null) ctrl = this.inputControl;
+	var value = ctrl.value;
+	var format = ctrl.getAttribute("datepicker_format");
+	return this.getDateFromString(value, format.toString());
+}
+
+
+//-----------------------------------------------------------------------------
+/**
+ * Gets a Date objects from a string given a format.
+ * @param strdate The string with the date.
+ * @param format The date's format.
+ * @return A Date object with the date of string according to the format, or
+ * today if string is empty or non-valid.
+ */
+DatePickerControl.getDateFromString = function(strdate, format) 
+{
+	var aDate = new Date();
+	var day, month, year;
+	
+	if (strdate == "" || format == "") return aDate;
+	strdate = strdate.replace("/", "@").replace("/", "@");
+	strdate = strdate.replace("-", "@").replace("-", "@");
+	strdate = strdate.replace(".", "@").replace(".", "@");
+	// check again
+	if (strdate.indexOf("/")>=0 || strdate.indexOf("-")>=0 || strdate.indexOf(".")>=0) return aDate;
+	// validate all other stuff
+	var data = strdate.split("@");
+	if (data.length != 3) return aDate;
+	for (i=0; i<3; i++){
+		data[i] = parseFloat(data[i]);
+		if (isNaN(data[i])) return aDate;
+	}
+	if (format.substring(0,1).toUpperCase() == "D"){
+		aDate.setDate(data[0]);
+		aDate.setMonth(data[1]-1);
+		aDate.setFullYear(this.yearTwo2Four(data[2]));
+	}
+	else if (format.substring(0,1).toUpperCase() == "Y"){
+		aDate.setDate(data[2]);
+		aDate.setMonth(data[1]-1);
+		aDate.setFullYear(this.yearTwo2Four(data[0]));
+	}
+	else if (format.substring(0,1).toUpperCase() == "M"){
+		aDate.setDate(data[1]);
+		aDate.setMonth(data[0]-1);
+		aDate.setFullYear(this.yearTwo2Four(data[2]));
+	}
+	return aDate;
+}
+ 
+
+//-----------------------------------------------------------------------------
+/**
+ * Transform a two digits year into a four digits year.
+ * All year from 30 to 99 are trated as 19XX, year before
+ * 30 are trated as 20XX
+ */
+DatePickerControl.yearTwo2Four = function(year)
+{
+	if (year < 99){
+		if (year >= 30){
+			year += 1900;
+		}
+		else{
+			year += 2000;
+		}
+	}
+	return year;
+}
+ 
+
+//-----------------------------------------------------------------------------
 /**
  * Writes the specified date in the control and close the calendar.
  */
-Calendar.writeDate = function(day)
+DatePickerControl.writeDate = function(day)
 {
-	var d = Calendar.prototype.formatData(day);
-	Calendar.inputControl.value = d;
-	Calendar.originalValue = d;
-	Calendar.hide();
-	Calendar.inputControl.focus();
+	var d = this.formatData(day);
+	this.inputControl.value = d;
+	this.originalValue = d;
+	this.hide();
+	if (DatePickerControl.onSelect) DatePickerControl.onSelect(this.inputControl.id);
+	this.firstFocused = true;
+	this.inputControl.focus();
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * Writes the current date in the control
  */
-Calendar.writeCurrentDate = function()
+DatePickerControl.writeCurrentDate = function()
 {
-	var d = Calendar.prototype.formatData(Calendar.currentDay);
-	Calendar.inputControl.value = d;
+	var d = this.formatData(this.currentDay);
+	this.inputControl.value = d;
 }
 
 
+//-----------------------------------------------------------------------------
 /**
- * Creates and write the calendar code
+ * Creates and write the calendar's code
  * @param m The month to build
  * @param y The year to build
  */
-Calendar.build = function(m, y)
+DatePickerControl.build = function(m, y)
 {
+	var bkm = this.month;
+	var bky = this.year;
+	var calframe = document.getElementById(this.calFrameId);
 	if (m==null){
 		var now = new Date();
-		Calendar.month     = now.getMonth();
-		Calendar.monthName = Calendar.Months[Calendar.month];
-		Calendar.year      = now.getFullYear();
+		this.month = now.getMonth();
+		this.year  = now.getFullYear();
 	}
 	else{
-		Calendar.month     = m;
-		Calendar.year      = y;
-		Calendar.monthName = Calendar.Months[Calendar.month];
+		this.month = m;
+		this.year  = y;
 	}
-	var code = Calendar.prototype.getAllCode();
-	writeLayer(Calendar.calContainer.id, null, code);
-	Calendar.inputControl.focus();
-	Calendar.selectDay(Calendar.currentDay);
-
-	if (Calendar.calBG){ // the ugly patch for IE
-		// adjust the height according to the container table
-		calframe = document.getElementById(Calendar.calFrameId);
-		if (calframe){
-			Calendar.calBG.style.height = calframe.offsetHeight;
-		}
+	// validate range
+	if (!this.isInRange(null)){
+		this.month = bkm;
+		this.year  = bky;
 	}
+	if (!this.isInRange(this.currentDay)){
+		if (this.minDate && this.currentDay < this.minDate.getDate()) this.currentDay = this.minDate.getDate();
+		if (this.maxDate && this.currentDay > this.maxDate.getDate()) this.currentDay = this.maxDate.getDate();
+	}
+	this.monthName = this.Months[this.month];
+	var code = this.getAllCode();
+	writeLayer(this.calContainer.id, null, code);
+	if (this.calContainer && calframe) this.calContainer.style.height = calframe.offsetHeight;
+	this.firstFocused = true;
+	this.inputControl.focus();
+	this.selectDay(this.currentDay);
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * Build the prev month calendar
  */
-Calendar.buildPrev = function()
+DatePickerControl.buildPrev = function()
 {
-	if (!Calendar.displayed) return;
-	var prevMMYYYY = Calendar.calcMonthYear(Calendar.month, Calendar.year, -1);
+	if (!this.displayed) return;
+	var prevMMYYYY = this.calcMonthYear(this.month, this.year, -1);
 	var prevMM = prevMMYYYY[0];
 	var prevYYYY = prevMMYYYY[1];
-	Calendar.build(prevMM, prevYYYY);
+	this.build(prevMM, prevYYYY);
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * Build the next month calendar
  */
-Calendar.buildNext = function()
+DatePickerControl.buildNext = function()
 {
-	if (!Calendar.displayed) return;
-	var nextMMYYYY = Calendar.calcMonthYear(Calendar.month, Calendar.year, 1);
+	if (!this.displayed) return;
+	var nextMMYYYY = this.calcMonthYear(this.month, this.year, 1);
 	var nextMM = nextMMYYYY[0];
 	var nextYYYY = nextMMYYYY[1];
-	Calendar.build(nextMM, nextYYYY);
+	this.build(nextMM, nextYYYY);
 }
 
 
+//-----------------------------------------------------------------------------
 /**
  * Today button action
  */
-Calendar.selectToday = function()
+DatePickerControl.selectToday = function()
 {
 	var now = new Date();
 	var today = now.getDate();
-	if (Calendar.closeOnTodayBtn){
-		Calendar.currentDay = today;
-		Calendar.writeDate(Calendar.currentDay);
+	if (!this.isInRange(today)) return;
+	if (this.closeOnTodayBtn){
+		this.currentDay = today;
+		this.writeDate(this.currentDay);
 	}
 	else{
-		Calendar.selectDay(today);
+		this.selectDay(today);
 	}
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * Select a specific day
  */
-Calendar.selectDay = function(day)
+DatePickerControl.selectDay = function(day)
 {
-	if (!Calendar.displayed) return;
-	var n = Calendar.currentDay;
-	var max = Calendar.prototype.getDaysOfMonth(Calendar.month, Calendar.year);
+	if (!this.displayed) return;
+	if (!this.isInRange(day)){
+		return;
+	}
+	var n = this.currentDay;
+	var max = this.getDaysOfMonth(this.month, this.year);
 	if (day > max) return;
-	var newDayObject = document.getElementById(Calendar.dayIdPrefix+day);
-	var currentDayObject = document.getElementById(Calendar.dayIdPrefix+Calendar.currentDay);
+	var newDayObject = document.getElementById(this.dayIdPrefix+day);
+	var currentDayObject = document.getElementById(this.dayIdPrefix+this.currentDay);
 	if (currentDayObject){
 		currentDayObject.className = currentDayObject.getAttribute("class_orig");
 	}
 	if (newDayObject){
 		newDayObject.className = "current";
-		Calendar.currentDay = day;
-		Calendar.writeCurrentDate();
+		this.currentDay = day;
+		this.writeCurrentDate();
 	}
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * Select the prev week day
  * @param decr Use 1 for yesterday or 7 for prev week
  */
-Calendar.selectPrevDay = function(decr)
+DatePickerControl.selectPrevDay = function(decr)
 {
-	if (!Calendar.displayed) return;
-	var n = Calendar.currentDay;
-	var max = Calendar.prototype.getDaysOfMonth(Calendar.month, Calendar.year);
+	if (!this.displayed) return;
+	var n = this.currentDay;
+	var max = this.getDaysOfMonth(this.month, this.year);
 	var prev = n - decr;
 	if ( prev <= 0 ){
 		if (decr == 7){
-			n = (n + Calendar.dayOfWeek) + 28 - Calendar.dayOfWeek;
+			n = (n + this.dayOfWeek) + 28 - this.dayOfWeek;
 			n--;
 			prev = n > max ? n-7 : n;
 		}
@@ -813,22 +1070,24 @@ Calendar.selectPrevDay = function(decr)
 			prev = max;
 		}
 	}
-	Calendar.selectDay(prev);
+	this.selectDay(prev);
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * Select the next week day
  * @param decr Use 1 for tomorrow or 7 for next week
  */
-Calendar.selectNextDay = function(incr)
+DatePickerControl.selectNextDay = function(incr)
 {
-	if (!Calendar.displayed) return;
-	var n = Calendar.currentDay;
-	var max = Calendar.prototype.getDaysOfMonth(Calendar.month, Calendar.year);
+	if (!this.displayed) return;
+	var n = this.currentDay;
+	var max = this.getDaysOfMonth(this.month, this.year);
 	var next = n + incr;
 	if ( next > max ){
 		if (incr == 7){
-			n = ((n + Calendar.dayOfWeek) % 7) - Calendar.dayOfWeek;
+			n = ((n + this.dayOfWeek) % 7) - this.dayOfWeek;
 			next = n < 0 ? n+7 : n;
 			next++;
 		}
@@ -836,236 +1095,590 @@ Calendar.selectNextDay = function(incr)
 			next = 1;
 		}
 	}
-	Calendar.selectDay(next);
+	this.selectDay(next);
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * Show the calendar for an edit control
  */
-Calendar.showEdit = function(edit)
+DatePickerControl.showForEdit = function(edit)
 {
-	if (Calendar.displayed) return;
+	if (this.displayed) return;
 	if (edit == null) return;
-	var idbtn = Calendar.buttonIdPrefix + edit.id;
-	var button = document.getElementById(idbtn);
-	Calendar.inputControl = edit;
-	Calendar.originalValue = edit.value;
-	// and the format
-	var format = button.getAttribute("datepicker_format");
-	if (format == null) format = Calendar.defaultFormat;
-	Calendar.format = format;
-	// build with the date
-	if (edit.value == ""){
-		Calendar.currentDate = null;
-		Calendar.build(null, null);
-		Calendar.currentDay  = 1;
+	if (edit.disabled) return;
+	this.inputControl  = edit;
+	this.originalValue = edit.value;
+	// the format
+	var format = this.inputControl.getAttribute("datepicker_format");
+	if (format == null) format = this.defaultFormat;
+	this.format = format;
+	// build with the current date in the control?
+	if (this.validate(edit.value, format)){
+		var date = this.getDateFromControl();
+		this.currentDate = date;
+		this.build(date.getMonth(), date.getFullYear());
+		this.currentDay  = date.getDate();
 	}
 	else{
-		var date = Calendar.prototype.getDateFromControl();
-		Calendar.currentDate = date;
-		Calendar.build(date.getMonth(), date.getFullYear());
-		Calendar.currentDay  = date.getDate();
+		edit.value = "";
+		this.originalValue = "";
+		this.currentDate = null;
+		if (this.defaultTodaySel){
+			this.currentDay = new Date().getDate();
+		}
+		else{
+			this.currentDay = 1;
+		}
+		this.build(null, null);
 	}
-	var currentDayObject = document.getElementById(Calendar.dayIdPrefix+Calendar.currentDay);
+	var currentDayObject = document.getElementById(this.dayIdPrefix+this.currentDay);
 	if (currentDayObject) currentDayObject.className = "current";
-	Calendar.writeCurrentDate();
-	// and show
-	Calendar.show();
+	this.writeCurrentDate();
+	// and finally
+	this.show();
 }
 
 
+//-----------------------------------------------------------------------------
+/** 
+ * Determine if a given day (with current month and year) is in range
+ * according to the min and max limit.
+ * @param day The number of the day; if null then the current month is validated.
+ */
+DatePickerControl.isInRange = function(day)
+{
+	if (!this.minDate && !this.maxDate) return true;
+	if (day){
+		var aDate = new Date();
+		aDate.setFullYear(this.year);
+		aDate.setMonth(this.month);
+		aDate.setDate(day);
+		if (this.minDate){
+			if (this.compareDates(aDate, this.minDate) < 0) return false;
+		}
+		if (this.maxDate){
+			if (this.compareDates(aDate, this.maxDate) > 0) return false;
+		}
+	}
+	else{ // validate only the month.
+		var currentym = parseInt(this.year.toString() + (this.month < 10 ? "0"+this.month.toString() : this.month.toString()));
+		var m;
+		if (this.minDate){
+			m = this.minDate.getMonth();
+			var minym = parseInt(this.minDate.getFullYear().toString() + (m < 10 ? "0"+m.toString() : m.toString()));
+			if (currentym < minym) return false;
+		}
+		if (this.maxDate){
+			m = this.maxDate.getMonth();
+			var maxym = parseInt(this.maxDate.getFullYear().toString() + (m < 10 ? "0"+m.toString() : m.toString()));
+			if (currentym > maxym) return false;
+		}
+	}
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------
+/**
+ * Compare two dates. We cannot use Date getTime() mehtod  in some specific cases,
+ * so we use a trick with the string year+month+day transformed in a number.
+ * @return '<0' if d1 < d2     '0' if d1 = d2     '>0' if d1 > d2
+ */
+DatePickerControl.compareDates = function(d1, d2)
+{
+	var m = d1.getMonth();
+	var d = d1.getDate();
+	var s1 = d1.getFullYear().toString() + (m<10 ? "0"+m.toString() : m.toString()) + (d<10 ? "0"+d.toString() : d.toString());
+	m = d2.getMonth();
+	d = d2.getDate();
+	var s2 = d2.getFullYear().toString() + (m<10 ? "0"+m.toString() : m.toString()) + (d<10 ? "0"+d.toString() : d.toString());
+	var n1 = parseInt(s1);
+	var n2 = parseInt(s2);
+	return n1-n2;
+}
+
+
+//-----------------------------------------------------------------------------
+/**
+ * Validate a string according to a date format.
+ * Portions of code from: http://www.rgagnon.com/jsdetails/js-0063.html
+ * @param strdate The string with the date.
+ * @param format The format to validate.
+ * @return true if succesfull or false otherwise
+ */
+DatePickerControl.validate = function(strdate, format)
+{
+    var dateRegExp;
+	var separator;
+	var d, m, y;
+	var od = this.currentDay, om = this.month, oy = this.year;
+	
+	if (strdate == "") return false;
+	
+	// use the correct regular expresion...
+	if (format.substring(0,1).toUpperCase() == "D"){
+		dateRegExp = /^\d{1,2}(\-|\/|\.)\d{1,2}\1\d{2,4}$/
+	}
+	else if (format.substring(0,1).toUpperCase() == "Y"){
+		dateRegExp = /^\d{2,4}(\-|\/|\.)\d{1,2}\1\d{1,2}$/
+	}
+	else if (format.substring(0,1).toUpperCase() == "M"){
+		dateRegExp = /^\d{1,2}(\-|\/|\.)\d{1,2}\1\d{2,4}$/
+	}
+
+	// is ok at least with the format?
+	if (!dateRegExp.test(strdate)){
+		return false;
+	}
+	
+	// chek for a valid day month day combination
+	separator = (strdate.indexOf("/") > 1) ? "/" : ((strdate.indexOf("-") > 1) ? "-" : ".");
+	var datearray = strdate.split(separator);
+	
+	// get the number of date elements
+	if (format.substring(0,1).toUpperCase() == "D"){
+		d = parseFloat(datearray[0]);
+		m = parseFloat(datearray[1]);
+		y = parseFloat(datearray[2]);
+	}
+	else if (format.substring(0,1).toUpperCase() == "Y"){
+		d = parseFloat(datearray[2]);
+		m = parseFloat(datearray[1]);
+		y = parseFloat(datearray[0]);
+	}
+	else if (format.substring(0,1).toUpperCase() == "M"){
+		d = parseFloat(datearray[1]);
+		m = parseFloat(datearray[0]);
+		y = parseFloat(datearray[2]);
+	}	
+	// is a valid month?
+	if (m<1 || m>12) return false;
+	//check if month value and day value agree
+	if (d > this.getDaysOfMonth(m-1)) return false;
+	
+	// ok, date is valid... but is it in range?
+	this.month = m;
+	this.year  = y;
+	var res = this.isInRange(d);
+	this.month = om;
+	this.year  = oy;
+	return res;
+}
+
+
+//-----------------------------------------------------------------------------
+/**
+ * Check if a year is leap:
+ * 1.Years evenly divisible by four are normally leap years, except for...
+ * 2.Years also evenly divisible by 100 are not leap years, except for...
+ * 3.Years also evenly divisible by 400 are leap years.
+ * @return true if the year is leap or false otherwise.
+ */
+DatePickerControl.isLeapYear = function(year)
+{
+	if ((year % 4) == 0){
+		if ((year % 100) == 0 && (year % 400) != 0){
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------
 /**
  * Click event for calendar button
  */
-Calendar.onButtonClick = function(event)
+function DPC_onButtonClick(event){DatePickerControl.onButtonClick(event);}
+DatePickerControl.onButtonClick = function(event)
 {
-	if (!Calendar.displayed){
+	if (!this.displayed){
 		// get the button
 		if (event == null) event = window.event;
 		var button = (event.srcElement) ? event.srcElement : event.originalTarget;
 		// gets the associated input:
 		var input = document.getElementById(button.getAttribute("datepicker_inputid"));
-		Calendar.showEdit(input);
+		this.showForEdit(input);
 	}
 	else{
-		Calendar.hide();
+		this.hide();
 	}
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * Click event for calendar layer.
  */
-Calendar.onContainerClick = function(event)
+function DPC_onContainerClick(event){DatePickerControl.onContainerClick(event);}
+DatePickerControl.onContainerClick = function(event)
 {
 	if (event == null) event = window.event;
-	if (Calendar.hideTimeout){
-		clearTimeout(Calendar.hideTimeout);
-		Calendar.hideTimeout = null;
+	if (this.hideTimeout){
+		clearTimeout(this.hideTimeout);
+		this.hideTimeout = null;
 	}
-	Calendar.inputControl.focus();
+	this.inputControl.focus();
 	return false;
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * Key-up event for edit controls as date-pickers
  */
-Calendar.onEditControlKeyUp = function(event)
+function DPC_onEditControlKeyUp(event){DatePickerControl.onEditControlKeyUp(event);}
+DatePickerControl.onEditControlKeyUp = function(event)
 {
 	if (event == null) event = window.event;
-	var edit = (event.srcElement) ? event.srcElement : event.originalTarget;
+	var edit = event.srcElement ? event.srcElement : event.originalTarget;
+	var kc   = event.charCode ? event.charCode : event.which ? event.which : event.keyCode;
 	//alert(event.keyCode);
-	switch (event.keyCode){
+	switch (kc){
 		case 37: // left arrow key
-			Calendar.selectPrevDay(1);
+			this.selectPrevDay(1);
 			break;
 
 		case 38: // up arrow key
-			Calendar.selectPrevDay(7);
+			this.selectPrevDay(7);
 			break;
 
 		case 39: // right arrow key
-			Calendar.selectNextDay(1);
+			this.selectNextDay(1);
 			break;
 
 		case 40: // down arrow key
-			if (!Calendar.displayed){
-				Calendar.showEdit(edit);
+			if (!this.displayed){
+				this.showForEdit(edit);
 			}
 			else{
-				Calendar.selectNextDay(7);
+				this.selectNextDay(7);
 				break;
 			}
 			break;
 
 		case 27: // escape key
-			Calendar.hide();
+			this.hide();
 			break;
 
 		case 33: // repag key
-			Calendar.buildPrev();
+			if ((event.modifiers & Event.SHIFT_MASK) || (event.shiftKey)){
+				this.build(this.month, parseInt(this.year)-1);
+			}
+			else{
+				this.buildPrev();
+			}
 			break;
 
 		case 34: // avpag key
-			Calendar.buildNext();
+			if ((event.modifiers & Event.SHIFT_MASK) || (event.shiftKey)){
+				this.build(this.month, parseInt(this.year)+1);
+			}
+			else{
+				this.buildNext();
+			}
 			break;
 
 		case 13: // enter-key (forms without submit buttons)
-			if (Calendar.displayed && Calendar.currentDay > 0 && Calendar.submitByKey){
-				Calendar.writeDate(Calendar.currentDay);
+			if (this.displayed && this.currentDay > 0 && this.submitByKey){
+				this.writeDate(this.currentDay);
 			}
 			break;
 	}
 	return false;
 }
 
+
+//-----------------------------------------------------------------------------
 /**
  * Key-down event for edit controls as date-pickers
  */
-Calendar.onEditControlKeyDown = function(event)
+function DPC_onEditControlKeyDown(event){DatePickerControl.onEditControlKeyDown(event);}
+DatePickerControl.onEditControlKeyDown = function(event)
 {
 	if (event == null) event = window.event;
-	var edit = (event.srcElement) ? event.srcElement : event.originalTarget;
+	var edit = event.srcElement ? event.srcElement : event.originalTarget;
+	var kc   = event.charCode ? event.charCode : event.which ? event.which : event.keyCode;
 	//alert(event.keyCode);
-	switch (event.keyCode){
+	if ( kc >= 65 && kc <= 90 ){ // letters
+		if (event.stopPropagation) event.stopPropagation();
+		if (event.preventDefault)  event.preventDefault();
+		event.returnValue  = false;
+		event.cancelBubble = true;
+		return false;
+	}	
+	switch (kc){
 		case 13: // enter key
-			Calendar.submitByKey = true;
+			this.submitByKey = true;
 			break;
 		case 9:  // tab key
 		case 32: // space-bar key
-			if (Calendar.displayed && Calendar.currentDay > 0){
-				Calendar.writeDate(Calendar.currentDay);
+			if (this.displayed && this.currentDay > 0){
+				this.writeDate(this.currentDay);
 			}
 			break;
 	}
 }
 
+
+//-----------------------------------------------------------------------------
 /**
- * blur event for edit controls as date-pickers
+ * Key-press event for edit controls as date-pickers
  */
-Calendar.onEditControlBlur = function(event)
+function DPC_onEditControlKeyPress(event){DatePickerControl.onEditControlKeyPress(event);}
+DatePickerControl.onEditControlKeyPress = function(event)
 {
 	if (event == null) event = window.event;
-	if (!Calendar.hideTimeout){
-		Calendar.hideTimeout = setTimeout("Calendar.hide()", Calendar.HIDE_TIMEOUT);
-	}
+	var edit = event.srcElement ? event.srcElement : event.originalTarget;
+	var kc   = event.charCode ? event.charCode : event.which ? event.which : event.keyCode;
+	if (!((kc < 32) || (kc > 44 && kc < 58))){
+		if (event.stopPropagation) event.stopPropagation();
+		if (event.preventDefault)  event.preventDefault();
+		event.returnValue  = false;
+		event.cancelBubble = true;
+		return false;
+	}	
 }
 
+
+//-----------------------------------------------------------------------------
 /**
- * focus event for edit controls as date-pickers
+ * Blur event for edit controls as date-pickers
  */
-Calendar.onEditControlFocus = function(event)
+function DPC_onEditControlBlur(event){DatePickerControl.onEditControlBlur(event);}
+DatePickerControl.onEditControlBlur = function(event)
+{
+	if (event == null) event = window.event;
+	if (!this.hideTimeout){
+		this.hideTimeout = setTimeout("DatePickerControl.hide()", this.HIDE_TIMEOUT);
+	}
+	this.firstFocused  = false;
+	this.hideCauseBlur = true;
+}
+
+
+//-----------------------------------------------------------------------------
+/**
+ * Change event for edit controls as date-pickers
+ */
+function DPC_onEditControlChange(event){DatePickerControl.onEditControlChange(event);}
+DatePickerControl.onEditControlChange = function(event)
 {
 	if (event == null) event = window.event;
 	var edit = (event.srcElement) ? event.srcElement : event.originalTarget;
-	if (Calendar.inputControl && Calendar.inputControl.id != edit.id){
-		Calendar.hide();
-	}
-	else if (Calendar.hideTimeout){
-		clearTimeout(Calendar.hideTimeout);
-		Calendar.hideTimeout = null;
+	if (edit.value == "") return;
+	var format = edit.getAttribute("datepicker_format");
+	if (!this.validate(edit.value, format)){
+		setTimeout("e = document.getElementById('"+edit.id+"'); e.value=''; e.focus()", 10);
 	}
 }
 
+
+//-----------------------------------------------------------------------------
 /**
- * Form's onSubmit event
+ * Focus event for edit controls as date-pickers
  */
-Calendar.onFormSubmit = function(event)
+function DPC_onEditControlFocus(event){DatePickerControl.onEditControlFocus(event);}
+DatePickerControl.onEditControlFocus = function(event)
 {
-	if (Calendar.submitByKey){
-		Calendar.submitByKey = false;
-		if (Calendar.displayed && Calendar.currentDay > 0){
-			Calendar.writeDate(Calendar.currentDay);
+	if (event == null) event = window.event;
+	var edit = (event.srcElement) ? event.srcElement : event.originalTarget;
+	
+	// get the date range
+	var format = edit.getAttribute("datepicker_format");
+	var min = edit.getAttribute("datepicker_min");
+	this.minDate = min ? this.getDateFromString(min, format) : null;
+	var max = edit.getAttribute("datepicker_max");
+	this.maxDate = max ? this.getDateFromString(max, format) : null;
+	if (this.maxDate && this.minDate){
+		if (this.maxDate.getTime() < this.minDate.getTime()){
+			var tmp = this.maxDate;
+			this.maxDate = this.minDate;
+			this.minDate = tmp;
+		}
+	}
+	
+	if ((!this.displayed || this.hideCauseBlur) && this.autoShow && !this.firstFocused){
+		clearTimeout(this.hideTimeout);
+		this.hideTimeout   = null;
+		this.firstFocused  = true;
+		if (this.hideCauseBlur){
+			this.hideCauseBlur = false;
+			this.hide();
+		}
+		this.showForEdit(edit);
+	}
+	else if (this.inputControl && this.inputControl.id != edit.id){
+		this.hide();
+	}
+	else if (this.hideTimeout){
+		clearTimeout(this.hideTimeout);
+		this.hideTimeout = null;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+/**
+ * Form's submit event
+ */
+function DPC_onFormSubmit(event){DatePickerControl.onFormSubmit(event);}
+DatePickerControl.onFormSubmit = function(event)
+{
+	if (this.submitByKey){
+		this.submitByKey = false;
+		if (this.displayed && this.currentDay > 0){
+			this.writeDate(this.currentDay);
 			if (event == null) event = window.event;
 			var theForm = (event.srcElement) ? event.srcElement : event.originalTarget;
-			event.returnValue = false
-			if (event.preventDefault){
-				event.preventDefault();
-			}
+			if (event.stopPropagation) event.stopPropagation();
+			if (event.preventDefault)  event.preventDefault();
+			event.returnValue  = false;
+			event.cancelBubble = true;
 			return false;
+		}
+	}
+	this.reformatOnSubmit();
+}
+
+
+//-----------------------------------------------------------------------------
+/** 
+ * Reformat all dates to the current onSubmit date format
+ */
+DatePickerControl.reformatOnSubmit = function()
+{
+	if (this.submitFormat == "") return true;
+	var inputControls = document.getElementsByTagName("input"); 
+	var inputsLength  = inputControls.length;
+	var i;
+	for (i=0; i<inputsLength; i++){
+		if (inputControls[i].type.toLowerCase() == "text"){
+			var editctrl  = inputControls[i];
+			if (editctrl.value == "") continue;
+			var isdpc = editctrl.getAttribute("isdatepicker");
+			if (isdpc && isdpc == "true"){
+				var thedate = this.getDateFromControl(editctrl);
+				var res = this.submitFormat.replace("DD", thedate.getDate());
+				var mo  = thedate.getMonth() + 1;
+				res = res.replace("MM", mo.toString());
+				if (this.submitFormat.indexOf("YYYY") >= 0){
+					res = res.replace("YYYY", thedate.getFullYear());
+				}
+				else{
+					res = res.replace("YY", thedate.getFullYear());
+				}
+				editctrl.value = res;
+			}
+		}
+	}
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------
+/**
+ * Replacement for submit method of the form.
+ */
+function DPC_formSubmit()
+{
+	var res = DatePickerControl.reformatOnSubmit();
+	if (this.submitOrig){
+		res = this.submitOrig();
+	}
+	return res;
+}
+
+
+//-----------------------------------------------------------------------------
+/**
+ * Window resize event.
+ */
+function DPC_onWindowResize(event){DatePickerControl.onWindowResize(event);}
+DatePickerControl.onWindowResize = function(event)
+{
+	this.relocate();
+	this.relocateButtons();
+}
+
+
+//-----------------------------------------------------------------------------
+/**
+ * Relocate buttons
+ */
+DatePickerControl.relocateButtons = function()
+{
+	var divElements = document.getElementsByTagName("div");
+	for (key in divElements){
+		if (divElements[key].id && divElements[key].id.indexOf(this.buttonIdPrefix) == 0){
+			var calButton = divElements[key];
+			if (calButton.style.display == 'none') continue;
+			var input = document.getElementById(calButton.getAttribute("datepicker_inputid"));
+			if (input.style.display == 'none' || input.offsetTop == 0) continue;
+			var nTop = getObject.getSize("offsetTop", input);
+			var nLeft = getObject.getSize("offsetLeft", input);
+			calButton.style.top = (nTop + Math.floor((input.offsetHeight-calButton.offsetHeight)/2) + this.buttonOffsetY) + "px";
+			var btnOffX         = Math.floor((input.offsetHeight - calButton.offsetHeight) / 2);
+			if (this.buttonPosition == "in"){
+				calButton.style.left = (nLeft + input.offsetWidth - calButton.offsetWidth - btnOffX + this.buttonOffsetX) + "px";
+			}
+			else{ // "out"
+				calButton.style.left = (nLeft + input.offsetWidth + btnOffX + this.buttonOffsetX) + "px";
+			}
 		}
 	}
 }
 
+
+//-----------------------------------------------------------------------------
 /**
- * Try to get the date from the control according to the format:
- * This function doesn't work with named months
- * @return An object of class Date with the current date in the control (if succesfull) or
- *  today if fails.
+ * Relocate the calendar's frame
  */
-Calendar.prototype.getDateFromControl = function()
+DatePickerControl.relocate = function()
 {
-	var aDate = new Date();
-	var value = Calendar.inputControl.value;
-	var day, month, year;
-	value = value.replace("/", "@").replace("/", "@");
-	value = value.replace("-", "@").replace("-", "@");
-	// si persisten los caracteres el formato es invalido:
-	if (value.indexOf("/")>=0 || value.indexOf("-")>=0) return aDate;
-	// validate all other stuff
-	var data = value.split("@");
-	if (data.length != 3) return aDate;
-	for (i=0; i<3; i++){
-		if (isNaN(parseInt(data[i]))) return aDate;
+	if (this.displayed){
+		var input = this.inputControl;
+		if (input == null) return;
+		var top  = getObject.getSize("offsetTop", input);
+		var left = getObject.getSize("offsetLeft", input);
+		this.calContainer.style.top  = top + input.offsetHeight + this.offsetY + "px";
+		this.calContainer.style.left = left + this.offsetX + "px";
+		if (this.calBG){ // the ugly patch for IE
+			this.calBG.style.top  = this.calContainer.style.top;
+			this.calBG.style.left = this.calContainer.style.left;
+		}
 	}
-	// formatos que comienzan con D,
-	if (Calendar.format.substring(0,1).toUpperCase() == "D"){
-		aDate.setDate(data[0]);
-		aDate.setMonth(data[1]-1);
-		aDate.setFullYear(data[2]);
-	}
-	else if (Calendar.format.substring(0,1).toUpperCase() == "Y"){
-		aDate.setDate(data[2]);
-		aDate.setMonth(data[1]-1);
-		aDate.setFullYear(data[0]);
-	}
-	else if (Calendar.format.substring(0,1).toUpperCase() == "M"){
-		aDate.setDate(data[1]);
-		aDate.setMonth(data[0]-1);
-		aDate.setFullYear(data[2]);
-	}
-	return aDate;
 }
 
+
+//-----------------------------------------------------------------------------
+/**
+ * Gets the number of the week on the year for the given year, month, day.
+ */
+DatePickerControl.getWeekNumber = function(year, month, day) 
+{
+	var when = new Date(year,month,day);
+	var newYear = new Date(year,0,1);
+	var offset = 7 + 1 - newYear.getDay();
+	if (offset == 8) offset = 1;
+	var daynum = ((Date.UTC(y2k(year),when.getMonth(),when.getDate(),0,0,0) - Date.UTC(y2k(year),0,1,0,0,0)) /1000/60/60/24) + 1;
+	var weeknum = Math.floor((daynum-offset+7)/7);
+	if (weeknum == 0) {
+		year--;
+		var prevNewYear = new Date(year,0,1);
+		var prevOffset = 7 + 1 - prevNewYear.getDay();
+		if (prevOffset == 2 || prevOffset == 8) weeknum = 53; else weeknum = 52;
+	}
+	return weeknum;
+}
+
+function y2k(number) { return (number < 1000) ? number + 1900 : number; }
+
+
+//-----------------------------------------------------------------------------
 // Following 2 functions by: Mircho Mirev
 
 function getObject(sId)
@@ -1083,7 +1696,6 @@ function getObject(sId)
 		this.hStyle = this.hElement.style;
 	}
 }
-
 
 getObject.getSize = function(sParam, hLayer)
 {
@@ -1106,6 +1718,7 @@ getObject.getSize = function(sParam, hLayer)
 }
 
 
+//-----------------------------------------------------------------------------
 /**
  * Based on code by: Peter Todorov
  */
@@ -1130,3 +1743,7 @@ function writeLayer(ID, parentID, sText)
 		document.getElementById(ID).innerHTML = sText;
 	}
 }
+
+//
+// Compartir es la única manera de perdurar
+// EOF

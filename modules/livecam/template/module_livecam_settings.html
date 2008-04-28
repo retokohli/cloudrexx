@@ -1,38 +1,14 @@
 <!-- START module_livecam_settings.html -->
-<script language="javascript" type="text/javascript">
-<!-- //
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=['','{TXT_ACTIVATE_LIGHTBOX_INFO}'];
-// -->
-</script>
-<form action="index.php?cmd=livecam&amp;act=settings" method="post" name="guestbook">
+<form action="index.php?cmd=livecam&amp;act=saveSettings" method="post" name="guestbook">
 	<table cellspacing="0" cellpadding="2" width="100%" border="0" class="adminlist">
 		<tr>
 			<th colspan="2">{TXT_SETTINGS}</th>
 		</tr>
 		<tr class="row1">
-			<td width="220" nowrap="nowrap" style="vertical-align: top;">{TXT_CURRENT_IMAGE_URL}</td>
-			<td nowrap="nowrap" style="vertical-align: top;"><input type="text" size="70" name="currentImageUrl" value="{CURRENT_IMAGE_URL}" /></td>
-		</tr>
-		<tr class="row2">
-			<td nowrap="nowrap" style="vertical-align: top;">{TXT_CURRENT_IMAGE_MAX_SIZE}</td>
-			<td nowrap="nowrap" style="vertical-align: top;"><input type="text" size="70" name="currentImageMaxSize" value="{CURRENT_IMAGE_MAX_SIZE}" /></td>
-		</tr>
-		<tr class="row1">
-			<td nowrap="nowrap" style="vertical-align: top;">{TXT_ARCHIVE_PATH}</td>
-			<td nowrap="nowrap" style="vertical-align: top;"><input name="archivePath" size="70" type="text" value="{ARCHIVE_PATH}" /></td>
-		</tr>
-		<tr class="row2">
-			<td nowrap="nowrap" style="vertical-align: top;">{TXT_THUMBNAIL_PATH}</td>
-			<td  nowrap="nowrap" style="vertical-align: top;"><input name="thumbnailPath" size="70" type="text" value="{THUMBNAIL_PATH}" /></td>
-		</tr>
-				<tr class="row1">
-			<td nowrap="nowrap" style="vertical-align: top;">{TXT_THUMBNAIL_MAX_SIZE}</td>
-			<td nowrap="nowrap" style="vertical-align: top;"><input type="text" size="70" name="thumbnailMaxSize" value="{THUMBNAIL_MAX_SIZE}" /></td>
-		</tr>
-		<tr class="row2">
-			<td nowrap="nowrap" style="vertical-align: top;">{TXT_ACTIVATE_LIGHTBOX}</td>
-			<td  nowrap="nowrap" style="vertical-align: top;"><input name="activateLightbox" type="radio" value="1" {LIGHTBOX_ACTIVE} />{TXT_LIGHTBOX_ACTIVE}&nbsp;<input name="activateLightbox" type="radio" value="0" {LIGHTBOX_INACTIVE} />{TXT_LIGHTBOX_INACTIVE}&nbsp;&nbsp;<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+			<td width="220" nowrap="nowrap" style="vertical-align: top;">{TXT_NUMBER_OF_CAMS}</td>
+			<td nowrap="nowrap" style="vertical-align: top;">
+                <input type="text" style="width: 250px;" name="number_of_cams" value="{NUMBER_OF_CAMS}" />
+			</td>
 		</tr>
 	</table>
 	<br />
