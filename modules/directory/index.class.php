@@ -569,6 +569,11 @@ class rssDirectory extends directoryLibrary
                 //get attributes
                 $this->getAttributes($objResult->fields['id']);
 
+                //row class
+				$this->_objTpl->setVariable(array(
+					'DIRECTORY_FEED_ROW'	=> $i%2==0? 'row1' : 'row2',
+				));
+
                 //check paging
 		    	if ($count<$pagingLimit){
                     $paging = "";
@@ -577,6 +582,7 @@ class rssDirectory extends directoryLibrary
                 $this->_objTpl->parse('showFeeds');
 
                 $objResult->MoveNext();
+                $i++;
             }
         }
 
@@ -1511,9 +1517,15 @@ class rssDirectory extends directoryLibrary
                 //get votes
                 $this->getVotes($objResult->fields['id']);
 
+                //row class
+				$this->_objTpl->setVariable(array(
+					'DIRECTORY_FEED_ROW'	=> $i%2==0? 'row1' : 'row2',
+				));
+
                 $this->_objTpl->parse('showFeeds');
 
                 $objResult->MoveNext();
+                $i++;
             }
         }
 
@@ -1836,6 +1848,11 @@ class rssDirectory extends directoryLibrary
                     //get content
                     $this->getContent($objResult->fields['id'], intval($_GET['cid']), intval($_GET['lid']));
 
+                    //row class
+					$this->_objTpl->setVariable(array(
+						'DIRECTORY_FEED_ROW'	=> $i%2==0? 'row1' : 'row2',
+					));
+
                     $this->_objTpl->parse('showResults');
 
                     //check paging
@@ -1844,6 +1861,7 @@ class rssDirectory extends directoryLibrary
                     }
 
                     $objResult->MoveNext();
+                    $i++;
                 }
             }
 
@@ -2300,9 +2318,16 @@ class rssDirectory extends directoryLibrary
                 //get voting
                 $this->getVoting($objResult->fields['id']);
 
+                //row class
+				$this->_objTpl->setVariable(array(
+					'DIRECTORY_FEED_ROW'	=> $i%2==0? 'row1' : 'row2',
+				));
+
+
                 $this->_objTpl->parse('showFeeds');
 
                 $objResult->MoveNext();
+                $i++;
             }
         }
 
