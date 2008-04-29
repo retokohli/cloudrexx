@@ -17,4 +17,9 @@ $_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX'] = "Активизируйте LightBox";
 $_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX_INFO'] = "Чтобы LightBox функционировал, следующая метка-заполнитель должна вводиться в Дизайнерский щаблон в Header index.htm файла: [[JAVASCRIPT_LIGHTBOX]]";
 $_ARRAYLANG['TXT_THUMBNAIL_MAX_SIZE'] = "Макс. Ширина эскиза (в пикселях)";
 $_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'] = "Макс. Ширина актуальной картинки (в пикселях)";
+$_ARRAYLANG['TXT_CAM'] = "Kamera";
+$_ARRAYLANG['TXT_CAMS'] = "Kameras";
+$_ARRAYLANG['TXT_LIVECAM_NUMBER_OF_CAMS'] = "Anzahl Kameras";
+$_ARRAYLANG['TXT_LIVECAM_TO_MODULE'] = "Zur Frontend-Seite";
+$_ARRAYLANG['TXT_MAKE_A_FRONTEND_PAGE'] = "Für jede Webcam müssen Sie eine Content-Seite erstellen mit der Kamera-Nummber als cmd.";
 ?>
