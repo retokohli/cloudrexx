@@ -1282,7 +1282,7 @@ class Market extends marketLibrary
 		   			if($objResult->fields['premium'] == 1){
 		   				$row = "marketRow1";
 		   			}else{
-		   				$row = "marketRow2";
+		   				$row = $i%2==0 ? "marketRow2" : "marketRow3";
 		   			}
 
 		   			$enddate = date("d.m.Y", $objResult->fields['enddate']);
@@ -1314,6 +1314,7 @@ class Market extends marketLibrary
 
 					$this->_objTpl->parse('showEntries');
 					$objResult->MoveNext();
+					$i++;
 		   		}
 
 		   	}
