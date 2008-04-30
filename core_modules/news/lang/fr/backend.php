@@ -117,7 +117,7 @@ $_ARRAYLANG['TXT_NEWS_LONG_DATE_DESCRIPTION'] = "Date avec indicatino de l'heure
 $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'] = "Lien vers l'article";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'] = "Catégorie de l'article";
 $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "Classe CSS: row1 oder row2";
-$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Brique pour la définition d'un article. Tag de début: &lt;!-- BEGIN newsrow --&gt; Tag de fin: &lt;!-- END newsrow --&gt;";
+$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Module pour la définition d'un article. Tag de début: &lt;!-- BEGIN newsrow --&gt; Tag de fin: &lt;!-- END newsrow --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Ces variables peuvent être utilisées dans les pages de contenu de la <b>section</b> \"news\" qui comportent la <b>cmd</b> \"details\" (?section=news&cmd=details).";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Titre de l'article";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Texte de l'article";
@@ -129,7 +129,7 @@ $_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "Dans le modèle de présentat
 $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Chemin de l'image de l'article";
 $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'] = "Texte court de l'article";
 $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "Les boîtes de texte d'accroche peuvent être incorporées dans le modèle ou le contenu.<br />Lier les boîtes à l'aide des variables visibles sous \"Textes d'accroche\".";
-$_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Brique de définition d'un texte d'accroche. Tag de début: &lt;!-- BEGIN teaser_n --&gt; Tag de fin: &lt;!-- END teaser_n --&gt;. n pour le numéro de boîte, en començant à 1";
+$_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Module de définition d'un texte d'accroche. Tag de début: &lt;!-- BEGIN teaser_n --&gt; Tag de fin: &lt;!-- END teaser_n --&gt;. n pour le numéro de boîte, en començant à 1";
 $_ARRAYLANG['TXT_CONTINUE'] = "suivant";
 $_ARRAYLANG['TXT_NUMBER_OF_CHARS'] = "Nombre de caractères";
 $_ARRAYLANG['TXT_IMAGE'] = "Image";
