@@ -14,6 +14,8 @@ Allgemein
 - Die Grösse des Spamschutz-Bildes wurde angepasst. Die Schrift ist somit besser
   lesbar.
 - Englische Sprachversion kompletiert
+- Sämtliche Contentseiten der Module und das buildin_style.css wurden neu
+  geschrieben und gestaltet.
 
 Content Verlauf
 - Alte Einträge im Content Verlauf können nun über eine Funktion gelöscht
@@ -66,7 +68,7 @@ Modul: Livecam
 
 Modul: Market
 - Der Aufschaltmechanismus kann klar definiert werden. Variante 1 mittels
-  aufschaltschlüssel, Variante 2 durch Admin.
+  Aufschaltschlüssel, Variante 2 durch Admin.
 
 Modul: Newsletter
 - Das System versucht automatisch frühzeitig ein bevorstehendes Timeout zu
