@@ -81,7 +81,10 @@ class FWLanguage
      */
     function getLanguageParameter($id, $index)
     {
-        return isset($this->arrLanguage[$id][$index]) ? $this->arrLanguage[$id][$index] : false;
+        return
+            (isset($this->arrLanguage[$id][$index])
+                ? $this->arrLanguage[$id][$index] : false
+            );
     }
 
 
@@ -124,9 +127,8 @@ class FWLanguage
      * Note that you can supply the complete string from the Accept-Language
      * HTTP header.  This method will take care of chopping it into pieces
      * and trying to pick a suitable language.
-     * However, it will not pick the most suitable one according to RFC2616
-     * and others, but only tries to find the first language range it sees
-     * able to serve.
+     * However, it will not pick the most suitable one according to RFC2616,
+     * but only returns the first language that fits.
      * @static
      * @param   string    $langCode         The ISO 639-1 language code
      * @return  mixed                       The language ID on success,
@@ -141,7 +143,6 @@ class FWLanguage
         // Something like "fr; q=1.0, en-gb; q=0.5"
         $arrLangCode = preg_split('/,\s*/', $langCode);
         $strLangCode = "'".join("', '", preg_replace('/(?:-\w+)?(?:;\s*q(?:\=\d?\.?\d*)?)?/i', '', $arrLangCode))."'";
-//echo("FWLanguage::getLangIdByIso639_1($langCode): Found languages: $strLangCode<br />");
 
         $objResult = $objDatabase->Execute("
             SELECT id
@@ -173,22 +174,37 @@ class FWLanguage
         return false;
     }
 
+
+    /**
+     * Return the language code from the database for the given ID
+     *
+     * Returns false on failure, or the empty string if the code
+     * could not be found.
+     * @global  mixed   $objDatabase    Database object
+     * @param   integer $langId         The language ID
+     * @return  mixed                   The two letter code, the empty string,
+     *                                  or false
+     * @static
+     */
+    //static
+    function getLanguageCodeById($langId)
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            SELECT lang
+              FROM '.DBPREFIX.'languages
+             WHERE id=$langId
+        ");
+        if (!$objResult) {
+            return false;
+        }
+        if (!$objResult->EOF) {
+            return $objResult->fields['lang'];
+        }
+        return '';
+    }
+
 }
-
-/* TEST
-
-$arrLang = array(
-    'de', 'en', 'fr, en', 'en, it', 'it, kr', 'gr, zh',
-    'de, en', 'en, de', 'de-ch',
-    'de-de, en-gb', 'en-gb, de-de',
-    'de; q=0.1, en; q=0.9', 'de-de; q=0.1, de-ch; q=0.9',
-);
-foreach ($arrLang as $strLangCode) {
-    echo("Code $strLangCode -> ID ".FWLanguage::getLangIdByIso639_1($strLangCode)."<br />");
-}
-die("Died.");
-
-*/
-
 
 ?>
