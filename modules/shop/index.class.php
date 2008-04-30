@@ -1203,7 +1203,6 @@ class Shop extends ShopLibrary
         }
         $this->objTemplate->setCurrentBlock('shopProductRow');
         foreach ($arrProduct as $objProduct) {
-            echo "1";
             $formId = 0;
             $productSubmitFunction = '';
             $arrPictures = $this->_getShopImagesFromBase64String($objProduct->getPictures());
