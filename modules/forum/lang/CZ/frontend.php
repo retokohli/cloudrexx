@@ -70,4 +70,15 @@ $_ARRAYLANG['TXT_FORUM_NOTIFICATION_HELPTEXT'] = "Um einzelne Einträge zu marki
 $_ARRAYLANG['TXT_FORUM_NOTIFICATION_SUBMIT'] = "Speichern";
 $_ARRAYLANG['TXT_FORUM_SUBSCRIBED_THREADS'] = "Abonnierte Kategorien/Foren";
 $_ARRAYLANG['TXT_FORUM_UNSUBSCRIBED_THREADS'] = "Verfügbare Kategorien/Foren";
+$_ARRAYLANG['TXT_FORUM_FILE_ATTACHMENT'] = "Anhang";
+$_ARRAYLANG['TXT_FORUM_RATING'] = "Bewertung";
+$_ARRAYLANG['TXT_FORUM_RATING_THANKS'] = "Danke!";
+$_ARRAYLANG['TXT_FORUM_BANNED_WORD'] = "Folgendes Wort darf im Beitrag nicht verwendet werden: '%s'!";
+$_ARRAYLANG['TXT_FORUM_KEYWORDS'] = "Stichwörter";
+$_ARRAYLANG['TXT_FORUM_COMMA_SEPARATED_KEYWORDS'] = "Aussagekräftige Stichwörter, durch Komma getrennt";
+$_ARRAYLANG['TXT_FORUM_UPLOAD_TOO_BIG'] = "Die hochgeladene Datei hat die maximale Uploadgrösse überschritten.";
+$_ARRAYLANG['TXT_FORUM_UPLOAD_PARTIAL'] = "Die Datei wurde nur teilweise hochgeladen, bitte erneut versuchen. Wenn das Problem besteht, wenden Sie sich an den Webmaster.";
+$_ARRAYLANG['TXT_FORUM_UPLOAD_NOT_MOVABLE'] = "Die Datei konnte auf dem Server nicht verschoben werden, bitte erneut versuchen. Wenn das Problem besteht, wenden Sie sich an den Webmaster.";
+$_ARRAYLANG['TXT_FORUM_DELETE_ATTACHMENT'] = "Anhang '%s' löschen";
+$_ARRAYLANG['TXT_FORUM_SEARCH_TERM_TOO_SHORT'] = "Hinweis: Der Suchbegriff muss mind. 3 Zeichen lang sein.";
 ?>
