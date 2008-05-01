@@ -14,6 +14,11 @@
  */
 
 /**
+ * Currency: Conversion, formatting.
+ */
+require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
+
+/**
  * Yellowpay plugin for online payment
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
@@ -82,7 +87,7 @@ class Yellowpay
      */
     private $arrLangVersion = array(
         'DE' => 2055,
-        'US' => 2057,
+        'US' => 2057, 'EN' => 2057,
         'IT' => 2064,
         'FR' => 4108,
     );
@@ -100,23 +105,53 @@ class Yellowpay
     );
 
     /**
-     * Delivery payment types
+     * Known authorization types
      * @access  private
      * @var     array
      * @see     checkKey()
      */
-    private $arrDeliveryPaymentType = array(
+    private static $arrKnownAuthorization = array(
         'immediate',
         'deferred',
     );
 
     /**
-     * Payment types
+     * Current authorization type, defaults to 'immediate'
+     * @access  private
+     * @var     string
+     */
+    private $strAuthorization = 'immediate';
+
+    /**
+     * Known payment method names
+     *
+     * Note that these correspond to the names used for
+     * dynamically choosing the payment methods using the
+     * txtPM_*_Status" parameters and must thus
+     * be spelt *exactly* as specified.
+     * @var     array
+     * @static
+     */
+    private static $arrKnownPaymentMethod = array(
+        'PostFinanceCard',
+        'yellownet',
+        'Master',
+        'Visa',
+        'Amex',
+        'Diners',
+        'yellowbill',
+    );
+
+
+    /**
+     * Accepted payment methods
+     *
+     * Those not allowed will be unset in the constructor.
      * @access  private
      * @var     array
      * @see     addPaymentTypeKeys()
      */
-    private $arrPaymentType = array(
+    private $arrAcceptedPaymentMethod = array(
         'PostFinanceCard' => array(),
         'yellownet' => array(),
         'Master' => array(),
@@ -132,18 +167,38 @@ class Yellowpay
         ),
     );
 
-    /**
-     * Accepted payment methods; comma separated list, no whitespace!
-     * @var   string
-     */
-    private $strAcceptedPaymentMethods;
-
 
     /**
      * Constructor
+     *
+     * The optional $strAcceptedPaymentMethods argument lets you restrict
+     * the payment methods to be available.  If the string is empty, any
+     * known methods will be accepted, however.
+     * @param   string  $strAcceptedPaymentMethods  The comma separated list
+     *                                              of payment methods
+     * @return  Yellowpay                           The Yellowpay object
      */
-    function Yellowpay()
+    function Yellowpay($strAcceptedPaymentMethods='', $strAuthorization='')
     {
+        // There needs to be at least one accepted payment method,
+        // if there is none, accept all.
+        if (!empty($strAcceptedPaymentMethods)) {
+            foreach (Yellowpay::$arrKnownPaymentMethod as $strPaymentMethod) {
+                // Remove payment methods not mentioned
+                if (!preg_match("/$strPaymentMethod/", $strAcceptedPaymentMethods)) {
+//echo("Yellowpay::Yellowpay($strAcceptedPaymentMethods, $strAuthorization): removing pm $strPaymentMethod<br />");
+                    unset ($this->arrAcceptedPaymentMethod[$strPaymentMethod]);
+                }
+            }
+        } else {
+//echo("Yellowpay::Yellowpay($strAcceptedPaymentMethods, $strAuthorization): note: no accepted pm<br />");
+        }
+        if (in_array($strAuthorization, Yellowpay::$arrKnownAuthorization)) {
+//echo("Yellowpay::Yellowpay($strAcceptedPaymentMethods, $strAuthorization): note: setting authorization to $strAuthorization<br />");
+            $this->strAuthorization = $strAuthorization;
+        } else {
+//echo("Yellowpay::Yellowpay($strAcceptedPaymentMethods, $strAuthorization): note: no authorization<br />");
+        }
     }
 
 
@@ -154,22 +209,36 @@ class Yellowpay
      * @return  string    The HTML-Form
      * @see     addRequiredKeys(), addPaymentTypeKeys(), addOtherKeys()
      */
-    function getForm($arrShopOrder, $submitValue='send')
+    function getForm($arrShopOrder, $submitValue='send', $autopost=false)
     {
         $this->arrShopOrder = $arrShopOrder;
-
-        if ($this->is_test) {
-            // Test mode
-            $this->form ="<form action='https://yellowpaytest.postfinance.ch/checkout/Yellowpay.aspx?userctrl=Invisible' method='post'>\n";
-        } else {
-            // Live mode
-            $this->form ="<form action='https://yellowpay.postfinance.ch/checkout/Yellowpay.aspx?userctrl=Invisible' method='post'>\n";
-        }
+        $this->form =
+            // The real yellowpay server or the test server
+            '<form name="yellowpay" method="post" '.
+            'action="https://yellowpay'.
+            ($this->is_test ? 'test' : '').
+            '.postfinance.ch/checkout/Yellowpay.aspx?userctrl=Invisible"'.
+            ">\n";
+/*
+            // Yellowpay dummy
+            '<form name="yellowpay" method="post" '.
+            'action="http://localhost/c_trunk/modules/shop/payments/yellowpay/YellowpayDummy.class.php"'.
+            ">\n";
+*/
         $this->addRequiredKeys();
         $this->addPaymentTypeKeys();
         $this->addOtherKeys();
-        $this->form .= "<input type='submit' name='submit' value='$submitValue' />\n";
-        $this->form .= '</form>';
+        if ($autopost) {
+            $this->form .=
+                '<script type="text/javascript">/* <![CDATA[ */ '.
+                'document.yellowpay.submit(); '.
+                '/* ]]> */</script>';
+        } else {
+            $this->form .=
+                '<input type="submit" name="go" value="'.$submitValue."\" />\n";
+        }
+        $this->form .= "</form>";
+//$this->arrError[] = "Test for error handling";
         return $this->form;
     }
 
@@ -202,46 +271,47 @@ class Yellowpay
     {
         // Skip this if no payment methods are specified.
         if (!isset($this->arrShopOrder['acceptedPaymentMethods'])) {
+            $this->arrError[] = "Missing accepted payment methods";
             return;
         }
         $arrAcceptedPM = explode(',', $this->arrShopOrder['acceptedPaymentMethods']);
+        // Remove list of accepted payment methods
+        unset($this->arrShopOrder['acceptedPaymentMethods']);
         if (empty($arrAcceptedPM)) {
+            $this->arrError[] = "Failed to decode accepted payment methods";
             return;
         }
 
+//echo("desired pm: ".join(", ", $arrAcceptedPM)."<br />");
+//echo("accepted pm: ".join(", ", array_keys($this->arrAcceptedPaymentMethod))."<br />");
+
         foreach ($arrAcceptedPM as $strPM) {
-            if (array_key_exists($strPM, $this->arrPaymentType)) {
+            if (array_key_exists($strPM, $this->arrAcceptedPaymentMethod)) {
                 $this->arrShopOrder["txtPM_{$strPM}_Status"] = 'true';
                 $this->addToForm("txtPM_{$strPM}_Status");
             } else {
-                $this->arrError[] = "Payment type '$strPM' is unknown.";
+                $this->arrError[] = "Payment type '$strPM' is disabled or unknown.";
                 return;
             }
         }
         // Enable dynamic payment method selection
         $this->arrShopOrder['txtUseDynPM'] = 'true';
         $this->addToForm('txtUseDynPM');
+//echo(htmlentities($this->form));die();
     }
 
 
     /**
-     * Returns an array with all supported payment types.
+     * Returns the array with all currently accepted payment methods.
      *
      * Note: This is still under development.
+     * The contents of this array directly depend on the list of
+     * accepted payment methods specified when calling the constructor.
      * @return  array         The payment type name strings
      */
-    function getActivePaymentTypes()
+    function getAcceptedPaymentMethods()
     {
-        //return array_keys($this->arrPaymentType);
-        return array(
-            'PostFinanceCard',
-            'yellownet',
-            'Master',
-            'Visa',
-            'Amex',
-            'Diners',
-            'yellowbill',
-        );
+        return array_keys($this->arrAcceptedPaymentMethod);
     }
 
 
@@ -255,7 +325,7 @@ class Yellowpay
      */
     function addOtherKeys()
     {
-        unset($this->arrShopOrder['ShopId']);
+        unset($this->arrShopOrder['txtShopId']);
         unset($this->arrShopOrder['Hash_seed']);
         foreach (array_keys($this->arrShopOrder) as $key) {
             $this->addToForm($key);
@@ -270,14 +340,15 @@ class Yellowpay
      */
     function addHash()
     {
-        if (empty($this->arrShopOrder['ShopId'])) {
-            $this->arrError[] = "Missing the ShopId parameter";
+        if (empty($this->arrShopOrder['txtShopId'])) {
+            $this->arrError[] = "Missing the txtShopId parameter";
         }
         if ($this->arrShopOrder['Hash_seed'] == '') {
             $this->arrError[] = "Missing the Hash_seed parameter";
         }
+//echo("txtShopId: /".$this->arrShopOrder['txtShopId']."/<br />txtArtCurrency: /".$this->arrShopOrder['txtArtCurrency']."/<br />txtOrderTotal: /".$this->arrShopOrder['txtOrderTotal']."/<br />Hash_seed: /".$this->arrShopOrder['Hash_seed']."/<br />");
         $this->arrShopOrder['txtHash'] = md5(
-            $this->arrShopOrder['ShopId'].
+            $this->arrShopOrder['txtShopId'].
             $this->arrShopOrder['txtArtCurrency'].
             $this->arrShopOrder['txtOrderTotal'].
             $this->arrShopOrder['Hash_seed']
@@ -344,7 +415,7 @@ class Yellowpay
                     $this->arrError[] = "$key is missing or invalid.";
                     return false;
                 }
-                if (!ereg('^[0-9]+\.[0-9]{1,2}$', $this->arrShopOrder[$key])) {
+                if (!ereg('^[0-9]+\.[0-9][0-9]$', $this->arrShopOrder[$key])) {
                     $this->arrShopOrder[$key] = Currency::formatPrice($this->arrShopOrder[$key]);
                     $this->arrWarning[] = "$key was reformatted to ".$this->arrShopOrder[$key];
                 }
@@ -367,9 +438,9 @@ class Yellowpay
                 }
                 break;
             case 'deliveryPaymentType':
-                if (!in_array($this->arrShopOrder[$key], $this->arrDeliveryPaymentType)) {
-                    $this->arrShopOrder[$key] = $this->arrDeliveryPaymentType['1'];
-                    $this->arrWarning[] = "$key was set to '{$this->arrDeliveryPaymentType['1']}'.";
+                if (!in_array($this->arrShopOrder[$key], Yellowpay::$arrKnownAuthorization)) {
+                    $this->arrShopOrder[$key] = Yellowpay::$arrKnownAuthorization['1'];
+                    $this->arrWarning[] = "$key was set to '".Yellowpay::$arrKnownAuthorization['1']."'.";
                 }
                 break;
             case 'txtESR_Member':
@@ -489,7 +560,25 @@ class Yellowpay
                     $this->arrWarning[] = "$key was set to 'false'.";
                 }
                 break;
-
+            // Added 20080410, Reto Kohli
+            // Dynamic payment methods selection.
+            // All default to false
+            case 'txtPM_PostFinanceCard_Status':
+            case 'txtPM_yellownet_Status':
+            case 'txtPM_Master_Status':
+            case 'txtPM_Visa_Status':
+            case 'txtPM_Amex_Status':
+            case 'txtPM_Diners_Status':
+            case 'txtPM_yellowbill_Status':
+            case 'txtUseDynPM':
+                if (   $this->arrShopOrder[$key] != 'true'
+                    && $this->arrShopOrder[$key] != 'false') {
+                    $this->arrShopOrder[$key] = 'false';
+                    $this->arrWarning[] = "$key was set to 'false'.";
+                }
+                break;
+            // All unknown keys like 'acceptedPaymentMethods' should have been
+            // unset() already.
             default:
                 $this->arrError[] = "$key is an unknown key!";
                 return false;
@@ -497,6 +586,75 @@ class Yellowpay
         return true;
     }
 
+
+    /**
+     * Returns the HTML menu options for selecting from the currently accepted
+     * payment methods.
+     * @param   string    $strSelected    The optional preselected payment
+     *                                    method name
+     * @return  string                    The HTML menu options
+     */
+    function getAcceptedPaymentMethodMenuOptions($strSelected='')
+    {
+        global $_ARRAYLANG;
+
+        $strOptions = '';
+        foreach (array_keys($this->arrAcceptedPaymentMethod)
+                  as $strPaymentMethod) {
+            $strOptions .=
+                '<option value="'.$strPaymentMethod.'"'.
+                ($strPaymentMethod == $strSelected
+                    ? ' selected="selected"' : ''
+                ).'>'.
+                $_ARRAYLANG['TXT_SHOP_YELLOWPAY_'.strtoupper($strPaymentMethod)].
+                '</option>';
+        }
+        return $strOptions;
+    }
+
+
+    /**
+     * Returns the HTML checkboxes for selecting zero or more from the known
+     * payment methods.
+     * @return  string        The HTML checkboxes
+     */
+    function getKnownPaymentMethodCheckboxes()
+    {
+        global $_ARRAYLANG;
+
+//echo("Yellowpay::getKnownPaymentMethodCheckboxes(): accepted pm: ");var_export($this->arrAcceptedPaymentMethod);echo("<br />");
+        $strOptions = '';
+        foreach (Yellowpay::$arrKnownPaymentMethod as $index => $strPaymentMethod) {
+//echo("Yellowpay::getKnownPaymentMethodCheckboxes(): testing /$strPaymentMethod/<br />");
+            $strOptions .=
+                '<input name="yellowpay_accepted_payment_methods[]" '.
+                'id="yellowpay_pm_'.$index.'" type="checkbox" '.
+                (in_array($strPaymentMethod, array_keys($this->arrAcceptedPaymentMethod))
+                    ? 'checked="checked" ' : ''
+                ).
+                'value="'.$strPaymentMethod.'" />'.
+                '<label for="yellowpay_pm_'.$index.'">&nbsp;'.
+                $_ARRAYLANG['TXT_SHOP_YELLOWPAY_'.strtoupper($strPaymentMethod)].
+                '</label><br />';
+        }
+        return $strOptions;
+    }
+
+
+    function getAuthorizationMenuoptions()
+    {
+        global $_ARRAYLANG;
+
+        return
+            '<option value="immediate" '.
+            ($this->strAuthorization == 'immediate' ? 'selected="selected"' : '').'>'.
+            $_ARRAYLANG['TXT_SHOP_YELLOWPAY_IMMEDIATE'].
+            '</option>'.
+            '<option value="deferred" '.
+            ($this->strAuthorization == 'deferred' ? 'selected="selected"' : '').'>'.
+            $_ARRAYLANG['TXT_SHOP_YELLOWPAY_DEFERRED'].
+            '</option>';
+    }
 }
 
 ?>
