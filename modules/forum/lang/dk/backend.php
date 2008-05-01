@@ -101,4 +101,12 @@ $_ARRAYLANG['TXT_FORUM_POST_COUNT'] = "Beiträge";
 $_ARRAYLANG['TXT_FORUM_THREAD_CREATE_DATE'] = "Erstellt am";
 $_ARRAYLANG['TXT_FORUM_NO_SUBJECT'] = "Kein Betreff";
 $_ARRAYLANG['TXT_FORUM_NOTIFICATION'] = "Benachrichtigung";
+$_ARRAYLANG['TXT_FORUM_SHOW_TAG_CONTENT'] = "Stichworte anzeigen";
+$_ARRAYLANG['TXT_FORUM_WYSIWYG_EDITOR'] = "WYSIWYG Editor";
+$_ARRAYLANG['TXT_FORUM_WYSIWYG_EDITOR_HELP'] = "(De-)Aktiviert den WYSIWYG-Editor zum Bearbeiten/Verfassen von Beiträgen. WYSIWYG bedeutet `What you see is what you get.` (Was du siehst, ist [das,] was du bekommst)";
+$_ARRAYLANG['TXT_FORUM_TAG_COUNT'] = "Max. Tags";
+$_ARRAYLANG['TXT_FORUM_TAG_COUNT_HELP'] = "Max. Anzahl Tags (Stichworte) in der Tag-Box + Tag-Hitliste, welche angezeigt werden.";
+$_ARRAYLANG['TXT_FORUM_BANNED_WORDS'] = "Unzulässige Wörter";
+$_ARRAYLANG['TXT_FORUM_BANNED_WORDS_HELP'] = "Durch Kommas getrennte Liste von Wörtern oder Ausdrücken, welche nicht zulässig sind in Forenbeiträgen.<br />Reguläre Ausdrücke sind erlaubt.<br /><br />Bsp: penis enlargment,free porn,(?i:buy\\\s*?(?:cheap\\\s*?)?viagra)";
+$_ARRAYLANG['TXT_CATEGORY_STATUS'] = "Status";
 ?>
