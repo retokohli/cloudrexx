@@ -6,8 +6,8 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,
 Text[{FORUM_TOOLTIP_INDEX}]=["","{FORUM_TOOLTIP_TEXT}"];
 <!-- END forumToolTips -->
 
-function deleteCategory(catId){ 
-    if(confirm('{TXT_JS_DELETE_MSG}')) 
+function deleteCategory(catId){
+    if(confirm('{TXT_JS_DELETE_MSG}'))
         window.location.replace("?cmd=forum&act=category_delete&id="+catId);
 }
 
@@ -29,7 +29,7 @@ function selectMultiAction()
 					submit();
 				}
 			break;
-			default: //do nothing			
+			default: //do nothing
 		}
 	}
 }
@@ -62,7 +62,7 @@ function copyText(strType,boolCategory) {
 				}
 			}
 		}
-	}	
+	}
 }
 
 function markCheckboxes(intSelected) {
@@ -74,7 +74,7 @@ function markCheckboxes(intSelected) {
 				if(document.forms[h].elements[i].name.search('frmAddCategory_ParCat_'+intSelected) != -1) {
 					strCategories = document.forms[h].elements[i].value;
 				}
-				
+
 				if (document.forms[h].elements[i].name.search('frmAddCategory_Languages') != -1) {
 					document.forms[h].elements[i].disabled = true;
 					document.forms[h].elements[i].checked = false;
@@ -82,7 +82,7 @@ function markCheckboxes(intSelected) {
 			}
 		}
 	}
-	
+
 	if (strCategories != '') {
 		arrTemp = strCategories.split(',');
 		for (var j = 0; j < arrTemp.length; j++) {
@@ -96,7 +96,7 @@ function markCheckboxes(intSelected) {
 						}
 					}
 				}
-			}		
+			}
 		}
 	}
 }
@@ -140,7 +140,7 @@ function markCheckboxes(intSelected) {
 					<div align="right">
 						<a href="?cmd=forum&amp;act=category_edit&amp;id={CATEGORY_ID}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
 						<a href="?cmd=forum&amp;act=category_access&amp;id={CATEGORY_ID}" target="_self" title="{TXT_IMGALT_ACCESS}"><img src="images/icons/groups.gif" border="0" alt="{TXT_IMGALT_ACCESS}" title="{TXT_IMGALT_ACCESS}" /></a>
-						<a href="javascript:deleteCategory({CATEGORY_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a> 
+						<a href="javascript:deleteCategory({CATEGORY_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a>
 					</div>
 				</td>
 			</tr>
@@ -157,7 +157,7 @@ function markCheckboxes(intSelected) {
 			<tr>
 				<td>
 					<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-					<a href="#" onClick="changeCheckboxes('frmShowCategories','selectedCategoryId[]',true); return false;">{TXT_SELECT_ALL}</a> / 
+					<a href="#" onClick="changeCheckboxes('frmShowCategories','selectedCategoryId[]',true); return false;">{TXT_SELECT_ALL}</a> /
 					<a href="#" onClick="changeCheckboxes('frmShowCategories','selectedCategoryId[]',false); return false;">{TXT_DESELECT_ALL}</a>
 					<img src="images/icons/strike.gif" />
 					<select name="frmShowCategories_MultiAction" onChange="selectMultiAction();">
@@ -188,10 +188,10 @@ function markCheckboxes(intSelected) {
 						<!-- BEGIN categoryNameFields -->
 						<input type="text" name="frmAddCategory_Name_{CATEGORY_ADD_NAME_LANGID}" value="" style="width:30%; margin-top:1px;" />&nbsp;<label for="frmAddCategory_Name_{CATEGORY_ADD_NAME_LANGID}">{CATEGORY_ADD_NAME_LANG}</label><br />
 						<!-- END categoryNameFields -->
-					</div>	
+					</div>
 				</td>
 			</tr>
-			<tr class="row1">
+			<tr class="row2">
 				<td valign="top">{TXT_CATEGORY_ADD_CATEGORY_DESC}</td>
 				<td colspan="3">
 					<textarea name="frmAddCategory_Desc" rows="3" onChange="copyText('frmAddCategory_Desc_',true);" style="width:30%;"></textarea>&nbsp;<a href="javascript:showOrHide('divAddCategoryLang_Desc');">{TXT_CATEGORY_ADD_EXTENDED}</a>
@@ -207,6 +207,10 @@ function markCheckboxes(intSelected) {
 				<td width="10%" valign="top">{CATEGORY_ADD_LANGUAGES_1}</td>
 				<td width="10%" valign="top">{CATEGORY_ADD_LANGUAGES_2}</td>
 				<td width="70%" valign="top">{CATEGORY_ADD_LANGUAGES_3}</td>
+			</tr>
+			<tr class="row2">
+				<td width="10%">{TXT_CATEGORY_STATUS}</td>
+				<td colspan="3"><input type="checkbox" value="1" name="frmAddCategory_Status" /></td>
 			</tr>
 		</table>
 		<br />
@@ -229,7 +233,7 @@ function markCheckboxes(intSelected) {
 					<!-- END forumAllowedParcats -->
 				</td>
 			</tr>
-			<tr class="row1">
+			<tr class="row2">
 				<td valign="top">{TXT_CATEGORY_ADD_FORUM_NAME}</td>
 				<td colspan="3">
 					<input type="text" name="frmAddCategory_Name" value="" maxlength="100" onChange="copyText('frmAddCategory_Name_',false);" style="width:30%;" />&nbsp;<a href="javascript:showOrHide('divAddForumLang_Name');">{TXT_FORUM_ADD_EXTENDED}</a>
@@ -237,8 +241,8 @@ function markCheckboxes(intSelected) {
 						<!-- BEGIN forumNameFields -->
 						<input type="text" name="frmAddCategory_Name_{FORUM_ADD_NAME_LANGID}" value="" style="width:30%; margin-top:1px;" />&nbsp;<label for="frmAddCategory_Name_{FORUM_ADD_NAME_LANGID}">{FORUM_ADD_NAME_LANG}</label><br />
 						<!-- END forumNameFields -->
-					</div>	
-					
+					</div>
+
 				</td>
 			</tr>
 			<tr class="row1">
@@ -252,7 +256,7 @@ function markCheckboxes(intSelected) {
 					</div>
 				</td>
 			</tr>
-			<tr class="row1">
+			<tr class="row2">
 				<td width="10%">{TXT_CATEGORY_ADD_CATEGORY_LANGUAGES}</td>
 				<td width="10%" valign="top">{CATEGORY_ADD_LANGUAGES_1}</td>
 				<td width="10%" valign="top">{CATEGORY_ADD_LANGUAGES_2}</td>
@@ -260,7 +264,11 @@ function markCheckboxes(intSelected) {
 			</tr>
 			<tr class="row1">
 				<td>{TXT_CATEGORY_ADD_FORUM_INHERIT}</td>
-				<td colspan="3"><input type="checkbox" checked="checked" name="frmAddCategory_Inherit" value="1"></td>		
+				<td colspan="3"><input type="checkbox" checked="checked" name="frmAddCategory_Inherit" value="1"></td>
+			</tr>
+			<tr class="row2">
+				<td width="10%">{TXT_CATEGORY_STATUS}</td>
+				<td colspan="3"><input type="checkbox" value="1" name="frmAddCategory_Status" /></td>
 			</tr>
 		</table>
 		<br />

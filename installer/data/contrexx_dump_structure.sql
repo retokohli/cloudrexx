@@ -1002,13 +1002,16 @@ CREATE TABLE `contrexx_module_forum_postings` (
   `time_edited` int(14) unsigned NOT NULL default '0',
   `is_locked` set('0','1') NOT NULL default '0',
   `is_sticky` set('0','1') NOT NULL default '0',
+  `rating` int(11) NOT NULL default '0',
   `views` int(10) unsigned NOT NULL default '0',
   `icon` smallint(5) unsigned NOT NULL default '0',
+  `keywords` text NOT NULL,
   `subject` varchar(250) NOT NULL default '',
+  `attachment` varchar(250) NOT NULL default '',
   `content` text NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `category_id` (`category_id`,`thread_id`,`prev_post_id`,`user_id`),
-  FULLTEXT KEY `fulltext` (`subject`,`content`)
+  FULLTEXT KEY `fulltext` (`keywords`,`subject`,`content`)
 ) TYPE=MyISAM;
 
 CREATE TABLE `contrexx_module_forum_settings` (
@@ -1024,6 +1027,15 @@ CREATE TABLE `contrexx_module_forum_statistics` (
   `post_count` int(10) unsigned NOT NULL default '0',
   `last_post_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`category_id`)
+) TYPE=MyISAM;
+
+CREATE TABLE `contrexx_module_forum_rating` (
+	`id` INT(14) NOT NULL auto_increment,
+	`user_id` INT(14) NOT NULL ,
+	`post_id` INT(14) NOT NULL ,
+	`time` INT(14) NOT NULL ,
+	PRIMARY KEY ( `id` ) ,
+	KEY ( `user_id`, `post_id` )
 ) TYPE=MyISAM;
 
 CREATE TABLE `contrexx_module_gallery_categories` (

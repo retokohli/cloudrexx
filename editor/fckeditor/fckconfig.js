@@ -189,13 +189,13 @@ FCKConfig.CleanWordKeepsStructure = false ;
 // Only inline elements are valid.
 FCKConfig.RemoveFormatTags = 'b,big,code,del,dfn,em,font,i,ins,kbd,q,samp,small,span,strike,strong,sub,sup,tt,u,var' ;
 
-FCKConfig.CustomStyles = 
+FCKConfig.CustomStyles =
 {
 	'Red Title'	: { Element : 'h3', Styles : { 'color' : 'Red' } }
 };
 
 // Do not add, rename or remove styles here. Only apply definition changes.
-FCKConfig.CoreStyles = 
+FCKConfig.CoreStyles =
 {
 	// Basic Inline Styles.
 	'Bold'			: { Element : 'b', Overrides : 'strong' },
@@ -204,7 +204,7 @@ FCKConfig.CoreStyles =
 	'StrikeThrough'	: { Element : 'strike' },
 	'Subscript'		: { Element : 'sub' },
 	'Superscript'	: { Element : 'sup' },
-	
+
 	// Basic Block Styles (Font Format Combo).
 	'p'				: { Element : 'p' },
 	'div'			: { Element : 'div' },
@@ -216,29 +216,29 @@ FCKConfig.CoreStyles =
 	'h4'			: { Element : 'h4' },
 	'h5'			: { Element : 'h5' },
 	'h6'			: { Element : 'h6' },
-	
+
 	// Other formatting features.
-	'FontFace' : 
-	{ 
-		Element		: 'span', 
-		Styles		: { 'font-family' : '#("Font")' }, 
+	'FontFace' :
+	{
+		Element		: 'span',
+		Styles		: { 'font-family' : '#("Font")' },
 		Overrides	: [ { Element : 'font', Attributes : { 'face' : null } } ]
 	},
-	
+
 	'Size' :
-	{ 
-		Element		: 'span', 
-		Styles		: { 'font-size' : '#("Size","fontSize")' }, 
+	{
+		Element		: 'span',
+		Styles		: { 'font-size' : '#("Size","fontSize")' },
 		Overrides	: [ { Element : 'font', Attributes : { 'size' : null } } ]
 	},
-	
+
 	'Color' :
-	{ 
-		Element		: 'span', 
-		Styles		: { 'color' : '#("Color","color")' }, 
+	{
+		Element		: 'span',
+		Styles		: { 'color' : '#("Color","color")' },
 		Overrides	: [ { Element : 'font', Attributes : { 'color' : null } } ]
 	},
-	
+
 	'BackColor'		: { Element : 'span', Styles : { 'background-color' : '#("Color","color")' } }
 };
 

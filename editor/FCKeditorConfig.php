@@ -32,10 +32,19 @@ FCKConfig.ToolbarSets["News"] = [
 	['Table','Rule','Smiley','SpecialChar'],
 	['FitWindow']
 ] ;
+FCKConfig.ToolbarSets["BBCode"] = [
+	['Source'],
+	['Bold','Italic','Underline','StrikeThrough','-','Link','Unlink','Image', 'SpecialChar'],
+] ;
 
 <?php
 $langId = !empty($_GET['langId']) ? $_GET['langId'] : null;
 $absoluteURIs = !empty($_GET['absoluteURIs']) ? $_GET['absoluteURIs'] : null;
+
+if(!empty($_GET['bbcode'])){
+	echo "FCKConfig.Plugins.Add('bbcode');\n";
+}
+
 ?>
 FCKConfig.LinkBrowserURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&standalone=true&langId=<?php echo $langId;?>&absoluteURIs=<?php echo $absoluteURIs;?>&type=webpages' ;
 FCKConfig.ImageBrowserURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&standalone=true&langId=<?php echo $langId;?>&absoluteURIs=<?php echo $absoluteURIs;?>';

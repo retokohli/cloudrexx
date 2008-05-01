@@ -32,7 +32,8 @@ class ForumLibrary {
 	var $_anonymousGroupId 		= array(0);
 	var $_maxStringLenght		= 50;
 	var $_minPostLenght			= 5;
-
+	var $_topListLimit			= 10;
+	var $_rateTimeout;
 
 	/**
 	* Constructor-Fix for non PHP5-Servers
@@ -51,6 +52,7 @@ class ForumLibrary {
 		$this->_arrSettings		= $this->createSettingsArray();
 		$this->_arrLanguages 	= $this->createLanguageArray();
 		$this->_arrTranslations	= $this->createTranslationArray();
+		$this->_rateTimeout 	= 3600*6;
 	}
 
 
@@ -87,7 +89,7 @@ class ForumLibrary {
 		$last_post_id = $objRS->fields['last_post_id'];
 
 		//get all id's from the thread which is gonna be deleted
-		$query = '	SELECT id FROM '.DBPREFIX.'module_forum_postings
+		$query = '	SELECT id,attachment FROM '.DBPREFIX.'module_forum_postings
 					WHERE thread_id = '.$intThreadId;
 		$objRS = $objDatabase->Execute($query);
 		if($objRS === false){
@@ -96,7 +98,12 @@ class ForumLibrary {
 		$deletePostIds = array();
 		while(!$objRS->EOF){
 			$deletePostIds[] = $objRS->fields['id'];
+			$deleteAttachments[] = $objRS->fields['attachment'];
 			$objRS->MoveNext();
+		}
+
+		if(empty($deletePostIds)){
+			return false;
 		}
 
 		//now compare the fetched ids with the last_post_id from the stats table we retrieved before
@@ -122,6 +129,13 @@ class ForumLibrary {
 		if($objDatabase->Execute($query) === false){
 			die('Database error: '.$objDatabase->ErrorMsg());
 		}
+
+		foreach ($deleteAttachments as $file) {
+			if(!empty($file) && file_exists(ASCMS_FORUM_UPLOAD_PATH.'/'.$file)) {
+				unlink(ASCMS_FORUM_UPLOAD_PATH.'/'.$file);
+			}
+		}
+
 		$intAffectedRows = $objDatabase->Affected_Rows();
 		if(!isset($new_last_post_id)){
 			$query = '	UPDATE '.DBPREFIX.'module_forum_statistics
@@ -168,6 +182,18 @@ class ForumLibrary {
 			$this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
 			return false;
 		}
+
+		//check if post exists
+		$query = 'SELECT 1 FROM '.DBPREFIX.'module_forum_postings
+					WHERE id = '.$intPostId;
+		if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
+			if($objRS->RecordCount() == 0){
+				return false;
+			}
+		} else {
+			die('Database error: '.$objDatabase->ErrorMsg());
+		}
+
 		//check if it's the first post in a thread, warn and exit if true
 		$query = '	SELECT 1 FROM '.DBPREFIX.'module_forum_postings
 					WHERE id = '.$intPostId.'
@@ -213,7 +239,7 @@ class ForumLibrary {
 		}
 
 		//check if any posts are associated with this one (not used yet)
-		$query = '	SELECT id, category_id, thread_id, prev_post_id
+		$query = '	SELECT id, category_id, thread_id, prev_post_id, attachment
 					FROM '.DBPREFIX.'module_forum_postings
 					WHERE prev_post_id = '.$intPostId.'
 					AND thread_id = '.$intThreadId.'
@@ -223,6 +249,9 @@ class ForumLibrary {
 			if($objRS->RecordCount() > 0){
 				$this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_POST_STILL_ASSOCIATED'].' '.$_ARRAYLANG['TXT_FORUM_DELETE_ASSOCIATED_POSTS_FIRST']);
 			}else{
+				if(!empty($objRS->fields['attachment']) && file_exists(ASCMS_FORUM_UPLOAD_PATH.'/'.$objRS->fields['attachment'])) {
+					unlink(ASCMS_FORUM_UPLOAD_PATH.'/'.$objRS->fields['attachment']);
+				}
 				$query = '	DELETE FROM '.DBPREFIX.'module_forum_postings
 							WHERE id='.$intPostId;
 				if($objDatabase->Execute($query) !== false){
@@ -385,9 +414,9 @@ class ForumLibrary {
 	    $content = $this->stripBBtags($content);
 
     	if(isset($attributes['w']) && isset($attributes['h'])){
-		    return '<img border="0" width="'.$attributes['w'].'" height="'.$attributes['h'].'" src="'.htmlspecialchars($content, ENT_QUOTES, CONTREXX_CHARSET).'" alt="embedded_image" />';
+		    return '<img src="'.htmlspecialchars($content, ENT_QUOTES, CONTREXX_CHARSET).'" height="'.$attributes['h'].'" width="'.$attributes['w'].'" alt="user-posted image" border="0" />';
 	    }
-	    return '<img border="0" src="'.htmlspecialchars($content, ENT_QUOTES, CONTREXX_CHARSET).'" alt="embedded_image" />';
+	    return '<img src="'.htmlspecialchars($content, ENT_QUOTES, CONTREXX_CHARSET).'" alt="user-posted image" border="0" />';
 	}
 
 	/**
@@ -437,9 +466,248 @@ class ForumLibrary {
 			$objResult->MoveNext();
 		}
 
+		$arrReturn['banned_words'] = explode(',', $arrReturn['banned_words']);
+
 		return $arrReturn;
 	}
 
+
+	/**
+	 * checks if the message contains prohibited words
+	 *
+	 * @param string $message
+	 * @return bool
+	 */
+	function _hasBadWords($message){
+		foreach ($this->_arrSettings['banned_words'] as $regex) {
+			$regex = trim($regex);
+			if(!empty($regex) && preg_match('#('.$regex.')#i', $message, $match)){
+				return $match;
+			}
+		}
+		return false;
+	}
+
+
+	/**
+	 * Creates the html-source for a tag-cloud with all used keywords.
+	 *
+	 * @return	string		html-source for the tag cloud.
+	 */
+	function getTagCloud() {
+		$strReturn		= '';
+		$arrKeywords = $this->createKeywordArray();
+
+		if (count($arrKeywords) > 0) {
+			$strReturn = '<ul class="forumTagCloud">';
+			$intMinimum = min($arrKeywords);
+			$intMaximum = max($arrKeywords);
+			$intRange = $intMaximum - $intMinimum;
+
+			foreach ($arrKeywords as $strTag => $intKeywordValue) {
+				$strCssClass = '';
+
+				if ($intKeywordValue >= $intMinimum + $intRange * 1.0) {
+					$strCssClass = 'forumTagCloudLargest';
+				} else if($intKeywordValue >= $intMinimum + $intRange * 0.75) {
+					$strCssClass = 'forumTagCloudLarge';
+				} else if($intKeywordValue >= $intMinimum + $intRange * 0.5) {
+					$strCssClass = 'forumTagCloudMedium';
+				} else if($intKeywordValue >= $intMinimum + $intRange * 0.25) {
+					$strCssClass = 'forumTagCloudSmall';
+				} else {
+					$strCssClass = 'forumTagCloudSmallest';
+				}
+
+				$strReturn .= '<li class="'.$strCssClass.'"><a href="index.php?section=forum&amp;cmd=searchTags&amp;term='.$strTag.'" title="'.$strTag.'">'.$strTag.'</a></li>';
+			}
+
+			$strReturn .= '</ul>';
+		}
+
+		return $strReturn;
+	}
+
+
+	/**
+	 * Creates the html-source for a tag-hitlist with the $intNumberOfTags-most used keywords.
+	 *
+	 * @param	integer		$intNumberOfTags: the hitlist contains less or equals items than this value, depending on the number of keywords used.
+	 * @return	string		html-source for the tag hitlist.
+	 */
+	function getTagHitlist($intNumberOfTags = 0) {
+		$strReturn		= '';
+		$arrKeywords = $this->createKeywordArray();
+		arsort($arrKeywords); //Order Descending by Value
+
+		$intNumberOfTags = ($intNumberOfTags == 0) ? intval($this->_arrSettings['tag_count']) : intval($intNumberOfTags);
+		$intNumberOfTags = (count($arrKeywords) < $intNumberOfTags) ? count($arrKeywords) : $intNumberOfTags;
+
+		if ($intNumberOfTags > 0) {
+			$strReturn = '<ol class="forumTagHitlist">';
+
+			$intTagCounter = 0;
+			foreach ($arrKeywords as $strTag => $intKeywordValue) {
+				$strReturn .= '<li class="forumTagHitlistItem"><a href="index.php?section=forum&amp;cmd=searchTags&amp;term='.$strTag.'" title="'.$strTag.'">'.$strTag.'</a></li>';
+				++$intTagCounter;
+
+				if ($intTagCounter == $intNumberOfTags) {
+					break;
+				}
+			}
+
+			$strReturn .= '</ol>';
+		}
+
+		return $strReturn;
+	}
+
+
+	/**
+	 * Creates an array containing all used tags (keywords) with an calculated number of points. The points depend of the usage-frequency,
+	 * the number of hits for the assigned topics, voting of the assigned topics and the number of commend of the assigned topics. The
+	 * array is ordered alphabetically by the keywords.
+	 *
+	 * @return	array		Sorted array in the format $arrExample[Keyword] = NumberOfPoints.
+	 */
+	function createKeywordArray() {
+		$arrKeywords 	= array();
+		$arrEntries 	= $this->createPostArray(0, -1);
+		if (count($arrEntries) > 0) {
+			//Count total-values first
+			$intTotalHits = 1;
+			$count = 0;
+			foreach ($arrEntries as $intEntryId => $arrEntryValues) {
+				$intTotalHits += $arrEntryValues['views'];
+				$ratings[] = $arrEntryValues['rating'];
+				$minRating = min($ratings);
+				$maxRating = max($ratings);
+			}
+
+
+
+			foreach ($arrEntries as $intEntryId => $arrEntryValues) {
+				if(trim($arrEntryValues['keywords']) == ''){
+					continue;
+				}
+				//Calculate the keyword-value first
+				$intKeywordValue = 1; 																						#Base-Value
+				$intKeywordValue = $intKeywordValue + ceil(100 * $arrEntryValues['views'] / $intTotalHits);					#Include Hits (More visited = bigger font)
+				$intKeywordValue = $intKeywordValue + ceil(($arrEntryValues['rating']) * ($maxRating - $minRating));	#Include Votes (Better rated = bigger font)
+
+				$dblDateFactor = 0;
+				if ($arrEntryValues['timestamp_edited'] > time() - 7 * 24 * 60 * 60) {
+					$dblDateFactor = 1.0;
+				} elseif ($arrEntryValues['timestamp_edited'] > time() - 14 * 24 * 60 * 60) {
+					$dblDateFactor = 0.8;
+				} elseif ($arrEntryValues['timestamp_edited'] > time() - 30 * 24 * 60 * 60) {
+					$dblDateFactor = 0.6;
+				} elseif ($arrEntryValues['timestamp_edited'] > time() - 90 * 24 * 60 * 60) {
+					$dblDateFactor = 0.4;
+				} elseif ($arrEntryValues['timestamp_edited'] > time() - 180 * 24 * 60 * 60) {
+					$dblDateFactor = 0.2;
+				} else {
+					$dblDateFactor = 0.1;
+				}
+
+				$intKeywordValue = ceil($intKeywordValue * $dblDateFactor); #Include Date (Newer = bigger font)
+
+				//Split tags
+				$arrEntryTags = split(',',$arrEntryValues['keywords']);
+				foreach($arrEntryTags as $intKey => $strTag) {
+					$strTag = trim($strTag);
+					if (array_key_exists($strTag,$arrKeywords)) {
+						$arrKeywords[$strTag] += $intKeywordValue;
+					} else {
+						$arrKeywords[$strTag] = $intKeywordValue;
+					}
+
+				}
+			}
+		}
+
+		ksort($arrKeywords);
+
+		return $arrKeywords;
+	}
+
+
+	/**
+	 * returns an array containing attachment information
+	 *
+	 * @param string $file
+	 * @return array $arrReturn 'path','webpath','extension', false if attachment doesn't exist in filesystem
+	 */
+	function _getAttachment($file){
+		$file = addslashes($file);
+		if(!file_exists(ASCMS_FORUM_UPLOAD_PATH.'/'.$file) || empty($file)){
+			return false;
+		}
+		$pathinfo = pathinfo($file);
+		if(file_exists(ASCMS_MODULE_IMAGE_PATH.'/filebrowser/'.$pathinfo['extension'].'.gif')){
+			$icon = ASCMS_MODULE_IMAGE_WEB_PATH.'/filebrowser/'.$pathinfo['extension'].'.gif';
+		} else {
+			$icon = ASCMS_ADMIN_WEB_PATH.'/images/icons/save.png';
+		}
+		return array(
+			'name' => $file,
+			'path' => ASCMS_FORUM_UPLOAD_PATH.'/'.$file,
+			'webpath' => ASCMS_FORUM_UPLOAD_WEB_PATH.'/'.$file,
+			'extension' => $pathinfo['extension'],
+			'icon' => $icon,
+			'size' => filesize(ASCMS_FORUM_UPLOAD_PATH.'/'.$file),
+		);
+	}
+
+
+	/**
+	 * handles the upload of a file
+	 *
+	 * @param string $inputName name of the HTML input element used to upload the file
+	 * @return array $uploadedFileInfo array containing the properties for the uploaded file, false when upload has failed
+	 */
+	function _handleUpload($inputName){
+		global $_ARRAYLANG;
+		switch($_FILES[$inputName]['error']){
+			case UPLOAD_ERR_OK:
+				$pathinfo = pathinfo($_FILES[$inputName]['name']);
+				$newPath = ASCMS_FORUM_UPLOAD_PATH.'/';
+				$newName = $_FILES[$inputName]['name'];
+				$i=1;
+				while(file_exists($newPath.$newName)){
+					$newName = $pathinfo['filename'].'_'.$i++.'.'.$pathinfo['extension'];
+				}
+				if(!move_uploaded_file($_FILES[$inputName]['tmp_name'], $newPath.$newName)){
+					$this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_NOT_MOVABLE']);
+					return false;
+				}
+				return array(
+					'name' 		=> contrexx_addslashes($newName),
+					'path'		=> $newPath,
+					'size'		=> $_FILES[$inputName]['size'],
+				);
+			break;
+
+			case UPLOAD_ERR_INI_SIZE:
+			case UPLOAD_ERR_FORM_SIZE:
+				$this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_TOO_BIG']);
+				return false;
+			break;
+
+			case UPLOAD_ERR_PARTIAL:
+				$this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_PARTIAL']);
+				return false;
+			break;
+
+			case UPLOAD_ERR_NO_FILE:
+			default:
+				return array(
+					'name' 		=> '',
+					'path'		=> '',
+					'size'		=> 0,
+				);
+		}
+	}
 
 	/**
 	 * Creates an array containing all frontend-languages. Example: $arrValue[$langId]['short'] or $arrValue[$langId]['long']
@@ -646,6 +914,8 @@ class ForumLibrary {
 	 * if the second argument $pos is -1, then all posts are being returned, otherwise
 	 * it will be limited to the thread_paging setting
 	 *
+	 * if $intThreadId = 0 and $pos = -1, then all posts from all threads are returned
+	 *
 	 * @param 	integer $intThreadId ID of the thread
 	 * @param 	integer $pos position at which the posts will be read from (for paging)
 	 * @return 	array 	$arrReturn
@@ -657,8 +927,14 @@ class ForumLibrary {
 		$intThreadId = intval($intThreadId);
 		$arrReturn = array();
 
-		$objRSCount = $objDatabase->SelectLimit('	SELECT count(1) AS `cnt` FROM '.DBPREFIX.'module_forum_postings
-													WHERE thread_id='.$intThreadId, 1);
+		if($intThreadId > 0){
+			$WHERE = ' WHERE thread_id='.$intThreadId;
+		} elseif($pos < 0) {
+			$WHERE = ' ';
+		}
+
+		$objRSCount = $objDatabase->SelectLimit('	SELECT count(1) AS `cnt` FROM '.DBPREFIX.'module_forum_postings '.$WHERE, 1);
+
 		if($objRSCount !== false){
 			$this->_postCount = $objRSCount->fields['cnt'];
 		}
@@ -666,19 +942,24 @@ class ForumLibrary {
 			$this->_arrSettings['thread_paging'] = $this->_postCount+1;
 			$pos = 0;
 		}
+
 		$objResult = $objDatabase->SelectLimit('SELECT		id,
 															category_id,
+															thread_id,
 															user_id,
 															time_created,
 															time_edited,
 															is_locked,
 															is_sticky,
+															rating,
 															views,
 															icon,
+															keywords,
 															subject,
-															content
+															content,
+															attachment
 												FROM		'.DBPREFIX.'module_forum_postings
-												WHERE		thread_id='.$intThreadId.'
+												'.$WHERE.'
 												ORDER BY	prev_post_id, time_created ASC
 											', $this->_arrSettings['thread_paging'], $pos);
 		$intReplies = $objResult->RecordCount();
@@ -691,18 +972,25 @@ class ForumLibrary {
 			$content = $this->BBCodeToHTML($content);
 
 			$arrReturn[$objResult->fields['id']] =	array(	'id'				=>	$objResult->fields['id'],
+															'thread_id'			=>	$objResult->fields['thread_id'],
 															'category_id'		=>	$objResult->fields['category_id'],
 															'user_id'			=>	$objResult->fields['user_id'],
 															'user_name'			=>	$strAuthor,
 															'time_created'		=>	date(ASCMS_DATE_FORMAT,$objResult->fields['time_created']),
 															'time_edited'		=>	date(ASCMS_DATE_FORMAT,$objResult->fields['time_edited']),
+															'timestamp_created'	=>  $objResult->fields['time_created'],
+															'timestamp_edited'	=>  $objResult->fields['time_edited'],
 															'is_locked'			=>	intval($objResult->fields['is_locked']),
 															'is_sticky'			=>	intval($objResult->fields['is_sticky']),
+															'rating'			=>	intval($objResult->fields['rating']),
 															'post_icon'			=>	$this->getThreadIcon($objResult->fields['icon']),
 															'replies'			=>	$intReplies,
 															'views'				=>	intval($objResult->fields['views']),
+															'icon'				=>	intval($objResult->fields['icon']),
+															'keywords'			=>	htmlspecialchars($objResult->fields['keywords'], ENT_QUOTES, CONTREXX_CHARSET),
 															'subject'			=>	(!trim($objResult->fields['subject']) == '') ? htmlspecialchars($objResult->fields['subject'], ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_FORUM_NO_SUBJECT'],
 															'content'			=>	$content,
+															'attachment'		=>	htmlspecialchars($objResult->fields['attachment'], ENT_QUOTES, CONTREXX_CHARSET),
 															'post_number'		=>  $postNumber++,
 														);
 			$objResult->MoveNext();
@@ -850,14 +1138,20 @@ class ForumLibrary {
 	 * @param integer $intThreadId
 	 * @return bool success
 	 */
-
-	function updateViews($intThreadId){
+	function updateViews($intThreadId, $postId = 0){
 		global $objDatabase;
+
+		$where = '';
+		if($postId > 0){
+			$where = ' AND id='.intval($postId);
+		}
 		$query = '	UPDATE '.DBPREFIX.'module_forum_postings
 					SET views = (views + 1)
-					WHERE `thread_id` = '.$intThreadId.'
-					AND prev_post_id = 0
-					LIMIT 1';
+					WHERE `thread_id` = '.$intThreadId.
+					$where.' LIMIT 1';
+
+
+
 		if($objDatabase->Execute($query) === false){
 			return false;
 			echo "DB error in function: updateViews()";

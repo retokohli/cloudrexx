@@ -76,6 +76,9 @@ function search_getSearchPage($pos, $page_content)
 			$queryCalendar = search_searchQuery("calendar", $term);
 			$queryCalendarCats = search_searchQuery("calendar_cats", $term);
 		}
+		if (in_array('forum', $arrActiveModules)) {
+			$queryForum = search_searchQuery("forum", $term);
+		}
     }
 
     //Prm: Query,Section,Cmd,PageVar
@@ -93,6 +96,7 @@ function search_getSearchPage($pos, $page_content)
     $arrayDirectoryCats = array();
     $arrayCalendar = array();
     $arrayCalendarCats = array();
+    $arrayForum = array();
 
     if (!empty($querydocsys)) {
        	$arrayDocsys=search_getResultArray($querydocsys,"docsys","details","id=",$term);
@@ -120,13 +124,18 @@ function search_getSearchPage($pos, $page_content)
     	$arrayCalendar = search_getResultArray($queryCalendar, "calendar", "event", "id=", $term);
     	$arrayCalendarCats = search_getResultArray($queryCalendarCats, "calendar", "", "catid=", $term);
     }
+    if (!empty($queryForum)) {
+    	$arrayForum = search_getResultArray($queryForum, "forum", "thread", "id=", $term);
+    }
 
 
     //**************************************
 	//paging start
     //**************************************
 
-    $arraySearchResults=array_merge($arrayContent,$arrayNews,$arrayDocsys,$arrayPodcastMedia,$arrayPodcastCategory,$arrayShopProducts,$arrayGalleryCats,$arrayGalleryPics,$arrayMemberdir,$arrayMemberdirCats,$arrayDirectory,$arrayDirectoryCats,$arrayCalendar,$arrayCalendarCats);
+    $arraySearchResults=array_merge($arrayContent,$arrayNews,$arrayDocsys,$arrayPodcastMedia,$arrayPodcastCategory,$arrayShopProducts,
+    								$arrayGalleryCats,$arrayGalleryPics,$arrayMemberdir,$arrayMemberdirCats,$arrayDirectory,$arrayDirectoryCats,
+    								$arrayCalendar,$arrayCalendarCats,$arrayForum);
     if(is_array($arraySearchResults)){
         usort($arraySearchResults, "search_comparison");
     }
@@ -387,6 +396,17 @@ function search_searchQuery($section, $searchTerm)
 						AND (name LIKE ('%$searchTerm%'))";
 			break;
 
+			case "forum":
+			$query = "	SELECT thread_id AS id,
+							 subject AS title,
+						MATCH (subject, keywords, content) AGAINST ('%$searchTerm%') AS score
+						FROM ".DBPREFIX."module_forum_postings
+						WHERE (
+								subject LIKE ('%$searchTerm%')
+							OR  content LIKE ('%$searchTerm%')
+							OR  keywords LIKE ('%$searchTerm%')
+						)";
+			break;
 
 		default:
             break;
@@ -442,6 +462,7 @@ function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
 	        	case 'memberdir':
 	        	case 'directory':
 	        	case 'calendar':
+	        	case 'forum':
 	        		$temp_pagelink  = '?'.$pagevar.$objResult->fields['id'].$temp_section.$temp_cmd;
 	        		break;
 

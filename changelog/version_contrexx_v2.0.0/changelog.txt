@@ -13,7 +13,7 @@ Allgemein
   http://www.example.com/en/index.php?section=home
 - Die Grösse des Spamschutz-Bildes wurde angepasst. Die Schrift ist somit besser
   lesbar.
-- Englische Sprachversion kompletiert
+- Englische Sprachversion komplettiert
 - Sämtliche Contentseiten der Module und das buildin_style.css wurden neu
   geschrieben und gestaltet.
 
@@ -56,6 +56,17 @@ Modul: Community
 
 Modul: Directory
 - Anzahl Einträge pro Seite (Paging) kann frei definiert werden.
+
+Modul: Forum
+- Konfigurierbare Liste von verbotenen Wörtern hinzugefügt. (Regex erlaubt)
+  Beiträge, welche mit Ausdrücken in der Liste übereinstimmen, werden abgelehnt.
+- Datei-Upload bei Beiträgen hinzugefügt.
+- WYSIWIG-Editor mit BB-Code zum Bearbeiten von Beiträgen ein-/ausschaltbar
+- Es können pro Beitrag Sichworte erfasst und eine Tag-Cloud erstellt werden.
+  Siehe Forumbackend "Block Vorlage", inkl. neuem Block Template in den
+  Designvorlagen (-> forum.html)
+- Bewertungssystem für Beiträge.
+- Neue Übersichtsseite mit den beliebtesten Beiträgen.
 
 Modul: Gästebuch
 - Die Datums- und Zeitangabe können nun über die Konfigurationsdateien angepasst
@@ -141,6 +152,9 @@ Module: Community
 
 Modul: Directory
 - Pagingfehler wurde behoben.
+
+Modul: Forum
+- Benachtichtigungsübersicht zeigt deaktivierte Kategorien nicht mehr an.
 
 Modul: Dokumenten System
 - Festlegung der Start- und Endzeitpunkte funktioniert nun wieder.
