@@ -147,6 +147,32 @@ $objCache = new Cache();
 $objCache->startCache();
 
 //-------------------------------------------------------
+// Custom Yellowpay handling
+//-------------------------------------------------------
+// Yellowpay:  Restore the originating module (shop or egov),
+// from which the payment was initiated.
+// Also fix the cmd parameter, make sure it points to "success" for the shop,
+// and to "" (the default page) for the egov module.
+if (   isset($_GET['handler'])
+    && isset($_GET['result'])) {
+    // "source" must be set by a POST request by Yellowpay!
+    if (!empty($_POST['source'])) {
+        $_GET['section'] = $_POST['source'];
+        $_POST['section'] = $_POST['source'];
+        $_REQUEST['section'] = $_POST['source'];
+        if ($_REQUEST['section'] == 'shop') {
+            $_GET['cmd'] = 'success';
+            $_POST['cmd'] = 'success';
+            $_REQUEST['cmd'] = 'success';
+        } elseif ($_REQUEST['section'] == 'egov') {
+            $_GET['cmd'] = '';
+            $_POST['cmd'] = '';
+            $_REQUEST['cmd'] = '';
+        }
+    }
+}
+
+//-------------------------------------------------------
 // Load settings and configuration
 //-------------------------------------------------------
 
