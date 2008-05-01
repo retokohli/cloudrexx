@@ -1,4 +1,5 @@
 <?
+
 /**
  * eGovLibrary
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -20,535 +21,857 @@
  */
 class eGovLibrary {
 
-	var $arrForms;
-	var $arrCheckTypes;
+    private $arrForms;
 
-	function GetProduktName($ProductID){
-		global $objDatabase, $_ARRAYLANG;
-		$query_GPN = "SELECT product_name
-		          FROM ".DBPREFIX."module_egov_products
-		          WHERE product_id=".$ProductID."";
-		$objResult = $objDatabase->Execute($query_GPN);
-		if ($objResult->RecordCount() == 1) {
-			return $objResult->fields['product_name'];
-		}else{
-			return "";
-		}
-	}
+    static $arrCheckTypes = array(
+        1 => array(
+            'regex' => '.*',
+            'name' => 'TXT_EGOV_REGEX_EVERYTHING',
+        ),
+        2 => array(
+            'regex' => '^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$',
+            'name' => 'TXT_EGOV_REGEX_EMAIL',
+        ),
+        3 => array(
+            'regex' => '^(ht|f)tp[s]?\:\/\/[A-Za-z0-9\-\:\.\?\&\=]*$',
+            'name' => 'TXT_EGOV_REGEX_URL',
+        ),
+        4 => array(
+            'regex' => '^[A-Za-zהאבüגûפסטציט\ ]*$',
+            'name' => 'TXT_EGOV_REGEX_TEXT',
+        ),
+        5 => array(
+            'regex' => '^[0-9]*$',
+            'name' => 'TXT_EGOV_REGEX_NUMBERS',
+        ),
+    );
 
-	function GetProduktValue($FieldName="", $ProductID){
-		global $objDatabase, $_ARRAYLANG;
-		$query_GPN = "SELECT ".$FieldName."
-		          FROM ".DBPREFIX."module_egov_products
-		          WHERE product_id=".$ProductID."";
-		$objResult = $objDatabase->Execute($query_GPN);
-		if ($objResult->RecordCount() == 1) {
-			return $objResult->fields[$FieldName];
-		}else{
-			return "";
-		}
-	}
 
-	function GetEmailAdress($orderID){
-		global $objDatabase;
-		$ReturnValue = '';
-		$query = "SELECT order_values
-		          FROM ".DBPREFIX."module_egov_orders
-		          WHERE order_id=".$orderID."";
-		$objResult = $objDatabase->Execute($query);
-		if ($objResult->RecordCount() == 1) {
-			$ValuesArray = $objResult->fields["order_values"];
-		}
-		$ValuesArray = split(";;", $ValuesArray);
-		if(is_array($ValuesArray)){
-			for($y=0; $y<count($ValuesArray); $y++) {
-				list ($ArrayName, $ArrayValue) = split('::', $ValuesArray[$y]);
-				if($this->isEmail($ArrayValue)>0){
-					$ReturnValue = $ArrayValue;
-				}
-			}
-		}
-		return $ReturnValue;
-	}
+    /**
+     * OBSOLETE
+     *
+     * Use GetProduktValue('product_name', $ProductID) instead.
+     */
+    function GetProduktName($ProductID)
+    {
+        die("Error: Obsolete method GetProduktName(\$ProductID=$ProductID) called.  Please use GetProduktValue('product_name', \$ProductID) instead.");
+    }
 
-	function isEmail($Text){
-		$ismail = preg_match("!^\w[\w|\.|\-]+@\w[\w|\.|\-]+\.[a-zA-Z]{2,4}$!",$Text);
-		return $ismail;
-	}
 
-	function ParseFormValues($Field="", $Values=""){
-		$ValuesArray = split(";;", $Values);
-		for($y=0; $y<count($ValuesArray); $y++) {
-			if(!empty($ValuesArray[$y])){
-				list ($ArrayName, $ArrayValue) = split('::', $ValuesArray[$y]);
-				$FormArray[$ArrayName] = $ArrayValue;
-			}
-		}
-		if(!empty($ValuesArray[$y])){
-			return $FormArray[$Field];
-		}
-	}
+    /**
+     * Return the value in the field indicated by $FieldName
+     * for the given product ID
+     * @param   string  $FieldName    The field name
+     * @param   integer $ProductID    The product ID
+     * @return  string                The value from the database field
+     *                                on success, the empty string otherwise
+     * @static
+     */
+    //static
+    function GetProduktValue($FieldName, $ProductID)
+    {
+        global $objDatabase;
 
-	function MaskState($State){
-		global $_ARRAYLANG;
-		switch($State){
-    		case 0:
-    			return $_ARRAYLANG['TXT_STATE_NEW'];
-    		break;
-    		case 1:
-    			return $_ARRAYLANG['TXT_STATE_OK'];
-    		break;
-    		case 2:
-    			return $_ARRAYLANG['TXT_STATE_DELETED'];
-    		break;
-    		default:
+        $query = "
+            SELECT $FieldName
+              FROM ".DBPREFIX."module_egov_products
+             WHERE product_id=$ProductID
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && $objResult->RecordCount() == 1) {
+            return $objResult->fields[$FieldName];
+        }
+        return '';
+    }
+
+
+    /**
+     * Return the value in the field indicated by $FieldName
+     * for the given order ID
+     * @param   string  $FieldName    The field name
+     * @param   integer $order_id     The order ID
+     * @return  string                The value from the database field
+     *                                on success, the empty string otherwise
+     * @static
+     */
+    //static
+    function GetOrderValue($FieldName='', $order_id)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT $FieldName
+              FROM ".DBPREFIX."module_egov_orders
+             WHERE order_id=$order_id
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && $objResult->RecordCount() == 1) {
+            return $objResult->fields[$FieldName];
+        }
+        return '';
+    }
+
+
+    /**
+     * Search the order values for the order ID given for a valid
+     * e-mail address and return the last one found, if any.
+     *
+     * Note that the specific behaviour of taking only the last address
+     * into account seems to be by design. -- RK
+     * @param   integer   $order_id   The order ID
+     * @return  string                The e-mail address found, if any,
+     *                                or the empty string
+     * @static
+     */
+    //static
+    function GetEmailAdress($order_id)
+    {
+        global $objDatabase;
+
+        $arrOrderValues = eGovLibrary::getOrderValues($order_id);
+        $strEmail = '';
+        foreach ($arrOrderValues as $value) {
+            if (eGovLibrary::isEmail($value)) {
+                $strEmail = $value;
+            }
+        }
+        return $strEmail;
+    }
+
+
+    /**
+     * Run a plausibility test on the given string to determine
+     * whether it contains valid e-mail address(es) or not.
+     *
+     * @param   string    $Text     The string to test
+     * @return  integer             Zero if it does not seem to contain an
+     *                              e-mail address, the number of matches
+     *                              otherwise
+     * @static
+     */
+    //static
+    function isEmail($Text)
+    {
+        return preg_match(
+            '/^\w[\w\.\-]+@\w[\w\.\-]+\.[a-zA-Z]{2,4}$/', $Text
+        );
+    }
+
+
+    function ParseFormValues($Field='', $Values='')
+    {
+        $ValuesArray = split(';;', $Values);
+        for ($y = 0; $y < count($ValuesArray); ++$y) {
+            if (!empty($ValuesArray[$y])) {
+                list ($ArrayName, $ArrayValue) = split('::', $ValuesArray[$y]);
+                $FormArray[$ArrayName] = $ArrayValue;
+            }
+        }
+        if (!empty($ValuesArray[$y])) {
+            return $FormArray[$Field];
+        }
+        return '';
+    }
+
+
+    function MaskState($State)
+    {
+        global $_ARRAYLANG;
+
+        switch($State) {
+            case 0:
+                return $_ARRAYLANG['TXT_STATE_NEW'];
+                break;
+            case 1:
+                return $_ARRAYLANG['TXT_STATE_OK'];
+                break;
+            case 2:
+                return $_ARRAYLANG['TXT_STATE_DELETED'];
+                break;
+            default:
                 return 'unknown';
-    	}
-	}
-
-	function GetSettings($FilenName=''){
-		global $objDatabase;
-		$query_GPN = "SELECT ".$FilenName."
-		          FROM ".DBPREFIX."module_egov_settings";
-		$objResult = $objDatabase->Execute($query_GPN);
-		if ($objResult->RecordCount() == 1) {
-			return $objResult->fields[$FilenName];
-		}else{
-			return "";
-		}
-	}
-
-	function getFormFields($id){
-		global $objDatabase;
-		$arrFields = array();
-
-		$objFields  = $objDatabase->Execute("SELECT id, name, type,
-					attributes, is_required,
-					check_type, order_id
-					FROM ".DBPREFIX."module_egov_product_fields
-					WHERE product=".$id." ORDER BY order_id");
-
-		if ($objFields !== false) {
-			while (!$objFields->EOF) {
-				$arrFields[$objFields->fields['id']] = array(
-					'name'			=> $objFields->fields['name'],
-					'type'			=> $objFields->fields['type'],
-					'attributes'	=> $objFields->fields['attributes'],
-					'is_required'	=> $objFields->fields['is_required'],
-					'check_type'	=> $objFields->fields['check_type'],
-					'order_id'		=> $objFields->fields['order_id']
-				);
-				$objFields->MoveNext();
-			}
-		}
-		return $arrFields;
-	}
-
-	function initCheckTypes(){
-		global $objDatabase;
-
-		$this->arrCheckTypes = array(
-			1	=> array(
-				'regex'	=> '.*',
-				'name'	=> 'TXT_EGOV_REGEX_EVERYTHING'
-			),
-			2	=> array(
-				'regex'	=> '^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$',
-				'name'	=> 'TXT_EGOV_REGEX_EMAIL'
-			),
-			3	=> array(
-				'regex'	=> '^(ht|f)tp[s]?\:\/\/[A-Za-z0-9\-\:\.\?\&\=]*$',
-				'name'	=> 'TXT_EGOV_REGEX_URL'
-			),
-			4	=> array(
-				'regex'	=> '^[A-Za-zהאבüגûפסטציט\ ]*$',
-				'name'	=> 'TXT_EGOV_REGEX_TEXT'
-			),
-			5	=> array(
-				'regex'	=> '^[0-9]*$',
-				'name'	=> 'TXT_EGOV_REGEX_NUMBERS'
-			)
-		);
-	}
-
-	function initContactForms($allLanguages = false)
-	{
-		global $objDatabase, $_FRONTEND_LANGID;
-		$sqlWhere='';
-
-		$this->arrForms = array();
-
-		$objContactForms = $objDatabase->Execute("SELECT tblForm.product_id, tblForm.product_name, tblForm.product_desc,
-													tblForm.product_price, tblForm.product_per_day, tblForm.product_quantity,
-													tblForm.product_target_email, tblForm.product_target_url, tblForm.product_message,
-													COUNT(tblData.order_id) AS number, MAX(tblData.order_date) AS last
-												FROM ".DBPREFIX."module_egov_products AS tblForm
-												LEFT OUTER JOIN ".DBPREFIX."module_egov_orders AS tblData ON tblForm.product_id=tblData.order_product
-												".$sqlWhere."
-												GROUP BY tblForm.product_id
-												ORDER BY last DESC");
-		if ($objContactForms !== false) {
-			while (!$objContactForms->EOF) {
-				$this->arrForms[$objContactForms->fields['product_id']] = array(
-					'product_name'			=> $objContactForms->fields['product_name'],
-					'product_desc'			=> $objContactForms->fields['product_desc'],
-					'product_price'			=> intval($objContactForms->fields['product_price']),
-					'product_per_day'		=> $objContactForms->fields['product_per_day'],
-					'product_quantity'		=> intval($objContactForms->fields['product_quantity']),
-					'product_target_email'	=> $objContactForms->fields['product_target_email'],
-					'product_target_url'	=> $objContactForms->fields['product_target_url'],
-					'product_message'		=> $objContactForms->fields['product_message']
-				);
-
-				$objContactForms->MoveNext();
-			}
-		}
-	}
-
-	function _QuantityDropdown($id){
-		$dropdownSource = '<select name="contactFormField_Quantity" id="contactFormField_Quantity">';
-		$dropdownSource .= '</select>';
-		return $dropdownSource;
-	}
-
-	function _GetOrdersQuantityArray($id, $datum=''){
-		global $objDatabase;
-		$JSquantityArray = '';
-
-		if($datum==''){
-			$datum = date("Y").'-'.date("m");
-		}else{
-			$dat1 = substr($datum, 0, 4);
-			$dat2 = substr($datum, 4, 2);
-			$datum = $dat1.'-'.$dat2;
-		}
-		for($x=1; $x<=31; $x++){
-			$daydate = $x;
-			if(strlen($daydate)<2){
-				$daydate = '0'.$daydate;
-			}
-			$datumToSend = $datum.'-'.$daydate;
-			$JSquantityArray .= 'DayArray['.$x.'] = '.$this->_GetOrderedQuantity($id, $datumToSend).';'.chr(13);
-		}
-
-		return $JSquantityArray;
-	}
-
-	function _GetOrderedQuantity($id, $datum){
-		global $objDatabase;
-
-		list($year, $month, $day) = split('[-]', $datum);
-		$query = "SELECT count(*) as anzahl FROM ".DBPREFIX."module_egov_product_calendar WHERE calendar_day=".$day." and calendar_month=".$month." and calendar_year=".$year." and calendar_act=1 and calendar_product=".$id."";
-		$objResult = $objDatabase->Execute($query);
-
-		return $objResult->fields["anzahl"];
-	}
-
-	function getSourceCode($id, $preview = false, $show = false)
-	{
-		global $objDatabase, $_ARRAYLANG;
-
-		$arrFields = $this->getFormFields($id);
-
-		if($this->GetProduktValue("product_per_day", $id)=="yes"){
-
-			$last_y = date("Y")-1;
-			$query_ra = "SELECT calendar_product, calendar_order, calendar_day, calendar_month, calendar_year
-			       FROM ".DBPREFIX."module_egov_product_calendar
-			       WHERE calendar_product=".$id." and calendar_act=1 and calendar_year>".$last_y;
-			$objResult_ra = $objDatabase->Execute($query_ra);
-			if($objResult_ra !== false){
-				while (!$objResult_ra->EOF){
-					$ArrayRD[$objResult_ra->fields['calendar_year']][$objResult_ra->fields['calendar_month']][$objResult_ra->fields['calendar_day']]++;
-					$objResult_ra->MoveNext();
-				}
-			}
-			require_once dirname(__FILE__).'/cal/calendrier.php';
-			$AnzahlTxT = $_ARRAYLANG['TXT_EGOV_QUANTITY'];
-			$AnzahlDropdown = $this->_QuantityDropdown($id);
-			$QuantArray = $this->_GetOrdersQuantityArray($id, $_REQUEST["date"]);
-
-			$Datum4JS = $_REQUEST["date"];
-			if($Datum4JS==''){
-				$Datum4JS = date('Y').date('m').date('d');
-			}
-			$dat1 = substr($Datum4JS, 0, 4);
-			$dat2 = substr($Datum4JS, 4, 2);
-			$dat3 = substr($Datum4JS, 6, 2);
-			if(substr($dat3, 0, 1)=="0"){
-				$dat3 = substr($dat3, 1, 1);
-			}
-			$DatumJS = $dat3.'.'.$dat2.'.'.$dat1;
+        }
+    }
 
 
-			$CalenderSource = calendar($DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT, $this->GetSettings("set_calendar_date_desc"), $this->GetSettings("set_calendar_date_label"), $ArrayRD, $this->GetProduktValue("product_quantity", $id), '', $this->GetSettings("set_calendar_background"), $this->GetSettings("set_calendar_legende_1"), $this->GetSettings("set_calendar_legende_2"), $this->GetSettings("set_calendar_legende_3"), $this->GetSettings("set_calendar_color_1"), $this->GetSettings("set_calendar_color_2"), $this->GetSettings("set_calendar_color_3"), $this->GetSettings("set_calendar_border"));
+    /**
+     * Return the configuration setting from the database for the given name.
+     * @param   string  $name     The name of the configuration setting
+     * @return  string            The settings' value on success,
+     *                            false otherwise
+     * @static
+     */
+    //static
+    function GetSettings($name='')
+    {
+        global $objDatabase;
 
-		}else{
-			$CalenderSource = '';
-		}
+        $query = "
+            SELECT `value`
+              FROM ".DBPREFIX."module_egov_configuration
+             WHERE `name`='$name'
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && $objResult->RecordCount() > 0) {
+            return $objResult->fields['value'];
+        }
+//echo("eGovLibrary::GetSettings($name): Error: failed to get setting<br />");
+        return false;
+    }
 
-		$FormActionTarget 	= ($preview ? '../' : '')."index.php?section=egov&amp;id=".$id;
-		$PayPalPaymant		= $this->GetProduktValue('product_paypal', $id);
 
-		$sourcecode = $this->_getJsSourceCode($id, $arrFields, $preview, $show);
-		$sourcecode .= $this->arrForms[$id]['text'] . "<br /><br />\n";
-		$sourcecode .= "<div id=\"contactFormError\" style=\"color: red; display: none;\">";
-		$sourcecode .= $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'];
-		$sourcecode .= "</div>\n<br />";
-		$sourcecode .= "<!-- BEGIN contact_form -->\n";
-		$sourcecode .= "<form action=\"".$FormActionTarget."\" ";
-		$sourcecode .= "method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return checkAllFields();\" id=\"contactForm\">\n";
-		$sourcecode .= "<input type=\"hidden\" name=\"send\" value=\"exe\"  />";
-		$sourcecode .= "<input type=\"hidden\" name=\"paypal\" value=\"".$PayPalPaymant."\"  />";
-		$sourcecode .= $CalenderSource."";
-		$sourcecode .= "<table border=\"0\">\n";
+    /**
+     * Returns an array with available attributes for the form fields
+     * related to the product ID given.
+     * @param   integer   $id         The product ID
+     * @return  mixed                 The field array on success,
+     *                                false otherwise
+     * @static
+     */
+    //static
+    function getFormFields($id)
+    {
+        global $objDatabase;
 
-		foreach ($arrFields as $fieldId => $arrField) {
-			if ($arrField['is_required']) {
-				$required = "<span style=\"color: red;\">*</span>";
-			} else {
-				$required = "";
-			}
+        $objResult  = $objDatabase->Execute("
+            SELECT id, name, type, attributes, is_required, check_type, order_id
+              FROM ".DBPREFIX."module_egov_product_fields
+             WHERE product=$id
+             ORDER BY order_id
+        ");
+        if (!$objResult) {
+            return false;
+        }
+        $arrFields = array();
+        while (!$objResult->EOF) {
+            $arrFields[$objResult->fields['id']] = array(
+                'name' => $objResult->fields['name'],
+                'type' => $objResult->fields['type'],
+                'attributes' => $objResult->fields['attributes'],
+                'is_required' => $objResult->fields['is_required'],
+                'check_type' => $objResult->fields['check_type'],
+                'order_id' => $objResult->fields['order_id']
+            );
+            $objResult->MoveNext();
+        }
+        return $arrFields;
+    }
 
-			$sourcecode .= "<tr>\n";
-			$sourcecode .= "<td style=\"width:100px;\">".(($arrField['type'] != 'hidden' && $arrField['type'] != 'label') ? $arrField['name'] : '&nbsp;')." ".$required."</td>\n";
-			$sourcecode .= "<td>";
 
-			switch ($arrField['type']) {
-				case 'text':
-					$sourcecode .= "<input style=\"width:300px;\" type=\"text\" name=\"contactFormField_".$fieldId."\" value=\"".$arrField['attributes']."\" />\n";
-					break;
+    /**
+     * Returns an array with all form values stored with the order.
+     *
+     * Note that the names need to be unique for this to work!
+     * @param   integer   $order_id   The order ID
+     * @return  array                 The array with name/value pairs
+     * @static
+     */
+    //static
+    function getOrderValues($order_id)
+    {
+        $arrResult = array();
+        $order_values = eGovLibrary::GetOrderValue('order_values', $order_id);
+        $arrFields = preg_split('/;;/', $order_values, null, PREG_SPLIT_NO_EMPTY);
+        foreach ($arrFields as $field) {
+            list ($name, $value) = split('::', $field);
+            if ($name != '') {
+                $arrResult[$name] = $value;
+            }
+        }
+        return $arrResult;
+    }
 
-				case 'label':
-					$sourcecode .= $arrField['attributes']."\n";
-					break;
 
-				case 'checkbox':
-					$sourcecode .= "<input type=\"checkbox\" name=\"contactFormField_".$fieldId."\" value=\"1\"".($arrField['attributes'] == '1' ? ' checked="checked"' : '')." />\n";
-					break;
+    function initContactForms()
+    {
+        global $objDatabase;
 
-				case 'checkboxGroup':
-					$options = explode(',', $arrField['attributes']);
-					$nr = 0;
-					foreach ($options as $option) {
-						$sourcecode .= "<input type=\"checkbox\" name=\"contactFormField_".$fieldId."[]\" id=\"contactFormField_".$nr."_".$fieldId."\" value=\"".$option."\" /><label for=\"contactFormField_".$nr."_".$fieldId."\">".$option."</label>\n";
-						$nr++;
-					}
-					break;
+        $objResult = $objDatabase->Execute("
+            SELECT product_id, product_name, product_desc,
+                   product_price, product_per_day, product_quantity,
+                   product_target_email, product_target_url, product_message,
+                   COUNT(order_id) AS number, MAX(order_date) AS last
+              FROM ".DBPREFIX."module_egov_products
+              LEFT OUTER JOIN ".DBPREFIX."module_egov_orders
+                ON product_id=order_product
+             GROUP BY product_id
+             ORDER BY last DESC
+        ");
+        if (!$objResult) {
+            return false;
+        }
+        $this->arrForms = array();
+        while (!$objResult->EOF) {
+            $this->arrForms[$objResult->fields['product_id']] = array(
+                'product_name' => $objResult->fields['product_name'],
+                'product_desc' => $objResult->fields['product_desc'],
+                'product_price' => intval($objResult->fields['product_price']),
+                'product_per_day' => $objResult->fields['product_per_day'],
+                'product_quantity' => intval($objResult->fields['product_quantity']),
+                'product_target_email' => $objResult->fields['product_target_email'],
+                'product_target_url' => $objResult->fields['product_target_url'],
+                'product_message' => $objResult->fields['product_message']
+            );
+            $objResult->MoveNext();
+        }
+        return true;
+    }
 
-				case 'file':
-					$sourcecode .= "<input style=\"width:300px;\" type=\"file\" name=\"contactFormField_".$fieldId."\" />\n";
-					break;
 
-				case 'hidden':
-					$sourcecode .= "<input type=\"hidden\" name=\"contactFormField_".$fieldId."\" value=\"".$arrField['attributes']."\" />\n";
-					break;
+    function _QuantityDropdown()
+    {
+        return
+            '<select name="contactFormField_Quantity" '.
+            'id="contactFormField_Quantity" '.
+            'onchange="changeDropdown(document.getElementById(\'CalDate\').value);">'.
+            '</select>';
+    }
 
-				case 'password':
-					$sourcecode .= "<input style=\"width:300px;\" type=\"password\" name=\"contactFormField_".$fieldId."\" value=\"\" />\n";
-					break;
 
-				case 'radio':
-					$options = explode(',', $arrField['attributes']);
-					$nr = 0;
-					foreach ($options as $option) {
-						$sourcecode .= "<input type=\"radio\" name=\"contactFormField_".$fieldId."\" id=\"contactFormField_".$nr."_".$fieldId."\" value=\"".$option."\" /><label for=\"contactFormField_".$nr."_".$fieldId."\">".$option."</label>\n";
-						$nr++;
-					}
-					break;
+    function _GetOrdersQuantityArray($id, $datum='')
+    {
+        global $objDatabase;
 
-				case 'select':
-					$options = explode(',', $arrField['attributes']);
-					$nr = 0;
-					$sourcecode .= "<select style=\"width:300px;\" name=\"contactFormField_".$fieldId."\">\n";
-					foreach ($options as $option) {
-						$sourcecode .= "<option>".$option."</option>\n";
-					}
-					$sourcecode .= "</select>\n";
-					break;
+        $JSquantityArray = '';
+        if ($datum == '') {
+            $datum = date('Y-m');
+        } else {
+            $dat1 = substr($datum, 0, 4);
+            $dat2 = substr($datum, 4, 2);
+            $datum = "$dat1-$dat2";
+        }
+        for ($x = 1; $x <= 31; ++$x) {
+            $daydate = sprintf('%02u', $x);
+            $datumToSend = "$datum-$daydate";
+            $JSquantityArray .=
+                'DayArray['.$x.'] = '.
+                $this->_GetOrderedQuantity($id, $datumToSend).";\n";
+        }
+        return $JSquantityArray;
+    }
 
-				case 'textarea':
-					$sourcecode .= "<textarea style=\"width:300px; height:100px;\" name=\"contactFormField_".$fieldId."\"></textarea>\n";
-					break;
-			}
 
-			$sourcecode .= "</td>\n";
-			$sourcecode .= "</tr>\n";
-		}
-		$sourcecode .= "<tr>\n";
-		$sourcecode .= "<td>&nbsp;</td>\n";
-		$sourcecode .= "<td>\n";
-		if(count($arrFields)>0){
-			$sourcecode .= "<input type=\"reset\" value=\"".$_ARRAYLANG['TXT_EGOV_DELETE']."\" /> <input type=\"submit\" name=\"submitContactForm\" value=\"".$_ARRAYLANG['TXT_EGOV_SUBMIT']."\" />\n";
-		}
-		$sourcecode .= "</td>\n";
-		$sourcecode .= "</tr>\n";
-		$sourcecode .= "</table>\n";
+    function _GetOrderedQuantity($id, $datum)
+    {
+        global $objDatabase;
 
-		$sourcecode .= "</form>";
-		$sourcecode .= "<!-- END contact_form -->\n";
+        list ($year, $month, $day) = split('-', $datum);
+        $query = "
+            SELECT count(*) AS anzahl
+              FROM ".DBPREFIX."module_egov_product_calendar
+             WHERE calendar_day=$day
+               AND calendar_month=$month
+               AND calendar_year=$year
+               AND calendar_act=1
+               AND calendar_product=$id
+        ";
+        $objResult = $objDatabase->Execute($query);
+        return $objResult->fields['anzahl'];
+    }
 
-		return $sourcecode;
-	}
 
-	function _getJsSourceCode($id, $formFields, $preview = false, $show = false)
-	{
-		$code = "<script type=\"text/javascript\">\n";
-		$code .= "// <![CDATA[\n";
-		$code .= "fields = new Array();\n";
-		$this->initCheckTypes();
-		foreach ($formFields as $key => $field) {
-			$code .= "fields[$key] = Array(\n";
-			$code .= "\t'{$field['name']}',\n";
-			$code .= "\t{$field['is_required']},\n";
-			if ($preview) {
-				$code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
-			} elseif ($show) {
-				$code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
-			} else {
-				$code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
-			}
-			$code .= "\t'".$field['type']."');\n";
-		}
-		/*
-		if($this->GetProduktValue("product_per_day", $_REQUEST["id"]=="yes")){
-			$code .= "fields[1000] = Array('Datum', 1, '', 'text');\n";
-		}
-		*/
-		$code .= "var readBefore = false;\n";
-		$code .= "var borderBefore = \"\";\n";
+    function getSourceCode($id, $preview=false, $show=false)
+    {
+        global $objDatabase, $_ARRAYLANG;
 
-		$code .= "\nfunction checkAllFields() {\n";
-		$code .= "	var isOk = true;\n";
-		$code .= "	for (var field in fields) { \n";
-		$code .= "		if (!readBefore) {\n";
-		$code .= "			if (document.getElementsByName('contactFormField_' + field)[0]) {borderBefore = document.getElementsByName('contactFormField_' + field)[0].style.border;} else {borderBefore = '#000000';}\n";
-		$code .= "			readBefore = true;\n";
-		$code .= "		}\n\n";
+        $arrFields = eGovLibrary::getFormFields($id);
+        $flagYellowbill = false;
+        $yellowpayEnabled =
+            eGovLibrary::GetProduktValue('yellowpay', $id);
+        $yellowpayAcceptedPaymentMethods =
+            eGovLibrary::GetSettings('yellowpay_accepted_payment_methods');
+//echo("$yellowpayEnabled/$yellowpayAcceptedPaymentMethods<br />");
+        if (   $yellowpayEnabled
+            && preg_match('/yellowbill/', $yellowpayAcceptedPaymentMethods)) {
+            $flagYellowbill = true;
+            // Hack: If yellowbill is one of the payment methods available,
+            // add the necessary fields with an ID, so they can be found.
+            // The special is_required value of -1 makes them easy to skip
+            // during validation of the fields when a different payment
+            // method is selected.
+            $order = count($arrFields);
+            $arrFields[] = array(
+                'name' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_ESR'],
+                'type' => 'text',
+                'attributes' => '" id="yellow1',
+                'is_required' => -1,
+                'check_type' => 1,
+                'order_id' => ++$order,
+            );
+            $arrFields[] = array(
+                'name' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_REFERENCE'],
+                'type' => 'text',
+                'attributes' => '" id="yellow2',
+                'is_required' => 0,
+                'check_type' => 5,
+                'order_id' => ++$order,
+            );
+            $arrFields[] = array(
+                'name' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_LASTNAME'],
+                'type' => 'text',
+                'attributes' => '" id="yellow3',
+                'is_required' => -1,
+                'check_type' => 4,
+                'order_id' => ++$order,
+            );
+            $arrFields[] = array(
+                'name' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_ADDRESS'],
+                'type' => 'text',
+                'attributes' => '" id="yellow4',
+                'is_required' => -1,
+                'check_type' => 1,
+                'order_id' => ++$order,
+            );
+            $arrFields[] = array(
+                'name' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_ZIP'],
+                'type' => 'text',
+                'attributes' => '" id="yellow5',
+                'is_required' => -1,
+                'check_type' => 5,
+                'order_id' => ++$order,
+            );
+            $arrFields[] = array(
+                'name' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_CITY'],
+                'type' => 'text',
+                'attributes' => '" id="yellow6',
+                'is_required' => -1,
+                'check_type' => 4,
+                'order_id' => ++$order,
+            );
+        }
+        $strCalendarSource = '';
+        if (eGovLibrary::GetProduktValue('product_per_day', $id) == 'yes') {
+            $strCalendarSource = $this->getCalendarSource($id);
+        }
 
-		$code .= "		var type = fields[field][3];\n";
-		$code .= "		if (type == 'text' || type == 'file' || type == 'password' || type == 'textarea') {\n";
-		$code .= "			value = document.getElementsByName('contactFormField_' + field)[0].value;\n";
-		$code .= "			if (value == \"\" && isRequiredNorm(fields[field][1], value)) {\n";
-		$code .= "				isOk = false;\n";
-		$code .= "				document.getElementsByName('contactFormField_' + field)[0].style.border = \"red 1px solid\"; \n";
-		$code .= "			} else if (value != \"\" && !matchType(fields[field][2], value)) {\n";
-		$code .= "				isOk = false;\n";
-		$code .= "				document.getElementsByName('contactFormField_' + field)[0].style.border = \"red 1px solid\"; \n";
-		$code .= "			} else {\n";
-		$code .= "				document.getElementsByName('contactFormField_' + field)[0].style.border = borderBefore; \n";
-		$code .= "			}\n";
-		$code .= "		} else if (type == 'checkbox') {\n";
-		$code .= "			if (!isRequiredCheckbox(fields[field][1], field)) {\n";
-		$code .= "				isOk = false;\n";
-		$code .= "			}\n";
-		$code .= "		} else if (type == 'checkboxGroup') {\n";
-		$code .= "			if (!isRequiredCheckBoxGroup(fields[field][1], field)) {\n";
-		$code .= "				isOk = false;\n";
-		$code .= "			}\n";
-		$code .= "		} else if (type == 'radio') {\n";
-		$code .= "			if (!isRequiredRadio(fields[field][1], field)) {\n";
-		$code .= "				isOk = false;\n";
-		$code .= "			}\n";
-		$code .= "		}\n";
-		$code .= "	}\n\n";
-		$code .= "	if (!isOk) {\n";
-		$code .= "		document.getElementById('contactFormError').style.display = \"block\";\n";
-		$code .= "	}\n";
-		$code .= "	return isOk;\n";
-		$code .= "} \n\n";
+        $FormActionTarget =
+            ($preview ? '../' : '').
+            "index.php?section=egov&amp;id=$id";
 
-		// This is for checking normal text input field if they are required.
-		// If yes, it also checks if the field is set. If it is not set, it returns true.
-		$code .= "function isRequiredNorm(required, value) {\n";
-		$code .= "	if (required == 1) {\n";
-		$code .= "		if (value == \"\") { \n";
-		$code .= "			return true; \n";
-		$code .= "		} \n";
-		$code .= "	} \n";
-		$code .= "	return false; \n";
-		$code .= "} \n\n";
+        //$sourcecode = $this->_getJsSourceCode($id, $arrFields, $preview, $show).
+        $sourcecode = $this->_getJsSourceCode($arrFields, $preview, $show).
+// TODO: This index is never set
+//            $this->arrForms[$id]['text'].
+            "\n".
+            "<div id=\"contactFormError\" style=\"color: red; display: none;\">".
+            "<br />".$_ARRAYLANG['TXT_EGOV_CHECK_YOUR_INPUT'].
+            "</div>\n<br />\n".
+            "<!-- BEGIN contact_form -->\n".
+            "<form action=\"$FormActionTarget\" ".
+            "method=\"post\" enctype=\"multipart/form-data\" ".
+            "onsubmit=\"return checkAllFields();\" id=\"contactForm\">\n".
+            "<input type=\"hidden\" name=\"send\" value=\"1\" />".
+            ($flagYellowbill
+              ? "<input id=\"bill1\" type=\"hidden\" name=\"txtESR_Member\" value=\"\" />".
+                "<input id=\"bill2\" type=\"hidden\" name=\"txtESR_Ref\" value=\"\" />".
+                "<input id=\"bill3\" type=\"hidden\" name=\"txtBLastName\" value=\"\" />".
+                "<input id=\"bill4\" type=\"hidden\" name=\"txtBAddr1\" value=\"\" />".
+                "<input id=\"bill5\" type=\"hidden\" name=\"txtBZipCode\" value=\"\" />".
+                "<input id=\"bill6\" type=\"hidden\" name=\"txtBCity\" value=\"\" />"
+              : ''
+             ).
+//            "<input type=\"hidden\" name=\"paypal\" value=\"".eGovLibrary::GetProduktValue('product_paypal', $id)."\" />".
+            $strCalendarSource.
+            "<table summary=\"\" border=\"0\">\n";
+        foreach ($arrFields as $fieldId => $arrField) {
+            $sourcecode .=
+                "<tr>\n<td style=\"width:180px;\">".
+                ($arrField['type'] != 'hidden' && $arrField['type'] != 'label'
+                    ? $arrField['name'] : '&nbsp;'
+                ).
+                ($arrField['is_required']
+                    ? ' <span style="color: red;">*</span>'
+                    : ''
+                ).
+                "</td>\n<td>";
+            switch ($arrField['type']) {
+                case 'text':
+                    $sourcecode .=
+                        "<input style=\"width:300px;\" type=\"text\" ".
+                        "name=\"contactFormField_$fieldId\" ".
+                        "value=\"".$arrField['attributes']."\" />\n";
+                    break;
+                case 'label':
+                    $sourcecode .= $arrField['attributes']."\n";
+                    break;
+                case 'checkbox':
+                    $sourcecode .=
+                        "<input type=\"checkbox\" ".
+                        "name=\"contactFormField_$fieldId\" ".
+                        "value=\"1\"".
+                        ($arrField['attributes'] == '1'
+                            ? ' checked="checked"' : ''
+                        )." />\n";
+                    break;
+                case 'checkboxGroup':
+                    $options = explode(',', $arrField['attributes']);
+                    $nr = 0;
+                    foreach ($options as $option) {
+                        $sourcecode .=
+                            "<input type=\"checkbox\" ".
+                            "name=\"contactFormField_{$fieldId}[]\" ".
+                            "id=\"contactFormField_{$nr}_$fieldId\" ".
+                            "value=\"$option\" />".
+                            "<label for=\"contactFormField_{$nr}_$fieldId\">$option</label>\n";
+                        ++$nr;
+                    }
+                    break;
+                case 'file':
+                    $sourcecode .=
+                        "<input style=\"width:300px;\" type=\"file\" ".
+                        "name=\"contactFormField_$fieldId\" />\n";
+                    break;
+                case 'hidden':
+                    $sourcecode .=
+                        "<input type=\"hidden\" ".
+                        "name=\"contactFormField_$fieldId\" ".
+                        "value=\"".$arrField['attributes']."\" />\n";
+                    break;
+                case 'password':
+                    $sourcecode .=
+                        "<input style=\"width:300px;\" type=\"password\" ".
+                        "name=\"contactFormField_$fieldId\" value=\"\" />\n";
+                    break;
+                case 'radio':
+                    $options = explode(',', $arrField['attributes']);
+                    $nr = 0;
+                    foreach ($options as $option) {
+                        $sourcecode .=
+                            "<input type=\"radio\" name=\"contactFormField_$fieldId\" id=\"contactFormField_{$nr}_$fieldId\" value=\"$option\" />".
+                            "<label for=\"contactFormField_{$nr}_$fieldId\">$option</label>\n";
+                        ++$nr;
+                    }
+                    break;
+                case 'select':
+                    $options = explode(',', $arrField['attributes']);
+                    $nr = 0;
+                    $sourcecode .=
+                        "<select style=\"width:300px;\" name=\"contactFormField_$fieldId\">\n";
+                    foreach ($options as $option) {
+                        $sourcecode .= "<option>$option</option>\n";
+                    }
+                    $sourcecode .= "</select>\n";
+                    break;
+                case 'textarea':
+                    $sourcecode .= "<textarea style=\"width:300px; height:100px;\" name=\"contactFormField_$fieldId\"></textarea>\n";
+                    break;
+            }
+            $sourcecode .=
+                "</td>\n</tr>\n";
+        }
 
-		// Matches the type of the value and pattern. Returns true if it matched, false if not.
-		$code .= "function matchType(pattern, value) {\n";
-		$code .= "	var reg = new RegExp(pattern);\n";
-		$code .= "	if (value.match(reg)) {\n";
-		$code .= "		return true;\n";
-		$code .= "	}\n";
-		$code .= "	return false;\n";
-		$code .= "} \n\n";
+        // Add payment selection or hidden fields here,
+        // according to price and payment settings.
+        $paymentPaypal = eGovLibrary::GetProduktValue('product_paypal', $id);
+        $paymentYellowpay = eGovLibrary::GetProduktValue('yellowpay', $id);
+        $paymentPrice = eGovLibrary::GetProduktValue('product_price', $id);
+        if ($paymentPrice > 0) {
+            $sourcecode .=
+                '<tr><td>'.
+                $_ARRAYLANG['TXT_EGOV_PAYMENT_HANDLER']."</td>\n".
+                '<td><select style="width: 306px;" name="handler" id="handler" '.
+                "onchange=\"toggleYellowpayFields();\">\n";
+            if ($paymentYellowpay) {
+                // Yellowpay is enabled
+                $objYellowpay = new Yellowpay(
+                    eGovLibrary::GetSettings('yellowpay_accepted_payment_methods'),
+                    eGovLibrary::GetSettings('yellowpay_authorization')
+                );
+                $sourcecode .= $objYellowpay->getAcceptedPaymentMethodMenuOptions();
+            }
+            if ($paymentPaypal) {
+                // PayPal is enabled
+                $sourcecode .=
+                    '<option value="paypal">'.$_ARRAYLANG['TXT_EGOV_PAYPAL'].'</option>';
+            }
+            $sourcecode .= "</select>\n</td></tr>";
+        }
 
-		// Checks if a checkbox is required but not set. Returns false when finding an error.
-		$code .= "function isRequiredCheckbox(required, field) {\n";
-		$code .= "	if (required == 1) {\n";
-		$code .= "		if (!document.getElementsByName('contactFormField_' + field)[0].checked) {\n";
-		$code .= "			document.getElementsByName('contactFormField_' + field)[0].style.border = \"red 1px solid\"; \n";
-		$code .= "			return false;\n";
-		$code .= "		}\n";
-		$code .= "	}\n";
-		$code .= "	document.getElementsByName('contactFormField_' + field)[0].style.border = borderBefore; \n";
-		$code .= "	return true;\n";
-		$code .= "}\n\n";
+        $sourcecode .=
+            "<tr>\n<td>&nbsp;</td>\n<td>\n";
+        if (count($arrFields) > 0) {
+            $sourcecode .=
+                "<br /><input type=\"reset\" value=\"".
+                $_ARRAYLANG['TXT_EGOV_DELETE']."\" />\n".
+                "<input type=\"submit\" name=\"submitContactForm\" value=\"".
+                $_ARRAYLANG['TXT_EGOV_SUBMIT']."\" />\n";
+        }
+        $sourcecode .=
+            "</td>\n</tr>\n</table>\n</form>".
+            ($flagYellowbill
+              ? "<script type=\"text/javascript\">\n".
+                "/* <![CDATA[ */\n".
+                "  toggleYellowpayFields();".
+                "/* ]]> */\n".
+                "</script>\n"
+              : ''
+            ).
+            "<!-- END contact_form -->\n";
+        return $sourcecode;
+    }
 
-		// Checks if a multile checkbox is required but not set. Returns false when finding an error.
-		$code .= "function isRequiredCheckBoxGroup(required, field) {\n";
-		$code .= "	if (required == true) {\n";
-		$code .= "		var boxes = document.getElementsByName('contactFormField_' + field + '[]');\n";
-		$code .= "		var checked = false;\n";
-		$code .= "		for (var i = 0; i < boxes.length; i++) { \n";
-		$code .= " 			if (boxes[i].checked) {\n";
-		$code .= "				checked = true;\n";
-		$code .= "			}\n";
-		$code .= "		}\n";
-		$code .= "		if (checked) {\n";
-		$code .= "			setListBorder('contactFormField_' + field + '[]', borderBefore);\n";
-		$code .= "			return true;\n";
-		$code .= "		} else {\n";
-		$code .= "			setListBorder('contactFormField_' + field + '[]', '1px red solid');\n";
-		$code .= "			return false;\n";
-		$code .= "		}\n";
-		$code .= "	} else { \n";
-		$code .= "		return true;\n";
-		$code .= "	}\n";
-		$code .= "}\n\n";
 
-		// Checks if some radio button need to be checked. Returns false if it finds an error
-		$code .= "function isRequiredRadio(required, field) {\n";
-		$code .= "	if (required == 1) {\n";
-		$code .= "		var buttons = document.getElementsByName('contactFormField_' + field);\n";
-		$code .= "		var checked = false;\n";
-		$code .= "		for (var i = 0; i < buttons.length; i++) {\n";
-		$code .= "			if (buttons[i].checked) {\n";
-		$code .= "				checked = true;\n";
-		$code .= "			}\n";
-		$code .= "		}\n";
-		$code .= "		if (checked) {\n";
-		$code .= "			setListBorder('contactFormField_' + field, borderBefore);\n";
-		$code .= "			return true;\n";
-		$code .= "		} else { \n";
-		$code .= "			setListBorder('contactFormField_' + field, '1px red solid');\n";
-		$code .= "			return false;\n";
-		$code .= "		}\n";
-		$code .= "	} else { \n";
-		$code .= "		return true;\n";
-		$code .="	}\n";
-		$code .= "}\n\n";
+    //function _getJsSourceCode($id, $formFields, $preview=false, $show=false)
+    function _getJsSourceCode($formFields, $preview=false, $show=false)
+    {
+        $code =
+            "<script type=\"text/javascript\">\n".
+            "// <![CDATA[\n".
+            "fields = new Array();\n";
+        foreach ($formFields as $key => $field) {
+            $code .=
+                "fields[$key] = Array(\n".
+                "  '{$field['name']}',\n".
+                "  {$field['is_required']},\n";
+            if ($preview) {
+                $code .= "  '".
+                addslashes(eGovLibrary::$arrCheckTypes[$field['check_type']]['regex']).
+                "',\n";
+            } elseif ($show) {
+                $code .= "  '".
+                addslashes(eGovLibrary::$arrCheckTypes[$field['check_type']]['regex']).
+                "',\n";
+            } else {
+                $code .= "  '".
+                addslashes(eGovLibrary::$arrCheckTypes[$field['check_type']]['regex']).
+                "',\n";
+            }
+            $code .= "  '".$field['type']."');\n";
+        }
+        /*
+        if (eGovLibrary::GetProduktValue('product_per_day', $_REQUEST['id'] == 'yes')) {
+            $code .= "fields[1000] = Array('Datum', 1, '', 'text');\n";
+        }
+        */
+        $code .=
+            "var readBefore = false;\n".
+            "var borderBefore = \"\";\n".
 
-		// Sets the border attribute of a group of checkboxes or radiobuttons
-		$code .= "function setListBorder(field, borderColor) {\n";
-		$code .= "	var boxes = document.getElementsByName(field);\n";
-		$code .= "	for (var i = 0; i < boxes.length; i++) {\n";
-		$code .= "		boxes[i].style.border = borderColor;\n";
-		$code .= "	}\n";
-		$code .= "}\n\n";
+            "\nfunction checkAllFields() {\n".
+            "    var isOk = true;\n".
+            "    for (var field in fields) {\n".
+            "        if (!readBefore) {\n".
+            "            if (document.getElementsByName('contactFormField_' + field)[0]) {borderBefore = document.getElementsByName('contactFormField_' + field)[0].style.border;} else {borderBefore = '#000000';}\n".
+            "            readBefore = true;\n".
+            "        }\n\n".
 
-		$code .= "// ]]>\n";
-		$code .= "</script>\n";
-		return $code;
-	}
+            "        var type = fields[field][3];\n".
+            "        if (type == 'text' || type == 'file' || type == 'password' || type == 'textarea') {\n".
+            "            value = document.getElementsByName('contactFormField_' + field)[0].value;\n".
+            "            if (value == \"\" && isRequiredNorm(fields[field][1], value)) {\n".
+            "                isOk = false;\n".
+            "                document.getElementsByName('contactFormField_' + field)[0].style.border = \"red 1px solid\";\n".
+            "            } else if (value != \"\" && !matchType(fields[field][2], value)) {\n".
+            "                isOk = false;\n".
+            "                document.getElementsByName('contactFormField_' + field)[0].style.border = \"red 1px solid\";\n".
+            "            } else {\n".
+            "                document.getElementsByName('contactFormField_' + field)[0].style.border = borderBefore;\n".
+            "            }\n".
+            "        } else if (type == 'checkbox') {\n".
+            "            if (!isRequiredCheckbox(fields[field][1], field)) {\n".
+            "                isOk = false;\n".
+            "            }\n".
+            "        } else if (type == 'checkboxGroup') {\n".
+            "            if (!isRequiredCheckBoxGroup(fields[field][1], field)) {\n".
+            "                isOk = false;\n".
+            "            }\n".
+            "        } else if (type == 'radio') {\n".
+            "            if (!isRequiredRadio(fields[field][1], field)) {\n".
+            "                isOk = false;\n".
+            "            }\n".
+            "        }\n".
+            "    }\n\n".
+            "    if (!isOk) {\n".
+            "        document.getElementById('contactFormError').style.display = \"block\";\n".
+            "    } else {\n".
+            "        if (document.getElementById('bill1')) {\n".
+            "            document.getElementById('bill1').value = document.getElementById('yellow1').value;\n".
+            "            document.getElementById('bill2').value = document.getElementById('yellow2').value;\n".
+            "            document.getElementById('bill3').value = document.getElementById('yellow3').value;\n".
+            "            document.getElementById('bill4').value = document.getElementById('yellow4').value;\n".
+            "            document.getElementById('bill5').value = document.getElementById('yellow5').value;\n".
+            "            document.getElementById('bill6').value = document.getElementById('yellow6').value;\n".
+            "        }\n".
+            "    }".
+            "    return isOk;\n".
+            "}\n\n".
 
+        // This is for checking normal text input field if they are required.
+        // If yes, it also checks if the field is set. If it is not set, it returns true.
+        // Uses a hack to skip Yellowbill fields when this payment method
+        // is not selected.
+            "function isRequiredNorm(required, value) {\n".
+            "    if (   (   required == -1\n".
+            "            && document.getElementById('handler')\n".
+            "            && document.getElementById('handler').value == 'yellowbill')\n".
+            "        ||  required == 1) {\n".
+            "        if (value == \"\") {\n".
+            "            return true;\n".
+            "        }\n".
+            "    }\n".
+            "    return false;\n".
+            "}\n\n".
+
+        // Matches the type of the value and pattern. Returns true if it matched, false if not.
+            "function matchType(pattern, value) {\n".
+            "    var reg = new RegExp(pattern);\n".
+            "    if (value.match(reg)) {\n".
+            "        return true;\n".
+            "    }\n".
+            "    return false;\n".
+            "}\n\n".
+
+        // Checks if a checkbox is required but not set. Returns false when finding an error.
+            "function isRequiredCheckbox(required, field) {\n".
+            "    if (required == 1) {\n".
+            "        if (!document.getElementsByName('contactFormField_' + field)[0].checked) {\n".
+            "            document.getElementsByName('contactFormField_' + field)[0].style.border = \"red 1px solid\";\n".
+            "            return false;\n".
+            "        }\n".
+            "    }\n".
+            "    document.getElementsByName('contactFormField_' + field)[0].style.border = borderBefore;\n".
+            "    return true;\n".
+            "}\n\n".
+
+        // Checks if a multiple checkbox is required but not set. Returns false when finding an error.
+            "function isRequiredCheckBoxGroup(required, field) {\n".
+            "    if (required == true) {\n".
+            "        var boxes = document.getElementsByName('contactFormField_' + field + '[]');\n".
+            "        var checked = false;\n".
+            "        for (var i = 0; i < boxes.length; i++) {\n".
+            "             if (boxes[i].checked) {\n".
+            "                checked = true;\n".
+            "            }\n".
+            "        }\n".
+            "        if (checked) {\n".
+            "            setListBorder('contactFormField_' + field + '[]', borderBefore);\n".
+            "            return true;\n".
+            "        } else {\n".
+            "            setListBorder('contactFormField_' + field + '[]', '1px red solid');\n".
+            "            return false;\n".
+            "        }\n".
+            "    } else {\n".
+            "        return true;\n".
+            "    }\n".
+            "}\n\n".
+
+        // Checks if some radio button need to be checked. Returns false if it finds an error
+            "function isRequiredRadio(required, field) {\n".
+            "    if (required == 1) {\n".
+            "        var buttons = document.getElementsByName('contactFormField_' + field);\n".
+            "        var checked = false;\n".
+            "        for (var i = 0; i < buttons.length; i++) {\n".
+            "            if (buttons[i].checked) {\n".
+            "                checked = true;\n".
+            "            }\n".
+            "        }\n".
+            "        if (checked) {\n".
+            "            setListBorder('contactFormField_' + field, borderBefore);\n".
+            "            return true;\n".
+            "        } else {\n".
+            "            setListBorder('contactFormField_' + field, '1px red solid');\n".
+            "            return false;\n".
+            "        }\n".
+            "    } else {\n".
+            "        return true;\n".
+            "    }\n".
+            "}\n\n".
+
+        // Sets the border attribute of a group of checkboxes or radiobuttons
+            "function setListBorder(field, borderColor) {\n".
+            "    var boxes = document.getElementsByName(field);\n".
+            "    for (var i = 0; i < boxes.length; i++) {\n".
+            "        boxes[i].style.border = borderColor;\n".
+            "    }\n".
+            "}\n\n".
+
+        // Show Yellowbill fields when this payment method is selected,
+        // hide them otherwise.
+            "function toggleYellowpayFields() {\n".
+            "    if (!document.getElementById('yellow1')) {\n".
+//            "alert('no yello');\n".
+            "        return;\n".
+            "    }\n".
+            "    display = (document.getElementById('handler').value == 'yellowbill' ? 1 : 0);\n".
+//            "alert('setting rows to '+display);\n".
+            "    for (i = 1; i < 7; ++i) {\n".
+            "        row = document.getElementById('yellow'+i).parentNode.parentNode;\n".
+//            "alert('setting row '+i+' to '+display);\n".
+            "        if (display == 1) {\n".
+            // Firefox won't display the table rows properly using 'block'.
+            "            row.style.display = (document.all ? 'block' : 'table-row');\n".
+            "        } else {\n".
+            "            row.style.display = 'none';\n".
+            "        }\n".
+            "    }\n".
+//            "    checkAllFields();\n".
+            "}\n\n".
+            "// ]]>\n".
+            "</script>\n";
+        return $code;
+    }
+
+
+    function getCalendarSource($product_id)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $last_y = date('Y')-1;
+        $query = "
+            SELECT calendar_product, calendar_order, calendar_day,
+                   calendar_month, calendar_year
+              FROM ".DBPREFIX."module_egov_product_calendar
+             WHERE calendar_product=$product_id
+               AND calendar_act=1
+               AND calendar_year>$last_y
+        ";
+        $objResult = $objDatabase->Execute($query);
+        $ArrayRD = array();
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                if (!isset($ArrayRD[$objResult->fields['calendar_year']][$objResult->fields['calendar_month']][$objResult->fields['calendar_day']])) {
+                    $ArrayRD[$objResult->fields['calendar_year']][$objResult->fields['calendar_month']][$objResult->fields['calendar_day']] = 0;
+                }
+                ++$ArrayRD[$objResult->fields['calendar_year']][$objResult->fields['calendar_month']][$objResult->fields['calendar_day']];
+                $objResult->MoveNext();
+            }
+        }
+        require_once dirname(__FILE__).'/cal/calendrier.php';
+        $AnzahlTxT = $_ARRAYLANG['TXT_EGOV_QUANTITY'];
+        $AnzahlDropdown = $this->_QuantityDropdown();
+        $Datum4JS = (isset($_REQUEST['date']) ? $_REQUEST['date'] : '');
+        if ($Datum4JS == '') {
+            $Datum4JS = date('Ymd');
+        }
+        $QuantArray = $this->_GetOrdersQuantityArray($product_id, $Datum4JS);
+        $dat1 = substr($Datum4JS, 0, 4);
+        $dat2 = substr($Datum4JS, 4, 2);
+        $dat3 = substr($Datum4JS, 6, 2);
+        if (substr($dat3, 0, 1) == '0') {
+            $dat3 = substr($dat3, 1, 1);
+        }
+        $DatumJS = "$dat3.$dat2.$dat1";
+        return calendar(
+            $DatumJS,
+            $QuantArray,
+            $AnzahlDropdown,
+            $AnzahlTxT,
+            eGovLibrary::GetSettings('set_calendar_date_desc'),
+            eGovLibrary::GetSettings('set_calendar_date_label'),
+            $ArrayRD,
+            eGovLibrary::GetProduktValue('product_quantity', $product_id),
+            '',
+            eGovLibrary::GetSettings('set_calendar_background'),
+            eGovLibrary::GetSettings('set_calendar_legende_1'),
+            eGovLibrary::GetSettings('set_calendar_legende_2'),
+            eGovLibrary::GetSettings('set_calendar_legende_3'),
+            eGovLibrary::GetSettings('set_calendar_color_1'),
+            eGovLibrary::GetSettings('set_calendar_color_2'),
+            eGovLibrary::GetSettings('set_calendar_color_3'),
+            eGovLibrary::GetSettings('set_calendar_border')
+        );
+    }
 
 }
-
 
 ?>
