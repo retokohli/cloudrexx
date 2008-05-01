@@ -187,9 +187,9 @@ class Settings
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['yellowpay_id'])."',
+                                    SET value='".addslashes($_POST['yellowpay_shop_id'])."',
                                         status=".(!empty($_POST['yellowpay_status']) ? 1 : 0)."
-                                    WHERE name='yellowpay_id'"
+                                    WHERE name='yellowpay_shop_id'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config

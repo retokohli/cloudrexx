@@ -437,17 +437,15 @@ class PaymentProcessing
         global $_ARRAYLANG;
 
         $arrShopOrder = array(
-            'txtShopId'           => $this->arrConfig['yellowpay_id']['value'],
-            'txtOrderTotal'       => $_SESSION['shop']['grand_total_price'],
-            'ShopId'              => $this->arrConfig['yellowpay_shop_id']['value'],
+            'txtShopId'           => $this->arrConfig['yellowpay_shop_id']['value'],
             'Hash_seed'           => $this->arrConfig['yellowpay_hash_seed']['value'],
             'txtLangVersion'      => strtoupper($this->_languageCode),
+            'txtOrderTotal'       => $_SESSION['shop']['grand_total_price'],
             'txtArtCurrency'      => $this->_currencyCode,
             'txtOrderIDShop'      => $_SESSION['shop']['orderid'],
+            'txtShopPara'         => 'source=shop',
             'deliveryPaymentType' => $this->arrConfig['yellowpay_delivery_payment_type']['value'],
             'acceptedPaymentMethods' => $this->arrConfig['yellowpay_accepted_payment_methods']['value'],
-// TODO: This isn't set anywhere in the shop, and not even used anywhere in yellowpay.class.php
-//            'SessionId'           => $_SESSION['shop']['PHPSESSID']
         );
 
         $objYellowpay = new Yellowpay();
@@ -456,12 +454,11 @@ class PaymentProcessing
             $_ARRAYLANG['TXT_ORDER_NOW']
         );
         if (count($objYellowpay->arrError) > 0) {
-            $strError = '';
+            $strError = '<font color="red"><b>Yellowpay could not be initialized!</b>';
             if (_PAYMENT_DEBUG) {
-                $strError .= join('<br />', $objYellowpay->arrError).'<br />';
+                $strError .= join('<br />', $objYellowpay->arrError); //.'<br />';
             }
-            $strError = '<font color="red"><b>Yellowpay could not be initialized!</b></font>';
-            return $strError;
+            return $strError.'</font>';
         }
         return $yellowpayForm;
     }

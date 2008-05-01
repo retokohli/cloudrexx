@@ -27,6 +27,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Payment.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Shipment.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/payments/saferpay/Saferpay.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/CSVimport.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Csv_bv.class.php';
 require_once ASCMS_CORE_PATH.'/usermanagement.class.php';
@@ -2390,9 +2391,18 @@ class shopmanager extends ShopLibrary {
                 $excluded = ($this->objVat->isIncluded() ? '' : 'checked="checked"');
                 $saferpayStatus = ($this->arrConfig['saferpay_id']['status'] == 1) ? 'checked="checked"' : '';
                 $saferpayTestStatus = ($this->arrConfig['saferpay_use_test_account']['status'] == 1) ? 'checked="checked"' : '';
-                $yellowpayStatus = ($this->arrConfig['yellowpay_id']['status'] == 1) ? 'checked="checked"' : '';;
                 $paypalStatus = ($this->arrConfig['paypal_account_email']['status'] == 1) ? 'checked="checked"' : '';
 
+//var_export($this->arrConfig);echo("<br />");
+                $objYellowpay = new Yellowpay(
+                    $this->arrConfig['yellowpay_accepted_payment_methods']['value'],
+                    $this->arrConfig['yellowpay_delivery_payment_type']['value']
+                );
+                $yellowpayStatus =
+                    ($this->arrConfig['yellowpay_shop_id']['status'] == 1
+                        ? 'checked="checked"' : ''
+                    );
+/*
                 if ($this->arrConfig['yellowpay_delivery_payment_type']['value'] == 'deferred') {
                     $yellowpayDeferred = "selected='selected'";
                     $yellowpayImmediate = "";
@@ -2400,7 +2410,7 @@ class shopmanager extends ShopLibrary {
                     $yellowpayImmediate = "selected='selected'";
                     $yellowpayDeferred = "";
                 }
-
+*/
                 $countryIdMenu = "<select name='country_id'>";
                 foreach ($this->arrCountries as $cId => $data) {
                     if ($data['activation_status'] == 1) {
@@ -2448,12 +2458,17 @@ class shopmanager extends ShopLibrary {
                     'SHOP_SAFERPAY_TEST_STATUS'         => $saferpayTestStatus,
                     'SHOP_SAFERPAY_FINALIZE_PAYMENT'    => $this->arrConfig['saferpay_finalize_payment']['value'] == 1 ? "checked=\"checked\"" : "",
                     'SHOP_SAFERPAY_WINODW_OPTION_MENU'  => $strSaferpayWindowOptionMenu,
-                    'SHOP_YELLOWPAY_ID'                 => $this->arrConfig['yellowpay_id']['value'],
+
+                    'SHOP_YELLOWPAY_SHOP_ID'            => $this->arrConfig['yellowpay_shop_id']['value'],
                     'SHOP_YELLOWPAY_STATUS'             => $yellowpayStatus,
                     'SHOP_YELLOWPAY_HASH_SEED'          => $this->arrConfig['yellowpay_hash_seed']['value'],
+                    'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' =>
+                        $objYellowpay->getKnownPaymentMethodCheckboxes(),
+                    'SHOP_YELLOWPAY_DELIVERY_PAYMENT_TYPE_OPTIONS' =>
+                        $objYellowpay->getAuthorizationMenuoptions(),
+/*
                     'SHOP_YELLOWPAY_IMMEDIATE_STATUS'   => $yellowpayImmediate,
                     'SHOP_YELLOWPAY_DEFERRED_STATUS'    => $yellowpayDeferred,
-
                     'SHOP_YELLOWPAY_CHECKED_POSTFINANCECARD' =>
                         (preg_match('/\bPostFinanceCard\b/', $this->arrConfig['yellowpay_accepted_payment_methods']['value'])
                             ? ' checked="checked"' : ''
@@ -2482,7 +2497,7 @@ class shopmanager extends ShopLibrary {
                         (preg_match('/\byellowbill\b/', $this->arrConfig['yellowpay_accepted_payment_methods']['value'])
                             ? ' checked="checked"' : ''
                         ),
-
+*/
                     'SHOP_CONFIRMATION_EMAILS'          => $this->arrConfig['confirmation_emails']['value'],
                     'SHOP_CONTACT_EMAIL'                => $this->arrConfig['email']['value'],
                     'SHOP_CONTACT_COMPANY'              => $this->arrConfig['shop_company']['value'],
