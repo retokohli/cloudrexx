@@ -7,6 +7,9 @@ Text[1]=["","{TXT_GENERAL_POSTING_PAGING_HELP}"];
 Text[2]=["","{TXT_LATEST_ENTRIES_COUNT_HELP}"];
 Text[3]=["","{TXT_BLOCK_TEMPLATE_HELP}"];
 Text[4]=["","{TXT_FORUM_NOTIFICATION_TEMPLATE_HELP}"];
+Text[5]=["","{TXT_FORUM_BANNED_WORDS_HELP}"];
+Text[6]=["","{TXT_FORUM_TAG_COUNT_HELP}"];
+Text[7]=["","{TXT_FORUM_WYSIWYG_EDITOR_HELP}"];
 
 function insertTag(elInsertBox, sTag) {
 	try{
@@ -33,7 +36,7 @@ function insertTag(elInsertBox, sTag) {
 		var pos;
 		var re = new RegExp('^[0-9]{0,3}$');
 		while(!re.test(pos)) {
-			pos = prompt("Einfügen an Position (0.." + elInsertBox.value.length + "):", "0");
+			pos = prompt("Einfï¿½gen an Position (0.." + elInsertBox.value.length + "):", "0");
 		}
 		if (pos > elInsertBox.value.length) {
 			pos = elInsertBox.value.length;
@@ -71,6 +74,18 @@ function insertTag(elInsertBox, sTag) {
 			<tr class="row1">
 				<td width="20%">{TXT_LATEST_ENTRIES_COUNT}&nbsp;</td>
 				<td width="80%"><input type="text" name="setvalue[3]" value="{SETTINGS_LATEST_ENTRIES_COUNT}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
+			</tr>
+			<tr class="row2">
+				<td width="20%">{TXT_FORUM_TAG_COUNT}&nbsp;</td>
+				<td width="80%"><input type="text" name="setvalue[11]" value="{FORUM_SETTINGS_TAG_COUNT}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[6],Style[0])" /></td>
+			</tr>
+			<tr class="row1">
+				<td width="20%">{TXT_FORUM_BANNED_WORDS}&nbsp;</td>
+				<td width="80%"><input type="text" name="setvalue[9]" value="{FORUM_SETTINGS_BANNED_WORDS}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])" /></td>
+			</tr>
+			<tr class="row2">
+				<td width="20%">{TXT_FORUM_WYSIWYG_EDITOR}&nbsp;</td>
+				<td width="80%"><input type="radio" name="setvalue[10]" value="1" {FORUM_SETTINGS_WYSIWYG_EDITOR_1} />&nbsp;{TXT_FORUM_ACTIVATE}&nbsp;<input type="radio" name="setvalue[10]" value="0" {FORUM_SETTINGS_WYSIWYG_EDITOR_0} />&nbsp;{TXT_FORUM_DEACTIVATE}&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[7],Style[0])" /></td>
 			</tr>
 		</table>
 	</div>
@@ -158,6 +173,10 @@ function insertTag(elInsertBox, sTag) {
 			<tr class="row1">
 				<td width="15%">{TXT_FORUM_SHOW_HOME_CONTENT}</td>
 				<td width="85%"><input type="radio" name="setHomeContent" value="1" {FORUM_SHOW_CONTENT_1} />&nbsp;{TXT_FORUM_ACTIVATE}&nbsp;<input type="radio" name="setHomeContent" value="0" {FORUM_SHOW_CONTENT_0} />&nbsp;{TXT_FORUM_DEACTIVATE}</td>
+			</tr>
+			<tr class="row2">
+				<td width="15%">{TXT_FORUM_SHOW_TAG_CONTENT}</td>
+				<td width="85%"><input type="radio" name="setTagContent" value="1" {FORUM_SHOW_TAG_CONTENT_1} />&nbsp;{TXT_FORUM_ACTIVATE}&nbsp;<input type="radio" name="setTagContent" value="0" {FORUM_SHOW_TAG_CONTENT_0} />&nbsp;{TXT_FORUM_DEACTIVATE}</td>
 			</tr>
 		</table>
 		<br />

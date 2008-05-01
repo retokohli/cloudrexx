@@ -69,6 +69,10 @@ function get_wysiwyg_editor($name, $value = '', $mode = '', $languageId = null, 
 
 			if ($mode != 'html') {
 				switch ($mode) {
+				case 'forum':
+					$objFCKeditor->ToolbarSet = 'BBCode';
+					$objFCKeditor->Config['CustomConfigurationsPath'] = ASCMS_PATH_OFFSET.'/editor/FCKeditorConfig.php?bbcode=1&langId='.$languageId.'&absoluteURIs='.$absoluteURIs;
+					break;
 				case 'shop':
 					$objFCKeditor->Width = '100%';
 					$objFCKeditor->Height = '200';

@@ -624,7 +624,7 @@ if ($_CONFIG['directoryHomeContent'] == '1') {
 }
 
 //-------------------------------------------------------
-// get Forum latest entries content
+// get + replace forum latest entries content
 //-------------------------------------------------------
 if ($_CONFIG['forumHomeContent'] == '1') {
     $modulespath = "modules/forum/homeContent.class.php";
@@ -662,6 +662,35 @@ if ($_CONFIG['forumHomeContent'] == '1') {
         }
     }
 }
+
+
+//------------------------------
+// get + replace forum tagcloud
+//------------------------------
+if ($_CONFIG['forumTagContent'] == 1) {
+	$modulespath = "modules/forum/homeContent.class.php";
+    if (file_exists($modulespath)) {
+		require_once($modulespath);
+    	$objForumHome = new ForumHomeContent();
+
+	    //Forum-TagCloud
+	    $forumHomeTagCloudInContent     = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', $page_content);
+	    $forumHomeTagCloudInTemplate = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', $page_template);
+	    $forumHomeTagCloudInTheme    = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', $themesPages['index']);
+	    $forumHomeTagCloudInSidebar    = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', $themesPages['sidebar']);
+
+	    if ($forumHomeTagCloudInContent || $forumHomeTagCloudInTemplate || $forumHomeTagCloudInTheme || $forumHomeTagCloudInSidebar) {
+	        $strTagCloudSource = $objForumHome->getHomeTagCloud();
+	        $page_content            = $objForumHome->fillVariableIfActivated('FORUM_TAG_CLOUD', $strTagCloudSource, $page_content, $forumHomeTagCloudInContent);
+	        $page_template            = $objForumHome->fillVariableIfActivated('FORUM_TAG_CLOUD', $strTagCloudSource, $page_template, $forumHomeTagCloudInTemplate);
+	        $themesPages['index']     = $objForumHome->fillVariableIfActivated('FORUM_TAG_CLOUD', $strTagCloudSource, $themesPages['index'], $forumHomeTagCloudInTheme);
+	        $themesPages['sidebar'] = $objForumHome->fillVariableIfActivated('FORUM_TAG_CLOUD', $strTagCloudSource, $themesPages['sidebar'], $forumHomeTagCloudInSidebar);
+	    }
+    }
+}
+
+
+
 
 //-------------------------------------------------------
 // Get Gallery-Images (Latest, Random)
@@ -872,7 +901,7 @@ if (file_exists($modulespath)) {
             $themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $themesPages['sidebar'], $blogHomeTagCloudInSidebar);
         }
 
-        //Blog-TagCloud
+        //Blog-TagHitlist
         $blogHomeTagHitlistInContent    = $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $page_content);
         $blogHomeTagHitlistInTemplate     = $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $page_template);
         $blogHomeTagHitlistInTheme        = $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $themesPages['index']);
@@ -1673,4 +1702,5 @@ if(isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1){
     $objTemplate->show();
 }
 $objCache->endCache();
+
 ?>

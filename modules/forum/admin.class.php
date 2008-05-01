@@ -1,8 +1,17 @@
 <?php
+$_ARRAYLANG['TXT_FORUM_SHOW_TAG_CONTENT'] = "Stichworte anzeigen";
+$_ARRAYLANG['TXT_FORUM_WYSIWYG_EDITOR'] = "WYSIWYG Editor";
+$_ARRAYLANG['TXT_FORUM_WYSIWYG_EDITOR_HELP'] = "(De-)Aktiviert den WYSIWYG-Editor zum Bearbeiten/Verfassen von Beiträgen. WYSIWYG bedeutet `What you see is what you get.` (Was du siehst, ist [das,] was du bekommst)";
+$_ARRAYLANG['TXT_FORUM_TAG_COUNT'] = "Max. Tags";
+$_ARRAYLANG['TXT_FORUM_TAG_COUNT_HELP'] = "Max. Anzahl Tags (Stichworte) in der Tag-Box + Tag-Hitliste, welche angezeigt werden.";
+$_ARRAYLANG['TXT_FORUM_BANNED_WORDS'] = "Unzulässige Wörter";
+$_ARRAYLANG['TXT_FORUM_BANNED_WORDS_HELP'] = "Durch Kommas getrennte Liste von Wörtern oder Ausdrücken, welche nicht zulässig sind in Forenbeiträgen.<br />Reguläre Ausdrücke sind erlaubt.<br /><br />Bsp: penis enlargment,free porn,(?i:buy\\\s*?(?:cheap\\\s*?)?viagra)";
+$_ARRAYLANG['TXT_CATEGORY_STATUS'] = "Status";
+
 /**
  * Forum
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Kaelin <thomas.kaelin@comvation.com>              
+ * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version	    $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_forum
@@ -23,12 +32,12 @@ require_once ASCMS_MODULE_PATH.'/forum/lib/forumLib.class.php';
  * @subpackage  module_forum
  */
 class ForumAdmin extends ForumLibrary {
-	
+
 	var $_objTpl;
 	var $_strPageTitle	= '';
 	var $_strErrMessage = '';
-	var $_strOkMessage 	= '';	
-	
+	var $_strOkMessage 	= '';
+
 	/**
 	* Constructor-Fix for non PHP5-Servers
     *
@@ -36,8 +45,8 @@ class ForumAdmin extends ForumLibrary {
 	function ForumAdmin() {
 		$this->__constructor();
 	}
-	
-	
+
+
 	/**
 	* Constructor	-> Create the module-menu and an internal template-object
     *
@@ -50,13 +59,13 @@ class ForumAdmin extends ForumLibrary {
 		ForumLibrary::__constructor();
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/forum/template');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-    	$this->_intLangId = $objInit->userFrontendLangId;		
+    	$this->_intLangId = $objInit->userFrontendLangId;
     	$objTemplate->setVariable('CONTENT_NAVIGATION','	<a href="?cmd=forum&amp;act=category">'.$_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'].'</a>
     														<a href="?cmd=forum&amp;act=settings">'.$_ARRAYLANG['TXT_FORUM_MENU_SETTINGS'].'</a>
-    												');	
+    												');
 	}
-	
-	
+
+
     /**
 	* Perform the right operation depending on the $_GET-params
     *
@@ -65,94 +74,94 @@ class ForumAdmin extends ForumLibrary {
     */
     function getPage() {
     	global $objPerm,$objTemplate;
-    	
+
     	if(!isset($_GET['act'])) {
     	    $_GET['act']='';
     	}
-    	
+
     	switch($_GET['act']){
     		case 'category':
 				$objPerm->checkAccess(107, 'static');
                 $this->showCategoryOverview();
                 break;
-                
+
     		case 'category_status':
     				$objPerm->checkAccess(107, 'static');
     				$this->setCategoryStatus($_GET['id']);
     				$this->showCategoryOverview();
     			break;
-    		
+
     		case 'category_sorting':
     				$objPerm->checkAccess(107, 'static');
     				$this->saveCategorySorting();
     				$this->showCategoryOverview();
     			break;
-    			
+
     		case 'category_delete':
     				$objPerm->checkAccess(107, 'static');
     				$this->deleteCategory($_GET['id']);
     				$this->showCategoryOverview();
-    			break;	
-    			
+    			break;
+
     		case 'category_multiaction':
     				$objPerm->checkAccess(107, 'static');
     				$this->doCategoryMultiAction();
     				$this->showCategoryOverview();
-    			break;	
-    		
+    			break;
+
     		case 'category_add':
     				$objPerm->checkAccess(107, 'static');
     				$this->addCategory();
     				$this->showCategoryOverview();;
-    			break;	
-    			
+    			break;
+
     		case 'category_edit':
     				$objPerm->checkAccess(107, 'static');
-    				$this->editCategory($_GET['id']);    			
-    			break;	
-    			
+    				$this->editCategory($_GET['id']);
+    			break;
+
     		case 'category_update':
     				$objPerm->checkAccess(107,'static');
     				$this->updateCategory();
     				$this->showCategoryOverview();
     			break;
-    		
+
     		case 'category_access':
     				$objPerm->checkAccess(107,'static');
     				$this->editCategoryAccess($_GET['id']);
-    			break;	
-    			
+    			break;
+
     		case 'category_access_update':
     				$objPerm->checkAccess(107,'static');
     				$this->updateCategoryAccess();
     				$this->showCategoryOverview();
-    			break;	
-    		
+    			break;
+
     		case 'settings':
     				$objPerm->checkAccess(108, 'static');
     				$this->showSettings();
     			break;
-    		
+
     		case 'settings_update':
     				$objPerm->checkAccess(108, 'static');
     				$this->updateSettings();
     				$this->showSettings();
-    			break;	
-    			
+    			break;
+
     		default:
 				$objPerm->checkAccess(107, 'static');
                 $this->showCategoryOverview();
     	}
-    	
+
 		$objTemplate->setVariable(array(
 			'CONTENT_TITLE'				=> $this->_strPageTitle,
 			'CONTENT_OK_MESSAGE'		=> $this->_strOkMessage,
 			'CONTENT_STATUS_MESSAGE'	=> $this->_strErrMessage,
 			'ADMIN_CONTENT'				=> $this->_objTpl->get()
-		));    	
+		));
     }
-    
-    
+
+
     /**
      * Show an overview of all forums (categories)
      *
@@ -160,10 +169,10 @@ class ForumAdmin extends ForumLibrary {
      */
     function showCategoryOverview() {
     	global $_ARRAYLANG;
-    	
+
     	$this->_strPageTitle = $_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'];
     	$this->_objTpl->loadTemplateFile('module_forum_category_overview.html',true,true);
-    	
+
     //Show categories
     	$this->_objTpl->setVariable(array(
     		'TXT_TITLE_OVERVIEW' 		=>	$_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'],
@@ -184,7 +193,7 @@ class ForumAdmin extends ForumLibrary {
     		'TXT_SUBMIT_ACTIVATE'		=>	$_ARRAYLANG['TXT_FORUM_CATEGORY_MULTIACTION_ACTIVATE'],
     		'TXT_SUBMIT_DEACTIVATE'		=>	$_ARRAYLANG['TXT_FORUM_CATEGORY_MULTIACTION_DEACTIVATE'],
 	   	));
-	   	
+
 	   	$arrForums = $this->createForumArray();
 
 	   	if (count($arrForums) > 0) {
@@ -196,8 +205,8 @@ class ForumAdmin extends ForumLibrary {
     				'TXT_IMGALT_EDIT'			=>	$_ARRAYLANG['TXT_FORUM_CATEGORY_EDIT'],
     				'TXT_IMGALT_ACCESS'			=>	$_ARRAYLANG['TXT_FORUM_CATEGORY_ACCESS'],
     				'TXT_IMGALT_DELETE'			=>	$_ARRAYLANG['TXT_FORUM_CATEGORY_DELETE']
-    			)); 
-    			
+    			));
+
     			$strLanguages = '';
     			if (is_array($arrValues['languages'])) {
     				foreach ($arrValues['languages'] as $intLangId => $arrTranslations) {
@@ -206,8 +215,8 @@ class ForumAdmin extends ForumLibrary {
     			} else {
     				$strLanguages = '-';
     			}
-    			
-    			$this->_objTpl->setVariable(array(		
+
+    			$this->_objTpl->setVariable(array(
 	   				'CATEGORY_ROWCLASS'			=>	'row'.($index % 2),
 	   				'CATEGORY_ID'				=>	$arrValues['id'],
 	   				'CATEGORY_STATUS_ICON'		=>	($arrValues['status'] == 1) ? 'led_green' : 'led_red',
@@ -224,14 +233,14 @@ class ForumAdmin extends ForumLibrary {
 	   			));
 	   			$this->_objTpl->parse('showCategories');
 
-	   			$this->_objTpl->setVariable(array(		
+	   			$this->_objTpl->setVariable(array(
 	   				'FORUM_TOOLTIP_INDEX'		=>	$index,
 	   				'FORUM_TOOLTIP_TEXT'		=>	$strLanguages,
 	   			));
 	   			$this->_objTpl->parse('forumToolTips');
 	   			$index++;
 	   		}
-	   		
+
 	   		$this->_objTpl->hideBlock('noCategories');
 	   	} else {
 	   		//no categories have been found
@@ -241,8 +250,8 @@ class ForumAdmin extends ForumLibrary {
 	   		$this->_objTpl->parse('noCategories');
 	   		$this->_objTpl->hideBlock('showCategories');
 	   	}
-	   	
-	   	
+
+
 	 //show "add category"-Form
     	$this->_objTpl->setVariable(array(
     		'TXT_TITLE_ADD_CATEGORY'				=>	$_ARRAYLANG['TXT_FORUM_CATEGORY_ADD_CATEGORY'],
@@ -251,15 +260,16 @@ class ForumAdmin extends ForumLibrary {
     		'TXT_CATEGORY_ADD_CATEGORY_LANGUAGES'	=>	$_ARRAYLANG['TXT_FORUM_CATEGORY_LANGUAGES'],
     		'TXT_CATEGORY_ADD_EXTENDED'				=>	$_ARRAYLANG['TXT_FORUM_CATEGORY_EXTENDED'],
     		'TXT_CATEGORY_ADD_CATEGORY_BUTTON'		=>	$_ARRAYLANG['TXT_SAVE'],
+    		'TXT_CATEGORY_STATUS'					=>	$_ARRAYLANG['TXT_CATEGORY_STATUS'],
 	   	));
-	   	
+
 	   	if (count($this->_arrLanguages) > 0) {
 	   		$intCounter = 0;
 	   		$arrLanguages = array();
-	   		
+
 	   		foreach ($this->_arrLanguages as $intLangId => $arrValues) {
 	   			$arrLanguages[$intCounter%3] .= '<input checked="checked" type="checkbox" name="frmAddCategory_Languages[]" value="'.$intLangId.'" />'.$arrValues['long'].' ['.$arrValues['short'].']<br />';
-	   			
+
 		   		$this->_objTpl->setVariable(array(
 		   			'CATEGORY_ADD_NAME_LANGID'	=>	$intLangId,
 		   			'CATEGORY_ADD_DESC_LANGID'	=>	$intLangId,
@@ -274,17 +284,17 @@ class ForumAdmin extends ForumLibrary {
 		   		$this->_objTpl->parse('categoryDescFields');
 		   		$this->_objTpl->parse('forumNameFields');
 		   		$this->_objTpl->parse('forumDescFields');
-		   			   			
+
 	   			++$intCounter;
 	   		}
-	   		
+
 	   		$this->_objTpl->setVariable(array(
 	   			'CATEGORY_ADD_LANGUAGES_1'	=>	$arrLanguages[0],
 	   			'CATEGORY_ADD_LANGUAGES_2'	=>	$arrLanguages[1],
 	   			'CATEGORY_ADD_LANGUAGES_3'	=>	$arrLanguages[2]
 	   		));
 	   	}
-	   	
+
 	 //show "add forum"-form
     	$this->_objTpl->setVariable(array(
     		'TXT_TITLE_ADD_FORUM'				=>	$_ARRAYLANG['TXT_FORUM_CATEGORY_ADD_FORUM'],
@@ -294,26 +304,27 @@ class ForumAdmin extends ForumLibrary {
     		'TXT_CATEGORY_ADD_FORUM_INHERIT'	=>	$_ARRAYLANG['TXT_CATEGORY_ADD_FORUM_INHERIT'],
     		'TXT_FORUM_ADD_EXTENDED'			=>	$_ARRAYLANG['TXT_FORUM_CATEGORY_EXTENDED'],
     		'TXT_CATEGORY_ADD_FORUM_BUTTON'		=>	$_ARRAYLANG['TXT_SAVE'],
+    		'TXT_CATEGORY_STATUS'				=>	$_ARRAYLANG['TXT_CATEGORY_STATUS'],
 	   	));
-	   	$this->_objTpl->setVariable('CATEGORY_FORUM_ADD_DROPDOWN',$this->createForumDD('frmAddCategory_ParentId',0,'onchange="markCheckboxes(this.options[this.selectedIndex].value);"', null, false, true)); 	
-	   	
+	   	$this->_objTpl->setVariable('CATEGORY_FORUM_ADD_DROPDOWN',$this->createForumDD('frmAddCategory_ParentId',0,'onchange="markCheckboxes(this.options[this.selectedIndex].value);"', null, false, true));
+
 	   	foreach ($this->_arrTranslations as $intCatId => $arrInner) {
 	   		$strLanguages = '';
 	   		foreach ($arrInner as $intLangId => $arrTranslations) {
 	   			$strLanguages .= $intLangId.',';
 	   		}
 	   		$strLanguages = substr($strLanguages,0,-1);
-	   		
+
 	    	$this->_objTpl->setVariable(array(
 	    		'FORUM_ADD_PARCAT_ID'		=>	$intCatId,
 	    		'FORUM_ADD_PARCAT_VALUES'	=>	$strLanguages
 		   	));
 		   	$this->_objTpl->parse('forumAllowedParcats');
 	   	}
-	   	
+
     }
-    
-        
+
+
     /**
      * Change the "status"-flag of a category. If 2nd parameter is empty, the current status will be inverted.
      *
@@ -324,9 +335,9 @@ class ForumAdmin extends ForumLibrary {
      */
     function setCategoryStatus($intCatId,$intNewStatus='') {
     	global $objDatabase, $_ARRAYLANG;
-    	
+
     	$intCatId = intval($intCatId);
-    	
+
     	if ($intCatId != 0) {
     		if ($intNewStatus == '') {
     			$objResult = $objDatabase->Execute('SELECT	status
@@ -346,7 +357,7 @@ class ForumAdmin extends ForumLibrary {
     		} else {
     			$intNewStatus = intval($intNewStatus);
     		}
-    		
+
 			$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_forum_categories
 									SET		status="'.$intNewStatus.'"
 									WHERE	id='.$intCatId.'
@@ -357,8 +368,8 @@ class ForumAdmin extends ForumLibrary {
 //			$objCache->deleteAllFiles();
     	}
     }
-    
-    
+
+
     /**
      * Delete a category (and all its subcategories) and postings of those categories. The function is used recursive.
      *
@@ -368,9 +379,9 @@ class ForumAdmin extends ForumLibrary {
      */
     function deleteCategory($intCatId) {
     	global $objDatabase, $_ARRAYLANG;
-    	
+
     	$intCatId = intval($intCatId);
-    	
+
     	$objResult = $objDatabase->Execute('SELECT	id
     										FROM	'.DBPREFIX.'module_forum_categories
     										WHERE	parent_id = '.$intCatId.'
@@ -388,23 +399,23 @@ class ForumAdmin extends ForumLibrary {
     					$objRS->MoveNext();
     				}
     			}
-    			
+
     			$this->deleteCategory($objResult->fields['id']);	//recursive step for subcategories
     			$objResult->MoveNext();
     		}
     	}
-    	
+
     	$objDatabase->Execute('	DELETE
     							FROM	'.DBPREFIX.'module_forum_categories
     							WHERE	id = '.$intCatId.'
     							LIMIT	1
     						');
-    	
+
     	$objDatabase->Execute('	DELETE
     							FROM	'.DBPREFIX.'module_forum_categories_lang
     							WHERE	category_id='.$intCatId.'
     						');
-    	    	
+
     	$objDatabase->Execute('	DELETE
 								FROM	'.DBPREFIX.'module_forum_statistics
 								WHERE	category_id = '.$intCatId.'
@@ -414,19 +425,19 @@ class ForumAdmin extends ForumLibrary {
     	$objDatabase->Execute('	DELETE
 								FROM	'.DBPREFIX.'module_forum_access
 								WHERE	category_id = '.$intCatId.'
-							');    	   	
-    	
+							');
+
     	$objDatabase->Execute('	DELETE
 								FROM	'.DBPREFIX.'module_forum_postings
 								WHERE	category_id = '.$intCatId.'
 							');
-    	    	
+
     	$this->_strOkMessage = $_ARRAYLANG['TXT_FORUM_CATEGORY_DELETED'];
 //		$objCache = &new Cache();
-//		$objCache->deleteAllFiles();    	
+//		$objCache->deleteAllFiles();
     }
-    
-    
+
+
     /**
      * Save the sorting of categories/forums
      *
@@ -435,7 +446,7 @@ class ForumAdmin extends ForumLibrary {
      */
     function saveCategorySorting() {
     	global $objDatabase, $_ARRAYLANG;
-    	
+
     	if (is_array($_POST)) {
     		foreach($_POST as $strKey => $strValue) { //sortingSystem2
     			if (substr($strKey,0,13) == 'sortingSystem') {
@@ -451,8 +462,8 @@ class ForumAdmin extends ForumLibrary {
 //			$objCache->deleteAllFiles();
     	}
     }
-    
-    
+
+
     /**
      * Perform all "multi action" for all selected categories.
      *
@@ -474,8 +485,8 @@ class ForumAdmin extends ForumLibrary {
 	    	}
     	}
     }
-    
-    
+
+
     /**
      * Add a new category / forum to database.
      *
@@ -484,10 +495,10 @@ class ForumAdmin extends ForumLibrary {
      */
     function addCategory() {
     	global $objDatabase, $_ARRAYLANG;
-    	
+
     	$intParentId 	= intval($_POST['frmAddCategory_ParentId']);
     	$boolInherit	= intval($_POST['frmAddCategory_Inherit']);
-    	
+    	$boolStatus		= intval($_POST['frmAddCategory_Status']) > 0 ? 1 : 0;
     	if (is_array($_POST['frmAddCategory_Languages'])) {
     		foreach ($_POST['frmAddCategory_Languages'] as $intKey => $intLangId) {
     			$arrTranslations[$intLangId] = array(	'name'	=>	addslashes(strip_tags($_POST['frmAddCategory_Name_'.$intLangId])),
@@ -495,15 +506,15 @@ class ForumAdmin extends ForumLibrary {
     												);
     		}
     	}
-    	
+
     	if (is_array($arrTranslations)) {
     		$objDatabase->Execute('	INSERT
     								INTO	'.DBPREFIX.'module_forum_categories
     								SET		parent_id='.$intParentId.',
-    										order_id=99,		
-    										status="0"
+    										order_id=99,
+    										status="'.$boolStatus.'"
     							');
-     		
+
     		$intInsertedId = $objDatabase->insert_id();
 
     		foreach ($arrTranslations as $intLangId => $arrValues) {
@@ -513,9 +524,9 @@ class ForumAdmin extends ForumLibrary {
 	    										lang_id='.$intLangId.',
 	    										name="'.$arrValues['name'].'",
 	    										description="'.$arrValues['desc'].'"
-	    							');    			
-    		}    		
-    		
+	    							');
+    		}
+
     		if ($boolInherit == 1 && $intParentId != 0) {
     			$arrRights = $this->createAccessArray($intParentId);
     			if (count($arrRights) > 0) {
@@ -523,9 +534,9 @@ class ForumAdmin extends ForumLibrary {
     					$this->saveRights($intInsertedId,$intGroupId,$arrValues,false);
     				}
     			}
-    			
+
     		}
-    		
+
     		if ($intParentId != 0) {
     			$objDatabase->Execute('	INSERT
     									INTO	'.DBPREFIX.'module_forum_statistics
@@ -544,8 +555,8 @@ class ForumAdmin extends ForumLibrary {
     		$this->_strErrMessage = $_ARRAYLANG['TXT_FORUM_CATEGORY_ADD_ERROR'];
     	}
     }
-    
-    
+
+
     /**
      * Edit an existing category / forum with the id in the parameter
      *
@@ -555,7 +566,7 @@ class ForumAdmin extends ForumLibrary {
      */
     function editCategory($intCategoryId) {
     	global $objDatabase, $_ARRAYLANG;
-    	
+
     	$this->_strPageTitle = $_ARRAYLANG['TXT_FORUM_CATEGORY_EDIT'];
     	$this->_objTpl->loadTemplateFile('module_forum_category_edit.html',true,true);
     	$this->_objTpl->setVariable(array(
@@ -567,9 +578,9 @@ class ForumAdmin extends ForumLibrary {
     		'TXT_CATEGORY_EDIT_EXTENDED'			=>	$_ARRAYLANG['TXT_FORUM_CATEGORY_EXTENDED'],
     		'TXT_CATEGORY_EDIT_CATEGORY_BUTTON'		=>	$_ARRAYLANG['TXT_SAVE'],
 	   	));
-    	
+
 	   	$intCategoryId = intval($intCategoryId);
-    	
+
     	$objResult = $objDatabase->Execute('SELECT	parent_id
     										FROM	'.DBPREFIX.'module_forum_categories
     										WHERE	id = '.$intCategoryId.'
@@ -577,51 +588,51 @@ class ForumAdmin extends ForumLibrary {
     									');
     	if ($objResult->RecordCount() == 1) {
     		$intParentId 	= intval($objResult->fields['parent_id']);
-    		
+
     		$this->_objTpl->setVariable(array(
     			'VALUE_CATEGORY_ID'	=>	$intCategoryId,
     			'VALUE_NAME'		=>	$this->_arrTranslations[$intCategoryId][$this->_intLangId]['name'],
     			'VALUE_DESC'		=>	$this->_arrTranslations[$intCategoryId][$this->_intLangId]['desc']
     		));
-    		
+
     		if ($intParentId == 0) {
     			//category
     			$this->_objTpl->setVariable('VALUE_CATEGORY_NOPARCAT',0);
     			$this->_objTpl->parse('isCategory');
-    			$this->_objTpl->hideBlock('isForum');    			
+    			$this->_objTpl->hideBlock('isForum');
 
     		} else {
     			//forum
-    			$this->_objTpl->setVariable('VALUE_CATEGORY_DD',$this->createForumDD('frmUpdateCategory_ParentId',$intParentId,'onchange="markCheckboxes(this.options[this.selectedIndex].value);"', '', false));	
-    			
+    			$this->_objTpl->setVariable('VALUE_CATEGORY_DD',$this->createForumDD('frmUpdateCategory_ParentId',$intParentId,'onchange="markCheckboxes(this.options[this.selectedIndex].value);"', '', false));
+
 			   	foreach ($this->_arrTranslations as $intCatId => $arrInner) {
 			   		$strLanguages = '';
 			   		foreach ($arrInner as $intLangId => $arrTranslations) {
 			   			$strLanguages .= $intLangId.',';
 			   		}
 			   		$strLanguages = substr($strLanguages,0,-1);
-			   		
+
 			    	$this->_objTpl->setVariable(array(
 			    		'FORUM_EDIT_PARCAT_ID'		=>	$intCatId,
 			    		'FORUM_EDIT_PARCAT_VALUES'	=>	$strLanguages
 				   	));
 				   	$this->_objTpl->parse('forumAllowedParcats');
 			   	}
-			   	
+
     			$this->_objTpl->parse('isForum');
-    			$this->_objTpl->hideBlock('isCategory');			   	
+    			$this->_objTpl->hideBlock('isCategory');
     		}
-    		
+
 		   	if (count($this->_arrLanguages) > 0) {
 		   		$intCounter = 0;
 		   		$arrLanguages = array();
-		   				   		
+
 		   		foreach ($this->_arrLanguages as $intLangId => $arrValues) {
-		   			$strChecked		= (array_key_exists($intLangId, $this->_arrTranslations[$intCategoryId])) ? 'checked' : '';	
-		   			$strDisabled 	= ($intParentId == 0) ? '' : ((!array_key_exists($intLangId, $this->_arrTranslations[$intParentId])) ? 'disabled="disabled"' : '');	   			
-		   			
+		   			$strChecked		= (array_key_exists($intLangId, $this->_arrTranslations[$intCategoryId])) ? 'checked' : '';
+		   			$strDisabled 	= ($intParentId == 0) ? '' : ((!array_key_exists($intLangId, $this->_arrTranslations[$intParentId])) ? 'disabled="disabled"' : '');
+
 		   			$arrLanguages[$intCounter%3] .= '<input type="checkbox" name="frmUpdateCategory_Languages[]" value="'.$intLangId.'" '.$strDisabled.' '.$strChecked.' />'.$arrValues['long'].' ['.$arrValues['short'].']<br />';
-		   			
+
 			   		$this->_objTpl->setVariable(array(
 			   			'CATEGORY_EDIT_NAME_LANGID'	=>	$intLangId,
 			   			'CATEGORY_EDIT_DESC_LANGID'	=>	$intLangId,
@@ -632,41 +643,41 @@ class ForumAdmin extends ForumLibrary {
 			   		));
 			   		$this->_objTpl->parse('categoryNameFields');
 			   		$this->_objTpl->parse('categoryDescFields');
-			   			   			
+
 		   			++$intCounter;
 		   		}
-		   		
+
 		   		$this->_objTpl->setVariable(array(
 		   			'CATEGORY_EDIT_LANGUAGES_1'	=>	$arrLanguages[0],
 		   			'CATEGORY_EDIT_LANGUAGES_2'	=>	$arrLanguages[1],
 		   			'CATEGORY_EDIT_LANGUAGES_3'	=>	$arrLanguages[2]
 		   		));
 		   	}
-    		
-    		
+
+
     	} else {
     		//no category with this id, redirect
     		header("location: index.php?cmd=forum");
     	}
-    	
+
     }
-    
-    
+
+
     /**
      * Update dataset of a category / forum.
      *
      */
     function updateCategory() {
     	global $objDatabase, $_ARRAYLANG;
-    	  	
+
     	$intCategoryId 	= intval($_POST['frmUpdateCategory_CategoryId']);
     	$intParentId 	= intval($_POST['frmUpdateCategory_ParentId']);
-    	
+
     	$arrActiveLanguages = array();
     	foreach ($this->_arrLanguages as $intLangId => $arrLangValues) {
     		$arrActiveLanguages[$intLangId] = false;
     	}
-    	
+
     	if (is_array($_POST['frmUpdateCategory_Languages'])) {
     		foreach ($_POST['frmUpdateCategory_Languages'] as $intKey => $intLangId) {
     			$arrTranslations[$intLangId] = array(	'name'	=>	addslashes(strip_tags($_POST['frmUpdateCategory_Name_'.$intLangId])),
@@ -675,21 +686,21 @@ class ForumAdmin extends ForumLibrary {
     			$arrActiveLanguages[$intLangId] = true;
     		}
     	}
-    	    	    	    	
+
  		if (is_array($arrTranslations) && $intCategoryId != 0 && $this->checkParentCategory($intCategoryId,$intParentId)) {
 	    	$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_forum_categories
 	    							SET		parent_id='.$intParentId.'
 	    							WHERE	id='.$intCategoryId.'
 	    							LIMIT	1
 	    						');
-	    	
+
 	    	$objDatabase->Execute('	DELETE
 	    							FROM	'.DBPREFIX.'module_forum_categories_lang
 	    							WHERE	category_id='.$intCategoryId.'
 	    						');
-	    	
+
 	    	$this->deleteSubcatLanguages($intCategoryId, $arrActiveLanguages);
-	    	
+
     		foreach ($arrTranslations as $intLangId => $arrValues) {
   	    		$objDatabase->Execute('	INSERT
 	    								INTO	'.DBPREFIX.'module_forum_categories_lang
@@ -697,22 +708,22 @@ class ForumAdmin extends ForumLibrary {
 	    										lang_id='.$intLangId.',
 	    										name="'.$arrValues['name'].'",
 	    										description="'.$arrValues['desc'].'"
-	    							');    			
+	    							');
     		}
-    			    	
+
     		$this->_arrTranslations = $this->createTranslationArray();
-	    	$this->_strOkMessage = $_ARRAYLANG['TXT_FORUM_CATEGORY_UPDATE_OK'];    
+	    	$this->_strOkMessage = $_ARRAYLANG['TXT_FORUM_CATEGORY_UPDATE_OK'];
 //			$objCache = &new Cache();
 //			$objCache->deleteAllFiles();
     	} else {
     		//no languages have been selected, show error
     		$this->_strErrMessage = $_ARRAYLANG['TXT_FORUM_CATEGORY_UPDATE_ERROR'];
     	}
-    	
+
 
     }
-    
-    
+
+
     /**
      * This functions checks if the new parent-category isn't a subcategory of the category.
      *
@@ -722,12 +733,12 @@ class ForumAdmin extends ForumLibrary {
      */
     function checkParentCategory($intCategoryId, $intNewParentId) {
     	global $objDatabase;
-    	
+
     	if ($intCategoryId == $intNewParentId) {
     		return false;
     	}
-    	
-    	$intCategoryId = intval($intCategoryId);    	
+
+    	$intCategoryId = intval($intCategoryId);
 		$objResult = $objDatabase->Execute('SELECT	id
 											FROM	'.DBPREFIX.'module_forum_categories
 											WHERE	parent_id='.$intCategoryId.'
@@ -738,23 +749,23 @@ class ForumAdmin extends ForumLibrary {
 			}
 			$objResult->MoveNext();
 		}
-		
+
 		return true;
     }
-    
-    
+
+
     function deleteSubcatLanguages($intParentId, $arrLanguages) {
     	global $objDatabase;
-    	
+
     	$intParentId = intval($intParentId);
-    	
+
     	if ($intParentId > 0 && is_array($arrLanguages)) {
     		$objResult = $objDatabase->Execute('SELECT	id
     											FROM	'.DBPREFIX.'module_forum_categories
     											WHERE	parent_id='.$intParentId.'
     										');
     		while (!$objResult->EOF) {
-    			
+
     			foreach ($arrLanguages as $intLangId => $boolActive) {
     				if (!$boolActive) {
     					$objDatabase->Execute('	DELETE
@@ -765,15 +776,15 @@ class ForumAdmin extends ForumLibrary {
     										');
     				}
     			}
-    			$this->deleteSubcatLanguages($objResult->fields['id'],$arrLanguages);    			
+    			$this->deleteSubcatLanguages($objResult->fields['id'],$arrLanguages);
     			$objResult->MoveNext();
     		}
     	}
 //		$objCache = &new Cache();
 //		$objCache->deleteAllFiles();
     }
-    
-    
+
+
     /**
      * Show "access rights"-form for a selected category.
      *
@@ -783,7 +794,7 @@ class ForumAdmin extends ForumLibrary {
      */
     function editCategoryAccess($intCategoryId) {
     	global $objDatabase, $_ARRAYLANG;
-    	
+
     	$this->_strPageTitle = $_ARRAYLANG['TXT_FORUM_CATEGORY_ACCESS'];
     	$this->_objTpl->loadTemplateFile('module_forum_category_access.html',true,true);
     	$this->_objTpl->setGlobalVariable(array(
@@ -804,9 +815,9 @@ class ForumAdmin extends ForumLibrary {
     		'TXT_CATEGORY_ACCESS_BEQUEATH'	=>	$_ARRAYLANG['TXT_CATEGORY_ACCESS_BEQUEATH'],
     		'TXT_CATEGORY_ACCESS_BUTTON'	=>	$_ARRAYLANG['TXT_SAVE']
 	   	));
-    		   	
-	   	$intCategoryId = intval($intCategoryId); 	
-	   	
+
+	   	$intCategoryId = intval($intCategoryId);
+
 	   	if (is_array($this->_arrTranslations[$intCategoryId])) {
 	   		$this->_objTpl->setVariable(array(
 	   			'VALUE_CATEGORY_ID'		=>	$intCategoryId,
@@ -828,12 +839,12 @@ class ForumAdmin extends ForumLibrary {
 		   				'VALUE_MOVE'		=>	($arrValues['move']   == 1) ? 'checked="checked"' : '',
 		   				'VALUE_CLOSE'		=>	($arrValues['close']  == 1) ? 'checked="checked"' : '',
 		   				'VALUE_STICKY'		=>	($arrValues['sticky'] == 1) ? 'checked="checked"' : '',
-		   				
+
 		   			));
-		   			
+
 		   			$this->_objTpl->parse('showRights');
 		   			++$intCounter;
-		   		}		   		
+		   		}
 		   		$this->_objTpl->setVariable(array(
 		   			'TXT_CATEGORY_GLOBAL_RIGHTS' 	=> $_ARRAYLANG['TXT_CATEGORY_GLOBAL_RIGHTS'],
 		   		));
@@ -842,7 +853,7 @@ class ForumAdmin extends ForumLibrary {
 		   		//no userrights existing, hide block
 		   		$this->_objTpl->setVariable('TXT_CATEGORY_ACCESS_NOGROUPS',$_ARRAYLANG['TXT_FORUM_CATEGORY_ACCESS_NOGROUPS']);
 		   		$this->_objTpl->parse('noGroupsMessage');
-		   		
+
 		   		$this->_objTpl->hideBlock('showRights');
 		   		$this->_objTpl->hideBlock('noGroupsHide_1');
 		   		$this->_objTpl->hideBlock('noGroupsHide_2');
@@ -852,8 +863,8 @@ class ForumAdmin extends ForumLibrary {
 	   		header("location: index.php?cmd=forum");
 	   	}
     }
-    
-    
+
+
     /**
      * This function collects and filter all information from the "edit-access"-form.
      *
@@ -864,7 +875,7 @@ class ForumAdmin extends ForumLibrary {
     	global $objDatabase, $_ARRAYLANG;
     	$intCategoryId 	= intval($_POST['frmCategoryAccess_CategoryId']);
     	$boolBequeath	= intval($_POST['frmCategoryAccess_Bequeath']);
-    	
+
     	foreach ($_POST as $strKey => $strValue) {
     		$arrExplode = explode('_',$strKey);
     		if (count($arrExplode) == 3) {
@@ -874,16 +885,16 @@ class ForumAdmin extends ForumLibrary {
     			}
     		}
     	}
-    	   	
+
        	foreach($arrRights as $intGroupId => $arrRights) {
     		$this->saveRights($intCategoryId,$intGroupId,$arrRights,$boolBequeath);
     	}
 //		$objCache = &new Cache();
 //		$objCache->deleteAllFiles();
-    	$this->_strOkMessage = $_ARRAYLANG['TXT_FORUM_CATEGORY_ACCESS_UPDATED'];	
+    	$this->_strOkMessage = $_ARRAYLANG['TXT_FORUM_CATEGORY_ACCESS_UPDATED'];
     }
-       
-       
+
+
     /**
      * Save access rights for a given group in a given board.
      *
@@ -894,10 +905,10 @@ class ForumAdmin extends ForumLibrary {
      */
     function saveRights($intCatId,$intGroupId,$arrRights,$boolBequeath = false) {
     	global $objDatabase;
-    	        	
+
     	$intCatId 	= intval($intCatId);
     	$intGroupId = intval($intGroupId);
-    		
+
     	if ($boolBequeath) {
     		$objResult = $objDatabase->Execute('SELECT		id
     											FROM		'.DBPREFIX.'module_forum_categories
@@ -909,14 +920,14 @@ class ForumAdmin extends ForumLibrary {
     			$objResult->MoveNext();
     		}
     	}
-    	
+
     	$objDatabase->Execute('	DELETE
     							FROM	'.DBPREFIX.'module_forum_access
     							WHERE	category_id='.$intCatId.' AND
     									group_id='.$intGroupId.'
     							LIMIT	1
-    						');      	
-    	
+    						');
+
     	$objDatabase->Execute('	INSERT
     							INTO	'.DBPREFIX.'module_forum_access
     							SET		'.DBPREFIX.'module_forum_access.category_id='.$intCatId.',
@@ -927,11 +938,11 @@ class ForumAdmin extends ForumLibrary {
     									'.DBPREFIX.'module_forum_access.delete="'.intval($arrRights['delete']).'",
     									'.DBPREFIX.'module_forum_access.move="'.intval($arrRights['move']).'",
     									'.DBPREFIX.'module_forum_access.close="'.intval($arrRights['close']).'",
-    									'.DBPREFIX.'module_forum_access.sticky="'.intval($arrRights['sticky']).'"'    						
+    									'.DBPREFIX.'module_forum_access.sticky="'.intval($arrRights['sticky']).'"'
     						);
     }
-    
-    
+
+
     /**
      * Show settings.
      *
@@ -940,7 +951,7 @@ class ForumAdmin extends ForumLibrary {
     	global $_ARRAYLANG, $_CONFIG;
     	$this->_strPageTitle = $_ARRAYLANG['TXT_FORUM_MENU_SETTINGS'];
     	$this->_objTpl->loadTemplateFile('module_forum_settings.html',true,true);
-    	
+
     	$this->_objTpl->setVariable(array(
     		'TXT_TITLE_GENERAL' 				=>	$_ARRAYLANG['TXT_FORUM_SETTINGS_GENERAL'],
     		'TXT_GENERAL_THREAD_PAGING'			=>	$_ARRAYLANG['TXT_FORUM_SETTINGS_THREAD_PAGING'],
@@ -956,7 +967,7 @@ class ForumAdmin extends ForumLibrary {
     		'TXT_FORUM_PLACEHOLDERS'		 	=>	$_ARRAYLANG['TXT_FORUM_PLACEHOLDERS'],
     		'TXT_FORUM_CLICK_TO_INSERT'		 	=>	$_ARRAYLANG['TXT_FORUM_CLICK_TO_INSERT'],
     		'TXT_FORUM_CLICK_VARIABLE_TO_INSERT' =>	$_ARRAYLANG['TXT_FORUM_CLICK_VARIABLE_TO_INSERT'],
-    		
+
     		'TXT_FORUM_LATEST_ENTRIES' 			=>	sprintf($_ARRAYLANG['TXT_FORUM_LATEST_ENTRIES'], $this->_arrSettings['latest_entries_count']),
     		'TXT_FORUM_OVERVIEW_FORUM' 			=>	$_ARRAYLANG['TXT_FORUM_OVERVIEW_FORUM'],
     		'TXT_FORUM_THREAD_STARTER' 			=>	$_ARRAYLANG['TXT_FORUM_THREAD_STARTER'],
@@ -980,14 +991,22 @@ class ForumAdmin extends ForumLibrary {
     		'TXT_FORUM_SETTINGS' 				=>	$_ARRAYLANG['TXT_FORUM_SETTINGS'],
     		'TXT_FORUM_SHOW_HOME_CONTENT' 		=>	$_ARRAYLANG['TXT_FORUM_SHOW_HOME_CONTENT'],
     		'TXT_FORUM_ACTIVATE' 				=>	$_ARRAYLANG['TXT_FORUM_ACTIVATE'],
-    		'TXT_FORUM_DEACTIVATE' 				=>	$_ARRAYLANG['TXT_FORUM_DEACTIVATE'], 		
-    		'TXT_FORUM_EMAIL_TEMPLATE' 			=>	$_ARRAYLANG['TXT_FORUM_EMAIL_TEMPLATE'], 		
-    		'TXT_FORUM_EMAIL_NOTIFICATION' 		=>	$_ARRAYLANG['TXT_FORUM_EMAIL_NOTIFICATION'], 		
-    		'TXT_FORUM_NOTIFICATION_TEMPLATE_HELP' => $_ARRAYLANG['TXT_FORUM_NOTIFICATION_TEMPLATE_HELP'], 		
-    		'TXT_FORUM_EMAIL_TEMPLATE_FROM_EMAIL' => $_ARRAYLANG['TXT_FORUM_EMAIL_TEMPLATE_FROM_EMAIL'], 		
-    		'TXT_FORUM_EMAIL_TEMPLATE_FROM_NAME' =>	$_ARRAYLANG['TXT_FORUM_EMAIL_TEMPLATE_FROM_NAME'], 		
+    		'TXT_FORUM_DEACTIVATE' 				=>	$_ARRAYLANG['TXT_FORUM_DEACTIVATE'],
+    		'TXT_FORUM_EMAIL_TEMPLATE' 			=>	$_ARRAYLANG['TXT_FORUM_EMAIL_TEMPLATE'],
+    		'TXT_FORUM_EMAIL_NOTIFICATION' 		=>	$_ARRAYLANG['TXT_FORUM_EMAIL_NOTIFICATION'],
+    		'TXT_FORUM_NOTIFICATION_TEMPLATE_HELP' => $_ARRAYLANG['TXT_FORUM_NOTIFICATION_TEMPLATE_HELP'],
+    		'TXT_FORUM_EMAIL_TEMPLATE_FROM_EMAIL' => $_ARRAYLANG['TXT_FORUM_EMAIL_TEMPLATE_FROM_EMAIL'],
+    		'TXT_FORUM_EMAIL_TEMPLATE_FROM_NAME' =>	$_ARRAYLANG['TXT_FORUM_EMAIL_TEMPLATE_FROM_NAME'],
+    		'TXT_FORUM_SHOW_TAG_CONTENT' 		=>	$_ARRAYLANG['TXT_FORUM_SHOW_TAG_CONTENT'],
+    		'TXT_FORUM_TAG_COUNT' 				=>	$_ARRAYLANG['TXT_FORUM_TAG_COUNT'],
+    		'TXT_FORUM_TAG_COUNT_HELP' 			=>	$_ARRAYLANG['TXT_FORUM_TAG_COUNT_HELP'],
+    		'TXT_FORUM_WYSIWYG_EDITOR' 			=>	$_ARRAYLANG['TXT_FORUM_WYSIWYG_EDITOR'],
+    		'TXT_FORUM_WYSIWYG_EDITOR_HELP' 	=>	$_ARRAYLANG['TXT_FORUM_WYSIWYG_EDITOR_HELP'],
+    		'TXT_FORUM_BANNED_WORDS' 			=>	$_ARRAYLANG['TXT_FORUM_BANNED_WORDS'],
+    		'TXT_FORUM_BANNED_WORDS_HELP' 		=>	$_ARRAYLANG['TXT_FORUM_BANNED_WORDS_HELP'],
     		'FORUM_SHOW_CONTENT_'.$_CONFIG['forumHomeContent']	=>  'checked="checked"',
-    		
+    		'FORUM_SHOW_TAG_CONTENT_'.$_CONFIG['forumTagContent']	=>  'checked="checked"',
+
 	   	));
 	   	$this->_objTpl->setVariable(array(
 	   		'SETTINGS_THREAD_PAGING'			=>	$this->_arrSettings['thread_paging'],
@@ -998,44 +1017,50 @@ class ForumAdmin extends ForumLibrary {
 	   		'SETTINGS_NOTIFICATION_SUBJECT'		=>	$this->_arrSettings['notification_subject'],
 	   		'SETTINGS_NOTIFICATION_FROM_EMAIL'	=>	$this->_arrSettings['notification_from_email'],
 	   		'SETTINGS_NOTIFICATION_FROM_NAME'	=>	$this->_arrSettings['notification_from_name'],
+	   		'FORUM_SETTINGS_BANNED_WORDS'		=>	implode(',', $this->_arrSettings['banned_words']),
+	   		'FORUM_SETTINGS_TAG_COUNT'			=>	$this->_arrSettings['tag_count'],
+	   		'FORUM_SETTINGS_WYSIWYG_EDITOR_'
+	   		.$this->_arrSettings['wysiwyg_editor']	=>	'checked="checked"',
 	   	));
     }
-    
-    
+
+
     /**
-     * Validate and save new settings. 
+     * Validate and save new settings.
      *
      * @global	object		$objDatabase
      * @global 	array		$_ARRAYLANG
      */
     function updateSettings() {
     	global $objDatabase, $_ARRAYLANG, $_CONFIG;
-  
     	//update settings table and write new settings file for /config
     	if (isset($_POST['set_homecontent_submit'])){
 			//update settings
-			$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".intval($_POST['setHomeContent'])."' WHERE setname='forumHomeContent'");	
-			require_once(ASCMS_CORE_PATH.'/settings.class.php');	
+			$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".intval($_POST['setHomeContent'])."' WHERE setname='forumHomeContent'");
+			$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".intval($_POST['setTagContent'])."' WHERE setname='forumTagContent'");
+
+			require_once(ASCMS_CORE_PATH.'/settings.class.php');
 			$objSettings = &new settingsManager();
-			$objSettings->writeSettingsFile();	
+			$objSettings->writeSettingsFile();
 			$_CONFIG['forumHomeContent'] = intval($_POST['setHomeContent']);
-		}  
-    	   	
+			$_CONFIG['forumTagContent'] = intval($_POST['setTagContent']);
+		}
+
     	foreach($_POST['setvalue'] as $intSetId => $strSetValue) {
     		switch ($intSetId) {
-    			case 1:  				
+    			case 1:
     				$strSetValue = (intval($strSetValue) == 0) ? $this->_arrSettings['thread_paging'] : intval($strSetValue);
     				break;
     			case 2:
     				$strSetValue = (intval($strSetValue) == 0) ? $this->_arrSettings['posting_paging'] : intval($strSetValue);
     				break;
     			case 3:
-    				$strSetValue = (intval($strSetValue) == 0) ? $this->_arrSettings['latest_entries_count'] : intval($strSetValue);    				
+    				$strSetValue = (intval($strSetValue) == 0) ? $this->_arrSettings['latest_entries_count'] : intval($strSetValue);
     				break;
     			default:
     		}
     		$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_forum_settings
-    								SET		value="'.addslashes($strSetValue).'" 
+    								SET		value="'.addslashes($strSetValue).'"
     								WHERE	id='.intval($intSetId).'
     								LIMIT	1');
     	}
