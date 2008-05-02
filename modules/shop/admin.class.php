@@ -3090,8 +3090,8 @@ class shopmanager extends ShopLibrary {
             $shopManufacturerUrl      = htmlspecialchars(strip_tags(contrexx_stripslashes($_POST['shopManufacturerUrl'])), ENT_QUOTES, CONTREXX_CHARSET);
             $shopArticleActive        =
                 (isset($_POST['shopArticleActive']) ? 1 : 0);
-            $shopB2B                  = intval($_POST['shopB2B']);
-            $shopB2C                  = intval($_POST['shopB2C']);
+            $shopB2B                  = isset($_POST['shopB2B']);
+            $shopB2C                  = isset($_POST['shopB2C']);
             $shopStartdate            = !empty($_POST['shopStartdate']) ? contrexx_stripslashes($_POST['shopStartdate']) : '0000-00-00 00:00:00';
             $shopEnddate              = !empty($_POST['shopEnddate']) ? contrexx_stripslashes($_POST['shopEnddate']) : '0000-00-00 00:00:00';
             $shopManufacturerId       = intval($_POST["shopManufacturerId"]);
