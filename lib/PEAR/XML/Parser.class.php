@@ -274,12 +274,13 @@ class XML_Parser extends PEAR
      * @see xml_parser_create
      */
     function _create()
-    {
-        if ($this->srcenc === null) {
-            $xp = @xml_parser_create();
-        } else {
-            $xp = @xml_parser_create($this->srcenc);
-        }
+	{
+
+		// Change # Dave, Fri May  2 11:20:58 2008
+		// PHP5 is a dependency now, so we can
+		// do this in a bit simpler way..
+		$xp = xml_parser_create('');
+
         if (is_resource($xp)) {
             if ($this->tgtenc !== null) {
                 if (!@xml_parser_set_option($xp, XML_OPTION_TARGET_ENCODING,
