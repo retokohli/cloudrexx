@@ -1145,8 +1145,9 @@ class ForumLibrary {
 		if($postId > 0){
 			$where = ' AND id='.intval($postId);
 		}
-		$query = '	UPDATE '.DBPREFIX.'module_forum_postings
-					SET views = (views + 1)
+
+		$query = '	UPDATE `'.DBPREFIX.'module_forum_postings`
+					SET `views` = (`views` + 1)
 					WHERE `thread_id` = '.$intThreadId.
 					$where.' LIMIT 1';
 
@@ -1174,7 +1175,7 @@ class ForumLibrary {
 										`last_post_id` = ".$last_post_id."
 										WHERE `category_id` = ".$intCatId." LIMIT 1";
 
-		}else{
+		} else {
 			$updateQueryStats = "UPDATE `".DBPREFIX."module_forum_statistics` SET `thread_count` = `thread_count`+1,
 										`post_count` = `post_count`+1,
 										`last_post_id` = ".$last_post_id."

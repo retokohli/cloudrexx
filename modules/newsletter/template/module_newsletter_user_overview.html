@@ -209,7 +209,10 @@ var confirmDeleteInactive = function(){
 						<td><input type="text" name="keyword" value="" size="40" maxlength="255" /></td>
 						<td>{SELECTLIST_FIELDS}</td>
 						<td>{SELECTLIST_STATUS}</td>
-						<td><input type="submit" value="{TXT_SEARCH}" /></td>
+						<td>
+							<input type="submit" value="{TXT_SEARCH}" />
+						    <input type="hidden" name="newsletterListId" id="srch_newsletterListId" value="{NEWSLETTER_SEARCH_LIST_ID}" />
+						</td>
 					</tr>
 				</table>
 			</form>
