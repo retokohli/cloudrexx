@@ -73,7 +73,6 @@ $_ARRAYLANG['TXT_NO_PENDING_ORDER'] = "There was no pending order to confirm!";
 $_ARRAYLANG['TXT_PRICE_NOW'] = "Price now";
 $_ARRAYLANG['TXT_INSTEAD_OF'] = "instead of";
 $_ARRAYLANG['TXT_NO_TAX'] = "No taxes required";
-$_ARRAYLANG['TXT_CVC_CODE'] = "CVC code";
 $_ARRAYLANG['TXT_MORE_INFORMATIONS'] = "More info";
 $_ARRAYLANG['TXT_SHOP_ID'] = "ID";
 $_ARRAYLANG['TXT_ORDER_LINK_PREPARED'] = "Your order has been prepared for payment. Click the button below in order to proceed to the payment gateway.";

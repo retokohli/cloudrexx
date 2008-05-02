@@ -73,7 +73,6 @@ $_ARRAYLANG['TXT_NO_PENDING_ORDER'] = "Der er ikke nogle udstående bestililnger
 $_ARRAYLANG['TXT_PRICE_NOW'] = "Lige nu kun";
 $_ARRAYLANG['TXT_INSTEAD_OF'] = "i stedet for";
 $_ARRAYLANG['TXT_NO_TAX'] = "Ikke gebyrpligtig";
-$_ARRAYLANG['TXT_CVC_CODE'] = "CVC Code";
 $_ARRAYLANG['TXT_MORE_INFORMATIONS'] = "Flere informationer";
 $_ARRAYLANG['TXT_SHOP_ID'] = "ID";
 $_ARRAYLANG['TXT_ORDER_LINK_PREPARED'] = "Denne bestilling er nu klar til betalingen. Klik venligst på nedstående link/knap for at blive sent tilbage til betalings-gateway. Der kan du gennemføre din betailng";

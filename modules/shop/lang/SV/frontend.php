@@ -73,7 +73,6 @@ $_ARRAYLANG['TXT_NO_PENDING_ORDER'] = "Im System konnte kein zu bestätigenden A
 $_ARRAYLANG['TXT_PRICE_NOW'] = "jetzt nur";
 $_ARRAYLANG['TXT_INSTEAD_OF'] = "statt";
 $_ARRAYLANG['TXT_NO_TAX'] = "Nicht Taxpflichtig";
-$_ARRAYLANG['TXT_CVC_CODE'] = "CVC Code";
 $_ARRAYLANG['TXT_MORE_INFORMATIONS'] = "Weitere Informationen";
 $_ARRAYLANG['TXT_SHOP_ID'] = "ID";
 $_ARRAYLANG['TXT_ORDER_LINK_PREPARED'] = "Die Bestellung ist nun für die Zahlung vorbereitet. Klicken Sie auf den untenstehenden Link, um zum Zahlungs Gateway zu gelangen und dort Ihre Zahlung zu tätigen.";
