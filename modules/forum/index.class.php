@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Forum
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -9,18 +8,6 @@
  * @subpackage  module_forum
  * @todo        Edit PHP DocBlocks!
  */
-
-$_ARRAYLANG['TXT_FORUM_FILE_ATTACHMENT'] = "Anhang";
-$_ARRAYLANG['TXT_FORUM_RATING'] = "Bewertung";
-$_ARRAYLANG['TXT_FORUM_RATING_THANKS'] = "Danke!";
-$_ARRAYLANG['TXT_FORUM_BANNED_WORD'] = "Folgendes Wort darf im Beitrag nicht verwendet werden: '%s'!";
-$_ARRAYLANG['TXT_FORUM_KEYWORDS'] = "Stichwörter";
-$_ARRAYLANG['TXT_FORUM_COMMA_SEPARATED_KEYWORDS'] = "Aussagekräftige Stichwörter, durch Komma getrennt";
-$_ARRAYLANG['TXT_FORUM_UPLOAD_TOO_BIG'] = "Die hochgeladene Datei hat die maximale Uploadgrösse überschritten.";
-$_ARRAYLANG['TXT_FORUM_UPLOAD_PARTIAL'] = "Die Datei wurde nur teilweise hochgeladen, bitte erneut versuchen. Wenn das Problem besteht, wenden Sie sich an den Webmaster.";
-$_ARRAYLANG['TXT_FORUM_UPLOAD_NOT_MOVABLE'] = "Die Datei konnte auf dem Server nicht verschoben werden, bitte erneut versuchen. Wenn das Problem besteht, wenden Sie sich an den Webmaster.";
-$_ARRAYLANG['TXT_FORUM_DELETE_ATTACHMENT'] = "Anhang '%s' löschen";
-$_ARRAYLANG['TXT_FORUM_SEARCH_TERM_TOO_SHORT'] = "Hinweis: Der Suchbegriff muss mind. 3 Zeichen lang sein.";
 
 /**
  * Includes
@@ -402,7 +389,6 @@ class Forum extends ForumLibrary {
 		}
 
 		$arrThreads = $this->createThreadArray($intForumId, $pos);
-		$arrAccess = $this->createAccessArray($intForumId);
 
 		$subject = !empty($_REQUEST['thread_subject']) ? contrexx_stripslashes($_REQUEST['thread_subject']) : '';
 		$keywords = !empty($_REQUEST['thread_keywords']) ? contrexx_stripslashes($_REQUEST['thread_keywords']) : '';
@@ -598,10 +584,16 @@ class Forum extends ForumLibrary {
 			$this->_updateNotification($intThreadId);
 		}
 
-		$intCatId = !empty($_REQUEST['category_id']) ? intval($_REQUEST['category_id']) : 0;
+		$intCatId = !empty($_REQUEST['category_id']) ? intval($_REQUEST['category_id']) : '0';
 		if($intCatId == 0){
 			$intCatId = $this->_getCategoryIdFromThread($intThreadId);
 		}
+
+		if(empty($intCatId)){
+			header('Location: index.php?section=forum');
+			die();
+		}
+
 
 		if($_SESSION['auth']['userid'] > 0){
 			$this->_objTpl->touchBlock('notificationRow');
@@ -655,7 +647,6 @@ class Forum extends ForumLibrary {
 		}
 
 		$arrPosts = $this->createPostArray($intThreadId, $pos);
-		$arrAccess = $this->createAccessArray($intCatId);
 
 		if(!empty($_REQUEST['preview_edit']) && $_REQUEST['post_id'] != 0 && $_REQUEST['act'] != 'quote'){
 			$intPostId = intval($intPostId);
@@ -1002,7 +993,7 @@ class Forum extends ForumLibrary {
 							WHERE id = '.$intPostId;
 
 			if($objDatabase->Execute($updateQuery) !== false){
-				$this->updateViews($intThreadId, $postId);
+				$this->updateViews($intThreadId, $intPostId);
 				$objCache = &new Cache();
 				$objCache->deleteAllFiles();
 			}
@@ -1018,7 +1009,7 @@ class Forum extends ForumLibrary {
 			$this->_objTpl->touchBlock('previewEditPost');
 		}
 
-		$this->updateViews($intThreadId, $postId);
+		$this->updateViews($intThreadId, $intPostId);
 		return true;
 	}
 

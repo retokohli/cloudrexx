@@ -3368,6 +3368,7 @@ class newsletter extends NewsletterLib
 			'TXT_IMPORT'			=> $_ARRAYLANG['TXT_IMPORT'],
 			'TXT_EXPORT'			=> $_ARRAYLANG['TXT_EXPORT'],
 			'TXT_FUNCTIONS'			=> $_CORELANG['TXT_FUNCTIONS'],
+			'NEWSLETTER_SEARCH_LIST_ID' => $newsletterListId,
 			));
 
 		$this->_objTpl->setGlobalVariable(array(
@@ -3406,9 +3407,16 @@ class newsletter extends NewsletterLib
 
 		$pos = intval($_GET['pos']);
 
+
 		if($where_statement == ''){
 			$query 		= "	SELECT id, email, lastname, firstname, street, zip, city, country, emaildate, `status`
 							FROM ".DBPREFIX."module_newsletter_user
+							GROUP BY id
+							ORDER BY emaildate DESC";
+		}elseif($newsletterListId == 0){
+			$query 		= "	SELECT tblUser.id, email, lastname, firstname, street, zip, city, country, emaildate, `status`
+							FROM ".DBPREFIX."module_newsletter_user AS tblUser
+							where 1=1 ".$where_statement."
 							GROUP BY id
 							ORDER BY emaildate DESC";
 		}else{
@@ -3433,6 +3441,10 @@ class newsletter extends NewsletterLib
 		if($where_statement == ''){
 			$query_2 = "	SELECT COUNT(1) as cnt
 							FROM ".DBPREFIX."module_newsletter_user";
+		}elseif($newsletterListId == 0){
+			$query_2 = "	SELECT COUNT(1) as cnt
+							FROM ".DBPREFIX."module_newsletter_user AS tblUser
+							WHERE 1=1 ".$where_statement;
 		}else{
 			$query_2 = "	SELECT COUNT(1) as cnt
 							FROM ".DBPREFIX."module_newsletter_user AS tblUser, "

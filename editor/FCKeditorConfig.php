@@ -34,7 +34,7 @@ FCKConfig.ToolbarSets["News"] = [
 ] ;
 FCKConfig.ToolbarSets["BBCode"] = [
 	['Source'],
-	['Bold','Italic','Underline','StrikeThrough','-','Link','Unlink','Image', 'SpecialChar'],
+	['Bold','Italic','Underline','StrikeThrough','-','Link','Unlink', 'SpecialChar'],
 ] ;
 
 <?php
