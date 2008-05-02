@@ -158,19 +158,17 @@ function toggleDisplay(elementId) {
 function distributionChanged()
 {
   selectedValue = document.getElementById("shopDistribution").value;
+  display = (document.all ? "block" : "table-row");
   if (selectedValue == "delivery") {
-//alert("delivery");
-    document.getElementById("shopWeightRow").style.display = "block";
+    document.getElementById("shopWeightRow").style.display = display;
     document.getElementById("shopAccountRow").style.display = "none";
     document.getElementById("shopValidityRow").style.display = "none";
     document.getElementById("shopGroupsRow").style.display = "none";
   } else if (selectedValue == "download") {
-//alert("download");
     document.getElementById("shopWeightRow").style.display = "none";
-    document.getElementById("shopAccountRow").style.display = "block";
+    document.getElementById("shopAccountRow").style.display = display;
     accountChanged();
-  } else { // 'none'
-//alert("none");
+  } else {
     document.getElementById("shopWeightRow").style.display = "none";
     document.getElementById("shopAccountRow").style.display = "none";
     document.getElementById("shopValidityRow").style.display = "none";
@@ -181,8 +179,9 @@ function distributionChanged()
 function accountChanged()
 {
   if (document.getElementById("shopCreateAccountYes").checked) {
-    document.getElementById("shopValidityRow").style.display = "block";
-    document.getElementById("shopGroupsRow").style.display = "block";
+    display = (document.all ? "block" : "table-row");
+    document.getElementById("shopValidityRow").style.display = display;
+    document.getElementById("shopGroupsRow").style.display = display;
   } else {
     document.getElementById("shopValidityRow").style.display = "none";
     document.getElementById("shopGroupsRow").style.display = "none";
