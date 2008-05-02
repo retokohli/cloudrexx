@@ -208,6 +208,7 @@ $_ARRAYLANG['TXT_CUSTOMERS_PARTNERS'] = "Kunden/Partner";
 $_ARRAYLANG['TXT_PERIOD'] = "Periode";
 $_ARRAYLANG['TXT_PERFORM'] = "Perform";
 $_ARRAYLANG['TXT_CUSTOMERS_ENTRIES'] = "Kundeneinträge";
+$_ARRAYLANG['TXT_CVC_CODE'] = "Verifikationsnummer (CVC)";
 $_ARRAYLANG['TXT_CUSTOMER_STATUS'] = "User status";
 $_ARRAYLANG['TXT_MORE_INFORMATIONS'] = "More info";
 $_ARRAYLANG['TXT_WHOIS'] = "Get informationen about this ip-address";

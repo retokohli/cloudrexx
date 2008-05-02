@@ -109,4 +109,5 @@ $_ARRAYLANG['TXT_FORUM_TAG_COUNT_HELP'] = "Max. Anzahl Tags (Stichworte) in der 
 $_ARRAYLANG['TXT_FORUM_BANNED_WORDS'] = "Unzulässige Wörter";
 $_ARRAYLANG['TXT_FORUM_BANNED_WORDS_HELP'] = "Durch Kommas getrennte Liste von Wörtern oder Ausdrücken, welche nicht zulässig sind in Forenbeiträgen.<br />Reguläre Ausdrücke sind erlaubt.<br /><br />Bsp: penis enlargment,free porn,(?i:buy\\\s*?(?:cheap\\\s*?)?viagra)";
 $_ARRAYLANG['TXT_CATEGORY_STATUS'] = "Status";
+$_ARRAYLANG['TXT_FORUM_INSERT_AT_POSITION'] = "Einfügen an Position";
 ?>
