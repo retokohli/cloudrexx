@@ -140,9 +140,10 @@ Media Manager
   einem Unterverzeichnis relativ zum DocumentRoot liegt.
 
 Statistik
-- Der Bereich "Besucher und Seitenaufrufe" funktioniert auch unter PHP4.
 - Der Graph des Bereichs "Monatliche Besucher und Seitenaufrufe" beinhaltet alle
   Monate innerhalb eines Intervalls von zwei Jahren.
+- Der Graph des Bereichs "Tägliche Besucher und Seitenaufrufe" zeigt nur, die
+  im entsprechenden Monat effektiv vorhandenen Tage an.
 
 Webinstaller
 - Die Funktion "Datenbank erstellen" ist kompatibel mit der MySQL Version 4.0.
