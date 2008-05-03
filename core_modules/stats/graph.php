@@ -171,8 +171,14 @@ class makeGraph
 			}
 		}
 
-		if (date('d') < date('t')) {
-			$arrRange[(date('m') == 1 ? 12 : date('m')-1)] = range(date('d')+1, date('t'));
+		$arrRange = array();
+    	if (date('d') < date('t')) {
+			$arrRange[$previousMonth = (date('m') == 1 ? 12 : date('m')-1)] = range(
+				date('d') + 1 > ($daysOfPreviousMonth = date('t', mktime(0,0,0,$previousMonth,1,$previousYear,$previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))))
+					?	$daysOfPreviousMonth
+					:	date('d') + 1,
+				$daysOfPreviousMonth
+			);
 		}
 		$arrRange[date('m')] = range(1, date('d'));
 
