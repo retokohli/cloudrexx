@@ -30,7 +30,6 @@ require_once ASCMS_MODULE_PATH.'/shop/payments/saferpay/Saferpay.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/CSVimport.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Csv_bv.class.php';
-require_once ASCMS_CORE_PATH.'/usermanagement.class.php';
 /**
  * Weight
  */
@@ -3388,18 +3387,21 @@ class shopmanager extends ShopLibrary {
         $shopDistribution = $objProduct->getDistribution();
 
         // Available active frontend groups, and those assigned to the product
-        $arrActiveFrontendGroups = userManagement::getActiveFrontendGroupArray();
+        $objFWUser = FWUser::getFWUserObject();
+        $objGroup = $objFWUser->objGroup->getGroups(array('type' => 'frontend', 'is_active' => true), array('group_id' => 'asc'));
         $shopUserGroupIds = $objProduct->getUsergroups();
         $arrAssignedFrontendGroupId = explode(',', $shopUserGroupIds);
         $strActiveFrontendGroupOptions = '';
         $strAssignedFrontendGroupOptions = '';
-        foreach ($arrActiveFrontendGroups as $id => $name) {
-            $strOption = '<option value="'.$id.'">'.$name.'</option>';
-            if (in_array($id, $arrAssignedFrontendGroupId)) {
+        while (!$objGroup->EOF) {
+        	$strOption = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</option>';
+            if (in_array($objGroup->getId(), $arrAssignedFrontendGroupId)) {
                 $strAssignedFrontendGroupOptions .= $strOption;
             } else {
                 $strActiveFrontendGroupOptions .= $strOption;
             }
+
+        	$objGroup->next();
         }
 
         $this->_objTpl->setVariable(array(
@@ -3513,7 +3515,7 @@ class shopmanager extends ShopLibrary {
             'SHOP_GROUPS_AVAILABLE' => $strActiveFrontendGroupOptions,
             'SHOP_GROUPS_ASSIGNED' => $strAssignedFrontendGroupOptions,
             'SHOP_ACCOUNT_VALIDITY_OPTIONS' =>
-                userManagement::getValidityMenuOptions(
+                FWUser::getValidityMenuOptions(
                     ($shopDistribution == 'download'
                         ? $objProduct->getWeight()
                         : 0
@@ -3544,6 +3546,8 @@ class shopmanager extends ShopLibrary {
         $shopSearchPattern = '';
         $arrCurrency = $this->objCurrency->getCurrencyArray();
 
+        $objFWUser = FWUser::getFWUserObject();
+
         // Update the order status if valid
         if (isset($_GET['changeOrderStatus']) &&
             intval($_GET['changeOrderStatus']) >= SHOP_ORDER_STATUS_PENDING &&
@@ -3552,7 +3556,7 @@ class shopmanager extends ShopLibrary {
             $query = "
                 UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_orders
                    SET order_status='".intval($_GET['changeOrderStatus'])."',
-                       modified_by ='".$_SESSION['auth']['username']."',
+                       modified_by ='".$objFWUser->objUser->getUsername()."',
                        last_modified=NOW()
                  WHERE orderid=".intval($_GET['orderId']);
             $objDatabase->Execute($query);
@@ -3784,10 +3788,8 @@ class shopmanager extends ShopLibrary {
                         $this->errorHandling();
                     }
                     // Determine end date
-                    $orderUnixTimeStamp = strtotime($objResult->fields['order_date']);
-                    $validity = $objResultAccount->fields['validity'] * 24 * 60 * 60;
                     $endDate =
-                        ($validity > 0 ? date('d.m.Y', ($orderUnixTimeStamp+$validity)) : '-');
+                        ($objResultAccount->fields['expiration'] > 0 ? date('d.m.Y', $objResultAccount->fields['expiration']) : '-');
 
                     // PHP5! $tipNote = (strlen($objResult['customer_note'])>0) ? php_strip_whitespace($objResult['customer_note']) : '';
                     $tipNote = $objResult->fields['customer_note'];
@@ -4324,7 +4326,7 @@ class shopmanager extends ShopLibrary {
                         ),
                     'SHOP_PRODUCT_TAX_AMOUNT' => Currency::formatPrice($rowVatAmount),
                     'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($weight),
-                    'SHOP_ACCOUNT_VALIDITY' => userManagement::getValidityString($weight),
+                    'SHOP_ACCOUNT_VALIDITY' => FWUser::getValidityString($weight),
                 ));
 
                 // get a product menu for each product if $type == 1 (edit)
@@ -4389,6 +4391,7 @@ class shopmanager extends ShopLibrary {
         global $objDatabase, $_ARRAYLANG;
 
         $shopOrderId = intval($_POST['orderid']);
+        $objFWUser = FWUser::getFWUserObject();
 
         //begin language variables
         $this->_objTpl->setVariable(array(
@@ -4470,7 +4473,7 @@ class shopmanager extends ShopLibrary {
                    ship_phone='".addslashes(strip_tags($_POST['shopShipPhone']))."',
                    tax_price=".floatval($_POST['shopTaxPrice']).",
                    shipping_id=".intval($_POST['shipperId']).",
-                   modified_by='".addslashes(strip_tags($_SESSION['auth']['username']))."',
+                   modified_by='".$objFWUser->objUser->getUsername()."',
                    last_modified=now()
              WHERE orderid = $shopOrderId
         ";

@@ -257,9 +257,9 @@ class skins
     */
     function overview()
     {
-		global $_CORELANG, $objTemplate, $objPerm;
+		global $_CORELANG, $objTemplate;
 
-		$objPerm->checkAccess(47, 'static');
+		Permission::checkAccess(47, 'static');
 
 	    // initialize variables
 		$objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_content', 'skins_content.html');
@@ -293,9 +293,9 @@ class skins
      */
     function _manage()
     {
-    	global $_CORELANG, $objTemplate, $objDatabase, $objPerm;
+    	global $_CORELANG, $objTemplate, $objDatabase;
 
-    	$objPerm->checkAccess(102, 'static');
+    	Permission::checkAccess(102, 'static');
 
     	$objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_manage', 'skins_manage.html');
     	$this->pageTitle = $_CORELANG['TXT_THEME_IMPORT_EXPORT'];
@@ -748,9 +748,9 @@ class skins
     */
 	function _activate()
     {
-		global $objDatabase, $_CORELANG, $objTemplate, $objPerm;
+		global $objDatabase, $_CORELANG, $objTemplate;
 
-		$objPerm->checkAccess(46, 'static');
+		Permission::checkAccess(46, 'static');
 
 		$objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_active', 'skins_activate.html');
 		$this->pageTitle = $_CORELANG['TXT_ACTIVATE_DESIGN'];
@@ -814,9 +814,9 @@ class skins
     */
     function examples()
     {
-		global $_CORELANG, $objTemplate, $objPerm;
+		global $_CORELANG, $objTemplate;
 
-		$objPerm->checkAccess(47, 'static');
+		Permission::checkAccess(47, 'static');
 
 	    // initialize variables
 		$objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_examples', 'skins_examples.html');
@@ -838,9 +838,9 @@ class skins
     */
     function newdir()
     {
-		global $_CORELANG, $objTemplate, $objPerm;
+		global $_CORELANG, $objTemplate;
 
-		$objPerm->checkAccess(47, 'static');
+		Permission::checkAccess(47, 'static');
 
 	 	$this->webPath = $this->arrWebPaths[0];
 		// initialize variables
@@ -872,9 +872,9 @@ class skins
     */
     function createdir()
     {
-		global $_CORELANG, $objTemplate, $objPerm;
+		global $_CORELANG, $objTemplate;
 
-		$objPerm->checkAccess(47, 'static');
+		Permission::checkAccess(47, 'static');
 
 		if($_POST['dbName'] != "") {
 			if(($_POST['dirName']!= "") && ($_POST['existingdirName'] == "")) {
@@ -984,9 +984,7 @@ class skins
     */
     function update()
     {
-    	global $objPerm;
-
-    	$objPerm->checkAccess(47, 'static');
+    	Permission::checkAccess(47, 'static');
 
 	    $themes = $_POST['themes'];
 	    $themesPage = $_POST['themesPage'];
@@ -1030,9 +1028,9 @@ class skins
     */
     function newfile()
     {
-		global $_CORELANG, $objPerm;
+		global $_CORELANG;
 
-		$objPerm->checkAccess(47, 'static');
+		Permission::checkAccess(47, 'static');
 
 		$themes = isset($_POST['themes']) ? $_POST['themes'] : '';
         $themesFile = isset($_POST['themesNewFileName']) ? $this->replaceCharacters($_POST['themesNewFileName']) : '';
@@ -1051,9 +1049,9 @@ class skins
     */
     function delfile()
     {
-    	global $_CORELANG, $objPerm;
+    	global $_CORELANG;
 
-    	$objPerm->checkAccess(47, 'static');
+    	Permission::checkAccess(47, 'static');
 
 		$themesFile = isset($_POST['themesDelFileName']) ? $_POST['themesDelFileName'] : '';
 		$themes = isset($_POST['themes']) ? $_POST['themes'] : '';
@@ -1082,9 +1080,9 @@ class skins
     */
     function deldir($nocheck = false)
     {
-		global $objDatabase, $_CORELANG, $objPerm;
+		global $objDatabase, $_CORELANG;
 
-		$objPerm->checkAccess(47, 'static');
+		Permission::checkAccess(47, 'static');
 
 		$themes = isset($_POST['themesDelName']) ? $_POST['themesDelName'] : '';
 		if($themes == '' && !empty($_GET['delete'])){

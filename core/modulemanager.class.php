@@ -50,7 +50,7 @@ class modulemanager
 
     function getModulesPage()
     {
-    	global $objPerm, $_CORELANG, $objTemplate;
+    	global $_CORELANG, $objTemplate;
 
     	$objTemplate->setVariable(array(
     	    'CONTENT_TITLE'      => $_CORELANG['TXT_MODULE_MANAGER'],
@@ -79,17 +79,17 @@ class modulemanager
 
         switch($_GET['act']){
 			case "manage":
-			    $objPerm->checkAccess(51, 'static');
+			    Permission::checkAccess(51, 'static');
                 $this->manageModules();
 			    break;
 
 			case "edit":
-			    $objPerm->checkAccess(52, 'static');
+			    Permission::checkAccess(52, 'static');
                 $this->modModules();
                 $this->showModules();
 			    break;
 			default:
-    	        $objPerm->checkAccess(23, 'static');
+    	        Permission::checkAccess(23, 'static');
                 $this->showModules();
 			    break;
 		}
@@ -332,11 +332,13 @@ class modulemanager
     	    } // end foreach
 
 	    	if (!$alreadyexist){
+	    		$objFWUser = FWUser::getFWUserObject();
+
 	    		$objResult = $objDatabase->Execute("SELECT name FROM ".DBPREFIX."modules WHERE id=".$id);
 	    		if ($objResult !== false && !$objResult->EOF) {
 	    			$name=$objResult->fields['name'];
 	    		}
-	    		$username= $_SESSION['auth']['username'];
+	    		$username= $objFWUser->objUser->getUsername();
 	    		$query= "INSERT INTO ".DBPREFIX."content_navigation SET
 					    	    	        parcat='0',
 	    									catname='".$name."',

@@ -395,11 +395,9 @@ $objDatabase = getDatabaseObject($errorMsg);
 
 $objInit= new InitCMS($mode="backend");
 
-$sessionObj= &new cmsSession();
-$sessionObj->cmsSessionStatusUpdate($status="backend");
-
-$objPerm =&new Permission($type='backend');
-$objPerm->checkAccess(19, 'static');
+$sessionObj = new cmsSession();
+$sessionObj->cmsSessionStatusUpdate("backend");
+Permission::checkAccess(19, 'static');
 
 $objInit->_initBackendLanguage();
 $objInit->getUserFrontendLangId();

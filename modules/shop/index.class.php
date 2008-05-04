@@ -126,10 +126,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategories.class.php';
  * Discount: Custom calculations for discounts
  */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Discount.class.php';
-/**
- * UserManagement: User account handling
- */
-require_once ASCMS_CORE_PATH.'/usermanagement.class.php';
 
 
 /**
@@ -2248,14 +2244,12 @@ sendReq('', 1);
                 $_SESSION['shop']['email'] = $this->objCustomer->getEmail();
                 // update the session information both in the session object
                 // and in the database
-                $sessionObj->cmsSessionUserUpdate(
-                    $this->objCustomer->getUserName()
-                );
+                 $sessionObj->cmsSessionUserUpdate($this->objCustomer->getId());
                 return true;
             }
         }
         if (!empty($sessionObj)) {
-            $sessionObj->cmsSessionUserUpdate('unknown');
+        	$sessionObj->cmsSessionUserUpdate();
             $sessionObj->cmsSessionStatusUpdate('shop');
         }
         return false;
@@ -4485,30 +4479,36 @@ right after the customer logs in!
                     $body = $arrTemplate['mail_body'];
                     // The login names are created from the order ID,
                     // with product ID and instance number appended.
-                    $username = "$orderIdCustom-$productId-$instance";
                     $userpass = uniqid();
-                    $userId = userManagement::addUserByParam(
-                        $username,
-                        $userpass,
-                        $objResultOrder->fields['email'],
-                        false, true, $arrUsergroupId,
-                        $validity,
-                        $this->langId,
-                        $objResultOrder->fields['firstname'],
-                        $objResultOrder->fields['lastname'],
-                        $objResultOrder->fields['company'],
-                        $objResultOrder->fields['address'],
-                        $objResultOrder->fields['zip'],
-                        $objResultOrder->fields['city'].', '.$countryNameCustomer,
-                        $objResultOrder->fields['phone'],
-                        '', '', '', ''
-                    );
-                    if (!$userId) {
-                        $this->statusMessage .= $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+
+                    $objUser = new User();
+                    $objUser->setUsername("$orderIdCustom-$productId-$instance");
+                    $objUser->setPassword($userpass);
+                    $objUser->setEmail($objResultOrder->fields['email']);
+                    $objUser->setAdminStatus(false);
+                    $objUser->setActiveStatus(true);
+                    $objUser->setGroups($arrUsergroupId);
+                    $objUser->setValidityTimePeriod($validity);
+                    $objUser->setFrontendLanguage($this->langId);
+                    $objUser->setBackendLanguage($this->langId);
+                    $objUser->setProfile(array(
+                    	'firstname'		=> $objResultOrder->fields['firstname'],
+                        'lastname'		=> $objResultOrder->fields['lastname'],
+                        'company'		=> $objResultOrder->fields['company'],
+                        'address'		=> $objResultOrder->fields['address'],
+                        'zip'			=> $objResultOrder->fields['zip'],
+                        'city'			=> $objResultOrder->fields['city'],
+                        'country'		=> $objResultOrder->fields['country_id'],
+                        'phone_office'	=> $objResultOrder->fields['phone'],
+                        'phone_fax'		=> $objResultOrder->fields['fax']
+					));
+
+                    if (!$objUser->store()) {
+                        $this->statusMessage .= implode('<br />', $objUser->getErrorMsg());
                         return false;
                     } else {
                        $loginData .=
-                          $_ARRAYLANG['TXT_SHOP_LOGINNAME'].": $username\n".
+                          $_ARRAYLANG['TXT_SHOP_LOGINNAME'].": ".htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)."\n".
                           $_ARRAYLANG['TXT_PASSWORD'].": $userpass".
                           "\n\n";
                     }
@@ -4857,7 +4857,18 @@ $orderSum."\n".
         }
 
         $orderIdCustom = ShopLibrary::getCustomOrderId($orderId, $orderDate);
-        return userManagement::deleteUserByOrderId($orderIdCustom);
+
+        $objFWUser = FWUser::getFWUserObject();
+        if ($objUser = $objFWUser->objUser->getUsers(array('username' => $orderIdCustom.'-%'))) {
+	        while (!$objUser->EOF) {
+	        	if (!$objUser->delete()) {
+	        		return false;
+	        	}
+	        	$objUser->next();
+	        }
+        }
+
+        return true;
     }
 
 

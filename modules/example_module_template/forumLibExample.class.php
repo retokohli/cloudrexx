@@ -23,21 +23,21 @@
 class ForumLibraryExample
 {
 	var $_arrConfig = array();
-	
-	function ForumLibrary() 
+
+	function ForumLibrary()
 	{
 		$this->__constructor();
 	}
-	
-	function __constructor() 
+
+	function __constructor()
 	{
 		$this->_initialize();
 	}
-	
-	function _initialize() 
+
+	function _initialize()
 	{
-		global $objDatabase, $objPerm;
-		
+		global $objDatabase;
+
 		// get config options
 		$objResult = $objDatabase->Execute("SELECT `name`, `value`, `status` FROM ".DBPREFIX."module_forum_config");
 		if ($objResult !== false) {

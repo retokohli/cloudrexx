@@ -120,19 +120,13 @@ class news extends newsLibrary {
 															news.changelog			AS changelog,
 															news.title				AS title,
 															news.teaser_image_path	AS newsimage,
-															news.teaser_text		AS teasertext,
-															users.id				AS usId,
-															users.username			AS username,
-															users.firstname			AS firstname,
-															users.lastname			AS lastname
-			              							FROM 	'.DBPREFIX.'module_news AS news,
-			              									'.DBPREFIX.'access_users AS users
+															news.teaser_text		AS teasertext
+			              							FROM 	'.DBPREFIX.'module_news AS news
 										            WHERE 	news.status = 1 AND
 										            		news.id = '.$newsid.' AND
 										            		news.lang ='.$this->langId.' AND
 										            		(news.startdate <= CURDATE() OR news.startdate="0000-00-00") AND
-										            		(news.enddate >= CURDATE() OR news.enddate="0000-00-00") AND
-										            		news.userid = users.id'
+										            		(news.enddate >= CURDATE() OR news.enddate="0000-00-00")'
 													, 1);
 
 			if ($objResult !== false) {
@@ -170,11 +164,17 @@ class news extends newsLibrary {
 						$newsLastUpdate = $_ARRAYLANG['TXT_LAST_UPDATE'].'<br />'.date(ASCMS_DATE_FORMAT,$objResult->fields['changelog']);
 					}
 
-					if (empty($objResult->fields['firstname']) && empty($objResult->fields['lastname'])) {
-						$author = htmlspecialchars($objResult->fields['username'], ENT_QUOTES, CONTREXX_CHARSET);
-					} else {
-						$author = htmlspecialchars($objResult->fields['firstname'], ENT_QUOTES, CONTREXX_CHARSET).' '.htmlspecialchars($objResult->fields['lastname'], ENT_QUOTES, CONTREXX_CHARSET);
-					}
+    				if ($objResult->fields['userid'] && ($objFWUser = FWUser::getFWUserObject()) && ($objUser = $objFWUser->objUser->getUser($objResult->fields['userid']))) {
+    					$firstname = $objUser->getProfileAttribute('firstname');
+    					$lastname = $objUser->getProfileAttribute('lastname');
+		    			if(!empty($firstname) && !empty($lastname)) {
+		    				$author = htmlentities($firstname.' '.$lastname, ENT_QUOTES, CONTREXX_CHARSET);
+		    			} else {
+		    				$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
+		    			}
+    				} else {
+    					$author = $_ARRAYLANG['TXT_ANONYMOUS'];
+    				}
 
 					$newstitle = htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET);
 					$this->_objTpl->setVariable(array(
@@ -232,7 +232,7 @@ class news extends newsLibrary {
 
 			if (count($arrCategories) == 1) {
 				$selected = $arrCategories[0];
-			}
+		}
 
 			foreach ($arrCategories as $intCategoryId) {
 				if (!$boolFirst) {
@@ -263,16 +263,10 @@ class news extends newsLibrary {
 		                 		n.title 			AS newstitle,
 		                 		n.teaser_image_path	AS newsimage,
 		                 		n.redirect			AS newsredirect,
-		                 		nc.name 			AS name,
-								us.id				AS usId,
-								us.username			AS username,
-								us.firstname		AS firstname,
-								us.lastname			AS lastname
+		                 		nc.name 			AS name
 		            FROM 		'.DBPREFIX.'module_news AS n
-		            INNER JOIN  '.DBPREFIX.'module_news_categories AS nc
-		            ON			n.catid=nc.catid
-		            INNER JOIN  '.DBPREFIX.'access_users AS us
-		            ON			n.userid = us.id
+                    INNER JOIN  '.DBPREFIX.'module_news_categories AS nc
+                    ON          n.catid=nc.catid
 		           	WHERE 		status = 1
 		            			AND n.lang='.$this->langId.'
 	                 			AND (n.startdate<=CURDATE() OR n.startdate="0000-00-00")
@@ -294,6 +288,18 @@ class news extends newsLibrary {
 			while (!$objResult->EOF) {
 				($i % 2) ? $class  = 'row1' : $class  = 'row2';
 
+				if ($objResult->fields['newsuid'] && ($objFWUser = FWUser::getFWUserObject()) && ($objUser = $objFWUser->objUser->getUser($objResult->fields['newsuid']))) {
+					$firstname = $objUser->getProfileAttribute('firstname');
+					$lastname = $objUser->getProfileAttribute('lastname');
+	    			if(!empty($firstname) && !empty($lastname)) {
+	    				$author = htmlentities($firstname.' '.$lastname, ENT_QUOTES, CONTREXX_CHARSET);
+	    			} else {
+	    				$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
+	    			}
+				} else {
+					$author = $_ARRAYLANG['TXT_ANONYMOUS'];
+				}
+
 				$newstitle = htmlspecialchars(stripslashes($objResult->fields['newstitle']), ENT_QUOTES, CONTREXX_CHARSET);
 				$this->_objTpl->setVariable(array(
 						   'NEWS_CSS'      		=> $class,
@@ -301,7 +307,7 @@ class news extends newsLibrary {
 						   'NEWS_DATE'       	=> date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['newsdate']),
 						   'NEWS_LINK'	   		=> (empty($objResult->fields['newsredirect'])) ? '<a href="?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$newstitle.'</a>' : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>',
 						   'NEWS_CATEGORY' 		=> stripslashes($objResult->fields['name']),
-						   'NEWS_AUTHOR'		=> (empty($objResult->fields['firstname']) && empty($objResult->fields['lastname'])) ? htmlspecialchars($objResult->fields['username'], ENT_QUOTES, CONTREXX_CHARSET) : htmlspecialchars($objResult->fields['firstname'], ENT_QUOTES, CONTREXX_CHARSET).' '.htmlspecialchars($objResult->fields['lastname'], ENT_QUOTES, CONTREXX_CHARSET),
+						   'NEWS_AUTHOR'		=> $author,
 						   'NEWS_IMAGE'			=> (empty($objResult->fields['newsimage'])) ? '' : '<img src="'.$_PATHCONFIG['ascms_root_offset'].$objResult->fields['newsimage'].'" alt="'.$newstitle.'" title="'.$newstitle.'" />'
 				        ));
 
@@ -341,7 +347,7 @@ class news extends newsLibrary {
 		if ($group_id > 0) {
 			// Retreive userids from the activated group..
 			$res = $objDatabase->Execute('
-				SELECT id FROM '.DBPREFIX."access_users 
+				SELECT id FROM '.DBPREFIX."access_users
 				WHERE  groups =      '$group_id'
 			    	OR groups LIKE   '$group_id,%'
 			    	OR groups LIKE '%,$group_id'
@@ -350,14 +356,14 @@ class news extends newsLibrary {
 			while (!$res->EOF) {
 				$users_in_group[] = $res->fields['id'];
 				$res->MoveNext();
-			} 
+			}
 		}
-		
+
 		if ($user_id > 0) {
 			$users_in_group[] = $user_id;
 		}
 
-		// Now we have fetched all user IDs that 
+		// Now we have fetched all user IDs that
 		// are to be notified. Now send those emails!
 		foreach ($users_in_group as $user_id) {
 			$this->_notify_user_by_email($user_id, $news_id);
@@ -369,14 +375,14 @@ class news extends newsLibrary {
 		// First, get username and email address.
 		try {
 			$res = $objDatabase->Execute('
-				SELECT firstname, lastname, email, username 
-				FROM '.DBPREFIX."access_users 
+				SELECT firstname, lastname, email, username
+				FROM '.DBPREFIX."access_users
 				WHERE  id = $user_id"
 			);
 		}
 		catch (Exception $e) {
 		}
-		
+
 		if($res->EOF) {
 			return false;
 		}
@@ -407,7 +413,7 @@ class news extends newsLibrary {
 			}
 		}
 		$msg .= "$line\n";
-		$msg .= "  http://".$_SERVER['SERVER_NAME'].  $serverPort.ASCMS_PATH_OFFSET . "/cadmin/index.php?cmd=news" 
+		$msg .= "  http://".$_SERVER['SERVER_NAME'].  $serverPort.ASCMS_PATH_OFFSET . "/cadmin/index.php?cmd=news"
 			. "&act=edit&newsId=$news_id&validate=true";
 		$msg .= "\n\n";
 		$msg .= $_CONFIG['coreAdminName'];
@@ -425,14 +431,12 @@ class news extends newsLibrary {
 	*
 	* @access private
 	* @global array $_ARRAYLANG
-	* @global object $objAuth
-	* @global object $objPerm
-	* @see HTML_Template_Sigma::setTemplate(), modulemanager::getModules(), Permission::checkAccess(), Auth::checkAuth()
+	* @see HTML_Template_Sigma::setTemplate(), modulemanager::getModules(), Permission::checkAccess()
 	* @return string content
 	*/
 	function _submit()
 	{
-		global $_ARRAYLANG, $objAuth, $objPerm, $objDatabase;
+		global $_ARRAYLANG, $objDatabase;
 
 		$this->_objTpl->setTemplate($this->pageContent);
 
@@ -449,14 +453,15 @@ class news extends newsLibrary {
 			header('Location: index.php?section=news');
 			exit;
 		} elseif ($this->arrSettings['news_submit_only_community'] == '1') {
-			if ($objAuth->checkAuth()) {
-				if (!$objPerm->checkAccess(61, 'static')) {
-					header("Location: ?section=login&cmd=noaccess");
+			$objFWUser = FWUser::getFWUserObject();
+			if ($objFWUser->objUser->login()) {
+				if (!Permission::checkAccess(61, 'static')) {
+					header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&cmd=noaccess');
 					exit;
 				}
 			} else {
-				$link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-				header("Location: ?section=login&redirect=".$link);
+				$link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
+				header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&redirect='.$link);
 				exit;
 			}
 		}
@@ -521,6 +526,8 @@ class news extends newsLibrary {
 				$this->_objTpl->touchBlock('news_submitted');
 			}
 		} else {
+			include_once ASCMS_CORE_PATH.'/wysiwyg.class.php';
+
 			$this->_objTpl->setVariable(array(
 				'TXT_NEWS_MESSAGE'			=> $_ARRAYLANG['TXT_NEWS_MESSAGE'],
 				'TXT_TITLE'					=> $_ARRAYLANG['TXT_TITLE'],
@@ -581,6 +588,8 @@ class news extends newsLibrary {
 	{
 		global $objDatabase, $_ARRAYLANG;
 
+		$objFWUser = FWUser::getFWUserObject();
+
 	    $date = time();
 	    $newstitle = $_POST['newsTitle'];
 	    $newstext = addslashes($_POST['newsText']);
@@ -593,7 +602,7 @@ class news extends newsLibrary {
 	    $newsurl1 = $_POST['newsUrl1'];
 	    $newsurl2 = $_POST['newsUrl2'];
 	    $newscat = $_POST['newsCat'];
-	    $userid = intval($_SESSION['auth']['userid']);
+	    $userid = $objFWUser->objUser->getId();
 
 	    $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news (
 	    	id,

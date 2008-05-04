@@ -449,12 +449,9 @@ class Market extends marketLibrary
 
 	   			$image = '<img src="'.$this->mediaWebPath.'pictures/'.$objResult->fields['picture'].'" '.$width.' '.$height.' border="0" alt="'.$objResult->fields['title'].'" />';
 
-	   			$objResultUser = $objDatabase->Execute("SELECT residence FROM ".DBPREFIX."access_users WHERE id='".$objResult->fields['userid']."' LIMIT 1");
-				if($objResultUser !== false){
-					while(!$objResultUser->EOF){
-						$city = $objResultUser->fields['residence'];
-						$objResultUser->MoveNext();
-					}
+	   			$objFWUser = FWUser::getFWUserObject();
+				if ($objUser = $objFWUser->objUser->getUser($objResult->fields['userid'])) {
+					$city = $objUser->getProfileAttribute('city');
 				}
 
 	   			if($objResult->fields['premium'] == 1){
@@ -726,28 +723,25 @@ class Market extends marketLibrary
 			$userMail	= '<a href="mailto:'.$this->entries[$id]['email'].'">'.$this->entries[$id]['email'].'</a><br />';
 
 			//user details
-			$objResultUser = $objDatabase->Execute("SELECT username, email, firstname, lastname, residence, webpage, phone, mobile, zip, street FROM ".DBPREFIX."access_users WHERE id='".$this->entries[$id]['userid']."' LIMIT 1");
-			if($objResultUser !== false){
-				while(!$objResultUser->EOF){
-					$objResultUser->fields['street'] != '' ? $street = $objResultUser->fields['street'].'<br />' : $street = '';
-					$objResultUser->fields['phone'] != '' ? $phone = $objResultUser->fields['phone'].'<br />' : $phone = '';
-					$objResultUser->fields['mobile'] != '' ? $mobile = $objResultUser->fields['mobile'].'<br />' : $mobile = '';
-					$objResultUser->fields['webpage'] != '' ? $webpage = '<a href="http://:'.$objResultUser->fields['webpage'].'" target="_blank">'.$objResultUser->fields['webpage'].'</a><br />' : $webpage = '';
+			$objFWUser = FWUser::getFWUserObject();
+			if ($objUser = $objFWUser->objUser->getUser($this->entries[$id]['userid'])) {
+					$objUser->getProfileAttribute('address') != '' ? $street = $objUser->getProfileAttribute('address').'<br />' : $street = '';
+					$objUser->getProfileAttribute('phone_office') != '' ? $phone = $objUser->getProfileAttribute('phone_office').'<br />' : $phone = '';
+					$objUser->getProfileAttribute('phone_mobile') != '' ? $mobile = $objUser->getProfileAttribute('phone_mobile').'<br />' : $mobile = '';
+					$objUser->getProfileAttribute('website') != '' ? $webpage = '<a href="http://:'.$objUser->getProfileAttribute('website').'" target="_blank">'.$objUser->getProfileAttribute('website').'</a><br />' : $webpage = '';
 
-					$TXTuserDetails = $_ARRAYLANG['TXT_MARKET_CONTACT'];
-					$userDetails = 	$user.'<br />
-									'.$street.'
-									'.$objResultUser->fields['zip'].' '.$objResultUser->fields['residence'].'<br />
-									<br />
-									'.$phone.'
-									'.$mobile.'
-									<br />
-									'.$userMail.'
-									'.$webpage;
+				$TXTuserDetails = $_ARRAYLANG['TXT_MARKET_CONTACT'];
+				$userDetails = 	$user.'<br />
+								'.$street.'
+								'.$objUser->getProfileAttribute('zip').' '.$objUser->getProfileAttribute('city').'<br />
+								<br />
+								'.$phone.'
+								'.$mobile.'
+								<br />
+								'.$userMail.'
+								'.$webpage;
 
-					$residence = $objResultUser->fields['zip'].' '.$objResultUser->fields['residence'];
-					$objResultUser->MoveNext();
-				}
+				$residence = $objUser->getProfileAttribute('zip').' '.$objUser->getProfileAttribute('city');
 			}
 
 			if($this->entries[$id]['userdetails'] != 1){
@@ -911,23 +905,26 @@ class Market extends marketLibrary
 
 	function addEntry(){
 
-		global $objDatabase, $_CORELANG, $_ARRAYLANG, $_CONFIG, $objAuth, $objPerm;
+		global $objDatabase, $_CORELANG, $_ARRAYLANG, $_CONFIG;
 
 
 		if (!$this->settings['addEntry'] == '1' || (!$this->communityModul && $this->settings['addEntry_only_community'] == '1')) {
 			header('Location: index.php?section=market');
 			exit;
 		}elseif($this->settings['addEntry_only_community'] == '1'){
-			if ($objAuth->checkAuth()) {
-				if (!$objPerm->checkAccess(99, 'static')) {
-					header("Location: ?section=login&cmd=noaccess");
+			$objFWUser = FWUser::getFWUserObject();
+			if ($objFWUser->objUser->login()) {
+				if (!Permission::checkAccess(99, 'static', true)) {
+					header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
 					exit;
 				}
 			}else {
-				$link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-				header("Location: ?section=login&redirect=".$link);
+				$link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
+				header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
 				exit;
 			}
+		} else {
+			$objFWUser = FWUser::getFWUserObject();
 		}
 
 		$this->_objTpl->setTemplate($this->pageContent, true, true);
@@ -1029,7 +1026,7 @@ class Market extends marketLibrary
 		$this->_objTpl->setVariable(array(
 	    	'TXT_MARKET_PREMIUM_CONDITIONS'			=>	$premium,
 	    	'MARKET_CATEGORIES'						=>	$categories,
-	    	'MARKET_ENTRY_ADDEDBY'					=>	$_SESSION['auth']['username'],
+	    	'MARKET_ENTRY_ADDEDBY'					=>	htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
 	    	'MARKET_ENTRY_USERDETAILS_ON'			=>	"checked",
 	    	'MARKET_ENTRY_TYPE_OFFER'				=>	"checked",
 	    	'MARKET_DAYS_ONLINE'					=>	$daysOnline,
@@ -1271,12 +1268,9 @@ class Market extends marketLibrary
 		   			$image = '<img src="'.$this->mediaWebPath.'pictures/'.$objResult->fields['picture'].'" '.$width.'" '.$height.'" border="0" alt="'.$objResult->fields['title'].'" />';
 
 
-		   			$objResultUser = $objDatabase->Execute("SELECT residence FROM ".DBPREFIX."access_users WHERE id='".$objResult->fields['userid']."' LIMIT 1");
-					if($objResultUser !== false){
-						while(!$objResultUser->EOF){
-							$city = $objResultUser->fields['residence'];
-							$objResultUser->MoveNext();
-						}
+		   			$objFWUser = FWUser::getFWUserObject();
+					if ($objUser = $objFWUser->objUser->getUser($objResult->fields['userid'])) {
+						$city = $objUser->getProfileAttribute('city');
 					}
 
 		   			if($objResult->fields['premium'] == 1){
@@ -1348,7 +1342,7 @@ class Market extends marketLibrary
 
 	function editEntry(){
 
-		global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG, $objAuth, $objPerm;
+		global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
 		$this->_objTpl->setTemplate($this->pageContent, true, true);
 
@@ -1356,16 +1350,19 @@ class Market extends marketLibrary
 			header('Location: index.php?section=market&cmd=detail&id='.$_POST['id']);
 			exit;
 		}elseif($this->settings['addEntry_only_community'] == '1'){
-			if ($objAuth->checkAuth()) {
-				if (!$objPerm->checkAccess(100, 'static')) {
-					header("Location: ?section=login&cmd=noaccess");
+			$objFWUser = FWUser::getFWUserObject();
+			if ($objFWUser->objUser->login()) {
+				if (!Permission::checkAccess(100, 'static', true)) {
+					header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
 					exit;
 				}
 			}else {
-				$link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-				header("Location: ?section=login&redirect=".$link);
+				$link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
+				header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
 				exit;
 			}
+		} else {
+			$objFWUser = FWUser::getFWUserObject();
 		}
 
 		//get search
@@ -1399,7 +1396,7 @@ class Market extends marketLibrary
 			$objResult = $objDatabase->Execute('SELECT type, title, description, premium, picture, catid, price, regdate, enddate, userid, name, email, userdetails, spez_field_1, spez_field_2, spez_field_3, spez_field_4, spez_field_5 FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
 			if($objResult !== false){
 				while (!$objResult->EOF) {
-					if($_SESSION['auth']['userid']==$objResult->fields['userid']){
+					if($objFWUser->objUser->login() && $objFWUser->objUser->getId()==$objResult->fields['userid']){
 						//entry type
 						if($objResult->fields['type'] == 'offer'){
 							$offer 	= 'checked';
@@ -1568,7 +1565,7 @@ class Market extends marketLibrary
 
 	function delEntry(){
 
-		global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG, $objAuth, $objPerm;
+		global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
 		$this->_objTpl->setTemplate($this->pageContent, true, true);
 
@@ -1576,16 +1573,19 @@ class Market extends marketLibrary
 			header('Location: index.php?section=market&cmd=detail&id='.$_POST['id']);
 			exit;
 		}elseif($this->settings['addEntry_only_community'] == '1'){
-			if ($objAuth->checkAuth()) {
-				if (!$objPerm->checkAccess(101, 'static')) {
-					header("Location: ?section=login&cmd=noaccess");
+			$objFWUser = FWUser::getFWUserObject();
+			if ($objFWUser->objUser->login()) {
+				if (!Permission::checkAccess(101, 'static', true)) {
+					header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
 					exit;
 				}
 			}else {
-				$link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-				header("Location: ?section=login&redirect=".$link);
+				$link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
+				header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
 				exit;
 			}
+		} else {
+			$objFWUser = FWUser::getFWUserObject();
 		}
 
 		//get search
@@ -1596,7 +1596,7 @@ class Market extends marketLibrary
 			$objResult = $objDatabase->Execute('SELECT id, userid, catid FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
 			if($objResult !== false){
 				while (!$objResult->EOF) {
-					if($_SESSION['auth']['userid']==$objResult->fields['userid']){
+					if($objFWUser->objUser->login() && $objFWUser->objUser->getId()==$objResult->fields['userid']){
 						$this->_objTpl->setVariable(array(
 						    'MARKET_ENTRY_ID'					=>	$entryId,
 						    'TXT_MARKET_DEL'					=>	$_ARRAYLANG['TXT_MARKET_DELETE_ADVERTISEMENT'],

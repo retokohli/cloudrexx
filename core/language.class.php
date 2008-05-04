@@ -85,7 +85,7 @@ class LanguageManager
      */
     function getLanguagePage()
     {
-        global $_CORELANG, $objTemplate, $objPerm;
+        global $_CORELANG, $objTemplate;
 
         if (!isset($_GET['act'])) {
             $_GET['act'] = "";
@@ -93,7 +93,7 @@ class LanguageManager
 
         switch($_GET['act']) {
             case 'dellang':
-                $objPerm->checkAccess(49, 'static');
+                Permission::checkAccess(49, 'static');
                 $this->deleteLanguage();
                 $this->languageOverview();
             break;
@@ -104,27 +104,27 @@ class LanguageManager
                 $this->_getVarOfId();
                 break;
             case 'mod':
-                $objPerm->checkAccess(48, 'static');
+                Permission::checkAccess(48, 'static');
                 $this->addUpdateVariable();
                 $this->modifyVariables();
             break;
             case 'add':
-                $objPerm->checkAccess(50, 'static');
+                Permission::checkAccess(50, 'static');
                 $this->addLanguage();
                 $this->languageOverview();
             break;
             case 'del':
-                $objPerm->checkAccess(48, 'static');
+                Permission::checkAccess(48, 'static');
                 $this->deleteVariable();
                 $this->listVariables();
             break;
             case 'writefiles':
-                $objPerm->checkAccess(48, 'static');
+                Permission::checkAccess(48, 'static');
                 $this->createFiles();
                 $this->listVariables();
                 break;
             default:
-                $objPerm->checkAccess(50, 'static');
+                Permission::checkAccess(50, 'static');
                 $this->modifyLanguage();
                 $this->languageOverview();
         }
@@ -663,12 +663,10 @@ class LanguageManager
 
     function _getVarOfId()
     {
-        global $objPerm;
-
         $_GET['id'] = isset($_REQUEST['langVarId']) ? intval($_REQUEST['langVarId']) : 0;
 
         if ($_GET['id'] > 0) {
-            $objPerm->checkAccess(48, 'static');
+            Permission::checkAccess(48, 'static');
             $this->addUpdateVariable();
             $this->modifyVariables();
         }

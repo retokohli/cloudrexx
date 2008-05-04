@@ -101,48 +101,38 @@ class calendarLibrary
 	 */
     function _checkAccess($id=null)
     {
-    	global $objDatabase, $objAuth, $objPerm;
+    	global $objDatabase;
 
+    	$objFWUser = FWUser::getFWUserObject();
+    	if (isset($id)) {
 
-    	if(!empty($_COOKIE['PHPSESSID'])) {
-	    	if (isset($id)) {
+	    	//check access
+			$query = "SELECT access
+						FROM ".DBPREFIX."module_calendar".$this->mandateLink."
+			  		   WHERE id = '".$id."'";
 
-		    	//check access
-				$query = "SELECT access
-							FROM ".DBPREFIX."module_calendar".$this->mandateLink."
-				  		   WHERE id = '".$id."'";
+			$objResult = $objDatabase->SelectLimit($query, 1);
 
-				$objResult = $objDatabase->SelectLimit($query, 1);
-
-				if ($objResult->fields['access'] == 1) {
-						if ($objAuth->checkAuth()) {
-							if (!$objPerm->checkAccess(116, 'static')) {
-								header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
-								exit;
-							}
-						}else {
-							$link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-							header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
-							exit;
-						}
-					}
-	    	} else {
-					if ($objAuth->checkAuth()) {
-						if (!$objPerm->checkAccess(116, 'static')) {
-							return false;
-							exit;
-						}
-					} else {
-						return false;
+			if ($objResult->fields['access'] == 1) {
+				if ($objFWUser->objUser->login()) {
+					if (!Permission::checkAccess(116, 'static', true)) {
+						header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
 						exit;
 					}
+				}else {
+					$link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
+					header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
+					exit;
 				}
-
-			return true;
+			}
     	} else {
-    		return false;
-    	}
-    }
+			if (!Permission::checkAccess(116, 'static', true)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 
 
 
@@ -579,7 +569,7 @@ class calendarLibrary
      */
     function getBoxes($howmany, $year, $month=0, $day=0, $catid=NULL)
     {
-        global $objDatabase, $_ARRAYLANG, $objPerm, $objInit;
+        global $objDatabase, $_ARRAYLANG, $objInit;
 
         $url = htmlentities($this->url, ENT_QUOTES, CONTREXX_CHARSET);
 
@@ -630,7 +620,7 @@ class calendarLibrary
             $objResult = $objDatabase->Execute($query);
 
             while (!$objResult->EOF) {
-            	if ($objResult->fields['access'] && $objInit->mode == 'frontend' && (!is_object($objPerm) || !$objPerm->checkAccess(116, 'static', true))) {
+            	if ($objResult->fields['access'] && $objInit->mode == 'frontend' && !Permission::checkAccess(116, 'static', true)) {
             		$objResult->MoveNext();
             		continue;
             	}

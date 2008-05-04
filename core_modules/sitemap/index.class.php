@@ -69,8 +69,9 @@ class sitemap
 
     function _initialize()
     {
-    	global $objDatabase, $_LANGID, $objPerm;
+    	global $objDatabase, $_LANGID;
 
+    	$objFWUser = FWUser::getFWUserObject();
 		$query = "SELECT n.cmd AS cmd,
 		                 n.catid AS catid,
 		                 n.catname AS catname,
@@ -81,21 +82,21 @@ class sitemap
 						 a_s.url AS alias_url
 		            FROM ".DBPREFIX."content_navigation AS n
 						LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
-						LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s 
+						LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
 								ON  a_t.id        = a_s.target_id
 								AND a_s.isdefault = 1,
 		                 ".DBPREFIX."modules AS m
 
 		           WHERE (n.module=m.id AND n.displaystatus = 'on' AND n.activestatus = '1' AND n.lang=".$_LANGID.")
 		             ".(
-						!is_object($objPerm) ?
+						!$objFWUser->objUser->login() ?
 							// user is not authenticated
 							'AND (n.protected=0)' :
 							// user is authenticated
 							(
-								!$objPerm->allAccess ?
+								!$objFWUser->objUser->getAdminStatus() ?
 									 // user is not administrator
-									'AND (n.protected=0'.(count($objPerm->getDynamicAccessIds()) ? ' OR n.frontend_access_id IN ('.implode(', ', $objPerm->getDynamicAccessIds()).')' : '').')' :
+									'AND (n.protected=0'.(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR n.frontend_access_id IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '').')' :
 									// user is administrator
 									''
 							)

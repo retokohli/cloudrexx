@@ -1139,7 +1139,7 @@ class statsLibrary
 	}
 
 	function _deleteStatistics() {
-		global $objDatabase, $objPerm, $_ARRAYLANG;
+		global $objDatabase, $_ARRAYLANG;
 
 		$statusMessage = "";
 

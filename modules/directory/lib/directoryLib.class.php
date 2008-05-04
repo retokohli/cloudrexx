@@ -898,8 +898,9 @@ class directoryLibrary
 
 				//get author id
 				if($inputName == "addedby"){
-					if(isset($_SESSION['auth']['userid'])){
-						$inputValue = $_SESSION['auth']['userid'];
+					$objFWUser = FWUser::getFWUserObject();
+					if($objFWUser->objUser->login()){
+						$inputValue = $objFWUser->objUser->getId();
 					}else{
 						$inputValue = $inputValue;
 					}

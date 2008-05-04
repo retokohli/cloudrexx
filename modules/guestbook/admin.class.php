@@ -65,12 +65,11 @@ class GuestbookManager extends GuestbookLibrary
     * @global   array     $_ARRAYLANG
     * @global   array     $_CONFIG
     * @global   object    $objTemplate
-    * @global   object    $objPerm
     * @return   string    parsed content
     */
 	function getPage()
     {
-    	global $_ARRAYLANG, $_CONFIG, $objTemplate, $objPerm;
+    	global $_ARRAYLANG, $_CONFIG, $objTemplate;
 
     	if(!isset($_GET['act'])){
     	    $_GET['act']="";

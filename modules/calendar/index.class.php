@@ -137,9 +137,9 @@ class Calendar extends calendarLibrary
 
     function _standardView()
     {
-    	global $objDatabase, $_ARRAYLANG, $_CONFIG, $objAuth, $objPerm, $_LANGID;
-    	
-    	
+    	global $objDatabase, $_ARRAYLANG, $_CONFIG, $_LANGID;
+
+
     	$this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar";
 
     	$this->_objTpl->setTemplate($this->pageContent);
@@ -150,8 +150,8 @@ class Calendar extends calendarLibrary
         //check access
         $auth = $this->_checkAccess();
 
-        
-        
+
+
 		if ($auth == true) {
 			$where = "";
 		} else {
@@ -297,9 +297,9 @@ class Calendar extends calendarLibrary
     	if ($objResult !== false) {
     		$count = $objResult->RecordCount();
     		$i=0;
-    
+
     		$arrCats = array();
-    		
+
     		$catQuery = "	SELECT `id`
     						FROM `".DBPREFIX."module_calendar".$this->mandateLink."_categories`
     						WHERE `lang` = ".$_LANGID." AND";
@@ -309,7 +309,7 @@ class Calendar extends calendarLibrary
     				$objRSCats->MoveNext();
     			}
     		}
-    
+
     		if ($count >= 1) {
     			while (!$objResult->EOF) {
     				if(!in_array($objResult->fields['catid'], $arrCats)){
@@ -318,13 +318,13 @@ class Calendar extends calendarLibrary
     				}
     				//load data
     				$this->getNoteData($objResult->fields['id'], "show", 1);
-    
+
     				$this->_objTpl->setVariable(array(
     					"CALENDAR_ROW"	 		=> $i % 2 == 0 ? "row1" : "row2",
     				));
-    
+
     				$i++;
-    
+
     				$this->_objTpl->parse("event");
     				$objResult->MoveNext();
     			}
@@ -658,7 +658,7 @@ class Calendar extends calendarLibrary
      */
 	function showEvent()
 	{
-		global $_ARRAYLANG, $objAuth, $objPerm;
+		global $_ARRAYLANG;
 
 		if (!isset($_GET['id'])) {
 		    if ($this->mandate == 1) {
@@ -805,10 +805,10 @@ class Calendar extends calendarLibrary
 
 				if ($objResultFields !== false) {
 					//email
-					$query = " SELECT id 
-					           FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields 
-					           WHERE note_id='".$noteId."' 
-					           AND `key`='6' 
+					$query = " SELECT id
+					           FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
+					           WHERE note_id='".$noteId."'
+					           AND `key`='6'
 					           LIMIT 1";
 				    $objResult = $objDatabase->Execute($query);
 					if ($objResult !== false) {
@@ -816,10 +816,10 @@ class Calendar extends calendarLibrary
 					}
 
 					//firstane
-					$query = " SELECT id 
-					           FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields 
-					           WHERE note_id='".$noteId."' 
-					           AND `key`='1' 
+					$query = " SELECT id
+					           FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
+					           WHERE note_id='".$noteId."'
+					           AND `key`='1'
 					           LIMIT 1";
 				    $objResult = $objDatabase->Execute($query);
 					if ($objResult !== false) {
@@ -827,10 +827,10 @@ class Calendar extends calendarLibrary
 					}
 
 					//lastname
-					$query = " SELECT id 
-					           FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields 
-					           WHERE note_id='".$noteId."' 
-					           AND `key`='2' 
+					$query = " SELECT id
+					           FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
+					           WHERE note_id='".$noteId."'
+					           AND `key`='2'
 					           LIMIT 1";
 				    $objResult = $objDatabase->Execute($query);
 					if ($objResult !== false) {

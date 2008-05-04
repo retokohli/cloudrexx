@@ -491,12 +491,14 @@ if (MY_DEBUG) echo("Ticket::refreshTimestamp(): done!<br />");
     function updateSupportCategoryId($supportCategoryId)
     {
         if ($this->supportCategoryId != $supportCategoryId) {
+        	$objFWUser = FWUser::getFWUserObject();
+
             // Create the appropriate TicketEvent
             $objEvent = new TicketEvent(
                 $this,
                 SUPPORT_TICKET_EVENT_CHANGE_CATEGORY,
                 $supportCategoryId,
-                Auth::getUserId()
+                $objFWUser->objUser->getId()
             );
             // Process the TicketEvent, returns the new Ticket status
             $newStatus = $objEvent->process();
@@ -531,12 +533,14 @@ if (MY_DEBUG) echo("Ticket::refreshTimestamp(): done!<br />");
     function updateOwnerId($ownerId)
     {
         if ($this->ownerId != $ownerId) {
+        	$objFWUser = FWUser::getFWUserObject();
+
             // Create the appropriate TicketEvent
             $objEvent = new TicketEvent(
                 $this,
                 SUPPORT_TICKET_EVENT_CHANGE_OWNER,
                 $ownerId,
-                Auth::getUserId()
+                $objFWUser->objUser->getId()
             );
             // Process the TicketEvent, returns the new Ticket status
             $newStatus = $objEvent->process();
@@ -650,11 +654,13 @@ if (MY_DEBUG) echo("Ticket::addMessage(): ERROR: Adding Message results in UNKNO
         }
         // If a new Ticket was created above, add a REFERENCE to the old one.
         if ($this != $objTicket) {
+        	$objFWUser = FWUser::getFWUserObject();
+
             $objEvent = new TicketEvent(
                 $objTicket,                     // New Ticket object
                 SUPPORT_TICKET_EVENT_REFERENCE,
                 $this->id,                       // Old Ticket ID
-                Auth::getUserId()
+                $objFWUser->objUser->getId()
             );
             if (!$objEvent) {
 if (MY_DEBUG) echo("Ticket::addMessage(): ERROR: Failed to create REFERENCE TicketEvent, ticketId ".$objTicket->getId().", reference ticketId $this->id<br />");
@@ -715,12 +721,15 @@ if (MY_DEBUG) echo("Ticket::addReply(
 if (MY_DEBUG) echo("Ticket::addReply(): ERROR: Failed to insert() the new Message, ticketId ".$this->getId()."<br />");
             return false;
         }
+
+        $objFWUser = FWUser::getFWUserObject();
+
         // Create the TicketEvent
         $objEvent = new TicketEvent(
             $this,
             SUPPORT_TICKET_EVENT_REPLY,
             $objMessage->getId(),
-            Auth::getUserId()
+            $objFWUser->objUser->getId()
         );
         if (!$objEvent) {
 if (MY_DEBUG) echo("Ticket::addReply(): ERROR: Failed to create MESSAGE_REPLY TicketEvent (ticketId ".$this->getId().", messageId ".$objMessage->getId().")!<br />");
@@ -758,11 +767,12 @@ if (MY_DEBUG) echo("Ticket::addReply(): ERROR: Failed to roll back Message inser
      */
     function deleteMessage($messageId)
     {
+    	$objFWUser = FWUser::getFWUserObject();
         $objEvent = new TicketEvent(
             $this,
             SUPPORT_TICKET_EVENT_MESSAGE_DELETE,
             $messageId,
-            Auth::getUserId()
+            $objFWUser->objUser->getId()
         );
         $newStatus = $objEvent->process();
         if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
@@ -790,11 +800,12 @@ if (MY_DEBUG) echo("Ticket::deleteMessage(messageId=$messageId): INFO: process()
      */
     function updateView($messageId)
     {
+    	$objFWUser = FWUser::getFWUserObject();
         $objEvent = new TicketEvent(
             $this,
             SUPPORT_TICKET_EVENT_MESSAGE_VIEW,
             $messageId,
-            Auth::getUserId()
+            $objFWUser->objUser->getId()
         );
         $newStatus = $objEvent->process();
         if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
@@ -814,11 +825,12 @@ if (MY_DEBUG) echo("Ticket::updateView(messageId=$messageId): INFO: process() re
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function close() {
+    	$objFWUser = FWUser::getFWUserObject();
         $objEvent = new TicketEvent(
             $this,
             SUPPORT_TICKET_EVENT_CLOSE,
             0,
-            Auth::getUserId()
+            $objFWUser->objUser->getId()
         );
         $newStatus = $objEvent->process();
         if ($newStatus == SUPPORT_TICKET_STATUS_UNKNOWN) {
@@ -1051,23 +1063,25 @@ if (MY_DEBUG) { echo("getTicketIdArray(supportCategoryId=$supportCategoryId, lan
     {
         // The argument in this function call is fake!
         // It will return all user IDs.
-        $arrUserId = Auth::getUserIdArray('support');
-        if (!$arrUserId) {
+        $objFWUser = FWUser::getFWUserObject();
+        if (($objUsers = $objFWUser->objUser->getUsers()) === false) {
 if (MY_DEBUG) echo("getOwnerMenu(selected=$selectedId, name=$menuName, onchange=$onchange): ERROR: got no user IDs!<br />");
             return false;
         }
 //if (MY_DEBUG) { echo("getOwnerMenu(selected=$selectedId, name=$menuName, onchange=$onchange): got user IDs: ");var_export($arrUserId);echo("<br />"); }
         $menu = '';
-        foreach ($arrUserId as $userId) {
-            $fullName = trim(Auth::getFullName($userId));
+        while (!$objUsers->EOF) {
+			$fullName = trim($objUsers->getProfileAttribute('firstanme').' '.$objUsers->getProfileAttribute('lastname'));
             if ($fullName == '') {
                 continue;
             }
             $menu .=
-                "<option value='$userId'".
-                ($selectedId == $userId ? ' selected="selected"' : '').
-                '>'.$fullName."</option>\n";
+                "<option value='{$objUsers->getId()}'".
+                ($selectedId == $objUsers->getId() ? ' selected="selected"' : '').
+                '>'.htmlentities($fullName, ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
+        	$objUsers->next();
         }
+
         if ($menuName) {
             $menu = "<select id='$menuName' name='$menuName'".
             ($onchange ? ' onchange="'.$onchange.'"' : '').

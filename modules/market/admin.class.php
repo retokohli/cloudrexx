@@ -82,7 +82,7 @@ class Market extends marketLibrary
     */
     function getPage() {
 
-        global $objTemplate, $objPerm;
+        global $objTemplate;
 
         if (!isset($_GET['act'])) {
             $_GET['act']="";
@@ -90,61 +90,61 @@ class Market extends marketLibrary
 
         switch ($_GET['act']) {
             case 'addCategorie':
-                $objPerm->checkAccess(98, 'static');
+                Permission::checkAccess(98, 'static');
                 $this->addCategory();
             break;
             case 'editCategorie':
-                $objPerm->checkAccess(98, 'static');
+                Permission::checkAccess(98, 'static');
                 $this->editCategorie();
             break;
             case 'statusCategorie':
-                $objPerm->checkAccess(98, 'static');
+                Permission::checkAccess(98, 'static');
                 $this->statusCategorie();
                 $this->overview();
             break;
             case 'deleteCategorie':
-                $objPerm->checkAccess(98, 'static');
+                Permission::checkAccess(98, 'static');
                 $this->deleteCategorie();
                 $this->overview();
             break;
             case 'sortCategorie':
-                $objPerm->checkAccess(98, 'static');
+                Permission::checkAccess(98, 'static');
                 $this->sortCategorie();
                 $this->overview();
             break;
             case 'addEntry':
-                $objPerm->checkAccess(98, 'static');
+                Permission::checkAccess(98, 'static');
                 $this->addEntry();
             break;
             case 'statusEntry':
-                $objPerm->checkAccess(98, 'static');
+                Permission::checkAccess(98, 'static');
                 $this->statusEntry();
                 $this->entries();
             break;
             /*case 'statusEntry':
-                $objPerm->checkAccess(98, 'static');
+                Permission::checkAccess(98, 'static');
                 $this->deleteEntry();
                 $this->entries();
             break;*/
             case 'deleteEntry':
-                $objPerm->checkAccess(98, 'static');
+                Permission::checkAccess(98, 'static');
                 $this->deleteEntry();
                 $this->entries();
             break;
             case 'editEntry':
-                $objPerm->checkAccess(98, 'static');
+                Permission::checkAccess(98, 'static');
                 $this->editEntry();
             break;
             case 'entries':
-                $objPerm->checkAccess(98, 'static');
+                Permission::checkAccess(98, 'static');
                 $this->entries();
             break;
             case 'settings':
-                $objPerm->checkAccess(98, 'static');
+                Permission::checkAccess(98, 'static');
                 $this->sysSettings();
             break;
             default:
-                $objPerm->checkAccess(98, 'static');
+                Permission::checkAccess(98, 'static');
                 $this->overview();
             break;
         }
@@ -572,6 +572,8 @@ class Market extends marketLibrary
         $this->_pageTitle = $_ARRAYLANG['TXT_NEW_ENTRY'];
         $this->_objTpl->loadTemplateFile('module_market_entry.html',true,true);
 
+        $objFWUser = FWUser::getFWUserObject();
+
         $this->getCategories();
         $categories = '';
         foreach (array_keys($this->categories) as $catId) {
@@ -643,12 +645,12 @@ class Market extends marketLibrary
           }
 
         $this->_objTpl->setVariable(array(
-            'FORM_ACTION'                    =>    "addEntry",
-            'CATEGORIES'                    =>    $categories,
-            'ENTRY_ADDEDBY'                    =>    $_SESSION['auth']['username'],
-            'ENTRY_USERDETAILS_ON'            =>    "checked",
-            'ENTRY_TYPE_OFFER'                =>    "checked",
-            'DAYS_ONLINE'                    =>    $daysOnline
+            'FORM_ACTION'			=> "addEntry",
+            'CATEGORIES'			=> $categories,
+            'ENTRY_ADDEDBY'			=> htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+            'ENTRY_USERDETAILS_ON'	=> "checked",
+            'ENTRY_TYPE_OFFER'		=> "checked",
+            'DAYS_ONLINE'			=> $daysOnline
         ));
 
         if (isset($_POST['submitEntry'])) {

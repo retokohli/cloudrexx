@@ -435,13 +435,16 @@ class ForumLibrary {
 	 *
 	 * @return void
 	 */
-	function _communityLogin(){
+	function _communityLogin()
+	{
 		global $_ARRAYLANG;
-		if(!isset($_SESSION['auth']) || $_SESSION['auth']['userid'] <= 0){
+
+		$objFWUser = FWUser::getFWUserObject();
+		if(!$objFWUser->objUser->login()){
 			$strForumCommunityLinks = '	<a href="?section=login&amp;redirect='.((isset($_SERVER['REQUEST_URI'])) ? base64_encode($_SERVER['REQUEST_URI'])  : '?section=forum' ).'"> '.$_ARRAYLANG['TXT_FORUM_LOGIN'].'</a> |
-										<a href="?section=community&amp;cmd=register">'.$_ARRAYLANG['TXT_FORUM_REGISTER'].'</a>';
+										<a href="?section=access&amp;cmd=signup">'.$_ARRAYLANG['TXT_FORUM_REGISTER'].'</a>';
 		}else{
-			$strForumCommunityLinks = '<a href="?section=forum&amp;cmd=notification">'.$_ARRAYLANG['TXT_FORUM_NOTIFICATION'].'</a> | <a href="?section=community&amp;cmd=profile">'.$_ARRAYLANG['TXT_FORUM_PROFILE'].'</a>
+			$strForumCommunityLinks = '<a href="?section=forum&amp;cmd=notification">'.$_ARRAYLANG['TXT_FORUM_NOTIFICATION'].'</a> | <a href="?section=access&amp;cmd=settings">'.$_ARRAYLANG['TXT_FORUM_PROFILE'].'</a>
 									| <a href="?section=logout&amp;redirect='.((isset($_SERVER['REQUEST_URI'])) ? urlencode($_SERVER['REQUEST_URI'])  : '?section=forum' ).'"> '.$_ARRAYLANG['TXT_FORUM_LOGOUT'].'</a>';
 		}
 		$this->_objTpl->setVariable('FORUM_COMMUNITY_LINKS', $strForumCommunityLinks);
@@ -1397,17 +1400,11 @@ class ForumLibrary {
 	 */
 	function _checkAuth($intCatId, $mixedMode='read')
 	{
-		global $objPerm;
-
-		if ($objPerm->allAccess) {
+		if (Permission::hasAllAccess()) {
 			return true;
 		}
 
 		$arrAccess = $this->createAccessArray($intCatId);
-		if(empty($_SESSION['auth']['groups'])){
-			$_SESSION['auth']['groups'] = $this->_anonymousGroupId;
-			$_SESSION['auth']['userid'] = -1;
- 		}
 
 		if(is_array($mixedMode)){
 			foreach ($mixedMode as $mode){
@@ -1421,9 +1418,15 @@ class ForumLibrary {
 		return false;
 	}
 
-	function _checkGroupAccess($arrAccess, $mode){
-		if(empty($this->_arrGroups)){
-			$this->_arrGroups = array_intersect($_SESSION['auth']['groups'], array_keys($arrAccess));
+	function _checkGroupAccess($arrAccess, $mode)
+	{
+		if (empty($this->_arrGroups)) {
+			$objFWUser = FWUser::getFWUserObject();
+			$arrGroups = array(0);
+			if ($objFWUser->objUser->login()) {
+				$arrGroups = array_merge($arrGroups, $objFWUser->objUser->getAssociatedGroupIds());
+			}
+			$this->_arrGroups = array_intersect($arrGroups, array_keys($arrAccess));
 		}
 		foreach ($this->_arrGroups as $group) {
 			if(!empty($arrAccess[$group][$mode]) && $arrAccess[$group][$mode] == 1){ //has access
@@ -1440,19 +1443,16 @@ class ForumLibrary {
 	 * @param	integer		$intCategoryId: The rights of this category will be returned
 	 * @return	array		$arrAccess
 	 */
-	function createAccessArray($intCategoryId) {
+	function createAccessArray($intCategoryId)
+	{
 		global $objDatabase, $_ARRAYLANG;
+
 		$intCategoryId 	= intval($intCategoryId);
 		$arrAccess 		= array();
 
-		$objResult = $objDatabase->Execute('SELECT		group_id,
-														group_name,
-														group_description
-											FROM		'.DBPREFIX.'access_user_groups
-											WHERE		type = "frontend"
-											ORDER BY	group_id ASC
-										');
-		while (!$objResult->EOF) {
+		$objFWUser = FWUser::getFWUserObject();
+		$objGroup = $objFWUser->objGroup->getGroups(array('type' => 'frontend'), array('group_id' => 'asc'));
+		while (!$objGroup->EOF) {
 			$objSubResult = $objDatabase->SelectLimit('	SELECT	`read`,
 																`write`,
 																`edit`,
@@ -1462,28 +1462,29 @@ class ForumLibrary {
 																`sticky`
 														FROM	'.DBPREFIX.'module_forum_access
 														WHERE	category_id = '.$intCategoryId.'
-														AND		group_id = '.$objResult->fields['group_id'], 1);
+														AND		group_id = '.$objGroup->getId(), 1);
 			if ($objSubResult->RecordCount() == 1) {
 				//there are rights existing for this group
-				$arrAccess[$objResult->fields['group_id']] = array(	'name'		=>	htmlentities(stripslashes($objResult->fields['group_name']),ENT_QUOTES, CONTREXX_CHARSET),
-																	'desc'		=>	htmlentities(stripslashes($objResult->fields['group_description']),ENT_QUOTES, CONTREXX_CHARSET),
-																	'read'		=>	$objSubResult->fields['read'],
-																	'write'		=>	$objSubResult->fields['write'],
-																	'edit'		=>	$objSubResult->fields['edit'],
-																	'delete'	=>	$objSubResult->fields['delete'],
-																	'move'		=>	$objSubResult->fields['move'],
-																	'close'		=>	$objSubResult->fields['close'],
-																	'sticky'	=>	$objSubResult->fields['sticky']
-																);
+				$arrAccess[$objGroup->getId()] = array(	'name'		=>	htmlentities($objGroup->getName(),ENT_QUOTES, CONTREXX_CHARSET),
+														'desc'		=>	htmlentities($objGroup->getDescription(),ENT_QUOTES, CONTREXX_CHARSET),
+														'read'		=>	$objSubResult->fields['read'],
+														'write'		=>	$objSubResult->fields['write'],
+														'edit'		=>	$objSubResult->fields['edit'],
+														'delete'	=>	$objSubResult->fields['delete'],
+														'move'		=>	$objSubResult->fields['move'],
+														'close'		=>	$objSubResult->fields['close'],
+														'sticky'	=>	$objSubResult->fields['sticky']
+													);
 			} else {
 				//no rights in database for this group
-				$arrAccess[$objResult->fields['group_id']] = array(	'name'		=>	htmlentities(stripslashes($objResult->fields['group_name']),ENT_QUOTES, CONTREXX_CHARSET),
-																	'desc'		=>	htmlentities(stripslashes($objResult->fields['group_description']),ENT_QUOTES, CONTREXX_CHARSET)
-																);
+				$arrAccess[$objGroup->getId()] = array(	'name'		=>	htmlentities($objGroup->getName(),ENT_QUOTES, CONTREXX_CHARSET),
+														'desc'		=>	htmlentities($objGroup->getDescription(),ENT_QUOTES, CONTREXX_CHARSET)
+													);
 			}
 
-			$objResult->MoveNext();
+			$objGroup->next();
 		}
+
 
 		//anonymous access
 		$objSubResult = $objDatabase->SelectLimit('	SELECT		`read`,

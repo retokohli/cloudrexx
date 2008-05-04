@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Validator
  *
@@ -30,41 +29,41 @@ if (eregi("validator.inc.php",$_SERVER['PHP_SELF'])) {
 function contrexx_strip_tags($string)
 {
     if (CONTREXX_ESCAPE_GPC) {
-        return strip_tags($string);
+    return strip_tags($string);
     }
     return addslashes(strip_tags($string));
 }
 
 
+
 /**
- * addslashes wrapper to check for gpc_magic_quotes - gz
- *
- * @param     string     $string
- * @return    string     $string (cleaned)
- */
+* addslashes wrapper to check for gpc_magic_quotes - gz
+*
+* @param     string     $string
+* @return    string     $string (cleaned)
+*/
 function contrexx_addslashes($string)
 {
-    // if magic quotes is on the string is already quoted,
-    // just return it
+  // if magic quotes is on the string is already quoted,
+  // just return it
     if (CONTREXX_ESCAPE_GPC) {
-        return $string;
+    return $string;
     }
     return addslashes($string);
 }
 
-
 /**
- * stripslashes wrapper to check for gpc_magic_quotes
- *
- * @param string	$string
- * @return string $string
- */
+* stripslashes wrapper to check for gpc_magic_quotes
+*
+* @param string	$string
+* @return string $string
+*/
 function contrexx_stripslashes($string)
 {
 	if (CONTREXX_ESCAPE_GPC) {
 		return stripslashes($string);
 	}
-	return $string;
-}
+		return $string;
+	}
 
 ?>

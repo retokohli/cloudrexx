@@ -9,7 +9,7 @@ define('_DEBUG', 0);
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Engineering Team
- * @version     $Id:    Exp $
+ * @version       $Id:    Exp $
  * @package     contrexx
  * @subpackage  admin
  * @todo        Edit PHP DocBlocks!
@@ -56,7 +56,7 @@ $incVersionStatus = include_once('../config/version.php');
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
     header("Location: ../installer/index.php");
 } elseif ($incSettingsStatus === false || $incVersionStatus === false) {
-    die('System halted: Unable to load basic configuration!');
+	die('System halted: Unable to load basic configuration!');
 }
 
 require_once('../core/API.php');
@@ -139,14 +139,13 @@ $objLanguage = new FWLanguage();
 // Module object
 $objModules = new ModuleChecker();
 
-$objAuth = new Auth('backend');
-$objPerm = new Permission('backend');
+$objFWUser = FWUser::getFWUserObject();
 
 //-------------------------------------------------------
 // Authentification start
 //-------------------------------------------------------
-if (!$objAuth->checkAuth()) {
-    $modulespath = ASCMS_CORE_PATH."/imagecreator.php";
+if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
+    $modulespath = ASCMS_CORE_PATH . "/imagecreator.php";
     if (file_exists($modulespath)) require_once($modulespath);
     else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
 
@@ -159,18 +158,97 @@ if (!$objAuth->checkAuth()) {
             $objTemplate->loadTemplateFile('login_index.html');
             $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login_lost_password.html');
             $objTemplate->setVariable('TITLE', $_CORELANG['TXT_RESET_PASSWORD']);
-            $objAuth->lostPassword($objTemplate);
+
+	        // set language variables
+	        $objTemplate->setVariable(array(
+	            'TXT_LOST_PASSWORD_TEXT'    => $_CORELANG['TXT_LOST_PASSWORD_TEXT'],
+	            'TXT_EMAIL'					=> $_CORELANG['TXT_EMAIL'],
+	            'TXT_RESET_PASSWORD'        => $_CORELANG['TXT_RESET_PASSWORD']
+	        ));
+
+	        if (isset($_POST['email'])) {
+	            $email = contrexx_stripslashes($_POST['email']);
+
+	            if (($objFWUser->restorePassword($email))) {
+					$statusMessage = str_replace("%EMAIL%", $email, $_CORELANG['TXT_LOST_PASSWORD_MAIL_SENT']);
+					if ($objTemplate->blockExists('login_lost_password')) {
+						$objTemplate->hideBlock('login_lost_password');
+					}
+	            } else {
+	            	$statusMessage = $objFWUser->getErrorMsg();
+	            }
+
+	            $objTemplate->setVariable(array(
+	                'LOGIN_STATUS_MESSAGE'        => $statusMessage
+	            ));
+	        }
             $objTemplate->show();
             exit;
         case "resetpw":
             $objTemplate->loadTemplateFile('login_index.html');
             $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login_reset_password.html');
             $objTemplate->setVariable('TITLE', $_CORELANG['TXT_SET_NEW_PASSWORD']);
-            $objAuth->resetPassword($objTemplate);
+
+            function resetPassword($objTemplate)
+            {
+            	global $_CORELANG, $objFWUser;
+
+	            $username = isset($_POST['username']) ? contrexx_stripslashes($_POST['username']) : (isset($_GET['username']) ? contrexx_stripslashes($_GET['username']) : '');
+		        $restoreKey = isset($_POST['restore_key']) ? contrexx_stripslashes($_POST['restore_key']) : (isset($_GET['restoreKey']) ? contrexx_stripslashes($_GET['restoreKey']) : '');
+		        $password = isset($_POST['password']) ? trim(contrexx_stripslashes($_POST['password'])) : '';
+		        $confirmedPassword = isset($_POST['password2']) ? trim(contrexx_stripslashes($_POST['password2'])) : '';
+		        $statusMessage = '';
+
+				if (isset($_POST['reset_password'])) {
+					if ($objFWUser->resetPassword($username, $restoreKey, $password, $confirmedPassword, true)) {
+						$statusMessage = $_CORELANG['TXT_PASSWORD_CHANGED_SUCCESSFULLY'];
+						if ($objTemplate->blockExists('login_reset_password')) {
+			                $objTemplate->hideBlock('login_reset_password');
+			            }
+					} else {
+						$statusMessage = $objFWUser->getErrorMsg();
+
+						$objTemplate->setVariable(array(
+							'TXT_USERNAME'						=> $_CORELANG['TXT_USERNAME'],
+							'TXT_PASSWORD'						=> $_CORELANG['TXT_PASSWORD'],
+							'TXT_VERIFY_PASSWORD'				=> $_CORELANG['TXT_VERIFY_PASSWORD'],
+							'TXT_PASSWORD_MINIMAL_CHARACTERS'	=> $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
+							'TXT_SET_PASSWORD_TEXT'				=> $_CORELANG['TXT_SET_PASSWORD_TEXT'],
+							'TXT_SET_NEW_PASSWORD'				=> $_CORELANG['TXT_SET_NEW_PASSWORD'],
+						));
+
+						$objTemplate->parse('login_reset_password');
+					}
+				} elseif (!$objFWUser->resetPassword($username, $restoreKey, $password, $confirmedPassword)) {
+					$statusMessage = $objFWUser->getErrorMsg();
+					if ($objTemplate->blockExists('login_reset_password')) {
+		                $objTemplate->hideBlock('login_reset_password');
+		            }
+				} else {
+					$objTemplate->setVariable(array(
+						'TXT_USERNAME'						=> $_CORELANG['TXT_USERNAME'],
+						'TXT_PASSWORD'						=> $_CORELANG['TXT_PASSWORD'],
+						'TXT_VERIFY_PASSWORD'				=> $_CORELANG['TXT_VERIFY_PASSWORD'],
+						'TXT_PASSWORD_MINIMAL_CHARACTERS'	=> $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
+						'TXT_SET_PASSWORD_TEXT'				=> $_CORELANG['TXT_SET_PASSWORD_TEXT'],
+						'TXT_SET_NEW_PASSWORD'				=> $_CORELANG['TXT_SET_NEW_PASSWORD'],
+					));
+
+					$objTemplate->parse('login_reset_password');
+				}
+
+				$objTemplate->setVariable(array(
+					'LOGIN_STATUS_MESSAGE'	=> $statusMessage,
+					'LOGIN_USERNAME'		=> htmlentities($username, ENT_QUOTES, CONTREXX_CHARSET),
+					'LOGIN_RESTORE_KEY'		=> htmlentities($restoreKey, ENT_QUOTES, CONTREXX_CHARSET)
+				));
+            }
+
+            resetPassword($objTemplate);
             $objTemplate->show();
             exit;
         default:
-            if (checkGDExtension()) {
+            if(checkGDExtension()) {
                 $loginSecurityCode = '<img src="index.php?cmd=secure" alt="Security Code" title="Security Code"/>';
             } else {
                 $_SESSION['auth']['secid'] = strtoupper(substr(md5(microtime()), 0, 4));
@@ -180,16 +258,16 @@ if (!$objAuth->checkAuth()) {
             $objTemplate->loadTemplateFile('login_index.html',true,true);
             $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login.html');
             $objTemplate->setVariable(array(
-            'TXT_SECURITY_CODE'       => $_CORELANG['TXT_SECURITY_CODE'],
-            'TXT_ENTER_SECURITY_CODE' => $_CORELANG['TXT_ENTER_SECURITY_CODE'],
-            'TXT_USER_NAME'           => $_CORELANG['TXT_USER_NAME'],
-            'TXT_PASSWORD'            => $_CORELANG['TXT_PASSWORD'],
-            'TXT_LOGIN'               => $_CORELANG['TXT_LOGIN'],
-            'TXT_PASSWORD_LOST'       => $_CORELANG['TXT_PASSWORD_LOST'],
-            'UID'                     => isset($_COOKIE['username']) ? $_COOKIE['username'] : '',
-            'TITLE'                   => $_CORELANG['TXT_LOGIN'],
-            'LOGIN_IMAGE'             => $loginSecurityCode,
-            'LOGIN_ERROR_MESSAGE'     => $objAuth->errorMessage()
+	            'TXT_SECURITY_CODE'       => $_CORELANG['TXT_SECURITY_CODE'],
+	            'TXT_ENTER_SECURITY_CODE' => $_CORELANG['TXT_ENTER_SECURITY_CODE'],
+	            'TXT_USER_NAME'           => $_CORELANG['TXT_USER_NAME'],
+	            'TXT_PASSWORD'            => $_CORELANG['TXT_PASSWORD'],
+	            'TXT_LOGIN'               => $_CORELANG['TXT_LOGIN'],
+	            'TXT_PASSWORD_LOST'			=> $_CORELANG['TXT_PASSWORD_LOST'],
+	            'UID'                     => isset($_COOKIE['username']) ? $_COOKIE['username'] : '',
+	            'TITLE'                   => $_CORELANG['TXT_LOGIN'],
+	            'LOGIN_IMAGE'             => $loginSecurityCode,
+	            'LOGIN_ERROR_MESSAGE'     => $objFWUser->getErrorMsg()
             ));
             $objTemplate->show();
             exit;
@@ -201,24 +279,36 @@ if (!$objAuth->checkAuth()) {
 //-------------------------------------------------------
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $objTemplate->loadTemplateFile('index.html');
-    if ($objPerm->checkAccess(35, 'static', true)) {
-        $objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
+    if (Permission::checkAccess(35, 'static', true)) {
+    $objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
     }
     $objTemplate->setVariable(
-        array(
-            'TXT_PAGE_ID'      => $_CORELANG['TXT_PAGE_ID'],
-            'CONTREXX_CHARSET' => CONTREXX_CHARSET
-        )
+    	array(
+    		'TXT_PAGE_ID'		=> $_CORELANG['TXT_PAGE_ID'],
+    		'CONTREXX_CHARSET'	=> CONTREXX_CHARSET
+    	)
     );
     $objTemplate->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
 }
 
 switch ($plainCmd) {
     //-------------------------------------------------------
-    // e-government
+	    // access & user management
+	//-----------------------------------------------------------------------------------------------
+	case "access":
+		$modulespath = ASCMS_CORE_MODULE_PATH . "/access/admin.class.php";
+		if (file_exists($modulespath)) require_once($modulespath);
+		else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+		$subMenuTitle = $_CORELANG['TXT_COMMUNITY'];
+		$objAccessManager = &new AccessManager();
+		$objAccessManager->getPage();
+		break;
+
+	//-----------------------------------------------------------------------------------------------
+        // e-government
     //-------------------------------------------------------
     case 'egov':
-        $objPerm->checkAccess(109, 'static');
+        Permission::checkAccess(109, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/egov/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -228,10 +318,10 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // banner management
+	    // banner management
     //-------------------------------------------------------
     case 'banner':
-        //$objPerm->checkAccess(??, 'static');
+        // Permission::checkAccess(??, 'static');
         $modulespath = ASCMS_CORE_MODULE_PATH.'/banner/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -241,7 +331,7 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // file browser
+        // file browser
     //-------------------------------------------------------
     case 'fileBrowser':
         $modulespath = ASCMS_CORE_MODULE_PATH.'/fileBrowser/admin.class.php';
@@ -253,49 +343,23 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // community
-    //-------------------------------------------------------
-    case 'community':
-        //$objPerm->checkAccess(18, 'static');
-        $modulespath = ASCMS_MODULE_PATH.'/community/admin.class.php';
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_COMMUNITY'];
-        $objCommunity = new Community();
-        $objCommunity->getPage();
-        break;
-
-    //-------------------------------------------------------
-    // usermanagement
-    //-------------------------------------------------------
-    case 'user':
-        //$objPerm->checkAccess(18, 'static');
-        $modulespath = ASCMS_CORE_PATH.'/usermanagement.class.php';
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_USER_ADMINISTRATION'];
-        $objUsers = new userManagement();
-        $objUsers->getPage();
-        break;
-
-    //-------------------------------------------------------
-    // feed
+        // feed
     //-------------------------------------------------------
     case 'feed':
-        $objPerm->checkAccess(27, 'static');
+        Permission::checkAccess(27, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/feed/admin.class.php';
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_NEWS_SYNDICATION'];
+        $subMenuTitle  = $_CORELANG['TXT_NEWS_SYNDICATION'];
         $objFeed = new feedManager();
         $objFeed->getFeedPage();
         break;
 
     //-------------------------------------------------------
-    // news-management
+        // news-management
     //-------------------------------------------------------
     case 'server':
-        $objPerm->checkAccess(4, 'static');
+        Permission::checkAccess(4, 'static');
         $modulespath = ASCMS_CORE_PATH.'/serverSettings.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -305,10 +369,10 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // log manager
+        // log manager
     //-------------------------------------------------------
     case 'log':
-        $objPerm->checkAccess(18, 'static');
+        Permission::checkAccess(18, 'static');
         $modulespath = ASCMS_CORE_PATH.'/log.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -321,7 +385,7 @@ switch ($plainCmd) {
     // Online Shop
     //-------------------------------------------------------
     case 'shop':
-        $objPerm->checkAccess($intAccessIdOffset+13, 'static');
+        Permission::checkAccess($intAccessIdOffset+13, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/shop/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -331,10 +395,10 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // themes: skins
+        // themes: skins
     //-------------------------------------------------------
     case 'skins':
-        //$objPerm->checkAccess(18, 'static');
+        //Permission::checkAccess(18, 'static');
         $modulespath = ASCMS_CORE_PATH.'/skins.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -344,7 +408,7 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // content management
+        // content management
     //-------------------------------------------------------
     case 'content':
         $modulespath = ASCMS_CORE_PATH.'/ContentManager.class.php';
@@ -356,7 +420,7 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // content workflow
+        // content workflow
     //-------------------------------------------------------
     case 'workflow':
         $modulespath = ASCMS_CORE_PATH.'/ContentWorkflow.class.php';
@@ -368,10 +432,10 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // Document System Module
+        // Document System Module
     //-------------------------------------------------------
     case 'docsys':
-        $objPerm->checkAccess(11, 'static');
+        Permission::checkAccess(11, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/docsys/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -381,10 +445,10 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // news-management
+        // news-management
     //-------------------------------------------------------
     case 'news':
-        $objPerm->checkAccess(10, 'static');
+        Permission::checkAccess(10, 'static');
         $modulespath = ASCMS_CORE_MODULE_PATH.'/news/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -394,10 +458,10 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // contact-management
+        // contact-management
     //-------------------------------------------------------
     case 'contact':
-        //$objPerm->checkAccess(10, 'static');
+        // Permission::checkAccess(10, 'static');
         $modulespath = ASCMS_CORE_MODULE_PATH.'/contact/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -407,22 +471,22 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // Immo-management
+        // Immo-management
     //-------------------------------------------------------
     case 'immo':
         $modulespath = ASCMS_MODULE_PATH.'/immo/admin.class.php';
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_IMMO_MANAGEMENT'];
+		if (file_exists($modulespath)) require_once($modulespath);
+		else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+	    $subMenuTitle = $_CORELANG['TXT_IMMO_MANAGEMENT'];
         $objImmo = new Immo();
-        $objImmo->getPage();
-    break;
+		$objImmo->getPage();
+	break;
 
     //-------------------------------------------------------
-    // Livecam
+        // Livecam
     //-------------------------------------------------------
     case 'livecam':
-        //$objPerm->checkAccess(9, 'static');
+        // Permission::checkAccess(9, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/livecam/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -432,10 +496,10 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // guestbook
+        // guestbook
     //-------------------------------------------------------
     case 'guestbook':
-        $objPerm->checkAccess(9, 'static');
+        Permission::checkAccess(9, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/guestbook/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -445,10 +509,10 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // Memberdir
+        // Memberdir
     //-------------------------------------------------------
         case 'memberdir':
-            $objPerm->checkAccess(83, 'static');
+            Permission::checkAccess(83, 'static');
             $modulespath = ASCMS_MODULE_PATH.'/memberdir/admin.class.php';
             if (file_exists($modulespath)) require_once($modulespath);
             else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -459,10 +523,10 @@ switch ($plainCmd) {
 
 
     //-------------------------------------------------------
-    // Download
+        // Download
     //-------------------------------------------------------
     case 'download':
-        $objPerm->checkAccess(57, 'static');
+        Permission::checkAccess(57, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/download/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -472,125 +536,48 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // media manager
+        // media manager
     //-------------------------------------------------------
     case 'media':
         $modulespath = ASCMS_CORE_MODULE_PATH.'/media/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_MEDIA_MANAGER'];
+        $subMenuTitle  = $_CORELANG['TXT_MEDIA_MANAGER'];
         $objMedia = new MediaManager();
         $objMedia->getMediaPage();
         break;
 
 
     //-------------------------------------------------------
-    // development
+		// development
     //-------------------------------------------------------
     case 'development':
-             $objPerm->checkAccess(81, 'static');
-          $modulespath = ASCMS_CORE_MODULE_PATH.'/development/admin.class.php';
-          if (file_exists($modulespath)) require_once($modulespath);
-          else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-          $subMenuTitle = $_CORELANG['TXT_DEVELOPMENT'];
-          $objDevelopment = new Development();
-             $objDevelopment->getPage();
-         break;
+		Permission::checkAccess(81, 'static');
+		$modulespath = ASCMS_CORE_MODULE_PATH.'/development/admin.class.php';
+		if (file_exists($modulespath)) require_once($modulespath);
+		else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+		$subMenuTitle = $_CORELANG['TXT_DEVELOPMENT'];
+		$objDevelopment = new Development();
+		$objDevelopment->getPage();
+		break;
 
     //-------------------------------------------------------
-    // database manager
+        // database manager
     //-------------------------------------------------------
     case 'dbm':
-    case 'backup':
-    case 'systemUpdate':
-        if (CONTREXX_PHP5) {
-            $modulespath = ASCMS_CORE_PATH.'/DatabaseManager.class.php';
-            if (file_exists($modulespath)) include($modulespath);
-            else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-            $subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
-            $objDatabaseManager = new DatabaseManager();
-            $objDatabaseManager->getPage();
-        } else {
-            // This part will be removed as soon as PHP4 support has been stopped!
-            $objPerm->checkAccess(20, 'static');
-            switch ($cmd) {
-                case 'systemUpdate':
-                    $modulespath = ASCMS_CORE_MODULE_PATH.'/systemUpdate/admin.class.php';
-                    if (file_exists($modulespath)) include($modulespath);
-                    else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                    $subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
-                    $systemUpdate = new systemUpdate();
-                    $systemUpdate->getContent();
-                    break;
-
-                default:
-                    $modulespath = ASCMS_CORE_PATH.'/backup.class.php';
-                    if (file_exists($modulespath)) include($modulespath);
-                    else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                    $subMenuTitle= $_CORELANG['TXT_DATABASE_MANAGER'];
-                    $statustxt = '';
-
-                    if (!isset($_GET['act'])) {
-                        $_GET['act']='';
-                    }
-
-                    if (!empty($_GET['act'])) {
-                        if (!$objPerm->allAccess) {
-                            $objPerm->noAccess();
-                        }
-
-                        switch ($_GET['act']) {
-                            case 'create':
-                                $strOkMessage = backup_create();
-                                break;
-
-                            case 'restore':
-                                $strOkMessage = backup_restore();
-                                break;
-
-                            case 'delete':
-                                $strOkMessage =backup_delete();
-                                break;
-
-                            case 'view':
-                                $othertxt = backup_view();
-                                break;
-
-                            case 'viewtables':
-                                $othertxt = backup_viewTables();
-                                break;
-
-                            case 'download':
-                                backup_download();
-                                break;
-                        }
-                    }
-
-                    $objTemplate->setVariable(array(
-                    'CONTENT_OK_MESSAGE' => $strOkMessage,
-                    'CONTENT_STATUS_MESSAGE' => $strErrMessage,
-                    'CONTENT_TITLE' => $_CORELANG['TXT_OVERVIEW'],
-                    'CONTENT_NAVIGATION' =>
-                        '<a href="?cmd=backup">'.$_CORELANG['TXT_OVERVIEW'].
-                        '</a> <a href="?cmd=systemUpdate">'.
-                        $_ARRAYLANG['TXT_DBM_SQL_TITLE'].'</a>'
-                    ));
-
-                    if (isset($othertxt)) {
-                        $objTemplate->setVariable('ADMIN_CONTENT',$othertxt);
-                    } else {
-                        backup_showList();
-                    }
-                    break;
-            }
-        }
-        break;
+        $modulespath = ASCMS_CORE_PATH.'/DatabaseManager.class.php';
+        if (file_exists($modulespath)) include($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
+        $objDatabaseManager = new DatabaseManager();
+        $objDatabaseManager->getPage();
+    	break;
 
     //-------------------------------------------------------
-    // stats
+        //stats
     //-------------------------------------------------------
     case 'stats':
-        $objPerm->checkAccess(19, 'static');
+        Permission::checkAccess(19, 'static');
         $modulespath = ASCMS_CORE_MODULE_PATH.'/stats/admin.class.php';
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -600,23 +587,23 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // alias
+        // alias
     //-------------------------------------------------------
     case 'alias':
-        $objPerm->checkAccess(115, 'static');
+		Permission::checkAccess(115, 'static');
         $modulespath = ASCMS_CORE_MODULE_PATH.'/alias/admin.class.php';
-        if (file_exists($modulespath)) include($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_ALIAS_ADMINISTRATION'];
+		if (file_exists($modulespath)) include($modulespath);
+		else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+		$subMenuTitle = $_CORELANG['TXT_ALIAS_ADMINISTRATION'];
         $objAlias = new AliasAdmin();
-        $objAlias->getPage();
-        break;
+		$objAlias->getPage();
+		break;
 
     //-------------------------------------------------------
-    // nettools
+        // nettools
     //-------------------------------------------------------
     case 'nettools':
-        $objPerm->checkAccess(54, 'static');
+        Permission::checkAccess(54, 'static');
         $modulespath = ASCMS_CORE_MODULE_PATH.'/nettools/admin.class.php';
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -626,7 +613,7 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // newsletter
+        // newsletter
     //-------------------------------------------------------
     case 'newsletter':
         $modulespath = ASCMS_MODULE_PATH.'/newsletter/admin.class.php';
@@ -638,10 +625,10 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // settings
+        // settings
     //-------------------------------------------------------
     case 'settings':
-        $objPerm->checkAccess(17, 'static');
+        Permission::checkAccess(17, 'static');
         $modulespath = ASCMS_CORE_PATH.'/settings.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -651,10 +638,10 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // language management
+        // language management
     //-------------------------------------------------------
     case 'language':
-        $objPerm->checkAccess(22, 'static');
+        Permission::checkAccess(22, 'static');
         $modulespath = ASCMS_CORE_PATH.'/language.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -664,59 +651,58 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // module manager
+        // module manager
     //-------------------------------------------------------
     case 'modulemanager':
-        $objPerm->checkAccess(23, 'static');
+        Permission::checkAccess(23, 'static');
         $modulespath = ASCMS_CORE_PATH.'/modulemanager.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_MODULE_MANAGER'];
+        $subMenuTitle  = $_CORELANG['TXT_MODULE_MANAGER'];
         $objModuleManager = new modulemanager();
         $objModuleManager->getModulesPage();
         break;
 
     //-------------------------------------------------------
-    // voting
+        // voting
     //-------------------------------------------------------
     case 'voting':
-        $objPerm->checkAccess(14, 'static');
+        Permission::checkAccess(14, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/voting/admin.class.php';
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
+        $subMenuTitle  = $_CORELANG['TXT_CONTENT_MANAGER'];
         $objvoting = new votingmanager();
         $objvoting->getVotingPage();
         break;
 
-
     //-------------------------------------------------------
-    // survey
+        // survey
     //-------------------------------------------------------
     case 'survey':
-        $objPerm->checkAccess(111, 'static');
+    	Permission::checkAccess(111, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/survey/admin.class.php';
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_SURVEY'];
+        $subMenuTitle  = $_CORELANG['TXT_SURVEY'];
         $objSurvey = new SurveyAdmin();
         $objSurvey->getPage();
         break;
 
     //-------------------------------------------------------
-    // calendar
+        // calendar
     //-------------------------------------------------------
     case 'calendar':
-        $objPerm->checkAccess(16, 'static');
+        Permission::checkAccess(16, 'static');
 //            $objRs = $objDatabase->Execute('SELECT id FROM '.DBPREFIX.'
 //                                            WHERE name = 'calendar.'.$mandate.''');
 //            print $objRs->fields['id'];
-//            $objPerm->checkAccess($objRs->fields['id'], 'static');
+//            Permission::checkAccess($objRs->fields['id'], 'static');
         $modulespath = ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/admin.class.php';
         define('CALENDAR_MANDATE', MODULE_INDEX);
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_CALENDAR'];
+        $subMenuTitle  = $_CORELANG['TXT_CALENDAR'];
         $objCalendar = new calendarManager();
         $objCalendar->getCalendarPage();
         break;
@@ -731,36 +717,36 @@ switch ($plainCmd) {
     break;
 
     //-------------------------------------------------------
-    // Recommend
+        // Recommend
     //-------------------------------------------------------
     case 'recommend':
-        $objPerm->checkAccess(64, 'static');
+        Permission::checkAccess(64, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/recommend/admin.class.php';
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_RECOMMEND'];
+        $subMenuTitle  = $_CORELANG['TXT_RECOMMEND'];
         $objCalendar = new RecommendManager();
         $objCalendar->getPage();
         break;
 
     //-------------------------------------------------------
-    // forum
+        // forum
     //-------------------------------------------------------
     case 'forum':
-        $objPerm->checkAccess(106, 'static');
+    	Permission::checkAccess(106, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/forum/admin.class.php';
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_FORUM'];
+        $subMenuTitle  = $_CORELANG['TXT_FORUM'];
         $objForum = new ForumAdmin();
         $objForum->getPage();
         break;
 
     //-------------------------------------------------------
-    // thumbnail gallery
+        // thumbnail gallery
     //-------------------------------------------------------
     case 'gallery':
-        $objPerm->checkAccess(12, 'static');
+        Permission::checkAccess(12, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/gallery/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -770,10 +756,10 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // themes: directory
+        // themes: directory
     //-------------------------------------------------------
     case 'directory':
-        //$objPerm->checkAccess(18, 'static');
+        //Permission::checkAccess(18, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/directory/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -783,10 +769,10 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // block system
+        // block system
     //-------------------------------------------------------
     case 'block':
-        $objPerm->checkAccess(76, 'static');
+        Permission::checkAccess(76, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/block/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -796,10 +782,10 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // block system
+        // block system
     //-------------------------------------------------------
     case 'popup':
-        $objPerm->checkAccess(117, 'static');
+        Permission::checkAccess(117, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/popup/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -810,10 +796,10 @@ switch ($plainCmd) {
 
 
     //-------------------------------------------------------
-    // market
+        // market
     //-------------------------------------------------------
     case 'market':
-        $objPerm->checkAccess(98, 'static');
+        Permission::checkAccess(98, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/market/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -823,10 +809,10 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // podcast
+        // podcast
     //-------------------------------------------------------
     case 'podcast':
-        $objPerm->checkAccess(87, 'static');
+        Permission::checkAccess(87, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/podcast/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -842,7 +828,7 @@ switch ($plainCmd) {
      * @version 0.0.1 alpha
      */
     case 'support':
-        $objPerm->checkAccess(87, 'static');
+        Permission::checkAccess(87, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/support/admin.class.php';
         if (file_exists($modulespath)) {
             require_once($modulespath);
@@ -861,25 +847,25 @@ switch ($plainCmd) {
      * @version 1.0
      */
     case 'blog':
-        $objPerm->checkAccess(119, 'static');
+    	Permission::checkAccess(119, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/blog/admin.class.php';
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_BLOG_MODULE'];
+        $subMenuTitle  = $_CORELANG['TXT_BLOG_MODULE'];
         $objBlog = new BlogAdmin();
         $objBlog->getPage();
         break;
 
     //-------------------------------------------------------
-    // access denied
+        // access denied
     //-------------------------------------------------------
     case 'noaccess':
-    //Temporary no-acces-file and comment
+        //Temporary no-acces-file and comment
         $subMenuTitle=$_CORELANG['TXT_ACCESS_DENIED'];
         $objTemplate->setVariable(array(
-        'CONTENT_TITLE'          => $_CORELANG['TXT_ACCESS_DENIED'],
-        'CONTENT_NAVIGATION'     => $_CONFIG['coreCmsName'],
-        'CONTENT_STATUS_MESSAGE' => '',
+        'CONTENT_TITLE'				=> $_CORELANG['TXT_ACCESS_DENIED'],
+        'CONTENT_NAVIGATION'		=> $_CONFIG['coreCmsName'],
+        'CONTENT_STATUS_MESSAGE'	=> '',
         'ADMIN_CONTENT'          =>
             '<img src="images/stop_hand.gif" alt="" /><br /><br />'.
             $_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']
@@ -887,27 +873,27 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // logout
+        // logout
     //-------------------------------------------------------
     case 'logout':
-        $objAuth->logout();
+        $objFWUser->logout();
         exit;
         break;
 
     //-------------------------------------------------------
-    // downloads
+        // downloads
     //-------------------------------------------------------
     case 'downloads':
         $modulespath = ASCMS_MODULE_PATH.'/downloads/admin.class.php';
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_DOWNLOADS'];
+	    if (file_exists($modulespath)) require_once($modulespath);
+	    else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+	    $subMenuTitle = $_CORELANG['TXT_DOWNLOADS'];
         $objDownloadsModule = new downloads();
-        $objDownloadsModule->getPage();
-    break;
+	    $objDownloadsModule->getPage();
+	break;
 
     //-------------------------------------------------------
-    // show default admin page
+        // show default admin page
     //-------------------------------------------------------
     default:
         $modulespath = ASCMS_CORE_PATH.'/myAdmin.class.php';
@@ -928,15 +914,15 @@ $parsingTime = round(((float)$finishTime[0] + (float)$finishTime[1]) - ((float)$
 $objAdminNav = new adminMenu();
 $objAdminNav->getAdminNavbar();
 $objTemplate->setVariable(array(
-    'SUB_MENU_TITLE'       => $subMenuTitle,
-    'FRONTEND_LANG_MENU'   => $objInit->getUserFrontendLangMenu(),
-    'TXT_GENERATED_IN'     => $_CORELANG['TXT_GENERATED_IN'],
-    'TXT_SECONDS'          => $_CORELANG['TXT_SECONDS'],
-    'TXT_LOGOUT_WARNING'   => $_CORELANG['TXT_LOGOUT_WARNING'],
-    'PARSING_TIME'         => $parsingTime,
-    'LOGGED_NAME'          => $_SESSION['auth']['name'],
-    'TXT_LOGGED_IN_AS'     => $_CORELANG['TXT_LOGGED_IN_AS'],
-    'TXT_LOG_OUT'          => $_CORELANG['TXT_LOG_OUT'],
+'SUB_MENU_TITLE' => $subMenuTitle,
+'FRONTEND_LANG_MENU' => $objInit->getUserFrontendLangMenu(),
+'TXT_GENERATED_IN' => $_CORELANG['TXT_GENERATED_IN'],
+'TXT_SECONDS' => $_CORELANG['TXT_SECONDS'],
+'TXT_LOGOUT_WARNING' => $_CORELANG['TXT_LOGOUT_WARNING'],
+'PARSING_TIME'=> $parsingTime,
+'LOGGED_NAME' => htmlentities($objFWUser->objUser->getProfileAttribute('firstname').' '.$objFWUser->objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET),
+'TXT_LOGGED_IN_AS' => $_CORELANG['TXT_LOGGED_IN_AS'],
+'TXT_LOG_OUT' => $_CORELANG['TXT_LOG_OUT'],
     'CONTENT_WYSIWYG_CODE' => get_wysiwyg_code(),
     // Mind: The module index is not used in any non-module template
     // for the time being, but is provided for future use and convenience.
@@ -950,9 +936,9 @@ if (isset($objTemplate->_variables['CONTENT_STATUS_MESSAGE']) && !empty($objTemp
 }
 
 if (!empty($objTemplate->_variables['CONTENT_OK_MESSAGE'])) {
-    if (!isset($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
-        $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] = '';
-    }
+	if (!isset($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
+		$objTemplate->_variables['CONTENT_STATUS_MESSAGE'] = '';
+	}
     $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] .=
         '<div id="okbox" style="overflow:auto">'.
         $objTemplate->_variables['CONTENT_OK_MESSAGE'].'</div><br />';
@@ -976,5 +962,4 @@ if (file_exists(ASCMS_ADMIN_TEMPLATE_PATH.'/css/'.$cmd.'.css')) {
 }
 
 $objTemplate->show();
-
 ?>

@@ -23,20 +23,20 @@ require_once ASCMS_FRAMEWORK_PATH . '/NetToolsLib.class.php';
  * @subpackage  core_module_nettools
  */
 class netToolsManager extends NetToolsLib {
-	
+
 	var $pageTitle;
 	var $strErrMessage = '';
 	var $strOkMessage = '';
 	var $_objTpl;
-	
-	
+
+
     /**
     * constructor
     */
     function netTools(){
        $this->__construct();
     }
-    
+
     /**
     * constructor
     *
@@ -45,17 +45,17 @@ class netToolsManager extends NetToolsLib {
     */
     function __construct(){
     	global $objTemplate, $_ARRAYLANG;
-    	
+
     	$this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/nettools/template');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-		
+
 		$objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=nettools&amp;tpl=whois'>".$_ARRAYLANG['TXT_WHOIS']."</a>
 												<a href='?cmd=nettools&amp;tpl=lookup'>".$_ARRAYLANG['TXT_LOOKUP']."</a>
 												<a href='?cmd=nettools&amp;tpl=mxlookup'>".$_ARRAYLANG['TXT_MX_LOOKUP']."</a>
 												".(!ini_get("safe_mode") ? "<a href='?cmd=nettools&amp;tpl=ping'>".$_ARRAYLANG['TXT_PING']."</a>" : "")."
 												<a href='?cmd=nettools&amp;tpl=port'>".$_ARRAYLANG['TXT_CHECK_PORT']."</a>");
     }
-    
+
     /**
     * Get content
     *
@@ -63,43 +63,42 @@ class netToolsManager extends NetToolsLib {
     *
     * @access	public
     * @global	object	$objTemplate
-    * @global 	object	$objPerm
     * @see	_showRequests(), _showMostViewedPages(), _showSpiders(), _showClients(), _showSearchTerms()
     * @return	mixed	Template content
     */
     function getContent(){
     	global $objTemplate;
-    	
+
     	if(!isset($_REQUEST['tpl'])){
     		$_REQUEST['tpl'] = "";
     	}
-    	
+
 		switch ($_REQUEST['tpl']){
     		case 'whois': // show whois page
     			$this->_showWhois();
     			break;
-    			
+
     		case 'lookup':
     			$this->_showLookup();
     			break;
-    		
+
     		case 'mxlookup':
     			$this->_showMXLookup();
     			break;
-    			
+
     		case 'ping':
     			$this->_showPing();
     			break;
-    		
+
     		case 'port':
     			$this->_showPort();
     			break;
-    			
+
     		default:
     			$this->_showWhois();
     			break;
     	}
-    	    	
+
     	$objTemplate->setVariable(array(
     		'CONTENT_TITLE'				=> $this->pageTitle,
 			'CONTENT_OK_MESSAGE'		=> $this->strOkMessage,
@@ -107,34 +106,34 @@ class netToolsManager extends NetToolsLib {
     		'ADMIN_CONTENT'				=> $this->_objTpl->get()
     	));
     }
-    
+
     function _showWhois() {
     	global $_ARRAYLANG;
-    	
+
     	$this->_objTpl->loadTemplateFile('module_nettools_whois.html',true,true);
     	$this->pageTitle = $_ARRAYLANG['TXT_WHOIS'];
-    	
-    	// set language variables	
+
+    	// set language variables
     	$this->_objTpl->setVariable(array(
     		'TXT_WHOIS'					=> $_ARRAYLANG['TXT_WHOIS'],
     		'TXT_BACK'					=> $_ARRAYLANG['TXT_BACK'],
     		'TXT_WHOIS_TEXT'			=> $_ARRAYLANG['TXT_WHOIS_TEXT'],
     		'TXT_WHOIS_REQUEST'			=> $_ARRAYLANG['TXT_WHOIS_REQUEST']
     	));
-    	
+
     	if (isset($_REQUEST['address']) && !empty($_REQUEST['address'])) {
     		$address = strip_tags($_REQUEST['address']);
-    		
+
 	    	if ($this->IsIP($address)) {
 	    		$whoisInfo = $this->WhoisIP($address);
 	    	} else {
 	    		$whoisInfo = $this->WhoisDomain($address);
 	    	}
-	    	
+
 	    	if (empty($whoisInfo)) {
 	    		$whoisInfo = $_ARRAYLANG['TXT_UNABLE_TO_WHOIS_TARGET'];
 	    	}
-	    	
+
 	    	$this->_objTpl->setVariable(array(
 		    	'NETTOOLS_WHOIS_INFO_TEXT'	=> "<pre>".$whoisInfo."</pre>",
 		    	'NETTOOLS_WHOIS_ADDRESS'	=> $address,
@@ -148,18 +147,18 @@ class netToolsManager extends NetToolsLib {
     		$this->_objTpl->hideBlock('whoisinfo');
     	}
     }
-    
+
     function _showLookup() {
     	global $_ARRAYLANG;
     	$this->_objTpl->loadTemplateFile('module_nettools_lookup.html',true,true);
     	$this->pageTitle = $_ARRAYLANG['TXT_LOOKUP'];
-    	
+
     	$this->_objTpl->setVariable(array(
     		'TXT_LOOKUP'			=> $_ARRAYLANG['TXT_LOOKUP'],
     		'TXT_LOOKUP_REQUEST'	=> $_ARRAYLANG['TXT_LOOKUP_REQUEST'],
     		'TXT_LOOKUP_TEXT'		=> $_ARRAYLANG['TXT_LOOKUP_TEXT']
     	));
-    	
+
     	if (isset($_REQUEST['address']) && !empty($_REQUEST['address'])) {
     		$address = strip_tags($_REQUEST['address']);
     		if ($this->IsIP($address)) {
@@ -175,7 +174,7 @@ class netToolsManager extends NetToolsLib {
     				$lookupResult = $_ARRAYLANG['TXT_LOOKUP_FAILED'];
     			}
     		}
-    		
+
     		$this->_objTpl->setVariable(array(
     			'NETTOOLS_LOOKUP_ADDRESS'	=> $address,
     			'NETTOOLS_LOOKUP_RESULT'	=> $lookupResult
@@ -188,28 +187,28 @@ class netToolsManager extends NetToolsLib {
     		$this->_objTpl->hideBlock('lookupinfo');
     	}
     }
-    
+
     function _showMXLookup() {
     	global $_ARRAYLANG;
-    	
+
     	require_once ASCMS_FRAMEWORK_PATH . '/MXLookup.class.php';
     	$this->_objTpl->loadTemplateFile('module_nettools_mxlookup.html');
     	$this->pageTitle = $_ARRAYLANG['TXT_MX_LOOKUP'];
-    	
+
     	$this->_objTpl->setVariable(array(
     		'TXT_MX_LOOKUP'			=> $_ARRAYLANG['TXT_MX_LOOKUP'],
     		'TXT_MX_LOOKUP_TEXT'	=> $_ARRAYLANG['TXT_MX_LOOKUP_TEXT'],
     		'TXT_PREFERENCE'		=> $_ARRAYLANG['TXT_PREFERENCE'],
     		'TXT_HOSTNAME' => $_ARRAYLANG['TXT_HOSTNAME']
     	));
-    	
+
     	if (isset($_REQUEST['address']) && !empty($_REQUEST['address'])) {
     		$address = strip_tags($_REQUEST['address']);
-    		
+
     		$objMXLookup = new MXLookup();
     		if ($objMXLookup->getMailServers($address)) {
     			$arrMxRRs = $objMXLookup->arrMXRRs;
-    			
+
     			$rowNr = 0;
     			foreach ($arrMxRRs as $arrMxRR) {
     				$this->_objTpl->setVariable(array(
@@ -227,26 +226,26 @@ class netToolsManager extends NetToolsLib {
     			$this->_objTpl->hideBlock('mxlookup');
     			$this->_objTpl->parse('mxlookup-error');
     		}
-    		
+
     		$this->_objTpl->setVariable('NETTOOLS_MX_LOOKUP_ADDRESS', $address);
     	} else {
     		$this->_objTpl->hideBlock('mxlookup');
     		$this->_objTpl->hideBlock('mxlookup-error');
     	}
     }
-    
+
     function _showPing() {
     	global $_ARRAYLANG;
-    	
+
     	$this->_objTpl->loadTemplateFile('module_nettools_ping.html',true,true);
     	$this->pageTitle = $_ARRAYLANG['TXT_PING'];
-    	
+
     	$this->_objTpl->setVariable(array(
     		'TXT_PING'	=> $_ARRAYLANG['TXT_PING'],
     		'TXT_PING_REQUEST' => $_ARRAYLANG['TXT_PING_REQUEST'],
     		'TXT_PING_TEXT'		=> $_ARRAYLANG['TXT_PING_TEXT']
     	));
-    	
+
     	if (isset($_REQUEST['address']) && !empty($_REQUEST['address'])) {
     		$address = strip_tags($_REQUEST['address']);
     		$pingMsg = $this->PingHost($address,$err);
@@ -259,7 +258,7 @@ class netToolsManager extends NetToolsLib {
     				$pingResult = "<pre>".$pingMsg."</pre>";
     			}
     		}
-    		
+
 		    $this->_objTpl->setVariable(array(
 				'NETTOOLS_PING_ADDRESS'	=> $address,
 				'NETTOOLS_PING_RESULT'	=> $pingResult
@@ -272,25 +271,25 @@ class netToolsManager extends NetToolsLib {
     		$this->_objTpl->hideBlock('pinginfo');
     	}
     }
-    
+
     function _showPort() {
     	global $_ARRAYLANG;
-    	
+
     	$this->_objTpl->loadTemplateFile('module_nettools_port.html',true,true);
     	$this->pageTitle = $_ARRAYLANG['TXT_CHECK_PORT'];
-    	
+
     	$this->_objTpl->setVariable(array(
     		'TXT_CHECK_PORT'		=> $_ARRAYLANG['TXT_CHECK_PORT'],
     		'TXT_CHECK'				=> $_ARRAYLANG['TXT_CHECK'],
     		'TXT_CHECK_PORT_TEXT'	=> $_ARRAYLANG['TXT_CHECK_PORT_TEXT']
     	));
-    	
+
 		if (isset($_REQUEST['address']) && !empty($_REQUEST['address'])) {
 			$address = substr($_REQUEST['address'],0, strpos($_REQUEST['address'],":"));
 			$port = (int) substr($_REQUEST['address'],strpos($_REQUEST['address'],":")+1);
-    		
+
     		$result = $this->ProbePort($address, $port, $banner, $err);
-    		
+
     		if ($result === 0) {
     			$portResult = $_ARRAYLANG['TXT_PORT_IS_OPEN'];
     		} elseif ($result === -1) {
@@ -298,7 +297,7 @@ class netToolsManager extends NetToolsLib {
     		} else {
     			$portResult = $_ARRAYLANG['TXT_PORT_IS_CLOSED']." ($result)";
     		}
-    		
+
 		    $this->_objTpl->setVariable(array(
 				'NETTOOLS_PORT_ADDRESS'	=> $_REQUEST['address'],
 				'NETTOOLS_PORT_RESULT'	=> $portResult

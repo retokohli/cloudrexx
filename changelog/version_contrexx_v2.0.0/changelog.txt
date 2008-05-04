@@ -17,6 +17,9 @@ Allgemein
 - Sämtliche Contentseiten der Module und das buildin_style.css wurden neu
   geschrieben und gestaltet.
 
+Benutzerverwaltung
+- Komplettes Redesign der Benutzerverwaltung.
+
 Content Verlauf
 - Alte Einträge im Content Verlauf können nun über eine Funktion gelöscht
   werden.

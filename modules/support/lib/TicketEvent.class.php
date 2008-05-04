@@ -473,7 +473,8 @@ class TicketEvent
         $this->oldStatus = $oldStatus;
         if ($this->id <= 0) {
 // TODO: This only works in the Backend
-//            $this->userId    = Auth::getUserId();
+//			  $objFWUser = FWUser::getFWUserObject();
+//            $this->userId    = $objFWUser->objUser->getId()
             $this->oldStatus =
                 $this->getTicketStatus($this->objTicket->getId());
         }
@@ -707,7 +708,8 @@ if (MY_DEBUG) echo("TicketEvent::getMessageStatus(messageId=$messageId, ticketId
         }
 
         // Look up the status for the current User
-        $userId = Auth::getUserId();
+        $objFWUser = FWUser::getFWUserObject();
+        $userId = $objFWUser->objUser->getId();
         if ($userId <= 0) {
 if (MY_DEBUG) echo("TicketEvent::getMessageStatus(messageId=$messageId, ticketId=$ticketId): ERROR: missing or invalid user ID '$userId'!<br />");
             return false;
@@ -815,7 +817,8 @@ if (MY_DEBUG) echo("TicketEvent::ticketHasNewMessages(ticketId=$ticketId): ERROR
         }
 
         // The current Users' ID
-        $userId = Auth::getUserId();
+        $objFWUser = FWUser::getFWUserObject();
+        $userId = $objFWUser->objUser->getId();
         // Array for collecting the Messages viewed while owned
         $arrViews = array();
         // Flag indicating whether the current User was the owner
@@ -1413,11 +1416,12 @@ if (MY_DEBUG) echo("TicketEvent::actionTransfer(): ERROR: NEW Ticket already has
             }
             // Create the TicketEvent to change ownership.
             // This *MUST* be made before the VIEW event can be logged!
+            $objFWUser = FWUser::getFWUserObject();
             $objTicketEvent = new TicketEvent(
                 $this->objTicket,
                 SUPPORT_TICKET_EVENT_CHANGE_OWNER,
                 $this->userId,
-                Auth::getUserId()
+                $objFWUser->objUser->getId()
             );
             // If the owner has been set successfully, the VIEW may also
             // be processed.

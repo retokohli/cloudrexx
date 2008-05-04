@@ -2,8 +2,8 @@
 /**
  * Admin CP navigation
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @version        1.0.0
+ * @author		Comvation Development Team <info@comvation.com>
+ * @version		1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -14,9 +14,9 @@
  *
  * Class for the Admin CP navigation
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @access        public
- * @version        1.0.0
+ * @author		Comvation Development Team <info@comvation.com>
+ * @access		public
+ * @version		1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -50,14 +50,12 @@ class adminMenu
     {
         global $_CORELANG, $objDatabase;
 
+        $objFWUser = FWUser::getFWUserObject();
         $sqlWhereString = "";
 
-        if (!isset($_SESSION['auth']['is_admin']) || $_SESSION['auth']['is_admin']!=1) {
-            if (count($_SESSION['auth']['static_access_ids'])>0) {
-                foreach ($_SESSION['auth']['static_access_ids'] as $rightId) {
-                    $sqlWhereString .= "areas.access_id=".intval($rightId)." OR ";
-                }
-                $sqlWhereString = " AND (".substr($sqlWhereString, 0, strlen($sqlWhereString)-4).") ";
+        if (!$objFWUser->objUser->getAdminStatus()) {
+            if (count($objFWUser->objUser->getStaticPermissionIds()) > 0) {
+            	$sqlWhereString = " AND (areas.access_id = ".implode(' OR areas.access_id = ', $objFWUser->objUser->getStaticPermissionIds()).")";
             } else {
                 $sqlWhereString = " AND areas.access_id='' ";
             }
@@ -66,16 +64,14 @@ class adminMenu
         $objResult = $objDatabase->Execute("SELECT areas.area_id AS area_id,
                            areas.parent_area_id AS parent_area_id,
                            areas.area_name AS area_name,
-                           areas.module_id AS module_id,
                            areas.type AS type,
                            areas.uri AS uri,
                            areas.target AS target,
-                           modules.id AS id,
                            modules.name AS module_name
-                      FROM  ".DBPREFIX."backend_areas AS areas,
-                            ".DBPREFIX."modules AS modules
+                      FROM  ".DBPREFIX."backend_areas AS areas
+                      INNER JOIN ".DBPREFIX."modules AS modules
+                      ON modules.id=areas.module_id
                      WHERE is_active=1
-                       AND modules.id=areas.module_id
                        ".$sqlWhereString."
                   ORDER BY areas.order_id ASC");
         if ($objResult !== false) {
@@ -84,13 +80,13 @@ class adminMenu
                     $this->arrMenuGroups[$objResult->fields['area_id']] = $objResult->fields['area_name'];
                 }
                 $this->arrMenuItems[$objResult->fields['area_id']] =
-                    array(
-                        $objResult->fields['parent_area_id'],
-                        $_CORELANG[$objResult->fields['area_name']],
-                        $objResult->fields['uri'],
-                        $objResult->fields['target'],
-                        $objResult->fields['module_name']
-                    );
+                array(
+                    $objResult->fields['parent_area_id'],
+                    $_CORELANG[$objResult->fields['area_name']],
+                    $objResult->fields['uri'],
+                    $objResult->fields['target'],
+                    $objResult->fields['module_name']
+                );
                 $objResult->MoveNext();
             }
         }
@@ -102,8 +98,8 @@ class adminMenu
      * creates the navigation by userright
      *
      * @global array $_CORELANG
-     * @global object $objTemplate
-     * @global object $objModules
+	 * @global object $objTemplate
+	 * @global object $objModules
      */
     function getMenu()
     {
@@ -123,36 +119,25 @@ class adminMenu
                 // checks if the links are childs of this area ID
                 if ($link_data[0] == $group_id) {
                     if ($this->moduleExists($link_data[4])) {
-                        $navigation .= "<li><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>&raquo;&nbsp;".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
+                        $navigation.= "<li><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>&raquo;&nbsp;".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                     }
                 }
             }
 
             if (!empty($navigation)) {
-                $objTemplate->setVariable(array(
-                    'NAVIGATION_GROUP_NAME'    => htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
-                    'NAVIGATION_ID'            => $group_id,
-                    'NAVIGATION_MENU'        => $navigation,
-                    'NAVIGATION_STYLE'        => isset($_COOKIE['navigation_'.$group_id]) ? $_COOKIE['navigation_'.$group_id] : 'none'
-                ));
+				$objTemplate->setVariable(array(
+					'NAVIGATION_GROUP_NAME'	=> htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
+					'NAVIGATION_ID'			=> $group_id,
+					'NAVIGATION_MENU'		=> $navigation,
+					'NAVIGATION_STYLE'		=> isset($_COOKIE['navigation_'.$group_id]) ? $_COOKIE['navigation_'.$group_id] : 'none'
+				));
                 $objTemplate->parse('navigationRow');
-            }
+        }
         }
 
-        $objTemplate->setVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
+		$objTemplate->setVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
         $objTemplate->parse('navigation_output');
     }
-
-    /**
-     * check the user session and returns the group ids as an array
-     */
-    function _getUserGroups()
-    {
-        if (isset($_SESSION['auth']['groups']) && !empty($_SESSION['auth']['groups'])) {
-            $this->arrUserGroups = $_SESSION['auth']['groups'];
-        }
-    }
-
 
     function moduleExists($moduleFolderName)
     {

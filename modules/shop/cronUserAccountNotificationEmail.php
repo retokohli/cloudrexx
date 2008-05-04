@@ -28,7 +28,7 @@ $query = "
     SELECT * FROM ".DBPREFIX."access_users
      WHERE username LIKE 'A-%'
        AND active=1
-       AND validity!=0
+       AND expiration!=0
        AND interests=''
 ";
 $objResult = $objDatabase->Execute($query);
@@ -42,9 +42,7 @@ $notifyLimitTimestamp = $todayTimestamp + 7 * 24 * 60 * 60;
 
 while (!$objResult->EOF) {
     $id = $objResult->fields['id'];
-    $regdateTimestamp = strtotime($objResult->fields['regdate']);
-    $validity = $objResult->fields['validity'] * 24 * 60 * 60;
-    $endTimestamp = $regdateTimestamp + $validity;
+    $endTimestamp = $objResult->fields['expiration'];
     $endDate = date('d.m.Y', $endTimestamp);
 
     // Skip accounts that are valid for longer than the limit

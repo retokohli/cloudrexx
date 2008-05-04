@@ -122,7 +122,7 @@ class Gallery {
         $intCatId = $this->getCategoryId($intPicId);
         $categoryProtected = $this->categoryIsProtected($intCatId);
         if ($categoryProtected > 0) {
-            if (!$objPerm->checkAccess($categoryProtected, 'dynamic')) {
+            if (!Permission::checkAccess($categoryProtected, 'dynamic', true)) {
     	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
     	            header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
     	            exit;
@@ -366,7 +366,7 @@ class Gallery {
     */
     function showPicture($intPicId)
     {
-        global $objDatabase, $_ARRAYLANG, $objPerm;
+        global $objDatabase, $_ARRAYLANG;
 
         $arrPictures = array();
         $intPicId    = intval($intPicId);
@@ -376,7 +376,7 @@ class Gallery {
         $intCatId = $this->getCategoryId($intPicId);
         $categoryProtected = $this->categoryIsProtected($intCatId);
         if ($categoryProtected > 0) {
-            if (!$objPerm->checkAccess($categoryProtected, 'dynamic')) {
+            if (!Permission::checkAccess($categoryProtected, 'dynamic', true)) {
     	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
     	            header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
     	            exit;
@@ -726,15 +726,13 @@ class Gallery {
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-        $objPerm =&new Permission($type='frontend');
-
         $intParentId = intval($intParentId);
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         $categoryProtected = $this->categoryIsProtected($intParentId);
         if ($categoryProtected > 0) {
-            if (!$objPerm->checkAccess($categoryProtected, 'dynamic')) {
+            if (!Permission::checkAccess($categoryProtected, 'dynamic', true)) {
     	            $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
     	            header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
     	            exit;
@@ -1039,7 +1037,8 @@ class Gallery {
             return true;
         }
 
-        if (isset($_SESSION['auth']['is_admin']) && $_SESSION['auth']['is_admin'] == 1) {
+        $objFWUser = FWUser::getFWUserObject();
+        if ($objFWUser->objUser->login() && $objFWUser->objUser->getAdminStatus()) {
             return true;
         }
 
@@ -1052,8 +1051,8 @@ class Gallery {
         }
         if (intval($objRs->fields['protected']) === 1) {
             // it's a protected category. check auth
-            if (isset($_SESSION['auth']['groups'])) {
-                $userGroups = $_SESSION['auth']['groups'];
+            if ($objFWUser->objUser->login()) {
+                $userGroups = $objFWUser->objUser->getAssociatedGroupIds();
             } else {
                 return false;
             }

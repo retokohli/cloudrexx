@@ -403,7 +403,7 @@ class FileBrowser {
 		$uploadedFileName = $file;
 
 		if (move_uploaded_file($tmpFileName, $strPath.$file)) {
-		    if(!$objFile){
+		    if (!isset($objFile)) {
 		        $objFile = &new File();
 		    }
 			$objFile->setChmod($strPath, $strWebPath, $file);
@@ -412,14 +412,15 @@ class FileBrowser {
 		$fileType = pathinfo($strPath.$file);
 
 		if($fileType['extension'] == 'jpg' || $fileType['extension'] == 'jpeg' || $fileType['extension'] == 'png' || $fileType['extension'] == 'gif'){
-		    if($this->_createThumb($strPath, $strWebPath, $file)){
+		    if ($this->_createThumb($strPath, $strWebPath, $file)) {
 		      $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_SUCCESSFULLY_CREATED'], $strWebPath.$file));
 		    }
 		}
 	}
 
 
-	function _createThumb($strPath, $strWebPath, $file, $height = 80, $quality = 90){
+	function _createThumb($strPath, $strWebPath, $file, $height = 80, $quality = 90)
+	{
 	    global $_ARRAYLANG;
         $objFile = &new File();
 
@@ -430,7 +431,7 @@ class FileBrowser {
         $_objImage->resizeImage($thumbWidth, $height, $quality);
         $_objImage->saveNewImage($strPath.$file . '.thumb');
 
-	    if($objFile->setChmod($strPath, $strWebPath, $file . '.thumb')){
+	    if ($objFile->setChmod($strPath, $strWebPath, $file . '.thumb')) {
 	       return true;
 	    }
 	    return false;
@@ -479,7 +480,7 @@ class FileBrowser {
 	*/
 	function _setContent()
 	{
-		global $objDatabase, $objPerm, $objLanguage, $_CONFIG;
+		global $objDatabase, $objLanguage, $_CONFIG;
 
 		$this->_objTpl->addBlockfile('FILEBROWSER_CONTENT', 'fileBrowser_content', 'module_fileBrowser_content.html');
 		$this->_objTpl->setVariable('FILEBROWSER_NOT_ABSOLUTE_URI', !$this->_absoluteURIs ? 'true' : 'false');
@@ -537,9 +538,9 @@ class FileBrowser {
 		case 'media2':
 		case 'media3':
 		case 'media4':
-			$objPerm->checkAccess(7, 'static');		//Access Media-Archive
-			$objPerm->checkAccess(38, 'static');	//Edit Media-Files
-			$objPerm->checkAccess(39, 'static');	//Upload Media-Files
+			Permission::checkAccess(7, 'static');		//Access Media-Archive
+			Permission::checkAccess(38, 'static');	//Edit Media-Files
+			Permission::checkAccess(39, 'static');	//Upload Media-Files
 
 		//Hier soll wirklich kein break stehen! Beabsichtig!
 
