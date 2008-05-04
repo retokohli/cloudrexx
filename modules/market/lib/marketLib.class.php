@@ -163,6 +163,8 @@ class marketLibrary
                 $key        = substr($key,0 ,6);
             }
 
+            $objFWUser = FWUser::getFWUserObject();
+
             $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_market SET
                                 type='".contrexx_addslashes($_POST['type'])."',
                                   title='".contrexx_addslashes($_POST['title'])."',
@@ -173,7 +175,7 @@ class marketLibrary
                                   price='".$price."',
                                   regdate='".$regdate."',
                                   enddate='".$enddate."',
-                                  userid='".contrexx_addslashes($_SESSION['auth']['userid'])."',
+                                  userid='".($objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0)."',
                                   name='".contrexx_addslashes($_POST['name'])."',
                                   email='".contrexx_addslashes($_POST['email'])."',
                                   userdetails='".contrexx_addslashes($_POST['userdetails'])."',

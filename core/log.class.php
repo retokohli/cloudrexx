@@ -112,22 +112,28 @@ class logmanager
 			'TXT_SEARCH'				 => $_CORELANG['TXT_SEARCH']
 		));
 
-		$term = contrexx_strip_tags(trim($_REQUEST['term']));
+		$objFWUser = FWUser::getFWUserObject();
+
+		$term = contrexx_addslashes(contrexx_strip_tags(trim($_REQUEST['term'])));
     	$objTemplate->setVariable('LOG_SEARCHTERM', $term);
 		$q_search = "";
 		if(!empty($term)){
-		   $q_search = "AND ( log.id LIKE '%$term%'
-		                   OR log.userid LIKE '%$term%'
-		                   OR log.useragent LIKE '%$term%'
-		                   OR log.userlanguage LIKE '%$term%'
-		                   OR log.remote_addr LIKE '%$term%'
-		                   OR log.remote_host LIKE '%$term%'
-		                   OR log.http_via LIKE '%$term%'
-		                   OR log.http_client_ip LIKE '%$term%'
-		                   OR log.http_x_forwarded_for LIKE '%$term%'
-		                   OR log.referer LIKE '%$term%'
-		                   OR users.username LIKE '%$term%'
-		               )";
+		   $q_search = "log.id LIKE '%$term%'
+	                   OR log.userid LIKE '%$term%'
+	                   OR log.useragent LIKE '%$term%'
+	                   OR log.userlanguage LIKE '%$term%'
+	                   OR log.remote_addr LIKE '%$term%'
+	                   OR log.remote_host LIKE '%$term%'
+	                   OR log.http_via LIKE '%$term%'
+	                   OR log.http_client_ip LIKE '%$term%'
+	                   OR log.http_x_forwarded_for LIKE '%$term%'
+	                   OR log.referer LIKE '%$term%'";
+			if ($objUser = $objFWUser->objUser->getUsers(array('username' => "%$term%"))) {
+				while (!$objUser->EOF) {
+					$q_search .= ' OR log.userid='.$objUser->getId();
+					$objUser->next();
+				}
+			}
 		}
 
 		$q = "SELECT log.id AS id,
@@ -140,12 +146,9 @@ class logmanager
 					 log.http_via AS http_via,
 					 log.http_client_ip AS http_client_ip,
 					 log.http_x_forwarded_for AS http_x_forwarded_for,
-					 log.referer AS referer,
-					 users.id AS uid,
-					 users.username AS username
-		        FROM ".DBPREFIX."log AS log,
-		             ".DBPREFIX."access_users AS users
-		       WHERE log.userid=users.id " . $q_search .
+					 log.referer AS referer
+		        FROM ".DBPREFIX."log AS log
+		       WHERE " . $q_search .
 		    "ORDER BY log.id DESC";
 
 		$objResult = $objDatabase->Execute($q);
@@ -175,12 +178,14 @@ class logmanager
 		));
 
 		while (!$objResult->EOF) {
+			$objUser = $objFWUser->objUser->getUser($objResult->fields['userid']);
+
 			if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
 			$objTemplate->setVariable(array(
 			    'LOG_ROWCLASS' 		  => $class,
 			    'LOG_ID' 			  => $objResult->fields['id'],
-			    'LOG_USERID' 		  => $objResult->fields['userid'],
-			    'LOG_USERNAME'	 	  => $objResult->fields['username'],
+			    'LOG_USERID' 		  => $objUser ? $objUser->getId() : 0,
+			    'LOG_USERNAME'	 	  => $objUser ? htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET) : '',
 			    'LOG_TIME' 		 	  => $objResult->fields['datetime'],
 			    'LOG_USERAGENT'	 	  => substr_replace($objResult->fields['useragent'],' ...', 90),
 			    'LOG_USERLANGUAGE' 	  => substr_replace($objResult->fields['userlanguage'],' ...', 20),

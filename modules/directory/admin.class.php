@@ -106,7 +106,7 @@ class rssDirectory extends directoryLibrary
     */
     function getPage()
     {
-    	global $objDatabase, $objTemplate, $objPerm;
+    	global $objDatabase, $objTemplate;
 
     	if(!isset($_GET['act'])){
     	    $_GET['act']="";
@@ -114,109 +114,109 @@ class rssDirectory extends directoryLibrary
 
         switch($_GET['act']){
 			case "add":
-				$objPerm->checkAccess(97, 'static');
+				Permission::checkAccess(97, 'static');
 		        $this->addCategorie();
 		        $this->showCategories();
 			break;
 
 			case "del":
-				$objPerm->checkAccess(97, 'static');
+				Permission::checkAccess(97, 'static');
 		        $this->delete();
 		        $this->showCategories();
 			break;
 
 			case "move":
-				$objPerm->checkAccess(97, 'static');
+				Permission::checkAccess(97, 'static');
 		        $this->move();
 		        $this->showCategories();
 			break;
 
 			case "edit":
-				$objPerm->checkAccess(97, 'static');
+				Permission::checkAccess(97, 'static');
 		        $this->editCategorie();
 			break;
 
 			case "catOrder":
-				$objPerm->checkAccess(97, 'static');
+				Permission::checkAccess(97, 'static');
 		        $this->catOrder();
 		        $this->showCategories();
 			break;
 
 			case "confirm":
-				$objPerm->checkAccess(94, 'static');
+				Permission::checkAccess(94, 'static');
 				$this->showConfirm();
 			break;
 
 			case "detailfile":
-				$objPerm->checkAccess(93, 'static');
+				Permission::checkAccess(93, 'static');
 				$this->detailEntry(intval($_GET['id']));
 			break;
 
 			case "confirmfile":
-				$objPerm->checkAccess(96, 'static');
+				Permission::checkAccess(96, 'static');
 				$this->confirmEntry_step1();
 				$this->showConfirm();
 			break;
 
 			case "files":
-				$objPerm->checkAccess(96, 'static');
+				Permission::checkAccess(96, 'static');
 			    $this->showFiles(intval($_GET['cat']), intval($_GET['level']));
 			break;
 
 			case "delfile":
-				$objPerm->checkAccess(94, 'static');
+				Permission::checkAccess(94, 'static');
 		        $this->delete();
 		       	$this->showFiles('', '');
 			break;
 
 			case "editfile":
-				$objPerm->checkAccess(94, 'static');
+				Permission::checkAccess(94, 'static');
 		        $this->editFile(intval($_GET['id']));
 			break;
 
 			case "movefile":
-				$objPerm->checkAccess(94, 'static');
+				Permission::checkAccess(94, 'static');
 		        $this->move();
 			break;
 
 			case "restorevoting":
-				$objPerm->checkAccess(94, 'static');
+				Permission::checkAccess(94, 'static');
 		        $this->restoreVoting(intval($_GET['id']));
 			break;
 			case "new":
-				$objPerm->checkAccess(96, 'static');
+				Permission::checkAccess(96, 'static');
 				$this->newEntry();
 			break;
 			case "settings":
-				$objPerm->checkAccess(97, 'static');
+				Permission::checkAccess(97, 'static');
 				$this->updateSettings();
 			    $this->showSettings();
 			    break;
 			case "levels":
-				$objPerm->checkAccess(97, 'static');
+				Permission::checkAccess(97, 'static');
 			    $this->showLevels();
 			    break;
 			case "addlevel":
-				$objPerm->checkAccess(97, 'static');
+				Permission::checkAccess(97, 'static');
 			    $this->addLevel();
 			    $this->showLevels();
 			    break;
 			case "editlevel":
-				$objPerm->checkAccess(97, 'static');
+				Permission::checkAccess(97, 'static');
 		        $this->editLevel();
 			break;
 			case "dellevel":
-				$objPerm->checkAccess(97, 'static');
+				Permission::checkAccess(97, 'static');
 		        $this->delete();
 		        $this->showLevels();
 			break;
 			case "levelOrder":
-				$objPerm->checkAccess(97, 'static');
+				Permission::checkAccess(97, 'static');
 		        $this->levelOrder();
 		        $this->showLevels();
 			break;
 			case "moveLevel":
-				$objPerm->checkAccess(97, 'static');
+				Permission::checkAccess(97, 'static');
 		        $this->move();
 		        $this->showLevels();
 			break;
@@ -227,7 +227,7 @@ class rssDirectory extends directoryLibrary
 					$objResult = $objDatabase->Execute($query);
 
 				    if ($objResult !== false && $objResult->RecordCount()==1) {
-				    	$objPerm->checkAccess(96, 'static');
+				    	Permission::checkAccess(96, 'static');
 					    $this->showConfirm();
 					}else{
 						$this->showCategories();
@@ -1743,7 +1743,8 @@ class rssDirectory extends directoryLibrary
 		$this->pageTitle = $_ARRAYLANG['TXT_DIR_ADD_ENTREE'];
 
 		//get inputfields
-		$this->getInputfields($_SESSION['auth']['userid'], "add", "", "backend");
+		$objFWUser = FWUser::getFWUserObject();
+		$this->getInputfields($objFWUser->objUser->getId(), "add", "", "backend");
 
 		// initialize variables
 		$this->_objTpl->setVariable(array(
@@ -2347,7 +2348,8 @@ class rssDirectory extends directoryLibrary
 		$this->pageTitle = $_ARRAYLANG['TXT_DIR_EDIT_FILE'];
 
 		//get inputfields
-		$this->getInputfields($_SESSION['auth']['name'], "confirm", intval($id), "backend");
+		$objFWUser = FWUser::getFWUserObject();
+		$this->getInputfields(htmlentities($objFWUser->objUser->getProfileAttribute('firstname')." ".$objFWUser->objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET), "confirm", intval($id), "backend");
 
 		$this->_objTpl->setVariable(array(
 		    'TXT_NAME' 					=> $_ARRAYLANG['TXT_DIRECTORY_NAME'],

@@ -96,21 +96,20 @@ class galleryManager extends GalleryLibrary
     * Select the admired action
     *
     * @global     object        $objTemplate
-    * @global     object        $objPerm
     * @global    array        $_ARRAYLANG
     * @global     array        $_GET
     * @global     array        $_POST
     */
     function getPage()
     {
-        global $objTemplate, $objPerm, $_ARRAYLANG, $_GET,$_POST;
+        global $objTemplate, $_ARRAYLANG, $_GET,$_POST;
 
         if(!isset($_GET['act'])) {
             $_GET['act']='';
         }
            switch($_GET['act']){
             case 'new_cat':
-                $objPerm->checkAccess(66, 'static');
+                Permission::checkAccess(66, 'static');
                 $this->newCategory();
             break;
             case 'insert_category':
@@ -233,7 +232,7 @@ class galleryManager extends GalleryLibrary
             break;
             case 'upload_form':
                 $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM'];
-                $objPerm->checkAccess(67, 'static');
+                Permission::checkAccess(67, 'static');
                 $this->showUploadForm();
             break;
             case 'upload_images':
@@ -243,7 +242,7 @@ class galleryManager extends GalleryLibrary
             break;
             case 'validate_form':
                 $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'];
-                $objPerm->checkAccess(69, 'static');
+                Permission::checkAccess(69, 'static');
                 $this->showValidateForm();
 
             break;
@@ -258,7 +257,7 @@ class galleryManager extends GalleryLibrary
             break;
             case 'settings':
                 $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'];
-                $objPerm->checkAccess(70, 'static');
+                Permission::checkAccess(70, 'static');
                 $this->showSettings();
             break;
             case 'save_settings':
@@ -273,7 +272,7 @@ class galleryManager extends GalleryLibrary
                 break;
             case 'import_picture':
                 $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_IMPORT_PICTURES'];
-                $objPerm->checkAccess(68, 'static');
+                Permission::checkAccess(68, 'static');
                 $this->importPicture();
             break;
             case 'importFromFolder':
@@ -349,7 +348,7 @@ class galleryManager extends GalleryLibrary
                 $this->overview();
             break;
             default:
-                $objPerm->checkAccess(65, 'static');
+                Permission::checkAccess(65, 'static');
                 $this->overview();
                 break;
         }
@@ -469,6 +468,8 @@ class galleryManager extends GalleryLibrary
             }
             $intRowCounter = 0;
 
+            $objFWUser = FWUser::getFWUserObject();
+
             foreach ($arrMaincats as $intMainKey => $strMainValue){
                 $objResult = $objDatabase->Execute('SELECT     sorting,
                                                             status, backendProtected, backend_access_id
@@ -479,7 +480,7 @@ class galleryManager extends GalleryLibrary
                                                                     value
                                                         FROM        '.DBPREFIX.'module_gallery_language
                                                         WHERE        gallery_id='.$intMainKey.' AND
-                                                                    lang_id='.intval(intval($_SESSION['auth']['lang'])).'
+                                                                    lang_id='.$objFWUser->objUser->getFrontendLanguage().'
                                                         ORDER BY    name ASC
                                                     ');
                 unset($arrCategoryLang);
@@ -534,7 +535,7 @@ class galleryManager extends GalleryLibrary
                                                                             value
                                                                 FROM        '.DBPREFIX.'module_gallery_language
                                                                 WHERE        gallery_id='.$objResult->fields['id'].' AND
-                                                                            lang_id='.intval($_SESSION['auth']['lang']).'
+                                                                            lang_id='.$objFWUser->objUser->getFrontendLanguage().'
                                                                 ORDER BY    name ASC
                                                             ');
                         unset($arrCategoryLang);
@@ -575,7 +576,7 @@ class galleryManager extends GalleryLibrary
      */
     function newCategory()
     {
-        global $objDatabase, $_ARRAYLANG, $objPerm;
+        global $objDatabase, $_ARRAYLANG;
 
         $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'];
         $this->_objTpl->loadTemplateFile('module_gallery_edit_category.html',true,true);
@@ -673,7 +674,8 @@ class galleryManager extends GalleryLibrary
      */
     private function parseCategoryDropdown($selected=-1, $disabled=false, $name="showCategories", $parent_id=0, $level=0)
     {
-        $categories = $this->sql->getCategoriesArray($_SESSION['auth']['lang'], $parent_id);
+    	$objFWuser = FWUser::getFWUserObject();
+        $categories = $this->sql->getCategoriesArray($objFWuser->objUser->getFrontendLanguage(), $parent_id);
 
         if ($disabled) {
             $this->_objTpl->setVariable("CAT_DROPDOWN_DISABLED", "disabled=\"disabled\"");
@@ -1111,11 +1113,13 @@ class galleryManager extends GalleryLibrary
             $this->_objTpl->hideBlock('showCategories');
 
         } else {
+        	$objFWUser = FWUser::getFWUserObject();
+
             while (!$objResult->EOF) {
                 $objSubResult = $objDatabase->Execute('    SELECT        value
                                                         FROM        '.DBPREFIX.'module_gallery_language
                                                         WHERE        gallery_id='.$objResult->fields['id'].' AND
-                                                                    lang_id='.intval($_SESSION['auth']['lang']).' AND
+                                                                    lang_id='.$objFWUser->objUser->getFrontendLanguage().' AND
                                                                     name="name"
                                                     ');
                 $this->_objTpl->setVariable(array(
@@ -1262,6 +1266,8 @@ class galleryManager extends GalleryLibrary
             return;
         }
 
+        $objFWUser = FWUser::getFWUserObject();
+
         $this->_objTpl->loadTemplateFile('module_gallery_category_details.html', true, true);
         $this->_objTpl->setGlobalVariable(array(
             'TXT_TITLE_NAME'                =>    $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_NAME'],
@@ -1296,7 +1302,7 @@ class galleryManager extends GalleryLibrary
         $objResult = $objDatabase->Execute('SELECT     value
                                             FROM     '.DBPREFIX.'module_gallery_language
                                             WHERE     gallery_id='.intval($intCatId).' AND
-                                                    lang_id='.intval($_SESSION['auth']['lang']).' AND
+                                                    lang_id='.$objFWUser->objUser->getFrontendLanguage().' AND
                                                     name="desc"
                                             LIMIT    1
                                         ');
@@ -1345,7 +1351,7 @@ class galleryManager extends GalleryLibrary
                 $objSubResult = $objDatabase->Execute('    SELECT    name
                                                         FROM    '.DBPREFIX.'module_gallery_language_pics
                                                         WHERE    picture_id='.$objResult->fields['id'].' AND
-                                                                lang_id='.$_SESSION['auth']['lang'].'
+                                                                lang_id='.$objFWUser->objUser->getFrontendLanguage().'
                                                         LIMIT    1
                                                     ');
 
@@ -1599,6 +1605,7 @@ class galleryManager extends GalleryLibrary
         global $objDatabase,$_ARRAYLANG,$_CONFIG;
 
         $intPid = intval($_GET['id']);
+        $objFWUser = FWUser::getFWUserObject();
 
         $this->_objTpl->loadTemplateFile('module_gallery_edit_image.html',true,true);
         $this->_objTpl->setVariable(array(
@@ -1691,7 +1698,7 @@ class galleryManager extends GalleryLibrary
                                                         `desc`
                                                 FROM    '.DBPREFIX.'module_gallery_language_pics
                                                 WHERE    picture_id='.$intPid.' AND
-                                                        lang_id='.$_SESSION['auth']['lang'].'
+                                                        lang_id='.$objFWUser->objUser->getFrontendLanguage().'
                                                 LIMIT    1');
 
         $boolSizeShow = ($objResult->fields['size_show'] == '1') ? 'checked' : '';
@@ -2310,6 +2317,8 @@ class galleryManager extends GalleryLibrary
 
         if ($objResult->RecordCount() > 0) {
             // only a single picture
+        	$objFWUser = FWUser::getFWUserObject();
+
             if ($_GET['type'] == 'single') {
                 $this->_objTpl->loadTemplateFile('module_gallery_validate_details_single.html',true,true);
                 $this->_objTpl->setVariable(array(
@@ -2368,7 +2377,7 @@ class galleryManager extends GalleryLibrary
                 $objSubResult = $objDatabase->Execute(' SELECT  name
                                                         FROM    '.DBPREFIX.'module_gallery_language_pics
                                                         WHERE   picture_id='.$objResult->fields['id'].' AND
-                                                                lang_id='.intval($_SESSION['auth']['lang']).'
+                                                                lang_id='.$objFWUser->objUser->getFrontendLanguage().'
                                                         LIMIT   1
                                                     ');
 
@@ -2595,7 +2604,7 @@ class galleryManager extends GalleryLibrary
                     $arrFileInfo = getimagesize($this->strImagePath.$objResult->fields['path']);
 
                     $arrImageCounter[$objResult->fields['id']]                 = $objResult->fields['id'];
-                    $arrImageInfo[$objResult->fields['id']]['name']         = $arrNames[$objResult->fields['id']][$_SESSION['auth']['lang']];
+                    $arrImageInfo[$objResult->fields['id']]['name']         = $arrNames[$objResult->fields['id']][$objFWUser->objUser->getFrontendLanguage()];
                     $arrImageInfo[$objResult->fields['id']]['random_path']     = $this->strThumbnailWebPath.'temp_'.rand().'_'.$objResult->fields['path'];
                     $arrImageInfo[$objResult->fields['id']]['uploadtime']     = date('d.m.Y',$objResult->fields['lastedit']);
                     $arrImageInfo[$objResult->fields['id']]['size_o']         = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
@@ -3738,14 +3747,15 @@ class galleryManager extends GalleryLibrary
      */
     private function checkAccess($access_id)
     {
-        if ($_SESSION['auth']['is_admin']) {
+    	$objFWUser = FWUser::getFWUserObject();
+        if ($objFWUser->objUser->getAdminStatus()) {
             return true;
         }
 
         $accessGroups = $this->sql->getAccessGroups("backend", $access_id);
-        $userGroups = $_SESSION['auth']['groups'];
+        $userGroups = $objFWUser->objUser->getAssociatedGroupIds();
         foreach ($accessGroups as $group) {
-            if (in_array(intval($group), $userGroups)) {
+            if (in_array(intval($group),$userGroups)) {
                 return true;
             }
         }

@@ -240,6 +240,7 @@ class docSysManager extends docSysLibrary
     {
 	    global $objDatabase, $_ARRAYLANG;
 
+	    $objFWUser = FWUser::getFWUserObject();
 	    $this->_objTpl->loadTemplateFile('module_docsys_modify.html',true,true);
 	    $this->pageTitle = $_ARRAYLANG['TXT_CREATE_DOCUMENT'];
 
@@ -270,7 +271,7 @@ class docSysManager extends docSysLibrary
 			'DOCSYS_DATE'  => date(ASCMS_DATE_FORMAT, time()),
 			'DOCSYS_JS_DATE'	=> date('Y-m-d', $objResult->fields['date']),
             'TXT_AUTHOR' => $_ARRAYLANG['TXT_AUTHOR'],
-            'DOCSYS_AUTHOR' => $_SESSION['auth']['username'],
+            'DOCSYS_AUTHOR' => htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
 		));
 
 		if (isset($_POST['docSysTitle']) AND !empty($_POST['docSysTitle'])) {
@@ -431,8 +432,10 @@ class docSysManager extends docSysLibrary
 	    global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
 	    if (isset($_GET['id'])) {
+	    	$objFWUser = FWUser::getFWUserObject();
+
 	    	$id = intval($_GET['id']);
-		    $userId = $_SESSION['auth']['userid'];
+		    $userId = $objFWUser->objUser->getId();
 		    $changelog = mktime();
 		    $date = date(ASCMS_DATE_FORMAT);
 		    $title = get_magic_quotes_gpc() ? strip_tags($_POST['docSysTitle']) : addslashes(strip_tags($_POST['docSysTitle']));
@@ -539,6 +542,8 @@ class docSysManager extends docSysLibrary
     {
 	    global $objDatabase, $_ARRAYLANG;
 
+	    $objFWUser = FWUser::getFWUserObject();
+
 	    $date = $this->_checkDate($_POST['creation_date']);
 	    $title = get_magic_quotes_gpc() ? strip_tags($_POST['docSysTitle']) : addslashes(strip_tags($_POST['docSysTitle']));
 	    $author = get_magic_quotes_gpc() ? strip_tags($_POST['author']) : addslashes(strip_tags($_POST['author']));
@@ -553,7 +558,7 @@ class docSysManager extends docSysLibrary
 	    $url2 = get_magic_quotes_gpc() ? strip_tags($_POST['docSysUrl2']) : addslashes(strip_tags($_POST['docSysUrl2']));
 
 	    $cat = intval($_POST['docSysCat']);
-	    $userid = intval($_SESSION['auth']['userid']);
+	    $userid = $objFWUser->objUser->getId();
 
 	    $startDate = get_magic_quotes_gpc() ? strip_tags($_POST['startDate']) : addslashes(strip_tags($_POST['startDate']));
 	    $endDate = get_magic_quotes_gpc() ? strip_tags($_POST['endDate']) : addslashes(strip_tags($_POST['endDate']));

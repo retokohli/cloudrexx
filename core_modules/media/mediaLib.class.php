@@ -133,7 +133,7 @@ class MediaLibrary{
 		                    if(!empty($_REQUEST['uploadForceOverwrite']) && intval($_REQUEST['uploadForceOverwrite'] > 0)){
 			                    $fileName = $part1 . $exte;
 		                    }else{
-			                    $fileName = $part1 . '_' . (time() + $x) . $exte;                	
+			                    $fileName = $part1 . '_' . (time() + $x) . $exte;
 		                    }
                         }
 
@@ -189,7 +189,7 @@ class MediaLibrary{
 		$file = $this->path . $this->getFile;
 		//First, see if the file exists
 		if (!is_file($file)) { die("<b>404 File not found!</b>"); }
-		
+
 		$filename = basename($file);
 		$file_extension = strtolower(substr(strrchr($filename,"."),1));
 
@@ -200,7 +200,7 @@ class MediaLibrary{
 			case "zip": $ctype="application/zip"; break;
 	        case "docx" :
 			case "doc": $ctype="application/msword"; break;
-			case "xlsx": 
+			case "xlsx":
 			case "xls": $ctype="application/vnd.ms-excel"; break;
 			case "ppt": $ctype="application/vnd.ms-powerpoint"; break;
 			case "gif": $ctype="image/gif"; break;
@@ -223,9 +223,9 @@ class MediaLibrary{
 
 			default: $ctype="application/force-download";
 		}
-		
+
 		require_once ASCMS_LIBRARY_PATH . '/PEAR/Download.php';
-		
+
 		$dl = new HTTP_Download(array(
 		  "file"                  => $file,
 		  "contenttype"           => $ctype
@@ -686,7 +686,13 @@ class MediaLibrary{
 
 	// designs the sorting icons
 	function _sortingIcons(){
-		$icon         = array();
+		$icon         = array(
+			'size'	=> null,
+			'type'	=> null,
+			'date'	=> null,
+			'perm'	=> null,
+			'name'	=> null
+		);
 		$icon1        = '&uarr;';     // sort by a   // &and;
 		$icon2        = '&darr;';     // sort by z   // &or;
 		$sort         = explode('_', $_SESSION['media']['sort']);
@@ -714,7 +720,13 @@ class MediaLibrary{
 
 	// designs the sorting class
 	function _sortingClass(){
-		$class         = array();
+		$class         = array(
+			'size'	=> null,
+			'type'	=> null,
+			'date'	=> null,
+			'perm'	=> null,
+			'name'	=> null
+		);
 		$class1        = 'sort';     // sort by a   // &and;
 		$class2        = 'sort';     // sort by z   // &or;
 		$sort         = explode('_', $_SESSION['media']['sort']);

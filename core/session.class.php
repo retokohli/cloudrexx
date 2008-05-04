@@ -24,9 +24,10 @@ class cmsSession
 {
 	var $sessionid;
 	var $status;
-	var $username;
+	var $userId;
 	var $lifetime;
 	var $_objDb;
+	var $compatibelitiyMode;
 
 	function cmsSession($status="")
 	{
@@ -49,6 +50,8 @@ class cmsSession
 	       	$this->status=$status;
 	       	$errorMsg = '';
 	        $this->_objDb = getDatabaseObject($errorMsg, true);
+	        $this->compatibelitiyMode = ($arrColumns = $this->_objDb->MetaColumnNames(DBPREFIX.'sessions')) && in_array('username', $arrColumns);
+
 	        session_start();
         } else {
         	$this->cmsSessionError();
@@ -69,17 +72,24 @@ class cmsSession
 	function cmsSessionRead( $aKey )
 	{
 		   $this->sessionid=$aKey;
-	       $query = "SELECT datavalue, username, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
+	       $query = "SELECT datavalue, user_id, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
+	       if ($this->compatibelitiyMode) {
+			$query = "SELECT datavalue, username as user_id, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
+	       }
 	       $objResult = $this->_objDb->Execute($query);
 
 	       if ($objResult !== false) {
 		       if ($objResult->RecordCount() == 1) {
-		      	     $this->username=$objResult->fields['username'];
+		      	     $this->userId=$objResult->fields['user_id'];
 		      	     $this->status=$objResult->fields['status'];
 		             return $objResult->fields['datavalue'];
 		       } else {
-		             $query = "INSERT INTO ".DBPREFIX."sessions (sessionid, startdate, lastupdated, status, username, datavalue)
-		                       VALUES ('".$aKey."', ROUND(NOW()+0), ROUND(NOW()+0), '".($this->status)."', '".($this->username)."', '')";
+		             $query = "INSERT INTO ".DBPREFIX."sessions (sessionid, startdate, lastupdated, status, user_id, datavalue)
+		                       VALUES ('".$aKey."', '".time()."', '".time()."', '".($this->status)."', '".($this->userId)."', '')";
+		             if ($this->compatibelitiyMode) {
+		             	 $query = "INSERT INTO ".DBPREFIX."sessions (sessionid, startdate, lastupdated, status, username, datavalue)
+		                       VALUES ('".$aKey."', '".time()."', '".time()."', '".($this->status)."', '".($this->userId)."', '')";
+		             }
 		             $this->_objDb->Execute($query);
 		             return "";
 		       }
@@ -88,10 +98,10 @@ class cmsSession
 
 	function cmsSessionWrite( $aKey, $aVal )
 	{
-	       $aVal = addslashes( $aVal );
-	       $query = "UPDATE ".DBPREFIX."sessions SET datavalue = '".$aVal."', lastupdated = ROUND(NOW()+0)  WHERE sessionid = '".$aKey."'";
-	       $this->_objDb->Execute($query);
-	       return true;
+		$aVal = addslashes( $aVal );
+		$query = "UPDATE ".DBPREFIX."sessions SET datavalue = '".$aVal."', lastupdated = '".time()."' WHERE sessionid = '".$aKey."'";
+		$this->_objDb->Execute($query);
+	   return true;
 	}
 
 	function cmsSessionDestroy( $aKey )
@@ -104,14 +114,18 @@ class cmsSession
 	function cmsSessionGc( $aMaxLifeTime )
 	{
 		   if (empty($aMaxLifeTime)) return true;
-	       $query = "DELETE FROM ".DBPREFIX."sessions WHERE UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(lastupdated) > ".$aMaxLifeTime;
+	       $query = "DELETE FROM ".DBPREFIX."sessions WHERE lastupdated < ".(time() - $aMaxLifeTime);
 	       $this->_objDb->Execute($query);
 	       return true;
 	}
 
-	function cmsSessionUserUpdate($username="") {
-		   $this->username=$username;
-	       $query = "UPDATE ".DBPREFIX."sessions SET username ='".$username."' WHERE sessionid = '".$this->sessionid."'";
+	function cmsSessionUserUpdate($userId=0)
+	{
+		   $this->userId=$userId;
+	       $query = "UPDATE ".DBPREFIX."sessions SET user_id ='".$userId."' WHERE sessionid = '".$this->sessionid."'";
+	       if ($this->compatibelitiyMode) {
+	       	$query = "UPDATE ".DBPREFIX."sessions SET username ='".$userId."' WHERE sessionid = '".$this->sessionid."'";
+	       }
 	       $this->_objDb->Execute($query);
 	       return true;
 	}

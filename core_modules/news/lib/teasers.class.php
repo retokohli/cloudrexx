@@ -64,7 +64,7 @@ class Teasers extends newsLibrary
 	*/
 	function __construct($administrate = false)
 	{
-		global $objTemplate, $_ARRAYLANG;
+		global $objTemplate;
 
 		$this->administrate = $administrate;
 
@@ -90,8 +90,8 @@ class Teasers extends newsLibrary
 
 	function initializeTeasers()
 	{
-		global $objDatabase, $objInit, $_LANGID;
-$objDatabase->debug=1;
+		global $objDatabase, $objInit, $_LANGID, $_CORELANG;
+
 		$this->arrTeasers = array();
 
 		if ($this->administrate) {
@@ -110,16 +110,10 @@ $objDatabase->debug=1;
 									                 cat.name AS category_name,
 									                 news.teaser_text AS teaser_text,
 									                 news.teaser_show_link AS teaser_show_link,
-									                 news.teaser_image_path AS teaser_image_path".
-									                 ($this->administrate == false ? ",
-									                 users.id AS usId,
-													 users.username AS username,
-													 users.firstname AS firstname,
-													 users.lastname AS lastname" : '')."
+									                 news.teaser_image_path AS teaser_image_path
 									            FROM ".DBPREFIX."module_news AS news
-										INNER JOIN   ".DBPREFIX."module_news_categories AS cat on cat.catid = news.catid "
-										.($this->administrate == false ? " INNER JOIN ".DBPREFIX."access_users AS users on users.id = news.userid " : '').
-									           " WHERE news.lang=".$langId."
+										INNER JOIN   ".DBPREFIX."module_news_categories AS cat on cat.catid = news.catid
+									             WHERE news.lang=".$langId."
 									             ".($this->administrate == false ? "
 									             AND news.validated='1'
 									             AND news.status='1'
@@ -146,11 +140,18 @@ $objDatabase->debug=1;
     			}
 
     			if($this->administrate == false){
-	    			if(!empty($objResult->fields['firstname']) && !empty($objResult->fields['lastname'])) {
-	    				$author = $objResult->fields['firstname']." ".$objResult->fields['lastname'];
-	    			} else {
-	    				$author = $objResult->fields['username'];
-	    			}
+    				$objFWUser = FWUser::getFWUserObject();
+    				if ($objUser = $objFWUser->objUser->getUser($objResult->fields['userid'])) {
+    					$firstname = $objUser->getProfileAttribute('firstname');
+    					$lastname = $objUser->getProfileAttribute('lastname');
+		    			if(!empty($firstname) && !empty($lastname)) {
+		    				$author = htmlentities($firstname.' '.$lastname, ENT_QUOTES, CONTREXX_CHARSET);
+		    			} else {
+		    				$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
+		    			}
+    				} else {
+    					$author = $_CORELANG['TXT_ANONYMOUS'];
+    				}
 	    		} else {
 	    			$author = '';
 	    		}

@@ -44,7 +44,7 @@ class calHeadlines extends calendarLibrary
 
 	function getHeadlines()
 	{
-		global $_CONFIG, $objDatabase, $_LANGID, $objAuth, $objPerm;
+		global $_CONFIG, $objDatabase, $_LANGID;
 
 		$this->_objTemplate->setTemplate($this->_pageContent,true,true);
 

@@ -61,7 +61,8 @@ class Blog extends BlogLibrary  {
 	 *
 	 */
 	function initUserId() {
-		$this->_intCurrentUserId = (isset($_SESSION['auth']['userid'])) ? intval($_SESSION['auth']['userid']) : 0;
+		$objFWUser = FWUser::getFWUserObject();
+		$this->_intCurrentUserId = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
 	}
 
 
@@ -110,7 +111,7 @@ class Blog extends BlogLibrary  {
 		$strPagingSource 	= getPaging($this->countEntries(), $intPos, '&amp;section=blog', '<b>'.$_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS'].'</b>', false, $intPerPage);
 		$this->_objTpl->setVariable('BLOG_ENTRIES_PAGING', $strPagingSource);
 		/* End Paging -------------------------------------- */
-		
+
 		$arrEntries = $this->createEntryArray($this->_intLanguageId, $intPos, $intPerPage);
 
 		foreach ($arrEntries as $intEntryId => $arrEntryValues) {

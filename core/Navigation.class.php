@@ -72,16 +72,17 @@ class Navigation
     */
     function _initialize()
     {
-    	global $objDatabase, $objPerm;
+    	global $objDatabase;
 
+    	$objFWUser = FWUser::getFWUserObject();
 		$query = "SELECT n.cmd AS cmd,
-						  n.catid         AS catid,
-						  n.catname       AS catname,
-						  n.target        AS target,
-						  n.parcat        AS parcat,
-						  n.css_name      AS css_name,
-						  n.displayorder  AS displayorder,
-						  m.name          AS section,
+			                   n.catid AS catid,
+			                   n.catname AS catname,
+			                   n.target AS target,
+			                   n.parcat AS parcat,
+			                   n.css_name AS css_name,
+			                   n.displayorder AS displayorder,
+			                   m.name AS section,
 						  n.displaystatus AS displaystatus,
 						  a_s.url         AS alias_url,
 						  min(a_s.id)     AS alias_id
@@ -91,20 +92,20 @@ class Navigation
 						  LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
 						  	ON  a_t.id        = a_s.target_id
 							AND a_s.isdefault = 1
-					WHERE n.module=m.id
+			             WHERE n.module=m.id
 			               AND (n.displaystatus = 'on' OR n.catid='".$this->pageId."')
 			               AND n.lang='".$this->langId."'
 			               AND (n.startdate<=CURDATE() OR n.startdate='0000-00-00')
-           				   AND (n.enddate  >=CURDATE() OR n.enddate  ='0000-00-00')
+           				   AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
            				   AND n.activestatus='1'
            				   AND n.is_validated='1'
            				   ".(
-							is_object($objPerm) ?
+							$objFWUser->objUser->login() ?
 								// user is authenticated
 								(
-									!$objPerm->allAccess ?
+									!$objFWUser->objUser->getAdminStatus() ?
 										 // user is not administrator
-										'AND (n.protected=0'.(count($objPerm->getDynamicAccessIds()) ? ' OR n.frontend_access_id IN ('.implode(', ', $objPerm->getDynamicAccessIds()).')' : '').')' :
+										'AND (n.protected=0'.(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR n.frontend_access_id IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '').')' :
 										// user is administrator
 										''
 								)
@@ -158,7 +159,7 @@ class Navigation
 					$menu_url = self::mkurl('/'.$objResult->fields['alias_url']);
 				}
 				else {
-					$link = (!empty($s)) ? "?section=".$s.$cmd : "?page=".$objResult->fields['catid'].$section.$cmd;
+				$link = (!empty($s)) ? "?section=".$s.$cmd : "?page=".$objResult->fields['catid'].$section.$cmd;
 					$menu_url = CONTREXX_SCRIPT_PATH
 						.$link
 						.(($currentThemesId && !strpos($this->data[$id]['url'],'preview')) ? '&amp;preview='.$currentThemesId : '');

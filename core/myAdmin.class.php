@@ -40,7 +40,8 @@ class myAdminManager {
     {
     	global $_CORELANG, $objTemplate;
 
-    	$objTemplate->setVariable('CONTENT_NAVIGATION', $_CORELANG['TXT_WELCOME_MESSAGE'].". ".$_CORELANG['TXT_LOGGED_IN_AS']."<a href='?cmd=user&amp;act=edituser&amp;userId=".$_SESSION['auth']['userid']."' title='".$_SESSION['auth']['userid']."'>".$_SESSION['auth']['name']."</a>");
+    	$objFWUser = FWUser::getFWUserObject();
+    	$objTemplate->setVariable('CONTENT_NAVIGATION', $_CORELANG['TXT_WELCOME_MESSAGE'].". ".$_CORELANG['TXT_LOGGED_IN_AS']."<a href='?cmd=access&amp;act=user&amp;tpl=modify&amp;id=".$objFWUser->objUser->getId()."' title='".$objFWUser->objUser->getId()."'>".htmlentities($objFWUser->objUser->getProfileAttribute('firstname'), ENT_QUOTES, CONTREXX_CHARSET).' '.htmlentities($objFWUser->objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET)."</a>");
     }
 
     function getPage()
@@ -72,6 +73,7 @@ class myAdminManager {
     {
     	global $_CORELANG, $_CONFIG, $objTemplate, $objDatabase;
 
+    	$objFWUser = FWUser::getFWUserObject();
     	$i = 0;
     	$dbErrorMsg = '';
     	$class = '';
@@ -104,20 +106,19 @@ class myAdminManager {
 		));
 		$objTemplate->setGlobalVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
 
-		$userId = intval($_SESSION['auth']['userid']);
-
+		$objFWUser = FWUser::getFWUserObject();
 		$objResult = $objDatabase->SelectLimit(
 			"SELECT datetime,
 					remote_host
 			   FROM ".DBPREFIX."log
-			  WHERE userid = ".$userId."
+			  WHERE userid = ".$objFWUser->objUser->getId()."
 			  ORDER BY id DESC", 5);
 
 		if ($objResult !== false) {
 			while (!$objResult->EOF) {
 				$objTemplate->setVariable(array(
 				    'INDEX_HOME_ROWCLASS' 		=> (($i % 2) == 0) ? "row1" : "row2",
-				    'INDEX_HOME_USERNAME'	 	=> $_SESSION['auth']['username'],
+				    'INDEX_HOME_USERNAME'	 	=> htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
 				    'INDEX_HOME_TIME' 		 	=> $objResult->fields['datetime'],
 				    'INDEX_HOME_REMOTE_HOST'	=> $objResult->fields['remote_host']
 				));

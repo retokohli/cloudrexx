@@ -89,12 +89,11 @@ class stats extends statsLibrary
     *
     * @access	public
     * @global	object	$objTemplate
-    * @global 	object	$objPerm
     * @see	_showRequests(), _showMostViewedPages(), _showSpiders(), _showClients(), _showSearchTerms()
     * @return	mixed	Template content
     */
     function getContent(){
-    	global $objTemplate, $objPerm;
+    	global $objTemplate;
 
     	$this->_optimizeTables();
 
@@ -132,7 +131,7 @@ class stats extends statsLibrary
     			break;
 
     		case 'settings':
-    			$objPerm->checkAccess(40, 'static');
+    			Permission::checkAccess(40, 'static');
     			$this->_showSettings();
     			break;
 

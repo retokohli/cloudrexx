@@ -1280,7 +1280,9 @@ if (MY_DEBUG) echo("Support::categoriesStore(): ERROR: Failed to get Support Cat
         // Other Support Ticket defaults
         $ownerId             = 0;
         $ownerName           = $_ARRAYLANG['TXT_SUPPORT_OWNER_NONE'];
-        $ticketEmail         = Auth::getEmail(Auth::getUserId());
+
+        $objFWUser = FWUser::getFWUserObject();
+        $ticketEmail         = $objFWUser->objUser->getEmail();
         $ticketTimestamp     = $_ARRAYLANG['TXT_SUPPORT_DATE_NONE'];
         $ticketStatusString  = $_ARRAYLANG['TXT_SUPPORT_TICKET_STATUS_NEW'];
         $ticketSourceString  = $_ARRAYLANG['TXT_SUPPORT_TICKET_SOURCE_SYSTEM'];
@@ -1299,7 +1301,7 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
             $supportLanguageId  = $objTicket->getLanguageId();
             $supportCategoryId  = $objTicket->getSupportCategoryId();
             $ownerId            = TicketEvent::getTicketOwnerId($supportTicketId);
-            $ownerName          = Auth::getFullName($ownerId);
+            $ownerName          = ($objOwner = $objFWUser->objUser->getUser($ownerId)) ? $objOwner->getProfileAttribute('firstname').' '.$objOwner->getProfileAttribute('lastname') : false;
             if ($ownerName == false) {
                 $ownerName = $_ARRAYLANG['TXT_SUPPORT_OWNER_UNKNOWN'];
             }
@@ -1345,7 +1347,7 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
             'SUPPORT_TICKET_ID'          => $supportTicketId,
             'SUPPORT_TICKET_EMAIL'       => $ticketEmail,
             'SUPPORT_TICKET_OWNER_ID'    => $ownerId,
-            'SUPPORT_TICKET_OWNER'       => $ownerName,
+            'SUPPORT_TICKET_OWNER'       => htmlentities($ownerName, ENT_QUOTES, CONTREXX_CHARSET),
             'SUPPORT_TICKET_DATE'        => $ticketTimestamp,
             'SUPPORT_TICKET_LANGUAGE_ID' => $supportLanguageId,
             'SUPPORT_TICKET_LANGUAGE'    => $languageName,
@@ -1575,7 +1577,8 @@ if (MY_DEBUG) echo("Support::ticketRow(): ERROR: Could not get the Ticket with I
             $supportCategoryName = $_ARRAYLANG['TXT_SUPPORT_CATEGORY_NONE'];
         }
         $ownerId            = TicketEvent::getTicketOwnerId($supportTicketId);
-        $ownerName          = Auth::getFullName($ownerId);
+        $objFWUser = FWUser::getFWUserObject();
+        $ownerName          = ($objOwner = $objFWUser->objUser->getUser($ownerId)) ? $objOwner->getProfileAttribute('firstname').' '.$objOwner->getProfileAttribute('lastname') : false;
         if (!$ownerId) {
             $ownerName = $_ARRAYLANG['TXT_SUPPORT_OWNER_NONE'];
         }
@@ -1587,7 +1590,7 @@ if (MY_DEBUG) echo("Support::ticketRow(): ERROR: Could not get the Ticket with I
             'SUPPORT_TICKET_ID'             => $supportTicketId,
             'SUPPORT_TICKET_EMAIL'          => $objTicket->getEmail(),
             'SUPPORT_TICKET_OWNER_ID'       => $ownerId,
-            'SUPPORT_TICKET_OWNER'          => $ownerName,
+            'SUPPORT_TICKET_OWNER'          => htmlentities($ownerNamem, ENT_QUOTES, CONTREXX_CHARSET),
             'SUPPORT_TICKET_DATE'           => $objTicket->getTimestamp(),
             'SUPPORT_TICKET_LANGUAGE_ID'    => $languageId,
             'SUPPORT_TICKET_LANGUAGE'       =>
@@ -2013,12 +2016,13 @@ if (MY_DEBUG) echo("Support::messageEdit(): INFO: quoting body ($supportMessageB
 if (MY_DEBUG) echo("Support::messageEdit(): INFO: Editing Message for new Ticket<br />");
         }
 
+        $objFWUser = FWUser::getFWUserObject();
         $objTemplate->setVariable(array(
             'TICKET_DATA'   => $this->ticketData($supportTicketId),
             'MESSAGE_TABLE' =>
                 $this->messageTable($supportTicketId, true, $supportMessageId),
             'SUPPORT_TICKET_ID'         => $supportTicketId,
-            'SUPPORT_MESSAGE_FROM'      => Auth::getEmail(Auth::getUserId()),
+            'SUPPORT_MESSAGE_FROM'      => $objFWUser->objUser->getEmail(),
             'SUPPORT_MESSAGE_SUBJECT'   => $supportMessageSubject,
             'SUPPORT_MESSAGE_BODY'      => $supportMessageBody,
             'TXT_SUPPORT_MESSAGE'       => $_ARRAYLANG['TXT_SUPPORT_MESSAGE'],

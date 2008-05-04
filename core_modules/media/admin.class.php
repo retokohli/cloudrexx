@@ -80,7 +80,7 @@ class MediaManager extends MediaLibrary {
      * @access public
      */
     function __construct(){
-		global  $_ARRAYLANG, $_FTPCONFIG, $objTemplate, $objPerm;
+		global  $_ARRAYLANG, $_FTPCONFIG, $objTemplate;
 
         // sigma template
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/media/template');
@@ -128,7 +128,7 @@ class MediaManager extends MediaLibrary {
 
     	switch ($this->archive) {
     	case 'themes':
-    		$objPerm->checkAccess(21, 'static');
+    		Permission::checkAccess(21, 'static');
     		$objTemplate->setVariable("CONTENT_NAVIGATION",
 				"<a href='index.php?cmd=skins'>".$_ARRAYLANG['TXT_DESIGN_OVERVIEW']."</a>
 				<a href='index.php?cmd=skins&amp;act=newDir'>".$_ARRAYLANG['TXT_NEW_DESIGN']."</a>
@@ -139,14 +139,14 @@ class MediaManager extends MediaLibrary {
 			break;
 
     	case 'content':
-    		$objPerm->checkAccess(32, 'static');
+    		Permission::checkAccess(32, 'static');
     		$objTemplate->setVariable('CONTENT_NAVIGATION', '
 				<a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>'
 				.(($_shopEnabled) ? '<a href="index.php?cmd=media&amp;archive=shop">'. $_ARRAYLANG['TXT_IMAGE_SHOP'] .'</a>' : '')
 			);
 			break;
     	case 'shop':
-    		$objPerm->checkAccess(13, 'static');
+    		Permission::checkAccess(13, 'static');
 			$objTemplate->setVariable('CONTENT_NAVIGATION', '
 				<a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>'
 				.(($_shopEnabled) ? '<a href="index.php?cmd=media&amp;archive=shop">'. $_ARRAYLANG['TXT_IMAGE_SHOP'] .'</a>' : '')
@@ -154,7 +154,7 @@ class MediaManager extends MediaLibrary {
     		break;
 
     	default:
-    		$objPerm->checkAccess(7, 'static');
+    		Permission::checkAccess(7, 'static');
     		$objTemplate->setVariable('CONTENT_NAVIGATION', '
 				<a href="index.php?cmd=media&amp;archive=archive1">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #1</a>
 				<a href="index.php?cmd=media&amp;archive=archive2">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #2</a>

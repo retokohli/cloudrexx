@@ -22,20 +22,6 @@
  */
 class Permission
 {
-	var $type;
-	var $allAccess = 0;
-
-
-
-	function Permission($permType='frontend')
-	{
-		$this->type=$permType;
-
-		if(isset($_SESSION['auth']['is_admin']) && $_SESSION['auth']['is_admin']==1){
-			$this->allAccess=1;
-		}
-	}
-
 	/**
 	 * Check access
 	 *
@@ -46,68 +32,38 @@ class Permission
 	 * @param string $type
 	 * @return boolean
 	 */
-	function checkAccess($accessId, $type, $return = false)
+	public static function checkAccess($accessId, $type, $return = false)
 	{
-		if ($this->allAccess) {
+		$objFWUser = FWUser::getFWUserObject();
+		if ($objFWUser->objUser->login() &&
+			(
+				$objFWUser->objUser->getAdminStatus() ||
+				$type == 'static' && in_array($accessId, $objFWUser->objUser->getStaticPermissionIds()) ||
+				$type == 'dynamic' && in_array($accessId, $objFWUser->objUser->getDynamicPermissionIds())
+			)
+		) {
 			return true;
-		} elseif (($type == 'static' || $type == 'dynamic') && isset($_SESSION['auth'][$type.'_access_ids']) && !empty($_SESSION['auth'][$type.'_access_ids'])) {
-			if (in_array($accessId, $_SESSION['auth'][$type.'_access_ids'])) {
-				return true;
-			}
-		}
-		if (!$return) {
-			$this->noAccess();
-		}
-		return false;
-	}
-
-	function noAccess()
-	{
-		if ($this->type == 'backend') {
-			header("Location: index.php?cmd=noaccess");
-			exit;
+		} elseif ($return) {
+			return false;
+		} else {
+			Permission::noAccess();
 		}
 	}
 
-	function getAccessGroups($accessId, $type)
+	public static function hasAllAccess()
 	{
-		global $objDatabase;
-
-		$arrGroups = array();
-
-		$objGroup = $objDatabase->Execute('SELECT `group_id` FROM `'.DBPREFIX.'access_group_'.$type.'_ids` WHERE `access_id` = '.$accessId);
-		if ($objGroup !== false) {
-			while (!$objGroup->EOF) {
-				$arrGroups[] = $objGroup->fields['group_id'];
-				$objGroup->MoveNext();
-			}
+		$objFWUser = FWUser::getFWUserObject();
+		if ($objFWUser->objUser->login() && $objFWUser->objUser->getAdminStatus()) {
+			return true;
+		} else {
+			return false;
 		}
-
-		return $arrGroups;
 	}
 
-	/**
-	 * Get static access ids
-	 *
-	 * Returns an array containing the static access ID's of the initialized user.
-	 *
-	 * @return array
-	 */
-	function getStaticAccessIds()
+	public static function noAccess()
 	{
-		return $_SESSION['auth']['static_access_ids'];
-	}
-
-	/**
-	 * Get dynamic access ids
-	 *
-	 * Returns an array containing the dynamic access ID's of the initialized user.
-	 *
-	 * @return array
-	 */
-	function getDynamicAccessIds()
-	{
-		return $_SESSION['auth']['dynamic_access_ids'];
+		header("Location: index.php?cmd=noaccess");
+		exit;
 	}
 }
 ?>

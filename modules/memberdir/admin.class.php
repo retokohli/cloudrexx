@@ -77,12 +77,11 @@ class MemberDirManager extends MemberDirLibrary
     * @global   array     $_ARRAYLANG
     * @global   array     $_CONFIG
     * @global   object    $objTemplate
-    * @global   object    $objPerm
     * @access public
     */
 	function getPage()
     {
-    	global $_ARRAYLANG, $_CONFIG, $objTemplate, $objPerm;
+    	global $_ARRAYLANG, $_CONFIG, $objTemplate;
 
     	if(!isset($_GET['act'])){
     	    $_GET['act']="";
@@ -263,7 +262,7 @@ class MemberDirManager extends MemberDirLibrary
                 $parentdir = $this->directories[$parentdir]['parentdir'];
             }
 
-            
+
             if ($value['lang'] == 0) {
                 $lang = $_ARRAYLANG['TXT_ALL_LANGUAGES'];
             } else {
@@ -1173,7 +1172,7 @@ class MemberDirManager extends MemberDirLibrary
 				    '".$values[17]."', '".$values[18]."',
 				    '".$this->langId."'
 				   )";
-		
+
 		if ($objDatabase->Execute($query)) {
             $memberid = $objDatabase->Insert_ID();
 

@@ -196,7 +196,9 @@ function search_getSearchPage($pos, $page_content)
  */
 function search_searchQuery($section, $searchTerm)
 {
-    global $_LANGID, $_CONFIG, $objPerm;
+    global $_LANGID, $_CONFIG;
+
+    $objFWUser = FWUser::getFWUserObject();
     $query="";
     switch($section)
     {
@@ -230,14 +232,14 @@ function search_searchQuery($section, $searchTerm)
                         AND activestatus='1'
                         AND is_validated='1'
                         ".(
-						!is_object($objPerm) ?
+						!$objFWUser->objUser->login() ?
 							// user is not authenticated
 							'AND (n.protected=0)' :
 							// user is authenticated
 							(
-								!$objPerm->allAccess ?
+								!$objFWUser->objUser->getAdminStatus() ?
 									 // user is not administrator
-									'AND (n.protected=0'.(count($objPerm->getDynamicAccessIds()) ? ' OR n.frontend_access_id IN ('.implode(', ', $objPerm->getDynamicAccessIds()).')' : '').')' :
+									'AND (n.protected=0'.(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR n.frontend_access_id IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '').')' :
 									// user is administrator
 									''
 							)

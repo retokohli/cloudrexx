@@ -52,7 +52,7 @@ class ContactManager extends ContactLib
 	*/
 	function __construct()
 	{
-		global $objTemplate, $_ARRAYLANG, $objPerm, $_CONFIG;
+		global $objTemplate, $_ARRAYLANG, $_CONFIG;
 
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/contact/template');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -79,11 +79,9 @@ class ContactManager extends ContactLib
 
     	$this->boolHistoryEnabled = ($_CONFIG['contentHistoryStatus'] == 'on') ? true : false;
 
-    	if (is_array($_SESSION['auth']['static_access_ids'])) {
-	        if (in_array(78,$_SESSION['auth']['static_access_ids']) || $objPerm->allAccess) {
-				$this->boolHistoryActivate = true;
-	        }
-        }
+    	if (Permission::checkAccess(78, 'static', true)) {
+    		$this->boolHistoryActivate = true;
+		}
 	}
 
 	/**
@@ -96,7 +94,7 @@ class ContactManager extends ContactLib
 	*/
 	function getPage()
 	{
-		global $objTemplate, $objPerm;
+		global $objTemplate;
 
 		if (!isset($_REQUEST['act'])) {
 			$_REQUEST['act'] = '';
@@ -108,7 +106,7 @@ class ContactManager extends ContactLib
 
 		switch ($_REQUEST['act']) {
 		case 'settings':
-			$objPerm->checkAccess(85, 'static');
+			Permission::checkAccess(85, 'static');
 			$this->_getSettingsPage();
 			break;
 
@@ -873,9 +871,9 @@ class ContactManager extends ContactLib
 
 	function _deleteContentSite($formId)
 	{
-		global $objPerm, $objDatabase, $_ARRAYLANG;
+		global $objDatabase, $_ARRAYLANG;
 
-		$objPerm->checkAccess(26, 'static');
+		Permission::checkAccess(26, 'static');
 
 		$formId = intval($_REQUEST['formId']);
 		$pageId = $this->_getContentSiteId($formId);
@@ -1476,12 +1474,13 @@ class ContactManager extends ContactLib
 	 */
 	function _createContentPage()
 	{
-		global $_ARRAYLANG, $objDatabase, $_FRONTEND_LANGID, $objPerm, $_CONFIG;
+		global $_ARRAYLANG, $objDatabase, $_FRONTEND_LANGID, $_CONFIG;
 
-		$objPerm->checkAccess(5, 'static');
+		Permission::checkAccess(5, 'static');
 
 		$formId = intval($_REQUEST['formId']);
 		if ($formId > 0) {
+			$objFWUser = FWUser::getFWUserObject();
 			$objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form WHERE id=".$formId, 1);
 			if ($objContactForm !== false) {
 				$catname = addslashes($objContactForm->fields['name']);
@@ -1503,7 +1502,7 @@ class ContactManager extends ContactLib
 								  		'".$catname."',
 								  		'1',
 								  		'on',
-								  		'".$_SESSION['auth']['username']."',
+								  		'".$objFWUser->objUser->getUsername()."',
 								  		'".$currentTime."',
 								  		'".$formId."',
 								  		'".$_FRONTEND_LANGID."',
@@ -1551,7 +1550,7 @@ class ContactManager extends ContactLib
 								                   	catname="'.$catname.'",
 								                   	displayorder=1,
 								                   	displaystatus="off",
-								                   	username="'.$_SESSION['auth']['username'].'",
+								                   	username="'.$objFWUser->objUser->getUsername().'",
 								                   	changelog="'.$currentTime.'",
 								               	 	cmd="'.$formId.'",
 								                  	lang="'.$_FRONTEND_LANGID.'",
@@ -1584,13 +1583,14 @@ class ContactManager extends ContactLib
 
 	function _updateContentSite()
 	{
-		global $objDatabase, $_FRONTEND_LANGID, $objPerm, $_ARRAYLANG;
+		global $objDatabase, $_FRONTEND_LANGID, $_ARRAYLANG;
 
-		$objPerm->checkAccess(35, 'static');
+		Permission::checkAccess(35, 'static');
 		$formId = intval($_REQUEST['formId']);
 		$pageId = $this->_getContentSiteId($formId);
 		$parcat = $this->_getContentSiteParCat($formId);
 		if ($pageId > 0) {
+			$objFWUser = FWUser::getFWUserObject();
 			$objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form WHERE id=".$formId, 1);
 			if ($objContactForm !== false) {
 				$catname = addslashes($objContactForm->fields['name']);
@@ -1620,7 +1620,7 @@ class ContactManager extends ContactLib
 				$intHistoryParcat = $parcat;
 				if ($boolDirectUpdate) {
 					$objDatabase->Execute("	UPDATE 	".DBPREFIX."content_navigation
-							                SET 	username='".$_SESSION['auth']['username']."',
+							                SET 	username='".$objFWUser->objUser->getUsername()."',
 							                    	changelog='".$currentTime."'
 							              	WHERE catid=".$pageId);
 				}
@@ -1629,7 +1629,7 @@ class ContactManager extends ContactLib
 				$intHistoryParcat = 0;
 				if ($boolDirectUpdate) {
 				   	$objDatabase->Execute("	UPDATE 	".DBPREFIX."content_navigation
-						                  	SET 	username='".$_SESSION['auth']['username']."',
+						                  	SET 	username='".$objFWUser->objUser->getUsername()."',
 											  		changelog='".$currentTime."'
 											WHERE 	catid=".$pageId);
 				}
@@ -1663,7 +1663,7 @@ class ContactManager extends ContactLib
 												catid='.$pageId.',
 												parcat="'.$intHistoryParcat.'",
 						                    	catname="'.$catname.'",
-						                    	username="'.$_SESSION['auth']['username'].'",
+						                    	username="'.$objFWUser->objUser->getUsername().'",
 						                    	changelog="'.$currentTime.'",
 						                    	lang="'.$_FRONTEND_LANGID.'",
 						                    	cmd="'.$formId.'",

@@ -60,11 +60,10 @@ class ForumAdmin extends ForumLibrary {
     /**
 	* Perform the right operation depending on the $_GET-params
     *
-    * @global 	object		$objPerm
     * @global 	object		$objTemplate
     */
     function getPage() {
-    	global $objPerm,$objTemplate;
+    	global $objTemplate;
 
     	if(!isset($_GET['act'])) {
     	    $_GET['act']='';
@@ -72,75 +71,75 @@ class ForumAdmin extends ForumLibrary {
 
     	switch($_GET['act']){
     		case 'category':
-				$objPerm->checkAccess(107, 'static');
+				Permission::checkAccess(107, 'static');
                 $this->showCategoryOverview();
                 break;
 
     		case 'category_status':
-    				$objPerm->checkAccess(107, 'static');
+    				Permission::checkAccess(107, 'static');
     				$this->setCategoryStatus($_GET['id']);
     				$this->showCategoryOverview();
     			break;
 
     		case 'category_sorting':
-    				$objPerm->checkAccess(107, 'static');
+    				Permission::checkAccess(107, 'static');
     				$this->saveCategorySorting();
     				$this->showCategoryOverview();
     			break;
 
     		case 'category_delete':
-    				$objPerm->checkAccess(107, 'static');
+    				Permission::checkAccess(107, 'static');
     				$this->deleteCategory($_GET['id']);
     				$this->showCategoryOverview();
     			break;
 
     		case 'category_multiaction':
-    				$objPerm->checkAccess(107, 'static');
+    				Permission::checkAccess(107, 'static');
     				$this->doCategoryMultiAction();
     				$this->showCategoryOverview();
     			break;
 
     		case 'category_add':
-    				$objPerm->checkAccess(107, 'static');
+    				Permission::checkAccess(107, 'static');
     				$this->addCategory();
     				$this->showCategoryOverview();;
     			break;
 
     		case 'category_edit':
-    				$objPerm->checkAccess(107, 'static');
+    				Permission::checkAccess(107, 'static');
     				$this->editCategory($_GET['id']);
     			break;
 
     		case 'category_update':
-    				$objPerm->checkAccess(107,'static');
+    				Permission::checkAccess(107,'static');
     				$this->updateCategory();
     				$this->showCategoryOverview();
     			break;
 
     		case 'category_access':
-    				$objPerm->checkAccess(107,'static');
+    				Permission::checkAccess(107,'static');
     				$this->editCategoryAccess($_GET['id']);
     			break;
 
     		case 'category_access_update':
-    				$objPerm->checkAccess(107,'static');
+    				Permission::checkAccess(107,'static');
     				$this->updateCategoryAccess();
     				$this->showCategoryOverview();
     			break;
 
     		case 'settings':
-    				$objPerm->checkAccess(108, 'static');
+    				Permission::checkAccess(108, 'static');
     				$this->showSettings();
     			break;
 
     		case 'settings_update':
-    				$objPerm->checkAccess(108, 'static');
+    				Permission::checkAccess(108, 'static');
     				$this->updateSettings();
     				$this->showSettings();
     			break;
 
     		default:
-				$objPerm->checkAccess(107, 'static');
+				Permission::checkAccess(107, 'static');
                 $this->showCategoryOverview();
     	}
 

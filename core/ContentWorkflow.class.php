@@ -73,7 +73,7 @@ class ContentWorkflow {
     * @global 	array		Core language
     */
     function getPage() {
-    	global $objTemplate, $objPerm,$_CORELANG;
+    	global $objTemplate, $_CORELANG;
 
     	if(!isset($_GET['act'])){
     	    $_GET['act'] = '';
@@ -82,49 +82,49 @@ class ContentWorkflow {
     	switch ($_GET['act']) {
     		//perm 76 is for validating pages
 			case 'restoreHistory':
-				$objPerm->checkAccess(77, 'static');
+				Permission::checkAccess(77, 'static');
 				$intPageId = $this->loadHistory($_GET['hId'],true);
 				$this->redirectPage($intPageId);
 			break;
 			case 'activateHistory':
-			$objPerm->checkAccess(79, 'static');
+				Permission::checkAccess(79, 'static');
 				$intPageId = $this->loadHistory($_GET['hId']);
 				$this->redirectPage($intPageId);
 			break;
 			case 'deleteHistory':
-				$objPerm->checkAccess(80, 'static');
+				Permission::checkAccess(80, 'static');
 				$intPageId = $this->deleteHistory($_GET['hId']);
 				$this->redirectPage($intPageId);
 			break;
 			case 'new':
-    			$objPerm->checkAccess(75, 'static');
+    			Permission::checkAccess(75, 'static');
     			$this->showHistory();
 			break;
     		case 'updated':
-    			$objPerm->checkAccess(75, 'static');
+    			Permission::checkAccess(75, 'static');
     			$this->showHistory('updated');
     		break;
     		case 'deleted':
-    			$objPerm->checkAccess(75, 'static');
+    			Permission::checkAccess(75, 'static');
     			$this->showHistory('deleted');
     		break;
     		case 'validate':
-    			$objPerm->checkAccess(78, 'static');
+    			Permission::checkAccess(78, 'static');
     			$this->validatePage($_GET['id'],$_GET['acc']);
     			$this->showHistory('unvalidated');
     		break;
     		case 'showClean':
-    			$objPerm->checkAccess(126, 'static');
+    			Permission::checkAccess(126, 'static');
     			$this->showClean();
     			break;
     		case 'cleanHistory':
-    			$objPerm->checkAccess(126, 'static');
+    			Permission::checkAccess(126, 'static');
     			$this->cleanHistory($_GET['days']);
     			$this->showClean();
     			break;
 			case 'unvalidated':
     		default:
-    			$objPerm->checkAccess(75, 'static');
+    			Permission::checkAccess(75, 'static');
     			$this->showHistory('unvalidated');
 
     	}
@@ -792,7 +792,7 @@ class ContentWorkflow {
 		}
 	}
 
-	
+
 	/**
     * Show logfile-entries (new, updated or deleted)
     *
@@ -813,28 +813,28 @@ class ContentWorkflow {
 		    'TXT_HISTORY_CLEAN_SUBMIT'		=> $_CORELANG['TXT_EXECUTE'],
 			'TXT_HISTORY_CLEAN_JS_CONFIRM'	=> $_CORELANG['TXT_WORKFLOW_CLEAN_CONFIRM']
 		));
-		
+
 		//Figure out how much space is occupied by the workflow
 		$intBytes = 0;
-		
+
 		$objResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'content_history";');
 		$intBytes += $objResult->fields['Data_length'];
 		$intBytes += $objResult->fields['Index_length'];
-		
+
 		$objResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'content_navigation_history";');
 		$intBytes += $objResult->fields['Data_length'];
 		$intBytes += $objResult->fields['Index_length'];
-		
+
 		$objResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'content_logfile";');
 		$intBytes += $objResult->fields['Data_length'];
 		$intBytes += $objResult->fields['Index_length'];
-		
+
 		$objTemplate->setVariable('HISTORY_CLEAN_OCCUPIED', round($intBytes / 1024, 2));
-		
+
 		//Get old values
 		$intDays = (isset($_GET['days'])) ? intval($_GET['days']) : 30;
 		$intDays = ($intDays < 1) ? 1 : $intDays;
-		
+
 		$objTemplate->setVariable('HISTORY_CLEAN_DAYS', $intDays);
 	}
 
@@ -847,14 +847,14 @@ class ContentWorkflow {
 	 */
 	function cleanHistory($intNumberOfDays) {
 		global $objDatabase, $_CORELANG;
-		
+
 		$intNumberOfDays = intval($intNumberOfDays);
 		if ($intNumberOfDays < 1) {
 			$intNumberOfDays = 1;
 		}
-		
+
 		$intTimeStamp = time()-($intNumberOfDays*24*60*60);
-		
+
 		//Look for deleted pages older than XX days
 		$objResult = $objDatabase->Execute('SELECT		log.history_id as id
 											FROM		'.DBPREFIX.'content_logfile AS log
@@ -862,50 +862,50 @@ class ContentWorkflow {
 											ON			log.history_id = nav.id
 											WHERE		log.action="delete" And
 														nav.changelog < '.$intTimeStamp);
-		
+
 		while (!$objResult->EOF) {
 			$objDatabase->Execute('	DELETE
 									FROM    '.DBPREFIX.'content_logfile
 									WHERE    history_id='.$objResult->fields['id']);
-		
+
 			$objDatabase->Execute('	DELETE
 									FROM    '.DBPREFIX.'content_navigation_history
 									WHERE    id='.$objResult->fields['id'].'
 									LIMIT    1');
-		
+
 			$objDatabase->Execute('	DELETE
 									FROM    '.DBPREFIX.'content_history
 									WHERE    id='.$objResult->fields['id'].'
-									LIMIT    1');       
-		
+									LIMIT    1');
+
 			$objResult->MoveNext();
-		}        
-		
+		}
+
 		//Look for not active entries older than XX days
 		$objResult = $objDatabase->Execute('SELECT	id
 											FROM	'.DBPREFIX.'content_navigation_history
 											WHERE	is_active="0" AND
 													changelog < '.$intTimeStamp);
-		
+
 		while (!$objResult->EOF) {
 			$objDatabase->Execute('	DELETE
 									FROM	'.DBPREFIX.'content_logfile
 									WHERE	history_id='.$objResult->fields['id'].' AND
 											(action="update" OR action="new")');
-		
+
 			$objDatabase->Execute('	DELETE
 									FROM    '.DBPREFIX.'content_navigation_history
 									WHERE    id='.$objResult->fields['id'].'
 									LIMIT    1');
-		
+
 			$objDatabase->Execute('	DELETE
 									FROM    '.DBPREFIX.'content_history
 									WHERE    id='.$objResult->fields['id'].'
 									LIMIT    1');
-		
+
 			$objResult->MoveNext();
 		}
-		
+
 		$this->strOkMessage = str_replace('[DAYS]', $intNumberOfDays, $_CORELANG['TXT_WORKFLOW_CLEAN_SUCCESS']);
 	}
 }

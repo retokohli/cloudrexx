@@ -11,7 +11,7 @@
  * @todo        Edit PHP DocBlocks!
  */
 $_EXCEPTIONS = array( 	// Filter specific Pages in alphabetical order
-	array('section'	=> 'community','register' => '/.*/'),		// Community
+	array('section'	=> 'access','cmd' => '/settings.*/'),		// User Profile
 	array('section'	=> 'contact'),								// Contact
     array('section'	=> 'guestbook'	),							// Guestbook
 	//array('section'	=> 'login','redirect' => '/.*/'),			// Login

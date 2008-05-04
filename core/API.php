@@ -62,6 +62,31 @@ require_once ASCMS_CORE_PATH.'/database.php';
 require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
 
 /**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User_Setting_Mail.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User_Setting.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User_Profile_Attribute.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User_Profile.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/User.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/User/UserGroup.class.php';
+
+/**
  * Includes all framework files
  */
 require_once (ASCMS_FRAMEWORK_PATH . "/framework.php");
@@ -75,10 +100,6 @@ require_once ASCMS_CORE_PATH.'/paging.class.php';
  * @ignore
  */
 require_once ASCMS_CORE_PATH.'/session.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/auth.class.php';
 /**
  * @ignore
  */

@@ -277,14 +277,17 @@ class Forum extends ForumLibrary {
 	 * @param integer $postId
 	 * @return boolean
 	 */
-	function _hasRated($postId){
+	function _hasRated($postId)
+	{
 		global $objDatabase;
+
+		$objFWUser = FWUser::getFWUserObject();
 		$query = "	DELETE FROM `".DBPREFIX."module_forum_rating`
 					WHERE `time`+".$this->_rateTimeout."  < unix_timestamp()";
 		$objDatabase->Execute($query);
 
 		$query = "	SELECT 1 FROM `".DBPREFIX."module_forum_rating`
-					WHERE `user_id` = ".$_SESSION['auth']['userid']
+					WHERE `user_id` = ".($objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0)
 				."	AND `post_id` = ".$postId;
 		$objRS = $objDatabase->Execute($query);
 		if($objRS->RecordCount() > 0){
@@ -301,11 +304,14 @@ class Forum extends ForumLibrary {
 	 * @param integer $postId
 	 * @return boolean
 	 */
-	function _updateRated($postId){
+	function _updateRated($postId)
+	{
 		global $objDatabase;
+
+		$objFWUser = FWUser::getFWUserObject();
 		$query = "	INSERT INTO `".DBPREFIX."module_forum_rating`
 					(`user_id`, `post_id`, `time`) VALUES
-					(".$_SESSION['auth']['userid'].", $postId, ".time().")";
+					(".($objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0).", $postId, ".time().")";
 		return $objDatabase->Execute($query);
 	}
 
@@ -313,9 +319,12 @@ class Forum extends ForumLibrary {
 	 * update the rating for a post
 	 *
 	 */
-	function _rate(){
+	function _rate()
+	{
 		global $objDatabase;
-		if($_SESSION['auth']['userid'] < 1){
+
+		$objFWUser = FWUser::getFWUserObject();
+		if (!$objFWUser->objUser->login()) {
 			die('not allowed to vote.');
 		}
 		$postId = intval($_GET['postId']);
@@ -350,8 +359,10 @@ class Forum extends ForumLibrary {
 	 * @global 	array		$_ARRAYLANG
 	 * @param	integer		$intForumId: The id of the forum which should be shown
 	 */
-	function showForum($intForumId) {
+	function showForum($intForumId)
+	{
 		global $objDatabase, $_ARRAYLANG, $objCache;
+
 		require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
 		if ($intForumId == 0) {
 			//wrong id, redirect
@@ -360,6 +371,7 @@ class Forum extends ForumLibrary {
 		}
 
 		$captcha = new Captcha();
+		$objFWUser = FWUser::getFWUserObject();
 
 		$this->_communityLogin();
 
@@ -368,9 +380,9 @@ class Forum extends ForumLibrary {
 		$intThreadId = !empty($_REQUEST['threadid']) ? intval($_REQUEST['threadid']) : 0;
 		$pos = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
 
-		if($_SESSION['auth']['userid'] > 0){
+		if ($objFWUser->objUser->login()) {
 			$this->_objTpl->touchBlock('notificationRow');
-		}else{
+		} else{
 			$this->_objTpl->hideBlock('notificationRow');
 		}
 
@@ -431,7 +443,7 @@ class Forum extends ForumLibrary {
 			'FORUM_MESSAGE_INPUT'		=>	$strMessageInputHTML,
 		));
 
-		if($_SESSION['auth']['userid'] > 0){
+		if ($objFWUser->objUser->login()) {
 			$this->_objTpl->hideBlock('captcha');
 		} else {
 			$this->_objTpl->touchBlock('captcha');
@@ -470,7 +482,7 @@ class Forum extends ForumLibrary {
 			}
 			$intCounter = 0;
 			foreach ($arrThreads as $threadId => $arrValues) {
-				$strUserProfileLink = ($arrValues['user_id'] > 0) ? '<a href="?section=forum&amp;cmd=userinfo&amp;id='.$arrValues['user_id'].'">'.$arrValues['user_name'].'</a>': $this->_anonymousName;
+				$strUserProfileLink = ($arrValues['user_id'] > 0) ? '<a href="?section=access&amp;cmd=user&amp;id='.$arrValues['user_id'].'">'.$arrValues['user_name'].'</a>': $this->_anonymousName;
 				$this->_objTpl->setVariable(array(
 					'FORUM_THREADS_ROWCLASS'		=>	($intCounter++ % 2) + 1,
 					'FORUM_THREADS_SYMBOL'			=>	'<img title="comment.gif" alt="comment.gif" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/forum/comment.gif" border="0" />',
@@ -511,7 +523,7 @@ class Forum extends ForumLibrary {
 				return false;
 			}
 
-			if ($_SESSION['auth']['userid'] < 1 && !$captcha->compare($_POST['captcha'], $_POST['offset'])) {
+			if (!$objFWUser->objUser->login() && !$captcha->compare($_POST['captcha'], $_POST['offset'])) {
 				$this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_INVALID_CAPTCHA']);
 				return false;
 			}
@@ -538,7 +550,7 @@ class Forum extends ForumLibrary {
 				die($objDatabase->ErrorMsg());
 			}
 
-			$userId = !empty($_SESSION['auth']['userid']) ? $_SESSION['auth']['userid'] : 0;
+			$userId = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
 			$icon = !empty($_REQUEST['icons']) ? intval($_REQUEST['icons']) : 1;
 
 
@@ -577,6 +589,7 @@ class Forum extends ForumLibrary {
 	{
 		global $objDatabase, $_ARRAYLANG, $objCache;
 
+		$objFWUser = FWUser::getFWUserObject();
 		$this->_communityLogin();
 		$intThreadId = intval($intThreadId);
 
@@ -593,11 +606,9 @@ class Forum extends ForumLibrary {
 			header('Location: index.php?section=forum');
 			die();
 		}
-
-
-		if($_SESSION['auth']['userid'] > 0){
+		if ($objFWUser->objUser->login()) {
 			$this->_objTpl->touchBlock('notificationRow');
-		}else{
+		} else {
 			$this->_objTpl->hideBlock('notificationRow');
 		}
 
@@ -656,7 +667,7 @@ class Forum extends ForumLibrary {
 			$arrPosts[$intPostId]['content'] = $this->BBCodeToHTML(contrexx_stripslashes($_REQUEST['message']));
 		}
 
-		$userId  = !empty($_SESSION['auth']['userid']) ? $_SESSION['auth']['userid'] : 0;
+		$userId  = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
 		$icon 	 = !empty($_REQUEST['icons']) ? intval($_REQUEST['icons']) : 1;
 
 
@@ -747,7 +758,7 @@ class Forum extends ForumLibrary {
 			'FORUM_POSTS_PAGING'		=>	getPaging($this->_postCount, $pos, '&amp;section=forum&amp;cmd=thread&amp;id='.$intThreadId, $_ARRAYLANG['TXT_FORUM_OVERVIEW_POSTINGS'], true, $this->_arrSettings['posting_paging']),
 		));
 
-		if($_SESSION['auth']['userid'] > 0){
+		if ($objFWUser->objUser->login()) {
 			$this->_objTpl->hideBlock('captcha');
 		} else {
 			$this->_objTpl->touchBlock('captcha');
@@ -771,7 +782,7 @@ class Forum extends ForumLibrary {
 				$class = 'neg';
 			}
 			$strRating = sprintf($strRating, $class, $arrValues['rating']);
-			$strUserProfileLink = ($arrValues['user_id'] > 0) ? '<a title="'.$arrValues['user_name'].'" href="?section=forum&amp;cmd=userinfo&amp;id='.$arrValues['user_id'].'">'.$arrValues['user_name'].'</a>' : $this->_anonymousName;
+			$strUserProfileLink = ($arrValues['user_id'] > 0) ? '<a title="'.$arrValues['user_name'].'" href="?section=access&amp;cmd=user&amp;id='.$arrValues['user_id'].'">'.$arrValues['user_name'].'</a>' : $this->_anonymousName;
 
 			$arrAttachment = $this->_getAttachment($arrValues['attachment']);
 			$this->_objTpl->setGlobalVariable(array(
@@ -805,9 +816,9 @@ class Forum extends ForumLibrary {
 				'FORUM_POST_ID' 		=> $postId,
 				'FORUM_RATING_POST_ID' 	=> $postId
 				));
-			if(($this->_checkAuth($intCatId, 'edit') || $arrValues['user_id'] == $_SESSION['auth']['userid']) && $_SESSION['auth']['userid'] != $this->_anonymousGroupId){
+			if($this->_checkAuth($intCatId, 'edit') || ($objFWUser->objUser->login() && $arrValues['user_id'] == $objFWUser->objUser->getId())) {
 				$this->_objTpl->touchBlock('postEdit');
-			}else{
+			} else {
 				$this->_objTpl->hideBlock('postEdit');
 			}
 
@@ -827,7 +838,7 @@ class Forum extends ForumLibrary {
 			}
 
 			if($this->_objTpl->blockExists('rating')){
-				if($_SESSION['auth']['userid'] > 0 && !$this->_hasRated($postId)){
+				if($objFWUser->objUser->login() && !$this->_hasRated($postId)){
 					$this->_objTpl->parse('rating');
 				}else{
 					$this->_objTpl->hideBlock('rating');
@@ -859,7 +870,7 @@ class Forum extends ForumLibrary {
 				$this->_objTpl->hideBlock('addPost');
 				return false;
 			}
-			if($_SESSION['auth']['userid'] < 1 && !$captcha->compare($_POST['captcha'], $_POST['offset'])) {//captcha check
+			if(!$objFWUser->objUser->login() && !$captcha->compare($_POST['captcha'], $_POST['offset'])) {//captcha check
 				$this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_INVALID_CAPTCHA']);
 				return false;
 			}
@@ -925,7 +936,7 @@ class Forum extends ForumLibrary {
 				'FORUM_POST_ROWCLASS'			=>	($intCounter++ % 2) + 1,
 				'FORUM_POST_DATE'				=>	date(ASCMS_DATE_FORMAT, time()),
 				'FORUM_USER_ID'					=>	$userId,
-				'FORUM_USER_NAME'				=>	!empty($_SESSION['auth']['username']) ? '<a href="index.php?section=forum&amp;cmd=userinfo&amp;id='.$userId.'" title="'.$_SESSION['auth']['username'].'">'.$_SESSION['auth']['username'].'</a>' : $this->_anonymousName,
+				'FORUM_USER_NAME'				=>	$objFWUser->objUser->login() ? '<a href="index.php?section=access&amp;cmd=user&amp;id='.$userId.'" title="'.htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET).'</a>' : $this->_anonymousName,
 				'FORUM_USER_IMAGE'				=>	!empty($arrValues['user_image']) ? '<img border="0" width="60" height="60" src="'.$arrValues['user_image'].'" title="'.$arrValues['user_name'].'\'s avatar" alt="'.$arrValues['user_name'].'\'s avatar" />' : '',
 				'FORUM_USER_GROUP'				=>	'',
 				'FORUM_USER_RANK'				=>	'',
@@ -956,12 +967,12 @@ class Forum extends ForumLibrary {
 				$this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf($_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostLenght));
 				return false;
 			}
-			if((!$this->_checkAuth($intCatId, 'edit') && $arrValues['user_id'] != $_SESSION['auth']['userid']) || ($_SESSION['auth']['userid'] == $this->_anonymousGroupId && !$this->_checkAuth($intCatId, 'edit'))){
+			if (!$this->_checkAuth($intCatId, 'edit') && (!$objFWUser->objUser->login() || $arrValues['user_id'] != $objFWUser->objUser->getId())) {
 				$this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
 				$this->_objTpl->hideBlock('postEdit');
 				return false;
 			}
-			if ($_SESSION['auth']['userid'] == 0 && !$captcha->compare($_POST['captcha'], $_POST['offset'])) {
+			if (!$objFWUser->objUser->login() && !$captcha->compare($_POST['captcha'], $_POST['offset'])) {
 				$this->_objTpl->touchBlock('updatePost');
 				$this->_objTpl->hideBlock('createPost');
 
@@ -1014,14 +1025,17 @@ class Forum extends ForumLibrary {
 	}
 
 
-	function _hasNotification($intThreadId){
+	function _hasNotification($intThreadId)
+	{
 		global $objDatabase;
-		if($_SESSION['auth']['userid'] < 1){
+
+		$objFWUser = FWUser::getFWUserObject();
+		if (!$objFWUser->objUser->login()) {
 			return false;
 		}
 		$query = '	SELECT 1 FROM `'.DBPREFIX.'module_forum_notification`
 						WHERE `thread_id` = '.$intThreadId.'
-						AND `user_id` = '.$_SESSION['auth']['userid'];
+						AND `user_id` = '.$objFWUser->objUser->getId();
 		if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
 			if($objRS->RecordCount() > 0){
 				return true;
@@ -1039,23 +1053,26 @@ class Forum extends ForumLibrary {
 	 * @param integer $intThreadId
 	 * @return void
 	 */
-	function _updateNotification($intThreadId){
+	function _updateNotification($intThreadId)
+	{
 		global $objDatabase;
+
+		$objFWUser = FWUser::getFWUserObject();
 		if(!empty($_REQUEST['notification']) && $_REQUEST['notification'] == 'notify'){
 			$query = '	SELECT 1 FROM `'.DBPREFIX.'module_forum_notification`
 						WHERE `thread_id` = '.$intThreadId.'
 						AND `category_id` = 0
-						AND `user_id` = '.$_SESSION['auth']['userid'];
+						AND `user_id` = '.($objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0);
 			if(($objRS=$objDatabase->SelectLimit($query, 1)) !== false){
 				if($objRS->RecordCount() > 0){
 					$query = '	UPDATE `'.DBPREFIX.'module_forum_notification`
-							  	SET `thread_id` = '.$intThreadId.', `user_id` = '.$_SESSION['auth']['userid'].', `is_notified` = \'0\'
+							  	SET `thread_id` = '.$intThreadId.', `user_id` = '.($objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0).', `is_notified` = \'0\'
 							  	WHERE `thread_id` = '.$intThreadId.'
-							  	AND `user_id` = '.$_SESSION['auth']['userid'];
+							  	AND `user_id` = '.($objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0);
 				}else{
 					$query = '	INSERT INTO `'.DBPREFIX.'module_forum_notification`
 							  	SET `thread_id` = '.$intThreadId.',
-							  		`user_id` = '.$_SESSION['auth']['userid'].',
+							  		`user_id` = '.($objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0).',
 							  		`is_notified` = \'0\'';
 				}
 
@@ -1064,7 +1081,7 @@ class Forum extends ForumLibrary {
 			$query = '	DELETE FROM `'.DBPREFIX.'module_forum_notification`
 					  	WHERE `thread_id` = '.$intThreadId.'
 					  	AND `category_id` = 0
-					  	AND `user_id` = '.$_SESSION['auth']['userid'];
+					  	AND `user_id` = '.($objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0);
 		}
 
 		if($objDatabase->Execute($query) === false){
@@ -1145,8 +1162,10 @@ class Forum extends ForumLibrary {
 			$_strMailTemplate = html_entity_decode(str_replace($arrSearch, $arrReplace, $this->stripBBtags($this->_arrSettings['notification_template'])));
 			$_strMailSubject  = html_entity_decode(str_replace($arrSearch, $arrReplace, $this->stripBBtags($this->_arrSettings['notification_subject'])));
 
+			$objFWUser = FWUser::getFWUserObject();
+
 			foreach ($arrSubscribers as $arrSubscriber) {
-				if($arrSubscriber['id'] == $_SESSION['auth']['userid']){//creator of the new post/thread doesn't want a notification
+				if($objFWUser->objUser->login() && $arrSubscriber['id'] == $objFWUser->objUser->getId()){//creator of the new post/thread doesn't want a notification
 					continue;
 				}
 				$mail->ClearAddresses();
@@ -1408,7 +1427,8 @@ class Forum extends ForumLibrary {
 		));
 
 
-		if(empty($_SESSION['auth']) || $_SESSION['auth']['userid'] < 1){
+		$objFWUser = FWUser::getFWUserObject();
+		if (!$objFWUser->objUser->login()) {
 			$this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_MUST_BE_AUTHENTICATED']);
 			$this->_objTpl->hideBlock('notification');
 			return false;
@@ -1418,7 +1438,7 @@ class Forum extends ForumLibrary {
 
 		if(isset($_REQUEST['forumNotificationSubmit'])){//drop and update notifications
 			$query = "	DELETE FROM `".DBPREFIX."module_forum_notification`
-						WHERE `user_id` = ".$_SESSION['auth']['userid']."
+						WHERE `user_id` = ".$objFWUser->objUser->getId()."
 						AND thread_id = 0";
 
 			if($objDatabase->Execute($query) === false){
@@ -1431,7 +1451,7 @@ class Forum extends ForumLibrary {
 				$intCategoryId = intval($intCategoryId);
 				if($intCategoryId > 0){
 					$query = "	INSERT INTO `".DBPREFIX."module_forum_notification`
-								VALUES ( ".$intCategoryId.", 0, ".$_SESSION['auth']['userid'].", '0')";
+								VALUES ( ".$intCategoryId.", 0, ".$objFWUser->objUser->getId().", '0')";
 					if($objDatabase->Execute($query) === false){
 						$this->_objTpl->setVariable('TXT_FORUM_ERROR', 'Database error: '.$objDatabase->ErrorMsg());
 						$this->_objTpl->hideBlock('notification');
@@ -1450,7 +1470,7 @@ class Forum extends ForumLibrary {
 					FROM `".DBPREFIX."module_forum_notification` AS `n`
 					LEFT JOIN ".DBPREFIX."module_forum_categories_lang AS `l` USING ( category_id )
 					LEFT JOIN ".DBPREFIX."module_forum_categories AS `c` ON ( `c`.`id` = `n`.`category_id` )
-					WHERE `n`.`user_id` = ".$_SESSION['auth']['userid']."
+					WHERE `n`.`user_id` = ".$objFWUser->objUser->getId()."
 					AND `n`.`thread_id` = 0
 					AND `l`.`lang_id` = ".$this->_intLangId."
 					AND `c`.`status` = '1'

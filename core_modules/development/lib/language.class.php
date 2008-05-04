@@ -7,7 +7,7 @@
  * @package     contrexx
  * @subpackage  core_module_development
  * @todo        Edit PHP DocBlocks!
- */ 
+ */
 
 /**
  * Language Manager
@@ -28,17 +28,17 @@ class LanguageManager
 	var $arrLang = array();
 	var $filePath='';
 	var $hideVariables = true;
-	
+
 	/**
-	* constructor                                                                             
+	* constructor
 	*/
 	function LanguageManager(){
     	global  $objDatabase, $_CORELANG, $objTemplate;
-    	
+
     	$arrTables = array();
-		
+
 		$this->filePath = ASCMS_LANGUAGE_PATH. '/';
-	    
+
 		// get tables in database
 		$objResult = $objDatabase->MetaTables('TABLES');
 		if ($objResult !== false && !$objResult->EOF) {
@@ -47,15 +47,15 @@ class LanguageManager
 		if (in_array(DBPREFIX."language_variable_names",$arrTables) && in_array(DBPREFIX."language_variable_content",$arrTables)){
 			$this->hideVariables = false;
 		}
-		
+
 		$objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=language'>".$_CORELANG['TXT_LANGUAGE_LIST']."</a>"
 		                                         .($this->hideVariables == false ? "<a href='index.php?cmd=language&amp;act=vars'>".$_CORELANG['TXT_VARIABLE_LIST']."</a>
 		                                         <a href='index.php?cmd=language&amp;act=mod'>".$_CORELANG['TXT_ADD_LANGUAGE_VARIABLES']."</a>
-												 <a href='index.php?cmd=language&amp;act=writefiles' title='".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."'>".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."</a>" 
+												 <a href='index.php?cmd=language&amp;act=writefiles' title='".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."'>".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."</a>"
 		                                         : ""));
-		                                         
-	    
-		                                         
+
+
+
 	    $objResult = $objDatabase->Execute("SELECT id,name FROM ".DBPREFIX."languages");
 	    if ($objResult !== false) {
 			while (!$objResult->EOF) {
@@ -63,109 +63,108 @@ class LanguageManager
 				$objResult->MoveNext();
 			}
 	    }
-		    	
+
 	    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."languages");
 	    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."language_variable_content");
-	    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."language_variable_names"); 	
-	}	
+	    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."language_variable_names");
+	}
 
-	
-		
+
+
     /**
     * Gets the requested methods
     *
     * @global   array     $_CORELANG
     * @global   object    $objTemplate
-    * @global   object    $objPerm
-    * @return   string    parsed content                                                                                  
-    */	
+    * @return   string    parsed content
+    */
 	function getLanguagePage()
     {
-    	global $_CORELANG, $objTemplate, $objPerm;
-    	
+    	global $_CORELANG, $objTemplate;
+
     	if(!isset($_GET['act'])){
-    	    $_GET['act']="";	
+    	    $_GET['act']="";
     	}
-    	
+
         switch($_GET['act']){
-			case "dellang":			     
-			    $objPerm->checkAccess(49, 'static'); 
-			    $this->deleteLanguage();	
-			    $this->languageOverview();			           	
-			break;				
-			case "vars":		     
-			    $this->listVariables();      	
-			break;				
-			case "mod":	
-			    $objPerm->checkAccess(48, 'static'); 
-			    $this->addUpdateVariable();    
-			    $this->modifyVariables();       	
+			case "dellang":
+			    Permission::checkAccess(49, 'static');
+			    $this->deleteLanguage();
+			    $this->languageOverview();
 			break;
-			case "add":	
-			    $objPerm->checkAccess(50, 'static'); 
-			    $this->addLanguage();    
-			    $this->languageOverview();      	
-			break;			
-			case "del":	
-			    $objPerm->checkAccess(48, 'static');			        
+			case "vars":
+			    $this->listVariables();
+			break;
+			case "mod":
+			    Permission::checkAccess(48, 'static');
+			    $this->addUpdateVariable();
+			    $this->modifyVariables();
+			break;
+			case "add":
+			    Permission::checkAccess(50, 'static');
+			    $this->addLanguage();
+			    $this->languageOverview();
+			break;
+			case "del":
+			    Permission::checkAccess(48, 'static');
 			    $this->deleteVariable();
-			    $this->listVariables(); 	         	
+			    $this->listVariables();
 			break;
 			case "writefiles":
-				$objPerm->checkAccess(48, 'static');
+				Permission::checkAccess(48, 'static');
 				$this->createFiles();
 				$this->listVariables();
 				break;
 			default:
-			    $objPerm->checkAccess(50, 'static');
-			    $this->modifyLanguage();          
-			    $this->languageOverview();       	     		        
+			    Permission::checkAccess(50, 'static');
+			    $this->modifyLanguage();
+			    $this->languageOverview();
 		}
 		$objTemplate->setVariable(array(
 			'CONTENT_TITLE'			=> $this->pageTitle,
 			'CONTENT_STATUS_MESSAGE'	=> $this->statusMessage
 		));
-    } 
+    }
 
-	
-	
+
+
 	/**
 	* deletes the selected language
 	*
 	* @global    array      $_CORELANG
 	* @global    object     $objDatabase
 	* @global    string     DBPREFIX
-	* @return    string     error string or empty string                                                                             
+	* @return    string     error string or empty string
 	*/
 	function deleteLanguage()
 	{
-		global $_CORELANG, $objDatabase;	
+		global $_CORELANG, $objDatabase;
 		if (!empty($_REQUEST['id'])){
 	        $objResult = $objDatabase->Execute("SELECT lang FROM ".DBPREFIX."content_navigation WHERE lang=".intval($_REQUEST['id']));
-			
+
 	        if ($objResult !== false && $objResult->RecordCount() == 0) {
 				if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."languages WHERE id=".intval($_REQUEST['id'])) !== false) {
 					$objDatabase->Execute("DELETE FROM ".DBPREFIX."language_variable_content WHERE lang_id=".intval($_REQUEST['id']));
 					$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_gallery_language WHERE lang_id=".intval($_REQUEST['id']));
 					$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_gallery_language_pics WHERE lang_id=".intval($_REQUEST['id']));
-					$this->statusMessage = $_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE']; //not available	
-					return true;							
+					$this->statusMessage = $_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE']; //not available
+					return true;
 				}
 			} else {
 			    $this->statusMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
-			    return false;					
+			    return false;
 			}
 		}
 	}
-    
-    
-    
+
+
+
 	/**
 	* deletes the selected language variables
 	*
 	* @global    object     $objDatabase
 	* @global    string     DBPREFIX
-	* @return    boolean                                                                             
+	* @return    boolean
 	*/
 	function deleteVariable()
 	{
@@ -177,15 +176,15 @@ class LanguageManager
 			return true;
 		}
 		return false;
-	}    
+	}
 
 
-	
+
 	/**
 	* deletes the selected language variables
 	*
 	* @global    object     $objDatabase
-	* @return    boolean                                                                             
+	* @return    boolean
 	*/
 	function addLanguage()
 	{
@@ -195,19 +194,19 @@ class LanguageManager
             $shortName = mysql_escape_string($_POST['shortName']);
             $name = mysql_escape_string($_POST['name']);
             $charset = mysql_escape_string($_POST['charset']);
-            
+
 			$objResult = $objDatabase->Execute("SELECT lang FROM ".DBPREFIX."languages WHERE lang='".$shortName."'");
 			if ($objResult !== false) {
 				if ($objResult->RecordCount()>=1) {
-					$this->statusMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];	
-					return false;		
+					$this->statusMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+					return false;
 				} else {
-					$objDatabase->Execute("INSERT INTO ".DBPREFIX."languages 
-					                               SET lang='".$shortName."', 
+					$objDatabase->Execute("INSERT INTO ".DBPREFIX."languages
+					                               SET lang='".$shortName."',
 										               name='".$name."',
 										               charset='".$charset."',
 										               is_default='false'");
-					
+
 					$newLanguageId = $objDatabase->Insert_ID();
 					$objResult = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."languages WHERE is_default='true'", 1);
 					if ($objResult !== false) {
@@ -216,8 +215,8 @@ class LanguageManager
 							$objResult->MoveNext();
 						}
 					}
-					$objResult = $objDatabase->Execute("SELECT varid,content 
-					              FROM ".DBPREFIX."language_variable_content 
+					$objResult = $objDatabase->Execute("SELECT varid,content
+					              FROM ".DBPREFIX."language_variable_content
 					             WHERE lang_id=".$defaultLanguageId);
 					if ($objResult !== false) {
 						while (!$objResult->EOF) {
@@ -226,13 +225,13 @@ class LanguageManager
 						}
 					}
 					foreach ($arrContent as $key => $content) {
-						$objDatabase->Execute("INSERT INTO ".DBPREFIX."language_variable_content 
-						                    	SET varid=".$key.", 
+						$objDatabase->Execute("INSERT INTO ".DBPREFIX."language_variable_content
+						                    	SET varid=".$key.",
 						                        content='".addslashes($content)."',
-						                        lang_id=".$newLanguageId.", 
+						                        lang_id=".$newLanguageId.",
 						                        status=0");
 					}
-					
+
 					$objResult = $objDatabase->Execute('	SELECT	gallery_id,
 																	name,
 																	value
@@ -269,24 +268,24 @@ class LanguageManager
 												');
 							$objResult->MoveNext();
 						}
-					}					
-					
+					}
+
 					$this->statusMessage = $_CORELANG['TXT_NEW_LANGUAGE_ADDED_SUCCESSFUL'];
-					return true;												
+					return true;
 				}
 			}
         }
-	}	
+	}
 
-	
-	
-    
+
+
+
 	/**
 	* Gets the language add variable page
 	*
 	* @global    object     $objDatabase
 	* @global    string     DBPREFIX
-	* @return    string     parsed content                                                                             
+	* @return    string     parsed content
 	*/
 	function addUpdateVariable()
 	{
@@ -299,8 +298,8 @@ class LanguageManager
 
 			// Add new variable
 			if (empty($_POST['id'])){
-				$objResult = $objDatabase->Execute("SELECT name 
-				              FROM ".DBPREFIX."language_variable_names 
+				$objResult = $objDatabase->Execute("SELECT name
+				              FROM ".DBPREFIX."language_variable_names
 				             WHERE name = '".$name."'
 				               AND module_id =".$moduleId);
 				if ($objResult !== false) {
@@ -308,20 +307,20 @@ class LanguageManager
 						$this->statusMessage= $_CORELANG['TXT_LANGUAGE_VARIABLE_ALREADY_EXIST'];
 						return false;
 					} else {
-						$objDatabase->Execute("INSERT INTO ".DBPREFIX."language_variable_names 
-						                   SET name='".$name."', 
-						                       module_id='".$moduleId."', 
+						$objDatabase->Execute("INSERT INTO ".DBPREFIX."language_variable_names
+						                   SET name='".$name."',
+						                       module_id='".$moduleId."',
 						                       backend='".$adminzone."',
 						                       frontend='".$website."'");
-						
+
 		                $varId = $objDatabase->Insert_ID();
-	
+
 						foreach ($_POST['content'] as $langId => $content) {
 							$status = intval($_POST['status'][$langId]);
-							$objDatabase->Execute("INSERT INTO ".DBPREFIX."language_variable_content 
-							                    SET varid=".$varId.", 
+							$objDatabase->Execute("INSERT INTO ".DBPREFIX."language_variable_content
+							                    SET varid=".$varId.",
 							                        content='".addslashes($content)."',
-							                        status=".$status.", 
+							                        status=".$status.",
 							                        lang_id=".$langId);
 						}
 						$this->statusMessage= $_CORELANG['TXT_LANGUAGE_VARIABLE_ADDED_SUCCESSFUL'];
@@ -337,22 +336,22 @@ class LanguageManager
 			{
 				// Edit not add
 				$id = intval($_POST['id']);
-				
-				$objDatabase->Execute("UPDATE ".DBPREFIX."language_variable_names 
+
+				$objDatabase->Execute("UPDATE ".DBPREFIX."language_variable_names
 				               SET name='".$name."',
 				                   module_id='".$moduleId."',
 				                   backend='".$adminzone."',
-				                   frontend='".$website."' 
+				                   frontend='".$website."'
 				             WHERE id=".$id);
-				
+
 				foreach ($_POST['content'] as $langId => $content) {
 					$content=addslashes($content);
 					$status = intval($_POST['status'][$langId]);
-					
-				    $objDatabase->Execute("UPDATE ".DBPREFIX."language_variable_content 
-				                   SET content='".$content."', 
-				                       status='".$status."' 
-				                 WHERE varid=".$id." 
+
+				    $objDatabase->Execute("UPDATE ".DBPREFIX."language_variable_content
+				                   SET content='".$content."',
+				                       status='".$status."'
+				                 WHERE varid=".$id."
 				                   AND lang_id=".$langId);
 				}
 				$this->statusMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
@@ -364,23 +363,23 @@ class LanguageManager
 		}
 		return false;
 	}
-	    
-    
-    
-    
-    
-	
+
+
+
+
+
+
 	/**
 	* Gets the language add/mod variable page
 	*
 	* @global    object     $objDatabase
 	* @global    string     DBPREFIX
-	* @return    string     parsed content                                                                             
+	* @return    string     parsed content
 	*/
 	function modifyVariables()
 	{
 		global $objDatabase, $_CORELANG, $objTemplate;
-		
+
 		$variableName = "";
 		$variableId = "";
 		$variableModule = "";
@@ -397,7 +396,7 @@ class LanguageManager
 	        'TXT_WEB_PAGES'              => $_CORELANG['TXT_WEB_PAGES'],
 	        'TXT_ADMINISTRATION_PAGES'   => $_CORELANG['TXT_ADMINISTRATION_PAGES'],
 	        'TXT_APPLICATION_RANGE'      => $_CORELANG['TXT_APPLICATION_RANGE'],
-	        'TXT_LANGUAGE_NAME_REQUIRED' => $_CORELANG['TXT_LANGUAGE_NAME_REQUIRED'],	
+	        'TXT_LANGUAGE_NAME_REQUIRED' => $_CORELANG['TXT_LANGUAGE_NAME_REQUIRED'],
 	        'TXT_APPLICATION_RANGE_REQUIRED'  => $_CORELANG['TXT_APPLICATION_RANGE_REQUIRED'],
 	        'TXT_WRITE_VARIABLES_TO_FILES' => $_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']
 	    ));
@@ -412,7 +411,7 @@ class LanguageManager
 		if(isset($_GET['id']))
 		//---------------------------
 		// mod status
-		//---------------------------	
+		//---------------------------
 		{
 		    $objTemplate->setVariable("TXT_LANGUAGE_SETTING", $_CORELANG['TXT_MOD_LANGUAGE_VARIABLES']);
 		    $variableId = intval($_GET['id']);
@@ -420,9 +419,9 @@ class LanguageManager
 			                   name,
 			                   module_id,
 			                   backend,
-			                   frontend 
-			              FROM ".DBPREFIX."language_variable_names 
-			              WHERE id = ".$variableId, 1);	
+			                   frontend
+			              FROM ".DBPREFIX."language_variable_names
+			              WHERE id = ".$variableId, 1);
 			if ($objResult !== false) {
 				while (!$objResult->EOF) {
 					$variableName=$objResult->fields['name'];
@@ -432,10 +431,10 @@ class LanguageManager
 					$objResult->MoveNext();
 				}
 			}
-			$objResult = $objDatabase->Execute("SELECT content, 
-			                   lang_id, 
-			                   status 
-			              FROM ".DBPREFIX."language_variable_content 
+			$objResult = $objDatabase->Execute("SELECT content,
+			                   lang_id,
+			                   status
+			              FROM ".DBPREFIX."language_variable_content
 			             WHERE varid = ".$variableId."
 			          ORDER BY varid");
 			if ($objResult !== false) {
@@ -455,7 +454,7 @@ class LanguageManager
 				$content=htmlspecialchars(stripslashes($variableContent[$k]));
 				$strLangInputFields .="<input type='text' name='content[$k]' size=80 value=\"".$content."\" />&nbsp;\n
 									   <input type='checkbox' name='status[$k]' value='1' ".$checked." />&nbsp;$v<br />\n";
-			}			
+			}
 		}
 		else
 		//---------------------------
@@ -463,13 +462,13 @@ class LanguageManager
 		//---------------------------
 		{
 			$objTemplate->setVariable("TXT_LANGUAGE_SETTING", $_CORELANG['TXT_ADD_LANGUAGE_VARIABLES']);
-			foreach ($arrayLang as $k => $v) 
+			foreach ($arrayLang as $k => $v)
 			{
 				$strLangInputFields .="<input type='text' name='content[$k]' size=80 value='' />&nbsp;\n
 									   <input type='checkbox' name='status[$k]' value='1' checked />&nbsp;$v<br />\n";
-			}	
+			}
 		}
-		
+
 		if($variableAdminzone==1){
 			$variableAdminzone="checked";
 		}else {
@@ -490,23 +489,23 @@ class LanguageManager
 			'LANGUAGE_VARIABLE_ID'		=> $variableId
 		));
 	}
-    
 
-	
+
+
 	/**
 	* Get the language variable default page
 	*
 	* @global    object     $objDatabase
 	* @global    string     DBPREFIX
-	* @return    string     parsed content                                                                             
+	* @return    string     parsed content
 	*/
 	function listVariables()
 	{
 		global $_CORELANG, $objDatabase, $objTemplate;
-		
+
 		//init variables
-		$q_term = ""; 
-		$q_lang = ""; 
+		$q_term = "";
+		$q_lang = "";
 		$q_module = "";
 		$q_status = "";
 		$q_zone = "";
@@ -514,24 +513,24 @@ class LanguageManager
 		$zoneMenu ="";
 	    $selected1="";
 	    $selected2="";
-	    $selected3="";	
-	    
-			    
+	    $selected3="";
+
+
 	    $objTemplate->addBlockfile('ADMIN_CONTENT', 'language_list', 'language_list.html');
 	    $this->pageTitle = $_CORELANG['TXT_VARIABLE_LIST'];
-	    	    
+
 		if(!isset($_SESSION['lang']['term'])) $_SESSION['lang']['term']="";
 		if(!isset($_SESSION['lang']['langId'])) $_SESSION['lang']['langId']="";
 		if(!isset($_SESSION['lang']['status'])) $_SESSION['lang']['status']="";
-		if(!isset($_SESSION['lang']['zone'])) $_SESSION['lang']['zone']="both";	 
+		if(!isset($_SESSION['lang']['zone'])) $_SESSION['lang']['zone']="both";
 		if(!isset($_SESSION['lang']['moduleId'])) $_SESSION['lang']['moduleId'] = "";
-		
+
 		if(isset($_POST['term'])){
-			$_SESSION['lang']['term']= mysql_escape_string($_POST['term']);			
+			$_SESSION['lang']['term']= mysql_escape_string($_POST['term']);
 		}
 		if(isset($_POST['lang'])){
 			$_SESSION['lang']['langId']=intval($_POST['lang']);
-		}		
+		}
 		if(isset($_POST['status'])){
 			$_SESSION['lang']['status']=intval($_POST['status']);
 		}
@@ -541,26 +540,26 @@ class LanguageManager
 		if (isset($_POST['module'])) {
 			$_SESSION['lang']['moduleId'] = intval($_POST['module']);
 		}
-		
+
 		$term = $_SESSION['lang']['term'];
 		$lang = $_SESSION['lang']['langId'];
 		$status = $_SESSION['lang']['status'];
 		$zone = $_SESSION['lang']['zone'];
 		$module = $_SESSION['lang']['moduleId'];
 
-	    if($zone=="frontend"){	
-			$selected1="selected";	
+	    if($zone=="frontend"){
+			$selected1="selected";
 		} elseif($zone == "backend") {
-			$selected2="selected";				
+			$selected2="selected";
 		}elseif($zone == "both" OR $zone == "") {
 			$zone = "both";
-			$selected3="selected";				
+			$selected3="selected";
 		}
-		$zoneMenu .="<option value='both' ".$selected3.">".$_CORELANG['TXT_SECTION']."</option>\n";		
-		$zoneMenu .="<option value='frontend' ".$selected1.">".$_CORELANG['TXT_WEB_PAGES']."</option>\n";		
-		$zoneMenu .="<option value='backend' ".$selected2.">".$_CORELANG['TXT_ADMINISTRATION_PAGES']."</option>\n";		
+		$zoneMenu .="<option value='both' ".$selected3.">".$_CORELANG['TXT_SECTION']."</option>\n";
+		$zoneMenu .="<option value='frontend' ".$selected1.">".$_CORELANG['TXT_WEB_PAGES']."</option>\n";
+		$zoneMenu .="<option value='backend' ".$selected2.">".$_CORELANG['TXT_ADMINISTRATION_PAGES']."</option>\n";
 		$objTemplate->setVariable("LANGUAGE_ZONE_MENU", $zoneMenu);
-	
+
 	    //Begin language varibales
 	    $objTemplate->setVariable(array(
 	        'TXT_CONFIRM_DELETE_DATA'                    => $_CORELANG['TXT_CONFIRM_DELETE_DATA'],
@@ -578,7 +577,7 @@ class LanguageManager
 	        'TXT_DISPLAY'                                => $_CORELANG['TXT_DISPLAY'],
 	        'TXT_ADMIN'                                  => $_CORELANG['TXT_ADMINISTRATION_PAGES'],
 	        'TXT_PUBLIC'                                 => $_CORELANG['TXT_WEB_PAGES'],
-	        'TXT_EXPORT_VARIABLES_TO_FILES'				 => $_CORELANG['TXT_EXPORT_VARIABLES_TO_FILES'] //not available 
+	        'TXT_EXPORT_VARIABLES_TO_FILES'				 => $_CORELANG['TXT_EXPORT_VARIABLES_TO_FILES'] //not available
 	    ));
 	    //End language variables
 		if(!empty($term)) {
@@ -591,43 +590,43 @@ class LanguageManager
 					}
 		        }
 			} else {
-		        $q_lang = "AND con.lang_id=".intval($lang)." "; 		
+		        $q_lang = "AND con.lang_id=".intval($lang)." ";
 			}
-			
+
 			if ($zone <> "both") {
 			    $q_zone = "AND nam.$zone=1 ";
 			}
-			
+
 			if ($module != 0) {
 				$q_module = "AND nam.module_id = ".$module." ";
 			}
-			
+
 			if($status=="0" || $status=="1") {
 			    $q_status = "AND con.status=".intval($status)." ";
 			}
 
-			$q = "SELECT con.content AS content, 
+			$q = "SELECT con.content AS content,
 			             con.status AS status,
-			             con.lang_id AS lang, 
-			             nam.name AS name, 
-			             nam.id AS varid, 
+			             con.lang_id AS lang,
+			             nam.name AS name,
+			             nam.id AS varid,
 			             modu.name AS module,
 			             nam.backend AS backend,
-			             nam.frontend AS frontend 
-			      FROM ".DBPREFIX."language_variable_content AS con, 
+			             nam.frontend AS frontend
+			      FROM ".DBPREFIX."language_variable_content AS con,
 					   ".DBPREFIX."language_variable_names AS nam,
 					   ".DBPREFIX."modules AS modu
 				  WHERE modu.id=nam.module_id
 			        AND con.varid=nam.id
 			        AND (nam.name LIKE '%".$term."%' OR con.content LIKE '%".$term."%') ".$q_zone.$q_lang.$q_module.$q_status."
 				  ORDER BY nam.id";
-			
+
 			$objResult = $objDatabase->Execute($q);
 			if ($objResult !== false) {
 				$numRows = $objResult->RecordCount();
 				while (!$objResult->EOF) {
 					if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
-					
+
 					if (intval($objResult->fields['backend'])==1) {
 						$objTemplate->setVariable("LANGUAGE_ADMIN","<img alt='' src='images/icons/check.gif' />");
 					}
@@ -655,7 +654,7 @@ class LanguageManager
 				}
 			}
 		} else {
-		    $objTemplate->hideBlock('languageSearchTable');	
+		    $objTemplate->hideBlock('languageSearchTable');
 		}
 		$objTemplate->setVariable(array(
 			'LANGUAGE_STATS'		=> $numRows,
@@ -664,30 +663,30 @@ class LanguageManager
 			'LANGUAGE_SEARCHTERM'	=> $term
 		));
 	}
-	
-	
-	
-	
-    
-    
+
+
+
+
+
+
 
 	/**
 	* get the language list page
 	*
 	* @global    object     $objDatabase
 	* @global    string     DBPREFIX
-	* @return    string     parsed content                                                                             
+	* @return    string     parsed content
 	*/
 	function languageOverview()
 	{
 		global $_CORELANG, $objDatabase, $objTemplate;
 	    // init vars
 	    $i=0;
-	    
+
 		$objTemplate->addBlockfile('ADMIN_CONTENT', 'langauge_langlist', 'language_langlist.html');
-		$this->pageTitle = $_CORELANG['TXT_LANGUAGE_LIST']; 	    
-	    
-	    //begin language variables			   
+		$this->pageTitle = $_CORELANG['TXT_LANGUAGE_LIST'];
+
+	    //begin language variables
 	    $objTemplate->setVariable(array(
 		    'TXT_ADD_NEW_LANGUAGE'	         => $_CORELANG['TXT_ADD_NEW_LANGUAGE'],
 		    'TXT_NAME'	                     => $_CORELANG['TXT_NAME'],
@@ -695,14 +694,14 @@ class LanguageManager
 		    'TXT_CHARSET'                    => $_CORELANG['TXT_CHARSET'],
 		    'TXT_ADD'  	                     => $_CORELANG['TXT_ADD'],
 		    'TXT_LANGUAGE_LIST'              => $_CORELANG['TXT_LANGUAGE_LIST'],
-		    'TXT_ID'                         => $_CORELANG['TXT_ID'],	           
+		    'TXT_ID'                         => $_CORELANG['TXT_ID'],
 		    'TXT_SHORT_FORM'                 => $_CORELANG['TXT_SHORT_FORM'],
-		    'TXT_STANDARD_LANGUAGE'          => $_CORELANG['TXT_STANDARD_LANGUAGE'],	            
-		    'TXT_ACTION'                     => $_CORELANG['TXT_ACTION'], 
-		    'TXT_ACCEPT_CHANGES'             => $_CORELANG['TXT_ACCEPT_CHANGES'], 
-		    'TXT_REMARK'                     => $_CORELANG['TXT_REMARK'],     
-		    'TXT_ADD_DELETE_LANGUAGE_REMARK' => $_CORELANG['TXT_ADD_DELETE_LANGUAGE_REMARK'], 
-		    'TXT_CONFIRM_DELETE_DATA'        => $_CORELANG['TXT_CONFIRM_DELETE_DATA'],    
+		    'TXT_STANDARD_LANGUAGE'          => $_CORELANG['TXT_STANDARD_LANGUAGE'],
+		    'TXT_ACTION'                     => $_CORELANG['TXT_ACTION'],
+		    'TXT_ACCEPT_CHANGES'             => $_CORELANG['TXT_ACCEPT_CHANGES'],
+		    'TXT_REMARK'                     => $_CORELANG['TXT_REMARK'],
+		    'TXT_ADD_DELETE_LANGUAGE_REMARK' => $_CORELANG['TXT_ADD_DELETE_LANGUAGE_REMARK'],
+		    'TXT_CONFIRM_DELETE_DATA'        => $_CORELANG['TXT_CONFIRM_DELETE_DATA'],
 		    'TXT_ACTION_IS_IRREVERSIBLE'     => $_CORELANG['TXT_ACTION_IS_IRREVERSIBLE'],
 		    'TXT_VALUE'                      => $_CORELANG['TXT_VALUE'],
 		    'TXT_MODULE'                     => $_CORELANG['TXT_MODULE'],
@@ -710,43 +709,43 @@ class LanguageManager
 		    'TXT_STATUS'                     => $_CORELANG['TXT_STATUS'],
 		    'TXT_VIEW'                       => $_CORELANG['TXT_VIEW'],
 		    'TXT_CONTROLLED'                 => $_CORELANG['TXT_CONTROLLED'],
-		    'TXT_OPEN_ISSUE'                 => $_CORELANG['TXT_OPEN_ISSUE'],  
-		    'TXT_SHORT_NAME'                 => $_CORELANG['TXT_SHORT_NAME'],  
+		    'TXT_OPEN_ISSUE'                 => $_CORELANG['TXT_OPEN_ISSUE'],
+		    'TXT_SHORT_NAME'                 => $_CORELANG['TXT_SHORT_NAME'],
 		    'TXT_LANGUAGE_DEPENDANT_SYSTEM_VARIABLES'=> $_CORELANG['TXT_LANGUAGE_DEPENDANT_SYSTEM_VARIABLES'],
 		    'TXT_ADMINISTRATION_PAGES'       => $_CORELANG['TXT_ADMINISTRATION_PAGES'],
 		    'TXT_WEB_PAGES'                  => $_CORELANG['TXT_WEB_PAGES'],
 		    'TXT_SECTION'                    => $_CORELANG['TXT_SECTION'],
 		    'TXT_DEFAULT_LANGUAGE'           => $_CORELANG['TXT_STANDARD_LANGUAGE']
 		));
-	    //end language variables	    
-		
+	    //end language variables
+
 	    if($this->hideVariables == true){
 	    	$objTemplate->setGlobalVariable(array('LANGUAGE_ADMIN_STYLE' => 'display: none'));
 	    } else {
 	    	$objTemplate->setGlobalVariable(array('LANGUAGE_ADMIN_STYLE' => 'display: block'));
 	    }
-	    
+
 		$objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."languages ORDER BY id");
 		if ($objResult !== false) {
 			while (!$objResult->EOF) {
-				$checked = "";		
+				$checked = "";
 				if ($objResult->fields['is_default']=="true") {
 				  $checked = "checked";
 				}
 				$status ="<input type='radio' name='langDefaultStatus' value='".$objResult->fields['id']."' $checked />";
-		
+
 				$checked = "";
 				if($objResult->fields['frontend']==1) {
 				  $checked = "checked";
 				}
 				$activeStatus ="<input type='checkbox' name='langActiveStatus[".$objResult->fields['id']."]' value='1' $checked />";
-				$checked = "";				
+				$checked = "";
 				if($objResult->fields['backend']==1) {
 				  $checked = "checked";
 				}
 				$adminStatus ="<input type='checkbox' name='langAdminStatus[".$objResult->fields['id']."]' value='1' $checked />";
-				
-				($i % 2) ? $class  = 'row1' : $class  = 'row2';	
+
+				($i % 2) ? $class  = 'row1' : $class  = 'row2';
 				$objTemplate->setVariable(array(
 					'LANGUAGE_ROWCLASS'		=> $class,
 					'LANGUAGE_LANG_ID'		=> $objResult->fields['id'],
@@ -762,17 +761,17 @@ class LanguageManager
 				$objResult->MoveNext();
 			}
 		}
-	}    
+	}
 
 
-	
+
 	/**
 	* add and modify language values
 	*
 	* @global    object     $objDatabase
 	* @global    string     DBPREFIX
-	* @return    string     parsed content                                                                             
-	*/ 
+	* @return    string     parsed content
+	*/
 	function modifyLanguage()
 	{
 		global $_CORELANG, $objDatabase;
@@ -790,7 +789,7 @@ class LanguageManager
 						$this->statusMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
 						return false;
 					} else {
-						$objDatabase->Execute("INSERT INTO ".DBPREFIX."languages SET lang='".$newLangShortname."', 
+						$objDatabase->Execute("INSERT INTO ".DBPREFIX."languages SET lang='".$newLangShortname."',
 																		   name='".$newLangName."',
 																		   charset='".$newLangCharset."',
 																		   is_default='false'");
@@ -800,14 +799,14 @@ class LanguageManager
 							$objResult = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."languages WHERE is_default='true'", 1);
 							if ($objResult !== false && !$objResult->EOF) {
 								$defaultLanguage=$objResult->fields['id'];
-							
+
 								$objResult = $objDatabase->Execute("SELECT varid,content,module FROM ".DBPREFIX."language_variable_content WHERE 1 AND lang=".$defaultLanguage);
 								if ($objResult !== false) {
 									while (!$objResult->EOF) {
 										$arrayLanguageContent[$objResult->fields['varid']]=stripslashes($objResult->fields['content']);
 										$arrayLanguageModule[$objResult->fields['varid']]=$objResult->fields['module'];
 										$objResult->MoveNext();
-									}			
+									}
 									foreach ($arrayLanguageContent as $varid => $content) {
 										$LanguageModule = $arrayLanguageModule[$varid];
 										$objDatabase->Execute("INSERT INTO ".DBPREFIX."language_variable_content SET varid=".$varid.", content='".addslashes($content)."', module=".$LanguageModule.", lang=".$newLanguageId.", status=0");
@@ -818,8 +817,8 @@ class LanguageManager
 							}
 					    }else{
 							$this->statusMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
-							return false;			
-						}												
+							return false;
+						}
 					}
 				}
 	        }
@@ -832,7 +831,7 @@ class LanguageManager
 				$active = 0;
 				if (isset($_POST['langActiveStatus'][$id]) && $_POST['langActiveStatus'][$id]==1 ){
 					$active = 1;
-				}			
+				}
 				$status = "false";
 				if($_POST['langDefaultStatus']==$id){
 				    $status = "true";
@@ -840,18 +839,18 @@ class LanguageManager
 				$adminstatus = 0;
 				if(isset($_POST['langAdminStatus'][$id]) && $_POST['langAdminStatus'][$id]==1){
 					$adminstatus = 1;
-				}			
+				}
 				$objDatabase->Execute("UPDATE ".DBPREFIX."languages SET name='".$name."', frontend=".$active." , is_default='".$status."',backend='".$adminstatus."' WHERE id=".$id);
 			}
 			$this->statusMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
-			return true;   
+			return true;
 	   }
 		return false;
 	}
-	
 
-	
-	
+
+
+
 	function getSearchOptionMenu($dbTableName, $selectedOption="")
 	{
 		global $objDatabase;
@@ -873,7 +872,7 @@ class LanguageManager
 								case 'media1':
 									$name = 'media';
 									break;
-									
+
 								case 'media2':
 								case 'media3':
 									$name = '';
@@ -890,17 +889,17 @@ class LanguageManager
 		}
 		return $strMenu;
 	}
-	
-	
-	
+
+
+
 	/**
     * checks if the permissions on the language directory are correct
-    *   
-	* @return   boolean    
+    *
+	* @return   boolean
     */
 	function checkPermissions()
 	{
-		if(is_writeable($this->filePath) AND 
+		if(is_writeable($this->filePath) AND
 		   is_dir($this->filePath))
 		{
 			return true;
@@ -908,7 +907,7 @@ class LanguageManager
 			return false;
 		}
 	}
-	
+
 	/**
     * createXML: parse out the XML
     *
@@ -918,18 +917,18 @@ class LanguageManager
     function createFiles()
     {
     	global $objDatabase, $_CORELANG;
-    	
+
     	require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-    	
+
     	$arrModules = array();
     	$arrLanguages = array();
     	$arrModulesPath = array();
     	$arrModuleVariables = array();
     	$arrErrorFiles = array();
     	$objFile = &new File();
-    	
+
     	$strHeader = "/**\n* Contrexx CMS\n* generated date ".date('r',time())."\n**/\n\n";
-    	
+
     	// generate the arrays $arrModulesPath and $arrModules
 		$query = "SELECT id, name, is_core FROM ".DBPREFIX."modules";
 		$objResult = $objDatabase->Execute($query);
@@ -966,7 +965,7 @@ class LanguageManager
     			$objResult->MoveNext();
 			}
 		}
-		
+
     	// get language array
     	$query = "SELECT id, lang FROM ".DBPREFIX."languages";
     	$objResult = $objDatabase->Execute($query);
@@ -979,13 +978,13 @@ class LanguageManager
 				$objResult->MoveNext();
     		}
     	}
-    	
+
     	// get language variables
     	$query = "SELECT vn.name, vn.module_id, vn.backend, vn.frontend, vc.content, vc.lang_id
     				FROM ".DBPREFIX."language_variable_names AS vn,
     					 ".DBPREFIX."language_variable_content AS vc
 				   WHERE vn.id=vc.varid";
-    	
+
     	// generate array $arrModuleVariables including the variables
     	$objResult = $objDatabase->Execute($query);
     	if ($objResult !== false) {
@@ -1023,7 +1022,7 @@ class LanguageManager
     		}
     	}
     	unset($arrModuleVariables);
-    	
+
     	// write variables to files
     	foreach ($arrOutput as $file => $strOutput){
     		//$objFile->setChmod($strOutput['path'], $strOutput['webpath'], $strOutput['filename']);
@@ -1036,7 +1035,7 @@ class LanguageManager
 				array_push($arrErrorFiles,$file);
 			}
     	}
-    	
+
     	unset($arrOutput);
     	if(count($arrErrorFiles)>0){
     		foreach ($arrErrorFiles as $file){

@@ -78,62 +78,129 @@ class Login
     }
 
     /**
-    * Calls the method lostPassword of the class Auth
+    * Calls the method restorePassword of the class FWUser
     * and displays the lostpw page of the login module
     *
-    * @access private
-    * @global object $objAuth
-    * @see Auth::lostPassword()
+    * @global array $_CORELANG
+    * @see FWUser::restorePassword()
     * @return string HTML_Template_Sigma::get()
     */
     function _lostPassword()
     {
-    	global $objAuth;
+    	global $_CORELANG;
 
-    	$objAuth->lostPassword($this->_objTpl);
-    	return $this->_objTpl->get();
+        // set language variables
+        $this->_objTpl->setVariable(array(
+            'TXT_LOST_PASSWORD_TEXT'    => $_CORELANG['TXT_LOST_PASSWORD_TEXT'],
+            'TXT_EMAIL'					=> $_CORELANG['TXT_EMAIL'],
+            'TXT_RESET_PASSWORD'        => $_CORELANG['TXT_RESET_PASSWORD']
+        ));
+
+        if (isset($_POST['email'])) {
+        	$objFWUser = FWUser::getFWUserObject();
+            $email = contrexx_stripslashes($_POST['email']);
+
+            if (($objFWUser->restorePassword($email))) {
+				$statusMessage = str_replace("%EMAIL%", $email, $_CORELANG['TXT_LOST_PASSWORD_MAIL_SENT']);
+				if ($this->_objTpl->blockExists('login_lost_password')) {
+					$this->_objTpl->hideBlock('login_lost_password');
+				}
+            } else {
+            	$statusMessage = $objFWUser->getErrorMsg();
+            }
+
+            $this->_objTpl->setVariable(array(
+                'LOGIN_STATUS_MESSAGE'        => $statusMessage
+            ));
+        }
+
+        return $this->_objTpl->get();
     }
 
     /**
-    * Calls the method resetPassword of the class Auth
+    * Calls the method resetPassword of the class FWUser
     * and displays the resetpw page of the login module
     *
     * @access private
-    * @global object $objAuth
-    * @see Auth::resetPassword()
+    * @see FWUser::resetPassword()
     * @return string HTML_Template_Sigma::get()
     */
     function _resetPassword()
     {
-    	global $objAuth;
+    	global $_CORELANG;
 
-    	$objAuth->resetPassword($this->_objTpl);
-    	return $this->_objTpl->get();
+    	$objFWUser = FWUser::getFWUserObject();
+    	$username = isset($_POST['username']) ? contrexx_stripslashes($_POST['username']) : (isset($_GET['username']) ? contrexx_stripslashes($_GET['username']) : '');
+        $restoreKey = isset($_POST['restore_key']) ? contrexx_stripslashes($_POST['restore_key']) : (isset($_GET['restoreKey']) ? contrexx_stripslashes($_GET['restoreKey']) : '');
+        $password = isset($_POST['password']) ? trim(contrexx_stripslashes($_POST['password'])) : '';
+        $confirmedPassword = isset($_POST['password2']) ? trim(contrexx_stripslashes($_POST['password2'])) : '';
+        $statusMessage = '';
+
+		if (isset($_POST['reset_password'])) {
+			if ($objFWUser->resetPassword($username, $restoreKey, $password, $confirmedPassword, true)) {
+				$statusMessage = $_CORELANG['TXT_PASSWORD_CHANGED_SUCCESSFULLY'];
+				if ($this->_objTpl->blockExists('login_reset_password')) {
+	                $this->_objTpl->hideBlock('login_reset_password');
+	            }
+			} else {
+				$statusMessage = $objFWUser->getErrorMsg();
+
+				$this->_objTpl->setVariable(array(
+					'TXT_USERNAME'						=> $_CORELANG['TXT_USERNAME'],
+					'TXT_PASSWORD'						=> $_CORELANG['TXT_PASSWORD'],
+					'TXT_VERIFY_PASSWORD'				=> $_CORELANG['TXT_VERIFY_PASSWORD'],
+					'TXT_PASSWORD_MINIMAL_CHARACTERS'	=> $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
+					'TXT_SET_PASSWORD_TEXT'				=> $_CORELANG['TXT_SET_PASSWORD_TEXT'],
+					'TXT_SET_NEW_PASSWORD'				=> $_CORELANG['TXT_SET_NEW_PASSWORD'],
+				));
+
+				$this->_objTpl->parse('login_reset_password');
+			}
+		} elseif (!$objFWUser->resetPassword($username, $restoreKey, $password, $confirmedPassword)) {
+			$statusMessage = $objFWUser->getErrorMsg();
+			if ($this->_objTpl->blockExists('login_reset_password')) {
+                $this->_objTpl->hideBlock('login_reset_password');
+            }
+		} else {
+			$this->_objTpl->setVariable(array(
+				'TXT_USERNAME'						=> $_CORELANG['TXT_USERNAME'],
+				'TXT_PASSWORD'						=> $_CORELANG['TXT_PASSWORD'],
+				'TXT_VERIFY_PASSWORD'				=> $_CORELANG['TXT_VERIFY_PASSWORD'],
+				'TXT_PASSWORD_MINIMAL_CHARACTERS'	=> $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
+				'TXT_SET_PASSWORD_TEXT'				=> $_CORELANG['TXT_SET_PASSWORD_TEXT'],
+				'TXT_SET_NEW_PASSWORD'				=> $_CORELANG['TXT_SET_NEW_PASSWORD'],
+			));
+
+			$this->_objTpl->parse('login_reset_password');
+		}
+
+		$this->_objTpl->setVariable(array(
+			'LOGIN_STATUS_MESSAGE'	=> $statusMessage,
+			'LOGIN_USERNAME'		=> htmlentities($username, ENT_QUOTES, CONTREXX_CHARSET),
+			'LOGIN_RESTORE_KEY'		=> htmlentities($restoreKey, ENT_QUOTES, CONTREXX_CHARSET)
+		));
+
+		return $this->_objTpl->get();
     }
 
     /**
     * Displays the noaccess page of the login module
     *
-    * @access private
-    * @global object $objAuth
-    * @global string $loginStatus
     * @global array $_CORELANG
-    * @see Auth::status()
     * @return string HTML_Template_Sigma::get()
     */
     function _noaccess()
     {
-    	global $objAuth, $loginStatus, $_CORELANG;
+    	global $_CORELANG;
 
     	if (isset($_REQUEST['redirect'])) {
 			$redirect = contrexx_strip_tags($_REQUEST['redirect']);
 		} else {
-			$redirect = "";
+			$redirect = '';
 		}
 
     	$this->_objTpl->setVariable('TXT_NOT_ALLOWED_TO_ACCESS', $_CORELANG['TXT_NOT_ALLOWED_TO_ACCESS']);
     	$this->_objTpl->setVariable('LOGIN_REDIRECT', $redirect);
-    	$loginStatus = $objAuth->status();
     	return $this->_objTpl->get();
     }
 
@@ -144,18 +211,15 @@ class Login
     * redirected to the requested page, otherwise the login page will be displayed
     *
     * @access private
-    * @global object $sessionObj
-    * @global object $objAuth
-    * @global object $objPerm
     * @global array $_CORELANG
     * @see cmsSession::cmsSessionStatusUpdate(), contrexx_strip_tags, HTML_Template_Sigma::get()
     * @return string HTML_Template_Sigma::get()
     */
     function _login()
     {
-    	global $_CORELANG, $sessionObj, $objAuth, $objPerm;
+    	global $_CORELANG;
 
-		$sessionObj->cmsSessionStatusUpdate($status="frontend");
+		$objFWUser = FWUser::getFWUserObject();
 
 		if (isset($_REQUEST['redirect'])) {
 			$redirect = contrexx_strip_tags($_REQUEST['redirect']);
@@ -163,7 +227,7 @@ class Login
 			$redirect = "";
 		}
 
-		if ($objAuth->checkAuth() && (!isset($_REQUEST['relogin']) || $_REQUEST['relogin'] != 'true')) {
+		if ((!isset($_REQUEST['relogin']) || $_REQUEST['relogin'] != 'true') && $objFWUser->objUser->login() || $objFWUser->checkAuth()) {
 			header('Location: '.(empty($redirect) ? CONTREXX_SCRIPT_PATH : base64_decode($redirect)));
 			exit;
 		} else {

@@ -52,7 +52,9 @@ class BlogAdmin extends BlogLibrary {
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
  		$this->_intLanguageId = $objInit->userFrontendLangId;
- 		$this->_intCurrentUserId = intval($_SESSION['auth']['userid']);
+
+ 		$objFWUser = FWUser::getFWUserObject();
+ 		$this->_intCurrentUserId = $objFWUser->objUser->getId();
 
     	$objTemplate->setVariable('CONTENT_NAVIGATION','	<a href="?cmd=blog">'.$_CORELANG['TXT_BLOG_ENTRY_MANAGE_TITLE'].'</a>
     														<a href="?cmd=blog&amp;act=addEntry">'.$_CORELANG['TXT_BLOG_ENTRY_ADD_TITLE'].'</a>
@@ -67,11 +69,10 @@ class BlogAdmin extends BlogLibrary {
     /**
 	* Perform the right operation depending on the $_GET-params
     *
-    * @global 	object		$objPerm
     * @global 	object		$objTemplate
     */
     function getPage() {
-    	global $objPerm, $objTemplate;
+    	global $objTemplate;
 
     	if(!isset($_GET['act'])) {
     	    $_GET['act']='';
@@ -79,100 +80,100 @@ class BlogAdmin extends BlogLibrary {
 
     	switch($_GET['act']){
     		case 'addEntry':
-    			$objPerm->checkAccess(121, 'static');
+    			Permission::checkAccess(121, 'static');
     			$this->addEntry();
     		break;
     		case 'insertEntry':
-    			$objPerm->checkAccess(121, 'static');
+    			Permission::checkAccess(121, 'static');
     			$this->insertEntry();
     			$this->showEntries();
     			break;
     		case 'deleteEntry':
-    			$objPerm->checkAccess(120, 'static');
+    			Permission::checkAccess(120, 'static');
     			$this->deleteEntry($_GET['id']);
     			$this->showEntries();
     			break;
     		case 'editEntry':
-    			$objPerm->checkAccess(120, 'static');
+    			Permission::checkAccess(120, 'static');
     			$this->editEntry($_GET['id']);
     			break;
     		case 'updateEntry':
-    			$objPerm->checkAccess(120, 'static');
+    			Permission::checkAccess(120, 'static');
     			$this->updateEntry();
     			$this->showEntries();
     			break;
     		case 'multiactionEntry':
-    			$objPerm->checkAccess(120, 'static');
+    			Permission::checkAccess(120, 'static');
     			$this->doEntryMultiAction($_POST['frmShowEntries_MultiAction']);
     			$this->showEntries();
     			break;
     		case 'showVoting':
-    			$objPerm->checkAccess(120, 'static');
+    			Permission::checkAccess(120, 'static');
     			$this->showVoting($_GET['id'],'stats');
     			break;
     		case 'deleteVoting':
-    			$objPerm->checkAccess(120, 'static');
+    			Permission::checkAccess(120, 'static');
     			$intEntryId = $this->deleteVoting($_GET['id']);
     			$this->showVoting($intEntryId,'details');
     			break;
     		case 'multiactionVoting':
-    			$objPerm->checkAccess(120, 'static');
+    			Permission::checkAccess(120, 'static');
     			$intEntryId = $this->doVotingMultiAction($_POST['frmShowDetails_MultiAction']);
     			$this->showVoting($intEntryId,'details');
     			break;
     		case 'showComments':
-    			$objPerm->checkAccess(120, 'static');
+    			Permission::checkAccess(120, 'static');
     			$this->showComments($_GET['id']);
     			break;
     		case 'editComment':
-    			$objPerm->checkAccess(120, 'static');
+    			Permission::checkAccess(120, 'static');
     			$this->editComment($_GET['id']);
     			break;
     		case 'updateComment':
-    			$objPerm->checkAccess(120, 'static');
+    			Permission::checkAccess(120, 'static');
     			$intEntryId = $this->updateCommement();
     			$this->showComments($intEntryId);
     			break;
     		case 'commentStatus':
-    			$objPerm->checkAccess(120, 'static');
+    			Permission::checkAccess(120, 'static');
     			$intEntryId = $this->invertCommentStatus($_GET['id']);
     			$this->showComments($intEntryId);
     			break;
     		case 'deleteComment':
-    			$objPerm->checkAccess(120, 'static');
+    			Permission::checkAccess(120, 'static');
     			$intEntryId = $this->deleteComment($_GET['id']);
     			$this->showComments($intEntryId);
     			break;
     		case 'multiactionComment':
-    			$objPerm->checkAccess(120, 'static');
+    			Permission::checkAccess(120, 'static');
     			$intEntryId = $this->doCommentMultiAction($_POST['frmShowComments_MultiAction']);
     			$this->showComments($intEntryId);
     			break;
     		case 'manageCategory':
-    			$objPerm->checkAccess(122, 'static');
+    			Permission::checkAccess(122, 'static');
     			$this->showCategories();
     			break;
     		case 'insertCategory':
-    			$objPerm->checkAccess(123, 'static');
+    			Permission::checkAccess(123, 'static');
     			$this->insertCategory();
     			$this->showCategories();
     			break;
     		case 'editCategory':
-    			$objPerm->checkAccess(122, 'static');
+    			Permission::checkAccess(122, 'static');
     			$this->editCategory($_GET['id']);
     			break;
     		case 'updateCategory':
-    			$objPerm->checkAccess(122, 'static');
+    			Permission::checkAccess(122, 'static');
     			$this->updateCategory();
     			$this->showCategories();
     			break;
     		case 'deleteCategory':
-    			$objPerm->checkAccess(122, 'static');
+    			Permission::checkAccess(122, 'static');
     			$this->deleteCategory($_GET['id']);
     			$this->showCategories();
     			break;
     		case 'multiactionCategory':
-    			$objPerm->checkAccess(122, 'static');
+    			Permission::checkAccess(122, 'static');
     			$this->doCategoryMultiAction($_POST['frmShowCategories_MultiAction']);
     			$this->showCategories();
     			break;
@@ -180,44 +181,44 @@ class BlogAdmin extends BlogLibrary {
     			$this->showBlockVariables();
     			break;
     		case 'networks':
-    			$objPerm->checkAccess(125, 'static');
+    			Permission::checkAccess(125, 'static');
     			$this->showNetworks();
     			break;
     		case 'insertNetwork':
-    			$objPerm->checkAccess(125, 'static');
+    			Permission::checkAccess(125, 'static');
     			$this->insertNetwork();
     			$this->showNetworks();
     			break;
     		case 'editNetwork':
-    			$objPerm->checkAccess(125, 'static');
+    			Permission::checkAccess(125, 'static');
     			$this->editNetwork($_GET['id']);
     			break;
     		case 'updateNetwork':
-    			$objPerm->checkAccess(125, 'static');
+    			Permission::checkAccess(125, 'static');
     			$this->updateNetwork();
     			$this->showNetworks();
     			break;
     		case 'deleteNetwork';
-    			$objPerm->checkAccess(125, 'static');
+    			Permission::checkAccess(125, 'static');
     			$this->deleteNetwork($_GET['id']);
     			$this->showNetworks();
     			break;
     		case 'multiactionNetwork':
-    			$objPerm->checkAccess(125, 'static');
+    			Permission::checkAccess(125, 'static');
     			$this->doNetworkMultiAction($_POST['frmShowNetworks_MultiAction']);
     			$this->showNetworks();
     			break;
     		case 'settings':
-    			$objPerm->checkAccess(124, 'static');
+    			Permission::checkAccess(124, 'static');
     			$this->showSettings();
     			break;
     		case 'saveSettings':
-    			$objPerm->checkAccess(124, 'static');
+    			Permission::checkAccess(124, 'static');
     			$this->saveSettings();
     			$this->showSettings();
     			break;
     		default:
-    			$objPerm->checkAccess(120, 'static');
+    			Permission::checkAccess(120, 'static');
     			$this->showEntries();
     	}
 

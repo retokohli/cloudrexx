@@ -297,6 +297,8 @@ class newsManager extends newsLibrary {
 			return $this->add();
 		}
 
+		$objFWUser = FWUser::getFWUserObject();
+
     	// initialize variables
     	$paging = "";
 
@@ -341,14 +343,12 @@ class newsManager extends newsLibrary {
 		                 n.title AS title,
 		                 n.status AS status,
 		                 n.validated AS validated,
+		                 n.userid,
 		                 l.name AS name,
-		                 nc.name AS catname,
-		                 u.username AS username
+		                 nc.name AS catname
 		            FROM ".DBPREFIX."module_news_categories AS nc,
 		                 ".DBPREFIX."languages AS l,
 		                 ".DBPREFIX."module_news AS n
-		       LEFT JOIN ".DBPREFIX."access_users AS u
-					  ON u.id=n.userid
 		           WHERE n.lang=l.id
 		             AND n.lang=".$this->langId."
 		             AND nc.catid=n.catid
@@ -381,11 +381,17 @@ class newsManager extends newsLibrary {
 					($messageNr % 2) ? $class = "row2" : $class = "row1";
 	            	$messageNr++;
 
+	            	if ($objResult->fields['userid'] && ($objUser = $objFWUser->objUser->getUser($objResult->fields['userid']))) {
+	    				$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
+					} else {
+						$author = $_ARRAYLANG['TXT_ANONYMOUS'];
+					}
+
 					$this->_objTpl->setVariable(array(
 		                'NEWS_ID'				=> $objResult->fields['id'],
 		                'NEWS_DATE'				=> date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
 		                'NEWS_TITLE'			=> stripslashes($objResult->fields['title']),
-		                'NEWS_USER'				=> empty($objResult->fields['username']) ? $_ARRAYLANG['TXT_ANONYMOUS'] : $objResult->fields['username'],
+		                'NEWS_USER'				=> $author,
 		                'NEWS_CHANGELOG'		=> date(ASCMS_DATE_FORMAT, $objResult->fields['changelog']),
 		                'NEWS_LIST_PARSING'		=> $paging,
 		                'NEWS_CLASS'			=> $class,
@@ -412,14 +418,12 @@ class newsManager extends newsLibrary {
 		                 n.title AS title,
 		                 n.status AS status,
 		                 n.validated AS validated,
+		                 n.userid,
 		                 l.name AS name,
-		                 nc.name AS catname,
-		                 u.username AS username
+		                 nc.name AS catname
 		            FROM ".DBPREFIX."module_news_categories AS nc,
 		            	 ".DBPREFIX."languages AS l,
 		                 ".DBPREFIX."module_news AS n
-			   LEFT JOIN ".DBPREFIX."access_users AS u
-			   		  ON u.id=n.userid
 		           WHERE n.lang=l.id
 		             AND n.lang=".$this->langId."
 		             AND nc.catid=n.catid
@@ -479,11 +483,17 @@ class newsManager extends newsLibrary {
 					    $statusPicture = "status_green.gif";
 					}
 
+					if ($objResult->fields['userid'] && ($objUser = $objFWUser->objUser->getUser($objResult->fields['userid']))) {
+	    				$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
+					} else {
+						$author = $_ARRAYLANG['TXT_ANONYMOUS'];
+					}
+
 					$this->_objTpl->setVariable(array(
 		                'NEWS_ID'				=> $objResult->fields['id'],
 		                'NEWS_DATE'				=> date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
 		                'NEWS_TITLE'			=> stripslashes($objResult->fields['title']),
-		                'NEWS_USER'				=> empty($objResult->fields['username']) ? $_ARRAYLANG['TXT_ANONYMOUS'] : $objResult->fields['username'],
+		                'NEWS_USER'				=> $author,
 		                'NEWS_CHANGELOG'		=> date(ASCMS_DATE_FORMAT, $objResult->fields['changelog']),
 		                'NEWS_CLASS'			=> $class,
 		                'NEWS_CATEGORY'			=> stripslashes($objResult->fields['catname']),
@@ -516,6 +526,7 @@ class newsManager extends newsLibrary {
     	}
 
 	    $objValidator = &new FWValidator();
+	    $objFWUser = FWUser::getFWUserObject();
 
 	    if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['newsDate'], $arrDate)) {
 	    	$date = mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
@@ -530,7 +541,7 @@ class newsManager extends newsLibrary {
 	    $newsurl1 				= $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl1']));
 	    $newsurl2 				= $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
 	    $newscat 				= intval($_POST['newsCat']);
-	    $userid 				= intval($_SESSION['auth']['userid']);
+	    $userid 				= $objFWUser->objUser->getId();
 	    $startDate				= (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['startDate'])) ? '0000-00-00' : $_POST['startDate'];
 		$endDate				= (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['endDate'])) ? '0000-00-00' : $_POST['endDate'];
 	    $status 				= intval($_POST['status']);
@@ -600,8 +611,8 @@ class newsManager extends newsLibrary {
 			if (in_array($frameId, $arrNewsTeaserFrames)) {
 				$associatedFrameIds .= "<option value=\"".$frameId."\">".$frameName."</option>\n";
 			} else {
-				$frameIds .= "<option value=\"".$frameId."\">".$frameName."</option>\n";
-			}
+			$frameIds .= "<option value=\"".$frameId."\">".$frameName."</option>\n";
+		}
 		}
 
 	    $this->_objTpl->setVariable(array(
@@ -678,7 +689,7 @@ class newsManager extends newsLibrary {
 			$this->_objTpl->hideBlock('newsTeaserOptions');
 			$this->_objTpl->setVariable('NEWS_HEADLINES_TEASERS_TXT', $_ARRAYLANG['TXT_HEADLINES']);
 		}
-    }
+        }
 
     /**
     * Deletes a news entry
@@ -921,9 +932,10 @@ class newsManager extends newsLibrary {
 
 	    if (isset($_GET['newsId'])) {
 	    	$objValidator = &new FWValidator();
+	    	$objFWUser = FWUser::getFWUserObject();
 
 	    	$id = intval($_GET['newsId']);
-		    $userId = intval($_SESSION['auth']['userid']);
+		    $userId = $objFWUser->objUser->getId();
 		    $changelog = mktime();
 
 		    if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['newsDate'], $arrDate)) {
@@ -1371,7 +1383,7 @@ class newsManager extends newsLibrary {
 			$objSettings = &new settingsManager();
 		    $objSettings->writeSettingsFile();
     	}
-	}
+    }
 
 	function _store_settings_item($name_in_db, $value) {
     	global $objDatabase;
@@ -1446,7 +1458,7 @@ class newsManager extends newsLibrary {
 			'NEWS_NOTIFY_GROUP_LIST'                => $this->_generate_notify_group_list(),
 			'NEWS_NOTIFY_USER_LIST'                 => $this->_generate_notify_user_list()
 		));
-	}
+    }
 	function _generate_notify_group_list() {
 		$active_grp = $this->arrSettings['news_notify_group'];
 		if (!empty($_POST['newsNotifySelectedGroup'])) {
