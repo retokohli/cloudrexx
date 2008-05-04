@@ -2,13 +2,15 @@
 /**
  * Captcha
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Kaelin <thomas.kaelin@comvation.ch>
+ * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch>
  * @access      public
  * @version     1.2.0
  * @package     contrexx
  * @subpackage  lib_spamprotection
  */
 class Captcha {
+	var $boolFreetypeInstalled = false;
+	
 	var $strRandomString;
 	var $strSalt;
 	
@@ -41,6 +43,7 @@ class Captcha {
     function __construct() {
     	srand ((double)microtime()*1000000);
 	    
+    	$this->isFreetypeInstalled();
 	    $this->cleanDirectory();
 	    
 	    $this->strRandomString 	= $this->createRandomString();
@@ -53,6 +56,21 @@ class Captcha {
 	    $this->strWebPath 		= ASCMS_PATH_OFFSET.'/images/spamprotection/';
 	    
 	    $this->createImage();
+    }
+    
+    /**
+     * Figures out if the Freetype-Extension (part of GD) is installed.
+     */
+    function isFreetypeInstalled() {
+    	$arrExtensions = get_loaded_extensions();
+    	
+    	if (in_array('gd', $arrExtensions)) {
+    		$arrGdFunctions = get_extension_funcs('gd');   	
+    			
+    		if (in_array('imagettftext', $arrGdFunctions)) {
+    			$this->boolFreetypeInstalled = true;
+    		}
+    	}
     }
 
     /**
@@ -149,15 +167,25 @@ class Captcha {
     		$intAngel 	= rand(-$intAngel, $intAngel);
     		$intYMove 	= rand(-$intVerticalMove, $intVerticalMove);
     		
-	        imagettftext(	$image, 
-	        				$intFontSize, 
-	        				$intAngel, 
-	        				(6+$intFontSize*$i), 
-	        				($intHeight/2+$intFontSize/2+$intYMove), 
-	        				$arrFontColors[$intColor], 
-	        				$arrFonts[$intFont], 
-	        				substr($this->strRandomString,$i,1)
-	        			);
+    		if ($this->boolFreetypeInstalled) {
+    			imagettftext(	$image, 
+		        				$intFontSize, 
+		        				$intAngel, 
+		        				(6+$intFontSize*$i), 
+		        				($intHeight/2+$intFontSize/2+$intYMove), 
+		        				$arrFontColors[$intColor], 
+		        				$arrFonts[$intFont], 
+		        				substr($this->strRandomString,$i,1)
+		        			);
+    		} else {
+		    	imagestring($image, 
+							5, 
+							(6+25*$i),
+							12+$intYMove,
+							substr($this->strRandomString,$i,1),
+							$arrFontColors[$intColor]
+						);
+    		}
     	}
     	
     	//Create Image
