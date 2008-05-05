@@ -2432,6 +2432,7 @@ class rssDirectory extends directoryLibrary
     		case 'google':
     			$this->showSettings_google();
     			break;
+
     		case 'headlines':
     			$this->showSettings_headlines();
     			break;

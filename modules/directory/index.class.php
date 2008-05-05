@@ -1871,6 +1871,10 @@ class rssDirectory extends directoryLibrary
 			}
 
 			//Google Search
+
+			//Googlesearch needs to be tested again. Don't work 100%.
+			$this->settings['google']['googleSeach'] = 0;
+
 			if($this->settings['google']['googleSeach'] == "1"){
 				if($count < 10){
 					$results = $this->settings['google']['googleResults']-$count;
@@ -2327,7 +2331,6 @@ class rssDirectory extends directoryLibrary
 				$this->_objTpl->setVariable(array(
 					'DIRECTORY_FEED_ROW'	=> $i%2==0? 'row1' : 'row2',
 				));
-
 
 				$this->_objTpl->parse('showFeeds');
 
