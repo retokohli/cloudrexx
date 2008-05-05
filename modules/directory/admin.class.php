@@ -1092,7 +1092,7 @@ class rssDirectory extends directoryLibrary
 			case'movefile':
 				// initialize variables
 				$this->_objTpl->loadTemplateFile('module_directory_entry_move.html',true,true);
-				$this->pageTitle =  "Einträge verschieben";
+				$this->pageTitle =  "Eintrï¿½ge verschieben";
 
 				//get categories/levels
 				$categories = $this->getCategories('', 1);
@@ -2721,6 +2721,7 @@ class rssDirectory extends directoryLibrary
 
 
 
+
 	function showSettings_mail()
 	{
 		global $_CONFIG, $objDatabase, $_ARRAYLANG;
@@ -2852,7 +2853,7 @@ class rssDirectory extends directoryLibrary
     */
 	function updateSettings()
 	{
-		global $_CONFIG, $objDatabase, $_CORELANG, $template;
+		global $_CONFIG, $objDatabase, $_CORELANG, $template, $_ARRAYLANG;
 
 		if (isset($_POST['set_sys_submit'])){
 			//get post data
@@ -2937,8 +2938,10 @@ class rssDirectory extends directoryLibrary
 					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='city'");
 				}elseif (!$googleMapIsEnabled && $addressElements < 4){
 					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' WHERE name='googlemap'");
+					$this->strErrMessage = $_ARRAYLANG['TXT_DIRECTORY_GOOGLEMAP_REQUIRED_FIELDS_MISSING'];
 				}elseif ($googleMapIsEnabled && $addressElements < 4){
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' WHERE name='googlemap'");
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='googlemap'");
+					$this->strErrMessage = $_ARRAYLANG['TXT_DIRECTORY_GOOGLEMAP_REQUIRED_FIELDS_MISSING'];
 				}
 			}
 
