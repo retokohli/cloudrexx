@@ -1548,15 +1548,15 @@ CREATE TABLE `contrexx_module_immo_statistics` (
 ) TYPE=MyISAM;
 
 CREATE TABLE `contrexx_module_livecam` (
-  `id` int(10) unsigned NOT NULL,
-  `currentImagePath` varchar(255) NOT NULL,
-  `archivePath` varchar(255) NOT NULL,
-  `thumbnailPath` varchar(255) NOT NULL,
+  `id` int(10) unsigned NOT NULL DEFAULT '1',
+  `currentImagePath` varchar(255) NOT NULL DEFAULT '/webcam/cam1/current.jpg',
+  `archivePath` varchar(255) NOT NULL DEFAULT '/webcam/cam1/archive/',
+  `thumbnailPath` varchar(255) NOT NULL DEFAULT '/webcam/cam1/thumbs/',
   `maxImageWidth` int(10) unsigned NOT NULL default '400',
   `thumbMaxSize` int(10) unsigned NOT NULL default '200',
   `lightboxActivate` set('1','0') NOT NULL default '1',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT;
+) ENGINE=MyISAM;
 
 
 CREATE TABLE `contrexx_module_livecam_settings` (
