@@ -878,6 +878,12 @@ CREATE TABLE `contrexx_module_docsys_categories` (
   PRIMARY KEY  (`catid`)
 ) TYPE=MyISAM;
 
+CREATE TABLE `contrexx_module_egov_configuration` (
+  `name` varchar(255) NOT NULL default '',
+  `value` text NOT NULL default '',
+  UNIQUE KEY `name` (`name`)
+) TYPE=MyISAM;
+
 CREATE TABLE `contrexx_module_egov_orders` (
   `order_id` int(11) NOT NULL auto_increment,
   `order_date` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -938,34 +944,6 @@ CREATE TABLE `contrexx_module_egov_products` (
   `product_paypal_currency` varchar(255) NOT NULL default '',
   `product_orderby` int(11) NOT NULL default '0',
   PRIMARY KEY  (`product_id`)
-) TYPE=MyISAM;
-
-CREATE TABLE `contrexx_module_egov_settings` (
-  `set_id` int(11) NOT NULL default '0',
-  `set_sender_name` varchar(255) NOT NULL default '',
-  `set_sender_email` varchar(255) NOT NULL default '',
-  `set_recipient_email` varchar(255) NOT NULL default '',
-  `set_state_subject` varchar(255) NOT NULL default '',
-  `set_state_email` text NOT NULL,
-  `set_calendar_color_1` varchar(255) NOT NULL default '',
-  `set_calendar_color_2` varchar(255) NOT NULL default '',
-  `set_calendar_color_3` varchar(255) NOT NULL default '',
-  `set_calendar_legende_1` varchar(255) NOT NULL default '',
-  `set_calendar_legende_2` varchar(255) NOT NULL default '',
-  `set_calendar_legende_3` varchar(255) NOT NULL default '',
-  `set_calendar_background` varchar(255) NOT NULL default '',
-  `set_calendar_border` varchar(255) NOT NULL default '',
-  `set_calendar_date_label` varchar(255) NOT NULL default '',
-  `set_calendar_date_desc` varchar(255) NOT NULL default '',
-  `set_orderentry_subject` varchar(255) NOT NULL default '',
-  `set_orderentry_email` text NOT NULL,
-  `set_orderentry_name` varchar(255) NOT NULL default '',
-  `set_orderentry_sender` varchar(255) NOT NULL default '',
-  `set_orderentry_recipient` varchar(255) NOT NULL default '',
-  `set_paypal_email` text NOT NULL,
-  `set_paypal_currency` text NOT NULL,
-  `set_paypal_ipn` tinyint(1) NOT NULL default '0',
-  KEY `set_id` (`set_id`)
 ) TYPE=MyISAM;
 
 CREATE TABLE `contrexx_module_feed_category` (
