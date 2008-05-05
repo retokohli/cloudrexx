@@ -102,7 +102,7 @@ CREATE TABLE `contrexx_access_user_profile` (
   `signature` varchar(255) NOT NULL default '',
   `picture` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`user_id`),
-  KEY `profile` (`firstname`(100),`lastname`(100),`company`(40),`address`,`city`(30),`zip`,`phone_office`,`phone_private`,`phone_mobile`,`phone_fax`,`website`(20),`profession`(30),`interests`(100))
+  KEY `profile` (`firstname`(100),`lastname`(100),`company`(50))
 ) TYPE=InnoDB;
 
 CREATE TABLE `contrexx_access_user_title` (
