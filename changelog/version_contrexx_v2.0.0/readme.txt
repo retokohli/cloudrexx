@@ -8,6 +8,12 @@ Anzeigebild:
 Archivbilder:
 <a href="[[LIVECAM_PICTURE_URL]]" title="[[LIVECAM_PICTURE_TIME]]" [[LIVECAM_IMAGE_LIGHTBOX]]><img src="[[LIVECAM_THUMBNAIL_URL]]" width="[[LIVECAM_THUMBNAIL_SIZE]]" border="0" alt="[[LIVECAM_PICTURE_TIME]]" /></a>
 
+Zudem muss im Form-Tag die URL angepasst und &amp;cmd=[[CMD]] angehängt werden:
+<form action="index.php?section=livecam&amp;cmd=[[CMD]]" method="post" name="form">
+
+Das gleiche gilt für den Aktualisieren-Link:
+<a href="index.php?section=livecam&amp;cmd=[[CMD]]" onclick="javascript:document.location.reload();">Aktualisieren</a>
+
 
 12.03.2008 Market Anpassungen
 ---------------------------------------
