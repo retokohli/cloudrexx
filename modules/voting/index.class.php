@@ -149,7 +149,7 @@ function votingShowCurrent($page_content){
 				}
 				$votingResultText .= stripslashes($objResult->fields['question'])."<br />\n";
 				$votingResultText .= '<img src="images/modules/voting/'.$images.'.gif" width="'.$imagewidth.'%" height="10" />';
-				$votingResultText .= '&nbsp;'.$votes.' '.$_ARRAYLANG['TXT_VOTES'].' / '.$percentage.' %<br />'."\n";
+				$votingResultText .= "&nbsp;".$percentage."% (".$votes. " " .$_ARRAYLANG['TXT_VOTES'].")<br /><br />\n";
 			}
 			$objResult->MoveNext();
 		}
