@@ -1663,124 +1663,139 @@ if ($objTemplate->blockExists('access_logged_out')) {
 
 // currently online users
 if (FWUser::showCurrentlyOnlineUsers()) {
-	if ($objTemplate->blockExists('access_currently_online_female_members')) {
-		if (isset($objAccessBlocks)
-			&& is_object($objAccessBlocks)
-			|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
-			&& file_exists($modulespath)
-			&& (include_once($modulespath))
-			&& ($objAccessBlocks = new Access_Blocks())
-		) {
-			$objAccessBlocks->setCurrentlyOnlineUsers('female');
+	if ($objTemplate->blockExists('access_currently_online_member_list')) {
+		if ($objTemplate->blockExists('access_currently_online_female_members')) {
+			if (isset($objAccessBlocks)
+				&& is_object($objAccessBlocks)
+				|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
+				&& file_exists($modulespath)
+				&& (include_once($modulespath))
+				&& ($objAccessBlocks = new Access_Blocks())
+			) {
+				$objAccessBlocks->setCurrentlyOnlineUsers('female');
+			}
+		}
+		if ($objTemplate->blockExists('access_currently_online_male_members')) {
+			if (isset($objAccessBlocks)
+				&& is_object($objAccessBlocks)
+				|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
+				&& file_exists($modulespath)
+				&& (include_once($modulespath))
+				&& ($objAccessBlocks = new Access_Blocks())
+			) {
+				$objAccessBlocks->setCurrentlyOnlineUsers('male');
+			}
+		}
+		if ($objTemplate->blockExists('access_currently_online_members')) {
+			if (isset($objAccessBlocks)
+				&& is_object($objAccessBlocks)
+				|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
+				&& file_exists($modulespath)
+				&& (include_once($modulespath))
+				&& ($objAccessBlocks = new Access_Blocks())
+			) {
+				$objAccessBlocks->setCurrentlyOnlineUsers();
+			}
 		}
 	}
-	if ($objTemplate->blockExists('access_currently_online_male_members')) {
-		if (isset($objAccessBlocks)
-			&& is_object($objAccessBlocks)
-			|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
-			&& file_exists($modulespath)
-			&& (include_once($modulespath))
-			&& ($objAccessBlocks = new Access_Blocks())
-		) {
-			$objAccessBlocks->setCurrentlyOnlineUsers('male');
-		}
-	}
-	if ($objTemplate->blockExists('access_currently_online_members')) {
-		if (isset($objAccessBlocks)
-			&& is_object($objAccessBlocks)
-			|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
-			&& file_exists($modulespath)
-			&& (include_once($modulespath))
-			&& ($objAccessBlocks = new Access_Blocks())
-		) {
-			$objAccessBlocks->setCurrentlyOnlineUsers();
-		}
-	}
+} elseif ($objTemplate->blockExists('access_currently_online_member_list')) {
+	$objTemplate->hideBlock('access_currently_online_member_list');
 }
 
 // last active users
 if (FWUser::showLastActivUsers()) {
-	if ($objTemplate->blockExists('access_last_active_female_members')) {
-		if (isset($objAccessBlocks)
-			&& is_object($objAccessBlocks)
-			|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
-			&& file_exists($modulespath)
-			&& (include_once($modulespath))
-			&& ($objAccessBlocks = new Access_Blocks())
-		) {
-			$objAccessBlocks->setLastActiveUsers('female');
+	if ($objTemplate->blockExists('access_last_active_member_list')) {
+		if ($objTemplate->blockExists('access_last_active_female_members')) {
+			if (isset($objAccessBlocks)
+				&& is_object($objAccessBlocks)
+				|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
+				&& file_exists($modulespath)
+				&& (include_once($modulespath))
+				&& ($objAccessBlocks = new Access_Blocks())
+			) {
+				$objAccessBlocks->setLastActiveUsers('female');
+			}
+		}
+		if ($objTemplate->blockExists('access_last_active_male_members')) {
+			if (isset($objAccessBlocks)
+				&& is_object($objAccessBlocks)
+				|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
+				&& file_exists($modulespath)
+				&& (include_once($modulespath))
+				&& ($objAccessBlocks = new Access_Blocks())
+			) {
+				$objAccessBlocks->setLastActiveUsers('male');
+			}
+		}
+		if ($objTemplate->blockExists('access_last_active_members')) {
+			if (isset($objAccessBlocks)
+				&& is_object($objAccessBlocks)
+				|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
+				&& file_exists($modulespath)
+				&& (include_once($modulespath))
+				&& ($objAccessBlocks = new Access_Blocks())
+			) {
+				$objAccessBlocks->setLastActiveUsers();
+			}
 		}
 	}
-	if ($objTemplate->blockExists('access_last_active_male_members')) {
-		if (isset($objAccessBlocks)
-			&& is_object($objAccessBlocks)
-			|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
-			&& file_exists($modulespath)
-			&& (include_once($modulespath))
-			&& ($objAccessBlocks = new Access_Blocks())
-		) {
-			$objAccessBlocks->setLastActiveUsers('male');
-		}
-	}
-	if ($objTemplate->blockExists('access_last_active_members')) {
-		if (isset($objAccessBlocks)
-			&& is_object($objAccessBlocks)
-			|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
-			&& file_exists($modulespath)
-			&& (include_once($modulespath))
-			&& ($objAccessBlocks = new Access_Blocks())
-		) {
-			$objAccessBlocks->setLastActiveUsers();
-		}
-	}
+} elseif ($objTemplate->blockExists('access_last_active_member_list')) {
+	$objTemplate->hideBlock('access_last_active_member_list');
 }
 
 // latest registered users
 if (FWUser::showLatestRegisteredUsers()) {
-	if ($objTemplate->blockExists('access_latest_registered_female_members')) {
-		if (isset($objAccessBlocks)
-			&& is_object($objAccessBlocks)
-			|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
-			&& file_exists($modulespath)
-			&& (include_once($modulespath))
-			&& ($objAccessBlocks = new Access_Blocks())
-		) {
-			$objAccessBlocks->setLatestRegisteredUsers('female');
+	if ($objTemplate->blockExists('access_latest_registered_member_list')) {
+		if ($objTemplate->blockExists('access_latest_registered_female_members')) {
+			if (isset($objAccessBlocks)
+				&& is_object($objAccessBlocks)
+				|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
+				&& file_exists($modulespath)
+				&& (include_once($modulespath))
+				&& ($objAccessBlocks = new Access_Blocks())
+			) {
+				$objAccessBlocks->setLatestRegisteredUsers('female');
+			}
+		}
+		if ($objTemplate->blockExists('access_latest_registered_male_members')) {
+			if (isset($objAccessBlocks)
+				&& is_object($objAccessBlocks)
+				|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
+				&& file_exists($modulespath)
+				&& (include_once($modulespath))
+				&& ($objAccessBlocks = new Access_Blocks())
+			) {
+				$objAccessBlocks->setLatestRegisteredUsers('male');
+			}
+		}
+		if ($objTemplate->blockExists('access_latest_registered_members')) {
+			if (isset($objAccessBlocks)
+				&& is_object($objAccessBlocks)
+				|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
+				&& file_exists($modulespath)
+				&& (include_once($modulespath))
+				&& ($objAccessBlocks = new Access_Blocks())
+			) {
+				$objAccessBlocks->setLatestRegisteredUsers();
+			}
 		}
 	}
-	if ($objTemplate->blockExists('access_latest_registered_male_members')) {
-		if (isset($objAccessBlocks)
-			&& is_object($objAccessBlocks)
-			|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
-			&& file_exists($modulespath)
-			&& (include_once($modulespath))
-			&& ($objAccessBlocks = new Access_Blocks())
-		) {
-			$objAccessBlocks->setLatestRegisteredUsers('male');
-		}
-	}
-	if ($objTemplate->blockExists('access_latest_registered_members')) {
-		if (isset($objAccessBlocks)
-			&& is_object($objAccessBlocks)
-			|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
-			&& file_exists($modulespath)
-			&& (include_once($modulespath))
-			&& ($objAccessBlocks = new Access_Blocks())
-		) {
-			$objAccessBlocks->setLatestRegisteredUsers();
-		}
-	}
+} elseif ($objTemplate->blockExists('access_latest_registered_member_list')) {
+	$objTemplate->hideBlock('access_latest_registered_member_list');
 }
 
 // birthday users
 if (FWUser::showBirthdayUsers()) {
 	if ($objTemplate->blockExists('access_birthday_member_list')) {
-		if (isset($objAccessBlocks)
-			&& is_object($objAccessBlocks)
-			|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
-			&& file_exists($modulespath)
-			&& (include_once($modulespath))
-			&& ($objAccessBlocks = new Access_Blocks())
+		if (
+			(
+				isset($objAccessBlocks)
+				&& is_object($objAccessBlocks)
+				|| ($modulespath = 'core_modules/access/lib/blocks.class.php')
+				&& file_exists($modulespath)
+				&& (include_once($modulespath))
+				&& ($objAccessBlocks = new Access_Blocks())
+			)
 			&& $objAccessBlocks->isSomeonesBirthdayToday()
 		) {
 			if ($objTemplate->blockExists('access_birthday_female_members')) {
@@ -1797,6 +1812,8 @@ if (FWUser::showBirthdayUsers()) {
 			$objTemplate->hideBlock('access_birthday_member_list');
 		}
 	}
+} elseif ($objTemplate->blockExists('access_birthday_member_list')) {
+	$objTemplate->hideBlock('access_birthday_member_list');
 }
 
 

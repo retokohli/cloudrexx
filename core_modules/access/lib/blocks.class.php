@@ -217,19 +217,23 @@ class Access_Blocks extends AccessLib
 
 	function isSomeonesBirthdayToday()
 	{
-		$objFWUser = FWUser::getFWUserObject();
-		if ($objFWUser->objUser->getUsers(
-			array(
-				'active'	=> true,
-				'birthday'	=> array(
-					array(
-						'>' => mktime(0,0,0,date('m'),date('d'),date('y')),
-						'<'	=> mktime(0,0,0,date('m'),date('d'),date('y'))+86400
-					)
+		$arrSettings = User_Setting::getSettings();
+
+		$filter = array(
+			'active'	=> true,
+			'birthday'	=> array(
+				array(
+					'>' => mktime(0,0,0,date('m'),date('d'),date('y')),
+					'<'	=> mktime(0,0,0,date('m'),date('d'),date('y'))+86400
 				)
-			),
-			null, null, null, $limit = 1
-		)) {
+			)
+		);
+		if ($arrSettings['block_birthday_users_pic']['status']) {
+			$filter['picture'] = array('!=' => '');
+		}
+
+		$objFWUser = FWUser::getFWUserObject();
+		if ($objFWUser->objUser->getUsers($filter, null, null, null, $limit = 1)) {
 			return true;
 		} else {
 			return false;
