@@ -20,4 +20,15 @@ $_ARRAYLANG['TXT_VOTING_ENTRIES'] = "Votings";
 $_ARRAYLANG['TXT_VOTING_INVALID_EMAIL_ERROR'] = "Please insert a valid E-Mail Address";
 $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'] = "You have already answered this poll question";
 $_ARRAYLANG['TXT_VOTING_NONEXISTENT_EMAIL'] = "Your E-Mail Address doesn't exist";
+$_ARRAYLANG['TXT_ADDITIONAL_NICKNAME'] = "Nickname";
+$_ARRAYLANG['TXT_ADDITIONAL_FORENAME'] = "Forename";
+$_ARRAYLANG['TXT_ADDITIONAL_EMAIL'] = "E-Mail address";
+$_ARRAYLANG['TXT_ADDITIONAL_SURNAME'] = "Surname";
+$_ARRAYLANG['TXT_ADDITIONAL_PHONE'] = "Telephone";
+$_ARRAYLANG['TXT_ADDITIONAL_STREET'] = "Street";
+$_ARRAYLANG['TXT_ADDITIONAL_ZIP'] = "ZIP";
+$_ARRAYLANG['TXT_ADDITIONAL'] = "Additional fields for users";
+$_ARRAYLANG['TXT_ADDITIONAL_CITY'] = "City";
+$_ARRAYLANG['TXT_EXPORT_ADDITIONAL'] = "Export additional fields";
+$_ARRAYLANG['TXT_EXPORT_CSV'] = "CSV";
 ?>

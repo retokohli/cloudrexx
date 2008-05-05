@@ -49,4 +49,15 @@ $_ARRAYLANG['TXT_VOTING_EMAIL_ISNT_VAILD'] = "The Validity of this E-Mail Addres
 $_ARRAYLANG['TXT_VOTING_EMAIL_IS_VAILD'] = "This E-Mail Address Is Not Valid";
 $_ARRAYLANG['TXT_VOTING_SHOW_EMAIL_ADRESSES'] = "View Voter E-Mail Addresses for this poll";
 $_ARRAYLANG['TXT_VOTING_WRITE_EMAIL'] = "Send E-Mail to this address";
+$_ARRAYLANG['TXT_ADDITIONAL_NICKNAME'] = "Nickname";
+$_ARRAYLANG['TXT_ADDITIONAL_FORENAME'] = "Forename";
+$_ARRAYLANG['TXT_ADDITIONAL_EMAIL'] = "E-Mail address";
+$_ARRAYLANG['TXT_ADDITIONAL_SURNAME'] = "Surname";
+$_ARRAYLANG['TXT_ADDITIONAL_PHONE'] = "Telephone";
+$_ARRAYLANG['TXT_ADDITIONAL_STREET'] = "Street";
+$_ARRAYLANG['TXT_ADDITIONAL_ZIP'] = "ZIP";
+$_ARRAYLANG['TXT_ADDITIONAL'] = "Additional fields for users";
+$_ARRAYLANG['TXT_ADDITIONAL_CITY'] = "City";
+$_ARRAYLANG['TXT_EXPORT_ADDITIONAL'] = "Export additional fields";
+$_ARRAYLANG['TXT_EXPORT_CSV'] = "CSV";
 ?>
