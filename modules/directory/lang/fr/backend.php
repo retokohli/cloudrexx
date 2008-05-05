@@ -299,4 +299,5 @@ $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'] = "Adresse indiponible";
 $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'] = "Mauvaise clé API Google";
 $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'] = "Adresse pas trouvée";
 $_ARRAYLANG['TXT_PAGINGLIMIT'] = "Nombre de lignes par page";
+$_ARRAYLANG['TXT_DIRECTORY_GOOGLEMAP_REQUIRED_FIELDS_MISSING'] = "Damit Google-Map richtig funktioniert, müssen folgende Felder auch aktiviert sein: 'Land', 'PLZ', 'Stadt' und 'Strasse'.";
 ?>

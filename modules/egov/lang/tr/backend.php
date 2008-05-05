@@ -154,4 +154,5 @@ $_ARRAYLANG['TXT_SHOP_YELLOWPAY_VISA'] = "Visa";
 $_ARRAYLANG['TXT_SHOP_YELLOWPAY_AMEX'] = "American Express (Amex)";
 $_ARRAYLANG['TXT_SHOP_YELLOWPAY_DINERS'] = "Diners";
 $_ARRAYLANG['TXT_SHOP_YELLOWPAY_YELLOWBILL'] = "PostFinance E-Rechnung (Yellowbill)";
+$_ARRAYLANG['TXT_EGOV_EMAIL_TEMPLATE_FOR_CUSTOMER'] = "E-Mail Vorlage für den Kunden";
 ?>

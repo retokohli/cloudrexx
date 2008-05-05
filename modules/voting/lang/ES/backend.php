@@ -49,4 +49,15 @@ $_ARRAYLANG['TXT_VOTING_EMAIL_ISNT_VAILD'] = "¡La validez de esta dirección de
 $_ARRAYLANG['TXT_VOTING_EMAIL_IS_VAILD'] = "Esta dirección de E.Mail no es válida";
 $_ARRAYLANG['TXT_VOTING_SHOW_EMAIL_ADRESSES'] = "Ver sus direcciones de Correo";
 $_ARRAYLANG['TXT_VOTING_WRITE_EMAIL'] = "Enviar E-Mail a esta dirección";
+$_ARRAYLANG['TXT_ADDITIONAL_NICKNAME'] = "Übername";
+$_ARRAYLANG['TXT_ADDITIONAL_FORENAME'] = "Vorname";
+$_ARRAYLANG['TXT_ADDITIONAL_EMAIL'] = "E-Mail-Adresse";
+$_ARRAYLANG['TXT_ADDITIONAL_SURNAME'] = "Nachname";
+$_ARRAYLANG['TXT_ADDITIONAL_PHONE'] = "Telefonnummer";
+$_ARRAYLANG['TXT_ADDITIONAL_STREET'] = "Strasse";
+$_ARRAYLANG['TXT_ADDITIONAL_ZIP'] = "PLZ";
+$_ARRAYLANG['TXT_ADDITIONAL'] = "Zusätzliche Eingabefelder für die Benutzer";
+$_ARRAYLANG['TXT_ADDITIONAL_CITY'] = "Ort";
+$_ARRAYLANG['TXT_EXPORT_ADDITIONAL'] = "Zusatzfelder-Export";
+$_ARRAYLANG['TXT_EXPORT_CSV'] = "CSV";
 ?>
