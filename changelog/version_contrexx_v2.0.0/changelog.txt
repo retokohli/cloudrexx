@@ -46,6 +46,10 @@ Content Manager: Übersicht
 Statistik
 - Der Bereich "Monatliche Besucher und Seitenaufrufe" listet die letzten zwei
   Jahre.
+  
+WYSIWYG-Editor
+- Neue Version 2.6 des FCKeditors. Weitere Informationen unter:
+  http://www.fckeditor.net/whatsnew/
 
 Modul: Blog
 - Auf der Übersichtsseite der Meldungen (index.php?section=blog) war kein Paging

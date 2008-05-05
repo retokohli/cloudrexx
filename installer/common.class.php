@@ -1048,9 +1048,10 @@ class CommonFunctions
 			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."access_users`
 						 SET `username` = '".$_SESSION['installer']['account']['username']."',
 							 `password` = '".md5($_SESSION['installer']['account']['password'])."',
-							 `regdate` = '".date('Y-m-d',time())."',
+							 `regdate` = '".time()."',
 							 `email` = '".$_SESSION['installer']['account']['email']."',
-							 `langId` = '".$userLangId."',
+							 `frontend_lang_id` = '".$userLangId."',
+							 `backend_lang_id` = '".$userLangId."',
 							 `active` = 1
 					   WHERE `id` = 1";
 			if ($objDb->Execute($query) !== false) {
