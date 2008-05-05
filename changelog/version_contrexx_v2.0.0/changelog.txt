@@ -79,6 +79,7 @@ Modul: Livecam
 - Die Grösse des Anzeigebildes und der Thumbnails kann optional eingestellt
   werden.
 - Für sämtliche Bilder im Livecam Modul kan die LightBox aktiviert werden.
+- Es können nun mehr als nur eine Livecam eingestellt werden
 
 Modul: Market
 - Der Aufschaltmechanismus kann klar definiert werden. Variante 1 mittels
