@@ -2974,8 +2974,10 @@ class rssDirectory extends directoryLibrary
 					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='city'");
 				}elseif (!$googleMapIsEnabled && $addressElements < 4){
 					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='0' WHERE name='googlemap'");
+					$this->strErrMessage = $_ARRAYLANG['TXT_DIRECTORY_GOOGLEMAP_REQUIRED_FIELDS_MISSING'];
 				}elseif ($googleMapIsEnabled && $addressElements < 4){
-					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' WHERE name='googlemap'");
+					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='1' WHERE name='googlemap'");
+					$this->strErrMessage = $_ARRAYLANG['TXT_DIRECTORY_GOOGLEMAP_REQUIRED_FIELDS_MISSING'];
 				}
 			}
 
