@@ -719,7 +719,7 @@ class Market extends marketLibrary
 
 			$image = '<img src="'.$this->mediaWebPath.'pictures/'.$this->entries[$id]['picture'].'" '.$width.' '.$height.' border="0" alt="'.$this->entries[$id]['title'].'" />';
 
-			$user 		= $this->entries[$id]['name'].'<br />';
+			$user 		= $this->entries[$id]['name'].'<br /><br />';
 			$userMail	= '<a href="mailto:'.$this->entries[$id]['email'].'">'.$this->entries[$id]['email'].'</a><br />';
 
 			//user details
@@ -727,19 +727,17 @@ class Market extends marketLibrary
 			if ($objUser = $objFWUser->objUser->getUser($this->entries[$id]['userid'])) {
 					$objUser->getProfileAttribute('address') != '' ? $street = $objUser->getProfileAttribute('address').'<br />' : $street = '';
 					$objUser->getProfileAttribute('phone_office') != '' ? $phone = $objUser->getProfileAttribute('phone_office').'<br />' : $phone = '';
-					$objUser->getProfileAttribute('phone_mobile') != '' ? $mobile = $objUser->getProfileAttribute('phone_mobile').'<br />' : $mobile = '';
+					$objUser->getProfileAttribute('phone_mobile') != '' ? $mobile = $objUser->getProfileAttribute('phone_mobile').'<br /><br />' : $mobile = '';
+					if ($objUser->getProfileAttribute('zip') != '' || $objUser->getProfileAttribute('zip') != 0) {
+						$zip = $objUser->getProfileAttribute('zip').' ';
+					} else {
+						$zip = '';
+					}
+					$objUser->getProfileAttribute('city') != '' ? $city = $objUser->getProfileAttribute('city').'<br />' : $city = '';
 					$objUser->getProfileAttribute('website') != '' ? $webpage = '<a href="http://:'.$objUser->getProfileAttribute('website').'" target="_blank">'.$objUser->getProfileAttribute('website').'</a><br />' : $webpage = '';
 
 				$TXTuserDetails = $_ARRAYLANG['TXT_MARKET_CONTACT'];
-				$userDetails = 	$user.'<br />
-								'.$street.'
-								'.$objUser->getProfileAttribute('zip').' '.$objUser->getProfileAttribute('city').'<br />
-								<br />
-								'.$phone.'
-								'.$mobile.'
-								<br />
-								'.$userMail.'
-								'.$webpage;
+				$userDetails = 	$user.$street.$zip.$city.$phone.$mobile.$userMail.$webpage;
 
 				$residence = $objUser->getProfileAttribute('zip').' '.$objUser->getProfileAttribute('city');
 			}
