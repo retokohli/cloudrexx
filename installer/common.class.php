@@ -1045,7 +1045,7 @@ class CommonFunctions
 
 		$objDb = $this->_getDbObject($statusMsg);
 		if ($objDb !== false) {
-			$objDb->debug = true;
+			#$objDb->debug = true;
 			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."access_users`
 						 SET `username` = '".$_SESSION['installer']['account']['username']."',
 							 `password` = '".md5($_SESSION['installer']['account']['password'])."',
