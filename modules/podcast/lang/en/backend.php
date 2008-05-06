@@ -153,5 +153,5 @@ $_ARRAYLANG['TXT_PODCAST_MEDIA_THUMBNAIL'] = "Media thumbnail URL";
 $_ARRAYLANG['TXT_PODCAST_MEDIA_SHORT_DATE'] = "Short date of the media";
 $_ARRAYLANG['TXT_PODCAST_MEDIA_DESCRIPTION'] = "Description of the media";
 $_ARRAYLANG['TXT_PODCAST_MEDIA_VIEWS'] = "Requests";
-$_ARRAYLANG['TXT_PODCAST_AUTO_VALIDATE'] = "Einsendungen von Benutzern automatisch aktivieren";
+$_ARRAYLANG['TXT_PODCAST_AUTO_VALIDATE'] = "Automatically activate contributions of users";
 ?>

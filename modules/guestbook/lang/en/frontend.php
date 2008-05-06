@@ -25,7 +25,7 @@ $_ARRAYLANG['TXT_NEW_GUESTBOOK_ENTRY'] = "New Guestbook Entry At";
 $_ARRAYLANG['TXT_DATA_RECORD_STORED_ACTIVATE'] = "Please notice, that the administrator of this site will check every submitted entry before publishing on the page.";
 $_ARRAYLANG['txt_captcha'] = "Please enter the shown numbers";
 $_ARRAYLANG['TXT_ALT_STRING'] = "The value of this picture is: , without the whitespaces between the cyphers.";
-$_ARRAYLANG['captcha_error'] = "The entered number is incorrect!";
+$_ARRAYLANG['captcha_error'] = "The entered code is incorrect!";
 $_ARRAYLANG['TXT_IS_INVALID'] = "is empty or not valid!";
-$_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "The inputted number is incorrect!";
+$_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "The entered code is incorrect!";
 ?>

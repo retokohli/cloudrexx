@@ -63,7 +63,7 @@ $_ARRAYLANG['TXT_MARKET_ADD_SUCCESS'] = "The advertisement has been added succes
 $_ARRAYLANG['TXT_MARKET_DELETE_SUCCESS'] = "The advertisement has been deleted successfully.";
 $_ARRAYLANG['TXT_MARKET_IMAGE_DELETE_ERROR'] = "Error while deleting image.";
 $_ARRAYLANG['TXT_MARKET_PRICE_MAX'] = "Preis bis";
-$_ARRAYLANG['TXT_MARKET_ALL_PRICES'] = "egal";
+$_ARRAYLANG['TXT_MARKET_ALL_PRICES'] = "don't care";
 $_ARRAYLANG['TXT_MARKET_LOCATION'] = "Location";
 $_ARRAYLANG['TXT_MARKET_LOCATIONS'] = "All Locations";
 ?>
