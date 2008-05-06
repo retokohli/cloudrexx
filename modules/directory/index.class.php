@@ -626,7 +626,13 @@ class rssDirectory extends directoryLibrary
 				//get voting
 				$this->getVoting($objResult->fields['id']);
 
+				//row class
+				$this->_objTpl->setVariable(array(
+					'DIRECTORY_FEED_ROW'	=> $i%2==0? 'row1' : 'row2',
+				));
+
 				$this->_objTpl->parse('showFeeds');
+				$i++;
 
 				$objResult->MoveNext();
 			}
