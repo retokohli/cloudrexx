@@ -875,7 +875,7 @@ class CommonFunctions
 
 	function executeSQLQueries($type)
 	{
-		global $_ARRLANG, $sqlDumpFile, $dbType, $dbPrefix, $_CONFIG, $arrDatabaseTables, $useUtf8;
+		global $_ARRLANG, $sqlDumpFile, $dbType, $dbPrefix, $arrDatabaseTables, $useUtf8;
 
 		$sqlQuery = "";
 		$buffer = "";
@@ -888,7 +888,7 @@ class CommonFunctions
 			return $statusMsg;
 		} else {
 			// insert sql dump file
-			$sqlDump = $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$sqlDumpFile.'_'.strtolower($_CONFIG['coreCmsEdition']).'_'.$type.'.sql';
+			$sqlDump = $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$sqlDumpFile.'_'.$type.'.sql';
 
 			$fp = @fopen ($sqlDump, "r");
 			if ($fp !== false) {
@@ -954,7 +954,7 @@ class CommonFunctions
 		if (empty($statusMsg)) {
 			return true;
 		} else {
-			$statusMsg .= str_replace("[FILEPATH]", $_SESSION['installer']['config']['offsetPath'].str_replace(DIRECTORY_SEPARATOR, '/', $sqlDumpFile).'_'.strtolower($_CONFIG['coreCmsEdition']).'.sql', $_ARRLANG['TXT_CREATE_DATABAES_TABLE_MANUALLY'])."<br />";
+			$statusMsg .= str_replace("[FILEPATH]", $_SESSION['installer']['config']['offsetPath'].str_replace(DIRECTORY_SEPARATOR, '/', $sqlDumpFile).'_structure.sql', $_ARRLANG['TXT_CREATE_DATABAES_TABLE_MANUALLY'])."<br />";
 			$statusMsg .= $_ARRLANG['TXT_PRESS_REFRESH_TO_CONTINUE_INSTALLATION'];
 			return $statusMsg;
 		}
@@ -1045,6 +1045,7 @@ class CommonFunctions
 
 		$objDb = $this->_getDbObject($statusMsg);
 		if ($objDb !== false) {
+			$objDb->debug = true;
 			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."access_users`
 						 SET `username` = '".$_SESSION['installer']['account']['username']."',
 							 `password` = '".md5($_SESSION['installer']['account']['password'])."',
