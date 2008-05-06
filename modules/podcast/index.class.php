@@ -162,6 +162,7 @@ EOF;
 			if (count($arrMedia) > 0) {
 				foreach ($arrMedia as $mediumId => $arrMedium) {
 					$this->_objTpl->setVariable(array(
+						'PODCAST_MEDIUM_ROW'				=> $i%2==0 ? 'row1' : 'row2',
 						'PODCAST_MEDIA_ID'					=> $mediumId,
 						'PODCAST_MEDIA_CATEGORY_ID'			=> $categoryId,
 						'PODCAST_MEDIA_TITLE'				=> htmlentities($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -175,6 +176,7 @@ EOF;
 						'PODCAST_MEDIA_PLAYLENGHT'			=> $this->_getPlaylenghtFormatOfTimestamp($arrMedium['playlenght']),
 						'PODCAST_MEDIA_SHORT_PLAYLENGHT'	=> $this->_getShortPlaylenghtFormatOfTimestamp($arrMedium['playlenght'])
 					));
+					$i++;
 					$this->_objTpl->parse('podcast_media');
 				}
 			}
