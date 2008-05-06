@@ -12,7 +12,9 @@
 //error_reporting(E_ALL);
 /**
  * Includes
+ *
  */
+
 if (CALENDAR_MANDATE == 1) {
     require_once ASCMS_MODULE_PATH . '/calendar/calendarLib.class.php';
 } else {
@@ -62,7 +64,7 @@ class Calendar extends calendarLibrary
     {
     	global $_ARRAYLANG;
 
-    	$this->calendarLibrary($_SERVER['SCRIPT_NAME']."?section=calendar");
+    	$this->calendarLibrary($_SERVER['SCRIPT_NAME']."index.php?section=calendar");
 	    $this->pageContent = $pageContent;
 	}
 
@@ -138,7 +140,6 @@ class Calendar extends calendarLibrary
     function _standardView()
     {
     	global $objDatabase, $_ARRAYLANG, $_CONFIG, $_LANGID;
-
 
     	$this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar";
 
@@ -302,7 +303,9 @@ class Calendar extends calendarLibrary
 
     		$catQuery = "	SELECT `id`
     						FROM `".DBPREFIX."module_calendar".$this->mandateLink."_categories`
-    						WHERE `lang` = ".$_LANGID." AND";
+    						WHERE `lang` = ".$_LANGID;
+
+
     		if(($objRSCats = $objDatabase->Execute($catQuery)) !== false){
     			while(!$objRSCats->EOF){
     				$arrCats[] = $objRSCats->fields['id'];
