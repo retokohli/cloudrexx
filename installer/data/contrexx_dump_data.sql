@@ -853,6 +853,7 @@ INSERT INTO `contrexx_module_egov_configuration` (`name`, `value`) VALUES ('yell
 INSERT INTO `contrexx_module_egov_configuration` (`name`, `value`) VALUES ('yellowpay_uid', 'demo');
 INSERT INTO `contrexx_module_egov_configuration` (`name`, `value`) VALUES ('yellowpay_hashseed', 'demo');
 INSERT INTO `contrexx_module_egov_configuration` (`name`, `value`) VALUES ('yellowpay_shopid', '');
+INSERT INTO `contrexx_module_egov_configuration` (`name`, `value`) VALUES ('yellowpay_use_testserver', '1');
 INSERT INTO `contrexx_module_egov_product_fields` (`id`, `product`, `name`, `type`, `attributes`, `is_required`, `check_type`, `order_id`) VALUES (1,1,'Vorname','text','','1',1,0);
 INSERT INTO `contrexx_module_egov_product_fields` (`id`, `product`, `name`, `type`, `attributes`, `is_required`, `check_type`, `order_id`) VALUES (2,1,'Nachname','text','','1',1,1);
 INSERT INTO `contrexx_module_egov_product_fields` (`id`, `product`, `name`, `type`, `attributes`, `is_required`, `check_type`, `order_id`) VALUES (3,1,'E-Mail','text','','1',2,2);
@@ -4583,14 +4584,10 @@ INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALU
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (22,'tax_number','99999',1);
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (23,'tax_included','1',1);
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (28,'saferpay_id','37385-17754345',1);
-INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (29,'yellowpay_id','demo',0);
-INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (30,'yellowpay_hash_seed','demo',1);
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (31,'confirmation_emails','',1);
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (32,'telephone','012 345 67 89',1);
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (33,'fax','012 345 67 90',1);
-INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (34,'yellowpay_delivery_payment_type','immediate',1);
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (35,'paypal_account_email','',1);
-INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (36,'yellowpay_shop_id','1711',1);
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (37,'country_id','204',1);
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (38,'saferpay_use_test_account','99867-94913159',1);
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (39,'saferpay_finalize_payment','1',1);
@@ -4604,6 +4601,11 @@ INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALU
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (47,'shop_thumbnail_max_width','80',1);
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (48,'shop_thumbnail_max_height','80',1);
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (49,'shop_thumbnail_quality','90',1);
+INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (50,'yellowpay_shop_id','1711',1);
+INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (51,'yellowpay_hash_seed','demo',1);
+INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (52,'yellowpay_authorization_type','immediate',1);
+INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (53,'yellowpay_accepted_payment_methods','',1);
+INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`) VALUES (54,'yellowpay_use_testserver','1',1);
 INSERT INTO `contrexx_module_shop_countries` (`countries_id`, `countries_name`, `countries_iso_code_2`, `countries_iso_code_3`, `activation_status`) VALUES (1,'Afghanistan','AF','AFG',0);
 INSERT INTO `contrexx_module_shop_countries` (`countries_id`, `countries_name`, `countries_iso_code_2`, `countries_iso_code_3`, `activation_status`) VALUES (2,'Albania','AL','ALB',0);
 INSERT INTO `contrexx_module_shop_countries` (`countries_id`, `countries_name`, `countries_iso_code_2`, `countries_iso_code_3`, `activation_status`) VALUES (3,'Algeria','DZ','DZA',0);
