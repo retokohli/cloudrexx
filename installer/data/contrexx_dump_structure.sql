@@ -294,6 +294,13 @@ CREATE TABLE `contrexx_languages` (
   KEY `defaultstatus` (`is_default`)
 ) TYPE=MyISAM;
 
+CREATE TABLE `contrexx_lib_country` (
+  `id` int(3) unsigned NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  UNIQUE (`name`)
+) TYPE=MYISAM;
+
 CREATE TABLE `contrexx_log` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `userid` int(6) unsigned default NULL,
@@ -1961,7 +1968,10 @@ CREATE TABLE `contrexx_module_shop_categories` (
   `catname` varchar(255) NOT NULL default '',
   `catsorting` smallint(6) NOT NULL default '100',
   `catstatus` tinyint(1) NOT NULL default '1',
-  PRIMARY KEY  (`catid`)
+  `picture` varchar (255) NOT NULL default '',
+  `flags` varchar (255) NOT NULL default '',
+  PRIMARY KEY  (`catid`),
+  KEY `flags` (`flags`)
 ) TYPE=MyISAM;
 
 CREATE TABLE `contrexx_module_shop_config` (
@@ -2189,8 +2199,8 @@ CREATE TABLE `contrexx_module_shop_products` (
   `sort_order` smallint(4) unsigned NOT NULL default '0',
   `vat_id` int(10) unsigned default NULL,
   `weight` int(10) unsigned default NULL,
-  `flags` varchar(100) default NULL,
-  `usergroups` varchar(255) NOT NULL,
+  `flags` varchar(255) default NULL,
+  `usergroups` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `flags` (`flags`),
   FULLTEXT KEY `shopindex` (`title`,`description`)
