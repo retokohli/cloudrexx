@@ -1203,6 +1203,131 @@ class shopmanager extends ShopLibrary {
 
 
     /**
+     * Show attribute options
+     *
+     * Generate the attribute option/value list for its configuration
+     *
+     * @access    private
+     */
+    function _showAttributeOptions()
+    {
+        global $_ARRAYLANG, $objDatabase;
+
+        $this->_initAttributes();
+        $arrAttributes = $this->arrAttributes;
+
+        $rowClass = 1;
+        // unsed: $arrAttributNames = array();
+
+        // delete option
+        if (isset($_GET['delId']) && !empty($_GET['delId'])) {
+            $this->addError($this->_deleteAttributeOption($_GET['delId']));
+        } elseif (!empty($_GET['delProduct']) && isset($_POST['selectedOptionId']) && !empty($_POST['selectedOptionId'])) {
+            $this->addError($this->_deleteAttributeOption($_POST['selectedOptionId']));
+        }
+        // store new option
+        if (isset($_POST['addAttributeOption']) && !empty($_POST['addAttributeOption'])) {
+            $this->addError($this->_storeNewAttributeOption());
+        }
+        // update attribute options
+        if (isset($_POST['updateAttributeOptions']) && !empty($_POST['updateAttributeOptions'])) {
+            $this->addError($this->_updateAttributeOptions());
+        }
+
+        // set language variables
+        $this->_objTemplate->setVariable(array(
+            'TXT_DEFINE_NAME_FOR_OPTION'  => $_ARRAYLANG['TXT_DEFINE_NAME_FOR_OPTION'],
+            'TXT_DEFINE_VALUE_FOR_OPTION' => $_ARRAYLANG['TXT_DEFINE_VALUE_FOR_OPTION'],
+            'TXT_CONFIRM_DELETE_OPTION'   => $_ARRAYLANG['TXT_CONFIRM_DELETE_OPTION'],
+            'TXT_ACTION_IS_IRREVERSIBLE'  => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_MAKE_SELECTION'          => $_ARRAYLANG['TXT_MAKE_SELECTION'],
+            'TXT_SELECT_ACTION'           => $_ARRAYLANG['TXT_SELECT_ACTION'],
+            'TXT_DELETE'                  => $_ARRAYLANG['TXT_DELETE'],
+            'TXT_SAVE_CHANGES'            => $_ARRAYLANG['TXT_SAVE_CHANGES'],
+            'TXT_CHECKBOXES_OPTION'       => $_ARRAYLANG['TXT_CHECKBOXES_OPTION'],
+            'TXT_RADIOBUTTON_OPTION'      => $_ARRAYLANG['TXT_RADIOBUTTON_OPTION'],
+            'TXT_MENU_OPTION'             => $_ARRAYLANG['TXT_MENU_OPTION'],
+            'TXT_SHOP_MENU_OPTION_DUTY'   => $_ARRAYLANG['TXT_SHOP_MENU_OPTION_DUTY'],
+        ));
+        $this->_objTemplate->setGlobalVariable(array(
+            'TXT_OPTIONS'                 => $_ARRAYLANG['TXT_OPTIONS'],
+            'TXT_ADD'                     => $_ARRAYLANG['TXT_ADD'],
+            'TXT_NAME'                    => $_ARRAYLANG['TXT_NAME'],
+            'TXT_VALUES'                  => $_ARRAYLANG['TXT_VALUES'],
+            'TXT_FUNCTIONS'               => $_ARRAYLANG['TXT_FUNCTIONS'],
+            'TXT_VALUE'                   => $_ARRAYLANG['TXT_VALUE'],
+            'TXT_PRICE'                   => $_ARRAYLANG['TXT_PRICE'],
+            'TXT_PRICE_PREFIX'            => $_ARRAYLANG['TXT_PRICE_PREFIX'],
+            'TXT_ADD_NEW_VALUE'           => $_ARRAYLANG['TXT_ADD_NEW_VALUE'],
+            'TXT_EDIT_OPTION'             => $_ARRAYLANG['TXT_EDIT_OPTION'],
+            'TXT_DELETE_OPTION'           => $_ARRAYLANG['TXT_DELETE_OPTION'],
+            'TXT_MARKED'                  => $_ARRAYLANG['TXT_MARKED'],
+            'TXT_SELECT_ALL'              => $_ARRAYLANG['TXT_SELECT_ALL'],
+            'TXT_REMOVE_SELECTION'        => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
+            'TXT_REMOVE_SELECTED_VALUE'   => $_ARRAYLANG['TXT_REMOVE_SELECTED_VALUE'],
+            'TXT_DISPLAY_AS'              => $_ARRAYLANG['TXT_DISPLAY_AS'],
+        ));
+
+        $this->arrAttributes = array();
+        $this->_initAttributes();
+        $arrAttributes = $this->arrAttributes;
+
+        foreach ($arrAttributes as $attributeId => $arrValues) {
+            $this->_objTemplate->setCurrentBlock('attributeList');
+            $this->_objTemplate->setVariable(array(
+            'SHOP_PRODUCT_ATTRIBUTE_ROW_CLASS'         => (++$rowClass % 2 == 0 ? 'row2' : 'row1'),
+            'SHOP_PRODUCT_ATTRIBUTE_ID'                => $attributeId,
+            'SHOP_PRODUCT_ATTRIBUTE_NAME'              => $arrValues['name'],
+            'SHOP_PRODUCT_ATTRIBUTE_VALUE_MENU'        =>
+                $this->_getAttributeValueMenu(
+                    $attributeId,
+                    "attributeValueList[$attributeId]",
+                    $arrValues['values'],
+                    "",
+                    "setSelectedValue($attributeId)",
+                    "width:200px;"
+                ),
+            'SHOP_PRODUCT_ATTRIBUTE_VALUE_INPUTBOXES'  =>
+                $this->_getAttributeInputBoxes(
+                    $attributeId,
+                    'attributeValue',
+                    'value',
+                    32,
+                    'width:170px;'
+                ),
+            'SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES'  =>
+                $this->_getAttributeInputBoxes(
+                    $attributeId,
+                    'attributePrice',
+                    'price',
+                    9,
+                    'width:170px;text-align:right;'
+                ),
+            'SHOP_PRODUCT_ATTRIBUTE_PRICEPREFIX_MENUS' =>
+                $this->_getAttributePricePrefixMenu(
+                    $attributeId,
+                    'attributePricePrefix',
+                    $arrValues['values']
+                ),
+            'SHOP_PRODUCT_ATTRIBUTE_DISPLAY_TYPE'      =>
+                $this->_getAttributeDisplayTypeMenu(
+                    $attributeId,
+                    $arrValues['displayType']
+                ),
+            ));
+            $this->_objTemplate->parseCurrentBlock();
+        }
+
+        $this->_objTemplate->setVariable(array(
+            'SHOP_PRODUCT_ATTRIBUTE_JS_VARS'  =>
+                $this->_getAttributeJSVars().
+                "\nindex = ".$this->highestIndex.";\n",
+            'SHOP_PRODUCT_ATTRIBUTE_CURRENCY' => $this->defaultCurrency,
+        ));
+    }
+
+
+    /**
      * Show product download option page
      *
      * Show the settings for the download options of the products
@@ -1282,99 +1407,6 @@ class shopmanager extends ShopLibrary {
             $this->_objTpl->parse('attributeList');
             ++$i;
         }
-    }
-
-
-    /**
-     * Show attribute options
-     *
-     * Generate the attribute option/value list for its configuration
-     *
-     * @access    private
-     */
-    function _showAttributeOptions()
-    {
-        global $_ARRAYLANG, $objDatabase;
-
-        $this->_initAttributes();
-        $arrAttributes = $this->arrAttributes;
-
-        $rowClass = 1;
-        // unsed: $arrAttributNames = array();
-
-        // delete option
-        if (isset($_GET['delId']) && !empty($_GET['delId'])) {
-            $this->addError($this->_deleteAttributeOption($_GET['delId']));
-        } elseif (!empty($_GET['delProduct']) && !empty($_POST['selectedOptionId'])) {
-            $this->addError($this->_deleteAttributeOption($_POST['selectedOptionId']));
-        }
-        // store new option
-        if (isset($_POST['addAttributeOption']) && !empty($_POST['addAttributeOption'])) {
-            $this->addError($this->_storeNewAttributeOption());
-        }
-        // update attribute options
-        if (isset($_POST['updateAttributeOptions']) && !empty($_POST['updateAttributeOptions'])) {
-            $this->addError($this->_updateAttributeOptions());
-        }
-
-        // set language variables
-        $this->_objTpl->setVariable(array(
-        'TXT_DEFINE_NAME_FOR_OPTION'  => $_ARRAYLANG['TXT_DEFINE_NAME_FOR_OPTION'],
-        'TXT_DEFINE_VALUE_FOR_OPTION' => $_ARRAYLANG['TXT_DEFINE_VALUE_FOR_OPTION'],
-        'TXT_CONFIRM_DELETE_OPTION'   => $_ARRAYLANG['TXT_CONFIRM_DELETE_OPTION'],
-        'TXT_ACTION_IS_IRREVERSIBLE'  => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
-        'TXT_MAKE_SELECTION'          => $_ARRAYLANG['TXT_MAKE_SELECTION'],
-        'TXT_SELECT_ACTION'           => $_ARRAYLANG['TXT_SELECT_ACTION'],
-        'TXT_DELETE'                  => $_ARRAYLANG['TXT_DELETE'],
-        'TXT_SAVE_CHANGES'            => $_ARRAYLANG['TXT_SAVE_CHANGES'],
-        'TXT_CHECKBOXES_OPTION'       => $_ARRAYLANG['TXT_CHECKBOXES_OPTION'],
-        'TXT_RADIOBUTTON_OPTION'      => $_ARRAYLANG['TXT_RADIOBUTTON_OPTION'],
-        'TXT_MENU_OPTION'             => $_ARRAYLANG['TXT_MENU_OPTION'],
-        'TXT_SHOP_MENU_OPTION_DUTY'   => $_ARRAYLANG['TXT_SHOP_MENU_OPTION_DUTY']
-        ));
-        $this->_objTpl->setGlobalVariable(array(
-        'TXT_OPTIONS'                 => $_ARRAYLANG['TXT_OPTIONS'],
-        'TXT_ADD'                     => $_ARRAYLANG['TXT_ADD'],
-        'TXT_NAME'                    => $_ARRAYLANG['TXT_NAME'],
-        'TXT_VALUES'                  => $_ARRAYLANG['TXT_VALUES'],
-        'TXT_FUNCTIONS'               => $_ARRAYLANG['TXT_FUNCTIONS'],
-        'TXT_VALUE'                   => $_ARRAYLANG['TXT_VALUE'],
-        'TXT_PRICE'                   => $_ARRAYLANG['TXT_PRICE'],
-        'TXT_PRICE_PREFIX'            => $_ARRAYLANG['TXT_PRICE_PREFIX'],
-        'TXT_ADD_NEW_VALUE'           => $_ARRAYLANG['TXT_ADD_NEW_VALUE'],
-        'TXT_EDIT_OPTION'             => $_ARRAYLANG['TXT_EDIT_OPTION'],
-        'TXT_DELETE_OPTION'           => $_ARRAYLANG['TXT_DELETE_OPTION'],
-        'TXT_MARKED'                  => $_ARRAYLANG['TXT_MARKED'],
-        'TXT_SELECT_ALL'              => $_ARRAYLANG['TXT_SELECT_ALL'],
-        'TXT_REMOVE_SELECTION'        => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
-        'TXT_REMOVE_SELECTED_VALUE'   => $_ARRAYLANG['TXT_REMOVE_SELECTED_VALUE'],
-        'TXT_DISPLAY_AS'              => $_ARRAYLANG['TXT_DISPLAY_AS']
-        ));
-
-        $this->arrAttributes = array();
-        $this->_initAttributes();
-        $arrAttributes = $this->arrAttributes;
-
-        foreach ($arrAttributes as $attributeId => $arrValues) {
-            $this->_objTpl->setCurrentBlock('attributeList');
-            $this->_objTpl->setVariable(array(
-            'SHOP_PRODUCT_ATTRIBUTE_ROW_CLASS'         => $rowClass%2 == 0 ? "row2" : "row1",
-            'SHOP_PRODUCT_ATTRIBUTE_ID'                => $attributeId,
-            'SHOP_PRODUCT_ATTRIBUTE_NAME'              => $arrValues['name'],
-            'SHOP_PRODUCT_ATTRIBUTE_VALUE_MENU'        => $this->_getAttributeValueMenu($attributeId,"attributeValueList[$attributeId]", $arrValues['values'],"","setSelectedValue($attributeId)","width:200px;"),
-            'SHOP_PRODUCT_ATTRIBUTE_VALUE_INPUTBOXES'  => $this->_getAttributeInputBoxes($attributeId,'attributeValue', 'value',32,'width:170px;'),
-            'SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES'  => $this->_getAttributeInputBoxes($attributeId,'attributePrice','price',9,'width:170px;text-align:right;'),
-            'SHOP_PRODUCT_ATTRIBUTE_PRICEPREFIX_MENUS' => $this->_getAttributePricePrefixMenu($attributeId,'attributePricePrefix', $arrValues['values']),
-            'SHOP_PRODUCT_ATTRIBUTE_DISPLAY_TYPE'      => $this->_getAttributeDisplayTypeMenu($attributeId, $arrValues['displayType'])
-            ));
-            $this->_objTpl->parseCurrentBlock();
-            $rowClass++;
-        }
-
-        $this->_objTpl->setVariable(array(
-        'SHOP_PRODUCT_ATTRIBUTE_JS_VARS'  => $this->_getAttributeJSVars()."\nindex = ".$this->highestIndex.";\n",
-        'SHOP_PRODUCT_ATTRIBUTE_CURRENCY' => $this->defaultCurrency
-        ));
     }
 
 
@@ -1823,6 +1855,7 @@ class shopmanager extends ShopLibrary {
             'TXT_IMMEDIATE'                    => $_ARRAYLANG['TXT_IMMEDIATE'],
             'TXT_DEFERRED'                     => $_ARRAYLANG['TXT_DEFERRED'],
             'TXT_SHOP_ACCEPTED_PAYMENT_METHODS' => $_ARRAYLANG['TXT_SHOP_ACCEPTED_PAYMENT_METHODS'],
+/*
             'TXT_SHOP_YELLOWPAY_POSTFINANCECARD' => $_ARRAYLANG['TXT_SHOP_YELLOWPAY_POSTFINANCECARD'],
             'TXT_SHOP_YELLOWPAY_YELLOWNET' => $_ARRAYLANG['TXT_SHOP_YELLOWPAY_YELLOWNET'],
             'TXT_SHOP_YELLOWPAY_MASTER' => $_ARRAYLANG['TXT_SHOP_YELLOWPAY_MASTER'],
@@ -1830,6 +1863,7 @@ class shopmanager extends ShopLibrary {
             'TXT_SHOP_YELLOWPAY_AMEX' => $_ARRAYLANG['TXT_SHOP_YELLOWPAY_AMEX'],
             'TXT_SHOP_YELLOWPAY_DINERS' => $_ARRAYLANG['TXT_SHOP_YELLOWPAY_DINERS'],
             'TXT_SHOP_YELLOWPAY_YELLOWBILL' => $_ARRAYLANG['TXT_SHOP_YELLOWPAY_YELLOWBILL'],
+*/
             // country settings
             'TXT_COUNTRY_LIST'                 => $_ARRAYLANG['TXT_COUNTRY_LIST'],
             'TXT_DISPLAY_IT_IN_THE_SHOP'       => $_ARRAYLANG['TXT_DISPLAY_IT_IN_THE_SHOP'],

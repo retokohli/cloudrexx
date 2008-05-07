@@ -101,6 +101,7 @@ class Products
         $query = $this->getWildcardQuery($arrPattern);
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
+//echo("Error: Query failed:<br />$query<br />");
             return false;
         }
         $arrProduct = array();
@@ -134,6 +135,7 @@ class Products
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
+//echo("Error: Query failed:<br />$query<br />");
             return false;
         }
         $arrProduct = array();
@@ -200,7 +202,7 @@ class Products
                 AND (  title LIKE '%$pattern%'
                     OR description LIKE '%$pattern%'
                     OR shortdesc LIKE '%$pattern%'
-                    OR product_id LIKE '%$pattern%')
+                    OR product_id LIKE '%$pattern%'
                     OR id LIKE '%$pattern%')
             ";
             // Add a list of comma separated ShopCategory IDs to be searched.
@@ -223,6 +225,7 @@ class Products
             && empty($querySpecialoffer)
             && empty($querySearch)
         ) {
+//echo("empty($flagBackend) && empty($queryCategory) && empty($queryManufacturer) && empty($querySpecialoffer) && empty($querySearch) -> returning empty array();"); die();
             return array();
         }
 
@@ -256,9 +259,11 @@ class Products
         // Count the number of available Products
         $objResult = $objDatabase->Execute('SELECT COUNT(*) AS count'.$query);
         if (!$objResult) {
+//echo("Error: Query failed:<br />SELECT COUNT(*) AS count $query<br />");
             return false;
         }
         $count = $objResult->fields['count'];
+//echo("Count is $count<br />");
         // Set up the Product array
         if ($_CONFIG['corePagingLimit']) { // From /config/settings.php
             $objResult = $objDatabase->SelectLimit(
@@ -268,6 +273,7 @@ class Products
             $objResult = $objDatabase->Execute('SELECT id'.$query);
         }
         if (!$objResult) {
+//echo("Error: Query failed:<br />SELECT id $query<br />");
             return false;
         }
         $arrProduct = array();
@@ -275,6 +281,7 @@ class Products
             $arrProduct[] = Product::getById($objResult->Fields('id'));
             $objResult->MoveNext();
         }
+//echo("got ".count($arrProduct)." entries<br />");
         return $arrProduct;
     }
 
@@ -400,6 +407,7 @@ class Products
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
+//echo("Error: Query failed:<br />$query<br />");
             return false;
         }
         $arrProductId = array();
@@ -433,6 +441,7 @@ class Products
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
+//echo("Error: Query failed:<br />$query<br />");
             return false;
         }
         $arrProduct = array();
@@ -501,6 +510,7 @@ class Products
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
+//echo("Error: Query failed:<br />$query<br />");
             return false;
         }
         $arrShopCategoryId = array();

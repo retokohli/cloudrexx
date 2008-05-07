@@ -475,7 +475,7 @@ class ShopCategory
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-echo("ShopCategory::update(): ERROR: Query failed: $query<br />");
+//echo("ShopCategory::update(): ERROR: Query failed: $query<br />");
         }
         return $objResult;
     }
@@ -510,7 +510,7 @@ echo("ShopCategory::update(): ERROR: Query failed: $query<br />");
             )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-echo("ShopCategory::insert(): ERROR: Query failed: $query<br />");
+//echo("ShopCategory::insert(): ERROR: Query failed: $query<br />");
             return false;
         }
         $this->id = $objDatabase->Insert_ID();
