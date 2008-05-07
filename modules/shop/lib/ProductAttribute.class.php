@@ -12,6 +12,20 @@
  */
 
 /**
+ * Attribute type constants
+ *
+ * Note that you need to update methods like getAttributeDisplayTypeMenu()
+ * manually when you add another option here.
+ */
+define('SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU_OPTIONAL', 0);
+define('SHOP_PRODUCT_ATTRIBUTE_TYPE_RADIOBUTTON', 1);
+define('SHOP_PRODUCT_ATTRIBUTE_TYPE_CHECKBOX', 2);
+define('SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU_MANDATORY', 3);
+define('SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXT', 4);
+define('SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD', 5);
+define('SHOP_PRODUCT_ATTRIBUTE_TYPE_COUNT', 6);
+
+/**
  * Product Attribute
  *
  * These may be associated with zero or more Products.
@@ -31,7 +45,6 @@
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @todo        Test!
  */
-
 class ProductAttribute
 {
     // attributes: attribute_id, product_id, attributes_name_id, attributes_value_id, sort_id
@@ -42,7 +55,7 @@ class ProductAttribute
      * The ProductAttribute ID
      * @var integer
      */
-    var $id;
+    private $id;
 
     /**
      * The associated Product ID, if any, or false
@@ -53,19 +66,19 @@ class ProductAttribute
      * The ProductAttribute name
      * @var string
      */
-    var $name;
+    private $name;
 
     /**
      * The ProductAttribute type
      * @var integer
      */
-    var $type;
+    private $type;
 
     /**
      * The ProductAttribute array of values
      * @var array
      */
-    var $arrValue;
+    private $arrValue;
 
     /**
      * The value index
@@ -84,7 +97,7 @@ class ProductAttribute
      * Only used by our friend, the Product class
      * @var integer
      */
-    var $order;
+    private $order;
 
 
     /**
@@ -94,6 +107,7 @@ class ProductAttribute
     function ProductAttribute($name, $type, $id=0, $productId=false)
     {
         $this->__construct($name, $type, $id, $productId);
+        $this->setType($type);
     }
 
     /**
@@ -147,7 +161,10 @@ class ProductAttribute
      */
     function setType($type)
     {
-        $this->type = intval($type);
+        if (   $type >= SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU_OPTIONAL
+            && $type <  SHOP_PRODUCT_ATTRIBUTE_TYPE_COUNT) {
+            $this->type = intval($type);
+        }
     }
 
     /**
