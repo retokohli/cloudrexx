@@ -1136,7 +1136,7 @@ class Shop extends ShopLibrary
         $shopMenu =
             '<form action="index.php?section=shop'.MODULE_INDEX.'" method="post">'.
             '<input type="text" name="term" value="'.htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET).'" style="width:150px;" />&nbsp;'.
-            '<select name="catId" style="width:150px;">'.'<option value="0">'.$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].'</option>'.$this->objShopCategories->getShopCategoriesMenu($catId, true, 0).'</select>&nbsp;'.$this->_getManufacturerMenu($manufacturerId).'<br /><input type="submit" name="Submit" value="'.$_ARRAYLANG['TXT_SEARCH'].'" style="width:66px;" /></form>';
+            '<select name="catId" style="width:150px;">'.'<option value="0">'.$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].'</option>'.$this->objShopCategories->getShopCategoriesMenu($catId, true, 0).'</select>&nbsp;'.$this->_getManufacturerMenu($manufacturerId).'<input type="submit" name="Submit" value="'.$_ARRAYLANG['TXT_SEARCH'].'" style="width:66px;" /></form>';
         $this->objTemplate->setVariable("SHOP_MENU", $shopMenu);
         $this->objTemplate->setVariable("SHOP_CART_INFO", $this->showCartInfo());
 
