@@ -232,6 +232,9 @@ class eGov extends eGovLibrary
             eGovLibrary::GetSettings('yellowpay_accepted_payment_methods'),
             eGovLibrary::GetSettings('yellowpay_authorization')
         );
+        $yellowpayTest = eGovLibrary::GetSettings('yellowpay_use_testserver');
+        $yellowpayTestCheckedYes = ($yellowpayTest ? 'checked="checked"' : '');
+        $yellowpayTestCheckedNo = ($yellowpayTest ? '' : 'checked="checked"');
 
         $this->_objTpl->setVariable(array(
             'TXT_EGOV_CALENDAR_COLOR_FREE' => $_ARRAYLANG['TXT_EGOV_CALENDAR_COLOR_FREE'],
@@ -310,6 +313,11 @@ class eGov extends eGovLibrary
             'TXT_EGOV_GENERAL' => $_ARRAYLANG['TXT_EGOV_GENERAL'],
             'TXT_EGOV_DEFAULT_CURRENCY' => $_ARRAYLANG['TXT_EGOV_DEFAULT_CURRENCY'],
             'EGOV_CURRENCY_MENUOPTIONS' => $currencyMenuoptions,
+            'TXT_EGOV_YELLOWPAY_USE_TESTSERVER' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_USE_TESTSERVER'],
+            'EGOV_YELLOWPAY_USE_TESTSERVER_YES_CHECKED' => $yellowpayTestCheckedYes,
+            'EGOV_YELLOWPAY_USE_TESTSERVER_NO_CHECKED' => $yellowpayTestCheckedNo,
+            'TXT_EGOV_YES' => $_ARRAYLANG['TXT_EGOV_YES'],
+            'TXT_EGOV_NO' => $_ARRAYLANG['TXT_EGOV_NO'],
         ));
     }
 
@@ -366,8 +374,8 @@ class eGov extends eGovLibrary
         if ($ProductTargetBody == '') {
             $ProductTargetBody = eGovLibrary::GetSettings('set_state_email');
         }
-        $PayPal_yes = (eGovLibrary::GetProduktValue('product_paypal', $product_id) == 1 ? 'checked="checked"' : '');
-        $PayPal_no = ($PayPal_yes == '' ? 'checked="checked"' : '');
+        $PaypayCheckedYes = (eGovLibrary::GetProduktValue('product_paypal', $product_id) == 1 ? 'checked="checked"' : '');
+        $PaypayCheckedNo = ($PaypayCheckedYes == '' ? 'checked="checked"' : '');
         $currency = eGovLibrary::GetProduktValue('product_paypal_currency', $product_id);
         $paypalEmail = eGovLibrary::GetProduktValue('product_paypal_sandbox', $product_id);
         if ($paypalEmail == '') {
@@ -390,8 +398,6 @@ class eGov extends eGovLibrary
             'TXT_PRODUCT_NAME' => $_ARRAYLANG['TXT_PRODUCT_NAME'],
             'TXT_EGOV_RECEIVER_ADDRESSES' => $_ARRAYLANG['TXT_EGOV_RECEIVER_ADDRESSES'],
             'TXT_EGOV_LIMITED_PER_DAY' => $_ARRAYLANG['TXT_EGOV_LIMITED_PER_DAY'],
-            'TXT_YES' => $_ARRAYLANG['TXT_YES'],
-            'TXT_NO' => $_ARRAYLANG['TXT_NO'],
             'TXT_EGOV_RESERVED_DAYS' => $_ARRAYLANG['TXT_EGOV_RESERVED_DAYS'],
             'TXT_EGOV_PRODUCT_QUANTITY' => $_ARRAYLANG['TXT_EGOV_PRODUCT_QUANTITY'],
             'TXT_EGOV_TARGET_URL' => $_ARRAYLANG['TXT_EGOV_TARGET_URL'],
@@ -441,8 +447,8 @@ class eGov extends eGovLibrary
             'PRODUCT_TARGET_BODY' => $ProductTargetBody,
             'TXT_EGOV_PRODUCTNAME_PLACEHOLDER' => $_ARRAYLANG['TXT_EGOV_PRODUCTNAME_PLACEHOLDER'],
             'TXT_EGOV_ORDERDETAILS_PLACEHOLDER' => $_ARRAYLANG['TXT_EGOV_ORDERDETAILS_PLACEHOLDER'],
-            'PAYPAL_YES' => $PayPal_yes,
-            'PAYPAL_NO' => $PayPal_no,
+            'PAYPAL_YES' => $PaypayCheckedYes,
+            'PAYPAL_NO' => $PaypayCheckedNo,
             'TXT_EGOV_ACTIVATE_PAYPAL' => $_ARRAYLANG['TXT_EGOV_ACTIVATE_PAYPAL'],
             'TXT_EGOV_SANDBOX_EMAIL' => $_ARRAYLANG['TXT_EGOV_SANDBOX_EMAIL'],
             'SANDBOX_EMAIL' => $paypalEmail,

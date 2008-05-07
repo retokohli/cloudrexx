@@ -552,7 +552,8 @@ class eGov extends eGovLibrary
         if (!empty($_POST['txtBZipCode'])) { $arrShopOrder['txtBZipCode'] = $_POST['txtBZipCode']; }
         if (!empty($_POST['txtBCity'])) { $arrShopOrder['txtBCity'] = $_POST['txtBCity']; }
 
-        $yellowpayForm = $objYellowpay->getForm($arrShopOrder, '', true);
+        $yellowpayForm = $objYellowpay->getForm(
+            $arrShopOrder, '', true, eGovLibrary::GetSettings(''));
 //echo("got yellowpayform: ".htmlentities($yellowpayForm)."<br />");
         if (count($objYellowpay->arrError) > 0) {
             $strError = "alert(\"Yellowpay could not be initialized:\n";
