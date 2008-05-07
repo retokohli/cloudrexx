@@ -444,7 +444,7 @@ class PaymentProcessing
             'txtArtCurrency'      => $this->_currencyCode,
             'txtOrderIDShop'      => $_SESSION['shop']['orderid'],
             'txtShopPara'         => 'source=shop',
-            'deliveryPaymentType' => $this->arrConfig['yellowpay_delivery_payment_type']['value'],
+            'deliveryPaymentType' => $this->arrConfig['yellowpay_authorization_type']['value'],
             'acceptedPaymentMethods' => $this->arrConfig['yellowpay_accepted_payment_methods']['value'],
         );
 

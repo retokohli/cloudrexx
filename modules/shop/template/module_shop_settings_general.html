@@ -130,37 +130,29 @@ function setVatUnset()
                 {TXT_AUTORIZATION}
               </td>
               <td>
-                <select name="yellowpay_delivery_payment_type">
-                  {SHOP_YELLOWPAY_DELIVERY_PAYMENT_TYPE_OPTIONS}
-<!--
-                  <option value="immediate" {SHOP_YELLOWPAY_IMMEDIATE_STATUS}>{TXT_IMMEDIATE}</option>
-                  <option value="deferred" {SHOP_YELLOWPAY_DEFERRED_STATUS}>{TXT_DEFERRED}</option>
--->
+                <select name="yellowpay_authorization_type">
+                  {SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS}
                 </select>
               </td>
             </tr>
             <tr>
-              <td>
+              <td valign="top">
                 {TXT_SHOP_ACCEPTED_PAYMENT_METHODS}
               </td>
               <td>
                 {SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES}
-<!--
-                <input name="yellowpay_accepted_payment_methods[]" id="yellowpay_pm_1" type="checkbox"{SHOP_YELLOWPAY_CHECKED_POSTFINANCECARD} value="PostFinanceCard" />
-                <label for="yellowpay_pm_1">&nbsp;{TXT_SHOP_YELLOWPAY_POSTFINANCECARD}</label><br />
-                <input name="yellowpay_accepted_payment_methods[]" id="yellowpay_pm_2" type="checkbox"{SHOP_YELLOWPAY_CHECKED_YELLOWNET} value="yellownet" />
-                <label for="yellowpay_pm_2">&nbsp;{TXT_SHOP_YELLOWPAY_YELLOWNET}</label><br />
-                <input name="yellowpay_accepted_payment_methods[]" id="yellowpay_pm_3" type="checkbox"{SHOP_YELLOWPAY_CHECKED_MASTER} value="Master" />
-                <label for="yellowpay_pm_3">&nbsp;{TXT_SHOP_YELLOWPAY_MASTER}</label><br />
-                <input name="yellowpay_accepted_payment_methods[]" id="yellowpay_pm_4" type="checkbox"{SHOP_YELLOWPAY_CHECKED_VISA} value="Visa" />
-                <label for="yellowpay_pm_4">&nbsp;{TXT_SHOP_YELLOWPAY_VISA}</label><br />
-                <input name="yellowpay_accepted_payment_methods[]" id="yellowpay_pm_5" type="checkbox"{SHOP_YELLOWPAY_CHECKED_AMEX} value="Amex" />
-                <label for="yellowpay_pm_5">&nbsp;{TXT_SHOP_YELLOWPAY_AMEX}</label><br />
-                <input name="yellowpay_accepted_payment_methods[]" id="yellowpay_pm_6" type="checkbox"{SHOP_YELLOWPAY_CHECKED_DINERS} value="Diners" />
-                <label for="yellowpay_pm_6">&nbsp;{TXT_SHOP_YELLOWPAY_DINERS}</label><br />
-                <input name="yellowpay_accepted_payment_methods[]" id="yellowpay_pm_7" type="checkbox"{SHOP_YELLOWPAY_CHECKED_YELLOWBILL} value="yellowbill" />
-                <label for="yellowpay_pm_7">&nbsp;{TXT_SHOP_YELLOWPAY_YELLOWBILL}</label>
--->
+              </td>
+            </tr>
+            <tr>
+              <td valign="top">{TXT_SHOP_YELLOWPAY_USE_TESTSERVER}</td>
+              <td>
+                <input id="yellowpay_use_testserver_yes" type="radio"
+                  name="yellowpay_use_testserver" value="1"{SHOP_YELLOWPAY_USE_TESTSERVER_YES_CHECKED}>
+                <label for="yellowpay_use_testserver_yes">{TXT_SHOP_YES}</label>
+                <br />
+                <input id="yellowpay_use_testserver_no" type="radio"
+                  name="yellowpay_use_testserver" value="0"{SHOP_YELLOWPAY_USE_TESTSERVER_NO_CHECKED}>
+                <label for="yellowpay_use_testserver_no">{TXT_SHOP_NO}</label>
               </td>
             </tr>
           </table>

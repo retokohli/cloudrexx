@@ -1903,6 +1903,10 @@ class shopmanager extends ShopLibrary {
             'TXT_SHOP_THUMBNAIL_MAX_WIDTH'     => $_ARRAYLANG['TXT_SHOP_THUMBNAIL_MAX_WIDTH'],
             'TXT_SHOP_THUMBNAIL_MAX_HEIGHT'    => $_ARRAYLANG['TXT_SHOP_THUMBNAIL_MAX_HEIGHT'],
             'TXT_SHOP_THUMBNAIL_QUALITY'       => $_ARRAYLANG['TXT_SHOP_THUMBNAIL_QUALITY'],
+            // Yellowpay settings
+            'TXT_SHOP_YELLOWPAY_USE_TESTSERVER' => $_ARRAYLANG['TXT_SHOP_YELLOWPAY_USE_TESTSERVER'],
+            'TXT_SHOP_YES' => $_ARRAYLANG['TXT_SHOP_YES'],
+            'TXT_SHOP_NO' => $_ARRAYLANG['TXT_SHOP_NO'],
         ));
 
         if (!isset($_GET['tpl'])) {
@@ -2429,14 +2433,17 @@ class shopmanager extends ShopLibrary {
 //var_export($this->arrConfig);echo("<br />");
                 $objYellowpay = new Yellowpay(
                     $this->arrConfig['yellowpay_accepted_payment_methods']['value'],
-                    $this->arrConfig['yellowpay_delivery_payment_type']['value']
+                    $this->arrConfig['yellowpay_authorization_type']['value']
                 );
                 $yellowpayStatus =
                     ($this->arrConfig['yellowpay_shop_id']['status'] == 1
                         ? 'checked="checked"' : ''
                     );
+                $yellowpayTest = $this->arrConfig['yellowpay_use_testserver'][value];
+                $yellowpayTestCheckedYes = ($yellowpayTest ? 'checked="checked"' : '');
+                $yellowpayTestCheckedNo = ($yellowpayTest ? '' : 'checked="checked"');
 /*
-                if ($this->arrConfig['yellowpay_delivery_payment_type']['value'] == 'deferred') {
+                if ($this->arrConfig['yellowpay_authorization_type']['value'] == 'deferred') {
                     $yellowpayDeferred = "selected='selected'";
                     $yellowpayImmediate = "";
                 } else {
@@ -2497,8 +2504,12 @@ class shopmanager extends ShopLibrary {
                     'SHOP_YELLOWPAY_HASH_SEED'          => $this->arrConfig['yellowpay_hash_seed']['value'],
                     'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' =>
                         $objYellowpay->getKnownPaymentMethodCheckboxes(),
-                    'SHOP_YELLOWPAY_DELIVERY_PAYMENT_TYPE_OPTIONS' =>
+                    'SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS' =>
                         $objYellowpay->getAuthorizationMenuoptions(),
+                    'SHOP_YELLOWPAY_USE_TESTSERVER_YES_CHECKED' =>
+                        $yellowpayTestCheckedYes,
+                    'SHOP_YELLOWPAY_USE_TESTSERVER_NO_CHECKED' =>
+                        $yellowpayTestCheckedNo,
 /*
                     'SHOP_YELLOWPAY_IMMEDIATE_STATUS'   => $yellowpayImmediate,
                     'SHOP_YELLOWPAY_DEFERRED_STATUS'    => $yellowpayDeferred,

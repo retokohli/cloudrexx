@@ -198,14 +198,19 @@ class Settings
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['yellowpay_delivery_payment_type'])."'
-                                    WHERE name='yellowpay_delivery_payment_type'"
+                                    SET value='".addslashes($_POST['yellowpay_authorization_type'])."'
+                                    WHERE name='yellowpay_authorization_type'"
                                 );
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
             $strAcceptedPM = (isset($_POST['yellowpay_accepted_payment_methods'])
                 ? addslashes(join(',', $_POST['yellowpay_accepted_payment_methods']))
                 : ''
             );
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
+                                    SET value='".addslashes($_POST['yellowpay_use_testserver'])."'
+                                    WHERE name='yellowpay_use_testserver'"
+                                );
+            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                                     SET value='$strAcceptedPM'
                                     WHERE name='yellowpay_accepted_payment_methods'"
