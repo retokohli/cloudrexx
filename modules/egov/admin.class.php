@@ -1565,6 +1565,11 @@ class eGov extends eGovLibrary
                SET `value`='".(isset($_REQUEST['yellowpay_authorization']) ? $_REQUEST['yellowpay_authorization'] : '')."'
              WHERE `name`='yellowpay_authorization'
         ") ? true : false);
+        $result &= ($objDatabase->Execute("
+            UPDATE ".DBPREFIX."module_egov_configuration
+               SET `value`='".(isset($_REQUEST['yellowpay_use_testserver']) ? $_REQUEST['yellowpay_use_testserver'] : '')."'
+             WHERE `name`='yellowpay_use_testserver'
+        ") ? true : false);
         return $result;
     }
 
