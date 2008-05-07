@@ -209,14 +209,15 @@ class Yellowpay
      * @return  string    The HTML-Form
      * @see     addRequiredKeys(), addPaymentTypeKeys(), addOtherKeys()
      */
-    function getForm($arrShopOrder, $submitValue='send', $autopost=false)
-    {
+    function getForm(
+        $arrShopOrder, $submitValue='send', $autopost=false, $isTest=false
+    ) {
         $this->arrShopOrder = $arrShopOrder;
         $this->form =
             // The real yellowpay server or the test server
             '<form name="yellowpay" method="post" '.
             'action="https://yellowpay'.
-            ($this->is_test ? 'test' : '').
+            ($isTest ? 'test' : '').
             '.postfinance.ch/checkout/Yellowpay.aspx?userctrl=Invisible"'.
             ">\n";
 /*
