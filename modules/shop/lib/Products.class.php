@@ -682,7 +682,7 @@ class Products
 
         // Get the affected identical Products
         $arrProduct = Products::getByCustomId($productCode);
-        if (!is_array($arrProduct)) {
+        if (count($arrProduct) == 0) {
             // No way we can do anything useful without them.
             return false;
         }
