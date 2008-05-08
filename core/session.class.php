@@ -38,6 +38,10 @@ class cmsSession
 		}  else {
 			$this->lifetime=intval($_CONFIG['sessionLifeTime']);
 		}
+		
+		if (ini_get("session.auto_start")) {
+            session_destroy();
+		}
 
 		if (session_set_save_handler(
         	array(& $this, 'cmsSessionOpen'),
