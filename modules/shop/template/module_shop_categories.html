@@ -65,7 +65,6 @@ function SetUrl(url, width, height, alt)
   }
   img.style.width = (width/factor)+"px";
   img.style.height = (height/factor)+"px";
-//alert("width: "+width+"\nheight: "+height+"\nmax width: "+imageMaxWidth+"\nmax height: "+imageMaxHeight+"\nratio width: "+imgRatioWidth+"\nratio height: "+imgRatioHeight+"\nthumb width: "+img.style.width+"\nthumb height: "+img.style.height);
   elName = img.nextSibling.nextSibling.nextSibling;
   elName.replaceData(0, elName.nodeValue.length, fileName);
 }

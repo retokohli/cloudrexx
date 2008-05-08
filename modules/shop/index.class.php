@@ -1677,11 +1677,7 @@ class Shop extends ShopLibrary
         }
         $count = $objResult->RecordCount();
         $i = 1;
-
         while (!$objResult->EOF) {
-//            $fileArr = explode (".", $objResult->fields['picture']);
-//            $file = $fileArr[0].$this->thumbnailNameSuffix.".".$fileArr[1];
-//            $arrThumbnailPath[$i] = $this->shopImageWebPath.$file;
             $arrImages = $this->_getShopImagesFromBase64String($objResult->fields['picture']);
 
             // no product picture available
@@ -1694,18 +1690,9 @@ class Shop extends ShopLibrary
             }
 
             $price = $this->_getProductPrice($objResult->fields['normalprice'], $objResult->fields['resellerprice']);
+            $arrPrice[$i] = "<s>".$price."</s>";
+            $arrDiscountPrice[$i] = $this->objCurrency->getCurrencyPrice($objResult->fields['discountprice']);
 
-            if ($objResult->fields['discountprice'] == 0) {
-                // No free samples!
-                // Skip these Products
-                $objResult->MoveNext();
-                continue;
-//                $arrPrice[$i]         = $price;
-//                $arrDiscountPrice[$i] = '0.00';
-            } else {
-                $arrPrice[$i] = "<s>".$price."</s>";
-                $arrDiscountPrice[$i] = $this->objCurrency->getCurrencyPrice($objResult->fields['discountprice']);
-            }
             $arrDetailLink[$i] = "index.php?section=shop".MODULE_INDEX."&amp;cmd=details&amp;productId=".$objResult->fields['id'];
             $arrTitle[$i] = $objResult->fields['title'];
             ++$i;
