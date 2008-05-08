@@ -46,7 +46,7 @@ Content Manager: Übersicht
 Statistik
 - Der Bereich "Monatliche Besucher und Seitenaufrufe" listet die letzten zwei
   Jahre.
-  
+
 WYSIWYG-Editor
 - Neue Version 2.6 des FCKeditors. Weitere Informationen unter:
   http://www.fckeditor.net/whatsnew/
@@ -203,3 +203,6 @@ Modul: Shop
 - Währungen bearbeiten: Die Standart Währung erhält immer den Kurs 1.000.
   Beim setzen einer neuen Standart Währung werden die Wechselkurse automatisch
   umgerechnet.
+- Neue Option "Produktgewicht verwenden" in den allgemeinen Einstellungen
+  schaltet die Anzeige und Verwendung des Produktegewichtes ein oder aus.
+
