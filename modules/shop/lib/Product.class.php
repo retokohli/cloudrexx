@@ -903,7 +903,7 @@ class Product
      */
     function setUsergroups($usergroups)
     {
-        $this->usergroups = intval($usergroups);
+        $this->usergroups = $usergroups;
     }
 
 

@@ -37,35 +37,23 @@ class Settings
 {
     /**
      * Array of all countries
-     *
-     * @var array $arrCountries Array of all countries
-     * @access public
-     * @see _initCountries()
+     * @var   array   $arrCountries   Array of all countries
+     * @see   _initCountries()
      */
-    var $arrCountries = array();
+    private $arrCountries = array();
 
     /**
      * This flag is set to true as soon as any changed setting is
-     * detected and stored. Only used by new methods that support it.
-     *
+     * detected and stored.  Only used by new methods that support it.
      * @var     boolean     $flagChanged
      * @access  private
      */
-    var $flagChanged = false;
+    private $flagChanged = false;
 
     /**
-     * PHP4 Constructor
+     * Constructor
      */
     function Settings()
-    {
-        $this->__construct();
-    }
-
-
-    /**
-     * PHP5 Constructor
-     */
-    function __construct()
     {
     }
 
@@ -155,145 +143,40 @@ class Settings
         global $objDatabase;
 
         if (isset($_POST['general'])) {
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['email'])."'
-                                    WHERE name='email'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['confirmation_emails'])."'
-                                    WHERE name='confirmation_emails'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            // added: shop company name and address
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['shop_company'])."'
-                                    WHERE name='shop_company'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['shop_address'])."'
-                                    WHERE name='shop_address'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['telephone'])."'
-                                    WHERE name='telephone'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['fax'])."'
-                                    WHERE name='fax'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['yellowpay_shop_id'])."',
-                                        status=".(!empty($_POST['yellowpay_status']) ? 1 : 0)."
-                                    WHERE name='yellowpay_shop_id'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['yellowpay_hash_seed'])."'
-                                    WHERE name='yellowpay_hash_seed'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['yellowpay_authorization_type'])."'
-                                    WHERE name='yellowpay_authorization_type'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $strAcceptedPM = (isset($_POST['yellowpay_accepted_payment_methods'])
+            $strYellowpayAcceptedPM = (isset($_POST['yellowpay_accepted_payment_methods'])
                 ? addslashes(join(',', $_POST['yellowpay_accepted_payment_methods']))
                 : ''
             );
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['yellowpay_use_testserver'])."'
-                                    WHERE name='yellowpay_use_testserver'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='$strAcceptedPM'
-                                    WHERE name='yellowpay_accepted_payment_methods'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['saferpay_id'])."',
-                                        status=".(!empty($_POST['saferpay_status']) ? 1 : 0)."
-                                    WHERE name='saferpay_id'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value=".intval($_POST['saferpay_finalize_payment'])."
-                                    WHERE name='saferpay_finalize_payment'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                     SET status='".intval($_POST['saferpay_use_test_account'])."'
-                                   WHERE name='saferpay_use_test_account'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                     SET value='".intval($_POST['saferpay_window_option'])."'
-                                   WHERE name='saferpay_window_option'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['paypal_account_email'])."',
-                                        status=".(!empty($_POST['paypal_status']) ? 1 : 0)."
-                                    WHERE name='paypal_account_email'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".addslashes($_POST['tax_number'])."'
-                                    WHERE name='tax_number'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".intval($_POST['tax_enabled'])."'
-                                    WHERE name='tax_enabled'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
+
+            Settings::storeSetting('email', $_POST['email']);
+            Settings::storeSetting('confirmation_emails', $_POST['confirmation_emails']);
+            // added: shop company name and address
+            Settings::storeSetting('shop_company', $_POST['shop_company']);
+            Settings::storeSetting('shop_address', $_POST['shop_address']);
+            Settings::storeSetting('telephone', $_POST['telephone']);
+            Settings::storeSetting('fax', $_POST['fax']);
+            Settings::storeSetting('yellowpay_shop_id', $_POST['yellowpay_shop_id'], (!empty($_POST['yellowpay_status']) ? 1 : 0));
+            Settings::storeSetting('yellowpay_hash_seed', $_POST['yellowpay_hash_seed']);
+            Settings::storeSetting('yellowpay_authorization_type', $_POST['yellowpay_authorization_type']);
+            Settings::storeSetting('yellowpay_accepted_payment_methods', $strYellowpayAcceptedPM);
+            Settings::storeSetting('yellowpay_use_testserver', $_POST['yellowpay_use_testserver']);
+            Settings::storeSetting('saferpay_id', $_POST['saferpay_id'], (!empty($_POST['saferpay_status']) ? 1 : 0));
+            Settings::storeSetting('saferpay_finalize_payment', (!empty($_POST['saferpay_finalize_payment']) ? 1 : 0));
+            Settings::storeSetting('saferpay_use_test_account', (!empty($_POST['saferpay_use_test_account']) ? 1 : 0));
+            Settings::storeSetting('saferpay_window_option', $_POST['saferpay_window_option']);
+            Settings::storeSetting('paypal_account_email', $_POST['paypal_account_email'], (!empty($_POST['paypal_status']) ? 1 : 0));
+            Settings::storeSetting('tax_number', $_POST['tax_number']);
+            Settings::storeSetting('tax_enabled', $_POST['tax_enabled']);
             // default vat rate
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".intval($_POST['tax_default_id'])."'
-                                    WHERE name='tax_default_id'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".intval($_POST['tax_included'])."'
-                                    WHERE name='tax_included'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".intval($_POST['country_id'])."'
-                                    WHERE name='country_id'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value='".contrexx_addslashes($_POST['paypal_default_currency'])."'
-                                    WHERE name='paypal_default_currency'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET status=".(!empty($_POST['payment_lsv_status']) ? 1 : 0)."
-                                    WHERE name='payment_lsv_status'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value=".intval($_POST['shop_thumbnail_max_width'])."
-                                    WHERE name='shop_thumbnail_max_width'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value=".intval($_POST['shop_thumbnail_max_height'])."
-                                    WHERE name='shop_thumbnail_max_height'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                                    SET value=".intval($_POST['shop_thumbnail_quality'])."
-                                    WHERE name='shop_thumbnail_quality'"
-                                );
-            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
+            Settings::storeSetting('tax_default_id', $_POST['tax_default_id']);
+            Settings::storeSetting('tax_included', $_POST['tax_included']);
+            Settings::storeSetting('country_id', $_POST['country_id']);
+            Settings::storeSetting('paypal_default_currency', $_POST['paypal_default_currency']);
+            Settings::storeSetting('payment_lsv_status', '', (!empty($_POST['payment_lsv_status']) ? 1 : 0));
+            Settings::storeSetting('shop_thumbnail_max_width', $_POST['shop_thumbnail_max_width']);
+            Settings::storeSetting('shop_thumbnail_max_height', $_POST['shop_thumbnail_max_height']);
+            Settings::storeSetting('shop_thumbnail_quality', $_POST['shop_thumbnail_quality']);
+            Settings::storeSetting('shop_weight_enable', (!empty($_POST['shop_weight_enable']) ? 1 : 0));
 
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_config");
             return true;
@@ -962,6 +845,58 @@ class Settings
         }
         return true;
     }
+
+
+    /**
+     * Store any single shop setting in the database
+     *
+     * Inserts any setting whose name cannot be found, updates present ones.
+     * @param   string  $name     The name of the setting
+     * @param   string  $value    The value of the setting
+     * @param   string  $status   The status of the setting
+     * @return  boolean           True on success, false otherwise
+     * @global  mixed   $objDatabase    Database object
+     */
+    function storeSetting($name, $value, $status=0)
+    {
+        global $objDatabase;
+
+        // Does the setting exist already?
+        $objResult = $objDatabase->Execute("
+            SELECT 1
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
+             WHERE name='$name'
+        ");
+        if (!$objResult) {
+            return false;
+        }
+        if ($objResult->RecordCount() > 0) {
+            // Exists, update it
+            $objDatabase->Execute("
+                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
+                   SET value='".contrexx_addslashes($value)."',
+                       status='".contrexx_addslashes($status)."'
+                 WHERE name='$name'
+            ");
+            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
+        } else {
+            // Not present, insert it
+            $objResult = $objDatabase->Execute("
+                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_config (
+                    `name`, `value`, `status`
+                ) VALUES (
+                    '$name',
+                    '".contrexx_addslashes($value)."',
+                    '".contrexx_addslashes($status)."'
+                )
+            ");
+            if (!$objResult) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
 
 ?>
