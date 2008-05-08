@@ -293,14 +293,16 @@ CREATE TABLE `contrexx_languages` (
   UNIQUE KEY `lang` (`lang`),
   KEY `defaultstatus` (`is_default`)
 ) TYPE=MyISAM;
-
 CREATE TABLE `contrexx_lib_country` (
-  `id` int(3) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `name` varchar(64) NOT NULL,
+  `iso_code_2` char(2) NOT NULL,
+  `iso_code_3` char(3) default NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE (`name`)
-) TYPE=MYISAM;
-
+  UNIQUE KEY          (`name`),
+  UNIQUE KEY `unique` (`iso_code_2`),
+  KEY `INDEX_COUNTRIES_NAME` (`name`)
+) TYPE=InnoDB;
 CREATE TABLE `contrexx_log` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `userid` int(6) unsigned default NULL,
@@ -737,7 +739,7 @@ CREATE TABLE `contrexx_module_directory_dir` (
   `premium` int(1) NOT NULL default '0',
   `longitude` decimal(18,15) NOT NULL default '0.000000000000000',
   `latitude` decimal(18,15) NOT NULL default '0.000000000000000',
-  `zoom` tinyint(2) unsigned NOT NULL default '1',
+  `zoom` decimal(18,15) NOT NULL default '1.000000000000000',
   `spez_field_1` varchar(255) NOT NULL default '',
   `spez_field_2` varchar(255) NOT NULL default '',
   `spez_field_3` varchar(255) NOT NULL default '',
@@ -1081,9 +1083,19 @@ CREATE TABLE `contrexx_module_forum_postings` (
   `subject` varchar(250) NOT NULL default '',
   `attachment` varchar(250) NOT NULL default '',
   `content` text NOT NULL,
+  `attachment` varchar(250) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `category_id` (`category_id`,`thread_id`,`prev_post_id`,`user_id`),
   FULLTEXT KEY `fulltext` (`keywords`,`subject`,`content`)
+) TYPE=MyISAM;
+
+CREATE TABLE `contrexx_module_forum_rating` (
+  `id` int(14) NOT NULL auto_increment,
+  `user_id` int(14) NOT NULL,
+  `post_id` int(14) NOT NULL,
+  `time` int(14) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `user_id` (`user_id`,`post_id`)
 ) TYPE=MyISAM;
 
 CREATE TABLE `contrexx_module_forum_settings` (
@@ -1100,16 +1112,6 @@ CREATE TABLE `contrexx_module_forum_statistics` (
   `last_post_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`category_id`)
 ) TYPE=MyISAM;
-
-CREATE TABLE `contrexx_module_forum_rating` (
-	`id` INT(14) NOT NULL auto_increment,
-	`user_id` INT(14) NOT NULL ,
-	`post_id` INT(14) NOT NULL ,
-	`time` INT(14) NOT NULL ,
-	PRIMARY KEY ( `id` ) ,
-	KEY ( `user_id`, `post_id` )
-) TYPE=MyISAM;
-
 CREATE TABLE `contrexx_module_gallery_categories` (
   `id` int(11) NOT NULL auto_increment,
   `pid` int(11) NOT NULL default '0',
@@ -1968,10 +1970,10 @@ CREATE TABLE `contrexx_module_shop_categories` (
   `catname` varchar(255) NOT NULL default '',
   `catsorting` smallint(6) NOT NULL default '100',
   `catstatus` tinyint(1) NOT NULL default '1',
-  `picture` varchar (255) NOT NULL default '',
-  `flags` varchar (255) NOT NULL default '',
+  `picture` varchar(255) NOT NULL default '',
+  `flags` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`catid`),
-  KEY `flags` (`flags`)
+  FULLTEXT KEY `flags` (`flags`)
 ) TYPE=MyISAM;
 
 CREATE TABLE `contrexx_module_shop_config` (
@@ -2172,7 +2174,7 @@ CREATE TABLE `contrexx_module_shop_pricelists` (
 CREATE TABLE `contrexx_module_shop_products` (
   `id` smallint(10) unsigned NOT NULL auto_increment,
   `product_id` tinytext NOT NULL,
-  `picture` text collate utf8_unicode_ci,
+  `picture` text,
   `title` varchar(255) NOT NULL default '',
   `catid` int(10) unsigned NOT NULL default '1',
   `handler` enum('none','delivery','download') NOT NULL default 'delivery',
@@ -2199,12 +2201,12 @@ CREATE TABLE `contrexx_module_shop_products` (
   `sort_order` smallint(4) unsigned NOT NULL default '0',
   `vat_id` int(10) unsigned default NULL,
   `weight` int(10) unsigned default NULL,
-  `flags` varchar(255) default NULL,
+  `flags` varchar(255) NOT NULL default '',
   `usergroups` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
-  KEY `flags` (`flags`),
-  FULLTEXT KEY `shopindex` (`title`,`description`)
-) ENGINE=MyISAM;
+  FULLTEXT KEY `shopindex` (`title`,`description`),
+  FULLTEXT KEY `flags` (`flags`)
+) TYPE=MyISAM;
 
 CREATE TABLE `contrexx_module_shop_products_attributes` (
   `attribute_id` int(11) unsigned NOT NULL auto_increment,
