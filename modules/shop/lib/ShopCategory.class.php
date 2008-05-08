@@ -709,9 +709,9 @@ class ShopCategory
      *
      * Returns false if the query fails, or if no child ShopCategory of
      * that name can be found.
-     * Note that if there are two or more children of the same name (and with
-     * active status, if $flagActiveOnly is true), a warning will be echo()ed.
-     * This is by design.
+     * //Note that if there are two or more children of the same name (and with
+     * //active status, if $flagActiveOnly is true), a warning will be echo()ed.
+     * //This is by design.
      * @static
      * @param   string      $strName        The child ShopCategory name
      * @param   boolean     $flagActiveOnly If true, only active ShopCategories
@@ -740,9 +740,11 @@ class ShopCategory
         if (!$objResult) {
             return false;
         }
+/*
         if ($objResult->RecordCount() > 1) {
             echo("ShopCategory::getChildNamed($strName, $flagActiveOnly): ".$_ARRAYLANG['TXT_SHOP_WARNING_MULTIPLE_CATEGORIES_WITH_SAME_NAME'].'<br />');
         }
+*/
         if (!$objResult->EOF) {
             return ShopCategory::getById($objResult->fields['catid']);
         }

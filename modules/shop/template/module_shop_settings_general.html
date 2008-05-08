@@ -53,7 +53,7 @@ function setVatUnset()
 <form name="shopForm" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=general">
 <!-- start shopContent1 div -->
 <div id="shopContent1" class="generalTab" style="display:block">
-  <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+  <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
       <th colspan="2"> <b>{TXT_GENERAL_SETTINGS}</b></th>
     </tr>
@@ -87,13 +87,17 @@ function setVatUnset()
       <td nowrap="nowrap">{TXT_COUNTRY}</td>
       <td nowrap="nowrap">{SHOP_GENERAL_COUNTRY}</td>
     </tr>
+    <tr class="row2">
+      <td nowrap="nowrap">{TXT_SHOP_SETTING_WEIGHT_ENABLE}</td>
+      <td nowrap="nowrap"><input type="checkbox" name="shop_weight_enable" value="1"{SHOP_WEIGHT_ENABLE_CHECKED} /></td>
+    </tr>
   </table>
   <br />
 </div>
 <!-- end shopContent1 div -->
 <!-- start shopContent2 div -->
 <div id="shopContent2" class="generalTab" style="display:none;">
-  <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+  <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
       <th colspan="3">{TXT_PAYMENT_HANDLER}</th>
     </tr>
@@ -147,11 +151,11 @@ function setVatUnset()
               <td valign="top">{TXT_SHOP_YELLOWPAY_USE_TESTSERVER}</td>
               <td>
                 <input id="yellowpay_use_testserver_yes" type="radio"
-                  name="yellowpay_use_testserver" value="1"{SHOP_YELLOWPAY_USE_TESTSERVER_YES_CHECKED}>
+                  name="yellowpay_use_testserver" value="1"{SHOP_YELLOWPAY_USE_TESTSERVER_YES_CHECKED} />
                 <label for="yellowpay_use_testserver_yes">{TXT_SHOP_YES}</label>
                 <br />
                 <input id="yellowpay_use_testserver_no" type="radio"
-                  name="yellowpay_use_testserver" value="0"{SHOP_YELLOWPAY_USE_TESTSERVER_NO_CHECKED}>
+                  name="yellowpay_use_testserver" value="0"{SHOP_YELLOWPAY_USE_TESTSERVER_NO_CHECKED} />
                 <label for="yellowpay_use_testserver_no">{TXT_SHOP_NO}</label>
               </td>
             </tr>
@@ -226,7 +230,7 @@ function setVatUnset()
 <!-- end shopContent2 div -->
 <!-- start shopContent3 div -->
 <div id="shopContent3" class="generalTab" style="display:none;">
-    <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+    <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
         <th>{TXT_TAXES}</th>
       </tr>
@@ -238,7 +242,7 @@ function setVatUnset()
       </tr>
     </table>
     <br />
-    <table id='taxes' style="display:{SHOP_TAX_DISPLAY_STATUS};" border="0" cellspacing="0" cellpadding="2" width='100%' class="adminlist">
+    <table summary="" id='taxes' style="display:{SHOP_TAX_DISPLAY_STATUS};" border="0" cellspacing="0" cellpadding="2" width='100%' class="adminlist">
     <colgroup><col width="5%" /><col width="5%" /><col width="90%" /></colgroup>
       <tr>
         <th width='100%' colspan="3">{TXT_TAX_DETAILS}</th>
@@ -313,7 +317,7 @@ function setVatUnset()
 
 <!-- start shopContent4 div -->
 <div id="shopContent4" class="generalTab" style="display:none;">
-    <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+    <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
         <th colspan="2">{TXT_SHOP_IMAGE_SETTINGS}</th>
       </tr>

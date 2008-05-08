@@ -1210,29 +1210,23 @@ class Shop extends ShopLibrary
         foreach ($arrProduct as $objProduct) {
             $productSubmitFunction = '';
             $arrPictures = $this->_getShopImagesFromBase64String($objProduct->getPictures());
-//echo("product images: ");var_export($arrPictures);echo("<br />");
             $havePicture = false;
             $arrProductImages = array();
             foreach ($arrPictures as $index => $image) {
                 if (   empty($image['img'])
                     || $image['img'] == $this->noPictureName) {
-//echo("index $index: empty<br />");
                     // We have at least one picture on display already.
                     // No need to show "no picture" three times!
                     if ($havePicture) { continue; }
-//echo("index $index: adding default<br />");
                     $thumbnailPath = $this->_defaultImage;
                     $pictureLink = ''; //"javascript:alert('".$_ARRAYLANG['TXT_NO_PICTURE_AVAILABLE']."');";
                 } elseif ($image['width'] && $image['height']) {
-//echo("index $index: present<br />");
                     $thumbnailPath = $this->shopImageWebPath.$image['img'].$this->thumbnailNameSuffix;
                     $pictureLink = "javascript:viewPicture('".$this->shopImageWebPath.$image['img']."','width=".($image['width']+25).",height=".($image['height']+25)."')";
                 } else {
-//echo("index $index: present, no width<br />");
                     $thumbnailPath = $this->shopImageWebPath.$image['img'].$this->thumbnailNameSuffix;
                     $pictureLink = '';
                 }
-//echo("index $index: adding to array: $thumbnailPath, ".htmlentities($pictureLink)."<br />");
                 $arrProductImages[] = array(
                     'THUMBNAIL'       => $thumbnailPath,
                     'THUMBNAIL_LINK'  => $pictureLink,
@@ -1249,7 +1243,6 @@ class Shop extends ShopLibrary
                     'SHOP_PRODUCT_THUMBNAIL_'.$i => $arrProductImage['THUMBNAIL'],
                 ));
                 if (!empty($arrProductImage['THUMBNAIL_LINK'])) {
-//echo("index $i: showing link: /".$arrProductImage['THUMBNAIL_LINK']."/<br />");
                     $this->objTemplate->setVariable(array(
                         'SHOP_PRODUCT_THUMBNAIL_LINK_'.$i => $arrProductImage['THUMBNAIL_LINK'],
                         'TXT_SEE_LARGE_PICTURE'           => $_ARRAYLANG['TXT_SEE_LARGE_PICTURE'],
@@ -1417,7 +1410,9 @@ class Shop extends ShopLibrary
                 $productWeight = $objProduct->getWeight();
             }
 
-            if ($productWeight > 0) {
+            // Hide the weight if it is zero or disabled in the configuration
+            if (   $productWeight > 0
+                && $this->arrConfig['shop_weight_enable']['value']) {
                 $this->objTemplate->setVariable(array(
                     'TXT_SHOP_PRODUCT_WEIGHT' => $_ARRAYLANG['TXT_SHOP_PRODUCT_WEIGHT'],
                     'SHOP_PRODUCT_WEIGHT'     => Weight::getWeightString($productWeight),
@@ -1846,7 +1841,9 @@ class Shop extends ShopLibrary
      */
     function _calculateShipmentPrice($shipperId, $price, $weight)
     {
-        $shipmentPrice = $this->objShipment->calculateShipmentPrice($shipperId, $price, $weight);
+        $shipmentPrice = $this->objShipment->calculateShipmentPrice(
+            $shipperId, $price, $weight
+        );
         return $this->objCurrency->getCurrencyPrice($shipmentPrice);
     }
 
@@ -2080,11 +2077,7 @@ function addProductToCart(objForm)
     }
 
     productStr = '{id:'+objProduct.id+',options:{'+arrOptions.join(',')+'},quantity:'+objProduct.quantity+'}';
-
-alert('product string: '+productStr);
-
     sendReq('&product='+encodeURIComponent(productStr)+updateProduct, 1);
-
     return false;
 }
 
@@ -2407,8 +2400,6 @@ sendReq('', 1);
 
     function _addProductToCart($arrNewProduct, $oldCartProdId = null)
     {
-//echo("adding product: ");var_export($arrNewProduct);echo("<br />old cart id $oldCartProdId<br />");
-
         if (is_array($arrNewProduct) && isset($arrNewProduct['id'])) {
             // Add new product to cart
             $isNewProduct = true;
@@ -2669,8 +2660,13 @@ sendReq('', 1);
                     'SHOP_PRODUCT_QUANTITY'       => $arrProduct['quantity'],
                     'SHOP_PRODUCT_ITEMPRICE'      => $arrProduct['itemprice'],
                     'SHOP_PRODUCT_ITEMPRICE_UNIT' => $arrProduct['itemprice_unit'],
-                    'SHOP_PRODUCT_WEIGHT'         => Weight::getWeightString($arrProduct['weight']),
                 ));
+                if ($this->arrConfig['shop_weight_enable']['value']) {
+                    $this->objTemplate->setVariable(array(
+                        'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($arrProduct['weight']),
+                        'TXT_WEIGHT'          => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
+                    ));
+                }
                 if ($this->objVat->isEnabled()) {
                     $this->objTemplate->setVariable(array(
                         // avoid a lonely '%' percent sign in case 'percent' is unset
@@ -2703,7 +2699,6 @@ sendReq('', 1);
             'TXT_NEXT'                     => $_ARRAYLANG['TXT_NEXT'],
             'TXT_EMPTY_CART'               => $_ARRAYLANG['TXT_EMPTY_CART'],
             'TXT_CONTINUE_SHOPPING'        => $_ARRAYLANG['TXT_CONTINUE_SHOPPING'],
-            'TXT_WEIGHT'                   => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
             'SHOP_PRODUCT_TOTALITEM'       => $_SESSION['shop']['cart']['items'],
             'SHOP_PRODUCT_TOTALPRICE'      => $_SESSION['shop']['cart']['total_price'],
             'SHOP_PRODUCT_TOTALPRICE_UNIT' => $this->aCurrencyUnitName,
@@ -2746,9 +2741,10 @@ sendReq('', 1);
     {
         global $_ARRAYLANG;
 
+        $redirect = (isset($_REQUEST['redirect']) ? $_REQUEST['redirect'] : '');
         if ($this->objCustomer) {
-            if (isset($_REQUEST['redirect'])) {
-                if ($_REQUEST['redirect'] == 'shop') {
+            if ($redirect) {
+                if ($redirect == 'shop') {
                     header('Location: index.php?section=shop');
                     exit;
                 }
@@ -2786,7 +2782,8 @@ sendReq('', 1);
                 'SHOP_LOGIN_ACTION'                  => 'index.php?section=shop'.MODULE_INDEX.'&amp;cmd=login',
 // TODO: Change the name of this placeholder to SHOP_STATUS and remove this.
                 'SHOP_LOGIN_STATUS'                  => $this->statusMessage,
-                'SHOP_REDIRECT'                      => "&redirect=$redirect",
+                'SHOP_REDIRECT'                      =>
+                    (!empty($redirect) ? "&redirect=$redirect" : ''),
             ));
         }
     }
@@ -3222,7 +3219,6 @@ sendReq('', 1);
             } else {
                 // VAT is excluded
                 if ($_SESSION['shop']['countryId'] == intval($this->arrConfig['country_id']['value'])) {
-
                     // home country equals shop country; add tax.
                     // the VAT on the products has already been calculated and set in the cart.
                     // now we add the default tax to the shipping and payment cost.
@@ -3299,7 +3295,9 @@ sendReq('', 1);
             // agb status is true, if either
             // - the agb placeholder does not exist
             // - the agb checkbox has been checked
-            $agbStatus = ($this->objTemplate->placeholderExists('SHOP_AGB') ? (!empty($_POST['agb']) ? true : false) : true);
+            $agbStatus = ($this->objTemplate->placeholderExists('SHOP_AGB')
+                ? (!empty($_POST['agb']) ? true : false) : true
+            );
 
             if ($agbStatus && $shipmentStatus && $paymentStatus) {
                 // everything is set and valid
@@ -3455,6 +3453,7 @@ right after the customer logs in!
         ));
     }
 
+
     /**
      * Set up the common fields of the payment page
      *
@@ -3467,23 +3466,19 @@ right after the customer logs in!
     {
         global $_ARRAYLANG;
 
-/* TODO: Future extension:  Only show rows actually needed.
-
-        if ($_SESSION['shop']['cart']['total_weight'] > 0) {
-*/
+        if ($_SESSION['shop']['cart']['total_weight'] > 0
+            && $this->arrConfig['shop_weight_enable']['value']) {
             $this->objTemplate->setVariable(array(
                 'TXT_TOTAL_WEIGHT'        => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
                 'SHOP_TOTAL_WEIGHT'       => Weight::getWeightString($_SESSION['shop']['cart']['total_weight']),
-/*
             ));
         }
+
         if ($_SESSION['shop']['shipment']) {
             $this->objTemplate->setVariable(array(
-*/
                 'SHOP_SHIPMENT_PRICE'     => $_SESSION['shop']['shipment_price'],
                 'SHOP_SHIPMENT_MENU'      => $this->_getShipperMenu(),
                 'TXT_SHIPPING_METHODS'    => $_ARRAYLANG['TXT_SHIPPING_METHODS'],
-/*
             ));
         }
 
@@ -3491,14 +3486,11 @@ right after the customer logs in!
             || $_SESSION['shop']['shipment_price']
             || $_SESSION['shop']['tax_price']) {
             $this->objTemplate->setVariable(array(
-*/
                 'SHOP_PAYMENT_PRICE'      => $_SESSION['shop']['payment_price'],
                 'SHOP_PAYMENT_MENU'       => $this->_getPaymentMenu(),
                 'TXT_PAYMENT_TYPES'       => $_ARRAYLANG['TXT_PAYMENT_TYPES'],
             ));
-/*
         }
-*/
 
         $this->objTemplate->setVariable(array(
             'SHOP_UNIT'               => $this->aCurrencyUnitName,
@@ -3508,6 +3500,7 @@ right after the customer logs in!
             'SHOP_CUSTOMERNOTE'       => $_SESSION['shop']['customer_note'],
             'SHOP_AGB'                => $_SESSION['shop']['agb'],
             'SHOP_STATUS'             => $paymentStatus,
+            'SHOP_ACCOUNT_STATUS'     => $paymentStatus,
             'TXT_PRODUCTS'            => $_ARRAYLANG['TXT_PRODUCTS'],
             'TXT_TOTALLY_GOODS'       => $_ARRAYLANG['TXT_TOTALLY_GOODS'],
             'TXT_PRODUCT_S'           => $_ARRAYLANG['TXT_PRODUCT_S'],
@@ -3906,8 +3899,13 @@ right after the customer logs in!
                         'SHOP_PRODUCT_QUANTITY'     => $arrProduct['quantity'],
                         'SHOP_PRODUCT_ITEMPRICE'    => Currency::formatPrice($price+$priceOptions),
                         'SHOP_UNIT'                 => $this->aCurrencyUnitName,
-                        'SHOP_PRODUCT_WEIGHT'       => $weight,
                     ));
+                    if ($this->arrConfig['shop_weight_enable']['value']) {
+                        $this->objTemplate->setVariable(array(
+                            'SHOP_PRODUCT_WEIGHT' => $weight,
+                            'TXT_WEIGHT'          => $_ARRAYLANG['TXT_WEIGHT'],
+                        ));
+                    }
                     if ($this->objVat->isEnabled()) {
                         $this->objTemplate->setVariable(array(
                             'SHOP_PRODUCT_TAX_RATE'   => $vatPercent,
@@ -3964,7 +3962,6 @@ right after the customer logs in!
                 'TXT_ADDRESS_CUSTOMER'  => $_ARRAYLANG['TXT_ADDRESS_CUSTOMER'],
                 'TXT_COMMENTS'          => $_ARRAYLANG['TXT_COMMENTS'],
                 'TXT_ORDER_NOW'         => $_ARRAYLANG['TXT_ORDER_NOW'],
-                'TXT_WEIGHT'            => $_ARRAYLANG['TXT_WEIGHT'],
             ));
             if ($this->objVat->isEnabled()) {
                 $this->objTemplate->setVariable(array(
@@ -4876,7 +4873,8 @@ $orderSum."\n".
 
         $orderIdCustom = ShopLibrary::getCustomOrderId($orderId, $orderDate);
         $objFWUser = FWUser::getFWUserObject();
-        if ($objUser = $objFWUser->objUser->getUsers(array('username' => $orderIdCustom.'-%'))) {
+        $objUser = $objFWUser->objUser->getUsers(array('username' => $orderIdCustom.'-%'));
+        if ($objUser) {
             while (!$objUser->EOF) {
                 if (!$objUser->delete()) {
                     return false;

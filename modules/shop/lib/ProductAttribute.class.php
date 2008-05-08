@@ -23,6 +23,7 @@ define('SHOP_PRODUCT_ATTRIBUTE_TYPE_CHECKBOX', 2);
 define('SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU_MANDATORY', 3);
 define('SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXT', 4);
 define('SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD', 5);
+// Keep this up to date!
 define('SHOP_PRODUCT_ATTRIBUTE_TYPE_COUNT', 6);
 
 /**
@@ -59,8 +60,9 @@ class ProductAttribute
 
     /**
      * The associated Product ID, if any, or false
+     * @var   mixed
      */
-    var $productId = false;
+    private $productId = false;
 
     /**
      * The ProductAttribute name
@@ -87,9 +89,9 @@ class ProductAttribute
      * array ( ID => index, ... ),
      * where ID is the ID of the Attribute value, and index is its
      * offset in the Attribute value array ($arrValue object variable)
-     * @var array
+     * @var   array
      */
-    var $arrValueIndex;
+    private $arrValueIndex;
 
     /**
      * Sorting order
@@ -106,19 +108,8 @@ class ProductAttribute
      */
     function ProductAttribute($name, $type, $id=0, $productId=false)
     {
-        $this->__construct($name, $type, $id, $productId);
-        $this->setType($type);
-    }
-
-    /**
-     * Constructor (PHP5)
-     *
-     * id, name, display_type (enum('0', '1', '2', '3'))
-     */
-    function __construct($name, $type, $id=0, $productId=false)
-    {
         $this->name      = $name;
-        $this->type      = $type;
+        $this->setType($type);
         $this->id        = $id;
         $this->productId = $productId;
         $this->arrValue  = array();
@@ -285,6 +276,24 @@ class ProductAttribute
      */
     function addValue($value, $price, $prefix, $order=0, $id='')
     {
+        if ($this->type == SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD) {
+            // This type cannot have any values
+            return false;
+        }
+        if ($this->type == SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXT) {
+            // This type can have exactly one value
+            $this->arrValue = array(
+                array(
+                    'value'   => $value,
+                    'price'   => $price,
+                    'prefix'  => $prefix,
+                    'order'   => $order,
+                    'id'      => $id,          // changed by insertValue()
+                )
+            );
+            return ProductAttribute::rebuildValueIndex();
+        }
+        // Any other types can have an arbitrary number of values
         $this->arrValue[] = array(
             'value'   => $value,
             'price'   => $price,
@@ -292,24 +301,33 @@ class ProductAttribute
             'order'   => $order,
             'id'      => $id,          // changed by insertValue()
         );
+        return ProductAttribute::rebuildValueIndex();
     }
 
 
     /**
-     * Update a ProductAttribute value
+     * Update a ProductAttribute value.
      *
-     *
+     * Updates the value in the database as well.
+     * If the value with the given value ID does not exists, returns false.
+     * @param   integer   $valueId    The ProductAttribute value ID
+     * @param   string    $value      The descriptive name
+     * @param   float     $price      The price
+     * @param   string    $prefix     The price prefix
+     * @param   integer   $order      The order of the value
+     * @return  boolean               True on success, false otherwise
      */
     function updateValue($valueId, $value, $price, $prefix, $order)
     {
         // fields: id, name_id, value, price, price_prefix (enum('+', '-'))
-        $index = $this->getValueIndexByValueId($valueId);
+        $index = $this->arrValueIndex[$valueId];
+        if ($index === false) return false;
         $this->arrValue[$index]['value']  = $value;
         $this->arrValue[$index]['price']  = $price;
         $this->arrValue[$index]['prefix'] = $prefix;
         $this->arrValue[$index]['order']  = $order;
         // insert into database, and update ID
-        $this->_updateValue($this->arrValue[$index]);
+        return $this->_updateValue($this->arrValue[$index]);
     }
 
 
@@ -335,6 +353,24 @@ class ProductAttribute
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * Rebuilds the arrValueIndex array
+     *
+     * Called whenever the arrValue array is modified.
+     * @return  boolean             True if arrValue is initialized as an array,
+     *                              false otherwise
+     */
+    function rebuildValueIndex()
+    {
+        if (!is_array($this->arrValue)) return false;
+        $this->arrValueIndex = array();
+        foreach ($this->arrValue as $index => $arrValue) {
+            $this->arrValueIndex[$arrValue['id']] = $index;
         }
         return true;
     }
@@ -677,6 +713,23 @@ class ProductAttribute
             return false;
         }
         return $objResult->fields['name_id'];
+    }
+
+
+    /**
+     * Returns a values index in the value array by its ID.
+     *
+     * Somewhat obsolete; you should use the arrValueIndex array instead.
+     * @param   integer   $valueId    The ProductAttribute value ID
+     * @return  mixed                 The index in the value array, if found,
+     *                                false otherwise
+     */
+    function getValueIndexByValueId($valueId)
+    {
+        foreach ($this->arrValue as $index => $arrValue) {
+            if ($arrValue['id'] == $valueId) return $index;
+        }
+        return false;
     }
 
 
