@@ -228,7 +228,7 @@ function SetUrl(url, width, height, alt) {
     document.getElementById(newsElInsertBox).value = url;
     break
   case 'link':
-    newsInsertLink(document.getElementById(newsElInsertBox), '<a href="'+url+'">'+newsElLinkText+'</a>');
+    newsInsertLink(document.getElementById(newsElInsertBox), '<a href="'+url+'">'+newsElLinkText+'<\/a>');
     break;
   }
 }
@@ -388,7 +388,15 @@ function showOrHide(strElement) {
         </tr>
         <tr class="row1">
           <td>{TXT_EGOV_LIMITED_PER_DAY}</td>
-          <td><input type="radio" name="productFormPerDay" value="1" id="productFormPerDay_1" {PER_DAY_CHECKED_YES} /><label for="productFormPerDay_1">{TXT_YES}</label> <input type="radio" name="productFormPerDay" value="0" id="productFormPerDay_0" {PER_DAY_CHECKED_NO} /><label for="productFormPerDay_0">{TXT_NO}</label></td>
+          <td>
+            <input type="radio" name="productFormPerDay" value="1"
+                id="productFormPerDay_1" {PER_DAY_CHECKED_YES} />
+            <label for="productFormPerDay_1">{TXT_EGOV_YES}</label>
+            <br />
+            <input type="radio" name="productFormPerDay" value="0"
+                id="productFormPerDay_0" {PER_DAY_CHECKED_NO} />
+            <label for="productFormPerDay_0">{TXT_EGOV_NO}</label>
+          </td>
         </tr>
         <tr class="row2">
           <td>{TXT_EGOV_PRODUCT_QUANTITY}</td>
@@ -400,7 +408,15 @@ function showOrHide(strElement) {
         </tr>
         <tr class="row2">
           <td>{TXT_EGOV_PRODUCT_AUTO}</td>
-          <td><input type="radio" name="productAutoStatus" value="1" id="productAutoStatus_1" {AUTOSTATUS_CHECKED_YES} /><label for="productAutoStatus_1">{TXT_YES}</label> <input type="radio" name="productAutoStatus" value="0" id="productAutoStatus_0" {AUTOSTATUS_CHECKED_NO} /><label for="productAutoStatus_0">{TXT_NO}</label> &nbsp;&nbsp;({TXT_EGOV_ORDER_STATE_AUTOMAIL})</td>
+          <td>
+            <input type="radio" name="productAutoStatus" value="1"
+                id="productAutoStatus_1" {AUTOSTATUS_CHECKED_YES} />
+            <label for="productAutoStatus_1">{TXT_EGOV_YES} ({TXT_EGOV_ORDER_STATE_AUTOMAIL})</label>
+            <br />
+            <input type="radio" name="productAutoStatus" value="0"
+                id="productAutoStatus_0" {AUTOSTATUS_CHECKED_NO} />
+            <label for="productAutoStatus_0">{TXT_EGOV_NO}</label>
+          </td>
         </tr>
         <tr class="row1" style="height:20px;">
           <td>{TXT_EGOV_PRODUCT_PRICE}</td>
@@ -465,7 +481,7 @@ function showOrHide(strElement) {
       <tr class="row1">
         <td width="15%">{TXT_EGOV_DEFAULT_CURRENCY}</td>
         <td width="85%">
-          <select name="general_currency">
+          <select name="general_currency" style="width: 300px;">
             {EGOV_CURRENCY_MENUOPTIONS}
           </select>
         </td>
@@ -477,12 +493,15 @@ function showOrHide(strElement) {
         <th colspan="2">{TXT_EGOV_YELLOWPAY}</th>
       </tr>
       <tr class="row1">
-        <td width="15%">{TXT_EGOV_ACTIVATE_YELLOWPAY}</td>
+        <td width="15%" valign="top">{TXT_EGOV_ACTIVATE_YELLOWPAY}</td>
         <td width="85%">
-          <input type="radio" name="yellowpay_enable" id="yellowpay_yes" value="1" {YELLOWPAY_CHECKED_YES} />
-          <label for="yellowpay_yes">{TXT_YES}</label>
-          <input type="radio" name="yellowpay_enable" id="yellowpay_no" value="0" {YELLOWPAY_CHECKED_NO} />
-          <label for="yellowpay_no">{TXT_NO}</label>
+          <input type="radio" name="yellowpay_enable" id="yellowpay_yes"
+                value="1" {YELLOWPAY_CHECKED_YES} />
+          <label for="yellowpay_yes">{TXT_EGOV_YES}</label>
+          <br />
+          <input type="radio" name="yellowpay_enable" id="yellowpay_no"
+                value="0" {YELLOWPAY_CHECKED_NO} />
+          <label for="yellowpay_no">{TXT_EGOV_NO}</label>
         </td>
       </tr>
     </table>
@@ -492,12 +511,18 @@ function showOrHide(strElement) {
         <th colspan="2">{TXT_EGOV_PAYPAL}</th>
       </tr>
       <tr class="row1">
-        <td width="15%">{TXT_EGOV_ACTIVATE_PAYPAL}</td>
-        <td width="85%"><input type="radio" name="paypal" id="paypal_yes" value="1" {PAYPAL_YES} /><label for="paypal_yes">{TXT_YES}</label> <input type="radio" name="paypal" id="paypal_no" value="0" {PAYPAL_NO} /><label for="paypal_no">{TXT_NO}</label></td>
+        <td width="15%" valign="top">{TXT_EGOV_ACTIVATE_PAYPAL}</td>
+        <td width="85%">
+          <input type="radio" name="paypal" id="paypal_yes" value="1" {PAYPAL_YES} />
+          <label for="paypal_yes">{TXT_EGOV_YES}</label>
+          <br />
+          <input type="radio" name="paypal" id="paypal_no" value="0" {PAYPAL_NO} />
+          <label for="paypal_no">{TXT_EGOV_NO}</label>
+        </td>
       </tr>
       <tr class="row2">
         <td width="15%">{TXT_EGOV_SANDBOX_EMAIL}</td>
-        <td width="85%"><input type="text" name="sandbox_mail" value="{SANDBOX_EMAIL}" style="width: 670px;"" /></td>
+        <td width="85%"><input type="text" name="sandbox_mail" value="{SANDBOX_EMAIL}" style="width: 300px;" /></td>
       </tr>
       <!--tr class="row1">
         <td width="15%">{TXT_EGOV_PAYPAL_CURRENCY}</td>

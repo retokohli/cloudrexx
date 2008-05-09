@@ -137,7 +137,7 @@ function showOrHide(strElement) {
       <tr class="row1">
         <td width="15%">{TXT_EGOV_DEFAULT_CURRENCY}</td>
         <td width="85%">
-          <select name="general_currency">
+          <select name="general_currency" style="width: 300px;">
             {EGOV_CURRENCY_MENUOPTIONS}
           </select>
         </td>
@@ -148,29 +148,33 @@ function showOrHide(strElement) {
       <tr>
         <th colspan="2">{TXT_EGOV_YELLOWPAY}</th>
       </tr>
-      <tr class="row2">
+      <!--tr class="row2">
         <td width="15%">{TXT_EGOV_YELLOWPAY_UID}</td>
         <td width="85%"><input type="text" name="yellowpay_uid" value="{EGOV_YELLOWPAY_UID}" style="width: 670px;" /></td>
-      </tr>
+      </tr-->
       <tr class="row1">
-        <td>{TXT_EGOV_YELLOWPAY_HASHSEED}</td>
-        <td><input type="text" name="yellowpay_hashseed" value="{EGOV_YELLOWPAY_HASHSEED}" style="width: 670px;" /></td>
+        <td width="15%">{TXT_EGOV_YELLOWPAY_SHOPID}</td>
+        <td width="85%"><input type="text" name="yellowpay_shopid" value="{EGOV_YELLOWPAY_SHOPID}" style="width: 300px;" /></td>
       </tr>
       <tr class="row2">
+        <td>{TXT_EGOV_YELLOWPAY_HASHSEED}</td>
+        <td><input type="text" name="yellowpay_hashseed" value="{EGOV_YELLOWPAY_HASHSEED}" style="width: 300px;" /></td>
+      </tr>
+      <tr class="row1">
         <td>{TXT_EGOV_YELLOWPAY_AUTHORIZATION}</td>
         <td>
-          <select name="yellowpay_authorization" style="width: 670px;" />
+          <select name="yellowpay_authorization" style="width: 300px;">
           {EGOV_YELLOWPAY_AUTHORIZATION_MENUOPTIONS}
           </select>
         </td>
       </tr>
-      <tr class="row1">
-        <td>{TXT_EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS}</td>
+      <tr class="row2">
+        <td valign="top">{TXT_EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS}</td>
         <td>
         {EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES}
         </td>
       </tr>
-      <tr class="row2">
+      <tr class="row1">
         <td valign="top">{TXT_EGOV_YELLOWPAY_USE_TESTSERVER}</td>
         <td>
           <input id="yellowpay_use_testserver_yes" type="radio"
@@ -190,7 +194,7 @@ function showOrHide(strElement) {
       </tr>
     <tr class="row2">
       <td width="15%">{TXT_EGOV_PAYPAL_EMAIL}</td>
-      <td width="85%"><input type="text" name="PayPal_mail" value="{PAYPAL_EMAIL}" style="width: 670px;" /></td>
+      <td width="85%"><input type="text" name="PayPal_mail" value="{PAYPAL_EMAIL}" style="width: 300px;" /></td>
     </tr>
     <!--tr class="row1">
       <td>{TXT_EGOV_PAYPAL_CURRENCY}</td>
@@ -204,7 +208,7 @@ function showOrHide(strElement) {
         </select>
       </td>
     </tr-->
-    <tr class="row2">
+    <tr class="row1">
       <td>{TXT_EGOV_PAYPAL_IPN}</td>
       <td><input type="checkbox" name="PayPal_IPN" value="1" {IPN_CHECKED} /></td>
     </tr>
@@ -213,4 +217,3 @@ function showOrHide(strElement) {
   <br />
 <input type="submit" value="{TXT_SAVE}" />
 </form>
-
