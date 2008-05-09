@@ -6,21 +6,21 @@
  * @package     contrexx
  * @subpackage  module_egov
  */
-$_ARRAYLANG['TXT_DATE'] = "Date";
+$_ARRAYLANG['TXT_DATE'] = "Datum";
 $_ARRAYLANG['TXT_NAME'] = "Name";
-$_ARRAYLANG['TXT_PRODUCT'] = "Product";
-$_ARRAYLANG['TXT_EGOV_SUBMIT'] = "Send";
-$_ARRAYLANG['TXT_EGOV_DELETE'] = "Reset";
-$_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_1'] = "Kalenderlegende für freie Tage";
-$_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_2'] = "Kalenderlegende für teilweise reservierte Tage";
-$_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_3'] = "Calendar caption for reserved days";
-$_ARRAYLANG['TXT_EGOVERNMENT'] = "E-Government";
-$_ARRAYLANG['TXT_BROWSE'] = "Browse";
-$_ARRAYLANG['TXT_EGOV_QUANTITY'] = "Quantity";
+$_ARRAYLANG['TXT_PRODUCT'] = "Produkt";
+$_ARRAYLANG['TXT_EGOV_SUBMIT'] = "Senden";
+$_ARRAYLANG['TXT_EGOV_DELETE'] = "ZurÃ¼cksetzen";
+$_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_1'] = "Kalenderlegende fÃ¼r freie Tage";
+$_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_2'] = "Kalenderlegende fÃ¼r teilweise reservierte Tage";
+$_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_3'] = "Kalederlegende fÃ¼r reservierte Tage";
+$_ARRAYLANG['TXT_EGOVERNMENT'] = "Online-Schalter";
+$_ARRAYLANG['TXT_BROWSE'] = "Durchsuchen";
+$_ARRAYLANG['TXT_EGOV_QUANTITY'] = "Anzahl";
 $_ARRAYLANG['TXT_EGOV_PAYPAL_SUCCESS'] = "Die Zahlung mit PayPal wurde erfolgreich abgeschlossen";
 $_ARRAYLANG['TXT_EGOV_PAYPAL_CANCEL'] = "Die Zahlung mit PayPal wurde abgebrochen";
 $_ARRAYLANG['TXT_EGOV_PAYPAL_NOT_VALID'] = "Die Zahlung mit PayPal ist ungÃ¼ltig";
-$_ARRAYLANG['TXT_EGOV_PAYMENT_HANDLER'] = "Payment";
+$_ARRAYLANG['TXT_EGOV_PAYMENT_HANDLER'] = "Bezahlung";
 $_ARRAYLANG['TXT_EGOV_YELLOWPAY_SUCCESS'] = "Die Zahlung mit Yellowpay wurde erfolgreich abgeschlossen";
 $_ARRAYLANG['TXT_EGOV_YELLOWPAY_CANCEL'] = "Die Zahlung mit Yellowpay wurde abgebrochen";
 $_ARRAYLANG['TXT_EGOV_YELLOWPAY_NOT_VALID'] = "Die Zahlung mit Yellowpay ist ungÃ¼ltig";
@@ -44,4 +44,11 @@ $_ARRAYLANG['TXT_SHOP_YELLOWPAY_VISA'] = "Visa";
 $_ARRAYLANG['TXT_SHOP_YELLOWPAY_AMEX'] = "American Express (Amex)";
 $_ARRAYLANG['TXT_SHOP_YELLOWPAY_DINERS'] = "Diners";
 $_ARRAYLANG['TXT_SHOP_YELLOWPAY_YELLOWBILL'] = "PostFinance E-Rechnung (Yellowbill)";
+$_ARRAYLANG['TXT_EGOV_DAYNAME_1'] = "Montag";
+$_ARRAYLANG['TXT_EGOV_DAYNAME_2'] = "Dienstag";
+$_ARRAYLANG['TXT_EGOV_DAYNAME_3'] = "Mittwoch";
+$_ARRAYLANG['TXT_EGOV_DAYNAME_4'] = "Donnerstag";
+$_ARRAYLANG['TXT_EGOV_DAYNAME_5'] = "Freitag";
+$_ARRAYLANG['TXT_EGOV_DAYNAME_6'] = "Samstag";
+$_ARRAYLANG['TXT_EGOV_DAYNAME_7'] = "Sonntag";
 ?>
