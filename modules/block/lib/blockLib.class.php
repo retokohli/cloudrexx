@@ -381,7 +381,7 @@ class blockLibrary
 		
         $query = "  SELECT tblBlock.id 
                     FROM ".DBPREFIX."module_block_blocks AS tblBlock 
-                    INNER JOIN ".DBPREFIX."module_block_rel_lang AS tbllang
+                    INNER JOIN ".DBPREFIX."module_block_rel_lang AS tblLang
                     ON tblLang.block_id = tblBlock.id
                     WHERE tblBlock.active= 1
                     AND tblLang.lang_id = ".$_LANGID." ";
