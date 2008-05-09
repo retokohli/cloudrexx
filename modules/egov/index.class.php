@@ -62,7 +62,7 @@ class eGov extends eGovLibrary
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($this->pageContent, true, true);
 
-//eGov::addLog('Created eGov');
+//eGovLibrary::addLog('Created eGov');
     }
 
 
@@ -126,7 +126,7 @@ class eGov extends eGovLibrary
             )
         ");
         $order_id = $objDatabase->Insert_ID();
-//eGov::addLog("Order ID $order_id stored");
+//eGovLibrary::addLog("Order ID $order_id stored");
 
         if (eGovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes') {
             list ($calD, $calM, $calY) = split('[.]', $_REQUEST['contactFormField_1000']);
@@ -156,7 +156,7 @@ class eGov extends eGovLibrary
         if (eGov::GetOrderValue('order_state', $order_id) == 0) {
             // If any non-empty string is returned, an error occurred.
             $ReturnValue = $this->updateOrder($order_id);
-//eGov::addLog("_saveOrder(): Order ID $order_id updated, result: /$ReturnValue/");
+//eGovLibrary::addLog("_saveOrder(): Order ID $order_id updated, result: /$ReturnValue/");
             if (!empty($ReturnValue)) return $ReturnValue;
         }
 
@@ -176,11 +176,11 @@ class eGov extends eGovLibrary
     function updateOrder($order_id)
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
-//eGov::addLog("Updating order ID $order_id");
+//eGovLibrary::addLog("Updating order ID $order_id");
 
         $product_id = eGov::getOrderValue('order_product', $order_id);
         if (empty($product_id)) {
-//eGov::addLog("Error updating order ID $order_id: No product ID found");
+//eGovLibrary::addLog("Error updating order ID $order_id: No product ID found");
             return 'alert("'.$_ARRAYLANG['TXT_EGOV_ERROR_UPDATING_ORDER'].'");'."\n";
         }
 
@@ -191,12 +191,25 @@ class eGov extends eGovLibrary
         }
 
         $arrFields = eGovLibrary::getOrderValues($order_id);
+//eGovLibrary::addLog(var_export($arrFields, true));
         $FormValue4Mail = '';
+        $arrMatch = array();
         foreach ($arrFields as $name => $value) {
 //echo("processing field $name: $value<br />");
+            // If the value matches a calendar date, prefix the string with
+            // the day of the week
+            if (preg_match('/^(\d\d?)\.(\d\d?)\.(\d\d\d\d)$/', $value, $arrMatch)) {
+                // ISO-8601 numeric representation of the day of the week
+                // 1 (for Monday) through 7 (for Sunday)
+                $dotwNumber =
+                    date('N', mktime(1,1,1,$arrMatch[2],$arrMatch[1],$arrMatch[3]));
+                $dotwName = $_ARRAYLANG['TXT_EGOV_DAYNAME_'.$dotwNumber];
+                $value = "$dotwName, $value";
+            }
+//eGovLibrary::addLog("updateOrder($order_id): processing field /$name/$value/\n");
             $FormValue4Mail .= html_entity_decode($name).': '.html_entity_decode($value)."\n";
         }
-//echo("made form4mail:<br />$FormValue4Mail<br />");
+//eGovLibrary::addLog("made form4mail:\n$FormValue4Mail\n");
 /*
         if (eGovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes') {
             $FormValue4Mail = html_entity_decode(eGovLibrary::GetSettings('set_calendar_date_label')).': '.$_REQUEST['contactFormField_1000']."\n".$FormValue4Mail;
@@ -241,7 +254,7 @@ class eGov extends eGovLibrary
                 $objMail->Body = $BodyText;
                 $objMail->AddAddress($recipient);
                 $objMail->Send();
-//eGov::addLog("Sent mail to administrator for order ID $order_id");
+//eGovLibrary::addLog("Sent mail to administrator for order ID $order_id");
             }
         }
 
@@ -299,11 +312,11 @@ class eGov extends eGovLibrary
                         $objMail->AddAttachment(ASCMS_PATH.eGovLibrary::GetProduktValue('product_file', $product_id));
                     }
                     $objMail->Send();
-//eGov::addLog("Sent mail to customer for order ID $order_id");
+//eGovLibrary::addLog("Sent mail to customer for order ID $order_id");
                 }
             }
         }
-//eGov::addLog("Finished updating order ID $order_id");
+//eGovLibrary::addLog("Finished updating order ID $order_id");
         return '';
     }
 
@@ -311,7 +324,7 @@ class eGov extends eGovLibrary
     function payment($order_id=0, $amount=0)
     {
         $handler = $_REQUEST['handler'];
-//eGov::addLog("Entering payment, order ID $order_id, handler /$handler/");
+//eGovLibrary::addLog("Entering payment, order ID $order_id, handler /$handler/");
 
 //echo("Got handler $handler<br />");
         switch ($handler) {
@@ -336,13 +349,13 @@ class eGov extends eGovLibrary
             return $this->paymentYellowpay($order_id, $amount);
           // Returning from Yellowpay
           case 'yellowpay':
-//eGov::addLog("Info: paymentYellowpay: POST:\n".var_export($_POST, true));
-//eGov::addLog("Info: paymentYellowpay: GET:\n".var_export($_GET, true));
+//eGovLibrary::addLog("Info: paymentYellowpay: POST:\n".var_export($_POST, true));
+//eGovLibrary::addLog("Info: paymentYellowpay: GET:\n".var_export($_GET, true));
 //echo("Coming from Yellowpay, order_id $order_id<br />");
             return $this->paymentYellowpayVerify($order_id);
           // Silently ignore invalid payment requests
         }
-//eGov::addLog("Warning: Order ID $order_id, no match for handler /$handler/");
+//eGovLibrary::addLog("Warning: Order ID $order_id, no match for handler /$handler/");
         return '';
     }
 
@@ -486,7 +499,7 @@ class eGov extends eGovLibrary
     function paymentYellowpay($order_id, $amount)
     {
         global $_ARRAYLANG, $_LANGID;
-//eGov::addLog("Entered paymentYellowpay: Order ID $order_id, amount $amount");
+//eGovLibrary::addLog("Entered paymentYellowpay: Order ID $order_id, amount $amount");
 
 //echo("order id $order_id<br />");
         $paymentMethods =
@@ -503,7 +516,7 @@ class eGov extends eGovLibrary
 
         $product_id = eGovLibrary::GetOrderValue('order_product', $order_id);
         if (empty($product_id)) {
-//eGov::addLog("Error: paymentYellowpay: Order ID $order_id: Failed to get product ID");
+//eGovLibrary::addLog("Error: paymentYellowpay: Order ID $order_id: Failed to get product ID");
             return 'alert("'.$_ARRAYLANG['TXT_EGOV_ERROR_PROCESSING_ORDER']."\");\n";
         }
         $quantity =
@@ -552,37 +565,39 @@ class eGov extends eGovLibrary
         if (!empty($_POST['txtBZipCode'])) { $arrShopOrder['txtBZipCode'] = $_POST['txtBZipCode']; }
         if (!empty($_POST['txtBCity'])) { $arrShopOrder['txtBCity'] = $_POST['txtBCity']; }
 
+        $isTest = eGovLibrary::GetSettings('yellowpay_use_testserver');
         $yellowpayForm = $objYellowpay->getForm(
-            $arrShopOrder, '', true, eGovLibrary::GetSettings(''));
+            $arrShopOrder, '', true, $isTest
+            // Without autopost (for debugging and testing):
+            //$arrShopOrder, '', false, $isTest
+        );
 //echo("got yellowpayform: ".htmlentities($yellowpayForm)."<br />");
         if (count($objYellowpay->arrError) > 0) {
             $strError = "alert(\"Yellowpay could not be initialized:\n";
-//            if (_EGOV_DEBUG) {
+            if (_EGOV_DEBUG) {
                 $strError .= join("\n", $objYellowpay->arrError);
-//            }
+            }
             $strError .= '");';
-//            return $strError;
-//eGov::addLog("Error: paymentYellowpay: Yellowpay reported the following errors:\n$strError");
-            die($strError);
+            return $strError;
+//eGovLibrary::addLog("Error: paymentYellowpay: Yellowpay reported the following errors:\n$strError");die($strError);
         }
-//eGov::addLog("Info: paymentYellowpay: Providing form");
+//eGovLibrary::addLog("Info: paymentYellowpay: Providing form");
         die(
             '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" '.
             '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'.
             '<html><head><title>Yellowpay</title></head><body>'.
             $yellowpayForm.'</body></html>'
         );
-//        die(htmlentities($yellowpayForm));
+        // Test/debug: die(htmlentities($yellowpayForm));
     }
 
 
     function paymentYellowpayVerify($order_id)
     {
         global $_ARRAYLANG;
-//eGov::addLog("Info: paymentYellowpayVerify: Entered, Order ID $order_id");
-
+//eGovLibrary::addLog("Info: paymentYellowpayVerify: Entered, Order ID $order_id");
         $result = (isset($_GET['result']) ? $_GET['result'] : 0);
-//eGov::addLog("paymentYellowpayVerify: Result is $result for order ID $order_id");
+//eGovLibrary::addLog("paymentYellowpayVerify: Result is $result for order ID $order_id");
         // Silently process yellowpay notifications and die().
         if (//$result == -1 &&
                isset($_POST['txtOrderIDShop'])
@@ -591,49 +606,55 @@ class eGov extends eGovLibrary
             // Verification
 // TODO: Implement hashback
             $order_id = $_POST['txtOrderIDShop'];
+/*  Test server only!
             $transaction_id = $_POST['txtTransactionID'];
             if ($transaction_id == '2684') {
-//eGov::addLog("paymentYellowpayVerify: Going to update order ID $order_id");
+*/
+//eGovLibrary::addLog("paymentYellowpayVerify: Going to update order ID $order_id");
                 $this->updateOrder($order_id);
                 die();
+/*
             }
-//eGov::addLog("Warning: paymentYellowpayVerify: Wrong transaction ID /$transaction_id/");
+//eGovLibrary::addLog("Warning: paymentYellowpayVerify: Wrong transaction ID /$transaction_id/");
             die();
+*/
         }
 
         if (isset($_GET['order_id'])) {
             $order_id = $_GET['order_id'];
             $product_id = eGovLibrary::GetOrderValue('order_product', $order_id);
             if (empty($product_id)) {
-//eGov::addLog("Error: paymentYellowpayVerify: Order ID $order_id, failed to get product ID");
+//eGovLibrary::addLog("Error: paymentYellowpayVerify: Order ID $order_id, failed to get product ID");
                 return 'alert("'.$_ARRAYLANG['TXT_EGOV_ERROR_PROCESSING_ORDER']."\");\n";
             }
             switch ($result) {
               case 0:
-//eGov::addLog("Warning: paymentYellowpayVerify: Order ID $order_id: Payment failed");
+//eGovLibrary::addLog("Warning: paymentYellowpayVerify: Order ID $order_id: Payment failed");
                 // Payment failed
                 break;
               case 1:
-//eGov::addLog("Info: paymentYellowpayVerify: Order ID $order_id, payment complete");
+//eGovLibrary::addLog("Info: paymentYellowpayVerify: Order ID $order_id, payment complete with result 1");
                 // The payment has been completed.
                 // The notification with result == -1 will update the order.
                 // This case only redirects the customer to the list page with
                 // an appropriate message according to the status of the order.
                 $order_state = eGovLibrary::GetOrderValue('order_state', $order_id);
                 if ($order_state == 1) {
-//eGov::addLog("Success: paymentYellowpayVerify: Order ID $order_id, order status is $order_state");
+//eGovLibrary::addLog("Success: paymentYellowpayVerify: Order ID $order_id, order status is $order_state");
                     $product_id = eGovLibrary::GetOrderValue('order_product', $order_id);
                     return eGov::getSuccessMessage($product_id);
+                } else {
+//eGovLibrary::addLog("Warning: paymentYellowpayVerify: Order ID $order_id, order status is $order_state");
                 }
-//eGov::addLog("Warning: paymentYellowpayVerify: Order ID $order_id, order status is $order_state");
+//eGovLibrary::addLog("Warning: paymentYellowpayVerify: Order ID $order_id, order status is $order_state");
                 break;
               case 2:
-//eGov::addLog("Info: paymentYellowpayVerify: Order ID $order_id, payment cancelled");
+//eGovLibrary::addLog("Info: paymentYellowpayVerify: Order ID $order_id, payment cancelled");
                 // Payment was cancelled
                 return 'alert("'.$_ARRAYLANG['TXT_EGOV_YELLOWPAY_CANCEL']."\");\n";
             }
         }
-//eGov::addLog("Info: paymentYellowpayVerify: Order ID $order_id, returning error message");
+//eGovLibrary::addLog("Info: paymentYellowpayVerify: Order ID $order_id, returning error message");
         return 'alert("'.$_ARRAYLANG['TXT_EGOV_YELLOWPAY_NOT_VALID']."\");\n";
     }
 
@@ -760,26 +781,31 @@ class eGov extends eGovLibrary
         $ReturnValue = '';
         if (eGovLibrary::GetProduktValue('product_message', $product_id) != '') {
             $AlertMessageTxt = preg_replace(array('/(\n|\r\n)/', '/<br\s?\/?>/i'), '\n', addslashes(html_entity_decode(eGovLibrary::GetProduktValue('product_message', $product_id), ENT_QUOTES, CONTREXX_CHARSET)));
-//eGov::addLog("getSuccessMessage($product_id): eGovLibrary::getOrderValues(): Adding product message");
+//eGovLibrary::addLog("getSuccessMessage($product_id): eGovLibrary::getOrderValues(): Adding product message");
             $ReturnValue = 'alert("'.$AlertMessageTxt.'");'."\n";
         }
         if (eGovLibrary::GetProduktValue('product_target_url', $product_id) != '') {
-//eGov::addLog("getSuccessMessage($product_id): eGovLibrary::getOrderValues(): Adding redirect to target URI");
+//eGovLibrary::addLog("getSuccessMessage($product_id): eGovLibrary::getOrderValues(): Adding redirect to target URI");
             return
                 $ReturnValue.
                 'document.location.href="'.
                 eGovLibrary::GetProduktValue('product_target_url', $product_id).
                 '";'."\n";
         }
-//eGov::addLog("getSuccessMessage($product_id): eGovLibrary::getOrderValues(): Adding redirect to home page");
-//            $ReturnValue .= "history.go(-2);\n";
+//eGovLibrary::addLog("getSuccessMessage($product_id): eGovLibrary::getOrderValues(): Adding redirect to home page");
+        // Old: $ReturnValue .= "history.go(-2);\n";
         return
             $ReturnValue.
             'document.location.href="'.$_SERVER['PHP_SELF']."\";\n";
     }
 
 
-
+    /**
+     * Update the order status of an order specified by its ID
+     * @param   integer     $order_id   The order ID
+     * @param   integer     $status     The new status
+     * @return  boolean                 True on success, false otherwise
+     */
     function updateOrderStatus($order_id, $status)
     {
         global $objDatabase;
@@ -805,22 +831,6 @@ class eGov extends eGovLibrary
         return true;
     }
 
-
-    /**
-     * Add a line to the log file
-     *
-     * Prepends the current date and time to the string,
-     * adds a line terminator and appends this to the log file.
-     * Silently terminates if the log file cannot be opened for appending.
-     * @param   string   $strLine     The entry to be logged
-     */
-    function addLog($strLine)
-    {
-        $fp = fopen('egov.log', 'a');
-        if (!$fp) return;
-        fwrite($fp, date('Ymd His')." $strLine\n");
-        fclose($fp);
-    }
 }
 
 ?>
