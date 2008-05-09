@@ -894,25 +894,25 @@ CREATE TABLE `contrexx_module_egov_configuration` (
 ) TYPE=MyISAM;
 
 CREATE TABLE `contrexx_module_egov_orders` (
-  `order_id` int(11) NOT NULL auto_increment,
+  `order_id` int(11) unsigned NOT NULL auto_increment,
   `order_date` datetime NOT NULL default '0000-00-00 00:00:00',
   `order_ip` varchar(255) NOT NULL default '',
-  `order_product` int(11) NOT NULL default '0',
+  `order_product` int(11) unsigned NOT NULL default '0',
   `order_values` text NOT NULL,
-  `order_state` tinyint(4) NOT NULL default '0',
-  `order_quant` tinyint(4) NOT NULL default '1',
+  `order_state` tinyint(4) unsigned NOT NULL default '0',
+  `order_quant` tinyint(4) unsigned NOT NULL default '1',
   PRIMARY KEY  (`order_id`),
   KEY `order_product` (`order_product`)
 ) TYPE=MyISAM;
 
 CREATE TABLE `contrexx_module_egov_product_calendar` (
-  `calendar_id` int(11) NOT NULL auto_increment,
-  `calendar_product` int(11) NOT NULL default '0',
-  `calendar_order` int(11) NOT NULL default '0',
-  `calendar_day` int(2) NOT NULL default '0',
+  `calendar_id` int(11) unsigned NOT NULL auto_increment,
+  `calendar_product` int(11) unsigned NOT NULL default '0',
+  `calendar_order` int(11) unsigned NOT NULL default '0',
+  `calendar_day` int(2) unsigned NOT NULL default '0',
   `calendar_month` int(2) unsigned zerofill NOT NULL default '00',
-  `calendar_year` int(4) NOT NULL default '0',
-  `calendar_act` tinyint(1) NOT NULL default '0',
+  `calendar_year` int(4)unsigned  NOT NULL default '0',
+  `calendar_act` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`calendar_id`),
   KEY `calendar_product` (`calendar_product`)
 ) TYPE=MyISAM;
@@ -931,18 +931,18 @@ CREATE TABLE `contrexx_module_egov_product_fields` (
 ) TYPE=MyISAM;
 
 CREATE TABLE `contrexx_module_egov_products` (
-  `product_id` int(11) NOT NULL auto_increment,
-  `product_autostatus` tinyint(1) NOT NULL default '0',
+  `product_id` int(11) unsigned NOT NULL auto_increment,
+  `product_autostatus` tinyint(1) unsigned NOT NULL default '0',
   `product_name` varchar(255) NOT NULL default '',
   `product_desc` text NOT NULL,
   `product_price` decimal(11,2) NOT NULL default '0.00',
   `product_per_day` enum('yes','no') NOT NULL default 'no',
-  `product_quantity` tinyint(2) NOT NULL default '0',
+  `product_quantity` tinyint(2) unsigned NOT NULL default '0',
   `product_target_email` varchar(255) NOT NULL default '',
   `product_target_url` varchar(255) NOT NULL default '',
   `product_message` text NOT NULL,
-  `product_status` tinyint(1) NOT NULL default '1',
-  `product_electro` tinyint(1) NOT NULL default '0',
+  `product_status` tinyint(1) unsigned NOT NULL default '1',
+  `product_electro` tinyint(1) unsigned NOT NULL default '0',
   `product_file` varchar(255) NOT NULL default '',
   `product_sender_name` varchar(255) NOT NULL default '',
   `product_sender_email` varchar(255) NOT NULL default '',
@@ -951,7 +951,8 @@ CREATE TABLE `contrexx_module_egov_products` (
   `product_paypal` tinyint(1) NOT NULL default '0',
   `product_paypal_sandbox` varchar(255) NOT NULL default '',
   `product_paypal_currency` varchar(255) NOT NULL default '',
-  `product_orderby` int(11) NOT NULL default '0',
+  `product_orderby` int(11) unsigned NOT NULL default '0',
+  `yellowpay` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`product_id`)
 ) TYPE=MyISAM;
 
