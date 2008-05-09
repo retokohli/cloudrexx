@@ -425,13 +425,13 @@ class eGov extends eGovLibrary
             'TXT_EGOV_MANDATORY_FIELD' => $_ARRAYLANG['TXT_EGOV_MANDATORY_FIELD'],
             'TXT_BROWSE' => $_ARRAYLANG['TXT_BROWSE'],
             'TXT_EGOV_SEPARATE_MULTIPLE_VALUES_BY_COMMA' => $_ARRAYLANG['TXT_EGOV_SEPARATE_MULTIPLE_VALUES_BY_COMMA'],
-            'PRODUCT_FORM_DESC'                =>  get_wysiwyg_editor('contactFormDesc', eGovLibrary::GetProduktValue("product_desc", $product_id), 'shop'),
-            'PRODUCT_FORM_QUIANTITY'        =>  eGovLibrary::GetProduktValue("product_quantity", $product_id),
-            'PRODUCT_FORM_NAME'                =>  eGovLibrary::GetProduktValue('product_name', $product_id),
-            'PRODUCT_FORM_EMAIL'            =>  $TargetEmail,
-            'PRODUCT_FORM_TARGET_URL'        =>  eGovLibrary::GetProduktValue("product_target_url", $product_id),
-            'PRODUCT_FORM_TARGET_MESSAGE'    =>  get_wysiwyg_editor('productFormTargetMessage', eGovLibrary::GetProduktValue("product_message", $product_id), 'shop'),
-            'PRODUCT_FORM_PRICE'            =>  eGovLibrary::GetProduktValue("product_price", $product_id),
+            'PRODUCT_FORM_DESC' => get_wysiwyg_editor('contactFormDesc', eGovLibrary::GetProduktValue("product_desc", $product_id), 'shop'),
+            'PRODUCT_FORM_QUIANTITY' => eGovLibrary::GetProduktValue("product_quantity", $product_id),
+            'PRODUCT_FORM_NAME' => eGovLibrary::GetProduktValue('product_name', $product_id),
+            'PRODUCT_FORM_EMAIL' => $TargetEmail,
+            'PRODUCT_FORM_TARGET_URL' => eGovLibrary::GetProduktValue("product_target_url", $product_id),
+            'PRODUCT_FORM_TARGET_MESSAGE' => get_wysiwyg_editor('productFormTargetMessage', eGovLibrary::GetProduktValue("product_message", $product_id), 'shop'),
+            'PRODUCT_FORM_PRICE' => eGovLibrary::GetProduktValue("product_price", $product_id),
             'PRODUCT_ID' => $product_id,
             'EGOV_JS_SUBMIT_FUNCTION' => $jsSubmitFunction,
             'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
@@ -445,7 +445,7 @@ class eGov extends eGovLibrary
             'TXT_EGOV_PRODUCT_ELECTRO' => $_ARRAYLANG['TXT_EGOV_PRODUCT_ELECTRO'],
             'ELECTRO_CHECKED' => $electro_checked,
             'TXT_EGOV_PRODUCT_SELECT_FILE' => $_ARRAYLANG['TXT_EGOV_PRODUCT_SELECT_FILE'],
-            'PRODUCT_FORM_FILE'                => eGovLibrary::GetProduktValue("product_file", $product_id),
+            'PRODUCT_FORM_FILE' => eGovLibrary::GetProduktValue("product_file", $product_id),
             'TXT_EGOV_ORDER_STATE_AUTOMAIL' => $_ARRAYLANG["TXT_EGOV_ORDER_STATE_AUTOMAIL"],
             'TXT_EGOV_BASIC_DATA' => $_ARRAYLANG["TXT_EGOV_BASIC_DATA"],
             'TXT_EGOV_EXTENDED_OPTIONS' => $_ARRAYLANG["TXT_EGOV_EXTENDED_OPTIONS"],
@@ -519,29 +519,25 @@ class eGov extends eGovLibrary
                 $this->objTemplate->setVariable(array(
                     'EGOV_FORM_FIELD_NAME' => $arrField['name'],
                     'EGOV_FORM_FIELD_ID' => $fieldId,
-                    'EGOV_FORM_FIELD_TYPE_MENU' =>
-                        $this->_getFormFieldTypesMenu(
+                    'EGOV_FORM_FIELD_TYPE_MENU' => $this->_getFormFieldTypesMenu(
                             'contactFormFieldType['.$fieldId.']',
                             $arrField['type'],
                             'id="contactFormFieldType_'.$fieldId.
                               '" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'
                         ),
-                    'EGOV_FORM_FIELD_CHECK_MENU' =>
-                        $this->_getFormFieldCheckTypesMenu(
+                    'EGOV_FORM_FIELD_CHECK_MENU' => $this->_getFormFieldCheckTypesMenu(
                             'contactFormFieldCheckType['.$fieldId.']',
                             'contactFormFieldCheckType_'.$fieldId,
                             $arrField['type'],
                             $arrField['check_type']
                         ),
-                    'EGOV_FORM_FIELD_CHECK_BOX' =>
-                        $this->_getFormFieldRequiredCheckBox(
+                    'EGOV_FORM_FIELD_CHECK_BOX' => $this->_getFormFieldRequiredCheckBox(
                             'contactFormFieldRequired['.$fieldId.']',
                             'contactFormFieldRequired_'.$fieldId,
                             $arrField['type'],
                             ($arrField['is_required'] == 1 ? true : false)
                         ),
-                    'EGOV_FORM_FIELD_ATTRIBUTES' =>
-                        $this->_getFormFieldAttribute(
+                    'EGOV_FORM_FIELD_ATTRIBUTES' => $this->_getFormFieldAttribute(
                             $fieldId, $arrField['type'], $arrField['attributes']
                         ),
                 ));
@@ -855,8 +851,8 @@ class eGov extends eGovLibrary
                 }
 
                 $TargetMail = $_REQUEST['email'];
-                    if($TargetMail == ''){
-                        $TargetMail = eGovLibrary::GetEmailAdress($order_id);
+                if ($TargetMail == '') {
+                    $TargetMail = eGovLibrary::GetEmailAdress($order_id);
                 }
                 if ($TargetMail != '') {
                     if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
@@ -881,6 +877,7 @@ class eGov extends eGovLibrary
                         $objMail->IsHTML(false);
                         $objMail->Body = $BodyText;
                         $objMail->AddAddress($TargetMail);
+// TODO: Verify the result and show an error if sending the mail fails!
                         $objMail->Send();
                     }
                 }
@@ -900,10 +897,10 @@ class eGov extends eGovLibrary
         // selected state
         $selected_ok = '';
         $selected_deleted = '';
-        if ($objResult->fields['order_state']==1) {
+        if ($objResult->fields['order_state'] == 1) {
             $selected_ok = 'selected';
         }
-        if ($objResult->fields['order_state']==2) {
+        if ($objResult->fields['order_state'] == 2) {
             $selected_deleted = 'selected';
         }
 
@@ -927,15 +924,16 @@ class eGov extends eGovLibrary
             'TXT_SAVE_WITHOUT_EMAIL' => $_ARRAYLANG['TXT_SAVE_WITHOUT_EMAIL'],
             'TXT_SVE_WITH_EMAIL' => $_ARRAYLANG['TXT_SVE_WITH_EMAIL'],
             'TXT_EMPTY_EMAIL' => $_ARRAYLANG['TXT_EMPTY_EMAIL'],
-            'SETTINGS_STATE_CHANGE_EMAIL'     =>  eGovLibrary::GetSettings("set_state_email"),
-            'SELECTED_STATE_OK'                =>  $selected_ok,
-            'SELECTED_STATE_DELETED'        =>  $selected_deleted,
-            'ORDER_ID'                        =>  $objResult->fields["order_id"],
-            'ORDER_IP'                        =>  $objResult->fields["order_ip"],
-            'ORDER_DATE'                    =>  $objResult->fields["order_date"],
+            'SETTINGS_STATE_CHANGE_EMAIL' => eGovLibrary::GetSettings("set_state_email"),
+            'SELECTED_STATE_OK' => $selected_ok,
+            'SELECTED_STATE_DELETED' => $selected_deleted,
+            'ORDER_ID' => $objResult->fields["order_id"],
+            'ORDER_IP' => $objResult->fields["order_ip"],
+            'ORDER_DATE' => $objResult->fields["order_date"],
             'ORDER_PRODUCT' => eGovLibrary::GetProduktValue('product_name', $objResult->fields['order_product']),
-            'TXT_EGOV_SUBJECT'                => $_ARRAYLANG['TXT_EGOV_SUBJECT'],
-            'STATE_SUBJECT'                    => eGovLibrary::GetSettings("set_state_subject")
+            'TXT_EGOV_SUBJECT' => $_ARRAYLANG['TXT_EGOV_SUBJECT'],
+            'STATE_SUBJECT' => eGovLibrary::GetSettings("set_state_subject"),
+            'EGOV_TARGET_EMAIL' => eGovLibrary::GetEmailAdress($order_id),
         ));
 
         // form falues
@@ -1041,8 +1039,7 @@ class eGov extends eGovLibrary
                 'ORDER_ID' => $objResult->fields['order_id'],
                 'ORDER_STATE' => $this->MaskState($objResult->fields['order_state']),
                 'ORDER_PRODUCT' => eGovLibrary::GetProduktValue('product_name', $objResult->fields['order_product']),
-                'ORDER_NAME' =>
-                    $this->ParseFormValues('Vorname', $objResult->fields['order_values']).
+                'ORDER_NAME' => $this->ParseFormValues('Vorname', $objResult->fields['order_values']).
                     ' '.
                     $this->ParseFormValues('Name', $objResult->fields['order_values']),
                 'TXT_EDIT' => $_ARRAYLANG['TXT_EDIT'],

@@ -620,30 +620,33 @@ class eGov extends eGovLibrary
 */
         }
 
+        $strReturn = '';
         if (isset($_GET['order_id'])) {
             $order_id = $_GET['order_id'];
             $product_id = eGovLibrary::GetOrderValue('order_product', $order_id);
             if (empty($product_id)) {
 //eGovLibrary::addLog("Error: paymentYellowpayVerify: Order ID $order_id, failed to get product ID");
-                return 'alert("'.$_ARRAYLANG['TXT_EGOV_ERROR_PROCESSING_ORDER']."\");\n";
+                $strReturn = 'alert("'.$_ARRAYLANG['TXT_EGOV_ERROR_PROCESSING_ORDER']."\");\n";
             }
             switch ($result) {
               case 0:
 //eGovLibrary::addLog("Warning: paymentYellowpayVerify: Order ID $order_id: Payment failed");
                 // Payment failed
+                $strReturn = 'alert("'.$_ARRAYLANG['TXT_EGOV_YELLOWPAY_NOT_VALID']."\");\n";
                 break;
               case 1:
 //eGovLibrary::addLog("Info: paymentYellowpayVerify: Order ID $order_id, payment complete with result 1");
                 // The payment has been completed.
                 // The notification with result == -1 will update the order.
-                // This case only redirects the customer to the list page with
+                // This case only redirects the customer with
                 // an appropriate message according to the status of the order.
                 $order_state = eGovLibrary::GetOrderValue('order_state', $order_id);
                 if ($order_state == 1) {
 //eGovLibrary::addLog("Success: paymentYellowpayVerify: Order ID $order_id, order status is $order_state");
                     $product_id = eGovLibrary::GetOrderValue('order_product', $order_id);
-                    return eGov::getSuccessMessage($product_id);
+                    $strReturn = eGov::getSuccessMessage($product_id);
                 } else {
+                    $strReturn = 'alert("'.$_ARRAYLANG['TXT_EGOV_YELLOWPAY_NOT_VALID']."\");\n";
 //eGovLibrary::addLog("Warning: paymentYellowpayVerify: Order ID $order_id, order status is $order_state");
                 }
 //eGovLibrary::addLog("Warning: paymentYellowpayVerify: Order ID $order_id, order status is $order_state");
@@ -651,11 +654,11 @@ class eGov extends eGovLibrary
               case 2:
 //eGovLibrary::addLog("Info: paymentYellowpayVerify: Order ID $order_id, payment cancelled");
                 // Payment was cancelled
-                return 'alert("'.$_ARRAYLANG['TXT_EGOV_YELLOWPAY_CANCEL']."\");\n";
+                $strReturn = 'alert("'.$_ARRAYLANG['TXT_EGOV_YELLOWPAY_CANCEL']."\");\n";
             }
         }
 //eGovLibrary::addLog("Info: paymentYellowpayVerify: Order ID $order_id, returning error message");
-        return 'alert("'.$_ARRAYLANG['TXT_EGOV_YELLOWPAY_NOT_VALID']."\");\n";
+        return 'document.location.href="'.$_SERVER['PHP_SELF']."?section=egov\";\n";
     }
 
 
