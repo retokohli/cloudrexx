@@ -63,7 +63,7 @@ function shopProductsIsChecked(fieldName)
   {SHOP_PRODUCT_PAGING}<br />
   <table summary="" width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
     <tr>
-      <th colspan="16">{TXT_PRODUCT_CATALOG}&nbsp;(&nbsp;{TXT_TOTAL}&nbsp;{SHOP_PRODUCT_TOTAL}&nbsp;)</th>
+      <th colspan="15">{TXT_PRODUCT_CATALOG}&nbsp;(&nbsp;{TXT_TOTAL}&nbsp;{SHOP_PRODUCT_TOTAL}&nbsp;)</th>
     </tr>
     <tr class="row1">
       <td width="1%" nowrap="nowrap"><div style="text-align:center;"><b>#</b></div></td>
@@ -76,17 +76,19 @@ function shopProductsIsChecked(fieldName)
       <td width="1%" nowrap="nowrap"><b>{TXT_EKP}</b></td>
       <td width="1%" nowrap="nowrap"><b>{TXT_HP}</b></td>
       <td width="1%" nowrap="nowrap"><b>{TXT_TAX}</b></td>
-      <!--td width="5%" nowrap="nowrap"><b>{TXT_WEIGHT}</b></td>
-      <td width="5%" nowrap="nowrap"><b>{TXT_DISTRIBUTION}</b></td-->
+      <!--td width="5%" nowrap="nowrap"><b>{TXT_WEIGHT}</b></td-->
+      <td width="5%" nowrap="nowrap"><b>{TXT_DISTRIBUTION}</b></td>
       <td width="1%" nowrap="nowrap"><b>{TXT_STOCK}</b></td>
-      <td width="1%" nowrap="nowrap"><b>{TXT_PRODUCT_STATUS}&nbsp;</b></td>
       <td width="1%" nowrap="nowrap"><b>{TXT_ACTION}</b></td>
     </tr>
     <!-- BEGIN productRow -->
       <tr class="{SHOP_ROWCLASS}" style="vertical-align:top;">
         <td><input type="checkbox" name="selectedProductId[]" value="{SHOP_PRODUCT_ID}" /></td>
         <td>{SHOP_PRODUCT_ID}<input type="hidden" name="shopProductId[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_ID}" /></td>
-        <td><img src="images/icons/{SHOP_PRODUCT_STATUS_PICTURE}" alt="{TXT_PRODUCT_STATUS}" title="{TXT_PRODUCT_STATUS}" /></td>
+        <td>
+          <img src="images/icons/{SHOP_PRODUCT_STATUS_PICTURE}" alt="{TXT_PRODUCT_STATUS}" title="{TXT_PRODUCT_STATUS}" />
+          <input type="checkbox" name="active[{SHOP_PRODUCT_ID}]" value="1" {SHOP_PRODUCT_STATUS} /><input type="hidden" name="activeOld[{SHOP_PRODUCT_ID}]" value="{SHOP_ACTIVE_VALUE_OLD}" />
+        </td>
         <td><input type="text" name="shopSortOrder[{SHOP_PRODUCT_ID}]" size="5" maxlength="5" value="{SHOP_SORT_ORDER}" /><input type="hidden" name="shopSortOrderOld[{SHOP_PRODUCT_ID}]" value="{SHOP_SORT_ORDER}" /></td>
         <td><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}" title="{SHOP_PRODUCT_NAME}">{SHOP_PRODUCT_NAME}</a></td>
         <td><input maxlength="255" name="identifier[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" size="10" /><input type="hidden" name="identifierOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_CUSTOM_ID}" /></td>
@@ -96,10 +98,10 @@ function shopProductsIsChecked(fieldName)
         <td><input type="text" name="price1[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_PRICE1}" size="6" maxlength="10" /><input type="hidden" name="price1Old[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_PRICE1}" /></td>
         <td><input type="text" name="price2[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_PRICE2}" size="6" maxlength="10" /><input type="hidden" name="price2Old[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_PRICE2}" /></td>
         <td>{SHOP_PRODUCT_TAX_MENU}<input type="hidden" name="taxIdOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_TAX_ID}" /></td>
-        <!--td><input type="text" name="weight[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_WEIGHT}" size="10" maxlength="10" /><input type="hidden" name="weightOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_WEIGHT}" /></td>
-        <td>{SHOP_DISTRIBUTION_MENU}<input type="hidden" name="distributionOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_DISTRIBUTION}" /></td-->
+        <!--td><input type="text" name="weight[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_WEIGHT}" size="10" maxlength="10" /><input type="hidden" name="weightOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_WEIGHT}" /></td-->
+        <!--td>{SHOP_DISTRIBUTION_MENU}<input type="hidden" name="distributionOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_DISTRIBUTION}" /></td-->
+        <td>{SHOP_DISTRIBUTION}</td>
         <td><input type="text" name="stock[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_STOCK}" size="5" maxlength="5" /><input type="hidden" name="stockOld[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_STOCK}" /></td>
-        <td><input type="checkbox" name="active[{SHOP_PRODUCT_ID}]" value="1" {SHOP_PRODUCT_STATUS} /><input type="hidden" name="activeOld[{SHOP_PRODUCT_ID}]" value="{SHOP_ACTIVE_VALUE_OLD}" /></td>
         <td nowrap="nowrap"><div style="text-align:right;">
           <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}&amp;new=1" title="{TXT_AS_TEMPLATE}"><img src="images/icons/press.gif" alt="{TXT_AS_TEMPLATE}" border="0" /></a>&nbsp;
           <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a>&nbsp;

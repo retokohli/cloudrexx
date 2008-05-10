@@ -317,7 +317,10 @@ class Shop extends ShopLibrary
         $this->_initCountries();
 
         // Check session and user data, log in if present
-        $this->_authenticate();
+        if (shopUseSession()) {
+            $this->_authenticate();
+        }
+//        if (empty($_COOKIE['PHPSESSID'])) $this->_authenticate();
 
         $this->_initConfiguration();
         $this->_initPayment();
@@ -1275,32 +1278,6 @@ class Shop extends ShopLibrary
                 : ''
             );
 
-            $manufacturerName = '';
-            $manufacturerUrl  = '';
-            $manufacturerId   = $objProduct->getManufacturerId();
-            if ($manufacturerId) {
-                $manufacturerName =
-                    $this->_getManufacturerName($manufacturerId);
-                $manufacturerUrl  =
-                    $this->_getManufacturerUrl($manufacturerId);
-                if ($manufacturerUrl) {
-                    $manufacturerUrl =
-                        '<a href="'.$manufacturerUrl.'</a>';
-                }
-            }
-
-// TODO: This is the old Product field for the Manufacturer URI.
-// This is now extended by the Manufacturer table and should thus
-// get a new purpose.  As it is product specific, it could be
-// renamed and reused as a link to individual Products!
-            $manufacturerLink = (strlen($objProduct->getExternalLink())
-                ? '<a href="'.$objProduct->getExternalLink().
-                  '" title="'.$_ARRAYLANG['TXT_MANUFACTURER_URL'].
-                  '" target="_blank">'.
-                  $_ARRAYLANG['TXT_MANUFACTURER_URL'].'</a>'
-                : ''
-            );
-
             $price = $this->objCurrency->getCurrencyPrice(
                 $objProduct->getCustomerPrice($this->objCustomer)
             );
@@ -1349,9 +1326,6 @@ class Shop extends ShopLibrary
                 'SHOP_PRODUCT_TITLE'              => htmlentities($objProduct->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                 'SHOP_PRODUCT_DESCRIPTION'        => $shortDescription,
                 'SHOP_PRODUCT_DETAILDESCRIPTION'  => $longDescription,
-                'SHOP_MANUFACTURER_NAME'          => $manufacturerName,
-                'SHOP_MANUFACTURER_URL'           => $manufacturerUrl,
-                'SHOP_MANUFACTURER_LINK'          => $manufacturerLink,
                 'SHOP_PRODUCT_FORM_NAME'          => $shopProductFormName,
                 'SHOP_PRODUCT_SUBMIT_NAME'        => $productSubmitName,
                 'SHOP_PRODUCT_SUBMIT_FUNCTION'    => $productSubmitFunction,
@@ -1362,6 +1336,46 @@ class Shop extends ShopLibrary
                         : $_ARRAYLANG['TXT_SHOP_PRODUCT_COUNT']
                     ),
             ));
+
+            $manufacturerName = '';
+            $manufacturerUrl  = '';
+            $manufacturerId   = $objProduct->getManufacturerId();
+            if ($manufacturerId) {
+                $manufacturerName =
+                    $this->_getManufacturerName($manufacturerId);
+                $manufacturerUrl  =
+                    $this->_getManufacturerUrl($manufacturerId);
+            }
+            if (!empty($manufacturerUrl) || !empty($manufacturerName)) {
+                if (empty($manufacturerName)) {
+                    $manufacturerName = $manufacturerUrl;
+                }
+                if (!empty($manufacturerUrl)) {
+                    $manufacturerName =
+                        '<a href="'.$manufacturerUrl.'">'.
+                        $manufacturerName.'</a>';
+                }
+                $this->objTemplate->setVariable(array(
+                    'SHOP_MANUFACTURER_LINK'     => $manufacturerName,
+                    'TXT_SHOP_MANUFACTURER_LINK' => $_ARRAYLANG['TXT_SHOP_MANUFACTURER_LINK'],
+                ));
+            }
+
+// TODO: This is the old Product field for the Manufacturer URI.
+// This is now extended by the Manufacturer table and should thus
+// get a new purpose.  As it is product specific, it could be
+// renamed and reused as a link to individual Products!
+            $externalLink = $objProduct->getExternalLink();
+            if (!empty($externalLink)) {
+                $this->objTemplate->setVariable(array(
+                    'SHOP_EXTERNAL_LINK'     =>
+                    '<a href="'.$externalLink.
+                    '" title="'.$_ARRAYLANG['TXT_SHOP_EXTERNAL_LINK'].
+                    '" target="_blank">'.
+                    $_ARRAYLANG['TXT_SHOP_EXTERNAL_LINK'].'</a>',
+                ));
+            }
+
             if ($price > 0) {
                 $this->objTemplate->setVariable(array(
                     'SHOP_PRODUCT_PRICE'      => $price,
@@ -2240,7 +2254,7 @@ sendReq('', 1);
                 $_SESSION['shop']['email'] = $this->objCustomer->getEmail();
                 // update the session information both in the session object
                 // and in the database
-                 $sessionObj->cmsSessionUserUpdate($this->objCustomer->getId());
+                $sessionObj->cmsSessionUserUpdate($this->objCustomer->getId());
                 return true;
             }
         }
@@ -4494,15 +4508,15 @@ right after the customer logs in!
                     $objUser->setFrontendLanguage($this->langId);
                     $objUser->setBackendLanguage($this->langId);
                     $objUser->setProfile(array(
-                        'firstname'        => $objResultOrder->fields['firstname'],
-                        'lastname'        => $objResultOrder->fields['lastname'],
-                        'company'        => $objResultOrder->fields['company'],
-                        'address'        => $objResultOrder->fields['address'],
-                        'zip'            => $objResultOrder->fields['zip'],
-                        'city'            => $objResultOrder->fields['city'],
-                        'country'        => $objResultOrder->fields['country_id'],
-                        'phone_office'    => $objResultOrder->fields['phone'],
-                        'phone_fax'        => $objResultOrder->fields['fax']
+                        'firstname'    => $objResultOrder->fields['firstname'],
+                        'lastname'     => $objResultOrder->fields['lastname'],
+                        'company'      => $objResultOrder->fields['company'],
+                        'address'      => $objResultOrder->fields['address'],
+                        'zip'          => $objResultOrder->fields['zip'],
+                        'city'         => $objResultOrder->fields['city'],
+                        'country'      => $objResultOrder->fields['country_id'],
+                        'phone_office' => $objResultOrder->fields['phone'],
+                        'phone_fax'    => $objResultOrder->fields['fax']
                     ));
 
                     if (!$objUser->store()) {

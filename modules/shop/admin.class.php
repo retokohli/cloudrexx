@@ -3236,11 +3236,12 @@ class shopmanager extends ShopLibrary {
             }
 
             // Apply the changes to all Products with the same Product code.
-            if ($shopProductIdentifier != '') {
-                $arrProduct = Products::getByCustomId($shopProductIdentifier);
-            } else {
+// Note: This is disabled for the time being, as virtual categories are.
+//            if ($shopProductIdentifier != '') {
+//                $arrProduct = Products::getByCustomId($shopProductIdentifier);
+//            } else {
                 $arrProduct = array($objProduct);
-            }
+//            }
             if (!is_array($arrProduct)) {
                 return false;
             }
@@ -3432,7 +3433,7 @@ class shopmanager extends ShopLibrary {
             $objProduct = Product::getById($shopProductId);
         }
         if (!$objProduct) {
-            $objProduct = new Product('', 0, '', '', 0, 0, 0, 0);
+            $objProduct = new Product('', 0, '', '', 0, 1, 0, 0);
         }
 
         // extract product image infos (path, width, height)
@@ -5414,8 +5415,9 @@ class shopmanager extends ShopLibrary {
             'TXT_SELECT_ALL'             => $_ARRAYLANG['TXT_SELECT_ALL'],
             'TXT_REMOVE_SELECTION'       => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
             'TXT_SELECT_ACTION'          => $_ARRAYLANG['TXT_SELECT_ACTION'],
-            'TXT_MAKE_SELECTION'         => $_ARRAYLANG['TXT_MAKE_SELECTION']
-//            'TXT_DISTRIBUTION'           => $_ARRAYLANG['TXT_DISTRIBUTION'],
+            'TXT_MAKE_SELECTION'         => $_ARRAYLANG['TXT_MAKE_SELECTION'],
+            'TXT_PRODUCT_STATUS'         => $_ARRAYLANG['TXT_STATUS'],
+            'TXT_DISTRIBUTION'           => $_ARRAYLANG['TXT_DISTRIBUTION'],
 //            'TXT_WEIGHT'                 => $_ARRAYLANG['TXT_WEIGHT'],
         ));
 
@@ -5516,6 +5518,9 @@ class shopmanager extends ShopLibrary {
                 'SHOP_SORT_ORDER'              => $objProduct->getOrder(),
 //                'SHOP_DISTRIBUTION_MENU'       => $this->objDistribution->getDistributionMenu($objProduct->getDistribution(), "distribution[".$objProduct->getId()."]"),
 //                'SHOP_PRODUCT_WEIGHT'          => Weight::getWeightString($objProduct->getWeight()),
+                'SHOP_DISTRIBUTION'            =>
+                    $_ARRAYLANG['TXT_DISTRIBUTION_'.
+                    strtoupper($objProduct->getDistribution())],
             ));
             $this->objTemplate->parse('productRow');
         }
