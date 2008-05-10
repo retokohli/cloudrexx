@@ -700,7 +700,9 @@ class ShopCategories
                 "<option value='$id'".
                 ($selectedId == $id ? ' selected="selected"' : '').'>'.
                 str_repeat('...', $level).
-                htmlentities($name).
+// TODO: This may f*** up when UTF8 is used
+//                htmlentities($name, ENV_QUOTE, CONTREXX_CHARSET).
+                $name.
                 "</option>\n";
         }
         return $strMenu;

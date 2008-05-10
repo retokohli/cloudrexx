@@ -430,7 +430,7 @@ class Product
      */
     function setStatus($status)
     {
-        $this->status = ($status == 0 ? 0 : 1);
+        $this->status = ($status ? 1 : 0);
     }
 
     /**
