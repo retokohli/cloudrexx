@@ -229,4 +229,6 @@ $_ARRAYLANG['TXT_SHOP_UNKNOWN_CUSTOMER_ACCOUNT'] = "Diese Kontoangaben sind ungÃ
 $_ARRAYLANG['TXT_SHOP_URI_FOR_DOWNLOAD'] = "Server Adresse:";
 $_ARRAYLANG['TXT_SHOP_LOGINNAME'] = "Benutzername:";
 $_ARRAYLANG['TXT_SHOP_LOGINDATA'] = "Die Zugangsdaten fÃ¼r den Download:";
+$_ARRAYLANG['TXT_SHOP_MANUFACTURER_LINK'] = "Hersteller:";
+$_ARRAYLANG['TXT_SHOP_EXTERNAL_LINK'] = "Externe Informationen";
 ?>
