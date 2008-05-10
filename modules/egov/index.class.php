@@ -143,6 +143,7 @@ class eGov extends eGovLibrary
             }
         }
 
+        $ReturnValue = '';
         // Handle any kind of payment request
         if (!empty($_REQUEST['handler'])) {
 //echo("handler is set (".$_REQUEST['handler'].")<br />");
@@ -150,7 +151,6 @@ class eGov extends eGovLibrary
             if (!empty($ReturnValue)) return $ReturnValue;
         }
 
-        $ReturnValue = '';
         // If no more payment handling is required,
         // update the order right away
         if (eGov::GetOrderValue('order_state', $order_id) == 0) {
@@ -160,7 +160,7 @@ class eGov extends eGovLibrary
             if (!empty($ReturnValue)) return $ReturnValue;
         }
 
-        return '';
+        return eGov::getSuccessMessage($product_id);
     }
 
 
@@ -799,7 +799,7 @@ class eGov extends eGovLibrary
         // Old: $ReturnValue .= "history.go(-2);\n";
         return
             $ReturnValue.
-            'document.location.href="'.$_SERVER['PHP_SELF']."\";\n";
+            'document.location.href="'.$_SERVER['PHP_SELF']."?section=egov\";\n";
     }
 
 

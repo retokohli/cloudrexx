@@ -1670,20 +1670,11 @@ class eGov extends eGovLibrary
             $FormValue .= $arrField['name'].'::'.strip_tags(contrexx_addslashes($_REQUEST['contactFormField_'.$fieldId])).';;';
         }
 
-// postfinancearena
         $quantity = 0;
-        if (isset($_REQUEST["contactFormField_Quantity_Kids"])) {
-            $quantityAdult = $_REQUEST["contactFormField_Quantity"];
-            $quantityKid = $_REQUEST["contactFormField_Quantity_Kids"];
-            $quantity = $quantityAdult + $quantityKid;
+        if (eGovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes') {
+            $quantity = intval($_REQUEST['contactFormField_Quantity']);
             $FormValue = eGovLibrary::GetSettings('set_calendar_date_label').'::'.strip_tags(contrexx_addslashes($_REQUEST['contactFormField_1000'])).';;'.$FormValue;
-            $FormValue = "Erwachsene/Kinder::$quantityAdult/$quantityKid;;$FormValue";
-        } else {
-            if (eGovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes') {
-                $quantity = intval($_REQUEST['contactFormField_Quantity']);
-                $FormValue = eGovLibrary::GetSettings('set_calendar_date_label').'::'.strip_tags(contrexx_addslashes($_REQUEST['contactFormField_1000'])).';;'.$FormValue;
-                $FormValue = $_ARRAYLANG['TXT_EGOV_QUANTITY'].'::'.$quantity.';;'.$FormValue;
-            }
+            $FormValue = $_ARRAYLANG['TXT_EGOV_QUANTITY'].'::'.$quantity.';;'.$FormValue;
         }
 
         $objDatabase->Execute("
