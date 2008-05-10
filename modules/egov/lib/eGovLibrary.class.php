@@ -576,7 +576,8 @@ class eGovLibrary {
         $paymentPaypal = eGovLibrary::GetProduktValue('product_paypal', $id);
         $paymentYellowpay = eGovLibrary::GetProduktValue('yellowpay', $id);
         $paymentPrice = eGovLibrary::GetProduktValue('product_price', $id);
-        if ($paymentPrice > 0) {
+        if (   $paymentPrice > 0
+            && ($paymentYellowpay || $paymentPaypal)) {
             $sourcecode .=
                 '<tr><td>'.
                 $_ARRAYLANG['TXT_EGOV_PAYMENT_HANDLER']."</td>\n".
