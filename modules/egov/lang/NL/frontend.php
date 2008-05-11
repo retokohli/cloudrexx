@@ -9,7 +9,6 @@
 $_ARRAYLANG['TXT_DATE'] = "Datum";
 $_ARRAYLANG['TXT_NAME'] = "Name";
 $_ARRAYLANG['TXT_PRODUCT'] = "Produkt";
-$_ARRAYLANG['TXT_EGOV_SUBMIT'] = "Senden";
 $_ARRAYLANG['TXT_EGOV_DELETE'] = "ZurÃ¼cksetzen";
 $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_1'] = "Kalenderlegende fÃ¼r freie Tage";
 $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_2'] = "Kalenderlegende fÃ¼r teilweise reservierte Tage";
