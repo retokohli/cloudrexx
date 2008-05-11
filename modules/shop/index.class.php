@@ -3959,7 +3959,6 @@ right after the customer logs in!
                 'SHOP_TOTALPRICE'       => $_SESSION['shop']['total_price'],
                 'SHOP_PAYMENT'          => $strPayment,
                 'SHOP_GRAND_TOTAL'      => $_SESSION['shop']['grand_total_price'],
-                'SHOP_CUSTOMERNOTE'     => $_SESSION['shop']['customer_note'],
                 'SHOP_COMPANY'          => stripslashes($_SESSION['shop']['company']),
                 'SHOP_PREFIX'           => stripslashes($_SESSION['shop']['prefix']),
                 'SHOP_LASTNAME'         => stripslashes($_SESSION['shop']['lastname']),
@@ -3992,9 +3991,16 @@ right after the customer logs in!
                 'TXT_PAYMENT_TYPE'      => $_ARRAYLANG['TXT_PAYMENT_TYPE'],
                 'TXT_TOTAL_PRICE'       => $_ARRAYLANG['TXT_TOTAL_PRICE'],
                 'TXT_ADDRESS_CUSTOMER'  => $_ARRAYLANG['TXT_ADDRESS_CUSTOMER'],
-                'TXT_COMMENTS'          => $_ARRAYLANG['TXT_COMMENTS'],
                 'TXT_ORDER_NOW'         => $_ARRAYLANG['TXT_ORDER_NOW'],
             ));
+
+            if (!empty($_SESSION['shop']['customer_note'])) {
+                $this->objTemplate->setVariable(array(
+                    'TXT_COMMENTS'          => $_ARRAYLANG['TXT_COMMENTS'],
+                    'SHOP_CUSTOMERNOTE'     => $_SESSION['shop']['customer_note'],
+                ));
+            }
+
             if ($this->objVat->isEnabled()) {
                 $this->objTemplate->setVariable(array(
                     'TXT_TAX_RATE'          => $_ARRAYLANG['TXT_TAX_RATE'],
