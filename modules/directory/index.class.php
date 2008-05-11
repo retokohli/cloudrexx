@@ -832,6 +832,7 @@ class rssDirectory extends directoryLibrary
 				'DIRECTORY_MAP_LON_BACKEND'	=> $this->googleMapStartPoint['lon'],
 				'DIRECTORY_MAP_LAT_BACKEND'	=> $this->googleMapStartPoint['lat'],
 				'DIRECTORY_MAP_ZOOM_BACKEND'=> $this->googleMapStartPoint['zoom'],
+				'IS_BACKEND'				=> 'true',
 				'DIRECTORY_COUNTRY_OPTIONS' => $this->getCountry($country),
 			));
 			if($this->_objTpl->blockExists('direcoryGoogleMapJavascript')){
@@ -1147,8 +1148,6 @@ class rssDirectory extends directoryLibrary
 
 		    		 	$inputValueField .= '<div id="gmap" style="margin:2px; border:1px solid;width: 400px; height: 300px;"></div>';
 
-		    		 	$inputValueField .= '<div id="loclayer" style="-moz-opacity: 0.85; filter: alpha(opacity=85); background-color: #dedede;padding:2px; border:1px solid;width: 198px; height: 42px; position:relative; top: -270px; left: 200px; "></div>';
-
 						$content = 	$inputValueField;
 					}
 
@@ -1452,6 +1451,7 @@ class rssDirectory extends directoryLibrary
 					'DIRECTORY_MAP_LON_BACKEND'	=> $this->googleMapStartPoint['lon'],
 					'DIRECTORY_MAP_LAT_BACKEND'	=> $this->googleMapStartPoint['lat'],
 					'DIRECTORY_MAP_ZOOM_BACKEND'=> $this->googleMapStartPoint['zoom'],
+					'IS_BACKEND'				=> 'true',
 				));
 				if($this->_objTpl->blockExists('direcoryGoogleMapJavascript')){
 					$this->_objTpl->parse('direcoryGoogleMapJavascript');
@@ -1696,6 +1696,7 @@ class rssDirectory extends directoryLibrary
 					'DIRECTORY_MAP_LON_BACKEND'	=> $this->googleMapStartPoint['lon'],
 					'DIRECTORY_MAP_LAT_BACKEND'	=> $this->googleMapStartPoint['lat'],
 					'DIRECTORY_MAP_ZOOM_BACKEND'=> $this->googleMapStartPoint['zoom'],
+					'IS_BACKEND'				=> 'true',
 				));
 				if($this->_objTpl->blockExists('direcoryGoogleMapJavascript')){
 					$this->_objTpl->parse('direcoryGoogleMapJavascript');

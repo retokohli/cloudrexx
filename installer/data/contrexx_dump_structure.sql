@@ -1082,7 +1082,6 @@ CREATE TABLE `contrexx_module_forum_postings` (
   `icon` smallint(5) unsigned NOT NULL default '0',
   `keywords` text NOT NULL,
   `subject` varchar(250) NOT NULL default '',
-  `attachment` varchar(250) NOT NULL default '',
   `content` text NOT NULL,
   `attachment` varchar(250) NOT NULL default '',
   PRIMARY KEY  (`id`),

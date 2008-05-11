@@ -3264,7 +3264,6 @@ class newsletter extends NewsletterLib
 		if (isset($_REQUEST['newsletterListId'])) {
 			$newsletterListId = intval($_REQUEST['newsletterListId']);
 		}
-
 		$this->_objTpl->setVariable(array(
 			'TXT_TITLE'							=> $_ARRAYLANG['TXT_SEARCH'],
 			'TXT_CHANGELOG_SUBMIT'	   			=> $_CORELANG['TXT_MULTISELECT_SELECT'],
@@ -3377,28 +3376,28 @@ class newsletter extends NewsletterLib
 		));
 
 		$where_statement = '';
-		if($_POST["keyword"]!=""){
-			if($_POST["SearchFields"]!=""){
-				$where_statement .= ' and '.contrexx_addslashes($_POST["SearchFields"]).' LIKE "%'.contrexx_addslashes($_POST["keyword"]).'%" ';
+		if($_REQUEST["keyword"]!=""){
+			if($_REQUEST["SearchFields"]!=""){
+				$where_statement .= ' and '.contrexx_addslashes($_REQUEST["SearchFields"]).' LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%" ';
 			}else{
-				$where_statement .= '	and (email LIKE "%'.contrexx_addslashes($_POST["keyword"]).'%"
-										or lastname LIKE "%'.contrexx_addslashes($_POST["keyword"]).'%"
-										or firstname LIKE "%'.contrexx_addslashes($_POST["keyword"]).'%"
-										or street LIKE "%'.contrexx_addslashes($_POST["keyword"]).'%"
-										or zip LIKE "%'.contrexx_addslashes($_POST["keyword"]).'%"
-										or city LIKE "%'.contrexx_addslashes($_POST["keyword"]).'%"
-										or country LIKE "%'.contrexx_addslashes($_POST["keyword"]).'%"
-										or phone LIKE "%'.contrexx_addslashes($_POST["keyword"]).'%"
-										or birthday LIKE "%'.contrexx_addslashes($_POST["keyword"]).'%")';
+				$where_statement .= '	and (email LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
+										or lastname LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
+										or firstname LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
+										or street LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
+										or zip LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
+										or city LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
+										or country LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
+										or phone LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
+										or birthday LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%")';
 			}
 		}
 		// kategoriesuche noch einbauen
-		if($_POST["SearchCategory"]!=""){
+		if($_REQUEST["SearchCategory"]!=""){
 			$where_statement .= ' ';
 		}
 
-		if($_POST["SearchStatus"]!=""){
-			$where_statement .= ' and status='.intval($_POST["SearchStatus"]).' ';
+		if($_REQUEST["SearchStatus"]!=""){
+			$where_statement .= ' and status='.intval($_REQUEST["SearchStatus"]).' ';
 		}
 
 		if ($newsletterListId > 0) {
@@ -3491,7 +3490,12 @@ class newsletter extends NewsletterLib
 		}
 
 
-		$paging = getPaging($count, $pos, "&amp;cmd=newsletter&amp;act=users&amp;limit=".$_CONFIG['corePagingLimit']."&amp;newsletterListId=".$newsletterListId, "", true, $_CONFIG['corePagingLimit']);
+		$paging = getPaging($count, $pos, "&amp;cmd=newsletter&amp;act=users".
+		"&amp;limit=".$_CONFIG['corePagingLimit'].
+		"&amp;newsletterListId=".$newsletterListId.
+		"&amp;SearchFields=".$_REQUEST["SearchFields"].
+		"&amp;keyword=".$_REQUEST["keyword"].
+		"&amp;SearchStatus=".$_REQUEST["SearchStatus"], "", true, $_CONFIG['corePagingLimit']);
 		$this->_objTpl->setVariable("USER_PAGING", $paging);
 		$this->_objTpl->setVariable('TXT_EDIT', $_ARRAYLANG['TXT_EDIT']);
 		$this->_objTpl->parse('module_newsletter_user_overview');
