@@ -1281,11 +1281,17 @@ class Shop extends ShopLibrary
             $price = $this->objCurrency->getCurrencyPrice(
                 $objProduct->getCustomerPrice($this->objCustomer)
             );
-            $discountPrice = $objProduct->getDiscountPrice();
-            if ($discountPrice > 0) {
-                $price = "<s>$price</s>";
-                $discountPrice =
-                    $this->objCurrency->getCurrencyPrice($discountPrice);
+            $discountPrice = '';
+            $isSpecialoffer = $objProduct->isSpecialOffer();
+            if ($isSpecialoffer) {
+                $discountPrice = $objProduct->getDiscountPrice();
+                if ($discountPrice > 0) {
+                    $price = "<s>$price</s>";
+                    $discountPrice =
+                        $this->objCurrency->getCurrencyPrice($discountPrice);
+                } else {
+                    $discountPrice = '';
+                }
             }
 
             $shortDescription = $objProduct->getShortDesc();
@@ -2309,10 +2315,14 @@ sendReq('', 1);
         if (!isset($_SESSION['shop']['cart'])) {
             $_SESSION['shop']['cart']['products'] = array();
             $_SESSION['shop']['cart']['items'] = 1;
-            $_SESSION['shop']['cart']['total_price'] = "0.00";
+            $_SESSION['shop']['cart']['total_price'] = '0.00';
         }
         // check countries
-        $_SESSION['shop']['countryId2'] = isset($_POST['countryId2']) ? intval($_POST['countryId2']) : $this->arrConfig['country_id']['value'];
+        $_SESSION['shop']['countryId2'] =
+            (isset($_POST['countryId2'])
+                ? intval($_POST['countryId2'])
+                : $this->arrConfig['country_id']['value']
+            );
     }
 
 
@@ -2538,6 +2548,9 @@ sendReq('', 1);
         $total_price      = 0;
         $total_tax_amount = 0;
         $total_weight     = 0;
+        // No shipment by default.  Only if at least one Product with
+        // type "delivery" is encountered, it is switched on.
+        $_SESSION['shop']['shipment'] = false;
 
         if (is_array($_SESSION['shop']['cart']['products']) && !empty($_SESSION['shop']['cart']['products'])) {
             foreach ($_SESSION['shop']['cart']['products'] as $cartProdId => $arrProduct) {
@@ -2695,7 +2708,6 @@ sendReq('', 1);
             'TXT_QUANTITY'                 => $_ARRAYLANG['TXT_QUANTITY'],
             'TXT_TOTAL'                    => $_ARRAYLANG['TXT_TOTAL'],
             'TXT_INTER_TOTAL'              => $_ARRAYLANG['TXT_INTER_TOTAL'],
-            'TXT_SHIP_COUNTRY'             => $_ARRAYLANG['TXT_SHIP_COUNTRY'],
             'TXT_UPDATE'                   => $_ARRAYLANG['TXT_UPDATE'],
             'TXT_NEXT'                     => $_ARRAYLANG['TXT_NEXT'],
             'TXT_EMPTY_CART'               => $_ARRAYLANG['TXT_EMPTY_CART'],
@@ -2718,17 +2730,17 @@ sendReq('', 1);
 
             ));
         }
-        $this->objTemplate->setVariable(
-            'SHOP_COUNTRIES_MENU',
-                ($_SESSION['shop']['shipment']
-                  ? $this->_getCountriesMenu(
-                      'countryId2',
-                      $_SESSION['shop']['countryId2'],
-                      "document.forms['shopForm'].submit()"
-                    )
-                  : '-'
-                )
-        );
+        if ($_SESSION['shop']['shipment']) {
+            $this->objTemplate->setVariable(array(
+                'TXT_SHIP_COUNTRY'    => $_ARRAYLANG['TXT_SHIP_COUNTRY'],
+                'SHOP_COUNTRIES_MENU' =>
+                    $this->_getCountriesMenu(
+                        'countryId2',
+                        $_SESSION['shop']['countryId2'],
+                        "document.forms['shopForm'].submit()"
+                    ),
+            ));
+        }
     }
 
 
@@ -2815,13 +2827,14 @@ sendReq('', 1);
             empty($_POST['zip']) ||
             empty($_POST['city']) ||
             empty($_POST['phone']) ||
-            empty($_POST['prefix2']) ||
+            $_SESSION['shop']['shipment'] &&
+            (empty($_POST['prefix2']) ||
             empty($_POST['lastname2']) ||
             empty($_POST['firstname2']) ||
             empty($_POST['address2']) ||
             empty($_POST['zip2']) ||
             empty($_POST['city2']) ||
-            empty($_POST['phone2']) ||
+            empty($_POST['phone2'])) ||
             (empty($_POST['email']) && !$this->objCustomer) ||
             (empty($_POST['password']) && !$this->objCustomer)
         ) {
@@ -2888,14 +2901,22 @@ sendReq('', 1);
 
         if (isset($_POST) && is_array($_POST)) {
             foreach($_POST as $key => $value) {
-                $value = get_magic_quotes_gpc() ? strip_tags(trim($value)) : addslashes(strip_tags(trim($value)));
-                $_SESSION['shop'][$key] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
+                $value = (get_magic_quotes_gpc()
+                    ? strip_tags(trim($value))
+                    : addslashes(strip_tags(trim($value))));
+                $_SESSION['shop'][$key] =
+                    htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
             }
 
             if (isset($_POST['equalAddress'])) {
-                $_SESSION['shop']['equalAddress'] = "checked='checked'";
+                if (!empty($_POST['address2'])) {
+                    $_SESSION['shop']['equalAddress'] = 'checked="checked"';
+                } else {
+                    $_SESSION['shop']['equalAddress'] = '';
+                }
             } else {
-                if (!isset($_SESSION['shop']['equalAddress'])) {
+                if (empty($_POST['address2']) ||
+                    !isset($_SESSION['shop']['equalAddress'])) {
                     $_SESSION['shop']['equalAddress'] = '';
                 }
             }
@@ -2904,6 +2925,7 @@ sendReq('', 1);
                 $_SESSION['shop']['countryId'] = intval($_POST['countryId']);
             } else {
                 if (!isset($_SESSION['shop']['countryId'])) {
+                    // countryId2 is set in _initCart()
                     $_SESSION['shop']['countryId'] = $_SESSION['shop']['countryId2'];
                 }
             }
@@ -2963,6 +2985,8 @@ sendReq('', 1);
                 'SHOP_ACCOUNT_PHONE2'        => (isset($_SESSION['shop']['phone2'])     ? stripslashes($_SESSION['shop']['phone2']) : ''),
                 'SHOP_ACCOUNT_EQUAL_ADDRESS' => $_SESSION['shop']['equalAddress']
             ));
+        } else {
+            $this->objTemplate->hideBlock('shopShipmentAddress');
         }
     }
 
@@ -3587,7 +3611,7 @@ right after the customer logs in!
                 $this->objCustomer->setPassword($_SESSION['shop']['password']);
                 $this->objCustomer->setActiveStatus(1);
 
-//todo: this might belong somewhere else
+// TODO: This might belong somewhere else
                 $_SESSION['shop']['username'] = trim($_SESSION['shop']['email'], " \t");
             } else {
                 // update the Customer object from the session array
@@ -3611,8 +3635,13 @@ right after the customer logs in!
             // insert or update the customer
             $this->objCustomer->store();
 
-// todo: is this really needed?
+// TODO: Is this really needed?
             $_SESSION['shop']['customerid'] = $this->objCustomer->getId();
+
+            // Clear the ship-to country if there is no shipping
+            if (empty($_SESSION['shop']['shipment'])) {
+                $_SESSION['shop']['countryId2'] = 0;
+            }
 
             // Add to order table
             $query = "
@@ -3620,7 +3649,8 @@ right after the customer logs in!
                     customerid, selected_currency_id, currency_order_sum,
                     order_date, order_status, ship_company, ship_prefix,
                     ship_firstname, ship_lastname, ship_address, ship_city,
-                    ship_zip, ship_country_id, ship_phone, currency_ship_price,
+                    ship_zip, ship_country_id, ship_phone,
+                    tax_price, currency_ship_price,
                     shipping_id, payment_id, currency_payment_price,
                     customer_ip, customer_host, customer_lang,
                     customer_browser, customer_note
@@ -3639,6 +3669,7 @@ right after the customer logs in!
                 '".trim($_SESSION['shop']['zip2']," \t")."',
                 '".intval($_SESSION['shop']['countryId2'])."',
                 '".trim($_SESSION['shop']['phone2']," \t")."',
+                '{$_SESSION['shop']['tax_price']}',
                 '{$_SESSION['shop']['shipment_price']}', ".
                 (   isset($_SESSION['shop']['shipperId'])
                  && $_SESSION['shop']['shipperId']
@@ -3977,7 +4008,7 @@ right after the customer logs in!
                         ),
                ));
             }
-            if (isset($_SESSION['shop']['shipperId']) && $_SESSION['shop']['shipperId']) {
+            if ($_SESSION['shop']['shipment']) {
                 $this->objTemplate->setVariable(array(
                     'SHOP_SHIPMENT_PRICE'   => $_SESSION['shop']['shipment_price'],
                     'SHOP_SHIPMENT' =>
@@ -3985,6 +4016,8 @@ right after the customer logs in!
                     'TXT_SHIPPING_METHOD'   => $_ARRAYLANG['TXT_SHIPPING_METHOD'],
                     'TXT_SHIPPING_ADDRESS'  => $_ARRAYLANG['TXT_SHIPPING_ADDRESS'],
                 ));
+            } else {
+                $this->objTemplate->hideBlock('shopShipmentAddress');
             }
             // Custom.
             // Enable if Discount class is customized and in use.
@@ -4335,7 +4368,7 @@ right after the customer logs in!
             $_ARRAYLANG['TXT_SHOP_URI_FOR_DOWNLOAD'].":\n".
             'http://'.$_SERVER['SERVER_NAME'].
             "/index.php?section=download\n";
-        $orderIdCustom = ShopLibrary::getCustomOrderId($orderId, date('Y'));
+        $orderIdCustom = ShopLibrary::getCustomOrderId($orderId);
 
         // Pick the order from the database
         $query = "
@@ -4359,6 +4392,7 @@ right after the customer logs in!
         $objResultOrder = $objDatabase->Execute($query);
         if (!$objResultOrder || $objResultOrder->RecordCount() == 0) {
             // Order not found
+//echo("Could not find order for order ID $orderId<br />");
             return false;
         }
         // Determine the Currency code
@@ -4366,6 +4400,7 @@ right after the customer logs in!
             $objResultOrder->fields['selected_currency_id']
         );
         if (!$strCurrencyCode) {
+//echo("Could not find currency for currency ID ".$objResultOrder->fields['selected_currency_id']."<br />");
             return false;
         }
 
@@ -4400,6 +4435,7 @@ right after the customer logs in!
         $objResultItem = $objDatabase->Execute($query);
         if (!$objResultItem || $objResultItem->RecordCount() == 0) {
             // Order not found
+//echo("Could not find order items for order ID $orderId<br />");
             return false;
         }
 
@@ -4422,6 +4458,7 @@ right after the customer logs in!
             $objResultProduct = $objDatabase->Execute($query);
             if (!$objResultProduct || $objResultProduct->RecordCount() == 0) {
                 $objResultItem->MoveNext();
+//echo("Could not find product ID $productId<br />");
                 continue;
             }
             $productCode = $objResultProduct->fields['product_id'];
@@ -4496,11 +4533,13 @@ right after the customer logs in!
                     // The login names are created from the order ID,
                     // with product ID and instance number appended.
                     $userpass = uniqid();
+                    $userEmail = "$userpass-".$objResultOrder->fields['email'];
+                    $lastname = $objResultOrder->fields['lastname'];
 
                     $objUser = new User();
-                    $objUser->setUsername("$orderIdCustom-$productId-$instance");
+                    $objUser->setUsername("$lastname$orderId-$productId-$instance");
                     $objUser->setPassword($userpass);
-                    $objUser->setEmail($objResultOrder->fields['email']);
+                    $objUser->setEmail($userEmail);
                     $objUser->setAdminStatus(false);
                     $objUser->setActiveStatus(true);
                     $objUser->setGroups($arrUsergroupId);
@@ -4521,6 +4560,7 @@ right after the customer logs in!
 
                     if (!$objUser->store()) {
                         $this->statusMessage .= implode('<br />', $objUser->getErrorMsg());
+//echo("Failed to store user:<br />");var_export($objUser);echo("<br />");
                         return false;
                     } else {
                        $loginData .=
@@ -4537,13 +4577,11 @@ right after the customer logs in!
         $objVat = new Vat();
         if ($objVat->isEnabled()) {
             // taxes are enabled
+            $taxPrice = Currency::formatPrice($objResultOrder->fields['tax_price']);
             $taxTxt = ($objVat->isIncluded()
-                ? $_ARRAYLANG['TXT_TAX_INCLUDED']
-                : $_ARRAYLANG['TXT_TAX_EXCLUDED']
-            ).' '.
-            Currency::formatPrice(
-                $objResultOrder->fields['tax_price']
-            ).' '.$strCurrencyCode;
+                ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
+                : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']
+            ).' '.$taxPrice.' '.$strCurrencyCode."\n";
         }
         $priceTotalItems =
             Currency::formatPrice($priceTotalItems).' '.$strCurrencyCode;
@@ -4552,57 +4590,49 @@ right after the customer logs in!
             $strCurrencyCode;
 
         $shipperId =
-            (isset($_SESSION['shop']['shipperId'])
-                ? $_SESSION['shop']['shipperId']
-                : 0
-            );
+            (isset($_SESSION['shop']['shipperId']) ? $_SESSION['shop']['shipperId'] : 0);
         $shipperName =
-            ($shipperId > 0
-                ? $this->objShipment->getShipperName($shipperId)
-                : ''
-            );
+            ($shipperId > 0 ? $this->objShipment->getShipperName($shipperId) : '');
         $paymentId =
-            (isset($_SESSION['shop']['paymentId'])
-                ? $_SESSION['shop']['paymentId']
-                : 0
-            );
+            (isset($_SESSION['shop']['paymentId']) ? $_SESSION['shop']['paymentId'] : 0);
         $paymentName =
             (isset($this->objPayment->arrPaymentObject[$paymentId])
-                ? $this->objPayment->arrPaymentObject[$paymentId]['name']
-                : ''
+                ? $this->objPayment->arrPaymentObject[$paymentId]['name'] : ''
             );
         $orderData =
-"-----------------------------------------------------------------\n".
-$_ARRAYLANG['TXT_ORDER_INFOS']."\n".
-"-----------------------------------------------------------------\n".
-$_ARRAYLANG['TXT_ID'].' | '.
-$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'].' | '.
-$_ARRAYLANG['TXT_PRODUCT'].' | '.
-$_ARRAYLANG['TXT_UNIT_PRICE'].' | '.
-$_ARRAYLANG['TXT_QUANTITY'].' | '.
-$_ARRAYLANG['TXT_TOTAL']."\n".
-"-----------------------------------------------------------------\n".
-$cartTxt.
-"-----------------------------------------------------------------\n".
-$_ARRAYLANG['TXT_INTER_TOTAL'].': '.$orderItemCount.' '.
-$_ARRAYLANG['TXT_PRODUCT_S'].' '.
-Currency::formatPrice($priceTotalItems).' '.
-$strCurrencyCode."\n".
-"-----------------------------------------------------------------\n".
-$_ARRAYLANG['TXT_PAYMENT_TYPE'].': '.$paymentName.' '.
-$_ARRAYLANG['TXT_SHIPPING_METHOD'].': '.
-$shipperName.' '.
-Currency::formatPrice($objResultOrder->fields['currency_ship_price']).' '.
-$strCurrencyCode."\n".
-$_ARRAYLANG['TXT_PAYMENT_TYPE'].': '.
-$paymentName.' '.
-Currency::formatPrice($objResultOrder->fields['currency_payment_price']).' '.
-$strCurrencyCode."\n".
-$taxTxt."\n".
-"-----------------------------------------------------------------\n".
-$_ARRAYLANG['TXT_TOTAL_PRICE'].': '.
-$orderSum."\n".
-"-----------------------------------------------------------------\n";
+            "-----------------------------------------------------------------\n".
+            $_ARRAYLANG['TXT_ORDER_INFOS']."\n".
+            "-----------------------------------------------------------------\n".
+            $_ARRAYLANG['TXT_ID'].' | '.
+            $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'].' | '.
+            $_ARRAYLANG['TXT_PRODUCT'].' | '.
+            $_ARRAYLANG['TXT_UNIT_PRICE'].' | '.
+            $_ARRAYLANG['TXT_QUANTITY'].' | '.
+            $_ARRAYLANG['TXT_TOTAL']."\n".
+            "-----------------------------------------------------------------\n".
+            $cartTxt.
+            "-----------------------------------------------------------------\n".
+            $_ARRAYLANG['TXT_INTER_TOTAL'].': '.$orderItemCount.' '.
+            $_ARRAYLANG['TXT_PRODUCT_S'].' '.
+            Currency::formatPrice($priceTotalItems).' '.
+            $strCurrencyCode."\n".
+            "-----------------------------------------------------------------\n".
+            (!empty($shipperId)
+              ? $_ARRAYLANG['TXT_SHIPPING_METHOD'].': '.$shipperName.' '.
+                Currency::formatPrice($objResultOrder->fields['currency_ship_price']).
+                ' '.$strCurrencyCode."\n"
+              : ''
+            ).
+            (!empty($paymentId)
+              ? $_ARRAYLANG['TXT_PAYMENT_TYPE'].': '.$paymentName.' '.
+                Currency::formatPrice($objResultOrder->fields['currency_payment_price']).
+                ' '.$strCurrencyCode."\n"
+              : ''
+            ).
+            $taxTxt.
+            "-----------------------------------------------------------------\n".
+            $_ARRAYLANG['TXT_TOTAL_PRICE'].': '.$orderSum."\n".
+            "-----------------------------------------------------------------\n";
 
         $search  = array (
             '<ORDER_ID>', '<DATE>',

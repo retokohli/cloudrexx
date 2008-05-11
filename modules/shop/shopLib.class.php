@@ -539,23 +539,35 @@ class ShopLibrary
 
     /**
      * Convert the order ID and date to a custom order ID of the form
-     * A-xx-yyy, where xx is the two digit year and yyy is the order ID.
+     * "lastnameYYY", where YYY is the order ID.
      *
      * This method may be customized to meet the needs of any shop owner.
      * The custom order ID may be used for creating user accounts for
      * protected downloads, for example.
-     * The order date provided must start with the current year in four digit
-     * notation, like the mySQL datetime format.
      * @param   integer   $orderId        The order ID
-     * @param   string    $orderDateTime  The order date
      * @return  string                    The custom order ID
+     * @global  mixed     $objDatabase    Database object
      */
-    function getCustomOrderId($orderId, $orderDateTime)
+    function getCustomOrderId($orderId)
     {
-        $year = preg_replace(
-            '/^\d\d(\d\d).+$/', '$1', $orderDateTime
-        );
-        return "A-$year-$orderId";
+        global $objDatabase;
+
+        $query = "
+            SELECT lastname
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
+             INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers
+             USING (customerid)
+             WHERE orderid=$orderId
+        ";
+        $objResultOrder = $objDatabase->Execute($query);
+        if (!$objResultOrder || $objResultOrder->RecordCount() == 0) {
+            return false;
+        }
+        $lastname = $objResultOrder->fields['lastname'];
+        return "$lastname$orderId";
+        // Or something along the lines
+        //$year = preg_replace('/^\d\d(\d\d).+$/', '$1', $orderDateTime);
+        //return "$year-$orderId";
     }
 }
 
