@@ -2241,7 +2241,6 @@ sendReq('', 1);
      * Authenticate a Customer
      *
      * @global  mixed   $objDatabase    Database object
-     * @global  mixed   $sessionObj     Session object
      * @return  boolean                 True if the Customer could be
      *                                  authenticated successfully,
      *                                  false otherwise.
@@ -2249,7 +2248,7 @@ sendReq('', 1);
      */
     function _authenticate()
     {
-        global $objDatabase, $sessionObj;
+        global $objDatabase;
 
         if (   isset($_SESSION['shop']['username'])
             && isset($_SESSION['shop']['password'])) {
@@ -2258,15 +2257,8 @@ sendReq('', 1);
             $this->objCustomer = Customer::authenticate($username, $password);
             if ($this->objCustomer) {
                 $_SESSION['shop']['email'] = $this->objCustomer->getEmail();
-                // update the session information both in the session object
-                // and in the database
-                $sessionObj->cmsSessionUserUpdate($this->objCustomer->getId());
                 return true;
             }
-        }
-        if (!empty($sessionObj)) {
-            $sessionObj->cmsSessionUserUpdate();
-            $sessionObj->cmsSessionStatusUpdate('shop');
         }
         return false;
     }
