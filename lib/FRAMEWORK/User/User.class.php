@@ -453,6 +453,12 @@ class User extends User_Profile
 
 	public function getEmail()
 	{
+		// START: COMPATIBELITY MODE FOR SHOP ACCOUNT SELLING
+		if (preg_match('#^shop_customer_[0-9]+\-(.*)$#', $this->email, $email)) {
+			return $email[1];
+		}
+		// END: COMPATIBELITY MODE FOR SHOP ACCOUNT SELLING
+		
 		return $this->email;
 	}
 
@@ -1467,6 +1473,12 @@ class User extends User_Profile
 	 */
 	public function setEmail($email)
 	{
+		// START: COMPATIBELITY MODE FOR SHOP ACCOUNT SELLING
+		if (preg_match('#^(shop_customer_[0-9]+\-)#', $this->email, $emailPrefix)) {
+			$email = $emailPrefix[1].$email;
+		}
+		// END: COMPATIBELITY MODE FOR SHOP ACCOUNT SELLING
+		
 		$this->email = $email;
 	}
 
