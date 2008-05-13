@@ -4531,7 +4531,7 @@ right after the customer logs in!
                     // The login names are created from the order ID,
                     // with product ID and instance number appended.
                     $userpass = uniqid();
-                    $userEmail = "$userpass-".$objResultOrder->fields['email'];
+                    $userEmail = 'shop_customer_'.time().'-'.$objResultOrder->fields['email'];
                     $lastname = $objResultOrder->fields['lastname'];
 
                     $objUser = new User();
