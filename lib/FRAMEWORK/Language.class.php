@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Framework language
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -158,14 +159,25 @@ class FWLanguage
             SELECT id
               FROM ".DBPREFIX."languages
              WHERE is_default='true'
+               AND frontend=1
         ");
         if ($objResult && $objResult->RecordCount() > 0) {
             return $objResult->fields['id'];
         }
-        // Still nothing.  Pick the first language available.
+        // Still nothing.  Pick the first frontend language available.
         $objResult = $objDatabase->Execute("
             SELECT id
               FROM ".DBPREFIX."languages
+             WHERE frontend=1
+        ");
+        if ($objResult && $objResult->RecordCount() > 0) {
+            return $objResult->fields['id'];
+        }
+        // Pick the first language.
+        $objResult = $objDatabase->Execute("
+            SELECT id
+              FROM ".DBPREFIX."languages
+             WHERE frontend=1
         ");
         if ($objResult && $objResult->RecordCount() > 0) {
             return $objResult->fields['id'];
