@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Framework user
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -9,40 +10,73 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+/**
+ * Framework user
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  lib_framework
+ * @todo        Edit PHP DocBlocks!
+ */
 class FWUser extends User_Setting
 {
-	var $arrStatusMsg = array(
-		'ok'		=> array(),
-		'error'		=> array()
-	);
+    var $arrStatusMsg = array(
+        'ok'    => array(),
+        'error' => array(),
+    );
+
+    var $backendMode;
+    /**
+     * User
+     * @var   User
+     */
+    var $objUser;
+    /**
+     * User Group
+     * @var   UserGroup
+     */
+    var $objGroup;
 
 
-	var $backendMode;
+    function __construct($backend = false)
+    {
+        parent::__construct();
 
-	var $objUser;
-	var $objGroup;
+        $this->setMode($backend);
 
-	function __construct($backend = false)
-	{
-		parent::__construct();
+        $this->objUser = new User();
+        $this->objGroup = new UserGroup();
+    }
 
-		$this->setMode($backend);
 
-		$this->objUser = new User();
-		$this->objGroup = new UserGroup();
-	}
+    /**
+     * Toggle backend mode on (true) or off (false)
+     * @param   boolean   $backend    Turn on backend mode if true,
+     *                                off otherwise.
+     */
+    function setMode($backend=false)
+    {
+        $this->backendMode = $backend;
+    }
 
-	function setMode($backend = false)
-	{
-		$this->backendMode = $backend;
-	}
+    /**
+     * Get the backend mode flag
+     * @return  boolean             Backend mode is on if this evaluates to
+     *                              boolean true.
+     */
+    function isBackendMode()
+    {
+        return $this->backendMode;
+    }
 
-	function isBackendMode()
-	{
-		return $this->backendMode;
-	}
 
-	function checkAuth()
+    /**
+     * Verify user authentication
+     * @return  boolean           True if authentication is okay,
+     *                            false otherwise
+     */
+    function checkAuth()
     {
         global $sessionObj, $_CORELANG;
 
@@ -58,17 +92,17 @@ class FWUser extends User_Setting
                 }
             }
 
-			if ($this->objUser->auth($username, $password, $this->isBackendMode())) {
-				if ($this->isBackendMode()) {
-					// sets cookie for 30 days
-					setcookie("username", $this->objUser->getUsername(), time()+3600*24*30);
-					$this->log();
-				}
-				$sessionObj->cmsSessionUserUpdate($this->objUser->getId());
-				return true;
-			} else {
-				$this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
-			}
+            if ($this->objUser->auth($username, $password, $this->isBackendMode())) {
+                if ($this->isBackendMode()) {
+                    // sets cookie for 30 days
+                    setcookie("username", $this->objUser->getUsername(), time()+3600*24*30);
+                    $this->log();
+                }
+                $sessionObj->cmsSessionUserUpdate($this->objUser->getId());
+                return true;
+            } else {
+                $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
+            }
         }
 
         $sessionObj->cmsSessionUserUpdate();
@@ -76,26 +110,37 @@ class FWUser extends User_Setting
         return false;
     }
 
+
+    /**
+     * Logs the User off and destroys the session.
+     *
+     * If the User was in backend mode, redirects her to the frontend home page.
+     * Otherwise, if a redirect was requested, the desired page is called.
+     * If no redirect parameter is present, the frontend login page is shown.
+     */
     function logout()
     {
-    	if (isset($_SESSION['auth'])) {
-    		unset($_SESSION['auth']);
-    	}
-		session_destroy();
+        if (isset($_SESSION['auth'])) {
+            unset($_SESSION['auth']);
+        }
+        session_destroy();
 
         if ($this->backendMode) {
-        	header('Location: ../'.CONTREXX_DIRECTORY_INDEX);
+            header('Location: ../'.CONTREXX_DIRECTORY_INDEX);
         } else {
-            header('Location: '.(!empty($_REQUEST['redirect']) ? urldecode($_REQUEST['redirect']) : CONTREXX_DIRECTORY_INDEX.'?section=login'));
+            header('Location: '.(!empty($_REQUEST['redirect'])
+                ? urldecode($_REQUEST['redirect'])
+                : CONTREXX_DIRECTORY_INDEX.'?section=login'));
         }
         exit;
     }
+
 
     /**
      * Log the user session.
      *
      * Create a log entry in the database containing the users' details.
-     * @global mixed  Database
+     * @global  mixed   $objDatabase    Database object
      */
     function log()
     {
@@ -123,9 +168,10 @@ class FWUser extends User_Setting
         }
     }
 
+
     function getErrorMsg()
     {
-    	return implode('<br />', $this->arrStatusMsg['error']);
+        return implode('<br />', $this->arrStatusMsg['error']);
     }
 
     /**
@@ -133,228 +179,249 @@ class FWUser extends User_Setting
      *
      * This function compares the security image code with the
      * code present in the current session.
-     * @access private
-     * @return bool true if the images are identical
+     * @access  private
+     * @param   string    $validationCode   The code entered by the user
+     * @return  boolean                     True if the codes are equal,
+     *                                      false otherwise.
      */
     function checkCode($validationCode)
     {
         return $_SESSION['auth']['secid'] === $validationCode;
     }
 
-	function setLoggedInInfos()
-	{
-		global $_CORELANG, $objTemplate;
 
-		if (!$this->objUser->login()) {
-			return false;
-		}
+    function setLoggedInInfos()
+    {
+        global $_CORELANG, $objTemplate;
 
-		$objTemplate->setVariable(array(
-			'LOGGING_STATUS'	=> $_CORELANG['TXT_LOGGED_IN_AS']." ".htmlentities($this->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+        if (!$this->objUser->login()) {
+            return false;
+        }
 
-		));
-	}
+        $objTemplate->setVariable(
+            'LOGGING_STATUS',
+            $_CORELANG['TXT_LOGGED_IN_AS'].' '.
+            htmlentities(
+                $this->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET
+            )
+        );
+    }
 
-	/**
-    * Restore password of user account
-    *
-    * Sends an email with instructions on how to reset the password to the user specified by an e-mail address.
-    *
-    * @param  string $email
-    * @global array $_CORELANG
-    * @global array $_CONFIG
-    * @global integer $_LANGID
-    */
+
+    /**
+     * Restore password of user account
+     *
+     * Sends an email with instructions on how to reset the password to
+     * the user specified by an e-mail address.
+     * @param  string  $email      The e-mail address presented by the user
+     * @global array   $_CORELANG  Core language array
+     * @global array   $_CONFIG    Configuration array
+     * @global integer $_LANGID    Language ID
+     */
     public function restorePassword($email)
     {
         global $_CORELANG, $_CONFIG, $_LANGID;
 
-		if ($objUser = $this->objUser->getUsers(array('email' => $email), null, null, null, 1)) {
-			$objUser->setRestoreKey();
+        $objUser = $this->objUser->getUsers(
+            array('email' => $email), null, null, null, 1
+        );
+        if ($objUser) {
+            $objUser->setRestoreKey();
+            if ($objUser->store() &&
+                (
+                    $this->objMail->load('reset_pw', $_LANGID) ||
+                    $this->objMail->load('reset_pw')
+                ) &&
+                (include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') &&
+                ($objMail = new PHPMailer()) !== false
+            ) {
+                if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                    $objSmtpSettings = new SmtpSettings();
+                    if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                        $objMail->IsSMTP();
+                        $objMail->Host = $arrSmtp['hostname'];
+                        $objMail->Port = $arrSmtp['port'];
+                        $objMail->SMTPAuth = true;
+                        $objMail->Username = $arrSmtp['username'];
+                        $objMail->Password = $arrSmtp['password'];
+                    }
+                }
 
-			if ($objUser->store() &&
-				(
-					$this->objMail->load('reset_pw', $_LANGID) ||
-					$this->objMail->load('reset_pw')
-				) &&
-				(include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') &&
-				($objMail = new PHPMailer()) !== false
-			) {
-				if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-					$objSmtpSettings = new SmtpSettings();
-					if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-						$objMail->IsSMTP();
-						$objMail->Host = $arrSmtp['hostname'];
-						$objMail->Port = $arrSmtp['port'];
-						$objMail->SMTPAuth = true;
-						$objMail->Username = $arrSmtp['username'];
-						$objMail->Password = $arrSmtp['password'];
-					}
-				}
+                $objMail->CharSet = CONTREXX_CHARSET;
+                $objMail->From = $this->objMail->getSenderMail();
+                $objMail->FromName = $this->objMail->getSenderName();
+                $objMail->AddReplyTo($this->objMail->getSenderMail());
+                $objMail->Subject = $this->objMail->getSubject();
 
-				$objMail->CharSet = CONTREXX_CHARSET;
-				$objMail->From = $this->objMail->getSenderMail();
-				$objMail->FromName = $this->objMail->getSenderName();
-				$objMail->AddReplyTo($this->objMail->getSenderMail());
-				$objMail->Subject = $this->objMail->getSubject();
-
-				if ($this->isBackendMode()) {
-					$restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
-				} else {
+                if ($this->isBackendMode()) {
+                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
+                } else {
                     $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=login&cmd=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
                 }
 
-				if (in_array($this->objMail->getFormat(), array('multipart', 'text'))) {
-					$this->objMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
-					$objMail->{($this->objMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
-						array(
-							'[[USERNAME]]',
-							'[[URL]]',
-							'[[SENDER]]'
-						),
-						array(
-							$objUser->getUsername(),
-							$restorLink,
-							$this->objMail->getSenderName()
-						),
-						$this->objMail->getBodyText()
-					);
-				}
-				if (in_array($this->objMail->getFormat(), array('multipart', 'html'))) {
-					$this->objMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
-					$objMail->Body = str_replace(
-						array(
-							'[[USERNAME]]',
-							'[[URL]]',
-							'[[SENDER]]'
-						),
-						array(
-							htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-							$restorLink,
-							htmlentities($this->objMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
-						),
-						$this->objMail->getBodyHtml()
-					);
-				}
+                if (in_array($this->objMail->getFormat(), array('multipart', 'text'))) {
+                    $this->objMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
+                    $objMail->{($this->objMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
+                        array(
+                            '[[USERNAME]]',
+                            '[[URL]]',
+                            '[[SENDER]]'
+                        ),
+                        array(
+                            $objUser->getUsername(),
+                            $restorLink,
+                            $this->objMail->getSenderName()
+                        ),
+                        $this->objMail->getBodyText()
+                    );
+                }
+                if (in_array($this->objMail->getFormat(), array('multipart', 'html'))) {
+                    $this->objMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
+                    $objMail->Body = str_replace(
+                        array(
+                            '[[USERNAME]]',
+                            '[[URL]]',
+                            '[[SENDER]]'
+                        ),
+                        array(
+                            htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+                            $restorLink,
+                            htmlentities($this->objMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
+                        ),
+                        $this->objMail->getBodyHtml()
+                    );
+                }
 
-				$objMail->AddAddress($objUser->getEmail());
+                $objMail->AddAddress($objUser->getEmail());
 
 
-				if ($objMail->Send()) {
-					return true;
-				} else {
-					$this->arrStatusMsg['error'][] = str_replace("%EMAIL%", $email, $_CORELANG['TXT_EMAIL_NOT_SENT']);
-				}
-			} else {
-				$this->arrStatusMsg['error'][] = str_replace("%EMAIL%", $email, $_CORELANG['TXT_EMAIL_NOT_SENT']);
-			}
-		} else {
+                if ($objMail->Send()) {
+                    return true;
+                } else {
+                    $this->arrStatusMsg['error'][] = str_replace("%EMAIL%", $email, $_CORELANG['TXT_EMAIL_NOT_SENT']);
+                }
+            } else {
+                $this->arrStatusMsg['error'][] = str_replace("%EMAIL%", $email, $_CORELANG['TXT_EMAIL_NOT_SENT']);
+            }
+        } else {
             $this->arrStatusMsg['error'][] = $_CORELANG['TXT_ACCOUNT_WITH_EMAIL_DOES_NOT_EXIST']."<br />";
         }
 
         return false;
     }
 
+
     /**
-    * Reset the password of the user using a reset form.
-    * @access  public
-    * @param   mixed  $objTemplate Template
-    * @global  mixed  Database
-    * @global  array  Core language
-    */
+     * Reset the password of the user using a reset form.
+     * @access  public
+     * @param   mixed  $objTemplate Template
+     * @global  array  $_CORELANG   Core language array
+     */
     function resetPassword($username, $restoreKey, $password = null, $confirmedPassword = null, $store = false)
     {
         global $_CORELANG;
 
         $userFilter = array(
-        	'username'			=> $username,
-        	'restore_key'		=> $restoreKey,
-        	'restore_key_time'	=> array(
-				array(
-					'>' => time()
-				),
-				'=' => time()
-			),
-        	'active'			=> 1
+            'username'         => $username,
+            'restore_key'      => $restoreKey,
+            'restore_key_time' => array(
+                array (
+                    '>' => time(),
+                ),
+                '=' => time(),
+            ),
+            'active'           => 1,
         );
 
-		if ($objUser = $this->objUser->getUsers($userFilter, null, null, null, 1)) {
-			if ($store) {
-				if ($objUser->setPassword($password, $confirmedPassword, true) &&
-					$objUser->releaseRestoreKey() &&
-					$objUser->store()
-				) {
-					return true;
-				} else {
-					$this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objUser->getErrorMsg());
-				}
-			} else {
-				return true;
-			}
-		} else {
-			$this->arrStatusMsg['error'][] = $_CORELANG['TXT_INVALID_USER_ACCOUNT'];
-		}
-
-		return false;
+        $objUser = $this->objUser->getUsers($userFilter, null, null, null, 1);
+        if ($objUser) {
+            if ($store) {
+                if ($objUser->setPassword($password, $confirmedPassword, true) &&
+                    $objUser->releaseRestoreKey() &&
+                    $objUser->store()
+                ) {
+                    return true;
+                }
+                $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objUser->getErrorMsg());
+            } else {
+                return true;
+            }
+        } else {
+            $this->arrStatusMsg['error'][] = $_CORELANG['TXT_INVALID_USER_ACCOUNT'];
+        }
+        return false;
     }
+
 
     public static function showCurrentlyOnlineUsers()
     {
-		$arrSettings = User_Setting::getSettings();
-		return $arrSettings['block_currently_online_users']['status'];
+        $arrSettings = User_Setting::getSettings();
+        return $arrSettings['block_currently_online_users']['status'];
     }
+
 
     public static function showLastActivUsers()
     {
-		$arrSettings = User_Setting::getSettings();
-		return $arrSettings['block_last_active_users']['status'];
+        $arrSettings = User_Setting::getSettings();
+        return $arrSettings['block_last_active_users']['status'];
     }
+
 
     public static function showLatestRegisteredUsers()
     {
-		$arrSettings = User_Setting::getSettings();
-		return $arrSettings['block_latest_reg_users']['status'];
+        $arrSettings = User_Setting::getSettings();
+        return $arrSettings['block_latest_reg_users']['status'];
     }
+
 
     public static function showBirthdayUsers()
     {
-		$arrSettings = User_Setting::getSettings();
-		return $arrSettings['block_birthday_users']['status'];
+        $arrSettings = User_Setting::getSettings();
+        return $arrSettings['block_birthday_users']['status'];
     }
 
+
     public static function getFWUserObject()
-	{
-		global $objInit;
+    {
+        global $objInit;
+        static $objFWUser;
 
-		static $objFWUser;
+        if (!isset($objFWUser)) {
+            $objFWUser = new FWUser($objInit->mode == 'backend');
+        }
+        return $objFWUser;
+    }
 
-		if (!isset($objFWUser)) {
-			$objFWUser = new FWUser($objInit->mode == 'backend');
-		}
 
-		return $objFWUser;
-	}
-
-	public static function getValidityMenuOptions($selectedValidity = null, $attrs = null)
-	{
-		foreach (User_Setting::getUserValidities() as $validity) {
-			$strValidity = FWUser::getValidityString($validity);
-			$strOptions .=
-			// Use original value in days as option value.
-			'<option value="'.$validity.'"'.
-			($selectedValidity === $validity
-			? ' selected="selected"' : ''
-			).(!empty($attrs) ? ' '.$attrs : null).
-			'>'.$strValidity.'</option>';
-		}
-
+    /**
+     * Returns the HTML dropdown menu string for the User account
+     * validity period.
+     * @param   integer   $selectedValidity   The selected validity period
+     *                                        in days.  Defaults to 0 (zero).
+     * @param   string    $attrs              Additional attributes for the
+     *                                        menu, to be included in the
+     *                                        <SELECT> tag.
+     * @return  string                        The HTML dropdown menu code
+     */
+    public static function getValidityMenuOptions($selectedValidity=0, $attrs='')
+    {
+        $strOptions = '';
+        foreach (User_Setting::getUserValidities() as $validity) {
+            $strValidity = FWUser::getValidityString($validity);
+            $strOptions .=
+                // Use original value in days as option value.
+                '<option value="'.$validity.'"'.
+                ($selectedValidity == $validity ? ' selected="selected"' : '').
+                (empty($attrs) ? '' : ' '.$attrs).
+                '>'.$strValidity.'</option>';
+        }
         return $strOptions;
-	}
+    }
 
-	/**
+
+    /**
      * Returns a pretty textual representation of the validity period
      * specified by the $validity argument.
-     *
      * @param   integer   $validity     Validity period in days
      * @return  string                  The textual representation
      */
@@ -382,6 +449,5 @@ class FWUser extends User_Setting
         return "$validity $unit";
     }
 }
-
 
 ?>
