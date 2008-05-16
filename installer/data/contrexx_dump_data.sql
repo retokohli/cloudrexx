@@ -196,6 +196,17 @@ INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_desc
 
 INSERT INTO `contrexx_access_user_profile` (`user_id`, `gender`, `title`, `firstname`, `lastname`, `company`, `address`, `city`, `zip`, `country`, `phone_office`, `phone_private`, `phone_mobile`, `phone_fax`, `birthday`, `website`, `profession`, `interests`, `signature`, `picture`) VALUES ('1', 'gender_undefined', '0', 'CMS', 'System Benutzer', '', '', '', '', '0', '', '', '', '', NULL, '', '', '', '', '');
 
+INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (0);
+INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (1);
+INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (15);
+INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (31);
+INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (62);
+INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (92);
+INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (123);
+INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (184);
+INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (366);
+INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (731);
+
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id` ) VALUES (1, 0, 'group', 'TXT_CONTENT_MANAGEMENT', 1, '', '_self', 1, 0, 1  );
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id` ) VALUES (2, 0, 'group', 'TXT_MODULE', 1, '', '_self', 1, 2, 2  );
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id` ) VALUES (3, 0, 'group', 'TXT_ADMINISTRATION', 1, '', '_self', 1, 3, 3  );
@@ -1221,7 +1232,7 @@ INSERT INTO `contrexx_module_egov_configuration` (`name`, `value`) VALUES ('yell
 INSERT INTO `contrexx_module_egov_configuration` (`name`, `value`) VALUES ('yellowpay_shopid', 'demo_yp');
 INSERT INTO `contrexx_module_egov_configuration` (`name`, `value`) VALUES ('yellowpay_use_testserver', '1');
 
-INSERT INTO `contrexx_module_egov_products` (`product_id`, `product_autostatus`, `product_name`, `product_desc`, `product_price`, `product_per_day`, `product_quantity`, `product_target_email`, `product_target_url`, `product_message`, `product_status`, `product_electro`, `product_file`, `product_sender_name`, `product_sender_email`, `product_target_subject`, `product_target_body`, `product_paypal`, `product_paypal_sandbox`, `product_paypal_currency`, `product_orderby`, `yellowpay`) VALUES ('3', '1', 'Produkteschulung Contrexx WCMS Version 2.0 (limitierte Plätze)', 'Produkteschulung in Thailand<br type=\"_moz\" />', '299.00', 'yes', '20', 'example@example.com', '', '<p>Besten Dank f&uuml;r Ihre Anmeldung!<br />\r\nSie erhalten in K&uuml;rze eine E-Mail Nachricht mit den wichtigsten Informationen.</p>', '1', '0', '', 'Contrexx Demo', 'example@example.com', 'Bestellung/Anfrage: [[PRODUCT_NAME]]', 'Guten Tag\r\n\r\nHerzlichen Dank für Ihren Besuch bei der Contrexx Demo Webseite.\r\nIhre Bestellung/Anfrage wurde bearbeitet. Falls es sich um ein Download Produkt handelt, finden Sie ihre Bestellung im Anhang.\r\n\r\nIhre Angaben:\r\n[[ORDER_VALUE]]\r\n\r\nFreundliche Grüsse\r\nIhr Online-Team', '0', 'demo', 'CHF', '0', '0');
+INSERT INTO `contrexx_module_egov_products` (`product_id`, `product_autostatus`, `product_name`, `product_desc`, `product_price`, `product_per_day`, `product_quantity`, `product_quantity_limit`, `product_target_email`, `product_target_url`, `product_message`, `product_status`, `product_electro`, `product_file`, `product_sender_name`, `product_sender_email`, `product_target_subject`, `product_target_body`, `product_paypal`, `product_paypal_sandbox`, `product_paypal_currency`, `product_orderby`, `yellowpay`) VALUES ('3', '1', 'Produkteschulung Contrexx WCMS Version 2.0 (limitierte Plätze)', 'Produkteschulung in Thailand<br type=\"_moz\" />', '299.00', 'yes', '20', '10, 'example@example.com', '', '<p>Besten Dank f&uuml;r Ihre Anmeldung!<br />\r\nSie erhalten in K&uuml;rze eine E-Mail Nachricht mit den wichtigsten Informationen.</p>', '1', '0', '', 'Contrexx Demo', 'example@example.com', 'Bestellung/Anfrage: [[PRODUCT_NAME]]', 'Guten Tag\r\n\r\nHerzlichen Dank für Ihren Besuch bei der Contrexx Demo Webseite.\r\nIhre Bestellung/Anfrage wurde bearbeitet. Falls es sich um ein Download Produkt handelt, finden Sie ihre Bestellung im Anhang.\r\n\r\nIhre Angaben:\r\n[[ORDER_VALUE]]\r\n\r\nFreundliche Grüsse\r\nIhr Online-Team', '0', 'demo', 'CHF', '0', '0');
 
 INSERT INTO `contrexx_module_egov_product_fields` (`id`, `product`, `name`, `type`, `attributes`, `is_required`, `check_type`, `order_id`) VALUES ('10', '3', 'Firma', 'text', '', '0', '1', '3');
 INSERT INTO `contrexx_module_egov_product_fields` (`id`, `product`, `name`, `type`, `attributes`, `is_required`, `check_type`, `order_id`) VALUES ('9', '3', 'Nachname', 'text', '', '1', '1', '2');
