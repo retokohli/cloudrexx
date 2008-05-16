@@ -299,5 +299,5 @@ $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'] = "Address not available";
 $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'] = "Invalid Google API key";
 $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'] = "Address not found";
 $_ARRAYLANG['TXT_PAGINGLIMIT'] = "Paging Limit ";
-$_ARRAYLANG['TXT_DIRECTORY_GOOGLEMAP_REQUIRED_FIELDS_MISSING'] = "To allow Google Map to function correctly, the following fields must be activated: 'Country', 'ZIP', 'City' and 'Street'.";
+$_ARRAYLANG['TXT_DIRECTORY_GOOGLEMAP_REQUIRED_FIELDS_MISSING'] = "To allow Google Map to function correctly, the following fields must be activated: 'Country', 'ZIP', 'City' and 'Street'. These fields have now been activated automatically.";
 ?>
