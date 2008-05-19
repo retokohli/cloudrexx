@@ -2161,7 +2161,7 @@ class shopmanager extends ShopLibrary {
                     'TXT_FUNCTIONS'                        => $_ARRAYLANG['TXT_FUNCTIONS'],
                     'TXT_ORDER'                            => $_ARRAYLANG['TXT_ORDER'],
                     'TXT_REPLACEMENT'                      => $_ARRAYLANG['TXT_REPLACEMENT'],
-                    'TXT_ORDER_NR'                         => $_ARRAYLANG['TXT_ORDER_NR'],
+                    'TXT_SHOP_ORDER_ID'                    => $_ARRAYLANG['TXT_SHOP_ORDER_ID'],
                     'TXT_CUSTOMER_INFORMATIONS'            => $_ARRAYLANG['TXT_CUSTOMER_INFORMATIONS'],
                     'TXT_CUSTOMER_NR'                      => $_ARRAYLANG['TXT_CUSTOMER_NR'],
                     'TXT_SHIPPING_ADDRESS'                 => $_ARRAYLANG['TXT_SHIPPING_ADDRESS'],
@@ -2204,7 +2204,11 @@ class shopmanager extends ShopLibrary {
                     'TXT_SHOP_PHONE'                       => $_ARRAYLANG['TXT_SHOP_PHONE'],
                     'TXT_SHOP_FAX'                         => $_ARRAYLANG['TXT_SHOP_FAX'],
                     'TXT_SHOP_SHIPPING_INFORMATIONS'       => $_ARRAYLANG['TXT_SHOP_SHIPPING_INFORMATIONS'],
-                    'TXT_SHOP_ORDER_TIME'                  => $_ARRAYLANG['TXT_SHOP_ORDER_TIME']
+                    'TXT_SHOP_ORDER_TIME'                  => $_ARRAYLANG['TXT_SHOP_ORDER_TIME'],
+                    'TXT_SHOP_DOWNLOAD_USERNAME' => $_ARRAYLANG['TXT_SHOP_DOWNLOAD_USERNAME'],
+                    'TXT_SHOP_DOWNLOAD_PASSWORD' => $_ARRAYLANG['TXT_SHOP_DOWNLOAD_PASSWORD'],
+                    'TXT_SHOP_LOGIN_DATA'        => $_ARRAYLANG['TXT_SHOP_LOGIN_DATA'],
+                    'TXT_SHOP_ORDER_ID_CUSTOM'   => $_ARRAYLANG['TXT_SHOP_ORDER_ID_CUSTOM'],
                 ));
 
                 // set config vars
