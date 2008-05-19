@@ -71,7 +71,7 @@ class Settings
         $success = true;
 
         // sets $flagChanged accordingly.
-        $success &= $this->_storeGeneral();
+        $success &= $this->storeGeneral();
 
         $this->_deleteCurrency();
         $this->_storeNewCurrency();
@@ -138,7 +138,7 @@ class Settings
      *
      * @return  boolean     true on success, false otherwise.
      */
-    function _storeGeneral()
+    function storeGeneral()
     {
         global $objDatabase;
 
@@ -162,7 +162,7 @@ class Settings
             Settings::storeSetting('yellowpay_use_testserver', $_POST['yellowpay_use_testserver']);
             Settings::storeSetting('saferpay_id', $_POST['saferpay_id'], (!empty($_POST['saferpay_status']) ? 1 : 0));
             Settings::storeSetting('saferpay_finalize_payment', (!empty($_POST['saferpay_finalize_payment']) ? 1 : 0));
-            Settings::storeSetting('saferpay_use_test_account', (!empty($_POST['saferpay_use_test_account']) ? 1 : 0));
+            Settings::storeSetting('saferpay_use_test_account', 0, (!empty($_POST['saferpay_use_test_account']) ? 1 : 0));
             Settings::storeSetting('saferpay_window_option', $_POST['saferpay_window_option']);
             Settings::storeSetting('paypal_account_email', $_POST['paypal_account_email'], (!empty($_POST['paypal_status']) ? 1 : 0));
             Settings::storeSetting('tax_number', $_POST['tax_number']);
@@ -191,6 +191,7 @@ class Settings
     function _deleteCurrency()
     {
         global $objDatabase;
+
         if (isset($_GET['currencyId']) && !empty($_GET['currencyId'])) {
             $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies WHERE id=".intval($_GET['currencyId'])." AND is_default=0");
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies");

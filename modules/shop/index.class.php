@@ -172,48 +172,44 @@ function shopUseSession()
  */
 class Shop extends ShopLibrary
 {
-    var $pageContent;
+    private $pageContent;
 
-// TODO: remove
-    var $arrCategoriesSorted = array();
-    var $arrCategoriesTable = array();
-    var $arrCategoriesName = array();
-    var $arrParentCategoriesId = array();
-    var $arrParentCategoriesTable = array();
+    private $arrCategoriesTable = array();
+    private $arrCategoriesName = array();
+    private $arrParentCategoriesTable = array();
 
-    var $statusMessage = '';
-    var $thumbnailNameSuffix = '.thumb';
-    var $is_reseller = 0;
-    var $is_auth = 0;
-    var $noPictureName = 'no_picture.gif';
-    var $shopImageWebPath;
-    var $shopImagePath;
-    var $inactiveStyleName = 'inactive';
-    var $activeStyleName = 'active';
-    var $arrProductAttributes = array();
-    var $langId;
-    var $_defaultImage = '';
+    private $statusMessage = '';
+    private $thumbnailNameSuffix = '.thumb';
+    private $is_reseller = 0;
+    private $is_auth = 0;
+    private $noPictureName = 'no_picture.gif';
+    private $shopImageWebPath;
+    private $shopImagePath;
+    private $inactiveStyleName = 'inactive';
+    private $activeStyleName = 'active';
+    private $arrProductAttributes = array();
+    private $_defaultImage = '';
 
     /**
      * Active currency unit name (e.g. 'CHF', 'EUR', 'USD')
      * @var     string
      * @access  private
      */
-    var $aCurrencyUnitName;
+    private $aCurrencyUnitName;
 
     /**
      * Currency navbar indicator
      * @var     boolean
      * @access  private
      */
-    var $_hideCurrencyNavbar = false;
+    private $_hideCurrencyNavbar = false;
 
     /**
      * The PEAR Template Sigma object
      * @var     HTML_Template_Sigma
      * @access  private
      */
-    var $objTemplate;
+    private $objTemplate;
 
     /**
      * The Customer object
@@ -221,7 +217,7 @@ class Shop extends ShopLibrary
      * @access  private
      * @see     lib/Customer.class.php
      */
-    var $objCustomer;
+    private $objCustomer;
 
     /**
      * Object of the payment offerer
@@ -229,7 +225,7 @@ class Shop extends ShopLibrary
      * @access  private
      * @see     lib/Payment.class.php
      */
-    var $objPayment;
+    private $objPayment;
 
     /**
      * The Payment Processing object
@@ -237,7 +233,7 @@ class Shop extends ShopLibrary
      * @access  private
      * @see     lib/PaymentProcessing.class.php
      */
-    var $objProcessing;
+    private $objProcessing;
 
     /**
      * The Shipment object
@@ -245,7 +241,7 @@ class Shop extends ShopLibrary
      * @access  private
      * @see     lib/Shipment.class.php
      */
-    var $objShipment;
+    private $objShipment;
 
     /**
      * The Currency object
@@ -253,7 +249,7 @@ class Shop extends ShopLibrary
      * @access  private
      * @see     lib/Currency.class.php
      */
-    var $objCurrency;
+    private $objCurrency;
 
     /**
      * The VAT object
@@ -261,13 +257,13 @@ class Shop extends ShopLibrary
      * @access  private
      * @see     lib/Vat.class.php
      */
-    var $objVat;
+    private $objVat;
 
     /**
      * The ShopCategories helper object
      * @var ShopCategories
      */
-    var $objShopCategories;
+    private $objShopCategories;
 
 
     /**
@@ -278,19 +274,21 @@ class Shop extends ShopLibrary
      */
     function Shop($pageContent)
     {
-        global $_LANGID, $objDatabase;
+        global $objDatabase;
 
-        if (_SHOP_DEBUG) {
+        if (_SHOP_DEBUG & 1) {
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
-            $objDatabase->debug = 1;
         } else {
             error_reporting(0);
             ini_set('display_errors', 0);
+        }
+        if (_SHOP_DEBUG & 2) {
+            $objDatabase->debug = 1;
+        } else {
             $objDatabase->debug = 0;
         }
 
-        $this->langId = $_LANGID;
         $this->pageContent = $pageContent;
         $this->shopImageWebPath = ASCMS_SHOP_IMAGES_WEB_PATH.'/';
         $this->shopImagePath = ASCMS_SHOP_IMAGES_PATH.'/';
@@ -348,8 +346,6 @@ class Shop extends ShopLibrary
                 = $objResult->fields['catname'];
             $this->arrCategoriesName[$objResult->fields['catid']]
                 = $objResult->fields['catname'];
-            $this->arrParentCategoriesId[$objResult->fields['catid']]
-                = $objResult->fields['parentid'];
             $this->arrParentCategoriesTable[$objResult->fields['catid']][$objResult->fields['parentid']]
                 = $objResult->fields['catname'];
             $objResult->MoveNext();
@@ -771,7 +767,7 @@ class Shop extends ShopLibrary
 
     function _sendpass()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_LANGID;
 
         $this->objTemplate->setVariable(array(
             'SHOP_PASSWORD_ENTER_EMAIL' => $_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'],
@@ -796,7 +792,7 @@ class Shop extends ShopLibrary
 
                     if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_customers SET password='".md5($password)."' WHERE customerid=".$objResult->fields['customerid']) !== false) {
                         // Select template for sending login data
-                        $arrShopMailtemplate = Shop::shopSetMailtemplate(3, $this->langId);
+                        $arrShopMailtemplate = Shop::shopSetMailtemplate(3, $_LANGID);
                         $shopMailFrom = $arrShopMailtemplate['mail_from'];
                         $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
                         $shopMailSubject = $arrShopMailtemplate['mail_subject'];
@@ -2796,9 +2792,9 @@ sendReq('', 1);
 
     function account()
     {
+        $this->_configAccount();
         $status = $this->_checkAccountForm();
         if (empty($status)) $this->_gotoPaymentPage();
-        $this->_configAccount();
         $this->_parseAccountDetails();
         $this->_getAccountPage($status);
     }
@@ -2855,7 +2851,7 @@ sendReq('', 1);
 
     function _gotoPaymentPage()
     {
-        global $objDatabase;
+        global $objDatabase, $_LANGID;
 
         foreach($_POST as $key => $value) {
             $value = contrexx_addslashes(strip_tags(trim($value)));
@@ -2872,7 +2868,7 @@ sendReq('', 1);
         $query = "SELECT catid FROM ".DBPREFIX."content_navigation AS nav, ".
             DBPREFIX."modules AS modules ".
             "WHERE modules.name='shop' AND nav.module=modules.id ".
-            "AND nav.cmd='payment' AND activestatus='1' AND lang=".$this->langId;
+            "AND nav.cmd='payment' AND activestatus='1' AND lang=".$_LANGID;
         $objResult = $objDatabase->SelectLimit($query, 1);
 
         if ($objResult) {
@@ -2891,37 +2887,49 @@ sendReq('', 1);
         // hide currency navbar
         $this->_hideCurrencyNavbar = true;
 
-        if (isset($_POST) && is_array($_POST)) {
-            foreach($_POST as $key => $value) {
-                $value = (get_magic_quotes_gpc()
-                    ? strip_tags(trim($value))
-                    : addslashes(strip_tags(trim($value))));
-                $_SESSION['shop'][$key] =
-                    htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
-            }
+        if (empty($_POST) || !is_array($_POST)) {
+            return;
+        }
+        foreach($_POST as $key => $value) {
+            $value = (get_magic_quotes_gpc()
+                ? strip_tags(trim($value))
+                : addslashes(strip_tags(trim($value))));
+            $_SESSION['shop'][$key] =
+                htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
+        }
 
-            if (isset($_POST['equalAddress'])) {
-                if (!empty($_POST['address2'])) {
-                    $_SESSION['shop']['equalAddress'] = 'checked="checked"';
-                } else {
-                    $_SESSION['shop']['equalAddress'] = '';
-                }
+        if (isset($_POST['equalAddress'])) {
+            if (!empty($_POST['address2'])) {
+                $_SESSION['shop']['equalAddress'] = 'checked="checked"';
             } else {
-                if (empty($_POST['address2']) ||
-                    !isset($_SESSION['shop']['equalAddress'])) {
-                    $_SESSION['shop']['equalAddress'] = '';
-                }
+                $_SESSION['shop']['equalAddress'] = '';
             }
-
-            if (isset($_POST['countryId'])) {
-                $_SESSION['shop']['countryId'] = intval($_POST['countryId']);
-            } else {
-                if (!isset($_SESSION['shop']['countryId'])) {
-                    // countryId2 is set in _initCart()
-                    $_SESSION['shop']['countryId'] = $_SESSION['shop']['countryId2'];
-                }
+        } else {
+            if (empty($_POST['address2']) ||
+                !isset($_SESSION['shop']['equalAddress'])) {
+                $_SESSION['shop']['equalAddress'] = '';
             }
         }
+
+        if (isset($_POST['countryId'])) {
+            $_SESSION['shop']['countryId'] = intval($_POST['countryId']);
+        } else {
+            if (!isset($_SESSION['shop']['countryId'])) {
+                // countryId2 is set in _initCart()
+                $_SESSION['shop']['countryId'] = $_SESSION['shop']['countryId2'];
+            }
+        }
+
+        // Fill missing arguments with empty strings
+        if (empty($_SESSION['shop']['company2']))   $_SESSION['shop']['company2']   = '';
+        if (empty($_SESSION['shop']['prefix2']))    $_SESSION['shop']['prefix2']    = '';
+        if (empty($_SESSION['shop']['lastname2']))  $_SESSION['shop']['lastname2']  = '';
+        if (empty($_SESSION['shop']['firstname2'])) $_SESSION['shop']['firstname2'] = '';
+        if (empty($_SESSION['shop']['address2']))   $_SESSION['shop']['address2']   = '';
+        if (empty($_SESSION['shop']['zip2']))       $_SESSION['shop']['zip2']       = '';
+        if (empty($_SESSION['shop']['city2']))      $_SESSION['shop']['city2']      = '';
+        if (empty($_SESSION['shop']['phone2']))     $_SESSION['shop']['phone2']     = '';
+        if (empty($_SESSION['shop']['countryId2'])) $_SESSION['shop']['countryId2'] = 0;
     }
 
 
@@ -2940,11 +2948,15 @@ sendReq('', 1);
                 'SHOP_ACCOUNT_ZIP'           => $this->objCustomer->getZip(),
                 'SHOP_ACCOUNT_CITY'          => $this->objCustomer->getCity(),
                 'SHOP_ACCOUNT_COUNTRY'       =>
-                    $this->arrCountries[$this->objCustomer->getCountryId()]['countries_name'],
+                    $this->_getCountriesMenu(
+                        'countryId',
+                        $this->objCustomer->getCountryId()
+                    ),
+                    //$this->arrCountries[$this->objCustomer->getCountryId()]['countries_name'],
                 'SHOP_ACCOUNT_EMAIL'         => $this->objCustomer->getEmail(),
                 'SHOP_ACCOUNT_PHONE'         => $this->objCustomer->getPhone(),
                 'SHOP_ACCOUNT_FAX'           => $this->objCustomer->getFax(),
-                'SHOP_ACCOUNT_ACTION'        => "?section=shop".MODULE_INDEX."&amp;cmd=payment"
+                'SHOP_ACCOUNT_ACTION'        => "?section=shop".MODULE_INDEX."&amp;cmd=payment",
             ));
             $this->objTemplate->hideBlock('account_details');
         } else {
@@ -2957,11 +2969,14 @@ sendReq('', 1);
                 'SHOP_ACCOUNT_ADDRESS'       => (isset($_SESSION['shop']['address'])    ? stripslashes($_SESSION['shop']['address']) : ''),
                 'SHOP_ACCOUNT_ZIP'           => (isset($_SESSION['shop']['zip'])        ? stripslashes($_SESSION['shop']['zip']) : ''),
                 'SHOP_ACCOUNT_CITY'          => (isset($_SESSION['shop']['city'])       ? stripslashes($_SESSION['shop']['city']) : ''),
-                'SHOP_ACCOUNT_COUNTRY'       => $this->_getCountriesMenu('countryId', $_SESSION['shop']['countryId']),
+                'SHOP_ACCOUNT_COUNTRY'       =>
+                    $this->_getCountriesMenu(
+                        'countryId', $_SESSION['shop']['countryId']
+                    ),
                 'SHOP_ACCOUNT_EMAIL'         => (isset($_SESSION['shop']['email'])      ? stripslashes($_SESSION['shop']['email']) : ''),
                 'SHOP_ACCOUNT_PHONE'         => (isset($_SESSION['shop']['phone'])      ? stripslashes($_SESSION['shop']['phone']) : ''),
                 'SHOP_ACCOUNT_FAX'           => (isset($_SESSION['shop']['fax'])        ? stripslashes($_SESSION['shop']['fax']) : ''),
-                'SHOP_ACCOUNT_EQUAL_ADDRESS' => $_SESSION['shop']['equalAddress']
+                'SHOP_ACCOUNT_EQUAL_ADDRESS' => $_SESSION['shop']['equalAddress'],
             ));
         }
         if ($_SESSION['shop']['shipment']) {
@@ -3007,7 +3022,7 @@ sendReq('', 1);
             'TXT_NEXT'                 => $_ARRAYLANG['TXT_NEXT'],
             'TXT_RESET'                => $_ARRAYLANG['TXT_RESET'],
             'TXT_PHONE_NUMBER'         => $_ARRAYLANG['TXT_PHONE_NUMBER'],
-            'TXT_FAX_NUMBER'           => $_ARRAYLANG['TXT_FAX_NUMBER']
+            'TXT_FAX_NUMBER'           => $_ARRAYLANG['TXT_FAX_NUMBER'],
         ));
 
         $this->objTemplate->setVariable(array(
@@ -3089,7 +3104,9 @@ sendReq('', 1);
             $_SESSION['shop']['paymentId'] = next($arrPaymentId);
         }
 
-        if ($this->objPayment->arrPaymentObject[$_SESSION['shop']['paymentId']]['processor_id'] != 2) {
+        if (   empty($_SESSION['shop']['paymentId'])
+            || empty($this->objPayment->arrPaymentObject[$_SESSION['shop']['paymentId']])
+            || $this->objPayment->arrPaymentObject[$_SESSION['shop']['paymentId']]['processor_id'] != 2) {
             if (isset($_SESSION['shop']['currencyIdPrev'])) {
                 $_SESSION['shop']['currencyId'] = $_SESSION['shop']['currencyIdPrev'];
                 unset($_SESSION['shop']['currencyIdPrev']);
@@ -3557,7 +3574,7 @@ right after the customer logs in!
      */
     function confirm()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_LANGID;
 
         // if the cart is missing, return to the shop
         if (!isset($_SESSION['shop']['cart'])) {
@@ -3787,7 +3804,7 @@ right after the customer logs in!
             $this->objProcessing->initProcessor(
                 $processorId,
                 $this->objCurrency->getActiveCurrencyCode(),
-                $objLanguage->getLanguageParameter($this->langId, 'lang')
+                $objLanguage->getLanguageParameter($_LANGID, 'lang')
             );
 
             // if the processor is Internal_LSV, and there is account information,
@@ -4355,17 +4372,18 @@ right after the customer logs in!
     //static
     function _generateEmailBody($body, $orderId, $langId)
     {
-        global $objDatabase, $_ARRAYLANG, $objDatabase;
+        global $objDatabase, $_ARRAYLANG, $_LANGID;
 
         $today     = date(ASCMS_DATE_SHORT_FORMAT);
         $orderTime = date(ASCMS_DATE_FORMAT);
         $cartTxt   = '';
         $taxTxt    = '';
-
-        $loginData =
+        $loginData = '';
+/*
             $_ARRAYLANG['TXT_SHOP_URI_FOR_DOWNLOAD'].":\n".
             'http://'.$_SERVER['SERVER_NAME'].
             "/index.php?section=download\n";
+*/
         $orderIdCustom = ShopLibrary::getCustomOrderId($orderId);
 
         // Pick the order from the database
@@ -4439,6 +4457,10 @@ right after the customer logs in!
 
         $orderItemCount = 0;
         $priceTotalItems = 0;
+        $username = '';
+        $userpass = '';
+        $arrUsername = array();
+        $arrUserpass = array();
         while (!$objResultItem->EOF) {
             $orderItemId = $objResultItem->fields['order_items_id'];
             $productId = $objResultItem->fields['productid'];
@@ -4528,25 +4550,29 @@ right after the customer logs in!
                     // the user name and password for the download.
                     $arrTemplate = self::shopSetMailtemplate(4, $langId);
                     $body = $arrTemplate['mail_body'];
-                    // The login names are created from the order ID,
-                    // with product ID and instance number appended.
-                    $userpass = uniqid();
-                    $userEmail = 'shop_customer_'.time().'-'.$objResultOrder->fields['email'];
+                    // The login names are created separately for
+                    // each product instance
                     $lastname = $objResultOrder->fields['lastname'];
+                    $username = "$lastname-$orderId-$productId-$instance";
+                    $userpass = uniqid();
+                    $userEmail =
+                        "shop_customer_${orderId}_${productId}_${instance}-".
+                        $objResultOrder->fields['email'];
+//echo("created user with email $userEmail<br />");
 
                     $objUser = new User();
-                    $objUser->setUsername("$lastname$orderId-$productId-$instance");
+                    $objUser->setUsername($username);
                     $objUser->setPassword($userpass);
                     $objUser->setEmail($userEmail);
                     $objUser->setAdminStatus(false);
                     $objUser->setActiveStatus(true);
                     $objUser->setGroups($arrUsergroupId);
                     $objUser->setValidityTimePeriod($validity);
-                    $objUser->setFrontendLanguage($this->langId);
-                    $objUser->setBackendLanguage($this->langId);
+                    $objUser->setFrontendLanguage($_LANGID);
+                    $objUser->setBackendLanguage($_LANGID);
                     $objUser->setProfile(array(
                         'firstname'    => $objResultOrder->fields['firstname'],
-                        'lastname'     => $objResultOrder->fields['lastname'],
+                        'lastname'     => $lastname,
                         'company'      => $objResultOrder->fields['company'],
                         'address'      => $objResultOrder->fields['address'],
                         'zip'          => $objResultOrder->fields['zip'],
@@ -4558,14 +4584,16 @@ right after the customer logs in!
 
                     if (!$objUser->store()) {
                         $this->statusMessage .= implode('<br />', $objUser->getErrorMsg());
-//echo("Failed to store user:<br />");var_export($objUser);echo("<br />");
+//echo("Failed to store user ".$objUser->getUsername()." with email $userEmail<br />");
                         return false;
-                    } else {
-                       $loginData .=
-                          $_ARRAYLANG['TXT_SHOP_LOGINNAME'].": ".htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)."\n".
-                          $_ARRAYLANG['TXT_PASSWORD'].": $userpass".
-                          "\n\n";
                     }
+//echo("Stored user ".$objUser->getUsername()."<br />");
+                    $loginData .=
+                        $_ARRAYLANG['TXT_SHOP_LOGINNAME'].' '.htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)."\n".
+                        $_ARRAYLANG['TXT_SHOP_PASSWORD']." $userpass".
+                        "\n\n";
+                    $arrUsername[] = $username;
+                    $arrUserpass[] = $userpass;
                 }
             }
             $objResultItem->MoveNext();
@@ -4588,14 +4616,24 @@ right after the customer logs in!
             $strCurrencyCode;
 
         $shipperId =
-            (isset($_SESSION['shop']['shipperId']) ? $_SESSION['shop']['shipperId'] : 0);
+            (isset($_SESSION['shop']['shipperId'])
+                ? $_SESSION['shop']['shipperId']
+                : 0
+            );
         $shipperName =
-            ($shipperId > 0 ? $this->objShipment->getShipperName($shipperId) : '');
+            ($shipperId > 0
+                ? $this->objShipment->getShipperName($shipperId)
+                : ''
+            );
         $paymentId =
-            (isset($_SESSION['shop']['paymentId']) ? $_SESSION['shop']['paymentId'] : 0);
+            (isset($_SESSION['shop']['paymentId'])
+                ? $_SESSION['shop']['paymentId']
+                : 0
+            );
         $paymentName =
             (isset($this->objPayment->arrPaymentObject[$paymentId])
-                ? $this->objPayment->arrPaymentObject[$paymentId]['name'] : ''
+                ? $this->objPayment->arrPaymentObject[$paymentId]['name']
+                : ''
             );
         $orderData =
             "-----------------------------------------------------------------\n".
@@ -4633,7 +4671,7 @@ right after the customer logs in!
             "-----------------------------------------------------------------\n";
 
         $search  = array (
-            '<ORDER_ID>', '<DATE>',
+            '<ORDER_ID>', '<ORDER_ID_CUSTOM>', '<DATE>',
             '<USERNAME>', '<PASSWORD>',
             '<ORDER_DATA>', '<ORDER_SUM>', '<ORDER_TIME>', '<REMARKS>',
             '<CUSTOMER_ID>', '<CUSTOMER_EMAIL>',
@@ -4647,7 +4685,7 @@ right after the customer logs in!
             '<LOGIN_DATA>',
         );
         $replace = array (
-            $orderId, $today,
+            $orderId, $orderIdCustom, $today,
             $objResultOrder->fields['username'],
             (isset($_SESSION['shop']['password'])
                 ? $_SESSION['shop']['password'] : '******'),
@@ -4666,6 +4704,22 @@ right after the customer logs in!
             ($loginData ? $_ARRAYLANG['TXT_SHOP_LOGINDATA']."\n\n".$loginData : ''),
         );
         $body = str_replace($search, $replace, $body);
+
+        // Substitute user names and passwords
+        foreach ($arrUsername as $index => $username) {
+            // Duplicate lines containing placeholders
+            $body = preg_replace(
+                '/^(.*?\<DOWNLOAD_USERNAME\>.*?\n?.*?\<DOWNLOAD_PASSWORD\>.*?$\n?)/m', '$1$1',
+                $body
+            );
+            $userpass = $arrUserpass[$index];
+            $body = preg_replace('/\<DOWNLOAD_USERNAME\>/', $username, $body, 1);
+            $body = preg_replace('/\<DOWNLOAD_PASSWORD\>/', $userpass, $body, 1);
+        }
+        // Remove spare lines with placeholders
+        $body = preg_replace('/^.*\<DOWNLOAD_USERNAME\>.*$\n?/m', '', $body);
+        $body = preg_replace('/^.*\<DOWNLOAD_PASSWORD\>.*$\n?/m', '', $body);
+
         // Strip CRs
         $body = str_replace("\r", '', $body); //echo("made mail body:<br />".str_replace("\n", '<br />', htmlentities($body))."<br />");
         return $body;
