@@ -2,6 +2,8 @@
 
 class User_Profile_Attribute
 {
+    public $EOF;
+
     private $id;
     private $type;
     private $sort_type;
@@ -18,7 +20,6 @@ class User_Profile_Attribute
     private $modifiable;
     private $arrName;
     private $arrAttributes;
-    private $EOF;
     private $langId;
 
     private $arrAttributeTree;

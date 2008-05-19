@@ -14,6 +14,12 @@ class User_Setting
     }
 
 
+    function getMail()
+    {
+        return $this->objMail;
+    }
+
+
     function getSettings($reload=false)
     {
         global $objDatabase;
