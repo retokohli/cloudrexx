@@ -2,7 +2,7 @@
 
 function calendar(
     $DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT,
-    $DatumDesc, $DatumLabel, $ArrayRD, $Anzahl, $date='',
+    $DatumDesc, $DatumLabel, $ArrayRD, $Anzahl, $quantityLimit, $date='',
     $backgroundcolor='', $legende1='', $legende2='', $legende3='',
     $legende1Color='', $legende2Color='', $legende3Color='', $border='',
     $flagBackend=false
@@ -81,7 +81,6 @@ function calendar(
     $current_month = date('n', $timestamp);
     $current_month_2 = date('m', $timestamp);
     $current_year = date('Y', $timestamp);
-//echo("Start: $current_year-$current_month_2-$current_day<br />");
     $first_decalage = date('w', mktime(0, 0, 0, $current_month, 1, $current_year));
     $first_decalage = ($first_decalage == 0 ? 7 : $first_decalage);
 
@@ -96,12 +95,11 @@ function calendar(
     $today_day = date('d', $today_timestamp);
     $today_month = date('m', $today_timestamp);
     $today_year = date('Y', $today_timestamp);
-//echo("Today: $today_year-$today_month-$today_day<br />");
+
     $current_timestamp = mktime(0,0,0, $current_month, $current_day, $current_year);
     $first_date = ($current_timestamp > $today_timestamp
         ? "$current_day.$current_month_2.$current_year" : ''
     );
-//echo("first date: $first_date<br />");
 
     ### CSS
     $output = '<style type="text/css">'."\n";
@@ -146,12 +144,16 @@ function calendar(
     $output .= '// ]]>'."\n";
     $output .= '</script>'."\n";
     $output .= '<table summary="" cellspacing="0" cellpadding="0" border="0">';
-    $output .= '<tr><td valign="top">';
-    $output .= '<table summary="" border="0" class="calendarTable'.$param['calendar_id'].'" cellpadding="2" cellspacing="1">'."\n";
+    $output .= '<tr><td class="zero" valign="top">';
+    $output .= '<table class="'.
+      ($flagBackend ? 'noborder' : 'calendarTable'.$param['calendar_id']).'" '.
+      'summary="" border="0" cellpadding="2" cellspacing="1">'."\n";
 
     if ($param['show_month'] == 1) {
         $output .= '<tr>'."\n";
-        $output .= '    <td colspan="'.$param['calendar_columns'].'" align="center" class="calendarTop'.$param['calendar_id'].'">'."\n";
+        $output .= '    <td class="'.
+        ($flagBackend ? 'noborder' : 'calendarTop'.$param['calendar_id']).'" '.
+        'colspan="'.$param['calendar_columns'].'" align="center">'."\n";
 
         if ($param['use_img'] ) {
             $output .= '';
@@ -219,7 +221,7 @@ function calendar(
         for ($i = 1; $i <= $nb_days_month; $i++) {
             $loop_timestamp = mktime(23,59,59, $current_month, $i, $current_year);
             $i_2 = ($i < 10) ? '0'.$i : $i;
-            $highlight_current = ( isset($param['highlight'][date('Ym', $timestamp).$i_2]) );
+            $highlight_current = isset($param['highlight'][date('Ym', $timestamp).$i_2]);
 
             if ( ($i + $first_decalage) % $param['calendar_columns'] == 2 && $i != 1) {
                 $output .= '<tr align="center">'."\n";
@@ -232,29 +234,23 @@ function calendar(
 
             // Choose the first available date from today
             if (empty($first_date)) {
-//echo("first date is empty: $first_date<br />");
                 if (   $today_timestamp < $loop_timestamp) {
-//echo("year $today_year < $current_year<br />month $today_month < $current_month<br />day $today_day < $i<br /><br />");
-                    if ((   empty($ArrayRD[$current_year])
-                         || empty($ArrayRD[$current_year][$current_month_2])
-                         || empty($ArrayRD[$current_year][$current_month_2][$i])
+                    if ((   empty($ArrayRD[$current_year][$current_month_2][$i])
                          || $ArrayRD[$current_year][$current_month_2][$i] < $Anzahl)) {
-                        $first_date = "$i.$current_month.$current_year";
-//echo("\$ArrayRD[$current_year][$current_month_2][$i] == ".$ArrayRD[$current_year][$current_month_2][$i]." < $Anzahl => date $first_date<br />");
+                        $first_date = "$i.$current_month_2.$current_year";
                     }
                 }
             }
 
-//            if ($i == $current_day) {
             if (   $today_year == $current_year
                 && $today_month == $current_month
                 && $today_day == $i
                 && $param['link_on_day']
             ) {
                 // zustand
-                if (   isset($ArrayRD[$current_year])
-                    && isset($ArrayRD[$current_year][$current_month_2])
-                    && isset($ArrayRD[$current_year][$current_month_2][$i])) {
+                if (   isset($ArrayRD[$current_year][$current_month_2][$i])
+                    && $ArrayRD[$current_year][$current_month_2][$i] >= $quantityLimit
+                ) {
                     if ($ArrayRD[$current_year][$current_month_2][$i] < $Anzahl) {
                         // teilweise
                         $day_class = "calendarTeils".$param['calendar_id'];
@@ -269,8 +265,6 @@ function calendar(
                 }
                 $output .= '<td class="'.$day_class.'">'.$day_link.''.$txt_2_use.'</td>'."\n";
             } else {
-//            if ($param['link_on_day'] != '') {
-
                 if (   (   $param['link_after_date'] == 0
                         && $today_timestamp < $loop_timestamp)
                     || (   $param['link_before_date'] == 0
@@ -279,9 +273,9 @@ function calendar(
                     $output .= '<td class="calendar'.$css_2_use.$param['calendar_id'].'">'.$i.$txt_2_use.'</td>'."\n";
                 } else {
                     // zustand
-                    if (   isset($ArrayRD[$current_year])
-                        && isset($ArrayRD[$current_year][$current_month_2])
-                        && isset($ArrayRD[$current_year][$current_month_2][$i])) {
+                    if (   isset($ArrayRD[$current_year][$current_month_2][$i])
+                        && $ArrayRD[$current_year][$current_month_2][$i] >= $quantityLimit
+                    ) {
                         if ($ArrayRD[$current_year][$current_month_2][$i] < $Anzahl) {
                             // teilweise
                             $day_class = "calendarTeils".$param['calendar_id'];
