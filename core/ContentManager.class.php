@@ -1820,13 +1820,18 @@ class ContentManager
 			array_unshift ($catidarray,$pageId);
             $paridarray = array();
             $justonce = false;
+            
+            $objModule = $objDatabase->SelectLimit('SELECT `module` FROM `'.DBPREFIX.'content_navigation` WHERE `catid` = '.$pageId, 1);
+			if ($objModule) {
+				$moduleId = $objModule->fields['module'];            
+			}
 			foreach ($catidarray as $value) {
                 $objResult = $objDatabase->Execute("
                     SELECT *
 				              FROM ".DBPREFIX."content_navigation,
 				                   ".DBPREFIX."content
 				             WHERE id=catid
-                       AND catid=".$value
+                       AND catid=".$value." AND module IN (0, ".$moduleId.")".(count($arrSkipPages) ? " AND parcat NOT IN (".implode(',', $arrSkipPages).")" : null)
                 );
 				if ($objResult !== false && $objResult->RecordCount()>0) {
 					$repository['displayorder'] = $objResult->fields['displayorder'];
@@ -1852,23 +1857,25 @@ class ContentManager
 						$justonce=true;
 				        $repository['parid']= 0;
 					}
+					$query = "
+	                    INSERT INTO ".DBPREFIX."module_repository
+	                       SET displayorder ='".$repository['displayorder']."',
+										displaystatus ='".$repository['displaystatus']."',
+					                    username = '".addslashes($repository['username'])."',
+										cmd = '".addslashes($repository['cmd'])."',
+										content = '".addslashes($repository['content'])."',
+										title = '".addslashes($repository['title'])."',
+										expertmode ='".$repository['expertmode']."',
+										moduleid ='".$repository['moduleid']."',
+										lang ='".$repository['lang']."',
+										parid ='".$repository['parid']."'";
+					if ($objDatabase->Execute($query) === false) {
+						$this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+					}
+					$paridarray[$value] = $objDatabase->Insert_ID();
+				} else {
+					$arrSkipPages[] = $value;
 				}
-                $query = "
-                    INSERT INTO ".DBPREFIX."module_repository
-                       SET displayorder ='".$repository['displayorder']."',
-									displaystatus ='".$repository['displaystatus']."',
-				                    username = '".addslashes($repository['username'])."',
-									cmd = '".addslashes($repository['cmd'])."',
-									content = '".addslashes($repository['content'])."',
-									title = '".addslashes($repository['title'])."',
-									expertmode ='".$repository['expertmode']."',
-									moduleid ='".$repository['moduleid']."',
-									lang ='".$repository['lang']."',
-									parid ='".$repository['parid']."'";
-				if ($objDatabase->Execute($query) === false) {
-					$this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
-				}
-				$paridarray[$value] = $objDatabase->Insert_ID();
 			}
 			$this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
 		}
