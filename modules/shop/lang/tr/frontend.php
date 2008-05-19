@@ -165,6 +165,7 @@ $_ARRAYLANG['TXT_SHOP_WEIGHT_UNLIMITED'] = "unbeschränkt";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_CONDITIONS'] = "Lieferbedingungen:";
 $_ARRAYLANG['TXT_SHOP_COST_FREE'] = "gratis";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_COUNTRIES'] = "Lieferländer";
+$_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'] = "Bitte wählen Sie";
 $_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'] = "Das Gesamtgewicht Ihrer Bestellung übersteigt die verfügbaren Versandmöglichkeiten.";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_HIERARCHY'] = "Sie sind hier:";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_FLAT'] = "Galerien:";
@@ -231,4 +232,5 @@ $_ARRAYLANG['TXT_SHOP_LOGINNAME'] = "Benutzername:";
 $_ARRAYLANG['TXT_SHOP_LOGINDATA'] = "Die Zugangsdaten für den Download:";
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER_LINK'] = "Hersteller:";
 $_ARRAYLANG['TXT_SHOP_EXTERNAL_LINK'] = "Externe Informationen";
+$_ARRAYLANG['TXT_SHOP_PASSWORD'] = "Passwort:";
 ?>

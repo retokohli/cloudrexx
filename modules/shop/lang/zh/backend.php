@@ -455,7 +455,6 @@ $_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Type of headline";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_HIERARCHY'] = "hierarchisch";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_FLAT'] = "flat";
 $_ARRAYLANG['TXT_SETTINGS_IMAGENAME_EXT_SHOW'] = "Display extension along with file name";
-$_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'] = "--- Please Select ---";
 $_ARRAYLANG['TXT_SHOP_IMPORT_ASSIGNMENT_TIPS'] = "Ordnen sie Felder der Textdatei entsprechenden Feldern der Datenbank Tabelle zu, indem sie je eines markieren und danach auf 'Paar hinzufügen' klicken.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_TIPS'] = "Um ein Feld der Textdatei als Quelle für die Namen für Produkte Kategorien festzulegen, markieren sie das Feld und klicken sie danach auf 'Kategorie hinzufügen'.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_REMOVE_TIPS'] = "Um ein Feld wieder zu entfernen, markieren sie es in der Liste 'Kategorien', und klicken sie danach auf 'Kategorie entfernen'.";
@@ -576,4 +575,9 @@ $_ARRAYLANG['TXT_SHOP_CANCEL'] = "Abbrechen";
 $_ARRAYLANG['TXT_SHOP_SETTING_WEIGHT_ENABLE'] = "Produktgewicht verwenden";
 $_ARRAYLANG['TXT_SHOP_GROUPS_AVAILABLE'] = "Vorhandene Benutzergruppen";
 $_ARRAYLANG['TXT_SHOP_GROUPS_ASSIGNED'] = "Zugewiesene Benutzergruppen";
+$_ARRAYLANG['TXT_SHOP_ORDER_ID'] = "Bestellungs ID";
+$_ARRAYLANG['TXT_SHOP_DOWNLOAD_USERNAME'] = "Benutzername für einen geschützten Download";
+$_ARRAYLANG['TXT_SHOP_DOWNLOAD_PASSWORD'] = "Passwort für einen geschützten Download";
+$_ARRAYLANG['TXT_SHOP_LOGIN_DATA'] = "Liste aller Zugangsdaten (Benutzername und Passwort) für mehrere geschützte Downloads";
+$_ARRAYLANG['TXT_SHOP_ORDER_ID_CUSTOM'] = "Angepasste Bestellungs ID";
 ?>
