@@ -400,13 +400,25 @@ function showOrHide(strElement) {
         </tr>
         <tr class="row2">
           <td>{TXT_EGOV_PRODUCT_QUANTITY}</td>
-          <td><input style="width: 670px;" type="text" name="productFormQuintity" value="{PRODUCT_FORM_QUIANTITY}" maxlength="2" /></td>
+          <td><input style="width: 670px;" type="text" name="productFormQuantity" value="{PRODUCT_FORM_QUANTITY}" maxlength="2" /></td>
         </tr>
         <tr class="row1">
-          <td>{TXT_EGOV_PRODUCT_ELECTRO}</td>
-          <td><table summary="" cellspacing="0" cellpadding="0" border="0"><tr><td><input type="checkbox" name="ElectroProduct" value="1" {ELECTRO_CHECKED} onclick="ShowProductFile();" /></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td><div id="productFileLayer">{TXT_EGOV_PRODUCT_SELECT_FILE} <input style="width: 450px;" type="text" name="productFile" id="productFile" value="{PRODUCT_FORM_FILE}" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('productFile', 'image')" /></div></td></tr></table></td>
+          <td>{TXT_EGOV_PRODUCT_QUANTITY_LIMIT}</td>
+          <td><input style="width: 670px;" type="text" name="productQuantityLimit" value="{EGOV_PRODUCT_QUANTITY_LIMIT}" maxlength="2" /></td>
         </tr>
         <tr class="row2">
+          <td>{TXT_EGOV_PRODUCT_ELECTRO}</td>
+          <td>
+            <div style="float:left;">
+              <input type="checkbox" name="ElectroProduct" value="1" {ELECTRO_CHECKED} onclick="ShowProductFile();" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
+            <div style="float:left;" id="productFileLayer">{TXT_EGOV_PRODUCT_SELECT_FILE}
+              &nbsp;<input style="width: 450px;" type="text" name="productFile" id="productFile" value="{PRODUCT_FORM_FILE}" />
+              &nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('productFile', 'image')" />
+            </div>
+          </td>
+        </tr>
+        <tr class="row1">
           <td>{TXT_EGOV_PRODUCT_AUTO}</td>
           <td>
             <input type="radio" name="productAutoStatus" value="1"
@@ -418,15 +430,15 @@ function showOrHide(strElement) {
             <label for="productAutoStatus_0">{TXT_EGOV_NO}</label>
           </td>
         </tr>
-        <tr class="row1" style="height:20px;">
+        <tr class="row2" style="height:20px;">
           <td>{TXT_EGOV_PRODUCT_PRICE}</td>
           <td><input style="width: 670px;" type="text" name="productFormPrice" value="{PRODUCT_FORM_PRICE}" /><td>
         </tr>
-        <tr class="row2" style="height:20px;">
+        <tr class="row1" style="height:20px;">
           <td width="20%">{TXT_EGOV_TARGET_URL}</td>
           <td width="80%"><input style="width: 580px;" type="text" name="productFormTargetUrl" id="productFormTargetUrl" value="{PRODUCT_FORM_TARGET_URL}" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('productFormTargetUrl', 'image')" /><td>
         </tr>
-        <tr class="row1" style="height:20px;">
+        <tr class="row2" style="height:20px;">
           <td>{TXT_STATE}</td>
           <td><input type="checkbox" name="productState" value="1" {STATE_CHECKED} /><td>
         </tr>
@@ -524,18 +536,6 @@ function showOrHide(strElement) {
         <td width="15%">{TXT_EGOV_SANDBOX_EMAIL}</td>
         <td width="85%"><input type="text" name="sandbox_mail" value="{SANDBOX_EMAIL}" style="width: 300px;" /></td>
       </tr>
-      <!--tr class="row1">
-        <td width="15%">{TXT_EGOV_PAYPAL_CURRENCY}</td>
-        <td width="85%">
-          <select name="PayPalcurrency">
-            <option value="CHF" {SELECTED_CHF}>(CHF) Schweizer Franken</option>
-            <option value="EUR" {SELECTED_EUR}>(EUR) Euro</option>
-            <option value="USD" {SELECTED_USD}>(USD) US-Dollar</option>
-            <option value="GBP" {SELECTED_GBP}>(GBP) Britische Pfund</option>
-            <option value="JPY" {SELECTED_JPY}>(JPY) Yen</option>
-          </select>
-        </td>
-      </tr-->
     </table>
   </div>
   <br />

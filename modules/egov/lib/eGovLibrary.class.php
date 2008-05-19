@@ -163,6 +163,7 @@ class eGovLibrary {
         $ValuesArray = split(';;', $Values);
         $FormArray = array();
         foreach ($ValuesArray as $value) {
+            if (empty($value)) continue;
             list ($ArrayName, $ArrayValue) = split('::', $value);
             $FormArray[$ArrayName] = $ArrayValue;
         }
@@ -326,6 +327,7 @@ class eGovLibrary {
             '</select>';
     }
 
+
     function _QuantityDropdownKids() {
         return
             '<select name="contactFormField_Quantity_Kids" '.
@@ -377,7 +379,7 @@ class eGovLibrary {
     }
 
 
-    function getSourceCode($id, $preview=false, $show=false)
+    function getSourceCode($id, $preview=false, $flagBackend=false)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -388,7 +390,8 @@ class eGovLibrary {
         $yellowpayAcceptedPaymentMethods =
             eGovLibrary::GetSettings('yellowpay_accepted_payment_methods');
 //echo("$yellowpayEnabled/$yellowpayAcceptedPaymentMethods<br />");
-        if (   $yellowpayEnabled
+        if (   $flagBackend === false
+            && $yellowpayEnabled
             && preg_match('/yellowbill/', $yellowpayAcceptedPaymentMethods)) {
             $flagYellowbill = true;
             // Hack: If yellowbill is one of the payment methods available,
@@ -448,15 +451,18 @@ class eGovLibrary {
         }
         $strCalendarSource = '';
         if (eGovLibrary::GetProduktValue('product_per_day', $id) == 'yes') {
-            $strCalendarSource = $this->getCalendarSource($id);
+            $strCalendarSource = $this->getCalendarSource($id, $flagBackend);
         }
 
         $FormActionTarget =
             ($preview ? '../' : '').
-            "index.php?section=egov&amp;id=$id";
+            ($flagBackend
+              ? "index.php?cmd=egov&amp;act=detail&amp;id=$id"
+              : "index.php?section=egov&amp;id=$id"
+            );
 
-        //$sourcecode = $this->_getJsSourceCode($id, $arrFields, $preview, $show).
-        $sourcecode = $this->_getJsSourceCode($arrFields, $preview, $show).
+        //$sourcecode = $this->_getJsSourceCode($id, $arrFields, $preview, $flagBackend).
+        $sourcecode = $this->_getJsSourceCode($arrFields, $preview, $flagBackend).
 // TODO: This index is never set
 //            $this->arrForms[$id]['text'].
             "\n".
@@ -480,15 +486,19 @@ class eGovLibrary {
 //            "<input type=\"hidden\" name=\"paypal\" value=\"".eGovLibrary::GetProduktValue('product_paypal', $id)."\" />".
             $strCalendarSource.
             "<br /><table summary=\"\" border=\"0\">\n";
+        $i = 1;
         foreach ($arrFields as $fieldId => $arrField) {
             $feldbezeichnung = $arrField['name'];
             if ($feldbezeichnung == "AGB") {
+                if ($flagBackend) continue;
                 $feldbezeichnung = '<a href="index.php?section=agb" target="_blank">AGB akzeptieren</a>';
             }
             $sourcecode .=
-                "<tr>\n<td style=\"width:180px;\">".
+                "<tr".
+                ($flagBackend ? ' class="row'.((++$i % 2)+1).'"' : '').
+                ">\n<td style=\"width:180px;\">".
                 ($arrField['type'] != 'hidden' && $arrField['type'] != 'label'
-                    ? $arrField['name'] : '&nbsp;'
+                    ? $feldbezeichnung : '&nbsp;'
                 ).
                 ($arrField['is_required']
                     ? ' <span style="color: red;">*</span>'
@@ -576,7 +586,9 @@ class eGovLibrary {
         $paymentPaypal = eGovLibrary::GetProduktValue('product_paypal', $id);
         $paymentYellowpay = eGovLibrary::GetProduktValue('yellowpay', $id);
         $paymentPrice = eGovLibrary::GetProduktValue('product_price', $id);
-        if (   $paymentPrice > 0
+        // Using the $flagBackend flag to disable payment in the backend
+        if ($flagBackend === false
+            && $paymentPrice > 0
             && ($paymentYellowpay || $paymentPaypal)) {
             $sourcecode .=
                 '<tr><td>'.
@@ -623,8 +635,8 @@ class eGovLibrary {
     }
 
 
-    //function _getJsSourceCode($id, $formFields, $preview=false, $show=false)
-    function _getJsSourceCode($formFields, $preview=false, $show=false)
+    //function _getJsSourceCode($id, $formFields, $preview=false, $flagBackend=false)
+    function _getJsSourceCode($formFields, $preview=false, $flagBackend=false)
     {
         $code =
             "<script type=\"text/javascript\">\n".
@@ -639,7 +651,7 @@ class eGovLibrary {
                 $code .= "  '".
                 addslashes(eGovLibrary::$arrCheckTypes[$field['check_type']]['regex']).
                 "',\n";
-            } elseif ($show) {
+            } elseif ($flagBackend) {
                 $code .= "  '".
                 addslashes(eGovLibrary::$arrCheckTypes[$field['check_type']]['regex']).
                 "',\n";
@@ -824,7 +836,7 @@ class eGovLibrary {
     }
 
 
-    function getCalendarSource($product_id)
+    function getCalendarSource($product_id, $flagBackend=false)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -872,6 +884,7 @@ class eGovLibrary {
             eGovLibrary::GetSettings('set_calendar_date_label'),
             $ArrayRD,
             eGovLibrary::GetProduktValue('product_quantity', $product_id),
+            eGovLibrary::GetProduktValue('product_quantity_limit', $product_id),
             '',
             eGovLibrary::GetSettings('set_calendar_background'),
             eGovLibrary::GetSettings('set_calendar_legende_1'),
@@ -889,8 +902,6 @@ class eGovLibrary {
     function updateOrderStatus($order_id, $status)
     {
         global $objDatabase;
-
-//echo("updateOrderStatus($order_id, $status) entered<br />");
 
         $query = "
             UPDATE ".DBPREFIX."module_egov_orders
@@ -910,10 +921,8 @@ class eGovLibrary {
 //echo("Query error:<br />$query<br />");
             return false;
         }
-//echo("updateOrderStatus($order_id, $status) success<br />");
         return true;
     }
-
 
 
     function getSourceCodeBackend($id, $preview=false, $flagBackend=true)
@@ -921,12 +930,6 @@ class eGovLibrary {
         global $objDatabase, $_ARRAYLANG;
 
         $arrFields = eGovLibrary::getFormFields($id);
-        $flagYellowbill = false;
-        $yellowpayEnabled =
-            eGovLibrary::GetProduktValue('yellowpay', $id);
-        $yellowpayAcceptedPaymentMethods =
-            eGovLibrary::GetSettings('yellowpay_accepted_payment_methods');
-//echo("$yellowpayEnabled/$yellowpayAcceptedPaymentMethods<br />");
         $strCalendarSource = '';
         if (eGovLibrary::GetProduktValue('product_per_day', $id) == 'yes') {
             $strCalendarSource = $this->getCalendarSourceBackend($id, $flagBackend);
@@ -954,7 +957,8 @@ class eGovLibrary {
             '    <tr>'."\n".
             '      <th colspan="2">'.$this->GetProduktValue('product_name', $id).' (ID '.$id.')</th>'."\n".
             '    </tr>'."\n".
-            "<tr><td>&nbsp;</td><td>$strCalendarSource</td>\n";
+'    <tr>'."\n".
+            "<td>&nbsp;</td><td>$strCalendarSource</td></tr>\n";
         $i = 1;
         foreach ($arrFields as $fieldId => $arrField) {
             $feldbezeichnung = $arrField['name'];
@@ -1060,14 +1064,6 @@ class eGovLibrary {
         }
         $sourcecode .=
             "</form>\n".
-            ($flagYellowbill
-              ? "<script type=\"text/javascript\">\n".
-                "/* <![CDATA[ */\n".
-                "  toggleYellowpayFields();".
-                "/* ]]> */\n".
-                "</script>\n"
-              : ''
-            ).
             "<!-- END contact_form -->\n";
         return $sourcecode;
     }
@@ -1305,7 +1301,6 @@ class eGovLibrary {
             $Datum4JS = date('Ymd');
         }
         $QuantArray = $this->_GetOrdersQuantityArray($product_id, $Datum4JS);
-/*
         $dat1 = substr($Datum4JS, 0, 4);
         $dat2 = substr($Datum4JS, 4, 2);
         $dat3 = substr($Datum4JS, 6, 2);
@@ -1313,8 +1308,6 @@ class eGovLibrary {
             $dat3 = substr($dat3, 1, 1);
         }
         $DatumJS = "$dat3.$dat2.$dat1";
-*/
-//var_export($ArrayRD);echo("<br />");
         return calendar(
             $DatumJS,
             $QuantArray,
@@ -1324,6 +1317,7 @@ class eGovLibrary {
             eGovLibrary::GetSettings('set_calendar_date_label'),
             $ArrayRD,
             eGovLibrary::GetProduktValue('product_quantity', $product_id),
+            eGovLibrary::GetProduktValue('product_quantity_limit', $product_id),
             '',
             eGovLibrary::GetSettings('set_calendar_background'),
             eGovLibrary::GetSettings('set_calendar_legende_1'),

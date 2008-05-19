@@ -126,8 +126,6 @@ class eGov extends eGovLibrary
             )
         ");
         $order_id = $objDatabase->Insert_ID();
-//eGovLibrary::addLog("Order ID $order_id stored");
-
         if (eGovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes') {
             list ($calD, $calM, $calY) = split('[.]', $_REQUEST['contactFormField_1000']);
             for($x = 0; $x < $quantity; ++$x) {
@@ -146,7 +144,6 @@ class eGov extends eGovLibrary
         $ReturnValue = '';
         // Handle any kind of payment request
         if (!empty($_REQUEST['handler'])) {
-//echo("handler is set (".$_REQUEST['handler'].")<br />");
             $ReturnValue = $this->payment($order_id, $product_amount);
             if (!empty($ReturnValue)) return $ReturnValue;
         }
@@ -156,7 +153,6 @@ class eGov extends eGovLibrary
         if (eGov::GetOrderValue('order_state', $order_id) == 0) {
             // If any non-empty string is returned, an error occurred.
             $ReturnValue = $this->updateOrder($order_id);
-//eGovLibrary::addLog("_saveOrder(): Order ID $order_id updated, result: /$ReturnValue/");
             if (!empty($ReturnValue)) return $ReturnValue;
         }
 
@@ -195,7 +191,7 @@ class eGov extends eGovLibrary
         $FormValue4Mail = '';
         $arrMatch = array();
         foreach ($arrFields as $name => $value) {
-//echo("processing field $name: $value<br />");
+
             // If the value matches a calendar date, prefix the string with
             // the day of the week
             if (preg_match('/^(\d\d?)\.(\d\d?)\.(\d\d\d\d)$/', $value, $arrMatch)) {
@@ -326,7 +322,6 @@ class eGov extends eGovLibrary
         $handler = $_REQUEST['handler'];
 //eGovLibrary::addLog("Entering payment, order ID $order_id, handler /$handler/");
 
-//echo("Got handler $handler<br />");
         switch ($handler) {
           case 'paypal':
             $order_id =
@@ -334,7 +329,6 @@ class eGov extends eGovLibrary
                   ? $_POST['custom']
                   : $order_id
                 );
-//echo("Handler is PayPal, order_id $order_id<br />");
             return $this->paymentPaypal($order_id, $amount);
           // Payment requests
           // The following are all handled by Yellowpay.
@@ -345,13 +339,11 @@ class eGov extends eGovLibrary
           case 'Amex':
           case 'Diners':
           case 'yellowbill':
-//echo("Going to Yellowpay, order_id $order_id<br />");
             return $this->paymentYellowpay($order_id, $amount);
           // Returning from Yellowpay
           case 'yellowpay':
 //eGovLibrary::addLog("Info: paymentYellowpay: POST:\n".var_export($_POST, true));
 //eGovLibrary::addLog("Info: paymentYellowpay: GET:\n".var_export($_GET, true));
-//echo("Coming from Yellowpay, order_id $order_id<br />");
             return $this->paymentYellowpayVerify($order_id);
           // Silently ignore invalid payment requests
         }
@@ -368,16 +360,13 @@ class eGov extends eGovLibrary
             $result = $_GET['result'];
             switch ($result) {
               case -1:
-//echo("notification<br />");
                 // Go validate PayPal IPN
                 $this->paymentPaypalIpn($order_id, $amount);
                 die();
               case 0:
-//echo("payment failed<br />");
                 // Payment failed
                 break;
               case 1:
-//echo("payment completed<br />");
                 // The payment has been completed.
                 // The notification with result == -1 will update the order.
                 // This case only redirects the customer to the list page with
@@ -393,7 +382,6 @@ class eGov extends eGovLibrary
                 }
                 break;
               case 2:
-//echo("payment cancelled<br />");
                 // Payment was cancelled
                 return 'alert("'.$_ARRAYLANG['TXT_EGOV_PAYPAL_CANCEL']."\");\n";
             }
@@ -425,20 +413,6 @@ class eGov extends eGovLibrary
         if ($product_amount <= 0) {
             return '';
         }
-/*
-        $FormFields = "id=$product_id&send=1&";
-        $arrFields = $this->getFormFields($product_id);
-        foreach (array_keys($arrFields) as $fieldId) {
-            $FormFields .= 'contactFormField_'.$fieldId.'='.strip_tags(contrexx_addslashes($_REQUEST['contactFormField_'.$fieldId])).'&';
-        }
-*/
-//        $Addname = '';
-        if (eGovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes') {
-            $FormFields .= 'contactFormField_1000='.$_REQUEST['contactFormField_1000'].'&';
-            $FormFields .= 'contactFormField_Quantity='.$_REQUEST['contactFormField_Quantity'];
-//            $Addname = $_REQUEST['contactFormField_1000'];
-        }
-
         $objPaypal->add_field('business', eGovLibrary::GetProduktValue('product_paypal_sandbox', $product_id));
         $objPaypal->add_field('return', $paypalUriOk);
         $objPaypal->add_field('cancel_return', $paypalUriNok);
@@ -458,27 +432,21 @@ class eGov extends eGovLibrary
     {
         global $_ARRAYLANG;
 
-//echo("entering IPN, order_id $order_id<br />");
         $product_id = eGovLibrary::GetOrderValue('order_product', $order_id);
         if (empty($product_id)) {
-//echo("Warning: no product_id $product_id<br />");
             die(); //return 'alert("'.$_ARRAYLANG['TXT_EGOV_ERROR_PROCESSING_ORDER']."\");\n";
         }
-//echo("Info: product_id $product_id<br />");
         $objPaypal = new paypal_class();
         if (!eGovLibrary::GetProduktValue('product_paypal', $product_id)) {
-//echo("Warning: PayPal is disabled!");
             // How did we get here?  PayPal isn't even enabled for this product.
             die(); //return 'alert("'.$_ARRAYLANG['TXT_EGOV_PAYPAL_NOT_VALID']."\");\n";
         }
         if (eGovLibrary::GetSettings('set_paypal_ipn') == 0) {
             // PayPal IPN is disabled.
-//echo("Warning: IPN is disabled!");
             die(); //return '';
         }
         if (!$objPaypal->validate_ipn()) {
             // Verification failed.
-//echo("IPN failed!");
             die(); //return 'alert("'.$_ARRAYLANG['TXT_EGOV_PAYPAL_NOT_VALID']."\");\n";
         }
 /*
@@ -501,13 +469,11 @@ class eGov extends eGovLibrary
         global $_ARRAYLANG, $_LANGID;
 //eGovLibrary::addLog("Entered paymentYellowpay: Order ID $order_id, amount $amount");
 
-//echo("order id $order_id<br />");
         $paymentMethods =
             (!empty($_REQUEST['handler'])
                 ? $_REQUEST['handler']
                 : eGovLibrary::GetSettings('yellowpay_accepted_payment_methods')
         );
-//echo("Payment methods: $paymentMethods<br />");
         // Prepare payment using current settings and customer selection
         $objYellowpay = new Yellowpay(
 //            $paymentMethods,
@@ -539,9 +505,6 @@ class eGov extends eGovLibrary
         }
 
         $languageCode = strtoupper(FWLanguage::getLanguageCodeById($_LANGID));
-//echo("langid: $_LANGID, language code: /$languageCode/<br />");
-//echo("adding amount /$product_amount/<br />");
-
         $arrShopOrder = array(
             // From registration confirmation form
             'txtShopId'      => eGovLibrary::GetSettings('yellowpay_shopid'),
@@ -555,15 +518,52 @@ class eGov extends eGovLibrary
             'deliveryPaymentType' => eGovLibrary::GetSettings('yellowpay_authorization'),
             'acceptedPaymentMethods' => $paymentMethods,
         );
-//var_export($arrShopOrder);echo("<br />");
 
-        // Yellowbill additional parameters
-        if (!empty($_POST['txtESR_Member'])) { $arrShopOrder['txtESR_Member'] = $_POST['txtESR_Member']; }
-        if (!empty($_POST['txtESR_Ref'])) { $arrShopOrder['txtESR_Ref'] = $_POST['txtESR_Ref']; }
-        if (!empty($_POST['txtBLastName'])) { $arrShopOrder['txtBLastName'] = $_POST['txtBLastName']; }
-        if (!empty($_POST['txtBAddr1'])) { $arrShopOrder['txtBAddr1'] = $_POST['txtBAddr1']; }
-        if (!empty($_POST['txtBZipCode'])) { $arrShopOrder['txtBZipCode'] = $_POST['txtBZipCode']; }
-        if (!empty($_POST['txtBCity'])) { $arrShopOrder['txtBCity'] = $_POST['txtBCity']; }
+        if (!empty($_POST['txtESR_Member'])) {
+            $arrShopOrder['txtESR_Member'] = $_POST['txtESR_Member'];
+        }
+        if (!empty($_POST['txtESR_Ref'])) {
+            $arrShopOrder['txtESR_Ref'] = $_POST['txtESR_Ref'];
+        }
+
+        if (!empty($_POST['txtBLastName'])) {
+            $arrShopOrder['txtBLastName'] = $_POST['txtBLastName'];
+        } elseif (!empty($_POST['Nachname'])) {
+            $arrShopOrder['txtBLastName'] = $_POST['Nachname'];
+        }
+        if (!empty($_POST['txtBAddr1'])) {
+            $arrShopOrder['txtBAddr1'] = $_POST['txtBAddr1'];
+        } elseif (!empty($_POST['Adresse'])) {
+            $arrShopOrder['txtBLastName'] = $_POST['Adresse'];
+        }
+        if (!empty($_POST['txtBZipCode'])) {
+            $arrShopOrder['txtBZipCode'] = $_POST['txtBZipCode'];
+        } elseif (!empty($_POST['PLZ'])) {
+            $arrShopOrder['txtBLastName'] = $_POST['PLZ'];
+        }
+        if (!empty($_POST['txtBCity'])) {
+            $arrShopOrder['txtBCity'] = $_POST['txtBCity'];
+        } elseif (!empty($_POST['Ort'])) {
+            $arrShopOrder['txtBLastName'] = $_POST['Ort'];
+        }
+        if (!empty($_POST['Anrede'])) {
+            $arrShopOrder['txtBTitle'] = $_POST['Anrede'];
+        }
+        if (!empty($_POST['Vorname'])) {
+            $arrShopOrder['txtBFirstName'] = $_POST['Vorname'];
+        }
+        if (!empty($_POST['Land'])) {
+            $arrShopOrder['txtBCountry'] = $_POST['Land'];
+        }
+        if (!empty($_POST['Telefon'])) {
+            $arrShopOrder['txtBTel'] = $_POST['Telefon'];
+        }
+        if (!empty($_POST['Fax'])) {
+            $arrShopOrder['txtBFax'] = $_POST['Fax'];
+        }
+        if (!empty($_POST['EMail'])) {
+            $arrShopOrder['txtBEmail'] = $_POST['EMail'];
+        }
 
         $isTest = eGovLibrary::GetSettings('yellowpay_use_testserver');
         $yellowpayForm = $objYellowpay->getForm(
@@ -571,7 +571,6 @@ class eGov extends eGovLibrary
             // Without autopost (for debugging and testing):
             //$arrShopOrder, '', false, $isTest
         );
-//echo("got yellowpayform: ".htmlentities($yellowpayForm)."<br />");
         if (count($objYellowpay->arrError) > 0) {
             $strError = "alert(\"Yellowpay could not be initialized:\n";
             if (_EGOV_DEBUG) {
@@ -819,7 +818,6 @@ class eGov extends eGovLibrary
              WHERE order_id=$order_id
         ";
         if (!$objDatabase->Execute($query)) {
-//echo("Query error:<br />$query<br />");
             return false;
         }
         $query = "
@@ -828,7 +826,6 @@ class eGov extends eGovLibrary
              WHERE calendar_order=$order_id
         ";
         if (!$objDatabase->Execute($query)) {
-//echo("Query error:<br />$query<br />");
             return false;
         }
         return true;
