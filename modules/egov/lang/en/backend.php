@@ -83,6 +83,7 @@ $_ARRAYLANG['TXT_EGOV_CALENDAR_COLOR_PART'] = "Kalenderfarbe fÃ¼r teilweise re
 $_ARRAYLANG['TXT_EGOV_CALENDAR_COLOR_OCCUPIED'] = "Kalederfarbe fÃ¼r reservierte Tage";
 $_ARRAYLANG['TXT_EGOV_PRODUCTS_CHOICE_MENU'] = "Produktenauswahl-MenÃ¼";
 $_ARRAYLANG['TXT_EGOV_SETTINGS_UPDATED_SUCCESSFUL'] = "Einstellungen wurden erfolgreich aktualisiert.";
+$_ARRAYLANG['TXT_EGOV_SUBMIT'] = "Senden";
 $_ARRAYLANG['TXT_EGOV_DELETE'] = "ZurÃ¼cksetzen";
 $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_1'] = "Kalenderlegende fÃ¼r freie Tage";
 $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_2'] = "Kalenderlegende fÃ¼r teilweise reservierte Tage";
