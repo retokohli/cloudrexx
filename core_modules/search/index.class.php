@@ -401,6 +401,7 @@ function search_searchQuery($section, $searchTerm)
 			case "forum":
 			$query = "	SELECT thread_id AS id,
 							 subject AS title,
+							 content AS content,
 						MATCH (subject, keywords, content) AGAINST ('%$searchTerm%') AS score
 						FROM ".DBPREFIX."module_forum_postings
 						WHERE (
@@ -491,6 +492,7 @@ function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
 
 	        $searchcontent = eregi_replace("\{[a-z0-9_]+\}","",strip_tags($objResult->fields['content']));
 	        $searchcontent = stripslashes($searchcontent);
+	        $searchcontent = preg_replace("#\[[^\]]+\]#", "", $searchcontent);	        
 	        $shortcontent = substr(ltrim($searchcontent), 0,intval($_CONFIG['searchDescriptionLength']));
 	        $arrayShortContent = explode(" ",$shortcontent);
 	        $arrelem= array_pop($arrayShortContent);

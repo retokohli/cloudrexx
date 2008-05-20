@@ -150,7 +150,7 @@ class Forum extends ForumLibrary {
 								'&amp;l=1&amp;pos='.$this->_getEditPos($postId, $threadId).'#p'.$postId;
 
 			$subject = $objRS->fields['subject'];
-			$content = $objRS->fields['content'];
+			$content = preg_replace("#\[[^\]]+\]#", "", $objRS->fields['content']);
 			$keywords = $objRS->fields['keywords'];
 
 			if(strlen($content) > 60){
