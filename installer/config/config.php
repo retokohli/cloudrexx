@@ -9,8 +9,8 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-$requiredPHPVersion = "4.3";
-$requiredMySQLVersion = "4.0";
+$requiredPHPVersion = "5.2.0";
+$requiredMySQLVersion = "4.1.2";
 $requiredGDVersion = "1.6";
 $dbType = "mysql";
 $defaultLanguage = "de";
