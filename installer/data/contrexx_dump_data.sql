@@ -194,7 +194,20 @@ INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_desc
 INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_description`, `is_active`, `type`) VALUES ('4', 'Forum: Administratoren', 'Gruppe der Forenadministratoren', '1', 'frontend');
 INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_description`, `is_active`, `type`) VALUES ('5', 'Forum: Benutzer', 'Gruppe der Forenbenutzer', '1', 'frontend');
 
+INSERT INTO `contrexx_access_user_mail` (`type`, `lang_id`, `sender_mail`, `sender_name`, `subject`, `format`, `body_text`, `body_html`) VALUES ('reg_confirm',0,'td@comvation.com','admin','Benutzerregistrierung bestätigen','text','Hallo [[USERNAME]],\r\n\r\nVielen Dank für Ihre Anmeldung bei [[HOST]].\r\nBitte klicken Sie auf den folgenden Link, um Ihre E-Mail-Adresse zu bestätigen:\r\n[[ACTIVATION_LINK]]\r\n\r\nUm sich später einzuloggen, geben Sie bitte Ihren Benutzernamen \"[[USERNAME]]\" und das Passwort ein, das Sie bei der Registrierung festgelegt haben.\r\n\r\n\r\n--\r\nIhr [[SENDER]]','');
+INSERT INTO `contrexx_access_user_mail` (`type`, `lang_id`, `sender_mail`, `sender_name`, `subject`, `format`, `body_text`, `body_html`) VALUES ('reset_pw',0,'td@comvation.com','admin','Kennwort zurücksetzen','text','Hallo [[USERNAME]],\r\n\r\nUm ein neues Passwort zu wählen, müssen Sie auf die unten aufgeführte URL gehen und dort Ihr neues Passwort eingeben.\r\n\r\nWICHTIG: Die Gültigkeit der URL wird nach 60 Minuten verfallen, nachdem diese E-Mail abgeschickt wurde.\r\nFalls Sie mehr Zeit benötigen, geben Sie Ihre E-Mail Adresse einfach ein weiteres Mal ein.\r\n\r\nIhre URL:\r\n[[URL]]\r\n\r\n\r\n--\r\n[[SENDER]]','');
+INSERT INTO `contrexx_access_user_mail` (`type`, `lang_id`, `sender_mail`, `sender_name`, `subject`, `format`, `body_text`, `body_html`) VALUES ('user_activated',0,'td@comvation.com','admin','Ihr Benutzerkonto wurde aktiviert','text','Hallo [[USERNAME]],\r\n\r\nIhr Benutzerkonto auf [[HOST]] wurde soeben aktiviert und kann von nun an verwendet werden.\r\n\r\n\r\n--\r\n[[SENDER]]','');
+INSERT INTO `contrexx_access_user_mail` (`type`, `lang_id`, `sender_mail`, `sender_name`, `subject`, `format`, `body_text`, `body_html`) VALUES ('user_deactivated',0,'td@comvation.com','admin','Ihr Benutzerkonto wurde deaktiviert','text','Hallo [[USERNAME]],\r\n\r\nIhr Benutzerkonto auf [[HOST]] wurde soeben deaktiviert.\r\n\r\n\r\n--\r\n[[SENDER]]','');
+INSERT INTO `contrexx_access_user_mail` (`type`, `lang_id`, `sender_mail`, `sender_name`, `subject`, `format`, `body_text`, `body_html`) VALUES ('new_user',0,'td@comvation.com','admin','Ein neuer Benutzer hat sich registriert','text','Der Benutzer [[USERNAME]] hat sich soeben registriert und muss nun frei geschaltet werden.\r\n\r\nÜber die folgende Adresse kann das Benutzerkonto von [[USERNAME]] verwaltet werden:\r\n[[LINK]]\r\n\r\n\r\n--\r\n[[SENDER]]','');
+
 INSERT INTO `contrexx_access_user_profile` (`user_id`, `gender`, `title`, `firstname`, `lastname`, `company`, `address`, `city`, `zip`, `country`, `phone_office`, `phone_private`, `phone_mobile`, `phone_fax`, `birthday`, `website`, `profession`, `interests`, `signature`, `picture`) VALUES ('1', 'gender_undefined', '0', 'CMS', 'System Benutzer', '', '', '', '', '0', '', '', '', '', NULL, '', '', '', '', '');
+
+INSERT INTO `contrexx_access_user_title` (`id`, `title`, `order_id`) VALUES (1,'Sehr geehrte Frau',0);
+INSERT INTO `contrexx_access_user_title` (`id`, `title`, `order_id`) VALUES (2,'Sehr geehrter Herr',0);
+INSERT INTO `contrexx_access_user_title` (`id`, `title`, `order_id`) VALUES (3,'Dear Ms',0);
+INSERT INTO `contrexx_access_user_title` (`id`, `title`, `order_id`) VALUES (4,'Dear Mr',0);
+INSERT INTO `contrexx_access_user_title` (`id`, `title`, `order_id`) VALUES (5,'Madame',0);
+INSERT INTO `contrexx_access_user_title` (`id`, `title`, `order_id`) VALUES (6,'Monsieur',0);
 
 INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (0);
 INSERT INTO `contrexx_access_user_validity` (`validity`) VALUES (1);
