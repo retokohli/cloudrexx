@@ -248,7 +248,7 @@ class Access extends AccessLib
 			// store profile
 			$status = true;
 
-			$objFWUser->objUser->setUsername(isset($_POST['access_user_username']) ? trim(contrexx_stripslashes($_POST['access_user_username'])) : '');
+			isset($_POST['access_user_username']) ? $objFWUser->objUser->setUsername(trim(contrexx_stripslashes($_POST['access_user_username']))) : null;
 			$objFWUser->objUser->setEmail(isset($_POST['access_user_email']) ? trim(contrexx_stripslashes($_POST['access_user_email'])) : $objFWUser->objUser->getEmail());
 			$objFWUser->objUser->setFrontendLanguage(isset($_POST['access_user_frontend_language']) ? intval($_POST['access_user_frontend_language']) : $objFWUser->objUser->getFrontendLanguage());
 			$objFWUser->objUser->setEmailAccess(isset($_POST['access_user_email_access']) && $objFWUser->objUser->isAllowedToChangeEmailAccess() ? contrexx_stripslashes($_POST['access_user_email_access']) : $objFWUser->objUser->getEmailAccess());
@@ -480,7 +480,13 @@ class Access extends AccessLib
 		$objFWUser = FWUser::getFWUserObject();
 		$arrSettings = User_Setting::getSettings();
 
-		$mail2load = $arrSettings['user_activation']['status'] ? 'reg_confirm' : 'new_user';
+		if ($arrSettings['user_activation']['status']) {
+			$mail2load = 'reg_confirm';
+			$mail2addr = $objUser->getEmail();
+		} else {
+			$mail2load = 'new_user';
+			$mail2addr = $arrSettings['notification_address']['value'];
+		}
 
 		if (
 			(
@@ -553,8 +559,7 @@ class Access extends AccessLib
 				);
 			}
 
-			$objMail->AddAddress($objUser->getEmail());
-
+			$objMail->AddAddress($mail2addr);
 
 			if ($objMail->Send()) {
 				$this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_ACCOUNT_SUCCESSFULLY_CREATED'];
