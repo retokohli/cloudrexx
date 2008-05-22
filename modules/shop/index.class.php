@@ -3782,19 +3782,6 @@ right after the customer logs in!
                         }
                     }
                 }
-
-                // Update Product stock
-// TODO: Only decrease the count for non-electronic products
-                $query = "
-                    UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
-                       SET stock=stock-$productQuantity
-                     WHERE id=$productId
-                ";
-                $objResult = $objDatabase->Execute($query);
-                if (!$objResult) {
-                    // The order does not fail because of that!
-                    $this->addMessage($_ARRAYLANG['TXT_ERROR_UPDATING_STOCK']); // Fehler: Bestand kann nicht aktualisiert werden"
-                }
             } // foreach product in cart
 
             $processorId = $this->objPayment->arrPaymentObject[$_SESSION['shop']['paymentId']]['processor_id'];
@@ -4468,6 +4455,15 @@ right after the customer logs in!
             $orderItemPrice = $objResultItem->fields['price'];
             $orderItemQuantity = $objResultItem->fields['quantity'];
 // TODO:      $orderItemVatPercent = $objResultItem->fields['vat_percent'];
+
+            // Update Product stock
+// TODO: Only decrease the count for non-electronic products
+            $query = "
+                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
+                   SET stock=stock-$orderItemQuantity
+                 WHERE id=$productId
+            ";
+            $objDatabase->Execute($query);
 
             // Pick missing Product data
             $query = "
