@@ -7,7 +7,7 @@
  * @subpackage  module_guestbook
  */
 $_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY'] = "Gästebucheintrag hinzufügen";
-$_ARRAYLANG['TXT_NAME'] = "Name";
+$_ARRAYLANG['TXT_NAME'] = "Имя";
 $_ARRAYLANG['TXT_COMMENT'] = "Kommentar";
 $_ARRAYLANG['TXT_LOCATION'] = "Wohnort";
 $_ARRAYLANG['TXT_SEX'] = "Geschlecht";

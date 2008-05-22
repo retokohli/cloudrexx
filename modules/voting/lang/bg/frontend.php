@@ -29,6 +29,4 @@ $_ARRAYLANG['TXT_ADDITIONAL_STREET'] = "Strasse";
 $_ARRAYLANG['TXT_ADDITIONAL_ZIP'] = "PLZ";
 $_ARRAYLANG['TXT_ADDITIONAL'] = "Zusätzliche Eingabefelder für die Benutzer";
 $_ARRAYLANG['TXT_ADDITIONAL_CITY'] = "Ort";
-$_ARRAYLANG['TXT_EXPORT_ADDITIONAL'] = "Zusatzfelder-Export";
-$_ARRAYLANG['TXT_EXPORT_CSV'] = "CSV";
 ?>

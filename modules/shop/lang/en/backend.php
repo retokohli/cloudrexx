@@ -455,6 +455,7 @@ $_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Type of headline";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_HIERARCHY'] = "hierarchisch";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_FLAT'] = "flat";
 $_ARRAYLANG['TXT_SETTINGS_IMAGENAME_EXT_SHOW'] = "Display extension along with file name";
+$_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'] = "--- Bitte wählen ---";
 $_ARRAYLANG['TXT_SHOP_IMPORT_ASSIGNMENT_TIPS'] = "Ordnen sie Felder der Textdatei entsprechenden Feldern der Datenbank Tabelle zu, indem sie je eines markieren und danach auf 'Paar hinzufügen' klicken.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_TIPS'] = "Um ein Feld der Textdatei als Quelle für die Namen für Produkte Kategorien festzulegen, markieren sie das Feld und klicken sie danach auf 'Kategorie hinzufügen'.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_REMOVE_TIPS'] = "Um ein Feld wieder zu entfernen, markieren sie es in der Liste 'Kategorien', und klicken sie danach auf 'Kategorie entfernen'.";
