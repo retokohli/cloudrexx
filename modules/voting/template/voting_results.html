@@ -28,16 +28,19 @@ function deleteVoting(id)
     <th valign="top" nowrap="nowrap" width="45%">
       <div align="left">{TXT_TITLE}</div>
     </th>
-    <th valign="top" nowrap="nowrap" width="12%">
+    <th valign="top" nowrap="nowrap">
       <div align="left">{TXT_VOTES}</div>
     </th>
-    <th valign="top" nowrap="nowrap" width="12%">
+    <th valign="top" nowrap="nowrap">
       <div align="left">{TXT_ACTIVATION}</div>
     </th>
-    <th valign="top" nowrap="nowrap" width="7%">
+    <th valign="top" nowrap="nowrap">
+      <div align="left">&nbsp;{TXT_EXPORT_ADDITIONAL}&nbsp;</div>
+    </th>
+    <th valign="top" nowrap="nowrap">
       <div align="left">&nbsp;{TXT_CREATE_HTML}&nbsp;</div>
     </th>
-    <th valign="top" nowrap="nowrap" width="9%">
+    <th valign="top" nowrap="nowrap">
       <div align="left">{TXT_ACTION}</div>
     </th>
   </tr>
@@ -45,11 +48,11 @@ function deleteVoting(id)
   <tr class="{VOTING_LIST_CLASS}">
     <td nowrap="nowrap" width="15%">{VOTING_OLDER_DATE}</td>
     <td nowrap="nowrap" width="45%">{VOTING_OLDER_TEXT}</td>
-    <td nowrap="nowrap" width="12%">{VOTING_OLDER_VOTES}</td>
-    <td nowrap="nowrap" width="12%">{VOTING_RADIO}</td>
-    <td nowrap="nowrap" width="7%"> <a href="?cmd=voting&amp;act=code&amp;votingid={VOTING_ID}">{TXT_HTML_CODE}</a>
-    </td>
-    <td nowrap="nowrap" width="9%">
+    <td nowrap="nowrap"            >{VOTING_OLDER_VOTES}</td>
+    <td nowrap="nowrap"            >{VOTING_RADIO}</td>
+	<td nowrap="nowrap"            ><a href="?cmd=voting&amp;act=additionalexport&amp;votingid={VOTING_ID}">{TXT_EXPORT_CSV}</a></td>
+    <td nowrap="nowrap"            ><a href="?cmd=voting&amp;act=code&amp;votingid={VOTING_ID}">{TXT_HTML_CODE}</a></td>
+    <td nowrap="nowrap"            >
       <div align="right"><a href="?cmd=voting&amp;act=edit&amp;votingid={VOTING_ID}"><img src="images/icons/edit.gif" border="0" title="Edit Voting" alt="Edit Voting" />
         </a> <a href="javascript:deleteVoting({VOTING_ID})"><img src="images/icons/delete.gif" border="0" title="Delete Voting" alt="Delete Voting" /></a>
       </div>

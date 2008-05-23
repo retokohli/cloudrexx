@@ -62,9 +62,27 @@ function votingShowCurrent($page_content){
 	}
 
 	if ($_GET['vid'] != '' && $_GET['act'] != 'delete'){
-	    $query= "SELECT id, status, UNIX_TIMESTAMP(date) as datesec, question, votes, submit_check FROM ".DBPREFIX."voting_system where id=".intval($_GET['vid']);
+		$query= "SELECT 
+			id,                                status,
+			UNIX_TIMESTAMP(date) as datesec,   question,
+			votes,                             submit_check,
+			additional_nickname,               additional_forename,
+			additional_surname,                additional_phone,
+			additional_street,                 additional_zip,
+		   	additional_city,                   additional_email
+		
+			FROM ".DBPREFIX."voting_system where id=".intval($_GET['vid']);
 	} else {
-		$query= "SELECT id, status, UNIX_TIMESTAMP(date) as datesec, question, votes, submit_check  FROM ".DBPREFIX."voting_system where status=1";
+		$query= "SELECT 
+			id,                                status,
+			UNIX_TIMESTAMP(date) as datesec,   question,
+			votes,                             submit_check,
+			additional_nickname,               additional_forename,
+			additional_surname,                additional_phone,
+			additional_street,                 additional_zip,
+		   	additional_city,                   additional_email
+			
+			FROM ".DBPREFIX."voting_system where status=1";
 	}
 
 	$objResult = $objDatabase->Execute($query);
@@ -82,7 +100,7 @@ function votingShowCurrent($page_content){
 				'VOTING_RESULTS_TEXT'			=> '',
 				'VOTING_RESULTS_TOTAL_VOTES'	=> '',
 				'VOTING_OLDER_TITLE'			=> $_ARRAYLANG['TXT_VOTING_OLDER'],
-				'TXT_SUBMIT'					=> ''
+				'TXT_SUBMIT'					=> '',
 			));
 
 		/** start paging **/
@@ -116,20 +134,23 @@ function votingShowCurrent($page_content){
 			$i++;
 			$objResult->MoveNext();
 		}
-	} else {
+	}
+   	else {
 		if (!$objResult->EOF) {
-			$votingId 		= $objResult->fields['id'];
-			$votingTitle	= stripslashes($objResult->fields['question']);
-			$votingVotes	= $objResult->fields['votes'];
-			$votingDate		= $objResult->fields['datesec'];
-			$votingStatus	= $objResult->fields['status'];
-			$votingMethod	= $objResult->fields['submit_check'];
+			$votingId 		   = $objResult->fields['id'];
+			$votingTitle	   = stripslashes($objResult->fields['question']);
+			$votingVotes	   = $objResult->fields['votes'];
+			$votingDate		   = $objResult->fields['datesec'];
+			$votingStatus	   = $objResult->fields['status'];
+			$votingMethod	   = $objResult->fields['submit_check'];
+			$additional_fields = _create_additional_input_fields($objResult);
 			$objResult->MoveNext();
 		} else {
     		errorHandling();
     	    return false;
     	}
 
+		$votingResultText = _vote_result_html($votingId);
 		$images = 1;
 
 		$query = "SELECT id, question, votes FROM ".DBPREFIX."voting_results WHERE voting_system_id='$votingId' ORDER BY id";
@@ -139,17 +160,6 @@ function votingShowCurrent($page_content){
 			if ($votingStatus==1 && (($votingMethod == 'email' && !$voted) || ($votingMethod == 'cookie' && $_COOKIE['votingcookie']!='1'))){
 				$votingResultText .="<input type='radio' name='votingoption' value='".$objResult->fields['id']."' ".($_POST["votingoption"] == $objResult->fields['id'] ? 'checked="checked"' : '')." /> ";
 			    $votingResultText .= stripslashes($objResult->fields['question'])."<br />\n";
-			}else {
-				$votes=intval($objResult->fields['votes']);
-				$percentage = 0;
-				$imagewidth = 1; //Mozilla Bug if image width=0
-				if($votes>0){
-				    $percentage = (round(($votes/$votingVotes)*10000))/100;
-				    $imagewidth = round($percentage,0);
-				}
-				$votingResultText .= stripslashes($objResult->fields['question'])."<br />\n";
-				$votingResultText .= '<img src="images/modules/voting/'.$images.'.gif" width="'.$imagewidth.'%" height="10" />';
-				$votingResultText .= "&nbsp;".$percentage."% (".$votes. " " .$_ARRAYLANG['TXT_VOTES'].")<br /><br />\n";
 			}
 			$objResult->MoveNext();
 		}
@@ -171,9 +181,22 @@ function votingShowCurrent($page_content){
 			if ($objTpl->blockExists('voting_email_input')) {
 				$objTpl->hideBlock('voting_email_input');
 			}
+			if ($objTpl->blockExists('additional_fields')) {
+				$objTpl->hideBlock('additional_fields');
+			}
+
+
 
 			$votingVotes	= $_ARRAYLANG['TXT_VOTING_TOTAL'].":	".$votingVotes;
 			$submitbutton	='';
+		}
+
+
+		if ($additional_fields != ''){
+			$objTpl->parse('additional_fields');
+		}
+		else {
+			$objTpl->hideBlock('additional_fields');
 		}
 
 		$objTpl->setVariable(array(
@@ -186,6 +209,7 @@ function votingShowCurrent($page_content){
 			'TXT_DATE'						=> $_ARRAYLANG['TXT_DATE'],
 			'TXT_TITLE'						=> $_ARRAYLANG['TXT_TITLE'],
 			'TXT_VOTES'						=> $_ARRAYLANG['TXT_VOTES'],
+			'VOTING_ADDITIONAL_INPUT'       => $additional_fields,
 			'TXT_SUBMIT'					=> $submitbutton
 			));
 
@@ -247,13 +271,39 @@ function VotingSubmit(){
 		$query="SELECT voting_system_id from ".DBPREFIX."voting_results WHERE id=".$votingOption." ";
 		$objResult = $objDatabase->Execute($query);
 	    if (!$objResult->EOF){
-	    	$query="UPDATE ".DBPREFIX."voting_system set votes=votes+1,date=date WHERE id=".$objResult->fields["voting_system_id"]." ";
+			$voting_id = $objResult->fields["voting_system_id"];
+	    	$query="UPDATE ".DBPREFIX."voting_system set votes=votes+1,date=date WHERE id=".$voting_id ." ";
 			$objDatabase->Execute($query);
 	        $query="UPDATE ".DBPREFIX."voting_results set votes=votes+1 WHERE id=".$votingOption." ";
 	        $objDatabase->Execute($query);
-	    }
+			_store_additional_data($voting_id);
+    }
 	    header("Location: ?section=voting");
 	}
+}
+
+function _store_additional_data($id){
+	global $objDatabase;
+
+	$email = $_POST['additional_email'];
+
+	// Fallback to voting confirmation email. this way the
+	// user doesn't have to enter it twice for the stats.
+	if ($email == '') {
+		$email = $_POST['votingemail'];
+	}
+
+	$sql = 'INSERT INTO ' . DBPREFIX . 'voting_additionaldata SET ' .
+		"voting_system_id = '". intval($id)                               . "', ". 
+		"nickname         = '". addslashes($_POST['additional_nickname']) . "', ". 
+		"forename         = '". addslashes($_POST['additional_forename']) . "', ".
+		"surname          = '". addslashes($_POST['additional_surname' ]) . "', ".
+		"phone            = '". addslashes($_POST['additional_phone'   ]) . "', ".
+		"street           = '". addslashes($_POST['additional_street'  ]) . "', ".
+		"zip              = '". addslashes($_POST['additional_zip'     ]) . "', ".
+		"city             = '". addslashes($_POST['additional_city'    ]) . "', ".
+		"email            = '". addslashes($email                       ) . "'  ";
+	$objDatabase->Execute($sql);
 }
 
 function VotingSubmitEmail($systemId, $voteId, $email, $emailValidated)
@@ -264,6 +314,7 @@ function VotingSubmitEmail($systemId, $voteId, $email, $emailValidated)
 	$objDatabase->Execute($query);
     $query="UPDATE ".DBPREFIX."voting_results set votes=votes+1 WHERE id=".$voteId." ";
     $objDatabase->Execute($query);
+	_store_additional_data($systemId);
 
 	$objEmail = $objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."voting_email` WHERE `email` = '".$email."'");
 	if ($objEmail !== false) {
@@ -314,33 +365,15 @@ function setVotingResult($template)
 	} else {
 	    return '';
 	}
+	$votingResultText = _vote_result_html($votingId);
 
-	$images = 1;
-
-	$query="SELECT id, question, votes FROM ".DBPREFIX."voting_results WHERE voting_system_id='$votingId' ORDER BY id";
-	$objResult = $objDatabase->Execute($query);
-
-	$votingResultText = '';
-	while (!$objResult->EOF) {
-		$votes=intval($objResult->fields['votes']);
-		$percentage = 0;
-		$imagewidth = 1; //Mozilla Bug if image width=0
-		if($votes>0){
-		    $percentage = (round(($votes/$votingVotes)*10000))/100;
-		    $imagewidth = round($percentage,0);
-		}
-		$votingResultText .= stripslashes($objResult->fields['question'])."<br />\n";
-		$votingResultText .= "<img src='images/modules/voting/$images.gif' width='$imagewidth%' height='10' />";
-		$votingResultText .= "&nbsp;$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %<br />\n";
-		$objResult->MoveNext();
-	}
 
 	$votingVotes= $_ARRAYLANG['TXT_VOTING_TOTAL'].":	".$votingVotes;
 
 	$objTpl->setVariable(array(
-		'VOTING_RESULTS_TOTAL_VOTES'	=> $votingVotes,
-		'VOTING_TITLE'	=> $votingTitle,
-		'VOTING_RESULTS_TEXT'	=> $votingResultText
+		'VOTING_RESULTS_TOTAL_VOTES' => $votingVotes,
+		'VOTING_TITLE'               => $votingTitle,
+		'VOTING_RESULTS_TEXT'	     => $votingResultText
 	));
 	$objTpl->parse();
 	//$objTpl->parse('voting_result');
@@ -391,4 +424,75 @@ function _getMXHosts($email)
 		return false;
 	}
 }
+
+function _create_additional_input_fields($settings) {
+	global $_ARRAYLANG;
+
+	$input_template = '<label for="%name">%label</label> <input name="%name" id="%name" type="%type" /><br/>';
+
+	$additionals = array(
+		'additional_nickname' => array('text', $_ARRAYLANG['TXT_ADDITIONAL_NICKNAME']),
+		'additional_forename' => array('text', $_ARRAYLANG['TXT_ADDITIONAL_FORENAME']),
+		'additional_surname'  => array('text', $_ARRAYLANG['TXT_ADDITIONAL_SURNAME' ]),
+		'additional_phone'    => array('text', $_ARRAYLANG['TXT_ADDITIONAL_PHONE'   ]),
+		'additional_street'   => array('text', $_ARRAYLANG['TXT_ADDITIONAL_STREET'  ]),
+		'additional_zip'      => array('text', $_ARRAYLANG['TXT_ADDITIONAL_ZIP'     ]),
+		'additional_city'     => array('text', $_ARRAYLANG['TXT_ADDITIONAL_CITY'    ]),
+		'additional_email'    => array('text', $_ARRAYLANG['TXT_ADDITIONAL_EMAIL'   ]),
+	);
+	$retval = '';
+	foreach ($additionals as $name => $data) {
+		if (!$settings->fields[$name]) continue;
+
+		list($type, $label) = $data;
+		$retval .= 
+			str_replace('%name',  $name, 
+			str_replace('%label', $label,
+			str_replace('%type',  $type,
+			$input_template
+		)));
+	}
+
+	// Make it style-able
+	if ($retval != '') {
+		$retval = "<div id=\"AdditionalFields\">$retval</div>";
+	}
+	return $retval;
+}
+
+/**
+ * Returns HTML to display the vote statistics. Requires as Parameter:
+ * @param votingId the ID of the voting system entry.
+ */
+function _vote_result_html($votingId) {
+	global $objDatabase, $_ARRAYLANG;
+	$images = 1;
+
+	$query     = "SELECT votes FROM ".DBPREFIX."voting_system WHERE id='$votingId'";
+	$votes_res = $objDatabase->Execute($query);
+	$votingVotes = $votes_res->fields['votes'];
+
+	$query     = "SELECT id, question, votes FROM ".DBPREFIX."voting_results WHERE voting_system_id='$votingId' ORDER BY id";
+	$objResult = $objDatabase->Execute($query);
+
+	$out = '';
+
+	while (!$objResult->EOF) {
+		$votes=intval($objResult->fields['votes']);
+		$percentage = 0;
+		$imagewidth = 1; //Mozilla Bug if image width=0
+		if($votes>0){
+		    $percentage = (round(($votes/$votingVotes)*10000))/100;
+		    $imagewidth = round($percentage,0);
+		}
+		$out .= "<p>";
+		$out .= "<span class=\"VotingResultTitle\">".stripslashes($objResult->fields['question'])."</span><br />\n";
+		$out .= "<img src='images/modules/voting/$images.gif' width='$imagewidth%' height='10' />";
+		$out .= "&nbsp;$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %<br />\n";
+		$out .= "</p>";
+		$objResult->MoveNext();
+	}
+	return $out;
+}
+
 ?>
