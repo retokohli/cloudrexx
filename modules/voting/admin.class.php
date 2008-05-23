@@ -87,7 +87,9 @@ class votingmanager
                 $action = $this->votingDelete();
                 $action = $this->showCurrent();
 			break;
-
+			case 'additionalexport':
+				$this->export_additional_data();
+			break;
 			case "code":
 				$action = $this->votingCode();
 			break;
@@ -127,8 +129,9 @@ class votingmanager
     				$objMail->MoveNext();
     			}
 
-    			$objDatabase->Execute('DELETE FROM `'.DBPREFIX.'voting_rel_email_system` WHERE `email_id` = '.intval($_GET['delete']));
-    			$objDatabase->Execute('DELETE FROM `'.DBPREFIX.'voting_email` WHERE `id` = '.intval($_GET['delete']));
+    			$objDatabase->Execute('DELETE FROM `'.DBPREFIX.'voting_rel_email_system` WHERE `email_id`         = '.intval($_GET['delete']));
+    			$objDatabase->Execute('DELETE FROM `'.DBPREFIX.'voting_email`            WHERE `id`               = '.intval($_GET['delete']));
+    			$objDatabase->Execute('DELETE FROM `'.DBPREFIX.'voting_additionaldata`   WHERE `voting_system_id` = '.intval($_GET['delete']));
     		}
     	}
 
@@ -242,17 +245,18 @@ class votingmanager
 			$this->_objTpl->setVariable(array(
 			    'VOTING_TITLE'               => $votingTitle,
 			    'VOTING_DATE'                => showFormattedDate($votingDate),
-				'VOTING_RESULTS_TEXT'	       => $votingResultText,
+				'VOTING_RESULTS_TEXT'	     => $votingResultText,
 				'VOTING_RESULTS_TOTAL_VOTES' => $votingVotes,
 				'VOTING_TOTAL_TEXT'          => $_ARRAYLANG['TXT_VOTING_TOTAL'],
 				'TXT_DATE'                   => $_ARRAYLANG['TXT_DATE'],
 				'TXT_TITLE'                  => $_ARRAYLANG['TXT_TITLE'],
 				'TXT_VOTES'                  => $_ARRAYLANG['TXT_VOTES'],
-				'TXT_ACTION'	               => $_ARRAYLANG['TXT_ACTION'],
+				'TXT_ACTION'	             => $_ARRAYLANG['TXT_ACTION'],
 				'TXT_ACTIVATION'             => $_ARRAYLANG['TXT_ACTIVATION'],
-				'TXT_CREATE_HTML'		       => $_ARRAYLANG['TXT_CREATE_HTML'],
+				'TXT_CREATE_HTML'		     => $_ARRAYLANG['TXT_CREATE_HTML'],
 				'TXT_CONFIRM_DELETE_DATA'    => $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
-				'TXT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE']
+				'TXT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+				'TXT_EXPORT_ADDITIONAL'      => $_ARRAYLANG['TXT_EXPORT_ADDITIONAL'],
 			));
 
 			$this->_objTpl->setGlobalVariable('TXT_HTML_CODE', $_ARRAYLANG['TXT_HTML_CODE']);
@@ -286,7 +290,8 @@ class votingmanager
 					'VOTING_OLDER_VOTES'     => ($votingVotes > 0 && $objResult->fields['submit_check'] == 'email') ? '<a href="?cmd=voting&amp;act=detail&amp;id='.$votingid.'" title="'.$_ARRAYLANG['TXT_VOTING_SHOW_EMAIL_ADRESSES'].'">'.$votingVotes.'</a>' : $votingVotes,
 					'VOTING_ID'              => $votingid,
 					'VOTING_LIST_CLASS'      => $class,
-					'VOTING_RADIO'           => "<input type='radio' name='voting_selected' value='radiobutton'".$radio
+					'VOTING_RADIO'           => "<input type='radio' name='voting_selected' value='radiobutton'".$radio,
+					'TXT_EXPORT_CSV'         => $_ARRAYLANG['TXT_EXPORT_CSV']
 				));
 				$this->_objTpl->parse("votingRow");
 				$i++;
@@ -310,7 +315,32 @@ class votingmanager
 
     	$query="UPDATE ".DBPREFIX."voting_system set status=0,date=date";
 		$objDatabase->Execute($query);
-       	$query="INSERT INTO ".DBPREFIX."voting_system (title,question,status,submit_check,votes)  values ('".htmlspecialchars(addslashes($_POST['votingname']), ENT_QUOTES, CONTREXX_CHARSET)."','".htmlspecialchars(addslashes($_POST['votingquestion']), ENT_QUOTES, CONTREXX_CHARSET)."','1','".$method."','0')";
+		$query="INSERT INTO ".DBPREFIX."voting_system (
+				title,question,status,submit_check,votes,
+				additional_nickname, 
+				additional_forename,
+				additional_surname ,
+				additional_phone   ,
+				additional_street  ,
+				additional_zip     ,
+				additional_city    ,
+				additional_email   
+			)  
+			values (
+				'".htmlspecialchars(addslashes($_POST['votingname']), ENT_QUOTES, CONTREXX_CHARSET)."',
+				'".htmlspecialchars(addslashes($_POST['votingquestion']), ENT_QUOTES, CONTREXX_CHARSET)."',
+				'1',
+				'".$method."',
+				'0',
+				'".($_POST['additional_nickname']=='on'?1:0)."', 
+				'".($_POST['additional_forename']=='on'?1:0)."',
+				'".($_POST['additional_surname' ]=='on'?1:0)."',
+				'".($_POST['additional_phone'   ]=='on'?1:0)."',
+				'".($_POST['additional_street'  ]=='on'?1:0)."',
+				'".($_POST['additional_zip'     ]=='on'?1:0)."',
+				'".($_POST['additional_city'    ]=='on'?1:0)."',
+				'".($_POST['additional_email'   ]=='on'?1:0)."'
+			)";
 		$objDatabase->Execute($query);
     	$query = "SELECT MAX(id) as max_id FROM ".DBPREFIX."voting_system";
     	$objResult = $objDatabase->Execute($query);
@@ -370,8 +400,26 @@ class votingmanager
             	$objDatabase->Execute($query);
             }
     	}
+		#print_r($_POST);
 
-    	$query="UPDATE ".DBPREFIX."voting_system set date=date, title='".htmlspecialchars(addslashes($_POST['votingname']), ENT_QUOTES, CONTREXX_CHARSET)."',question='".htmlspecialchars(addslashes($_POST['votingquestion']), ENT_QUOTES, CONTREXX_CHARSET)."',votes=votes-".$deleted_votes.", submit_check='".$method."' WHERE id='".intval($_POST['votingid'])."'";
+		$query="
+			UPDATE ".DBPREFIX."voting_system 
+			SET date                = date, 
+				title               = '".htmlspecialchars(addslashes($_POST['votingname']), ENT_QUOTES, CONTREXX_CHARSET)."',
+				question            = '".htmlspecialchars(addslashes($_POST['votingquestion']), ENT_QUOTES, CONTREXX_CHARSET)."',
+				votes               = votes-".$deleted_votes.", 
+				submit_check        = '".$method."',
+				additional_nickname = '".($_POST['additional_nickname']=='on'?1:0)."', 
+				additional_forename = '".($_POST['additional_forename']=='on'?1:0)."',
+				additional_surname  = '".($_POST['additional_surname' ]=='on'?1:0)."',
+				additional_phone    = '".($_POST['additional_phone'   ]=='on'?1:0)."',
+				additional_street   = '".($_POST['additional_street'  ]=='on'?1:0)."',
+				additional_zip      = '".($_POST['additional_zip'     ]=='on'?1:0)."',
+				additional_city     = '".($_POST['additional_city'    ]=='on'?1:0)."',
+				additional_email    = '".($_POST['additional_email'   ]=='on'?1:0)."'
+
+			WHERE id='".intval($_POST['votingid'])."'";
+		#print "<pre>$query</pre>";
 		if ($objDatabase->Execute($query)) {
 			$this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'];
     		return true;
@@ -463,7 +511,16 @@ class votingmanager
 			'TXT_VOTING_QUESTION'					=> $_ARRAYLANG['TXT_VOTING_QUESTION'],
 			'TXT_VOTING_ADD_OPTIONS'				=> $_ARRAYLANG['TXT_VOTING_ADD_OPTIONS'],
 			'TXT_STORE'								=> $_ARRAYLANG['TXT_STORE'],
-			'TXT_RESET'								=> $_ARRAYLANG['TXT_RESET']
+			'TXT_RESET'								=> $_ARRAYLANG['TXT_RESET'],
+			'TXT_ADDITIONAL_NICKNAME' => $_ARRAYLANG['TXT_ADDITIONAL_NICKNAME'],
+			'TXT_ADDITIONAL_FORENAME' => $_ARRAYLANG['TXT_ADDITIONAL_FORENAME'],
+			'TXT_ADDITIONAL_SURNAME'  => $_ARRAYLANG['TXT_ADDITIONAL_SURNAME' ],
+			'TXT_ADDITIONAL_PHONE'    => $_ARRAYLANG['TXT_ADDITIONAL_PHONE'   ],
+			'TXT_ADDITIONAL_STREET'   => $_ARRAYLANG['TXT_ADDITIONAL_STREET'  ],
+			'TXT_ADDITIONAL_ZIP'      => $_ARRAYLANG['TXT_ADDITIONAL_ZIP'     ],
+			'TXT_ADDITIONAL_CITY'     => $_ARRAYLANG['TXT_ADDITIONAL_CITY'    ],
+			'TXT_ADDITIONAL_EMAIL'    => $_ARRAYLANG['TXT_ADDITIONAL_EMAIL'   ],
+			'TXT_ADDITIONAL'          => $_ARRAYLANG['TXT_ADDITIONAL'         ],
 		));
 	}
 
@@ -472,6 +529,19 @@ class votingmanager
     	global $objDatabase, $_ARRAYLANG;
 
     	$this->_objTpl->loadTemplateFile('voting_edit.html');
+
+		$this->_objTpl->setVariable(array(
+			'TXT_ADDITIONAL_NICKNAME' => $_ARRAYLANG['TXT_ADDITIONAL_NICKNAME'],
+			'TXT_ADDITIONAL_FORENAME' => $_ARRAYLANG['TXT_ADDITIONAL_FORENAME'],
+			'TXT_ADDITIONAL_SURNAME'  => $_ARRAYLANG['TXT_ADDITIONAL_SURNAME' ],
+			'TXT_ADDITIONAL_PHONE'    => $_ARRAYLANG['TXT_ADDITIONAL_PHONE'   ],
+			'TXT_ADDITIONAL_STREET'   => $_ARRAYLANG['TXT_ADDITIONAL_STREET'  ],
+			'TXT_ADDITIONAL_ZIP'      => $_ARRAYLANG['TXT_ADDITIONAL_ZIP'     ],
+			'TXT_ADDITIONAL_CITY'     => $_ARRAYLANG['TXT_ADDITIONAL_CITY'    ],
+			'TXT_ADDITIONAL_EMAIL'    => $_ARRAYLANG['TXT_ADDITIONAL_EMAIL'   ],
+			'TXT_ADDITIONAL'          => $_ARRAYLANG['TXT_ADDITIONAL'         ],
+		));
+
     	$query="SELECT * FROM ".DBPREFIX."voting_system where id=".intval($_GET['votingid'])." ";
 		$objResult = $objDatabase->Execute($query);
 		if(!$objResult->EOF) {
@@ -479,6 +549,16 @@ class votingmanager
 			$votingquestion=stripslashes($objResult->fields["question"]);
 			$votingid=$objResult->fields["id"];
 			$votingmethod = $objResult->fields['submit_check'];
+
+			$additional_nickname = $objResult->fields['additional_nickname'] ;
+			$additional_forename = $objResult->fields['additional_forename'] ;
+			$additional_surname  = $objResult->fields['additional_surname'] ;
+			$additional_phone    = $objResult->fields['additional_phone'] ;
+			$additional_street   = $objResult->fields['additional_street'] ;
+			$additional_zip      = $objResult->fields['additional_zip'] ;
+			$additional_city     = $objResult->fields['additional_city'] ;
+			$additional_email    = $objResult->fields['additional_email'] ;
+
 		}
 
 		$query="SELECT question,id FROM ".DBPREFIX."voting_results WHERE voting_system_id='$votingid' ORDER BY id";
@@ -507,7 +587,15 @@ class votingmanager
 			'EDIT_QUESTION'							=> $votingquestion,
 			'EDIT_OPTIONS'							=> $votingoptions,
 			'VOTING_ID'								=> $votingid,
-			'VOTING_RESULTS'						=> implode($voltingresults,";")
+			'VOTING_RESULTS'						=> implode($voltingresults,";"),
+			'VOTING_FLAG_ADDITIONAL_NICKNAME'       => $additional_nickname ? 'checked="checked"' : '',  
+			'VOTING_FLAG_ADDITIONAL_FORENAME'       => $additional_forename ? 'checked="checked"' : '',  
+			'VOTING_FLAG_ADDITIONAL_SURNAME'        => $additional_surname  ? 'checked="checked"' : '',   
+			'VOTING_FLAG_ADDITIONAL_PHONE'          => $additional_phone    ? 'checked="checked"' : '',     
+			'VOTING_FLAG_ADDITIONAL_STREET'         => $additional_street   ? 'checked="checked"' : '',    
+			'VOTING_FLAG_ADDITIONAL_ZIP'            => $additional_zip      ? 'checked="checked"' : '',       
+			'VOTING_FLAG_ADDITIONAL_CITY'           => $additional_city     ? 'checked="checked"' : '',
+			'VOTING_FLAG_ADDITIONAL_EMAIL'          => $additional_email    ? 'checked="checked"' : '',
 		));
 	}
 
@@ -565,5 +653,75 @@ class votingmanager
         $this->strErrMessage.= " ".$_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']." ";
     }
 
+	function export_additional_data() {
+		global $objDatabase;
+
+		// Figure out which fields we need to export here
+		$voting_id = intval($_GET['votingid']);
+		$sql = "
+			SELECT 
+				additional_nickname AS nickname,
+				additional_forename AS forename,
+				additional_surname  AS surname ,
+				additional_phone    AS phone   ,
+				additional_street   AS street  ,
+				additional_zip      AS zip     ,
+				additional_city     AS city    ,
+				additional_email    AS email   
+			FROM ".DBPREFIX."voting_system 
+			WHERE id = $voting_id
+		";
+		$res = $objDatabase->Execute($sql);
+
+		$fields = array();
+		foreach ($res->fields as $field => $enabled) {
+			if ($enabled) $fields[] = $field;
+		}
+
+		// Check if we have anything to export at all
+		if (!sizeof($fields)) {
+			// No export fields defined. Don't do export.
+			$_GET['act'] = '';
+			$_GET['votingid'] = '';
+			return $this->showCurrent();
+		}
+
+		// Now select those fields from our table.
+		$fields_txt = join(',', $fields);
+
+		$sql_export = "
+			SELECT $fields_txt
+			FROM ".DBPREFIX."voting_additionaldata 
+			WHERE voting_system_id = $voting_id
+			ORDER BY date_entered
+		";
+		$data = $objDatabase->Execute($sql_export);
+		header("Content-Type: text/csv");
+		header("Content-Disposition: Attachment; filename=\"export.csv\"");
+		while (!$data->EOF) {
+			print($this->_format_csv($data->fields) . "\r\n");
+			$data->MoveNext();
+		}
+		exit;
+	}
+	/**
+	 * Returns a line suitable to put in a CSV file.
+	 * @param list array    The list to be put in CSV.
+	 * @param separator string [optional] Separator, defaults to ";"
+	 */
+	function _format_csv($list, $separator=';') {
+		// First, fix the data values if they
+		// contain newlines or the separator.
+		$printable = array();
+		foreach ($list as $elem) {
+			if (preg_match("/$separator/", $elem) or preg_match('/[\r\n]/', $elem)) {
+				$printable[] = '"' . $elem . '"';
+			}
+			else {
+				$printable[] = $elem;
+			}
+		}
+		return join($separator, $printable);
+	}
 }
 ?>
