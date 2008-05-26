@@ -29,7 +29,7 @@ class cmsSession
 	var $_objDb;
 	var $compatibelitiyMode;
 
-	function cmsSession($status="")
+	function __construct($status='')
 	{
 		global $_CONFIG;
 

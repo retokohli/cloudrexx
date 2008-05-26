@@ -34,7 +34,7 @@ class logmanager
     * @param  string
     * @access public
     */
-    function logmanager()
+    function __construct()
     {
     	global $_CORELANG, $objTemplate;
 

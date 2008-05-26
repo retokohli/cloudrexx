@@ -52,7 +52,7 @@ class PDF extends HTML2FPDF
     */
 	var $pdf_autor;
 	
-	function PDF()
+	function __construct()
 	{
 		$this->pdf_orientation 	= 'P';
 		$this->pdf_unit 		= 'mm';

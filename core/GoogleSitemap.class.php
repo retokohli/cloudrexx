@@ -31,7 +31,7 @@ class GoogleSitemap {
 	 * Constructor
 	 *
 	 */
-	function GoogleSitemap() {
+	function __construct() {
 		global $_CONFIG;
 
 		$this->strFileName = 'sitemap.xml';

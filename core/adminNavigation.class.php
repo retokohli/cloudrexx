@@ -33,7 +33,7 @@ class adminMenu
     /**
      * Constructor
      */
-    function adminMenu()
+    function __construct()
     {
         $this->init();
     }

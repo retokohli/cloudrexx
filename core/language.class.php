@@ -39,7 +39,7 @@ class LanguageManager
      * @global  mixed   Template
      * @return  void
      */
-    function LanguageManager() {
+    function __construct() {
         global  $objDatabase, $_CORELANG, $objTemplate;
         $arrTables = array();
 
@@ -80,7 +80,6 @@ class LanguageManager
      *
      * @global   array     Core language
      * @global   object    Template
-     * @global   object    Permission
      * @return   string    Parsed content
      */
     function getLanguagePage()

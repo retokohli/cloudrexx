@@ -142,7 +142,7 @@ class Mime
      * Usually not needed, as this class may currently be used statically.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function Mime()
+    function __construct()
     {
     }
 

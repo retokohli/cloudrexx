@@ -49,7 +49,7 @@ class Navigation
     * @global    string   $_LANGID
     * @param     integer  $pageId
     */
-	function Navigation($pageId)
+	function __construct($pageId)
 	{
 	    global $_LANGID;
 
