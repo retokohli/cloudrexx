@@ -1,14 +1,13 @@
-<?PHP
+<?php
 
 /**
  * Reservations module
  *
  * Frontend Reservations Class
- *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
- * @access public
- * @version 1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_reservation
  * @todo        Edit PHP DocBlocks!
@@ -17,7 +16,16 @@
 require_once ASCMS_PATH . "/lib/activecalendar/activecalendar.php";
 require_once ASCMS_MODULE_PATH . "/reservation/lib/reservationLib.class.php";
 
-
+/**
+ * Frontend Reservations Class
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  module_reservation
+ * @todo        Edit PHP DocBlocks!
+ */
 class reservations extends reservationLib
 {
     var $langId;
@@ -26,92 +34,78 @@ class reservations extends reservationLib
     var $error;
 
     /**
-     * Constructor
-     *
-     * @param  string
-     * @access public
-     */
-    function reservations($pageContent)
-    {
-    	$this->__construct($pageContent);
-    }
-
-    /**
      * PHP5 constructor
      * @param  string  $pageContent
-     * @global string  $_LANGID
-     * @access public
+     * @global InitCMS $objInit
      */
     function __construct($pageContent)
     {
         global $objInit;
 
-	    $this->pageContent = $pageContent;
+        $this->pageContent = $pageContent;
 
-	    $this->_objTpl = &new HTML_Template_Sigma('.');
-		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-		$this->_objTpl->setTemplate($this->pageContent, true, true);
-		parent::__construct();
+        $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+        $this->_objTpl->setTemplate($this->pageContent, true, true);
+        parent::__construct();
+        $this->langId = $objInit->userFrontendLangId;
+        $this->setOptions();
+    }
 
-		$this->langId = $objInit->userFrontendLangId;
+    /**
+     * Get Page
+     *
+     * @access public
+     * @return string Page content
+     */
+    function getPage()
+    {
+        global $objTemplate;
 
-		$this->setOptions();
-	}
+        if (!isset($_GET['cmd'])){
+            $_GET['cmd'] = '';
+        }
 
-	/**
-	 * Get Page
-	 *
-	 * @access public
-	 * @return string Page content
-	 */
-	function getPage()
-	{
-	    global $objTemplate;
+        if (!isset($_GET['act'])) {
+            $_GET['act'] = '';
+        }
 
-    	if (!isset($_GET['cmd'])){
-    		$_GET['cmd'] = '';
-    	}
-
-    	if (!isset($_GET['act'])) {
-    	    $_GET['act'] = '';
-    	}
-
-    	switch ($_GET['cmd']) {
-    	    case 'reserve':
+        switch ($_GET['cmd']) {
+            case 'reserve':
                 $this->reserve();
-    	        break;
-    	    default:
-    	        if ($_GET['act'] == "save") {
-    	            $this->save();
-    	        } elseif ($_GET['act'] == "confirm") {
-    	            $this->confirm();
-    	        }
-    	        $this->dayView();
-    	}
+                break;
+            default:
+                if ($_GET['act'] == "save") {
+                    $this->save();
+                } elseif ($_GET['act'] == "confirm") {
+                    $this->confirm();
+                }
+                $this->dayView();
+        }
 
-    	return $this->_objTpl->get();
-	}
+        return $this->_objTpl->get();
+    }
 
-	/**
-	 * Shows a day
-	 *
-	 * @global $_ARRAYLANG
-	 */
-	function dayView()
-	{
-	    global $_ARRAYLANG, $objDatabase, $_CORELANG;
+    /**
+     * Shows a day
+     *
+     * @global $_ARRAYLANG
+     */
+    function dayView()
+    {
+        global $_ARRAYLANG, $objDatabase, $_CORELANG;
 
-	    if (empty($_GET['yearID']) && empty($_GET['monthID']) && empty($_GET['dayID'])) {
+        if (empty($_GET['yearID']) && empty($_GET['monthID']) && empty($_GET['dayID'])) {
             list ($year, $month, $day) = split("-", date("Y-n-j"));
-	    } elseif (empty($_GET['dayID']) && !empty($_GET['monthID']) && !empty($_GET['yearID'])) {
-	        $year = $_GET['yearID'];
-	        $month = $_GET['monthID'];
-	        $day = "1";
-	    } else {
-	        $year = $_GET['yearID'];
-	        $month = $_GET['monthID'];
-	        $day = $_GET['dayID'];
-	    }
+        } elseif (empty($_GET['dayID']) && !empty($_GET['monthID']) && !empty($_GET['yearID'])) {
+            $year = $_GET['yearID'];
+            $month = $_GET['monthID'];
+            $day = "1";
+        } else {
+            $year = $_GET['yearID'];
+            $month = $_GET['monthID'];
+            $day = $_GET['dayID'];
+        }
 
         $cal = new activeCalendar($year, $month, $day);
         $cal->enableMonthNav("?section=reservation");
@@ -178,27 +172,27 @@ class reservations extends reservationLib
             $counter += $this->options['unit'];
             $unit++;
         }
-	}
+    }
 
 
-	/**
-	 * Shows the reserve form
-	 *
-	 * @global $_ARRAYLANG
-	 */
-	function reserve()
-	{
-	    global $_ARRAYLANG;
+    /**
+     * Shows the reserve form
+     *
+     * @global $_ARRAYLANG
+     */
+    function reserve()
+    {
+        global $_ARRAYLANG;
 
-	    $day = $_GET['day'];
-	    $unit = $_GET['unit'];
+        $day = $_GET['day'];
+        $unit = $_GET['unit'];
 
-	    if (empty($day) || empty($unit)) {
-	        header("Location: index.php?section=reservation");
-	    }
+        if (empty($day) || empty($unit)) {
+            header("Location: index.php?section=reservation");
+        }
 
-	    $outDay = strftime("%A, %d.%m.%Y", mktime(1, 1, 1, substr($day, 5, 2), substr($day, 8, 2), substr($day, 0, 4)));
-	    $outTime = strftime("%H:%M", $this->options['framestart'] + ($unit-1) * $this->options['unit']);
+        $outDay = strftime("%A, %d.%m.%Y", mktime(1, 1, 1, substr($day, 5, 2), substr($day, 8, 2), substr($day, 0, 4)));
+        $outTime = strftime("%H:%M", $this->options['framestart'] + ($unit-1) * $this->options['unit']);
 
         $this->_objTpl->setVariable(array(
             "TXT_NAME"      => $_ARRAYLANG['TXT_NAME'],
@@ -214,140 +208,139 @@ class reservations extends reservationLib
             "RESERVATION_UNIT"  => $unit
         ));
 
-	}
+    }
 
 
-	function save()
-	{
-	    global $objDatabase, $_ARRAYLANG, $_CONFIG;
+    function save()
+    {
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-	    $day = $_POST['day'];
-	    $unit = $_POST['unit'];
+        $day = $_POST['day'];
+        $unit = $_POST['unit'];
 
-//	    $objDatabase->debug = true;
+//        $objDatabase->debug = true;
 
-	    $query = "SELECT unit FROM ".DBPREFIX."module_reservation
-	              WHERE day = '".$day."' AND unit = '".$unit."'";
+        $query = "SELECT unit FROM ".DBPREFIX."module_reservation
+                  WHERE day = '".$day."' AND unit = '".$unit."'";
 
-	    $objResult = $objDatabase->Execute($query);
-	    if ($objResult->RecordCount() > 0) {
-	        // Already occupied
-	        $this->_objTpl->setVariable("TXT_ERROR", $_ARRAYLANG['TXT_ALREADY_OCCUPIED']);
-	        $this->_objTpl->parse("error");
-	        return;
-	    } else {
-	        // Still free. check validity
-			$chkTime = $this->options['framestart'] + ($unit * $this->options['unit']);
-			if ($chkTime <= $this->options['frameend']) {
-				// Valid
-				$status = 0;
-				$confirmed = ($this->options['confirmation']) ? 0 : 1;
-				$name = contrexx_addslashes($_POST['name']);
-				$email = contrexx_addslashes($_POST['email']);
-				$phone = contrexx_addslashes($_POST['phone']);
-				$comments = contrexx_addslashes($_POST['comments']);
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult->RecordCount() > 0) {
+            // Already occupied
+            $this->_objTpl->setVariable("TXT_ERROR", $_ARRAYLANG['TXT_ALREADY_OCCUPIED']);
+            $this->_objTpl->parse("error");
+            return;
+        } else {
+            // Still free. check validity
+            $chkTime = $this->options['framestart'] + ($unit * $this->options['unit']);
+            if ($chkTime <= $this->options['frameend']) {
+                // Valid
+                $status = 0;
+                $confirmed = ($this->options['confirmation']) ? 0 : 1;
+                $name = contrexx_addslashes($_POST['name']);
+                $email = contrexx_addslashes($_POST['email']);
+                $phone = contrexx_addslashes($_POST['phone']);
+                $comments = contrexx_addslashes($_POST['comments']);
 
-				$day = contrexx_addslashes($_POST['day']);
-				$unit = contrexx_addslashes($_POST['unit']);
+                $day = contrexx_addslashes($_POST['day']);
+                $unit = contrexx_addslashes($_POST['unit']);
 
-				$time = time();
-				$hash = md5(rand(0, 223232) . $time);
+                $time = time();
+                $hash = md5(rand(0, 223232) . $time);
 
-				$query = "INSERT INTO ".DBPREFIX."module_reservation
-				         (`status`, `confirmed`, `day`, `unit`, `name`, `email`, `phone`,
-				          `comments`, `lang_id`, `time`, `hash`) VALUES
-				         ('".$status."', '".$confirmed."', '".$day."', '".$unit."', '".$name."', '".$email."', '".$phone."',
-				          '".$comments."', '".$this->langId."', '".$time."', '".$hash."')";
-				if ($objDatabase->Execute($query)) {
-				// sucessfull. Send mail now
+                $query = "INSERT INTO ".DBPREFIX."module_reservation
+                         (`status`, `confirmed`, `day`, `unit`, `name`, `email`, `phone`,
+                          `comments`, `lang_id`, `time`, `hash`) VALUES
+                         ('".$status."', '".$confirmed."', '".$day."', '".$unit."', '".$name."', '".$email."', '".$phone."',
+                          '".$comments."', '".$this->langId."', '".$time."', '".$hash."')";
+                if ($objDatabase->Execute($query)) {
+                // sucessfull. Send mail now
 
-				$insertId = $objDatabase->Insert_ID();
-				$url = "http://".$_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME']."?section=reservation&id=".$insertId."&act=confirm&hash=".$hash;
+                $insertId = $objDatabase->Insert_ID();
+                $url = "http://".$_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME']."?section=reservation&id=".$insertId."&act=confirm&hash=".$hash;
 
-				$mailtext = str_replace("<URL>", $url, $this->options['mailtext']);
+                $mailtext = str_replace("<URL>", $url, $this->options['mailtext']);
 
-				if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-						$objMail = new phpmailer();
+                if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+                        $objMail = new phpmailer();
 
-						if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-							$objSmtpSettings = new SmtpSettings();
-							if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-								$objMail->IsSMTP();
-								$objMail->Host = $arrSmtp['hostname'];
-								$objMail->Port = $arrSmtp['port'];
-								$objMail->SMTPAuth = true;
-								$objMail->Username = $arrSmtp['username'];
-								$objMail->Password = $arrSmtp['password'];
-							}
-						}
+                        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                            if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                                $objMail->IsSMTP();
+                                $objMail->Host = $arrSmtp['hostname'];
+                                $objMail->Port = $arrSmtp['port'];
+                                $objMail->SMTPAuth = true;
+                                $objMail->Username = $arrSmtp['username'];
+                                $objMail->Password = $arrSmtp['password'];
+                            }
+                        }
 
-						$objMail->CharSet = CONTREXX_CHARSET;
-						$objMail->From = $_CONFIG['coreAdminEmail'];
-						$objMail->FromName = $_CONFIG['coreAdminName'];
-						$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
-						$objMail->Subject = "Reservation";
-						$objMail->IsHTML(false);
-						$objMail->Body = $mailtext;
-						$objMail->AddAddress($email);
-						$objMail->Send();
-					}
+                        $objMail->CharSet = CONTREXX_CHARSET;
+                        $objMail->From = $_CONFIG['coreAdminEmail'];
+                        $objMail->FromName = $_CONFIG['coreAdminName'];
+                        $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+                        $objMail->Subject = "Reservation";
+                        $objMail->IsHTML(false);
+                        $objMail->Body = $mailtext;
+                        $objMail->AddAddress($email);
+                        $objMail->Send();
+                    }
 
-	               $this->_objTpl->setVariable("TXT_SUCCEDED", $_ARRAYLANG['TXT_SUCCEDED']);
-	               $this->_objTpl->parse("successful");
-	           } else {
-	               echo $objDatabase->ErrorMsg();
-	               $this->_objTpl->setVariable("TXT_ERROR", $_ARRAYLANG['TXT_ERROR_RESERVATION']);
-	           }
+                   $this->_objTpl->setVariable("TXT_SUCCEDED", $_ARRAYLANG['TXT_SUCCEDED']);
+                   $this->_objTpl->parse("successful");
+               } else {
+                   echo $objDatabase->ErrorMsg();
+                   $this->_objTpl->setVariable("TXT_ERROR", $_ARRAYLANG['TXT_ERROR_RESERVATION']);
+               }
 
-	       } else {
-	           // Invalid
-	           header("Location: index.php?section=recommend");
-	       }
-	    }
+           } else {
+               // Invalid
+               header("Location: index.php?section=recommend");
+           }
+        }
 
-	    $_GET['yearID'] = substr($day, 0, 4);
-	    $_GET['monthID'] = substr($day, 5, 2);
-	    $_GET['dayID'] = substr($day, 8, 2);
-	}
-
+        $_GET['yearID'] = substr($day, 0, 4);
+        $_GET['monthID'] = substr($day, 5, 2);
+        $_GET['dayID'] = substr($day, 8, 2);
+    }
 
 
-	function confirm()
-	{
-	    global $objDatabase, $_ARRAYLANG;
 
-	    $id = contrexx_addslashes($_GET['id']);
+    function confirm()
+    {
+        global $objDatabase, $_ARRAYLANG;
 
-	    $query = "SELECT hash, confirmed, day FROM ".DBPREFIX."module_reservation
-	              WHERE id = '".$id."'";
-	    $objResult = $objDatabase->Execute($query);
+        $id = contrexx_addslashes($_GET['id']);
 
-	    if ($objResult) {
-	        if ($objResult->fields['hash'] == $_GET['hash']) {
-	            $query = "UPDATE ".DBPREFIX."module_reservation
-	                      SET status = '1' WHERE id = '".$id."'";
-	            $objDatabase->Execute($query);
+        $query = "SELECT hash, confirmed, day FROM ".DBPREFIX."module_reservation
+                  WHERE id = '".$id."'";
+        $objResult = $objDatabase->Execute($query);
 
-	            if ($objResult->fields['confirmed']) {
-	                $this->_objTpl->setVariable("TXT_SUCCEDED", $_ARRAYLANG['TXT_FINAL_RESERVATION_SUCCEEDED']);
-	            } else {
-	                $this->_objTpl->setVariable("TXT_SUCCEDED", $_ARRAYLANG['TXT_NEED_TO_CONFIRM']);
-	            }
-	            $this->_objTpl->parse("successful");
+        if ($objResult) {
+            if ($objResult->fields['hash'] == $_GET['hash']) {
+                $query = "UPDATE ".DBPREFIX."module_reservation
+                          SET status = '1' WHERE id = '".$id."'";
+                $objDatabase->Execute($query);
 
-	        } else {
-	            $this->_objTpl->setVariable("TXT_ERROR", $_ARRAYLANG['TXT_WRONG_HASH']);
-	            $this->_objTpl->parse("error");
-	        }
-	    }
+                if ($objResult->fields['confirmed']) {
+                    $this->_objTpl->setVariable("TXT_SUCCEDED", $_ARRAYLANG['TXT_FINAL_RESERVATION_SUCCEEDED']);
+                } else {
+                    $this->_objTpl->setVariable("TXT_SUCCEDED", $_ARRAYLANG['TXT_NEED_TO_CONFIRM']);
+                }
+                $this->_objTpl->parse("successful");
+
+            } else {
+                $this->_objTpl->setVariable("TXT_ERROR", $_ARRAYLANG['TXT_WRONG_HASH']);
+                $this->_objTpl->parse("error");
+            }
+        }
 
 
-	    $day = $objResult->fields['day'];
+        $day = $objResult->fields['day'];
 
-	    $_GET['yearID'] = substr($day, 0, 4);
-	    $_GET['monthID'] = substr($day, 5, 2);
-	    $_GET['dayID'] = substr($day, 8, 2);
-	}
+        $_GET['yearID'] = substr($day, 0, 4);
+        $_GET['monthID'] = substr($day, 5, 2);
+        $_GET['dayID'] = substr($day, 8, 2);
+    }
 }
 
 ?>

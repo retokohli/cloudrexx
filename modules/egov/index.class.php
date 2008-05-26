@@ -44,7 +44,7 @@ class eGov extends eGovLibrary
      * @param   string  $pageContent    The page content template
      * @return  eGov                    The eGov object
      */
-    function eGov($pageContent)
+    function __construct($pageContent)
     {
         if (_EGOV_DEBUG) {
             error_reporting(E_ALL);
@@ -230,8 +230,7 @@ class eGov extends eGovLibrary
             if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                 $objMail = new phpmailer();
                 if (!empty($_CONFIG['coreSmtpServer']) && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                    $objSmtpSettings = new SmtpSettings();
-                    if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                    if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                         $objMail->IsSMTP();
                         $objMail->Host = $arrSmtp['hostname'];
                         $objMail->Port = $arrSmtp['port'];
@@ -285,8 +284,7 @@ class eGov extends eGovLibrary
                 if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                     $objMail = new phpmailer();
                     if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                        $objSmtpSettings = new SmtpSettings();
-                        if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                        if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                             $objMail->IsSMTP();
                             $objMail->Host = $arrSmtp['hostname'];
                             $objMail->Port = $arrSmtp['port'];
@@ -657,7 +655,9 @@ class eGov extends eGovLibrary
             }
         }
 //eGovLibrary::addLog("Info: paymentYellowpayVerify: Order ID $order_id, returning error message");
-        return 'document.location.href="'.$_SERVER['PHP_SELF']."?section=egov\";\n";
+        return
+            $strReturn.
+            'document.location.href="'.$_SERVER['PHP_SELF']."?section=egov\";\n";
     }
 
 

@@ -28,23 +28,14 @@ class BlogAdmin extends BlogLibrary {
 	var $_strErrMessage = '';
 	var $_strOkMessage 	= '';
 
-	/**
-	* Constructor-Fix for non PHP5-Servers
-    *
-    */
-	function BlogAdmin() {
-		$this->__constructor();
-	}
-
-
-	/**
-	* Constructor	-> Create the module-menu and an internal template-object
-    *
-    * @global 	object		$objInit
-    * @global	object		$objTemplate
-    * @global	array		$_CORELANG
-    */
-	function __constructor() {
+    /**
+     * Constructor	-> Create the module-menu and an internal template-object
+     * @global 	object		$objInit
+     * @global	object		$objTemplate
+     * @global	array		$_CORELANG
+     */
+    function __construct()
+    {
 		global $objInit, $objTemplate, $_CORELANG;
 
 		BlogLibrary::__constructor();

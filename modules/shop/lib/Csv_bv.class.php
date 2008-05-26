@@ -71,15 +71,14 @@ class Csv_bv
     /**
       * Constructor
       *
-      * Only used to initialise variables.
-      *
+      * Only initialises class settings variables.
       * @param str $file - file path
       * @param str $seperator - Only one character is allowed (optional)
       * @param str $enclose - Only one character is allowed (optional)
       * @param str $escape - Only one character is allowed (optional)
       * @access public
       */
-    function Csv_bv($file, $seperator = ';', $enclose = '"', $escape = '')
+    function __construct($file, $seperator=';', $enclose='"', $escape='')
     {
         $this->mFldSeperator = $seperator;
         $this->mFldEnclosure = $enclose;

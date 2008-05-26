@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Forum
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -29,23 +30,14 @@ class ForumAdmin extends ForumLibrary {
 	var $_strErrMessage = '';
 	var $_strOkMessage 	= '';
 
-	/**
-	* Constructor-Fix for non PHP5-Servers
-    *
-    */
-	function ForumAdmin() {
-		$this->__constructor();
-	}
-
-
-	/**
-	* Constructor	-> Create the module-menu and an internal template-object
-    *
-    * @global 	object		$objInit
-    * @global	object		$objTemplate
-    * @global	array		$_ARRAYLANG
-    */
-	function __constructor() {
+    /**
+     * Constructor	-> Create the module-menu and an internal template-object
+     * @global 	object		$objInit
+     * @global	object		$objTemplate
+     * @global	array		$_ARRAYLANG
+     */
+    function __constructor()
+    {
 		global $objInit, $objTemplate, $_ARRAYLANG;
 		ForumLibrary::__constructor();
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/forum/template');

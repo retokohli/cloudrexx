@@ -1,4 +1,5 @@
 <?php
+
 /*******************************************************************************
  *                      PHP Paypal IPN Integration Class
  *******************************************************************************
@@ -84,8 +85,8 @@ class paypal_class {
    var $fields = array();           // array holds the fields to submit to paypal
 
 
-   function paypal_class() {
-
+   function __construct()
+   {
       // initialization constructor.  Called when class is created.
 
       $this->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';

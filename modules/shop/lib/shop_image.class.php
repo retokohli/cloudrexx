@@ -1,4 +1,5 @@
 <?php
+
 //Security-Check
 if (eregi("shop_image.class.php",$_SERVER['PHP_SELF']))
 {
@@ -17,7 +18,6 @@ if (eregi("shop_image.class.php",$_SERVER['PHP_SELF']))
 * @modulegroup shop
 * @version       $Id: index.inc.php,v 1.00 $
 */
-
 class upload
 {
     // class variable
@@ -38,7 +38,6 @@ class upload
 
     /**
      * Constructor
-     *
      * @version 1.0    initial version
      * @param  string  $max_file_size
      * @param  array   $file_perm
@@ -46,7 +45,7 @@ class upload
      * @param  int  $quality
      * @access public
      */
-    function upload ($file_perm,$max_file_size = 300000,$arc_dir = "..",$quality)
+    function __construct($file_perm, $max_file_size=300000, $arc_dir='..', $quality)
     {
         if (empty ($file_perm)) {
             $file_perm = array ("image/pjpeg","image/x-png","image/jpeg","image/png","image/gif");

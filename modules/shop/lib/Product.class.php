@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shop Products
  *
@@ -233,7 +234,7 @@ class Product
      * @return  Product                 The Product
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function Product(
+    function __construct(
         $code, $catId, $name, $distribution, $price,
         $status, $order, $weight, $id=0
     ) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Products helper class
  *
@@ -46,12 +47,12 @@ class Products
 
 
     /**
-     * Create a Products helper object (PHP4)
+     * Create a Products helper object 
      * @access  public
      * @return  Products                The helper
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function Products()
+    function __construct()
     {
     }
 

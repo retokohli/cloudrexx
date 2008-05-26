@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Feed library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -31,10 +32,10 @@ class feedLibrary
 	var $statusMessage;
 	var $feedpath;
 
-	function feedLibrary()
+	function __construct()
 	{
-		//nothing..
 	}
+
 
 	//FUNC refresh
 	function showNewsRefresh($id, $time, $path)

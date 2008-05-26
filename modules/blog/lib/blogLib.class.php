@@ -29,19 +29,11 @@ class BlogLibrary {
 	var $_arrLanguages 			= array();
 
 	/**
-	* Constructor-Fix for non PHP5-Servers
-    *
+	 * Constructor
+	 *
     */
-	function BlogLibrary() {
-		$this->__constructor();
-	}
-
-
-	/**
-	* Constructor
-	*
-    */
-	function __constructor() {
+	function __construct()
+	{
 		$this->setDatabaseEngine();
 		$this->_arrSettings		= $this->createSettingsArray();
 		$this->_arrLanguages 	= $this->createLanguageArray();

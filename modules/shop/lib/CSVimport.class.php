@@ -10,7 +10,7 @@ class CSVimport
     private $arrName2Fieldname = false;
 
 
-    function CSVimport()
+    function __construct()
     {
         global $_ARRAYLANG;
 

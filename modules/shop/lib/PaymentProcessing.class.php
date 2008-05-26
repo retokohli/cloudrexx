@@ -115,7 +115,7 @@ class PaymentProcessing
      * Constructor
      * @param   array   $arrConfig    Shop configuration array
      */
-    function PaymentProcessing($arrConfig)
+    function __construct($arrConfig)
     {
         global $objDatabase;
 

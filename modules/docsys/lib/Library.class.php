@@ -1,19 +1,30 @@
 <?php
+
 /**
  * Class Document System
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>        
+ * @author Comvation Development Team <info@comvation.com>
  * @access public
- * @version 1.0.0                                        
+ * @version 1.0.0
  * @package     contrexx
  * @subpackage  module_docsys
  * @todo        Edit PHP DocBlocks!
  */
 
-
+/**
+ * Class Document System
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
+ * @access public
+ * @version 1.0.0
+ * @package     contrexx
+ * @subpackage  module_docsys
+ * @todo        Edit PHP DocBlocks!
+ */
 class docSysLibrary
-{	
+{
     /**
     * Gets the categorie option menu string
     *
@@ -21,29 +32,30 @@ class docSysLibrary
     * @global    string     $_LANGID
     * @param     string     $lang
     * @param     string     $selectedOption
-    * @return    string     $modulesMenu                                                                              
+    * @return    string     $modulesMenu
     */
     function getCategoryMenu($langId, $selectedCatId="")
     {
 	    global $objDatabase;
-	    
-	    $strMenu = "";      
-        $query="SELECT catid, 
-                       name 
-                  FROM ".DBPREFIX."module_docsys_categories 
-                 WHERE lang=".$langId." 
+
+	    $strMenu = "";
+        $query="SELECT catid,
+                       name
+                  FROM ".DBPREFIX."module_docsys_categories
+                 WHERE lang=".$langId."
               ORDER BY catid";
-         
+
         $objResult = $objDatabase->Execute($query);
 	    while (!$objResult->EOF) {
 		    $selected = "";
 		    if($selectedCatId==$objResult->fields['catid']){
 			    $selected = "selected";
 		    }
-		    $strMenu .="<option value=\"".$objResult->fields['catid']."\" $selected>".stripslashes($objResult->fields['name'])."</option>\n"; 
+		    $strMenu .="<option value=\"".$objResult->fields['catid']."\" $selected>".stripslashes($objResult->fields['name'])."</option>\n";
 		    $objResult->MoveNext();
 	    }
 	    return $strMenu;
     }
 }
+
 ?>

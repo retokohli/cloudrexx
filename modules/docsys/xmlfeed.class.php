@@ -1,4 +1,5 @@
-<?PHP
+<?php
+
 /**
  * Docsys RSS XML Feed
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -45,7 +46,7 @@ class rssFeed
 	* @global	array		$_CONFIG
 	* @global	string		$objDatabase
     */
-	function rssFeed()
+	function __construct()
 	{
 		global $_CONFIG, $objInit, $objDatabase;
 

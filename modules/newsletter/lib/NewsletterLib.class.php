@@ -1,4 +1,19 @@
 <?php
+
+/**
+ * Class newsletter library
+ *
+ * Newsletter module class
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author		Comvation Development Team <info@comvation.com>
+ * @access		public
+ * @version		1.0.0
+ * @package     contrexx
+ * @subpackage  module_newsletter
+ * @todo        Edit PHP DocBlocks!
+ */
+
 /**
  * Class newsletter library
  *
@@ -314,4 +329,5 @@ class NewsletterLib {
 		}
 	}
 }
+
 ?>

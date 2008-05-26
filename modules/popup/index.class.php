@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Block
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -213,4 +214,5 @@ class popup extends popupLibrary
 		$code = str_replace("{POPUP_JS_FUNCTION}", $JS, $code);
 	}
 }
+
 ?>

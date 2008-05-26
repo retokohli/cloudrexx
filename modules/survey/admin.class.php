@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class SurveyAdmin
  *
@@ -12,6 +13,16 @@
 
 require_once ASCMS_MODULE_PATH.'/survey/lib/surveyLib.class.php';
 
+/**
+ * Class SurveyAdmin
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
+ * @version	   $Id: index.inc.php,v 1.00 $
+ * @package     contrexx
+ * @subpackage  module_survey
+ * @todo        Edit PHP DocBlocks!
+ */
 class SurveyAdmin extends SurveyLibrary {
 
 	var $_objTpl;
@@ -19,24 +30,18 @@ class SurveyAdmin extends SurveyLibrary {
 	var $_strErrMessage = '';
 	var $_strOkMessage 	= '';
 
-	/**
-	* Constructor-Fix for non PHP5-Servers
-    *
-    */
-	function SurveyAdmin() {
-		$this->__constructor();
-	}
 
-
-	/**
-	* Constructor	-> Create the module-menu and an internal template-object
-    *
-    * @global 	object		$objInit
-    * @global	object		$objTemplate
-    * @global	array		$_ARRAYLANG
-    * @global 	array		$_CORELANG
-    */
-	function __constructor() {
+    /**
+     * Constructor
+     *
+     * Create the module-menu and an internal template-object
+     * @global 	object		$objInit
+     * @global	object		$objTemplate
+     * @global	array		$_ARRAYLANG
+     * @global 	array		$_CORELANG
+     */
+    function __construct()
+    {
 		global $objInit, $objTemplate, $_ARRAYLANG, $_CORELANG;
 
 		SurveyLibrary::__constructor();

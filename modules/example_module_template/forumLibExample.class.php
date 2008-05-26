@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Forum library example
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -24,11 +25,6 @@ class ForumLibraryExample
 {
 	var $_arrConfig = array();
 
-	function ForumLibrary()
-	{
-		$this->__constructor();
-	}
-
 	function __constructor()
 	{
 		$this->_initialize();
@@ -51,4 +47,5 @@ class ForumLibraryExample
 		}
 	}
 }
+
 ?>
