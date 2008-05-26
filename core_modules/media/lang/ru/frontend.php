@@ -6,13 +6,13 @@
  * @package     contrexx
  * @subpackage  core_module_media
  */
-$_ARRAYLANG['TXT_MEDIA_FILE_NAME'] = "Dateiname";
-$_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Dateigrösse";
-$_ARRAYLANG['TXT_MEDIA_FILE_DATE'] = "Datum";
-$_ARRAYLANG['TXT_MEDIA_FILE_PERM'] = "Permission";
-$_ARRAYLANG['TXT_MEDIA_ARCHIVE'] = "Medienarchiv";
-$_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'] = "Dieses Verzeichnis ist leer";
-$_ARRAYLANG['TXT_MEDIA_FILE_TYPE'] = "Typ";
-$_ARRAYLANG['TXT_MEDIA_FILE_DIRECTORY'] = "Dateiordner";
-$_ARRAYLANG['TXT_MEDIA_FILE'] = "Datei";
+$_ARRAYLANG['TXT_MEDIA_FILE_NAME'] = "Имя файла";
+$_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Размер файла";
+$_ARRAYLANG['TXT_MEDIA_FILE_DATE'] = "Дата";
+$_ARRAYLANG['TXT_MEDIA_FILE_PERM'] = "Права доступа";
+$_ARRAYLANG['TXT_MEDIA_ARCHIVE'] = "Медиаархив";
+$_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'] = "Этот каталог пуст";
+$_ARRAYLANG['TXT_MEDIA_FILE_TYPE'] = "Тип";
+$_ARRAYLANG['TXT_MEDIA_FILE_DIRECTORY'] = "Папка с файлами";
+$_ARRAYLANG['TXT_MEDIA_FILE'] = "Файл";
 ?>
