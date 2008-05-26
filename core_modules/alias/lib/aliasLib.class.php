@@ -1,4 +1,15 @@
 <?php
+
+/**
+ * Alias library
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author		Comvation Development Team <info@comvation.com>
+ * @version		1.0.0
+ * @package     contrexx
+ * @subpackage  core_module_alias
+ * @todo        Edit PHP DocBlocks!
+ */
+
 /**
  * Alias library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -606,4 +617,5 @@ class aliasLib
 		return file_exists(ASCMS_DOCUMENT_ROOT.'/.htaccess') || touch(ASCMS_DOCUMENT_ROOT.'/.htaccess');
 	}
 }
+
 ?>

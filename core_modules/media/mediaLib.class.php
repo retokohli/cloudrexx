@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Media Library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -20,7 +21,7 @@
  * @package     contrexx
  * @subpackage  core_module_media
  */
-class MediaLibrary{
+class MediaLibrary {
 	// act: sort
 	// sorting information $_SESSION['media']['sort']
     function _sortingSession(){

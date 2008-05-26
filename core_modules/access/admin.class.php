@@ -1071,8 +1071,7 @@ class AccessManager extends AccessLib
             ($objMail = new PHPMailer()) !== false
         ) {
             if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                $objSmtpSettings = new SmtpSettings();
-                if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                     $objMail->IsSMTP();
                     $objMail->Host = $arrSmtp['hostname'];
                     $objMail->Port = $arrSmtp['port'];

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Banner management
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -8,7 +9,6 @@
  * @subpackage  core_module_banner
  * @todo        Edit PHP DocBlocks!
  */
-
 
 require_once ASCMS_CORE_MODULE_PATH . '/banner/bannerLib.class.php';
 require_once ASCMS_CORE_PATH.'/Tree.class.php';
@@ -47,7 +47,8 @@ class Banner extends bannerLibrary {
     * @param  string
     * @access public
     */
-    function Banner(){
+    function __construct()
+    {
     	global  $_ARRAYLANG, $objInit, $objTemplate;
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/banner/template');

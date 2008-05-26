@@ -1,4 +1,5 @@
 <?php
+
 /**
  * News library
  * @copyright   CONTREXX CMS - COMVATION AG
