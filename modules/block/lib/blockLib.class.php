@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Block
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -37,6 +38,15 @@ class blockLibrary
 	* @var array
 	*/
 	var $_arrBlocks;
+
+
+    /**
+     * Constructor
+     */
+    function __construct()
+    {
+    }
+
 
 	/**
 	* Get blocks

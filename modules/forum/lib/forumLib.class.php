@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Forum library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -36,25 +37,16 @@ class ForumLibrary {
 	var $_rateTimeout;
 
 	/**
-	* Constructor-Fix for non PHP5-Servers
-    *
-    */
-	function ForumLibrary() {
-		$this->__constructor();
-	}
-
-
-	/**
 	* Constructor
 	*
     */
-	function __constructor() {
+	function __construct()
+	{
 		$this->_arrSettings		= $this->createSettingsArray();
 		$this->_arrLanguages 	= $this->createLanguageArray();
 		$this->_arrTranslations	= $this->createTranslationArray();
 		$this->_rateTimeout 	= 3600*6;
 	}
-
 
 
 	/**

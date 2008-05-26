@@ -1,4 +1,5 @@
-<?PHP
+<?php
+
 /**
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
@@ -13,7 +14,6 @@
  * @package     contrexx
  * @subpackage  module_shop
  */
-
 class Shipment
 {
     /**
@@ -62,7 +62,7 @@ class Shipment
      * @return  void
      * @since   v1.1
      */
-    function Shipment($ignoreStatus=1)
+    function __construct($ignoreStatus=1)
     {
         global $objDatabase;
         // get the shippers first

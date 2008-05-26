@@ -103,10 +103,9 @@ class ProductAttribute
 
 
     /**
-     * Constructor (PHP4)
-     *
+     * Constructor 
      */
-    function ProductAttribute($name, $type, $id=0, $productId=false)
+    function __construct($name, $type, $id=0, $productId=false)
     {
         $this->name      = $name;
         $this->setType($type);

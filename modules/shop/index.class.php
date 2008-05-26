@@ -267,12 +267,11 @@ class Shop extends ShopLibrary
 
 
     /**
-     * PHP4 constructor
-     *
+     * Constructor
      * @param  string
      * @access public
      */
-    function Shop($pageContent)
+    function __construct($pageContent)
     {
         global $objDatabase;
 

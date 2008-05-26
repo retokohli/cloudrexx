@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Livecam Library
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>            
+ * @author		Comvation Development Team <info@comvation.com>
  * @version		1.0.0
  * @package     contrexx
  * @subpackage  module_livecam
@@ -27,17 +28,17 @@ class LivecamLibrary
 	* @var array
 	*/
 	var $arrSettings = array();
-	
+
 	/**
     * Get settings
     *
     * Initialize the settings
     *
     * @access public
-    */ 
+    */
     function getSettings()
     {
-    	
+
     	global $objDatabase;
 
     	$query = "SELECT setname, setvalue FROM ".DBPREFIX."module_livecam_settings";
@@ -46,10 +47,10 @@ class LivecamLibrary
 		    $this->arrSettings[$objResult->fields['setname']] = $objResult->fields['setvalue'];
 		    $objResult->MoveNext();
 	    }
-	    
+
     }
-    
-        
+
+
     /**
      * Get cam settings
      *
@@ -61,9 +62,9 @@ class LivecamLibrary
         global $objDatabase;
 
         $id = intval($id);
-        
+
         $query = "  SELECT  id,
-                            currentImagePath, 
+                            currentImagePath,
                             archivePath,
                             thumbnailPath,
                             maxImageWidth,
@@ -79,7 +80,7 @@ class LivecamLibrary
             //throw new DatabaseError("error getting the camera setting");
             return;
         }
-        
+
         $ret = array();
         if ($result->RecordCount()) {
             while (!$result->EOF) {
@@ -95,7 +96,7 @@ class LivecamLibrary
                 $result->MoveNext();
             }
         }
-        
+
         if ($id == 0) {
             // return all cams
             return $ret;
@@ -105,4 +106,5 @@ class LivecamLibrary
         }
     }
 }
+
 ?>

@@ -1,4 +1,5 @@
-<?PHP
+<?php
+
 /**
  * Guestbook
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -142,4 +143,5 @@ class GuestbookLibrary
 		return $strJavascript;
 	}
 }
+
 ?>

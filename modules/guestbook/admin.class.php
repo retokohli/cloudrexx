@@ -1,4 +1,5 @@
-<?PHP
+<?php
+
 /**
  * Guestbook Module
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -39,7 +40,7 @@ class GuestbookManager extends GuestbookLibrary
 	/**
 	* constructor
 	*/
-	function GuestbookManager()
+	function __construct()
 	{
     	global  $objDatabase, $_ARRAYLANG, $objTemplate, $objInit;
 

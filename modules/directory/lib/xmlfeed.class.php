@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RSS Feed
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -43,7 +44,7 @@ class rssFeed
 	* @global	array		$_CONFIG
 	* @global	string		$db
     */
-	function rssFeed($catId)
+	function __construct($catId)
 	{
 		global $_CONFIG, $objInit, $objDatabase;
 

@@ -1,4 +1,5 @@
-<?PHP
+<?php
+
 /**
  * Currencies manager.
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -55,10 +56,11 @@ class Currency
 
 
     /**
-    * @return void
-    * @desc Initialize the currencies as an indexed array
-    */
-    function Currency()
+     * Constructor
+     *
+     * Initializes the currencies array
+     */
+    function __construct()
     {
         global $objDatabase;
 

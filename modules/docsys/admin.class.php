@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DocSys
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -9,7 +10,6 @@
  * @subpackage  module_docsys
  * @todo        Edit PHP DocBlocks!
  */
-
 
 /**
  * Includes
@@ -42,7 +42,7 @@ class docSysManager extends docSysLibrary
     * @param  string
     * @access public
     */
-    function docSysManager()
+    function __construct()
     {
     	global  $_ARRAYLANG, $objInit, $objTemplate;
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Forum
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -28,21 +29,14 @@ class Forum extends ForumLibrary {
 	var $strError = ''; //errormessage for captcha
 
 
-	/**
-	* Constructor-Fix for non PHP5-Servers
-    *
-    */
-	function Forum($strPageContent) {
-		$this->__constructor($strPageContent);
-	}
-
-
-	/**
-	* Constructor	-> Call parent-constructor, set language id and create local template-object
-    *
-    * @global	integer		$_LANGID
-    */
-	function __constructor($strPageContent) {
+    /**
+     * Constructor
+     *
+     * Call parent-constructor, set language id and create local template-object
+     * @global	integer		$_LANGID
+     */
+    function __construct($strPageContent)
+    {
 		global $_LANGID;
 
 		ForumLibrary::__constructor();

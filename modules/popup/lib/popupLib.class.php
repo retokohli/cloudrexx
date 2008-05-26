@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Block
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -22,7 +23,6 @@
  */
 class popupLibrary
 {
-
     /**
     * Get blocks
     *
@@ -486,4 +486,5 @@ class popupLibrary
         $objSettings->writeSettingsFile();
     }
 }
+
 ?>

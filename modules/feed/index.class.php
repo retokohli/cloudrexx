@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Feed
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -45,7 +46,7 @@ class feed extends feedLibrary{
 	var $feedpath;
 
     // CONSTRUCTOR
-    function feed($pageContent) {
+    function __construct($pageContent) {
 	    global  $_ARRAYLANG;
 	    $this->pageContent = $pageContent;
 		$this->_objTpl = &new HTML_Template_Sigma('.');

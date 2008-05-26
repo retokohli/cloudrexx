@@ -53,7 +53,7 @@ class Settings
     /**
      * Constructor
      */
-    function Settings()
+    function __construct()
     {
     }
 

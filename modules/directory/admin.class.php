@@ -64,7 +64,7 @@ class rssDirectory extends directoryLibrary
 	* @global	object	$template
 	* @global	array	$_CORELANG
     */
-    function rssDirectory()
+    function __construct()
     {
     	global  $_ARRAYLANG, $objInit, $objTemplate, $objDatabase;
 

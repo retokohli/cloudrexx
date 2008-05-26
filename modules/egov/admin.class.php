@@ -84,7 +84,7 @@ class eGov extends eGovLibrary
     private $_strOkMessage = '';
 
 
-    function eGov()
+    function __construct()
     {
         global $_ARRAYLANG, $objTemplate, $objInit;
 
@@ -869,8 +869,7 @@ class eGov extends eGovLibrary
                     if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                         $objMail = new phpmailer();
                         if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                            $objSmtpSettings = new SmtpSettings();
-                            if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                            if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                                 $objMail->IsSMTP();
                                 $objMail->Host = $arrSmtp['hostname'];
                                 $objMail->Port = $arrSmtp['port'];
@@ -1817,8 +1816,7 @@ eGovLibrary::addLog("Error updating order ID $order_id: No product ID found");
             if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                 $objMail = new phpmailer();
                 if (!empty($_CONFIG['coreSmtpServer']) && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                    $objSmtpSettings = new SmtpSettings();
-                    if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                    if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                         $objMail->IsSMTP();
                         $objMail->Host = $arrSmtp['hostname'];
                         $objMail->Port = $arrSmtp['port'];
@@ -1872,8 +1870,7 @@ eGovLibrary::addLog("Error updating order ID $order_id: No product ID found");
                 if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                     $objMail = new phpmailer();
                     if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                        $objSmtpSettings = new SmtpSettings();
-                        if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                        if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                             $objMail->IsSMTP();
                             $objMail->Host = $arrSmtp['hostname'];
                             $objMail->Port = $arrSmtp['port'];

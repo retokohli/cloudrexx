@@ -213,12 +213,11 @@ class shopmanager extends ShopLibrary {
 
 
     /**
-     * PHP4 constructor
-     *
+     * Constructor
      * @access  public
      * @return  shopmanager
      */
-    function shopmanager()
+    function __construct()
     {
         global $_ARRAYLANG, $objTemplate, $objInit;
 

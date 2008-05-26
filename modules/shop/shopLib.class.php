@@ -1,7 +1,7 @@
-<?PHP
+<?php
+
 /**
  * Shop library
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @version     1.0.0
@@ -31,7 +31,6 @@ define('SHOP_PAYMENT_RESULT_COUNT',           3);
 
 /**
  * All the helping hands needed to run the shop
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @access      public
@@ -381,8 +380,7 @@ class ShopLibrary
             if (   isset($_CONFIG['coreSmtpServer'])
                 && $_CONFIG['coreSmtpServer'] > 0
                 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                $objSmtpSettings = new SmtpSettings();
-                if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                     $objMail->IsSMTP();
                     $objMail->Host = $arrSmtp['hostname'];
                     $objMail->Port = $arrSmtp['port'];

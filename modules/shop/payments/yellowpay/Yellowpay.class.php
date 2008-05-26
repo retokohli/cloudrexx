@@ -178,7 +178,7 @@ class Yellowpay
      *                                              of payment methods
      * @return  Yellowpay                           The Yellowpay object
      */
-    function Yellowpay($strAcceptedPaymentMethods='', $strAuthorization='')
+    function __construct($strAcceptedPaymentMethods='', $strAuthorization='')
     {
         // There needs to be at least one accepted payment method,
         // if there is none, accept all.

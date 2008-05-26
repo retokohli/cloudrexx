@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Feed
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -38,7 +39,7 @@ class feedManager extends feedLibrary
 	var $_objNewsML;
 
     // CONSTRUCTOR
-    function feedManager()
+    function __construct()
     {
 	    global  $_ARRAYLANG, $objTemplate, $_CONFIG;
 
