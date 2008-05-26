@@ -1,4 +1,5 @@
-<?PHP
+<?php
+
 /**
  * News headlines
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -20,18 +21,20 @@
  * @package     contrexx
  * @subpackage  core_module_news
  */
-class newsHeadlines{
+class newsHeadlines {
     var $_pageContent;
     var $_objTemplate;
     var $arrSettings = array();
 
-    function newsHeadlines($pageContent){
+    function __construct($pageContent)
+    {
     	$this->getSettings();
 	    $this->_pageContent = $pageContent;
 	    $this->_objTemplate = &new HTML_Template_Sigma('.');
 	}
 
-    function getSettings(){
+    function getSettings()
+    {
     	global $objDatabase;
         $objResult = $objDatabase->Execute("SELECT name, value FROM ".DBPREFIX."module_news_settings");
         if ($objResult !== false) {
@@ -43,7 +46,8 @@ class newsHeadlines{
     }
 
 
-	function getHomeHeadlines($catId=0) {
+	function getHomeHeadlines($catId=0)
+	{
 		global $_CONFIG, $_CORELANG, $objDatabase, $_LANGID;
 
 		$catId= intval($catId);

@@ -44,7 +44,7 @@ class sitemap
     * @param  string
     * @access public
     */
-    function sitemap($pageContent)
+    function __construct($pageContent)
     {
 		$this->pageContent = $pageContent;
 		$this->_objTpl = &new HTML_Template_Sigma('.');

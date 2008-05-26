@@ -39,7 +39,8 @@ class Cache extends cacheLib {
     *
     * @global 	array		$_CONFIG
     */
-	function Cache() {
+	function __construct()
+	{
 		global $_CONFIG;
 
 		if($_CONFIG['cacheEnabled'] == 'on' && (!isset($_REQUEST['caching']) || $_REQUEST['caching'] != '0')) {

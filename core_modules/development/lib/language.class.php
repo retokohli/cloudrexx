@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Language Module
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -32,7 +33,8 @@ class LanguageManager
 	/**
 	* constructor
 	*/
-	function LanguageManager(){
+	function __construct()
+	{
     	global  $objDatabase, $_CORELANG, $objTemplate;
 
     	$arrTables = array();
