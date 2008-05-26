@@ -6,23 +6,23 @@
  * @package     contrexx
  * @subpackage  module_recommend
  */
-$_ARRAYLANG['TXT_STATUS_RECEIVER_NAME'] = "Empfänger Name";
-$_ARRAYLANG['TXT_STATUS_RECEIVER_MAIL'] = "Empfänger E-Mail Adresse";
-$_ARRAYLANG['TXT_STATUS_COMMENT'] = "Kommentar";
-$_ARRAYLANG['TXT_STATUS_SENDER_MAIL'] = "Ihre E-Mail Adresse";
-$_ARRAYLANG['TXT_STATUS_SENDER_NAME'] = "Ihr Name";
-$_ARRAYLANG['TXT_SENT_OK'] = "Empfehlung wurde erfolgreich verschickt.";
-$_ARRAYLANG['TXT_IS_EMPTY'] = "is empty";
-$_ARRAYLANG['TXT_IS_INVALID'] = "ist ungültig!";
-$_ARRAYLANG['TXT_RECEIVERMAIL_FRONTEND'] = "Empfänger E-Mail Adresse";
-$_ARRAYLANG['TXT_RECEIVERNAME_FRONTEND'] = "Empfänger Name";
-$_ARRAYLANG['TXT_GENDER_FRONTEND'] = "Geschlecht des Empfängers";
-$_ARRAYLANG['TXT_SENDERNAME_FRONTEND'] = "Ihr Name";
-$_ARRAYLANG['TXT_SENDERMAIL_FRONTEND'] = "Ihre E-Mail Adresse";
-$_ARRAYLANG['TXT_COMMENT_FRONTEND'] = "Kommentar";
-$_ARRAYLANG['TXT_PREVIEW_FRONTEND'] = "Vorschau";
-$_ARRAYLANG['TXT_FEMALE_FRONTEND'] = "Weiblich";
-$_ARRAYLANG['TXT_MALE_FRONTEND'] = "Männlich";
-$_ARRAYLANG['TXT_INTRODUCTION'] = "Möchten Sie diese Seite weiterempfehlen, füllen Sie einfach das folgende Formular aus und klicken anschliessend auf \"Absenden\". Der/die Empfänger/in wird per E-Mail auf diese Seite aufmerksam gemacht.";
-$_ARRAYLANG['TXT_RECOMMEND_CAPTCHA'] = "Security Code";
+$_ARRAYLANG['TXT_STATUS_RECEIVER_NAME'] = "Имя получателя";
+$_ARRAYLANG['TXT_STATUS_RECEIVER_MAIL'] = "Электронный адрес получателя";
+$_ARRAYLANG['TXT_STATUS_COMMENT'] = "Комментарий";
+$_ARRAYLANG['TXT_STATUS_SENDER_MAIL'] = "Ваш электронный адрес";
+$_ARRAYLANG['TXT_STATUS_SENDER_NAME'] = "Ваше имя";
+$_ARRAYLANG['TXT_SENT_OK'] = "Рекомендация успешно послана.";
+$_ARRAYLANG['TXT_IS_EMPTY'] = "Пустой";
+$_ARRAYLANG['TXT_IS_INVALID'] = "Недопустимо!";
+$_ARRAYLANG['TXT_RECEIVERMAIL_FRONTEND'] = "Адрес электронной почты получателя";
+$_ARRAYLANG['TXT_RECEIVERNAME_FRONTEND'] = "Имя получателя";
+$_ARRAYLANG['TXT_GENDER_FRONTEND'] = "Пол получателя";
+$_ARRAYLANG['TXT_SENDERNAME_FRONTEND'] = "Ваше имя";
+$_ARRAYLANG['TXT_SENDERMAIL_FRONTEND'] = "Ваш электронный адрес";
+$_ARRAYLANG['TXT_COMMENT_FRONTEND'] = "Комментарии";
+$_ARRAYLANG['TXT_PREVIEW_FRONTEND'] = "Просмотр";
+$_ARRAYLANG['TXT_FEMALE_FRONTEND'] = "Женский";
+$_ARRAYLANG['TXT_MALE_FRONTEND'] = "Мужской";
+$_ARRAYLANG['TXT_INTRODUCTION'] = "Если Вы хотите рекомендовать эту страницу, заполнить бланк выше и нажать на посылающуюся кнопку. Получатель будет, получают электронную почту с Вашей рекомендацией.";
+$_ARRAYLANG['TXT_RECOMMEND_CAPTCHA'] = "Защитный код";
 ?>

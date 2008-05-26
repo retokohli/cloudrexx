@@ -8,11 +8,11 @@
  */
 $_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM'] = "Hier sind die übermittelten Informationen vom Kontaktformular der Webseite von";
 $_ARRAYLANG['TXT_CONTACT_FORM'] = "Neuer Kontaktformulareintrag auf";
-$_ARRAYLANG['TXT_CONTACT_DATE'] = "Datum";
-$_ARRAYLANG['TXT_CONTACT_HOSTNAME'] = "Rechnername";
-$_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'] = "IP Adresse";
-$_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'] = "Browser Sprache ";
-$_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION'] = "Browser Version ";
+$_ARRAYLANG['TXT_CONTACT_DATE'] = "Дата";
+$_ARRAYLANG['TXT_CONTACT_HOSTNAME'] = "Имя компьютера";
+$_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'] = "IP Адрес";
+$_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'] = "Язык Обозревателя";
+$_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION'] = "Версия Обозревателя";
 $_ARRAYLANG['TXT_CONTACT_YES'] = "Ja";
 $_ARRAYLANG['TXT_CONTACT_NO'] = "Nein";
 $_ARRAYLANG['TXT_CONTACT_UPLOADS'] = "Uploads";

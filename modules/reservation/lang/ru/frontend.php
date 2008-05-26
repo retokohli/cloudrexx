@@ -6,20 +6,20 @@
  * @package     contrexx
  * @subpackage  module_reservation
  */
-$_ARRAYLANG['TXT_AVAILABLE'] = "Click here to reserve";
-$_ARRAYLANG['TXT_OCCUPIED'] = "This date is already reserved but not confirmed!";
-$_ARRAYLANG['TXT_CONFIRMED'] = "This date is not available anymore.";
-$_ARRAYLANG['TXT_NAME'] = "Name";
-$_ARRAYLANG['TXT_EMAIL'] = "E-Mail";
-$_ARRAYLANG['TXT_PHONE'] = "Telephone";
-$_ARRAYLANG['TXT_COMMENTS'] = "Comments";
-$_ARRAYLANG['TXT_RESERVE'] = "Reserve";
-$_ARRAYLANG['TXT_CANCEL'] = "Cancel";
-$_ARRAYLANG['TXT_ERROR'] = "Please check your input!";
-$_ARRAYLANG['TXT_SUCCEDED'] = "Sucessfully reserved. You will now receive a confirmation e-mail.";
-$_ARRAYLANG['TXT_ALREADY_OCCUPIED'] = "Already reserved!";
-$_ARRAYLANG['TXT_ERROR_RESERVATION'] = "Due to an internal error this date couldn't be reserved. Please contact the webmaster.";
-$_ARRAYLANG['TXT_WRONG_HASH'] = "Wrong hash!";
-$_ARRAYLANG['TXT_FINAL_RESERVATION_SUCCEEDED'] = "Thank you. Your reservation is completed now!";
-$_ARRAYLANG['TXT_NEED_TO_CONFIRM'] = "Thank you. Your reservation has to be confirmed by the administratior. You will receive an email when he does!";
+$_ARRAYLANG['TXT_AVAILABLE'] = "Нажмите здесь для резервирования";
+$_ARRAYLANG['TXT_OCCUPIED'] = "Эта дата уже зарезервирована, но не подтверждена!";
+$_ARRAYLANG['TXT_CONFIRMED'] = "Эта дата не доступна больше.";
+$_ARRAYLANG['TXT_NAME'] = "Имя";
+$_ARRAYLANG['TXT_EMAIL'] = "Электронный адрес";
+$_ARRAYLANG['TXT_PHONE'] = "Телефон";
+$_ARRAYLANG['TXT_COMMENTS'] = "Комментарии";
+$_ARRAYLANG['TXT_RESERVE'] = "Резервирование";
+$_ARRAYLANG['TXT_CANCEL'] = "Потом";
+$_ARRAYLANG['TXT_ERROR'] = "Пожалуйста проверьте свой ввод!";
+$_ARRAYLANG['TXT_SUCCEDED'] = "Успешнозарезервирован. Вы теперь получите электронную почту подтверждения.";
+$_ARRAYLANG['TXT_ALREADY_OCCUPIED'] = "Уже зарезервировано!";
+$_ARRAYLANG['TXT_ERROR_RESERVATION'] = "Из-за внутренней ошибки не могла быть зарезервирована эта дата. Пожалуйста войдите в контакт с Web-мастером.";
+$_ARRAYLANG['TXT_WRONG_HASH'] = "Не верный Hash!";
+$_ARRAYLANG['TXT_FINAL_RESERVATION_SUCCEEDED'] = "Спасибо. Ваше резервирование закончено !";
+$_ARRAYLANG['TXT_NEED_TO_CONFIRM'] = "Спасибо. Ваше резервирование должно быть подтверждено администратором. Вы получите электронную почту, когда он сделает!";
 ?>

@@ -6,20 +6,20 @@
  * @package     contrexx
  * @subpackage  module_recommend
  */
-$_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
-$_ARRAYLANG['TXT_BODY'] = "Nachrichtentext";
-$_ARRAYLANG['TXT_SUBJECT'] = "Betreff";
-$_ARRAYLANG['TXT_SUBMIT'] = "Speichern";
-$_ARRAYLANG['TXT_AVAILABLE_VARS'] = "Verfügbare Platzhalter";
-$_ARRAYLANG['TXT_SENDERNAME'] = "Name von demjenigen der die Seite empfiehlt";
-$_ARRAYLANG['TXT_SENDERMAIL'] = "E-Mail Adresse von demjenigen der die Seite empfiehlt";
-$_ARRAYLANG['TXT_RECEIVERMAIL'] = "E-Mail Adresse vom Empfänger";
-$_ARRAYLANG['TXT_RECEIVERNAME'] = "Name vom Empfänger";
-$_ARRAYLANG['TXT_URL'] = "URL (Adresse) der Website";
-$_ARRAYLANG['TXT_COMMENT'] = "Kommentar von demjenigen der die Seite empfiehlt";
-$_ARRAYLANG['TXT_ERROR'] = "Datensatz konnte nicht gespeichert werden. Überprüfen Sie ob kein Feld leer ist!";
-$_ARRAYLANG['TXT_STATUS_OK'] = "Änderungen wurden erfolgreich gespeichert";
-$_ARRAYLANG['TXT_SALUTATION_FEMALE'] = "Anrede für weibliche Personen";
-$_ARRAYLANG['TXT_SALUTATION_MALE'] = "Anrede für männliche Personen";
-$_ARRAYLANG['TXT_SALUTATION'] = "Anrede";
+$_ARRAYLANG['TXT_SETTINGS'] = "Настройки";
+$_ARRAYLANG['TXT_BODY'] = "Содержание сообщения";
+$_ARRAYLANG['TXT_SUBJECT'] = "Тема";
+$_ARRAYLANG['TXT_SUBMIT'] = "Сохранить";
+$_ARRAYLANG['TXT_AVAILABLE_VARS'] = "Доступныая папка назначения";
+$_ARRAYLANG['TXT_SENDERNAME'] = "Название того, кто рекомендует сайт";
+$_ARRAYLANG['TXT_SENDERMAIL'] = "Почтовый адрес того, кто рекомендует сайт";
+$_ARRAYLANG['TXT_RECEIVERMAIL'] = "Почтовый адрес получателя";
+$_ARRAYLANG['TXT_RECEIVERNAME'] = "Имя получателя";
+$_ARRAYLANG['TXT_URL'] = "URL (адрес) вебсайта";
+$_ARRAYLANG['TXT_COMMENT'] = "Комментарий того, кто рекомендует сайт";
+$_ARRAYLANG['TXT_ERROR'] = "Набор данных не может быть сохранен. Проверьте, пусто ли поле!";
+$_ARRAYLANG['TXT_STATUS_OK'] = "Изменения успешно сохранены";
+$_ARRAYLANG['TXT_SALUTATION_FEMALE'] = "Приветствие для женщин";
+$_ARRAYLANG['TXT_SALUTATION_MALE'] = "Приветствие для мужчин";
+$_ARRAYLANG['TXT_SALUTATION'] = "Приветствие";
 ?>
