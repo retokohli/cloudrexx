@@ -125,7 +125,7 @@ class XML_RSS extends XML_Parser
      * @param mixed File pointer or name of the RDF file.
      * @return void
      */
-    function XML_RSS($handle = '')
+    function __construct($handle='')
     {
         $this->XML_Parser();
 

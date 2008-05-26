@@ -8,7 +8,7 @@ class User_Setting
      */
     private $objMail;
 
-    function User_Setting()
+    function __construct()
     {
         $this->objMail = new User_Setting_Mail();
     }

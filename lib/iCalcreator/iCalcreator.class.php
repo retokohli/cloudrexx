@@ -97,7 +97,8 @@ class vcalendar {
  * @since 0.9.7 - 2006-11-20
  * @return void
  */
-  function vcalendar () {
+  function __construct()
+  {
 
     $this->_makeVersion();
     $this->calscale   = null;
