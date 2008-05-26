@@ -94,7 +94,7 @@ class Paging
      * @param     integer  $result_per_page
      * @param     string   $ext_argv
      */
-    function Paging($row, $cur_position, $result_per_page = 30, $ext_argv = "")
+    function __construct($row, $cur_position, $result_per_page=30, $ext_argv='')
     {
         $this->row = $row;
         $this->result_per_page = $result_per_page;

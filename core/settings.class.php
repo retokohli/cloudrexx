@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Settings
  *
@@ -28,18 +29,14 @@ require_once ASCMS_CORE_PATH.'/SmtpSettings.class.php';
  * @package     contrexx
  * @subpackage  core
  */
-class settingsManager {
+class settingsManager
+{
     var $_objTpl;
     var $strPageTitle;
     var $strSettingsFile;
     var $strErrMessage;
     var $strOkMessage;
     var $_objSmtp;
-
-    function settingsManager()
-    {
-        $this->__construct();
-    }
 
     function __construct()
     {
@@ -57,7 +54,7 @@ class settingsManager {
     {
            global $_CORELANG, $objTemplate;
 
-        $objTemplate->setVariable('CONTENT_NAVIGATION',	'<a href="?cmd=settings">'.$_CORELANG['TXT_SETTINGS_MENU_SYSTEM'].'</a>'.
+        $objTemplate->setVariable('CONTENT_NAVIGATION',    '<a href="?cmd=settings">'.$_CORELANG['TXT_SETTINGS_MENU_SYSTEM'].'</a>'.
                                                         '<a href="?cmd=settings&amp;act=cache">'.$_CORELANG['TXT_SETTINGS_MENU_CACHE'].'</a>'.
                                                         '<a href="?cmd=settings&amp;act=smtp">'.$_CORELANG['TXT_SETTINGS_EMAIL'].'</a>'
         );
@@ -77,13 +74,13 @@ class settingsManager {
 
             case 'cache':
                 $boolShowStatus = false;
-                $objCache = &new Cache();
+                $objCache = new Cache();
                 $objCache->showSettings();
                 break;
 
             case 'cache_update':
                 $boolShowStatus = false;
-                $objCache = &new Cache();
+                $objCache = new Cache();
                 $objCache->updateSettings();
                 $objCache->writeCacheablePagesFile();
                 $objCache->showSettings();
@@ -92,14 +89,14 @@ class settingsManager {
 
             case 'cache_empty':
                 $boolShowStatus = false;
-                $objCache = &new Cache();
+                $objCache = new Cache();
                 $objCache->deleteAllFiles();
                 $objCache->showSettings();
                 break;
 
             case 'smtp':
-            	$this->smtp();
-            	break;
+                $this->smtp();
+                break;
 
             default:
                 $this->showSettings();
@@ -159,7 +156,7 @@ class settingsManager {
             'TXT_CONTACT_EMAIL_HELP'          => $_CORELANG['TXT_SETTINGS_CONTACT_EMAIL_HELP'],
             'TXT_SEARCH_VISIBLE_CONTENT_ONLY' => $_CORELANG['TXT_SEARCH_VISIBLE_CONTENT_ONLY'],
             'TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'=> $_CORELANG['TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'],
-            'TXT_SYSTEM_DEFAULT_LANGUAGE_HELP' 	=> $_CORELANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'],
+            'TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'     => $_CORELANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'],
             'TXT_GOOGLE_MAPS_API_KEY_HELP'      => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY_HELP'],
             'TXT_GOOGLE_MAPS_API_KEY'           => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY'],
         ));
@@ -320,115 +317,114 @@ class settingsManager {
         }
     }
 
+
     function smtp()
     {
-    	$this->_objSmtp = new SmtpSettings();
+        if (empty($_REQUEST['tpl'])) {
+            $_REQUEST['tpl'] = '';
+        }
 
-    	if (empty($_REQUEST['tpl'])) {
-    		$_REQUEST['tpl'] = '';
-    	}
+        switch ($_REQUEST['tpl']) {
+            case 'modify':
+                $this->_smtpModify();
+                break;
 
-    	switch ($_REQUEST['tpl']) {
-    		case 'modify':
-				$this->_smtpModify();
-				break;
+            case 'delete':
+                $this->_smtpDeleteAccount();
+                $this->_smtpOverview();
+                break;
 
-    		case 'delete':
-    			$this->_smtpDeleteAccount();
-    			$this->_smtpOverview();
-    			break;
+            case 'default':
+                $this->_smtpDefaultAccount();
+                $this->_smtpOverview();
+                break;
 
-    		case 'default':
-    			$this->_smtpDefaultAccount();
-    			$this->_smtpOverview();
-    			break;
-
-    		default:
-				$this->_smtpOverview();
-    	}
+            default:
+                $this->_smtpOverview();
+        }
     }
 
     function _smtpDefaultAccount()
     {
-    	global $objDatabase, $_CORELANG, $_CONFIG;
+        global $objDatabase, $_CORELANG, $_CONFIG;
 
-    	$id = intval($_GET['id']);
-    	if (($arrSmtp = $this->_objSmtp->_getSmtpAccount($id)) || (($id = 0) !== false && $arrSmtp = $this->_objSmtp->getSystemSmtpAccount())) {
-    		if ($objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = '".$id."' WHERE `setname` = 'coreSmtpServer'")) {
-    			$_CONFIG['coreSmtpServer'] = $id;
-    			require_once(ASCMS_CORE_PATH.'/settings.class.php');
-				$objSettings = &new settingsManager();
-			    $objSettings->writeSettingsFile();
-			    $this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_DEFAULT_SMTP_CHANGED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
-    		} else {
-    			$this->strErrMessage .= $_CORELANG['TXT_SETTINGS_CHANGE_DEFAULT_SMTP_FAILED'].'<br />';
-    		}
-		}
+        $id = intval($_GET['id']);
+        if (($arrSmtp = $this->_objSmtp->_getSmtpAccount($id)) || (($id = 0) !== false && $arrSmtp = $this->_objSmtp->getSystemSmtpAccount())) {
+            if ($objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = '".$id."' WHERE `setname` = 'coreSmtpServer'")) {
+                $_CONFIG['coreSmtpServer'] = $id;
+                require_once(ASCMS_CORE_PATH.'/settings.class.php');
+                $objSettings = new settingsManager();
+                $objSettings->writeSettingsFile();
+                $this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_DEFAULT_SMTP_CHANGED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
+            } else {
+                $this->strErrMessage .= $_CORELANG['TXT_SETTINGS_CHANGE_DEFAULT_SMTP_FAILED'].'<br />';
+            }
+        }
     }
 
     function _smtpDeleteAccount()
     {
-    	global $objDatabase, $_CONFIG, $_CORELANG;
+        global $objDatabase, $_CONFIG, $_CORELANG;
 
-    	$id = intval($_GET['id']);
+        $id = intval($_GET['id']);
 
-    	if (($arrSmtp = $this->_objSmtp->_getSmtpAccount($id)) !== false) {
-	    	if ($id != $_CONFIG['coreSmtpServer']) {
-	    		if ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'settings_smtp` WHERE `id`='.$id) !== false) {
-		    		$this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_DELETE_SUCCEED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
-		    	} else {
-		    		$this->strErrMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_DELETE_FAILED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
-		    	}
-	    	} else {
-	    		$this->strErrMessage .= sprintf($_CORELANG['TXT_SETTINGS_COULD_NOT_DELETE_DEAULT_SMTP'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
-	    	}
-    	}
+        if (($arrSmtp = $this->_objSmtp->_getSmtpAccount($id)) !== false) {
+            if ($id != $_CONFIG['coreSmtpServer']) {
+                if ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'settings_smtp` WHERE `id`='.$id) !== false) {
+                    $this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_DELETE_SUCCEED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
+                } else {
+                    $this->strErrMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_DELETE_FAILED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
+                }
+            } else {
+                $this->strErrMessage .= sprintf($_CORELANG['TXT_SETTINGS_COULD_NOT_DELETE_DEAULT_SMTP'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
+            }
+        }
     }
 
     function _smtpOverview()
     {
-    	global $_CORELANG, $objTemplate, $_CONFIG;
+        global $_CORELANG, $objTemplate, $_CONFIG;
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings_smtp', 'settings_smtp.html');
         $this->strPageTitle = $_CORELANG['TXT_SETTINGS_EMAIL_ACCOUNTS'];
 
         $objTemplate->setVariable(array(
-			'TXT_SETTINGS_EMAIL_ACCOUNTS'			=> $_CORELANG['TXT_SETTINGS_EMAIL_ACCOUNTS'],
-			'TXT_SETTINGS_ACCOUNT'					=> $_CORELANG['TXT_SETTINGS_ACCOUNT'],
-			'TXT_SETTINGS_HOST'						=> $_CORELANG['TXT_SETTINGS_HOST'],
-			'TXT_SETTINGS_USERNAME'					=> $_CORELANG['TXT_SETTINGS_USERNAME'],
-			'TXT_SETTINGS_STANDARD'					=> $_CORELANG['TXT_SETTINGS_STANDARD'],
-			'TXT_SETTINGS_FUNCTIONS'				=> $_CORELANG['TXT_SETTINGS_FUNCTIONS'],
-			'TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT'		=> $_CORELANG['TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT'],
-			'TXT_SETTINGS_CONFIRM_DELETE_ACCOUNT'	=> $_CORELANG['TXT_SETTINGS_CONFIRM_DELETE_ACCOUNT'],
-			'TXT_SETTINGS_OPERATION_IRREVERSIBLE'	=> $_CORELANG['TXT_SETTINGS_OPERATION_IRREVERSIBLE']
+            'TXT_SETTINGS_EMAIL_ACCOUNTS'            => $_CORELANG['TXT_SETTINGS_EMAIL_ACCOUNTS'],
+            'TXT_SETTINGS_ACCOUNT'                    => $_CORELANG['TXT_SETTINGS_ACCOUNT'],
+            'TXT_SETTINGS_HOST'                        => $_CORELANG['TXT_SETTINGS_HOST'],
+            'TXT_SETTINGS_USERNAME'                    => $_CORELANG['TXT_SETTINGS_USERNAME'],
+            'TXT_SETTINGS_STANDARD'                    => $_CORELANG['TXT_SETTINGS_STANDARD'],
+            'TXT_SETTINGS_FUNCTIONS'                => $_CORELANG['TXT_SETTINGS_FUNCTIONS'],
+            'TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT'        => $_CORELANG['TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT'],
+            'TXT_SETTINGS_CONFIRM_DELETE_ACCOUNT'    => $_CORELANG['TXT_SETTINGS_CONFIRM_DELETE_ACCOUNT'],
+            'TXT_SETTINGS_OPERATION_IRREVERSIBLE'    => $_CORELANG['TXT_SETTINGS_OPERATION_IRREVERSIBLE']
         ));
 
         $objTemplate->setGlobalVariable(array(
-			'TXT_SETTINGS_MODFIY'					=> $_CORELANG['TXT_SETTINGS_MODFIY'],
-			'TXT_SETTINGS_DELETE'					=> $_CORELANG['TXT_SETTINGS_DELETE']
+            'TXT_SETTINGS_MODFIY'                    => $_CORELANG['TXT_SETTINGS_MODFIY'],
+            'TXT_SETTINGS_DELETE'                    => $_CORELANG['TXT_SETTINGS_DELETE']
         ));
 
         $nr = 1;
         foreach ($this->_objSmtp->getSmtpAccounts() as $id => $arrSmtp) {
-        	if ($id) {
-        		$objTemplate->setVariable(array(
-					'SETTINGS_SMTP_ACCOUNT_ID'	=> $id,
-					'SETTINGS_SMTP_ACCOUNT_JS'	=> htmlentities(addslashes($arrSmtp['name']), ENT_QUOTES, CONTREXX_CHARSET)
-				));
-        		$objTemplate->parse('settings_smtp_account_functions');
-        	} else {
-        		$objTemplate->hideBlock('settings_smtp_account_functions');
-        	}
-        	$objTemplate->setVariable(array(
-				'SETTINGS_ROW_CLASS_ID'		=> $nr++ % 2 + 1,
-				'SETTINGS_SMTP_ACCOUNT_ID'	=> $id,
-				'SETTINGS_SMTP_ACCOUNT'		=> htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET),
-				'SETTINGS_SMTP_HOST'		=> !empty($arrSmtp['hostname']) ? htmlentities($arrSmtp['hostname'], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;',
-				'SETTINGS_SMTP_USERNAME'	=> !empty($arrSmtp['username']) ? htmlentities($arrSmtp['username'], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;',
-				'SETTINGS_SMTP_DEFAULT'		=> $id == $_CONFIG['coreSmtpServer'] ? 'checked="checked"' : ''
-        	));
-        	$objTemplate->parse('settings_smtp_accounts');
+            if ($id) {
+                $objTemplate->setVariable(array(
+                    'SETTINGS_SMTP_ACCOUNT_ID'    => $id,
+                    'SETTINGS_SMTP_ACCOUNT_JS'    => htmlentities(addslashes($arrSmtp['name']), ENT_QUOTES, CONTREXX_CHARSET)
+                ));
+                $objTemplate->parse('settings_smtp_account_functions');
+            } else {
+                $objTemplate->hideBlock('settings_smtp_account_functions');
+            }
+            $objTemplate->setVariable(array(
+                'SETTINGS_ROW_CLASS_ID'        => $nr++ % 2 + 1,
+                'SETTINGS_SMTP_ACCOUNT_ID'    => $id,
+                'SETTINGS_SMTP_ACCOUNT'        => htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                'SETTINGS_SMTP_HOST'        => !empty($arrSmtp['hostname']) ? htmlentities($arrSmtp['hostname'], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;',
+                'SETTINGS_SMTP_USERNAME'    => !empty($arrSmtp['username']) ? htmlentities($arrSmtp['username'], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;',
+                'SETTINGS_SMTP_DEFAULT'        => $id == $_CONFIG['coreSmtpServer'] ? 'checked="checked"' : ''
+            ));
+            $objTemplate->parse('settings_smtp_accounts');
         }
 
         $objTemplate->parse('settings_smtp');
@@ -436,93 +432,95 @@ class settingsManager {
 
     function _smtpModify()
     {
-    	global $objTemplate, $_CORELANG;
+        global $objTemplate, $_CORELANG;
 
-    	$error = false;
-    	$id = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+        $error = false;
+        $id = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 
-    	if (isset($_POST['settings_smtp_save'])) {
-    		$arrSmtp = array(
-    			'name'		=> !empty($_POST['settings_smtp_account']) ? contrexx_stripslashes(trim($_POST['settings_smtp_account'])) : '',
-    			'hostname'	=> !empty($_POST['settings_smtp_hostname']) ? contrexx_stripslashes(trim($_POST['settings_smtp_hostname'])) : '',
-    			'port'		=> !empty($_POST['settings_smtp_port']) ? intval($_POST['settings_smtp_port']) : 25,
-    			'username'	=> !empty($_POST['settings_smtp_username']) ? contrexx_stripslashes(trim($_POST['settings_smtp_username'])) : '',
-    			'password'	=> !empty($_POST['settings_smtp_password']) ? contrexx_stripslashes($_POST['settings_smtp_password']) : ''
-    		);
+        if (isset($_POST['settings_smtp_save'])) {
+            $arrSmtp = array(
+                'name'        => !empty($_POST['settings_smtp_account']) ? contrexx_stripslashes(trim($_POST['settings_smtp_account'])) : '',
+                'hostname'    => !empty($_POST['settings_smtp_hostname']) ? contrexx_stripslashes(trim($_POST['settings_smtp_hostname'])) : '',
+                'port'        => !empty($_POST['settings_smtp_port']) ? intval($_POST['settings_smtp_port']) : 25,
+                'username'    => !empty($_POST['settings_smtp_username']) ? contrexx_stripslashes(trim($_POST['settings_smtp_username'])) : '',
+                'password'    => !empty($_POST['settings_smtp_password']) ? contrexx_stripslashes($_POST['settings_smtp_password']) : ''
+            );
 
-    		if (!$arrSmtp['port']) {
-    			$arrSmtp['port'] = 25;
-    		}
+            if (!$arrSmtp['port']) {
+                $arrSmtp['port'] = 25;
+            }
 
-    		if (empty($arrSmtp['name'])) {
-    			$error = true;
-    			$this->strErrMessage .= $_CORELANG['TXT_SETTINGS_EMPTY_ACCOUNT_NAME_TXT'].'<br />';
-    		} elseif (!$this->_objSmtp->_isUniqueSmtpAccountName($arrSmtp['name'], $id)) {
-    			$error = true;
-				$this->strErrMessage .= sprintf($_CORELANG['TXT_SETTINGS_NOT_UNIQUE_SMTP_ACCOUNT_NAME'], htmlentities($arrSmtp['name'])).'<br />';
-    		}
+            if (empty($arrSmtp['name'])) {
+                $error = true;
+                $this->strErrMessage .= $_CORELANG['TXT_SETTINGS_EMPTY_ACCOUNT_NAME_TXT'].'<br />';
+            } elseif (!$this->_objSmtp->_isUniqueSmtpAccountName($arrSmtp['name'], $id)) {
+                $error = true;
+                $this->strErrMessage .= sprintf($_CORELANG['TXT_SETTINGS_NOT_UNIQUE_SMTP_ACCOUNT_NAME'], htmlentities($arrSmtp['name'])).'<br />';
+            }
 
-    		if (empty($arrSmtp['hostname'])) {
-    			$error = true;
-    			$this->strErrMessage .= $_CORELANG['TXT_SETTINGS_EMPTY_SMTP_HOST_TXT'].'<br />';
-    		}
+            if (empty($arrSmtp['hostname'])) {
+                $error = true;
+                $this->strErrMessage .= $_CORELANG['TXT_SETTINGS_EMPTY_SMTP_HOST_TXT'].'<br />';
+            }
 
-    		if (!$error) {
-	    		if ($id) {
-					if ($this->_objSmtp->_updateSmtpAccount($id, $arrSmtp)) {
-						$this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_SUCCEED'], $arrSmtp['name']).'<br />';
-						return $this->_smtpOverview();
-					} else {
-						$this->strErrMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_FAILED'], $arrSmtp['name']).'<br />';
-					}
-	    		} else {
-					if ($this->_objSmtp->_addSmtpAccount($arrSmtp)) {
-						$this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_ADD_SUCCEED'], $arrSmtp['name']).'<br />';
-						return $this->_smtpOverview();
-					} else {
-						$this->strErrMessage .= $_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_ADD_FAILED'].'<br />';
-					}
-	    		}
-    		}
-    	} elseif (($arrSmtp = $this->_objSmtp->_getSmtpAccount($id)) === false) {
-    		$id = 0;
-    		$arrSmtp = array(
-    			'name'		=> '',
-    			'hostname'	=> '',
-    			'port'		=> 25,
-    			'username'	=> '',
-    			'password'	=> 0
-    		);
-    	}
+            if (!$error) {
+                if ($id) {
+                    if ($this->_objSmtp->_updateSmtpAccount($id, $arrSmtp)) {
+                        $this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_SUCCEED'], $arrSmtp['name']).'<br />';
+                        return $this->_smtpOverview();
+                    } else {
+                        $this->strErrMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_FAILED'], $arrSmtp['name']).'<br />';
+                    }
+                } else {
+                    if ($this->_objSmtp->_addSmtpAccount($arrSmtp)) {
+                        $this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_ADD_SUCCEED'], $arrSmtp['name']).'<br />';
+                        return $this->_smtpOverview();
+                    } else {
+                        $this->strErrMessage .= $_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_ADD_FAILED'].'<br />';
+                    }
+                }
+            }
+        } elseif (($arrSmtp = $this->_objSmtp->_getSmtpAccount($id)) === false) {
+            $id = 0;
+            $arrSmtp = array(
+                'name'        => '',
+                'hostname'    => '',
+                'port'        => 25,
+                'username'    => '',
+                'password'    => 0
+            );
+        }
 
-    	$objTemplate->addBlockfile('ADMIN_CONTENT', 'settings_smtp_modify', 'settings_smtp_modify.html');
-    	$this->strPageTitle = $id ? $_CORELANG['TXT_SETTINGS_MODIFY_SMTP_ACCOUNT'] : $_CORELANG['TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT'];
+        $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings_smtp_modify', 'settings_smtp_modify.html');
+        $this->strPageTitle = $id ? $_CORELANG['TXT_SETTINGS_MODIFY_SMTP_ACCOUNT'] : $_CORELANG['TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT'];
 
-    	$objTemplate->setVariable(array(
-    		'TXT_SETTINGS_ACCOUNT'					=> $_CORELANG['TXT_SETTINGS_ACCOUNT'],
-    		'TXT_SETTINGS_NAME_OF_ACCOUNT'			=> $_CORELANG['TXT_SETTINGS_NAME_OF_ACCOUNT'],
-    		'TXT_SETTINGS_SMTP_SERVER'				=> $_CORELANG['TXT_SETTINGS_SMTP_SERVER'],
-    		'TXT_SETTINGS_HOST'						=> $_CORELANG['TXT_SETTINGS_HOST'],
-    		'TXT_SETTINGS_PORT'						=> $_CORELANG['TXT_SETTINGS_PORT'],
-    		'TXT_SETTINGS_AUTHENTICATION'			=> $_CORELANG['TXT_SETTINGS_AUTHENTICATION'],
-    		'TXT_SETTINGS_USERNAME'					=> $_CORELANG['TXT_SETTINGS_USERNAME'],
-    		'TXT_SETTINGS_PASSWORD'					=> $_CORELANG['TXT_SETTINGS_PASSWORD'],
-    		'TXT_SETTINGS_SMTP_AUTHENTICATION_TXT'	=> $_CORELANG['TXT_SETTINGS_SMTP_AUTHENTICATION_TXT'],
-    		'TXT_SETTINGS_BACK'						=> $_CORELANG['TXT_SETTINGS_BACK'],
-    		'TXT_SETTINGS_SAVE'						=> $_CORELANG['TXT_SETTINGS_SAVE']
-    	));
+        $objTemplate->setVariable(array(
+            'TXT_SETTINGS_ACCOUNT'                    => $_CORELANG['TXT_SETTINGS_ACCOUNT'],
+            'TXT_SETTINGS_NAME_OF_ACCOUNT'            => $_CORELANG['TXT_SETTINGS_NAME_OF_ACCOUNT'],
+            'TXT_SETTINGS_SMTP_SERVER'                => $_CORELANG['TXT_SETTINGS_SMTP_SERVER'],
+            'TXT_SETTINGS_HOST'                        => $_CORELANG['TXT_SETTINGS_HOST'],
+            'TXT_SETTINGS_PORT'                        => $_CORELANG['TXT_SETTINGS_PORT'],
+            'TXT_SETTINGS_AUTHENTICATION'            => $_CORELANG['TXT_SETTINGS_AUTHENTICATION'],
+            'TXT_SETTINGS_USERNAME'                    => $_CORELANG['TXT_SETTINGS_USERNAME'],
+            'TXT_SETTINGS_PASSWORD'                    => $_CORELANG['TXT_SETTINGS_PASSWORD'],
+            'TXT_SETTINGS_SMTP_AUTHENTICATION_TXT'    => $_CORELANG['TXT_SETTINGS_SMTP_AUTHENTICATION_TXT'],
+            'TXT_SETTINGS_BACK'                        => $_CORELANG['TXT_SETTINGS_BACK'],
+            'TXT_SETTINGS_SAVE'                        => $_CORELANG['TXT_SETTINGS_SAVE']
+        ));
 
-    	$objTemplate->setVariable(array(
-    		'SETTINGS_SMTP_TITLE'		=> $id ? $_CORELANG['TXT_SETTINGS_MODIFY_SMTP_ACCOUNT'] : $_CORELANG['TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT'],
-    		'SETTINGS_SMTP_ID'			=> $id,
-    		'SETTINGS_SMTP_ACCOUNT'		=> htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET),
-    		'SETTINGS_SMTP_HOST'		=> htmlentities($arrSmtp['hostname'], ENT_QUOTES, CONTREXX_CHARSET),
-    		'SETTINGS_SMTP_PORT'		=> $arrSmtp['port'],
-    		'SETTINGS_SMTP_USERNAME'	=> htmlentities($arrSmtp['username'], ENT_QUOTES, CONTREXX_CHARSET),
-    		'SETTINGS_SMTP_PASSWORD'	=> str_pad('', $arrSmtp['password'], ' ')
-    	));
+        $objTemplate->setVariable(array(
+            'SETTINGS_SMTP_TITLE'        => $id ? $_CORELANG['TXT_SETTINGS_MODIFY_SMTP_ACCOUNT'] : $_CORELANG['TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT'],
+            'SETTINGS_SMTP_ID'            => $id,
+            'SETTINGS_SMTP_ACCOUNT'        => htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET),
+            'SETTINGS_SMTP_HOST'        => htmlentities($arrSmtp['hostname'], ENT_QUOTES, CONTREXX_CHARSET),
+            'SETTINGS_SMTP_PORT'        => $arrSmtp['port'],
+            'SETTINGS_SMTP_USERNAME'    => htmlentities($arrSmtp['username'], ENT_QUOTES, CONTREXX_CHARSET),
+            'SETTINGS_SMTP_PASSWORD'    => str_pad('', $arrSmtp['password'], ' ')
+        ));
 
-    	$objTemplate->parse('settings_smtp_modify');
+        $objTemplate->parse('settings_smtp_modify');
+        return true;
     }
 }
+
 ?>

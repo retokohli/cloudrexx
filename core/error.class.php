@@ -33,7 +33,7 @@ class error
 	 * Error page constructor
 	 * @param  string $pageContent Page content
      */
-    function error($pageContent)
+    function __construct($pageContent)
     {
         $this->pageContent = $pageContent;
         $this->_objTpl = &new HTML_Template_Sigma();

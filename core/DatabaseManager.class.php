@@ -59,7 +59,7 @@ class DatabaseManager {
      * @global  HTML_Template_Sigma $objTemplate  Template object
      * @global  array               $_CORELANG    Core language array
 	 */
-	function DatabaseManager()
+	function __construct()
 	{
 		global $objTemplate, $_CORELANG;
 

@@ -42,7 +42,7 @@ class ContentWorkflow {
     * @global 	array		Core language
     * @global 	array		Configuration
     */
-    function ContentWorkflow() {
+    function __construct() {
     	global $objDatabase,$objTemplate,$_CORELANG,$_CONFIG;
 
     	$objDatabase->Execute('DELETE FROM	'.DBPREFIX.'content_logfile WHERE history_id=0');
@@ -69,10 +69,10 @@ class ContentWorkflow {
     * Calls the requested function
     *
     * @global 	object		Template
-    * @global 	object		Permission
     * @global 	array		Core language
     */
-    function getPage() {
+    function getPage()
+    {
     	global $objTemplate, $_CORELANG;
 
     	if(!isset($_GET['act'])){
@@ -457,7 +457,7 @@ class ContentWorkflow {
 												LIMIT	1
 											');
 
-			$objContentTree = &new ContentTree();
+			$objContentTree = new ContentTree();
 			$arrCategory = $objContentTree->getThisNode($objResult->fields['parcat']);
 
 			if (!is_array($arrCategory) && $boolInsert) {
@@ -566,7 +566,7 @@ class ContentWorkflow {
 			}
 
 			//write caching-file if enabled
-			$objCache = &new Cache();
+			$objCache = new Cache();
 			$objCache->writeCacheablePagesFile();
 
 			//write google-sitemap
@@ -784,7 +784,7 @@ class ContentWorkflow {
 			}
 
 			//write caching-file if enabled
-			$objCache = &new Cache();
+			$objCache = new Cache();
 			$objCache->writeCacheablePagesFile();
 
 			//write google-sitemap

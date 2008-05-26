@@ -49,7 +49,7 @@ class ContentTree
     * Constructor
     *
     */
-	function ContentTree($langId = null)
+	function __construct($langId=null)
 	{
 		global $objDatabase, $_FRONTEND_LANGID;
 
@@ -86,7 +86,7 @@ class ContentTree
 							a_s.url                                  AS alias_url
 		               FROM ".DBPREFIX."content_navigation AS n
 							LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
-							LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s 
+							LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
 								ON  a_t.id        = a_s.target_id
 								AND a_s.isdefault = 1
 
@@ -111,7 +111,7 @@ class ContentTree
 				    'protected' => $objResult->fields['protected'],
 				    'frontend_access_id' => $objResult->fields['frontend_access_id'],
 				    'backend_access_id' => $objResult->fields['backend_access_id'],
-					'alias'             => $objResult->fields['alias_url'] 
+					'alias'             => $objResult->fields['alias_url']
 				    );
 
 				$this->table[$objResult->fields['parcat']][$objResult->fields['catid']]= array(

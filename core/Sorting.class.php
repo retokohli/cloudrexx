@@ -73,8 +73,7 @@ class Sorting
 
 
     /**
-     * Constructor (PHP4)
-     *
+     * Constructor
      * @param   string  $baseURI        The base page URI.
      * @param   array   $arrFieldName   The acceptable field names.
      * @param   array   $arrHeaderName  The header names for displaying.
@@ -83,7 +82,7 @@ class Sorting
      * @return  Sorting
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function Sorting(
+    function __construct(
         $baseUri, $arrFieldName, $arrHeaderName, $flagDefaultAsc=true
     ) {
         $this->baseUri        = $baseUri;

@@ -53,7 +53,7 @@ class ContentSitemap
     * @param  boolean  $adminmode
     * @access public
     */
-	function ContentSitemap($currentid)
+	function __construct($currentid)
 	{
 		global $objDatabase, $objInit;
 

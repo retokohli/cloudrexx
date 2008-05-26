@@ -43,7 +43,8 @@ class serverSettings
      * Constructor
      * @access public
      */
-    function serverSettings() {
+    function __construct()
+    {
         global  $_CORELANG, $objTemplate, $_FTPCONFIG;
 
         $objTemplate->setVariable('CONTENT_NAVIGATION',"<a href='?cmd=server'>".$_CORELANG['TXT_OVERVIEW']."</a>

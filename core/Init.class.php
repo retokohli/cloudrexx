@@ -52,8 +52,8 @@ class InitCMS
     * Constructor
     *
     */
-    function InitCMS($mode='frontend')
-	{
+    function __construct($mode='frontend')
+    {
 		global $objDatabase;
 
 		$this->is_home=false;
