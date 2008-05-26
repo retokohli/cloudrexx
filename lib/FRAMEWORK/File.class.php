@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File Manager
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -40,7 +41,8 @@ class File
 
 
 
-	function File(){
+	function __construct()
+	{
 		global  $_FTPCONFIG;
 
 		$this->ftp_is_activated = $_FTPCONFIG['is_activated'];
@@ -63,8 +65,8 @@ class File
 	}
 
 
-
-	function checkConnection(){
+	function checkConnection()
+	{
 		//check connection
 		if ((!$this->conn_id) || (!$this->login_result)) {
 			$status = "FTP: disabled - ";

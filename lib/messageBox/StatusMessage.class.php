@@ -1,4 +1,5 @@
 <?php
+
 class StatusMessage {
 	var $iconFile;
 	var $width;
@@ -9,15 +10,12 @@ class StatusMessage {
 	var $title;
 	var $background;
 
-
-	function StatusMessage() {
-		$this->__constructor();
-	}
-
-
-	function __constructor() {
-		//$this->_initialize();
-	}
+    /**
+     * Constructor
+     */
+    function __construct()
+    {
+    }
 
 
 	// $type = error | ok | info

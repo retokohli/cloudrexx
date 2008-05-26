@@ -36,7 +36,7 @@ class cache
 	var $cacheIsEnabled;
 
 
-	function cache($maxAge=24)
+	function __construct($maxAge=24)
 	{
         $this->pageUri = $_SERVER['REQUEST_URI'];
         /*

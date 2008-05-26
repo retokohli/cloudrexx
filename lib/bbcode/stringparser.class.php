@@ -201,7 +201,7 @@ class StringParser {
 	 *
 	 * @access public
 	 */
-	function StringParser () {
+	function __construct() {
 	}
 	
 	/**

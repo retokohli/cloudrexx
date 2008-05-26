@@ -197,7 +197,6 @@ class FWUser extends User_Setting
         if (!$this->objUser->login()) {
             return false;
         }
-
         $objTemplate->setVariable(
             'LOGGING_STATUS',
             $_CORELANG['TXT_LOGGED_IN_AS'].' '.
@@ -205,6 +204,7 @@ class FWUser extends User_Setting
                 $this->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET
             )
         );
+        return true;
     }
 
 
@@ -236,8 +236,7 @@ class FWUser extends User_Setting
                 ($objMail = new PHPMailer()) !== false
             ) {
                 if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                    $objSmtpSettings = new SmtpSettings();
-                    if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                    if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                         $objMail->IsSMTP();
                         $objMail->Host = $arrSmtp['hostname'];
                         $objMail->Port = $arrSmtp['port'];
