@@ -192,8 +192,17 @@ function votingShowCurrent($page_content){
 		}
 
 
-		if ($additional_fields != ''){
+		if (sizeof($additional_fields)){
 			$objTpl->parse('additional_fields');
+			foreach ($additional_fields as $field) {
+				list($name, $label, $tag) = $field;
+				$objTpl->setVariable(array(
+					'VOTING_ADDITIONAL_INPUT_LABEL' => $label,
+					'VOTING_ADDITIONAL_INPUT'       => $tag,
+				   	'VOTING_ADDITIONAL_NAME'        => $name
+				));
+				$objTpl->parse('additional_elements');
+			}
 		}
 		else {
 			$objTpl->hideBlock('additional_fields');
@@ -209,9 +218,8 @@ function votingShowCurrent($page_content){
 			'TXT_DATE'						=> $_ARRAYLANG['TXT_DATE'],
 			'TXT_TITLE'						=> $_ARRAYLANG['TXT_TITLE'],
 			'TXT_VOTES'						=> $_ARRAYLANG['TXT_VOTES'],
-			'VOTING_ADDITIONAL_INPUT'       => $additional_fields,
 			'TXT_SUBMIT'					=> $submitbutton
-			));
+		));
 
 		// show other Poll entries
 
@@ -428,7 +436,7 @@ function _getMXHosts($email)
 function _create_additional_input_fields($settings) {
 	global $_ARRAYLANG;
 
-	$input_template = '<label for="%name">%label</label> <input name="%name" id="%name" type="%type" /><br/>';
+	$input_template = '<input name="%name" id="%name" type="%type" />';
 
 	$additionals = array(
 		'additional_nickname' => array('text', $_ARRAYLANG['TXT_ADDITIONAL_NICKNAME']),
@@ -440,22 +448,19 @@ function _create_additional_input_fields($settings) {
 		'additional_city'     => array('text', $_ARRAYLANG['TXT_ADDITIONAL_CITY'    ]),
 		'additional_email'    => array('text', $_ARRAYLANG['TXT_ADDITIONAL_EMAIL'   ]),
 	);
-	$retval = '';
+	$retval = array();
 	foreach ($additionals as $name => $data) {
 		if (!$settings->fields[$name]) continue;
 
 		list($type, $label) = $data;
-		$retval .= 
+
+		$input_tag = 
 			str_replace('%name',  $name, 
 			str_replace('%label', $label,
 			str_replace('%type',  $type,
 			$input_template
 		)));
-	}
-
-	// Make it style-able
-	if ($retval != '') {
-		$retval = "<div id=\"AdditionalFields\">$retval</div>";
+		$retval[] = array($name, $label, $input_tag);
 	}
 	return $retval;
 }
@@ -485,11 +490,9 @@ function _vote_result_html($votingId) {
 		    $percentage = (round(($votes/$votingVotes)*10000))/100;
 		    $imagewidth = round($percentage,0);
 		}
-		$out .= "<p>";
 		$out .= "<span class=\"VotingResultTitle\">".stripslashes($objResult->fields['question'])."</span><br />\n";
 		$out .= "<img src='images/modules/voting/$images.gif' width='$imagewidth%' height='10' />";
 		$out .= "&nbsp;$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %<br />\n";
-		$out .= "</p>";
 		$objResult->MoveNext();
 	}
 	return $out;
