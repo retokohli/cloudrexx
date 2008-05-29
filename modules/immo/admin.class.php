@@ -1,8 +1,4 @@
 <?php
-
-$_ARRAYLANG['TXT_IMMO_HEADLINER'] = "Rechts auf der Homepage anzeigen";
-
-
 /**
  * Immo
  * @copyright   CONTREXX CMS - COMVATION AG
