@@ -168,4 +168,5 @@ $_ARRAYLANG['TXT_IMMO_STREET'] = "Street";
 $_ARRAYLANG['TXT_IMMO_ZIP'] = "ZIP";
 $_ARRAYLANG['TXT_IMMO_PURCHASE'] = "Purchase";
 $_ARRAYLANG['TXT_IMMO_FUNDING'] = "Financing";
+$_ARRAYLANG['TXT_IMMO_HEADLINER'] = "Rechts auf der Homepage anzeigen";
 ?>
