@@ -2,7 +2,7 @@
 /**
  * Navigation
 
- * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
+ * Note: modified 27/06/2006 by Sï¿½bastien Perret => sva.perret@bluewin.ch
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author		Comvation Development Team <info@comvation.com>
  * @version		1.0.0
@@ -15,7 +15,7 @@
  * Class Navigation
  *
  * This class creates the navigation tree
- * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
+ * Note: modified 27/06/2006 by Sï¿½bastien Perret => sva.perret@bluewin.ch
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author		Comvation Development Team <info@comvation.com>
  * @access		public
@@ -562,7 +562,11 @@ class Navigation
 		while($parentId!=0) {
 			if(is_array($this->table[$parentId])) {
 				array_push($this->parents, $parentId);
-				$parentId = $this->parentId[$parentId];
+				if (!empty($this->parentId[$parentId])) {
+				    $parentId = $this->parentId[$parentId];
+				} else {
+				    $parentId = 0;
+				}
 			}
 		}
 		// adds the current pageId and the root id 0 to the parents array
@@ -582,15 +586,19 @@ class Navigation
 		$return ="";
 		$parentId = $this->parentId[$this->pageId];
 		while ($parentId!=0) {
-			if(!is_array($this->table[$parentId])) {
-			    return $return;
-			}
-			$n = $this->data[$parentId]['catname'];
-			if ($n == "") $this->separator = "";
-			$u = $this->data[$parentId]['url'];
-			$trail = "<a href=\"".$u."\" title=\"".htmlentities($n, ENT_QUOTES, CONTREXX_CHARSET)."\">".htmlentities($n, ENT_QUOTES, CONTREXX_CHARSET)."</a>".$this->separator;
-			$return=$trail.$return;
-			$parentId = $this->parentId[$parentId];
+		    if (!empty($this->data[$parentId])) {
+    			if(!is_array($this->table[$parentId])) {
+    			    return $return;
+    			}
+    			$n = $this->data[$parentId]['catname'];
+    			if ($n == "") $this->separator = "";
+    			$u = $this->data[$parentId]['url'];
+    			$trail = "<a href=\"".$u."\" title=\"".htmlentities($n, ENT_QUOTES, CONTREXX_CHARSET)."\">".htmlentities($n, ENT_QUOTES, CONTREXX_CHARSET)."</a>".$this->separator;
+    			$return=$trail.$return;
+    			$parentId = $this->parentId[$parentId];
+		    }  else {
+		        $parentId = 0;
+		    }
 		}
 		return $return;
 	}
