@@ -20,6 +20,6 @@ $_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'] = "Largeur maximale de l'image courant
 $_ARRAYLANG['TXT_CAM'] = "Caméra";
 $_ARRAYLANG['TXT_CAMS'] = "Caméras";
 $_ARRAYLANG['TXT_LIVECAM_NUMBER_OF_CAMS'] = "Nombre de caméras";
-$_ARRAYLANG['TXT_LIVECAM_TO_MODULE'] = "Vers le Frontend";
+$_ARRAYLANG['TXT_LIVECAM_TO_MODULE'] = "Page Frontend";
 $_ARRAYLANG['TXT_MAKE_A_FRONTEND_PAGE'] = "Pour chaque caméra, créer une page de contenu avec le numéro de caméra comme cmd.";
 ?>
