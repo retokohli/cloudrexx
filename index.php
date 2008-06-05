@@ -333,6 +333,17 @@ if ($is_home){
     $page_template  = $themesPages['home'];
 }
 
+//-------------------------------------------------------
+// make the replacements for the data module
+//-------------------------------------------------------
+$dataBlocksPath = 'modules/data/dataBlocks.class.php';
+if (file_exists($dataBlocksPath)) {
+    $lang = $objInit->loadLanguageData("data");
+    require_once('modules/data/dataBlocks.class.php');
+    $dataBlocks = new dataBlocks($lang);
+    $page_content = $dataBlocks->replace($page_content);
+    $themesPages = $dataBlocks->replace($themesPages);
+}
 
 $arrMatches = array();
 //-------------------------------------------------------
@@ -1107,6 +1118,22 @@ switch ($plainSection) {
         $objTemplate->setVariable('CONTENT_TEXT', $objMemberDir->getPage());
     break;
 
+        //-------------------------------------------------------
+        // Data Module
+        //-------------------------------------------------------
+    case "data":
+        $modulespath = "modules/data/index.class.php";
+        /**
+         * @ignore
+         */
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
+        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
+
+        $objBlog = &new Data($page_content);
+        $objTemplate->setVariable('CONTENT_TEXT', $objBlog->getPage());
+        break;
 
 //-------------------------------------------------------
 // Download

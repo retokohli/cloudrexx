@@ -808,7 +808,20 @@ switch ($plainCmd) {
         $objMarket->getPage();
         break;
 
-    //-------------------------------------------------------
+        //-----------------------------------------------------------------------------------------------
+        // data
+        //-----------------------------------------------------------------------------------------------
+    case "data":
+        Permission::checkAccess(122, 'static'); // ID !!
+        $modulespath = ASCMS_MODULE_PATH . "/data/admin.class.php";
+        if (file_exists($modulespath)) include($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_DATA_MODULE'];
+        $objData = new DataAdmin();
+        $objData->getPage();
+        break;
+
+        //-----------------------------------------------------------------------------------------------
         // podcast
     //-------------------------------------------------------
     case 'podcast':
