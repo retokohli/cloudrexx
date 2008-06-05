@@ -32,7 +32,7 @@ class BlogHomeContent extends BlogLibrary  {
     function __construct($strPageContent)
     {
         global $_LANGID;
-        BlogLibrary::__constructor();
+        BlogLibrary::__construct();
         $this->_strPageContent = $strPageContent;
         $this->_objTpl = &new HTML_Template_Sigma('.');
         $this->_intLanguageId = intval($_LANGID);
