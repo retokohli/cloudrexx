@@ -834,4 +834,6 @@ $_ARRAYLANG['TXT_USERS_DAYS'] = "Days";
 $_ARRAYLANG['TXT_USERS_MONTHS'] = "Months";
 $_ARRAYLANG['TXT_USERS_YEARS'] = "Years";
 $_ARRAYLANG['TXT_USERS_UNLIMITED'] = "unlimited";
+$_ARRAYLANG['TXT_DATA_MODULE'] = "Data lists";
+$_ARRAYLANG['TXT_DATA_MODULE_DESCRIPTION'] = "Allows the creation and management of data lists.";
 ?>
