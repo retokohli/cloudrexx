@@ -75,10 +75,10 @@ $_ARRAYLANG['TXT_FORUM_RATING'] = "Rating";
 $_ARRAYLANG['TXT_FORUM_RATING_THANKS'] = "Thank you!";
 $_ARRAYLANG['TXT_FORUM_BANNED_WORD'] = "The following word is not allowed in the post: '%s'!";
 $_ARRAYLANG['TXT_FORUM_KEYWORDS'] = "Stichwörter";
-$_ARRAYLANG['TXT_FORUM_COMMA_SEPARATED_KEYWORDS'] = "Aussagekräftige Stichwörter, durch Komma getrennt";
+$_ARRAYLANG['TXT_FORUM_COMMA_SEPARATED_KEYWORDS'] = "Meaningful keywords, separated by comma";
 $_ARRAYLANG['TXT_FORUM_UPLOAD_TOO_BIG'] = "The uploaded file has exceeded the maximum allowed size.";
-$_ARRAYLANG['TXT_FORUM_UPLOAD_PARTIAL'] = "Die Datei wurde nur teilweise hochgeladen, bitte erneut versuchen. Wenn das Problem besteht, wenden Sie sich an den Webmaster.";
-$_ARRAYLANG['TXT_FORUM_UPLOAD_NOT_MOVABLE'] = "Die Datei konnte auf dem Server nicht verschoben werden, bitte erneut versuchen. Wenn das Problem besteht, wenden Sie sich an den Webmaster.";
+$_ARRAYLANG['TXT_FORUM_UPLOAD_PARTIAL'] = "The file was uploaded only partially. Please try again. If the problem persists, please conact the webmaster.";
+$_ARRAYLANG['TXT_FORUM_UPLOAD_NOT_MOVABLE'] = "The file could not be moved on the server. Please try again. If the problem persists, please contact the webmaster.";
 $_ARRAYLANG['TXT_FORUM_DELETE_ATTACHMENT'] = "Delete attachment '%s'";
 $_ARRAYLANG['TXT_FORUM_SEARCH_TERM_TOO_SHORT'] = "Note: The search term must be at least 3 characters long.";
 ?>
