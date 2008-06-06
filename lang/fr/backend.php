@@ -833,4 +833,6 @@ $_ARRAYLANG['TXT_USERS_DAYS'] = "jours";
 $_ARRAYLANG['TXT_USERS_MONTHS'] = "mois";
 $_ARRAYLANG['TXT_USERS_YEARS'] = "ans";
 $_ARRAYLANG['TXT_USERS_UNLIMITED'] = "illimité";
+$_ARRAYLANG['TXT_DATA_MODULE'] = "Datenlisten";
+$_ARRAYLANG['TXT_DATA_MODULE_DESCRIPTION'] = "Erm&ouml;glicht das Erfassen und Verwalten von Datenlisten.";
 ?>
