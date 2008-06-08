@@ -369,4 +369,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_EXPORT_ALL_LISTS'] = "Alle Listen ins Excel exportie
 $_ARRAYLANG['TXT_NEWSLETTER_FILE_TYPE'] = "Dateityp";
 $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'] = "Wählen Sie hier eine Datei aus, deren Inhalt importiert werden soll:";
 $_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Unknown";
+$_ARRAYLANG['TXT_NEWSLETTER_NOTICE'] = "Hinweis";
+$_ARRAYLANG['TXT_NEWSLETTER_NOTICE_TESTMAIL'] = "Beim Testnewsletter werden die Platzhalter und die Profillinks nicht ersetzt";
 ?>
