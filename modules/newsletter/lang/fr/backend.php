@@ -369,4 +369,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_EXPORT_ALL_LISTS'] = "Exporter toutes les listes dan
 $_ARRAYLANG['TXT_NEWSLETTER_FILE_TYPE'] = "Extension fichier";
 $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'] = "Sélectionner le fichier dont le contenu doit être importé:";
 $_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Inconnu";
+$_ARRAYLANG['TXT_NEWSLETTER_NOTICE'] = "Hinweis";
+$_ARRAYLANG['TXT_NEWSLETTER_NOTICE_TESTMAIL'] = "Beim Testnewsletter werden die Platzhalter und die Profillinks nicht ersetzt";
 ?>
