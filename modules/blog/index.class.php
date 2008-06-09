@@ -180,12 +180,12 @@ class Blog extends BlogLibrary  {
         if (isset($_POST['frmAddComment_MessageId'])) {
             $this->addComment();
             if (!empty($this->_strErrorMessage)) {
-                //Error occured, get previous entered values
-                $strName         = htmlentities($_POST['frmAddComment_Name'], ENT_QUOTES, CONTREXX_CHARSET);
-                $strEMail        = htmlentities($_POST['frmAddComment_EMail'], ENT_QUOTES, CONTREXX_CHARSET);
-                $strWWW            = htmlentities($_POST['frmAddComment_WWW'], ENT_QUOTES, CONTREXX_CHARSET);
-                $strSubject        = htmlentities($_POST['frmAddComment_Subject'], ENT_QUOTES, CONTREXX_CHARSET);
-                $strComment        = $_POST['frmAddComment_Comment'];
+				//Error occured, get previous entered values
+				$strName 		= htmlentities($_POST['frmAddComment_Name'], ENT_QUOTES, CONTREXX_CHARSET);
+				$strEMail		= htmlentities($_POST['frmAddComment_EMail'], ENT_QUOTES, CONTREXX_CHARSET);
+				$strWWW			= htmlentities($_POST['frmAddComment_WWW'], ENT_QUOTES, CONTREXX_CHARSET);
+				$strSubject		= htmlentities($_POST['frmAddComment_Subject'], ENT_QUOTES, CONTREXX_CHARSET);
+				$strComment		= contrexx_stripslashes(html_entity_decode($_POST['frmAddComment_Comment'], ENT_QUOTES, CONTREXX_CHARSET));
             }
         }
 
@@ -286,7 +286,7 @@ class Blog extends BlogLibrary  {
                         'BLOG_DETAILS_COMMENT_ID'        =>    $objCommentsResult->fields['comment_id'],
                         'BLOG_DETAILS_COMMENT_TITLE'    =>    htmlentities(stripslashes($objCommentsResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET),
                         'BLOG_DETAILS_COMMENT_POSTED'    =>    $this->getPostedByString((($objCommentsResult->fields['user_id'] == 0) ? $objCommentsResult->fields['user_name'] : $this->getUserName($objCommentsResult->fields['user_id'])), date(ASCMS_DATE_FORMAT,$objCommentsResult->fields['time_created'])),
-                        'BLOG_DETAILS_COMMENT_CONTENT'    =>    stripslashes($objCommentsResult->fields['comment'])
+                        'BLOG_DETAILS_COMMENT_CONTENT'	=>	contrexx_stripslashes($objCommentsResult->fields['comment'])
                     ));
 
                     $this->_objTpl->parse('showCommentRows');
@@ -460,13 +460,12 @@ class Blog extends BlogLibrary  {
         $strOffset        = $_POST['frmAddComment_Offset'];
         $strCaptcha        = strtoupper($_POST['frmAddComment_Captcha']);
 
-        //Check for editor
-        if ($this->_arrSettings['blog_comments_editor'] == 'textarea') {
-            $strComment = strip_tags($strComment);
-        } else {
-// TODO: Never used
-//            $strEditor = '<textarea name="frmAddComment_Comment" class="blogCommentTextarea">'.$strComment.'</textarea>';
-        }
+		//Check for editor
+		if ($this->_arrSettings['blog_comments_editor'] == 'textarea') {
+			$strComment = strip_tags($strComment);
+		} else {
+			$strComment = html_entity_decode($strComment, ENT_QUOTES, CONTREXX_CHARSET);
+		}
 
         //Get specified-input
         if ($this->_intCurrentUserId == 0) {

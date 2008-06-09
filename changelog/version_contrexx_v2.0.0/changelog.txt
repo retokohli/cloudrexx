@@ -156,6 +156,11 @@ Statistik
 Webinstaller
 - Die Funktion "Datenbank erstellen" ist kompatibel mit der MySQL Version 4.0.
 
+Module: Blog
+- Bei den Kommentaren konnte es bei aktiviertem WYSIWYG-Editor zu Fehlern in der
+  Darstellung von HTML-Tags kommen. Diese traten beim Einsatz der im Editor
+  enthaltenen Smileys auf.
+
 Module: Community
 - Sonderzeichen der Profildaten werden auf der Profilseite korrekt dargestellt.
 
