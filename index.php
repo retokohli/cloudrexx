@@ -1,6 +1,6 @@
 <?php
 
-define('_DEBUG', 0);
+define('_DEBUG', 1);
 
 /**
  * The main page for the CMS
@@ -1647,6 +1647,7 @@ $objTemplate->setVariable(array(
     'METAROBOTS'            => $page_robots,
     'CONTENT_TITLE'        => $page_title,
     'CSS_NAME'              => $pageCssName,
+    'LOGIN_STATUS_NAME'     => $loginStatus ? "in" : "out",
     'PRINT_URL'             => $objInit->getPrintUri(),
     'PDF_URL'             => $objInit->getPDFUri(),
     'PAGE_URL'              => $objInit->getPageUri(),
