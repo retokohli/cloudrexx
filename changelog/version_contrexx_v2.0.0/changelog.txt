@@ -114,6 +114,13 @@ Modul Shop
   Vor Ablauf eines solchen Kontos kann ein E-Mail zur Benachrichtigung
   verschickt werden.
 
+Design und Themes
+- Neu ist in der Version 2.0 ein Platzhalter [[LOGIN_STATUS_NAME]] integriert, 
+der den Loginstatus in Form von "in" (User ist eingelogt) und 
+"out" (User ist ausgelogt) in der Designvorlage ausgibt.
+So ist es z.B möglich auf komfortabler Weise zwei Designs zu integrieren, die je
+nach Loginstatus wechseln.
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************
