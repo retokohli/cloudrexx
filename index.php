@@ -709,7 +709,7 @@ if ($_CONFIG['forumHomeContent'] == '1') {
 //------------------------------
 // get + replace forum tagcloud
 //------------------------------
-if ($_CONFIG['forumTagContent'] == 1) {
+if (!empty($_CONFIG['forumTagContent'])) {
 	$modulespath = "modules/forum/homeContent.class.php";
     if (file_exists($modulespath)) {
 		require_once($modulespath);
