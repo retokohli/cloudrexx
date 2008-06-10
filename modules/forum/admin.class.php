@@ -39,7 +39,7 @@ class ForumAdmin extends ForumLibrary {
     function __constructor()
     {
 		global $objInit, $objTemplate, $_ARRAYLANG;
-		ForumLibrary::__constructor();
+		ForumLibrary::__construct();
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/forum/template');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     	$this->_intLangId = $objInit->userFrontendLangId;
