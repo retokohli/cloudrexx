@@ -705,7 +705,9 @@ class ContentManager
             'TXT_CONTENT_TYPE_REDIRECT'=> $_CORELANG['TXT_CONTENT_TYPE_REDIRECT'],
             'TXT_CONTENT_TYPE_HELP'       => $_CORELANG['TXT_CONTENT_TYPE_HELP'],
             'TXT_NAVIGATION'           => $_CORELANG['TXT_NAVIGATION'],
-            'TXT_ASSIGN_BLOCK'              => $_CORELANG['TXT_ASSIGN_BLOCK']
+            'TXT_ASSIGN_BLOCK'              => $_CORELANG['TXT_ASSIGN_BLOCK'],
+            'TXT_DEFAULT_ALIAS'        => $_CORELANG['TXT_DEFAULT_ALIAS'],
+            'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
         ));
 
         $objTemplate->hideBlock('deleteButton');
@@ -909,7 +911,9 @@ class ContentManager
             'TXT_CONTENT_TYPE_REDIRECT'        => $_CORELANG['TXT_CONTENT_TYPE_REDIRECT'],
             'TXT_CONTENT_TYPE_HELP'               => $_CORELANG['TXT_CONTENT_TYPE_HELP'],
             'TXT_NAVIGATION'                => $_CORELANG['TXT_NAVIGATION'],
-            'TXT_ASSIGN_BLOCK'                   => $_CORELANG['TXT_ASSIGN_BLOCK']
+            'TXT_ASSIGN_BLOCK'                   => $_CORELANG['TXT_ASSIGN_BLOCK'],
+            'TXT_DEFAULT_ALIAS'        => $_CORELANG['TXT_DEFAULT_ALIAS'],
+            'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
         ));
 
         if (!$this->boolHistoryEnabled) {
@@ -918,9 +922,14 @@ class ContentManager
         }
 
         if (!empty($pageId)) {
-            $objResult = $objDatabase->SelectLimit("SELECT *
-                                                      FROM ".DBPREFIX."content
-                                                     WHERE id =".$pageId, 1);
+            $objResult = $objDatabase->SelectLimit("SELECT c.*,
+                                                           a_s.url AS alias_url
+                                                      FROM ".DBPREFIX."content AS c
+                                                      LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = c.id
+                                                      LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
+                                                          ON  a_t.id        = a_s.target_id
+                                                        AND a_s.isdefault = 1
+                                                     WHERE c.id =".$pageId, 1);
 
             if ($objResult !== false && $objResult->RecordCount()>0) {
                 $contenthtml = $objResult->fields['content'];
@@ -965,6 +974,7 @@ class ContentManager
                     'CONTENT_TOP_TITLE'           => $_CORELANG['TXT_EDIT_PAGE'],
                     'CONTENT_CATID'            => $pageId,
                     'CONTENT_HTML'               => $ed,
+                    'CONTENT_ALIAS'              => htmlentities($objResult->fields['alias_url'], ENT_QUOTES, CONTREXX_CHARSET),
                     'CONTENT_TITLE_VAL'           => htmlentities($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET),
                     'CONTENT_DESC'               => htmlentities($objResult->fields['metadesc'], ENT_QUOTES, CONTREXX_CHARSET),
                     'CONTENT_META_TITLE'       => htmlentities($objResult->fields['metatitle'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -1390,6 +1400,11 @@ class ContentManager
             }
         }
 
+
+        if($err = $this->_default_alias($pageId, $_POST['alias'])) {
+            $objTemplate->setVariable("ALIAS_STATUS", $err);
+        }
+
         if (isset($_POST['themesRecursive']) && !empty($_POST['themesRecursive'])) {
             $objNavbar = new ContentSitemap(0);
             $catidarray = $objNavbar->getCurrentSonArray($pageId);
@@ -1598,6 +1613,10 @@ class ContentManager
         ";
         $objDatabase->Execute($q1);
         $pageId = $objDatabase->Insert_ID();
+
+        if($err = $this->_default_alias($pageId, $_POST['alias'])) {
+            $objTemplate->setVariable("ALIAS_STATUS", $err);
+        }
 
         $q2 = "
             INSERT INTO ".DBPREFIX."content (
@@ -2559,7 +2578,107 @@ class ContentManager
         return $blocks;
     }
 
+    /**
+     * Returns false on success. On failure, returns an appropriate error message.
+     * @param pageid  the local URL to the page ("?page=xx" or "?section=..." alike stuff)
+     * @param alias   the alias to install for the page. if it is empty or null,
+     *                no change will happen.
+     */
+    function _default_alias($pageid, $alias) {
+        $alias    = contrexx_addslashes($alias);
 
+        //////////////////////////////////////////////////////////////
+        // No action if there's no alias.
+        if ($alias == '') {
+            return false;
+        }
+
+        //////////////////////////////////////////////////////////////
+        // aliasLib has some handy stuff for us here..
+        global $objDatabase, $_ARRAYLANG;
+        require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
+        $util = new aliasLib;
+
+
+        //////////////////////////////////////////////////////////////
+        // Is the alias breaking access to a file?
+        if (!$util->is_alias_valid($alias)) {
+            return $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'];
+        }
+
+        //////////////////////////////////////////////////////////////
+        // Check if there is already an alias with that 
+        // name.. or for that page.
+        $query = "
+            SELECT target_id
+            FROM  ".DBPREFIX."module_alias_source AS s
+            WHERE s.url = '$alias'
+        ";
+        $src = $objDatabase->SelectLimit($query, 1);
+        if ($src->RecordCount()) {
+            // There is already some alias with that name.
+            // This is only a problem if the alias points to another
+            // page. For this, we need to figure out where
+            // this alias points.
+            $t_id = $src->fields['target_id'];
+            $q_target = "
+                SELECT count(*) AS _count
+                FROM ".DBPREFIX."module_alias_target AS t
+                WHERE t.url = '$pageid'
+                  AND t.id  = $t_id
+            ";
+            $cnt = $objDatabase->SelectLimit($q_target, 1);
+            if ($cnt->fields['_count'] == 0) {
+                // Alias points somewhere else.
+                return $_ARRAYLANG['TXT_CORE_ALIAS_EXISTS_ALREADY'];
+            }
+            return false;
+        }
+
+        //////////////////////////////////////////////////////////////
+        // If the page already has a default alias, we're just
+        // going to update it.
+        $check_update = "
+            SELECT a_s.url, a_s.id
+            FROM            ".DBPREFIX."module_alias_target AS a_t 
+            LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
+                  ON  a_t.id        = a_s.target_id
+                  AND a_s.isdefault = 1
+            WHERE a_t.url = '$pageid'
+        ";
+        $check_update_res = $objDatabase->Execute($check_update);
+        if ($check_update_res->RecordCount()){
+            // Alias already exists. grab the ID and update it.
+            $alias_src_id = $check_update_res->fields['id'];
+            $objDatabase->Execute("
+                UPDATE ".DBPREFIX."module_alias_source
+                SET    url = '$alias'
+                WHERE  id  = $alias_src_id
+                LIMIT  1"
+            );
+        }
+
+
+        //////////////////////////////////////////////////////////////
+        // Okay. we're now ready to create the alias.
+        $objDatabase->Execute("
+            INSERT INTO ".DBPREFIX."module_alias_target 
+                (type, url) 
+            VALUES 
+                ('local', '$pageid')"
+        );
+        $last_id = $objDatabase->Insert_ID();
+        $objDatabase->Execute("
+            INSERT INTO ".DBPREFIX."module_alias_source
+                (target_id, url, isdefault) 
+            VALUES 
+                ($last_id, '$alias', 1)"
+        );
+
+        // reads alias table, rewrites the .htaccess.
+        $util->_activateRewriteEngine();
+        return false;
+    }
 
     function modifyBlocks($associatedBlockIds, $pageId)
     {
