@@ -1,9 +1,7 @@
 <?php
-
 class User extends User_Profile
 {
-
-  /**
+    /**
      * ID of loaded user
      *
      * @var integer
@@ -191,40 +189,40 @@ class User extends User_Profile
      * @access private
      */
     private $arrAttributes = array(
-        'id'               => 'int',
-        'is_admin'         => 'int',
-        'username'         => 'string',
-        'regdate'          => 'int',
-        'expiration'       => 'int',
-        'validity'         => 'int',
-        'last_auth'        => 'int',
-        'last_activity'    => 'int',
-        'email'            => 'string',
-        'email_access'     => 'string',
-        'frontend_lang_id' => 'int',
-        'backend_lang_id'  => 'int',
-        'active'           => 'int',
-        'profile_access'   => 'string',
-        'restore_key'      => 'string',
-        'restore_key_time' => 'int',
+        'id'                => 'int',
+        'is_admin'          => 'int',
+        'username'          => 'string',
+        'regdate'           => 'int',
+        'expiration'        => 'int',
+        'validity'          => 'int',
+        'last_auth'         => 'int',
+        'last_activity'     => 'int',
+        'email'             => 'string',
+        'email_access'      => 'string',
+        'frontend_lang_id'  => 'int',
+        'backend_lang_id'   => 'int',
+        'active'            => 'int',
+        'profile_access'    => 'string',
+        'restore_key'       => 'string',
+        'restore_key_time'  => 'int'
     );
 
     /**
      * @access private
      */
     private static $arrPrivacyAccessTypes = array(
-        'everyone'     => array(
-            'email'   => 'TXT_ACCESS_EVERYONE_ALLOWED_SEEING_EMAIL',
-            'profile' => 'TXT_ACCESS_EVERYONE_ALLOWED_SEEING_PROFILE',
+        'everyone'      => array(
+            'email'         => 'TXT_ACCESS_EVERYONE_ALLOWED_SEEING_EMAIL',
+            'profile'       => 'TXT_ACCESS_EVERYONE_ALLOWED_SEEING_PROFILE',
         ),
-        'members_only' => array(
-            'email'   => 'TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_EMAIL',
-            'profile' => 'TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_PROFILE',
+        'members_only'  => array(
+            'email'         => 'TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_EMAIL',
+            'profile'       => 'TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_PROFILE'
         ),
-        'nobody'       => array(
-            'email'   => 'TXT_ACCESS_NOBODY_ALLOWED_SEEING_EMAIL',
-            'profile' => 'TXT_ACCESS_NOBODY_ALLOWED_SEEING_PROFILE',
-        ),
+        'nobody'        => array(
+            'email'         => 'TXT_ACCESS_NOBODY_ALLOWED_SEEING_EMAIL',
+            'profile'       => 'TXT_ACCESS_NOBODY_ALLOWED_SEEING_PROFILE'
+        )
     );
 
     /**
@@ -362,11 +360,11 @@ class User extends User_Profile
                 if ($objDatabase->Execute(
                 'DELETE tblU, tblP, tblG, tblA
                 FROM `'.DBPREFIX.'access_users` AS tblU
-                  INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`
-                  LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`
-                  LEFT JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`
-                  WHERE tblU.`id` = '.$this->id) !== false
-              ) {
+                INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`
+                LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`
+                LEFT JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`
+                WHERE tblU.`id` = '.$this->id) !== false
+            ) {
                     return true;
                 } else {
                     $this->error_msg[] = sprintf($_CORELANG['TXT_ACCESS_USER_DELETE_FAILED'], $this->username);
@@ -481,6 +479,7 @@ class User extends User_Profile
 
     private function getFilteredUserIdList($arrFilter = null, $search = null)
     {
+        $arrUserIds = array();
         $arrConditions = array();
         $arrSearchConditions = array();
         $tblCoreAttributes = false;
@@ -502,7 +501,14 @@ class User extends User_Profile
             }
 
             if (in_array('group_id', array_keys($arrFilter)) && !empty($arrFilter['group_id'])) {
-                $arrConditions[] = '(tblG.`group_id` = '.(is_array($arrFilter['group_id']) ? implode(' OR tblG.`group_id` = ', array_map('intval', $arrFilter['group_id'])) : intval($arrFilter['group_id'])).')';
+                if (is_array($arrFilter['group_id'])) {
+                    foreach ($arrFilter['group_id'] as $condition => $groupId) {
+                        $arrGroupConditions[] = 'tblG.`group_id` '.$condition.' '.intval($groupId);
+                    }
+                } else {
+                    $arrGroupConditions[] = 'tblG.`group_id` = '.intval($arrFilter['group_id']);
+                }
+                $arrConditions[] = '('.implode(' OR ', $arrGroupConditions).')';
                 $tblGroup = true;
             }
         }
@@ -511,6 +517,7 @@ class User extends User_Profile
         if (!empty($search)) {
             if (count($arrAccountConditions = $this->parseAccountSearchConditions($search))) {
                 $arrSearchConditions[] = implode(' OR ', $arrAccountConditions);
+                $tblAccount = true;
             }
             if (count($arrCoreAttributeConditions = $this->parseAttributeSearchConditions($search, true))) {
                 $arrSearchConditions[] = implode(' OR ', $arrCoreAttributeConditions);
@@ -525,22 +532,21 @@ class User extends User_Profile
             }
         }
 
-        return 'SELECT tblU.`id` FROM `'.DBPREFIX.'access_users` AS tblU'
-            .(!empty($tblCoreAttributes) ? ' INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`' : '')
-            .(!empty($tblCustomAttributes) ? ' INNER JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`' : '')
-            .($tblGroup ? ' INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`' : '')
-            .(count($arrConditions) ? ' WHERE ('.implode(') AND (', $arrConditions).')' : '')
-            .' GROUP BY tblU.`id`';
-
-        /*$objUserId = $objDatabase->Execute($query);
-        if ($objUserId !== false) {
-            while (!$objUserId->EOF) {
-                $arrUserIds[$objUserId->fields['id']] = '';
-                $objUserId->MoveNext();
-            }
+        $arrTables = array();
+        if (!empty($tblCoreAttributes)) {
+            $arrTables[] = 'core';
         }
-
-        return $arrUserIds;*/
+        if (!empty($tblCustomAttributes)) {
+            $arrTables[] = 'custom';
+        }
+        if ($tblGroup) {
+            $arrTables[] = 'group';
+        }
+        
+        return array(
+            'tables'        => $arrTables,
+            'conditions'    => $arrConditions
+        );
     }
 
     public function getFrontendLanguage()
@@ -583,8 +589,8 @@ class User extends User_Profile
 
     public function getProfileAttribute($attributeId, $historyId = 0)
     {
-        if (isset($this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId])) {
-            return $this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId];
+        if (isset($this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId])) {
+            return $this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId];
         } else {
             return false;
         }
@@ -669,37 +675,35 @@ class User extends User_Profile
         if ($id) {
             if (!isset($this->arrCachedUsers[$id])) {
                 return $this->loadUsers($id);
+            } else {
+                $this->id = $id;
+                $this->username = isset($this->arrCachedUsers[$id]['username']) ? $this->arrCachedUsers[$id]['username'] : '';
+                $this->email = isset($this->arrCachedUsers[$id]['email']) ? $this->arrCachedUsers[$id]['email'] : '';
+                $this->email_access = isset($this->arrCachedUsers[$id]['email_access']) ? $this->arrCachedUsers[$id]['email_access'] : $this->defaultEmailAccessType;
+                $this->frontend_language = isset($this->arrCachedUsers[$id]['frontend_lang_id']) ? $this->arrCachedUsers[$id]['frontend_lang_id'] : $_LANGID;
+                $this->backend_language = isset($this->arrCachedUsers[$id]['backend_lang_id']) ? $this->arrCachedUsers[$id]['backend_lang_id'] : $_LANGID;
+                $this->is_active = isset($this->arrCachedUsers[$id]['active']) ? (bool)$this->arrCachedUsers[$id]['active'] : false;
+                $this->is_admin = isset($this->arrCachedUsers[$id]['is_admin']) ? (bool)$this->arrCachedUsers[$id]['is_admin'] : false;
+                $this->regdate = isset($this->arrCachedUsers[$id]['regdate']) ? $this->arrCachedUsers[$id]['regdate'] : 0;
+                $this->expiration = isset($this->arrCachedUsers[$id]['expiration']) ? $this->arrCachedUsers[$id]['expiration'] : 0;
+                $this->validity = isset($this->arrCachedUsers[$id]['validity']) ? $this->arrCachedUsers[$id]['validity'] : 0;
+                $this->last_auth = isset($this->arrCachedUsers[$id]['last_auth']) ? $this->arrCachedUsers[$id]['last_auth'] : 0;
+                $this->last_activity = isset($this->arrCachedUsers[$id]['last_activity']) ? $this->arrCachedUsers[$id]['last_activity'] : 0;
+                $this->profile_access = isset($this->arrCachedUsers[$id]['profile_access']) ? $this->arrCachedUsers[$id]['profile_access'] : $this->defaultProfileAccessTyp;
+                $this->restore_key = isset($this->arrCachedUsers[$id]['restore_key']) ? $this->arrCachedUsers[$id]['restore_key'] : '';
+                $this->restore_key_time = isset($this->arrCachedUsers[$id]['restore_key_time']) ? $this->arrCachedUsers[$id]['restore_key_time'] : 0;
+                $this->password = '';
+                $this->arrGroups = null;
+                $this->EOF = false;
+                $this->loggedIn = false;
+                return true;
             }
-            $this->id = $id;
-            $this->username = isset($this->arrCachedUsers[$id]['username']) ? $this->arrCachedUsers[$id]['username'] : '';
-            $this->email = isset($this->arrCachedUsers[$id]['email']) ? $this->arrCachedUsers[$id]['email'] : '';
-            $this->email_access = isset($this->arrCachedUsers[$id]['email_access']) ? $this->arrCachedUsers[$id]['email_access'] : $this->defaultEmailAccessType;
-            $this->frontend_language = isset($this->arrCachedUsers[$id]['frontend_lang_id']) ? $this->arrCachedUsers[$id]['frontend_lang_id'] : $_LANGID;
-            $this->backend_language = isset($this->arrCachedUsers[$id]['backend_lang_id']) ? $this->arrCachedUsers[$id]['backend_lang_id'] : $_LANGID;
-            $this->is_active = isset($this->arrCachedUsers[$id]['active']) ? (bool)$this->arrCachedUsers[$id]['active'] : false;
-            $this->is_admin = isset($this->arrCachedUsers[$id]['is_admin']) ? (bool)$this->arrCachedUsers[$id]['is_admin'] : false;
-            $this->regdate = isset($this->arrCachedUsers[$id]['regdate']) ? $this->arrCachedUsers[$id]['regdate'] : 0;
-            $this->expiration = isset($this->arrCachedUsers[$id]['expiration']) ? $this->arrCachedUsers[$id]['expiration'] : 0;
-            $this->validity = isset($this->arrCachedUsers[$id]['validity']) ? $this->arrCachedUsers[$id]['validity'] : 0;
-            $this->last_auth = isset($this->arrCachedUsers[$id]['last_auth']) ? $this->arrCachedUsers[$id]['last_auth'] : 0;
-            $this->last_activity = isset($this->arrCachedUsers[$id]['last_activity']) ? $this->arrCachedUsers[$id]['last_activity'] : 0;
-            $this->profile_access = isset($this->arrCachedUsers[$id]['profile_access']) ? $this->arrCachedUsers[$id]['profile_access'] : $this->defaultProfileAccessTyp;
-            $this->restore_key = isset($this->arrCachedUsers[$id]['restore_key']) ? $this->arrCachedUsers[$id]['restore_key'] : '';
-            $this->restore_key_time = isset($this->arrCachedUsers[$id]['restore_key_time']) ? $this->arrCachedUsers[$id]['restore_key_time'] : 0;
-            $this->password = '';
-            $this->arrGroups = null;
-            $this->EOF = false;
-            $this->loggedIn = false;
-            return true;
+        } else {
+            $this->clean();
         }
-        $this->clean();
-        return false;
     }
 
-
-    private function loadUsers(
-        $filter=null, $search=null, $arrSort=null,
-        $arrAttributes=null, $limit=null, $offset=null)
+    private function loadUsers($filter = null, $search = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null)
     {
         global $objDatabase;
 
@@ -711,19 +715,21 @@ class User extends User_Profile
         $this->arrLoadedUsers = array();
         $arrSelectMetaExpressions = array();
         $arrSelectCoreExpressions = array();
-        $arrSelectCustomExpressions = array();
+        $arrSelectCustomExpressions = null;
         $this->filtered_search_count = 0;
         $sqlCondition = '';
 
         // set filter
-        if (isset($filter) && is_array($filter) || !empty($search)) {
+        if (isset($filter) && is_array($filter) && count($filter) || !empty($search)) {
             $sqlCondition = $this->getFilteredUserIdList($filter, $search);
         } elseif (!empty($filter)) {
-            $sqlCondition = intval($filter);
+            $sqlCondition['tables'] = array('core');
+            $sqlCondition['conditions'] = array('tblU.`id` = '.intval($filter));
+            $limit = 1;
         }
 
         // set sort order
-        if (!count($this->arrLoadedUsers = $this->setSortedUserIdList($arrSort, $sqlCondition, $limit, $offset))) {
+        if (!($arrQuery = $this->setSortedUserIdList($arrSort, $sqlCondition, $limit, $offset))) {
             $this->clean();
             return false;
         }
@@ -735,7 +741,7 @@ class User extends User_Profile
                     $arrSelectMetaExpressions[] = $attribute;
                 } elseif ($this->objAttribute->isCoreAttribute($attribute) && !in_array($attribute, $arrSelectCoreExpressions)) {
                     $arrSelectCoreExpressions[] = $attribute;
-                } elseif ($this->objAttribute->isCustomAttribute($attribute) && !in_array($attribute, $arrSelectCustomExpressions)) {
+                } elseif ($this->objAttribute->isCustomAttribute($attribute) && (!isset($arrSelectCustomExpressions) || !in_array($attribute, $arrSelectCustomExpressions))) {
                     $arrSelectCustomExpressions[] = $attribute;
                 }
             }
@@ -746,18 +752,24 @@ class User extends User_Profile
         } else {
             $arrSelectMetaExpressions = array_keys($this->arrAttributes);
             $arrSelectCoreExpressions = $this->objAttribute->getCoreAttributeIds();
+            $arrSelectCustomExpressions = array();
         }
 
         $query = 'SELECT tblU.`'.implode('`, tblU.`', $arrSelectMetaExpressions).'`'
             .(count($arrSelectCoreExpressions) ? ', tblP.`'.implode('`, tblP.`', $arrSelectCoreExpressions).'`' : '')
             .'FROM `'.DBPREFIX.'access_users` AS tblU'
-            .(count($arrSelectCoreExpressions) ? ' INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`' : '')
-            .(count($this->arrLoadedUsers) ? ' WHERE tblU.`id` IN ('.implode(',', array_keys($this->arrLoadedUsers)).')' : '');
+            .(count($arrSelectCoreExpressions) || $arrQuery['tables']['core'] ? ' INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`' : '')
+            .($arrQuery['tables']['custom'] ? ' INNER JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`' : '')
+            .($arrQuery['tables']['group'] ? ' INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`' : '')
+            .(count($arrQuery['joins']) ? ' '.implode(' ',$arrQuery['joins']) : '')
+            .(count($arrQuery['conditions']) ? ' WHERE '.implode(' AND ', $arrQuery['conditions']) : '')
+            .' GROUP BY tblU.`id`'
+            .(count($arrQuery['sort']) ? ' ORDER BY '.implode(', ', $arrQuery['sort']) : '');
 
         if (empty($limit)) {
             $objUser = $objDatabase->Execute($query);
         } else {
-            $objUser = $objDatabase->SelectLimit($query, $limit);//, $offset);
+            $objUser = $objDatabase->SelectLimit($query, $limit, $offset);
         };
 
         if ($objUser !== false && $objUser->RecordCount() > 0) {
@@ -772,7 +784,7 @@ class User extends User_Profile
                 $objUser->MoveNext();
             }
 
-            $this->loadCustomAttributeProfileData($arrSelectCustomExpressions);
+            isset($arrSelectCustomExpressions) ? $this->loadCustomAttributeProfileData($arrSelectCustomExpressions) : false;
             $this->first();
             return true;
         } else {
@@ -846,12 +858,28 @@ class User extends User_Profile
         $arrCustomJoins = array();
         $arrCustomSelection = array();
         $joinCoreTbl = false;
+        $joinCustomTbl = false;
+        $joinGroupTbl = false;
         $arrUserIds = array();
         $arrSortExpressions = array();
         $nr = 0;
 
         if (!empty($sqlCondition)) {
-            $arrCustomSelection[] = '(tblU.`id` IN ('.$sqlCondition.'))';
+            if (isset($sqlCondition['tables'])) {
+                if (in_array('core', $sqlCondition['tables'])) {
+                    $joinCoreTbl = true;
+                }
+                if (in_array('custom', $sqlCondition['tables'])) {
+                    $joinCustomTbl = true;
+                }
+                if (in_array('group', $sqlCondition['tables'])) {
+                    $joinGroupTbl = true;
+                }
+            }
+            
+            if (isset($sqlCondition['conditions']) && count($sqlCondition['conditions'])) {
+                $arrCustomSelection = $sqlCondition['conditions'];
+            }
         }
 
         if (is_array($arrSort)) {
@@ -879,6 +907,8 @@ class User extends User_Profile
         $query = 'SELECT SQL_CALC_FOUND_ROWS tblU.`id`
             FROM `'.DBPREFIX.'access_users` AS tblU'
             .($joinCoreTbl ? ' INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`' : '')
+            .($joinCustomTbl ? ' INNER JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`' : '')
+            .($joinGroupTbl ? ' INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`' : '')
             .(count($arrCustomJoins) ? ' '.implode(' ',$arrCustomJoins) : '')
             .(count($arrCustomSelection) ? ' WHERE '.implode(' AND ', $arrCustomSelection) : '')
             .' GROUP BY tblU.`id`'
@@ -899,7 +929,23 @@ class User extends User_Profile
                 $objUserId->MoveNext();
             }
         }
+        
+        $this->arrLoadedUsers = $arrUserIds;
 
+        if (!count($arrUserIds)) {
+            return false;
+        }
+        
+        return array(
+            'tables' => array(
+                'core'      => $joinCoreTbl,
+                'custom'    => $joinCustomTbl,
+                'group'     => $joinGroupTbl
+            ),
+            'joins'         => $arrCustomJoins,
+            'conditions'    => $arrCustomSelection,
+            'sort'          => $arrSortExpressions
+        );
         /*$arrNotSortedUserIds = array_diff(array_keys($this->arrLoadedUsers), $arrUserIds);
         foreach ($arrNotSortedUserIds as $userId) {
             $arrUserIds[$userId] = '';
@@ -934,39 +980,39 @@ class User extends User_Profile
      * Examples of the filer array:
      *
      * array(
-     *         'firstname' => '%nicole%',
+     *      'firstname' => '%nicole%',
      * )
      * // will return all users who's firstname include 'nicole'
      *
      *
      * array(
-     *         'firstname' => array(
-     *             'd%',
-     *             'e%',
-     *             'f%',
-     *             'g%'
-     *         )
+     *      'firstname' => array(
+     *          'd%',
+     *          'e%',
+     *          'f%',
+     *          'g%'
+     *      )
      * )
      * // will return all users which have a firstname of which its first letter is and between 'd' to 'g' (case less)
      *
      *
      * array(
-     *         'firstname'    => array(
-     *             array(
-     *                 '>'    => 'd',
-     *                 '<'    => 'g'
-     *            ),
-     *             'LIKE'    => 'g%'
-     *        )
+     *      'firstname' => array(
+     *          array(
+     *              '>' => 'd',
+     *              '<' => 'g'
+     *          ),
+     *          'LIKE'  => 'g%'
+     *      )
      * )
      * // same as the preview example but in an other way
      *
      *
      * array(
-     *         'is_active' => 1,
-     *         'last_auth'    => array(
-     *             '>' => time()-3600
-     *         )
+     *      'is_active' => 1,
+     *      'last_auth' => array(
+     *          '>' => time()-3600
+     *      )
      * )
      * // will return all users that are active and have been logged in at least in the last one hour
      *
@@ -985,15 +1031,15 @@ class User extends User_Profile
              */
             if (isset($this->arrAttributes[$attribute])) {
                 $arrComparisonOperators = array(
-                    'int'        => array('=','<','>'),
+                    'int'       => array('=','<','>'),
                     'string'    => array('!=','<','>', 'REGEXP')
                 );
                 $arrDefaultComparisonOperator = array(
-                    'int'        => '=',
+                    'int'       => '=',
                     'string'    => 'LIKE'
                 );
                 $arrEscapeFunction = array(
-                    'int'        => 'intval',
+                    'int'       => 'intval',
                     'string'    => 'addslashes'
                 );
 
@@ -1014,7 +1060,7 @@ class User extends User_Profile
                                 $arrConditionRestriction[] = "tblU.`{$attribute}` ".(
                                     in_array($restrictionOperator, $arrComparisonOperators[$this->arrAttributes[$attribute]], true) ?
                                         $restrictionOperator
-                                    :    $arrDefaultComparisonOperator[$this->arrAttributes[$attribute]]
+                                    :   $arrDefaultComparisonOperator[$this->arrAttributes[$attribute]]
                                 )." '".$arrEscapeFunction[$this->arrAttributes[$attribute]]($restrictionValue)."'";
                             }
                             $arrRestrictions[] = implode(' AND ', $arrConditionRestriction);
@@ -1022,7 +1068,7 @@ class User extends User_Profile
                             $arrRestrictions[] = "tblU.`{$attribute}` ".(
                                 in_array($operator, $arrComparisonOperators[$this->arrAttributes[$attribute]], true) ?
                                     $operator
-                                :    $arrDefaultComparisonOperator[$this->arrAttributes[$attribute]]
+                                :   $arrDefaultComparisonOperator[$this->arrAttributes[$attribute]]
                             )." '".$arrEscapeFunction[$this->arrAttributes[$attribute]]($restriction)."'";
                         }
                     }
@@ -1265,11 +1311,11 @@ class User extends User_Profile
             $objDatabase->Execute(
                 'DELETE tblU, tblP, tblG, tblA
                 FROM `'.DBPREFIX.'access_users` AS tblU
-                  INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`
-                  LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`
-                  LEFT JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`
-                  WHERE tblU.`active` = 0 AND tblU.`restore_key` != \'\' AND tblU.`restore_key_time`  <'.time()
-              );
+                INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`
+                LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`
+                LEFT JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`
+                WHERE tblU.`active` = 0 AND tblU.`restore_key` != \'\' AND tblU.`restore_key_time`  <'.time()
+            );
         }
     }
 
@@ -1757,7 +1803,6 @@ class User extends User_Profile
         $arrSettings = User_Setting::getSettings();
         return $arrSettings['user_delete_account']['status'];
     }
-
 
     /**
      * Returns the e-mail address if the User accounts has been created
