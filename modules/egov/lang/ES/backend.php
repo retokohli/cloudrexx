@@ -179,4 +179,7 @@ $_ARRAYLANG['TXT_EGOV_DAYNAME_5'] = "Freitag";
 $_ARRAYLANG['TXT_EGOV_DAYNAME_6'] = "Samstag";
 $_ARRAYLANG['TXT_EGOV_DAYNAME_7'] = "Sonntag";
 $_ARRAYLANG['TXT_EGOV_PRODUCT_QUANTITY_LIMIT'] = "Wechsel auf \\\"Bald ausgebucht\\\" bei";
+$_ARRAYLANG['TXT_EGOV_ALTERNATIVE_PAYMENT_METHODS'] = "Alternative Bezahlmethode";
+$_ARRAYLANG['TXT_EGOV_ALTERNATIVE_PAYMENT_NAMES'] = "Bezeichnung";
+$_ARRAYLANG['TXT_STATE_ALTERNATIVE'] = "Alternativ";
 ?>
