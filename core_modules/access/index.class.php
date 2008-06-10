@@ -5,11 +5,11 @@
 * access module class
 *
 * @copyright    CONTREXX CMS - COMVATION AG
-* @author        COMVATION Development Team <info@comvation.com>
-* @module        access
-* @modulegroup    core_modules
-* @access        public
-* @version        1.0.0
+* @author       COMVATION Development Team <info@comvation.com>
+* @module       access
+* @modulegroup  core_modules
+* @access       public
+* @version      1.0.0
 */
 require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
 
@@ -21,11 +21,11 @@ class Access extends AccessLib
     public function __construct($pageContent)
     {
         parent::__construct();
+
         $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
     }
-
 
     public function getPage(&$metaPageTitle, &$pageTitle)
     {
@@ -90,7 +90,7 @@ class Access extends AccessLib
             $pageTitle = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)."'s Profil";
             $this->_objTpl->setGlobalVariable(array(
                 'ACCESS_USER_ID'        => $objUser->getId(),
-                'ACCESS_USER_USERNAME'    => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+                'ACCESS_USER_USERNAME'  => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
             ));
 
             if ($objUser->getEmailAccess() == 'everyone' ||
@@ -286,11 +286,11 @@ class Access extends AccessLib
         $this->attachJavaScriptFunction('jscalendarIncludes');
 
         $this->_objTpl->setVariable(array(
-            'ACCESS_DELETE_ACCOUNT_BUTTON'    => '<input type="submit" name="access_delete_account" value="'.$_ARRAYLANG['TXT_ACCESS_DELETE_ACCOUNT'].'" />',
+            'ACCESS_DELETE_ACCOUNT_BUTTON'  => '<input type="submit" name="access_delete_account" value="'.$_ARRAYLANG['TXT_ACCESS_DELETE_ACCOUNT'].'" />',
             'ACCESS_USER_PASSWORD_INPUT'    => '<input type="password" name="access_user_password" />',
-            'ACCESS_STORE_BUTTON'            => '<input type="submit" name="access_store" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'].'" />',
-            'ACCESS_CHANGE_PASSWORD_BUTTON'    => '<input type="submit" name="access_change_password" value="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'].'" />',
-            'ACCESS_JAVASCRIPT_FUNCTIONS'    => $this->getJavaScriptCode()
+            'ACCESS_STORE_BUTTON'           => '<input type="submit" name="access_store" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'].'" />',
+            'ACCESS_CHANGE_PASSWORD_BUTTON' => '<input type="submit" name="access_change_password" value="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'].'" />',
+            'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode()
         ));
 
         if ($this->_objTpl->blockExists('access_settings')) {
@@ -331,10 +331,6 @@ class Access extends AccessLib
     {
         global $_ARRAYLANG;
 
-// TODO: Never used
-//        $associatedGroups = '';
-// TODO: Never used
-//        $notAssociatedGroups = '';
         $arrProfile = array();
 
         if (!empty($_GET['u']) && !empty($_GET['k'])) {
@@ -375,7 +371,7 @@ class Access extends AccessLib
                     ||
                     // otherwise try to adopt them
                     (
-                        $arrProfile = $_POST['access_profile_attribute']
+                        ($arrProfile = $_POST['access_profile_attribute'])
                         && (
                             // either no profile images are set
                             (!isset($_FILES['access_profile_attribute_images']) || !is_array($_FILES['access_profile_attribute_images']))
@@ -389,28 +385,13 @@ class Access extends AccessLib
                 && $objUser->setPassword(
                     isset($_POST['access_user_password']) ?
                         trim(contrexx_stripslashes($_POST['access_user_password']))
-                    :    '',
+                    :   '',
                     isset($_POST['access_user_password_confirmed'])?
                         trim(contrexx_stripslashes($_POST['access_user_password_confirmed']))
-                    :     ''
+                    :    ''
                 )
                 && $objUser->checkMandatoryCompliance()
                 && $objUser->signUp()
-//            ) {
-//                ;
-//
-//                /*if (isset($_FILES['access_profile_attribute_images']) && is_array($_FILES['access_profile_attribute_images'])) {
-//                    if (($result = $this->addUploadedImagesToProfile($arrProfile, $_FILES['access_profile_attribute_images'])) !== true) {
-//                        $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $result);
-//                    }
-//                }
-//
-//                $objUser->setProfile($arrProfile);*/
-//            }
-//
-//            if ($objUser->setPassword(isset($_POST['access_user_password']) ? trim(contrexx_stripslashes($_POST['access_user_password'])) : '', isset($_POST['access_user_password_confirmed']) ? trim(contrexx_stripslashes($_POST['access_user_password_confirmed'])) : '') &&
-//                $objUser->checkMandatoryCompliance() &&
-//                $objUser->signUp()
             ) {
                 if ($this->handleSignUp($objUser)) {
                     $this->_objTpl->setVariable('ACCESS_SIGNUP_MESSAGE', implode('<br />', $this->arrStatusMsg['ok']));
@@ -437,6 +418,7 @@ class Access extends AccessLib
             $this->_objTpl->hideBlock('access_signup_store_success');
             $this->_objTpl->hideBlock('access_signup_store_error');
         }
+
         $this->parseAccountAttributes($objUser, true);
 
         while (!$objUser->objAttribute->EOF) {
@@ -458,9 +440,9 @@ class Access extends AccessLib
         $this->attachJavaScriptFunction('jscalendarIncludes');
 
         $this->_objTpl->setVariable(array(
-            'ACCESS_SIGNUP_BUTTON'            => '<input type="submit" name="access_signup" value="'.$_ARRAYLANG['TXT_ACCESS_CREATE_ACCOUNT'].'" />',
-            'ACCESS_JAVASCRIPT_FUNCTIONS'    => $this->getJavaScriptCode(),
-            'ACCESS_SIGNUP_MESSAGE'            => implode("<br />\n", $this->arrStatusMsg['error'])
+            'ACCESS_SIGNUP_BUTTON'          => '<input type="submit" name="access_signup" value="'.$_ARRAYLANG['TXT_ACCESS_CREATE_ACCOUNT'].'" />',
+            'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
+            'ACCESS_SIGNUP_MESSAGE'         => implode("<br />\n", $this->arrStatusMsg['error'])
         ));
         $this->_objTpl->parse('access_signup_form');
     }

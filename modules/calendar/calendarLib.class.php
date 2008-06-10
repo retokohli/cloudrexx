@@ -1,9 +1,8 @@
 <?php
-
 /**
  * Calendar
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author         Comvation Development Team <info@comvation.com>
+ * @author      Comvation Development Team <info@comvation.com>
  * @version     1.1.0
  * @package     contrexx
  * @subpackage  module_calendar".$this->mandateLink."
@@ -100,7 +99,7 @@ class calendarLibrary
             //check access
             $query = "SELECT access
                         FROM ".DBPREFIX."module_calendar".$this->mandateLink."
-                         WHERE id = '".$id."'";
+                       WHERE id = '".$id."'";
 
             $objResult = $objDatabase->SelectLimit($query, 1);
 
@@ -159,10 +158,10 @@ class calendarLibrary
         $c->setMethod('PUBLISH');
 
         foreach ($arrEvents as $arrEvent) {
-            $comment         = $this->_filterHTML($arrEvent['comment']);
-            $place             = $this->_filterHTML($arrEvent['place']);
-            $name             = $this->_filterHTML($arrEvent['name']);
-            $categoryName     = $this->_filterHTML($this->_getCategoryNameByEventId($arrEvent['id']));
+            $comment        = $this->_filterHTML($arrEvent['comment']);
+            $place          = $this->_filterHTML($arrEvent['place']);
+            $name           = $this->_filterHTML($arrEvent['name']);
+            $categoryName   = $this->_filterHTML($this->_getCategoryNameByEventId($arrEvent['id']));
             $infoURL        = $this->_filterHTML($arrEvent['info']);
 
             $ev = new vevent();
@@ -223,7 +222,7 @@ class calendarLibrary
      * @return void
      */
     function _iCalExportCategory($catID){
-        if ($catID == 0) {
+        if($catID == 0){
             $this->_iCalExportAll();
         }
         require_once(ASCMS_LIBRARY_PATH.'/iCalcreator/iCalcreator.class.php');
@@ -253,8 +252,8 @@ class calendarLibrary
     function _getAllEvents(){
         global $objDatabase, $_ARRAYLANG;
 
-        $query = "    SELECT     `id`, `catid`,     `startdate`,     `enddate`,    `priority`,
-                            `name`,     `comment`,        `placeName`,    `link`
+        $query = "  SELECT  `id`, `catid`,  `startdate`,    `enddate`,  `priority`,
+                            `name`,     `comment`,      `placeName`,    `link`
                     FROM `".DBPREFIX."module_calendar".$this->mandateLink."`";
 
         if(($objRS = $objDatabase->Execute($query)) !== false){
@@ -273,23 +272,22 @@ class calendarLibrary
                 $arrEvents[] = array(
                     'id'            => $objRS->fields['id'],
                     'catid'         => $objRS->fields['catid'],
-                    'startdate'        => $objRS->fields['startdate'],
-                    'enddate'         => $objRS->fields['enddate'],
-                    'priority'         => $objRS->fields['priority'],
-                    'name'             => html_entity_decode($objRS->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'categoryname'    => html_entity_decode($categoryName, ENT_QUOTES, CONTREXX_CHARSET),
-                    'comment'         => html_entity_decode($objRS->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'startdate'     => $objRS->fields['startdate'],
+                    'enddate'       => $objRS->fields['enddate'],
+                    'priority'      => $objRS->fields['priority'],
+                    'name'          => html_entity_decode($objRS->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'categoryname'  => html_entity_decode($categoryName, ENT_QUOTES, CONTREXX_CHARSET),
+                    'comment'       => html_entity_decode($objRS->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET),
                     'place'         => html_entity_decode($objRS->fields['placeName'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'info'             => html_entity_decode($objRS->fields['link'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'info'          => html_entity_decode($objRS->fields['link'], ENT_QUOTES, CONTREXX_CHARSET),
                 );
                 $objRS->MoveNext();
             }
             return $arrEvents;
         }
-        $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_READ_ERROR'];
+            $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_READ_ERROR'];
         return false;
     }
-
 
     /**
      * return event(s) by ID
@@ -300,8 +298,8 @@ class calendarLibrary
     function getEventByID($eventID){
         global $objDatabase, $_ARRAYLANG;
 
-        $query = "    SELECT     `catid`,     `startdate`,     `enddate`,    `priority`,
-                            `name`,     `comment`,        `placeName`,    `link`
+        $query = "  SELECT  `catid`,    `startdate`,    `enddate`,  `priority`,
+                            `name`,     `comment`,      `placeName`,    `link`
                     FROM `".DBPREFIX."module_calendar".$this->mandateLink."`
                     WHERE  `id` = ".$eventID."";
         if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
@@ -318,14 +316,14 @@ class calendarLibrary
             return array(
                 'id'            => $objRS->fields['id'],
                 'catid'         => $objRS->fields['catid'],
-                'startdate'        => $objRS->fields['startdate'],
-                'enddate'         => $objRS->fields['enddate'],
-                'priority'         => $objRS->fields['priority'],
-                'name'             => html_entity_decode($objRS->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
-                'categoryname'    => html_entity_decode($categoryName, ENT_QUOTES, CONTREXX_CHARSET),
-                'comment'         => html_entity_decode($objRS->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET),
+                'startdate'     => $objRS->fields['startdate'],
+                'enddate'       => $objRS->fields['enddate'],
+                'priority'      => $objRS->fields['priority'],
+                'name'          => html_entity_decode($objRS->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                'categoryname'  => html_entity_decode($categoryName, ENT_QUOTES, CONTREXX_CHARSET),
+                'comment'       => html_entity_decode($objRS->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET),
                 'place'         => html_entity_decode($objRS->fields['placeName'], ENT_QUOTES, CONTREXX_CHARSET),
-                'info'             => html_entity_decode($objRS->fields['link'], ENT_QUOTES, CONTREXX_CHARSET),
+                'info'          => html_entity_decode($objRS->fields['link'], ENT_QUOTES, CONTREXX_CHARSET),
             );
         }
         $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_READ_ERROR'];
@@ -342,7 +340,7 @@ class calendarLibrary
     function getEventsFromCategoryByID($categoryID){
         global $objDatabase, $_ARRAYLANG;
 
-        $query = "    SELECT `id` FROM `".DBPREFIX."module_calendar".$this->mandateLink."`
+        $query = "  SELECT `id` FROM `".DBPREFIX."module_calendar".$this->mandateLink."`
                     WHERE `catid` = ".$categoryID."";
         if(($objRS = $objDatabase->Execute($query)) !== false){
             if($objRS->RecordCount() < 1){
@@ -369,7 +367,7 @@ class calendarLibrary
     function getCategoryNameFromCategoryId($catId){
         global $objDatabase, $_ARRAYLANG;
 
-        $query = "    SELECT `name` FROM `".DBPREFIX."module_calendar".$this->mandateLink."_categories`
+        $query = "  SELECT `name` FROM `".DBPREFIX."module_calendar".$this->mandateLink."_categories`
                     WHERE `id` = ".$catId."";
         if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
             if($objRS->RecordCount() < 1){
@@ -392,7 +390,7 @@ class calendarLibrary
     function _getCategoryNameByEventId($eventID){
         global $objDatabase, $_LANGID;
 
-        $query = "    SELECT `c`.`name` FROM `".DBPREFIX."module_calendar".$this->mandateLink."` AS `e`
+        $query = "  SELECT `c`.`name` FROM `".DBPREFIX."module_calendar".$this->mandateLink."` AS `e`
                     INNER JOIN `".DBPREFIX."module_calendar".$this->mandateLink."_categories` AS `c`
                     ON (`e`.`catid` = `c`.`id`)
                     WHERE `lang` = ".$_LANGID."
@@ -492,28 +490,28 @@ class calendarLibrary
 
         // parse to template
         $this->_objTpl->setVariable(array(
-            'TXT_CALENDAR_CAT'                  => $_ARRAYLANG['TXT_CALENDAR_CAT'],
-            'TXT_CALENDAR_DATE'                => $_ARRAYLANG['TXT_CALENDAR_DATE'],
-            'TXT_CALENDAR_NAME'                => $_ARRAYLANG['TXT_CALENDAR_NAME'],
+            'TXT_CALENDAR_CAT'              => $_ARRAYLANG['TXT_CALENDAR_CAT'],
+            'TXT_CALENDAR_DATE'             => $_ARRAYLANG['TXT_CALENDAR_DATE'],
+            'TXT_CALENDAR_NAME'             => $_ARRAYLANG['TXT_CALENDAR_NAME'],
             'TXT_CALENDAR_PLACE'            => $_ARRAYLANG['TXT_CALENDAR_PLACE'],
-            'TXT_CALENDAR_PRIORITY'            => $_ARRAYLANG['TXT_CALENDAR_PRIORITY'],
+            'TXT_CALENDAR_PRIORITY'         => $_ARRAYLANG['TXT_CALENDAR_PRIORITY'],
             'TXT_CALENDAR_START'            => $_ARRAYLANG['TXT_CALENDAR_START'],
-            'TXT_CALENDAR_END'                => $_ARRAYLANG['TXT_CALENDAR_END'],
-            'TXT_CALENDAR_COMMENT'            => $_ARRAYLANG['TXT_CALENDAR_COMMENT'],
+            'TXT_CALENDAR_END'              => $_ARRAYLANG['TXT_CALENDAR_END'],
+            'TXT_CALENDAR_COMMENT'          => $_ARRAYLANG['TXT_CALENDAR_COMMENT'],
             'TXT_CALENDAR_BACK'             => $_ARRAYLANG['TXT_CALENDAR_BACK'],
             'CALENDAR_TITLE'                => $title,
             'CALENDAR_NAME'                 => stripslashes(htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)),
             'CALENDAR_PLACE'                => stripslashes(htmlentities($objResult->fields['place'], ENT_QUOTES, CONTREXX_CHARSET)),
             'CALENDAR_PRIORITY_GIF'         => $priority_gif,
-            'CALENDAR_PRIORITY'               => $objResult->fields['priority'],
+            'CALENDAR_PRIORITY'             => $objResult->fields['priority'],
             'CALENDAR_START'                => $start,
-            'CALENDAR_END'                    => $end,
+            'CALENDAR_END'                  => $end,
             'CALENDAR_STARTTIME'            => $starttime,
-            'CALENDAR_ENDTIME'                => $endtime,
+            'CALENDAR_ENDTIME'              => $endtime,
             'CALENDAR_STARTDATE'            => $startdate,
-            'CALENDAR_ENDDATE'               => $enddate,
-            'CALENDAR_COMMENT'               => $comment,
-            'CALENDAR_ID'                    => $id,
+            'CALENDAR_ENDDATE'              => $enddate,
+            'CALENDAR_COMMENT'              => $comment,
+            'CALENDAR_ID'                   => $id,
             'CALENDAR_CAT'                  => stripslashes($objResult2->fields['name']),
             'CALENDAR_ICAL_EXPORT'          => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar'.$this->mandateLink.'&amp;cmd=event&amp;export=iCal&amp;id='.$id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'">
                                                 '.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].' <img style="padding-top: -1px;" border="0" src="images/modules/calendar/ical_export.gif" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" />
@@ -739,7 +737,7 @@ class calendarLibrary
     {
         global $objDatabase, $_ARRAYLANG, $_LANGID;
 
-        $query = "SELECT     id,
+        $query = "SELECT    id,
                             active,
                             catid,
                             startdate,
@@ -772,10 +770,10 @@ class calendarLibrary
                             num,
                             notification,
                             notification_address
-                    FROM     ".DBPREFIX."module_calendar".$this->mandateLink."
-                   WHERE     id = '".$id."'";
+                    FROM    ".DBPREFIX."module_calendar".$this->mandateLink."
+                   WHERE    id = '".$id."'";
 
-        $objResultNote     = $objDatabase->SelectLimit($query, 1);
+        $objResultNote  = $objDatabase->SelectLimit($query, 1);
 
         //date and time
         $startdate  = $objResultNote->fields['startdate'];
@@ -784,15 +782,15 @@ class calendarLibrary
         $day            = date("d", $startdate);
 // TODO: never used
 //        $end_day        = date("d", $enddate);
-        $month            = date("m", $startdate);
+        $month          = date("m", $startdate);
 // TODO: never used
 //        $end_month        = date("m", $enddate);
-        $year            = date("Y", $startdate);
+        $year           = date("Y", $startdate);
 // TODO: never used
 //        $end_year        = date("Y", $enddate);
-        $hour            = date("H", $startdate);
+        $hour           = date("H", $startdate);
         $minutes        = date("i", $startdate);
-        $end_hour        = date("H", $enddate);
+        $end_hour       = date("H", $enddate);
         $end_minutes    = date("i", $enddate);
 
 
@@ -807,23 +805,23 @@ class calendarLibrary
             //priority
             switch ($objResultNote->fields['priority']){
                 case 1:
-                    $priority         = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT'];
+                    $priority       = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT'];
                     $priorityImg    = "<img src='images/modules/calendar/very_height.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT']."' />";
                     break;
                 case 2:
-                    $priority         = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT'];
+                    $priority       = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT'];
                     $priorityImg    = "<img src='images/modules/calendar/height.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT']."' />";
                     break;
                 case 3:
-                    $priority         = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_NORMAL'];
+                    $priority       = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_NORMAL'];
                     $priorityImg    = "&nbsp;";
                     break;
                 case 4:
-                    $priority         = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW'];
+                    $priority       = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW'];
                     $priorityImg    = "<img src='images/modules/calendar/low.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW']."' />";
                     break;
                 case 5:
-                    $priority         = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW'];
+                    $priority       = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW'];
                     $priorityImg    = "<img src='images/modules/calendar/very_low.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW']."' />";
                     break;
             }
@@ -832,7 +830,7 @@ class calendarLibrary
             $access = $objResultNote->fields['access'] == 1 ? $_ARRAYLANG['TXT_CALENDAR_ACCESS_COMMUNITY'] : $_ARRAYLANG['TXT_CALENDAR_ACCESS_PUBLIC'];
 
             //categorie
-            $query = "SELECT     id,
+            $query = "SELECT    id,
                                 name
                            FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
                         WHERE id='".$objResultNote->fields['catid']."'";
@@ -847,13 +845,13 @@ class calendarLibrary
             }
 
             //place map
-            $arrInfo     = getimagesize(ASCMS_PATH.$objResultNote->fields['placeMap']); //ermittelt die Gr��e des Bildes
-            $picWidth    = $arrInfo[0]+20;
-            $picHeight    = $arrInfo[1]+20;
+            $arrInfo    = getimagesize(ASCMS_PATH.$objResultNote->fields['placeMap']); //ermittelt die Gr��e des Bildes
+            $picWidth   = $arrInfo[0]+20;
+            $picHeight  = $arrInfo[1]+20;
 
             $attachNamePos  = strrpos($objResultNote->fields['attachment'], '/');
             $attachNameLenght = strlen($objResultNote->fields['attachment']);
-            $attachName        = substr($objResultNote->fields['attachment'], $attachNamePos+1, $attachNameLenght);
+            $attachName     = substr($objResultNote->fields['attachment'], $attachNamePos+1, $attachNameLenght);
 
         } else {
             $ed = get_wysiwyg_editor('inputComment',$objResultNote->fields['comment']);
@@ -864,39 +862,39 @@ class calendarLibrary
             //priority
             switch ($objResultNote->fields['priority']){
                 case 1:
-                    $veryHeight         = 'selected="selected"';
+                    $veryHeight     = 'selected="selected"';
                     $height         = '';
                     $normal         = '';
-                    $low             = '';
-                    $veryLow         = '';
+                    $low            = '';
+                    $veryLow        = '';
                     break;
                 case 2:
-                    $veryHeight         = '';
+                    $veryHeight     = '';
                     $height         = 'selected="selected"';
                     $normal         = '';
-                    $low             = '';
-                    $veryLow         = '';
+                    $low            = '';
+                    $veryLow        = '';
                     break;
                 case 3:
-                    $veryHeight         = '';
+                    $veryHeight     = '';
                     $height         = '';
                     $normal         = 'selected="selected"';
-                    $low             = '';
-                    $veryLow         = '';
+                    $low            = '';
+                    $veryLow        = '';
                     break;
                 case 4:
-                    $veryHeight         = '';
+                    $veryHeight     = '';
                     $height         = '';
                     $normal         = '';
-                    $low             = 'selected="selected"';
-                    $veryLow         = '';
+                    $low            = 'selected="selected"';
+                    $veryLow        = '';
                     break;
                 case 5:
-                    $veryHeight         = '';
+                    $veryHeight     = '';
                     $height         = '';
                     $normal         = '';
-                    $low             = '';
-                    $veryLow         = 'selected="selected"';
+                    $low            = '';
+                    $veryLow        = 'selected="selected"';
                     break;
             }
 
@@ -910,7 +908,7 @@ class calendarLibrary
             $this->selectMinutes($end_minutes, "endminutes", "CALENDAR_END_MINUTES_SELECT", "CALENDAR_END_MINUTES");
 
             //categorie
-            $query = "SELECT     id,
+            $query = "SELECT    id,
                                 name,
                                 lang
                            FROM ".DBPREFIX."module_calendar".$this->mandateLink."_categories
@@ -948,12 +946,12 @@ class calendarLibrary
         //access
         switch ($objResultNote->fields['access']){
             case 0:
-                $public             = 'selected="selected"';
-                $community         = '';
+                $public         = 'selected="selected"';
+                $community      = '';
                 $return         = false;
                 break;
             case 1:
-                $community         = 'selected="selected"';
+                $community      = 'selected="selected"';
                 $public         = '';
                 $return         = true;
                 break;
@@ -962,41 +960,41 @@ class calendarLibrary
         //registrations
         switch ($objResultNote->fields['registration']){
             case 0:
-                $registrationsActivated     = '';
+                $registrationsActivated  = '';
                 break;
             case 1:
-                $registrationsActivated     = 'checked="checked"';
+                $registrationsActivated  = 'checked="checked"';
                 break;
         }
 
-        $registrationsAddresserAll                = '';
-        $registrationsAddresserAllUser            = '';
-        $registrationsAddresserSelectGroup        = '';
+        $registrationsAddresserAll              = '';
+        $registrationsAddresserAllUser          = '';
+        $registrationsAddresserSelectGroup      = '';
         //addresser
         if ($objResultNote->fields['public'] == 1) {
-            $registrationsAddresserAll                = 'selected="selected"';
-            $registrationsAddresserAllUser            = '';
-            $registrationsAddresserSelectGroup        = '';
+            $registrationsAddresserAll              = 'selected="selected"';
+            $registrationsAddresserAllUser          = '';
+            $registrationsAddresserSelectGroup      = '';
         }
 
         if ($objResultNote->fields['all_groups'] == 1) {
-            $registrationsAddresserAll                = '';
-            $registrationsAddresserAllUser            = 'selected="selected"';
-            $registrationsAddresserSelectGroup        = '';
+            $registrationsAddresserAll              = '';
+            $registrationsAddresserAllUser          = 'selected="selected"';
+            $registrationsAddresserSelectGroup      = '';
         }
 
         if ($objResultNote->fields['groups'] != "") {
-            $registrationsAddresserAll                = '';
-            $registrationsAddresserAllUser            = '';
-            $registrationsAddresserSelectGroup        = 'selected="selected"';
+            $registrationsAddresserAll              = '';
+            $registrationsAddresserAllUser          = '';
+            $registrationsAddresserSelectGroup      = 'selected="selected"';
         }
 
         switch ($objResultNote->fields['notification']){
             case 0:
-                $notification     = '';
+                $notification    = '';
                 break;
             case 1:
-                $notification     = 'checked="checked"';
+                $notification    = 'checked="checked"';
                 break;
         }
 
@@ -1005,74 +1003,74 @@ class calendarLibrary
 
         // parse to template
         $this->_objTpl->setVariable(array(
-            'CALENDAR_ID'                     => $objResultNote->fields['id'],
-            'CALENDAR_TITLE'                 => htmlentities($objResultNote->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
-            'CALENDAR_START'                 => date("Y-m-d", $startdate),
-            'CALENDAR_END'                     => date("Y-m-d", $enddate),
-            'CALENDAR_START_SHOW'             => date("d.m.Y", $startdate),
-            'CALENDAR_END_SHOW'                 => date("d.m.Y", $enddate),
-            'CALENDAR_START_TIME'             => date("H:i", $startdate),
-            'CALENDAR_END_TIME'                 => date("H:i", $enddate),
-            'CALENDAR_LINK'                     => $objResultNote->fields['link'] != '' ? "<a href='".$objResultNote->fields['link']."' target='_blank' >".$objResultNote->fields['link']."</a>" : "",
-            'CALENDAR_LINK_SOURCE'            => $objResultNote->fields['link'],
-            'CALENDAR_PIC_THUMBNAIL'         => $objResultNote->fields['pic'] != '' ? "<img src='".$objResultNote->fields['pic'].".thumb' border='0' alt='".$objResultNote->fields['name']."' />" : "",
-            'CALENDAR_PIC_SOURCE'             => $objResultNote->fields['pic'],
-            'CALENDAR_PIC'                     => $objResultNote->fields['pic'] != '' ? "<img src='".$objResultNote->fields['pic']."' border='0' alt='".$objResultNote->fields['name']."' />" : "",
-            'CALENDAR_SOURCE_ATTACHMENT'     => $objResultNote->fields['attachment'],
-            'CALENDAR_ATTACHMENT'            => $objResultNote->fields['attachment'] != '' ? "<a href='".$objResultNote->fields['attachment']."' target='_blank' >".$attachName."</a>" : "",
-            'CALENDAR_DESCRIPTION'             => $ed,
-            'CALENDAR_ACTIVE'                 => $active,
+            'CALENDAR_ID'                   => $objResultNote->fields['id'],
+            'CALENDAR_TITLE'                => htmlentities($objResultNote->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
+            'CALENDAR_START'                => date("Y-m-d", $startdate),
+            'CALENDAR_END'                  => date("Y-m-d", $enddate),
+            'CALENDAR_START_SHOW'           => date("d.m.Y", $startdate),
+            'CALENDAR_END_SHOW'             => date("d.m.Y", $enddate),
+            'CALENDAR_START_TIME'           => date("H:i", $startdate),
+            'CALENDAR_END_TIME'             => date("H:i", $enddate),
+            'CALENDAR_LINK'                 => $objResultNote->fields['link'] != '' ? "<a href='".$objResultNote->fields['link']."' target='_blank' >".$objResultNote->fields['link']."</a>" : "",
+            'CALENDAR_LINK_SOURCE'          => $objResultNote->fields['link'],
+            'CALENDAR_PIC_THUMBNAIL'        => $objResultNote->fields['pic'] != '' ? "<img src='".$objResultNote->fields['pic'].".thumb' border='0' alt='".$objResultNote->fields['name']."' />" : "",
+            'CALENDAR_PIC_SOURCE'           => $objResultNote->fields['pic'],
+            'CALENDAR_PIC'                  => $objResultNote->fields['pic'] != '' ? "<img src='".$objResultNote->fields['pic']."' border='0' alt='".$objResultNote->fields['name']."' />" : "",
+            'CALENDAR_SOURCE_ATTACHMENT'    => $objResultNote->fields['attachment'],
+            'CALENDAR_ATTACHMENT'           => $objResultNote->fields['attachment'] != '' ? "<a href='".$objResultNote->fields['attachment']."' target='_blank' >".$attachName."</a>" : "",
+            'CALENDAR_DESCRIPTION'          => $ed,
+            'CALENDAR_ACTIVE'               => $active,
 
-            'CALENDAR_PLACE'                 => htmlentities($objResultNote->fields['placeName'], ENT_QUOTES, CONTREXX_CHARSET),
-            'CALENDAR_PLACE_STREET_NR'         => htmlentities($objResultNote->fields['placeStreet'], ENT_QUOTES, CONTREXX_CHARSET),
-            'CALENDAR_PLACE_ZIP'             => htmlentities($objResultNote->fields['placeZip'], ENT_QUOTES, CONTREXX_CHARSET),
-            'CALENDAR_PLACE_CITY'             => htmlentities($objResultNote->fields['placeCity'], ENT_QUOTES, CONTREXX_CHARSET),
-            'CALENDAR_PLACE_LINK'             => $objResultNote->fields['placeLink'] != '' ? "<a href='".$objResultNote->fields['placeLink']."' target='_blank' >".$objResultNote->fields['placeLink']."</a>" : "",
-            'CALENDAR_PLACE_LINK_SOURCE'     => htmlentities($objResultNote->fields['placeLink'], ENT_QUOTES, CONTREXX_CHARSET),
-            'CALENDAR_PLACE_MAP_LINK'        => $objResultNote->fields['placeMap'] != '' ? '<a href="'.$objResultNote->fields['placeMap'].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
-            'CALENDAR_PLACE_MAP_THUMBNAIL'    => $objResultNote->fields['placeMap'] != '' ? '<a href="'.$objResultNote->fields['placeMap'].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$objResultNote->fields['placeMap'].'.thumb" border="0" alt="'.$objResultNote->fields['placeName'].'" /></a>' : "",
+            'CALENDAR_PLACE'                => htmlentities($objResultNote->fields['placeName'], ENT_QUOTES, CONTREXX_CHARSET),
+            'CALENDAR_PLACE_STREET_NR'      => htmlentities($objResultNote->fields['placeStreet'], ENT_QUOTES, CONTREXX_CHARSET),
+            'CALENDAR_PLACE_ZIP'            => htmlentities($objResultNote->fields['placeZip'], ENT_QUOTES, CONTREXX_CHARSET),
+            'CALENDAR_PLACE_CITY'           => htmlentities($objResultNote->fields['placeCity'], ENT_QUOTES, CONTREXX_CHARSET),
+            'CALENDAR_PLACE_LINK'           => $objResultNote->fields['placeLink'] != '' ? "<a href='".$objResultNote->fields['placeLink']."' target='_blank' >".$objResultNote->fields['placeLink']."</a>" : "",
+            'CALENDAR_PLACE_LINK_SOURCE'    => htmlentities($objResultNote->fields['placeLink'], ENT_QUOTES, CONTREXX_CHARSET),
+            'CALENDAR_PLACE_MAP_LINK'       => $objResultNote->fields['placeMap'] != '' ? '<a href="'.$objResultNote->fields['placeMap'].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
+            'CALENDAR_PLACE_MAP_THUMBNAIL'  => $objResultNote->fields['placeMap'] != '' ? '<a href="'.$objResultNote->fields['placeMap'].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$objResultNote->fields['placeMap'].'.thumb" border="0" alt="'.$objResultNote->fields['placeName'].'" /></a>' : "",
             'CALENDAR_PLACE_MAP_SOURCE'     => $objResultNote->fields['placeMap'],
 
-            'CALENDAR_ORGANIZER'             => htmlentities($objResultNote->fields['organizerName'], ENT_QUOTES, CONTREXX_CHARSET),
-            'CALENDAR_ORGANIZER_STREET_NR'     => htmlentities($objResultNote->fields['organizerStreet'], ENT_QUOTES, CONTREXX_CHARSET),
-            'CALENDAR_ORGANIZER_PLACE'         => htmlentities($objResultNote->fields['organizerPlace'], ENT_QUOTES, CONTREXX_CHARSET),
-            'CALENDAR_ORGANIZER_ZIP'         => htmlentities($objResultNote->fields['organizerZip'], ENT_QUOTES, CONTREXX_CHARSET),
+            'CALENDAR_ORGANIZER'            => htmlentities($objResultNote->fields['organizerName'], ENT_QUOTES, CONTREXX_CHARSET),
+            'CALENDAR_ORGANIZER_STREET_NR'  => htmlentities($objResultNote->fields['organizerStreet'], ENT_QUOTES, CONTREXX_CHARSET),
+            'CALENDAR_ORGANIZER_PLACE'      => htmlentities($objResultNote->fields['organizerPlace'], ENT_QUOTES, CONTREXX_CHARSET),
+            'CALENDAR_ORGANIZER_ZIP'        => htmlentities($objResultNote->fields['organizerZip'], ENT_QUOTES, CONTREXX_CHARSET),
             'CALENDAR_ORGANIZER_LINK_SOURCE'=> htmlentities($objResultNote->fields['organizerLink'], ENT_QUOTES, CONTREXX_CHARSET),
-            'CALENDAR_ORGANIZER_LINK'        => $objResultNote->fields['organizerLink'] != '' ? "<a href='".$objResultNote->fields['organizerLink']."' target='_blank' >".$objResultNote->fields['organizerLink']."</a>" : "",
+            'CALENDAR_ORGANIZER_LINK'       => $objResultNote->fields['organizerLink'] != '' ? "<a href='".$objResultNote->fields['organizerLink']."' target='_blank' >".$objResultNote->fields['organizerLink']."</a>" : "",
             'CALENDAR_ORGANIZER_MAIL_SOURCE'=> htmlentities($objResultNote->fields['organizerMail'], ENT_QUOTES, CONTREXX_CHARSET),
-            'CALENDAR_ORGANIZER_MAIL'        => $objResultNote->fields['organizerMail'] != '' ? "<a href='mailto:".$objResultNote->fields['organizerMail']."' >".$objResultNote->fields['organizerMail']."</a>" : "",
+            'CALENDAR_ORGANIZER_MAIL'       => $objResultNote->fields['organizerMail'] != '' ? "<a href='mailto:".$objResultNote->fields['organizerMail']."' >".$objResultNote->fields['organizerMail']."</a>" : "",
 
 
-            'CALENDAR_ACCESS_PUBLIC'         => $public,
+            'CALENDAR_ACCESS_PUBLIC'        => $public,
             'CALENDAR_ACCESS_COMMUNITY'     => $community,
-            'CALENDAR_ACCESS'                 => $access,
+            'CALENDAR_ACCESS'               => $access,
             'CALENDAR_PRIORITY'             => $priority,
             'CALENDAR_PRIORITY_IMG'         => $priorityImg,
             'CALENDAR_PRIORITY_VERY_HEIGHT' => (isset($veryHeight)) ? $veryHeight : "",
-            'CALENDAR_PRIORITY_HEIGHT'         => (isset($height)) ? $height : "",
-            'CALENDAR_PRIORITY_NORMAL'         => (isset($normal)) ? $normal : "",
+            'CALENDAR_PRIORITY_HEIGHT'      => (isset($height)) ? $height : "",
+            'CALENDAR_PRIORITY_NORMAL'      => (isset($normal)) ? $normal : "",
             'CALENDAR_PRIORITY_LOW'         => (isset($low)) ? $low : "",
-            'CALENDAR_PRIORITY_VERY_LOW'     => (isset($veryLow)) ? $veryLow : "",
+            'CALENDAR_PRIORITY_VERY_LOW'    => (isset($veryLow)) ? $veryLow : "",
 
-            'CALENDAR_ACTUALL_BOXES'         => $calendarbox,
-            'CALENDAR_CATEGORIE'             => $catName,
+            'CALENDAR_ACTUALL_BOXES'        => $calendarbox,
+            'CALENDAR_CATEGORIE'            => $catName,
 
-            'CALENDAR_EVENT_COUNT_REG'                        => $reg_signoff[0],
-            'CALENDAR_EVENT_COUNT_SIGNOFF'                    => $reg_signoff[1],
-            'CALENDAR_EVENT_COUNT_SUBSCRIBER'                => $this->_countSubscriber($objResultNote->fields['id']),
-            'CALENDAR_REGISTRATIONS_SUBSCRIBER'                => $objResultNote->fields['num'],
-            'CALENDAR_REGISTRATIONS_ACTIVATED'                => $registrationsActivated,
-            'CALENDAR_REGISTRATIONS_ADDRESSER_ALL'            => $registrationsAddresserAll,
-            'CALENDAR_REGISTRATIONS_ADDRESSER_ALL_USER'        => $registrationsAddresserAllUser,
-            'CALENDAR_REGISTRATIONS_ADDRESSER_SELECT_GROUP'    => $registrationsAddresserSelectGroup,
-            'CALENDAR_REGISTRATIONS_GROUPS_UNSELECTED'         => $this->_getUserGroups($objResultNote->fields['id'], 0),
-            'CALENDAR_REGISTRATIONS_GROUPS_SELECTED'         => $this->_getUserGroups($objResultNote->fields['id'], 1),
+            'CALENDAR_EVENT_COUNT_REG'                      => $reg_signoff[0],
+            'CALENDAR_EVENT_COUNT_SIGNOFF'                  => $reg_signoff[1],
+            'CALENDAR_EVENT_COUNT_SUBSCRIBER'               => $this->_countSubscriber($objResultNote->fields['id']),
+            'CALENDAR_REGISTRATIONS_SUBSCRIBER'             => $objResultNote->fields['num'],
+            'CALENDAR_REGISTRATIONS_ACTIVATED'              => $registrationsActivated,
+            'CALENDAR_REGISTRATIONS_ADDRESSER_ALL'          => $registrationsAddresserAll,
+            'CALENDAR_REGISTRATIONS_ADDRESSER_ALL_USER'     => $registrationsAddresserAllUser,
+            'CALENDAR_REGISTRATIONS_ADDRESSER_SELECT_GROUP' => $registrationsAddresserSelectGroup,
+            'CALENDAR_REGISTRATIONS_GROUPS_UNSELECTED'      => $this->_getUserGroups($objResultNote->fields['id'], 0),
+            'CALENDAR_REGISTRATIONS_GROUPS_SELECTED'        => $this->_getUserGroups($objResultNote->fields['id'], 1),
             'CALENDAR_REGISTRATION_LINK'                    => '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar'.$this->mandateLink.'&amp;cmd=sign&amp;id='.$objResultNote->fields['id'].'">'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_LINK'].'</a>',
 
-            'CALENDAR_MAIL_TITLE'             => htmlentities($objResultNote->fields['mailTitle'], ENT_QUOTES, CONTREXX_CHARSET),
+            'CALENDAR_MAIL_TITLE'           => htmlentities($objResultNote->fields['mailTitle'], ENT_QUOTES, CONTREXX_CHARSET),
             'CALENDAR_MAIL_CONTENT'         => htmlentities($objResultNote->fields['mailContent'], ENT_QUOTES, CONTREXX_CHARSET),
 
-            'CALENDAR_NOTIFICATION_ACTIVATED'     => $notification,
+            'CALENDAR_NOTIFICATION_ACTIVATED'   => $notification,
             'CALENDAR_NOTIFICATION_ADDRESS'     => htmlentities($objResultNote->fields['notification_address'], ENT_QUOTES, CONTREXX_CHARSET),
         ));
 
@@ -1114,20 +1112,20 @@ class calendarLibrary
                 }
 
             $this->_objTpl->setVariable(array(
-                'CALENDAR_REG_ID'                 => $objResultReg->fields['id'],
-                'CALENDAR_REG_NOTE_ID'             => $objResultReg->fields['note_id'],
+                'CALENDAR_REG_ID'               => $objResultReg->fields['id'],
+                'CALENDAR_REG_NOTE_ID'          => $objResultReg->fields['note_id'],
                 'CALENDAR_REG_TYPE_TXT'         => $statusTxt,
                 'CALENDAR_REG_TYPE_IMG'         => $statusImg,
                 'CALENDAR_REG_DATE'             => date("d.m.Y H:i:s", $objResultReg->fields['time']),
-                'CALENDAR_REG_HOST'                 => htmlentities($objResultReg->fields['host'], ENT_QUOTES, CONTREXX_CHARSET),
-                'CALENDAR_REG_IP'                 => htmlentities($objResultReg->fields['ip_address'], ENT_QUOTES, CONTREXX_CHARSET),
+                'CALENDAR_REG_HOST'             => htmlentities($objResultReg->fields['host'], ENT_QUOTES, CONTREXX_CHARSET),
+                'CALENDAR_REG_IP'               => htmlentities($objResultReg->fields['ip_address'], ENT_QUOTES, CONTREXX_CHARSET),
             ));
         }
 
         //get fields
         $queryField = "SELECT id, note_id, name, type, required
                          FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
-                           WHERE note_id='".$objResultReg->fields['note_id']."'";
+                        WHERE note_id='".$objResultReg->fields['note_id']."'";
 
         $objResultField = $objDatabase->Execute($queryField);
 
@@ -1218,7 +1216,7 @@ class calendarLibrary
                            FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
                           WHERE note_id = '".$id."' AND `key`='13'";
 
-        $objResultFieldId     = $objDatabase->SelectLimit($queryFieldId, 1);
+        $objResultFieldId   = $objDatabase->SelectLimit($queryFieldId, 1);
         $fieldId            = $objResultFieldId->fields['id'];
 
         //get registrations
@@ -1227,17 +1225,17 @@ class calendarLibrary
                    WHERE note_id = '".$id."' AND type='1'";
 
         $objResultCount = $objDatabase->Execute($query);
-        $countReg        = $objResultCount->RecordCount();
+        $countReg       = $objResultCount->RecordCount();
         $countEscort = 0;
 
         //add escort
         if ($objResultCount !== false) {
             while(!$objResultCount->EOF) {
-                $queryEscort     = "SELECT data
+                $queryEscort    = "SELECT data
                                      FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_data
-                                       WHERE reg_id = '".$objResultCount->fields['id']."' AND field_id='".$fieldId."'";
+                                    WHERE reg_id = '".$objResultCount->fields['id']."' AND field_id='".$fieldId."'";
 
-                $objResultEscort     = $objDatabase->SelectLimit($queryEscort, 1);
+                $objResultEscort    = $objDatabase->SelectLimit($queryEscort, 1);
 
                 $countEscort = $countEscort+$objResultEscort->fields['data'];
 
@@ -1261,22 +1259,22 @@ class calendarLibrary
         global $objDatabase, $_LANGID;
 
         //get selected groups
-        $queryGroups         = "SELECT groups
-                                  FROM ".DBPREFIX."module_calendar".$this->mandateLink."
-                                   WHERE id = '".$noteId."'";
+        $queryGroups        = "SELECT groups
+                                 FROM ".DBPREFIX."module_calendar".$this->mandateLink."
+                                WHERE id = '".$noteId."'";
 
-        $objResultGroups     = $objDatabase->Execute($queryGroups);
+        $objResultGroups    = $objDatabase->Execute($queryGroups);
 
         if ($objResultGroups !== false) {
             $arrSelectedGroups = explode(";", $objResultGroups->fields['groups']);
         }
 
         //get all groups
-        $queryGroups         = "SELECT group_id,group_name,group_description,is_active,type
-                                  FROM ".DBPREFIX."access_user_groups
-                                   WHERE is_active = '1'";
+        $queryGroups        = "SELECT group_id,group_name,group_description,is_active,type
+                                 FROM ".DBPREFIX."access_user_groups
+                                WHERE is_active = '1'";
 
-        $objResultGroups     = $objDatabase->Execute($queryGroups);
+        $objResultGroups    = $objDatabase->Execute($queryGroups);
 
         if ($objResultGroups !== false) {
             while(!$objResultGroups->EOF) {
@@ -1315,15 +1313,15 @@ class calendarLibrary
 
 
          $arrSysFieldNames = array(
-            '1'        => $_ARRAYLANG['TXT_CALENDAR_REG_FIRSTNAME'],
-            '2'        => $_ARRAYLANG['TXT_CALENDAR_REG_LASTNAME'],
-            '3'        => $_ARRAYLANG['TXT_CALENDAR_REG_STREET'],
-            '4'        => $_ARRAYLANG['TXT_CALENDAR_REG_ZIP'],
-            '5'        => $_ARRAYLANG['TXT_CALENDAR_REG_CITY'],
-            '6'        => $_ARRAYLANG['TXT_CALENDAR_REG_MAIL'],
-            '7'        => $_ARRAYLANG['TXT_CALENDAR_REG_WEBSITE'],
-            '8'        => $_ARRAYLANG['TXT_CALENDAR_REG_PHONE'],
-            '9'        => $_ARRAYLANG['TXT_CALENDAR_REG_MOBILE'],
+            '1'     => $_ARRAYLANG['TXT_CALENDAR_REG_FIRSTNAME'],
+            '2'     => $_ARRAYLANG['TXT_CALENDAR_REG_LASTNAME'],
+            '3'     => $_ARRAYLANG['TXT_CALENDAR_REG_STREET'],
+            '4'     => $_ARRAYLANG['TXT_CALENDAR_REG_ZIP'],
+            '5'     => $_ARRAYLANG['TXT_CALENDAR_REG_CITY'],
+            '6'     => $_ARRAYLANG['TXT_CALENDAR_REG_MAIL'],
+            '7'     => $_ARRAYLANG['TXT_CALENDAR_REG_WEBSITE'],
+            '8'     => $_ARRAYLANG['TXT_CALENDAR_REG_PHONE'],
+            '9'     => $_ARRAYLANG['TXT_CALENDAR_REG_MOBILE'],
             '10'    => $_ARRAYLANG['TXT_CALENDAR_REG_INTERESSTS'],
             '11'    => $_ARRAYLANG['TXT_CALENDAR_REG_PROFESSION'],
             '12'    => $_ARRAYLANG['TXT_CALENDAR_REG_COMPANY'],
@@ -1333,91 +1331,91 @@ class calendarLibrary
         if ($frmType == "backend") {
             for ($i=1; $i <= 20; $i++) {
                 $queryField         = "SELECT `id`,`note_id`,`name`,`type`,`required`,`order`,`key`
-                                          FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
-                                           WHERE note_id = '".$noteId."' AND `key`='".$i."'";
+                                         FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
+                                        WHERE note_id = '".$noteId."' AND `key`='".$i."'";
 
                 $objResultField     = $objDatabase->SelectLimit($queryField, 1);
 
                 if ($objResultField !== false) {
-                    $id            = $objResultField->fields['id'];
-                    $name        = $objResultField->fields['name'];
-                    $order        = $objResultField->fields['order'];
-                    $type        = $objResultField->fields['type'];
+                    $id         = $objResultField->fields['id'];
+                    $name       = $objResultField->fields['name'];
+                    $order      = $objResultField->fields['order'];
+                    $type       = $objResultField->fields['type'];
 
                     if(!empty($objResultField->fields['name'])){
                         $status         = 'checked="checked"';
-                        $statusImg        = 'green';
+                        $statusImg      = 'green';
                     } else {
                         $status         = '';
-                        $statusImg        = 'red';
+                        $statusImg      = 'red';
                     }
 
                     if(!empty($objResultField->fields['required']) == 1){
-                        $required    = 'checked="checked"';
+                        $required   = 'checked="checked"';
                     } else {
-                        $required    = '';
+                        $required   = '';
                     }
                 }
 
                 if($i <= count($arrSysFieldNames)){
-                    $disabled     = 'readonly="readonly"';
-                    $type        = 1;
-                    $name        = $arrSysFieldNames[$i];
+                    $disabled   = 'readonly="readonly"';
+                    $type       = 1;
+                    $name       = $arrSysFieldNames[$i];
                 } else {
-                    $disabled     = '';
+                    $disabled   = '';
                 }
 
                 //options
                 switch ($type){
                     case 1:
-                        $options    .=    '<option value="0">'.$_ARRAYLANG['TXT_CALENDAR_CHOSE_TYPE'].'</option>';
-                        $options    .=    '<option value="1" selected="selected">'.$_ARRAYLANG['TXT_CALENDAR_INPUTFIELD'].'</option>';
-                        $options    .=    '<option value="2">'.$_ARRAYLANG['TXT_CALENDAR_TEXTAREA'].'</option>';
-                        $options    .=    '<option value="3">'.$_ARRAYLANG['TXT_CALENDAR_CHECKBOCK'].'</option>';
+                        $options    .=  '<option value="0">'.$_ARRAYLANG['TXT_CALENDAR_CHOSE_TYPE'].'</option>';
+                        $options    .=  '<option value="1" selected="selected">'.$_ARRAYLANG['TXT_CALENDAR_INPUTFIELD'].'</option>';
+                        $options    .=  '<option value="2">'.$_ARRAYLANG['TXT_CALENDAR_TEXTAREA'].'</option>';
+                        $options    .=  '<option value="3">'.$_ARRAYLANG['TXT_CALENDAR_CHECKBOCK'].'</option>';
                         break;
                     case 2:
-                        $options    .=    '<option value="0">'.$_ARRAYLANG['TXT_CALENDAR_CHOSE_TYPE'].'</option>';
-                        $options    .=    '<option value="1">'.$_ARRAYLANG['TXT_CALENDAR_INPUTFIELD'].'</option>';
-                        $options    .=    '<option value="2" selected="selected">'.$_ARRAYLANG['TXT_CALENDAR_TEXTAREA'].'</option>';
-                        $options    .=    '<option value="3">'.$_ARRAYLANG['TXT_CALENDAR_CHECKBOCK'].'</option>';
+                        $options    .=  '<option value="0">'.$_ARRAYLANG['TXT_CALENDAR_CHOSE_TYPE'].'</option>';
+                        $options    .=  '<option value="1">'.$_ARRAYLANG['TXT_CALENDAR_INPUTFIELD'].'</option>';
+                        $options    .=  '<option value="2" selected="selected">'.$_ARRAYLANG['TXT_CALENDAR_TEXTAREA'].'</option>';
+                        $options    .=  '<option value="3">'.$_ARRAYLANG['TXT_CALENDAR_CHECKBOCK'].'</option>';
                         break;
                     case 3:
-                        $options    .=    '<option value="0">'.$_ARRAYLANG['TXT_CALENDAR_CHOSE_TYPE'].'</option>';
-                        $options    .=    '<option value="1">'.$_ARRAYLANG['TXT_CALENDAR_INPUTFIELD'].'</option>';
-                        $options    .=    '<option value="2">'.$_ARRAYLANG['TXT_CALENDAR_TEXTAREA'].'</option>';
-                        $options    .=    '<option value="3" selected="selected">'.$_ARRAYLANG['TXT_CALENDAR_CHECKBOCK'].'</option>';
+                        $options    .=  '<option value="0">'.$_ARRAYLANG['TXT_CALENDAR_CHOSE_TYPE'].'</option>';
+                        $options    .=  '<option value="1">'.$_ARRAYLANG['TXT_CALENDAR_INPUTFIELD'].'</option>';
+                        $options    .=  '<option value="2">'.$_ARRAYLANG['TXT_CALENDAR_TEXTAREA'].'</option>';
+                        $options    .=  '<option value="3" selected="selected">'.$_ARRAYLANG['TXT_CALENDAR_CHECKBOCK'].'</option>';
                         break;
                     default:
-                        $options    .=    '<option value="0" selected="selected">'.$_ARRAYLANG['TXT_CALENDAR_CHOSE_TYPE'].'</option>';
-                        $options    .=    '<option value="1">'.$_ARRAYLANG['TXT_CALENDAR_INPUTFIELD'].'</option>';
-                        $options    .=    '<option value="2">'.$_ARRAYLANG['TXT_CALENDAR_TEXTAREA'].'</option>';
-                        $options    .=    '<option value="3">'.$_ARRAYLANG['TXT_CALENDAR_CHECKBOCK'].'</option>';
+                        $options    .=  '<option value="0" selected="selected">'.$_ARRAYLANG['TXT_CALENDAR_CHOSE_TYPE'].'</option>';
+                        $options    .=  '<option value="1">'.$_ARRAYLANG['TXT_CALENDAR_INPUTFIELD'].'</option>';
+                        $options    .=  '<option value="2">'.$_ARRAYLANG['TXT_CALENDAR_TEXTAREA'].'</option>';
+                        $options    .=  '<option value="3">'.$_ARRAYLANG['TXT_CALENDAR_CHECKBOCK'].'</option>';
                         break;
                 }
 
                 $this->_objTpl->setVariable(array(
-                    'CALENDAR_FIELD_ROW'                      => ($i % 2) ? 'row1'  : 'row2',
-                    'CALENDAR_FIELD_DISABLED'                  => $disabled,
-                    'CALENDAR_FIELD_OPTIONS'                  => $options,
-                    'CALENDAR_FIELD_ORDER'                      => intval($order),
-                    'CALENDAR_FIELD_ID'                          => $id,
-                    'CALENDAR_FIELD_NAME'                      => $name,
-                    'CALENDAR_FIELD_STATUS'                      => $status,
-                    'CALENDAR_FIELD_STATUS_IMG'                  => $statusImg,
-                    'CALENDAR_FIELD_REQUIRED'                  => $required,
-                    'CALENDAR_FIELD_KEY'                      => $i
+                    'CALENDAR_FIELD_ROW'                    => ($i % 2) ? 'row1'  : 'row2',
+                    'CALENDAR_FIELD_DISABLED'               => $disabled,
+                    'CALENDAR_FIELD_OPTIONS'                => $options,
+                    'CALENDAR_FIELD_ORDER'                  => intval($order),
+                    'CALENDAR_FIELD_ID'                     => $id,
+                    'CALENDAR_FIELD_NAME'                   => $name,
+                    'CALENDAR_FIELD_STATUS'                 => $status,
+                    'CALENDAR_FIELD_STATUS_IMG'             => $statusImg,
+                    'CALENDAR_FIELD_REQUIRED'               => $required,
+                    'CALENDAR_FIELD_KEY'                    => $i
                 ));
                 $this->_objTpl->parse("calendarRegFields");
 
-                $options    =    "";
-                $status        =    "";
-                $name        =    "";
+                $options    =   "";
+                $status     =   "";
+                $name       =   "";
             }
         } else {
             $queryField         = "SELECT `id`,`note_id`,`name`,`type`,`required`,`order`,`key`
-                                      FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
-                                       WHERE note_id = '".$noteId."'
-                                    ORDER BY `order`, `id`";
+                                     FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields
+                                    WHERE note_id = '".$noteId."'
+                                 ORDER BY `order`, `id`";
 
             $objResultField     = $objDatabase->Execute($queryField);
 
@@ -1425,12 +1423,12 @@ class calendarLibrary
                 while(!$objResultField->EOF) {
 
                     if ($objResultField->fields['required'] == 1) {
-                        $jsFields    .= 'if (document.getElementsByName("signForm['.$objResultField->fields['id'].']")[0].value == "") {
+                        $jsFields   .= 'if (document.getElementsByName("signForm['.$objResultField->fields['id'].']")[0].value == "") {
                                             errorMsg = errorMsg + "- '.$objResultField->fields['name'].'\n";
                                         }';
-                        $required     = "<font color='red'> *</font>";
+                        $required    = "<font color='red'> *</font>";
                     } else {
-                        $required     = "";
+                        $required    = "";
                     }
 
                     switch ($objResultField->fields['type']){
@@ -1446,9 +1444,9 @@ class calendarLibrary
                     }
 
                     $this->_objTpl->setVariable(array(
-                        'CALENDAR_NOTE_ID'                          => $noteId,
-                        'CALENDAR_FIELD_NAME'                      => $objResultField->fields['name'].$required,
-                        'CALENDAR_FIELD_INPUT'                      => $inputField,
+                        'CALENDAR_NOTE_ID'                      => $noteId,
+                        'CALENDAR_FIELD_NAME'                   => $objResultField->fields['name'].$required,
+                        'CALENDAR_FIELD_INPUT'                  => $inputField,
                     ));
 
                     $this->_objTpl->parse("calendarRegFields");
@@ -1457,7 +1455,7 @@ class calendarLibrary
                 }
             }
 
-            $frmJS         =  '<script type="text/javascript">
+            $frmJS      =  '<script type="text/javascript">
                             <!--
                             function checkFields(){
                                 var errorMsg = "";
@@ -1476,7 +1474,7 @@ class calendarLibrary
                             -->
                             </script>';
             $this->_objTpl->setVariable(array(
-                'CALENDAR_FIELD_JS'                      => $frmJS,
+                'CALENDAR_FIELD_JS'                 => $frmJS,
             ));
 
             $this->_objTpl->parse("signForm");
@@ -1494,17 +1492,19 @@ class calendarLibrary
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG, $objLanguage;
 
+        $objFWUser = FWUser::getFWUserObject();
+        
         //get mail template
-        $query             = "SELECT mailTitle, mailContent
-                                FROM ".DBPREFIX."module_calendar".$this->mandateLink."
+        $query          = "SELECT mailTitle, mailContent
+                             FROM ".DBPREFIX."module_calendar".$this->mandateLink."
                             WHERE id = '".$noteId."'";
 
-        $objResult         = $objDatabase->SelectLimit($query, 1);
-        $mailTitle         = $objResult->fields['mailTitle'];
-        $mailContent     = $objResult->fields['mailContent'];
+        $objResult      = $objDatabase->SelectLimit($query, 1);
+        $mailTitle      = $objResult->fields['mailTitle'];
+        $mailContent    = $objResult->fields['mailContent'];
 
         //get note data
-        $queryNote = "SELECT     id,
+        $queryNote = "SELECT    id,
                             catid,
                             startdate,
                             enddate,
@@ -1516,48 +1516,35 @@ class calendarLibrary
                             mailTitle,
                             num,
                             `key`
-                    FROM     ".DBPREFIX."module_calendar".$this->mandateLink."
-                   WHERE     id = '".$noteId."'";
+                    FROM    ".DBPREFIX."module_calendar".$this->mandateLink."
+                   WHERE    id = '".$noteId."'";
 
 
 
-        $objResultNote     = $objDatabase->SelectLimit($queryNote, 1);
+        $objResultNote  = $objDatabase->SelectLimit($queryNote, 1);
 
-        $GoupsNote        = substr($objResultNote->fields['groups'],0,-1);
+        $GoupsNote      = substr($objResultNote->fields['groups'],0,-1);
 
-        $arrGoupsNote     = explode(";",$GoupsNote);
-
-        $queryUser = "SELECT     id,
-                                email,
-                                firstname,
-                                lastname,
-                                groups
-                        FROM     ".DBPREFIX."access_users
-                       WHERE     active = '1'";
-
-        $objResultUser     = $objDatabase->Execute($queryUser);
-
-        if ($objResultUser !== false) {
-            while(!$objResultUser->EOF) {
-                if ($objResultNote->fields['all_groups'] == 1) {
-                    if (!empty($objResultUser->fields['email'])) {
-                        $arrUsers[$objResultUser->fields['id']]['email']         = $objResultUser->fields['email'];
-                        $arrUsers[$objResultUser->fields['id']]['lastname']     = $objResultUser->fields['lastname'];
-                        $arrUsers[$objResultUser->fields['id']]['firstname']     = $objResultUser->fields['firstname'];
-                    }
-                } else {
-                    if (!empty($objResultUser->fields['email'])) {
-                        $arrGoupsUser = explode(",",$objResultUser->fields['groups']);
-                        foreach ($arrGoupsNote as $groupId){
-                            if (in_array($groupId, $arrGoupsUser)) {
-                                $arrUsers[$objResultUser->fields['id']]['email']         = $objResultUser->fields['email'];
-                                $arrUsers[$objResultUser->fields['id']]['lastname']     = $objResultUser->fields['lastname'];
-                                $arrUsers[$objResultUser->fields['id']]['firstname']     = $objResultUser->fields['firstname'];
-                            }
-                        }
-                    }
-                }
-                $objResultUser->moveNext();
+        $arrGoupsNote   = explode(";",$GoupsNote);
+        
+        $arrFilter = array(
+            'active' => 1,
+            array(
+                'email' => array(
+                    '!=' => ''
+                )
+            )
+        );
+        if ($objResultNote->fields['all_groups'] != 1) {
+            $arrFilter['group_id'] = $arrGoupsNote;
+        }
+        
+        if ($objUser = $objFWUser->objUser->getUsers($arrFilter, null, null, array('id', 'email', 'firstname', 'lastname'))) {
+            while (!$objUser->EOF) {
+                $arrUsers[$objUser->getId()]['email']       = $objUser->getEmail();
+                $arrUsers[$objUser->getId()]['lastname']    = $objUser->getProfileAttribute('lastname');
+                $arrUsers[$objUser->getId()]['firstname']   = $objUser->getProfileAttribute('firstname');
+                $objUser->next();
             }
         }
 
@@ -1582,19 +1569,19 @@ class calendarLibrary
             }
 
             foreach($arrUsers as $userId => $arrUser){
-                $mailTitleReloaded        = $mailTitle;
+                $mailTitleReloaded      = $mailTitle;
                 $mailContentReloaded    = $mailContent;
 
                 $key        = base64_encode($noteId."#".$userId."#".$objResultNote->fields['key']);
                 $url        = $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET;
-                $date        = date(ASCMS_DATE_FORMAT);
-                $firstname    = $arrUser['firstname'];
-                $lastname    = $arrUser['lastname'];
-                $link        = "http://".$url."/".($_CONFIG['useVirtualLanguagePath'] == 'on' ? $objLanguage->getLanguageParameter($languageId, 'lang').'/' : null).CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandateLink."&cmd=sign&key=".$key;
-                $title        = $objResultNote->fields['name'];
-                $startdate    = date("Y-m-d H:i", $objResultNote->fields['startdate']);
-                $enddate     = date("Y-m-d H:i", $objResultNote->fields['enddate']);
-                $num         = $objResultNote->fields['num'];
+                $date       = date(ASCMS_DATE_FORMAT);
+                $firstname  = $arrUser['firstname'];
+                $lastname   = $arrUser['lastname'];
+                $link       = "http://".$url."/".($_CONFIG['useVirtualLanguagePath'] == 'on' ? $objLanguage->getLanguageParameter($languageId, 'lang').'/' : null).CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandateLink."&cmd=sign&key=".$key;
+                $title      = $objResultNote->fields['name'];
+                $startdate  = date("Y-m-d H:i", $objResultNote->fields['startdate']);
+                $enddate    = date("Y-m-d H:i", $objResultNote->fields['enddate']);
+                $num        = $objResultNote->fields['num'];
 
                 //replace placeholder
                 $array_1 = array('[[FIRSTNAME]]', '[[LASTNAME]]', '[[REG_LINK]]', '[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[URL]]', '[[DATE]]', '[[NUM_SUBSCRIBER]]');
@@ -1636,47 +1623,41 @@ class calendarLibrary
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
         //get mail template
-        $query             = "SELECT setvalue
-                                FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+        $query          = "SELECT setvalue
+                             FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
                             WHERE setid = '3'";
 
-        $objResult         = $objDatabase->SelectLimit($query, 1);
-        $mailTitle     = $objResult->fields['setvalue'];
+        $objResult      = $objDatabase->SelectLimit($query, 1);
+        $mailTitle  = $objResult->fields['setvalue'];
 
-        $query             = "SELECT setvalue
-                                FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+        $query          = "SELECT setvalue
+                             FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
                             WHERE setid = '4'";
 
-        $objResult         = $objDatabase->SelectLimit($query, 1);
+        $objResult      = $objDatabase->SelectLimit($query, 1);
         $mailContent = $objResult->fields['setvalue'];
 
         //get note data
-        $queryNote = "SELECT     id,
+        $queryNote = "SELECT    id,
                                 startdate,
                                 enddate,
                                 name
-                        FROM     ".DBPREFIX."module_calendar".$this->mandateLink."
-                       WHERE     id = '".$noteId."'";
+                        FROM    ".DBPREFIX."module_calendar".$this->mandateLink."
+                       WHERE    id = '".$noteId."'";
 
-        $objResultNote     = $objDatabase->SelectLimit($queryNote, 1);
+        $objResultNote  = $objDatabase->SelectLimit($queryNote, 1);
 
         //get user data
         if (is_numeric($user)) {
-            $queryUser = "SELECT     id,
-                                    firstname,
-                                    lastname,
-                                    email
-                            FROM     ".DBPREFIX."access_users
-                           WHERE     id = '".$user."'";
+            $objFWUser = FWUser::getFWUserObject();
+            $objUser = $objFWUser->objUser->getUser($user);
 
-            $objResultUser     = $objDatabase->SelectLimit($queryUser, 1);
-
-            $firstname        = $objResultUser->fields['firstname'];
-            $lastname        = $objResultUser->fields['lastname'];
-            $toMail         = $objResultUser->fields['email'];
+            $firstname      = $objUser->getProfileAttribute('firstname');
+            $lastname       = $objUser->getProfileAttribute('lastname');
+            $toMail         = $objUser->getEmail();
         } else {
-            $firstname        = "";
-            $lastname        = "";
+            $firstname      = "";
+            $lastname       = "";
             $toMail         = $user;
         }
 
@@ -1684,10 +1665,10 @@ class calendarLibrary
         //get reg data
         $queryReg = "SELECT     id,
                                 type
-                        FROM     ".DBPREFIX."module_calendar".$this->mandateLink."_registrations
-                       WHERE     id = '".$regId."'";
+                        FROM    ".DBPREFIX."module_calendar".$this->mandateLink."_registrations
+                       WHERE    id = '".$regId."'";
 
-        $objResultReg     = $objDatabase->SelectLimit($queryReg, 1);
+        $objResultReg   = $objDatabase->SelectLimit($queryReg, 1);
 
         //get mail obj
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
@@ -1705,11 +1686,11 @@ class calendarLibrary
             }
 
             $url        = $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET;
-            $date        = date(ASCMS_DATE_FORMAT);
-            $title        = $objResultNote->fields['name'];
-            $startdate    = date("Y-m-d H:i", $objResultNote->fields['startdate']);
-            $enddate     = date("Y-m-d H:i", $objResultNote->fields['enddate']);
-            $type         = $objResultReg->fields['type'] == 1 ? $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'] : $_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'];
+            $date       = date(ASCMS_DATE_FORMAT);
+            $title      = $objResultNote->fields['name'];
+            $startdate  = date("Y-m-d H:i", $objResultNote->fields['startdate']);
+            $enddate    = date("Y-m-d H:i", $objResultNote->fields['enddate']);
+            $type       = $objResultReg->fields['type'] == 1 ? $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'] : $_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'];
 
             //replace placeholder
             $array_1 = array('[[FIRSTNAME]]', '[[LASTNAME]]', '[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[URL]]', '[[DATE]]', '[[REG_TYPE]]');
@@ -1743,37 +1724,37 @@ class calendarLibrary
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
         //get note data
-        $queryNote         = "SELECT     id,
+        $queryNote      = "SELECT   id,
                                     name,
                                     notification,
                                     notification_address
-                            FROM     ".DBPREFIX."module_calendar".$this->mandateLink."
-                           WHERE     id = '".$noteId."'";
+                            FROM    ".DBPREFIX."module_calendar".$this->mandateLink."
+                           WHERE    id = '".$noteId."'";
 
-        $objResultNote     = $objDatabase->SelectLimit($queryNote, 1);
+        $objResultNote  = $objDatabase->SelectLimit($queryNote, 1);
 
         //get mail template
-        $query             = "SELECT setvalue
-                                FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+        $query          = "SELECT setvalue
+                             FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
                             WHERE setid = '5'";
 
-        $objResult         = $objDatabase->SelectLimit($query, 1);
-        $mailTitle         = $objResult->fields['setvalue'];
+        $objResult      = $objDatabase->SelectLimit($query, 1);
+        $mailTitle      = $objResult->fields['setvalue'];
 
-        $query             = "SELECT setvalue
-                                FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
+        $query          = "SELECT setvalue
+                             FROM ".DBPREFIX."module_calendar".$this->mandateLink."_settings
                             WHERE setid = '6'";
 
-        $objResult         = $objDatabase->SelectLimit($query, 1);
-        $mailContent     = $objResult->fields['setvalue'];
+        $objResult      = $objDatabase->SelectLimit($query, 1);
+        $mailContent    = $objResult->fields['setvalue'];
 
         //get reg data
         $queryReg = "SELECT     id,
                                 type
-                        FROM     ".DBPREFIX."module_calendar".$this->mandateLink."_registrations
-                       WHERE     id = '".$regId."'";
+                        FROM    ".DBPREFIX."module_calendar".$this->mandateLink."_registrations
+                       WHERE    id = '".$regId."'";
 
-        $objResultReg     = $objDatabase->SelectLimit($queryReg, 1);
+        $objResultReg   = $objDatabase->SelectLimit($queryReg, 1);
 
 
 
@@ -1794,10 +1775,10 @@ class calendarLibrary
                 }
 
                 $url            =  "http://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET;
-                $date            = date(ASCMS_DATE_FORMAT);
-                $type             = $objResultReg->fields['type'] == 1 ? $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'] : $_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'];
-                $title            = $objResultNote->fields['name'];
-                $addresses        = explode(",", $objResultNote->fields['notification_address']);
+                $date           = date(ASCMS_DATE_FORMAT);
+                $type           = $objResultReg->fields['type'] == 1 ? $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'] : $_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'];
+                $title          = $objResultNote->fields['name'];
+                $addresses      = explode(",", $objResultNote->fields['notification_address']);
 
                 //replace placeholder
                 $array_1 = array('[[FIRSTNAME]]', '[[LASTNAME]]', '[[TITLE]]', '[[E-MAIL]]', '[[URL]]', '[[DATE]]', '[[REG_TYPE]]');
@@ -1833,5 +1814,4 @@ class calendarLibrary
     }
 }
 }
-
 ?>
