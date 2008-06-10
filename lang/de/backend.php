@@ -834,4 +834,7 @@ $_ARRAYLANG['TXT_USERS_YEARS'] = "Jahre";
 $_ARRAYLANG['TXT_USERS_UNLIMITED'] = "unlimitiert";
 $_ARRAYLANG['TXT_DATA_MODULE'] = "Datenlisten";
 $_ARRAYLANG['TXT_DATA_MODULE_DESCRIPTION'] = "Erm&ouml;glicht das Erfassen und Verwalten von Datenlisten.";
+$_ARRAYLANG['TXT_DEFAULT_ALIAS'] = "Standard-Alias";
+$_ARRAYLANG['TXT_CORE_ALIAS_EXISTS_ALREADY'] = "Dieser Alias existiert bereits. Die Seite wurde trotzdem gespeichert";
+$_ARRAYLANG['document.getElementById(\'errormessagetarget\').'] = "Sie müssen mindestens den Linknamen erfassen.";
 ?>
