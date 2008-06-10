@@ -51,4 +51,5 @@ $_ARRAYLANG['TXT_EGOV_DAYNAME_4'] = "Donnerstag";
 $_ARRAYLANG['TXT_EGOV_DAYNAME_5'] = "Freitag";
 $_ARRAYLANG['TXT_EGOV_DAYNAME_6'] = "Samstag";
 $_ARRAYLANG['TXT_EGOV_DAYNAME_7'] = "Sonntag";
+$_ARRAYLANG['TXT_EGOV_PAYMENT_NOT_COMPLETED'] = "Die Bezahlung des Produktes steht noch aus.";
 ?>
