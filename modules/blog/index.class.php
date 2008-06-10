@@ -38,7 +38,7 @@ class Blog extends BlogLibrary  {
     {
         global $_LANGID;
 
-        BlogLibrary::__constructor();
+        BlogLibrary::__construct();
 
         $this->_intLanguageId = intval($_LANGID);
         $this->_intCurrentUserId = 0;
