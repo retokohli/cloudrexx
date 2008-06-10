@@ -231,6 +231,19 @@ $is_home = $objInit->is_home;
 $objCounter = new statsLibrary();
 $objCounter->checkForSpider();
 $themesPages = $objInit->getTemplates();
+
+//-------------------------------------------------------
+// Frontend Editing: Collect parameters
+//-------------------------------------------------------
+$frontEditing 			= isset($_REQUEST['frontEditing']) ? intval($_GET['frontEditing']) : 0;
+$frontEditingContent 	= isset($_REQUEST['previewContent']) ? preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}' , html_entity_decode(stripslashes($_GET['previewContent']), ENT_QUOTES, CONTREXX_CHARSET)) : '';
+
+if($frontEditing) {
+	$themesPages['index'] 	= '{CONTENT_FILE}';
+	$themesPages['content'] = '{CONTENT_TEXT}';
+	$themesPages['home']	= '{CONTENT_TEXT}';
+}
+
 $query="SELECT c.content,
                c.title,
                n.catname,
@@ -262,7 +275,8 @@ if ($objResult === false || $objResult->EOF) {
     }
     exit;
 } else {
-    $page_content   = $objResult->fields["content"];
+	//Frontend Editing: content has to be replaced with preview-code if needed.
+   	$page_content	= ($frontEditing) ? ( ($frontEditingContent != '') ? $frontEditingContent : $objResult->fields["content"]) : '<div id="fe_PreviewContent">'.$objResult->fields["content"].'</div>';
     $page_title     = $objResult->fields["title"];
     $page_catname   = $objResult->fields["catname"];
     $page_metatitle = htmlentities($objResult->fields["metatitle"], ENT_QUOTES, CONTREXX_CHARSET);
@@ -1630,6 +1644,21 @@ if ($_CONFIG['bannerStatus'] == '1') {
     }
 }
 
+//-------------------------------------------------------
+// Frontend Editing: prepare needed code-fragments
+//-------------------------------------------------------
+$modulespath = "core_modules/frontendEditing/frontendEditingLib.class.php";
+if (file_exists($modulespath)) {
+	/**
+	 * @ignore
+	 */
+	include_once($modulespath);
+	
+	$strFeInclude 	= frontendEditingLib::getIncludeCode();
+	$strFeLink		= frontendEditingLib::getLinkCode();
+	$strFeContent	= frontendEditingLib::getContentCode($pageId, $section, $command);
+}
+
 
 //-------------------------------------------------------
 // set global template variables
@@ -1637,7 +1666,7 @@ if ($_CONFIG['bannerStatus'] == '1') {
 
 $objTemplate->setVariable(array(
     'CHARSET'              => $objInit->getFrontendLangCharset(),
-    'TITLE'                 => $page_title,
+    'TITLE'                 => '<span id="fe_PreviewTitle">'.$page_title.'</span>',
     'METATITLE'            => $page_metatitle,
     'NAVTITLE'             => $page_catname,
     'GLOBAL_TITLE'         => $_CONFIG['coreGlobalPageTitle'],
@@ -1669,6 +1698,9 @@ $objTemplate->setVariable(array(
     'RANDOM'                => md5(microtime()),
     'TXT_SEARCH'           => $_CORELANG['TXT_SEARCH'],
     'MODULE_INDEX'         => MODULE_INDEX,
+	'LOGIN_INCLUDE'			=>	$strFeInclude,
+	'LOGIN_URL'				=>	$strFeLink,
+	'LOGIN_CONTENT'			=>	$strFeContent
 ));
 
 
