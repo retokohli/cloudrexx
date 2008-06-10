@@ -312,8 +312,7 @@ class PaymentProcessing
             case 'Saferpay_Visa_Multipay_CAR':
                 $return = $this->_SaferpayProcessor(array('Visa Multipay CAR'));
                 break;
-            case 'Yellowpay':
-            case 'PostFinance_DebitDirect':
+            case 'yellowpay': // was: 'PostFinance_DebitDirect'
                 $return = $this->_YellowpayProcessor();
                 break;
             case 'Paypal':

@@ -190,7 +190,7 @@ class ShopLibrary
      * @param   string  $onchange   Optional onchange callback function
      * @return  string              The dropdown menu string
      */
-    function _getCountriesMenu($menuName="countryId", $selectedId="", $onchange="")
+    function _getCountriesMenu($menuName='countryId', $selectedId='', $onchange='')
     {
         global $objDatabase;
 
@@ -202,7 +202,7 @@ class ShopLibrary
             "WHERE activation_status=1";
         $objResult = $objDatabase->Execute($query);
 
-        if($objResult->RecordCount()>1) {
+        if ($objResult->RecordCount() > 1) {
             while (!$objResult->EOF) {
                 $selected = (intval($selectedId)==$objResult->fields['countries_id']) ? "selected=\"selected\"" : "";
                 $menu .="<option value=\"".$objResult->fields['countries_id']."\" ".$selected.">".$objResult->fields['countries_name']."</option>\n";
@@ -210,7 +210,7 @@ class ShopLibrary
             }
             $menu .= "</select>\n";
         } else {
-            $menu = $menu = "\n<input name=\"".$menuName."\" type=\"hidden\" value=\"".$objResult->fields['countries_id']."\">".$objResult->fields['countries_name']."\n";
+            $menu = "\n<input name=\"".$menuName."\" type=\"hidden\" value=\"".$objResult->fields['countries_id']."\">".$objResult->fields['countries_name']."\n";
         }
         return $menu;
     }

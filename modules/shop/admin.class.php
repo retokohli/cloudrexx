@@ -206,7 +206,7 @@ class shopmanager extends ShopLibrary {
     private $paymentHandlers = array(
         'Saferpay',
         'Paypal',
-        'PostFinance_DebitDirect',
+        'yellowpay', // was: 'PostFinance_DebitDirect'
         'Internal',
         'Internal_CreditCard'
     );
@@ -1000,8 +1000,21 @@ class shopmanager extends ShopLibrary {
                 while (!$objResult->EOF) {
                     $arrRow = $objResult->FetchRow();
                     $arrReplaced = array();
-                    foreach ($arrRow as $field) { $arrReplaced[] = str_replace('"','""', $field); }
+                    foreach ($arrRow as $field) {
+                        $arrReplaced[] = str_replace('"','""', $field);
+                    }
                     $fileContent .= '"'.join('";"', $arrReplaced)."\"\n";
+                }
+// TODO:
+// Fix output for UTF8
+// This is a workaround to be used until the utf8 functions
+// become available or MIME supports "original encoding".
+                if (strtoupper(CONTREXX_CHARSET) == 'UTF-8') {
+                    $fileContent = html_entity_decode(
+                        htmlentities($fileContent, ENT_QUOTES, CONTREXX_CHARSET),
+                        ENT_QUOTES,
+                        'latin1'
+                    );
                 }
                 // set content to filename and -type for download
                 header("Content-Disposition: inline; filename=$content_location");
