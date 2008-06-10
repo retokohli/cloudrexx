@@ -67,8 +67,7 @@ class eGovLibrary {
      *                                on success, the empty string otherwise
      * @static
      */
-    //static
-    function GetProduktValue($FieldName, $ProductID)
+    static function GetProduktValue($FieldName, $ProductID)
     {
         global $objDatabase;
 
@@ -94,8 +93,7 @@ class eGovLibrary {
      *                                on success, the empty string otherwise
      * @static
      */
-    //static
-    function GetOrderValue($FieldName='', $order_id)
+    static function GetOrderValue($FieldName='', $order_id)
     {
         global $objDatabase;
 
@@ -123,8 +121,7 @@ class eGovLibrary {
      *                                or the empty string
      * @static
      */
-    //static
-    function GetEmailAdress($order_id)
+    static function GetEmailAdress($order_id)
     {
         global $objDatabase;
 
@@ -149,8 +146,7 @@ class eGovLibrary {
      *                              otherwise
      * @static
      */
-    //static
-    function isEmail($Text)
+    static function isEmail($Text)
     {
         return preg_match(
             '/^\w[\w\.\-]+@\w[\w\.\-]+\.[a-zA-Z]{2,4}$/', $Text
@@ -158,7 +154,7 @@ class eGovLibrary {
     }
 
 
-    function ParseFormValues($Field='', $Values='')
+    static function ParseFormValues($Field='', $Values='')
     {
         $ValuesArray = split(';;', $Values);
         $FormArray = array();
@@ -174,20 +170,20 @@ class eGovLibrary {
     }
 
 
-    function MaskState($State)
+    static function MaskState($State)
     {
         global $_ARRAYLANG;
 
         switch($State) {
             case 0:
                 return $_ARRAYLANG['TXT_STATE_NEW'];
-                break;
             case 1:
                 return $_ARRAYLANG['TXT_STATE_OK'];
-                break;
             case 2:
                 return $_ARRAYLANG['TXT_STATE_DELETED'];
-                break;
+            case 3:
+                // Used when alternative payment methods are selected
+                return $_ARRAYLANG['TXT_STATE_ALTERNATIVE'];
             default:
                 return 'unknown';
         }
@@ -201,8 +197,7 @@ class eGovLibrary {
      *                            false otherwise
      * @static
      */
-    //static
-    function GetSettings($name='')
+    static function GetSettings($name='')
     {
         global $objDatabase;
 
@@ -215,7 +210,6 @@ class eGovLibrary {
         if ($objResult && $objResult->RecordCount() > 0) {
             return $objResult->fields['value'];
         }
-//echo("eGovLibrary::GetSettings($name): Error: failed to get setting<br />");
         return false;
     }
 
@@ -228,8 +222,7 @@ class eGovLibrary {
      *                                false otherwise
      * @static
      */
-    //static
-    function getFormFields($id)
+    static function getFormFields($id)
     {
         global $objDatabase;
 
@@ -266,8 +259,7 @@ class eGovLibrary {
      * @return  array                 The array with name/value pairs
      * @static
      */
-    //static
-    function getOrderValues($order_id)
+    static function getOrderValues($order_id)
     {
         $arrResult = array();
         $order_values = eGovLibrary::GetOrderValue('order_values', $order_id);
@@ -318,7 +310,7 @@ class eGovLibrary {
     }
 
 
-    function _QuantityDropdown()
+    static function _QuantityDropdown()
     {
         return
             '<select name="contactFormField_Quantity" '.
@@ -328,7 +320,7 @@ class eGovLibrary {
     }
 
 
-    function _QuantityDropdownKids() {
+    static function _QuantityDropdownKids() {
         return
             '<select name="contactFormField_Quantity_Kids" '.
             'id="contactFormField_Quantity_Kids" '.
@@ -337,7 +329,7 @@ class eGovLibrary {
     }
 
 
-    function _GetOrdersQuantityArray($id, $datum='')
+    static function _GetOrdersQuantityArray($id, $datum='')
     {
         global $objDatabase;
 
@@ -354,13 +346,13 @@ class eGovLibrary {
             $datumToSend = "$datum-$daydate";
             $JSquantityArray .=
                 'DayArray['.$x.'] = '.
-                $this->_GetOrderedQuantity($id, $datumToSend).";\n";
+                eGovLibrary::_GetOrderedQuantity($id, $datumToSend).";\n";
         }
         return $JSquantityArray;
     }
 
 
-    function _GetOrderedQuantity($id, $datum)
+    static function _GetOrderedQuantity($id, $datum)
     {
         global $objDatabase;
 
@@ -389,7 +381,6 @@ class eGovLibrary {
             eGovLibrary::GetProduktValue('yellowpay', $id);
         $yellowpayAcceptedPaymentMethods =
             eGovLibrary::GetSettings('yellowpay_accepted_payment_methods');
-//echo("$yellowpayEnabled/$yellowpayAcceptedPaymentMethods<br />");
         if (   $flagBackend === false
             && $yellowpayEnabled
             && preg_match('/yellowbill/', $yellowpayAcceptedPaymentMethods)) {
@@ -586,10 +577,12 @@ class eGovLibrary {
         $paymentPaypal = eGovLibrary::GetProduktValue('product_paypal', $id);
         $paymentYellowpay = eGovLibrary::GetProduktValue('yellowpay', $id);
         $paymentPrice = eGovLibrary::GetProduktValue('product_price', $id);
+        $strAlternativePaymentMethods =
+            eGovLibrary::GetProduktValue('alternative_names', $id);
         // Using the $flagBackend flag to disable payment in the backend
         if ($flagBackend === false
             && $paymentPrice > 0
-            && ($paymentYellowpay || $paymentPaypal)) {
+            && ($paymentYellowpay || $paymentPaypal || !empty($strAlternativePaymentMethods))) {
             $sourcecode .=
                 '<tr><td>'.
                 $_ARRAYLANG['TXT_EGOV_PAYMENT_HANDLER']."</td>\n".
@@ -607,6 +600,20 @@ class eGovLibrary {
                 // PayPal is enabled
                 $sourcecode .=
                     '<option value="paypal">'.$_ARRAYLANG['TXT_EGOV_PAYPAL'].'</option>';
+            }
+            // Alternative payment methods
+            $arrAlternativePaymentMethods =
+                preg_split(
+                    '/\s*,\s*/',
+                    $strAlternativePaymentMethods,
+                    0,
+                    PREG_SPLIT_NO_EMPTY
+                );
+            foreach ($arrAlternativePaymentMethods as $strPaymentMethod) {
+                $sourcecode .=
+                    '<option value="$strPaymentMethod">'.
+                    $strPaymentMethod.
+                    '</option>';
             }
             $sourcecode .= "</select>\n</td></tr>";
         }
@@ -635,8 +642,7 @@ class eGovLibrary {
     }
 
 
-    //function _getJsSourceCode($id, $formFields, $preview=false, $flagBackend=false)
-    function _getJsSourceCode($formFields, $preview=false, $flagBackend=false)
+    static function _getJsSourceCode($formFields, $preview=false, $flagBackend=false)
     {
         $code =
             "<script type=\"text/javascript\">\n".
@@ -862,12 +868,13 @@ class eGovLibrary {
         }
         require_once dirname(__FILE__).'/cal/calendrier.php';
         $AnzahlTxT = $_ARRAYLANG['TXT_EGOV_QUANTITY'];
-        $AnzahlDropdown = $this->_QuantityDropdown();
+        $AnzahlDropdown = eGovLibrary::_QuantityDropdown();
         $Datum4JS = (isset($_REQUEST['date']) ? $_REQUEST['date'] : '');
         if ($Datum4JS == '') {
             $Datum4JS = date('Ymd');
         }
-        $QuantArray = $this->_GetOrdersQuantityArray($product_id, $Datum4JS);
+        $QuantArray =
+            eGovLibrary::_GetOrdersQuantityArray($product_id, $Datum4JS);
         $dat1 = substr($Datum4JS, 0, 4);
         $dat2 = substr($Datum4JS, 4, 2);
         $dat3 = substr($Datum4JS, 6, 2);
@@ -896,32 +903,6 @@ class eGovLibrary {
             eGovLibrary::GetSettings('set_calendar_border'),
             $flagBackend
         );
-    }
-
-
-    function updateOrderStatus($order_id, $status)
-    {
-        global $objDatabase;
-
-        $query = "
-            UPDATE ".DBPREFIX."module_egov_orders
-               SET order_state=$status
-             WHERE order_id=$order_id
-        ";
-        if (!$objDatabase->Execute($query)) {
-//echo("Query error:<br />$query<br />");
-            return false;
-        }
-        $query = "
-            UPDATE ".DBPREFIX."module_egov_product_calendar
-               SET calendar_act=$status
-             WHERE calendar_order=$order_id
-        ";
-        if (!$objDatabase->Execute($query)) {
-//echo("Query error:<br />$query<br />");
-            return false;
-        }
-        return true;
     }
 
 
@@ -1329,6 +1310,36 @@ class eGovLibrary {
             eGovLibrary::GetSettings('set_calendar_border'),
             $flagBackend
         );
+    }
+
+
+    /**
+     * Update the order status of an order specified by its ID
+     * @param   integer     $order_id   The order ID
+     * @param   integer     $status     The new status
+     * @return  boolean                 True on success, false otherwise
+     */
+    static function updateOrderStatus($order_id, $status)
+    {
+        global $objDatabase;
+
+        $query = "
+            UPDATE ".DBPREFIX."module_egov_orders
+               SET order_state=$status
+             WHERE order_id=$order_id
+        ";
+        if (!$objDatabase->Execute($query)) {
+            return false;
+        }
+        $query = "
+            UPDATE ".DBPREFIX."module_egov_product_calendar
+               SET calendar_act=".($status == 1 || $status == 3 ? 1 : 0)."
+             WHERE calendar_order=$order_id
+        ";
+        if (!$objDatabase->Execute($query)) {
+            return false;
+        }
+        return true;
     }
 
 

@@ -237,7 +237,7 @@ function calendar(
                 if (   $today_timestamp < $loop_timestamp) {
                     if ((   empty($ArrayRD[$current_year][$current_month_2][$i])
                          || $ArrayRD[$current_year][$current_month_2][$i] < $Anzahl)) {
-                        $first_date = "$i.$current_month_2.$current_year";
+                        $first_date = "$i.$current_month.$current_year";
                     }
                 }
             }
