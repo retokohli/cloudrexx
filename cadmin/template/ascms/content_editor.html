@@ -16,8 +16,41 @@ function setText() {
 	if(desc.value == "")
 		desc.value=txtNewpage;
 	if(key.value == "")
-		key.value=txtNewpage
+		key.value=txtNewpage;
+	// Not mature enough yet:
+	// if(alias.value == "")
+	// 	alias.value=aliasText(txtNewpage);
 	}
+}
+
+function preSubmitCheck(){
+	if (document.formContent.newpage.value == "") {
+		document.getElementById('errormessagetarget').innerHTML = '<div id="alertbox">{TXT_ERROR_NO_TITLE}</div><p/>';
+		return false;
+	}
+	SelectAllList(document.formContent.elements['assignedGroups[]']);
+	SelectAllList(document.formContent.elements['assignedBackendGroups[]']);
+	SelectAllList(document.formContent.elements['assignedBlocks[]']);
+	return true;
+}
+
+function aliasText(txt) {
+	return txt
+		.replace(/[\s\+\/\(\)=,;%&]+/g, '-') // interpunction etc. 
+		.replace(/['<>\\\~$!"]+/g, '')       // quotes and other special characters
+		// Sanitize most latin1 characters. 
+		// there's more to come. maybe there's
+		// a generic function for this?
+		.replace(/[д]/ig, 'ae')
+		.replace(/[ц]/ig, 'oe')
+		.replace(/[ь]/ig, 'ue')
+		.replace(/[ий]/ig, 'e')
+		.replace(/[а]/ig,  'a')
+		.replace(/[з]/ig,  'c')
+		// Fallback for everything we didn't catch by now
+		.replace(/[^a-z_-]+/ig, '_')
+		.toLowerCase()
+	;
 }
 
 function setDateToday(txtValue) {
@@ -232,8 +265,8 @@ function openWindow(theURL,winName,features){
 }
 // ]]>
 </script>
-<span class="red">{CONTENT_STATUS}</span>
-<form name="formContent" method="post" onsubmit="SelectAllList(document.formContent.elements['assignedGroups[]']); SelectAllList(document.formContent.elements['assignedBackendGroups[]']); SelectAllList(document.formContent.elements['assignedBlocks[]']);" action="index.php?cmd=content&amp;act={CONTENT_FORM_ACTION}">
+<span class="red" id="errormessagetarget">{CONTENT_STATUS}</span>
+<form name="formContent" method="post" onsubmit="return preSubmitCheck()" action="index.php?cmd=content&amp;act={CONTENT_FORM_ACTION}">
 	<input type="hidden" name="pageId" value="{CONTENT_CATID}" />
 	<input type="hidden" name="date" value="{CONTENT_DATE}" />
 	<input type="hidden" name="pagetitle" value="{CONTENT_TOP_TITLE}" />
@@ -299,10 +332,14 @@ function openWindow(theURL,winName,features){
 					<td><input type="text" name="key" value="{CONTENT_KEY}" size="80" /></td>
 				</tr>
 				<tr class="row1">
+					<td>{TXT_DEFAULT_ALIAS}</td>
+					<td><input type="text" name="alias" value="{CONTENT_ALIAS}" size="80" /></td>
+				</tr>
+				<tr class="row2">
 					<td>{TXT_META_ROBOTS}</td>
 					<td><input type="checkbox" name="robots" value="index" {CONTENT_ROBOTS} /></td>
 				</tr>
-				<tr class="row2">
+				<tr class="row1">
 					<td nowrap="nowrap">{TXT_TYPE_SELECT}</td>
 					<td>
 						<input type="radio" name="TypeSelection" value="content" onclick="modusSelection('type_content');" {CONTENT_TYPE_CHECKED_CONTENT}><label for="TypeSelection">{TXT_CONTENT_TYPE_DEFAULT}</label>
