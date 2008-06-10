@@ -61,8 +61,6 @@ class eGov extends eGovLibrary
         $this->objTemplate = new HTML_Template_Sigma('.');
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($this->pageContent, true, true);
-
-//eGovLibrary::addLog('Created eGov');
     }
 
 
@@ -142,9 +140,14 @@ class eGov extends eGovLibrary
         }
 
         $ReturnValue = '';
+        $newStatus = 1;
         // Handle any kind of payment request
         if (!empty($_REQUEST['handler'])) {
             $ReturnValue = $this->payment($order_id, $product_amount);
+            if (intval($ReturnValue) > 0) {
+                $newStatus = $ReturnValue;
+                $ReturnValue = '';
+            }
             if (!empty($ReturnValue)) return $ReturnValue;
         }
 
@@ -152,7 +155,7 @@ class eGov extends eGovLibrary
         // update the order right away
         if (eGov::GetOrderValue('order_state', $order_id) == 0) {
             // If any non-empty string is returned, an error occurred.
-            $ReturnValue = $this->updateOrder($order_id);
+            $ReturnValue = eGov::updateOrder($order_id, $newStatus);
             if (!empty($ReturnValue)) return $ReturnValue;
         }
 
@@ -168,30 +171,28 @@ class eGov extends eGovLibrary
      * does some page redirect.
      * @param   integer   $order_id       The order ID
      * @return  string                    Javascript code
+     * @static
      */
-    function updateOrder($order_id)
+    static function updateOrder($order_id, $newStatus=1)
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
-//eGovLibrary::addLog("Updating order ID $order_id");
 
         $product_id = eGov::getOrderValue('order_product', $order_id);
         if (empty($product_id)) {
-//eGovLibrary::addLog("Error updating order ID $order_id: No product ID found");
             return 'alert("'.$_ARRAYLANG['TXT_EGOV_ERROR_UPDATING_ORDER'].'");'."\n";
         }
 
         // Has this order been updated already?
-        if (eGov::GetOrderValue('order_state', $order_id) == 1) {
+        $orderStatus = eGovLibrary::GetOrderValue('order_state', $order_id);
+        if ($orderStatus != 0) {
             // Do not resend mails!
             return '';
         }
 
         $arrFields = eGovLibrary::getOrderValues($order_id);
-//eGovLibrary::addLog(var_export($arrFields, true));
         $FormValue4Mail = '';
         $arrMatch = array();
         foreach ($arrFields as $name => $value) {
-
             // If the value matches a calendar date, prefix the string with
             // the day of the week
             if (preg_match('/^(\d\d?)\.(\d\d?)\.(\d\d\d\d)$/', $value, $arrMatch)) {
@@ -202,17 +203,8 @@ class eGov extends eGovLibrary
                 $dotwName = $_ARRAYLANG['TXT_EGOV_DAYNAME_'.$dotwNumber];
                 $value = "$dotwName, $value";
             }
-//eGovLibrary::addLog("updateOrder($order_id): processing field /$name/$value/\n");
             $FormValue4Mail .= html_entity_decode($name).': '.html_entity_decode($value)."\n";
         }
-//eGovLibrary::addLog("made form4mail:\n$FormValue4Mail\n");
-/*
-        if (eGovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes') {
-            $FormValue4Mail = html_entity_decode(eGovLibrary::GetSettings('set_calendar_date_label')).': '.$_REQUEST['contactFormField_1000']."\n".$FormValue4Mail;
-            $FormValue4Mail = $_ARRAYLANG['TXT_EGOV_QUANTITY'].': '.$_REQUEST['contactFormField_Quantity']."\n".$FormValue4Mail;
-        }
-*/
-
         // Bestelleingang-Benachrichtigung || Mail für den Administrator
         $recipient = eGovLibrary::GetProduktValue('product_target_email', $product_id);
         if (empty($recipient)) {
@@ -249,7 +241,6 @@ class eGov extends eGovLibrary
                 $objMail->Body = $BodyText;
                 $objMail->AddAddress($recipient);
                 $objMail->Send();
-//eGovLibrary::addLog("Sent mail to administrator for order ID $order_id");
             }
         }
 
@@ -257,7 +248,7 @@ class eGov extends eGovLibrary
         if (   eGovLibrary::GetProduktValue('product_electro', $product_id) == 1
             || eGovLibrary::GetProduktValue('product_autostatus', $product_id) == 1
         ) {
-            eGov::updateOrderStatus($order_id, 1);
+            eGovLibrary::updateOrderStatus($order_id, $newStatus);
             $TargetMail = eGovLibrary::GetEmailAdress($order_id);
             if ($TargetMail != '') {
                 $FromEmail = eGovLibrary::GetProduktValue('product_sender_email', $product_id);
@@ -306,11 +297,9 @@ class eGov extends eGovLibrary
                         $objMail->AddAttachment(ASCMS_PATH.eGovLibrary::GetProduktValue('product_file', $product_id));
                     }
                     $objMail->Send();
-//eGovLibrary::addLog("Sent mail to customer for order ID $order_id");
                 }
             }
         }
-//eGovLibrary::addLog("Finished updating order ID $order_id");
         return '';
     }
 
@@ -318,8 +307,6 @@ class eGov extends eGovLibrary
     function payment($order_id=0, $amount=0)
     {
         $handler = $_REQUEST['handler'];
-//eGovLibrary::addLog("Entering payment, order ID $order_id, handler /$handler/");
-
         switch ($handler) {
           case 'paypal':
             $order_id =
@@ -340,13 +327,14 @@ class eGov extends eGovLibrary
             return $this->paymentYellowpay($order_id, $amount);
           // Returning from Yellowpay
           case 'yellowpay':
-//eGovLibrary::addLog("Info: paymentYellowpay: POST:\n".var_export($_POST, true));
-//eGovLibrary::addLog("Info: paymentYellowpay: GET:\n".var_export($_GET, true));
             return $this->paymentYellowpayVerify($order_id);
           // Silently ignore invalid payment requests
         }
-//eGovLibrary::addLog("Warning: Order ID $order_id, no match for handler /$handler/");
-        return '';
+        // Unknown payment handler provided.
+        // Should be one of the alternative payment methods,
+        // use the alternative status as return value.
+        return 3;
+        //return $_ARRAYLANG['TXT_EGOV_PAYMENT_NOT_COMPLETED'];
     }
 
 
@@ -407,7 +395,6 @@ class eGov extends eGovLibrary
             (eGovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes'
                 ? $_REQUEST['contactFormField_Quantity'] : 1
             );
-//echo("$product_amount * $quantity, $amount<br />");
         if ($product_amount <= 0) {
             return '';
         }
@@ -465,7 +452,6 @@ class eGov extends eGovLibrary
     function paymentYellowpay($order_id, $amount)
     {
         global $_ARRAYLANG, $_LANGID;
-//eGovLibrary::addLog("Entered paymentYellowpay: Order ID $order_id, amount $amount");
 
         $paymentMethods =
             (!empty($_REQUEST['handler'])
@@ -480,7 +466,6 @@ class eGov extends eGovLibrary
 
         $product_id = eGovLibrary::GetOrderValue('order_product', $order_id);
         if (empty($product_id)) {
-//eGovLibrary::addLog("Error: paymentYellowpay: Order ID $order_id: Failed to get product ID");
             return 'alert("'.$_ARRAYLANG['TXT_EGOV_ERROR_PROCESSING_ORDER']."\");\n";
         }
         $quantity =
@@ -576,9 +561,7 @@ class eGov extends eGovLibrary
             }
             $strError .= '");';
             return $strError;
-//eGovLibrary::addLog("Error: paymentYellowpay: Yellowpay reported the following errors:\n$strError");die($strError);
         }
-//eGovLibrary::addLog("Info: paymentYellowpay: Providing form");
         die(
             '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" '.
             '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'.
@@ -592,9 +575,8 @@ class eGov extends eGovLibrary
     function paymentYellowpayVerify($order_id)
     {
         global $_ARRAYLANG;
-//eGovLibrary::addLog("Info: paymentYellowpayVerify: Entered, Order ID $order_id");
+
         $result = (isset($_GET['result']) ? $_GET['result'] : 0);
-//eGovLibrary::addLog("paymentYellowpayVerify: Result is $result for order ID $order_id");
         // Silently process yellowpay notifications and die().
         if (//$result == -1 &&
                isset($_POST['txtOrderIDShop'])
@@ -607,12 +589,10 @@ class eGov extends eGovLibrary
             $transaction_id = $_POST['txtTransactionID'];
             if ($transaction_id == '2684') {
 */
-//eGovLibrary::addLog("paymentYellowpayVerify: Going to update order ID $order_id");
                 $this->updateOrder($order_id);
                 die();
 /*
             }
-//eGovLibrary::addLog("Warning: paymentYellowpayVerify: Wrong transaction ID /$transaction_id/");
             die();
 */
         }
@@ -622,39 +602,31 @@ class eGov extends eGovLibrary
             $order_id = $_GET['order_id'];
             $product_id = eGovLibrary::GetOrderValue('order_product', $order_id);
             if (empty($product_id)) {
-//eGovLibrary::addLog("Error: paymentYellowpayVerify: Order ID $order_id, failed to get product ID");
                 $strReturn = 'alert("'.$_ARRAYLANG['TXT_EGOV_ERROR_PROCESSING_ORDER']."\");\n";
             }
             switch ($result) {
               case 0:
-//eGovLibrary::addLog("Warning: paymentYellowpayVerify: Order ID $order_id: Payment failed");
                 // Payment failed
                 $strReturn = 'alert("'.$_ARRAYLANG['TXT_EGOV_YELLOWPAY_NOT_VALID']."\");\n";
                 break;
               case 1:
-//eGovLibrary::addLog("Info: paymentYellowpayVerify: Order ID $order_id, payment complete with result 1");
                 // The payment has been completed.
                 // The notification with result == -1 will update the order.
                 // This case only redirects the customer with
                 // an appropriate message according to the status of the order.
                 $order_state = eGovLibrary::GetOrderValue('order_state', $order_id);
                 if ($order_state == 1) {
-//eGovLibrary::addLog("Success: paymentYellowpayVerify: Order ID $order_id, order status is $order_state");
                     $product_id = eGovLibrary::GetOrderValue('order_product', $order_id);
                     $strReturn = eGov::getSuccessMessage($product_id);
                 } else {
                     $strReturn = 'alert("'.$_ARRAYLANG['TXT_EGOV_YELLOWPAY_NOT_VALID']."\");\n";
-//eGovLibrary::addLog("Warning: paymentYellowpayVerify: Order ID $order_id, order status is $order_state");
                 }
-//eGovLibrary::addLog("Warning: paymentYellowpayVerify: Order ID $order_id, order status is $order_state");
                 break;
               case 2:
-//eGovLibrary::addLog("Info: paymentYellowpayVerify: Order ID $order_id, payment cancelled");
                 // Payment was cancelled
                 $strReturn = 'alert("'.$_ARRAYLANG['TXT_EGOV_YELLOWPAY_CANCEL']."\");\n";
             }
         }
-//eGovLibrary::addLog("Info: paymentYellowpayVerify: Order ID $order_id, returning error message");
         return
             $strReturn.
             'document.location.href="'.$_SERVER['PHP_SELF']."?section=egov\";\n";
@@ -723,22 +695,8 @@ class eGov extends eGovLibrary
         if (empty($_REQUEST['id'])) {
             return;
         }
-/*
-        $AddSource = '';
-        if (isset($_REQUEST['handler'])) {
-            $AddSource =
-                "\n\n<script type=\"text/javascript\">\n// <![CDATA[\n".
-                ($_REQUEST['payment'] == 'cancel'
-                  ? 'alert("'.$_ARRAYLANG['TXT_EGOV_PAYPAL_CANCEL']."\");\n"
-                  : ''
-                ).
-                "// ]]>\n</script>\n";
-        }
-*/
         $query = "
             SELECT product_id, product_name, product_desc, product_price ".
-//                   product_per_day, product_quantity, product_target_email,
-//                   product_target_url, product_message
              "FROM ".DBPREFIX."module_egov_products
              WHERE product_id=".$_REQUEST['id'];
         $objResult = $objDatabase->Execute($query);
@@ -751,7 +709,6 @@ class eGov extends eGovLibrary
                 'EGOV_PRODUCT_DESC' => $objResult->fields['product_desc'],
                 'EGOV_PRODUCT_PRICE' => $objResult->fields['product_price'],
                 'EGOV_FORM' => $FormSource,
-//.$AddSource,
             ));
         }
         if ($this->objTemplate->blockExists('egov_price')) {
@@ -771,8 +728,7 @@ class eGov extends eGovLibrary
      * @return  string                    The Javascript string
      * @static
      */
-    //static
-    function getSuccessMessage($product_id)
+    static function getSuccessMessage($product_id)
     {
         // Seems that we need to clear the $_POST array to prevent it from
         // being reposted on the target page.
@@ -783,52 +739,19 @@ class eGov extends eGovLibrary
         $ReturnValue = '';
         if (eGovLibrary::GetProduktValue('product_message', $product_id) != '') {
             $AlertMessageTxt = preg_replace(array('/(\n|\r\n)/', '/<br\s?\/?>/i'), '\n', addslashes(html_entity_decode(eGovLibrary::GetProduktValue('product_message', $product_id), ENT_QUOTES, CONTREXX_CHARSET)));
-//eGovLibrary::addLog("getSuccessMessage($product_id): eGovLibrary::getOrderValues(): Adding product message");
             $ReturnValue = 'alert("'.$AlertMessageTxt.'");'."\n";
         }
         if (eGovLibrary::GetProduktValue('product_target_url', $product_id) != '') {
-//eGovLibrary::addLog("getSuccessMessage($product_id): eGovLibrary::getOrderValues(): Adding redirect to target URI");
             return
                 $ReturnValue.
                 'document.location.href="'.
                 eGovLibrary::GetProduktValue('product_target_url', $product_id).
                 '";'."\n";
         }
-//eGovLibrary::addLog("getSuccessMessage($product_id): eGovLibrary::getOrderValues(): Adding redirect to home page");
         // Old: $ReturnValue .= "history.go(-2);\n";
         return
             $ReturnValue.
             'document.location.href="'.$_SERVER['PHP_SELF']."?section=egov\";\n";
-    }
-
-
-    /**
-     * Update the order status of an order specified by its ID
-     * @param   integer     $order_id   The order ID
-     * @param   integer     $status     The new status
-     * @return  boolean                 True on success, false otherwise
-     */
-    function updateOrderStatus($order_id, $status)
-    {
-        global $objDatabase;
-
-        $query = "
-            UPDATE ".DBPREFIX."module_egov_orders
-               SET order_state=$status
-             WHERE order_id=$order_id
-        ";
-        if (!$objDatabase->Execute($query)) {
-            return false;
-        }
-        $query = "
-            UPDATE ".DBPREFIX."module_egov_product_calendar
-               SET calendar_act=$status
-             WHERE calendar_order=$order_id
-        ";
-        if (!$objDatabase->Execute($query)) {
-            return false;
-        }
-        return true;
     }
 
 }
