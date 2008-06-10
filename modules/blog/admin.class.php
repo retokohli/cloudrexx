@@ -38,7 +38,7 @@ class BlogAdmin extends BlogLibrary {
     {
         global $objInit, $objTemplate, $_CORELANG;
 
-        BlogLibrary::__constructor();
+        BlogLibrary::__construct();
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/blog/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
