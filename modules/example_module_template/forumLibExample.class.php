@@ -23,29 +23,31 @@
  */
 class ForumLibraryExample
 {
-	var $_arrConfig = array();
+    var $_arrConfig = array();
 
-	function __constructor()
-	{
-		$this->_initialize();
-	}
 
-	function _initialize()
-	{
-		global $objDatabase;
+    function __construct()
+    {
+        $this->_initialize();
+    }
 
-		// get config options
-		$objResult = $objDatabase->Execute("SELECT `name`, `value`, `status` FROM ".DBPREFIX."module_forum_config");
-		if ($objResult !== false) {
-			while (!$objResult->EOF) {
-				$this->_arrConfig[$objResult->fields['name']] = array(
-					'value'		=> $objResult->fields['value'],
-					'status'	=> $objResult->fields['status']
-				);
-				$objResult->MoveNext();
-			}
-		}
-	}
+
+    function _initialize()
+    {
+        global $objDatabase;
+
+        // get config options
+        $objResult = $objDatabase->Execute("SELECT `name`, `value`, `status` FROM ".DBPREFIX."module_forum_config");
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                $this->_arrConfig[$objResult->fields['name']] = array(
+                    'value'        => $objResult->fields['value'],
+                    'status'    => $objResult->fields['status']
+                );
+                $objResult->MoveNext();
+            }
+        }
+    }
 }
 
 ?>
