@@ -39,7 +39,7 @@ class Forum extends ForumLibrary {
     {
 		global $_LANGID;
 
-		ForumLibrary::__constructor();
+		ForumLibrary::__construct();
 
 		$this->_intLangId = intval($_LANGID);
 
