@@ -1415,7 +1415,7 @@ class directoryLibrary
         $javascript = <<< EOF
 <script language="JavaScript">
 /* <![CDATA[ */
-function add(from,dest,add,remove)
+function addCategoryLevel(from,dest,add,remove)
 {
     if ( from.selectedIndex < 0)
     {
@@ -1445,7 +1445,7 @@ function add(from,dest,add,remove)
 }
 
 
-function remove(from,dest,add,remove)
+function removeCategoryLevel(from,dest,add,remove)
 {
     if ( dest.selectedIndex < 0)
     {
