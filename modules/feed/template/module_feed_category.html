@@ -73,18 +73,18 @@
 	function setCheckboxes(do_check)
 	{
 		with(document.form2)
-		{	
+		{
 		    var box      = elements['form_selected[]'];
 		    var box_cnt  = (typeof(box.length) != 'undefined') ? box.length : 0;
-		                  
-		    if(box_cnt) 
+
+		    if(box_cnt)
 		    {
-		        for(var i = 0; i < box_cnt; i++) 
+		        for(var i = 0; i < box_cnt; i++)
 		        {
 		            box[i].checked = do_check;
 		        }
 		    }
-		    else 
+		    else
 		    {
 		        box.checked = do_check;
 		    }
@@ -136,23 +136,21 @@
 <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr>
     	<th width="25"><center>#</center></th>
-    	<th width="70"><center>{TXT_FEED_SORTING}</center></th>
-    	<th width="40"><center>{TXT_FEED_STATUS}</center></th>
-	    <th width="35"><center>{TXT_FEED_ID}</center></th>
+    	<th width="70">{TXT_FEED_SORTING}</th>
+    	<th width="40">{TXT_FEED_STATUS}</th>
+	    <th width="35">{TXT_FEED_ID}</th>
 	    <th>{TXT_FEED_CAT_NAME}</th>
 	    <th width="80" style="text-align:left;">{TXT_FEED_LANGUAGE}</th>
-	    <th width="80"><center>{TXT_FEED_RECORDS}</center></th>
-	    <th width="150"><center>{TXT_FEED_BUILT_EDITED}</center></th>
+	    <th width="80">{TXT_FEED_RECORDS}</th>
+	    <th width="150">{TXT_FEED_BUILT_EDITED}</th>
     </tr>
     <input type="hidden" name="ischecked" value="0">
     <!-- BEGIN feed_table_row -->
     <tr class="{FEED_CLASS}">
     	<td><input type="checkbox" name="form_selected[]" value="{FEED_ID}" onclick="isChecked(this.checked);" hidefocus></td>
     	<td>
-    	    <center>
 	    	    <input type="hidden" name="form_id[]" value="{FEED_ID}">
-	    	    <input type="text" name="form_pos[]" value="{FEED_POS}" style="width:25px; text-align:right; padding:2px;">
-	    	</center>
+	    	    <input type="text" name="form_pos[]" value="{FEED_POS}" style="width:25px; padding:2px;">
     	</td>
     	<td align="center"><img src="images/icons/led_{FEED_STATUS}.gif"></td>
     	<td align="center">{FEED_ID}</td>
