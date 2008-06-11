@@ -51,6 +51,11 @@ class frontendEditing extends frontendEditingLib {
 	private $boolLoginFailed = false;
 	
 	/**
+	 * Will be set to true, if the user is successfully logged in for frontend editing.
+	 */
+	private $boolUserIsLoggedIn = false;
+	
+	/**
 	 * Requested action.
 	 */
 	private $strAction;
@@ -131,6 +136,9 @@ class frontendEditing extends frontendEditingLib {
 		//create user object
 		$this->objUser = FWUser::getFWUserObject();
 		$this->objUser->setMode(true);
+		
+		//Is the user already logged in?
+		$this->boolUserIsLoggedIn = ($_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD]) ? true : false;
 	}
 	
 	/**
@@ -233,21 +241,22 @@ class frontendEditing extends frontendEditingLib {
 				$_POST['USERNAME'] 	= $_POST['username'];
 				$_POST['PASSWORD'] 	= $_POST['password'];
 				$_POST['secid2'] 	= $_POST['seckey'];
-							
-				if (!$this->objUser->checkAuth()) {
+						
+				if ($this->objUser->checkAuth() && $this->isUserInBackendGroup()) {
+					//Login successfull
+					$this->boolUserIsLoggedIn = true;
+					$_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] = true;
+					$this->setToolbarVisibility(true);
+				} else {
 					$this->boolLoginFailed = true;
 				}
-				
-				//Login successfull
-				$this->setToolbarVisibility(true);
 			} else {
 				$this->boolLoginFailed = true;
 			}
 		}
-
 		
 		//check for enough rights to perform an action
-		if ($this->objUser->objUser->login()) {
+		if ($this->objUser->objUser->login() && $this->boolUserIsLoggedIn) {
 			
 			//check for toolbar-loading (can be done by everyone)
 			if ($this->strAction == 'getToolbar' || $this->strAction == 'hideToolbar') {
@@ -277,6 +286,26 @@ class frontendEditing extends frontendEditingLib {
 		} else {
 			$this->strErrorCode = 'login';
 			
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Checks, if the current user is in a backend group.
+	 *
+	 * @return boolean	true, if the user is in a backend group.
+	 */
+	private function isUserInBackendGroup() {
+		$this->objUser->objGroup->loadGroups();
+		$arrAssociatedGroups = $this->objUser->objUser->getAssociatedGroupIds();
+		
+		foreach ($arrAssociatedGroups as $intKey => $intGroupId) {
+			if (array_key_exists($intGroupId, $this->objUser->objGroup->arrLoadedGroups)) {
+				if ($this->objUser->objGroup->arrLoadedGroups[$intGroupId]['type'] == 'backend' && intval($this->objUser->objGroup->arrLoadedGroups[$intGroupId]['is_active']) == 1) {
+					return true;
+				}
+			}
 		}
 		
 		return false;
@@ -319,7 +348,7 @@ class frontendEditing extends frontendEditingLib {
 		
 		return 'login'.$this->strSplitChar.$this->objTemplate->get();
 	}
-	
+		
 	/**
 	 * Shows a security-image which is used for protection of the login-form.
 	 *
