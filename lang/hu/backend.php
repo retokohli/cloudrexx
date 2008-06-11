@@ -838,4 +838,6 @@ $_ARRAYLANG['TXT_DATA_MODULE_DESCRIPTION'] = "Erm&ouml;glicht das Erfassen und V
 $_ARRAYLANG['TXT_DEFAULT_ALIAS'] = "Default alias";
 $_ARRAYLANG['TXT_CORE_ALIAS_EXISTS_ALREADY'] = "";
 $_ARRAYLANG['document.getElementById(\'errormessagetarget\').'] = "You need to define at least the link name.";
+$_ARRAYLANG['TXT_SETTINGS_FRONTEND_EDITING'] = "Frontend Editing";
+$_ARRAYLANG['TXT_SETTINGS_FRONTEND_EDITING_HELP'] = "Mit Hilfe des Frontend Editing können Sie Ihre Seite auch ohne ein vorheriges Einloggen im Backend anpassen - Status (on | off).";
 ?>
