@@ -36,7 +36,6 @@ class settingsManager
     var $strSettingsFile;
     var $strErrMessage;
     var $strOkMessage;
-    var $_objSmtp;
 
     function __construct()
     {
@@ -349,7 +348,7 @@ class settingsManager
         global $objDatabase, $_CORELANG, $_CONFIG;
 
         $id = intval($_GET['id']);
-        if (($arrSmtp = $this->_objSmtp->_getSmtpAccount($id)) || (($id = 0) !== false && $arrSmtp = $this->_objSmtp->getSystemSmtpAccount())) {
+        if (($arrSmtp = SmtpSettings::_getSmtpAccount($id)) || (($id = 0) !== false && $arrSmtp = SmtpSettings::getSystemSmtpAccount())) {
             if ($objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = '".$id."' WHERE `setname` = 'coreSmtpServer'")) {
                 $_CONFIG['coreSmtpServer'] = $id;
                 require_once(ASCMS_CORE_PATH.'/settings.class.php');
@@ -368,7 +367,7 @@ class settingsManager
 
         $id = intval($_GET['id']);
 
-        if (($arrSmtp = $this->_objSmtp->_getSmtpAccount($id)) !== false) {
+        if (($arrSmtp = SmtpSettings::_getSmtpAccount($id)) !== false) {
             if ($id != $_CONFIG['coreSmtpServer']) {
                 if ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'settings_smtp` WHERE `id`='.$id) !== false) {
                     $this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_DELETE_SUCCEED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
@@ -406,7 +405,7 @@ class settingsManager
         ));
 
         $nr = 1;
-        foreach ($this->_objSmtp->getSmtpAccounts() as $id => $arrSmtp) {
+        foreach (SmtpSettings::getSmtpAccounts() as $id => $arrSmtp) {
             if ($id) {
                 $objTemplate->setVariable(array(
                     'SETTINGS_SMTP_ACCOUNT_ID'    => $id,
@@ -453,7 +452,7 @@ class settingsManager
             if (empty($arrSmtp['name'])) {
                 $error = true;
                 $this->strErrMessage .= $_CORELANG['TXT_SETTINGS_EMPTY_ACCOUNT_NAME_TXT'].'<br />';
-            } elseif (!$this->_objSmtp->_isUniqueSmtpAccountName($arrSmtp['name'], $id)) {
+            } elseif (!SmtpSettings::_isUniqueSmtpAccountName($arrSmtp['name'], $id)) {
                 $error = true;
                 $this->strErrMessage .= sprintf($_CORELANG['TXT_SETTINGS_NOT_UNIQUE_SMTP_ACCOUNT_NAME'], htmlentities($arrSmtp['name'])).'<br />';
             }
@@ -465,14 +464,14 @@ class settingsManager
 
             if (!$error) {
                 if ($id) {
-                    if ($this->_objSmtp->_updateSmtpAccount($id, $arrSmtp)) {
+                    if (SmtpSettings::_updateSmtpAccount($id, $arrSmtp)) {
                         $this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_SUCCEED'], $arrSmtp['name']).'<br />';
                         return $this->_smtpOverview();
                     } else {
                         $this->strErrMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_UPDATE_FAILED'], $arrSmtp['name']).'<br />';
                     }
                 } else {
-                    if ($this->_objSmtp->_addSmtpAccount($arrSmtp)) {
+                    if (SmtpSettings::_addSmtpAccount($arrSmtp)) {
                         $this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_ACCOUNT_ADD_SUCCEED'], $arrSmtp['name']).'<br />';
                         return $this->_smtpOverview();
                     } else {
@@ -480,7 +479,7 @@ class settingsManager
                     }
                 }
             }
-        } elseif (($arrSmtp = $this->_objSmtp->_getSmtpAccount($id)) === false) {
+        } elseif (($arrSmtp = SmtpSettings::_getSmtpAccount($id)) === false) {
             $id = 0;
             $arrSmtp = array(
                 'name'        => '',
