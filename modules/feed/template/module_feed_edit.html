@@ -65,58 +65,59 @@
 </script>
 <form action="?cmd=feed&act=edit&set=1" name="form" method="POST" style="padding:0px; margin:0px;" onSubmit="return formCheck();">
 	<input type="hidden" name="form_id" value="{FEED_ID}">
-	<table cellspacing="0" width="100%" border="0" class="adminlist">
+	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
 	    <tr>
 	    	<th colspan="2">{TXT_FEED_EDIT_NEWS_FEED}</th>
 	    </tr>
 	    <tr class="row1">
-	    	<td width="150">{TXT_FEED_CATEGORY}:</td>
+	    	<td width="180">{TXT_FEED_CATEGORY}:</td>
 	    	<td>
-		    	<select name="form_category">
+		    	<select name="form_category" style="width: 302px;">
 			        <!-- BEGIN feed_table_option -->
 			        <option value="{FEED_CATEGORY_ID}"{FEED_CATEGORY_SELECTED}>{FEED_CATEGORY}</option>
 			        <!-- END feed_table_option -->
 	   			</select>
 			</td>
 		</tr>
-	    <tr class="row1">
+	    <tr class="row2">
 			<td>{TXT_FEED_NAME}:</td>
-			<td><input type="text" size="40" name="form_name" value="{FEED_NAME}"></td>
+			<td><input type="text"  style="width: 300px;" name="form_name" value="{FEED_NAME}"></td>
 	    </tr>
 	    <tr class="row1">
 	        <td>{TXT_FEED_LINK}:</td>
-	        <td><input type="text" size="70" name="form_link" value="{FEED_LINK}"></td>
-	    <tr class="row1">
+	        <td><input type="text"  style="width: 300px;" name="form_link" value="{FEED_LINK}"></td>
+	    <tr class="row2">
 	    	<td>{TXT_FEED_FILE_NAME}:</td>
 	    	<td>
-	    	    <select name="form_file_name">
+	    	    <select name="form_file_name" style="width: 302px;">
 	    	        <option value="0">- {TXT_FEED_CHOOSE_FILE_NAME}</option>
 	    	        <!-- BEGIN feed_table_option_name -->
 	    	        <option value="{FEED_FILE}"{FEED_FILE_SELECTED}>{FEED_FILE}</option>
 	    	        <!-- END feed_table_option_name -->
+	    	    </select>
 	    	</td>
 	    </tr>
 	    <tr class="row1">
 	    	<td>{TXT_FEED_NUMBER_ARTICLES}:</td>
-	    	<td><input type="text" size="5" name="form_articles" value="{FEED_ARTICLES}"></td>
+	    	<td><input type="text"  style="width: 300px;" name="form_articles" value="{FEED_ARTICLES}"></td>
 	    </tr>
-	    <tr class="row1">
+	    <tr class="row2">
 	    	<td>{TXT_FEED_CACHE_TIME}:</td>
-	    	<td><input type="text" size="10" name="form_cache" value="{FEED_CACHE}"></td>
+	    	<td><input type="text"  style="width: 300px;" name="form_cache" value="{FEED_CACHE}"></td>
 	    </tr>
 	    <tr class="row1">
 	    	<td>{TXT_FEED_SHOW_LOGO}:</td>
 	    	<td>
-	    	    <select name="form_image">
+	    	    <select name="form_image" style="width: 302px;">
 	    	        <option value="0"{FEED_IMG_STATUS0}>{TXT_FEED_NO}</option>
 	    		    <option value="1"{FEED_IMG_STATUS1}>{TXT_FEED_YES}</option>
 	    	    </select>
 	    	</td>
 	    </tr>
-	    <tr class="row1">
+	    <tr class="row2">
 	    	<td>{TXT_FEED_STATUS}:</td>
 	    	<td>
-	    	    <select name="form_status">
+	    	    <select name="form_status" style="width: 302px;">
 	    	        <option value="0"{FEED_STATUS0}>{TXT_FEED_INACTIVE}</option>
 	    		    <option value="1"{FEED_STATUS1}>{TXT_FEED_ACTIVE}</option>
 	    	    </select>

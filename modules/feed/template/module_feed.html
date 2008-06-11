@@ -112,22 +112,22 @@
 	        }
 	    }
         document.form2.form_select_todo.value = "0";
-    }	
+    }
 	function setCheckboxes(do_check)
 	{
 		with(document.form2)
-		{	
+		{
 		    var box      = elements['form_selected[]'];
 		    var box_cnt  = (typeof(box.length) != 'undefined') ? box.length : 0;
-		                  
-		    if(box_cnt) 
+
+		    if(box_cnt)
 		    {
-		        for(var i = 0; i < box_cnt; i++) 
+		        for(var i = 0; i < box_cnt; i++)
 		        {
 		            box[i].checked = do_check;
 		        }
 		    }
-		    else 
+		    else
 		    {
 		        box.checked = do_check;
 		    }
@@ -154,29 +154,29 @@
 	}
 </script>
 <form action="?cmd=feed&new=1" name="form" method="POST" style="padding:0px; margin:0px;" onSubmit="return formCheck();">
-	<table cellspacing="0" width="100%" border="0" class="adminlist">
+	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
 	    <tr>
 	    	<th colspan="4">{TXT_FEED_INSERT_NEW_FEED}</th>
 	    </tr>
 	    <tr class="row1">
-	    	<td>{TXT_FEED_CATEGORY}:</td>
+	    	<td width="180">{TXT_FEED_CATEGORY}:</td>
 	    	<td>
-		    	<select name="form_category">
+		    	<select name="form_category" style="width: 302px">
 		            <option value="0">- {TXT_FEED_CHOOSE_CATEGORY}</option>
 			        <!-- BEGIN feed_table_option -->
 			        <option value="{FEED_CATEGORY_ID}">{FEED_CATEGORY}</option>
 			        <!-- END feed_table_option -->
 	   			</select>
    			</td>
-   			<td>{TXT_FEED_NAME}:</td>
-   			<td><input type="text" size="30" name="form_name"></td>
+   			<td width="180">{TXT_FEED_NAME}:</td>
+   			<td><input type="text" style="width: 300px" name="form_name"></td>
 	    </tr>
-	    <tr class="row1">
+	    <tr class="row2">
 	    	<td>{TXT_FEED_LINK}:</td>
-	    	<td><input type="text" size="50" name="form_link"></td>
+	    	<td><input type="text"  style="width: 300px" name="form_link"></td>
 	    	<td>{TXT_FEED_FILE_NAME}:</td>
 	    	<td>
-	    	    <select name="form_file_name">
+	    	    <select name="form_file_name" style="width: 302px">
 	    	        <option value="0">- {TXT_FEED_CHOOSE_FILE_NAME}</option>
 	    	        <!-- BEGIN feed_table_option_name -->
 	    	        <option value="{FEED_NAME}">{FEED_NAME}</option>
@@ -186,21 +186,21 @@
 	    </tr>
 	    <tr class="row1">
 	    	<td>{TXT_FEED_NUMBER_ARTICLES}:</td>
-	    	<td><input type="text" size="5" name="form_articles" value="50"></td>
+	    	<td><input type="text" size="5" name="form_articles" style="width: 300px"></td>
 	    	<td>{TXT_FEED_CACHE_TIME}:</td>
-	    	<td><input type="text" size="10" name="form_cache" value="3600"></td>
+	    	<td><input type="text" size="10" name="form_cache" value="3600" style="width: 300px"></td>
 	    </tr>
-	    <tr class="row1">
+	    <tr class="row2">
 	        <td>{TXT_FEED_SHOW_LOGO}:</td>
 	        <td>
-	        	<select name="form_image">
+	        	<select name="form_image" style="width: 302px">
 	    	        <option value="0">{TXT_FEED_NO}</option>
 	    		    <option value="1" selected>{TXT_FEED_YES}</option>
 	    	    </select>
 	        </td>
 	    	<td>{TXT_FEED_STATUS}:</td>
 	    	<td>
-	    	    <select name="form_status">
+	    	    <select name="form_status" style="width: 302px">
 	    	        <option value="0">{TXT_FEED_INACTIVE}</option>
 	    		    <option value="1" selected>{TXT_FEED_ACTIVE}</option>
 	    	    </select>
@@ -213,11 +213,11 @@
 <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr>
     	<th width="25"><center>#</center></th>
-    	<th width="70"><center>{TXT_FEED_SORTING}</center></th>
-    	<th width="40"><center>{TXT_FEED_STATUS}</center></th>
-	    <th width="35"><center>{TXT_FEED_ID}</center></th>
+    	<th width="70">{TXT_FEED_SORTING}</th>
+    	<th width="40">{TXT_FEED_STATUS}</th>
+	    <th width="35">{TXT_FEED_ID}</th>
 	    <th>{TXT_FEED_NEWS_NAME}</th>
-	    <th width="60"><center>{TXT_FEED_LANGUAGE}</center></td>
+	    <th width="60">{TXT_FEED_LANGUAGE}</td>
 	    <th width="150">
 	    	<select name="form_show_category" onChange="sortByCategory();">
 	            <option value="0">- {TXT_FEED_ALL_CATEGORIES}</option>
@@ -226,9 +226,9 @@
 		        <!-- END feed_category_option -->
    			</select>
 	    </th>
-	    <th width="55"><center>{TXT_FEED_ARTICLE}</center></th>
-	    <th width="70"><center>{TXT_FEED_CACHE_TIME}</center></th>
-	    <th width="150"><center>{TXT_FEED_LAST_UPDATE}</center></th>
+	    <th width="55">{TXT_FEED_ARTICLE}</th>
+	    <th width="70" nowrap="nowrap">{TXT_FEED_CACHE_TIME}</th>
+	    <th width="150">{TXT_FEED_LAST_UPDATE}</th>
 	    <th width="20">&nbsp;</th>
 	    <th width="20">&nbsp;</th>
     </tr>
