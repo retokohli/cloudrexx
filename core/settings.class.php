@@ -158,6 +158,8 @@ class settingsManager
             'TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'     => $_CORELANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'],
             'TXT_GOOGLE_MAPS_API_KEY_HELP'      => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY_HELP'],
             'TXT_GOOGLE_MAPS_API_KEY'           => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY'],
+            'TXT_FRONTEND_EDITING_STATUS'		=> $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING'],
+            'TXT_FRONTEND_EDITING_STATUS_HELP'	=> $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING_HELP']
         ));
 
         $objResult = $objDatabase->Execute('SELECT setid,
@@ -194,6 +196,8 @@ class settingsManager
             'SETTINGS_SEARCH_VISIBLE_CONTENT_OFF' => ($arrSettings['searchVisibleContentOnly'] == 'off') ? 'checked' : '',
             'SETTINGS_DETECT_BROWSER_LANGUAGE_ON' => ($arrSettings['languageDetection'] == 'on') ? 'checked' : '',
             'SETTINGS_DETECT_BROWSER_LANGUAGE_OFF'=> ($arrSettings['languageDetection'] == 'off') ? 'checked' : '',
+            'SETTINGS_FRONTEND_EDITING_ON'        => ($arrSettings['frontendEditingStatus'] == 'on') ? 'checked' : '',
+            'SETTINGS_FRONTEND_EDITING_OFF'       => ($arrSettings['frontendEditingStatus'] == 'off') ? 'checked' : '',
             'SETTINGS_GOOGLE_MAPS_API_KEY'        => htmlentities($arrSettings['googleMapsAPIKey'], ENT_QUOTES, CONTREXX_CHARSET),
         ));
     }
@@ -215,7 +219,8 @@ class settingsManager
                 intval($intId) == 54 ||
                 intval($intId) == 55 ||
                 intval($intId) == 56 ||
-                intval($intId) == 63) {
+                intval($intId) == 63 ||
+                intval($intId) == 69) {
                 $strValue = ($strValue == 'on') ? 'on' : 'off';
             }
 
@@ -224,7 +229,7 @@ class settingsManager
                     $strValue = substr($strValue,7);
                 }
             }
-            $objDatabase->Execute('    UPDATE '.DBPREFIX.'settings
+            $objDatabase->Execute(' UPDATE '.DBPREFIX.'settings
                                     SET setvalue="'.htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET).'"
                                     WHERE setid='.intval($intId));
         }

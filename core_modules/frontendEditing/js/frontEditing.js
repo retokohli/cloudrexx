@@ -163,7 +163,7 @@ function fe_showToolbar() {
 		fe_toolbarIsLoaded = true;
 	}
 	
-	if (!fe_toolbarIsVisible) {	
+	if (!fe_toolbarIsVisible && fe_userWantsToolbar) {	
 		Effect.Appear(fe_toolbarDivName, {duration: fe_appearanceDuration, from: 0.0, to: 1.0});
 		fe_toolbarIsVisible = true;
 	}
@@ -176,6 +176,21 @@ function fe_closeToolbar() {
 	if (fe_editorIsVisible) {
 		fe_makeEditorInvisible();
 	}
+	
+	fe_setToolbarVisibility(false);
+}
+
+function fe_setToolbarVisibility(newStatus) {
+	fe_userWantsToolbar = newStatus;
+			
+	new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing, 
+					{	method: 'get',
+						parameters: {	act: 'setToolbarVisibility',
+										status: ((fe_userWantsToolbar == true) ? '1' : '0')
+									},
+  						onSuccess: function(transport) {}
+					}
+				);
 }
 
 function fe_doLogout() {
