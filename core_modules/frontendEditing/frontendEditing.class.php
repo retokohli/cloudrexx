@@ -113,6 +113,12 @@ class frontendEditing extends frontendEditingLib {
 	private function init() {
 		global $_CONFIG;
 		
+		//Abort execution if frontend editing is not activated
+		if ($_CONFIG['frontendEditingStatus'] == 'off') {
+			exit;
+		}
+		
+		//Empty error code
 		$strErrorCode = '';
 				
 		//Template
@@ -131,10 +137,10 @@ class frontendEditing extends frontendEditingLib {
 	 * Catches the parameters in the $_REQUEST array and validates them.
 	 */
 	private function getParameters() {	
-		$this->strAction 		= isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
-		$this->intPageId 		= intval($_REQUEST['page']);
-		$this->strPageSection 	= isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
-		$this->strPageCommand	= isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
+		$this->strAction 			= isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
+		$this->intPageId 			= intval($_REQUEST['page']);
+		$this->strPageSection 		= isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
+		$this->strPageCommand		= isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
 	}
 	
 	/**
@@ -171,6 +177,9 @@ class frontendEditing extends frontendEditingLib {
 			switch ($this->strAction) {
 				case 'getToolbar':
 					echo $this->getToolbarPage();
+					break;
+				case 'setToolbarVisibility':
+					$this->setToolbarVisibility($_REQUEST['status']);
 					break;
 				case 'getEditor':
 					if (empty($this->strPageSection) || $_REQUEST['selection'] == 'false' || in_array($this->strPageSection, frontendEditingLib::$arrSectionsWithoutBackend)) {
@@ -229,7 +238,8 @@ class frontendEditing extends frontendEditingLib {
 					$this->boolLoginFailed = true;
 				}
 				
-				
+				//Login successfull
+				$this->setToolbarVisibility(true);
 			} else {
 				$this->boolLoginFailed = true;
 			}
@@ -240,7 +250,7 @@ class frontendEditing extends frontendEditingLib {
 		if ($this->objUser->objUser->login()) {
 			
 			//check for toolbar-loading (can be done by everyone)
-			if ($this->strAction == 'getToolbar') {
+			if ($this->strAction == 'getToolbar' || $this->strAction == 'hideToolbar') {
 				return true;
 			}
 			
@@ -347,7 +357,7 @@ class frontendEditing extends frontendEditingLib {
 	 */
 	private function getToolbarPage() {
 		global $_CORELANG;
-		
+				
 		$this->objTemplate->loadTemplateFile('toolbar.html',true,true);
 		
 		$this->objTemplate->setVariable(array(	'TXT_TOOLBAR_USER'			=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_USER'],
@@ -363,6 +373,15 @@ class frontendEditing extends frontendEditingLib {
 										));
 		
 		return 'editor'.$this->strSplitChar.$this->objTemplate->get();
+	}
+	
+	/**
+	 * Setter-Method for (de-)activating the toolbar visibility.
+	 *
+	 * @param $isToolbarVisible
+	 */
+	private function setToolbarVisibility($isToolbarVisible) {
+		$_SESSION[frontendEditingLib::SESSION_TOOLBAR_FIELD] = $isToolbarVisible;
 	}
 	
 	/**

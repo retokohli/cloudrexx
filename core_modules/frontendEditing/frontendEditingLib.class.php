@@ -30,7 +30,12 @@ class frontendEditingLib {
 	/**
 	 * ID of the access key which should be used for frontend editing.
 	 */
-	const ACCESS_KEY = 9;	
+	const ACCESS_KEY = 9;
+	
+	/**
+	 * Name of the SESSION-Field which stores to visibility-status.
+	 */
+	const SESSION_TOOLBAR_FIELD = 'frontendEditing_ToolbarVisibility';
 	
 	/**
 	 * Array containing all disallowed sections.
@@ -57,8 +62,11 @@ class frontendEditingLib {
 	 *
 	 * @return html-code with all include-statements
 	 */
-	public static function getIncludeCode() {
-		$strFeInclude = 	'<link rel="stylesheet" type="text/css" href="'.frontendEditingLib::FRONTENDEDITING_PATH.'css/style.css" />'."\n";
+	public static function getIncludeCode() { 	
+		$strFeInclude =		'<style type="text/css">@import url('.frontendEditingLib::FRONTENDEDITING_PATH.'css/style.css) all;</style>'."\n";
+		$strFeInclude .=	'<!--[if IE 6]>'."\n";
+   		$strFeInclude .=	'<style type="text/css">@import url('.frontendEditingLib::FRONTENDEDITING_PATH.'css/style_ie6.css);</style>'."\n";
+  		$strFeInclude .=	'<![endif]-->'."\n";
 		$strFeInclude .= 	'<script src="'.frontendEditingLib::PROTOTYPE_PATH.'" type="text/javascript"></script>'."\n";
 		$strFeInclude .= 	'<script src="'.frontendEditingLib::SCRIPTACULOUS_PATH.'" type="text/javascript"></script>'."\n";
 		$strFeInclude .= 	'<script src="'.frontendEditingLib::FRONTENDEDITING_PATH.'js/frontEditing.js" type="text/javascript"></script>'."\n";
@@ -75,7 +83,7 @@ class frontendEditingLib {
 	public static function getLinkCode() {
 		global $_CORELANG;
 				
-		return '<a href="javascript:void(0)" onclick="fe_loadToolbar();" accesskey="'.frontendEditingLib::ACCESS_KEY.'" title="[ALT + '.frontendEditingLib::ACCESS_KEY.'] '.$_CORELANG['TXT_FRONTEND_EDITING_LOGIN'].'">'.$_CORELANG['TXT_FRONTEND_EDITING_LOGIN'].'</a>';
+		return '<a href="javascript:void(0)" onclick="fe_setToolbarVisibility(true); fe_loadToolbar();" accesskey="'.frontendEditingLib::ACCESS_KEY.'" title="[ALT + '.frontendEditingLib::ACCESS_KEY.'] '.$_CORELANG['TXT_FRONTEND_EDITING_LOGIN'].'">'.$_CORELANG['TXT_FRONTEND_EDITING_LOGIN'].'</a>';
 	}
 	
 	/**
@@ -84,14 +92,22 @@ class frontendEditingLib {
 	 * @return html-code with needed content-elements.
 	 */
 	public static function getContentCode($pageId, $section, $command) {
+		//Is user logged in?
 		$userIsLoggedIn = 'false';
 		$objCurrentUser = FWUser::getFWUserObject();
 		if ($objCurrentUser->objUser->login()) {
 			$userIsLoggedIn = 'true';
 		}
 		
+		//Should toolbar be shown?
+		$showToolbar = 'true';
+		if($_SESSION[frontendEditingLib::SESSION_TOOLBAR_FIELD] == false) {
+			$showToolbar = 'false';
+		}
+				
 		$strFeContent =		'<script type="text/javascript">'."\n";
 		$strFeContent .=	'	var fe_userIsLoggedIn = '.$userIsLoggedIn.';'."\n";
+		$strFeContent .=	'	var fe_userWantsToolbar = '.$showToolbar.';'."\n";
 		$strFeContent .=	'	var fe_pageId = \''.$pageId.'\';'."\n";
 		$strFeContent .=	'	var fe_pageSection = \''.$section.'\';'."\n";
 		$strFeContent .=	'	var fe_pageCommand = \''.$command.'\';'."\n";
