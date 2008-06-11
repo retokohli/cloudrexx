@@ -240,7 +240,7 @@ class BlogLibrary {
 
         if ($objResult->RecordCount() > 0) {
             $objFWUser = FWUser::getFWUserObject();
-            
+
             while (!$objResult->EOF) {
                 $intMessageId = $objResult->fields['message_id'];
 
@@ -978,7 +978,8 @@ class BlogLibrary {
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
                     $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog';
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
-                    $objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($intLanguageId, 'lang');
+                    //Function doesn't exist
+                    //$objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($intLanguageId, 'lang');
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
@@ -1047,7 +1048,8 @@ class BlogLibrary {
                     $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog';
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_COMMENTS_TITLE'];
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
-                    $objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($intLanguageId, 'lang');
+                    //Function doesn't exist
+                    //$objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($intLanguageId, 'lang');
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
                     while (!$objResult->EOF) {
@@ -1117,7 +1119,8 @@ class BlogLibrary {
                             $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($intLanguageId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=blog';
                             $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'].' ('.$arrCategoryTranslation[$intLanguageId]['name'].')';
                             $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
-                            $objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($intLanguageId, 'lang');
+                            //Function doesn't exist
+                            //$objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($intLanguageId, 'lang');
                             $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
                             //Find assigned messages
