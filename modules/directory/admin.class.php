@@ -114,109 +114,109 @@ class rssDirectory extends directoryLibrary
 
         switch($_GET['act']){
 			case "add":
-				Permission::checkAccess(97, 'static');
+				Permission::checkAccess(59, 'static');
 		        $this->addCategorie();
 		        $this->showCategories();
 			break;
 
 			case "del":
-				Permission::checkAccess(97, 'static');
+				Permission::checkAccess(59, 'static');
 		        $this->delete();
 		        $this->showCategories();
 			break;
 
 			case "move":
-				Permission::checkAccess(97, 'static');
+				Permission::checkAccess(59, 'static');
 		        $this->move();
 		        $this->showCategories();
 			break;
 
 			case "edit":
-				Permission::checkAccess(97, 'static');
+				Permission::checkAccess(59, 'static');
 		        $this->editCategorie();
 			break;
 
 			case "catOrder":
-				Permission::checkAccess(97, 'static');
+				Permission::checkAccess(59, 'static');
 		        $this->catOrder();
 		        $this->showCategories();
 			break;
 
 			case "confirm":
-				Permission::checkAccess(94, 'static');
+				Permission::checkAccess(59, 'static');
 				$this->showConfirm();
 			break;
 
 			case "detailfile":
-				Permission::checkAccess(93, 'static');
+				Permission::checkAccess(59, 'static');
 				$this->detailEntry(intval($_GET['id']));
 			break;
 
 			case "confirmfile":
-				Permission::checkAccess(96, 'static');
+				Permission::checkAccess(59, 'static');
 				$this->confirmEntry_step1();
 				$this->showConfirm();
 			break;
 
 			case "files":
-				Permission::checkAccess(96, 'static');
+				Permission::checkAccess(59, 'static');
 			    $this->showFiles(intval($_GET['cat']), intval($_GET['level']));
 			break;
 
 			case "delfile":
-				Permission::checkAccess(94, 'static');
+				Permission::checkAccess(59, 'static');
 		        $this->delete();
 		       	$this->showFiles('', '');
 			break;
 
 			case "editfile":
-				Permission::checkAccess(94, 'static');
+				Permission::checkAccess(59, 'static');
 		        $this->editFile(intval($_GET['id']));
 			break;
 
 			case "movefile":
-				Permission::checkAccess(94, 'static');
+				Permission::checkAccess(59, 'static');
 		        $this->move();
 			break;
 
 			case "restorevoting":
-				Permission::checkAccess(94, 'static');
+				Permission::checkAccess(59, 'static');
 		        $this->restoreVoting(intval($_GET['id']));
 			break;
 			case "new":
-				Permission::checkAccess(96, 'static');
+				Permission::checkAccess(59, 'static');
 				$this->newEntry();
 			break;
 			case "settings":
-				Permission::checkAccess(97, 'static');
+				Permission::checkAccess(59, 'static');
 				$this->updateSettings();
 			    $this->showSettings();
 			    break;
 			case "levels":
-				Permission::checkAccess(97, 'static');
+				Permission::checkAccess(59, 'static');
 			    $this->showLevels();
 			    break;
 			case "addlevel":
-				Permission::checkAccess(97, 'static');
+				Permission::checkAccess(59, 'static');
 			    $this->addLevel();
 			    $this->showLevels();
 			    break;
 			case "editlevel":
-				Permission::checkAccess(97, 'static');
+				Permission::checkAccess(59, 'static');
 		        $this->editLevel();
 			break;
 			case "dellevel":
-				Permission::checkAccess(97, 'static');
+				Permission::checkAccess(59, 'static');
 		        $this->delete();
 		        $this->showLevels();
 			break;
 			case "levelOrder":
-				Permission::checkAccess(97, 'static');
+				Permission::checkAccess(59, 'static');
 		        $this->levelOrder();
 		        $this->showLevels();
 			break;
 			case "moveLevel":
-				Permission::checkAccess(97, 'static');
+				Permission::checkAccess(59, 'static');
 		        $this->move();
 		        $this->showLevels();
 			break;
@@ -227,7 +227,7 @@ class rssDirectory extends directoryLibrary
 					$objResult = $objDatabase->Execute($query);
 
 				    if ($objResult !== false && $objResult->RecordCount()==1) {
-				    	Permission::checkAccess(96, 'static');
+				    	Permission::checkAccess(59, 'static');
 					    $this->showConfirm();
 					}else{
 						$this->showCategories();
@@ -2933,7 +2933,7 @@ class rssDirectory extends directoryLibrary
 					}
 					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='".contrexx_addslashes($value)."' WHERE id=".intval($id));
 				}
-				
+
 				if ($googleMapIsEnabled && $addressElements < 4){
 					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='country'");
 					$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='zip'");
