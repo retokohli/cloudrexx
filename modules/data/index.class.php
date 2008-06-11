@@ -36,19 +36,19 @@ class Data extends DataLibrary  {
     *
     */
 	function Data($strPageContent) {
-		$this->__constructor($strPageContent);
+		$this->__construct($strPageContent);
 	}
 
 
 	/**
-	* Constructor	-> Call parent-constructor, set language id and create local template-object
+	* Constructor	-> Call parent-construct, set language id and create local template-object
     *
     * @global	integer		$_LANGID
     */
-	function __constructor($strPageContent) {
+	function __construct($strPageContent) {
 		global $_LANGID;
 
-		DataLibrary::__constructor();
+		DataLibrary::__construct();
 
 		$this->_intLanguageId = intval($_LANGID);
 		$this->_intCurrentUserId = (isset($_SESSION['auth']['userid'])) ? intval($_SESSION['auth']['userid']) : 0;

@@ -34,7 +34,7 @@ class DataLibrary
     *
     */
 	function DataLibrary() {
-		$this->__constructor();
+		$this->__construct();
 	}
 
 
@@ -42,7 +42,7 @@ class DataLibrary
 	* Constructor
 	*
     */
-	function __constructor() {
+	function __construct() {
 		$this->setDatabaseEngine();
 		$this->_arrSettings		= $this->createSettingsArray();
 		$this->_arrLanguages 	= $this->createLanguageArray();
