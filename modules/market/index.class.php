@@ -160,8 +160,7 @@ class Market extends marketLibrary
         $this->getSearch();
 
         //get navigation
-// TODO: Never used
-//        $verlauf = $this->getNavigation($_GET['id']);
+        $this->getNavigation($_GET['id']);
 
         //show categories
         $i = 1;
@@ -651,8 +650,7 @@ class Market extends marketLibrary
             $this->getSearch();
 
             //get navigatin
-// TODO: Never used
-//            $verlauf = $this->getNavigation($this->entries[$id]['catid']);
+            $this->getNavigation($this->entries[$id]['catid']);
 
             $enddate = date("d.m.Y", $this->entries[$id]['enddate']);
             $info         = getimagesize($this->mediaPath.'pictures/'.$this->entries[$id]['picture']);
@@ -718,6 +716,9 @@ class Market extends marketLibrary
                 $userDetails =     $user.$street.$zip.$city.$phone.$mobile.$userMail.$webpage;
 
                 $residence = $objUser->getProfileAttribute('zip').' '.$objUser->getProfileAttribute('city');
+            } else {
+            	$TXTuserDetails 	= $_ARRAYLANG['TXT_MARKET_CONTACT'];
+                $userDetails 		= $user.$userMail;
             }
 
             if ($this->entries[$id]['userdetails'] != 1) {
@@ -819,8 +820,7 @@ class Market extends marketLibrary
             $this->getSearch();
 
             //get navigatin
-// TODO: Never used
-//            $verlauf = $this->getNavigation($this->entries[$id]['catid']);
+            $this->getNavigation($this->entries[$id]['catid']);
 
             if ($_POST['title'] != '' && $_POST['message'] != '') {
                 //create mail
@@ -889,12 +889,7 @@ class Market extends marketLibrary
             exit;
         }elseif ($this->settings['addEntry_only_community'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
-            if ($objFWUser->objUser->login()) {
-                if (!Permission::checkAccess(99, 'static', true)) {
-                    header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
-                    exit;
-                }
-            }else {
+            if (!$objFWUser->objUser->login()) {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
                 header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
                 exit;
@@ -909,8 +904,7 @@ class Market extends marketLibrary
         $this->getSearch();
 
         //get navigatin
-// TODO: Never used
-//        $verlauf = $this->getNavigation('');
+        $this->getNavigation('');
 
         $this->getCategories();
         $categories = '';
@@ -1024,8 +1018,7 @@ class Market extends marketLibrary
         $this->getSearch();
 
         //get navigatin
-// TODO: Never used
-//        $verlauf = $this->getNavigation($this->entries[$id]['catid']);
+        $this->getNavigation($this->entries[$id]['catid']);
 
         if (isset($_POST['submitEntry']) || isset($_POST['submit'])) {
 
@@ -1108,8 +1101,7 @@ class Market extends marketLibrary
         $this->getSearch();
 
         //get navigatin
-// TODO: Never used
-//        $verlauf = $this->getNavigation('');
+        $this->getNavigation('');
 
         //spez fields
         $objResult = $objDatabase->Execute("SELECT id, value FROM ".DBPREFIX."module_market_spez_fields WHERE lang_id = '1'");
@@ -1336,12 +1328,7 @@ class Market extends marketLibrary
             exit;
         }elseif ($this->settings['addEntry_only_community'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
-            if ($objFWUser->objUser->login()) {
-                if (!Permission::checkAccess(100, 'static', true)) {
-                    header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
-                    exit;
-                }
-            }else {
+            if (!$objFWUser->objUser->login()) {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
                 header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
                 exit;
@@ -1489,8 +1476,7 @@ class Market extends marketLibrary
                 }
 
                 //get navigatin
-// TODO: Never used
-//                $verlauf = $this->getNavigation($catID);
+                $this->getNavigation($catID);
             }
         }else{
             if (isset($_POST['submitEntry'])) {
@@ -1565,12 +1551,7 @@ class Market extends marketLibrary
             exit;
         }elseif ($this->settings['addEntry_only_community'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
-            if ($objFWUser->objUser->login()) {
-                if (!Permission::checkAccess(101, 'static', true)) {
-                    header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess");
-                    exit;
-                }
-            }else {
+            if (!$objFWUser->objUser->login()) {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
                 header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&redirect=".$link);
                 exit;
@@ -1596,8 +1577,7 @@ class Market extends marketLibrary
                         ));
 
                         //get navigatin
-// TODO: Never used
-//                        $verlauf = $this->getNavigation($objResult->fields['catid']);
+                        $this->getNavigation($objResult->fields['catid']);
 
                         $objResult->MoveNext();
                     }else{
