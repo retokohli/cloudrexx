@@ -33,7 +33,13 @@ class frontendEditingLib {
 	const ACCESS_KEY = 9;
 	
 	/**
-	 * Name of the SESSION-Field which stores to visibility-status.
+	 * Name of the SESSION-Field, which stores the login-status.
+	 *
+	 */
+	const SESSION_LOGIN_FIELD = 'frontendEditing_LoggedIn';
+	
+	/**
+	 * Name of the SESSION-Field, which stores the visibility-status.
 	 */
 	const SESSION_TOOLBAR_FIELD = 'frontendEditing_ToolbarVisibility';
 	
@@ -95,7 +101,8 @@ class frontendEditingLib {
 		//Is user logged in?
 		$userIsLoggedIn = 'false';
 		$objCurrentUser = FWUser::getFWUserObject();
-		if ($objCurrentUser->objUser->login()) {
+		
+		if ($objCurrentUser->objUser->login() && $_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] == true) {
 			$userIsLoggedIn = 'true';
 		}
 		
