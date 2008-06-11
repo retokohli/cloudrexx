@@ -22,3 +22,13 @@ Die Contentseite (?section=market&cmd=confirm) wird neu in zwei Blöcke unterteil
 Block 1: <!-- BEGIN codeForm --><!-- END codeForm --> Dieser Block beinhaltet die bisherige Eingabeform für den Freischaltcode.
 
 Block 1: <!-- BEGIN infoText --><!-- END infoText --> Dieser Block beinhaltet lediglich Text zur Information, dass der Block eingetragen wurde und nach Prüfung aufgeschaltet werde.
+
+
+11.06.2008 Frontend Editing Anpassungen
+---------------------------------------
+Frontend Editing
+Contrexx wurde für die Version 2.0 um eine Frontend Editing-Funktion ergänzt. Um diese zu verwenden müssen die folgenden Platzhalter in der index.html Ihres Designs eingefügt werden:
+  
+1) [[LOGIN_INCLUDE]] innerhalb des <head>-Tags
+2) [[LOGIN_CONTENT]] vor dem schliessenden </body>-Tag
+3) [[LOGIN_URL]] dort, wo Sie Ihren Login-Link postionieren möchten.

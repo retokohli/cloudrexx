@@ -17,6 +17,15 @@ Allgemein
 - Sämtliche Contentseiten der Module und das buildin_style.css wurden neu
   geschrieben und gestaltet.
 
+Frontend Editing
+- Contrexx wurde um eine Frontend Editing-Funktion ergänzt. Um diese zu
+  verwenden müssen die folgenden Platzhalter in der index.html Ihres Designs
+  eingefügt werden:
+  
+  1) [[LOGIN_INCLUDE]] innerhalb des <head>-Tags
+  2) [[LOGIN_CONTENT]] vor dem schliessenden </body>-Tag
+  3) [[LOGIN_URL]] dort, wo Sie Ihren Login-Link postionieren möchten.
+
 Benutzerverwaltung
 - Komplettes Redesign der Benutzerverwaltung.
 
