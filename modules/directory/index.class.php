@@ -741,7 +741,7 @@ class rssDirectory extends directoryLibrary
 			                    <input id="searchCheck" type="hidden" name="check" value="norm" size="10" />
 			                    <input type="hidden" name="section" value="directory" size="10" />
 			                    <input type="hidden" name="cmd" value="search" size="10" />
-			                     <input type="submit" value="'.$_ARRAYLANG['TXT_DIR_F_SEARCH'].'" name="search" /> &raquo; <a onclick="javascript:toggle(\'hiddenSearch\')" href="javascript:{}">'.$_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'].'</a><br />
+			                     <input type="submit" value="'.$_ARRAYLANG['TXT_DIR_F_SEARCH'].'" name="search" /> &raquo; <a href="javascript:toggle(\'hiddenSearch\')">'.$_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'].'</a><br />
 			                    <div style="display: none;" id="hiddenSearch">
 			                    <br />
 			                    <table width="100%" cellspacing="0" cellpadding="0" border="0">
