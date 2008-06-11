@@ -62,7 +62,7 @@ function votingShowCurrent($page_content){
 	}
 
 	if ($_GET['vid'] != '' && $_GET['act'] != 'delete'){
-		$query= "SELECT 
+		$query= "SELECT
 			id,                                status,
 			UNIX_TIMESTAMP(date) as datesec,   question,
 			votes,                             submit_check,
@@ -70,10 +70,10 @@ function votingShowCurrent($page_content){
 			additional_surname,                additional_phone,
 			additional_street,                 additional_zip,
 		   	additional_city,                   additional_email
-		
+
 			FROM ".DBPREFIX."voting_system where id=".intval($_GET['vid']);
 	} else {
-		$query= "SELECT 
+		$query= "SELECT
 			id,                                status,
 			UNIX_TIMESTAMP(date) as datesec,   question,
 			votes,                             submit_check,
@@ -81,7 +81,7 @@ function votingShowCurrent($page_content){
 			additional_surname,                additional_phone,
 			additional_street,                 additional_zip,
 		   	additional_city,                   additional_email
-			
+
 			FROM ".DBPREFIX."voting_system where status=1";
 	}
 
@@ -149,8 +149,6 @@ function votingShowCurrent($page_content){
     		errorHandling();
     	    return false;
     	}
-
-		$votingResultText = _vote_result_html($votingId);
 		$images = 1;
 
 		$query = "SELECT id, question, votes FROM ".DBPREFIX."voting_results WHERE voting_system_id='$votingId' ORDER BY id";
@@ -159,10 +157,13 @@ function votingShowCurrent($page_content){
 		while (!$objResult->EOF) {
 			if ($votingStatus==1 && (($votingMethod == 'email' && !$voted) || ($votingMethod == 'cookie' && $_COOKIE['votingcookie']!='1'))){
 				$votingResultText .="<input type='radio' name='votingoption' value='".$objResult->fields['id']."' ".($_POST["votingoption"] == $objResult->fields['id'] ? 'checked="checked"' : '')." /> ";
-			    $votingResultText .= stripslashes($objResult->fields['question'])."<br />\n";
+			    $votingResultText .= stripslashes($objResult->fields['question'])."<br />";
 			}
 			$objResult->MoveNext();
 		}
+
+		$votingResultText .= "<br />";
+		$votingResultText .= _vote_result_html($votingId);
 
 		if ($votingStatus==1 && (($votingMethod == 'email' && !$voted) || ($votingMethod == 'cookie' && $_COOKIE['votingcookie']!='1'))){
 			$votingVotes		= '';
@@ -302,8 +303,8 @@ function _store_additional_data($id){
 	}
 
 	$sql = 'INSERT INTO ' . DBPREFIX . 'voting_additionaldata SET ' .
-		"voting_system_id = '". intval($id)                               . "', ". 
-		"nickname         = '". addslashes($_POST['additional_nickname']) . "', ". 
+		"voting_system_id = '". intval($id)                               . "', ".
+		"nickname         = '". addslashes($_POST['additional_nickname']) . "', ".
 		"forename         = '". addslashes($_POST['additional_forename']) . "', ".
 		"surname          = '". addslashes($_POST['additional_surname' ]) . "', ".
 		"phone            = '". addslashes($_POST['additional_phone'   ]) . "', ".
@@ -454,8 +455,8 @@ function _create_additional_input_fields($settings) {
 
 		list($type, $label) = $data;
 
-		$input_tag = 
-			str_replace('%name',  $name, 
+		$input_tag =
+			str_replace('%name',  $name,
 			str_replace('%label', $label,
 			str_replace('%type',  $type,
 			$input_template
@@ -490,9 +491,14 @@ function _vote_result_html($votingId) {
 		    $percentage = (round(($votes/$votingVotes)*10000))/100;
 		    $imagewidth = round($percentage,0);
 		}
+
+		if($imagewidth>80){
+		    $imagewidth = 80;
+		}
+
 		$out .= "<span class=\"VotingResultTitle\">".stripslashes($objResult->fields['question'])."</span><br />\n";
-		$out .= "<img src='images/modules/voting/$images.gif' width='$imagewidth%' height='10' />";
-		$out .= "&nbsp;$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %<br />\n";
+		$out .= "<img src='images/modules/voting/$images.gif' width='".$imagewidth."%' height='10' />";
+		$out .= "&nbsp;<em>$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %</em><br /><br />";
 		$objResult->MoveNext();
 	}
 	return $out;
