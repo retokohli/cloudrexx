@@ -839,4 +839,6 @@ $_ARRAYLANG['TXT_DATA_MODULE_DESCRIPTION'] = "Allows the creation and management
 $_ARRAYLANG['TXT_DEFAULT_ALIAS'] = "Default alias";
 $_ARRAYLANG['TXT_CORE_ALIAS_EXISTS_ALREADY'] = "This alias already exists. The page was still saved.";
 $_ARRAYLANG['document.getElementById(\'errormessagetarget\').'] = "You need to define at least the link name.";
+$_ARRAYLANG['TXT_SETTINGS_FRONTEND_EDITING'] = "Frontend Editing";
+$_ARRAYLANG['TXT_SETTINGS_FRONTEND_EDITING_HELP'] = "Frontend Editing allows you to edit the content of your page without the need of logging in into your admin-panel - status (on | off).";
 ?>
