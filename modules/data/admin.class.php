@@ -36,7 +36,7 @@ class DataAdmin extends DataLibrary {
     *
     */
 	function DataAdmin() {
-		$this->__constructor();
+		$this->__construct();
 	}
 
 
@@ -47,10 +47,10 @@ class DataAdmin extends DataLibrary {
     * @global	object		$objTemplate
     * @global	array		$_CORELANG
     */
-	function __constructor() {
+	function __construct() {
 		global $objInit, $objTemplate, $_CORELANG;
 
-		DataLibrary::__constructor();
+		DataLibrary::__construct();
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/data/template');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
