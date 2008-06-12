@@ -220,4 +220,8 @@ $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'] = "Adresse inconnue";
 $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'] = "Adresse indiponible";
 $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'] = "Mauvaise clé API Google";
 $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'] = "Adresse pas trouvée";
+$_ARRAYLANG['TXT_DIRECTORY_BROWSER_NOT_SUPPORTED'] = "Ihr Browser unterstützt keine Google Map";
+$_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'] = "Zu viele Anfragen: Die tägliche Limite der Geocoding-Anfragen wurde für diese Domain überschritten.";
+$_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Serverfehler: Die Suchanfrage (Geocoding) konnte nicht erfolgreich bearbeitet werden. ";
+$_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Geben Sie eine eindeutige Adresse an oder bewegen die Karte mit der Maus an den gewünschten Punkt";
 ?>
