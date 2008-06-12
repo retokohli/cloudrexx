@@ -268,7 +268,7 @@ class UserGroup {
                     `is_active` = ".intval($this->is_active)."
                 WHERE `group_id`=".$this->id
             ) === false) {
-                $this->error_msg = $_CORELANG['TXT_FAILED_TO_UPDATE_GROUP'];
+                $this->error_msg = $_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_GROUP'];
                 return false;
             }
         } else {
@@ -287,18 +287,18 @@ class UserGroup {
             ) !== false) {
                 $this->id = $objDatabase->Insert_ID();
             } else {
-                $this->error_msg = $_CORELANG['TXT_FAILED_TO_CREATE_GROUP'];
+                $this->error_msg = $_CORELANG['TXT_ACCESS_FAILED_TO_CREATE_GROUP'];
                 return false;
             }
         }
 
         if (!$this->storeUserAssociations()) {
-            $this->error_msg = $_CORELANG['TXT_COULD_NOT_SET_USER_ASSOCIATIONS'];
+            $this->error_msg = $_CORELANG['TXT_ACCESS_COULD_NOT_SET_USER_ASSOCIATIONS'];
             return false;
         }
 
         if (!$this->storePermissions()) {
-            $this->error_msg = $_CORELANG['TXT_COULD_NOT_SET_PERMISSIONS'];
+            $this->error_msg = $_CORELANG['TXT_ACCESS_COULD_NOT_SET_PERMISSIONS'];
             return false;
         }
 
@@ -581,7 +581,7 @@ class UserGroup {
         if ($objResult && $objResult->RecordCount() == 0) {
             return true;
         } else {
-            $this->error_msg = $_CORELANG['TXT_DUPLICATE_GROUP_NAME'];
+            $this->error_msg = $_CORELANG['TXT_ACCESS_DUPLICATE_GROUP_NAME'];
             return false;
         }
     }
@@ -593,7 +593,7 @@ class UserGroup {
         if (!empty($this->name)) {
             return true;
         } else {
-            $this->error_msg = $_CORELANG['TXT_EMPTY_GROUP_NAME'];
+            $this->error_msg = $_CORELANG['TXT_ACCESS_EMPTY_GROUP_NAME'];
             return false;
         }
     }

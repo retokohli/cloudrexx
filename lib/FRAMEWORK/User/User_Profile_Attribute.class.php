@@ -53,7 +53,7 @@ class User_Profile_Attribute
             'mandatory'            => false,
             'sort_type'            => 'asc',
             'parent_id'            => 'gender',
-            'desc'                => 'TXT_UNKNOWN',
+            'desc'                => 'TXT_ACCESS_UNKNOWN',
             'order_id'            => 0
         ),
         'gender_female' => array(
@@ -62,7 +62,7 @@ class User_Profile_Attribute
             'mandatory'            => false,
             'sort_type'            => 'asc',
             'parent_id'            => 'gender',
-            'desc'                => 'TXT_FEMALE',
+            'desc'                => 'TXT_ACCESS_FEMALE',
             'order_id'            => 1
         ),
         'gender_male' => array(
@@ -71,7 +71,7 @@ class User_Profile_Attribute
             'mandatory'            => false,
             'sort_type'            => 'asc',
             'parent_id'            => 'gender',
-            'desc'                => 'TXT_MALE',
+            'desc'                => 'TXT_ACCESS_MALE',
             'order_id'            => 2
         ),
         'title' => array(
@@ -80,7 +80,7 @@ class User_Profile_Attribute
             'mandatory'            => false,
             'sort_type'            => 'desc',
             'parent_id'            => 0,
-            'desc'                => 'TXT_TITLE',
+            'desc'                => 'TXT_ACCESS_TITLE',
             'modifiable'        => array('mandatory', 'sort_order', 'access', 'children')
         ),
         'title_undefined' => array(
@@ -89,7 +89,7 @@ class User_Profile_Attribute
             'mandatory'            => false,
             'sort_type'            => 'asc',
             'parent_id'            => 'title',
-            'desc'                => 'TXT_UNKNOWN',
+            'desc'                => 'TXT_ACCESS_UNKNOWN',
             'value'                => '0',
             'order_id'            => 0
         ),
@@ -162,7 +162,7 @@ class User_Profile_Attribute
             'mandatory'            => false,
             'sort_type'            => 'asc',
             'parent_id'            => 'country',
-            'desc'                => 'TXT_UNKNOWN',
+            'desc'                => 'TXT_ACCESS_UNKNOWN',
             'value'                => '0',
             'order_id'            => 0
         ),

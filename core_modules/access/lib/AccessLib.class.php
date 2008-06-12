@@ -1,413 +1,4 @@
 <?php
-
-$_CORELANG['TXT_INVALID_USERNAME'] = 'Der Benutzername darf nur aus Alphanumerischen Zeichen (a-z/A-Z/0-9) und den folgenden Sonderzeichen bestehen: -_';
-$_CORELANG['TXT_USERNAME_ALREADY_USED'] = 'Der gewählte Benutzername wird bereits von einem anderen Benutzer verwendet! Wählen Sie bitte einen anderen Benutzernamen!';
-$_CORELANG['TXT_INVALID_EMAIL_ADDRESS'] = 'Sie müssen eine gültige E-Mail Adresse angeben!';
-$_CORELANG['TXT_EMAIL_ALREADY_USED'] = 'Diese E-Mail Adresse wird bereits von einem anderen Benutzerkonto verwendet!';
-$_CORELANG['TXT_INVALID_PASSWORD'] = 'Das Kennwort ist ungültig! Es muss mindestens 6 Zeichen lang sein!';
-$_CORELANG['TXT_PASSWORD_NOT_CONFIRMED'] = 'Das Bestätigungskennwort stimmt nicht mit Ihrem gewählten Kennwort überein!';
-$_CORELANG['TXT_COULD_NOT_SET_GROUP_ASSOCIATIONS'] = 'Die Gruppenzugehörigkeiten konnten nicht gesetzt werden! Versuchen Sie den Vorgang zu wiederholen!';
-$_CORELANG['TXT_COULD_NOT_SET_USER_ASSOCIATIONS'] = 'Die Benutzerzugehörigkeiten konnten nicht gesetzt werden! Versuchen Sie den Vorgang zu wiederholen!';
-$_CORELANG['TXT_COULD_NOT_SET_PERMISSIONS'] = 'Die Zugriffsberechtigungen konnten nicht gesetzt werden! Versuchen Sie den Vorgang zu wiederholen!';
-$_CORELANG['TXT_COULD_NOT_SET_PROFILE_DATA'] = 'Beim Speichern der Profildaten trat ein Fehler auf! Versuchen Sie den Vorgang zu wiederholen!';
-$_CORELANG['TXT_FAILED_TO_ADD_USER_ACCOUNT'] = 'Beim Hinzufügen des Benutzerkontos trat ein Fehler auf! Versuchen Sie den Vorgang zu wiederholen!';
-$_CORELANG['TXT_FAILED_TO_UPDATE_USER_ACCOUNT'] = 'Beim Aktualisieren des Benutzerkontos trat ein Fehler auf! Versuchen Sie den Vorgang zu wiederholen!';
-//$_CORELANG['TXT_FAILED_TO_SET_USER_LANGUAGE'] = 'Die Benutzersprache konnte nicht gesetzt werden! Versuchen Sie den Vorgang zu wiederholen!';
-$_CORELANG['TXT_ACCESS_LAST_ADMIN_USER'] = 'Der Benutzer %s konnte nicht gelöscht werden, da es der einzige Administrator ist!';
-$_CORELANG['TXT_ACCESS_UNABLE_DELETE_YOUR_USER'] = 'Sie können Ihren eigenen Benutzer nicht löschen!';
-$_CORELANG['TXT_ACCESS_NO_USER_WITH_ID'] = 'Ein Benutzer mit der ID %s gibt es nicht!';
-$_CORELANG['TXT_ACCESS_USER_DELETE_FAILED'] = 'Der Benutzer %s konnte nicht gelöscht werden, da ein Fehler auftrat!';
-$_CORELANG['TXT_ACCESS_GROUP_DELETE_FAILED'] = 'Die Gruppe %s konnte nicht gelöscht werden, da ein Fehler auftrat!';
-$_CORELANG['TXT_ACCESS_CHANGE_PERM_LAST_ADMIN_USER'] = 'Dem Benutzer %s konnten die Administrator-Rechte nicht entzogen werden, da es der einzige Administrator ist!';
-$_CORELANG['TXT_EMPTY_GROUP_NAME'] = 'Sie müssen einen Namen für die Benutzergruppe definieren!';
-$_CORELANG['TXT_DUPLICATE_GROUP_NAME'] = 'Der gewählte Gruppenname wird bereits von einer anderen Gruppe verwendet! Wählen Sie bitte einen anderen Namen für die Gruppen!';
-$_CORELANG['TXT_INVALID_GROUP_TYPE'] = 'Der gewählte Gruppentyp ist ungültig!';
-$_CORELANG['TXT_MANAGE_GROUPS'] = 'Gruppen verwalten';
-$_CORELANG['TXT_MANAGE_USERS'] = 'Benutzer verwalten';
-$_CORELANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Sie müssen alle erforderlichen Felder ausfüllen!";
-
-// core attributes: use corelang?
-$_CORELANG['TXT_UNKNOWN'] = 'Unbekannt';
-$_CORELANG['TXT_MALE'] = 'Männlich';
-$_CORELANG['TXT_FEMALE'] = 'Weiblich';
-$_CORELANG['TXT_TITLE'] = 'Anrede';
-
-$_ARRAYLANG['TXT_ACCESS_PASSWORD_CHANGED_SUCCESSFULLY'] = "Das Kennwort wurde erfolgreich geändert.";
-$_CORELANG['TXT_ACCESS_UNABLE_STORE_PROFILE_ATTIRBUTE'] = 'Die Profileigenschaft %s konnte nicht gespeichert werden!';
-$_CORELANG['TXT_ACCESS_FAILED_STORE_PROFILE'] = 'Beim Speichern der Profildaten trat ein Fehler auf!';
-
-$_ARRAYLANG['TXT_ACCESS_INVALID_EXISTING_PASSWORD'] = 'Das aktuelle Kennwort ist ungültig!';
-$_ARRAYLANG['TXT_ACCESS_DELETE_ENTRY'] = 'Eintrag Löschen';
-$_ARRAYLANG['TXT_ACCESS_PRIVACY'] = 'Privatsphäre';
-
-$_ARRAYLANG['TXT_ACCESS_DEFAULT'] = 'Standard';
-
-$_ARRAYLANG['TXT_ACCESS_CREATE_ACCOUNT'] = 'Konto erstellen';
-$_ARRAYLANG['TXT_ACCESS_CURRENT_PASSWORD'] = 'Aktuelles Kennwort';
-
-$_ARRAYLANG['TXT_ACCESS_MEMBERS'] = 'Mitglieder';
-
-$_ARRAYLANG['TXT_ACCESS_GROUP_TYP'] = 'Gruppentyp';
-
-$_ARRAYLANG['TXT_ACCESS_NO_USERS_FOUND'] = 'Es wurden keine Benutzer gefunden!';
-$_ARRAYLANG['TXT_ACCESS_DELETE_DATE'] = 'Datum löschen';
-$_CORELANG['TXT_ACCESS_SIGNATURE'] = 'Signatur';
-$_ARRAYLANG['TXT_ACCESS_OVERVIEW'] = 'Übersicht';
-$_ARRAYLANG['TXT_ACCESS_USER'] = 'Benutzer';
-$_ARRAYLANG['TXT_ACCESS_USERS'] = 'Benutzer';
-$_ARRAYLANG['TXT_ACCESS_GROUPS'] = 'Gruppen';
-$_ARRAYLANG['TXT_ACCESS_SETTINGS'] = 'Einstellungen';
-$_ARRAYLANG['TXT_ACCESS_USER_LIST'] = 'Benutzer Liste';
-$_ARRAYLANG['TXT_ACCESS_USERNAME'] = 'Benutzername';
-$_CORELANG['TXT_ACCESS_FIRSTNAME'] = 'Vorname';
-$_CORELANG['TXT_ACCESS_LASTNAME'] = 'Nachname';
-$_ARRAYLANG['TXT_ACCESS_EMAIL'] = 'E-Mail';
-$_ARRAYLANG['TXT_ACCESS_LANGUAGE'] = 'Sprache';
-$_ARRAYLANG['TXT_ACCESS_ADMINISTRATOR'] = 'Administrator';
-$_ARRAYLANG['TXT_ACCESS_FUNCTIONS'] = 'Funktionen';
-$_ARRAYLANG['TXT_ACCESS_MODIFY_USER_ACCOUNT'] = 'Benutzerkonto bearbeiten';
-$_ARRAYLANG['TXT_ACCESS_SEND_EMAIL_TO_USER'] = 'E-Mail an %s schicken';
-$_ARRAYLANG['TXT_ACCESS_NO_ADMINISTRATOR'] = 'Kein Administrator';
-$_ARRAYLANG['TXT_ACCESS_DELETE_USER_ACCOUNT'] = 'Benutzerkonto von %s löschen';
-$_ARRAYLANG['TXT_ACCESS_CHANGE_SORT_DIRECTION'] = 'Sortierreihenfolge ändern';
-$_ARRAYLANG['TXT_ACCESS_SELECT_GROUP'] = 'Gruppe auswählen';
-$_ARRAYLANG['TXT_ACCESS_ALL'] = 'Alle';
-$_ARRAYLANG['TXT_ACCESS_NO_USER_IN_GROUP'] = 'Die Gruppe %s enthält keine Benutzer!';
-$_ARRAYLANG['TXT_ACCESS_NO_USERS'] = 'Keine Bentzer vorhanden!';
-$_ARRAYLANG['TXT_ACCESS_STATUS'] = 'Status';
-$_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_USER'] = 'Möchten Sie den Benutzer %s wirklich löschen?';
-$_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_GROUP'] = 'Möchten Sie die Gruppe %s wirklich löschen?';
-$_ARRAYLANG['TXT_ACCESS_OPERATION_IRREVERSIBLE'] = 'Dieser Vorgang kann nicht rückgängig gemacht werden!';
-$_ARRAYLANG['TXT_ACCESS_NO_USER_WITH_ID'] = 'Ein Benutzer mit der ID %s gibt es nicht!';
-$_ARRAYLANG['TXT_ACCESS_NO_GROUP_WITH_ID'] = 'Eine Gruppe mit der ID %s gibt es nicht!';
-$_ARRAYLANG['TXT_ACCESS_USER_SUCCESSFULLY_DELETED'] = 'Der Benutzer %s wurde erfolgreich gelöscht.';
-$_ARRAYLANG['TXT_ACCESS_USER_DEACTIVATED_SUCCESSFULLY'] = 'Der Benutzer %s wurde erfolgreich deaktiviert.';
-$_ARRAYLANG['TXT_ACCESS_USER_STATUS'] = 'Benutzerstatus';
-$_ARRAYLANG['TXT_ACCESS_ACTIVATE_USER'] = 'Klicken Sie hier, um das Benutzerkonto des Benutzers %s zu aktivieren.';
-$_ARRAYLANG['TXT_ACCESS_DEACTIVATE_USER'] = 'Klicken Sie hier, um das Benutzerkonto des Benutzers %s zu deaktivieren.';
-
-$_ARRAYLANG['TXT_ACCESS_ACTIVATE_GROUP'] = 'Klicken Sie hier, um die Gruppe %s zu aktivieren.';
-$_ARRAYLANG['TXT_ACCESS_DEACTIVATE_GROUP'] = 'Klicken Sie hier, um die Gruppe %s zu deaktivieren.';
-
-$_ARRAYLANG['TXT_ACCESS_USER_ROLE'] = 'Benutzerrolle';
-$_ARRAYLANG['TXT_ACCESS_ADMINISTRATORS'] = 'Administratoren';
-
-$_ARRAYLANG['TXT_ACCESS_USER_ACTIVATED_SUCCESSFULLY'] = 'Der Benutzer %s wurde erfolgreich aktiviert.';
-$_ARRAYLANG['TXT_ACCESS_GROUP_SUCCESSFULLY_DELETED'] = 'Die Gruppe %s wurde erfolgreich gelöscht.';
-$_ARRAYLANG['TXT_ACCESS_GROUP_ACTIVATED_SUCCESSFULLY'] = 'Die Gruppe %s wurde erfolgreich aktiviert.';
-$_ARRAYLANG['TXT_ACCESS_GROUP_DEACTIVATED_SUCCESSFULLY'] = 'Die Gruppe %s wurde erfolgreich deaktiviert.';
-
-$_ARRAYLANG['TXT_ACCESS_LAST_ACTIVITY'] = 'Letzte Aktivität';
-
-$_ARRAYLANG['TXT_ACCESS_MODIFY_USER_ACCOUNT'] = 'Benutzerkonto bearbeiten';
-$_ARRAYLANG['TXT_ACCESS_CREATE_USER_ACCOUNT'] = 'Neues Benutzerkonto erstellen';
-$_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT'] = 'Benutzerkonto';
-$_ARRAYLANG['TXT_ACCESS_USER_GROUP_S'] = 'Benutzergruppe(n)';
-$_ARRAYLANG['TXT_ACCESS_PROFILE'] = 'Profil';
-$_ARRAYLANG['TXT_ACCESS_STATISTICS'] = 'Statistiken';
-$_ARRAYLANG['TXT_ACCESS_PASSWORD'] = 'Kennwort';
-$_ARRAYLANG['TXT_ACCESS_CONFIRM_PASSWORD'] = 'Kennwort bestätigen';
-$_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS'] = '(min. 6 Zeichen)';
-$_ARRAYLANG['TXT_ACCESS_USER_ADMIN_RIGHTS'] = 'Benutzer erhält Administrator-Rechte.';
-$_ARRAYLANG['TXT_ACCESS_PASSWORD_FIELD_EMPTY'] = 'Wenn Sie das Kennwortfeld leer lassen, wird das aktuelle Kennwort beibehalten!';
-$_ARRAYLANG['TXT_ACCESS_PASSWORD_MD5_ENCRYPTED'] = 'Das Kennwort wird mit dem MD5 Logarithmus verschlüsselt.';
-$_ARRAYLANG['TXT_ACCESS_AVAILABLE_GROUPS'] = 'Vorhandene Gruppen';
-$_ARRAYLANG['TXT_ACCESS_ASSOCIATED_GROUPS'] = 'Zugeordnete Gruppen';
-$_ARRAYLANG['TXT_ACCESS_CHECK_ALL'] = 'Alle auswählen';
-$_ARRAYLANG['TXT_ACCESS_UNCHECK_ALL'] = 'Auswahl entfernen';
-$_CORELANG['TXT_ACCESS_GENDER'] = 'Geschlecht';
-$_CORELANG['TXT_ACCESS_COMPANY'] = 'Firma';
-$_CORELANG['TXT_ACCESS_ADDRESS'] = 'Adresse';
-$_CORELANG['TXT_ACCESS_CITY'] = 'Ort';
-$_CORELANG['TXT_ACCESS_ZIP'] = 'PLZ';
-$_CORELANG['TXT_ACCESS_COUNTRY'] = 'Land';
-$_CORELANG['TXT_ACCESS_PHONE_OFFICE'] = 'Tel. Büro';
-$_CORELANG['TXT_ACCESS_PHONE_PRIVATE'] = 'Tel. Privat';
-$_CORELANG['TXT_ACCESS_PHONE_MOBILE'] = 'Tel. Mobile';
-$_CORELANG['TXT_ACCESS_PHONE_FAX'] = 'Fax';
-$_CORELANG['TXT_ACCESS_BIRTHDAY'] = 'Geburtstag';
-$_CORELANG['TXT_ACCESS_WEBSITE'] = 'Webseite';
-$_CORELANG['TXT_ACCESS_PREFESSION'] = 'Beruf';
-$_CORELANG['TXT_ACCESS_INTERESTS'] = 'Interessen';
-$_ARRAYLANG['TXT_ACCESS_SAVE'] = 'Speichern';
-$_ARRAYLANG['TXT_ACCESS_CANCEL'] = 'Abbrechen';
-$_ARRAYLANG['TXT_ACCESS_CHANGE_WEBSITE'] = 'Webseite ändern';
-$_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = 'Webseite besuchen';
-$_ARRAYLANG['TXT_ACCESS_NO_SPECIFIED'] = 'Keine angegeben!';
-$_CORELANG['TXT_ACCESS_SKYPE_NAME'] = 'Skype-Name';
-$_ARRAYLANG['TXT_ACCESS_CHANGE_PROFILE_PIC'] = 'Profilbild ändern';
-$_ARRAYLANG['TXT_ACCESS_ACTIVE'] = 'Aktiv';
-$_ARRAYLANG['TXT_ACCESS_GROUP_LIST'] = 'Gruppen Liste';
-$_ARRAYLANG['TXT_ACCESS_NAME'] = 'Name';
-$_ARRAYLANG['TXT_ACCESS_DESCRIPTION'] = 'Beschreibung';
-$_ARRAYLANG['TXT_ACCESS_TYPE'] = 'Typ';
-$_ARRAYLANG['TXT_ACCESS_MODIFY_GROUP'] = 'Gruppe bearbeiten';
-$_ARRAYLANG['TXT_ACCESS_DELETE_GROUP'] = 'Gruppe %s löschen';
-$_ARRAYLANG['TXT_ACCESS_INACTIVE'] = 'Inaktiv';
-$_ARRAYLANG['TXT_ACCESS_SHOW_USERS_OF_GROUP'] = 'Benutzer der Gruppe %s anzeigen';
-$_ARRAYLANG['TXT_ACCESS_EMAILS'] = 'E-Mails';
-$_ARRAYLANG['TXT_ACCESS_ATTRIBUTE'] = 'Eigenschaft';
-$_ARRAYLANG['TXT_ACCESS_MODIFY_ATTRIBUTE'] = 'Eigenschaft bearbeiten';
-$_ARRAYLANG['TXT_ACCESS_DELETE_ATTRIBUTE'] = 'Eigenschaft löschen';
-$_ARRAYLANG['TXT_ACCESS_PREVIEW'] = 'Vorschau';
-//$_ARRAYLANG['TXT_ACCESS_UNABLE_MODIFY_ATTRIBUTE'] = 'Die gewünschte Eigenschaft kann nicht bearbeitet werden!';
-$_ARRAYLANG['TXT_ACCESS_PROFILE_ATTRIBUTE_MODIFY'] = 'Profileigenschaft bearbeiten';
-$_ARRAYLANG['TXT_ACCESS_EXTENDED'] = 'Erweitert';
-$_ARRAYLANG['TXT_ACCESS_MANDATORY_FIELD'] = 'Pflichtfeld';
-$_ARRAYLANG['TXT_ACCESS_NO'] = 'Nein';
-$_ARRAYLANG['TXT_ACCESS_YES'] = 'Ja';
-$_ARRAYLANG['TXT_ACCESS_ADD_NEW_PROFILE_ATTRIBUTE'] = 'Neue Profileigenschaft hinzufügen';
-$_ARRAYLANG['TXT_ACCESS_ADD_NEW_MENU_OPTION'] = 'Neue Option hinzufügen';
-$_ARRAYLANG['TXT_ACCESS_ADD_NEW_GROUP_FRAME'] = 'Neue Gruppe hinzufügen';
-$_ARRAYLANG['TXT_ACCESS_MULTILINE_TEXT'] = 'Mehrzeiliges Textfeld';
-$_ARRAYLANG['TXT_ACCESS_INVALID_PARENT_ATTRIBUTE'] = 'Die angegebene übergeordnete Eigenschaft kann nicht als solche verwendet werden!';
-$_ARRAYLANG['TXT_ACCESS_INVALID_CHILD_ATTRIBUTE'] = 'Der ausgewählte Eigenschaftstyp kann in diesem Zusammenhang nicht verwendet werden!';
-$_ARRAYLANG['TXT_ACCESS_FAILED_STORE_ATTRIBUTE'] = 'Beim Speichern der Eigenschaft trat ein Fehler auf!';
-$_ARRAYLANG['TXT_ACCESS_FAILED_STORE_FRAME'] = 'Beim Speichern des Rahmens trat ein Fehler auf!';
-$_ARRAYLANG['TXT_ACCESS_FAILED_STORE_MENU_OPTION'] = 'Beim Speichern der Menu Option trat ein Fehler auf!';
-$_ARRAYLANG['TXT_ACCESS_FAILED_STORE_ATTRIBUTE_DESC'] = 'Es konnten nicht alle Beschreibungen der Eigenschaft gespeichert werden!';
-$_ARRAYLANG['TXT_ACCESS_FAILED_STORE_FRAME_DESC'] = 'Es konnten nicht alle Beschreibungen des Rahmens gespeichert werden!';
-$_ARRAYLANG['TXT_ACCESS_FAILED_STORE_MENU_OPTION_DESC'] = 'Es konnten nicht alle Beschreibungen der Menu Option gespeichert werden!';
-$_ARRAYLANG['TXT_ACCESS_SUCCESS_STORE_MENU_OPTION'] = 'Die Menu Option wurde erfolgreich gespeichert.';
-$_ARRAYLANG['TXT_ACCESS_SUCCESS_STORE_FRAME'] = 'Der Gruppenrahmnen wurde erfolgreich gespeichert!';
-$_ARRAYLANG['TXT_ACCESS_SUCCESS_STORE_ATTRIBUTE'] = 'Die Profileigenschaft wurde erfolgreich gespeichert!';
-$_ARRAYLANG['TXT_ACCESS_TEXT_FIELD'] = 'Textfeld';
-$_ARRAYLANG['TXT_ACCESS_EMAIL_ADDRESS'] = 'E-Mail Adresse';
-$_ARRAYLANG['TXT_ACCESS_WEB_ADDRESS'] = 'Web Adresse (URL)';
-$_ARRAYLANG['TXT_ACCESS_DATE'] = 'Datum';
-$_ARRAYLANG['TXT_ACCESS_IMAGE'] = 'Bild';
-$_ARRAYLANG['TXT_ACCESS_MENU'] = 'Auswahlmenu';
-$_ARRAYLANG['TXT_ACCESS_MENU_OPTION'] = 'Auswahlmenu Option';
-$_ARRAYLANG['TXT_ACCESS_GROUP'] = 'Gruppe';
-$_ARRAYLANG['TXT_ACCESS_FRAME'] = 'Rahmen';
-$_ARRAYLANG['TXT_ACCESS_HISTORY'] = 'Verlauf';
-$_ARRAYLANG['TXT_ACCESS_PARENT_ATTRIBUTE'] = 'Übergeordnete Eigenschaft';
-$_ARRAYLANG['TXT_ACCESS_NEW_ATTRIBUTE'] = 'Neue Eigenschaft';
-$_ARRAYLANG['TXT_ACCESS_MUST_STORE_NEW_ATTRIBUTE_MSG'] = 'Die Eigenschaft muss zuerst gespeichert werden!';
-$_ARRAYLANG['TXT_ACCESS_STORE_CHANGED_ATTRIBUTE_MSG'] = 'Möchten Sie die Änderungen speichern?';
-$_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_ATTRIBUTE_MSG'] = 'Möchten Sie die Eigenschaft %s wirklich löschen?\nDabei werden alle Untereigenschaften, sowie erfassten Daten der Benutzer gelöscht!';
-$_ARRAYLANG['TXT_ACCESS_INVALID_PROFILE_ATTRIBUTE_SPECIFIED'] = 'Sie haben eine ungültige Profileigenschaft angegeben!';
-$_ARRAYLANG['TXT_ACCESS_SUCCESS_DEL_ATTRIBUTE'] = 'Die Eigenschaft wurde erfolgreich gelöscht.';
-$_ARRAYLANG['TXT_ACCESS_UNABLE_DEL_ATTRIBUTE_CONTENT'] = 'Die erfassten Benutzerdaten der Eigenschaft %s konnten nicht gelöscht werden!';
-$_ARRAYLANG['TXT_ACCESS_UNABLE_DEL_ATTRIBUTE_DESCS'] = 'Die Beschreibungen der Eigenschaft %s konnten nicht gelöscht werder!';
-$_ARRAYLANG['TXT_ACCESS_UNABLE_DEL_ATTRIBUTE'] = 'Beim Löschen der Eigenschaft %s trat ein Fehler auf!';
-$_ARRAYLANG['TXT_ACCESS_CHANGES_WILL_BE_LOST'] = 'Achtung: Die Änderungen gehen dabei verloren!';
-$_ARRAYLANG['TXT_ACCESS_BACK'] = 'Zurück';
-$_ARRAYLANG['TXT_ACCESS_SET_ADDRESS_OF_WEBSITE'] = 'Geben Sie die Adresse einer Webseite an:';
-$_ARRAYLANG['TXT_ACCESS_SORT'] = 'Sortierung';
-$_ARRAYLANG['TXT_ACCESS_ASCENDING'] = 'Aufsteigend';
-$_ARRAYLANG['TXT_ACCESS_DESCENDING'] = 'Absteigend';
-$_ARRAYLANG['TXT_ACCESS_CUSTOM'] = 'Benutzerdefiniert';
-$_ARRAYLANG['TXT_ACCESS_MOVE_UP'] = 'Nach Oben verschieben';
-$_ARRAYLANG['TXT_ACCESS_MOVE_DOWN'] = 'Nach Unten verschieben';
-$_ARRAYLANG['TXT_ACCESS_EVERYONE_MOD_PERM'] = 'Jeder darf diese Eigenschaft bearbeiten.';
-$_ARRAYLANG['TXT_ACCESS_MODIFICATION_ACCESS'] = 'Bearbeitungsrecht';
-$_ARRAYLANG['TXT_ACCESS_MODIFY_PROFILE_ATTRIBUTE_MSG'] = 'Definieren Sie hier, ob diese Eigenschaft ein Benutzer in seinem Profil bearbeiten darf.';
-$_ARRAYLANG['TXT_ACCESS_SELECT_ALLOWED_MODIFY_GROUPS'] = 'Wählen Sie die Gruppen aus, welche Berechtig sein sollen, diese Eigenschaft zu bearbeiten.';
-$_ARRAYLANG['TXT_ACCESS_SPECIAL_MENU_PERM'] = 'Spezielle Erlaubnis für Benutzer, welche einer Gruppe angehören, deren die Berechtigung zum Bearbeiten nicht zugeteilt wurde:';
-$_ARRAYLANG['TXT_ACCESS_NONE'] = 'Keine';
-$_ARRAYLANG['TXT_ACCESS_ONLY_HIGHER_OPTION_ACCESS'] = 'Es darf, im Vergleich zur aktuellen Auswahl, nur eine Option in <strong>höher</strong> liegender Position ausgewählt werden.';
-$_ARRAYLANG['TXT_ACCESS_ONLY_LOWER_OPTION_ACCESS'] = 'Es darf, im Vergleich zur aktuellen Auswahl, nur eine Option in <strong>tiefer</strong> liegender Position ausgewählt werden.';
-$_ARRAYLANG['TXT_ACCESS_FRAMES'] = 'Rahmen';
-$_ARRAYLANG['TXT_ACCESS_SELECT_OPTION'] = 'Auswahlmenü Option';
-$_ARRAYLANG['TXT_ACCESS_SELECT_OPTIONS'] = 'Auswahlmenü Optionen';
-$_ARRAYLANG['TXT_ACCESS_ADD_NEW_FRAME'] = 'Neuen Rahmen hinzufügen';
-$_ARRAYLANG['TXT_ACCESS_ADD_NEW_SELECT_OPTION'] = 'Neue Auswahlmenü Option hinzufügen';
-$_ARRAYLANG['TXT_ACCESS_ADD_OTHER_MENU_OPTION'] = 'Nach dem Speichern eine weitere Auswahlmenü Option hinzufügen';
-$_ARRAYLANG['TXT_ACCESS_ADD_OTHER_FRAME'] = 'Nach dem Speichern einen weiteren Rahmen hinzufügen';
-$_ARRAYLANG['TXT_ACCESS_ADD_OTHER_ATTRIBUTE'] = 'Nach dem Speichern eine weiteren Profil Eigenschaft hinzufügen';
-
-$_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = 'Das Benutzerkonto wurde erfolgreich gespeichert';
-$_ARRAYLANG['TXT_ACCESS_GROUP_STORED_SUCCESSFULLY'] = 'Die Gruppe wurde erfolgreich gespeichert';
-$_ARRAYLANG['TXT_ACCESS_ID'] = 'ID';
-
-$_ARRAYLANG['TXT_ACCESS_EVERYONE_ALLOWED_SEEING_EMAIL'] = 'Jeder darf die E-Mail Adresse einsehen';
-$_ARRAYLANG['TXT_ACCESS_EVERYONE_ALLOWED_SEEING_PROFILE'] = 'Jeder darf die Profiledaten einsehen';
-$_ARRAYLANG['TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_EMAIL'] = 'Nur Mitglieder dürfen die E-Mail Adresse einsehen';
-$_ARRAYLANG['TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_PROFILE'] = 'Nur Mitglieder dürfen die Profiledaten einsehen';
-$_ARRAYLANG['TXT_ACCESS_NOBODY_ALLOWED_SEEING_EMAIL'] = 'Niemand darf die E-Mail Adresse einsehen';
-$_ARRAYLANG['TXT_ACCESS_NOBODY_ALLOWED_SEEING_PROFILE'] = 'Niemand darf die Profiledaten einsehen';
-
-
-$_ARRAYLANG['TXT_ACCESS_GENERAL'] = 'Allgemein';
-$_ARRAYLANG['TXT_ACCESS_PERMISSIONS'] = 'Berechtigungen';
-$_ARRAYLANG['TXT_ACCESS_AVAILABLE_USERS'] = 'Vorhandene Benutzer';
-$_ARRAYLANG['TXT_ACCESS_ASSOCIATED_USERS'] = 'Zugeordnete Benutzer';
-$_ARRAYLANG['TXT_ACCESS_SHOW_PAGE_IN_NEW_DOCUMENT'] = 'Webseite in neuem Fenster anzeigen';
-$_ARRAYLANG['TXT_ACCESS_MODIFY_PAGE_IN_NEW_DOCUMENT'] = 'Webseite in neuem Fenster bearbeiten';
-$_ARRAYLANG['TXT_ACCESS_PROTECTED'] = 'Geschützt';
-$_ARRAYLANG['TXT_ACCESS_PUBLIC'] = 'Öffentlich';
-$_ARRAYLANG['TXT_ACCESS_UNPROTECT_PAGE'] = 'Sind Sie sicher, dass Sie diese Seite wieder öffentlich zugänglich machen wollen?';
-$_ARRAYLANG['TXT_ACCESS_PROTECT_PAGE'] = 'Soll diese Seite geschützt werden?';
-$_ARRAYLANG['TXT_ACCESS_CLICK_UNLOCK_PAGE_MODIF'] = 'Klicken Sie auf das Symbol um den Modifikationsschutz dieser Seite zu entfehrnen.';
-$_ARRAYLANG['TXT_ACCESS_CLICK_LOCK_PAGE_MODIFY'] = 'Klicken Sie auf das Symbol um die Seite vor unerlaubten Modifikationen zu schützen.';
-$_ARRAYLANG['TXT_ACCESS_CLICK_UNLOCK_PAGE_ACCESS'] = 'Klicken Sie auf das Symbol um die Seite öffentlich zugänglich zu machen.';
-$_ARRAYLANG['TXT_ACCESS_CLICK_LOCK_PAGE_ACCESS'] = 'Klicken Sie auf das Symbol um die Seite vor unerlaubtem Zugriff zu schützen.';
-$_ARRAYLANG['TXT_ACCESS_PROMT_EXEC_WARNING'] = 'Achtung: Nach dem Bestätigen dieser Anforderung wird die angeforderte Aktion sofort durchgeführt!';
-$_ARRAYLANG['TXT_ACCESS_CONFIRM_LOCK_PAGE'] = 'Möchten Sie diese Seite vor unerlaubten Modifikationen schützen?';
-$_ARRAYLANG['TXT_ACCESS_CONFIRM_PROTECT_PAGE'] = 'Möchten Sie diese Seite vor unerlaubtem Zugriff schützen?';
-$_ARRAYLANG['TXT_ACCESS_CONFIRM_UNLOCK_PAGE'] = 'Möchten Sie den Modifikationsschutz dieser Seite wirklich entfehrnen?';
-$_ARRAYLANG['TXT_ACCESS_CONFIRM_UNPROTECT_PAGE'] = 'Möchten Sie den Zugriffsschutz dieser Seite wirklich entfehrnen?';
-$_ARRAYLANG['TXT_ACCESS_ADDRESS_OF_USER_TO_NOTIFY'] = 'E-Mail Adresse, an die eine Nachricht gesendet werden soll, wenn sich ein neuer Benutzer registriert hat.';
-$_CORELANG['TXT_ACCESS_PROFILE_PIC'] = 'Profilbild';
-$_ARRAYLANG['TXT_ACCESS_PROFILE_AVATAR_PIC'] = 'Profilbild / Avatar';
-$_ARRAYLANG['TXT_ACCESS_OTHER_PICTURES'] = 'Sonstige Bilder';
-$_ARRAYLANG['TXT_ACCESS_MISCELLANEOUS'] = 'Sonstiges';
-
-$_ARRAYLANG['TXT_ACCESS_MAX_WIDTH'] = 'Maximale Breite';
-$_ARRAYLANG['TXT_ACCESS_MAX_HEIGHT'] = 'Maximale Höhe';
-$_ARRAYLANG['TXT_ACCESS_MAX_THUMBNAIL_WIDTH'] = 'Maximale Thumbnail Breite';
-$_ARRAYLANG['TXT_ACCESS_MAX_THUMBNAIL_HEIGHT'] = 'Maximale Thumbnail Höhe';
-$_ARRAYLANG['TXT_ACCESS_THUMBNAIL_WIDTH'] = 'Thumbnail Breite';
-$_ARRAYLANG['TXT_ACCESS_THUMBNAIL_HEIGHT'] = 'Thumbnail Höhe';
-$_ARRAYLANG['TXT_ACCESS_PICTURES'] = 'Bilder';
-
-$_ARRAYLANG['TXT_ACCESS_MAX_FILE_SIZE'] = 'Maximale Dateigrösse';
-$_ARRAYLANG['TXT_ACCESS_CONFIG_SUCCESSFULLY_SAVED'] = 'Die Einstellungen wurden erfolgreich gespeichert.';
-$_ARRAYLANG['TXT_ACCESS_CONFIG_FAILED_SAVED'] = 'Beim Speichern der Einstellungen trat ein Fehler auf!';
-$_ARRAYLANG['TXT_ACCESS_TRY_TO_REPEAT_OPERATION'] = 'Versuchen Sie den Vorgang zu wiederholen!';
-
-$_ARRAYLANG['TXT_ACCESS_GROUP_SUCCESSFULLY_UPDATED'] = 'Die Gruppe %s wurde erfolgreich aktualisiert.';
-$_ARRAYLANG['TXT_ACCESS_GROUP_UPDATE_FAILED'] = 'Beim Aktualisieren der Gruppe %s trat ein Fehler auf!';
-
-
-
-$_CORELANG['TXT_FAILED_TO_UPDATE_GROUP'] = 'Beim Aktualisieren der Gruppe trat ein Fehler auf! Versuchen Sie den Vorgang zu wiederholen!';
-$_CORELANG['TXT_FAILED_TO_CREATE_GROUP'] = 'Beim Erstellen der Gruppe trat ein Fehler auf! Versuchen Sie den Vorgang zu wiederholen!';
-
-
-
-$_ARRAYLANG['TXT_ACCESS_GROUP_SUCCESSFULLY_CREATED'] = 'Die Gruppe %s wurde erfolgreich erstellt.';
-$_ARRAYLANG['TXT_ACCESS_GROUP_CREATION_FAILED'] = 'Beim Hinzufügen der Gruppe %s trat ein Fehler auf!';
-$_ARRAYLANG['TXT_ACCESS_NEXT'] = 'Weiter';
-$_ARRAYLANG['TXT_ACCESS_BACKEND_DESC'] = 'Administrationskonsole (backend)';
-$_ARRAYLANG['TXT_ACCESS_FRONTEND_DESC'] = 'Website (frontend)';
-$_ARRAYLANG['TXT_ACCESS_CREATE_GROUP_TYPE_QUESTION'] = 'Was für eine Gruppe möchten Sie erstellen?';
-$_ARRAYLANG['TXT_ACCESS_CREATE_GROUP'] = 'Gruppe erstellen';
-$_ARRAYLANG['TXT_ACCESS_SELECT_A_VALID_GROUP_TYPE'] = 'Sie müssen einen gültigen Gruppentyp auswählen!';
-$_ARRAYLANG['TXT_ACCESS_FAILED_PROTECT_PAGE'] = 'Beim Schützen der gewünschten Seite trat ein Fehler auf!';
-$_ARRAYLANG['TXT_ACCESS_FAILED_RELEASE_PAGE'] = 'Beim Freigeben der gewünschten Seite trat ein Fehler auf!';
-$_ARRAYLANG['TXT_ACCESS_CONFIRM_OPEN_URL'] = 'Möchten Sie diese Seite trotzdem besuchen?';
-$_ARRAYLANG['TXT_ACCESS_URL_OPEN_RISK_MSG'] = 'Wenn Ihnen die Adresse %s unbekannt ist, kann es ein Sicherheitsrisiko sein diese Seite zu besuchen!';
-
-$_ARRAYLANG['TXT_ACCESS_EMAIL_NOTIFICATIONS'] = 'E-Mail Benachrichtigungen';
-$_ARRAYLANG['TXT_ACCESS_MAIL_SUBJECT'] = 'E-Mail Betreff';
-$_ARRAYLANG['TXT_ACCESS_STANDARD'] = 'Standard';
-
-$_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'] = 'Kennwort ändern';
-
-$_CORELANG['TXT_ACCESS_PIC_TOO_BIG'] = 'Das Bild %s ist zu gross!';
-
-$_CORELANG['TXT_ACCESS_REGISTER_CONFIRMATION'] = 'Registrationsbestätigung';
-$_CORELANG['TXT_ACCESS_RESET_PASSWORD'] = 'Kennwort zurücksetzen';
-$_CORELANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATED'] = 'Benutzerkonto aktiviert';
-$_CORELANG['TXT_ACCESS_USER_ACCOUNT_DEACTIVATED'] = 'Benutzerkonto deaktiviert';
-$_CORELANG['TXT_ACCESS_NEW_USER_REGISTRATION'] = 'Neue Benutzerregistrierung';
-$_ARRAYLANG['TXT_ACCESS_MODIFY_EMAIL'] = 'E-Mail bearbeiten';
-$_ARRAYLANG['TXT_ACCESS_SENDER_ADDRESS'] = 'Absender (E-Mail)';
-$_ARRAYLANG['TXT_ACCESS_SENDER_NAME'] = 'Absender (Name)';
-$_ARRAYLANG['TXT_ACCESS_TEXT_BODY'] = 'Inhalt';
-$_ARRAYLANG['TXT_ACCESS_SEND_AS'] = 'Senden als';
-$_CORELANG['TXT_ACCESS_ONLY_TEXT'] = 'nur Text';
-$_ARRAYLANG['TXT_ACCESS_HTML_UC'] = 'HTML';
-$_CORELANG['TXT_ACCESS_HTML_UC'] = 'HTML';
-$_CORELANG['TXT_ACCESS_MULTIPART'] = 'Multipart (Text/HTML)';
-$_ARRAYLANG['TXT_ACCESS_TEXT'] = 'Text';
-$_ARRAYLANG['TXT_ACCESS_PLACEHOLDER_DIRECTORY'] = 'Platzhalter Verzeichnis';
-$_CORELANG['TXT_ACCESS_USERNAME_DESC'] = 'Benutzername';
-//$_ARRAYLANG['TXT_ACCESS_HOST_DESC'] = 'Hostname'; OBSOLETE?
-$_CORELANG['TXT_ACCESS_ACTIVATION_LINK_DESC'] = 'Aktivierungslink';
-$_CORELANG['TXT_ACCESS_HOST_LINK_DESC'] = 'Link zum Webportal';
-$_CORELANG['TXT_ACCESS_PASSWORD_DESC'] = 'Kennwort des Benutzerkontos';
-$_CORELANG['TXT_ACCESS_RESET_PW_URL_DESC'] = 'Link um das Kennwort zurückzusetzen';
-$_CORELANG['TXT_ACCESS_SENDER_DESC'] = 'Name des Absenders';
-$_CORELANG['TXT_ACCESS_HOST_DESC'] = 'Hostname dieses Webservers';
-$_CORELANG['TXT_ACCESS_MANAGE_USER_LINK_DESC'] = 'Link um den neu registrierten Benutzer zu verwalten';
-$_ARRAYLANG['TXT_ACCESS_MAIL_STORED_SUCCESSFULLY'] = 'Das E-Mail wurde erfolgreich gespeichert.';
-$_CORELANG['TXT_ACCESS_MAIL_ADDED_FAILED'] = 'Beim Hinzufügen des E-Mails trat ein Fehler auf!';
-$_CORELANG['TXT_ACCESS_MAIL_UPDATED_FAILED'] = 'Beim Aktualisieren des E-Mails trat ein Fehler auf!';
-$_ARRAYLANG['TXT_ACCESS_MAIL_TYPE_ALREADY_IN_USE'] = 'Vom gewählten E-Mail Typ gibt es bereits eine Variante in der Sprache %s!';
-$_CORELANG['TXT_ACCESS_INVALID_SENDER_ADDRESS'] = 'Die eingegebene Absender E-Mail Adresse ist ungültig!';
-$_CORELANG['TXT_ACCESS_REQUIRED_PLACEHOLDERS_IN_TEXT'] = 'Die folgenden Platzhalter müssen bei der Textnachricht zwingend verwendet werden: %s';
-$_CORELANG['TXT_ACCESS_REQUIRED_PLACEHOLDER_IN_TEXT'] = 'Der Platzhalter %s muss bei der Textnachricht zwingend verwendet werden!';
-$_CORELANG['TXT_ACCESS_REQUIRED_PLACEHOLDERS_IN_HTML'] = 'Die folgenden Platzhalter müssen bei der HTML-Nachricht zwingend verwendet werden: %s';
-$_CORELANG['TXT_ACCESS_REQUIRED_PLACEHOLDER_IN_HTML'] = 'Der Platzhalter %s muss bei der HTML-Nachricht zwingend verwendet werden!';
-$_ARRAYLANG['TXT_ACCESS_EMAIL_DEL_SUCCESS'] = 'Das E-Mail wurde erfolgreich gelöscht';
-$_CORELANG['TXT_ACCESS_EMAIL_DEL_FAILED'] = 'Beim Löschen des E-Mails trat ein Fehler auf!';
-$_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_MAIL'] = 'Möchten Sie das E-Mail wirklich löschen?';
-$_ARRAYLANG['TXT_ACCESS_DELETE_MAIL_TEMPLATE'] = 'E-Mail löschen';
-$_ARRAYLANG['TXT_ACCESS_COPY_MAIL_TEMPLATE'] = 'Standard E-Mail in einer Frontend-Sprache erfassen';
-$_ARRAYLANG['TXT_ACCESS_MODIFY_MAIL_TEMPLATE'] = 'E-Mail bearbeiten';
-$_ARRAYLANG['TXT_ACCESS_CHECK_ALL'] = 'Alle auswählen';
-$_ARRAYLANG['TXT_ACCESS_UNCHECK_ALL'] = 'Auswahl entfernen';
-$_ARRAYLANG['TXT_ACCESS_CREATE_NEW_USER_GROUP'] = 'Neue Benutzergruppe erstellen';
-$_ARRAYLANG['TXT_ACCESS_CREATE_NEW_USER'] = 'Neues Benutzerkonto erstellen';
-
-$_CORELANG['TXT_ACCESS_UNKNOWN_TYPE_SPECIFIED'] = 'Der gewählte E-Mail Typ ist unbekannt!';
-$_CORELANG['TXT_ACCESS_SET_SENDER_NAME'] = 'Sie müssen einen Namen auswählen, der als Absender angegeben werden soll!';
-$_CORELANG['TXT_ACCESS_UNKOWN_FORMAT_SPECIFIED'] = 'Das gewählte E-Mail Format ist unbekannt!';
-
-
-// community vars
-$_ARRAYLANG['TXT_ACCESS_GROUP_ASSOCIATION_TEXT'] = 'Choose the groups to which a new registered user should belong to.<br />Hint: A user, who isn`t associated to a group, isn`t able to login into the system!';
-$_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATION_METHOD_TEXT'] = 'Method used to activate the user account of a new registered user';
-$_ARRAYLANG['TXT_ACCESS_ACTIVATION_BY_USER'] = 'Activation by the user.';
-$_ARRAYLANG['TXT_ACCESS_ACTIVATION_BY_AUTHORIZED_PERSON'] = 'Activation by an authorized person (see Backend group permissions under User administration).';
-$_ARRAYLANG['TXT_ACCESS_TIME_PERIOD_ACTIVATION_TIME'] = 'Time period in hours before the activation time expires. (0 ? 24 hours, 0 for unlimited)';
-$_ARRAYLANG['TXT_ACCESS_INVALID_ENTERED_EMAIL_ADDRESS'] = 'Die eingegebene E-Mail Adresse ist ungültig!';
-$_ARRAYLANG['TXT_ACCESS_PROFILE_ATTRIBUTES'] = 'Profil Eigenschaften';
-
-$_ARRAYLANG['TXT_ACCESS_COMMUNITY'] = 'Community';
-$_ARRAYLANG['TXT_ACCESS_DELETE_IMAGE'] = 'Bild löschen';
-
-
-
-$_ARRAYLANG['TXT_ACCESS_ACCOUNT_SUCCESSFULLY_CREATED'] = "Ihr Benutzerkonto wurde erfolgreich erstellt.";
-$_ARRAYLANG['TXT_ACCESS_HOUR_IN_STR'] = "einer Stunde";
-$_ARRAYLANG['TXT_ACCESS_HOURS_IN_STR'] = "Stunden";
-$_ARRAYLANG['TXT_ACCESS_ACTIVATION_TIMEOUT'] = " innerhalb von %TIMEOUT%";
-$_ARRAYLANG['TXT_ACCESS_ACTIVATION_BY_USER_MSG'] = "Sie erhalten jetzt gleich eine Bestätigungsnachricht per E-Mail. Sie müssen Ihr Benutzerkonto dann über den angegeben Link%TIMEOUT% aktivieren.";
-$_ARRAYLANG['TXT_ACCESS_ACTIVATION_BY_SYSTEM'] = "Sie werden eine Bestätigung per Mail erhalten, sobald Ihr Benutzerkonto auf %HOST% aktiviert wurde.";
-$_ARRAYLANG['TXT_ACCESS_COULD_NOT_SEND_EMAIL'] = "Konnte keine Bestätigung per Mail senden.<br />Für weitere Informationen wenden Sie sich bitte an den Administrator %EMAIL%. ";
-$_ARRAYLANG['TXT_ACCESS_COULD_NOT_SEND_ACTIVATION_MAIL'] = "Registrierungsfehler: Konnte kein Bestätigungsmail schicken";
-$_ARRAYLANG['TXT_ACCESS_ACCOUNT_SUCCESSFULLY_ACTIVATED'] = "Glückwunsch! Ihr Benutzerkonto wurde erfolgreich aktiviert.";
-$_ARRAYLANG['TXT_ACCESS_ACTIVATION_TIME_EXPIRED'] = "Dieses Benutzerkonto kann nicht mehr aktiviert werden, da die Aktivierungsfrist abgelaufen ist.";
-$_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'] = "Klicken Sie hier um sich erneut zu registrieren.";
-$_ARRAYLANG['TXT_ACCESS_INVALID_USERNAME_OR_ACTIVATION_KEY'] = "Sie haben einen falschen Benutzernamen oder Aktivierungsschlüssel angegeben!<br />Für weitere Informationen wenden Sie sich bitte an den Administrator %EMAIL%.";
-$_ARRAYLANG['TXT_ACCESS_ACCOUNT_ACTIVATION_NOT_POSSIBLE'] = "Registrierungsfehler: Benutzerkonto Aktivierung auf %HOST% nicht möglich";
-$_ARRAYLANG['TXT_ACCESS_REGISTERED_SINCE'] = 'Registriert seit';
-
-$_ARRAYLANG['TXT_ACCESS_SEARCH'] = 'Suchen';
-
-
-$_ARRAYLANG['TXT_ACCESS_COULD_NOT_NOTIFY_USER_ABOUT_STATUS_CHANGE'] = 'Der Benutzer %USER% konnte über die E-Mail Adresse %EMAIL% nicht über dessen Statusänderung seines Kontos informiert werden, da der E-Mail Versand fehl schlug!';
-$_ARRAYLANG['TXT_ACCESS_CONFIRM_USER_NOTIFY_ABOUT_ACCOUNT_STATUS'] = 'Den Benutzer über die Änderung seines Status informieren?';
-
-$_ARRAYLANG['TXT_ACCESS_NO_PICTURE'] = 'Kein Bild';
-$_ARRAYLANG['TXT_ACCESS_CONFIRM_USER_NOTIFY_ABOUT_ACCOUNT_STATUS_NAMED'] = 'Möchten Sie den Benutzer %s über die Status Änderung seines Kontos per E-Mail informieren?';
-
-$_ARRAYLANG['TXT_ACCESS_ALLOW_USERS_DELETE_ACCOUNT'] = 'Benutzer erlauben Ihr Konto zu löschen';
-$_ARRAYLANG['TXT_ACCESS_ALLOW_USERS_SET_PROFILE_ACCESS'] = 'Benutzer erlauben den Zugriff auf Ihr Profil selber zu bestimmen';
-$_ARRAYLANG['TXT_ACCESS_ALLOW_USERS_SET_EMAIL_ACCESS'] = 'Benutzer erlauben den Zugriff auf Ihre E-Mail Adresse selber zu bestimmen';
-
-$_ARRAYLANG['TXT_ACCESS_FRONTEND_BLOCK_FUNCTIONS'] = 'Block Funktionen (Frontend)';
-$_ARRAYLANG['TXT_ACCESS_CURRENTLY_ONLINE'] = 'Zur Zeit Online';
-$_ARRAYLANG['TXT_ACCESS_ACTIVATE_BLOCK_FUNCTION'] = 'Block Funktion aktivieren';
-$_ARRAYLANG['TXT_ACCESS_SHOW_USERS_ONLY_WITH_PHOTO'] = 'Nur Benutzer mit Photo anzeigen';
-$_ARRAYLANG['TXT_ACCESS_MAX_USER_COUNT'] = 'Maximale Anzahl Benutzer';
-$_ARRAYLANG['TXT_ACCESS_LAST_ACTIVE'] = 'Zuletzt aktiv';
-$_ARRAYLANG['TXT_ACCESS_LATEST_REGISTERED_USERS'] = 'Neuste Benutzer';
-$_ARRAYLANG['TXT_ACCESS_BIRTHDAYS'] = 'Geburtstage';
-
-$_ARRAYLANG['TXT_ACCESS_DELETE_ACCOUNT'] = 'Konto löschen';
-$_ARRAYLANG['TXT_ACCESS_YOUR_ACCOUNT_SUCCSESSFULLY_DELETED'] = 'Ihr Konto wurde erfolgreich gelöscht.';
-$_ARRAYLANG['TXT_ACCESS_NOT_ALLOWED_TO_DELETE_ACCOUNT'] = 'Sie sind nicht berechtigt Ihr Konto zu löschen';
-$_ARRAYLANG['TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE'] = 'Den ausgewählten Zugriff für alle übernehmen';
-$_ARRAYLANG['TXT_ACCESS_SET_DEFAULT_PROFILE_ACCESS_FAILED'] = 'Das Übernehmen des ausgewählten Profil Zugriffs für alle Benutzer schlug fehl!';
-$_ARRAYLANG['TXT_ACCESS_SET_DEFAULT_EMAIL_ACCESS_FAILED'] = 'Das Übernehmen des ausgewählten E-Mail Zugriffs für alle Benutzer schlug fehl!';
-
-$_ARRAYLANG['TXT_ACCESS_VALIDITY_EXPIRATION'] = 'Zeitbegrenzung';
-
 require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
 
 
@@ -491,27 +82,27 @@ class AccessLib
     /**
      * Load the html code template of the different attribute types
      *
-     * @global array $_ARRAYLANG
+     * @global array $_CORELANG
      */
     private function loadAttributeTypeTemplates()
     {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
         $this->arrAttributeTypeTemplates = array(
             'textarea'        => '<textarea name="[NAME]" rows="10" cols="30" style="width:300px; height:100px;">[VALUE]</textarea>',
             'text'            => '<input type="text" name="[NAME]" value="[VALUE]" style="width:300px;" />',
             'password'        => '<input type="password" name="[NAME]" value="" style="width:300px;" />',
             'menu'            => '<select name="[NAME]" style="width:300px;">[VALUE]</select>',
-            'menu_option'    => '<option value="[VALUE]"[SELECTED]>[VALUE_TXT]</option>',
-            'url'            => '<input type="hidden" name="[NAME]" value="[VALUE]" /><div style="display:inline;">[VALUE_TXT]</div> <a href="javascript:void(0);" onclick="elLink=null;elDiv=null;elInput=null;pntEl=this.previousSibling;while((typeof(elInput)==\'undefined\'||typeof(elDiv)!=\'undefined\')&& pntEl!=null){switch(pntEl.nodeName){case\'INPUT\':elInput=pntEl;break;case\'DIV\':elDiv=pntEl;if(elDiv.getElementsByTagName(\'a\').length>0){elLink=elDiv.getElementsByTagName(\'a\')[0];}break;}pntEl=pntEl.previousSibling;}accessSetWebsite(elInput,elDiv,elLink)" title="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_WEBSITE'].'"><img align="middle" src="'.ASCMS_PATH_OFFSET.'/images/modules/access/edit.gif" width="16" height="16" border="0" alt="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_WEBSITE'].'" /></a>',
-            'date'            => '<input type="text" name="[NAME]" onfocus="Calendar.setup({inputField:this,ifFormat:\''.preg_replace('#([a-z])#i', '%$1', str_replace(array('j', 'n'), array('e', 'm'), ASCMS_DATE_SHORT_FORMAT)).'\',range:[1900,2100]})" value="[VALUE]" readonly="readonly" /><a href="javascript:void(0)" onclick="this.previousSibling.value = \'\'" title="'.$_ARRAYLANG['TXT_ACCESS_DELETE_DATE'].'"><img src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif" width="17" height="17" border="0" alt="'.$_ARRAYLANG['TXT_ACCESS_DELETE_DATE'].'" style="vertical-align:middle;" /></a>'
+            'menu_option'     => '<option value="[VALUE]"[SELECTED]>[VALUE_TXT]</option>',
+            'url'             => '<input type="hidden" name="[NAME]" value="[VALUE]" /><div style="display:inline;">[VALUE_TXT]</div> <a href="javascript:void(0);" onclick="elLink=null;elDiv=null;elInput=null;pntEl=this.previousSibling;while((typeof(elInput)==\'undefined\'||typeof(elDiv)!=\'undefined\')&& pntEl!=null){switch(pntEl.nodeName){case\'INPUT\':elInput=pntEl;break;case\'DIV\':elDiv=pntEl;if(elDiv.getElementsByTagName(\'a\').length>0){elLink=elDiv.getElementsByTagName(\'a\')[0];}break;}pntEl=pntEl.previousSibling;}accessSetWebsite(elInput,elDiv,elLink)" title="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'"><img align="middle" src="'.ASCMS_PATH_OFFSET.'/images/modules/access/edit.gif" width="16" height="16" border="0" alt="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'" /></a>',
+            'date'            => '<input type="text" name="[NAME]" onfocus="Calendar.setup({inputField:this,ifFormat:\''.preg_replace('#([a-z])#i', '%$1', str_replace(array('j', 'n'), array('e', 'm'), ASCMS_DATE_SHORT_FORMAT)).'\',range:[1900,2100]})" value="[VALUE]" readonly="readonly" /><a href="javascript:void(0)" onclick="this.previousSibling.value = \'\'" title="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'"><img src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif" width="17" height="17" border="0" alt="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'" style="vertical-align:middle;" /></a>'
 
         );
     }
 
     function parseAttribute($objUser, $attributeId, $historyId = 0, $edit = false, $return = false, $isChild = false, $inFrame = false, $useMagicBlock = true)
     {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
         $objAttribute = $objUser->objAttribute->getById($attributeId);
         $attributeName = $this->attributeNamePrefix.'['.$attributeId.']['.$historyId.']';
@@ -551,7 +142,7 @@ class AccessLib
                 $uri = $objUser->getProfileAttribute($attributeId, $historyId);
                 if (empty($uri)) {
                     if ($this->_objTpl->blockExists($block.'_no_link')) {
-                        $this->_objTpl->setVariable('TXT_ACCESS_NO_SPECIFIED', $_ARRAYLANG['TXT_ACCESS_NO_SPECIFIED']);
+                        $this->_objTpl->setVariable('TXT_ACCESS_NO_SPECIFIED', $_CORELANG['TXT_ACCESS_NO_SPECIFIED']);
                         $this->_objTpl->touchBlock($block.'_no_link');
                     }
                     if ($this->_objTpl->blockExists($block.'_link')) {
@@ -561,9 +152,9 @@ class AccessLib
                     $arrPlaceholders['_VALUE'] = htmlentities($objUser->getProfileAttribute($attributeId, $historyId), ENT_QUOTES, CONTREXX_CHARSET);
                     if ($this->_objTpl->blockExists($block.'_link')) {
                         $this->_objTpl->setVariable(array(
-                            'TXT_ACCESS_URL_OPEN_RISK_MSG'                        => $_ARRAYLANG['TXT_ACCESS_URL_OPEN_RISK_MSG'],
-                            'TXT_ACCESS_CONFIRM_OPEN_URL'                        => $_ARRAYLANG['TXT_ACCESS_CONFIRM_OPEN_URL'],
-                            'TXT_ACCESS_VISIT_WEBSITE'                            => $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE']
+                            'TXT_ACCESS_URL_OPEN_RISK_MSG'                        => $_CORELANG['TXT_ACCESS_URL_OPEN_RISK_MSG'],
+                            'TXT_ACCESS_CONFIRM_OPEN_URL'                        => $_CORELANG['TXT_ACCESS_CONFIRM_OPEN_URL'],
+                            'TXT_ACCESS_VISIT_WEBSITE'                            => $_CORELANG['TXT_ACCESS_VISIT_WEBSITE']
                         ));
                         $this->_objTpl->touchBlock($block.'_link');
                     }
@@ -582,7 +173,7 @@ class AccessLib
                 }
                 $arrPlaceholders['_SRC'] = ($attributeId == 'picture' ? ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/' : ASCMS_ACCESS_PHOTO_IMG_WEB_PATH.'/').($arrPlaceholders['_VALUE'] ? $arrPlaceholders['_VALUE'] : ($attributeId == 'picture' ? $this->_arrNoAvatar['src'] : $this->_arrNoPicture['src']));
                 if (empty($arrPlaceholders['_VALUE'])) {
-                    $arrPlaceholders['_VALUE'] = $_ARRAYLANG['TXT_ACCESS_NO_PICTURE'];
+                    $arrPlaceholders['_VALUE'] = $_CORELANG['TXT_ACCESS_NO_PICTURE'];
                 }
                 $arrPlaceholders['_THUMBNAIL'] = $this->getImageAttributeCode($objUser, $attributeName, $image, $attributeId, '', $historyId, $edit, true);
                 $arrPlaceholders['_THUMBNAIL_SRC'] = $arrPlaceholders['_SRC'].$this->_imageThumbnailSuffix;
@@ -790,59 +381,59 @@ class AccessLib
 
     private function loadAccountAttributes()
     {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
         $this->arrAccountAttributes = array(
             'username'    => array(
-                'name'    => $_ARRAYLANG['TXT_ACCESS_USERNAME'],
+                'name'    => $_CORELANG['TXT_ACCESS_USERNAME'],
                 'type'    => 'text',
                 'value'    => 'getUsername'
             ),
             'password'    => array(
-                'name'    => $_ARRAYLANG['TXT_ACCESS_PASSWORD'],
+                'name'    => $_CORELANG['TXT_ACCESS_PASSWORD'],
                 'type'    => 'password'
             ),
             'password_confirmed'    => array(
-                'name'    => $_ARRAYLANG['TXT_ACCESS_CONFIRM_PASSWORD'],
+                'name'    => $_CORELANG['TXT_ACCESS_CONFIRM_PASSWORD'],
                 'type'    => 'password'
             ),
             'current_password'    => array(
-                'name'    => $_ARRAYLANG['TXT_ACCESS_CURRENT_PASSWORD'],
+                'name'    => $_CORELANG['TXT_ACCESS_CURRENT_PASSWORD'],
                 'type'    => 'password'),
             'email'    => array(
-                'name'    => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
+                'name'    => $_CORELANG['TXT_ACCESS_EMAIL'],
                 'type'    => 'email',
                 'value'    => 'getEmail'
             ),
             'frontend_language'    => array(
-                'name'    => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'],
+                'name'    => $_CORELANG['TXT_ACCESS_LANGUAGE'],
                 'type'    => 'menu',
                 'children'    => array(),
                 'value'    => 'getFrontendLanguage'
             ),
             'backend_language'    => array(
-                'name'    => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'],
+                'name'    => $_CORELANG['TXT_ACCESS_LANGUAGE'],
                 'type'    => 'menu',
                 'children'    => array(),
                 'value'    => 'getBackendLanguage'
             ),
             'email_access'    => array(
-                'name'    => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
+                'name'    => $_CORELANG['TXT_ACCESS_EMAIL'],
                 'type'    => 'menu',
                 'children'    => array(
-                    'everyone'        => $_ARRAYLANG['TXT_ACCESS_EVERYONE_ALLOWED_SEEING_EMAIL'],
-                    'members_only'    => $_ARRAYLANG['TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_EMAIL'],
-                    'nobody'        => $_ARRAYLANG['TXT_ACCESS_NOBODY_ALLOWED_SEEING_EMAIL']
+                    'everyone'        => $_CORELANG['TXT_ACCESS_EVERYONE_ALLOWED_SEEING_EMAIL'],
+                    'members_only'    => $_CORELANG['TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_EMAIL'],
+                    'nobody'        => $_CORELANG['TXT_ACCESS_NOBODY_ALLOWED_SEEING_EMAIL']
                 ),
                 'value'    => 'getEmailAccess'
             ),
             'profile_access'    => array(
-                'name'    => $_ARRAYLANG['TXT_ACCESS_PROFILE'],
+                'name'    => $_CORELANG['TXT_ACCESS_PROFILE'],
                 'type'    => 'menu',
                 'children'    => array(
-                    'everyone'        => $_ARRAYLANG['TXT_ACCESS_EVERYONE_ALLOWED_SEEING_PROFILE'],
-                    'members_only'    => $_ARRAYLANG['TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_PROFILE'],
-                    'nobody'        => $_ARRAYLANG['TXT_ACCESS_NOBODY_ALLOWED_SEEING_PROFILE']
+                    'everyone'        => $_CORELANG['TXT_ACCESS_EVERYONE_ALLOWED_SEEING_PROFILE'],
+                    'members_only'    => $_CORELANG['TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_PROFILE'],
+                    'nobody'        => $_CORELANG['TXT_ACCESS_NOBODY_ALLOWED_SEEING_PROFILE']
                 ),
                 'value'        => 'getProfileAccess'
             )
@@ -853,12 +444,12 @@ class AccessLib
 
     private function loadLanguageAccountAttribute()
     {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
         $arrScope = array('frontend', 'backend');
         $objFWLanguage = new FWLanguage();
 
-        $this->arrAccountAttributes['frontend_language']['children'][0] = $this->arrAccountAttributes['backend_language']['children'][0] = $_ARRAYLANG['TXT_ACCESS_DEFAULT'];
+        $this->arrAccountAttributes['frontend_language']['children'][0] = $this->arrAccountAttributes['backend_language']['children'][0] = $_CORELANG['TXT_ACCESS_DEFAULT'];
         foreach ($objFWLanguage->getLanguageArray() as $langId => $arrLanguage)
         {
             foreach ($arrScope as $scope) {
@@ -1041,15 +632,15 @@ class AccessLib
      */
     private function getURIAttributeCode($name, $uri, $edit)
     {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
         return $edit ?
             str_replace(
                 array('[NAME]', '[VALUE]', '[VALUE_TXT]'),
-                array($name, $uri, (!empty($uri) ? '<a href="'.$uri.'" onclick="return confirm(\''.sprintf($_ARRAYLANG['TXT_ACCESS_URL_OPEN_RISK_MSG'], htmlentities($uri, ENT_QUOTES, CONTREXX_CHARSET)).'\n'.$_ARRAYLANG['TXT_ACCESS_CONFIRM_OPEN_URL'].'\')" target="_blank" title="'.$_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'].'">'.htmlentities($uri, ENT_QUOTES, CONTREXX_CHARSET).'</a>' : $_ARRAYLANG['TXT_ACCESS_NO_SPECIFIED'])),
+                array($name, $uri, (!empty($uri) ? '<a href="'.$uri.'" onclick="return confirm(\''.sprintf($_CORELANG['TXT_ACCESS_URL_OPEN_RISK_MSG'], htmlentities($uri, ENT_QUOTES, CONTREXX_CHARSET)).'\n'.$_CORELANG['TXT_ACCESS_CONFIRM_OPEN_URL'].'\')" target="_blank" title="'.$_CORELANG['TXT_ACCESS_VISIT_WEBSITE'].'">'.htmlentities($uri, ENT_QUOTES, CONTREXX_CHARSET).'</a>' : $_CORELANG['TXT_ACCESS_NO_SPECIFIED'])),
                 $this->arrAttributeTypeTemplates['url']
             )
-            : (!empty($uri) ? '<a href="'.$uri.'" title="'.$_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'].'">'.htmlentities($uri, ENT_QUOTES, CONTREXX_CHARSET).'</a>' : $_ARRAYLANG['TXT_ACCESS_NO_SPECIFIED']);
+            : (!empty($uri) ? '<a href="'.$uri.'" title="'.$_CORELANG['TXT_ACCESS_VISIT_WEBSITE'].'">'.htmlentities($uri, ENT_QUOTES, CONTREXX_CHARSET).'</a>' : $_CORELANG['TXT_ACCESS_NO_SPECIFIED']);
     }
 
     /**
@@ -1085,7 +676,7 @@ class AccessLib
      */
     private function getImageAttributeCode($objUser, $name, $value, $attributeId, $attributeHtmlId, $historyId, $edit, $thumbnail = false)
     {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
         if ($attributeId == 'picture') {
             $imageRepo = ASCMS_ACCESS_PROFILE_IMG_PATH.'/';
@@ -1127,10 +718,10 @@ class AccessLib
                     document.getElementById(\''.$attributeHtmlId.'_image\').style.height=\''.$arrNoImage['height'].'px\';
                     document.getElementById(\''.$attributeHtmlId.'\').value = \'\';
                     this.style.display=\'none\'"
-                title="'.$_ARRAYLANG['TXT_ACCESS_DELETE_IMAGE'].'">
+                title="'.$_CORELANG['TXT_ACCESS_DELETE_IMAGE'].'">
                 <img
                     src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif"
-                    alt="'.$_ARRAYLANG['TXT_ACCESS_DELETE_IMAGE'].'"
+                    alt="'.$_CORELANG['TXT_ACCESS_DELETE_IMAGE'].'"
                     border="0"
                     width="17"
                     height="17"
@@ -1153,10 +744,10 @@ class AccessLib
                 onclick="
                     this.previousSibling.value=\'\';
                     this.style.display=\'none\'"
-                title="'.$_ARRAYLANG['TXT_ACCESS_DELETE_IMAGE'].'">
+                title="'.$_CORELANG['TXT_ACCESS_DELETE_IMAGE'].'">
                 <img
                     src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif"
-                    alt="'.$_ARRAYLANG['TXT_ACCESS_DELETE_IMAGE'].'"
+                    alt="'.$_CORELANG['TXT_ACCESS_DELETE_IMAGE'].'"
                     border="0"
                     width="17"
                     height="17"
@@ -1205,7 +796,7 @@ class AccessLib
 
     function _getAtrributeCode($objUser, $attributeId, $historyId, $edit = false)
     {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
         $objAttribute = $objUser->objAttribute->getById($attributeId);
 
@@ -1328,9 +919,9 @@ class AccessLib
                     }
 
                     if (!$attributeHistoryId) {
-                    $arrRows[] = '<tr style="display:none;" id="'.$this->attributeNamePrefix.'_'.$attributeId.'_history_new"><td>'.implode('</td><td>', $arrCols).'</td><td><a href="javascript:void(0);" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);"><img src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif" width="17" height="17" border="0" alt="'.$_ARRAYLANG['TXT_ACCESS_DELETE_ENTRY'].'" /></a></td></tr>';
+                    $arrRows[] = '<tr style="display:none;" id="'.$this->attributeNamePrefix.'_'.$attributeId.'_history_new"><td>'.implode('</td><td>', $arrCols).'</td><td><a href="javascript:void(0);" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);"><img src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif" width="17" height="17" border="0" alt="'.$_CORELANG['TXT_ACCESS_DELETE_ENTRY'].'" /></a></td></tr>';
                     } else {
-                        $arrRows[] = '<tr id="'.$this->attributeNamePrefix.'_'.$attributeId.'_history_'.$attributeHistoryId.'"><td>'.implode('</td><td>', $arrCols).'</td>'.($edit ? '<td><a href="javascript:void(0);" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);"><img src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif" width="17" height="17" border="0" alt="'.$_ARRAYLANG['TXT_ACCESS_DELETE_ENTRY'].'" /></a></td>' : '').'</tr>';
+                        $arrRows[] = '<tr id="'.$this->attributeNamePrefix.'_'.$attributeId.'_history_'.$attributeHistoryId.'"><td>'.implode('</td><td>', $arrCols).'</td>'.($edit ? '<td><a href="javascript:void(0);" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);"><img src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif" width="17" height="17" border="0" alt="'.$_CORELANG['TXT_ACCESS_DELETE_ENTRY'].'" /></a></td>' : '').'</tr>';
                     }
                 }
 
@@ -1366,7 +957,7 @@ class AccessLib
 
     function getJavaScriptCode()
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         static $arrFunctions;
 
@@ -1380,7 +971,7 @@ class AccessLib
 function accessSetWebsite(elInput, elDiv, elLink)
 {
     website = elInput.value;
-    newWebsite = prompt('{$_ARRAYLANG['TXT_ACCESS_SET_ADDRESS_OF_WEBSITE']}', (website != '' ? website : 'http://'));
+    newWebsite = prompt('{$_CORELANG['TXT_ACCESS_SET_ADDRESS_OF_WEBSITE']}', (website != '' ? website : 'http://'));
 
     if (typeof(newWebsite) == 'string') {
         if (newWebsite == 'http://') {
@@ -1397,7 +988,7 @@ function accessSetWebsite(elInput, elDiv, elLink)
 
                 objLink = document.createElement('a');
                 objLink.target = '_blank';
-                objLink.title = '{$_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE']}';
+                objLink.title = '{$_CORELANG['TXT_ACCESS_VISIT_WEBSITE']}';
                 objLinkText = document.createTextNode('');
                 objLink.appendChild(objLinkText);
                 objLink.setAttribute('href', newWebsite);
@@ -1412,7 +1003,7 @@ function accessSetWebsite(elInput, elDiv, elLink)
             }
         } else {
             accessRemoveChildsOfElement(elDiv);
-            objText = document.createTextNode('{$_ARRAYLANG['TXT_ACCESS_NO_SPECIFIED']}');
+            objText = document.createTextNode('{$_CORELANG['TXT_ACCESS_NO_SPECIFIED']}');
             elDiv.appendChild(objText);
         }
     }
@@ -1425,9 +1016,9 @@ JSaccessSetWebsite
 // <![CDATA[
 function accessAddEvent( obj, url )
 {
-    strMsg1 = '{$_ARRAYLANG['TXT_ACCESS_URL_OPEN_RISK_MSG']}';
+    strMsg1 = '{$_CORELANG['TXT_ACCESS_URL_OPEN_RISK_MSG']}';
     strMsg1 = strMsg1.replace('%s', url)
-    strMsg2 = '{$_ARRAYLANG['TXT_ACCESS_CONFIRM_OPEN_URL']}';
+    strMsg2 = '{$_CORELANG['TXT_ACCESS_CONFIRM_OPEN_URL']}';
 
     if (obj.addEventListener) {
         obj.setAttribute('onclick', "return confirm('"+strMsg1+"\\\\n"+strMsg2+"');");
@@ -1638,7 +1229,7 @@ JSconfirmUserNotification
 
     protected function parseLetterIndexList($URI, $paramName, $selectedLetter)
     {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
         $arrLetters[] = 48;
         $arrLetters = array_merge($arrLetters, range(65, 90)); // ascii codes of characters "A" to "Z"
@@ -1651,7 +1242,7 @@ JSconfirmUserNotification
                     break;
 
                 case '':
-                    $parsedLetter = $_ARRAYLANG['TXT_ACCESS_ALL'];
+                    $parsedLetter = $_CORELANG['TXT_ACCESS_ALL'];
                     break;
 
                 default:
