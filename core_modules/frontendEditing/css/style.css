@@ -4,7 +4,7 @@ html, body {
 
 /* LOADER --------------------------------------------- */
 #fe_Loader {
-	 position: fixed; 
+	 position: absolute; 
 	 width: 32px; 
 	 height: 32px; 
 	 top: 50%; 
@@ -258,8 +258,6 @@ html, body {
 	padding: 10px;
 	margin-top: -107px; 
 	margin-left: -211px; 
-	font-size: 11pt;
-	line-height: 8px;
 	text-align: center;
 	border: 1px solid #c3dff9; 
 	background-color: #82b1ec;
@@ -273,6 +271,7 @@ html, body {
 	padding: 10px;
 	border: 1px solid #4978ae; 
 	background-color: #ffffff;
+	font-size: 13px;
 }
 
 #fe_SelectionBoxContent img {
