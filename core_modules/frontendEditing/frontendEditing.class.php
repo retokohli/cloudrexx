@@ -49,12 +49,7 @@ class frontendEditing extends frontendEditingLib {
 	 * Will be set to true, if the user failed with his login-attempt.
 	 */
 	private $boolLoginFailed = false;
-	
-	/**
-	 * Will be set to true, if the user is successfully logged in for frontend editing.
-	 */
-	private $boolUserIsLoggedIn = false;
-	
+		
 	/**
 	 * Requested action.
 	 */
@@ -94,7 +89,6 @@ class frontendEditing extends frontendEditingLib {
 	 * User-Object for accessing userprofile.
 	 */
 	private $objUser;
-	
 	
 	/**
 	 * Used for checking accessrights of the requested page.
@@ -136,9 +130,6 @@ class frontendEditing extends frontendEditingLib {
 		//create user object
 		$this->objUser = FWUser::getFWUserObject();
 		$this->objUser->setMode(true);
-		
-		//Is the user already logged in?
-		$this->boolUserIsLoggedIn = ($_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD]) ? true : false;
 	}
 	
 	/**
@@ -240,11 +231,10 @@ class frontendEditing extends frontendEditingLib {
 				//Assign variables for login
 				$_POST['USERNAME'] 	= $_POST['username'];
 				$_POST['PASSWORD'] 	= $_POST['password'];
-				$_POST['secid2'] 	= $_POST['seckey'];
+				$_POST['secid2'] 	= strtoupper($_POST['seckey']);
 						
 				if ($this->objUser->checkAuth() && $this->isUserInBackendGroup()) {
 					//Login successfull
-					$this->boolUserIsLoggedIn = true;
 					$_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] = true;
 					$this->setToolbarVisibility(true);
 				} else {
@@ -256,8 +246,7 @@ class frontendEditing extends frontendEditingLib {
 		}
 		
 		//check for enough rights to perform an action
-		if ($this->objUser->objUser->login() && $this->boolUserIsLoggedIn) {
-			
+		if (frontendEditingLib::isUserLoggedIn()) {
 			//check for toolbar-loading (can be done by everyone)
 			if ($this->strAction == 'getToolbar' || $this->strAction == 'hideToolbar') {
 				return true;
@@ -274,8 +263,8 @@ class frontendEditing extends frontendEditingLib {
 				return true;
 			}
 			
-			//No admin, figure out what the user is allowed to do (35 = Edit pages)							
-			if (Permission::checkAccess(35, 'static', true)) {
+			//No admin, figure out what the user is allowed to do						
+			if (Permission::checkAccess(frontendEditingLib::AUTH_ID_FOR_PAGE_EDITING, 'static', true)) {
 				//Page is not restricted or allowed for this usergroup
 				if($this->intBackendAccessId == 0 || Permission::checkAccess($this->intBackendAccessId, 'dynamic', true)) {
 					return true;
@@ -549,7 +538,7 @@ class frontendEditing extends frontendEditingLib {
 		$strNew_C_Title 	= contrexx_addslashes(strip_tags($_POST['title']));
 		$strNew_C_Content 	= preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}', contrexx_addslashes($_POST['content']));
 		
-		$strNew_N_UserName	= contrexx_addslashes(strip_tags($_SESSION['auth']['username']));
+		$strNew_N_UserName	= contrexx_addslashes(strip_tags($this->objUser->objUser->getUsername()));
 		$strNew_N_ChangeLog = time();
 		
 		//Update database		

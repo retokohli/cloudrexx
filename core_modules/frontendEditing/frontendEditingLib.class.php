@@ -33,6 +33,11 @@ class frontendEditingLib {
 	const ACCESS_KEY = 9;
 	
 	/**
+	 * Stores the authorization id for editing pages.
+	 */
+	const AUTH_ID_FOR_PAGE_EDITING = 35;
+	
+	/**
 	 * Name of the SESSION-Field, which stores the login-status.
 	 *
 	 */
@@ -88,8 +93,10 @@ class frontendEditingLib {
 	 */
 	public static function getLinkCode() {
 		global $_CORELANG;
+		
+		$strLinkDescription = (frontendEditingLib::isUserLoggedIn()) ? $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_EDIT'] : $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'];
 				
-		return '<a href="javascript:void(0)" onclick="fe_setToolbarVisibility(true); fe_loadToolbar();" accesskey="'.frontendEditingLib::ACCESS_KEY.'" title="[ALT + '.frontendEditingLib::ACCESS_KEY.'] '.$_CORELANG['TXT_FRONTEND_EDITING_LOGIN'].'">'.$_CORELANG['TXT_FRONTEND_EDITING_LOGIN'].'</a>';
+		return '<a href="javascript:void(0)" onclick="fe_setToolbarVisibility(true); fe_loadToolbar();" accesskey="'.frontendEditingLib::ACCESS_KEY.'" title="[ALT + '.frontendEditingLib::ACCESS_KEY.'] '.$strLinkDescription.'">'.$strLinkDescription.'</a>';
 	}
 	
 	/**
@@ -99,12 +106,7 @@ class frontendEditingLib {
 	 */
 	public static function getContentCode($pageId, $section, $command) {
 		//Is user logged in?
-		$userIsLoggedIn = 'false';
-		$objCurrentUser = FWUser::getFWUserObject();
-		
-		if ($objCurrentUser->objUser->login() && $_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] == true) {
-			$userIsLoggedIn = 'true';
-		}
+		$userIsLoggedIn = (frontendEditingLib::isUserLoggedIn()) ? 'true' : 'false';
 		
 		//Should toolbar be shown?
 		$showToolbar = 'true';
@@ -123,6 +125,18 @@ class frontendEditingLib {
 		$strFeContent .=	'<div id="fe_Loader" style="display: none;"></div>'."\n";
 		
 		return $strFeContent;
+	}
+	
+	/**
+	 * Checks, if the current user is successfully logged in for frontend editing. This method will return false, if the user has
+	 * logged in over the "normal" login and not the frontend editing login!
+	 *
+	 * @return true, if the user is successfully logged in. Otherwise false.
+	 */
+	public static function isUserLoggedIn() {
+		$objCurrentUser = FWUser::getFWUserObject();
+		
+		return ($objCurrentUser->objUser->login() && $_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] == true);
 	}
 }
 
