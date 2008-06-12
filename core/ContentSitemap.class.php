@@ -344,17 +344,21 @@ class ContentSitemap
 					'SITEMAP_PAGE_NAME'         =>$this->navName[$key],
                     'SITEMAP_REPOSITORY' =>$repository,
                     // New behavior: Go to module administration or content
-                    'SITEMAP_PAGE_LINK' =>
-                        (!empty($moduleReference)
-                            ? "cmd=$moduleReference"
-                            : "cmd=content&amp;act=edit&amp;pageId=$key"
-                        ),
+                    'SITEMAP_PAGE_LINK' =>	(!empty($moduleReference) ? "javascript: showEditModeWindow('".$moduleReference."','".$key."');" : "index.php?cmd=content&amp;act=edit&amp;pageId=$key"),
 				));
 				$objTpl->parseCurrentBlock();
 				$i++;
 			}
 		    $n++;
 		}
+		
+		        //New added in 2.0: editmode-selector window
+		$objTpl->setVariable(array(	'TXT_EDITMODE_TITLE'	=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
+									'TXT_EDITMODE_TEXT'		=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'],
+									'TXT_EDITMODE_CODE'		=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'],
+									'TXT_EDITMODE_CONTENT'	=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT']
+						));
+		
 		return $objTpl->get();
 	}
 
