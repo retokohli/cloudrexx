@@ -68,6 +68,8 @@ $_ARRLANG['TXT_MYSQL_VERSION_REQUIRED'] = "A MySQL server of version [VERSION] o
 $_ARRLANG['TXT_GD_VERSION_REQUIRED'] = "GD extension version [VERSION] or later for PHP is required!";
 $_ARRLANG['TXT_ALLOW_URL_FOPEN_FOR_RSS_REQUIRED'] = "As long as the directive \"allow_url_fopen\" is turned off in the PHP configuration, the module <i>News Syndication</i> cannot be used!";
 $_ARRLANG['TXT_FTP_SUPPORT_REQUIRED'] = "FTP support for PHP is not permitted on this server.This is necessary because PHP runs in Safemode! Change the PHP configuration with the option ('--enable ftp ') or installing the system manually.";
+$_ARRLANG['TXT_IGNORE_PHP_REQUIREMENT'] = "Sie können Contrexx&reg; unter eigener Verantwortung trotzdem installieren. Sollten in diesem Fall Funktionsmängel entstehen, lehnt Comvation Internet Solutions jede Haftung oder Supportbeteiligung ab.";
+$_ARRLANG['TXT_ACCEPT_NO_SLA'] = "Contrexx&reg;  unter diesen Bedingungen installieren";
 
 // configuration
 $_ARRLANG['TXT_FTP_PATH_CONFIG'] = "FTP path configuration";
