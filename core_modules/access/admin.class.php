@@ -738,7 +738,7 @@ class AccessManager extends AccessLib
             }
 
             $this->_objTpl->setVariable(array(
-                'TXT_ACCESS_LANGUAGE'               => $_CORELANG['TXT_ACCESS_LANGUAGE'],
+                'TXT_ACCESS_LANGUAGE'               => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'],
                 'TXT_ACCESS_ADMINISTRATOR'          => $_ARRAYLANG['TXT_ACCESS_ADMINISTRATOR'],
                 'TXT_ACCESS_FUNCTIONS'              => $_ARRAYLANG['TXT_ACCESS_FUNCTIONS'],
                 'TXT_ACCESS_CHANGE_SORT_DIRECTION'  => $_ARRAYLANG['TXT_ACCESS_CHANGE_SORT_DIRECTION'],
@@ -754,11 +754,11 @@ class AccessManager extends AccessLib
                 'ACCESS_SORT_EXPIRATION'            => ($orderBy == 'expiration' && $orderDirection == 'asc') ? 'desc' : 'asc',
                 'ACCESS_ID'                         => $_ARRAYLANG['TXT_ACCESS_ID'].($orderBy == 'id' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'ACCESS_STATUS'                     => $_ARRAYLANG['TXT_ACCESS_STATUS'].($orderBy == 'active' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
-                'ACCESS_USERNAME'                   => $_CORELANG['TXT_ACCESS_USERNAME'].($orderBy == 'username' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'ACCESS_USERNAME'                   => $_ARRAYLANG['TXT_ACCESS_USERNAME'].($orderBy == 'username' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'ACCESS_COMPANY'                    => $_CORELANG['TXT_ACCESS_COMPANY'].($orderBy == 'company' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'ACCESS_FIRSTNAME'                  => $_CORELANG['TXT_ACCESS_FIRSTNAME'].($orderBy == 'firstname' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'ACCESS_LASTNAME'                   => $_CORELANG['TXT_ACCESS_LASTNAME'].($orderBy == 'lastname' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
-                'ACCESS_EMAIL'                      => $_CORELANG['TXT_ACCESS_EMAIL'].($orderBy == 'email' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
+                'ACCESS_EMAIL'                      => $_ARRAYLANG['TXT_ACCESS_EMAIL'].($orderBy == 'email' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'ACCESS_REGISTERED_SINCE'           => $_ARRAYLANG['TXT_ACCESS_REGISTERED_SINCE'].($orderBy == 'regdate' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'ACCESS_LAST_ACTIVITY'              => $_ARRAYLANG['TXT_ACCESS_LAST_ACTIVITY'].($orderBy == 'last_activity' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
                 'ACCESS_EXPIRATION'                 => $_ARRAYLANG['TXT_ACCESS_VALIDITY_EXPIRATION'].($orderBy == 'expiration' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
@@ -990,11 +990,11 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_USER_ACCOUNT'                   => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT'],
             'TXT_ACCESS_USER_GROUP_S'                   => $_ARRAYLANG['TXT_ACCESS_USER_GROUP_S'],
             'TXT_ACCESS_PROFILE'                        => $_ARRAYLANG['TXT_ACCESS_PROFILE'],
-            'TXT_ACCESS_USERNAME'                       => $_CORELANG['TXT_ACCESS_USERNAME'],
+            'TXT_ACCESS_USERNAME'                       => $_ARRAYLANG['TXT_ACCESS_USERNAME'],
             'TXT_ACCESS_PASSWORD'                       => $_ARRAYLANG['TXT_ACCESS_PASSWORD'],
             'TXT_ACCESS_CONFIRM_PASSWORD'               => $_ARRAYLANG['TXT_ACCESS_CONFIRM_PASSWORD'],
-            'TXT_ACCESS_EMAIL'                          => $_CORELANG['TXT_ACCESS_EMAIL'],
-            'TXT_ACCESS_LANGUAGE'                       => $_CORELANG['TXT_ACCESS_LANGUAGE'],
+            'TXT_ACCESS_EMAIL'                          => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
+            'TXT_ACCESS_LANGUAGE'                       => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'],
             'TXT_ACCESS_ADMINISTRATOR'                  => $_ARRAYLANG['TXT_ACCESS_ADMINISTRATOR'],
             'TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS'    => $_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS'],
             'TXT_ACCESS_USER_ADMIN_RIGHTS'              => $_ARRAYLANG['TXT_ACCESS_USER_ADMIN_RIGHTS'],
@@ -1445,7 +1445,7 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_OTHER_PICTURES'                         => $_ARRAYLANG['TXT_ACCESS_OTHER_PICTURES'],
             'TXT_ACCESS_MISCELLANEOUS'                          => $_ARRAYLANG['TXT_ACCESS_MISCELLANEOUS'],
             'TXT_ACCESS_STANDARD'                               => $_ARRAYLANG['TXT_ACCESS_STANDARD'],
-            'TXT_ACCESS_EMAIL'                                  => $_CORELANG['TXT_ACCESS_EMAIL'],
+            'TXT_ACCESS_EMAIL'                                  => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
             'TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE'       => $_ARRAYLANG['TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE']
         ));
 
@@ -1992,7 +1992,7 @@ class AccessManager extends AccessLib
         $this->_objTpl->setVariable(array(
             'TXT_ACCESS_EMAIL_NOTIFICATIONS'    => $_ARRAYLANG['TXT_ACCESS_EMAIL_NOTIFICATIONS'],
             'TXT_ACCESS_TYPE'                   => $_ARRAYLANG['TXT_ACCESS_TYPE'],
-            'TXT_ACCESS_LANGUAGE'               => $_CORELANG['TXT_ACCESS_LANGUAGE'],
+            'TXT_ACCESS_LANGUAGE'               => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'],
             'TXT_ACCESS_MAIL_SUBJECT'           => $_ARRAYLANG['TXT_ACCESS_MAIL_SUBJECT'],
             'TXT_ACCESS_FUNCTIONS'              => $_ARRAYLANG['TXT_ACCESS_FUNCTIONS']
         ));
@@ -2091,7 +2091,7 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_CANCEL'                 => $_ARRAYLANG['TXT_ACCESS_CANCEL'],
             'TXT_ACCESS_SAVE'                   => $_ARRAYLANG['TXT_ACCESS_SAVE'],
             'TXT_ACCESS_TYPE'                   => $_ARRAYLANG['TXT_ACCESS_TYPE'],
-            'TXT_ACCESS_LANGUAGE'               => $_CORELANG['TXT_ACCESS_LANGUAGE'],
+            'TXT_ACCESS_LANGUAGE'               => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'],
             'TXT_ACCESS_PLACEHOLDER_DIRECTORY'  => $_ARRAYLANG['TXT_ACCESS_PLACEHOLDER_DIRECTORY']
         ));
 
