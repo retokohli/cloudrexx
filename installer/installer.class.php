@@ -414,7 +414,7 @@ class Installer
 				$ftpSupport = true;
 			}
 
-			if (($phpVersion >= $requiredPHPVersion) && ($mysqlSupport) && ($gdVersion >= $requiredGDVersion) && ($ftpSupport)) {
+			if (($phpVersion >= $requiredPHPVersion || isset($_POST['ignore_php_requirement'])) && ($mysqlSupport) && ($gdVersion >= $requiredGDVersion) && ($ftpSupport)) {
 				$_SESSION['installer']['step']++;
 			}
 		}
@@ -448,7 +448,10 @@ class Installer
 		$ftpSupport = $objCommon->checkFTPSupport();
 
 		if ($phpVersion < $requiredPHPVersion) {
-			$this->arrStatusMsg['php'] .= str_replace("[VERSION]", $requiredPHPVersion, $_ARRLANG['TXT_PHP_VERSION_REQUIRED']."<br />");
+			$this->arrStatusMsg['php'] .= str_replace("[VERSION]", $requiredPHPVersion, $_ARRLANG['TXT_PHP_VERSION_REQUIRED']."<br /><br />".$_ARRLANG['TXT_IGNORE_PHP_REQUIREMENT']."<br />"
+                ."<input type=\"checkbox\" name=\"ignore_php_requirement\" id=\"ignore_php_requirement\" value=\"1\" style=\"vertical-align:middle;border-color:#FFCCCC;background-color:#FFCCCC;margin-left:0px;padding-left:0px;\" />"
+                ."<label for=\"ignore_php_requirement\">".$_ARRLANG['TXT_ACCEPT_NO_SLA']."</label>"
+            );
 		}
 		if (!$mysqlSupport) {
 			$this->arrStatusMsg['extensions'] .= $_ARRLANG['TXT_MYSQL_SUPPORT_REQUIRED']."<br />";
