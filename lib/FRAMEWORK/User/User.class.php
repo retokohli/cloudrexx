@@ -1194,7 +1194,7 @@ class User extends User_Profile
                     `restore_key_time` = ".$this->restore_key_time."
                 WHERE `id` = ".$this->id
             ) === false) {
-                $this->error_msg[] = $_CORELANG['TXT_FAILED_TO_UPDATE_USER_ACCOUNT'];
+                $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT'];
                 return false;
             }
         } else {
@@ -1237,17 +1237,17 @@ class User extends User_Profile
                 $this->id = $objDatabase->Insert_ID();
                 if (!$this->createProfile()) {
                     $this->delete();
-                    $this->error_msg[] = $_CORELANG['TXT_FAILED_TO_ADD_USER_ACCOUNT'];
+                    $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_ADD_USER_ACCOUNT'];
                     return false;
                 }
             } else {
-                $this->error_msg[] = $_CORELANG['TXT_FAILED_TO_ADD_USER_ACCOUNT'];
+                $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_ADD_USER_ACCOUNT'];
                 return false;
             }
         }
 
         if (!$this->storeGroupAssociations()) {
-            $this->error_msg[] = $_CORELANG['TXT_COULD_NOT_SET_GROUP_ASSOCIATIONS'];
+            $this->error_msg[] = $_CORELANG['TXT_ARRAY_COULD_NOT_SET_GROUP_ASSOCIATIONS'];
             return false;
         }
 
@@ -1327,10 +1327,10 @@ class User extends User_Profile
             if ($this->isUniqueUsername($this->username, $this->id)) {
                 return true;
             } else {
-                $this->error_msg[] = $_CORELANG['TXT_USERNAME_ALREADY_USED'];
+                $this->error_msg[] = $_CORELANG['TXT_ACCESS_USERNAME_ALREADY_USED'];
             }
         } else {
-            $this->error_msg[] = $_CORELANG['TXT_INVALID_USERNAME'];
+            $this->error_msg[] = $_CORELANG['TXT_ACCESS_INVALID_USERNAME'];
         }
 
         return false;
@@ -1368,10 +1368,10 @@ class User extends User_Profile
             if ($this->isUniqueEmail($this->email, $this->id)) {
                 return true;
             } else {
-                $this->error_msg[] = $_CORELANG['TXT_EMAIL_ALREADY_USED'];
+                $this->error_msg[] = $_CORELANG['TXT_ACCESS_EMAIL_ALREADY_USED'];
             }
         } else {
-            $this->error_msg[] = $_CORELANG['TXT_INVALID_EMAIL_ADDRESS'];
+            $this->error_msg[] = $_CORELANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS'];
         }
 
         return false;
@@ -1550,14 +1550,14 @@ class User extends User_Profile
 
         if ($this->isValidPassword($password)) {
             if (isset($confirmedPassword) && $password != $confirmedPassword) {
-                $this->error_msg[] = $_CORELANG['TXT_PASSWORD_NOT_CONFIRMED'];
+                $this->error_msg[] = $_CORELANG['TXT_ACCESS_PASSWORD_NOT_CONFIRMED'];
                 return false;
             }
 
             $this->password = md5($password);
             return true;
         } else {
-            $this->error_msg[] = $_CORELANG['TXT_INVALID_PASSWORD'];
+            $this->error_msg[] = $_CORELANG['TXT_ACCESS_INVALID_PASSWORD'];
         }
 
         return false;

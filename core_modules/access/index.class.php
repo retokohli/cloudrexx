@@ -452,6 +452,7 @@ class Access extends AccessLib
         global $_ARRAYLANG, $_CONFIG, $_LANGID;
 
         $objFWUser = FWUser::getFWUserObject();
+        $objUserMail = $objFWUser->getMail();
         $arrSettings = User_Setting::getSettings();
 
         if ($arrSettings['user_activation']['status']) {
@@ -464,8 +465,8 @@ class Access extends AccessLib
 
         if (
             (
-                $objFWUser->objMail->load($mail2load, $_LANGID) ||
-                $objFWUser->objMail->load($mail2load)
+                $objUserMail->load($mail2load, $_LANGID) ||
+                $objUserMail->load($mail2load)
             ) &&
             (include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') &&
             ($objMail = new PHPMailer()) !== false
@@ -482,14 +483,14 @@ class Access extends AccessLib
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $objFWUser->objMail->getSenderMail();
-            $objMail->FromName = $objFWUser->objMail->getSenderName();
-            $objMail->AddReplyTo($objFWUser->objMail->getSenderMail());
-            $objMail->Subject = $objFWUser->objMail->getSubject();
+            $objMail->From = $objUserMail->getSenderMail();
+            $objMail->FromName = $objUserMail->getSenderName();
+            $objMail->AddReplyTo($objUserMail->getSenderMail());
+            $objMail->Subject = $objUserMail->getSubject();
 
-            if (in_array($objFWUser->objMail->getFormat(), array('multipart', 'text'))) {
-                $objFWUser->objMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
-                $objMail->{($objFWUser->objMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
+            if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
+                $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
+                $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
                     array(
                         '[[HOST]]',
                         '[[USERNAME]]',
@@ -503,14 +504,14 @@ class Access extends AccessLib
                         $objUser->getUsername(),
                         'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
                         'http://'.$_CONFIG['domainUrl'],
-                        $objFWUser->objMail->getSenderName(),
+                        $objUserMail->getSenderName(),
                         'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=access&act=user&tpl=modify&id='.$objUser->getId()
                     ),
-                    $objFWUser->objMail->getBodyText()
+                    $objUserMail->getBodyText()
                 );
             }
-            if (in_array($objFWUser->objMail->getFormat(), array('multipart', 'html'))) {
-                $objFWUser->objMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
+            if (in_array($objUserMail->getFormat(), array('multipart', 'html'))) {
+                $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
                 $objMail->Body = str_replace(
                     array(
                         '[[HOST]]',
@@ -525,10 +526,10 @@ class Access extends AccessLib
                         htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
                         'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
                         'http://'.$_CONFIG['domainUrl'],
-                        htmlentities($objFWUser->objMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
+                        htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
                         'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=access&act=user&tpl=modify&id='.$objUser->getId()
                     ),
-                    $objFWUser->objMail->getBodyHtml()
+                    $objUserMail->getBodyHtml()
                 );
             }
 
