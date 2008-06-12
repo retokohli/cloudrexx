@@ -300,4 +300,9 @@ $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'] = "Invalid Google API key";
 $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'] = "Address not found";
 $_ARRAYLANG['TXT_PAGINGLIMIT'] = "Paging Limit ";
 $_ARRAYLANG['TXT_DIRECTORY_GOOGLEMAP_REQUIRED_FIELDS_MISSING'] = "Damit Google-Map richtig funktioniert, müssen folgende Felder auch aktiviert sein: 'Land', 'PLZ', 'Stadt' und 'Strasse'.";
+$_ARRAYLANG['TXT_DIR_GOOGLEMAP_STARTPOINT'] = "Google Map Startpunkt";
+$_ARRAYLANG['TXT_DIRECTORY_BROWSER_NOT_SUPPORTED'] = "Ihr Browser unterstützt keine Google Map";
+$_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'] = "Zu viele Anfragen: Die tägliche Limite der Geocoding-Anfragen wurde für diese Domain überschritten.";
+$_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Serverfehler: Die Suchanfrage (Geocoding) konnte nicht erfolgreich bearbeitet werden. ";
+$_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Geben Sie eine eindeutige Adresse an oder bewegen die Karte mit der Maus an den gewünschten Punkt";
 ?>
