@@ -4,7 +4,7 @@ html, body {
 
 /* LOADER --------------------------------------------- */
 #fe_Loader {
-	 position: absolute; 
+	 position: fixed; 
 	 width: 32px; 
 	 height: 32px; 
 	 top: 50%; 

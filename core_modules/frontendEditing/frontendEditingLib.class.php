@@ -75,8 +75,8 @@ class frontendEditingLib {
 	 */
 	public static function getIncludeCode() { 	
 		$strFeInclude =		'<style type="text/css">@import url('.frontendEditingLib::FRONTENDEDITING_PATH.'css/style.css) all;</style>'."\n";
-		$strFeInclude .=	'<!--[if IE 6]>'."\n";
-   		$strFeInclude .=	'<style type="text/css">@import url('.frontendEditingLib::FRONTENDEDITING_PATH.'css/style_ie6.css);</style>'."\n";
+		$strFeInclude .=	'<!--[if lte IE 7]>'."\n";
+   		$strFeInclude .=	'<style type="text/css">@import url('.frontendEditingLib::FRONTENDEDITING_PATH.'css/style_ie.css);</style>'."\n";
   		$strFeInclude .=	'<![endif]-->'."\n";
 		$strFeInclude .= 	'<script src="'.frontendEditingLib::PROTOTYPE_PATH.'" type="text/javascript"></script>'."\n";
 		$strFeInclude .= 	'<script src="'.frontendEditingLib::SCRIPTACULOUS_PATH.'" type="text/javascript"></script>'."\n";
