@@ -51,6 +51,7 @@ $_ARRAYLANG['TXT_MALE_FRONTEND'] = "Bay";
 $_ARRAYLANG['TXT_RESIDENCE'] = "Şehir";
 $_ARRAYLANG['TXT_ZIP'] = "Posta kodu";
 $_ARRAYLANG['TXT_BACK'] = "Geri";
+$_ARRAYLANG['TXT_ACCESS_CONFIRM_USER_NOTIFY_ABOUT_ACCOUNT_STATUS'] = "Den Benutzer über die Änderung seines Status informieren?";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_ACTIVATION_NOT_POSSIBLE'] = "Kayıt hatası:  %HOST% ta Kullanıcı hesabı etkinlenemiyor.";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_SUCCESSFULLY_ACTIVATED'] = "Tebrikler! Kullanıcı hesabınız etkinlendi.";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_SUCCESSFULLY_CREATED'] = "Kullanıcı isminiz başarıyla oluşturuldu.";

@@ -50,6 +50,7 @@ $_ARRAYLANG['TXT_MALE_FRONTEND'] = "Мужской";
 $_ARRAYLANG['TXT_RESIDENCE'] = "Место жительства";
 $_ARRAYLANG['TXT_ZIP'] = "Zip";
 $_ARRAYLANG['TXT_BACK'] = "Назад";
+$_ARRAYLANG['TXT_ACCESS_CONFIRM_USER_NOTIFY_ABOUT_ACCOUNT_STATUS'] = "Den Benutzer über die Änderung seines Status informieren?";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_ACTIVATION_NOT_POSSIBLE'] = "Регистрационная ошибка: активация учетной записи в %HOST% невозможна";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_SUCCESSFULLY_ACTIVATED'] = "Поздравление! Ваша учетная запись пользователя была успешно активизирована.";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_SUCCESSFULLY_CREATED'] = "Ваша учетная запись пользователя была успешно создана.";

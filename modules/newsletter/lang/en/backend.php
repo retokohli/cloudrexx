@@ -177,7 +177,7 @@ $_ARRAYLANG['TXT_NOT_VALID_EMAIL'] = "Not valid E-Mail address.";
 $_ARRAYLANG['TXT_STATISTICS'] = "Statistics";
 $_ARRAYLANG['TXT_GENERALLY'] = "Generally";
 $_ARRAYLANG['TXT_HELP'] = "Help";
-$_ARRAYLANG['TXT_IMPORT_HELP'] = "Hier können Sie eine Text/CSV Datei mit Ihren Kunden/User raufladen.<br/>Dabei ist die <b>Reihenfolge von den Felder</b> (E-Mail, Anrede [m|f], Name, Vorname, Strasse, PLZ, Ort, Land, Telefon, Geburtsdatum) zu beachten.<br/>Als Trennzeichen können Sie <b>,</b> (Komma) oder <b>;</b> (Semikolone) gebrauchen.<br/><br/>Nur E-Mail Feld ist kein optionales Feld und muss angegeben werden.";
+$_ARRAYLANG['TXT_IMPORT_HELP'] = "Here, you can import a text/CSV file.<br/>You need to put the fields in the correct order: E-Mail, Salutation [m|f], Surname, Forename, Street, ZIP, City, Country, Telephone, Birth date.<br/><br/>You may use the following characters as field separators: <b>,</b> (Comma) or <b>;</b> (Semicolon).<br/><br/>Only the e-mail address is mandatory. Every other field is optional.";
 $_ARRAYLANG['TXT_NEWSLETTER_SUCCESSFULLY_MADE'] = "Newsletter successfully made.";
 $_ARRAYLANG['TXT_NEWSLETTER_SUCCESSFULLY_UPDATE'] = "Successfully update.";
 $_ARRAYLANG['TXT_NEWSLETTER_ALL'] = "All";
@@ -369,6 +369,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_EXPORT_ALL_LISTS'] = "Export all lists into Excel";
 $_ARRAYLANG['TXT_NEWSLETTER_FILE_TYPE'] = "File type";
 $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'] = "Select a file that should be imported:";
 $_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Unknown";
-$_ARRAYLANG['TXT_NEWSLETTER_NOTICE'] = "Hinweis";
-$_ARRAYLANG['TXT_NEWSLETTER_NOTICE_TESTMAIL'] = "Beim Testnewsletter werden die Platzhalter und die Profillinks nicht ersetzt";
+$_ARRAYLANG['TXT_NEWSLETTER_NOTICE'] = "Notice";
+$_ARRAYLANG['TXT_NEWSLETTER_NOTICE_TESTMAIL'] = "The place holders will not be replaced in the test newsletter.";
 ?>

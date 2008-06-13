@@ -50,6 +50,7 @@ $_ARRAYLANG['TXT_MALE_FRONTEND'] = "Masculino";
 $_ARRAYLANG['TXT_RESIDENCE'] = "Residencia";
 $_ARRAYLANG['TXT_ZIP'] = "C&oacute;digo Postal";
 $_ARRAYLANG['TXT_BACK'] = "volver";
+$_ARRAYLANG['TXT_ACCESS_CONFIRM_USER_NOTIFY_ABOUT_ACCOUNT_STATUS'] = "Den Benutzer über die Änderung seines Status informieren?";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_ACTIVATION_NOT_POSSIBLE'] = "Error en el registro: No ha sido posible completar la activaci&oacute;n de la cuenta en %HOST%";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_SUCCESSFULLY_ACTIVATED'] = "Felicidades. Tu cuenta de usuario ha sido activada.";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_SUCCESSFULLY_CREATED'] = "Tu cuenta de usuario ha sido creada con &eacute;xito";

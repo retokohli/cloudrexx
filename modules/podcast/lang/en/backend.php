@@ -79,7 +79,7 @@ $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE'] = "Source Code";
 $_ARRAYLANG['TXT_PODCAST_SOURCE_CODE_OF_MEDIUM'] = "Show Source Code of medium %s";
 $_ARRAYLANG['TXT_PODCAST_SELECT_ALL'] = "Select all";
 $_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE'] = "Choose source";
-$_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'] = "Geben Sie entweder ein lokales Medium an, dass Sie zur Podcast Bibliothek hinzufügen möchten,<br />oder geben Sie direkt die URL eines Mediums an.<br /><br />Sie können auch einen YouTube Link direkt zum Video angeben. (Bsp: http://youtube.com/watch?v=abcdef12345)<br />Dieser Link kann auf der YouTube Videoseite aus der URL-Box rechts oder von der Browser-Adressleiste kopiert und hier eingefügt werden.";
+$_ARRAYLANG['TXT_PODCAST_SELECT_SOURCE_TXT'] = "Please enter either a local medium or an URL if it is already somewhere on the internet to add it to the library.<br/> You may also post a Youtube link directly to the video (Example: http://youtube.com/watch?v=abcdef12345)<br/>. This link is available on the youtube video page in the URL box, so you only need to copy&paste it.";
 $_ARRAYLANG['TXT_PODCAST_LOCAL'] = "Local";
 $_ARRAYLANG['TXT_PODCAST_REMOTE'] = "URL";
 $_ARRAYLANG['TXT_PODCAST_NEXT'] = "Forward";
@@ -136,7 +136,7 @@ $_ARRAYLANG['TXT_PODCAST_SHOW_HOME_CONTENT'] = "Display podcast media on start p
 $_ARRAYLANG['TXT_PODCAST_DEACTIVATE'] = "Deactivate";
 $_ARRAYLANG['TXT_PODCAST_ACTIVATE'] = "Activate";
 $_ARRAYLANG['TXT_PODCAST_HOMECONTENT_USAGE'] = "Usage";
-$_ARRAYLANG['TXT_PODCAST_HOMECONTENT_USAGE_TEXT'] = "Die Platzhalter können unter dem Menüpunkt \"Layout & Designs\" in der Datei <strong>podcast.html</strong> einer Webdesignvorlage verwendet werden. <br /> Diese Datei kann mit dem Platzhalter <strong>[[PODCAST_FILE]]</strong> in einer beliebigen Webdesignvorlage Datei oder in einer Inhaltsseite eingebunden werden.";
+$_ARRAYLANG['TXT_PODCAST_HOMECONTENT_USAGE_TEXT'] = "The place holders may be used under \"Layout & Design\" in the file <strong>podcast.html</strong> in a design template. <br/> This file may be loaded at any place in the design using the place holder <strong>[[PODCAST_FILE]]</strong>.";
 $_ARRAYLANG['TXT_PODCAST_THUMB_MAX_SIZE'] = "Maximum thumbnail size (module page)";
 $_ARRAYLANG['TXT_PODCAST_THUMB_MAX_SIZE_HOMECONTENT'] = "Maximum thumbnail size (start page)";
 $_ARRAYLANG['TXT_PODCAST_PIXEL'] = "Pixel";
