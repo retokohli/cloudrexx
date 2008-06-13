@@ -1,6 +1,6 @@
 <?php
 
-define('_DEBUG', 1);
+define('_DEBUG', 0);
 
 /**
  * The main page for the CMS
@@ -1143,7 +1143,7 @@ switch ($plainSection) {
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
-        if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
+        #if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
 
         $objBlog = &new Data($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objBlog->getPage());
@@ -1176,6 +1176,20 @@ switch ($plainSection) {
         $objRecommend = new Recommend($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objRecommend->getPage());
     break;
+
+//-------------------------------------------------------
+// E-Cards
+//-------------------------------------------------------
+    case "ecard":
+        $modulespath = "modules/ecard/index.class.php";
+        /**
+         * @ignore
+         */
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objEcard = new Ecard($page_content);
+        $objTemplate->setVariable('CONTENT_TEXT', $objEcard->getPage());
+        break;
 
 //-------------------------------------------------------
 // DocumentSystem module
@@ -1643,6 +1657,7 @@ if ($_CONFIG['bannerStatus'] == '1') {
         $objBanner->updateClicks(intval($_REQUEST['bannerId']));
     }
 }
+
 
 //-------------------------------------------------------
 // Frontend Editing: prepare needed code-fragments
