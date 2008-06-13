@@ -220,8 +220,8 @@ $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'] = "Address unknown";
 $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'] = "Address not available";
 $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'] = "Invalid Google API key";
 $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'] = "Address not found";
-$_ARRAYLANG['TXT_DIRECTORY_BROWSER_NOT_SUPPORTED'] = "Ihr Browser unterstützt keine Google Map";
-$_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'] = "Zu viele Anfragen: Die tägliche Limite der Geocoding-Anfragen wurde für diese Domain überschritten.";
-$_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Serverfehler: Die Suchanfrage (Geocoding) konnte nicht erfolgreich bearbeitet werden. ";
-$_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Geben Sie eine eindeutige Adresse an oder bewegen die Karte mit der Maus an den gewünschten Punkt";
+$_ARRAYLANG['TXT_DIRECTORY_BROWSER_NOT_SUPPORTED'] = "Your browser does not support google maps.";
+$_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'] = "Too many requests: The daily limit of geocoding requests for this domain was exceeded.";
+$_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Server error: The search query (Goecoding) could not be handled correctly.";
+$_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Please enter a unique address or move the map to the desired point.";
 ?>

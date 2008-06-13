@@ -50,6 +50,7 @@ $_ARRAYLANG['TXT_MALE_FRONTEND'] = "Männlich";
 $_ARRAYLANG['TXT_RESIDENCE'] = "Wohnort";
 $_ARRAYLANG['TXT_ZIP'] = "PLZ";
 $_ARRAYLANG['TXT_BACK'] = "zurück";
+$_ARRAYLANG['TXT_ACCESS_CONFIRM_USER_NOTIFY_ABOUT_ACCOUNT_STATUS'] = "Den Benutzer über die Änderung seines Status informieren?";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_ACTIVATION_NOT_POSSIBLE'] = "Registrierungsfehler: Benutzerkonto Aktivierung auf %HOST% nicht möglich";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_SUCCESSFULLY_ACTIVATED'] = "Glückwunsch! Ihr Benutzerkonto wurde erfolgreich aktiviert.";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_SUCCESSFULLY_CREATED'] = "Ihr Benutzerkonto wurde erfolgreich erstellt.";

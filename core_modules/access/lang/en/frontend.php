@@ -50,6 +50,7 @@ $_ARRAYLANG['TXT_MALE_FRONTEND'] = "Male";
 $_ARRAYLANG['TXT_RESIDENCE'] = "Residence";
 $_ARRAYLANG['TXT_ZIP'] = "ZIP";
 $_ARRAYLANG['TXT_BACK'] = "back";
+$_ARRAYLANG['TXT_ACCESS_CONFIRM_USER_NOTIFY_ABOUT_ACCOUNT_STATUS'] = "Inform the user about changes of his status?";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_ACTIVATION_NOT_POSSIBLE'] = "Registration error: Account activation at %HOST% not possible";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_SUCCESSFULLY_ACTIVATED'] = "Congratulation! Your user account has been successfully activated.";
 $_ARRAYLANG['TXT_ACCESS_ACCOUNT_SUCCESSFULLY_CREATED'] = "Your user account has been successfully created.";
