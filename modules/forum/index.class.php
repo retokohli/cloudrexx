@@ -49,8 +49,10 @@ class Forum extends ForumLibrary {
 
 
     /**
-    * Reads $_GET['act'] and selects (depending on the value) an action
+    * Reads $_GET['act'] and selects an action, which prepares
+    * the template that is going to be returned
     *
+    * @return string HTML-Code
     */
     function getPage()
     {
@@ -185,6 +187,12 @@ class Forum extends ForumLibrary {
         $this->_parseTopRated($this->_getTopRated());
     }
 
+
+   /**
+    * parse the most viewed entries
+    *
+    * @param adodb_result_set $objRS
+    */
     function _parseMostViewed($objRS){
         while(!$objRS->EOF){
             $postId = $objRS->fields['id'];
@@ -213,6 +221,12 @@ class Forum extends ForumLibrary {
         }
     }
 
+
+    /**
+     * get the most viewed entries
+     *
+     * @return adodb_result_set $objRS
+     */
     function _getMostViewed(){
         global $objDatabase;
         $query = "    SELECT id, thread_id, category_id, subject, content, keywords, views
@@ -223,6 +237,11 @@ class Forum extends ForumLibrary {
     }
 
 
+    /**
+     * parse the top rated entries
+     *
+     * @param adodb_result_set $objRSS
+     */
     function _parseTopRated($objRS){
         while(!$objRS->EOF){
             $postId = $objRS->fields['id'];
@@ -251,6 +270,12 @@ class Forum extends ForumLibrary {
         }
     }
 
+
+    /**
+     * get the top rated entries
+     *
+     * @return adodb_result_set $objRS
+     */
     function _getTopRated(){
         global $objDatabase;
         $query = "    SELECT id, thread_id, category_id, subject, content, keywords, rating
@@ -259,7 +284,6 @@ class Forum extends ForumLibrary {
         $objRS = $objDatabase->SelectLimit($query, $this->_topListLimit);
         return $objRS;
     }
-
 
 
     /**
