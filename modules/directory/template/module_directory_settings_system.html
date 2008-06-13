@@ -1,4 +1,5 @@
-<!-- START module_directory_settings_system.html --> <font color="#FF0000">{STATUS} </font>
+<!-- START module_directory_settings_system.html -->
+<font color="#FF0000">{STATUS} </font>
 <form name="settings" method="post" action="?cmd=directory&act=settings">
   <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
     <tr>
@@ -14,9 +15,11 @@
       <td >{SETTINGS_SETVALUE}</td>
     </tr>
     <!-- END settingsOutput -->
+    {DIRECTORY_GOOGLEMAP_HTML}
     </table>
 <br />
 <input type="submit" value="{TXT_SAVE_CHANGES}" name="set_sys_submit">
 </form>
+{DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK}
 <br>
 <!-- END module_directory_settings_system.html -->

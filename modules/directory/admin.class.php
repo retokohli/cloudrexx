@@ -15,7 +15,7 @@ require_once ASCMS_MODULE_PATH . '/directory/lib/directoryLib.class.php';
 require_once ASCMS_MODULE_PATH . '/directory/lib/xmlfeed.class.php';
 require_once ASCMS_LIBRARY_PATH . '/FRAMEWORK/File.class.php';
 require_once ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php';
-require_once ASCMS_CORE_PATH.'/'.'settings.class.php';
+require_once ASCMS_CORE_PATH . '/settings.class.php';
 
 /**
  * Directory
@@ -1764,17 +1764,20 @@ class rssDirectory extends directoryLibrary
 		    'TXT_PLEASE_SELECT'			=> $_ARRAYLANG['TXT_DIRECTORY_PLEASE_CHOSE'],
 		    'TXT_SELECT'				=> $_ARRAYLANG['TXT_DIRECTORY_SELECT_ALL'],
 		    'TXT_DESELECT'				=> $_ARRAYLANG['TXT_DIRECTORY_DESELECT_ALL'],
+		    'ADDED_BY'					=> $userName,
+		    'CATEGORY'					=> $categories,
+		    'LEVELS'					=> $levels,
+		    'LANGUAGE'  				=> $languages,
+		    'OS'  						=> $platforms,
+		    'TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'   => $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'],
+		    'TXT_DIR_GEO_TOO_MANY_QUERIES'   => $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'],
+            'TXT_DIR_GEO_SERVER_ERROR'   => $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'],
 		    'TXT_DIR_GEO_NOT_FOUND'		=> $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
 		    'TXT_DIR_GEO_SUCCESS'		=> $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
 		    'TXT_DIR_GEO_MISSING'		=> $_ARRAYLANG['TXT_DIR_GEO_MISSING'],
 		    'TXT_DIR_GEO_UNKNOWN'		=> $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'],
 		    'TXT_DIR_GEO_UNAVAILABLE'	=> $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'],
 		    'TXT_DIR_GEO_BAD_KEY'		=> $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'],
-		    'ADDED_BY'					=> $userName,
-		    'CATEGORY'					=> $categories,
-		    'LEVELS'					=> $levels,
-		    'LANGUAGE'  				=> $languages,
-		    'OS'  						=> $platforms,
 			'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
 			'DIRECTORY_START_X'			=> 'null',
 			'DIRECTORY_START_Y'			=> 'null',
@@ -2457,6 +2460,7 @@ class rssDirectory extends directoryLibrary
 
 		// initialize variables
 		$this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_directory_settings_system.html');
+        $this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'module_directory_googlemap_include.html');
 
 		$this->_objTpl->setVariable(array(
 		    'TXT_SYSTEM_VARIABLES_OVERVIEW' 	=> $_ARRAYLANG['TXT_DIR_SYSTEM_VARIABLES'],
@@ -2467,7 +2471,7 @@ class rssDirectory extends directoryLibrary
 
 		//get settings
 		$i=0;
-      	$objResult = $objDatabase->Execute("SELECT setid,setname,setvalue,settyp FROM ".DBPREFIX."module_directory_settings WHERE settyp != '0' AND setid != '30' ORDER BY settyp DESC");
+      	$objResult = $objDatabase->Execute("SELECT setid,setname,setvalue,settyp FROM ".DBPREFIX."module_directory_settings WHERE settyp != '0' AND setid != '30' AND setname != 'googlemap_start_location' ORDER BY settyp DESC");
       	if($objResult !== false){
 			while(!$objResult->EOF){
 				$allow_url_fopen = '';
@@ -2502,7 +2506,54 @@ class rssDirectory extends directoryLibrary
 			}
       	}
 
+      	$arrLon = explode('.', $this->googleMapStartPoint['lon']);
+      	$arrLat = explode('.', $this->googleMapStartPoint['lat']);
+
+      	$googleMapHTML = '<tr><td style="vertical-align: top;">'.$_ARRAYLANG['TXT_DIR_GOOGLEMAP_STARTPOINT'].'</td><td><table border="0" cellspacing="0" cellpadding="0"><tr><td width="120">';
+        $googleMapHTML .= $_ARRAYLANG['TXT_DIR_F_STREET'].':</td><td> <input style="width: 148px;" type="text" name="inputValue[street]" value=""></td></tr><tr><td>';
+        $googleMapHTML .= $_ARRAYLANG['TXT_DIR_F_PLZ'].':</td><td> <input style="width: 148px;" type="text" name="inputValue[zip]" value=""></td></tr><tr><td>';
+        $googleMapHTML .= $_ARRAYLANG['TXT_DIR_CITY'].':</td><td> <input style="width: 148px;" type="text" name="inputValue[city]" value=""></td></tr><tr><td>';
+        $googleMapHTML .= $_ARRAYLANG['TXT_DIR_F_COUNTRY'].':</td><td> <select style="width: 148px;" name="inputValue[country]">'.$this->getCountry().'</select></td></tr></table><br />';
+        $googleMapHTML .= '<input type="button" onclick="getAddress();" value="'.$_ARRAYLANG['TXT_DIR_SEARCH_ADDRESS'].'"><br /><br />';
+        $googleMapHTML .= $_ARRAYLANG['TXT_DIR_LON'].': <input type="text" name="inputValue[lon]" value="'.$arrLon[0].'" style="width:22px;" maxlength="3">';
+        $googleMapHTML .= '.<input type="text" name="inputValue[lon_fraction]" value="'.$arrLon[1].'" style="width:92px;" maxlength="15"> ';
+        $googleMapHTML .= $_ARRAYLANG['TXT_DIR_LAT'].': <input type="text" name="inputValue[lat]" value="'.$arrLat[0].'" style="width:22px;" maxlength="15">';
+        $googleMapHTML .= '.<input type="text" name="inputValue[lat_fraction]" value="'.$arrLat[1].'" style="width:92px;" maxlength="15"> ';
+        $googleMapHTML .= $_ARRAYLANG['TXT_DIR_ZOOM'].': <input type="text" name="inputValue[zoom]" value="'.$this->googleMapStartPoint['zoom'].'" style="width:15px;" maxlength="2"><br />';
+        $googleMapHTML .= '<span id="geostatus"></span>';
+        $googleMapHTML .= '<div id="gmap" style="margin:2px; border:1px solid;width: 400px; height: 300px;"></div>';
+        $googleMapHTML .= '<div id="loclayer" style="-moz-opacity: 0.85; filter: alpha(opacity=85); background-color: #dedede;padding:2px; border:1px solid;width: 198px; height: 48px; position:relative; top: -270px; left: 200px; "></div>';
+        $googleMapHTML .= '</td></tr>';
+
+        $this->_objTpl->setVariable(array(
+            'TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'   => $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'],
+            'TXT_DIRECTORY_BROWSER_NOT_SUPPORTED'   => $_ARRAYLANG['TXT_DIRECTORY_BROWSER_NOT_SUPPORTED'],
+            'TXT_DIR_GEO_TOO_MANY_QUERIES'   => $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'],
+            'TXT_DIR_GEO_SERVER_ERROR'   => $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'],
+		    'TXT_DIR_GEO_NOT_FOUND'		=> $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
+		    'TXT_DIR_GEO_SUCCESS'		=> $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
+		    'TXT_DIR_GEO_MISSING'		=> $_ARRAYLANG['TXT_DIR_GEO_MISSING'],
+		    'TXT_DIR_GEO_UNKNOWN'		=> $_ARRAYLANG['TXT_DIR_GEO_UNKNOWN'],
+		    'TXT_DIR_GEO_UNAVAILABLE'	=> $_ARRAYLANG['TXT_DIR_GEO_UNAVAILABLE'],
+		    'TXT_DIR_GEO_BAD_KEY'		=> $_ARRAYLANG['TXT_DIR_GEO_BAD_KEY'],
+            'DIRECTORY_GOOGLEMAP_HTML'  => $googleMapHTML,
+      	    'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
+			'DIRECTORY_START_X'			=> 'null',
+			'DIRECTORY_START_Y'			=> 'null',
+			'DIRECTORY_START_ZOOM'		=> 'null',
+			'DIRECTORY_ENTRY_NAME'		=> 'null',
+			'DIRECTORY_ENTRY_COMPANY'	=> 'null',
+			'DIRECTORY_ENTRY_STREET'	=> 'null',
+			'DIRECTORY_ENTRY_ZIP'		=> 'null',
+			'DIRECTORY_ENTRY_LOCATION'	=> 'null',
+			'DIRECTORY_MAP_LON_BACKEND'	=> $this->googleMapStartPoint['lon'],
+			'DIRECTORY_MAP_LAT_BACKEND'	=> $this->googleMapStartPoint['lat'],
+			'DIRECTORY_MAP_ZOOM_BACKEND'=> $this->googleMapStartPoint['zoom'],
+			'IS_BACKEND'				=> 'true',
+      	));
+
 		$this->_objTpl->parse('requests_block');
+		$this->_objTpl->parse('direcoryGoogleMapJavascript');
 	}
 
 	function showSettings_google()
@@ -3021,6 +3072,14 @@ class rssDirectory extends directoryLibrary
 			$objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='description'");
 
 			$this->strOkMessage = $_ARRAYLANG['TXT_DIR_SETTINGS_SUCCESFULL_SAVE'];
+		}
+		if($_POST['inputValue']['zoom'] != ""){
+		    $googleStartPoint  = intval($_POST['inputValue']['lat']);
+		    $googleStartPoint .= '.'.intval($_POST['inputValue']['lat_fraction']);
+		    $googleStartPoint .= ':'.intval($_POST['inputValue']['lon']);
+		    $googleStartPoint .= '.'.intval($_POST['inputValue']['lon_fraction']);
+		    $googleStartPoint .= ':'.intval($_POST['inputValue']['zoom']);
+			$objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_settings SET setvalue='".$googleStartPoint."' WHERE setname='googlemap_start_location'");
 		}
 	}
 

@@ -53,13 +53,15 @@ reasons[G_GEO_MISSING_ADDRESS]    = "{TXT_DIR_GEO_MISSING}";
 reasons[G_GEO_UNKNOWN_ADDRESS]    = "{TXT_DIR_GEO_UNKNOWN}";
 reasons[G_GEO_UNAVAILABLE_ADDRESS]= "{TXT_DIR_GEO_UNAVAILABLE}";
 reasons[G_GEO_BAD_KEY]            = "{TXT_DIR_GEO_BAD_KEY}";
-reasons[G_GEO_TOO_MANY_QUERIES]   = "Too Many Queries: The daily geocoding quota for this site has been exceeded.";
-reasons[G_GEO_SERVER_ERROR]       = "Server error: The geocoding request could not be successfully processed.";
+reasons[G_GEO_TOO_MANY_QUERIES]   = "{TXT_DIR_GEO_TOO_MANY_QUERIES}";
+reasons[G_GEO_SERVER_ERROR]       = "{TXT_DIR_GEO_SERVER_ERROR}";
 
 
-var startX = {DIRECTORY_START_X};
-var startY = {DIRECTORY_START_Y};
-var startZoom = {DIRECTORY_START_ZOOM};
+
+
+var startX      = {DIRECTORY_START_X};
+var startY      = {DIRECTORY_START_Y};
+var startZoom   = {DIRECTORY_START_ZOOM};
 
 var map = null;
 var geocoder = null;
@@ -132,7 +134,7 @@ var load = function() {
     	});
         geocoder = new GClientGeocoder();
     }else{
-    	alert("{TXT_DIRECOTRY_BROWSER_NOT_SUPPORTED}");
+    	alert("{TXT_DIRECTORY_BROWSER_NOT_SUPPORTED}");
     }
 }
 
@@ -154,6 +156,12 @@ var passValues = function(){
 
 var getAddress = function() {
 	address = updateAddress();
+	if(address.match(/^,  ,/)){
+	    try{
+	        document.getElementById("geostatus").innerHTML = "{TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY}";
+	    }catch(e){}
+	    return false;
+	}
    	if (geocoder) {
    		geocoder.getLocations(address, getGeoCodeData);
     }
@@ -163,17 +171,13 @@ var getGeoCodeData = function(data){
 	try{
 		if(data.Status.code == G_GEO_SUCCESS){
 			try{
-				if(!location.href.match(/cmd=detail/)){
-					document.getElementById("geostatus").innerHTML = reasons[data.Status.code];
-				}
 				point = new GLatLng(data.Placemark[0].Point.coordinates[1], data.Placemark[0].Point.coordinates[0]);
 				suggestions = /\s([^,\ ])+/.exec(data.Placemark[0].address)[1];
 				map.setCenter(point, 14);
 			}catch(e){}
-		}else{
-			if(!location.href.match(/cmd=detail/)){
-				document.getElementById("geostatus").innerHTML = address+" {TXT_DIR_GEO_NOT_FOUND}";
-			}
+		}
+		if(!location.href.match(/cmd=detail/)){
+			document.getElementById("geostatus").innerHTML = reasons[data.Status.code];
 		}
 	}catch(e){}
 }
