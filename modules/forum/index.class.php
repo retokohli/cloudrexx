@@ -181,7 +181,6 @@ class Forum extends ForumLibrary {
      *
      */
     function showTopList(){
-        error_reporting(E_ALL);ini_set('display_errors',1);
         $this->_parseMostViewed($this->_getMostViewed());
         $this->_parseTopRated($this->_getTopRated());
     }
