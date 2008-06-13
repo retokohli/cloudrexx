@@ -45,10 +45,10 @@ class DataAdmin extends DataLibrary {
     *
     * @global 	object		$objInit
     * @global	object		$objTemplate
-    * @global	array		$_CORELANG
+    * @global	array		$_ARRAYLANG
     */
 	function __construct() {
-		global $objInit, $objTemplate, $_CORELANG;
+		global $objInit, $objTemplate, $_ARRAYLANG;
 
 		DataLibrary::__construct();
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/data/template');
@@ -56,10 +56,10 @@ class DataAdmin extends DataLibrary {
 
  		$this->_intLanguageId = $objInit->userFrontendLangId;
 
-    	$objTemplate->setVariable('CONTENT_NAVIGATION','	<a href="?cmd=data">'.$_CORELANG['TXT_DATA_ENTRY_MANAGE_TITLE'].'</a>
-    														<a href="?cmd=data&amp;act=addEntry">'.$_CORELANG['TXT_DATA_ENTRY_ADD_TITLE'].'</a>
-    														<a href="?cmd=data&amp;act=manageCategory">'.$_CORELANG['TXT_DATA_CATEGORY_MANAGE_TITLE'].'</a>
-    														<a href="?cmd=data&amp;act=settings">'.$_CORELANG['TXT_DATA_SETTINGS_TITLE'].'</a>
+    	$objTemplate->setVariable('CONTENT_NAVIGATION','	<a href="?cmd=data">'.$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'].'</a>
+    														<a href="?cmd=data&amp;act=addEntry">'.$_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'].'</a>
+    														<a href="?cmd=data&amp;act=manageCategory">'.$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'].'</a>
+    														<a href="?cmd=data&amp;act=settings">'.$_ARRAYLANG['TXT_DATA_SETTINGS_TITLE'].'</a>
     												');
 	}
 
@@ -176,17 +176,17 @@ class DataAdmin extends DataLibrary {
     /**
      * Shows the categories-page of the data-module.
      *
-     * @global	array		$_CORELANG
+     * @global	array		$_ARRAYLANG
      * @global 	array		$_ARRAYLANG
      */
     function showCategories() {
-    	global $_CORELANG, $_ARRAYLANG, $objDatabase;
+    	global $_ARRAYLANG, $_ARRAYLANG, $objDatabase;
 
-		$this->_strPageTitle = $_CORELANG['TXT_DATA_CATEGORY_MANAGE_TITLE'];
+		$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_data_categories.html',true,true);
 
     	$this->_objTpl->setVariable(array(
-    		'TXT_OVERVIEW_TITLE'				=>	$_CORELANG['TXT_DATA_CATEGORY_MANAGE_TITLE'],
+    		'TXT_OVERVIEW_TITLE'				=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'],
     		'TXT_OVERVIEW_SUBTITLE_NAME'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
     		'TXT_OVERVIEW_SUBTITLE_ACTIVE'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ACTIVE_LANGUAGES'],
     		'TXT_OVERVIEW_SUBTITLE_ACTIONS'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ACTIONS'],
@@ -197,11 +197,11 @@ class DataAdmin extends DataLibrary {
     		'TXT_OVERVIEW_SUBMIT_SELECT'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_ACTION'],
     		'TXT_OVERVIEW_SUBMIT_DELETE'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DELETE'],
    			'TXT_OVERVIEW_SUBMIT_DELETE_JS'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DELETE_JS'],
-    		'TXT_ADD_TITLE'						=>	$_CORELANG['TXT_DATA_CATEGORY_ADD_TITLE'],
+    		'TXT_ADD_TITLE'						=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_TITLE'],
     		'TXT_ADD_NAME'						=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
     		'TXT_ADD_EXTENDED'					=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_EXTENDED'],
     		'TXT_ADD_LANGUAGES'					=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
-    		'TXT_ADD_SUBMIT'					=>	$_CORELANG['TXT_SAVE'],
+    		'TXT_ADD_SUBMIT'					=>	$_ARRAYLANG['TXT_SAVE'],
     		'TXT_PLACEHOLDERS'                  =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
     		'TXT_PARENT_CAT'                    =>  $_ARRAYLANG['TXT_DATA_PARENT_CAT'],
     		"TXT_TOP_LEVEL"                     =>  $_ARRAYLANG['TXT_TOP_LEVEL'],
@@ -539,15 +539,15 @@ class DataAdmin extends DataLibrary {
     /**
      * Shows the edit-page for a specific category.
      *
-     * @global	array		$_CORELANG
+     * @global	array		$_ARRAYLANG
      * @global 	array		$_ARRAYLANG
      * @global 	object		$objDatabase
      * @param 	integer		$intCategoryId: The category with this id will be loaded into the form.
      */
     function editCategory($intCategoryId) {
-    	global $_CORELANG, $_ARRAYLANG, $objDatabase;
+    	global $_ARRAYLANG, $_ARRAYLANG, $objDatabase;
 
-		$this->_strPageTitle = $_CORELANG['TXT_DATA_CATEGORY_MANAGE_TITLE'];
+		$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_data_categories_edit.html',true,true);
 
     	$this->_objTpl->setVariable(array(
@@ -555,7 +555,7 @@ class DataAdmin extends DataLibrary {
     		'TXT_EDIT_NAME'			=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
     		'TXT_EDIT_EXTENDED'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_EXTENDED'],
     		'TXT_EDIT_LANGUAGES'	=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
-    		'TXT_EDIT_SUBMIT'		=>	$_CORELANG['TXT_SAVE'],
+    		'TXT_EDIT_SUBMIT'		=>	$_ARRAYLANG['TXT_SAVE'],
     		'TXT_PARENT_CAT'        =>  $_ARRAYLANG['TXT_DATA_PARENT_CAT'],
     		'TXT_TOP_LEVEL'         =>  $_ARRAYLANG['TXT_TOP_LEVEL'],
     		"TXT_FRONTEND_PAGE"     =>  $_ARRAYLANG['TXT_FRONTEND_PAGE'],
@@ -764,17 +764,17 @@ class DataAdmin extends DataLibrary {
     /**
      * Shows an overview of all entries.
      *
-     * @global	array		$_CORELANG
+     * @global	array		$_ARRAYLANG
      * @global 	array		$_ARRAYLANG
      */
     function showEntries()
     {
-    	global $_CORELANG, $_ARRAYLANG;
+    	global $_ARRAYLANG, $_ARRAYLANG;
 
     	$intSelectedCategory = (isset($_GET['catId'])) ? intval($_GET['catId']) : 0;
    		$intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
 
-    	$this->_strPageTitle = $_CORELANG['TXT_DATA_ENTRY_MANAGE_TITLE'];
+    	$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_data_entries.html',true,true);
 
     	$this->arrEntries = $this->createEntryArray(0);
@@ -795,7 +795,7 @@ class DataAdmin extends DataLibrary {
     	$this->parseOverviewCategories($catTree, $arrCategories, $intSelectedCategory, 0, $row);
 
     	$this->_objTpl->setVariable(array(
-			'TXT_ENTRIES_TITLE'					=>	$_CORELANG['TXT_DATA_ENTRY_MANAGE_TITLE'],
+			'TXT_ENTRIES_TITLE'					=>	$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'],
 			'TITLE_CATEGORY'                    =>  ($intSelectedCategory == 0) ? $_ARRAYLANG['TXT_DATA_ALL'] : $arrCategories[$intSelectedCategory][$this->_intLanguageId]['name'],
 			'TXT_ENTRIES_SUBTITLE_DATE'			=>	$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_DATE'],
 			'TXT_ENTRIES_SUBTITLE_SUBJECT'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_ADD_SUBJECT'],
@@ -804,7 +804,7 @@ class DataAdmin extends DataLibrary {
 			'TXT_ENTRIES_SUBTITLE_HITS'			=>	$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_HITS'],
 			'TXT_ENTRIES_SUBTITLE_COMMENTS'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_COMMENTS'],
 			'TXT_ENTRIES_SUBTITLE_VOTES'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_VOTE'],
-			'TXT_ENTRIES_SUBTITLE_USER'			=>	$_CORELANG['TXT_USER'],
+			'TXT_ENTRIES_SUBTITLE_USER'			=>	$_ARRAYLANG['TXT_USER'],
 			'TXT_ENTRIES_SUBTITLE_EDITED'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_UPDATED'],
 			'TXT_ENTRIES_SUBTITLE_ACTIONS'		=>	$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_ACTIONS'],
 			'TXT_ENTRIES_DELETE_ENTRY_JS'		=>	$_ARRAYLANG['TXT_DATA_ENTRY_DELETE_JS'],
@@ -981,19 +981,19 @@ class DataAdmin extends DataLibrary {
     /**
      * Shows the "Add Entry" page.
      *
-     * @global	array		$_CORELANG
+     * @global	array		$_ARRAYLANG
      * @global 	array		$_ARRAYLANG
      */
     function addEntry() {
-    	global $_CORELANG, $_ARRAYLANG, $objDatabase;
+    	global $_ARRAYLANG, $_ARRAYLANG, $objDatabase;
 
-    	$this->_strPageTitle = $_CORELANG['TXT_DATA_ENTRY_ADD_TITLE'];
+    	$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);
 
     	$this->_objTpl->setVariable(array(
     		'TXT_EDIT_LANGUAGES'	=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
-    		'TXT_ADD_ENTRY'         =>  $_CORELANG['TXT_DATA_ENTRY_ADD_TITLE'],
-    		'TXT_EDIT_SUBMIT'		=>	$_CORELANG['TXT_SAVE'],
+    		'TXT_ADD_ENTRY'         =>  $_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'],
+    		'TXT_EDIT_SUBMIT'		=>	$_ARRAYLANG['TXT_SAVE'],
     		'TXT_TOP_LEVEL'         =>  $_ARRAYLANG['TXT_TOP_LEVEL'],
     		'TXT_ADV_SETTINGS'      =>  $_ARRAYLANG['TXT_ADV_SETTINGS'],
     		'TXT_DIV_MODE'          =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE'],
@@ -1262,19 +1262,19 @@ class DataAdmin extends DataLibrary {
     /**
      * Shows the "Edit Entry" page.
      *
-     * @global	array		$_CORELANG
+     * @global	array		$_ARRAYLANG
      * @global 	array		$_ARRAYLANG
      * @param 	integer		$intEntryId: The values of this entry will be loaded into the form.
      */
     function editEntry($intEntryId) {
-    	global $_CORELANG, $_ARRAYLANG;
+    	global $_ARRAYLANG, $_ARRAYLANG;
 
     	$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_ENTRY_EDIT_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);
 
     	$this->_objTpl->setVariable(array(
     		'TXT_EDIT_LANGUAGES'	=>	$_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
-    		'TXT_EDIT_SUBMIT'		=>	$_CORELANG['TXT_SAVE'],
+    		'TXT_EDIT_SUBMIT'		=>	$_ARRAYLANG['TXT_SAVE'],
     		'TXT_ADV_SETTINGS'      =>  $_ARRAYLANG['TXT_ADV_SETTINGS'],
             'TXT_DIV_MODE'          =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE'],
 		    'TXT_DIV_MODE_NORMAL'   =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE_NORMAL'],
@@ -1623,13 +1623,13 @@ class DataAdmin extends DataLibrary {
     /**
      * Shows the settings-page of the data-module.
      *
-     * @global	array		$_CORELANG
+     * @global	array		$_ARRAYLANG
      * @global 	array		$_ARRAYLANG
      */
     function showSettings() {
-    	global $_CORELANG, $_ARRAYLANG, $objDatabase, $_SERVER;
+    	global $_ARRAYLANG, $_ARRAYLANG, $objDatabase, $_SERVER;
 
-    	$this->_strPageTitle = $_CORELANG['TXT_DATA_SETTINGS_TITLE'];
+    	$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_SETTINGS_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_data_settings.html',true,true);
 
     	$objRs = $objDatabase->Execute( "SELECT setvalue FROM ".DBPREFIX."settings
@@ -1659,9 +1659,9 @@ class DataAdmin extends DataLibrary {
     		'TXT_BLOCK_ACTIVATE_HELP'					=>	$_ARRAYLANG['TXT_DATA_SETTINGS_BLOCK_ACTIVATE_HELP'],
     		'TXT_BLOCK_MESSAGES'						=>	$_ARRAYLANG['TXT_DATA_SETTINGS_BLOCK_MESSAGES'],
     		'TXT_BLOCK_MESSAGES_HELP'					=>	$_ARRAYLANG['TXT_DATA_SETTINGS_BLOCK_MESSAGES_HELP'],
-    		'TXT_ACTIVATED'								=>	$_CORELANG['TXT_ACTIVATED'],
-    		'TXT_DEACTIVATED'							=>	$_CORELANG['TXT_DEACTIVATED'],
-    		'TXT_BUTTON_SAVE'							=>	$_CORELANG['TXT_SAVE'],
+    		'TXT_ACTIVATED'								=>	$_ARRAYLANG['TXT_ACTIVATED'],
+    		'TXT_DEACTIVATED'							=>	$_ARRAYLANG['TXT_DEACTIVATED'],
+    		'TXT_BUTTON_SAVE'							=>	$_ARRAYLANG['TXT_SAVE'],
     		'TXT_GENERAL_TEMPLATE_CATEGORY'             =>  $_ARRAYLANG['TXT_DATA_TEMPLATE_CATEGORY'],
     		'TXT_GENERAL_TEMPLATE_ENTRY'                =>  $_ARRAYLANG['TXT_DATA_TEMPLATE_ENTRY'],
     		'TXT_GENERAL_TEMPLATE_THICKBOX'             =>  $_ARRAYLANG['TXT_DATA_SETTINGS_THICKBOX_TEMPLATE'],
