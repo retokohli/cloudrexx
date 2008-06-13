@@ -78,7 +78,7 @@ class FWUser extends User_Setting
      */
     function checkAuth()
     {
-        global $sessionObj, $_CORELANG;
+        global $sessionObj, $_CORELANG, $objInit;
 
         $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
         $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
@@ -99,6 +99,12 @@ class FWUser extends User_Setting
                     $this->log();
                 }
                 $sessionObj->cmsSessionUserUpdate($this->objUser->getId());
+
+                // store frontend lang_id in cookie
+                $langId = $this->objUser->getFrontendLanguage();
+                if ($objInit->arrLang[$langId]['frontend']) {
+                    setcookie ("langId", $langId(), time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
+                } 
                 return true;
             } else {
                 $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];

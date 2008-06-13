@@ -246,6 +246,8 @@ class Access extends AccessLib
 
             isset($_POST['access_user_username']) ? $objFWUser->objUser->setUsername(trim(contrexx_stripslashes($_POST['access_user_username']))) : null;
             $objFWUser->objUser->setEmail(isset($_POST['access_user_email']) ? trim(contrexx_stripslashes($_POST['access_user_email'])) : $objFWUser->objUser->getEmail());
+
+            $currentLangId = $objFWUser->objUser->getFrontendLanguage();
             $objFWUser->objUser->setFrontendLanguage(isset($_POST['access_user_frontend_language']) ? intval($_POST['access_user_frontend_language']) : $objFWUser->objUser->getFrontendLanguage());
             $objFWUser->objUser->setEmailAccess(isset($_POST['access_user_email_access']) && $objFWUser->objUser->isAllowedToChangeEmailAccess() ? contrexx_stripslashes($_POST['access_user_email_access']) : $objFWUser->objUser->getEmailAccess());
             $objFWUser->objUser->setProfileAccess(isset($_POST['access_user_profile_access']) && $objFWUser->objUser->isAllowedToChangeProfileAccess() ? contrexx_stripslashes($_POST['access_user_profile_access']) : $objFWUser->objUser->getProfileAccess());
@@ -263,7 +265,18 @@ class Access extends AccessLib
                 $objFWUser->objUser->setProfile($arrProfile);
             }
 
-            $this->_objTpl->setVariable('ACCESS_SETTINGS_MESSAGE', $status ? ($objFWUser->objUser->store() ? $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'].(($settingsDone = true) && false) : implode('<br />', $objFWUser->objUser->getErrorMsg())) : implode('<br />', $result));
+            if ($status) {
+                if ($objFWUser->objUser->store()) {
+                    $msg = $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'];
+                    $settingsDone = true;
+                    $this->setLanguageCookie($currentLangId, $objFWUser->objUser->getFrontendLanguage());
+                } else {
+                    $msg = implode('<br />', $objFWUser->objUser->getErrorMsg());
+                }
+            } else {
+                $msg = implode('<br />', $result);
+            }
+            $this->_objTpl->setVariable('ACCESS_SETTINGS_MESSAGE', $msg); 
         }
         $this->parseAccountAttributes($objFWUser->objUser, true);
 
@@ -298,6 +311,20 @@ class Access extends AccessLib
         }
         if ($this->_objTpl->blockExists('access_settings_done')) {
             $this->_objTpl->{$settingsDone ? 'touchBlock' : 'hideBlock'}('access_settings_done');
+        }
+    }
+
+    private function setLanguageCookie($currentLangId, $newLangId)
+    {
+        global $objInit;
+
+        // set a new cookie if the language id had been changed
+        if ($currentLangId != $newLangId) {
+            // check if the desired language is active at all. otherwise set default language
+    $objInit->arrLang[$newLangId]['frontend'];
+            if ($objInit->arrLang[$newLangId]['frontend'] || ($newLangId = $objInit->defaultFrontendLangId)) {
+                setcookie("langId", $newLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
+            }
         }
     }
 

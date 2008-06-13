@@ -97,14 +97,14 @@ class InitCMS
     /**
      * Backend language initialization
      */
-	function _initBackendLanguage()
-	{
-		$objFWUser = FWUser::getFWUserObject();
-		if ($objFWUser->objUser->login()) {
-            $backendLangId = $objFWUser->objUser->getFrontendLanguage();
-		} elseif (!empty($_COOKIE['backendLangId'])) {
-		    $backendLangId = intval($_COOKIE['backendLangId']);
-		} else {
+    function _initBackendLanguage()
+    {
+        $objFWUser = FWUser::getFWUserObject();
+        if ($objFWUser->objUser->login()) {
+            $backendLangId = $objFWUser->objUser->getBackendLanguage();
+        } elseif (!empty($_COOKIE['backendLangId'])) {
+            $backendLangId = intval($_COOKIE['backendLangId']);
+        } else {
             $backendLangId = $this->defaultBackendLangId;
 		}
 		if ($this->arrLang[$backendLangId]['backend'] != 1) {
@@ -150,29 +150,29 @@ class InitCMS
             exit;
         }
 
-		$this->frontendLangId = $frontendLangId;
-		if (isset($_GET['printview']) && $_GET['printview'] == 1) {
-		    $this->currentThemesId = $this->arrLang[$frontendLangId]['print_themes_id'];
-		}elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
-			$this->currentThemesId = $this->arrLang[$frontendLangId]['pdf_themes_id'];
-		} else {
-		    $this->currentThemesId = $this->arrLang[$frontendLangId]['themesid'];
-		}
+        $this->frontendLangId = $frontendLangId;
+        if (isset($_GET['printview']) && $_GET['printview'] == 1) {
+            $this->currentThemesId = $this->arrLang[$frontendLangId]['print_themes_id'];
+        }elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
+            $this->currentThemesId = $this->arrLang[$frontendLangId]['pdf_themes_id'];
+        } else {
+            $this->currentThemesId = $this->arrLang[$frontendLangId]['themesid'];
+        }
 
-		$this->frontendLangCharset = $this->arrLang[$frontendLangId]['charset'];
-		}
+        $this->frontendLangCharset = $this->arrLang[$frontendLangId]['charset'];
+    }
+    
 
-
-	/**
-	 * Select best language
-	 *
-	 * Selects the best language for the client and returns
-	 * its name.
-	 *
-	 */
-	function _selectBestLanguage()
-	{
-		global $_CONFIG;
+    /**
+     * Select best language
+     *
+     * Selects the best language for the client and returns
+     * its name.
+     *
+     */
+    function _selectBestLanguage()
+    {
+        global $_CONFIG;
         if ($_CONFIG['languageDetection'] == 'on') {
 			$arrAcceptedLanguages = $this->_getClientAcceptedLanguages();
 		foreach (array_keys($arrAcceptedLanguages) as $language) {
