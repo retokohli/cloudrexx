@@ -75,6 +75,7 @@ class directoryLibrary
     }
 
 
+
     function restorePopular()
     {
         global $objDatabase;
@@ -1157,10 +1158,10 @@ class directoryLibrary
             }
         }
 
-        //explode languages
+        //explode countries
         $this->getCountry = explode(",", $country);
 
-        //make languages dropdown
+        //make country dropdown
         foreach($this->getCountry as $countryName){
             $checked = "";
             if ($countryName == $countryVal) {
@@ -1725,6 +1726,7 @@ EOF;
     function getSettings(){
         global $objDatabase, $_ARRAYLANG;
 
+
         //get settings
         $objResult = $objDatabase->Execute("SELECT setname, setvalue, settyp FROM ".DBPREFIX."module_directory_settings");
         if($objResult !== false){
@@ -1738,10 +1740,15 @@ EOF;
                     $settings[$objResult->fields['setname']]['checked'] =     $objResult->fields['setvalue'] ==1 ? "checked" : "";
                     $settings[$objResult->fields['setname']]['display'] =     $objResult->fields['setvalue'] ==1 ? "block" : "none";
                 }
+                if($objResult->fields['setname'] == 'googlemap_start_location'){
+                    $arrGoogleStartPoint = explode(':', $objResult->fields['setvalue']);
+                    $this->googleMapStartPoint = array( 'lat'   =>$arrGoogleStartPoint[0],
+                                                        'lon'   =>$arrGoogleStartPoint[1],
+                                                        'zoom'  =>$arrGoogleStartPoint[2]);
+                }
                 $objResult->MoveNext();
             }
         }
-
         $objResult = $objDatabase->Execute("SELECT setname, setvalue, settyp FROM ".DBPREFIX."module_directory_settings_google");
         if($objResult !== false){
             while(!$objResult->EOF){
@@ -1754,7 +1761,7 @@ EOF;
     }
 
 
-     /**
+   /**
     * count
     *
     *

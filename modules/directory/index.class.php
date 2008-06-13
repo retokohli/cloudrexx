@@ -17,7 +17,7 @@ require_once ASCMS_MODULE_PATH . '/directory/lib/directoryLib.class.php';
 require_once ASCMS_MODULE_PATH . '/directory/lib/xmlfeed.class.php';
 require_once ASCMS_LIBRARY_PATH . '/FRAMEWORK/File.class.php';
 require_once ASCMS_LIBRARY_PATH . '/soap/googlesearch/GoogleSearch.php';
-require_once ASCMS_CORE_PATH.'/modulemanager.class.php';
+require_once ASCMS_CORE_PATH . '/modulemanager.class.php';
 
 /**
  * RSS Directory
@@ -814,7 +814,10 @@ class rssDirectory extends directoryLibrary
 			$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript','modules/directory/template/module_directory_googlemap_include.html');
 
 			$this->_objTpl->setVariable(array(
-				'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
+    			'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
+				'TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY' => $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'],
+				'TXT_DIR_GEO_TOO_MANY_QUERIES' => $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'],
+				'TXT_DIR_GEO_SERVER_ERROR'	=> $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'],
 				'TXT_DIR_GEO_NOT_FOUND'		=> $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
 			    'TXT_DIR_GEO_SUCCESS'		=> $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
 			    'TXT_DIR_GEO_MISSING'		=> $_ARRAYLANG['TXT_DIR_GEO_MISSING'],
@@ -832,7 +835,7 @@ class rssDirectory extends directoryLibrary
 				'DIRECTORY_MAP_LON_BACKEND'	=> $this->googleMapStartPoint['lon'],
 				'DIRECTORY_MAP_LAT_BACKEND'	=> $this->googleMapStartPoint['lat'],
 				'DIRECTORY_MAP_ZOOM_BACKEND'=> $this->googleMapStartPoint['zoom'],
-				'IS_BACKEND'				=> 'true',
+				'IS_BACKEND'				=> 'false',
 				'DIRECTORY_COUNTRY_OPTIONS' => $this->getCountry($country),
 			));
 			if($this->_objTpl->blockExists('direcoryGoogleMapJavascript')){
@@ -1429,6 +1432,9 @@ class rssDirectory extends directoryLibrary
 				$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'modules/directory/template/module_directory_googlemap_include.html');
 				$this->_objTpl->setVariable(array(
 					'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
+					'TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY' => $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'],
+					'TXT_DIR_GEO_TOO_MANY_QUERIES' => $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'],
+					'TXT_DIR_GEO_SERVER_ERROR'	=> $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'],
 					'TXT_DIR_GEO_NOT_FOUND'		=> $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
 				    'TXT_DIR_GEO_SUCCESS'		=> $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
 				    'TXT_DIR_GEO_MISSING'		=> $_ARRAYLANG['TXT_DIR_GEO_MISSING'],
@@ -1664,6 +1670,9 @@ class rssDirectory extends directoryLibrary
 				$this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'modules/directory/template/module_directory_googlemap_include.html');
 				$this->_objTpl->setVariable(array(
 					'DIRECTORY_GOOGLE_API_KEY'	=> $_CONFIG["googleMapsAPIKey"],
+					'TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY' => $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'],
+					'TXT_DIR_GEO_TOO_MANY_QUERIES' => $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'],
+					'TXT_DIR_GEO_SERVER_ERROR'	=> $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'],
 					'TXT_DIR_GEO_NOT_FOUND'		=> $_ARRAYLANG['TXT_DIR_GEO_NOT_FOUND'],
 				    'TXT_DIR_GEO_SUCCESS'		=> $_ARRAYLANG['TXT_DIR_GEO_SUCCESS'],
 				    'TXT_DIR_GEO_MISSING'		=> $_ARRAYLANG['TXT_DIR_GEO_MISSING'],

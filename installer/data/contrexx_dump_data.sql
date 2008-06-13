@@ -1439,6 +1439,7 @@ INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES ('38', 'encodeFilename', '1', '2');
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES ('39', 'country', ',Schweiz,Deutschland,Österreich,Weltweit', '0');
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES ('40', 'pagingLimit', '20', '1');
+INSERT INTO `contrexx_module_directory_settings` (`setid` ,`setname` ,`setvalue` ,`settyp`) VALUES ('41', 'googlemap_start_location', '46:8:1', '1');
 
 INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES ('1', 'googleSeach', '0', '2');
 INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES ('2', 'googleResults', '', '1');

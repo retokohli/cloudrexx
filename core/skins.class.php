@@ -164,8 +164,8 @@ class skins
         //add preview.gif to required files
     	$this->filenames[] = "images".DIRECTORY_SEPARATOR."preview.gif";
 		//get path variables
-	    $this->path = ASCMS_THEMES_PATH.DIRECTORY_SEPARATOR;
-		$this->arrWebPaths  = array(ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR);
+	    $this->path = ASCMS_THEMES_PATH.'/';
+		$this->arrWebPaths  = array(ASCMS_THEMES_WEB_PATH.'/');
 	    $this->themeZipPath = '/themezips/';
 	    $this->_archiveTempWebPath = ASCMS_TEMP_WEB_PATH.$this->themeZipPath;
 	    $this->_archiveTempPath = ASCMS_PATH.$this->_archiveTempWebPath;
@@ -177,8 +177,8 @@ class skins
 			}
 	    }
 	    $this->webPath = $this->arrWebPaths[0];
-	    if(substr($this->webPath, -1) != DIRECTORY_SEPARATOR){
-            $this->webPath = $this->webPath . DIRECTORY_SEPARATOR;
+	    if(substr($this->webPath, -1) != '/'){
+            $this->webPath = $this->webPath . '/';
         }
 
 	    $objTemplate->setVariable("CONTENT_NAVIGATION",
@@ -313,7 +313,6 @@ class skins
     	}
     	if(!empty($_GET['import'])){
    			$this->_importFile();
-
     	}
     	if(!empty($_GET['activate'])){
    			$this->_activateDefault(intval($_GET['activate']));
@@ -356,7 +355,7 @@ class skins
 
 	      		$this->_getXML($theme['foldername']);
 
-	    		$htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.htmlspecialchars($theme['themesname'], ENT_QUOTES, CONTREXX_CHARSET).'\');" href="?cmd=skins&amp;act=manage&amp;delete='.$theme['themesname'].'" title="'.$_CORELANG['TXT_DELETE'].'"> <img border="0" src="images/icons/delete.gif" alt="" /> </a>';
+	    		$htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.htmlspecialchars($theme['themesname'], ENT_QUOTES, CONTREXX_CHARSET).'\');" href="?cmd=skins&amp;act=manage&amp;delete='.urlencode($theme['themesname']).'" title="'.$_CORELANG['TXT_DELETE'].'"> <img border="0" src="images/icons/delete.gif" alt="" /> </a>';
 	    		$htmlActivateLink = '<a onclick="showInfo(this.parentNode.parentNode);" href="?cmd=skins&amp;act=manage&amp;activate='.$theme['id'].'" title="'.$_CORELANG['TXT_ACTIVATE_DESIGN'].'"> <img border="0" src="images/icons/check.gif" alt="" /> </a>';
 
 	    		$objTemplate->setVariable(array('THEME_NAME'			=>	$theme['themesname'],
@@ -477,7 +476,7 @@ class skins
 			switch($index){
 				//first array element has to be a directory (the base directory)
 				case 0:
-					if(substr($item['stored_filename'], -1) == DIRECTORY_SEPARATOR){
+					if(substr($item['stored_filename'], -1) == '/'){
 						$this->_themeDir=substr($item['stored_filename'], 0, -1);
 					}else{
 						$this->_themeDir=$item['stored_filename'];
@@ -634,6 +633,9 @@ class skins
 				//extract archive files
 				$this->_extractArchive($archive);
 				//create database entry
+				if(substr($this->_themeName, -1) == '/'){
+					$this->_themeName = substr($this->_themeName, 0, -1);
+				}
 				$this->insertIntoDb(contrexx_addslashes($this->_themeName), $this->_themeDir);
 				$this->strOkMessage	= $this->_themeName.' ('.$this->_themeDir.') '.$_CORELANG['TXT_THEME_SUCCESSFULLY_IMPORTED'];
 				break;
@@ -1097,6 +1099,7 @@ class skins
 		    		//delete whole folder with subfolders
     				$this->dirLog = $this->_objFile->delDir($this->path, $this->webPath, $themes);
 	   				if($this->dirLog != "error") {
+	   					
 	   					$objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
 	   					if ($objResult !== false) {
 		   					while (!$objResult->EOF) {
