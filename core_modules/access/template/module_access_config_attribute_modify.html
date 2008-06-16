@@ -196,6 +196,31 @@ function accessSwitchSortType(sortType)
 // ]]>
 </script>
 {ACCESS_JAVASCRIPT_FUNCTIONS}
+<style type="text/css">
+#access_attribute_child_frame input[type=checkbox], #access_attribute_child_frame input[type=radio]{
+    float: left;
+    width: 20px;
+    text-align:left;
+}
+
+#access_attribute_child_frame input[type=text], #access_attribute_child_frame input[type=password]{
+    overflow: hidden;
+    width: 250px !important;
+    width:250px ; /* nur fï¿½r den IE */
+}
+
+#access_attribute_child_frame select {
+    width: 254px !important;
+    width:254px ; /* nur fï¿½r den IE */
+}
+
+
+#access_attribute_child_frame textarea {
+    width: 250px !important;
+    width:250px ; /* nur fï¿½r den IE */
+    height: 150px !important;
+}
+</style>
 <ul id="tabmenu">
 <li><a id="accessTab_modifyAttribute1" class="active" href="javascript:void(0);" onclick="selectTab('modifyAttribute1')" title="{TXT_ACCESS_GENERAL}">{TXT_ACCESS_GENERAL}</a></li>
 <li id="accessPermissionTab" style="display:{ACCESS_PERMISSON_TAB_DISPLAY};"><a id="accessTab_modifyAttribute2" href="javascript:void(0);" onclick="selectTab('modifyAttribute2')" title="{TXT_ACCESS_MODIFICATION_ACCESS}">{TXT_ACCESS_MODIFICATION_ACCESS}</a></li>

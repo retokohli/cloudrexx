@@ -210,7 +210,7 @@ class User extends User_Profile
     /**
      * @access private
      */
-    private static $arrPrivacyAccessTypes = array(
+    private $arrPrivacyAccessTypes = array(
         'everyone'      => array(
             'email'         => 'TXT_ACCESS_EVERYONE_ALLOWED_SEEING_EMAIL',
             'profile'       => 'TXT_ACCESS_EVERYONE_ALLOWED_SEEING_PROFILE',

@@ -1620,7 +1620,7 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_PROFILE_ATTRIBUTES'             => $_ARRAYLANG['TXT_ACCESS_PROFILE_ATTRIBUTES'],
             'TXT_ACCESS_MODIFY_ATTRIBUTE'               => $_ARRAYLANG['TXT_ACCESS_MODIFY_ATTRIBUTE'],
             'TXT_ACCESS_DELETE_ATTRIBUTE'               => $_ARRAYLANG['TXT_ACCESS_DELETE_ATTRIBUTE'],
-            'TXT_ACCESS_CONFIRM_DELETE_ATTRIBUTE_MSG'   => $_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_ATTRIBUTE_MSG'],
+            'TXT_ACCESS_CONFIRM_DELETE_ATTRIBUTE_MSG'   => str_replace("\n",'\n', $_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_ATTRIBUTE_MSG']),
             'TXT_ACCESS_OPERATION_IRREVERSIBLE'         => $_ARRAYLANG['TXT_ACCESS_OPERATION_IRREVERSIBLE']
         ));
 
@@ -1702,11 +1702,11 @@ class AccessManager extends AccessLib
 
             if ($setStatus && $objAttribute->store()) {
                 if (isset($_POST['access_add_child'])) {
-                    $objAttribute->createChild($objAttribute->id);
+                    $objAttribute->createChild($objAttribute->getId());
                 } elseif (isset($_POST['access_add_other_after_store'])) {
                     $objAttribute->createChild($objAttribute->getParent());
                 } else {
-                    $this->arrStatusMsg['ok'][] = $this->errorMsg = $objAttribute->type == 'menu_option' ? $_ARRAYLANG['TXT_ACCESS_SUCCESS_STORE_MENU_OPTION'] : ($objAttribute->type == 'frame' ? $_ARRAYLANG['TXT_ACCESS_SUCCESS_STORE_FRAME'] : $_ARRAYLANG['TXT_ACCESS_SUCCESS_STORE_ATTRIBUTE']);
+                    $this->arrStatusMsg['ok'][] = $this->errorMsg = $objAttribute->getType() == 'menu_option' ? $_ARRAYLANG['TXT_ACCESS_SUCCESS_STORE_MENU_OPTION'] : ($objAttribute->getType() == 'frame' ? $_ARRAYLANG['TXT_ACCESS_SUCCESS_STORE_FRAME'] : $_ARRAYLANG['TXT_ACCESS_SUCCESS_STORE_ATTRIBUTE']);
                     if ($objAttribute->getParent()) {
                         $objAttribute->load($objAttribute->getParent());
                     } else {
@@ -1778,7 +1778,7 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_NAME'                           => $_ARRAYLANG['TXT_ACCESS_NAME'],
             'TXT_ACCESS_MODIFY_ATTRIBUTE'               => $_ARRAYLANG['TXT_ACCESS_MODIFY_ATTRIBUTE'],
             'TXT_ACCESS_DELETE_ATTRIBUTE'               => $_ARRAYLANG['TXT_ACCESS_DELETE_ATTRIBUTE'],
-            'TXT_ACCESS_CONFIRM_DELETE_ATTRIBUTE_MSG'   => $_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_ATTRIBUTE_MSG'],
+            'TXT_ACCESS_CONFIRM_DELETE_ATTRIBUTE_MSG'   => str_replace("\n", '\n', $_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_ATTRIBUTE_MSG']),
             'TXT_ACCESS_OPERATION_IRREVERSIBLE'         => $_ARRAYLANG['TXT_ACCESS_OPERATION_IRREVERSIBLE'],
             'TXT_ACCESS_MOVE_UP'                        => $_ARRAYLANG['TXT_ACCESS_MOVE_UP'],
             'TXT_ACCESS_MOVE_DOWN'                      => $_ARRAYLANG['TXT_ACCESS_MOVE_DOWN'],
@@ -1827,7 +1827,7 @@ class AccessManager extends AccessLib
             'ACCESS_ATTRIBUTE_ID'                       => $objAttribute->getId(),
             'ACCESS_ATTRIBUTE_NAME'                     => htmlentities($objAttribute->getName(), ENT_QUOTES, CONTREXX_CHARSET),
             'ACCESS_ATTRIBUTE_TYPE'                     => $objAttribute->getId() ? $objAttribute->getTypeDescription() : $objAttribute->getTypeMenu('name="access_attribute_type" onchange="accessSwitchType(this.value)" style="width:300px;"'),
-            'ACCESS_TEXT_MULTILINE_OPTION_DISPLAY'      => in_array($objAttribute->isTypeModifiable() && $objAttribute->getType(), array('text', 'textarea')) ? 'inline' : 'none',
+            'ACCESS_TEXT_MULTILINE_OPTION_DISPLAY'      => $objAttribute->isTypeModifiable() && in_array($objAttribute->getType(), array('text', 'textarea')) ? 'inline' : 'none',
             'ACCESS_TEXT_MULTILINE_CHECKED'             => $objAttribute->isMultiline() ? 'checked="checked"' : '',
             'ACCESS_ATTRIBUTE_MANDATORY_FRAME_DISPLAY'  => $objAttribute->hasMandatoryOption() ? '' : 'none',
             'ACCESS_ATTRIBUTE_MANDATORY_YES'            => $objAttribute->isMandatory() ? 'checked="checked"' : '',
@@ -1954,8 +1954,8 @@ class AccessManager extends AccessLib
         if ($attributeId && $objAttribute->load($attributeId)) {
             if ($objAttribute->delete()) {
                 $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_SUCCESS_DEL_ATTRIBUTE'];
-                if ($objAttribute->parent_id) {
-                    $_REQUEST['id'] = $objAttribute->parent_id;
+                if ($objAttribute->getParent()) {
+                    $_REQUEST['id'] = $objAttribute->getParent();
                     return $this->_configModifyAttribute();
                 } else {
                     $_REQUEST['id'] = 0;
@@ -1963,8 +1963,8 @@ class AccessManager extends AccessLib
                 }
             } else {
                 $this->arrStatusMsg['error'][] = $objAttribute->getErrorMsg();
-                if ($objAttribute->parent_id) {
-                    $_REQUEST['id'] = $objAttribute->parent_id;
+                if ($objAttribute->getParent()) {
+                    $_REQUEST['id'] = $objAttribute->getParent();
                     return $this->_configModifyAttribute();
                 } else {
                     $_REQUEST['id'] = 0;

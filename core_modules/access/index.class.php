@@ -102,13 +102,14 @@ class Access extends AccessLib
                 )
             ) {
                 $this->parseAccountAttribute($objUser, 'email');
+            } elseif ($this->_objTpl->blockExists('access_user_email')) {
+                $this->_objTpl->hideBlock('access_user_email');
             }
 
             $nr = 0;
             while (!$objUser->objAttribute->EOF) {
                 $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                $this->_objTpl->setVariable('ACCESS_PROFILE_ATTRIBUTE_CLASS', $nr % 2 + 1);
-                $this->parseAttribute($objUser, $objAttribute->getId(), 0, false) ? $nr++ : false;
+                $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, true, array('_CLASS' => $nr % 2 + 1)) ? $nr++ : false;
                 $objUser->objAttribute->next();
             }
 
