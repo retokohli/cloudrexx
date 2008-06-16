@@ -1123,6 +1123,19 @@ class CommonFunctions
 				return $statusMsg;
 			}
 
+            // set access emails
+			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."access_settings`
+						 SET `value` = '".$_SESSION['installer']['sysConfig']['adminEmail']."'
+					   WHERE `key` = 'notification_address'";
+			if (!@$objDb->Execute($query)) {
+				$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_ADMIN_EMAIL']."<br />";
+			}
+			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."access_user_mail`
+						 SET `sender_mail` = '".$_SESSION['installer']['sysConfig']['adminEmail']."'";
+			if (!@$objDb->Execute($query)) {
+				$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_ADMIN_EMAIL']."<br />";
+			}
+
 			// set newsletter emails
 			if (in_array($_SESSION['installer']['config']['dbTablePrefix']."module_newsletter_settings", $arrTables)) {
 				$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."module_newsletter_settings`
