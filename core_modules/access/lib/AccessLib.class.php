@@ -100,7 +100,7 @@ class AccessLib
         );
     }
 
-    function parseAttribute($objUser, $attributeId, $historyId = 0, $edit = false, $return = false, $isChild = false, $inFrame = false, $useMagicBlock = true)
+    function parseAttribute($objUser, $attributeId, $historyId = 0, $edit = false, $return = false, $isChild = false, $inFrame = false, $useMagicBlock = true, $arrAdditionalPlaceholders = null)
     {
         global $_CORELANG;
 
@@ -125,6 +125,9 @@ class AccessLib
             '_ID'            => $attributeId,
             '_HISTORY_ID'    => $historyId
         );
+        if (is_array($arrAdditionalPlaceholders)) {
+            $arrPlaceholders = array_merge($arrPlaceholders, $arrAdditionalPlaceholders);
+        }
 
 
         switch ($objAttribute->getType()) {

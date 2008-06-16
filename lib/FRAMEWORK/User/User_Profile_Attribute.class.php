@@ -719,6 +719,7 @@ class User_Profile_Attribute
         $this->arrName = array();
         $this->multiline = false;
         $this->protected = false;
+        $this->modifiable = array('mandatory', 'access', 'type');
         $this->EOF = true;
     }
 

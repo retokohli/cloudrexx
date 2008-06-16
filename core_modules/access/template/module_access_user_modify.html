@@ -1,12 +1,37 @@
 <!-- start module_access_modify_user.html -->
 {ACCESS_JAVASCRIPT_FUNCTIONS}
+<style type="text/css">
+#access input[type=checkbox], #access input[type=radio]{
+    float: left;
+    width: 20px;
+    text-align:left;
+}
+
+#access input[type=text], #access input[type=password]{
+    overflow: hidden;
+    width: 250px !important;
+    width:250px ; /* nur fï¿½r den IE */
+}
+
+#access select {
+    width: 254px !important;
+    width:254px ; /* nur fï¿½r den IE */
+}
+
+
+#access textarea {
+    width: 250px !important;
+    width:250px ; /* nur fï¿½r den IE */
+    height: 150px !important;
+}
+</style>
 <ul id="tabmenu">
 <li><a id="userTab_modifyUser1" class="active" href="javascript:void(0);" onclick="selectTab('modifyUser1')" title="{TXT_ACCESS_USER_ACCOUNT}">{TXT_ACCESS_USER_ACCOUNT}</a></li>
 <!-- BEGIN access_profile_group_assignment --><li><a id="userTab_modifyUser2" href="javascript:void(0);" onclick="selectTab('modifyUser2')" title="{TXT_ACCESS_USER_GROUP_S}">{TXT_ACCESS_USER_GROUP_S}</a></li><!-- END access_profile_group_assignment -->
 <li><a id="userTab_modifyUser3" href="javascript:void(0);" onclick="selectTab('modifyUser3')" title="{TXT_ACCESS_PROFILE}">{TXT_ACCESS_PROFILE}</a></li>
 </ul>
 
-<form action="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={ACCESS_USER_ID}" onsubmit="accessSelectAllGroups(document.getElementById('access_user_associated_groups'))" method="post" enctype="multipart/form-data">
+<form action="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={ACCESS_USER_ID}" onsubmit="accessSelectAllGroups(document.getElementById('access_user_associated_groups'))" method="post" enctype="multipart/form-data" id="access">
 <!-- start modifyUser1 div -->
 <div id="modifyUser1" class="userTab" style="display:block">
 	<table cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" summary="user account informations">
