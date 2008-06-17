@@ -11,7 +11,7 @@
 
 //defined robots
 $arrRobots=array("google", "msn","agent","bot","crawl","find","seek","seer","search","spider","spyder","seek","info","about",
-"altavista","aport","appie","arachnoidea","askjeeves","asterias","atomz","bigfoot.com","digout4u",
+"altavista","aport","appie","arachnoidea","askjeeves","asterias","atomz","bigfoot.com","digout4u","phx.gbl",
 "ezresult","flunky","gazz/1.0","gulliver","webtop","ia_archiver","incywincy","indy library","ip3000.com",
 "fireball","libwww-perl/5.47","linkwalker","LWP::Simple","lwp-trivial","SurveyBot","Rumours-Agent",
 "MarkWatch","mercator","mozilla/4.05","muscatferret","nameprotect","nazilla","netmechanic",
