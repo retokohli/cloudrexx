@@ -707,7 +707,11 @@ class ContentManager
             'TXT_NAVIGATION'           => $_CORELANG['TXT_NAVIGATION'],
             'TXT_ASSIGN_BLOCK'              => $_CORELANG['TXT_ASSIGN_BLOCK'],
             'TXT_DEFAULT_ALIAS'        => $_CORELANG['TXT_DEFAULT_ALIAS'],
+            'CONTENT_ALIAS_HELPTEXT'        => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
+            'CONTENT_ALIAS_DISABLE'    => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
             'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
+			'TXT_BASE_URL'             => self::mkurl('/'),
+
         ));
 
         $objTemplate->hideBlock('deleteButton');
@@ -816,6 +820,22 @@ class ContentManager
     }
 
     /**
+	 * Returns true if alias functionality is enabled.
+	 */
+	function _is_alias_enabled() {
+        global $objDatabase;
+		$query = "
+			SELECT setvalue
+			FROM ".DBPREFIX."settings
+			WHERE setmodule = 41 AND setname = 'aliasStatus'
+		";
+		if ($res = $objDatabase->SelectLimit($query, 1)) {
+			return $res->fields['setvalue'];
+		}
+		return false;
+	}
+
+    /**
     * Content editing
     *
     * This method manages all aspects of editing of content
@@ -912,8 +932,11 @@ class ContentManager
             'TXT_CONTENT_TYPE_HELP'               => $_CORELANG['TXT_CONTENT_TYPE_HELP'],
             'TXT_NAVIGATION'                => $_CORELANG['TXT_NAVIGATION'],
             'TXT_ASSIGN_BLOCK'                   => $_CORELANG['TXT_ASSIGN_BLOCK'],
+            'CONTENT_ALIAS_HELPTEXT'        => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
             'TXT_DEFAULT_ALIAS'        => $_CORELANG['TXT_DEFAULT_ALIAS'],
+            'CONTENT_ALIAS_DISABLE'    => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
             'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
+			'TXT_BASE_URL'             => self::mkurl('/'),
         ));
 
         if (!$this->boolHistoryEnabled) {
@@ -1516,6 +1539,13 @@ class ContentManager
         $this->modifyBlocks($_POST['assignedBlocks'], $pageId);
     }
 
+    static function mkurl($absolute_local_path) {
+        global $_CONFIG;
+        return "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80
+            ? ""
+            : ":".intval($_SERVER['SERVER_PORT'])
+        ).ASCMS_PATH_OFFSET.$absolute_local_path;
+    }
     /**
     * Adds a new page
     *
@@ -1525,7 +1555,7 @@ class ContentManager
     */
     function addPage()
     {
-        global $objDatabase, $_CORELANG;
+        global $objDatabase, $_CORELANG, $objTemplate;
 
         if (!empty($_POST['category'])) {
             $parcat = intval($_POST['category']);

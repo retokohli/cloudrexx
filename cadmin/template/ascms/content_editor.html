@@ -3,7 +3,7 @@
 // <[![CDATA
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 Text[0]=["","{TXT_CONTENT_TYPE_HELP}"];
-
+Text[1]=['','{CONTENT_ALIAS_HELPTEXT}'];
 
 function setText() {
 	with( document.formContent )
@@ -17,11 +17,18 @@ function setText() {
 		desc.value=txtNewpage;
 	if(key.value == "")
 		key.value=txtNewpage;
-	// Not mature enough yet:
-	// if(alias.value == "")
-	// 	alias.value=aliasText(txtNewpage);
+	 if(alias.value == "")
+	 	alias.value=aliasText(txtNewpage);
+		updateAliasPreview(txtNewpage);
 	}
 }
+
+
+function updateAliasPreview(text) {
+	document.getElementById('aliastarget').innerHTML = aliasText(text);
+	document.formContent.alias.value = aliasText(text);
+}
+
 
 function preSubmitCheck(){
 	if (document.formContent.newpage.value == "") {
@@ -36,19 +43,24 @@ function preSubmitCheck(){
 
 function aliasText(txt) {
 	return txt
+		.replace(/Ã„/ig, 'ae')
+		.replace(/Ã–/ig, 'oe')
+		.replace(/Ãœ/ig, 'ue')
+		.replace(/Ã¤/ig, 'ae')
+		.replace(/Ã¶/ig, 'oe')
+		.replace(/Ã¼/ig, 'ue')
+		.replace(/Ã /ig,  'a')
+		.replace(/Ã§/ig,  'c')
+		.replace(/[Ã¨Ã©]/ig, 'e')
 		.replace(/[\s\+\/\(\)=,;%&]+/g, '-') // interpunction etc. 
 		.replace(/['<>\\\~$!"]+/g, '')       // quotes and other special characters
 		// Sanitize most latin1 characters. 
 		// there's more to come. maybe there's
 		// a generic function for this?
-		.replace(/[ä]/ig, 'ae')
-		.replace(/[ö]/ig, 'oe')
-		.replace(/[ü]/ig, 'ue')
-		.replace(/[èé]/ig, 'e')
-		.replace(/[à]/ig,  'a')
-		.replace(/[ç]/ig,  'c')
 		// Fallback for everything we didn't catch by now
 		.replace(/[^a-z_-]+/ig, '_')
+		.replace(/[_-]{2,}/g, '_')
+		.replace(/^[_\.\/\-]+/, '')
 		.toLowerCase()
 	;
 }
@@ -226,35 +238,35 @@ function getFileBrowser(elInsertBox, sType)
 function insertLink(elInsertBox, sLink) {
 	elInsertBox.focus();
 
-	/* für Internet Explorer */
+	/* fÃ¼r Internet Explorer */
 	if (typeof document.selection != 'undefined') {
-		/* Einfügen des Formatierungscodes */
+		/* EinfÃ¼gen des Formatierungscodes */
 		var range = document.selection.createRange();
 		var insText = range.text;
 		range.text = sLink;
 	}
 
-	/* für neuere auf Gecko basierende Browser */
+	/* fÃ¼r neuere auf Gecko basierende Browser */
 	else if (typeof elInsertBox.selectionStart != 'undefined') {
-		/* Einfügen des Formatierungscodes */
+		/* EinfÃ¼gen des Formatierungscodes */
 		var start = elInsertBox.selectionStart;
 		var end = elInsertBox.selectionEnd;
 
 		elInsertBox.value = elInsertBox.value.substr(0, start) + sLink + elInsertBox.value.substr(end);
 	}
 
-	/* für die übrigen Browser */
+	/* fÃ¼r die Ã¼brigen Browser */
 	else {
-		/* Abfrage der Einfügeposition */
+		/* Abfrage der EinfÃ¼geposition */
 		var pos;
 		var re = new RegExp('^[0-9]{0,3}$');
 		while(!re.test(pos)) {
-			pos = prompt("Einfügen an Position (0.." + elInsertBox.value.length + "):", "0");
+			pos = prompt("EinfÃ¼gen an Position (0.." + elInsertBox.value.length + "):", "0");
 		}
 		if (pos > elInsertBox.value.length) {
 			pos = elInsertBox.value.length;
 		}
-		/* Einfügen des Formatierungscodes */
+		/* EinfÃ¼gen des Formatierungscodes */
 		elInsertBox.value = elInsertBox.value.substr(0, pos) + sType + elInsertBox.value.substr(pos);
 	}
 }
@@ -331,15 +343,19 @@ function openWindow(theURL,winName,features){
 					<td>{TXT_META_KEYWORD}</td>
 					<td><input type="text" name="key" value="{CONTENT_KEY}" size="80" /></td>
 				</tr>
-				<tr class="row1">
+				<tr class="row1" {CONTENT_ALIAS_DISABLE}>
 					<td>{TXT_DEFAULT_ALIAS}</td>
-					<td><input type="text" name="alias" value="{CONTENT_ALIAS}" size="80" /></td>
+					<td><input type="text" name="alias" onkeyup="updateAliasPreview(this.value)" value="{CONTENT_ALIAS}" size="80" /><span class="note" onmouseover="stm(Text[1], Style[0])" onmouseout="htm()">&nbsp;</span></td>
 				</tr>
-				<tr class="row2">
+				<tr class="row2" {CONTENT_ALIAS_DISABLE}>
+					<td>&nbsp;</td>
+					<td>{TXT_BASE_URL}<span style="font-weight: bold;" id="aliastarget">{CONTENT_ALIAS}</span></td>
+				</tr>
+				<tr class="row1">
 					<td>{TXT_META_ROBOTS}</td>
 					<td><input type="checkbox" name="robots" value="index" {CONTENT_ROBOTS} /></td>
 				</tr>
-				<tr class="row1">
+				<tr class="row2">
 					<td nowrap="nowrap">{TXT_TYPE_SELECT}</td>
 					<td>
 						<input type="radio" name="TypeSelection" value="content" onclick="modusSelection('type_content');" {CONTENT_TYPE_CHECKED_CONTENT}><label for="TypeSelection">{TXT_CONTENT_TYPE_DEFAULT}</label>

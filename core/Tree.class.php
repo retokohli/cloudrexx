@@ -83,12 +83,16 @@ class ContentTree
 							n.protected                              AS protected         ,
 							n.frontend_access_id                     AS frontend_access_id,
 							n.backend_access_id                      AS backend_access_id,
-							a_s.url                                  AS alias_url
+                            a_s.url                                  AS alias_url,
+						    settings.setvalue                        AS alias_enable
 		               FROM ".DBPREFIX."content_navigation AS n
 							LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
 							LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
 								ON  a_t.id        = a_s.target_id
 								AND a_s.isdefault = 1
+						    LEFT OUTER JOIN ".DBPREFIX."settings            AS settings 
+						        ON settings.setmodule = 41
+						       AND settings.setname   = 'aliasStatus'
 
 		              WHERE lang=".$langId."
 		           ORDER BY parcat ASC, displayorder ASC";
@@ -111,7 +115,7 @@ class ContentTree
 				    'protected' => $objResult->fields['protected'],
 				    'frontend_access_id' => $objResult->fields['frontend_access_id'],
 				    'backend_access_id' => $objResult->fields['backend_access_id'],
-					'alias'             => $objResult->fields['alias_url']
+                    'alias'             => $objResult->fields['alias_enable'] ? $objResult->fields['alias_url'] : '' 
 				    );
 
 				$this->table[$objResult->fields['parcat']][$objResult->fields['catid']]= array(
@@ -130,7 +134,7 @@ class ContentTree
 				    'protected' => $objResult->fields['protected'],
 				    'frontend_access_id' => $objResult->fields['frontend_access_id'],
 				    'backend_access_id' => $objResult->fields['backend_access_id'],
-					'alias'             => $objResult->fields['alias_url'] ,
+                    'alias'             => $objResult->fields['alias_enable'] ? $objResult->fields['alias_url'] : '',
 				    'level' => '0'
 				    );
 				$objResult->MoveNext();
