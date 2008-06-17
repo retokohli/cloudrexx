@@ -79,9 +79,13 @@ class sitemap
 		                 n.parcat AS parcat,
 		                 n.displayorder AS displayorder,
 						 m.name AS section,
-						 a_s.url AS alias_url
+                         a_s.url AS alias_url,
+						 settings.setvalue AS alias_enable
 		            FROM ".DBPREFIX."content_navigation AS n
 						LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
+						LEFT OUTER JOIN ".DBPREFIX."settings            AS settings 
+							ON settings.setmodule = 41
+						   AND settings.setname   = 'aliasStatus'
 						LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
 								ON  a_t.id        = a_s.target_id
 								AND a_s.isdefault = 1,
@@ -113,7 +117,7 @@ class sitemap
 				$section = ( ($s=="") ? "" : "&amp;section=$s" );
 				$cmd     = ( ($c=="") ? "" : "&amp;cmd=$c" );
 
-				if ($alias = $objResult->fields['alias_url']) {
+                if ($objResult->fields['alias_enable'] && ($alias = $objResult->fields['alias_url'])) {
 					$link = $alias;
 				}
 				elseif (!empty($s)) {

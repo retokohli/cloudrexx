@@ -2,7 +2,7 @@
 /**
  * Navigation
 
- * Note: modified 27/06/2006 by S�bastien Perret => sva.perret@bluewin.ch
+ * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author		Comvation Development Team <info@comvation.com>
  * @version		1.0.0
@@ -15,7 +15,7 @@
  * Class Navigation
  *
  * This class creates the navigation tree
- * Note: modified 27/06/2006 by S�bastien Perret => sva.perret@bluewin.ch
+ * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author		Comvation Development Team <info@comvation.com>
  * @access		public
@@ -85,10 +85,14 @@ class Navigation
 			                   m.name AS section,
 						  n.displaystatus AS displaystatus,
 						  a_s.url         AS alias_url,
-						  min(a_s.id)     AS alias_id
+                               min(a_s.id)       AS alias_id,
+						       settings.setvalue AS alias_enable
 					FROM ".DBPREFIX."content_navigation                   AS n
 					      INNER JOIN ".DBPREFIX."modules                  AS m   ON n.module=m.id
 						  LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
+						  LEFT OUTER JOIN ".DBPREFIX."settings            AS settings 
+						      ON settings.setmodule = 41
+						     AND settings.setname   = 'aliasStatus'
 						  LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
 						  	ON  a_t.id        = a_s.target_id
 							AND a_s.isdefault = 1
@@ -155,7 +159,7 @@ class Navigation
 				$cmd = ($c=="") ? "" : "&amp;cmd=$c";
 
 				// Create alias link if alias is present for this page...
-				if ($objResult->fields['alias_url']) {
+                if ($objResult->fields['alias_url'] && $objResult->fields['alias_enable']) {
 					$menu_url = self::mkurl('/'.$objResult->fields['alias_url']);
 				}
 				else {
