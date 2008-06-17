@@ -836,7 +836,7 @@ $_ARRAYLANG['TXT_USERS_YEARS'] = "Years";
 $_ARRAYLANG['TXT_USERS_UNLIMITED'] = "unlimited";
 $_ARRAYLANG['TXT_DATA_MODULE'] = "Data lists";
 $_ARRAYLANG['TXT_DATA_MODULE_DESCRIPTION'] = "Allows the creation and management of data lists.";
-$_ARRAYLANG['TXT_DEFAULT_ALIAS'] = "Default alias";
+$_ARRAYLANG['TXT_DEFAULT_ALIAS'] = "Alias";
 $_ARRAYLANG['TXT_CORE_ALIAS_EXISTS_ALREADY'] = "This alias already exists. The page was still saved.";
 $_ARRAYLANG['document.getElementById(\'errormessagetarget\').'] = "You need to define at least the link name.";
 $_ARRAYLANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'] = "Select edit-mode";
@@ -943,6 +943,6 @@ $_ARRAYLANG['TXT_ACCESS_USERNAME_ALREADY_USED'] = "The chosen username is alread
 $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "visit website";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Website";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "ZIP";
-$_ARRAYLANG['CONTENT_ALIAS_HELPTEXT'] = "Using the default alias funcionality, you may assign an URL to the page that is easier to recognize by both humans and search engines. Instead of using e.g. <b>www.yourdomain.com/index.php?page=9934</b> you may use an URL in the form <b>www.yourdomain.com/services</b>";
+$_ARRAYLANG['CONTENT_ALIAS_HELPTEXT'] = "Using the alias funcionality, you may assign an URL to the page that is easier to recognize by both humans and search engines. Instead of using e.g. <b>www.yourdomain.com/index.php?page=9934</b> you may use an URL in the form <b>www.yourdomain.com/services</b>";
 $_ARRAYLANG['TXT_ERROR_NO_TITLE'] = "This page does not have a link name. It has not been saved.";
 ?>

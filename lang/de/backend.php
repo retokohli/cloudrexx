@@ -834,7 +834,7 @@ $_ARRAYLANG['TXT_USERS_YEARS'] = "Jahre";
 $_ARRAYLANG['TXT_USERS_UNLIMITED'] = "unlimitiert";
 $_ARRAYLANG['TXT_DATA_MODULE'] = "Datenlisten";
 $_ARRAYLANG['TXT_DATA_MODULE_DESCRIPTION'] = "Erm&ouml;glicht das Erfassen und Verwalten von Datenlisten.";
-$_ARRAYLANG['TXT_DEFAULT_ALIAS'] = "Standard-Alias";
+$_ARRAYLANG['TXT_DEFAULT_ALIAS'] = "Alias";
 $_ARRAYLANG['TXT_CORE_ALIAS_EXISTS_ALREADY'] = "Dieser Alias existiert bereits. Die Seite wurde trotzdem gespeichert";
 $_ARRAYLANG['document.getElementById(\'errormessagetarget\').'] = "Sie müssen mindestens den Linknamen erfassen.";
 $_ARRAYLANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'] = "Editiermodus wählen";
@@ -941,6 +941,6 @@ $_ARRAYLANG['TXT_ACCESS_USERNAME_ALREADY_USED'] = "Der gewählte Benutzername wi
 $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "Webseite besuchen";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Webseite";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "PLZ";
-$_ARRAYLANG['CONTENT_ALIAS_HELPTEXT'] = "Mit dem Standard-Alias können Sie der Seite eine URL zuweisen, die für Suchmaschinen sowie für das menschliche Auge angenehmer ist. Anstelle von z.B. <b>www.ihredomain.com/index.php?page=9234</b> kann eine URL in der Form <b>www.ihredomain.com/dienstleistung</b> benutzt werden.";
+$_ARRAYLANG['CONTENT_ALIAS_HELPTEXT'] = "Mit einem Alias können Sie der Seite eine URL zuweisen, die für Suchmaschinen sowie für das menschliche Auge angenehmer ist. Anstelle von z.B. <b>www.ihredomain.com/index.php?page=9234</b> kann eine URL in der Form <b>www.ihredomain.com/dienstleistung</b> benutzt werden.";
 $_ARRAYLANG['TXT_ERROR_NO_TITLE'] = "Diese Seite hat keinen Linknamen und konnte deshalb nicht gespeichert werden.";
 ?>

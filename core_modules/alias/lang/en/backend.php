@@ -38,7 +38,7 @@ $_ARRAYLANG['TXT_ALIAS_CONFIRM_DELETE_ALIAS'] = "Are you sure you want to remove
 $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_REMOVED'] = "The alias was removed successfully.";
 $_ARRAYLANG['TXT_ALIAS_ALIAS_REMOVE_FAILED'] = "An error occurred while removing the alias";
 $_ARRAYLANG['TXT_ALIAS_NO_ALIASES_MSG'] = "There are no aliases defined!";
-$_ARRAYLANG['TXT_ALIAS_REQUIREMENTS_DESC'] = "The alias administration does only work on an <strong>Apache</strong> webserver with the extension <strong>mod_rewrite</strong> enabled.<br /> Also, the usage of <strong>.htaccess</strong> files must be allowed by the server.";
+$_ARRAYLANG['TXT_ALIAS_REQUIREMENTS_DESC'] = "Using aliases, you can make a complicated URL like <b>www.yourdomain.com/index.php?page=84472</b> look more friendly. With an alias defined, the URL might become <b>www.yourdomain.com/services</b>. This not only makes it more readable, but also improves placement in search results. <br/><br/>Note: The alias administration does only work on an <strong>Apache</strong> webserver with the extension <strong>mod_rewrite</strong> enabled.<br /> Also, the usage of <strong>.htaccess</strong> files must be allowed by the server.";
 $_ARRAYLANG['TXT_ALIAS_USE_ALIAS_ADMINISTRATION'] = "Use alias administration";
 $_ARRAYLANG['TXT_ALIAS_APACHE_MISSING'] = "You are using another webserver than Apache. Alias management only works with Apache, so you cannot use aliases on this server.";
 $_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "Contrexx could not determine whether the extension <strong>mod_rewrite</strong> is enabled. Therefore, the alias management cannot be activated, as it would render the site inaccessible if the extension <strong>mod_rewrite</strong> was missing.<br/><br/>
