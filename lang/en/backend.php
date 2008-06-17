@@ -944,4 +944,5 @@ $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "visit website";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Website";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "ZIP";
 $_ARRAYLANG['CONTENT_ALIAS_HELPTEXT'] = "Using the default alias funcionality, you may assign an URL to the page that is easier to recognize by both humans and search engines. Instead of using e.g. <b>www.yourdomain.com/index.php?page=9934</b> you may use an URL in the form <b>www.yourdomain.com/services</b>";
+$_ARRAYLANG['TXT_ERROR_NO_TITLE'] = "This page does not have a link name. It has not been saved.";
 ?>
