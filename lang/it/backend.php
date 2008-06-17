@@ -945,4 +945,5 @@ $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "Webseite besuchen";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Webseite";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "Zip";
 $_ARRAYLANG['CONTENT_ALIAS_HELPTEXT'] = "";
+$_ARRAYLANG['TXT_ERROR_NO_TITLE'] = "This page does not have a link name. It has not been saved.";
 ?>
