@@ -17,9 +17,9 @@ function setText() {
 		desc.value=txtNewpage;
 	if(key.value == "")
 		key.value=txtNewpage;
-	 if(alias.value == "")
-	 	alias.value=aliasText(txtNewpage);
-		updateAliasPreview(txtNewpage);
+	// if(alias.value == "")
+	// 	alias.value=aliasText(txtNewpage);
+	//	updateAliasPreview(txtNewpage);
 	}
 }
 
@@ -345,7 +345,7 @@ function openWindow(theURL,winName,features){
 				</tr>
 				<tr class="row1" {CONTENT_ALIAS_DISABLE}>
 					<td>{TXT_DEFAULT_ALIAS}</td>
-					<td><input type="text" name="alias" onkeyup="updateAliasPreview(this.value)" value="{CONTENT_ALIAS}" size="80" /><span class="note" onmouseover="stm(Text[1], Style[0])" onmouseout="htm()">&nbsp;</span></td>
+					<td><input type="text" name="alias" onkeyup="updateAliasPreview(this.value)" value="{CONTENT_ALIAS}" size="80" />&nbsp;<span class="note" style="margin-left: 3px;" onmouseover="stm(Text[1], Style[0])" onmouseout="htm()">&nbsp;</span></td>
 				</tr>
 				<tr class="row2" {CONTENT_ALIAS_DISABLE}>
 					<td>&nbsp;</td>

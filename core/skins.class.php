@@ -313,6 +313,7 @@ class skins
     	}
     	if(!empty($_GET['import'])){
    			$this->_importFile();
+
     	}
     	if(!empty($_GET['activate'])){
    			$this->_activateDefault(intval($_GET['activate']));
@@ -388,7 +389,7 @@ class skins
      */
     function _getPreview($themedir){
     	if(file_exists($this->path.$themedir.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'preview.gif')){
-    		return '/themes/'.$themedir.'/images/preview.gif';
+            return ASCMS_THEMES_WEB_PATH . '/'.$themedir.'/images/preview.gif';
     	}else{
     		return ASCMS_ADMIN_TEMPLATE_WEB_PATH.'/images/preview.gif';
     	}
@@ -825,6 +826,7 @@ class skins
 		$this->pageTitle = $_CORELANG['TXT_DESIGN_VARIABLES_LIST'];
 		$objTemplate->setVariable(array(
 		    'TXT_STANDARD_TEMPLATE_STRUCTURE' => $_CORELANG['TXT_STANDARD_TEMPLATE_STRUCTURE'],
+            'TXT_FRONTEND_EDITING_LOGIN_FRONTEND' => $_CORELANG['TXT_FRONTEND_EDITING_LOGIN_FRONTEND'],
 		    'TXT_STARTPAGE'                   => $_CORELANG['TXT_STARTPAGE'],
 		    'TXT_STANDARD_PAGES'              => $_CORELANG['TXT_STANDARD_PAGES'],
 		    'TXT_REPLACEMENT_LIST'            => $_CORELANG['TXT_REPLACEMENT_LIST'],
@@ -1099,7 +1101,6 @@ class skins
 		    		//delete whole folder with subfolders
     				$this->dirLog = $this->_objFile->delDir($this->path, $this->webPath, $themes);
 	   				if($this->dirLog != "error") {
-	   					
 	   					$objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
 	   					if ($objResult !== false) {
 		   					while (!$objResult->EOF) {
