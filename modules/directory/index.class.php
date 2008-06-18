@@ -1173,23 +1173,37 @@ class rssDirectory extends directoryLibrary
 					}
 
 					//get homepage, relatedlinks
-					if($fieldName == "homepage" || $fieldName == "relatedlinks" || $fieldName == "link"){
-						$varLinks = "";
+                    if($fieldName == "homepage" || $fieldName == "relatedlinks" || $fieldName == "link"){
+                        $varLinks = "";
 
-						//explode links
-						$links = explode(", ", $arrFeedContent[$fieldName]);
+                        //explode links
+                        $arrLinks = explode(", ", $arrFeedContent[$fieldName]);
 
-						//make links
-						foreach($links as $linkKey => $linkName){
-							if(substr($linkName, 0,7) != "http://"){
-								$linkName = "http://".$linkName;
-							}
+                        //make links
+                        foreach($arrLinks as $link){
+                            if(substr($link, 0,7) != "http://"){
+                                $linkUrl = "http://".$link;
+                            } else {
+                            	$linkUrl = $link;
+                            }
 
-							$varLinks .= "<a href='".$linkName."' class='out' target='_blank'>".$linkName."</a><br />";
-						}
+                            if(strlen($link) >= 55 ) {
+                            	/*$arrLink = explode("/", $link);
+                            	$lastElement = count($arrLink)-1;
+                            	$lastElementLength = strlen($arrLink[$lastElement]);
+                            	$firstElementLength = 49-$lastElementLength;
+                            	$linkName = substr($link, 0, $firstElementLength)."...../".$arrLink[$lastElement];*/
 
-						$content = $varLinks;
-					}
+                            	$linkName = substr($link, 0, 55)."[...]";
+                            } else {
+                            	$linkName = $link;
+                            }
+
+                            $varLinks .= "<a href='".$linkUrl."' class='out' target='_blank'>".$linkName."</a><br />";
+                        }
+
+                        $content = $varLinks;
+                    }
 
 					//check spez
 					if(substr($fieldName,0, 10) == "spez_field"){
@@ -1219,8 +1233,12 @@ class rssDirectory extends directoryLibrary
 
 					$setVariable["DIRECTORY_FEED_".strtoupper($fieldName)] = nl2br($content);
 					$setVariable["TXT_DIRECTORY_FEED_".strtoupper($fieldName)] = $name;
-				}
-			}
+
+					$fieldsList .= '<div class="fieldsList"><div class="fieldDesc">'.nl2br($name).'</div><div class="fieldContent">'.nl2br($content).'</div></div>';
+                }
+            }
+
+            $setVariable["DIRECTORY_FIELDS_LIST"] = $fieldsList;
 		}
 
 		//parse spez variables
