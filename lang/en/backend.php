@@ -839,6 +839,7 @@ $_ARRAYLANG['TXT_DATA_MODULE_DESCRIPTION'] = "Allows the creation and management
 $_ARRAYLANG['TXT_DEFAULT_ALIAS'] = "Alias";
 $_ARRAYLANG['TXT_CORE_ALIAS_EXISTS_ALREADY'] = "This alias already exists. The page was still saved.";
 $_ARRAYLANG['document.getElementById(\'errormessagetarget\').'] = "You need to define at least the link name.";
+$_ARRAYLANG['TXT_FRONTEND_EDITING_LOGIN_FRONTEND'] = "Frontend Editing";
 $_ARRAYLANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'] = "Select edit-mode";
 $_ARRAYLANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'] = "The current page is a module-page. Would you like to change to page-layout or modify the module-contents?";
 $_ARRAYLANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'] = "Page-Layout";

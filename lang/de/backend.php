@@ -837,6 +837,7 @@ $_ARRAYLANG['TXT_DATA_MODULE_DESCRIPTION'] = "Erm&ouml;glicht das Erfassen und V
 $_ARRAYLANG['TXT_DEFAULT_ALIAS'] = "Alias";
 $_ARRAYLANG['TXT_CORE_ALIAS_EXISTS_ALREADY'] = "Dieser Alias existiert bereits. Die Seite wurde trotzdem gespeichert";
 $_ARRAYLANG['document.getElementById(\'errormessagetarget\').'] = "Sie müssen mindestens den Linknamen erfassen.";
+$_ARRAYLANG['TXT_FRONTEND_EDITING_LOGIN_FRONTEND'] = "Frontend Editing";
 $_ARRAYLANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'] = "Editiermodus wählen";
 $_ARRAYLANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'] = "Bei der aktuellen Seite handelt es sich um eine Modulseite. Möchten Sie das Seitenlayout oder die Modulinhalte verändern?";
 $_ARRAYLANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'] = "Seitenlayout";
