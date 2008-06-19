@@ -6,14 +6,14 @@
  * @package     contrexx
  * @subpackage  module_voting
  */
-$_ARRAYLANG['TXT_NAME'] = "Name";
-$_ARRAYLANG['TXT_RESET'] = "Zurücksetzen";
-$_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'] = "Der Datensatz wurde erfolgreich gespeichert";
-$_ARRAYLANG['TXT_VOTES'] = "Stimmen";
-$_ARRAYLANG['TXT_VOTING_TOTAL'] = "Total Stimmen";
-$_ARRAYLANG['TXT_DATE'] = "Datum";
-$_ARRAYLANG['TXT_TITLE'] = "Titel";
-$_ARRAYLANG['TXT_SUBMIT'] = "Absenden";
+$_ARRAYLANG['TXT_NAME'] = "Nom";
+$_ARRAYLANG['TXT_RESET'] = "Réinitialiser";
+$_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'] = "Données enregistrées";
+$_ARRAYLANG['TXT_VOTES'] = "Voix";
+$_ARRAYLANG['TXT_VOTING_TOTAL'] = "Nb total de voix";
+$_ARRAYLANG['TXT_DATE'] = "Date";
+$_ARRAYLANG['TXT_TITLE'] = "Titre";
+$_ARRAYLANG['TXT_SUBMIT'] = "Envoyer";
 $_ARRAYLANG['TXT_VOTING_NOT_AVAILABLE'] = "Es gibt zur Zeit keine Umfragen.";
 $_ARRAYLANG['TXT_VOTING_OLDER'] = "Ältere Umfragen";
 $_ARRAYLANG['TXT_VOTING_ENTRIES'] = "Umfragen";
