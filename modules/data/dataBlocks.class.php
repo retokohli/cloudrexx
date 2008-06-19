@@ -194,7 +194,8 @@ class dataBlocks extends DataLibrary
                 $cmd = $this->arrCategories[$id]['cmd'];
                 $url = "index.php?section=data&amp;cmd=".$cmd;
             } else {
-                $url = "index.php?section=data&amp;act=thickbox&height=".$height."&amp;width=".$width."&amp;lang=".$lang;
+                //$url = "index.php?section=data&amp;act=thickbox&height=".$height."&amp;width=".$width."&amp;lang=".$lang;
+                $url = "index.php?section=data&amp;act=thickbox&amp;lang=".$lang;
         }
         
         foreach ($this->entryArray as $entryId => $entry) {
@@ -249,7 +250,7 @@ class dataBlocks extends DataLibrary
                     "HREF"          => $href,
                     "TARGET"        => $target,
 //                    "CLASS"         => ($this->arrCategories[$id]['action'] == "overlaybox" && $entry['mode'] == "normal") ? "class=\"thickbox\"" : "",
-                    "CLASS"         => ($this->arrCategories[$id]['action'] == "overlaybox" && $entry['mode'] == "normal") ? "class=\"lightview\"" : "",
+                    "CLASS"         => ($this->arrCategories[$id]['action'] == "overlaybox" && $entry['mode'] == "normal") ? "class=\"lightview\" title='Contrexx ::  :: width: ".$width.", height: ".$height."'" : "",
                     "TXT_MORE"      => $this->langVars['TXT_DATA_MORE']
                 ));
                 if ($parcat) {
@@ -317,7 +318,7 @@ class dataBlocks extends DataLibrary
             "CONTENT"       => $content,
             "HREF"          => $url."&amp;id=".$id,
 //            "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "class=\"thickbox\"" : "",
-            "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "class=\"lightview\"" : "",
+            "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "class=\"lightview\" title='Contrexx ::  :: width: ".$width.", height: ".$height."'" : "",
             "TXT_MORE"      => $this->langVars['TXT_DATA_MORE']
         );
         $this->_objTpl->setVariable($templateVars);

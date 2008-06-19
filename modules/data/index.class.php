@@ -267,7 +267,9 @@ class Data extends DataLibrary  {
 	 */
 	function thickbox()
 	{
-	    global $objDatabase, $_ARRAYLANG;
+	    global $objDatabase, $_ARRAYLANG, $objInit;
+	    
+	   // var_dump($themesPages['buildin_style']);
 	    
 	    $id = intval($_GET['id']);
         $lang = intval($_GET['lang']);
@@ -283,8 +285,16 @@ class Data extends DataLibrary  {
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_THEMES_PATH);
         $this->_objTpl->setCurrentBlock("thickbox");
         
+        $objResult = $objDatabase->SelectLimit(" SELECT foldername
+                               FROM ".DBPREFIX."skins
+                              WHERE id = '$objInit->currentThemesId'", 1);
+        if ($objResult !== false) {
+            $themesPath = $objResult->fields['foldername'];
+        }
+        
         $template = preg_replace("/\[\[([A-Z_]+)\]\]/", '{$1}', $settings['data_template_thickbox']);
         $this->_objTpl->setTemplate($template);
+        
          
         if ($entry['translation'][$lang]['attachment']) {
             $this->_objTpl->setVariable(array(
@@ -297,7 +307,8 @@ class Data extends DataLibrary  {
         $this->_objTpl->setVariable(array(
             "TITLE"         => $title,
             "CONTENT"       => $content,
-            "PICTURE"       => $picture
+            "PICTURE"       => $picture,
+            "THEMES_PATH"   => $themesPath
         ));
         if ($picture != "none") {
             $this->_objTpl->parse("image");
