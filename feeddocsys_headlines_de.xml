@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+<title>Dokumentensystem</title>
+<description></description>
+<link>http://contrexx.2.0</link>
+<copyright>http://contrexx.2.0</copyright>
+<webMaster>reto.kohli@comvation.com</webMaster>
+<generator>Contrexx® Web Content Management System</generator>
+<lastBuildDate>Mon, 16 Jun 2008 17:59:17 +0200</lastBuildDate>
+<language>de</language>
+<item>
+<title>test</title>
+<pubDate>Mon, 16 Jun 2008 17:59:17 +0200</pubDate>
+<link>http://contrexx.2.0/?section=docsys&amp;cmd=details&amp;id=13</link>
+</item>
+<item>
+<title>test</title>
+<pubDate>Mon, 16 Jun 2008 17:59:17 +0200</pubDate>
+<link>http://contrexx.2.0/?section=docsys&amp;cmd=details&amp;id=12</link>
+</item>
+<item>
+<title>test</title>
+<pubDate>Mon, 16 Jun 2008 17:59:17 +0200</pubDate>
+<link>http://contrexx.2.0/?section=docsys&amp;cmd=details&amp;id=11</link>
+</item>
+<item>
+<title>test</title>
+<pubDate>Mon, 16 Jun 2008 17:59:17 +0200</pubDate>
+<link>http://contrexx.2.0/?section=docsys&amp;cmd=details&amp;id=10</link>
+</item>
+<item>
+<title>test</title>
+<pubDate>Mon, 16 Jun 2008 17:59:17 +0200</pubDate>
+<link>http://contrexx.2.0/?section=docsys&amp;cmd=details&amp;id=9</link>
+</item>
+<item>
+<title>test</title>
+<pubDate>Mon, 16 Jun 2008 17:59:17 +0200</pubDate>
+<link>http://contrexx.2.0/?section=docsys&amp;cmd=details&amp;id=8</link>
+</item>
+<item>
+<title>test</title>
+<pubDate>Mon, 16 Jun 2008 17:59:17 +0200</pubDate>
+<link>http://contrexx.2.0/?section=docsys&amp;cmd=details&amp;id=7</link>
+</item>
+<item>
+<title>test</title>
+<pubDate>Mon, 16 Jun 2008 17:59:17 +0200</pubDate>
+<link>http://contrexx.2.0/?section=docsys&amp;cmd=details&amp;id=6</link>
+</item>
+<item>
+<title>test</title>
+<pubDate>Mon, 16 Jun 2008 17:59:17 +0200</pubDate>
+<link>http://contrexx.2.0/?section=docsys&amp;cmd=details&amp;id=5</link>
+</item>
+<item>
+<title>test</title>
+<pubDate>Mon, 16 Jun 2008 17:59:17 +0200</pubDate>
+<link>http://contrexx.2.0/?section=docsys&amp;cmd=details&amp;id=4</link>
+</item>
+<item>
+<title>Google Sitemaps</title>
+<pubDate>Mon, 16 Jun 2008 17:59:17 +0200</pubDate>
+<link>http://contrexx.2.0/?section=docsys&amp;cmd=details&amp;id=1</link>
+</item>
+</channel>
+</rss>
