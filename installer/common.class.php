@@ -1394,7 +1394,8 @@ class CommonFunctions
 	        	$ip = $_SERVER['SERVER_ADDR'];
 	        }
 
-	        $url = base64_decode('aHR0cDovL3d3dy5jb250cmV4eC5jb20vdXBkYXRlY2VudGVyL2luZGV4LnBocA==').'?host='.$serverName.$_SESSION['installer']['config']['offsetPath'].'&ip='.$ip.'&version='.$_CONFIG['coreCmsVersion'].'&edition='.$_CONFIG['coreCmsEdition'];
+			$v = $_CONFIG['coreCmsVersion'] . ' ' . $_CONFIG['coreCmsStatus'];
+	        $url = base64_decode('aHR0cDovL3d3dy5jb250cmV4eC5jb20vdXBkYXRlY2VudGVyL2luZGV4LnBocA==').'?host='.$serverName.$_SESSION['installer']['config']['offsetPath'].'&ip='.$ip.'&version='.$v.'&edition='.$_CONFIG['coreCmsEdition'];
 	        if($this->checkRSSSupport()) {
 	            @file($url);
 	            $_SESSION['installer']['updateCheckImage']="";
