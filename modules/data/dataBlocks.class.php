@@ -248,7 +248,8 @@ class dataBlocks extends DataLibrary
                     "CONTENT"       => $content,
                     "HREF"          => $href,
                     "TARGET"        => $target,
-                    "CLASS"         => ($this->arrCategories[$id]['action'] == "overlaybox" && $entry['mode'] == "normal") ? "class=\"thickbox\"" : "",
+//                    "CLASS"         => ($this->arrCategories[$id]['action'] == "overlaybox" && $entry['mode'] == "normal") ? "class=\"thickbox\"" : "",
+                    "CLASS"         => ($this->arrCategories[$id]['action'] == "overlaybox" && $entry['mode'] == "normal") ? "class=\"lightview\"" : "",
                     "TXT_MORE"      => $this->langVars['TXT_DATA_MORE']
                 ));
                 if ($parcat) {
@@ -315,7 +316,8 @@ class dataBlocks extends DataLibrary
             "IMAGE"         => $image,
             "CONTENT"       => $content,
             "HREF"          => $url."&amp;id=".$id,
-            "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "class=\"thickbox\"" : "",
+//            "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "class=\"thickbox\"" : "",
+            "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "class=\"lightview\"" : "",
             "TXT_MORE"      => $this->langVars['TXT_DATA_MORE']
         );
         $this->_objTpl->setVariable($templateVars);
