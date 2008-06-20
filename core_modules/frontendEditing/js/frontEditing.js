@@ -318,8 +318,10 @@ function fe_loadDefault() {
 }
 
 function fe_restoreDefault(defaultContent) {
-	$(fe_previewTitleName).update($F(fe_editorFormTitleName + fe_editorFormOldSuffix));
- 	new Effect.Highlight(fe_previewTitleName, {startcolor: fe_editorHighlightColor, duration: fe_appearanceDuration});	
+	if ($(fe_previewTitleName) != null) {
+		$(fe_previewTitleName).update($F(fe_editorFormTitleName + fe_editorFormOldSuffix));
+ 		new Effect.Highlight(fe_previewTitleName, {startcolor: fe_editorHighlightColor, duration: fe_appearanceDuration});	
+	}
 	
 	$(fe_previewContentName).update(defaultContent);
 	new Effect.Highlight(fe_previewContentName, {startcolor: fe_editorHighlightColor, duration: fe_appearanceDuration});
@@ -348,9 +350,11 @@ function fe_loadPreview(previewMode) {
 }
 
 function fe_showPreview(previewContent) {
-	$(fe_previewTitleName).update($F(fe_editorFormTitleName));
- 	new Effect.Highlight(fe_previewTitleName, {startcolor: fe_editorHighlightColor, duration: fe_appearanceDuration, delay: 0.2});
-
+	if ($(fe_previewTitleName) != null) {
+		$(fe_previewTitleName).update($F(fe_editorFormTitleName));
+		new Effect.Highlight(fe_previewTitleName, {startcolor: fe_editorHighlightColor, duration: fe_appearanceDuration, delay: 0.2});
+	}
+	
  	$(fe_previewContentName).update(previewContent);	 	
  	new Effect.Highlight(fe_previewContentName, {startcolor: fe_editorHighlightColor, duration: fe_appearanceDuration, delay: 0.2});
 }
