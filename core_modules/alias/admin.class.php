@@ -246,7 +246,7 @@ class AliasAdmin extends aliasLib
                     $newAliasSource = trim(contrexx_stripslashes($newAliasSource));
                     
                     if (!empty($newAliasSource)) {
-                        if ($this->is_alias_valid($newAliasSource)) {
+                        if (!$this->is_alias_valid($newAliasSource)) {
                             $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'], htmlentities($newAliasSource, ENT_QUOTES, CONTREXX_CHARSET));
                             continue;
                         }
