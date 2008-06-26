@@ -7,9 +7,9 @@
  * @subpackage  module_block
  */
 $_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "Обзор";
-$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL_ID'] = "more";
-$_ARRAYLANG['TXT_BLOCK_MARKET'] = "other advertisements";
-$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL'] = "all advertisements";
-$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR_TITLE'] = "Advertisement";
-$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR'] = "Actually there is no advertisement posted.";
+$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL_ID'] = "Больше";
+$_ARRAYLANG['TXT_BLOCK_MARKET'] = "Другие рекламные объявления";
+$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL'] = "Все рекламные объявления";
+$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR_TITLE'] = "Реклама";
+$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR'] = "Фактически нет никакой объявленной рекламы.";
 ?>

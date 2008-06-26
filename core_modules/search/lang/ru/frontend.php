@@ -6,11 +6,11 @@
  * @package     contrexx
  * @subpackage  core_module_search
  */
-$_ARRAYLANG['TXT_SEARCH_RESULTS'] = "Suchresultate";
-$_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_RELEVANCE'] = "Ihre Suche zu <strong>%s</strong>  ergab %d Treffer (sortiert nach Relevanz)";
-$_ARRAYLANG['TXT_RELEVANCE'] = "Relevanz";
-$_ARRAYLANG['TXT_NO_SEARCH_RESULTS'] = "Mit dem Suchbegriff <strong>%s</strong> wurden keine Resultate gefunden.";
-$_ARRAYLANG['TXT_SEARCH'] = "Suchen";
-$_ARRAYLANG['TXT_PLEASE_ENTER_SEARCHTERM'] = "Bitte geben Sie ein Suchwort ein.";
-$_ARRAYLANG['TXT_UNTITLED'] = "Untitled";
+$_ARRAYLANG['TXT_SEARCH_RESULTS'] = "Поисковые результаты";
+$_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_RELEVANCE'] = "Ваш поиск к <strong> %s </strong> давал в итоге %d ответ(отсортировано после значения)";
+$_ARRAYLANG['TXT_RELEVANCE'] = "Значение";
+$_ARRAYLANG['TXT_NO_SEARCH_RESULTS'] = "С искомым понятием <strong> %s </strong> никакие результаты не были найдены.";
+$_ARRAYLANG['TXT_SEARCH'] = "Поиск";
+$_ARRAYLANG['TXT_PLEASE_ENTER_SEARCHTERM'] = "Пожалуйста, дайте поисковое слово.";
+$_ARRAYLANG['TXT_UNTITLED'] = "Неназванный";
 ?>

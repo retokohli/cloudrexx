@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  module_gallery
  */
-$_ARRAYLANG['TXT_GALLERY_EXTERNAL_SUB_CATS'] = "Sous-gallerie";
+$_ARRAYLANG['TXT_GALLERY_EXTERNAL_SUB_CATS'] = "Sous-galerie";
 $_ARRAYLANG['TXT_CLOSE_WINDOW'] = "Fermer fenêtre";
 $_ARRAYLANG['TXT_ZOOM_OUT'] = "Zoom -";
 $_ARRAYLANG['TXT_ZOOM_IN'] = "Zoom +";
@@ -19,8 +19,8 @@ $_ARRAYLANG['TXT_RESOLUTION'] = "Resolution";
 $_ARRAYLANG['TXT_USER_DEFINED'] = "Défini par l'utilisateur";
 $_ARRAYLANG['TXT_IMAGE_NAME'] = "Nom";
 $_ARRAYLANG['TXT_IMAGE_COUNT'] = "Nombre d'images";
-$_ARRAYLANG['TXT_CATEGORY'] = "Gallerie";
-$_ARRAYLANG['TXT_GALLERY'] = "Gallerie";
+$_ARRAYLANG['TXT_CATEGORY'] = "Galerie";
+$_ARRAYLANG['TXT_GALLERY'] = "Galerie";
 $_ARRAYLANG['TXT_SIZE'] = "Taille fichier";
 $_ARRAYLANG['TXT_VOTING_TITLE'] = "Evaluation de cette image";
 $_ARRAYLANG['TXT_VOTING_STATS_ACTUAL'] = "Evaluation actuelle";
