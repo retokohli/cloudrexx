@@ -81,4 +81,5 @@ $_ARRAYLANG['TXT_FORUM_UPLOAD_PARTIAL'] = "Die Datei wurde nur teilweise hochgel
 $_ARRAYLANG['TXT_FORUM_UPLOAD_NOT_MOVABLE'] = "Die Datei konnte auf dem Server nicht verschoben werden, bitte erneut versuchen. Wenn das Problem besteht, wenden Sie sich an den Webmaster.";
 $_ARRAYLANG['TXT_FORUM_DELETE_ATTACHMENT'] = "Anhang '%s' löschen";
 $_ARRAYLANG['TXT_FORUM_SEARCH_TERM_TOO_SHORT'] = "Hinweis: Der Suchbegriff muss mind. 3 Zeichen lang sein.";
+$_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS'] = "Erlaubte Dateierweiterungen";
 ?>

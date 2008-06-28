@@ -81,4 +81,5 @@ $_ARRAYLANG['TXT_FORUM_UPLOAD_PARTIAL'] = "The file was uploaded only partially.
 $_ARRAYLANG['TXT_FORUM_UPLOAD_NOT_MOVABLE'] = "The file could not be moved on the server. Please try again. If the problem persists, please contact the webmaster.";
 $_ARRAYLANG['TXT_FORUM_DELETE_ATTACHMENT'] = "Delete attachment '%s'";
 $_ARRAYLANG['TXT_FORUM_SEARCH_TERM_TOO_SHORT'] = "Note: The search term must be at least 3 characters long.";
+$_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS'] = "Erlaubte Dateierweiterungen";
 ?>
