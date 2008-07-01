@@ -232,11 +232,12 @@ class FWUser extends User_Setting
             array('email' => $email), null, null, null, 1
         );
         if ($objUser) {
+            $objUserMail = $this->getMail();
             $objUser->setRestoreKey();
             if ($objUser->store() &&
                 (
-                    $this->objMail->load('reset_pw', $_LANGID) ||
-                    $this->objMail->load('reset_pw')
+                    $objUserMail->load('reset_pw', $_LANGID) ||
+                    $objUserMail->load('reset_pw')
                 ) &&
                 (include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') &&
                 ($objMail = new PHPMailer()) !== false
@@ -253,10 +254,10 @@ class FWUser extends User_Setting
                 }
 
                 $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = $this->objMail->getSenderMail();
-                $objMail->FromName = $this->objMail->getSenderName();
-                $objMail->AddReplyTo($this->objMail->getSenderMail());
-                $objMail->Subject = $this->objMail->getSubject();
+                $objMail->From = $objUserMail->getSenderMail();
+                $objMail->FromName = $objUserMail->getSenderName();
+                $objMail->AddReplyTo($objUserMail->getSenderMail());
+                $objMail->Subject = $objUserMail->getSubject();
 
                 if ($this->isBackendMode()) {
                     $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
@@ -264,9 +265,9 @@ class FWUser extends User_Setting
                     $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=login&cmd=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
                 }
 
-                if (in_array($this->objMail->getFormat(), array('multipart', 'text'))) {
-                    $this->objMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
-                    $objMail->{($this->objMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
+                if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
+                    $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
+                    $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
                         array(
                             '[[USERNAME]]',
                             '[[URL]]',
@@ -275,13 +276,13 @@ class FWUser extends User_Setting
                         array(
                             $objUser->getUsername(),
                             $restorLink,
-                            $this->objMail->getSenderName()
+                            $objUserMail->getSenderName()
                         ),
-                        $this->objMail->getBodyText()
+                        $objUserMail->getBodyText()
                     );
                 }
-                if (in_array($this->objMail->getFormat(), array('multipart', 'html'))) {
-                    $this->objMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
+                if (in_array($objUserMail->getFormat(), array('multipart', 'html'))) {
+                    $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
                     $objMail->Body = str_replace(
                         array(
                             '[[USERNAME]]',
@@ -291,9 +292,9 @@ class FWUser extends User_Setting
                         array(
                             htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
                             $restorLink,
-                            htmlentities($this->objMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
+                            htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
                         ),
-                        $this->objMail->getBodyHtml()
+                        $objUserMail->getBodyHtml()
                     );
                 }
 
