@@ -938,6 +938,7 @@ CREATE TABLE `contrexx_module_egov_products` (
   `product_paypal_currency` varchar(255) NOT NULL default '',
   `product_orderby` int(11) unsigned NOT NULL default '0',
   `yellowpay` tinyint(1) unsigned NOT NULL default '0',
+  `alternative_names` TEXT NOT NULL default '',
   PRIMARY KEY  (`product_id`)
 ) TYPE=MyISAM;
 
