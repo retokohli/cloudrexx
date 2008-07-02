@@ -83,6 +83,10 @@ Modul: Forum
   Designvorlagen (-> forum.html)
 - Bewertungssystem für Beiträge.
 - Neue Übersichtsseite mit den beliebtesten Beiträgen.
+- Es kann gewählt werden ob die neusten Beiträge nur pro Thread oder global 
+  angezeigt werden sollen.
+- Eine Liste von erlaubten Dateiendungen kann definiert werden, welche für den 
+  Dateiupload erlaubt werden.
 
 Modul: Gästebuch
 - Die Datums- und Zeitangabe können nun über die Konfigurationsdateien angepasst
