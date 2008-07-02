@@ -461,7 +461,7 @@ class ForumLibrary {
         }
 
         $arrReturn['banned_words'] = explode(',', $arrReturn['banned_words']);
-
+        $arrReturn['allowed_extensions'] = str_replace(array(' ', '\n', '\r'), '', $arrReturn['allowed_extensions']);
         return $arrReturn;
     }
 
@@ -665,6 +665,11 @@ class ForumLibrary {
         switch($_FILES[$inputName]['error']){
             case UPLOAD_ERR_OK:
                 $pathinfo = pathinfo($_FILES[$inputName]['name']);
+                $arrExtensions = explode(',', $this->_arrSettings['allowed_extensions']);
+                if(!in_array($pathinfo['extension'], $arrExtensions)){
+                    $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf($_ARRAYLANG['TXT_FORUM_EXTENSION_NOT_ALLOWED'], $pathinfo['extension'], str_replace(',', ', ', $this->_arrSettings['allowed_extensions'])));
+                    return false;
+                }
                 $newPath = ASCMS_FORUM_UPLOAD_PATH.'/';
                 $newName = $_FILES[$inputName]['name'];
                 $i=1;
@@ -1283,11 +1288,26 @@ class ForumLibrary {
     function _getLatestEntries(){
         global $objDatabase, $_ARRAYLANG;
         $index = 0;
-        $query = "  SELECT `id`, `category_id`, `thread_id`, `subject`, `user_id`, max(`time_created`) as `time_created` FROM `".DBPREFIX."module_forum_postings`
-                    GROUP BY `thread_id` ORDER by `time_created` DESC";
+        if($this->_arrSettings['latest_post_per_thread'] == 0){
+            $query = "  SELECT `id` , `category_id` , `thread_id` , `subject` , `user_id` , `time_created`
+                        FROM `".DBPREFIX."module_forum_postings`
+                        ORDER BY IF( `time_edited`, `time_edited`, `time_created` ) DESC";
+        }else{
+            $query = "  SELECT `id`, `category_id`, `thread_id`, `subject`, `user_id`, `time_created`
+                        FROM `".DBPREFIX."module_forum_postings`
+                        WHERE `id`
+                        IN (
+                            SELECT max( `id` )
+                            FROM `".DBPREFIX."module_forum_postings`
+                            GROUP BY `thread_id`
+                            ORDER BY `time_created` DESC
+                        )
+                        ORDER BY `time_created` DESC";
+        }
+
         if(($objRS = $objDatabase->SelectLimit($query, $this->_arrSettings['latest_entries_count'])) !== false){
             $objFWUser = FWUser::getFWUserObject();
-            
+
             while(!$objRS->EOF){
                 $arrLatestEntries[$index]['subject'] = !empty($objRS->fields['subject']) ? $objRS->fields['subject'] : $_ARRAYLANG['TXT_FORUM_NO_SUBJECT'];
                 $arrLatestEntries[$index]['post_id'] = $objRS->fields['id'];
