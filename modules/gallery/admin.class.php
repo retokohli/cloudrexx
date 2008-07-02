@@ -403,7 +403,7 @@ class galleryManager extends GalleryLibrary
     */
     function overview()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG, $_LANGID;
 
 
         $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
@@ -480,7 +480,7 @@ class galleryManager extends GalleryLibrary
                                                                     value
                                                         FROM        '.DBPREFIX.'module_gallery_language
                                                         WHERE        gallery_id='.$intMainKey.' AND
-                                                                    lang_id='.$objFWUser->objUser->getFrontendLanguage().'
+                                                                    lang_id='.$_LANGID.'
                                                         ORDER BY    name ASC
                                                     ');
                 unset($arrCategoryLang);
@@ -535,7 +535,7 @@ class galleryManager extends GalleryLibrary
                                                                             value
                                                                 FROM        '.DBPREFIX.'module_gallery_language
                                                                 WHERE        gallery_id='.$objResult->fields['id'].' AND
-                                                                            lang_id='.$objFWUser->objUser->getFrontendLanguage().'
+                                                                            lang_id='.$_LANGID.'
                                                                 ORDER BY    name ASC
                                                             ');
                         unset($arrCategoryLang);
@@ -674,8 +674,11 @@ class galleryManager extends GalleryLibrary
      */
     private function parseCategoryDropdown($selected=-1, $disabled=false, $name="showCategories", $parent_id=0, $level=0)
     {
+        global $_LANGID;
+        
     	$objFWuser = FWUser::getFWUserObject();
-        $categories = $this->sql->getCategoriesArray($objFWuser->objUser->getFrontendLanguage(), $parent_id);
+        //$categories = $this->sql->getCategoriesArray($objFWuser->objUser->getFrontendLanguage(), $parent_id);
+        $categories = $this->sql->getCategoriesArray($_LANGID, $parent_id);
 
         if ($disabled) {
             $this->_objTpl->setVariable("CAT_DROPDOWN_DISABLED", "disabled=\"disabled\"");
