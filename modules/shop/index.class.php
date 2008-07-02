@@ -1902,6 +1902,16 @@ class Shop extends ShopLibrary
     function getJavascriptCode()
     {
         global $_ARRAYLANG, $_CONFIGURATION;
+        if(!empty($_GET[session_name()])){
+            session_write_close();
+            session_id($_GET[session_name()]);
+            session_start();
+        }else{
+            if(!isset($_SESSION['shop']['cart'])){
+                session_start();
+            }
+        }
+
         $javascriptCode =
 "<script language=\"JavaScript\" type=\"text/javascript\">
 // <![CDATA[
@@ -2107,7 +2117,7 @@ function sendReq(data, type)
 
     if (type == 1) {
         // add product
-        objHttp.open('get', 'index.php?section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct'+data, true);
+        objHttp.open('get', 'index.php?section=shop".MODULE_INDEX."&".htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET)."=".htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET)."&cmd=cart&remoteJs=addProduct'+data, true);
         objHttp.onreadystatechange = shopUpdateCart;
     } else {//if ..
         //more requests here...

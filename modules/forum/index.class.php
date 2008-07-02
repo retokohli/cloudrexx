@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Forum
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -44,7 +43,6 @@ class Forum extends ForumLibrary {
         $this->_objTpl = &new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($strPageContent);
-
     }
 
 
@@ -1665,6 +1663,7 @@ class Forum extends ForumLibrary {
                 break;
             case 'insertText':
                 $thanks = $_ARRAYLANG['TXT_FORUM_RATING_THANKS'];
+                $allowedExtensions = str_replace(',', ', ', $this->_arrSettings['allowed_extensions']);
                 $strJavaScript = <<< EOJS
 <script type="text/javascript" language="JavaScript">
 //<![CDATA[
@@ -1694,6 +1693,22 @@ class Forum extends ForumLibrary {
 
     var hideToolTip = function(id){
         document.getElementById(id).parentNode.removeChild(document.getElementById(id));
+    }
+
+    var showAllowedExtensions = function(){
+        try{
+            forumAllowedExtPopUp = window.open('about:blank', 'forumAllowedExtPopUp', 'menubar=1,directories=0,toolbar=1,resizeable=1,location=1,status=1,scrollbars=1,width=600,height=200');
+            //IE
+            forumAllowedExtPopUp.document.body.innerHTML = '<div>$allowedExtensions</div>';
+            //others
+            forumAllowedExtPopUp.onload = function(){ //others
+                try{
+                    forumAllowedExtPopUp.document.body.appendChild(document.createElement('div'));
+                    forumAllowedExtPopUp.document.body.childNodes[0].innerHTML = '$allowedExtensions';
+                }catch(e){}
+            }
+        //fallback to alert if all else fails
+        }catch(e){ alert('$allowedExtensions'); }
     }
 
 //]]>
