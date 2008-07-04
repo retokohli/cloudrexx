@@ -89,10 +89,10 @@ class AccessLib
         global $_CORELANG;
 
         $this->arrAttributeTypeTemplates = array(
-            'textarea'        => '<textarea name="[NAME]" rows="10" cols="30" style="width:300px; height:100px;">[VALUE]</textarea>',
-            'text'            => '<input type="text" name="[NAME]" value="[VALUE]" style="width:300px;" />',
-            'password'        => '<input type="password" name="[NAME]" value="" style="width:300px;" />',
-            'menu'            => '<select name="[NAME]" style="width:300px;">[VALUE]</select>',
+            'textarea'        => '<textarea name="[NAME]" rows="1" cols="1">[VALUE]</textarea>',
+            'text'            => '<input type="text" name="[NAME]" value="[VALUE]" />',
+            'password'        => '<input type="password" name="[NAME]" value="" autocomplete="off" />',
+            'menu'            => '<select name="[NAME]">[VALUE]</select>',
             'menu_option'     => '<option value="[VALUE]"[SELECTED]>[VALUE_TXT]</option>',
             'url'             => '<input type="hidden" name="[NAME]" value="[VALUE]" /><em>[VALUE_TXT]</em> <a href="javascript:void(0);" onclick="elLink=null;elDiv=null;elInput=null;pntEl=this.previousSibling;while((typeof(elInput)==\'undefined\'||typeof(elDiv)!=\'undefined\')&& pntEl!=null){switch(pntEl.nodeName){case\'INPUT\':elInput=pntEl;break;case\'EM\':elDiv=pntEl;if(elDiv.getElementsByTagName(\'a\').length>0){elLink=elDiv.getElementsByTagName(\'a\')[0];}break;}pntEl=pntEl.previousSibling;}accessSetWebsite(elInput,elDiv,elLink)" title="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'"><img align="middle" src="'.ASCMS_PATH_OFFSET.'/images/modules/access/edit.gif" width="16" height="16" border="0" alt="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'" /></a>',
             'date'            => '<input type="text" name="[NAME]" onfocus="Calendar.setup({inputField:this,ifFormat:\''.preg_replace('#([a-z])#i', '%$1', str_replace(array('j', 'n'), array('e', 'm'), ASCMS_DATE_SHORT_FORMAT)).'\',range:[1900,2100]})" value="[VALUE]" readonly="readonly" /><a href="javascript:void(0)" onclick="this.previousSibling.value = \'\'" title="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'"><img src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif" width="17" height="17" border="0" alt="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'" style="vertical-align:middle;" /></a>'
@@ -527,8 +527,7 @@ class AccessLib
                 break;
 
             case 'menu':
-// TODO: This should most probably be a comparison.
-                if ($edit = true) {
+                if ($edit == true) {
                     $childrenCode = array();
                     foreach ($this->arrAccountAttributes[$attributeId]['children'] as $childAttributeId => $childAttributeName) {
                         $childrenCode[] = $this->getMenuOptionAttributeCode($childAttributeId, $value, $childAttributeName);
