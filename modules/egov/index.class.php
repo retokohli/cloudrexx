@@ -109,13 +109,13 @@ class eGov extends eGovLibrary
         $quantity = intval($_REQUEST['contactFormField_Quantity']);
         $product_amount = eGovLibrary::GetProduktValue('product_price', $product_id);
         if (eGovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes') {
+            if ($quantity <= 0) {
+                return 'alert("'.$_ARRAYLANG['TXT_EGOV_SPECIFY_COUNT'].'");history.go(-1);';
+            }
             $FormValue = eGovLibrary::GetSettings('set_calendar_date_label').'::'.strip_tags(contrexx_addslashes($_REQUEST['contactFormField_1000'])).';;'.$FormValue;
             $FormValue = $_ARRAYLANG['TXT_EGOV_QUANTITY'].'::'.$quantity.';;'.$FormValue;
         }
 
-        if ($quantity <= 0) {
-            return 'alert("'.$_ARRAYLANG['TXT_EGOV_SPECIFY_COUNT'].'");history.go(-1);';
-        }
         $objDatabase->Execute("
             INSERT INTO ".DBPREFIX."module_egov_orders (
                 order_date, order_ip, order_product, order_values
