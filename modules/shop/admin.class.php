@@ -4941,7 +4941,9 @@ class shopmanager extends ShopLibrary {
                         // Determine customer language
                         $query = "
                             SELECT customer_lang
-                              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
+                              FROM ".DBPREFIX."module_shop_customers
+                             INNER JOIN ".DBPREFIX."module_shop_orders
+                             USING (customerid)
                              WHERE customerid=$customerid
                         ";
                         $objResult = $objDatabase->Execute($query);
