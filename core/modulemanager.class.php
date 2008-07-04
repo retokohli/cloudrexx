@@ -265,7 +265,7 @@ class modulemanager
 						    {
 							    $objResult2 = $objDb2->Execute("SELECT catid FROM ".DBPREFIX."content_navigation WHERE module=".$id." AND lang=".$this->langId );
 							    if ($objResult2 !== false && !$objResult2->EOF) {
-							        $objDb2->Execute("DELETE FROM ".DBPREFIX."content WHERE id='".$$objResult2->fields['catid']."'");
+                                    $objDb2->Execute("DELETE FROM ".DBPREFIX."content WHERE id='".$objResult2->fields['catid']."'");
 							    }
 							    $objDb2->Execute("DELETE FROM ".DBPREFIX."content_navigation WHERE module=".$id." AND lang=".$this->langId );
 						    }
