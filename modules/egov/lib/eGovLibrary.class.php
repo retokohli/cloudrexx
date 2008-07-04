@@ -93,7 +93,7 @@ class eGovLibrary {
      *                                on success, the empty string otherwise
      * @static
      */
-    static function GetOrderValue($FieldName='', $order_id)
+    static function GetOrderValue($FieldName, $order_id)
     {
         global $objDatabase;
 
