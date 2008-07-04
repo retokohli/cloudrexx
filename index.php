@@ -1683,7 +1683,7 @@ if ($_CONFIG['frontendEditingStatus'] == 'on') {
 
 $objTemplate->setVariable(array(
     'CHARSET'              => $objInit->getFrontendLangCharset(),
-    'TITLE'                 => '<span id="fe_PreviewTitle">'.$page_title.'</span>',
+    'TITLE'                 => $page_title,
     'METATITLE'            => $page_metatitle,
     'NAVTITLE'             => $page_catname,
     'GLOBAL_TITLE'         => $_CONFIG['coreGlobalPageTitle'],
@@ -1691,7 +1691,7 @@ $objTemplate->setVariable(array(
     'METAKEYS'             => $page_keywords,
     'METADESC'             => $page_desc,
     'METAROBOTS'            => $page_robots,
-    'CONTENT_TITLE'        => $page_title,
+    'CONTENT_TITLE'        => '<span id="fe_PreviewTitle">'.$page_title.'</span>',
     'CSS_NAME'              => $pageCssName,
     'PRINT_URL'             => $objInit->getPrintUri(),
     'PDF_URL'             => $objInit->getPDFUri(),
