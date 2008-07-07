@@ -1,64 +1,5 @@
 <!-- START module_directory_entry_move.html -->
 <script language="JavaScript">
-function add(from,dest,add,remove) 
-{
-    if ( from.selectedIndex < 0)
-	{
-		if (from.options[0] != null)
-			from.options[0].selected = true;
-		from.focus();
-		return false;
-	}
-	else
-	{	
-		for (var i=0; i<from.length; i++) 
-		{	    
-			if (from.options[i].selected) 
-			{
-		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);				
-   			}			
-		}
-	    for (var i=from.length-1; i>=0; i--) 
-		{	    
-			if (from.options[i].selected) 
-			{
-		       from.options[i] = null;				
-   			}			
-		}		
-	}
-    disableButtons(from,dest,add,remove);
-}	
-
-
-function remove(from,dest,add,remove) 
-{
-	if ( dest.selectedIndex < 0)
-	{
-		if (dest.options[0] != null)
-			dest.options[0].selected = true;
-		dest.focus();
-		return false;
-	}
-	else
-	{	
-		for (var i=0; i<dest.options.length; i++) 
-		{	    
-			if (dest.options[i].selected) 
-			{
-		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);				
-   			}			
-		}
-	    for (var i=dest.options.length-1; i>=0; i--) 
-		{	    
-			if (dest.options[i].selected) 
-			{
-		       dest.options[i] = null;				
-   			}			
-		}		
-	}	
-	disableButtons(from,dest,add,remove);
-}
-
 function disableButtons(from,dest,add,remove)
 {
 	if (from.options.length > 0 )
@@ -110,9 +51,9 @@ function deselectAll(CONTROL)
 		    </td>
 		    <td width="50"> 
 		      <div align="center"> 
-		        <input type="button" value=" &gt;&gt; " name="addCat" onclick="add(document.moveForm.elements['notSelectedCat[]'],document.moveForm.elements['selectedCat[]'],addCat,removeCat);" />
+		        <input type="button" value=" &gt;&gt; " name="addCat" onclick="addCategoryLevel(document.moveForm.elements['notSelectedCat[]'],document.moveForm.elements['selectedCat[]'],addCat,removeCat);" />
 		        <br />
-		        <input type="button" value=" &lt;&lt; " name="removeCat" onclick="remove(document.moveForm.elements['notSelectedCat[]'],document.moveForm.elements['selectedCat[]'],addCat,removeCat);" />
+		        <input type="button" value=" &lt;&lt; " name="removeCat" onclick="removeCategoryLevel(document.moveForm.elements['notSelectedCat[]'],document.moveForm.elements['selectedCat[]'],addCat,removeCat);" />
 		        <br /><br />
 		      </div>
 		    </td>
@@ -139,9 +80,9 @@ function deselectAll(CONTROL)
 		    </td>
 		    <td width="50"> 
 		      <div align="center"> 
-		        <input type="button" value=" &gt;&gt; " name="addLevel" onclick="add(document.moveForm.elements['notSelectedLevel[]'],document.moveForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
+		        <input type="button" value=" &gt;&gt; " name="addLevel" onclick="addCategoryLevel(document.moveForm.elements['notSelectedLevel[]'],document.moveForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
 		        <br />
-		        <input type="button" value=" &lt;&lt; " name="removeLevel" onclick="remove(document.moveForm.elements['notSelectedLevel[]'],document.moveForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
+		        <input type="button" value=" &lt;&lt; " name="removeLevel" onclick="removeCategoryLevel(document.moveForm.elements['notSelectedLevel[]'],document.moveForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
 		        <br /><br />
 		      </div>
 		    </td>
