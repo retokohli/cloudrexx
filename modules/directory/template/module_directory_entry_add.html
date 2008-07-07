@@ -19,9 +19,9 @@
 		    </td>
 		    <td width="50">
 		      <div align="center">
-		        <input type="button" value=" &gt;&gt; " name="addCat" onclick="add(document.addForm.elements['notSelectedCat[]'],document.addForm.elements['selectedCat[]'],addCat,removeCat);" />
+		        <input type="button" value=" &gt;&gt; " name="addCat" onclick="addCategoryLevel(document.addForm.elements['notSelectedCat[]'],document.addForm.elements['selectedCat[]'],addCat,removeCat);" />
 		        <br />
-		        <input type="button" value=" &lt;&lt; " name="removeCat" onclick="remove(document.addForm.elements['notSelectedCat[]'],document.addForm.elements['selectedCat[]'],addCat,removeCat);" />
+		        <input type="button" value=" &lt;&lt; " name="removeCat" onclick="removeCategoryLevel(document.addForm.elements['notSelectedCat[]'],document.addForm.elements['selectedCat[]'],addCat,removeCat);" />
 		        <br /><br />
 		      </div>
 		    </td>
@@ -48,9 +48,9 @@
 		    </td>
 		    <td width="50">
 		      <div align="center">
-		        <input type="button" value=" &gt;&gt; " name="addLevel" onclick="add(document.addForm.elements['notSelectedLevel[]'],document.addForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
+		        <input type="button" value=" &gt;&gt; " name="addLevel" onclick="addCategoryLevel(document.addForm.elements['notSelectedLevel[]'],document.addForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
 		        <br />
-		        <input type="button" value=" &lt;&lt; " name="removeLevel" onclick="remove(document.addForm.elements['notSelectedLevel[]'],document.addForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
+		        <input type="button" value=" &lt;&lt; " name="removeLevel" onclick="removeCategoryLevel(document.addForm.elements['notSelectedLevel[]'],document.addForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
 		        <br /><br />
 		      </div>
 		    </td>
