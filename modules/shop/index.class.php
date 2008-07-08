@@ -1677,15 +1677,17 @@ class Shop extends ShopLibrary
         // $this->objTemplate->setVariable(getShopNews());
         ////////////////////////////////////////////
 
-        $q = "SELECT *
-                FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products AS p
-                INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_categories AS c USING (catid)
-               WHERE p.is_special_offer=1
-                 AND p.status=1
-                 AND c.catstatus=1
-            ORDER BY p.sort_order";
-
-        $objResult = $objDatabase->Execute($q);
+        $query = "
+            SELECT p.id, p.title, p.picture,
+                   p.normalprice, p.resellerprice, p.discountprice
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products AS p
+             INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_categories AS c USING (catid)
+             WHERE p.is_special_offer=1
+               AND p.status=1
+               AND c.catstatus=1
+             ORDER BY p.sort_order
+        ";
+        $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             $this->errorHandling();
             return false;
@@ -1694,7 +1696,6 @@ class Shop extends ShopLibrary
         $i = 1;
         while (!$objResult->EOF) {
             $arrImages = $this->_getShopImagesFromBase64String($objResult->fields['picture']);
-
             // no product picture available
             if (!$arrImages
              || $arrImages[1]['img'] == ''
