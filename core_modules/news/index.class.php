@@ -278,8 +278,21 @@ class news extends newsLibrary {
         /***start paging ****/
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
+        if (isset($_REQUEST['category'])) {
+			$category = "&amp;category=".$selected;
+		}
+
+		if (isset($_REQUEST['cmd'])) {
+			if ($_REQUEST['cmd'] == $selected) {
+        		$category = "&amp;cmd=".$_REQUEST['cmd'];
+			}else {
+				$category .= "&amp;cmd=".$_REQUEST['cmd'];
+			}
+		}
+
+
         if ($count>intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pos, "&amp;section=news&amp;category=".$selected, $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
+            $paging = getPaging($count, $pos, "&amp;section=news".$category, $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
         }
         $this->_objTpl->setVariable("NEWS_PAGING", $paging);
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
@@ -347,7 +360,7 @@ class news extends newsLibrary {
 
         if ($group_id > 0) {
             $objFWUser = FWUser::getFWUserObject();
-            
+
             if ($objGroup = $objFWUser->objGroup->getGroup($group_id)) {
                 $users_in_group = $objGroup->getAssociatedUserIds();
             }
