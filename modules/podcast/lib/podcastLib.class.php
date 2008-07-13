@@ -462,6 +462,17 @@ class podcastLib
 	{
 		global $objDatabase;
 
+        require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/File.class.php';
+
+        $query = "SELECT `thumbnail`
+		          FROM `".DBPREFIX."module_podcast_medium`
+		          WHERE `id` = ".$id;
+		if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
+		    $thumbNail = $objRS->fields['thumbnail'];
+		    $objFile = &new File();
+		    $objFile->delFile(ASCMS_DOCUMENT_ROOT, ASCMS_PATH_OFFSET, $thumbNail);
+		}
+
 		if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_podcast_rel_medium_category WHERE medium_id=".$id) !== false) {
 			if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_podcast_medium WHERE id=".$id) !== false) {
 				return true;
