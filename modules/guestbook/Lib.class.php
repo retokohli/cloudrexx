@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Guestbook
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -27,7 +26,7 @@ class GuestbookLibrary
 	/**
     * Gets the guestbook settings
     *
-    * @global    object     $objDatabase
+    * @global    ADONewConnection
     */
     function getSettings()
     {

@@ -19,88 +19,88 @@
  */
 class statsLibrary
 {
-	var $totalVisitors = 0;
-	var $totalRequests = 0;
+    var $totalVisitors = 0;
+    var $totalRequests = 0;
 
-	var $arrBrowsers = array();
-	var $browserSum = 0;
+    var $arrBrowsers = array();
+    var $browserSum = 0;
 
-	var $arrSupportJavaScript = array();
-	var $supportJavaScriptSum = 0;
+    var $arrSupportJavaScript = array();
+    var $supportJavaScriptSum = 0;
 
-	var $arrOperatingSystems = array();
-	var $operatingSystemsSum = 0;
+    var $arrOperatingSystems = array();
+    var $operatingSystemsSum = 0;
 
-	var $arrScreenResolutions = array();
-	var $screenResolutionSum = 0;
+    var $arrScreenResolutions = array();
+    var $screenResolutionSum = 0;
 
-	var $arrColourDepths = array();
-	var $colourDepthSum = 0;
+    var $arrColourDepths = array();
+    var $colourDepthSum = 0;
 
-	var $arrMostViewedPages = array();
-	var $mostViewedPagesSum = 0;
+    var $arrMostViewedPages = array();
+    var $mostViewedPagesSum = 0;
 
-	var $arrIndexedPages = array();
-	var $arrSpiders = array();
+    var $arrIndexedPages = array();
+    var $arrSpiders = array();
 
-	var $arrVisitorsDetails = array();
+    var $arrVisitorsDetails = array();
 
-	var $arrVisitors = array();
-	var $arrRequests = array();
+    var $arrVisitors = array();
+    var $arrRequests = array();
 
-	var $arrLastReferer = array();
-	var $arrTopReferer = array();
+    var $arrLastReferer = array();
+    var $arrTopReferer = array();
 
-	var $arrHostnames = array();
-	var $hostnamesSum = 0;
-	var $arrCountries = array();
-	var $countriesSum = 0;
-	var $arrCountryNames = array();
+    var $arrHostnames = array();
+    var $hostnamesSum = 0;
+    var $arrCountries = array();
+    var $countriesSum = 0;
+    var $arrCountryNames = array();
 
-	var $arrConfig = array();
+    var $arrConfig = array();
 
-	var $arrSearchTerms = array();
+    var $arrSearchTerms = array();
 
-	var $pagingLimit = "";
-	var $pagingLimitVisitorDetails = "";
+    var $pagingLimit = "";
+    var $pagingLimitVisitorDetails = "";
 
-	var $spiderAgent = false;
+    var $spiderAgent = false;
 
     var $arrClient = array();
     var $arrProxy = array();
     var $md5Id = 0;
     var $currentTime = 0;
 
-	function statsLibrary() {
-		$this->__construct();
-	}
+    function statsLibrary() {
+        $this->__construct();
+    }
 
-	function __construct() {
-		$this->_initConfiguration();
-	}
+    function __construct() {
+        $this->_initConfiguration();
+    }
 
 
-	/**
+    /**
     * Initialize configuration
     *
     * Initialize the configuration for the counter and statistics
     *
-    * @global	object	$ojbDatabase
+    * @global    ADONewConnection
     */
     function _initConfiguration() {
-    	global $objDatabase;
+        global $objDatabase;
 
-    	$query = "SELECT name, value, `status` FROM ".DBPREFIX."stats_config";
-    	if (($objResult = $objDatabase->Execute($query))) {
-    		while (!$objResult->EOF) {
-    			$this->arrConfig[$objResult->fields['name']] = array('value' => $objResult->fields['value'], 'status' => $objResult->fields['status']);
-    			$objResult->MoveNext();
-    		}
-    	}
+        $query = "SELECT name, value, `status` FROM ".DBPREFIX."stats_config";
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $this->arrConfig[$objResult->fields['name']] = array('value' => $objResult->fields['value'], 'status' => $objResult->fields['status']);
+                $objResult->MoveNext();
+            }
+        }
 
-   		$this->pagingLimit = "LIMIT ".$this->arrConfig['paging_limit']['value']."";
-   		$this->pagingLimitVisitorDetails = "LIMIT ".$this->arrConfig['paging_limit_visitor_details']['value']."";
-   		$this->currentTime = time();
+        $this->pagingLimit = "LIMIT ".$this->arrConfig['paging_limit']['value']."";
+        $this->pagingLimitVisitorDetails = "LIMIT ".$this->arrConfig['paging_limit_visitor_details']['value']."";
+        $this->currentTime = time();
     }
 
 
@@ -109,45 +109,45 @@ class statsLibrary
     *
     * Creates the tag to call the counter
     *
-    * @access	public
-    * @global	integer	$pageId
-    * @return	string	$counterTag	The counter tag
+    * @access   public
+    * @global   integer $pageId
+    * @return   string  $counterTag The counter tag
     */
     function getCounterTag() {
-    	global $pageId;
+        global $pageId;
 
-    	$searchTerm = "";
-    	$counterTag = "";
+        $searchTerm = "";
+        $counterTag = "";
 
-    	if ($this->arrConfig['make_statistics']['status']) {
-			if (isset($_REQUEST['term']) && !empty($_REQUEST['term']) && $_REQUEST['section'] == "search") {
-				$searchTerm = "&amp;searchTerm=".urlencode($_REQUEST['term'])."' + '";
-			}
+        if ($this->arrConfig['make_statistics']['status']) {
+            if (isset($_REQUEST['term']) && !empty($_REQUEST['term']) && $_REQUEST['section'] == "search") {
+                $searchTerm = "&amp;searchTerm=".urlencode($_REQUEST['term'])."' + '";
+            }
 
-			if (isset($_SERVER['HTTP_REFERER'])) {
-				$referer = urlencode($_SERVER['HTTP_REFERER']);
-			} else {
-				$referer = "";
-			}
+            if (isset($_SERVER['HTTP_REFERER'])) {
+                $referer = urlencode($_SERVER['HTTP_REFERER']);
+            } else {
+                $referer = "";
+            }
 
-			$counterTag = "<!-- Counter  START -->\n";
-			$counterTag .= "<script type=\"text/javascript\">\n";
-			$counterTag .= "<!--\n";
-			$counterTag .= "referer = (document.referrer) ? escape(document.referrer) : \"\";\n";
-			$counterTag .= "v = navigator.appName;\n";
-			$counterTag .= "c=0;\n";
-			$counterTag .= "if (v != \"Netscape\")\n";
-			$counterTag .= "	c = screen.colorDepth;\n";
-			$counterTag .= "else\n";
-			$counterTag .= "    c = screen.pixelDepth;\n";
-			$url = '\'<script language="JavaScript" type="text/javascript" src="'.ASCMS_CORE_MODULE_WEB_PATH.'/stats/counter.php?mode=script&referer=\'+referer+\'&pageId=\' + '.$pageId.' + \'&screen=\' + screen.width + \'x\' + screen.height  +  \'&color_depth=\' + c + \''.$searchTerm.'" ><\/script>\'';
-			$counterTag .= "document.write(".$url.");\n";
-			$counterTag .= "// -->\n";
-			$counterTag .= "</script>\n";
-			$counterTag .= "<noscript><div style=\"display:none;\"><img src=\"".ASCMS_CORE_MODULE_WEB_PATH."/stats/counter.php?mode=noscript&amp;referer=".$referer."&amp;pageId=".$pageId.$searchTerm."\" alt=\" \" width=\"1\" height=\"1\" /></div></noscript>\n";
-			$counterTag .= "<!-- Counter Code END -->\n";
-    	}
-    	return $counterTag;
+            $counterTag = "<!-- Counter  START -->\n";
+            $counterTag .= "<script type=\"text/javascript\">\n";
+            $counterTag .= "<!--\n";
+            $counterTag .= "referer = (document.referrer) ? escape(document.referrer) : \"\";\n";
+            $counterTag .= "v = navigator.appName;\n";
+            $counterTag .= "c=0;\n";
+            $counterTag .= "if (v != \"Netscape\")\n";
+            $counterTag .= "    c = screen.colorDepth;\n";
+            $counterTag .= "else\n";
+            $counterTag .= "    c = screen.pixelDepth;\n";
+            $url = '\'<script language="JavaScript" type="text/javascript" src="'.ASCMS_CORE_MODULE_WEB_PATH.'/stats/counter.php?mode=script&referer=\'+referer+\'&pageId=\' + '.$pageId.' + \'&screen=\' + screen.width + \'x\' + screen.height  +  \'&color_depth=\' + c + \''.$searchTerm.'" ><\/script>\'';
+            $counterTag .= "document.write(".$url.");\n";
+            $counterTag .= "// -->\n";
+            $counterTag .= "</script>\n";
+            $counterTag .= "<noscript><div style=\"display:none;\"><img src=\"".ASCMS_CORE_MODULE_WEB_PATH."/stats/counter.php?mode=noscript&amp;referer=".$referer."&amp;pageId=".$pageId.$searchTerm."\" alt=\" \" width=\"1\" height=\"1\" /></div></noscript>\n";
+            $counterTag .= "<!-- Counter Code END -->\n";
+        }
+        return $counterTag;
     }
 
     /**
@@ -156,46 +156,47 @@ class statsLibrary
     * Check if the user agent is a spider
     */
     function checkForSpider() {
-    	if ($this->arrConfig['count_spiders']['status']) {
-	    	require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/spiders.inc.php';
-	    	$useragent =  htmlspecialchars($_SERVER['HTTP_USER_AGENT'], ENT_QUOTES, CONTREXX_CHARSET);
-	    	 $spiderAgent = false;
+        if ($this->arrConfig['count_spiders']['status']) {
+            require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/spiders.inc.php';
+            $useragent =  htmlspecialchars($_SERVER['HTTP_USER_AGENT'], ENT_QUOTES, CONTREXX_CHARSET);
+             $spiderAgent = false;
 
-	        foreach ($arrRobots as $spider) {
-	            $spiderName = trim($spider);
-	            if (preg_match("=".$spiderName."=",$useragent)) {
-	                $spiderAgent = true;
-	                break;
-	            }
-	        }
+            foreach ($arrRobots as $spider) {
+                $spiderName = trim($spider);
+                if (preg_match("=".$spiderName."=",$useragent)) {
+                    $spiderAgent = true;
+                    break;
+                }
+            }
 
-	        if ($spiderAgent) {
-	        	$this->_countSpider($useragent);
-	        }
-    	}
+            if ($spiderAgent) {
+                $this->_countSpider($useragent);
+            }
+        }
     }
 
-	/**
+    /**
     * count spider visits
     *
     * count every spider visit
     *
-    * @global    object   $db
-    * @retrun    boolean  result
+    * @global   ADONewConnection
+    * @global   integer
+    * @return   boolean  result
     */
     function _countSpider($useragent)
     {
         global $objDatabase, $pageId;
 
-    	if (isset($_SERVER['HTTP_VIA']) && $_SERVER['HTTP_VIA']) { // spider does use a proxy
+        if (isset($_SERVER['HTTP_VIA']) && $_SERVER['HTTP_VIA']) { // spider does use a proxy
             if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            	$spiderIp = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                $spiderIp = $_SERVER['HTTP_X_FORWARDED_FOR'];
             } else {
-            	if (isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP'])) {
-            		$spiderIp = $_SERVER['HTTP_CLIENT_IP'];
-            	} else {
-            		$spiderIp = $_SERVER['REMOTE_ADDR'];
-            	}
+                if (isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP'])) {
+                    $spiderIp = $_SERVER['HTTP_CLIENT_IP'];
+                } else {
+                    $spiderIp = $_SERVER['REMOTE_ADDR'];
+                }
             }
         } else { // spider does not use proxy
             $spiderIp = $_SERVER['REMOTE_ADDR'];
@@ -209,54 +210,54 @@ class statsLibrary
         $requestedUrl = $this->_getRequestedUrl();
 
         // update statistics of the indexed page by spiders
-		$query = "UPDATE `".DBPREFIX."stats_spiders`
-				 Set `last_indexed` = '".time()."',
-					 `count` = `count` + 1,
-					 `spider_useragent` = '".$useragent."',
-					 `spider_ip` = '".$spiderIp."',
-					 `spider_host` = '".$spiderHost."'
-				   WHERE `page` = '".$requestedUrl."'";
-		$objDatabase->Execute($query);
-		if ($objDatabase->Affected_Rows() == 0) {
-    		$query = "INSERT INTO `".DBPREFIX."stats_spiders` (
-    					`last_indexed`,
-    					`page`,
-    					`pageId`,
-						`count`,
-    					`spider_useragent`,
-    					`spider_ip`,
-    					`spider_host`
-    					) VALUES (
-    					'".time()."',
-    					'".$requestedUrl."',
-    					'".$pageId."',
-						1,
-    					'".$useragent."',
-    					'".$spiderIp."',
-    					'".$spiderHost."
-    					')";
-    		$objDatabase->Execute($query);
+        $query = "UPDATE `".DBPREFIX."stats_spiders`
+                 Set `last_indexed` = '".time()."',
+                     `count` = `count` + 1,
+                     `spider_useragent` = '".$useragent."',
+                     `spider_ip` = '".$spiderIp."',
+                     `spider_host` = '".$spiderHost."'
+                   WHERE `page` = '".$requestedUrl."'";
+        $objDatabase->Execute($query);
+        if ($objDatabase->Affected_Rows() == 0) {
+            $query = "INSERT INTO `".DBPREFIX."stats_spiders` (
+                        `last_indexed`,
+                        `page`,
+                        `pageId`,
+                        `count`,
+                        `spider_useragent`,
+                        `spider_ip`,
+                        `spider_host`
+                        ) VALUES (
+                        '".time()."',
+                        '".$requestedUrl."',
+                        '".$pageId."',
+                        1,
+                        '".$useragent."',
+                        '".$spiderIp."',
+                        '".$spiderHost."
+                        ')";
+            $objDatabase->Execute($query);
         }
 
         // update summery statistics of the spiders
-		$query = "UPDATE `".DBPREFIX."stats_spiders_summary` SET `count` = `count` + 1, `timestamp` = '".time()."' WHERE `name` = '".substr($useragent,0,255)."'";
-		$objDatabase->Execute($query);
+        $query = "UPDATE `".DBPREFIX."stats_spiders_summary` SET `count` = `count` + 1, `timestamp` = '".time()."' WHERE `name` = '".substr($useragent,0,255)."'";
+        $objDatabase->Execute($query);
 
-		if ($objDatabase->Affected_Rows() == 0) {
-       		$query = "INSERT INTO `".DBPREFIX."stats_spiders_summary` (`name`, `timestamp`, `count`) VALUES ('".substr($useragent,0,255)."', '".time()."', 1)";
-        	$objDatabase->Execute($query);
+        if ($objDatabase->Affected_Rows() == 0) {
+            $query = "INSERT INTO `".DBPREFIX."stats_spiders_summary` (`name`, `timestamp`, `count`) VALUES ('".substr($useragent,0,255)."', '".time()."', 1)";
+            $objDatabase->Execute($query);
         }
     }
 
-	/**
+    /**
     * Get requested page
     *
     * Get the requested page from the $_GET vars. If a session has started, this var will be blocked
     * and not in the uri
     *
-	*/
+    */
     function _getRequestedUrl() {
-    	require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/banned.inc.php';
+        require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/banned.inc.php';
 
         $uriString="";
 
@@ -267,425 +268,422 @@ class statsLibrary
         foreach ($arrUriGets AS $elem) {
             //check if Session-ID is traced by url (cookies are disabled)
             if (!preg_match("/PHPSESSID/",$elem)) {
-            	if ($elem != "") {
-                	$uriString .="&".$elem;
-            	}
+                if ($elem != "") {
+                    $uriString .="&".$elem;
+                }
             }
         }
 
         if (count($arrBannedWords)>0) {
-			foreach ($arrBannedWords as $blockElem) {
-	            $blockElem = trim($blockElem);
-	            //some blocked words in get-Vars?
-	            if (preg_match("=".$blockElem."=",$uriString) && ($blockElem <>"")) {
-					$uriString = "";
-	            }
-			}
+            foreach ($arrBannedWords as $blockElem) {
+                $blockElem = trim($blockElem);
+                //some blocked words in get-Vars?
+                if (preg_match("=".$blockElem."=",$uriString) && ($blockElem <>"")) {
+                    $uriString = "";
+                }
+            }
         }
 
-		if ($uriString == "") { // only uninteresting vars in uri (faked?)
-			return "/index.php";
-		} else {
-		    return "/index.php?".mysql_escape_string(stripslashes(substr($uriString,1)));
-		}
+        if ($uriString == "") { // only uninteresting vars in uri (faked?)
+            return "/index.php";
+        } else {
+            return "/index.php?".mysql_escape_string(stripslashes(substr($uriString,1)));
+        }
     }
 
     /**
     * Remove outdated entries
     *
     * Remove outdated entries of the database
-    *
-    * @access	private
-    * @global	object	$objDatabase
+    * @global    ADONewConnection
     */
-	function _removeOutdatedEntries()
-	{
-		global $objDatabase;
+    function _removeOutdatedEntries()
+    {
+        global $objDatabase;
 
-		// remove outdated visitor entries
-		$query = "DELETE FROM ".DBPREFIX."stats_visitors WHERE `timestamp` < '".(mktime(0,0,0,date('m'),date('d'),date('Y'))-($this->arrConfig['online_timeout']['status'] ? $this->arrConfig['online_timeout']['value'] : 0))."'";
-		$objDatabase->Execute($query);
+        // remove outdated visitor entries
+        $query = "DELETE FROM ".DBPREFIX."stats_visitors WHERE `timestamp` < '".(mktime(0,0,0,date('m'),date('d'),date('Y'))-($this->arrConfig['online_timeout']['status'] ? $this->arrConfig['online_timeout']['value'] : 0))."'";
+        $objDatabase->Execute($query);
 
-		// remove outdated request entries
-		if ($this->arrConfig['remove_requests']['status']) {
-			$query = "DELETE FROM ".DBPREFIX."stats_requests WHERE `timestamp` < '".$this->arrConfig['remove_requests']['value']."'";
-			$objDatabase->Execute($query);
-		}
+        // remove outdated request entries
+        if ($this->arrConfig['remove_requests']['status']) {
+            $query = "DELETE FROM ".DBPREFIX."stats_requests WHERE `timestamp` < '".$this->arrConfig['remove_requests']['value']."'";
+            $objDatabase->Execute($query);
+        }
 
-		/*// delete outdated visitor summary entries
-    	$query = "DELETE FROM `".DBPREFIX."stats_visitors_summary`
-				   WHERE (`type` = 'hour' AND `timestamp` < '".mktime(0,0,0,date('m'),date('d'),date('Y'))."')
-					  OR (`type` = 'day' AND `timestamp` < '".mktime(0,0,0,date('m'),1,date('Y'))."')
-					  OR (`type` = 'month' AND `timestamp` < '".mktime(0,0,0,1,1,date('Y'))."')";
-    	$objDatabase->Execute($query);
+        /*// delete outdated visitor summary entries
+        $query = "DELETE FROM `".DBPREFIX."stats_visitors_summary`
+                   WHERE (`type` = 'hour' AND `timestamp` < '".mktime(0,0,0,date('m'),date('d'),date('Y'))."')
+                      OR (`type` = 'day' AND `timestamp` < '".mktime(0,0,0,date('m'),1,date('Y'))."')
+                      OR (`type` = 'month' AND `timestamp` < '".mktime(0,0,0,1,1,date('Y'))."')";
+        $objDatabase->Execute($query);
 
-    	// delete outdated requests summary entries
-    	$query = "DELETE FROM `".DBPREFIX."stats_requests_summary`
-				   WHERE (`type` = 'hour' AND `timestamp` < '".mktime(0,0,0,date('m'),date('d'),date('Y'))."')
-					  OR (`type` = 'day' AND `timestamp` < '".mktime(0,0,0,date('m'),1,date('Y'))."')
-					  OR (`type` = 'month' AND `timestamp` < '".mktime(0,0,0,1,1,date('Y'))."')";
-    	$objDatabase->Execute($query);*/
-	}
+        // delete outdated requests summary entries
+        $query = "DELETE FROM `".DBPREFIX."stats_requests_summary`
+                   WHERE (`type` = 'hour' AND `timestamp` < '".mktime(0,0,0,date('m'),date('d'),date('Y'))."')
+                      OR (`type` = 'day' AND `timestamp` < '".mktime(0,0,0,date('m'),1,date('Y'))."')
+                      OR (`type` = 'month' AND `timestamp` < '".mktime(0,0,0,1,1,date('Y'))."')";
+        $objDatabase->Execute($query);*/
+    }
 
-	function _initVisitorDetails()
-	{
-		global $objDatabase;
+    function _initVisitorDetails()
+    {
+        global $objDatabase;
 
-		$query = "SELECT client_ip, client_host, client_useragent, proxy_ip, proxy_host, proxy_useragent, `timestamp`
-					FROM ".DBPREFIX."stats_visitors
-					ORDER BY `timestamp` DESC
-					".$this->pagingLimitVisitorDetails."";
-		if (($objResult = $objDatabase->Execute($query))) {
-			while (!$objResult->EOF) {
-				$arrVisitor = array(
-									'client_ip' => $objResult->fields['client_ip'],
-									'client_host'	=> $objResult->fields['client_host'],
-									'client_useragent'	=> $objResult->fields['client_useragent'],
-									'proxy_ip'			=> $objResult->fields['proxy_ip'],
-									'proxy_host'		=> $objResult->fields['proxy_host'],
-									'proxy_useragent'	=> $objResult->fields['proxy_useragent'],
-									'timestamp'			=> $objResult->fields['timestamp'],
-									'last_request'		=> date(ASCMS_DATE_FORMAT, $objResult->fields['timestamp'])
-									);
-				array_push($this->arrVisitorsDetails,$arrVisitor);
-				$objResult->MoveNext();
-			}
-			if (isset($this->arrVisitorsDetails[count($this->arrVisitorsDetails)-1])) {
-				$lastTimestamp = $this->arrVisitorsDetails[count($this->arrVisitorsDetails)-1]['timestamp'];
-			}
-		}
+        $query = "SELECT client_ip, client_host, client_useragent, proxy_ip, proxy_host, proxy_useragent, `timestamp`
+                    FROM ".DBPREFIX."stats_visitors
+                    ORDER BY `timestamp` DESC
+                    ".$this->pagingLimitVisitorDetails."";
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $arrVisitor = array(
+                                    'client_ip' => $objResult->fields['client_ip'],
+                                    'client_host'   => $objResult->fields['client_host'],
+                                    'client_useragent'  => $objResult->fields['client_useragent'],
+                                    'proxy_ip'          => $objResult->fields['proxy_ip'],
+                                    'proxy_host'        => $objResult->fields['proxy_host'],
+                                    'proxy_useragent'   => $objResult->fields['proxy_useragent'],
+                                    'timestamp'         => $objResult->fields['timestamp'],
+                                    'last_request'      => date(ASCMS_DATE_FORMAT, $objResult->fields['timestamp'])
+                                    );
+                array_push($this->arrVisitorsDetails,$arrVisitor);
+                $objResult->MoveNext();
+            }
+            if (isset($this->arrVisitorsDetails[count($this->arrVisitorsDetails)-1])) {
+                $lastTimestamp = $this->arrVisitorsDetails[count($this->arrVisitorsDetails)-1]['timestamp'];
+            }
+        }
 
-		if (isset($lastTimestamp)) {
-			// remove outdated visitor entries
-			$query = "DELETE FROM ".DBPREFIX."stats_visitors WHERE `timestamp` < '".$lastTimestamp."'";
-			$objDatabase->Execute($query);
-		}
-	}
+        if (isset($lastTimestamp)) {
+            // remove outdated visitor entries
+            $query = "DELETE FROM ".DBPREFIX."stats_visitors WHERE `timestamp` < '".$lastTimestamp."'";
+            $objDatabase->Execute($query);
+        }
+    }
 
-	/**
-	* Initialize today statistics
-	*
-	* Initialize the visitor and request statistics from today
-	*
-	* @access	private
-	* @global	object	$objDatabase
-	* @see	_removeOutdatedEntries()
-	*/
-	function _initStatisticsToday() {
-		global $objDatabase;
+    /**
+    * Initialize today statistics
+    *
+    * Initialize the visitor and request statistics from today
+    *
+    * @access    private
+    * @global    ADONewConnection
+    * @see    _removeOutdatedEntries()
+    */
+    function _initStatisticsToday() {
+        global $objDatabase;
 
-		// remove outdated visitor and request entries in the summary
-		$this->_removeOutdatedEntries();
+        // remove outdated visitor and request entries in the summary
+        $this->_removeOutdatedEntries();
 
-		// get statistics
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` , `count`
-			FROM `".DBPREFIX."stats_visitors_summary`
-			WHERE `type` = 'hour' AND `count` > 0 AND `timestamp` >= '".(time()-86400)."'";
-		$objResult = $objDatabase->Execute($query);
-		while (!$objResult->EOF) {
-			$this->arrRequests[$objResult->fields['hour']]['visitors'] = $objResult->fields['count'];
-			$this->totalVisitors += $objResult->fields['count'];
-			$objResult->MoveNext();
-		}
+        // get statistics
+        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` , `count`
+            FROM `".DBPREFIX."stats_visitors_summary`
+            WHERE `type` = 'hour' AND `count` > 0 AND `timestamp` >= '".(time()-86400)."'";
+        $objResult = $objDatabase->Execute($query);
+        while (!$objResult->EOF) {
+            $this->arrRequests[$objResult->fields['hour']]['visitors'] = $objResult->fields['count'];
+            $this->totalVisitors += $objResult->fields['count'];
+            $objResult->MoveNext();
+        }
 
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` , `count`
-			FROM `".DBPREFIX."stats_requests_summary`
-			WHERE `type` = 'hour' AND `count` > 0 AND `timestamp` >= '".(time()-86400)."'";
-		$objResult = $objDatabase->Execute($query);
-		while (!$objResult->EOF) {
-			$this->arrRequests[$objResult->fields['hour']]['requests'] = $objResult->fields['count'];
-			$this->totalRequests += $objResult->fields['count'];
-			$objResult->MoveNext();
-		}
+        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` , `count`
+            FROM `".DBPREFIX."stats_requests_summary`
+            WHERE `type` = 'hour' AND `count` > 0 AND `timestamp` >= '".(time()-86400)."'";
+        $objResult = $objDatabase->Execute($query);
+        while (!$objResult->EOF) {
+            $this->arrRequests[$objResult->fields['hour']]['requests'] = $objResult->fields['count'];
+            $this->totalRequests += $objResult->fields['count'];
+            $objResult->MoveNext();
+        }
 
-		$query = "SELECT client_ip, client_host, client_useragent, proxy_ip, proxy_host, proxy_useragent, FROM_UNIXTIME(`timestamp`,'%H:%i:%s') AS last_request
-					FROM ".DBPREFIX."stats_visitors WHERE `timestamp` > '".mktime(0,0,0,date('m'),date('d'),date('Y'))."'
-					ORDER BY `timestamp` DESC
-					".$this->pagingLimit."";
-		if (($objResult = $objDatabase->Execute($query))) {
-			while (!$objResult->EOF) {
-				$arrVisitor = array(
-									'client_ip' => $objResult->fields['client_ip'],
-									'client_host'	=> $objResult->fields['client_host'],
-									'client_useragent'	=> $objResult->fields['client_useragent'],
-									'proxy_ip'			=> $objResult->fields['proxy_ip'],
-									'proxy_host'		=> $objResult->fields['proxy_host'],
-									'proxy_useragent'	=> $objResult->fields['proxy_useragent'],
-									'last_request'		=> $objResult->fields['last_request']
-									);
-				array_push($this->arrVisitorsDetails,$arrVisitor);
-				$objResult->MoveNext();
-			}
-		}
-	}
+        $query = "SELECT client_ip, client_host, client_useragent, proxy_ip, proxy_host, proxy_useragent, FROM_UNIXTIME(`timestamp`,'%H:%i:%s') AS last_request
+                    FROM ".DBPREFIX."stats_visitors WHERE `timestamp` > '".mktime(0,0,0,date('m'),date('d'),date('Y'))."'
+                    ORDER BY `timestamp` DESC
+                    ".$this->pagingLimit."";
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $arrVisitor = array(
+                                    'client_ip' => $objResult->fields['client_ip'],
+                                    'client_host'   => $objResult->fields['client_host'],
+                                    'client_useragent'  => $objResult->fields['client_useragent'],
+                                    'proxy_ip'          => $objResult->fields['proxy_ip'],
+                                    'proxy_host'        => $objResult->fields['proxy_host'],
+                                    'proxy_useragent'   => $objResult->fields['proxy_useragent'],
+                                    'last_request'      => $objResult->fields['last_request']
+                                    );
+                array_push($this->arrVisitorsDetails,$arrVisitor);
+                $objResult->MoveNext();
+            }
+        }
+    }
 
-	function _initStatisticsDays() {
-		global $objDatabase;
+    function _initStatisticsDays() {
+        global $objDatabase;
 
-		// remove outdated visitor and request entries in the summary
-		$this->_removeOutdatedEntries();
+        // remove outdated visitor and request entries in the summary
+        $this->_removeOutdatedEntries();
 
-		// get statistics
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%e' ) AS `day` , `count`
-					FROM `".DBPREFIX."stats_visitors_summary`
-		 				   WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".
-							mktime(
-								0,
-								0,
-								0,
-								$previousMonth = date('m') == 1 ? 12 : date('m') - 1,
-								$startDay = date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))) ? date('d') + 1 : 1,
-								$previousYear
-							)."'";
-		$objResult = $objDatabase->Execute($query);
-		while (!$objResult->EOF) {
-			$this->arrRequests[$objResult->fields['day']]['visitors'] = $objResult->fields['count'];
-			$this->totalVisitors += $objResult->fields['count'];
-			$objResult->MoveNext();
-		}
+        // get statistics
+        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%e' ) AS `day` , `count`
+                    FROM `".DBPREFIX."stats_visitors_summary`
+                           WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".
+                            mktime(
+                                0,
+                                0,
+                                0,
+                                $previousMonth = date('m') == 1 ? 12 : date('m') - 1,
+                                $startDay = date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))) ? date('d') + 1 : 1,
+                                $previousYear
+                            )."'";
+        $objResult = $objDatabase->Execute($query);
+        while (!$objResult->EOF) {
+            $this->arrRequests[$objResult->fields['day']]['visitors'] = $objResult->fields['count'];
+            $this->totalVisitors += $objResult->fields['count'];
+            $objResult->MoveNext();
+        }
 
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%e' ) AS `day` , `count`
-					FROM `".DBPREFIX."stats_requests_summary`
-		 				   WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".
-							mktime(
-								0,
-								0,
-								0,
-								$previousMonth = date('m') == 1 ? 12 : date('m') - 1,
-								$startDay = date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))) ? date('d') + 1 : 1,
-								$previousYear
-							)."'";
-		$objResult = $objDatabase->Execute($query);
-		while (!$objResult->EOF) {
-			$this->arrRequests[$objResult->fields['day']]['requests'] = $objResult->fields['count'];
-			$this->totalRequests += $objResult->fields['count'];
-			$objResult->MoveNext();
-		}
-	}
+        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%e' ) AS `day` , `count`
+                    FROM `".DBPREFIX."stats_requests_summary`
+                           WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".
+                            mktime(
+                                0,
+                                0,
+                                0,
+                                $previousMonth = date('m') == 1 ? 12 : date('m') - 1,
+                                $startDay = date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))) ? date('d') + 1 : 1,
+                                $previousYear
+                            )."'";
+        $objResult = $objDatabase->Execute($query);
+        while (!$objResult->EOF) {
+            $this->arrRequests[$objResult->fields['day']]['requests'] = $objResult->fields['count'];
+            $this->totalRequests += $objResult->fields['count'];
+            $objResult->MoveNext();
+        }
+    }
 
-	function _initStatisticsMonths() {
-		global $objDatabase;
+    function _initStatisticsMonths() {
+        global $objDatabase;
 
-		// remove outdated visitor and request entries in the summary
-		$this->_removeOutdatedEntries();
+        // remove outdated visitor and request entries in the summary
+        $this->_removeOutdatedEntries();
 
-		// get statistics
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%c' ) AS `month` , FROM_UNIXTIME(`timestamp`, '%y' ) AS `year` , `count`
-			FROM `".DBPREFIX."stats_visitors_summary`
-			WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-2)."'";
-		$objResult = $objDatabase->Execute($query);
-		while (!$objResult->EOF) {
-			$this->arrRequests[$objResult->fields['year']][$objResult->fields['month']]['visitors'] = $objResult->fields['count'];
-			$this->totalVisitors += $objResult->fields['count'];
-			$objResult->MoveNext();
-		}
+        // get statistics
+        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%c' ) AS `month` , FROM_UNIXTIME(`timestamp`, '%y' ) AS `year` , `count`
+            FROM `".DBPREFIX."stats_visitors_summary`
+            WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-2)."'";
+        $objResult = $objDatabase->Execute($query);
+        while (!$objResult->EOF) {
+            $this->arrRequests[$objResult->fields['year']][$objResult->fields['month']]['visitors'] = $objResult->fields['count'];
+            $this->totalVisitors += $objResult->fields['count'];
+            $objResult->MoveNext();
+        }
 
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%c' ) AS `month` , FROM_UNIXTIME(`timestamp`, '%y' ) AS `year` ,`count`
-			FROM `".DBPREFIX."stats_requests_summary`
-			WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-2)."'";
-		$objResult = $objDatabase->Execute($query);
-		while (!$objResult->EOF) {
-			$this->arrRequests[$objResult->fields['year']][$objResult->fields['month']]['requests'] = $objResult->fields['count'];
-			$this->totalRequests += $objResult->fields['count'];
-			$objResult->MoveNext();
-		}
-	}
+        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%c' ) AS `month` , FROM_UNIXTIME(`timestamp`, '%y' ) AS `year` ,`count`
+            FROM `".DBPREFIX."stats_requests_summary`
+            WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-2)."'";
+        $objResult = $objDatabase->Execute($query);
+        while (!$objResult->EOF) {
+            $this->arrRequests[$objResult->fields['year']][$objResult->fields['month']]['requests'] = $objResult->fields['count'];
+            $this->totalRequests += $objResult->fields['count'];
+            $objResult->MoveNext();
+        }
+    }
 
-	function _initStatisticsYears() {
-		global $objDatabase;
+    function _initStatisticsYears() {
+        global $objDatabase;
 
-		// remove outdated visitor and request entries in the summary
-		$this->_removeOutdatedEntries();
+        // remove outdated visitor and request entries in the summary
+        $this->_removeOutdatedEntries();
 
-		// get statistics
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%Y' ) AS `year` , `count`
-			FROM `".DBPREFIX."stats_visitors_summary`
-			WHERE `type` = 'year'
-			ORDER BY `year`";
-		$objResult = $objDatabase->Execute($query);
-		while (!$objResult->EOF) {
-			$this->arrRequests[$objResult->fields['year']]['visitors'] = $objResult->fields['count'];
-			$this->totalVisitors += $objResult->fields['count'];
-			$objResult->MoveNext();
-		}
+        // get statistics
+        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%Y' ) AS `year` , `count`
+            FROM `".DBPREFIX."stats_visitors_summary`
+            WHERE `type` = 'year'
+            ORDER BY `year`";
+        $objResult = $objDatabase->Execute($query);
+        while (!$objResult->EOF) {
+            $this->arrRequests[$objResult->fields['year']]['visitors'] = $objResult->fields['count'];
+            $this->totalVisitors += $objResult->fields['count'];
+            $objResult->MoveNext();
+        }
 
-		$query = "SELECT FROM_UNIXTIME(`timestamp`, '%Y' ) AS `year` , `count`
-			FROM `".DBPREFIX."stats_requests_summary`
-			WHERE `type` = 'year'
-			ORDER BY `year`";
-		$objResult = $objDatabase->Execute($query);
-		while (!$objResult->EOF) {
-			$this->arrRequests[$objResult->fields['year']]['requests'] = $objResult->fields['count'];
-			$this->totalRequests +=$objResult->fields['count'];
-			$objResult->MoveNext();
-		}
-	}
+        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%Y' ) AS `year` , `count`
+            FROM `".DBPREFIX."stats_requests_summary`
+            WHERE `type` = 'year'
+            ORDER BY `year`";
+        $objResult = $objDatabase->Execute($query);
+        while (!$objResult->EOF) {
+            $this->arrRequests[$objResult->fields['year']]['requests'] = $objResult->fields['count'];
+            $this->totalRequests +=$objResult->fields['count'];
+            $objResult->MoveNext();
+        }
+    }
 
-	function _initMostViewedPages() {
-		global $objDatabase;
+    function _initMostViewedPages() {
+        global $objDatabase;
 
-		$query = "SELECT `content`.`title`, `stats`.`page`, `stats`.`visits`, FROM_UNIXTIME(`stats`.`timestamp`,'%d-%m-%Y %H:%i:%s') AS `last_request`
-					FROM `".DBPREFIX."stats_requests` AS `stats`
-		 LEFT OUTER JOIN `".DBPREFIX."content` AS `content`
-					  ON `stats`.`pageId` = `content`.`id`
-				ORDER BY `visits` DESC, `last_request` DESC
-						".$this->pagingLimit;
-		if (($objResult = $objDatabase->Execute($query))) {
-			while (!$objResult->EOF) {
-				$arrPage = array(
-					'title' => strlen($objResult->fields['title'])>0 ? $objResult->fields['title'] : "No title",
-					'page' => $objResult->fields['page'],
-					'requests' => $objResult->fields['visits'],
-					'last_request' => $objResult->fields['last_request']
-				);
-				array_push($this->arrMostViewedPages, $arrPage);
-				$this->mostViewedPagesSum += $objResult->fields['visits'];
-				$objResult->MoveNext();
-			}
-		}
-		if ($objResult->RecordCount() == $this->arrConfig['paging_limit']['value']) {
-			$query = "SELECT SUM(`visits`) AS `visits_sum` FROM `".DBPREFIX."stats_requests`";
-			if (($objResult = $objDatabase->Execute($query))) {
-				if (!$objResult->EOF) {
-					$this->mostViewedPagesSum = $objResult->fields['visits_sum'];
-				}
-			}
-		}
-	}
+        $query = "SELECT `content`.`title`, `stats`.`page`, `stats`.`visits`, FROM_UNIXTIME(`stats`.`timestamp`,'%d-%m-%Y %H:%i:%s') AS `last_request`
+                    FROM `".DBPREFIX."stats_requests` AS `stats`
+         LEFT OUTER JOIN `".DBPREFIX."content` AS `content`
+                      ON `stats`.`pageId` = `content`.`id`
+                ORDER BY `visits` DESC, `last_request` DESC
+                        ".$this->pagingLimit;
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $arrPage = array(
+                    'title' => strlen($objResult->fields['title'])>0 ? $objResult->fields['title'] : "No title",
+                    'page' => $objResult->fields['page'],
+                    'requests' => $objResult->fields['visits'],
+                    'last_request' => $objResult->fields['last_request']
+                );
+                array_push($this->arrMostViewedPages, $arrPage);
+                $this->mostViewedPagesSum += $objResult->fields['visits'];
+                $objResult->MoveNext();
+            }
+        }
+        if ($objResult->RecordCount() == $this->arrConfig['paging_limit']['value']) {
+            $query = "SELECT SUM(`visits`) AS `visits_sum` FROM `".DBPREFIX."stats_requests`";
+            if (($objResult = $objDatabase->Execute($query))) {
+                if (!$objResult->EOF) {
+                    $this->mostViewedPagesSum = $objResult->fields['visits_sum'];
+                }
+            }
+        }
+    }
 
-	function _initSpiders() {
-		global $objDatabase;
+    function _initSpiders() {
+        global $objDatabase;
 
-		$query = "SELECT FROM_UNIXTIME(`stats`.`last_indexed`, '%d-%m-%Y %H:%i:%s') as `last_indexed_date`,
-						 `stats`.`page`,
-						 `content`.`title`,
-						 `stats`.`count`,
-						 `stats`.`spider_useragent`,
-						 `stats`.`spider_ip`,
-						 `stats`.`spider_host`
-					FROM `".DBPREFIX."stats_spiders` AS `stats`
-		 LEFT OUTER JOIN `".DBPREFIX."content` AS `content`
-					  ON `stats`.`pageId` = `content`.`id`
-				   ORDER BY last_indexed DESC
-				   ".$this->pagingLimit;
-		if (($objResult = $objDatabase->Execute($query))) {
-			while (!$objResult->EOF) {
-				$arrIndexedPage = array(
-					'last_indexed'		=> $objResult->fields['last_indexed_date'],
-					'page'				=> $objResult->fields['page'],
-					'title'				=> strlen($objResult->fields['title'])>0 ? $objResult->fields['title'] : "No title",
-					'count'				=> $objResult->fields['count'],
-					'spider_useragent'	=> $objResult->fields['spider_useragent'],
-					'spider_ip'			=> $objResult->fields['spider_ip'],
-					'spider_host'		=> $objResult->fields['spider_host']
-				);
-				array_push($this->arrIndexedPages, $arrIndexedPage);
-				$objResult->MoveNext();
-			}
-		}
+        $query = "SELECT FROM_UNIXTIME(`stats`.`last_indexed`, '%d-%m-%Y %H:%i:%s') as `last_indexed_date`,
+                         `stats`.`page`,
+                         `content`.`title`,
+                         `stats`.`count`,
+                         `stats`.`spider_useragent`,
+                         `stats`.`spider_ip`,
+                         `stats`.`spider_host`
+                    FROM `".DBPREFIX."stats_spiders` AS `stats`
+         LEFT OUTER JOIN `".DBPREFIX."content` AS `content`
+                      ON `stats`.`pageId` = `content`.`id`
+                   ORDER BY last_indexed DESC
+                   ".$this->pagingLimit;
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $arrIndexedPage = array(
+                    'last_indexed'      => $objResult->fields['last_indexed_date'],
+                    'page'              => $objResult->fields['page'],
+                    'title'             => strlen($objResult->fields['title'])>0 ? $objResult->fields['title'] : "No title",
+                    'count'             => $objResult->fields['count'],
+                    'spider_useragent'  => $objResult->fields['spider_useragent'],
+                    'spider_ip'         => $objResult->fields['spider_ip'],
+                    'spider_host'       => $objResult->fields['spider_host']
+                );
+                array_push($this->arrIndexedPages, $arrIndexedPage);
+                $objResult->MoveNext();
+            }
+        }
 
-		$query = "SELECT name, FROM_UNIXTIME(`timestamp`, '%d-%m-%Y %H:%i:%s') as last_indexed, `count`
-					FROM ".DBPREFIX."stats_spiders_summary
-				ORDER BY `count` DESC, `timestamp` DESC
-				   ".$this->pagingLimit;
-		if (($objResult = $objDatabase->Execute($query))) {
-			while (!$objResult->EOF) {
-				$arrSpider = array(
-					'name'			=> $objResult->fields['name'],
-					'count'			=> $objResult->fields['count'],
-					'last_indexed'	=> $objResult->fields['last_indexed']
-				);
-				array_push($this->arrSpiders, $arrSpider);
-				$objResult->MoveNext();
-			}
-		}
-	}
+        $query = "SELECT name, FROM_UNIXTIME(`timestamp`, '%d-%m-%Y %H:%i:%s') as last_indexed, `count`
+                    FROM ".DBPREFIX."stats_spiders_summary
+                ORDER BY `count` DESC, `timestamp` DESC
+                   ".$this->pagingLimit;
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $arrSpider = array(
+                    'name'          => $objResult->fields['name'],
+                    'count'         => $objResult->fields['count'],
+                    'last_indexed'  => $objResult->fields['last_indexed']
+                );
+                array_push($this->arrSpiders, $arrSpider);
+                $objResult->MoveNext();
+            }
+        }
+    }
 
-	/**
-	* Get online users
-	*
-	* Get the number of the online users
-	*
-	* @access	public
-	* @global	object	$objDatabase
-	* @return	integer	$onlineUsers
-	*/
-	function getOnlineUsers() {
-		global $objDatabase;
+    /**
+    * Get online users
+    *
+    * Get the number of the online users
+    *
+    * @access    public
+    * @global    ADONewConnection
+    * @return    integer    $onlineUsers
+    */
+    function getOnlineUsers() {
+        global $objDatabase;
 
-		$onlineUsers = 0;
+        $onlineUsers = 0;
 
-		if ($this->arrConfig['online_timeout']['status']) {
-			$query = "SELECT SUM(1) AS `online_users` FROM `".DBPREFIX."stats_visitors` WHERE `timestamp` > '".(time()-$this->arrConfig['online_timeout']['value'])."'";
-			if (($objResult = $objDatabase->query($query))) {
-				if (!$objResult->EOF) {
-					$onlineUsers = $objResult->fields['online_users'];
-					$objResult->MoveNext();
-				}
-			}
-		}
-		return $onlineUsers;
-	}
+        if ($this->arrConfig['online_timeout']['status']) {
+            $query = "SELECT SUM(1) AS `online_users` FROM `".DBPREFIX."stats_visitors` WHERE `timestamp` > '".(time()-$this->arrConfig['online_timeout']['value'])."'";
+            if (($objResult = $objDatabase->query($query))) {
+                if (!$objResult->EOF) {
+                    $onlineUsers = $objResult->fields['online_users'];
+                    $objResult->MoveNext();
+                }
+            }
+        }
+        return $onlineUsers;
+    }
 
-	/**
-	* Get visitor number
-	*
-	* Get the number of the current visitor
-	*
-	* @access public
-	* @global object $objDatabase
-	* @return mixed visitor number on success, false on failure
-	*/
-	function getVisitorNumber()
-	{
-		global $objDatabase;
+    /**
+    * Get visitor number
+    *
+    * Get the number of the current visitor
+    *
+    * @access public
+    * @global ADONewConnection
+    * @return mixed visitor number on success, false on failure
+    */
+    function getVisitorNumber()
+    {
+        global $objDatabase;
 
-		if ($this->arrConfig['make_statistics']['status'] && $this->arrConfig['count_visitor_number']['status']) {
-			$isNewUser = true;
+        if ($this->arrConfig['make_statistics']['status'] && $this->arrConfig['count_visitor_number']['status']) {
+            $isNewUser = true;
 
-			// check if it is a new user
-			$this->_getClientInfos();
+            // check if it is a new user
+            $this->_getClientInfos();
 
-			$objVisitors = $objDatabase->SelectLimit("SELECT id FROM `".DBPREFIX."stats_visitors` WHERE `sid` = '".$this->md5Id."' AND `timestamp` >= '".($this->currentTime - $this->arrConfig['reload_block_time']['value'])."'", 1);
-			if ($objVisitors !== false) {
-				if ($objVisitors->RecordCount() == 1) {
-					$isNewUser = false;
-				}
-			}
+            $objVisitors = $objDatabase->SelectLimit("SELECT id FROM `".DBPREFIX."stats_visitors` WHERE `sid` = '".$this->md5Id."' AND `timestamp` >= '".($this->currentTime - $this->arrConfig['reload_block_time']['value'])."'", 1);
+            if ($objVisitors !== false) {
+                if ($objVisitors->RecordCount() == 1) {
+                    $isNewUser = false;
+                }
+            }
 
-			$objVisitors = $objDatabase->Execute("SELECT sum(`count`) as `number` FROM ".DBPREFIX."stats_visitors_summary WHERE `type`='year' GROUP BY `type`");
-			if ($objVisitors !== false) {
-				if ($isNewUser) {
-					return $objVisitors->fields['number']+1;
-				} else {
-					return $objVisitors->fields['number'];
-				}
-			}
-		}
-		return false;
-	}
+            $objVisitors = $objDatabase->Execute("SELECT sum(`count`) as `number` FROM ".DBPREFIX."stats_visitors_summary WHERE `type`='year' GROUP BY `type`");
+            if ($objVisitors !== false) {
+                if ($isNewUser) {
+                    return $objVisitors->fields['number']+1;
+                } else {
+                    return $objVisitors->fields['number'];
+                }
+            }
+        }
+        return false;
+    }
 
-	 /**
+     /**
     * Get client informations
     *
     * Get the clientinfos like useragent, langugage, ip, proxy, host and referer
     *
-    * @global    array    $_SERVER[]
-    * @see	_getProxyInformations(), _getReferer(), _checkForSpider()
-    * @retrun    boolean  result
+    * @see    _getProxyInformations(), _getReferer(), _checkForSpider()
+    * @return    boolean  result
     */
     function _getClientInfos()
     {
         $this->arrClient['useragent'] = htmlspecialchars($_SERVER['HTTP_USER_AGENT'], ENT_QUOTES, CONTREXX_CHARSET);
         if (stristr($this->arrClient['useragent'],"phpinfo")) {
-			$this->arrClient['useragent'] = "<b>p_h_p_i_n_f_o() Possible Hacking Attack</b>";
+            $this->arrClient['useragent'] = "<b>p_h_p_i_n_f_o() Possible Hacking Attack</b>";
         }
 
         $this->arrClient['language'] = htmlspecialchars($_SERVER['HTTP_ACCEPT_LANGUAGE'], ENT_QUOTES, CONTREXX_CHARSET);
 
         $this->_getProxyInformations(); // get also the client ip
 
-		$this->md5Id = md5($this->arrClient['ip'].$this->arrClient['useragent'].$this->arrClient['language'].$this->arrProxy['ip'].$this->arrProxy['host']);
+        $this->md5Id = md5($this->arrClient['ip'].$this->arrClient['useragent'].$this->arrClient['language'].$this->arrProxy['ip'].$this->arrProxy['host']);
     }
 
 
@@ -693,31 +691,29 @@ class statsLibrary
     * Get proxy informations
     *
     * Determines if a proxy is used or not. If so, then proxy information are colleted
-    *
-    * @global	array	$_SERVER
     */
     function _getProxyInformations() {
-    	if (isset($_SERVER['HTTP_VIA']) && $_SERVER['HTTP_VIA']) { // client does use a proxy
-    		$this->arrProxy['ip'] = $_SERVER['REMOTE_ADDR'];
-    		$this->arrProxy['host'] = @gethostbyaddr($this->arrProxy['ip']);
-    		$proxyUseragent = trim(addslashes(urldecode(strstr($_SERVER['HTTP_VIA'],' '))));
+        if (isset($_SERVER['HTTP_VIA']) && $_SERVER['HTTP_VIA']) { // client does use a proxy
+            $this->arrProxy['ip'] = $_SERVER['REMOTE_ADDR'];
+            $this->arrProxy['host'] = @gethostbyaddr($this->arrProxy['ip']);
+            $proxyUseragent = trim(addslashes(urldecode(strstr($_SERVER['HTTP_VIA'],' '))));
             $startPos = strpos($proxyUseragent,"(");
             $this->arrProxy['useragent'] = substr($proxyUseragent,$startPos+1);
             $endPos=strpos($this->arrProxy['useragent'],")");
 
             if ($this->arrProxy['host'] == $this->arrProxy['ip']) { // no hostname found, try to take it out from useragent-infos
-				$endPos = strpos($proxyUseragent,"(");
-            	$this->arrProxy['host'] = substr($proxyUseragent,0,$endPos);
+                $endPos = strpos($proxyUseragent,"(");
+                $this->arrProxy['host'] = substr($proxyUseragent,0,$endPos);
             }
 
             if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            	$this->arrClient['ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                $this->arrClient['ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
             } else {
-            	if (isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP'])) {
-            		$this->arrClient['ip'] = $_SERVER['HTTP_CLIENT_IP'];
-            	} else {
-            		$this->arrClient['ip'] = $_SERVER['REMOTE_ADDR'];
-            	}
+                if (isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP'])) {
+                    $this->arrClient['ip'] = $_SERVER['HTTP_CLIENT_IP'];
+                } else {
+                    $this->arrClient['ip'] = $_SERVER['REMOTE_ADDR'];
+                }
             }
         } else { // Client does not use proxy
             $this->arrClient['ip'] = $_SERVER['REMOTE_ADDR'];
@@ -727,16 +723,16 @@ class statsLibrary
     }
 
 
-	/**
+    /**
     * return the image with the procentualy width or height
     *
-    * @param	float	$maxWidth	width if the image is 100% in widht
-    * @param	float	$maxHeight	height if the image is 100% in height
-    * @param	float	$percWidth	procentualy width
-    * @param	float	$percHeight	procentualy height
-    * @param 	string	choose the image for the percentbar
-    * @param	string	$title	title and alternative text
-    * @return	string	the path to the image with procentualy width and height
+    * @param    float   $maxWidth   width if the image is 100% in widht
+    * @param    float   $maxHeight  height if the image is 100% in height
+    * @param    float   $percWidth  procentualy width
+    * @param    float   $percHeight procentualy height
+    * @param    string  choose the image for the percentbar
+    * @param    string  $title  title and alternative text
+    * @return   string  the path to the image with procentualy width and height
     */
     function _makePercentBar($maxWidth, $maxHeight, $percWidth, $percHeight, $gif, $title = '')
     {
@@ -750,535 +746,535 @@ class statsLibrary
 
     function _initSearchTerms()
     {
-    	global $objDatabase;
+        global $objDatabase;
 
-    	$objResult = $objDatabase->Execute("SELECT `name`, `count`, `external` FROM `".DBPREFIX."stats_search` WHERE `external`='0' ORDER BY `count` DESC, `name` ".$this->pagingLimit);
-    	if ($objResult !== false) {
-    		$this->arrSearchTerms['internal'] = array();
-    		while (!$objResult->EOF) {
-	    		array_push($this->arrSearchTerms['internal'], array(
-	    			'name'	=> stripslashes($objResult->fields['name']),
-	    			'count'	=> $objResult->fields['count']
-	    		));
-    			$objResult->MoveNext();
-    		}
-    	}
+        $objResult = $objDatabase->Execute("SELECT `name`, `count`, `external` FROM `".DBPREFIX."stats_search` WHERE `external`='0' ORDER BY `count` DESC, `name` ".$this->pagingLimit);
+        if ($objResult !== false) {
+            $this->arrSearchTerms['internal'] = array();
+            while (!$objResult->EOF) {
+                array_push($this->arrSearchTerms['internal'], array(
+                    'name'  => stripslashes($objResult->fields['name']),
+                    'count' => $objResult->fields['count']
+                ));
+                $objResult->MoveNext();
+            }
+        }
 
-    	$objResult = $objDatabase->Execute("SELECT `name`, `count`, `external` FROM `".DBPREFIX."stats_search` WHERE `external`='1' ORDER BY `count` DESC, `name` ".$this->pagingLimit);
-    	if ($objResult !== false) {
-    		$this->arrSearchTerms['external'] = array();
-    		while (!$objResult->EOF) {
-	    		array_push($this->arrSearchTerms['external'], array(
-	    			'name'	=> stripslashes($objResult->fields['name']),
-	    			'count'	=> $objResult->fields['count']
-	    		));
-    			$objResult->MoveNext();
-    		}
-    	}
+        $objResult = $objDatabase->Execute("SELECT `name`, `count`, `external` FROM `".DBPREFIX."stats_search` WHERE `external`='1' ORDER BY `count` DESC, `name` ".$this->pagingLimit);
+        if ($objResult !== false) {
+            $this->arrSearchTerms['external'] = array();
+            while (!$objResult->EOF) {
+                array_push($this->arrSearchTerms['external'], array(
+                    'name'  => stripslashes($objResult->fields['name']),
+                    'count' => $objResult->fields['count']
+                ));
+                $objResult->MoveNext();
+            }
+        }
 
-    	$objResult = $objDatabase->Execute("SELECT `name`, SUM(`count`) AS totalCount, `external` FROM `".DBPREFIX."stats_search` GROUP BY `name` ORDER BY totalCount DESC, `name` ".$this->pagingLimit);
-    	if ($objResult !== false) {
-    		$this->arrSearchTerms['summary'] = array();
-    		while (!$objResult->EOF) {
-	    		array_push($this->arrSearchTerms['summary'], array(
-	    			'name'	=> stripslashes($objResult->fields['name']),
-	    			'count'	=> $objResult->fields['totalCount']
-	    		));
-    			$objResult->MoveNext();
-    		}
-    	}
+        $objResult = $objDatabase->Execute("SELECT `name`, SUM(`count`) AS totalCount, `external` FROM `".DBPREFIX."stats_search` GROUP BY `name` ORDER BY totalCount DESC, `name` ".$this->pagingLimit);
+        if ($objResult !== false) {
+            $this->arrSearchTerms['summary'] = array();
+            while (!$objResult->EOF) {
+                array_push($this->arrSearchTerms['summary'], array(
+                    'name'  => stripslashes($objResult->fields['name']),
+                    'count' => $objResult->fields['totalCount']
+                ));
+                $objResult->MoveNext();
+            }
+        }
     }
 
-	function _initClientStatistics()
-	{
-		global $objDatabase;
+    function _initClientStatistics()
+    {
+        global $objDatabase;
 
-		// get browser statistics
-		$query = "SELECT `name`, `count` FROM `".DBPREFIX."stats_browser`
-				ORDER BY `count` DESC
-				".$this->pagingLimit;
-    	if (($objResult = $objDatabase->Execute($query))) {
-    		while (!$objResult->EOF) {
-    			$this->arrBrowsers[$objResult->fields['name']] = $objResult->fields['count'];
-    			$this->browserSum += $objResult->fields['count'];
-    			$objResult->MoveNext();
-    		}
-    	}
-    	if ($objResult->RecordCount() == $this->arrConfig['paging_limit']['value']) {
-			$query = "SELECT SUM(`count`) AS `count_sum` FROM `".DBPREFIX."stats_browser`";
-			if (($objResult = $objDatabase->Execute($query))) {
-				if (!$objResult->EOF) {
-					$this->browserSum = $objResult->fields['count_sum'];
-				}
-			}
-		}
+        // get browser statistics
+        $query = "SELECT `name`, `count` FROM `".DBPREFIX."stats_browser`
+                ORDER BY `count` DESC
+                ".$this->pagingLimit;
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $this->arrBrowsers[$objResult->fields['name']] = $objResult->fields['count'];
+                $this->browserSum += $objResult->fields['count'];
+                $objResult->MoveNext();
+            }
+        }
+        if ($objResult->RecordCount() == $this->arrConfig['paging_limit']['value']) {
+            $query = "SELECT SUM(`count`) AS `count_sum` FROM `".DBPREFIX."stats_browser`";
+            if (($objResult = $objDatabase->Execute($query))) {
+                if (!$objResult->EOF) {
+                    $this->browserSum = $objResult->fields['count_sum'];
+                }
+            }
+        }
 
-    	// get javascript statistics
-    	$query = "SELECT `support`, `count` FROM `".DBPREFIX."stats_javascript`
-    			   ".$this->pagingLimit;
-    	if (($objResult = $objDatabase->Execute($query))) {
-    		while (!$objResult->EOF) {
-    			$this->arrSupportJavaScript[$objResult->fields['support']] = $objResult->fields['count'];
-    			$this->supportJavaScriptSum += $objResult->fields['count'];
-    			$objResult->MoveNext();
-    		};
-    	}
+        // get javascript statistics
+        $query = "SELECT `support`, `count` FROM `".DBPREFIX."stats_javascript`
+                   ".$this->pagingLimit;
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $this->arrSupportJavaScript[$objResult->fields['support']] = $objResult->fields['count'];
+                $this->supportJavaScriptSum += $objResult->fields['count'];
+                $objResult->MoveNext();
+            };
+        }
 
-    	// get operating system statistics
-    	$query = "SELECT `name`, `count` FROM `".DBPREFIX."stats_operatingsystem`
-				ORDER BY `count` DESC
-				   ".$this->pagingLimit;
-    	if (($objResult = $objDatabase->Execute($query))) {
-    		while (!$objResult->EOF) {
-    			$this->arrOperatingSystems[$objResult->fields['name']] = $objResult->fields['count'];
-    			$this->operatingSystemsSum += $objResult->fields['count'];
-    			$objResult->MoveNext();
-    		}
-    	}
-    	if ($objResult->RecordCount() == $this->arrConfig['paging_limit']['value']) {
-			$query = "SELECT SUM(`count`) AS `count_sum` FROM `".DBPREFIX."stats_operatingsystem`";
-			if (($objResult = $objDatabase->Execute($query))) {
-				if (!$objResult->EOF) {
-					$this->operatingSystemsSum = $objResult->fields['count_sum'];
-				}
-			}
-		}
+        // get operating system statistics
+        $query = "SELECT `name`, `count` FROM `".DBPREFIX."stats_operatingsystem`
+                ORDER BY `count` DESC
+                   ".$this->pagingLimit;
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $this->arrOperatingSystems[$objResult->fields['name']] = $objResult->fields['count'];
+                $this->operatingSystemsSum += $objResult->fields['count'];
+                $objResult->MoveNext();
+            }
+        }
+        if ($objResult->RecordCount() == $this->arrConfig['paging_limit']['value']) {
+            $query = "SELECT SUM(`count`) AS `count_sum` FROM `".DBPREFIX."stats_operatingsystem`";
+            if (($objResult = $objDatabase->Execute($query))) {
+                if (!$objResult->EOF) {
+                    $this->operatingSystemsSum = $objResult->fields['count_sum'];
+                }
+            }
+        }
 
-    	// get screen resolution statistics
-    	$query = "SELECT `resolution`, `count` FROM `".DBPREFIX."stats_screenresolution`
-				ORDER BY `count` DESC
-				   ".$this->pagingLimit;
-    	if (($objResult = $objDatabase->Execute($query))) {
-    		while (!$objResult->EOF) {
-    			$this->arrScreenResolutions[$objResult->fields['resolution']] = $objResult->fields['count'];
-    			$this->screenResolutionSum += $objResult->fields['count'];
-    			$objResult->MoveNext();
-    		}
-    	}
-    	 if ($objResult->RecordCount() == $this->arrConfig['paging_limit']['value']) {
-			$query = "SELECT SUM(`count`) AS `count_sum` FROM `".DBPREFIX."stats_screenresolution`";
-			if (($objResult = $objDatabase->Execute($query))) {
-				if (!$objResult->EOF) {
-					$this->screenResolutionSum = $objResult->fields['count_sum'];
-				}
-			}
-		}
+        // get screen resolution statistics
+        $query = "SELECT `resolution`, `count` FROM `".DBPREFIX."stats_screenresolution`
+                ORDER BY `count` DESC
+                   ".$this->pagingLimit;
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $this->arrScreenResolutions[$objResult->fields['resolution']] = $objResult->fields['count'];
+                $this->screenResolutionSum += $objResult->fields['count'];
+                $objResult->MoveNext();
+            }
+        }
+         if ($objResult->RecordCount() == $this->arrConfig['paging_limit']['value']) {
+            $query = "SELECT SUM(`count`) AS `count_sum` FROM `".DBPREFIX."stats_screenresolution`";
+            if (($objResult = $objDatabase->Execute($query))) {
+                if (!$objResult->EOF) {
+                    $this->screenResolutionSum = $objResult->fields['count_sum'];
+                }
+            }
+        }
 
-		// get colour depth statistics
-    	$query = "SELECT `depth`, `count` FROM `".DBPREFIX."stats_colourdepth`
-				ORDER BY `count` DESC
-				   ".$this->pagingLimit;
-    	if (($objResult = $objDatabase->Execute($query))) {
-    		while (!$objResult->EOF) {
-    			$this->arrColourDepths[$objResult->fields['depth']] = $objResult->fields['count'];
-    			$this->colourDepthSum += $objResult->fields['count'];
-    			$objResult->MoveNext();
-    		}
-    	}
-    	if ($objResult->RecordCount() == $this->arrConfig['paging_limit']['value']) {
-			$query = "SELECT SUM(`count`) AS `count_sum` FROM `".DBPREFIX."stats_colourdepth`";
-			if (($objResult = $objDatabase->Execute($query))) {
-				if (!$objResult->EOF) {
-					$this->colourDepthSum = $objResult->fields['count_sum'];
-				}
-			}
-		}
+        // get colour depth statistics
+        $query = "SELECT `depth`, `count` FROM `".DBPREFIX."stats_colourdepth`
+                ORDER BY `count` DESC
+                   ".$this->pagingLimit;
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $this->arrColourDepths[$objResult->fields['depth']] = $objResult->fields['count'];
+                $this->colourDepthSum += $objResult->fields['count'];
+                $objResult->MoveNext();
+            }
+        }
+        if ($objResult->RecordCount() == $this->arrConfig['paging_limit']['value']) {
+            $query = "SELECT SUM(`count`) AS `count_sum` FROM `".DBPREFIX."stats_colourdepth`";
+            if (($objResult = $objDatabase->Execute($query))) {
+                if (!$objResult->EOF) {
+                    $this->colourDepthSum = $objResult->fields['count_sum'];
+                }
+            }
+        }
 
-		// get hostname statistics
-		$query = "SELECT `hostname`, `count` FROM `".DBPREFIX."stats_hostname`
-				ORDER BY `count` DESC
-					".$this->pagingLimit;
-		if (($objResult = $objDatabase->Execute($query))) {
-			while (!$objResult->EOF) {
-				$this->arrHostnames[$objResult->fields['hostname']] = $objResult->fields['count'];
-				$this->hostnamesSum += $objResult->fields['count'];
-				$objResult->MoveNext();
-			}
-		}
-    	if ($objResult->RecordCount() == $this->arrConfig['paging_limit']['value']) {
-			$query = "SELECT SUM(`count`) AS `count_sum` FROM `".DBPREFIX."stats_hostname`";
-			if (($objResult = $objDatabase->Execute($query))) {
-				if (!$objResult->EOF) {
-					$this->hostnamesSum = $objResult->fields['count_sum'];
-				}
-			}
-		}
+        // get hostname statistics
+        $query = "SELECT `hostname`, `count` FROM `".DBPREFIX."stats_hostname`
+                ORDER BY `count` DESC
+                    ".$this->pagingLimit;
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $this->arrHostnames[$objResult->fields['hostname']] = $objResult->fields['count'];
+                $this->hostnamesSum += $objResult->fields['count'];
+                $objResult->MoveNext();
+            }
+        }
+        if ($objResult->RecordCount() == $this->arrConfig['paging_limit']['value']) {
+            $query = "SELECT SUM(`count`) AS `count_sum` FROM `".DBPREFIX."stats_hostname`";
+            if (($objResult = $objDatabase->Execute($query))) {
+                if (!$objResult->EOF) {
+                    $this->hostnamesSum = $objResult->fields['count_sum'];
+                }
+            }
+        }
 
-		// get coutry of origin statistics
-		$query = "SELECT `country`, `count` FROM `".DBPREFIX."stats_country`
-				ORDER BY `count` DESC
-					".$this->pagingLimit;
-		if (($objResult = $objDatabase->Execute($query))) {
-			while (!$objResult->EOF) {
-				$this->arrCountries[$objResult->fields['country']] = $objResult->fields['count'];
-				$this->countriesSum += $objResult->fields['count'];
-				$objResult->MoveNext();
-			}
-		}
-    	if ($objResult->RecordCount() == $this->arrConfig['paging_limit']['value']) {
-			$query = "SELECT SUM(`count`) AS `count_sum` FROM `".DBPREFIX."stats_country`";
-			if (($objResult = $objDatabase->Execute($query))) {
-				if (!$objResult->EOF) {
-					$this->countriesSum = $objResult->fields['count_sum'];
-				}
-			}
-		}
-	}
+        // get coutry of origin statistics
+        $query = "SELECT `country`, `count` FROM `".DBPREFIX."stats_country`
+                ORDER BY `count` DESC
+                    ".$this->pagingLimit;
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $this->arrCountries[$objResult->fields['country']] = $objResult->fields['count'];
+                $this->countriesSum += $objResult->fields['count'];
+                $objResult->MoveNext();
+            }
+        }
+        if ($objResult->RecordCount() == $this->arrConfig['paging_limit']['value']) {
+            $query = "SELECT SUM(`count`) AS `count_sum` FROM `".DBPREFIX."stats_country`";
+            if (($objResult = $objDatabase->Execute($query))) {
+                if (!$objResult->EOF) {
+                    $this->countriesSum = $objResult->fields['count_sum'];
+                }
+            }
+        }
+    }
 
-	/**
-	* Init referer
-	*
-	* Initialize the referer statistics
-	*
-	* @access	private
-	* @global	object	$objDatabase
-	*/
-	function _initReferer() {
-		global $objDatabase;
+    /**
+    * Init referer
+    *
+    * Initialize the referer statistics
+    *
+    * @access    private
+    * @global    ADONewConnection
+    */
+    function _initReferer() {
+        global $objDatabase;
 
-		$query = "SELECT `uri`, `timestamp` FROM `".DBPREFIX."stats_referer`
-				ORDER BY `timestamp` DESC
-					".$this->pagingLimit;
-		if (($objResult = $objDatabase->Execute($query))) {
-			while (!$objResult->EOF) {
-				$lastRefer = array(
-					'uri'		=> $objResult->fields['uri'],
-					'timestamp'	=> $objResult->fields['timestamp']
-				);
-				array_push($this->arrLastReferer, $lastRefer);
-				$objResult->MoveNext();
-			}
-		}
-		$query = "SELECT `uri`, `count` FROM `".DBPREFIX."stats_referer`
-				ORDER BY `count` DESC, `uri` ASC
-					".$this->pagingLimit;
-		if (($objResult = $objDatabase->Execute($query))) {
-			while (!$objResult->EOF) {
-				$topRefer = array(
-					'uri'		=> $objResult->fields['uri'],
-					'count'		=> $objResult->fields['count']
-				);
-				array_push($this->arrTopReferer, $topRefer);
-				$objResult->MoveNext();
-			}
-		}
-	}
+        $query = "SELECT `uri`, `timestamp` FROM `".DBPREFIX."stats_referer`
+                ORDER BY `timestamp` DESC
+                    ".$this->pagingLimit;
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $lastRefer = array(
+                    'uri'       => $objResult->fields['uri'],
+                    'timestamp' => $objResult->fields['timestamp']
+                );
+                array_push($this->arrLastReferer, $lastRefer);
+                $objResult->MoveNext();
+            }
+        }
+        $query = "SELECT `uri`, `count` FROM `".DBPREFIX."stats_referer`
+                ORDER BY `count` DESC, `uri` ASC
+                    ".$this->pagingLimit;
+        if (($objResult = $objDatabase->Execute($query))) {
+            while (!$objResult->EOF) {
+                $topRefer = array(
+                    'uri'       => $objResult->fields['uri'],
+                    'count'     => $objResult->fields['count']
+                );
+                array_push($this->arrTopReferer, $topRefer);
+                $objResult->MoveNext();
+            }
+        }
+    }
 
-	/**
-	* Save settings
-	*
-	* Save the statistic settings
-	*
-	* @access	private
-	* @global	object	$objDatabase
-	* @see	_initConfiguration()
-	*/
-	function _saveSettings() {
-		global $objDatabase, $_ARRAYLANG;
+    /**
+    * Save settings
+    *
+    * Save the statistic settings
+    *
+    * @access    private
+    * @global    ADONewConnection
+    * @see    _initConfiguration()
+    */
+    function _saveSettings() {
+        global $objDatabase, $_ARRAYLANG;
 
-		$statusMessage = "";
+        $statusMessage = "";
 
-		$makeStatistics = (boolean) isset($_POST['options']['make_statistics']) ? $_POST['options']['make_statistics'] : 0;
+        $makeStatistics = (boolean) isset($_POST['options']['make_statistics']) ? $_POST['options']['make_statistics'] : 0;
 
-		if ($makeStatistics) {
-			$countRequests = (boolean) isset($_POST['options']['count_requests']) ? $_POST['options']['count_requests'] : 0;
-			$removeRequestsStatus = (boolean) isset($_POST['options']['remove_requests_status']) ? $_POST['options']['remove_requests_status'] : 0;
-			$removeRequests = (int) isset($_POST['options']['remove_requests']) ? $_POST['options']['remove_requests'] : $this->arrConfig['remove_requests']['value'];
-			$countReferer = (boolean) isset($_POST['options']['count_referer']) ? $_POST['options']['count_referer'] : 0;
-			$countHostname = (boolean) isset($_POST['options']['count_hostname']) ? $_POST['options']['count_hostname'] : 0;
-			$countCountry = (boolean) isset($_POST['options']['count_country']) ? $_POST['options']['count_country'] : 0;
-			$countBrowser = (boolean) isset($_POST['options']['count_browser']) ? $_POST['options']['count_browser'] : 0;
-			$countOS = (boolean) isset($_POST['options']['count_operating_system']) ? $_POST['options']['count_operating_system'] : 0;
-			$countSpiders = (boolean) isset($_POST['options']['count_spiders']) ? $_POST['options']['count_spiders'] : 0;
-			$countSearchTerms = (boolean) isset($_POST['options']['count_search_terms']) ? $_POST['options']['count_search_terms'] : 0;
-			$countResolution = (boolean) isset($_POST['options']['count_screen_resolution']) ? $_POST['options']['count_screen_resolution'] : 0;
-			$countColour = (boolean) isset($_POST['options']['count_colour_depth']) ? $_POST['options']['count_colour_depth'] : 0;
-			$countJavascript = (boolean) isset($_POST['options']['count_javascript']) ? $_POST['options']['count_javascript'] : 0;
-			$onlineTimeoutStatus = (boolean) isset($_POST['options']['online_timeout_status']) ? $_POST['options']['online_timeout_status'] : 0;
-			$countVisitorNumber = (boolean) isset($_POST['options']['count_visitor_number']) ? $_POST['options']['count_visitor_number'] : 0;
-			$onlineTimeout = (int) isset($_POST['options']['online_timeout']) ? $_POST['options']['online_timeout'] : $this->arrConfig['online_timeout']['value'];
-			$reloadBlockTime = (int) isset($_POST['options']['reload_block_time']) ? $_POST['options']['reload_block_time'] : $this->arrConfig['reload_block_time']['value'];
-			$pagingLimit = (int) isset($_POST['options']['paging_limit']) ? $_POST['options']['paging_limit'] : $this->arrConfig['paging_limit']['value'];
-			$pagingLimitVisitorDetails = (int) isset($_POST['options']['paging_limit_visitor_details']) ? $_POST['options']['paging_limit_visitor_details'] : $this->arrConfig['paging_limit_visitor_details']['value'];
+        if ($makeStatistics) {
+            $countRequests = (boolean) isset($_POST['options']['count_requests']) ? $_POST['options']['count_requests'] : 0;
+            $removeRequestsStatus = (boolean) isset($_POST['options']['remove_requests_status']) ? $_POST['options']['remove_requests_status'] : 0;
+            $removeRequests = (int) isset($_POST['options']['remove_requests']) ? $_POST['options']['remove_requests'] : $this->arrConfig['remove_requests']['value'];
+            $countReferer = (boolean) isset($_POST['options']['count_referer']) ? $_POST['options']['count_referer'] : 0;
+            $countHostname = (boolean) isset($_POST['options']['count_hostname']) ? $_POST['options']['count_hostname'] : 0;
+            $countCountry = (boolean) isset($_POST['options']['count_country']) ? $_POST['options']['count_country'] : 0;
+            $countBrowser = (boolean) isset($_POST['options']['count_browser']) ? $_POST['options']['count_browser'] : 0;
+            $countOS = (boolean) isset($_POST['options']['count_operating_system']) ? $_POST['options']['count_operating_system'] : 0;
+            $countSpiders = (boolean) isset($_POST['options']['count_spiders']) ? $_POST['options']['count_spiders'] : 0;
+            $countSearchTerms = (boolean) isset($_POST['options']['count_search_terms']) ? $_POST['options']['count_search_terms'] : 0;
+            $countResolution = (boolean) isset($_POST['options']['count_screen_resolution']) ? $_POST['options']['count_screen_resolution'] : 0;
+            $countColour = (boolean) isset($_POST['options']['count_colour_depth']) ? $_POST['options']['count_colour_depth'] : 0;
+            $countJavascript = (boolean) isset($_POST['options']['count_javascript']) ? $_POST['options']['count_javascript'] : 0;
+            $onlineTimeoutStatus = (boolean) isset($_POST['options']['online_timeout_status']) ? $_POST['options']['online_timeout_status'] : 0;
+            $countVisitorNumber = (boolean) isset($_POST['options']['count_visitor_number']) ? $_POST['options']['count_visitor_number'] : 0;
+            $onlineTimeout = (int) isset($_POST['options']['online_timeout']) ? $_POST['options']['online_timeout'] : $this->arrConfig['online_timeout']['value'];
+            $reloadBlockTime = (int) isset($_POST['options']['reload_block_time']) ? $_POST['options']['reload_block_time'] : $this->arrConfig['reload_block_time']['value'];
+            $pagingLimit = (int) isset($_POST['options']['paging_limit']) ? $_POST['options']['paging_limit'] : $this->arrConfig['paging_limit']['value'];
+            $pagingLimitVisitorDetails = (int) isset($_POST['options']['paging_limit_visitor_details']) ? $_POST['options']['paging_limit_visitor_details'] : $this->arrConfig['paging_limit_visitor_details']['value'];
 
-			if ($countRequests != $this->arrConfig['count_requests']['status']) {
-				$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countRequests." WHERE `name` = 'count_requests'";
-				$objDatabase->Execute($query);
-			}
+            if ($countRequests != $this->arrConfig['count_requests']['status']) {
+                $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countRequests." WHERE `name` = 'count_requests'";
+                $objDatabase->Execute($query);
+            }
 
-			if ($removeRequestsStatus != $this->arrConfig['remove_requests']['status']) {
-				if (!$removeRequestsStatus) {
-					$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = 0 WHERE `name` = 'remove_requests'";
-					$objDatabase->Execute($query);
-				} else {
-					if ($removeRequests < 86400 || $removeRequests > 31536000) {
-						$statusMessage .= $_ARRAYLANG['TXT_REMOVE_REQUESTS_TIMEOUT'].': '.$_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'];
-					} else {
-						$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = 1, `value` = ".$removeRequests." WHERE `name` = 'remove_requests'";
-						$objDatabase->Execute($query);
-					}
-				}
-			} else {
-				if ($removeRequests < 86400 || $removeRequests > 31536000) {
-					$statusMessage .= $_ARRAYLANG['TXT_REMOVE_REQUESTS_TIMEOUT'].': '.$_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'];
-				} else {
-					$query = "UPDATE `".DBPREFIX."stats_config` SET `value` = ".$removeRequests." WHERE `name` = 'remove_requests'";
-					$objDatabase->Execute($query);
-				}
-			}
+            if ($removeRequestsStatus != $this->arrConfig['remove_requests']['status']) {
+                if (!$removeRequestsStatus) {
+                    $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = 0 WHERE `name` = 'remove_requests'";
+                    $objDatabase->Execute($query);
+                } else {
+                    if ($removeRequests < 86400 || $removeRequests > 31536000) {
+                        $statusMessage .= $_ARRAYLANG['TXT_REMOVE_REQUESTS_TIMEOUT'].': '.$_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'];
+                    } else {
+                        $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = 1, `value` = ".$removeRequests." WHERE `name` = 'remove_requests'";
+                        $objDatabase->Execute($query);
+                    }
+                }
+            } else {
+                if ($removeRequests < 86400 || $removeRequests > 31536000) {
+                    $statusMessage .= $_ARRAYLANG['TXT_REMOVE_REQUESTS_TIMEOUT'].': '.$_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'];
+                } else {
+                    $query = "UPDATE `".DBPREFIX."stats_config` SET `value` = ".$removeRequests." WHERE `name` = 'remove_requests'";
+                    $objDatabase->Execute($query);
+                }
+            }
 
-			if ($onlineTimeoutStatus != $this->arrConfig['online_timeout']['status']) {
-				// status wurde ge�ndert
-				if (!$onlineTimeoutStatus) {
-					// deaktiviert
-					$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = 0 WHERE `name` = 'online_timeout'";
-					$objDatabase->Execute($query);
-				} else {
-					// aktiviert
-					if ($onlineTimeout < 60 || $onlineTimeout > 3600) {
-						$statusMessage .= $_ARRAYLANG['TXT_ONLINE_TIMEOUT'].': '.$_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'];
-					} else {
-						$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = 1, `value` = ".$onlineTimeout." WHERE `name` = 'online_timeout'";
-						$objDatabase->Execute($query);
-					}
-				}
-			} else {
-				if ($onlineTimeout < 60 || $onlineTimeout > 3600) {
-					$statusMessage .= $_ARRAYLANG['TXT_ONLINE_TIMEOUT'].': '.$_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'];
-				} else {
-					$query = "UPDATE `".DBPREFIX."stats_config` SET `value` = ".$onlineTimeout." WHERE `name` = 'online_timeout'";
-					$objDatabase->Execute($query);
-				}
-			}
-
-
-			if ($pagingLimit != $this->arrConfig['paging_limit']['value']) {
-				if ($pagingLimit < 1 || $pagingLimit > 100) {
-					$statusMessage .= $_ARRAYLANG['TXT_PAGING_LIMIT'].': '.$_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'];
-				} else {
-					$query = "UPDATE `".DBPREFIX."stats_config` SET `value` = ".$pagingLimit." WHERE `name` = 'paging_limit'";
-				}
-				$objDatabase->Execute($query);
-			}
-
-			if ($pagingLimitVisitorDetails != $this->arrConfig['paging_limit_visitor_details']['value']) {
-				if ($pagingLimitVisitorDetails < 1 || $pagingLimitVisitorDetails > 1000) {
-					$statusMessage .= $_ARRAYLANG['TXT_PAGING_LIMIT_VISITOR_DETAILS'].': '.$_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'];
-				} else {
-					$query = "UPDATE `".DBPREFIX."stats_config` SET `value` = ".$pagingLimitVisitorDetails." WHERE `name` = 'paging_limit_visitor_details'";
-				}
-				$objDatabase->Execute($query);
-			}
-
-			if ($reloadBlockTime != $this->arrConfig['reload_block_time']['value']) {
-				if ($reloadBlockTime < 1800 || $reloadBlockTime > 86400) {
-					$statusMessage .= $_ARRAYLANG['TXT_RELOAD_BLOCK_TIMEOUT'].': '.$_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'];
-				} else {
-					$query = "UPDATE `".DBPREFIX."stats_config` SET `value` = ".$reloadBlockTime." WHERE `name` = 'reload_block_time'";
-					$objDatabase->Execute($query);
-				}
-			}
+            if ($onlineTimeoutStatus != $this->arrConfig['online_timeout']['status']) {
+                // status wurde ge�ndert
+                if (!$onlineTimeoutStatus) {
+                    // deaktiviert
+                    $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = 0 WHERE `name` = 'online_timeout'";
+                    $objDatabase->Execute($query);
+                } else {
+                    // aktiviert
+                    if ($onlineTimeout < 60 || $onlineTimeout > 3600) {
+                        $statusMessage .= $_ARRAYLANG['TXT_ONLINE_TIMEOUT'].': '.$_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'];
+                    } else {
+                        $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = 1, `value` = ".$onlineTimeout." WHERE `name` = 'online_timeout'";
+                        $objDatabase->Execute($query);
+                    }
+                }
+            } else {
+                if ($onlineTimeout < 60 || $onlineTimeout > 3600) {
+                    $statusMessage .= $_ARRAYLANG['TXT_ONLINE_TIMEOUT'].': '.$_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'];
+                } else {
+                    $query = "UPDATE `".DBPREFIX."stats_config` SET `value` = ".$onlineTimeout." WHERE `name` = 'online_timeout'";
+                    $objDatabase->Execute($query);
+                }
+            }
 
 
-			if ($makeStatistics != $this->arrConfig['make_statistics']['status']) {
-				$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$makeStatistics." WHERE `name` = 'make_statistics'";
-				$objDatabase->Execute($query);
-			}
-			if ($countReferer != $this->arrConfig['count_referer']['status']) {
-				$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countReferer." WHERE `name` = 'count_referer'";
-				$objDatabase->Execute($query);
-			}
-			if ($countHostname != $this->arrConfig['count_hostname']['status']) {
-				$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countHostname." WHERE `name` = 'count_hostname'";
-				$objDatabase->Execute($query);
-			}
-			if ($countCountry != $this->arrConfig['count_country']['status']) {
-				$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countCountry." WHERE `name` = 'count_country'";
-				$objDatabase->Execute($query);
-			}
-			if ($countBrowser != $this->arrConfig['count_browser']['status']) {
-				$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countBrowser." WHERE `name` = 'count_browser'";
-				$objDatabase->Execute($query);
-			}
-			if ($countOS != $this->arrConfig['count_operating_system']['status']) {
-				$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countOS." WHERE `name` = 'count_operating_system'";
-				$objDatabase->Execute($query);
-			}
-			if ($countSpiders != $this->arrConfig['count_spiders']['status']) {
-				$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countSpiders." WHERE `name` = 'count_spiders'";
-				$objDatabase->Execute($query);
-			}
-			if ($countSearchTerms != $this->arrConfig['count_search_terms']['status']) {
-				$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countSearchTerms." WHERE `name` = 'count_search_terms'";
-				$objDatabase->Execute($query);
-			}
-			if ($countResolution != $this->arrConfig['count_screen_resolution']['status']) {
-				$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countResolution." WHERE `name` = 'count_screen_resolution'";
-				$objDatabase->Execute($query);
-			}
-			if ($countColour != $this->arrConfig['count_colour_depth']['status']) {
-				$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countColour." WHERE `name` = 'count_colour_depth'";
-				$objDatabase->Execute($query);
-			}
-			if ($countJavascript != $this->arrConfig['count_javascript']['status']) {
-				$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countJavascript." WHERE `name` = 'count_javascript'";
-				$objDatabase->Execute($query);
-			}
-			if ($countVisitorNumber != $this->arrConfig['count_visitor_number']) {
-				$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countVisitorNumber." WHERE `name` = 'count_visitor_number'";
-				$objDatabase->Execute($query);
-			}
-		} else {
-			$query = "UPDATE `".DBPREFIX."stats_config` SET `status` = 0 WHERE `name` = 'make_statistics'";
-			$objDatabase->Execute($query);
-		}
+            if ($pagingLimit != $this->arrConfig['paging_limit']['value']) {
+                if ($pagingLimit < 1 || $pagingLimit > 100) {
+                    $statusMessage .= $_ARRAYLANG['TXT_PAGING_LIMIT'].': '.$_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'];
+                } else {
+                    $query = "UPDATE `".DBPREFIX."stats_config` SET `value` = ".$pagingLimit." WHERE `name` = 'paging_limit'";
+                }
+                $objDatabase->Execute($query);
+            }
 
-		// reinitialize configuration
-		$this->_initConfiguration();
-		return $statusMessage;
-	}
+            if ($pagingLimitVisitorDetails != $this->arrConfig['paging_limit_visitor_details']['value']) {
+                if ($pagingLimitVisitorDetails < 1 || $pagingLimitVisitorDetails > 1000) {
+                    $statusMessage .= $_ARRAYLANG['TXT_PAGING_LIMIT_VISITOR_DETAILS'].': '.$_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'];
+                } else {
+                    $query = "UPDATE `".DBPREFIX."stats_config` SET `value` = ".$pagingLimitVisitorDetails." WHERE `name` = 'paging_limit_visitor_details'";
+                }
+                $objDatabase->Execute($query);
+            }
 
-	function _deleteStatistics() {
-		global $objDatabase, $_ARRAYLANG;
+            if ($reloadBlockTime != $this->arrConfig['reload_block_time']['value']) {
+                if ($reloadBlockTime < 1800 || $reloadBlockTime > 86400) {
+                    $statusMessage .= $_ARRAYLANG['TXT_RELOAD_BLOCK_TIMEOUT'].': '.$_ARRAYLANG['TXT_VALUE_IS_NOT_IN_RANGE'];
+                } else {
+                    $query = "UPDATE `".DBPREFIX."stats_config` SET `value` = ".$reloadBlockTime." WHERE `name` = 'reload_block_time'";
+                    $objDatabase->Execute($query);
+                }
+            }
 
-		$statusMessage = "";
 
-		if (isset($_POST['statistics'])) {
-			foreach ($_POST['statistics'] as $type) {
-				switch ($type) {
-					case 'requests':
-						$query = "DELETE FROM `".DBPREFIX."stats_visitors_summary`";
-						if ($objDatabase->Execute($query)) {
-							$query = "DELETE FROM `".DBPREFIX."stats_requests_summary`";
-							if ($objDatabase->Execute($query)) {
+            if ($makeStatistics != $this->arrConfig['make_statistics']['status']) {
+                $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$makeStatistics." WHERE `name` = 'make_statistics'";
+                $objDatabase->Execute($query);
+            }
+            if ($countReferer != $this->arrConfig['count_referer']['status']) {
+                $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countReferer." WHERE `name` = 'count_referer'";
+                $objDatabase->Execute($query);
+            }
+            if ($countHostname != $this->arrConfig['count_hostname']['status']) {
+                $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countHostname." WHERE `name` = 'count_hostname'";
+                $objDatabase->Execute($query);
+            }
+            if ($countCountry != $this->arrConfig['count_country']['status']) {
+                $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countCountry." WHERE `name` = 'count_country'";
+                $objDatabase->Execute($query);
+            }
+            if ($countBrowser != $this->arrConfig['count_browser']['status']) {
+                $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countBrowser." WHERE `name` = 'count_browser'";
+                $objDatabase->Execute($query);
+            }
+            if ($countOS != $this->arrConfig['count_operating_system']['status']) {
+                $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countOS." WHERE `name` = 'count_operating_system'";
+                $objDatabase->Execute($query);
+            }
+            if ($countSpiders != $this->arrConfig['count_spiders']['status']) {
+                $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countSpiders." WHERE `name` = 'count_spiders'";
+                $objDatabase->Execute($query);
+            }
+            if ($countSearchTerms != $this->arrConfig['count_search_terms']['status']) {
+                $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countSearchTerms." WHERE `name` = 'count_search_terms'";
+                $objDatabase->Execute($query);
+            }
+            if ($countResolution != $this->arrConfig['count_screen_resolution']['status']) {
+                $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countResolution." WHERE `name` = 'count_screen_resolution'";
+                $objDatabase->Execute($query);
+            }
+            if ($countColour != $this->arrConfig['count_colour_depth']['status']) {
+                $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countColour." WHERE `name` = 'count_colour_depth'";
+                $objDatabase->Execute($query);
+            }
+            if ($countJavascript != $this->arrConfig['count_javascript']['status']) {
+                $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countJavascript." WHERE `name` = 'count_javascript'";
+                $objDatabase->Execute($query);
+            }
+            if ($countVisitorNumber != $this->arrConfig['count_visitor_number']) {
+                $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countVisitorNumber." WHERE `name` = 'count_visitor_number'";
+                $objDatabase->Execute($query);
+            }
+        } else {
+            $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = 0 WHERE `name` = 'make_statistics'";
+            $objDatabase->Execute($query);
+        }
 
-								$statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_VISITORS_AND_PAGE_VIEWS']."<br />";
-								break;
-							}
-						}
-						$statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_VISITORS_AND_PAGE_VIEWS']."<br />";
-						break;
+        // reinitialize configuration
+        $this->_initConfiguration();
+        return $statusMessage;
+    }
 
-					case 'visitors':
-						$query = "DELETE FROM `".DBPREFIX."stats_visitors`";
-						if ($objDatabase->Execute($query)) {
-							$statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_VISITOR_DETAIL_FROM_TODAY']."<br />";
-						} else {
-							$statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_VISITOR_DETAIL_FROM_TODAY']."<br />";
-						}
-						break;
+    function _deleteStatistics() {
+        global $objDatabase, $_ARRAYLANG;
 
-					case 'hostname':
-						$query = "DELETE FROM `".DBPREFIX."stats_hostname`";
-						if ($objDatabase->Execute($query)) {
-							$statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_DOMAIN']."<br />";
-						} else {
-							$statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_DOMAIN']."<br />";
-						}
-						break;
+        $statusMessage = "";
 
-					case 'country':
-						$query = "DELETE FROM `".DBPREFIX."stats_country`";
-						if ($objDatabase->Execute($query)) {
-							$statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_COUNTRIES_OF_ORIGIN']."<br />";
-						} else {
-							$statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_COUNTRIES_OF_ORIGIN']."<br />";
-						}
-						break;
+        if (isset($_POST['statistics'])) {
+            foreach ($_POST['statistics'] as $type) {
+                switch ($type) {
+                    case 'requests':
+                        $query = "DELETE FROM `".DBPREFIX."stats_visitors_summary`";
+                        if ($objDatabase->Execute($query)) {
+                            $query = "DELETE FROM `".DBPREFIX."stats_requests_summary`";
+                            if ($objDatabase->Execute($query)) {
 
-					case 'mvp':
-						$query = "DELETE FROM `".DBPREFIX."stats_requests`";
-						if ($objDatabase->Execute($query)) {
-							$statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_MOST_POPULAR_PAGES']."<br />";
-						} else {
-							$statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_MOST_POPULAR_PAGES']."<br />";
-						}
-						break;
+                                $statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_VISITORS_AND_PAGE_VIEWS']."<br />";
+                                break;
+                            }
+                        }
+                        $statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_VISITORS_AND_PAGE_VIEWS']."<br />";
+                        break;
 
-					case 'referer':
-						$query = "DELETE FROM `".DBPREFIX."stats_referer`";
-						if ($objDatabase->Execute($query)) {
-							$statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_REFERER']."<br />";
-						} else {
-							$statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_REFERER']."<br />";
-						}
-						break;
+                    case 'visitors':
+                        $query = "DELETE FROM `".DBPREFIX."stats_visitors`";
+                        if ($objDatabase->Execute($query)) {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_VISITOR_DETAIL_FROM_TODAY']."<br />";
+                        } else {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_VISITOR_DETAIL_FROM_TODAY']."<br />";
+                        }
+                        break;
 
-					case 'browsers':
-						$query = "DELETE FROM `".DBPREFIX."stats_browser`";
-						if ($objDatabase->Execute($query)) {
-							$statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_BROWSERS']."<br />";
-						} else {
-							$statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_BROWSERS']."<br />";
-						}
-						break;
+                    case 'hostname':
+                        $query = "DELETE FROM `".DBPREFIX."stats_hostname`";
+                        if ($objDatabase->Execute($query)) {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_DOMAIN']."<br />";
+                        } else {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_DOMAIN']."<br />";
+                        }
+                        break;
 
-					case 'os':
-						$query = "DELETE FROM `".DBPREFIX."stats_operatingsystem`";
-						if ($objDatabase->Execute($query)) {
-							$statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_OPERATING_SYSTEMS']."<br />";
-						} else {
-							$statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_OPERATING_SYSTEMS']."<br />";
-						}
-						break;
+                    case 'country':
+                        $query = "DELETE FROM `".DBPREFIX."stats_country`";
+                        if ($objDatabase->Execute($query)) {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_COUNTRIES_OF_ORIGIN']."<br />";
+                        } else {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_COUNTRIES_OF_ORIGIN']."<br />";
+                        }
+                        break;
 
-					case 'search':
-						$query = "DELETE FROM `".DBPREFIX."stats_search`";
-						if ($objDatabase->Execute($query)) {
-							$statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_SEARCH_TERMS']."<br />";
-						} else {
-							$statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_SEARCH_TERMS']."<br />";
-						}
-						break;
+                    case 'mvp':
+                        $query = "DELETE FROM `".DBPREFIX."stats_requests`";
+                        if ($objDatabase->Execute($query)) {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_MOST_POPULAR_PAGES']."<br />";
+                        } else {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_MOST_POPULAR_PAGES']."<br />";
+                        }
+                        break;
 
-					case 'spiders':
-						$query = "DELETE FROM `".DBPREFIX."stats_spiders_summary`";
-						if ($objDatabase->Execute($query)) {
-							$statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_SEARCH_ENGINES']."<br />";
-						} else {
-							$statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_SEARCH_ENGINES']."<br />";
-						}
-						break;
+                    case 'referer':
+                        $query = "DELETE FROM `".DBPREFIX."stats_referer`";
+                        if ($objDatabase->Execute($query)) {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_REFERER']."<br />";
+                        } else {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_REFERER']."<br />";
+                        }
+                        break;
 
-					case 'indexedPages':
-						$query = "DELETE FROM `".DBPREFIX."stats_spiders`";
-						if ($objDatabase->Execute($query)) {
-							$statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_INDEXED_PAGES']."<br />";
-						} else {
-							$statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_INDEXED_PAGES']."<br />";
-						}
-						break;
+                    case 'browsers':
+                        $query = "DELETE FROM `".DBPREFIX."stats_browser`";
+                        if ($objDatabase->Execute($query)) {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_BROWSERS']."<br />";
+                        } else {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_BROWSERS']."<br />";
+                        }
+                        break;
 
-					case 'resolution':
-						$query = "DELETE FROM `".DBPREFIX."stats_screenresolution`";
-						if ($objDatabase->Execute($query)) {
-							$statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_SCREEN_RESOLUTION']."<br />";
-						} else {
-							$statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_SCREEN_RESOLUTION']."<br />";
-						}
-						break;
+                    case 'os':
+                        $query = "DELETE FROM `".DBPREFIX."stats_operatingsystem`";
+                        if ($objDatabase->Execute($query)) {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_OPERATING_SYSTEMS']."<br />";
+                        } else {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_OPERATING_SYSTEMS']."<br />";
+                        }
+                        break;
 
-					case 'colour':
-						$query = "DELETE FROM `".DBPREFIX."stats_colourdepth`";
-						if ($objDatabase->Execute($query)) {
-							$statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_COLOUR_DEPTH']."<br />";
-						} else {
-							$statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_COLOUR_DEPTH']."<br />";
-						}
-						break;
+                    case 'search':
+                        $query = "DELETE FROM `".DBPREFIX."stats_search`";
+                        if ($objDatabase->Execute($query)) {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_SEARCH_TERMS']."<br />";
+                        } else {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_SEARCH_TERMS']."<br />";
+                        }
+                        break;
 
-					case 'javascript':
-						$query = "UPDATE `".DBPREFIX."stats_javascript` SET `count` = 0";
-						if ($objDatabase->Execute($query)) {
-							$statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_JAVASCRIPT_SUPPORT']."<br />";
-						} else {
-							$statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_JAVASCRIPT_SUPPORT']."<br />";
-						}
-						break;
-				}
-			}
-		}
-		return $statusMessage;
-	}
+                    case 'spiders':
+                        $query = "DELETE FROM `".DBPREFIX."stats_spiders_summary`";
+                        if ($objDatabase->Execute($query)) {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_SEARCH_ENGINES']."<br />";
+                        } else {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_SEARCH_ENGINES']."<br />";
+                        }
+                        break;
+
+                    case 'indexedPages':
+                        $query = "DELETE FROM `".DBPREFIX."stats_spiders`";
+                        if ($objDatabase->Execute($query)) {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_INDEXED_PAGES']."<br />";
+                        } else {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_INDEXED_PAGES']."<br />";
+                        }
+                        break;
+
+                    case 'resolution':
+                        $query = "DELETE FROM `".DBPREFIX."stats_screenresolution`";
+                        if ($objDatabase->Execute($query)) {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_SCREEN_RESOLUTION']."<br />";
+                        } else {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_SCREEN_RESOLUTION']."<br />";
+                        }
+                        break;
+
+                    case 'colour':
+                        $query = "DELETE FROM `".DBPREFIX."stats_colourdepth`";
+                        if ($objDatabase->Execute($query)) {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_COLOUR_DEPTH']."<br />";
+                        } else {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_COLOUR_DEPTH']."<br />";
+                        }
+                        break;
+
+                    case 'javascript':
+                        $query = "UPDATE `".DBPREFIX."stats_javascript` SET `count` = 0";
+                        if ($objDatabase->Execute($query)) {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_STATISTIC_DELETED_SUCCESSFULLY']." ".$_ARRAYLANG['TXT_JAVASCRIPT_SUPPORT']."<br />";
+                        } else {
+                            $statusMessage .= "".$_ARRAYLANG['TXT_COULD_NOT_DELETE_STATISTIC']." ".$_ARRAYLANG['TXT_JAVASCRIPT_SUPPORT']."<br />";
+                        }
+                        break;
+                }
+            }
+        }
+        return $statusMessage;
+    }
 }
 ?>

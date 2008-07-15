@@ -1,6 +1,15 @@
 <?php
 /**
- * Includes
+ * AliasAdmin
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author        Comvation Development Team <info@comvation.com>
+ * @version        1.0.0
+ * @package     contrexx
+ * @subpackage  core_module_alias
+ * @todo        Edit PHP DocBlocks!
+ */
+/**
+ * @ignore
  */
 require_once ASCMS_CORE_MODULE_PATH.'/alias/lib/aliasLib.class.php';
 
@@ -40,18 +49,10 @@ class AliasAdmin extends aliasLib
     var $arrStatusMsg = array('ok' => array(), 'error' => array());
 
     /**
-    * Constructor
-    */
-    function AliasAdmin()
-    {
-        $this->__construct();
-    }
-
-    /**
     * PHP5 constructor
     *
-    * @global object $objTemplate
-    * @global array $_ARRAYLANG
+    * @global HTML_Template_Sigma
+    * @global array
     */
     function __construct()
     {
@@ -88,8 +89,8 @@ class AliasAdmin extends aliasLib
     * Set the backend page
     *
     * @access public
-    * @global object $objTemplate
-    * @global array $_ARRAYLANG
+    * @global HTML_Template_Sigma
+    * @global array
     */
     function getPage()
     {

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Data
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -43,9 +42,9 @@ class DataAdmin extends DataLibrary {
 	/**
 	* Constructor	-> Create the module-menu and an internal template-object
     *
-    * @global 	object		$objInit
-    * @global	object		$objTemplate
-    * @global	array		$_ARRAYLANG
+    * @global   InitCMS	
+    * @global	HTML_Template_Sigma
+    * @global	array
     */
 	function __construct() {
 		global $objInit, $objTemplate, $_ARRAYLANG;
@@ -67,11 +66,10 @@ class DataAdmin extends DataLibrary {
     /**
 	* Perform the right operation depending on the $_GET-params
     *
-    * @global 	object		$objPerm
-    * @global 	object		$objTemplate
+    * @global 	HTML_Template_Sigma
     */
     function getPage() {
-    	global $objPerm, $objTemplate;
+    	global /*$objPerm,*/ $objTemplate;
 
     	if(!isset($_GET['act'])) {
     	    $_GET['act']='';
@@ -176,11 +174,11 @@ class DataAdmin extends DataLibrary {
     /**
      * Shows the categories-page of the data-module.
      *
-     * @global	array		$_ARRAYLANG
-     * @global 	array		$_ARRAYLANG
+     * @global	array
+     * @global 	ADONewConnection
      */
     function showCategories() {
-    	global $_ARRAYLANG, $_ARRAYLANG, $objDatabase;
+    	global $_ARRAYLANG, $objDatabase;
 
 		$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_data_categories.html',true,true);
@@ -417,8 +415,8 @@ class DataAdmin extends DataLibrary {
      * Adds a new category to the database. Collected 
      * data in POST is checked for valid values.
      *
-     * @global 	array		$_ARRAYLANG
-     * @global 	object		$objDatabase
+     * @global 	ADONewConnection
+     * @global  array
      */
     function insertCategory() {
     	global $objDatabase, $_ARRAYLANG;
@@ -484,8 +482,8 @@ class DataAdmin extends DataLibrary {
      * Removes a category from the database.
      *
      * @param 	integer		$intCategoryId: This category will be deleted by the function.
-     * @global 	array		$_ARRAYLANG
-     * @global 	object		$objDatabase
+     * @global 	array
+     * @global 	ADONewConnection
      */
     function deleteCategory($intCategoryId) {
     	global $_ARRAYLANG, $objDatabase;
@@ -539,13 +537,12 @@ class DataAdmin extends DataLibrary {
     /**
      * Shows the edit-page for a specific category.
      *
-     * @global	array		$_ARRAYLANG
-     * @global 	array		$_ARRAYLANG
-     * @global 	object		$objDatabase
+     * @global	array
+     * @global 	ADONewConnection
      * @param 	integer		$intCategoryId: The category with this id will be loaded into the form.
      */
     function editCategory($intCategoryId) {
-    	global $_ARRAYLANG, $_ARRAYLANG, $objDatabase;
+    	global $_ARRAYLANG, $objDatabase;
 
 		$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_data_categories_edit.html',true,true);
@@ -672,8 +669,8 @@ class DataAdmin extends DataLibrary {
     /**
      * Updates an existing category.
      *
-     * @global 	array		$_ARRAYLANG
-     * @global 	object		$objDatabase
+     * @global 	array
+     * @global 	ADONewConnection
      */
     function updateCategory() {
     	global $_ARRAYLANG, $objDatabase;
@@ -764,12 +761,11 @@ class DataAdmin extends DataLibrary {
     /**
      * Shows an overview of all entries.
      *
-     * @global	array		$_ARRAYLANG
-     * @global 	array		$_ARRAYLANG
+     * @global	array
      */
     function showEntries()
     {
-    	global $_ARRAYLANG, $_ARRAYLANG;
+    	global $_ARRAYLANG;
 
     	$intSelectedCategory = (isset($_GET['catId'])) ? intval($_GET['catId']) : 0;
    		$intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
@@ -981,11 +977,11 @@ class DataAdmin extends DataLibrary {
     /**
      * Shows the "Add Entry" page.
      *
-     * @global	array		$_ARRAYLANG
-     * @global 	array		$_ARRAYLANG
+     * @global 	array
+     * @global  ADONewConnection
      */
     function addEntry() {
-    	global $_ARRAYLANG, $_ARRAYLANG, $objDatabase;
+    	global $_ARRAYLANG, $objDatabase;
 
     	$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);
@@ -1113,8 +1109,8 @@ class DataAdmin extends DataLibrary {
     /**
      * Adds a new entry to the database. Collected data in POST is checked for valid values.
      *
-     * @global 	array		$_ARRAYLANG
-     * @global 	object		$objDatabase
+     * @global 	array
+     * @global 	ADONewConnection
      */
     function insertEntry() {
     	global $_ARRAYLANG, $objDatabase;
@@ -1182,7 +1178,7 @@ class DataAdmin extends DataLibrary {
      * $_POST and creates the new entries in the database. This function was extracted from original source to be as
      * DRY/SPOT as possible.
      *
-     * @global 	object		$objDatabase
+     * @global 	ADONewConnection
      * @param	integer		$intMessageId: This is the id of the message which the new values will be linked to.
      */
     function insertEntryData($intMessageId) {
@@ -1262,12 +1258,11 @@ class DataAdmin extends DataLibrary {
     /**
      * Shows the "Edit Entry" page.
      *
-     * @global	array		$_ARRAYLANG
-     * @global 	array		$_ARRAYLANG
+     * @global 	array
      * @param 	integer		$intEntryId: The values of this entry will be loaded into the form.
      */
     function editEntry($intEntryId) {
-    	global $_ARRAYLANG, $_ARRAYLANG;
+    	global $_ARRAYLANG;
 
     	$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_ENTRY_EDIT_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);
@@ -1417,8 +1412,8 @@ class DataAdmin extends DataLibrary {
     /**
      * Collects and validates all values from the edit-entry-form. Updates values in database.
      *
-     * @global 	array		$_ARRAYLANG
-     * @global 	object		$objDatabase
+     * @global 	array
+     * @global 	ADONewConnection
      */
     function updateEntry() {
     	global $_ARRAYLANG, $objDatabase;
@@ -1545,8 +1540,8 @@ class DataAdmin extends DataLibrary {
     /**
      * Removes the entry with id = $intEntry from database.
      *
-     * @global 	array		$_ARRAYLANG
-     * @global 	object		$objDatabase
+     * @global 	array
+     * @global 	ADONewConnection
      */
     function deleteEntry($intEntryId) {
     	global $_ARRAYLANG, $objDatabase;
@@ -1623,11 +1618,11 @@ class DataAdmin extends DataLibrary {
     /**
      * Shows the settings-page of the data-module.
      *
-     * @global	array		$_ARRAYLANG
-     * @global 	array		$_ARRAYLANG
+     * @global 	array
+     * @global  ADONewConnection
      */
     function showSettings() {
-    	global $_ARRAYLANG, $_ARRAYLANG, $objDatabase, $_SERVER;
+    	global $_ARRAYLANG, $objDatabase;
 
     	$this->_strPageTitle = $_ARRAYLANG['TXT_DATA_SETTINGS_TITLE'];
     	$this->_objTpl->loadTemplateFile('module_data_settings.html',true,true);
@@ -1712,8 +1707,8 @@ class DataAdmin extends DataLibrary {
     /**
      * Validate and save the settings from $_POST into the database.
      *
-     * @global	object		$objDatabase
-     * @global 	array		$_ARRAYLANG
+     * @global	ADONewConnection
+     * @global 	array
      */
     function saveSettings() {
     	global $objDatabase, $_ARRAYLANG;

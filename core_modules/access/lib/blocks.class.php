@@ -1,7 +1,26 @@
 <?php
+/**
+ * User Management
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
+ * @version     2.0.0
+ * @package     contrexx
+ * @subpackage  core_module_access
+ */
+
+/**
+ * @ignore
+ */
 require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
 
-
+/**
+ * Info Blocks about Community used in the layout
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
+ * @version     2.0.0
+ * @package     contrexx
+ * @subpackage  core_module_access
+ */
 class Access_Blocks extends AccessLib
 {
 	public function Access()

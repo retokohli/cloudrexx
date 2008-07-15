@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Shop Product Attribute
  *
@@ -215,7 +214,7 @@ class ProductAttribute
      * @param   integer     $productId      The optional Product ID
      * @return  array                       Array of ProductAttribute values
      *                                      upon success, false otherwise.
-     * @global  mixed       $objDatabase    The Database object
+     * @global  ADONewConnection
      */
     function getValueArray($flagReuse=true)
     {
@@ -338,7 +337,7 @@ class ProductAttribute
      * @static
      * @param   integer     $id             The ProductAttribute value ID
      * @return  boolean                     True on success, false otherwise.
-     * @global  mixed       $objDatabase    The Database object
+     * @global  ADONewConnection
      */
     //static
     function deleteValueById($id)
@@ -385,7 +384,7 @@ class ProductAttribute
      * inconsistencies!  To be on the safe side, remove relations between
      * Products and these ProductAttribute first!
      * @return  boolean                     True on success, false otherwise.
-     * @global  mixed       $objDatabase    The Database object
+     * @global  ADONewConnection
      */
     function delete()
     {
@@ -442,7 +441,7 @@ class ProductAttribute
      *
      * Also updates (or inserts) all value entries contained.
      * @return  boolean                     True on success, false otherwise
-     * @global  mixed       $objDatabase    The Database object
+     * @global  ADONewConnection
      */
     function update()
     {
@@ -474,7 +473,7 @@ class ProductAttribute
      * in case it had not been set and {@link _insertValue()} was called.
      * @param   array       $arrValue       The value array
      * @return  boolean                     True on success, false otherwise
-     * @global  mixed       $objDatabase    The Database object
+     * @global  ADONewConnection
      */
     function _updateValue(&$arrValue)
     {
@@ -506,7 +505,7 @@ class ProductAttribute
      *
      * Also inserts all value entries contained.
      * @return  boolean                     True on success, false otherwise
-     * @global  mixed       $objDatabase    The Database object
+     * @global  ADONewConnection
      */
     function insert()
     {
@@ -542,7 +541,7 @@ class ProductAttribute
      * @access  private
      * @param   array       $value          The value array, by reference
      * @return  boolean                     True on success, false otherwise
-     * @global  mixed       $objDatabase    The Database object
+     * @global  ADONewConnection
      */
     function _insertValue(&$arrValue)
     {
@@ -576,7 +575,7 @@ class ProductAttribute
      *                                      An optional array of
      *                                      ProductAttribute value IDs
      * @return  ProductAttribute            The ProductAttribute object
-     * @global  mixed       $objDatabase    The Database object
+     * @global  ADONewConnection
      */
     //static
     function getByNameId($nameId, $arrProductAttributeValueId='')
@@ -659,7 +658,7 @@ class ProductAttribute
      * @param   integer     $productId      The Product ID
      * @return  mixed                       The array of Attribute value IDs
      *                                      upon success, false otherwise
-     * @global  mixed       $objDatabase    The Database object
+     * @global  ADONewConnection
      */
     function getValueIdArray($productId)
     {
@@ -694,7 +693,7 @@ class ProductAttribute
      * @static
      * @param   integer     $valueId        The value ID
      * @return  integer                     The associated name ID
-     * @global  mixed       $objDatabase    The Database object
+     * @global  ADONewConnection
      */
     // static
     function getNameIdByValueId($valueId)
@@ -744,7 +743,7 @@ class ProductAttribute
      * @param   string      $value          The Attribute value name
      * @return  integer                     The first matching value ID found,
      *                                      or false.
-     * @global  mixed       $objDatabase    The Database object
+     * @global  ADONewConnection
      */
     function getValueIdByName($value)
     {
@@ -773,7 +772,7 @@ class ProductAttribute
      *
      * @access  public
      * @param   integer     $productId      The optional Product ID
-     * @global  mixed       $objDatabase    The Database object
+     * @global  ADONewConnection
      */
     function getAttributeArray($productId=0)
     {

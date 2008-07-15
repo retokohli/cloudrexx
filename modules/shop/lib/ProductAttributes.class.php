@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Shop Product Attributes
  *
@@ -24,7 +23,6 @@
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @todo        Test!
  */
-
 class ProductAttributes  // friend Product
 {
     /**
@@ -270,7 +268,7 @@ class ProductAttributes  // friend Product
      * @param   integer     $order          The optional sorting order,
      *                                      defaults to 0 (zero)
      * @return  boolean                     True on success, false otherwise
-     * @global  mixed       $objDatabase    Database object
+     * @global  ADONewConnection
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
@@ -311,7 +309,7 @@ class ProductAttributes  // friend Product
      * @static
      * @param   integer     $productId      The Product ID
      * @return  boolean                     True on success, false otherwise.
-     * @global  mixed       $objDatabase    Database object
+     * @global  ADONewConnection
      */
     function deleteByProductId($productId)
     {
@@ -333,7 +331,7 @@ class ProductAttributes  // friend Product
      * Use with due care!
      * @static
      * @return  boolean                     True on success, false otherwise.
-     * @global  mixed       $objDatabase    Database object
+     * @global  ADONewConnection
      */
     //static
     function deleteAll()
@@ -453,7 +451,7 @@ class ProductAttributes  // friend Product
     /**
      * Returns HTML code for the value menu for each ProductAttribute
      *
-     * @global  array       $_ARRAYLANG     Language array
+     * @global  array
      * @param   integer     $attributeId    ID of the ProductAttribute name
      * @param   string      $name           Name of the menu
      * @param   integer     $selectedId     ID of the selected value

@@ -68,7 +68,7 @@ class DataLibrary
 	 * Create an array containing all settings of the data-module.
 	 * Example: $arrSettings[$strSettingName] for the content of $strSettingsName
 	 *
-	 * @global	object		$objDatabase
+	 * @global	ADONewConnection
 	 * @return 	array		$arrReturn
 	 */
 	function createSettingsArray() {
@@ -102,7 +102,7 @@ class DataLibrary
 	 * $arrValue[$langId]['short']		=>	For Example: en, de, fr, ...
 	 * $arrValue[$langId]['long']		=>	For Example: 'English', 'Deutsch', 'French', ...
 	 *
-	 * @global 	object		$objDatabase
+	 * @global 	ADONewConnection
 	 * @return	array		$arrReturn
 	 */
 	function createLanguageArray() {
@@ -135,7 +135,7 @@ class DataLibrary
 	 * $arrCategories[$categoryId][$langId]['name']			=>	Translation for the category with ID = $categoryId for the desired language ($langId).
 	 * $arrCategories[$categoryId][$langId]['is_active']	=>	Status of the category with ID = $categoryId for the desired language ($langId).
 	 *
-	 * @global 	object		$objDatabase
+	 * @global 	ADONewConnection
 	 * @param 	integer		$intStartingIndex: can be used for paging. The value defines, with which row the result should start.
 	 * @param 	integer		$intLimitIndex: can be used for paging. The value defines, how many categories will be returned (starting from $intStartingIndex). If the value is zero, all entries will be returned.
 	 * @return	array		$arrReturn
@@ -241,7 +241,7 @@ class DataLibrary
 	 * $arrEntries[$entryId]['translation'][$langId]['tags']		=>	Keywords of entry in the language with the id = langId.
      * $arrEntries[$entryId]['translation'][$langId]['attachment'] 	=>  The attachment url
 	 *
-	 * @global 	object		$objDatabase
+	 * @global 	ADONewConnection
 	 * @param 	integer		$intLanguageId: The value defines, if categories of a specific language should be returned. If the value is zero, all languages will be used.
 	 * @param 	integer		$intStartingIndex: can be used for paging. The value defines, with which row the result should start.
 	 * @param 	integer		$intLimitIndex: can be used for paging. The value defines, how many entries will be returned (starting from $intStartingIndex). If the value is zero, all entries will be returned.
@@ -394,7 +394,7 @@ class DataLibrary
 	 * $arrEntries[$intNetworkId]['icon_img']			=>	Icon of the service provider as am <img>-tag.
 	 * $arrEntries[$intNetworkId]['status'][$langId]	=>	Activation status of a specific language.
 	 *
-	 * @global 	object		$objDatabase
+	 * @global 	ADONewConnection
 	 * @param 	integer		$intStartingIndex: can be used for paging. The value defines, with which row the result should start.
 	 * @param 	integer		$intLimitIndex: can be used for paging. The value defines, how many categories will be returned (starting from $intStartingIndex). If the value is zero, all entries will be returned.
 	 * @return	array		$arrReturn
@@ -463,7 +463,7 @@ class DataLibrary
 	/**
 	 * Returns an array containing the necessary user-details for an user.
 	 *
-	 * @global 	object		$objDatabase
+	 * @global 	ADONewConnection
 	 * @param	integer		$intUserId: Details of this user will be returned.
 	 * @return	array		Array containing the user-infos.
 	 */
@@ -498,7 +498,7 @@ class DataLibrary
 	/**
 	 * Returns the allowed maximum element per page. Can be used for paging.
 	 *
-	 * @global 	array		$_CONFIG
+	 * @global 	array
 	 * @return 	integer		allowed maximum of elements per page.
 	 */
 	function getPagingLimit() {
@@ -511,7 +511,7 @@ class DataLibrary
 	/**
 	 * Counts all existing entries in the database.
 	 *
-	 * @global 	object		$objDatabase
+	 * @global 	ADONewConnection
 	 * @return 	integer		number of entries in the database
 	 */
 	function countEntries() {
@@ -557,7 +557,7 @@ class DataLibrary
 	/**
 	 * Counts all existing categories in the database.
 	 *
-	 * @global 	object		$objDatabase
+	 * @global 	ADONewConnection
 	 * @return 	integer		number of categories in the database
 	 */
 	function countCategories() {
@@ -574,7 +574,7 @@ class DataLibrary
 	/**
 	 * Counts all votings for a specific entry.
 	 *
-	 * @global 	object		$objDatabase
+	 * @global 	ADONewConnection
 	 * @param 	integer		$intMessageId: the votings of the message with this id will be counted.
 	 * @return 	integer		number of votings for the desired entry.
 	 */
@@ -595,7 +595,7 @@ class DataLibrary
 	/**
 	 * Counts all existing networks in the database.
 	 *
-	 * @global 	object		$objDatabase
+	 * @global 	ADONewConnection
 	 * @return 	integer		number of networks in the database
 	 */
 	function countNetworks() {
@@ -613,8 +613,8 @@ class DataLibrary
 	/**
 	 * Creates an rating bar (****) for a specific message.
 	 *
-	 * @global 	object		$objDatabase
-	 * @global 	array		$_ARRAYLANG
+	 * @global 	ADONewConnection
+	 * @global 	array
 	 * @param	integer		$intMessageId: The rating bar will be created for the message with this id.
 	 * @return	string		HTML-source for the rating bar.
 	 */
@@ -651,7 +651,7 @@ class DataLibrary
 	/**
 	 * Counts all comments for a specific entry.
 	 *
-	 * @global 	object		$objDatabase
+	 * @global  ADONewConnection
 	 * @param 	integer		$intMessageId: the comments of the message with this id will be counted.
 	 * @param 	boolean		$boolOnlyActive: if this parameter is true, only the "active" comments are counted
 	 * @return 	integer		number of comments for the desired entry.
@@ -680,7 +680,7 @@ class DataLibrary
 	/**
 	 * Creates a "posted by $strUsername on $strDate" string.
 	 *
-	 * @global 	array		$_ARRAYLANG
+	 * @global 	array
 	 * @param	string	 	$strUsername
 	 * @param	integer		$intTimestamp
 	 * @return	string
@@ -1047,8 +1047,8 @@ class DataLibrary
 	/**
 	 * Writes RSS feed containing the latest N messages to the feed-directory. This is done for every language seperately.
 	 *
-	 * @global 	array		$_CONFIG
-	 * @global 	array		$_ARRAYLANG
+	 * @global 	array
+	 * @global 	array
 	 */
 	function writeMessageRSS() {
 		global $_CONFIG, $_ARRAYLANG;
@@ -1100,9 +1100,9 @@ class DataLibrary
 	/**
 	 * Writes RSS feed containing the latest N comments to the feed-directory. This is done for every language seperately.
 	 *
-	 * @global 	array		$_CONFIG
-	 * @global 	array		$_ARRAYLANG
-	 * @global 	object		$objDatabase
+	 * @global 	array
+	 * @global 	array
+	 * @global 	ADONewConnection
 	 */
 	function writeCommentRSS() {
 		global $_CONFIG, $_ARRAYLANG, $objDatabase;
@@ -1167,8 +1167,8 @@ class DataLibrary
 	/**
 	 * Writes RSS feed containing the latest N messages of each category the feed-directory. This is done for every language seperately.
 	 *
-	 * @global 	array		$_CONFIG
-	 * @global 	array		$_ARRAYLANG
+	 * @global 	array
+	 * @global 	array
 	 */
 	function writeCategoryRSS() {
 		global $_CONFIG, $_ARRAYLANG;

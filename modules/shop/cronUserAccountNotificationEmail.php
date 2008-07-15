@@ -1,4 +1,11 @@
 <?php
+/**
+ * The Shop
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ */
 
 /**
  * Pull generated user accounts from the access_users database table

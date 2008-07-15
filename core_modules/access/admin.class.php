@@ -1,29 +1,24 @@
 <?php
 /**
-* Class access
-*
-* access module class
-*
+* User Management
 * @copyright    CONTREXX CMS - COMVATION AG
 * @author       COMVATION Development Team <info@comvation.com>
-* @module       access
-* @modulegroup  core_modules
-* @access       public
+* @package      contrexx
+* @subpackage   core_module_access
 * @version      1.0.0
 */
-require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
-
 
 /**
-* Class access
-*
-* access module class
-*
+ * @ignore
+ */
+require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
+
+/**
+* User Management Backend
 * @copyright    CONTREXX CMS - COMVATION AG
 * @author       COMVATION Development Team <info@comvation.com>
-* @module       access
-* @modulegroup  core_modules
-* @access       public
+* @package      contrexx
+* @subpackage   core_module_access
 * @version      1.0.0
 */
 class AccessManager extends AccessLib
@@ -47,8 +42,8 @@ class AccessManager extends AccessLib
     /**
     * Constructor
     *
-    * @global object $objTemplate
-    * @global array $_ARRAYLANG
+    * @global HTML_Template_Sigma
+    * @global array
     */
     public function __construct()
     {
@@ -67,7 +62,7 @@ class AccessManager extends AccessLib
     /**
     * Get page
     *
-    * @global object $objTemplate
+    * @global HTML_Template_Sigma
     */
     public function getPage()
     {

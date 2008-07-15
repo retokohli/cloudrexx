@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Provides methods to create sorted tables
  *
@@ -12,6 +11,9 @@
  * @subpackage  core
  */
 
+/**
+ * URL modificator that definies the sort order
+ */
 define('SORTING_ORDER_PARAMETER_NAME', 'x_order');
 
 /**

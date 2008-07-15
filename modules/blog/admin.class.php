@@ -30,9 +30,9 @@ class BlogAdmin extends BlogLibrary {
 
     /**
     * Constructor   -> Create the module-menu and an internal template-object
-    * @global   object      $objInit
-    * @global   object      $objTemplate
-    * @global   array       $_CORELANG
+    * @global   InitCMS
+    * @global   HTML_Template_Sigma
+    * @global   array
     */
     function __construct()
     {
@@ -60,7 +60,7 @@ class BlogAdmin extends BlogLibrary {
     /**
     * Perform the right operation depending on the $_GET-params
     *
-    * @global   object      $objTemplate
+    * @global   HTML_Template_Sigma
     */
     function getPage() {
         global $objTemplate;
@@ -225,8 +225,8 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Shows the categories-page of the blog-module.
      *
-     * @global  array       $_CORELANG
-     * @global  array       $_ARRAYLANG
+     * @global  array
+     * @global  array
      */
     function showCategories() {
         global $_CORELANG, $_ARRAYLANG;
@@ -328,8 +328,8 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Adds a new category to the database. Collected data in POST is checked for valid values.
      *
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
+     * @global  array
      */
     function insertCategory() {
         global $objDatabase, $_ARRAYLANG;
@@ -373,8 +373,8 @@ class BlogAdmin extends BlogLibrary {
      * Removes a category from the database.
      *
      * @param   integer     $intCategoryId: This category will be deleted by the function.
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  array
+     * @global  ADONewConnection
      */
     function deleteCategory($intCategoryId) {
         global $_ARRAYLANG, $objDatabase;
@@ -425,9 +425,9 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Shows the edit-page for a specific category.
      *
-     * @global  array       $_CORELANG
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  array
+     * @global  array
+     * @global  ADONewConnection
      * @param   integer     $intCategoryId: The category with this id will be loaded into the form.
      */
     function editCategory($intCategoryId) {
@@ -483,8 +483,8 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Updates an existing category.
      *
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  array
+     * @global  ADONewConnection
      */
     function updateCategory() {
         global $_ARRAYLANG, $objDatabase;
@@ -543,8 +543,8 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Shows an overview of all entries.
      *
-     * @global  array       $_CORELANG
-     * @global  array       $_ARRAYLANG
+     * @global  array
+     * @global  array
      */
     function showEntries() {
         global $_CORELANG, $_ARRAYLANG;
@@ -637,8 +637,10 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Shows the "Add Entry" page.
      *
-     * @global  array       $_CORELANG
-     * @global  array       $_ARRAYLANG
+     * @global  array
+     * @global  array
+     * @global  array
+     * @global  FWLanguage
      */
     function addEntry() {
         global $_CORELANG, $_ARRAYLANG, $_CONFIG, $objLanguage;
@@ -726,8 +728,8 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Adds a new entry to the database. Collected data in POST is checked for valid values.
      *
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  array
+     * @global  ADONewConnection
      */
     function insertEntry() {
         global $_ARRAYLANG, $objDatabase;
@@ -760,7 +762,7 @@ class BlogAdmin extends BlogLibrary {
      * $_POST and creates the new entries in the database. This function was extracted from original source to be as
      * DRY/SPOT as possible.
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @param   integer     $intMessageId: This is the id of the message which the new values will be linked to.
      */
     function insertEntryData($intMessageId) {
@@ -812,8 +814,10 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Shows the "Edit Entry" page.
      *
-     * @global  array       $_CORELANG
-     * @global  array       $_ARRAYLANG
+     * @global  array
+     * @global  array
+     * @global  array
+     * @global  FWLanguage
      * @param   integer     $intEntryId: The values of this entry will be loaded into the form.
      */
     function editEntry($intEntryId) {
@@ -918,8 +922,8 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Collects and validates all values from the edit-entry-form. Updates values in database.
      *
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  array
+     * @global  ADONewConnection
      */
     function updateEntry() {
         global $_ARRAYLANG, $objDatabase;
@@ -965,8 +969,8 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Removes the entry with id = $intEntry from database.
      *
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  array
+     * @global  ADONewConnection
      */
     function deleteEntry($intEntryId) {
         global $_ARRAYLANG, $objDatabase;
@@ -1041,9 +1045,9 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Shows the "votes for entry" page.
      *
-     * @global  array       $_CORELANG
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  array
+     * @global  array
+     * @global  ADONewConnection
      * @param   integer     $intEntryId: The values of this entry will be loaded into the form.
      * @param   string      $strActiveTab: Set's the currently active tab. Valid values are: stats, details.
      */
@@ -1188,8 +1192,8 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Removes a voting from database.
      *
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  array
+     * @global  ADONewConnection
      * @param   integer     $intVotingId: The vote with this id will be deleted.
      * @return  integer     $intEntryId: the vote was assigned to the message with this id.
      */
@@ -1248,9 +1252,9 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Shows all existing comments of the entry with the id $intEntryId.
      *
-     * @global  array       $_CORELANG
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  array
+     * @global  array
+     * @global  ADONewConnection
      * @param   integer     $intEntryId: The comments of this entry will shown.
      */
     function showComments($intEntryId) {
@@ -1352,8 +1356,8 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Removes a comment from database.
      *
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  array
+     * @global  ADONewConnection
      * @param   integer     $intCommentId: The comment with this id will be deleted.
      * @return  integer     $intEntryId: the comment was assigned to the message with this id.
      */
@@ -1390,7 +1394,7 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Inverts the status of the comment with the id $intCommentId.
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @param   integer     $intCommentId: the status of this comment will be inverted.
      * @return  integer     The function returns the id of the message which this comment belongs to.
      */
@@ -1454,9 +1458,9 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Shows the edit-form for an comment.
      *
-     * @global  array       $_CORELANG
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  array
+     * @global  array
+     * @global  ADONewConnection
      * @param   integer     $intCommentId: the values of this comment will be loaded into the form
      */
     function editComment($intCommentId) {
@@ -1560,8 +1564,8 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Validates and saves all values from $_POST into the database.
      *
-     * @global  object      $objDatabase
-     * @global  array       $_ARRAYLANG
+     * @global  ADONewConnection
+     * @global  array
      * @return  integer     The function returns the id of the message which the updated comment belongs to.
      */
     function updateCommement() {
@@ -1627,8 +1631,8 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Shows the placeholder-page of the blog-module. Contains all usable Variables for the blog.html-File.
      *
-     * @global  array       $_CORELANG
-     * @global  array       $_ARRAYLANG
+     * @global  array
+     * @global  array
      */
     function showBlockVariables() {
         global $_CORELANG, $_ARRAYLANG;
@@ -1688,8 +1692,8 @@ class BlogAdmin extends BlogLibrary {
      * Shows an overview of all socializing networks which are currently existing in the database. In the second tab
      * an "add network"-form is shown.
      *
-     * @global  array       $_CORELANG
-     * @global  array       $_ARRAYLANG
+     * @global  array
+     * @global  array
      */
     function showNetworks() {
         global $_CORELANG, $_ARRAYLANG;
@@ -1791,8 +1795,8 @@ class BlogAdmin extends BlogLibrary {
      * Inserts a new socializing network into to the database. If fields aren't set properly an error message is
      * returned.
      *
-     * @global  object      $objDatabase
-     * @global  array       $_ARRAYLANG
+     * @global  ADONewConnection
+     * @global  array
      *
      */
     function insertNetwork() {
@@ -1843,8 +1847,8 @@ class BlogAdmin extends BlogLibrary {
      * Shows the edit-page for the network with the id $intNetworkId. If there is no entry with this id an error
      * message will be shown.
      *
-     * @global  array       $_CORELANG
-     * @global  array       $_ARRAYLANG
+     * @global  array
+     * @global  array
      */
     function editNetwork($intNetworkId) {
         global $_CORELANG, $_ARRAYLANG;
@@ -1899,8 +1903,8 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Updates the values for an existing network.
      *
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
+     * @global  array
      */
     function updateNetwork() {
         global $objDatabase, $_ARRAYLANG;
@@ -1956,8 +1960,8 @@ class BlogAdmin extends BlogLibrary {
      * Removes a socializing network from the database.
      *
      * @param   integer     $intNetworkId: This network will be removed.
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  array
+     * @global  ADONewConnection
      */
     function deleteNetwork($intNetworkId) {
         global $_ARRAYLANG, $objDatabase;
@@ -2008,8 +2012,8 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Shows the settings-page of the blog-module.
      *
-     * @global  array       $_CORELANG
-     * @global  array       $_ARRAYLANG
+     * @global  array
+     * @global  array
      */
     function showSettings() {
         global $_CORELANG, $_ARRAYLANG;
@@ -2090,8 +2094,8 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Validate and save the settings from $_POST into the database.
      *
-     * @global  object      $objDatabase
-     * @global  array       $_ARRAYLANG
+     * @global  ADONewConnection
+     * @global  array
      */
     function saveSettings() {
         global $objDatabase, $_ARRAYLANG;

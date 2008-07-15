@@ -48,7 +48,6 @@ class Market extends marketLibrary
     /**
      * Constructor
      * @global object $objTemplate
-     * @global array $_ARRAYLANG
      */
     function __construct($pageContent)
     {

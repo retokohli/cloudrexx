@@ -1,13 +1,4 @@
 <?php
-
-/*
-INSERT INTO `contrexx`.`contrexx_module_shop_config` (
-  `id`, `name`, `value`, `status`
-) VALUES (
-  NULL, 'yellowpay_accepted_payment_methods', '', '0'
-);
-*/
-
 /**
  * Settings
  *
@@ -20,6 +11,15 @@ INSERT INTO `contrexx`.`contrexx_module_shop_config` (
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */
+
+/*
+INSERT INTO `contrexx`.`contrexx_module_shop_config` (
+  `id`, `name`, `value`, `status`
+) VALUES (
+  NULL, 'yellowpay_accepted_payment_methods', '', '0'
+);
+*/
+
 
 /**
  * Settings
@@ -815,7 +815,7 @@ class Settings
      * @todo    Add possibility to choose some products to change,
      *          and add a parameter for this list of IDs
      * @return  boolean                     True on success, false otherwise.
-     * @global  mixed       $objDatabase    Database object
+     * @global  ADONewConnection
      */
     function _setProductsVat()
     {
@@ -856,7 +856,7 @@ class Settings
      * @param   string  $value    The value of the setting
      * @param   string  $status   The status of the setting
      * @return  boolean           True on success, false otherwise
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      */
     function storeSetting($name, $value, $status=0)
     {

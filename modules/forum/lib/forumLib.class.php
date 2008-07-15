@@ -444,7 +444,7 @@ class ForumLibrary {
     /**
      * Create an array containing all settings of the forum-module. Example: $arrSettings[$strSettingName].
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @return  array       $arrReturn
      */
     function createSettingsArray() {
@@ -711,7 +711,7 @@ class ForumLibrary {
     /**
      * Creates an array containing all frontend-languages. Example: $arrValue[$langId]['short'] or $arrValue[$langId]['long']
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @return  array       $arrReturn
      */
     function createLanguageArray() {
@@ -740,7 +740,7 @@ class ForumLibrary {
     /**
      * Creates an array containing all translations of the categories. Example: $arrValue[$categoryId][$langId]['name'].
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @return  array       $arrReturn
      */
     function createTranslationArray() {
@@ -828,8 +828,8 @@ class ForumLibrary {
     /**
      * This is a recursive help-function of "createForumArray()".
      *
-     * @global  object      $objDatabase
-     * @global  array       $_ARRAYLANG
+     * @global  ADONewConnection
+     * @global  array
      * @param   reference   $arrForums: reference to an array. To this array the information are written.
      * @param   integer     $intParCat: the recursive-step starts with this category
      * @param   integer     $intLevel: Current level (0 is base-level)

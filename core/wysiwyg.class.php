@@ -1,4 +1,12 @@
 <?php
+/**
+ * WYSIWYG editor interface
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
+ * @version     2.0.0
+ * @package     contrexx
+ * @subpackage  core
+ */
 //Security-Check
 if (eregi('wysiwyg.class.php',$_SERVER['PHP_SELF']))
 {

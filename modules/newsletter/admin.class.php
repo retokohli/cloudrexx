@@ -61,8 +61,8 @@ class newsletter extends NewsletterLib
 
     /**
      * PHP5 constructor
-     * @global object $objTemplate
-     * @global array $_ARRAYLANG
+     * @global HTML_Template_Sigma
+     * @global array
      */
     function __construct()
     {
@@ -94,10 +94,9 @@ class newsletter extends NewsletterLib
     * Set the backend page
     *
     * @access public
-    * @global object $objTemplate
-    * @global array $_ARRAYLANG
+    * @global HTML_Template_Sigma
+    * @global array
     */
-
     function getPage() {
         global $objTemplate, $_ARRAYLANG;
 
@@ -235,7 +234,8 @@ class newsletter extends NewsletterLib
      * Display the list administration page
      *
      * @access private
-     * @global array $_ARRAYLANG
+     * @global array
+     * @global ADONewConnection
      */
     function _lists()
     {

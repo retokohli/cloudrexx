@@ -1,19 +1,26 @@
 <?php
 /**
-* Class access
-*
-* access module class
-*
+* User Management
 * @copyright    CONTREXX CMS - COMVATION AG
 * @author       COMVATION Development Team <info@comvation.com>
-* @module       access
-* @modulegroup  core_modules
-* @access       public
+* @package      contrexx
+* @subpackage   core_module_access
 * @version      1.0.0
 */
+
+/**
+ * @ignore
+ */
 require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
 
-
+/**
+* Frontend for the user management
+* @copyright    CONTREXX CMS - COMVATION AG
+* @author       COMVATION Development Team <info@comvation.com>
+* @package      contrexx
+* @subpackage   core_module_access
+* @version      1.0.0
+*/
 class Access extends AccessLib
 {
     private $arrStatusMsg = array('ok' => array(), 'error' => array());

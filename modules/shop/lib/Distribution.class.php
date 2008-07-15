@@ -45,8 +45,6 @@ class Distribution
      * Set up a Distribution object (PHP4)
      *
      * @access      public
-     * @package     contrexx
-     * @subpackage  module_shop
      * @return      Distribution object
      */
     function Distribution()
@@ -62,8 +60,6 @@ class Distribution
      * be written to the database, but is only used to determine whether
      * the user actually chose a valid distribution type.
      * @access      public
-     * @package     contrexx
-     * @subpackage  module_shop
      * @return      Distribution object
      */
     function __construct()

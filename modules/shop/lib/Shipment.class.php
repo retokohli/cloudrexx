@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
@@ -55,7 +54,7 @@ class Shipment
      * module_shop_shipment_cost (id, shipper_id, max_weight, cost, price_free)
      * as of version 1.1.
      *
-     * @global  mixed           $objDatabase    Database object
+     * @global  ADONewConnection
      * @param   boolean         $ignoreStatus   If false, only records with status==1 are
      *                                          returned, all records otherwise.
      *                                          Use $ignoreStatus=1 for the settings (backend).
@@ -222,7 +221,7 @@ class Shipment
      * @param   string  $selectedId     Optional preselected shipment ID
      * @param   string  $onchange       Optional onchange javascript callback
      * @return  string                  Dropdown menu string
-     * @global  array   $_ARRAYLANG     Language array
+     * @global  array
      */
     function getShipperMenu($countryId=0, $selectedId=0, $onchange="")
     {
@@ -396,7 +395,7 @@ class Shipment
      *
      * Returns the shipment price in default currency, or -1 if there is any kind
      * of problem with the shipment conditions.
-     * The weight is converted from string using {@link Weight::getWeight()
+     * The weight is converted from string using {@link Weight::getWeight()}
      * to make sure that grams are used.
      * Note: You have to convert the returned value to the customers' currency
      * using {@link Currency::getCurrencyPrice()}!
@@ -465,8 +464,8 @@ class Shipment
     /**
      * Returns an array containing all the active shipment conditions.
      *
-     * @global  mixed   $objDatabase    Database object
-     * @global  array   $_ARRAYLANG     Language array
+     * @global  ADONewConnection
+     * @global  array
      * @return  array           Countries and conditions array
      */
     function getShipmentConditions()
@@ -537,7 +536,7 @@ class Shipment
     /**
      * Get the shipper name for the ID given
      * @static
-     * @global  mixed     $objDatabase    Database object
+     * @global  ADONewConnection
      * @param   integer   $shipperId      The shipper ID
      * @return  mixed                     The shipper name on success,
      *                                    false otherwise

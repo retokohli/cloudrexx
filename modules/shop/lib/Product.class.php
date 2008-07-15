@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Shop Products
  *
@@ -1016,7 +1015,7 @@ class Product
      * Associated Attributes and pictures are deleted with it.
      * @param       integer     $productId      The Product ID
      * @return      boolean                     True on success, false otherwise
-     * @global      mixed       $objDatabase    Database object
+     * @global      ADONewConnection
      * @todo        The handling of pictures is buggy.  Pictures used by other
      *              Products are only recognised if all file names are identical
      *              and in the same order!
@@ -1088,7 +1087,7 @@ class Product
      * Test whether a record with the ID of this object is already present
      * in the database.
      * @return  boolean                     True if it exists, false otherwise
-     * @global  mixed       $objDatabase    Database object
+     * @global  ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function recordExists()
@@ -1154,7 +1153,7 @@ class Product
      * Returns the result of the query.
      *
      * @return      boolean                     True on success, false otherwise
-     * @global      mixed       $objDatabase    Database object
+     * @global      ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function update()
@@ -1205,7 +1204,7 @@ class Product
      * Insert this Product into the database.
      *
      * @return      boolean                     True on success, false otherwise
-     * @global      mixed       $objDatabase    Database object
+     * @global      ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function insert()
@@ -1266,7 +1265,7 @@ class Product
      * @param       integer     $id             The Product ID
      * @return      Product                     The Product object on success,
      *                                          false otherwise
-     * @global      mixed       $objDatabase    Database object
+     * @global      ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -1386,7 +1385,7 @@ class Product
      * thus this will yield unexpected results if the IDs are set
      * by any other means than the AUTO_INCREMENT mechanism.
      * @return  array                   The array of the five Product objects
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function lastFive()

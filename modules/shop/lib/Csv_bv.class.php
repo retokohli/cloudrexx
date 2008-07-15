@@ -1,5 +1,17 @@
 <?php
+/**
+ * The Shop
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ */
 
+/**
+ * The Shop
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ */
 class Csv_bv
 {
     /**

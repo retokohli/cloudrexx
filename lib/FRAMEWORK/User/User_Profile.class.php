@@ -1,9 +1,30 @@
 <?php
-
-
+/**
+ * User Profile
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
+ * @version     2.0.0
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+/**
+ * User Profile
+ *
+ * The User object is used for all user related operations.
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
+ * @version     2.0.0
+ * @package     contrexx
+ * @subpackage  lib_framework
+ * @uses        /lib/FRAMEWORK/User/User_Profile_Attribute.class.php
+ */ 
 class User_Profile
 {
+    /**
+     * @var User_Profile_Attribute
+     */
     var $objAttribute;
+
     var $arrAttributeHistories;
     var $arrUpdatedAttributeHistories;
 

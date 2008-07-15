@@ -287,7 +287,7 @@ class Customer
     }
     /**
      * Set the ID -- NOT ALLOWED
-     * @see{Customer::makeClone()}
+     * @see {Customer::makeClone()}
      */
 
     /**

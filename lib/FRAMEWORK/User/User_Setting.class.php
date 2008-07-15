@@ -1,5 +1,20 @@
 <?php
-
+/**
+ * User Settings Object
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
+ * @version     2.0.0
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+/**
+ * User Settings Object
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
+ * @version     2.0.0
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */ 
 class User_Setting
 {
     /**
@@ -61,7 +76,7 @@ class User_Setting
      * Returns an array containing the available account validity
      * time periods in days in ascending order.
      * @return  array                   The time periods
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @static
      */
     public static function getUserValidities()

@@ -60,8 +60,8 @@ class stats extends statsLibrary
     /**
     * constructor
     *
-    * global	object	$objTemplate
-    * global	array	$_ARRAYLANG
+    * global    HTML_Template_Sigma
+    * global    array
     */
     function __construct(){
     	global $objTemplate, $_ARRAYLANG;
@@ -87,10 +87,10 @@ class stats extends statsLibrary
     *
     * Get the content of the requested page
     *
-    * @access	public
-    * @global	object	$objTemplate
-    * @see	_showRequests(), _showMostViewedPages(), _showSpiders(), _showClients(), _showSearchTerms()
-    * @return	mixed	Template content
+    * @access    public
+    * @global    HTML_Template_Sigma
+    * @see    _showRequests(), _showMostViewedPages(), _showSpiders(), _showClients(), _showSearchTerms()
+    * @return    mixed    Template content
     */
     function getContent(){
     	global $objTemplate;
@@ -221,9 +221,9 @@ class stats extends statsLibrary
     *
     * Show the request statistics
     *
-    * @access	private
-    * @global	array	$_ARRAYLANG
-    * @see	_showRequestsToday(), _showRequestsDays(), _showRequestsMonths(), _showRequestsYears(), _showRequestsToday()
+    * @access    private
+    * @global    array
+    * @see    _showRequestsToday(), _showRequestsDays(), _showRequestsMonths(), _showRequestsYears(), _showRequestsToday()
     */
     function _showRequests(){
     	global $_ARRAYLANG;
@@ -271,10 +271,10 @@ class stats extends statsLibrary
     *
     * Show the page requests and visitors of today
     *
-    * @access	private
-    * @see	_initStatisticsToday()
-    * @global	array	$_ARRAYLANG
-    * @global	int	$_LANGID
+    * @access    private
+    * @see    _initStatisticsToday()
+    * @global    array
+    * @global    integer
     */
     function _showRequestsToday() {
 		global $_ARRAYLANG, $_LANGID;
@@ -356,10 +356,10 @@ class stats extends statsLibrary
     *
     * Show the page requests and visitors of the days
     *
-    * @access	private
-    * @see	_initStatisticsDays()
-    * @global	array	$_ARRAYLANG
-    * @global	int	$_LANGID
+    * @access    private
+    * @see    _initStatisticsDays()
+    * @global    array
+    * @global    integer
     */
     function _showRequestsDays() {
     	global $_ARRAYLANG, $_LANGID;
@@ -457,10 +457,10 @@ class stats extends statsLibrary
     *
     * Show the page requests and visitors of the months
     *
-    * @access	private
-    * @see	_initStatisticsMonths()
-    * @global	array	$_ARRAYLANG
-    * @global	int	$_LANGID
+    * @access    private
+    * @see    _initStatisticsMonths()
+    * @global    array
+    * @global    integer 
     */
     function _showRequestsMonths() {
     	global $_ARRAYLANG, $_LANGID;
@@ -543,10 +543,10 @@ class stats extends statsLibrary
     *
     * Show the page requests and visitors of the years
     *
-    * @access	private
-    * @see	_initStatisticsYears()
-    * @global	array	$_ARRAYLANG
-    * @global	int	$_LANGID
+    * @access    private
+    * @see    _initStatisticsYears()
+    * @global    array
+    * @global    integer
     */
     function _showRequestsYears() {
     	global $_ARRAYLANG, $_LANGID;
@@ -621,9 +621,9 @@ class stats extends statsLibrary
     *
     * Show the last referers and the most referers
     *
-    * @access	private
-    * @global	array	$_ARRAYLANG;
-    * @see	_initReferer()
+    * @access    private
+    * @global    array
+    * @see    _initReferer()
     */
     function _showReferer() {
     	global $_ARRAYLANG;
@@ -678,15 +678,15 @@ class stats extends statsLibrary
     }
 
 
-	/**
-	* Show most viewed pages
-	*
-	* Show a list of the most viewed pages
-	*
-	* @access	private
-	* @global	array	$_ARRAYLANG
-	* @see	_initMostViewedPagesStatistics()
-	*/
+    /**
+    * Show most viewed pages
+    *
+    * Show a list of the most viewed pages
+    *
+    * @access    private
+    * @global    array
+    * @see    _initMostViewedPagesStatistics()
+    */
     function _showMostViewedPages() {
     	global $_ARRAYLANG;
     	$i = 0;
@@ -729,9 +729,9 @@ class stats extends statsLibrary
     *
     * Show a top list of the spiders that have indexed this webpage and a list of all websites that have been indexed by a spider
     *
-    * @access	private
-    * @global	array	$_ARRAYLANG
-    * @see	_initSpiders()
+    * @access    private
+    * @global    array
+    * @see    _initSpiders()
     */
     function _showSpiders() {
     	global $_ARRAYLANG;
@@ -802,9 +802,9 @@ class stats extends statsLibrary
     *
     * Show the statistic of the search queries
     *
-    * @access	private
-    * @glocal	array	$_ARRAYLANG
-    * @see	_initSearchTerms()
+    * @access    private
+    * @global    array
+    * @see    _initSearchTerms()
     */
     function _showSearchTerms() {
     	global $_ARRAYLANG;
@@ -891,9 +891,9 @@ class stats extends statsLibrary
     *
     * Show the statistics of the clients browser, operating system, javascript support, screen resolution and the colour depth
     *
-    * @access	private
-    * @global	array	$_ARRAYLANG
-    * @see	_initClientStatistics
+    * @access    private
+    * @global    array
+    * @see    _initClientStatistics
     */
     function _showClients(){
     	global $_ARRAYLANG;
@@ -1092,15 +1092,15 @@ class stats extends statsLibrary
 	function _xmlCountryEndTag($parser,$name){
 	}
 
-	/**
-	* Show settings
-	*
-	* Show the settings page
-	*
-	* @access	private
-	* @global	array	$_ARRAYLANG
-	* @see	_saveSettings();
-	*/
+    /**
+    * Show settings
+    *
+    * Show the settings page
+    *
+    * @access    private
+    * @global    array
+    * @see    _saveSettings();
+    */
     function _showSettings() {
     	global $_ARRAYLANG;
 

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Docsys RSS XML Feed
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -43,8 +42,9 @@ class rssFeed
     /**
     * Constructor
     *
-    * @global    array        $_CONFIG
-    * @global    string        $objDatabase
+    * @global    array
+    * @global    InitCMS
+    * @global    ADONewConnection
     */
     function __construct()
     {
@@ -91,8 +91,8 @@ class rssFeed
     /**
     * createXML: parse out the XML
     *
-    * @global   array         $_LANGID
-    * @global    string        $objDatabase
+    * @global   integer
+    * @global   ADONewConnection
     */
     function createXML()
     {

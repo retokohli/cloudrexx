@@ -500,7 +500,7 @@ class InitCMS
 	*
 	* gets the current pageId
 	*
-     * @global  mixed     $objDatabase
+    * @global   ADONewConnection
 	* @param     integer	$catID
 	* @param     string		$command
 	* @return    integer    $catID

@@ -92,8 +92,7 @@ class directoryLibrary
     *
     * @access   public
     * @param    string  $id
-    * @global    object    $objDatabase
-    * @global    array    $_ARRAYLANG
+    * @global   ADONewConnection
     */
     function getHits($id)
     {
@@ -131,9 +130,7 @@ class directoryLibrary
     * @access   public
     * @param    string    $catId
     * @return    string    $options
-    * @global    object    $objInit
-    * @global    object    $template
-    * @global    array    $_CORELANG
+    * @global    ADONewConnection
     */
     function getSearchCategories($catId)
     {
@@ -218,9 +215,7 @@ class directoryLibrary
     * @access   public
     * @param    string    $catId
     * @return    string    $options
-    * @global    object    $objInit
-    * @global    object    $template
-    * @global    array    $_CORELANG
+    * @global    ADONewConnection
     */
     function getCategories($id, $type)
     {
@@ -318,9 +313,7 @@ class directoryLibrary
     * @access   public
     * @param    string    $langId
     * @return    string    $languages
-    * @global    object    $objInit
-    * @global    object    $template
-    * @global    array    $_CORELANG
+    * @global    ADONewConnection
     */
     function getLanguages($langId)
     {
@@ -473,9 +466,7 @@ class directoryLibrary
     * @access   public
     * @param    string    $osId
     * @return    string    $platforms
-    * @global    object    $objInit
-    * @global    object    $template
-    * @global    array    $_CORELANG
+    * @global    ADONewConnection
     */
     function getPlatforms($osId)
     {
@@ -749,8 +740,8 @@ class directoryLibrary
     * @access   public
     * @param    string  $id
     * @return   string  $filename
-    * @global   object  $objDatabase
-    * @global   array   $_ARRAYLANG
+    * @global   ADONewConnection
+    * @global   array
     */
     function refreshXML($id)
     {
@@ -804,8 +795,8 @@ class directoryLibrary
     * add new feed
     *
     * @access   public
-    * @global   object  $objDatabase
-    * @global   array   $_ARRAYLANG
+    * @global   ADONewConnection
+    * @global   array
     */
     function addFeed()
     {
@@ -963,9 +954,8 @@ class directoryLibrary
      *
      * @access   public
      * @param    string    $id
-     * @global    object    $objDatabase
-     * @global    array    $_CORELANG
-     * @global    array    $_CONFIG
+     * @global    ADONewConnection
+     * @global    array
      */
     function confirmEntry_step2($id)
     {
@@ -1126,12 +1116,6 @@ class directoryLibrary
     * create rss
     *
     * create new xml
-    *
-    * @access   public
-    * @param    string  $id
-    * @global   object  $objDatabase
-    * @global   array   $_CORELANG
-    * @global   array   $_CONFIG
     */
     function createRSS()
     {
@@ -1181,8 +1165,8 @@ class directoryLibrary
     * create new xml latest
     *
     * @access   public
-    * @global   object  $objDatabase
-    * @global   array   $_CONFIG
+    * @global   array
+    * @global   ADONewConnection
     */
     function createRSSlatest()
     {
@@ -1888,10 +1872,9 @@ EOF;
     * update selected file
     *
     * @access   public
-    * @global    object    $objDatabase
-    * @global    object    $template
-    * @global    array    $_CORELANG
-    * @global    array    $_CONFIG
+    * @global    array
+    * @global    ADONewConnection
+    * @global    array
     */
     function updateFile($addedby)
     {
@@ -2138,9 +2121,8 @@ EOF;
     * @access   public
     * @param    string    $catId
     * @return    string    $options
-    * @global    object    $objInit
-    * @global    object    $template
-    * @global    array    $_CORELANG
+    * @global    array
+    * @global    ADONewConnection
     */
     function getSearchLevels($levelId)
     {
@@ -2223,9 +2205,8 @@ EOF;
     * @access   public
     * @param    string    $catId
     * @return    string    $options
-    * @global    object    $objInit
-    * @global    object    $template
-    * @global    array    $_CORELANG
+    * @global    array
+    * @global    ADONewConnection
     */
     function getLevels($id, $type)
     {

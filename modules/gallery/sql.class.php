@@ -1,11 +1,21 @@
 <?php
+/**
+ * SQL layer of the gallery module
+ *
+ * Contains methods to read and save date from and to the
+ * database.
+ * @author Comvation Development Team <info@comvation.com>
+ * @author Stefan Heinemann
+ * @package contrexx
+ * @subpackage module_gallery
+ */
 
 /**
  * SQL layer of the gallery module
  *
  * Contains methods to read and save date from and to the
  * database.
- * @author omvation Development Team <info@comvation.com>
+ * @author Comvation Development Team <info@comvation.com>
  * @author Stefan Heinemann
  * @package contrexx
  * @subpackage module_gallery
@@ -296,6 +306,13 @@ class GallerySql
     }
 }
 
+/**
+ * Database Error
+ * @author Comvation Development Team <info@comvation.com>
+ * @author Stefan Heinemann
+ * @package contrexx
+ * @subpackage module_gallery
+ */
 class DatabaseError extends Exception
 {
     public function __construct($message)

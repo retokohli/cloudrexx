@@ -1,5 +1,15 @@
 <?php
+/**
+ * Online Desk
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ */
 
+/**
+ * Calendar
+ */
 function calendar(
     $DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT,
     $DatumDesc, $DatumLabel, $ArrayRD, $Anzahl, $quantityLimit, $date='',

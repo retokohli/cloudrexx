@@ -1,5 +1,14 @@
 <?php
 /**
+ * Statistics
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
+ * @version 1.0
+ * @package     contrexx
+ * @subpackage  core_module_stats
+ * @todo        Edit PHP DocBlocks!
+ */
+/**
  * Make Graph
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author Comvation Development Team <info@comvation.com>

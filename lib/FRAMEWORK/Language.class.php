@@ -30,7 +30,7 @@ class FWLanguage
     /**
      * Constructor (PHP5)
      * @access  private
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      */
     function __construct()
     {
@@ -134,7 +134,7 @@ class FWLanguage
      * @param   string    $langCode         The ISO 639-1 language code
      * @return  mixed                       The language ID on success,
      *                                      false otherwise
-     * @global  mixed     $objDatabase      Database object
+     * @global  ADONewConnection
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getLangIdByIso639_1($langCode)
@@ -192,7 +192,7 @@ class FWLanguage
      *
      * Returns false on failure, or the empty string if the code
      * could not be found.
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @param   integer $langId         The language ID
      * @return  mixed                   The two letter code, the empty string,
      *                                  or false

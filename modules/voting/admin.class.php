@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Class voting manager
  *
@@ -13,7 +12,9 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-// Checks empty entries
+/**
+ * Checks empty entries
+ */
 function checkEntryData($var)
 {
     return (trim($var)!="");

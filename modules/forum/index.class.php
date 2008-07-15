@@ -32,7 +32,7 @@ class Forum extends ForumLibrary {
      * Constructor
      *
      * Call parent-constructor, set language id and create local template-object
-     * @global    integer        $_LANGID
+     * @global    integer
      */
     function __construct($strPageContent)
     {
@@ -369,7 +369,9 @@ class Forum extends ForumLibrary {
     /**
      * Show all threads of a forum
      *
-     * @global     array        $_ARRAYLANG
+     * @global  ADONewConnection
+     * @global     array
+     * @global   Cache 
      * @param    integer        $intForumId: The id of the forum which should be shown
      */
     function showForum($intForumId)
@@ -1305,7 +1307,7 @@ class Forum extends ForumLibrary {
     /**
      * Show an overview of all available board in the current language
      *
-     * @global    array        $_ARRAYLANG
+     * @global    array
      */
     function showForumOverview() {
         global $_ARRAYLANG;

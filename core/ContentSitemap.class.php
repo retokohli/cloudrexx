@@ -48,7 +48,8 @@ class ContentSitemap
     /**
     * Constructor
     *
-    * @global object   $objDatabase
+    * @global ADONewConnection
+    * @global InitCMS
     * @param  integer  $currentid
     * @param  boolean  $adminmode
     * @access public
@@ -127,8 +128,8 @@ class ContentSitemap
     /**
     * Gets admin tree array
     *
-    * @global   array    $_CORELANG
-    * @global   object   $objLanguage
+    * @global   array
+    * @global   FWLanguage
     * @return   string   parsed content
     */
 	function getSiteMap()

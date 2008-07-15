@@ -33,8 +33,6 @@ if (eregi("paging.class.php",$_SERVER['PHP_SELF'])) {
  * @param   boolean     $showeverytime
  * @param   int         $limit
  * @return  string      Result
- * @package     contrexx
- * @subpackage  core
  */
 function getPaging($count, $pos, $extargv, $paging_text, $showeverytime = false, $limit = null)
 {
@@ -78,6 +76,8 @@ function getPaging($count, $pos, $extargv, $paging_text, $showeverytime = false,
  * Class Paging
  *
  * Creates the link for paging
+ * @package contrexx
+ * @subpackage core
  * @version 1.0.0
  */
 class Paging

@@ -10,6 +10,11 @@
  */
 
 /**
+ * @ignore
+ */
+require_once ASCMS_MODULE_PATH . '/gallery/sql.class.php';
+
+/**
  * Gallery library
  *
  * Library for the Gallery
@@ -20,9 +25,6 @@
  * @package     contrexx
  * @subpackage  module_gallery
  */
-
-require_once ASCMS_MODULE_PATH . '/gallery/sql.class.php';
-
 class GalleryLibrary
 {
     protected $sql;
@@ -31,20 +33,20 @@ class GalleryLibrary
     {
         $this->sql = new GallerySql();
     }
-	
-	/**
+    
+    /**
     * Gets the gallery settings
     *
-    * @global  object  $objDatabase
+    * @global  ADONewConnection
     */
     public function getSettings()
     {
-    	global $objDatabase;
-    	$objResult = $objDatabase->Execute("SELECT name,value FROM ".DBPREFIX."module_gallery_settings");
-    	while (!$objResult->EOF) {
-    		$this->arrSettings[$objResult->fields['name']] = $objResult->fields['value'];
-    		$objResult->MoveNext();
-    	}
+        global $objDatabase;
+        $objResult = $objDatabase->Execute("SELECT name,value FROM ".DBPREFIX."module_gallery_settings");
+        while (!$objResult->EOF) {
+            $this->arrSettings[$objResult->fields['name']] = $objResult->fields['value'];
+            $objResult->MoveNext();
+        }
     }
 }
 ?>

@@ -161,7 +161,7 @@ class DataHomeContent extends DataLibrary  {
 	/**
 	 * Fills the latest entries of the data-module into the data-page.
 	 *
-	 * @global 	array		$_ARRAYLANG
+	 * @global 	array
 	 * @return	string		parsed content with latest entries.
 	 */
 	function getLatestEntries() {

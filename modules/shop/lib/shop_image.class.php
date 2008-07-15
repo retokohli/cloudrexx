@@ -1,4 +1,15 @@
 <?php
+/**
+* Class Upload
+*
+* Class to upload an image and create a thumbnail
+*
+* @copyright   CONTREXX CMS - COMVATION AG
+* @author      Christian Wehrli <schristian.wehrli@astalavista.ch>
+* @package     contrexx
+* @subpackage  module_shop
+* @version       $Id: index.inc.php,v 1.00 $
+*/
 
 //Security-Check
 if (eregi("shop_image.class.php",$_SERVER['PHP_SELF']))
@@ -14,8 +25,8 @@ if (eregi("shop_image.class.php",$_SERVER['PHP_SELF']))
 *
 * @copyright   CONTREXX CMS - COMVATION AG
 * @author      Christian Wehrli <schristian.wehrli@astalavista.ch>
-* @module      shopmanager
-* @modulegroup shop
+* @package     contrexx
+* @subpackage  module_shop
 * @version       $Id: index.inc.php,v 1.00 $
 */
 class upload
