@@ -47,7 +47,7 @@ class SmtpSettings
                 ? '`password`'
                 : 'CHAR_LENGTH(`password`) AS \'password\''
             )."
-              FROM `'.DBPREFIX.'settings_smtp`
+              FROM `".DBPREFIX."settings_smtp`
              WHERE `id`=".intval($accountId)
         );
         if ($objResult && $objResult->RecordCount() == 1) {
