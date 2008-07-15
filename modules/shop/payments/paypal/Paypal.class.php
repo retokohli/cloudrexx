@@ -1,6 +1,22 @@
 <?php
+/**
+ * Interface for the PayPal form
+ *
+ * It requires a html form to send the date to
+ * PayPal. This class generates it.
+ *
+ * @link https://www.paypal.com/ch/cgi-bin/webscr?cmd=_pdn_howto_checkout_outside
+ * @link https://www.paypal.com/ipn
+ * @author Stefan Heinemannn <stefan.heinemann@comvation.com>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ */
 
-/*
+/**
+ * Debug mode
+ * @internal
     Debug modes:
     0   No debugging, normal operation
     1   Use PayPal Sandbox, create log files

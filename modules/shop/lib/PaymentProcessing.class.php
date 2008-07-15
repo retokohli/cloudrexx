@@ -1,7 +1,4 @@
 <?php
-
-define('_PAYMENT_DEBUG', 0);
-
 /**
  * Payment processing manager.
  * @package     contrexx
@@ -9,6 +6,11 @@ define('_PAYMENT_DEBUG', 0);
  * @copyright   CONTREXX CMS - COMVATION AG
  * @todo        Edit PHP DocBlocks!
  */
+
+/**
+ * Debug mode
+ */
+define('_PAYMENT_DEBUG', 0);
 
 /**
  * Saferpay payment handling
@@ -169,7 +171,7 @@ class PaymentProcessing
      * @param   integer     $processorId    The payment processor ID
      * @return  string                      The payment processors' name,
      *                                      or the empty string on failure.
-     * @global  mixed       $objDatabase    Database object
+     * @global  ADONewConnection
      */
     function getPaymentProcessorName($processorId=0)
     {
@@ -207,7 +209,7 @@ class PaymentProcessing
      * @param   integer     $processorId    The payment processor ID
      * @return  string                      The payment processor type,
      *                                      or the empty string on failure.
-     * @global  mixed       $objDatabase    Database object
+     * @global  ADONewConnection 
      */
     function getCurrentPaymentProcessorType($processorId=0)
     {
@@ -245,7 +247,7 @@ class PaymentProcessing
      * @return  string                      The payment processors' picture
      *                                      file name, or the empty string
      *                                      on failure.
-     * @global  mixed       $objDatabase    Database object
+     * @global  ADONewConnection
      */
     function getPaymentProcessorPicture($processorId=0)
     {

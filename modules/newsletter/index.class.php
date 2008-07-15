@@ -1,5 +1,16 @@
 <?php
 /**
+ * Newsletter Modul
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
+ * @access public
+ * @version 1.1.0
+ * @package     contrexx
+ * @subpackage  module_newsletter
+ * @todo        Edit PHP DocBlocks!
+ */
+
+/**
  * @ignore
  */
 require_once ASCMS_MODULE_PATH.'/newsletter/lib/NewsletterLib.class.php';

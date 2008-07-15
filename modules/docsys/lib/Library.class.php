@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Class Document System
  *
@@ -28,17 +27,16 @@ class docSysLibrary
     /**
     * Gets the categorie option menu string
     *
-    * @global    object     $objDatabase
-    * @global    string     $_LANGID
+    * @global    ADONewConnection
     * @param     string     $lang
     * @param     string     $selectedOption
     * @return    string     $modulesMenu
     */
     function getCategoryMenu($langId, $selectedCatId="")
     {
-	    global $objDatabase;
+        global $objDatabase;
 
-	    $strMenu = "";
+        $strMenu = "";
         $query="SELECT catid,
                        name
                   FROM ".DBPREFIX."module_docsys_categories
@@ -46,15 +44,15 @@ class docSysLibrary
               ORDER BY catid";
 
         $objResult = $objDatabase->Execute($query);
-	    while (!$objResult->EOF) {
-		    $selected = "";
-		    if($selectedCatId==$objResult->fields['catid']){
-			    $selected = "selected";
-		    }
-		    $strMenu .="<option value=\"".$objResult->fields['catid']."\" $selected>".stripslashes($objResult->fields['name'])."</option>\n";
-		    $objResult->MoveNext();
-	    }
-	    return $strMenu;
+        while (!$objResult->EOF) {
+            $selected = "";
+            if($selectedCatId==$objResult->fields['catid']){
+                $selected = "selected";
+            }
+            $strMenu .="<option value=\"".$objResult->fields['catid']."\" $selected>".stripslashes($objResult->fields['name'])."</option>\n";
+            $objResult->MoveNext();
+        }
+        return $strMenu;
     }
 }
 

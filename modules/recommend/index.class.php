@@ -13,8 +13,24 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+/**
+ * @ignore
+ */
 require_once ASCMS_MODULE_PATH . '/recommend/Lib.class.php';
 
+/**
+ * Class Recommend
+ *
+ * Recommend module class
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author        Comvation Development Team
+ * @access        public
+ * @version        1.0.0
+ * @package     contrexx
+ * @subpackage  module_recommend
+ * @todo        Edit PHP DocBlocks!
+ */
 class Recommend extends RecommendLibrary
 {
     /**
@@ -29,7 +45,7 @@ class Recommend extends RecommendLibrary
 
     /**
      * Constructor
-     * @global integer $_LANGID
+     * @global integer
      */
     function __construct($pageContent)
     {

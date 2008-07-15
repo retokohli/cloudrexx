@@ -1,4 +1,21 @@
 <?php
+/**
+ * User Group Object
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+
+/**
+ * User Group Object
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
 class UserGroup {
 
     var $id;
@@ -246,8 +263,8 @@ class UserGroup {
      * to the database.
      * If it is a new user, it also sets the registration time to the current time.
      *
-     * @global object $objDatabase
-     * @global array $_CORELANG
+     * @global ADONewConnection
+     * @global array
      * @return boolean
      */
     function store()
@@ -311,7 +328,7 @@ class UserGroup {
      * Stores the user associations of the loaded group.
      * Returns TRUE no success, FALSE on failure.
      *
-     * @global object $objDatabase
+     * @global ADONewConnection
      * @return boolean
      */
     function storeUserAssociations()

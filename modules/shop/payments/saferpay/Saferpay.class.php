@@ -1,5 +1,21 @@
 <?php
+/**
+ * Interface to Saferpay
+ * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ */
 
+/**
+ * Interface to Saferpay
+ * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ */
 class Saferpay
 {
     /**

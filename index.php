@@ -1,7 +1,4 @@
 <?php
-
-define('_DEBUG', 0);
-
 /**
  * The main page for the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -58,6 +55,11 @@ define('_DEBUG', 0);
  * @uses        /modules/blog/homeContent.class.php
  * @uses        /modules/blog/index.class.php
  */
+
+/**
+ * Error reporting status
+ */
+define('_DEBUG', 0);
 
 //-------------------------------------------------------
 // Set error reporting
@@ -122,6 +124,10 @@ require_once dirname(__FILE__).'/core/API.php';
 // Initialize database object
 //-------------------------------------------------------
 $errorMsg = '';
+/**
+ * Database object
+ * @global ADONewConnection $objDatabase
+ */
 $objDatabase = getDatabaseObject($errorMsg);
 
 if ($objDatabase === false) {
@@ -177,8 +183,20 @@ if (   isset($_GET['handler'])
 //-------------------------------------------------------
 
 $objInit = new InitCMS();
+/**
+ * Frontend language ID
+ * @global integer $_LANGID
+ */
 $_LANGID = $objInit->getFrontendLangId();
+/**
+ * Core language data
+ * @global array $_CORELANG
+ */
 $_CORELANG = $objInit->loadLanguageData('core');
+/**
+ * Module specific data
+ * @global array $_ARRAYLANG
+ */
 $_ARRAYLANG = $objInit->loadLanguageData();
 
 //-------------------------------------------------------
@@ -200,6 +218,10 @@ require_once ASCMS_CORE_PATH.'/redirect.class.php';
 //-------------------------------------------------------
 // initialize objects
 //-------------------------------------------------------
+/**
+ * Template object
+ * @global HTML_Template_Sigma $objTemplate
+ */
 $objTemplate = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
 $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 

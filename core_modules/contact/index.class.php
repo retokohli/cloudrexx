@@ -180,8 +180,8 @@ class Contact extends ContactLib
      *
      * Reads out the data that has been submited by the visitor.
      * @access private
-     * @global array $_ARRAYLANG
-     * @global array $_CONFIG
+     * @global array
+     * @global array
      * @see getContactFormDetails(), getFormFields(), _uploadFiles(),
      * @return mixed An array with the contact details or FALSE if an error occurs
      */
@@ -244,7 +244,7 @@ class Contact extends ContactLib
      * Move all files that are allowed to be uploaded in the folder that
      * has been specified in the configuration option "File upload deposition path"
      * @access private
-     * @global array $_ARRAYLANG
+     * @global array
      * @param array Files that have been submited
      * @see getSettings(), _cleanFileName(), enabledUploadFileExtensions, errorMsg, FWSystem::getMaxUploadFileSize()
      * @return array A list of files that have been stored successfully in the system
@@ -348,7 +348,7 @@ class Contact extends ContactLib
      * JS, so this is done here again. Sadly, it is not possible to rewrite
      * the posted values again
      * @access private
-     * @global array $_ARRAYLANG
+     * @global array
      * @param array Submitted field values
      * @see getSettings(), initCheckTypes(), arrCheckTypes, _isSpam(), errorMsg
      * @return boolean Return FALSE if a field's value isn't valid, otherwise TRUE
@@ -423,8 +423,8 @@ class Contact extends ContactLib
      *
      * This method does store the request in the database
      * @access private
-     * @global object $objDatabase
-     * @global array $_ARRAYLANG
+     * @global ADONewConnection
+     * @global array
      * @param array Details of the contact request
      * @see errorMsg
      * @return boolean TRUE on succes, otherwise FALSE
@@ -461,8 +461,8 @@ class Contact extends ContactLib
      * This methode sends an email to all email addresses that are defined in the
      * option "Receiver address(es)" of the requested contact form.
      * @access private
-     * @global array $_ARRAYLANG
-     * @global array $_CONFIG
+     * @global array
+     * @global array
      * @param array Details of the contact request
      * @see _getEmailAdressOfString(), phpmailer::From, phpmailer::FromName, phpmailer::AddReplyTo(), phpmailer::Subject, phpmailer::IsHTML(), phpmailer::Body, phpmailer::AddAddress(), phpmailer::Send(), phpmailer::ClearAddresses()
      */
@@ -683,7 +683,7 @@ class Contact extends ContactLib
      * If a form field's value has been set through the http request,
      * then this method will parse the value and will set it in the template
      * @access private
-     * @global object $objDatabase
+     * @global ADONewConnection
      * @see HTML_Template_Sigma::setVariable
      */
     function _getParams()

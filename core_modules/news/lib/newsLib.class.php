@@ -25,7 +25,7 @@ class newsLibrary
 	/**
     * Gets the categorie option menu string
     *
-    * @global    object     $objDatabase
+    * @global    ADONewConnection
     * @param     string     $lang
     * @param     string     $selectedOption
     * @return    string     $modulesMenu

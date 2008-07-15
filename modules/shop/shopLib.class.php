@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Shop library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -11,22 +10,61 @@
  */
 
 // Order status constant values
+/**
+ * Order status: pending
+ */
 define('SHOP_ORDER_STATUS_PENDING',   0);
+/**
+ * Order status: confirmed
+ */
 define('SHOP_ORDER_STATUS_CONFIRMED', 1);
+/**
+ * Order status: deleted
+ */
 define('SHOP_ORDER_STATUS_DELETED',   2);
+/**
+ * Order status: cancelled
+ */
 define('SHOP_ORDER_STATUS_CANCELLED', 3);
+/**
+ * Order status: completed
+ */
 define('SHOP_ORDER_STATUS_COMPLETED', 4);
+/**
+ * Order status: paid
+ */
 define('SHOP_ORDER_STATUS_PAID',      5);
+/**
+ * Order status: shipped
+ */
 define('SHOP_ORDER_STATUS_SHIPPED',   6);
-// Total number.  Keep this up to date!
+/**
+ * Total number of states.
+ * @internal Keep this up to date!
+ */
 define('SHOP_ORDER_STATUS_COUNT',     7);
 
 // Payment result constant values
+/**
+ * Payment result: success (silent)
+ */
 define('SHOP_PAYMENT_RESULT_SUCCESS_SILENT', -1);
+/**
+ * Payment result: fail
+ */
 define('SHOP_PAYMENT_RESULT_FAIL',            0);
+/**
+ * Payment result: success
+ */
 define('SHOP_PAYMENT_RESULT_SUCCESS',         1);
+/**
+ * Payment result: cancel
+ */
 define('SHOP_PAYMENT_RESULT_CANCEL',          2);
-// Total number.  Keep this up to date!
+/**
+ * Total number of result types
+ * @internal Keep this up to date!
+ */
 define('SHOP_PAYMENT_RESULT_COUNT',           3);
 
 /**
@@ -329,7 +367,7 @@ class ShopLibrary
      * Initialize the shop configuration array
      *
      * The array created contains all of the common shop settings.
-     * @global $objDatabase Database object
+     * @global ADONewConnection
      */
     function _initConfiguration()
     {
@@ -412,7 +450,7 @@ class ShopLibrary
      * @static
      * @param   integer $shopTemplateId     The mail template ID
      * @param   integer $langId             The language ID
-     * @global  mixed   $objDatabase        Database object
+     * @global  ADONewConnection
      * @return  mixed                       The mail template array on success,
      *                                      false otherwise
      */
@@ -487,7 +525,7 @@ class ShopLibrary
      * Checks that the email address isn't already used by an other customer
      *
      * @access  private
-     * @global          $objDatabase    Database object
+     * @global  ADONewConnection
      * @param   string  $email          The users' email address
      * @param   integer $customerId     The customers' ID
      * @return  boolean                 True if the email address is unique, false otherwise
@@ -513,7 +551,7 @@ class ShopLibrary
      * Checks that the username isn't already used by an other customer
      *
      * @access  private
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @param   string  $username       The user name
      * @param   integer $customerId     The customers' ID
      * @return  boolean                 True if the user name is unique, false otherwise
@@ -544,7 +582,7 @@ class ShopLibrary
      * protected downloads, for example.
      * @param   integer   $orderId        The order ID
      * @return  string                    The custom order ID
-     * @global  mixed     $objDatabase    Database object
+     * @global  ADONewConnection
      */
     function getCustomOrderId($orderId)
     {

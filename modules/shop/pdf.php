@@ -12,22 +12,39 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-
+/**
+ * @ignore
+ */
 require_once realpath(dirname(__FILE__)."/../../").'/config/configuration.php';
 require_once ASCMS_CORE_PATH .'/API.php';
 require_once ASCMS_LIBRARY_PATH.'/ezpdf/class.pdf.php';
 require_once ASCMS_LIBRARY_PATH.'/ezpdf/class.ezpdf.php';
 
 $errorMsg = '';
+/**
+ * @ignore
+ */
 $objDatabase = getDatabaseObject($errorMsg);
 if ($objDatabase === false) {
     die('Database error: '.$errorMsg);
 }
 
 
+/**
+ * PDF Creator
+ *
+ * This file creates a PDF-File with the information from the Database
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author        Thomas Kaelin <gwanun@astalavista.com>
+ * @version       $Id:     Exp $
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ */
 class pdfCreator
 {
-    var $objDatabase;
+    var $_objDatabase;
     var $objResult;
     var $pdf;
     var $pdfSettingsFONT;

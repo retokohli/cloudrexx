@@ -1,7 +1,4 @@
 <?php
-
-define('_DEBUG', 0);
-
 /**
  * Modul Admin Index
  *
@@ -14,6 +11,12 @@ define('_DEBUG', 0);
  * @subpackage  admin
  * @todo        Edit PHP DocBlocks!
  */
+
+/**
+ * Error reporting status
+ * @ignore
+ */
+define('_DEBUG', 0);
 
 //-------------------------------------------------------
 // Set error reporting
@@ -94,11 +97,19 @@ $_FRONTEND_LANGID = $objInit->userFrontendLangId;
 //-------------------------------------------------------
 // language array for the core system
 //-------------------------------------------------------
+/**
+ * Core language data
+ * @ignore
+ */
 $_CORELANG = $objInit->loadLanguageData('core');
 
 //-------------------------------------------------------
 // language array for all modules
 //-------------------------------------------------------
+/**
+ * Module specific data
+ * @ignore
+ */
 $_ARRAYLANG = $objInit->loadLanguageData();
 $_ARRAYLANG = array_merge($_ARRAYLANG, $_CORELANG);
 
@@ -124,6 +135,9 @@ if (preg_match('/^(\w+)(\d+)$/', $cmd, $arrMatch)) {
 // This guarantees full backward compatibility with old code, templates
 // and database tables for the default instance.
 $moduleIndex = (empty($arrMatch[2]) ? '' : $arrMatch[2]);
+/**
+ * @ignore
+ */
 define('MODULE_INDEX', $moduleIndex);
 // Simple way to distinguish any number of cloned modules
 // and apply individual access rights.  This offset is added
@@ -699,6 +713,9 @@ switch ($plainCmd) {
 //            print $objRs->fields['id'];
 //            Permission::checkAccess($objRs->fields['id'], 'static');
         $modulespath = ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/admin.class.php';
+        /**
+         * @ignore
+         */
         define('CALENDAR_MANDATE', MODULE_INDEX);
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);

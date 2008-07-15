@@ -239,8 +239,8 @@ class ContentManager
     * Show copy page
     *
     * @global    array Core language
-    * @global    array Language
-    * @global    array Template
+    * @global    FWLanguage
+    * @global    HTML_Template_Sigma
     */
     function showCopyPage()
     {
@@ -279,11 +279,11 @@ class ContentManager
     }
 
     /**
-    * Copy page content
-    *
-     * @global    mixed      Database
-    * @global    array    Core language
-    */
+     * Copy page content
+     *
+     * @global   ADONewConnection
+     * @global    array    Core language
+     */
     function _copyAll()
     {
         global $objDatabase, $_CORELANG;
@@ -405,8 +405,9 @@ class ContentManager
     /**
     * Deletes all global site content
     *
-     * @global mixed  Database
-    * @global array  Core language
+    * @global ADONewConnection
+    * @global array
+    * @global FWLanguage
     */
     function _deleteAll($langId=0)
     {
@@ -483,14 +484,13 @@ class ContentManager
     }
 
     /**
-    * Show sitemap
-    *
-    * @version   1.0        initial version
-     * @global    mixed      Database
-     * @global    mixed      Template
-     * @global    mixed      Permission
-     * @global    array      Core language
-    */
+     * Show sitemap
+     *
+     * @version   1.0        initial version
+     * @global    ADONewConnection
+     * @global    HTML_Template_Sigma
+     * @global    array
+     */
     function contentOverview()
     {
         global $objDatabase, $objTemplate, $_CORELANG;
@@ -552,12 +552,12 @@ class ContentManager
     }
 
     /**
-    * Create new page
-    *
-     * @global    mixed      Database
+     * Create new page
+     *
+     * @global    ADONewConnection
      * @global    array      Core language
-     * @global    mixed      Template
-    */
+     * @global    HTML_Template_Sigma
+     */
     function showNewPage()
     {
         global $objDatabase, $_CORELANG, $objTemplate;
@@ -765,13 +765,13 @@ class ContentManager
     }
 
     /**
-    * @access private
-    * @return array
-     * @global    mixed      Database
-    * @param groupType string
-    * @param pageId int (optional)
-    * @desc gets all frontend or backend groups ( id,name ) from this page
-    */
+     * @access private
+     * @return array
+     * @global    ADONewConnection
+     * @param groupType string
+     * @param pageId int (optional)
+     * @desc gets all frontend or backend groups ( id,name ) from this page
+     */
     function _getAssignedGroups($groupType, $pageId=0)
     {
         global $objDatabase;
@@ -836,14 +836,14 @@ class ContentManager
 	}
 
     /**
-    * Content editing
-    *
-    * This method manages all aspects of editing of content
-    *
-     * @global  mixed   Database
-    * @global  array   Core language
-     * @global  mixed   Template
-    */
+     * Content editing
+     *
+     * This method manages all aspects of editing of content
+     *
+     * @global  ADONewConnection
+     * @global  array   Core language
+     * @global  HTML_Template_Sigma
+     */
     function showEditPage($pageId = '')
     {
         global $objDatabase, $_CORELANG, $objTemplate;
@@ -1549,9 +1549,9 @@ class ContentManager
     /**
     * Adds a new page
     *
-     * @global    mixed      Database
+    * @global    ADONewConnection 
     * @global    array      Core language
-    * @global    array      Configuration
+    * @global    HTML_Template_Sigma
     */
     function addPage()
     {
@@ -1750,11 +1750,10 @@ class ContentManager
 
     /**
      * Delete page content (with all subcategories!)
-    *
-     * @global    mixed      Database
-    * @global    array      Core language
-    * @global    array      Configuration
-    */
+     *
+     * @global    ADONewConnection
+     * @global    array      Core language
+     */
     function deleteContent($pageId)
     {
         global $objDatabase, $_CORELANG;
@@ -1854,7 +1853,7 @@ class ContentManager
     /**
     * Add page to repository
     *
-     * @global    mixed      Database
+    * @global    ADONewConnection
     * @global    array      Core language
     */
     function addToRepository()
@@ -1962,7 +1961,7 @@ class ContentManager
     /**
     * Gets the search option menus string
     *
-     * @global    mixed      Database
+    * @global    ADONewConnection
     * @param     string     optional $selectedOption
     * @return    string     $modulesMenu
     */
@@ -2071,7 +2070,7 @@ class ContentManager
     * Get dropdown menue
     *
     * Gets back a dropdown menu like  <option value='catid'>Catname</option>
-     * @global   mixed    Database
+    * @global   ADONewConnection
     * @param    integer  $selectedid
     * @return   string   $result
     */
@@ -2133,7 +2132,7 @@ class ContentManager
     /**
     * Change page protection
     *
-     * @global    mixed      Database
+    * @global    ADONewConnection
     * @global    array      Core language
     */
     function changeProtection()
@@ -2372,7 +2371,7 @@ class ContentManager
     /**
     * Do navigation dropdown
     *
-     * @global    mixed      Database
+    * @global    ADONewConnection
     * @global    array      Core language
     * @param    integer  $parcat
     * @param    integer  $level
@@ -2400,7 +2399,7 @@ class ContentManager
     /**
     * Change the "activestatus"-flag of a page
     *
-     * @global     mixed         Database
+    * @global    ADONewConnection 
     * @param    integer      $intPageId: The page with this id will be changed
     */
     function changeActiveStatus($intPageId,$intNewStatus='') {
@@ -2463,15 +2462,15 @@ class ContentManager
 
     /**
      * Avoid circular references in categories.
-    *
+     *
      * Note: This method is called recursively.
-     * @global  mixed       $objDatabase    Database object
+     * @global  ADONewConnection
      * @param   integer     $intPageId      The page ID to be checked
      * @param   integer     $intPid         The new parent category ID
      * @param   boolean     $boolFirst      Has to be true for the first call
      * @return  boolean     True if the parent category ID is valid,
      *                      false otherwise (circular reference detected)
-    */
+     */
     function checkParcat($intPageId,$intPid,$boolFirst=true)
     {
         global $objDatabase;
@@ -2516,10 +2515,10 @@ class ContentManager
 
 
     /**
-    * The function collects all categories without an existing parcat and assigns it to "lost and found"
-    *
-     * @global     mixed         Database
-    */
+     * The function collects all categories without an existing parcat and assigns it to "lost and found"
+     *
+     * @global     ADONewConnection
+     */
     function collectLostPages() {
         global $objDatabase;
 

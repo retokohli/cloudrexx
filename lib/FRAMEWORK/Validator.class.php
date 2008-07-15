@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Framework Validator
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -10,13 +9,12 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/*
-Another proposal for the e-mail regex from in here:
-
-'/\s([_a-zA-Z0-9-]+(?:\.?[_a-zA-Z0-9-])*
-@((?:[a-zA-Z0-9-]+\.)+(?:[a-zA-Z]{2,4})|localhost))\s/';
-
-TODO: Find the up to date RFC and do it right.
+/**
+ * Regular Expression for an e-mail address
+ * @internal Another proposal for the e-mail regex from in here:
+   '/\s([_a-zA-Z0-9-]+(?:\.?[_a-zA-Z0-9-])*
+    @((?:[a-zA-Z0-9-]+\.)+(?:[a-zA-Z]{2,4})|localhost))\s/';
+    TODO: Find the up to date RFC and do it right.
 */
 define('VALIDATOR_REGEX_EMAIL',
           '[a-z0-9]+([-._][a-z0-9]+)*'.       // user

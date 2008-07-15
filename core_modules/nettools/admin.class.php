@@ -10,7 +10,7 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once ASCMS_FRAMEWORK_PATH . '/NetToolsLib.class.php';
 
@@ -61,10 +61,10 @@ class netToolsManager extends NetToolsLib {
     *
     * Get the content of the requested page
     *
-    * @access	public
-    * @global	object	$objTemplate
-    * @see	_showRequests(), _showMostViewedPages(), _showSpiders(), _showClients(), _showSearchTerms()
-    * @return	mixed	Template content
+    * @access    public
+    * @global    HTML_Template_Sigma
+    * @see    _showRequests(), _showMostViewedPages(), _showSpiders(), _showClients(), _showSearchTerms()
+    * @return    mixed    Template content
     */
     function getContent(){
     	global $objTemplate;

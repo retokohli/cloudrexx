@@ -31,9 +31,9 @@ class ForumAdmin extends ForumLibrary {
 
     /**
      * Constructor    -> Create the module-menu and an internal template-object
-     * @global     object        $objInit
-     * @global    object        $objTemplate
-     * @global    array        $_ARRAYLANG
+     * @global    InitCMS 
+     * @global    HTML_Template_Sigma
+     * @global    array
      */
     function __construct()
     {
@@ -53,7 +53,7 @@ class ForumAdmin extends ForumLibrary {
     /**
     * Perform the right operation depending on the $_GET-params
     *
-    * @global     object        $objTemplate
+    * @global     HTML_Template_Sigma
     */
     function getPage() {
         global $objTemplate;
@@ -148,7 +148,7 @@ class ForumAdmin extends ForumLibrary {
     /**
      * Show an overview of all forums (categories)
      *
-     * @global     array        $_ARRAYLANG
+     * @global     array
      */
     function showCategoryOverview() {
         global $_ARRAYLANG;
@@ -311,8 +311,8 @@ class ForumAdmin extends ForumLibrary {
     /**
      * Change the "status"-flag of a category. If 2nd parameter is empty, the current status will be inverted.
      *
-     * @global     object        $objDatabase
-     * @global     array        $_ARRAYLANG
+     * @global     ADONewConnection
+     * @global     array
      * @param    integer        $intCatId: The status of the category with this id will be inverted
      * @param     integer        $intNewStatus: The category will be set to 0 (inactive) or 1 (active).
      */
@@ -356,8 +356,8 @@ class ForumAdmin extends ForumLibrary {
     /**
      * Delete a category (and all its subcategories) and postings of those categories. The function is used recursive.
      *
-     * @global     object        $objDatabase
-     * @global     array        $_ARRAYLANG
+     * @global     ADONewConnection
+     * @global     array
      * @param     integer     $intCatId: The category with this id will be deleted
      */
     function deleteCategory($intCatId) {
@@ -424,8 +424,8 @@ class ForumAdmin extends ForumLibrary {
     /**
      * Save the sorting of categories/forums
      *
-     * @global     object        $objDatabase
-     * @global     array        $_ARRAYLANG
+     * @global     ADONewConnection
+     * @global     array
      */
     function saveCategorySorting() {
         global $objDatabase, $_ARRAYLANG;
@@ -473,8 +473,8 @@ class ForumAdmin extends ForumLibrary {
     /**
      * Add a new category / forum to database.
      *
-     * @global     object        $objDatabase
-     * @global     array        $_ARRAYLANG
+     * @global     ADONewConnection
+     * @global     array
      */
     function addCategory() {
         global $objDatabase, $_ARRAYLANG;
@@ -543,8 +543,8 @@ class ForumAdmin extends ForumLibrary {
     /**
      * Edit an existing category / forum with the id in the parameter
      *
-     * @global     object        $objDatabase
-     * @global     array        $_ARRAYLANG
+     * @global     ADONewConnection
+     * @global     array
      * @param    integer        $intCategoryId: The category / forum with this id should be edited
      */
     function editCategory($intCategoryId) {
@@ -771,8 +771,8 @@ class ForumAdmin extends ForumLibrary {
     /**
      * Show "access rights"-form for a selected category.
      *
-     * @global     object        $objDatabase
-     * @global     array        $_ARRAYLANG
+     * @global    ADONewConnection 
+     * @global     array
      * @param    integer        $intCategoryId: The category / forum with this id should be edited
      */
     function editCategoryAccess($intCategoryId) {
@@ -851,8 +851,8 @@ class ForumAdmin extends ForumLibrary {
     /**
      * This function collects and filter all information from the "edit-access"-form.
      *
-     * @global     object        $objDatabase
-     * @global     array        $_ARRAYLANG
+     * @global     ADONewConnection
+     * @global     array
      */
     function updateCategoryAccess() {
         global $objDatabase, $_ARRAYLANG;
@@ -1019,8 +1019,9 @@ class ForumAdmin extends ForumLibrary {
     /**
      * Validate and save new settings.
      *
-     * @global    object        $objDatabase
-     * @global     array        $_ARRAYLANG
+     * @global    ADONewConnection
+     * @global     array
+     * @global     array
      */
     function updateSettings() {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;

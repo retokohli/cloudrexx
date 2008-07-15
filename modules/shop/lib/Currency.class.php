@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Currencies manager.
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -282,7 +281,7 @@ class Currency
      * @param   integer   $currencyId   The currency ID
      * @return  mixed                   The currency code on success,
      *                                  false otherwise
-     * @global  mixed     $objDatabase  Database object
+     * @global  ADONewConnection
      */
     //static
     function getCodeById($currencyId)

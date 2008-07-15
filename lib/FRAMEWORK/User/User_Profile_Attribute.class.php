@@ -1,4 +1,20 @@
 <?php
+/**
+ * User Profile Attribute Object
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
+ * @version     2.0.0
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+/**
+ * User Profile Attribute Object
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
+ * @version     2.0.0
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */ 
 
 class User_Profile_Attribute
 {
@@ -862,7 +878,7 @@ class User_Profile_Attribute
     /**
      * Store attribute names
      *
-     * @global object $objDatabase
+     * @global ADONewConnection
      * @return boolean TRUE on success, otherwise FALSE
      */
     function storeNames()
@@ -914,7 +930,8 @@ class User_Profile_Attribute
      *
      * Create a new access ID (if there hasn't already one be setted) and associate it with the groups defined in $this->access_group_ids
      *
-     * @global object $objDatabase
+     * @global ADONewConnection
+     * @global array
      * @return boolean TRUE on success, otherwiese FALSE
      */
     function storeProtection()
@@ -1576,7 +1593,11 @@ class User_Profile_Attribute
         return $this->getTypeDescription().'<input type="hidden" name="access_attribute_type" value="'.$this->arrTypeAssociation[isset($this->arrAttributes[$this->parent_id]['type']) ? $this->arrAttributes[$this->parent_id]['type'] : ''][0].'" />';
     }
 
-
+    /**
+     * Get element type of the attribute
+     *
+     * @return string Element typ
+     */
     function getType()
     {
         return $this->type;

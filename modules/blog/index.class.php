@@ -32,7 +32,7 @@ class Blog extends BlogLibrary  {
     /**
     * Constructor   -> Call parent-constructor, set language id and create local template-object
     *
-    * @global   integer     $_LANGID
+    * @global   integer
     */
     function __construct($strPageContent)
     {
@@ -92,7 +92,7 @@ class Blog extends BlogLibrary  {
     /**
      * Shows all existing entries of the blog in descending order.
      *
-     * @global  array       $_ARRAYLANG
+     * @global  array
      */
     function showEntries() {
         global $_ARRAYLANG;
@@ -149,9 +149,9 @@ class Blog extends BlogLibrary  {
     /**
      * Shows detail-page (content, voting & comments) for a single message. It checks also for new comments (POST) or votings (GET).
      *
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
-     * @global  array       $_CONFIG
+     * @global  array
+     * @global  ADONewConnection
+     * @global  array
      * @param   integer     $intMessageId: The details of this page will be shown
      */
     function showDetails($intMessageId) {
@@ -358,7 +358,7 @@ class Blog extends BlogLibrary  {
     /**
      * Count a new visitor for a message. Increments the field "hit" by one.
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @param   integer     $intMessageId: The hit will be counted for this message.
      */
     function addHit($intMessageId) {
@@ -380,8 +380,8 @@ class Blog extends BlogLibrary  {
     /**
      * Insert a new voting for a message into database.
      *
-     * @global  object      $objDatabase
-     * @global  array       $_ARRAYLANG
+     * @global  ADONewConnection
+     * @global  array
      * @param   integer     $intMessageId: The voting will be added to this message.
      * @param   integer     $intVoting: the mark for the value. Can be an integer between 1 (worst) and 10 (best).
      */
@@ -421,9 +421,9 @@ class Blog extends BlogLibrary  {
      * Insert a new comment for a message into database, if the function is activated. Furthermore, all input values are validated.
      * Sends also the notification mail to the administrator, if it is enabled in options.
      *
-     * @global  object      $objDatabase
-     * @global  array       $_ARRAYLANG
-     * @global  array       $_CONFIG
+     * @global  ADONewConnection
+     * @global  array
+     * @global  array
      */
     function addComment() {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
@@ -560,7 +560,7 @@ class Blog extends BlogLibrary  {
     /**
      * Creates an voting bar (123...10) for a specific message.
      *
-     * @global  array       $_ARRAYLANG
+     * @global  array
      * @param   integer     $intMessageId: The voting bar will be created for the message with this id.
      * @return  string      HTML-source for the voting bar.
      */
@@ -692,7 +692,7 @@ class Blog extends BlogLibrary  {
     /**
      * Create an error-string for validation of input.
      *
-     * @global  array       $_ARRAYLANG
+     * @global  array
      * @return  string      Error string for validation of input.
      */
     function getFormError($strFieldName) {
@@ -717,8 +717,8 @@ class Blog extends BlogLibrary  {
     /**
      * Shows the "Search"-page for the blog-module.
      *
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  array
+     * @global  ADONewConnection
      */
     function showSearch() {
         global $_ARRAYLANG, $objDatabase;

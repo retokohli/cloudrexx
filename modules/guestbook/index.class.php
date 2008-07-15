@@ -10,7 +10,7 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once ASCMS_MODULE_PATH . '/guestbook/Lib.class.php';
 
@@ -36,7 +36,7 @@ class Guestbook extends GuestbookLibrary
     /**
      * Constructor
      * @param  string   $pageContent
-     * @global integer  $_LANGID
+     * @global integer
      * @access public
      */
     function __construct($pageContent)
@@ -77,9 +77,9 @@ class Guestbook extends GuestbookLibrary
     /**
      * Gets the guestbook status
      *
-     * @global  array    $_CONFIG
-     * @global  array    $_ARRAYLANG
-     * @global  object   $objDatabase
+     * @global  ADONewConnection
+     * @global  array
+     * @global  array
      * @access private
      */
 

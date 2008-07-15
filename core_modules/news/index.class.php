@@ -49,7 +49,7 @@ class news extends newsLibrary {
     /**
      * PHP5 constructor
      * @param  string  $pageContent
-     * @global string  $_LANGID
+     * @global integer
      * @access public
      */
     function __construct($pageContent)
@@ -96,9 +96,9 @@ class news extends newsLibrary {
     /**
     * Gets the news details
     *
-    * @global    array     $_CONFIG
-    * @global    array     $_ARRAYLANG
-    * @global    object    $objDatabase
+    * @global    array
+    * @global    ADONewConnection
+    * @global    array
     * @return    string    parsed content
     */
     function getDetails()
@@ -204,9 +204,9 @@ class news extends newsLibrary {
     /**
     * Gets the list with the headlines
     *
-    * @global    object    $objDatabase
-    * @param     integer   $pos
-    * @param     string    $page_content
+    * @global    array
+    * @global    ADONewConnection
+    * @global    array
     * @return    string    parsed content
     */
     function getHeadlines() {
@@ -453,7 +453,8 @@ class news extends newsLibrary {
     * Get the submit, login or the noaccess page depending on the configuration
     *
     * @access private
-    * @global array $_ARRAYLANG
+    * @global array
+    * @global ADONewConnection
     * @see HTML_Template_Sigma::setTemplate(), modulemanager::getModules(), Permission::checkAccess()
     * @return string content
     */
@@ -603,8 +604,8 @@ class news extends newsLibrary {
     * Insert a new news message
     *
     * @access private
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
+    * @global ADONewConnection
+    * @global array
     * @return boolean true on success - false on failure
     */
     function _insert()
@@ -679,7 +680,8 @@ class news extends newsLibrary {
     * Show feed page
     *
     * @access private
-    * @global array $_ARRAYLANG
+    * @global array
+    * @global integer
     * @return string Template output
     */
     function _showFeed()

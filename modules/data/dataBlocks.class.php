@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Data
  * @copyright   CONTREXX CMS - COMVATION AG

@@ -34,9 +34,9 @@ class LanguageManager
 
     /**
      * Constructor
-     * @global  mixed   Database
-     * @global  array   Core language
-     * @global  mixed   Template
+     * @global  ADONewConnection
+     * @global  array
+     * @global  HTML_Template_Sigma
      * @return  void
      */
     function __construct() {
@@ -78,8 +78,8 @@ class LanguageManager
     /**
      * Gets the requested methods
      *
-     * @global   array     Core language
-     * @global   object    Template
+     * @global   array
+     * @global   HTML_Template_Sigma
      * @return   string    Parsed content
      */
     function getLanguagePage()
@@ -138,8 +138,8 @@ class LanguageManager
     /**
      * deletes the selected language
      *
-     * @global    array      Core language
-     * @global    object     Database
+     * @global    array
+     * @global    ADONewConnection
      * @return    boolean    True on success, false on failure
      */
     function deleteLanguage()
@@ -166,8 +166,8 @@ class LanguageManager
     /**
      * deletes the selected language variables
      *
-     * @global  array       Core language
-     * @global  object      Database
+     * @global  array
+     * @global  ADONewConnection
      * @return  boolean     True on success, false on failure
      */
     function deleteVariable()
@@ -185,8 +185,8 @@ class LanguageManager
 
     /**
      * Adds a new language and imports language variables from default language
-     * @global  array   Core language
-     * @global  mixed   Database
+     * @global  array
+     * @global  ADONewConnection
      * @return  boolean    True on success, false on failure
      */
     function addLanguage()
@@ -315,8 +315,8 @@ class LanguageManager
     /**
      * Gets the language add variable page
      *
-     * @global  array       Core language
-     * @global  object      Database
+     * @global  array
+     * @global  ADONewConnection
      * @return  boolean     True on success, false on failure
      */
     function addUpdateVariable()
@@ -534,9 +534,9 @@ class LanguageManager
     /**
     * Sets the language add/mod variable page
     *
-    * @global    object     Database
-    * @global    array      Core language
-    * @global    object     Template
+    * @global    ADONewConnection
+    * @global    array
+    * @global    HTML_Template_Sigma
     * @return    void
     */
     function modifyVariables()
@@ -675,9 +675,9 @@ class LanguageManager
     /**
      * Set the language variable default page
      *
-     * @global    array      Core language
-     * @global    object     Database
-     * @global    object     Template
+     * @global    array
+     * @global    ADONewConnection
+     * @global    HTML_Template_Sigma
      * @return    void
      */
     function listVariables()
@@ -851,9 +851,9 @@ class LanguageManager
     /**
      * Set the language list page
      *
-     * @global    array     Core language
-     * @global    object    Database
-     * @global    object    Template
+     * @global    array
+     * @global    ADONewConnection
+     * @global    HTML_Template_Sigma
      * @return    void
      */
     function languageOverview()
@@ -943,8 +943,8 @@ class LanguageManager
     /**
      * add and modify language values
      *
-     * @global  array       Core language
-     * @global  object      Database
+     * @global  array
+     * @global  ADONewConnection
      * @return  boolean     True on success, false on failure
      */
     function modifyLanguage()
@@ -1087,8 +1087,8 @@ class LanguageManager
     /**
      * createXML: parse out the XML
      *
-     * @global  mixed   Database
-     * @global  array   Core language
+     * @global  ADONewConnection
+     * @global  array
      * @return  void
      */
     function createFiles()

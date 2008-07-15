@@ -37,8 +37,6 @@ class Weight
      *
      * Does nothing.
      * @access      public
-     * @package     contrexx
-     * @subpackage  module_shop
      * @return      Weight
      */
     function Weight()
@@ -51,9 +49,6 @@ class Weight
      *
      * Does nothing.
      * @access      public
-     * @global      $_ARRAYLANG     (not implemented -- uses hard coded units, for the time being...)
-     * @package     contrexx
-     * @subpackage  module_shop
      * @return      Weight
      */
     function __construct()

@@ -1,5 +1,19 @@
 <?php
+/**
+ * The Shop
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Ivan Schmid <ivan.schmid@comvation.com>
+ * @access      public
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ */
 
+/**
+ * Debug mode
+ */
 define('_SHOP_DEBUG', 0);
 
 /*
@@ -70,17 +84,6 @@ And finally:
  */
 
 
-/**
- * The Shop
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Ivan Schmid <ivan.schmid@comvation.com>
- * @access      public
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
- */
 
 /**
  * Common methods for both frontend and backend of the Shop.
@@ -169,6 +172,8 @@ function shopUseSession()
  *          Customer, Product, ...
  * @todo    It doesn't really make sense to extend ShopLibrary.  Instead, dissolve
  *          ShopLibrary into classes like Shop, Zone, Country, Payment, etc.
+ * @package contrexx
+ * @subpackage module_shop
  */
 class Shop extends ShopLibrary
 {
@@ -355,7 +360,7 @@ class Shop extends ShopLibrary
     /**
      * Initialize product attributes from database
      *
-     * @global  mixed   $objDatabase    Database
+     * @global  ADONewConnection
      * @see     $arrProductAttributes
      */
     function initProductAttributes()
@@ -635,7 +640,7 @@ class Shop extends ShopLibrary
      * Generate the base structure of the JavsScript cart and put it
      * in the template block shopJsCart.
      * @access  public
-     * @global  array   $_ARRAYLANG Language array
+     * @global  array
      * @param   string  $cartTpl    Template of the JavaScript cart
      * @return  string              The parsed JavaScript cart template
      */
@@ -831,7 +836,7 @@ class Shop extends ShopLibrary
      * @param   integer     $parentId   The optional parent ShopCategory ID,
      *                                  defaults to 0 (zero).
      * @return  boolean                 True on success, false otherwise
-     * @global  array       $_ARRAYLANG Language array
+     * @global  array
      */
     function showCategories($parentId=0)
     {
@@ -1067,10 +1072,10 @@ class Shop extends ShopLibrary
      * Set up the shop page with products and discounts
      *
      * @return unknown                      Sometimes boolean, sometimes void
-     * @global  mixed       $objDatabase    Database object
-     * @global  array       $_ARRAYLANG     Language array
-     * @global  array       $_CONFIG        Core configuration array, see {@link /config/settings.php}
-     * @global  string(?)   $themesPages    Themes pages(?)
+     * @global  ADONewConnection
+     * @global  array
+     * @global  array   Core configuration array, see {@link /config/settings.php}
+     * @global  string   Themes pages(?)
      * @todo    Determine return type
      * @todo    Documentation!
      */
@@ -1895,8 +1900,8 @@ class Shop extends ShopLibrary
     /**
      * Returns the JavaScript functions used by the shop
      *
-     * @global  array   $_ARRAYLANG         Language array
-     * @global  array   $_CONFIGURATION     Core configuration array, see {@link /config/settings.php}
+     * @global  array   Language array
+     * @global  array   Core configuration array, see {@link /config/settings.php}
      * @return  string                      string containung the JavaScript functions
      *
      */
@@ -2246,7 +2251,7 @@ sendReq('', 1);
     /**
      * Authenticate a Customer
      *
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @return  boolean                 True if the Customer could be
      *                                  authenticated successfully,
      *                                  false otherwise.
@@ -2535,7 +2540,8 @@ sendReq('', 1);
      * in an array.
      * Additionally it also computes the new count of total products in the cart
      * and calculates the total amount.
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
+     * @global  array
      * @return  array                   Array with all products that are stored in the cart
      */
     function _parseCart()
@@ -2643,7 +2649,7 @@ sendReq('', 1);
      *
      * Generate the shop cart page (?section=shop&cmd=cart).
      *
-     * @global  array $_ARRAYLANG   Language array
+     * @global  array
      * @param   array $arrProducts  Array with all the products taken from the cart,
      *                              see {@link _parseCart()}
      * @see _getCountriesMenu(), HTML_Template_Sigma::setVariable(), HTML_Template_Sigma::parse(), HTML_Template_Sigma::hideBlock()
@@ -2745,7 +2751,7 @@ sendReq('', 1);
     /**
      * Show the login page
      *
-     * @global  array   $_ARRAYLANG Language array
+     * @global  array
      * @see _authenticate(), is_auth(), HTML_Template_Sigma::setVariable()
      */
     function login()
@@ -3369,7 +3375,7 @@ sendReq('', 1);
      * Set up the LSV page (internal LSV form provider)
      *
      * Currently, this is implemented as a part of the payment page.
-     * @global  array   $_ARRAYLANG     Language array
+     * @global  array
      * @return  boolean                 True if the account information is complete,
      *                                  false otherwise
      */
@@ -3419,8 +3425,8 @@ sendReq('', 1);
      *  by printing.  This issue should be resolved by replacing the
      *  <textarea> with a variable height element, such as a table, or
      *  a simple div.
-     * @global  mixed   $objDatabase    Database object
-     * @global  array   $_ARRAYLANG     Language array
+     * @global  ADONewConnection
+     * @global  array
      */
     function einzug()
     {
@@ -4747,8 +4753,8 @@ right after the customer logs in!
      * @static
      * @param   integer $selectedId     The optional preselected Manufacturer ID
      * @return  string                  The Manufacturer dropdown menu HTML code
-     * @global  mixed   $objDatabase    Database object
-     * @global  array   $_ARRAYLANG     Language array
+     * @global  ADONewConnection
+     * @global  array
      * @todo    Move this to the Manufacturer class!
      */
     //static
@@ -4791,7 +4797,7 @@ right after the customer logs in!
      * @param   integer $id             The Manufacturer ID
      * @return  string                  The Manufacturer name on success,
      *                                  or the empty string on failure
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @todo    Move this to the Manufacturer class!
      */
     //static
@@ -4818,7 +4824,7 @@ right after the customer logs in!
      * @param   integer $id             The Manufacturer ID
      * @return  string                  The Manufacturer URL on success,
      *                                  or the empty string on failure
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @todo    Move this to the Manufacturer class!
      */
     //static
@@ -4860,7 +4866,7 @@ right after the customer logs in!
      * This method fails if there is no Customer logged in or if there
      * is some weird problem with the Discount class.
      * @param   double  $orderAmount        The amount of the current order
-     * @global  array   $_ARRAYLANG         Language array
+     * @global  array
      * @return  boolean                     True on success, false otherwise.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
@@ -4906,7 +4912,7 @@ right after the customer logs in!
      * user accounts created for the downloads.
      * @param   integer   $orderId        The order ID
      * @return  boolean                   True on success, false otherwise
-     * @global  mixed     $objDatabase    Database object
+     * @global  ADONewConnection
      */
     function deleteOrder($orderId)
     {
@@ -4981,7 +4987,7 @@ right after the customer logs in!
      * Please *DO NOT* remove this method, despite the site terms and
      * conditions have been removed from the Shop!
      * This has been requested by some shopkeepers and may be used at will.
-     * @global  array   $_ARRAYLANG     Language array
+     * @global  array
      */
     function showShipmentTerms()
     {

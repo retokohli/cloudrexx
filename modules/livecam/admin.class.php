@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Livecam
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -11,7 +10,7 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once ASCMS_MODULE_PATH.'/livecam/lib/livecamLib.class.php';
 
@@ -42,8 +41,9 @@ class LivecamManager extends LivecamLibrary
     /**
     * PHP5 constructor
     *
-    * @global object $objTemplate
-    * @global array $_ARRAYLANG
+    * @global HTML_Template_Sigma
+    * @global array
+    * @global array
     */
     function __construct()
     {
@@ -75,7 +75,8 @@ class LivecamManager extends LivecamLibrary
      * Get a page of the block system administration
      *
      * @access public
-     * @global object $objTemplate
+     * @global HTML_Template_Sigma
+     * @global array
      */
     function getPage()
     {
@@ -114,7 +115,9 @@ class LivecamManager extends LivecamLibrary
      * Show the cameras     
      * 
      * @access private
-     * @global array $_ARRAYLANG
+     * @global array
+     * @global array
+     * @global array
      */
     function showCams()
     {
@@ -256,7 +259,9 @@ class LivecamManager extends LivecamLibrary
      * Save Settings
      *
      * @access private
-     * @global objDatabase, $_ARRAYLANG
+     * @global ADONewConnection
+     * @global array
+     * @global array
      */
     private function saveSettings()
     {
@@ -291,7 +296,7 @@ class LivecamManager extends LivecamLibrary
      * Saves one option
      *
      * @access private
-     * @global objDatabase
+     * @global ADONewConnection
      */
     private function save($setname, $setval)
     {

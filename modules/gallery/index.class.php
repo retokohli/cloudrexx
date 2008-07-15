@@ -1,4 +1,15 @@
 <?php
+/**
+ * Gallery
+ *
+ * This class is used to publish the pictures of the gallery on the frontend.
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.2
+ * @package     contrexx
+ * @subpackage  module_gallery
+ * @todo        Edit PHP DocBlocks!
+ */
 
 /**
  * Gallery
@@ -37,9 +48,9 @@ class Gallery {
     /**
     * Constructor
     *
-    * @global array $_ARRAYLANG
-    * @global object $objDatabase
-    * @global integer $_LANGID
+    * @global ADONewConnection
+    * @global array
+    * @global integer
     */
     function __construct($pageContent)
     {
@@ -360,8 +371,8 @@ class Gallery {
     /**
     * Show the picture with the id $intPicId (with popup)
     *
-    * @global     object        $objDatabase
-    * @global     array        $_ARRAYLANG
+    * @global    ADONewConnection
+    * @global    array
     * @param     integer        $intPicId: The id of the picture which should be shown
     */
     function showPicture($intPicId)
@@ -599,8 +610,8 @@ class Gallery {
     /**
      * Shows the Category-Tree
      *
-     * @global  array       $_ARRAYLANG     Language array
-     * @global  mixed       $objDatabase    Database object
+     * @global  array
+     * @global  ADONewConnection
      * @return  string                      The category tree
      */
     function getCategoryTree()
@@ -718,8 +729,9 @@ class Gallery {
     /**
      * Shows the Overview of categories
      *
-     * @global  array   $_ARRAYLANG
-     * @global  object  $objDatabase
+     * @global  ADONewConnection
+     * @global  array
+     * @global  array
      * @param   var     $intParentId
      */
     function showCategoryOverview($intParentId=0)
@@ -1097,9 +1109,8 @@ END;
 
     /**
     * Add a new comment to database
-    * @global     array        $_POST
-    * @global     array        $_SERVER
-    * @global     object        $objDatabase
+    * @global     ADONewConnection
+    * @global     Cache
     */
     function addComment()
     {
@@ -1143,9 +1154,8 @@ END;
 
     /**
     * Add a new voting to database
-    * @global     array        $_SERVER
-    * @global     array        $_COOKIE
-    * @global     object        $objDatabase
+    * @global     ADONewConnection
+    * @global     Cache
     * @param     integer        $intPicId: The picture with this id will be rated
     * @param     integer        $intMark: This mark will be set for the picture
     */

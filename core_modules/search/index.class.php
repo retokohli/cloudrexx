@@ -25,12 +25,12 @@ require_once ASCMS_CORE_PATH.'/Modulechecker.class.php';
 /**
 * Gets the searchpage
 *
-* @global	 array		$_CONFIG
-* @global	 array      $_ARRAYLANG
-* @global	 mixed      $objDatabase
-* @param     integer	$pos  get the results from pos
-* @param     string		$page_content get the content from index.php
-* @return    string		Result page content
+* @global     array
+* @global     array
+* @global     ADONewConnection
+* @param     integer    $pos  get the results from pos
+* @param     string        $page_content get the content from index.php
+* @return    string        Result page content
 */
 function search_getSearchPage($pos, $page_content)
 {
@@ -423,13 +423,14 @@ function search_searchQuery($section, $searchTerm)
  *
  * Gets the results in an array
  * @author  Christian Wehrli <christian.wehrli@astalavista.ch>
- * @global mixed    $_CONFIG
- * @global mixed    $objDatabase
- * @param  string	$query			the searching query
- * @param  string	$section_var	needed for section
- * @param  string	$cmd_var		needed for cmd
- * @param  string	$pagevar
- * @param  string	$term			search term
+ * @global array
+ * @global ADONewConnection
+ * @global array
+ * @param  string    $query            the searching query
+ * @param  string    $section_var    needed for section
+ * @param  string    $cmd_var        needed for cmd
+ * @param  string    $pagevar
+ * @param  string    $term            search term
  * @return array                    search results
  */
 function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)

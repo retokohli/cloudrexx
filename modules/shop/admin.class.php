@@ -1,7 +1,4 @@
 <?php
-
-define('_SHOP_DEBUG', 0);
-
 /**
  * Class Shop manager
  *
@@ -14,6 +11,13 @@ define('_SHOP_DEBUG', 0);
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */
+
+/**
+ * Debug mode
+ * @ignore
+ */
+define('_SHOP_DEBUG', 0);
+
 
 /**
  * @ignore
@@ -3617,9 +3621,9 @@ class shopmanager extends ShopLibrary {
     /**
      * Show the stored orders
      * @access  public
-     * @global  mixed   $objDatabase
-     * @global  array   $_ARRAYLANG
-     * @global  array   $_CONFIG
+     * @global  ADONewConnection
+     * @global  array
+     * @global  array
      * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
      */
     function shopShowOrders()
@@ -3935,8 +3939,8 @@ class shopmanager extends ShopLibrary {
      * @access  public
      * @param   string  $templateName   Name of the template file
      * @param   integer $type           1: edit order, 0: just display it
-     * @global  mixed   $objDatabase    Database
-     * @global  array   $_ARRAYLANG     Language array
+     * @global  ADONewConnection
+     * @global  array
      * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
      */
     function shopShowOrderdetails($templateName, $type)
@@ -4467,8 +4471,8 @@ class shopmanager extends ShopLibrary {
     /**
      * Store order
      *
-     * @global  array   $_ARRAYLANG     Language array
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
+     * @global  array
      */
     function shopStoreOrderdetails()
     {
@@ -5680,7 +5684,8 @@ class shopmanager extends ShopLibrary {
     /**
      * Get some statistical stuff
      *
-     * @global    array      $_ARRAYLANG
+     * @global    ADONewConnection
+     * @global    array
      */
     function shopOrderStatistics()
     {
@@ -6049,7 +6054,7 @@ class shopmanager extends ShopLibrary {
 
     /**
      * Set the database query error Message
-     * @global    array      $_ARRAYLANG
+     * @global    array
      */
     function errorHandling()
     {
@@ -6060,8 +6065,8 @@ class shopmanager extends ShopLibrary {
 
     /**
      * Shows an overview of all pricelists
-     * @global    array     $_ARRAYLANG
-     * @global    mixed     $objDatabase
+     * @global    ADONewConnection
+     * @global    array
      */
     function shopPricelistOverview()
     {
@@ -6120,7 +6125,8 @@ class shopmanager extends ShopLibrary {
     /**
      * Shows an overview of all pricelists
      * @version 1.0     initial version
-     * @global  array   $_ARRAYLANG
+     * @global  ADONewConnection
+     * @global  array
      */
     function shopPricelistNew()
     {
@@ -6190,7 +6196,7 @@ class shopmanager extends ShopLibrary {
     /**
      * Returns the Maincategories for the PDF-Selections
      *
-     * @global  mixed   $objDatabase  Database object
+     * @global  ADONewConnection
      */
     function shopPricelistMainCategories($selectedCategories)
     {
@@ -6236,8 +6242,8 @@ class shopmanager extends ShopLibrary {
     /**
      * Inserts a new pricelist into the database
      *
-     * @global  mixed   $objDatabase  Database object
-     * @global  array   $_ARRAYLANG   Language array
+     * @global  ADONewConnection
+     * @global  array
      */
     function shopPricelistInsert()
     {
@@ -6293,8 +6299,8 @@ class shopmanager extends ShopLibrary {
 
     /**
      * Edit a pricelist
-     * @global  mixed   $objDatabase  Database object
-     * @global  array   $_ARRAYLANG   Language array
+     * @global  ADONewConnection
+     * @global  array
      */
     function shopPricelistEdit($pricelistID)
     {
@@ -6407,8 +6413,8 @@ class shopmanager extends ShopLibrary {
 
     /**
      * Update a pricelist entry in the database
-     * @global  mixed   $objDatabase  Database object
-     * @global  array   $_ARRAYLANG   Language array
+     * @global  ADONewConnection
+     * @global  array
      */
     function shopPricelistUpdate($pricelistID)
     {
@@ -6462,8 +6468,8 @@ class shopmanager extends ShopLibrary {
     /**
      * Delete a pricelist
      *
-     * @global  mixed   $objDatabase
-     * @global  array   $_ARRAYLANG
+     * @global  ADONewConnection
+     * @global  array
      */
     function shopPricelistDelete($pricelistID='')
     {
@@ -6501,8 +6507,8 @@ class shopmanager extends ShopLibrary {
      * @static
      * @param   integer $selectedId     The optional selected Manufacturer ID
      * @return  string                  The HTML code string
-     * @global  mixed   $objDatabase
-     * @global  array   $_ARRAYLANG
+     * @global  ADONewConnection
+     * @global  array
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -6589,7 +6595,7 @@ class shopmanager extends ShopLibrary {
      * @param   string  $menuName       Optional menu name
      * @param   string  $onchange       Optional onchange callback function
      * @return  string  $menu           The dropdown menu string
-     * @global  array   $_ARRAYLANG     Language array
+     * @global  array
      */
     function getOrderStatusMenu($selectedStatus=-1, $menuName='', $onchange='')
     {

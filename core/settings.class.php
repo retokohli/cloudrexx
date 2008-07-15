@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Settings
  *
@@ -46,7 +45,7 @@ class settingsManager
      * Perform the requested function depending on $_GET['act']
      *
      * @global  array   Core language
-     * @global  mixed   Template
+     * @global  HTML_Template_Sigma
      * @return  void
      */
     function getPage()
@@ -112,9 +111,9 @@ class settingsManager
 
     /**
      * Set the cms system settings
-     * @global  mixed   Database
+     * @global  ADONewConnection
      * @global  array   Core language
-     * @global  mixed   Template
+     * @global  HTML_Template_Sigma
      */
     function showSettings()
     {
@@ -205,7 +204,7 @@ class settingsManager
     /**
      * Update settings
      *
-     * @global  mixed   Database
+     * @global  ADONewConnection
      * @global  array   Core language
      * @global  array   Configuration
      */

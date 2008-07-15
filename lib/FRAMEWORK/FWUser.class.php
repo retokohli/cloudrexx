@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Framework user
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -7,7 +6,6 @@
  * @version     1.0.0
  * @package     contrexx
  * @subpackage  lib_framework
- * @todo        Edit PHP DocBlocks!
  */
 
 /**
@@ -17,7 +15,6 @@
  * @version     1.0.0
  * @package     contrexx
  * @subpackage  lib_framework
- * @todo        Edit PHP DocBlocks!
  */
 class FWUser extends User_Setting
 {
@@ -146,7 +143,7 @@ class FWUser extends User_Setting
      * Log the user session.
      *
      * Create a log entry in the database containing the users' details.
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      */
     function log()
     {
@@ -220,9 +217,9 @@ class FWUser extends User_Setting
      * Sends an email with instructions on how to reset the password to
      * the user specified by an e-mail address.
      * @param  string  $email      The e-mail address presented by the user
-     * @global array   $_CORELANG  Core language array
-     * @global array   $_CONFIG    Configuration array
-     * @global integer $_LANGID    Language ID
+     * @global array
+     * @global array
+     * @global integer
      */
     public function restorePassword($email)
     {
@@ -321,7 +318,7 @@ class FWUser extends User_Setting
      * Reset the password of the user using a reset form.
      * @access  public
      * @param   mixed  $objTemplate Template
-     * @global  array  $_CORELANG   Core language array
+     * @global  array  Core language array
      */
     function resetPassword($username, $restoreKey, $password = null, $confirmedPassword = null, $store = false)
     {

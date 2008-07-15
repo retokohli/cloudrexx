@@ -1,7 +1,4 @@
 <?php
-
-define('_EGOV_DEBUG', 0);
-
 /**
  * E-Government
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -11,6 +8,11 @@ define('_EGOV_DEBUG', 0);
  * @subpackage  module_egov
  * @todo        Edit PHP DocBlocks!
  */
+
+/**
+ * Debug mode
+ */
+define('_EGOV_DEBUG', 0);
 
 /**
  * Includes

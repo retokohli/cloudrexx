@@ -1,19 +1,27 @@
 <?php
-require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
-
+/**
+ * User Management
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
+ * @version     2.0.0
+ * @package     contrexx
+ * @subpackage  core_module_access
+ */
 
 /**
-* Class access library
-*
-* Provides common methodes for the access module
-*
-* @copyright CONTREXX CMS - Astalavista IT Engineering GmbH Thun
-* @author Astalavista Development Team <thun@astalvista.ch>
-* @module access
-* @modulegroups core_modules
-* @access private
-* @version 1.0.0
-*/
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
+
+/**
+ * Common functions used by the front- and backend
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
+ * @version     2.0.0
+ * @package     contrexx
+ * @subpackage  core_module_access
+ * @uses        /lib/FRAMEWORK/Image.class.php
+ */ 
 class AccessLib
 {
     /**
@@ -61,7 +69,7 @@ class AccessLib
     /**
      * Sign to mark mandatory fields as required
      *
-     * @var
+     * @var string
      */
     var $_mandatorySign = '<strong style="padding: 0px 2px 0px 2px;color:#f00;">*</strong>';
 
@@ -82,7 +90,7 @@ class AccessLib
     /**
      * Load the html code template of the different attribute types
      *
-     * @global array $_CORELANG
+     * @global array
      */
     private function loadAttributeTypeTemplates()
     {
@@ -735,7 +743,6 @@ class AccessLib
             .'<input
                 type="file"
                 name="'.$this->attributeNamePrefix.'_images['.$attributeId.']['.$historyId.']"
-                style="width:300px;"
                 onchange="this.nextSibling.style.display = this.value.length ? \'\' : \'none\';"
             />'
 
@@ -862,7 +869,7 @@ class AccessLib
                 break;
 
             case 'group':
-                $code = '<select name="'.$attributeName.'" style="width:300px;" onchange="for (i=0; i < this.options.length; i++){document.getElementById(this.options[i].value).style.display = (i == this.selectedIndex ? \'\' : \'none\')}">';
+                $code = '<select name="'.$attributeName.'" onchange="for (i=0; i < this.options.length; i++){document.getElementById(this.options[i].value).style.display = (i == this.selectedIndex ? \'\' : \'none\')}">';
 
                 $arrFramesCode = array();
                 $firstFrame = true;

@@ -1,9 +1,17 @@
 <?php
 /**
+ * Podcast
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author        Comvation Development Team <info@comvation.com>
+ * @access        public
+ * @version        1.0.0
+ * @package     contrexx
+ * @subpackage  module_podcast
+ * @todo        Edit PHP DocBlocks!
+ */
+
+/**
  * Class podcast library
- *
- * podcast library class
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author		Comvation Development Team <info@comvation.com>
  * @access		public
@@ -12,7 +20,6 @@
  * @subpackage  module_podcast
  * @todo        Edit PHP DocBlocks!
  */
-
 class podcastLib
 {
 	/**

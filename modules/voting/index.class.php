@@ -13,6 +13,9 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+/**
+ * Show current voting
+ */
 function votingShowCurrent($page_content){
 	global $objDatabase, $_CONFIG, $_ARRAYLANG, $_COOKIE;
 

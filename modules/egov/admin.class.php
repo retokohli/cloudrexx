@@ -1,5 +1,18 @@
 <?php
+/**
+ * E-Government
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  module_egov
+ * @todo        Edit PHP DocBlocks!
+ */
 
+/**
+ * Debug mode
+ * @ignore
+ */
 define('_EGOV_DEBUG', 0);
 
 /*
@@ -13,16 +26,6 @@ VALUES ('yellowpay_use_testserver', 0);
 ALTER TABLE `contrexx_module_egov_products`
 ADD `alternative_names` VARCHAR(255) NOT NULL DEFAULT '';
 */
-
-/**
- * E-Government
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_egov
- * @todo        Edit PHP DocBlocks!
- */
 
 /*
 Changes to the database:

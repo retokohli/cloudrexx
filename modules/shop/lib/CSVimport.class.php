@@ -1,5 +1,21 @@
 <?php
+/**
+ * CSV Import
+ * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ */
 
+/**
+ * CSV Import
+ * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ */
 class CSVimport
 {
     static private $separator = ';';

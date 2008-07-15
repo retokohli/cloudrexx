@@ -10,7 +10,7 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once ASCMS_MODULE_PATH.'/podcast/lib/podcastLib.class.php';
 

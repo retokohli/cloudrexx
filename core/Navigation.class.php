@@ -46,7 +46,7 @@ class Navigation
     /**
     * Constructor
     *
-    * @global    string   $_LANGID
+    * @global   integer
     * @param     integer  $pageId
     */
 	function __construct($pageId)
@@ -67,7 +67,7 @@ class Navigation
     /**
     * Initialize the data hash from the database
     *
-    * @global  object $objDatabase
+    * @global ADONewConnection 
     * @access private
     */
     function _initialize()

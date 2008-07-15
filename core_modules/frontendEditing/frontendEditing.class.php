@@ -1,9 +1,19 @@
 <?php
+/**
+ * Frontend Edition
+ * 
+ * @author Kaelin Thomas <thomas.kaelin@comvation.com>
+ * @version 1.0
+ * @package contrexx
+ * @subpackage core_module_frontendEditing
+ */
 /*
  * ATTENTION: SEE CODE AT END OF THIS FILE FOR COMPLETE UNDERSTANDMENT OF CODE!!
  */
 
-//Defines
+/**
+ * @ignore
+ */
 define('BASE_FOLDER', '../../');
 
 //Includes
@@ -23,6 +33,8 @@ require_once('frontendEditingLib.class.php');
  * 
  * @author Kaelin Thomas <thomas.kaelin@comvation.com>
  * @version 1.0
+ * @package contrexx
+ * @subpackage core_module_frontendEditing
  */
 class frontendEditing extends frontendEditingLib {	
 	/**
@@ -107,7 +119,7 @@ class frontendEditing extends frontendEditingLib {
 	/**
 	 * Creates necessary objects for this class.
 	 * 
-	 * @global $_CONFIG
+	 * @global array
 	 */
 	private function init() {
 		global $_CONFIG;
@@ -145,7 +157,7 @@ class frontendEditing extends frontendEditingLib {
 	/**
 	 * Loads the values of the requested page from database.
 	 * 
-	 * @global 	object		$objDatabase
+	 * @global 	ADONewConnection
 	 */
 	private function loadValuesFromDatabase() {	
 		global $objDatabase;
@@ -461,7 +473,7 @@ class frontendEditing extends frontendEditingLib {
 	/**
 	 * Updates the page with the values submitted in $_REQUEST and collected by <pre>getParameters()</pre>.
 	 * 
-	 * @global 	object		$objDatabase
+	 * @global 	ADONewConnection
 	 */
 	private function updatePage() {		
 		global $objDatabase;

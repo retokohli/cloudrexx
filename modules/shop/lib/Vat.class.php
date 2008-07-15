@@ -97,7 +97,7 @@ class Vat
      *  (ID => rate)
      * Plus initializes the various object variables.
      * May die() with a message if it fails to access its settings.
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @return  void
      */
     function init()
@@ -290,7 +290,7 @@ class Vat
      *
      * @access  public
      * @param   integer $vatId  The VAT ID
-     * @global  array           Language array
+     * @global  array
      * @return  string          The VAT class, or a warning
      */
     function getClass($vatId)
@@ -328,7 +328,7 @@ class Vat
      *
      * @access  public
      * @param   integer $vatId  The Vat ID
-     * @global  array           Language array
+     * @global  array
      * @return  string          The resulting string
      */
     function getShort($vatId)
@@ -350,7 +350,7 @@ class Vat
      *
      * @access  public
      * @param   integer $vatId  The Vat ID
-     * @global  array           Language array
+     * @global  array
      * @return  string          The resulting string
      */
     function getLong($vatId)
@@ -377,7 +377,7 @@ class Vat
      * @param   array   $vatIds     VAT IDs (index => ID)
      * @param   array   $vatClasses VAT classes (ID => 'class')
      * @param   array   $vatRates   VAT rates in percent (ID => rate)
-     * @global  mixed               Database
+     * @global  ADONewConnection
      * @return  boolean         True if *all* the values were accepted and
      *                          successfully inserted into the database,
      *                          false otherwise.
@@ -423,7 +423,7 @@ class Vat
      * @access  public
      * @param   string          Name of the VAT class
      * @param   double          Rate of the VAT in percent
-     * @global  mixed           Database
+     * @global  ADONewConnection
      * @return  boolean         True if the values were accepted and
      *                          successfully inserted into the database,
      *                          false otherwise.
@@ -449,7 +449,7 @@ class Vat
      * @static
      * @access  public
      * @param   integer         The VAT ID
-     * @global  mixed           Database
+     * @global  ADONewConnection
      * @return  boolean         True if the values were accepted and
      *                          successfully inserted into the database,
      *                          false otherwise.
@@ -510,7 +510,7 @@ class Vat
      * Note: This function returns the VAT rate no matter whether it is
      * enabled in the shop or not.  Check this yourself!
      * @param   double  $productId  The product ID
-     * @global  mixed               Database
+     * @global  ADONewConnection
      * @return  double              The (positive) associated tax rate
      *                              in percent, or -1 if the record could
      *                              not be found.

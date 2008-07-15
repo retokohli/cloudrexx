@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Shop Product Categories
  *
@@ -162,7 +161,7 @@ class ShopCategories
 
     /**
      * Returns an array representing the index for the tree of ShopCategories
-     * {@link $arrShopCategory).
+     * {@link $arrShopCategory}.
      *
      * See {@link ShopCategories::buildTreeArray()} for a detailed explanation
      * of the array structure.
@@ -340,7 +339,7 @@ class ShopCategories
      *                                      Defaults to true.
      * @return  string                      The ShopCategory ID list
      *                                      on success, false otherwise.
-     * @global  mixed   $objDatabase        Database object
+     * @global  ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getSearchCategoryIdString(
@@ -530,7 +529,7 @@ class ShopCategories
      * @param   boolean $flagActiveOnly Only consider active Categories if true
      * @return  string                  The product thumbnail path on success,
      *                                  the empty string otherwise.
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -631,7 +630,7 @@ class ShopCategories
      * The <select> tag pair
      * with the menu name will be included, plus an option for the root
      * ShopCategory.
-     * @global  array       $_ARRAYLANG     Language array
+     * @global  array
      * @param   integer     $selectedid     The selected ShopCategories ID
      * @param   string      $name           The optional menu name,
      *                                      defaults to 'catId'.
@@ -721,7 +720,7 @@ class ShopCategories
      * @return  array                       An array of ShopCategory IDs
      *                                      on success, false otherwise.
      * @static
-     * @global  mixed   $objDatabase        Database object
+     * @global  ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -804,11 +803,9 @@ class ShopCategories
      * If the ID given corresponds to a top level category,
      * 0 (zero) is returned, as there is no parent.
      * If the ID cannot be found, boolean false is returned.
-     * @global  mixed   $objDatabase    Database object
      * @param   integer $shopCategoryId The ShopCategory ID
      * @return  mixed                   The parent category ID,
      *                                  or boolean false on failure.
-     * @global  mixed   $objDatabase    Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getParentCategoryId($shopCategoryId)
@@ -972,7 +969,7 @@ class ShopCategories
      * @param   integer     $id         The ShopCategory ID
      * @return  string                  Empty string on success, a string
      *                                  with error messages otherwise.
-     * @global  array       $_ARRAYLANG     Language array
+     * @global  array
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function makeThumbnailById($id)

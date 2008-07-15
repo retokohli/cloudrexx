@@ -1,7 +1,4 @@
 <?php
-
-$_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT'] = "Anhang herunterladen";
-
 /**
  * Data
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -10,6 +7,9 @@ $_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT'] = "Anhang herunterladen";
  * @package     contrexx
  * @subpackage  module_data
  */
+
+$_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT'] = "Anhang herunterladen";
+
 
 /**
  * Includes
@@ -43,7 +43,7 @@ class Data extends DataLibrary  {
 	/**
 	* Constructor	-> Call parent-construct, set language id and create local template-object
     *
-    * @global	integer		$_LANGID
+    * @global	integer
     */
 	function __construct($strPageContent) {
 		global $_LANGID;
@@ -182,7 +182,7 @@ class Data extends DataLibrary  {
 	/**
 	 * Shows all existing entries of the data in descending order.
 	 *
-	 * @global 	array		$_ARRAYLANG
+	 * @global 	array
 	 */
 	function showEntries() {
 		global $_ARRAYLANG;

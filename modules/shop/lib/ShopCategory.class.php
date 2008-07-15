@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Shop Product Category
  *
@@ -375,7 +374,7 @@ class ShopCategory
      * Test whether a record with the ID of this object is already present
      * in the database.
      * @return  boolean                 True if it exists, false otherwise
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function recordExists()
@@ -456,7 +455,7 @@ class ShopCategory
      * Update this ShopCategory in the database.
      * Returns the result of the query.
      * @return  boolean                 True on success, false otherwise
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function update()
@@ -487,7 +486,7 @@ class ShopCategory
      * On success, updates this objects' Category ID.
      * Uses the ID stored in this object, if greater than zero.
      * @return  boolean                 True on success, false otherwise
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function insert()
@@ -525,7 +524,7 @@ class ShopCategory
      * Images will only be erased from the disc if the optional
      * $flagDeleteImages parameter evaluates to true.
      * @return  boolean                 True on success, false otherwise
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function delete($flagDeleteImages=false)
@@ -583,7 +582,7 @@ class ShopCategory
      * must contain at least all of the flags present in the pattern).
      * @return  array                   Array of the resulting
      *                                  Shop Category objects
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getByWildcard()
@@ -626,7 +625,7 @@ class ShopCategory
      * @param   integer                     The Shop Category ID
      * @return  ShopCategory                The Shop Category object on success,
      *                                      false otherwise.
-     * @global  mixed       $objDatabase    Database object
+     * @global  ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -678,7 +677,7 @@ class ShopCategory
      * Return an array of all IDs of children ShopCateries.
      * @return  mixed                   Array of the resulting Shop Category
      *                                  IDs on success, false otherwise
-     * @global  mixed   $objDatabase    Database object
+     * @global  ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getChildrenIdArray()
@@ -718,8 +717,8 @@ class ShopCategory
      *                                      are considered.
      * @return  mixed                       The ShopCategory on success,
      *                                      false otherwise.
-     * @global  mixed       $objDatabase    Database object
-     * @global  array       $_ARRAYLANG     Language array
+     * @global  ADONewConnection
+     * @global  array
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static

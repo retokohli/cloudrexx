@@ -1,5 +1,4 @@
 <?php
-
 /**
  * DocSys
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -120,7 +119,9 @@ class docSysManager extends docSysLibrary
     /**
     * List up the news for edit or delete
     *
-    * @global     object    $objDatabase
+    * @global     ADONewConnection
+    * @global     array
+    * @global     array
     * @param     integer   $newsid
     * @param     string       $what
     * @return    string    $output
@@ -232,7 +233,8 @@ class docSysManager extends docSysLibrary
     /**
     * adds a news entry
     *
-    * @global     object    $objDatabase
+    * @global    ADONewConnection 
+    * @global    array
     * @param     integer   $newsid -> the id of the news entry
     * @return    boolean   result
     */
@@ -286,8 +288,8 @@ class docSysManager extends docSysLibrary
     /**
     * Deletes a news entry
     *
-    * @global     object    $objDatabase
-    * @global     array     $_ARRAYLANG
+    * @global     ADONewConnection
+    * @global     array
     * @return    -
     */
     function delete()
@@ -328,7 +330,8 @@ class docSysManager extends docSysLibrary
     /**
     * Edit the news
     *
-    * @global    object     $objDatabase
+    * @global    ADONewConnection
+    * @global    array
     * @param     string     $pageContent
     */
     function edit()
@@ -424,7 +427,9 @@ class docSysManager extends docSysLibrary
     /**
     * Update news
     *
-    * @global     object    $objDatabase
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
     * @return    boolean   result
     */
     function update()
@@ -485,8 +490,9 @@ class docSysManager extends docSysLibrary
     /**
     * Update news
     *
-    * @global     object    $objDatabase
-    * @global     array     $_POST
+    * @global    ADONewConnection 
+    * @global    array
+    * @global    array
     * @param     integer   $newsid
     * @return    boolean   result
     */
@@ -535,7 +541,8 @@ class docSysManager extends docSysLibrary
     /**
     * Insert news
     *
-    * @global     object    $objDatabase
+    * @global    ADONewConnection
+    * @global    array
     * @return    boolean   result
     */
     function insert()
@@ -615,8 +622,8 @@ class docSysManager extends docSysLibrary
     /**
     * Add or edit the news categories
     *
-    * @global    object     $objDatabase
-    * @global    array      $_ARRAYLANG
+    * @global    ADONewConnection
+    * @global    array
     * @param     string     $pageContent
     */
     function manageCategories()
@@ -709,8 +716,8 @@ class docSysManager extends docSysLibrary
     /**
     * Delete the news categories
     *
-    * @global    object     $objDatabase
-    * @global    array      $_ARRAYLANG[news*]
+    * @global    ADONewConnection
+    * @global    array
     * @param     string     $pageContent
     */
     function deleteCat(){

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Products helper class
  *
@@ -11,7 +10,13 @@
  * @author      Reto Kohli <reto.kohli@comvation.com>
  */
 
+/**
+ * Storage path for product images (absolute path)
+ */
 define('PRODUCT_IMAGE_PATH',        ASCMS_SHOP_IMAGES_PATH.'/');
+/**
+ * Storage path for product images (relativ pat)
+ */
 define('PRODUCT_IMAGE_WEB_PATH',    ASCMS_SHOP_IMAGES_WEB_PATH.'/');
 
 /**
@@ -62,7 +67,6 @@ class Products
      * @param       array       $arrPattern     The array of patterns
      *                                          to look for
      * @return      string                      The query string
-     * @global      mixed       $objDatabase    Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getWildcardQuery($arrPattern)
@@ -92,7 +96,7 @@ class Products
      * @param       string      $pattern        The pattern to look for
      * @return      array                       An array of Products on success,
      *                                          false otherwise
-     * @global      mixed       $objDatabase    Database object
+     * @global      ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getByWildcard($arrPattern)
@@ -166,7 +170,8 @@ class Products
      *                                          added to the Shop
      * @return      array                       Array of Product objects,
      *                                          or false if none were found
-     * @global      mixed       $objDatabase    Database object
+     * @global      ADONewConnection
+     * @global      array
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -297,7 +302,6 @@ class Products
      * @static
      * @param       integer     $catid          The ShopCategory ID
      * @return      boolean                     True on success, false otherwise
-     * @global      mixed       $objDatabase    Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -460,7 +464,7 @@ class Products
      * @static
      * @return      string                      The image name, or the
      *                                          empty string.
-     * @global      mixed       $objDatabase    Database object
+     * @global      ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -545,8 +549,8 @@ class Products
      * @param   integer     $arrId      The array of Product IDs
      * @return  string                  Empty string on success, a string
      *                                  with error messages otherwise.
-     * @global  mixed       $objDatabase    Database object
-     * @global  array       $_ARRAYLANG     Language array
+     * @global  ADONewConnection
+     * @global  array
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function makeThumbnailsById($arrId)

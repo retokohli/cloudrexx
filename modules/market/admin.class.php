@@ -53,8 +53,9 @@ class Market extends marketLibrary
     /**
     * PHP5 constructor
     *
-    * @global object $objTemplate
-    * @global array $_ARRAYLANG
+    * @global array
+    * @global array
+    * @global HTML_Teplate_Sigma
     */
     function __construct() {
 
@@ -77,8 +78,7 @@ class Market extends marketLibrary
     * Set the backend page
     *
     * @access public
-    * @global object $objTemplate
-    * @global array $_ARRAYLANG
+    * @global HTML_Template_Sigma
     */
     function getPage() {
 
@@ -164,14 +164,12 @@ class Market extends marketLibrary
     * create categorie overview
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global array
+    * @global array
     */
     function overview()
     {
-        global $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         $this->_pageTitle = $_CORELANG['TXT_OVERVIEW'];
         $this->_objTpl->loadTemplateFile('module_market_overview.html',true,true);
@@ -219,14 +217,13 @@ class Market extends marketLibrary
     * change status from categories
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global ADONewConnection
+    * @global array
+    * @global array
     */
     function statusCategorie() {
 
-        global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         $this->getCategories();
 
@@ -261,13 +258,11 @@ class Market extends marketLibrary
     * delete categories
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global ADONewConnection
+    * @global array
     */
     function deleteCategorie() {
-        global $objDatabase, $objTemplate, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         $arrDelete = array();
         $i = 0;
@@ -304,13 +299,11 @@ class Market extends marketLibrary
     * set sort order for categories
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global ADONewConnection
+    * @global array
     */
     function sortCategorie() {
-        global $objDatabase, $objTemplate, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         foreach ($_POST['sortCategory'] as $catId => $catSort) {
             $objDatabase->Execute('UPDATE '.DBPREFIX.'module_market_categories SET displayorder = '.$catSort.' WHERE id = '.$catId.'');
@@ -324,14 +317,13 @@ class Market extends marketLibrary
     * add a categorie
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global ADONewConnection
+    * @global array
+    * @global array
     */
     function addCategory() {
 
-        global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         $this->_pageTitle = $_CORELANG['TXT_NEW_CATEGORY'];
         $this->_objTpl->loadTemplateFile('module_market_category.html',true,true);
@@ -372,14 +364,13 @@ class Market extends marketLibrary
     * edit a categories
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global ADONewConnection
+    * @global array
+    * @global array
     */
     function editCategorie() {
 
-        global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_MARKET_CATEGORY_EDIT'];
         $this->_objTpl->loadTemplateFile('module_market_category.html',true,true);
@@ -443,14 +434,13 @@ class Market extends marketLibrary
     * show market entries
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global ADONewConnection
+    * @global array
+    * @global array
     */
     function entries() {
 
-        global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_ENTRIES'];
         $this->_objTpl->loadTemplateFile('module_market_entries.html',true,true);
@@ -560,14 +550,13 @@ class Market extends marketLibrary
     * add a entree
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global ADONewConnection
+    * @global array
+    * @global array
     */
     function addEntry() {
 
-        global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_NEW_ENTRY'];
         $this->_objTpl->loadTemplateFile('module_market_entry.html',true,true);
@@ -663,14 +652,13 @@ class Market extends marketLibrary
     * change status from entries
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global ADONewConnection
+    * @global array
+    * @global array
     */
     function statusEntry() {
 
-        global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         $arrStatus = array();
         $i=0;
@@ -722,17 +710,8 @@ class Market extends marketLibrary
 
     /**
     * delete a entree
-    *
-    * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
     */
     function deleteEntry() {
-
-        global $objDatabase, $objTemplate, $_ARRAYLANG;
-
         $arrDelete = array();
         $i = 0;
 
@@ -745,7 +724,7 @@ class Market extends marketLibrary
             $arrDelete[$i] = $_GET['id'];
         }
 
-           $this->removeEntry($arrDelete);
+        $this->removeEntry($arrDelete);
     }
 
 
@@ -753,14 +732,13 @@ class Market extends marketLibrary
     * edit a entree
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global ADONewConnction
+    * @global array
+    * @global array
     */
     function editEntry() {
 
-        global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'];
         $this->_objTpl->loadTemplateFile('module_market_entry.html',true,true);
@@ -988,10 +966,8 @@ class Market extends marketLibrary
     * show system settings
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global array
+    * @global array
     */
     function sysSettings()
     {
@@ -1035,14 +1011,13 @@ class Market extends marketLibrary
     * show settings for spezial fields
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global ADONewConnection
+    * @global array
+    * @global array
     */
     function spezfieldsSettings() {
 
-        global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         // initialize variables
         $this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_market_settings_spez_fields.html');
@@ -1110,14 +1085,13 @@ class Market extends marketLibrary
     * show system settings
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global ADONewConnection
+    * @global array
+    * @global array
     */
     function systemSettings() {
 
-        global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         // initialize variables
         $this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_market_settings_system.html');
@@ -1192,14 +1166,14 @@ class Market extends marketLibrary
     * show settings for mail
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global ADONewConnection
+    * @global array
+    * @global array
+    * @global array
     */
     function mailSettings() {
 
-        global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
         // initialize variables
         $this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_market_settings_mail.html');
@@ -1263,14 +1237,13 @@ class Market extends marketLibrary
     * show settings for mail code
     *
     * @access public
-    * @global object $objTemplate
-    * @global object $objDatabase
-    * @global array $_ARRAYLANG
-    * @global array $_CORELANG
+    * @global ADONewConnection
+    * @global array
+    * @global array
     */
     function mail_codeSettings() {
 
-        global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         // initialize variables
         $this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_market_settings_mail_code.html');

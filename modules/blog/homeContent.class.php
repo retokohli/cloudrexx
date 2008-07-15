@@ -163,7 +163,7 @@ class BlogHomeContent extends BlogLibrary  {
     /**
      * Fills the latest entries of the blog-module into the blog-page.
      *
-     * @global     array        $_ARRAYLANG
+     * @global     array
      * @return    string        parsed content with latest entries.
      */
     function getLatestEntries()

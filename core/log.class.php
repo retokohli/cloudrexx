@@ -208,7 +208,7 @@ class logmanager
     /**
     * Set the error Message (void())
     *
-    * @global    array      $_CORELANG
+    * @global    array
     */
     function errorHandling(){
     	global $_CORELANG;

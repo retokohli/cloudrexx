@@ -81,7 +81,7 @@ class Login
     * Calls the method restorePassword of the class FWUser
     * and displays the lostpw page of the login module
     *
-    * @global array $_CORELANG
+    * @global array
     * @see FWUser::restorePassword()
     * @return string HTML_Template_Sigma::get()
     */
@@ -186,7 +186,7 @@ class Login
     /**
     * Displays the noaccess page of the login module
     *
-    * @global array $_CORELANG
+    * @global array
     * @return string HTML_Template_Sigma::get()
     */
     function _noaccess()
@@ -211,7 +211,7 @@ class Login
     * redirected to the requested page, otherwise the login page will be displayed
     *
     * @access private
-    * @global array $_CORELANG
+    * @global array
     * @see cmsSession::cmsSessionStatusUpdate(), contrexx_strip_tags, HTML_Template_Sigma::get()
     * @return string HTML_Template_Sigma::get()
     */

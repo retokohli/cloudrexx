@@ -59,7 +59,7 @@ class BlogLibrary {
      * Create an array containing all settings of the blog-module.
      * Example: $arrSettings[$strSettingName] for the content of $strSettingsName
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @return  array       $arrReturn
      */
     function createSettingsArray() {
@@ -88,7 +88,7 @@ class BlogLibrary {
      * $arrValue[$langId]['short']      =>  For Example: en, de, fr, ...
      * $arrValue[$langId]['long']       =>  For Example: 'English', 'Deutsch', 'French', ...
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @return  array       $arrReturn
      */
     function createLanguageArray() {
@@ -121,7 +121,7 @@ class BlogLibrary {
      * $arrCategories[$categoryId][$langId]['name']         =>  Translation for the category with ID = $categoryId for the desired language ($langId).
      * $arrCategories[$categoryId][$langId]['is_active']    =>  Status of the category with ID = $categoryId for the desired language ($langId).
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @param   integer     $intStartingIndex: can be used for paging. The value defines, with which row the result should start.
      * @param   integer     $intLimitIndex: can be used for paging. The value defines, how many categories will be returned (starting from $intStartingIndex). If the value is zero, all entries will be returned.
      * @return  array       $arrReturn
@@ -197,7 +197,8 @@ class BlogLibrary {
      * $arrEntries[$entryId]['translation'][$langId]['content']     =>  Content of entry in the language with the id = langId.
      * $arrEntries[$entryId]['translation'][$langId]['tags']        =>  Keywords of entry in the language with the id = langId.
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
+     * @global  array
      * @param   integer     $intLanguageId: The value defines, if categories of a specific language should be returned. If the value is zero, all languages will be used.
      * @param   integer     $intStartingIndex: can be used for paging. The value defines, with which row the result should start.
      * @param   integer     $intLimitIndex: can be used for paging. The value defines, how many entries will be returned (starting from $intStartingIndex). If the value is zero, all entries will be returned.
@@ -339,7 +340,7 @@ class BlogLibrary {
      * $arrEntries[$intNetworkId]['icon_img']           =>  Icon of the service provider as am <img>-tag.
      * $arrEntries[$intNetworkId]['status'][$langId]    =>  Activation status of a specific language.
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @param   integer     $intStartingIndex: can be used for paging. The value defines, with which row the result should start.
      * @param   integer     $intLimitIndex: can be used for paging. The value defines, how many categories will be returned (starting from $intStartingIndex). If the value is zero, all entries will be returned.
      * @return  array       $arrReturn
@@ -408,7 +409,7 @@ class BlogLibrary {
     /**
      * Returns the allowed maximum element per page. Can be used for paging.
      *
-     * @global  array       $_CONFIG
+     * @global  array
      * @return  integer     allowed maximum of elements per page.
      */
     function getPagingLimit() {
@@ -421,7 +422,7 @@ class BlogLibrary {
     /**
      * Counts all existing entries in the database.
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @return  integer     number of entries in the database
      */
     function countEntries() {
@@ -467,7 +468,7 @@ class BlogLibrary {
     /**
      * Counts all existing categories in the database.
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @return  integer     number of categories in the database
      */
     function countCategories() {
@@ -484,7 +485,7 @@ class BlogLibrary {
     /**
      * Counts all votings for a specific entry.
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @param   integer     $intMessageId: the votings of the message with this id will be counted.
      * @return  integer     number of votings for the desired entry.
      */
@@ -505,7 +506,7 @@ class BlogLibrary {
     /**
      * Counts all existing networks in the database.
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @return  integer     number of networks in the database
      */
     function countNetworks() {
@@ -523,8 +524,8 @@ class BlogLibrary {
     /**
      * Creates an rating bar (****) for a specific message.
      *
-     * @global  object      $objDatabase
-     * @global  array       $_ARRAYLANG
+     * @global  ADONewConnection
+     * @global  array
      * @param   integer     $intMessageId: The rating bar will be created for the message with this id.
      * @return  string      HTML-source for the rating bar.
      */
@@ -561,7 +562,7 @@ class BlogLibrary {
     /**
      * Counts all comments for a specific entry.
      *
-     * @global  object      $objDatabase
+     * @global  ADONewConnection
      * @param   integer     $intMessageId: the comments of the message with this id will be counted.
      * @param   boolean     $boolOnlyActive: if this parameter is true, only the "active" comments are counted
      * @return  integer     number of comments for the desired entry.
@@ -590,7 +591,7 @@ class BlogLibrary {
     /**
      * Creates a "posted by $strUsername on $strDate" string.
      *
-     * @global  array       $_ARRAYLANG
+     * @global  array
      * @param   string      $strUsername
      * @param   integer     $intTimestamp
      * @return  string
@@ -957,8 +958,9 @@ class BlogLibrary {
     /**
      * Writes RSS feed containing the latest N messages to the feed-directory. This is done for every language seperately.
      *
-     * @global  array       $_CONFIG
-     * @global  array       $_ARRAYLANG
+     * @global  array
+     * @global  array
+     * @global  FWLanguage
      */
     function writeMessageRSS() {
         global $_CONFIG, $_ARRAYLANG, $objLanguage;
@@ -1012,9 +1014,10 @@ class BlogLibrary {
     /**
      * Writes RSS feed containing the latest N comments to the feed-directory. This is done for every language seperately.
      *
-     * @global  array       $_CONFIG
-     * @global  array       $_ARRAYLANG
-     * @global  object      $objDatabase
+     * @global  array
+     * @global  array
+     * @global  ADONewConnection
+     * @global  FWLanguage
      */
     function writeCommentRSS() {
         global $_CONFIG, $_ARRAYLANG, $objDatabase, $objLanguage;
@@ -1084,8 +1087,9 @@ class BlogLibrary {
     /**
      * Writes RSS feed containing the latest N messages of each category the feed-directory. This is done for every language seperately.
      *
-     * @global  array       $_CONFIG
-     * @global  array       $_ARRAYLANG
+     * @global  array
+     * @global  array
+     * @global  FWLanguage
      */
     function writeCategoryRSS() {
         global $_CONFIG, $_ARRAYLANG, $objLanguage;

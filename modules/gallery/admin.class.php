@@ -10,7 +10,7 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once ASCMS_MODULE_PATH . '/gallery/Lib.class.php';
 
@@ -47,9 +47,9 @@ class galleryManager extends GalleryLibrary
     /**
     * Constructor    -> Create the menu and copy the template
     *
-    * @global    object        $objTemplate
-    * @global     object        $objInit
-    * @global    array        $_ARRAYLANG
+    * @global    array
+    * @global    HTML_Template_Sigma 
+    * @global    InitCMS
     */
     function __construct()
     {
@@ -95,14 +95,12 @@ class galleryManager extends GalleryLibrary
     /**
     * Select the admired action
     *
-    * @global     object        $objTemplate
-    * @global    array        $_ARRAYLANG
-    * @global     array        $_GET
-    * @global     array        $_POST
+    * @global    HTML_Template_Sigma 
+    * @global    array
     */
     function getPage()
     {
-        global $objTemplate, $_ARRAYLANG, $_GET,$_POST;
+        global $objTemplate, $_ARRAYLANG;
 
         if(!isset($_GET['act'])) {
             $_GET['act']='';
@@ -364,7 +362,7 @@ class galleryManager extends GalleryLibrary
     /**
     * Checks if the file is still there, removes dead links
     *
-    * @global    object        $objDatabase
+    * @global    ADONewConnection
     */
     function checkImages()
     {
@@ -397,9 +395,10 @@ class galleryManager extends GalleryLibrary
     /**
     * Shows the overview of the gallery
     *
-    * @global    object        $objDatabase
-    * @global    array        $_CONFIG
-    * @global    array        $_ARRAYLANG
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
+    * @global    integer
     */
     function overview()
     {
@@ -571,8 +570,8 @@ class galleryManager extends GalleryLibrary
     /**
      * Shows the 'Insert new category'-Form
      *
-     * @global    object        $objDatabase
-     * @global    array        $_ARRAYLANG
+     * @global    ADONewConnection
+     * @global    array
      */
     function newCategory()
     {
@@ -709,8 +708,9 @@ class galleryManager extends GalleryLibrary
     /**
      * Inserts a new category into the database
      *
-     * @global    object        $objDatabase
-     * @global    array        $_ARRAYLANG
+     * @global    ADONewConnection
+     * @global    array
+     * @global    array
      */
     function insertCategory()
     {
@@ -790,8 +790,8 @@ class galleryManager extends GalleryLibrary
     /**
     * Saves the category sorting
     *
-    * @global    array        $_ARRAYLANG
-    * @global    object        $objDatabase
+    * @global    ADONewConnection
+    * @global    array
     */
     function saveCategorySorting()
     {
@@ -813,8 +813,8 @@ class galleryManager extends GalleryLibrary
     /**
     * Saves the image sorting
     *
-    * @global     array        $_ARRAYLANG
-    * @global    object        $objDatabase
+    * @global    ADONewConnection
+    * @global    array
     */
     function saveImagesSorting()
     {
@@ -835,7 +835,7 @@ class galleryManager extends GalleryLibrary
     /**
     * Activates or inactivates a category
     *
-    * @global    object        $objDatabase
+    * @global    ADONewConnection
     * @param    integer        $intCategoryId
     */
     function activateCategory($intCategoryId, $act=NULL)
@@ -867,9 +867,9 @@ class galleryManager extends GalleryLibrary
     /**
     * Delete a Category
     *
-    * @global    object $objDatabase
-    * @global    array  $_ARRAYLANG
-    * @global    array  $_CONFIG
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
     * @param    integer $intCategoryId
     */
     function deleteCategory($intCategoryId)
@@ -936,8 +936,8 @@ class galleryManager extends GalleryLibrary
     /**
     * Shows the "Edit-Category"-Form
     *
-    * @global    array        $_ARRAYLANG
-    * @global    object        $objDatabase
+    * @global    ADONewConnection
+    * @global    array
     * @param    integer        $intCategoryId
     */
     function editCategory($intCategoryId)
@@ -1153,8 +1153,9 @@ class galleryManager extends GalleryLibrary
     /**
     * Updates an category in the database
     *
-    * @global    array        $_ARRAYLANG
-    * @global    object        $objDatabase
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
     * @param    integer        $intCategoryId
     */
     function updateCategory($categoryId)
@@ -1250,9 +1251,9 @@ class galleryManager extends GalleryLibrary
     /**
     * Shows the category-details-page
     *
-    * @global    array    $_ARRAYLANG
-    * @global    var        $objDatabase
-    * @global    array    $_CONFIG
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
     */
     function showCategoryDetails($intCatId)
     {
@@ -1491,7 +1492,7 @@ class galleryManager extends GalleryLibrary
     /**
     * Activate / Inactivate a picture
     *
-    * @global    object        $objDatabase
+    * @global    ADONewConnection
     * @param    integer        $intImageId
     */
     function activatePicture($intImageId, $act=NULL)
@@ -1524,9 +1525,9 @@ class galleryManager extends GalleryLibrary
     /**
     * Reset the picture and move it back to the validation part
     *
-    * @global    object        $objDatabase
-    * @global    array        $_CONFIG
-    * @global    array        $_ARRAYLANG
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
     * @param    integer        $intImageId
     */
     function resetPicture($intImageId)
@@ -1562,8 +1563,8 @@ class galleryManager extends GalleryLibrary
     /**
     * Changes the Category of an Image
     *
-    * @global    object        $objDatabase
-    * @global    array        $_ARRAYLANG
+    * @global    ADONewConnection
+    * @global    array
     * @param    integer        $intImageId
     * @param    integer        $intNewCatId
     */
@@ -1599,9 +1600,9 @@ class galleryManager extends GalleryLibrary
     /**
     * Shows the edit-form for a picture
     *
-    * @global    var        $objDatabase
-    * @global    array    $_CONFIG
-    * @global    array    $_ARRAYLANG
+    * @global    ADONewConnection 
+    * @global    array
+    * @global    array
     */
     function showEditPicture()
     {
@@ -1834,9 +1835,9 @@ class galleryManager extends GalleryLibrary
     /**
     * Updates the name of a picture
     *
-    * @global    object        $objDatabase
-    * @global    array        $_ARRAYLANG
-    * @global    integer            $intImageId
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
     */
     function updatePicture()
     {
@@ -1892,8 +1893,8 @@ class galleryManager extends GalleryLibrary
     /**
     * Shows the settings-page
     *
-    * @global    array        $_ARRAYLANG
-    * @global    object        $objDatabase
+    * @global    ADONewConnection
+    * @global    array
     */
     function showSettings()
     {
@@ -2011,9 +2012,8 @@ class galleryManager extends GalleryLibrary
     /**
     * Save the settings for the gallery
     *
-    * @global    object        $objDatabase
-    * @global    array        $_ARRAYLANG
-    * @global    array        $_POST
+    * @global    ADONewConnection
+    * @global    array
     */
     function saveSettings()
     {
@@ -2095,8 +2095,8 @@ class galleryManager extends GalleryLibrary
     /**
     * Shows the UploadForm
     *
-    * @global    object        $objDatabase
-    * @global    array        $_ARRAYLANG
+    * @global    ADONewConnection
+    * @global    array
     */
     function showUploadForm()
     {
@@ -2140,13 +2140,12 @@ class galleryManager extends GalleryLibrary
     /**
     * Upload the submitted images
     *
-    * @global    object        $objDatabase
-    * @global    array        $_CONFIG
-    * @global    array        $_ARRAYLANG
-    * @global     array        $_FILES
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
     */
     function uploadImages(){
-        global $objDatabase,$_ARRAYLANG,$_FILES,$_CONFIG;
+        global $objDatabase,$_ARRAYLANG,$_CONFIG;
 
         $uploadedImagesCounter = 0;
         for ($i = 1; $i <= $this->arrSettings['max_images_upload'];$i++){
@@ -2218,9 +2217,8 @@ class galleryManager extends GalleryLibrary
     /**
     * Insert image into the database
     *
-    * @global    object        $objDatabase
-    * @global    array        $_CONFIG
-    * @global    array        $arrSettings
+    * @global    ADONewConnection
+    * @global    array
     * @param    string        $strImagePath
     * @param    integer        $imageName
     */
@@ -2278,14 +2276,13 @@ class galleryManager extends GalleryLibrary
     /**
     * Shows the validation-page
     *
-    * @global    object       $objDatabase
-    * @global    array        $_ARRAYLANG
-    * @global    array        $_CONFIG
-    * @global    array        $_GET
+    * @global    array
+    * @global    ADONewConnection
+    * @global    array
     */
     function showValidateForm()
     {
-        global $_ARRAYLANG, $objDatabase, $_CONFIG, $_GET;
+        global $_ARRAYLANG, $objDatabase, $_CONFIG;
 
         $this->_objTpl->loadTemplateFile('module_gallery_validate_main.html',true,true);
          $this->_objTpl->setVariable(array(
@@ -2695,9 +2692,9 @@ class galleryManager extends GalleryLibrary
     /**
     * Reload the validation page / Validated a picture / delete a picture
     *
-    * @global    object        $objDatabase
-    * @global     array        $_ARRAYLANG
-    * @global    array        $_CONFIG
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
     */
     function reloadSingleValidate()
     {
@@ -2841,9 +2838,9 @@ class galleryManager extends GalleryLibrary
     /**
     * Reload the validation page / Validated a picture / delete a picture
     *
-    * @global    object        $objDatabase
-    * @global     array        $_ARRAYLANG
-    * @global    array        $_CONFIG
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
     */
     function reloadAllValidate()
     {
@@ -2997,8 +2994,8 @@ class galleryManager extends GalleryLibrary
     /**
     * Deletes an Image from the database
     *
-    * @global     array        $_ARRAYLANG
-    * @global    object        $objDatabase
+    * @global    ADONewConnection
+    * @global    array
     * @param     integer        $intImageId: Id of the image which should be delted
     */
     function deleteImage($intImageId)
@@ -3042,9 +3039,9 @@ class galleryManager extends GalleryLibrary
     /**
     * Rotates an image clockwise by 90�
     *
-    * @global    object        $objDatabase
-    * @global     array        $_ARRAYLANG
-    * @global    array        $_CONFIG
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
     */
     function rotatePicture($intImageId)
     {
@@ -3190,7 +3187,8 @@ class galleryManager extends GalleryLibrary
     /**
     * import Pictures (requires chmod 777 in folder gallery_import)
     *
-    * @global    array    $_ARRAYLANG
+    * @global    array
+    * @global    array
     */
     function importPicture()
     {
@@ -3527,8 +3525,8 @@ class galleryManager extends GalleryLibrary
     /**
     * Delete a comment of a picture
     *
-    * @global     object        $objDatabase
-    * @global     array        $_ARRAYLANG
+    * @global     ADONewConnection
+    * @global     array
     * @param     integer        $intComId: The id of the comment which should be deleted
     */
     function deleteComment($intComId)
@@ -3553,8 +3551,8 @@ class galleryManager extends GalleryLibrary
     /**
     * Delete a voting of a picture
     *
-    * @global     object        $objDatabase
-    * @global     array        $_ARRAYLANG
+    * @global     ADONewConnection
+    * @global     array
     * @param     integer        $intComId: The id of the comment which should be deleted
     */
     function deleteVote($intVoteId)
@@ -3579,8 +3577,8 @@ class galleryManager extends GalleryLibrary
     /**
     * Edit a comment of a picture
     *
-    * @global     object        $objDatabase
-    * @global     array        $_ARRAYLANG
+    * @global     ADONewConnection
+    * @global     array
     * @param     integer        $intCommentId: The comment with this id will be shown in the form
     */
     function showEditComment($intCommentId)
@@ -3626,13 +3624,12 @@ class galleryManager extends GalleryLibrary
     /**
     * Save all changes done to a comment
     *
-    * @global     object        $objDatabase
-    * @global     array        $_ARRAYLANG
-    * @global     array        $_POST
+    * @global     ADONewConnection
+    * @global     array
     */
     function updateComment()
     {
-        global $objDatabase,$_ARRAYLANG,$_POST;
+        global $objDatabase,$_ARRAYLANG;
 
         $intCommentId     = intval($_POST['frmEditComment_Id']);
         $strName         = htmlspecialchars(strip_tags($_POST['frmEditComment_Name']), ENT_QUOTES, CONTREXX_CHARSET);
@@ -3669,7 +3666,7 @@ class galleryManager extends GalleryLibrary
     /**
      * Define an images as "category-image". This image will be shown in the category-selection.
      *
-     * @global     object        $objDatabase
+     * @global     ADONewConnection
      * @param    integer        $intImgId
      */
     function setCategoryImage($intImgId) {

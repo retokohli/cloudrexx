@@ -1,4 +1,22 @@
 <?php
+/**
+ * User Object
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
+ * @version     2.0.0
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+/**
+ * User Object
+ *
+ * The User object is used for all user related operations.
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
+ * @version     2.0.0
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */ 
 class User extends User_Profile
 {
     /**
@@ -1089,7 +1107,7 @@ class User extends User_Profile
      * the user is associated to.
      *
      * @param integer $userId
-     * @global object $objDatabase
+     * @global ADONewConnection
      * @return mixed array on success, FALSE on failure
      */
     private function loadGroups()
@@ -1163,8 +1181,8 @@ class User extends User_Profile
      * to the database.
      * If it is a new user, it also sets the registration time to the current time.
      *
-     * @global object $objDatabase
-     * @global array $_CORELANG
+     * @global ADONewConnection 
+     * @global array
      * @return boolean
      */
     public function store()
@@ -1265,7 +1283,7 @@ class User extends User_Profile
      * Stores the group associations of the loaded user.
      * Returns TRUE no success, FALSE on failure.
      *
-     * @global object $objDatabase
+     * @global ADONewConnection
      * @return boolean
      */
     private function storeGroupAssociations()
@@ -1470,7 +1488,6 @@ class User extends User_Profile
      * if the parameter $username is valid and isn't yet used by an other user.
      *
      * @param string $username
-     * @global array $_CORELANG
      * @return boolean
      */
     public function setUsername($username)
@@ -1512,7 +1529,6 @@ class User extends User_Profile
      * if the parameter $email is valid and isn't yet used by an other user.
      *
      * @param string $email
-     * @global array $_CORELANG
      * @return boolean
      */
     public function setEmail($email)
@@ -1537,7 +1553,7 @@ class User extends User_Profile
      *
      * @param string $password
      * @param string $confirmedPassword
-     * @global $_CORELANG
+     * @global array
      * @return boolean
      */
     public function setPassword($password, $confirmedPassword = null, $reset = false)
@@ -1613,7 +1629,7 @@ class User extends User_Profile
      * isn't the only administration.
      *
      * @param boolean $status
-     * @global array $_CORELANG
+     * @global array
      * @return boolean
      */
     public function setAdminStatus($status)
@@ -1664,7 +1680,7 @@ class User extends User_Profile
      *
      * Checks if the user is the last admin account in the system.
      *
-     * @global object $objDatabase
+     * @global ADONewConnection
      * @return boolean
      */
     private function isLastAdmin()

@@ -11,7 +11,7 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once ASCMS_CORE_MODULE_PATH . '/news/lib/newsLib.class.php';
 
@@ -190,7 +190,7 @@ class newsManager extends newsLibrary {
     /**
     * Do the requested newsaction
     *
-    * @global    object    $objTemplate
+    * @global    HTML_Template_Sigma
     * @return    string    parsed content
     */
     function getPage()
@@ -277,7 +277,9 @@ class newsManager extends newsLibrary {
     /**
     * List up the news for edit or delete
     *
-    * @global    object    $objDatabase
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
     * @param     integer   $newsid
     * @param     string    $what
     * @access  private
@@ -514,8 +516,9 @@ class newsManager extends newsLibrary {
     /**
     * adds a news entry
     *
-    * @global   array $_CONFIG
-    * @global   array $_ARRAYLANG
+    * @global   array
+    * @global   array
+    * @global   ADONewConnection
     */
     function add()
     {
@@ -694,8 +697,8 @@ class newsManager extends newsLibrary {
     /**
     * Deletes a news entry
     *
-    * @global    object    $objDatabase
-    * @global    array     $_ARRAYLANG
+    * @global    ADONewConnection
+    * @global    array
     * @return    -
     */
     function delete(){
@@ -743,7 +746,9 @@ class newsManager extends newsLibrary {
     /**
     * Edit the news
     *
-    * @global    object     $objDatabase
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
     * @param     string     $pageContent
     */
     function edit()
@@ -918,8 +923,9 @@ class newsManager extends newsLibrary {
     /**
     * Update news
     *
-    * @global    object    $objDatabase
-    * @global    array     $_POST[*]
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
     * @param     integer   $newsid
     * @return    boolean   result
     */
@@ -1007,8 +1013,9 @@ class newsManager extends newsLibrary {
     /**
     * Change status of multiple messages
     *
-    * @global    object    $objDatabase
-    * @global    array     $_POST[*]
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
     * @param     integer   $newsid
     * @return    boolean   result
     */
@@ -1048,8 +1055,8 @@ class newsManager extends newsLibrary {
     /**
      * Invert status of a single message
      *
-     * @global  object      $objDatabase
-     * @global  array       $_ARRAYLANG
+     * @global  ADONewConnection
+     * @global  array
      * @param   integer     $intNewsId
      */
     function invertStatus($intNewsId) {
@@ -1082,8 +1089,8 @@ class newsManager extends newsLibrary {
     /**
     * Add or edit the news categories
     *
-    * @global    object     $objDatabase
-    * @global    array      $_ARRAYLANG[news*]
+    * @global    ADONewConnection
+    * @global    array
     * @param     string     $pageContent
     */
     function manageCategories()
@@ -1167,8 +1174,8 @@ class newsManager extends newsLibrary {
     /**
     * Delete the news categories
     *
-    * @global    object     $objDatabase
-    * @global    array      $_ARRAYLANG[news*]
+    * @global    ADONewConnection
+    * @global    array
     * @param     string     $pageContent
     */
     function deleteCat(){
@@ -1326,9 +1333,9 @@ class newsManager extends newsLibrary {
     * Save the news settings
     *
     * @access private
-    * @global object $objDatabase
-    * @global array $_CONFIG
-    * @global array $_ARRAYLANG
+    * @global ADONewConnection
+    * @global array
+    * @global array
     * @see createRSS()
     */
     function _saveSettings()

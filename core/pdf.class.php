@@ -3,17 +3,28 @@
 * PDF class
 *
 * Generate PDF for pdfview
-*
-* @copyright	CONTREXX CMS - COMVATION AG
-* @author		Comvation Development Team <info@comvation.com>
-* @access		public
-* @module		settings
-* @modulegroup	core
-* @version		1.1.0
+* @copyright    CONTREXX CMS - COMVATION AG
+* @author       Comvation Development Team <info@comvation.com>
+* @package      contrexx
+* @subpackage   core
+* @version      1.1.0
 */
 
+/**
+ * @ignore
+ */
 require_once ASCMS_LIBRARY_PATH.'/html2fpdf/html2fpdf.php';
 
+/**
+* PDF class
+*
+* Generate PDF for pdfview
+* @copyright    CONTREXX CMS - COMVATION AG
+* @author       Comvation Development Team <info@comvation.com>
+* @package      contrexx
+* @subpackage   core
+* @version      1.1.0
+*/
 class PDF extends HTML2FPDF
 {
 	/**
