@@ -89,10 +89,10 @@ class cmsSession
 		             return $objResult->fields['datavalue'];
 		       } else {
 		             $query = "INSERT INTO ".DBPREFIX."sessions (sessionid, startdate, lastupdated, status, user_id, datavalue)
-		                       VALUES ('".$aKey."', '".time()."', '".time()."', '".($this->status)."', '".($this->userId)."', '')";
+                               VALUES ('".$aKey."', '".time()."', '".time()."', '".($this->status)."', '".intval($this->userId)."', '')";
 		             if ($this->compatibelitiyMode) {
 		             	 $query = "INSERT INTO ".DBPREFIX."sessions (sessionid, startdate, lastupdated, status, username, datavalue)
-		                       VALUES ('".$aKey."', '".time()."', '".time()."', '".($this->status)."', '".($this->userId)."', '')";
+                               VALUES ('".$aKey."', '".time()."', '".time()."', '".($this->status)."', '".intval($this->userId)."', '')";
 		             }
 		             $this->_objDb->Execute($query);
 		             return "";
