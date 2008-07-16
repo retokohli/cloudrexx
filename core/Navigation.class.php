@@ -624,7 +624,7 @@ class Navigation
 	  	if(count($this->arrLang)>1) {
 	  	  	foreach($this->arrLang as $id=>$value) {
 	  	  		if($this->arrLang[$id]['frontend']==1) {
-	  	  		    $langNavigation .= " [ <a href='?langId=".$id."' title='".$value['name']."' >".$value['name']."</a> ] ";
+	  	  		    $langNavigation .= " [ <a href='?setLang=".$id."' title='".$value['name']."' >".$value['name']."</a> ] ";
 	  	  		}
 	  	  	}
 	  	}
