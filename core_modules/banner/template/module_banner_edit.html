@@ -1,7 +1,7 @@
 <!-- START module_banner_edit.html -->
 <script type="text/javascript">
 // <[CDATA[
-function add(from,dest,add,remove)
+function banner_add(from,dest,add,remove)
 {
     if ( from.selectedIndex < 0) {
 		if (from.options[0] != null)
@@ -23,7 +23,7 @@ function add(from,dest,add,remove)
     disableButtons(from,dest,add,remove);
 }
 
-function remove(from,dest,add,remove)
+function banner_remove(from,dest,add,remove)
 {
 	if ( dest.selectedIndex < 0) {
 		if (dest.options[0] != null)
@@ -158,9 +158,9 @@ function switchDiv(strElement)
 					    </td>
 					    <td width="4%">
 					      <div align="center">
-					        <input type="button" value=" &gt;&gt; " name="addpages" onclick="add(document.formEditBanner.elements['notSelectedPages[]'],document.formEditBanner.elements['selectedPages[]'],addpages,removepages);" />
+					        <input type="button" value=" &gt;&gt; " name="addpages" onclick="banner_add(document.formEditBanner.elements['notSelectedPages[]'],document.formEditBanner.elements['selectedPages[]'],addpages,removepages);" />
 					        <br />
-					        <input type="button" value=" &lt;&lt; " name="removepages" onclick="remove(document.formEditBanner.elements['notSelectedPages[]'],document.formEditBanner.elements['selectedPages[]'],addpages,removepages);" />
+					        <input type="button" value=" &lt;&lt; " name="removepages" onclick="banner_remove(document.formEditBanner.elements['notSelectedPages[]'],document.formEditBanner.elements['selectedPages[]'],addpages,removepages);" />
 					        <br /><br />
 					      </div>
 					    </td>
@@ -191,9 +191,9 @@ function switchDiv(strElement)
 					    </td>
 					    <td width="4%">
 					      <div align="center">
-					        <input type="button" value=" &gt;&gt; " name="addnews" onclick="add(document.formEditBanner.elements['notSelectedNews[]'],document.formEditBanner.elements['selectedNews[]'],addnews,removenews);" />
+					        <input type="button" value=" &gt;&gt; " name="addnews" onclick="banner_add(document.formEditBanner.elements['notSelectedNews[]'],document.formEditBanner.elements['selectedNews[]'],addnews,removenews);" />
 					        <br />
-					        <input type="button" value=" &lt;&lt; " name="removenews" onclick="remove(document.formEditBanner.elements['notSelectedNews[]'],document.formEditBanner.elements['selectedNews[]'],addnews,removenews);" />
+					        <input type="button" value=" &lt;&lt; " name="removenews" onclick="banner_remove(document.formEditBanner.elements['notSelectedNews[]'],document.formEditBanner.elements['selectedNews[]'],addnews,removenews);" />
 					        <br /><br />
 					      </div>
 					    </td>
@@ -224,9 +224,9 @@ function switchDiv(strElement)
 					    </td>
 					    <td width="4%">
 					      <div align="center">
-					        <input type="button" value=" &gt;&gt; " name="addnews" onclick="add(document.formEditBanner.elements['notSelectedTeaser[]'],document.formEditBanner.elements['selectedTeaser[]'],addnews,removenews);" />
+					        <input type="button" value=" &gt;&gt; " name="addnews" onclick="banner_add(document.formEditBanner.elements['notSelectedTeaser[]'],document.formEditBanner.elements['selectedTeaser[]'],addnews,removenews);" />
 					        <br />
-					        <input type="button" value=" &lt;&lt; " name="removenews" onclick="remove(document.formEditBanner.elements['notSelectedTeaser[]'],document.formEditBanner.elements['selectedTeaser[]'],addnews,removenews);" />
+					        <input type="button" value=" &lt;&lt; " name="removenews" onclick="banner_remove(document.formEditBanner.elements['notSelectedTeaser[]'],document.formEditBanner.elements['selectedTeaser[]'],addnews,removenews);" />
 					        <br /><br />
 					      </div>
 					    </td>
