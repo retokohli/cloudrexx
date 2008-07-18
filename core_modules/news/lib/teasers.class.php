@@ -278,45 +278,52 @@ class Teasers extends newsLibrary
         if (isset($this->arrTeaserFrameTemplates[$templateId]['html'])) {
             $teaserFrame = $this->arrTeaserFrameTemplates[$templateId]['html'];
             if (preg_match_all('/<!-- BEGIN (teaser_[0-9]+) -->/ms', $teaserFrame, $arrTeaserBlocks)) {
+				$funcSort = create_function('$a, $b', '{$aNr = preg_replace("/^[^_]+_/", "", $a);$bNr = preg_replace("/^[^_]+_/", "", $b);if ($aNr == $bNr) {return 0;} return ($aNr < $bNr) ? -1 : 1;}'); 
+				usort($arrTeaserBlocks[0], $funcSort);
+				usort($arrTeaserBlocks[1], $funcSort);
                 foreach ($arrTeaserBlocks[1] as $nr => $teaserBlock) {
+					if (preg_match('/<!-- BEGIN '.$teaserBlock.' -->(.*)<!-- END '.$teaserBlock.' -->/s', $teaserFrame, $arrMatch)) {
+						$teaserBlockCode = $arrMatch[1];
+					} else {
+						$teaserBlockCode = '';
+					}
+
                     if (isset($this->arrFrameTeaserIds[$id][$nr])) {
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_CATEGORY\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.$this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category'].'${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_DATE\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.date(ASCMS_DATE_SHORT_FORMAT, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']).'${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_LONG_DATE\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.date(ASCMS_DATE_FORMAT, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']).'${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_TITLE\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.htmlentities($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['title'], ENT_QUOTES, CONTREXX_CHARSET).'${2}', $teaserFrame);
+                        $teaserBlockCode = str_replace('{TEASER_CATEGORY}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category'], $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_DATE}', date(ASCMS_DATE_SHORT_FORMAT, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_LONG_DATE}', date(ASCMS_DATE_FORMAT, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_TITLE}', htmlentities($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['title'], ENT_QUOTES, CONTREXX_CHARSET), $teaserBlockCode);
                         if ($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_show_link']) {
-                            $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_URL\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.((empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'])) ? 'index.php?section=news&amp;cmd=details&amp;newsid='.$this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'].'&amp;teaserId='.$this->arrTeaserFrames[$id]['id'] : $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']).'${2}', $teaserFrame);
-                            $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_URL_TARGET\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.((empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'])) ? '_self' : '_blank').'${2}', $teaserFrame);
-                            $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\<!-- BEGIN teaser_link -->([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.'${2}', $teaserFrame);
-                            $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\<!-- END teaser_link -->([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.'${2}', $teaserFrame);
+                            $teaserBlockCode = str_replace('{TEASER_URL}', empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']) ? 'index.php?section=news&amp;cmd=details&amp;newsid='.$this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'].'&amp;teaserId='.$this->arrTeaserFrames[$id]['id'] : $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'], $teaserBlockCode);
+                            $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']) ? '_self' : '_blank', $teaserBlockCode);
+                            $teaserBlockCode = str_replace('<!-- BEGIN teaser_link -->', '', $teaserBlockCode);
+                            $teaserBlockCode = str_replace('<!-- END teaser_link -->', '', $teaserBlockCode);
                         } else {
-                            $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\<!-- BEGIN teaser_link -->[\S\s]*<!-- END teaser_link -->([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.'${2}', $teaserFrame);
+                            $teaserBlockCode = preg_replace('/<!-- BEGIN teaser_link -->[\S\s]*<!-- END teaser_link -->/', '', $teaserBlockCode);
                         }
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_IMAGE_PATH\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.$this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_image_path'].'${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_TEXT\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.nl2br($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_text']).'${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_AUTHOR\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.$this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['author'].'${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_EXT_URL\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.$this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['ext_url'].'${2}', $teaserFrame);
+                        $teaserBlockCode = str_replace('{TEASER_IMAGE_PATH}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_image_path'], $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_TEXT}', nl2br($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_text']), $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_AUTHOR}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['author'], $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_EXT_URL}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['ext_url'], $teaserBlockCode);
                     } elseif ($this->administrate) {
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_CATEGORY\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}TXT_CATEGORY${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_DATE\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}TXT_DATE${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_LONG_DATE\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}TXT_LONG_DATE${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_TITLE\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}TXT_TITLE${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_URL\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}TXT_URL${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_URL_TARGET\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}TXT_URL_TARGET${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_IMAGE_PATH\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}TXT_IMAGE_PATH${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_TEXT\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}TXT_TEXT${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_AUTHOR\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.'TEASER_AUTHOR'.'${2}', $teaserFrame);
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->[\S\s]*)\{TEASER_EXT_URL\}([\S\s]*<!-- END '.$teaserBlock.' -->)/', '${1}'.'TEASER_EXT_URL'.'${2}', $teaserFrame);
+                        $teaserBlockCode = str_replace('{TEASER_CATEGORY}', 'TXT_CATEGORY', $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_DATE}', 'TXT_DATE', $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_LONG_DATE}', 'TXT_LONG_DATE', $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_TITLE}', 'TXT_TITLE', $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_URL}', 'TXT_URL', $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', 'TXT_URL_TARGET', $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_IMAGE_PATH}', 'TXT_IMAGE_PATH', $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_TEXT}', 'TXT_TEXT', $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_AUTHOR}', 'TEASER_AUTHOR', $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_EXT_URL}', 'TEASER_EXT_URL', $teaserBlockCode);
                     } else {
-                        $teaserFrame = preg_replace('/<!-- BEGIN '.$teaserBlock.' -->[\S\s]*<!-- END '.$teaserBlock.' -->/', '&nbsp;', $teaserFrame);
+                        $teaserBlockCode = '&nbsp;';
                     }
 
                     if (!$this->administrate) {
-                        $teaserFrame = preg_replace('/<!-- BEGIN '.$teaserBlock.' -->/', '', $teaserFrame);
-                        $teaserFrame = preg_replace('/<!-- END '.$teaserBlock.' -->/', '', $teaserFrame);
+                        $teaserFrame = preg_replace('/<!-- BEGIN '.$teaserBlock.' -->[\S\s]*<!-- END '.$teaserBlock.' -->/', $teaserBlockCode, $teaserFrame);
                     } else {
-                        $teaserFrame = preg_replace('/<!-- BEGIN '.$teaserBlock.' -->/', '<table cellspacing="0" cellpadding="0" style="border:1px dotted #aaaaaa;"><tr><td>', $teaserFrame);
-                        $teaserFrame = preg_replace('/<!-- END '.$teaserBlock.' -->/', '</td></tr></table>', $teaserFrame);
+						$teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->)[\S\s]*(<!-- END '.$teaserBlock.' -->)/', '<table cellspacing="0" cellpadding="0" style="border:1px dotted #aaaaaa;"><tr><td>'.$teaserBlockCode.'</td></tr></table>', $teaserFrame);
                     }
                 }
             }
