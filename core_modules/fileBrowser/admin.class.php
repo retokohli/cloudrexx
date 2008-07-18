@@ -140,8 +140,8 @@ class FileBrowser {
     {
         global $_FRONTEND_LANGID;
 
-        if (!empty($_REQUEST['langId'])) {
-            $this->_frontendLanguageId = intval($_REQUEST['langId']);
+        if (!empty($_GET['langId']) || !empty($_POST['langId'])) {
+            $this->_frontendLanguageId = intval(!empty($_GET['langId']) ? $_GET['langId'] : $_POST['langId']);
         } else {
             $this->_frontendLanguageId = $_FRONTEND_LANGID;
         }
