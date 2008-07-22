@@ -82,4 +82,5 @@ $_ARRAYLANG['TXT_FORUM_UPLOAD_NOT_MOVABLE'] = "The file could not be moved on th
 $_ARRAYLANG['TXT_FORUM_DELETE_ATTACHMENT'] = "Delete attachment '%s'";
 $_ARRAYLANG['TXT_FORUM_SEARCH_TERM_TOO_SHORT'] = "Note: The search term must be at least 3 characters long.";
 $_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS'] = "Erlaubte Dateierweiterungen";
+$_ARRAYLANG['TXT_FORUM_EXTENSION_NOT_ALLOWED'] = "Diese Dateierweiterung (%s) ist nicht erlaubt. Erlaubte Dateierweiterungen: %s";
 ?>

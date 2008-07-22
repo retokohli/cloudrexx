@@ -82,4 +82,5 @@ $_ARRAYLANG['TXT_FORUM_UPLOAD_NOT_MOVABLE'] = "Die Datei konnte auf dem Server n
 $_ARRAYLANG['TXT_FORUM_DELETE_ATTACHMENT'] = "Anhang '%s' löschen";
 $_ARRAYLANG['TXT_FORUM_SEARCH_TERM_TOO_SHORT'] = "Hinweis: Der Suchbegriff muss mind. 3 Zeichen lang sein.";
 $_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS'] = "Erlaubte Dateierweiterungen";
+$_ARRAYLANG['TXT_FORUM_EXTENSION_NOT_ALLOWED'] = "Diese Dateierweiterung (%s) ist nicht erlaubt. Erlaubte Dateierweiterungen: %s";
 ?>

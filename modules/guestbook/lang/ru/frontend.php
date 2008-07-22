@@ -7,25 +7,25 @@
  * @subpackage  module_guestbook
  */
 $_ARRAYLANG['TXT_NAME'] = "Имя";
-$_ARRAYLANG['TXT_COMMENT'] = "Kommentar";
-$_ARRAYLANG['TXT_LOCATION'] = "Wohnort";
-$_ARRAYLANG['TXT_SEX'] = "Geschlecht";
+$_ARRAYLANG['TXT_COMMENT'] = "Комментарий";
+$_ARRAYLANG['TXT_LOCATION'] = "Местоположение";
+$_ARRAYLANG['TXT_SEX'] = "Пол";
 $_ARRAYLANG['TXT_EMAIL'] = "e-mail";
-$_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "Ihre E-Mail Adresse ist ungültig!";
-$_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Bitte füllen Sie alle erforderlichen Felder aus.";
-$_ARRAYLANG['TXT_IP_ADDRESS'] = "IP Adresse";
-$_ARRAYLANG['TXT_RESET'] = "Zurücksetzen";
-$_ARRAYLANG['TXT_INVALID_INTERNET_ADDRESS'] = "Fehlerhafte Internetadresse";
-$_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'] = "Der Datensatz wurde erfolgreich gespeichert";
-$_ARRAYLANG['TXT_DATE'] = "Datum";
-$_ARRAYLANG['TXT_GUESTBOOK_ENTRIES'] = "Gästebucheinträge";
-$_ARRAYLANG['TXT_CHECK_GUESTBOOK_ENTRY'] = "Bitte überprüfen Sie den Gästebucheintrag auf Ihrer Webseite.";
-$_ARRAYLANG['TXT_ENTRY_READS'] = "Der Eintrag lautet:";
-$_ARRAYLANG['TXT_NEW_GUESTBOOK_ENTRY'] = "Neuer Gästebucheintrag auf";
-$_ARRAYLANG['TXT_DATA_RECORD_STORED_ACTIVATE'] = "Beachten Sie bitte, dass der Administrator alle einkommenden Beiträge zuerst überprüft, bevor diese auf der Seite erscheinen.";
-$_ARRAYLANG['txt_captcha'] = "Bitte geben Sie die abgebildeten Ziffern ein";
-$_ARRAYLANG['TXT_ALT_STRING'] = "Der Wert dieses Bildes lautet: , ohne Leerzeichen zwischen den Ziffern.";
-$_ARRAYLANG['captcha_error'] = "Die eingegebene Nummer stimmt nicht!";
-$_ARRAYLANG['TXT_IS_INVALID'] = "ist leer oder nicht gültig!";
-$_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "Die eingegebene Zahl stimmt nicht!";
+$_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "Ваш почтовый адрес недопустим!";
+$_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'] = "Пожалуйста заполните все обязательные поля.";
+$_ARRAYLANG['TXT_IP_ADDRESS'] = "IP адрес";
+$_ARRAYLANG['TXT_RESET'] = "Сброс";
+$_ARRAYLANG['TXT_INVALID_INTERNET_ADDRESS'] = "URL неправильный";
+$_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'] = "Запись данных была успешно сохранена";
+$_ARRAYLANG['TXT_DATE'] = "Дата";
+$_ARRAYLANG['TXT_GUESTBOOK_ENTRIES'] = "Записи гостевой книги";
+$_ARRAYLANG['TXT_CHECK_GUESTBOOK_ENTRY'] = "Пожалуйста проверьте запись гостевой книги на Вашем вебсайте";
+$_ARRAYLANG['TXT_ENTRY_READS'] = "Название записи:";
+$_ARRAYLANG['TXT_NEW_GUESTBOOK_ENTRY'] = "Новая запись гостевой книги";
+$_ARRAYLANG['TXT_DATA_RECORD_STORED_ACTIVATE'] = "Пожалуйста обратите внимание, что администратор этого сайта проверит каждый подвергавший вход прежде, чем издать на странице.";
+$_ARRAYLANG['txt_captcha'] = "Пожалуйста введите показанные числа";
+$_ARRAYLANG['TXT_ALT_STRING'] = "Значение этого изображения:, без свободных мест между шифрами.";
+$_ARRAYLANG['captcha_error'] = "Введенное число является неправильным!";
+$_ARRAYLANG['TXT_IS_INVALID'] = "Пусто или не правилен!";
+$_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "Введенное число является неправильным!";
 ?>
