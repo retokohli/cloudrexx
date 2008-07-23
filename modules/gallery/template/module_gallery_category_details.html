@@ -132,7 +132,9 @@
 					<option value="move">{TXT_SUBMIT_MOVE}</option>
 				</select>
 				<select name="frmShowImages_MultiAction_Move" onchange="selectMultiAction();" disabled="disabled">
-					{IMAGES_MULTIACTION_MOVE_SELECT}
+					<!-- BEGIN showCategoriesMultiAction -->
+					<option value="{CAT_DROPDOWN_VALUE}" {CAT_DROPDOWN_SELECTED}>{CAT_DROPDOWN_INDENT}{CAT_DROPDOWN_NAME}</option>
+					<!-- END showCategoriesMultiAction -->
 				</select>
 			</td>
 		</tr>
