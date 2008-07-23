@@ -11,6 +11,7 @@
 
 $strXML='';
 if(isset($_GET['mod']) && !empty($_GET['mod'])){
+    $_GET['mod'] = str_replace(array('\0', '..', '/'), '', $_GET['mod']);
 	$strXMLfile='xmlinfo/'.$_GET['mod'].'.xml';
 	if(file_exists($strXMLfile)){
 		$hXML=@fopen($strXMLfile,'r');
@@ -21,7 +22,7 @@ if(isset($_GET['mod']) && !empty($_GET['mod'])){
 			header('Content-Type: text/xml');
 			die($strXML);
 		}
-	}	
+	}
 }
 echo "notfound";
 
