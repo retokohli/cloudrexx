@@ -871,6 +871,96 @@ CREATE TABLE `contrexx_module_docsys_categories` (
   PRIMARY KEY  (`catid`)
 ) TYPE=MyISAM;
 
+CREATE TABLE `contrexx_module_downloads_cat_lang` (
+  `category` int(11) NOT NULL default '0',
+  `language` int(11) NOT NULL default '0',
+  KEY `category` (`category`)
+) TYPE=MyISAM;
+
+CREATE TABLE `contrexx_module_downloads_cat_locales` (
+  `loc_id` int(11) NOT NULL auto_increment,
+  `loc_lang` int(11) NOT NULL default '0',
+  `loc_cat` int(11) NOT NULL default '0',
+  `loc_name` varchar(255) collate utf8_unicode_ci NOT NULL default '',
+  `loc_desc` text collate utf8_unicode_ci NOT NULL,
+  PRIMARY KEY  (`loc_id`)
+) TYPE=MyISAM;
+
+
+CREATE TABLE `contrexx_module_downloads_categories` (
+  `category_id` int(11) NOT NULL auto_increment,
+  `category_img` varchar(255) collate utf8_unicode_ci NOT NULL default '',
+  `category_author` varchar(255) collate utf8_unicode_ci NOT NULL default '',
+  `category_created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `category_state` tinyint(1) NOT NULL default '0',
+  `category_order` int(3) NOT NULL default '0',
+  PRIMARY KEY  (`category_id`)
+) TYPE=MyISAM;
+
+CREATE TABLE `contrexx_module_downloads_files` (
+  `file_id` int(11) NOT NULL auto_increment,
+  `file_name` varchar(255) character set utf8 collate utf8_unicode_ci NOT NULL default '',
+  `file_type` varchar(255) character set utf8 collate utf8_unicode_ci NOT NULL default '',
+  `file_size` varchar(255) character set utf8 collate utf8_unicode_ci NOT NULL default '',
+  `file_source` varchar(255) character set utf8 collate utf8_unicode_ci NOT NULL default '',
+  `file_url` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `file_img` varchar(255) character set utf8 collate utf8_unicode_ci NOT NULL default '',
+  `file_autor` varchar(255) character set utf8 collate utf8_unicode_ci NOT NULL default '',
+  `file_access_id` int(11) NOT NULL default '0',
+  `file_protected` tinyint(1) NOT NULL default '0',
+  `file_license` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `file_version` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `file_created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `file_state` tinyint(1) NOT NULL,
+  `file_order` int(11) NOT NULL default '0',
+  `file_views` int(11) NOT NULL default '0',
+  `file_downloads` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`file_id`)
+) TYPE=MyISAM;
+
+CREATE TABLE `contrexx_module_downloads_files_lang` (
+  `file` int(11) NOT NULL default '0',
+  `language` int(11) NOT NULL default '0',
+  KEY `file` (`file`)
+) TYPE=MyISAM;
+
+CREATE TABLE `contrexx_module_downloads_files_locales` (
+  `loc_id` int(11) NOT NULL auto_increment,
+  `loc_lang` int(11) NOT NULL default '0',
+  `loc_file` int(11) NOT NULL default '0',
+  `loc_name` varchar(255) collate utf8_unicode_ci NOT NULL default '',
+  `loc_desc` text collate utf8_unicode_ci NOT NULL,
+  PRIMARY KEY  (`loc_id`)
+) TYPE=MyISAM;
+
+CREATE TABLE `contrexx_module_downloads_files_stat` (
+  `stat_id` int(11) NOT NULL auto_increment,
+  `stat_file` int(11) NOT NULL default '0',
+  `stat_user_id` int(11) NOT NULL default '0',
+  `stat_views` int(11) NOT NULL default '0',
+  `stat_downloads` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`stat_id`)
+) TYPE=MyISAM;
+
+CREATE TABLE `contrexx_module_downloads_rel_files_cat` (
+  `rel_file` int(11) NOT NULL default '0',
+  `rel_category` int(11) NOT NULL default '0',
+  KEY `rel_file` (`rel_file`)
+) TYPE=MyISAM;
+
+CREATE TABLE `contrexx_module_downloads_rel_files_files` (
+  `rel_file` int(11) NOT NULL default '0',
+  `rel_related` int(11) NOT NULL default '0',
+  KEY `rel_file` (`rel_file`)
+) TYPE=MyISAM;
+
+CREATE TABLE `contrexx_module_downloads_settings` (
+  `setting_id` int(11) NOT NULL auto_increment,
+  `setting_name` varchar(255) collate utf8_unicode_ci NOT NULL default '',
+  `setting_value` varchar(255) collate utf8_unicode_ci NOT NULL default '',
+  PRIMARY KEY  (`setting_id`)
+) TYPE=MyISAM;
+
 CREATE TABLE `contrexx_module_egov_configuration` (
   `name` varchar(255) NOT NULL default '',
   `value` text NOT NULL default '',
