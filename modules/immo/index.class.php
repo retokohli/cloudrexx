@@ -1071,8 +1071,10 @@ class Immo extends ImmoLib
             return false;
         }
         if($objRS->RecordCount() == 0){
-            $this->_objTpl->touchBlock("no_results");
-            $this->_objTpl->parse("no_results");
+            if($this->_objTpl->blockExists("no_results")){
+                $this->_objTpl->touchBlock("no_results");
+                $this->_objTpl->parse("no_results");
+            }
             return false;
         }
         while(!$objRS->EOF){
