@@ -234,6 +234,7 @@ $_ARRAYLANG['TXT_SHOP_LOGINDATA'] = "Die Zugangsdaten für den Download:";
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER_LINK'] = "Hersteller:";
 $_ARRAYLANG['TXT_SHOP_EXTERNAL_LINK'] = "Externe Informationen";
 $_ARRAYLANG['TXT_SHOP_PASSWORD'] = "Passwort:";
+$_ARRAYLANG['TXT_SHOP_ERROR_WRONG_FILETYPE'] = "Dateien mit der Endung '%1\$s' werden nicht unterstützt";
 $_ARRAYLANG['TXT_SHOP_DISCOUNT_FROM'] = "ab";
 $_ARRAYLANG['TXT_SHOP_DISCOUNT_TO'] = ":";
 $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT'] = "Mengenrabatte:";
