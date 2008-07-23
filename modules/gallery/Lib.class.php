@@ -1,4 +1,5 @@
-<?PHP
+<?php
+
 /**
  * Gallery library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -28,12 +29,12 @@ require_once ASCMS_MODULE_PATH . '/gallery/sql.class.php';
 class GalleryLibrary
 {
     protected $sql;
-    
+
     public function __construct()
     {
         $this->sql = new GallerySql();
     }
-    
+
     /**
     * Gets the gallery settings
     *
@@ -49,4 +50,5 @@ class GalleryLibrary
         }
     }
 }
+
 ?>

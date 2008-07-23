@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Gallery
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -45,17 +46,17 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Constructor    -> Create the menu and copy the template
-    *
-    * @global    array
-    * @global    HTML_Template_Sigma 
-    * @global    InitCMS
-    */
+     * Constructor    -> Create the menu and copy the template
+     *
+     * @global    array
+     * @global    HTML_Template_Sigma
+     * @global    InitCMS
+     */
     function __construct()
     {
         global $_ARRAYLANG, $objTemplate, $objInit;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->intLangId=$objInit->userFrontendLangId;
@@ -93,26 +94,25 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Select the admired action
-    *
-    * @global    HTML_Template_Sigma 
-    * @global    array
-    */
+     * Determine the page to display and call the appropriate methods
+     * @global    HTML_Template_Sigma
+     * @global    array
+     */
     function getPage()
     {
         global $objTemplate, $_ARRAYLANG;
 
-        if(!isset($_GET['act'])) {
+        if (!isset($_GET['act'])) {
             $_GET['act']='';
         }
-           switch($_GET['act']){
+        switch ($_GET['act']) {
             case 'new_cat':
                 Permission::checkAccess(66, 'static');
                 $this->newCategory();
             break;
             case 'insert_category':
                 $this->insertCategory();
-               $this->overview();
+                $this->overview();
             break;
             case 'sort_categories':
                 $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
@@ -126,7 +126,7 @@ class galleryManager extends GalleryLibrary
                     switch ($_POST['frmShowImages_MultiAction']) {
                         case 'delete':
                             if (isset($_POST['selectedImageId'])) {
-                                foreach($_POST['selectedImageId'] as $intKey => $intPicId) {
+                                foreach($_POST['selectedImageId'] as $intPicId) {
                                     $this->deleteImage($intPicId);
                                     $this->statusMessage = $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_DELETED'];
                                 }
@@ -134,28 +134,28 @@ class galleryManager extends GalleryLibrary
                         break;
                         case 'activate':
                             if (isset($_POST['selectedImageId'])) {
-                                foreach($_POST['selectedImageId'] as $intKey => $intPicId) {
+                                foreach($_POST['selectedImageId'] as $intPicId) {
                                     $this->activatePicture($intPicId, "activate");
                                 }
                             }
                         break;
                         case 'deactivate':
                             if (isset($_POST['selectedImageId'])) {
-                                foreach($_POST['selectedImageId'] as $intKey => $intPicId) {
+                                foreach($_POST['selectedImageId'] as $intPicId) {
                                     $this->activatePicture($intPicId, "deactivate");
                                 }
                             }
                         break;
                         case 'reset':
                             if (isset($_POST['selectedImageId'])) {
-                                foreach($_POST['selectedImageId'] as $intKey => $intPicId) {
+                                foreach($_POST['selectedImageId'] as $intPicId) {
                                     $this->resetPicture($intPicId);
                                 }
                             }
                         break;
                         case 'move':
                             if (isset($_POST['selectedImageId']) && intval($_POST['frmShowImages_MultiAction_Move']) != 0) {
-                                foreach($_POST['selectedImageId'] as $intKey => $intPicId) {
+                                foreach($_POST['selectedImageId'] as $intPicId) {
                                     $this->changeCategoryOfPicture($intPicId,intval($_POST['frmShowImages_MultiAction_Move']));
                                 }
                             }
@@ -309,7 +309,7 @@ class galleryManager extends GalleryLibrary
                 switch ($_POST['frmShowComments_MultiAction'])
                 {
                     case 'delete':
-                        foreach($_POST['selectedCommentsId'] as $intKey => $intCommentId) {
+                        foreach($_POST['selectedCommentsId'] as $intCommentId) {
                             $this->deleteComment($intCommentId);
                         }
                         $this->statusMessage = $_ARRAYLANG['TXT_GALLERY_COMMENT_DELETES_DONE'];
@@ -322,21 +322,21 @@ class galleryManager extends GalleryLibrary
                 switch ($_POST['frmShowGallery_MultiAction']) {
                     case 'delete':
                         if (isset($_POST['selectedCategoryId'])) {
-                            foreach($_POST['selectedCategoryId'] as $intKey => $intCatId) {
+                            foreach($_POST['selectedCategoryId'] as $intCatId) {
                                 $this->deleteCategory($intCatId);
                             }
                         }
                     break;
                     case 'activate':
                         if (isset($_POST['selectedCategoryId'])) {
-                            foreach($_POST['selectedCategoryId'] as $intKey => $intCatId) {
+                            foreach($_POST['selectedCategoryId'] as $intCatId) {
                                 $this->activateCategory($intCatId, "activate");
                             }
                         }
                         break;
                     case 'deactivate':
                         if (isset($_POST['selectedCategoryId'])) {
-                            foreach($_POST['selectedCategoryId'] as $intKey => $intCatId) {
+                            foreach($_POST['selectedCategoryId'] as $intCatId) {
                                 $this->activateCategory($intCatId, "deactivate");
                             }
                         }
@@ -360,10 +360,10 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Checks if the file is still there, removes dead links
-    *
-    * @global    ADONewConnection
-    */
+     * Checks if the file is still there, removes dead links
+     *
+     * @global    ADONewConnection
+     */
     function checkImages()
     {
         global $objDatabase;
@@ -373,17 +373,17 @@ class galleryManager extends GalleryLibrary
                                                 WHERE     validated="1"');
         while (!$objResult->EOF) {
             if (!is_file($this->strThumbnailPath.$objResult->fields['path']) ||
-                !is_file($this->strImagePath.$objResult->fields['path'])){
+                !is_file($this->strImagePath.$objResult->fields['path'])) {
                     $arrayPicToDel[$objResult->fields['id']] = $objResult->fields['path'];
                 }
             $objResult->MoveNext();
         }
         if (isset($arrayPicToDel)) {
-            foreach ($arrayPicToDel as $id => $path){
-                if (is_file($this->strThumbnailPath.$path)){
+            foreach ($arrayPicToDel as $id => $path) {
+                if (is_file($this->strThumbnailPath.$path)) {
                     @unlink($this->strThumbnailPath.$path);
                 }
-                if (is_file($this->strImagePath.$path)){
+                if (is_file($this->strImagePath.$path)) {
                     @unlink($this->strImagePath.$path);
                 }
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_gallery_pictures WHERE id=".$id);
@@ -393,16 +393,16 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Shows the overview of the gallery
-    *
-    * @global    ADONewConnection
-    * @global    array
-    * @global    array
-    * @global    integer
-    */
+     * Shows the overview of the gallery
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @global    array
+     * @global    integer
+     */
     function overview()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG, $_LANGID;
 
 
         $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
@@ -426,36 +426,33 @@ class galleryManager extends GalleryLibrary
             'TXT_SUBMIT_DELETE'         => $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DELETE'],
             'TXT_SUBMIT_ACTIVATE'       => $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_ACTIVATE'],
             'TXT_SUBMIT_DEACTIVATE'     => $_ARRAYLANG['TXT_GALLERY_CAT_DETAILS_SUBMIT_DEACTIVATE'],
-           ));
+        ));
 
-           $objResult = $objDatabase->Execute('SELECT     id
-                                               FROM '.DBPREFIX.'module_gallery_categories');
-           if ($objResult->RecordCount() > 0){
-               while (!$objResult->EOF) {
-                   $arrImageSize[$objResult->fields['id']] = '';
-                   $arrImageCount[$objResult->fields['id']] = '';
-                   $objResult->MoveNext();
-               }
+        $objResult = $objDatabase->Execute('SELECT     id
+                       FROM '.DBPREFIX.'module_gallery_categories');
+        if ($objResult->RecordCount() > 0) {
+            while (!$objResult->EOF) {
+                $arrImageSize[$objResult->fields['id']] = '';
+                $arrImageCount[$objResult->fields['id']] = '';
+                $objResult->MoveNext();
+            }
 
-               foreach ($arrImageSize as $intKey => $strValue){
-
-                   $objResult = $objDatabase->Execute('SELECT     path
-                                                       FROM     '.DBPREFIX.'module_gallery_pictures
-                                                       WHERE     catid='.$intKey);
-                   $arrImageCount[$intKey] = $objResult->RecordCount();
-                   while (!$objResult->EOF) {
-                       $arrImageSize[$intKey] = $arrImageSize[$intKey] + filesize($this->strImagePath.$objResult->fields['path']);
-                       $objResult->MoveNext();
-                   }
-                   $arrImageSize[$intKey] = round($arrImageSize[$intKey] / 1024,2);
-               }
-           }
-
+            foreach (array_keys($arrImageSize) as $intKey) {
+                $objResult = $objDatabase->Execute('SELECT     path
+                                                   FROM     '.DBPREFIX.'module_gallery_pictures
+                                                   WHERE     catid='.$intKey);
+                $arrImageCount[$intKey] = $objResult->RecordCount();
+                while (!$objResult->EOF) {
+                    $arrImageSize[$intKey] = $arrImageSize[$intKey] + filesize($this->strImagePath.$objResult->fields['path']);
+                    $objResult->MoveNext();
+                }
+                $arrImageSize[$intKey] = round($arrImageSize[$intKey] / 1024,2);
+            }
+        }
         $objResult = $objDatabase->Execute('SELECT         id
                                             FROM         '.DBPREFIX.'module_gallery_categories
                                             WHERE         pid=0
                                             ORDER BY     sorting');
-
         // there are no entries in the database
         if ($objResult->RecordCount() == 0) {
             $this->_objTpl->hideBlock('showCategories');
@@ -466,10 +463,9 @@ class galleryManager extends GalleryLibrary
                 $objResult->MoveNext();
             }
             $intRowCounter = 0;
-
-            $objFWUser = FWUser::getFWUserObject();
-
-            foreach ($arrMaincats as $intMainKey => $strMainValue){
+// TODO: Unused
+//            $objFWUser = FWUser::getFWUserObject();
+            foreach (array_keys($arrMaincats) as $intMainKey) {
                 $objResult = $objDatabase->Execute('SELECT     sorting,
                                                             status, backendProtected, backend_access_id
                                                     FROM     '.DBPREFIX.'module_gallery_categories
@@ -502,7 +498,6 @@ class galleryManager extends GalleryLibrary
                 } else {
                     $allowed = true;
                 }
-
 
                 $this->_objTpl->setVariable(array(
                     'OVERVIEW_ROWCLASS'         => $intRowColor,
@@ -664,6 +659,7 @@ class galleryManager extends GalleryLibrary
         }
     }
 
+
     /**
      * Parse a category dropdown recursively. If you want nothing selected, you should
      * pass -1 for the selected value.
@@ -674,18 +670,18 @@ class galleryManager extends GalleryLibrary
     private function parseCategoryDropdown($selected=-1, $disabled=false, $name="showCategories", $parent_id=0, $level=0)
     {
         global $_LANGID;
-        
-    	$objFWuser = FWUser::getFWUserObject();
-        //$categories = $this->sql->getCategoriesArray($objFWuser->objUser->getFrontendLanguage(), $parent_id);
+
+// TODO: Unused
+//        $objFWuser = FWUser::getFWUserObject();
         $categories = $this->sql->getCategoriesArray($_LANGID, $parent_id);
 
         if ($disabled) {
-            $this->_objTpl->setVariable("CAT_DROPDOWN_DISABLED", "disabled=\"disabled\"");
+            $this->_objTpl->setVariable('CAT_DROPDOWN_DISABLED', ' disabled="disabled"');
         }
         foreach ($categories as $cat) {
             // check if we have access to this category
             if ($cat['backendProtected']) {
-                $allowed = ($this->checkAccess($cat['backend_access_id'])) ? true : false;
+                $allowed = $this->checkAccess($cat['backend_access_id']);
             } else {
                 $allowed = true;
             }
@@ -693,8 +689,8 @@ class galleryManager extends GalleryLibrary
                 $this->_objTpl->setVariable(array(
                     'CAT_DROPDOWN_VALUE'    => $cat['id'],
                     'CAT_DROPDOWN_NAME'     => $cat['name'],
-                    'CAT_DROPDOWN_SELECTED' => ($cat['id'] == $selected) ? "selected=\"selected\"" : "",
-                    'CAT_DROPDOWN_INDENT'   => str_repeat("...", $level)
+                    'CAT_DROPDOWN_SELECTED' => ($cat['id'] == $selected ? ' selected="selected"' : ''),
+                    'CAT_DROPDOWN_INDENT'   => str_repeat('...', $level)
                 ));
             }
             $this->_objTpl->parse($name);
@@ -702,7 +698,6 @@ class galleryManager extends GalleryLibrary
             $this->parseCategoryDropdown($selected, $disabled, $name, $cat['id'], $level+1);
         }
     }
-
 
 
     /**
@@ -788,16 +783,16 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Saves the category sorting
-    *
-    * @global    ADONewConnection
-    * @global    array
-    */
+     * Saves the category sorting
+     *
+     * @global    ADONewConnection
+     * @global    array
+     */
     function saveCategorySorting()
     {
         global $objDatabase, $_ARRAYLANG;
 
-        foreach ($_POST as $intKey => $strValue){
+        foreach ($_POST as $intKey => $strValue) {
             if (substr($intKey,0,13) == 'sortingSystem') {
                 // this POST-Var is sortingSystem-Var
                 $intCatId = substr($intKey,13);
@@ -811,11 +806,11 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Saves the image sorting
-    *
-    * @global    ADONewConnection
-    * @global    array
-    */
+     * Saves the image sorting
+     *
+     * @global    ADONewConnection
+     * @global    array
+     */
     function saveImagesSorting()
     {
         global $objDatabase,$_ARRAYLANG;
@@ -833,11 +828,11 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Activates or inactivates a category
-    *
-    * @global    ADONewConnection
-    * @param    integer        $intCategoryId
-    */
+     * Activates or inactivates a category
+     *
+     * @global    ADONewConnection
+     * @param    integer        $intCategoryId
+     */
     function activateCategory($intCategoryId, $act=NULL)
     {
         global $objDatabase;
@@ -851,7 +846,7 @@ class galleryManager extends GalleryLibrary
                                                 FROM     '.DBPREFIX.'module_gallery_categories
                                                 WHERE     id='.$intCategoryId);
 
-            if ($objResult->fields['status'] == 0){
+            if ($objResult->fields['status'] == 0) {
                 $intNewStatus = 1;
             } else {
                 $intNewStatus = 0;
@@ -865,13 +860,13 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Delete a Category
-    *
-    * @global    ADONewConnection
-    * @global    array
-    * @global    array
-    * @param    integer $intCategoryId
-    */
+     * Delete a Category
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @global    array
+     * @param    integer $intCategoryId
+     */
     function deleteCategory($intCategoryId)
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
@@ -896,7 +891,7 @@ class galleryManager extends GalleryLibrary
         }
         $arrCats[$intCategoryId] = $intCategoryId;
 
-        foreach ($arrCats as $intKey => $strValue) {
+        foreach ($arrCats as $strValue) {
             $objResult = $objDatabase->Execute('SELECT     id,
                                                         path
                                                 FROM     '.DBPREFIX.'module_gallery_pictures
@@ -934,12 +929,12 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Shows the "Edit-Category"-Form
-    *
-    * @global    ADONewConnection
-    * @global    array
-    * @param    integer        $intCategoryId
-    */
+     * Shows the "Edit-Category"-Form
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @param    integer        $intCategoryId
+     */
     function editCategory($intCategoryId)
     {
         global $objDatabase, $_ARRAYLANG;
@@ -1058,47 +1053,47 @@ class galleryManager extends GalleryLibrary
         ));
 
         $pid = $objResult->fields['pid'];
-        if ($objResult->fields['pid'] == 0){
+        if ($objResult->fields['pid'] == 0) {
               $this->_objTpl->setVariable(array(
                 'VALUE_TYPE_MAIN'            =>    'checked',
                 'VALUE_TYPE_SUB'            =>    '',
                 'VALUE_MAINCAT_SELECTION'    =>     'disabled'
             ));
-        }else{
+        } else {
               $this->_objTpl->setVariable(array(
                 'VALUE_TYPE_MAIN'            =>    '',
                 'VALUE_TYPE_SUB'            =>    'checked',
                 'VALUE_MAINCAT_SELECTION'    =>     ''
             ));
         }
-        if ($objResult->fields['status'] == 0){
+        if ($objResult->fields['status'] == 0) {
              $this->_objTpl->setVariable(array(
                 'VALUE_STATE_ON'    =>    '',
                 'VALUE_STATE_OFF'    =>    'checked'
             ));
-        }else{
+        } else {
              $this->_objTpl->setVariable(array(
                 'VALUE_STATE_ON'    =>    'checked',
                 'VALUE_STATE_OFF'    =>    ''
             ));
         }
-        if ($objResult->fields['comment'] == 0){
+        if ($objResult->fields['comment'] == 0) {
              $this->_objTpl->setVariable(array(
                 'VALUE_COMMENT_ON'    =>    '',
                 'VALUE_COMMENT_OFF'    =>    'checked'
             ));
-        }else{
+        } else {
              $this->_objTpl->setVariable(array(
                 'VALUE_COMMENT_ON'    =>    'checked',
                 'VALUE_COMMENT_OFF'    =>    ''
             ));
         }
-        if ($objResult->fields['voting'] == 0){
+        if ($objResult->fields['voting'] == 0) {
              $this->_objTpl->setVariable(array(
                 'VALUE_VOTING_ON'    =>    '',
                 'VALUE_VOTING_OFF'    =>    'checked'
             ));
-        }else{
+        } else {
              $this->_objTpl->setVariable(array(
                 'VALUE_VOTING_ON'    =>    'checked',
                 'VALUE_VOTING_OFF'    =>    ''
@@ -1111,13 +1106,10 @@ class galleryManager extends GalleryLibrary
                                             WHERE         pid=0 AND
                                                         id != '.$intCategoryId.'
                                             ORDER BY     sorting ASC');
-
         if ($objResult->RecordCount() == 0) { // no rows
             $this->_objTpl->hideBlock('showCategories');
-
         } else {
-        	$objFWUser = FWUser::getFWUserObject();
-
+            $objFWUser = FWUser::getFWUserObject();
             while (!$objResult->EOF) {
                 $objSubResult = $objDatabase->Execute('    SELECT        value
                                                         FROM        '.DBPREFIX.'module_gallery_language
@@ -1150,22 +1142,22 @@ class galleryManager extends GalleryLibrary
         }
     }
 
+
     /**
-    * Updates an category in the database
-    *
-    * @global    ADONewConnection
-    * @global    array
-    * @global    array
-    * @param    integer        $intCategoryId
-    */
+     * Updates an category in the database
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @global    array
+     * @param    integer        $intCategoryId
+     */
     function updateCategory($categoryId)
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $categoryId = intval($categoryId);
-
         foreach ($_POST as $strKey => $strValue) {
-            if (preg_match("/^(category\_name\_|category\_desc\_)/", $strKey)) {
+            if (preg_match('/^(category\_name\_|category\_desc\_)/', $strKey)) {
                 $arrExplode = explode('_',$strKey);
                 $arrValues[$arrExplode[2]][$arrExplode[1]] = htmlspecialchars(strip_tags($strValue), ENT_QUOTES, CONTREXX_CHARSET);
             }
@@ -1249,12 +1241,12 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Shows the category-details-page
-    *
-    * @global    ADONewConnection
-    * @global    array
-    * @global    array
-    */
+     * Shows the category-details-page
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @global    array
+     */
     function showCategoryDetails($intCatId)
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
@@ -1308,7 +1300,6 @@ class galleryManager extends GalleryLibrary
                                             WHERE     gallery_id='.intval($intCatId).' AND
                                                     lang_id='.$objFWUser->objUser->getFrontendLanguage().' AND
                                                     name="desc"
-                                            LIMIT    1
                                         ');
         $strCategoryComment = $objResult->fields['value'];
 
@@ -1322,21 +1313,21 @@ class galleryManager extends GalleryLibrary
         $this->_objTpl->setGlobalVariable(array(
             'CATEGORY_NAME'    => $strCategoryComment,
             'CATEGORY_ID'    => $intCatId
-            ));
+        ));
 
-        $selectQuery = 'FROM 		'.DBPREFIX.'module_gallery_pictures
-						    				WHERE 		catid='.$intCatId.' AND
-						    							validated="1"
-						    				ORDER BY 	sorting ASC,
+        $selectQuery = 'FROM         '.DBPREFIX.'module_gallery_pictures
+                                            WHERE         catid='.$intCatId.' AND
+                                                        validated="1"
+                                            ORDER BY     sorting ASC,
                                                         id ASC';
 
 
-    	$objCount = $objDatabase->SelectLimit('SELECT count(id) AS picCount '.$selectQuery, 1);
-    	$pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
-    	if ($objCount !== false && $objCount->fields['picCount'] > $_CONFIG['corePagingLimit']) {
-    		$this->_objTpl->setVariable('GALLERY_PAGING', '<br />'.getPaging($objCount->fields['picCount'], $pos, '&amp;cmd=gallery&amp;act=cat_details&amp;id='.$intCatId, 'bilder'));
-    	}
-        $objResult = $objDatabase->SelectLimit('SELECT 		id '.$selectQuery, $_CONFIG['corePagingLimit'], $pos);
+        $objCount = $objDatabase->SelectLimit('SELECT count(id) AS picCount '.$selectQuery, 1);
+        $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+        if ($objCount !== false && $objCount->fields['picCount'] > $_CONFIG['corePagingLimit']) {
+            $this->_objTpl->setVariable('GALLERY_PAGING', '<br />'.getPaging($objCount->fields['picCount'], $pos, '&amp;cmd=gallery&amp;act=cat_details&amp;id='.$intCatId, 'bilder'));
+        }
+        $objResult = $objDatabase->SelectLimit('SELECT         id '.$selectQuery, $_CONFIG['corePagingLimit'], $pos);
 
         if ($objResult->RecordCount() == 0) {
             $this->_objTpl->hideBlock('showImages');
@@ -1348,7 +1339,7 @@ class galleryManager extends GalleryLibrary
 
             $intRowCounter = 0;
             $this->_objTpl->setCurrentBlock('showImages');
-            foreach ($arrImages AS $intKey => $strValue) {
+            foreach ($arrImages as $strValue) {
                 $objResult = $objDatabase->Execute('SELECT     *
                                                     FROM     '.DBPREFIX.'module_gallery_pictures
                                                     WHERE     id='.$strValue);
@@ -1444,7 +1435,7 @@ class galleryManager extends GalleryLibrary
                     } else {
                         $outputVotingAverage = ', &Oslash; 0.0';
                     }
-                } else{
+                } else {
                     // show nothing
                     $strOutputVotingCount = "";
                     $outputVotingAverage = "";
@@ -1484,17 +1475,17 @@ class galleryManager extends GalleryLibrary
                 ));
                 $this->_objTpl->parseCurrentBlock();
             }
-//            $this->_objTpl->setVariable('IMAGES_MULTIACTION_MOVE_SELECT',$strMultiActionSelect);
+            $this->parseCategoryDropdown($intCatId, false, 'showCategoriesMultiAction');
         }
     }
 
 
     /**
-    * Activate / Inactivate a picture
-    *
-    * @global    ADONewConnection
-    * @param    integer        $intImageId
-    */
+     * Activate / Inactivate a picture
+     *
+     * @global    ADONewConnection
+     * @param    integer        $intImageId
+     */
     function activatePicture($intImageId, $act=NULL)
     {
         global $objDatabase;
@@ -1523,13 +1514,13 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Reset the picture and move it back to the validation part
-    *
-    * @global    ADONewConnection
-    * @global    array
-    * @global    array
-    * @param    integer        $intImageId
-    */
+     * Reset the picture and move it back to the validation part
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @global    array
+     * @param    integer        $intImageId
+     */
     function resetPicture($intImageId)
     {
         global $objDatabase,$_CONFIG,$_ARRAYLANG;
@@ -1561,13 +1552,13 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Changes the Category of an Image
-    *
-    * @global    ADONewConnection
-    * @global    array
-    * @param    integer        $intImageId
-    * @param    integer        $intNewCatId
-    */
+     * Changes the Category of an Image
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @param    integer        $intImageId
+     * @param    integer        $intNewCatId
+     */
     function changeCategoryOfPicture($intImageId, $intNewCatId)
     {
         global $objDatabase,$_ARRAYLANG;
@@ -1598,12 +1589,12 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Shows the edit-form for a picture
-    *
-    * @global    ADONewConnection 
-    * @global    array
-    * @global    array
-    */
+     * Shows the edit-form for a picture
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @global    array
+     */
     function showEditPicture()
     {
         global $objDatabase,$_ARRAYLANG,$_CONFIG;
@@ -1833,12 +1824,12 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Updates the name of a picture
-    *
-    * @global    ADONewConnection
-    * @global    array
-    * @global    array
-    */
+     * Updates the name of a picture
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @global    array
+     */
     function updatePicture()
     {
         global $objDatabase,$_ARRAYLANG,$_CONFIG;
@@ -1891,11 +1882,11 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Shows the settings-page
-    *
-    * @global    ADONewConnection
-    * @global    array
-    */
+     * Shows the settings-page
+     *
+     * @global    ADONewConnection
+     * @global    array
+     */
     function showSettings()
     {
          global $objDatabase,$_ARRAYLANG;
@@ -1959,7 +1950,7 @@ class galleryManager extends GalleryLibrary
                 if ($objResult->fields['value'] == 'on') {
                         $strValue = 'checked';
                         $this->_objTpl->SetVariable('IMAGE_WIDTH_CONTAINER_VISIBILITY','none');
-                    }else{
+                    } else {
                         $this->_objTpl->SetVariable('IMAGE_WIDTH_CONTAINER_VISIBILITY','block');
                     }
                     $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$strValue);
@@ -2010,11 +2001,11 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Save the settings for the gallery
-    *
-    * @global    ADONewConnection
-    * @global    array
-    */
+     * Save the settings for the gallery
+     *
+     * @global    ADONewConnection
+     * @global    array
+     */
     function saveSettings()
     {
         global $objDatabase,$_ARRAYLANG;
@@ -2065,11 +2056,11 @@ class galleryManager extends GalleryLibrary
         if ($_POST['image_width'] > 2000) {
             $_POST['image_width'] = 2000;
         }
-        if (intval($_POST['quality']) > 95 || intval($_POST['quality']) <= 0){
+        if (intval($_POST['quality']) > 95 || intval($_POST['quality']) <= 0) {
             // the value shouldn't be above 95 otherwise the image becomes larger
             $_POST['quality'] = 95;
         }
-        if (intval($_POST['standard_quality']) > 95 || intval($_POST['standard_quality']) <= 0){
+        if (intval($_POST['standard_quality']) > 95 || intval($_POST['standard_quality']) <= 0) {
             // the value shouldn't be above 95 otherwise the image becomes larger
             $_POST['standard_quality'] = 95;
         }
@@ -2093,25 +2084,25 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Shows the UploadForm
-    *
-    * @global    ADONewConnection
-    * @global    array
-    */
+     * Shows the UploadForm
+     *
+     * @global    ADONewConnection
+     * @global    array
+     */
     function showUploadForm()
     {
         global $objDatabase,$_ARRAYLANG;
 
         //get enabled filetypes
-        if($this->boolGifEnabled == true){
+        if ($this->boolGifEnabled == true) {
             $strEnabledTypes .= 'GIF ';
         }
 
-        if($this->boolJpgEnabled == true){
+        if ($this->boolJpgEnabled == true) {
             $strEnabledTypes .= 'JPG ';
         }
 
-        if($this->boolPngEnabled == true){
+        if ($this->boolPngEnabled == true) {
             $strEnabledTypes .= 'PNG ';
         }
 
@@ -2138,40 +2129,41 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Upload the submitted images
-    *
-    * @global    ADONewConnection
-    * @global    array
-    * @global    array
-    */
-    function uploadImages(){
+     * Upload the submitted images
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @global    array
+     */
+    function uploadImages() {
         global $objDatabase,$_ARRAYLANG,$_CONFIG;
 
         $uploadedImagesCounter = 0;
-        for ($i = 1; $i <= $this->arrSettings['max_images_upload'];$i++){
+        for ($i = 1; $i <= $this->arrSettings['max_images_upload'];$i++) {
             $strUploaded_Name         = strcheck($_FILES['imageFile'.$i]['name']);
             $strUploaded_Type        = $_FILES['imageFile'.$i]['type'];
-            $intUploaded_Size        = $_FILES['imageFile'.$i]['size'];
+// TODO: Unused
+//            $intUploaded_Size        = $_FILES['imageFile'.$i]['size'];
             $strUploaded_Tempname    = $_FILES['imageFile'.$i]['tmp_name'];
             $intUploaded_Error         = $_FILES['imageFile'.$i]['error'];
 
             $arrEnabledTypes = array();
 
-            if($this->boolGifEnabled){
+            if ($this->boolGifEnabled) {
                 $arrEnabledTypes[] = 'image/gif';
             }
 
-            if($this->boolJpgEnabled){
+            if ($this->boolJpgEnabled) {
                 $arrEnabledTypes[] = 'image/pjpeg';
                 $arrEnabledTypes[] = 'image/jpeg';
             }
 
-            if($this->boolPngEnabled){
+            if ($this->boolPngEnabled) {
                 $arrEnabledTypes[] = 'image/png';
             }
 
-            if ($intUploaded_Error == 0 ){ // no errors reported
-                if(in_array($strUploaded_Type, $arrEnabledTypes)){ //filetype is okay
+            if ($intUploaded_Error == 0 ) { // no errors reported
+                if (in_array($strUploaded_Type, $arrEnabledTypes)) { //filetype is okay
 
                     $arrSizes = getimagesize($strUploaded_Tempname);
                     if (intval($arrSizes[0]) > intval($this->arrSettings['image_width'])) {
@@ -2185,15 +2177,15 @@ class galleryManager extends GalleryLibrary
                         $strTempFileName     = '';
                         $arrTempFile         = explode('.',$strUploaded_Name);
 
-                        for ($j = 0;$j < count($arrTempFile)-1;$j++){
+                        for ($j = 0;$j < count($arrTempFile)-1;$j++) {
                             $strTempFileName .= $arrTempFile[$j].'.';
                         }
                         $strTempFileName = substr($strTempFileName,0,strlen($strTempFileName)-1); // i have the filename
 
                         $boolChecker = false;
                         $j=1;
-                        while ($boolChecker == false){
-                            if (!file_exists($this->strImagePath.$strTempFileName.$j.$strTempFileEnding)){ //The filename is okay
+                        while ($boolChecker == false) {
+                            if (!file_exists($this->strImagePath.$strTempFileName.$j.$strTempFileEnding)) { //The filename is okay
                                 $strUploaded_Name = $strTempFileName.$j.$strTempFileEnding;
                                 $boolChecker = true;
                             }
@@ -2215,14 +2207,14 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Insert image into the database
-    *
-    * @global    ADONewConnection
-    * @global    array
-    * @param    string        $strImagePath
-    * @param    integer        $imageName
-    */
-    function insertImage($strImagePath,$imageName){
+     * Insert image into the database
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @param    string        $strImagePath
+     * @param    integer        $imageName
+     */
+    function insertImage($strImagePath,$imageName) {
         global $objDatabase,$_CONFIG;
 
         $arrImageInfo     = getimagesize($this->strImagePath.$strImagePath);
@@ -2231,9 +2223,9 @@ class galleryManager extends GalleryLibrary
         $intNewWidth     = intval($this->arrSettings['standard_width_abs']);
         $intNewHeight     = intval($this->arrSettings['standard_height_abs']);
 
-        if ($intNewWidth == 0){
+        if ($intNewWidth == 0) {
             // exception if width and height or 0!
-            if($intNewHeight == 0){
+            if ($intNewHeight == 0) {
                 $this->arrSettings['standard_height_abs'] = 100;
                 $intNewHeight = intval($this->arrSettings['standard_height_abs']);
                 $intNewWidth = round(($intOldWidth * $intNewHeight) / $intOldHeight,0);
@@ -2274,12 +2266,12 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Shows the validation-page
-    *
-    * @global    array
-    * @global    ADONewConnection
-    * @global    array
-    */
+     * Shows the validation-page
+     *
+     * @global    array
+     * @global    ADONewConnection
+     * @global    array
+     */
     function showValidateForm()
     {
         global $_ARRAYLANG, $objDatabase, $_CONFIG;
@@ -2317,7 +2309,7 @@ class galleryManager extends GalleryLibrary
 
         if ($objResult->RecordCount() > 0) {
             // only a single picture
-        	$objFWUser = FWUser::getFWUserObject();
+            $objFWUser = FWUser::getFWUserObject();
 
             if ($_GET['type'] == 'single') {
                 $this->_objTpl->loadTemplateFile('module_gallery_validate_details_single.html',true,true);
@@ -2382,29 +2374,32 @@ class galleryManager extends GalleryLibrary
                                                     ');
 
                 $strDetailsActive     = ($objResult->fields['status'] == '1') ? 'checked' : '';
-                $intImageCatId         = $objResult->fields['catid'];
+// TODO: Unused
+//                $intImageCatId         = $objResult->fields['catid'];
                 $arrImageInfos         = getimagesize($this->strImagePath.$objResult->fields['path']);
 
                 $this->_objTpl->setCurrentBlock('showThumbSize');
+                $boolCheckerThumbFileSize = false;
                 for ($i = 5; $i <= 100; $i=$i+5) {
                     $this->_objTpl->setVariable('THUMB_SIZE_VALUE',$i);
                     if ($i >= $objResult->fields['size_proz'] && !$boolCheckerThumbFileSize) {
                         $this->_objTpl->setVariable('THUMB_SIZE_SELECTED','selected');
                         $boolCheckerThumbFileSize = true;
-                    } else{
+                    } else {
                         $this->_objTpl->setVariable('THUMB_SIZE_SELECTED','');
                     }
                     $this->_objTpl->parseCurrentBlock();
                 }
 
                 $this->_objTpl->setCurrentBlock('showThumbQuality');
+                $boolCheckerThumbFileQuality = false;
                 for ($i = 5; $i <= 100; $i=$i+5)
                 {
                     $this->_objTpl->setVariable('THUMB_QUALITY_VALUE',$i);
-                    if ($i >= $objResult->fields['quality'] && !$boolCheckerThumbFileQuality){
+                    if ($i >= $objResult->fields['quality'] && !$boolCheckerThumbFileQuality) {
                         $this->_objTpl->setVariable('THUMB_QUALITY_SELECTED','selected');
                         $boolCheckerThumbFileQuality = true;
-                    } else{
+                    } else {
                         $this->_objTpl->setVariable('THUMB_QUALITY_SELECTED','');
                     }
                     $this->_objTpl->parseCurrentBlock();
@@ -2412,10 +2407,12 @@ class galleryManager extends GalleryLibrary
 
                 //create a thumbnail, but first delete all temporary files!
                 $handleDirectory = opendir($this->strThumbnailPath);
-                while ($strFile = readdir ($handleDirectory)) {
+                $strFile = readdir ($handleDirectory);
+                while ($strFile) {
                     if (substr($strFile,0,5) == 'temp_') {
                         unlink($this->strThumbnailPath.$strFile);
                     }
+                    $strFile = readdir ($handleDirectory);
                 }
                 closedir($handleDirectory);
 
@@ -2569,17 +2566,19 @@ class galleryManager extends GalleryLibrary
                     {
                         $this->_objTpl->setVariable('THUMB_SIZE_SELECTED','selected');
                         $boolCheckerThumbFileSize = true;
-                    } else{
+                    } else {
                         $this->_objTpl->setVariable('THUMB_SIZE_SELECTED','');
                     }
                     $this->_objTpl->parseCurrentBlock();
                 }
                 // here ends the thumbsize-proz dropdown
                 $handleDirectory = opendir($this->strThumbnailPath);
-                while ($strFile = readdir ($handleDirectory)) {
+                $strFile = readdir($handleDirectory);
+                while ($strFile) {
                     if (substr($strFile,0,5) == 'temp_') {
                         unlink($this->strThumbnailPath.$strFile);
                     }
+                    $strFile = readdir($handleDirectory);
                 }
                 closedir($handleDirectory);
                 srand((double)microtime()*1000000);
@@ -2690,19 +2689,19 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Reload the validation page / Validated a picture / delete a picture
-    *
-    * @global    ADONewConnection
-    * @global    array
-    * @global    array
-    */
+     * Reload the validation page / Validated a picture / delete a picture
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @global    array
+     */
     function reloadSingleValidate()
     {
         global $objDatabase, $_ARRAYLANG,$_CONFIG;
 
         $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'];
 
-        if ($_POST['validate_active'] == 1){
+        if ($_POST['validate_active'] == 1) {
             $intInsertStatus = 1;
         } else {
             $intInsertStatus = 0;
@@ -2808,6 +2807,9 @@ class galleryManager extends GalleryLibrary
                 }
 
                 //create thumb
+// TODO: $strFileOld, $strFileNew are not initialized
+$strFileOld = '';
+$strFileNew = '';
                 $this->createImages_JPG_GIF_PNG($strOrgPath, $strThumbPath, $strFileOld, $strFileNew, $intNewThumWidth, $intNewThumbHeight, $intNewThumbQuality);
                 $this->strOkMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_THUMBNAIL_VALIDATED'];
             } else { // no category was selected, save the values and show an error message
@@ -2836,12 +2838,12 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Reload the validation page / Validated a picture / delete a picture
-    *
-    * @global    ADONewConnection
-    * @global    array
-    * @global    array
-    */
+     * Reload the validation page / Validated a picture / delete a picture
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @global    array
+     */
     function reloadAllValidate()
     {
         global $objDatabase,$_ARRAYLANG,$_CONFIG;
@@ -2866,7 +2868,7 @@ class galleryManager extends GalleryLibrary
 
         if ($_POST['settingsActive'] != 1) {
             // set the selected ones to active
-            foreach ($arrId as $intKey => $strValue)
+            foreach ($arrId as $strValue)
             {
                 $objDatabase->Execute(' UPDATE     '.DBPREFIX.'module_gallery_pictures
                                         SET     status="'.intval($_POST['imageActive'.$strValue]).'"
@@ -2877,7 +2879,7 @@ class galleryManager extends GalleryLibrary
         try {
             if ($_POST['settingsCategory'] != 1) {
                 // the user definies the category by himself
-                foreach ($arrId as $intKey => $strValue) {
+                foreach ($arrId as $strValue) {
                     $catid = $_POST['imageCategory'.$strValue];
                     if (!$this->checkCategoryAccess($catid)) {
                         return;
@@ -2891,7 +2893,7 @@ class galleryManager extends GalleryLibrary
                 if (!$this->checkCategoryAccess($catid)) {
                     return;
                 }
-                foreach ($arrId as $intKey => $strValue) {
+                foreach ($arrId as $strValue) {
                     $objDatabase->Execute(' UPDATE     '.DBPREFIX.'module_gallery_pictures
                                             SET     catid='.intval($_POST['imageCategoryAll']).'
                                             WHERE     id='.intval($strValue));
@@ -2906,7 +2908,7 @@ class galleryManager extends GalleryLibrary
 
         if (isset($_POST['update_button'])) {
             // the user clicked on the update button, now i have to calculate the new values sizes for the database
-            foreach ($arrId as $intKey => $strValue) {
+            foreach ($arrId as $strValue) {
                 $objResult = $objDatabase->Execute('SELECT     path
                                                     FROM     '.DBPREFIX.'module_gallery_pictures
                                                     WHERE     id='.intval($strValue));
@@ -2952,7 +2954,7 @@ class galleryManager extends GalleryLibrary
             }
         } else {
             // the user clicked on the insert button
-            foreach ($arrId as $intKey => $strValue) {
+            foreach ($arrId as $strValue) {
 
                 $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_pictures
                                         SET     validated="1",
@@ -2984,6 +2986,9 @@ class galleryManager extends GalleryLibrary
                 }
 
                 //create thumb
+// TODO: $strFileOld, $strFileNew are not initialized
+$strFileOld = '';
+$strFileNew = '';
                 $this->createImages_JPG_GIF_PNG($strOrgPath, $strThumbPath, $strFileOld, $strFileNew, $intNewThumWidth, $intNewThumbHeight, $intNewThumbQuality);
                 $this->strOkMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_THUMBNAIL_VALIDATED'];
             }
@@ -2992,12 +2997,12 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Deletes an Image from the database
-    *
-    * @global    ADONewConnection
-    * @global    array
-    * @param     integer        $intImageId: Id of the image which should be delted
-    */
+     * Deletes an Image from the database
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @param     integer        $intImageId: Id of the image which should be delted
+     */
     function deleteImage($intImageId)
     {
         global $objDatabase, $_ARRAYLANG;
@@ -3037,12 +3042,12 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Rotates an image clockwise by 90�
-    *
-    * @global    ADONewConnection
-    * @global    array
-    * @global    array
-    */
+     * Rotates an image clockwise by 90�
+     *
+     * @global    ADONewConnection
+     * @global    array
+     * @global    array
+     */
     function rotatePicture($intImageId)
     {
         global $objDatabase,$_ARRAYLANG,$_CONFIG;
@@ -3088,20 +3093,20 @@ class galleryManager extends GalleryLibrary
         switch ($strType)
         {
             case 1: //GIF
-                if($this->boolGifEnabled==true){
-                    $strSourceImage = @ImageCreateFromGIF($strOrgPath);
+                if ($this->boolGifEnabled==true) {
+                    $strSourceImage = @ImageCreateFromGif ($strOrgPath);
                     $strDestImage = @ImageCreate($intX-1,$intY-1);
                     if (!$strDestImage) { @ImageCreate($intX-1,$intY-1); }
                     @ImageCopyResized($strDestImage,$strSourceImage,0,0,0,0,$intX,$intY,$intX_B,$intY_B);
                     $strRotatedImage = @ImageRotate($strDestImage,180,0);
                     $strRotatedImage = @ImageRotate($strRotatedImage,90,0);
-                    @ImageGIF($strRotatedImage,$strNewPath);
-                }else{
+                    @ImageGif ($strRotatedImage,$strNewPath);
+                } else {
                         $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_GIF_SUPPORT'];
                 }
             break;
             case 2: //JPG
-                if($this->boolJpgEnabled==true){
+                if ($this->boolJpgEnabled==true) {
                     $strSourceImage = ImageCreateFromJpeg($strOrgPath);
                     $strDestImage = @ImageCreateTrueColor($intX-1,$intY-1);
                     if (!$strDestImage) { @ImageCreate($intX-1,$intY-1); }
@@ -3109,12 +3114,12 @@ class galleryManager extends GalleryLibrary
                     $strRotatedImage = @ImageRotate($strDestImage,180,0);
                     $strRotatedImage = @ImageRotate($strRotatedImage,90,0);
                     @ImageJpeg($strRotatedImage,$strNewPath,$objResult->fields['quality']);
-                }else{
+                } else {
                         $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_JPG_SUPPORT'];
                 }
             break;
             case 3: //PNG
-                if($this->boolPngEnabled==true){
+                if ($this->boolPngEnabled==true) {
                     $strSourceImage = @ImageCreateFromPNG($strOrgPath);
                     @imageAlphaBlending($strSourceImage, true);
                     @imageSaveAlpha($strSourceImage, true);
@@ -3124,7 +3129,7 @@ class galleryManager extends GalleryLibrary
                     $strRotatedImage = @ImageRotate($strDestImage,180,0);
                     $strRotatedImage = @ImageRotate($strRotatedImage,90,0);
                     @ImagePNG($strRotatedImage,$strNewPath,$objResult->fields['quality']);
-                }else{
+                } else {
                         $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_PNG_SUPPORT'];
                 }
             break;
@@ -3144,29 +3149,29 @@ class galleryManager extends GalleryLibrary
 
         switch ($strType) {
             case 1: //GIF
-                if($this->boolGifEnabled==true){
+                if ($this->boolGifEnabled==true) {
                     // NOW I ROTATE THE ORIGINAL IMAGE
-                    $strSourceImage = @imagecreatefromGIF($strOrgPath);
+                    $strSourceImage = @imagecreatefromGif ($strOrgPath);
                     $strRotatedImage = @imagerotate($strSourceImage, 180, 0);
                     $strRotatedImage = @imagerotate($strRotatedImage, 90, 0);
-                    @ImageGIF($strRotatedImage,$strNewBigPath);
-                }else{
+                    @ImageGif ($strRotatedImage,$strNewBigPath);
+                } else {
                     $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_GIF_SUPPORT'];
                 }
             break;
             case 2: //JPG
-                if($this->boolJpgEnabled==true){
+                if ($this->boolJpgEnabled==true) {
                     // NOW I ROTATE THE ORIGINAL IMAGE
                     $strSourceImage = @imagecreatefromjpeg($strOrgPath);
                     $strRotatedImage = @imagerotate($strSourceImage, 180, 0);
                     $strRotatedImage = @imagerotate($strRotatedImage, 90, 0);
                     @ImageJPEG($strRotatedImage,$strNewBigPath);
-                }else{
+                } else {
                     $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_JPG_SUPPORT'];
                 }
             break;
             case 3: //PNG
-                if($this->boolPngEnabled==true){
+                if ($this->boolPngEnabled==true) {
                     // NOW I ROTATE THE ORIGINAL IMAGE
                     $strSourceImage = @imagecreatefromPNG($strOrgPath);
                     @imageAlphaBlending($strSourceImage, true);
@@ -3174,7 +3179,7 @@ class galleryManager extends GalleryLibrary
                     $strRotatedImage = imagerotate($strSourceImage, 180, 0);
                     $strRotatedImage = imagerotate($strRotatedImage, 90, 0);
                     @ImagePNG($strRotatedImage,$strNewBigPath);
-                }else{
+                } else {
                     $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_PNG_SUPPORT'];
                 }
             break;
@@ -3185,11 +3190,11 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * import Pictures (requires chmod 777 in folder gallery_import)
-    *
-    * @global    array
-    * @global    array
-    */
+     * import Pictures (requires chmod 777 in folder gallery_import)
+     *
+     * @global    array
+     * @global    array
+     */
     function importPicture()
     {
         global $_ARRAYLANG, $_CORELANG;
@@ -3199,24 +3204,25 @@ class galleryManager extends GalleryLibrary
         //get enabled filetypes
         $arrEnabledTypes = array();
 
-        if($this->boolGifEnabled == true){
+        if ($this->boolGifEnabled == true) {
             $arrEnabledTypes[] = 1;
         }
 
-        if($this->boolJpgEnabled == true){
+        if ($this->boolJpgEnabled == true) {
             $arrEnabledTypes[] = 2;
         }
 
-        if($this->boolPngEnabled == true){
+        if ($this->boolPngEnabled == true) {
             $arrEnabledTypes[] = 3;
         }
 
         //get images
-        $o=0;
+        $o = 0;
         $handleDirectory = @opendir($this->strImportPath);
-        while($strName = @readdir($handleDirectory)){
-            if($strName != '.' && $strName != '..'){
-                if(is_file($this->strImportPath . $strName) && $o < $this->intMaxEntries){
+        $strName = @readdir($handleDirectory);
+        while ($strName) {
+            if ($strName != '.' && $strName != '..') {
+                if (is_file($this->strImportPath . $strName) && $o < $this->intMaxEntries) {
                     $arrFileInfo=getimagesize($this->strImportPath.$strName);
                     $this->importFiles['name'][] = $strName;
                     $this->importFiles['size'][] = $this->_getSize($this->strImportPath.$strName);
@@ -3224,9 +3230,10 @@ class galleryManager extends GalleryLibrary
                     $this->importFiles['typeEnabled'][] = $arrFileInfo[2];
                     $this->importFiles['height'][] = $arrFileInfo[1];
                     $this->importFiles['width'][] = $arrFileInfo[0];
-                    $o++;
+                    ++$o;
                 }
             }
+            $strName = @readdir($handleDirectory);
         }
         @closedir($handleDirectory);
         clearstatcache();
@@ -3244,10 +3251,10 @@ class galleryManager extends GalleryLibrary
         ));
 
         // empty dir or php safe mode restriction
-        if($o==0 || !@opendir($this->strImportPath)){
-            if(!@opendir($this->strImportPath)) {
+        if ($o==0 || !@opendir($this->strImportPath)) {
+            if (!@opendir($this->strImportPath)) {
                 $strTempMessage = $_ARRAYLANG['TXT_GALLERY_IMPORT_ERR_SAFEMODE'];
-            } else{
+            } else {
                 $strTempMessage = $_ARRAYLANG['TXT_GALLERY_IMPORT_ERR_DIR'];
             }
 
@@ -3257,16 +3264,16 @@ class galleryManager extends GalleryLibrary
             $this->_objTpl->parse('importEmptyDirectory');
         }
         // not empty dir (select action)
-        else{
+        else {
             //importDirectoryTree
             $i=0;
             $this->_objTpl->setCurrentBlock('importDirectoryTree');
 
             asort($this->importFiles['name']);
 
-            foreach($this->importFiles['name'] as $intPicKey => $strPicName){
+            foreach($this->importFiles['name'] as $intPicKey => $strPicName) {
                 $intRowClass = ($i % 2) ? 'row2' : 'row1';
-                if(in_array($this->importFiles['typeEnabled'][$intPicKey], $arrEnabledTypes)){
+                if (in_array($this->importFiles['typeEnabled'][$intPicKey], $arrEnabledTypes)) {
                     $this->_objTpl->setVariable(array(
                         'IMPORT_IMAGE_DIR_TREE_ROW'    =>    $intRowClass,
                         'IMPORT_IMAGE_NAME'            =>    $strPicName,
@@ -3278,7 +3285,7 @@ class galleryManager extends GalleryLibrary
                         'IMPORT_IMAGE_KEY'            =>    $intPicKey,
                         'IMPORT_IMAGE_CHECKBOX'        =>  '<input type="checkbox" title="Select '.$strPicName.'" name="formSelected[]" value="'.$strPicName.'" />',
                     ));
-                }else{
+                } else {
                     $this->_objTpl->setVariable(array(
                         'IMPORT_IMAGE_DIR_TREE_ROW'        =>    $intRowClass,
                         'IMPORT_IMAGE_NAME'                =>    $strPicName,
@@ -3308,15 +3315,15 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Get filesize
-    *
-    * @param    string        $strFile
-    * @return     integer        $intSize: Size of the file
-    */
+     * Get filesize
+     *
+     * @param    string        $strFile
+     * @return     integer        $intSize: Size of the file
+     */
     function _getSize($strFile)
     {
-        if(is_file($strFile)){
-            if(@filesize($strFile)){
+        if (is_file($strFile)) {
+            if (@filesize($strFile)) {
                 $intSize = filesize($strFile);
             }
         }
@@ -3328,19 +3335,19 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Get filetype
-    *
-    * @param    string        $strFile
-    * @return     string        $strType: Type of the file
-    */
+     * Get filetype
+     *
+     * @param    string        $strFile
+     * @return     string        $strType: Type of the file
+     */
     function _getType($strFile)
     {
-        if(is_file($strFile)){
+        if (is_file($strFile)) {
             $info = pathinfo($strFile);
             $strType = strtoupper($info['extension']);
         }
 
-        if(is_dir($strFile)){
+        if (is_dir($strFile)) {
             $strType = '[folder]';
         }
 
@@ -3351,12 +3358,12 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Import selected pictures from folder
-    *
-    */
+     * Import selected pictures from folder
+     *
+     */
     function importFromFolder()
     {
-        foreach($_POST['formSelected'] as $intPicKey => $strPicName){
+        foreach($_POST['formSelected'] as $strPicName) {
             $strPicName = get_magic_quotes_gpc() ? strip_tags($strPicName) : addslashes(strip_tags($strPicName));
             $this->movePicture($strPicName);
         }
@@ -3364,19 +3371,19 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Move pictures from gallery_import to gallery
-    *
-    * @param    string        $strFile
-    */
+     * Move pictures from gallery_import to gallery
+     *
+     * @param    string        $strFile
+     */
     function movePicture($strFile) {
         global $objDatabase, $_ARRAYLANG;
 
         //check if file exists
         $boolChecker = false;
-        while ($boolChecker == false){
-            if (file_exists($this->strImagePath.$strFile)){
+        while ($boolChecker == false) {
+            if (file_exists($this->strImagePath.$strFile)) {
                 $strImportedImageName = time().'_'.$strFile;
-            }else{
+            } else {
                 $strImportedImageName = $strFile;
             }
             $boolChecker = true;
@@ -3403,7 +3410,7 @@ class galleryManager extends GalleryLibrary
             $this->insertImage($strDatabasePath,$strImportedImageName);
 
             //delete imported images
-            if(file_exists($this->strImagePath.$strImportedImageName)){
+            if (file_exists($this->strImagePath.$strImportedImageName)) {
                 unlink($this->strImportPath.$strFile);
             }
         }
@@ -3411,34 +3418,34 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Delete selected pictures
-    *
-    */
+     * Delete selected pictures
+     */
     function deleteImportPicture()
     {
-        if(!isset($_GET['pic'])){
-            foreach($_POST['formSelected'] as $intPicKey => $strPicName){
+        if (!isset($_GET['pic'])) {
+            foreach($_POST['formSelected'] as $strPicName) {
                 unlink($this->strImportPath.$strPicName);
             }
-        }else{
+        } else {
             unlink($this->strImportPath.$_GET['pic']);
         }
     }
 
 
     /**
-    * Create an Image
-    *
-    * @param     string        $strPathOld: The old path of the image
-    * @param     string        $strPathNew: The new path for the created image
-    * @param     string        $strFileOld: The name of the old file
-    * @param     string        $strFileNew: The name of the new file
-    * @param     integer        $intNewWidth: Width of the new image
-    * @param     integer        $intNewHeight: Height of the new image
-    * @param     integer        $intQuality: Quality of the new image
-    */
+     * Create an Image
+     * @param     string        $strPathOld: The old path of the image
+     * @param     string        $strPathNew: The new path for the created image
+     * @param     string        $strFileOld: The name of the old file
+     * @param     string        $strFileNew: The name of the new file
+     * @param     integer        $intNewWidth: Width of the new image
+     * @param     integer        $intNewHeight: Height of the new image
+     * @param     integer        $intQuality: Quality of the new image
+     */
     function createImages_JPG_GIF_PNG($strPathOld, $strPathNew, $strFileOld, $strFileNew, $intNewWidth, $intNewHeight, $intQuality)
     {
+        global $_ARRAYLANG;
+
         //copy image
         $intSize    = getimagesize($strPathOld.$strFileOld); //ermittelt die Gr��e des Bildes
         $intWidth    = $intSize[0]; //die Breite des Bildes
@@ -3446,52 +3453,52 @@ class galleryManager extends GalleryLibrary
         $strType    = $intSize[2]; //type des Bildes
         @touch($strPathNew.$strFileNew);
 
-		@include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
-    	$objSystem = new FWSystem();
-    	if ($objSystem === false) {
-    	    return false;
-    	}
+        @include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
+        $objSystem = new FWSystem();
+        if ($objSystem === false) {
+            return false;
+        }
 
         if (is_array($intSize)) {
-        	$memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
-        	// a $memoryLimit of zero means that there is no limit. so let's try it and hope that the host system has enough memory
-        	if (!empty($memoryLimit)) {
-	           	$potentialRequiredMemory = $intSize[0] * $intSize[1] * ($intSize['bits']/8) * $intSize['channels'] * 1.8;
-	        	if (function_exists('memory_get_usage')) {
-	        		$potentialRequiredMemory += memory_get_usage();
-	        	} else {
-	        		// add a default of 3MBytes
-	        		$potentialRequiredMemory += 3*pow(1024, 2);
-	        	}
+            $memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
+            // a $memoryLimit of zero means that there is no limit. so let's try it and hope that the host system has enough memory
+            if (!empty($memoryLimit)) {
+                   $potentialRequiredMemory = $intSize[0] * $intSize[1] * ($intSize['bits']/8) * $intSize['channels'] * 1.8;
+                if (function_exists('memory_get_usage')) {
+                    $potentialRequiredMemory += memory_get_usage();
+                } else {
+                    // add a default of 3MBytes
+                    $potentialRequiredMemory += 3*pow(1024, 2);
+                }
 
-	        	if ($potentialRequiredMemory > $memoryLimit) {
-	        		// try to set a higher memory_limit
-	        		if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
-	        			return false;
-	        		}
-	        	}
-        	}
+                if ($potentialRequiredMemory > $memoryLimit) {
+                    // try to set a higher memory_limit
+                    if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
+                        return false;
+                    }
+                }
+            }
         } else {
-        	return false;
+            return false;
         }
 
         switch ($strType)
         {
             case 1: //GIF
-                if($this->boolGifEnabled){
-                    $handleImage1 = ImageCreateFromGIF($strPathOld.$strFileOld);
+                if ($this->boolGifEnabled) {
+                    $handleImage1 = ImageCreateFromGif ($strPathOld.$strFileOld);
                     $handleImage2 = @ImageCreateTrueColor($intNewWidth,$intNewHeight);
                     ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
-                    ImageGIF($handleImage2, $strPathNew.$strFileNew);
+                    ImageGif ($handleImage2, $strPathNew.$strFileNew);
 
                     ImageDestroy($handleImage1);
                     ImageDestroy($handleImage2);
-                }else{
+                } else {
                         $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_GIF_SUPPORT'];
                 }
             break;
             case 2: //JPG
-                if($this->boolJpgEnabled){
+                if ($this->boolJpgEnabled) {
                     $handleImage1 = ImageCreateFromJpeg($strPathOld.$strFileOld);
                     $handleImage2 = @ImageCreateTrueColor($intNewWidth,$intNewHeight);
                     ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
@@ -3499,12 +3506,12 @@ class galleryManager extends GalleryLibrary
 
                     ImageDestroy($handleImage1);
                     ImageDestroy($handleImage2);
-                }else{
+                } else {
                         $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_JPG_SUPPORT'];
                 }
             break;
             case 3: //PNG
-                if($this->boolPngEnabled){
+                if ($this->boolPngEnabled) {
                     $handleImage1 = ImageCreateFromPNG($strPathOld.$strFileOld);
                     ImageAlphaBlending($handleImage1, true);
                     ImageSaveAlpha($handleImage1, true);
@@ -3514,21 +3521,21 @@ class galleryManager extends GalleryLibrary
 
                     ImageDestroy($handleImage1);
                     ImageDestroy($handleImage2);
-                }else{
+                } else {
                         $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_PNG_SUPPORT'];
                 }
             break;
         }
+        return true;
     }
 
 
     /**
-    * Delete a comment of a picture
-    *
-    * @global     ADONewConnection
-    * @global     array
-    * @param     integer        $intComId: The id of the comment which should be deleted
-    */
+     * Delete a comment of a picture
+     * @global     ADONewConnection
+     * @global     array
+     * @param     integer        $intComId: The id of the comment which should be deleted
+     */
     function deleteComment($intComId)
     {
         global $objDatabase,$_ARRAYLANG;
@@ -3549,12 +3556,11 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Delete a voting of a picture
-    *
-    * @global     ADONewConnection
-    * @global     array
-    * @param     integer        $intComId: The id of the comment which should be deleted
-    */
+     * Delete a voting of a picture
+     * @global     ADONewConnection
+     * @global     array
+     * @param     integer        $intComId: The id of the comment which should be deleted
+     */
     function deleteVote($intVoteId)
     {
         global $objDatabase,$_ARRAYLANG;
@@ -3575,12 +3581,11 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Edit a comment of a picture
-    *
-    * @global     ADONewConnection
-    * @global     array
-    * @param     integer        $intCommentId: The comment with this id will be shown in the form
-    */
+     * Edit a comment of a picture
+     * @global     ADONewConnection
+     * @global     array
+     * @param     integer        $intCommentId: The comment with this id will be shown in the form
+     */
     function showEditComment($intCommentId)
     {
         global $objDatabase,$_ARRAYLANG;
@@ -3622,14 +3627,14 @@ class galleryManager extends GalleryLibrary
 
 
     /**
-    * Save all changes done to a comment
-    *
-    * @global     ADONewConnection
-    * @global     array
-    */
+     * Save all changes done to a comment
+     *
+     * @global     ADONewConnection
+     * @global     array
+     */
     function updateComment()
     {
-        global $objDatabase,$_ARRAYLANG;
+        global $objDatabase,  $_ARRAYLANG;
 
         $intCommentId     = intval($_POST['frmEditComment_Id']);
         $strName         = htmlspecialchars(strip_tags($_POST['frmEditComment_Name']), ENT_QUOTES, CONTREXX_CHARSET);
@@ -3665,11 +3670,11 @@ class galleryManager extends GalleryLibrary
 
     /**
      * Define an images as "category-image". This image will be shown in the category-selection.
-     *
      * @global     ADONewConnection
      * @param    integer        $intImgId
      */
-    function setCategoryImage($intImgId) {
+    function setCategoryImage($intImgId)
+    {
         global $objDatabase;
 
         $intImgId = intval($intImgId);
@@ -3695,12 +3700,14 @@ class galleryManager extends GalleryLibrary
 
     }
 
+
     /**
-     * Enter description here...
-     *
-     * @param unknown_type $id
-     * @param unknown_type $type
-     * @return unknown
+     * Returns an array of strings containing dropdown menu options with
+     * existing (but not assigned) and assigned access groups for the
+     * category with the given ID.
+     * @param   integer   $id
+     * @param   string    $type
+     * @return  array
      */
     private function getGroupLists($id, $type="frontend")
     {
@@ -3718,11 +3725,11 @@ class galleryManager extends GalleryLibrary
         return Array($existingGroups, $assignedGroups);
     }
 
+
     /**
-     * Enter description here...
-     *
-     * @param unknown_type $id
-     * @return unknown
+     * Check the access to the category with the given ID
+     * @param   integer   $id
+     * @return  boolean
      */
     private function checkCategoryAccess($id)
     {
@@ -3739,15 +3746,15 @@ class galleryManager extends GalleryLibrary
         return true;
     }
 
+
     /**
      * Check access
-     *
      * @param int $access_id
      * @return int
      */
     private function checkAccess($access_id)
     {
-    	$objFWUser = FWUser::getFWUserObject();
+        $objFWUser = FWUser::getFWUserObject();
         if ($objFWUser->objUser->getAdminStatus()) {
             return true;
         }
@@ -3759,13 +3766,12 @@ class galleryManager extends GalleryLibrary
                 return true;
             }
         }
-
         return false;
     }
 
+
     /**
      * Save the last access id
-     *
      * @param intval $id
      */
     private function updateAccessId($id)
@@ -3773,10 +3779,9 @@ class galleryManager extends GalleryLibrary
         $this->sql->updateAccessId($id);
 
         require_once(ASCMS_CORE_PATH.'/settings.class.php');
-            $objSettings = &new settingsManager();
+            $objSettings = new settingsManager();
             $objSettings->writeSettingsFile();
     }
 }
-
 
 ?>
