@@ -115,7 +115,7 @@ class Immo extends ImmoLib
         } else {
             switch ($_GET['cmd']){
                 case 'map':
-                    $this->_doNothing();
+                    $this->_loadIFrame();
                        break;
                 case 'immolist':
                     $this->_showImmoList();
@@ -828,8 +828,15 @@ class Immo extends ImmoLib
     }
 
 
-
-    function _doNothing() {
+    /**
+     * use the domainUrl config string to set the iframe domain of the googlemap
+     *
+     */
+    function _loadIFrame() {
+        global $_CONFIG;
+        $this->_objTpl->setVariable(array(
+            'IMMO_GOOGLEMAP_DOMAIN' => $_CONFIG['domainUrl'],
+        ));
     }
 
 

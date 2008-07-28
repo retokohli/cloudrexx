@@ -42,18 +42,18 @@ function deleteImmo(immoID) {
 	fields[1] 		= new Array('immo_id', 'reference', 'ref_nr_note', 'visibility', 'address', 'location', 'object_type', 'new_building', 'property_type', 'foreigner_authorization', 'special_offer');
 	arrField[1]		= new Array();
 	arrOrder[1]		= new Array();
-	
-	var clearArrows = function(index){	
+
+	var clearArrows = function(index){
 		for (i=0; i<fields[index].length; i++){
 			document.getElementById(fields[index][i]+"_order").innerHTML = '';
-		}		
+		}
 	}
-	
+
 	if (document.ELEMENT_NODE == null) {
 	  document.ELEMENT_NODE = 1;
 	  document.TEXT_NODE = 3;
 	}
-	
+
 	function getXMLHttpRequestObj() {
 	  var objXHR;
 	  if(window.XMLHttpRequest) {
@@ -65,7 +65,7 @@ function deleteImmo(immoID) {
 	}
 
 	http = getXMLHttpRequestObj();
-	
+
 	var imgEdit = new Image();
 	imgEdit.src = 'images/icons/edit.gif';
 	imgEdit.title = '{TXT_IMMO_EDIT}';
@@ -83,15 +83,15 @@ function deleteImmo(immoID) {
 	imgCopy.title = '{TXT_IMMO_COPY}';
 	imgCopy.alt = '{TXT_IMMO_COPY}';
 	imgCopy.border = '0';
-	 
+
 	var addEvent, removeEvent;
-	addEvent = function(obj, type, fn){ 
+	addEvent = function(obj, type, fn){
 		if (obj.addEventListener){
 			addEvent = function(obj, type, fn){ //self-redeclaration
 				obj.addEventListener( type, fn, false );
 			}
 		}else if (obj.attachEvent){
-			addEvent = function(obj, type, fn){ 
+			addEvent = function(obj, type, fn){
 				obj["e"+type+fn] = fn;
 				obj[type+fn] = function() { obj["e"+type+fn]( window.event ); }
 				obj.attachEvent( "on"+type, obj[type+fn] );
@@ -108,10 +108,10 @@ function deleteImmo(immoID) {
 			removeEvent = function(obj, type, fn){
 				obj.detachEvent( "on"+type, obj[type+fn] );
 				obj[type+fn] = null;
-				obj["e"+type+fn] = null;				
+				obj["e"+type+fn] = null;
 			}
 		}
-	}		
+	}
 	function sendReq(field, type) {
 		if(request_active){
 			return false;
@@ -142,10 +142,10 @@ function deleteImmo(immoID) {
 
 		arrField[1].unshift(field);
 		arrOrder[1].unshift(orderspan.order);
-		
+
 		if(arrField[1].length >= fields[1].length){
 			arrField[1].pop();
-			arrOrder[1].pop(); 		
+			arrOrder[1].pop();
 		}
 
 		if(type == 1){
@@ -156,7 +156,7 @@ function deleteImmo(immoID) {
 		}
 	    http.send(null);
 	}
-	
+
 	function createTdWithText(text){
 		td = document.createElement("td");
 		td.style.whiteSpace = 'nowrap';
@@ -165,7 +165,7 @@ function deleteImmo(immoID) {
 		td.appendChild(textNode);
 		return td;
 	}
-	
+
 	var findPosX = function(obj){
 		var curleft = 0;
 		if (obj.offsetParent)
@@ -180,7 +180,7 @@ function deleteImmo(immoID) {
 			curleft += obj.x;
 		return curleft;
 	}
-	
+
 	var findPosY = function(obj){
 		var curtop = 0;
 		if (obj.offsetParent)
@@ -195,7 +195,7 @@ function deleteImmo(immoID) {
 			curtop += obj.y;
 		return curtop;
 	}
-	
+
 	var getInputPosition = function(obj){
 		try{
 			x = findPosX(obj);
@@ -204,7 +204,7 @@ function deleteImmo(immoID) {
 		y-=25;
 		return {X: x+'px', Y: y+'px'};
 	}
-	
+
 	function showTip(message, obj){
 		try{
 			pos = getInputPosition(obj);
@@ -219,18 +219,18 @@ function deleteImmo(immoID) {
 			obj.parentNode.appendChild(div);
 		}catch(e){}
 	}
-	
+
 	function hideTip(){
 		try{
 			document.getElementById('commentTip').parentNode.removeChild(document.getElementById('commentTip'));
 		}catch(e){}
 	}
-	
+
 	function updateOverview() {
 	    if(http.readyState == 4 && http.status == 200){
 	    	requests = new Array();
 	        var response = http.responseText;
-	        eval(response); // create contacts array  
+	        eval(response); // create contacts array
 	        tbl = document.getElementById('overviewList');
 				tBody = tbl.tBodies[0];
 				for(i = tBody.childNodes.length-1; i>=0; i--){
@@ -242,7 +242,7 @@ function deleteImmo(immoID) {
 	            	row = document.createElement("tr");
 	            	row.className = 'row' + ((i%2) + 1);
 	            	row.appendChild(createTdWithText(unescape(objects[i].immo_id)));
-					
+
 	            	aOpen = document.createElement("a");
 					aOpen.href = '?cmd=immo&act=edit&id='+unescape(objects[i].immo_id);
 					aOpen.title = unescape(objects[i].location);
@@ -251,7 +251,7 @@ function deleteImmo(immoID) {
 	            	pageTD = document.createElement("td");
 	            	pageTD.appendChild(aOpen);
 	            	row.appendChild(pageTD);
-	            		            	
+
 	            	row.appendChild(createTdWithText(unescape(objects[i].ref_nr_note)));
 	            	row.appendChild(createTdWithText(unescape(objects[i].visibility)));
 	            	row.appendChild(createTdWithText(unescape(objects[i].address)));
@@ -261,36 +261,36 @@ function deleteImmo(immoID) {
 	            	row.appendChild(createTdWithText(unescape(objects[i].ptype)));
 	            	row.appendChild(createTdWithText(unescape(objects[i].fa)));
 	            	row.appendChild(createTdWithText(unescape(objects[i].so)));
-	            		            	
+
 	            	aEdit = document.createElement("a");
 					aEdit.href = '?cmd=immo&act=edit&id='+objects[i].immo_id;
 					aEdit.title = '{TXT_IMMO_EDIT}';
 	            	aEdit.appendChild(imgEdit.cloneNode(false));
-	            	
+
 	            	aCopy = document.createElement("a");
 					aCopy.href = '?cmd=immo&act=copy&id='+objects[i].immo_id;
 					aCopy.title = '{TXT_IMMO_EDIT}';
 	            	aCopy.appendChild(imgCopy.cloneNode(false));
-	            		            	
+
 	            	aDelete = document.createElement("a");
 					aDelete.href = 'javascript:deleteImmo('+ objects[i]['immo_id'] +')';
 					aDelete.title = '{TXT_IMMO_DELETE}'
 					aDelete.appendChild(imgDelete.cloneNode(false));
-					
+
 					tdFunc = document.createElement("td");
 					tdFunc.style.textAlign = 'right';
 					tdFunc.appendChild(aEdit);
 					tdFunc.appendChild(aCopy);
 					tdFunc.appendChild(aDelete);
 					row.appendChild(tdFunc);
-	            	
+
 					tBody.appendChild(row);
 	            }
-	            
+
 	            try{ // hide contrexx status message when redirected from a "not found" search query
 					document.getElementById('alertbox').style.display='none';
 				}catch(e){}
-	            
+
 				request_active = false;
         }else{
         	try{
@@ -313,10 +313,10 @@ function deleteImmo(immoID) {
     <tr>
         <td>
         	<input type="text" name="searchterm" />
-        	<select name="logo">
-        		<option value="saxer" {IMMO_LOGO_SAXER_SELECTED}>Saxer</option>
-        		<option value="casa" {IMMO_LOGO_CASA_SELECTED}>Villa Casa</option>
-        	</select>
+        	<!--<select name="logo">
+        		<option value="logo1" {IMMO_LOGO_LOGO1_SELECTED}>Logo 1</option>
+        		<option value="logo2" {IMMO_LOGO_LOGO2_SELECTED}>Logo 2</option>
+        	</select>-->
         	<input type="submit" value="{TXT_IMMO_SEARCH}" />
         </td>
     </tr>
@@ -350,7 +350,7 @@ function deleteImmo(immoID) {
 		<span id="visibility_order"> </span>
 	</td>
 	<!--'reference', 'ref_nr_note', 'visibility', 'address', 'location', 'object_type', 'new_building', 'property_type', 'foreigner_authorization', 'special_offer'-->
-	
+
     <td style="width: 20%;"><a id="address" href="javascript:void(0);" onclick="sendReq('address', 1);"><strong>{TXT_IMMO_ADDRESS}</strong></a>
 		<span id="address_order"> </span>
 	</td>
@@ -371,7 +371,7 @@ function deleteImmo(immoID) {
 	</td>
     <td style="width: 3%;"><a id="special_offer" href="javascript:void(0);" onclick="sendReq('special_offer', 1);"><strong>{TXT_IMMO_SPECIAL_OFFER}</strong></a>
 		<span id="special_offer_order"> </span>
-	</td>    
+	</td>
     <td style="text-align: right; width: 3%;">
         <strong>{TXT_IMMO_FUNCTIONS}</strong>
     </td>
@@ -381,43 +381,43 @@ function deleteImmo(immoID) {
 <!-- BEGIN row -->
 <tr class={ROW_CLASS}>
     <td>
-        {IMMO_ID} 
-    </td> 
+        {IMMO_ID}
+    </td>
     <td>
-        <a href="?cmd=immo&amp;act=add&amp;id={IMMO_ID}">{IMMO_REF_ID}</a> 
+        <a href="?cmd=immo&amp;act=add&amp;id={IMMO_ID}">{IMMO_REF_ID}</a>
     </td>
     <td>
         {IMMO_REF_NR_NOTE}
     </td>
     <td>
-        {IMMO_VISIBILITY} 
+        {IMMO_VISIBILITY}
     </td>
     <td>
-        {IMMO_ADDRESS} 
+        {IMMO_ADDRESS}
     </td>
     <td>
-	    {IMMO_LOCATION} 
+	    {IMMO_LOCATION}
 	</td>
     <td>
-        {IMMO_OBJECT_TYPE} 
+        {IMMO_OBJECT_TYPE}
     </td>
     <td>
-        {IMMO_NEW_BUILDING} 
+        {IMMO_NEW_BUILDING}
     </td>
     <td>
-        {IMMO_PROPERTY_TYPE} 
+        {IMMO_PROPERTY_TYPE}
     </td>
     <td>
-        {IMMO_FOREIGNER_AUTHORIZATION} 
+        {IMMO_FOREIGNER_AUTHORIZATION}
     </td>
     <td>
-        {IMMO_SPECIAL_OFFER} 
+        {IMMO_SPECIAL_OFFER}
     </td>
     <td style="text-align: right; white-space: nowrap;">
         <a href="?cmd=immo&amp;act=add&amp;id={IMMO_ID}"> <img style="border: none;" src="images/icons/edit.gif" title="{TXT_IMMO_EDIT}" alt="{TXT_IMMO_EDIT}" /> </a>
         <a href="?cmd=immo&amp;act=copy&amp;id={IMMO_ID}"> <img style="border: none;" src="images/icons/copy.gif" title="{TXT_IMMO_COPY}" alt="{TXT_IMMO_COPY}" /> </a>
         <a href="javascript:deleteImmo({IMMO_ID})"> <img style="border: none;" src="images/icons/delete.gif" title="{TXT_IMMO_DELETE}" alt="{TXT_IMMO_DELETE}" /> </a>
-        
+
     </td>
 </tr>
 <!-- END row -->
