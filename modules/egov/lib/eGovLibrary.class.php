@@ -50,11 +50,11 @@ class eGovLibrary {
     /**
      * OBSOLETE
      *
-     * Use GetProduktValue('product_name', $ProductID) instead.
+     * Use GetProduktValue('product_name', $productId) instead.
      */
-    function GetProduktName($ProductID)
+    function GetProduktName($productId)
     {
-        die("Error: Obsolete method GetProduktName(\$ProductID=$ProductID) called.  Please use GetProduktValue('product_name', \$ProductID) instead.");
+        die("Error: Obsolete method GetProduktName(\$productId=$productId) called.  Please use GetProduktValue('product_name', \$productId) instead.");
     }
 
 
@@ -62,19 +62,19 @@ class eGovLibrary {
      * Return the value in the field indicated by $FieldName
      * for the given product ID
      * @param   string  $FieldName    The field name
-     * @param   integer $ProductID    The product ID
+     * @param   integer $productId    The product ID
      * @return  string                The value from the database field
      *                                on success, the empty string otherwise
      * @static
      */
-    static function GetProduktValue($FieldName, $ProductID)
+    static function GetProduktValue($FieldName, $productId)
     {
         global $objDatabase;
 
         $query = "
             SELECT $FieldName
               FROM ".DBPREFIX."module_egov_products
-             WHERE product_id=$ProductID
+             WHERE product_id=$productId
         ";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && $objResult->RecordCount() == 1) {
@@ -88,19 +88,19 @@ class eGovLibrary {
      * Return the value in the field indicated by $FieldName
      * for the given order ID
      * @param   string  $FieldName    The field name
-     * @param   integer $order_id     The order ID
+     * @param   integer $orderId     The order ID
      * @return  string                The value from the database field
      *                                on success, the empty string otherwise
      * @static
      */
-    static function GetOrderValue($FieldName, $order_id)
+    static function GetOrderValue($FieldName, $orderId)
     {
         global $objDatabase;
 
         $query = "
             SELECT $FieldName
               FROM ".DBPREFIX."module_egov_orders
-             WHERE order_id=$order_id
+             WHERE order_id=$orderId
         ";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && $objResult->RecordCount() == 1) {
@@ -116,16 +116,16 @@ class eGovLibrary {
      *
      * Note that the specific behaviour of taking only the last address
      * into account seems to be by design. -- RK
-     * @param   integer   $order_id   The order ID
+     * @param   integer   $orderId   The order ID
      * @return  string                The e-mail address found, if any,
      *                                or the empty string
      * @static
      */
-    static function GetEmailAdress($order_id)
+    static function GetEmailAdress($orderId)
     {
         global $objDatabase;
 
-        $arrOrderValues = eGovLibrary::getOrderValues($order_id);
+        $arrOrderValues = eGovLibrary::getOrderValues($orderId);
         $strEmail = '';
         foreach ($arrOrderValues as $value) {
             if (eGovLibrary::isEmail($value)) {
@@ -217,19 +217,19 @@ class eGovLibrary {
     /**
      * Returns an array with available attributes for the form fields
      * related to the product ID given.
-     * @param   integer   $id         The product ID
+     * @param   integer   $productId         The product ID
      * @return  mixed                 The field array on success,
      *                                false otherwise
      * @static
      */
-    static function getFormFields($id)
+    static function getFormFields($productId)
     {
         global $objDatabase;
 
-        $objResult  = $objDatabase->Execute("
+        $objResult = $objDatabase->Execute("
             SELECT id, name, type, attributes, is_required, check_type, order_id
               FROM ".DBPREFIX."module_egov_product_fields
-             WHERE product=$id
+             WHERE product=$productId
              ORDER BY order_id
         ");
         if (!$objResult) {
@@ -255,14 +255,14 @@ class eGovLibrary {
      * Returns an array with all form values stored with the order.
      *
      * Note that the names need to be unique for this to work!
-     * @param   integer   $order_id   The order ID
+     * @param   integer   $orderId   The order ID
      * @return  array                 The array with name/value pairs
      * @static
      */
-    static function getOrderValues($order_id)
+    static function getOrderValues($orderId)
     {
         $arrResult = array();
-        $order_values = eGovLibrary::GetOrderValue('order_values', $order_id);
+        $order_values = eGovLibrary::GetOrderValue('order_values', $orderId);
         $arrFields = preg_split('/;;/', $order_values, null, PREG_SPLIT_NO_EMPTY);
         foreach ($arrFields as $field) {
             list ($name, $value) = split('::', $field);
@@ -329,36 +329,39 @@ class eGovLibrary {
     }
 
 
-    static function _GetOrdersQuantityArray($id, $datum='')
+    static function _GetOrdersQuantityArray($arrRd, $datum='')
     {
         global $objDatabase;
 
+//echo("_GetOrdersQuantityArray($arrRd, $datum): array: ".var_export($arrRd, true)."<br />");
+
         $JSquantityArray = '';
         if ($datum == '') {
-            $datum = date('Y-m');
-        } else {
-            $dat1 = substr($datum, 0, 4);
-            $dat2 = substr($datum, 4, 2);
-            $datum = "$dat1-$dat2";
+            $datum = date('Ym');
         }
-        for ($x = 1; $x <= 31; ++$x) {
-            $daydate = sprintf('%02u', $x);
-            $datumToSend = "$datum-$daydate";
+        $year = intval(substr($datum, 0, 4));
+        $month = intval(substr($datum, 4, 2));
+        for($day = 1; $day <= 31; ++$day) {
+//            $day = sprintf("%02u", $x);
             $JSquantityArray .=
-                'DayArray['.$x.'] = '.
-                eGovLibrary::_GetOrderedQuantity($id, $datumToSend).";\n";
+                'DayArray['.$day.'] = '.
+                (isset($arrRd[$year][$month][$day])
+                  ? $arrRd[$year][$month][$day] : 0
+                ).";\n";
         }
+//echo("QuantityArray: $JSquantityArray<br />");
         return $JSquantityArray;
     }
 
 
-    static function _GetOrderedQuantity($id, $datum)
+/*
+    function _GetOrderedQuantity($id, $datum)
     {
         global $objDatabase;
 
-        list ($year, $month, $day) = split('-', $datum);
+        list($year, $month, $day) = split('[-]', $datum);
         $query = "
-            SELECT count(*) AS anzahl
+            SELECT count(*) as anzahl
               FROM ".DBPREFIX."module_egov_product_calendar
              WHERE calendar_day=$day
                AND calendar_month=$month
@@ -369,16 +372,17 @@ class eGovLibrary {
         $objResult = $objDatabase->Execute($query);
         return $objResult->fields['anzahl'];
     }
+*/
 
 
-    function getSourceCode($id, $preview=false, $flagBackend=false)
+    function getSourceCode($productId, $preview=false, $flagBackend=false)
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $arrFields = eGovLibrary::getFormFields($id);
+        $arrFields = eGovLibrary::getFormFields($productId);
         $flagYellowbill = false;
         $yellowpayEnabled =
-            eGovLibrary::GetProduktValue('yellowpay', $id);
+            eGovLibrary::GetProduktValue('yellowpay', $productId);
         $yellowpayAcceptedPaymentMethods =
             eGovLibrary::GetSettings('yellowpay_accepted_payment_methods');
         if (   $flagBackend === false
@@ -441,21 +445,21 @@ class eGovLibrary {
             );
         }
         $strCalendarSource = '';
-        if (eGovLibrary::GetProduktValue('product_per_day', $id) == 'yes') {
-            $strCalendarSource = $this->getCalendarSource($id, $flagBackend);
+        if (eGovLibrary::GetProduktValue('product_per_day', $productId) == 'yes') {
+            $strCalendarSource = $this->getCalendarSource($productId, $flagBackend);
         }
 
         $FormActionTarget =
             ($preview ? '../' : '').
             ($flagBackend
-              ? "index.php?cmd=egov&amp;act=detail&amp;id=$id"
-              : "index.php?section=egov&amp;id=$id"
+              ? "index.php?cmd=egov&amp;act=detail&amp;productId=$productId"
+              : "index.php?section=egov&amp;productId=$productId"
             );
 
-        //$sourcecode = $this->_getJsSourceCode($id, $arrFields, $preview, $flagBackend).
+        //$sourcecode = $this->_getJsSourceCode($productId, $arrFields, $preview, $flagBackend).
         $sourcecode = $this->_getJsSourceCode($arrFields, $preview, $flagBackend).
 // TODO: This index is never set
-//            $this->arrForms[$id]['text'].
+//            $this->arrForms[$productId]['text'].
             "\n".
             "<div id=\"contactFormError\" style=\"color: red; display: none;\">".
             "<br />".$_ARRAYLANG['TXT_EGOV_CHECK_YOUR_INPUT'].
@@ -474,7 +478,7 @@ class eGovLibrary {
                 "<input id=\"bill6\" type=\"hidden\" name=\"txtBCity\" value=\"\" />"
               : ''
              ).
-//            "<input type=\"hidden\" name=\"paypal\" value=\"".eGovLibrary::GetProduktValue('product_paypal', $id)."\" />".
+//            "<input type=\"hidden\" name=\"paypal\" value=\"".eGovLibrary::GetProduktValue('product_paypal', $productId)."\" />".
             $strCalendarSource.
             "<br /><table summary=\"\" border=\"0\">\n";
         $i = 1;
@@ -574,11 +578,11 @@ class eGovLibrary {
 
         // Add payment selection or hidden fields here,
         // according to price and payment settings.
-        $paymentPaypal = eGovLibrary::GetProduktValue('product_paypal', $id);
-        $paymentYellowpay = eGovLibrary::GetProduktValue('yellowpay', $id);
-        $paymentPrice = eGovLibrary::GetProduktValue('product_price', $id);
+        $paymentPaypal = eGovLibrary::GetProduktValue('product_paypal', $productId);
+        $paymentYellowpay = eGovLibrary::GetProduktValue('yellowpay', $productId);
+        $paymentPrice = eGovLibrary::GetProduktValue('product_price', $productId);
         $strAlternativePaymentMethods =
-            eGovLibrary::GetProduktValue('alternative_names', $id);
+            eGovLibrary::GetProduktValue('alternative_names', $productId);
         // Using the $flagBackend flag to disable payment in the backend
         if ($flagBackend === false
             && $paymentPrice > 0
@@ -669,7 +673,7 @@ class eGovLibrary {
             $code .= "  '".$field['type']."');\n";
         }
         /*
-        if (eGovLibrary::GetProduktValue('product_per_day', $_REQUEST['id'] == 'yes')) {
+        if (eGovLibrary::GetProduktValue('product_per_day', $_REQUEST['productId'] == 'yes')) {
             $code .= "fields[1000] = Array('Datum', 1, '', 'text');\n";
         }
         */
@@ -842,7 +846,7 @@ class eGovLibrary {
     }
 
 
-    function getCalendarSource($product_id, $flagBackend=false)
+    function getCalendarSource($productId, $flagBackend=false)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -851,7 +855,7 @@ class eGovLibrary {
             SELECT calendar_product, calendar_order, calendar_day,
                    calendar_month, calendar_year
               FROM ".DBPREFIX."module_egov_product_calendar
-             WHERE calendar_product=$product_id
+             WHERE calendar_product=$productId
                AND calendar_act=1
                AND calendar_year>$last_y
         ";
@@ -874,7 +878,7 @@ class eGovLibrary {
             $Datum4JS = date('Ymd');
         }
         $QuantArray =
-            eGovLibrary::_GetOrdersQuantityArray($product_id, $Datum4JS);
+            eGovLibrary::_GetOrdersQuantityArray($productId, $Datum4JS);
         $dat1 = substr($Datum4JS, 0, 4);
         $dat2 = substr($Datum4JS, 4, 2);
         $dat3 = substr($Datum4JS, 6, 2);
@@ -890,8 +894,8 @@ class eGovLibrary {
             eGovLibrary::GetSettings('set_calendar_date_desc'),
             eGovLibrary::GetSettings('set_calendar_date_label'),
             $ArrayRD,
-            eGovLibrary::GetProduktValue('product_quantity', $product_id),
-            eGovLibrary::GetProduktValue('product_quantity_limit', $product_id),
+            eGovLibrary::GetProduktValue('product_quantity', $productId),
+            eGovLibrary::GetProduktValue('product_quantity_limit', $productId),
             '',
             eGovLibrary::GetSettings('set_calendar_background'),
             eGovLibrary::GetSettings('set_calendar_legende_1'),
@@ -906,21 +910,26 @@ class eGovLibrary {
     }
 
 
-    function getSourceCodeBackend($id, $preview=false, $flagBackend=true)
+    function getSourceCodeBackend($productId, $preview=false, $flagBackend=true)
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $arrFields = eGovLibrary::getFormFields($id);
+        $arrFields = eGovLibrary::getFormFields($productId);
+        $flagYellowbill = false;
+        $yellowpayEnabled =
+            eGovLibrary::GetProduktValue('yellowpay', $id);
+        $yellowpayAcceptedPaymentMethods =
+            eGovLibrary::GetSettings('yellowpay_accepted_payment_methods');
         $strCalendarSource = '';
-        if (eGovLibrary::GetProduktValue('product_per_day', $id) == 'yes') {
-            $strCalendarSource = $this->getCalendarSourceBackend($id, $flagBackend);
+        if (eGovLibrary::GetProduktValue('product_per_day', $productId) == 'yes') {
+            $strCalendarSource = $this->getCalendarSourceBackend($productId, $flagBackend);
         }
 
         $FormActionTarget =
             ($preview ? '../' : '').
             ($flagBackend
-              ? "index.php?cmd=egov&amp;act=detail&amp;id=$id"
-              : "index.php?section=egov&amp;id=$id"
+              ? "index.php?cmd=egov&amp;act=detail&amp;productId=$productId"
+              : "index.php?section=egov&amp;productId=$productId"
             );
 
         $sourcecode = $this->_getJsSourceCodeBackend($arrFields, $preview, $flagBackend).
@@ -936,9 +945,9 @@ class eGovLibrary {
             '<table summary="" border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">'."\n".
             '  <tbody style="vertical-align:top;">'."\n".
             '    <tr>'."\n".
-            '      <th colspan="2">'.$this->GetProduktValue('product_name', $id).' (ID '.$id.')</th>'."\n".
+            '      <th colspan="2">'.$this->GetProduktValue('product_name', $productId).' (ID '.$productId.')</th>'."\n".
             '    </tr>'."\n".
-'    <tr>'."\n".
+            '    <tr>'."\n".
             "<td>&nbsp;</td><td>$strCalendarSource</td></tr>\n";
         $i = 1;
         foreach ($arrFields as $fieldId => $arrField) {
@@ -1045,6 +1054,14 @@ class eGovLibrary {
         }
         $sourcecode .=
             "</form>\n".
+            ($flagYellowbill
+              ? "<script type=\"text/javascript\">\n".
+                "/* <![CDATA[ */\n".
+                "  toggleYellowpayFields();".
+                "/* ]]> */\n".
+                "</script>\n"
+              : ''
+            ).
             "<!-- END contact_form -->\n";
         return $sourcecode;
     }
@@ -1077,7 +1094,7 @@ class eGovLibrary {
             $code .= "  '".$field['type']."');\n";
         }
         /*
-        if (eGovLibrary::GetProduktValue('product_per_day', $_REQUEST['id'] == 'yes')) {
+        if (eGovLibrary::GetProduktValue('product_per_day', $_REQUEST['productId'] == 'yes')) {
             $code .= "fields[1000] = Array('Datum', 1, '', 'text');\n";
         }
         */
@@ -1250,7 +1267,7 @@ class eGovLibrary {
     }
 
 
-    function getCalendarSourceBackend($product_id, $flagBackend=false)
+    function getCalendarSourceBackend($productId, $flagBackend=false)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -1259,7 +1276,7 @@ class eGovLibrary {
             SELECT calendar_product, calendar_order, calendar_day,
                    calendar_month, calendar_year
               FROM ".DBPREFIX."module_egov_product_calendar
-             WHERE calendar_product=$product_id
+             WHERE calendar_product=$productId
                AND calendar_act=1
                AND calendar_year>$last_y
         ";
@@ -1281,7 +1298,7 @@ class eGovLibrary {
         if ($Datum4JS == '') {
             $Datum4JS = date('Ymd');
         }
-        $QuantArray = $this->_GetOrdersQuantityArray($product_id, $Datum4JS);
+        $QuantArray = $this->_GetOrdersQuantityArray($productId, $Datum4JS);
         $dat1 = substr($Datum4JS, 0, 4);
         $dat2 = substr($Datum4JS, 4, 2);
         $dat3 = substr($Datum4JS, 6, 2);
@@ -1297,8 +1314,8 @@ class eGovLibrary {
             eGovLibrary::GetSettings('set_calendar_date_desc'),
             eGovLibrary::GetSettings('set_calendar_date_label'),
             $ArrayRD,
-            eGovLibrary::GetProduktValue('product_quantity', $product_id),
-            eGovLibrary::GetProduktValue('product_quantity_limit', $product_id),
+            eGovLibrary::GetProduktValue('product_quantity', $productId),
+            eGovLibrary::GetProduktValue('product_quantity_limit', $productId),
             '',
             eGovLibrary::GetSettings('set_calendar_background'),
             eGovLibrary::GetSettings('set_calendar_legende_1'),
@@ -1315,18 +1332,18 @@ class eGovLibrary {
 
     /**
      * Update the order status of an order specified by its ID
-     * @param   integer     $order_id   The order ID
+     * @param   integer     $orderId   The order ID
      * @param   integer     $status     The new status
      * @return  boolean                 True on success, false otherwise
      */
-    static function updateOrderStatus($order_id, $status)
+    static function updateOrderStatus($orderId, $status)
     {
         global $objDatabase;
 
         $query = "
             UPDATE ".DBPREFIX."module_egov_orders
                SET order_state=$status
-             WHERE order_id=$order_id
+             WHERE order_id=$orderId
         ";
         if (!$objDatabase->Execute($query)) {
             return false;
@@ -1334,7 +1351,7 @@ class eGovLibrary {
         $query = "
             UPDATE ".DBPREFIX."module_egov_product_calendar
                SET calendar_act=".($status == 1 || $status == 3 ? 1 : 0)."
-             WHERE calendar_order=$order_id
+             WHERE calendar_order=$orderId
         ";
         if (!$objDatabase->Execute($query)) {
             return false;

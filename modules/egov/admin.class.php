@@ -184,25 +184,25 @@ class eGov extends eGovLibrary
 
         global $objDatabase, $_ARRAYLANG;
 
-        $product_id = $_REQUEST['id'];
-        $product_autostatus     = eGovLibrary::GetProduktValue("product_autostatus", $product_id);
-        $product_name             = eGovLibrary::GetProduktValue("product_name", $product_id)." (copy)";
-        $product_desc             = eGovLibrary::GetProduktValue("product_desc", $product_id);
-        $product_price             = eGovLibrary::GetProduktValue("product_price", $product_id);
-        $product_per_day = eGovLibrary::GetProduktValue('product_per_day', $product_id);
-        $product_quantity         = eGovLibrary::GetProduktValue("product_quantity", $product_id);
-        $product_target_email     = eGovLibrary::GetProduktValue("product_target_email", $product_id);
-        $product_target_url     = eGovLibrary::GetProduktValue("product_target_url", $product_id);
-        $product_message         = eGovLibrary::GetProduktValue("product_message", $product_id);
-        $product_status         = eGovLibrary::GetProduktValue("product_status", $product_id);
-        $product_electro         = eGovLibrary::GetProduktValue("product_electro", $product_id);
-        $product_file             = eGovLibrary::GetProduktValue("product_file", $product_id);
-        $product_sender_name     = eGovLibrary::GetProduktValue("product_sender_name", $product_id);
-        $product_sender_email     = eGovLibrary::GetProduktValue("product_target_subject", $product_id);
-        $product_target_subject = eGovLibrary::GetProduktValue("product_sender_email", $product_id);
-        $product_target_body    = eGovLibrary::GetProduktValue("product_target_body", $product_id);
+        $productId = $_REQUEST['productId'];
+        $product_autostatus     = eGovLibrary::GetProduktValue("product_autostatus", $productId);
+        $product_name             = eGovLibrary::GetProduktValue("product_name", $productId)." (copy)";
+        $product_desc             = eGovLibrary::GetProduktValue("product_desc", $productId);
+        $product_price             = eGovLibrary::GetProduktValue("product_price", $productId);
+        $product_per_day = eGovLibrary::GetProduktValue('product_per_day', $productId);
+        $product_quantity         = eGovLibrary::GetProduktValue("product_quantity", $productId);
+        $product_target_email     = eGovLibrary::GetProduktValue("product_target_email", $productId);
+        $product_target_url     = eGovLibrary::GetProduktValue("product_target_url", $productId);
+        $product_message         = eGovLibrary::GetProduktValue("product_message", $productId);
+        $product_status         = eGovLibrary::GetProduktValue("product_status", $productId);
+        $product_electro         = eGovLibrary::GetProduktValue("product_electro", $productId);
+        $product_file             = eGovLibrary::GetProduktValue("product_file", $productId);
+        $product_sender_name     = eGovLibrary::GetProduktValue("product_sender_name", $productId);
+        $product_sender_email     = eGovLibrary::GetProduktValue("product_target_subject", $productId);
+        $product_target_subject = eGovLibrary::GetProduktValue("product_sender_email", $productId);
+        $product_target_body    = eGovLibrary::GetProduktValue("product_target_body", $productId);
 
-        $arrFields = eGovLibrary::getFormFields($product_id);
+        $arrFields = eGovLibrary::getFormFields($productId);
         if ($objDatabase->Execute("
             INSERT INTO ".DBPREFIX."module_egov_products (
                 `product_name`, `product_desc`,`product_price`,
@@ -222,12 +222,12 @@ class eGov extends eGovLibrary
                 '$product_target_subject', '$product_target_body'
             )
         ")) {
-            $ProdId = $objDatabase->Insert_ID();
+            $productId = $objDatabase->Insert_ID();
             foreach ($arrFields as $arrField) {
-                $this->_addFormField($ProdId, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
+                $this->_addFormField($productId, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
             }
         }
-        $_REQUEST['id'] = $ProdId;
+        $_REQUEST['productId'] = $productId;
         $this->_strOkMessage .= $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
         $this->_products();
     }
@@ -265,10 +265,47 @@ class eGov extends eGovLibrary
         $yellowpayTestCheckedNo = ($yellowpayTest ? '' : 'checked="checked"');
 
         $this->objTemplate->setVariable(array(
+            'CALENDER_BACKGROUND' => eGovLibrary::GetSettings("set_calendar_background"),
+            'CALENDER_BORDER' => eGovLibrary::GetSettings("set_calendar_border"),
+            'CALENDER_COLOR_1' => eGovLibrary::GetSettings("set_calendar_color_1"),
+            'CALENDER_COLOR_2' => eGovLibrary::GetSettings("set_calendar_color_2"),
+            'CALENDER_COLOR_3' => eGovLibrary::GetSettings("set_calendar_color_3"),
+            'CALENDER_DATUM_DESC' => eGovLibrary::GetSettings("set_calendar_date_desc"),
+            'CALENDER_DATUM_LABEL' => eGovLibrary::GetSettings("set_calendar_date_label"),
+            'CALENDER_LEGENDE_1' => eGovLibrary::GetSettings("set_calendar_legende_1"),
+            'CALENDER_LEGENDE_2' => eGovLibrary::GetSettings("set_calendar_legende_2"),
+            'CALENDER_LEGENDE_3' => eGovLibrary::GetSettings("set_calendar_legende_3"),
+            'EGOV_CURRENCY_MENUOPTIONS' => $currencyMenuoptions,
+            'EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => $objYellowpay->getKnownPaymentMethodCheckboxes(),
+            'EGOV_YELLOWPAY_AUTHORIZATION_MENUOPTIONS' => $objYellowpay->getAuthorizationMenuoptions(),
+            'EGOV_YELLOWPAY_HASHSEED' => eGovLibrary::GetSettings('yellowpay_hashseed'),
+            'EGOV_YELLOWPAY_SHOPID' => eGovLibrary::GetSettings('yellowpay_shopid'),
+            'EGOV_YELLOWPAY_UID' => eGovLibrary::GetSettings('yellowpay_uid'),
+            'EGOV_YELLOWPAY_USE_TESTSERVER_NO_CHECKED' => $yellowpayTestCheckedNo,
+            'EGOV_YELLOWPAY_USE_TESTSERVER_YES_CHECKED' => $yellowpayTestCheckedYes,
+            'IPN_CHECKED' => $ipnchecked,
+            'ORDER_ENTRY_EMAIL' => eGovLibrary::GetSettings("set_orderentry_email"),
+            'ORDER_ENTRY_RECIPIENT' => eGovLibrary::GetSettings("set_orderentry_recipient"),
+            'ORDER_ENTRY_SENDER_EMAIL' => eGovLibrary::GetSettings("set_orderentry_sender"),
+            'ORDER_ENTRY_SENDER_NAME' => eGovLibrary::GetSettings("set_orderentry_name"),
+            'ORDER_ENTRY_SUBJECT' => eGovLibrary::GetSettings("set_orderentry_subject"),
+            'PAYPAL_EMAIL' => eGovLibrary::GetSettings("set_paypal_email"),
+            'SENDER_EMAIL' => eGovLibrary::GetSettings("set_sender_email"),
+            'SENDER_NAME' => eGovLibrary::GetSettings("set_sender_name"),
+            'STANDARD_RECIPIENT' => eGovLibrary::GetSettings("set_recipient_email"),
+            'STANDARD_STATE_EMAIL' => eGovLibrary::GetSettings("set_state_email"),
+            'STATE_SUBJECT' => eGovLibrary::GetSettings("set_state_subject"),
             'TXT_EGOV_CALENDAR_COLOR_FREE' => $_ARRAYLANG['TXT_EGOV_CALENDAR_COLOR_FREE'],
             'TXT_EGOV_CALENDAR_COLOR_OCCUPIED' => $_ARRAYLANG['TXT_EGOV_CALENDAR_COLOR_OCCUPIED'],
             'TXT_EGOV_CALENDAR_COLOR_PART' => $_ARRAYLANG['TXT_EGOV_CALENDAR_COLOR_PART'],
+            'TXT_EGOV_DEFAULT_CURRENCY' => $_ARRAYLANG['TXT_EGOV_DEFAULT_CURRENCY'],
+            'TXT_EGOV_EMAIL_TEMPLATE' => $_ARRAYLANG['TXT_EGOV_EMAIL_TEMPLATE'],
+            'TXT_EGOV_EMAIL_TEMPLATE_FOR_Admin' => $_ARRAYLANG['TXT_EGOV_EMAIL_TEMPLATE_FOR_Admin'],
+            'TXT_EGOV_EMAIL_TEMPLATE_FOR_CUSTOMER' => $_ARRAYLANG['TXT_EGOV_EMAIL_TEMPLATE_FOR_CUSTOMER'],
+            'TXT_EGOV_GENERAL' => $_ARRAYLANG['TXT_EGOV_GENERAL'],
+            'TXT_EGOV_NO' => $_ARRAYLANG['TXT_EGOV_NO'],
             'TXT_EGOV_ORDERDETAILS_PLACEHOLDER' => $_ARRAYLANG['TXT_EGOV_ORDERDETAILS_PLACEHOLDER'],
+            'TXT_EGOV_ORDER_ENTRY' => $_ARRAYLANG['TXT_EGOV_ORDER_ENTRY'],
             'TXT_EGOV_PAYMENTS' => $_ARRAYLANG['TXT_EGOV_PAYMENTS'],
             'TXT_EGOV_PAYPAL' => $_ARRAYLANG['TXT_EGOV_PAYPAL'],
             'TXT_EGOV_PAYPAL_CURRENCY' => $_ARRAYLANG['TXT_EGOV_PAYPAL_CURRENCY'],
@@ -284,6 +321,7 @@ class eGov extends eGovLibrary
             'TXT_EGOV_SETTINGS_LAYOUT' => $_ARRAYLANG['TXT_EGOV_SETTINGS_LAYOUT'],
             'TXT_EGOV_STANDARD_RECIPIENT' => $_ARRAYLANG['TXT_EGOV_STANDARD_RECIPIENT'],
             'TXT_EGOV_STANDARD_STATUS_CHANGE' => $_ARRAYLANG['TXT_EGOV_STANDARD_STATUS_CHANGE'],
+            'TXT_EGOV_STATE_CHANGE' => $_ARRAYLANG['TXT_EGOV_STATE_CHANGE'],
             'TXT_EGOV_STTINGS_CALENDAR_BACKGROUND' => $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_BACKGROUND'],
             'TXT_EGOV_STTINGS_CALENDAR_BORDERCOLOR' => $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_BORDERCOLOR'],
             'TXT_EGOV_STTINGS_CALENDAR_LEGENDE_1' => $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_1'],
@@ -294,58 +332,20 @@ class eGov extends eGovLibrary
             'TXT_EGOV_SUBJECT' => $_ARRAYLANG['TXT_EGOV_SUBJECT'],
             'TXT_EGOV_YELLOWPAY' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY'],
             'TXT_EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS'],
-            'TXT_EGOV_YELLOWPAY_AUTHORIZATION' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_AUTHORIZATION'],
-            'TXT_EGOV_YELLOWPAY_HASHSEED' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_HASHSEED'],
-            'TXT_EGOV_YELLOWPAY_UID' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_UID'],
-            'TXT_EGOV_YELLOWPAY_POSTFINANCECARD' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_POSTFINANCECARD'],
-            'TXT_EGOV_YELLOWPAY_YELLOWNET' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_YELLOWNET'],
-            'TXT_EGOV_YELLOWPAY_MASTER' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_MASTER'],
-            'TXT_EGOV_YELLOWPAY_VISA' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_VISA'],
             'TXT_EGOV_YELLOWPAY_AMEX' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_AMEX'],
+            'TXT_EGOV_YELLOWPAY_AUTHORIZATION' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_AUTHORIZATION'],
             'TXT_EGOV_YELLOWPAY_DINERS' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_DINERS'],
-            'TXT_EGOV_YELLOWPAY_YELLOWBILL' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_YELLOWBILL'],
-            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
-            'CALENDER_BACKGROUND' => eGovLibrary::GetSettings("set_calendar_background"),
-            'CALENDER_BORDER' => eGovLibrary::GetSettings("set_calendar_border"),
-            'CALENDER_COLOR_1' => eGovLibrary::GetSettings("set_calendar_color_1"),
-            'CALENDER_COLOR_2' => eGovLibrary::GetSettings("set_calendar_color_2"),
-            'CALENDER_COLOR_3' => eGovLibrary::GetSettings("set_calendar_color_3"),
-            'CALENDER_DATUM_DESC' => eGovLibrary::GetSettings("set_calendar_date_desc"),
-            'CALENDER_DATUM_LABEL' => eGovLibrary::GetSettings("set_calendar_date_label"),
-            'CALENDER_LEGENDE_1' => eGovLibrary::GetSettings("set_calendar_legende_1"),
-            'CALENDER_LEGENDE_2' => eGovLibrary::GetSettings("set_calendar_legende_2"),
-            'CALENDER_LEGENDE_3' => eGovLibrary::GetSettings("set_calendar_legende_3"),
-            'EGOV_YELLOWPAY_UID' => eGovLibrary::GetSettings('yellowpay_uid'),
-            'EGOV_YELLOWPAY_SHOPID' => eGovLibrary::GetSettings('yellowpay_shopid'),
+            'TXT_EGOV_YELLOWPAY_HASHSEED' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_HASHSEED'],
+            'TXT_EGOV_YELLOWPAY_MASTER' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_MASTER'],
+            'TXT_EGOV_YELLOWPAY_POSTFINANCECARD' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_POSTFINANCECARD'],
             'TXT_EGOV_YELLOWPAY_SHOPID' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_SHOPID'],
-            'EGOV_YELLOWPAY_HASHSEED' => eGovLibrary::GetSettings('yellowpay_hashseed'),
-            'EGOV_YELLOWPAY_AUTHORIZATION_MENUOPTIONS' => $objYellowpay->getAuthorizationMenuoptions(),
-            'EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => $objYellowpay->getKnownPaymentMethodCheckboxes(),
-            'TXT_EGOV_EMAIL_TEMPLATE' => $_ARRAYLANG['TXT_EGOV_EMAIL_TEMPLATE'],
-            'TXT_EGOV_EMAIL_TEMPLATE_FOR_Admin' => $_ARRAYLANG['TXT_EGOV_EMAIL_TEMPLATE_FOR_Admin'],
-            'TXT_EGOV_EMAIL_TEMPLATE_FOR_CUSTOMER' => $_ARRAYLANG['TXT_EGOV_EMAIL_TEMPLATE_FOR_CUSTOMER'],
-            'TXT_EGOV_ORDER_ENTRY' => $_ARRAYLANG['TXT_EGOV_ORDER_ENTRY'],
-            'TXT_EGOV_STATE_CHANGE' => $_ARRAYLANG['TXT_EGOV_STATE_CHANGE'],
-            'IPN_CHECKED' => $ipnchecked,
-            'ORDER_ENTRY_EMAIL' => eGovLibrary::GetSettings("set_orderentry_email"),
-            'ORDER_ENTRY_RECIPIENT' => eGovLibrary::GetSettings("set_orderentry_recipient"),
-            'ORDER_ENTRY_SENDER_EMAIL' => eGovLibrary::GetSettings("set_orderentry_sender"),
-            'ORDER_ENTRY_SENDER_NAME' => eGovLibrary::GetSettings("set_orderentry_name"),
-            'ORDER_ENTRY_SUBJECT' => eGovLibrary::GetSettings("set_orderentry_subject"),
-            'PAYPAL_EMAIL' => eGovLibrary::GetSettings("set_paypal_email"),
-            'SENDER_EMAIL' => eGovLibrary::GetSettings("set_sender_email"),
-            'SENDER_NAME' => eGovLibrary::GetSettings("set_sender_name"),
-            'STANDARD_RECIPIENT' => eGovLibrary::GetSettings("set_recipient_email"),
-            'STANDARD_STATE_EMAIL' => eGovLibrary::GetSettings("set_state_email"),
-            'STATE_SUBJECT' => eGovLibrary::GetSettings("set_state_subject"),
-            'TXT_EGOV_GENERAL' => $_ARRAYLANG['TXT_EGOV_GENERAL'],
-            'TXT_EGOV_DEFAULT_CURRENCY' => $_ARRAYLANG['TXT_EGOV_DEFAULT_CURRENCY'],
-            'EGOV_CURRENCY_MENUOPTIONS' => $currencyMenuoptions,
+            'TXT_EGOV_YELLOWPAY_UID' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_UID'],
             'TXT_EGOV_YELLOWPAY_USE_TESTSERVER' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_USE_TESTSERVER'],
-            'EGOV_YELLOWPAY_USE_TESTSERVER_YES_CHECKED' => $yellowpayTestCheckedYes,
-            'EGOV_YELLOWPAY_USE_TESTSERVER_NO_CHECKED' => $yellowpayTestCheckedNo,
+            'TXT_EGOV_YELLOWPAY_VISA' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_VISA'],
+            'TXT_EGOV_YELLOWPAY_YELLOWBILL' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_YELLOWBILL'],
+            'TXT_EGOV_YELLOWPAY_YELLOWNET' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_YELLOWNET'],
             'TXT_EGOV_YES' => $_ARRAYLANG['TXT_EGOV_YES'],
-            'TXT_EGOV_NO' => $_ARRAYLANG['TXT_EGOV_NO'],
+            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
         ));
     }
 
@@ -355,57 +355,59 @@ class eGov extends eGovLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $this->objTemplate->loadTemplateFile('module_gov_product_edit.html');
-        if (intval($_REQUEST['id']) == 0) {
+        $productId = 0;
+        if (empty($_REQUEST['productId'])) {
             $this->_pageTitle = $_ARRAYLANG['TXT_EGOV_ADD_NEW_PRODUCT'];
         } else {
-            $this->_pageTitle = $_ARRAYLANG['TXT_EGOV_EDIT_PRODUCT'];
+            $this->_pageTitle =  $_ARRAYLANG['TXT_EGOV_EDIT_PRODUCT'];
+            $productId = intval($_REQUEST['productId']);
         }
-        $product_id = intval($_REQUEST['id']);
-        if ($product_id != 0) {
+
+        if ($productId != 0) {
             $jsSubmitFunction = 'updateContentSite()';
         } else {
             $jsSubmitFunction = 'createContentSite()';
         }
-        $TargetEmail = eGovLibrary::GetProduktValue('product_target_email', $product_id);
+        $TargetEmail = eGovLibrary::GetProduktValue('product_target_email', $productId);
         if ($TargetEmail == '') {
             $TargetEmail = eGovLibrary::GetSettings('set_recipient_email');
         }
         $StatusChecked = 'checked="checked"';
-        if ($product_id != 0) {
-            if (eGovLibrary::GetProduktValue('product_status', $product_id) != 1) {
+        if ($productId != 0) {
+            if (eGovLibrary::GetProduktValue('product_status', $productId) != 1) {
                 $StatusChecked = '';
             }
         }
         $AutoJaChecked = '';
         $AutoNeinChecked = 'checked="checked"';
-        if (eGovLibrary::GetProduktValue('product_autostatus', $product_id) == 1) {
+        if (eGovLibrary::GetProduktValue('product_autostatus', $productId) == 1) {
             $AutoJaChecked = 'checked="checked"';
             $AutoNeinChecked = '';
         }
         $electro_checked = '';
-        if (eGovLibrary::GetProduktValue('product_electro', $product_id) == 1) {
+        if (eGovLibrary::GetProduktValue('product_electro', $productId) == 1) {
             $electro_checked = 'checked="checked"';
         }
-        $ProductSenderName = eGovLibrary::GetProduktValue('product_sender_name', $product_id);
+        $ProductSenderName = eGovLibrary::GetProduktValue('product_sender_name', $productId);
         if ($ProductSenderName == '') {
             $ProductSenderName = eGovLibrary::GetSettings('set_sender_name');
         }
-        $ProductSenderEmail = eGovLibrary::GetProduktValue('product_sender_email', $product_id);
+        $ProductSenderEmail = eGovLibrary::GetProduktValue('product_sender_email', $productId);
         if ($ProductSenderEmail == '') {
             $ProductSenderEmail = eGovLibrary::GetSettings('set_sender_email');
         }
-        $ProductTargetSubject = eGovLibrary::GetProduktValue('product_target_subject', $product_id);
+        $ProductTargetSubject = eGovLibrary::GetProduktValue('product_target_subject', $productId);
         if ($ProductTargetSubject == '') {
             $ProductTargetSubject = eGovLibrary::GetSettings('set_state_subject');
         }
-        $ProductTargetBody = eGovLibrary::GetProduktValue('product_target_body', $product_id);
+        $ProductTargetBody = eGovLibrary::GetProduktValue('product_target_body', $productId);
         if ($ProductTargetBody == '') {
             $ProductTargetBody = eGovLibrary::GetSettings('set_state_email');
         }
-        $PaypayCheckedYes = (eGovLibrary::GetProduktValue('product_paypal', $product_id) == 1 ? 'checked="checked"' : '');
+        $PaypayCheckedYes = (eGovLibrary::GetProduktValue('product_paypal', $productId) == 1 ? 'checked="checked"' : '');
         $PaypayCheckedNo = ($PaypayCheckedYes == '' ? 'checked="checked"' : '');
-        $currency = eGovLibrary::GetProduktValue('product_paypal_currency', $product_id);
-        $paypalEmail = eGovLibrary::GetProduktValue('product_paypal_sandbox', $product_id);
+        $currency = eGovLibrary::GetProduktValue('product_paypal_currency', $productId);
+        $paypalEmail = eGovLibrary::GetProduktValue('product_paypal_sandbox', $productId);
         if ($paypalEmail == '') {
             $paypalEmail = eGovLibrary::GetSettings('set_paypal_email');;
         }
@@ -418,7 +420,7 @@ class eGov extends eGovLibrary
             eGovLibrary::GetSettings('yellowpay_accepted_payment_methods'),
             eGovLibrary::GetSettings('yellowpay_authorization')
         );
-        $yellowpayCheckedYes = (eGovLibrary::GetProduktValue('yellowpay', $product_id) ? 'checked="checked"' : '');
+        $yellowpayCheckedYes = (eGovLibrary::GetProduktValue('yellowpay', $productId) ? 'checked="checked"' : '');
         $yellowpayCheckedNo = ($yellowpayCheckedYes == '' ? 'checked="checked"' : '');
 
         $this->objTemplate->setVariable(array(
@@ -442,14 +444,14 @@ class eGov extends eGovLibrary
             'TXT_EGOV_MANDATORY_FIELD' => $_ARRAYLANG['TXT_EGOV_MANDATORY_FIELD'],
             'TXT_BROWSE' => $_ARRAYLANG['TXT_BROWSE'],
             'TXT_EGOV_SEPARATE_MULTIPLE_VALUES_BY_COMMA' => $_ARRAYLANG['TXT_EGOV_SEPARATE_MULTIPLE_VALUES_BY_COMMA'],
-            'PRODUCT_FORM_DESC' => get_wysiwyg_editor('contactFormDesc', eGovLibrary::GetProduktValue("product_desc", $product_id), 'shop'),
-            'PRODUCT_FORM_QUANTITY' => eGovLibrary::GetProduktValue("product_quantity", $product_id),
-            'PRODUCT_FORM_NAME' => eGovLibrary::GetProduktValue('product_name', $product_id),
+            'PRODUCT_FORM_DESC' => get_wysiwyg_editor('contactFormDesc', eGovLibrary::GetProduktValue("product_desc", $productId), 'shop'),
+            'PRODUCT_FORM_QUANTITY' => eGovLibrary::GetProduktValue("product_quantity", $productId),
+            'PRODUCT_FORM_NAME' => eGovLibrary::GetProduktValue('product_name', $productId),
             'PRODUCT_FORM_EMAIL' => $TargetEmail,
-            'PRODUCT_FORM_TARGET_URL' => eGovLibrary::GetProduktValue("product_target_url", $product_id),
-            'PRODUCT_FORM_TARGET_MESSAGE' => get_wysiwyg_editor('productFormTargetMessage', eGovLibrary::GetProduktValue("product_message", $product_id), 'shop'),
-            'PRODUCT_FORM_PRICE' => eGovLibrary::GetProduktValue("product_price", $product_id),
-            'PRODUCT_ID' => $product_id,
+            'PRODUCT_FORM_TARGET_URL' => eGovLibrary::GetProduktValue("product_target_url", $productId),
+            'PRODUCT_FORM_TARGET_MESSAGE' => get_wysiwyg_editor('productFormTargetMessage', eGovLibrary::GetProduktValue("product_message", $productId), 'shop'),
+            'PRODUCT_FORM_PRICE' => eGovLibrary::GetProduktValue("product_price", $productId),
+            'PRODUCT_ID' => $productId,
             'EGOV_JS_SUBMIT_FUNCTION' => $jsSubmitFunction,
             'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
             'TXT_EGOV_CONFIRM_CREATE_CONTENT_SITE' => $_ARRAYLANG['TXT_EGOV_CONFIRM_CREATE_CONTENT_SITE'],
@@ -462,7 +464,7 @@ class eGov extends eGovLibrary
             'TXT_EGOV_PRODUCT_ELECTRO' => $_ARRAYLANG['TXT_EGOV_PRODUCT_ELECTRO'],
             'ELECTRO_CHECKED' => $electro_checked,
             'TXT_EGOV_PRODUCT_SELECT_FILE' => $_ARRAYLANG['TXT_EGOV_PRODUCT_SELECT_FILE'],
-            'PRODUCT_FORM_FILE' => eGovLibrary::GetProduktValue("product_file", $product_id),
+            'PRODUCT_FORM_FILE' => eGovLibrary::GetProduktValue("product_file", $productId),
             'TXT_EGOV_ORDER_STATE_AUTOMAIL' => $_ARRAYLANG["TXT_EGOV_ORDER_STATE_AUTOMAIL"],
             'TXT_EGOV_BASIC_DATA' => $_ARRAYLANG["TXT_EGOV_BASIC_DATA"],
             'TXT_EGOV_EXTENDED_OPTIONS' => $_ARRAYLANG["TXT_EGOV_EXTENDED_OPTIONS"],
@@ -504,15 +506,15 @@ class eGov extends eGovLibrary
             'TXT_EGOV_GENERAL' => $_ARRAYLANG['TXT_EGOV_GENERAL'],
             'TXT_EGOV_DEFAULT_CURRENCY' => $_ARRAYLANG['TXT_EGOV_DEFAULT_CURRENCY'],
             'EGOV_CURRENCY_MENUOPTIONS' => $currencyMenuoptions,
-            'EGOV_PRODUCT_QUANTITY_LIMIT' => eGovLibrary::GetProduktValue('product_quantity_limit', $product_id),
+            'EGOV_PRODUCT_QUANTITY_LIMIT' => eGovLibrary::GetProduktValue('product_quantity_limit', $productId),
             'TXT_EGOV_PRODUCT_QUANTITY_LIMIT' => $_ARRAYLANG['TXT_EGOV_PRODUCT_QUANTITY_LIMIT'],
             // Alternative payment methods, comma separated
             'TXT_EGOV_ALTERNATIVE_PAYMENT_METHODS' => $_ARRAYLANG['TXT_EGOV_ALTERNATIVE_PAYMENT_METHODS'],
             'TXT_EGOV_ALTERNATIVE_PAYMENT_NAMES' => $_ARRAYLANG['TXT_EGOV_ALTERNATIVE_PAYMENT_NAMES'],
-            'ALTERNATIVE_NAMES' => eGovLibrary::GetProduktValue('alternative_names', $product_id),
+            'ALTERNATIVE_NAMES' => eGovLibrary::GetProduktValue('alternative_names', $productId),
         ));
 
-        if (eGovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes') {
+        if (eGovLibrary::GetProduktValue('product_per_day', $productId) == 'yes') {
             $this->objTemplate->setVariable(
                 'PER_DAY_CHECKED_YES', 'checked="checked"'
             );
@@ -523,8 +525,8 @@ class eGov extends eGovLibrary
         }
 
         $lastFieldId = 0;
-        if ($product_id != 0) {
-            $arrFields = eGovLibrary::getFormFields($product_id);
+        if ($productId != 0) {
+            $arrFields = eGovLibrary::getFormFields($productId);
         } else {
             $this->objTemplate->setVariable(array(
                 'EGOV_FORM_FIELD_NAME' => '',
@@ -601,11 +603,11 @@ class eGov extends eGovLibrary
         if (isset($_REQUEST['delete'])) {
             $objDatabase->Execute("
                 DELETE FROM ".DBPREFIX."module_egov_products
-                 WHERE product_id=".$_REQUEST['id']
+                 WHERE product_id=".$_REQUEST['productId']
             );
             $objDatabase->Execute("
                 DELETE FROM ".DBPREFIX."module_egov_product_fields
-                 WHERE product=".$_REQUEST['id']
+                 WHERE product=".$_REQUEST['productId']
             );
         }
 
@@ -635,10 +637,10 @@ class eGov extends eGovLibrary
                 $anzahl = $objResult->fields['anzahl'];
             }
             if ($_REQUEST['Direction']=='up') {
-                $NewPosition = eGovLibrary::GetProduktValue('product_orderby', $_REQUEST['id'])-1;
+                $NewPosition = eGovLibrary::GetProduktValue('product_orderby', $_REQUEST['productId'])-1;
             }
             if ($_REQUEST['Direction']=='down') {
-                $NewPosition = eGovLibrary::GetProduktValue('product_orderby', $_REQUEST['id'])+1;
+                $NewPosition = eGovLibrary::GetProduktValue('product_orderby', $_REQUEST['productId'])+1;
             }
             if ($NewPosition < 0) {
                 $NewPosition = 0;
@@ -659,14 +661,14 @@ class eGov extends eGovLibrary
             $query = "
                 SELECT product_orderby
                   FROM ".DBPREFIX."module_egov_products
-                 WHERE product_id=".$_REQUEST['id'];
+                 WHERE product_id=".$_REQUEST['productId'];
             $objResult = $objDatabase->Execute($query);
             if ($objResult->RecordCount() == 1) {
                 $TauschPosition = $objResult->fields['product_orderby'];
             }
             $query = "
                 UPDATE ".DBPREFIX."module_egov_products
-                   SET product_orderby=".$TauschPosition."
+                   SET product_orderby=$TauschPosition
                  WHERE product_id=$TauschID
             ";
             if ($objDatabase->Execute($query)) {
@@ -675,7 +677,7 @@ class eGov extends eGovLibrary
             $query = "
                 UPDATE ".DBPREFIX."module_egov_products
                    SET product_orderby=$NewPosition
-                 WHERE product_id=".$_REQUEST['id'];
+                 WHERE product_id=".$_REQUEST['productId'];
             if ($objDatabase->Execute($query)) {
                 $this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
             }
@@ -695,10 +697,11 @@ class eGov extends eGovLibrary
             'TXT_EGOV_RESERVATIONS' => $_ARRAYLANG['TXT_EGOV_RESERVATIONS'],
             'TXT_ORDERS' => $_ARRAYLANG['TXT_ORDERS'],
             'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
+            'TXT_EGOV_RESERVATION' => $_ARRAYLANG['TXT_EGOV_RESERVATION'],
+// TODO: These are not defined
             'TXT_EGOV_SEQUENCE' => $_ARRAYLANG['TXT_EGOV_SEQUENCE'],
             'TXT_EGOV_UP' => $_ARRAYLANG['TXT_EGOV_UP'],
             'TXT_EGOV_DOWN' => $_ARRAYLANG['TXT_EGOV_DOWN'],
-            'TXT_EGOV_RESERVATION' => $_ARRAYLANG['TXT_EGOV_RESERVATION'],
         ));
 
         $query = "
@@ -732,30 +735,32 @@ class eGov extends eGovLibrary
                 'ORDERS_VALUE' => $objResult_orders->fields['anzahl'],
                 'TXT_EGOV_VIEW_ORDERS' => $_ARRAYLANG['TXT_EGOV_VIEW_ORDERS'],
                 'TXT_COPY' => $_ARRAYLANG['TXT_COPY'],
-                'TXT_EGOV_UP' => $_ARRAYLANG['TXT_EGOV_UP'],
-                'TXT_EGOV_DOWN' => $_ARRAYLANG['TXT_EGOV_DOWN'],
+// TODO: These are not defined
+//                'TXT_IMGALT_COPY' => $_ARRAYLANG['TXT_IMGALT_COPY'],
+//                'TXT_EGOV_UP' => $_ARRAYLANG['TXT_EGOV_UP'],
+//                'TXT_EGOV_DOWN' => $_ARRAYLANG['TXT_EGOV_DOWN']
             ));
 
-            $product_id = $objResult->fields['product_id'];
-            if (eGovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes') {
+            $productId = $objResult->fields['product_id'];
+            if (eGovLibrary::GetProduktValue('product_per_day', $productId) == 'yes') {
 
                 $LastYear = date('Y')-1;
                 $query_rl = "
                     SELECT *
                       FROM ".DBPREFIX."module_egov_product_calendar
-                     WHERE calendar_product=".$product_id." and calendar_year>".$LastYear."
+                     WHERE calendar_product=".$productId." and calendar_year>".$LastYear."
                      GROUP BY calendar_day, calendar_month, calendar_year
                      ORDER BY calendar_year, calendar_month, calendar_day
                 ";
                 $objResult_rl = $objDatabase->Execute($query_rl);
                 $counter = 0;
                 $optionContent = '';
-                $ProductQuant = eGovLibrary::GetProduktValue('product_quantity', $product_id);
+                $ProductQuant = eGovLibrary::GetProduktValue('product_quantity', $productId);
                 while(!$objResult_rl->EOF) {
                     $query_count = "
                         SELECT count(*) as anzahl
                           FROM ".DBPREFIX."module_egov_product_calendar
-                         WHERE calendar_product=$product_id
+                         WHERE calendar_product=$productId
                            AND calendar_day=".$objResult_rl->fields['calendar_day']."
                            AND calendar_month=".$objResult_rl->fields['calendar_month']."
                            AND calendar_year=".$objResult_rl->fields['calendar_year']."
@@ -781,7 +786,7 @@ class eGov extends eGovLibrary
                 } else {
                     $this->objTemplate->setVariable(
                         'RESERVATIONS_VALUE',
-                        '<select name="ReservedDays_'.$product_id.
+                        '<select name="ReservedDays_'.$productId.
                         '" style="width: 150px;">'.$optionContent.'</select>'
                     );
                 }
@@ -801,25 +806,24 @@ class eGov extends eGovLibrary
 
         $this->objTemplate->loadTemplateFile('module_gov_order_edit.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_ORDER_EDIT'];
-        $order_id = (isset($_REQUEST['id']) ? $_REQUEST['id'] : 0);
-        $productId = eGovLibrary::GetOrderValue('order_product', $order_id);
+        $orderId = (isset($_REQUEST['orderId']) ? $_REQUEST['orderId'] : 0);
+        if (!$orderId) return false;
+        $productId = eGovLibrary::GetOrderValue('order_product', $orderId);
 
-        if (isset($_REQUEST['update'])) {
+        // update
+        if (isset($_POST['order_store'])) {
+//echo("order_store is set, going to store order<br />");
+// TODO: Update form data
+            eGovLibrary::storeOrder();
             $query = "
                 UPDATE ".DBPREFIX."module_egov_orders
                    SET order_state=".$_REQUEST['state']."
-                 WHERE order_id=$order_id
+                 WHERE order_id=$orderId
             ";
             if ($objDatabase->Execute($query)) {
                 $this->_strOkMessage = $_ARRAYLANG['TXT_STATE_UPDATED_SUCCESSFUL'];
             }
 
-            $query = "
-                SELECT *
-                  FROM ".DBPREFIX."module_egov_orders
-                 WHERE order_id=$order_id
-            ";
-            $objResult = $objDatabase->Execute($query);
             if (eGovLibrary::GetProduktValue('product_per_day', $productId) == 'yes') {
                 if (   intval($_REQUEST['state']) == 2
                     || intval($_REQUEST['state']) == 0) {
@@ -827,89 +831,27 @@ class eGov extends eGovLibrary
                 } else {
                     $act = 1;
                 }
-                $query = "UPDATE ".DBPREFIX."module_egov_product_calendar
+                $query = "
+                    UPDATE ".DBPREFIX."module_egov_product_calendar
                      SET calendar_act=$act
-                     WHERE calendar_order=$order_id
+                     WHERE calendar_order=$orderId
                 ";
                 $objDatabase->Execute($query);
             }
 
-            if (isset($_REQUEST['ChangeStateMessage'])) {
-                $SubjectText = str_replace(
-                    '[[PRODUCT_NAME]]',
-                    html_entity_decode(eGovLibrary::GetProduktValue('product_name', $productId)),
-                    $_REQUEST['email_subject']
-                );
-                $SubjectText = html_entity_decode($SubjectText);
-
-                $FormValue4Mail = '';
-                $GSdata = split(";;", $objResult->fields['order_values']);
-                for ($y = 0; $y < count($GSdata); ++$y) {
-                    if (!empty($GSdata[$y])) {
-                        list ($FieldName, $FieldValue) = split('::', $GSdata[$y]);
-                        if ($FieldName != '') {
-                            $FormValue4Mail .= $FieldName.': '.$FieldValue;
-                        }
-                    }
-                }
-
-                $BodyText = str_replace(
-                    '[[ORDER_VALUE]]', $FormValue4Mail, $_REQUEST['email_text']
-                );
-                $BodyText = str_replace(
-                    '[[PRODUCT_NAME]]',
-                    html_entity_decode(eGovLibrary::GetProduktValue('product_name', $productId)),
-                    $BodyText
-                );
-                    $BodyText = html_entity_decode($BodyText);
-
-                $FromEmail = eGovLibrary::GetProduktValue('product_sender_email', $productId);
-                if ($FromEmail == '') {
-                    $FromEmail = eGovLibrary::GetSettings('set_sender_email');
-                }
-
-                $FromName = eGovLibrary::GetProduktValue('product_sender_name', $productId);
-                if ($FromName == '') {
-                    $FromName = eGovLibrary::GetSettings('set_sender_name');
-                }
-
-                $TargetMail = $_REQUEST['email'];
-                if ($TargetMail == '') {
-                    $TargetMail = eGovLibrary::GetEmailAdress($order_id);
-                }
-                if ($TargetMail != '') {
-                    if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-                        $objMail = new phpmailer();
-                        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                            if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                                $objMail->IsSMTP();
-                                $objMail->Host = $arrSmtp['hostname'];
-                                $objMail->Port = $arrSmtp['port'];
-                                $objMail->SMTPAuth = true;
-                                $objMail->Username = $arrSmtp['username'];
-                                $objMail->Password = $arrSmtp['password'];
-                            }
-                        }
-                        $objMail->CharSet = CONTREXX_CHARSET;
-                        $objMail->From = $FromEmail;
-                        $objMail->FromName = $FromName;
-                        $objMail->AddReplyTo($FromEmail);
-                        $objMail->Subject = $SubjectText;
-                        $objMail->Priority = 3;
-                        $objMail->IsHTML(false);
-                        $objMail->Body = $BodyText;
-                        $objMail->AddAddress($TargetMail);
-// TODO: Verify the result and show an error if sending the mail fails!
-                        $objMail->Send();
-                    }
-                }
+            if (!empty($_POST['ChangeStateMessage'])) {
+//echo("sending mail<br />");
+                eGovLibrary::sendConfirmationMail($orderId);
             }
         }
+
+//echo(ASCMS_PROTOCOL.'://'.$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET.'/index.php?section=egov&amp;cmd=order_edit&amp;orderId='.$orderId.'&amp;hash='.eGovLibrary::getOrderHash($orderId)."<br />");
 
         $query = "
             SELECT *
               FROM ".DBPREFIX."module_egov_orders
-             WHERE order_id=".intval($_REQUEST['id']);
+             WHERE order_id=$orderId
+        ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->RecordCount() != 1) {
             header('Location: index.php?cmd=egov&err=Wrong Order ID');
@@ -917,6 +859,8 @@ class eGov extends eGovLibrary
         }
 
         $mailBody = eGovLibrary::GetProduktValue('product_target_body', $productId);
+// Alternativeliy use the default mail template from the settings
+//        $mailBody = eGovLibrary::GetSettings('set_state_email')
         $this->objTemplate->setVariable(array(
             'TXT_DATE' => $_ARRAYLANG['TXT_DATE'],
             'TXT_STATE' => $_ARRAYLANG['TXT_STATE'],
@@ -938,32 +882,21 @@ class eGov extends eGovLibrary
             'TXT_SVE_WITH_EMAIL' => $_ARRAYLANG['TXT_SVE_WITH_EMAIL'],
             'TXT_EMPTY_EMAIL' => $_ARRAYLANG['TXT_EMPTY_EMAIL'],
             'SETTINGS_STATE_CHANGE_EMAIL' => $mailBody,
-            'ORDER_ID' => $objResult->fields["order_id"],
-            'ORDER_IP' => $objResult->fields["order_ip"],
-            'ORDER_DATE' => $objResult->fields["order_date"],
-            'ORDER_PRODUCT' => eGovLibrary::GetProduktValue('product_name', $objResult->fields['order_product']),
+            'ORDER_ID' => $orderId,
+            'ORDER_IP' => $objResult->fields['order_ip'],
+            'ORDER_DATE' => $objResult->fields['order_date'],
+            'ORDER_PRODUCT' => eGovLibrary::GetProduktValue('product_name', $productId),
+            'PRODUCT_ID' => $productId,
             'TXT_EGOV_SUBJECT' => $_ARRAYLANG['TXT_EGOV_SUBJECT'],
-            'STATE_SUBJECT' => eGovLibrary::GetSettings("set_state_subject"),
-            'EGOV_TARGET_EMAIL' => eGovLibrary::GetEmailAdress($order_id),
+            'STATE_SUBJECT' => eGovLibrary::GetSettings('set_state_subject'),
+            'EGOV_TARGET_EMAIL' => eGovLibrary::GetEmailAdress($orderId),
             'EGOV_ORDER_STATUS_MENUOPTIONS' =>
                 eGov::getStatusMenuOptions($objResult->fields['order_state']),
-//            'SELECTED_STATE_OK' => $selected_ok,
-//            'SELECTED_STATE_DELETED' => $selected_deleted,
         ));
-
-        // form falues
-        $GSdata = split(';;', $objResult->fields['order_values']);
-        $y = 0;
-        foreach ($GSdata as $value) {
-            if (empty($value)) continue;
-            list ($FieldName, $FieldValue) = split('::', $value);
-            $this->objTemplate->setVariable(array(
-                'ROWCLASS' => (++$y % 2 ? 'row2' : 'row1'),
-                'DATA_FIELD' => $FieldName,
-                'DATA_VALUE' => $FieldValue,
-            ));
-            $this->objTemplate->parse('orders_data_row');
-        }
+        $this->objTemplate->setVariable(
+            'EGOV_FORM', eGovLibrary::getSourceCode($productId, $orderId, true)
+        );
+        return true;
     }
 
 
@@ -999,12 +932,12 @@ class eGov extends eGovLibrary
                 $objDatabase->Execute("
                     DELETE
                       FROM ".DBPREFIX."module_egov_orders
-                     WHERE order_id=".intval($_REQUEST['id'])
+                     WHERE order_id=".intval($_REQUEST['orderId'])
                 );
                 $objDatabase->Execute("
                     DELETE
                       FROM ".DBPREFIX."module_egov_product_calendar
-                     WHERE calendar_order=".intval($_REQUEST['id'])
+                     WHERE calendar_order=".intval($_REQUEST['orderId'])
                 );
             }
         }
@@ -1686,19 +1619,19 @@ class eGov extends eGovLibrary
             'TXT_EGOV_RESERVATION' => $_ARRAYLANG['TXT_EGOV_RESERVATION'],
         ));
 
-        if (empty($_REQUEST['id'])) {
+        if (empty($_REQUEST['productId'])) {
             return false;
         }
-        $product_id =$_REQUEST['id'];
+        $productId =$_REQUEST['productId'];
 
         $query = "
             SELECT product_id, product_name, product_desc, product_price ".
              "FROM ".DBPREFIX."module_egov_products
-             WHERE product_id=$product_id
+             WHERE product_id=$productId
         ";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && $objResult->RecordCount()) {
-            $FormSource = $this->getSourceCodeBackend($product_id, false, true);
+            $FormSource = $this->getSourceCodeBackend($productId, false, true);
             $this->objTemplate->setVariable(array(
                 'EGOV_PRODUCT_TITLE' => $objResult->fields['product_name'],
                 'EGOV_PRODUCT_ID' => $objResult->fields['product_id'],
@@ -1719,18 +1652,18 @@ class eGov extends eGovLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $product_id = intval($_REQUEST['id']);
+        $productId = intval($_REQUEST['productId']);
         $datum_db = date('Y-m-d H:i:s');
         $ip_adress = $_SERVER['REMOTE_ADDR'];
 
-        $arrFields = eGovLibrary::getFormFields($product_id);
+        $arrFields = eGovLibrary::getFormFields($productId);
         $FormValue = '';
         foreach ($arrFields as $fieldId => $arrField) {
             $FormValue .= $arrField['name'].'::'.contrexx_addslashes(strip_tags($_REQUEST['contactFormField_'.$fieldId])).';;';
         }
 
         $quantity = 0;
-        if (eGovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes') {
+        if (eGovLibrary::GetProduktValue('product_per_day', $productId) == 'yes') {
             $quantity = intval($_REQUEST['contactFormField_Quantity']);
             $FormValue = eGovLibrary::GetSettings('set_calendar_date_label').'::'.contrexx_addslashes(strip_tags($_REQUEST['contactFormField_1000'])).';;'.$FormValue;
             $FormValue = $_ARRAYLANG['TXT_EGOV_QUANTITY'].'::'.$quantity.';;'.$FormValue;
@@ -1740,12 +1673,12 @@ class eGov extends eGovLibrary
             INSERT INTO ".DBPREFIX."module_egov_orders (
                 order_date, order_ip, order_product, order_values
             ) VALUES (
-                '$datum_db', '$ip_adress', '$product_id', '$FormValue'
+                '$datum_db', '$ip_adress', '$productId', '$FormValue'
             )
         ");
-        $order_id = $objDatabase->Insert_ID();
+        $orderId = $objDatabase->Insert_ID();
 
-        if (eGovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes') {
+        if (eGovLibrary::GetProduktValue('product_per_day', $productId) == 'yes') {
             list ($calD, $calM, $calY) = split('[.]', $_REQUEST['contactFormField_1000']);
             for($x = 0; $x < $quantity; ++$x) {
                 $objDatabase->Execute("
@@ -1753,7 +1686,7 @@ class eGov extends eGovLibrary
                         calendar_product, calendar_order, calendar_day,
                         calendar_month, calendar_year
                     ) VALUES (
-                        '$product_id', '$order_id', '$calD',
+                        '$productId', '$orderId', '$calD',
                         '$calM', '$calY'
                     )
                 ");
@@ -1761,9 +1694,9 @@ class eGov extends eGovLibrary
         }
 
         // update the order right away
-        if (eGov::GetOrderValue('order_state', $order_id) == 0) {
+        if (eGov::GetOrderValue('order_state', $orderId) == 0) {
             // If any non-empty string is returned, an error occurred.
-            $ReturnValue = $this->updateOrder($order_id);
+            $ReturnValue = $this->updateOrder($orderId);
             if (!empty($ReturnValue)) {
                 $this->_strErrMessage = $_ARRAYLANG['TXT_EGOV_ERROR_ADDING_RESERVATION'];
                 return false;
@@ -1780,25 +1713,25 @@ class eGov extends eGovLibrary
      *
      * The resulting javascript code displays a message box or
      * does some page redirect.
-     * @param   integer   $order_id       The order ID
+     * @param   integer   $orderId       The order ID
      * @return  string                    Javascript code
      */
-    function updateOrder($order_id)
+    function updateOrder($orderId)
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-        $product_id = eGov::getOrderValue('order_product', $order_id);
-        if (empty($product_id)) {
+        $productId = eGov::getOrderValue('order_product', $orderId);
+        if (empty($productId)) {
             return 'alert("'.$_ARRAYLANG['TXT_EGOV_ERROR_UPDATING_ORDER'].'");'."\n";
         }
 
         // Has this order been updated already?
-        if (eGov::GetOrderValue('order_state', $order_id) == 1) {
+        if (eGov::GetOrderValue('order_state', $orderId) == 1) {
             // Do not resend mails!
             return '';
         }
 
-        $arrFields = eGovLibrary::getOrderValues($order_id);
+        $arrFields = eGovLibrary::getOrderValues($orderId);
         $FormValue4Mail = '';
         foreach ($arrFields as $name => $value) {
             // If the value matches a calendar date, prefix the string with
@@ -1816,23 +1749,32 @@ class eGov extends eGovLibrary
             $FormValue4Mail .= html_entity_decode($name).': '.html_entity_decode($value)."\n";
         }
         // Bestelleingang-Benachrichtigung || Mail für den Administrator
-        $recipient = eGovLibrary::GetProduktValue('product_target_email', $product_id);
+        $recipient = eGovLibrary::GetProduktValue('product_target_email', $productId);
         if (empty($recipient)) {
             $recipient = eGovLibrary::GetSettings('set_orderentry_recipient');
         }
         if (!empty($recipient)) {
-            $SubjectText = str_replace('[[PRODUCT_NAME]]', html_entity_decode(eGovLibrary::GetProduktValue('product_name', $product_id)), eGovLibrary::GetSettings('set_orderentry_subject'));
+            $SubjectText = str_replace('[[PRODUCT_NAME]]',
+                html_entity_decode(eGovLibrary::GetProduktValue('product_name', $productId)),
+                eGovLibrary::GetSettings('set_orderentry_subject'));
+// Alternatively, use the product mail subject for the administrator as well
+//                eGovLibrary::GetProduktValue('product_target_subject', $productId));
             $SubjectText = html_entity_decode($SubjectText);
-            $BodyText = str_replace('[[ORDER_VALUE]]', $FormValue4Mail, eGovLibrary::GetSettings('set_orderentry_email'));
+            $BodyText = str_replace('[[ORDER_VALUE]]',
+                $FormValue4Mail,
+                eGovLibrary::GetSettings('set_orderentry_email'));
+// Alternatively, use the product mail body for the administrator as well
+//                eGovLibrary::GetProduktValue('product_target_body', $productId));
             $BodyText = html_entity_decode($BodyText);
-            $replyAddress = eGovLibrary::GetEmailAdress($order_id);
+            $replyAddress = eGovLibrary::GetEmailAdress($orderId);
             if (empty($replyAddress)) {
                 $replyAddress = eGovLibrary::GetSettings('set_orderentry_sender');
             }
             if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                 $objMail = new phpmailer();
                 if (!empty($_CONFIG['coreSmtpServer']) && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                    if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                    $arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
+                    if ($arrSmtp !== false) {
                         $objMail->IsSMTP();
                         $objMail->Host = $arrSmtp['hostname'];
                         $objMail->Port = $arrSmtp['port'];
@@ -1855,37 +1797,38 @@ class eGov extends eGovLibrary
         }
 
         // Update 29.10.2006 Statusmail automatisch abschicken || Produktdatei
-        if (   eGovLibrary::GetProduktValue('product_electro', $product_id) == 1
-            || eGovLibrary::GetProduktValue('product_autostatus', $product_id) == 1
+        if (   eGovLibrary::GetProduktValue('product_electro', $productId) == 1
+            || eGovLibrary::GetProduktValue('product_autostatus', $productId) == 1
         ) {
-            eGovLibrary::updateOrderStatus($order_id, 1);
-            $TargetMail = eGovLibrary::GetEmailAdress($order_id);
+            eGovLibrary::updateOrderStatus($orderId, 1);
+            $TargetMail = eGovLibrary::GetEmailAdress($orderId);
             if ($TargetMail != '') {
-                $FromEmail = eGovLibrary::GetProduktValue('product_sender_email', $product_id);
+                $FromEmail = eGovLibrary::GetProduktValue('product_sender_email', $productId);
                 if ($FromEmail == '') {
                     $FromEmail = eGovLibrary::GetSettings('set_sender_email');
                 }
-                $FromName = eGovLibrary::GetProduktValue('product_sender_name', $product_id);
+                $FromName = eGovLibrary::GetProduktValue('product_sender_name', $productId);
                 if ($FromName == '') {
                     $FromName = eGovLibrary::GetSettings('set_sender_name');
                 }
-                $SubjectDB = eGovLibrary::GetProduktValue('product_target_subject', $product_id);
+                $SubjectDB = eGovLibrary::GetProduktValue('product_target_subject', $productId);
                 if ($SubjectDB == '') {
                     $SubjectDB = eGovLibrary::GetSettings('set_state_subject');
                 }
-                $SubjectText = str_replace('[[PRODUCT_NAME]]', html_entity_decode(eGovLibrary::GetProduktValue('product_name', $product_id)), $SubjectDB);
+                $SubjectText = str_replace('[[PRODUCT_NAME]]', html_entity_decode(eGovLibrary::GetProduktValue('product_name', $productId)), $SubjectDB);
                 $SubjectText = html_entity_decode($SubjectText);
-                $BodyDB = eGovLibrary::GetProduktValue('product_target_body', $product_id);
+                $BodyDB = eGovLibrary::GetProduktValue('product_target_body', $productId);
                 if ($BodyDB == '') {
                     $BodyDB = eGovLibrary::GetSettings('set_state_email');
                 }
                 $BodyText = str_replace('[[ORDER_VALUE]]', $FormValue4Mail, $BodyDB);
-                $BodyText = str_replace('[[PRODUCT_NAME]]', html_entity_decode(eGovLibrary::GetProduktValue('product_name', $product_id)), $BodyText);
+                $BodyText = str_replace('[[PRODUCT_NAME]]', html_entity_decode(eGovLibrary::GetProduktValue('product_name', $productId)), $BodyText);
                 $BodyText = html_entity_decode($BodyText);
                 if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                     $objMail = new phpmailer();
                     if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                        if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                        $arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
+                        if ($arrSmtp !== false) {
                             $objMail->IsSMTP();
                             $objMail->Host = $arrSmtp['hostname'];
                             $objMail->Port = $arrSmtp['port'];
@@ -1903,8 +1846,8 @@ class eGov extends eGovLibrary
                     $objMail->IsHTML(false);
                     $objMail->Body = $BodyText;
                     $objMail->AddAddress($TargetMail);
-                    if (eGovLibrary::GetProduktValue('product_electro', $product_id) == 1) {
-                        $objMail->AddAttachment(ASCMS_PATH.eGovLibrary::GetProduktValue('product_file', $product_id));
+                    if (eGovLibrary::GetProduktValue('product_electro', $productId) == 1) {
+                        $objMail->AddAttachment(ASCMS_PATH.eGovLibrary::GetProduktValue('product_file', $productId));
                     }
                     $objMail->Send();
                 }
