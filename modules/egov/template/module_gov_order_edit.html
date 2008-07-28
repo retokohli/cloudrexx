@@ -34,8 +34,8 @@
 </script>
 
 <form name="frmState" method="post" action="index.php?cmd=egov&amp;act=order_edit">
-<input type="hidden" name="id" value="{ORDER_ID}" />
-<input type="hidden" name="update" value="exe" />
+<input type="hidden" name="orderId" value="{ORDER_ID}" />
+  <input type="hidden" name="productId" value="{PRODUCT_ID}" />
 <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
   <tr>
     <th colspan="4">{TXT_ORDER}</th>
@@ -58,12 +58,11 @@
   <tr>
     <th colspan="2">{TXT_DATA}</th>
   </tr>
-  <!-- BEGIN orders_data_row -->
-  <tr class="{ROWCLASS}">
-    <td width="15%">{DATA_FIELD}</td>
-    <td width="85%">{DATA_VALUE}</td>
-  </tr>
-  <!-- END orders_data_row -->
+    <tr>
+      <td>
+        {EGOV_FORM}
+      </td>
+    </tr>
 </table>
 <br />
 <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
@@ -73,14 +72,16 @@
   <tr class="row1">
     <td width="15%">{TXT_STATE}</td>
     <td width="85%">
-      <select name="state" style="width: 300px;">
-        {EGOV_ORDER_STATUS_MENUOPTIONS}
-      </select>
+        <select name="state">
+          <option value="0">{TXT_STATE_NEW}</option>
+          <option value="1" {SELECTED_STATE_OK}>{TXT_STATE_OK}</option>
+          <option value="2" {SELECTED_STATE_DELETED}>{TXT_STATE_DELETED}</option>
+        </select>
     </td>
   </tr>
   <tr class="row2">
     <td>{TXT_SEND_STATE_CHANGE_EMAIL}</td>
-    <td><input type="checkbox" name="ChangeStateMessage" value="send" checked onclick="ChangeMessageFields();" /></td>
+      <td><input type="checkbox" name="ChangeStateMessage" value="1" checked onclick="ChangeMessageFields();" /></td>
   </tr>
   <tr class="row1">
     <td>{TXT_EMAIL_ADDRESS}</td>
@@ -88,7 +89,7 @@
   </tr>
   <tr class="row2">
     <td>{TXT_EGOV_SUBJECT}</td>
-      <td><input type="text" size="50" name="email_subject" value="{STATE_SUBJECT}" style="width: 300px;" /></td>
+      <td><input type="text" size="50" name="email_subject" value="{STATE_SUBJECT}" /></td>
   </tr>
   <tr class="row1">
     <td>{TXT_EMAIL_TEXT}</td>

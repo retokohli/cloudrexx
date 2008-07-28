@@ -143,13 +143,13 @@ class paypal_class {
 
       echo "</form>\n";
       echo('
-      	<style type="text/css">
-		/*<![CDATA[*/
-			<!--
-			 * html body div#layerid{left: -1px;}
-			-->
-		/*]]>*/
-		</style>
+          <style type="text/css">
+        /*<![CDATA[*/
+            <!--
+             * html body div#layerid{left: -1px;}
+            -->
+        /*]]>*/
+        </style>
       ');
       echo('<div style="position: absolute; top: 0; left: 0; z-index: 90; width: 100%; height: 200%; background-color: #000; filter:alpha(opacity=80); -moz-opacity: 0.8; opacity: 0.8;"></div>');
       echo('<div id="layerid" style="position: absolute; width: 100%; top: 150px; background-color: #ffffff; z-index: 100;" ><center><h3>Please wait, your order is being processed...</h3></center></div>');
