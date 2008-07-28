@@ -1977,7 +1977,7 @@ CREATE TABLE `contrexx_module_shop_products_attributes` (
 CREATE TABLE `contrexx_module_shop_products_attributes_name` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(32) NOT NULL default '',
-  `display_type` enum('0','1','2','3') NOT NULL default '0',
+  `display_type` TINYINT UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM;
 

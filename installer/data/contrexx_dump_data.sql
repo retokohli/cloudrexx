@@ -2661,6 +2661,7 @@ INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VA
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES ('65', 'googleMapsAPIKey', '', '1');
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES ('66', 'forumTagContent', '0', '20');
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES ('67', 'useVirtualLanguagePath', 'off', '1');
+INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES ('69', 'frontendEditingStatus', 'on', '1');
 
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`) VALUES (1, 'printview', 'printview');
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`) VALUES (2, 'pdf', 'pdf');
