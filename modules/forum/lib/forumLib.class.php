@@ -938,7 +938,7 @@ class ForumLibrary {
             $this->_postCount = $objRSCount->fields['cnt'];
         }
         if($pos == -1){
-            $this->_arrSettings['thread_paging'] = $this->_postCount+1;
+            $this->_arrSettings['posting_paging'] = $this->_postCount+1;
             $pos = 0;
         }
 
@@ -960,7 +960,7 @@ class ForumLibrary {
                                                 FROM        '.DBPREFIX.'module_forum_postings
                                                 '.$WHERE.'
                                                 ORDER BY    prev_post_id, time_created ASC
-                                            ', $this->_arrSettings['thread_paging'], $pos);
+                                            ', $this->_arrSettings['posting_paging'], $pos);
         $intReplies = $objResult->RecordCount();
 
         $postNumber=$pos+1;
