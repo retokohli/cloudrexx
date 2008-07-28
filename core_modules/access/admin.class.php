@@ -1,4 +1,5 @@
 <?php
+
 /**
 * User Management
 * @copyright    CONTREXX CMS - COMVATION AG
@@ -59,6 +60,7 @@ class AccessManager extends AccessLib
                                                             '.(Permission::checkAccess(18, 'static', true) ? '<a href="index.php?cmd=access&amp;act=config" title="'.$_ARRAYLANG['TXT_ACCESS_SETTINGS'].'">'.$_ARRAYLANG['TXT_ACCESS_SETTINGS'].'</a>' : ''));
     }
 
+
     /**
     * Get page
     *
@@ -113,6 +115,7 @@ class AccessManager extends AccessLib
         ));
     }
 
+
     private function overview()
     {
         global $_ARRAYLANG;
@@ -124,6 +127,7 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_OVERVIEW'   => $_ARRAYLANG['TXT_ACCESS_OVERVIEW']
         ));
     }
+
 
     /**
      * User Management Page
@@ -159,6 +163,7 @@ class AccessManager extends AccessLib
                 break;
         }
     }
+
 
     /**
      * Group Management Page
@@ -199,6 +204,7 @@ class AccessManager extends AccessLib
                 break;
         }
     }
+
 
     /**
      * Group Overview Page
@@ -280,6 +286,7 @@ class AccessManager extends AccessLib
         $this->_objTpl->parse('module_access_group_list');
     }
 
+
     /**
      * Create Group Page
      *
@@ -316,6 +323,7 @@ class AccessManager extends AccessLib
 
         $this->_objTpl->parse('module_access_group_create');
     }
+
 
     /**
      * Modify Group Page
@@ -378,27 +386,30 @@ class AccessManager extends AccessLib
         $this->_objTpl->addBlockfile('ACCESS_GROUP_TEMPLATE', 'module_access_group_modify', 'module_access_group_modify.html');
         $this->_pageTitle = $objFWUser->objGroup->getId() ? $_ARRAYLANG['TXT_ACCESS_MODIFY_GROUP'] : $_ARRAYLANG['TXT_ACCESS_CREATE_NEW_USER_GROUP'];
 
-        if ($objUser = $objFWUser->objUser->getUsers(null, null, array('username' => 'asc'), array('id', 'username', 'firstname', 'lastname'))) {
+        $objUser = $objFWUser->objUser->getUsers(null, null, array('username' => 'asc'), array('id', 'username', 'firstname', 'lastname'));
+        if ($objUser) {
             $arrGroupUsers = $objFWUser->objGroup->getAssociatedUserIds();
             while (!$objUser->EOF) {
                 $arrUsers[] = $objUser->getId();
                 $objUser->next();
             }
-            
+
             $arrOtherUsers = array_diff($arrUsers, $arrGroupUsers);
-            
+
             foreach ($arrGroupUsers as $uId) {
-                if ($objUser = $objFWUser->objUser->getUser($uId)) {
+                $objUser = $objFWUser->objUser->getUser($uId);
+                if ($objUser) {
                     $associatedUsers .= "<option value=\"".$objUser->getId()."\">".htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET).(($objUser->getProfileAttribute('lastname') != '' || $objUser->getProfileAttribute('firstname') != '')  ? " (".htmlentities($objUser->getProfileAttribute('firstname'), ENT_QUOTES, CONTREXX_CHARSET)." ".htmlentities($objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET).")" : '')."</option>\n";
                 }
             }
             foreach ($arrOtherUsers as $uId) {
-                if ($objUser = $objFWUser->objUser->getUser($uId)) {
+                $objUser = $objFWUser->objUser->getUser($uId);
+                if ($objUser) {
                     $notAssociatedUsers .= "<option value=\"".$objUser->getId()."\">".htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET).(($objUser->getProfileAttribute('lastname') != '' || $objUser->getProfileAttribute('firstname') != '')  ? " (".htmlentities($objUser->getProfileAttribute('firstname'), ENT_QUOTES, CONTREXX_CHARSET)." ".htmlentities($objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET).")" : '')."</option>\n";
                 }
             }
         }
-        
+
         require_once ASCMS_CORE_PATH.'/Tree.class.php';
         $objContentTree = new ContentTree();
 
@@ -487,9 +498,7 @@ class AccessManager extends AccessLib
             }
         }
 
-
         $tabNr = 1;
-
         foreach ($arrAreas AS $groupId => $arrAreaGroup ) {
             if ($arrAreaGroup['type'] == 'group') {
                 $this->_parsePermissionAreas($arrAreas, $groupId);
@@ -501,12 +510,9 @@ class AccessManager extends AccessLib
                                 $this->_parsePermissionAreas($arrAreas, $functionId);
                             }
                         }
-
                     }
                 }
-
                 $this->_objTpl->setGlobalVariable('ACCESS_TAB_NR', $tabNr);
-
                 $this->_objTpl->setVariable(array(
                     'ACCESS_TAB_NAME'           => isset($_CORELANG[$arrAreaGroup['name']]) ? htmlentities($_CORELANG[$arrAreaGroup['name']], ENT_QUOTES, CONTREXX_CHARSET) : $arrAreaGroup['name'],
                 ));
@@ -556,11 +562,10 @@ class AccessManager extends AccessLib
             'ACCESS_PERMISSION_TAB_MENU_STATUS' => $changeProtection ? 'class="active"' : '',
             'ACCESS_PERMISSION_TAB_STATUS'      => $changeProtection ? 'block' : 'none',
             'ACCESS_SCROLL_POS'                 => $scrollPos
-
         ));
-
         $this->_objTpl->parse('module_access_group_modify');
     }
+
 
     function _changePageProtection($pageId, $protect = true, $type)
     {
@@ -598,6 +603,7 @@ class AccessManager extends AccessLib
         return false;
     }
 
+
     function _parsePermissionAreas($arrAreas, $areaId)
     {
         global $_CORELANG;
@@ -612,6 +618,7 @@ class AccessManager extends AccessLib
         ));
         $this->_objTpl->parse('access_permission_area');
     }
+
 
     private function changeGroupStatus()
     {
@@ -635,9 +642,9 @@ class AccessManager extends AccessLib
         } else {
             $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NO_GROUP_WITH_ID'], $id);
         }
-
         return $this->_groupList();
     }
+
 
     function _deleteGroup()
     {
@@ -660,9 +667,9 @@ class AccessManager extends AccessLib
         } else {
             $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NO_GROUP_WITH_ID'], $id);
         }
-
         return $this->_groupList();
     }
+
 
     private function userList()
     {
@@ -768,8 +775,6 @@ class AccessManager extends AccessLib
                 'ACCESS_GROUP_ID'                   => $groupId,
             ));
 
-
-
             while (!$objUser->EOF) {
                 $firstname = $objUser->getProfileAttribute('firstname');
                 $lastname = $objUser->getProfileAttribute('lastname');
@@ -796,12 +801,9 @@ class AccessManager extends AccessLib
                     'ACCESS_CHANGE_ACCOUNT_STATUS_MSG'  => sprintf($objUser->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_DEACTIVATE_USER'] : $_ARRAYLANG['TXT_ACCESS_ACTIVATE_USER'], htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET))
                 ));
                 $rowNr++;
-
                 $this->_objTpl->parse('access_user_list');
-
                 $objUser->next();
             }
-
             $this->_objTpl->parse('access_has_users');
             $this->_objTpl->hideBlock('access_no_user');
         } else {
@@ -809,9 +811,9 @@ class AccessManager extends AccessLib
             $this->_objTpl->parse('access_no_user');
             $this->_objTpl->hideBlock('access_has_users');
         }
-
         $this->_objTpl->parse('module_access_user_overview');
     }
+
 
     private function changeUserStatus()
     {
@@ -836,9 +838,9 @@ class AccessManager extends AccessLib
         } else {
             $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NO_USER_WITH_ID'], $userId);
         }
-
         return $this->userList();
     }
+
 
     function _deleteUser()
     {
@@ -854,7 +856,8 @@ class AccessManager extends AccessLib
 
         if (count($arrIds) > 0) {
             foreach ($arrIds as $id) {
-                if ($objUser = $objFWUser->objUser->getUser($id)) {
+                $objUser = $objFWUser->objUser->getUser($id);
+                if ($objUser) {
                     if ($objUser->delete()) {
                         $this->arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_USER_SUCCESSFULLY_DELETED'], $objUser->getUsername());
                     } else {
@@ -865,9 +868,9 @@ class AccessManager extends AccessLib
                 }
             }
         }
-
         return $this->userList();
     }
+
 
     private function modifyUser()
     {
@@ -1055,9 +1058,9 @@ class AccessManager extends AccessLib
         }
 
         $this->_objTpl->parse('module_access_user_modify');
-
         return true;
     }
+
 
     private function notifyUserAboutAccountStatusChange($objUser)
     {
@@ -1124,19 +1127,16 @@ class AccessManager extends AccessLib
                     $objUserMail->getBodyHtml()
                 );
             }
-
             $objMail->AddAddress($objUser->getEmail());
-
-
             if ($objMail->Send()) {
                 return true;
             }
         }
-
         $userEmail = '<a href="mailto:'.$objUser->getEmail().'?subject='.($objUser->getActiveStatus() ? $_CORELANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATED'] : $_CORELANG['TXT_ACCESS_USER_ACCOUNT_DEACTIVATED']).'" title="'.$objUser->getEmail().'">'.$objUser->getEmail().'</a>';
         $this->arrStatusMsg['error'][] = str_replace(array('%USER%', '%EMAIL%'), array(htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET), $userEmail), $_ARRAYLANG['TXT_ACCESS_COULD_NOT_NOTIFY_USER_ABOUT_STATUS_CHANGE']);
         return false;
     }
+
 
     private function getGroupMenu($selectedGroupId, $attrs)
     {
@@ -1153,9 +1153,9 @@ class AccessManager extends AccessLib
             $objGroup->next();
         }
         $menu .= "</select>\n";
-
         return $menu;
     }
+
 
     private function getGroupTypeMenu($selectedType, $attrs)
     {
@@ -1166,9 +1166,9 @@ class AccessManager extends AccessLib
         $menu .= "<option value=\"frontend\" style=\"text-indent:5px;\"".($selectedType == 'frontend' ? " selected=\"selected\"" : "").">".$_ARRAYLANG['TXT_ACCESS_FRONTEND_DESC']."</option>\n";
         $menu .= "<option value=\"backend\" style=\"text-indent:5px;\"".($selectedType == 'backend' ? " selected=\"selected\"" : "").">".$_ARRAYLANG['TXT_ACCESS_BACKEND_DESC']."</option>\n";
         $menu .= "</select>\n";
-
         return $menu;
     }
+
 
     private function getUserStatusMenu($selectedStatus, $attrs)
     {
@@ -1179,9 +1179,9 @@ class AccessManager extends AccessLib
         $menu .= "<option value=\"1\" style=\"text-indent:5px;\"".($selectedStatus == '1' ? " selected=\"selected\"" : "").">".$_ARRAYLANG['TXT_ACCESS_ACTIVE']."</option>\n";
         $menu .= "<option value=\"0\" style=\"text-indent:5px;\"".($selectedStatus == '0' ? " selected=\"selected\"" : "").">".$_ARRAYLANG['TXT_ACCESS_INACTIVE']."</option>\n";
         $menu .= "</select>\n";
-
         return $menu;
     }
+
 
     private function getUserRoleMenu($selectedRole, $attrs)
     {
@@ -1196,6 +1196,7 @@ class AccessManager extends AccessLib
         return $menu;
     }
 
+
     private function getUserValidityMenu($validity, $expirationDate)
     {
         $menu = '<select name="access_user_validity" '.($validity && $expirationDate < time() ? 'onchange="this.style.color = this.value == \'current\' ? \'#f00\' : \'#000\'"' : null).' style="width:300px;'.($validity && $expirationDate < time() ? 'color:#f00;font-weight:normal;' : 'color:#000;').'">';
@@ -1204,9 +1205,9 @@ class AccessManager extends AccessLib
         }
         $menu .= FWUser::getValidityMenuOptions(null, 'style="color:#000; font-weight:normal;"');
         $menu .= '</select>';
-
         return $menu;
     }
+
 
     private function getMailLanguageMenu($type, $lang, $attrs)
     {
@@ -1219,7 +1220,6 @@ class AccessManager extends AccessLib
                 array_push($arrUsedLangIds, $objResultSet->fields['lang_id']);
                 $objResultSet->MoveNext();
             }
-
             $menu = '<select'.(!empty($attrs) ? ' '.$attrs : '').">\n";
             foreach ($objLanguage->arrLanguage as $langId => $arrLanguage) {
                 if (!in_array($langId, $arrUsedLangIds)) {
@@ -1227,11 +1227,11 @@ class AccessManager extends AccessLib
                 }
             }
             $menu .= "</select>\n";
-
             return $menu;
         }
         return false;
     }
+
 
     private function getMailFormatMenu($selectedFormat, $attrs)
     {
@@ -1243,16 +1243,15 @@ class AccessManager extends AccessLib
             $menu .= '<option value="'.$format.'"'.($format == $selectedFormat ? ' selected="selected"' : '').'>'.$formatTxt."</option>\n";
         }
         $menu .= "</select>\n";
-
         return $menu;
     }
+
 
     function _config()
     {
         global $_ARRAYLANG;
 
         $this->_objTpl->loadTemplatefile('module_access_config.html');
-
         switch ($_REQUEST['tpl']) {
             case 'general':
                 $this->_configGeneral();
@@ -1304,6 +1303,7 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_EMAILS'             => $_ARRAYLANG['TXT_ACCESS_EMAILS']
         ));
     }
+
 
     function _configCommunity()
     {
@@ -1397,16 +1397,15 @@ class AccessManager extends AccessLib
             'ACCESS_USER_ACTIVATION_TIMEOUT'        => $arrSettings['user_activation_timeout']['value'],
             'ACCESS_USER_NOTIFICATION_ADDRESS'      => $arrSettings['notification_address']['value']
         ));
-
         $this->_objTpl->parse('module_access_config_community');
     }
+
 
     function _configGeneral()
     {
         global $_ARRAYLANG, $_CORELANG;
 
         $status = true;
-
         $arrSettings = User_Setting::getSettings();
 
         $this->_objTpl->addBlockfile('ACCESS_CONFIG_TEMPLATE', 'module_access_config_general', 'module_access_config_general.html');
@@ -1500,9 +1499,10 @@ class AccessManager extends AccessLib
             }
 
             if (!empty($_POST['accessMaxProfilePicSize'])) {
-                if ($this->getBytesOfLiteralSizeFormat($_POST['accessMaxProfilePicSize']) != $arrSettings['max_profile_pic_size']['value']) {
-                    // resize profile pics
-                }
+// TODO
+//                if ($this->getBytesOfLiteralSizeFormat($_POST['accessMaxProfilePicSize']) != $arrSettings['max_profile_pic_size']['value']) {
+//                    // resize profile pics
+//                }
                 $arrSettings['max_profile_pic_size']['value'] = $this->getBytesOfLiteralSizeFormat($_POST['accessMaxProfilePicSize']);
             }
 
@@ -1521,9 +1521,10 @@ class AccessManager extends AccessLib
             }
 
             if (!empty($_POST['accessMaxPicSize'])) {
-                if ($this->getBytesOfLiteralSizeFormat($_POST['accessMaxPicSize']) != $arrSettings['max_pic_size']['value']) {
-                    // resize pics
-                }
+// TODO
+//                if ($this->getBytesOfLiteralSizeFormat($_POST['accessMaxPicSize']) != $arrSettings['max_pic_size']['value']) {
+//                    // resize pics
+//                }
                 $arrSettings['max_pic_size']['value'] = $this->getBytesOfLiteralSizeFormat($_POST['accessMaxPicSize']);
             }
 
@@ -1586,9 +1587,9 @@ class AccessManager extends AccessLib
             'ACCESS_MAX_THUMBNAIL_PIC_HEIGHT'                       => $arrSettings['max_thumbnail_pic_height']['value'],
             'ACCESS_MAX_PIC_SIZE'                                   => $this->getLiteralSizeFormat($arrSettings['max_pic_size']['value']),
         ));
-
         $this->_objTpl->parse('module_access_config_general');
     }
+
 
     function _configAttributes()
     {
@@ -1645,9 +1646,9 @@ class AccessManager extends AccessLib
             $this->_objTpl->parse('access_attribute_list');
             $objAttribute->next();
         }
-
         $this->_objTpl->parse('module_access_config_attribute_list');
     }
+
 
     function _configModifyAttribute()
     {
@@ -1929,9 +1930,9 @@ class AccessManager extends AccessLib
             $this->_objTpl->hideBlock('access_attribute_frames');
             $this->_objTpl->hideBlock('access_attribute_menu_options');
         }
-
         $this->_objTpl->parse('module_access_config_attribute_modify');
     }
+
 
     function _configDeleteAttribute()
     {
@@ -1943,9 +1944,7 @@ class AccessManager extends AccessLib
         }
 
         $objAttribute = new User_Profile_Attribute();
-
         $attributeId = isset($_REQUEST['id']) ? contrexx_addslashes($_REQUEST['id']) : 0;
-
         if ($attributeId && $objAttribute->load($attributeId)) {
             if ($objAttribute->delete()) {
                 $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_SUCCESS_DEL_ATTRIBUTE'];
@@ -1972,9 +1971,6 @@ class AccessManager extends AccessLib
             return $this->_configAttributes();
         }
     }
-
-
-
 
 
     function _configMails()
@@ -2029,9 +2025,9 @@ class AccessManager extends AccessLib
             }
             $objUserMail->next();
         }
-
         $this->_objTpl->parse('module_access_config_mail');
     }
+
 
     function _configModifyMails($copy = false)
     {
@@ -2143,10 +2139,10 @@ class AccessManager extends AccessLib
             ));
             $this->_objTpl->parse('access_placeholder_list');
         }
-
         $this->_objTpl->parse('module_access_config_mail_modify');
         return true;
     }
+
 
     function _configDeleteMail()
     {
@@ -2177,4 +2173,5 @@ class AccessManager extends AccessLib
         }
     }
 }
+
 ?>
