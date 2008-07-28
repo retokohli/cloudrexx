@@ -473,8 +473,8 @@ class Immo extends ImmoLib{
 	    		$query = "  SELECT 	`immo`.`reference`, `name`, `firstname`, `street`, `zip`, `location` ,
 	    							`email`, `phone_office`, `phone_home`, `phone_mobile`, `doc_via_mail`,
 	    							`funding_advice`, `inspection`, `contact_via_phone`, `comment` ,`time`
-							FROM `contrexx_module_immo_interest` AS `interest`
-							LEFT JOIN `contrexx_module_immo` AS `immo` ON `interest`.`immo_id` = `immo`.`id`";
+                            FROM `".DBPREFIX."module_immo_interest` AS `interest`
+                            LEFT JOIN `".DBPREFIX."module_immo` AS `immo` ON `interest`.`immo_id` = `immo`.`id`";
 	    		if(!empty($_SESSION['immo']['startDate'])){
 			    	$query .= " WHERE `time` BETWEEN ".strtotime($_SESSION['immo']['startDate'])." AND ".strtotime($_SESSION['immo']['endDate']);
 			    }
