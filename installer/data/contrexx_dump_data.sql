@@ -1465,7 +1465,7 @@ INSERT INTO `contrexx_module_docsys_categories` (`catid`, `name`, `lang`, `sort_
 INSERT INTO `contrexx_module_docsys_categories` (`catid`, `name`, `lang`, `sort_style`) VALUES ('6', '\';', '1', 'alpha');
 INSERT INTO `contrexx_module_docsys_categories` (`catid`, `name`, `lang`, `sort_style`) VALUES ('7', 'asdf', '1', 'alpha');
 
-INSERT INTO `contrexx_module_downloads_settings` (`setting_id`, `setting_name`, `setting_value`) VALUES (1, 'filter', '1')
+INSERT INTO `contrexx_module_downloads_settings` (`setting_id`, `setting_name`, `setting_value`) VALUES (1, 'filter', '1');
 INSERT INTO `contrexx_module_downloads_settings` (`setting_id`, `setting_name`, `setting_value`) VALUES (2, 'design', '3');
 
 INSERT INTO `contrexx_module_egov_configuration` (`name`, `value`) VALUES ('set_sender_name', 'Contrexx Demo');
