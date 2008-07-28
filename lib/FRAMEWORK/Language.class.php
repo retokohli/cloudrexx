@@ -20,12 +20,7 @@
  */
 class FWLanguage
 {
-    var $arrLanguage = NULL;
-
-    function FWLanguage()
-    {
-        $this->__construct();
-    }
+    public $arrLanguage = null;
 
     /**
      * Constructor (PHP5)
@@ -40,7 +35,7 @@ class FWLanguage
             SELECT id, lang, name, charset, themesid,
                    frontend, backend, is_default
               FROM '.DBPREFIX.'languages
-          ORDER BY id
+             ORDER BY id
          ');
          if ($objResult) {
              while (!$objResult->EOF) {
