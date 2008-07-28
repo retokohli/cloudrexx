@@ -6,8 +6,8 @@
  * @package     contrexx
  * @subpackage  module_calendar
  */
-$_ARRAYLANG['TXT_CALENDAR_DATE'] = "Date";
-$_ARRAYLANG['TXT_CALENDAR_BACK'] = "Back";
+$_ARRAYLANG['TXT_CALENDAR_DATE'] = "Datum";
+$_ARRAYLANG['TXT_CALENDAR_BACK'] = "Zurück";
 $_ARRAYLANG['TXT_CALENDAR_STYLE_MODIFIED'] = "The settings have been changed successfully.";
 $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "The next events:";
 $_ARRAYLANG['TXT_CALENDAR_STD_CAT'] = "Default categories";
@@ -43,13 +43,13 @@ $_ARRAYLANG['TXT_CALENDAR_PRIORITY'] = "Priority";
 $_ARRAYLANG['TXT_CALENDAR_START'] = "starts at";
 $_ARRAYLANG['TXT_CALENDAR_END'] = "end";
 $_ARRAYLANG['TXT_CALENDAR_COMMENT'] = "Comment";
-$_ARRAYLANG['TXT_CALENDAR_RESET'] = "reset";
+$_ARRAYLANG['TXT_CALENDAR_RESET'] = "Zurücksetzen";
 $_ARRAYLANG['TXT_CALENDAR_SUBMIT'] = "save";
 $_ARRAYLANG['TXT_CALENDAR_ERROR_CATEGORY'] = "Please select a category!";
 $_ARRAYLANG['TXT_CALENDAR_INFO'] = "Link";
 $_ARRAYLANG['TXT_CALENDAR_STAT_EDITED'] = "Event has been successfully edited...";
 $_ARRAYLANG['TXT_CALENDAR_STAT_ERROR_EXISTING'] = "There's already an appointment with the same name in the category!";
-$_ARRAYLANG['TXT_CALENDAR_NEW'] = "New Entry";
+$_ARRAYLANG['TXT_CALENDAR_NEW'] = "Neu";
 $_ARRAYLANG['TXT_CALENDAR_MESSAGE_NEW_CATRGORY'] = "New category has been added!";
 $_ARRAYLANG['TXT_CALENDAR_MESSAGE_ERROR_EXISTING'] = "Error: This name already exists!";
 $_ARRAYLANG['TXT_CALENDAR_MESSAGE_ERROR_FILL_IN_ALL'] = "Error: Please fill in all fields correctly!";

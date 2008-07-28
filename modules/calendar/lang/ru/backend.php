@@ -6,8 +6,8 @@
  * @package     contrexx
  * @subpackage  module_calendar
  */
-$_ARRAYLANG['TXT_CALENDAR_DATE'] = "Дата";
-$_ARRAYLANG['TXT_CALENDAR_BACK'] = "Назад";
+$_ARRAYLANG['TXT_CALENDAR_DATE'] = "Datum";
+$_ARRAYLANG['TXT_CALENDAR_BACK'] = "Zurück";
 $_ARRAYLANG['TXT_CALENDAR_STYLE_MODIFIED'] = "Установки успешно изменены.";
 $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "Следующее событие:";
 $_ARRAYLANG['TXT_CALENDAR_STD_CAT'] = "Стандартизация";
@@ -43,13 +43,13 @@ $_ARRAYLANG['TXT_CALENDAR_PRIORITY'] = "Приоритет";
 $_ARRAYLANG['TXT_CALENDAR_START'] = "Начинается в";
 $_ARRAYLANG['TXT_CALENDAR_END'] = "Закончить в";
 $_ARRAYLANG['TXT_CALENDAR_COMMENT'] = "Описание";
-$_ARRAYLANG['TXT_CALENDAR_RESET'] = "Возврат";
+$_ARRAYLANG['TXT_CALENDAR_RESET'] = "Zurücksetzen";
 $_ARRAYLANG['TXT_CALENDAR_SUBMIT'] = "Сохранить";
 $_ARRAYLANG['TXT_CALENDAR_ERROR_CATEGORY'] = "Пожалуйста выберите категорию!";
 $_ARRAYLANG['TXT_CALENDAR_INFO'] = "Ссылка";
 $_ARRAYLANG['TXT_CALENDAR_STAT_EDITED'] = "Событие успешно изменено";
 $_ARRAYLANG['TXT_CALENDAR_STAT_ERROR_EXISTING'] = "В этой категории уже имеется событие с таким именем!";
-$_ARRAYLANG['TXT_CALENDAR_NEW'] = "Новая запись";
+$_ARRAYLANG['TXT_CALENDAR_NEW'] = "Neu";
 $_ARRAYLANG['TXT_CALENDAR_MESSAGE_NEW_CATRGORY'] = "Новая категория будет добавлена!";
 $_ARRAYLANG['TXT_CALENDAR_MESSAGE_ERROR_EXISTING'] = "Ошибка: такое имя уже есть!";
 $_ARRAYLANG['TXT_CALENDAR_MESSAGE_ERROR_FILL_IN_ALL'] = "Ошибка: Заполните корректно все поля!";
