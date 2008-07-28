@@ -8,7 +8,7 @@
  */
 $_ARRAYLANG['TXT_PRODUCTS'] = "Produkte";
 $_ARRAYLANG['TXT_ORDERS'] = "Bestellungen";
-$_ARRAYLANG['TXT_DATE'] = "Datum";
+$_ARRAYLANG['TXT_DATE'] = "Dato";
 $_ARRAYLANG['TXT_STATE'] = "Status";
 $_ARRAYLANG['TXT_FUNCTIONS'] = "Funktionen";
 $_ARRAYLANG['TXT_NAME'] = "Name";
@@ -22,7 +22,7 @@ $_ARRAYLANG['TXT_DELETE_ORDER'] = "Diese Bestellung wirklich lÃ¶schen?";
 $_ARRAYLANG['TXT_ORDER_EDIT'] = "Bestellung bearbeiten";
 $_ARRAYLANG['TXT_ORDER'] = "Bestellung";
 $_ARRAYLANG['TXT_IP_ADDRESS'] = "IP Adresse";
-$_ARRAYLANG['TXT_DATA'] = "Daten";
+$_ARRAYLANG['TXT_DATA'] = "Data";
 $_ARRAYLANG['TXT_SEND_STATE_CHANGE_EMAIL'] = "Benachrichtigung Ã¼ber die StatusÃ¤nderung?";
 $_ARRAYLANG['TXT_CHANGE_STATE'] = "Status Ã¤ndern";
 $_ARRAYLANG['TXT_EMAIL_TEXT'] = "E-Mail Text";

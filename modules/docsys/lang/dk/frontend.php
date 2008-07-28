@@ -18,9 +18,9 @@ $_ARRAYLANG['TXT_LAST_UPDATE'] = "Sidste update";
 $_ARRAYLANG['TXT_PERFORM'] = "Udfør";
 $_ARRAYLANG['TXT_SOURCE'] = "Kilde";
 $_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND'] = "Der er ikke blevet fundet nogle dokumenter";
-$_ARRAYLANG['TXT_DOCSYS_SORTING'] = "Sortierung";
-$_ARRAYLANG['TXT_DOCSYS_SORTING_ALPHA'] = "nach Alphabet";
-$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE'] = "nach Datum";
-$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE_ALPHA'] = "nach Datum und Alphabet";
-$_ARRAYLANG['TXT_DOCSYS_SORTTYPE'] = "Art der Sortierung";
+$_ARRAYLANG['TXT_DOCSYS_SORTING'] = "Sortering";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_ALPHA'] = "efter alfabetet";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE'] = "efter dato";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE_ALPHA'] = "efter dato og alfabetet";
+$_ARRAYLANG['TXT_DOCSYS_SORTTYPE'] = "Slags sortering";
 ?>

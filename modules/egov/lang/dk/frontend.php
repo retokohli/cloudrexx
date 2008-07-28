@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  module_egov
  */
-$_ARRAYLANG['TXT_DATE'] = "Datum";
+$_ARRAYLANG['TXT_DATE'] = "Dato";
 $_ARRAYLANG['TXT_NAME'] = "Name";
 $_ARRAYLANG['TXT_PRODUCT'] = "Produkt";
 $_ARRAYLANG['TXT_EGOV_SUBMIT'] = "Senden";
