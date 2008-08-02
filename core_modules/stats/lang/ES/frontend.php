@@ -6,11 +6,11 @@
  * @package     contrexx
  * @subpackage  core_module_stats
  */
-$_ARRAYLANG['TXT_CLIENT_DATA'] = "Client-Data (Useragent,Ip,Host)";
+$_ARRAYLANG['TXT_CLIENT_DATA'] = "Data-Cliente (Useragent,Ip,Host)";
 $_ARRAYLANG['TXT_PROXY_DATA'] = "Proxy-Data(Host, Ip,Art, Useragent) ";
 $_ARRAYLANG['TXT_ANONYMOUS_PROXY'] = "Anonymer-Proxy";
 $_ARRAYLANG['TXT_DAY'] = "Tag";
-$_ARRAYLANG['TXT_BROWSER_AND_OPERATING_SYSTEMS'] = "Browser und Betriebssysteme";
+$_ARRAYLANG['TXT_BROWSER_AND_OPERATING_SYSTEMS'] = "Navegador y Sistemas operativos";
 $_ARRAYLANG['TXT_USER_STATISTIC'] = "Besucher Statistik";
 $_ARRAYLANG['TXT_PROXY_SERVERS'] = "Proxy Servers";
 $_ARRAYLANG['TXT_HOSTNAMES_AND_COUNTRIES'] = "Hostnamen und Länder";

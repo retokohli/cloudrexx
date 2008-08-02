@@ -41,7 +41,7 @@ $_ARRAYLANG['TXT_IMMO_FIELDS_REQUIRED'] = "Fill out all required fields";
 $_ARRAYLANG['TXT_IMMO_SEND'] = "Send";
 $_ARRAYLANG['TXT_IMMO_MISSIONG_OR_INVALID_FIELDS'] = "Missing or incomplete fields. <a href=\"javascript:history.back(-1)\"> back </a>";
 $_ARRAYLANG['TXT_IMMO_CONTACT_SUCCESSFUL'] = "Many thanks for your interest.  You will receive an E-Mail shortly.";
-$_ARRAYLANG['TXT_IMMO_MAIL_SUBJECT'] = "Angeforderter PDF Link auf immothunersee.ch";
+$_ARRAYLANG['TXT_IMMO_MAIL_SUBJECT'] = "Requested PDF Link from %s";
 $_ARRAYLANG['TXT_IMMO_MAIL_MESSAGE'] = "The requested PDF can be found at:";
 $_ARRAYLANG['TXT_IMMO_ALREADY_SENT_RECENTLY'] = "You have recently requested this document already.  Please try again later or call us in urgent cases.";
 $_ARRAYLANG['TXT_IMMO_LOCATIONS'] = "Cities";
