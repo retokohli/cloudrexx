@@ -1131,6 +1131,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, 
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (31, 'memberdir', 'TXT_MEMBERDIR_MODULE_DESCRIPTION', 'y', 0, 0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (32, 'nettools', 'TXT_NETTOOLS_MODULE_DESCRIPTION', 'n', 0, 1);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (33, 'market', 'TXT_MARKET_MODULE_DESCRIPTION', 'y', 0, 0);
+INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (37, 'immo', 'TXT_IMMO_MODULE_DESCRIPTION', 'n', 0, 0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (35, 'podcast', 'TXT_PODCAST_MODULE_DESCRIPTION', 'y', 0, 0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (38, 'egov', 'TXT_EGOVERNMENT_MODULE_DESCRIPTION', 'y', 0, 0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (39, 'media4', 'TXT_MEDIA_MODULE_DESCRIPTION', 'y', 0, 1);
@@ -1644,6 +1645,30 @@ INSERT INTO `contrexx_module_guestbook_settings` (`name`, `value`) VALUES ('gues
 INSERT INTO `contrexx_module_guestbook_settings` (`name`, `value`) VALUES ('guestbook_activate_submitted_entries', '0');
 INSERT INTO `contrexx_module_guestbook_settings` (`name`, `value`) VALUES ('guestbook_replace_at', '1');
 INSERT INTO `contrexx_module_guestbook_settings` (`name`, `value`) VALUES ('guestbook_only_lang_entries', '0');
+
+INSERT INTO `contrexx_module_immo_languages` (`id`, `language`) VALUES (1, 'TXT_IMMO_LANG_GERMAN');
+INSERT INTO `contrexx_module_immo_languages` (`id`, `language`) VALUES (2, 'TXT_IMMO_LANG_ENGLISH');
+
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (1, 'latest_entries_count', '600', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (4, 'message', '<strong>Ref-Nr. %REFERENCE% </strong><br />\r\n<img src=\\"%ÜBERSICHTSBILD%\\" style=\\"height: 60px;\\" /><br />\r\n%HEADLINE%\r\n%HEADER% <br />\r\n%ADRESSE% <br />\r\n%ORT%<br />\r\nCHF: %PREIS%.-', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (5, 'last_inserted_immo_id', '1', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (6, 'GOOGLE_API_KEY_DOMAIN1', 'abc', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (7, 'GOOGLE_API_KEY_www.DOMAIN1', 'abc', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (8, 'currency_lang_1', 'CHF', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (9, 'currency_lang_2', '€', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (10, 'lon_frontend', '7.730598449707031', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (11, 'lat_frontend', '46.69867032449709', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (12, 'zoom_frontend', '10', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (13, 'zoom_backend', '13', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (14, 'lat_backend', '46.77', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (15, 'lon_backend', '7.62', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (16, 'prot_link_message_body', 'Das von Ihnen angeforderte PDF finden sie unter: [[IMMO_PROTECTED_LINK]]', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (17, 'prot_link_message_subject', 'Angeforderter PDF Link', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (18, 'sender_email', 'immo@example.com', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (19, 'sender_name', 'Immobilienportal', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (20, 'contact_receiver', 'rominger@iims.ch', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (21, 'interest_confirm_subject', 'Danke für Ihr Interesse an einem unserer Objekte', 1);
+INSERT INTO `contrexx_module_immo_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (22, 'interest_confirm_message', 'Wir haben Ihre Kontaktanfrage betreffend "[[IMMO_OBJECT]]"\r\nerhalten und werden uns schnellstmöglich darum kümmern.\r\n\r\nBesten Dank und freundliche Grüsse', 1);
 
 INSERT INTO `contrexx_module_livecam_settings` (`setid`, `setname`, `setvalue`) VALUES ('1', 'amount_of_cams', '1');
 

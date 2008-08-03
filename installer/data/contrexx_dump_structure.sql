@@ -881,16 +881,16 @@ CREATE TABLE `contrexx_module_downloads_cat_locales` (
   `loc_id` int(11) NOT NULL auto_increment,
   `loc_lang` int(11) NOT NULL default '0',
   `loc_cat` int(11) NOT NULL default '0',
-  `loc_name` varchar(255) collate utf8_unicode_ci NOT NULL default '',
-  `loc_desc` text collate utf8_unicode_ci NOT NULL,
+  `loc_name` varchar(255) NOT NULL default '',
+  `loc_desc` text NOT NULL,
   PRIMARY KEY  (`loc_id`)
 ) TYPE=MyISAM;
 
 
 CREATE TABLE `contrexx_module_downloads_categories` (
   `category_id` int(11) NOT NULL auto_increment,
-  `category_img` varchar(255) collate utf8_unicode_ci NOT NULL default '',
-  `category_author` varchar(255) collate utf8_unicode_ci NOT NULL default '',
+  `category_img` varchar(255) NOT NULL default '',
+  `category_author` varchar(255) NOT NULL default '',
   `category_created` datetime NOT NULL default '0000-00-00 00:00:00',
   `category_state` tinyint(1) NOT NULL default '0',
   `category_order` int(3) NOT NULL default '0',
@@ -899,13 +899,13 @@ CREATE TABLE `contrexx_module_downloads_categories` (
 
 CREATE TABLE `contrexx_module_downloads_files` (
   `file_id` int(11) NOT NULL auto_increment,
-  `file_name` varchar(255) character set utf8 collate utf8_unicode_ci NOT NULL default '',
-  `file_type` varchar(255) character set utf8 collate utf8_unicode_ci NOT NULL default '',
-  `file_size` varchar(255) character set utf8 collate utf8_unicode_ci NOT NULL default '',
-  `file_source` varchar(255) character set utf8 collate utf8_unicode_ci NOT NULL default '',
+  `file_name` varchar(255) NOT NULL default '',
+  `file_type` varchar(255) NOT NULL default '',
+  `file_size` varchar(255) NOT NULL default '',
+  `file_source` varchar(255) NOT NULL default '',
   `file_url` varchar(255) collate latin1_general_ci NOT NULL default '',
-  `file_img` varchar(255) character set utf8 collate utf8_unicode_ci NOT NULL default '',
-  `file_autor` varchar(255) character set utf8 collate utf8_unicode_ci NOT NULL default '',
+  `file_img` varchar(255) NOT NULL default '',
+  `file_autor` varchar(255) NOT NULL default '',
   `file_access_id` int(11) NOT NULL default '0',
   `file_protected` tinyint(1) NOT NULL default '0',
   `file_license` varchar(255) collate latin1_general_ci NOT NULL default '',
@@ -928,8 +928,8 @@ CREATE TABLE `contrexx_module_downloads_files_locales` (
   `loc_id` int(11) NOT NULL auto_increment,
   `loc_lang` int(11) NOT NULL default '0',
   `loc_file` int(11) NOT NULL default '0',
-  `loc_name` varchar(255) collate utf8_unicode_ci NOT NULL default '',
-  `loc_desc` text collate utf8_unicode_ci NOT NULL,
+  `loc_name` varchar(255) NOT NULL default '',
+  `loc_desc` text NOT NULL,
   PRIMARY KEY  (`loc_id`)
 ) TYPE=MyISAM;
 
@@ -956,8 +956,8 @@ CREATE TABLE `contrexx_module_downloads_rel_files_files` (
 
 CREATE TABLE `contrexx_module_downloads_settings` (
   `setting_id` int(11) NOT NULL auto_increment,
-  `setting_name` varchar(255) collate utf8_unicode_ci NOT NULL default '',
-  `setting_value` varchar(255) collate utf8_unicode_ci NOT NULL default '',
+  `setting_name` varchar(255) NOT NULL default '',
+  `setting_value` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`setting_id`)
 ) TYPE=MyISAM;
 
@@ -1291,6 +1291,133 @@ CREATE TABLE `contrexx_module_guestbook_settings` (
   `value` varchar(250) NOT NULL default '',
   KEY `name` (`name`)
 ) TYPE=MyISAM;
+
+CREATE TABLE `contrexx_module_immo` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `reference` varchar(20) NOT NULL default '-',
+  `ref_nr_note` varchar(255) default NULL,
+  `logo` enum('logo1','logo2') NOT NULL default 'logo1',
+  `special_offer` tinyint(1) NOT NULL default '0',
+  `visibility` enum('disabled','reference','listing') NOT NULL default 'disabled',
+  `object_type` enum('flat','house','multifamily','estate','industry','parking') NOT NULL default 'flat',
+  `new_building` tinyint(1) NOT NULL default '0',
+  `property_type` enum('purchase','rent') NOT NULL default 'purchase',
+  `longitude` decimal(18,15) NOT NULL default '0.000000000000000',
+  `latitude` decimal(18,15) NOT NULL default '0.000000000000000',
+  `zoom` tinyint(3) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `reference` (`reference`)
+) TYPE=MyISAM ;
+
+CREATE TABLE `contrexx_module_immo_contact` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `email` varchar(255) NOT NULL default '',
+  `name` varchar(255) NOT NULL default '',
+  `firstname` varchar(255) NOT NULL default '',
+  `street` varchar(255) NOT NULL default '',
+  `zip` int(5) NOT NULL default '0',
+  `location` varchar(255) NOT NULL default '',
+  `company` varchar(255) NOT NULL default '',
+  `telephone` varchar(30) NOT NULL default '',
+  `telephone_office` varchar(30) NOT NULL default '',
+  `telephone_mobile` varchar(30) NOT NULL default '',
+  `purchase` tinyint(1) NOT NULL default '0',
+  `funding` tinyint(1) NOT NULL default '0',
+  `comment` text NOT NULL,
+  `immo_id` int(11) NOT NULL default '0',
+  `field_id` int(11) NOT NULL default '0',
+  `timestamp` int(14) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `immo_id` (`immo_id`),
+  KEY `field_id` (`field_id`)
+) TYPE=MyISAM;
+
+CREATE TABLE `contrexx_module_immo_content` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `immo_id` int(11) NOT NULL default '0',
+  `lang_id` tinyint(4) NOT NULL default '0',
+  `field_id` int(10) unsigned NOT NULL default '0',
+  `fieldvalue` text NOT NULL,
+  `active` tinyint(1) NOT NULL default '1',
+  PRIMARY KEY  (`id`),
+  KEY `field_id` (`field_id`),
+  KEY `immo_id` (`immo_id`),
+  KEY `fieldvalue` (`fieldvalue`(64))
+) TYPE=MyISAM;
+
+CREATE TABLE `contrexx_module_immo_field` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `type` enum('text','textarea','img','link','protected_link','panorama','digits_only','price') NOT NULL default 'text',
+  `order` int(11) NOT NULL default '1000',
+  `mandatory` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_immo_fieldname` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `field_id` int(10) unsigned NOT NULL default '0',
+  `lang_id` int(10) unsigned NOT NULL default '0',
+  `name` varchar(255) NOT NULL default '-',
+  PRIMARY KEY  (`id`),
+  KEY `field_id` (`field_id`),
+  KEY `lang_id` (`lang_id`),
+  KEY `name` (`name`(5))
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_immo_image` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `immo_id` int(11) NOT NULL default '0',
+  `field_id` int(10) unsigned NOT NULL default '0',
+  `uri` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  KEY `immo_id` (`immo_id`),
+  KEY `field_id` (`field_id`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_immo_interest` (
+  `id` int(11) NOT NULL auto_increment,
+  `immo_id` int(11) NOT NULL default '0',
+  `name` varchar(60) NOT NULL default '',
+  `firstname` varchar(60) NOT NULL default '',
+  `street` varchar(100) NOT NULL default '',
+  `zip` varchar(10) NOT NULL default '',
+  `location` varchar(100) NOT NULL default '',
+  `email` varchar(60) NOT NULL default '',
+  `phone_office` varchar(40) NOT NULL default '',
+  `phone_home` varchar(40) NOT NULL default '',
+  `phone_mobile` varchar(40) NOT NULL default '',
+  `doc_via_mail` tinyint(1) NOT NULL default '0',
+  `funding_advice` tinyint(1) NOT NULL default '0',
+  `inspection` tinyint(1) NOT NULL default '0',
+  `contact_via_phone` tinyint(1) NOT NULL default '0',
+  `comment` text NOT NULL,
+  `time` int(14) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `immo_id` (`immo_id`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_immo_languages` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `language` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_immo_settings` (
+  `setid` int(10) unsigned NOT NULL auto_increment,
+  `setname` varchar(80) NOT NULL default '',
+  `setvalue` text NOT NULL,
+  `status` tinyint(1) NOT NULL default '1',
+  PRIMARY KEY  (`setid`),
+  UNIQUE KEY `setname` (`setname`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_immo_statistics` (
+  `id` int(11) NOT NULL auto_increment,
+  `immo_id` int(11) NOT NULL default '0',
+  `field_id` int(11) NOT NULL default '0',
+  `hits` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
 
 CREATE TABLE `contrexx_module_livecam` (
   `id` int(10) unsigned NOT NULL default '1',
