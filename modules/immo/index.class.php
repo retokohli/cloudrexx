@@ -121,7 +121,7 @@ class Immo extends ImmoLib
 				case 'quickSearch':
 				    $this->_quickSearch();
 				    break;
-				case 'detailSeach':
+				case 'detailSearch':
 				    $this->_detailSearch();
 				    break;
                 case 'immolist':
