@@ -165,6 +165,7 @@ class Immo extends ImmoLib
 
         foreach ($images as $index => $image) {
             $this->_objTpl->setVariable(array(
+            	 'IMMO_STYLE_NAME'		 => $this->_styleName,
                  'IMMO_IMAGE_INDEX'      => $index,
                  'IMMO_IMAGE_SRC'        => $image['imgsrc'],
                  'IMMO_IMAGE_WIDTH'      => $image['width'],
