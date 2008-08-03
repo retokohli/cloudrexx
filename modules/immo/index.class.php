@@ -91,8 +91,9 @@ class Immo extends ImmoLib
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
 
-        mysql_set_charset("utf8"); //this is important for umlauts
-
+        if(function_exists('mysql_set_charset')){
+        	mysql_set_charset("utf8"); //this is important for umlauts
+        }
 
         parent::__construct();
     }
@@ -117,6 +118,12 @@ class Immo extends ImmoLib
                 case 'map':
                     $this->_loadIFrame();
                        break;
+				case 'quickSearch':
+				    $this->_quickSearch();
+				    break;
+				case 'detailSeach':
+				    $this->_detailSearch();
+				    break;
                 case 'immolist':
                     $this->_showImmoList();
                     break;
@@ -181,6 +188,93 @@ class Immo extends ImmoLib
 
         $this->_objTpl->show();
         die();
+    }
+
+
+    /**
+     * quick search handling
+     *
+     */
+    function _quickSearch(){
+		if(!empty($_GET['step'])){
+			switch ($_GET['step']){
+				case 2:
+					$this->_showQuickSearch2();
+				break;
+				default:
+					$this->showQuickSearch1();
+			}
+		}
+    }
+
+
+    /**
+     * shows the quick search form (step_1)
+     *
+     */
+    function _showQuickSearch1(){
+    	global $objDatabase;
+
+    	if($this->_objTpl->blockExists('step_2')){
+    		$this->_objTpl->hideblock('step_2');
+    	}
+
+    	$this->_objTpl->setVariable(array(
+    		'IMMO_SEARCH_ACTION' => 'index.php?section=immo&cmd=quickSearch&step=2',
+    	));
+    	$this->_objTpl->parse('step_1');
+
+
+    }
+
+    /**
+     * shows the quick search form (step_2)
+     *
+     */
+    function _showQuickSearch2(){
+    	if($this->_objTpl->blockExists('step_1')){
+    		$this->_objTpl->hideblock('step_1');
+    	}
+
+    	$this->_objTpl->setVariable(array(
+    		'IMMO_SEARCH_ACTION' => 'index.php?section=immo&cmd=immolist',
+    	));
+    	$this->_objTpl->parse('step_1');
+
+
+    }
+
+
+    /**
+   	 * deatil search handling
+     *
+     */
+    function _detailSearch(){
+		if(!empty($_GET['step'])){
+			if(!empty($_GET['noAJAX'])){
+				switch ($_GET['step']){
+					case 2:
+						$this->_showDetailSearchNoAJAX2();
+					break;
+					case 3:
+						$this->_showDetailSearchNoAJAX23();
+					break;
+					default:
+						$this->_showDetailSearchNoAJAX21();
+				}
+			}else{
+				switch ($_GET['step']){
+					case 2:
+						$this->_showDetailSearch2();
+					break;
+					case 3:
+						$this->_showDetailSearch3();
+					break;
+					default:
+						$this->_showDetailSearch1();
+				}
+			}
+		}
     }
 
 
@@ -849,6 +943,8 @@ class Immo extends ImmoLib
     function _showImmoList(){
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
+        //TODO
+        //handle last step of quickSeach and DetailSearch here
         $this->_objTpl->setGlobalVariable(array(
             'TXT_IMMO_BACK'               => $_ARRAYLANG['TXT_IMMO_BACK'],
             'TXT_IMMO_CURRENCY_PREFIX'      => $this->arrSettings['currency_lang_'.$this->frontLang],
