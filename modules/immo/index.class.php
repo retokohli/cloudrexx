@@ -961,7 +961,7 @@ class Immo extends ImmoLib
                         img.uri AS imgsrc
                         FROM ".DBPREFIX."module_immo AS immo";
                         if(!empty($searchterm)){
-                            $query .= ", ".DBPREFIX."module_immo_content AS content";
+                            $query .= "LEFT JOIN ".DBPREFIX."module_immo_content AS content on ( content.immo_id = immo.id ) ";
                         }
 
 
@@ -1023,8 +1023,7 @@ class Immo extends ImmoLib
                         WHERE TRUE
                         ";
                         if(!empty($searchterm)){
-                            $query .= " AND content.fieldvalue LIKE '%".$searchterm."%'
-                                        AND content.immo_id = immo.id ";
+                            $query .= " AND content.fieldvalue LIKE '%".$searchterm."%' ";
                         }
                         $query .= " AND immo.visibility != 'disabled' ";
                         if(!intval($_REQUEST['refnr'])){

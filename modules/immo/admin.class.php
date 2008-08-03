@@ -86,9 +86,9 @@ class Immo extends ImmoLib{
     	);
 
     	$this->_objFile =& new File();
-    	
+
     	mysql_set_charset("utf8"); //this is important for umlauts
-    	
+
     	// Run parent constructor
     	parent::__construct();
 	}
@@ -1332,7 +1332,8 @@ class Immo extends ImmoLib{
         array_walk($keys, array(&$this, 'arrStrToLower'));
 		if (!empty($searchterm)) {
             $query = "  SELECT immo.id AS `immo_id` , immo.reference AS `reference`, immo.ref_nr_note, immo.object_type AS object_type, immo.new_building AS `new_building` , immo.property_type AS property_type, immo.special_offer, immo.visibility, c.fieldvalue AS address, a.fieldvalue AS foreigner_authorization, b.fieldvalue AS location
-                        FROM ".DBPREFIX."module_immo AS immo, ".DBPREFIX."module_immo_content AS content
+                        FROM ".DBPREFIX."module_immo AS immo
+                        LEFT JOIN ".DBPREFIX."module_immo_content AS content on ( content.immo_id = immo.id )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS a ON ( immo.id = a.immo_id
         																AND a.field_id = (
         																	SELECT field_id
@@ -1354,7 +1355,7 @@ class Immo extends ImmoLib{
         																	WHERE name = 'adresse'
         																	AND lang_id = 1 )
         																AND c.lang_id = 1 )
-                        WHERE content.immo_id = immo.id";
+                        WHERE TRUE ";
 
             			if(!empty($searchterm) && intval($searchterm) == 0){
                         	$query .= " AND content.fieldvalue LIKE '%".$searchterm."%'";
@@ -1580,7 +1581,8 @@ class Immo extends ImmoLib{
 		    $searchterm = contrexx_addslashes(strip_tags($_POST['searchterm']));
 		    $logo = contrexx_addslashes(strip_tags($_POST['logo']));
             $query = "  SELECT immo.id AS `immo_id`, immo.reference AS `ref`, immo.ref_nr_note, immo.object_type AS otype, immo.new_building AS `new` , immo.property_type AS ptype, immo.special_offer, immo.visibility, c.fieldvalue AS address, a.fieldvalue AS foreigner_authorization, b.fieldvalue AS location
-                        FROM ".DBPREFIX."module_immo AS immo, ".DBPREFIX."module_immo_content AS content
+                        FROM ".DBPREFIX."module_immo AS immo
+                        LEFT JOIN ".DBPREFIX."module_immo_content AS content on ( content.immo_id = immo.id )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS a ON ( immo.id = a.immo_id
         																AND a.field_id = (
         																	SELECT field_id
@@ -1602,7 +1604,7 @@ class Immo extends ImmoLib{
         																	WHERE name = 'adresse'
         																	AND lang_id = 1 )
         																AND c.lang_id = 1 )
-                        WHERE content.immo_id = immo.id";
+                        WHERE TRUE ";
 
             			if(intval($searchterm) == 0){
                         	$query .= " AND content.fieldvalue LIKE '%".$searchterm."%'";
@@ -2714,7 +2716,7 @@ WHERE id = $immoID )";
      */
     function _updateSetting($key, $val) {
         global $objDatabase;
-        
+
         $query = "SELECT `setvalue` FROM ".DBPREFIX."module_immo_settings
                   WHERE `setname` = '".$key."'";
         $objRs = $objDatabase->Execute($query);
