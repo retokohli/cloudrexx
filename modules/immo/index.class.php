@@ -1084,7 +1084,7 @@ class Immo extends ImmoLib
                         img.uri AS imgsrc
                         FROM ".DBPREFIX."module_immo AS immo";
                         if(!empty($searchterm)){
-                            $query .= "LEFT JOIN ".DBPREFIX."module_immo_content AS content on ( content.immo_id = immo.id ) ";
+                            $query .= " LEFT JOIN ".DBPREFIX."module_immo_content AS content on ( content.immo_id = immo.id ) ";
                         }
 
 
