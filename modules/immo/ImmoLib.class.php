@@ -24,6 +24,7 @@ class ImmoLib{
 
 	var $_objTpl;
 
+
 	/**
 	 * Name of the theme directory, which shall be used. (see templates/frontend_images_viewer.html for example)
 	 *
@@ -31,12 +32,22 @@ class ImmoLib{
 	 */
 	var $_styleName = 'immo';
 
+
+	/**
+	 * available categories for the search mask
+	 *
+	 * @var array
+	 */
+	var $categories = array('alle Häuser', 'alle Wohnungen', 'Einfamilienhaus', 'Reihenendhaus',
+							'Doppelhaus', 'Mehrfamilienhaus', 'Bauernhaus', 'Stadthaus', 'alle Objekte');
+
 	/**
 	 * Array holding all the fields information
 	 *
 	 * @var array
 	 */
 	var $fieldNames = array();
+
 
 	/**
 	 * array of available languages
@@ -46,12 +57,14 @@ class ImmoLib{
 	 */
 	var $languages = array();
 
+
 	/**
 	 * framework file object
 	 *
 	 * @var object
 	 */
 	var $_objFile;
+
 
 	/**
 	 * number of languages
@@ -60,6 +73,7 @@ class ImmoLib{
 	 */
 	var $langCount = 0;
 
+
 	/**
 	 * holds the field ID of the last field found by ImmoLib::_getFieldFromText()
 	 *
@@ -67,12 +81,14 @@ class ImmoLib{
 	 */
 	var $_currFieldID;
 
+
 	/**
 	 * relative path to standard image in image-fields
 	 *
 	 * @var str
 	 */
 	var $noImage = 'images/icons/.gif';
+
 
 	/**
 	 * Array with the settings values
@@ -87,6 +103,7 @@ class ImmoLib{
 	 */
 	var $_lineBreak = "\r\n";
 
+
 	/**
 	 * Array holding number of field per type
 	 * $_fieldCount[$type]['count']
@@ -94,6 +111,7 @@ class ImmoLib{
 	 * @var array
 	 */
 	var $_fieldCount;
+
 
 	/**
 	 * Fields used in basic Data (i.e. which should not be displayed in any text-, img-, or link-rows)
