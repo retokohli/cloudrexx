@@ -87,8 +87,9 @@ class Immo extends ImmoLib{
 
     	$this->_objFile =& new File();
 
-    	mysql_set_charset("utf8"); //this is important for umlauts
-
+    	if(function_exists('mysql_set_charset')){
+        	mysql_set_charset("utf8"); //this is important for umlauts
+        }
     	// Run parent constructor
     	parent::__construct();
 	}
@@ -1924,8 +1925,8 @@ WHERE id = $immoID )";
                                 `property_type` = '".$property_type."',
                                 `longitude` =  '".$longitude."',
                                 `latitude` = '".$latitude."',
-                                `zoom` = '".$zoom."',
-                                `headliner` = '".$headliner."'
+                                `zoom` = '".$zoom."' /*,
+                                `headliner` = '".$headliner."'*/
                             WHERE `id` = '".$immoID."'";
                 if ($objDatabase->Execute($query)) {
                     $this->_getFieldNames($immoID);
