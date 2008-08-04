@@ -196,14 +196,13 @@ class Immo extends ImmoLib
      *
      */
     function _quickSearch(){
-		if(!empty($_GET['step'])){
-			switch ($_GET['step']){
-				case 2:
-					$this->_showQuickSearch2();
-				break;
-				default:
-					$this->showQuickSearch1();
-			}
+		switch (intval($_GET['step'])){
+			case 2:
+				$this->_showQuickSearch1();
+				$this->_showQuickSearch2();
+			break;
+			default:
+				$this->_showQuickSearch1();
 		}
     }
 
@@ -221,9 +220,11 @@ class Immo extends ImmoLib
 
     	$this->_objTpl->setVariable(array(
     		'IMMO_SEARCH_ACTION' => 'index.php?section=immo&cmd=quickSearch&step=2',
-    	));
+    		'IMMO_RADIO_CHECKED_'.
+    			( !empty($_POST['cat']) && $_POST['cat'] == 'business' ? 'BUSINESS' : 'RESIDENCE' )
+    							 => 'checked="checked"',
+	   	));
     	$this->_objTpl->parse('step_1');
-
 
     }
 
@@ -233,15 +234,41 @@ class Immo extends ImmoLib
      */
     function _showQuickSearch2(){
     	if($this->_objTpl->blockExists('step_1')){
-    		$this->_objTpl->hideblock('step_1');
+    		$this->_objTpl->touchBlock('step_1');
     	}
 
     	$this->_objTpl->setVariable(array(
     		'IMMO_SEARCH_ACTION' => 'index.php?section=immo&cmd=immolist',
     	));
-    	$this->_objTpl->parse('step_1');
 
+    	//buy
+    	//get buy info
+    	foreach ($this->categories as $id => $category) {
+			$this->_objTpl->setVariable(array(
+				'IMMO_CHECKBOX_ID'	=> $id,
+				'IMMO_CHECKBOX_NAME'	=> 'rent',
+				'IMMO_CHECKBOX_VALUE'	=> $category,
+				'IMMO_CHECKBOX_CHECKED'	=> $_SESSION['immo']['search']['cat_rent'][$category] ? 'checked="checked"' : '',
+				'IMMO_CHECKBOX_LABEL'	=> $category
+			));
 
+			$this->_objTpl->parse('buyResult');
+    	}
+
+    	//rent
+    	//get rent info
+    	foreach ($this->categories as $id => $category) {
+			$this->_objTpl->setVariable(array(
+				'IMMO_CHECKBOX_ID'	=> $id,
+				'IMMO_CHECKBOX_NAME'	=> 'rent',
+				'IMMO_CHECKBOX_VALUE'	=> $category,
+				'IMMO_CHECKBOX_CHECKED'	=> $_SESSION['immo']['search']['cat_rent'][$category] ? 'checked="checked"' : '',
+				'IMMO_CHECKBOX_LABEL'	=> $category
+			));
+
+			$this->_objTpl->parse('rentResult');
+    	}
+    	$this->_objTpl->parse('step_2');
     }
 
 
