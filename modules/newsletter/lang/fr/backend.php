@@ -371,4 +371,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'] = "Sélectionner le fichier dont le co
 $_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Inconnu";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTICE'] = "Hinweis";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTICE_TESTMAIL'] = "Beim Testnewsletter werden die Platzhalter und die Profillinks nicht ersetzt";
+$_ARRAYLANG['TXT_NEWSLETTER_URI'] = "URI";
 ?>

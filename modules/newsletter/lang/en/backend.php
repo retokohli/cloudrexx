@@ -371,4 +371,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'] = "Select a file that should be import
 $_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Unknown";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTICE'] = "Notice";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTICE_TESTMAIL'] = "The place holders will not be replaced in the test newsletter.";
+$_ARRAYLANG['TXT_NEWSLETTER_URI'] = "URI";
 ?>
