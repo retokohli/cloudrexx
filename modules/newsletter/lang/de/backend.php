@@ -372,4 +372,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'] = "Wählen Sie hier eine Datei aus, de
 $_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Unbekannt";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTICE'] = "Hinweis";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTICE_TESTMAIL'] = "Beim Testnewsletter werden die Platzhalter und die Profillinks nicht ersetzt";
+$_ARRAYLANG['TXT_NEWSLETTER_URI'] = "URI";
 ?>
