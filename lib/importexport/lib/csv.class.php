@@ -74,6 +74,12 @@ class CsvLib
 	 */
 	function parse($file, $looplimit=-1)
 	{
+
+		// detect newlines correctly. bit slower, but in exchange 
+		// we can import old apple CSV files.
+		ini_set('auto_detect_line_endings', 1);
+
+
 		$handle = fopen($file, "r");
 
 		if ($handle) {
