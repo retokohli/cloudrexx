@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The main page for the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -57,7 +58,7 @@
  */
 
 /**
- * Error reporting status
+ * Debug level
  */
 define('_DEBUG', 0);
 
@@ -243,8 +244,10 @@ if (preg_match('/^(\w+)(\d+)$/', $section, $arrMatch)) {
     // The plain section/module name, used below
     $plainSection = $arrMatch[1];
 }
-// The module index
-$moduleIndex = (empty($arrMatch[2]) ? '' : $arrMatch[2]);
+// The module index.
+// An empty or 1 (one) index represents the same (default) module,
+// values 2 (two) and larger represent distinct instances.
+$moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
 define('MODULE_INDEX', $moduleIndex);
 
 $pageId  = $objInit->getPageID($page, $plainSection, $command, $history);
@@ -1164,10 +1167,10 @@ switch ($plainSection) {
          */
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj=&new cmsSession();
+        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
         #if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
 
-        $objBlog = &new Data($page_content);
+        $objBlog = new Data($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objBlog->getPage());
         break;
 
@@ -1691,7 +1694,6 @@ if ($_CONFIG['frontendEditingStatus'] == 'on') {
          * @ignore
          */
         include_once($modulespath);
-        
         $strFeInclude   = frontendEditingLib::getIncludeCode();
         $strFeLink      = frontendEditingLib::getLinkCode();
         $strFeContent   = frontendEditingLib::getContentCode($pageId, $section, $command);
@@ -1738,7 +1740,7 @@ $objTemplate->setVariable(array(
     'MODULE_INDEX'         => MODULE_INDEX,
     'LOGIN_INCLUDE'         =>  $strFeInclude,
     'LOGIN_URL'             =>  $strFeLink,
-    'LOGIN_CONTENT'         =>  $strFeContent
+    'LOGIN_CONTENT'            =>    $strFeContent,
 ));
 
 
@@ -1763,6 +1765,9 @@ if ($objTemplate->blockExists('access_logged_out')) {
 if (FWUser::showCurrentlyOnlineUsers()) {
     if ($objTemplate->blockExists('access_currently_online_member_list')) {
         if ($objTemplate->blockExists('access_currently_online_female_members')) {
+// TODO:
+// $objAccessBlocks is never even mentioned in the code above!
+// Just inititialize the object when either males or females are shown.
             if (isset($objAccessBlocks)
                 && is_object($objAccessBlocks)
                 || ($modulespath = 'core_modules/access/lib/blocks.class.php')
