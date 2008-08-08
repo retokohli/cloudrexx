@@ -41,6 +41,7 @@ class settingsManager
         $this->strSettingsFile = ASCMS_DOCUMENT_ROOT.'/config/settings.php';
     }
 
+
     /**
      * Perform the requested function depending on $_GET['act']
      *
@@ -109,6 +110,7 @@ class settingsManager
         }
     }
 
+
     /**
      * Set the cms system settings
      * @global  ADONewConnection
@@ -157,8 +159,8 @@ class settingsManager
             'TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'     => $_CORELANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'],
             'TXT_GOOGLE_MAPS_API_KEY_HELP'      => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY_HELP'],
             'TXT_GOOGLE_MAPS_API_KEY'           => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY'],
-            'TXT_FRONTEND_EDITING_STATUS'		=> $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING'],
-            'TXT_FRONTEND_EDITING_STATUS_HELP'	=> $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING_HELP']
+            'TXT_FRONTEND_EDITING_STATUS'        => $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING'],
+            'TXT_FRONTEND_EDITING_STATUS_HELP'    => $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING_HELP']
         ));
 
         $objResult = $objDatabase->Execute('SELECT setid,
@@ -201,6 +203,7 @@ class settingsManager
         ));
     }
 
+
     /**
      * Update settings
      *
@@ -228,7 +231,7 @@ class settingsManager
                     $strValue = substr($strValue,7);
                 }
             }
-            $objDatabase->Execute(' UPDATE '.DBPREFIX.'settings
+            $objDatabase->Execute('    UPDATE '.DBPREFIX.'settings
                                     SET setvalue="'.htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET).'"
                                     WHERE setid='.intval($intId));
         }
@@ -242,11 +245,13 @@ class settingsManager
         $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
     }
 
+
     /**
      * Write all settings to the config file
      *
      */
-    function writeSettingsFile() {
+    function writeSettingsFile()
+    {
         global $objDatabase,$_CORELANG;
 
         if (is_writable($this->strSettingsFile)) {
@@ -347,13 +352,20 @@ class settingsManager
         }
     }
 
+
     function _smtpDefaultAccount()
     {
         global $objDatabase, $_CORELANG, $_CONFIG;
 
         $id = intval($_GET['id']);
-        if (($arrSmtp = SmtpSettings::_getSmtpAccount($id)) || (($id = 0) !== false && $arrSmtp = SmtpSettings::getSystemSmtpAccount())) {
-            if ($objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = '".$id."' WHERE `setname` = 'coreSmtpServer'")) {
+        $arrSmtp = SmtpSettings::getSmtpAccount($id);
+        if ($arrSmtp || ($id = 0) !== false) {
+            $objResult = $objDatabase->Execute("
+                UPDATE `".DBPREFIX."settings`
+                   SET `setvalue`='$id'
+                 WHERE `setname`='coreSmtpServer'
+            ");
+            if ($objResult) {
                 $_CONFIG['coreSmtpServer'] = $id;
                 require_once(ASCMS_CORE_PATH.'/settings.class.php');
                 $objSettings = new settingsManager();
@@ -365,13 +377,14 @@ class settingsManager
         }
     }
 
+
     function _smtpDeleteAccount()
     {
         global $objDatabase, $_CONFIG, $_CORELANG;
 
         $id = intval($_GET['id']);
-
-        if (($arrSmtp = SmtpSettings::_getSmtpAccount($id)) !== false) {
+        $arrSmtp = SmtpSettings::getSmtpAccount($id);
+        if ($arrSmtp !== false) {
             if ($id != $_CONFIG['coreSmtpServer']) {
                 if ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'settings_smtp` WHERE `id`='.$id) !== false) {
                     $this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_SMTP_DELETE_SUCCEED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
@@ -383,6 +396,7 @@ class settingsManager
             }
         }
     }
+
 
     function _smtpOverview()
     {
@@ -432,6 +446,7 @@ class settingsManager
 
         $objTemplate->parse('settings_smtp');
     }
+
 
     function _smtpModify()
     {
@@ -483,15 +498,18 @@ class settingsManager
                     }
                 }
             }
-        } elseif (($arrSmtp = SmtpSettings::_getSmtpAccount($id)) === false) {
-            $id = 0;
-            $arrSmtp = array(
-                'name'        => '',
-                'hostname'    => '',
-                'port'        => 25,
-                'username'    => '',
-                'password'    => 0
-            );
+        } else {
+            $arrSmtp = SmtpSettings::getSmtpAccount($id);
+            if ($arrSmtp === false) {
+                $id = 0;
+                $arrSmtp = array(
+                    'name'        => '',
+                    'hostname'    => '',
+                    'port'        => 25,
+                    'username'    => '',
+                    'password'    => 0
+                );
+            }
         }
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings_smtp_modify', 'settings_smtp_modify.html');
