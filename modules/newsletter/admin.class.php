@@ -25,29 +25,29 @@ require_once ASCMS_MODULE_PATH.'/newsletter/lib/NewsletterLib.class.php';
  * Newsletter module class
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @access        public
- * @version        1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_newsletter
  */
 class newsletter extends NewsletterLib
 {
-    var $_objTpl;
-    var $_pageTitle;
-    var $_strErrMessage = '';
-    var $_strOkMessage = '';
-    var $months = array();
+    public $_objTpl;
+    public $_pageTitle;
+    public $_strErrMessage = '';
+    public $_strOkMessage = '';
+    public $months = array();
 
-    var $_arrMailFormat = array(
+    public $_arrMailFormat = array(
         'text'        => 'TXT_NEWSLETTER_ONLY_TEXT',
         'html'        => 'TXT_NEWSLETTER_HTML_UC',
         'html/text'    => 'TXT_NEWSLETTER_MULTIPART_TXT'
     );
 
-    var $_stdMailFormat = 'text';
+    public $_stdMailFormat = 'text';
 
-    var $_arrMailPriority = array(
+    public $_arrMailPriority = array(
         1    => 'TXT_NEWSLETTER_VERY_HIGH',
         2    => 'TXT_NEWSLETTER_HIGH',
         3    => 'TXT_NEWSLETTER_MEDIUM',
@@ -55,14 +55,14 @@ class newsletter extends NewsletterLib
         5    => 'TXT_NEWSLETTER_VERY_LOW'
     );
 
-    var $_stdMailPriority = 3;
+    public $_stdMailPriority = 3;
 
-    var $_attachmentPath = '/images/attach/';
+    public $_attachmentPath = '/images/attach/';
 
     /**
      * PHP5 constructor
      * @global HTML_Template_Sigma
-     * @global array
+     * @global array $_ARRAYLANG
      */
     function __construct()
     {
@@ -71,7 +71,7 @@ class newsletter extends NewsletterLib
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/newsletter/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        if(!isset($_REQUEST['standalone'])){
+        if (!isset($_REQUEST['standalone'])) {
 
             $objTemplate->setVariable("CONTENT_NAVIGATION", "
                                             <a href='index.php?cmd=newsletter'>".$_ARRAYLANG['TXT_NEWSLETTER_ADMINISTRATION']."</a>
@@ -95,7 +95,7 @@ class newsletter extends NewsletterLib
     *
     * @access public
     * @global HTML_Template_Sigma
-    * @global array
+    * @global array $_ARRAYLANG
     */
     function getPage() {
         global $objTemplate, $_ARRAYLANG;
@@ -104,7 +104,7 @@ class newsletter extends NewsletterLib
             $_GET['act'] = '';
         }
 
-        switch ($_GET['act']){
+        switch ($_GET['act']) {
             case "lists":
                 $this->_lists();
                 break;
@@ -222,7 +222,7 @@ class newsletter extends NewsletterLib
                 'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
                 'ADMIN_CONTENT'                => $this->_objTpl->get()
             ));
-        }else{
+        } else {
             $this->_objTpl->show();
             exit;
         }
@@ -234,7 +234,7 @@ class newsletter extends NewsletterLib
      * Display the list administration page
      *
      * @access private
-     * @global array
+     * @global array $_ARRAYLANG
      * @global ADONewConnection
      */
     function _lists()
@@ -245,21 +245,21 @@ class newsletter extends NewsletterLib
         $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER_LISTS'];
         $rowNr = 0;
 
-        if(!empty($_GET["bulkdelete"]) && $_GET["bulkdelete"] == "exe"){
+        if (!empty($_GET["bulkdelete"]) && $_GET["bulkdelete"] == "exe") {
             $error=0;
-            if(!empty($_POST['listid'])){
-                foreach ($_POST['listid'] as $listid){
+            if (!empty($_POST['listid'])) {
+                foreach ($_POST['listid'] as $listid) {
                     $listid=intval($listid);
-                    if(    $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_category WHERE id=$listid") !== false){
+                    if (    $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_category WHERE id=$listid") !== false) {
                         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_cat_news WHERE category=$listid");
                         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE category=$listid");
-                    }else{
+                    } else {
                         $error=1;
                     }
                 }
-                if($error){
+                if ($error) {
                     $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'];
-                }else{
+                } else {
                     $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                 }
             }
@@ -327,12 +327,12 @@ class newsletter extends NewsletterLib
     {
         global $objDatabase, $_ARRAYLANG;
         $listID = (!empty($_GET['id'])) ? intval($_GET['id']) : false;
-        if($listID){
+        if ($listID) {
             $query = "    DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat
                         WHERE category = $listID";
-            if($objDatabase->Execute($query) !== false){
+            if ($objDatabase->Execute($query) !== false) {
                 $this->_strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_SUCCESSFULLY_FLUSHED'];
-            }else{
+            } else {
                 $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'];
             }
         } else {
@@ -411,7 +411,7 @@ class newsletter extends NewsletterLib
         $objList = $objDatabase->SelectLimit("SELECT `status`, `name` FROM ".DBPREFIX."module_newsletter_category WHERE id=".$listId, 1);
         if ($objList !== false && $objList->RecordCount() == 1) {
             return array(
-                'status'    => $objList->fields['status'],
+                'status' => $objList->fields['status'],
                 'name'   => $objList->fields['name'],
             );
         }
@@ -722,8 +722,8 @@ class newsletter extends NewsletterLib
             $this->_objTpl->hideBlock('newsletter_mail_text_content');
         } else {
             $this->_objTpl->setVariable(array(
-                'TXT_NEWSLETTER_HTML_UC'    => $_ARRAYLANG['TXT_NEWSLETTER_HTML_UC'],
-                'TXT_NEWSLETTER_TEXT'        => $_ARRAYLANG['TXT_NEWSLETTER_TEXT']
+                'TXT_NEWSLETTER_HTML_UC' => $_ARRAYLANG['TXT_NEWSLETTER_HTML_UC'],
+                'TXT_NEWSLETTER_TEXT'    => $_ARRAYLANG['TXT_NEWSLETTER_TEXT']
             ));
             $this->_objTpl->touchBlock('newsletter_mail_html_content');
             $this->_objTpl->touchBlock('newsletter_mail_text_content');
@@ -734,10 +734,10 @@ class newsletter extends NewsletterLib
         foreach ($arrLists as $listId => $arrList) {
             $column = $listNr % 3;
             $this->_objTpl->setVariable(array(
-                'NEWSLETTER_LIST_ID'                        => $listId,
-                'NEWSLETTER_LIST_NAME'                        => $arrList['name'],
-                'NEWSLETTER_SHOW_RECIPIENTS_OF_LIST_TXT'    => sprintf($_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'], $arrList['name']),
-                'NEWSLETTER_LIST_ASSOCIATED'                => in_array($listId, $arrAssociatedLists) ? 'checked="checked"' : ''
+                'NEWSLETTER_LIST_ID'                     => $listId,
+                'NEWSLETTER_LIST_NAME'                   => $arrList['name'],
+                'NEWSLETTER_SHOW_RECIPIENTS_OF_LIST_TXT' => sprintf($_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'], $arrList['name']),
+                'NEWSLETTER_LIST_ASSOCIATED'             => in_array($listId, $arrAssociatedLists) ? 'checked="checked"' : ''
             ));
             $this->_objTpl->parse('newsletter_mail_associated_list_'.$column);
             $listNr++;
@@ -746,8 +746,8 @@ class newsletter extends NewsletterLib
         if (count($arrAttachment) > 0) {
             foreach ($arrAttachment as $attachment) {
                 $this->_objTpl->setVariable(array(
-                    'NEWSLETTER_MAIL_ATTACHMENT_NR'        => $attachmentNr,
-                    'NEWSLETTER_MAIL_ATTACHMENT_NAME'    => substr($attachment, strrpos($attachment, '/')+1),
+                    'NEWSLETTER_MAIL_ATTACHMENT_NR'   => $attachmentNr,
+                    'NEWSLETTER_MAIL_ATTACHMENT_NAME' => substr($attachment, strrpos($attachment, '/')+1),
                     'NEWSLETTER_MAIL_ATTACHMENT_URL'  => $attachment,
                 ));
                 $this->_objTpl->parse('newsletter_mail_attachment_list');
@@ -758,47 +758,48 @@ class newsletter extends NewsletterLib
         }
 
         $this->_objTpl->setVariable(array(
-            'NEWSLETTER_MAIL_ATTACHMENT_NR'    => $attachmentNr,
+            'NEWSLETTER_MAIL_ATTACHMENT_NR'  => $attachmentNr,
             'NEWSLETTER_MAIL_ATTACHMENT_BOX' => $attachmentNr > 0 ? 'block' : 'none',
         ));
 
         $this->_objTpl->setVariable(array(
-            'TXT_NEWSLETTER_EMAIL_ACCOUNT'            => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ACCOUNT'],
-            'TXT_NEWSLETTER_SUBJECT'                => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
-            'TXT_NEWSLETTER_SEND_AS'                => $_ARRAYLANG['TXT_NEWSLETTER_SEND_AS'],
-            'TXT_NEWSLETTER_TEMPLATE'                => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATE'],
-            'TXT_NEWSLETTER_SENDER'                    => $_ARRAYLANG['TXT_NEWSLETTER_SENDER'],
-            'TXT_NEWSLETTER_EMAIL'                    => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL'],
-            'TXT_NEWSLETTER_NAME'                    => $_ARRAYLANG['TXT_NEWSLETTER_NAME'],
-            'TXT_NEWSLETTER_REPLY_ADDRESS'            => $_ARRAYLANG['TXT_NEWSLETTER_REPLY_ADDRESS'],
-            'TXT_NEWSLETTER_PRIORITY'                => $_ARRAYLANG['TXT_NEWSLETTER_PRIORITY'],
-            'TXT_NEWSLETTER_PRIORITY'                => $_ARRAYLANG['TXT_NEWSLETTER_PRIORITY'],
-            'TXT_NEWSLETTER_ASSOCIATED_LISTS'        => $_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_LISTS'],
-            'TXT_NEWSLETTER_ATTACH'                    => $_ARRAYLANG['TXT_NEWSLETTER_ATTACH'],
-            'TXT_NEWSLETTER_DISPLAY_FILE'            => $_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_FILE'],
-            'TXT_NEWSLETTER_REMOVE_FILE'            => $_ARRAYLANG['TXT_NEWSLETTER_REMOVE_FILE'],
-            'TXT_NEWSLETTER_ATTACH_FILE'            => $_ARRAYLANG['TXT_NEWSLETTER_ATTACH_FILE'],
-            'TXT_NEWSLETTER_HTML_CONTENT'            => $_ARRAYLANG['TXT_NEWSLETTER_HTML_CONTENT'],
-            'TXT_NEWSLETTER_TEXT_CONTENT'            => $_ARRAYLANG['TXT_NEWSLETTER_TEXT_CONTENT'],
-            'TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY'    => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY'],
-            'TXT_NEWSLETTER_USER_DATA'                => $_ARRAYLANG['TXT_NEWSLETTER_USER_DATA'],
-            'TXT_NEWSLETTER_EMAIL_ADDRESS'            => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
-            'TXT_NEWSLETTER_SEX'                    => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
-            'TXT_NEWSLETTER_TITLE'                    => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
-            'TXT_NEWSLETTER_LASTNAME'                => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
-            'TXT_NEWSLETTER_FIRSTNAME'                => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
-            'TXT_NEWSLETTER_STREET'                    => $_ARRAYLANG['TXT_NEWSLETTER_STREET'],
-            'TXT_NEWSLETTER_ZIP'                    => $_ARRAYLANG['TXT_NEWSLETTER_ZIP'],
-            'TXT_NEWSLETTER_CITY'                    => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
-            'TXT_NEWSLETTER_COUNTRY'                => $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
-            'TXT_NEWSLETTER_PHONE'                    => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
-            'TXT_NEWSLETTER_BIRTHDAY'                => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
-            'TXT_NEWSLETTER_GENERAL'                => $_ARRAYLANG['TXT_NEWSLETTER_GENERAL'],
-            'TXT_NEWSLETTER_MODIFY_PROFILE'            => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_PROFILE'],
-            'TXT_NEWSLETTER_UNSUBSCRIBE'            => $_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE'],
-            'TXT_NEWSLETTER_DATE'                    => $_ARRAYLANG['TXT_NEWSLETTER_DATE'],
-            'TXT_NEWSLETTER_SAVE'                    => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
-            'TXT_NEWSLETTER_BACK'                    => $_ARRAYLANG['TXT_NEWSLETTER_BACK']
+            'TXT_NEWSLETTER_EMAIL_ACCOUNT'         => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ACCOUNT'],
+            'TXT_NEWSLETTER_SUBJECT'               => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
+            'TXT_NEWSLETTER_SEND_AS'               => $_ARRAYLANG['TXT_NEWSLETTER_SEND_AS'],
+            'TXT_NEWSLETTER_TEMPLATE'              => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATE'],
+            'TXT_NEWSLETTER_SENDER'                => $_ARRAYLANG['TXT_NEWSLETTER_SENDER'],
+            'TXT_NEWSLETTER_EMAIL'                 => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL'],
+            'TXT_NEWSLETTER_URI'                    => $_ARRAYLANG['TXT_NEWSLETTER_URI'],
+            'TXT_NEWSLETTER_NAME'                  => $_ARRAYLANG['TXT_NEWSLETTER_NAME'],
+            'TXT_NEWSLETTER_REPLY_ADDRESS'         => $_ARRAYLANG['TXT_NEWSLETTER_REPLY_ADDRESS'],
+            'TXT_NEWSLETTER_PRIORITY'              => $_ARRAYLANG['TXT_NEWSLETTER_PRIORITY'],
+            'TXT_NEWSLETTER_PRIORITY'              => $_ARRAYLANG['TXT_NEWSLETTER_PRIORITY'],
+            'TXT_NEWSLETTER_ASSOCIATED_LISTS'      => $_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_LISTS'],
+            'TXT_NEWSLETTER_ATTACH'                => $_ARRAYLANG['TXT_NEWSLETTER_ATTACH'],
+            'TXT_NEWSLETTER_DISPLAY_FILE'          => $_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_FILE'],
+            'TXT_NEWSLETTER_REMOVE_FILE'           => $_ARRAYLANG['TXT_NEWSLETTER_REMOVE_FILE'],
+            'TXT_NEWSLETTER_ATTACH_FILE'           => $_ARRAYLANG['TXT_NEWSLETTER_ATTACH_FILE'],
+            'TXT_NEWSLETTER_HTML_CONTENT'          => $_ARRAYLANG['TXT_NEWSLETTER_HTML_CONTENT'],
+            'TXT_NEWSLETTER_TEXT_CONTENT'          => $_ARRAYLANG['TXT_NEWSLETTER_TEXT_CONTENT'],
+            'TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY' => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY'],
+            'TXT_NEWSLETTER_USER_DATA'             => $_ARRAYLANG['TXT_NEWSLETTER_USER_DATA'],
+            'TXT_NEWSLETTER_EMAIL_ADDRESS'         => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
+            'TXT_NEWSLETTER_SEX'                   => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
+            'TXT_NEWSLETTER_TITLE'                 => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
+            'TXT_NEWSLETTER_LASTNAME'              => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
+            'TXT_NEWSLETTER_FIRSTNAME'             => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
+            'TXT_NEWSLETTER_STREET'                => $_ARRAYLANG['TXT_NEWSLETTER_STREET'],
+            'TXT_NEWSLETTER_ZIP'                   => $_ARRAYLANG['TXT_NEWSLETTER_ZIP'],
+            'TXT_NEWSLETTER_CITY'                  => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
+            'TXT_NEWSLETTER_COUNTRY'               => $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
+            'TXT_NEWSLETTER_PHONE'                 => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
+            'TXT_NEWSLETTER_BIRTHDAY'              => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
+            'TXT_NEWSLETTER_GENERAL'               => $_ARRAYLANG['TXT_NEWSLETTER_GENERAL'],
+            'TXT_NEWSLETTER_MODIFY_PROFILE'        => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_PROFILE'],
+            'TXT_NEWSLETTER_UNSUBSCRIBE'           => $_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE'],
+            'TXT_NEWSLETTER_DATE'                  => $_ARRAYLANG['TXT_NEWSLETTER_DATE'],
+            'TXT_NEWSLETTER_SAVE'                  => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
+            'TXT_NEWSLETTER_BACK'                  => $_ARRAYLANG['TXT_NEWSLETTER_BACK']
         ));
         return true;
     }
@@ -1004,7 +1005,6 @@ class newsletter extends NewsletterLib
                 'TXT_NEWSLETTER_GO_TO_RECIPIENT_ADMINISTRATION'    => $_ARRAYLANG['TXT_NEWSLETTER_GO_TO_RECIPIENT_ADMINISTRATION']
             ));
 
-
             while (!$objUser->EOF) {
                 $this->_objTpl->setVariable(array(
                     'NEWSLETTER_RECIPIENT_ROW_CLASS'            => $rowNr % 2 == 1 ? 'row1' : 'row2',
@@ -1020,9 +1020,7 @@ class newsletter extends NewsletterLib
                     'NEWSLETTER_RECIPIENT_COUNTRY'                => !empty($objUser->fields['country']) ? htmlentities($objUser->fields['country'], ENT_QUOTES, CONTREXX_CHARSET) : '-',
                     'NEWSLETTER_RECIPIENT_REGISTRATION_DATE'    => date(ASCMS_DATE_FORMAT, $objUser->fields['emaildate'])
                 ));
-
                 $this->_objTpl->parse('newsletter_recipients');
-
                 $rowNr++;
                 $objUser->MoveNext();
             }
@@ -1246,8 +1244,8 @@ class newsletter extends NewsletterLib
 
     function _getBodyContent($fullContent)
     {
-        $posBody=0;
-        $posStartBodyContent=0;
+        $posBody = 0;
+        $posStartBodyContent = 0;
         $arrayMatches = array();
         $res = preg_match_all('/<body[^>]*>/i', $fullContent, $arrayMatches);
         if ($res==true) {
@@ -1259,7 +1257,7 @@ class newsletter extends NewsletterLib
         }
         $posEndTag=strlen($fullContent);
         $res = preg_match_all('/<\/body>/i', $fullContent, $arrayMatches);
-        if ($res==true) {
+        if ($res == true) {
             $bodyEndTag=$arrayMatches[0][0];
             // Position des End-Tags holen
             $posEndTag = strpos($fullContent, $bodyEndTag, 0);
@@ -1440,15 +1438,15 @@ class newsletter extends NewsletterLib
         if (!$objRelList) {
             return false;
         }
-            while (!$objRelList->EOF) {
-                array_push($arrCurrentList, $objRelList->fields['category']);
-                $objRelList->MoveNext();
-            }
+        while (!$objRelList->EOF) {
+            array_push($arrCurrentList, $objRelList->fields['category']);
+            $objRelList->MoveNext();
+        }
 
-            $arrNewLists = array_diff($arrLists, $arrCurrentList);
-            $arrRemovedLists = array_diff($arrCurrentList, $arrLists);
+        $arrNewLists = array_diff($arrLists, $arrCurrentList);
+        $arrRemovedLists = array_diff($arrCurrentList, $arrLists);
 
-            foreach ($arrNewLists as $listId) {
+        foreach ($arrNewLists as $listId) {
             $objDatabase->Execute("
                 INSERT INTO ".DBPREFIX."module_newsletter_rel_cat_news (
                     `newsletter`, `category`
@@ -1503,13 +1501,13 @@ class newsletter extends NewsletterLib
         ));
     }
 
-    function ConfigDispatch(){
+    function ConfigDispatch() {
         global $objDatabase, $_ARRAYLANG;
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
         $this->_objTpl->loadTemplateFile('newsletter_config_dispatch.html');
         $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_DISPATCH_SETINGS']);
 
-        if($_POST["update"]=="exe"){
+        if ($_POST["update"]=="exe") {
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".contrexx_addslashes($_POST['sender_email'])."' WHERE setname='sender_mail'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".contrexx_addslashes($_POST['sender_name'])."' WHERE setname='sender_name'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".contrexx_addslashes($_POST['return_path'])."' WHERE setname='reply_mail'");
@@ -1741,6 +1739,7 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_SAVE'                    => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
             'TXT_NEWSLETTER_USER_DATA'                => $_ARRAYLANG['TXT_NEWSLETTER_USER_DATA'],
             'TXT_NEWSLETTER_EMAIL_ADDRESS'            => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
+            'TXT_NEWSLETTER_URI'            => $_ARRAYLANG['TXT_NEWSLETTER_URI'],
             'TXT_NEWSLETTER_SEX'                    => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
             'TXT_NEWSLETTER_TITLE'                    => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
             'TXT_NEWSLETTER_LASTNAME'                => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
@@ -1794,13 +1793,13 @@ class newsletter extends NewsletterLib
         return false;
     }
 
-    function ActivateMail(){
+    function ActivateMail() {
         global $objDatabase, $_ARRAYLANG;
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
         $this->_objTpl->loadTemplateFile('newsletter_config_activatemail.html');
         $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_DISPATCH_SETINGS']);
 
-        if($_POST["update"]=="exe"){
+        if ($_POST["update"]=="exe") {
             if ($objDatabase->Execute("
                 UPDATE ".DBPREFIX."module_newsletter_confirm_mail
                    SET title='".contrexx_addslashes($_POST["mailSubject"])."',
@@ -1843,14 +1842,14 @@ class newsletter extends NewsletterLib
         ));
     }
 
-    function ConfirmMail(){
+    function ConfirmMail() {
         global $objDatabase, $_ARRAYLANG;
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
         $this->_objTpl->loadTemplateFile('newsletter_config_confirmmail.html');
         $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_DISPATCH_SETINGS']);
 
         //Update
-        if($_POST["update"]=="exe"){
+        if ($_POST["update"]=="exe") {
             if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_confirm_mail SET title='".contrexx_addslashes($_POST["mailSubject"])."', content='".contrexx_addslashes($_POST["mailContent"])."' WHERE id=2") !== false) {
                 $this->_strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_MAIL_UPDATED_SUCCESSFULLY'];
             } else {
@@ -1931,7 +1930,7 @@ class newsletter extends NewsletterLib
             'TXT_SEND_TEST_EMAIL'            => $_ARRAYLANG['TXT_SEND_TEST_EMAIL'],
             'TXT_NEWSLETTER_MODIFY_EMAIL'    => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_EMAIL'],
             'TXT_NEWSLETTER_NOTICE_TESTMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTICE_TESTMAIL'],
-            'TXT_NEWSLETTER_NOTICE'   		 => $_ARRAYLANG['TXT_NEWSLETTER_NOTICE'],
+            'TXT_NEWSLETTER_NOTICE'            => $_ARRAYLANG['TXT_NEWSLETTER_NOTICE'],
         ));
 
         $this->_objTpl->setVariable(array(
@@ -2115,14 +2114,14 @@ class newsletter extends NewsletterLib
             //check if there are new recipients since the letter was sent
             $query="SELECT `count` FROM ".DBPREFIX."module_newsletter WHERE id=$mailId";
             $objRS = $objDatabase->Execute($query);
-            if(!empty($objRS)){
+            if (!empty($objRS)) {
                 $sentCount = $objRS->fields['count'];
             }
             $recipientCount = $this->_getMailRecipientCount($mailId);
-            if($recipientCount > $sentCount){
+            if ($recipientCount > $sentCount) {
                 $this->_objTpl->hideBlock('newsletter_mail_stop_button');
                 $this->_objTpl->touchBlock('newsletter_mail_send_button');
-            }else{
+            } else {
                 $this->_objTpl->hideBlock('newsletter_mail_stop_button');
                 $this->_objTpl->hideBlock('newsletter_mail_send_button');
             }
@@ -2163,7 +2162,7 @@ class newsletter extends NewsletterLib
         }
     }
 
-    function SendEmail($UserID, $NewsletterID, $TargetEmail, $TmpEntry){
+    function SendEmail($UserID, $NewsletterID, $TargetEmail, $TmpEntry) {
         global $objDatabase, $_ARRAYLANG, $_DBCONFIG;
 
         require_once ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php';
@@ -2226,7 +2225,7 @@ class newsletter extends NewsletterLib
         $mail->Subject     = $subject;
         $mail->Priority = $priority;
         //$mail->AddBCC($bcc, '');
-        switch ($format){
+        switch ($format) {
             case "text/html":
                 $mail->Body     = $NewsletterBody_HTML;
                 $mail->AltBody     = $NewsletterBody_TEXT;
@@ -2265,7 +2264,7 @@ class newsletter extends NewsletterLib
 
         if ($mail->Send()) {
             $ReturnVar = $count++;
-            if($TmpEntry==1){
+            if ($TmpEntry==1) {
                 // Insert TMP-ENTRY Sended Email & Count++
                 // ---------------------------------------
                 $query = "UPDATE ".DBPREFIX."module_newsletter_tmp_sending SET sendt=1 where email='".$TargetEmail."' AND newsletter=".$NewsletterID."";
@@ -2343,7 +2342,7 @@ class newsletter extends NewsletterLib
         return $ReturnVar;
     }
 
-    function GetTemplateSource($TemplateID, $format){
+    function GetTemplateSource($TemplateID, $format) {
         global $objDatabase;
         $TemplateSource = '';
         $queryPN = "select id, name, description, ".$format." from ".DBPREFIX."module_newsletter_template where id=".$TemplateID."";
@@ -2354,19 +2353,19 @@ class newsletter extends NewsletterLib
         return $TemplateSource;
     }
 
-    function _createDatesDropdown($birthday = ''){
-        if(!empty($birthday)){
+    function _createDatesDropdown($birthday = '') {
+        if (!empty($birthday)) {
             $birthday = (is_array($birthday)) ? $birthday : explode('-', $birthday);
             $day = !empty($birthday[0]) ? $birthday[0] : '01';
             $month = !empty($birthday[1]) ? $birthday[1] : '01';
             $year = !empty($birthday[2]) ? $birthday[2] : date("Y");
-        }else{
+        } else {
             $day = '01';
             $month = '01';
             $year = date("Y");
         }
 
-        for($i=1;$i<=31;$i++){
+        for($i=1;$i<=31;$i++) {
             $selected = ($day == str_pad($i,2,'0',STR_PAD_LEFT)) ? 'selected="selected"' : '' ;
             $this->_objTpl->setVariable(array(
                 'USERS_BIRTHDAY_DAY'        => str_pad($i,2,'0', STR_PAD_LEFT),
@@ -2376,7 +2375,7 @@ class newsletter extends NewsletterLib
             $this->_objTpl->parse('birthday_day');
         }
 
-        for($i=1;$i<=12;$i++){
+        for($i=1;$i<=12;$i++) {
             $selected = ($month == str_pad($i,2,'0',STR_PAD_LEFT)) ? 'selected="selected"' : '' ;
             $this->_objTpl->setVariable(array(
                 'USERS_BIRTHDAY_MONTH'        => str_pad($i, 2, '0', STR_PAD_LEFT),
@@ -2386,7 +2385,7 @@ class newsletter extends NewsletterLib
             $this->_objTpl->parse('birthday_month');
         }
 
-        for($i=date("Y");$i>=1900;$i--){
+        for($i=date("Y");$i>=1900;$i--) {
             $selected = ($year == $i) ? 'selected="selected"' : '' ;
             $this->_objTpl->setVariable(array(
                 'USERS_BIRTHDAY_YEAR'         => $i,
@@ -2396,12 +2395,12 @@ class newsletter extends NewsletterLib
         }
     }
 
-    function ParseNewsletter($UserID, $subject, $content_text, $TemplateSource, $format, $TargetEmail){
+    function ParseNewsletter($UserID, $subject, $content_text, $TemplateSource, $format, $TargetEmail) {
         global $objDatabase, $_ARRAYLANG;
         $NewsletterBody = '';
 
-        if($UserID!=0){
-            $queryPN = "select id, code, sex, email, title, lastname, firstname, street, zip, city, country, phone, birthday, status, emaildate from ".DBPREFIX."module_newsletter_user where id=".$UserID."";
+        if ($UserID!=0) {
+            $queryPN = "select id, code, sex, email, uri, title, lastname, firstname, street, zip, city, country, phone, birthday, status, emaildate from ".DBPREFIX."module_newsletter_user where id=".$UserID."";
             $objResultPN = $objDatabase->Execute($queryPN);
 
             if ($objResultPN !== false) {
@@ -2414,9 +2413,10 @@ class newsletter extends NewsletterLib
                 $country  = $objResultPN->fields['country'];
                 $birthday  = $objResultPN->fields['birthday'];
                 $email   = $objResultPN->fields['email'];
+                $uri       = $objResultPN->fields['uri'];
                 $phone   = $objResultPN->fields['phone'];
 
-                switch($objResultPN->fields['sex']){
+                switch($objResultPN->fields['sex']) {
                     case 'm':
                         $sex = $_ARRAYLANG['TXT_NEWSLETTER_MALE'];
                         break;
@@ -2431,34 +2431,39 @@ class newsletter extends NewsletterLib
                 $arrRecipientTitles = &$this->_getRecipientTitles();
                 $title = $arrRecipientTitles[$objResultPN->fields['title']];
 
-                $array_1 = array('[[email]]', '[[sex]]', '[[title]]', '[[lastname]]', '[[firstname]]', '[[street]]', '[[zip]]', '[[city]]', '[[country]]', '[[phone]]', '[[birthday]]');
-                $array_2 = array($email, $sex, $title, $lastname, $firstname, $street, $zip, $city, $country, $phone, $birthday);
-
+                $array_1 = array(
+                    '[[email]]', '[[uri]]', '[[sex]]', '[[title]]', '[[lastname]]', '[[firstname]]',
+                    '[[street]]', '[[zip]]', '[[city]]', '[[country]]', '[[phone]]', '[[birthday]]'
+                );
+                $array_2 = array(
+                    $email, $uri, $sex, $title, $lastname, $firstname,
+                    $street, $zip, $city, $country, $phone, $birthday
+                );
                 $content_text     = str_replace($array_1, $array_2, $content_text);
                 $TemplateSource = str_replace($array_1, $array_2, $TemplateSource);
             }
         }
 
-        if($format=="text"){
+        if ($format=="text") {
             $array_1 = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
             $array_2 = array($this->GetProfileSource($code, $TargetEmail, "text"), $this->GetUnsubscribeSource($code, $TargetEmail, "text"), date(ASCMS_DATE_SHORT_FORMAT));
             $content_text = str_replace($array_1, $array_2, $content_text);
-        }else{
+        } else {
             $array_1 = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
             $array_2 = array($this->GetProfileSource($code, $TargetEmail, "html"), $this->GetUnsubscribeSource($code, $TargetEmail, "html"), date(ASCMS_DATE_SHORT_FORMAT));
             $content_text = str_replace($array_1, $array_2, $content_text);
 
             $allImg = array();
-            preg_match_all("|src=\"(.*)\"|U",$content_text,$allImg, PREG_PATTERN_ORDER);
+            preg_match_all("|src=\"(.*)\"|U", $content_text, $allImg, PREG_PATTERN_ORDER);
             $size = sizeof($allImg[1]);
             $i = 0;
             $port = $_SERVER['SERVER_PORT'] != 80 ? ':'.intval($_SERVER['SERVER_PORT']) : '';
 
             while ($i < $size) {
                 $URLforReplace = $allImg[1][$i];
-                if(substr($URLforReplace, 0, 7) != ASCMS_PROTOCOL.'://'){
+                if (substr($URLforReplace, 0, 7) != ASCMS_PROTOCOL.'://') {
                     $ReplaceWith = '"'.ASCMS_PROTOCOL.'://'.$_SERVER['SERVER_NAME'].$port.$URLforReplace.'"';
-                }else{
+                } else {
                     $ReplaceWith = $URLforReplace;
                 }
                 $content_text = str_replace('"'.$URLforReplace.'"', $ReplaceWith, $content_text);
@@ -2551,18 +2556,18 @@ class newsletter extends NewsletterLib
 
 
 
-    function exportuser(){
+    function exportuser() {
         global $objDatabase, $_ARRAYLANG;
 
         $listId = isset($_REQUEST['listId']) ? intval($_REQUEST['listId']) : 0;
 
         $arrRecipientTitles = &$this->_getRecipientTitles();
 
-        if($listId > 0){
+        if ($listId > 0) {
             $WhereStatement = " WHERE category=".$listId;
             $list = $this->_getList($listId);
             $listname = $list['name'];
-        }else{
+        } else {
             $listname = "all_lists";
         }
         $query    = "    SELECT * FROM ".DBPREFIX."module_newsletter_rel_user_cat
@@ -2577,6 +2582,7 @@ class newsletter extends NewsletterLib
             while (!$objResult->EOF) {
                 $StringForFile .= $objResult->fields['status'].$separator;
                 $StringForFile .= $objResult->fields['email'].$separator;
+                $StringForFile .= $objResult->fields['uri'].$separator;
                 $StringForFile .= $objResult->fields['sex'].$separator;
                 $StringForFile .= $arrRecipientTitles[$objResult->fields['title']].$separator;
                 $StringForFile .= $objResult->fields['lastname'].$separator;
@@ -2588,13 +2594,12 @@ class newsletter extends NewsletterLib
                 $StringForFile .= $objResult->fields['country'].$separator;
                 $StringForFile .= $objResult->fields['phone'].$separator;
                 $StringForFile .= $objResult->fields['birthday'];
-
                 $StringForFile .= chr(13).chr(10);
                 $objResult->MoveNext();
             }
         }
 
-        if(strtolower(CONTREXX_CHARSET) == 'utf-8'){
+        if (strtolower(CONTREXX_CHARSET) == 'utf-8') {
             $StringForFile = utf8_decode($StringForFile);
         }
 
@@ -2608,7 +2613,7 @@ class newsletter extends NewsletterLib
     {
         global $_CONFIG, $objDatabase;
         $output = '';
-        $fieldValues = array('status', 'email', 'lastname', 'firstname', 'street', 'zip', 'city', 'country', 'emaildate', );
+        $fieldValues = array('status', 'email', 'uri', 'lastname', 'firstname', 'street', 'zip', 'city', 'country', 'emaildate', );
         $field  = (!empty($_REQUEST['field'])) ? contrexx_addslashes($_REQUEST['field']) : 'emaildate';
         $order  = (!empty($_REQUEST['order'])) ? contrexx_addslashes($_REQUEST['order']) : 'asc';
         $listId = (!empty($_REQUEST['list']))  ? intval($_REQUEST['list']) : '';
@@ -2634,12 +2639,12 @@ class newsletter extends NewsletterLib
             return false;
         }
         if($listId == ''){
-            $query = "SELECT id, email, lastname, firstname, street, zip, city, country, `status`, emaildate
+            $query = "SELECT id, email, uri, lastname, firstname, street, zip, city, country, `status`, emaildate
             FROM ".DBPREFIX."module_newsletter_user
 			WHERE 1 = 1 $search_where
             ORDER BY $field $order";
         }else{
-            $query = "SELECT tblUser.id, email, lastname, firstname, street, zip, city, country, `status`, emaildate
+            $query = "SELECT tblUser.id, email, uri, lastname, firstname, street, zip, city, country, `status`, emaildate
             FROM ".DBPREFIX."module_newsletter_user AS tblUser, "
                   .DBPREFIX."module_newsletter_rel_user_cat AS tblRel
             WHERE tblUser.id=tblRel.user and tblRel.category=".$listId."
@@ -2653,6 +2658,7 @@ class newsletter extends NewsletterLib
             $output .= $objRS->fields['id'];
             $output .= '#'.$objRS->fields['status'];
             $output .= '#'.$objRS->fields['email'];
+            $output .= '#'.$objRS->fields['uri'];
             $output .= '#'.$objRS->fields['lastname'];
             $output .= '#'.$objRS->fields['firstname'];
             $output .= '#'.$objRS->fields['street'];
@@ -2677,17 +2683,18 @@ class newsletter extends NewsletterLib
         require_once ASCMS_LIBRARY_PATH . "/importexport/import.class.php";
         $objImport = new Import();
         $arrFields = array(
-            'email'            => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
-            'sex'            => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
-            'title'            => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
-            'lastname'        => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
-            'firstname'        => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
-            'company'        => $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'],
-            'street'        => $_ARRAYLANG['TXT_NEWSLETTER_STREET'],
-            'zip'            => $_ARRAYLANG['TXT_NEWSLETTER_ZIP'],
-            'city'            => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
-            'country'        => $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
-            'phone'            => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
+            'email'     => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
+            'uri' => $_ARRAYLANG['TXT_NEWSLETTER_URI'],
+            'sex'       => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
+            'title'     => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
+            'lastname'  => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
+            'firstname' => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
+            'company'   => $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'],
+            'street'    => $_ARRAYLANG['TXT_NEWSLETTER_STREET'],
+            'zip'       => $_ARRAYLANG['TXT_NEWSLETTER_ZIP'],
+            'city'      => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
+            'country'   => $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
+            'phone'     => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
             'brithday'  => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
         );
 
@@ -2712,10 +2719,10 @@ class newsletter extends NewsletterLib
             $NewEmails = 0;
 
             foreach ($arrRecipients as $arrRecipient) {
-                if (empty($arrRecipient['email'])){
+                if (empty($arrRecipient['email'])) {
                     continue;
                 }
-                if (!strpos($arrRecipient['email'],'@')){
+                if (!strpos($arrRecipient['email'],'@')) {
                     continue;
                 }
 
@@ -2817,10 +2824,10 @@ class newsletter extends NewsletterLib
                     $ExistEmails = 0;
                     $NewEmails = 0;
                     foreach ($EmailArray as $email) {
-                        if (empty($email)){
+                        if (empty($email)) {
                             continue;
                         }
-                        if (!strpos($email,'@')){
+                        if (!strpos($email,'@')) {
                             continue;
                         }
 
@@ -2893,12 +2900,12 @@ class newsletter extends NewsletterLib
                     $objResultIC->MoveNext();
                 }
             }
-        }else{
+        } else {
             $currentCategories = array(intval($_REQUEST['category']));
             //fetch all current categories that this user is in
             $query = "SELECT * from ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=$CreatedID";
             $objRS = $objDatabase->Execute($query);
-            while(!$objRS->EOF){
+            while(!$objRS->EOF) {
                 $currentCategories[] = $objRS->fields['category'];
                 $objRS->MoveNext();
             }
@@ -2909,8 +2916,8 @@ class newsletter extends NewsletterLib
 
             //re-import the unique categories
             foreach ($uniqueCategories as $catId) {
-                if($catId != 0){
-                    if($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_rel_user_cat
+                if ($catId != 0) {
+                    if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_rel_user_cat
                                     (user, category)
                                     VALUES (".$CreatedID.", ".$catId.")") === false) {
                         return $this->_strErrMessage = $_ARRAYLANG['TXT_DATABASE_ERROR'];
@@ -2930,24 +2937,24 @@ class newsletter extends NewsletterLib
      *
      * @return void
      */
-    function _deleteInactiveRecipients(){
+    function _deleteInactiveRecipients() {
         global $objDatabase, $_ARRAYLANG;
         $count = 0;
-        if( ($objRS = $objDatabase->Execute('SELECT `id` FROM `'.DBPREFIX.'module_newsletter_user` WHERE `status` = 0 ')) !== false ){
-            while(!$objRS->EOF){
+        if ( ($objRS = $objDatabase->Execute('SELECT `id` FROM `'.DBPREFIX.'module_newsletter_user` WHERE `status` = 0 ')) !== false ) {
+            while(!$objRS->EOF) {
                 $objDatabase->Execute('DELETE FROM `'.DBPREFIX.'module_newsletter_user` WHERE `id` = '. $objRS->fields['id']);
                 $objDatabase->Execute('DELETE FROM `'.DBPREFIX.'module_newsletter_rel_user_cat` WHERE `user` = '. $objRS->fields['id']);
                 $objRS->MoveNext();
                 $count++;
             }
             $this->_strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_INACTIVE_RECIPIENTS_SUCCESSFULLY_DELETED'] . ' ( '. $count .' )';
-        }else{
+        } else {
             $this->_strErrMessage = $_ARRAYLANG['TXT_DATABASE_ERROR'] . $objDatabase->ErrorMsg();
         }
     }
 
 
-    function overview(){
+    function overview() {
         global $objDatabase, $_ARRAYLANG;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER_ADMINISTRATION'];
@@ -2982,7 +2989,7 @@ class newsletter extends NewsletterLib
 
     }
 
-    function newsletterOverview(){
+    function newsletterOverview() {
         global $objDatabase, $_ARRAYLANG;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER'];
@@ -3034,7 +3041,7 @@ class newsletter extends NewsletterLib
         }
     }
 
-    function configOverview(){
+    function configOverview() {
         global $objDatabase, $_ARRAYLANG;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
@@ -3050,7 +3057,7 @@ class newsletter extends NewsletterLib
 
     }
 
-    function UserCount(){
+    function UserCount() {
         global $objDatabase;
         $objResult_value = $objDatabase->SelectLimit("SELECT
                                                     count(*) as counter
@@ -3058,12 +3065,12 @@ class newsletter extends NewsletterLib
                                                     ", 1);
         if ($objResult_value !== false && !$objResult_value->EOF) {
             return $objResult_value->fields["counter"];
-        }else{
+        } else {
             return 0;
         }
     }
 
-    function NewsletterSendCount(){
+    function NewsletterSendCount() {
         global $objDatabase;
         $objResult_value = $objDatabase->SelectLimit("SELECT
                                                     count(*) as counter
@@ -3071,12 +3078,12 @@ class newsletter extends NewsletterLib
                                                     WHERE status=1", 1);
         if ($objResult_value !== false && !$objResult_value->EOF) {
             return $objResult_value->fields["counter"];
-        }else{
+        } else {
             return 0;
         }
     }
 
-    function NewsletterNotSendCount(){
+    function NewsletterNotSendCount() {
         global $objDatabase;
         $objResult_value = $objDatabase->SelectLimit("SELECT
                                                     count(*) as counter
@@ -3084,7 +3091,7 @@ class newsletter extends NewsletterLib
                                                     WHERE status=0", 1);
         if ($objResult_value !== false && !$objResult_value->EOF) {
             return $objResult_value->fields["counter"];
-        }else{
+        } else {
             return 0;
         }
     }
@@ -3095,6 +3102,7 @@ class newsletter extends NewsletterLib
 
         $recipientId = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
         $recipientEmail = '';
+        $recipientUri = '';
         $recipientSex = '';
         $recipientTitle = 0;
         $recipientLastname = '';
@@ -3111,6 +3119,9 @@ class newsletter extends NewsletterLib
 
         if (isset($_POST['newsletter_recipient_email'])) {
             $recipientEmail = $_POST['newsletter_recipient_email'];
+        }
+        if (isset($_POST['newsletter_recipient_uri'])) {
+            $recipientUri = $_POST['newsletter_recipient_uri'];
         }
         if (isset($_POST['newsletter_recipient_sex'])) {
             $recipientSex = in_array($_POST['newsletter_recipient_sex'], array('f', 'm')) ? $_POST['newsletter_recipient_sex'] : '';
@@ -3162,18 +3173,17 @@ class newsletter extends NewsletterLib
 
         if (isset($_POST['newsletter_recipient_save'])) {
             $objValidator = new FWValidator();
-
             if ($objValidator->isEmail($recipientEmail)) {
                 if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
                     if ($recipientId > 0) {
-                        if ($this->_updateRecipient($recipientId, $recipientEmail, $recipientSex, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientCompany, $recipientStreet, $recipientZip, $recipientCity, $recipientCountry, $recipientPhone, $recipientBirthday, $recipientStatus, $arrAssociatedLists)) {
+                        if ($this->_updateRecipient($recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientCompany, $recipientStreet, $recipientZip, $recipientCity, $recipientCountry, $recipientPhone, $recipientBirthday, $recipientStatus, $arrAssociatedLists)) {
                             $this->_strOkMessage .= $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_UPDATED_SUCCESSFULLY'];
                             return $this->_userList();
                         } else {
                             $this->_strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_ERROR_UPDATE_RECIPIENT'];
                         }
                     } else {
-                        if ($this->_addRecipient($recipientEmail, $recipientSex, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientCompany, $recipientStreet, $recipientZip, $recipientCity, $recipientCountry, $recipientPhone, $recipientBirthday, $recipientStatus, $arrAssociatedLists)) {
+                        if ($this->_addRecipient($recipientEmail, $recipientUri, $recipientSex, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientCompany, $recipientStreet, $recipientZip, $recipientCity, $recipientCountry, $recipientPhone, $recipientBirthday, $recipientStatus, $arrAssociatedLists)) {
                             $this->_strOkMessage .= $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_SAVED_SUCCESSFULLY'];
                             return $this->_userList();
                         } else {
@@ -3187,9 +3197,10 @@ class newsletter extends NewsletterLib
                 $this->_strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_INVALIDE_EMAIL_ADDRESS'];
             }
         } elseif ($recipientId > 0) {
-            $objRecipient = $objDatabase->SelectLimit("SELECT email, sex, title, lastname, firstname, company, street, zip, city, country, phone, birthday, status FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
+            $objRecipient = $objDatabase->SelectLimit("SELECT email, uri, sex, title, lastname, firstname, company, street, zip, city, country, phone, birthday, status FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
             if ($objRecipient !== false && $objRecipient->RecordCount() == 1) {
                 $recipientEmail = $objRecipient->fields['email'];
+                $recipientUri = $objRecipient->fields['uri'];
                 $recipientSex = $objRecipient->fields['sex'];
                 $recipientTitle = $objRecipient->fields['title'];
                 $recipientLastname = $objRecipient->fields['lastname'];
@@ -3239,6 +3250,7 @@ class newsletter extends NewsletterLib
         $this->_objTpl->setVariable(array(
             'NEWSLETTER_RECIPIENT_ID'            => $recipientId,
             'NEWSLETTER_RECIPIENT_EMAIL'        => htmlentities($recipientEmail, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_RECIPIENT_URI'        => htmlentities($recipientUri, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_FEMALE'        => $recipientSex == 'f' ? 'checked="checked"' : '',
             'NEWSLETTER_RECIPIENT_MALE'            => $recipientSex == 'm' ? 'checked="checked"' : '',
             'NEWSLETTER_RECIPIENT_TITLE'        => $this->_getRecipientTitleMenu($recipientTitle, 'name="newsletter_recipient_title" size="1"'),
@@ -3253,28 +3265,27 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_RECIPIENT_BIRTHDAY'        => htmlentities($recipientBirthday, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_STATUS'        => $recipientStatus == '1' ? 'checked="checked"' : ''
         ));
-
         $this->_objTpl->setVariable(array(
             'TXT_NEWSLETTER_EMAIL_ADDRESS'    => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
+            'TXT_NEWSLETTER_URI'    => $_ARRAYLANG['TXT_NEWSLETTER_URI'],
             'TXT_NEWSLETTER_TITLE'            => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
-            'TXT_NEWSLETTER_SEX'            => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
-            'TXT_NEWSLETTER_FEMALE'            => $_ARRAYLANG['TXT_NEWSLETTER_FEMALE'],
-            'TXT_NEWSLETTER_MALE'            => $_ARRAYLANG['TXT_NEWSLETTER_MALE'],
-            'TXT_NEWSLETTER_LASTNAME'        => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
+            'TXT_NEWSLETTER_SEX'              => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
+            'TXT_NEWSLETTER_FEMALE'           => $_ARRAYLANG['TXT_NEWSLETTER_FEMALE'],
+            'TXT_NEWSLETTER_MALE'             => $_ARRAYLANG['TXT_NEWSLETTER_MALE'],
+            'TXT_NEWSLETTER_LASTNAME'         => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
             'TXT_NEWSLETTER_FIRSTNAME'        => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
-            'TXT_NEWSLETTER_COMPANY'        => $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'],
-            'TXT_NEWSLETTER_STREET'            => $_ARRAYLANG['TXT_NEWSLETTER_STREET'],
-            'TXT_NEWSLETTER_ZIP'            => $_ARRAYLANG['TXT_NEWSLETTER_ZIP'],
-            'TXT_NEWSLETTER_CITY'            => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
-            'TXT_NEWSLETTER_COUNTRY'        => $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
+            'TXT_NEWSLETTER_COMPANY'          => $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'],
+            'TXT_NEWSLETTER_STREET'           => $_ARRAYLANG['TXT_NEWSLETTER_STREET'],
+            'TXT_NEWSLETTER_ZIP'              => $_ARRAYLANG['TXT_NEWSLETTER_ZIP'],
+            'TXT_NEWSLETTER_CITY'             => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
+            'TXT_NEWSLETTER_COUNTRY'          => $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
             'TXT_NEWSLETTER_PHONE'            => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
-            'TXT_NEWSLETTER_BIRTHDAY'        => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
+            'TXT_NEWSLETTER_BIRTHDAY'         => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
             'TXT_NEWSLETTER_ASSOCIATED_LISTS' => $_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_LISTS'],
-            'TXT_NEWSLETTER_STATUS'            => $_ARRAYLANG['TXT_NEWSLETTER_STATUS'],
-            'TXT_NEWSLETTER_SAVE'            => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
+            'TXT_NEWSLETTER_STATUS'           => $_ARRAYLANG['TXT_NEWSLETTER_STATUS'],
+            'TXT_NEWSLETTER_SAVE'             => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
             'JAVASCRIPTCODE'                  => $this->JSadduser(),
         ));
-
         $this->_objTpl->parse('module_newsletter_user_edit');
         return true;
     }
@@ -3309,17 +3320,11 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_CATEGORY_ID'            => '&amp;newsletterListId='.$newsletterListId,
         ));
 
-
-
 		$search_params = addslashes("&SearchStatus={$_REQUEST['SearchStatus']}&keyword={$_REQUEST['keyword']}&SearchFields={$_REQUEST['SearchFields']}");
-
         $this->_objTpl->setVariable('NEWSLETTER_LIST_MENU', $this->CategoryDropDown('newsletterListId', $newsletterListId, "id='newsletterListId' onchange=\"window.location.replace('index.php?cmd=newsletter&act=users&newsletterListId='+this.value + '$search_params')\""));
-
-
         if($_GET["addmailcode"]=="exe"){
-
             $query        = "SELECT id, code FROM ".DBPREFIX."module_newsletter_user where code=''";
-            $objResult     = $objDatabase->Execute($query);
+            $objResult = $objDatabase->Execute($query);
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
                     $objDatabase->Execute("
@@ -3341,18 +3346,18 @@ class newsletter extends NewsletterLib
             }
         }
 
-        if($_GET["bulkdelete"]=="exe"){
+        if ($_GET["bulkdelete"]=="exe") {
             $error=0;
-            if(!empty($_POST['userid'])){
-                foreach ($_POST['userid'] as $userid){
+            if (!empty($_POST['userid'])) {
+                foreach ($_POST['userid'] as $userid) {
                     $userid=intval($userid);
                     if (!$this->_deleteRecipient($userid)) {
                         $error=1;
                     }
                 }
-                if($error){
+                if ($error) {
                     $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'];
-                }else{
+                } else {
                     $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                 }
             }
@@ -3372,9 +3377,6 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_UNCHECK_ALL'    => $_ARRAYLANG['TXT_NEWSLETTER_UNCHECK_ALL'],
             'TXT_NEWSLETTER_WITH_SELECTED'    => $_ARRAYLANG['TXT_NEWSLETTER_WITH_SELECTED'],
             'TXT_NEWSLETTER_DELETE'            => $_ARRAYLANG['TXT_NEWSLETTER_DELETE'],
-
-
-
             'TXT_STATUS'            => $_ARRAYLANG['TXT_STATUS'],
             'TXT_SEARCH'            => $_ARRAYLANG['TXT_SEARCH'],
             'TXT_EMAIL_ADDRESS'        => $_ARRAYLANG['TXT_EMAIL_ADDRESS'],
@@ -3399,7 +3401,7 @@ class newsletter extends NewsletterLib
             'TXT_EXPORT'            => $_ARRAYLANG['TXT_EXPORT'],
             'TXT_FUNCTIONS'            => $_CORELANG['TXT_FUNCTIONS'],
             'NEWSLETTER_SEARCH_LIST_ID' => $newsletterListId,
-        ));
+            ));
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_NEWSLETTER_MODIFY_RECIPIENT'    => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_RECIPIENT'],
@@ -3407,22 +3409,19 @@ class newsletter extends NewsletterLib
         ));
 
         $where_statement = '';
-
 		// Set session entries so edituserSort() uses the right values when it's called..
 		$_SESSION['backend_newsletter_users_search_SearchStatus'] = $_REQUEST["SearchStatus"];
 		$_SESSION['backend_newsletter_users_search_SearchFields'] = $_REQUEST["SearchFields"];
 		$_SESSION['backend_newsletter_users_search_keyword']      = $_REQUEST["keyword"];
-
         $this->_objTpl->setVariable(array(
 			'NEWSLETTER_SEARCH_STATUS'  => $_REQUEST["SearchStatus"],
 			'NEWSLETTER_SEARCH_FIELDS'  => $_REQUEST["SearchFields"],
 			'NEWSLETTER_SEARCH_KEYWORD' => $_REQUEST["keyword"]
 		));
-
-        if($_REQUEST["keyword"]!=""){
-            if($_REQUEST["SearchFields"]!=""){
+        if ($_REQUEST["keyword"]!="") {
+            if ($_REQUEST["SearchFields"]!="") {
                 $where_statement .= ' and '.contrexx_addslashes($_REQUEST["SearchFields"]).' LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%" ';
-            }else{
+            } else {
                 $where_statement .= '    and (email LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
                                         or lastname LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
                                         or firstname LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
@@ -3435,11 +3434,11 @@ class newsletter extends NewsletterLib
             }
         }
         // kategoriesuche noch einbauen
-        if($_REQUEST["SearchCategory"]!=""){
+        if ($_REQUEST["SearchCategory"]!="") {
             $where_statement .= ' ';
         }
 
-        if($_REQUEST["SearchStatus"]!=""){
+        if ($_REQUEST["SearchStatus"]!="") {
             $where_statement .= ' and status='.intval($_REQUEST["SearchStatus"]).' ';
         }
 
@@ -3450,18 +3449,18 @@ class newsletter extends NewsletterLib
         $pos = intval($_GET['pos']);
 
 
-        if($where_statement == ''){
+        if ($where_statement == '') {
             $query         = "    SELECT id, email, lastname, firstname, street, zip, city, country, emaildate, `status`
                             FROM ".DBPREFIX."module_newsletter_user
                             GROUP BY id
                             ORDER BY emaildate DESC";
-        }elseif($newsletterListId == 0){
+        } elseif ($newsletterListId == 0) {
             $query         = "    SELECT tblUser.id, email, lastname, firstname, street, zip, city, country, emaildate, `status`
                             FROM ".DBPREFIX."module_newsletter_user AS tblUser
                             where 1=1 ".$where_statement."
                             GROUP BY id
                             ORDER BY emaildate DESC";
-        }else{
+        } else {
             $query         = "    SELECT tblUser.id, email, lastname, firstname, street, zip, city, country, emaildate, `status`
                             FROM ".DBPREFIX."module_newsletter_user AS tblUser, "
                             .DBPREFIX."module_newsletter_rel_user_cat AS tblRel
@@ -3471,36 +3470,36 @@ class newsletter extends NewsletterLib
         }
 
         //show only one record set if _REQUEST['id'] is set (meaning the client comes from user details)
-        if(!empty($_REQUEST['id']) && $_GET['delete'] != 'exe' && $_GET['bulkdelete'] != 'exe'){
+        if (!empty($_REQUEST['id']) && $_GET['delete'] != 'exe' && $_GET['bulkdelete'] != 'exe') {
             $objResult = $objDatabase->Execute('SELECT tblUser.id, email, lastname, firstname, street, zip, city, country, emaildate, `status`
                                                 FROM '.DBPREFIX.'module_newsletter_user AS tblUser, '.DBPREFIX.'module_newsletter_rel_user_cat AS tblRel
                                                 WHERE tblUser.id ='.intval($_REQUEST['id'])
                                                 .' GROUP BY tblUser.id order by email LIMIT 1');
-        }else{
+        } else {
             $objResult = $objDatabase->SelectLimit($query, $limit, $pos);
         }
 
-        if($where_statement == ''){
+        if ($where_statement == '') {
             $query_2 = "    SELECT COUNT(1) as cnt
                             FROM ".DBPREFIX."module_newsletter_user";
-        }elseif($newsletterListId == 0){
+        } elseif ($newsletterListId == 0) {
             $query_2 = "    SELECT COUNT(1) as cnt
                             FROM ".DBPREFIX."module_newsletter_user AS tblUser
                             WHERE 1=1 ".$where_statement;
-        }else{
+        } else {
             $query_2 = "    SELECT COUNT(1) as cnt
                             FROM ".DBPREFIX."module_newsletter_user AS tblUser, "
                             .DBPREFIX."module_newsletter_rel_user_cat AS tblRel
                             WHERE 1=1 ".$where_statement;
         }
-        $objResult_2     = $objDatabase->Execute($query_2);
+        $objResult_2 = $objDatabase->Execute($query_2);
         $count = $objResult_2->fields['cnt'];
         $rowNr = 0;
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                if($objResult->fields['status']==1){
+                if ($objResult->fields['status']==1) {
                     $StatusImg = '<img src="'.ASCMS_ADMIN_WEB_PATH.'/images/icons/led_green.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_ACTIVE'].'" />';
-                }else{
+                } else {
                     $StatusImg = '<img src="'.ASCMS_ADMIN_WEB_PATH.'/images/icons/led_red.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_OPEN_ISSUE'].'" />';
                 }
                 $this->_objTpl->setVariable(array(
@@ -3521,7 +3520,7 @@ class newsletter extends NewsletterLib
                 $objResult->MoveNext();
             }
         }
-        if(!empty($limit)){
+        if (!empty($limit)) {
             $_CONFIG['corePagingLimit'] = $limit;
         }
 
@@ -3537,7 +3536,7 @@ class newsletter extends NewsletterLib
         $this->_objTpl->parse('module_newsletter_user_overview');
     }
 
-    function SelectListStatus(){
+    function SelectListStatus() {
         global $objDatabase, $_ARRAYLANG;
         $ReturnVar = '
             <select name="SearchStatus">
@@ -3547,13 +3546,12 @@ class newsletter extends NewsletterLib
             </select>
         ';
 		$selected = $_REQUEST['SearchStatus'];
-
 		$ReturnVar = str_replace("value=\"$selected\"", "selected=\"selected\" value=\"$selected\"", $ReturnVar);
         return $ReturnVar;
     }
 
 
-    function SelectListCategory(){
+    function SelectListCategory() {
         global $objDatabase, $_ARRAYLANG;
         $ReturnVar = '<select name="SearchCategory">';
         $ReturnVar .= '<option value="">-- '.$_ARRAYLANG['TXT_NEWSLETTER_CATEGORYS'].' --</option>';
@@ -3570,7 +3568,7 @@ class newsletter extends NewsletterLib
     }
 
 
-    function SelectListFields(){
+    function SelectListFields() {
         global $objDatabase, $_ARRAYLANG;
         $ReturnVar = '
             <select name="SearchFields">
@@ -3587,38 +3585,37 @@ class newsletter extends NewsletterLib
             </select>
         ';
 		$selected = $_REQUEST['SearchFields'];
-
 		$ReturnVar = str_replace("value=\"$selected\"", "selected=\"selected\" value=\"$selected\"", $ReturnVar);
         return $ReturnVar;
     }
 
 
-    function JSadduser(){
+    function JSadduser() {
         global $objDatabase, $_ARRAYLANG;
         Return '
             <script language="javascript">
-                function SubmitAddForm(){
-                    if(CheckMail(document.adduser.email.value)==true){
+                function SubmitAddForm() {
+                    if (CheckMail(document.adduser.email.value)==true) {
                             document.adduser.submit();
-                    }else{
+                    } else {
                         alert("'.$_ARRAYLANG['TXT_MAILERROR'].'");
                         document.adduser.email.focus();
                     }
                 }
 
-                function CheckMail(s){
+                function CheckMail(s) {
                      var a = false;
                      var res = false;
-                     if(typeof(RegExp) == "function"){
+                     if (typeof(RegExp) == "function") {
                           var b = new RegExp("abc");
-                          if(b.test("abc") == true){a = true;}
+                          if (b.test("abc") == true) {a = true;}
                       }
-                    if(a == true){
+                    if (a == true) {
                           reg = new RegExp("^([a-zA-Z0-9\\-\\.\\_]+)"+
                                            "(\\@)([a-zA-Z0-9\\-\\.]+)"+
                                            "(\\.)([a-zA-Z]{2,4})$");
                         res = (reg.test(s));
-                    }else{
+                    } else {
                         res = (s.search("@") >= 1 &&
                         s.lastIndexOf(".") > s.search("@") &&
                         s.lastIndexOf(".") >= s.length-5)
@@ -3629,7 +3626,7 @@ class newsletter extends NewsletterLib
         ';
     }
 
-    function JSedituser(){
+    function JSedituser() {
         global $_ARRAYLANG;
         Return '
             <script type="text/javascript">
@@ -3661,7 +3658,7 @@ class newsletter extends NewsletterLib
         ';
     }
 
-    function DateForDB(){
+    function DateForDB() {
         return date("Y")."-".date("m")."-".date("d");
     }
 
@@ -3700,7 +3697,7 @@ class newsletter extends NewsletterLib
     }
 
 
-    function CategoryDropDown($name = 'category', $selected = 0, $attrs = ''){
+    function CategoryDropDown($name = 'category', $selected = 0, $attrs = '') {
         global $objDatabase, $_ARRAYLANG;
         $ReturnVar = '<select name="'.$name.'"'.(!empty($attrs) ? ' '.$attrs : '').'>
         <option value="selectcategory">'.$_ARRAYLANG['TXT_NEWSLETTER_SELECT_CATEGORY'].'</option>
@@ -3715,7 +3712,7 @@ class newsletter extends NewsletterLib
             }
         }
         $ReturnVar .= '</select>';
-        if($CategorysFounded!=1){
+        if ($CategorysFounded!=1) {
             $ReturnVar = '';
         }
         return $ReturnVar;
@@ -3838,7 +3835,7 @@ class newsletter extends NewsletterLib
     }
 
 
-    function _getListHTML(){
+    function _getListHTML() {
         global $_ARRAYLANG;
 
         $listId = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -3864,7 +3861,7 @@ class newsletter extends NewsletterLib
         $this->_objTpl->loadTemplateFile('newsletter_config_system.html');
         $this->_objTpl->setVariable('TXT_TITLE', $_CORELANG['TXT_SETTINGS_MENU_SYSTEM']);
 
-        if($_POST["update"]=="exe"){
+        if ($_POST["update"]=="exe") {
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST['def_unsubscribe'])."' WHERE setname='defUnsubscribe'");
         }
 
@@ -3878,11 +3875,11 @@ class newsletter extends NewsletterLib
         }
 
         if ($arrSystem['defUnsubscribe'] == 1) {
-            $delete     = 'checked="checked"';
-            $deactivate    = '';
+            $delete = 'checked="checked"';
+            $deactivate = '';
         } else {
-            $delete     = '';
-            $deactivate    = 'checked="checked"';
+            $delete = '';
+            $deactivate = 'checked="checked"';
         }
 
         $this->_objTpl->setVariable(array(
