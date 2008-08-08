@@ -491,7 +491,7 @@ if (MY_DEBUG) echo("Ticket::refreshTimestamp(): done!<br />");
     function updateSupportCategoryId($supportCategoryId)
     {
         if ($this->supportCategoryId != $supportCategoryId) {
-        	$objFWUser = FWUser::getFWUserObject();
+            $objFWUser = FWUser::getFWUserObject();
 
             // Create the appropriate TicketEvent
             $objEvent = new TicketEvent(
@@ -533,7 +533,7 @@ if (MY_DEBUG) echo("Ticket::refreshTimestamp(): done!<br />");
     function updateOwnerId($ownerId)
     {
         if ($this->ownerId != $ownerId) {
-        	$objFWUser = FWUser::getFWUserObject();
+            $objFWUser = FWUser::getFWUserObject();
 
             // Create the appropriate TicketEvent
             $objEvent = new TicketEvent(
@@ -654,7 +654,7 @@ if (MY_DEBUG) echo("Ticket::addMessage(): ERROR: Adding Message results in UNKNO
         }
         // If a new Ticket was created above, add a REFERENCE to the old one.
         if ($this != $objTicket) {
-        	$objFWUser = FWUser::getFWUserObject();
+            $objFWUser = FWUser::getFWUserObject();
 
             $objEvent = new TicketEvent(
                 $objTicket,                     // New Ticket object
@@ -767,7 +767,7 @@ if (MY_DEBUG) echo("Ticket::addReply(): ERROR: Failed to roll back Message inser
      */
     function deleteMessage($messageId)
     {
-    	$objFWUser = FWUser::getFWUserObject();
+        $objFWUser = FWUser::getFWUserObject();
         $objEvent = new TicketEvent(
             $this,
             SUPPORT_TICKET_EVENT_MESSAGE_DELETE,
@@ -800,7 +800,7 @@ if (MY_DEBUG) echo("Ticket::deleteMessage(messageId=$messageId): INFO: process()
      */
     function updateView($messageId)
     {
-    	$objFWUser = FWUser::getFWUserObject();
+        $objFWUser = FWUser::getFWUserObject();
         $objEvent = new TicketEvent(
             $this,
             SUPPORT_TICKET_EVENT_MESSAGE_VIEW,
@@ -825,7 +825,7 @@ if (MY_DEBUG) echo("Ticket::updateView(messageId=$messageId): INFO: process() re
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function close() {
-    	$objFWUser = FWUser::getFWUserObject();
+        $objFWUser = FWUser::getFWUserObject();
         $objEvent = new TicketEvent(
             $this,
             SUPPORT_TICKET_EVENT_CLOSE,
@@ -1071,7 +1071,7 @@ if (MY_DEBUG) echo("getOwnerMenu(selected=$selectedId, name=$menuName, onchange=
 //if (MY_DEBUG) { echo("getOwnerMenu(selected=$selectedId, name=$menuName, onchange=$onchange): got user IDs: ");var_export($arrUserId);echo("<br />"); }
         $menu = '';
         while (!$objUsers->EOF) {
-			$fullName = trim($objUsers->getProfileAttribute('firstanme').' '.$objUsers->getProfileAttribute('lastname'));
+            $fullName = trim($objUsers->getProfileAttribute('firstanme').' '.$objUsers->getProfileAttribute('lastname'));
             if ($fullName == '') {
                 continue;
             }
@@ -1079,7 +1079,7 @@ if (MY_DEBUG) echo("getOwnerMenu(selected=$selectedId, name=$menuName, onchange=
                 "<option value='{$objUsers->getId()}'".
                 ($selectedId == $objUsers->getId() ? ' selected="selected"' : '').
                 '>'.htmlentities($fullName, ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
-        	$objUsers->next();
+            $objUsers->next();
         }
 
         if ($menuName) {

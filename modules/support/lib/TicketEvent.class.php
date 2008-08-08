@@ -473,7 +473,7 @@ class TicketEvent
         $this->oldStatus = $oldStatus;
         if ($this->id <= 0) {
 // TODO: This only works in the Backend
-//			  $objFWUser = FWUser::getFWUserObject();
+//              $objFWUser = FWUser::getFWUserObject();
 //            $this->userId    = $objFWUser->objUser->getId()
             $this->oldStatus =
                 $this->getTicketStatus($this->objTicket->getId());
