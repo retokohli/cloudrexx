@@ -97,7 +97,7 @@ class SmtpSettings
 
     /**
      * Returns the local configured SMTP account of the current system.
-     * @global array
+     * @global  array $_CORELANG
      * @return array Array with the SMTP account details
      * @static
      */
