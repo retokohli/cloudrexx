@@ -550,7 +550,10 @@ class news extends newsLibrary {
                 $this->_objTpl->touchBlock('news_submitted');
             }
         } else {
-            include_once ASCMS_CORE_PATH.'/wysiwyg.class.php';
+            require ASCMS_CORE_PATH.'/wysiwyg.class.php';
+            global $wysiwygEditor, $FCKeditorBasePath;
+            $wysiwygEditor = "FCKeditor";
+            $FCKeditorBasePath = "/editor/fckeditor/";
 
             $this->_objTpl->setVariable(array(
                 'TXT_NEWS_MESSAGE'          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
