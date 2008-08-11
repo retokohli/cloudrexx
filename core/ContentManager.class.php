@@ -2595,7 +2595,6 @@ class ContentManager
             }
         }
 
-
         foreach ($arrBlocks as $arrData) {
             if (array_key_exists($arrData['id'],$arrRelationBlocks)) {
                 $blocks[0] .= '<option value="'.$arrData['id'].'">'.$arrData['name'].' ('.$arrData['id'].') </option>'."\n";
@@ -2605,28 +2604,74 @@ class ContentManager
         }
 
         return $blocks;
-    }
+	}
 
-    /**
+	/**
+	 * Returns an alias that has only valid characters.
+	 */
+	function _fix_alias($txt) {
+		// this is kinda of a duplicate of the javascript function aliasText() 
+		// in cadmin/template/ascms/content_editor.html
+
+		// Sanitize most latin1 characters. 
+		// there's more to come. maybe there's
+		// a generic function for this?
+		$txt = str_replace(
+			array('ä', 'ö', 'ü', 'à','ç','è','é'),
+			array('ae','oe','ue','a','c','e','e')
+			strtolower($txt)
+		);
+
+		$txt = preg_replace( '/[\s\+\/\(\)=,;%&]+/', '-', $txt); // interpunction etc.
+		$txt = preg_replace( '/[\'<>\\\~$!"]+/',     '',  $txt); // quotes and other special characters
+
+		// Fallback for everything we didn't catch by now
+		$txt = preg_replace('/[^a-z_-]+/i',  '_', $txt); 
+		$txt = preg_replace('/[_-]{2,}/',    '_', $txt);
+		$txt = preg_replace('/^[_\.\/\-]+/', '',  $txt);
+
+		return $txt;
+	}
+
+	/**
+	 * Sets default alias for a given page id. If an empty alias is given and the
+	 * page already has a default alias, it will be removed.
+	 *
      * Returns false on success. On failure, returns an appropriate error message.
      * @param pageid  the local URL to the page ("?page=xx" or "?section=..." alike stuff)
      * @param alias   the alias to install for the page. if it is empty or null,
      *                no change will happen.
      */
     function _default_alias($pageid, $alias) {
-        $alias    = contrexx_addslashes($alias);
-
-        //////////////////////////////////////////////////////////////
-        // No action if there's no alias.
-        if ($alias == '') {
-            return false;
-        }
+        $alias    = $this->_fix_alias($alias);
 
         //////////////////////////////////////////////////////////////
         // aliasLib has some handy stuff for us here..
         global $objDatabase, $_ARRAYLANG;
         require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
         $util = new aliasLib;
+
+        //////////////////////////////////////////////////////////////
+        // Remove alias if it's empty. But only if it's a default alias!
+        if ($alias == '') {
+			if ($this->_has_default_alias($pageid)) {
+				// delete our default alias
+
+				$objResult = $objDatabase->Select("
+					SELECT id FROM ".DBPREFIX."module_alias_target 
+					WHERE type = 'local' and url = '$pageid'"
+				);
+				$target_id = $objResult->fields['id'];
+				$objDatabase->Execute("
+					DELETE FROM ".DBPREFIX."module_alias_source
+					WHERE target_id = $target_id "
+				);
+
+				// reads alias table, rewrites the .htaccess.
+				$util->_activateRewriteEngine();
+			}
+            return false;
+        }
 
 
         //////////////////////////////////////////////////////////////
@@ -2667,16 +2712,7 @@ class ContentManager
         //////////////////////////////////////////////////////////////
         // If the page already has a default alias, we're just
         // going to update it.
-        $check_update = "
-            SELECT a_s.url, a_s.id
-            FROM            ".DBPREFIX."module_alias_target AS a_t 
-            LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
-                  ON  a_t.id        = a_s.target_id
-                  AND a_s.isdefault = 1
-            WHERE a_t.url = '$pageid'
-        ";
-        $check_update_res = $objDatabase->Execute($check_update);
-        if ($check_update_res->RecordCount()){
+        if ($this->_has_default_alias($pageid)){
             // Alias already exists. grab the ID and update it.
             $alias_src_id = $check_update_res->fields['id'];
             $objDatabase->Execute("
@@ -2685,30 +2721,50 @@ class ContentManager
                 WHERE  id  = $alias_src_id
                 LIMIT  1"
             );
-        }
-
-
-        //////////////////////////////////////////////////////////////
-        // Okay. we're now ready to create the alias.
-        $objDatabase->Execute("
-            INSERT INTO ".DBPREFIX."module_alias_target 
-                (type, url) 
-            VALUES 
-                ('local', '$pageid')"
-        );
-        $last_id = $objDatabase->Insert_ID();
-        $objDatabase->Execute("
-            INSERT INTO ".DBPREFIX."module_alias_source
-                (target_id, url, isdefault) 
-            VALUES 
-                ($last_id, '$alias', 1)"
-        );
+		}
+		else {
+			//////////////////////////////////////////////////////////////
+			// Okay. we're now ready to create the alias.
+			$objDatabase->Execute("
+				INSERT INTO ".DBPREFIX."module_alias_target 
+					(type, url) 
+				VALUES 
+					('local', '$pageid')"
+			);
+			$last_id = $objDatabase->Insert_ID();
+			$objDatabase->Execute("
+				INSERT INTO ".DBPREFIX."module_alias_source
+					(target_id, url, isdefault) 
+				VALUES 
+					($last_id, '$alias', 1)"
+			);
+		}
 
         // reads alias table, rewrites the .htaccess.
         $util->_activateRewriteEngine();
         return false;
     }
 
+	/**
+	 * Returns true if the given pageid
+	 * has a default alias defined. false otherwise.
+	 */
+	function _has_default_alias($pageid) {
+		global $objDatabase;
+		$check_update = "
+			SELECT a_s.url, a_s.id
+			FROM            ".DBPREFIX."module_alias_target AS a_t 
+			LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
+				  ON  a_t.id        = a_s.target_id
+				  AND a_s.isdefault = 1
+			WHERE a_t.url = '$pageid'
+		";
+		$check_update_res = $objDatabase->Execute($check_update);
+		if ($check_update_res->RecordCount()){
+			return true;
+		}
+		return false;
+	}
     function modifyBlocks($associatedBlockIds, $pageId)
     {
         global $objDatabase, $_FRONTEND_LANGID;
