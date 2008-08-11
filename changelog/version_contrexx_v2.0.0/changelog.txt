@@ -21,7 +21,7 @@ Frontend Editing
 - Contrexx wurde um eine Frontend Editing-Funktion ergänzt. Um diese zu
   verwenden müssen die folgenden Platzhalter in der index.html Ihres Designs
   eingefügt werden:
-  
+
   1) [[LOGIN_INCLUDE]] innerhalb des <head>-Tags
   2) [[LOGIN_CONTENT]] vor dem schliessenden </body>-Tag
   3) [[LOGIN_URL]] dort, wo Sie Ihren Login-Link postionieren möchten.
@@ -83,9 +83,9 @@ Modul: Forum
   Designvorlagen (-> forum.html)
 - Bewertungssystem für Beiträge.
 - Neue Übersichtsseite mit den beliebtesten Beiträgen.
-- Es kann gewählt werden ob die neusten Beiträge nur pro Thread oder global 
+- Es kann gewählt werden ob die neusten Beiträge nur pro Thread oder global
   angezeigt werden sollen.
-- Eine Liste von erlaubten Dateiendungen kann definiert werden, welche für den 
+- Eine Liste von erlaubten Dateiendungen kann definiert werden, welche für den
   Dateiupload erlaubt werden.
 
 Modul: Gästebuch
@@ -126,10 +126,12 @@ Modul Shop
   zugewiesen worden sind, für beschränkte oder unbeschränkte Zeit.
   Vor Ablauf eines solchen Kontos kann ein E-Mail zur Benachrichtigung
   verschickt werden.
+- Der Wertebereich aller Preisfelder wurde vergrössert, so dass Beträge bis zu
+  99'999'999.99 verarbeitet werden können.
 
 Design und Themes
-- Neu ist in der Version 2.0 ein Platzhalter [[LOGIN_STATUS_NAME]] integriert, 
-der den Loginstatus in Form von "in" (User ist eingelogt) und 
+- Neu ist in der Version 2.0 ein Platzhalter [[LOGIN_STATUS_NAME]] integriert,
+der den Loginstatus in Form von "in" (User ist eingelogt) und
 "out" (User ist ausgelogt) in der Designvorlage ausgibt.
 So ist es z.B möglich auf komfortabler Weise zwei Designs zu integrieren, die je
 nach Loginstatus wechseln.
