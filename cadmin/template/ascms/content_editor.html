@@ -25,7 +25,13 @@ function setText() {
 
 
 function updateAliasPreview(text) {
-	document.getElementById('aliastarget').innerHTML = aliasText(text);
+    var linkstyle = (text == '') ? 'line-through' : '';
+
+    var target = document.getElementById('aliastarget');
+
+	target.innerHTML = aliasText(text);
+    target.parentNode.style.textDecoration = linkstyle;
+
 	document.formContent.alias.value = aliasText(text);
 }
 
@@ -731,4 +737,9 @@ function openWindow(theURL,winName,features){
 	<input type="submit" name="Submit" value="{TXT_STORE}" />
 	<br />
 </form>
+
+<script type="text/javascript">
+updateAliasPreview(document.formContent.alias.value);
+</script>
+
 <!-- END content_editor.html -->
