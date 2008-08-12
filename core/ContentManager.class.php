@@ -1297,7 +1297,7 @@ class ContentManager
     */
     function updatePage()
     {
-        global $objDatabase, $_CORELANG;
+        global $objDatabase, $objTemplate, $_CORELANG;
 
         $objFWUser = FWUser::getFWUserObject();
         $pageId = intval($_POST['pageId']);
@@ -2618,7 +2618,7 @@ class ContentManager
 		// a generic function for this?
 		$txt = str_replace(
 			array('ä', 'ö', 'ü', 'à','ç','è','é'),
-			array('ae','oe','ue','a','c','e','e')
+			array('ae','oe','ue','a','c','e','e'),
 			strtolower($txt)
 		);
 
@@ -2651,24 +2651,44 @@ class ContentManager
         require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
         $util = new aliasLib;
 
+
+        // Do we already have a default alias? This means we probably have to
+        // delete it if the name changed..
+        $alias_src_id = $this->_has_default_alias($pageid);
+
+        // figure out old name of alias, if present.
+        $old_name = '';
+        if ($alias_src_id) {
+            $objResult = $objDatabase->SelectLimit("
+                SELECT id FROM ".DBPREFIX."module_alias_target 
+                WHERE type = 'local' and url = '$pageid'", 
+                1
+            );
+            $target_id = $objResult->fields['id'];
+            $oldname_res = $objDatabase->SelectLimit("
+                SELECT url FROM ".DBPREFIX."module_alias_source
+                WHERE target_id = $target_id "
+                , 1
+            );
+            $old_name = $oldname_res->fields['url'];
+        }
+
         //////////////////////////////////////////////////////////////
         // Remove alias if it's empty. But only if it's a default alias!
         if ($alias == '') {
-			if ($this->_has_default_alias($pageid)) {
-				// delete our default alias
+			if ($alias_src_id) {
+                // We have a default alias, which needs to be
+                // deleted.
 
-				$objResult = $objDatabase->Select("
-					SELECT id FROM ".DBPREFIX."module_alias_target 
-					WHERE type = 'local' and url = '$pageid'"
-				);
-				$target_id = $objResult->fields['id'];
+
+
 				$objDatabase->Execute("
 					DELETE FROM ".DBPREFIX."module_alias_source
 					WHERE target_id = $target_id "
 				);
 
 				// reads alias table, rewrites the .htaccess.
-				$util->_activateRewriteEngine();
+				$util->_activateRewriteEngine(array($old_name));
 			}
             return false;
         }
@@ -2712,9 +2732,7 @@ class ContentManager
         //////////////////////////////////////////////////////////////
         // If the page already has a default alias, we're just
         // going to update it.
-        if ($this->_has_default_alias($pageid)){
-            // Alias already exists. grab the ID and update it.
-            $alias_src_id = $check_update_res->fields['id'];
+        if ($alias_src_id){
             $objDatabase->Execute("
                 UPDATE ".DBPREFIX."module_alias_source
                 SET    url = '$alias'
@@ -2725,28 +2743,37 @@ class ContentManager
 		else {
 			//////////////////////////////////////////////////////////////
 			// Okay. we're now ready to create the alias.
-			$objDatabase->Execute("
-				INSERT INTO ".DBPREFIX."module_alias_target 
-					(type, url) 
-				VALUES 
-					('local', '$pageid')"
-			);
-			$last_id = $objDatabase->Insert_ID();
+
+            // check if the target already exists
+            $has_target = $objDatabase->SelectLimit("
+                 SELECT id FROM ".DBPREFIX."module_alias_target 
+                 WHERE  url = '$pageid'", 1);
+            if ((!$has_target->RecordCount()) or !($target_id = $has_target->fields['id'])) {
+                $objDatabase->Execute("
+                    INSERT INTO ".DBPREFIX."module_alias_target 
+                        (type, url) 
+                    VALUES 
+                        ('local', '$pageid')"
+                );
+                $target_id = $objDatabase->Insert_ID();
+            }
 			$objDatabase->Execute("
 				INSERT INTO ".DBPREFIX."module_alias_source
 					(target_id, url, isdefault) 
 				VALUES 
-					($last_id, '$alias', 1)"
+					($target_id, '$alias', 1)"
 			);
 		}
 
         // reads alias table, rewrites the .htaccess.
-        $util->_activateRewriteEngine();
+        // delete old entry if the name changed.
+        $delete_old = ($alias != $old_name) ? array($old_name) : array();
+        $util->_activateRewriteEngine($delete_old);
         return false;
     }
 
 	/**
-	 * Returns true if the given pageid
+	 * Returns the alias source id if the given pageid
 	 * has a default alias defined. false otherwise.
 	 */
 	function _has_default_alias($pageid) {
@@ -2761,7 +2788,7 @@ class ContentManager
 		";
 		$check_update_res = $objDatabase->Execute($check_update);
 		if ($check_update_res->RecordCount()){
-			return true;
+			return $check_update_res->fields['id'];
 		}
 		return false;
 	}
