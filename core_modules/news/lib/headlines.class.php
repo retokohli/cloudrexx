@@ -76,8 +76,17 @@ class newsHeadlines {
 
 		if ($objResult !== false && $objResult->RecordCount()>=0) {
 			while (!$objResult->EOF) {
+
+                $url = CONTREXX_SCRIPT_PATH;
+                $newsid    = $objResult->fields['id'];
+                $newstitle = htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET);
+                $newsparam = 'section=news&amp;cmd=details';
+                $news_link = (empty($objResult->fields['redirect'])) 
+                    ? "<a class=\"headlineLink\" href=\"$url?$newsparam&amp;newsid=$newsid\" title=\"$newstitle\">$newstitle</a>" 
+                    : "<a class=\"headlineLink\" href=\"$objResult->fields['redirect']\"     title=\"$newstitle\">$newstitle</a>";
+
 			    $this->_objTemplate->setVariable("HEADLINE_DATE", date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['date']));
-				$this->_objTemplate->setVariable("HEADLINE_LINK", (empty($objResult->fields['redirect'])) ? "<a class=\"headlineLink\" href=\"?section=news&amp;cmd=details&amp;newsid=".$objResult->fields['id']."\" title=\"".htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET)."\">".htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET)."</a>" : '<a class=\"headlineLink\" href="'.$objResult->fields['redirect'].'" title="'.htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET).'</a>');
+				$this->_objTemplate->setVariable("HEADLINE_LINK", $news_link);
 				$this->_objTemplate->setVariable("HEADLINE_IMAGE_PATH", $objResult->fields['teaser_image_path']);
 				$this->_objTemplate->setVariable("HEADLINE_TEXT", nl2br($objResult->fields['teaser_text']));
 				$this->_objTemplate->setVariable("HEADLINE_ID", intval($objResult->fields['id']));
