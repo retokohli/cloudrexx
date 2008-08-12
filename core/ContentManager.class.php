@@ -1424,7 +1424,7 @@ class ContentManager
         }
 
 
-        if($err = $this->_default_alias($pageId, $_POST['alias'])) {
+        if($err = $this->_set_default_alias($pageId, $_POST['alias'])) {
             $objTemplate->setVariable("ALIAS_STATUS", $err);
         }
 
@@ -1644,7 +1644,7 @@ class ContentManager
         $objDatabase->Execute($q1);
         $pageId = $objDatabase->Insert_ID();
 
-        if($err = $this->_default_alias($pageId, $_POST['alias'])) {
+        if($err = $this->_set_default_alias($pageId, $_POST['alias'])) {
             $objTemplate->setVariable("ALIAS_STATUS", $err);
         }
 
@@ -2637,12 +2637,12 @@ class ContentManager
 	 * Sets default alias for a given page id. If an empty alias is given and the
 	 * page already has a default alias, it will be removed.
 	 *
-     * Returns false on success. On failure, returns an appropriate error message.
+     * Returns false on SUCCESS. On failure, returns an appropriate error message.
      * @param pageid  the local URL to the page ("?page=xx" or "?section=..." alike stuff)
      * @param alias   the alias to install for the page. if it is empty or null,
      *                no change will happen.
      */
-    function _default_alias($pageid, $alias) {
+    function _set_default_alias($pageid, $alias) {
         $alias    = $this->_fix_alias($alias);
 
         //////////////////////////////////////////////////////////////
