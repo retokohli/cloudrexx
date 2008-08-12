@@ -576,7 +576,7 @@ class Blog extends BlogLibrary  {
         }
 
         for ($i = 1; $i <= 10; ++$i) {
-            $strReturn .= '<a href="?section=blog&amp;cmd=details&amp;id='.$intMessageId.'&amp;vote='.$i.'" title="'.$_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_VOTING_DO'].': '.$i.'">';
+            $strReturn .= '<a href="index.php?section=blog&amp;cmd=details&amp;id='.$intMessageId.'&amp;vote='.$i.'" title="'.$_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_VOTING_DO'].': '.$i.'">';
             $strReturn .= '<img title="'.$_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_VOTING_DO'].': '.$i.'" alt="'.$_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_VOTING_DO'].': '.$i.'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/blog/voting/'.$i.'.gif" border="0" />';
             $strReturn .= '</a>';
         }

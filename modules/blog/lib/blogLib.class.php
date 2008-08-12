@@ -622,7 +622,7 @@ class BlogLibrary {
             $arrCategoryNames = $this->createCategoryArray();
 
             foreach ($arrCategories as $intCategoryId => $intDummyValue) {
-                $strCategoryString .= ($boolLinked) ? '<a href="?section=blog&amp;cmd=search&amp;category='.$intCategoryId.'" title="'.$arrCategoryNames[$intCategoryId][$this->_intLanguageId]['name'].'">' : '';
+                $strCategoryString .= ($boolLinked) ? '<a href="index.php?section=blog&amp;cmd=search&amp;category='.$intCategoryId.'" title="'.$arrCategoryNames[$intCategoryId][$this->_intLanguageId]['name'].'">' : '';
                 $strCategoryString .= $arrCategoryNames[$intCategoryId][$this->_intLanguageId]['name'];
                 $strCategoryString .= ($boolLinked) ? '</a>,&nbsp;' : ',&nbsp;';
             }
@@ -753,7 +753,7 @@ class BlogLibrary {
                     $strCssClass = 'blogTagCloudSmallest';
                 }
 
-                $strReturn .= '<li class="'.$strCssClass.'"><a href="?section=blog&amp;cmd=search&amp;term='.$strTag.'" title="'.$strTag.'">'.$strTag.'</a></li>';
+                $strReturn .= '<li class="'.$strCssClass.'"><a href="index.php?section=blog&amp;cmd=search&amp;term='.$strTag.'" title="'.$strTag.'">'.$strTag.'</a></li>';
             }
 
             $strReturn .= '</ul>';
@@ -782,7 +782,7 @@ class BlogLibrary {
 
             $intTagCounter = 0;
             foreach ($arrKeywords as $strTag => $intKeywordValue) {
-                $strReturn .= '<li class="blogTagHitlistItem"><a href="?section=blog&amp;cmd=search&amp;term='.$strTag.'" title="'.$strTag.'">'.$strTag.'</a></li>';
+                $strReturn .= '<li class="blogTagHitlistItem"><a href="index.php?section=blog&amp;cmd=search&amp;term='.$strTag.'" title="'.$strTag.'">'.$strTag.'</a></li>';
                 ++$intTagCounter;
 
                 if ($intTagCounter == $intNumberOfTags) {
@@ -814,7 +814,7 @@ class BlogLibrary {
         $intSelectedCategory    = intval($intSelectedCategory);
         $arrCategories          = $this->createCategoryArray();
 
-        $strReturn .= ($boolStandalone) ? '<form method="post" name="frmDoSearch" action="?section=blog&amp;cmd=search">' : '';
+        $strReturn .= ($boolStandalone) ? '<form method="post" name="frmDoSearch" action="index.php?section=blog&amp;cmd=search">' : '';
         $strReturn .= ($boolStandalone) ? '<select name="'.$strFieldName.'" onchange="this.form.submit()">' : '<select name="'.$strFieldName.'">';
         $strReturn .= '<option value="0" '.(($intSelectedCategory == 0) ? 'selected="selected"' : '').'>'.$_ARRAYLANG['TXT_BLOG_LIB_ALL_CATEGORIES'].'</option>';
 
@@ -850,16 +850,16 @@ class BlogLibrary {
      * This function replaces all tags with links to the search-module.
      *
      * @param   string      $strUnlinkedTags: The input String looks something like this: "Keyword 1, Keyword 2, Keyword 3".
-     * @return  string      The Keywords are replaced with linked tags, for example: "<a href="?section=blog&amp;cmd=search&term=Keyword 1">Keyword1</a>, ..."
+     * @return  string      The Keywords are replaced with linked tags, for example: "<a href="index.php?section=blog&amp;cmd=search&term=Keyword 1">Keyword1</a>, ..."
      */
     function getLinkedTags($strUnlinkedTags) {
 
         $arrPatterns    = array('/^(([a-z0-9]+\s?)*)$/i',
                                 '/(([a-z0-9]+\s?)*),/iU',
                                 '/,(\s?)(([a-z0-9]+\s?)*)$/iU');
-        $arrReplace     = array('<a href="?section=blog&amp;cmd=search&amp;term=\1" title="\1">\1</a>',
-                                '<a href="?section=blog&amp;cmd=search&amp;term=\1" title="\1">\1</a>,',
-                                ',\1<a href="?section=blog&amp;cmd=search&amp;term=\2" title="\2">\2</a>');
+        $arrReplace     = array('<a href="index.php?section=blog&amp;cmd=search&amp;term=\1" title="\1">\1</a>',
+                                '<a href="index.php?section=blog&amp;cmd=search&amp;term=\1" title="\1">\1</a>,',
+                                ',\1<a href="index.php?section=blog&amp;cmd=search&amp;term=\2" title="\2">\2</a>');
 
         return preg_replace($arrPatterns,$arrReplace,$strUnlinkedTags);
 
