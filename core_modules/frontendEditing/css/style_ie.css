@@ -141,7 +141,7 @@ html, body {
 
 #fe_LoginBoxFrame {
 	position: absolute; 
-	top: 35%; 
+	top: 50%; 
 	left: 50%; 
 	width: 280px;
 	height: 368px;
@@ -254,7 +254,7 @@ html, body {
 
 #fe_SelectionBoxFrame {
 	position: absolute; 
-	top: 35%; 
+	top: 50%; 
 	left: 50%; 
 	width: 400px;
 	height: 194px;
@@ -304,13 +304,13 @@ html, body {
 
 #fe_EditorBoxFrame {
 	position: absolute; 
-	top: 40%; 
+	top: 50%; 
 	left: 50%; 
 	width: 800px;
-	height: 610px;
+	height: 560px;
 	padding: 10px;
 	margin-left: -420px; 
-	margin-top: -315px;
+	margin-top: -290px;
 	font-size: 11pt;
 	text-align: center;
 	border: 1px solid #c3dff9; 
