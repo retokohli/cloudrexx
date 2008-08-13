@@ -709,7 +709,7 @@ class ContentManager
             'TXT_DEFAULT_ALIAS'        => $_CORELANG['TXT_DEFAULT_ALIAS'],
             'CONTENT_ALIAS_HELPTEXT'        => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
             'CONTENT_ALIAS_DISABLE'    => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
-            'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
+			'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
 			'TXT_BASE_URL'             => self::mkurl('/'),
 
         ));
@@ -819,7 +819,7 @@ class ContentManager
         }
     }
 
-    /**
+	/**
 	 * Returns true if alias functionality is enabled.
 	 */
 	function _is_alias_enabled() {
@@ -935,7 +935,7 @@ class ContentManager
             'CONTENT_ALIAS_HELPTEXT'        => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
             'TXT_DEFAULT_ALIAS'        => $_CORELANG['TXT_DEFAULT_ALIAS'],
             'CONTENT_ALIAS_DISABLE'    => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
-            'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
+			'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
 			'TXT_BASE_URL'             => self::mkurl('/'),
         ));
 
@@ -945,13 +945,13 @@ class ContentManager
         }
 
         if (!empty($pageId)) {
-            $objResult = $objDatabase->SelectLimit("SELECT c.*,
-                                                           a_s.url AS alias_url
+			$objResult = $objDatabase->SelectLimit("SELECT c.*,
+														   a_s.url AS alias_url
                                                       FROM ".DBPREFIX."content AS c
-                                                      LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = c.id
-                                                      LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
-                                                          ON  a_t.id        = a_s.target_id
-                                                        AND a_s.isdefault = 1
+													  LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = c.id
+													  LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
+														  ON  a_t.id        = a_s.target_id
+														AND a_s.isdefault = 1
                                                      WHERE c.id =".$pageId, 1);
 
             if ($objResult !== false && $objResult->RecordCount()>0) {
@@ -997,7 +997,7 @@ class ContentManager
                     'CONTENT_TOP_TITLE'           => $_CORELANG['TXT_EDIT_PAGE'],
                     'CONTENT_CATID'            => $pageId,
                     'CONTENT_HTML'               => $ed,
-                    'CONTENT_ALIAS'              => htmlentities($objResult->fields['alias_url'], ENT_QUOTES, CONTREXX_CHARSET),
+					'CONTENT_ALIAS'              => htmlentities($objResult->fields['alias_url'], ENT_QUOTES, CONTREXX_CHARSET),
                     'CONTENT_TITLE_VAL'           => htmlentities($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET),
                     'CONTENT_DESC'               => htmlentities($objResult->fields['metadesc'], ENT_QUOTES, CONTREXX_CHARSET),
                     'CONTENT_META_TITLE'       => htmlentities($objResult->fields['metatitle'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -1425,8 +1425,8 @@ class ContentManager
 
 
         if($err = $this->_set_default_alias($pageId, $_POST['alias'])) {
-            $objTemplate->setVariable("ALIAS_STATUS", $err);
-        }
+			$objTemplate->setVariable("ALIAS_STATUS", $err);
+		}
 
         if (isset($_POST['themesRecursive']) && !empty($_POST['themesRecursive'])) {
             $objNavbar = new ContentSitemap(0);
@@ -1575,8 +1575,8 @@ class ContentManager
         $command =     strip_tags(contrexx_addslashes($_POST['command']));
         $contenthtml= contrexx_addslashes($_POST['html']);
         $contenthtml = preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}' ,$contenthtml);
-        $contenttitle = htmlspecialchars(contrexx_addslashes($_POST['title']), ENT_QUOTES, CONTREXX_CHARSET);
-        $metatitle = htmlspecialchars(contrexx_addslashes($_POST['metatitle']), ENT_QUOTES, CONTREXX_CHARSET);
+        $contenttitle = contrexx_addslashes($_POST['title']);
+        $metatitle = contrexx_addslashes($_POST['metatitle']);
         $contentdesc =     strip_tags(contrexx_addslashes($_POST['desc']));
         $contentkey =     strip_tags(contrexx_addslashes($_POST['key']));
 
@@ -1645,8 +1645,8 @@ class ContentManager
         $pageId = $objDatabase->Insert_ID();
 
         if($err = $this->_set_default_alias($pageId, $_POST['alias'])) {
-            $objTemplate->setVariable("ALIAS_STATUS", $err);
-        }
+			$objTemplate->setVariable("ALIAS_STATUS", $err);
+		}
 
         $q2 = "
             INSERT INTO ".DBPREFIX."content (
@@ -2604,7 +2604,7 @@ class ContentManager
         }
 
         return $blocks;
-	}
+    }
 
 	/**
 	 * Returns an alias that has only valid characters.
@@ -2638,18 +2638,18 @@ class ContentManager
 	 * page already has a default alias, it will be removed.
 	 *
      * Returns false on SUCCESS. On failure, returns an appropriate error message.
-     * @param pageid  the local URL to the page ("?page=xx" or "?section=..." alike stuff)
-     * @param alias   the alias to install for the page. if it is empty or null,
-     *                no change will happen.
-     */
+	 * @param pageid  the local URL to the page ("?page=xx" or "?section=..." alike stuff)
+	 * @param alias   the alias to install for the page. if it is empty or null,
+	 *                no change will happen.
+	 */
     function _set_default_alias($pageid, $alias) {
         $alias    = $this->_fix_alias($alias);
 
-        //////////////////////////////////////////////////////////////
-        // aliasLib has some handy stuff for us here..
-        global $objDatabase, $_ARRAYLANG;
-        require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
-        $util = new aliasLib;
+		//////////////////////////////////////////////////////////////
+		// aliasLib has some handy stuff for us here..
+		global $objDatabase, $_ARRAYLANG;
+		require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
+		$util = new aliasLib;
 
 
         // Do we already have a default alias? This means we probably have to
@@ -2694,83 +2694,83 @@ class ContentManager
         }
 
 
-        //////////////////////////////////////////////////////////////
-        // Is the alias breaking access to a file?
-        if (!$util->is_alias_valid($alias)) {
-            return $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'];
-        }
+		//////////////////////////////////////////////////////////////
+		// Is the alias breaking access to a file?
+		if (!$util->is_alias_valid($alias)) {
+			return $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'];
+		}
 
-        //////////////////////////////////////////////////////////////
-        // Check if there is already an alias with that 
-        // name.. or for that page.
-        $query = "
-            SELECT target_id
-            FROM  ".DBPREFIX."module_alias_source AS s
-            WHERE s.url = '$alias'
-        ";
-        $src = $objDatabase->SelectLimit($query, 1);
-        if ($src->RecordCount()) {
-            // There is already some alias with that name.
-            // This is only a problem if the alias points to another
-            // page. For this, we need to figure out where
-            // this alias points.
-            $t_id = $src->fields['target_id'];
-            $q_target = "
-                SELECT count(*) AS _count
-                FROM ".DBPREFIX."module_alias_target AS t
-                WHERE t.url = '$pageid'
-                  AND t.id  = $t_id
-            ";
-            $cnt = $objDatabase->SelectLimit($q_target, 1);
-            if ($cnt->fields['_count'] == 0) {
-                // Alias points somewhere else.
-                return $_ARRAYLANG['TXT_CORE_ALIAS_EXISTS_ALREADY'];
-            }
-            return false;
-        }
+		//////////////////////////////////////////////////////////////
+		// Check if there is already an alias with that 
+		// name.. or for that page.
+		$query = "
+			SELECT target_id
+			FROM  ".DBPREFIX."module_alias_source AS s
+			WHERE s.url = '$alias'
+		";
+		$src = $objDatabase->SelectLimit($query, 1);
+		if ($src->RecordCount()) {
+			// There is already some alias with that name.
+			// This is only a problem if the alias points to another
+			// page. For this, we need to figure out where
+			// this alias points.
+			$t_id = $src->fields['target_id'];
+			$q_target = "
+				SELECT count(*) AS _count
+				FROM ".DBPREFIX."module_alias_target AS t
+				WHERE t.url = '$pageid'
+				  AND t.id  = $t_id
+			";
+			$cnt = $objDatabase->SelectLimit($q_target, 1);
+			if ($cnt->fields['_count'] == 0) {
+				// Alias points somewhere else.
+				return $_ARRAYLANG['TXT_CORE_ALIAS_EXISTS_ALREADY'];
+			}
+			return false;
+		}
 
-        //////////////////////////////////////////////////////////////
-        // If the page already has a default alias, we're just
-        // going to update it.
+		//////////////////////////////////////////////////////////////
+		// If the page already has a default alias, we're just
+		// going to update it.
         if ($alias_src_id){
-            $objDatabase->Execute("
-                UPDATE ".DBPREFIX."module_alias_source
-                SET    url = '$alias'
-                WHERE  id  = $alias_src_id
-                LIMIT  1"
-            );
+			$objDatabase->Execute("
+				UPDATE ".DBPREFIX."module_alias_source
+				SET    url = '$alias'
+				WHERE  id  = $alias_src_id
+				LIMIT  1"
+			);
 		}
 		else {
-			//////////////////////////////////////////////////////////////
-			// Okay. we're now ready to create the alias.
+		//////////////////////////////////////////////////////////////
+		// Okay. we're now ready to create the alias.
 
             // check if the target already exists
             $has_target = $objDatabase->SelectLimit("
                  SELECT id FROM ".DBPREFIX."module_alias_target 
                  WHERE  url = '$pageid'", 1);
             if ((!$has_target->RecordCount()) or !($target_id = $has_target->fields['id'])) {
-                $objDatabase->Execute("
-                    INSERT INTO ".DBPREFIX."module_alias_target 
-                        (type, url) 
-                    VALUES 
-                        ('local', '$pageid')"
-                );
+		$objDatabase->Execute("
+			INSERT INTO ".DBPREFIX."module_alias_target 
+				(type, url) 
+			VALUES 
+				('local', '$pageid')"
+		);
                 $target_id = $objDatabase->Insert_ID();
             }
-			$objDatabase->Execute("
-				INSERT INTO ".DBPREFIX."module_alias_source
-					(target_id, url, isdefault) 
-				VALUES 
+		$objDatabase->Execute("
+			INSERT INTO ".DBPREFIX."module_alias_source
+				(target_id, url, isdefault) 
+			VALUES 
 					($target_id, '$alias', 1)"
-			);
+		);
 		}
 
-        // reads alias table, rewrites the .htaccess.
+		// reads alias table, rewrites the .htaccess.
         // delete old entry if the name changed.
         $delete_old = ($alias != $old_name) ? array($old_name) : array();
         $util->_activateRewriteEngine($delete_old);
-        return false;
-    }
+		return false;
+	}
 
 	/**
 	 * Returns the alias source id if the given pageid
