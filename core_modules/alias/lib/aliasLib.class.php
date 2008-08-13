@@ -354,7 +354,7 @@ class aliasLib
         } else {
             $arrAddition = $objHtAccess->getAdditional('array');
 
-            if (is_array($arrAddition) && count(preg_grep('#^\s*RewriteEngine\s+On.*$#i', $arrAddition)) > 0) {
+            if (is_array($arrAddition) && count(preg_grep('#^\s*RewriteEngine\s+On.*$#mi', $arrAddition)) > 0) {
                 return true;
             } else {
                 return false;
