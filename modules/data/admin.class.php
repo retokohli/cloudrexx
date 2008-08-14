@@ -30,6 +30,8 @@ class DataAdmin extends DataLibrary {
 	var $_strErrMessage = '';
 	var $_strOkMessage 	= '';
 
+    var $current_cat_id = 0;
+
 	/**
 	* Constructor-Fix for non PHP5-Servers
     *
@@ -567,6 +569,9 @@ class DataAdmin extends DataLibrary {
     	));
 
     	$intCategoryId = intval($intCategoryId);
+
+        $this->current_cat_id = $intCategoryId;
+
     	$arrCategories = $this->createCategoryArray();
     	$ie = (preg_match("/MSIE (6|7)/", $_SERVER['HTTP_USER_AGENT'])) ? true : false;
 
@@ -650,18 +655,27 @@ class DataAdmin extends DataLibrary {
                     }
                 }
             }
+
+            // Don't show our own id as selectable parent. This just causes trouble.
+            // also, we don't want sub-categories of our's to be shown.
+            // this would require reordering of the categories to avoid
+            // having a loop.
+            if ($this->current_cat_id and $key == $this->current_cat_id) 
+                continue;
+
             $this->_objTpl->setVariable(array(
                 "CATEGORY_OPT_LABEL"      => $arrCategories[$key][$lang]['name'],
                 "CATEGORY_OPT_VALUE"      => $key,
                 "CATEGORY_OPT_SELECTED"   => ($selected) ? "selected=\"selected\"" : "",
                 "CATEGORY_OPT_INDENT"         =>  str_repeat("...", $level)
-    	    ));
+            ));
 
-    	    $this->_objTpl->parse("addCategoryDropDown");
+            $this->_objTpl->parse("addCategoryDropDown");
 
-    	    if (count($value) > 0) {
-    	        $this->parseCategoryDropdown($value, $arrCategories, $select, $level+1, $lang, $parent);
-    	    }
+            if (count($value) > 0) {
+                $this->parseCategoryDropdown($value, $arrCategories, $select, $level+1, $lang, $parent);
+            }
+
         }
     }
 
