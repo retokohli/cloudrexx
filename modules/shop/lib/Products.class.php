@@ -52,7 +52,7 @@ class Products
 
 
     /**
-     * Create a Products helper object 
+     * Create a Products helper object
      * @access  public
      * @return  Products                The helper
      * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -96,7 +96,7 @@ class Products
      * @param       string      $pattern        The pattern to look for
      * @return      array                       An array of Products on success,
      *                                          false otherwise
-     * @global      ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getByWildcard($arrPattern)
@@ -153,141 +153,176 @@ class Products
 
 
     /**
-     * Returns an array of Products selected by parameters as available in
-     * the Shop.
-     * @static
-     * @param       integer     $count          This reference parameter serves
-     *                                          as a return value.  It is set
-     *                                          to the total number of Product
-     *                                          records matching the given
-     *                                          criteria.
-     * @param       integer     $productId      The Product ID
-     * @param       integer     $shopCategoryId The ShopCategory ID
-     * @param       integer     $manufacturerId The Manufacturer ID
-     * @param       string      $pattern        A search pattern
-     * @param       integer     $offset         The paging offset
-     * @param       boolean     $lastFive       Flag for the last five Products
-     *                                          added to the Shop
-     * @return      array                       Array of Product objects,
-     *                                          or false if none were found
-     * @global      ADONewConnection
-     * @global      array
+     * Return the five products least recently added to the database.
+     *
+     * OBSOLETE -- Superseeded by {@link Shop::getByShopParams()}.
+     * Note that this just selects the five Products with the highest ID,
+     * thus this will yield unexpected results if the IDs are set
+     * by any other means than the AUTO_INCREMENT mechanism.
+     * @return  array                   The array of the five Product objects
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    //static
-    function getByShopParams(
-        &$count,
-        $flagBackend=false, $flagSpecialoffer=false, $flagLastFive=false,
-        $productId=0, $shopCategoryId=0, $manufacturerId=0,
-        $pattern='', $offset=0
-    ) {
-        global $objDatabase, $_CONFIG;
+    function lastFive()
+    {
+        global $objDatabase;
 
-        if ($productId) {
-            // select single Product by ID
-            return array(Product::getById($productId));
-        }
-        if ($flagLastFive) {
-            return Product::lastFive();
-        }
-        // Standard full featured query
-        $querySearch       = '';
-        $queryCategory     = '';
-        $queryManufacturer = '';
-        if ($shopCategoryId > 0) {
-            // Select Products by ShopCategory ID
-            $queryCategory = "AND c.catid=$shopCategoryId";
-        }
-        if ($manufacturerId > 0) {
-            // Select Products by Manufacturer ID
-            $queryManufacturer = "AND manufacturer=$manufacturerId";
-        }
-        if (!empty($pattern)) {
-            // Select Products by search pattern
-            $querySearch = "
-                AND (  title LIKE '%$pattern%'
-                    OR description LIKE '%$pattern%'
-                    OR shortdesc LIKE '%$pattern%'
-                    OR product_id LIKE '%$pattern%'
-                    OR id LIKE '%$pattern%')
-            ";
-            // Add a list of comma separated ShopCategory IDs to be searched.
-            // Only active ShopCategories are included in the frontend.
-            $queryCategory =
-                'AND c.catid IN ('.
-                ShopCategories::getSearchCategoryIdString(
-                    $shopCategoryId, !$flagBackend).
-                ')';
-        }
-        $querySpecialoffer =
-            ($flagSpecialoffer ? 'AND (is_special_offer=1)' : '');
-
-        // Suppress showing all Products when there is nothing selected
-        // limiting the result.
-        // In this case, only the categories will be shown.
-        if (   empty($flagBackend)
-            && empty($queryCategory)
-            && empty($queryManufacturer)
-            && empty($querySpecialoffer)
-            && empty($querySearch)
-        ) {
-//echo("empty($flagBackend) && empty($queryCategory) && empty($queryManufacturer) && empty($querySpecialoffer) && empty($querySearch) -> returning empty array();"); die();
-            return array();
-        }
-
-        // The subquery in this query groups the Products by their Product
-        // code, which allows us to hide the cloned Products in virtual
-        // ShopCategories.
-        // Note that this only works reliably with IDs created by means of
-        // the auto_increment mechanism!
+        // select last five products added to the database
         $query = "
+            SELECT id, DISTINCT product_id
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-             WHERE id IN (
-                SELECT id
-                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products AS p,
-                       ".DBPREFIX."module_shop".MODULE_INDEX."_categories AS c
-                 WHERE c.catid=p.catid
-                       ".($flagBackend ? '' : 'AND status=1 AND catstatus=1')."
-                       $queryCategory
-                       $queryManufacturer
-                       $querySpecialoffer
-                       $querySearch ".
-// TODO: This only works when using virtual ShopCategories and
-// non-empty product_id fields (Product codes)!
-// This query needs to be extended to handle both empty codes (ungrouped) and
-// non-empty, non-unique codes (grouped).
-//              GROUP BY product_id
-              "ORDER BY id ASC
-                   )
-          ORDER BY sort_order ASC, id DESC
+             WHERE status=1
+             ORDER BY id DESC
         ";
-
-        // Count the number of available Products
-        $objResult = $objDatabase->Execute('SELECT COUNT(*) AS count'.$query);
+        $objResult = $objDatabase->SelectLimit($query, 5);
         if (!$objResult) {
-//echo("Error: Query failed:<br />SELECT COUNT(*) AS count $query<br />");
-            return false;
-        }
-        $count = $objResult->fields['count'];
-//echo("Count is $count<br />");
-        // Set up the Product array
-        if ($_CONFIG['corePagingLimit']) { // From /config/settings.php
-            $objResult = $objDatabase->SelectLimit(
-                'SELECT id'.$query, $_CONFIG['corePagingLimit'], $offset
-            );
-        } else {
-            $objResult = $objDatabase->Execute('SELECT id'.$query);
-        }
-        if (!$objResult) {
-//echo("Error: Query failed:<br />SELECT id $query<br />");
             return false;
         }
         $arrProduct = array();
         while (!$objResult->EOF) {
-            $arrProduct[] = Product::getById($objResult->Fields('id'));
+            $arrProduct[] = Product::getById($objResult->fields['id']);
             $objResult->MoveNext();
         }
-//echo("got ".count($arrProduct)." entries<br />");
+        return $arrProduct;
+    }
+     */
+
+
+    /**
+     * Returns an array of Products selected by parameters as available in
+     * the Shop.
+     *
+     * The $count parameter is set to the number of records found.
+     * @param   integer     $count          The desired number of Products,
+     *                                      by reference
+     * @param   integer     $offset         The Product offset
+     * @param   integer     $productId      The Product ID
+     * @param   integer     $shopCategoryId The ShopCategory ID
+     * @param   integer     $manufacturerId The Manufacturer ID
+     * @param   string      $pattern        A search pattern
+     * @param   boolean     $flagSpecialoffer Flag for special offers
+     * @param   boolean     $flagLastFive   Flag for the last five Products
+     *                                      added to the Shop
+     * @param   boolean     $flagShowInactive   Include inactive Products
+     *                                      if true.  Backend use only!
+     * @param   integer     $orderSetting   The sorting order setting
+     * @return  array                       Array of Product objects,
+     *                                      or false if none were found
+     * @global      ADONewConnection
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getByShopParams(
+        &$count, $offset=0,
+        $productId=0, $shopCategoryId=0, $manufacturerId=0, $pattern='',
+        $flagSpecialoffer=false, $flagLastFive=false, $orderSetting=1,
+        $flagShowInactive=false
+    ) {
+        global $objDatabase, $_CONFIG;
+
+//echo("getByShopParams($count, $offset, $productId, $shopCategoryId, $manufacturerId, $pattern, $flagSpecialoffer, $flagLastFive, $orderSetting, $flagShowInactive): entered<br />");
+
+        if ($productId) {
+            // select single Product by ID
+            $objProduct = Product::getById($productId);
+            if ($objProduct) {
+                $count = 1;
+                return array($objProduct);
+            }
+            $count = 0;
+            return false;
+        }
+
+        $queryCount = "SELECT COUNT(*) as numof_products";
+        if ($flagLastFive) {
+            // select last five products added to the database
+            $querySelect = "SELECT id";
+            $queryTail = "
+                  FROM ".DBPREFIX."module_shop_products
+                 ".($flagShowInactive ? '' : 'WHERE status=1 ')."
+                 ORDER BY product_id DESC
+            ";
+            $count = 5;
+        } else {
+            // Build standard full featured query
+            $q_special_offer  =
+                ($flagSpecialoffer ? 'AND is_special_offer=1 ' : '');
+            $q1_category      = '';
+            $q2_category      = '';
+            $q1_manufacturer  = '';
+            $q2_manufacturer  = '';
+            $q_search         = '';
+            if ($shopCategoryId > 0) {
+                // select Products by ShopCategory ID
+                $q_special_offer = '';
+                $q1_category = 'INNER JOIN '.DBPREFIX.'module_shop_categories AS c USING (catid)';
+                $q2_category = "
+                    AND p.catid=$shopCategoryId
+                ";
+            }
+            if ($manufacturerId > 0) {
+                // select Products by Manufacturer ID
+                $q_special_offer = '';
+                $q1_manufacturer = 'INNER JOIN '.DBPREFIX.'module_shop_manufacturer AS m ON m.id=p.manufacturer';
+                $q2_manufacturer = "
+                    AND p.manufacturer=$manufacturerId
+                ";
+            }
+            if (!empty($pattern)) {
+                // select Products by search pattern
+                $q_special_offer = '';
+                $q_search = "
+                    AND (p.title LIKE '%$pattern%'
+                        OR p.description LIKE '%$pattern%'
+                        OR p.shortdesc LIKE '%$pattern%'
+                        OR p.keywords LIKE '%$pattern%'
+                        OR p.product_id LIKE '%$pattern%')
+                        OR p.id LIKE '%$pattern%')
+                ";
+            }
+            $querySelect = "SELECT p.id";
+            $queryCount = "SELECT COUNT(*) as numof_products";
+            $queryTail = "
+                  FROM ".DBPREFIX."module_shop_products AS p
+                       $q1_category $q1_manufacturer
+                 WHERE ".($flagShowInactive ? '1' : 'status=1')."
+                       $q_special_offer
+                       $q2_category $q2_manufacturer
+                       $q_search
+              ORDER BY ".
+                ($orderSetting == 2
+                  ? 'p.title ASC, p.product_id ASC' // Alphabetic
+                  : ($orderSetting == 3
+                      ? 'p.product_id ASC, p.title ASC' // Product Code
+                      // Default; $orderSetting == 1
+                      : 'p.sort_order ASC, p.id DESC' // Individual
+                    )
+                );
+        }
+        if ($count == 0) {
+            if ($_CONFIG['corePagingLimit']) { // $_CONFIG from /config/settings.php
+                $count = $_CONFIG['corePagingLimit'];
+            }
+        }
+        if ($count) {
+            $objResult = $objDatabase->SelectLimit($querySelect.$queryTail, $count, $offset);
+        } else {
+            $objResult = $objDatabase->Execute($querySelect.$queryTail);
+        }
+        if (!$objResult) {
+            return false;
+        }
+        $arrProduct = array();
+        while (!$objResult->EOF) {
+            $arrProduct[] = Product::getById($objResult->fields['id']);
+            $objResult->MoveNext();
+        }
+//echo("getByShopParams(): got ".count($arrProduct)." products from $offset<br />");
+//var_export($objResult);
+        $objResult = $objDatabase->Execute($queryCount.$queryTail);
+        if (!$objResult) {
+            return false;
+        }
+        $count = $objResult->fields['numof_products'];
+//echo("getByShopParams(): $count products total<br />");
         return $arrProduct;
     }
 
@@ -464,7 +499,7 @@ class Products
      * @static
      * @return      string                      The image name, or the
      *                                          empty string.
-     * @global      ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -549,7 +584,7 @@ class Products
      * @param   integer     $arrId      The array of Product IDs
      * @return  string                  Empty string on success, a string
      *                                  with error messages otherwise.
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @global  array
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */

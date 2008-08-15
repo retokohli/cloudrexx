@@ -311,6 +311,22 @@ function disableButtons(from, dest, add, remove) {
           &nbsp;{TXT_ACTIVE}
         </td>
       </tr>
+    <tr class="row1">
+      <td nowrap>{TXT_SHOP_DISCOUNT_GROUP_ARTICLE}</td>
+      <td>
+        <select name="shopDiscountGroupArticle" style="width:220px;">
+          {SHOP_DISCOUNT_GROUP_ARTICLE_MENU_OPTIONS}
+        </select>
+      </td>
+    </tr>
+    <tr class="row2">
+      <td nowrap>{TXT_SHOP_DISCOUNT_GROUP_COUNT}</td>
+      <td>
+        <select name="shopDiscountGroupCount" style="width:220px;">
+          {SHOP_DISCOUNT_GROUP_COUNT_MENU_OPTIONS}
+        </select>
+      </td>
+    </tr>
       <tr class="row1">
         <td nowrap="nowrap">{TXT_TAX_RATE}</td>
         <td>{SHOP_TAX}</td>
@@ -390,24 +406,33 @@ function disableButtons(from, dest, add, remove) {
         <td>{SHOP_FLAGS_SELECTION}</td>
       </tr>
       <!-- END shopFlags -->
+
       <tr valign="top" class="row2">
         <td colspan="2">{TXT_SHORT_DESCRIPTION}<br />{SHOP_SHORT_DESCRIPTION}</td>
       </tr>
       <tr valign="top" class="row1">
         <td colspan="2"><br />{TXT_DESCRIPTION}<br />{SHOP_DESCRIPTION}</td>
       </tr>
-      <tr valign="top" class="row2">
+<!-- vogt -->
+    <tr valign="top" class="row2">
+      <td>{TXT_SHOP_KEYWORDS}</td>
+      <td>
+        <textarea name="shopKeywords" rows="5" cols="80">{SHOP_KEYWORDS}</textarea>
+      </td>
+    </tr>
+
+    <tr valign="top" class="row1">
         <td nowrap="nowrap">{TXT_SHOP_MANUFACTURER}</td>
         <td>{SHOP_MANUFACTURER_SELECT}</td>
       </tr>
-      <tr valign="top" class="row1">
+    <tr valign="top" class="row2">
         <td nowrap="nowrap">{TXT_MANUFACTURER_URL}</td>
         <td>
           <input maxlength="255" name="shopManufacturerUrl" size="40" value="{SHOP_MANUFACTURER_URL}" />
           ({TXT_WITH_HTTP})
         </td>
       </tr>
-      <tr valign="top" class="row2">
+    <tr valign="top" class="row1">
         <td nowrap="nowrap">{TXT_STOCK}</td>
         <td>
           <input maxlength=10 name="shopStock" size="10" value="{SHOP_STOCK}" />
@@ -465,6 +490,7 @@ function disableButtons(from, dest, add, remove) {
           <input type="hidden" id="hi_2" name="productImage2" value="{SHOP_PICTURE2_IMG_SRC_NO_THUMB}" />
           <input type="hidden" id="hi_2_w" name="productImage2_width" value="{SHOP_PICTURE2_IMG_WIDTH}" />
           <input type="hidden" id="hi_2_h" name="productImage2_height" value="{SHOP_PICTURE2_IMG_HEIGHT}" />
+
         </td>
         <td width="27%">
           <a href="javascript:void(0);" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" onclick="openBrowser('index.php?cmd=fileBrowser&amp;standalone=true&amp;type=shop', '3','width=800,height=640,resizable=yes,status=no,scrollbars=yes', 'img', '');" >{TXT_SHOP_EDIT_OR_ADD_IMAGE}<br /> <img id="img3"  style="width: {SHOP_IMG3_WIDTH}px; height: {SHOP_IMG3_HEIGHT}px; border: none;" src="{SHOP_PICTURE3_IMG_SRC}" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" alt="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" /></a>
@@ -504,8 +530,8 @@ function disableButtons(from, dest, add, remove) {
   </div>
   <!-- end shopContent4 div -->
   <br />
-  <input type=submit value="{TXT_RESET}" name="shopResetForm" />
-  <input type=submit value="{TXT_STORE}" name="shopStoreProduct" />
+    <input type=submit value="{TXT_RESET}" name="shopResetForm" />
+    <input type=submit value="{TXT_STORE}" name="shopStoreProduct" />
   {TXT_ACTION_AFTER_SAVEING}
   <select name="shopAfterStoreAction">
     <option value="catalog" selected="selected">{TXT_PRODUCT_CATALOG}</option>

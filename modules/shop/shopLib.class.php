@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shop library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -87,11 +88,11 @@ class ShopLibrary
      * -- unless they are indeed treated as public, which is dangerous.
      * Someone might try to access them before they are set up!
      */
-    var $arrConfig = array();
-    var $arrCurrencies = array();
-    var $arrShipment = array();
-    var $arrPayment = array();
-    var $arrShopMailTemplate = array();
+    public $arrConfig = array();
+    private $arrCurrencies = array();
+    private $arrShipment = array();
+    private $arrPayment = array();
+    private $arrShopMailTemplate = array();
 
     /**
      * Array of all countries
@@ -100,7 +101,7 @@ class ShopLibrary
      * @access  public
      * @see     _initCountries()
      */
-    var $arrCountries = array();
+    private $arrCountries = array();
 
 
     /**
@@ -282,6 +283,41 @@ class ShopLibrary
     }
 
 
+    /**
+     * Returns a dropdown menu string with all available order status.
+     *
+     * @param   string  $selectedId     Optional preselected status ID
+     * @param   string  $menuName       Optional menu name
+     * @param   string  $onchange       Optional onchange callback function
+     * @return  string  $menu           The dropdown menu string
+     * @global  array   $_ARRAYLANG     Language array
+     */
+    function getOrderStatusMenu($selectedStatus=-1, $menuName='', $onchange='')
+    {
+        global $_ARRAYLANG;
+
+        $menu = '';
+        foreach ($this->arrOrderStatus as $status => $statusText) {
+            $menu .= '<option value="'.$status.'" '.
+            ($selectedStatus == $status ? 'selected="selected"' : '').
+            '>'.$statusText."</option>\n";
+        }
+        if ($menuName != '') {
+            $menu =
+                '<select name="'.$menuName.'" id="'.$menuName.'" '.
+                ($onchange != '' ? 'onchange="'.$onchange.'"' : '').
+                ">\n".$menu."</select>\n";
+        } else {
+            $menu =
+                '<option value="-1">-- '.
+                $_ARRAYLANG['TXT_STATUS'].
+                " --</option>\n".
+                $menu;
+        }
+        return $menu;
+    }
+
+
     function _initCountries()
     {
         global $objDatabase;
@@ -367,7 +403,7 @@ class ShopLibrary
      * Initialize the shop configuration array
      *
      * The array created contains all of the common shop settings.
-     * @global ADONewConnection
+     * @global $objDatabase Database object
      */
     function _initConfiguration()
     {
@@ -406,7 +442,7 @@ class ShopLibrary
      *                                          false otherwise
      */
     //static
-    function shopSendmail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody)
+    function shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody)
     {
         global $_CONFIG;
 
@@ -450,7 +486,7 @@ class ShopLibrary
      * @static
      * @param   integer $shopTemplateId     The mail template ID
      * @param   integer $langId             The language ID
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @return  mixed                       The mail template array on success,
      *                                      false otherwise
      */
@@ -525,7 +561,7 @@ class ShopLibrary
      * Checks that the email address isn't already used by an other customer
      *
      * @access  private
-     * @global  ADONewConnection
+     * @global          $objDatabase    Database object
      * @param   string  $email          The users' email address
      * @param   integer $customerId     The customers' ID
      * @return  boolean                 True if the email address is unique, false otherwise
@@ -551,7 +587,7 @@ class ShopLibrary
      * Checks that the username isn't already used by an other customer
      *
      * @access  private
-     * @global  ADONewConnection
+     * @global          $objDatabase    Database object
      * @param   string  $username       The user name
      * @param   integer $customerId     The customers' ID
      * @return  boolean                 True if the user name is unique, false otherwise
@@ -582,11 +618,13 @@ class ShopLibrary
      * protected downloads, for example.
      * @param   integer   $orderId        The order ID
      * @return  string                    The custom order ID
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
+
      */
     function getCustomOrderId($orderId)
     {
         global $objDatabase;
+
 
         $query = "
             SELECT lastname
@@ -605,6 +643,149 @@ class ShopLibrary
         //$year = preg_replace('/^\d\d(\d\d).+$/', '$1', $orderDateTime);
         //return "$year-$orderId";
     }
+
+
+    /**
+     * Remove the uniqid part from a file name that was added after
+     * uploading the file
+     *
+     * The file name to be matched should look something like
+     *  filename[uniqid].ext
+     * Where uniqid is a 13 digit hexadecimal value created by uniqid().
+     * This method will then return
+     *  filename.ext
+     * @param   string    $strFilename    The file name with the uniqid
+     * @return  string                    The original file name
+     */
+    function stripUniqidFromFilename($strFilename)
+    {
+        return preg_replace('/\[[0-9a-f]{13}\]/', '', $strFilename);
+    }
+
+
+    /**
+     * Deletes the order with the given ID.
+     *
+     * If no valid ID is specified, looks in the GET and POST request
+     * arrays for parameters called orderId and selectedOrderId, respectively.
+     * Also removes related order items, attributes, the customer, and the
+     * user accounts created for the downloads.
+     * @param   integer   $orderId        The optional order ID
+     * @return  boolean                   True on success, false otherwise
+     * @global  mixed     $objDatabase    Database object
+     */
+    function deleteOrder($orderId=0)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $arrOrderId = array();
+        // prepare the array $arrOrderId with the ids of the orders to delete
+        if (empty($orderId)) {
+            if (isset($_GET['orderId']) && !empty($_GET['orderId'])) {
+                array_push($arrOrderId, $_GET['orderId']);
+            } elseif (isset($_POST['selectedOrderId']) && !empty($_POST['selectedOrderId'])) {
+                $arrOrderId = $_POST['selectedOrderId'];
+            }
+        } else {
+            array_push($arrOrderId, $orderId);
+        }
+        if (empty($arrOrderId)) {
+            return true;
+        }
+
+        // Delete selected orders
+        foreach ($arrOrderId as $orderId) {
+            // Delete files uploaded with the order
+            $query = "
+                SELECT product_option_value
+                  FROM ".DBPREFIX."module_shop_order_items_attributes
+                 WHERE order_id=$orderId
+            ";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) {
+                $this->errorHandling();
+                return false;
+            }
+            while (!$objResult->EOF) {
+                $filename =
+                    ASCMS_PATH.'/'.$this->uploadDir.'/'.
+                    $objResult->fields['product_option_value'];
+                if (file_exists($filename)) {
+                    if (@unlink($filename)) {
+                        //$this->addMessage("Datei $filename gelöscht");
+                    } else {
+                        $this->addError(sprintf($_ARRAYLANG['TXT_SHOP_ERROR_DELETING_FILE'], $filename));
+                    }
+                }
+                $objResult->MoveNext();
+            }
+
+// Nope... see below.
+//            $customerId = $objResult->fields['customerid'];
+//            $orderDate = $objResult->fields['order_date'];
+
+            $query = "
+                DELETE FROM ".DBPREFIX."module_shop_order_items_attributes
+                 WHERE order_id=$orderId
+            ";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) {
+                $this->errorHandling();
+                return false;
+            }
+
+            $query = "
+                DELETE FROM ".DBPREFIX."module_shop_order_items
+                 WHERE orderid=$orderId
+            ";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) {
+                $this->errorHandling();
+                return false;
+            }
+
+            $query = "
+                DELETE FROM ".DBPREFIX."module_shop_orders
+                 WHERE orderid=$orderId
+            ";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) {
+                $this->errorHandling();
+                return false;
+            }
+
+/*  Whoah...  You cannot possibly do that!
+            $query = "
+                DELETE FROM ".DBPREFIX."module_shop_customers
+                 WHERE customerid=$customerId
+            ";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) {
+                $this->errorHandling();
+                return false;
+            }
+*/
+
+/*  This needs a fix for the new account name format
+            // Remove automatically created accounts for downloads
+            $orderIdCustom = ShopLibrary::getCustomOrderId($orderId, $orderDate);
+            $objFWUser = FWUser::getFWUserObject();
+            $objUser = $objFWUser->objUser->getUsers(array('username' => $orderIdCustom.'-%'));
+            if ($objUser) {
+                while (!$objUser->EOF) {
+                    if (!$objUser->delete()) {
+                        return false;
+                    }
+                    $objUser->next();
+                }
+            }
+*/
+        }
+        $this->addMessage($_ARRAYLANG['TXT_ORDER_DELETED']);
+        return true;
+    }
+
+
 }
 
 ?>

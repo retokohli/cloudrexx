@@ -348,7 +348,7 @@ $log = @fopen(ASCMS_DOCUMENT_ROOT.'/testIpn.txt', 'w');
         $currencyCode = $objResult->fields['code'];
         // Create order entry
         $query = "
-            INSERT INTO contrexx_module_shop_orders (
+            INSERT INTO ".DBPREFIX."module_shop_orders (
             orderid, customerid, selected_currency_id, order_sum, currency_order_sum,
             order_date, order_status,
             ship_prefix, ship_company, ship_firstname, ship_lastname,
