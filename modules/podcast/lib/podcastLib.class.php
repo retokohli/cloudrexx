@@ -1,21 +1,13 @@
 <?php
 /**
- * Podcast
+ * Class podcast library
+ *
+ * podcast library class
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>
  * @access        public
  * @version        1.0.0
- * @package     contrexx
- * @subpackage  module_podcast
- * @todo        Edit PHP DocBlocks!
- */
-
-/**
- * Class podcast library
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @access      public
- * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_podcast
  * @todo        Edit PHP DocBlocks!
@@ -28,7 +20,7 @@ class podcastLib
      * @access private
      * @var $_noThumbnail string path to default image, without offset
      */
-    var $_noThumbnail = '/images/podcast/no_picture.gif';
+    var $_noThumbnail = '';
 
     /**
      * settings array
@@ -111,6 +103,7 @@ class podcastLib
         $this->_youTubeIdRegex   = "#.*[\?&/]v[=/](".$this->_youTubeAllowedCharacters."{".$this->_youTubeIdLenght."}).*#";
         //youtubeIdCharacters and youtubeIdLength are JS variables.
         $this->_youTubeIdRegexJS = '.*[\\?&/]v[=/]("+youtubeIdCharacters+"{"+youtubeIdLength+"}).*';
+		$this->_noThumbnail = ASCMS_PATH_OFFSET . '/images/podcast/no_picture.gif';
     }
 
     function _getMedia($ofCategory = false, $isActive = false, $limit = 0, $pos = 0)
