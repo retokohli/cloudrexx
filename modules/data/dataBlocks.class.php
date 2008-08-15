@@ -16,7 +16,7 @@ require_once ASCMS_MODULE_PATH.'/data/lib/dataLib.class.php';
 
 /**
  * Datablocks
- * 
+ *
  * This class parses the Placeholder for Data in the content and layout
  * pages.
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -26,7 +26,7 @@ require_once ASCMS_MODULE_PATH.'/data/lib/dataLib.class.php';
  * @subpackage  module_data
  *
  */
-class dataBlocks extends DataLibrary 
+class dataBlocks extends DataLibrary
 {
     var $entryArray = false;
     var $categories = false;
@@ -35,7 +35,7 @@ class dataBlocks extends DataLibrary
     var $active = true;
     var $arrCategories = null;
     var $langVars = array();
-    
+
     /**
      * Constructor for PHP4
      *
@@ -45,7 +45,7 @@ class dataBlocks extends DataLibrary
     {
         $this->__construct($lang);
     }
-    
+
     /**
      * Constructor for PHP5
      *
@@ -54,11 +54,11 @@ class dataBlocks extends DataLibrary
     function __construct($lang)
     {
         global $objDatabase, $objInit;
-        
-        
+
+
         $objRs = $objDatabase->Execute("SELECT setvalue FROM ".DBPREFIX."settings
                                         WHERE setname = 'dataUseModule'");
-        
+
         if ($objRs) {
             if ($objRs->fields['setvalue'] == 1) {
                 $this->active = true;
@@ -69,14 +69,14 @@ class dataBlocks extends DataLibrary
             $this->active = false;
             return;
         }
-        
+
         $this->lang = $lang;
         $this->_arrSettings = $this->createSettingsArray();
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_THEMES_PATH);
-        
+
         $this->langVars = $objInit->loadLanguageData('data');
     }
-    
+
     /**
      * Do the replacements
      *
@@ -84,7 +84,7 @@ class dataBlocks extends DataLibrary
      * @return string
      */
     function replace($data)
-    {       
+    {
         if ($this->active) {
             if (is_array($data)) {
                 foreach ($data as $key => $value) {
@@ -98,10 +98,10 @@ class dataBlocks extends DataLibrary
                 }
             }
         }
-        
+
         return $data;
     }
-    
+
     /**
      * Get the replacement content for the placeholder
      *
@@ -111,24 +111,24 @@ class dataBlocks extends DataLibrary
     function getData($placeholder)
     {
         global $objDatabase;
-        
+
         $matter = substr($placeholder, 6, -1);
-        
+
         if ($matter == "OVERVIEW")  {
             return $this->getOverview();
         }
-        
+
         // get the data id for the placeholder
         $query = "  SELECT type, ref_id FROM ".DBPREFIX."module_data_placeholders
                     WHERE placeholder = '".$matter."'";
         $objRs = $objDatabase->Execute($query);
-        
+
         if ($objRs !== false && $objRs->RecordCount() > 0) {
             $id = $objRs->fields['ref_id'];
             if ($objRs->fields['type'] == "cat") {
                  $this->_arrLanguages = $this->createLanguageArray();
                  $this->arrCategories = $this->createCategoryArray();
-                             
+
                  if ($this->arrCategories[$id]['action'] == "subcategories") {
                      return $this->getSubcategories($id);
                  } else {
@@ -139,7 +139,7 @@ class dataBlocks extends DataLibrary
             }
         }
     }
-    
+
     /**
      * Get the subcategories of a category
      *
@@ -159,7 +159,7 @@ class dataBlocks extends DataLibrary
         $this->_objTpl->parse("datalist_category");
         return $categories;
     }
-   
+
     /**
      * Get a category and its entries
      *
@@ -169,7 +169,7 @@ class dataBlocks extends DataLibrary
     function getCategory($id, $parcat=0)
     {
         global $_LANGID;
-        
+
 
         if ($this->entryArray == 0) {
             $this->entryArray = $this->createEntryArray();
@@ -180,15 +180,15 @@ class dataBlocks extends DataLibrary
         } else {
             $this->_objTpl->setTemplate($this->adjustTemplatePlaceholders($this->arrCategories[$parcat]['template']));
         }
-        
+
         $lang = $_LANGID;
         $width = $this->arrCategories[$id]['box_width'];
         $height = $this->arrCategories[$id]['box_height'];
-        
+
         if ($parcat) {
             $this->_objTpl->setVariable("CATTITLE", $this->arrCategories[$id][$_LANGID]['name']);
         }
-        
+
         if ($this->arrCategories[$id]['action'] == "content") {
                 $cmd = $this->arrCategories[$id]['cmd'];
                 $url = "index.php?section=data&amp;cmd=".$cmd;
@@ -196,25 +196,25 @@ class dataBlocks extends DataLibrary
                 //$url = "index.php?section=data&amp;act=thickbox&height=".$height."&amp;width=".$width."&amp;lang=".$lang;
                 $url = "index.php?section=data&amp;act=thickbox&amp;lang=".$lang;
         }
-        
+
         foreach ($this->entryArray as $entryId => $entry) {
             if (!$entry['active'] || !$entry['translation'][$_LANGID]['is_active']) {
                 continue;
             }
-            
+
             // check date
             if ($entry['release_time'] != 0) {
                if ($entry['release_time'] > time()) {
                    // too old
                    continue;
                }
-               
+
                // if it is not endless (0), check if 'now' is past the given date
                if ($entry['release_time_end'] !=0 && time() > $entry['release_time_end']) {
                    continue;
                }
             }
-            
+
             //if (array_key_exists($id, $entry['categories'][$_LANGID])) {
             if ($this->categoryMatches($id, $entry['categories'][$_LANGID])) {
                 if ($entry['translation'][$_LANGID]['image']) {
@@ -226,20 +226,20 @@ class dataBlocks extends DataLibrary
                 } else {
                     $image = "";
                 }
-                
+
                 if ($entry['mode'] == "normal") {
                     $href = $url."&amp;id=".$entryId;
                 } else {
                     $href = $entry['translation'][$_LANGID]['forward_url'];
                 }
-                
+
                 if (!empty($entry['translation'][$_LANGID]['forward_target'])) {
                     $target = "target=\"".$entry['translation'][$_LANGID]['forward_target']."\"";
                 } else {
                     $target = "";
                 }
-                
-                
+
+
                 $title = $entry['translation'][$_LANGID]['subject'];
                 $content = substr(strip_tags($entry['translation'][$_LANGID]['content']), 0, $this->_arrSettings['data_general_introduction']);
                 $this->_objTpl->setVariable(array(
@@ -249,7 +249,7 @@ class dataBlocks extends DataLibrary
                     "HREF"          => $href,
                     "TARGET"        => $target,
 //                    "CLASS"         => ($this->arrCategories[$id]['action'] == "overlaybox" && $entry['mode'] == "normal") ? "class=\"thickbox\"" : "",
-                    "CLASS"         => ($this->arrCategories[$id]['action'] == "overlaybox" && $entry['mode'] == "normal") ? "class=\"lightview\" title='Contrexx ::  :: width: ".$width.", height: ".$height."'" : "",
+                    "CLASS"         => ($this->arrCategories[$id]['action'] == "overlaybox" && $entry['mode'] == "normal") ? "rel=\"ibox\"" : "",
                     "TXT_MORE"      => $this->langVars['TXT_DATA_MORE']
                 ));
                 if ($parcat) {
@@ -266,7 +266,7 @@ class dataBlocks extends DataLibrary
         }
         return $this->_objTpl->get();
     }
-    
+
     /**
      * Get a single entry view
      *
@@ -276,17 +276,17 @@ class dataBlocks extends DataLibrary
     function getDetail($id)
     {
         global $_LANGID;
-        
+
         if ($this->entryArray === false) {
             $this->entryArray = $this->createEntryArray();
         }
-        
+
         $entry = $this->entryArray[$id];
-        $title = $entry['translation'][$_LANGID]['subject'];  
+        $title = $entry['translation'][$_LANGID]['subject'];
         $content = substr(strip_tags($entry['translation'][$_LANGID]['content']), 0, $this->_arrSettings['data_general_introduction']);
-        
+
         $this->_objTpl->setTemplate($this->adjustTemplatePlaceholders($this->_arrSettings['data_template_entry']));
-        
+
         if ($entry['translation'][$_LANGID]['image']) {
             if (file_exists(ASCMS_PATH.$entry['translation'][$_LANGID]['image'].".thumb")) {
                 $image = "<img src=\"".$entry['translation'][$_LANGID]['image'].".thumb\" alt=\"\" style=\"float: left; margin-right: 5px;\"/>";
@@ -299,7 +299,7 @@ class dataBlocks extends DataLibrary
         $lang = $_LANGID;
         $width = $this->_arrSettings['data_thickbox_width'];
         $height = $this->_arrSettings['data_thickbox_height'];
-        
+
         if ($entry['mode'] == "normal") {
             if ($this->_arrSettings['data_entry_action'] == "content") {
                 $cmd = $this->_arrSettings['data_target_cmd'];
@@ -310,22 +310,22 @@ class dataBlocks extends DataLibrary
         } else {
             $url = $entry['translation'][$_LANGID]['forward_url'];
         }
-        
+
         $templateVars = array(
             "TITLE"         => $title,
             "IMAGE"         => $image,
             "CONTENT"       => $content,
             "HREF"          => $url."&amp;id=".$id,
 //            "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "class=\"thickbox\"" : "",
-            "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "class=\"lightview\" title='Contrexx ::  :: width: ".$width.", height: ".$height."'" : "",
+            "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "rel=\"ibox\"" : "",
             "TXT_MORE"      => $this->langVars['TXT_DATA_MORE']
         );
         $this->_objTpl->setVariable($templateVars);
-        
+
         $this->_objTpl->parse("datalist_entry");
         return $this->_objTpl->get();
     }
-    
+
     /**
      * Make the [[PLACEHOLDERS]] to {PLACEHOLDER}
      *

@@ -70,6 +70,9 @@ Modul: Community
 - Die Profil Eigenschaften Vor- und Nachname können bei der Registrierung
   angegeben werden.
 
+Modul: Datenlisten
+- Als PopUp Javascript Bibliothek wird iBox verwendet.
+
 Modul: Directory
 - Anzahl Einträge pro Seite (Paging) kann frei definiert werden.
 
