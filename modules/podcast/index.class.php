@@ -94,7 +94,13 @@ class podcast extends podcastLib
     }
     window.onload = function(){
         try{
-            document.getElementById("podcast_container").innerHTML = '%s';
+            elPodcastContainer = document.getElementById("podcast_container");
+            elPodcastContainerLength = elPodcastContainer.childNodes.length;
+            document.getElementById("podcast_container").innerHTML += '%s';
+            for (childNr = elPodcastContainerLength - 1; childNr >= 0; childNr--) {
+                elPodcastContainer.removeChild(elPodcastContainer.childNodes[childNr]);
+            }
+
         }catch(e){}
         setSize(document.getElementById("podcast_preview"), previewSizeMax);
         mThumbnails = document.getElementsByName("podcast_thumbnails");

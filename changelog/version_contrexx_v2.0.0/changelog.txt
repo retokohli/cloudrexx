@@ -220,6 +220,7 @@ Modul: Newsletter
 
 Modul: Podcast
 - Datenbank Abfragen optimiert.
+- Das Abspielen der Videos funktioniert mit dem Internet Explorer 6.
 
 Modul: Shop
 - Fehler bei der Verarbeitung von IPN bei PayPal wurde behoben.
