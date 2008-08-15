@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shop Product Categories
  *
@@ -294,16 +295,16 @@ class ShopCategories
             return false;
         }
         foreach ($arrShopCategory as $objShopCategory) {
-            $id = $objShopCategory->id;
+            $id = $objShopCategory->getId();
             $index = count($this->arrShopCategory);
             $this->arrShopCategory[$index] = array(
                 'id'       => $id,
-                'name'     => $objShopCategory->name,
-                'parentId' => $objShopCategory->parentId,
-                'sorting'  => $objShopCategory->sorting,
-                'status'   => $objShopCategory->status,
-                'picture'  => $objShopCategory->picture,
-                'flags'    => $objShopCategory->flags,
+                'name'     => $objShopCategory->getName(),
+                'parentId' => $objShopCategory->getParentId(),
+                'sorting'  => $objShopCategory->getSorting(),
+                'status'   => $objShopCategory->getStatus(),
+                'picture'  => $objShopCategory->getPicture(),
+                'flags'    => $objShopCategory->getFlags(),
                 'virtual'  => $objShopCategory->isVirtual(),
                 'level'    => $level,
             );
@@ -339,7 +340,7 @@ class ShopCategories
      *                                      Defaults to true.
      * @return  string                      The ShopCategory ID list
      *                                      on success, false otherwise.
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getSearchCategoryIdString(
@@ -529,7 +530,7 @@ class ShopCategories
      * @param   boolean $flagActiveOnly Only consider active Categories if true
      * @return  string                  The product thumbnail path on success,
      *                                  the empty string otherwise.
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -630,7 +631,7 @@ class ShopCategories
      * The <select> tag pair
      * with the menu name will be included, plus an option for the root
      * ShopCategory.
-     * @global  array
+     * @global  array       $_ARRAYLANG     Language array
      * @param   integer     $selectedid     The selected ShopCategories ID
      * @param   string      $name           The optional menu name,
      *                                      defaults to 'catId'.
@@ -720,7 +721,7 @@ class ShopCategories
      * @return  array                       An array of ShopCategory IDs
      *                                      on success, false otherwise.
      * @static
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     //static
@@ -969,7 +970,7 @@ class ShopCategories
      * @param   integer     $id         The ShopCategory ID
      * @return  string                  Empty string on success, a string
      *                                  with error messages otherwise.
-     * @global  array
+     * @global  array       $_ARRAYLANG     Language array
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function makeThumbnailById($id)

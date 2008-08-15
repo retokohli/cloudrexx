@@ -97,7 +97,7 @@ class Vat
      *  (ID => rate)
      * Plus initializes the various object variables.
      * May die() with a message if it fails to access its settings.
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @return  void
      */
     function init()
@@ -269,10 +269,10 @@ class Vat
 
     /**
      * Return the tax rate for the given VAT ID, if available,
-     * or '' (the empty string) if the entry could not be found.
+     * or '0.00' if the entry could not be found.
      * @access  public
      * @param   integer $vatId  The VAT ID
-     * @return  double          The VAT rate, or ''
+     * @return  double          The VAT rate, or '0.00'
      */
     function getRate($vatId)
     {
@@ -280,17 +280,16 @@ class Vat
             return $this->arrVatRate[$vatId];
         }
         // No entry found.  But some sensible value is required by the Shop.
-        return '0.0';
+        return '0.00';
     }
 
 
     /**
      * Return the tax class for the given VAT ID, if available,
      * or a warning message if the entry could not be found.
-     *
      * @access  public
      * @param   integer $vatId  The VAT ID
-     * @global  array
+     * @global  array           Language array
      * @return  string          The VAT class, or a warning
      */
     function getClass($vatId)
@@ -328,7 +327,7 @@ class Vat
      *
      * @access  public
      * @param   integer $vatId  The Vat ID
-     * @global  array
+     * @global  array           Language array
      * @return  string          The resulting string
      */
     function getShort($vatId)
@@ -350,7 +349,7 @@ class Vat
      *
      * @access  public
      * @param   integer $vatId  The Vat ID
-     * @global  array
+     * @global  array           Language array
      * @return  string          The resulting string
      */
     function getLong($vatId)

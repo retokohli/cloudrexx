@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shop Customer
  *
@@ -10,6 +11,13 @@
  * @todo        Test!
  */
 
+/*
+
+Changes to the customer table:
+ALTER TABLE `contrexx_module_shop_customers`
+ADD `group_id` INT(10) UNSIGNED NULL DEFAULT NULL;
+
+*/
 
 /**
  * Customer as used in the Shop.
@@ -34,7 +42,7 @@ class Customer
      * for {@see getByWildcards()}, not the real database table field names!
      * @var array   $fieldNames
      */
-    var $fieldNames = array(
+    private $fieldNames = array(
         'userName'       => 'username',
         'prefix'         => 'prefix',
         'firstName'      => 'firstname',
@@ -58,147 +66,121 @@ class Customer
      * @var     string          $prefix     The customers' prefix (Sir, Madam, etc.)
      * @access  private
      */
-    var $prefix;
+    private $prefix = '';
     /**
      * @var     string          $firstName  The customers' first name
      * @access  private
      */
-    var $firstName;
+    private $firstName = '';
     /**
      * @var     string          $lastName   The customers' last name
      * @access  private
      */
-    var $lastName;
+    private $lastName = '';
     /**
      * @var     string          $company    The customers' company
      * @access  private
      */
-    var $company;
+    private $company = '';
     /**
      * @var     string          $address    The customers' address (street and number)
      * @access  private
      */
-    var $address;
+    private $address = '';
     /**
      * @var     string          $city       The customers' city
      * @access  private
      */
-    var $city;
+    private $city = '';
     /**
      * @var     string          $zip        The customers' zip code
      * @access  private
      */
-    var $zip;
+    private $zip = '';
     /**
      * @var     string          $countryId  The customer country's ID
      * @access  private
      */
-    var $countryId;
+    private $countryId = 0;
     /**
      * @var     string          $phone      The customers' phone number
      * @access  private
      */
-    var $phone;
+    private $phone = '';
     /**
      * @var     string          $fax        The customers' fax number
      * @access  private
      */
-    var $fax;
+    private $fax = '';
     /**
      * @var     string          $email      The customers' e-mail address
      * @access  private
      */
-    var $email;
+    private $email = '';
     /**
      * @var     string          $ccNumber   The customers' credit card number
      * @access  private
      */
-    var $ccNumber;
+    private $ccNumber = '';
     /**
      * @var     string          $ccDate     The customers' credit card expiry date
      * @access  private
      */
-    var $ccDate;
+    private $ccDate = '';
     /**
      * @var     string          $ccName     The customers' credit card holder name
      * @access  private
      */
-    var $ccName;
+    private $ccName = '';
     /**
      * @var     string          $ccCode     The customers' credit card verification code
      * @access  private
      */
-    var $ccCode;
+    private $ccCode = '';
     /**
      * @var     string          $userName   The customers' user name
      * @access  private
      */
-    var $userName;
+    private $userName = '';
     /**
      * @var     string          $password   The customers' password
      * @access  private
      */
-    var $password;
+    private $password = '';
     /**
      * @var     string      $companyNote   A note regarding the customers' company
      * @access  private
      */
-    var $companyNote;
+    private $companyNote = '';
     /**
      * @var     boolean     $resellerStatus   True if the customer is a reseller
      * @access  private
      */
-    var $resellerStatus;
+    private $resellerStatus = false;
     /**
      * @var     string      $registerDate   The date the customer was inserted into the database
      * @access  private
      */
-    var $registerDate;
+    private $registerDate = '0000-00-00';
     /**
      * @var     boolean     $activeStatus   The customers' active status (0: inactive, 1: active)
      * @access  private
      */
-    var $activeStatus;
-
+    private $activeStatus = true;
+// vogt
 
     /**
-     * Add or replace a Customer (PHP4)
-     *
-     * If the optional argument $id is set, the corresponding
-     * Customer is updated.  Otherwise, a new Customer is created.
-     * Set the remaining object variables by calling the appropriate
-     * access methods.
-     * @access  public
-     * @param   string  $prefix     The customers' prefix (Sir, Madam, etc.)
-     * @param   string  $firstName  The customers' first name
-     * @param   string  $lastName   The customers' last name
-     * @param   string  $company    The customers' company
-     * @param   string  $address    The customers' address (street and number)
-     * @param   string  $city       The customers' city
-     * @param   string  $zip        The customers' zip code
-     * @param   integer $countryId  The customer country's ID
-     * @param   string  $phone      The customers' phone number
-     * @param   string  $fax        The customers' fax number
-     * @return  Customer            The Customer
-     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * The ID of the customer group
+     * @var     integer
      */
-    function Customer(
-        $prefix, $firstName, $lastName, $company,
-        $address, $city, $zip, $countryId,
-        $phone, $fax, $id=0)
-    {
-        $this->__construct(
-            $prefix, $firstName, $lastName, $company,
-            $address, $city, $zip, $countryId,
-            $phone, $fax, $id);
-    }
-
+    private $groupId = 0;
 
     /**
-     * Add or replace a Customer (PHP5)
+     * Create a Customer
      *
      * If the optional argument $id is set, the corresponding
-     * Customer is updated.  Otherwise, a new Customer is created.
+     * Customer is updated if she exists.
+     * Otherwise, a new Customer is created.
      * Set the remaining object variables by calling the appropriate
      * access methods.
      * @access  public
@@ -232,19 +214,7 @@ class Customer
         $this->countryId = intval($countryId);
         $this->phone     = strip_tags(trim($phone));
         $this->fax       = strip_tags(trim($fax));
-
         // defaults for the remaining fields
-        $this->email          = '';
-        $this->ccNumber       = '';
-        $this->ccDate         = '';
-        $this->ccName         = '';
-        $this->ccCode         = '';
-        $this->userName       = '';
-        $this->password       = '';
-        $this->companyNote    = '';
-        $this->resellerStatus = false;
-        $this->registerDate   = '';
-        $this->activeStatus   = true;
     }
 
 
@@ -698,6 +668,25 @@ class Customer
         $this->activeStatus = ($activeStatus ? true : false);
     }
 
+    /**
+     * Get the customer group ID
+     * @return  string         The customer group ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getGroupId()
+    {
+        return $this->groupId;
+    }
+    /**
+     * Set the customer group ID
+     * @param   string         $groupId       The customer group ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function setGroupId($groupId)
+    {
+        $this->groupId = intval($groupId);
+    }
+
 
     /**
      * Clone the Customer
@@ -765,28 +754,30 @@ class Customer
 
         $query = "
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-            SET prefix='".contrexx_addslashes($this->prefix)."',
-                firstname='".contrexx_addslashes($this->firstName)."',
-                lastname='".contrexx_addslashes($this->lastName)."',
-                company='".contrexx_addslashes($this->company)."',
-                address='".contrexx_addslashes($this->address)."',
-                city='".contrexx_addslashes($this->city)."',
-                zip='".contrexx_addslashes($this->zip)."',
-                country_id='".contrexx_addslashes($this->countryId)."',
-                phone='".contrexx_addslashes($this->phone)."',
-                fax='".contrexx_addslashes($this->fax)."',
-                email='".contrexx_addslashes($this->email)."',
-                ccnumber='".contrexx_addslashes($this->ccNumber)."',
-                ccdate='".contrexx_addslashes($this->ccDate)."',
-                ccname='".contrexx_addslashes($this->ccName)."',
-                cvc_code='".contrexx_addslashes($this->ccCode)."',
-                username='".contrexx_addslashes($this->userName)."',
-                password='".contrexx_addslashes($this->password)."',
-                company_note='".contrexx_addslashes($this->companyNote )."',
-                is_reseller=".($this->resellerStatus ? 1 : 0).",
-                register_date='".contrexx_addslashes($this->registerDate)."',
-                customer_status=".($this->activeStatus ? 1 : 0)."
-            WHERE customerid=".$this->id;
+               SET prefix='".contrexx_addslashes($this->prefix)."',
+                   firstname='".contrexx_addslashes($this->firstName)."',
+                   lastname='".contrexx_addslashes($this->lastName)."',
+                   company='".contrexx_addslashes($this->company)."',
+                   address='".contrexx_addslashes($this->address)."',
+                   city='".contrexx_addslashes($this->city)."',
+                   zip='".contrexx_addslashes($this->zip)."',
+                   country_id='".contrexx_addslashes($this->countryId)."',
+                   phone='".contrexx_addslashes($this->phone)."',
+                   fax='".contrexx_addslashes($this->fax)."',
+                   email='".contrexx_addslashes($this->email)."',
+                   ccnumber='".contrexx_addslashes($this->ccNumber)."',
+                   ccdate='".contrexx_addslashes($this->ccDate)."',
+                   ccname='".contrexx_addslashes($this->ccName)."',
+                   cvc_code='".contrexx_addslashes($this->ccCode)."',
+                   username='".contrexx_addslashes($this->userName)."',
+                   password='".contrexx_addslashes($this->password)."',
+                   company_note='".contrexx_addslashes($this->companyNote )."',
+                   is_reseller=".($this->resellerStatus ? 1 : 0).",
+                   register_date='".contrexx_addslashes($this->registerDate)."',
+                   customer_status=".($this->activeStatus ? 1 : 0).",
+                   group_id=$this->groupId
+             WHERE customerid=$this->id
+        ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -811,7 +802,8 @@ class Customer
                 country_id, phone, fax, email,
                 ccnumber, ccdate, ccname, cvc_code,
                 username, password, company_note, is_reseller,
-                customer_status, register_date
+                customer_status, register_date,
+                group_id
             ) VALUES (
                 '".contrexx_addslashes($this->prefix)."',
                 '".contrexx_addslashes($this->firstName)."',
@@ -833,7 +825,8 @@ class Customer
                 '".contrexx_addslashes($this->companyNote )."',
                 ".($this->resellerStatus ? 1 : 0).",
                 ".($this->activeStatus ? 1 : 0).",
-                NOW()
+                NOW(),
+                $this->groupId
             )
         ";
         $objResult = $objDatabase->Execute($query);
@@ -894,6 +887,7 @@ class Customer
         $objCustomer->resellerStatus = ($objResult->fields['is_reseller'] ? true : false);
         $objCustomer->registerDate   = $objResult->fields['register_date'];
         $objCustomer->activeStatus   = ($objResult->fields['customer_status'] ? true : false);
+        $objCustomer->groupId = $objResult->fields['group_id'];
         return $objCustomer;
     }
 
@@ -951,28 +945,29 @@ class Customer
     function toString()
     {
         return "
-            id        : ".$this->id       .",<br />
-            prefix    : ".$this->prefix   .",<br />
-            firstName : ".$this->firstName.",<br />
-            lastName  : ".$this->lastName .",<br />
-            company   : ".$this->company  .",<br />
-            address   : ".$this->address  .",<br />
-            city      : ".$this->city     .",<br />
-            zip       : ".$this->zip      .",<br />
-            countryId : ".$this->countryId.",<br />
-            phone     : ".$this->phone    .",<br />
-            fax       : ".$this->fax      .",<br />
-            email     : ".$this->email    .",<br />
-            ccNumber  : ".$this->ccNumber .",<br />
-            ccDate    : ".$this->ccDate   .",<br />
-            ccName    : ".$this->ccName   .",<br />
-            ccCode    : ".$this->ccCode   .".<br />
-            userName  : ".$this->userName ."<br />
-            password  : ".$this->password ."<br />
-            companyNote : ".$this->companyNote."<br />
-            resellerStatus : ".($this->resellerStatus ? 1 : 0)."<br />
-            registerDate : ".$this->registerDate."<br />
-            activeStatus : ".($this->activeStatus ? 1 : 0)."<br />
+            id        : $this->id,<br />
+            prefix    : $this->prefix,<br />
+            firstName : $this->firstName,<br />
+            lastName  : $this->lastName,<br />
+            company   : $this->company,<br />
+            address   : $this->address,<br />
+            city      : $this->city,<br />
+            zip       : $this->zip,<br />
+            countryId : $this->countryId,<br />
+            phone     : $this->phone,<br />
+            fax       : $this->fax,<br />
+            email     : $this->email,<br />
+            ccNumber  : $this->ccNumber,<br />
+            ccDate    : $this->ccDate,<br />
+            ccName    : $this->ccName,<br />
+            ccCode    : $this->ccCode,<br />
+            userName  : $this->userName,<br />
+            password  : $this->password,<br />
+            companyNote : $this->companyNote,<br />
+            resellerStatus : ".($this->resellerStatus ? 1 : 0).",<br />
+            registerDate : $this->registerDate,<br />
+            activeStatus : ".($this->activeStatus ? 1 : 0).",<br />
+            groupId : $this->groupId<br />
         ";
     }
 

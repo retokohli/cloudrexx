@@ -171,7 +171,7 @@ class PaymentProcessing
      * @param   integer     $processorId    The payment processor ID
      * @return  string                      The payment processors' name,
      *                                      or the empty string on failure.
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
     function getPaymentProcessorName($processorId=0)
     {
@@ -209,7 +209,7 @@ class PaymentProcessing
      * @param   integer     $processorId    The payment processor ID
      * @return  string                      The payment processor type,
      *                                      or the empty string on failure.
-     * @global  ADONewConnection 
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
     function getCurrentPaymentProcessorType($processorId=0)
     {
@@ -247,7 +247,7 @@ class PaymentProcessing
      * @return  string                      The payment processors' picture
      *                                      file name, or the empty string
      *                                      on failure.
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
     function getPaymentProcessorPicture($processorId=0)
     {
@@ -287,6 +287,7 @@ class PaymentProcessing
     function checkOut()
     {
         $return = '';
+//echo("PP name ".$this->getPaymentProcessorName()."<br />");
         switch ($this->getPaymentProcessorName()) {
             case 'Internal':
                 /* Redirect browser */
@@ -521,6 +522,9 @@ class PaymentProcessing
             case 'yellowpay':
                 if (isset($_POST['txtOrderIDShop'])) {
                     return intval($_POST['txtOrderIDShop']);
+                }
+                if (isset($_REQUEST['orderid'])) {
+                    return intval($_REQUEST['orderid']);
                 }
                 break;
             // For the remaining types, there's no need to check in, so we

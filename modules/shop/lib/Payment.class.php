@@ -68,7 +68,7 @@ class Payment
     /**
      * Returns the countries related payment ID array.
      *
-     * @global   ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @param    integer $countryId         The country ID
      * @param    array   $arrCurrencies     The currencies array
      * @return   array   $arrPaymentId      Array of payment IDs, like:
@@ -126,7 +126,7 @@ class Payment
      * @param   integer $countryId      Country ID
      * @param   array   $arrCurrencies  Currencies array
      * @return  string                  HTML code for the dropdown menu
-     * @global  array
+     * @global  array   $_ARRAYLANG     Language array
      */
     function getPaymentMenu($selectedId=0, $onchange='', $countryId=0, $arrCurrencies='')
     {
@@ -157,7 +157,7 @@ class Payment
     /**
      * Get the payment name for the ID given
      * @static
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @param   integer   $paymentId      The payment ID
      * @return  mixed                     The payment name on success,
      *                                    false otherwise
@@ -183,7 +183,7 @@ class Payment
      * Returns the name of the payment processor with the given ID,
      * or '' if it couldn't be found, or if an error was encountered.
      * @return  string                  The name of the payment processor
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @todo    This method belongs to the PaymentProcessing class.  It's
      *          still here because the backend only uses this class, and not
      *          PaymentProcessing.
@@ -210,7 +210,7 @@ class Payment
      * @param   integer   $paymentId    The payment ID
      * @return  integer                 The payment processor ID on success,
      *                                  false otherwise
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
     //static
     function getPaymentProcessorId($paymentId)

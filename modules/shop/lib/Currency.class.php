@@ -281,7 +281,7 @@ class Currency
      * @param   integer   $currencyId   The currency ID
      * @return  mixed                   The currency code on success,
      *                                  false otherwise
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
     //static
     function getCodeById($currencyId)

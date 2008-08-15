@@ -54,7 +54,7 @@ class Shipment
      * module_shop_shipment_cost (id, shipper_id, max_weight, cost, price_free)
      * as of version 1.1.
      *
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @param   boolean         $ignoreStatus   If false, only records with status==1 are
      *                                          returned, all records otherwise.
      *                                          Use $ignoreStatus=1 for the settings (backend).
@@ -221,7 +221,7 @@ class Shipment
      * @param   string  $selectedId     Optional preselected shipment ID
      * @param   string  $onchange       Optional onchange javascript callback
      * @return  string                  Dropdown menu string
-     * @global  array
+     * @global  array   $_ARRAYLANG     Language array
      */
     function getShipperMenu($countryId=0, $selectedId=0, $onchange="")
     {
@@ -464,8 +464,8 @@ class Shipment
     /**
      * Returns an array containing all the active shipment conditions.
      *
-     * @global  ADONewConnection
-     * @global  array
+     * @global  ADONewConnection  $objDatabase    Database connection object
+     * @global  array   $_ARRAYLANG     Language array
      * @return  array           Countries and conditions array
      */
     function getShipmentConditions()
@@ -536,7 +536,7 @@ class Shipment
     /**
      * Get the shipper name for the ID given
      * @static
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @param   integer   $shipperId      The shipper ID
      * @return  mixed                     The shipper name on success,
      *                                    false otherwise

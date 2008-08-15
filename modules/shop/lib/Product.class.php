@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shop Products
  *
@@ -51,173 +52,221 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/ProductAttributes.class.php';
 class Product
 {
     /**
+     * All Product table field names
+     *
+     * Might be used to generate queries.
+     * @var array   $fieldNames
+     */
+    private $fieldNames = array(
+        'id', 'product_id', 'picture', 'title', 'catid', 'handler',
+        'normalprice', 'resellerprice', 'shortdesc', 'description',
+        'stock', 'stock_visibility', 'discountprice', 'is_special_offer',
+        'property1', 'property2', 'status', 'b2b', 'b2c',
+        'startdate', 'enddate',
+        'thumbnail_percent', 'thumbnail_quality',
+        'manufacturer', 'external_link',
+        'sort_order', 'vat_id', 'weight',
+        'flags', 'group_id', 'article_id', 'keywords',
+    );
+
+    /**
+     * Default picture name
+     * @static
+     * @var     string
+     */
+    //static
+    private $defaultThumbnail = 'no_picture.gif';
+
+    /**
      * @var     string          $code               Product code
      * @access  private
      */
-    var $code;
+    private $code = '';
     /**
      * @var     integer         $catId              ShopCategory of the Product
      * @access  private
      */
-    var $catId;
+    private $catId = 0;
     /**
      * @var     string          $name               Product name
      * @access  private
      */
-    var $name;
+    private $name = '';
     /**
      * @var     Distribution    $distribution       Distribution type
      * @access  private
      */
-    var $distribution;
+    private $distribution = 'delivery';
     /**
-     * @var     double          $price              Product price
+     * @var     float           $price              Product price
      * @access  private
      */
-    var $price;
+    private $price = 0.00;
     /**
-     * @var     integer         $order              Sorting order of the Product
+     * @var     integer         $sortingOrder            Sorting order of the Product
      * @access  private
      */
-    var $order;
+    private $sortingOrder = 0;
     /**
      * @var     integer         $weight             Product weight (in grams)
      * @access  private
      */
-    var $weight;
+    private $weight = 0;
     /**
      * @var     integer         $id                 The Product ID
      * @access  private
      */
-    var $id;
+    private $id = 0;
     /**
      * The status is either active (true), or inactive (false).
      * @var     boolean         $status             Product status
      * @access  private
      */
-    var $status;
+    private $status = false;
     /**
      * @var     string          $pictures           Product pictures
      * @access  private
      */
-    var $pictures;
+    private $pictures = '';
     /**
-     * @var     double          $resellerPrice      Product price for resellers
+     * @var     float           $resellerPrice      Product price for resellers
      * @access  private
      */
-    var $resellerPrice;
+    private $resellerPrice = 0.00;
     /**
      * @var     string          $shortDesc          Product short description
      * @access  private
      */
-    var $shortDesc;
+    private $shortDesc = '';
         /**
      * @var     string          $description        Product description
      * @access  private
      */
-    var $description;
+    private $description = '';
     /**
      * @var     integer         $stock              Product stock
      * @access  private
      */
-    var $stock;
+    private $stock = 10;
     /**
      * @var     boolean         $isStockVisible     Product stock visibility
      * @access  private
      */
-    var $isStockVisible;
+    private $isStockVisible = 0;
     /**
-     * @var     double          $discountPrice      Product discount price
+     * @var     float           $discountPrice      Product discount price
      * @access  private
      */
-    var $discountPrice;
+    private $discountPrice = 0.00;
     /**
      * @var     boolean         $isSpecialOffer     Product is special offer
      * @access  private
      */
-    var $isSpecialOffer;
+    private $isSpecialOffer = false;
     /**
+     * For future use -- currently not used in the Shop!
      * @var     string          $property1          Product property 1
      * @access  private
      */
-    var $property1;
+    private $property1 = '';
     /**
+     * For future use -- currently not used in the Shop!
      * @var     string          $property2          Product property 2
      * @access  private
      */
-    var $property2;
+    private $property2 = '';
     /**
      * @var     boolean         $isB2B              Product available for isB2B
      * @access  private
      */
-    var $isB2B;
+    private $isB2B = 1;
     /**
      * @var     boolean         $isB2C              Product available for b2c
      * @access  private
      */
-    var $isB2C;
+    private $isB2C = 1;
     /**
      * @var     string          $startDate          Product startdate
      * @access  private
      */
-    var $startDate;
+    private $startDate = '0000-00-00';
     /**
+     * For future use -- currently not used in the Shop!
      * @var     string          $endDate            Product enddate
      * @access  private
      */
-    var $endDate;
+    private $endDate = '0000-00-00';
     /**
+     * OBSOLETE -- currently not used in the Shop!
      * @var     integer         $thumbnailPercent   Product thumbnail percent
      * @access  private
      */
-    var $thumbnailPercent;
+    private $thumbnailPercent = 25;
     /**
+     * OBSOLETE -- currently not used in the Shop!
      * @var     integer         $thumbnailQuality   Product thumbnail quality
      * @access  private
      */
-    var $thumbnailQuality;
+    private $thumbnailQuality = 95;
     /**
      * @var     integer         $manufacturerId     Product manufacturer ID
      * @access  private
      */
-    var $manufacturerId;
+    private $manufacturerId = 0;
     /**
      * @var     string          $externalLink       Product external link
      * @access  private
      */
-    var $externalLink;
+    private $externalLink = '';
     /**
      * @var     integer         $vatId              Product VAT ID
      * @access  private
      */
-    var $vatId;
+    private $vatId = 0;
     /**
      * The Product flags
      * @var string
      */
-    var $flags;
+    private $flags = '';
     /**
      * The assigned (frontend) user group IDs
      *
      * Comma separated list
      * @var string
      */
-    var $usergroups;
+    private $usergroups = '';
     /**
      * ProductAttribute value IDs array
      *
      * See {@link getProductAttributeValueIdArray()} for details.
      * @var     array   $arrProductAttributeValue
+     * The count type discount group ID
+     * @var     integer
+     */
+    private $groupCountId = 0;
+    /**
+     * The article group ID
+     * @var     integer
+     */
+    private $groupArticleId = 0;
+    /**
+     * The list of keywords
+     * @var     string
+     */
+    private $keywords = '';
+    /**
+     * @var     array   $arrProductAttributeValueId
+     *                                      ProductAttribute value IDs array
      * @access  private
      */
-    var $arrProductAttributeValue;
+    private $arrProductAttributeValueId = false;
 
 
     /**
      * Create a Product
      *
      * If the optional argument $id is set, the corresponding
-     * Product is updated.  Otherwise, a new Product is created.
+     * Product is updated, if it exists.  Otherwise, a new Product is created.
      * Set the remaining object variables by calling the appropriate
      * access methods.
      * @access  public
@@ -225,9 +274,9 @@ class Product
      * @param   integer $catId          The ShopCategory ID of the Product
      * @param   string  $name           The Product name
      * @param   string  $distribution   The Distribution type
-     * @param   double  $price          The Product price
+     * @param   float   $price          The Product price
      * @param   integer $status         The status of the Product (0 or 1)
-     * @param   integer $order          The sorting order
+     * @param   integer $sortingOrder        The sorting order
      * @param   integer $weight         The Product weight
      * @param   integer $id             The optional Product ID to be updated
      * @return  Product                 The Product
@@ -235,7 +284,7 @@ class Product
      */
     function __construct(
         $code, $catId, $name, $distribution, $price,
-        $status, $order, $weight, $id=0
+        $status, $sortingOrder, $weight, $id=0
     ) {
         // Assign & check
         $this->code         = strip_tags($code);
@@ -243,39 +292,18 @@ class Product
         $this->name         = strip_tags($name);
         $this->distribution = strip_tags($distribution);
         $this->price        = floatval($price);
-        $this->order        = intval($order);
+        $this->sortingOrder      = intval($sortingOrder);
         $this->weight       = intval($weight);
         $this->id           = intval($id);
         $this->setStatus($status);
-        if ($this->order <= 0) { $this->order = 0; }
 
-        // Default values for everything else
-        $this->pictures         = '';
-        $this->resellerPrice    =  0;
-        $this->shortDesc        = '';
-        $this->description      = '';
-        $this->stock            =  1;
-        $this->isStockVisible   =  false;
-        $this->discountPrice    =  0;
-        $this->isSpecialOffer   =  false;
-        $this->property1        = '';
-        $this->property2        = '';
-        $this->isB2B            =  true;
-        $this->isB2C            =  true;
-        $this->startDate        = '';
-        $this->endDate          = '';
-        $this->thumbnailPercent = 25;
-        $this->thumbnailQuality = 95;
-        $this->manufacturerId   =  0;
-        $this->externalLink     = '';
-        $this->vatId            =  0;
-        $this->flags            = '';
-        $this->usergroups       = '';
+        if ($this->sortingOrder <= 0) { $this->sortingOrder = 0; }
+        // Default values for everything else as stated above
 
         // Enable cloning of Products with ProductAttributes
         if ($this->id > 0) {
             $this->arrProductAttributeValue =
-                ProductAttribute::getValueIdArray($this->id);
+                ProductAttributes::getProductValueArray($this->id);
         }
     }
 
@@ -348,7 +376,7 @@ class Product
      */
     function setShopCategoryId($shopCategoryId)
     {
-        $this->catId = intval($shopCategoryId);
+        $this->ShopCategoryId = intval($shopCategoryId);
     }
 
     /**
@@ -377,16 +405,16 @@ class Product
      */
     function getOrder()
     {
-        return $this->order;
+        return $this->sortingOrder;
     }
     /**
      * Set the Product sorting order
-     * @param   integer         $order              Sorting order
+     * @param   integer         $sortingOrder              Sorting order
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setOrder($order)
+    function setOrder($sortingOrder)
     {
-        $this->order = intval($order);
+        $this->sortingOrder = intval($sortingOrder);
     }
 
     /**
@@ -630,8 +658,6 @@ class Product
     }
     /**
      * Set the ShopCategory flags
-     *
-     * Note that this is an alias for {@link setProperty1()}.
      * @param   string              The ShopCategory flags
      * @return  boolean             Boolean true if the flags were accepted,
      *                              false otherwise
@@ -906,6 +932,25 @@ class Product
         $this->usergroups = $usergroups;
     }
 
+    /**
+     * Get the keywords
+     * @return  string                               The product keywords
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getKeywords()
+    {
+        return $this->keywords;
+    }
+    /**
+     * Set the keywords
+     * @param   string          $keywords         The product keywords
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function setKeywords($keywords)
+    {
+        $this->keywords = $keywords;
+    }
+
 
     /**
      * Return the correct Product price for any Customer and Product.
@@ -926,7 +971,7 @@ class Product
 
 
     /**
-     * Return the current Product discounted price for any Product.
+     * Return the current discounted price for any Product, if applicable.
      * @return  mixed                       The Product discount price,
      *                                      or false if there is no discount.
      * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -995,6 +1040,45 @@ class Product
 
 
     /**
+     * Get the count type discount group ID
+     * @return  string         The group ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getGroupCountId()
+    {
+        return $this->groupCountId;
+    }
+    /**
+     * Set the count type discount group ID
+     * @param   string         $groupCountId       The group ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function setGroupCountId($groupCountId)
+    {
+        $this->groupCountId = intval($groupCountId);
+    }
+
+    /**
+     * Get the article group ID
+     * @return  string         The group ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getGroupArticleId()
+    {
+        return $this->groupArticleId;
+    }
+    /**
+     * Set the article group ID
+     * @param   string         $groupArticleId       The group ID
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function setGroupArticleId($groupArticleId)
+    {
+        $this->groupArticleId = intval($groupArticleId);
+    }
+
+
+    /**
      * Clone the Product
      *
      * Note that this does NOT create a copy in any way, but simply clears
@@ -1015,7 +1099,7 @@ class Product
      * Associated Attributes and pictures are deleted with it.
      * @param       integer     $productId      The Product ID
      * @return      boolean                     True on success, false otherwise
-     * @global      ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @todo        The handling of pictures is buggy.  Pictures used by other
      *              Products are only recognised if all file names are identical
      *              and in the same order!
@@ -1087,7 +1171,7 @@ class Product
      * Test whether a record with the ID of this object is already present
      * in the database.
      * @return  boolean                     True if it exists, false otherwise
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function recordExists()
@@ -1153,7 +1237,7 @@ class Product
      * Returns the result of the query.
      *
      * @return      boolean                     True on success, false otherwise
-     * @global      ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function update()
@@ -1186,12 +1270,16 @@ class Product
                 thumbnail_quality=$this->thumbnailQuality,
                 manufacturer=$this->manufacturerId,
                 external_link='".addslashes($this->externalLink)."',
-                sort_order=$this->order,
+                sort_order=$this->sortingOrder,
                 vat_id=$this->vatId,
                 weight=$this->weight,
                 flags='".addslashes($this->flags)."',
-                usergroups='$this->usergroups'
-          WHERE id=$this->id";
+                usergroups='$this->usergroups',
+                group_id=$this->groupCountId,
+                article_id=$this->groupArticleId,
+                keywords='".addslashes($this->keywords)."'
+          WHERE id=$this->id
+        ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -1221,7 +1309,8 @@ class Product
                 b2b, b2c, startdate, enddate,
                 manufacturer, external_link,
                 sort_order, vat_id, weight,
-                flags, usergroups
+                flags, usergroups,
+                group_id, article_id, keywords
             ) VALUES ('".
                 addslashes($this->code)."', '$this->pictures', '".
                 addslashes($this->name)."', $this->catId,
@@ -1241,13 +1330,12 @@ class Product
                 '$this->startDate', '$this->endDate',
                 $this->manufacturerId, '".
                 addslashes($this->externalLink)."',
-                $this->order, $this->vatId, $this->weight,
+                $this->sortingOrder, $this->vatId, $this->weight,
                 '".addslashes($this->flags)."',
-                '$this->usergroups'
+                '$this->usergroups',
+                $this->groupCountId, $this->groupArticleId, '".
+                contrexx_addslashes($this->keywords)."'
             )";
-// No longer in use:
-//                thumbnail_percent, thumbnail_quality,
-//                $this->thumbnailPercent, $this->thumbnailQuality,
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -1294,12 +1382,12 @@ class Product
             $objResult->fields['id']
         );
         $objProduct->pictures         = $objResult->fields['picture'];
-        $objProduct->resellerPrice    = $objResult->fields['resellerprice'];
+        $objProduct->resellerPrice    = floatval($objResult->fields['resellerprice']);
         $objProduct->shortDesc        = $objResult->fields['shortdesc'];
         $objProduct->description      = $objResult->fields['description'];
-        $objProduct->stock            = $objResult->fields['stock'];
+        $objProduct->stock            = intval($objResult->fields['stock']);
         $objProduct->setStockVisible($objResult->fields['stock_visibility']);
-        $objProduct->discountPrice    = $objResult->fields['discountprice'];
+        $objProduct->discountPrice    = floatval($objResult->fields['discountprice']);
         $objProduct->setSpecialOffer($objResult->fields['is_special_offer']);
         $objProduct->property1        = $objResult->fields['property1'];
         $objProduct->property2        = $objResult->fields['property2'];
@@ -1307,13 +1395,16 @@ class Product
         $objProduct->setB2C($objResult->fields['b2c']);
         $objProduct->startDate        = $objResult->fields['startdate'];
         $objProduct->endDate          = $objResult->fields['enddate'];
-        $objProduct->thumbnailPercent = $objResult->fields['thumbnail_percent'];
-        $objProduct->thumbnailQuality = $objResult->fields['thumbnail_quality'];
-        $objProduct->manufacturerId   = $objResult->fields['manufacturer'];
+        $objProduct->thumbnailPercent = intval($objResult->fields['thumbnail_percent']);
+        $objProduct->thumbnailQuality = intval($objResult->fields['thumbnail_quality']);
+        $objProduct->manufacturerId   = intval($objResult->fields['manufacturer']);
         $objProduct->externalLink     = $objResult->fields['external_link'];
-        $objProduct->vatId            = $objResult->fields['vat_id'];
+        $objProduct->vatId            = intval($objResult->fields['vat_id']);
         $objProduct->flags            = $objResult->fields['flags'];
         $objProduct->usergroups       = $objResult->fields['usergroups'];
+        $objProduct->groupCountId     = intval($objResult->fields['group_id']);
+        $objProduct->groupArticleId   = intval($objResult->fields['article_id']);
+        $objProduct->keywords         = $objResult->fields['keywords'];
         // also fetch the ProductAttribute value IDs
         $objProduct->arrProductAttributeValue =
             ProductAttributes::getProductValueArray($objProduct->id);
@@ -1327,15 +1418,15 @@ class Product
      * Note that the relation is is only permanently created after
      * the object is store()d.
      * @param   integer     $valueId    The Product Attribute value ID
-     * @param   integer     $order      The sorting order value
+     * @param   integer     $sortingOrder      The sorting order value
      * @return  boolean                 True. Always.
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function addAttribute($valueId, $order)
+    function addAttribute($valueId, $sortingOrder)
     {
         $this->arrProductAttributeValue[] = array(
             'valueId' => $valueId,
-            'order'   => $order,
+            'order'   => $sortingOrder,
         );
         return true;
     }
@@ -1379,27 +1470,54 @@ class Product
 
 
     /**
-     * Return the five products least recently added to the database.
-     *
-     * Note that this just selects the five Products with the greatest ID,
-     * thus this will yield unexpected results if the IDs are set
-     * by any other means than the AUTO_INCREMENT mechanism.
-     * @return  array                   The array of the five Product objects
-     * @global  ADONewConnection
+     * Returns the query for Product objects made from a wildcard pattern.
+     * @static
+     * @param   array       $arrPattern     The array of patterns to look for
+     * @return  string                      The query string
+     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function lastFive()
+    //static
+    function getWildcardQuery($arrPattern)
     {
         global $objDatabase;
 
-        // select last five products added to the database
-        $query = "
-            SELECT id, DISTINCT product_id
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-             WHERE status=1
-          ORDER BY id DESC
-        ";
-        $objResult = $objDatabase->SelectLimit($query, 5);
+        $query = '';
+        foreach ($arrPattern as $fieldName => $pattern) {
+            if (in_array($fieldName, array_keys($this->fieldNames))) {
+                if ($query) {
+                    $query .= "
+                        OR ".$this->fieldNames[$fieldName]." LIKE '%".
+                        contrexx_addslashes($pattern)."%'";
+                } else {
+                    $query  = "
+                        SELECT id FROM ".DBPREFIX."module_shop_products
+                        WHERE ".$this->fieldNames[$fieldName]." LIKE '%".
+                        contrexx_addslashes($pattern)."%'";
+                }
+// TODO: Do something else {
+//echo("Customer::getByWildcard(): illegal field name '$fieldName' ignored<br />");
+            }
+        }
+        return $query;
+    }
+
+    /**
+     * Returns an array of Product objects found by wildcard.
+     *
+     * @static
+     * @param   string      $pattern        The pattern to look for
+     * @return  array                       An array of Products on success, false otherwise
+     * @copyright   CONTREXX CMS - COMVATION AG
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    //static
+    function getByWildcard($arrPattern)
+    {
+        global $objDatabase;
+
+        $query = Product::getWildcardQuery($arrPattern);
+        $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
         }
@@ -1410,6 +1528,35 @@ class Product
         }
         return $arrProduct;
     }
+
+
+    /**
+     * Delete Products from the ShopCategory given by its ID.
+     *
+     * If deleting one of the Products fails, aborts and returns false
+     * immediately without trying to delete the remaining Products.
+     * Deleting the ShopCategory after this method failed will most
+     * likely result in Product bodies in the database!
+     * @static
+     * @param   integer     $catid      The ShopCategory ID
+     * @return  boolean                 True on success, false otherwise
+     * @copyright   CONTREXX CMS - COMVATION AG
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    //static
+    function deleteByShopCategory($catId)
+    {
+        $arrProducts = Product::getByShopCategoryId($catId);
+        if (is_array($arrProducts)) {
+            foreach ($arrProducts as $objProduct) {
+                if (!$objProduct->delete()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 }
 
 ?>

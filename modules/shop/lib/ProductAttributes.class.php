@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shop Product Attributes
  *
@@ -30,7 +31,7 @@ class ProductAttributes  // friend Product
      * or 0 (zero), meaning all Attributes whatsoever.
      * @var integer
      */
-    var $productId = 0;
+    private $productId = 0;
 
     /**
      * The array of ProductAttribute names
@@ -38,7 +39,7 @@ class ProductAttributes  // friend Product
      * Includes the fields id, name, and display_type
      * @var array
      */
-    var $arrName;
+    private $arrName;
 
     /**
      * The ProductAttribute name index
@@ -49,7 +50,7 @@ class ProductAttributes  // friend Product
      * offset in the Attribute name array ($arrName object variable)
      * @var array
      */
-    var $arrNameIndex;
+    private $arrNameIndex;
 
     /**
      * The array of ProductAttribute values
@@ -57,7 +58,7 @@ class ProductAttributes  // friend Product
      * Includes the fields id, name_id, value, price, and price_prefix
      * @var array
      */
-    var $arrValue;
+    private $arrValue;
 
     /**
      * The ProductAttribute value index
@@ -68,7 +69,7 @@ class ProductAttributes  // friend Product
      * offset in the Attribute value array ($arrValue object variable)
      * @var array
      */
-    var $arrValueIndex;
+    private $arrValueIndex;
 
     /**
      * The array of ProductAttribute relations
@@ -77,7 +78,7 @@ class ProductAttributes  // friend Product
      * attributes_name_id, attributes_value_id, and sort_id
      * @var array;
      */
-    var $arrRelation;
+    private $arrRelation;
 
     /**
      * The ProductAttribute relation index
@@ -89,7 +90,7 @@ class ProductAttributes  // friend Product
      * variable)
      * @var array
      */
-    var $arrRelationIndex;
+    private $arrRelationIndex;
 
 
     /**
@@ -174,6 +175,13 @@ class ProductAttributes  // friend Product
     /**
      * Returns an array of Attribute value IDs for the specified Product.
      *
+     * The array has the form
+     * array(
+     *  Index => array(
+     *      valueId => value ID,
+     *      order   => sorting order,
+     *  ),
+     *  ...
      * @access  public
      * @param   integer     $productId      The Product ID
      * @return  array                       Array of ProductAttribute value IDs
@@ -268,7 +276,7 @@ class ProductAttributes  // friend Product
      * @param   integer     $order          The optional sorting order,
      *                                      defaults to 0 (zero)
      * @return  boolean                     True on success, false otherwise
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
@@ -309,7 +317,7 @@ class ProductAttributes  // friend Product
      * @static
      * @param   integer     $productId      The Product ID
      * @return  boolean                     True on success, false otherwise.
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
     function deleteByProductId($productId)
     {
@@ -331,7 +339,7 @@ class ProductAttributes  // friend Product
      * Use with due care!
      * @static
      * @return  boolean                     True on success, false otherwise.
-     * @global  ADONewConnection
+     * @global  ADONewConnection  $objDatabase    Database connection object
      */
     //static
     function deleteAll()
@@ -364,19 +372,49 @@ class ProductAttributes  // friend Product
 
         return
             "<select name='attributeDisplayType[$attributeId]' ".
-                "size='1' style='width:170px;'>\n".
-            "<option value='0' ".
-                ($displayTypeId == '0' ? "selected='selected'" : '').">".
+                "size='1' style='width:170px;'".
+                (empty($onchange) ? '' : ' onchange="'.$onchange.'"').
+                ">\n".
+            "<option value='".SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU_OPTIONAL."' ".
+                ($displayTypeId == SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU_OPTIONAL
+                    ? "selected='selected'" : ''
+                ).">".
                 $_ARRAYLANG['TXT_MENU_OPTION']."</option>\n".
-            "<option value='3' ".
-                ($displayTypeId == '3' ? "selected='selected'" : '').">".
+            "<option value='".SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU_MANDATORY."' ".
+                ($displayTypeId == SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU_MANDATORY
+                    ? "selected='selected'" : ''
+                ).">".
                 $_ARRAYLANG['TXT_SHOP_MENU_OPTION_DUTY']."</option>\n".
-            "<option value='1' ".
-                ($displayTypeId == '1' ? "selected='selected'" : '').">".
+            "<option value='".SHOP_PRODUCT_ATTRIBUTE_TYPE_RADIOBUTTON."' ".
+                ($displayTypeId == SHOP_PRODUCT_ATTRIBUTE_TYPE_RADIOBUTTON
+                    ? "selected='selected'" : ''
+                ).">".
                 $_ARRAYLANG['TXT_RADIOBUTTON_OPTION']."</option>\n".
-            "<option value='2' ".
-                ($displayTypeId == '2' ? "selected='selected'" : '').">".
+            "<option value='".SHOP_PRODUCT_ATTRIBUTE_TYPE_CHECKBOX."' ".
+                ($displayTypeId == SHOP_PRODUCT_ATTRIBUTE_TYPE_CHECKBOX
+                    ? "selected='selected'" : ''
+                ).">".
                 $_ARRAYLANG['TXT_CHECKBOXES_OPTION']."</option>\n".
+            "<option value='".SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXT_OPTIONAL."' ".
+                ($displayTypeId == SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXT_OPTIONAL
+                    ? "selected='selected'" : ''
+                ).">".
+                $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXT_OPTIONAL']."</option>\n".
+            "<option value='".SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXT_MANDATORY."' ".
+                ($displayTypeId == SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXT_MANDATORY
+                    ? "selected='selected'" : ''
+                ).">".
+                $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXT_MANDATORY']."</option>\n".
+            "<option value='".SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_OPTIONAL."' ".
+                ($displayTypeId == SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_OPTIONAL
+                    ? "selected='selected'" : ''
+                ).">".
+                $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_OPTIONAL']."</option>\n".
+            "<option value='".SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_MANDATORY."' ".
+                ($displayTypeId == SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_MANDATORY
+                    ? "selected='selected'" : ''
+                ).">".
+                $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_MANDATORY']."</option>\n".
             "</select>\n";
     }
 
@@ -403,7 +441,7 @@ class ProductAttributes  // friend Product
         foreach ($objProductAttribute->arrValue as $id => $arrValue) {
             $inputBoxes .=
                 "<input type='text' name='$name[$id]' ".
-                "id='{$name}_{$id}' value='$arrValue[$content]' ".
+                "id='$name-$id' value='$arrValue[$content]' ".
                 "maxlength='$maxlength' style='display:".
                 ($select == true ? "inline" : "none").
                 ";$style' onchange='updateAttributeValueList($attributeId, $id)' />";
@@ -431,7 +469,7 @@ class ProductAttributes  // friend Product
             $menu .=
                 "<select style=\"width:50px;display:".
                 ($select == true ? "inline" : "none").
-                ";\" name=\"".$name."[$id]\" id=\"".$name."[$id]\" size=\"1\"".
+                ";\" name=\"".$name."[$id]\" id=\"".$name."-$id\" size=\"1\"".
                 "onchange='updateAttributeValueList($attributeId)'>\n".
                 "<option value=\"+\" ".
                 ($arrValue['price_prefix'] != "-" ? "selected=\"selected\"" : "").
@@ -451,7 +489,8 @@ class ProductAttributes  // friend Product
     /**
      * Returns HTML code for the value menu for each ProductAttribute
      *
-     * @global  array
+     * Used in the Backend for selecting and editing.
+     * @global  array       $_ARRAYLANG     Language array
      * @param   integer     $attributeId    ID of the ProductAttribute name
      * @param   string      $name           Name of the menu
      * @param   integer     $selectedId     ID of the selected value
@@ -472,8 +511,8 @@ class ProductAttributes  // friend Product
         }
 
         $menu =
-            "<select name='".$name."[]' id='".$name."[]' size='1' ".
-            "onchange='$onchange' style='$style'>\n";
+            '<select name="'.$name.'[]" id="'.$name.'-'.$attributeId.
+            '" size="1" onchange="'.$onchange.'" style="'.$style."\">\n";
 
         //if (is_array($objProductAttribute->arrValue))
         foreach ($objProductAttribute->arrValue as $arrValue) {
@@ -488,8 +527,8 @@ class ProductAttributes  // friend Product
         $menu .=
             '</select>'.
             '<br /><a href="javascript:{}" '.
-            'id="attributeValueMenuLink[$attributeId]" style="display:none;" '.
-            'onclick="removeSelectedValues($attributeId)" '.
+            'id="attributeValueMenuLink-'.$attributeId.'" style="display:none;" '.
+            'onclick="removeSelectedValues('.$attributeId.')" '.
             'title="'.$_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'].'" '.
             'alt="'.$_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'].'">'.
             $_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'].'</a>';
