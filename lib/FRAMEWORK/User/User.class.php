@@ -16,7 +16,7 @@
  * @version     2.0.0
  * @package     contrexx
  * @subpackage  lib_framework
- */ 
+ */
 class User extends User_Profile
 {
     /**
@@ -560,7 +560,7 @@ class User extends User_Profile
         if ($tblGroup) {
             $arrTables[] = 'group';
         }
-        
+
         return array(
             'tables'        => $arrTables,
             'conditions'    => $arrConditions
@@ -894,7 +894,7 @@ class User extends User_Profile
                     $joinGroupTbl = true;
                 }
             }
-            
+
             if (isset($sqlCondition['conditions']) && count($sqlCondition['conditions'])) {
                 $arrCustomSelection = $sqlCondition['conditions'];
             }
@@ -922,14 +922,13 @@ class User extends User_Profile
             }
         }
 
-        $query = 'SELECT SQL_CALC_FOUND_ROWS tblU.`id`
+        $query = 'SELECT SQL_CALC_FOUND_ROWS DISTINCT tblU.`id`
             FROM `'.DBPREFIX.'access_users` AS tblU'
             .($joinCoreTbl ? ' INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`' : '')
             .($joinCustomTbl ? ' INNER JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`' : '')
             .($joinGroupTbl ? ' INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`' : '')
             .(count($arrCustomJoins) ? ' '.implode(' ',$arrCustomJoins) : '')
             .(count($arrCustomSelection) ? ' WHERE '.implode(' AND ', $arrCustomSelection) : '')
-            .' GROUP BY tblU.`id`'
             .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
 
         if (empty($limit)) {
@@ -947,13 +946,13 @@ class User extends User_Profile
                 $objUserId->MoveNext();
             }
         }
-        
+
         $this->arrLoadedUsers = $arrUserIds;
 
         if (!count($arrUserIds)) {
             return false;
         }
-        
+
         return array(
             'tables' => array(
                 'core'      => $joinCoreTbl,
@@ -1181,7 +1180,7 @@ class User extends User_Profile
      * to the database.
      * If it is a new user, it also sets the registration time to the current time.
      *
-     * @global ADONewConnection 
+     * @global ADONewConnection
      * @global array
      * @return boolean
      */

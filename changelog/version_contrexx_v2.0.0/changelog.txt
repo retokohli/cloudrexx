@@ -154,6 +154,9 @@ Allgemein
 - Die PDF Ansicht funktioniert zuverlässiger, unabhängig von der Webserver
   Konfiguration.
 
+Benutzerverwaltung
+- Bei der Auflistung der Benutzer funktioniert das Paging.
+
 Content Manager
 - Wird eine Inhaltsseite vor unerlaubten Modifikationen geschützt, so wird nach
   dem Speichern der Seite nicht die Fehlermeldung "Zugriff verweigert"
