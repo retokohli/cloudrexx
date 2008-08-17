@@ -24,7 +24,7 @@
  */
 class InitCMS
 {
-    var $defaultBackendLangId;
+    7var $defaultBackendLangId;
     var $backendLangCharset;
     var $backendLangId;
 
@@ -517,9 +517,8 @@ class InitCMS
             case 'logout':
                 $section = 'login';
                 break;
-
-            case 'media':
-                $section .= MODULE_INDEX;
+			case 'media':
+                $section .= (MODULE_INDEX == '') ? 1 : intval(MODULE_INDEX);
                 break;
 
             default:
