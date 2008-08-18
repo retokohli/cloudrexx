@@ -63,7 +63,7 @@ class MediaManager extends MediaLibrary {
      * @access public
      */
     function __construct($pageContent, $archive){
-    	$this->archive = $archive;
+    	$this->archive = (intval(substr($archive,-1,1)) == 0) ? 'media1' : $archive;
 
         // directory variables
 		$this->iconPath     = ASCMS_MODULE_IMAGE_PATH . '/media/';
