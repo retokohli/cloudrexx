@@ -767,7 +767,6 @@ class Market extends marketLibrary
                 'MARKET_EDIT'                    => '<a href="?section=market&amp;cmd=edit&amp;id='.$id.'">'.$_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'].'</a>',
                 'MARKET_DEL'                    => '<a href="?section=market&amp;cmd=del&amp;id='.$id.'">'.$_ARRAYLANG['TXT_MARKET_DELETE_ADVERTISEMENT'].'</a>',
                 'MARKET_TYPE'                    => $type,
-                'MARKET_PICTURE'                => $image,
                 'MARKET_USER_DETAILS'             => $userDetails,
                 'TXT_MARKET_USER_DETAILS'         => $TXTuserDetails,
                 'MARKET_DESCRIPTION'             => $this->entries[$id]['description'],
@@ -798,6 +797,17 @@ class Market extends marketLibrary
                 'MARKET_SPEZ_FIELD_4'            => $this->entries[$id]['spez_field_4'],
                 'MARKET_SPEZ_FIELD_5'            => $this->entries[$id]['spez_field_5'],
             ));
+
+            if ($this->_objTpl->blockExists('market_picture')) {
+                if (!empty($this->entries[$id]['picture'])) {
+                    $this->_objTpl->setVariable('MARKET_PICTURE', $image);
+                    $this->_objTpl->parse('market_picture');
+                } else {
+                    $this->_objTpl->hideBlock('market_picture');
+                }
+            } else {
+                $this->_objTpl->setVariable('MARKET_PICTURE', $image);
+            }
         }else{
             header('Location: ?section=market');
         }
