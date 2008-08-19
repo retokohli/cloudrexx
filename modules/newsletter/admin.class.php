@@ -2618,7 +2618,7 @@ class newsletter extends NewsletterLib
         $order  = (!empty($_REQUEST['order'])) ? contrexx_addslashes($_REQUEST['order']) : 'asc';
         $listId = (!empty($_REQUEST['list']))  ? intval($_REQUEST['list']) : '';
         $limit  = (!empty($_REQUEST['limit'])) ? intval($_REQUEST['limit']) : $_CONFIG['corePagingLimit'];
-		
+
 		$keyword      = contrexx_addslashes($_SESSION['backend_newsletter_users_search_keyword']);
 		$searchfield  = contrexx_addslashes($_SESSION['backend_newsletter_users_search_SearchFields']);
 		$searchstatus = contrexx_addslashes($_SESSION['backend_newsletter_users_search_SearchStatus']) . '';
@@ -2629,7 +2629,7 @@ class newsletter extends NewsletterLib
 			$search_where = "AND `$searchfield` LIKE '%$keyword%'";
 		}
 		// PHP sucks. empty() doesn't work for numbers, even if they're
-		// strings. PHP considers "0" to be empty. 
+		// strings. PHP considers "0" to be empty.
 		if (strlen("$searchstatus") != 0) {
 			$search_where .= " AND `status` = $searchstatus ";
 		}
@@ -2785,7 +2785,7 @@ class newsletter extends NewsletterLib
             $objTpl->setVariable(array(
                 "IMPORT_ACTION"    => "?cmd=newsletter&amp;act=users&amp;tpl=import",
                 'TXT_FILETYPE'    => 'Dateityp',
-                'TXT_HELP'        => 'Wählen Sie hier eine Datei aus, deren Inhalt importiert werden soll:',
+                'TXT_HELP'        => $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'],
                 'IMPORT_ADD_NAME'    => 'Liste',
                 'IMPORT_ADD_VALUE'   => $this->CategoryDropDown(),
                 'IMPORT_ROWCLASS'    => 'row2'
