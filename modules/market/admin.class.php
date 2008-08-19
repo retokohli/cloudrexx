@@ -135,6 +135,10 @@ class Market extends marketLibrary
                 Permission::checkAccess(98, 'static');
                 $this->editEntry();
             break;
+            case 'copyEntry':
+                Permission::checkAccess(98, 'static');
+                $this->editEntry(true);
+            break;
             case 'entries':
                 Permission::checkAccess(98, 'static');
                 $this->entries();
@@ -444,6 +448,11 @@ class Market extends marketLibrary
 
         $this->_pageTitle = $_ARRAYLANG['TXT_ENTRIES'];
         $this->_objTpl->loadTemplateFile('module_market_entries.html',true,true);
+        if (isset($_POST['market_store_order'])) {
+            foreach ($_POST['entrySortNr'] as $sortEntryId => $sortNr) {
+                $objDatabase->Execute('UPDATE `'.DBPREFIX.'module_market` SET `sort_id` = '.intval($sortNr).' WHERE `id` = '.intval($sortEntryId));
+            }
+        }
 
         if (!isset($_GET['catid'])) {
             $where     = '';
@@ -487,6 +496,7 @@ class Market extends marketLibrary
         $this->_objTpl->setVariable(array(
             'TXT_IMG_EDIT'                =>    $_CORELANG['TXT_EDIT'],
             'TXT_IMG_DEL'                =>    $_CORELANG['TXT_DELETE'],
+            'TXT_IMG_COPY'                =>    $_CORELANG['TXT_COPY'],
             'TXT_STATUS'                =>    $_CORELANG['TXT_STATUS'],
             'TXT_DATE'                    =>    $_CORELANG['TXT_DATE'],
             'TXT_TITLE'                    =>    $_ARRAYLANG['TXT_MARKET_TITLE'],
@@ -527,6 +537,7 @@ class Market extends marketLibrary
                     'ENTRY_TITLE'            =>    $this->entries[$entryId]['title'],
                     'ENTRY_DATE'            =>    $date,
                     'ENTRY_ID'                =>    $entryId,
+                    'ENTRY_SORT_ORDER'          => $this->entries[$entryId]['sort_id'],
                     'ENTRY_DESCRIPTION'        =>    $this->entries[$entryId]['description'],
                     'ENTRY_TYPE'            =>    $type,
                     'ENTRY_ADDEDBY'            =>    $addedby,
@@ -736,11 +747,11 @@ class Market extends marketLibrary
     * @global array
     * @global array
     */
-    function editEntry() {
+    function editEntry($copy = false) {
 
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
-        $this->_pageTitle = $_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'];
+        $this->_pageTitle = $copy ? $_ARRAYLANG['TXT_COPY_ADVERTISEMENT'] : $_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'];
         $this->_objTpl->loadTemplateFile('module_market_entry.html',true,true);
 
         $this->_objTpl->setVariable(array(
@@ -767,7 +778,7 @@ class Market extends marketLibrary
             'TXT_DETAIL_SHOW'                =>    $_ARRAYLANG['TXT_MARKET_SHOW_IN_ADVERTISEMENT'],
             'TXT_DETAIL_HIDE'                =>    $_ARRAYLANG['TXT_MARKET_NO_SHOW_IN_ADVERTISEMENT'],
             'TXT_PREMIUM'                    =>    $_ARRAYLANG['TXT_MARKET_MARK_ADVERTISEMENT'],
-            'FORM_ACTION'                    =>    "editEntry",
+            'FORM_ACTION'                    =>    $copy ? "addEntry" : "editEntry",
             'TXT_DAYS'                        =>    $_ARRAYLANG['TXT_MARKET_DAYS'],
         ));
 
@@ -903,6 +914,9 @@ class Market extends marketLibrary
         }
 
         if (isset($_POST['submitEntry'])) {
+            if ($copy) {
+                return $this->insertEntry(1);
+            }
             if ($_FILES['pic']['name'] != "") {
                 $picture = $this->uploadPicture();
 /* TODO: Never used

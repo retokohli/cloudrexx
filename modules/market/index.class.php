@@ -331,7 +331,7 @@ class Market extends marketLibrary
                 $sortPaging            = "&sort=residence";
             break;
             default:
-                $sort                = "enddate";
+                $sort                = "sort_id, enddate";
                 $sortPaging            = "";
             break;
         }

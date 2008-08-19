@@ -63,7 +63,7 @@ function selectMultiAction()
 	    <td width="1%" valign="top"><input type="checkbox" name="selectedEntryId[]" id="selectedEntryId" value="{ENTRY_ID}"></td>
 		<td valign="top"><div align="center"><a href="?cmd=market&amp;act=statusEntry&amp;id={ENTRY_ID},{ENTRY_STATUS}{ENTRY_SORT_ID_STATUS}" target="_self"><img src="images/icons/{ENTRY_ICON}.gif" border="0" alt="" /></a></div></td>
 		<td valign="top" nowrap="nowrap"><div align="center">&nbsp;{ENTRY_ID}&nbsp;</div></td>
-		<td valign="top" nowrap="nowrap">&nbsp;{ENTRY_TITLE}&nbsp;</td>
+		<td valign="top" nowrap="nowrap">&nbsp;<input type="text" name="entrySortNr[{ENTRY_ID}]" value="{ENTRY_SORT_ORDER}" style="width:20px;" /> {ENTRY_TITLE}&nbsp;</td>
 		<td align="justify">{ENTRY_DESCRIPTION}&nbsp;</td>
 		<td valign="top">&nbsp;{ENTRY_TYPE}&nbsp;</td>
 		<td valign="top">&nbsp;{ENTRY_DATE}&nbsp;</td>
@@ -71,6 +71,7 @@ function selectMultiAction()
 		<td valign="top" align="right" nowrap="nowrap">
 			<div align="right">
 				<a href="?cmd=market&amp;act=editEntry&amp;id={ENTRY_ID}" target="_self"><img alt="{TXT_IMG_EDIT}" title="{TXT_IMG_EDIT}" src="images/icons/edit.gif" border="0" /></a> 
+				<a href="?cmd=market&amp;act=copyEntry&amp;id={ENTRY_ID}" target="_self" title="{TXT_IMG_COPY}"><img alt="{TXT_IMG_COPY}" src="images/icons/copy.gif" border="0" /></a>
 				<a href="javascript:deleteEntry({ENTRY_ID});" target="_self"><img alt="{TXT_IMG_DEL}" src="images/icons/delete.gif" border="0" title="{TXT_IMG_DEL}" /></a> 
 			</div>
 		</td>
@@ -78,6 +79,7 @@ function selectMultiAction()
 	<!-- END showEntries -->
 </table>
 <br />
+<input type="submit" name="market_store_order" value="{TXT_SAVE_ORDER}" style="margin-left:100px;" />
 <table cellpadding="2" cellspacing="0" border="0">
 	<tr>
 		<td>
