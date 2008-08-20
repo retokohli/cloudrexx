@@ -206,7 +206,7 @@ class modulemanager
 
     function installModules()
     {
-        global $objDatabase, $_CORELANG;
+        global $objDatabase, $_CORELANG, $objInit;
 
         $i = 1;
         if (empty($_POST['installModule']) || !is_array($_POST['installModule'])) {
@@ -231,20 +231,38 @@ class modulemanager
                 return false;
             }
 
-            $query = "
-                SELECT *
-                  FROM ".DBPREFIX."module_repository
-                 WHERE moduleid=$id
-                 ORDER BY parid ASC
+            $q_check_repo_lang = "
+                SELECT 
+                    count(lang) as langcount,
+                    lang
+                FROM ".DBPREFIX."module_repository
+                WHERE moduleid=$id
+                GROUP BY lang
+                HAVING langcount > 0
+                ORDER BY langcount ASC
             ";
+            $check_repo_lang = $objDatabase->Execute($q_check_repo_lang);
 
-            /* removed! Each language has the same repository!
+            // figure out what repository langid to use and store
+            // it in $repo_lang_id
+            while ($check_repo_lang and !$check_repo_lang->EOF) {
+                $repo_lang_id = $check_repo_lang->fields['lang'];
+                // preference in this order: current language id, default id, lowest id
+                if ($this->langId                   == $repo_lang_id) break;
+                if ($objInit->defaultFrontendLangId == $repo_lang_id) break;
+            
+                // lowest id is the last, so we just loop till the 
+                // end (or until we find something better). 
+                $check_repo_lang->MoveNext();
+            }
+            unset($check_repo_lang);
+
             $query = "SELECT *
                      FROM ".DBPREFIX."module_repository
                      WHERE moduleid=$id
-                     AND lang=$this->langId
+                     AND lang=$repo_lang_id
                      ORDER BY parid ASC";
-            */
+
 
             $objResult = $objDatabase->Execute($query);
             if ($objResult) {
@@ -284,7 +302,7 @@ class modulemanager
 
                     // Set displayorder to a high value for the parent module page
                     $displayorder = ($i == 1 ? $this->defaultOrderValue : $objResult->fields['displayorder']);
-                    $langId = $objResult->fields['lang'];
+                    $langId = $this->langId;
                     $modulerepid = $objResult->fields['id'];
                     $username = $objResult->fields['username'];
 
