@@ -983,19 +983,19 @@ class calendarManager extends calendarLibrary
         }
 
         if (!empty($link)) {
-            if (!preg_match("%^(?:ftp|http|https):\/\/%", $link)) {
+            if (!preg_match('%^(?:ftp|http|https):\/\/%', $link)) {
                 $link = "http://".$link;
             }
         }
 
         if (!empty($placeLink)) {
-            if (!preg_match("%^(?:ftp|http|https):\/\/%", $placeLink)) {
+            if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeLink)) {
                 $placeLink = "http://".$placeLink;
             }
         }
 
         if (!empty($organizerLink)) {
-            if (!preg_match("%^(?:ftp|http|https):\/\/%", $organizerLink)) {
+            if (!preg_match('%^(?:ftp|http|https):\/\/%', $organizerLink)) {
                 $organizerLink = "http://".$organizerLink;
             }
         }
@@ -1016,7 +1016,7 @@ class calendarManager extends calendarLibrary
                     $all_groups     = 0;
                     $public         = 0;
 
-                    foreach ($registrationGroups as $arrKey => $groupId){
+                    foreach ($registrationGroups as $groupId) {
                         $groups .= $groupId.";";
                     }
 
@@ -1083,7 +1083,7 @@ class calendarManager extends calendarLibrary
 
                         if ($objResultFields !== false) {
                             //input fields
-                            foreach ($registrationArrFieldStatus as $fieldKey => $fieldStatus) {
+                            foreach (array_keys($registrationArrFieldStatus) as $fieldKey) {
                                 $fieldId        = intval($registrationArrFieldIds[$fieldKey]);
                                 $fieldName      = $registrationArrFieldName[$fieldKey];
                                 $fieldType      = $registrationArrFieldType[$fieldKey];
@@ -1556,12 +1556,11 @@ class calendarManager extends calendarLibrary
         $this->_objTpl->loadTemplateFile('module_calendar_overview.html');
         $this->_objTpl->setVariable("CONTENT", $this->pageContent);
 
-        $i = 0;
-
-        $search   = $_POST['inputName'];
-        if ($_POST['inputName'] == ''){
-            $search = "[a-z0-9]";
-        }
+// TODO: $search is never used
+//        $search = $_POST['inputName'];
+//        if ($_POST['inputName'] == '') {
+//            $search = "[a-z0-9]";
+//        }
 
         $query = "
             SELECT * FROM ".DBPREFIX."module_calendar".$this->mandateLink."
@@ -1922,9 +1921,7 @@ class calendarManager extends calendarLibrary
                 WHERE setid = '6'";
         $objDatabase->Execute($query);
 
-
-
-        $objSettings = &new settingsManager();
+        $objSettings = new settingsManager();
         $objSettings->writeSettingsFile();
     }
 
@@ -2175,4 +2172,5 @@ class calendarManager extends calendarLibrary
     }
 
 }
+
 ?>

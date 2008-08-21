@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Calendar
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -7,6 +8,7 @@
  * @package     contrexx
  * @subpackage  module_calendar".$this->mandateLink."
  * @todo        Edit PHP DocBlocks!
+ * @todo        Make Note, Registration, etc. proper classes
  */
 
 /**
@@ -40,22 +42,15 @@ class calendarLibrary
     var $calDate2;
     var $calDate3;
     var $calendarDay;
-
     var $calStartYear;
     var $calEndYear;
     var $paging;
-
     var $calendarMonth;
-
     var $url;
     var $monthnavur=null;
-
     var $showOnlyActive = true;
-
-       var $_cachedCatNames = array();
-
-       var $mandate;
-       var $mandateLink;
+    var $_cachedCatNames = array();
+    var $mandate;
 
     /**
      * Constructor
@@ -1812,6 +1807,34 @@ class calendarLibrary
             }
         }
     }
+
+
+    /**
+     * Returns the Note ID which the Registration with the given ID is
+     * associated to.
+     * @param   integer   $regId    The Registration ID
+     * @return  mixed               The Note ID on success, false otherwise
+     * @static
+     * @global  ADONewConnection  $objDatabase    Database connection object
+     * @author  reto.kohli@comvation.com
+     */
+    static function getNoteIdByRegistrationId($regId)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT note_id
+              FROM ".DBPREFIX."module_calendar".MODULE_INDEX."_registrations
+             WHERE id='$regId'
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            return $objResult->fields['note_id'];
+        }
+        return false;
+    }
+
 }
 }
+
 ?>
