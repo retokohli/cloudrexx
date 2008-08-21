@@ -1605,11 +1605,11 @@ echo("WARNING: bogus method ProductAttribute::getAttributeList() called<br />");
      * @param   integer     $valueId        The value ID
      * @param   integer     $productId      The Product ID
      * @return  integer                     The sorting order, or false.
+     * @static
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function GetValueOrderByProductId($valueId, $productId)
+    static function GetValueOrderByProductId($valueId, $productId)
     {
         global $objDatabase;
 
