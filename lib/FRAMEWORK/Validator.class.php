@@ -11,18 +11,18 @@
 
 /**
  * Regular Expression for an e-mail address
- * @internal Another proposal for the e-mail regex from in here:
-   '/\s([_a-zA-Z0-9-]+(?:\.?[_a-zA-Z0-9-])*
-    @((?:[a-zA-Z0-9-]+\.)+(?:[a-zA-Z]{2,4})|localhost))\s/';
-    TODO: Find the up to date RFC and do it right.
+ *
+ * TKaelin @ 2.0.2: wrote new regex based on http://en.wikipedia.org/wiki/E-mail_address
 */
 define('VALIDATOR_REGEX_EMAIL',
-          '[a-z0-9]+([-._][a-z0-9]+)*'.       // user
+          '([a-z0-9!#$%*\/?|^{}`~&\'+\-=_])'.					//user
+          '([a-z0-9!#$%*\/?|^{}`~&\'+\-=_.]+)'.
+          '([a-z0-9!#$%*\/?|^{}`~&\'+\-=_])'.       
           '@(?:'.
-              '([a-z0-9]+([-.][a-z0-9]+)*)+'. //    domain
-              '\.[a-z]{2,4}'.                 //    sld, tld
+              '([a-z0-9]+([-.][a-z0-9]+)*)+'. 					//domain
+              '\.[a-z]{2,4}'.                 					//sld, tld
             '|'.
-              'localhost'.                    // or localhost
+              'localhost'.                    					//or localhost
           ')'
 );
 
@@ -44,11 +44,8 @@ class FWValidator
      * @return boolean
      * @access public
      */
-    function isEmail($string)
-    {
-        return preg_match(
-            '/^'.VALIDATOR_REGEX_EMAIL.'$/i',
-            $string) ? true : false;
+    function isEmail($string) {    	
+        return preg_match('/^'.VALIDATOR_REGEX_EMAIL.'$/i', stripslashes($string)) ? true : false;
     }
 
     /**
@@ -57,8 +54,7 @@ class FWValidator
      * @return  array               Array with all e-mail addresses found
      * @access  public
      */
-    function getEmailAsArray($string)
-    {
+    function getEmailAsArray($string) {
         preg_match_all(
 //          '/\s([_a-zA-Z0-9-]+(?:\.?[_a-zA-Z0-9-])*@((?:[a-zA-Z0-9-]+\.)+(?:[a-zA-Z]{2,4})|localhost))\s+/", $string, $matches);
             '/\s('.VALIDATOR_REGEX_EMAIL.')\.?\s/',
@@ -75,8 +71,7 @@ class FWValidator
      * @param string url
      * @return string url
      */
-    function getUrl($string)
-    {
+    function getUrl($string) {
         if (preg_match("/^[a-z]+:\/\//i", $string) || empty($string)) {
             return $string;
         } else {
@@ -84,5 +79,4 @@ class FWValidator
         }
     }
 }
-
 ?>
