@@ -82,8 +82,8 @@ class newsHeadlines {
                 $newstitle = htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET);
                 $newsparam = 'section=news&amp;cmd=details';
                 $news_link = (empty($objResult->fields['redirect'])) 
-                    ? "<a class=\"headlineLink\" href=\"$url?$newsparam&amp;newsid=$newsid\" title=\"$newstitle\">$newstitle</a>" 
-                    : "<a class=\"headlineLink\" href=\"$objResult->fields['redirect']\"     title=\"$newstitle\">$newstitle</a>";
+                    ? '<a class="headlineLink" href="'.$url.'?'.$newsparam.'&amp;newsid='.$newsid.'" title="'.$newstitle.'">'.$newstitle.'</a>' 
+                    : '<a class="headlineLink" href="'.$objResult->fields['redirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>';
 
 			    $this->_objTemplate->setVariable("HEADLINE_DATE", date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['date']));
 				$this->_objTemplate->setVariable("HEADLINE_LINK", $news_link);
