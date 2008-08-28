@@ -726,7 +726,7 @@ $_ARRAYLANG['TXT_DBM_MAINTENANCE_REPAIR_DESC'] = "If the database server stops u
 $_ARRAYLANG['TXT_DBM_MAINTENANCE_REPAIR_DONE'] = "All tables in the database have been successfully repaired.";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_HTML_TITLE'] = "HTML view";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_DUMP_TITLE'] = "SQL dump";
-$_ARRAYLANG['TXT_DBM_SHOW_TABLE_WRONG_PREFIX'] = "Error: you can only acces Contrexx tables.";
+$_ARRAYLANG['TXT_DBM_SHOW_TABLE_WRONG_PREFIX'] = "Error: you can only access Contrexx tables.";
 $_ARRAYLANG['TXT_DBM_SQL_CODE'] = "Execute SQL Query";
 $_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Note: All queries have to end with a semicolon (\";\"). Here an example: <pre>SELECT * FROM Table;</pre>
 <br />

@@ -88,4 +88,5 @@ $_ARRAYLANG['TXT_MARKET_SET_LOCATION_OVERVIEW'] = "Descripci&oacute;n general";
 $_ARRAYLANG['TXT_MARKET_NEW_LOCATION'] = "Agregar una ubicaci&oacute;n";
 $_ARRAYLANG['TXT_MARKET_LOCATION_EDIT'] = "Modificar";
 $_ARRAYLANG['TXT_MARKET_LOCATION_SORTING_UPDATED'] = "Sequencia de order ha side actualizado.";
+$_ARRAYLANG['TXT_COPY_ADVERTISEMENT'] = "Copy entry";
 ?>

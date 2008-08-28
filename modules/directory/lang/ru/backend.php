@@ -173,7 +173,6 @@ $_ARRAYLANG['TXT_DIRECTORY_SAVE'] = "Сохранить";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_SUCCESFULL'] = "Запись успешно оценена";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_SUCCESFULL_TEXT'] = "Ваш голос %LINK% успешно зарегестрирован.";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED'] = "Оценка не удалась";
-$_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'] = "Вы уже голосовали или не завершали все необходимые поля.  Ваш голос не был зарегистрирован";
 $_ARRAYLANG['TXT_DIRECTORY_VOTES'] = "Голоса";
 $_ARRAYLANG['TXT_DIRECTORY_YOUR_VOTE'] = "голос";
 $_ARRAYLANG['TXT_DIRECTORY_MY_FEEDS'] = "Моя рассылка";
@@ -305,4 +304,5 @@ $_ARRAYLANG['TXT_DIRECTORY_BROWSER_NOT_SUPPORTED'] = "Ваш браузер не
 $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'] = "Слишком много запросов: ежедневный лимит запросов Geocoding превосходился для этого домена.";
 $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Ошибка сервера: поисковый запрос (Geocoding)не может быть успешно обработан.";
 $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Укажите однозначный адрес или двигаете карту с мышью в желаемый пункт";
+$_ARRAYLANG['TXT_MAKE_SELECTION'] = "Bitte wählen Sie";
 ?>

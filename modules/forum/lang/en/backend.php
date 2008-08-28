@@ -110,8 +110,8 @@ $_ARRAYLANG['TXT_FORUM_BANNED_WORDS'] = "Invalid words";
 $_ARRAYLANG['TXT_FORUM_BANNED_WORDS_HELP'] = "Comma-separated list of words and expressions which are not allowed in forum posts. You may use Regular Expressions.<br /><br />Example: penis enlargment,free porn,(?i:buy\\\s*?(?:cheap\\\s*?)?viagra)";
 $_ARRAYLANG['TXT_CATEGORY_STATUS'] = "Status";
 $_ARRAYLANG['TXT_FORUM_INSERT_AT_POSITION'] = "Insert at position";
-$_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD'] = "Neuste Einträge nur pro Thema";
-$_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD_HELP'] = "Ist diese Option aktiviert, werden die neusten Beiträge nur pro Thema (resp. Thread) angezeigt. Ist die Option deaktiviert, werden alle neuen Beiträge angezeigt, auch wenn Sie im vom selben Thema sind.";
-$_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS_HELP'] = "Durch Kommas getrennte Liste der erlaubten Dateierweiterungen für den Dateiupload";
-$_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS'] = "Erlaubte Dateierweiterungen";
+$_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD'] = "Newest entries only per thread";
+$_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD_HELP'] = "If the option is active, the newest entries are shown per thread instead instead of all new entries from any thread.";
+$_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS_HELP'] = "Comma-separated list of allowed file extensions for upload";
+$_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS'] = "Allowed file extensions";
 ?>

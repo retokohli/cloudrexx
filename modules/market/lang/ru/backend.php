@@ -88,4 +88,5 @@ $_ARRAYLANG['TXT_MARKET_SET_LOCATION_OVERVIEW'] = "Краткий обзор";
 $_ARRAYLANG['TXT_MARKET_NEW_LOCATION'] = "Добавить местоположение";
 $_ARRAYLANG['TXT_MARKET_LOCATION_EDIT'] = "Редактировать";
 $_ARRAYLANG['TXT_MARKET_LOCATION_SORTING_UPDATED'] = "Последовательность вида была обновлена.";
+$_ARRAYLANG['TXT_COPY_ADVERTISEMENT'] = "Copy entry";
 ?>
