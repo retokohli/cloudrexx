@@ -59,7 +59,7 @@ $_ARRAYLANG['TXT_BANNER_GROUP_ADD_MAX_TITLE'] = "Máximo de grupos alcanzado";
 $_ARRAYLANG['TXT_BANNER_GROUP_ADD_MAX_CONTENT'] = "Ya alcanzado numero máximo de grupo de banners, por favor elimine uno antes de agregar uno nuevo.";
 $_ARRAYLANG['TXT_BANNER_GROUP_ADDED'] = "El grupo fue añadido con &eacute;xito";
 $_ARRAYLANG['TXT_BANNER_SETTINGS_CONTENT'] = "Banner (Contenido) activado";
-$_ARRAYLANG['TXT_BANNER_SETTINGS_TEASER'] = "";
+$_ARRAYLANG['TXT_BANNER_SETTINGS_TEASER'] = "Banner intro activado.";
 $_ARRAYLANG['TXT_BANNER_NOT_ACTIVE'] = "Aviso: Modulo Banner no esta activo en este momento.";
 $_ARRAYLANG['TXT_BANNER_INSERT_DONE'] = "Banner agregado con &eacute;xito";
 ?>

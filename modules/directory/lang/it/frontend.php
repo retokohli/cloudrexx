@@ -132,7 +132,7 @@ $_ARRAYLANG['TXT_DIRECTORY_SAVE'] = "Save";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_SUCCESFULL'] = "Voting successfull";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_SUCCESFULL_TEXT'] = "Your vote for %LINK% has been successfully recorded.";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED'] = "Voting aborted";
-$_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'] = "You have voted already or did not complete all required fields.  Your vote has not been recorded.";
+$_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'] = "Sie haben bereits abgestimmt oder es wurden nicht alle Angaben korrekt übertragen. Aus diesen Gründen konnte die Bewertung nicht erfolgreich abgeschlossen werden.";
 $_ARRAYLANG['TXT_DIRECTORY_VOTES'] = "Votes";
 $_ARRAYLANG['TXT_DIRECTORY_YOUR_VOTE'] = "Vote";
 $_ARRAYLANG['TXT_DIRECTORY_MY_FEEDS'] = "My Feeds";
@@ -224,4 +224,6 @@ $_ARRAYLANG['TXT_DIRECTORY_BROWSER_NOT_SUPPORTED'] = "Ihr Browser unterstützt k
 $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'] = "Zu viele Anfragen: Die tägliche Limite der Geocoding-Anfragen wurde für diese Domain überschritten.";
 $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Serverfehler: Die Suchanfrage (Geocoding) konnte nicht erfolgreich bearbeitet werden. ";
 $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Geben Sie eine eindeutige Adresse an oder bewegen die Karte mit der Maus an den gewünschten Punkt";
+$_ARRAYLANG['TXT_DIRECTORY_VOTE'] = "Stimme";
+$_ARRAYLANG['TXT_DIRECTORY_VOTES_TEMPLATE'] = "(%1\$s&nbsp;%2\$s,&nbsp;&Oslash;&nbsp;%3\$s)";
 ?>
