@@ -25,29 +25,29 @@ require_once ASCMS_MODULE_PATH . '/directory/lib/directoryLib.class.php';
  */
 class dirHomeContent extends directoryLibrary
 {
-	var $_pageContent;
-	var $_objTemplate;
-	var $rssPath;
-	var $rssWebPath;
-	var $settings = array();
+	private $_pageContent;
+    private $_objTemplate;
+    private $rssPath;
+    private $rssWebPath;
+    private $settings = array();
 
-	//local settings
-    var $rows 				= 2;
-	var $subLimit 			= 5;
-	var $rowWidth 			= "50%";
-	var $arrRows			= array();
-	var $arrRowsIndex	    = array();
+    //local settings
+    private $rows                 = 2;
+    private $subLimit             = 5;
+    private $rowWidth             = "50%";
+    private $arrRows            = array();
+    private $arrRowsIndex        = array();
 
-	var $categories = array();
-	var $levels = array();
+    public $categories = array();
+    public $levels = array();
 
-	var $count = array();
-    var $numLevels = array();
-    var $numCategories = array();
+    public $count = array();
+    public $numLevels = array();
+    public $numCategories = array();
 
-    var $navtree;
-	var $navtreeLevels = array();
-	var $navtreeCategories = array();
+    public $navtree;
+    public $navtreeLevels = array();
+    public $navtreeCategories = array();
 
 	/**
 	 * Constructor php5
