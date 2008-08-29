@@ -3,7 +3,7 @@
  * Blog library
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
- * @version     $Id: index.inc.php,v 1.00 $
+ * @version     $Id: index.inc.php,v 1.01 $
  * @package     contrexx
  * @subpackage  module_blog
  */
@@ -853,16 +853,10 @@ class BlogLibrary {
      * @return  string      The Keywords are replaced with linked tags, for example: "<a href="index.php?section=blog&amp;cmd=search&term=Keyword 1">Keyword1</a>, ..."
      */
     function getLinkedTags($strUnlinkedTags) {
-
-        $arrPatterns    = array('/^(([a-z0-9]+\s?)*)$/i',
-                                '/(([a-z0-9]+\s?)*),/iU',
-                                '/,(\s?)(([a-z0-9]+\s?)*)$/iU');
-        $arrReplace     = array('<a href="index.php?section=blog&amp;cmd=search&amp;term=\1" title="\1">\1</a>',
-                                '<a href="index.php?section=blog&amp;cmd=search&amp;term=\1" title="\1">\1</a>,',
-                                ',\1<a href="index.php?section=blog&amp;cmd=search&amp;term=\2" title="\2">\2</a>');
+        $arrPatterns    = array('/(,?\s?)(([a-z0-9+&;$!.-]+\s?)*)(,?\s?)/i');
+        $arrReplace     = array('\1<a href="index.php?section=blog&amp;cmd=search&amp;term=\2" title="\2">\2</a>\4',);
 
         return preg_replace($arrPatterns,$arrReplace,$strUnlinkedTags);
-
     }
 
 
