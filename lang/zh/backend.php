@@ -947,4 +947,11 @@ $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Webseite";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "ZIP";
 $_ARRAYLANG['CONTENT_ALIAS_HELPTEXT'] = "";
 $_ARRAYLANG['TXT_ERROR_NO_TITLE'] = "This page does not have a link name. It has not been saved.";
+$_ARRAYLANG['TXT_CREATE_BACKUPS'] = "Backup erstellen";
+$_ARRAYLANG['TXT_RESTORE_BACKUP'] = "Backup zurückspielen";
+$_ARRAYLANG['TXT_DELETE_BACKUPS'] = "Backups löschen";
+$_ARRAYLANG['TXT_DOWNLOAD_BACKUPS'] = "Backup herunterladen";
+$_ARRAYLANG['TXT_VIEW_BACKUPS'] = "Backups anzeigen";
+$_ARRAYLANG['TXT_BACKUP'] = "Backup";
+$_ARRAYLANG['TXT_SYSTEM_UPDATE'] = "System Update";
 ?>

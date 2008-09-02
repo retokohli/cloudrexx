@@ -944,4 +944,11 @@ $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Webseite";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "PLZ";
 $_ARRAYLANG['CONTENT_ALIAS_HELPTEXT'] = "Mit einem Alias können Sie der Seite eine URL zuweisen, die für Suchmaschinen sowie für das menschliche Auge angenehmer ist. Anstelle von z.B. <b>www.ihredomain.com/index.php?page=9234</b> kann eine URL in der Form <b>www.ihredomain.com/dienstleistung</b> benutzt werden.";
 $_ARRAYLANG['TXT_ERROR_NO_TITLE'] = "Diese Seite hat keinen Linknamen und konnte deshalb nicht gespeichert werden.";
+$_ARRAYLANG['TXT_CREATE_BACKUPS'] = "Backup erstellen";
+$_ARRAYLANG['TXT_RESTORE_BACKUP'] = "Backup zurückspielen";
+$_ARRAYLANG['TXT_DELETE_BACKUPS'] = "Backups löschen";
+$_ARRAYLANG['TXT_DOWNLOAD_BACKUPS'] = "Backup herunterladen";
+$_ARRAYLANG['TXT_VIEW_BACKUPS'] = "Backups anzeigen";
+$_ARRAYLANG['TXT_BACKUP'] = "Backup";
+$_ARRAYLANG['TXT_SYSTEM_UPDATE'] = "System Update";
 ?>
