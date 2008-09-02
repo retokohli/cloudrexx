@@ -38,7 +38,7 @@ class NewsletterLib
         if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_user (
         `code`,
         `email`,
-        `uri`,
+
         `sex`,
         `title`,
         `lastname`,
@@ -55,7 +55,7 @@ class NewsletterLib
         ) VALUES (
         '".$this->_emailCode()."',
         '".contrexx_addslashes($email)."',
-        '".contrexx_addslashes($uri)."',
+
         '".contrexx_addslashes($sex)."',
         ".intval($title).",
         '".contrexx_addslashes($lastname)."',
