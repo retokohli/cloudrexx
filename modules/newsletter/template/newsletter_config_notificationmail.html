@@ -10,37 +10,42 @@
 </ul>
 </div>
 <br />
-<form name="adduser" action="index.php?cmd=newsletter&amp;act=confirmmail" method="post">
+<form name="adduser" action="index.php?cmd=newsletter&amp;act=notificationmail" method="post">
 <input type="hidden" name="update" value="exe" />
   <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
     <tr>
-      <th colspan=2>{TXT_CONFIRM_MAIL}</th>
+      <th colspan=2>{TXT_NOTIFICATION_MAIL}</th>
+    </tr>
+    <tr class="row3">
+      <td colspan="2" valign="top"><b>{TXT_NOTIFICATION_SETTINGS}</b></td>
+    </tr>
+    <tr class="row1">
+      <td  valign="top">{TXT_SEND_BY_SUBSCRIBE}</td>
+      <td ><input type="radio" name="mailSendSubscribe" value="1" {SEND_BY_SUBSCRIBE_ON} /> {TXT_NOTIFICATION_ACTIVATE} &nbsp;
+      <input type="radio" name="mailSendSubscribe" value="0" {SEND_BY_SUBSCRIBE_OFF} /> {TXT_NOTIFICATION_DEACTIVATE}</td>
+    </tr>
+     <tr class="row2">
+      <td valign="top">{TXT_SEND_BY_UNSUBSCRIBE}</td>
+      <td ><input type="radio" name="mailSendUnsubscribe" value="1" {SEND_BY_UNSUBSCRIBE_ON} /> {TXT_NOTIFICATION_ACTIVATE} &nbsp;
+      <input type="radio" name="mailSendUnsubscribe" value="0" {SEND_BY_UNSUBSCRIBE_OFF} /> {TXT_NOTIFICATION_DEACTIVATE}</td>
+    </tr>
+        <tr class="row1">
+      <td width="210" valign="top">{TXT_RECIPIENTS}</td>
+      <td ><input type="text" name="mailRecipients" value="{MAIL_RECIPIENTS}" style="width:468px;" maxlength="255" /></td>
     </tr>
     <tr class="row3">
       <td colspan="2" valign="top"><b>{TXT_WILDCART_INFOS}</b></td>
     </tr>
-    <tr class="row2">
-      <td width="150" valign="top">{TXT_NEWSLETTER_SEX}</td>
-      <td >[[sex]]</td>
-    </tr>
-	<tr class="row1">
-      <td width="150" valign="top">{TXT_U_TITLE}</td>
-      <td >[[title]]</td>
-    </tr>
-    <tr class="row2">
-      <td width="150" valign="top">{TXT_FIRSTNAME}</td>
-      <td >[[firstname]]</td>
-    </tr>
     <tr class="row1">
-      <td width="150" valign="top">{TXT_LASTNAME}</td>
-      <td >[[lastname]]</td>
+      <td valign="top">{TXT_ACTION}</td>
+      <td >[[action]]</td>
     </tr>
     <tr class="row2">
-      <td width="150" valign="top">{TXT_URL}</td>
+      <td valign="top">{TXT_URL}</td>
       <td >[[url]]</td>
     </tr>
     <tr class="row1">
-      <td width="150" valign="top">{TXT_DATE}</td>
+      <td valign="top">{TXT_DATE}</td>
       <td >[[date]]</td>
     </tr>
     <tr class="row2">
@@ -49,12 +54,12 @@
     <tr>
       <th colspan="2" valign="top"><b>{TXT_CONTENT}</b></th>
     </tr>
-    <tr class="row2">
-      <td width="150" valign="top">{TXT_SUBJECT}</td>
+    <tr class="row1">
+      <td valign="top">{TXT_SUBJECT}</td>
       <td ><input type="text" name="mailSubject" value="{MAIL_SUBJECT}" style="width:468px;" maxlength="255" /></td>
     </tr>
-    <tr class="row1">
-      <td width="150" valign="top">{TXT_TEXT}</td>
+    <tr class="row2">
+      <td  valign="top">{TXT_TEXT}</td>
       <td ><textarea name="mailContent" style="width:468px; overflow: auto;" rows='15'>{MAIL_CONTENT}</textarea></td>
     </tr>
     </table>

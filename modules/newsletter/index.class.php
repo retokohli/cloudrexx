@@ -94,6 +94,9 @@ class newsletter extends NewsletterLib
             if ($objResult !== false) {
                 $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL']);
 
+                //send notification
+                $this->_sendNotifivationEmail(1);
+
                 //send mail
                 $query = "SELECT id, sex, title, firstname, lastname, email, code FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_addslashes($_GET['email'])."'";
                 $objResult = $objDatabase->Execute($query);
@@ -266,6 +269,10 @@ class newsletter extends NewsletterLib
             if ($arrSystem['defUnsubscribe'] == 1) {
                 //delete
                 if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=".$objUser->fields['id']) && $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_user WHERE id=".$objUser->fields['id'])) {
+                    //send notification
+                    $this->_sendNotifivationEmail(2);
+
+
                     $message = $_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'];
                 } else {
                     $message = $_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'];
@@ -273,6 +280,9 @@ class newsletter extends NewsletterLib
             } else {
                 //deactivate
                 if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_user SET status='0' WHERE id='".$objUser->fields['id']."'")) {
+                    //send notification
+                    $this->_sendNotifivationEmail(2);
+
                     $message = $_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'];
                 } else {
                     $message = $_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'];
@@ -570,6 +580,77 @@ class newsletter extends NewsletterLib
             return true;
         } else {
             return false;
+        }
+    }
+
+    function _sendNotifivationEmail($action)
+    {
+        global $_CONFIG, $_ARRAYLANG, $objDatabase;
+        //action: 1 = subscribe | 2 = unsubscribe
+
+
+        $objSettings = $objDatabase->Execute("SELECT `setname`, `setvalue` FROM `".DBPREFIX."module_newsletter_settings` WHERE `setid` = '10' OR  `setid` = '11' ");
+        if ($objSettings !== false) {
+            while (!$objSettings->EOF) {
+                $arrSettings[$objSettings->fields['setname']] = $objSettings->fields['setvalue'];
+            }
+        }
+
+        if(($arrSettings['notificationSubscribe'] == 1 && $action == 1) || ($arrSettings['notificationUnubscribe'] == 1 && $action == 2)) {
+
+            if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+                return false;
+            }
+
+            $objNotificationMail = $objDatabase->SelectLimit("SELECT title, content, recipients FROM ".DBPREFIX."module_newsletter_confirm_mail WHERE id='3'", 1);
+
+            if($action == 1) {
+                $txtAction = $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SUBSCRIBE'];
+            } else {
+               $txtAction = $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_UNSUBSCRIBE'];
+            }
+
+            $arrParsedTxts = str_replace(
+                array('[[action]]', '[[url]]', '[[date]]'),
+                array($txtAction, $_CONFIG['domainUrl'], date(ASCMS_DATE_FORMAT)),
+                array($objNotificationMail->fields['title'], $objNotificationMail->fields['content'])
+            );
+
+            $arrRecipients = explode(',', $objNotificationMail->fields['recipients']);
+
+            $arrSettings = &$this->_getSettings();
+
+            $objMail = new phpmailer();
+
+            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                    $objMail->IsSMTP();
+                    $objMail->Host = $arrSmtp['hostname'];
+                    $objMail->Port = $arrSmtp['port'];
+                    $objMail->SMTPAuth = true;
+                    $objMail->Username = $arrSmtp['username'];
+                    $objMail->Password = $arrSmtp['password'];
+                }
+            }
+
+            $objMail->CharSet = CONTREXX_CHARSET;
+            $objMail->From = $arrSettings['sender_mail']['setvalue'];
+            $objMail->FromName = $arrSettings['sender_name']['setvalue'];
+            $objMail->AddReplyTo($arrSettings['reply_mail']['setvalue']);
+            $objMail->Subject = $arrParsedTxts[0];
+            $objMail->Priority = 3;
+            $objMail->IsHTML(false);
+            $objMail->Body = $arrParsedTxts[1];
+
+            foreach ($arrRecipients as $key => $recipientEmail) {
+                $objMail->AddAddress($recipientEmail);
+            }
+
+            if ($objMail->Send()) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
