@@ -24,7 +24,7 @@
  */
 class InitCMS
 {
-    7var $defaultBackendLangId;
+    var $defaultBackendLangId;
     var $backendLangCharset;
     var $backendLangId;
 
