@@ -306,49 +306,51 @@ class GallerySql
     }
 }
 
-/**
- * Database Error
- * @author Comvation Development Team <info@comvation.com>
- * @author Stefan Heinemann
- * @package contrexx
- * @subpackage module_gallery
- */
-class DatabaseError extends Exception
-{
-    public function __construct($message)
+if (!class_exists("DatabaseError")) {
+    /**
+     * Database Error
+     * @author Comvation Development Team <info@comvation.com>
+     * @author Stefan Heinemann
+     * @package contrexx
+     * @subpackage module_gallery
+     */
+    class DatabaseError extends Exception
     {
-        parent::__construct($message);
-    }
-    
-    public function __toString()
-    {
-        global $objDatabase;
+        public function __construct($message)
+        {
+            parent::__construct($message);
+        }
         
-        $txt_details = "Details";
-       
-        return "<a style=\"margin-left: 1em;\" href=\"javascript:void(0);\" onclick=\"showErrDetails(this);\">$txt_details&gt;&gt;</a>
-        <div style=\"display:none;\" id=\"errDetails\">
-        ".$this->getMessage()."<br />
-        ".$objDatabase->ErrorMsg()."<br />
-        ".$this->getTraceAsString()."
-        </div>
-        <script type=\"text/javascript\">
-            /* <![CDATA[ */
-                var showErrDetails = function(obj)
-                {
-                    var childs = obj.childNodes;
-                    for (var i = 0; i < childs.length; ++i) {
-                        obj.removeChild(childs[i]);
+        public function __toString()
+        {
+            global $objDatabase;
+            
+            $txt_details = "Details";
+           
+            return "<a style=\"margin-left: 1em;\" href=\"javascript:void(0);\" onclick=\"showErrDetails(this);\">$txt_details&gt;&gt;</a>
+            <div style=\"display:none;\" id=\"errDetails\">
+            ".$this->getMessage()."<br />
+            ".$objDatabase->ErrorMsg()."<br />
+            ".$this->getTraceAsString()."
+            </div>
+            <script type=\"text/javascript\">
+                /* <![CDATA[ */
+                    var showErrDetails = function(obj)
+                    {
+                        var childs = obj.childNodes;
+                        for (var i = 0; i < childs.length; ++i) {
+                            obj.removeChild(childs[i]);
+                        }
+                        if ($('errDetails').visible()) {
+                            $('errDetails').style.display = \"none\";
+                            obj.appendChild(document.createTextNode(\"$txt_details >>\"));
+                        } else {
+                            $('errDetails').style.display = \"block\";
+                            obj.appendChild(document.createTextNode(\"$txt_details <<\"));
+                        }
                     }
-                    if ($('errDetails').visible()) {
-                        $('errDetails').style.display = \"none\";
-                        obj.appendChild(document.createTextNode(\"$txt_details >>\"));
-                    } else {
-                        $('errDetails').style.display = \"block\";
-                        obj.appendChild(document.createTextNode(\"$txt_details <<\"));
-                    }
-                }
-            /* ]]> */
-        </script>";
+                /* ]]> */
+            </script>";
+        }
     }
 }
