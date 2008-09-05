@@ -1018,16 +1018,13 @@ class directoryLibrary
 
         //get user data
         if(is_numeric($userId)){
-            $objResult = $objDatabase->Execute("SELECT email, firstname, lastname, username FROM ".DBPREFIX."access_users WHERE id='".$userId."' LIMIT 1");
-            if ($objResult !== false) {
-                while (!$objResult->EOF) {
-                    $userMail            = $objResult->fields['email'];
-                    $userFirstname        = $objResult->fields['firstname'];
-                    $userLastname        = $objResult->fields['lastname'];
-                    $userUsername        = $objResult->fields['username'];
-                    $objResult->MoveNext();
-                };
-            }
+             $objFWUser = new FWUser();
+                if ($objFWUser->objUser->getUser($userId)) {
+                    $userMail           = $objFWUser->objUser->getEmail();
+                    $userFirstname      = $objFWUser->objUser->getProfileAttribute('firstname');
+                    $userLastname       = $objFWUser->objUser->getProfileAttribute('lastname');
+                    $userUsername       = $objFWUser->objUser->getUsername();
+                }
 
             if(!empty($email)){
 // TODO: Never used
