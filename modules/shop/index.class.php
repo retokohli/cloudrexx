@@ -1143,6 +1143,7 @@ class Shop extends ShopLibrary
             'TXT_SHOP_CATEGORIES'        => $_ARRAYLANG['TXT_SHOP_CATEGORIES'],
             'TXT_SHOP_NORMALPRICE'       => $_ARRAYLANG['TXT_SHOP_NORMALPRICE'],
             'TXT_SHOP_DISCOUNTPRICE'     => $_ARRAYLANG['TXT_SHOP_DISCOUNTPRICE'],
+            'SHOP_JAVASCRIPT_CODE' => $this->getJavascriptCode($flagUpload),
         ));
         if (isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart') {
             $cartProdId = $productId;
@@ -1511,9 +1512,6 @@ class Shop extends ShopLibrary
             }
             $this->objTemplate->parse('shopProductRow');
         }
-        $this->objTemplate->setVariable(array(
-            'SHOP_JAVASCRIPT_CODE' => $this->getJavascriptCode($flagUpload),
-        ));
         return true;
     }
 
