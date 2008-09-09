@@ -444,17 +444,18 @@ function _create_additional_input_fields($settings) {
 	global $_ARRAYLANG;
 
 	$input_template = '<input name="%name" id="%name" type="%type" />';
+	$input_template_textarea = '<textarea name="%name" id="%name" > </textarea>';
 
 	$additionals = array(
-		'additional_nickname' => array('text', $_ARRAYLANG['TXT_ADDITIONAL_NICKNAME']),
-		'additional_forename' => array('text', $_ARRAYLANG['TXT_ADDITIONAL_FORENAME']),
-		'additional_surname'  => array('text', $_ARRAYLANG['TXT_ADDITIONAL_SURNAME' ]),
-		'additional_phone'    => array('text', $_ARRAYLANG['TXT_ADDITIONAL_PHONE'   ]),
-		'additional_street'   => array('text', $_ARRAYLANG['TXT_ADDITIONAL_STREET'  ]),
-		'additional_zip'      => array('text', $_ARRAYLANG['TXT_ADDITIONAL_ZIP'     ]),
-		'additional_city'     => array('text', $_ARRAYLANG['TXT_ADDITIONAL_CITY'    ]),
-		'additional_email'    => array('text', $_ARRAYLANG['TXT_ADDITIONAL_EMAIL'   ]),
-		'additional_comment'  => array('text', $_ARRAYLANG['TXT_ADDITIONAL_COMMENT' ]),
+		'additional_nickname' => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_NICKNAME']),
+		'additional_forename' => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_FORENAME']),
+		'additional_surname'  => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_SURNAME' ]),
+		'additional_phone'    => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_PHONE'   ]),
+		'additional_street'   => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_STREET'  ]),
+		'additional_zip'      => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_ZIP'     ]),
+		'additional_city'     => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_CITY'    ]),
+		'additional_email'    => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_EMAIL'   ]),
+		'additional_comment'  => array('textarea', $_ARRAYLANG['TXT_ADDITIONAL_COMMENT' ]),
 	);
 	$retval = array();
 	foreach ($additionals as $name => $data) {
@@ -466,7 +467,7 @@ function _create_additional_input_fields($settings) {
 			str_replace('%name',  $name,
 			str_replace('%label', $label,
 			str_replace('%type',  $type,
-			$input_template
+			($type == 'textarea' ? $input_template_textarea : $input_template)
 		)));
 		$retval[] = array($name, $label, $input_tag);
 	}
