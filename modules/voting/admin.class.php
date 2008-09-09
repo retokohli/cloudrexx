@@ -344,7 +344,8 @@ class votingmanager
                 additional_street  ,
                 additional_zip     ,
                 additional_city    ,
-                additional_email
+                additional_email   ,
+                additional_comment
             )
             values (
                 '".htmlspecialchars(addslashes($_POST['votingname']), ENT_QUOTES, CONTREXX_CHARSET)."',
@@ -359,7 +360,8 @@ class votingmanager
                 '".($_POST['additional_street'  ]=='on'?1:0)."',
                 '".($_POST['additional_zip'     ]=='on'?1:0)."',
                 '".($_POST['additional_city'    ]=='on'?1:0)."',
-                '".($_POST['additional_email'   ]=='on'?1:0)."'
+                '".($_POST['additional_email'   ]=='on'?1:0)."',
+                '".($_POST['additional_comment' ]=='on'?1:0)."'
             )";
         $objDatabase->Execute($query);
         $query = "SELECT MAX(id) as max_id FROM ".DBPREFIX."voting_system";
@@ -436,7 +438,8 @@ class votingmanager
                 additional_street   = '".($_POST['additional_street'  ]=='on'?1:0)."',
                 additional_zip      = '".($_POST['additional_zip'     ]=='on'?1:0)."',
                 additional_city     = '".($_POST['additional_city'    ]=='on'?1:0)."',
-                additional_email    = '".($_POST['additional_email'   ]=='on'?1:0)."'
+                additional_email    = '".($_POST['additional_email'   ]=='on'?1:0)."',
+                additional_comment  = '".($_POST['additional_comment' ]=='on'?1:0)."'
 
             WHERE id='".intval($_POST['votingid'])."'";
         #print "<pre>$query</pre>";
@@ -525,24 +528,25 @@ class votingmanager
         $this->_objTpl->loadTemplateFile('voting_add.html');
 
         $this->_objTpl->setVariable(array(
-            'TXT_VOTING_METHOD_OF_RESTRICTION_TXT'    => $_ARRAYLANG['TXT_VOTING_METHOD_OF_RESTRICTION_TXT'],
-            'TXT_VOTING_COOKIE_BASED'                => $_ARRAYLANG['TXT_VOTING_COOKIE_BASED'],
-            'TXT_VOTING_EMAIL_BASED'                => $_ARRAYLANG['TXT_VOTING_EMAIL_BASED'],
-            'TXT_VOTING_ADD'                        => $_ARRAYLANG['TXT_VOTING_ADD'],
-            'TXT_NAME'                                => $_ARRAYLANG['TXT_NAME'],
-            'TXT_VOTING_QUESTION'                    => $_ARRAYLANG['TXT_VOTING_QUESTION'],
-            'TXT_VOTING_ADD_OPTIONS'                => $_ARRAYLANG['TXT_VOTING_ADD_OPTIONS'],
-            'TXT_STORE'                                => $_ARRAYLANG['TXT_STORE'],
-            'TXT_RESET'                                => $_ARRAYLANG['TXT_RESET'],
-            'TXT_ADDITIONAL_NICKNAME' => $_ARRAYLANG['TXT_ADDITIONAL_NICKNAME'],
-            'TXT_ADDITIONAL_FORENAME' => $_ARRAYLANG['TXT_ADDITIONAL_FORENAME'],
-            'TXT_ADDITIONAL_SURNAME'  => $_ARRAYLANG['TXT_ADDITIONAL_SURNAME' ],
-            'TXT_ADDITIONAL_PHONE'    => $_ARRAYLANG['TXT_ADDITIONAL_PHONE'   ],
-            'TXT_ADDITIONAL_STREET'   => $_ARRAYLANG['TXT_ADDITIONAL_STREET'  ],
-            'TXT_ADDITIONAL_ZIP'      => $_ARRAYLANG['TXT_ADDITIONAL_ZIP'     ],
-            'TXT_ADDITIONAL_CITY'     => $_ARRAYLANG['TXT_ADDITIONAL_CITY'    ],
-            'TXT_ADDITIONAL_EMAIL'    => $_ARRAYLANG['TXT_ADDITIONAL_EMAIL'   ],
-            'TXT_ADDITIONAL'          => $_ARRAYLANG['TXT_ADDITIONAL'         ],
+            'TXT_VOTING_METHOD_OF_RESTRICTION_TXT' => $_ARRAYLANG['TXT_VOTING_METHOD_OF_RESTRICTION_TXT'],
+            'TXT_VOTING_COOKIE_BASED'              => $_ARRAYLANG['TXT_VOTING_COOKIE_BASED'],
+            'TXT_VOTING_EMAIL_BASED'               => $_ARRAYLANG['TXT_VOTING_EMAIL_BASED'],
+            'TXT_VOTING_ADD'                       => $_ARRAYLANG['TXT_VOTING_ADD'],
+            'TXT_NAME'                             => $_ARRAYLANG['TXT_NAME'],
+            'TXT_VOTING_QUESTION'                  => $_ARRAYLANG['TXT_VOTING_QUESTION'],
+            'TXT_VOTING_ADD_OPTIONS'               => $_ARRAYLANG['TXT_VOTING_ADD_OPTIONS'],
+            'TXT_STORE'                            => $_ARRAYLANG['TXT_STORE'],
+            'TXT_RESET'                            => $_ARRAYLANG['TXT_RESET'],
+            'TXT_ADDITIONAL_NICKNAME'              => $_ARRAYLANG['TXT_ADDITIONAL_NICKNAME'],
+            'TXT_ADDITIONAL_FORENAME'              => $_ARRAYLANG['TXT_ADDITIONAL_FORENAME'],
+            'TXT_ADDITIONAL_SURNAME'               => $_ARRAYLANG['TXT_ADDITIONAL_SURNAME' ],
+            'TXT_ADDITIONAL_PHONE'                 => $_ARRAYLANG['TXT_ADDITIONAL_PHONE'   ],
+            'TXT_ADDITIONAL_STREET'                => $_ARRAYLANG['TXT_ADDITIONAL_STREET'  ],
+            'TXT_ADDITIONAL_ZIP'                   => $_ARRAYLANG['TXT_ADDITIONAL_ZIP'     ],
+            'TXT_ADDITIONAL_CITY'                  => $_ARRAYLANG['TXT_ADDITIONAL_CITY'    ],
+            'TXT_ADDITIONAL_EMAIL'                 => $_ARRAYLANG['TXT_ADDITIONAL_EMAIL'   ],
+            'TXT_ADDITIONAL_COMMENT'               => $_ARRAYLANG['TXT_ADDITIONAL_COMMENT' ],
+            'TXT_ADDITIONAL'                       => $_ARRAYLANG['TXT_ADDITIONAL'         ],
         ));
     }
 
@@ -562,6 +566,7 @@ class votingmanager
             'TXT_ADDITIONAL_ZIP'      => $_ARRAYLANG['TXT_ADDITIONAL_ZIP'     ],
             'TXT_ADDITIONAL_CITY'     => $_ARRAYLANG['TXT_ADDITIONAL_CITY'    ],
             'TXT_ADDITIONAL_EMAIL'    => $_ARRAYLANG['TXT_ADDITIONAL_EMAIL'   ],
+            'TXT_ADDITIONAL_COMMENT'  => $_ARRAYLANG['TXT_ADDITIONAL_COMMENT' ],
             'TXT_ADDITIONAL'          => $_ARRAYLANG['TXT_ADDITIONAL'         ],
         ));
 
@@ -581,6 +586,7 @@ class votingmanager
             $additional_zip      = $objResult->fields['additional_zip'] ;
             $additional_city     = $objResult->fields['additional_city'] ;
             $additional_email    = $objResult->fields['additional_email'] ;
+            $additional_comment  = $objResult->fields['additional_comment'];
 
         }
 
@@ -619,6 +625,7 @@ class votingmanager
             'VOTING_FLAG_ADDITIONAL_ZIP'            => $additional_zip      ? 'checked="checked"' : '',
             'VOTING_FLAG_ADDITIONAL_CITY'           => $additional_city     ? 'checked="checked"' : '',
             'VOTING_FLAG_ADDITIONAL_EMAIL'          => $additional_email    ? 'checked="checked"' : '',
+            'VOTING_FLAG_ADDITIONAL_COMMENT'        => $additional_comment  ? 'checked="checked"' : '',
         ));
     }
 
@@ -696,7 +703,8 @@ class votingmanager
                 additional_street   AS street  ,
                 additional_zip      AS zip     ,
                 additional_city     AS city    ,
-                additional_email    AS email
+                additional_email    AS email   ,
+                additional_comment  AS comment
             FROM ".DBPREFIX."voting_system
             WHERE id = $voting_id
         ";

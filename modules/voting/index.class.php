@@ -72,7 +72,8 @@ function votingShowCurrent($page_content){
 			additional_nickname,               additional_forename,
 			additional_surname,                additional_phone,
 			additional_street,                 additional_zip,
-		   	additional_city,                   additional_email
+            additional_city,                   additional_email,
+            additional_comment
 
 			FROM ".DBPREFIX."voting_system where id=".intval($_GET['vid']);
 	} else {
@@ -83,7 +84,8 @@ function votingShowCurrent($page_content){
 			additional_nickname,               additional_forename,
 			additional_surname,                additional_phone,
 			additional_street,                 additional_zip,
-		   	additional_city,                   additional_email
+		   	additional_city,                   additional_email,
+            additional_comment
 
 			FROM ".DBPREFIX."voting_system where status=1";
 	}
@@ -314,6 +316,7 @@ function _store_additional_data($id){
 		"street           = '". addslashes($_POST['additional_street'  ]) . "', ".
 		"zip              = '". addslashes($_POST['additional_zip'     ]) . "', ".
 		"city             = '". addslashes($_POST['additional_city'    ]) . "', ".
+		"comment          = '". addslashes($_POST['additional_comment' ]) . "', ".
 		"email            = '". addslashes($email                       ) . "'  ";
 	$objDatabase->Execute($sql);
 }
@@ -451,6 +454,7 @@ function _create_additional_input_fields($settings) {
 		'additional_zip'      => array('text', $_ARRAYLANG['TXT_ADDITIONAL_ZIP'     ]),
 		'additional_city'     => array('text', $_ARRAYLANG['TXT_ADDITIONAL_CITY'    ]),
 		'additional_email'    => array('text', $_ARRAYLANG['TXT_ADDITIONAL_EMAIL'   ]),
+		'additional_comment'  => array('text', $_ARRAYLANG['TXT_ADDITIONAL_COMMENT' ]),
 	);
 	$retval = array();
 	foreach ($additionals as $name => $data) {
