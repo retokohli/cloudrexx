@@ -378,8 +378,8 @@ class memberDir extends MemberDirLibrary
             if ($this->_objTpl->blockExists("row")) {
                 // Automatic listing
                 if ($field['active']) {
-                    if(preg_match('#[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]{1,}\.[a-zA-Z0-9_-]{1,}#', $objResult->fields[$key])){
-                        $objResult->fields[$key] = '<a href="mailto:'.$objResult->fields[$key].'">'.$objResult->fields[$key].'</a>';
+                    if(preg_match('#\s[a-zA-Z]([.]?([[:alnum:]_-]+)*)?@([[:alnum:]\-_]+\.)+[a-zA-Z]{2,4}#', $objResult->fields[$key], $matches)){
+                        $objResult->fields[$key] = preg_replace("#\s[a-zA-Z]([.]?([[:alnum:]_-]+)*)?@([[:alnum:]\-_]+\.)+[a-zA-Z]{2,4}#", "<a href=\"mailto:".$matches[0]."\">".$matches[0]."</a>", $objResult->fields[$key]);
                     }
                     $subs = array();
                     if(strpos($objResult->fields[$key], 'http://') !== false){
