@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  module_hotel
  */
-$_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
+$_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 tegn)";
 $_ARRAYLANG['TXT_ACTION'] = "Funktionen";
 $_ARRAYLANG['TXT_ACTIVE'] = "Aktiv";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "Diese Felder sind erforderlich.";
@@ -256,7 +256,7 @@ $_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Überblick ";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "Neue Designvorlage erstellen";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Aktivier";
 $_ARRAYLANG['TXT_LANGUAGE'] = "Sprache";
-$_ARRAYLANG['TXT_ACTIVE_TEMPLATE'] = "Aktives Template";
+$_ARRAYLANG['TXT_ACTIVE_TEMPLATE'] = "Aktiver teplate";
 $_ARRAYLANG['TXT_MODE'] = "Modus";
 $_ARRAYLANG['TXT_EXISTING_DIR_NAME'] = "oder bestehendes Verzeichnis verwenden";
 $_ARRAYLANG['TXT_DIR_NAME'] = "Neuer Verzeichnisname";
@@ -371,13 +371,13 @@ $_ARRAYLANG['TXT_NEW_PW_SUCCESS'] = "Passwort erfolgreich geändert";
 $_ARRAYLANG['TXT_NEW_PW_ERROR'] = "Passwort konnte nicht geändert werden";
 $_ARRAYLANG['TXT_RESTORE_MAIL_TITLE'] = "Zurücksetzung Ihres Passwortes";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART1'] = "Jemand hat für Ihr ";
-$_ARRAYLANG['TXT_RESTORE_MAIL_PART2'] = " CMS Benutzerkonto, Benutzername: ";
+$_ARRAYLANG['TXT_RESTORE_MAIL_PART2'] = " CMS brugerkonto, brugernavn: ";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART3'] = ", eine Zurückstellung des Passwortes angefordert.\n\nFalls diese Zurückstellung nicht von Ihnen angefordert wurde, kann dieses E-Mail missachten werden. Diese Nachricht wurde nur an die Adresse dieses Benutzerkonto verschickt.";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART4'] = " Sie müssen sich gegebenen Falls keine Sorgen um Ihr Benutzerkonto machen.\n\nUm ein neues Passwort zu setzen, benutzen Sie bitte folgenden Link:";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART5'] = "Diese Zurückstellung wurde angefordert von:";
 $_ARRAYLANG['TXT_NEWPW_MAIL_TITLE'] = "Ihr Passwort wurde geändert";
 $_ARRAYLANG['TXT_NEWPW_MAIL_PART1'] = "Ihr Passwort für das ";
-$_ARRAYLANG['TXT_NEWPW_MAIL_PART2'] = " CMS Benutzerkonto, Benutzername: ";
+$_ARRAYLANG['TXT_NEWPW_MAIL_PART2'] = " CMS brugerkonto, brugernavn: ";
 $_ARRAYLANG['TXT_NEWPW_MAIL_PART3'] = ", wurde erfolgreich geändert. Aus Sicherheitsgründen ist Ihr neues Passwort hier nicht aufgeführt.";
 $_ARRAYLANG['TXT_NEWPW_MAIL_USER'] = "Brugernavn:";
 $_ARRAYLANG['TXT_NEWPW_MAIL_PART4'] = "Falls diese Änderung nicht durch Sie erfolgte, können Sie sich mit folgendem Link ein neues Passwort setzen.";
