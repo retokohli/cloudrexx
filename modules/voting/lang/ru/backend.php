@@ -50,4 +50,5 @@ $_ARRAYLANG['TXT_ADDITIONAL'] = "Дополнительные поля ввод�
 $_ARRAYLANG['TXT_ADDITIONAL_CITY'] = "Место";
 $_ARRAYLANG['TXT_EXPORT_ADDITIONAL'] = "Экспорт дополнительных полей";
 $_ARRAYLANG['TXT_EXPORT_CSV'] = "CSV";
+$_ARRAYLANG['TXT_ADDITIONAL_COMMENT'] = "Kommentar";
 ?>

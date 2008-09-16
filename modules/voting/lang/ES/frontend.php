@@ -29,4 +29,5 @@ $_ARRAYLANG['TXT_ADDITIONAL_STREET'] = "Calle";
 $_ARRAYLANG['TXT_ADDITIONAL_ZIP'] = "CP";
 $_ARRAYLANG['TXT_ADDITIONAL'] = "Los campos adicionales para los usuarios";
 $_ARRAYLANG['TXT_ADDITIONAL_CITY'] = "Ciudad";
+$_ARRAYLANG['TXT_ADDITIONAL_COMMENT'] = "Kommentar";
 ?>

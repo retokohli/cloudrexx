@@ -50,4 +50,5 @@ $_ARRAYLANG['TXT_ADDITIONAL'] = "Additional fields for users";
 $_ARRAYLANG['TXT_ADDITIONAL_CITY'] = "City";
 $_ARRAYLANG['TXT_EXPORT_ADDITIONAL'] = "Export additional fields";
 $_ARRAYLANG['TXT_EXPORT_CSV'] = "CSV";
+$_ARRAYLANG['TXT_ADDITIONAL_COMMENT'] = "Comment";
 ?>
