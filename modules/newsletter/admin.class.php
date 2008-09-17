@@ -1983,7 +1983,11 @@ class newsletter extends NewsletterLib
             'TXT_ACTION'     => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_ACTION'],
             'TXT_NOTIFICATION_ACTIVATE'     => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATE'],
             'TXT_NOTIFICATION_DEACTIVATE'     => $_ARRAYLANG['TXT_NEWSLETTER_DEACTIVATE'],
-
+            'TXT_SEX'     => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
+            'TXT_TITLE'     => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
+            'TXT_FIRSTNAME'     => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
+            'TXT_LASTNAME'     => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
+            'TXT_E-MAIL'     => $_ARRAYLANG['TXT_EMAIL'],
         ));
     }
 

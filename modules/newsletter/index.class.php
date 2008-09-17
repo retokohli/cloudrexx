@@ -88,6 +88,7 @@ class newsletter extends NewsletterLib
         $query         = "SELECT id FROM ".DBPREFIX."module_newsletter_user where status=0 and email='".contrexx_addslashes($_GET['email'])."'";
         $objResult     = $objDatabase->Execute($query);
         $count         = $objResult->RecordCount();
+        $userId        = $objResult->fields['id'];
 
         if($count == 1){
             $objResult     = $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_user SET status=1 where email='".contrexx_addslashes($_GET['email'])."'");
@@ -95,7 +96,7 @@ class newsletter extends NewsletterLib
                 $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL']);
 
                 //send notification
-                $this->_sendNotifivationEmail(1);
+                $this->_sendNotifivationEmail(1, $userId);
 
                 //send mail
                 $query = "SELECT id, sex, title, firstname, lastname, email, code FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_addslashes($_GET['email'])."'";
@@ -270,7 +271,7 @@ class newsletter extends NewsletterLib
                 //delete
                 if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=".$objUser->fields['id']) && $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_user WHERE id=".$objUser->fields['id'])) {
                     //send notification
-                    $this->_sendNotifivationEmail(2);
+                    $this->_sendNotifivationEmail(2, $objUser->fields['id']);
 
 
                     $message = $_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'];
@@ -281,7 +282,7 @@ class newsletter extends NewsletterLib
                 //deactivate
                 if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_user SET status='0' WHERE id='".$objUser->fields['id']."'")) {
                     //send notification
-                    $this->_sendNotifivationEmail(2);
+                    $this->_sendNotifivationEmail(2, $objUser->fields['id']);
 
                     $message = $_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'];
                 } else {
@@ -583,11 +584,10 @@ class newsletter extends NewsletterLib
         }
     }
 
-    function _sendNotifivationEmail($action)
+    function _sendNotifivationEmail($action, $recipientId)
     {
         global $_CONFIG, $_ARRAYLANG, $objDatabase;
         //action: 1 = subscribe | 2 = unsubscribe
-
 
         $objSettings = $objDatabase->Execute("SELECT `setname`, `setvalue` FROM `".DBPREFIX."module_newsletter_settings` WHERE `setid` = '10' OR  `setid` = '11' ");
         if ($objSettings !== false) {
@@ -602,6 +602,20 @@ class newsletter extends NewsletterLib
                 return false;
             }
 
+            $objRecipient = $objDatabase->SelectLimit("SELECT sex, title, lastname, firstname, email FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
+            if ($objRecipient !== false) {
+                $arrRecipient['sex'] = $objRecipient->fields['sex'];
+                $arrRecipient['title'] = $objRecipient->fields['title'];
+                $arrRecipient['lastname'] = $objRecipient->fields['lastname'];
+                $arrRecipient['firstname'] = $objRecipient->fields['firstname'];
+                $arrRecipient['email'] = $objRecipient->fields['email'];
+            }
+
+            $objRecipientTitle = $objDatabase->SelectLimit("SELECT title FROM ".DBPREFIX."module_newsletter_user_title WHERE id=".$arrRecipient['title'], 1);
+            if ($objRecipientTitle !== false) {
+                $arrRecipientTitle = $objRecipientTitle->fields['title'];
+            }
+
             $objNotificationMail = $objDatabase->SelectLimit("SELECT title, content, recipients FROM ".DBPREFIX."module_newsletter_confirm_mail WHERE id='3'", 1);
 
             if($action == 1) {
@@ -611,8 +625,8 @@ class newsletter extends NewsletterLib
             }
 
             $arrParsedTxts = str_replace(
-                array('[[action]]', '[[url]]', '[[date]]'),
-                array($txtAction, $_CONFIG['domainUrl'], date(ASCMS_DATE_FORMAT)),
+                array('[[action]]', '[[url]]', '[[date]]', '[[sex]]', '[[title]]', '[[lastname]]', '[[firstname]]', '[[e-mail]]'),
+                array($txtAction, $_CONFIG['domainUrl'], date(ASCMS_DATE_FORMAT), $arrRecipient['sex'], $arrRecipientTitle, $arrRecipient['lastname'], $arrRecipient['firstname'], $arrRecipient['email']),
                 array($objNotificationMail->fields['title'], $objNotificationMail->fields['content'])
             );
 
