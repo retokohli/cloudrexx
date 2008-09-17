@@ -3695,8 +3695,10 @@ INSERT INTO `contrexx_module_shop_countries` (`countries_id`, `countries_name`, 
 INSERT INTO `contrexx_module_shop_countries` (`countries_id`, `countries_name`, `countries_iso_code_2`, `countries_iso_code_3`, `activation_status`) VALUES (237,'Zaire','ZR','ZAR',0);
 INSERT INTO `contrexx_module_shop_countries` (`countries_id`, `countries_name`, `countries_iso_code_2`, `countries_iso_code_3`, `activation_status`) VALUES (238,'Zambia','ZM','ZMB',0);
 INSERT INTO `contrexx_module_shop_countries` (`countries_id`, `countries_name`, `countries_iso_code_2`, `countries_iso_code_3`, `activation_status`) VALUES (239,'Zimbabwe','ZW','ZWE',0);
+
 INSERT INTO `contrexx_module_shop_currencies` (`id`, `code`, `symbol`, `name`, `rate`, `sort_order`, `status`, `is_default`) VALUES (1,'CHF','sFr.','Swiss Francs','1.616840',1,1,0);
-INSERT INTO `contrexx_module_shop_currencies` (`id`, `code`, `symbol`, `name`, `rate`, `sort_order`, `status`, `is_default`) VALUES (4,'EUR','EUR','EURO','1.000000',NULL,1,1);
+INSERT INTO `contrexx_module_shop_currencies` (`id`, `code`, `symbol`, `name`, `rate`, `sort_order`, `status`, `is_default`) VALUES (4,'EUR','EUR','EURO','1.000000',2,1,1);
+
 INSERT INTO `contrexx_module_shop_mail` (`id`, `tplname`, `protected`) VALUES (1,'Bestellungsbestätigung',1);
 INSERT INTO `contrexx_module_shop_mail` (`id`, `tplname`, `protected`) VALUES (2,'Auftrag abgeschlossen',1);
 INSERT INTO `contrexx_module_shop_mail` (`id`, `tplname`, `protected`) VALUES (3,'Logindaten',1);
