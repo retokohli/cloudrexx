@@ -52,6 +52,15 @@ class Immo extends ImmoLib{
 	var $_strOkMessage = '';
 	var $_strErrMessage = '';
 
+	/**
+	 * Name of the headline variable in the primary language
+	 *
+	 * @access private
+	 * @var string
+	 */
+	var $_headline = 'überschrift';
+
+
 
 	var $_defaultImage = 'images/icons/images.gif';
 
@@ -237,7 +246,7 @@ class Immo extends ImmoLib{
 						AND content1.field_id = (
 							SELECT field_id
 							FROM `".DBPREFIX."module_immo_fieldname` AS fname
-							WHERE lower( name ) = 'headline'
+							WHERE lower( name ) = '".$this->_headline."'
 							AND fname.lang_id =1
 						)
 					LEFT JOIN `".DBPREFIX."module_immo_content` AS content2 ON content2.immo_id = interest.immo_id
@@ -369,7 +378,7 @@ class Immo extends ImmoLib{
 						AND content1.field_id = (
 							SELECT field_id
 							FROM `".DBPREFIX."module_immo_fieldname` AS fname
-							WHERE lower( name ) = 'headline'
+							WHERE lower( name ) = '".$this->_headline."'
 							AND fname.lang_id =1
 						)
 					LEFT JOIN `".DBPREFIX."module_immo_content` AS content2 ON content2.immo_id = interest.id
@@ -564,7 +573,7 @@ class Immo extends ImmoLib{
 						AND content1.field_id = (
 							SELECT field_id
 							FROM `".DBPREFIX."module_immo_fieldname` AS fname
-							WHERE lower( name ) = 'headline'
+							WHERE lower( name ) = '".$this->_headline."'
 							AND fname.lang_id =1
 						)
 					LEFT JOIN `".DBPREFIX."module_immo_content` AS content2 ON content2.immo_id = interest.immo_id
@@ -653,7 +662,7 @@ class Immo extends ImmoLib{
 						AND content1.field_id = (
 							SELECT field_id
 							FROM `".DBPREFIX."module_immo_fieldname` AS fname
-							WHERE lower( name ) = 'headline'
+							WHERE lower( name ) = '".$this->_headline."'
 							AND fname.lang_id =1
 						)
 					LEFT JOIN `".DBPREFIX."module_immo_content` AS content2 ON content2.immo_id = contact.immo_id
@@ -818,7 +827,7 @@ class Immo extends ImmoLib{
 						AND content1.field_id = (
 							SELECT field_id
 							FROM `".DBPREFIX."module_immo_fieldname` AS fname
-							WHERE lower( name ) = 'headline'
+							WHERE lower( name ) = '".$this->_headline."'
 							AND fname.lang_id =1
 						)
 					LEFT JOIN `".DBPREFIX."module_immo_content` AS content2 ON content2.immo_id = CAST(MID(`page`, 40, 8) AS UNSIGNED)
@@ -880,7 +889,7 @@ class Immo extends ImmoLib{
 					LEFT JOIN ".DBPREFIX."module_immo_fieldname
 						AS b
 						ON ( b.field_id = contact.field_id )
-					WHERE fn.name = 'headline'
+					WHERE lower( fn.name ) = '".$this->_headline."'
 					AND fn.lang_id = 1
 					AND a.lang_id = 1
 					AND b.lang_id = 1";
@@ -917,7 +926,7 @@ class Immo extends ImmoLib{
 					LEFT JOIN ".DBPREFIX."module_immo AS immo ON ( interest.immo_id = immo.id )
 					LEFT JOIN ".DBPREFIX."module_immo_content AS a ON ( a.immo_id = interest.immo_id )
 					LEFT JOIN ".DBPREFIX."module_immo_fieldname AS fn ON ( a.field_id = fn.field_id )
-					WHERE fn.name = 'headline'
+					WHERE lower( fn.name ) = '".$this->_headline."'
 					AND fn.lang_id =1
 					AND a.lang_id =1";
 					if(empty($_REQUEST['ignore_timespan']) && !empty($_SESSION['immo']['startDate'])){
@@ -1048,7 +1057,7 @@ class Immo extends ImmoLib{
 						AND content1.field_id = (
 							SELECT field_id
 							FROM `".DBPREFIX."module_immo_fieldname` AS fname
-							WHERE lower( name ) = 'headline'
+							WHERE lower( name ) = '".$this->_headline."'
 							AND fname.lang_id =1
 						)
 					LEFT JOIN `".DBPREFIX."module_immo_content` AS content2 ON content2.immo_id = contact.id
@@ -1146,7 +1155,7 @@ class Immo extends ImmoLib{
 					LEFT JOIN ".DBPREFIX."module_immo_fieldname
 						AS fn
 						ON ( a.field_id = fn.field_id )
-					WHERE fn.name = 'headline'";
+					WHERE lower( fn.name ) = '".$this->_headline."'";
 
 
 					if(empty($_REQUEST['ignore_timespan']) && !empty($_SESSION['immo']['startDate'])){
@@ -1204,7 +1213,7 @@ class Immo extends ImmoLib{
 						AND content1.field_id = (
 							SELECT field_id
 							FROM `".DBPREFIX."module_immo_fieldname` AS fname
-							WHERE lower( name ) = 'headline'
+							WHERE lower( name ) = '".$this->_headline."'
 							AND fname.lang_id =1
 						)
 					LEFT JOIN `".DBPREFIX."module_immo_content` AS content2 ON content2.immo_id = contact.immo_id
@@ -1420,7 +1429,7 @@ class Immo extends ImmoLib{
 						AND content1.field_id = (
 							SELECT field_id
 							FROM `".DBPREFIX."module_immo_fieldname` AS fname
-							WHERE lower( name ) = 'headline'
+							WHERE lower( name ) = '".$this->_headline."'
 							AND fname.lang_id =1
 						)
 					LEFT JOIN `".DBPREFIX."module_immo_content` AS content2 ON content2.immo_id = CAST(MID(`page`, 40, 8) AS UNSIGNED)
@@ -1489,7 +1498,7 @@ class Immo extends ImmoLib{
 					LEFT JOIN ".DBPREFIX."module_immo_fieldname
 						AS b
 						ON ( b.field_id = contact.field_id )
-					WHERE fn.name = 'headline'";
+					WHERE lower( fn.name ) = '".$this->_headline."'";
 
 
 					if(empty($_REQUEST['ignore_timespan']) && !empty($_SESSION['immo']['startDate'])){
