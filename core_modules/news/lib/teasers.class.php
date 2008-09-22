@@ -166,7 +166,7 @@ class Teasers extends newsLibrary
                     'teaser_text'           => $objResult->fields['teaser_text'],
                     'teaser_show_link'      => $objResult->fields['teaser_show_link'],
                     'author'                => $author,
-                    'teaser_image_path'     => !empty($objResult->fields['teaser_image_path']) ? $objResult->fields['teaser_image_path'] : ASCMS_MODULE_IMAGE_WEB_PATH.'/news/pixel.gif'
+                    'teaser_image_path'     => !empty($objResult->fields['teaser_image_path']) ? $objResult->fields['teaser_image_path'] : ''
                 );
                 $objResult->MoveNext();
             }
@@ -278,7 +278,7 @@ class Teasers extends newsLibrary
         if (isset($this->arrTeaserFrameTemplates[$templateId]['html'])) {
             $teaserFrame = $this->arrTeaserFrameTemplates[$templateId]['html'];
             if (preg_match_all('/<!-- BEGIN (teaser_[0-9]+) -->/ms', $teaserFrame, $arrTeaserBlocks)) {
-				$funcSort = create_function('$a, $b', '{$aNr = preg_replace("/^[^_]+_/", "", $a);$bNr = preg_replace("/^[^_]+_/", "", $b);if ($aNr == $bNr) {return 0;} return ($aNr < $bNr) ? -1 : 1;}'); 
+				$funcSort = create_function('$a, $b', '{$aNr = preg_replace("/^[^_]+_/", "", $a);$bNr = preg_replace("/^[^_]+_/", "", $b);if ($aNr == $bNr) {return 0;} return ($aNr < $bNr) ? -1 : 1;}');
 				usort($arrTeaserBlocks[0], $funcSort);
 				usort($arrTeaserBlocks[1], $funcSort);
                 foreach ($arrTeaserBlocks[1] as $nr => $teaserBlock) {
