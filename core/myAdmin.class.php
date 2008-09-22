@@ -40,8 +40,8 @@ class myAdminManager {
     {
     	global $_CORELANG, $objTemplate;
 
-    	$objFWUser = FWUser::getFWUserObject();
-    	$objTemplate->setVariable('CONTENT_NAVIGATION', $_CORELANG['TXT_WELCOME_MESSAGE'].". ".$_CORELANG['TXT_LOGGED_IN_AS']."<a href='?cmd=access&amp;act=user&amp;tpl=modify&amp;id=".$objFWUser->objUser->getId()."' title='".$objFWUser->objUser->getId()."'>".htmlentities($objFWUser->objUser->getProfileAttribute('firstname'), ENT_QUOTES, CONTREXX_CHARSET).' '.htmlentities($objFWUser->objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET)."</a>");
+        $objFWUser = FWUser::getFWUserObject();
+        $objTemplate->setVariable('CONTENT_NAVIGATION', $_CORELANG['TXT_WELCOME_MESSAGE'].". ".$_CORELANG['TXT_LOGGED_IN_AS']."<a href='?cmd=access&amp;act=user&amp;tpl=modify&amp;id=".$objFWUser->objUser->getId()."' title='".$objFWUser->objUser->getId()."'>".($objFWUser->objUser->getProfileAttribute('firstname') || $objFWUser->objUser->getProfileAttribute('lastname') ? htmlentities($objFWUser->objUser->getProfileAttribute('firstname'), ENT_QUOTES, CONTREXX_CHARSET).' '.htmlentities($objFWUser->objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET) : htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET))."</a>");
     }
 
     function getPage()
