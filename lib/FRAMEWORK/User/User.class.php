@@ -861,7 +861,7 @@ class User extends User_Profile
     {
 
         $arrConditions = array();
-        $arrAttribute = array('username');
+        $arrAttribute = array('username', 'email');
         foreach ($arrAttribute as $attribute) {
             $arrConditions[] = "(tblU.`".$attribute."` LIKE '%".(is_array($search) ? implode("%' OR tblU.`".$attribute."` LIKE '%", array_map('addslashes', $search)) : addslashes($search))."%')";
         }

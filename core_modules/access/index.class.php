@@ -284,7 +284,7 @@ class Access extends AccessLib
             } else {
                 $msg = implode('<br />', $result);
             }
-            $this->_objTpl->setVariable('ACCESS_SETTINGS_MESSAGE', $msg); 
+            $this->_objTpl->setVariable('ACCESS_SETTINGS_MESSAGE', $msg);
         }
         $this->parseAccountAttributes($objFWUser->objUser, true);
 

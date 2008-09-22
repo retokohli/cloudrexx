@@ -317,7 +317,7 @@ class modulemanager
                                changelog='$currentTime',
                                protected='0',
                                displaystatus='$displaystatus',
-                               lang=$langId
+                               lang=$this->langId
                     ";
                     if ($objDatabase->Execute($query)) {
                         $catid = $paridarray[$modulerepid] = $objDatabase->Insert_ID();
