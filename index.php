@@ -337,13 +337,13 @@ if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_
     $objFWUser = FWUser::getFWUserObject();
     if ($objFWUser->objUser->login()) {
         if ($page_protected) {
-            if (!Permission::checkAccess($page_access_id, 'dynamic')) {
+            if (!Permission::checkAccess($page_access_id, 'dynamic', true)) {
                 $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
                 header ("Location: ".CONTREXX_SCRIPT_PATH."?section=login&cmd=noaccess&redirect=".$link);
                 exit;
             }
         }
-        if ($history && !Permission::checkAccess(78, 'static')) {
+        if ($history && !Permission::checkAccess(78, 'static', true)) {
             $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
             header ("Location: ".CONTREXX_SCRIPT_PATH."?section=login&cmd=noaccess&redirect=".$link);
             exit;
