@@ -17,7 +17,7 @@
  * @package     contrexx
  * @subpackage  lib_framework
  * @uses        /lib/FRAMEWORK/User/User_Profile_Attribute.class.php
- */ 
+ */
 class User_Profile
 {
     /**
@@ -199,10 +199,12 @@ class User_Profile
     {
         global $objDatabase;
 
-        if ($objDatabase->Execute('INSERT INTO `'.DBPREFIX.'access_user_profile` SET `user_id` = '.$this->id) !== false) {
+        if ($objDatabase->Execute('INSERT INTO `'.DBPREFIX.'access_user_profile` SET `user_id` = '.$this->id) !== false
+            && $objDatabase->Execute('INSERT INTO `'.DBPREFIX.'access_user_attribute_value` (`attribute_id`, `user_id`, `history_id`, `value`) VALUES (\'0\', \''.$this->id.'\', \'0\', \'\')') !== false) {
             $this->arrLoadedUsers[$this->id]['profile'] = isset($this->arrLoadedUsers[0]['profile']) ? $this->arrLoadedUsers[0]['profile'] : array();
             return true;
         } else {
+            $objDatabase->Execute('DELETE FROM `'.DBPREFIX.'access_user_profile` WHERE `user_id` = '.$this->id);
             return false;
         }
     }
