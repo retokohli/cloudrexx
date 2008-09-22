@@ -21,7 +21,7 @@ require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
  * @package     contrexx
  * @subpackage  core_module_access
  * @uses        /lib/FRAMEWORK/Image.class.php
- */ 
+ */
 class AccessLib
 {
     /**
@@ -1240,35 +1240,37 @@ JSconfirmUserNotification
     {
         global $_CORELANG;
 
-        $arrLetters[] = 48;
-        $arrLetters = array_merge($arrLetters, range(65, 90)); // ascii codes of characters "A" to "Z"
-        $arrLetters[] = '';
+        if ($this->_objTpl->blockExists('access_user_letter_index_list')) {
+            $arrLetters[] = 48;
+            $arrLetters = array_merge($arrLetters, range(65, 90)); // ascii codes of characters "A" to "Z"
+            $arrLetters[] = '';
 
-        foreach ($arrLetters as $letter) {
-            switch ($letter) {
-                case 48:
-                    $parsedLetter = '#';
-                    break;
+            foreach ($arrLetters as $letter) {
+                switch ($letter) {
+                    case 48:
+                        $parsedLetter = '#';
+                        break;
 
-                case '':
-                    $parsedLetter = $_CORELANG['TXT_ACCESS_ALL'];
-                    break;
+                    case '':
+                        $parsedLetter = $_CORELANG['TXT_ACCESS_ALL'];
+                        break;
 
-                default:
-                    $parsedLetter = chr($letter);
-                    break;
+                    default:
+                        $parsedLetter = chr($letter);
+                        break;
+                }
+
+                if ($letter == '' && $selectedLetter == '' || chr($letter) == $selectedLetter) {
+                    $parsedLetter = '<strong>'.$parsedLetter.'</strong>';
+                }
+
+                $this->_objTpl->setVariable(array(
+                    'ACCESS_USER_LETTER_INDEX_URI'        => $URI.(!empty($letter) ? '&amp;'.$paramName.'='.chr($letter) : null),
+                    'ACCESS_USER_LETTER_INDEX_LETTER'    => $parsedLetter
+                ));
+
+                $this->_objTpl->parse('access_user_letter_index_list');
             }
-
-            if ($letter == '' && $selectedLetter == '' || chr($letter) == $selectedLetter) {
-                $parsedLetter = '<strong>'.$parsedLetter.'</strong>';
-            }
-
-            $this->_objTpl->setVariable(array(
-                'ACCESS_USER_LETTER_INDEX_URI'        => $URI.(!empty($letter) ? '&amp;'.$paramName.'='.chr($letter) : null),
-                'ACCESS_USER_LETTER_INDEX_LETTER'    => $parsedLetter
-            ));
-
-            $this->_objTpl->parse('access_user_letter_index_list');
         }
     }
 
