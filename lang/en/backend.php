@@ -953,4 +953,5 @@ $_ARRAYLANG['TXT_DOWNLOAD_BACKUPS'] = "Backup herunterladen";
 $_ARRAYLANG['TXT_VIEW_BACKUPS'] = "Backups anzeigen";
 $_ARRAYLANG['TXT_BACKUP'] = "Backup";
 $_ARRAYLANG['TXT_SYSTEM_UPDATE'] = "System Update";
+$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'] = "";
 ?>

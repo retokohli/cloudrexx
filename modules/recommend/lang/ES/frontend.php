@@ -13,7 +13,7 @@ $_ARRAYLANG['TXT_STATUS_SENDER_MAIL'] = "Tu direcci&oacute;n de E-Mail";
 $_ARRAYLANG['TXT_STATUS_SENDER_NAME'] = "Tu Nombre";
 $_ARRAYLANG['TXT_SENT_OK'] = "Recomendaci&oacute;n enviada con &eacute;xito.";
 $_ARRAYLANG['TXT_IS_EMPTY'] = "est&aacute; vac&iacute;o";
-$_ARRAYLANG['TXT_IS_INVALID'] = "es inv&aacute;lido";
+$_ARRAYLANG['TXT_IS_INVALID'] = "no es v&aacute;lido";
 $_ARRAYLANG['TXT_RECEIVERMAIL_FRONTEND'] = "E-Mail del Receptor";
 $_ARRAYLANG['TXT_RECEIVERNAME_FRONTEND'] = "Nombre del Receptor";
 $_ARRAYLANG['TXT_GENDER_FRONTEND'] = "G&eacute;nero del Receptor";
@@ -24,5 +24,5 @@ $_ARRAYLANG['TXT_PREVIEW_FRONTEND'] = "Vista Previa";
 $_ARRAYLANG['TXT_FEMALE_FRONTEND'] = "Femenino";
 $_ARRAYLANG['TXT_MALE_FRONTEND'] = "Masculino";
 $_ARRAYLANG['TXT_INTRODUCTION'] = "Si quieres recomendar esta p&aacute;gina, rellena el formulario y haz click en el bot&oacute;n enviar. El receptor recibir&aacute; un e-mail con tu recomendaci&oacute;n.";
-$_ARRAYLANG['TXT_RECOMMEND_CAPTCHA'] = "Security Code";
+$_ARRAYLANG['TXT_RECOMMEND_CAPTCHA'] = "C&oacute;digo de Seguridad";
 ?>
