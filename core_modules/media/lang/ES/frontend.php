@@ -6,13 +6,13 @@
  * @package     contrexx
  * @subpackage  core_module_media
  */
-$_ARRAYLANG['TXT_MEDIA_FILE_NAME'] = "Dateiname";
-$_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Dateigrösse";
-$_ARRAYLANG['TXT_MEDIA_FILE_DATE'] = "Datum";
-$_ARRAYLANG['TXT_MEDIA_FILE_PERM'] = "Permission";
-$_ARRAYLANG['TXT_MEDIA_ARCHIVE'] = "Medienarchiv";
-$_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'] = "Dieses Verzeichnis ist leer";
-$_ARRAYLANG['TXT_MEDIA_FILE_TYPE'] = "Typ";
-$_ARRAYLANG['TXT_MEDIA_FILE_DIRECTORY'] = "Dateiordner";
-$_ARRAYLANG['TXT_MEDIA_FILE'] = "Datei";
+$_ARRAYLANG['TXT_MEDIA_FILE_NAME'] = "Nombre del fichero";
+$_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Tama&ntilde;o del fichero";
+$_ARRAYLANG['TXT_MEDIA_FILE_DATE'] = "Fecha";
+$_ARRAYLANG['TXT_MEDIA_FILE_PERM'] = "Permiso";
+$_ARRAYLANG['TXT_MEDIA_ARCHIVE'] = "Fichero";
+$_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'] = "Este directorio est&aacute; vac&iacute;o";
+$_ARRAYLANG['TXT_MEDIA_FILE_TYPE'] = "Tipo";
+$_ARRAYLANG['TXT_MEDIA_FILE_DIRECTORY'] = "Directorio";
+$_ARRAYLANG['TXT_MEDIA_FILE'] = "Fichero";
 ?>

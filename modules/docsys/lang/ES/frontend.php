@@ -19,8 +19,8 @@ $_ARRAYLANG['TXT_PERFORM'] = "Mantenimiento";
 $_ARRAYLANG['TXT_SOURCE'] = "Origen";
 $_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND'] = "No se encontraron documentos";
 $_ARRAYLANG['TXT_DOCSYS_SORTING'] = "Clave de ordenaci&oacute;n";
-$_ARRAYLANG['TXT_DOCSYS_SORTING_ALPHA'] = "Alfabeticamente";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_ALPHA'] = "Alfab&eacute;ticamente";
 $_ARRAYLANG['TXT_DOCSYS_SORTING_DATE'] = "Por fecha";
-$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE_ALPHA'] = "Por fecha y alfabeticamente";
+$_ARRAYLANG['TXT_DOCSYS_SORTING_DATE_ALPHA'] = "Por fecha y alfab&eacute;ticamente";
 $_ARRAYLANG['TXT_DOCSYS_SORTTYPE'] = "Clave de ordenaci&oacute;n";
 ?>

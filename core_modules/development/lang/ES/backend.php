@@ -6,5 +6,5 @@
  * @package     contrexx
  * @subpackage  core_module_development
  */
-$_ARRAYLANG['TXT_BANNER_GROUP_DELETE_JS'] = "¿Quiere eliminar este grupo de banner?";
+$_ARRAYLANG['TXT_BANNER_GROUP_DELETE_JS'] = "\¿Desea eliminar este grupo de banners?";
 ?>
