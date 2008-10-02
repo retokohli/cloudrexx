@@ -7,7 +7,7 @@
  * @subpackage  core_module_media
  */
 $_ARRAYLANG['TXT_MEDIA_FILE_NAME'] = "Nombre del fichero";
-$_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Tama&ntilde;o del fichero";
+$_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Tama&ntilde;o";
 $_ARRAYLANG['TXT_MEDIA_FILE_DATE'] = "Fecha";
 $_ARRAYLANG['TXT_MEDIA_FILE_PERM'] = "Permiso";
 $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] = "Fichero";
