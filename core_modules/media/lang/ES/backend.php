@@ -8,7 +8,7 @@
  */
 $_ARRAYLANG['TXT_PREVIEW'] = "Vista Previa";
 $_ARRAYLANG['TXT_MEDIA_FILE_NAME'] = "Nombre del fichero";
-$_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Tama&ntilde;o del fichero";
+$_ARRAYLANG['TXT_MEDIA_FILE_SIZE'] = "Tama&ntilde;o";
 $_ARRAYLANG['TXT_MEDIA_FILE_DATE'] = "Fecha";
 $_ARRAYLANG['TXT_MEDIA_FILE_PERM'] = "Permiso";
 $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] = "Fichero";
@@ -51,7 +51,7 @@ $_ARRAYLANG['TXT_MEDIA_SELECT_UPLOAD_FILE'] = "\¡Por favor, seleccione un fiche
 $_ARRAYLANG['TXT_MEDIA_CUT'] = "Cortar";
 $_ARRAYLANG['TXT_MEDIA_PASTE'] = "Pegar";
 $_ARRAYLANG['TXT_MEDIA_MSG_CUT'] = "\¡Los ficheros han sido movidos con &eacute;xito!";
-$_ARRAYLANG['TXT_MEDIA_COPY'] = "Copias";
+$_ARRAYLANG['TXT_MEDIA_COPY'] = "Copiar";
 $_ARRAYLANG['TXT_MEDIA_MSG_COPY'] = "\¡Los ficheros han sido copiados con &eacute;xito!";
 $_ARRAYLANG['TXT_MEDIA_RENAME_NAME'] = "\¡Por favor, introduzca un nombre!";
 $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_COPY'] = "\¡Error: El directorio no puede ser copiado dentro de s&iacute; mismo!";
