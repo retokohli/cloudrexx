@@ -1,4 +1,21 @@
 <?php
+$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DESC'] = "Themen-Aktionen";
+$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_MOVE'] = "Thema verschieben";
+$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE'] = "Thema schliessen";
+$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE'] = "Thema löschen";
+$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY'] = "Thema festhalten";
+
+$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_MOVE_SUCCESSFUL'] = "Thema wurde verschoben.";
+$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_MOVE_UNSUCCESSFUL'] = "Thema konnte nicht verschoben werden.";
+$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_SUCCESSFUL'] = "Thema wurde geschlossen.";
+$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_UNSUCCESSFUL'] = "Thema konnte nicht geschlossen werden.";
+$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE_SUCCESSFUL'] = "Thema wurde gelöscht.";
+$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE_UNSUCCESSFUL'] = "Thema konnte nicht gelöscht werden.";
+$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_SUCCESSFUL'] = "Thema wurde festgehalten.";
+$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_UNSUCCESSFUL'] = "Thema konnte nicht festgehalten werden.";
+
+
+
 /**
  * Forum
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -371,7 +388,7 @@ class Forum extends ForumLibrary {
      *
      * @global  ADONewConnection
      * @global     array
-     * @global   Cache 
+     * @global   Cache
      * @param    integer        $intForumId: The id of the forum which should be shown
      */
     function showForum($intForumId)
@@ -602,7 +619,7 @@ class Forum extends ForumLibrary {
      */
     function showThread($intThreadId)
     {
-        global $objDatabase, $_ARRAYLANG, $objCache;
+        global $objDatabase, $_ARRAYLANG, $objCache, $page_title;
 
         $objFWUser = FWUser::getFWUserObject();
         $this->_communityLogin();
@@ -734,43 +751,48 @@ class Forum extends ForumLibrary {
             $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="message">'.$content.'</textarea>';
         }
         $this->_objTpl->setGlobalVariable(array(
-            'FORUM_JAVASCRIPT_GOTO'        =>    $this->getJavascript('goto'),
-            'FORUM_JAVASCRIPT_DELETE'    =>    $this->getJavascript('deletePost'),
-            'FORUM_JAVASCRIPT_SCROLLTO'    =>    $this->getJavascript('scrollto'),
-            'FORUM_SCROLLPOS'            =>    !empty($_REQUEST['scrollpos']) ? intval($_REQUEST['scrollpos']) : '0',
-            'FORUM_JAVASCRIPT_INSERT_TEXT'    =>     $this->getJavascript('insertText'),
-            'FORUM_NAME'                =>    $this->_shortenString($firstPost['subject'], $this->_maxStringLenght),
-            'FORUM_TREE'                =>    $this->_createNavTree($intCatId).'<a title="'.$this->_arrTranslations[$intCatId][$this->_intLangId]['name'].'" href="?section=forum&amp;cmd=board&amp;id='.$intCatId.'">'.$this->_shortenString($this->_arrTranslations[$intCatId][$this->_intLangId]['name'], $this->_maxStringLenght).'</a> > ' ,
-            'FORUM_DROPDOWN'            =>    $this->createForumDD('forum_quickaccess', $intCatId, 'onchange="gotoForum(this);"', ''),
+            'FORUM_JAVASCRIPT_GOTO'                 =>    $this->getJavascript('goto'),
+            'FORUM_JAVASCRIPT_DELETE'               =>    $this->getJavascript('deletePost'),
+            'FORUM_JAVASCRIPT_SCROLLTO'             =>    $this->getJavascript('scrollto'),
+            'FORUM_SCROLLPOS'                       =>    !empty($_REQUEST['scrollpos']) ? intval($_REQUEST['scrollpos']) : '0',
+            'FORUM_JAVASCRIPT_INSERT_TEXT'          =>     $this->getJavascript('insertText'),
+            'FORUM_NAME'                            =>    $this->_shortenString($firstPost['subject'], $this->_maxStringLenght),
+            'FORUM_TREE'                            =>    $this->_createNavTree($intCatId).'<a title="'.$this->_arrTranslations[$intCatId][$this->_intLangId]['name'].'" href="?section=forum&amp;cmd=board&amp;id='.$intCatId.'">'.$this->_shortenString($this->_arrTranslations[$intCatId][$this->_intLangId]['name'], $this->_maxStringLenght).'</a> > ' ,
+            'FORUM_DROPDOWN'                        =>    $this->createForumDD('forum_quickaccess', $intCatId, 'onchange="gotoForum(this);"', ''),
             'TXT_FORUM_COMMA_SEPARATED_KEYWORDS'    =>    $_ARRAYLANG['TXT_FORUM_COMMA_SEPARATED_KEYWORDS'],
-            'TXT_FORUM_KEYWORDS'        =>    $_ARRAYLANG['TXT_FORUM_KEYWORDS'],
-            'TXT_FORUM_FILE_ATTACHMENT'    =>    $_ARRAYLANG['TXT_FORUM_FILE_ATTACHMENT'],
-            'TXT_FORUM_RATING'            =>    $_ARRAYLANG['TXT_FORUM_RATING'],
-            'TXT_FORUM_ADD_POST'        =>    $_ARRAYLANG['TXT_FORUM_ADD_POST'],
-            'TXT_FORUM_SUBJECT'            =>    $_ARRAYLANG['TXT_FORUM_SUBJECT'],
-            'TXT_FORUM_MESSAGE'            =>    $_ARRAYLANG['TXT_FORUM_MESSAGE'],
-            'TXT_FORUM_RESET'            =>    $_ARRAYLANG['TXT_FORUM_RESET'],
-            'TXT_FORUM_CREATE_POST'        =>    $_ARRAYLANG['TXT_FORUM_CREATE_POST'],
-            'TXT_FORUM_ICON'            =>    $_ARRAYLANG['TXT_FORUM_ICON'],
-            'TXT_FORUM_QUOTE'            =>    $_ARRAYLANG['TXT_FORUM_QUOTE'],
-            'TXT_FORUM_EDIT'            =>    $_ARRAYLANG['TXT_FORUM_EDIT'],
-            'TXT_FORUM_DELETE'            =>    $_ARRAYLANG['TXT_FORUM_DELETE'],
-            'TXT_FORUM_PREVIEW'            =>    $_ARRAYLANG['TXT_FORUM_PREVIEW'],
-            'TXT_FORUM_UPDATE_POST'        =>    $_ARRAYLANG['TXT_FORUM_UPDATE_POST'],
-            'TXT_FORUM_NOTIFY_NEW_POSTS' =>    $_ARRAYLANG['TXT_FORUM_NOTIFY_NEW_POSTS'],
-            'TXT_FORUM_QUICKACCESS'     =>    $_ARRAYLANG['TXT_FORUM_QUICKACCESS'],
-            'TXT_FORUM_UPDATE_NOTIFICATION' =>    $_ARRAYLANG['TXT_FORUM_UPDATE_NOTIFICATION'],
-            'FORUM_NOTIFICATION_CHECKBOX_CHECKED'    =>    $this->_hasNotification($intThreadId) ? 'checked="checked"' : '',
-            'FORUM_SUBJECT'                =>    stripslashes($subject),
-            'FORUM_KEYWORDS'            =>    stripslashes($keywords),
-            'FORUM_ATTACHMENT_OLDNAME'    =>    $attachment,
-            'FORUM_MESSAGE_INPUT'        =>    $strMessageInputHTML,
-            'FORUM_CAPTCHA_OFFSET'        =>    $offset,
-            'FORUM_CAPTCHA_IMAGE_URL'    =>    $url,
-            'FORUM_CAPTCHA_IMAGE_ALT'    =>    $alt,
-            'FORUM_THREAD_ID'            =>    $intThreadId,
-            'FORUM_CATEGORY_ID'            =>    $intCatId,
-            'FORUM_POSTS_PAGING'        =>    getPaging($this->_postCount, $pos, '&amp;section=forum&amp;cmd=thread&amp;id='.$intThreadId, $_ARRAYLANG['TXT_FORUM_OVERVIEW_POSTINGS'], true, $this->_arrSettings['posting_paging']),
+            'TXT_FORUM_KEYWORDS'                    =>    $_ARRAYLANG['TXT_FORUM_KEYWORDS'],
+            'TXT_FORUM_FILE_ATTACHMENT'             =>    $_ARRAYLANG['TXT_FORUM_FILE_ATTACHMENT'],
+            'TXT_FORUM_RATING'                      =>    $_ARRAYLANG['TXT_FORUM_RATING'],
+            'TXT_FORUM_ADD_POST'                    =>    $_ARRAYLANG['TXT_FORUM_ADD_POST'],
+            'TXT_FORUM_SUBJECT'                     =>    $_ARRAYLANG['TXT_FORUM_SUBJECT'],
+            'TXT_FORUM_MESSAGE'                     =>    $_ARRAYLANG['TXT_FORUM_MESSAGE'],
+            'TXT_FORUM_RESET'                       =>    $_ARRAYLANG['TXT_FORUM_RESET'],
+            'TXT_FORUM_CREATE_POST'                 =>    $_ARRAYLANG['TXT_FORUM_CREATE_POST'],
+            'TXT_FORUM_ICON'                        =>    $_ARRAYLANG['TXT_FORUM_ICON'],
+            'TXT_FORUM_QUOTE'                       =>    $_ARRAYLANG['TXT_FORUM_QUOTE'],
+            'TXT_FORUM_EDIT'                        =>    $_ARRAYLANG['TXT_FORUM_EDIT'],
+            'TXT_FORUM_DELETE'                      =>    $_ARRAYLANG['TXT_FORUM_DELETE'],
+            'TXT_FORUM_PREVIEW'                     =>    $_ARRAYLANG['TXT_FORUM_PREVIEW'],
+            'TXT_FORUM_UPDATE_POST'                 =>    $_ARRAYLANG['TXT_FORUM_UPDATE_POST'],
+            'TXT_FORUM_NOTIFY_NEW_POSTS'            =>    $_ARRAYLANG['TXT_FORUM_NOTIFY_NEW_POSTS'],
+            'TXT_FORUM_QUICKACCESS'                 =>    $_ARRAYLANG['TXT_FORUM_QUICKACCESS'],
+            'TXT_FORUM_UPDATE_NOTIFICATION'         =>    $_ARRAYLANG['TXT_FORUM_UPDATE_NOTIFICATION'],
+            'TXT_FORUM_THREAD_ACTION_DESC'          =>    $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DESC'],
+            'TXT_FORUM_THREAD_ACTION_MOVE'          =>    $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_MOVE'],
+            'TXT_FORUM_THREAD_ACTION_CLOSE'         =>    $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE'],
+            'TXT_FORUM_THREAD_ACTION_DELETE'        =>    $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE'],
+            'TXT_FORUM_THREAD_ACTION_STICKY'        =>    $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY'],
+            'FORUM_NOTIFICATION_CHECKBOX_CHECKED'   =>    $this->_hasNotification($intThreadId) ? 'checked="checked"' : '',
+            'FORUM_SUBJECT'                         =>    stripslashes($subject),
+            'FORUM_KEYWORDS'                        =>    stripslashes($keywords),
+            'FORUM_ATTACHMENT_OLDNAME'              =>    $attachment,
+            'FORUM_MESSAGE_INPUT'                   =>    $strMessageInputHTML,
+            'FORUM_CAPTCHA_OFFSET'                  =>    $offset,
+            'FORUM_CAPTCHA_IMAGE_URL'               =>    $url,
+            'FORUM_CAPTCHA_IMAGE_ALT'               =>    $alt,
+            'FORUM_THREAD_ID'                       =>    $intThreadId,
+            'FORUM_CATEGORY_ID'                     =>    $intCatId,
+            'FORUM_POSTS_PAGING'                    =>    getPaging($this->_postCount, $pos, '&amp;section=forum&amp;cmd=thread&amp;id='.$intThreadId, $_ARRAYLANG['TXT_FORUM_OVERVIEW_POSTINGS'], true, $this->_arrSettings['posting_paging']),
         ));
 
         if ($objFWUser->objUser->login()) {
@@ -1035,7 +1057,55 @@ class Forum extends ForumLibrary {
             $this->_objTpl->touchBlock('previewEditPost');
         }
 
-        $this->updateViews($intThreadId, $intPostId);
+        if(!empty($_REQUEST['thread_do_action'])){
+            $action = $_REQUEST['thread_do_action'];
+            if($this->_checkAuth($intCatId, $_REQUEST['thread_actions'])){
+                if($this->_threadAction($action)){
+                    $this->_objTpl->setVariable('TXT_FORUM_SUCCESS', $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_'.$action.'_SUCCESSFUL']);
+                }else{
+                    $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_'.$action.'_UNSUCCESSFUL']);
+                }
+            }
+        }
+
+
+        if(!empty($_REQUEST['thread_actions'])){
+            $page_title = $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_'.strtoupper($_REQUEST['thread_actions'])];
+            if($this->_checkAuth($intCatId, $_REQUEST['thread_actions'])){
+                switch($_REQUEST['thread_actions']){
+                    case 'move':
+                        $arrForums = $this->createForumArray($this->_intLangId);
+                        foreach ($arrForums as $intCatID => $arrThread){
+                            $strOptions .= '<option value="'.$intCatID.'" '.($arrThread['level'] == 0 ? 'disabled="disabled"' : '').'>'.(str_repeat('&nbsp;', ($arrThread['level']*2))).$arrThread['name'].'</option>';
+                        }
+                        $this->_objTpl->setVariable(array(
+                            'FORUM_THREADS'    =>    $strOptions,
+                        ));
+                    break;
+                    case 'close':
+
+                    break;
+
+                    case 'delete':
+
+                    break;
+                    case 'sticky':
+
+                    break;
+
+                    default:
+                    break;
+                }
+            }else{
+                $this->_objTpl->setVariable('FORUM_ACTION', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
+            }
+
+            $this->_objTpl->parse('threadActions');
+            $this->_objTpl->hideBlock('threadDisplay');
+        }else{
+            $this->updateViews($intThreadId, $intPostId);
+            $this->_objTpl->parse('threadDisplay');
+        }
         return true;
     }
 
@@ -1483,7 +1553,7 @@ class Forum extends ForumLibrary {
 
         $query = "    SELECT `n`.`category_id`, `l`.`name` , `c`.`status`
                     FROM `".DBPREFIX."module_forum_notification` AS `n`
-                    LEFT JOIN ".DBPREFIX."module_forum_categories_lang AS `l` USING ( category_id )
+                    LEFT JOIN ".DBPREFIX."module_forum_categories_lang AS `l` USING ( `category_id` )
                     LEFT JOIN ".DBPREFIX."module_forum_categories AS `c` ON ( `c`.`id` = `n`.`category_id` )
                     WHERE `n`.`user_id` = ".$objFWUser->objUser->getId()."
                     AND `n`.`thread_id` = 0
@@ -1503,7 +1573,7 @@ class Forum extends ForumLibrary {
 
         if(!empty($arrSubscribedThreads)){
             foreach ($arrSubscribedThreads as $intCatID => $arrThread){
-                $strOptionsSubscribed .= '<option value="'.$intCatID.'">'.$arrThread['name'].'</option>';
+                $strOptionsSubscribed .= '<option value="'.$intCatID.'">'.(str_repeat('&nbsp;', ($arrForums[$intCatID]['level']*2))).$arrThread['name'].'</option>';
             }
         }
 
@@ -1539,7 +1609,9 @@ class Forum extends ForumLibrary {
                         } else {
                             offset = document.documentElement.scrollTop;
                         }
-                        document.getElementById("scrollpos").value = offset;
+                        if(document.getElementById("scrollpos")){
+                        	document.getElementById("scrollpos").value = offset;
+                        }
                     }
                 //]]>
                 </script>
@@ -1669,6 +1741,25 @@ class Forum extends ForumLibrary {
                 $strJavaScript = <<< EOJS
 <script type="text/javascript" language="JavaScript">
 //<![CDATA[
+
+    var doAction = function(aciton){
+        switch(action){
+         case 'move':
+            location.href = 'index.php?section=forum'
+         break;
+         case 'close':
+         break;
+         case 'delete':
+         break;
+         case 'move':
+         break;
+         case 'sticky':
+         break;
+        }
+    }
+
+
+
     var ratePost = function(postId, delta, obj){
         var d = document;
         var dl=document.location

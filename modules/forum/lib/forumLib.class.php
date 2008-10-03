@@ -47,7 +47,6 @@ class ForumLibrary {
         $this->_rateTimeout     = 3600*6;
     }
 
-
     /**
      * do checks and delete thread
      *
@@ -155,7 +154,6 @@ class ForumLibrary {
         return true;
     }
 
-
     /**
      * do checks and delete post
      *
@@ -260,7 +258,6 @@ class ForumLibrary {
         return true;
     }
 
-
     /**
      * convert BB code to HTML
      *
@@ -309,10 +306,11 @@ class ForumLibrary {
 
     function convertlinks($text){
         if(preg_match('#^http://.*#', $text)){
-            return preg_replace('#(http://)+(www\.)?([a-zA-Z][a-zA-Z0-9-/]+\.[a-zA-Z][a-zA-Z0-9-/&\#\+=\?\.:;%]+)+(\[/url\])?#i', '[url]$2$3$4$5[/url]' , $text);
+            return preg_replace('#(http://)+(www\.)?([a-zA-Z0-9][a-zA-Z0-9-_/]+\.[a-zA-Z0-9][a-zA-Z0-9-_/&\#\+=\?\.:;%]+)+(\[/url\])?#i', '[url]$1$2$3$4$5[/url]' , $text);
         }
-        return preg_replace('#[\s](http://)+(www\.)?([a-zA-Z][a-zA-Z0-9-/]+\.[a-zA-Z][a-zA-Z0-9-/&\#\+=\?\.:;%]+)+(\[/url\])?#i', '[url]$2$3$4$5[/url]' , $text);
+        return preg_replace('#[\s]+(http://)+(www\.)?([a-zA-Z0-9][a-zA-Z0-9-_/]+\.[a-zA-Z0-9][a-zA-Z0-9-_/&\#\+=\?\.:;%]+)+(\[/url\])?#i', '[url]$1$2$3$4$5[/url]' , $text);
     }
+
     /**
      * strip BB tags
      *
@@ -322,7 +320,6 @@ class ForumLibrary {
     function stripBBtags($text){
         return preg_replace ("#\[(.*[^\]])\](.*)\[/(.*[^\]])\]#", "$2", $text);
     }
-
 
     /**
      * convert different linebreaks to \n
@@ -420,7 +417,6 @@ class ForumLibrary {
         return true;
     }
 
-
     /**
      * set the community login links
      *
@@ -465,7 +461,6 @@ class ForumLibrary {
         return $arrReturn;
     }
 
-
     /**
      * checks if the message contains prohibited words
      *
@@ -481,7 +476,6 @@ class ForumLibrary {
         }
         return false;
     }
-
 
     /**
      * Creates the html-source for a tag-cloud with all used keywords.
@@ -522,7 +516,6 @@ class ForumLibrary {
         return $strReturn;
     }
 
-
     /**
      * Creates the html-source for a tag-hitlist with the $intNumberOfTags-most used keywords.
      *
@@ -555,7 +548,6 @@ class ForumLibrary {
 
         return $strReturn;
     }
-
 
     /**
      * Creates an array containing all used tags (keywords) with an calculated number of points. The points depend of the usage-frequency,
@@ -625,7 +617,6 @@ class ForumLibrary {
         return $arrKeywords;
     }
 
-
     /**
      * returns an array containing attachment information
      *
@@ -652,7 +643,6 @@ class ForumLibrary {
             'size' => filesize(ASCMS_FORUM_UPLOAD_PATH.'/'.$file),
         );
     }
-
 
     /**
      * handles the upload of a file
@@ -736,7 +726,6 @@ class ForumLibrary {
         return $arrReturn;
     }
 
-
     /**
      * Creates an array containing all translations of the categories. Example: $arrValue[$categoryId][$langId]['name'].
      *
@@ -765,7 +754,6 @@ class ForumLibrary {
 
         return $arrReturn;
     }
-
 
     /**
      * Create an array containing all "thread-icons". Key of the array is a number: 1.gif -> 1.
@@ -997,7 +985,6 @@ class ForumLibrary {
         return $arrReturn;
     }
 
-
     /**
      * get the post data for a specific posting
      *
@@ -1073,7 +1060,7 @@ class ForumLibrary {
                                                 FROM        '.DBPREFIX.'module_forum_postings
                                                 WHERE   prev_post_id=0  AND
                                                             category_id='.$intForumId.'
-                                                ORDER BY    time_created DESC
+                                                ORDER BY    is_sticky DESC, time_created DESC
                                             ', $this->_arrSettings['thread_paging'], $pos);
         while (!$objResult->EOF) {
             //Count replies
@@ -1155,6 +1142,7 @@ class ForumLibrary {
         }
         return true;
     }
+
     /**
      * update views when adding a new item
      *
@@ -1279,7 +1267,6 @@ class ForumLibrary {
         }
     }
 
-
     /**
      * fetch the latest entries
      *
@@ -1347,7 +1334,6 @@ class ForumLibrary {
         return $arrLatestEntries;
     }
 
-
     /**
      * prepare date for the lates entries
      *
@@ -1396,7 +1382,6 @@ class ForumLibrary {
         }
     }
 
-
     /**
      * check for permission
      *
@@ -1441,7 +1426,6 @@ class ForumLibrary {
         }
         return false; //has no access
     }
-
 
     /**
      * Creates an array containing all access rights for a category. The index of the array is the group_id.
