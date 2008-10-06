@@ -1238,12 +1238,12 @@ class ForumLibrary {
                     $strSpacer .= '&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
                 if($arrValues['parent_id'] != 0){
-                    $strSource .= '<option value="'.$arrValues['id'].'" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringLenght+10+($arrValues['level']*4)).'</option>';
+                    $strSource .= '<option value="'.$arrValues['id'].'" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringLenght+10+($arrValues['level'])).'</option>';
                 }else{
                     if($useCat){
-                        $strSource .= '<option value="'.$arrValues['id'].'_cat" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringLenght+($arrValues['level']*4)).'</option>';
+                        $strSource .= '<option value="'.$arrValues['id'].'_cat" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringLenght+($arrValues['level'])).'</option>';
                     }else{
-                        $strSource .= '<option value="'.$arrValues['id'].'" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringLenght+10+($arrValues['level']*4)).'</option>';
+                        $strSource .= '<option value="'.$arrValues['id'].'" '.$strOptionAdds.$strSelected.'>'.$strSpacer.$this->_shortenString($arrValues['name'], $this->_maxStringLenght+10+($arrValues['level'])).'</option>';
                     }
                 }
             }
