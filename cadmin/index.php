@@ -679,6 +679,18 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
+	// E-Card
+    //-------------------------------------------------------
+    case 'ecard':
+        $modulespath = ASCMS_MODULE_PATH.'/ecard/admin.class.php';
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+      	$subMenuTitle = $_CORELANG['TXT_ECARD_TITLE'];
+        $objEcard = new ecard();
+        $objEcard->getPage();
+        break;
+     
+    //-------------------------------------------------------
     // voting
     //-------------------------------------------------------
     case 'voting':
