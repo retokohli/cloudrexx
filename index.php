@@ -1203,7 +1203,7 @@ switch ($plainSection) {
     break;
 
 //-------------------------------------------------------
-// E-Cards
+// E-Card
 //-------------------------------------------------------
     case "ecard":
         $modulespath = "modules/ecard/index.class.php";
