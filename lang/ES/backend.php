@@ -112,7 +112,7 @@ $_ARRAYLANG['TXT_PAGE_WITH_SAME_MODULE_EXIST'] = "Ya existe una p&aacute;gina co
 $_ARRAYLANG['TXT_NEW_LANGUAGE_ADDED_SUCCESSFUL'] = "El nuevo idioma y todas las variables dependientes del idioma fueron insertadas con &eacute;xito. (Por favor, traduzca el fichero generado al nuevo idioma) ";
 $_ARRAYLANG['TXT_LANGUAGE_VARIABLE_ALREADY_EXIST'] = "\¡La variable ya existe!";
 $_ARRAYLANG['TXT_LANGUAGE_VARIABLE_ADDED_SUCCESSFUL'] = "El nuevo idioma fue insertado con &eacute;xito.";
-$_ARRAYLANG['TXT_TO'] = "A";
+$_ARRAYLANG['TXT_TO'] = "a";
 $_ARRAYLANG['TXT_MONTH_ARRAY'] = "Enero,Febrero,Marzo,Abril,Mayo,Junio,Julio,Agosto,Septiembre,Octubre,Noviembre,Diciembre";
 $_ARRAYLANG['TXT_DAY_ARRAY'] = "\"Domingo,Lunes,Martes,Mi&eacute;rcoles,Jueves,Viernes,S&aacute;bado,Domingo\";";
 $_ARRAYLANG['TXT_HOSTNAME'] = "Nombre del Host";
@@ -951,4 +951,6 @@ $_ARRAYLANG['TXT_VIEW_BACKUPS'] = "Ver copias de seguridad";
 $_ARRAYLANG['TXT_BACKUP'] = "Copia de seguridad";
 $_ARRAYLANG['TXT_SYSTEM_UPDATE'] = "Actualizaci&oacute;n del sistema";
 $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'] = "";
+$_ARRAYLANG['TXT_ECARD'] = "E-Card";
+$_ARRAYLANG['TXT_ECARD_TITLE'] = "E-Card";
 ?>
