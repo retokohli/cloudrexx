@@ -1,35 +1,4 @@
 <?php
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DESC'] = "Themen-Aktionen";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_MOVE'] = "Thema verschieben";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_0'] = "Thema schliessen";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_1'] = "Thema wiedereröffnen";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_0'] = "Thema festhalten";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_1'] = "Thema freigeben";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE'] = "Thema löschen";
-
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_MOVE_SUCCESSFUL'] = "Thema wurde verschoben.";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_MOVE_UNSUCCESSFUL'] = "Thema konnte nicht verschoben werden.";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_SUCCESSFUL_0'] = "Thema wurde geschlossen.";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_UNSUCCESSFUL_0'] = "Thema konnte nicht geschlossen werden.";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_SUCCESSFUL_1'] = "Thema wurde wieder geöffnet.";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_UNSUCCESSFUL_1'] = "Thema konnte nicht geöffnet werden.";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_SUCCESSFUL_0'] = "Thema wurde festgehalten.";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_UNSUCCESSFUL_0'] = "Thema konnte nicht festgehalten werden.";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_SUCCESSFUL_1'] = "Thema wurde wieder freigegeben.";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_UNSUCCESSFUL_1'] = "Thema konnte nicht freigegeben werden.";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE_SUCCESSFUL'] = "Thema wurde gelöscht.";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE_UNSUCCESSFUL'] = "Thema konnte nicht gelöscht werden.";
-
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_CONFIRM_0'] = "Dieses Thema wirklich schliessen?";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_CONFIRM_1'] = "Dieses Thema wirklich wiedereröffnen?";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_CONFIRM_0'] = "Dieses Thema wirklich festhalten?";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_CONFIRM_1'] = "Dieses Thema wirklich freigeben?";
-$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE_CONFIRM'] = "Dieses Thema wirklich löschen?";
-
-$_ARRAYLANG['TXT_FORUM_RETURN_TO_THREAD'] = "Zurück zum Thema";
-$_ARRAYLANG['TXT_FORUM_RETURN_TO_CATEGORY_OVERVIEW'] = "Zurück zur Kategorienübersicht";
-
-
 /**
  * Forum
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -436,12 +405,12 @@ class Forum extends ForumLibrary {
         if($_REQUEST['act'] == 'delete'){
             if($this->_checkAuth($intForumId, 'delete')){
                 if($this->_deleteThread($intThreadId, $intForumId)){
-                    $this->_objTpl->setVariable('TXT_FORUM_SUCCESS', $_ARRAYLANG['TXT_FORUM_DELETED_SUCCESSFULLY']);
+                    $this->_objTpl->setVariable('TXT_FORUM_SUCCESS', '<br />'.$_ARRAYLANG['TXT_FORUM_DELETED_SUCCESSFULLY']);
                 }else{
-                    $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_DELETE_FAILED']);
+                    $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_DELETE_FAILED']);
                 }
             }else{
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
                 return false;
             }
         }
@@ -523,7 +492,7 @@ class Forum extends ForumLibrary {
 
         if (count($arrThreads) > 0) {
             if(!$this->_checkAuth($intForumId, 'read')){
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
                 return false;
             }
             $intCounter = 0;
@@ -564,23 +533,23 @@ class Forum extends ForumLibrary {
         if(!empty($_REQUEST['create']) && $_REQUEST['create'] == $_ARRAYLANG['TXT_FORUM_CREATE_THREAD']){
             //addthread code
             if(!$this->_checkAuth($intForumId, 'write')){
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
                 $this->_objTpl->hideBlock('addThread');
                 return false;
             }
 
             if (!$objFWUser->objUser->login() && !$captcha->compare($_POST['captcha'], $_POST['offset'])) {
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_INVALID_CAPTCHA']);
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_INVALID_CAPTCHA']);
                 return false;
             }
 
             if(strlen(trim($content)) < $this->_minPostLenght){//content check
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf($_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostLenght));
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostLenght));
                 return false;
             }
 
             if(false !== ($match = $this->_hasBadWords($content))){
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf($_ARRAYLANG['TXT_FORUM_BANNED_WORD'], $match[1]));
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_BANNED_WORD'], $match[1]));
                 return false;
             }
             $fileInfo = $this->_handleUpload('forum_attachment');
@@ -666,12 +635,12 @@ class Forum extends ForumLibrary {
         if($_REQUEST['act'] == 'delete'){
             if($this->_checkAuth($intCatId, 'delete')){
                 if($this->_deletePost($intCatId, $intThreadId, $_REQUEST['postid'])){
-                    $this->_objTpl->setVariable('TXT_FORUM_SUCCESS', $_ARRAYLANG['TXT_FORUM_DELETED_SUCCESSFULLY']);
+                    $this->_objTpl->setVariable('TXT_FORUM_SUCCESS', '<br />'.$_ARRAYLANG['TXT_FORUM_DELETED_SUCCESSFULLY']);
                 }else{
-                    $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_DELETE_FAILED']);
+                    $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_DELETE_FAILED']);
                 }
             }else{
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
             }
         }
 
@@ -817,7 +786,7 @@ class Forum extends ForumLibrary {
         $this->_setIcons($this->_getIcons());
 
         if(!$this->_checkAuth($intCatId, 'read')){
-            $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
+            $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
             return false;
         }
 
@@ -916,21 +885,21 @@ class Forum extends ForumLibrary {
         //addpost code
         if(!empty($_REQUEST['create']) && $_REQUEST['create'] == $_ARRAYLANG['TXT_FORUM_CREATE_POST']){
             if(!$this->_checkAuth($intCatId, 'write') && $firstPost['is_locked']  != 1){//auth check
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
                 $this->_objTpl->hideBlock('addPost');
                 return false;
             }
             if(!$objFWUser->objUser->login() && !$captcha->compare($_POST['captcha'], $_POST['offset'])) {//captcha check
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_INVALID_CAPTCHA']);
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_INVALID_CAPTCHA']);
                 return false;
             }
             if(strlen(trim($content)) < $this->_minPostLenght){//content check
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf($_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostLenght));
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostLenght));
                 return false;
             }
 
             if(false !== ($match = $this->_hasBadWords($content))){
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf($_ARRAYLANG['TXT_FORUM_BANNED_WORD'], $match[1]));
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_BANNED_WORD'], $match[1]));
                 return false;
             }
             $fileInfo = $this->_handleUpload('forum_attachment');
@@ -975,11 +944,11 @@ class Forum extends ForumLibrary {
         if(!empty($_REQUEST['preview_new'])){
             $content = $this->BBCodeToHTML(stripslashes($content));
             if(false !== ($match = $this->_hasBadWords($content))){
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf($_ARRAYLANG['TXT_FORUM_BANNED_WORD'], $match[1]));
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_BANNED_WORD'], $match[1]));
                 return false;
             }
             if(strlen(trim($content)) < $this->_minPostLenght){//content check
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf($_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostLenght));
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostLenght));
                 return false;
             }
             $this->_objTpl->setVariable(array(
@@ -1014,11 +983,11 @@ class Forum extends ForumLibrary {
 
         if(!empty($_REQUEST['update']) && $_REQUEST['update'] == $_ARRAYLANG['TXT_FORUM_UPDATE_POST']){
             if(strlen(trim($content)) < $this->_minPostLenght){//content size check
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf($_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostLenght));
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_POST_EMPTY'], $this->_minPostLenght));
                 return false;
             }
             if (!$this->_checkAuth($intCatId, 'edit') && (!$objFWUser->objUser->login() || $arrValues['user_id'] != $objFWUser->objUser->getId())) {
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
                 $this->_objTpl->hideBlock('postEdit');
                 return false;
             }
@@ -1026,11 +995,11 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->touchBlock('updatePost');
                 $this->_objTpl->hideBlock('createPost');
 
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_INVALID_CAPTCHA']);
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_INVALID_CAPTCHA']);
                 return false;
             }
             if(false !== ($match = $this->_hasBadWords($content))){
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf($_ARRAYLANG['TXT_FORUM_BANNED_WORD'], $match[1]));
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_BANNED_WORD'], $match[1]));
                 return false;
             }
             $fileInfo = $this->_handleUpload('forum_attachment');
@@ -1071,12 +1040,28 @@ class Forum extends ForumLibrary {
         }
 
         if(!empty($_REQUEST['action']) && $_REQUEST['action'] == 'move' && !empty($_REQUEST['id'])){
-            $objDatabase->debug=99;
-            //TODO: update stats, CHECK $newCat -> sometimes 0
             $thread = intval($_REQUEST['id']);
             $newCat = intval($_REQUEST['moveToThread']);
+            $oldCat = $this->_getCategoryIdFromThread($thread);
             $query = "UPDATE `".DBPREFIX."module_forum_postings` SET `category_id` = $newCat WHERE `thread_id` = ".$thread;
             if($objDatabase->Execute($query)){
+                $intMovedPosts = $objDatabase->Affected_Rows();
+
+                $query = "SELECT max( `id` ) as `lastid` FROM `".DBPREFIX."module_forum_postings` WHERE `thread_id` = $thread";
+                $objRS = $objDatabase->SelectLimit($query, 1);
+                $intMovedPostLastId = $objRS->fields['lastid'];
+
+                $query = "SELECT max( `id` ) as `lastid` FROM `".DBPREFIX."module_forum_postings` WHERE `category_id` = $oldCat";
+                $objRS = $objDatabase->SelectLimit($query, 1);
+
+                $query = "UPDATE `".DBPREFIX."module_forum_statistics` SET `thread_count` = `thread_count` - 1, `post_count` = `post_count` - $intMovedPosts, `last_post_id` = ".(intval($objRS->fields['lastid']) > 0 ? intval($objRS->fields['lastid']) : 0)." WHERE `category_id` = $oldCat";
+                $objDatabase->Execute($query);
+
+                $query = "SELECT `id` FROM `".DBPREFIX."module_forum_postings` WHERE `category_id` = $newCat GROUP BY `time_created` DESC";
+                $objRS = $objDatabase->Execute($query);
+
+                $query = "UPDATE `".DBPREFIX."module_forum_statistics` SET `thread_count` = `thread_count` + 1, `post_count` = `post_count` + $intMovedPosts, `last_post_id` = ".$objRS->fields['id']." WHERE `category_id` = $newCat";
+                $objDatabase->Execute($query);
 
                 $this->_objTpl->hideBlock('moveForm');
                 $this->_objTpl->setVariable(array(
@@ -1086,10 +1071,15 @@ class Forum extends ForumLibrary {
                     'FORUM_CATEGORY_ID'                                     => $intCatId,
                     'FORUM_THREAD_ID'                                       => $intThreadId,
                 ));
-                $this->_objTpl->hideBlock('threadDisplay');
+                header('Location: index.php?section=forum&cmd=thread&id='.$thread);
             }
         }
 
+        if(!empty($_GET['a'])){
+            $this->_objTpl->setVariable(array(
+                'TXT_FORUM_'.($_GET['r'] == 1 ? 'SUCCESS' : 'ERROR')   => '<br />'.$_ARRAYLANG['TXT_FORUM_THREAD_ACTION_'.strtoupper($_GET['a']).'_'.(!$_GET['r'] ? 'UN' : '').'SUCCESSFUL'.$_GET['s']],
+            ));
+        }
 
         $success = false;
         if(!empty($_REQUEST['thread_actions'])){
@@ -1127,16 +1117,7 @@ class Forum extends ForumLibrary {
                     break;
                 }
 
-                $page_title = $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_'.strtoupper($action).$suffix];
-                if($action !== 'move'){
-                    $this->_objTpl->setVariable(array(
-                        'TXT_THREAD_ACTION_'.($success ? 'SUCCESS' : 'ERROR')   => $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_'.strtoupper($action).'_'.(!$success ? 'UN' : '').'SUCCESSFUL'.$suffix],
-                        'TXT_FORUM_RETURN_TO_THREAD'                            => $_ARRAYLANG['TXT_FORUM_RETURN_TO_THREAD'],
-                        'TXT_FORUM_RETURN_TO_CATEGORY_OVERVIEW'                 => $_ARRAYLANG['TXT_FORUM_RETURN_TO_CATEGORY_OVERVIEW'],
-                        'FORUM_CATEGORY_ID'                                     => $intCatId,
-                        'FORUM_THREAD_ID'                                       => $intThreadId,
-                    ));
-                }
+                header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&a='.$action.'&r='.$success.'&s='.$suffix);
             }else{
                 $this->_objTpl->setVariable('TXT_THREAD_ACTION_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
             }
@@ -1556,7 +1537,7 @@ class Forum extends ForumLibrary {
 
         $objFWUser = FWUser::getFWUserObject();
         if (!$objFWUser->objUser->login()) {
-            $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_MUST_BE_AUTHENTICATED']);
+            $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_MUST_BE_AUTHENTICATED']);
             $this->_objTpl->hideBlock('notification');
             return false;
         }
@@ -1569,7 +1550,7 @@ class Forum extends ForumLibrary {
                         AND thread_id = 0";
 
             if($objDatabase->Execute($query) === false){
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', 'Database error: '.$objDatabase->ErrorMsg());
+                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />Database error: '.$objDatabase->ErrorMsg());
                 $this->_objTpl->hideBlock('notification');
                 return false;
             }
@@ -1580,13 +1561,13 @@ class Forum extends ForumLibrary {
                     $query = "    INSERT INTO `".DBPREFIX."module_forum_notification`
                                 VALUES ( ".$intCategoryId.", 0, ".$objFWUser->objUser->getId().", '0')";
                     if($objDatabase->Execute($query) === false){
-                        $this->_objTpl->setVariable('TXT_FORUM_ERROR', 'Database error: '.$objDatabase->ErrorMsg());
+                        $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />Database error: '.$objDatabase->ErrorMsg());
                         $this->_objTpl->hideBlock('notification');
                         return false;
                     }
                 }
             }
-            $this->_objTpl->setVariable('TXT_FORUM_SUCCESS', $_ARRAYLANG['TXT_FORUM_NOTIFICATION_UPDATED']);
+            $this->_objTpl->setVariable('TXT_FORUM_SUCCESS', '<br />'.$_ARRAYLANG['TXT_FORUM_NOTIFICATION_UPDATED']);
         }
 
         $arrUnsubscribedThreads = $arrForums = $this->createForumArray($this->_intLangId);
