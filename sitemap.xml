@@ -1,1353 +1,351 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.google.com/schemas/sitemap/0.84">
-<url>
-<loc>http://dev.contrexx.org/index.php?section=home</loc>
-<lastmod>2006-06-20</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=712</loc>
-<lastmod>2006-01-16</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=core&amp;cmd=lost_and_found</loc>
-<lastmod>2006-01-16</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=news</loc>
-<lastmod>2006-07-07</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=media1</loc>
-<lastmod>2005-05-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=guestbook</loc>
-<lastmod>2005-11-29</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=guestbook&amp;cmd=post</loc>
-<lastmod>2006-01-18</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=voting</loc>
-<lastmod>2005-04-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=docsys</loc>
-<lastmod>2006-06-17</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=directory</loc>
-<lastmod>2006-07-03</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=feed</loc>
-<lastmod>2005-12-15</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=media2</loc>
-<lastmod>2005-05-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=media3</loc>
-<lastmod>2005-05-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=forum</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=news&amp;cmd=submit</loc>
-<lastmod>2005-09-29</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1165</loc>
-<lastmod>2006-01-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=fileBrowser</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1167</loc>
-<lastmod>2005-08-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1168</loc>
-<lastmod>2006-06-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1169</loc>
-<lastmod>2005-11-07</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1171</loc>
-<lastmod>2005-08-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1172</loc>
-<lastmod>2005-08-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1173</loc>
-<lastmod>2005-08-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=community</loc>
-<lastmod>2005-11-15</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=sitemap</loc>
-<lastmod>2005-12-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=news&amp;cmd=feed</loc>
-<lastmod>2005-12-20</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=livecam</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=recommend</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1191</loc>
-<lastmod>2005-12-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1192</loc>
-<lastmod>2006-06-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1193</loc>
-<lastmod>2006-02-09</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=newsletter</loc>
-<lastmod>2006-07-18</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1199</loc>
-<lastmod>2006-04-27</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1200</loc>
-<lastmod>2005-12-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1201</loc>
-<lastmod>2005-12-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1202</loc>
-<lastmod>2005-12-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1203</loc>
-<lastmod>2005-12-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1205</loc>
-<lastmod>2006-01-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=directory&amp;cmd=add</loc>
-<lastmod>2006-07-20</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=directory&amp;cmd=myfeeds</loc>
-<lastmod>2006-02-09</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=news</loc>
-<lastmod>2006-01-30</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=media1</loc>
-<lastmod>2005-05-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=guestbook</loc>
-<lastmod>2005-11-29</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=guestbook&amp;cmd=post</loc>
-<lastmod>2006-01-18</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop</loc>
-<lastmod>2006-05-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=voting</loc>
-<lastmod>2005-04-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=docsys</loc>
-<lastmod>2005-04-06</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=feed</loc>
-<lastmod>2005-12-15</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=media2</loc>
-<lastmod>2005-05-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=media3</loc>
-<lastmod>2005-05-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=forum</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=news&amp;cmd=submit</loc>
-<lastmod>2005-09-29</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=fileBrowser</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1261</loc>
-<lastmod>2005-08-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop&amp;cmd=terms</loc>
-<lastmod>2005-12-16</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=community</loc>
-<lastmod>2005-11-15</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=sitemap</loc>
-<lastmod>2006-02-07</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=news&amp;cmd=feed</loc>
-<lastmod>2005-12-20</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=livecam</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=recommend</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1277</loc>
-<lastmod>2006-02-06</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=newsletter</loc>
-<lastmod>2005-12-19</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=gallery</loc>
-<lastmod>2006-01-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=directory&amp;cmd=add</loc>
-<lastmod>2006-01-31</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=directory&amp;cmd=myfeeds</loc>
-<lastmod>2006-01-31</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=directory&amp;cmd=latest</loc>
-<lastmod>2006-02-10</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=calendar</loc>
-<lastmod>2006-03-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=calendar&amp;cmd=eventlist</loc>
-<lastmod>2006-02-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=calendar&amp;cmd=boxes</loc>
-<lastmod>2006-02-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=nettools</loc>
-<lastmod>2006-03-31</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=home</loc>
-<lastmod>2006-02-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop&amp;cmd=discounts</loc>
-<lastmod>2006-02-02</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop&amp;cmd=cart</loc>
-<lastmod>2005-08-26</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop</loc>
-<lastmod>2005-11-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop&amp;cmd=terms</loc>
-<lastmod>2005-12-16</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1379</loc>
-<lastmod>2006-02-06</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=news</loc>
-<lastmod>2006-01-30</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=media1</loc>
-<lastmod>2005-05-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=guestbook</loc>
-<lastmod>2005-11-29</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=guestbook&amp;cmd=post</loc>
-<lastmod>2006-01-18</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=voting</loc>
-<lastmod>2005-04-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=docsys</loc>
-<lastmod>2005-04-06</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=calendar&amp;cmd=boxes</loc>
-<lastmod>2006-02-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=directory</loc>
-<lastmod>2006-02-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=feed</loc>
-<lastmod>2005-12-15</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=media2</loc>
-<lastmod>2005-05-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=media3</loc>
-<lastmod>2005-05-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=forum</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=news&amp;cmd=submit</loc>
-<lastmod>2005-09-29</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1405</loc>
-<lastmod>2006-01-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=fileBrowser</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1407</loc>
-<lastmod>2005-08-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1408</loc>
-<lastmod>2006-02-14</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1409</loc>
-<lastmod>2005-11-07</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1410</loc>
-<lastmod>2005-08-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1411</loc>
-<lastmod>2005-08-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1412</loc>
-<lastmod>2005-08-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1413</loc>
-<lastmod>2005-08-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=community</loc>
-<lastmod>2005-11-15</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=sitemap</loc>
-<lastmod>2005-12-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=news&amp;cmd=feed</loc>
-<lastmod>2005-12-20</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=livecam</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=calendar&amp;cmd=eventlist</loc>
-<lastmod>2006-02-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=calendar</loc>
-<lastmod>2006-02-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=recommend</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1427</loc>
-<lastmod>2005-12-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1428</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1429</loc>
-<lastmod>2006-02-09</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=newsletter</loc>
-<lastmod>2005-12-19</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1435</loc>
-<lastmod>2005-12-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1436</loc>
-<lastmod>2005-12-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1437</loc>
-<lastmod>2005-12-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1438</loc>
-<lastmod>2005-12-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1439</loc>
-<lastmod>2005-12-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=gallery</loc>
-<lastmod>2006-01-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1441</loc>
-<lastmod>2006-01-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=directory&amp;cmd=add</loc>
-<lastmod>2006-02-24</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=directory&amp;cmd=myfeeds</loc>
-<lastmod>2006-02-09</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=contact&amp;cmd=thanks</loc>
-<lastmod>2006-02-14</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1447</loc>
-<lastmod>2006-02-06</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1448</loc>
-<lastmod>2006-02-09</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=directory&amp;cmd=latest</loc>
-<lastmod>2006-02-10</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1451</loc>
-<lastmod>2006-02-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1452</loc>
-<lastmod>2006-02-15</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1453</loc>
-<lastmod>2006-02-15</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=memberdir</loc>
-<lastmod>2006-02-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=nettools</loc>
-<lastmod>2006-02-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=memberdir</loc>
-<lastmod>2006-07-07</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=media1</loc>
-<lastmod>2006-03-09</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=market</loc>
-<lastmod>2006-07-03</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=market&amp;cmd=add</loc>
-<lastmod>2006-07-03</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=market&amp;cmd=search</loc>
-<lastmod>2006-03-20</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=nettools&amp;cmd=whois</loc>
-<lastmod>2006-03-31</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=nettools&amp;cmd=port</loc>
-<lastmod>2006-03-31</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=nettools&amp;cmd=ping</loc>
-<lastmod>2006-03-31</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=nettools&amp;cmd=mx</loc>
-<lastmod>2006-03-31</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=nettools&amp;cmd=lookup</loc>
-<lastmod>2006-03-31</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=reservation</loc>
-<lastmod>2006-04-07</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop</loc>
-<lastmod>2006-06-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop&amp;cmd=terms</loc>
-<lastmod>2006-07-03</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop&amp;cmd=cart</loc>
-<lastmod>2006-05-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop&amp;cmd=discounts</loc>
-<lastmod>2006-04-19</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop&amp;cmd=changepass</loc>
-<lastmod>2006-04-19</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1556</loc>
-<lastmod>2006-05-02</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1557</loc>
-<lastmod>2006-05-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1558</loc>
-<lastmod>2006-05-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1559</loc>
-<lastmod>2006-05-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1560</loc>
-<lastmod>2006-05-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1561</loc>
-<lastmod>2006-05-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1562</loc>
-<lastmod>2006-05-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=podcast</loc>
-<lastmod>2006-06-28</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1579</loc>
-<lastmod>2006-06-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1580</loc>
-<lastmod>2006-06-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1581</loc>
-<lastmod>2006-06-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1582</loc>
-<lastmod>2006-06-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1583</loc>
-<lastmod>2006-06-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1584</loc>
-<lastmod>2006-06-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1585</loc>
-<lastmod>2006-06-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=contact&amp;cmd=1</loc>
-<lastmod>2006-07-19</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1595</loc>
-<lastmod>2006-07-03</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=home</loc>
-<lastmod>2006-06-20</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop&amp;cmd=cart</loc>
-<lastmod>2006-05-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop&amp;cmd=terms</loc>
-<lastmod>2006-07-03</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=news</loc>
-<lastmod>2006-07-07</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=media1</loc>
-<lastmod>2005-05-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=guestbook</loc>
-<lastmod>2005-11-29</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=guestbook&amp;cmd=post</loc>
-<lastmod>2006-01-18</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=voting</loc>
-<lastmod>2005-04-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=docsys</loc>
-<lastmod>2006-06-17</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=calendar&amp;cmd=boxes</loc>
-<lastmod>2006-02-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=directory</loc>
-<lastmod>2006-07-03</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=feed</loc>
-<lastmod>2005-12-15</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=media2</loc>
-<lastmod>2005-05-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=media3</loc>
-<lastmod>2005-05-04</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=forum</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=news&amp;cmd=submit</loc>
-<lastmod>2005-09-29</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1635</loc>
-<lastmod>2006-01-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=fileBrowser</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1637</loc>
-<lastmod>2005-08-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1638</loc>
-<lastmod>2006-06-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1639</loc>
-<lastmod>2005-11-07</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1640</loc>
-<lastmod>2005-08-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1641</loc>
-<lastmod>2005-08-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1642</loc>
-<lastmod>2005-08-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=community</loc>
-<lastmod>2005-11-15</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=sitemap</loc>
-<lastmod>2005-12-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=news&amp;cmd=feed</loc>
-<lastmod>2005-12-20</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=livecam</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=calendar&amp;cmd=eventlist</loc>
-<lastmod>2006-02-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=calendar</loc>
-<lastmod>2006-03-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=recommend</loc>
-<lastmod>2005-12-08</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1656</loc>
-<lastmod>2005-12-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1657</loc>
-<lastmod>2006-06-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1658</loc>
-<lastmod>2006-02-09</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=newsletter</loc>
-<lastmod>2006-06-13</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1664</loc>
-<lastmod>2006-04-27</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1665</loc>
-<lastmod>2005-12-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1666</loc>
-<lastmod>2005-12-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1667</loc>
-<lastmod>2005-12-22</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1668</loc>
-<lastmod>2005-12-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=gallery</loc>
-<lastmod>2006-05-29</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1670</loc>
-<lastmod>2006-01-23</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=directory&amp;cmd=add</loc>
-<lastmod>2006-07-19</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=directory&amp;cmd=myfeeds</loc>
-<lastmod>2006-02-09</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=directory&amp;cmd=latest</loc>
-<lastmod>2006-02-10</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=nettools</loc>
-<lastmod>2006-03-31</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=contact&amp;cmd=1</loc>
-<lastmod>2006-06-28</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=memberdir</loc>
-<lastmod>2006-07-07</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=media1</loc>
-<lastmod>2006-03-09</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=market</loc>
-<lastmod>2006-07-19</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=market&amp;cmd=add</loc>
-<lastmod>2006-07-19</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=market&amp;cmd=search</loc>
-<lastmod>2006-07-19</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop</loc>
-<lastmod>2006-06-05</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=nettools&amp;cmd=whois</loc>
-<lastmod>2006-03-31</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=nettools&amp;cmd=port</loc>
-<lastmod>2006-03-31</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=nettools&amp;cmd=ping</loc>
-<lastmod>2006-03-31</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=nettools&amp;cmd=mx</loc>
-<lastmod>2006-03-31</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=nettools&amp;cmd=lookup</loc>
-<lastmod>2006-03-31</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=reservation</loc>
-<lastmod>2006-04-07</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop&amp;cmd=discounts</loc>
-<lastmod>2006-04-19</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=shop&amp;cmd=changepass</loc>
-<lastmod>2006-04-19</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1702</loc>
-<lastmod>2006-05-02</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?page=1704</loc>
-<lastmod>2006-07-03</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=contact&amp;cmd=22</loc>
-<lastmod>2006-07-20</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
-<url>
-<loc>http://dev.contrexx.org/index.php?section=contact&amp;cmd=23</loc>
-<lastmod>2006-07-19</lastmod>
-<changefreq>always</changefreq>
-<priority>0.5</priority>
-</url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+	<url>
+		<loc>http://trunk/index.php?section=home</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?page=2</loc>
+		<lastmod>2008-05-09</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?page=3</loc>
+		<lastmod>2008-05-07</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=news</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=news&amp;cmd=feed</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=calendar</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=calendar&amp;cmd=eventlist</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=calendar&amp;cmd=boxes</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=access</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=guestbook</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=guestbook&amp;cmd=post</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=shop</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=shop&amp;cmd=discounts</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=shop&amp;cmd=cart</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=directory</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=directory&amp;cmd=latest</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=directory&amp;cmd=add</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=directory&amp;cmd=myfeeds</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=gallery</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=forum</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=egov</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=shop&amp;cmd=einzug</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=market</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=market&amp;cmd=search</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=market&amp;cmd=add</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=sitemap</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=docsys</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=feed</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=media1</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?page=82</loc>
+		<lastmod>2008-05-05</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?page=83</loc>
+		<lastmod>2008-05-05</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=news&amp;cmd=1</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?page=88</loc>
+		<lastmod>2007-10-10</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?page=89</loc>
+		<lastmod>2008-06-13</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=blog</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=blog&amp;cmd=search</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=blog&amp;cmd=cloud</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?page=96</loc>
+		<lastmod>2008-05-13</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=access&amp;cmd=signup</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=access&amp;cmd=members</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=access&amp;cmd=settings</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=access&amp;cmd=settings_account</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=access&amp;cmd=settings_profile</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=access&amp;cmd=settings_avatar</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=access&amp;cmd=settings_password</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=access&amp;cmd=settings_delete_account</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=livecam</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?page=114</loc>
+		<lastmod>2008-05-06</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=forum&amp;cmd=notification</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=forum&amp;cmd=cloud</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=forum&amp;cmd=toplist</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=forum&amp;cmd=searchTags</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=contact&amp;cmd=4</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?page=662</loc>
+		<lastmod>2008-06-18</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=newsletter</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=podcast</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=recommend</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
+	<url>
+		<loc>http://trunk/index.php?section=voting</loc>
+		<lastmod>2008-10-08</lastmod>
+		<changefreq>hourly</changefreq>
+		<priority>0.5</priority>
+	</url>
 </urlset>
