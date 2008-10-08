@@ -156,8 +156,7 @@ class Mime
      *                                      false otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function isKnownExtension($strExtension)
+    static function isKnownExtension($strExtension)
     {
         return isset(self::$arrExtensions2MimeTypes[$strExtension]);
     }
@@ -175,18 +174,14 @@ class Mime
      * @return  string                      The corresponding MIME type
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getMimeTypeForExtension($strExtension)
+    static function getMimeTypeForExtension($strExtension)
     {
         // Make sure only the extension is present.
         // Chop the file name up to and including  the last dot
         $strChoppedExtension = preg_replace('/^.*\./', '', $strExtension);
-//echo("Mime::getMimeTypeForExtension($strExtension): Extension '$strChoppedExtension'<br />\n");
-
         if (Mime::isKnownExtension($strChoppedExtension)) {
             return self::$arrExtensions2MimeTypes[$strChoppedExtension];
         }
-//echo("Mime::getMimeTypeForExtension($strExtension): Warning: Extension '$strChoppedExtension' is not known!<br />\n");
         return self::$strDefaultType;
     }
 
@@ -198,29 +193,32 @@ class Mime
      * @static
      * @return  string                      The default MIME type
      * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @static
      */
-    //static
-    function getDefaultType()
+    static function getDefaultType()
     {
         return self::$strDefaultType;
     }
 
+
+    /**
+     * Returns the HTML code for the MIME type dropdown menu
+     * @param   string    $selected     The optional selected MIME tpye
+     * @return  string                  The menu options HTML code
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getTypeMenuoptions($selected='')
+    {
+        $strMenuoptions = '';
+        foreach (self::$arrExtensions2MimeTypes as $extension => $mimetype) {
+            $strMenuoptions .=
+                '<option value="'.$mimetype.'"'.
+                ($selected == $mimetype ? ' selected="selected"' : '').
+                ">$mimetype ($extension)</option>\n";
+        }
+        return $strMenuoptions;
+    }
+
 }
-
-
-/*
-    TEST
-
-$arrExtension = array(
-    'bild.jpg', '.jpg', 'jpg',
-    'a.b.c.def', '.def', 'def',
-    'noExtension', '.extensionOnly', 'dotAtEnd.',
-);
-foreach ($arrExtension as $strExtension) {
-    echo("Mime type for file name $strExtension: '".Mime::getMimeTypeForExtension($strExtension)."'<br />\n");
-}
-die('');
-
-*/
 
 ?>
