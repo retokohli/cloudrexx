@@ -1,14 +1,15 @@
 <?php
+
 /**
-* Database Manager class
-*
-* CMS Database Manager
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
-* @package      contrexx
-* @subpackage   core
-* @version        1.0
-*/
+ * Database Manager class
+ *
+ * CMS Database Manager
+ * @copyright    CONTREXX CMS - COMVATION AG
+ * @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
+ * @package      contrexx
+ * @subpackage   core
+ * @version        1.0
+ */
 
 /**
  * @ignore
@@ -16,56 +17,57 @@
 require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
 
 /**
-* Database Manager class
-*
-* CMS Database Manager
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
-* @package      contrexx
-* @subpackage   core
-* @version        1.0
-*/
-class DatabaseManager {
-
+ * Database Manager class
+ *
+ * CMS Database Manager
+ * @copyright    CONTREXX CMS - COMVATION AG
+ * @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
+ * @package      contrexx
+ * @subpackage   core
+ * @version        1.0
+ */
+class DatabaseManager
+{
     /**
      * @var string
      * @desc page title
      */
-    var $_strPageTitle;
+    public $_strPageTitle;
 
     /**
      * @var string
      * @desc status message (error message)
      */
-    var $_strErrMessage = '';
+    public $_strErrMessage = '';
 
     /**
      * @var string
      * @desc status message (okay message)
      */
-    var $_strOkMessage;
+    public $_strOkMessage;
 
     /**
      * @var string
      * @desc path to backup-folder
      */
-    var $_strBackupPath;
+    public $_strBackupPath;
 
     /**
      * @var array
      * @desc stores file endings for different export-types.
      */
-    var $_arrFileEndings;
+    public $_arrFileEndings;
 
     /**
      * @var array
      * @desc stores mime types for different export-types.
      */
-    var $_arrMimeTypes;
+    public $_arrMimeTypes;
+
 
     /**
      * Constructor
-     * @global  HTML_Template_Sigma 
+     * @global  HTML_Template_Sigma
      * @global  array
      */
     function __construct()
@@ -389,7 +391,7 @@ class DatabaseManager {
     /**
      * Shows content and sql-dump of a single table.
      *
-     * @global     HTML_Template_Sigma 
+     * @global     HTML_Template_Sigma
      * @global     ADONewConnection
      * @global     array
      * @param         string        $strTableName: This table will be shown.
@@ -699,7 +701,7 @@ class DatabaseManager {
      * Collects the information from the POST request by the query page
      * and returns the contained SQL query.
      * @global  array
-     * @global  HTML_Template_Sigma 
+     * @global  HTML_Template_Sigma
      * @return  string                            The query, if valid, or the
      *                                            empty string otherwise
      */
@@ -948,10 +950,10 @@ class DatabaseManager {
             return;
         }
 
-        //New Backup-String
+        // New Backup String
         $strBackup = '';
 
-        //Create file header
+        // Create file header
         if ($objBackup->hasCommentTags()) {
             $strBackup .=
                 $objBackup->getSeparationLine().
@@ -962,7 +964,7 @@ class DatabaseManager {
                 $objBackup->getSeparationLine()."\n\n";
         }
 
-        //Create table data
+        // Create table data
         $strTables = '';
         foreach ($_POST['frmDatabaseExport_Tables'] as $strTableName) {
             $strTables .= $strTableName.';';
@@ -977,7 +979,7 @@ class DatabaseManager {
         }
         $strTables = substr($strTables,0,-1);
 
-        //Write file
+        // Write file
         if (is_writable($this->_strBackupPath)) {
             $intTimeStamp = time();
             $strFileName = $intTimeStamp.$this->_arrFileEndings[$strBackupType];
@@ -1085,6 +1087,7 @@ class DatabaseManager {
         exit();
     }
 
+
     /**
      * Manages the Upload of a Backup-File and adds it to the database. Currently it only proccesses SQL-Uploads.
      *
@@ -1140,10 +1143,11 @@ class DatabaseManager {
         $this->_strOkMessage = $_CORELANG['TXT_DBM_IMPORT_SUCCESS'];
     }
 
+
     /**
      * Shows details of an existing backup.
      *
-     * @global     HTML_Template_Sigma 
+     * @global     HTML_Template_Sigma
      * @global     ADONewConnection
      * @global     array        core language
      * @global     array        system configuration
@@ -1219,21 +1223,22 @@ class DatabaseManager {
 
 }
 
-/**
-* BackupBase
-*
-* This abstract class is the base class for all Backup-Types (SQL, CSV). It delivers standard functionality like "new line" and
-* "tabulators" for its subclasses.
-*
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
-* @access        public
-* @package      contrexx
-* @subpackage   core
-* @version        1.0
-*/
-abstract class BackupBase {
 
+/**
+ * BackupBase
+ *
+ * This abstract class is the base class for all Backup-Types (SQL, CSV). It delivers standard functionality like "new line" and
+ * "tabulators" for its subclasses.
+ *
+ * @copyright    CONTREXX CMS - COMVATION AG
+ * @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
+ * @access        public
+ * @package      contrexx
+ * @subpackage   core
+ * @version        1.0
+ */
+abstract class BackupBase
+{
     /**
      * Return an table header for an table.
      *
@@ -1274,12 +1279,14 @@ abstract class BackupBase {
      */
     abstract function hasCommentTags();
 
+
     /**
      * Returns the comment-delimiter for the backup-type.
      *
      * @return  string      The comment-delimiter.
      */
     abstract function getCommentString();
+
 
     /**
      * Returns the Definition of a table in a string.
@@ -1289,6 +1296,7 @@ abstract class BackupBase {
      */
     abstract function getTableDefinition($strTable);
 
+
     /**
      * Returns the Content of a table in a string.
      *
@@ -1296,22 +1304,24 @@ abstract class BackupBase {
      * @return  string      The generated table-content
      */
     abstract function getTableContent($strTable);
+
 }
 
-/**
-* SQLBackup
-*
-* This class extends the BackupBase and implements the functionality for the SQL-Export.
-*
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
-* @access        public
-* @package      contrexx
-* @subpackage   core
-* @version        1.0
-*/
-final class SQLBackup extends BackupBase  {
 
+/**
+ * SQLBackup
+ *
+ * This class extends the BackupBase and implements the functionality for the SQL-Export.
+ *
+ * @copyright    CONTREXX CMS - COMVATION AG
+ * @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
+ * @access        public
+ * @package      contrexx
+ * @subpackage   core
+ * @version        1.0
+ */
+final class SQLBackup extends BackupBase
+{
     /**
      * Defines if the current language supports comments. Some languages (for Example CVS) don't have a comment-tag, so
      * in this languages some information should not be printed.
@@ -1496,26 +1506,54 @@ final class SQLBackup extends BackupBase  {
             case 'longtext':
             case 'longblob':
                 return ''; //No default values
+            case 'tinyint':
+            case 'smallint':
+            case 'mediumint':
+            case 'int':
+            case 'bigint':
+            case 'time':
+            case 'date':
+            case 'datetime':
+            case 'year':
+                return " default '".intval($strDefault)."'";
+            case 'timestamp':
+                // Note that there are *NO* quotes!
+                if ($strDefault == 'CURRENT_TIMESTAMP') return " default ".$strDefault;
+                // For any other default value
+                return " default '".intval($strDefault)."'";
+                // Note that "ON UPDATE CURRENT_TIMESTAMP" is not handled here!
+            case 'enum':
+            case 'set':
+                if ($strDefault !== '') return " default '".$strDefault."'";
+                // Pick the first possible value if no default is defined
+                $arrMatch = array();
+                $size = '';
+                if (preg_match('/^\w+\(?([^)]*)\)?.*$/', $strType, $arrMatch)) {
+                    $size = $arrMatch[1];
+                }
+                $arrValues = preg_split('/\s*,\s*/', $size, 1, PREG_SPLIT_NO_EMPTY);
+                return " default '".$arrValues[0]."'";
             default:
-                return ' default \''.$strDefault.'\'';
+                return " default '".$strDefault."'";
         }
     }
 }
 
+
 /**
-* CSVBackup
-*
+ * CSVBackup
+ *
  * This class extends the BackupBase and implements the functionality
  * for the CSV export.
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
-* @access        public
-* @package      contrexx
-* @subpackage   core
-* @version        1.0
-*/
-final class CSVBackup extends BackupBase  {
-
+ * @copyright    CONTREXX CMS - COMVATION AG
+ * @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
+ * @access        public
+ * @package      contrexx
+ * @subpackage   core
+ * @version        1.0
+ */
+final class CSVBackup extends BackupBase
+{
     /**
      * Defines if the current language supports comments. Some languages (for Example CVS) don't have a comment-tag, so
      * in this languages some information should not be printed.
@@ -1540,7 +1578,7 @@ final class CSVBackup extends BackupBase  {
     /**
      * Prints the CSV-definition of a table.
      *
-     * @global       ADONewConnection 
+     * @global       ADONewConnection
      * @param        string        $strTable: This table-header will be printed.
      * @return         string        The generated table-header.
      */
@@ -1601,6 +1639,7 @@ final class CSVBackup extends BackupBase  {
         }
         return $strReturn;
     }
+
 }
 
 ?>
