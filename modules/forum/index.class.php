@@ -376,7 +376,7 @@ class Forum extends ForumLibrary {
      */
     function showForum($intForumId)
     {
-        global $objDatabase, $_ARRAYLANG, $objCache;
+        global $objDatabase, $_ARRAYLANG, $objCache, $_LANGID;
 
         require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
         if ($intForumId == 0) {
@@ -431,7 +431,7 @@ class Forum extends ForumLibrary {
             global $wysiwygEditor, $FCKeditorBasePath;
             $wysiwygEditor = "FCKeditor";
             $FCKeditorBasePath = "/editor/fckeditor/";
-            $strMessageInputHTML = get_wysiwyg_editor('thread_message', $content, 'forum');
+            $strMessageInputHTML = get_wysiwyg_editor('thread_message', $content, 'forum', $_LANGID);
         }else{ //plain textarea
             $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="thread_message">'.$content.'</textarea>';
         }
@@ -1039,6 +1039,13 @@ class Forum extends ForumLibrary {
             $this->_objTpl->touchBlock('previewEditPost');
         }
 
+        foreach (array('STICKY', 'MOVE', 'CLOSE', 'DELETE') as $action){
+            if(!$this->_checkAuth($intCatId, $action)){
+                $this->_objTpl->setVariable('FORUM_THREAD_ACTIONS_DISABLED_'.$action, 'disabled="disabled"');
+            }
+        }
+
+
         if(!empty($_REQUEST['action']) && $_REQUEST['action'] == 'move' && !empty($_REQUEST['id'])){
             $thread = intval($_REQUEST['id']);
             $newCat = intval($_REQUEST['moveToThread']);
@@ -1066,8 +1073,6 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->hideBlock('moveForm');
                 $this->_objTpl->setVariable(array(
                     'TXT_THREAD_ACTION_'.($success ? 'SUCCESS' : 'ERROR')   => $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_MOVE'.(!$success ? 'UN' : '').'SUCCESSFUL'],
-                    'TXT_FORUM_RETURN_TO_THREAD'                            => $_ARRAYLANG['TXT_FORUM_RETURN_TO_THREAD'],
-                    'TXT_FORUM_RETURN_TO_CATEGORY_OVERVIEW'                 => $_ARRAYLANG['TXT_FORUM_RETURN_TO_CATEGORY_OVERVIEW'],
                     'FORUM_CATEGORY_ID'                                     => $intCatId,
                     'FORUM_THREAD_ID'                                       => $intThreadId,
                 ));
@@ -1784,7 +1789,7 @@ class Forum extends ForumLibrary {
          break;
          case 'delete':
             if(confirm('$confirmDelete')){
-                location.href = 'index.php?section=forum&cmd=board&id=$boardId&act=delete&id=$threadId';
+                location.href = 'index.php?section=forum&cmd=board&id=$boardId&act=delete&threadid=$threadId';
             }
          break;
          case 'sticky':
