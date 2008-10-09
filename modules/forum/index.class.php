@@ -1121,8 +1121,9 @@ class Forum extends ForumLibrary {
                     default:
                     break;
                 }
-
-                header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&a='.$action.'&r='.$success.'&s='.$suffix);
+                if($action != 'move'){
+                    header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&a='.$action.'&r='.$success.'&s='.$suffix);
+                }
             }else{
                 $this->_objTpl->setVariable('TXT_THREAD_ACTION_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
             }
