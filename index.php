@@ -302,7 +302,7 @@ if ($objResult === false || $objResult->EOF) {
 } else {
     //Frontend Editing: content has to be replaced with preview-code if needed.
     $page_content   = ($frontEditing) ? ( ($frontEditingContent != '') ? $frontEditingContent : $objResult->fields["content"]) : '<div id="fe_PreviewContent">'.$objResult->fields["content"].'</div>';
-    $page_title     = $objResult->fields["title"];
+    $page_title     = htmlentities($objResult->fields["title"], ENT_QUOTES, CONTREXX_CHARSET);
     $page_catname   = $objResult->fields["catname"];
     $page_metatitle = htmlentities($objResult->fields["metatitle"], ENT_QUOTES, CONTREXX_CHARSET);
     $page_keywords  = htmlentities($objResult->fields["metakeys"], ENT_QUOTES, CONTREXX_CHARSET);
