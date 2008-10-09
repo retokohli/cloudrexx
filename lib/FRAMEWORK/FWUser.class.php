@@ -200,13 +200,11 @@ class FWUser extends User_Setting
         if (!$this->objUser->login()) {
             return false;
         }
-        $objTemplate->setVariable(
-            'LOGGING_STATUS',
-            $_CORELANG['TXT_LOGGED_IN_AS'].' '.
-            htmlentities(
-                $this->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET
-            )
-        );
+        $objTemplate->setVariable(array(
+            'LOGGING_STATUS'        => $_CORELANG['TXT_LOGGED_IN_AS'].' '.htmlentities($this->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+            'ACCESS_USER_ID'        => $this->objUser->getId(),
+            'ACCESS_USER_USERNAME'  => htmlentities($this->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+        ));
         return true;
     }
 
