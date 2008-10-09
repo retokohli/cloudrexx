@@ -1748,6 +1748,7 @@ if ($objTemplate->blockExists('access_logged_in')) {
     $objFWUser = FWUser::getFWUserObject();
     if ($objFWUser->objUser->login()) {
         $objFWUser->setLoggedInInfos();
+        $objTemplate->parse('access_logged_in');
     } else {
         $objTemplate->hideBlock('access_logged_in');
     }
