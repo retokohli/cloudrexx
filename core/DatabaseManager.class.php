@@ -4,11 +4,11 @@
  * Database Manager class
  *
  * CMS Database Manager
- * @copyright    CONTREXX CMS - COMVATION AG
- * @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
- * @package      contrexx
- * @subpackage   core
- * @version        1.0
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch>
+ * @package     contrexx
+ * @subpackage  core
+ * @version     2.0.2
  */
 
 /**
@@ -20,11 +20,11 @@ require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
  * Database Manager class
  *
  * CMS Database Manager
- * @copyright    CONTREXX CMS - COMVATION AG
- * @author        Thomas Kaelin <thomas.kaelin@astalvista.ch>
- * @package      contrexx
- * @subpackage   core
- * @version        1.0
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch>
+ * @package     contrexx
+ * @subpackage  core
+ * @version     2.0.2
  */
 class DatabaseManager
 {
@@ -1363,7 +1363,7 @@ final class SQLBackup extends BackupBase
             $strReturn .=
                 ' `'.$objResult->fields['Field'].'` '.
                 $objResult->fields['Type'].' '.
-                (empty($objResult->fields['Null']) ? 'NOT ' : '').'NULL'.
+                ($objResult->fields['Null'] == 'NO' ? 'NOT ' : '').'NULL'.
                 (isset($objResult->fields['Default'])
                     ? $this->printTableDefaultTag($objResult->fields['Type'], $objResult->fields['Default'])
                     : ''
@@ -1378,8 +1378,9 @@ final class SQLBackup extends BackupBase
         $arrTableKeys = array();
         $objResult = $objDatabase->Execute('SHOW KEYS FROM '.$strTable);
         while (!$objResult->EOF) {
-            $strKeyName     = $objResult->fields['Key_name'];
-            $intSeqIndex    = $objResult->fields['Seq_in_index'];
+            $strKeyName  = $objResult->fields['Key_name'];
+            $intSeqIndex = $objResult->fields['Seq_in_index'];
+            $intSubPart  = intval($objResult->fields['Sub_part']);
 
             $arrUniqueKeys[$strKeyName] = false;
             if ($objResult->fields['Non_unique'] == 0) {
@@ -1391,13 +1392,15 @@ final class SQLBackup extends BackupBase
                 $arrFulltextKeys[$strKeyName] = true;
             }
 
-            $arrTableKeys[$strKeyName][$intSeqIndex] = '`'.$objResult->fields['Column_name'].'`';
+            $arrTableKeys[$strKeyName][$intSeqIndex] =
+                '`'.$objResult->fields['Column_name'].'`'.
+                ($intSubPart ? "($intSubPart)" : '');
             ksort($arrTableKeys[$strKeyName]);
             $objResult->MoveNext();
         }
 
         //Write table keys and indices
-        foreach ($arrTableKeys as $strKeyName => $strKeyFieldNames) {
+        foreach ($arrTableKeys as $strKeyName => $arrKeyFieldNames) {
             if ($strKeyName == 'PRIMARY') {
                 $strReturn .= '  PRIMARY ';
             } else {
@@ -1410,7 +1413,7 @@ final class SQLBackup extends BackupBase
             }
             $strReturn .=
                 'KEY'.(($strKeyName == 'PRIMARY') ? '' : ' `'.$strKeyName.'`').
-                ' ('.implode(',', $strKeyFieldNames)."),\n";
+                ' ('.implode(',', $arrKeyFieldNames)."),\n";
         }
 
         //Close definition
@@ -1488,11 +1491,14 @@ final class SQLBackup extends BackupBase
 
 
     /**
-     * Prints the "default"-tg for a table-definition.
+     * Returns the "default" value string for a table definition.
      *
-     * @param       string      $strType: data type of the column
-     * @param       string      $strDefault: default value of the column
-     * @return  strint      the generated default-tag.
+     * Note that this method assumes the $strDefault argument to be non-empty!
+     * @param   string      $strType      Data type of the column
+     * @param   string      $strDefault   Default value of the column
+     * @return  strint                    The default value string
+     * @version 2.0.2
+     * @author  Reto Kohli <reto.kohli@comvation.com> (version 2.0.2)
      */
     private function printTableDefaultTag($strType, $strDefault)
     {
@@ -1511,21 +1517,24 @@ final class SQLBackup extends BackupBase
             case 'mediumint':
             case 'int':
             case 'bigint':
+                return " default '".intval($strDefault)."'";
             case 'time':
             case 'date':
             case 'datetime':
             case 'year':
-                return " default '".intval($strDefault)."'";
+                return " default '$strDefault'";
             case 'timestamp':
                 // Note that there are *NO* quotes!
                 if ($strDefault == 'CURRENT_TIMESTAMP') return " default ".$strDefault;
                 // For any other default value
-                return " default '".intval($strDefault)."'";
+                return " default '$strDefault'";
                 // Note that "ON UPDATE CURRENT_TIMESTAMP" is not handled here!
             case 'enum':
             case 'set':
-                if ($strDefault !== '') return " default '".$strDefault."'";
-                // Pick the first possible value if no default is defined
+                if ($strDefault != '') return " default '".$strDefault."'";
+                // Pick the first possible value if an empty default is set
+                // (although it may in fact be the empty string,
+                // we wanna make sure it is valid)
                 $arrMatch = array();
                 $size = '';
                 if (preg_match('/^\w+\(?([^)]*)\)?.*$/', $strType, $arrMatch)) {
@@ -1534,7 +1543,7 @@ final class SQLBackup extends BackupBase
                 $arrValues = preg_split('/\s*,\s*/', $size, 1, PREG_SPLIT_NO_EMPTY);
                 return " default '".$arrValues[0]."'";
             default:
-                return " default '".$strDefault."'";
+                return " default '$strDefault'";
         }
     }
 }
