@@ -1266,6 +1266,7 @@ class Forum extends ForumLibrary {
         }
 
         if(!empty($arrSubscribers)){
+            $mail->CharSet = CONTREXX_CHARSET;
             $mail->IsHTML(false);
             $mail->From     = $this->_arrSettings['notification_from_email'];
             $mail->FromName = $this->_arrSettings['notification_from_name'];

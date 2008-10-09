@@ -677,6 +677,7 @@ class Immo extends ImmoLib
                                                 VALUES
                                                 (NULL, '$email', '$name', '$firstname', '$street', '$zip', '$location', '$company', '$telephone', '$telephone_office', '$telephone_mobile', '$purchase', '$funding', '$comment', '$immoID', '$fieldID', ".mktime()." )");
 
+                        $mailer->CharSet = CONTREXX_CHARSET;
                         $mailer->IsHTML(false);
                         $mailer->From         = $this->arrSettings['sender_email'];
                         $mailer->FromName     = $this->arrSettings['sender_name'];
