@@ -197,7 +197,7 @@ CREATE TABLE `contrexx_content_logfile` (
   `is_validated` set('0','1') NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `history_id` (`history_id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_content_navigation` (
   `catid` int(6) unsigned NOT NULL auto_increment,
   `is_validated` set('0','1') NOT NULL default '1',
@@ -250,7 +250,7 @@ CREATE TABLE `contrexx_content_navigation_history` (
   `css_name` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `catid` (`catid`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_ids` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `timestamp` int(14) default NULL,
@@ -262,7 +262,7 @@ CREATE TABLE `contrexx_ids` (
   `gpcs` mediumtext NOT NULL,
   `file` varchar(250) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_languages` (
   `id` int(2) unsigned NOT NULL auto_increment,
   `lang` varchar(5) NOT NULL default '',
@@ -300,7 +300,7 @@ CREATE TABLE `contrexx_log` (
   `http_x_forwarded_for` varchar(250) NOT NULL default '',
   `referer` varchar(250) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_alias_source` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `target_id` int(10) unsigned NOT NULL,
@@ -2202,14 +2202,14 @@ CREATE TABLE `contrexx_stats_browser` (
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`name`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_stats_colourdepth` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `depth` tinyint(3) unsigned NOT NULL default '0',
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`depth`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_stats_config` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(64) NOT NULL default '',
@@ -2223,27 +2223,27 @@ CREATE TABLE `contrexx_stats_country` (
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`country`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_stats_hostname` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `hostname` varchar(255) binary NOT NULL default '',
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`hostname`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_stats_javascript` (
   `id` int(3) unsigned NOT NULL auto_increment,
   `support` enum('0','1') default '0',
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_stats_operatingsystem` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `name` varchar(255) binary NOT NULL default '',
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`name`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_stats_referer` (
   `id` int(8) unsigned NOT NULL auto_increment,
   `uri` varchar(255) binary NOT NULL default '',
@@ -2262,7 +2262,7 @@ CREATE TABLE `contrexx_stats_requests` (
   `sid` varchar(32) NOT NULL default '',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`page`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_stats_requests_summary` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` varchar(10) NOT NULL default '',
@@ -2270,14 +2270,14 @@ CREATE TABLE `contrexx_stats_requests_summary` (
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`type`,`timestamp`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_stats_screenresolution` (
   `id` int(5) unsigned NOT NULL auto_increment,
   `resolution` varchar(11) NOT NULL default '',
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`resolution`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_stats_search` (
   `id` int(5) unsigned NOT NULL auto_increment,
   `name` varchar(100) binary NOT NULL default '',
@@ -2318,7 +2318,7 @@ CREATE TABLE `contrexx_stats_visitors` (
   `proxy_host` varchar(255) default NULL,
   `proxy_useragent` varchar(255) default NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_stats_visitors_summary` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` varchar(10) NOT NULL default '',
@@ -2326,7 +2326,7 @@ CREATE TABLE `contrexx_stats_visitors_summary` (
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`type`,`timestamp`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_user_validity` (
   `validity` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`validity`)
