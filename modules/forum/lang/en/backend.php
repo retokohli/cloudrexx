@@ -111,7 +111,7 @@ $_ARRAYLANG['TXT_FORUM_BANNED_WORDS_HELP'] = "Comma-separated list of words and 
 $_ARRAYLANG['TXT_CATEGORY_STATUS'] = "Status";
 $_ARRAYLANG['TXT_FORUM_INSERT_AT_POSITION'] = "Insert at position";
 $_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD'] = "Newest entries only per thread";
-$_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD_HELP'] = "If the option is active, the newest entries are shown per thread instead instead of all new entries from any thread.";
+$_ARRAYLANG['TXT_FORUM_LATEST_POST_PER_THREAD_HELP'] = "If the option is active, the newest entries are shown per thread only instead of all new entries from all threads.";
 $_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS_HELP'] = "Comma-separated list of allowed file extensions for upload";
 $_ARRAYLANG['TXT_FORUM_ALLOWED_EXTENSIONS'] = "Allowed file extensions";
 ?>
