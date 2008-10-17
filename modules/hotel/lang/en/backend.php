@@ -729,7 +729,7 @@ $_ARRAYLANG['TXT_HOTEL_CONFIRM_DELETE_OBJECT'] = "Wollen Sie dieses Objekt wirkl
 $_ARRAYLANG['TXT_HOTEL_CONFIRM_DELETE_CONTACT'] = "Wollen Sie diesen Eintrag wirklich löschen?";
 $_ARRAYLANG['TXT_HOTEL_CANNOT_UNDO_OPERATION'] = "Dieser Vorgang kann nicht rückgängig gemacht werden!";
 $_ARRAYLANG['TXT_HOTEL_COPY'] = "Kopieren";
-$_ARRAYLANG['TXT_HOTEL_GOOGLE_KEY_INFO'] = "<a target=\\\"_blank\\\" href=\\\"http://www.google.com/apis/maps/signup.html\\\"> Infos zu Google Map API KEY <\/a>";
+$_ARRAYLANG['TXT_HOTEL_GOOGLE_KEY_INFO'] = "<a target=\\\"_blank\\\" href=\\\"http://www.google.com/apis/maps/signup.html\\\"> Google Map API KEY information <\/a>";
 $_ARRAYLANG['TXT_HOTEL_ICON_MESSAGE'] = "Google Map Iconnachrichten-Vorlage";
 $_ARRAYLANG['TXT_HOTEL_SETTINGS_ICON_MESSAGE_DESC'] = "Dies ist die Vorlage für die Nachrichten, die erscheinen wenn man auf der Map auf ein Objekt klickt.<br /><br />Hier können Platzhalter eingesetzt werden, z.B. %ADRESSE%. Zwischen die % kommt in Grossbuchstaben der Name des Feldes, welches eingesetzt werden soll.";
 $_ARRAYLANG['TXT_HOTEL_SPECIAL_OFFER'] = "Spezialangebot";
