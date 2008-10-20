@@ -58,9 +58,9 @@ function aliasText(txt) {
 		.replace(/à/ig,  'a')
 		.replace(/ç/ig,  'c')
 		.replace(/[èé]/ig, 'e')
-		.replace(/[\s\+\/\(\)=,;%&]+/g, '-') // interpunction etc. 
+		.replace(/[\s\+\/\(\)=,;%&]+/g, '-') // interpunction etc.
 		.replace(/['<>\\\~$!"]+/g, '')       // quotes and other special characters
-		// Sanitize most latin1 characters. 
+		// Sanitize most latin1 characters.
 		// there's more to come. maybe there's
 		// a generic function for this?
 		// Fallback for everything we didn't catch by now
@@ -696,7 +696,7 @@ function openWindow(theURL,winName,features){
 		<table summary="" cellspacing="0" cellpadding="0" border="0" width="100%" class="adminlist" >
 			<thead>
 			    <tr>
-					<th colspan="3">Block zuweisen</th>
+					<th colspan="3">{TXT_CONTENT_ASSIGN_BLOCK}</th>
 				</tr>
 				<tr class="row2">
 					<td height="22" width="15%">{TXT_GROUPS}</td>
@@ -739,7 +739,7 @@ function openWindow(theURL,winName,features){
 </form>
 
 <script type="text/javascript">
-updateAliasPreview(document.formContent.alias.value);
+    updateAliasPreview(document.formContent.alias.value);
 </script>
 
 <!-- END content_editor.html -->

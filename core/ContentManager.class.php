@@ -678,6 +678,7 @@ class ContentManager
             'TXT_NO_MODULE'            => $_CORELANG['TXT_NO_MODULE'],
             'TXT_REDIRECT'             => $_CORELANG['TXT_REDIRECT'],
             'TXT_BROWSE'               => $_CORELANG['TXT_BROWSE'],
+            'TXT_CONTENT_ASSIGN_BLOCK' => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
             'TXT_NO_REDIRECT'          => '',
             'TXT_SOURCE_MODE'          => $_CORELANG['TXT_SOURCE_MODE'],
             'TXT_CACHING_STATUS'       => $_CORELANG['TXT_CACHING_STATUS'],
@@ -876,10 +877,10 @@ class ContentManager
             'TXT_MENU_NAME'                    => $_CORELANG['TXT_MENU_NAME'],
             'TXT_NEW_CATEGORY'                 => $_CORELANG['TXT_NEW_CATEGORY'],
             'TXT_VISIBLE'                      => $_CORELANG['TXT_VISIBLE'],
-            'TXT_CONTENT_TITLE'                   => $_CORELANG['TXT_PAGETITLE'],
+            'TXT_CONTENT_TITLE'                => $_CORELANG['TXT_PAGETITLE'],
             'TXT_META_INFORMATIONS'            => $_CORELANG['TXT_META_INFORMATIONS'],
             'TXT_META_TITLE'                   => $_CORELANG['TXT_META_TITLE'],
-            'TXT_META_DESCRIPTION'            => $_CORELANG['TXT_META_DESCRIPTION'],
+            'TXT_META_DESCRIPTION'             => $_CORELANG['TXT_META_DESCRIPTION'],
             'TXT_META_KEYWORD'                 => $_CORELANG['TXT_META_KEYWORD'],
             'TXT_META_ROBOTS'                  => $_CORELANG['TXT_META_ROBOTS'],
             'TXT_CONTENT'                      => $_CORELANG['TXT_CONTENT'],
@@ -887,10 +888,11 @@ class ContentManager
             'TXT_START_DATE'                   => $_CORELANG['TXT_START_DATE'],
             'TXT_END_DATE'                     => $_CORELANG['TXT_END_DATE'],
             'TXT_EXPERT_MODE'                  => $_CORELANG['TXT_EXPERT_MODE'],
-            'TXT_MODULE'                      => $_CORELANG['TXT_MODULE'],
+            'TXT_MODULE'                       => $_CORELANG['TXT_MODULE'],
             'TXT_NO_MODULE'                    => $_CORELANG['TXT_NO_MODULE'],
             'TXT_REDIRECT'                     => $_CORELANG['TXT_REDIRECT'],
-            'TXT_BROWSE'                    => $_CORELANG['TXT_BROWSE'],
+            'TXT_BROWSE'                       => $_CORELANG['TXT_BROWSE'],
+            'TXT_CONTENT_ASSIGN_BLOCK'         => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
             'TXT_NO_REDIRECT'                  => '',
             'TXT_SOURCE_MODE'                  => $_CORELANG['TXT_SOURCE_MODE'],
             'TXT_CACHING_STATUS'               => $_CORELANG['TXT_CACHING_STATUS'],
@@ -1549,7 +1551,7 @@ class ContentManager
     /**
     * Adds a new page
     *
-    * @global    ADONewConnection 
+    * @global    ADONewConnection
     * @global    array      Core language
     * @global    HTML_Template_Sigma
     */
@@ -2399,7 +2401,7 @@ class ContentManager
     /**
     * Change the "activestatus"-flag of a page
     *
-    * @global    ADONewConnection 
+    * @global    ADONewConnection
     * @param    integer      $intPageId: The page with this id will be changed
     */
     function changeActiveStatus($intPageId,$intNewStatus='') {
@@ -2610,10 +2612,10 @@ class ContentManager
 	 * Returns an alias that has only valid characters.
 	 */
 	function _fix_alias($txt) {
-		// this is kinda of a duplicate of the javascript function aliasText() 
+		// this is kinda of a duplicate of the javascript function aliasText()
 		// in cadmin/template/ascms/content_editor.html
 
-		// Sanitize most latin1 characters. 
+		// Sanitize most latin1 characters.
 		// there's more to come. maybe there's
 		// a generic function for this?
 		$txt = str_replace(
@@ -2626,7 +2628,7 @@ class ContentManager
 		$txt = preg_replace( '/[\'<>\\\~$!"]+/',     '',  $txt); // quotes and other special characters
 
 		// Fallback for everything we didn't catch by now
-		$txt = preg_replace('/[^a-z_-]+/i',  '_', $txt); 
+		$txt = preg_replace('/[^a-z_-]+/i',  '_', $txt);
 		$txt = preg_replace('/[_-]{2,}/',    '_', $txt);
 		$txt = preg_replace('/^[_\.\/\-]+/', '',  $txt);
 
@@ -2660,8 +2662,8 @@ class ContentManager
         $old_name = '';
         if ($alias_src_id) {
             $objResult = $objDatabase->SelectLimit("
-                SELECT id FROM ".DBPREFIX."module_alias_target 
-                WHERE type = 'local' and url = '$pageid'", 
+                SELECT id FROM ".DBPREFIX."module_alias_target
+                WHERE type = 'local' and url = '$pageid'",
                 1
             );
             $target_id = $objResult->fields['id'];
@@ -2701,7 +2703,7 @@ class ContentManager
 		}
 
 		//////////////////////////////////////////////////////////////
-		// Check if there is already an alias with that 
+		// Check if there is already an alias with that
 		// name.. or for that page.
 		$query = "
 			SELECT target_id
@@ -2746,21 +2748,21 @@ class ContentManager
 
             // check if the target already exists
             $has_target = $objDatabase->SelectLimit("
-                 SELECT id FROM ".DBPREFIX."module_alias_target 
+                 SELECT id FROM ".DBPREFIX."module_alias_target
                  WHERE  url = '$pageid'", 1);
             if ((!$has_target->RecordCount()) or !($target_id = $has_target->fields['id'])) {
 		$objDatabase->Execute("
-			INSERT INTO ".DBPREFIX."module_alias_target 
-				(type, url) 
-			VALUES 
+			INSERT INTO ".DBPREFIX."module_alias_target
+				(type, url)
+			VALUES
 				('local', '$pageid')"
 		);
                 $target_id = $objDatabase->Insert_ID();
             }
 		$objDatabase->Execute("
 			INSERT INTO ".DBPREFIX."module_alias_source
-				(target_id, url, isdefault) 
-			VALUES 
+				(target_id, url, isdefault)
+			VALUES
 					($target_id, '$alias', 1)"
 		);
 		}
@@ -2780,7 +2782,7 @@ class ContentManager
 		global $objDatabase;
 		$check_update = "
 			SELECT a_s.url, a_s.id
-			FROM            ".DBPREFIX."module_alias_target AS a_t 
+			FROM            ".DBPREFIX."module_alias_target AS a_t
 			LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
 				  ON  a_t.id        = a_s.target_id
 				  AND a_s.isdefault = 1
