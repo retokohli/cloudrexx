@@ -274,7 +274,9 @@ class Access extends AccessLib
             }
 
             if ($status) {
-                if ($objFWUser->objUser->store()) {
+                if ($objFWUser->objUser->checkMandatoryCompliance()
+                    && $objFWUser->objUser->store()
+                ) {
                     $msg = $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'];
                     $settingsDone = true;
                     $this->setLanguageCookie($currentLangId, $objFWUser->objUser->getFrontendLanguage());

@@ -607,7 +607,9 @@ class User extends User_Profile
 
     public function getProfileAttribute($attributeId, $historyId = 0)
     {
-        if (isset($this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId])) {
+        if (isset($this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId])) {
+            return $this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId];
+        } elseif (isset($this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId])) {
             return $this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId];
         } else {
             return false;

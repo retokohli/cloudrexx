@@ -928,7 +928,8 @@ class AccessManager extends AccessLib
                     // set validity expiration date (administrator accounts cannot be restricted in their validity)
                     (!isset($_POST['access_user_validity']) || $_REQUEST['access_user_validity'] == 'current' || $objUser->setValidityTimePeriod(intval($_POST['access_user_validity'])))
                 )) &&
-                $objUser->checkMandatoryCompliance() &&
+                // administrators aren't forced to fill out all mandatory profile attributes
+                (Permission::hasAllAccess() || $objUser->checkMandatoryCompliance()) &&
                 $objUser->store()
             ) {
                 $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'];
