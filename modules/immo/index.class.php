@@ -1171,10 +1171,10 @@ class Immo extends ImmoLib
                     $query .= " AND f.fieldvalue = '".$foreigner_auth."' ";
                 }
                 if(!empty($fprice)){//min price
-                    $query .= " AND b.fieldvalue >= '".$fprice."' ";
+                    $query .= " AND b.fieldvalue >= ".$fprice." ";
                 }
                 if(!empty($tprice)){//max price
-                    $query .= " AND b.fieldvalue <= '".$tprice."' ";
+                    $query .= " AND b.fieldvalue <= ".$tprice." ";
                 }
                 if(!empty($frooms)){//min rooms
                     $query .= " AND e.fieldvalue >= '".$frooms."' ";
