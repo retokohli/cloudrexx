@@ -17,13 +17,7 @@ html, body {
 	 background-color: #ffffff;
 	 background-image: url('../images/loading.gif');
 	 background-position: center center;
-	 background-repeat: no-repeat;
-	 display: none;
-}
-
-/* CONTAINER ------------------------------------------ */
-#fe_Container {
-    display: none;
+	 background-repeat: no-repeat;	 
 }
 
 /* BACKGROUND ----------------------------------------- */
