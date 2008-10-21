@@ -144,7 +144,7 @@ class statsLibrary
             $counterTag .= "document.write(".$url.");\n";
             $counterTag .= "// -->\n";
             $counterTag .= "</script>\n";
-            $counterTag .= "<noscript><div style=\"display:none;\"><img src=\"".ASCMS_CORE_MODULE_WEB_PATH."/stats/counter.php?mode=noscript&amp;referer=".$referer."&amp;pageId=".$pageId.$searchTerm."\" alt=\" \" width=\"1\" height=\"1\" /></div></noscript>\n";
+            $counterTag .= "<noscript><div><img src=\"".ASCMS_CORE_MODULE_WEB_PATH."/stats/counter.php?mode=noscript&amp;referer=".$referer."&amp;pageId=".$pageId.$searchTerm."\" alt=\" \" width=\"1\" height=\"1\" /></div></noscript>\n";
             $counterTag .= "<!-- Counter Code END -->\n";
         }
         return $counterTag;
