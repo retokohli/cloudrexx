@@ -23,13 +23,13 @@
         <tr class="row_[[FORUM_THREADS_ROWCLASS]]">
             <!--<td align="center">[[FORUM_THREADS_SYMBOL]]</td>-->
             <td colspan="2" align="center">[[FORUM_THREADS_ICON]]</td>
-            <td align="justify"><strong><a href="?section=forum&amp;cmd=thread&amp;id=[[FORUM_THREADS_ID]]" title="[[FORUM_THREADS_NAME]]">[[FORUM_THREADS_NAME]]</a></strong><br />
+            <td align="justify"><strong><a href="index.php?section=forum&amp;cmd=thread&amp;id=[[FORUM_THREADS_ID]]" title="[[FORUM_THREADS_NAME]]">[[FORUM_THREADS_NAME]]</a></strong><br />
             [[FORUM_THREADS_AUTHOR]]</td>
             <td align="center">[[FORUM_THREADS_LASTPOST_DATE]]<br />
             [[FORUM_THREADS_LASTPOST_AUTHOR]]</td>
             <td align="center">[[FORUM_THREADS_REPLIES]]</td>
             <td align="center">[[FORUM_THREADS_HITS]]</td>
-            <td align="center" style="vertical-align: middle;">                            <!-- BEGIN deleteThread -->                              <a onclick="deleteThread('[[FORUM_FORUM_ID]]', '[[FORUM_THREADS_ID]]'); return false;" href="?section=forum&amp;cmd=board&amp;id=[[FORUM_FORUM_ID]]&amp;act=delete&amp;threadid=[[FORUM_THREADS_ID]]">                                  <img style="border: medium none ; vertical-align: middle;" src="images/modules/forum/delete.gif" title="Thema löschen" alt="Thema löschen" />                              </a>                            <!-- END deleteThread -->                         </td>
+            <td align="center" style="vertical-align: middle;">                            <!-- BEGIN deleteThread -->                              <a onclick="deleteThread('[[FORUM_FORUM_ID]]', '[[FORUM_THREADS_ID]]'); return false;" href="index.php?section=forum&amp;cmd=board&amp;id=[[FORUM_FORUM_ID]]&amp;act=delete&amp;threadid=[[FORUM_THREADS_ID]]">                                  <img style="border: medium none ; vertical-align: middle;" src="images/modules/forum/delete.gif" title="Thema löschen" alt="Thema löschen" />                              </a>                            <!-- END deleteThread -->                         </td>
         </tr>
         <!-- END forumThreads --> 		<!-- BEGIN forumNoThreads -->
         <tr class="row_0">

@@ -428,11 +428,11 @@ class ForumLibrary {
 
         $objFWUser = FWUser::getFWUserObject();
         if(!$objFWUser->objUser->login()){
-            $strForumCommunityLinks = ' <a href="?section=login&amp;redirect='.((isset($_SERVER['REQUEST_URI'])) ? base64_encode($_SERVER['REQUEST_URI'])  : '?section=forum' ).'"> '.$_ARRAYLANG['TXT_FORUM_LOGIN'].'</a> |
-                                        <a href="?section=access&amp;cmd=signup">'.$_ARRAYLANG['TXT_FORUM_REGISTER'].'</a>';
+            $strForumCommunityLinks = ' <a href="index.php?section=login&amp;redirect='.((isset($_SERVER['REQUEST_URI'])) ? base64_encode($_SERVER['REQUEST_URI'])  : '?section=forum' ).'"> '.$_ARRAYLANG['TXT_FORUM_LOGIN'].'</a> |
+                                        <a href="index.php?section=access&amp;cmd=signup">'.$_ARRAYLANG['TXT_FORUM_REGISTER'].'</a>';
         }else{
-            $strForumCommunityLinks = '<a href="?section=forum&amp;cmd=notification">'.$_ARRAYLANG['TXT_FORUM_NOTIFICATION'].'</a> | <a href="?section=access&amp;cmd=settings">'.$_ARRAYLANG['TXT_FORUM_PROFILE'].'</a>
-                                    | <a href="?section=logout&amp;redirect='.((isset($_SERVER['REQUEST_URI'])) ? urlencode($_SERVER['REQUEST_URI'])  : '?section=forum' ).'"> '.$_ARRAYLANG['TXT_FORUM_LOGOUT'].'</a>';
+            $strForumCommunityLinks = '<a href="index.php?section=forum&amp;cmd=notification">'.$_ARRAYLANG['TXT_FORUM_NOTIFICATION'].'</a> | <a href="index.php?section=access&amp;cmd=settings">'.$_ARRAYLANG['TXT_FORUM_PROFILE'].'</a>
+                                    | <a href="index.php?section=logout&amp;redirect='.((isset($_SERVER['REQUEST_URI'])) ? urlencode($_SERVER['REQUEST_URI'])  : '?section=forum' ).'"> '.$_ARRAYLANG['TXT_FORUM_LOGOUT'].'</a>';
         }
         $this->_objTpl->setVariable('FORUM_COMMUNITY_LINKS', $strForumCommunityLinks);
     }
@@ -1198,14 +1198,14 @@ class ForumLibrary {
         while($pId > 0){
             $intForumId = $pId;
             if(in_array($intForumId, $parents)){
-                $strNavTree = '<a href="?section=forum&amp;cmd=cat&amp;id='.$intForumId.'">'.$this->_shortenString($arrForums[$intForumId]['name'], $this->_maxStringLenght)."</a> > \n".$strNavTree;
+                $strNavTree = '<a href="index.php?section=forum&amp;cmd=cat&amp;id='.$intForumId.'">'.$this->_shortenString($arrForums[$intForumId]['name'], $this->_maxStringLenght)."</a> > \n".$strNavTree;
             }else{
-                $strNavTree = '<a href="?section=forum&amp;cmd=board&amp;id='.$intForumId.'">'.$this->_shortenString($arrForums[$intForumId]['name'], $this->_maxStringLenght)."</a> > \n".$strNavTree;
+                $strNavTree = '<a href="index.php?section=forum&amp;cmd=board&amp;id='.$intForumId.'">'.$this->_shortenString($arrForums[$intForumId]['name'], $this->_maxStringLenght)."</a> > \n".$strNavTree;
             }
             $pId = $arrForums[$pId]['parent_id'];
         }
 
-        $strNavTree = '<a href="?section=forum"> '.$_ARRAYLANG['TXT_FORUM_OVERVIEW_FORUM'].' </a> >'."\n".$strNavTree;
+        $strNavTree = '<a href="index.php?section=forum"> '.$_ARRAYLANG['TXT_FORUM_OVERVIEW_FORUM'].' </a> >'."\n".$strNavTree;
         return $strNavTree;
     }
 
@@ -1371,8 +1371,8 @@ class ForumLibrary {
         foreach ($arrLatestEntries as $entry) {
             $strUserProfileLink = ($entry['user_id'] > 0) ? '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=access&amp;cmd=user&amp;id='.$entry['user_id'].'" title="'.$entry['username'].'">'.$entry['username'].'</a>' : $entry['username'] ;
             $this->_objTpl->setVariable(array(
-                'FORUM_THREAD'              =>  '<a href="?section=forum&amp;cmd=thread&amp;postid='.$entry['post_id'].'&amp;l=1&amp;id='.$entry['thread_id'].'#p'.$entry['post_id'].'" title="'.$entry['subject'].'">'.$this->_shortenString($entry['subject'], $this->_maxStringLenght).'</a>',
-                'FORUM_FORUM_NAME'          =>  '<a href="?section=forum&amp;cmd=board&amp;id='.$entry['cat_id'].'" title="'.$entry['category_name'].'">'.$this->_shortenString($entry['category_name'], $this->_maxStringLenght/2).'</a>',
+                'FORUM_THREAD'              =>  '<a href="index.php?section=forum&amp;cmd=thread&amp;postid='.$entry['post_id'].'&amp;l=1&amp;id='.$entry['thread_id'].'#p'.$entry['post_id'].'" title="'.$entry['subject'].'">'.$this->_shortenString($entry['subject'], $this->_maxStringLenght).'</a>',
+                'FORUM_FORUM_NAME'          =>  '<a href="index.php?section=forum&amp;cmd=board&amp;id='.$entry['cat_id'].'" title="'.$entry['category_name'].'">'.$this->_shortenString($entry['category_name'], $this->_maxStringLenght/2).'</a>',
                 'FORUM_THREAD_STARTER'      =>  $strUserProfileLink,
                 'FORUM_POST_COUNT'          =>  $entry['postcount'],
                 'FORUM_THREAD_CREATE_DATE'  =>  $entry['time'],

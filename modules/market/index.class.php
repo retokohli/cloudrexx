@@ -764,8 +764,8 @@ class Market extends marketLibrary
             $this->_objTpl->setVariable(array(
                 'MARKET_TITLE'                    => $this->entries[$id]['title'],
                 'MARKET_ID'                        => $id,
-                'MARKET_EDIT'                    => '<a href="?section=market&amp;cmd=edit&amp;id='.$id.'">'.$_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'].'</a>',
-                'MARKET_DEL'                    => '<a href="?section=market&amp;cmd=del&amp;id='.$id.'">'.$_ARRAYLANG['TXT_MARKET_DELETE_ADVERTISEMENT'].'</a>',
+                'MARKET_EDIT'                    => '<a href="index.php?section=market&amp;cmd=edit&amp;id='.$id.'">'.$_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'].'</a>',
+                'MARKET_DEL'                    => '<a href="index.php?section=market&amp;cmd=del&amp;id='.$id.'">'.$_ARRAYLANG['TXT_MARKET_DELETE_ADVERTISEMENT'].'</a>',
                 'MARKET_TYPE'                    => $type,
                 'MARKET_USER_DETAILS'             => $userDetails,
                 'TXT_MARKET_USER_DETAILS'         => $TXTuserDetails,
