@@ -83,4 +83,5 @@ $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'] = "Registro";
 $_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'] = "Cancelar";
 $_ARRAYLANG['TXT_CALENDAR_CHECK_REQUIRED'] = "\¡Por favor, rellene todos los campos requeridos!";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_LINK'] = "Registro";
+$_ARRAYLANG['TXT_CALENDAR_REG_NO_ESCORT'] = "no escort";
 ?>
