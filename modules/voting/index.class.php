@@ -129,7 +129,7 @@ function votingShowCurrent($page_content){
 
 			if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
 			$objTpl->setVariable(array(
-				'VOTING_OLDER_TEXT'		=> '<a href="?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
+				'VOTING_OLDER_TEXT'		=> '<a href="index.php?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
 				'VOTING_OLDER_DATE'		=> showFormattedDate($votingDate),
 				'VOTING_VOTING_ID'		=> $votingid,
 				'VOTING_LIST_CLASS'		=> $class,
@@ -260,7 +260,7 @@ function votingShowCurrent($page_content){
 
 			if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
 			$objTpl->setVariable(array(
-				'VOTING_OLDER_TEXT'		=> '<a href="?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
+				'VOTING_OLDER_TEXT'		=> '<a href="index.php?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
 				'VOTING_OLDER_DATE'		=> showFormattedDate($votingDate),
 				'VOTING_VOTING_ID'		=> $votingid,
 				'VOTING_LIST_CLASS'		=> $class,

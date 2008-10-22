@@ -497,7 +497,7 @@ class Forum extends ForumLibrary {
             }
             $intCounter = 0;
             foreach ($arrThreads as $threadId => $arrValues) {
-                $strUserProfileLink = ($arrValues['user_id'] > 0) ? '<a href="?section=access&amp;cmd=user&amp;id='.$arrValues['user_id'].'">'.$arrValues['user_name'].'</a>': $this->_anonymousName;
+                $strUserProfileLink = ($arrValues['user_id'] > 0) ? '<a href="index.php?section=access&amp;cmd=user&amp;id='.$arrValues['user_id'].'">'.$arrValues['user_name'].'</a>': $this->_anonymousName;
                 $this->_objTpl->setVariable(array(
                     'FORUM_THREADS_ROWCLASS'        =>    ($intCounter++ % 2) + 1,
                     'FORUM_THREADS_SYMBOL'            =>    '<img title="comment.gif" alt="comment.gif" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/forum/comment.gif" border="0" />',
@@ -739,7 +739,7 @@ class Forum extends ForumLibrary {
             'FORUM_SCROLLPOS'                       =>    !empty($_REQUEST['scrollpos']) ? intval($_REQUEST['scrollpos']) : '0',
             'FORUM_JAVASCRIPT_INSERT_TEXT'          =>    $this->getJavascript('insertText',  array($intCatId, $intThreadId, $firstPost)),
             'FORUM_NAME'                            =>    $this->_shortenString($firstPost['subject'], $this->_maxStringLenght),
-            'FORUM_TREE'                            =>    $this->_createNavTree($intCatId).'<a title="'.$this->_arrTranslations[$intCatId][$this->_intLangId]['name'].'" href="?section=forum&amp;cmd=board&amp;id='.$intCatId.'">'.$this->_shortenString($this->_arrTranslations[$intCatId][$this->_intLangId]['name'], $this->_maxStringLenght).'</a> > ' ,
+            'FORUM_TREE'                            =>    $this->_createNavTree($intCatId).'<a title="'.$this->_arrTranslations[$intCatId][$this->_intLangId]['name'].'" href="index.php?section=forum&amp;cmd=board&amp;id='.$intCatId.'">'.$this->_shortenString($this->_arrTranslations[$intCatId][$this->_intLangId]['name'], $this->_maxStringLenght).'</a> > ' ,
             'FORUM_DROPDOWN'                        =>    $this->createForumDD('forum_quickaccess', $intCatId, 'onchange="gotoForum(this);"', ''),
             'TXT_FORUM_COMMA_SEPARATED_KEYWORDS'    =>    $_ARRAYLANG['TXT_FORUM_COMMA_SEPARATED_KEYWORDS'],
             'TXT_FORUM_KEYWORDS'                    =>    $_ARRAYLANG['TXT_FORUM_KEYWORDS'],
@@ -801,7 +801,7 @@ class Forum extends ForumLibrary {
                 $class = 'neg';
             }
             $strRating = sprintf($strRating, $class, $arrValues['rating']);
-            $strUserProfileLink = ($arrValues['user_id'] > 0) ? '<a title="'.$arrValues['user_name'].'" href="?section=access&amp;cmd=user&amp;id='.$arrValues['user_id'].'">'.$arrValues['user_name'].'</a>' : $this->_anonymousName;
+            $strUserProfileLink = ($arrValues['user_id'] > 0) ? '<a title="'.$arrValues['user_name'].'" href="index.php?section=access&amp;cmd=user&amp;id='.$arrValues['user_id'].'">'.$arrValues['user_name'].'</a>' : $this->_anonymousName;
 
             $arrAttachment = $this->_getAttachment($arrValues['attachment']);
             $this->_objTpl->setGlobalVariable(array(
@@ -1653,11 +1653,11 @@ class Forum extends ForumLibrary {
                             //<![CDATA[
                                 function gotoForum(objSelect){
                                     id = objSelect.options[objSelect.selectedIndex].value;
-                                    if(id==0){return top.location.href="?section=forum";}
+                                    if(id==0){return top.location.href="index.php?section=forum";}
                                     if(id.indexOf("_cat") > -1){
-                                        return top.location.href="?section=forum&cmd=cat&id="+parseInt(id);
+                                        return top.location.href="index.php?section=forum&cmd=cat&id="+parseInt(id);
                                     }else{
-                                        return top.location.href="?section=forum&cmd=board&id="+id;
+                                        return top.location.href="index.php?section=forum&cmd=board&id="+id;
                                     }
                                 }
                             //]]>

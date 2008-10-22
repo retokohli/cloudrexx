@@ -711,7 +711,7 @@ class DataLibrary
 			$arrCategoryNames = $this->createCategoryArray();
 
 			foreach ($arrCategories as $intCategoryId => $intDummyValue) {
-				$strCategoryString .= ($boolLinked) ? '<a href="?section=data&amp;cmd=search&amp;category='.$intCategoryId.'" title="'.$arrCategoryNames[$intCategoryId][$this->_intLanguageId]['name'].'">' : '';
+				$strCategoryString .= ($boolLinked) ? '<a href="index.php?section=data&amp;cmd=search&amp;category='.$intCategoryId.'" title="'.$arrCategoryNames[$intCategoryId][$this->_intLanguageId]['name'].'">' : '';
 				$strCategoryString .= $arrCategoryNames[$intCategoryId][$this->_intLanguageId]['name'];
 				$strCategoryString .= ($boolLinked) ? '</a>,&nbsp;' : ',&nbsp;';
 			}
@@ -842,7 +842,7 @@ class DataLibrary
 					$strCssClass = 'dataTagCloudSmallest';
 				}
 
-				$strReturn .= '<li class="'.$strCssClass.'"><a href="?section=data&amp;cmd=search&amp;term='.$strTag.'" title="'.$strTag.'">'.$strTag.'</a></li>';
+				$strReturn .= '<li class="'.$strCssClass.'"><a href="index.php?section=data&amp;cmd=search&amp;term='.$strTag.'" title="'.$strTag.'">'.$strTag.'</a></li>';
 			}
 
 			$strReturn .= '</ul>';
@@ -871,7 +871,7 @@ class DataLibrary
 
 			$intTagCounter = 0;
 			foreach ($arrKeywords as $strTag => $intKeywordValue) {
-				$strReturn .= '<li class="dataTagHitlistItem"><a href="?section=data&amp;cmd=search&amp;term='.$strTag.'" title="'.$strTag.'">'.$strTag.'</a></li>';
+				$strReturn .= '<li class="dataTagHitlistItem"><a href="index.php?section=data&amp;cmd=search&amp;term='.$strTag.'" title="'.$strTag.'">'.$strTag.'</a></li>';
 				++$intTagCounter;
 
 				if ($intTagCounter == $intNumberOfTags) {
@@ -939,16 +939,16 @@ class DataLibrary
 	 * This function replaces all tags with links to the search-module.
 	 *
 	 * @param	string		$strUnlinkedTags: The input String looks something like this: "Keyword 1, Keyword 2, Keyword 3".
-	 * @return	string		The Keywords are replaced with linked tags, for example: "<a href="?section=data&amp;cmd=search&term=Keyword 1">Keyword1</a>, ..."
+	 * @return	string		The Keywords are replaced with linked tags, for example: "<a href="index.php?section=data&amp;cmd=search&term=Keyword 1">Keyword1</a>, ..."
 	 */
 	function getLinkedTags($strUnlinkedTags) {
 
 		$arrPatterns 	= array('/^(([a-z0-9]+\s?)*)$/i',
 								'/(([a-z0-9]+\s?)*),/iU',
 								'/,(\s?)(([a-z0-9]+\s?)*)$/iU');
-		$arrReplace 	= array('<a href="?section=data&amp;cmd=search&amp;term=\1" title="\1">\1</a>',
-								'<a href="?section=data&amp;cmd=search&amp;term=\1" title="\1">\1</a>,',
-								',\1<a href="?section=data&amp;cmd=search&amp;term=\2" title="\2">\2</a>');
+		$arrReplace 	= array('<a href="index.php?section=data&amp;cmd=search&amp;term=\1" title="\1">\1</a>',
+								'<a href="index.php?section=data&amp;cmd=search&amp;term=\1" title="\1">\1</a>,',
+								',\1<a href="index.php?section=data&amp;cmd=search&amp;term=\2" title="\2">\2</a>');
 
 		return preg_replace($arrPatterns,$arrReplace,$strUnlinkedTags);
 
