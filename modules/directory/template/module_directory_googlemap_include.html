@@ -57,8 +57,6 @@ reasons[G_GEO_TOO_MANY_QUERIES]   = "{TXT_DIR_GEO_TOO_MANY_QUERIES}";
 reasons[G_GEO_SERVER_ERROR]       = "{TXT_DIR_GEO_SERVER_ERROR}";
 
 
-
-
 var startX      = {DIRECTORY_START_X};
 var startY      = {DIRECTORY_START_Y};
 var startZoom   = {DIRECTORY_START_ZOOM};
@@ -123,12 +121,12 @@ var load = function() {
     	map.addOverlay(new GMarker(point));
 
     	GEvent.addListener(map, "moveend", function() {
-			point = map.getCenter();
-			passValues();
-			map.clearOverlays();
-			marker = new GMarker(point);
-			map.addOverlay(marker);
 			if(isBackend){
+    			point = map.getCenter();
+    			passValues();
+    			map.clearOverlays();
+    			marker = new GMarker(point);
+	       		map.addOverlay(marker);
 				document.getElementById("loclayer").innerHTML = getStatusString(point.x.toString(), point.y.toString())
 			}
     	});
@@ -182,7 +180,7 @@ var getGeoCodeData = function(data){
 	}catch(e){}
 }
 
-window.onload = load;
+addEvent(window, 'load', load);
 
 
 //]]>

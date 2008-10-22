@@ -842,7 +842,6 @@ $this->arrRows[2] = '';
                 'DIRECTORY_MAP_LAT_BACKEND'  => $this->googleMapStartPoint['lat'],
                 'DIRECTORY_MAP_ZOOM_BACKEND' => $this->googleMapStartPoint['zoom'],
                 'IS_BACKEND'                 => 'false',
-                'DIRECTORY_COUNTRY_OPTIONS'  => directoryLibrary::getCountryMenuOptions($country),
             ));
             if ($this->_objTpl->blockExists('direcoryGoogleMapJavascript')) {
                 $this->_objTpl->parse('direcoryGoogleMapJavascript');
