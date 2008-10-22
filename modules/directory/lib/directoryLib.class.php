@@ -596,7 +596,7 @@ class directoryLibrary
         $oldFile        = $this->mediaPath.$filePath.$fileName;
         $newFile        = $this->mediaPath."thumbs/".$fileName;
         $arrSettings     = $this->getSettings();
-        $arrInfo        = getimagesize($oldFile); //ermittelt die Größe des Bildes
+        $arrInfo        = getimagesize($oldFile); //ermittelt die GrÃ¶ÃŸe des Bildes
         $setSize        = $arrSettings['thumbSize']['value'];
         $strType        = $arrInfo[2]; //type des Bildes
 
@@ -907,7 +907,7 @@ class directoryLibrary
                 }
             }
 
-            $query .= "rss_file='".$rss_file."', date='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', status='".intval($entryStatus)."', provider='".gethostbyaddr($_SERVER['REMOTE_ADDR'])."', ip='".$_SERVER['REMOTE_ADDR']."',  validatedate='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', xml_refresh='".mktime("now")."', longitude='".intval($_REQUEST['inputValue']['lon']).'.'.intval($_POST['inputValue']['lon_fraction'])."', latitude='".intval($_REQUEST['inputValue']['lat']).'.'.intval($_REQUEST['inputValue']['lat_fraction'])."', zoom='".intval($_REQUEST['inputValue']['zoom'])."'";
+            $query .= "rss_file='".$rss_file."', date='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', status='".intval($entryStatus)."', provider='".gethostbyaddr($_SERVER['REMOTE_ADDR'])."', ip='".$_SERVER['REMOTE_ADDR']."',  validatedate='".mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"))."', xml_refresh='".mktime("now")."', longitude='".intval($_REQUEST['inputValue']['lon']).'.'.contrexx_addslashes($_POST['inputValue']['lon_fraction'])."', latitude='".intval($_REQUEST['inputValue']['lat']).'.'.contrexx_addslashes($_REQUEST['inputValue']['lat_fraction'])."', zoom='".intval($_REQUEST['inputValue']['zoom'])."'";
 
             //add entry
             $objResult = $objDatabase->query($query);
@@ -1146,7 +1146,7 @@ class directoryLibrary
         foreach($this->getCountry as $countryName){
             $checked = "";
             if ($countryName == $countryVal) {
-                $checked = "selected";
+                $checked = "selected=\"selected\"";
             }
             $country .= "<option value='".$countryName."' $checked>".$countryName."</option>";
         }
