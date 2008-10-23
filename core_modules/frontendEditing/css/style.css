@@ -4,20 +4,20 @@ html, body {
 
 /* LOADER --------------------------------------------- */
 #fe_Loader {
-	 position: absolute; 
-	 width: 32px; 
-	 height: 32px; 
-	 top: 50%; 
-	 left: 50%; 
-	 margin-top: -21px; 
+	 position: absolute;
+	 width: 32px;
+	 height: 32px;
+	 top: 50%;
+	 left: 50%;
+	 margin-top: -21px;
 	 margin-left: -21px;
 	 padding: 5px 5px 5px 5px;
 	 z-index: 1000;
-	 border: 1px solid #999999; 
+	 border: 1px solid #999999;
 	 background-color: #ffffff;
 	 background-image: url('../images/loading.gif');
 	 background-position: center center;
-	 background-repeat: no-repeat;	 
+	 background-repeat: no-repeat;
 }
 
 /* BACKGROUND ----------------------------------------- */
@@ -27,8 +27,6 @@ html, body {
 	width: 100%;
 	height: 100%;
 	background-color: #000000;
-	alpha(opacity=50);
-	-moz-opacity:0.5; 
 	opacity: 0.5;
 	z-index: 400;
 }
@@ -36,9 +34,9 @@ html, body {
 /* TOOLBAR -------------------------------------------- */
 #fe_Toolbar {
 	display: block;
-	width: 100%; 
-	height: 40px; 
-	border-bottom: 1px solid #4978ae; 
+	width: 100%;
+	height: 40px;
+	border-bottom: 1px solid #4978ae;
 	font-size: 13px;
 	color: #ffffff;
 	background-color: #82b1ec;
@@ -49,51 +47,51 @@ html, body {
 }
 
 #fe_Toolbar .fe_ToolbarIconsLeft {
-	float: left; 
-	padding: 6px 2px 2px 2px; 
-	margin: 0px 0px 0px 0px; 
+	float: left;
+	padding: 6px 2px 2px 2px;
+	margin: 0px 0px 0px 0px;
 }
 
 #fe_Toolbar .fe_ToolbarText {
-	float: left; 
+	float: left;
 	font-weight: bold;
-	padding: 12px 3px 3px 3px; 
-	margin: 0px 0px 0px 0px; 
+	padding: 12px 3px 3px 3px;
+	margin: 0px 0px 0px 0px;
 }
 
 #fe_Toolbar .fe_ToolbarIconsRight {
-	float: right; 
-	padding: 2px 2px 2px 2px; 
-	margin: 0px 0px 0px 0px; 
+	float: right;
+	padding: 2px 2px 2px 2px;
+	margin: 0px 0px 0px 0px;
 }
 
 #fe_editIcon {
-	border: 0px; 
-	margin: 0px 0px 0px 0px; 
+	border: 0px;
+	margin: 0px 0px 0px 0px;
 	padding: 6px 0px 0px 0px;
 }
 
 #fe_saveIcon {
-	border: 0px; 
-	margin: 0px 0px 0px 0px; 
+	border: 0px;
+	margin: 0px 0px 0px 0px;
 	padding: 0px 0px 0px 0px;
 }
 
 #fe_adminIcon {
-	border: 0px; 
-	margin: 0px 0px 0px 0px; 
+	border: 0px;
+	margin: 0px 0px 0px 0px;
 	padding: 0px 0px 0px 0px;
 }
 
 #fe_closeIcon {
-	border: 0px; 
-	margin: 0px 0px 0px 0px; 
+	border: 0px;
+	margin: 0px 0px 0px 0px;
 	padding: 0px 0px 0px 0px;
 }
 
 #fe_logoutIcon {
-	border: 0px; 
-	margin: 0px 0px 0px 0px; 
+	border: 0px;
+	margin: 0px 0px 0px 0px;
 	padding: 0px 5px 0px 0px;
 }
 
@@ -106,8 +104,8 @@ html, body {
 	color: #ffffff;
 }
 
-#fe_BoxTitle a, 
-#fe_BoxTitle a:visited, 
+#fe_BoxTitle a,
+#fe_BoxTitle a:visited,
 #fe_BoxTitle a:active {
 	text-decoration: none;
 	color: #ffffff;
@@ -134,21 +132,21 @@ html, body {
 	width: 0px;
 	width: 100%;
 	height: 100%;
-	z-index: 500; 
+	z-index: 500;
 }
 
 #fe_LoginBoxFrame {
-	position: absolute; 
-	top: 50%; 
-	left: 50%; 
+	position: absolute;
+	top: 50%;
+	left: 50%;
 	width: 280px;
 	height: 368px;
 	padding: 10px;
-	margin-top: -194px; 
-	margin-left: -151px; 
+	margin-top: -194px;
+	margin-left: -151px;
 	font-size: 13px;
 	text-align: center;
-	border: 1px solid #c3dff9; 
+	border: 1px solid #c3dff9;
 	background-color: #82b1ec;
 	background-image: url('../images/login_bg.gif');
 	background-repeat: repeat-x;
@@ -157,26 +155,26 @@ html, body {
 
 #fe_LoginBoxContent {
 	padding: 10px;
-	border: 1px solid #4978ae; 
+	border: 1px solid #4978ae;
 	background-color: #ffffff;
 }
 
 #fe_LoginBoxContent .fe_LoginSpacer {
-	padding: 4px 2px 4px 2px; 
+	padding: 4px 2px 4px 2px;
 	margin: 0px 0px 5px 0px;
 }
 
 #fe_LoginBoxContent .fe_LoginError {
-	background-color: #faa4a4; 
-	border: 1px solid #ab0101; 
-	color: #ab0101; 
-	padding: 4px 2px 4px 2px; 
+	background-color: #faa4a4;
+	border: 1px solid #ab0101;
+	color: #ab0101;
+	padding: 4px 2px 4px 2px;
 	margin: 0px 0px 5px 0px;
 }
 
 #fe_LoginBoxContent .fe_LoginLostPassword {
 	font-size: 0.8em;
-	padding: 0px; 
+	padding: 0px;
 	margin: 15px 0px 0px 0px;
 }
 
@@ -246,20 +244,20 @@ html, body {
 	width: 0px;
 	width: 100%;
 	height: 100%;
-	z-index: 500; 
+	z-index: 500;
 }
 
 #fe_SelectionBoxFrame {
-	position: absolute; 
-	top: 50%; 
-	left: 50%; 
+	position: absolute;
+	top: 50%;
+	left: 50%;
 	width: 400px;
 	height: 194px;
 	padding: 10px;
-	margin-top: -107px; 
-	margin-left: -211px; 
+	margin-top: -107px;
+	margin-left: -211px;
 	text-align: center;
-	border: 1px solid #c3dff9; 
+	border: 1px solid #c3dff9;
 	background-color: #82b1ec;
 	background-image: url('../images/login_bg.gif');
 	background-repeat: repeat-x;
@@ -269,7 +267,7 @@ html, body {
 #fe_SelectionBoxContent {
 	height: 146px;
 	padding: 10px;
-	border: 1px solid #4978ae; 
+	border: 1px solid #4978ae;
 	background-color: #ffffff;
 	font-size: 13px;
 }
@@ -279,12 +277,12 @@ html, body {
 }
 
 #fe_SelectionBoxContent .left {
-	width: 180px; 
+	width: 180px;
 	float: left;
 }
 
 #fe_SelectionBoxContent .right {
-	width: 180px; 
+	width: 180px;
 	float: right;
 }
 
@@ -295,21 +293,21 @@ html, body {
 	top: 0px;
 	width: 100%;
 	height: 100%;
-	z-index: 500; 
+	z-index: 500;
 }
 
 #fe_EditorBoxFrame {
-	position: absolute; 
-	top: 50%; 
-	left: 50%; 
+	position: absolute;
+	top: 50%;
+	left: 50%;
 	width: 800px;
 	height: 560px;
 	padding: 10px;
-	margin-left: -420px; 
+	margin-left: -420px;
 	margin-top: -290px;
 	font-size: 13px;
 	text-align: center;
-	border: 1px solid #c3dff9; 
+	border: 1px solid #c3dff9;
 	background-color: #82b1ec;
 	background-image: url('../images/login_bg.gif');
 	background-repeat: repeat-x;
@@ -318,7 +316,7 @@ html, body {
 
 #fe_EditorBoxContent {
 	padding: 10px;
-	border: 1px solid #4978ae; 
+	border: 1px solid #4978ae;
 	background-color: #ffffff;
 }
 
@@ -369,11 +367,9 @@ html, body {
 	width: 100%;
 	height: 100%;
 	background-color: #ff6666;
-	alpha(opacity=90); 
-	-moz-opacity:0.90; 
 	opacity: 0.90;
-	z-index: 500; 
+	z-index: 500;
 	background-image: url('../images/disallowed.gif');
 	background-position: center center;
-	background-repeat: no-repeat;	
+	background-repeat: no-repeat;
 }
