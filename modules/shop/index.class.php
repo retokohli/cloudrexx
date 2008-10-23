@@ -1265,8 +1265,10 @@ class Shop extends ShopLibrary
             }
             $i = 1;
             foreach ($arrProductImages as $arrProductImage) {
+            	$arrSizes = getimagesize(ASCMS_PATH.$arrProductImage['THUMBNAIL']);
                 $this->objTemplate->setVariable(array(
                     'SHOP_PRODUCT_THUMBNAIL_'.$i => $arrProductImage['THUMBNAIL'],
+                    'SHOP_PRODUCT_THUMBNAIL_SIZES_'.$i => $arrSizes[3],
                 ));
                 if (!empty($arrProductImage['THUMBNAIL_LINK'])) {
                     $this->objTemplate->setVariable(array(
