@@ -139,7 +139,7 @@ $moduleIndex = (empty($arrMatch[2]) ? '' : $arrMatch[2]);
 /**
  * @ignore
  */
-define('MODULE_INDEX', $moduleIndex);
+define('MODULE_INDEX', intval($moduleIndex));
 // Simple way to distinguish any number of cloned modules
 // and apply individual access rights.  This offset is added
 // to any static access ID before checking it.
@@ -689,7 +689,7 @@ switch ($plainCmd) {
         $objEcard = new ecard();
         $objEcard->getPage();
         break;
-     
+
     //-------------------------------------------------------
     // voting
     //-------------------------------------------------------
