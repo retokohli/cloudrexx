@@ -58,16 +58,11 @@ class calendarLibrary
     function __construct($url)
     {
         global $_CONFIG;
-
         $this->calStartYear = 2004;
         $this->calEndYear   = 2037;
         $this->paging       = intval($_CONFIG['corePagingLimit']);
         $this->mandate = CALENDAR_MANDATE;
-        if ($this->mandate == 1) {
-            $this->mandateLink = "";
-        } else {
-            $this->mandateLink = $this->mandate;
-        }
+        $this->mandateLink = ($this->mandate === 1) ? $this->mandate : '';
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/calendar'.$this->mandateLink.'/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -75,7 +70,6 @@ class calendarLibrary
 
         $this->url = $url.$this->mandateLink;
     }
-
 
 
     /**
@@ -1488,7 +1482,7 @@ class calendarLibrary
         global $_CONFIG, $objDatabase, $_ARRAYLANG, $objLanguage;
 
         $objFWUser = FWUser::getFWUserObject();
-        
+
         //get mail template
         $query          = "SELECT mailTitle, mailContent
                              FROM ".DBPREFIX."module_calendar".$this->mandateLink."
@@ -1521,7 +1515,7 @@ class calendarLibrary
         $GoupsNote      = substr($objResultNote->fields['groups'],0,-1);
 
         $arrGoupsNote   = explode(";",$GoupsNote);
-        
+
         $arrFilter = array(
             'active' => 1,
             array(
@@ -1533,7 +1527,7 @@ class calendarLibrary
         if ($objResultNote->fields['all_groups'] != 1) {
             $arrFilter['group_id'] = $arrGoupsNote;
         }
-        
+
         if ($objUser = $objFWUser->objUser->getUsers($arrFilter, null, null, array('id', 'email', 'firstname', 'lastname'))) {
             while (!$objUser->EOF) {
                 $arrUsers[$objUser->getId()]['email']       = $objUser->getEmail();

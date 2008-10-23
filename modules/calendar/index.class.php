@@ -9,7 +9,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-//error_reporting(E_ALL);
 /**
  * Includes
  *
@@ -41,17 +40,6 @@ class Calendar extends calendarLibrary
      * @see  xml_parser_create()
      */
 
-
-    /**
-    * PHP5 Constructor
-    *
-    */
-    function Calendar($pageContent)
-    {
-        $this->__construct($pageContent);
-    }
-
-
     /**
      * Constructor
      *
@@ -63,11 +51,9 @@ class Calendar extends calendarLibrary
     function __construct($pageContent)
     {
         global $_ARRAYLANG;
-
-        $this->calendarLibrary($_SERVER['SCRIPT_NAME']."index.php?section=calendar");
+        parent::__construct($_SERVER['SCRIPT_NAME']."index.php?section=calendar");
         $this->pageContent = $pageContent;
     }
-
 
     /**
      * Get Calendar Page
@@ -437,10 +423,8 @@ class Calendar extends calendarLibrary
     function _showThreeBoxes()
     {
         global $_ARRAYLANG, $_LANGID, $objDatabase;
-
         $this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes&act=list";
         $this->monthnavurl = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes";
-
         // http://www.contrexx.com/index.php?section=calendar&month=01&year=2006&catid=1
         $this->_objTpl->setTemplate($this->pageContent);
 
@@ -894,14 +878,14 @@ class Calendar extends calendarLibrary
                     if ($notePublic == 1 || ($noteKeyGet == $noteKey)) {
                         if (!empty($userId)) {
                             //get user details
-                            $objFWUser = FWUser::getFWUserObject();                         
+                            $objFWUser = FWUser::getFWUserObject();
                             if (($objUser = $objFWUser->objUser->getUser($userId)) && $objUser->getActiveStatus()) {
                                 if ($objResult->fields['all_groups']) {
                                     $x=1;
                                 } else {
                                     $arrUserGroups  =  $objUser->getAssociatedGroupIds();
                                     $arrNoteGroups  =  explode(";",$noteGroups);
-    
+
                                     $x=0;
                                     foreach ($arrUserGroups as $arrKey => $groupId){
                                         if (in_array($groupId, $arrNoteGroups)) {
