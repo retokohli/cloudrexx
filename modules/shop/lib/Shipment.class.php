@@ -4,6 +4,7 @@
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
+ * @todo        Make static as much as possible
  */
 
 /**
@@ -15,16 +16,6 @@
  */
 class Shipment
 {
-    /**
-     * Array of all available shipment methods
-     * -- UNUSED
-     * @var array
-     * @access public
-     * @ignore
-     */
-    //var $arrAllShipmentMethods = array();
-
-
     /**
      * Array of active shippers and shipment conditions
      * @var     array
@@ -106,16 +97,21 @@ class Shipment
 
     /**
      * Returns the name of the shipper with the given ID
-     *
-     * @param   integer $shipperId  The shippers' ID
-     * @return  string              The shippers' name
+     * @static
+     * @param   integer   $shipperId  The shipper ID
+     * @return  string                The shipper name
      */
-    function getShipperName($shipperId)
+    static function getShipperName($shipperId)
     {
-        if ($shipperId && isset($this->arrShippers[$shipperId]['name'])) {
-            return $this->arrShippers[$shipperId]['name'];
-        }
-        return '';
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            SELECT name
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipper
+             WHERE id=$shipperId
+        ");
+        if (!$objResult || $objResult->EOF) return false;
+        return $objResult->fields['name'];
     }
 
 
@@ -542,7 +538,7 @@ class Shipment
      *                                    false otherwise
      * @since   1.2.1
      */
-    function getNameById($shipperId)
+    static function getNameById($shipperId)
     {
         global $objDatabase;
 

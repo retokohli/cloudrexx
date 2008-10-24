@@ -3,16 +3,16 @@
 <!--
 function deleteOrder(orderId)
 {
-    if(confirm('{TXT_CONFIRM_DELETE_ORDER}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delorder&orderId="+orderId);
+  if (confirm('{TXT_CONFIRM_DELETE_ORDER}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delorder&orderId="+orderId);
 }
 
-function shopOrdersDoAction(strForm,strCheckbox,objSelect,strAct)
+function shopOrdersDoAction(strForm, strCheckbox, objSelect, strAct)
 {
-  if(checkboxIsChecked(strForm,strCheckbox) == true){
-    switch(strAct){
+  if (checkboxIsChecked(strForm, strCheckbox) == true) {
+    switch (strAct) {
       case 'del':
-        if(confirm('{TXT_CONFIRM_DELETE_ORDER}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
+        if (confirm('{TXT_CONFIRM_DELETE_ORDER}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
           document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=delorder";
           document.forms[strForm].submit();
         }
@@ -26,19 +26,19 @@ function shopOrdersDoAction(strForm,strCheckbox,objSelect,strAct)
 
 function sendForm(letter)
 {
-    document.formSearchOrders.shopListLetter.value = letter;
-    document.formSearchOrders.submit();
+  document.formSearchOrders.shopListLetter.value = letter;
+  document.formSearchOrders.submit();
 }
 
-function changeOrderStatus(orderId,orderStatus,newOrderStatus)
+function changeOrderStatus(orderId, orderStatus, newOrderStatus)
 {
-  if(confirm('{TXT_CONFIRM_CHANGE_STATUS}')){
-    strURI = "index.php?cmd=shop{MODULE_INDEX}&act=orders&orderId="+orderId+"&changeOrderStatus="+newOrderStatus;
+  if (confirm('{TXT_CONFIRM_CHANGE_STATUS}')) {
+    var strURI = "index.php?cmd=shop{MODULE_INDEX}&act=orders&orderId="+orderId+"&changeOrderStatus="+newOrderStatus;
     if (   newOrderStatus == 1
         || newOrderStatus == 4
         || newOrderStatus == 5
         || newOrderStatus == 6) {
-      if(confirm('{TXT_SEND_TEMPLATE_TO_CUSTOMER}?')){
+      if (confirm('{TXT_SEND_TEMPLATE_TO_CUSTOMER}?')) {
         strURI += "&shopSendMail=1";
       }
     }

@@ -3,7 +3,7 @@
 /**
  * Shop Product Attributes
  *
- * @version     $Id: 0.0.1 alpha$
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Test!
@@ -17,7 +17,7 @@
  * This class provides frontend and backend helper and display functionality
  * related to the Product Attribute class.
  * See {@link ProductAttribute} for details.
- * @version     $Id: 0.0.1 alpha$
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  * @copyright   CONTREXX CMS - COMVATION AG

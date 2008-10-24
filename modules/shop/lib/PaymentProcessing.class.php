@@ -65,7 +65,7 @@ require_once ASCMS_MODULE_PATH.'/shop/payments/dummy/Dummy.class.php';
  *      page as a reply to such a request.
  * @package     contrexx
  * @subpackage  module_shop
- * @author      Reto Kohli <reto.kohli@comvation.com>
+ * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @copyright   CONTREXX CMS - COMVATION AG
  */
 class PaymentProcessing
@@ -75,42 +75,42 @@ class PaymentProcessing
      * @access  private
      * @var     string
      */
-    var $_currencyCode = NULL;
+    private $_currencyCode = NULL;
 
     /**
      * The active language code (e.g. de, en, fr)
      * @access  private
      * @var     string
      */
-    var $_languageCode = NULL;
+    private $_languageCode = NULL;
 
     /**
      * The Shop configuration Array
      * @access  public
      * @var     array
      */
-    var $arrConfig = array();
+    private $arrConfig = array();
 
     /**
      * Array of all available payment processors
      * @access  public
      * @var     array
      */
-    var $arrPaymentProcessor = array();
+    private $arrPaymentProcessor = array();
 
     /**
      * The selected processor ID
      * @access  private
      * @var     integer
      */
-    var $_processorId = NULL;
+    private $_processorId = NULL;
 
     /**
      * Payment logo folder (e.g. /modules/shop/images/payments/)
      * @access  private
      * @var     string
      */
-    var $_imagePath;
+    private $_imagePath;
 
 
     /**
@@ -287,7 +287,6 @@ class PaymentProcessing
     function checkOut()
     {
         $return = '';
-//echo("PP name ".$this->getPaymentProcessorName()."<br />");
         switch ($this->getPaymentProcessorName()) {
             case 'Internal':
                 /* Redirect browser */

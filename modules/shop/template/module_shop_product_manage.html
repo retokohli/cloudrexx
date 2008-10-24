@@ -29,16 +29,16 @@ function setDateToday(txtValue)
   }
 }
 
-function openWindow(theURL,winName,features)
+function openWindow(theURL, winName, features)
 {
-  window.open(theURL,winName,features);
+  window.open(theURL, winName, features);
 }
 
 var openBrowser = function openBrowser(url, id, attrs)
 {
   fieldID = id;
   try {
-    if(!browserPopup.closed) {
+    if (!browserPopup.closed) {
       return browserPopup.focus();
     }
   } catch(e) {}
@@ -50,9 +50,10 @@ var openBrowser = function openBrowser(url, id, attrs)
   return false;
 }
 
-var SetUrl = function(url, width, height, alt) {
+var SetUrl = function(url, width, height, alt)
+{
   notDefined[fieldID] = true;
-  elInput = document.getElementById("hi_"+fieldID);
+  var elInput = document.getElementById("hi_"+fieldID);
   elInput.setAttribute('type', 'hidden');
   elInput.setAttribute('name', 'productImage'+fieldID);
   elInput.setAttribute('id', 'hi_'+fieldID);
@@ -64,14 +65,12 @@ var SetUrl = function(url, width, height, alt) {
     notDefined[fieldID] = false;
   }
   url = url.substring(1);
-  fileRegExp = /.+\/(.+)$/;
+  var fileRegExp = /.+\/(.+)$/;
   fileRegExp.exec(url);
-//if(notDefined[fieldID]){
-    elTxt = document.createTextNode(RegExp.$1);
-//}
-  img = document.getElementById("img"+fieldID);
+  var elTxt = document.createTextNode(RegExp.$1);
+  var img = document.getElementById("img"+fieldID);
   img.src = '/'+url;
-  fact = 1;
+  var fact = 1;
   if (width > height) {
     fact = 80 / width;
   } else {
@@ -92,9 +91,9 @@ var SetUrl = function(url, width, height, alt) {
   elInput_h.setAttribute('value', height);
 
   if (notDefined[fieldID]) {
-    elALink = document.createElement('a');
+    var elALink = document.createElement('a');
   } else {
-    elALink = document.getElementById("lnk_"+fieldID);
+    var elALink = document.getElementById("lnk_"+fieldID);
   }
   elALink.setAttribute('href', url);
   elALink.setAttribute('target', '_blank');
@@ -118,11 +117,11 @@ var SetUrl = function(url, width, height, alt) {
   }
 }
 
-function toggleOptions (checkboxId)
+function toggleOptions(checkboxId)
 {
   if (document.getElementById('productOptions'+checkboxId).checked == true) {
     document.getElementById('subOptionsProductOptions'+checkboxId).style.display = 'block';
-    for(i=0;i<document.getElementById('subOptionsProductOptions'+checkboxId).getElementsByTagName('input').length;i++) {
+    for (var i = 0; i < document.getElementById('subOptionsProductOptions'+checkboxId).getElementsByTagName('input').length; ++i) {
       objInput = document.getElementById('subOptionsProductOptions'+checkboxId).getElementsByTagName('input')[i];
       if (objInput.getAttribute('type') == "checkbox") {
         objInput.checked = true;
@@ -130,7 +129,7 @@ function toggleOptions (checkboxId)
     }
   } else {
     document.getElementById('subOptionsProductOptions'+checkboxId).style.display = 'none';
-    for(i=0;i<document.getElementById('subOptionsProductOptions'+checkboxId).getElementsByTagName('input').length;i++) {
+    for (var i = 0; i < document.getElementById('subOptionsProductOptions'+checkboxId).getElementsByTagName('input').length; ++i) {
       objInput = document.getElementById('subOptionsProductOptions'+checkboxId).getElementsByTagName('input')[i];
       if (objInput.getAttribute('type') == "checkbox") {
         objInput.checked = false;
@@ -157,11 +156,11 @@ function toggleDisplay(elementId) {
 
 function distributionChanged()
 {
-  selectedValue = document.getElementById("shopDistribution").value;
-  display = (document.all ? "block" : "table-row");
+  var selectedValue = document.getElementById("shopDistribution").value;
+  var display = (document.all ? "block" : "table-row");
   if (selectedValue == "delivery") {
     if ({SHOP_WEIGHT_ENABLED})
-      document.getElementById("shopWeightRow").style.display = display;
+    document.getElementById("shopWeightRow").style.display = display;
     document.getElementById("shopAccountRow").style.display = "none";
     document.getElementById("shopValidityRow").style.display = "none";
     document.getElementById("shopGroupsRow").style.display = "none";
@@ -183,7 +182,7 @@ function distributionChanged()
 function accountChanged()
 {
   if (document.getElementById("shopCreateAccountYes").checked) {
-    display = (document.all ? "block" : "table-row");
+    var display = (document.all ? "block" : "table-row");
     document.getElementById("shopValidityRow").style.display = display;
     document.getElementById("shopGroupsRow").style.display = display;
   } else {
@@ -200,12 +199,12 @@ function moveOptions(from, dest, add, remove)
     from.focus();
     return false;
   } else {
-    for (var i=0; i<from.length; ++i) {
+    for (var i = 0; i < from.length; ++i) {
       if (from.options[i].selected) {
         dest.options[dest.length] = new Option(from.options[i].text, from.options[i].value, false, false);
       }
     }
-    for (var i=from.length-1; i>=0; --i) {
+    for (var i = from.length-1; i >= 0; --i) {
       if (from.options[i].selected) {
         from.options[i] = null;
       }
@@ -283,7 +282,8 @@ function disableButtons(from, dest, add, remove) {
           <select name="shopCatMenu">
           {SHOP_CAT_MENU}
           </select>
-          &nbsp; </td>
+          &nbsp;
+        </td>
       </tr>
       <tr valign="top" class="row1">
         <td nowrap="nowrap">{TXT_SHOP_PRODUCT_CUSTOM_ID}</td>
@@ -311,22 +311,22 @@ function disableButtons(from, dest, add, remove) {
           &nbsp;{TXT_ACTIVE}
         </td>
       </tr>
-    <tr class="row1">
-      <td nowrap>{TXT_SHOP_DISCOUNT_GROUP_ARTICLE}</td>
-      <td>
-        <select name="shopDiscountGroupArticle" style="width:220px;">
-          {SHOP_DISCOUNT_GROUP_ARTICLE_MENU_OPTIONS}
-        </select>
-      </td>
-    </tr>
-    <tr class="row2">
-      <td nowrap>{TXT_SHOP_DISCOUNT_GROUP_COUNT}</td>
-      <td>
-        <select name="shopDiscountGroupCount" style="width:220px;">
-          {SHOP_DISCOUNT_GROUP_COUNT_MENU_OPTIONS}
-        </select>
-      </td>
-    </tr>
+      <tr class="row1">
+        <td nowrap>{TXT_SHOP_DISCOUNT_GROUP_ARTICLE}</td>
+        <td>
+          <select name="shopDiscountGroupArticle" style="width:220px;">
+            {SHOP_DISCOUNT_GROUP_ARTICLE_MENU_OPTIONS}
+          </select>
+        </td>
+      </tr>
+      <tr class="row2">
+        <td nowrap>{TXT_SHOP_DISCOUNT_GROUP_COUNT}</td>
+        <td>
+          <select name="shopDiscountGroupCount" style="width:220px;">
+            {SHOP_DISCOUNT_GROUP_COUNT_MENU_OPTIONS}
+          </select>
+        </td>
+      </tr>
       <tr class="row1">
         <td nowrap="nowrap">{TXT_TAX_RATE}</td>
         <td>{SHOP_TAX}</td>
@@ -406,33 +406,30 @@ function disableButtons(from, dest, add, remove) {
         <td>{SHOP_FLAGS_SELECTION}</td>
       </tr>
       <!-- END shopFlags -->
-
       <tr valign="top" class="row2">
         <td colspan="2">{TXT_SHORT_DESCRIPTION}<br />{SHOP_SHORT_DESCRIPTION}</td>
       </tr>
       <tr valign="top" class="row1">
         <td colspan="2"><br />{TXT_DESCRIPTION}<br />{SHOP_DESCRIPTION}</td>
       </tr>
-<!-- vogt -->
-    <tr valign="top" class="row2">
-      <td>{TXT_SHOP_KEYWORDS}</td>
-      <td>
-        <textarea name="shopKeywords" rows="5" cols="80">{SHOP_KEYWORDS}</textarea>
-      </td>
-    </tr>
-
-    <tr valign="top" class="row1">
+      <tr valign="top" class="row2">
+        <td>{TXT_SHOP_KEYWORDS}</td>
+        <td>
+          <textarea name="shopKeywords" rows="5" cols="80">{SHOP_KEYWORDS}</textarea>
+        </td>
+      </tr>
+      <tr valign="top" class="row1">
         <td nowrap="nowrap">{TXT_SHOP_MANUFACTURER}</td>
         <td>{SHOP_MANUFACTURER_SELECT}</td>
       </tr>
-    <tr valign="top" class="row2">
+      <tr valign="top" class="row2">
         <td nowrap="nowrap">{TXT_MANUFACTURER_URL}</td>
         <td>
           <input maxlength="255" name="shopManufacturerUrl" size="40" value="{SHOP_MANUFACTURER_URL}" />
           ({TXT_WITH_HTTP})
         </td>
       </tr>
-    <tr valign="top" class="row1">
+      <tr valign="top" class="row1">
         <td nowrap="nowrap">{TXT_STOCK}</td>
         <td>
           <input maxlength=10 name="shopStock" size="10" value="{SHOP_STOCK}" />

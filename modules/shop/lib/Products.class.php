@@ -1,34 +1,35 @@
 <?php
+
 /**
  * Products helper class
  *
- * @version     $Id: 1.0.1$
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Test!
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
+ * @version     2.1.0
  */
 
 /**
  * Storage path for product images (absolute path)
  */
-define('PRODUCT_IMAGE_PATH',        ASCMS_SHOP_IMAGES_PATH.'/');
+define('PRODUCT_IMAGE_PATH',     ASCMS_SHOP_IMAGES_PATH.'/');
 /**
  * Storage path for product images (relativ pat)
  */
-define('PRODUCT_IMAGE_WEB_PATH',    ASCMS_SHOP_IMAGES_WEB_PATH.'/');
+define('PRODUCT_IMAGE_WEB_PATH', ASCMS_SHOP_IMAGES_WEB_PATH.'/');
 
 /**
  * Product helper object
  *
  * Provides methods for accessing sets of Products, displaying menus
  * and the like.
- * @version     $Id: 1.0.1 $
  * @package     contrexx
  * @subpackage  module_shop
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
+ * @version     2.1.0
  */
 class Products
 {
@@ -38,8 +39,9 @@ class Products
      * Used to verify and create wildcard queries.
      * See {@link getWildcardQuery()}
      * @var array   $arrFieldName
+     * @static
      */
-    private $arrFieldName = array(
+    private static $arrFieldName = array(
         'id', 'product_id', 'picture', 'title', 'catid', 'handler',
         'normalprice', 'resellerprice', 'shortdesc', 'description',
         'stock', 'stock_visibility', 'discountprice', 'is_special_offer',
@@ -52,28 +54,18 @@ class Products
 
 
     /**
-     * Create a Products helper object
-     * @access  public
-     * @return  Products                The helper
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function __construct()
-    {
-    }
-
-
-    /**
      * Returns the query for Product objects made from a wildcard pattern.
      * @param       array       $arrPattern     The array of patterns
      *                                          to look for
      * @return      string                      The query string
+     * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getWildcardQuery($arrPattern)
+    static function getWildcardQuery($arrPattern)
     {
         $query = '';
         foreach ($arrPattern as $fieldName => $pattern) {
-            if (in_array($fieldName, $this->arrFieldName)) {
+            if (in_array($fieldName, self::$arrFieldName)) {
                 if ($query) {
                     $query .= "
                         OR $fieldName LIKE '%".
@@ -97,16 +89,16 @@ class Products
      * @return      array                       An array of Products on success,
      *                                          false otherwise
      * @global  ADONewConnection  $objDatabase    Database connection object
+     * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getByWildcard($arrPattern)
+    static function getByWildcard($arrPattern)
     {
         global $objDatabase;
 
-        $query = $this->getWildcardQuery($arrPattern);
+        $query = self::getWildcardQuery($arrPattern);
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("Error: Query failed:<br />$query<br />");
             return false;
         }
         $arrProduct = array();
@@ -123,9 +115,10 @@ class Products
      * @param   string      $customId   The Product code
      * @return  mixed                   The array of matching Product objects
      *                                  on success, false otherwise.
+     * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getByCustomId($customId)
+    static function getByCustomId($customId)
     {
         global $objDatabase;
 
@@ -140,7 +133,6 @@ class Products
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("Error: Query failed:<br />$query<br />");
             return false;
         }
         $arrProduct = array();
@@ -150,41 +142,6 @@ class Products
         }
         return $arrProduct;
     }
-
-
-    /**
-     * Return the five products least recently added to the database.
-     *
-     * OBSOLETE -- Superseeded by {@link Shop::getByShopParams()}.
-     * Note that this just selects the five Products with the highest ID,
-     * thus this will yield unexpected results if the IDs are set
-     * by any other means than the AUTO_INCREMENT mechanism.
-     * @return  array                   The array of the five Product objects
-     * @global  ADONewConnection  $objDatabase    Database connection object
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-    function lastFive()
-    {
-        global $objDatabase;
-
-        // select last five products added to the database
-        $query = "
-            SELECT id, DISTINCT product_id
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-             WHERE status=1
-             ORDER BY id DESC
-        ";
-        $objResult = $objDatabase->SelectLimit($query, 5);
-        if (!$objResult) {
-            return false;
-        }
-        $arrProduct = array();
-        while (!$objResult->EOF) {
-            $arrProduct[] = Product::getById($objResult->fields['id']);
-            $objResult->MoveNext();
-        }
-        return $arrProduct;
-    }
-     */
 
 
     /**
@@ -202,23 +159,28 @@ class Products
      * @param   boolean     $flagSpecialoffer Flag for special offers
      * @param   boolean     $flagLastFive   Flag for the last five Products
      *                                      added to the Shop
+     * @param   integer     $orderSetting   The sorting order setting, defaults
+     *                                      to the order field value ascending,
+     *                                      Product ID descending
+     * @param   boolean     $flagIsReseller The reseller status of the
+     *                                      current customer, ignored if
+     *                                      it's the empty string
      * @param   boolean     $flagShowInactive   Include inactive Products
      *                                      if true.  Backend use only!
-     * @param   integer     $orderSetting   The sorting order setting
      * @return  array                       Array of Product objects,
      *                                      or false if none were found
-     * @global      ADONewConnection
+     * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getByShopParams(
+    static function getByShopParams(
         &$count, $offset=0,
         $productId=0, $shopCategoryId=0, $manufacturerId=0, $pattern='',
-        $flagSpecialoffer=false, $flagLastFive=false, $orderSetting=1,
+        $flagSpecialoffer=false, $flagLastFive=false,
+        $orderSetting='p.sort_order ASC, p.id DESC', // Default
+        $flagIsReseller=false,
         $flagShowInactive=false
     ) {
         global $objDatabase, $_CONFIG;
-
-//echo("getByShopParams($count, $offset, $productId, $shopCategoryId, $manufacturerId, $pattern, $flagSpecialoffer, $flagLastFive, $orderSetting, $flagShowInactive): entered<br />");
 
         if ($productId) {
             // select single Product by ID
@@ -231,6 +193,16 @@ class Products
             return false;
         }
 
+        // Limit Products visible to resellers or non-resellers.
+        $queryReseller =
+            ($flagIsReseller === true
+              ? 'AND b2b=1'
+              : ($flagIsReseller === false
+                  ? 'AND b2c=1'
+                  : ''
+                )
+            );
+
         $queryCount = "SELECT COUNT(*) as numof_products";
         if ($flagLastFive) {
             // select last five products added to the database
@@ -238,6 +210,7 @@ class Products
             $queryTail = "
                   FROM ".DBPREFIX."module_shop_products
                  ".($flagShowInactive ? '' : 'WHERE status=1 ')."
+                   $queryReseller
                  ORDER BY product_id DESC
             ";
             $count = 5;
@@ -284,18 +257,11 @@ class Products
                   FROM ".DBPREFIX."module_shop_products AS p
                        $q1_category $q1_manufacturer
                  WHERE ".($flagShowInactive ? '1' : 'status=1')."
+                   $queryReseller
                        $q_special_offer
                        $q2_category $q2_manufacturer
                        $q_search
-              ORDER BY ".
-                ($orderSetting == 2
-                  ? 'p.title ASC, p.product_id ASC' // Alphabetic
-                  : ($orderSetting == 3
-                      ? 'p.product_id ASC, p.title ASC' // Product Code
-                      // Default; $orderSetting == 1
-                      : 'p.sort_order ASC, p.id DESC' // Individual
-                    )
-                );
+              ".($orderSetting ? "ORDER BY $orderSetting" : '');
         }
         if ($count == 0) {
             if ($_CONFIG['corePagingLimit']) { // $_CONFIG from /config/settings.php
@@ -315,14 +281,11 @@ class Products
             $arrProduct[] = Product::getById($objResult->fields['id']);
             $objResult->MoveNext();
         }
-//echo("getByShopParams(): got ".count($arrProduct)." products from $offset<br />");
-//var_export($objResult);
         $objResult = $objDatabase->Execute($queryCount.$queryTail);
         if (!$objResult) {
             return false;
         }
         $count = $objResult->fields['numof_products'];
-//echo("getByShopParams(): $count products total<br />");
         return $arrProduct;
     }
 
@@ -334,13 +297,12 @@ class Products
      * immediately without trying to delete the remaining Products.
      * Deleting the ShopCategory after this method failed will most
      * likely result in Product bodies in the database!
-     * @static
      * @param       integer     $catid          The ShopCategory ID
      * @return      boolean                     True on success, false otherwise
+     * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function deleteByShopCategory($catId, $flagDeleteImages=false)
+    static function deleteByShopCategory($catId, $flagDeleteImages=false)
     {
         $arrProductId = Products::getIdArrayByShopCategory($catId);
         if (!is_array($arrProductId)) {
@@ -404,9 +366,10 @@ class Products
      * @param   boolean     $flagDeleteImages   If true, Product images are
      *                                          deleted as well
      * @return  boolean                         True on success, false otherwise
+     * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function deleteByCode($productCode, $flagDeleteImages)
+    static function deleteByCode($productCode, $flagDeleteImages)
     {
         if (empty($productCode)) {
             return false;
@@ -428,14 +391,13 @@ class Products
     /**
      * Returns an array of Product IDs contained by the given
      * ShopCategory ID.
-     * @static
      * @param   integer     $catId      The ShopCategory ID
      * @return  mixed                   The array of Product IDs on success,
      *                                  false otherwise.
+     * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getIdArrayByShopCategory($catId)
+    static function getIdArrayByShopCategory($catId)
     {
         global $objDatabase;
 
@@ -447,7 +409,6 @@ class Products
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("Error: Query failed:<br />$query<br />");
             return false;
         }
         $arrProductId = array();
@@ -462,14 +423,13 @@ class Products
     /**
      * Returns an array of Product objects contained by the ShopCategory
      * with the given ID.
-     * @static
      * @param   integer     $catId      The ShopCategory ID
      * @return  mixed                   The array of Product IDs on success,
      *                                  false otherwise.
+     * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getByShopCategory($catId)
+    static function getByShopCategory($catId)
     {
         global $objDatabase;
 
@@ -481,7 +441,6 @@ class Products
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("Error: Query failed:<br />$query<br />");
             return false;
         }
         $arrProduct = array();
@@ -496,14 +455,13 @@ class Products
     /**
      * Returns the first matching picture name found in the Products
      * within the Shop Category given by its ID.
-     * @static
-     * @return      string                      The image name, or the
-     *                                          empty string.
+     * @return  string                      The image name, or the
+     *                                      empty string.
      * @global  ADONewConnection  $objDatabase    Database connection object
+     * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getPictureByCategoryId($catId)
+    static function getPictureByCategoryId($catId)
     {
         global $objDatabase;
 
@@ -517,7 +475,7 @@ class Products
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult && $objResult->RecordCount() > 0) {
             // Got a picture
-            $arrImages = $this->_getShopImagesFromBase64String(
+            $arrImages = Products::getShopImagesFromBase64String(
                 $objResult->fields['picture']
             );
             $imageName = $arrImages[1]['img'];
@@ -531,14 +489,13 @@ class Products
     /**
      * Returns an array of ShopCategory IDs containing Products with
      * their flags containing the given string.
-     * @static
      * @param   string  $strName    The name of the flag to match
      * @return  mixed               The array of ShopCategory IDs on success,
      *                              false otherwise.
+     * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getShopCategoryIdArrayByFlag($strName)
+    static function getShopCategoryIdArrayByFlag($strName)
     {
         global $objDatabase;
 
@@ -550,7 +507,6 @@ class Products
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("Error: Query failed:<br />$query<br />");
             return false;
         }
         $arrShopCategoryId = array();
@@ -586,9 +542,10 @@ class Products
      *                                  with error messages otherwise.
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @global  array
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function makeThumbnailsById($arrId)
+    static function makeThumbnailsById($arrId)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -642,7 +599,7 @@ class Products
             // don't create it again.
             if (file_exists($imagePath.'.thumb')
              && filemtime($imagePath.'.thumb') > filemtime($imagePath)) {
-                //$this->addMessage("Hinweis: Thumbnail für Produkt ID '$id' existiert bereits");
+                //$this->addMessage("Hinweis: Thumbnail fr Produkt ID '$id' existiert bereits");
                 // Need the original size to update the record, though
                 list($width, $height) =
                     $objImageManager->_getImageSize($imagePath);
@@ -709,9 +666,10 @@ class Products
      * @param   integer     $productCode  The Product code (*NOT* the ID).
      *                                    This must be non-empty!
      * @param   string      $strFlags     The new flags for the Product
+     * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function changeFlagsByProductCode($productCode, $strNewFlags)
+    static function changeFlagsByProductCode($productCode, $strNewFlags)
     {
         if (empty($productCode)) {
             return false;
@@ -875,6 +833,57 @@ class Products
         // And we're done!
         return true;
     }
+
+
+    /**
+     * Returns an array of image names, widths and heights from
+     * the base64 encoded string taken from the database
+     *
+     * The array returned looks like
+     *  array(
+     *    1 => array(
+     *      'img' => <image1>,
+     *      'width' => <image1.width>,
+     *      'height' => <image1.height>
+     *    ),
+     *    2 => array( ... ), // The same as above, three times in total
+     *    3 => array( ... ),
+     * )
+     * @param   string  $base64Str  The base64 encoded image string
+     * @return  array               The decoded image array
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getShopImagesFromBase64String($base64Str)
+    {
+        // Pre-init array to avoid "undefined index" notices
+        $arrPictures = array(
+            1 => array('img' => '', 'width' => 0, 'height' => 0),
+            2 => array('img' => '', 'width' => 0, 'height' => 0),
+            3 => array('img' => '', 'width' => 0, 'height' => 0)
+        );
+        if (strpos($base64Str, ':') === false) {
+            // have to return an array with the desired number of elements
+            // and an empty file name in order to show the "dummy" picture(s)
+            return $arrPictures;
+        }
+        $i = 0;
+        foreach (explode(':', $base64Str) as $imageData) {
+            list($shopImage, $shopImage_width, $shopImage_height) = explode('?', $imageData);
+            $shopImage        = base64_decode($shopImage);
+            $shopImage_width  = base64_decode($shopImage_width);
+            $shopImage_height = base64_decode($shopImage_height);
+            $arrPictures[++$i] = array(
+                'img'    => $shopImage,
+                'width'  => $shopImage_width,
+                'height' => $shopImage_height,
+            );
+        }
+        return $arrPictures;
+    }
+
+
+
 }
 
 ?>

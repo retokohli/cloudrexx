@@ -7,7 +7,7 @@
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @version     $Id:  Exp $
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
@@ -22,7 +22,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
  * Yellowpay plugin for online payment
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @version     $Id:  Exp $
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo    Yellowpay must be configured and this code rewritten to return and
@@ -186,18 +186,13 @@ class Yellowpay
             foreach (Yellowpay::$arrKnownPaymentMethod as $strPaymentMethod) {
                 // Remove payment methods not mentioned
                 if (!preg_match("/$strPaymentMethod/", $strAcceptedPaymentMethods)) {
-//echo("Yellowpay::Yellowpay($strAcceptedPaymentMethods, $strAuthorization): removing pm $strPaymentMethod<br />");
                     unset ($this->arrAcceptedPaymentMethod[$strPaymentMethod]);
                 }
             }
         } else {
-//echo("Yellowpay::Yellowpay($strAcceptedPaymentMethods, $strAuthorization): note: no accepted pm<br />");
         }
         if (in_array($strAuthorization, Yellowpay::$arrKnownAuthorization)) {
-//echo("Yellowpay::Yellowpay($strAcceptedPaymentMethods, $strAuthorization): note: setting authorization to $strAuthorization<br />");
             $this->strAuthorization = $strAuthorization;
-        } else {
-//echo("Yellowpay::Yellowpay($strAcceptedPaymentMethods, $strAuthorization): note: no authorization<br />");
         }
     }
 
@@ -283,9 +278,6 @@ class Yellowpay
             return;
         }
 
-//echo("desired pm: ".join(", ", $arrAcceptedPM)."<br />");
-//echo("accepted pm: ".join(", ", array_keys($this->arrAcceptedPaymentMethod))."<br />");
-
         foreach ($arrAcceptedPM as $strPM) {
             if (array_key_exists($strPM, $this->arrAcceptedPaymentMethod)) {
                 $this->arrShopOrder["txtPM_{$strPM}_Status"] = 'true';
@@ -298,7 +290,6 @@ class Yellowpay
         // Enable dynamic payment method selection
         $this->arrShopOrder['txtUseDynPM'] = 'true';
         $this->addToForm('txtUseDynPM');
-//echo(htmlentities($this->form));die();
     }
 
 
@@ -347,7 +338,6 @@ class Yellowpay
         if ($this->arrShopOrder['Hash_seed'] == '') {
             $this->arrError[] = "Missing the Hash_seed parameter";
         }
-//echo("txtShopId: /".$this->arrShopOrder['txtShopId']."/<br />txtArtCurrency: /".$this->arrShopOrder['txtArtCurrency']."/<br />txtOrderTotal: /".$this->arrShopOrder['txtOrderTotal']."/<br />Hash_seed: /".$this->arrShopOrder['Hash_seed']."/<br />");
         $this->arrShopOrder['txtHash'] = md5(
             $this->arrShopOrder['txtShopId'].
             $this->arrShopOrder['txtArtCurrency'].
@@ -623,10 +613,8 @@ class Yellowpay
     {
         global $_ARRAYLANG;
 
-//echo("Yellowpay::getKnownPaymentMethodCheckboxes(): accepted pm: ");var_export($this->arrAcceptedPaymentMethod);echo("<br />");
         $strOptions = '';
         foreach (Yellowpay::$arrKnownPaymentMethod as $index => $strPaymentMethod) {
-//echo("Yellowpay::getKnownPaymentMethodCheckboxes(): testing /$strPaymentMethod/<br />");
             $strOptions .=
                 '<input name="yellowpay_accepted_payment_methods[]" '.
                 'id="yellowpay_pm_'.$index.'" type="checkbox" '.

@@ -2,7 +2,7 @@
 /**
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     1.0.0
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -16,7 +16,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
- * @version     1.0.0
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  */

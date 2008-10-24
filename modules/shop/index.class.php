@@ -1,18 +1,22 @@
 <?php
 
-define('_SHOP_DEBUG', 0);
-
 /**
  * The Shop
  *
  * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Reto Kohli <reto.kohli@comvation.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @access      public
- * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
+ * @version     2.1.0
  */
+
+/**
+ * Debug level
+ */
+define('_SHOP_DEBUG', 0);
 
 /*
 
@@ -177,10 +181,15 @@ function shopUseSession()
  *
  * @todo    Extract code from this class and move it to other classes:
  *          Customer, Product, ...
- * @todo    It doesn't really make sense to extend ShopLibrary.  Instead, dissolve
- *          ShopLibrary into classes like Shop, Zone, Country, Payment, etc.
- * @package contrexx
- * @subpackage module_shop
+ * @todo        It doesn't really make sense to extend ShopLibrary.  Instead, dissolve
+ *              ShopLibrary into classes like Shop, Zone, Country, Payment, etc.
+ * @author      Reto Kohli <reto.kohli@comvation.com>
+ * @author      Ivan Schmid <ivan.schmid@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ * @version     2.1.0
  */
 class Shop extends ShopLibrary
 {
@@ -192,8 +201,6 @@ class Shop extends ShopLibrary
 
     private $statusMessage = '';
     private $thumbnailNameSuffix = '.thumb';
-    private $is_reseller = 0;
-    private $is_auth = 0;
     private $noPictureName = 'no_picture.gif';
     private $shopImageWebPath;
     private $shopImagePath;
@@ -233,14 +240,6 @@ class Shop extends ShopLibrary
     private $objCustomer;
 
     /**
-     * Object of the payment offerer
-     * @var     Payment
-     * @access  private
-     * @see     lib/Payment.class.php
-     */
-    private $objPayment;
-
-    /**
      * The Payment Processing object
      * @var     PaymentProcessing
      * @access  private
@@ -271,12 +270,6 @@ class Shop extends ShopLibrary
      * @see     lib/Vat.class.php
      */
     private $objVat;
-
-    /**
-     * The ShopCategories helper object
-     * @var ShopCategories
-     */
-    private $objShopCategories;
 
 
     /**
@@ -321,9 +314,6 @@ class Shop extends ShopLibrary
         // Shipment object - ignoreStatus == false; see Shipment::Shipment()
         $this->objShipment = new Shipment(0);
 
-        // Payment object
-        $this->objPayment = new Payment();
-
         // initialize the countries array
         $this->_initCountries();
 
@@ -334,14 +324,11 @@ class Shop extends ShopLibrary
 //        if (empty($_COOKIE['PHPSESSID'])) $this->_authenticate();
 
         $this->_initConfiguration();
-        $this->_initPayment();
+        Payment::init();
 
         // VAT object -- Create this only after the configuration
         // ($this->arrConfig) has been set up!
         $this->objVat = new Vat();
-
-        // The ShopCategories helper object
-        $this->objShopCategories = new ShopCategories();
 
         // initialize the product options names and values array
         $this->initProductAttributes();
@@ -627,12 +614,12 @@ class Shop extends ShopLibrary
             }
 
             // Array of all visible ShopCategories
-            $arrShopCategoryTree = $this->objShopCategories->getTreeArray(
+            $arrShopCategoryTree = ShopCategories::getTreeArray(
                 false, true, true, $selectedCatId, 0, 0
             );
             // The trail of IDs to the selected ShopCategory,
             // built along with the tree array when calling getTreeArray().
-            $arrTrail = $this->objShopCategories->getTrailArray($selectedCatId);
+            $arrTrail = ShopCategories::getTrailArray($selectedCatId);
 
             // Build the display of ShopCategories
             foreach ($arrShopCategoryTree as $arrShopCategory) {
@@ -893,6 +880,7 @@ class Shop extends ShopLibrary
             return false;
         }
         $cell = 0;
+        $arrDefaultImageSize = false;
         $this->objTemplate->setCurrentBlock();
         // For all child categories do...
         foreach ($arrShopCategory as $objShopCategory) {
@@ -900,6 +888,11 @@ class Shop extends ShopLibrary
             $catName   = $objShopCategory->getName();
             $imageName = $objShopCategory->getPicture();
             $thumbnailPath = $this->_defaultImage;
+            if (empty($arrDefaultImageSize)) {
+                $arrDefaultImageSize = getimagesize(ASCMS_PATH.$this->_defaultImage);
+                $this->scaleImageSizeToThumbnail($arrDefaultImageSize);
+            }
+            $arrSize = $arrDefaultImageSize;
             if ($imageName) {
                 $imageName = $imageName;
             } else {
@@ -915,10 +908,14 @@ class Shop extends ShopLibrary
                 $thumbnailPath =
                     $this->shopImageWebPath.
                     $imageName.$this->thumbnailNameSuffix;
+                $arrSize = getimagesize(ASCMS_PATH.$thumbnailPath);
+                $this->scaleImageSizeToThumbnail($arrSize);
             }
+
             $this->objTemplate->setVariable(array(
                 'SHOP_PRODUCT_TITLE'            => htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET),
                 'SHOP_PRODUCT_THUMBNAIL'        => $thumbnailPath,
+                'SHOP_PRODUCT_THUMBNAIL_SIZE'   => $arrSize[3],
                 'TXT_ADD_TO_CARD'               => $_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'],
                 'SHOP_PRODUCT_DETAILLINK_IMAGE' =>
                     "index.php?section=shop".MODULE_INDEX."&amp;catId=$id",
@@ -978,7 +975,7 @@ class Shop extends ShopLibrary
         $objResultProduct = $objDatabase->SelectLimit($queryProduct, 1);
         if ($objResultProduct && $objResultProduct->RecordCount() > 0) {
             // got a picture!
-            $arrImages = $this->_getShopImagesFromBase64String(
+            $arrImages = Products::getShopImagesFromBase64String(
                 $objResultProduct->fields['picture']
             );
             $picturePath = $this->shopImageWebPath.$arrImages[1]['img'];
@@ -1053,7 +1050,9 @@ class Shop extends ShopLibrary
                     "WHERE catid=".$catId_Pic." ORDER BY sort_order";
                 $objResultProduct = $objDatabase->SelectLimit($queryProduct, 1);
                 if ($objResultProduct) {
-                    $arrImages = $this->_getShopImagesFromBase64String($objResultProduct->fields['picture']);
+                    $arrImages = Products::getShopImagesFromBase64String(
+                        $objResultProduct->fields['picture']
+                    );
                 }
                 // no product picture available
                 if (!$arrImages
@@ -1143,7 +1142,6 @@ class Shop extends ShopLibrary
             'TXT_SHOP_CATEGORIES'        => $_ARRAYLANG['TXT_SHOP_CATEGORIES'],
             'TXT_SHOP_NORMALPRICE'       => $_ARRAYLANG['TXT_SHOP_NORMALPRICE'],
             'TXT_SHOP_DISCOUNTPRICE'     => $_ARRAYLANG['TXT_SHOP_DISCOUNTPRICE'],
-            'SHOP_JAVASCRIPT_CODE' => $this->getJavascriptCode($flagUpload),
         ));
         if (isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart') {
             $cartProdId = $productId;
@@ -1157,12 +1155,12 @@ class Shop extends ShopLibrary
             '" style="width:150px;" />&nbsp;'.
             '<select name="catId" style="width:150px;">'.'<option value="0">'.
             $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].'</option>'.
-            $this->objShopCategories->getShopCategoriesMenu($catId, true, 0).
+            ShopCategories::getShopCategoriesMenu($catId).
             '</select>&nbsp;'.$this->_getManufacturerMenu($manufacturerId).
             '<input type="submit" name="Submit" value="'.
             $_ARRAYLANG['TXT_SEARCH'].'" style="width:66px;" /></form>';
-        $this->objTemplate->setVariable("SHOP_MENU", $shopMenu);
-        $this->objTemplate->setVariable("SHOP_CART_INFO", $this->showCartInfo());
+        $this->objTemplate->setVariable('SHOP_MENU', $shopMenu);
+        $this->objTemplate->setVariable('SHOP_CART_INFO', $this->showCartInfo());
 
         $pagingCatId = '';
         $pagingManId = '';
@@ -1190,7 +1188,8 @@ class Shop extends ShopLibrary
         $arrProduct = Products::getByShopParams(
             $count, $pos,
             $productId, $catId, $manufacturerId, $term,
-            $flagSpecialoffer, $flagLastFive, $orderSetting
+            $flagSpecialoffer, $flagLastFive,
+            ShopLibrary::$arrProductOrder[$orderSetting]
         );
 
         $paging     = '';
@@ -1231,9 +1230,10 @@ class Shop extends ShopLibrary
         foreach ($arrProduct as $objProduct) {
             $id = $objProduct->getId();
             $productSubmitFunction = '';
-            $arrPictures = $this->_getShopImagesFromBase64String($objProduct->getPictures());
+            $arrPictures = Products::getShopImagesFromBase64String($objProduct->getPictures());
             $havePicture = false;
             $arrProductImages = array();
+            $arrDefaultImageSize = false;
             foreach ($arrPictures as $index => $image) {
                 if (   empty($image['img'])
                     || $image['img'] == $this->noPictureName) {
@@ -1242,19 +1242,31 @@ class Shop extends ShopLibrary
                     if ($havePicture) { continue; }
                     $thumbnailPath = $this->_defaultImage;
                     $pictureLink = ''; //"javascript:alert('".$_ARRAYLANG['TXT_NO_PICTURE_AVAILABLE']."');";
-                } elseif ($image['width'] && $image['height']) {
-                    $thumbnailPath = $this->shopImageWebPath.$image['img'].$this->thumbnailNameSuffix;
-                    $pictureLink =
-                        "javascript:viewPicture('".
-                        $this->shopImageWebPath.$image['img'].
-                        "','width=".($image['width']+25).
-                        ",height=".($image['height']+25)."')";
+                    if (empty($arrDefaultImageSize)) {
+                        $arrDefaultImageSize = getimagesize(ASCMS_PATH.$this->_defaultImage);
+                        $this->scaleImageSizeToThumbnail($arrDefaultImageSize);
+                    }
+                    $arrSize = $arrDefaultImageSize;
                 } else {
                     $thumbnailPath = $this->shopImageWebPath.$image['img'].$this->thumbnailNameSuffix;
-                    $pictureLink = '';
+                    if ($image['width'] && $image['height']) {
+                        $thumbnailPath = $this->shopImageWebPath.$image['img'].$this->thumbnailNameSuffix;
+                        $pictureLink =
+                            "javascript:viewPicture('".
+                            $this->shopImageWebPath.$image['img'].
+                            "','width=".($image['width']+25).
+                            ",height=".($image['height']+25)."')";
+                            // Thumbnail display size
+                            $arrSize = array($image['width'], $image['height']);
+                    } else {
+                        $pictureLink = '';
+                            $arrSize = getimagesize(ASCMS_PATH.$thumbnailPath);
+                    }
+                    $this->scaleImageSizeToThumbnail($arrSize);
                 }
                 $arrProductImages[] = array(
                     'THUMBNAIL'       => $thumbnailPath,
+                    'THUMBNAIL_SIZE'  => $arrSize[3],
                     'THUMBNAIL_LINK'  => $pictureLink,
 // TODO: Where are SHOP_PRODUCT_POPUP_LINK_x
 //             and SHOP_PRODUCT_POPUP_LINK_NAME_x used?
@@ -1265,10 +1277,9 @@ class Shop extends ShopLibrary
             }
             $i = 1;
             foreach ($arrProductImages as $arrProductImage) {
-            	$arrSizes = getimagesize(ASCMS_PATH.$arrProductImage['THUMBNAIL']);
                 $this->objTemplate->setVariable(array(
                     'SHOP_PRODUCT_THUMBNAIL_'.$i => $arrProductImage['THUMBNAIL'],
-                    'SHOP_PRODUCT_THUMBNAIL_SIZES_'.$i => $arrSizes[3],
+                    'SHOP_PRODUCT_THUMBNAIL_SIZE_'.$i => $arrProductImage['THUMBNAIL_SIZE'],
                 ));
                 if (!empty($arrProductImage['THUMBNAIL_LINK'])) {
                     $this->objTemplate->setVariable(array(
@@ -1302,14 +1313,13 @@ class Shop extends ShopLibrary
                 : ''
             );
 
-            // Show the price
             $price = $this->_getProductPrice(
                 $id,
                 0,    // No options yet
                 1,    // Apply discount for one article
                 true  // Ignore special offers
             );
-            // if no discountprice
+            // If there is a discountprice and it's enabled
             if (   $objProduct->getDiscountPrice() > 0
                 && $objProduct->isSpecialOffer()) {
                 $price = '<s>'.$price.'</s>';
@@ -1514,6 +1524,9 @@ class Shop extends ShopLibrary
             }
             $this->objTemplate->parse('shopProductRow');
         }
+        $this->objTemplate->setVariable(
+            'SHOP_JAVASCRIPT_CODE', $this->getJavascriptCode($flagUpload)
+        );
         return true;
     }
 
@@ -1535,14 +1548,14 @@ class Shop extends ShopLibrary
      * @param   integer     $product_Id     The Product ID
      * @param   string      $formName       The name of the HTML form containing
      *                                      the Product and options
-     * @param   mixed       $cartProdId     The optional cart Product ID,
+     * @param   integer     $cartProdId     The optional cart Product ID,
      *                                      false if not applicable.
      * @param   boolean     $flagUpload     If a product has an upload
      *                                      ProductAttribute associated with it,
      *                                      this parameter will be set to true
      * @return  string                      The string with the HTML code
      */
-    function productOptions($product_Id, $formName, $cartProdId=false, &$flagUpload)
+    function productOptions($product_Id, $formName, $cartProdId=false, &$flagUpload=false)
     {
         global $_ARRAYLANG;
 
@@ -1607,7 +1620,6 @@ class Shop extends ShopLibrary
                             '" style="width:180px;">'."\n".
                             // If there is only one option to choose from,
                             // why bother the customer at all?
-// TODO: Test this!
                             (count($arrOptionDetails['values']) > 1
                                 ? '<option value="0">'.
                                   $arrOptionDetails['name'].'&nbsp;'.
@@ -1809,18 +1821,31 @@ class Shop extends ShopLibrary
         }
         $count = $objResult->RecordCount();
         $i = 1;
+        $arrDefaultImageSize = false;
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];
-            $arrImages = $this->_getShopImagesFromBase64String($objResult->fields['picture']);
+            $arrImages = Products::getShopImagesFromBase64String($objResult->fields['picture']);
             // no product picture available
             if (!$arrImages
              || $arrImages[1]['img'] == ''
              || $arrImages[1]['img'] == $this->noPictureName) {
                 $arrThumbnailPath[$i] = $this->_defaultImage;
+                if (empty($arrDefaultImageSize)) {
+                    $arrDefaultImageSize = getimagesize(ASCMS_PATH.$this->_defaultImage);
+                    $this->scaleImageSizeToThumbnail($arrDefaultImageSize);
+                }
+                $arrSize = $arrDefaultImageSize;
             } else {
-                $arrThumbnailPath[$i] = $this->shopImageWebPath.$arrImages[1]['img'].$this->thumbnailNameSuffix;
+                if ($arrImages[1]['width'] && $arrImages[1]['height']) {
+                    $arrThumbnailPath[$i] = $this->shopImageWebPath.$arrImages[1]['img'].$this->thumbnailNameSuffix;
+                    // Thumbnail display size
+                    $arrSize = array($arrImages[1]['width'], $arrImages[1]['height']);
+                } else {
+                    $arrThumbnailPath[$i] = $this->shopImageWebPath.$arrImages[1]['img'].$this->thumbnailNameSuffix;
+                    $arrSize = getimagesize(ASCMS_PATH.$arrThumbnailPath[$i]);
+                }
+                $this->scaleImageSizeToThumbnail($arrSize);
             }
-
             $price = $this->_getProductPrice(
                 $id,
                 0,    // No options yet
@@ -1840,6 +1865,7 @@ class Shop extends ShopLibrary
                 );
             }
             $arrDetailLink[$i] = 'index.php?section=shop&amp;cmd=details&amp;productId='.$objResult->fields['id'];
+            $arrThumbnailSize[$i] = $arrSize[3];
             $arrTitle[$i] = $objResult->fields['title'];
             ++$i;
             $objResult->MoveNext();
@@ -1856,6 +1882,7 @@ class Shop extends ShopLibrary
                 $this->objTemplate->setVariable(array(
                     'SHOP_PRODUCT_TITLE'                => str_replace('"', '&quot;', $arrTitle[$i+1]),
                     'SHOP_PRODUCT_THUMBNAIL'            => $arrThumbnailPath[$i+1],
+                    'SHOP_PRODUCT_THUMBNAIL_SIZE'     => $arrThumbnailSize[$i+1],
                     'SHOP_PRODUCT_PRICE'                => $arrPrice[$i+1],
                     'SHOP_PRODUCT_DISCOUNTPRICE'        => $arrDiscountPrice[$i+1],
                     'SHOP_PRODUCT_PRICE_UNIT'           => $this->aCurrencyUnitName,
@@ -1870,6 +1897,7 @@ class Shop extends ShopLibrary
             $this->objTemplate->setVariable(array(
                 'SHOP_PRODUCT_TITLE'                => str_replace('"', '&quot;', $arrTitle[$i]),
                 'SHOP_PRODUCT_THUMBNAIL'            => $arrThumbnailPath[$i],
+                'SHOP_PRODUCT_THUMBNAIL_SIZE'     => $arrThumbnailSize[$i],
                 'SHOP_PRODUCT_PRICE'                => $arrPrice[$i],
                 'SHOP_PRODUCT_DISCOUNTPRICE'        => $arrDiscountPrice[$i],
                 'SHOP_PRODUCT_PRICE_UNIT'           => $this->aCurrencyUnitName,
@@ -1962,7 +1990,7 @@ class Shop extends ShopLibrary
      * @param   integer $count              The number of products, defaults
      *                                      to 1 (one)
      * @param   boolean $flagIgnoreSpecialoffer
-     *                                      if true, special offers are ignored.
+     *                                      If true, special offers are ignored.
      *                                      This is needed to actually determine
      *                                      both prices in the products view.
      *                                      Defaults to false.
@@ -1985,12 +2013,12 @@ class Shop extends ShopLibrary
         $groupArticleId = $objProduct->getGroupArticleId();
         if (   !$flagIgnoreSpecialoffer
             && $is_special_offer == 1
-            && $discountPrice != '0.00') {
+            && $discountPrice != 0) {
             $price = $discountPrice;
         } else {
             if (   $this->objCustomer
                 && $this->objCustomer->isReseller()
-                && $resellerPrice != '0.00') {
+                && $resellerPrice != 0) {
                 $price = $resellerPrice;
             } else {
                 $price = $normalPrice;
@@ -2044,9 +2072,9 @@ class Shop extends ShopLibrary
     {
         $paymentPrice = 0;
         if (!$paymentId) return $paymentPrice;
-        if ($this->objPayment->arrPaymentObject[$paymentId]['costs_free_sum'] == 0
-         || $totalPrice < $this->objPayment->arrPaymentObject[$paymentId]['costs_free_sum']) {
-            $paymentPrice = $this->objPayment->arrPaymentObject[$paymentId]['costs'];
+        if (  Payment::getProperty($paymentId, 'costs_free_sum') == 0
+           || $totalPrice < Payment::getProperty($paymentId, 'costs_free_sum')) {
+            $paymentPrice = Payment::getProperty($paymentId, 'costs');
         }
         return $this->objCurrency->getCurrencyPrice($paymentPrice);
     }
@@ -3044,8 +3072,8 @@ sendReq('', 1);
             'TXT_PASSWORD'                       => $_ARRAYLANG['TXT_PASSWORD'],
             'SHOP_LOGIN_EMAIL'                   => $loginUsername,
             'SHOP_LOGIN_ACTION'                  =>
-                'index.php?section=shop&amp;cmd=login&amp;redirect='.
-                (!empty($redirect) ? $redirect : base64_encode('section=shop')),
+                'index.php?section=shop&amp;cmd=login'.
+                (!empty($redirect) ? "&amp;redirect=$redirect" : ''),
 // TODO: Change the name of this placeholder to SHOP_STATUS and remove this.
             'SHOP_LOGIN_STATUS'                  => $this->statusMessage,
         ));
@@ -3260,15 +3288,21 @@ sendReq('', 1);
                 'SHOP_ACCOUNT_CITY'          => (isset($_SESSION['shop']['city'])       ? stripslashes($_SESSION['shop']['city']) : ''),
                 'SHOP_ACCOUNT_COUNTRY'       =>
                     $this->_getCountriesMenu(
-                        'countryId', $_SESSION['shop']['countryId']
+                        'countryId',
+                        (isset($_SESSION['shop']['countryId'])
+                          ? $_SESSION['shop']['countryId'] : 0
+                        )
                     ),
                 'SHOP_ACCOUNT_EMAIL'         => (isset($_SESSION['shop']['email'])      ? stripslashes($_SESSION['shop']['email']) : ''),
                 'SHOP_ACCOUNT_PHONE'         => (isset($_SESSION['shop']['phone'])      ? stripslashes($_SESSION['shop']['phone']) : ''),
                 'SHOP_ACCOUNT_FAX'           => (isset($_SESSION['shop']['fax'])        ? stripslashes($_SESSION['shop']['fax']) : ''),
-                'SHOP_ACCOUNT_EQUAL_ADDRESS' => $_SESSION['shop']['equalAddress'],
+                'SHOP_ACCOUNT_EQUAL_ADDRESS' =>
+                    (isset($_SESSION['shop']['equalAddress'])
+                      ? $_SESSION['shop']['equalAddress'] : ''
+                    ),
             ));
         }
-        if ($_SESSION['shop']['shipment']) {
+        if (!empty($_SESSION['shop']['shipment'])) {
             $this->objTemplate->setVariable(array(
                 'SHOP_ACCOUNT_COMPANY2'      => (isset($_SESSION['shop']['company2'])   ? stripslashes($_SESSION['shop']['company2']) : ''),
                 'SHOP_ACCOUNT_PREFIX2'       => (isset($_SESSION['shop']['prefix2'])    ? stripslashes($_SESSION['shop']['prefix2']) : ''),
@@ -3279,7 +3313,10 @@ sendReq('', 1);
                 'SHOP_ACCOUNT_CITY2'         => (isset($_SESSION['shop']['city2'])      ? stripslashes($_SESSION['shop']['city2']) : ''),
                 'SHOP_ACCOUNT_COUNTRY2'      => $this->arrCountries[$_SESSION['shop']['countryId2']]['countries_name'],
                 'SHOP_ACCOUNT_PHONE2'        => (isset($_SESSION['shop']['phone2'])     ? stripslashes($_SESSION['shop']['phone2']) : ''),
-                'SHOP_ACCOUNT_EQUAL_ADDRESS' => $_SESSION['shop']['equalAddress']
+                'SHOP_ACCOUNT_EQUAL_ADDRESS' =>
+                    (isset($_SESSION['shop']['equalAddress'])
+                      ? $_SESSION['shop']['equalAddress'] : ''
+                    ),
             ));
         } else {
             $this->objTemplate->hideBlock('shopShipmentAddress');
@@ -3389,13 +3426,13 @@ sendReq('', 1);
         // $_SESSION['shop']['paymentId'] may still be unset!
         // determine any valid value for it
         if (!isset($_SESSION['shop']['paymentId'])) {
-            $arrPaymentId = $this->objPayment->getCountriesRelatedPaymentIdArray($_SESSION['shop']['countryId'], $this->objCurrency->arrCurrency);
+            $arrPaymentId = Payment::getCountriesRelatedPaymentIdArray($_SESSION['shop']['countryId'], $this->objCurrency->arrCurrency);
             $_SESSION['shop']['paymentId'] = next($arrPaymentId);
         }
 
         if (   empty($_SESSION['shop']['paymentId'])
-            || empty($this->objPayment->arrPaymentObject[$_SESSION['shop']['paymentId']])
-            || $this->objPayment->arrPaymentObject[$_SESSION['shop']['paymentId']]['processor_id'] != 2) {
+            || Payment::getProperty($_SESSION['shop']['paymentId'], 'processor_id') != 2) {
+            // All payment processors except PayPal
             if (isset($_SESSION['shop']['currencyIdPrev'])) {
                 $_SESSION['shop']['currencyId'] = $_SESSION['shop']['currencyIdPrev'];
                 unset($_SESSION['shop']['currencyIdPrev']);
@@ -3403,6 +3440,7 @@ sendReq('', 1);
                 exit;
             }
         } else {
+            // PayPal payment processor (processor ID 2)
             require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
             $objPaypal = new PayPal;
             if (!in_array($this->objCurrency->getActiveCurrencyCode(), $objPaypal->arrAcceptedCurrencyCodes)) {
@@ -3481,14 +3519,16 @@ sendReq('', 1);
     {
         if ($_SESSION['shop']['shipment'] || $_SESSION['shop']['total_price'] > 0) {
             // get payment stuff
-            $arrPaymentId = $this->objPayment->getCountriesRelatedPaymentIdArray($_SESSION['shop']['countryId'], $this->objCurrency->arrCurrency);
+            $arrPaymentId = Payment::getCountriesRelatedPaymentIdArray(
+                $_SESSION['shop']['countryId'], $this->objCurrency->arrCurrency
+            );
             if (isset($_SESSION['shop']['paymentId'])) {
                 $_SESSION['shop']['paymentId'] = isset($_POST['paymentId']) ? intval($_POST['paymentId']) : $_SESSION['shop']['paymentId'];
             } else {
                 // get default payment Id
                 $_SESSION['shop']['paymentId'] = next($arrPaymentId);
             }
-            return $this->objPayment->getPaymentMenu(
+            return Payment::getPaymentMenu(
                 $_SESSION['shop']['paymentId'],
                 "document.forms['shopForm'].submit()",
                 $_SESSION['shop']['countryId'],
@@ -3517,7 +3557,6 @@ sendReq('', 1);
             if ($this->objVat->isIncluded()) {
                 // home country equals shop country; tax is included already
                 if ($_SESSION['shop']['countryId'] == intval($this->arrConfig['country_id']['value'])) {
-
                     $_SESSION['shop']['tax_price'] = $_SESSION['shop']['cart']['total_tax_amount'];
                     $_SESSION['shop']['grand_total_price']  = Currency::formatPrice(
                         $_SESSION['shop']['total_price']    +
@@ -3592,8 +3631,7 @@ sendReq('', 1);
 
         // added initializing of the payment processor below
         // in order to determine whether to show the LSV form.
-        $processorId = $this->objPayment->arrPaymentObject[$_SESSION['shop']['paymentId']]['processor_id'];
-        $processorName = $this->objProcessing->getPaymentProcessorName($processorId);
+        $processorName = Payment::getPaymentProcessorName($_SESSION['shop']['paymentId']);
         if ($processorName == 'Internal_LSV') {
             $status_LSV = $this->showLSV();
         }
@@ -3780,9 +3818,7 @@ right after the customer logs in!
     /**
      * Set up the common fields of the payment page
      *
-     * @param   unknown_type    $paymentStatus  Payment status
-     * @param   unknown_type    $paymentMenu    Payment dropdown menu, {@see _getPaymentMenu()}
-     * @param   unknown_type    $shipmentMenu   Shipment dropdown menu, {@see _getShipperMenu()}
+     * @param   string    $paymentStatus  Payment status
      * @return  void
      */
     function _getPaymentPage($paymentStatus)
@@ -3866,8 +3902,8 @@ right after the customer logs in!
         global $objDatabase, $_ARRAYLANG, $_LANGID;
 
         // if the cart is missing, return to the shop
-        if (!isset($_SESSION['shop']['cart'])) {
-            header("Location: index.php?section=shop".MODULE_INDEX."");
+        if (empty($_SESSION['shop']['cart'])) {
+            header('Location: index.php?section=shop'.MODULE_INDEX);
             exit;
         }
         // hide currency navbar
@@ -4098,7 +4134,7 @@ right after the customer logs in!
                 }
             } // foreach product in cart
 
-            $processorId = $this->objPayment->arrPaymentObject[$_SESSION['shop']['paymentId']]['processor_id'];
+            $processorId = Payment::getProperty($_SESSION['shop']['paymentId'], 'processor_id');
             $processorName = $this->objProcessing->getPaymentProcessorName($processorId);
              // other payment methods
             $objLanguage = new FWLanguage();
@@ -4150,11 +4186,6 @@ right after the customer logs in!
                 $_SESSION['shop']['isInstantPayment'] = true;
             }
 
-/* -> *MUST* be updated on success() page, like all other payment methods
-            if ($strProcessorType == 'internal') {
-                $this->updateOrderStatus($orderid);
-            }
-*/
             // Show payment processing page.
             // Note that some internal payments are redirected away
             // from this page in checkOut():
@@ -4277,14 +4308,13 @@ right after the customer logs in!
                     $this->objTemplate->parse("shopCartRow");
                 }
             }
-            // determine payment method
-            $strPayment = $this->objPayment->arrPaymentObject[$_SESSION['shop']['paymentId']]['name'];
             $this->objTemplate->setVariable(array(
                 'SHOP_UNIT'             => $this->aCurrencyUnitName,
                 'SHOP_TOTALITEM'        => $_SESSION['shop']['items'],
                 'SHOP_PAYMENT_PRICE'    => $_SESSION['shop']['payment_price'],
                 'SHOP_TOTALPRICE'       => $_SESSION['shop']['total_price'],
-                'SHOP_PAYMENT'          => $strPayment,
+                'SHOP_PAYMENT'          =>
+                    Payment::getProperty($_SESSION['shop']['paymentId'], 'name'),
                 'SHOP_GRAND_TOTAL'      => $_SESSION['shop']['grand_total_price'],
                 'SHOP_COMPANY'          => stripslashes($_SESSION['shop']['company']),
                 'SHOP_PREFIX'           => stripslashes($_SESSION['shop']['prefix']),
@@ -4345,7 +4375,7 @@ right after the customer logs in!
                 $this->objTemplate->setVariable(array(
                     'SHOP_SHIPMENT_PRICE'   => $_SESSION['shop']['shipment_price'],
                     'SHOP_SHIPMENT' =>
-                        $this->objShipment->getShipperName($_SESSION['shop']['shipperId']),
+                        Shipment::getShipperName($_SESSION['shop']['shipperId']),
                     'TXT_SHIPPING_METHOD'   => $_ARRAYLANG['TXT_SHIPPING_METHOD'],
                     'TXT_SHIPPING_ADDRESS'  => $_ARRAYLANG['TXT_SHIPPING_ADDRESS'],
                 ));
@@ -4389,7 +4419,6 @@ right after the customer logs in!
 
         // Hide the currency navbar
         $this->_hideCurrencyNavbar = true;
-
         $orderId = $this->objProcessing->checkIn();
         // True is returned for internal payment types only.
         if ($orderId === true) {
@@ -4430,7 +4459,7 @@ right after the customer logs in!
                 // has been cancelled.
                 $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
             }
-            $newOrderStatus = $this->updateOrderStatus($orderId, $newOrderStatus, $handler);
+            $newOrderStatus = Shop::updateOrderStatus($orderId, $newOrderStatus, $handler);
             switch ($newOrderStatus) {
                 case SHOP_ORDER_STATUS_CONFIRMED:
                 case SHOP_ORDER_STATUS_PAID:
@@ -4490,8 +4519,7 @@ right after the customer logs in!
      *                              if the order status can be changed
      *                              accordingly, zero otherwise
      */
-    //static
-    function updateOrderStatus($orderId, $newOrderStatus=0, $handler='')
+    static function updateOrderStatus($orderId, $newOrderStatus=0, $handler='')
     {
         global $objDatabase;
 
@@ -4619,8 +4647,7 @@ right after the customer logs in!
      * @return  boolean               True on success, false otherwise
      * @access  private
      */
-    // static
-    function _sendProcessedMail($orderId)
+    static function _sendProcessedMail($orderId)
     {
         global $objDatabase;
 
@@ -4687,8 +4714,7 @@ right after the customer logs in!
      * @param   integer $langId       The language ID
      * @return  string                The e-mail body
      */
-    //static
-    function _generateEmailBody($body, $orderId, $langId)
+    static function _generateEmailBody($body, $orderId, $langId)
     {
         global $objDatabase, $_ARRAYLANG, $_LANGID;
 
@@ -4948,20 +4974,13 @@ right after the customer logs in!
                 : 0
             );
         $shipperName =
-            ($shipperId > 0
-                ? $this->objShipment->getShipperName($shipperId)
-                : ''
-            );
+            ($shipperId > 0 ? Shipment::getShipperName($shipperId) : '');
         $paymentId =
             (isset($_SESSION['shop']['paymentId'])
                 ? $_SESSION['shop']['paymentId']
                 : 0
             );
-        $paymentName =
-            (isset($this->objPayment->arrPaymentObject[$paymentId])
-                ? $this->objPayment->arrPaymentObject[$paymentId]['name']
-                : ''
-            );
+        $paymentName = Payment::getProperty($paymentId, 'name');
         $orderData =
             "-----------------------------------------------------------------\n".
             $_ARRAYLANG['TXT_ORDER_INFOS']."\n".
@@ -5073,8 +5092,7 @@ right after the customer logs in!
      * @author    Reto Kohli <reto.kohli@comvation.com>
      * @todo    Move this to the Manufacturer class!
      */
-    //static
-    function _getManufacturerMenu($selectedId=0)
+    static function _getManufacturerMenu($selectedId=0)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -5116,8 +5134,7 @@ right after the customer logs in!
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @todo    Move this to the Manufacturer class!
      */
-    //static
-    function _getManufacturerName($id)
+    static function _getManufacturerName($id)
     {
         global $objDatabase;
 
@@ -5143,8 +5160,7 @@ right after the customer logs in!
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @todo    Move this to the Manufacturer class!
      */
-    //static
-    function _getManufacturerUrl($id)
+    static function _getManufacturerUrl($id)
     {
         global $objDatabase;
 
@@ -5215,83 +5231,6 @@ right after the customer logs in!
                 'SHOP_CUSTOMER_NEW_DISCOUNT_AMOUNT'    => number_format($newDiscountAmount, 2, '.', '').' '.$this->aCurrencyUnitName,
                 'TXT_SHOP_CUSTOMER_DISCOUNT_DETAILS'   => $_ARRAYLANG['TXT_SHOP_CUSTOMER_DISCOUNT_DETAILS'],
             ));
-        }
-        return true;
-    }
-
-
-    /**
-     * Deletes the order with the given ID.
-     *
-     * Also removes related order items, attributes, the customer, and the
-     * user accounts created for the downloads.
-     * @param   integer   $orderId        The order ID
-     * @return  boolean                   True on success, false otherwise
-     * @global  ADONewConnection
-     * @author    Reto Kohli <reto.kohli@comvation.com>
-     */
-    function deleteOrder($orderId)
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT customerid, order_date
-              FROM ".DBPREFIX."module_shop_orders
-             WHERE orderid=$orderId
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        $customerId = $objResult->fields['customerid'];
-        $orderDate = $objResult->fields['order_date'];
-
-        $query = "
-            DELETE FROM ".DBPREFIX."module_shop_order_items_attributes
-             WHERE order_id=$orderId
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-
-        $query = "
-            DELETE FROM ".DBPREFIX."module_shop_order_items
-             WHERE orderid=$orderId
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-
-        $query = "
-            DELETE FROM ".DBPREFIX."module_shop_orders
-             WHERE orderid=$orderId
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-
-        $query = "
-            DELETE FROM ".DBPREFIX."module_shop_customers
-             WHERE customerid=$customerId
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-
-        $orderIdCustom = ShopLibrary::getCustomOrderId($orderId, $orderDate);
-        $objFWUser = FWUser::getFWUserObject();
-        $objUser = $objFWUser->objUser->getUsers(array('username' => $orderIdCustom.'-%'));
-        if ($objUser) {
-            while (!$objUser->EOF) {
-                if (!$objUser->delete()) {
-                    return false;
-                }
-                $objUser->next();
-            }
         }
         return true;
     }

@@ -4,67 +4,42 @@
  * Shop library
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
- * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
+ * @version     2.1.0
  */
 
-// Order status constant values
 /**
- * Order status: pending
+ * Order status constant values
+ * @author  Reto Kohli <reto.kohli@comvation.com>
  */
 define('SHOP_ORDER_STATUS_PENDING',   0);
-/**
- * Order status: confirmed
- */
 define('SHOP_ORDER_STATUS_CONFIRMED', 1);
-/**
- * Order status: deleted
- */
 define('SHOP_ORDER_STATUS_DELETED',   2);
-/**
- * Order status: cancelled
- */
 define('SHOP_ORDER_STATUS_CANCELLED', 3);
-/**
- * Order status: completed
- */
 define('SHOP_ORDER_STATUS_COMPLETED', 4);
-/**
- * Order status: paid
- */
 define('SHOP_ORDER_STATUS_PAID',      5);
-/**
- * Order status: shipped
- */
 define('SHOP_ORDER_STATUS_SHIPPED',   6);
 /**
  * Total number of states.
  * @internal Keep this up to date!
+ * @author  Reto Kohli <reto.kohli@comvation.com>
  */
 define('SHOP_ORDER_STATUS_COUNT',     7);
 
-// Payment result constant values
 /**
- * Payment result: success (silent)
+ * Payment result constant values
+ * @author  Reto Kohli <reto.kohli@comvation.com>
  */
 define('SHOP_PAYMENT_RESULT_SUCCESS_SILENT', -1);
-/**
- * Payment result: fail
- */
 define('SHOP_PAYMENT_RESULT_FAIL',            0);
-/**
- * Payment result: success
- */
 define('SHOP_PAYMENT_RESULT_SUCCESS',         1);
-/**
- * Payment result: cancel
- */
 define('SHOP_PAYMENT_RESULT_CANCEL',          2);
 /**
- * Total number of result types
+ * Total number of possible results (-1 does count as 1)
  * @internal Keep this up to date!
+ * @author  Reto Kohli <reto.kohli@comvation.com>
  */
 define('SHOP_PAYMENT_RESULT_COUNT',           3);
 
@@ -73,12 +48,12 @@ define('SHOP_PAYMENT_RESULT_COUNT',           3);
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @access      public
- * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Add a proper constructor that initializes the class with its
  *              various variables, and/or move the appropriate parts to
  *              a pure Shop class.
+ * @version     2.1.0
  */
 class ShopLibrary
 {
@@ -89,19 +64,30 @@ class ShopLibrary
      * Someone might try to access them before they are set up!
      */
     public $arrConfig = array();
-    private $arrCurrencies = array();
-    private $arrShipment = array();
-    private $arrPayment = array();
-    private $arrShopMailTemplate = array();
 
     /**
      * Array of all countries
-     *
      * @var     array [$arrCountries] array of all countries
      * @access  public
      * @see     _initCountries()
      */
-    private $arrCountries = array();
+    public $arrCountries = array();
+
+    /**
+     * Sorting order strings according to the corresponding setting
+     *
+     * Order 1: By order field value ascending, ID descending
+     * Order 2: By title ascending, Product ID ascending
+     * Order 3: By Product ID ascending, title ascending
+     * @var     array
+     * @see     Products::getByShopParam()
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    public static $arrProductOrder = array(
+        1 => 'p.sort_order ASC, p.id DESC',
+        2 => 'p.title ASC, p.product_id ASC',
+        3 => 'p.product_id ASC, p.title ASC',
+    );
 
 
     /**
@@ -123,61 +109,6 @@ class ShopLibrary
         }
         return $arrZones;
     }
-
-
-    /**
-     * Returns an array of image names, widths and heights from
-     * the base64 encoded string taken from the Database
-     *
-     * @param   string  $base64Str  The base64 encoded image string
-     * @return  array               The decoded images, like:
-     * array(1 => array('img' => <image1>, 'width' => <image1.width>, 'height' => <image1.height>),
-     *       ... (three images in total)
-     * )
-     */
-    function _getShopImagesFromBase64String($base64Str)
-    {
-        // Pre-init array to avoid "undefined index" notices
-        $arrPictures = array(
-            1 => array('img' => '', 'width' => 0, 'height' => 0),
-            2 => array('img' => '', 'width' => 0, 'height' => 0),
-            3 => array('img' => '', 'width' => 0, 'height' => 0)
-        );
-        if (strpos($base64Str, ':') === false) {
-            // have to return an array with the desired number of elements
-            // and an empty file name in order to show the "dummy" picture(s)
-            return $arrPictures;
-        }
-        $i = 0;
-        foreach (explode(':', $base64Str) as $imageData) {
-            list($shopImage, $shopImage_width, $shopImage_height) = explode('?', $imageData);
-            $shopImage        = base64_decode($shopImage);
-            $shopImage_width  = base64_decode($shopImage_width);
-            $shopImage_height = base64_decode($shopImage_height);
-            $arrPictures[++$i] = array(
-                'img'    => $shopImage,
-                'width'  => $shopImage_width,
-                'height' => $shopImage_height,
-            );
-        }
-        return $arrPictures;
-    }
-
-
-    /**
-     * In_array replacement for multi dim. arrays
-     * NOT USED ANYMORE!
-     *
-     * @return boolean
-     */
-    /*
-    function ______in_array_multi($needle, $haystack)
-    {
-       $found = false;
-       foreach($haystack as $value) if((is_array($value) && in_array_multi($needle, $value)) || $value == $needle) $found = true;
-       return $found;
-    }
-    */
 
 
     function _getRelCountries()
@@ -343,29 +274,6 @@ class ShopLibrary
     }
 
 
-    function _initPayment()
-    {
-        global $objDatabase;
-
-         $query = "SELECT id, name, processor_id, costs, costs_free_sum, sort_order, status ".
-                  "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment ".
-                  "ORDER BY sort_order";
-         $objResult = $objDatabase->Execute($query);
-         while (!$objResult->EOF) {
-            $this->arrPayment[$objResult->fields['id']] = array(
-                'id' => $objResult->fields['id'],
-                'name' => $objResult->fields['name'],
-                'processor_id' => $objResult->fields['processor_id'],
-                'costs' => $objResult->fields['costs'],
-                'costs_free_sum' => $objResult->fields['costs_free_sum'],
-                'sort_order' => $objResult->fields['sort_order'],
-                'status' => $objResult->fields['status']
-            );
-            $objResult->MoveNext();
-        }
-    }
-
-
     /**
      * gets a select box with all the payment handlers
      *
@@ -440,9 +348,9 @@ class ShopLibrary
      * @param   string    $shopMailBody         Message body
      * @return  boolean                         True if the mail could be sent,
      *                                          false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function shopSendMail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody)
+    static function shopSendmail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody)
     {
         global $_CONFIG;
 
@@ -489,9 +397,9 @@ class ShopLibrary
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @return  mixed                       The mail template array on success,
      *                                      false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function shopSetMailtemplate($shopTemplateId, $langId)
+    static function shopSetMailtemplate($shopTemplateId, $langId)
     {
         global $objDatabase;
 
@@ -619,12 +527,11 @@ class ShopLibrary
      * @param   integer   $orderId        The order ID
      * @return  string                    The custom order ID
      * @global  ADONewConnection  $objDatabase    Database connection object
-
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function getCustomOrderId($orderId)
     {
         global $objDatabase;
-
 
         $query = "
             SELECT lastname
@@ -642,6 +549,38 @@ class ShopLibrary
         // Or something along the lines
         //$year = preg_replace('/^\d\d(\d\d).+$/', '$1', $orderDateTime);
         //return "$year-$orderId";
+    }
+
+
+    /**
+     * Scale the given image size down to thumbnail size
+     *
+     * The target thumbnail size is taken from the configuration.
+     * The argument and returned arrays use the indices as follows:
+     *  array(0 => width, 1 => height)
+     * In addition, index 3 of the array returned contains a
+     * string with the width and height attribute string, very much like
+     * the result of getimagesize().
+     * Note that the array argument is passed by reference and its
+     * values overwritten for the indices mentioned!
+     * @param   array   $arrSize      The original image size array, by reference
+     * @return  array                 The scaled down (thumbnail) image size array
+     */
+    function scaleImageSizeToThumbnail(&$arrSize)
+    {
+        $thumbWidthMax = $this->arrConfig['shop_thumbnail_max_width']['value'];
+        $thumbHeightMax = $this->arrConfig['shop_thumbnail_max_height']['value'];
+        $ratioWidth = $thumbWidthMax/$arrSize[0];
+        $ratioHeight = $thumbHeightMax/$arrSize[1];
+        if ($ratioWidth > $ratioHeight) {
+            $arrSize[0] = intval($arrSize[0]*$ratioHeight);
+            $arrSize[1] = $thumbHeightMax;
+        } else {
+            $arrSize[0] = $thumbWidthMax;
+            $arrSize[1] = intval($arrSize[1]*$ratioWidth);
+        }
+        $arrSize[3] = 'width="'.$arrSize[0].'" height="'.$arrSize[1].'"';
+        return $arrSize;
     }
 
 
@@ -668,8 +607,9 @@ class ShopLibrary
      *
      * If no valid ID is specified, looks in the GET and POST request
      * arrays for parameters called orderId and selectedOrderId, respectively.
-     * Also removes related order items, attributes, the customer, and the
+     * Also removes related order items, attributes, uploaded files, and the
      * user accounts created for the downloads.
+     * @todo    Fix user account deletion
      * @param   integer   $orderId        The optional order ID
      * @return  boolean                   True on success, false otherwise
      * @global  mixed     $objDatabase    Database object
@@ -679,7 +619,7 @@ class ShopLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $arrOrderId = array();
-        // prepare the array $arrOrderId with the ids of the orders to delete
+        // Prepare the array with the IDs of the orders to delete
         if (empty($orderId)) {
             if (isset($_GET['orderId']) && !empty($_GET['orderId'])) {
                 array_push($arrOrderId, $_GET['orderId']);
@@ -712,7 +652,7 @@ class ShopLibrary
                     $objResult->fields['product_option_value'];
                 if (file_exists($filename)) {
                     if (@unlink($filename)) {
-                        //$this->addMessage("Datei $filename gelöscht");
+                        //$this->addMessage("Datei $filename gelscht");
                     } else {
                         $this->addError(sprintf($_ARRAYLANG['TXT_SHOP_ERROR_DELETING_FILE'], $filename));
                     }
@@ -789,3 +729,4 @@ class ShopLibrary
 }
 
 ?>
+

@@ -8,7 +8,7 @@
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
  * @author      Reto Kohli <reto.kohli@astalavista.ch>
  * @access      public
- * @version     1.0.0
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -26,7 +26,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
  * @author      Reto Kohli <reto.kohli@astalavista.ch>
  * @access      public
- * @version     1.0.1
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  */

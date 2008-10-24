@@ -3,8 +3,8 @@
 <!-- //
 function deleteCustomer(customerId)
 {
-    if(confirm('{TXT_CONFIRM_DELETE_CUSTOMER}\n {TXT_ALL_ORDERS_WILL_BE_DELETED}\n {TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delcustomer&customerId="+customerId);
+  if (confirm('{TXT_CONFIRM_DELETE_CUSTOMER}\n {TXT_ALL_ORDERS_WILL_BE_DELETED}\n {TXT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delcustomer&customerId="+customerId);
 }
 
 function sendForm(letter)
@@ -13,12 +13,12 @@ function sendForm(letter)
     document.formSearchCustomers.submit();
 }
 
-function shopCustomersDoAction(strForm,strCheckbox,objSelect,strAct)
+function shopCustomersDoAction(strForm, strCheckbox, objSelect, strAct)
 {
-  if(checkboxIsChecked(strForm,strCheckbox) == true){
-    switch(strAct){
+  if (checkboxIsChecked(strForm, strCheckbox) == true) {
+    switch (strAct) {
       case 'del':
-        if(confirm('{TXT_CONFIRM_DELETE_CUSTOMER}\n {TXT_ALL_ORDERS_WILL_BE_DELETED}\n {TXT_ACTION_IS_IRREVERSIBLE}')){
+        if (confirm('{TXT_CONFIRM_DELETE_CUSTOMER}\n {TXT_ALL_ORDERS_WILL_BE_DELETED}\n {TXT_ACTION_IS_IRREVERSIBLE}')) {
           document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=delcustomer";
           document.forms[strForm].submit();
         }

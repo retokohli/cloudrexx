@@ -3,31 +3,31 @@
 <!-- //
 function deleteCurrency(cId)
 {
-  if(confirm('{TXT_CONFIRM_DELETE_CURRENCY}\n{TXT_ACTION_IS_IRREVERSIBLE}!'))
+  if (confirm('{TXT_CONFIRM_DELETE_CURRENCY}\n{TXT_ACTION_IS_IRREVERSIBLE}!'))
     window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=currency&currencyId="+cId);
 }
 
 function updateCurrencyCode(selectElement)
 {
-  value = selectElement.value;
-  symbolElement = document.getElementById("currencySymbolNew");
+  var value = selectElement.value;
+  var symbolElement = document.getElementById("currencySymbolNew");
   symbolElement.value = value;
-  text = selectElement.options[selectElement.selectedIndex].text;
+  var text = selectElement.options[selectElement.selectedIndex].text;
 //alert("value "+value+"\ntext: "+text);
   text = text.replace(/^\w+\s+(.+)$/, "$1");
-  nameElement = document.getElementById("currencyNameNew");
+  var nameElement = document.getElementById("currencyNameNew");
   nameElement.value = text;
 }
 
 function updateExchangeRates(selectedElement)
 {
   // The Currency ID
-  indexSelected = selectedElement.value;
+  var indexSelected = selectedElement.value;
   // The ID of the previous standard Currency.
   // This can only be determined if its rate is exactly 1.
-  indexStandard = -1;
+  var indexStandard = -1;
   // The factor used to calculate the new exchange rates
-  standardFactor = document.getElementsByName("currencyRate["+indexSelected+"]")[0].value;
+  var standardFactor = document.getElementsByName("currencyRate["+indexSelected+"]")[0].value;
 //alert("standard factor: "+standardFactor);
   // If no standard factor can be determined, use 1.
   // This means that none of the rates are actually changed, except for
@@ -36,20 +36,20 @@ function updateExchangeRates(selectedElement)
     standardFactor = 1;
   }
   // Find all input elements
-  arrInputElement = document.getElementsByTagName('input');
+  var arrInputElement = document.getElementsByTagName('input');
 //alert("element: "+arrInputElement+", length: "+arrInputElement.length);
   // Array to store all exchange rate elements,
   // except for the new standard currency.
-  arrRateElement = new Array();
+  var arrRateElement = new Array();
   // Loop through the input elements
-  for (i = 0; i < arrInputElement.length; ++i) {
-    element = arrInputElement[i];
+  for (var i = 0; i < arrInputElement.length; ++i) {
+    var element = arrInputElement[i];
     // Skip non currency rate fields
     if (!element.name.match(/^currencyRate\[(\d+)\]/)) {
       continue;
     }
     // The index, aka Currency ID
-    index = RegExp.$1
+    var index = RegExp.$1
     // Nothing to do for the new standard currency here.
     if (index == indexSelected) {
       continue;
@@ -66,7 +66,7 @@ function updateExchangeRates(selectedElement)
   }
   // Only if there was a previous standard currency with a rate of 1...
   if (indexStandard != -1) {
-    for (i = 0; i < arrRateElement.length; ++i) {
+    for (var i = 0; i < arrRateElement.length; ++i) {
       element = arrRateElement[i];
       // ...update the other rates
       element.value = (element.value / standardFactor).toFixed(6);
