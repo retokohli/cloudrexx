@@ -1,55 +1,51 @@
 <!-- START module_shop_settings_mail.html -->
 <script language="javascript" type="text/javascript">
-<!-- //
-
+// <![CDATA[
 function delMail(mailId)
 {
-  if(!mailId){
+  if (!mailId) {
     alert("{TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE}");
   } else {
-    if(confirm("{TXT_CONFIRM_DELETE_TEMPLATE_LANGUAGE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
+    if (confirm("{TXT_CONFIRM_DELETE_TEMPLATE_LANGUAGE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
       window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&delMailId="+mailId);
   }
 }
 
 function delTpl(tplId)
 {
-  if(confirm("{TXT_CONFIRM_DELETE_TEMPLATE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
+  if (confirm("{TXT_CONFIRM_DELETE_TEMPLATE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
     window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&delTplId="+tplId);
 }
 
 function sendMail()
 {
-  if(document.getElementById('shopMailTo').value == ""){
+  if (document.getElementById('shopMailTo').value == "") {
     alert("{TXT_PLEASE_SET_RECEIPTOR_ADDRESS}");
     return false;
-  } else {
-    if(document.shopFormSend.elements['shopMailFromAddress'].value == ""){
-      alert("{TXT_SET_MAIL_FROM_ADDRESS}");
-      return false;
-    } else {
-      return true;
-    }
   }
+  if (document.shopFormSend.elements['shopMailFromAddress'].value == "") {
+    alert("{TXT_SET_MAIL_FROM_ADDRESS}");
+    return false;
+  }
+  return true;
 }
 
-function loadTpl(tplId,langId,strTab)
+function loadTpl(tplId, langId, strTab)
 {
-  strUri = "index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&tplId="+tplId+"&langId="+langId+"&strTab="+strTab;
-  if(document.getElementById('portMail')){
-    if(document.shopFormEdit.elements['portMail'].checked == true){
+  var strUri = "index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&tplId="+tplId+"&langId="+langId+"&strTab="+strTab;
+  if (document.getElementById('portMail')) {
+    if (document.shopFormEdit.elements['portMail'].checked == true) {
       strUri += "&portLangId="+document.shopFormEdit.elements['loadedLangId'].value;
     }
   }
-  if(strTab == "shopMailSend"){
-    if(document.getElementById('shopMailTo') != ""){
+  if (strTab == "shopMailSend") {
+    if (document.getElementById('shopMailTo') != "") {
       strUri += "&shopMailTo="+document.getElementById('shopMailTo').value;
     }
   }
   window.location.replace(strUri);
 }
-
-// -->
+// ]]>
 </script>
 <style type="text/css">
 <!--

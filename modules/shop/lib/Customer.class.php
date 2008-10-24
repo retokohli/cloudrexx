@@ -5,7 +5,7 @@
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     $Id: 1.0.0$
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Test!
@@ -27,7 +27,7 @@ ADD `group_id` INT(10) UNSIGNED NULL DEFAULT NULL;
  * to access the database directly!
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     $Id: 1.0.0$
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -167,7 +167,6 @@ class Customer
      * @access  private
      */
     private $activeStatus = true;
-// vogt
 
     /**
      * The ID of the customer group
@@ -214,7 +213,7 @@ class Customer
         $this->countryId = intval($countryId);
         $this->phone     = strip_tags(trim($phone));
         $this->fax       = strip_tags(trim($fax));
-        // defaults for the remaining fields
+        // The remaining fields keep their default values for the time being.
     }
 
 

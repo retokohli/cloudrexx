@@ -3,37 +3,37 @@
 <!-- //
 function deleteVat(vatId)
 {
-    if(confirm("{TXT_TAX_CONFIRM_DELETE}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
-        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&vatid=" + vatId);
-    }
+  if (confirm("{TXT_TAX_CONFIRM_DELETE}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&vatid=" + vatId);
+  }
 }
 function setVatAll()
 {
-    if(confirm("{TXT_TAX_CONFIRM_SET_ALL}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
-        var vatId = document.forms.shopForm.tax_default_id.value;
-        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&setVatAll=" + vatId);
-    }
+  if (confirm("{TXT_TAX_CONFIRM_SET_ALL}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
+    var vatId = document.forms.shopForm.tax_default_id.value;
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&setVatAll=" + vatId);
+  }
 }
 function setVatUnset()
 {
-    if(confirm("{TXT_TAX_CONFIRM_SET_UNSET}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
-        var vatId = document.forms.shopForm.tax_default_id.value;
-        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&setVatUnset=" + vatId);
-    }
+  if (confirm("{TXT_TAX_CONFIRM_SET_UNSET}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
+    var vatId = document.forms.shopForm.tax_default_id.value;
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&setVatUnset=" + vatId);
+  }
 }
 //Text[0]=["","{}"];
 //Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
 //function getElementId(objFormName,objElementName) {
 //    for(var i=0;i<document.forms[objFormName].elements.length;i++) {
-//        if(document.forms[objFormName].elements[i].name == objElementName) {
+//        if (document.forms[objFormName].elements[i].name == objElementName) {
 //            return i;
 //        }
 //    }
 //}
 //function validateForm(objFormName) {
 //    getElementId(objFormName,"general_yellowpay_id_status");
-//    if(document.forms[objFormName].elements[getElementId(objFormName,"general_yellowpay_id_status")].checked == true) {
-//        if(document.forms[objFormName].elements[getElementId(objFormName,"general_yellowpay_id")].value == "") {
+//    if (document.forms[objFormName].elements[getElementId(objFormName,"general_yellowpay_id_status")].checked == true) {
+//        if (document.forms[objFormName].elements[getElementId(objFormName,"general_yellowpay_id")].value == "") {
 //            alert("ss");
 //        }
 //    }
@@ -87,12 +87,9 @@ function setVatUnset()
       <td nowrap="nowrap">{TXT_COUNTRY}</td>
       <td nowrap="nowrap">{SHOP_GENERAL_COUNTRY}</td>
     </tr>
-
     <tr class="row2">
       <td nowrap="nowrap">{TXT_SHOP_SETTING_WEIGHT_ENABLE}</td>
       <td nowrap="nowrap"><input type="checkbox" name="shop_weight_enable" value="1"{SHOP_WEIGHT_ENABLE_CHECKED} /></td>
-
-<!-- vogt -->
     <tr class="row2">
       <td nowrap="nowrap">{TXT_SHOP_PRODUCT_SORTING}</td>
       <td nowrap="nowrap">
@@ -100,7 +97,6 @@ function setVatUnset()
           {SHOP_PRODUCT_SORTING}
         </select>
       </td>
-
     </tr>
   </table>
   <br />

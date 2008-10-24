@@ -27,10 +27,10 @@ function shopProductsDoAction(obj,act)
 function shopProductsIsChecked(fieldName)
 {
   var x = 0;
-  for (var i = 0; i < document.formCatalog.elements.length; i++) {
+  for (var i = 0; i < document.formCatalog.elements.length; ++i) {
     var e = document.formCatalog.elements[i];
     if (e.name == fieldName && e.checked == true) {
-      x++;
+      ++x;
     }
   }
   if (x > 0) {

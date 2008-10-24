@@ -3,7 +3,7 @@
 /**
  * Shop Products
  *
- * @version     $Id: 1.0.1$
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Test!
@@ -43,7 +43,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/ProductAttributes.class.php';
  * Includes access methods and data layer.
  * Do not, I repeat, do not access private fields, or even try
  * to access the database directly!
- * @version     $Id: 1.0.1 $
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -74,8 +74,7 @@ class Product
      * @static
      * @var     string
      */
-    //static
-    private $defaultThumbnail = 'no_picture.gif';
+    static private $defaultThumbnail = 'no_picture.gif';
 
     /**
      * @var     string          $code               Product code
@@ -83,7 +82,7 @@ class Product
      */
     private $code = '';
     /**
-     * @var     integer         $catId              ShopCategory of the Product
+     * @var     integer         $categoryId              ShopCategory of the Product
      * @access  private
      */
     private $catId = 0;
@@ -271,7 +270,7 @@ class Product
      * access methods.
      * @access  public
      * @param   string  $code           The Product code
-     * @param   integer $catId          The ShopCategory ID of the Product
+     * @param   integer $categoryId     The ShopCategory ID of the Product
      * @param   string  $name           The Product name
      * @param   string  $distribution   The Distribution type
      * @param   float   $price          The Product price
@@ -283,16 +282,16 @@ class Product
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct(
-        $code, $catId, $name, $distribution, $price,
+        $code, $categoryId, $name, $distribution, $price,
         $status, $sortingOrder, $weight, $id=0
     ) {
         // Assign & check
         $this->code         = strip_tags($code);
-        $this->catId        = intval($catId);
+        $this->categoryId   = intval($categoryId);
         $this->name         = strip_tags($name);
         $this->distribution = strip_tags($distribution);
         $this->price        = floatval($price);
-        $this->sortingOrder      = intval($sortingOrder);
+        $this->sortingOrder = intval($sortingOrder);
         $this->weight       = intval($weight);
         $this->id           = intval($id);
         $this->setStatus($status);
@@ -367,7 +366,7 @@ class Product
      */
     function getShopCategoryId()
     {
-        return $this->catId;
+        return $this->categoryId;
     }
     /**
      * Set the ShopCategory ID
@@ -376,7 +375,7 @@ class Product
      */
     function setShopCategoryId($shopCategoryId)
     {
-        $this->ShopCategoryId = intval($shopCategoryId);
+        $this->categoryId = intval($shopCategoryId);
     }
 
     /**
@@ -1249,7 +1248,7 @@ class Product
             SET product_id='".addslashes($this->code)."',
                 picture='$this->pictures',
                 title='".addslashes($this->name)."',
-                catid=$this->catId,
+                catid=$this->categoryId,
                 handler='$this->distribution',
                 normalprice=$this->price,
                 resellerprice=$this->resellerPrice,
@@ -1313,7 +1312,7 @@ class Product
                 group_id, article_id, keywords
             ) VALUES ('".
                 addslashes($this->code)."', '$this->pictures', '".
-                addslashes($this->name)."', $this->catId,
+                addslashes($this->name)."', $this->categoryId,
                 '$this->distribution',
                 $this->price, $this->resellerPrice, '".
                 addslashes($this->shortDesc)."', '".
@@ -1334,7 +1333,7 @@ class Product
                 '".addslashes($this->flags)."',
                 '$this->usergroups',
                 $this->groupCountId, $this->groupArticleId, '".
-                contrexx_addslashes($this->keywords)."'
+                addslashes($this->keywords)."'
             )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
@@ -1356,8 +1355,7 @@ class Product
      * @global      ADONewConnection
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getById($id)
+    static function getById($id)
     {
         global $objDatabase;
 
@@ -1477,8 +1475,7 @@ class Product
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getWildcardQuery($arrPattern)
+    static function getWildcardQuery($arrPattern)
     {
         global $objDatabase;
 
@@ -1511,8 +1508,7 @@ class Product
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getByWildcard($arrPattern)
+    static function getByWildcard($arrPattern)
     {
         global $objDatabase;
 
@@ -1543,8 +1539,7 @@ class Product
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function deleteByShopCategory($catId)
+    static function deleteByShopCategory($catId)
     {
         $arrProducts = Product::getByShopCategoryId($catId);
         if (is_array($arrProducts)) {

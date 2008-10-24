@@ -7,7 +7,7 @@
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
- * @version     $Id: 1.0.1 $
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -33,72 +33,43 @@ define('SHOP_CATEGORY_IMAGE_WEB_PATH',  ASCMS_SHOP_IMAGES_WEB_PATH.'/');
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
- * @version     $Id: 1.0.1 $
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  */
 class ShopCategories
 {
     /**
-     * The Products helper object.
-     * @var     Products
-     */
-    var $objProducts;
-    /**
      * ShopCategory Tree array
      * @var     array
      * @access  private
      */
-    var $arrShopCategory;
+    private static $arrShopCategory;
     /**
      * ShopCategory array index
      * @var     array
      * @access  private
      */
-    var $arrShopCategoryIndex;
+    private static $arrShopCategoryIndex;
     /**
      * Virtual ShopCategory Tree array
      * @var     array
      * @access  private
      */
-    var $arrShopCategoryVirtual;
+    private static $arrShopCategoryVirtual;
     /**
      * Virtual ShopCategory array index
      * @var     array
      * @access  private
      */
-    var $arrShopCategoryVirtualIndex;
+    private static $arrShopCategoryVirtualIndex;
     /**
      * The trail from the root (0, zero) to the selected ShopCategory.
      *
      * See {@link getTrailArray()} for details.
      * @var     array
      */
-    var $arrTrail;
-
-
-    /**
-     * Create a new ShopCategories object(PHP4)
-     * @return  ShopCategories              The ShopCategories object
-     * @todo    Make this multilingual!
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function ShopCategories()
-    {
-        $this->__construct();
-    }
-
-
-    /**
-     * Create a new ShopCategories object(PHP4)
-     * @return  ShopCategories            The ShopCategories object
-     * @todo    Make this multilingual!
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function __construct()
-    {
-        $this->objProducts = new Products();
-    }
+    private static $arrTrail;
 
 
     /**
@@ -130,27 +101,28 @@ class ShopCategories
      *                                      Defaults to 0 (zero).
      * @return  mixed                       The array of ShopCategories on
      *                                      success, false on failure.
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getTreeArray(
+    static function getTreeArray(
         $flagFull=false, $flagActiveOnly=true, $flagVirtual=true,
         $selectedId=0, $parentCategoryId=0, $maxlevel=0
     ) {
         // Return the same array if it's already been initialized
-        if (is_array($this->arrShopCategory)) {
-            return $this->arrShopCategory;
+        if (is_array(self::$arrShopCategory)) {
+            return self::$arrShopCategory;
         }
         // Otherwise, initialize it now
-        if ($this->buildTreeArray(
+        if (self::buildTreeArray(
             $flagFull, $flagActiveOnly, $flagVirtual,
             $selectedId, $parentCategoryId, $maxlevel
         )) {
-            return $this->arrShopCategory;
+            return self::$arrShopCategory;
         }
         // It failed, probably due to a value of $selectedId that doesn't
         // exist.  Retry without it.
         if ($selectedId > 0) {
-            return $this->buildTreeArray(
+            return self::buildTreeArray(
                 $flagFull, $flagActiveOnly, $flagVirtual,
                 0, $parentCategoryId, $maxlevel
             );
@@ -172,13 +144,14 @@ class ShopCategories
      * @version 1.1
      * @return  mixed                       The ShopCategoriy index array on
      *                                      success, false on failure.
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getTreeIndexArray()
+    static function getTreeIndexArray()
     {
         // Return the same array if it's already been initialized
-        if (is_array($this->arrShopCategoryIndex)) {
-            return $this->arrShopCategoryIndex;
+        if (is_array(self::$arrShopCategoryIndex)) {
+            return self::$arrShopCategoryIndex;
         }
         return false;
     }
@@ -225,21 +198,22 @@ class ShopCategories
      *                                      0 (zero) means all.
      *                                      Defaults to 0 (zero).
      * @return  boolean                     True on success, false otherwise.
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function buildTreeArray(
+    static function buildTreeArray(
         $flagFull=false, $flagActiveOnly=true, $flagVirtual=true,
         $selectedId=0, $parentCategoryId=0, $maxlevel=0
     ) {
-        $this->arrShopCategory = array();
-        $this->arrShopCategoryIndex = array();
+        self::$arrShopCategory = array();
+        self::$arrShopCategoryIndex = array();
 
         // Set up the trail from the root (0, zero) to the selected ShopCategory
-        if (!$this->buildTrailArray($selectedId)) {
+        if (!self::buildTrailArray($selectedId)) {
             return false;
         }
 
-        if (!$this->buildTreeArrayRecursive(
+        if (!self::buildTreeArrayRecursive(
             $flagFull, $flagActiveOnly, $flagVirtual,
             $selectedId, $parentCategoryId, $maxlevel
         )) {
@@ -279,9 +253,10 @@ class ShopCategories
      *                                      initially 0.
      *                                      Defaults to 0 (zero).
      * @return  boolean                     True on success, false otherwise.
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function buildTreeArrayRecursive(
+    static function buildTreeArrayRecursive(
         $flagFull=false, $flagActiveOnly=true, $flagVirtual=true,
         $selectedId=0, $parentCategoryId=0, $maxlevel=0, $level=0
     ) {
@@ -296,8 +271,8 @@ class ShopCategories
         }
         foreach ($arrShopCategory as $objShopCategory) {
             $id = $objShopCategory->getId();
-            $index = count($this->arrShopCategory);
-            $this->arrShopCategory[$index] = array(
+            $index = count(self::$arrShopCategory);
+            self::$arrShopCategory[$index] = array(
                 'id'       => $id,
                 'name'     => $objShopCategory->getName(),
                 'parentId' => $objShopCategory->getParentId(),
@@ -308,15 +283,15 @@ class ShopCategories
                 'virtual'  => $objShopCategory->isVirtual(),
                 'level'    => $level,
             );
-            $this->arrShopCategoryIndex[$id] = $index;
+            self::$arrShopCategoryIndex[$id] = $index;
             // Get the grandchildren if
             // - the maximum depth has not been exceeded and
             // - the full list has been requested, or the current ShopCategory
             //   is an ancestor of the selected one or the selected itself.
             if (($maxlevel == 0 || $level < $maxlevel)
-             && ($flagFull || in_array($id, $this->arrTrail))
+             && ($flagFull || in_array($id, self::$arrTrail))
              && (!$objShopCategory->isVirtual() || $flagVirtual)) {
-                $this->buildTreeArrayRecursive(
+                self::buildTreeArrayRecursive(
                     $flagFull, $flagActiveOnly, $flagVirtual,
                     $selectedId, $id, $maxlevel, $level+1
                 );
@@ -341,9 +316,10 @@ class ShopCategories
      * @return  string                      The ShopCategory ID list
      *                                      on success, false otherwise.
      * @global  ADONewConnection  $objDatabase    Database connection object
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getSearchCategoryIdString(
+    static function getSearchCategoryIdString(
         $parentCategoryId=0, $flagActiveOnly=true
     ) {
         global $objDatabase;
@@ -387,19 +363,20 @@ class ShopCategories
      * @param   integer $selectedId         The selected ShopCategory ID.
      * @return  mixed                       The array of ShopCategory IDs
      *                                      on success, false on failure.
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getTrailArray($selectedId=0)
+    static function getTrailArray($selectedId=0)
     {
         // Return the same array if it's already been initialized
-        if (is_array($this->arrTrail)) {
-            return $this->arrTrail;
+        if (is_array(self::$arrTrail)) {
+            return self::$arrTrail;
         }
         // Otherwise, initialize it now
-        if (!$this->buildTrailArray($selectedId)) {
+        if (!self::buildTrailArray($selectedId)) {
             return false;
         }
-        return $this->arrShopCategory;
+        return self::$arrShopCategory;
     }
 
 
@@ -412,25 +389,25 @@ class ShopCategories
      * @return  mixed                       The array of all ancestor
      *                                      ShopCategories on success,
      *                                      false otherwise.
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    // was: _makeArrCurrentCategories
-    function buildTrailArray($shopCategoryId)
+    static function buildTrailArray($shopCategoryId)
     {
-        $this->arrTrail = array($shopCategoryId);
+        self::$arrTrail = array($shopCategoryId);
         while ($shopCategoryId != 0) {
             $objShopCategory = ShopCategory::getById($shopCategoryId);
             if (!$objShopCategory) {
                 // Probably du to an illegal or unknown ID.
                 // Use a dummy array so the work can go on anyway.
-                $this->arrTrail = array(0, $shopCategoryId);
+                self::$arrTrail = array(0, $shopCategoryId);
                 return false;
             } else {
                 $shopCategoryId = $objShopCategory->getParentId();
-                $this->arrTrail[] = $shopCategoryId;
+                self::$arrTrail[] = $shopCategoryId;
             }
         }
-        $this->arrTrail = array_reverse($this->arrTrail);
+        self::$arrTrail = array_reverse(self::$arrTrail);
         return true;
     }
 
@@ -442,12 +419,13 @@ class ShopCategories
      * Do this after changing the database tables or in order to get
      * a different subset of the Shop Categories the next time
      * {@link ShopCategories::getTreeArray()} is called.
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function invalidateTreeArray()
+    static function invalidateTreeArray()
     {
-        $this->arrShopCategory = false;
-        $this->arrShopCategoryIndex = false;
+        self::$arrShopCategory = false;
+        self::$arrShopCategoryIndex = false;
     }
 
 
@@ -456,14 +434,15 @@ class ShopCategories
      *
      * If the array has not been initialized before, boolean false is returned.
      * @return  mixed                       The element count, or false.
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getTreeNodeCount()
+    static function getTreeNodeCount()
     {
-        if (!is_array($this->arrShopCategory)) {
+        if (!is_array(self::$arrShopCategory)) {
             return false;
         }
-        return count($this->arrShopCategory);
+        return count(self::$arrShopCategory);
     }
 
 
@@ -474,15 +453,16 @@ class ShopCategories
      * is provided, returns boolean false.
      * @param   integer     $id         The ShopCategory ID
      * @return  mixed                   The ShopCategory data array, or false.
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getArrayById($id)
+    static function getArrayById($id)
     {
-        if (!isset($this->arrShopCategoryIndex[$id])) {
+        if (!isset(self::$arrShopCategoryIndex[$id])) {
             return false;
         }
-        $index = $this->arrShopCategoryIndex[$id];
-        return $this->arrShopCategory[$index];
+        $index = self::$arrShopCategoryIndex[$id];
+        return self::$arrShopCategory[$index];
     }
 
 
@@ -492,23 +472,18 @@ class ShopCategories
      * Also removes associated subcategories and Products.
      * Images will only be erased from the disc if the optional
      * $flagDeleteImages parameter evaluates to true.
-     * @static
      * @return  boolean         True on success, false otherwise
      * @todo    Adopt this to using the $arrCategories object variable
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function deleteAll($flagDeleteImages=false)
+    static function deleteAll($flagDeleteImages=false)
     {
-
-        $arrChildCategories = ShopCategories::getChildCategoryIdArray(0, false);
-        foreach ($arrChildCategories as $id) {
-            $objShopCategories = ShopCategory::getById($id);
-            // delete Product records, delete images if desired.
-            if (!Products::deleteByShopCategory($objShopCategories->id, $flagDeleteImages)) {
-                return false;
-            }
-            if (!$objShopCategories->delete($flagDeleteImages)) {
+        $arrChildCategoryId = ShopCategories::getChildCategoryIdArray(0, false);
+        foreach ($arrChildCategoryId as $id) {
+            $objShopCategory = ShopCategory::getById($id);
+            // delete siblings, Products, and images if desired.
+            if (!$objShopCategory->delete($flagDeleteImages)) {
                 return false;
             }
         }
@@ -525,16 +500,15 @@ class ShopCategories
      * If neither can be found, the same process is repeated with all
      * subcategories.
      * If no image could be found at all, returns the empty string.
-     * @static
      * @param   integer $catId          The ShopCategory to search
      * @param   boolean $flagActiveOnly Only consider active Categories if true
      * @return  string                  The product thumbnail path on success,
      *                                  the empty string otherwise.
-     * @global  ADONewConnection  $objDatabase    Database connection object
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @global  ADONewConnection
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getPictureById($catId=0, $flagActiveOnly=true)
+    static function getPictureById($catId=0, $flagActiveOnly=true)
     {
         global $objDatabase;
 
@@ -580,17 +554,16 @@ class ShopCategories
      * with ID $parentCategoryId.
      *
      * Note that for virtual ShopCategories, this will include their children.
-     * @static
      * @param   integer $parentCategoryId   The parent ShopCategories ID
      * @param   boolean $flagActiveOnly     Only return ShopCategories with
      *                                      status==1 if true.
      *                                      Defaults to false.
      * @return  array                       An array of ShopCategories objects
      *                                      on success, false on failure.
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getChildCategoriesById(
+    static function getChildCategoriesById(
         $parentCategoryId=0, $flagActiveOnly=true, $flagVirtual=true
     ) {
         global $objDatabase;
@@ -612,16 +585,17 @@ class ShopCategories
 
 
     /**
-     * Returns the ShopCategory array with ID $
+     * Returns the ShopCategory array for the given ID
      *
-     * @param unknown_type $id
-     * @return unknown
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @param   integer   $id       The ShopCategory ID
+     * @return  array               The ShopCategory array
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getCategoryById($id)
+    static function getCategoryById($id)
     {
-        $index = $this->arrShopCategoryIndex[$id];
-        return $this->arrShopCategory[$index];
+        $index = self::$arrShopCategoryIndex[$id];
+        return self::$arrShopCategory[$index];
     }
 
 
@@ -636,14 +610,15 @@ class ShopCategories
      * @param   string      $name           The optional menu name,
      *                                      defaults to 'catId'.
      * @return  string                      The HTML dropdown menu code
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getShopCategoriesMenuNamed($selectedId=0, $name='catId')
+    static function getShopCategoriesMenuNamed($selectedId=0, $name='catId')
     {
         global $_ARRAYLANG;
 
         $result =
-            $this->getShopCategoriesMenu($selectedId);
+            self::getShopCategoriesMenu($selectedId);
         if ($name) {
             $result =
                 "<select name='$name'>".
@@ -667,32 +642,33 @@ class ShopCategories
      *                                  defaults to 0 (zero), meaning all.
      * @return  string                  The HTML code with all <option> tags,
      *                                  or the empty string on failure.
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getShopCategoriesMenu(
+    static function getShopCategoriesMenu(
         $selectedId=0, $flagActiveOnly=true, $maxlevel=0
     ) {
 // TODO: Implement this in a way so that both the Shopnavbar and the Shopmenu
 // can be set up using only one call to buildTreeArray().
 // Unfortunately, the set of records used is not identical in both cases.
-//        if (!$this->arrShopCategory) {
-        $this->buildTreeArray(
-            true, true, true, $selectedId, 0, $maxlevel
+//        if (!self::$arrShopCategory) {
+        self::buildTreeArray(
+            true, $flagActiveOnly, true, $selectedId, 0, $maxlevel
         );
 //        }
 
         // Check whether the ShopCategory with the selected ID is missing
         // in the index (and thus in the tree as well)
-        $trailIndex = count($this->arrTrail);
+        $trailIndex = count(self::$arrTrail);
         while ($selectedId > 0
             && $trailIndex > 0
-            && !isset($this->arrShopCategoryIndex[$selectedId])
+            && !isset(self::$arrShopCategoryIndex[$selectedId])
         ) {
             // So we choose its highest level ancestor present.
-            $selectedId = $this->arrTrail[--$trailIndex];
+            $selectedId = self::$arrTrail[--$trailIndex];
         }
         $strMenu = '';
-        foreach ($this->arrShopCategory as $arrCategory) {
+        foreach (self::$arrShopCategory as $arrCategory) {
             $level = $arrCategory['level'];
             $id    = $arrCategory['id'];
             $name  = $arrCategory['name'];
@@ -720,12 +696,11 @@ class ShopCategories
      *                                      Defaults to false.
      * @return  array                       An array of ShopCategory IDs
      *                                      on success, false otherwise.
+     * @global  ADONewConnection    $objDatabase  Database connection
      * @static
-     * @global  ADONewConnection  $objDatabase    Database connection object
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getChildCategoryIdArray(
+    static function getChildCategoryIdArray(
         $parentShopCategoryId=0, $flagActiveOnly=true //, $flagVirtual=true
     ) {
         global $objDatabase;
@@ -760,7 +735,6 @@ class ShopCategories
      * Note that if there are two or more children of the same name (and with
      * active status, if $flagActiveOnly is true), a warning will be echo()ed.
      * This is by design.
-     * @static
      * @param   integer     $parentId       The parent ShopCategory Id,
      *                                      may be 0 (zero) to search the roots.
      * @param   string      $strName        The root ShopCategory name
@@ -768,10 +742,10 @@ class ShopCategories
      *                                      are considered.
      * @return  mixed                       The ShopCategory on success,
      *                                      false otherwise.
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getChildNamed($parentId, $strName, $flagActiveOnly=true)
+    static function getChildNamed($parentId, $strName, $flagActiveOnly=true)
     {
         global $objDatabase;
 
@@ -807,11 +781,12 @@ class ShopCategories
      * @param   integer $shopCategoryId The ShopCategory ID
      * @return  mixed                   The parent category ID,
      *                                  or boolean false on failure.
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getParentCategoryId($shopCategoryId)
+    static function getParentCategoryId($shopCategoryId)
     {
-        $arrShopCategory = $this->getArrayById($shopCategoryId);
+        $arrShopCategory = self::getArrayById($shopCategoryId);
         if (!$arrShopCategory) {
             return false;
         }
@@ -827,8 +802,7 @@ class ShopCategories
      * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getNextShopCategoriesId($shopCategoryId=0)
+    static function getNextShopCategoriesId($shopCategoryId=0)
     {
         // Get the parent ShopCategories ID
         $parentShopCategoryId =
@@ -856,8 +830,10 @@ class ShopCategories
      *
      * Note that the names are ordered according to the sorting order field.
      * @return  array               The array of virtual ShopCategory names
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getVirtualCategoryNameArray()
+    static function getVirtualCategoryNameArray()
     {
         global $objDatabase;
 
@@ -895,8 +871,10 @@ class ShopCategories
      * Note that the array elements are ordered according to the
      * sorting order field.
      * @return  array               The array of virtual ShopCategory IDs/names
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getVirtualCategoryIdNameArray()
+    static function getVirtualCategoryIdNameArray()
     {
         global $objDatabase;
 
@@ -927,9 +905,10 @@ class ShopCategories
      * selection checkboxes.
      * @param   string      $strFlags       The Product Flags
      * @return  string                      The HTML checkboxes string
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getVirtualCategoriesSelectionForFlags($strFlags)
+    static function getVirtualCategoriesSelectionForFlags($strFlags)
     {
         $arrVirtualShopCategoryName =
             ShopCategories::getVirtualCategoryIdNameArray();
@@ -968,13 +947,24 @@ class ShopCategories
      * whether or not thumbnails can be created is secondary, as the
      * process can be repeated if there is a problem.
      * @param   integer     $id         The ShopCategory ID
+     * @param   integer     $maxWidth   The maximum thubnail width
+     * @param   integer     $maxHeight  The maximum thubnail height
+     * @param   integer     $quality    The thumbnail quality
      * @return  string                  Empty string on success, a string
      *                                  with error messages otherwise.
-     * @global  array       $_ARRAYLANG     Language array
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @global  array
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function makeThumbnailById($id)
+    static function makeThumbnailById($id, $maxWidth=120, $maxHeight=80, $quality=90)
     {
+/*
+    Note: The size and quality parameters should be taken from the
+          settings as follows:
+    $this->arrConfig['shop_thumbnail_max_width']['value'],
+    $this->arrConfig['shop_thumbnail_max_height']['value'],
+    $this->arrConfig['shop_thumbnail_quality']['value']
+*/
         global $_ARRAYLANG;
 
         if ($id <= 0) {
@@ -1018,9 +1008,7 @@ class ShopCategories
             SHOP_CATEGORY_IMAGE_PATH,
             SHOP_CATEGORY_IMAGE_WEB_PATH,
             $imageName,
-            $this->arrConfig['shop_thumbnail_max_width']['value'],
-            $this->arrConfig['shop_thumbnail_max_height']['value'],
-            $this->arrConfig['shop_thumbnail_quality']['value']
+            $maxWidth, $maxHeight, $quality
         )) {
             return sprintf(
                 $_ARRAYLANG['TXT_SHOP_ERROR_CREATING_CATEGORY_THUMBNAIL'],

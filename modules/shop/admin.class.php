@@ -65,13 +65,21 @@ CREATE TABLE `contrexx_module_shop_discountgroup_count_rate` (
  * Class Shop manager
  *
  * Class for the administration of the shop
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Reto Kohli <reto.kohli@comvation.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
- * @version     $Id: index.inc.php,v 1.00 $
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */
+
+/**
+ * Debug level
+ * @ignore
+ */
+define('_SHOP_DEBUG', 0);
 
 /**
  * @ignore
@@ -141,16 +149,14 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Discount.class.php';
  * Administration of the Shop
  *
  * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Reto Kohli <reto.kohli@comvation.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
- * @version     $Id: index.inc.php,v 1.00 $
  * @access      public
  * @package     contrexx
  * @subpackage  module_shop
+ * @version     2.1.0
  */
 class shopmanager extends ShopLibrary {
-    /**
-     * @var HTML_Template_Sigma
-     */
     /**
      * The Template object
      * @var   HTML_Template_Sigma
@@ -210,13 +216,6 @@ class shopmanager extends ShopLibrary {
     private $objSettings;
 
     /**
-     * Payment object
-     * @access  private
-     * @var     Payment
-     */
-    private $objPayment;
-
-    /**
      * Shipment object
      * @access  public
      * @var     Shipment
@@ -250,20 +249,6 @@ class shopmanager extends ShopLibrary {
      */
     private $objVat;
 
-    /**
-     * ShopCategories helper object
-     * @access  private
-     * @var     ShopCategories
-     */
-    private $objShopCategories;
-
-    /**
-     * Products helper object
-     * @access  private
-     * @var     Products
-     */
-    private $objProducts;
-
     // BUGGY SOLUTION!
     // Must be in sync with the *_module_shop_payment database table!
     private $paymentHandlers = array(
@@ -282,16 +267,19 @@ class shopmanager extends ShopLibrary {
      */
     function __construct()
     {
-        global $_ARRAYLANG, $objTemplate, $objInit;
+        global $_ARRAYLANG, $objTemplate, $objInit, $objDatabase;
 
-        if (_SHOP_DEBUG) {
+        if (_SHOP_DEBUG & 1) {
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
-            global $objDatabase; $objDatabase->debug = 1;
         } else {
             error_reporting(0);
             ini_set('display_errors', 0);
-            global $objDatabase; $objDatabase->debug = 0;
+        }
+        if (_SHOP_DEBUG & 2) {
+            $objDatabase->debug = 1;
+        } else {
+            $objDatabase->debug = 0;
         }
 
         // sigma template
@@ -349,9 +337,6 @@ class shopmanager extends ShopLibrary {
         // Exchange object
         $this->objExchange = new Exchange();
 
-        // Payment object
-        $this->objPayment = new Payment();
-
         // Shipment object
         $this->objShipment = new Shipment(1);
 
@@ -360,7 +345,8 @@ class shopmanager extends ShopLibrary {
         // initialize array of all countries
         $this->_initCountries();
         $this->_initConfiguration();
-        $this->_initPayment();
+//        $this->_initPayment();
+        Payment::init();
 
         // VAT object
         // Used in many places, thus it's instantiated right away.
@@ -373,14 +359,6 @@ class shopmanager extends ShopLibrary {
         // Distribution object
         // Knows all the distribution types, and creates the menu.
         $this->objDistribution = new Distribution();
-
-        // Products object
-        // The helper for every task related to Products.
-        $this->objProducts = new Products();
-
-        // ShopCategories object
-        // The helper for every task related to ShopCategories.
-        $this->objShopCategories = new ShopCategories();
     }
 
 
@@ -2147,7 +2125,7 @@ class shopmanager extends ShopLibrary {
                 // start show payment
                 $this->objTemplate->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_payment.html');
                 $this->objTemplate->setCurrentBlock('shopPayment');
-                foreach ($this->arrPayment as $id => $data) {
+                foreach (Payment::getPaymentArray() as $id => $data) {
                     $query = "SELECT r.zones_id as zone_id ".
                              "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment AS r, ".
                                      DBPREFIX."module_shop".MODULE_INDEX."_zones AS z ".
@@ -2851,10 +2829,10 @@ class shopmanager extends ShopLibrary {
 
         // Get the tree array of all ShopCategories
         $arrShopCategories =
-            $this->objShopCategories->getTreeArray(true, false, false);
+            ShopCategories::getTreeArray(true, false, false);
         $this->objTemplate->setVariable(
             'SHOP_TOTAL_CATEGORIES',
-            $this->objShopCategories->getTreeNodeCount()
+            ShopCategories::getTreeNodeCount()
         );
         // Default to the list tab
         $flagEditTabActive = false;
@@ -2862,7 +2840,7 @@ class shopmanager extends ShopLibrary {
         if (!empty($_REQUEST['modCatId'])) {
             // Flip view to the edit tab
             $flagEditTabActive = true;
-            $arrShopCategory = $this->objShopCategories->getArrayById($id);
+            $arrShopCategory = ShopCategories::getArrayById($id);
             $pictureFilename = $arrShopCategory['picture'];
             $picturePath = $this->shopImageWebPath.$pictureFilename.$this->thumbnailNameSuffix;
             if ($pictureFilename == '') {
@@ -2873,7 +2851,7 @@ class shopmanager extends ShopLibrary {
                 'SHOP_MOD_CAT_ID'        => $id,
                 'SHOP_SELECTED_CAT_NAME' => $arrShopCategory['name'],
                 'SHOP_CAT_MENU'          =>
-                    $this->objShopCategories->getShopCategoriesMenu(
+                    ShopCategories::getShopCategoriesMenu(
                         $arrShopCategory['parentId'], false
                     ),
                 'SHOP_PICTURE_IMG_HREF'  => $picturePath,
@@ -2889,7 +2867,7 @@ class shopmanager extends ShopLibrary {
                 'SHOP_MOD_CAT_ID' => '',
                 'SHOP_SELECTED_CAT_NAME' => '',
                 'SHOP_CAT_MENU' =>
-                    $this->objShopCategories->getShopCategoriesMenu(0, false),
+                    ShopCategories::getShopCategoriesMenu(0, false),
                 'SHOP_PICTURE_IMG_HREF'  => $this->_defaultImage,
                 'SHOP_SELECTED_CATEGORY_VIRTUAL_CHECKED' => '',
                 'SHOP_SELECTED_CATEGORY_STATUS_CHECKED' => ' checked="checked"',
@@ -3508,7 +3486,7 @@ class shopmanager extends ShopLibrary {
             }
 
             $objImage = new ImageManager();
-            $arrImages = $this->_getShopImagesFromBase64String($shopImageName);
+            $arrImages = Products::getShopImagesFromBase64String($shopImageName);
             // create thumbnails if not available
             foreach ($arrImages as $arrImage) {
                 if (   !empty($arrImage['img'])
@@ -3638,7 +3616,7 @@ class shopmanager extends ShopLibrary {
         }
 
         // extract product image infos (path, width, height)
-        $arrImages = $this->_getShopImagesFromBase64String(
+        $arrImages = Products::getShopImagesFromBase64String(
             $objProduct->getPictures()
         );
 
@@ -3685,7 +3663,7 @@ class shopmanager extends ShopLibrary {
             'SHOP_DATE'                   => date('Y-m-d H:m'),
             'SHOP_PRODUCT_NAME'           => $objProduct->getName(),
             'SHOP_CAT_MENU'               =>
-                $this->objShopCategories->getShopCategoriesMenu(
+                ShopCategories::getShopCategoriesMenu(
                     $objProduct->getShopCategoryId(), false
                 ),
             'SHOP_CUSTOMER_PRICE'         =>
@@ -4276,7 +4254,7 @@ class shopmanager extends ShopLibrary {
                 $orderStatus                         = $objResult->fields['order_status'];
                 $this->objCurrency->activeCurrencyId = $selectedCurrencyId;
                 $arrCurrency                         = $this->objCurrency->getCurrencyArray();
-                $shipperName                         = $this->objShipment->getShipperName($shippingId);
+                $shipperName                         = Shipment::getShipperName($shippingId);
                 $groupCustomerId             = $objResult->fields['group_id'];
                 $this->objTemplate->setVariable(array(
                 'SHOP_CUSTOMER_ID'      => $objResult->fields['customerid' ],
@@ -4328,7 +4306,7 @@ class shopmanager extends ShopLibrary {
                 'SHOP_PHONE'            => $objResult->fields['phone'],
                 'SHOP_FAX'              => $objResult->fields['fax'],
                 'SHOP_EMAIL'            => $shopMailTo,
-                'SHOP_PAYMENTTYPE'      => $this->arrPayment[$paymentId]['name'],
+                    'SHOP_PAYMENTTYPE'      => Payment::getProperty($paymentId, 'name'),
                 'SHOP_CCNUMBER'         => $objResult->fields['ccnumber'],
                 'SHOP_CCDATE'           => $objResult->fields['ccdate'],
                 'SHOP_CCNAME'           => $objResult->fields['ccname'],
@@ -4380,9 +4358,7 @@ class shopmanager extends ShopLibrary {
                 ));
 
                 // set the handler of the payment method
-                $ppName = $this->objPayment->getPaymentProcessorName(
-                    $this->arrPayment[$paymentId]['processor_id']
-                );
+                $ppName = Payment::getPaymentProcessorName($paymentId);
                 if ($ppName) {
                     $this->objTemplate->setVariable(array('SHOP_PAYMENT_HANDLER' => $ppName));
                 } else {
@@ -5769,7 +5745,7 @@ class shopmanager extends ShopLibrary {
         $pos   = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $count = 0;
         // Mind that $count is handed over by reference.
-        $arrProducts = $this->objProducts->getByShopParams(
+        $arrProducts = Products::getByShopParams(
             $count, $pos, 0, $catId, $manufacturerId, $searchTerm,
             false, false,
             $this->arrConfig['product_sorting']['value'],
@@ -5792,7 +5768,7 @@ class shopmanager extends ShopLibrary {
         }
         $this->objTemplate->setVariable(array(
             'SHOP_CAT_MENU' =>
-                $this->objShopCategories->getShopCategoriesMenu($catId, false),
+                ShopCategories::getShopCategoriesMenu($catId, false),
             'SHOP_SEARCH_TERM' => $searchTerm,
             'SHOP_PRODUCT_TOTAL' => $count,
         ));
@@ -5890,6 +5866,8 @@ class shopmanager extends ShopLibrary {
             $shopTaxId            = (isset($_POST['taxId'][$id]) ? $_POST['taxId'][$id] : 0);
             $shopTaxIdOld         = $_POST['taxIdOld'][$id];
 /*
+    Distribution and weight have been removed from the overview due to the
+    changes made to the delivery options.
             $shopDistribution     = $_POST['distribution'][$id];
             $shopDistributionOld  = $_POST['distributionOld'][$id];
             $shopWeight           = $_POST['weight'][$id];
@@ -5949,10 +5927,11 @@ class shopmanager extends ShopLibrary {
             ) {
 
                 $arrProducts =
-                    ($shopProductIdentifierOld != ''
-                        ? $this->objProducts->getByCustomId($shopProductIdentifierOld)
-                        : array(Product::getById($id))
-                );
+//                    ($shopProductIdentifierOld != ''
+//                        ? Products::getByCustomId($shopProductIdentifierOld) :
+                    array(Product::getById($id))
+//                );
+                    ;
                 if (!is_array($arrProducts)) {
                     continue;
                 }
@@ -5990,6 +5969,7 @@ class shopmanager extends ShopLibrary {
     /**
      * Get some statistical stuff
      *
+     * @global    ADONewConnection
      * @global    array      $_ARRAYLANG
      */
     function shopOrderStatistics()

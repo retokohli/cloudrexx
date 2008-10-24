@@ -6,7 +6,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
- * @version     $Id: 1.0.1 $
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -23,7 +23,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
- * @version     $Id: 1.0.1 $
+ * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        From time to time, do something like this:
@@ -70,7 +70,7 @@ class ShopCategory
 
 
     /**
-     * Add or replace a ShopCategory (PHP5)
+     * Create a ShopCategory
      *
      * If the optional argument $catId is greater than zero, the corresponding
      * category is updated.  Otherwise, a new category is created.
@@ -428,10 +428,7 @@ class ShopCategory
             WHERE catid=$this->id
         ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-//echo("ShopCategory::update(): ERROR: Query failed: $query<br />");
-            return false;
-        }
+        if (!$objResult) return false;
         return true;
     }
 
@@ -465,7 +462,6 @@ class ShopCategory
             )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-//echo("ShopCategory::insert(): ERROR: Query failed: $query<br />");
             return false;
         }
         $this->id = $objDatabase->Insert_ID();
@@ -517,8 +513,9 @@ class ShopCategory
      * @param   integer     $catId      The parent ShopCategory ID
      * @param   string      $catName    The ShopCategory name to delete
      * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @static
      */
-    function deleteChildNamed($catParentId, $catName)
+    static function deleteChildNamed($catParentId, $catName)
     {
         $objShopCategory = new ShopCategory($catName, $catParentId, '', '', '');
         $arrChild = $objShopCategory->getByWildcard();
@@ -584,8 +581,7 @@ class ShopCategory
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getById($catId)
+    static function getById($catId)
     {
         global $objDatabase;
         $objResult = $objDatabase->Execute("
@@ -677,10 +673,9 @@ class ShopCategory
      * @global  array
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    //static
-    function getChildNamed($strName, $flagActiveOnly=true)
+    static function getChildNamed($strName, $flagActiveOnly=true)
     {
-        global $objDatabase; //, $_ARRAYLANG;
+        global $objDatabase;
 
         $query = "
            SELECT catid
@@ -735,8 +730,7 @@ class ShopCategory
      * @return  array   $arrShopCategories  The array of ShopCategories,
      *                                      or false on failure.
      */
-    //static
-    function getCategoryTree($parentCategoryId=0, $flagActiveOnly=false, $level=0)
+    static function getCategoryTree($parentCategoryId=0, $flagActiveOnly=false, $level=0)
     {
         // Get the ShopCategory's children
         $arrChildShopCategories =
@@ -782,8 +776,7 @@ class ShopCategory
      * @param   string      $name           The optional menu name
      * @return  string                      The HTML dropdown menu code
      */
-    //static
-    function getShopCategoryMenuHierarchic($selectedId=0, $name='catId')
+    static function getShopCategoryMenuHierarchic($selectedId=0, $name='catId')
     {
         global $_ARRAYLANG;
 
@@ -815,17 +808,14 @@ class ShopCategory
      * @return   string                 The HTML code with all <option> tags,
      *                                  or the empty string on failure.
      */
-    //static
-    function getShopCategoryMenuHierarchicRecurse($parentCatId, $level, $selectedId=0)
+    static function getShopCategoryMenuHierarchicRecurse($parentCatId, $level, $selectedId=0)
     {
-//echo("Debug: ShopCategory::getShopCategoryMenuHierarchicRecurse(parentCatId=$parentCatId, level=$level, selectedId=$selectedId)<br />");
         global $objDatabase;
 
         $arrChildShopCategories =
             ShopCategory::getChildCategoriesById($parentCatId);
         if (   !is_array($arrChildShopCategories
             || count($arrChildShopCategories) == 0)) {
-echo("no child categories!<br />");
             return '';
         }
         $result = '';
@@ -862,8 +852,7 @@ echo("no child categories!<br />");
      *                                  or 0 (zero) on failure.
      * @static
      */
-    //static
-    function getParentCategoryId($intCategoryId)
+    static function getParentCategoryId($intCategoryId)
     {
         global $objDatabase;
 
@@ -889,8 +878,7 @@ echo("no child categories!<br />");
      * @return  integer                     The next ShopCategory ID
      * @static
      */
-    //static
-    function getNextShopCategoryId($shopCategoryId=0)
+    static function getNextShopCategoryId($shopCategoryId=0)
     {
         global $objDatabase;
 
@@ -922,7 +910,6 @@ echo("no child categories!<br />");
      *                                      ShopCategories
      */
     function getAncestorIdArray($shopCategoryId=1)
-    //_makeArrCurrentCategories
     {
         $arrCategory = array();
         while ($shopCategoryId != 0) {

@@ -1,48 +1,42 @@
-<?PHP
+<?php
 
 /**
- * Payment manager.
+ * Payment service manager
  * @package     contrexx
  * @copyright   CONTREXX CMS - COMVATION AG
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
+ * @version     2.1.0
  */
 
 /**
- * Payment manager.
+ * Payment service manager
  * @package     contrexx
  * @copyright   CONTREXX CMS - COMVATION AG
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
+ * @version     2.1.0
  */
-
 class Payment
 {
     /**
-     * Array of available payment methods
+     * Array of available payment service data
      * @var     array
-     * @access  public
+     * @access  private
+     * @static
      */
-    var $arrPaymentObject = array();
+    private static $arrPayment = array();
 
 
     /**
-     * Constructor (PHP4)
-     * @access  public
+     * Set up the payment array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   2.1.0
      */
-    function Payment()
-    {
-        $this->__construct();
-    }
-
-    /**
-     * Constructor (PHP5)
-     *
-     * Sets up the array of payment objects
-     */
-    function __construct()
+    static function init()
     {
         global $objDatabase;
+
         $query = "
             SELECT id, name, processor_id, costs, costs_free_sum,
                    sort_order, status
@@ -50,8 +44,8 @@ class Payment
           ORDER BY id
         ";
         $objResult = $objDatabase->Execute($query);
-        while($objResult && !$objResult->EOF) {
-            $this->arrPaymentObject[$objResult->fields['id']] = array(
+        while ($objResult && !$objResult->EOF) {
+            self::$arrPayment[$objResult->fields['id']] = array(
                 'id'             => $objResult->fields['id'],
                 'name'           => $objResult->fields['name'],
                 'processor_id'   => $objResult->fields['processor_id'],
@@ -66,6 +60,38 @@ class Payment
 
 
     /**
+     * Returns the array of available Payment service data
+     * @see     Payment::init()
+     * @return  array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   2.1.0
+     */
+    static function getPaymentArray()
+    {
+        return self::$arrPayment;
+    }
+
+
+    /**
+     * Returns the named property for the given Payment service
+     * @param   integer   $payment_id       The Payment service ID
+     * @param   string    $property_name    The property name
+     * @return  string                      The property value
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   2.1.0
+     */
+    static function getProperty($payment_id, $property_name)
+    {
+        return
+            (   isset(self::$arrPayment[$payment_id])
+             && isset(self::$arrPayment[$payment_id][$property_name])
+              ? self::$arrPayment[$payment_id][$property_name]
+              : false
+            );
+    }
+
+
+    /**
      * Returns the countries related payment ID array.
      *
      * @global  ADONewConnection  $objDatabase    Database connection object
@@ -74,15 +100,13 @@ class Payment
      * @return   array   $arrPaymentId      Array of payment IDs, like:
      *                                      array( index => paymentId )
      */
-    function getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies)
+    static function getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies)
     {
         global $objDatabase;
 
         require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
         $objPayPal = new PayPal();
-
         $arrAcceptedCurrencyCodes = array();
-
         foreach ($arrCurrencies as $arrCurrency) {
             if (   $arrCurrency['status']
                 && in_array($arrCurrency['code'],
@@ -105,9 +129,9 @@ class Payment
         ";
         $objResult = $objDatabase->Execute($query);
         while ($objResult && !$objResult->EOF) {
-            if (   isset($this->arrPaymentObject[$objResult->fields['payment_id']])
-                && $this->arrPaymentObject[$objResult->fields['payment_id']]['status'] == 1
-                && (   $this->arrPaymentObject[$objResult->fields['payment_id']]['processor_id'] != 2
+            if (   isset(self::$arrPayment[$objResult->fields['payment_id']])
+                && self::$arrPayment[$objResult->fields['payment_id']]['status'] == 1
+                && (   self::$arrPayment[$objResult->fields['payment_id']]['processor_id'] != 2
                     || count($arrAcceptedCurrencyCodes) > 0)
             ) {
                 $arrPaymentId[] = $objResult->fields['payment_id'];
@@ -116,7 +140,6 @@ class Payment
         }
         return $arrPaymentId;
     }
-
 
 
     /**
@@ -128,11 +151,11 @@ class Payment
      * @return  string                  HTML code for the dropdown menu
      * @global  array   $_ARRAYLANG     Language array
      */
-    function getPaymentMenu($selectedId=0, $onchange='', $countryId=0, $arrCurrencies='')
+    static function getPaymentMenu($selectedId=0, $onchange='', $countryId=0, $arrCurrencies='')
     {
         global $_ARRAYLANG;
 
-        $arrPaymentId = $this->getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies);
+        $arrPaymentId = self::getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies);
         $onchange = !empty($onchange) ? 'onchange="'.$onchange.'"' : '';
         $menu = "\n<select name='paymentId' $onchange>\n".
             (intval($selectedId) == 0
@@ -146,7 +169,7 @@ class Payment
             $selected = ($id==intval($selectedId) ? "selected='selected'" : '');
             $menu .=
                 "<option value='$id' $selected>".
-                $this->arrPaymentObject[$id]['name'].
+                self::$arrPayment[$id]['name'].
                 "</option>\n";
         }
         $menu .= "</select>\n";
@@ -163,7 +186,7 @@ class Payment
      *                                    false otherwise
      * @since   1.2.1
      */
-    function getNameById($paymentId)
+    static function getNameById($paymentId)
     {
         global $objDatabase;
 
@@ -188,13 +211,16 @@ class Payment
      *          still here because the backend only uses this class, and not
      *          PaymentProcessing.
      */
-    function getPaymentProcessorName($processorId)
+    static function getPaymentProcessorName($payment_id)
     {
         global $objDatabase;
+
+        if (empty($payment_id)) return '';
+        $processor_id = self::$arrPayment[$payment_id]['processor_id'];
         $query = "
             SELECT name
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment_processors
-             WHERE id=$processorId
+             WHERE id=$processor_id
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
@@ -212,8 +238,7 @@ class Payment
      *                                  false otherwise
      * @global  ADONewConnection  $objDatabase    Database connection object
      */
-    //static
-    function getPaymentProcessorId($paymentId)
+    static function getPaymentProcessorId($paymentId)
     {
         global $objDatabase;
 
