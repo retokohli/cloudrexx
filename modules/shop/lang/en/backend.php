@@ -456,7 +456,6 @@ $_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Type of headline";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_HIERARCHY'] = "hierarchical";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_FLAT'] = "flat";
 $_ARRAYLANG['TXT_SETTINGS_IMAGENAME_EXT_SHOW'] = "Display extension along with file name";
-$_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'] = "--- Please choose ---";
 $_ARRAYLANG['TXT_SHOP_IMPORT_ASSIGNMENT_TIPS'] = "Please assign the fields of the text file to the database fields. Just select a pair and then click \"Add pair\".";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_TIPS'] = "To define a field of the text file as a source for names of a product category, select the field and click on \"Add category\".";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_REMOVE_TIPS'] = "To remove a field, select it in the category list and click on \"remove category\".";
