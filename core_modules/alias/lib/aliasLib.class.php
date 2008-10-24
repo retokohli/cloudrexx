@@ -8,6 +8,10 @@
  * @subpackage  core_module_alias
  * @todo        Edit PHP DocBlocks!
  */
+/**
+ * Includes
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 
 /**
  * Alias library
@@ -617,7 +621,9 @@ class aliasLib
 
     function _createHtAccessFile()
     {
-        return file_exists(ASCMS_DOCUMENT_ROOT.'/.htaccess') || touch(ASCMS_DOCUMENT_ROOT.'/.htaccess');
+		$objFile = new File();
+
+        return (file_exists(ASCMS_DOCUMENT_ROOT.'/.htaccess') || touch(ASCMS_DOCUMENT_ROOT.'/.htaccess') || $objFile->touchFile('.htaccess')) && (is_writable(ASCMS_DOCUMENT_ROOT.'/.htaccess') || $objFile->setChmod(ASCMS_DOCUMENT_ROOT, ASCMS_PATH_OFFSET, '/.htaccess')) ;
     }
 }
 
