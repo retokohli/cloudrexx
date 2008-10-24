@@ -33,7 +33,7 @@ $_ARRAYLANG['TXT_DIR_F_ADD'] = "A&ntilde;adir";
 $_ARRAYLANG['TXT_DIR_F_FILL_ALL'] = "Por favor, rellene todos los campos";
 $_ARRAYLANG['TXT_DIR_F_LINK'] = "Enlace";
 $_ARRAYLANG['TXT_DIR_F_FILETYP'] = "Tipo";
-$_ARRAYLANG['TXT_DIR_F_USER_SUCCESSFULL_ACTIVATE'] = "Gracias por registrarse.<br /><br />Su direcci&oacute;n de correo ha sido validada. Haga click <a href='?section=directory&cmd=add'>aqu&iacute;</a> para acceder.";
+$_ARRAYLANG['TXT_DIR_F_USER_SUCCESSFULL_ACTIVATE'] = "Gracias por registrarse.<br /><br />Su direcci&oacute;n de correo ha sido validada. Haga click <a href='index.php?section=directory&cmd=add'>aqu&iacute;</a> para acceder.";
 $_ARRAYLANG['TXT_DIR_F_SET_NEW_PASSWORD'] = "Ahora puede introducir una nueva contrase&ntilde;a";
 $_ARRAYLANG['TXT_DIR_F_CHANGES_SAVE'] = "Guardar cambios";
 $_ARRAYLANG['TXT_DIR_F_FIRSTNAME'] = "Nombre";

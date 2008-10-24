@@ -33,7 +33,7 @@ $_ARRAYLANG['TXT_DIR_F_ADD'] = "Добавить";
 $_ARRAYLANG['TXT_DIR_F_FILL_ALL'] = "Заполните все поля пожалуйста";
 $_ARRAYLANG['TXT_DIR_F_LINK'] = "Ссылка";
 $_ARRAYLANG['TXT_DIR_F_FILETYP'] = "Тип файла";
-$_ARRAYLANG['TXT_DIR_F_USER_SUCCESSFULL_ACTIVATE'] = "Спасибо за регистрацию.<br /><br />. Ваш почтовый адрес теперь утвержден. Нажмите <a href='?section=directory&cmd=add'>here</a> для входа в систему.";
+$_ARRAYLANG['TXT_DIR_F_USER_SUCCESSFULL_ACTIVATE'] = "Спасибо за регистрацию.<br /><br />. Ваш почтовый адрес теперь утвержден. Нажмите <a href='index.php?section=directory&cmd=add'>here</a> для входа в систему.";
 $_ARRAYLANG['TXT_DIR_F_SET_NEW_PASSWORD'] = "Сейчас выможете ввести пароль";
 $_ARRAYLANG['TXT_DIR_F_CHANGES_SAVE'] = "Сохранить измения";
 $_ARRAYLANG['TXT_DIR_F_FIRSTNAME'] = "Имя";

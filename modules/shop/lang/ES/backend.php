@@ -455,7 +455,6 @@ $_ARRAYLANG['TXT_SETTINGS_HEADER_TYPE'] = "Tipo de cabecera";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_HIERARCHY'] = "Jerarqu&iacute;a";
 $_ARRAYLANG['TXT_SETTINGS_HEADER_FLAT'] = "Cabecera";
 $_ARRAYLANG['TXT_SETTINGS_IMAGENAME_EXT_SHOW'] = "Mostrar extensi&oacute;n junto a nombre de fichero";
-$_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'] = "--- Por favor, seleccione una opci&oacute;n ---";
 $_ARRAYLANG['TXT_SHOP_IMPORT_ASSIGNMENT_TIPS'] = "Por favor, asigne los campos del fichero de texto a los campos de la base de datos. Simplemente, seleccione un par y haga click en 'A&ntilde;adir par'.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_TIPS'] = "Para definir un campo de un fichero de texto como fuente para nombres de una categor&iacute;a de productos, seleccione el campo y haga click en 'A&ntilde;adir categor&iacute;a'.";
 $_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORY_REMOVE_TIPS'] = "Para eliminar un campo, selecci&oacute;nalo en la lista de categor&iacute;s y haz click en 'eliminar categor&iacute;a'.";

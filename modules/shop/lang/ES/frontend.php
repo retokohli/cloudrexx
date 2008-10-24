@@ -165,6 +165,7 @@ $_ARRAYLANG['TXT_SHOP_WEIGHT_UNLIMITED'] = "ilimitado";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_CONDITIONS'] = "Condiciones de env&iacute;o:";
 $_ARRAYLANG['TXT_SHOP_COST_FREE'] = "gratis";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_COUNTRIES'] = "Pa&iacute;ses de entrega";
+$_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'] = "Bitte wählen";
 $_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'] = "Su pedido es demasiado pesado para todas las modalidades de env&iacute;o.";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_HIERARCHY'] = "Usted est&aacute; aqu&iacute;:";
 $_ARRAYLANG['TXT_GALLERY_CATEGORY_HINT_FLAT'] = "Galer&iacute;as:";
