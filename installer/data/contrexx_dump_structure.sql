@@ -2327,10 +2327,6 @@ CREATE TABLE `contrexx_stats_visitors_summary` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`type`,`timestamp`)
 ) TYPE=MyISAM;
-CREATE TABLE `contrexx_user_validity` (
-  `validity` int(10) unsigned NOT NULL,
-  PRIMARY KEY  (`validity`)
-) TYPE=MyISAM;
 CREATE TABLE `contrexx_voting_additionaldata` (
   `id` int(11) NOT NULL auto_increment,
   `nickname` varchar(80) NOT NULL,

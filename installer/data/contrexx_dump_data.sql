@@ -2332,16 +2332,6 @@ INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (16
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (17,'count_country','',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (18,'paging_limit_visitor_details','100',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (19,'count_visitor_number','',1);
-INSERT INTO `contrexx_user_validity` (`validity`) VALUES (0);
-INSERT INTO `contrexx_user_validity` (`validity`) VALUES (1);
-INSERT INTO `contrexx_user_validity` (`validity`) VALUES (15);
-INSERT INTO `contrexx_user_validity` (`validity`) VALUES (31);
-INSERT INTO `contrexx_user_validity` (`validity`) VALUES (62);
-INSERT INTO `contrexx_user_validity` (`validity`) VALUES (92);
-INSERT INTO `contrexx_user_validity` (`validity`) VALUES (123);
-INSERT INTO `contrexx_user_validity` (`validity`) VALUES (184);
-INSERT INTO `contrexx_user_validity` (`validity`) VALUES (366);
-INSERT INTO `contrexx_user_validity` (`validity`) VALUES (731);
 INSERT INTO `contrexx_voting_email` (`id`, `email`, `valid`) VALUES (4,'janik@comvation.com','0');
 INSERT INTO `contrexx_voting_email` (`id`, `email`, `valid`) VALUES (5,'janisk@comvation.com','0');
 INSERT INTO `contrexx_voting_email` (`id`, `email`, `valid`) VALUES (6,'janissssk@comvation.com','0');
