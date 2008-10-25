@@ -14,7 +14,7 @@
  * Includes
  */
 require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
-require_once ASCMS_CORE_PATH.'/'.'GoogleSitemap.class.php';
+require_once ASCMS_CORE_PATH.'/'.'XMLSitemap.class.php';
 require_once ASCMS_CORE_PATH.'/SmtpSettings.class.php';
 
 /**
@@ -136,8 +136,8 @@ class settingsManager
             'TXT_IDS_STATUS_HELP'             => $_CORELANG['TXT_SETTINGS_IDS_HELP'],
             'TXT_HISTORY_STATUS'              => $_CORELANG['TXT_SETTINGS_HISTORY'],
             'TXT_HISTORY_STATUS_HELP'         => $_CORELANG['TXT_SETTINGS_HISTORY_HELP'],
-            'TXT_GOOGLESITEMAP_STATUS'        => $_CORELANG['TXT_SETTINGS_GOOGLESITEMAP'],
-            'TXT_GOOGLESITEMAP_STATUS_HELP'   => $_CORELANG['TXT_SETTINGS_GOOGLESITEMAP_HELP'],
+            'TXT_XML_SITEMAP_STATUS'          => $_CORELANG['TXT_SETTINGS_XML_SITEMAP'],
+            'TXT_XML_SITEMAP_STATUS_HELP'     => $_CORELANG['TXT_SETTINGS_XML_SITEMAP_HELP'],
             'TXT_GLOBAL_TITLE'                => $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE'],
             'TXT_GLOBAL_TITLE_HELP'           => $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE_HELP'],
             'TXT_DOMAIN_URL'                  => $_CORELANG['TXT_SETTINGS_DOMAIN_URL'],
@@ -189,8 +189,8 @@ class settingsManager
             'SETTINGS_IDS_RADIO_OFF'              => ($arrSettings['coreIdsStatus'] == 'off') ? 'checked' : '',
             'SETTINGS_HISTORY_ON'                 => ($arrSettings['contentHistoryStatus'] == 'on') ? 'checked' : '',
             'SETTINGS_HISTORY_OFF'                => ($arrSettings['contentHistoryStatus'] == 'off') ? 'checked' : '',
-            'SETTINGS_GOOGLESITEMAP_ON'           => ($arrSettings['googleSitemapStatus'] == 'on') ? 'checked' : '',
-            'SETTINGS_GOOGLESITEMAP_OFF'          => ($arrSettings['googleSitemapStatus'] == 'off') ? 'checked' : '',
+            'SETTINGS_XML_SITEMAP_ON'           => ($arrSettings['xmlSitemapStatus'] == 'on') ? 'checked' : '',
+            'SETTINGS_XML_SITEMAP_OFF'          => ($arrSettings['xmlSitemapStatus'] == 'off') ? 'checked' : '',
             'SETTINGS_SYSTEMSTATUS_ON'            => ($arrSettings['systemStatus'] == 'on') ? 'checked' : '',
             'SETTINGS_SYSTEMSTATUS_OFF'           => ($arrSettings['systemStatus'] == 'off') ? 'checked' : '',
             'SETTINGS_SEARCH_VISIBLE_CONTENT_ON'  => ($arrSettings['searchVisibleContentOnly'] == 'on') ? 'checked' : '',
@@ -237,9 +237,8 @@ class settingsManager
         }
 
         if ($_POST['setvalue']['54'] == 'on') {
-            $_CONFIG['googleSitemapStatus'] = 'on';
-            $objGoogleSitemap = new GoogleSitemap();
-            $objGoogleSitemap->writeFile();
+            $_CONFIG['xmlSitemapStatus'] = 'on';
+            XMLSitemap::write();
         }
 
         $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];

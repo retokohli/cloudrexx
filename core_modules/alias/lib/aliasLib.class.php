@@ -181,7 +181,7 @@ class aliasLib
 
                 array_push($arrAlias['sources'], array(
                     'id'        => $objAlias->fields['sourceId'],
-                    'isdefault' => $objAlias->fields['isdefault'], 
+                    'isdefault' => $objAlias->fields['isdefault'],
                     'url'        => $objAlias->fields['sourceUrl']
                 ));
 
@@ -236,13 +236,13 @@ class aliasLib
         global $objDatabase;
 
         $upd_query = "
-            UPDATE `".DBPREFIX."module_alias_target` 
-            SET `type`      = '".addslashes($arrAlias['type'])."', 
-                `url`       = '".addslashes($arrAlias['url'])."' 
+            UPDATE `".DBPREFIX."module_alias_target`
+            SET `type`      = '".addslashes($arrAlias['type'])."',
+                `url`       = '".addslashes($arrAlias['url'])."'
             WHERE `id` =       ".intval    ($aliasId);
 
         if (
-            ($arrOldAlias = $this->_getAlias($aliasId)) !== false 
+            ($arrOldAlias = $this->_getAlias($aliasId)) !== false
             && $objDatabase->Execute($upd_query) !== false
         ) {
 
@@ -266,10 +266,10 @@ class aliasLib
                     if (!empty($arrSource['id']) && $arrSource['id'] == $arrOldSource['id']) {
                         if (($arrSource['isdefault'] != $arrOldSource['isdefault'] ) or  ($arrSource['url'] != $arrOldSource['url'])) {
                             $qry_update = "
-                                UPDATE `".DBPREFIX."module_alias_source` 
+                                UPDATE `".DBPREFIX."module_alias_source`
                                     SET `url`       = '".addslashes($arrSource['url'])      ."',
-                                        `isdefault` = '".intval    ($arrSource['isdefault'])."' 
-                                WHERE `id` = ".intval($arrSource['id'])." 
+                                        `isdefault` = '".intval    ($arrSource['isdefault'])."'
+                                WHERE `id` = ".intval($arrSource['id'])."
                                     AND `target_id` = ".intval($aliasId)
                                 ;
 
@@ -301,7 +301,7 @@ class aliasLib
                 $isdefault = intval($arrSource['isdefault']);
                 $url       = addslashes($arrSource['url']);
                 $qry_insert = "
-                    INSERT INTO `".DBPREFIX."module_alias_source` (`target_id`, `url`, `isdefault`) 
+                    INSERT INTO `".DBPREFIX."module_alias_source` (`target_id`, `url`, `isdefault`)
                     VALUES ($alias_id, '$url', $isdefault)
                     ";
                 if ($objDatabase->Execute($qry_insert) === false) {
@@ -623,7 +623,7 @@ class aliasLib
     {
 		$objFile = new File();
 
-        return (file_exists(ASCMS_DOCUMENT_ROOT.'/.htaccess') || touch(ASCMS_DOCUMENT_ROOT.'/.htaccess') || $objFile->touchFile('.htaccess')) && (is_writable(ASCMS_DOCUMENT_ROOT.'/.htaccess') || $objFile->setChmod(ASCMS_DOCUMENT_ROOT, ASCMS_PATH_OFFSET, '/.htaccess')) ;
+        return (file_exists(ASCMS_DOCUMENT_ROOT.'/.htaccess') || touch(ASCMS_DOCUMENT_ROOT.'/.htaccess') || $objFile->touchFile('/.htaccess')) && (is_writable(ASCMS_DOCUMENT_ROOT.'/.htaccess') || $objFile->setChmod(ASCMS_DOCUMENT_ROOT, ASCMS_PATH_OFFSET, '/.htaccess')) ;
     }
 }
 

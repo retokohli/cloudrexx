@@ -12,7 +12,7 @@
  * Includes
  */
 require_once ASCMS_CORE_PATH.'/Tree.class.php';
-require_once ASCMS_CORE_PATH.'/GoogleSitemap.class.php';
+require_once ASCMS_CORE_PATH.'/XMLSitemap.class.php';
 require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
 
 /**
@@ -82,12 +82,6 @@ class ContentManager
     */
     var $arrAllBackendGroups = array();
 
-    /**
-     * GoogleSitemap object
-     * @var mixed
-     */
-    var $objGoogleSitemap;
-
    /**
     * @var array
     * @desc array of required modules
@@ -115,8 +109,6 @@ class ContentManager
         global $objDatabase,$objInit,$_CORELANG,$objTemplate,$_CONFIG;
 
         $this->langId=$objInit->userFrontendLangId;
-
-        $this->objGoogleSitemap = new GoogleSitemap();
 
         $objTemplate->setVariable("CONTENT_NAVIGATION",
                            "<a href='index.php?cmd=content&amp;act=new'>".$_CORELANG['TXT_NEW_PAGE']."</a>
@@ -218,7 +210,7 @@ class ContentManager
 
         case 'changeActiveStatus':
             $this->changeActiveStatus($_GET['id']);
-            $this->objGoogleSitemap->writeFile();
+            XMLSitemap::write();
             $this->contentOverview();
         break;
 
@@ -452,8 +444,8 @@ class ContentManager
                 $objCache = new Cache();
                 $objCache->writeCacheablePagesFile();
 
-                //write google-sitemap
-                $this->objGoogleSitemap->writeFile();
+                // write xml sitemap
+                XMLSitemap::write();
             }
         }
     }
@@ -544,7 +536,8 @@ class ContentManager
                 default: //do nothing
             }
 
-            $this->objGoogleSitemap->writeFile();
+            // write xml sitemap
+            XMLSitemap::write();
         }
         $objNavbar = new ContentSitemap(0);
         $objTemplate->setVariable('ADMIN_CONTENT', $objNavbar->getSiteMap());
@@ -1462,8 +1455,8 @@ class ContentManager
         $objCache = new Cache();
         $objCache->writeCacheablePagesFile();
 
-        //write google-sitemap
-        $this->objGoogleSitemap->writeFile();
+        // write xml sitemap
+        XMLSitemap::write();
 
         if (empty($command) && intval($moduleId) == 0) {
             $objCache->deleteSingleFile($pageId);
@@ -1675,8 +1668,8 @@ class ContentManager
             $objCache = new Cache();
             $objCache->writeCacheablePagesFile();
 
-            // Write google sitemap
-            $this->objGoogleSitemap->writeFile();
+            // write xml sitemap
+            XMLSitemap::write();
 
             // Create backup for history
             if (!$this->boolHistoryActivate && $this->boolHistoryEnabled) {
@@ -1842,8 +1835,8 @@ class ContentManager
                                 $objCache = new Cache();
                                 $objCache->writeCacheablePagesFile();
 
-                                // write google sitemap
-                                $this->objGoogleSitemap->writeFile();
+                                // write xml sitemap
+                                XMLSitemap::write();
                             }
                         }
                     }
@@ -2164,8 +2157,8 @@ class ContentManager
                 $objCache = new Cache();
                 $objCache->writeCacheablePagesFile();
 
-                //write google-sitemap
-                $this->objGoogleSitemap->writeFile();
+                // write xml sitemap
+                XMLSitemap::write();
                 $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -2229,8 +2222,8 @@ class ContentManager
                     );
 //                }
 
-                //write google-sitemap
-                $this->objGoogleSitemap->writeFile();
+                // write xml sitemap
+                XMLSitemap::write();
 
                 $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
