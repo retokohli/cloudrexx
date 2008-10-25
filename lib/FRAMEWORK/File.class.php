@@ -139,16 +139,15 @@ class File
      *
      * Creates a new empty file on the server.
      *
-     * @param string Name of the file to create
-     * @param string Path on the server where to create the file
+     * @param string Name (inkl. offset path) of the file to create. E.g. $file = '/sitemap.xml'
      * @return bolean
      */
-    function touchFile($filename, $path = '')
+    function touchFile($file)
     {
         $status = false;
         $fp = fopen("php://memory", 'w+');
         if ($fp) {
-            if (ftp_fput($this->conn_id, $this->ftpDirectory.$path.'/'.$filename, $fp, FTP_ASCII)) {
+            if (ftp_fput($this->conn_id, $this->ftpDirectory.$file, $fp, FTP_ASCII)) {
                 $status = true;
             }
             fclose($fp);

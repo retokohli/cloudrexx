@@ -13,7 +13,7 @@
  * Includes
  */
 require_once ASCMS_CORE_PATH.'/Tree.class.php';
-require_once ASCMS_CORE_PATH.'/'.'GoogleSitemap.class.php';
+require_once ASCMS_CORE_PATH.'/'.'XMLSitemap.class.php';
 require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
 
 /**
@@ -32,7 +32,6 @@ class ContentWorkflow {
     var $strPageTitle;
     var $strErrMessage = '';
     var $strOkMessage = '';
-    var $objGoogleSitemap;
 
     /**
     * Constructor
@@ -57,8 +56,6 @@ class ContentWorkflow {
                                      <a href="index.php?cmd=workflow&amp;act=unvalidated">'.$_CORELANG['TXT_WORKFLOW_VALIDATE'].'</a>
                                      <a href="index.php?cmd=workflow&amp;act=showClean">'.$_CORELANG['TXT_WORKFLOW_CLEAN_TITLE'].'</a>
                                 ');
-
-        $this->objGoogleSitemap = new GoogleSitemap();
 
         if ($_CONFIG['contentHistoryStatus'] == 'off') {
             $this->strErrMessage = $_CORELANG['TXT_WORKFLOW_NOT_ACTIVE'];
@@ -573,8 +570,8 @@ class ContentWorkflow {
             $objCache = new Cache();
             $objCache->writeCacheablePagesFile();
 
-            //write google-sitemap
-            $this->objGoogleSitemap->writeFile();
+            //write xml sitemap
+            XMLSitemap::write();
 
             $this->strOkMessage = $_CORELANG['TXT_HISTORY_RESTORED'];
         }
@@ -791,8 +788,8 @@ class ContentWorkflow {
             $objCache = new Cache();
             $objCache->writeCacheablePagesFile();
 
-            //write google-sitemap
-            $this->objGoogleSitemap->writeFile();
+            //write xml sitemap
+            XMLSitemap::write();
         }
     }
 
