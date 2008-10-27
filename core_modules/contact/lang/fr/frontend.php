@@ -9,7 +9,7 @@
 $_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM'] = "Données transmises du formulaire de contact du site Web";
 $_ARRAYLANG['TXT_CONTACT_FORM'] = "Nouveau message du formulaire de contact sur";
 $_ARRAYLANG['TXT_CONTACT_DATE'] = "Date";
-$_ARRAYLANG['TXT_CONTACT_HOSTNAME'] = "Host";
+$_ARRAYLANG['TXT_CONTACT_HOSTNAME'] = "Serveur";
 $_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'] = "Adresse IP";
 $_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'] = "Langue du navigateur";
 $_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION'] = "Version du navigateur";
@@ -27,7 +27,7 @@ $_ARRAYLANG['TXT_CONTACT_FAILED_SUBMIT_REQUEST'] = "Erreur lors de la transmissi
 $_ARRAYLANG['TXT_CONTACT_FILE_SIZE_EXCEEDS_LIMIT'] = "Erreur lors de l'envoi du fichier: la taille du fichier ne peut pas excéder %s Bytes!";
 $_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "Erreur lors de l'envoi du fichier: la taille du fichier est trop importante!";
 $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Erreur: le fichier %s n'a pas pu être envoyé complètement!";
-$_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Un fichier n'a pas pu être envoyé";
+$_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Un fichier n'a pas pu être importé";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Veuillez saisir la séquence de caractères de l'image dans le champ ci-dessous. (Il s'agit d'une protection anti-spambot)";
 $_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Saisie erronée du code CAPTCHA";
 ?>
