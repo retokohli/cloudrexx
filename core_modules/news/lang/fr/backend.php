@@ -118,7 +118,7 @@ $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'] = "Lien vers l'article";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'] = "Catégorie de l'article";
 $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "Classe CSS: row1 oder row2";
 $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Brique pour la définition d'un article. Tag de début: &lt;!-- BEGIN newsrow --&gt; Tag de fin: &lt;!-- END newsrow --&gt;";
-$_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Ces variables peuvent être utilisées dans les pages de contenu de la <b>section</b> \"news\" qui comportent la <b>cmd</b> \"details\" (?section=news&cmd=details).";
+$_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Ces variables peuvent être utilisées dans les pages de contenu de la <b>section</b> \"news\" qui comportent la <b>cmd</b> \"details\" (index.php?section=news&cmd=details).";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Titre de l'article";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Texte de l'article";
 $_ARRAYLANG['TXT_NEWS_LASTUPDATE_DESCRIPTION'] = "Date de la dernière mise à jour";
@@ -175,7 +175,7 @@ $_ARRAYLANG['TXT_NEWS_TICKER_FAILED_DELETE'] = "Erreur lors de la suppression du
 $_ARRAYLANG['TXT_NEWS_URL_ENCODING'] = "Codification URL";
 $_ARRAYLANG['TXT_NEWS_URL_ENCODING_TXT'] = "L'activation de cette option signifie que le contenu du ticker sera codifié selon la norme URL RFC 1738.";
 $_ARRAYLANG['TXT_NEWS_PREFIX'] = "Préfixe";
-$_ARRAYLANG['TXT_NEWS_TICKER_PREFIX_MSG'] = "Le préfixe sera inséré avant le contenu lors de l'enregistrement du ticker.<br />Le préfixe ne sera pas codifié URL si cetet option n'a pas été sélectionnée.";
+$_ARRAYLANG['TXT_NEWS_TICKER_PREFIX_MSG'] = "Le préfixe sera inséré avant le contenu lors de l'enregistrement du ticker.<br />Le préfixe ne sera pas codifié URL si cette option n'a pas été sélectionnée.";
 $_ARRAYLANG['TXT_NEWS_IMAGE_DESCRIPTION'] = "Image (Texte d'accroche)";
 $_ARRAYLANG['TXT_NEWS_GENERAL'] = "Général";
 $_ARRAYLANG['TXT_NEWS_ADVANCED'] = "Avancé";
