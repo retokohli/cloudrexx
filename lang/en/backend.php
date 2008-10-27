@@ -728,9 +728,7 @@ $_ARRAYLANG['TXT_DBM_SHOW_TABLE_HTML_TITLE'] = "HTML view";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_DUMP_TITLE'] = "SQL dump";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_WRONG_PREFIX'] = "Error: you can only access Contrexx tables.";
 $_ARRAYLANG['TXT_DBM_SQL_CODE'] = "Execute SQL Query";
-$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Note: All queries have to end with a semicolon (\";\"). Here an example: <pre>SELECT * FROM Table;</pre>
-<br />
-You can execute the queries by pressing the key combination shift+return.";
+$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Note: All queries have to end with a semicolon (\";\"). Here an example: <pre>SELECT * FROM Table;</pre><br />You can execute the queries by pressing the key combination shift+return.";
 $_ARRAYLANG['TXT_DBM_SQL_FILE'] = "Execute SQL file";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_TYPES'] = "Allowed file types";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_SIZE'] = "Allowed file size";
