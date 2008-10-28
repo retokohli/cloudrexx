@@ -128,4 +128,5 @@ $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Er denne option valgt, blive
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Kopie til afsender";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "Hvis der anwendes et eget CSS-design, så har dette formular IDet og CSS-klassen <strong>'contactForm_\$FormularNummer'</strong> F.eks. contactForm_2, som standard er kun 'contactForm' sat for disse attributer";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'] = "Anvend eget design";
+$_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
 ?>

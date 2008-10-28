@@ -128,4 +128,5 @@ $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "ДЛя активации э
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Копия отправителю";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "При использовании собственного CSS стиля, эта форма должна иметь ID и CSS-класс <strong>'contactForm_\$FormularNummer'</strong> например contactForm_2, стандартно устанавливает атрибуты только для 'contactForm'";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'] = "Использовать собственный CSS стиль";
+$_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
 ?>
