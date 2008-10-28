@@ -129,4 +129,5 @@ $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Activating this option makes
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Carbon copy to sender";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "If an own CSS style is in use, this form has the ID and CSS class <strong>'contactForm_\$FormularNummer'</strong>, i.e. contactForm_2. By default, only 'contactForm' is used for these attributes.";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'] = "Use own style";
+$_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
 ?>

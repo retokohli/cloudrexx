@@ -118,7 +118,7 @@ $_ARRAYLANG['TXT_CONTACT_DATA_RECORD_UPDATED_SUCCESSFUL_VALIDATE'] = "Page mise 
 $_ARRAYLANG['TXT_CONTACT_SETTINGS_UPDATED'] = "Paramètres acceptés.";
 $_ARRAYLANG['TXT_CONTACT_META_DATE_BY_EXPORT'] = "Métainformations lors de l'exportation";
 $_ARRAYLANG['TXT_CONTACT_DEFAULT_FEEDBACK_TXT'] = "Nous vous remercions pour votre demande. Nous allons vous contacter très prochainement.";
-$_ARRAYLANG['TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'] = "Réafficher le formulaire avec le feedback";
+$_ARRAYLANG['TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'] = "Réafficher le formulaire envoi";
 $_ARRAYLANG['TXT_CONTACT_LANG'] = "Langue";
 $_ARRAYLANG['TXT_CONTACT_ENTRIE_DETAILS'] = "Details";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES'] = "Messages";
@@ -128,4 +128,5 @@ $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Si cette option est activée
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Copie à l'expéditeur";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "En cas d'utilisation d'un style CSS personnalisé, le formulaire prend l'ID et la classe CSS suivants:<strong>'contactForm_\$NuméroFormulaire'</strong> p.ex. contactForm_2. En standard, le nom est simplement 'contactForm'";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'] = "Style personnalisé";
+$_ARRAYLANG['TXT_CONTACT_RESET'] = "Réinitialiser";
 ?>
