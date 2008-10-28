@@ -932,7 +932,7 @@ class ContactManager extends ContactLib
     /**
     * The function collects all categories without an existing parcat and assigns it to "lost and found"
     *
-    * @global    ADONewConnection 
+    * @global    ADONewConnection
     */
     function _collectLostPages() {
         global $objDatabase;
@@ -1279,7 +1279,7 @@ class ContactManager extends ContactLib
         }
 
         $sourcecode[] = "<p>";
-        $sourcecode[] = '<input class="contactFormClass_button" type="reset" value="'.$_ARRAYLANG['TXT_CONTACT_DELETE'].'" /> <input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.$_ARRAYLANG['TXT_CONTACT_SUBMIT'].'" />';
+        $sourcecode[] = '<input class="contactFormClass_button" type="reset" value="'.$_ARRAYLANG['TXT_CONTACT_RESET'].'" /> <input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.$_ARRAYLANG['TXT_CONTACT_SUBMIT'].'" />';
         $sourcecode[] = "</p>";
         $sourcecode[] = "</form>";
         $sourcecode[] = "</fieldset>";
@@ -1460,9 +1460,9 @@ class ContactManager extends ContactLib
         $filename = preg_replace("%\ %", "_", $filename);
 
         // replace umlauts
-        $filename = preg_replace("%ö%", "oe", $filename);
-        $filename = preg_replace("%ü%", "ue", $filename);
-        $filename = preg_replace("%ä%", "ae", $filename);
+        $filename = preg_replace("%ï¿½%", "oe", $filename);
+        $filename = preg_replace("%ï¿½%", "ue", $filename);
+        $filename = preg_replace("%ï¿½%", "ae", $filename);
 
         return $filename;
     }
