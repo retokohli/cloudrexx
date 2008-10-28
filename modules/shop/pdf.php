@@ -29,7 +29,6 @@ if ($objDatabase === false) {
     die('Database error: '.$errorMsg);
 }
 
-
 /**
  * PDF Creator
  *
@@ -43,39 +42,36 @@ if ($objDatabase === false) {
  */
 class pdfCreator
 {
-    public $pdf;
-    public $pdfSettingsFONT;
-    public $pdfRowColor1;
-    public $pdfRowColor2;
-    public $pdfFontHeightHeader;
-    public $pdfFontHeightFooter;
-    public $pdfFontHeight;
+    private $pdf;
+    private $pdfSettingsFONT = 'Helvetica';
+    private $pdfRowColor1 = 'DDDDDD';
+    private $pdfRowColor2 = 'FFFFFF';
+    private $pdfFontHeightHeader = 8;
+    private $pdfFontHeightFooter = 7;
+    private $pdfFontHeight = 7;
 
-    public $pdfID;
-    public $pdfNAME;
-    public $pdfLANG_ID;
-    public $pdfBORDER_ON;
-    public $pdfHEADER_ON;
-    public $pdfHEADER_LEFT;
-    public $pdfHEADER_RIGHT;
-    public $pdfFOOTER_ON;
-    public $pdfFOOTER_LEFT;
-    public $pdfFOOTER_RIGHT;
-    public $pdfCATEGORIES;
+    private $pdfID;
+    private $pdfNAME;
+    private $pdfLANG_ID;
+    private $pdfBORDER_ON;
+    private $pdfHEADER_ON;
+    private $pdfHEADER_LEFT;
+    private $pdfHEADER_RIGHT;
+    private $pdfFOOTER_ON;
+    private $pdfFOOTER_LEFT;
+    private $pdfFOOTER_RIGHT;
+    private $pdfCATEGORIES;
 
-    public $langProductName;
-    public $langCategoryName;
-    public $langProductId;
-    public $langPrice;
+    private $langProductName;
+    private $langCategoryName;
+    private $langProductId;
+    private $langPrice;
+    private $currencySymbol;
+    private $arrProducts;
+    private $arrProductCat;
 
-    public $currencySymbol;
-
-    public $arrProducts;
-    public $arrProductCat;
-
-    /*
+    /**
      * Constructor
-     *
      * @version  1.0      initial version
      */
     function pdfCreator($plid)
@@ -342,15 +338,8 @@ class pdfCreator
     }
 }
 
-$objInit = new InitCMS($mode="backend");
-
+$objInit = new InitCMS('backend');
 $pdfCreator = new pdfCreator(intval($_GET['plid']));
-$pdfCreator->pdfSettingsFONT = 'Helvetica';
-$pdfCreator->pdfRowColor1 = 'DDDDDD';
-$pdfCreator->pdfRowColor2 = 'FFFFFF';
-$pdfCreator->pdfFontHeightHeader = 8;
-$pdfCreator->pdfFontHeightFooter = 7;
-$pdfCreator->pdfFontHeight = 7;
 $pdfCreator->createOutput();
 
 ?>
