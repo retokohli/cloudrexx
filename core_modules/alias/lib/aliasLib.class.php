@@ -367,6 +367,7 @@ class aliasLib
     }
 
     function _escapeStringForRegex($string) {
+        $string = str_replace(array(' ', '\\\ '), '\\ ', $string);
         return str_replace(
             array('\\', '^',    '$',    '.',    '[',    ']',    '|',    '(',    ')',    '?',    '*',    '+',    '{',    '}',    ':'),
             array('\\\\', '\^',    '\$',    '\.',    '\[',    '\]',    '\|',    '\(',    '\)',    '\?',    '\*',    '\+',    '\{',    '\}',    '\:'),
