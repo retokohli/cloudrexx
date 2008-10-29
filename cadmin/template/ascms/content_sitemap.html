@@ -88,7 +88,7 @@ function changeStatus(pageId)
 <td><div style="padding-left: {SITEMAP_ROW_PADDING}px">
 <input type="checkbox" name="selectedPages[]" id="selectedPages" value="{SITEMAP_PAGE_ID}" />
 {SITEMAP_PAGE_LEVEL}
-<input class="tree_input" maxlength="5" size="3" value="{SITEMAP_PAGE_DISPLAYORDER}" name="displayorder_new[{SITEMAP_PAGE_ID}]" />
+<input {SITEMAP_DISPLAYORDER_DISABLED} class="tree_input" maxlength="5" size="3" value="{SITEMAP_PAGE_DISPLAYORDER}" name="displayorder_new[{SITEMAP_PAGE_ID}]" />
 <input type="hidden" value="{SITEMAP_PAGE_DISPLAYORDER}" name="displayorder_old[{SITEMAP_PAGE_ID}]" />
 <input type="hidden" value="{SITEMAP_PAGE_ID}" name="catid[{SITEMAP_PAGE_ID}]" />
 <a href="{SITEMAP_PAGE_LINK}"><b>{SITEMAP_PAGE_NAME}</b></a></div></td>
@@ -132,7 +132,7 @@ function changeStatus(pageId)
 function moveDivsToEndOfBodyTag() {
 	backgroundDiv = $('editMode_Background').remove();
 	windowDiv = $('editMode_Window').remove();
-	
+
 	body = document.getElementsByTagName("body")[0];
 	new Insertion.Bottom(body, backgroundDiv);
 	new Insertion.Bottom(body, windowDiv);
@@ -144,7 +144,7 @@ function showEditModeWindow(cmdName, pageId) {
 	$('editMode_Code_Link2').href 		= 'index.php?cmd=content&act=edit&pageId=' + pageId;
 	$('editMode_Content_Link1').href 	= 'index.php?cmd=' + cmdName;
 	$('editMode_Content_Link2').href 	= 'index.php?cmd=' + cmdName;
-	
+
 	Effect.Appear('editMode_Background', {duration: 0.5, to: 0.5});
 	Effect.Appear('editMode_Window', {duration: 0.5});
 }

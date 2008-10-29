@@ -333,33 +333,34 @@ class ContentSitemap
 			    }
 
 			    $objTpl->setVariable(array(
-					'SITEMAP_PAGE_MODULE'       =>$this->navModule[$key],
-					'SITEMAP_PAGE_CMD'          =>$this->navCmd[$key],
-					'SITEMAP_PAGE_DISPLAYORDER' =>$this->navdisplayorder[$key],
-					'SITEMAP_PAGE_USERNAME'     =>$this->navUsername[$key],
-					'SITEMAP_PAGE_CHANGELOG'    =>$this->navChangelog[$key],
-					'SITEMAP_ROWCLASS'          =>$class,
-					'SITEMAP_ROW_PADDING'       =>$width,
-					'SITEMAP_PAGE_LEVEL'        =>$folderLinkIcon.$activeIcon.'&nbsp;'.$folderIcon,
-					'SITEMAP_PAGE_ID'           =>$key,
-					'SITEMAP_PAGE_NAME'         =>$this->navName[$key],
-                    'SITEMAP_REPOSITORY' =>$repository,
+					'SITEMAP_DISPLAYORDER_DISABLED'    => (Permission::checkAccess(35, 'static', $return = true) ? '' : 'disabled="disabled"'),
+					'SITEMAP_PAGE_MODULE'              => $this->navModule[$key],
+					'SITEMAP_PAGE_CMD'                 => $this->navCmd[$key],
+					'SITEMAP_PAGE_DISPLAYORDER'        => $this->navdisplayorder[$key],
+					'SITEMAP_PAGE_USERNAME'            => $this->navUsername[$key],
+					'SITEMAP_PAGE_CHANGELOG'           => $this->navChangelog[$key],
+					'SITEMAP_ROWCLASS'                 => $class,
+					'SITEMAP_ROW_PADDING'              => $width,
+					'SITEMAP_PAGE_LEVEL'               => $folderLinkIcon.$activeIcon.'&nbsp;'.$folderIcon,
+					'SITEMAP_PAGE_ID'                  => $key,
+					'SITEMAP_PAGE_NAME'                => $this->navName[$key],
+                    'SITEMAP_REPOSITORY'               => $repository,
                     // New behavior: Go to module administration or content
-                    'SITEMAP_PAGE_LINK' =>	(!empty($moduleReference) ? "javascript: showEditModeWindow('".$moduleReference."','".$key."');" : "index.php?cmd=content&amp;act=edit&amp;pageId=$key"),
+                    'SITEMAP_PAGE_LINK'                => (!empty($moduleReference) ? "javascript: showEditModeWindow('".$moduleReference."','".$key."');" : "index.php?cmd=content&amp;act=edit&amp;pageId=$key"),
 				));
 				$objTpl->parseCurrentBlock();
 				$i++;
 			}
 		    $n++;
 		}
-		
+
 		        //New added in 2.0: editmode-selector window
 		$objTpl->setVariable(array(	'TXT_EDITMODE_TITLE'	=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
 									'TXT_EDITMODE_TEXT'		=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'],
 									'TXT_EDITMODE_CODE'		=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'],
 									'TXT_EDITMODE_CONTENT'	=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT']
 						));
-		
+
 		return $objTpl->get();
 	}
 
