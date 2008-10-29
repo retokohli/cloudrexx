@@ -1345,7 +1345,12 @@ class ContentManager
         $currentTime = time();
         $cssName = contrexx_addslashes(strip_tags($_POST['cssName']));
         $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
-        $redirect = contrexx_addslashes(strip_tags($_POST['redirect']));
+        $redirect = (!empty($_POST['TypeSelection']) && $_POST['TypeSelection'] == 'redirect') ? contrexx_addslashes(strip_tags($_POST['redirect'])) : '';
+        if(preg_match('/\b(?:mailto:)?([\w\d\._%+-]+@(?:[\w\d-]+\.)+[\w]{2,6})\b/i', $redirect, $match)){
+            $redirect = 'mailto:'.$match[1];
+            $_POST['redirectTarget'] = '_blank';
+        }
+
         $redirectTarget    = in_array($_POST['redirectTarget'], $this->_arrRedirectTargets) ? $_POST['redirectTarget'] : '';
 
         $contenthtml=$this->_getBodyContent($contenthtml);
@@ -2617,14 +2622,14 @@ class ContentManager
 			strtolower($txt)
 		);
 
-		$txt = preg_replace( '/[\s\+\/\(\)=,;%&]+/', '-', $txt); // interpunction etc.
+		$txt = preg_replace( '/[\+\/\(\)=,;%&]+/', '-', $txt); // interpunction etc.
 		$txt = preg_replace( '/[\'<>\\\~$!"]+/',     '',  $txt); // quotes and other special characters
 
 		// Fallback for everything we didn't catch by now
-		$txt = preg_replace('/[^a-z_-]+/i',  '_', $txt);
+		$txt = preg_replace('/[^\sa-z_-]+/i',  '_', $txt);
 		$txt = preg_replace('/[_-]{2,}/',    '_', $txt);
 		$txt = preg_replace('/^[_\.\/\-]+/', '',  $txt);
-
+        $txt = str_replace(array(' ', '\\\ '), '\\\\ ', $txt);
 		return $txt;
 	}
 
@@ -2645,7 +2650,6 @@ class ContentManager
 		global $objDatabase, $_ARRAYLANG;
 		require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
 		$util = new aliasLib;
-
 
         // Do we already have a default alias? This means we probably have to
         // delete it if the name changed..
@@ -2674,8 +2678,6 @@ class ContentManager
 			if ($alias_src_id) {
                 // We have a default alias, which needs to be
                 // deleted.
-
-
 
 				$objDatabase->Execute("
 					DELETE FROM ".DBPREFIX."module_alias_source
