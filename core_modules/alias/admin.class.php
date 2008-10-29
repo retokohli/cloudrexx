@@ -170,7 +170,7 @@ class AliasAdmin extends aliasLib
                 foreach ($arrAlias['sources'] as $arrAliasSource) {
 
                     $this->_objTpl->setVariable(array(
-                        'ALIAS_SOURCE_URL'    => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'<strong>/'.$arrAliasSource['url'].'</strong>',
+                        'ALIAS_SOURCE_URL'    => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'<strong>/'.stripslashes($arrAliasSource['url']).'</strong>',
                     ));
 
                     if (!isset($arrRewriteInfo['rules'][($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'])]) || !in_array($arrAliasSource['url'], $arrRewriteInfo['rules'][($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'])])) {
@@ -230,6 +230,7 @@ class AliasAdmin extends aliasLib
                 $nr = 0;
                 foreach ($_POST['alias_aliases'] as $sourceId => $aliasSource) {
                     $aliasSource = trim(contrexx_stripslashes($aliasSource));
+                    $aliasSource = str_replace(array(' ', '\\\ '), '\\ ', $aliasSource);
                     if (!empty($aliasSource)) {
                         $arrAlias['sources'][] = array(
                             'id'        => intval($sourceId),
@@ -244,16 +245,15 @@ class AliasAdmin extends aliasLib
             if (!empty($_POST['alias_aliases_new']) && is_array($_POST['alias_aliases_new'])) {
 
                 foreach ($_POST['alias_aliases_new'] as $id => $newAliasSource) {
-                    $newAliasSource = trim(contrexx_stripslashes($newAliasSource));
-                    
+                    $newAliasSource = trim(str_replace(array(' ', '\\\ '), '\\ ', contrexx_stripslashes($newAliasSource)));
                     if (!empty($newAliasSource)) {
                         if (!$this->is_alias_valid($newAliasSource)) {
                             $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'], htmlentities($newAliasSource, ENT_QUOTES, CONTREXX_CHARSET));
                             continue;
                         }
-                        
+
                         $arrAlias['sources'][] = array(
-                            'url'       => $newAliasSource, 
+                            'url'       => $newAliasSource,
                             'isdefault' => $_POST['alias_use_default'] == "newalias_$id" ? 1 : 0
                         );
                     }
@@ -352,7 +352,7 @@ class AliasAdmin extends aliasLib
                 'ALIAS_ALIAS_NR'        => $nr++,
                 'ALIAS_IS_DEFAULT'      => $arrAliasSource['isdefault'] == 1 ? 'checked' : '',
                 'ALIAS_ALIAS_PREFIX'    => empty($arrAliasSource['id']) ? '_new' : '',
-                'ALIAS_ALIAS_URL'        => htmlentities($arrAliasSource['url'], ENT_QUOTES, CONTREXX_CHARSET)
+                'ALIAS_ALIAS_URL'        => stripslashes(htmlentities($arrAliasSource['url'], ENT_QUOTES, CONTREXX_CHARSET))
             ));
             $this->_objTpl->parse('alias_list');
         }
