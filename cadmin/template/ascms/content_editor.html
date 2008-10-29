@@ -58,13 +58,13 @@ function aliasText(txt) {
 		.replace(/à/ig,  'a')
 		.replace(/ç/ig,  'c')
 		.replace(/[èé]/ig, 'e')
-		.replace(/[\s\+\/\(\)=,;%&]+/g, '-') // interpunction etc.
+		.replace(/[\+\/\(\)=,;%&]+/g, '-') // interpunction etc.
 		.replace(/['<>\\\~$!"]+/g, '')       // quotes and other special characters
 		// Sanitize most latin1 characters.
 		// there's more to come. maybe there's
 		// a generic function for this?
 		// Fallback for everything we didn't catch by now
-		.replace(/[^a-z_-]+/ig, '_')
+		.replace(/[^\sa-z_-]+/ig, '_')
 		.replace(/[_-]{2,}/g, '_')
 		.replace(/^[_\.\/\-]+/, '')
 		.toLowerCase()
@@ -364,8 +364,8 @@ function openWindow(theURL,winName,features){
 				<tr class="row2">
 					<td nowrap="nowrap">{TXT_TYPE_SELECT}</td>
 					<td>
-						<input type="radio" name="TypeSelection" value="content" onclick="modusSelection('type_content');" {CONTENT_TYPE_CHECKED_CONTENT}><label for="TypeSelection">{TXT_CONTENT_TYPE_DEFAULT}</label>
-						<input type="radio" name="TypeSelection" value="redirect" onclick="modusSelection('type_redirect');" {CONTENT_TYPE_CHECKED_REDIRECT}><label for="TypeSelection">{TXT_CONTENT_TYPE_REDIRECT}</label>
+						<input type="radio" id="typeContent" name="TypeSelection" value="content" onclick="modusSelection('type_content');" {CONTENT_TYPE_CHECKED_CONTENT}><label for="typeContent">{TXT_CONTENT_TYPE_DEFAULT}</label>
+						<input type="radio" id="typeRedirect" name="TypeSelection" value="redirect" onclick="modusSelection('type_redirect');" {CONTENT_TYPE_CHECKED_REDIRECT}><label for="typeRedirect">{TXT_CONTENT_TYPE_REDIRECT}</label>
 					</td>
 				</tr>
 			</tbody>
