@@ -243,4 +243,7 @@ $_ARRAYLANG['TXT_SHOP_CHANGE_PASSWORD'] = "Cambiar contrase&ntilde;a";
 $_ARRAYLANG['TXT_DIRECTORY_VOTE'] = "Votar";
 $_ARRAYLANG['TXT_DIRECTORY_VOTES_TEMPLATE'] = "(%1\$s&nbsp;%2\$s,&nbsp;&Oslash;&nbsp;%3\$s)";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'] = "Ya ha votado o hubo un problema enviando su entrada. En cualquier caso, su voto no fue aceptado.";
+$_ARRAYLANG['TXT_SHOP_MAKE_ORDER'] = "Weiter zur Bestellung...";
+$_ARRAYLANG['TXT_SHOP_NEW_ORDER'] = "Neue Bestellung...";
+$_ARRAYLANG['TXT_SHOP_LOGIN_INFO'] = "Informationen";
 ?>

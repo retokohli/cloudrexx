@@ -243,4 +243,7 @@ $_ARRAYLANG['TXT_SHOP_CHANGE_PASSWORD'] = "Modifier mot de passe";
 $_ARRAYLANG['TXT_DIRECTORY_VOTE'] = "Vois";
 $_ARRAYLANG['TXT_DIRECTORY_VOTES_TEMPLATE'] = "(%1\$s&nbsp;%2\$s,&nbsp;&Oslash;&nbsp;%3\$s)";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'] = "Impossible d'enregistrer votre évaluation. Causes possibles: vous avez déjà soumis une évaluation ou les données n'ont pas été transmises correctement.";
+$_ARRAYLANG['TXT_SHOP_MAKE_ORDER'] = "Weiter zur Bestellung...";
+$_ARRAYLANG['TXT_SHOP_NEW_ORDER'] = "Neue Bestellung...";
+$_ARRAYLANG['TXT_SHOP_LOGIN_INFO'] = "Informationen";
 ?>
