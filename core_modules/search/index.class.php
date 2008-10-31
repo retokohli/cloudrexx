@@ -13,7 +13,7 @@
 
 //Security-Check
 if (eregi("index.class.php",$_SERVER['PHP_SELF'])) {
-    Header("Location: ?");
+    Header("Location: ../../index.php");
     die();
 }
 

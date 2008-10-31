@@ -721,7 +721,7 @@ class counter
 
     function _countSearchquery($searchTerm, $external) {
         global $objDb;
-
+        $searchTerm = urldecode(utf8_decode($searchTerm));
         $query = "UPDATE `".DBPREFIX."stats_search` SET `count` = `count` + 1, `sid` = '".$this->md5Id."' WHERE `name` = '".substr($searchTerm,0,100)."' AND `sid` != '".$this->md5Id."' AND `external` = '".$external."'";
         $objDb->Execute($query);
         if ($objDb->Affected_Rows() == 0) {
