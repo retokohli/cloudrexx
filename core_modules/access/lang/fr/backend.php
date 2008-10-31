@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  core_module_access
  */
-$_ARRAYLANG['TXT_SETTINGS'] = "Pramètres";
+$_ARRAYLANG['TXT_SETTINGS'] = "Paramètres";
 $_ARRAYLANG['TXT_STORE'] = "Enregistrer";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Erreur lors de l'interrogation de la base de données!";
 $_ARRAYLANG['TXT_USER_ADMINISTRATION'] = "Gestion des utilisateurs";
@@ -197,7 +197,7 @@ $_ARRAYLANG['TXT_ACCESS_SENDER_ADDRESS'] = "Absender (E-mail)";
 $_ARRAYLANG['TXT_ACCESS_SENDER_NAME'] = "Absender (Name)";
 $_ARRAYLANG['TXT_ACCESS_SET_DEFAULT_EMAIL_ACCESS_FAILED'] = "Das Übernehmen des ausgewählten E-Mail Zugriffs für alle Benutzer schlug fehl!";
 $_ARRAYLANG['TXT_ACCESS_SET_DEFAULT_PROFILE_ACCESS_FAILED'] = "Das Übernehmen des ausgewählten Profil Zugriffs für alle Benutzer schlug fehl!";
-$_ARRAYLANG['TXT_ACCESS_SETTINGS'] = "Pramètres";
+$_ARRAYLANG['TXT_ACCESS_SETTINGS'] = "Paramètres";
 $_ARRAYLANG['TXT_ACCESS_SHOW_PAGE_IN_NEW_DOCUMENT'] = "Webseite in neuem Fenster anzeigen";
 $_ARRAYLANG['TXT_ACCESS_SHOW_USERS_OF_GROUP'] = "Benutzer der Gruppe %s anzeigen";
 $_ARRAYLANG['TXT_ACCESS_SHOW_USERS_ONLY_WITH_PHOTO'] = "Nur Benutzer mit Photo anzeigen";

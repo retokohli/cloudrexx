@@ -243,4 +243,7 @@ $_ARRAYLANG['TXT_SHOP_CHANGE_PASSWORD'] = "Kennwort ändern";
 $_ARRAYLANG['TXT_DIRECTORY_VOTE'] = "Stimme";
 $_ARRAYLANG['TXT_DIRECTORY_VOTES_TEMPLATE'] = "(%1\$s&nbsp;%2\$s,&nbsp;&Oslash;&nbsp;%3\$s)";
 $_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'] = "Sie haben bereits abgestimmt oder es wurden nicht alle Angaben korrekt übertragen. Aus diesen Gründen konnte die Bewertung nicht erfolgreich abgeschlossen werden.";
+$_ARRAYLANG['TXT_SHOP_MAKE_ORDER'] = "Weiter zur Bestellung...";
+$_ARRAYLANG['TXT_SHOP_NEW_ORDER'] = "Neue Bestellung...";
+$_ARRAYLANG['TXT_SHOP_LOGIN_INFO'] = "Informationen";
 ?>
