@@ -175,16 +175,19 @@ class settingsManager
             }
         }
 
+        // There was a lot of htmlentities() in the list below, which is not needed,
+        // as every setting entry is already passed through htmlspecialchars() when 
+        // saved. See function updateSettings() below
         $objTemplate->setVariable(array(
-            'SETTINGS_CONTACT_EMAIL'              => htmlentities($arrSettings['contactFormEmail'], ENT_QUOTES, CONTREXX_CHARSET),
-            'SETTINGS_ADMIN_EMAIL'                => htmlentities($arrSettings['coreAdminEmail'], ENT_QUOTES, CONTREXX_CHARSET),
-            'SETTINGS_ADMIN_NAME'                 => htmlentities($arrSettings['coreAdminName'], ENT_QUOTES, CONTREXX_CHARSET),
-            'SETTINGS_GLOBAL_TITLE'               => htmlentities($arrSettings['coreGlobalPageTitle'], ENT_QUOTES, CONTREXX_CHARSET),
-            'SETTINGS_DOMAIN_URL'                 => htmlentities($arrSettings['domainUrl'], ENT_QUOTES, CONTREXX_CHARSET),
+            'SETTINGS_CONTACT_EMAIL'              => ($arrSettings['contactFormEmail']),
+            'SETTINGS_ADMIN_EMAIL'                => ($arrSettings['coreAdminEmail']),
+            'SETTINGS_ADMIN_NAME'                 => ($arrSettings['coreAdminName']),
+            'SETTINGS_GLOBAL_TITLE'               => ($arrSettings['coreGlobalPageTitle']),
+            'SETTINGS_DOMAIN_URL'                 => ($arrSettings['domainUrl']),
             'SETTINGS_PAGING_LIMIT'               => intval($arrSettings['corePagingLimit']),
             'SETTINGS_SEARCH_RESULT_LENGTH'       => intval($arrSettings['searchDescriptionLength']),
             'SETTINGS_SESSION_LIFETIME'           => intval($arrSettings['sessionLifeTime']),
-            'SETTINGS_DNS_SERVER'                 => htmlentities($arrSettings['dnsServer'], ENT_QUOTES, CONTREXX_CHARSET),
+            'SETTINGS_DNS_SERVER'                 => ($arrSettings['dnsServer']),
             'SETTINGS_IDS_RADIO_ON'               => ($arrSettings['coreIdsStatus'] == 'on') ? 'checked' : '',
             'SETTINGS_IDS_RADIO_OFF'              => ($arrSettings['coreIdsStatus'] == 'off') ? 'checked' : '',
             'SETTINGS_HISTORY_ON'                 => ($arrSettings['contentHistoryStatus'] == 'on') ? 'checked' : '',
@@ -199,7 +202,7 @@ class settingsManager
             'SETTINGS_DETECT_BROWSER_LANGUAGE_OFF'=> ($arrSettings['languageDetection'] == 'off') ? 'checked' : '',
             'SETTINGS_FRONTEND_EDITING_ON'        => ($arrSettings['frontendEditingStatus'] == 'on') ? 'checked' : '',
             'SETTINGS_FRONTEND_EDITING_OFF'       => ($arrSettings['frontendEditingStatus'] == 'off') ? 'checked' : '',
-            'SETTINGS_GOOGLE_MAPS_API_KEY'        => htmlentities($arrSettings['googleMapsAPIKey'], ENT_QUOTES, CONTREXX_CHARSET),
+            'SETTINGS_GOOGLE_MAPS_API_KEY'        => ($arrSettings['googleMapsAPIKey']),
         ));
     }
 
@@ -231,8 +234,10 @@ class settingsManager
                     $strValue = substr($strValue,7);
                 }
             }
+
+            $val = contrexx_addslashes(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
             $objDatabase->Execute('    UPDATE '.DBPREFIX.'settings
-                                    SET setvalue="'.htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET).'"
+                                    SET setvalue="'.$val.'"
                                     WHERE setid='.intval($intId));
         }
 
