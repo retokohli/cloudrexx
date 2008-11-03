@@ -53,6 +53,7 @@ window.onload = fe_checkForLogin;
 
 function fe_loadToolbar(showEditorAfterLoading) {
 	if (!fe_toolbarIsLoaded) {
+	    fe_startLoading();
 		new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing, 
 							{	method: 'get',
 								parameters: {	act: 'getToolbar', 
@@ -62,7 +63,8 @@ function fe_loadToolbar(showEditorAfterLoading) {
 											},
 		  						onSuccess: function(transport) {
 		  							fe_loadToolbarResponse(transport.responseText, showEditorAfterLoading);
-		  						}
+		  						},
+		  						onComplete : fe_stopLoading
 							}
 						);				
 	} else {
@@ -115,6 +117,7 @@ function fe_doLogin() {
 	var loginType = ($(fe_loginTypeFrontend).checked == true) ? 'frontend' : 'backend';
 
 	if (loginType == 'frontend') {
+	    fe_startLoading();
 		new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing, 
 							{	method: 'post',
 								parameters: {	act: 'getToolbar',
@@ -129,10 +132,12 @@ function fe_doLogin() {
 											},
 		  						onSuccess: function(transport) {
 									fe_loadToolbarResponse(transport.responseText, true);
-		  						}
+		  						},
+		  						onComplete: fe_stopLoading()
 							}
 						);
 	} else {
+	    fe_startLoading();
 		new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing, 
 							{	method: 'post',
 								parameters: {	act: 'getAdmin',
@@ -144,7 +149,8 @@ function fe_doLogin() {
 											},
 		  						onSuccess: function(transport) {
 		  							fe_loadToolbarResponse(transport.responseText, false);
-		  						}
+		  						},
+		  						onComplete: fe_stopLoading()
 							}
 						);
 	}
@@ -182,13 +188,15 @@ function fe_closeToolbar() {
 
 function fe_setToolbarVisibility(newStatus) {
 	fe_userWantsToolbar = newStatus;
-			
+		
+	fe_startLoading();
 	new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing, 
 					{	method: 'get',
 						parameters: {	act: 'setToolbarVisibility',
 										status: ((fe_userWantsToolbar == true) ? '1' : '0')
 									},
-  						onSuccess: function(transport) {}
+  						onSuccess: function(transport) {},
+  						onComplete: fe_stopLoading()
 					}
 				);
 }
@@ -198,6 +206,7 @@ function fe_doLogout() {
 		fe_makeEditorInvisible();
 	}
 	
+	fe_startLoading();
 	new Ajax.Request(	fe_fileForIndex, 
 					{	method: 'get',
 						parameters: {	section: 'logout' },
@@ -209,7 +218,8 @@ function fe_doLogout() {
   							fe_editorIsLoaded	= false;
   							fe_editorIsVisible	= false;
   							$(fe_containerDivName).update();
-  						}
+  						},
+  						onComplete: fe_stopLoading()
 					}
 				);
 }
@@ -226,6 +236,7 @@ function fe_showSelection() {
 
 function fe_loadEditor(showSelectionIfNeeded) {
 	if (!fe_editorIsLoaded) {
+	    fe_startLoading();
 		new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing, 
 						{	method: 'get',
 							parameters: {	act: 'getEditor', 
@@ -236,7 +247,8 @@ function fe_loadEditor(showSelectionIfNeeded) {
 										},
 	  						onSuccess: function(transport) {
 	  							fe_loadEditorResponse(transport.responseText);
-	  						}
+	  						},
+	  						onComplete: fe_stopLoading()
 						}
 					);		
 	} else {
@@ -303,6 +315,7 @@ function fe_makeEditorInvisible() {
 }
 
 function fe_loadDefault() {
+    fe_startLoading();
 	new Ajax.Request(	fe_fileForIndex, 
 						{	method: 'get',
 							parameters: {	frontEditing: '1', 
@@ -312,7 +325,8 @@ function fe_loadDefault() {
 										},
 	  						onSuccess: function(transport) {
 	  							fe_restoreDefault(transport.responseText);
-	  						}
+	  						},
+	  						onComplete: fe_stopLoading()
 						}
 					);	
 }
@@ -330,6 +344,7 @@ function fe_restoreDefault(defaultContent) {
 function fe_loadPreview(previewMode) {
 	fe_makeEditorInvisible();
 	var editorContent = FCKeditorAPI.GetInstance(fe_editorFormContentName).GetData();	
+	fe_startLoading();
 	new Ajax.Request(	fe_fileForIndex, 
 						{	method: 'get',
 							parameters: {	frontEditing: '1',
@@ -344,7 +359,8 @@ function fe_loadPreview(previewMode) {
 	  							if (previewMode) {
 	  								fe_showSaveIcon();
 	  							}
-	  						}
+	  						},
+	  						onComplete: fe_stopLoading()
 						}
 					);	
 }
@@ -374,6 +390,7 @@ function fe_hideSaveIcon() {
 
 function fe_updatePage() {
 	fe_makeEditorInvisible();
+	fe_startLoading();
 	new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing,
 						{	method: 'post',
 							parameters: {	act: 'doUpdate', 
@@ -386,7 +403,8 @@ function fe_updatePage() {
 	  						onSuccess: function(transport) {
 	  							fe_loadPreview(false);
 	  							fe_hideSaveIcon();
-	  						}
+	  						},
+	  						onComplete: fe_stopLoading()
 						}
 					);	
 }
@@ -398,9 +416,3 @@ function fe_startLoading() {
 function fe_stopLoading() {
 	$(fe_loaderDivName).hide();
 }
-
-Ajax.Responders.register(
-	{	onCreate : fe_startLoading,
-    	onComplete : fe_stopLoading
-	}
-);
