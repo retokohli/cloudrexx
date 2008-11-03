@@ -913,6 +913,7 @@ CREATE TABLE `contrexx_module_egov_products` (
   `product_price` decimal(11,2) NOT NULL default '0.00',
   `product_per_day` enum('yes','no') NOT NULL default 'no',
   `product_quantity` tinyint(2) NOT NULL default '0',
+  `product_quantity_limit` tinyint(2) unsigned NOT NULL default '1',
   `product_target_email` varchar(255) NOT NULL default '',
   `product_target_url` varchar(255) NOT NULL default '',
   `product_message` text NOT NULL,
@@ -928,6 +929,7 @@ CREATE TABLE `contrexx_module_egov_products` (
   `product_paypal_currency` varchar(255) NOT NULL default '',
   `product_orderby` int(11) NOT NULL default '0',
   `yellowpay` tinyint(1) unsigned NOT NULL default '0',
+  `alternative_names` text NOT NULL,
   PRIMARY KEY  (`product_id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_egov_settings` (
