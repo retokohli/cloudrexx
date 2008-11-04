@@ -689,7 +689,9 @@ class skins
                 $this->strErrMessage = $_CORELANG['TXT_THEME_IMPORT_WRONG_MIMETYPE'];
                 return false;
             }
-            $tempFile = ASCMS_TEMP_PATH.DIRECTORY_SEPARATOR.$this.microtime().'.zip';
+            $tmpfilename = basename($URL['path']);
+            if (strlen($tmpfilename) < 3) $tmpfilename = '_unknown_upload_'; 
+            $tempFile = ASCMS_TEMP_PATH.DIRECTORY_SEPARATOR.$tmpfilename.microtime().'.zip';
             $fh = fopen($tempFile,'w');
             fputs($fh, $archive);
             return $tempFile;
