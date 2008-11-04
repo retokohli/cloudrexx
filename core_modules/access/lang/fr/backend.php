@@ -241,4 +241,5 @@ $_ARRAYLANG['TXT_ACCESS_WEB_ADDRESS'] = "Web Adresse (URL)";
 $_ARRAYLANG['TXT_ACCESS_YES'] = "Ja";
 $_ARRAYLANG['TXT_ACCESS_SAVE'] = "Enregistrer";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "Compte utilisateur mis à jour";
+$_ARRAYLANG['TXT_ACCESS_CHECKBOX'] = "Case à cocher";
 ?>

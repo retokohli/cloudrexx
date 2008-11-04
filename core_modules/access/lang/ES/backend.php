@@ -241,4 +241,5 @@ $_ARRAYLANG['TXT_ACCESS_WEB_ADDRESS'] = "Direcci&oacute;n Web";
 $_ARRAYLANG['TXT_ACCESS_YES'] = "S&iacute;";
 $_ARRAYLANG['TXT_ACCESS_SAVE'] = "Guardar";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "La cuenta ha sido guardada.";
+$_ARRAYLANG['TXT_ACCESS_CHECKBOX'] = "Checkbox";
 ?>

@@ -241,4 +241,5 @@ $_ARRAYLANG['TXT_ACCESS_WEB_ADDRESS'] = "Web Adresse (URL)";
 $_ARRAYLANG['TXT_ACCESS_YES'] = "Ja";
 $_ARRAYLANG['TXT_ACCESS_SAVE'] = "Speichern";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "Das Benutzerkonto wurde erfolgreich gespeichert";
+$_ARRAYLANG['TXT_ACCESS_CHECKBOX'] = "Kontrollkästchen";
 ?>
