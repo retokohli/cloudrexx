@@ -256,9 +256,8 @@ class User extends User_Profile
     /**
      * Contains the message if an error occurs
      * @var string
-     * @access private
      */
-    private $error_msg = array();
+    public $error_msg = array();
 
 
     /**

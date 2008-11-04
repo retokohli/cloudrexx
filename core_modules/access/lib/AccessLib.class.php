@@ -100,6 +100,7 @@ class AccessLib
             'textarea'        => '<textarea name="[NAME]" rows="1" cols="1">[VALUE]</textarea>',
             'text'            => '<input type="text" name="[NAME]" value="[VALUE]" />',
             'password'        => '<input type="password" name="[NAME]" value="" autocomplete="off" />',
+            'checkbox'        => '<input type="hidden" name="[NAME]" /><input type="checkbox" name="[NAME]" value="1" [CHECKED] />',
             'menu'            => '<select name="[NAME]">[VALUE]</select>',
             'menu_option'     => '<option value="[VALUE]"[SELECTED]>[VALUE_TXT]</option>',
             'url'             => '<input type="hidden" name="[NAME]" value="[VALUE]" /><em>[VALUE_TXT]</em> <a href="javascript:void(0);" onclick="elLink=null;elDiv=null;elInput=null;pntEl=this.previousSibling;while((typeof(elInput)==\'undefined\'||typeof(elDiv)!=\'undefined\')&& pntEl!=null){switch(pntEl.nodeName){case\'INPUT\':elInput=pntEl;break;case\'EM\':elDiv=pntEl;if(elDiv.getElementsByTagName(\'a\').length>0){elLink=elDiv.getElementsByTagName(\'a\')[0];}break;}pntEl=pntEl.previousSibling;}accessSetWebsite(elInput,elDiv,elLink)" title="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'"><img align="middle" src="'.ASCMS_PATH_OFFSET.'/images/modules/access/edit.gif" width="16" height="16" border="0" alt="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'" /></a>',
@@ -195,6 +196,10 @@ class AccessLib
 //                if ($attributeId == 'picture') {
 //                    $arrPlaceholders['_DESC'] = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 //                }
+                break;
+
+            case 'checkbox':
+                $arrPlaceholders['_CHECKED'] = $objUser->getProfileAttribute($attributeId, $historyId) ? 'checked="checked"' : '';
                 break;
 
             case 'menu':
@@ -767,6 +772,27 @@ class AccessLib
     }
 
     /**
+     * Return the html code for a checkbox attribute
+     *
+     * @param string $name
+     * @param string $value
+     * @param boolean $edit
+     * @return string
+     */
+    private function getCheckboxAttributeCode($name, $value, $edit)
+    {
+        global $_ARRAYLANG;
+
+        return $edit ?
+            str_replace(
+                array('[NAME]', '[CHECKED]'),
+                array($name, $value ? 'checked="checked"' : ''),
+                $this->arrAttributeTypeTemplates['checkbox']
+            )
+            : ($value ? $_ARRAYLANG['TXT_ACCESS_YES'] : $_ARRAYLANG['TXT_ACCESS_NO']);
+    }
+
+    /**
      * Return the html code of a dropdown menu option
      *
      * @param string $value
@@ -839,6 +865,10 @@ class AccessLib
 
             case 'image':
                 $code = $this->getImageAttributeCode($objUser, $attributeName, $objUser->getProfileAttribute($objAttribute->getId(), $historyId), $attributeId, $attributeHtmlId, $historyId, $edit);
+                break;
+
+            case 'checkbox':
+                $code = $this->getCheckboxAttributeCode($attributeName, $objUser->getProfileAttribute($objAttribute->getId(), $historyId), $edit);
                 break;
 
             case 'menu':
