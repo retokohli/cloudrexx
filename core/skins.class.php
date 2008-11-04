@@ -143,6 +143,19 @@ class skins
      */
     var $fileextensions = array("htm", "shtml", "html", "txt", "css", "js", "php", "java", "tpl", "xml",);
 
+    /**
+     * Subdirectores and contents of selected theme
+     * @var array
+     */
+    var $subDirs = array();
+
+    /**
+     * Path to the parent directory of the theme
+     *
+     * @var string
+     */
+    var $_parentPath = '';
+
 
     var $arrWebPaths;                      // array web paths
     var $getAct;                           // $_GET['act']
@@ -1285,6 +1298,54 @@ class skins
     }
 
     /**
+     * Get subdirectory contents
+     *
+     * @param string $strDir
+     * @param bool $boolRecursive
+     * @param bool $boolIncludeDirs
+     * @return array $this->subDirs
+     */
+    function _getDirListing($strDir, $arrAllowedFileExtensions, $level = 0, $boolRecursive = true, $boolIncludeDirs = true) {
+        $strFile = str_replace($this->_parentPath.'/', '', $strDir .'/'. $strFile);
+        $this->subDirs[$strDir] = array(
+		    'rel'  => preg_replace("/\/\//si", "/", $strFile),
+		    'file'  => basename($strFile),
+		    'level' => $level,
+		);
+        if($hDir = opendir($strDir)) {
+            $level++;
+        	while(false !== ($strFile = readdir($hDir))) {
+        		if(!in_array($strFile, array('.', '..', '.svn'))){
+                    $pathinfo = pathinfo($strDir. "/" . $strFile);
+        			if(is_dir($strDir. "/" . $strFile)) {
+        				if($boolRecursive)
+        					$this->subDirs = array_merge($this->subDirs, $this->_getDirListing($strDir .'/'. $strFile, $arrAllowedFileExtensions, $level, $boolRecursive, $boolIncludeDirs));
+        				if($boolIncludeDirs){
+        				    $strPath = $strDir .'/'. $strFile;
+            				$strFile = str_replace($this->_parentPath.'/', '', $strDir .'/'. $strFile);
+            				$this->subDirs[$strPath] = array(
+            				    'rel'  => preg_replace("/\/\//si", "/", $strFile),
+            				    'file'  => basename($strFile),
+            				    'level' => $level,
+            				);
+        				}
+        			} elseif(in_array($pathinfo['extension'], $arrAllowedFileExtensions)) {
+        				$strPath = $strDir .'/'. $strFile;
+            			$strFile = str_replace($this->_parentPath.'/', '', $strDir .'/'. $strFile);
+        				$this->subDirs[$strPath] = array(
+        				    'rel'  => preg_replace("/\/\//si", "/", $strFile),
+        				    'file'  => basename($strFile),
+        				    'level' => $level,
+        				);
+        			}
+        		}
+        	}
+        	closedir($hDir);
+        }
+        return $this->subDirs;
+    }
+
+    /**
     * Gets the themes pages dropdown menu
     *
     * @access   public
@@ -1305,41 +1366,54 @@ class skins
         if($themes != "") {
             $file = $this->path.$themes;
             if(file_exists($file)) {
+                $this->_parentPath = $file;
                 $skin_folder_page = opendir ($file);
-                while ($page = readdir ($skin_folder_page)) {
-                    $extension = split("[.]",$page);
+                while (false !== ($strPage = readdir ($skin_folder_page))) {
+                    if(!in_array($strPage, array('.', '..', '.svn')) && is_dir($file.'/'.$strPage)){
+                        $this->subDirs = array_merge($this->subDirs, $this->_getDirListing($file.'/'.$strPage, $this->fileextensions));
+                    }
+                    $extension = split("[.]",$strPage);
                     $x = count($extension)-1;
                     if(in_array($extension[$x], $this->fileextensions)) {
-                        if(in_array($page, $this->filenames)) {
-                            if($page != "." && $page != "..") {
-                                $defaultFiles[] = $page;
+                        if(in_array($strPage, $this->filenames)) {
+                            if($strPage != "." && $strPage != "..") {
+                                $defaultFiles[] = $strPage;
                             }
                         } else {
-                            if($page != "." && $page != "..") {
+                            if($strPage != "." && $strPage != "..") {
                                 $selected="";
-                                if($themesPage==$page) $selected = "selected";
+                                if($themesPage==$strPage) $selected = 'selected="selected"';
                                 if (!isset($special)) {
                                     $special = "";
                                 }
-                                $special .="<option value='".$page."' $selected>".$page."</option>\n";
+                                $special .="<option value='".$strPage."' $selected>".$strPage."</option>\n";
                             }
                         }
                     }
                 }
                 closedir($skin_folder_page);
+                ksort($this->subDirs, SORT_STRING);
+                $subdirContent = '';
+                foreach ($this->subDirs as $absolutePath => $arrFile) {
+                    $disabled = $selected = '';
+                    $strName = str_repeat('&hellip;', $arrFile['level']).$arrFile['file'];
+                    if($themesPage == $arrFile['rel']){ $selected = 'selected="selected"'; }
+                    if(is_dir($absolutePath)){ $disabled = 'disabled="disabled"'; $strName .= '/'; }
+                    $subdirContent .= "<option value='".($disabled != '' ? '' : $arrFile['rel'])."' $disabled $selected>".$strName."</option>\n";
+                }
                 //sort files
                 sort($defaultFiles);
-                foreach ($defaultFiles as $id => $page){
+                foreach ($defaultFiles as $id => $strPage){
                     $selected="";
-                    if($themesPage==$page) $selected = "selected";
+                    if($themesPage==$strPage) $selected = "selected";
                     if (!isset($default)) {
                         $default = "";
                     }
-                    $default .="<option value='".$page."' $selected>".$page."</option>\n";
+                    $default .="<option value='".$strPage."' $selected>".$strPage."</option>\n";
                 }
                 //create dropdown
                 $seperator = "<option value=''>----------------------------------------</option>\n";
-                $fdm = $default.$seperator.$special;
+                $fdm = $default.$seperator.$special.$seperator.$subdirContent;
             } else {
                 $this->strErrMessage = $_CORELANG['TXT_STATUS_CANNOT_OPEN'];
             }
