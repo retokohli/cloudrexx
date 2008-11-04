@@ -20,7 +20,7 @@ CREATE TABLE `contrexx_access_settings` (
 CREATE TABLE `contrexx_access_user_attribute` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `parent_id` int(10) unsigned NOT NULL default '0',
-  `type` enum('text','textarea','mail','uri','date','image','menu','menu_option','group','frame','history') NOT NULL default 'text',
+  `type` enum('text','textarea','mail','uri','date','image','checkbox','menu','menu_option','group','frame','history') NOT NULL default 'text',
   `mandatory` enum('0','1') NOT NULL default '0',
   `sort_type` enum('asc','desc','custom') NOT NULL default 'asc',
   `order_id` int(10) unsigned NOT NULL default '0',
