@@ -14,7 +14,7 @@
  * @version     2.0.0
  * @package     contrexx
  * @subpackage  lib_framework
- */ 
+ */
 
 class User_Profile_Attribute
 {
@@ -330,6 +330,17 @@ class User_Profile_Attribute
             'special'        => array(),
             'data_type'        => 'string'
         ),
+        'checkbox' => array(
+            'desc'            => 'TXT_ACCESS_CHECKBOX',
+            'parent'        => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'        => true,
+            'children'        => false,
+            'multiline'        => false,
+            'movable'        => true,
+            'protection'    => true,
+            'special'        => array(),
+            'data_type'        => 'int'
+        ),
         'menu' => array(
             'desc'            => 'TXT_ACCESS_MENU',
             'parent'        => 'TXT_ACCESS_PARENT_ATTRIBUTE',
@@ -394,6 +405,7 @@ class User_Profile_Attribute
                 'uri',
                 'date',
                 'image',
+                'checkbox',
                 'menu',
                 'group',
                 'history'
@@ -403,6 +415,7 @@ class User_Profile_Attribute
         'uri'        => array(),
         'date'        => array(),
         'image'        => array(),
+        'checkbox'    => array(),
         'menu'        => array(
                 'menu_option'
             ),
@@ -415,6 +428,7 @@ class User_Profile_Attribute
                 'uri',
                 'date',
                 'image',
+                'checkbox',
                 'menu',
                 'group',
                 'history'
@@ -425,6 +439,7 @@ class User_Profile_Attribute
                 'uri',
                 'date',
                 'image',
+                'checkbox',
                 'menu',
                 'group',
                 'history'
@@ -444,10 +459,10 @@ class User_Profile_Attribute
 
     function __construct()
     {
-        global $_LANGID;
+        global $_LANGID, $objInit;
 
         // this is a crapy solution! but the problem is, that this class gets initialized before the backend language ID is loaded.
-        $this->langId = $_LANGID ? $_LANGID : (!empty($_COOKIE['backendLangId']) ? intval($_COOKIE['backendLangId']) : 1);
+        $this->langId = $_LANGID ? $_LANGID : (!empty($_COOKIE['backendLangId']) ? intval($_COOKIE['backendLangId']) : (isset($objInit) ? ($objInit->mode == 'frontend' ? $objInit->defaultFrontendLangId : $objInit->defaultBackendLangId) : 1));
 
         $this->init();
         $this->first();
@@ -1492,7 +1507,7 @@ class User_Profile_Attribute
 
     function getName($langId = null)
     {
-        global $_LANGID;
+        global $_LANGID, $objInit;
 
         if (empty($this->langId)) {
             $this->langId = $_LANGID;
@@ -1500,7 +1515,11 @@ class User_Profile_Attribute
         if (empty($langId)) {
             $langId = $this->langId;
         }
-        if (!isset($this->arrName[$langId])) {
+        if (empty($this->arrName[$langId])) {
+            $this->loadName($langId);
+        }
+        if (empty($this->arrName[$langId])) {
+            $langId = $objInit->mode == 'frontend' ? $objInit->defaultFrontendLangId : $objInit->defaultBackendLangId;
             $this->loadName($langId);
         }
         return $this->arrName[$langId];
