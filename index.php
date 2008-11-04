@@ -1687,6 +1687,7 @@ if ($_CONFIG['bannerStatus'] == '1') {
 //-------------------------------------------------------
 // Frontend Editing: prepare needed code-fragments
 //-------------------------------------------------------
+$strFeInclude = $strFeLink = $strFeContent = null;
 if ($_CONFIG['frontendEditingStatus'] == 'on') {
     $modulespath = "core_modules/frontendEditing/frontendEditingLib.class.php";
     if (file_exists($modulespath)) {
@@ -1707,40 +1708,40 @@ if ($_CONFIG['frontendEditingStatus'] == 'on') {
 
 $objTemplate->setVariable(array(
     'CHARSET'              => $objInit->getFrontendLangCharset(),
-    'TITLE'                 => $page_title,
+    'TITLE'                => $page_title,
     'METATITLE'            => $page_metatitle,
     'NAVTITLE'             => $page_catname,
     'GLOBAL_TITLE'         => $_CONFIG['coreGlobalPageTitle'],
-    'DOMAIN_URL'            => $_CONFIG['domainUrl'],
+    'DOMAIN_URL'           => $_CONFIG['domainUrl'],
     'METAKEYS'             => $page_keywords,
     'METADESC'             => $page_desc,
-    'METAROBOTS'            => $page_robots,
+    'METAROBOTS'           => $page_robots,
     'CONTENT_TITLE'        => '<span id="fe_PreviewTitle">'.$page_title.'</span>',
-    'CSS_NAME'              => $pageCssName,
-    'PRINT_URL'             => $objInit->getPrintUri(),
-    'PDF_URL'             => $objInit->getPDFUri(),
-    'PAGE_URL'              => $objInit->getPageUri(),
+    'CSS_NAME'             => $pageCssName,
+    'PRINT_URL'            => $objInit->getPrintUri(),
+    'PDF_URL'              => $objInit->getPDFUri(),
+    'PAGE_URL'             => $objInit->getPageUri(),
     'CURRENT_URL'          => $objInit->getCurrentPageUri(),
     'DATE'                 => showFormattedDate(),
     'TIME'                 => date("H:i", time()),
     'NAVTREE'              => $objNavbar->getTrail(),
     'SUBNAVBAR_FILE'       => $objNavbar->getNavigation($themesPages['subnavbar'],$boolShop),
-    'SUBNAVBAR2_FILE'       => $objNavbar->getNavigation($themesPages['subnavbar2'],$boolShop),
-    'SUBNAVBAR3_FILE'       => $objNavbar->getNavigation($themesPages['subnavbar3'],$boolShop),
+    'SUBNAVBAR2_FILE'      => $objNavbar->getNavigation($themesPages['subnavbar2'],$boolShop),
+    'SUBNAVBAR3_FILE'      => $objNavbar->getNavigation($themesPages['subnavbar3'],$boolShop),
     'NAVBAR_FILE'          => $objNavbar->getNavigation($themesPages['navbar'],$boolShop),
     'ONLINE_USERS'         => $objCounter->getOnlineUsers(),
-    'VISITOR_NUMBER'        => $objCounter->getVisitorNumber(),
+    'VISITOR_NUMBER'       => $objCounter->getVisitorNumber(),
     'COUNTER'              => $objCounter->getCounterTag(),
-    'BANNER'                => isset($objBanner) ? $objBanner->getBannerJS() : '',
+    'BANNER'               => isset($objBanner) ? $objBanner->getBannerJS() : '',
     'VERSION'              => $_CONFIG['coreCmsName'],
     'LANGUAGE_NAVBAR'      => $objNavbar->getFrontendLangNavigation(),
-    'ACTIVE_LANGUAGE_NAME'  => $objInit->getFrontendLangName(),
-    'RANDOM'                => md5(microtime()),
+    'ACTIVE_LANGUAGE_NAME' => $objInit->getFrontendLangName(),
+    'RANDOM'               => md5(microtime()),
     'TXT_SEARCH'           => $_CORELANG['TXT_SEARCH'],
     'MODULE_INDEX'         => MODULE_INDEX,
-    'LOGIN_INCLUDE'         =>  $strFeInclude,
-    'LOGIN_URL'             =>  $strFeLink,
-    'LOGIN_CONTENT'            =>    $strFeContent,
+    'LOGIN_INCLUDE'        => $strFeInclude,
+    'LOGIN_URL'            => $strFeLink,
+    'LOGIN_CONTENT'        => $strFeContent,
 ));
 
 
