@@ -1,4 +1,5 @@
 <?php
+$_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
 /**
  * Contact
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -517,18 +518,22 @@ class ContactManager extends ContactLib
         if ($copy) {
             $this->initContactForms(true);
         }
-
-        $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
-
-
         $this->_objTpl->loadTemplateFile('module_contact_form_modify.html');
+        $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
+        if ($formId == 0) {
+            $this->_objTpl->setVariable(array(
+                'CONTACT_FORM_RECIPIENT_ID'  =>   '',
+            ));
+            $this->_objTpl->touchBlock("contactRecipients");
+        }
+
         $this->_pageTitle = (!$copy && $formId != 0) ? $_ARRAYLANG['TXT_CONTACT_MODIFY_CONTACT_FORM'] : $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
 
         $this->_objTpl->setVariable(array(
             'TXT_CONTACT_ID'                                => $_ARRAYLANG['TXT_CONTACT_ID'],
             'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
             'TXT_CONTACT_RECEIVER_ADDRESSES'                => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES'],
-            'TXT_CONTACT_ADD_OTHER_FIELD'                   => $_ARRAYLANG['TXT_CONTACT_ADD_OTHER_FIELD'],
+            'TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'      => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
             'TXT_CONTACT_SAVE'                              => $_ARRAYLANG['TXT_CONTACT_SAVE'],
             'TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA' => $_ARRAYLANG['TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA'],
             'TXT_CONTACT_SUBJECT'                           => $_ARRAYLANG['TXT_CONTACT_SUBJECT'],
@@ -556,7 +561,10 @@ class ContactManager extends ContactLib
             'TXT_CONTACT_FORM_FIELDS'                       => $_ARRAYLANG['TXT_CONTACT_FORM_FIELDS'],
             'TXT_CONTACT_DELETE'                            => $_ARRAYLANG['TXT_CONTACT_DELETE'],
             'TXT_CONTACT_MOVE_UP'                           => $_ARRAYLANG['TXT_CONTACT_MOVE_UP'],
-            'TXT_CONTACT_MOVE_DOWN'                         => $_ARRAYLANG['TXT_CONTACT_MOVE_DOWN']
+            'TXT_CONTACT_MOVE_DOWN'                         => $_ARRAYLANG['TXT_CONTACT_MOVE_DOWN'],
+            'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
+            'TXT_CONTACT_REGEX_EMAIL'                       => $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'],
+            'TXT_CONTACT_ADD_OTHER_FIELD'                   => $_ARRAYLANG['TXT_CONTACT_ADD_OTHER_FIELD'],
         ));
 
         if (!$copy && $formId > 0 && $this->_getContentSiteId($formId)) {
@@ -658,6 +666,7 @@ class ContactManager extends ContactLib
             'CONTACT_FORM_EMAIL'                            => $formEmails,
             'CONTACT_FORM_SUBJECT'                          => $formSubject,
             'CONTACT_FORM_FIELD_NEXT_ID'                    => $lastFieldId+1,
+            'CONTACT_FORM_RECIPIENT_NEXT_ID'                => $lastRecipientId+1,
             'CONTACT_FORM_FIELD_NEXT_TEXT_TPL'              => $this->_getFormFieldAttribute($lastFieldId+1, 'text', ''),
             'CONTACT_FORM_FIELD_LABEL_TPL'                  => $this->_getFormFieldAttribute($lastFieldId+1, 'label', ''),
             'CONTACT_FORM_FIELD_CHECK_MENU_NEXT_TPL'        => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType['.($lastFieldId+1).']', 'contactFormFieldCheckType_'.($lastFieldId+1), 'text', 1),

@@ -20,6 +20,8 @@
  */
 class ContactLib
 {
+    private $_arrRecipients = array();
+    private $_lastRecipientId = array();
     var $arrForms;
     var $_arrSettings;
 
@@ -27,6 +29,54 @@ class ContactLib
      * Regexpression list
      */
     var $arrCheckTypes;
+
+        /**
+     * return the last recipient id
+     *
+     * @return integer
+     */
+    public function getLastRecipientId($refresh = false)
+    {
+        if (empty($this->_lastRecipientId) || $refresh) {
+            $this->_lastRecipientId = $objDatabase->SelectLimit('SELECT MAX(`id`) as `max` FROM `".DBPREFIX."module_contact_recipient`', 1)->fields['max'];
+        }
+        return $this->_lastRecipientId;
+    }
+
+    /**
+     * load recipient list
+     *
+     * @param integer $formId
+     * @param boolean $refresh
+     * @return array
+     */
+    public function _getRecipients($formId = 0, $refresh = false)
+    {
+        global $objDatabase;
+        $formId = intval($formId);
+        if ($formId > 0 && isset($this->_arrRecipients[$formId]) && !$refresh){
+            return $this->_arrRecipients[$formId];
+        }
+        if ($formId == 0 && !empty($this->_arrRecipients) && !$refresh ){
+            return $this->_arrRecipients;
+        }
+        $objRS = $objDatabase->Execute("
+            SELECT `id`, `id_form`, `name`, `email`, `sort`
+            FROM `".DBPREFIX."module_contact_recipient`".
+            ($formId == 0) ? "" : " WHERE `form_id` = ".$formId).
+            " ORDER BY `sort` ASC";
+        while (!$objRS->EOF){
+            $this->_arrRecipients[$objRS->fields['id_form']][] = array(
+                'id'    =>  $objRS->fields['id'],
+                'name'  =>  $objRS->fields['name'],
+                'email' =>  $objRS->fields['email'],
+                'sort'  =>  $objRS->fields['sort'],
+            );
+            $objRS->MoveNext();
+        }
+        return $this->_arrRecipients;
+    }
+
 
     function initContactForms($allLanguages = false)
     {
@@ -88,7 +138,7 @@ class ContactLib
                 'name'  => 'TXT_CONTACT_REGEX_URL'
             ),
             4   => array(
-                'regex' => '^[A-Za-z'.(strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_encode('äàáüâûôñèöéè') : 'äàáüâûôñèöéè').'\ ]*$',
+                'regex' => '^[A-Za-z'.(strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_encode('ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½') : 'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½').'\ ]*$',
                 'name'  => 'TXT_CONTACT_REGEX_TEXT'
             ),
             5   => array(
@@ -330,7 +380,7 @@ class ContactLib
 
         $count = $objEntry->RecordCount();
         if ($limit && $count > intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pagingPos, "&amp;cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId, 'Kontaktformular Einträge');
+            $paging = getPaging($count, $pagingPos, "&amp;cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId, 'Kontaktformular Eintrï¿½ge');
             $objEntry = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pagingPos);
         }
 

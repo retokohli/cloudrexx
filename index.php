@@ -1538,6 +1538,31 @@ break;
         break;
 
 //-------------------------------------------------------
+// Partners Module
+//-------------------------------------------------------
+    case "partners":
+        $modulespath = "modules/partners/index.class.php";
+        /**
+         * @ignore
+         */
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objPartners = new Partners($page_content);
+        $objTemplate->setVariable('CONTENT_TEXT', $objPartners->getPage());
+    break;
+
+//-------------------------------------------------------
+// U2U Module
+//-------------------------------------------------------
+    case "u2u":
+		$modulespath = "modules/u2u/index.class.php";
+		if (file_exists($modulespath)) require_once($modulespath);
+		else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+		$objAccess = new u2u($page_content);
+		$objTemplate->setVariable('CONTENT_TEXT', $objAccess->getPage($page_metatitle, $page_title));
+	break;
+
+//-------------------------------------------------------
 // Download Module
 //-------------------------------------------------------
     case "downloads":
