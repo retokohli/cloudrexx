@@ -480,7 +480,7 @@ switch ($plainCmd) {
         $modulespath = ASCMS_CORE_MODULE_PATH.'/contact/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = 'Kontaktmanager';
+        $subMenuTitle = $_CORELANG['TXT_CONTACTS'];
         $objContact = new contactManager();
         $objContact->getPage();
         break;
@@ -897,6 +897,22 @@ switch ($plainCmd) {
         $subMenuTitle  = $_CORELANG['TXT_BLOG_MODULE'];
         $objBlog = new BlogAdmin();
         $objBlog->getPage();
+        break;
+
+    /**
+     * Partners Module
+     * @author  Ivan Schmid <ivan.schmid@comvation.com>
+     * @since   2.0.1
+     * @version 1.0
+     */
+    case 'partners':
+    	// Permission::checkAccess(119, 'static');
+        $modulespath = ASCMS_MODULE_PATH.'/partners/admin.class.php';
+        if (file_exists($modulespath)) include($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle  = $_CORELANG['TXT_PARTNERS_MODULE'];
+        $objPartner = new PartnersAdmin();
+        $objPartner->getPage();
         break;
 
     //-------------------------------------------------------
