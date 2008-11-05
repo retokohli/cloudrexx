@@ -1,6 +1,6 @@
 <!-- START index_home.html -->
 {INDEX_HOME_CMS_NAME} {INDEX_HOME_CMS_EDITION}<br />
-Version {INDEX_HOME_CMS_VERSION} - {INDEX_HOME_CMS_STATUS}<br />
+Version {INDEX_HOME_CMS_VERSION} - {INDEX_HOME_CMS_STATUS} <span id="newversion"> </span><br />
 {TXT_RELEASE_DATE}: {INDEX_HOME_CMS_RELEASEDATE}<br />
 <br />
 <div style="border-bottom-width: 1px; border-bottom-color:#cccccc; border-bottom-style:solid"></div>
@@ -50,4 +50,7 @@ Version {INDEX_HOME_CMS_VERSION} - {INDEX_HOME_CMS_STATUS}<br />
 <!-- END logRow -->
 </table>
 <br />
+<script type="text/javascript" language="javascript">
+	new Ajax.Updater('newversion', 'versioncheck.php');
+</script>
 <!-- END index_home.html -->
