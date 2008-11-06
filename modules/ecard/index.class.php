@@ -552,6 +552,7 @@ class ecard {
 			$senderEmail = $objResult->fields['senderEmail'];
 			$receiverName = $objResult->fields['receiverName'];
 			$receiverEmail = $objResult->fields['receiverEmail'];
+			$receiversalutation = $objResult->fields['salutation'];
 
 
 			/****************************/
@@ -567,14 +568,15 @@ class ecard {
 			/* Initialize DATA placeholder */
 			/*******************************/
 			$this->_objTpl->setVariable(array(
-				'ECARD_DATA'   			=> '<strong>' . $senderName . '</strong> (<a href="mailto:' . $senderEmail . '">' . $senderEmail . '</a>) ' . $_ARRAYLANG['TXT_HAS_SEND_YOU_ECARD'],
-				'MOTIVE'   				=> '<img src="' . ASCMS_ECARD_SEND_ECARDS_WEB_PATH . $selectedMotive  . '" alt="' . $selectedMotive . '" />',
-				'ECARD_FROM'   			=> 'E-Card von ' . $senderName,
-				'ECARD_MESSAGE'   		=> $message,
-				'ECARD_SENDER_NAME'   	=> $senderName,
-				'ECARD_SENDER_EMAIL'   	=> $senderEmail,
-				'ECARD_RECEIVER_NAME'   => $receiverName,
-				'ECARD_RECEIVER_EMAIL'	=> $receiverEmail
+				'ECARD_DATA'   				=> '<strong>' . $senderName . '</strong> (<a href="mailto:' . $senderEmail . '">' . $senderEmail . '</a>) ' . $_ARRAYLANG['TXT_HAS_SEND_YOU_ECARD'],
+				'MOTIVE'   					=> '<img src="' . ASCMS_ECARD_SEND_ECARDS_WEB_PATH . $selectedMotive  . '" alt="' . $selectedMotive . '" />',
+				'ECARD_FROM'   				=> 'E-Card von ' . $senderName,
+				'ECARD_MESSAGE'   			=> $message,
+				'ECARD_SENDER_NAME'   		=> $senderName,
+				'ECARD_SENDER_EMAIL'   		=> $senderEmail,
+				'ECARD_RECEIVER_SALUTATION'	=> $receiversalutation,
+				'ECARD_RECEIVER_NAME'		=> $receiverName,
+				'ECARD_RECEIVER_EMAIL'		=> $receiverEmail
 			));
 
 
