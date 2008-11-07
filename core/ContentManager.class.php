@@ -671,7 +671,6 @@ class ContentManager
             'TXT_NO_MODULE'            => $_CORELANG['TXT_NO_MODULE'],
             'TXT_REDIRECT'             => $_CORELANG['TXT_REDIRECT'],
             'TXT_BROWSE'               => $_CORELANG['TXT_BROWSE'],
-            'TXT_CONTENT_ASSIGN_BLOCK' => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
             'TXT_NO_REDIRECT'          => '',
             'TXT_SOURCE_MODE'          => $_CORELANG['TXT_SOURCE_MODE'],
             'TXT_CACHING_STATUS'       => $_CORELANG['TXT_CACHING_STATUS'],
@@ -870,10 +869,10 @@ class ContentManager
             'TXT_MENU_NAME'                    => $_CORELANG['TXT_MENU_NAME'],
             'TXT_NEW_CATEGORY'                 => $_CORELANG['TXT_NEW_CATEGORY'],
             'TXT_VISIBLE'                      => $_CORELANG['TXT_VISIBLE'],
-            'TXT_CONTENT_TITLE'                => $_CORELANG['TXT_PAGETITLE'],
+            'TXT_CONTENT_TITLE'                   => $_CORELANG['TXT_PAGETITLE'],
             'TXT_META_INFORMATIONS'            => $_CORELANG['TXT_META_INFORMATIONS'],
             'TXT_META_TITLE'                   => $_CORELANG['TXT_META_TITLE'],
-            'TXT_META_DESCRIPTION'             => $_CORELANG['TXT_META_DESCRIPTION'],
+            'TXT_META_DESCRIPTION'            => $_CORELANG['TXT_META_DESCRIPTION'],
             'TXT_META_KEYWORD'                 => $_CORELANG['TXT_META_KEYWORD'],
             'TXT_META_ROBOTS'                  => $_CORELANG['TXT_META_ROBOTS'],
             'TXT_CONTENT'                      => $_CORELANG['TXT_CONTENT'],
@@ -881,11 +880,10 @@ class ContentManager
             'TXT_START_DATE'                   => $_CORELANG['TXT_START_DATE'],
             'TXT_END_DATE'                     => $_CORELANG['TXT_END_DATE'],
             'TXT_EXPERT_MODE'                  => $_CORELANG['TXT_EXPERT_MODE'],
-            'TXT_MODULE'                       => $_CORELANG['TXT_MODULE'],
+            'TXT_MODULE'                      => $_CORELANG['TXT_MODULE'],
             'TXT_NO_MODULE'                    => $_CORELANG['TXT_NO_MODULE'],
             'TXT_REDIRECT'                     => $_CORELANG['TXT_REDIRECT'],
-            'TXT_BROWSE'                       => $_CORELANG['TXT_BROWSE'],
-            'TXT_CONTENT_ASSIGN_BLOCK'         => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
+            'TXT_BROWSE'                    => $_CORELANG['TXT_BROWSE'],
             'TXT_NO_REDIRECT'                  => '',
             'TXT_SOURCE_MODE'                  => $_CORELANG['TXT_SOURCE_MODE'],
             'TXT_CACHING_STATUS'               => $_CORELANG['TXT_CACHING_STATUS'],
@@ -1346,11 +1344,6 @@ class ContentManager
         $cssName = contrexx_addslashes(strip_tags($_POST['cssName']));
         $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
         $redirect = (!empty($_POST['TypeSelection']) && $_POST['TypeSelection'] == 'redirect') ? contrexx_addslashes(strip_tags($_POST['redirect'])) : '';
-        if(preg_match('/\b(?:mailto:)?([\w\d\._%+-]+@(?:[\w\d-]+\.)+[\w]{2,6})\b/i', $redirect, $match)){
-            $redirect = 'mailto:'.$match[1];
-            $_POST['redirectTarget'] = '_blank';
-        }
-
         $redirectTarget    = in_array($_POST['redirectTarget'], $this->_arrRedirectTargets) ? $_POST['redirectTarget'] : '';
 
         $contenthtml=$this->_getBodyContent($contenthtml);
@@ -1904,8 +1897,9 @@ class ContentManager
                         if (!$justonce) {
                             $objDatabase->Execute("
                                 DELETE FROM ".DBPREFIX."module_repository
-                                 WHERE moduleid='".$repository['moduleid']."'"
-                            );
+                                 WHERE moduleid='".$repository['moduleid']."'
+                                 AND   lang    ='".$repository['lang']."'
+                             ");
                         }
                         $justonce=true;
                         $repository['parid']= 0;
@@ -2678,7 +2672,6 @@ class ContentManager
 			if ($alias_src_id) {
                 // We have a default alias, which needs to be
                 // deleted.
-
 				$objDatabase->Execute("
 					DELETE FROM ".DBPREFIX."module_alias_source
 					WHERE target_id = $target_id "
