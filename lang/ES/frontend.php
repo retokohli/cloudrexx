@@ -178,4 +178,5 @@ $_ARRAYLANG['TXT_ACCESS_USERNAME_ALREADY_USED'] = "El nombre de usuario elegido 
 $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "visitar web";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Web";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "C&oacute;digo Postal";
+$_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partners";
 ?>

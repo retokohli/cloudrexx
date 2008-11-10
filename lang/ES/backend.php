@@ -953,4 +953,5 @@ $_ARRAYLANG['TXT_SYSTEM_UPDATE'] = "Actualizaci&oacute;n del sistema";
 $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'] = "";
 $_ARRAYLANG['TXT_ECARD'] = "E-Card";
 $_ARRAYLANG['TXT_ECARD_TITLE'] = "E-Card";
+$_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partners";
 ?>
