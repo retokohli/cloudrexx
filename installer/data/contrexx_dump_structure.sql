@@ -562,6 +562,14 @@ CREATE TABLE `contrexx_module_contact_form_field` (
   `order_id` smallint(5) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_contact_recipient` (
+  `id` int(11) NOT NULL auto_increment,
+  `id_form` int(11) NOT NULL default '0',
+  `name` varchar(250) NOT NULL default '',
+  `email` varchar(250) NOT NULL default '',
+  `sort` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_contact_settings` (
   `setid` int(6) unsigned NOT NULL auto_increment,
   `setname` varchar(250) NOT NULL default '',
