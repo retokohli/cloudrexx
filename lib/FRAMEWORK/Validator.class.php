@@ -20,7 +20,7 @@ define('VALIDATOR_REGEX_EMAIL',
           '([a-z0-9!#$%*\/?|^{}`~&\'+\-=_])'.
           '@(?:'.
               '([a-z0-9]+([-.][a-z0-9]+)*)+'. 					//domain
-              '\.[a-z]{2,4}'.                 					//sld, tld
+              '\.[a-z]{2,6}'.                 					//sld, tld
             '|'.
               'localhost'.                    					//or localhost
           ')'
