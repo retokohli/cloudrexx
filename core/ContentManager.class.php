@@ -671,7 +671,8 @@ class ContentManager
             'TXT_NO_MODULE'            => $_CORELANG['TXT_NO_MODULE'],
             'TXT_REDIRECT'             => $_CORELANG['TXT_REDIRECT'],
             'TXT_BROWSE'               => $_CORELANG['TXT_BROWSE'],
-            'TXT_NO_REDIRECT'          => '',
+      		'TXT_CONTENT_ASSIGN_BLOCK' => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
+           	'TXT_NO_REDIRECT'          => '',
             'TXT_SOURCE_MODE'          => $_CORELANG['TXT_SOURCE_MODE'],
             'TXT_CACHING_STATUS'       => $_CORELANG['TXT_CACHING_STATUS'],
             'TXT_THEMES'               => $_CORELANG['TXT_THEMES'],
@@ -884,6 +885,7 @@ class ContentManager
             'TXT_NO_MODULE'                    => $_CORELANG['TXT_NO_MODULE'],
             'TXT_REDIRECT'                     => $_CORELANG['TXT_REDIRECT'],
             'TXT_BROWSE'                    => $_CORELANG['TXT_BROWSE'],
+  			'TXT_CONTENT_ASSIGN_BLOCK'         => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
             'TXT_NO_REDIRECT'                  => '',
             'TXT_SOURCE_MODE'                  => $_CORELANG['TXT_SOURCE_MODE'],
             'TXT_CACHING_STATUS'               => $_CORELANG['TXT_CACHING_STATUS'],
@@ -1344,6 +1346,10 @@ class ContentManager
         $cssName = contrexx_addslashes(strip_tags($_POST['cssName']));
         $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
         $redirect = (!empty($_POST['TypeSelection']) && $_POST['TypeSelection'] == 'redirect') ? contrexx_addslashes(strip_tags($_POST['redirect'])) : '';
+	    if(preg_match('/\b(?:mailto:)?([\w\d\._%+-]+@(?:[\w\d-]+\.)+[\w]{2,6})\b/i', $redirect, $match)){
+            $redirect = 'mailto:'.$match[1];
+            $_POST['redirectTarget'] = '_blank';
+        }
         $redirectTarget    = in_array($_POST['redirectTarget'], $this->_arrRedirectTargets) ? $_POST['redirectTarget'] : '';
 
         $contenthtml=$this->_getBodyContent($contenthtml);
