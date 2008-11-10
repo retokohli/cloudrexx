@@ -42,9 +42,9 @@ function MultiAction(){
 	</form>
 	<span>
 		<a href="index.php?cmd=newsletter&amp;act=users&amp;tpl=export&amp;listId=0">
-			<img style="border: 0;" alt="" title="{TXT_NEWSLETTER_EXPORT_ALL_LISTS}" src="images/icons/icon_excel.gif" /> 
-			{TXT_NEWSLETTER_EXPORT_ALL_LISTS}		
-		</a>  
+			<img style="border: 0;" alt="" title="{TXT_NEWSLETTER_EXPORT_ALL_LISTS}" src="images/icons/icon_excel.gif" />
+			{TXT_NEWSLETTER_EXPORT_ALL_LISTS}
+		</a>
 	</span>
 </div>
 <br />
@@ -52,14 +52,15 @@ function MultiAction(){
 <table border="0" cellpadding="2" cellspacing="0" width="100%" class="adminlist">
 	<tbody>
 		<tr>
-			<th colspan="6">{TXT_NEWSLETTER_LISTS}</th>
+			<th colspan="7">{TXT_NEWSLETTER_LISTS}</th>
 		</tr>
 		<tr style="height:20px; font-weight:bold;" class="row3">
 			<td width="1%">{TXT_NEWSLETTER_ID_UC}</td>
 			<td width="5%" style="text-align:center;">{TXT_NEWSLETTER_STATUS}</td>
 			<td width="15%">{TXT_NEWSLETTER_NAME}</td>
 			<td width="10%">{TXT_NEWSLETTER_RECIPIENTS}</td>
-			<td width="65%">{TXT_NEWSLETTER_LAST_EMAIL}</td>			
+			<td width="30%">{TXT_NEWSLETTER_LAST_EMAIL}</td>
+			<td width="35%">{TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE}</td>
 			<td width="4%" style="text-align:right;">{TXT_NEWSLETTER_FUNCTIONS}</td>
 		</tr>
 		<!-- BEGIN newsletter_lists -->
@@ -76,7 +77,9 @@ function MultiAction(){
 						<a href="index.php?cmd=newsletter&amp;act=editMail&amp;id=0" title="{TXT_NEWSLETTER_CREATE_NEW_EMAIL}">-</a>
 					<!-- END newsletter_list_no_last_mail -->
 				</td>
-				
+	            <td>
+					<a href="index.php?cmd=newsletter&amp;act=editlist&amp;id={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE}">&nbsp;{NEWSLETTER_NOTIFICATION_EMAIL}</a>
+				</td>
 				<td style="text-align:right; white-space:nowrap;">
 					<a href="index.php?cmd=newsletter&amp;act=users&amp;tpl=export&amp;listId={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_EXPORT}"><img src="images/icons/icon_excel.gif" border="0" alt="{TXT_NEWSLETTER_EXPORT}" /> </a>
 					<a href="index.php?cmd=newsletter&amp;act=gethtml&amp;id={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_GENERATE_HTML_SOURCE_CODE}"><img src="images/icons/html.gif" border="0" width="16" height="16" alt="{TXT_NEWSLETTER_GENERATE_HTML_SOURCE_CODE}" /></a>
