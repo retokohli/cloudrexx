@@ -7,12 +7,39 @@ Text[1]=["","{TXT_CONTACT_CAPTCHA_DESCRIPTION}"];
 Text[2]=["","{TXT_CONTACT_SEND_COPY_DESCRIPTION}"];
 Text[3]=["","{TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION}"];
 
-formFieldLastId = {CONTACT_FORM_FIELD_NEXT_ID};
-recipientFieldLastId = {CONTACT_FORM_RECIPIENT_NEXT_ID};
+var formFieldLastId = {CONTACT_FORM_FIELD_NEXT_ID};
+var formRecipientLastId = {CONTACT_FORM_RECIPIENT_NEXT_ID};
+var sort = {CONTACT_FORM_RECIPIENT_NEXT_SORT};
+
+function addRecipient()
+{
+	var elField = document.getElementById('formRecipient_'+formRecipientLastId).cloneNode(true);
+
+	document.getElementById('formRecipient_'+formRecipientLastId).setAttribute('id', 'formRecipient_'+(formRecipientLastId+1));
+	document.getElementById('contactFormRecipientId_'+formRecipientLastId).innerHTML = formRecipientLastId+1;
+	document.getElementById('contactFormRecipientId_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientId_'+(formRecipientLastId+1));
+	document.getElementById('contactFormRecipientName_'+formRecipientLastId).setAttribute('name', 'contactFormRecipientName['+(formRecipientLastId+1)+']');
+	document.getElementById('contactFormRecipientName_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientName_'+(formRecipientLastId+1));
+	document.getElementById('contactFormRecipientEmail_'+formRecipientLastId).setAttribute('name', 'contactFormRecipientEmail['+(formRecipientLastId+1)+']');
+	document.getElementById('contactFormRecipientEmail_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientEmail_'+(formRecipientLastId+1));
+	document.getElementById('contactFormRecipientSort_'+formRecipientLastId).setAttribute('name', 'contactFormRecipientSort['+(formRecipientLastId+1)+']');
+	document.getElementById('contactFormRecipientSort_'+formRecipientLastId).setAttribute('value', ++sort);
+	document.getElementById('contactFormRecipientSort_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientSort_'+(formRecipientLastId+1));
+	document.getElementById('contactFormRecipientButtonDelete_'+formRecipientLastId).setAttribute('href', 'javascript:removeFormElement('+(formRecipientLastId+1)+', \'Recipient\')');
+	document.getElementById('contactFormRecipientButtonDelete_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientButtonDelete_'+(formRecipientLastId+1));
+	document.getElementById('contactFormRecipientButtonUp_'+formRecipientLastId).setAttribute('href', 'javascript:moveFormElementUp('+(formRecipientLastId+1)+', \'Recipient\')');
+	document.getElementById('contactFormRecipientButtonUp_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientButtonUp_'+(formRecipientLastId+1));
+	document.getElementById('contactFormRecipientButtonDown_'+formRecipientLastId).setAttribute('href', 'javascript:moveFormElementDown('+(formRecipientLastId+1)+', \'Recipient\')');
+	document.getElementById('contactFormRecipientButtonDown_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientButtonDown_'+(formRecipientLastId+1));
+
+	formRecipientLastId = formRecipientLastId + 1;
+
+	document.getElementById('formRecipientContainer').appendChild(elField);
+}
 
 function addFormField()
 {
-	elField = document.getElementById('formField_'+formFieldLastId).cloneNode(true);
+	var elField = document.getElementById('formField_'+formFieldLastId).cloneNode(true);
 
 	document.getElementById('formField_'+formFieldLastId).setAttribute('id', 'formField_'+(formFieldLastId+1));
 	document.getElementById('contactFormFieldId_'+formFieldLastId).innerHTML = formFieldLastId+1;
@@ -21,12 +48,12 @@ function addFormField()
 	document.getElementById('contactFormFieldName_'+formFieldLastId).setAttribute('id', 'contactFormFieldName_'+(formFieldLastId+1));
 	document.getElementById('contactFormFieldType_'+formFieldLastId).setAttribute('name', 'contactFormFieldType['+(formFieldLastId+1)+']');
 	document.getElementById('contactFormFieldType_'+formFieldLastId).setAttribute('id', 'contactFormFieldType_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('href', 'javascript:removeFormField('+(formFieldLastId+1)+')');
+	document.getElementById('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('href', 'javascript:removeFormElement('+(formFieldLastId+1)+', \'Field\')');
 	document.getElementById('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonDelete_'+(formFieldLastId+1));
 	document.getElementById('contactFormFieldAttributeBox_'+formFieldLastId).setAttribute('id', 'contactFormFieldAttributeBox_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldButtonUp_'+formFieldLastId).setAttribute('href', 'javascript:moveFormFieldUp('+(formFieldLastId+1)+')');
+	document.getElementById('contactFormFieldButtonUp_'+formFieldLastId).setAttribute('href', 'javascript:moveFormElementUp('+(formFieldLastId+1)+', \'Field\')');
 	document.getElementById('contactFormFieldButtonUp_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonUp_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldButtonDown_'+formFieldLastId).setAttribute('href', 'javascript:moveFormFieldDown('+(formFieldLastId+1)+')');
+	document.getElementById('contactFormFieldButtonDown_'+formFieldLastId).setAttribute('href', 'javascript:moveFormElementDown('+(formFieldLastId+1)+', \'Field\')');
 	document.getElementById('contactFormFieldButtonDown_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonDown_'+(formFieldLastId+1));
 	document.getElementById('contactFormFieldRequiredBox_'+formFieldLastId).setAttribute('id', 'contactFormFieldRequiredBox_'+(formFieldLastId+1));
 	document.getElementById('contactFormFieldRequired_'+formFieldLastId).setAttribute('name', 'contactFormFieldRequired['+(formFieldLastId+1)+']');
@@ -39,64 +66,33 @@ function addFormField()
 	document.getElementById('formFieldContainer').appendChild(elField);
 }
 
-function addRecipientField()
+function removeFormElement(id, what)
 {
-	elField = document.getElementById('formField_'+formFieldLastId).cloneNode(true);
-
-	document.getElementById('formField_'+formFieldLastId).setAttribute('id', 'formField_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldId_'+formFieldLastId).innerHTML = formFieldLastId+1;
-	document.getElementById('contactFormFieldId_'+formFieldLastId).setAttribute('id', 'contactFormFieldId_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldName_'+formFieldLastId).setAttribute('name', 'contactFormFieldName['+(formFieldLastId+1)+']');
-	document.getElementById('contactFormFieldName_'+formFieldLastId).setAttribute('id', 'contactFormFieldName_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldType_'+formFieldLastId).setAttribute('name', 'contactFormFieldType['+(formFieldLastId+1)+']');
-	document.getElementById('contactFormFieldType_'+formFieldLastId).setAttribute('id', 'contactFormFieldType_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('href', 'javascript:removeFormField('+(formFieldLastId+1)+')');
-	document.getElementById('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonDelete_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldAttributeBox_'+formFieldLastId).setAttribute('id', 'contactFormFieldAttributeBox_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldButtonUp_'+formFieldLastId).setAttribute('href', 'javascript:moveFormFieldUp('+(formFieldLastId+1)+')');
-	document.getElementById('contactFormFieldButtonUp_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonUp_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldButtonDown_'+formFieldLastId).setAttribute('href', 'javascript:moveFormFieldDown('+(formFieldLastId+1)+')');
-	document.getElementById('contactFormFieldButtonDown_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonDown_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldRequiredBox_'+formFieldLastId).setAttribute('id', 'contactFormFieldRequiredBox_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldRequired_'+formFieldLastId).setAttribute('name', 'contactFormFieldRequired['+(formFieldLastId+1)+']');
-	document.getElementById('contactFormFieldRequired_'+formFieldLastId).setAttribute('id', 'contactFormFieldRequired_'+(formFieldLastId+1));
-	document.getElementById('contactFormFieldCheckType_'+formFieldLastId).setAttribute('name', 'contactFormFieldCheckType['+(formFieldLastId+1)+']');
-	document.getElementById('contactFormFieldCheckType_'+formFieldLastId).setAttribute('id', 'contactFormFieldCheckType_'+(formFieldLastId+1));
-
-	formFieldLastId = formFieldLastId + 1;
-
-	document.getElementById('formFieldContainer').appendChild(elField);
+	document.getElementById('form'+what+'Container').removeChild(document.getElementById('form'+what+'_'+id));
 }
 
-function removeFormField(id)
+function moveFormElementUp(id, what)
 {
-	document.getElementById('formFieldContainer').removeChild(document.getElementById('formField_'+id));
-}
-
-function moveFormFieldUp(id)
-{
-	elField1 = document.getElementById('formField_'+id);
-	elField2 = document.getElementById('formField_'+id).cloneNode(true);
-	for (i = 0; i < document.getElementById('contactFormFieldType_'+id).childNodes.length; i++) {
-		if (document.getElementById('contactFormFieldType_'+id).childNodes[i].selected == true) {
-			elFieldType1 = i;
-			break;
+	elField1 = document.getElementById('form'+what+'_'+id);
+	elField2 = document.getElementById('form'+what+'_'+id).cloneNode(true);
+	if(what == 'Field')
+		for (var i = 0; i < document.getElementById('contactFormFieldType_'+id).childNodes.length; i++) {
+			if (document.getElementById('contactFormFieldType_'+id).childNodes[i].selected == true) {
+				elFieldType1 = i;
+				break;
+			}
 		}
-	}
 
-	elField3 = document.getElementById('formField_'+id).previousSibling;
+	elField3 = document.getElementById('form'+what+'_'+id).previousSibling;
 	if (elField3) {
 		try {
 			elField3Id = elField3.getAttribute('id');
 		} catch (e) {
 			elField3Id = '';
 		}
-		while (elField3.nodeType != 1 || elField3Id == '' || elField3Id.substring(0, 10) != 'formField_') {
+		while (elField3.nodeType != 1 || elField3Id == '' || elField3Id.substring(0, 5+(what.length)) != 'form'+what+'_') {
 			elField3 = elField3.previousSibling;
-			if (!elField3) {
-				return;
-			}
-
+			if (!elField3) return;
 			try {
 				elField3Id = elField3.getAttribute('id');
 				if (typeof(elField3Id) != 'string') {
@@ -104,31 +100,49 @@ function moveFormFieldUp(id)
 				}
 			} catch (e) {
 				elField3Id = '';
-
 			}
 		}
 	} else {
 		return;
 	}
 
-	document.getElementById('formFieldContainer').removeChild(elField1);
-	document.getElementById('formFieldContainer').insertBefore(elField2, elField3);
-
-	document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[elFieldType1].selected = true;
-}
-
-function moveFormFieldDown(id)
-{
-	elField1 = document.getElementById('formField_'+id).cloneNode(true);
-
-	for (i = 0; i < document.getElementById('contactFormFieldType_'+id).childNodes.length; i++) {
-		if (document.getElementById('contactFormFieldType_'+id).childNodes[i].selected == true) {
-			elFieldType1 = i;
-			break;
-		}
+	if(what == "Recipient"){
+		var recipientSortGoesDown 	= getFieldByName(elField2, 'contactFormRecipientSort')
+		var recipientSortGoesUp 	= getFieldByName(elField3, 'contactFormRecipientSort')
+		recipientSortGoesDown.value = recipientSortGoesDown.value*1 - 1;
+		recipientSortGoesUp.value 	= recipientSortGoesUp.value*1 + 1;
 	}
 
-	elField2 = document.getElementById('formField_'+id).nextSibling;
+	document.getElementById('form'+what+'Container').removeChild(elField1);
+	document.getElementById('form'+what+'Container').insertBefore(elField2, elField3);
+
+	if(what == 'Field')
+		document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[elFieldType1].selected = true;
+}
+
+function getFieldByName(obj, name)
+{
+	var fields = obj.getElementsByTagName("input");
+	for(var i = 0; i < fields.length; i++){
+		if(fields[i].name.indexOf(name) != -1){
+			return fields[i];
+		}
+	}
+}
+
+function moveFormElementDown(id, what)
+{
+	elField1 = document.getElementById('form'+what+'_'+id).cloneNode(true);
+
+	if(what == 'Field')
+		for (i = 0; i < document.getElementById('contactFormFieldType_'+id).childNodes.length; i++) {
+			if (document.getElementById('contactFormFieldType_'+id).childNodes[i].selected == true) {
+				elFieldType1 = i;
+				break;
+			}
+		}
+
+	elField2 = document.getElementById('form'+what+'_'+id).nextSibling;
 	if (elField2) {
 		while (elField2.nodeType != 1) {
 			elField2 = elField2.nextSibling;
@@ -140,22 +154,33 @@ function moveFormFieldDown(id)
 		return;
 	}
 
-	for (i = 0; i < document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes.length; i++) {
-		if (document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[i].selected == true) {
-			elFieldType2 = i;
-			break;
+	if(what == 'Field')
+		for (i = 0; i < document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes.length; i++) {
+			if (document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[i].selected == true) {
+				elFieldType2 = i;
+				break;
+			}
 		}
-	}
 
 	elField3 = elField2;
 	elField2 = elField2.cloneNode(true);
 
-	document.getElementById('formFieldContainer').removeChild(document.getElementById('formField_'+id));
-	document.getElementById('formFieldContainer').replaceChild(elField1, elField3);
-	document.getElementById('formFieldContainer').insertBefore(elField2, document.getElementById('formField_'+id));
+	if(what == "Recipient"){
+		var recipientSortGoesUp 	= getFieldByName(elField2, 'contactFormRecipientSort')
+		recipientSortGoesUp.value 	= recipientSortGoesUp.value*1 - 1;
+		var recipientSortGoesDown 	= getFieldByName(elField1, 'contactFormRecipientSort')
+		recipientSortGoesDown.value	= recipientSortGoesDown.value*1 + 1;
+	}
 
-	document.getElementById('contactFormFieldType_'+id).childNodes[elFieldType1].selected = true;
-	document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[elFieldType2].selected = true;
+
+	document.getElementById('form'+what+'Container').removeChild(document.getElementById('form'+what+'_'+id));
+	document.getElementById('form'+what+'Container').replaceChild(elField1, elField3);
+	document.getElementById('form'+what+'Container').insertBefore(elField2, document.getElementById('form'+what+'_'+id));
+
+	if(what == 'Field'){
+		document.getElementById('contactFormFieldType_'+id).childNodes[elFieldType1].selected = true;
+		document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[elFieldType2].selected = true;
+	}
 }
 
 function setFormFieldAttributeBox(el, type)
@@ -257,11 +282,28 @@ function updateContentSite()
 // -->
 </script>
 <div style="display:none;">
+	<div style="white-space:nowrap; height:20px;" id="formRecipient_{CONTACT_FORM_RECIPIENT_NEXT_ID}">
+		<div style="width:55px; display:inline; float:left;">
+			<a href="javascript:removeFormElement('{CONTACT_FORM_RECIPIENT_NEXT_ID}', 'Recipient')" id="contactFormRecipientButtonDelete_{CONTACT_FORM_RECIPIENT_NEXT_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
+			<a href="javascript:moveFormElementUp('{CONTACT_FORM_RECIPIENT_NEXT_ID}', 'Recipient')" id="contactFormRecipientButtonUp_{CONTACT_FORM_RECIPIENT_NEXT_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
+			<a href="javascript:moveFormElementDown('{CONTACT_FORM_RECIPIENT_NEXT_ID}', 'Recipient')" id="contactFormRecipientButtonDown_{CONTACT_FORM_RECIPIENT_NEXT_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
+		</div>
+		<div style="width:35px; display:inline; float:left; text-align:center;" id="contactFormRecipientId_{CONTACT_FORM_RECIPIENT_NEXT_ID}" >
+			{CONTACT_FORM_RECIPIENT_NEXT_ID}
+		</div>
+		<div style="width:135px; display:inline; float:left;">
+			<input type="text" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_NEXT_ID}]" id="contactFormRecipientName_{CONTACT_FORM_RECIPIENT_NEXT_ID}" value="{TXT_CONTACT_NAME}" onclick="if(this.value=='{TXT_CONTACT_NAME}'){this.value='';}" />
+		</div>
+		<div style="width:150px; display:inline;">
+			<input type="text" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_NEXT_ID}]" id="contactFormRecipientEmail_{CONTACT_FORM_RECIPIENT_NEXT_ID}" value="{TXT_CONTACT_REGEX_EMAIL}" onclick="if(this.value=='{TXT_CONTACT_REGEX_EMAIL}'){this.value='';}" />
+			<input type="hidden" name="contactFormRecipientSort[{CONTACT_FORM_RECIPIENT_NEXT_ID}]" id="contactFormRecipientSort_{CONTACT_FORM_RECIPIENT_NEXT_ID}" value="{CONTACT_FORM_RECIPIENT_NEXT_SORT}" />
+		</div>
+	</div>
 	<div style="white-space:nowrap; height:20px;" id="formField_{CONTACT_FORM_FIELD_NEXT_ID}">
 		<div style="width:55px; display:inline; float:left;">
-			<a href="javascript:removeFormField('{CONTACT_FORM_FIELD_NEXT_ID}')" id="contactFormFieldButtonDelete_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
-			<a href="javascript:moveFormFieldUp('{CONTACT_FORM_FIELD_NEXT_ID}')" id="contactFormFieldButtonUp_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
-			<a href="javascript:moveFormFieldDown('{CONTACT_FORM_FIELD_NEXT_ID}')" id="contactFormFieldButtonDown_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
+			<a href="javascript:removeFormElement('{CONTACT_FORM_FIELD_NEXT_ID}', 'Field')" id="contactFormFieldButtonDelete_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
+			<a href="javascript:moveFormElementUp('{CONTACT_FORM_FIELD_NEXT_ID}', 'Field')" id="contactFormFieldButtonUp_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
+			<a href="javascript:moveFormElementDown('{CONTACT_FORM_FIELD_NEXT_ID}', 'Field')" id="contactFormFieldButtonDown_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
 		</div>
 		<div style="width:35px; display:inline; float:left; text-align:center;" id="contactFormFieldId_{CONTACT_FORM_FIELD_NEXT_ID}" >
 			{CONTACT_FORM_FIELD_NEXT_ID}
@@ -325,16 +367,28 @@ function updateContentSite()
 			<tr class="row1" style="height:20px;">
 				<td>{TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION}</td>
 				<td>
-				    <!-- BEGIN contactRecipients -->
-				    <div style="width:55px; display:inline; float:left;">
-						<a href="javascript:removeFormField('{CONTACT_FORM_RECIPIENT_ID}')" id="contactFormFieldButtonDelete_{CONTACT_FORM_RECIPIENT_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
-						<a href="javascript:moveFormFieldUp('{CONTACT_FORM_RECIPIENT_ID}')" id="contactFormFieldButtonUp_{CONTACT_FORM_RECIPIENT_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
-						<a href="javascript:moveFormFieldDown('{CONTACT_FORM_RECIPIENT_ID}')" id="contactFormFieldButtonDown_{CONTACT_FORM_RECIPIENT_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
+					<div id="formRecipientContainer">
+						<!-- BEGIN contact_form_recipient_list -->
+							<div style="white-space:nowrap; height:20px;" id="formRecipient_{CONTACT_FORM_RECIPIENT_ID}">
+								<div style="width:55px; display:inline; float:left;">
+									<a href="javascript:removeFormElement('{CONTACT_FORM_RECIPIENT_ID}', 'Recipient')" id="contactFormRecipientButtonDelete_{CONTACT_FORM_RECIPIENT_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
+									<a href="javascript:moveFormElementUp('{CONTACT_FORM_RECIPIENT_ID}', 'Recipient')" id="contactFormRecipientButtonUp_{CONTACT_FORM_RECIPIENT_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
+									<a href="javascript:moveFormElementDown('{CONTACT_FORM_RECIPIENT_ID}', 'Recipient')" id="contactFormRecipientButtonDown_{CONTACT_FORM_RECIPIENT_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
+								</div>
+								<div style="width:35px; display:inline; float:left; text-align:center;">
+									{CONTACT_FORM_RECIPIENT_ID}
+								</div>
+								<div style="width:135px; display:inline; float:left;">
+									<input type="text" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}]" id="contactFormRecipientName_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_NAME}" onclick="if(this.value=='{TXT_CONTACT_NAME}'){this.value='';}" />
+								</div>
+								<div style="width:150px; display:inline;">
+									<input type="text" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]" id="contactFormRecipientEmail_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_EMAIL}" onclick="if(this.value=='{TXT_CONTACT_REGEX_EMAIL}'){this.value='';}" />
+									<input type="hidden"  name="contactFormRecipientSort[{CONTACT_FORM_RECIPIENT_ID}]" id="contactFormRecipientSort_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_SORT}" />
+								</div>
+							</div>
+						<!-- END contact_form_recipient_list -->
 					</div>
-    				    {TXT_CONTACT_NAME}: <input style="width: 250px;" type="text" name="contactFormEmailSelection[name]" value="{CONTACT_FORM_EMAIL_SELECTION_NAME}" />
-    				    {TXT_CONTACT_REGEX_EMAIL}: <input style="width: 250px;" type="text" name="contactFormEmailSelection[email]" value="{CONTACT_FORM_EMAIL_SELECTION_EMAIL}" />
-				    <!-- END contactRecipients -->
-				    <br /><input type="button" onclick="addRecipientField()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" />
+				    <br /><input type="button" onclick="addRecipient()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" />
 				<td>
 			</tr>
 			<tr class="row2">
@@ -392,9 +446,9 @@ function updateContentSite()
 						<!-- BEGIN contact_form_field_list -->
 							<div style="white-space:nowrap; height:20px;" id="formField_{CONTACT_FORM_FIELD_ID}">
 								<div style="width:55px; display:inline; float:left;">
-									<a href="javascript:removeFormField('{CONTACT_FORM_FIELD_ID}')" id="contactFormFieldButtonDelete_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
-									<a href="javascript:moveFormFieldUp('{CONTACT_FORM_FIELD_ID}')" id="contactFormFieldButtonUp_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
-									<a href="javascript:moveFormFieldDown('{CONTACT_FORM_FIELD_ID}')" id="contactFormFieldButtonDown_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
+									<a href="javascript:removeFormElement('{CONTACT_FORM_FIELD_ID}', 'Field')" id="contactFormFieldButtonDelete_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
+									<a href="javascript:moveFormElementUp('{CONTACT_FORM_FIELD_ID}', 'Field')" id="contactFormFieldButtonUp_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
+									<a href="javascript:moveFormElementDown('{CONTACT_FORM_FIELD_ID}', 'Field')" id="contactFormFieldButtonDown_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
 								</div>
 								<div style="width:35px; display:inline; float:left; text-align:center;">
 									{CONTACT_FORM_FIELD_ID}

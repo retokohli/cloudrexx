@@ -1,5 +1,10 @@
 <?php
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
+
+if(0){
+$objDatabase->debug=99;
+error_reporting(E_ALL);ini_set('display_errors',1);
+}
 /**
  * Contact
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -505,6 +510,55 @@ class ContactManager extends ContactLib
     }
 
     /**
+     * display recipients in backend
+     *
+     * @param array $arrRecipients
+     */
+    function _showRecipients($arrRecipients = null){
+    	global $_ARRAYLANG;
+		if(!is_array($arrRecipients)){
+			$arrRecipients[$this->getLastRecipientId()+1] = array(
+				'name' 	=> $_ARRAYLANG['TXT_CONTACT_NAME'],
+				'email' => $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'],
+				'sort' => 1,
+			);
+		}
+		foreach ($arrRecipients as $id => $arrRecipient) {
+			$this->_objTpl->setVariable(array(
+				'CONTACT_FORM_RECIPIENT_ID'		=> $id,
+				'CONTACT_FORM_RECIPIENT_NAME'   => $arrRecipient['name'],
+				'CONTACT_FORM_RECIPIENT_EMAIL'  => $arrRecipient['email'],
+				'CONTACT_FORM_RECIPIENT_SORT'   => $arrRecipient['sort'],
+			));
+			$this->_objTpl->parse("contact_form_recipient_list");
+		}
+	}
+
+
+	/**
+	* update recipient list
+	*
+	* @param integer $formId
+	* @param boolean $refresh
+	* @return array
+	*/
+    public function setRecipients($arrRecipients)
+    {
+        global $objDatabase;
+$objDatabase->debug=99;
+        foreach ($arrRecipients as $id => $arrRecipient) {
+			$objRS = $objDatabase->Execute("
+	            REPLACE INTO `".DBPREFIX."module_contact_recipient`
+	            SET `id`  = $id,
+	            `id_form` = ".$arrRecipient['id_form'].",
+	            `name`	  = '".$arrRecipient['name']."',
+	            `email`	  = '".$arrRecipient['email']."',
+	            `sort`	  = ".$arrRecipient['sort']);
+        }
+$objDatabase->debug=0;
+    }
+
+    /**
      * Modify Form
      *
      * Shows the modifying page.
@@ -520,12 +574,6 @@ class ContactManager extends ContactLib
         }
         $this->_objTpl->loadTemplateFile('module_contact_form_modify.html');
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
-        if ($formId == 0) {
-            $this->_objTpl->setVariable(array(
-                'CONTACT_FORM_RECIPIENT_ID'  =>   '',
-            ));
-            $this->_objTpl->touchBlock("contactRecipients");
-        }
 
         $this->_pageTitle = (!$copy && $formId != 0) ? $_ARRAYLANG['TXT_CONTACT_MODIFY_CONTACT_FORM'] : $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
 
@@ -577,6 +625,8 @@ class ContactManager extends ContactLib
 
         if (isset($_POST['saveForm'])) {
             $arrFields = $this->_getFormFieldsFromPost($null);
+            $arrRecipients = $this->_getRecipientsFromPost();
+			$this->_showRecipients($arrRecipients);
             $formName = isset($_POST['contactFormName']) ? htmlentities(strip_tags(contrexx_stripslashes($_POST['contactFormName'])), ENT_QUOTES, CONTREXX_CHARSET) : '';
             $formEmails = isset($_POST['contactFormEmail']) ? htmlentities(strip_tags(contrexx_stripslashes(trim($_POST['contactFormEmail']))), ENT_QUOTES, CONTREXX_CHARSET) : '';
             if (empty($formEmails)) {
@@ -600,6 +650,7 @@ class ContactManager extends ContactLib
             $formUseCaptcha = $this->arrForms[$formId]['useCaptcha'];
             $formUseCustomStyle = $this->arrForms[$formId]['useCustomStyle'];
             $formSendCopy = $this->arrForms[$formId]['sendCopy'];
+			$this->_showRecipients($this->arrForms[$formId]['recipients']);
         } else {
             $formName = '';
             $formEmails = $_CONFIG['contactFormEmail'];
@@ -610,7 +661,7 @@ class ContactManager extends ContactLib
             $formUseCaptcha = 1;
             $formUseCustomStyle = 0;
             $formSendCopy = 0;
-
+			$this->_showRecipients();
             $this->_objTpl->setVariable(array(
                 'CONTACT_FORM_FIELD_NAME'               => '',
                 'CONTACT_FORM_FIELD_ID'                 => 1,
@@ -659,14 +710,13 @@ class ContactManager extends ContactLib
             $lang = $_FRONTEND_LANGID;
         }
 
-
-
         $this->_objTpl->setVariable(array(
             'CONTACT_FORM_NAME'                             => $formName,
             'CONTACT_FORM_EMAIL'                            => $formEmails,
             'CONTACT_FORM_SUBJECT'                          => $formSubject,
             'CONTACT_FORM_FIELD_NEXT_ID'                    => $lastFieldId+1,
-            'CONTACT_FORM_RECIPIENT_NEXT_ID'                => $lastRecipientId+1,
+            'CONTACT_FORM_RECIPIENT_NEXT_SORT'              => $this->getHighestSortValue($formId)+2,
+            'CONTACT_FORM_RECIPIENT_NEXT_ID'                => $this->getLastRecipientId(true)+2,
             'CONTACT_FORM_FIELD_NEXT_TEXT_TPL'              => $this->_getFormFieldAttribute($lastFieldId+1, 'text', ''),
             'CONTACT_FORM_FIELD_LABEL_TPL'                  => $this->_getFormFieldAttribute($lastFieldId+1, 'label', ''),
             'CONTACT_FORM_FIELD_CHECK_MENU_NEXT_TPL'        => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType['.($lastFieldId+1).']', 'contactFormFieldCheckType_'.($lastFieldId+1), 'text', 1),
@@ -811,6 +861,7 @@ class ContactManager extends ContactLib
                         } else {
                             $this->addForm($formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $formUseCustomStyle, $arrFields, $formSendCopy);
                         }
+                        $this->setRecipients($this->_getRecipientsFromPost());
                         $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_FORM_SUCCESSFULLY_SAVED']."<br />";
 
                         if (isset($_POST['contentSiteAction'])) {
@@ -979,6 +1030,26 @@ class ContactManager extends ContactLib
             }
         }
     }
+
+    function _getRecipientsFromPost()
+    {
+		$arrRecipients = array();
+		if(isset($_POST['contactFormRecipientName']) && is_array($_POST['contactFormRecipientName'])){
+			$formId = intval($_REQUEST['formId']);
+			foreach ($_POST['contactFormRecipientName'] as $id => $recipientName) {
+                $recipientName  = strip_tags(contrexx_stripslashes($recipientName));
+                $recipientEmail = strip_tags(contrexx_stripslashes($_POST['contactFormRecipientEmail'][$id]));
+                $recipientSort  = intval($_POST['contactFormRecipientSort'][$id]);
+          		$arrRecipients[$id] = array(
+          			'name' 		=>	$recipientName,
+          			'email' 	=>	$recipientEmail,
+          			'sort'		=> 	$recipientSort,
+          			'id_form'	=>  $formId
+          		);
+			}
+		}
+		return $arrRecipients;
+	}
 
     function _getFormFieldsFromPost(&$uniqueFieldNames)
     {
