@@ -178,4 +178,5 @@ $_ARRAYLANG['TXT_ACCESS_USERNAME_ALREADY_USED'] = "Det valgte brugernavn er alle
 $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "Besøg hjemmeside";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Hjemmeside";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "Postnr.";
+$_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partners";
 ?>
