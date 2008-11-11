@@ -107,7 +107,7 @@ function selectMultiAction()
 						<form name="frmEventList" method="post" action="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=event_actions">
 						<table class="adminlist" style="width: 100%; border-spacing: 0px; margin: 0px;" cellpadding="3" cellspacing="0">
 							<tr>
-								<th colspan="10">
+								<th colspan="11">
 									{TXT_EVENTS}
 								</th>
 							</tr>
@@ -117,6 +117,7 @@ function selectMultiAction()
 								<td><span style="font-weight:bold;">{TXT_CALENDAR_START}</span></td>
 								<td><span style="font-weight:bold;">{TXT_CALENDAR_END}</span></td>
 								<td><span style="font-weight:bold;">{TXT_CALENDAR_TITLE}</span></td>
+								<td><span style="font-weight:bold;">{TXT_SERIES}</span></td>
 								<td><span style="font-weight:bold;">{TXT_CALENDAR_REGISTRATIONS}</span></td>
 								<td><span style="font-weight:bold;">{TXT_CALENDAR_SUBSCRIBER}</span></td>
 								<td><span style="font-weight:bold;">{TXT_CALENDAR_CSV_FILE}</span></td>
@@ -132,6 +133,7 @@ function selectMultiAction()
 								<td style="width: 110px">{CALENDAR_EVENT_STARTDATE}</td>
 								<td style="width: 110px">{CALENDAR_EVENT_ENDDATE}</td>
 								<td><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=event&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_TITLE}</a></td>
+								<td>{CALENDAR_SERIES}</td>
 								<td><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=reg&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_COUNT_REG} / {CALENDAR_EVENT_COUNT_SIGNOFF}</a></td>
 								<td style="width: 150px">{CALENDAR_EVENT_COUNT_SUBSCRIBER}</td>
 								<td style="width: 150px"><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=getCSV&amp;id={CALENDAR_EVENT_ID}"><img src="images/icons/xls.gif" alt="{TXT_CALENDAR_CSV_FILE}" title="{TXT_CALENDAR_CSV_FILE}" border="0"/></a></td>
