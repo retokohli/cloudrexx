@@ -12,7 +12,7 @@
 /**
  * @ignore
  */
-require_once ASCMS_MODULE_PATH . '/calendar/calendarLib.class.php';
+require_once ASCMS_MODULE_PATH . '/calendar/lib/calendarLib.class.php';
 
 /**
  * Headline news
