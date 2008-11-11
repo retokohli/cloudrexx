@@ -1,4 +1,5 @@
 <?php
+$_ARRAYLANG['TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE'] = "Benachrichtigung bei Abmeldung";
 
 /**
  * Newsletter
@@ -364,53 +365,6 @@ class newsletter extends NewsletterLib
         }
     }
 
-    function _getLists($orderBy = '')
-    {
-        global $objDatabase;
-
-        $arrLists = array();
-        $objList = $objDatabase->Execute("SELECT tblCategory.id,
-            tblCategory.status,
-            tblCategory.name,
-            COUNT(tblRel.category) as recipients
-            FROM ".DBPREFIX."module_newsletter_category AS tblCategory
-            LEFT JOIN ".DBPREFIX."module_newsletter_rel_user_cat AS tblRel ON tblRel.category = tblCategory.id
-            GROUP BY tblCategory.id".(!empty($orderBy) ? " ORDER BY ".$orderBy : ""));
-        if ($objList !== false) {
-            while (!$objList->EOF) {
-                $objMail = $objDatabase->SelectLimit("
-                    SELECT tblNewsletter.id, tblNewsletter.subject, tblNewsletter.date_sent, tblRel.notification_email
-                      FROM ".DBPREFIX."module_newsletter AS tblNewsletter
-                      LEFT JOIN ".DBPREFIX."module_newsletter_rel_cat_news AS tblRel
-                        ON tblRel.newsletter = tblNewsletter.id
-                     WHERE tblRel.category=".$objList->fields['id']."
-                     ORDER BY date_sent DESC", 1);
-                if ($objMail !== false && $objMail->RecordCount() == 1) {
-                    $mailId = $objMail->fields['id'];
-                    $mailSend = $objMail->fields['date_sent'];
-                    $mailName = $objMail->fields['subject'];
-                } else {
-                    $mailId = 0;
-                    $mailSend = 0;
-                    $mailName = '';
-                }
-
-                $arrLists[$objList->fields['id']] = array(
-                    'status'     => $objList->fields['status'],
-                    'name'       => $objList->fields['name'],
-                    'recipients' => $objList->fields['recipients'],
-                    'mail_sent'  => $mailSend,
-                    'mail_name'  => $mailName,
-                    'mail_id'    => ($mailSend > 0 ? $mailId : 0),
-                    'notification_email'    => $objMail->fields['notification_email'],
-                );
-                $objList->MoveNext();
-            }
-        }
-        return $arrLists;
-    }
-
-
     function _getList($listId)
     {
         global $objDatabase;
@@ -495,7 +449,6 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_BACK'                   => $_ARRAYLANG['TXT_NEWSLETTER_BACK'],
             'TXT_NEWSLETTER_SAVE'                   => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
             'TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE'  => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE'],
-            'TXT_EMAIL'                             => $_ARRAYLANG['TXT_EMAIL'],
 
         ));
 
@@ -2333,7 +2286,7 @@ class newsletter extends NewsletterLib
                 $mail->IsSMTP();
                 $mail->Host = $arrSmtp['hostname'];
                 $mail->Port = $arrSmtp['port'];
-                $mail->SMTPAuth = true;
+                $mail->SMTPAuth = $arrSmtp['username'] == '-' ? false : true;
                 $mail->Username = $arrSmtp['username'];
                 $mail->Password = $arrSmtp['password'];
             }
