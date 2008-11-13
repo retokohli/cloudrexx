@@ -41,4 +41,6 @@ $_ARRAYLANG['TXT_SUBMIT'] = "Submit";
 $_ARRAYLANG['TXT_NOTIFY_ADDRESS'] = "Hello";
 $_ARRAYLANG['TXT_NOTIFY_SUBJECT'] = "News entry waiting for confirmation";
 $_ARRAYLANG['TXT_NOTIFY_MESSAGE'] = "A news entry was added. You can review the entry at the following URL:";
+$_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "Der eingegebene Captcha-Code ist nicht korrekt!";
+$_ARRAYLANG['TXT_CAPTCHA'] = "Bitte geben Sie die abgebildeten Zeichen ein:";
 ?>

@@ -41,4 +41,6 @@ $_ARRAYLANG['TXT_SUBMIT'] = "Soumettre";
 $_ARRAYLANG['TXT_NOTIFY_ADDRESS'] = "Bonjour";
 $_ARRAYLANG['TXT_NOTIFY_SUBJECT'] = "Articles à valider";
 $_ARRAYLANG['TXT_NOTIFY_MESSAGE'] = "Un nouvel article a été soumis. Lien pour la validation:";
+$_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "Der eingegebene Captcha-Code ist nicht korrekt!";
+$_ARRAYLANG['TXT_CAPTCHA'] = "Bitte geben Sie die abgebildeten Zeichen ein:";
 ?>
