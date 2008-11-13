@@ -141,10 +141,23 @@ debug("\nGET:".var_export($_GET, true)."\n\n");
             exit;
             break;
 
+        case 'applet':
+            $this->sendApplet();
+            exit;
+            break;
+
         default:
             $this->showUploadApplet();
             break;
         }
+    }
+
+    private function sendApplet()
+    {
+        header('Content-Length: '.(filesize(ASCMS_MODULE_PATH.'/fileUploader/lib/fileUploader.jar')));
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename=fileUploader.jar');
+        die(file_get_contents(ASCMS_MODULE_PATH.'/fileUploader/lib/fileUploader.jar'));
     }
 
     private function sendLanguageArchive()
@@ -186,7 +199,7 @@ debug("\nGET:".var_export($_GET, true)."\n\n");
             'TXT_FILEUPLOADER_CLOSE' => $_ARRAYLANG['TXT_FILEUPLOADER_CLOSE'],
             'CONTREXX_CHARSET'      => CONTREXX_CHARSET,
 //            'FILEUPLOADER_APPLET_PATH'  => ASCMS_ADMIN_WEB_PATH.'/index.php'.$this->moduleURI.'&amp;act=language,'.ASCMS_MODULE_WEB_PATH.'/fileUploader/lib/fileUploader.jar',
-            'FILEUPLOADER_APPLET_PATH'  => ASCMS_MODULE_WEB_PATH.'/fileUploader/lib/fileUploader.jar',
+            'FILEUPLOADER_APPLET_PATH'  => ASCMS_ADMIN_WEB_PATH.'/index.php'.$this->moduleURI.'&amp;act=applet',
             'FILEUPLOADER_HANDLER_PATH' => ASCMS_ADMIN_WEB_PATH.'/index.php'.$this->moduleURI.'&amp;act=upload&amp;type='.$this->mediaType.'&amp;path='.urlencode($this->path),
             'FILEUPLOADER_PARTITION_LENGTH' => $this->getPartitionLength()
         ));
