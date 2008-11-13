@@ -266,7 +266,7 @@ class MediaManager extends MediaLibrary {
     * @return    string    parsed content
     */
     function _overviewMedia(){
-    	global $_ARRAYLANG;
+    	global $_ARRAYLANG, $_CONFIG;
 
     	$this->_objTpl->loadTemplateFile('module_media.html', true, true);
 
@@ -350,6 +350,19 @@ class MediaManager extends MediaLibrary {
             	}
         	}
         }
+
+
+        $objModulChecker = new ModuleChecker();
+        if ($objModulChecker->getModuleStatusById(52) && $_CONFIG['fileUploaderStatus'] == 'on') {
+
+            $this->_objTpl->setVariable('FILEBROWSER_ADVANCED_UPLOAD_PATH', 'index.php?cmd=fileUploader&amp;standalone=true&amp;type='.$this->archive.'&amp;path='.urlencode(substr($this->webPath,strlen($this->arrWebPaths[$this->archive])-1)));
+            $this->_objTpl->parse('media_use_advanced_file_uploader');
+            $this->_objTpl->hideBlock('media_dont_use_advanced_file_uploader');
+        } else {
+            $this->_objTpl->touchBlock('media_dont_use_advanced_file_uploader');
+            $this->_objTpl->hideBlock('media_use_advanced_file_uploader');
+        }
+
 
     	// media directory tree
     	$i       = 0;

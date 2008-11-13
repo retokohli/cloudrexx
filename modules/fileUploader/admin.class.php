@@ -253,18 +253,22 @@ debug(5);
 
         switch($this->mediaType) {
             case 'media1':
+            case 'archive1':
                 $strPath    = ASCMS_MEDIA1_PATH.$this->path;
                 $strWebPath = ASCMS_MEDIA1_WEB_PATH.$this->path;
             break;
             case 'media2':
+            case 'archive2':
                 $strPath    = ASCMS_MEDIA2_PATH.$this->path;
                 $strWebPath = ASCMS_MEDIA2_WEB_PATH.$this->path;
             break;
             case 'media3':
+            case 'archive3':
                 $strPath    = ASCMS_MEDIA3_PATH.$this->path;
                 $strWebPath = ASCMS_MEDIA3_WEB_PATH.$this->path;
             break;
             case 'media4':
+            case 'archive4':
                 $strPath    = ASCMS_MEDIA4_PATH.$this->path;
                 $strWebPath = ASCMS_MEDIA4_WEB_PATH.$this->path;
             break;
@@ -310,7 +314,7 @@ debug(6);
             unlink($partitionFile);
         }
         fclose($file);
-
+debug($file);
 debug(7);
 
 return true;
