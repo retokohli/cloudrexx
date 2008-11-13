@@ -124,12 +124,14 @@ class settingsManager
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings', 'settings.html');
         $this->strPageTitle = $_CORELANG['TXT_SYSTEM_SETTINGS'];
 
+        $objTemplate->setGlobalVariable(array(
+            'TXT_RADIO_ON'                    => $_CORELANG['TXT_ACTIVATED'],
+            'TXT_RADIO_OFF'                   => $_CORELANG['TXT_DEACTIVATED']
+        ));
         $objTemplate->setVariable(array(
             'TXT_TITLE_SET1'                  => $_CORELANG['TXT_SETTINGS_TITLE_MISC'],
             'TXT_TITLE_SET2'                  => $_CORELANG['TXT_SETTINGS_TITLE_CONTACT'],
             'TXT_SAVE_CHANGES'                => $_CORELANG['TXT_SAVE'],
-            'TXT_RADIO_ON'                    => $_CORELANG['TXT_ACTIVATED'],
-            'TXT_RADIO_OFF'                   => $_CORELANG['TXT_DEACTIVATED'],
             'TXT_SYSTEM_STATUS'               => $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS'],
             'TXT_SYSTEM_STATUS_HELP'          => $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS_HELP'],
             'TXT_IDS_STATUS'                  => $_CORELANG['TXT_SETTINGS_IDS'],
@@ -176,7 +178,7 @@ class settingsManager
         }
 
         // There was a lot of htmlentities() in the list below, which is not needed,
-        // as every setting entry is already passed through htmlspecialchars() when 
+        // as every setting entry is already passed through htmlspecialchars() when
         // saved. See function updateSettings() below
         $objTemplate->setVariable(array(
             'SETTINGS_CONTACT_EMAIL'              => ($arrSettings['contactFormEmail']),
@@ -204,6 +206,18 @@ class settingsManager
             'SETTINGS_FRONTEND_EDITING_OFF'       => ($arrSettings['frontendEditingStatus'] == 'off') ? 'checked' : '',
             'SETTINGS_GOOGLE_MAPS_API_KEY'        => ($arrSettings['googleMapsAPIKey']),
         ));
+
+        $objModuleChecker = new ModuleChecker();
+        if ($objModuleChecker->getModuleStatusById(52)) {
+            $objTemplate->setVariable(array(
+                'TXT_FILE_UPLOADER_STATUS'          => $_CORELANG['TXT_SETTINGS_FILE_UPLOADER'],
+                'SETTINGS_FILE_UPLOADER_ON'           => ($arrSettings['fileUploaderStatus'] == 'on') ? 'checked' : '',
+                'SETTINGS_FILE_UPLOADER_OFF'           => ($arrSettings['fileUploaderStatus'] == 'off') ? 'checked' : ''
+            ));
+            $objTemplate->parse('showFileUploaderStatus');
+        } else {
+            $objTemplate->hideBlock('showFileUploaderStatus');
+        }
     }
 
 
@@ -225,7 +239,8 @@ class settingsManager
                 intval($intId) == 55 ||
                 intval($intId) == 56 ||
                 intval($intId) == 63 ||
-                intval($intId) == 69) {
+                intval($intId) == 69 ||
+                intval($intId) == 70) {
                 $strValue = ($strValue == 'on') ? 'on' : 'off';
             }
 

@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>Contrexx File Uploader</title>
+<meta http-equiv="Content-Type" content="text/html; charset={CONTREXX_CHARSET}" />
+<meta name="robots" content="noindex" />
+<meta name="robots" content="nofollow" />
+<meta name="robots" content="noarchive" />
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="cache-control" content="no-cache" />
+<link href="template/ascms/css/base.css" rel="stylesheet" type="text/css" />
+<script language="javascript" type="text/javascript">
+<!--
+function closeWindow(){
+	window.opener.focus();
+	window.top.close();
+}
+
+
+// -->
+/**
+ * resize applet to fit client area
+* @param applet an applet to resize
+* @param dx a horizontal space to substract from client area width
+* @param dy a vertical space to substract from client area width
+*/
+function resizeApplet() {
+    var applet = document.jumpLoaderApplet;
+    var dx = 0;
+    var dy = 7;
+    var w_newWidth, w_newHeight;
+    var w_maxWidth = 2600, w_maxHeight = 2200;
+    var dx = 0;
+    var dy = 2;
+    if( navigator.appName.indexOf( "Microsoft" ) != -1 ) {
+        w_newWidth = document.body.clientWidth;
+        w_newHeight = document.body.clientHeight;
+    } else {
+        w_newWidth = window.innerWidth;
+        w_newHeight = window.innerHeight - 35;
+    }
+    if( w_newWidth > w_maxWidth ) {
+        w_newWidth = w_maxWidth;
+    }
+    if( w_newHeight > w_maxHeight ) {
+        w_newHeight = w_maxHeight;
+    }
+    applet.width = w_newWidth - dx;
+    applet.height = w_newHeight - dy;
+    applet.setSize( w_newWidth - dx, w_newHeight - dy );
+}
+
+function uploaderStatusChanged(uploader)
+{
+    if (uploader.getStatus() === 0) {
+        window.opener.location.replace(window.opener.location.href);
+    }
+}
+</script>
+</head>
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onResize="resizeApplet()" onLoad="resizeApplet()">
+    <applet name="jumpLoaderApplet"
+            code="jmaster.jumploader.app.JumpLoaderApplet.class"
+            archive="{FILEUPLOADER_APPLET_PATH}"
+            width="800"
+            height="600" mayscript>
+
+        <param name="uc_uploadUrl" value="{FILEUPLOADER_HANDLER_PATH}" />
+        <param name="uc_partitionLength" value="{FILEUPLOADER_PARTITION_LENGTH}" />
+        <param name="gc_loggingLevel" value="INFO" />
+        <param name="ac_fireUploaderStatusChanged" value="true"/>
+    </applet>
+    <div style="text-align:right; margin:10px;">
+        <input type="button" onclick="window.close();" value="{TXT_FILEUPLOADER_CLOSE}" />
+    </div>
+</body>
+</html>

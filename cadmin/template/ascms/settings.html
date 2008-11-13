@@ -112,6 +112,15 @@ Text[15]=["","{TXT_FRONTEND_EDITING_STATUS_HELP}"];
 				<td>{TXT_DNS_SERVER}&nbsp;</td>
 				<td><input type="text" name="setvalue[3]" value="{SETTINGS_DNS_SERVER}" size="70" maxlength="250">&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[7],Style[0])" /></td>
 			</tr>
+            <!-- BEGIN showFileUploaderStatus -->
+			<tr class="row2">
+				<td>{TXT_FILE_UPLOADER_STATUS}&nbsp;</td>
+				<td>
+					<label for="setvalue[70]"><input type="radio" name="setvalue[70]" value="on" {SETTINGS_FILE_UPLOADER_ON}>{TXT_RADIO_ON}</label>&nbsp;
+					<label for="setvalue[70]"><input type="radio" name="setvalue[70]" value="off" {SETTINGS_FILE_UPLOADER_OFF}>{TXT_RADIO_OFF}</label>&nbsp;
+				</td>
+			</tr>
+            <!-- END showFileUploaderStatus -->
 		</table>
 	</div>
 	<div id="Settings2" class="setTab" style="display:none;">

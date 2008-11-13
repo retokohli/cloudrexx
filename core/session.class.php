@@ -11,6 +11,11 @@
  */
 
 /**
+ * Includes
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
+
+/**
  * Session
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -24,6 +29,7 @@ class cmsSession
 {
 	var $sessionid;
 	var $status;
+    var $tempPath;
 	var $userId;
 	var $lifetime;
 	var $_objDb;
@@ -38,7 +44,7 @@ class cmsSession
 		}  else {
 			$this->lifetime=intval($_CONFIG['sessionLifeTime']);
 		}
-		
+
 		if (ini_get("session.auto_start")) {
             session_destroy();
 		}
@@ -76,6 +82,7 @@ class cmsSession
 	function cmsSessionRead( $aKey )
 	{
 		   $this->sessionid=$aKey;
+           $this->sessionPath = ASCMS_TEMP_PATH.'/'.$this->sessionid;
 	       $query = "SELECT datavalue, user_id, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
 	       if ($this->compatibelitiyMode) {
 			$query = "SELECT datavalue, username as user_id, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
@@ -112,6 +119,12 @@ class cmsSession
 	{
 	       $query = "DELETE FROM ".DBPREFIX."sessions WHERE sessionid = '".$aKey."'";
 	       $this->_objDb->Execute($query);
+
+           if (file_exists($this->sessionPath)) {
+                $objFile = new File();
+                $objFile->delDir(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$this->sessionid);
+           }
+
 	       return true;
 	}
 
@@ -144,6 +157,21 @@ class cmsSession
 
 	function cmsSessionError() {
         die ("Session Handler Error");
+    }
+
+    function getTempPath()
+    {
+        $objFile = new File();
+
+        if (!is_dir($this->sessionPath) && !$objFile->mkdir(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$this->sessionid)) {
+            return false;
+        }
+
+        if (!is_writable($this->sessionPath) && !$objFile->setChmod(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$this->sessionid)) {
+            return false;
+        }
+
+        return $this->sessionPath;
     }
 
 }

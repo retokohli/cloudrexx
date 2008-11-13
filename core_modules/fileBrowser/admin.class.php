@@ -80,6 +80,7 @@ class FileBrowser {
         $this->_podcastEnabled = $this->_checkForModule('podcast');
 
         $this->_checkUpload();
+        $this->checkMakeDir();
         $this->_initFiles();
     }
 
@@ -311,6 +312,63 @@ class FileBrowser {
         }
     }
 
+    private function checkMakeDir()
+    {
+        if (isset($_POST['createDir']) && !empty($_POST['newDir'])) {
+            $this->makeDir($_POST['newDir']);
+        }
+    }
+
+    private function makeDir($dir)
+    {
+        global $_ARRAYLANG;
+
+        switch($this->_mediaType) {
+            case 'media1':
+                $strPath    = ASCMS_MEDIA1_PATH.$this->_path;
+                $strWebPath = ASCMS_MEDIA1_WEB_PATH.$this->_path;
+            break;
+            case 'media2':
+                $strPath    = ASCMS_MEDIA2_PATH.$this->_path;
+                $strWebPath = ASCMS_MEDIA2_WEB_PATH.$this->_path;
+            break;
+            case 'media3':
+                $strPath    = ASCMS_MEDIA3_PATH.$this->_path;
+                $strWebPath = ASCMS_MEDIA3_WEB_PATH.$this->_path;
+            break;
+            case 'media4':
+                $strPath    = ASCMS_MEDIA4_PATH.$this->_path;
+                $strWebPath = ASCMS_MEDIA4_WEB_PATH.$this->_path;
+            break;
+            case 'shop':
+                $strPath    = ASCMS_SHOP_IMAGES_PATH.$this->_path;
+                $strWebPath = ASCMS_SHOP_IMAGES_WEB_PATH.$this->_path;
+            break;
+            case 'blog':
+                $strPath    = ASCMS_BLOG_IMAGES_PATH.$this->_path;
+                $strWebPath = ASCMS_BLOG_IMAGES_WEB_PATH.$this->_path;
+            break;
+            case 'podcast':
+                $strPath    = ASCMS_PODCAST_IMAGES_PATH.$this->_path;
+                $strWebPath = ASCMS_PODCAST_IMAGES_WEB_PATH.$this->_path;
+            break;
+            default:
+                $strPath    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
+                $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
+        }
+
+        if(preg_match('#^[0-9a-zA-Z_\-]+$#', $dir)){
+            $objFile = new File();
+            if(!$objFile->mkDir($strPath, $strWebPath, $dir)){
+                $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'], $dir), 'error');
+            }else{
+                $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_SUCCESSFULLY_CREATED'], $dir));
+            }
+        }else if(!empty($dir)){
+            $this->_pushStatusMessage($_ARRAYLANG['TXT_FILEBROWSER_INVALID_CHARACTERS'], 'error');
+        }
+    }
+
 
     /**
      * Upload a file
@@ -360,17 +418,6 @@ class FileBrowser {
         }
 
         $nr = 1;
-
-        if(!empty($_REQUEST['newDir']) && preg_match('#^[0-9a-zA-Z_\-]+$#', $_REQUEST['newDir'])){
-            $objFile = &new File();
-            if(!$objFile->mkDir($strPath, $strWebPath, $_REQUEST['newDir'])){
-                $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'], $_REQUEST['newDir']), 'error');
-            }else{
-                $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_SUCCESSFULLY_CREATED'], $_REQUEST['newDir']));
-            }
-        }else if(!empty($_REQUEST['newDir'])){
-            $this->_pushStatusMessage($_ARRAYLANG['TXT_FILEBROWSER_INVALID_CHARACTERS'], 'error');
-        }
 
         if (@file_exists($strPath.$uploadFileName)) {
             if (preg_match('/.*\.(.*)$/', $uploadFileName, $arrSubPatterns)) {
@@ -599,7 +646,7 @@ class FileBrowser {
     */
     function _setUploadForm()
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_CONFIG;
         $objFWSystem = &new FWSystem();
 
         $this->_objTpl->addBlockfile('FILEBROWSER_UPLOAD', 'fileBrowser_upload', 'module_fileBrowser_upload.html');
@@ -607,9 +654,22 @@ class FileBrowser {
             'FILEBROWSER_UPLOAD_TYPE'   => $this->_mediaType,
             'FILEBROWSER_UPLOAD_PATH'   => $this->_path,
             'FILEBROWSER_MAX_FILE_SIZE' => $objFWSystem->getMaxUploadFileSize(),
-            'TXT_UPLOAD_FILE'           => $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE'],
             'TXT_CREATE_DIRECTORY'      => $_ARRAYLANG['TXT_FILEBROWSER_CREATE_DIRECTORY'],
         ));
+
+        $objModulChecker = new ModuleChecker();
+        if ($objModulChecker->getModuleStatusById(52) && $_CONFIG['fileUploaderStatus'] == 'on') {
+            $this->_objTpl->setVariable(array(
+                'TXT_UPLOAD_FILE_MULTI'				=> $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE_MULTI'],
+                'FILEBROWSER_ADVANCED_UPLOAD_PATH'	=> 'index.php?cmd=fileUploader&amp;standalone=true&amp;type='.$this->_mediaType.'&amp;path='.urlencode($this->_path)
+            ));
+            $this->_objTpl->parse('fileBrowser_advanced_upload');
+            $this->_objTpl->hideBlock('fileBrowser_simple_upload');
+        } else {
+            $this->_objTpl->setVariable('TXT_UPLOAD_FILE', $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE']);
+            $this->_objTpl->parse('fileBrowser_simple_upload');
+            $this->_objTpl->hideBlock('fileBrowser_advanced_upload');
+        }
 
         $this->_objTpl->parse('fileBrowser_upload');
     }
