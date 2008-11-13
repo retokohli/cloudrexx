@@ -499,6 +499,13 @@ class news extends newsLibrary {
         $newsUrl1 = "http://";
         $newsUrl2 = "http://";
         $insertStatus = false;
+        
+        require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
+		$captcha = new Captcha();
+		
+		$offset = $captcha->getOffset();
+		$alt = $captcha->getAlt();
+		$url = $captcha->getUrl();
 
         if (isset($_POST['submitNews'])) {
             $objValidator = &new FWValidator();
@@ -513,33 +520,37 @@ class news extends newsLibrary {
             $_POST['newsUrl2'] = $objValidator->getUrl(contrexx_strip_tags(html_entity_decode($_POST['newsUrl2'])));
             $_POST['newsCat'] = intval($_POST['newsCat']);
 
-            if (!empty($_POST['newsTitle']) && (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
-                $insertStatus = $this->_insert();
-                if (!$insertStatus) {
-                    $newsTitle = $_POST['newsTitle'];
-                    $newsTeaserText = $_POST['newsTeaserText'];
-                    $newsRedirect = $_POST['newsRedirect'];
-                    $newsSource = $_POST['newsSource'];
-                    $newsUrl1 = $_POST['newsUrl1'];
-                    $newsUrl2 = $_POST['newsUrl2'];
-                    $newsCat = $_POST['newsCat'];
-                    $newsText = $_POST['newsText'];
-                }
-                else {
-                    $this->_notify_by_email($insertStatus);
-                }
-            } else {
-                $newsTitle = $_POST['newsTitle'];
-                $newsTeaserText = $_POST['newsTeaserText'];
-                $newsRedirect = $_POST['newsRedirect'];
-                $newsSource = $_POST['newsSource'];
-                $newsUrl1 = $_POST['newsUrl1'];
-                $newsUrl2 = $_POST['newsUrl2'];
-                $newsCat = $_POST['newsCat'];
-                $newsText = $_POST['newsText'];
-
-                $this->_submitMessage = $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT']."<br /><br />";
+            if(!$captcha->compare($_POST['captcha'], $_POST['offset'])) {
+            	$this->_submitMessage = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . "<br />";
             }
+            
+	        if (!empty($_POST['newsTitle']) && $captcha->compare($_POST['captcha'], $_POST['offset']) && (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
+	                $insertStatus = $this->_insert();
+	                if (!$insertStatus) {
+	                    $newsTitle = $_POST['newsTitle'];
+	                    $newsTeaserText = $_POST['newsTeaserText'];
+	                    $newsRedirect = $_POST['newsRedirect'];
+	                    $newsSource = $_POST['newsSource'];
+	                    $newsUrl1 = $_POST['newsUrl1'];
+	                    $newsUrl2 = $_POST['newsUrl2'];
+	                    $newsCat = $_POST['newsCat'];
+	                    $newsText = $_POST['newsText'];
+	                }
+	                else {
+	                    $this->_notify_by_email($insertStatus);
+	                }
+	            } else {
+	                $newsTitle = $_POST['newsTitle'];
+	                $newsTeaserText = $_POST['newsTeaserText'];
+	                $newsRedirect = $_POST['newsRedirect'];
+	                $newsSource = $_POST['newsSource'];
+	                $newsUrl1 = $_POST['newsUrl1'];
+	                $newsUrl2 = $_POST['newsUrl2'];
+	                $newsCat = $_POST['newsCat'];
+	                $newsText = $_POST['newsText'];
+	
+	                $this->_submitMessage .= $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT']."<br /><br />";
+	            }
         }
 
         if ($insertStatus) {
@@ -554,6 +565,8 @@ class news extends newsLibrary {
             global $wysiwygEditor, $FCKeditorBasePath;
             $wysiwygEditor = "FCKeditor";
             $FCKeditorBasePath = "/editor/fckeditor/";
+            
+
 
             $this->_objTpl->setVariable(array(
                 'TXT_NEWS_MESSAGE'          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
@@ -567,6 +580,7 @@ class news extends newsLibrary {
                 'TXT_SUBMIT_NEWS'           => $_ARRAYLANG['TXT_SUBMIT_NEWS'],
                 'TXT_NEWS_REDIRECT'         => $_ARRAYLANG['TXT_NEWS_REDIRECT'],
                 'TXT_NEWS_NEWS_URL'         => $_ARRAYLANG['TXT_NEWS_NEWS_URL'],
+                "TXT_CAPTCHA"           	=> $_ARRAYLANG['TXT_CAPTCHA'],
                 'NEWS_TEXT'                 => get_wysiwyg_editor('newsText', $newsText, 'news'),
                 'NEWS_CAT_MENU'             => $this->getCategoryMenu($this->langId, $newsCat),
                 'NEWS_TITLE'                => $newsTitle,
@@ -574,7 +588,10 @@ class news extends newsLibrary {
                 'NEWS_URL1'                 => $newsUrl1,
                 'NEWS_URL2'                 => $newsUrl2,
                 'NEWS_TEASER_TEXT'          => $newsTeaserText,
-                'NEWS_REDIRECT'             => $newsRedirect
+                'NEWS_REDIRECT'             => $newsRedirect,
+            	"CAPTCHA_OFFSET"        	=> $offset,
+            	"IMAGE_URL"                 => $url,
+            	"IMAGE_ALT"                 => $alt
             ));
 
             if ($this->_objTpl->blockExists('news_category_menu')) {
