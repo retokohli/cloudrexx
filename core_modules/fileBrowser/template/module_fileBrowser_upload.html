@@ -4,10 +4,27 @@
    	<table border="0" cellpadding="0" cellspacing="0" width="100%" style="height:30px; margin:5px;" summary="upload form">
 		<tbody>
 			<tr>
-				<td><input type="file" name="fileBrowserUploadFile" />&nbsp;<input type="submit" name="uploadFile" value="{TXT_UPLOAD_FILE}" /><br /><br /></td>
+				<td>
+                    <!-- BEGIN fileBrowser_simple_upload -->
+                    <input type="file" name="fileBrowserUploadFile" />&nbsp;<input type="submit" name="uploadFile" value="{TXT_UPLOAD_FILE}" />
+                    <!-- END fileBrowser_simple_upload -->
+                    <!-- BEGIN fileBrowser_advanced_upload -->
+                    <script language="javascript" type="text/javascript">
+                    // <![CDATA[
+                    function openWindow(theURL,winName,features)
+                    {
+                        objPopup = window.open(theURL,"fileUploader",features);
+                        objPopup.focus();
+                    }
+                    // ]]>
+                    </script>
+                    <input type="button" name="fileBrowserUploadFile" value="{TXT_UPLOAD_FILE_MULTI}" onclick="openWindow('{FILEBROWSER_ADVANCED_UPLOAD_PATH}','','width=800,height=600,resizable=yes,status=no,scrollbars=no');" />
+                    <!-- END fileBrowser_advanced_upload -->
+                    <br /><br />
+                </td>
 			</tr>
 			<tr>
-                <td><input type="text" name="newDir" /> <input type="submit" name="createDir" value="{TXT_CREATE_DIRECTORY}" /></td>			
+                <td><input type="text" name="newDir" /> <input type="submit" name="createDir" value="{TXT_CREATE_DIRECTORY}" /></td>
 			</tr>
 		</tbody>
 	</table>

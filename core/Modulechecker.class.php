@@ -80,6 +80,7 @@ class ModuleChecker
     	    }
     	}
     	array_push($this->arrUsedModules, 7);
+    	array_push($this->arrUsedModules, 52);
 
     	// check the module database tables for required modules
     	$objResult = $this->objDb->Execute("SELECT id,name,is_core,is_required FROM ".DBPREFIX."modules");

@@ -333,7 +333,7 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-        // banner management
+    // banner management
     //-------------------------------------------------------
     case 'banner':
         // Permission::checkAccess(??, 'static');
@@ -346,7 +346,7 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-        // file browser
+    // file browser
     //-------------------------------------------------------
     case 'fileBrowser':
         $modulespath = ASCMS_CORE_MODULE_PATH.'/fileBrowser/admin.class.php';
@@ -354,6 +354,18 @@ switch ($plainCmd) {
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objFileBrowser = new FileBrowser();
         $objFileBrowser->getPage();
+        exit;
+        break;
+
+    //-------------------------------------------------------
+    // file uploader
+    //-------------------------------------------------------
+    case 'fileUploader':
+        $modulespath = ASCMS_MODULE_PATH.'/fileUploader/admin.class.php';
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objFileUploader = new FileUploader();
+        $objFileUploader->getPage();
         exit;
         break;
 
