@@ -1,0 +1,15 @@
+////////////////////////////////////////
+// CHANGELOG 2.0.1-2.0.2 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Neue Funktionen / Änderungen *********
+****************************************
+
+****************************************
+* Behobene Fehler **********************
+****************************************
+Datenbank Manager
+- Die mySQL Syntax der Sicherungen wurde gefixt, so dass die erzeugten .sql
+  Dateien auch über myPhpAdmin oder mySQL Clients fehlerfrei importiert werden
+  können.
