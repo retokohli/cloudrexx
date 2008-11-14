@@ -5,8 +5,8 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team
  * @version     v1.0.9.10.1 stable
- * @package        contrexx
- * @subpackage    core
+ * @package     contrexx
+ * @subpackage  core
  * @link        http://www.contrexx.com/ contrexx homepage
  * @since       v0.0.0.0
  * @todo        Capitalize all class names in project
@@ -1764,9 +1764,9 @@ $objTemplate->setVariable(array(
     'RANDOM'               => md5(microtime()),
     'TXT_SEARCH'           => $_CORELANG['TXT_SEARCH'],
     'MODULE_INDEX'         => MODULE_INDEX,
-    'LOGIN_INCLUDE'        => $strFeInclude,
-    'LOGIN_URL'            => $strFeLink,
-    'LOGIN_CONTENT'        => $strFeContent,
+    'LOGIN_INCLUDE'        => (isset($strFeInclude) ? $strFeInclude : ''),
+    'LOGIN_URL'            => (isset($strFeLink) ? $strFeLink : ''),
+    'LOGIN_CONTENT'        => (isset($strFeContent) ? $strFeContent : ''),
 ));
 
 
