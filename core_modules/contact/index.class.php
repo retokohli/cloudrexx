@@ -112,7 +112,7 @@ class Contact extends ContactLib
 
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) {
             $showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
-
+            $this->_getPostParams();
             $arrFormData = &$this->_getContactFormData();
             if ($arrFormData) {
                 if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) {
@@ -263,13 +263,13 @@ class Contact extends ContactLib
 
                 switch ($_FILES[$file]['error']) {
                     case UPLOAD_ERR_INI_SIZE:
-                        //Die hochgeladene Datei überschreitet die in der Anweisung upload_max_filesize in php.ini festgelegte Größe.
+                        //Die hochgeladene Datei Ã¼berschreitet die in der Anweisung upload_max_filesize in php.ini festgelegte GrÃ¶sse.
                         include_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
                         $this->errorMsg .= sprintf($_ARRAYLANG['TXT_CONTACT_FILE_SIZE_EXCEEDS_LIMIT'], $fileName, FWSystem::getMaxUploadFileSize()).'<br />';
                         break;
 
                     case UPLOAD_ERR_FORM_SIZE:
-                        //Die hochgeladene Datei überschreitet die in dem HTML Formular mittels der Anweisung MAX_FILE_SIZE angegebene maximale Dateigröße.
+                        //Die hochgeladene Datei Ã¼berschreitet die in dem HTML Formular mittels der Anweisung MAX_FILE_SIZE angegebene maximale DateigrÃ¶sse.
                         $this->errorMsg .= sprintf($_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'], $fileName).'<br />';
                         break;
 
@@ -328,13 +328,13 @@ class Contact extends ContactLib
     * @return string Formatted file name
     */
     function _cleanFileName($name, $maxlen=250){
-        $noalpha = 'áéíóúàèìòùäëïöüÁÉÍÓÚÀÈÌÒÙÄËÏÖÜâêîôûÂÊÎÔÛñçÇ@';
+        $noalpha = 'Ã¡Ã©Ã­Ã³ÃºÃ Ã¨Ã¬Ã²Ã¹Ã¤Ã«Ã¯Ã¶Ã¼ÃÃ‰ÃÃ“ÃšÃ€ÃˆÃŒÃ’Ã™Ã„Ã‹ÃÃ–ÃœÃ¢ÃªÃ®Ã´Ã»Ã‚ÃŠÃŽÃ”Ã›Ã±Ã§Ã‡@';
         $alpha =   'aeiouaeiouaeiouAEIOUAEIOUAEIOUaeiouAEIOUncCa';
         $name = substr ($name, 0, $maxlen);
         $name = strtr ($name, $noalpha, $alpha);
-        $mixChars = array('Þ' => 'th', 'þ' => 'th', 'Ð' => 'dh', 'ð' => 'dh',
-                        'ß' => 'ss', 'Œ' => 'oe', 'œ' => 'oe', 'Æ' => 'ae',
-                        'æ' => 'ae', '$' => 's',  '¥' => 'y');
+        $mixChars = array('Ãž' => 'th', 'Ã¾' => 'th', 'Ã' => 'dh', 'Ã°' => 'dh',
+                          'ÃŸ' => 'ss', 'Å’' => 'oe', 'Å“' => 'oe', 'Ã†' => 'ae',
+                          'Ã¦' => 'ae', '$' => 's',  'Â¥' => 'y');
         $name = strtr($name, $mixChars);
         // not permitted chars are replaced with "_"
         return ereg_replace ('[^a-zA-Z0-9,._\+\()\-]', '_', $name);
@@ -365,7 +365,7 @@ class Contact extends ContactLib
         if (count($arrFields['fields']) > 0) {
             foreach ($arrFields['fields'] as $field) {
                 $source = $field['type'] == 'file' ? 'uploadedFiles' : 'data';
-                $regex = "¬".$this->arrCheckTypes[$field['check_type']]['regex'] ."¬";
+                $regex = "Â§".$this->arrCheckTypes[$field['check_type']]['regex'] ."Â§";
                 if ($field['is_required'] && empty($arrFields[$source][$field['name']])) {
                     $error = true;
                 } elseif (empty($arrFields[$source][$field['name']])) {
@@ -410,7 +410,7 @@ class Contact extends ContactLib
     {
         foreach ($arrKeywords as $keyword) {
             if (!empty($keyword)) {
-                if (preg_match("¬{$keyword}¬i",$string)) {
+                if (preg_match("Â§{$keyword}Â§i",$string)) {
                     return true;
                 }
             }
@@ -543,11 +543,22 @@ class Contact extends ContactLib
             $objMail->IsHTML(false);
             $objMail->Body = $message;
 
-            foreach ($arrFormData['emails'] as $sendTo) {
-                if (!empty($sendTo)) {
-                    $objMail->AddAddress($sendTo);
-                    $objMail->Send();
-                    $objMail->ClearAddresses();
+            if(!empty($_POST['contactFormField_recipient'])){
+                foreach (explode(',', $this->arrForms[intval($_GET['cmd'])]['recipients'][intval($_POST['contactFormField_recipient'])]) as $sendTo) {
+                	 if (!empty($sendTo)) {
+//                	    echo "asd".$sendTo;
+                        $objMail->AddAddress($sendTo);
+                        $objMail->Send();
+                        $objMail->ClearAddresses();
+                    }
+                }
+            }else{
+                foreach ($arrFormData['emails'] as $sendTo) {
+                    if (!empty($sendTo)) {
+                        $objMail->AddAddress($sendTo);
+                        $objMail->Send();
+                        $objMail->ClearAddresses();
+                    }
                 }
             }
         }
@@ -585,7 +596,7 @@ class Contact extends ContactLib
     function _getEmailAdressOfString($string)
     {
         $arrMatch = array();
-        if (preg_match('/[a-z0-9]+(?:[_\.-][a-z0-9]+)*@[a-z0-9]+(?:[\.-][a-z0-9]+)*\.[a-z]{2,4}/', $string, $arrMatch)) {
+        if (preg_match('/[a-z0-9]+(?:[_\.-][a-z0-9]+)*@[a-z0-9]+(?:[\.-][a-z0-9]+)*\.[a-z]{2,6}/', $string, $arrMatch)) {
             return $arrMatch[0];
         } else {
             return false;
@@ -691,13 +702,45 @@ class Contact extends ContactLib
         global $objDatabase;
 
         $arrFields = array();
-
         if (isset($_GET['cmd']) && ($formId = intval($_GET['cmd'])) && !empty($formId)) {
             $objFields = $objDatabase->Execute('SELECT `id` FROM `'.DBPREFIX.'module_contact_form_field` WHERE `id_form`='.$formId);
             if ($objFields !== false) {
                 while (!$objFields->EOF) {
                     if (!empty($_GET[$objFields->fields['id']])) {
                         $arrFields[$objFields->fields['id'].'_VALUE'] = $_GET[$objFields->fields['id']];
+                    }
+                    if(!empty($_POST['contactFormField_'.$objFields->fields['id']])){
+                        $arrFields[$objFields->fields['id'].'_VALUE'] = $_POST['contactFormField_'.$objFields->fields['id']];
+                    }
+                    $objFields->MoveNext();
+                }
+
+                $this->objTemplate->setVariable($arrFields);
+            }
+        }
+    }
+
+    /**
+     * get parameters from post request and set them in the template
+     *
+     * @access private
+     * @global ADONewConnection
+     * @see HTML_Template_Sigma::setVariable
+     */
+    function _getPostParams()
+    {
+        global $objDatabase;
+
+        $arrFields = array();
+        if (isset($_GET['cmd']) && ($formId = intval($_GET['cmd'])) && !empty($formId)) {
+            $objFields = $objDatabase->Execute('SELECT `id` FROM `'.DBPREFIX.'module_contact_form_field` WHERE `id_form`='.$formId);
+            if ($objFields !== false) {
+                while (!$objFields->EOF) {
+                    if (!empty($_GET[$objFields->fields['id']])) {
+                        $arrFields[$objFields->fields['id'].'_VALUE'] = $_GET[$objFields->fields['id']];
+                    }
+                    if(!empty($_POST['contactFormField_'.$objFields->fields['id']])){
+                        $arrFields[$objFields->fields['id'].'_VALUE'] = $_POST['contactFormField_'.$objFields->fields['id']];
                     }
                     $objFields->MoveNext();
                 }
