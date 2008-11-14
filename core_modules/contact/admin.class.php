@@ -1,5 +1,6 @@
 <?php
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
+$_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'] = "Die E-Mail Adresse '%s' ist nicht gültig!";
 
 if(0){
 $objDatabase->debug=99;
@@ -45,6 +46,8 @@ class ContactManager extends ContactLib
 
     var $_pageTitle = '';
 
+    var $_invalidRecipients = false;
+
     /**
     * Constructor
     */
@@ -81,7 +84,8 @@ class ContactManager extends ContactLib
             'password'      => $_ARRAYLANG['TXT_CONTACT_PASSWORD_FIELD'],
             'radio'         => $_ARRAYLANG['TXT_CONTACT_RADIO_BOXES'],
             'select'        => $_ARRAYLANG['TXT_CONTACT_SELECTBOX'],
-            'textarea'      => $_ARRAYLANG['TXT_CONTACT_TEXTAREA']
+            'textarea'      => $_ARRAYLANG['TXT_CONTACT_TEXTAREA'],
+            'recipient'     => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
         );
 
         $this->initContactForms(true);
@@ -516,7 +520,7 @@ class ContactManager extends ContactLib
      */
     function _showRecipients($arrRecipients = null){
     	global $_ARRAYLANG;
-		if(!is_array($arrRecipients)){
+		if(!is_array($arrRecipients) || count($arrRecipients) < 1){
 			$arrRecipients[$this->getLastRecipientId()+1] = array(
 				'name' 	=> $_ARRAYLANG['TXT_CONTACT_NAME'],
 				'email' => $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'],
@@ -545,7 +549,6 @@ class ContactManager extends ContactLib
     public function setRecipients($arrRecipients)
     {
         global $objDatabase;
-$objDatabase->debug=99;
         foreach ($arrRecipients as $id => $arrRecipient) {
 			$objRS = $objDatabase->Execute("
 	            REPLACE INTO `".DBPREFIX."module_contact_recipient`
@@ -555,7 +558,6 @@ $objDatabase->debug=99;
 	            `email`	  = '".$arrRecipient['email']."',
 	            `sort`	  = ".$arrRecipient['sort']);
         }
-$objDatabase->debug=0;
     }
 
     /**
@@ -625,7 +627,7 @@ $objDatabase->debug=0;
 
         if (isset($_POST['saveForm'])) {
             $arrFields = $this->_getFormFieldsFromPost($null);
-            $arrRecipients = $this->_getRecipientsFromPost();
+            $arrRecipients = $this->_getRecipientsFromPost(false);
 			$this->_showRecipients($arrRecipients);
             $formName = isset($_POST['contactFormName']) ? htmlentities(strip_tags(contrexx_stripslashes($_POST['contactFormName'])), ENT_QUOTES, CONTREXX_CHARSET) : '';
             $formEmails = isset($_POST['contactFormEmail']) ? htmlentities(strip_tags(contrexx_stripslashes(trim($_POST['contactFormEmail']))), ENT_QUOTES, CONTREXX_CHARSET) : '';
@@ -861,7 +863,13 @@ $objDatabase->debug=0;
                         } else {
                             $this->addForm($formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $formUseCustomStyle, $arrFields, $formSendCopy);
                         }
-                        $this->setRecipients($this->_getRecipientsFromPost());
+
+                        $arrRecipients = $this->_getRecipientsFromPost();
+                        if($this->_invalidRecipients){
+                            return $this->_modifyForm();
+                        }else{
+                            $this->setRecipients($arrRecipients);
+                        }
                         $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_FORM_SUCCESSFULLY_SAVED']."<br />";
 
                         if (isset($_POST['contentSiteAction'])) {
@@ -1031,14 +1039,25 @@ $objDatabase->debug=0;
         }
     }
 
-    function _getRecipientsFromPost()
+    function _getRecipientsFromPost($logErrors = true)
     {
-		$arrRecipients = array();
+        global $_ARRAYLANG;
+        $arrErrors = $arrRecipients = array();
 		if(isset($_POST['contactFormRecipientName']) && is_array($_POST['contactFormRecipientName'])){
 			$formId = intval($_REQUEST['formId']);
 			foreach ($_POST['contactFormRecipientName'] as $id => $recipientName) {
                 $recipientName  = strip_tags(contrexx_stripslashes($recipientName));
                 $recipientEmail = strip_tags(contrexx_stripslashes($_POST['contactFormRecipientEmail'][$id]));
+                if(strpos($recipientEmail, ',')){
+                    foreach (explode(',', $recipientEmail) as $email) {
+                        if ($logErrors && !preg_match('/[a-z0-9]+(?:[_\.-][a-z0-9]+)*?@[a-z0-9]+(?:[\.-][a-z0-9]+)*?\.[a-z]{2,6}/', $email)){
+                            $arrErrors[] = sprintf($_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'], $email);
+                        }
+                    }
+                }elseif ($logErrors && !preg_match('/[a-z0-9]+(?:[_\.-][a-z0-9]+)*?@[a-z0-9]+(?:[\.-][a-z0-9]+)*?\.[a-z]{2,6}/', $recipientEmail)){
+                    $arrErrors[] = sprintf($_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'], $recipientEmail);
+                }
+
                 $recipientSort  = intval($_POST['contactFormRecipientSort'][$id]);
           		$arrRecipients[$id] = array(
           			'name' 		=>	$recipientName,
@@ -1048,6 +1067,10 @@ $objDatabase->debug=0;
           		);
 			}
 		}
+    	if(!empty($arrErrors)){
+    	    $this->_invalidRecipients = true;
+            $this->_statusMessageErr .= implode("<br />", $arrErrors);
+    	}
 		return $arrRecipients;
 	}
 
@@ -1143,6 +1166,7 @@ $objDatabase->debug=0;
             case 'radio':
             case 'select':
             case 'label':
+            case 'recipient':
                 $menu = '';
                 break;
 
@@ -1176,6 +1200,7 @@ $objDatabase->debug=0;
             case 'hidden':
             case 'select':
             case 'label':
+            case 'recipient':
                 return '';
                 break;
 
@@ -1247,7 +1272,6 @@ $objDatabase->debug=0;
         $sourcecode[] = '<form action="'.($preview ? '../' : '')."index.php?section=contact&amp;cmd=".$id.'" ';
         $sourcecode[] = 'method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();" id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'">';
 
-
         foreach ($arrFields as $fieldId => $arrField) {
             if ($arrField['is_required']) {
                 $required = '<strong class="is_required">*</strong>';
@@ -1315,6 +1339,13 @@ $objDatabase->debug=0;
 
                 case 'textarea':
                     $sourcecode[] = '<textarea class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" rows="5" cols="20">{'.$fieldId.'_VALUE}</textarea>';
+                    break;
+                case 'recipient':
+                    $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_recipient" id=contactFormField_'.$fieldId.'">';
+                    foreach ($this->arrForms[$id]['recipients'] as $index => $arrRecipient) {
+                    	$sourcecode[] = '<option value="'.$index.'">'.$arrRecipient['name'].'</option>';
+                    }
+                    $sourcecode[] = "</select>";
                     break;
             }
             $sourcecode[] = "</p>";
