@@ -1734,6 +1734,7 @@ CREATE TABLE `contrexx_module_newsletter_user` (
   `id` int(11) NOT NULL auto_increment,
   `code` varchar(255) NOT NULL default '',
   `email` varchar(255) NOT NULL default '',
+  `uri` varchar(255) default NULL,
   `sex` enum('m','f') default NULL,
   `title` int(10) unsigned NOT NULL,
   `lastname` varchar(255) NOT NULL default '',
