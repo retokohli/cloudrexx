@@ -112,8 +112,8 @@ class Contact extends ContactLib
 
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) {
             $showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
-            $this->_getPostParams();
-            $arrFormData = &$this->_getContactFormData();
+            $this->_getParams();
+            $arrFormData =& $this->_getContactFormData();
             if ($arrFormData) {
                 if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) {
                     $this->_sendMail($arrFormData);
@@ -361,11 +361,10 @@ class Contact extends ContactLib
         $arrSettings = $this->getSettings();
         $arrSpamKeywords = explode(',', $arrSettings['spamProtectionWordList']);
         $this->initCheckTypes();
-
         if (count($arrFields['fields']) > 0) {
             foreach ($arrFields['fields'] as $field) {
                 $source = $field['type'] == 'file' ? 'uploadedFiles' : 'data';
-                $regex = "§".$this->arrCheckTypes[$field['check_type']]['regex'] ."§";
+                $regex = "#".$this->arrCheckTypes[$field['check_type']]['regex'] ."#";
                 if ($field['is_required'] && empty($arrFields[$source][$field['name']])) {
                     $error = true;
                 } elseif (empty($arrFields[$source][$field['name']])) {
@@ -410,7 +409,7 @@ class Contact extends ContactLib
     {
         foreach ($arrKeywords as $keyword) {
             if (!empty($keyword)) {
-                if (preg_match("§{$keyword}§i",$string)) {
+                if (preg_match("#{$keyword}#i",$string)) {
                     return true;
                 }
             }
@@ -492,7 +491,6 @@ class Contact extends ContactLib
             }
 
             uksort($arrFormData['data'], array($this, '_sortFormData'));
-
             foreach ($arrFormData['data'] as $key => $value) {
                 $tabCount = ceil((strlen($key)+1) / 6);
                 $tabs = 7 - $tabCount;
@@ -542,11 +540,10 @@ class Contact extends ContactLib
             $objMail->Subject = $arrFormData['subject'];
             $objMail->IsHTML(false);
             $objMail->Body = $message;
-
-            if(!empty($_POST['contactFormField_recipient'])){
-                foreach (explode(',', $this->arrForms[intval($_GET['cmd'])]['recipients'][intval($_POST['contactFormField_recipient'])]) as $sendTo) {
+            $arrRecipients = $this->getRecipients(intval($_GET['cmd']));
+            if(!empty($arrFormData['data']['contactFormField_recipient'])){
+                foreach (explode(',', $arrRecipients[intval($arrFormData['data']['contactFormField_recipient'])]['email']) as $sendTo) {
                 	 if (!empty($sendTo)) {
-//                	    echo "asd".$sendTo;
                         $objMail->AddAddress($sendTo);
                         $objMail->Send();
                         $objMail->ClearAddresses();
@@ -698,36 +695,6 @@ class Contact extends ContactLib
      * @see HTML_Template_Sigma::setVariable
      */
     function _getParams()
-    {
-        global $objDatabase;
-
-        $arrFields = array();
-        if (isset($_GET['cmd']) && ($formId = intval($_GET['cmd'])) && !empty($formId)) {
-            $objFields = $objDatabase->Execute('SELECT `id` FROM `'.DBPREFIX.'module_contact_form_field` WHERE `id_form`='.$formId);
-            if ($objFields !== false) {
-                while (!$objFields->EOF) {
-                    if (!empty($_GET[$objFields->fields['id']])) {
-                        $arrFields[$objFields->fields['id'].'_VALUE'] = $_GET[$objFields->fields['id']];
-                    }
-                    if(!empty($_POST['contactFormField_'.$objFields->fields['id']])){
-                        $arrFields[$objFields->fields['id'].'_VALUE'] = $_POST['contactFormField_'.$objFields->fields['id']];
-                    }
-                    $objFields->MoveNext();
-                }
-
-                $this->objTemplate->setVariable($arrFields);
-            }
-        }
-    }
-
-    /**
-     * get parameters from post request and set them in the template
-     *
-     * @access private
-     * @global ADONewConnection
-     * @see HTML_Template_Sigma::setVariable
-     */
-    function _getPostParams()
     {
         global $objDatabase;
 
