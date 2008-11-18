@@ -614,4 +614,11 @@ $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_OPTIONAL'] = "Fichier (facul
 $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_MANDATORY'] = "Fichier (requis)";
 $_ARRAYLANG['TXT_SHOP_ERROR_DELETING_FILE'] = "Impossible de supprimer le fichier %1\$s";
 $_ARRAYLANG['TXT_SHOP_PRODUCTATTRIBUTE_CANNOT_ADD_VALUE_FOR_TYPE'] = "Impossible d'ajouter d'autres valeurs pour ce mode.";
+$_ARRAYLANG['TXT_SHOP_AUTHORIZATION'] = "Authorisierung";
+$_ARRAYLANG['TXT_SHOP_DATATRANS'] = "Datatrans";
+$_ARRAYLANG['TXT_SHOP_DATATRANS_MERCHANT_ID'] = "Partner ID";
+$_ARRAYLANG['TXT_SHOP_DATATRANS_USE_TESTSERVER'] = "Testserver benutzen";
+$_ARRAYLANG['TXT_SHOP_EDIT'] = "bearbeiten";
+$_ARRAYLANG['TXT_SHOP_DATATRANS_REQTYPE_NOA'] = "Nur authorisieren";
+$_ARRAYLANG['TXT_SHOP_DATATRANS_REQTYPE_CAA'] = "Authorisieren und abrechnen";
 ?>
