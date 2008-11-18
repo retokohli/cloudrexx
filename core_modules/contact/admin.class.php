@@ -1,11 +1,5 @@
 <?php
-$_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
-$_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'] = "Die E-Mail Adresse '%s' ist nicht gültig!";
 
-if(0){
-$objDatabase->debug=99;
-error_reporting(E_ALL);ini_set('display_errors',1);
-}
 /**
  * Contact
  * @copyright   CONTREXX CMS - COMVATION AG
