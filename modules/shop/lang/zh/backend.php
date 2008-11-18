@@ -615,4 +615,11 @@ $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_OPTIONAL'] = "Dateifeld (Aus
 $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_MANDATORY'] = "Dateifeld (Auswahl zwingend)";
 $_ARRAYLANG['TXT_SHOP_ERROR_DELETING_FILE'] = "Konnte Datei %1\$s nicht löschen";
 $_ARRAYLANG['TXT_SHOP_PRODUCTATTRIBUTE_CANNOT_ADD_VALUE_FOR_TYPE'] = "Für diesen Typ kann kein weiterer Wert hinzugefügt werden.";
+$_ARRAYLANG['TXT_SHOP_AUTHORIZATION'] = "Authorisierung";
+$_ARRAYLANG['TXT_SHOP_DATATRANS'] = "Datatrans";
+$_ARRAYLANG['TXT_SHOP_DATATRANS_MERCHANT_ID'] = "Partner ID";
+$_ARRAYLANG['TXT_SHOP_DATATRANS_USE_TESTSERVER'] = "Testserver benutzen";
+$_ARRAYLANG['TXT_SHOP_EDIT'] = "bearbeiten";
+$_ARRAYLANG['TXT_SHOP_DATATRANS_REQTYPE_NOA'] = "Nur authorisieren";
+$_ARRAYLANG['TXT_SHOP_DATATRANS_REQTYPE_CAA'] = "Authorisieren und abrechnen";
 ?>
