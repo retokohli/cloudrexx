@@ -30,4 +30,5 @@ $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Erreur: le fichier %s n'a pas pu êtr
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Un fichier n'a pas pu être importé";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Veuillez saisir la séquence de caractères de l'image dans le champ ci-dessous. (Il s'agit d'une protection anti-spambot)";
 $_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Saisie erronée du code CAPTCHA";
+$_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
 ?>
