@@ -52,7 +52,7 @@ class ContactLib
     public function getHighestSortValue($formId)
     {
     	global $objDatabase;
-        return intval($objDatabase->SelectLimit('SELECT MAX(`sort`) as `max` FROM `'.DBPREFIX.'module_contact_recipient` WHERE `id_form` = '.$formid, 1)->fields['max']);
+        return intval($objDatabase->SelectLimit('SELECT MAX(`sort`) as `max` FROM `'.DBPREFIX.'module_contact_recipient` WHERE `id_form` = '.$formId, 1)->fields['max']);
     }
 
     /**

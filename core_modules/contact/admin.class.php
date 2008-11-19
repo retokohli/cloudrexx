@@ -1384,7 +1384,7 @@ class ContactManager extends ContactLib
         }
 
         $sourcecode[] = "<p>";
-        $sourcecode[] = '<input class="contactFormClass_button" type="reset" value="'.$_ARRAYLANG['TXT_CONTACT_RESET'].'" /> <input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.$_ARRAYLANG['TXT_CONTACT_SUBMIT'].'" />';
+        $sourcecode[] = '<input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.$_ARRAYLANG['TXT_CONTACT_SUBMIT'].'" /><input class="contactFormClass_button" type="reset" value="'.$_ARRAYLANG['TXT_CONTACT_RESET'].'" />';
         $sourcecode[] = "</p>";
         $sourcecode[] = "</form>";
         $sourcecode[] = "</fieldset>";
