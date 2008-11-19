@@ -480,6 +480,8 @@ class Contact extends ContactLib
             $body .= "\n";
         }
 
+        $arrRecipients = $this->getRecipients(intval($_GET['cmd']));
+
         if(!empty($arrFormData['data'])) {
             if (!empty($arrFormData['fields'])) {
                 foreach ($arrFormData['fields'] as $arrField) {
@@ -496,6 +498,10 @@ class Contact extends ContactLib
                 $tabs = 7 - $tabCount;
                 if((strlen($key)+1) % 6 == 0){
                     $tabs--;
+                }
+                if($key == 'contactFormField_recipient'){
+                    $key    = $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'];
+                    $value  = $arrRecipients[$value]['name'];
                 }
                 $body .= $key.":".str_repeat("\t", $tabs).$value."\n";
                 if (empty($replyAddress) && ($mail = $this->_getEmailAdressOfString($value))) {
