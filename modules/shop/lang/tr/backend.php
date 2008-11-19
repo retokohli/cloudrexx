@@ -621,4 +621,9 @@ $_ARRAYLANG['TXT_SHOP_DATATRANS_USE_TESTSERVER'] = "Testserver benutzen";
 $_ARRAYLANG['TXT_SHOP_EDIT'] = "bearbeiten";
 $_ARRAYLANG['TXT_SHOP_DATATRANS_REQTYPE_NOA'] = "Nur authorisieren";
 $_ARRAYLANG['TXT_SHOP_DATATRANS_REQTYPE_CAA'] = "Authorisieren und abrechnen";
+$_ARRAYLANG['TXT_SHOP_ERROR_INSERTING_CUSTOMER'] = "Fehler beim Einfügen des neuen Kunden";
+$_ARRAYLANG['TXT_SHOP_SHOW_PRODUCTS_ON_START_PAGE'] = "Produkte auf der Shop Startseite anzeigen";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_DEFAULT_VIEW_0'] = "Keine";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_DEFAULT_VIEW_1'] = "Sonderangebote";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_DEFAULT_VIEW_2'] = "Neuste fünf";
 ?>

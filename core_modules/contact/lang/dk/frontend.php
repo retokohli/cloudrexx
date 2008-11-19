@@ -30,4 +30,5 @@ $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Filen %s kunne ikke uploades fuldstæ
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "En fil er ikke blevet uploadet!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Tippen Sie bitte die Zeichenfolge im dargestellten Bild in das Textfeld ein. Dies ist Notwendig, damit das System Sie von einem Spambot unterscheiden kann.";
 $_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Den intastede tegnfølge var falsk!";
+$_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
 ?>
