@@ -323,6 +323,21 @@ class ContactLib
         $this->initContactForms(true);
     }
 
+    /**
+     * delete recipients
+     *
+     * @param integer $id
+     * @return bool
+     */
+    function _deleteFormRecipients($id){
+        global $objDatabase;
+        if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_recipient WHERE id_form = ".$id)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     function deleteForm($id)
     {
         global $objDatabase;
@@ -330,7 +345,7 @@ class ContactLib
         if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form WHERE id=".$id) !== false) {
             $this->_deleteFormFieldsByFormId($id);
             $this->_deleteFormDataByFormId($id);
-
+            $this->_deleteFormRecipients($id);
             $this->initContactForms(true);
 
             return true;

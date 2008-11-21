@@ -851,6 +851,13 @@ class ContactManager extends ContactLib
                             $formEmails = $_CONFIG['contactFormEmail'];
                         }
 
+                        $arrRecipients = $this->_getRecipientsFromPost();
+                        if($this->_invalidRecipients){
+                            return $this->_modifyForm();
+                        }else{
+                            $this->setRecipients($arrRecipients);
+                        }
+
                         if ($formId > 0) {
                             // This updates the database
                             $this->updateForm($formId, $formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $formUseCustomStyle, $arrFields, $formSendCopy);
@@ -858,12 +865,6 @@ class ContactManager extends ContactLib
                             $this->addForm($formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $formUseCustomStyle, $arrFields, $formSendCopy);
                         }
 
-                        $arrRecipients = $this->_getRecipientsFromPost();
-                        if($this->_invalidRecipients){
-                            return $this->_modifyForm();
-                        }else{
-                            $this->setRecipients($arrRecipients);
-                        }
                         $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_FORM_SUCCESSFULLY_SAVED']."<br />";
 
                         if (isset($_POST['contentSiteAction'])) {
@@ -1044,21 +1045,23 @@ class ContactManager extends ContactLib
                 $recipientEmail = strip_tags(contrexx_stripslashes($_POST['contactFormRecipientEmail'][$id]));
                 if(strpos($recipientEmail, ',')){
                     foreach (explode(',', $recipientEmail) as $email) {
-                        if ($logErrors && !preg_match('/[a-z0-9]+(?:[_\.-][a-z0-9]+)*?@[a-z0-9]+(?:[\.-][a-z0-9]+)*?\.[a-z]{2,6}/', $email)){
+                        if ($logErrors && $email != $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL']  && !preg_match('/[a-z0-9]+(?:[_\.-][a-z0-9]+)*?@[a-z0-9]+(?:[\.-][a-z0-9]+)*?\.[a-z]{2,6}/', $email)){
                             $arrErrors[] = sprintf($_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'], $email);
                         }
                     }
-                }elseif ($logErrors && !preg_match('/[a-z0-9]+(?:[_\.-][a-z0-9]+)*?@[a-z0-9]+(?:[\.-][a-z0-9]+)*?\.[a-z]{2,6}/', $recipientEmail)){
+                }elseif ($logErrors && $email != $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'] && !preg_match('/[a-z0-9]+(?:[_\.-][a-z0-9]+)*?@[a-z0-9]+(?:[\.-][a-z0-9]+)*?\.[a-z]{2,6}/', $recipientEmail)){
                     $arrErrors[] = sprintf($_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'], $recipientEmail);
                 }
 
                 $recipientSort  = intval($_POST['contactFormRecipientSort'][$id]);
-          		$arrRecipients[$id] = array(
-          			'name' 		=>	$recipientName,
-          			'email' 	=>	$recipientEmail,
-          			'sort'		=> 	$recipientSort,
-          			'id_form'	=>  $formId
-          		);
+                if($recipientEmail != $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL']){
+              		$arrRecipients[$id] = array(
+              			'name' 		=>	$recipientName,
+              			'email' 	=>	$recipientEmail,
+              			'sort'		=> 	$recipientSort,
+              			'id_form'	=>  $formId
+              		);
+                }
 			}
 		}
     	if(!empty($arrErrors)){
