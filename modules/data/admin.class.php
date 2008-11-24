@@ -287,16 +287,16 @@ class DataAdmin extends DataLibrary {
     {
         global $objDatabase;
         $pages = array();
-        $query = "SELECT page_id, title, cmd
-                  FROM ".DBPREFIX."content_page
-                  WHERE module_id = 48
-                  AND lang_id = ".$this->_intLanguageId;
+        $query = "SELECT catid, catname, cmd
+                  FROM ".DBPREFIX."content_navigation
+                  WHERE module = 48
+                  AND lang = ".$this->_intLanguageId;
         $objRs = $objDatabase->Execute($query);
         if ($objRs) {
             while (!$objRs->EOF) {
                 $pages[] = array(
-                    'id'    => $objRs->fields['page_id'],
-                    'name'  => $objRs->fields['title'],
+                    'id'    => $objRs->fields['catid'],
+                    'name'  => $objRs->fields['catname'],
                     'cmd'   => $objRs->fields['cmd']
                 );
                 $objRs->MoveNext();
