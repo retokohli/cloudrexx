@@ -179,57 +179,9 @@ if (   isset($_GET['handler'])
     }
 }
 
-//-------------------------------------------------------
-// Load settings and configuration
-//-------------------------------------------------------
 
-$objInit = new InitCMS();
-/**
- * Frontend language ID
- * @global integer $_LANGID
- */
-$_LANGID = $objInit->getFrontendLangId();
-/**
- * Core language data
- * @global array $_CORELANG
- */
-$_CORELANG = $objInit->loadLanguageData('core');
-/**
- * Module specific data
- * @global array $_ARRAYLANG
- */
-$_ARRAYLANG = $objInit->loadLanguageData();
-
-//-------------------------------------------------------
-// Webapp Intrusion Detection System
-//-------------------------------------------------------
-
-$objSecurity = new Security;
-$_GET = $objSecurity->detectIntrusion($_GET);
-$_POST = $objSecurity->detectIntrusion($_POST);
-$_COOKIE = $objSecurity->detectIntrusion($_COOKIE);
-$_REQUEST = $objSecurity->detectIntrusion($_REQUEST);
-
-//-------------------------------------------------------
-// Check Referer -> Redirect
-//-------------------------------------------------------
-require_once ASCMS_CORE_PATH.'/redirect.class.php';
-//$objRedirect = new redirect();
-
-//-------------------------------------------------------
-// initialize objects
-//-------------------------------------------------------
-/**
- * Template object
- * @global HTML_Template_Sigma $objTemplate
- */
-$objTemplate = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
-$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
 $section = isset($_REQUEST['section']) ? contrexx_addslashes($_REQUEST['section']) : '';
-$command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
-$page    = isset($_REQUEST['page']) ? intval($_GET['page']) : 0;
-$history = isset($_REQUEST['history']) ? intval($_GET['history']) : 0;
 
 // To clone any module, use an optional integer cmd suffix.
 // E.g.: "shop2", "gallery5", etc.
@@ -250,7 +202,60 @@ if (preg_match('/^(\w+)(\d+)$/', $section, $arrMatch)) {
 $moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
 define('MODULE_INDEX', $moduleIndex);
 
-$pageId  = $objInit->getPageID($page, $plainSection, $command, $history);
+//-------------------------------------------------------
+// Load settings and configuration
+//-------------------------------------------------------
+
+$objInit = new InitCMS();
+
+/**
+ * Frontend language ID
+ * @global integer $_LANGID
+ */
+$_LANGID = $objInit->getFrontendLangId();
+/**
+ * Core language data
+ * @global array $_CORELANG
+ */
+$_CORELANG = $objInit->loadLanguageData('core');
+/**
+ * Module specific data
+ * @global array $_ARRAYLANG
+ */
+$_ARRAYLANG = $objInit->loadLanguageData($plainSection);
+
+//-------------------------------------------------------
+// Webapp Intrusion Detection System
+//-------------------------------------------------------
+
+$objSecurity = new Security;
+$_GET = $objSecurity->detectIntrusion($_GET);
+$_POST = $objSecurity->detectIntrusion($_POST);
+$_COOKIE = $objSecurity->detectIntrusion($_COOKIE);
+$_REQUEST = $objSecurity->detectIntrusion($_REQUEST);
+
+
+//-------------------------------------------------------
+// Check Referer -> Redirect
+//-------------------------------------------------------
+require_once ASCMS_CORE_PATH.'/redirect.class.php';
+//$objRedirect = new redirect();
+
+//-------------------------------------------------------
+// initialize objects
+//-------------------------------------------------------
+/**
+ * Template object
+ * @global HTML_Template_Sigma $objTemplate
+ */
+$objTemplate = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+
+$command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
+$page    = isset($_REQUEST['page']) ? intval($_GET['page']) : 0;
+$history = isset($_REQUEST['history']) ? intval($_GET['history']) : 0;
+
+$pageId  = $objInit->getPageID($page, $section, $command, $history);
 $is_home = $objInit->is_home;
 
 $objCounter = new statsLibrary();
@@ -1381,7 +1386,7 @@ switch ($plainSection) {
 // Calendar Module
 //-------------------------------------------------------
     case 'calendar':
-        $modulespath = 'modules/calendar'.MODULE_INDEX.'/index.class.php';
+        $modulespath = 'modules/calendar'.MODULE_INDEX.'/index.class.php';;
         $moduleStyleFile = 'modules/calendar'.MODULE_INDEX.'/frontend_style.css';
         define('CALENDAR_MANDATE', MODULE_INDEX);
         /**
