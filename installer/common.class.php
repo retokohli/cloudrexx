@@ -1094,7 +1094,15 @@ class CommonFunctions
 	* @access	public
 	*/
 	function setSystemConfig() {
-		global $_ARRLANG, $_CONFIG;
+		global $_ARRLANG, $_CONFIG, $arrLanguages, $language;
+
+		$userLangId = "";
+		foreach ($arrLanguages as $langId => $arrLanguage) {
+			if ($language == $arrLanguage['lang']) {
+				$userLangId = $langId;
+				break;
+			}
+		}
 
 		$statusMsg = "";
 
@@ -1102,6 +1110,20 @@ class CommonFunctions
 		if ($objDb === false) {
 			return $statusMsg;
 		} else {
+            // deactivate all languages
+            $query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."languages`
+                         SET `frontend` = '0', `backend` = '0', `is_default` = 'false'";
+            if (!@$objDb->Execute($query)) {
+                $statusMsg .= $_ARRLANG['TXT_COULD_NOT_DEACTIVATE_UNUSED_LANGUAGES']."<br />";
+            }
+
+            // set active language
+            $query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."languages`
+                         SET `frontend` = '1', `backend` = '1', `is_default` = 'true' WHERE `id` = ".$userLangId;
+            if (!@$objDb->Execute($query)) {
+                $statusMsg .= $_ARRLANG['TXT_COULD_NOT_ACTIVATE_DEFAULT_LANGUAGE']."<br />";
+            }
+
 			// set admin email
 			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."settings`
 						 SET `setvalue` = '".$_SESSION['installer']['sysConfig']['adminEmail']."'
