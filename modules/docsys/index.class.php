@@ -85,6 +85,8 @@ class docSys extends docSysLibrary
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
         $this->_objTpl->setTemplate($this->pageContent);
+        // Global module index for clones
+        $this->_objTpl->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
 
         $id = intval($_GET['id']);
 
@@ -142,7 +144,7 @@ class docSys extends docSysLibrary
                 $objResult->MoveNext();
             }
         } else {
-            header("Location: ?section=docsys");
+            header("Location: ?section=docsys".MODULE_INDEX);
             exit;
         }
 
@@ -196,7 +198,7 @@ class docSys extends docSysLibrary
 
         if(!empty($_REQUEST['category'])){
             $selectedId= intval($_REQUEST['category']);
-            $query = " SELECT `sort_style` FROM `".DBPREFIX."module_docsys_categories`
+            $query = " SELECT `sort_style` FROM `".DBPREFIX."module_docsys".MODULE_INDEX."_categories`
                         WHERE `catid` = ".$selectedId;
             $objRS = $objDatabase->SelectLimit($query, 1);
             if($objRS !== false){
@@ -215,8 +217,8 @@ class docSys extends docSysLibrary
                          n.title AS title,
                          n.author AS author,
                          nc.name AS name
-                    FROM ".DBPREFIX."module_docsys AS n,
-                         ".DBPREFIX."module_docsys_categories AS nc
+                    FROM ".DBPREFIX."module_docsys".MODULE_INDEX." AS n,
+                         ".DBPREFIX."module_docsys".MODULE_INDEX."_categories AS nc
                    WHERE status = 1
                      AND n.lang=".$this->langId."
                      AND $docFilter n.catid=nc.catid
@@ -252,7 +254,7 @@ class docSys extends docSysLibrary
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
         if ($count > intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pos, "&section=docsys", $_ARRAYLANG['TXT_DOCUMENTS'], true);
+            $paging = getPaging($count, $pos, "&section=docsys".MODULE_INDEX, $_ARRAYLANG['TXT_DOCUMENTS'], true);
         }
         $this->_objTpl->setVariable("DOCSYS_PAGING", $paging);
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos) ;
@@ -265,7 +267,7 @@ class docSys extends docSysLibrary
                     'DOCSYS_STYLE'      => $class,
                     'DOCSYS_LONG_DATE'  => date($this->dateLongFormat,$objResult->fields['date']),
                     'DOCSYS_DATE'       => date($this->dateFormat,$objResult->fields['date']),
-                    'DOCSYS_LINK'      => "<a href=\"?section=docsys&amp;cmd=details&amp;id=".$objResult->fields['docid']."\" title=\"".stripslashes($objResult->fields['title'])."\">".stripslashes($objResult->fields['title'])."</a>",
+                    'DOCSYS_LINK'      => "<a href=\"?section=docsys".MODULE_INDEX."&amp;cmd=details&amp;id=".$objResult->fields['docid']."\" title=\"".stripslashes($objResult->fields['title'])."\">".stripslashes($objResult->fields['title'])."</a>",
                     'DOCSYS_CATEGORY'   => stripslashes($objResult->fields['name']),
                     'DOCSYS_AUTHOR'    => stripslashes($objResult->fields['author']),
                 ));

@@ -39,7 +39,7 @@ class docSysLibrary
         $strMenu = "";
         $query="SELECT catid,
                        name
-                  FROM ".DBPREFIX."module_docsys_categories
+                  FROM ".DBPREFIX."module_docsys".MODULE_INDEX."_categories
                  WHERE lang=".$langId."
               ORDER BY catid";
 
