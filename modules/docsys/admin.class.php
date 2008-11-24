@@ -48,9 +48,9 @@ class docSysManager extends docSysLibrary
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/docsys/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=docsys'>".$_ARRAYLANG['TXT_DOC_SYS_MENU_OVERVIEW']."</a>
-                                                      <a href='?cmd=docsys&amp;act=add'>".$_ARRAYLANG['TXT_CREATE_DOCUMENT']."</a>
-                                                      <a href='?cmd=docsys&amp;act=cat'>".$_ARRAYLANG['TXT_CATEGORY_MANAGER']."</a>");
+        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=docsys".MODULE_INDEX."'>".$_ARRAYLANG['TXT_DOC_SYS_MENU_OVERVIEW']."</a>
+                                                      <a href='?cmd=docsys".MODULE_INDEX."&amp;act=add'>".$_ARRAYLANG['TXT_CREATE_DOCUMENT']."</a>
+                                                      <a href='?cmd=docsys".MODULE_INDEX."&amp;act=cat'>".$_ARRAYLANG['TXT_CATEGORY_MANAGER']."</a>");
 
         $this->pageTitle = $_ARRAYLANG['TXT_DOC_SYS_MANAGER'];
         $this->langId=$objInit->userFrontendLangId;
@@ -134,6 +134,8 @@ class docSysManager extends docSysLibrary
         $i=0;
 
         $this->_objTpl->loadTemplateFile('module_docsys_list.html',true,true);
+        // Global module index for clones
+        $this->_objTpl->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
         $this->pageTitle = $_ARRAYLANG['TXT_DOC_SYS_MANAGER'];
 
         $this->_objTpl->setVariable(array(
@@ -174,7 +176,7 @@ class docSysManager extends docSysLibrary
                          l.name AS name,
                          nc.name AS catname,
                          u.username AS username
-                    FROM ".DBPREFIX."module_docsys_categories AS nc,
+                    FROM ".DBPREFIX."module_docsys".MODULE_INDEX."_categories AS nc,
                          ".DBPREFIX."module_docsys AS n,
                          ".DBPREFIX."languages AS l,
                          ".DBPREFIX."access_users AS u
@@ -244,6 +246,8 @@ class docSysManager extends docSysLibrary
 
         $objFWUser = FWUser::getFWUserObject();
         $this->_objTpl->loadTemplateFile('module_docsys_modify.html',true,true);
+        // Global module index for clones
+        $this->_objTpl->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
         $this->pageTitle = $_ARRAYLANG['TXT_CREATE_DOCUMENT'];
 
         $this->_objTpl->setVariable(array(
@@ -310,10 +314,10 @@ class docSysManager extends docSysLibrary
             }
         }
 
-        if(is_array($_POST['selectedId'])) {
+        if(isset($_POST['selectedId']) && is_array($_POST['selectedId'])) {
             foreach ($_POST['selectedId'] as $value) {
                 if (!empty($value)) {
-                    if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_docsys WHERE id = ".intval($value))) {
+                    if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_docsys".MODULE_INDEX." WHERE id = ".intval($value))) {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                         $this->createRSS();
                     } else {
@@ -343,6 +347,8 @@ class docSysManager extends docSysLibrary
         $endDate = "";
 
         $this->_objTpl->loadTemplateFile('module_docsys_modify.html',true,true);
+        // Global module index for clones
+        $this->_objTpl->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
         $this->pageTitle = $_ARRAYLANG['TXT_EDIT_DOCUMENTS'];
 
         $this->_objTpl->setVariable(array(
@@ -378,7 +384,7 @@ class docSysManager extends docSysLibrary
                            `startdate`,
                            `enddate`,
                            `status`
-                      FROM `".DBPREFIX."module_docsys`
+                      FROM `".DBPREFIX."module_docsys".MODULE_INDEX."`
                      WHERE id = '$id'
                      LIMIT 1";
         $objResult = $objDatabase->Execute($query);
@@ -457,7 +463,7 @@ class docSysManager extends docSysLibrary
             $endDate = get_magic_quotes_gpc() ? strip_tags($_POST['endDate']) : addslashes(strip_tags($_POST['endDate']));
             $author =  get_magic_quotes_gpc() ? strip_tags($_POST['author']) : addslashes(strip_tags($_POST['author']));
 
-            $query = "UPDATE ".DBPREFIX."module_docsys
+            $query = "UPDATE ".DBPREFIX."module_docsys".MODULE_INDEX."
                            SET title='$title',
                                   date=".$this->_checkDate($_POST['creation_date']).",
                                author='".$author."',
@@ -510,7 +516,7 @@ class docSysManager extends docSysLibrary
             if(is_array($_POST['selectedId'])){
                 foreach ($_POST['selectedId'] as $value){
                     if (!empty($value)){
-                        $retval = $objDatabase->Execute("UPDATE ".DBPREFIX."module_docsys SET status = '$status' WHERE id = ".intval($value));
+                        $retval = $objDatabase->Execute("UPDATE ".DBPREFIX."module_docsys".MODULE_INDEX." SET status = '$status' WHERE id = ".intval($value));
                     }
                     if(!$retval){
                            $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
@@ -576,7 +582,7 @@ class docSysManager extends docSysLibrary
             $endDate = "";
         }
 
-        $query = "INSERT INTO `".DBPREFIX."module_docsys`
+        $query = "INSERT INTO `".DBPREFIX."module_docsys".MODULE_INDEX."`
                                 ( `id`,
                                   `date`,
                                   `title`,
@@ -631,7 +637,9 @@ class docSysManager extends docSysLibrary
         global $objDatabase,$_ARRAYLANG;
 
         $this->_objTpl->loadTemplateFile('module_docsys_category.html',true,true);
-        $this->pageTitle = $_ARRAYLANG['txtCategoryManager'];
+        // Global module index for clones
+        $this->_objTpl->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
+        $this->pageTitle = $_ARRAYLANG['TXT_CATEGORY_MANAGER'];
 
         $this->_objTpl->setVariable(array(
             'TXT_ADD_NEW_CATEGORY'                       => $_ARRAYLANG['TXT_ADD_NEW_CATEGORY'],
@@ -644,8 +652,8 @@ class docSysManager extends docSysLibrary
             'TXT_CONFIRM_DELETE_DATA'                    => $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
             'TXT_ACTION_IS_IRREVERSIBLE'                 => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
             'TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK' => $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'],
-            'TXT_DOCSYS_SORTING'                          => $_ARRAYLANG['TXT_DOCSYS_SORTING'],
-            'TXT_DOCSYS_SORTTYPE'                          => $_ARRAYLANG['TXT_DOCSYS_SORTTYPE'],
+            'TXT_DOCSYS_SORTING'                         => $_ARRAYLANG['TXT_DOCSYS_SORTING'],
+            'TXT_DOCSYS_SORTTYPE'                        => $_ARRAYLANG['TXT_DOCSYS_SORTTYPE'],
         ));
 
         $this->_objTpl->setGlobalVariable(array(
@@ -655,7 +663,7 @@ class docSysManager extends docSysLibrary
         // Add a new category
         if (isset($_POST['addCat']) AND ($_POST['addCat']==true)){
              $catName = get_magic_quotes_gpc() ? strip_tags($_POST['newCatName']) : addslashes(strip_tags($_POST['newCatName']));
-             if($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_docsys_categories (name,lang)
+             if($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_docsys".MODULE_INDEX."_categories (name,lang)
                                  VALUES ('$catName','$this->langId')")) {
                  $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
              } else {
@@ -672,7 +680,7 @@ class docSysManager extends docSysLibrary
 
                 $sorting = !empty($_REQUEST['sortStyle'][$id]) ? contrexx_addslashes($_REQUEST['sortStyle'][$id]) : 'alpha';
 
-                if($objDatabase->Execute("UPDATE ".DBPREFIX."module_docsys_categories
+                if($objDatabase->Execute("UPDATE ".DBPREFIX."module_docsys".MODULE_INDEX."_categories
                                   SET name='$name',
                                       lang='$this->langId',
                                       sort_style='$sorting'
@@ -688,7 +696,7 @@ class docSysManager extends docSysLibrary
         $query = "SELECT `catid`,
                            `name`,
                            `sort_style`
-                      FROM `".DBPREFIX."module_docsys_categories`
+                      FROM `".DBPREFIX."module_docsys".MODULE_INDEX."_categories`
                      WHERE `lang`='$this->langId'
                   ORDER BY `catid` asc";
         $objResult = $objDatabase->Execute($query);
@@ -725,12 +733,12 @@ class docSysManager extends docSysLibrary
 
         if(isset($_GET['catId'])) {
             $catId=intval($_GET['catId']);
-            $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_docsys WHERE catid=$catId");
+            $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_docsys".MODULE_INDEX." WHERE catid=$catId");
 
             if (!$objResult->EOF) {
                  $this->strErrMessage = $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'];
             } else {
-                if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_docsys_categories WHERE catid=$catId")) {
+                if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_docsys".MODULE_INDEX."_categories WHERE catid=$catId")) {
                     $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                 } else {
                     $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];

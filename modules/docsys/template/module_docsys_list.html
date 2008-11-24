@@ -3,7 +3,7 @@
 function deletePage(pageId)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
-        window.location.replace("index.php?cmd=docsys&act=delete&id="+pageId);
+        window.location.replace("index.php?cmd=docsys{MODULE_INDEX}&act=delete&id="+pageId);
     }
 }
 
@@ -11,7 +11,7 @@ function deletePages()
 {
 	with (document.formDocSys){
 		if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {									
-		 	action = "index.php?cmd=docsys&act=delete"; 
+		 	action = "index.php?cmd=docsys{MODULE_INDEX}&act=delete"; 
 			method = "post";
 			submit();
 			return true;
@@ -58,14 +58,14 @@ function setCheckboxes(do_check)
   </tr>  
 <tr class="row1">     
 <td valign="top"> 
-      <form action="index.php?cmd=docsys&act=edit" method="post" name="form2">
+      <form action="index.php?cmd=docsys{MODULE_INDEX}&act=edit" method="post" name="form2">
         {TXT_EDIT_DOCSYS_ID}: 
         <input type="text" maxlength="5" size="5" name="id" />
       </form>
     </td>
   </tr></tbody></table>
 <br />
-<form name="formDocSys" method="post" action="index.php?cmd=docsys&act=changeStatus">
+<form name="formDocSys" method="post" action="index.php?cmd=docsys{MODULE_INDEX}&act=changeStatus">
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
 <tr> 
 <th valign="top" colspan="8">{TXT_ARCHIVE}</th>
@@ -85,13 +85,13 @@ function setCheckboxes(do_check)
 	<td nowrap="nowrap"><input type="checkbox" value="{DOCSYS_ID}" name="selectedId[]" /></td>   
 	<td nowrap="nowrap"><img border="0" title="{DOCSYS_STATUS}" alt="{DOCSYS_STATUS}" src="images/icons/{DOCSYS_STATUS_PICTURE}" /></td>  
 	<td nowrap="nowrap">{DOCSYS_DATE}&nbsp;</td>
-	<td><a href="?cmd=docsys&act=edit&id={DOCSYS_ID}">{DOCSYS_TITLE}</a>&nbsp;</td>
+	<td><a href="?cmd=docsys{MODULE_INDEX}&act=edit&id={DOCSYS_ID}">{DOCSYS_TITLE}</a>&nbsp;</td>
 	<td nowrap="nowrap">{DOCSYS_CATEGORY}&nbsp;</td>
 	<td nowrap="nowrap">&nbsp;{DOCSYS_AUTHOR}</td>
 	<td nowrap="nowrap">{DOCSYS_CHANGELOG}: {DOCSYS_USER}&nbsp;</td>
 	<td nowrap="nowrap"> 
 	  <div align="right"> 
-	  <a title="{TXT_EDIT}" href="?cmd=docsys&act=edit&id={DOCSYS_ID}"><img border="0" alt="{TXT_EDIT}" src="images/icons/edit.gif" /></a> 
+	  <a title="{TXT_EDIT}" href="?cmd=docsys{MODULE_INDEX}&act=edit&id={DOCSYS_ID}"><img border="0" alt="{TXT_EDIT}" src="images/icons/edit.gif" /></a> 
       <a title="{TXT_DELETE}" href="javascript:deletePage({DOCSYS_ID})"><img border="0" alt="{TXT_DELETE}" src="images/icons/delete.gif" /></a></div>
     </td>
   </tr>
