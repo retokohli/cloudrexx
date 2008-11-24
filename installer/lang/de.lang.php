@@ -104,6 +104,8 @@ $_ARRLANG['TXT_DATABASE_CONNECTION_COLLATION'] = "Zeichensatz der Verbindung";
 $_ARRLANG['TXT_DB_COLLATION_DESCRIPTION'] = "Der Zeichensatz für die MySQL Verbindung wird für die Sortierreihenfolge, sowie für Suchoperationen verwendet.<br  /><br />Wenn Sie vor haben diese Webseite in mehreren Sprachen anzubieten, wird empfohlen, entweder <strong>utf8_unicode_ci</strong> oder <strong>utf8_general_ci</strong> zu verwenden. Wobei <strong>utf8_unicode_ci</strong> Erweiterungen unterstützt, was bedeutet, dass es z.B. die Gleichsetzung im Deutschen von `ß´ = `ss´ kennt, im Gegensatz zu <strong>utf8_general_ci</strong>, welches zwar keine Erweiterungen unterstützt, deshalb aber wesentlich schneller ist.<br /><br />Verwenden Sie andernfalls, wenn Sie die Webseite nur in einer Sprache anbieten wollen, einen entsprechend spezifischen Zeichensatz.";
 
 // installation
+$_ARRLANG['TXT_COULD_NOT_DEACTIVATE_UNUSED_LANGUAGES'] = "Konnte die überflüssigen Sprachen nicht deaktivieren!";
+$_ARRLANG['TXT_COULD_NOT_ACTIVATE_DEFAULT_LANGUAGE'] = "Konnte die Standard Sprachen nicht aktivieren!";
 $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'] = "Konnte die Berechtigungen nicht ändern: ";
 $_ARRLANG['TXT_CANNOT_OPEN_FILE'] = "Kann die Datei [FILENAME] nicht öffnen";
 $_ARRLANG['TXT_CANNOT_CREATE_FILE'] = "Kann die Datei %s nicht erstellen";
