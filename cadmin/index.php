@@ -104,17 +104,11 @@ $_FRONTEND_LANGID = $objInit->userFrontendLangId;
  */
 $_CORELANG = $objInit->loadLanguageData('core');
 
-//-------------------------------------------------------
-// language array for all modules
-//-------------------------------------------------------
-/**
- * Module specific data
- * @ignore
- */
-$_ARRAYLANG = $objInit->loadLanguageData();
-$_ARRAYLANG = array_merge($_ARRAYLANG, $_CORELANG);
-
 $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
+
+//-------------------------------------------------------
+// Provide mandate functionality
+//-------------------------------------------------------
 
 // To clone any module, use an optional integer cmd suffix.
 // E.g.: "shop2", "gallery5", etc.
@@ -139,11 +133,21 @@ $moduleIndex = (empty($arrMatch[2]) ? '' : $arrMatch[2]);
 /**
  * @ignore
  */
-define('MODULE_INDEX', intval($moduleIndex));
+define('MODULE_INDEX', (intval($moduleIndex) == 0) ? '' : intval($moduleIndex));
 // Simple way to distinguish any number of cloned modules
 // and apply individual access rights.  This offset is added
 // to any static access ID before checking it.
 $intAccessIdOffset = intval(MODULE_INDEX)*1000;
+
+//-------------------------------------------------------
+// language array for all modules
+//-------------------------------------------------------
+/**
+ * Module specific data
+ * @ignore
+ */
+$_ARRAYLANG = $objInit->loadLanguageData($plainCmd);
+$_ARRAYLANG = array_merge($_ARRAYLANG, $_CORELANG);
 
 $objTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
 $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -737,7 +741,7 @@ switch ($plainCmd) {
 //                                            WHERE name = 'calendar.'.$mandate.''');
 //            print $objRs->fields['id'];
 //            Permission::checkAccess($objRs->fields['id'], 'static');
-        $modulespath = ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/admin.class.php';
+            $modulespath = ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/admin.class.php';
         /**
          * @ignore
          */
