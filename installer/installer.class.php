@@ -1500,12 +1500,12 @@ class Installer
 				|| !isset($_SESSION['installer']['sysConfig']['contactEmail']) || $_POST['contactEmail'] != $_SESSION['installer']['sysConfig']['contactEmail']
 				|| !isset($_SESSION['installer']['sysConfig']['domainURL']) || $_POST['domainURL'] != $_SESSION['installer']['sysConfig']['domainURL'])
 			{
-				$_SESSION['installer']['sysConfig']['adminEmail'] = $_POST['adminEmail'];
-				$_SESSION['installer']['sysConfig']['adminName'] = $_POST['adminName'];
+				$_SESSION['installer']['sysConfig']['adminEmail'] = trim($_POST['adminEmail']);
+				$_SESSION['installer']['sysConfig']['adminName'] = trim($_POST['adminName']);
 /*				$_SESSION['installer']['sysConfig']['rssTitle'] = $_POST['rssTitle'];
 				$_SESSION['installer']['sysConfig']['rssDescription'] = $_POST['rssDescription'];*/
-				$_SESSION['installer']['sysConfig']['contactEmail'] = $_POST['contactEmail'];
-				$_SESSION['installer']['sysConfig']['domainURL'] = $_POST['domainURL'];
+				$_SESSION['installer']['sysConfig']['contactEmail'] = trim($_POST['contactEmail']);
+				$_SESSION['installer']['sysConfig']['domainURL'] = trim($_POST['domainURL']);
 				$changed = true;
 			}
 
