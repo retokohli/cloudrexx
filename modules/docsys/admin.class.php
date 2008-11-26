@@ -136,7 +136,7 @@ class docSysManager extends docSysLibrary
         $this->_objTpl->loadTemplateFile('module_docsys_list.html',true,true);
         // Global module index for clones
         $this->_objTpl->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
-        $this->pageTitle = $_ARRAYLANG['TXT_DOC_SYS_MANAGER'];
+        $this->pageTitle = $_ARRAYLANG['TXT_DOC_SYS2_MANAGER'];
 
         $this->_objTpl->setVariable(array(
             'TXT_EDIT_DOCSYS_MESSAGE'    => $_ARRAYLANG['TXT_EDIT_DOCUMENTS'],
@@ -177,7 +177,7 @@ class docSysManager extends docSysLibrary
                          nc.name AS catname,
                          u.username AS username
                     FROM ".DBPREFIX."module_docsys".MODULE_INDEX."_categories AS nc,
-                         ".DBPREFIX."module_docsys AS n,
+                         ".DBPREFIX."module_docsys".MODULE_INDEX." AS n,
                          ".DBPREFIX."languages AS l,
                          ".DBPREFIX."access_users AS u
                    WHERE n.lang=l.id
@@ -189,7 +189,7 @@ class docSysManager extends docSysLibrary
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
         $pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
-        $paging = ($count>intval($_CONFIG['corePagingLimit'])) ? getPaging($count, $pos, "&amp;cmd=docsys", $_ARRAYLANG['TXT_DOCUMENTS '],true) : "";
+        $paging = ($count>intval($_CONFIG['corePagingLimit'])) ? getPaging($count, $pos, "&amp;cmd=docsys".MODULE_INDEX, $_ARRAYLANG['TXT_DOCUMENTS '],true) : "";
 
 
         $objDatabase->SelectLimit($query, $pos, $_CONFIG['corePagingLimit']);
@@ -304,7 +304,7 @@ class docSysManager extends docSysLibrary
         if(isset($_GET['id'])){
             $docSysId = intval($_GET['id']);
 
-            $query = "DELETE FROM ".DBPREFIX."module_docsys WHERE id = $docSysId";
+            $query = "DELETE FROM ".DBPREFIX."module_docsys".MODULE_INDEX." WHERE id = $docSysId";
 
             if ($objDatabase->Execute($query)) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
@@ -657,7 +657,7 @@ class docSysManager extends docSysLibrary
         ));
 
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_DELETE'    => $_ARRAYLANG['TXT_DELETE']
+            'TXT_DELETE'    => $_ARRAYLANG['TXT_DELETE'],
         ));
 
         // Add a new category
