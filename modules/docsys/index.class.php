@@ -101,7 +101,7 @@ class docSys extends docSysLibrary
                                changelog,
                                title,
                                author
-                          FROM ".DBPREFIX."module_docsys
+                          FROM ".DBPREFIX."module_docsys".MODULE_INDEX."
                          WHERE status = 1
                            AND id = $id
                            AND lang=".$this->langId."
@@ -195,6 +195,7 @@ class docSys extends docSysLibrary
         $class  = 'row1';
 
         $this->_objTpl->setTemplate($this->pageContent);
+        $this->_objTpl->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
 
         if(!empty($_REQUEST['category'])){
             $selectedId= intval($_REQUEST['category']);
