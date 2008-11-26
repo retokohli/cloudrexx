@@ -2278,6 +2278,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, 
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (37,'immo','TXT_IMMO_MODULE_DESCRIPTION','n',0,0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (51,'partners','TXT_PARTNERS_MODULE_DESCRIPTION','y',0,0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (52,'fileUploader','TXT_FILEUPLOADER_MODULE_DESCRIPTION','y',0,0);
+INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (53,'downloads','TXT_DOWNLOADS_MODULE_DESCRIPTION','y',1,1);
 INSERT INTO `contrexx_sessions` (`sessionid`, `startdate`, `lastupdated`, `status`, `user_id`, `datavalue`) VALUES ('2d49e64de09474b6538fff4f521dccb6','1223382965','1223383175','backend',1,'userFrontendLangId|i:1;auth|a:2:{s:5:\"secid\";s:4:\"AED9\";s:3:\"log\";b:1;}content|a:2:{s:9:\"expandAll\";b:0;s:9:\"expandCat\";i:0;}');
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (3,'dnsServer','ns1.contrexxhosting.com',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (4,'bannerStatus','0',28);
