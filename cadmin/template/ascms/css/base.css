@@ -50,6 +50,7 @@ input,
 object,
 select {
 	BORDER-RIGHT: 1px solid;
+	MARGIN-BOTTOM: 2px;
 	BORDER-TOP: 1px solid;
 	FONT-SIZE: 11px;
 	BORDER-LEFT: 1px solid;
