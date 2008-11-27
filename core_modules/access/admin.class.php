@@ -256,31 +256,31 @@ class AccessManager extends AccessLib
 
         $filter = empty($groupTypeFilter) ? array() : array('type' => $groupTypeFilter);
 
-        $objFWUser->objGroup->loadGroups($filter, array($orderBy => $orderDirection), null, $_CONFIG['corePagingLimit'], $limitOffset);
-        while (!$objFWUser->objGroup->EOF) {
+        $objGroup = $objFWUser->objGroup->getGroups($filter, array($orderBy => $orderDirection), null, $_CONFIG['corePagingLimit'], $limitOffset);
+        while (!$objGroup->EOF) {
             $this->_objTpl->setVariable(array(
                 'ACCESS_ROW_CLASS_ID'           => $rowNr % 2 ? 1 : 2,
-                'ACCESS_GROUP_STATUS_IMG'       => $objFWUser->objGroup->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
-                'ACCESS_GRoUP_STATUS'           => $objFWUser->objGroup->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_ACTIVE'] : $_ARRAYLANG['TXT_ACCESS_INACTIVE'],
-                'ACCESS_GROUP_NAME'             => $objFWUser->objGroup->getName(),
-                'ACCESS_GROUP_NAME_ESCAPED'     => urlencode($objFWUser->objGroup->getName()),
-                'ACCESS_GROUP_DESCRIPTION'      => $objFWUser->objGroup->getDescription(),
-                'ACCESS_GROUP_TYPE'             => $objFWUser->objGroup->getType(),
-                'ACCESS_GROUP_USER_COUNT'       => $objFWUser->objGroup->getUserCount(),
-                'ACCESS_SHOW_USERS_OF_GROUP'    => sprintf($_ARRAYLANG['TXT_ACCESS_SHOW_USERS_OF_GROUP'], htmlentities($objFWUser->objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)),
-                'ACCESS_GROUP_ID'               => $objFWUser->objGroup->getId(),
-                'ACCESS_DELETE_GROUP'           => sprintf($_ARRAYLANG['TXT_ACCESS_DELETE_GROUP'], htmlentities($objFWUser->objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)),
-                'ACCESS_CHANGE_GROUP_STATUS_MSG'    => sprintf($objFWUser->objGroup->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_DEACTIVATE_GROUP'] : $_ARRAYLANG['TXT_ACCESS_ACTIVATE_GROUP'], htmlentities($objFWUser->objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET))
+                'ACCESS_GROUP_STATUS_IMG'       => $objGroup->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
+                'ACCESS_GRoUP_STATUS'           => $objGroup->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_ACTIVE'] : $_ARRAYLANG['TXT_ACCESS_INACTIVE'],
+                'ACCESS_GROUP_NAME'             => $objGroup->getName(),
+                'ACCESS_GROUP_NAME_ESCAPED'     => urlencode($objGroup->getName()),
+                'ACCESS_GROUP_DESCRIPTION'      => $objGroup->getDescription(),
+                'ACCESS_GROUP_TYPE'             => $objGroup->getType(),
+                'ACCESS_GROUP_USER_COUNT'       => $objGroup->getUserCount(),
+                'ACCESS_SHOW_USERS_OF_GROUP'    => sprintf($_ARRAYLANG['TXT_ACCESS_SHOW_USERS_OF_GROUP'], htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)),
+                'ACCESS_GROUP_ID'               => $objGroup->getId(),
+                'ACCESS_DELETE_GROUP'           => sprintf($_ARRAYLANG['TXT_ACCESS_DELETE_GROUP'], htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)),
+                'ACCESS_CHANGE_GROUP_STATUS_MSG'    => sprintf($objGroup->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_DEACTIVATE_GROUP'] : $_ARRAYLANG['TXT_ACCESS_ACTIVATE_GROUP'], htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET))
             ));
 
             $this->_objTpl->parse('access_group_list');
             $rowNr++;
 
-            $objFWUser->objGroup->next();
+            $objGroup->next();
         }
 
-        if ($objFWUser->objGroup->getGroupCount() > $_CONFIG['corePagingLimit']) {
-            $this->_objTpl->setVariable('ACCESS_GROUP_PAGING', getPaging($objFWUser->objGroup->getGroupCount($filter), $limitOffset, '&amp;cmd=access&amp;act=group&amp;sort='.$orderDirection.'&amp;by='.$orderBy.'&amp;group_type_filter='.$groupTypeFilter, $_ARRAYLANG['TXT_ACCESS_GROUPS']));
+        if ($objGroup->getGroupCount() > $_CONFIG['corePagingLimit']) {
+            $this->_objTpl->setVariable('ACCESS_GROUP_PAGING', getPaging($objGroup->getGroupCount($filter), $limitOffset, '&amp;cmd=access&amp;act=group&amp;sort='.$orderDirection.'&amp;by='.$orderBy.'&amp;group_type_filter='.$groupTypeFilter, $_ARRAYLANG['TXT_ACCESS_GROUPS']));
         }
 
         $this->_objTpl->parse('module_access_group_list');
@@ -343,35 +343,35 @@ class AccessManager extends AccessLib
         $scrollPos = 0;
         $objFWUser = FWUser::getFWUserObject();
 
-        $objFWUser->objGroup->load(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
+        $objGroup = $objFWUser->objGroup->getGroup(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
         if (isset($_POST['access_save_group']) || isset($_POST['access_change_protection'])) {
             // only administrators are allowed to modify a group
             if (!Permission::hasAllAccess()) {
                 Permission::noAccess();
             }
 
-            $objFWUser->objGroup->setName(!empty($_POST['access_group_name']) ? trim(contrexx_stripslashes($_POST['access_group_name'])) : '');
-            $objFWUser->objGroup->setDescription(!empty($_POST['access_group_description']) ? trim(contrexx_stripslashes($_POST['access_group_description'])) : '');
-            $objFWUser->objGroup->setActiveStatus(isset($_POST['access_group_status']) ? (bool)$_POST['access_group_status'] : false);
-            $objFWUser->objGroup->setType(!empty($_POST['access_group_type']) ? $_POST['access_group_type'] : '');
-            $objFWUser->objGroup->setUsers(isset($_POST['access_group_associated_users']) && is_array($_POST['access_group_associated_users']) ? $_POST['access_group_associated_users'] : array());
-            $objFWUser->objGroup->setStaticPermissionIds(isset($_POST['access_area_id']) && is_array($_POST['access_area_id']) ? $_POST['access_area_id'] : array());
-            $objFWUser->objGroup->setDynamicPermissionIds(isset($_POST['access_webpage_access_id']) && is_array($_POST['access_webpage_access_id']) ? $_POST['access_webpage_access_id'] : array());
+            $objGroup->setName(!empty($_POST['access_group_name']) ? trim(contrexx_stripslashes($_POST['access_group_name'])) : '');
+            $objGroup->setDescription(!empty($_POST['access_group_description']) ? trim(contrexx_stripslashes($_POST['access_group_description'])) : '');
+            $objGroup->setActiveStatus(isset($_POST['access_group_status']) ? (bool)$_POST['access_group_status'] : false);
+            $objGroup->setType(!empty($_POST['access_group_type']) ? $_POST['access_group_type'] : '');
+            $objGroup->setUsers(isset($_POST['access_group_associated_users']) && is_array($_POST['access_group_associated_users']) ? $_POST['access_group_associated_users'] : array());
+            $objGroup->setStaticPermissionIds(isset($_POST['access_area_id']) && is_array($_POST['access_area_id']) ? $_POST['access_area_id'] : array());
+            $objGroup->setDynamicPermissionIds(isset($_POST['access_webpage_access_id']) && is_array($_POST['access_webpage_access_id']) ? $_POST['access_webpage_access_id'] : array());
 
             if (isset($_POST['access_save_group'])) {
-                if ($objFWUser->objGroup->store()) {
+                if ($objGroup->store()) {
                     $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_GROUP_STORED_SUCCESSFULLY'];
                     $this->_groupList();
                     return;
                 } else {
-                    $this->arrStatusMsg['error'][] = $objFWUser->objGroup->getErrorMsg();
+                    $this->arrStatusMsg['error'][] = $objGroup->getErrorMsg();
                 }
             } else {
                 $changeProtection = true;
 
                 $pageId = isset($_GET['pageId']) ? intval($_GET['pageId']) : 0;
                 $protect = isset($_GET['protect']) && $_GET['protect'] == 'false' ? false : true;
-                if (!$this->_changePageProtection($pageId, $protect, $objFWUser->objGroup->getType())) {
+                if (!$this->_changePageProtection($pageId, $protect, $objGroup->getType())) {
                     $this->arrStatusMsg['error'][] = $protect ? $_ARRAYLANG['TXT_ACCESS_FAILED_PROTECT_PAGE'] : $_ARRAYLANG['TXT_ACCESS_FAILED_RELEASE_PAGE'];
                 }
             }
@@ -380,15 +380,15 @@ class AccessManager extends AccessLib
                 $scrollPos = intval($_GET['scrollPos']);
             }
         } elseif (isset($_POST['access_create_group'])) {
-            $objFWUser->objGroup->setType(isset($_POST['access_group_type']) ? $_POST['access_group_type'] : '');
+            $objGroup->setType(isset($_POST['access_group_type']) ? $_POST['access_group_type'] : '');
         }
 
         $this->_objTpl->addBlockfile('ACCESS_GROUP_TEMPLATE', 'module_access_group_modify', 'module_access_group_modify.html');
-        $this->_pageTitle = $objFWUser->objGroup->getId() ? $_ARRAYLANG['TXT_ACCESS_MODIFY_GROUP'] : $_ARRAYLANG['TXT_ACCESS_CREATE_NEW_USER_GROUP'];
+        $this->_pageTitle = $objGroup->getId() ? $_ARRAYLANG['TXT_ACCESS_MODIFY_GROUP'] : $_ARRAYLANG['TXT_ACCESS_CREATE_NEW_USER_GROUP'];
 
         $objUser = $objFWUser->objUser->getUsers(null, null, array('username' => 'asc'), array('id', 'username', 'firstname', 'lastname'));
         if ($objUser) {
-            $arrGroupUsers = $objFWUser->objGroup->getAssociatedUserIds();
+            $arrGroupUsers = $objGroup->getAssociatedUserIds();
             while (!$objUser->EOF) {
                 $arrUsers[] = $objUser->getId();
                 $objUser->next();
@@ -442,17 +442,17 @@ class AccessManager extends AccessLib
             $this->_objTpl->setGlobalVariable('ACCESS_WEBPAGE_ID', $arrPage['catid']);
 
             $this->_objTpl->setVariable(array(
-                'ACCESS_WEBPAGE_ACCESS_ID'  => $arrPage[$objFWUser->objGroup->getType().'_access_id'],
+                'ACCESS_WEBPAGE_ACCESS_ID'  => $arrPage[$objGroup->getType().'_access_id'],
                 'ACCESS_WEBPAGE_STYLE_NR'   => $rowNr % 2 + 1,
                 'ACCESS_WEBPAGE_TEXT_INDENT'=> $arrPage['level'] * 20,
                 'ACCESS_WEBPAGE_NAME'       => htmlentities($arrPage['catname'], ENT_QUOTES, CONTREXX_CHARSET),
                 'ACCESS_WEBPAGE_LINK'       => ASCMS_PATH_OFFSET.'/index.php'.$link,
-                'ACCESS_CLICK_TO_CHANGE_PROTECTION_TXT' => $objFWUser->objGroup->getType() == 'backend' ? ($arrPage[$objFWUser->objGroup->getType().'_access_id'] > 0 ? $_ARRAYLANG['TXT_ACCESS_CLICK_UNLOCK_PAGE_MODIF'] : $_ARRAYLANG['TXT_ACCESS_CLICK_LOCK_PAGE_MODIFY']) : ($arrPage[$objFWUser->objGroup->getType().'_access_id'] > 0 ? $_ARRAYLANG['TXT_ACCESS_CLICK_UNLOCK_PAGE_ACCESS'] : $_ARRAYLANG['TXT_ACCESS_CLICK_LOCK_PAGE_ACCESS'])
+                'ACCESS_CLICK_TO_CHANGE_PROTECTION_TXT' => $objGroup->getType() == 'backend' ? ($arrPage[$objGroup->getType().'_access_id'] > 0 ? $_ARRAYLANG['TXT_ACCESS_CLICK_UNLOCK_PAGE_MODIF'] : $_ARRAYLANG['TXT_ACCESS_CLICK_LOCK_PAGE_MODIFY']) : ($arrPage[$objGroup->getType().'_access_id'] > 0 ? $_ARRAYLANG['TXT_ACCESS_CLICK_UNLOCK_PAGE_ACCESS'] : $_ARRAYLANG['TXT_ACCESS_CLICK_LOCK_PAGE_ACCESS'])
             ));
 
-            if ($arrPage[$objFWUser->objGroup->getType().'_access_id'] > 0) {
+            if ($arrPage[$objGroup->getType().'_access_id'] > 0) {
                 $this->_objTpl->setVariable(array(
-                    'ACCESS_WEBPAGE_ALLOWED'    => in_array($arrPage[$objFWUser->objGroup->getType().'_access_id'], $objFWUser->objGroup->getDynamicPermissionIds()) ? 'checked="checked"' : '',
+                    'ACCESS_WEBPAGE_ALLOWED'    => in_array($arrPage[$objGroup->getType().'_access_id'], $objGroup->getDynamicPermissionIds()) ? 'checked="checked"' : '',
                     'ACCESS_WEBPAGE_STATUS_IMG' => 'lock_closed.gif',
                     'ACCESS_WEBPAGE_STATUS_TXT' => $_ARRAYLANG['TXT_ACCESS_PROTECTED'],
                     'ACCESS_WEBPAGE_STATUS'     => 1
@@ -481,7 +481,7 @@ class AccessManager extends AccessLib
                 `type`,
                 `parent_area_id`
             FROM `".DBPREFIX."backend_areas`
-            WHERE `is_active` = 1 AND (`scope` = '".$objFWUser->objGroup->getType()."' OR `scope` = 'global')
+            WHERE `is_active` = 1 AND (`scope` = '".$objGroup->getType()."' OR `scope` = 'global')
             ORDER BY `parent_area_id`, `order_id`
             ");
         if ($objResult) {
@@ -492,7 +492,7 @@ class AccessManager extends AccessLib
                     'status'    => $objResult->fields['is_active'],
                     'type'      => $objResult->fields['type'],
                     'group_id'  => $objResult->fields['parent_area_id'],
-                    'allowed'   => in_array($objResult->fields['access_id'], $objFWUser->objGroup->getStaticPermissionIds()) ? 1 : 0
+                    'allowed'   => in_array($objResult->fields['access_id'], $objGroup->getStaticPermissionIds()) ? 1 : 0
                 );
                 $objResult->MoveNext();
             }
@@ -548,15 +548,15 @@ class AccessManager extends AccessLib
         ));
 
         $this->_objTpl->setVariable(array(
-            'ACCESS_GROUP_ID'                   => $objFWUser->objGroup->getId(),
-            'ACCESS_GROUP_NAME'                 => htmlentities($objFWUser->objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET),
-            'ACCESS_GROUP_DESCRIPTION'          => htmlentities($objFWUser->objGroup->getDescription(), ENT_QUOTES, CONTREXX_CHARSET),
-            'ACCESS_GROUP_STATUS'               => $objFWUser->objGroup->getActiveStatus() ? 'checked="checked"' : '',
-            'ACCESS_GROUP_TYPE'                 => $objFWUser->objGroup->getType(),
+            'ACCESS_GROUP_ID'                   => $objGroup->getId(),
+            'ACCESS_GROUP_NAME'                 => htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET),
+            'ACCESS_GROUP_DESCRIPTION'          => htmlentities($objGroup->getDescription(), ENT_QUOTES, CONTREXX_CHARSET),
+            'ACCESS_GROUP_STATUS'               => $objGroup->getActiveStatus() ? 'checked="checked"' : '',
+            'ACCESS_GROUP_TYPE'                 => $objGroup->getType(),
             'ACCESS_GROUP_NOT_ASSOCIATED_USERS' => $notAssociatedUsers,
             'ACCESS_GROUP_ASSOCIATED_USERS'     => $associatedUsers,
-            'ACCESS_PROTECT_PAGE_TXT'           => $objFWUser->objGroup->getType() == 'backend' ? $_ARRAYLANG['TXT_ACCESS_CONFIRM_LOCK_PAGE'] : $_ARRAYLANG['TXT_ACCESS_CONFIRM_PROTECT_PAGE'],
-            'ACCESS_UNPROTECT_PAGE_TXT'         => $objFWUser->objGroup->getType() == 'backend' ? $_ARRAYLANG['TXT_ACCESS_CONFIRM_UNLOCK_PAGE'] : $_ARRAYLANG['TXT_ACCESS_CONFIRM_UNPROTECT_PAGE'],
+            'ACCESS_PROTECT_PAGE_TXT'           => $objGroup->getType() == 'backend' ? $_ARRAYLANG['TXT_ACCESS_CONFIRM_LOCK_PAGE'] : $_ARRAYLANG['TXT_ACCESS_CONFIRM_PROTECT_PAGE'],
+            'ACCESS_UNPROTECT_PAGE_TXT'         => $objGroup->getType() == 'backend' ? $_ARRAYLANG['TXT_ACCESS_CONFIRM_UNLOCK_PAGE'] : $_ARRAYLANG['TXT_ACCESS_CONFIRM_UNPROTECT_PAGE'],
             'ACCESS_GENERAL_TAB_MENU_STATUS'    => !$changeProtection ? 'class="active"' : '',
             'ACCESS_GENERAL_TAB_STATUS'         => !$changeProtection ? 'block' : 'none',
             'ACCESS_PERMISSION_TAB_MENU_STATUS' => $changeProtection ? 'class="active"' : '',
@@ -631,13 +631,13 @@ class AccessManager extends AccessLib
 
         $id = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
         $objFWUser = FWUser::getFWUserObject();
-        $objFWUser->objGroup->load($id);
-        if ($objFWUser->objGroup->getId()) {
-            $objFWUser->objGroup->setActiveStatus(!$objFWUser->objGroup->getActiveStatus());
-            if ($objFWUser->objGroup->store()) {
-                $this->arrStatusMsg['ok'][] = sprintf($objFWUser->objGroup->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_GROUP_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_ACCESS_GROUP_DEACTIVATED_SUCCESSFULLY'], $objFWUser->objGroup->getName());
+        $objGroup = $objFWUser->objGroup->getGroup($id);
+        if ($objGroup->getId()) {
+            $objGroup->setActiveStatus(!$objGroup->getActiveStatus());
+            if ($objGroup->store()) {
+                $this->arrStatusMsg['ok'][] = sprintf($objGroup->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_GROUP_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_ACCESS_GROUP_DEACTIVATED_SUCCESSFULLY'], $objGroup->getName());
             } else {
-                $this->arrStatusMsg['error'][] = $objFWUser->objGroup->getErrorMsg();
+                $this->arrStatusMsg['error'][] = $objGroup->getErrorMsg();
             }
         } else {
             $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NO_GROUP_WITH_ID'], $id);
@@ -657,12 +657,12 @@ class AccessManager extends AccessLib
 
         $id = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
         $objFWUser = FWUser::getFWUserObject();
-        $objFWUser->objGroup->load($id);
-        if ($objFWUser->objGroup->getId()) {
-            if ($objFWUser->objGroup->delete()) {
-                $this->arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_GROUP_SUCCESSFULLY_DELETED'], $objFWUser->objGroup->getName());
+        $objGroup = $objFWUser->objGroup->getGroup($id);
+        if ($objGroup->getId()) {
+            if ($objGroup->delete()) {
+                $this->arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_GROUP_SUCCESSFULLY_DELETED'], $objGroup->getName());
             } else {
-                $this->arrStatusMsg['error'][] = $objFWUser->objGroup->getErrorMsg();
+                $this->arrStatusMsg['error'][] = $objGroup->getErrorMsg();
             }
         } else {
             $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NO_GROUP_WITH_ID'], $id);
@@ -713,8 +713,8 @@ class AccessManager extends AccessLib
 
         $this->parseLetterIndexList('index.php?cmd=access&amp;act=user&amp;groupId='.$groupId.'&amp;user_status_filter='.$userStatusFilter.'&amp;user_role_filter='.$userRoleFilter, 'username_filter', $usernameFilter);
 
-        $objFWUser->objGroup->load($groupId);
-        $userCount = $objFWUser->objGroup->getUserCount();
+        $objGroup = $objFWUser->objGroup->getGroup($groupId);
+        $userCount = $objGroup->getUserCount();
         $userFilter = array();
         if ($groupId) {
             $userFilter['group_id'] = $groupId;
@@ -807,7 +807,7 @@ class AccessManager extends AccessLib
             $this->_objTpl->parse('access_has_users');
             $this->_objTpl->hideBlock('access_no_user');
         } else {
-            $this->_objTpl->setVariable('ACCESS_STATUS_MSG', count($search) || $usernameFilter != '' ? $_ARRAYLANG['TXT_ACCESS_NO_USERS_FOUND'] : sprintf($_ARRAYLANG['TXT_ACCESS_NO_USER_IN_GROUP'], '&laquo;'.htmlentities($objFWUser->objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'&raquo;'));
+            $this->_objTpl->setVariable('ACCESS_STATUS_MSG', count($search) || $usernameFilter != '' ? $_ARRAYLANG['TXT_ACCESS_NO_USERS_FOUND'] : sprintf($_ARRAYLANG['TXT_ACCESS_NO_USER_IN_GROUP'], '&laquo;'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'&raquo;'));
             $this->_objTpl->parse('access_no_user');
             $this->_objTpl->hideBlock('access_has_users');
         }
@@ -963,12 +963,12 @@ class AccessManager extends AccessLib
         }
 
         if (Permission::hasAllAccess()) {
-            $objFWUser->objGroup->loadGroups();
-            while (!$objFWUser->objGroup->EOF) {
-                $var = in_array($objFWUser->objGroup->getId(), $objUser->getAssociatedGroupIds()) ? 'associatedGroups' : 'notAssociatedGroups';
-                $$var .= "<option value=\"".$objFWUser->objGroup->getId()."\">".htmlentities($objFWUser->objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)." [".$objFWUser->objGroup->getType()."]</option>\n";
+            $objGroup = $objFWUser->objGroup->getGroups();
+            while (!$objGroup->EOF) {
+                $var = in_array($objGroup->getId(), $objUser->getAssociatedGroupIds()) ? 'associatedGroups' : 'notAssociatedGroups';
+                $$var .= "<option value=\"".$objGroup->getId()."\">".htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)." [".$objGroup->getType()."]</option>\n";
 
-                $objFWUser->objGroup->next();
+                $objGroup->next();
             }
 
             $this->_objTpl->touchBlock('access_profile_group_assignment');
