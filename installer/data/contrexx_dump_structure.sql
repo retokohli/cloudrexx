@@ -862,7 +862,7 @@ CREATE TABLE `contrexx_module_downloads_cat_lang` (
   KEY `category` (`category`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_cat_locales` (
-  `loc_id` int(11) NOT NULL,
+  `loc_id` int(11) unsigned NOT NULL auto_increment,
   `loc_lang` int(11) NOT NULL default '0',
   `loc_cat` int(11) NOT NULL default '0',
   `loc_name` varchar(255) NOT NULL default '',
@@ -870,16 +870,16 @@ CREATE TABLE `contrexx_module_downloads_cat_locales` (
   PRIMARY KEY  (`loc_id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_categories` (
-  `category_id` int(11) NOT NULL,
+  `category_id` int(11) unsigned NOT NULL auto_increment,
   `category_img` varchar(255) NOT NULL default '',
   `category_author` varchar(255) NOT NULL default '',
   `category_created` datetime NOT NULL default '0000-00-00 00:00:00',
   `category_state` tinyint(1) NOT NULL default '0',
-  `category_order` int(3) NOT NULL default '0',
+  `category_order` int(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (`category_id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_files` (
-  `file_id` int(11) NOT NULL,
+  `file_id` int(11) unsigned NOT NULL auto_increment,
   `file_name` varchar(255) NOT NULL default '',
   `file_type` varchar(255) NOT NULL default '',
   `file_size` varchar(255) NOT NULL default '',
@@ -904,7 +904,7 @@ CREATE TABLE `contrexx_module_downloads_files_lang` (
   KEY `file` (`file`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_files_locales` (
-  `loc_id` int(11) NOT NULL,
+  `loc_id` int(11) unsigned NOT NULL auto_increment,
   `loc_lang` int(11) NOT NULL default '0',
   `loc_file` int(11) NOT NULL default '0',
   `loc_name` varchar(255) NOT NULL default '',
