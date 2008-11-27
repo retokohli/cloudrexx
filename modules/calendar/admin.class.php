@@ -75,7 +75,6 @@ class calendarManager extends calendarLibrary
 
         switch ($_REQUEST['act']) {
             case 'event':
-                $this->_objTpl->loadTemplateFile('module_calendar_note_show.html');
                 $this->showEvent(intval($_GET['id']));
                 break;
 
@@ -559,6 +558,8 @@ class calendarManager extends calendarLibrary
     function showEvent($id)
     {
         global $_ARRAYLANG, $_CORELANG;
+
+        $this->_objTpl->loadTemplateFile('module_calendar_note_show.html');
 
         // get day note
         $this->getNoteData($id, 'show', 3);
@@ -1435,7 +1436,7 @@ class calendarManager extends calendarLibrary
                     }
 
                     if ($registrationAdresser != 0) {
-                        $this->_sendRegistration($noteId);
+                        //$this->_sendRegistration($noteId);
                     }
                 }
 
