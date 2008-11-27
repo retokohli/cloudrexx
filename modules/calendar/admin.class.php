@@ -53,12 +53,11 @@ class calendarManager extends calendarLibrary
         $this->pageTitle = $_ARRAYLANG['TXT_CALENDAR'];
 
         $objTemplate->setVariable("CONTENT_NAVIGATION","
-            <a href='?cmd=calendar".$this->mandateLink."'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW']." </a>
-            <a href='?cmd=calendar".$this->mandateLink."&amp;act=new'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_ENTRY']." </a>
-            <a href='?cmd=calendar".$this->mandateLink."&amp;act=cat'> ".$_ARRAYLANG['TXT_CALENDAR_CATEGORIES']." </a>
-            <a href='?cmd=calendar".$this->mandateLink."&amp;act=placeholder'>".$_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER']."</a>
-            <a href='?cmd=calendar".$this->mandateLink."&amp;act=settings'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS']." </a>");
-
+            <a href='index.php?cmd=calendar".$this->mandateLink."'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW']." </a>
+            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=new'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_ENTRY']." </a>
+            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=cat'> ".$_ARRAYLANG['TXT_CALENDAR_CATEGORIES']." </a>
+            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=placeholder'>".$_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER']."</a>
+            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=settings'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS']." </a>");
         $this->showOnlyActive = false;
     }
 
@@ -109,8 +108,7 @@ class calendarManager extends calendarLibrary
 
             case 'saveNew':
                 $id = $this->writeNote('');
-                header("Location: ?cmd=calendar".$this->mandateLink."&act=event&id=$id");
-
+                header("Location: index.php?cmd=calendar".$this->mandateLink."&act=event&id=$id");
                 exit;
                 break;
 
@@ -136,7 +134,7 @@ class calendarManager extends calendarLibrary
 
             case 'saveEdited':
                 $id = $this->writeNote(intval($_POST['id']));
-                header("Location: ?cmd=calendar".$this->mandateLink);
+                header("Location: index.php?cmd=calendar".$this->mandateLink);
                 exit;
                 break;
 
@@ -148,7 +146,7 @@ class calendarManager extends calendarLibrary
             case 'saveSettings':
                 $this->saveSettings();
                 $this->setStdCat();
-                header("Location: ?cmd=calendar".$this->mandateLink."&act=settings");
+                header("Location: index.php?cmd=calendar".$this->mandateLink."&act=settings");
                 exit;
                 break;
 
@@ -178,16 +176,13 @@ class calendarManager extends calendarLibrary
                 $this->showOverview();
         }
 
-
         $objTemplate->setVariable(array(
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
             'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
             'ADMIN_CONTENT'             => $this->_objTpl->get(),
             'CONTENT_TITLE'             => $this->pageTitle,
         ));
-
     }
-
 
 
     /**
@@ -552,9 +547,9 @@ class calendarManager extends calendarLibrary
         }
 
         if ($this->mandate == 1) {
-            header("LOCATION: ?cmd=calendar".$this->mandateLink."");
+            header("Location: index.php?cmd=calendar".$this->mandateLink."");
         } else {
-            header("LOCATION: ?cmd=calendar".$this->mandateLink."".$this->mandate);
+            header("Location: index.php?cmd=calendar".$this->mandateLink."".$this->mandate);
         }
         exit;
     }
