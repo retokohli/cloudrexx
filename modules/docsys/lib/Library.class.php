@@ -32,15 +32,17 @@ class docSysLibrary
     * @param     string     $selectedOption
     * @return    string     $modulesMenu
     */
-    function getCategoryMenu($langId, $selectedCatId="")
+    function getCategoryMenu($langId, $selectedCatId="", $cmdName)
     {
         global $objDatabase;
 
         $strMenu = "";
+		!$cmdName ? $query_where = '' : $query_where = " AND cmd='".$cmdName."'";
+		
         $query="SELECT catid,
                        name
                   FROM ".DBPREFIX."module_docsys".MODULE_INDEX."_categories
-                 WHERE lang=".$langId."
+                 WHERE lang=".$langId.$query_where."
               ORDER BY catid";
 
         $objResult = $objDatabase->Execute($query);
