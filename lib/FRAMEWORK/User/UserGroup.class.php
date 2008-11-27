@@ -69,12 +69,9 @@ class UserGroup {
     {
         $objGroup = clone $this;
         $objGroup->arrCache = &$this->arrCache;
+        $objGroup->loadGroups($filter, $arrSort, $arrAttributes, $limit, $offset);
 
-        if ($objGroup->loadGroups($filter, $arrSort, $arrAttributes, $limit, $offset)) {
-            return $objGroup;
-        } else {
-            return false;
-        }
+        return $objGroup;
     }
 
     private function loadGroups($filter = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null)
@@ -169,12 +166,9 @@ class UserGroup {
     {
         $objGroup = clone $this;
         $objGroup->arrCache = &$this->arrCache;
+        $objGroup->load($id);
 
-        if ($objGroup->load($id)) {
-            return $objGroup;
-        } else {
-            return false;
-        }
+        return $objGroup;
     }
 
     private function load($id)
