@@ -77,7 +77,7 @@ class UserGroup {
         }
     }
 
-    function loadGroups($filter = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null)
+    private function loadGroups($filter = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null)
     {
         global $objDatabase;
 
@@ -177,7 +177,7 @@ class UserGroup {
         }
     }
 
-    function load($id)
+    private function load($id)
     {
         if ($id) {
             if (!isset($this->arrCache[$id])) {
@@ -267,7 +267,7 @@ class UserGroup {
      * @global array
      * @return boolean
      */
-    function store()
+    public function store()
     {
         global $objDatabase, $_CORELANG;
 
@@ -395,7 +395,7 @@ class UserGroup {
         $this->EOF = true;
     }
 
-    function delete()
+    public function delete()
     {
         global $objDatabase, $_CORELANG;
 
@@ -424,7 +424,7 @@ class UserGroup {
      * Load next group
      *
      */
-    function next()
+    public function next()
     {
         if (next($this->arrLoadedGroups) === false || !$this->load(key($this->arrLoadedGroups))) {
             $this->EOF = true;
@@ -432,22 +432,22 @@ class UserGroup {
     }
 
 
-    function setName($name)
+    public function setName($name)
     {
         $this->name = $name;
     }
 
-    function setDescription($description)
+    public function setDescription($description)
     {
         $this->description = $description;
     }
 
-    function setActiveStatus($status)
+    public function setActiveStatus($status)
     {
         $this->is_active = (bool)$status;
     }
 
-    function setType($type)
+    public function setType($type)
     {
         $this->type = in_array($type, $this->arrTypes) ? $type : $this->defaultType;
     }
@@ -459,7 +459,7 @@ class UserGroup {
      * @see User, User::getUser()
      * @return void
      */
-    function setUsers($arrUsers)
+    public function setUsers($arrUsers)
     {
         $objFWUser = FWUser::getFWUserObject();
         $this->arrUsers = array();
@@ -471,22 +471,22 @@ class UserGroup {
         }
     }
 
-    function setDynamicPermissionIds($arrPermissionIds)
+    public function setDynamicPermissionIds($arrPermissionIds)
     {
         $this->arrDynamicPermissions = array_map('intval', $arrPermissionIds);
     }
 
-    function setStaticPermissionIds($arrPermissionIds)
+    public function setStaticPermissionIds($arrPermissionIds)
     {
         $this->arrStaticPermissions = array_map('intval', $arrPermissionIds);
     }
 
-    function getLoadedGroupCount()
+    public function getLoadedGroupCount()
     {
         return count($this->arrLoadedGroups);
     }
 
-    function getGroupCount($arrFilter = null)
+    public function getGroupCount($arrFilter = null)
     {
         global $objDatabase;
 
@@ -506,7 +506,7 @@ class UserGroup {
         }
     }
 
-    function getUserCount($onlyActive = false)
+    public function getUserCount($onlyActive = false)
     {
         global $objDatabase;
 
@@ -520,7 +520,7 @@ class UserGroup {
         }
     }
 
-    function getAssociatedUserIds()
+    public function getAssociatedUserIds()
     {
         if (!isset($this->arrUsers)) {
             $this->arrUsers = $this->loadUsers();
@@ -528,7 +528,7 @@ class UserGroup {
         return $this->arrUsers;
     }
 
-    function getDynamicPermissionIds()
+    public function getDynamicPermissionIds()
     {
         if (!isset($this->arrDynamicPermissions)) {
             $this->arrDynamicPermissions = $this->loadDynamicPermissions();
@@ -536,7 +536,7 @@ class UserGroup {
         return $this->arrDynamicPermissions;
     }
 
-    function getStaticPermissionIds()
+    public function getStaticPermissionIds()
     {
         if (!isset($this->arrStaticPermissions)) {
             $this->arrStaticPermissions = $this->loadStaticPermissions();
@@ -544,37 +544,37 @@ class UserGroup {
         return $this->arrStaticPermissions;
     }
 
-    function getId()
+    public function getId()
     {
         return $this->id;
     }
 
-    function getName()
+    public function getName()
     {
         return $this->name;
     }
 
-    function getDescription()
+    public function getDescription()
     {
         return $this->description;
     }
 
-    function getActiveStatus()
+    public function getActiveStatus()
     {
         return $this->is_active;
     }
 
-    function getType()
+    public function getType()
     {
         return $this->type;
     }
 
-    function getTypes()
+    public function getTypes()
     {
         return $this->arrTypes;
     }
 
-    function getErrorMsg()
+    public function getErrorMsg()
     {
         return $this->error_msg;
     }

@@ -150,14 +150,14 @@ class Access extends AccessLib
         }
 
         $objFWUser = FWUser::getFWUserObject();
-        $objFWUser->objGroup->load($groupId);
-        if ($objFWUser->objGroup->getType() == 'frontend' && $objFWUser->objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, array('username' => 'asc'), null, $_CONFIG['corePagingLimit'], $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
+        $objGroup = $objFWUser->objGroup->getGroup($groupId);
+        if ($objGroup->getType() == 'frontend' && $objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, array('username' => 'asc'), null, $_CONFIG['corePagingLimit'], $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
 
             if ($userCount > $_CONFIG['corePagingLimit']) {
                 $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&amp;section=access&amp;cmd=members&amp;groupId=".$groupId."&amp;search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&amp;username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
             }
 
-            $this->_objTpl->setVariable('ACCESS_GROUP_NAME', $objFWUser->objGroup->load($groupId) ? htmlentities($objFWUser->objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
+            $this->_objTpl->setVariable('ACCESS_GROUP_NAME', ($objGroup = $objFWUser->objGroup->getGroup($groupId)) ? htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
 
             $nr = 0;
             while (!$objUser->EOF) {
