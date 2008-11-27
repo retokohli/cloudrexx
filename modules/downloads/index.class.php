@@ -1,8 +1,8 @@
 <?php
-if (1) {
+if (0) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
-    $objDatabase->debug = 99;
+    $objDatabase->debug = 1;
 } else {
     error_reporting(0);
     ini_set('display_errors', 0);
@@ -21,7 +21,6 @@ if (1) {
  * Includes
  */
 require_once ASCMS_MODULE_PATH.'/downloads/downloadsLib.class.php';
-require_once ASCMS_CORE_PATH.'/usermanagement.class.php';
 
 $_ARRAYLANG['TXT_DOWNLOADS']            = "Downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_SEARCH']     = "Suche";
@@ -65,25 +64,13 @@ class Downloads extends DownloadsLibrary
     {
         global $_LANGID;
 
-
-
         DownloadsLibrary::__constructor();
 
         $this->_intLanguageId = intval($_LANGID);
-        $this->_intCurrentUserId = 0;
 
         $this->objTemplate = new HTML_Template_Sigma('.');
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($strPageContent);
-    }
-
-
-    /**
-     * Must be called before the user-id is accessed. Tries to load the user-id from the session.
-     *
-     */
-    function initUserId() {
-        $this->_intCurrentUserId = (isset($_SESSION['auth']['userid'])) ? intval($_SESSION['auth']['userid']) : 0;
     }
 
 
@@ -101,12 +88,12 @@ class Downloads extends DownloadsLibrary
             case "file":
                 $this->GetFile();
                 break;
-            case 'user';
+            /*case 'user';
                 $this->showUserInfo();
                 break;
             case 'check';
                 $this->checkUser();
-                break;
+                break;*/
             default:
                 $this->listDownloads();
                 break;
@@ -125,7 +112,7 @@ class Downloads extends DownloadsLibrary
      */
     function listDownloads()
     {
-        global $_ARRAYLANG, $objDatabase, $_LANGID, $objPerm, $objAuth;
+        global $_ARRAYLANG, $objDatabase, $_LANGID;
 
         // Request
         // ---------------------------------------------------------------------
@@ -232,8 +219,8 @@ class Downloads extends DownloadsLibrary
         }
 
         $objResult = $objDatabase->Execute($query);
-        if ($objResult) {
-            $this->objTemplate->setCurrentBlock('Files_Row');
+        if ($objResult && $objResult->RecordCount()) {
+            $objFWUser = FWUser::getFWUserObject();
             $FilesJS = '';
             $openendJS = '';
             while (!$objResult->EOF) {
@@ -261,15 +248,11 @@ class Downloads extends DownloadsLibrary
                 if ($fileInfo["file_protected"]==0) {
                     $DonwlodLink = '<a href="index.php?section=downloads&cmd=file&id='.$fileInfo['file_source'].'" target="_blank">'.$this->_GetIconImage('download.gif').'</a>';
                 } else {
-                    if (!empty($objAuth)) {
-                        if ($objAuth->checkAuth()) {
-                            if ($objPerm->checkAccess($fileInfo["file_access_id"], 'dynamic')) {
-                                $DonwlodLink = '<a href="index.php?section=downloads&cmd=file&id='.$fileInfo['file_source'].'" target="_blank">'.$this->_GetIconImage('download.gif').'</a>';
-                            } else {
-                                $DonwlodLink = '<a href="index.php?section=downloads&cmd=user">'.$this->_GetIconImage('lock.gif').'</a>';
-                            }
+                    if ($objFWUser->objUser->login()) {
+                        if (Permission::checkAccess($fileInfo['file_access_id'], 'dynamic', true)) {
+                            $DonwlodLink = '<a href="index.php?section=downloads&cmd=file&id='.$fileInfo['file_source'].'" target="_blank">'.$this->_GetIconImage('download.gif').'</a>';
                         } else {
-                            $DonwlodLink = '<a href="index.php?section=login">'.$this->_GetIconImage('lock.gif').'</a>';
+                            $DonwlodLink = '<a href="index.php?section=downloads&cmd=user">'.$this->_GetIconImage('lock.gif').'</a>';
                         }
                     } else {
                         $DonwlodLink = '<a href="index.php?section=login">'.$this->_GetIconImage('lock.gif').'</a>';
@@ -278,163 +261,152 @@ class Downloads extends DownloadsLibrary
 
                 // TXT_DOWNLOADS_DOWNLOAD
                 if ($this->_arrConfig["design"]==0) {
-                    if ($objAuth!='') {
-                        if ($objAuth->checkAuth()) {
-                            if (!$objPerm->checkAccess($fileInfo["file_access_id"], 'dynamic')) {
-                                $DonwlodLink = '<a href="index.php?section=downloads&cmd=file&id='.$fileInfo['file_source'].'" target="_blank">'.$_ARRAYLANG["TXT_DOWNLOADS_DOWNLOAD"].'</a>';
-                            } else {
-                                $DonwlodLink = '<a href="index.php?section=login">'.$_ARRAYLANG["TXT_DOWNLOADS_LOGIN"].'</a>';
-                            }
-                        } else {
-                            $DonwlodLink = '<a href="index.php?section=login">'.$_ARRAYLANG["TXT_DOWNLOADS_LOGIN"].'</a>';
-                        }
+                if ($objFWUser->objUser->login()) {
+                    if (!Permission::checkAccess($fileInfo['file_access_id'], 'dynamic', true)) {
+                        $DonwlodLink = '<a href="index.php?section=downloads&cmd=file&id='.$fileInfo['file_source'].'" target="_blank">'.$_ARRAYLANG["TXT_DOWNLOADS_DOWNLOAD"].'</a>';
                     } else {
                         $DonwlodLink = '<a href="index.php?section=login">'.$_ARRAYLANG["TXT_DOWNLOADS_LOGIN"].'</a>';
                     }
+                } else {
+                    $DonwlodLink = '<a href="index.php?section=login">'.$_ARRAYLANG["TXT_DOWNLOADS_LOGIN"].'</a>';
                 }
-
-
-
-                $this->objTemplate->setVariable(array(
-                    'FILE_ID'                  => $fileInfo['file_id'],
-                    'FILE_NAME'                => $fileInfo['file_loc']['lang'][$_LANGID]["name"],
-                    'FILE_DESC'                => str_replace(chr(13), '<br />', $fileInfo['file_loc']['lang'][$_LANGID]["desc"]),
-                    'FILE_TYPE'                => $fileInfo['file_type'],
-                    'FILE_TYPE'                => $fileInfo['file_type'],
-                    'FILE_SIZE'                => ($fileInfo['file_size']/1000)." KB",
-                    'FILE_IMG'                 => $fileInfo['file_img'],
-                    'FILE_AUTHOR'              => $fileInfo['file_autor'],
-                    'FILE_CREATED'             => $fileInfo['file_created'],
-                    'FILE_LICENSE'             => $fileInfo['file_license'],
-                    'FILE_VERSION'             => $fileInfo['file_version'],
-                    'ICON_FILE'                => $FileIcon,
-                    'ICON_INFO'                => $this->_GetIconImage('info.gif',0,'info_'.$fileInfo['file_id']),
-                    'ICON_DOWNLOAD'            => $DonwlodLink,
-                    'TXT_DOWNLOADS_LICENSE'    => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
-                    'TXT_DOWNLOADS_VERSION'    => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
-                    'TXT_DOWNLOADS_SIZE'       => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
-                    'TXT_DOWNLOADS_SCREENSHOT' => $_ARRAYLANG['TXT_DOWNLOADS_SCREENSHOT'],
-                    'FILE_SCREEN'              => $FILE_SCREEN,
-
-                ));
-
-                $openendJS .= "opened[".$fileInfo['file_id']."] = false;
-
-                ";
-                $FilesJS .= "Download[".$fileInfo['file_id']."] = new fx.Height('DownlaodLayer_".$fileInfo['file_id']."',{duration:1000});
-
-                ";
-
-                $this->objTemplate->parse('Files_Row');
-                $objResult->MoveNext();
             }
 
-            $DOWNLOADS_JS = "
-                <script type=\"text/javascript\" src=\"lib/javascript/prototype.lite.js\"></script>
-                <script type=\"text/javascript\" src=\"lib/javascript/moo.fx.js\"></script>
-                <script type=\"text/javascript\">
-                <!--
-                opened = new Array()
-                Download = new Array();
-                ".$openendJS."
-                window.onload = function() {
-                    ".$FilesJS."
-                };
 
-                function toggelopen(Obj) {
-                    if (opened[Obj]==false) {
-                        Download[Obj].custom(24,180);
-                        opened[Obj]=true;
-                        document.getElementById('info_'+Obj).src = '".ASCMS_MODULE_WEB_PATH."/downloads/images/icons/".$this->_arrConfig["design"]."/info_act.gif';
-                    } else {
-                        Download[Obj].custom(180,24);
-                        opened[Obj]=false;
-                        document.getElementById('info_'+Obj).src = '".ASCMS_MODULE_WEB_PATH."/downloads/images/icons/".$this->_arrConfig["design"]."/info.gif';
-                    }
-                }
-                //-->
-                </script>
-            ";
 
             $this->objTemplate->setVariable(array(
-                'DOWNLOADS_JS'                 => $DOWNLOADS_JS,
+                'FILE_ID'                  => $fileInfo['file_id'],
+                'FILE_NAME'                => $fileInfo['file_loc']['lang'][$_LANGID]["name"],
+                'FILE_DESC'                => str_replace(chr(13), '<br />', $fileInfo['file_loc']['lang'][$_LANGID]["desc"]),
+                'FILE_TYPE'                => $fileInfo['file_type'],
+                'FILE_TYPE'                => $fileInfo['file_type'],
+                'FILE_SIZE'                => ($fileInfo['file_size']/1000)." KB",
+                'FILE_IMG'                 => $fileInfo['file_img'],
+                'FILE_AUTHOR'              => $fileInfo['file_autor'],
+                'FILE_CREATED'             => $fileInfo['file_created'],
+                'FILE_LICENSE'             => $fileInfo['file_license'],
+                'FILE_VERSION'             => $fileInfo['file_version'],
+                'ICON_FILE'                => $FileIcon,
+                'ICON_INFO'                => $this->_GetIconImage('info.gif',0,'info_'.$fileInfo['file_id']),
+                'ICON_DOWNLOAD'            => $DonwlodLink,
+                'TXT_DOWNLOADS_LICENSE'    => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
+                'TXT_DOWNLOADS_VERSION'    => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
+                'TXT_DOWNLOADS_SIZE'       => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
+                'TXT_DOWNLOADS_SCREENSHOT' => $_ARRAYLANG['TXT_DOWNLOADS_SCREENSHOT'],
+                'FILE_SCREEN'              => $FILE_SCREEN,
+
             ));
+
+            $openendJS .= "opened[".$fileInfo['file_id']."] = false;
+
+            ";
+            $FilesJS .= "Download[".$fileInfo['file_id']."] = new fx.Height('DownlaodLayer_".$fileInfo['file_id']."',{duration:1000});
+
+            ";
+
+            $this->objTemplate->parse('Files_Row');
+            $objResult->MoveNext();
         }
 
-        if ($this->_arrConfig["filter"]==0) {
-            $searchdisplay = 'none';
-        } else {
-            $searchdisplay = 'block';
-        }
+        $DOWNLOADS_JS = "
+            <script type=\"text/javascript\" src=\"lib/javascript/prototype.lite.js\"></script>
+            <script type=\"text/javascript\" src=\"lib/javascript/moo.fx.js\"></script>
+            <script type=\"text/javascript\">
+            <!--
+            opened = new Array()
+            Download = new Array();
+            ".$openendJS."
+            window.onload = function() {
+                ".$FilesJS."
+            };
+
+            function toggelopen(Obj) {
+                if (opened[Obj]==false) {
+                    Download[Obj].custom(24,180);
+                    opened[Obj]=true;
+                    document.getElementById('info_'+Obj).src = '".ASCMS_MODULE_WEB_PATH."/downloads/images/icons/".$this->_arrConfig["design"]."/info_act.gif';
+                } else {
+                    Download[Obj].custom(180,24);
+                    opened[Obj]=false;
+                    document.getElementById('info_'+Obj).src = '".ASCMS_MODULE_WEB_PATH."/downloads/images/icons/".$this->_arrConfig["design"]."/info.gif';
+                }
+            }
+            //-->
+            </script>
+        ";
 
         $this->objTemplate->setVariable(array(
-            'TXT_DOWNLOADS'            => $_ARRAYLANG['TXT_DOWNLOADS'],
-            'TXT_DOWNLOADS_SEARCH'     => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
-            'TXT_DOWNLOADS_FILTERS'    => $_ARRAYLANG['TXT_DOWNLOADS_FILTERS'],
-            'TXT_DOWNLOADS_CATEGORIES' => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'],
-            'FILTER_CATEGORIES_VALUE'  => $FILTER_CATEGORIES_VALUE,
-            'FILTER_DISPLAY'           => $searchdisplay,
+            'DOWNLOADS_JS'                 => $DOWNLOADS_JS,
         ));
+    } else {
+        $this->objTemplate->hideBlock('Files_Row');
     }
 
+    if ($this->_arrConfig["filter"]==0) {
+        $searchdisplay = 'none';
+    } else {
+        $searchdisplay = 'block';
+    }
 
-    function GetFile()
-    {
-        global $objDatabase, $objAuth, $objPerm;
+    $this->objTemplate->setVariable(array(
+        'TXT_DOWNLOADS'            => $_ARRAYLANG['TXT_DOWNLOADS'],
+        'TXT_DOWNLOADS_SEARCH'     => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
+        'TXT_DOWNLOADS_FILTERS'    => $_ARRAYLANG['TXT_DOWNLOADS_FILTERS'],
+        'TXT_DOWNLOADS_CATEGORIES' => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'],
+        'FILTER_CATEGORIES_VALUE'  => $FILTER_CATEGORIES_VALUE,
+        'FILTER_DISPLAY'           => $searchdisplay,
+    ));
+}
 
-        $code = $_REQUEST["id"];
 
-        if ($code!='') {
-            $objResult = $objDatabase->SelectLimit("SELECT `file_id` FROM ".DBPREFIX."module_downloads_files WHERE file_source='".$code."'", 1);
-            if ($objResult !== false && $objResult->RecordCount() == 1) {
-                $File_ID =  $objResult->fields['file_id'];
-            } else {
-                header('location:index.php?section=downloads');
-                exit();
-            }
+function GetFile()
+{
+    global $objDatabase;
+
+    $code = $_REQUEST["id"];
+
+    if ($code!='') {
+        $objResult = $objDatabase->SelectLimit("SELECT `file_id` FROM ".DBPREFIX."module_downloads_files WHERE file_source='".$code."'", 1);
+        if ($objResult !== false && $objResult->RecordCount() == 1) {
+            $File_ID =  $objResult->fields['file_id'];
         } else {
             header('location:index.php?section=downloads');
             exit();
         }
+    } else {
+        header('location:index.php?section=downloads');
+        exit();
+    }
 
-        $FileInfo = $this->_FileInfo($File_ID);
+    $FileInfo = $this->_FileInfo($File_ID);
 
-        if ($FileInfo["file_protected"]==0) {
+    if ($FileInfo["file_protected"]==0) {
+        $StartDownload = true;
+    } else {
+        if (Permission::checkAccess($FileInfo['file_access_id'], 'dynamic', true)) {
             $StartDownload = true;
         } else {
-
-//            if ($objAuth!='') {
-                if ($objAuth->checkAuth()) {
-                    if ($objPerm->checkAccess($FileInfo["file_access_id"], 'dynamic')) {
-                        $StartDownload = true;
-                    } else {
-                        $StartDownload = false;
-                    }
-                } else {
-                    $StartDownload = false;
-                }
-//            } else {
-//                $StartDownload = false;
-//            }
-        }
-
-        if ($StartDownload) {
-            if (substr($FileInfo['file_name'], 0, 7)!='http://' && substr($FileInfo['file_name'], 0, 8)!='https://') {
-                $Dateiname 	= basename($FileInfo['file_name']);
-                $Size 		= filesize(ASCMS_PATH.'/'.$FileInfo['file_name']);
-                header("Content-Type: application/force-download");
-                header("Content-Disposition: attachment; filename=".$Dateiname."");
-                header("Content-Length: ".$Size."");
-                readfile(ASCMS_PATH.'/'.$FileInfo['file_name']);
-            } else {
-                header('location:'.$FileInfo['file_name']);
-                exit();
-            }
-        } else {
-            header('location:index.php?section=login');
-            exit();
+            $StartDownload = false;
         }
     }
+
+    if ($StartDownload) {
+        if (substr($FileInfo['file_name'], 0, 7)!='http://' && substr($FileInfo['file_name'], 0, 8)!='https://') {
+            $Dateiname 	= basename($FileInfo['file_name']);
+            $Size 		= filesize(ASCMS_PATH.'/'.$FileInfo['file_name']);
+            header("Content-Type: application/force-download");
+            header("Content-Disposition: attachment; filename=".$Dateiname."");
+            header("Content-Length: ".$Size."");
+            readfile(ASCMS_PATH.'/'.$FileInfo['file_name']);
+        } else {
+            header('location:'.$FileInfo['file_name']);
+            exit();
+        }
+    } else {
+        header('location:index.php?section=login');
+        exit();
+    }
+}
 
 
     /**
@@ -447,7 +419,7 @@ class Downloads extends DownloadsLibrary
      * @return  boolean                     True on success, false otherwise.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function showUserInfo()
+/*    function showUserInfo()
     {
         global $_ARRAYLANG, $objAuth;
 
@@ -549,6 +521,8 @@ class Downloads extends DownloadsLibrary
         ));
     	}
     }
-
+*/
 
 }
+?>
+

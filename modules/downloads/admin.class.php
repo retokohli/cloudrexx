@@ -1,4 +1,13 @@
 <?php
+if (0) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    $objDatabase->debug = 1;
+} else {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+    $objDatabase->debug = 0;
+}
 /**
  * Downloads module
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -380,19 +389,23 @@ class downloads extends DownloadsLibrary
         $valueGroups = '';
         $valueAddedGroups = '';
         //$arrAssignedFrontendGroups=$this->_getAssignedGroups($groupType="frontend",$pageId);
-        $Groups = $this->_getAllGroups();
-        foreach ($Groups as $id => $name) {
+
+        $objFWUser = FWUser::getFWUserObject();
+        $objGroup = $objFWUser->objGroup->getGroups(array('type' => 'frontend'));
+        while (!$objGroup->EOF) {
             $added = false;
             for($xx=0; $xx<count($DownloadInfo['file_access_groups']); $xx++) {
-                if ($DownloadInfo['file_access_groups'][$xx]['id']==$id) {
+                if ($DownloadInfo['file_access_groups'][$xx]['id']==$objGroup->getId()) {
                     $added = true;
                 }
             }
             if ($added) {
-                $valueAddedGroups .="<option value=\"".$id."\">".$name."</option>\n";
+                $valueAddedGroups .="<option value=\"".$objGroup->getId()."\">".htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
             } else {
-                $valueGroups .="<option value=\"".$id."\">".$name."</option>\n";
+                $valueGroups .="<option value=\"".$objGroup->getId()."\">".htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
             }
+
+            $objGroup->next();
         }
 
         // related downloads
@@ -718,9 +731,11 @@ class downloads extends DownloadsLibrary
         // Frontend Groups
         $valueGroups = '';
         //$arrAssignedFrontendGroups=$this->_getAssignedGroups($groupType="frontend",$pageId);
-        $Groups = $this->_getAllGroups();
-        foreach ($Groups as $id => $name) {
-            $valueGroups.="<option value=\"".$id."\">".$name."</option>\n";
+        $objFWUser = FWUser::getFWUserObject();
+        $objGroup = $objFWUser->objGroup->getGroups(array('type' => 'frontend'));
+        while (!$objGroup->EOF) {
+            $valueGroups.="<option value=\"".$objGroup->getId()."\">".htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
+            $objGroup->next();
         }
 
         $this->_objTpl->setVariable(array(
