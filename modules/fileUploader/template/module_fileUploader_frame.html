@@ -10,21 +10,21 @@
 <meta http-equiv="cache-control" content="no-cache" />
 <link href="template/ascms/css/base.css" rel="stylesheet" type="text/css" />
 <script language="javascript" type="text/javascript">
-<!--
-function closeWindow(){
+// <![CDATA[
+function closeWindow()
+{
 	window.opener.focus();
 	window.top.close();
 }
 
-
-// -->
 /**
  * resize applet to fit client area
-* @param applet an applet to resize
-* @param dx a horizontal space to substract from client area width
-* @param dy a vertical space to substract from client area width
-*/
-function resizeApplet() {
+ * @param applet an applet to resize
+ * @param dx a horizontal space to substract from client area width
+ * @param dy a vertical space to substract from client area width
+ */
+function resizeApplet()
+{
     var applet = document.jumpLoaderApplet;
     var dx = 0;
     var dy = 7;
@@ -50,23 +50,56 @@ function resizeApplet() {
     applet.setSize( w_newWidth - dx, w_newHeight - dy );
 }
 
+/**
+ * Used to store the names of the uploaded files
+ */
+aUploadedFiles = new Array();
+
 function uploaderStatusChanged(uploader)
 {
-    if (uploader.getStatus() === 0) {
-        files = uploader.getAllFiles();
-        sFiles = '&highlightFiles=';
-        aFiles = new Array();
-        for (i = 0; i < files.length; i++) {
-            aFiles[aFiles.length] = files[i].getFile().toString();
-        }
-        sFiles += encodeURIComponent(aFiles.toSource());
-        window.opener.location.replace(window.opener.location.href+sFiles);
+    var status = parseInt(uploader.getStatus(), 10);
+    switch (status) {
+        case 0:
+            /**
+             * Reload opener window with passing the list of uploaded files in JSON
+             * packed into the url modifier "highlightFiles".
+             */
+            sFiles = '&highlightFiles=';
+            sFiles += encodeURIComponent(aUploadedFiles.toSource());
+            window.opener.location.replace(window.opener.location.href+sFiles);
+
+            // enable close button
+            document.getElementById('fileUploaderClose').disabled = false;
+            document.getElementById('fileUploaderClose').style.backgroundColor = '';
+            break;
+
+        case 1:
+            // disable close button
+            document.getElementById('fileUploaderClose').disabled = true;
+            document.getElementById('fileUploaderClose').style.backgroundColor = '#CCCCCC';
+            break;
     }
+}
+
+function uploaderFileStatusChanged(uploader, file)
+{
+    /**
+     * Add successfully uploaded files to the list (aUploadedFiles) of
+     * uploaded files.
+     */
+    if (uploader.getStatus() == 1 && file.getStatus() == 2) {
+        aUploadedFiles[aUploadedFiles.length] = file.getResponseContent().toString()
+    }
+}
 
 function appletInitialized(applet)
 {
+    /**
+     * Set UserAgent of applet to the browser's one
+     */
     applet.getUploaderConfig().setUserAgent(navigator.userAgent);
 }
+// ]]>
 </script>
 </head>
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onResize="resizeApplet()" onLoad="resizeApplet()">
@@ -80,12 +113,13 @@ function appletInitialized(applet)
         <param name="uc_partitionLength" value="{FILEUPLOADER_PARTITION_LENGTH}" />
         <param name="gc_loggingLevel" value="INFO" />
         <param name="ac_fireAppletInitialized" value="true"/>
+        <param name="ac_fireUploaderFileStatusChanged" value="true"/>
         <param name="ac_fireUploaderStatusChanged" value="true"/>
 		<param name="vc_uploadListViewName" value="_compact"/>
 		<param name="vc_useThumbs" value="false"/>
     </applet>
     <div style="text-align:right; margin:10px;">
-        <input type="button" onclick="window.close();" value="{TXT_FILEUPLOADER_CLOSE}" />
+        <input type="button" id="fileUploaderClose" onclick="window.close();" value="{TXT_FILEUPLOADER_CLOSE}" />
     </div>
 </body>
 </html>
