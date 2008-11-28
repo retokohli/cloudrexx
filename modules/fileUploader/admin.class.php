@@ -13,10 +13,8 @@ $_ARRAYLANG['TXT_FILEUPLOADER_CLOSE'] = 'Schliessen';
 /**
  * Includes
  */
-#require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
 require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-#require_once ASCMS_CORE_PATH.'/Tree.class.php';
-#require_once(ASCMS_FRAMEWORK_PATH.DIRECTORY_SEPARATOR.'Image.class.php');
+require_once(ASCMS_FRAMEWORK_PATH.'/Image.class.php');
 
 /**
  * File Uploader
@@ -31,36 +29,12 @@ class FileUploader {
 
     private $objTpl;
     private $defaultInterfaceLanguage = 'en';
-#    var $_pageTitle;
-#    var $_okMessage = array();
-#    var $_errMessage = array();
-#    var $_arrFiles = array();
-#    var $_arrDirectories = array();
+    private $defaultPartitionLength = 1048576;
     private $path;
     private $mediaType;
-#    var $_iconWebPath = '';
     private $frontendLanguageId = null;
 
     private $moduleURI;
-#    var $_absoluteURIs = false;
-#    var $_mediaType = '';
-#    var $_arrWebpages = array();
-/*    var $_arrMediaTypes = array(
-        'files'     => 'TXT_FILEBROWSER_FILES',
-        'webpages'  => 'TXT_FILEBROWSER_WEBPAGES',
-        'media1'    => 'TXT_FILEBROWSER_MEDIA_1',
-        'media2'    => 'TXT_FILEBROWSER_MEDIA_2',
-        'media3'    => 'TXT_FILEBROWSER_MEDIA_3',
-        'media4'    => 'TXT_FILEBROWSER_MEDIA_4',
-        'shop'      => 'TXT_FILEBROWSER_SHOP',
-        'blog'      => 'TXT_FILEBROWSER_BLOG',
-        'podcast'   => 'TXT_FILEBROWSER_PODCAST'
-    );*/
-#    var $_shopEnabled;
-#    var $_blogEnabled;
-#    var $_podcastEnabled;
-
-
 
     /**
     * Constructor
@@ -94,9 +68,6 @@ class FileUploader {
     */
     private function getPath()
     {
-debug("\nFILES:".var_export($_FILES, true)."\n\n");
-debug("\nPOST:".var_export($_POST, true)."\n\n");
-debug("\nGET:".var_export($_GET, true)."\n\n");
         $path = "";
         if (isset($_GET['path']) && !stristr($_GET['path'], '..')) {
             $path = $_GET['path'];
@@ -154,14 +125,49 @@ debug("\nGET:".var_export($_GET, true)."\n\n");
 
     private function sendApplet()
     {
+
+            $a = ASCMS_ADMIN_WEB_PATH.'/index.php'.$this->moduleURI.'&amp;act=upload&amp;type='.$this->mediaType.'&amp;path='.urlencode($this->path);
+            $b =  $this->getPartitionLength();
+        $jnlpXML = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://dev.contrexxlabs.com/" > 
+<information>
+    <title>Time Check</title>
+    <vendor>Java Developer Connection</vendor>
+    <homepage href="/jdc" />
+    <description>Demonstration of JNLP</description>
+</information> 
+<security> <j2ee-application-client-permissions/> </security> 
+<resources> <j2se version="1.2+" /> <jar href="/tmp/jumploader_z.jar"/> </resources> 
+<applet-desc
+            documentBase="http://dev.contrexxlabs.com/"
+            name="jumpLoaderApplet"
+            main-class="jmaster.jumploader.app.JumpLoaderApplet"
+            width="800"
+            height="600">
+
+        <param name="uc_uploadUrl" value="$a" />
+        <param name="uc_partitionLength" value="$b" />
+        <param name="gc_loggingLevel" value="INFO" />
+        <param name="ac_fireAppletInitialized" value="true"/>
+        <param name="ac_fireUploaderStatusChanged" value="true"/>
+		<param name="vc_uploadListViewName" value="_compact"/>
+		<param name="vc_useThumbs" value="false"/>
+    </applet-desc>
+</jnlp>
+XML;
+//<application-desc main-class="jmaster.jumploader.app.JumpLoaderApplet" />
+        header('Content-Type: application/x-java-jnlp-file');
+        die($jnlpXML);
+
         header('Content-Length: '.(filesize(ASCMS_MODULE_PATH.'/fileUploader/lib/fileUploader.jar')));
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename=fileUploader.jar');
+        header('Content-Type: application/java-archive');
+        header('Content-Disposition: attachment; filename="fileUploader.jar"');
         die(file_get_contents(ASCMS_MODULE_PATH.'/fileUploader/lib/fileUploader.jar'));
     }
 
     private function sendLanguageArchive()
-    {error_reporting(E_ALL);ini_set('display_errors', 1);
+    {
         global $_ARRAYLANG;
 
         $file = str_replace(array_keys($_ARRAYLANG), $_ARRAYLANG, file_get_contents(ASCMS_MODULE_PATH.'/fileUploader/lib/fileUploader.lang'));
@@ -198,8 +204,9 @@ debug("\nGET:".var_export($_GET, true)."\n\n");
         $this->objTpl->setVariable(array(
             'TXT_FILEUPLOADER_CLOSE' => $_ARRAYLANG['TXT_FILEUPLOADER_CLOSE'],
             'CONTREXX_CHARSET'      => CONTREXX_CHARSET,
-//            'FILEUPLOADER_APPLET_PATH'  => ASCMS_ADMIN_WEB_PATH.'/index.php'.$this->moduleURI.'&amp;act=language,'.ASCMS_MODULE_WEB_PATH.'/fileUploader/lib/fileUploader.jar',
-            'FILEUPLOADER_APPLET_PATH'  => ASCMS_ADMIN_WEB_PATH.'/index.php'.$this->moduleURI.'&amp;act=applet',
+            'FILEUPLOADER_APPLET_PATH'  => ASCMS_ADMIN_WEB_PATH.'/fileUploader.jar',
+//            'FILEUPLOADER_APPLET_PATH'  => '/tmp/jumploader_z.jar',
+//            'FILEUPLOADER_APPLET_PATH'  => ASCMS_ADMIN_WEB_PATH.'/index.php'.$this->moduleURI.'&amp;act=applet',
             'FILEUPLOADER_HANDLER_PATH' => ASCMS_ADMIN_WEB_PATH.'/index.php'.$this->moduleURI.'&amp;act=upload&amp;type='.$this->mediaType.'&amp;path='.urlencode($this->path),
             'FILEUPLOADER_PARTITION_LENGTH' => $this->getPartitionLength()
         ));
@@ -209,7 +216,7 @@ debug("\nGET:".var_export($_GET, true)."\n\n");
 
     private function getPartitionLength()
     {
-        return 1024*1024;
+        return $this->defaultPartitionLength;
     }
 
 
@@ -227,8 +234,7 @@ debug("\nGET:".var_export($_GET, true)."\n\n");
         $fileExtension = '';
 
         if (!isset($_FILES['file'])) {
-debug(1);
-            return false;
+            die('Error:No file has been uploaded!');
         } else {
             $fileName = $_FILES['file']['name'];
             $partitionIndex = $_POST['partitionIndex'];
@@ -238,13 +244,11 @@ debug(1);
         }
 
         if (!($sessionTmpPath = $sessionObj->getTempPath())) {
-debug(2);
-            return false;
+            die('Error:Unable to create a temporary session path!');
         }
 
         if (!move_uploaded_file($_FILES['file']['tmp_name'], $sessionTmpPath.'/'.$fileId.'_'.$partitionIndex)) {
-debug(3);
-            return false;
+            die('Error:Unable to load the uploaded file!');
         }
 
         $partitionsLength = 0;
@@ -253,14 +257,12 @@ debug(3);
             if (file_exists($partitionFile)) {
                 $partitionsLength += filesize($partitionFile);
             } else {
-debug(4);
-                return false;
+                die('Error:A partition is missing');
             }
         }
 
         if ($partitionsLength != $fileLength) {
-debug(5);
-            return false;
+            die('Error:Defragmented file doesn\'t match its original file size!');
         }
 
 
@@ -304,8 +306,7 @@ debug(5);
 
         $objFile = new File();
         if (!is_writable($strPath) && !$objFile->setChmod($strPath, $strWebPath, '/')) {
-debug(6);
-            return false;
+            die('Error:Unsufficent file permissions to store uploaded file!');
         }
 
         $file = $strPath.$fileName;
@@ -327,77 +328,15 @@ debug(6);
             unlink($partitionFile);
         }
         fclose($file);
-debug($file);
-debug(7);
 
-return true;
-
-
-
-
-
-
-        $nr = 1;
-
-        if (@file_exists($strPath.$uploadFileName)) {
-            if (preg_match('/.*\.(.*)$/', $uploadFileName, $arrSubPatterns)) {
-                $fileName = substr($uploadFileName, 0, strrpos($uploadFileName, '.'));
-                $fileExtension = $arrSubPatterns[1];
-                $file = $fileName.'-'.$nr.'.'.$fileExtension;
-
-                while (@file_exists($strPath.$file)) {
-                    $file = substr($uploadFileName, 0, strrpos($uploadFileName, '.')).'-'.$nr.'.'.$fileExtension;
-                    $nr++;
-                }
-            } else {
-                return false;
-            }
-        }
-        $uploadedFileName = $file;
-
-        if (move_uploaded_file($tmpFileName, $strPath.$file)) {
-            if (!isset($objFile)) {
-                $objFile = &new File();
-            }
-            $objFile->setChmod($strPath, $strWebPath, $file);
+        // create thumbnail if the uploaded file is an image
+        $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
+        if (in_array($fileExtension, array('jpg', 'jpeg', 'png', 'gif'))) {
+            ImageManager::_createThumb($strPath.'/', $strWebPath.'/', basename($file));
         }
 
-        $fileType = pathinfo($strPath.$file);
-
-        if($fileType['extension'] == 'jpg' || $fileType['extension'] == 'jpeg' || $fileType['extension'] == 'png' || $fileType['extension'] == 'gif'){
-            if ($this->_createThumb($strPath, $strWebPath, $file)) {
-              $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_SUCCESSFULLY_CREATED'], $strWebPath.$file));
-            }
-        }
+        // file has been succesfully uploaded
+        die(basename($file));
     }
-
-
-    function _createThumb($strPath, $strWebPath, $file, $height = 80, $quality = 90)
-    {
-        global $_ARRAYLANG;
-        $objFile = &new File();
-
-        $_objImage = &new ImageManager();
-        $tmpSize    = getimagesize($strPath.$file);
-        $thumbWidth = $height / $tmpSize[1] * $tmpSize[0];
-        $_objImage->loadImage($strPath.$file);
-        $_objImage->resizeImage($thumbWidth, $height, $quality);
-        $_objImage->saveNewImage($strPath.$file . '.thumb');
-
-        if ($objFile->setChmod($strPath, $strWebPath, $file . '.thumb')) {
-           return true;
-        }
-        return false;
-    }
-
-}
-
-function debug($msg)
-{
-return;
-$asdf = fopen('../uploader.log', 'a');
-
-fwrite($asdf, $msg);
-fclose($asdf);
 }
 ?>
