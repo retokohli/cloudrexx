@@ -1044,6 +1044,7 @@ $this->arrRows[2] = '';
                 $arrFeedContent['spez_field_27']         = $objResult->fields['spez_field_27'];
                 $arrFeedContent['spez_field_28']         = $objResult->fields['spez_field_28'];
                 $arrFeedContent['spez_field_29']         = $objResult->fields['spez_field_29'];
+                $arrFeedContent['youtube']               = $objResult->fields['youtube'];
                 $objResult->MoveNext();
             }
         }
@@ -1073,6 +1074,16 @@ $this->arrRows[2] = '';
                         ? $_ARRAYLANG[$arrFieldsActive['title'][$fieldKey]]
                         : ''
                     );
+
+                    //youtube
+                    if ($fieldName == "youtube") {
+                        $youTubeIdRegex = "#.*[\?&/]v[=/]([a-zA-Z0-9_-]{11}).*#";
+                        preg_match($youTubeIdRegex, $arrFeedContent[$fieldName], $youTubeArray);
+                        $youTubeID = $youTubeArray[1];
+
+                        $content =  '<object width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'"><param name="movie" value="http://www.youtube.com/v/'.$youTubeID.'&hl=de&fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/'.$youTubeID.'&hl=de&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'"></embed></object>';
+                    }
+
                     //get pics
                     if ($fieldName == "logo") {
                         $content = '<img src="'.$this->mediaWebPath.'images/'.$arrFeedContent[$fieldName].'" border="0" alt="'.$arrFeedContent['title'].'" />&nbsp;&nbsp;';

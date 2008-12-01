@@ -1361,6 +1361,7 @@ class directoryLibrary
                     $arrInputfieldsValue['spez_field_27']         = $objResult->fields['spez_field_27'];
                     $arrInputfieldsValue['spez_field_28']         = $objResult->fields['spez_field_28'];
                     $arrInputfieldsValue['spez_field_29']         = $objResult->fields['spez_field_29'];
+                    $arrInputfieldsValue['youtube']         = $objResult->fields['youtube'];
                     $objResult->MoveNext();
                 }
             }
