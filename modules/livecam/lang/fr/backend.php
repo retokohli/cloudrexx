@@ -7,19 +7,22 @@
  * @subpackage  module_livecam
  */
 $_ARRAYLANG['TXT_SETTINGS'] = "Paramètres";
-$_ARRAYLANG['TXT_ARCHIVE_PATH'] = "Chemin archives";
+$_ARRAYLANG['TXT_ARCHIVE_PATH'] = "Dossier d'archive";
 $_ARRAYLANG['TXT_SAVE'] = "Enregistrer";
-$_ARRAYLANG['TXT_CURRENT_IMAGE_URL'] = "URL vers l'image courante";
-$_ARRAYLANG['TXT_THUMBNAIL_PATH'] = "Chemin vignette";
-$_ARRAYLANG['TXT_EMPTY_FIELDS'] = "Veuillez compléter les champs";
+$_ARRAYLANG['TXT_CURRENT_IMAGE_URL'] = "URL de l'image courante";
+$_ARRAYLANG['TXT_THUMBNAIL_PATH'] = "Dossier des vignettes";
+$_ARRAYLANG['TXT_EMPTY_FIELDS'] = "Certains champs sont vides!";
 $_ARRAYLANG['TXT_UPDATE_FAILED'] = "Erreur lors de la mise à jour";
 $_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX'] = "Activer LightBox";
-$_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX_INFO'] = "La variable [[JAVASCRIPT_LIGHTBOX]] doit être insérée dans le Header du fichier index.htm, afin que la LightBox fonctionne";
-$_ARRAYLANG['TXT_THUMBNAIL_MAX_SIZE'] = "Largeur maximale de la vignette (Pixel)";
-$_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'] = "Largeur maximale de l'image courante (Pixel)";
+$_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX_INFO'] = "Pour la LightBox, la variable [[JAVASCRIPT_LIGHTBOX]] doit être saisie dans le fichier index.htm du modèle de présentation: ";
+$_ARRAYLANG['TXT_THUMBNAIL_MAX_SIZE'] = "Largeur maximale des vignettes (en Pixel)";
+$_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'] = "Hauteur maximale des vignettes (en Pixel)";
 $_ARRAYLANG['TXT_CAM'] = "Caméra";
 $_ARRAYLANG['TXT_CAMS'] = "Caméras";
 $_ARRAYLANG['TXT_LIVECAM_NUMBER_OF_CAMS'] = "Nombre de caméras";
-$_ARRAYLANG['TXT_LIVECAM_TO_MODULE'] = "Page Frontend";
-$_ARRAYLANG['TXT_MAKE_A_FRONTEND_PAGE'] = "Pour chaque caméra, créer une page de contenu avec le numéro de caméra comme cmd.";
+$_ARRAYLANG['TXT_LIVECAM_TO_MODULE'] = "A la page de Frontend";
+$_ARRAYLANG['TXT_MAKE_A_FRONTEND_PAGE'] = "Définir une page de contenu pour chaque Webcam avec le numéro de caméra comme cmd.";
+$_ARRAYLANG['TXT_LIVECAM_SHOWFROM'] = "Voir l'image du";
+$_ARRAYLANG['TXT_LIVECAM_SHOWTILL'] = "à";
+$_ARRAYLANG['TXT_LIVECAM_OCLOCK'] = "Heure";
 ?>

@@ -305,4 +305,7 @@ $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'] = "Слишком много зап�
 $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Ошибка сервера: поисковый запрос (Geocoding)не может быть успешно обработан.";
 $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Укажите однозначный адрес или двигаете карту с мышью в желаемый пункт";
 $_ARRAYLANG['TXT_MAKE_SELECTION'] = "Bitte wählen Sie";
+$_ARRAYLANG['TXT_YOUTUBEWIDTH'] = "YouTube Height";
+$_ARRAYLANG['TXT_YOUTUBEHEIGHT'] = "YouTube Height";
+$_ARRAYLANG['TXT_DIRECTORY_YOUTUBE'] = "YouTube";
 ?>

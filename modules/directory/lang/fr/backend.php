@@ -305,4 +305,7 @@ $_ARRAYLANG['TXT_DIR_GEO_TOO_MANY_QUERIES'] = "Trop de demandes: la limite quoti
 $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Erreur lors du traitement de la demande de recherche (Geocoding).";
 $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Veuillez saisir une adresse précise ou vous déplacer avec la souris sur la carte jusqu'au point désiré";
 $_ARRAYLANG['TXT_MAKE_SELECTION'] = "Veuillez choisir";
+$_ARRAYLANG['TXT_YOUTUBEWIDTH'] = "Largeur YouTube";
+$_ARRAYLANG['TXT_YOUTUBEHEIGHT'] = "Hauteur YouTube";
+$_ARRAYLANG['TXT_DIRECTORY_YOUTUBE'] = "YouTube";
 ?>
