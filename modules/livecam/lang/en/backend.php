@@ -6,20 +6,23 @@
  * @package     contrexx
  * @subpackage  module_livecam
  */
-$_ARRAYLANG['TXT_SETTINGS'] = "Settings";
-$_ARRAYLANG['TXT_ARCHIVE_PATH'] = "Archive Path";
-$_ARRAYLANG['TXT_SAVE'] = "Save";
-$_ARRAYLANG['TXT_CURRENT_IMAGE_URL'] = "URL To The Current Image";
-$_ARRAYLANG['TXT_THUMBNAIL_PATH'] = "Thumbnail Path";
-$_ARRAYLANG['TXT_EMPTY_FIELDS'] = "Some Fields Are Empty!";
-$_ARRAYLANG['TXT_UPDATE_FAILED'] = "Update Failed";
-$_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX'] = "activate LightBox";
-$_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX_INFO'] = "For LightBox to function, you need to put the following place holder in the header of the index.html file (Design & Layout): [[JAVASCRIPT_LIGHTBOX]]";
-$_ARRAYLANG['TXT_THUMBNAIL_MAX_SIZE'] = "max. width of thumbnails (in pixels)";
-$_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'] = "max. width of the current image (in pixels)";
-$_ARRAYLANG['TXT_CAM'] = "Camera";
-$_ARRAYLANG['TXT_CAMS'] = "Cameras";
-$_ARRAYLANG['TXT_LIVECAM_NUMBER_OF_CAMS'] = "Amount of cameras";
-$_ARRAYLANG['TXT_LIVECAM_TO_MODULE'] = "To the frontend page";
-$_ARRAYLANG['TXT_MAKE_A_FRONTEND_PAGE'] = "For every webcam, there needs to be a content page using the camera number as \"cmd\" on the page settings tab.";
+$_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
+$_ARRAYLANG['TXT_ARCHIVE_PATH'] = "Archivpfad";
+$_ARRAYLANG['TXT_SAVE'] = "Speichern";
+$_ARRAYLANG['TXT_CURRENT_IMAGE_URL'] = "URL zum aktuellen Bild";
+$_ARRAYLANG['TXT_THUMBNAIL_PATH'] = "Thumbnail Pfad";
+$_ARRAYLANG['TXT_EMPTY_FIELDS'] = "Einige Felder sind leer!";
+$_ARRAYLANG['TXT_UPDATE_FAILED'] = "Update ist fehlgeschlagen";
+$_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX'] = "LightBox aktivieren";
+$_ARRAYLANG['TXT_ACTIVATE_LIGHTBOX_INFO'] = "Damit die LightBox funktioniert, muss im Designtemplate folgender Platzhalter im Header der index.htm Datei eingefügt werden: [[JAVASCRIPT_LIGHTBOX]]";
+$_ARRAYLANG['TXT_THUMBNAIL_MAX_SIZE'] = "max. Breite der Thumbnails (in Pixel)";
+$_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'] = "max. Breite des aktuellen Bildes (in Pixel)";
+$_ARRAYLANG['TXT_CAM'] = "Kamera";
+$_ARRAYLANG['TXT_CAMS'] = "Kameras";
+$_ARRAYLANG['TXT_LIVECAM_NUMBER_OF_CAMS'] = "Anzahl Kameras";
+$_ARRAYLANG['TXT_LIVECAM_TO_MODULE'] = "Zur Frontend-Seite";
+$_ARRAYLANG['TXT_MAKE_A_FRONTEND_PAGE'] = "Für jede Webcam müssen Sie eine Content-Seite erstellen mit der Kamera-Nummber als cmd.";
+$_ARRAYLANG['TXT_LIVECAM_SHOWFROM'] = "Bilder anzeigen von";
+$_ARRAYLANG['TXT_LIVECAM_SHOWTILL'] = "bis";
+$_ARRAYLANG['TXT_LIVECAM_OCLOCK'] = "Uhr";
 ?>

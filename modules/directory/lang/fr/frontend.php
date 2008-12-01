@@ -33,7 +33,7 @@ $_ARRAYLANG['TXT_DIR_F_ADD'] = "Nouveau";
 $_ARRAYLANG['TXT_DIR_F_FILL_ALL'] = "Veuillez compléter tous les champs";
 $_ARRAYLANG['TXT_DIR_F_LINK'] = "Lien";
 $_ARRAYLANG['TXT_DIR_F_FILETYP'] = "Extension";
-$_ARRAYLANG['TXT_DIR_F_USER_SUCCESSFULL_ACTIVATE'] = "Merci pour votre enregistrement.<br /><br />. Votre adresse E-mail est validée. Cliquer <a href='index.php?section=directory&cmd=add'>ici</a> pour vous connecter.";
+$_ARRAYLANG['TXT_DIR_F_USER_SUCCESSFULL_ACTIVATE'] = "Merci pour votre inscription.<br /><br />. Votre adresse E-mail est validée. Cliquer <a href='index.php?section=directory&cmd=add'>ici</a> pour vous connecter.";
 $_ARRAYLANG['TXT_DIR_F_SET_NEW_PASSWORD'] = "Vous pouvez maintenant saisir un nouveau mot de passe.";
 $_ARRAYLANG['TXT_DIR_F_CHANGES_SAVE'] = "Enregistrer les modifications";
 $_ARRAYLANG['TXT_DIR_F_FIRSTNAME'] = "Prénom";
@@ -43,10 +43,10 @@ $_ARRAYLANG['TXT_DIR_F_PASSWORD_CONFIRM'] = "Confirmer le mot de passe";
 $_ARRAYLANG['TXT_DIR_F_PW_TO_SHORT'] = "Mot de passe trop court (min. 6 caractères).";
 $_ARRAYLANG['TXT_DIR_F_PW_DONOT_MATCH'] = "Les deux mots de passes saisis ne correspondent pas.";
 $_ARRAYLANG['TXT_DIR_F_WRONG_KEY'] = "Mauvaise clé.";
-$_ARRAYLANG['TXT_DIR_F_REGISTRATE'] = "S'enregistrer";
+$_ARRAYLANG['TXT_DIR_F_REGISTRATE'] = "S'inscrire";
 $_ARRAYLANG['TXT_DIR_F_NO_FILES_FOUND'] = "Aucun fichier trouvé.";
 $_ARRAYLANG['TXT_DIR_F_USER_ALREADY_EXISTS'] = "Le compte ou l'E-mail saisis existe déjà.";
-$_ARRAYLANG['TXT_DIR_F_USER_SUCCESSFULL_ADDED'] = "Utilisateur enregistré. La clé d'activation vous a été envoyée par E-mail.";
+$_ARRAYLANG['TXT_DIR_F_USER_SUCCESSFULL_ADDED'] = "Utilisateur inscrit. La clé d'activation vous a été envoyée par E-mail.";
 $_ARRAYLANG['TXT_DIR_F_SEARCH'] = "Rechercher";
 $_ARRAYLANG['TXT_DIR_F_TITLE'] = "Titre";
 $_ARRAYLANG['TXT_DIR_F_CANTON'] = "Canton";
@@ -226,4 +226,5 @@ $_ARRAYLANG['TXT_DIR_GEO_SERVER_ERROR'] = "Erreur lors du traitement de la deman
 $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'] = "Veuillez saisir une adresse précise ou vous déplacer avec la souris sur la carte jusqu'au point désiré";
 $_ARRAYLANG['TXT_DIRECTORY_VOTE'] = "Voix";
 $_ARRAYLANG['TXT_DIRECTORY_VOTES_TEMPLATE'] = "(%1\$s&nbsp;%2\$s,&nbsp;&Oslash;&nbsp;%3\$s)";
+$_ARRAYLANG['TXT_DIRECTORY_YOUTUBE'] = "YouTube";
 ?>

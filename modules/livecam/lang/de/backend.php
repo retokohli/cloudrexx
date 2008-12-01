@@ -22,4 +22,7 @@ $_ARRAYLANG['TXT_CAMS'] = "Kameras";
 $_ARRAYLANG['TXT_LIVECAM_NUMBER_OF_CAMS'] = "Anzahl Kameras";
 $_ARRAYLANG['TXT_LIVECAM_TO_MODULE'] = "Zur Frontend-Seite";
 $_ARRAYLANG['TXT_MAKE_A_FRONTEND_PAGE'] = "Für jede Webcam müssen Sie eine Content-Seite erstellen mit der Kamera-Nummber als cmd.";
+$_ARRAYLANG['TXT_LIVECAM_SHOWFROM'] = "Bilder anzeigen von";
+$_ARRAYLANG['TXT_LIVECAM_SHOWTILL'] = "bis";
+$_ARRAYLANG['TXT_LIVECAM_OCLOCK'] = "Uhr";
 ?>

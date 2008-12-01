@@ -129,6 +129,6 @@ $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Copie à l'expéditeur";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "En cas d'utilisation d'un style CSS personnalisé, le formulaire prend l'ID et la classe CSS suivants:<strong>'contactForm_\$NuméroFormulaire'</strong> p.ex. contactForm_2. En standard, le nom est simplement 'contactForm'";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'] = "Style personnalisé";
 $_ARRAYLANG['TXT_CONTACT_RESET'] = "Réinitialiser";
-$_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
-$_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'] = "Die E-Mail Adresse '%s' ist nicht gültig!";
+$_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Liste destinataires";
+$_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'] = "L'adresse E-mail '%s' est invalide!";
 ?>
