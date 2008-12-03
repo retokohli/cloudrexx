@@ -101,7 +101,7 @@ class FWUser extends User_Setting
                 $langId = $this->objUser->getFrontendLanguage();
                 if ($objInit->arrLang[$langId]['frontend']) {
                     setcookie ("langId", $langId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
-                } 
+                }
                 return true;
             } else {
                 $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
@@ -224,7 +224,7 @@ class FWUser extends User_Setting
         global $_CORELANG, $_CONFIG, $_LANGID;
 
         $objUser = $this->objUser->getUsers(
-            array('email' => $email), null, null, null, 1
+            array('email' => $email, 'is_active' => true), null, null, null, 1
         );
         if ($objUser) {
             $objUserMail = $this->getMail();
