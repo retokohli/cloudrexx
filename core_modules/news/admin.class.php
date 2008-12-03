@@ -209,6 +209,10 @@ class newsManager extends newsLibrary {
             case 'edit':
                 $this->edit();
                 break;
+                	
+			case 'copy':
+				$this->edit(true);
+				break;
 
             case 'delete':
                 $this->delete();
@@ -744,14 +748,14 @@ class newsManager extends newsLibrary {
 
 
     /**
-    * Edit the news
+    * Edit the news, or if $copy is true, it copies an entry
     *
     * @global    ADONewConnection
     * @global    array
     * @global    array
     * @param     string     $pageContent
     */
-    function edit()
+    function edit($copy = false)
     {
         global $objDatabase,$_ARRAYLANG, $_CONFIG;
 
@@ -764,9 +768,10 @@ class newsManager extends newsLibrary {
         $endDate = "";
 
         $this->_objTpl->loadTemplateFile('module_news_modify.html',true,true);
-        $this->pageTitle = $_ARRAYLANG['TXT_EDIT_NEWS_CONTENT'];
+        $this->pageTitle = (($copy) ? $_ARRAYLANG['TXT_CREATE_NEWS'] : $_ARRAYLANG['TXT_EDIT_NEWS_CONTENT']);
 
         $this->_objTpl->setVariable(array(
+            'TXT_COPY'                      => $_ARRAYLANG['TXT_NEWS_COPY'],
             'TXT_NEWS_MESSAGE'              => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
             'TXT_TITLE'                     => $_ARRAYLANG['TXT_TITLE'],
             'TXT_CATEGORY'                  => $_ARRAYLANG['TXT_CATEGORY'],
@@ -870,8 +875,8 @@ class newsManager extends newsLibrary {
             }
 
             $this->_objTpl->setVariable(array(
-                'NEWS_ID'                       => $id,
-                'NEWS_STORED_ID'                => $id,
+                'NEWS_ID'                       => (($copy) ? '' : $id),
+                'NEWS_STORED_ID'                => (($copy) ? '' : $id),
                 'NEWS_TITLE'                    => htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWS_TEXT'                     => get_wysiwyg_editor('newsText', $newsText),
                 'NEWS_REDIRECT'                 => htmlentities($objResult->fields['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -913,7 +918,7 @@ class newsManager extends newsLibrary {
         }
 
         $this->_objTpl->setVariable("NEWS_CAT_MENU",$this->getCategoryMenu($this->langId, $newsCat));
-        $this->_objTpl->setVariable("NEWS_FORM_ACTION","update");
+        $this->_objTpl->setVariable("NEWS_FORM_ACTION",(($copy) ? 'add' : 'update'));
         $this->_objTpl->setVariable("NEWS_STORED_FORM_ACTION","update");
         $this->_objTpl->setVariable("NEWS_TOP_TITLE",$_ARRAYLANG['TXT_EDIT_NEWS_CONTENT']);
     }
