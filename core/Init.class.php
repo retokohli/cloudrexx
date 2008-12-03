@@ -146,7 +146,7 @@ class InitCMS
         }
 
         if ($_CONFIG['useVirtualLanguagePath'] == 'on' && $this->mode == 'frontend' && empty($_SERVER['REDIRECT_CONTREXX_LANG_PREFIX'])) {
-            header('Location: '.ASCMS_PATH_OFFSET.'/'.$this->arrLang[$frontendLangId]['lang']);
+            header('Location: '.ASCMS_PATH_OFFSET.'/'.$this->arrLang[$frontendLangId]['lang'].'/'.CONTREXX_DIRECTORY_INDEX.(empty($_GET) ? '' : '?'.implode('&', array_map(create_function('$a,$b', 'return contrexx_stripslashes($a.\'=\'.$b);'), array_keys($_GET), $_GET))));
             exit;
         }
 
