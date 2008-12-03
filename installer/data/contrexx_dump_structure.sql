@@ -869,12 +869,12 @@ CREATE TABLE `contrexx_module_downloads_cat_locales` (
   `loc_desc` text NOT NULL,
   PRIMARY KEY  (`loc_id`)
 ) TYPE=MyISAM;
-CREATE TABLE `contrexx_module_downloads_categories` (
+CREATE TABLE `contrexx_module_downloads_category` (
   `category_id` int(11) unsigned NOT NULL auto_increment,
   `category_img` varchar(255) NOT NULL default '',
-  `category_author` varchar(255) NOT NULL default '',
-  `category_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `category_state` tinyint(1) NOT NULL default '0',
+  `category_author` int(5) unsigned NOT NULL default '0',
+  `category_created` int(14) unsigned NOT NULL default '0',
+  `category_state` tinyint(1) unsigned NOT NULL default '0',
   `category_order` int(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (`category_id`)
 ) TYPE=MyISAM;
