@@ -66,7 +66,7 @@ class LivecamManager extends LivecamLibrary
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=livecam'>".$_ARRAYLANG['TXT_CAMS']."</a>".
                                    "<a href='index.php?cmd=livecam&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
-        
+
     }
 
     /**
@@ -80,6 +80,11 @@ class LivecamManager extends LivecamLibrary
      */
     function getPage()
     {
+
+/*
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+        */
         global $objTemplate, $_CONFIG;
 
         if (!isset($_REQUEST['act'])) {
@@ -112,8 +117,8 @@ class LivecamManager extends LivecamLibrary
     }
 
     /**
-     * Show the cameras     
-     * 
+     * Show the cameras
+     *
      * @access private
      * @global array
      * @global array
@@ -125,11 +130,11 @@ class LivecamManager extends LivecamLibrary
 
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
         $this->_objTpl->loadTemplateFile('module_livecam_cams.html');
-        
+
         $amount = $this->arrSettings['amount_of_cams'];
-        
+
         $cams = $this->getCamSettings();
-        
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_SETTINGS'            => $_ARRAYLANG['TXT_SETTINGS'],
             'TXT_CURRENT_IMAGE_URL'   => $_ARRAYLANG['TXT_CURRENT_IMAGE_URL'],
@@ -148,7 +153,10 @@ class LivecamManager extends LivecamLibrary
             'ASCMS_PATH_OFFSET'       => ASCMS_PATH_OFFSET,
             'ASCMS_PATH_OFFSET'       => ASCMS_PATH_OFFSET,
             'TXT_SUCCESS'             => $_CORELANG['TXT_SETTINGS_UPDATED'],
-            'TXT_TO_MODULE'           => $_ARRAYLANG['TXT_LIVECAM_TO_MODULE']
+            'TXT_TO_MODULE'           => $_ARRAYLANG['TXT_LIVECAM_TO_MODULE'],
+            'TXT_SHOWFROM'            => $_ARRAYLANG['TXT_LIVECAM_SHOWFROM'],
+            'TXT_SHOWTILL'            => $_ARRAYLANG['TXT_LIVECAM_SHOWTILL'],
+            'TXT_OCLOCK'              => $_ARRAYLANG['TXT_LIVECAM_OCLOCK'],
         ));
 
         for ($i = 1; $i<=$amount; $i++) {
@@ -159,7 +167,7 @@ class LivecamManager extends LivecamLibrary
                 $lightboxActive = '';
                 $lightboxInctive = 'checked="checked"';
             }
-    
+
             $this->_objTpl->setVariable(array(
                 'CAM_NUMBER'             => $i,
                 'CURRENT_IMAGE_URL'      => $cams[$i]['currentImagePath'],
@@ -167,10 +175,14 @@ class LivecamManager extends LivecamLibrary
                 'THUMBNAIL_PATH'         => $cams[$i]['thumbnailPath'],
                 'LIGHTBOX_ACTIVE'         => $lightboxActive,
                 'LIGHTBOX_INACTIVE'         => $lightboxInctive,
-                'CURRENT_IMAGE_MAX_SIZE' => $cams[$i]['maxImageWidth'],    
-                'THUMBNAIL_MAX_SIZE'     => $cams[$i]['thumbMaxSize']
+                'CURRENT_IMAGE_MAX_SIZE' => $cams[$i]['maxImageWidth'],
+                'THUMBNAIL_MAX_SIZE'     => $cams[$i]['thumbMaxSize'],
+                'HOUR_FROM'              => $this->getHourOptions($cams[$i]['showFrom']),
+                'MINUTE_FROM'            => $this->getMinuteOptions($cams[$i]['showFrom']),
+                'HOUR_TILL'              => $this->getHourOptions((!empty($cams[$i]['showTill']) ? $cams[$i]['showTill'] : mktime(23))),
+                'MINUTE_TILL'            => $this->getMinuteOptions((!empty($cams[$i]['showTill']) ? $cams[$i]['showTill'] : mktime(0, 59))),
             ));
-            
+
             if (preg_match("/^https{0,1}:\/\//", $cams[$i]['currentImagePath'])) {
                 $filepath = $cams[$i]['currentImagePath'];
                 $this->_objTpl->setVariable("PATH", $filepath);
@@ -184,16 +196,16 @@ class LivecamManager extends LivecamLibrary
                     $this->_objTpl->hideBlock("current_image");
                 }
             }
-            
-            
+
+
             $this->_objTpl->parse("cam");
-    
+
             /*
             $this->_objTpl->setVariable('BLOCK_USE_BLOCK_SYSTEM', $_CONFIG['blockStatus'] == '1' ? 'checked="checked"' : '');
             */
         }
     }
-    
+
     /**
      * Save the cam's settings
      *
@@ -201,7 +213,7 @@ class LivecamManager extends LivecamLibrary
     function saveCam()
     {
         global $objDatabase;
-        
+
         $id = intval($_POST['id']);
         $currentImagePath = $_POST['currentImagePath'];
         $maxImageWidth = intval($_POST['maxImageWidth']);
@@ -209,14 +221,22 @@ class LivecamManager extends LivecamLibrary
         $thumbnailPath = $_POST['thumbnailPath'];
         $thumbMaxSize = intval($_POST['thumbMaxSize']);
         $lightboxActivate = intval($_POST['lightboxActivate']);
-        
+        $hourFrom = intval($_POST['hourFrom']);
+        $hourTill = intval($_POST['hourTill']);
+        $minuteFrom = intval($_POST['minuteFrom']);
+        $minuteTill = intval($_POST['minuteTill']);
+        $showFrom = mktime($hourFrom, $minuteFrom);
+        $showTill = mktime($hourTill, $minuteTill);
+
         $query = " UPDATE ".DBPREFIX."module_livecam
                    SET currentImagePath = '".$currentImagePath."',
                        maxImageWidth = ".$maxImageWidth.",
                        archivePath = '".$archivePath."',
                        thumbnailPath = '".$thumbnailPath."',
                        thumbMaxSize = ".$thumbMaxSize.",
-                       lightboxActivate = '".$lightboxActivate."'
+                       lightboxActivate = '".$lightboxActivate."',
+                       showFrom = $showFrom,
+                       showTill = $showTill
                    WHERE id = ".$id;
         if ($objDatabase->Execute($query) === false) {
             // return a 500 or so
@@ -225,7 +245,7 @@ class LivecamManager extends LivecamLibrary
         }
         die();
     }
-    
+
     /**
      * Show settings
      *
@@ -233,19 +253,19 @@ class LivecamManager extends LivecamLibrary
     private function settings()
     {
         global $_ARRAYLANG, $objDatabase;
-        
+
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
         $this->_objTpl->loadTemplateFile('module_livecam_settings.html');
-        
+
         /*
-            i'd do this differently if i had the time and since there's 
+            i'd do this differently if i had the time and since there's
             only property i guess this isn't that bat
         */
         $query = "SELECT setvalue FROM ".DBPREFIX."module_livecam_settings
                     WHERE setname = 'amount_of_cams'";
         $result = $objDatabase->Execute($query);
-        
-        
+
+
         $this->_objTpl->setVariable(array(
             "TXT_SETTINGS"          => $_ARRAYLANG['TXT_SETTINGS'],
             "TXT_SAVE"              => $_ARRAYLANG['TXT_SAVE'],
@@ -269,24 +289,24 @@ class LivecamManager extends LivecamLibrary
 
         $number_of_cams = intval($_POST['number_of_cams']);
         $this->save("amount_of_cams", $number_of_cams);
-        
+
         for ($i = 1; $i<=$number_of_cams; $i++) {
-            $query = "  SELECT id 
+            $query = "  SELECT id
                         FROM ".DBPREFIX."module_livecam
                         WHERE id = ".$i;
             $result = $objDatabase->Execute($query);
             if ($result->RecordCount() == 0) {
                 $query = "  INSERT INTO ".DBPREFIX."module_livecam
-                            (id, currentImagePath, archivePath, thumbnailPath, 
+                            (id, currentImagePath, archivePath, thumbnailPath,
                              maxImageWidth, thumbMaxSize, lightboxActivate)
                             VALUES
-                            (".$i.", '/webcam/cam".$i."/current.jpg', 
-                             '/webcam/cam".$i."/archive', 
+                            (".$i.", '/webcam/cam".$i."/current.jpg',
+                             '/webcam/cam".$i."/archive',
                              '/webcam/cam".$i."/thumbs', 400, 120, 1)";
                 $objDatabase->Execute($query);
             }
         }
-        
+
         $this->cleanUp($number_of_cams);
     }
 
@@ -315,7 +335,7 @@ class LivecamManager extends LivecamLibrary
             return true;
         }
     }
-    
+
     /**
      * Enter description here...
      *
@@ -324,11 +344,49 @@ class LivecamManager extends LivecamLibrary
     private function cleanUp($number)
     {
         global $objDatabase;
-        
+
         $query = " DELETE FROM ".DBPREFIX."module_livecam
                    WHERE id > ".$number;
         $objDatabase->Execute($query);
     }
-    
+
+
+    /**
+     * gets the contents of a HTML select for a list of hours, if timestamp is set, it also gets the selected value
+     *
+     * @param integer $timestamp Time of the selected value
+     * @return string HTML option list
+     */
+    private function getHourOptions($timestamp) {
+
+        $hours = (!empty($timestamp) ? date('G', $timestamp) : 0);
+        $options = "";
+        for($i = 0; $i < 24; $i++) {
+            $selected = "";
+            if($hours == $i)
+                    $selected = "selected='selected'";
+            $options .= "<option value='$i' $selected>$i</option>";
+        }
+        return $options;
+    }
+
+    /**
+     * gets the contents of a HTML select for a list of minutes, if timestamp is set, it also gets the selected value
+     *
+     * @param integer $timestamp Time of the selected value
+     * @return string HTML option list
+     */
+    private function getMinuteOptions($timestamp) {
+        $minutes = date('i', $timestamp);
+        $options = "";
+
+        for($i = 0; $i < 60; $i++) {
+            $selected = "";
+            if($minutes == $i)
+                $selected = "selected='selected'";
+            $options .= "<option value='$i' $selected>$i</option>";
+        }
+        return $options;
+    }
 }
 ?>

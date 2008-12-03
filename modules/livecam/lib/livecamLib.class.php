@@ -69,7 +69,9 @@ class LivecamLibrary
                             thumbnailPath,
                             maxImageWidth,
                             thumbMaxSize,
-                            lightboxActivate
+                            lightboxActivate,
+                            showFrom,
+                            showTill
                     FROM contrexx_module_livecam";
         if ($id != 0) {
             // select only one
@@ -90,7 +92,9 @@ class LivecamLibrary
                     "thumbnailPath"             => $result->fields['thumbnailPath'],
                     "maxImageWidth"             => $result->fields['maxImageWidth'],
                     "thumbMaxSize"              => $result->fields['thumbMaxSize'],
-                    "lightboxActivate"          => $result->fields['lightboxActivate']
+                    "lightboxActivate"          => $result->fields['lightboxActivate'],
+                    "showFrom"                  => $result->fields['showFrom'],
+                    "showTill"                  => $result->fields['showTill']
                 );
                 $ret[$result->fields['id']] = $cam;
                 $result->MoveNext();
