@@ -856,19 +856,6 @@ CREATE TABLE `contrexx_module_docsys_categories` (
   `sort_style` enum('alpha','date','date_alpha') NOT NULL default 'alpha',
   PRIMARY KEY  (`catid`)
 ) TYPE=MyISAM ;
-CREATE TABLE `contrexx_module_downloads_cat_lang` (
-  `category` int(11) NOT NULL default '0',
-  `language` int(11) NOT NULL default '0',
-  KEY `category` (`category`)
-) TYPE=MyISAM;
-CREATE TABLE `contrexx_module_downloads_cat_locales` (
-  `loc_id` int(11) unsigned NOT NULL auto_increment,
-  `loc_lang` int(11) NOT NULL default '0',
-  `loc_cat` int(11) NOT NULL default '0',
-  `loc_name` varchar(255) NOT NULL default '',
-  `loc_desc` text NOT NULL,
-  PRIMARY KEY  (`loc_id`)
-) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_category` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `parent_id` int(11) unsigned NOT NULL default '0',
@@ -885,6 +872,13 @@ CREATE TABLE `contrexx_module_downloads_category` (
   `modify_file_access_id` int(11) unsigned NOT NULL default '0',
   `image` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_downloads_category_locale` (
+  `lang_id` int(11) unsigned NOT NULL default '0',
+  `category_id` int(11) unsigned NOT NULL default '0',
+  `name` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  PRIMARY KEY  (`lang_id`,`category_id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_files` (
   `file_id` int(11) unsigned NOT NULL auto_increment,
