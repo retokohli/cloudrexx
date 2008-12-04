@@ -870,10 +870,10 @@ CREATE TABLE `contrexx_module_downloads_category` (
   `deletable_by_owner` tinyint(1) unsigned NOT NULL default '0',
   `modify_access_by_owner` tinyint(1) unsigned NOT NULL default '0',
   `read_access_id` int(11) unsigned NOT NULL default '0',
-  `add_subdirectory_access_id` int(11) unsigned NOT NULL default '0',
-  `modify_subdirectory_access_id` int(11) unsigned NOT NULL default '0',
-  `add_file_access_id` int(11) unsigned NOT NULL default '0',
-  `modify_file_access_id` int(11) unsigned NOT NULL default '0',
+  `add_subcategories_access_id` int(11) unsigned NOT NULL default '0',
+  `manage_subcategories_access_id` int(11) unsigned NOT NULL default '0',
+  `add_files_access_id` int(11) unsigned NOT NULL default '0',
+  `manage_files_access_id` int(11) unsigned NOT NULL default '0',
   `image` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM;
