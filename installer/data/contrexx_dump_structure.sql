@@ -839,7 +839,6 @@ CREATE TABLE `contrexx_module_docsys` (
   `source` varchar(250) NOT NULL default '',
   `url1` varchar(250) NOT NULL default '',
   `url2` varchar(250) NOT NULL default '',
-  `catid` int(2) unsigned NOT NULL default '0',
   `lang` int(2) unsigned NOT NULL default '0',
   `userid` int(6) unsigned NOT NULL default '0',
   `startdate` date NOT NULL default '0000-00-00',
@@ -856,6 +855,11 @@ CREATE TABLE `contrexx_module_docsys_categories` (
   `sort_style` enum('alpha','date','date_alpha') NOT NULL default 'alpha',
   PRIMARY KEY  (`catid`)
 ) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_docsys_entry_category` (
+  `entry` int(10) unsigned NOT NULL,
+  `category` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`entry`,`category`)
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_category` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `parent_id` int(11) unsigned NOT NULL default '0',
