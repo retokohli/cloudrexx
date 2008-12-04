@@ -870,13 +870,20 @@ CREATE TABLE `contrexx_module_downloads_cat_locales` (
   PRIMARY KEY  (`loc_id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_category` (
-  `category_id` int(11) unsigned NOT NULL auto_increment,
-  `category_img` varchar(255) NOT NULL default '',
-  `category_author` int(5) unsigned NOT NULL default '0',
-  `category_created` int(14) unsigned NOT NULL default '0',
-  `category_state` tinyint(1) unsigned NOT NULL default '0',
-  `category_order` int(3) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`category_id`)
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `is_active` tinyint(1) unsigned NOT NULL default '0',
+  `visibility` tinyint(1) unsigned NOT NULL default '0',
+  `owner_id` int(5) unsigned NOT NULL default '0',
+  `order` int(3) unsigned NOT NULL default '0',
+  `deletable_by_owner` tinyint(1) unsigned NOT NULL default '0',
+  `modify_access_by_owner` tinyint(1) unsigned NOT NULL default '0',
+  `read_access_id` int(11) unsigned NOT NULL default '0',
+  `add_subdirectory_access_id` int(11) unsigned NOT NULL default '0',
+  `modify_subdirectory_access_id` int(11) unsigned NOT NULL default '0',
+  `add_file_access_id` int(11) unsigned NOT NULL default '0',
+  `modify_file_access_id` int(11) unsigned NOT NULL default '0',
+  `image` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`)
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_files` (
   `file_id` int(11) unsigned NOT NULL auto_increment,
