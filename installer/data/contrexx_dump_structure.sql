@@ -871,6 +871,7 @@ CREATE TABLE `contrexx_module_downloads_cat_locales` (
 ) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_category` (
   `id` int(11) unsigned NOT NULL auto_increment,
+  `parent_id` int(11) unsigned NOT NULL default '0',
   `is_active` tinyint(1) unsigned NOT NULL default '0',
   `visibility` tinyint(1) unsigned NOT NULL default '0',
   `owner_id` int(5) unsigned NOT NULL default '0',
