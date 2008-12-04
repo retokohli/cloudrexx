@@ -872,8 +872,8 @@ CREATE TABLE `contrexx_module_downloads_cat_locales` (
 CREATE TABLE `contrexx_module_downloads_category` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `parent_id` int(11) unsigned NOT NULL default '0',
-  `is_active` tinyint(1) unsigned NOT NULL default '0',
-  `visibility` tinyint(1) unsigned NOT NULL default '0',
+  `is_active` tinyint(1) unsigned NOT NULL default '1',
+  `visibility` tinyint(1) unsigned NOT NULL default '1',
   `owner_id` int(5) unsigned NOT NULL default '0',
   `order` int(3) unsigned NOT NULL default '0',
   `deletable_by_owner` tinyint(1) unsigned NOT NULL default '0',
