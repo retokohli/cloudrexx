@@ -35,12 +35,6 @@ class docSys extends docSysLibrary
     var $_objTpl;
 
 
-    function docSys($pageContent)
-    {
-        $this->__construct($pageContent);
-    }
-
-
     // CONSTRUCTOR
     function __construct($pageContent)
     {
@@ -56,6 +50,7 @@ class docSys extends docSysLibrary
     // GET PAGE
     function getdocSysPage()
     {
+        
         if (!isset($_REQUEST['cmd'])) {
             $_REQUEST['cmd'] = '';
         }
@@ -187,8 +182,8 @@ class docSys extends docSysLibrary
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
-        $selectedId = "";
-        $docFilter = "";
+        $selectedId = null;
+        $docFilter = null;
         $paging = "";
         $pos = intval($_GET['pos']);
         $i = 1;
@@ -207,83 +202,46 @@ class docSys extends docSysLibrary
             }else{
                 die('database error. '.$objDatabase->ErrorMsg());
             }
-            $docFilter =" n.catid='$selectedId' AND ";
+            //$docFilter = " '$selectedId' AND ";
         }
         $this->_objTpl->setVariable("DOCSYS_NO_CATEGORY", $_ARRAYLANG['TXT_CATEGORY']);
-        $this->_objTpl->setVariable("DOCSYS_CAT_MENU", $this->getCategoryMenu($this->langId, $selectedId));
+        $this->_objTpl->setVariable("DOCSYS_CAT_MENU", $this->getCategoryMenu($this->langId, array($selectedId), $_REQUEST['cmd']));
         $this->_objTpl->setVariable("TXT_PERFORM", $_ARRAYLANG['TXT_PERFORM']);
-
-        $query = "SELECT n.date AS date,
-                         n.id AS docid,
-                         n.title AS title,
-                         n.author AS author,
-                         nc.name AS name
-                    FROM ".DBPREFIX."module_docsys".MODULE_INDEX." AS n,
-                         ".DBPREFIX."module_docsys".MODULE_INDEX."_categories AS nc
-                   WHERE status = 1
-                     AND n.lang=".$this->langId."
-                     AND $docFilter n.catid=nc.catid
-                     AND (startdate<=CURDATE() OR startdate='0000-00-00')
-                     AND (enddate>=CURDATE() OR enddate='0000-00-00') ";
-
-       if(!empty($docFilter)){
-            switch($sortType){
-                case 'alpha':
-                    $query .= " ORDER BY `title`";
-                break;
-
-                case 'date':
-                    $query .= " ORDER BY `date` DESC";
-                break;
-
-                case 'date_alpha':
-                    $query .= " ORDER BY DATE_FORMAT( FROM_UNIXTIME( `date` ) , '%Y%j' ) DESC, `title`";
-                break;
-
-                default:
-                    $query .= " ORDER BY n.date DESC";
-            }
-        }else{
-            $query .= " ORDER BY n.date DESC";
-        }
-
-
-
-
-        /***start paging ****/
-
-        $objResult = $objDatabase->Execute($query);
-        $count = $objResult->RecordCount();
+        
+        $count = $this->countOverviewEntries($selectedId);
+        $entries = $this->getOverviewTitles($pos, $selectedId, $sortType);
+        
         if ($count > intval($_CONFIG['corePagingLimit'])) {
             $paging = getPaging($count, $pos, "&section=docsys".MODULE_INDEX, $_ARRAYLANG['TXT_DOCUMENTS'], true);
         }
         $this->_objTpl->setVariable("DOCSYS_PAGING", $paging);
-        $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos) ;
-        /*** end paging ***/
 
-        if($count>=1){
-            while (!$objResult->EOF) {
-                ($i % 2) ? $class  = 'row1' : $class  = 'row2';
+        if ($count >= 1) {
+            $row = 1;
+            foreach ($entries as $entry) {
                 $this->_objTpl->setVariable(array(
-                    'DOCSYS_STYLE'      => $class,
-                    'DOCSYS_LONG_DATE'  => date($this->dateLongFormat,$objResult->fields['date']),
-                    'DOCSYS_DATE'       => date($this->dateFormat,$objResult->fields['date']),
-                    'DOCSYS_LINK'      => "<a href=\"?section=docsys".MODULE_INDEX."&amp;cmd=details&amp;id=".$objResult->fields['docid']."\" title=\"".stripslashes($objResult->fields['title'])."\">".stripslashes($objResult->fields['title'])."</a>",
-                    'DOCSYS_CATEGORY'   => stripslashes($objResult->fields['name']),
-                    'DOCSYS_AUTHOR'    => stripslashes($objResult->fields['author']),
+                    'DOCSYS_STYLE'      => ($row++) % 2 + 1,
+                    'DOCSYS_LONG_DATE'  => date($this->dateLongFormat, $entry['date']),
+                    'DOCSYS_DATE'       => date($this->dateFormat, $entry['date']),
+                    'DOCSYS_LINK'	    => "<a href=\"?section=docsys".MODULE_INDEX."&amp;cmd=".$_REQUEST['cmd']."_details&amp;id=".
+                                            $entry['id']."\" title=\"".stripslashes($entry['title'])."\">".stripslashes($entry['title'])."</a>",
+                    'DOCSYS_CATEGORY'   => stripslashes($entry['name']),
+                    'DOCSYS_AUTHOR'     => stripslashes($entry['author']),               
                 ));
-
+                
                 $this->_objTpl->parse("row");
-                $i++;
-                $objResult->MoveNext();
             }
-        }else{
-            $this->_objTpl->setVariable('DOCSYS_STYLE', $class);
-            $this->_objTpl->setVariable('DOCSYS_DATE', '');
-            $this->_objTpl->setVariable('DOCSYS_LINK', '');
-            $this->_objTpl->setVariable('DOCSYS_CATEGORY', $_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND']);
+        } else {
+            $this->_objTpl->setVariable(array(
+                'DOCSYS_STYLE'      => 1,
+                'DOCSYS_DATE'       => "",
+                'DOCSYS_LINK'       => "",
+                'DOCSYS_CATEGORY'   => $_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND']
+            ));
+
             $this->_objTpl->parse("row");
         }
+
         return $this->_objTpl->get();
     }
 }

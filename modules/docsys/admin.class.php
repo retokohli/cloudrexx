@@ -74,22 +74,22 @@ class docSysManager extends docSysLibrary
             case "add":
                 $this->add();
                 // $this->overview();
-            break;
+                break;
 
             case "edit":
                 $this->edit();
-            break;
+                break;
 
             case "delete":
                 $this->delete();
                 $this->overview();
-            break;
+                break;
 
             case "update":
                 $this->update();
                 $this->overview();
-            break;
-
+                break;
+ 
             case "cat":
                 $this->manageCategories();
                 break;
@@ -163,57 +163,34 @@ class docSysManager extends docSysLibrary
         $this->_objTpl->setGlobalVariable(array(
             'TXT_DELETE'    => $_ARRAYLANG['TXT_DELETE']
         ));
-
-          /**************************************
-             paging start
-         **************************************/
-        $query = "SELECT n.id AS docSysId,
-                         n.date AS date,
-                         n.changelog AS changelog,
-                         n.title AS title,
-                         n.status AS status,
-                         n.author AS author,
-                         l.name AS name,
-                         nc.name AS catname,
-                         u.username AS username
-                    FROM ".DBPREFIX."module_docsys".MODULE_INDEX."_categories AS nc,
-                         ".DBPREFIX."module_docsys".MODULE_INDEX." AS n,
-                         ".DBPREFIX."languages AS l,
-                         ".DBPREFIX."access_users AS u
-                   WHERE n.lang=l.id
-                     AND n.lang=".$this->langId."
-                     AND nc.catid=n.catid
-                     AND u.id=n.userid
-                ORDER BY n.id DESC";
-
-        $objResult = $objDatabase->Execute($query);
-        $count = $objResult->RecordCount();
+        $count = $this->countAllEntries();
         $pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
         $paging = ($count>intval($_CONFIG['corePagingLimit'])) ? getPaging($count, $pos, "&amp;cmd=docsys".MODULE_INDEX, $_ARRAYLANG['TXT_DOCUMENTS '],true) : "";
 
-
-        $objDatabase->SelectLimit($query, $pos, $_CONFIG['corePagingLimit']);
-        $this->_objTpl->setCurrentBlock('row');
-        while (!$objResult->EOF) {
-            $class = ($i % 2) ? "row2" : "row1";
-            $i++;
-            $statusPicture = ($objResult->fields['status']==1) ? "status_green.gif" : "status_red.gif";
-
+        $entries = $this->getAllEntries($pos);
+        $row = 1;
+        $this->_objTpl->setCurrentBlock('row'); 
+        foreach ($entries as $entry) {
+            $categories = "";
+            foreach ($entry['categories'] as $category) {
+                $categories .= $category."<br />";
+            }
+            $categories = substr($categories, 0, -6); // remove the last br
+            
             $this->_objTpl->setVariable(array(
-                'DOCSYS_ID'         =>$objResult->fields['docSysId'],
-                'DOCSYS_DATE'       =>date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                'DOCSYS_TITLE'      =>stripslashes($objResult->fields['title']),
-                'DOCSYS_AUTHOR'      =>stripslashes($objResult->fields['author']),
-                'DOCSYS_USER'       =>$objResult->fields['username'],
-                'DOCSYS_CHANGELOG'  =>date(ASCMS_DATE_FORMAT, $objResult->fields['changelog']),
-                'DOCSYS_PAGING'     =>$paging,
-                'DOCSYS_CLASS'      =>$class,
-                'DOCSYS_CATEGORY'   =>$objResult->fields['catname'],
-                'DOCSYS_STATUS'     =>$objResult->fields['status'],
-                'DOCSYS_STATUS_PICTURE' => $statusPicture,
+                'DOCSYS_ID'         => $entry['id'],
+                'DOCSYS_DATE'       => date(ASCMS_DATE_FORMAT, $entry['date']),
+                'DOCSYS_TITLE'      => stripslashes($entry['title']),
+                'DOCSYS_AUTHOR'     => stripslashes($entry['author']),
+                'DOCSYS_USER'       => $entry['username'],
+                'DOCSYS_CHANGELOG'  => date(ASCMS_DATE_FORMAT, $entry['changelog']),
+                'DOCSYS_PAGING'     => $paging,
+                'DOCSYS_CLASS'      => ($row++ % 2)+1,
+                'DOCSYS_CATEGORY'   => $categories,
+                'DOCSYS_STATUS'     => $entry['status'],
+                'DOCSYS_STATUS_PICTURE' => ($entry['status']==1) ? "status_green.gif" : "status_red.gif",
             ));
             $this->_objTpl->parseCurrentBlock("row");
-            $objResult->MoveNext();
         }
     }
 
@@ -271,7 +248,7 @@ class docSysManager extends docSysLibrary
             'DOCSYS_STATUS'          => "checked='checked'",
             'DOCSYS_ID'              => "",
             'DOCSYS_TOP_TITLE'       => $_ARRAYLANG['TXT_CREATE_DOCUMENT'],
-            'DOCSYS_CAT_MENU'        => $this->getCategoryMenu($this->langId, $selectedOption=""),
+            'DOCSYS_CAT_MENU'        => $this->getCategoryMenu($this->langId),
             'DOCSYS_STARTDATE'       => "",
             'DOCSYS_ENDDATE' => "",
             'DOCSYS_DATE'  => date(ASCMS_DATE_FORMAT, time()),
@@ -371,8 +348,7 @@ class docSysManager extends docSysLibrary
 
         $id = intval($_REQUEST['id']);
 
-        $query = "SELECT `catid`,
-                           `lang`,
+        $query = "SELECT   `lang`,
                            `date`,
                            `id`,
                            `title`,
@@ -385,12 +361,10 @@ class docSysManager extends docSysLibrary
                            `enddate`,
                            `status`
                       FROM `".DBPREFIX."module_docsys".MODULE_INDEX."`
-                     WHERE id = '$id'
-                     LIMIT 1";
-        $objResult = $objDatabase->Execute($query);
+                     WHERE id = '$id'";
+        $objResult = $objDatabase->SelectLimit($query, 1);
 
         if(!$objResult->EOF) {
-            $catId=$objResult->fields['catid'];
             $id = $objResult->fields['id'];
             $docSysText = stripslashes($objResult->fields['text']);
 
@@ -405,23 +379,25 @@ class docSysManager extends docSysLibrary
             }
 
             $this->_objTpl->setVariable(array(
-                'DOCSYS_ID'            => $id,
-                'DOCSYS_STORED_ID'    => $id,
-                'DOCSYS_TITLE'        => stripslashes(htmlspecialchars($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET)),
-                'DOCSYS_AUTHOR'        => stripslashes(htmlspecialchars($objResult->fields['author'], ENT_QUOTES, CONTREXX_CHARSET)),
-                'DOCSYS_TEXT'        => get_wysiwyg_editor('docSysText', $docSysText),
-                'DOCSYS_SOURCE'        => $objResult->fields['source'],
-                'DOCSYS_URL1'        => $objResult->fields['url1'],
-                'DOCSYS_URL2'        => $objResult->fields['url2'],
-                'DOCSYS_STARTDATE'    => $startDate,
-                'DOCSYS_ENDDATE'    => $endDate,
-                'DOCSYS_STATUS'        => $status,
-                'DOCSYS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                'DOCSYS_JS_DATE'    => date('Y-m-d', $objResult->fields['date']),
+                'DOCSYS_ID'             => $id,
+                'DOCSYS_STORED_ID'      => $id,
+                'DOCSYS_TITLE'          => stripslashes(htmlspecialchars($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET)),
+                'DOCSYS_AUTHOR'         => stripslashes(htmlspecialchars($objResult->fields['author'], ENT_QUOTES, CONTREXX_CHARSET)),
+                'DOCSYS_TEXT'           => get_wysiwyg_editor('docSysText', $docSysText),
+                'DOCSYS_SOURCE'         => $objResult->fields['source'],
+                'DOCSYS_URL1'           => $objResult->fields['url1'],
+                'DOCSYS_URL2'           => $objResult->fields['url2'],
+                'DOCSYS_STARTDATE'      => $startDate,
+                'DOCSYS_ENDDATE'        => $endDate,
+                'DOCSYS_STATUS'         => $status,
+                'DOCSYS_DATE'           => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
+                'DOCSYS_JS_DATE'        => date('Y-m-d', $objResult->fields['date']),
             ));
         }
+        
+        $categories = $this->getCategories($id);
 
-        $this->_objTpl->setVariable("DOCSYS_CAT_MENU",$this->getCategoryMenu($this->langId, $catId));
+        $this->_objTpl->setVariable("DOCSYS_CAT_MENU",$this->getCategoryMenu($this->langId, $categories));
         $this->_objTpl->setVariable("DOCSYS_FORM_ACTION","update");
         $this->_objTpl->setVariable("DOCSYS_STORED_FORM_ACTION","update");
         $this->_objTpl->setVariable("DOCSYS_TOP_TITLE",$_ARRAYLANG['TXT_EDIT']);
@@ -471,7 +447,6 @@ class docSysManager extends docSysLibrary
                                source='$source',
                                url1='$url1',
                                url2='$url2',
-                               catid='$catId',
                                lang='$this->langId',
                                userid = '$userId',
                                status = '$status',
@@ -479,19 +454,22 @@ class docSysManager extends docSysLibrary
                                enddate = '$endDate',
                                changelog = '$changelog'
                          WHERE id = '$id'";
-           if(!$objDatabase->Execute($query)) {
+            if(!$objDatabase->Execute($query)) {
                    $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
-           } else {
+            } else {
                 $this->createRSS();
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
-           }
+            }
+           
+            if (!$this->removeCategories($id)) {
+                $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'].": ".$objDatabase->ErrorMsg();
+            } else{
+                if (!$this->assignCategories($id, $_POST['docSysCat'])) {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'].": ".$objDatabase->ErrorMsg();
+                }
+            }
         }
     }
-
-
-
-
-
 
     /**
     * Update news
@@ -554,6 +532,7 @@ class docSysManager extends docSysLibrary
     function insert()
     {
         global $objDatabase, $_ARRAYLANG;
+        
 
         $objFWUser = FWUser::getFWUserObject();
 
@@ -591,7 +570,6 @@ class docSysManager extends docSysLibrary
                                   `source`,
                                   `url1`,
                                   `url2`,
-                                  `catid`,
                                   `lang`,
                                   `startdate`,
                                   `enddate`,
@@ -606,7 +584,6 @@ class docSysManager extends docSysLibrary
                                   '$source',
                                   '$url1',
                                   '$url2',
-                                  '$cat',
                                   '$this->langId',
                                   '$startDate',
                                   '$endDate',
@@ -614,12 +591,18 @@ class docSysManager extends docSysLibrary
                                   '$userid',
                                   '$date')";
 
-
         if ($objDatabase->Execute($query)){
             $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
         }
+        
+        $id = $objDatabase->Insert_ID();
+        if (!$this->assignCategories($id, $_POST['docSysCat'])) {
+            $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'].": ".$objDatabase->ErrorMsg();
+        }
+        
+        
         $this->overview();
     }
 
