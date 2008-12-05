@@ -7,7 +7,7 @@
  * @subpackage  module_downloads
  */
 $_ARRAYLANG['TXT_MANAGE_CATEGORIES'] = "Kategorien verwalten";
-$_ARRAYLANG['TXT_ADD_CATEGORY'] = "Kategorie hinzufügen";
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'] = "Kategorie hinzufügen";
 $_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_PLACEHOLDER'] = "Platzhalter";
 $_ARRAYLANG['TXT_MANAGE_FILES'] = "Dateien verwalten";
@@ -17,8 +17,8 @@ $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD'] = "Download hinzufügen";
 $_ARRAYLANG['TXT_LANGUAGES'] = "Sprachen";
 $_ARRAYLANG['TXT_DOWNLOADS_LANGUAGE'] = "Sprache";
 $_ARRAYLANG['TXT_NAME'] = "Name";
-$_ARRAYLANG['TXT_DESCRIPTION'] = "Beschreibung";
-$_ARRAYLANG['TXT_IMAGE'] = "Bild";
+$_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'] = "Beschreibung";
+$_ARRAYLANG['TXT_DOWNLOADS_IMAGE'] = "Bild";
 $_ARRAYLANG['TXT_BROWSE'] = "Durchsuchen";
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_SUCCESSFULL'] = "Erfolgreich hinzugefügt";
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_FAILED'] = "Fehler beim speichern";
@@ -84,4 +84,20 @@ $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'] = "Kategorien";
 $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'] = "Lizenz";
 $_ARRAYLANG['TXT_DOWNLOADS_VERSION'] = "Version";
 $_ARRAYLANG['TXT_DOWNLOADS_SIZE'] = "Grösse";
+$_ARRAYLANG['TXT_DOWNLOADS_GENERAL'] = "Allgemein";
+$_ARRAYLANG['TXT_DOWNLOADS_NAME'] = "Name";
+$_ARRAYLANG['TXT_DOWNLOADS_EXTENDED'] = "Erweitert";
+$_ARRAYLANG['TXT_DOWNLOADS_OWNER'] = "Besitzer";
+$_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_IMAGE'] = "Kategorienbild";
+$_ARRAYLANG['TXT_DOWNLOADS_REMOVE_IMAGE'] = "Bild entfernen";
+$_ARRAYLANG['TXT_DOWNLOADS_VIEW_CONTENT'] = "Inhalt ansehen";
+$_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_GROUPS'] = "Vorhandene Gruppen";
+$_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'] = "Alle auswählen";
+$_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'] = "Auswahl entfernen";
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_SUBCATEGORIES'] = "Hinzufügen von Unterkategorien";
+$_ARRAYLANG['TXT_DOWNLOADS_MANAGE_SUBCATEGORIES'] = "Unterkategorien Verwalten";
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_FILES'] = "Dateiein hinzufügen";
+$_ARRAYLANG['TXT_DOWNLOADS_MANAGE_FILES'] = "Dateien verwalten";
+$_ARRAYLANG['TXT_DOWNLOADS_CANCEL'] = "Abbrechen";
+$_ARRAYLANG['TXT_DOWNLOADS_SAVE'] = "Speichern";
 ?>

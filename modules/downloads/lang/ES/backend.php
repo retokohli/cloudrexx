@@ -7,7 +7,7 @@
  * @subpackage  module_downloads
  */
 $_ARRAYLANG['TXT_MANAGE_CATEGORIES'] = "Gestionar Categor&iacute;as";
-$_ARRAYLANG['TXT_ADD_CATEGORY'] = "Antilde;adir Categor&iacute;a";
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'] = "Antilde;adir Categor&iacute;a";
 $_ARRAYLANG['TXT_SETTINGS'] = "Propiedades";
 $_ARRAYLANG['TXT_PLACEHOLDER'] = "Variable";
 $_ARRAYLANG['TXT_MANAGE_FILES'] = "Gestionar Ficheros";
@@ -17,8 +17,8 @@ $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD'] = "A&ntilde;adir Descarga";
 $_ARRAYLANG['TXT_LANGUAGES'] = "Idiomas";
 $_ARRAYLANG['TXT_DOWNLOADS_LANGUAGE'] = "Idioma";
 $_ARRAYLANG['TXT_NAME'] = "Nombre";
-$_ARRAYLANG['TXT_DESCRIPTION'] = "Descripci&oacute;n";
-$_ARRAYLANG['TXT_IMAGE'] = "Imagen";
+$_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'] = "Descripci&oacute;n";
+$_ARRAYLANG['TXT_DOWNLOADS_IMAGE'] = "Imagen";
 $_ARRAYLANG['TXT_BROWSE'] = "Buscar";
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_SUCCESSFULL'] = "Se ha a&ntilde;adido con &eacute;xito";
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_FAILED'] = "Fallo al guardar";
@@ -84,4 +84,20 @@ $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'] = "Categor&iacute;as";
 $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'] = "Licencia";
 $_ARRAYLANG['TXT_DOWNLOADS_VERSION'] = "Versi&oacute;n";
 $_ARRAYLANG['TXT_DOWNLOADS_SIZE'] = "Tama&ntilde;o";
+$_ARRAYLANG['TXT_DOWNLOADS_GENERAL'] = "General";
+$_ARRAYLANG['TXT_DOWNLOADS_NAME'] = "Nombre";
+$_ARRAYLANG['TXT_DOWNLOADS_EXTENDED'] = "Extendido";
+$_ARRAYLANG['TXT_DOWNLOADS_OWNER'] = "Owner";
+$_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_IMAGE'] = "Category image";
+$_ARRAYLANG['TXT_DOWNLOADS_REMOVE_IMAGE'] = "Remove image";
+$_ARRAYLANG['TXT_DOWNLOADS_VIEW_CONTENT'] = "View content";
+$_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_GROUPS'] = "Grupos disponibles";
+$_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'] = "Seleccionar todo";
+$_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'] = "Deseleccionar todo";
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_SUBCATEGORIES'] = "Adding subcategories";
+$_ARRAYLANG['TXT_DOWNLOADS_MANAGE_SUBCATEGORIES'] = "Manage subcategories";
+$_ARRAYLANG['TXT_DOWNLOADS_ADD_FILES'] = "Add files";
+$_ARRAYLANG['TXT_DOWNLOADS_MANAGE_FILES'] = "Manage files";
+$_ARRAYLANG['TXT_DOWNLOADS_CANCEL'] = "Cancelar";
+$_ARRAYLANG['TXT_DOWNLOADS_SAVE'] = "Guardar";
 ?>
