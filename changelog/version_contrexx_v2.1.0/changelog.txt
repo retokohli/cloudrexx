@@ -13,3 +13,9 @@ Datenbank Manager
 - Die mySQL Syntax der Sicherungen wurde gefixt, so dass die erzeugten .sql
   Dateien auch über myPhpAdmin oder mySQL Clients fehlerfrei importiert werden
   können.
+
+Grundeinstellungen
+- Auf die Konfigurationsdatei /config/settings.php wird automatisch versucht
+  Schreibzugriff zu vergeben.
+- Es können keine Änderungen getätigt werden, solange auf die
+  Konfigurationsdatei kein Schreibzugriff besteht.
