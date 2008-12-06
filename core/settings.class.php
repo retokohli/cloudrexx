@@ -16,6 +16,7 @@
 require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
 require_once ASCMS_CORE_PATH.'/'.'XMLSitemap.class.php';
 require_once ASCMS_CORE_PATH.'/SmtpSettings.class.php';
+require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 
 /**
  * Settings
@@ -35,12 +36,34 @@ class settingsManager
     var $strSettingsFile;
     var $strErrMessage;
     var $strOkMessage;
+    private $writable;
 
     function __construct()
     {
         $this->strSettingsFile = ASCMS_DOCUMENT_ROOT.'/config/settings.php';
+        $this->checkWritePermissions();
     }
 
+    private function checkWritePermissions()
+    {
+        global $_CORELANG;
+
+        $objFile = new File();
+
+        if (is_writable($this->strSettingsFile)
+             || $objFile->setChmod(dirname($this->strSettingsFile), substr(dirname($this->strSettingsFile), strlen(ASCMS_PATH_OFFSET)), '/'.basename($this->strSettingsFile))
+        ) {
+            $this->writable = true;
+        } else {
+            $this->writable = false;
+            $this->strErrMessage = sprintf($_CORELANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'], $this->strSettingsFile);
+        }
+    }
+
+    public function isWritable()
+    {
+        return $this->writable;
+    }
 
     /**
      * Perform the requested function depending on $_GET['act']
@@ -165,6 +188,12 @@ class settingsManager
             'TXT_FRONTEND_EDITING_STATUS_HELP'    => $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING_HELP']
         ));
 
+        if ($this->isWritable()) {
+            $objTemplate->parse('settings_submit_button');
+        } else {
+            $objTemplate->hideBlock('settings_submit_button');
+        }
+
         $objResult = $objDatabase->Execute('SELECT setid,
                                                    setname,
                                                    setvalue,
@@ -273,7 +302,7 @@ class settingsManager
     {
         global $objDatabase,$_CORELANG;
 
-        if (is_writable($this->strSettingsFile)) {
+        if ($this->isWritable()) {
             $handleFile = fopen($this->strSettingsFile,'w+');
             if ($handleFile) {
             //Header & Footer
@@ -337,10 +366,11 @@ class settingsManager
 
                 fclose($handleFile);
             }
+            return true;
         } else {
             $this->strOkMessage = '';
             $this->strErrMessage = $this->strSettingsFile.' '.$_CORELANG['TXT_SETTINGS_ERROR_WRITABLE'];
-
+            return false;
         }
     }
 
@@ -458,7 +488,8 @@ class settingsManager
                 'SETTINGS_SMTP_ACCOUNT'        => htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET),
                 'SETTINGS_SMTP_HOST'        => !empty($arrSmtp['hostname']) ? htmlentities($arrSmtp['hostname'], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;',
                 'SETTINGS_SMTP_USERNAME'    => !empty($arrSmtp['username']) ? htmlentities($arrSmtp['username'], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;',
-                'SETTINGS_SMTP_DEFAULT'        => $id == $_CONFIG['coreSmtpServer'] ? 'checked="checked"' : ''
+                'SETTINGS_SMTP_DEFAULT'        => $id == $_CONFIG['coreSmtpServer'] ? 'checked="checked"' : '',
+                'SETTINGS_SMTP_OPTION_DISABLED' => $this->isWritable() ? '' : 'disabled="disabled"'
             ));
             $objTemplate->parse('settings_smtp_accounts');
         }
