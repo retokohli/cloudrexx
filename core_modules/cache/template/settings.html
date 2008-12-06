@@ -14,7 +14,7 @@ Text[1]=["","{TXT_SETTINGS_EXPIRATION_HELP}"];
 	<li><a id="setTab_Caching3" href="javascript:{}" onclick="selectTab('Caching3')" title="{TXT_TAB3}">{TXT_TAB3}</a></li>
 </ul>
 <div id="Caching1" class="setTab" style="display:block;">
-	<form name="frmSettings" method="POST" action="index.php?cmd=settings&amp;act=cache_update">
+	<form name="frmSettings" method="post" action="index.php?cmd=settings&amp;act=cache_update">
 		<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
 			<tr>
 				<th colspan="2">{TXT_TAB1}</th>
@@ -30,13 +30,13 @@ Text[1]=["","{TXT_SETTINGS_EXPIRATION_HELP}"];
 			<tr class="row1">
 				<td>{TXT_SETTINGS_EXPIRATION}</td>
 				<td>
-					<input type="text" name="cachingExpiration" value="{SETTINGS_EXPIRATION}" size="70" maxlength="250">
+					<input type="text" name="cachingExpiration" value="{SETTINGS_EXPIRATION}" size="70" maxlength="250" />
 					<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
 				</td>
 			</tr>
 		</table>
 		<br />
-		<input type="submit" name="frmSettings_Submit" value="{TXT_SETTINGS_SAVE}">
+		<!-- BEGIN cache_submit_button --><input type="submit" name="frmSettings_Submit" value="{TXT_SETTINGS_SAVE}"><!-- END cache_submit_button -->
 	</form>
 </div>
 <div id="Caching2" class="setTab" style="display:none;">

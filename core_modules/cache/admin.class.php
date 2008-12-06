@@ -1,6 +1,6 @@
 <?php
 /**
- * Cache 
+ * Cache
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.1
@@ -9,9 +9,10 @@
  * @todo        Edit PHP DocBlocks!
  */
 require_once ASCMS_CORE_MODULE_PATH.'/cache/lib/cacheLib.class.php';
+require_once ASCMS_CORE_PATH.'/settings.class.php';
 
 /**
- * Cache 
+ * Cache
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.1
@@ -22,6 +23,8 @@ class Cache extends cacheLib {
 	var $objTpl;
 	var $strCacheablePagesFile = 'index.php';
 	var $arrSettings = array();
+
+	private $objSettings;
 
 	/**
 	 * Constructor
@@ -44,6 +47,7 @@ class Cache extends cacheLib {
 		$this->objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
 		$this->arrSettings = $this->getSettings();
+		$this->objSettings = new settingsManager();
 
 		if (is_dir(ASCMS_CACHE_PATH)) {
 			if (is_writable(ASCMS_CACHE_PATH)) {
@@ -107,6 +111,13 @@ class Cache extends cacheLib {
 			'TXT_STATS_FOLDERSIZE'			=>	$_CORELANG['TXT_CACHE_STATS_FOLDERSIZE']
 		));
 
+		if ($this->objSettings->isWritable()) {
+            $this->objTpl->parse('cache_submit_button');
+        } else {
+            $this->objTpl->hideBlock('cache_submit_button');
+            $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', $this->objSettings->strErrMessage);
+        }
+
 		$intFoldersize = 0;
 		$intFiles = 0;
 
@@ -146,6 +157,10 @@ class Cache extends cacheLib {
 	function updateSettings() {
 		global $objDatabase, $objTemplate, $_CORELANG;
 
+		if (!isset($_POST['frmSettings_Submit'])) {
+		    return;
+		}
+
 		$strStatus 		= ($_POST['cachingStatus'] == 'on') ? 'on' : 'off';
 		$intExpiration 	= intval($_POST['cachingExpiration']);
 
@@ -163,7 +178,13 @@ class Cache extends cacheLib {
 
 		$this->arrSettings = $this->getSettings();
 
-		$objTemplate->SetVariable('CONTENT_OK_MESSAGE',$_CORELANG['TXT_SETTINGS_UPDATED']);
+		$this->objSettings->writeSettingsFile();
+
+		if (empty($this->objSettings->strErrMessage)) {
+            $objTemplate->SetVariable('CONTENT_OK_MESSAGE', $_CORELANG['TXT_SETTINGS_UPDATED']);
+		} else {
+		    $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', $this->objSettings->strErrMessage);
+		}
 	}
 
 	/**
