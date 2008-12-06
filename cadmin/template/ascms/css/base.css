@@ -332,6 +332,49 @@ table.subnavbar {
 	color: black;
 }
 
+#tabsubmenu {
+    color: black;
+    margin: 0;
+    padding: 2px;
+    z-index: 1;
+    padding-left: 0px
+}
+
+#tabsubmenu li {
+    display: inline;
+    overflow: hidden;
+    list-style-type: none;
+}
+
+#tabsubmenu a, a.active {
+    color: black;
+    background: white;
+    FONT-WEIGHT: normal;
+    border: 1px solid #DDE4FF;
+    padding: 2px 5px 2px 5px;
+    margin: 0px;
+    text-decoration: none;
+}
+
+#tabsubmenu a.active {
+    background: #F4F7FF;
+    border-bottom: 1px solid #DDE4FF;
+}
+
+#tabsubmenu a:hover {
+    color: black;
+    background: #F4F7FF;
+}
+
+#tabsubmenu a:visited {
+    color: black;
+}
+
+#tabsubmenu a.active:hover {
+    background: #F4F7FF;
+    color: black;
+}
+
 #alertbox {
 	border: 1px solid;
 	color: #ff0000;

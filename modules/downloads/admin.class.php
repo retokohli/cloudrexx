@@ -1,5 +1,5 @@
 <?php
-if (0) {
+if (1) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
     $objDatabase->debug = 1;
@@ -142,6 +142,17 @@ class downloads extends DownloadsLibrary
      */
     var $_strOkMessage = '';
 
+    private $arrPermissionDependencies = array(
+        'read' => array(
+            'add_subcategories' => array(
+                'manage_subcategories' => null
+            ),
+            'add_files' => array(
+                'manage_files' => null
+            )
+        )
+    );
+
 
     /**
      * PHP5 constructor
@@ -184,10 +195,10 @@ class downloads extends DownloadsLibrary
                 $this->_files();
                 break;
             case 'categories':
-                $this->_categories();
+                $this->categories();
                 break;
             case 'category':
-                $this->_category();
+                $this->category();
                 break;
             case 'placeholder':
                 $this->_placeholder();
@@ -213,83 +224,417 @@ class downloads extends DownloadsLibrary
     }
 
 
+
+    private function resolvePermissionDependencies($arrCategoryPermissions, $arrPermissionDependencies, $parentPermission = null, $protected = false)
+    {
+        foreach($arrPermissionDependencies as $permission => $arrDependendPermissions) {
+            $arrCategoryPermissions[$permission]['protected'] = $arrCategoryPermissions[$permission]['protected'] || $protected;
+            if (is_array($arrDependendPermissions)) {
+                $arrCategoryPermissions = $this->resolvePermissionDependencies($arrCategoryPermissions, $arrDependendPermissions, $permission, $arrCategoryPermissions[$permission]['protected']);
+            }
+            if (isset($arrCategoryPermissions[$parentPermission]) && $arrCategoryPermissions[$parentPermission]['protected']) {
+                $arrCategoryPermissions[$parentPermission]['groups'] = array_unique(array_merge($arrCategoryPermissions[$parentPermission]['groups'], $arrCategoryPermissions[$permission]['groups']));
+            }
+        }
+
+        return $arrCategoryPermissions;
+    }
+
     /**
      * category edit
      *
      * @global object $objDatabase
      * @global array $_ARRAYLANG
      */
-    function _category()
+    private function category()
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $objLanguage, $_LANGID;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'];
-        $this->_objTpl->loadTemplateFile('category.html');
+        $this->_objTpl->loadTemplateFile('module_downloads_category_modify.html');
 
-        $category = intval($_REQUEST["id"]);
-        if ($category<1) {
-            header('location: index.php?cmd=downloads&act=categories');
-            exit;
-        }
+        $objFWUser = FWUser::getFWUserObject();
+        $arrCategory = $this->getCategory(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
 
-        $CategoriyInfo = $this->_CategoryInfo($category);
-        // -----------------------------------------
-        // checkboxes & languagetabs 4 languages
-        // -----------------------------------------
-        $checkboxesSource = '';
-        $languageTabsNavi = '';
-        $languageTabsSource = '';
-        $js_arr = '';
-        $hideJS = '';
-        $fieldsArray = array();
-        $LiClass = 'active';
-        $StyleDisplay = 'block';
-        foreach ($this->_arrLang as $langId => $LangInfo) {
-            $fieldsArray = array('category_name_'.$langId => array('name' => $_ARRAYLANG['TXT_NAME'], 'value' => $CategoriyInfo['category_loc']['lang'][$langId]['name'], 'rte' => 0), 'category_desc_'.$langId => array('name' => $_ARRAYLANG['TXT_DESCRIPTION'], 'value' => $CategoriyInfo['category_loc']['lang'][$langId]['desc'], 'rte' => 2));
+        if (isset($_POST['downloads_category_save'])) {
+            $arrCategory['id']                                = isset($_POST['id']) ? intval($_POST['id']) : 0;
+            $arrCategory['parent_id']                         = isset($_POST['downloads_category_parent_id']) ? intval($_POST['downloads_category_parent_id']) : 0;
+            $arrCategory['is_active']                         = isset($_POST['downloads_category_active']) && $_POST['downloads_category_active'];
+            $arrCategory['owner_id']                          = isset($_POST['downloads_category_owner_id']) ? intval($_POST['downloads_category_owner_id']) : $objFWUser->objUser->getId();
+            $arrCategory['deletable_by_owner']                = isset($_POST['downloads_category_deletable_by_owner']) && $_POST['downloads_category_deletable_by_owner'];
+            $arrCategory['modify_access_by_owner']            = isset($_POST['downloads_category_manage_by_owner']) && $_POST['downloads_category_manage_by_owner'];
+            $arrCategory['image']                             = isset($_POST['downloads_category_image']) ? contrexx_stripslashes($_POST['downloads_category_image']) : '';
+            $arrCategory['visibility']                        = (!isset($_POST['downloads_category_read']) || !$_POST['downloads_category_read']) || isset($_POST['downloads_category_visibility']) && $_POST['downloads_category_visibility'];
+            $arrCategory['name']                              = isset($_POST['downloads_category_name']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_category_name'])) : array();
+            $arrCategory['description']                       = isset($_POST['downloads_category_description']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_category_description'])) : array();
 
-            /*
-            if ($this->_CatLang($category, $langId)) {
-                $checked = 'checked="checked"';
-            } else {
-                $checked = '';
-                $hideJS .= '
-                document.getElementById("addEntry_'.$LangInfo['name'].'").style.display = "none";';
+
+            foreach ($this->arrPermissionTypes as $protectionType) {
+                $arrCategoryPermissions[$protectionType]['protected'] = isset($_POST['downloads_category_'.$protectionType]) && $_POST['downloads_category_'.$protectionType];
+                $arrCategoryPermissions[$protectionType]['groups'] = !empty($_POST['downloads_category_'.$protectionType.'_associated_groups']) ? array_map('intval', $_POST['downloads_category_'.$protectionType.'_associated_groups']) : array();
             }
-            */
 
-            $checkboxesSource .= '<td><input  name="frmEditEntry_Languages[]" value="'.$langId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$LangInfo['name'].'\');" type="checkbox" />'.$LangInfo['name'].' ['.$LangInfo['lang'].']</td>';
-            $languageTabsNavi .= '<li><a id="addEntry_'.$LangInfo['name'].'" class="'.$LiClass.'" href="javascript:{}" onclick="selectTab(\''.$LangInfo['name'].'\')" title="'.$LangInfo['name'].'" style="display: inline;">'.$LangInfo['name'].'</a></li>';
-            $LiClass = 'inactive';
-            $languageTabsSource .= $this->_LangTabHTML($LangInfo['name'], 'display: '.$StyleDisplay.';', $LangInfo['name'], $fieldsArray);
-            $StyleDisplay = 'none';
-            $js_arr .= 'arrTabToDiv["addEntry_'.$LangInfo['name'].'"] = "'.$LangInfo['name'].'"; ';
+            $arrCategory['tmp_permissions'] = $this->resolvePermissionDependencies($arrCategoryPermissions, $this->arrPermissionDependencies);
+
+            if (!isset($objLanguage)) {
+                $objLanguage = new FWLanguage();
+                $arrLanguages =$objLanguage->getLanguageArray();
+            }
+
+            $namesSet = true;
+            foreach ($arrLanguages as $langId => $arrLanguage) {
+                if (!empty($arrCategory['name'][$langId])) {
+                    $namesSet = false;
+                    break;
+                }
+            }
+
+            if ($namesSet) {
+                // TODO: add store methode
+
+                foreach ($arrCategory['tmp_permissions'] as $permission => $arrPermission) {
+                    //$this->setProtection($arrPermission['protected'], $arrCategory[$permission.'_access_id'], $arrPermission['groups']);
+                }
+            } else {
+                // TODO: error message name not in every language set
+
+            }
+
+
+
+
+
         }
 
-        $languageTabsNavi = '<ul id="tabmenu">'.$languageTabsNavi.'</ul>';
-        $GroupsSelect = $this->_permissionsSelect('AddCategory');
+
+
+        /*
+TXT_DOWNLOADS_GENERAL
+TXT_DOWNLOADS_PERMISSIONS
+TXT_DOWNLOADS_ADD_CATEGORY
+TXT_DOWNLOADS_EDIT_CATEGORY
+TXT_DOWNLOADS_NAME
+TXT_DOWNLOADS_EXTENDED
+TXT_DOWNLOADS_DESCRIPTION
+TXT_DOWNLOADS_OWNER
+TXT_DOWNLOADS_IMAGE
+TXT_DOWNLOADS_CATEGORY_IMAGE
+TXT_DOWNLOADS_REMOVE_IMAGE
+TXT_DOWNLOADS_VIEW_CONTENT
+TXT_DOWNLOADS_AVAILABLE_GROUPS
+TXT_DOWNLOADS_CHECK_ALL
+TXT_DOWNLOADS_UNCHECK_ALL
+TXT_DOWNLOADS_ASSOCIATED_GROUPS
+//TXT_DOWNLOADS_ADD_SUBCATEGORIES
+//TXT_DOWNLOADS_MANAGE_SUBCATEGORIES
+//TXT_DOWNLOADS_ADD_FILES
+//TXT_DOWNLOADS_MANAGE_FILES
+TXT_DOWNLOADS_CANCEL
+TXT_DOWNLOADS_SAVE
+TXT_DOWNLOADS_ACTIVE
+TXT_DOWNLOADS_SUBCATEGORIES
+TXT_DOWNLOADS_ADD
+TXT_DOWNLOADS_MANAGE
+TXT_DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER
+TXT_DOWNLOADS_CATEGORY_MANAGE_BY_OWNER
+TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
+         */
+
 
         $this->_objTpl->setVariable(array(
-            'TXT_DOWNLOADS_EDIT_CATEGORY' => $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'],
-            'TXT_LANGUAGES' => $_ARRAYLANG['TXT_LANGUAGES'],
-            'TXT_IMAGE' => $_ARRAYLANG['TXT_IMAGE'],
-            'TXT_BROWSE' => $_ARRAYLANG['TXT_BROWSE'],
-            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
-            'TXT_AUTHOR' => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
-            'TXT_DOWNLOADS_PERMISSIONS' => $_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'],
-            'GROUP_SELECT' => $GroupsSelect,
-            'LANG_SELECT' => $checkboxesSource,
-            'LANG_TABS' => $languageTabsSource,
-            'LANG_TAB_NAVI' => $languageTabsNavi,
-            'JS_ARR' => $js_arr,
-            'JS_HIDE' => $hideJS
+            'TXT_DOWNLOADS_GENERAL'                                     => $_ARRAYLANG['TXT_DOWNLOADS_GENERAL'],
+            'TXT_DOWNLOADS_PERMISSIONS'                                 => $_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'],
+            'TXT_DOWNLOADS_NAME'                                        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
+            'TXT_DOWNLOADS_DESCRIPTION'                                 => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
+            'TXT_DOWNLOADS_ACTIVE'                                      => $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'],
+            'TXT_DOWNLOADS_OWNER'                                       => $_ARRAYLANG['TXT_DOWNLOADS_OWNER'],
+            'TXT_DOWNLOADS_IMAGE'                                       => $_ARRAYLANG['TXT_DOWNLOADS_IMAGE'],
+            'TXT_DOWNLOADS_CATEGORY_IMAGE'                              => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_IMAGE'],
+            'TXT_DOWNLOADS_REMOVE_IMAGE'                                => $_ARRAYLANG['TXT_DOWNLOADS_REMOVE_IMAGE'],
+            'TXT_DOWNLOADS_FILES'                                       => $_ARRAYLANG['TXT_DOWNLOADS_FILES'],
+            'TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'                       => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'],
+            'TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'                        => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'],
+            'TXT_DOWNLOADS_CHECK_ALL'                                   => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
+            'TXT_DOWNLOADS_UNCHECK_ALL'                                 => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
+            'TXT_DOWNLOADS_VIEW_CONTENT'                                => $_ARRAYLANG['TXT_DOWNLOADS_VIEW_CONTENT'],
+            'TXT_DOWNLOADS_SUBCATEGORIES'                               => $_ARRAYLANG['TXT_DOWNLOADS_SUBCATEGORIES'],
+            'TXT_DOWNLOADS_ADD'                                         => $_ARRAYLANG['TXT_DOWNLOADS_ADD'],
+            'TXT_DOWNLOADS_MANAGE'                                      => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE'],
+            'TXT_DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER'                 => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER'],
+            'TXT_DOWNLOADS_CATEGORY_MANAGE_BY_OWNER'                    => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_MANAGE_BY_OWNER'],
+//            'TXT_DOWNLOADS_ADD_SUBCATEGORIES'                           => $_ARRAYLANG['TXT_DOWNLOADS_ADD_SUBCATEGORIES'],
+//            'TXT_DOWNLOADS_MANAGE_SUBCATEGORIES'                        => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_SUBCATEGORIES'],
+//            'TXT_DOWNLOADS_ADD_FILES'                                   => $_ARRAYLANG['TXT_DOWNLOADS_ADD_FILES'],
+//            'TXT_DOWNLOADS_MANAGE_FILES'                                => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_FILES'],
+            'TXT_DOWNLOADS_CANCEL'                                      => $_ARRAYLANG['TXT_DOWNLOADS_CANCEL'],
+            'TXT_DOWNLOADS_SAVE'                                        => $_ARRAYLANG['TXT_DOWNLOADS_SAVE'],
+            'TXT_DOWNLOADS_BROWSE'                                      => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
+            'TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC'                    => $_ARRAYLANG['TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC'],
+            'TXT_DOWNLOADS_READ_ALL_ACCESS_DESC'                        => $_ARRAYLANG['TXT_DOWNLOADS_READ_ALL_ACCESS_DESC'],
+            'TXT_DOWNLOADS_READ_SELECTED_ACCESS_DESC'                   => $_ARRAYLANG['TXT_DOWNLOADS_READ_SELECTED_ACCESS_DESC'],
+            'TXT_DOWNLOADS_ADD_SUBCATEGORIES_ALL_ACCESS_DESC'           => $_ARRAYLANG['TXT_DOWNLOADS_ADD_SUBCATEGORIES_ALL_ACCESS_DESC'],
+            'TXT_DOWNLOADS_ADD_SUBCATEGORIES_SELECTED_ACCESS_DESC'      => $_ARRAYLANG['TXT_DOWNLOADS_ADD_SUBCATEGORIES_SELECTED_ACCESS_DESC'],
+            'TXT_DOWNLOADS_MANAGE_SUBCATEGORIES_ALL_ACCESS_DESC'        => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_SUBCATEGORIES_ALL_ACCESS_DESC'],
+            'TXT_DOWNLOADS_MANAGE_SUBCATEGORIES_SELECTED_ACCESS_DESC'   => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_SUBCATEGORIES_SELECTED_ACCESS_DESC'],
+            'TXT_DOWNLOADS_ADD_FILES_ALL_ACCESS_DESC'                   => $_ARRAYLANG['TXT_DOWNLOADS_ADD_FILES_ALL_ACCESS_DESC'],
+            'TXT_DOWNLOADS_ADD_FILES_SELECTED_ACCESS_DESC'              => $_ARRAYLANG['TXT_DOWNLOADS_ADD_FILES_SELECTED_ACCESS_DESC'],
+            'TXT_DOWNLOADS_MANAGE_FILES_ALL_ACCESS_DESC'                => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_FILES_ALL_ACCESS_DESC'],
+            'TXT_DOWNLOADS_MANAGE_FILES_SELECTED_ACCESS_DESC'           => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_FILES_SELECTED_ACCESS_DESC']
         ));
+
+        // parse general attributes
+        $this->_objTpl->setVariable(array(
+            'DOWNLOADS_CATEGORY_ID'                         => $arrCategory['id'],
+            'DOWNLOADS_CATEGORY_PARENT_ID'                  => $arrCategory['parent_id'],
+            'DOWNLOADS_CATEGORY_OPERATION_TITLE'            => $arrCategory['id'] ? $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'] : $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'],
+            'DOWNLOADS_CATEGORY_OWNER'                      => Permission::checkAccess(142, 'static', true) ? $this->getUserDropDownMenu($arrCategory['owner_id'], $objFWUser->objUser->getId()) : $this->getParsedUsername($arrCategory['owner_id']),
+            'DOWNLOADS_CATEGORY_OWNER_CONFIG_DISPLAY'       => Permission::checkAccess(142, 'static', true) && $arrCategory['owner_id'] != $objFWUser->objUser->getId() ? '' : 'none',
+            'DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER_CHECKED' => $arrCategory['deletable_by_owner'] ? 'checked="checked"' : '',
+            'DOWNLOADS_CATEGORY_MANAGE_BY_OWNER_CHECKED'    => $arrCategory['modify_access_by_owner'] ? 'checked="checked"' : '',
+            'DOWNLOADS_CATEGORY_ACTIVE_CHECKED'             => $arrCategory['is_active'] ? 'checked="checked"' : '',
+            'DOWNLOADS_CATEGORY_VISIBILITY_CHECKED'         => $arrCategory['visibility'] ? 'checked="checked"' : ''
+        ));
+
+
+        // parse image attribute
+        if (!empty($arrCategory['image']) && file_exists(ASCMS_PATH.$arrCategory['image'])) {
+            if (file_exists(ASCMS_PATH.$arrCategory['image'].'.thumb')) {
+                $imageSrc = $arrCategory['image'].'.thumb';
+            } else {
+                $imageSrc = $arrCategory['image'];
+            }
+            $image = $arrCategory['image'];
+        } else {
+            $image = '';
+            $imageSrc = $this->defaultCategoryImage['src'];
+        }
 
         $this->_objTpl->setVariable(array(
-            'VALUE_AUTHOR' => $CategoriyInfo["category_author"],
-            'VALUE_IMG' => $CategoriyInfo["category_img"],
-            'VALUE_ID' => $category,
+            'DOWNLOADS_CATEGORY_IMAGE'                  => $image,
+            'DOWNLOADS_CATEGORY_IMAGE_SRC'              => $imageSrc,
+            'DOWNLOADS_DEFAULT_CATEGORY_IMAGE'          => $this->defaultCategoryImage['src'],
+            'DOWNLOADS_DEFAULT_CATEGORY_IMAGE_WIDTH'    => $this->defaultCategoryImage['width'].'px',
+            'DOWNLOADS_DEFAULT_CATEGORY_IMAGE_HEIGHT'   => $this->defaultCategoryImage['height'].'px',
+            'DOWNLOADS_CATEGORY_IMAGE_REMOVE_DISPLAY'   => empty($image) ? 'none' : ''
         ));
 
+
+        // parse name and description attributres
+        if (!isset($objLanguage)) {
+            $objLanguage = new FWLanguage();
+            $arrLanguages =$objLanguage->getLanguageArray();
+        }
+        foreach ($arrLanguages as $langId => $arrLanguage) {
+            if (!isset($arrCategory['name'][$langId])) {
+                $arrCategory['name'][$langId] = '';
+            }
+            if (!isset($arrCategory['description'][$langId])) {
+                $arrCategory['description'][$langId] = '';
+            }
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_CATEGORY_NAME'       => htmlentities($arrCategory['name'][$langId], ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_CATEGORY_LANG_ID'    => $langId,
+                'DOWNLOADS_CATEGORY_LANG_NAME'  => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
+            ));
+            $this->_objTpl->parse('downloads_category_name_list');
+
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_CATEGORY_DESCRIPTION'        => htmlentities($arrCategory['description'][$langId], ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_CATEGORY_LANG_ID'            => $langId,
+                'DOWNLOADS_CATEGORY_LANG_DESCRIPTION'   => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
+            ));
+            $this->_objTpl->parse('downloads_category_description_list');
+        }
+
+        $this->_objTpl->setVariable(array(
+            'DOWNLOADS_CATEGORY_NAME'   => htmlentities($arrCategory['name'][$_LANGID], ENT_QUOTES, CONTREXX_CHARSET),
+            'TXT_DOWNLOADS_EXTENDED'    => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
+        ));
+        $this->_objTpl->parse('downloads_category_name');
+
+        $this->_objTpl->setVariable(array(
+            'DOWNLOADS_CATEGORY_DESCRIPTION'    => htmlentities($arrCategory['description'][$_LANGID], ENT_QUOTES, CONTREXX_CHARSET),
+            'TXT_DOWNLOADS_EXTENDED'            => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
+        ));
+        $this->_objTpl->parse('downloads_category_description');
+
+
+        // parse access permissions
+        $arrPermissions = $this->getParsedAccessPermissions($arrCategory);
+        foreach ($arrPermissions as $permissionType => $arrPermissionType) {
+            $permissionTypeUC = strtoupper($permissionType);
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_ALL_CHECKED'              => !$arrPermissionType['set'] ? 'checked="checked"' : '',
+                'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_SELECTED_CHECKED'         => $arrPermissionType['set'] ? 'checked="checked"' : '',
+                'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_DISPLAY'                  => $arrPermissionType['set'] ? '' : 'none',
+                'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_NOT_ASSOCIATED_GROUPS'    => implode("\n", $arrPermissionType['not_associated_groups']),
+                'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_ASSOCIATED_GROUPS'        => implode("\n", $arrPermissionType['associated_groups'])
+            ));
+        }
+
+
+
+/*
+$this->_objTpl->setVariable(array(
+    'DOWNLOADS_CATEGORY_READ_ACCESS_ALL_CHECKED'
+    'DOWNLOADS_CATEGORY_READ_ACCESS_SELECTED_CHECKED'
+    'DOWNLOADS_CATEGORY_READ_ACCESS_DISPLAY'
+    'DOWNLOADS_CATEGORY_READ_ACCESS_NOT_ASSOCIATED_GROUPS'  =>
+    'DOWNLOADS_CATEGORY_READ_ACCESS_ASSOCIATED_GROUPS'
+));
+
+'DOWNLOADS_CATEGORY_ADD_SUBCATEGORIES_ALL_CHECKED'
+'DOWNLOADS_CATEGORY_ADD_SUBCATEGORIES_SELECTED_CHECKED'
+'DOWNLOADS_CATEGORY_ADD_SUBCATEGORIES_DISPLAY'
+'DOWNLOADS_CATEGORY_ADD_SUBCATEGORIES_NOT_ASSOCIATED_GROUPS'
+'DOWNLOADS_CATEGORY_ADD_SUBCATEGORIES_ASSOCIATED_GROUPS'
+
+'DOWNLOADS_CATEGORY_MANAGE_SUBCATEGORIES_ALL_CHECKED'
+'DOWNLOADS_CATEGORY_MANAGE_SUBCATEGORIES_SELECTED_CHECKED'
+'DOWNLOADS_CATEGORY_MANAGE_SUBCATEGORIES_DISPLAY'
+'DOWNLOADS_CATEGORY_MANAGE_SUBCATEGORIES_NOT_ASSOCIATED_GROUPS'
+'DOWNLOADS_CATEGORY_MANAGE_SUBCATEGORIES_ASSOCIATED_GROUPS'
+
+'DOWNLOADS_CATEGORY_ADD_FILES_ALL_CHECKED'
+'DOWNLOADS_CATEGORY_ADD_FILES_SELECTED_CHECKED'
+'DOWNLOADS_CATEGORY_ADD_FILES_DISPLAY'
+'DOWNLOADS_CATEGORY_ADD_FILES_NOT_ASSOCIATED_GROUPS'
+'DOWNLOADS_CATEGORY_ADD_FILES_ASSOCIATED_GROUPS'
+
+'DOWNLOADS_CATEGORY_MANAGE_FILES_ALL_CHECKED'
+'DOWNLOADS_CATEGORY_MANAGE_FILES_SELECTED_CHECKED'
+'DOWNLOADS_CATEGORY_MANAGE_FILES_DISPLAY'
+'DOWNLOADS_CATEGORY_MANAGE_FILES_NOT_ASSOCIATED_GROUPS'
+'DOWNLOADS_CATEGORY_MANAGE_FILES_ASSOCIATED_GROUPS'
+*/
+
+
+//
+//
+//        $category = intval($_REQUEST["id"]);
+//        if ($category<1) {
+//            header('location: index.php?cmd=downloads&act=categories');
+//            exit;
+//        }
+//
+//        $CategoriyInfo = $this->_CategoryInfo($category);
+//        // -----------------------------------------
+//        // checkboxes & languagetabs 4 languages
+//        // -----------------------------------------
+//        $checkboxesSource = '';
+//        $languageTabsNavi = '';
+//        $languageTabsSource = '';
+//        $js_arr = '';
+//        $hideJS = '';
+//        $fieldsArray = array();
+//        $LiClass = 'active';
+//        $StyleDisplay = 'block';
+//        foreach ($this->_arrLang as $langId => $LangInfo) {
+//            $fieldsArray = array('category_name_'.$langId => array('name' => $_ARRAYLANG['TXT_NAME'], 'value' => $CategoriyInfo['category_loc']['lang'][$langId]['name'], 'rte' => 0), 'category_desc_'.$langId => array('name' => $_ARRAYLANG['TXT_DESCRIPTION'], 'value' => $CategoriyInfo['category_loc']['lang'][$langId]['desc'], 'rte' => 2));
+//
+//            /*
+//            if ($this->_CatLang($category, $langId)) {
+//                $checked = 'checked="checked"';
+//            } else {
+//                $checked = '';
+//                $hideJS .= '
+//                document.getElementById("addEntry_'.$LangInfo['name'].'").style.display = "none";';
+//            }
+//            */
+//
+//            $checkboxesSource .= '<td><input  name="frmEditEntry_Languages[]" value="'.$langId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$LangInfo['name'].'\');" type="checkbox" />'.$LangInfo['name'].' ['.$LangInfo['lang'].']</td>';
+//            $languageTabsNavi .= '<li><a id="addEntry_'.$LangInfo['name'].'" class="'.$LiClass.'" href="javascript:{}" onclick="selectTab(\''.$LangInfo['name'].'\')" title="'.$LangInfo['name'].'" style="display: inline;">'.$LangInfo['name'].'</a></li>';
+//            $LiClass = 'inactive';
+//            $languageTabsSource .= $this->_LangTabHTML($LangInfo['name'], 'display: '.$StyleDisplay.';', $LangInfo['name'], $fieldsArray);
+//            $StyleDisplay = 'none';
+//            $js_arr .= 'arrTabToDiv["addEntry_'.$LangInfo['name'].'"] = "'.$LangInfo['name'].'"; ';
+//        }
+//
+//        $languageTabsNavi = '<ul id="tabmenu">'.$languageTabsNavi.'</ul>';
+//        $GroupsSelect = $this->_permissionsSelect('AddCategory');
+//
+//        $this->_objTpl->setVariable(array(
+//            'TXT_DOWNLOADS_EDIT_CATEGORY' => $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'],
+//            'TXT_LANGUAGES' => $_ARRAYLANG['TXT_LANGUAGES'],
+//            'TXT_IMAGE' => $_ARRAYLANG['TXT_IMAGE'],
+//            'TXT_BROWSE' => $_ARRAYLANG['TXT_BROWSE'],
+//            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
+//            'TXT_AUTHOR' => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+//            'TXT_DOWNLOADS_PERMISSIONS' => $_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'],
+//            'GROUP_SELECT' => $GroupsSelect,
+//            'LANG_SELECT' => $checkboxesSource,
+//            'LANG_TABS' => $languageTabsSource,
+//            'LANG_TAB_NAVI' => $languageTabsNavi,
+//            'JS_ARR' => $js_arr,
+//            'JS_HIDE' => $hideJS
+//        ));
+//
+//        $this->_objTpl->setVariable(array(
+//            'VALUE_AUTHOR' => $CategoriyInfo["category_author"],
+//            'VALUE_IMG' => $CategoriyInfo["category_img"],
+//            'VALUE_ID' => $category,
+//        ));
+
+    }
+
+    private function setProtection($protection, &$accessId, $associatedGroups)
+    {
+        if ($protection) {
+            // set protection
+            if ($accessId || $accessId = Permission::createNewDynamicAccessId()) {
+                var_dump(Permission::setAccess($accessId, 'dynamic', $associatedGroups));
+            } else {
+                // remove protection due that no new access-ID could have been created
+                $accessId = 0;
+            }
+        } else {
+            // remove protection
+            var_dump(Permission::removeAccess($accessId));
+            $accessId = 0;
+        }
+    }
+
+    private function getParsedAccessPermissions($arrCategory)
+    {
+        $arrPermissions = array();
+        $objFWUser = FWUser::getFWUserObject();
+
+        foreach ($this->arrPermissionTypes as $permissionType) {
+            $arrPermissions[$permissionType] = array(
+                'set'                   => false,
+                'group_ids'             => array(),
+                'not_associated_groups' => array(),
+                'associated_groups'     => array()
+            );
+
+            if (isset($arrCategory['tmp_permissions'])) {
+                if ($arrCategory['tmp_permissions'][$permissionType]['protected']) {
+                    $arrPermissions[$permissionType]['set'] = true;
+                    $arrPermissions[$permissionType]['group_ids'] = $arrCategory['tmp_permissions'][$permissionType]['groups'];
+                }
+            } elseif ($arrCategory[$permissionType.'_access_id']) {
+                $arrPermissions[$permissionType]['set'] = true;
+                $objGroup = $objFWUser->objGroup->getGroups(array('dynamic' => $arrCategory[$permissionType.'_access_id']));
+                $arrPermissions[$permissionType]['group_ids'] = $objGroup->getLoadedGroupIds();
+            }
+        }
+
+        $objGroup = $objFWUser->objGroup->getGroups();
+        while (!$objGroup->EOF) {
+            $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
+
+            foreach ($this->arrPermissionTypes as $permissionType) {
+                if (in_array($objGroup->getId(), $arrPermissions[$permissionType]['group_ids'])) {
+                    $arrPermissions[$permissionType]['associated_groups'][] = $option;
+                } else {
+                    $arrPermissions[$permissionType]['not_associated_groups'][] = $option;
+                }
+            }
+
+            $objGroup->next();
+        }
+
+        return $arrPermissions;
     }
 
 
@@ -808,109 +1153,101 @@ class downloads extends DownloadsLibrary
      * @global object $objDatabase
      * @global array $_ARRAYLANG
      */
-    function _categories()
+    private function categories()
     {
         global $_ARRAYLANG, $objDatabase;
 
+        // TODO: add to lang repository
+        $_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'] = 'Inhalt der Kategorie %s zeigen...';
+        $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] = 'Klicken Sie hier, um diese Kategorie zu deaktivieren.';
+        $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC'] = 'Klicken Sie hier, um diese Kategorie zu aktivieren.';
+        // TXT_DOWNLOADS_ACTIVE
+        // TXT_DOWNLOADS_INACTIVE
+        // TXT_DOWNLOADS_UNKNOWN
+
+
+
+        // TODO: clean up
         $this->_pageTitle = $_ARRAYLANG['TXT_MANAGE_CATEGORIES'];
-        $this->_objTpl->loadTemplateFile('categories.html');
+        $this->_objTpl->loadTemplateFile('module_downloads_categories.html');
 
-        if (isset($_REQUEST["category"])) {
-            $category = intval($_REQUEST["category"]);
-        } else {
-            $category = 0;
-        }
 
-        if (isset($_REQUEST["mode"])) {
+        $parentCategoryId = isset($_REQUEST["parent_id"]) ? intval($_REQUEST["parent_id"]) : 0;
 
-            // INSERT
-            // ---------------------------------
-            if ($_REQUEST["mode"] == "insert") {
-                $InserCat = $this->InsertCategory();
-                if ($InserCat) {
-                    $this->_strOkMessage = $_ARRAYLANG['TXT_DOWNLOADS_ADD_SUCCESSFULL'];
-                } else {
-                    $this->_strErrMessage = $_ARRAYLANG['TXT_DOWNLOADS_ADD_FAILED'];
-                }
-            }
-
-            // UPDATE
-            // ---------------------------------
-            if ($_REQUEST["mode"] == "update") {
-                $UpdateCat = $this->UpdateCategory($category);
-                if ($UpdateCat) {
-                    $this->_strOkMessage = $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_SUCCESSFULL'];
-                } else {
-                    $this->_strErrMessage = $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FAILED'];
-                }
-            }
-
-            // DELETE
-            // ---------------------------------
-            if ($_REQUEST["mode"] == "delete") {
-                $DeleteCat = $this->_DeleteCategory($_REQUEST["id"]);
-                if ($DeleteCat) {
-                    $this->_strOkMessage = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUCCESSFULL'];
-                } else {
-                    $this->_strErrMessage = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_FAILED'];
-                }
-            }
-
-        }
-
+        // TODO: clean up
         $this->_objTpl->setVariable(array(
             'TXT_MANAGE_CATEGORIES' => $_ARRAYLANG['TXT_MANAGE_CATEGORIES'],
             'TXT_ADD_CATEGORY' => $_ARRAYLANG['TXT_ADD_CATEGORY'],
         ));
 
-        // -----------------------------------------
-        // list
-        // -----------------------------------------
-        $query = "
-            SELECT category_id
-            FROM ".DBPREFIX."module_downloads_categories
-            ORDER BY category_order";
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult) {
-            $this->_objTpl->setCurrentBlock('categoriesList');
-            while (!$objResult->EOF) {
 
-                $categoryInfo = $this->_CategoryInfo($objResult->fields['category_id']);
 
-                $LanguagesStr = '';
-                $TrennZeichen = '';
-                for($i=0;$i<=count($categoryInfo['category_lang']);$i++) {
-                    if ($categoryInfo['category_lang'][$i]["lang"]!="") {
-                        $LanguagesStr .= $TrennZeichen.$categoryInfo['category_lang'][$i]["lang"];
-                        $TrennZeichen = ', ';
-                    }
+
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_DOWNLOADS_EDIT'    => $_ARRAYLANG['TXT_DOWNLOADS_EDIT'],
+            'TXT_DOWNLOADS_DELETE'  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE']
+        ));
+
+        $arrCategories = $this->GetCategories(null, $parentCategoryId);
+        if ($arrCategories) {
+            foreach ($arrCategories as $arrCategorie) {
+                $description = htmlentities($arrCategorie['description'], ENT_QUOTES, CONTREXX_CHARSET);
+                if (strlen($description) > 200) {
+                    $description = substr($description, 0, 197).'...';
                 }
 
                 $this->_objTpl->setVariable(array(
-                        'SHOP_ROWCLASS' =>
-                            ($objResult->fields['order_status'] == 0
-                                ? 'rowWarn'
-                                : (++$i % 2 ? 'row1' : 'row2')
-                            ),
-                        'CAT_ID' => $categoryInfo["category_id"],
-                        'CAT_NAME' => $categoryInfo["category_loc"][0]["name"],
-                        'CAT_LANG' => $LanguagesStr,
-                        'CAT_ORDER' => $categoryInfo["category_order"],
+                    'DOWNLOADS_CATEGORY_ROW_CLASS'      => 1,
+                    'DOWNLOADS_CATEGORY_ID'             => $arrCategorie['id'],
+                    'DOWNLOADS_CATEGORY_ORDER'          => $arrCategorie['order'],
+                    'DOWNLOADS_CATEGORY_STATUS_LED'     => $arrCategorie['is_active'] ? 'led_green.gif' : 'led_red.gif',
+                    'DOWNLOADS_OPEN_CATEGORY_DESC'      => sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($arrCategorie['name'], ENT_QUOTES, CONTREXX_CHARSET)),
+                    'DOWNLOADS_CATEGORY_NAME'           => htmlentities($arrCategorie['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_CATEGORY_DESCRIPTION'    => $description,
+                    'DOWNLOADS_CATEGORY_AUTHOR'         => $this->getParsedUsername($arrCategorie['owner_id'])
                 ));
-                $this->_objTpl->parse('categoriesList');
-                $objResult->MoveNext();
+
+                if (Permission::checkAccess(142, 'static', true)) {
+                    // managers are allowed to switch the active status of a category
+                    $this->_objTpl->setVariable(array(
+                        'DOWNLOADS_CATEGORY_ID'                  => $arrCategorie['id'],
+                        'DOWNLOADS_CATEGORY_STATUS_JS'           => $arrCategories['is_active'],
+                        'DOWNLOADS_CATEGORY_NAME_JS'             => htmlspecialchars($arrCategorie['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC'  => $arrCategorie['is_active'] ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC']
+                    ));
+                    $this->_objTpl->parse('downloads_category_status_link_open');
+                    $this->_objTpl->parse('downloads_category_status_link_close');
+
+
+                    $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_NAME_JS', htmlspecialchars($arrCategorie['name'], ENT_QUOTES, CONTREXX_CHARSET));
+                    $this->_objTpl->parse('downloads_category_function_list');
+                } else {
+                    $this->_objTpl->setVariable(
+                        'DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC',
+                        $arrCategorie['is_active'] ? $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'] : $_ARRAYLANG['TXT_DOWNLOADS_INACTIVE']
+                    );
+                    $this->_objTpl->hideBlock('downloads_category_status_link_open');
+                    $this->_objTpl->hideBlock('downloads_category_status_link_close');
+
+                    $this->_objTpl->hideBlock('downloads_category_function_list');
+                }
             }
         }
 
+        // TODO: clean up
         $this->_objTpl->setVariable(array(
-            'TXT_MARKED' => $_ARRAYLANG['TXT_MARKED'],
-            'TXT_SELECT_ALL' => $_ARRAYLANG['TXT_SELECT_ALL'],
-            'TXT_REMOVE_SELECTION' => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
-            'TXT_SELECT_ACTION' => $_ARRAYLANG['TXT_SELECT_ACTION'],
-            'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
-            'TXT_DOWNLOADS_ORDER' => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'],
+            'TXT_DOWNLOADS_SELECT_ACTION'   => $_ARRAYLANG['TXT_DOWNLOADS_SELECT_ACTION'],
+            'TXT_DOWNLOADS_DELETE'          => $_ARRAYLANG['TXT_DOWNLOADS_DELETE'],
+            //'TXT_DOWNLOADS_ORDER'           => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'],
+            'TXT_DOWNLOADS_CHECK_ALL'       => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
+            'TXT_DOWNLOADS_UNCHECK_ALL'     => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
         ));
 
+
+
+        // TODO: Add file list
+
+        /*
         // -----------------------------------------
         // checkboxes & languagetabs 4 languages
         // -----------------------------------------
@@ -959,6 +1296,7 @@ class downloads extends DownloadsLibrary
 //            $objFWUser->objGroup->next();
 //        }
 
+
         $GroupsSelect = $this->_permissionsSelect('AddCategory');
 
         $this->_objTpl->setVariable(array(
@@ -979,7 +1317,7 @@ class downloads extends DownloadsLibrary
         ));
 
 
-
+*/
     }
 
 

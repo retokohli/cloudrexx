@@ -392,8 +392,8 @@ function GetFile()
 
     if ($StartDownload) {
         if (substr($FileInfo['file_name'], 0, 7)!='http://' && substr($FileInfo['file_name'], 0, 8)!='https://') {
-            $Dateiname 	= basename($FileInfo['file_name']);
-            $Size 		= filesize(ASCMS_PATH.'/'.$FileInfo['file_name']);
+            $Dateiname  = basename($FileInfo['file_name']);
+            $Size       = filesize(ASCMS_PATH.'/'.$FileInfo['file_name']);
             header("Content-Type: application/force-download");
             header("Content-Disposition: attachment; filename=".$Dateiname."");
             header("Content-Length: ".$Size."");
@@ -507,19 +507,19 @@ function GetFile()
     }
 
     function checkUser(){
-    	global $objDatabase, $objAuth, $objPerm;
-    	if(isset($_REQUEST["id"])){
-    		$UserInfo = userManagement::getUserInfoByName($_REQUEST["id"]);
+        global $objDatabase, $objAuth, $objPerm;
+        if(isset($_REQUEST["id"])){
+            $UserInfo = userManagement::getUserInfoByName($_REQUEST["id"]);
 
-    		$validity 				= $UserInfo['validity'];
-    		$regdate 				= $UserInfo['regdate'];
-            $orderUnixTimeStamp 	= strtotime($regdate);
+            $validity               = $UserInfo['validity'];
+            $regdate                = $UserInfo['regdate'];
+            $orderUnixTimeStamp     = strtotime($regdate);
             $endDate = ($validity > 0 ? date('d.m.Y', ($orderUnixTimeStamp+($validity * 24 * 60 * 60))) : '');
 
-    		$this->objTemplate->setVariable(array(
+            $this->objTemplate->setVariable(array(
             'USER_INFO' => 'Expires: '.$endDate,
         ));
-    	}
+        }
     }
 */
 
