@@ -79,7 +79,7 @@ class UserGroup {
         global $objDatabase;
 
         $this->arrLoadedGroups = array();
-        $arrWhereExpressions = array();
+        $arrWhereExpressions = array('conditions' => array(), 'joins' => array());
         $arrSortExpressions = array();
         $arrSelectExpressions = array();
 
@@ -87,14 +87,14 @@ class UserGroup {
         if (is_array($filter)) {
             $arrWhereExpressions = $this->parseFilterConditions($filter);
         } elseif (!empty($filter)) {
-            $arrWhereExpressions[] = '`group_id` = '.intval($filter);
+            $arrWhereExpressions['conditions'][] = 'tblG.`group_id` = '.intval($filter);
         }
 
         // set sort order
         if (is_array($arrSort)) {
             foreach ($arrSort as $attribute => $direction) {
                 if (in_array($attribute, $this->arrAttributes) && in_array(strtolower($direction), array('asc', 'desc'))) {
-                    $arrSortExpressions[] = '`'.$attribute.'` '.$direction;
+                    $arrSortExpressions[] = 'tblG.`'.$attribute.'` '.$direction;
                 }
             }
         }
@@ -115,8 +115,9 @@ class UserGroup {
         }
 
         $query = 'SELECT `'.implode('`, `', $arrSelectExpressions).'`
-            FROM `'.DBPREFIX.'access_user_groups`'
-            .(count($arrWhereExpressions) ? ' WHERE '.implode(' AND ', $arrWhereExpressions) : '')
+            FROM `'.DBPREFIX.'access_user_groups` AS tblG'
+            .(count($arrWhereExpressions['joins']) ? implode(' ', $arrWhereExpressions['joins']) : '')
+            .(count($arrWhereExpressions['conditions']) ? ' WHERE '.implode(' AND ', $arrWhereExpressions['conditions']) : '')
             .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
 
         if (empty($limit)) {
@@ -139,22 +140,27 @@ class UserGroup {
         }
     }
 
-    function parseFilterConditions($arrFilter)
+    private function parseFilterConditions($arrFilter)
     {
-        $arrConditions = array();
+        $arrConditions = array('conditions' => array(), 'joins' => array());
         foreach ($arrFilter as $attribute => $condition) {
             switch ($attribute) {
                 case 'group_name':
                 case 'group_description':
-                    $arrConditions[] = "`".$attribute."` LIKE '%".addslashes($condition)."%'";
+                    $arrConditions['conditions'][] = "tblG.`".$attribute."` LIKE '%".addslashes($condition)."%'";
                     break;
 
                 case 'is_active':
-                    $arrConditions[] = '`'.$attribute.'` = '.intval($condition);
+                    $arrConditions['conditions'][] = 'tblG.`'.$attribute.'` = '.intval($condition);
                     break;
 
                 case 'type':
-                    $arrConditions[] = "`".$attribute."` = '".addslashes($condition)."'";
+                    $arrConditions['conditions'][] = "tblG.`".$attribute."` = '".addslashes($condition)."'";
+
+                case 'static':
+                case 'dynamic':
+                    $arrConditions['conditions'][] = 'tbl'.$attribute.'.`access_id` = '.intval($condition);
+                    $arrConditions['joins'][] = ' INNER JOIN `'.DBPREFIX.'access_groups_'.$attribute.'_ids` as tbl'.$attribute.' USING (`group_id`)';
                     break;
             }
         }
@@ -193,7 +199,7 @@ class UserGroup {
         }
     }
 
-    function loadUsers()
+    private function loadUsers()
     {
         global $objDatabase;
 
@@ -221,7 +227,7 @@ class UserGroup {
         }
     }
 
-    function loadPermissions($type)
+    private function loadPermissions($type)
     {
         global $objDatabase;
 
@@ -239,12 +245,12 @@ class UserGroup {
         }
     }
 
-    function loadDynamicPermissions()
+    private function loadDynamicPermissions()
     {
         return $this->loadPermissions('dynamic');
     }
 
-    function loadStaticPermissions()
+    private function loadStaticPermissions()
     {
         return $this->loadPermissions('static');
     }
@@ -325,7 +331,7 @@ class UserGroup {
      * @global ADONewConnection
      * @return boolean
      */
-    function storeUserAssociations()
+    private function storeUserAssociations()
     {
         global $objDatabase;
 
@@ -349,7 +355,7 @@ class UserGroup {
         return $status;
     }
 
-    function storePermissions()
+    private function storePermissions()
     {
         global $objDatabase;
 
@@ -480,16 +486,22 @@ class UserGroup {
         return count($this->arrLoadedGroups);
     }
 
+    public function getLoadedGroupIds()
+    {
+        return array_keys($this->arrLoadedGroups);
+    }
+
     public function getGroupCount($arrFilter = null)
     {
         global $objDatabase;
 
-        $arrWhereExpressions = is_array($arrFilter) ? $this->parseFilterConditions($arrFilter) : array();
+        $arrWhereExpressions = is_array($arrFilter) ? $this->parseFilterConditions($arrFilter) : array('joins' => array(), 'conditions' => array());
 
         $objGroupCount = $objDatabase->SelectLimit('
             SELECT SUM(1) AS `group_count`
-            FROM `'.DBPREFIX.'access_user_groups`'
-            .(count($arrWhereExpressions) ? ' WHERE '.implode(' AND ', $arrWhereExpressions) : ''),
+            FROM `'.DBPREFIX.'access_user_groups` AS tblG'
+            .(count($arrWhereExpressions['joins']) ? implode(' ', $arrWhereExpressions['joins']) : '')
+            .(count($arrWhereExpressions['conditions']) ? ' WHERE '.implode(' AND ', $arrWhereExpressions['conditions']) : ''),
             1
         );
 

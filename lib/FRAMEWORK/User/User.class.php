@@ -1649,19 +1649,19 @@ class User extends User_Profile
      * Set ID's of groups to which this user should belong to
      *
      * @param array $arrGroups
-     * @see UserGroup, UserGroup::loadGroups(), UserGroup::load()
+     * @see UserGroup, UserGroup::getGroups(), UserGroup::getId()
      * @return void
      */
     public function setGroups($arrGroups)
     {
-        $objGroup = new UserGroup();
-        $objGroup->loadGroups(null,null,array());
+        $objFWUser = FWUser::getFWUserObject();
+        $objGroup = $objFWUser->objGroup->getGroups(null,null,array());
         $this->arrGroups = array();
-        foreach ($arrGroups as $groupId)
-        {
-            if ($objGroup->load($groupId)) {
-                $this->arrGroups[] = $groupId;
+        while (!$objGroup->EOF) {
+            if (in_array($objGroup->getId(), $arrGroups)) {
+                $this->arrGroups[] = $objGroup->getId();
             }
+            $objGroup->next();
         }
     }
 
