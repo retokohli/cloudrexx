@@ -957,4 +957,5 @@ $_ARRAYLANG['TXT_ECARD_TITLE'] = "E-Card";
 $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partner";
 $_ARRAYLANG['TXT_SETTINGS_FILE_UPLOADER'] = "File Uploader";
 $_ARRAYLANG['TXT_FILEUPLOADER_MODULE_DESCRIPTION'] = "Erlaubt das Hinaufladen von grossen Dateien.";
+$_ARRAYLANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'] = "Auf die Datei <strong>%s</strong> besteht kein Schreibzugriff!<br />Ohne Schreibzugriff auf diese Datei können keine Einstellungen vorgenommen werden!";
 ?>

@@ -958,4 +958,5 @@ $_ARRAYLANG['TXT_ECARD_TITLE'] = "E-Carte";
 $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partenaires";
 $_ARRAYLANG['TXT_SETTINGS_FILE_UPLOADER'] = "Téléchargeur de fichier";
 $_ARRAYLANG['TXT_FILEUPLOADER_MODULE_DESCRIPTION'] = "Permet le transfert de gros fichiers";
+$_ARRAYLANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'] = "The file <strong>%s</strong> is write-protected!<br />No changes to the settings can be made until the write protection on that file has been removed!";
 ?>
