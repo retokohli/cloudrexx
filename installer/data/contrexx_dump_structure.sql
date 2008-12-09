@@ -2251,6 +2251,41 @@ CREATE TABLE `contrexx_module_shop_zones` (
   `activation_status` tinyint(1) unsigned NOT NULL default '1',
   PRIMARY KEY  (`zones_id`)
 ) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_u2u_address_list` (
+  `id` int(11) NOT NULL auto_increment,
+  `user_id` int(11) NOT NULL,
+  `buddies_id` int(11) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_u2u_message_log` (
+  `message_id` int(11) unsigned NOT NULL auto_increment,
+  `message_text` text NOT NULL,
+  `message_title` text NOT NULL,
+  PRIMARY KEY  (`message_id`)
+) TYPE=InnoDB;
+CREATE TABLE `contrexx_module_u2u_sent_messages` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `userid` int(11) unsigned NOT NULL,
+  `message_id` int(11) unsigned NOT NULL,
+  `receiver_id` int(11) unsigned NOT NULL,
+  `mesage_open_status` enum('0','1') NOT NULL default '0',
+  `date_time` datetime NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=InnoDB;
+CREATE TABLE `contrexx_module_u2u_settings` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `name` varchar(50) NOT NULL,
+  `value` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=InnoDB;
+CREATE TABLE `contrexx_module_u2u_user_log` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `userid` int(11) unsigned NOT NULL,
+  `user_sent_items` int(11) unsigned NOT NULL,
+  `user_unread_items` int(11) unsigned NOT NULL,
+  `user_status` enum('0','1') NOT NULL default '1',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_modules` (
   `id` int(2) unsigned default NULL,
   `name` varchar(250) NOT NULL default '',
