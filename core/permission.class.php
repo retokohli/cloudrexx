@@ -92,7 +92,7 @@ class Permission
     {
         global $objDatabase;
 
-        return ($objDatabase->Execute('INSERT INTO `'.DBPREFIX.'access_group_'.$type.'_ids` (`access_id`, `group_id`) VALUES ('.$accessId.', '.(is_array($groupId) ? implode('),('.$accessId.',', $groupId) : $groupId).')'));
+        return (bool) $objDatabase->Execute('INSERT INTO `'.DBPREFIX.'access_group_'.$type.'_ids` (`access_id`, `group_id`) VALUES ('.$accessId.', '.(is_array($groupId) ? implode('),('.$accessId.',', $groupId) : $groupId).')');
     }
 
     /**
@@ -105,7 +105,7 @@ class Permission
         global $objDatabase, $_CONFIG;
 
         $lastAccessId = $_CONFIG['lastAccessId'];
-        $nextAccessId = $_CONFIG['lastAccessId'] + 1;
+        $newAccessId = $_CONFIG['lastAccessId'] + 1;
 
         if (include_once(ASCMS_CORE_PATH.'/settings.class.php')) {
             $objSettings = new settingsManager();
@@ -136,7 +136,7 @@ class Permission
     {
         global $objDatabase;
 
-        return ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'access_group_'.$type.'_ids` WHERE `access_id` = '.$accessId.(isset($groupId) ? ' AND `group_id` IN ('.(is_array($groupId) ? implode(',', $groupId) : $groupId).')' : '')));
+        return (bool) $objDatabase->Execute('DELETE FROM `'.DBPREFIX.'access_group_'.$type.'_ids` WHERE `access_id` = '.$accessId.(isset($groupId) ? ' AND `group_id` IN ('.(is_array($groupId) ? implode(',', $groupId) : $groupId).')' : ''));
     }
 }
 
