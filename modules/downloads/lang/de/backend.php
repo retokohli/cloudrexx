@@ -124,4 +124,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_FUNCTIONS'] = "Funktionen";
 $_ARRAYLANG['TXT_DOWNLOADS_ID'] = "ID";
 $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORY'] = "Möchten Sie die Kategorie %s wirklich löschen?\nDie enthaltenen Dateien gehen dabei nicht verloren.";
 $_ARRAYLANG['TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'] = "Dieser Vorgang kann nicht rückgängig gemacht werden!";
+$_ARRAYLANG['TXT_DOWNLOADS_EDIT'] = "Bearbeiten";
 ?>
