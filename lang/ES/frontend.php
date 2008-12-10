@@ -179,4 +179,5 @@ $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "visitar web";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Web";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "C&oacute;digo Postal";
 $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partners";
+$_ARRAYLANG['TXT_U2U_MODULE'] = "U2U messaging";
 ?>

@@ -957,4 +957,5 @@ $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partners";
 $_ARRAYLANG['TXT_SETTINGS_FILE_UPLOADER'] = "File Uploader";
 $_ARRAYLANG['TXT_FILEUPLOADER_MODULE_DESCRIPTION'] = "Provides the ability to upload large files.";
 $_ARRAYLANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'] = "The file <strong>%s</strong> is write-protected!<br />No changes to the settings can be made until the write protection on that file has been removed!";
+$_ARRAYLANG['TXT_U2U_MODULE'] = "U2U messaging";
 ?>
