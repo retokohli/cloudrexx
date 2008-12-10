@@ -1,5 +1,5 @@
 <?php
-if (1) {
+if (0) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
     $objDatabase->debug = 1;
@@ -24,7 +24,7 @@ if (1) {
 //error_reporting(E_ALL);
 //ini_set('display_errors', 1);
 
-require_once dirname(__FILE__).'/downloadsLib.class.php';
+require_once dirname(__FILE__).'/lib/downloadsLib.class.php';
 
 $_ARRAYLANG['TXT_MANAGE_CATEGORIES'] = "Kategorien verwalten";
 $_ARRAYLANG['TXT_ADD_CATEGORY'] = "Kategorie hinzufügen";
@@ -55,7 +55,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'] = "Kategorien";
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'] = "Kategorie";
 $_ARRAYLANG['TXT_DOWNLOADS_ADDED_CATEGORIES'] = "Hinzugefügte Kategorien";
 $_ARRAYLANG['TXT_DOWNLOADS_FILES'] = "Dateien";
-$_ARRAYLANG['TXT_DOWNLOADS_STATE'] = "Status";
+$_ARRAYLANG['TXT_DOWNLOADS_STATUS'] = "Status";
 $_ARRAYLANG['TXT_DOWNLOADS_TYPE'] = "Typ";
 $_ARRAYLANG['TXT_DOWNLOADS_TYPE_UNDEFINED'] = "Undefiniert";
 $_ARRAYLANG['TXT_DOWNLOADS_TYPE_IMAGE'] = "Bild";
@@ -79,7 +79,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'] = "Zugewiesene Benutzergruppen
 $_ARRAYLANG['TXT_DOWNLOADS_SOURCE'] = "Source";
 $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'] = "Verfügbare Downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'] = "Zugewiesene Downloads";
-$_ARRAYLANG['TXT_DOWNLOADS_STATE'] = "Status";
+$_ARRAYLANG['TXT_DOWNLOADS_STATUS'] = "Status";
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'] = "Downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_ICONS'] = "Icons";
 $_ARRAYLANG['TXT_PLACEHOLDER_FILE_ID'] = "Eindeutige ID";
@@ -142,6 +142,14 @@ class downloads extends DownloadsLibrary
      */
     var $_strOkMessage = '';
 
+    /**
+     * Contains the info messages about done operations
+     *
+     * @var array
+     * @access private
+     */
+    private $arrStatusMsg = array('ok' => array(), 'error' => array());
+
     private $arrPermissionDependencies = array(
         'read' => array(
             'add_subcategories' => array(
@@ -167,8 +175,8 @@ class downloads extends DownloadsLibrary
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/downloads/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=downloads&act=files'>".$_ARRAYLANG['TXT_DOWNLOADS_MANAGE_DOWNLOADS']."</a>
-                                                        <a href='index.php?cmd=downloads&act=categories'>".$_ARRAYLANG['TXT_MANAGE_CATEGORIES']."</a>
+        $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=downloads&act=categories'>".$_ARRAYLANG['TXT_MANAGE_CATEGORIES']."</a>
+                                                        <a href='index.php?cmd=downloads&act=files'>".$_ARRAYLANG['TXT_DOWNLOADS_MANAGE_DOWNLOADS']."</a>
                                                         <a href='index.php?cmd=downloads&act=placeholder'>".$_ARRAYLANG['TXT_PLACEHOLDER']."</a>
                                                         <a href='index.php?cmd=downloads&act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>
                                                         ");
@@ -194,6 +202,17 @@ class downloads extends DownloadsLibrary
             case 'files':
                 $this->_files();
                 break;
+
+            case 'delete_category':
+                $this->deleteCategory();
+                $this->categories();
+                break;
+
+            case 'switch_category_status':
+                $this->switchCategoryStatus();
+                $this->categories();
+                break;
+
             case 'categories':
                 $this->categories();
                 break;
@@ -210,34 +229,39 @@ class downloads extends DownloadsLibrary
                 $this->_download();
                 break;
             default:
-                $this->_files();
+                $this->categories();
                 break;
         }
 
-
         $objTemplate->setVariable(array(
-            'CONTENT_TITLE' => $this->_pageTitle,
-            'CONTENT_OK_MESSAGE' => $this->_strOkMessage,
-            'CONTENT_STATUS_MESSAGE' => $this->_strErrMessage,
-            'ADMIN_CONTENT' => $this->_objTpl->get()
+            'CONTENT_TITLE'             => $this->_pageTitle,
+            'CONTENT_OK_MESSAGE'        => implode("<br />\n", $this->arrStatusMsg['ok']),
+            'CONTENT_STATUS_MESSAGE'    => implode("<br />\n", $this->arrStatusMsg['error']),
+            'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
     }
 
-
-
-    private function resolvePermissionDependencies($arrCategoryPermissions, $arrPermissionDependencies, $parentPermission = null, $protected = false)
+    private function deleteCategory()
     {
-        foreach($arrPermissionDependencies as $permission => $arrDependendPermissions) {
-            $arrCategoryPermissions[$permission]['protected'] = $arrCategoryPermissions[$permission]['protected'] || $protected;
-            if (is_array($arrDependendPermissions)) {
-                $arrCategoryPermissions = $this->resolvePermissionDependencies($arrCategoryPermissions, $arrDependendPermissions, $permission, $arrCategoryPermissions[$permission]['protected']);
-            }
-            if (isset($arrCategoryPermissions[$parentPermission]) && $arrCategoryPermissions[$parentPermission]['protected']) {
-                $arrCategoryPermissions[$parentPermission]['groups'] = array_unique(array_merge($arrCategoryPermissions[$parentPermission]['groups'], $arrCategoryPermissions[$permission]['groups']));
+        global $_LANGID;
+
+        $objCategory = Category::getCategory(isset($_GET['id']) ? intval($_GET['id']) : 0);
+
+        if (!$objCategory->EOF) {
+            $name = '<strong>'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'</strong>';
+            if ($objCategory->delete()) {
+                $this->arrStatusMsg['ok'][] = sprintf('Die Kategorie %s wurde erfolgreich gelöscht.', $name);
             }
         }
+    }
 
-        return $arrCategoryPermissions;
+    private function switchCategoryStatus()
+    {
+        $objCategory = Category::getCategory(isset($_GET['id']) ? intval($_GET['id']) : 0);
+        if (!$objCategory->EOF) {
+            $objCategory->setActiveStatus(!$objCategory->getActiveStatus());
+            $objCategory->store();
+        }
     }
 
     /**
@@ -250,63 +274,65 @@ class downloads extends DownloadsLibrary
     {
         global $_ARRAYLANG, $objLanguage, $_LANGID;
 
-        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'];
-        $this->_objTpl->loadTemplateFile('module_downloads_category_modify.html');
+
 
         $objFWUser = FWUser::getFWUserObject();
-        $arrCategory = $this->getCategory(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
+        $objCategory = Category::getCategory(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
+
+
+        //$arrCategory = $this->getCategory(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
+
+        if (!isset($objLanguages)) {
+            $objLanguages = new FWLanguage();
+        }
 
         if (isset($_POST['downloads_category_save'])) {
-            $arrCategory['id']                                = isset($_POST['id']) ? intval($_POST['id']) : 0;
-            $arrCategory['parent_id']                         = isset($_POST['downloads_category_parent_id']) ? intval($_POST['downloads_category_parent_id']) : 0;
-            $arrCategory['is_active']                         = isset($_POST['downloads_category_active']) && $_POST['downloads_category_active'];
-            $arrCategory['owner_id']                          = isset($_POST['downloads_category_owner_id']) ? intval($_POST['downloads_category_owner_id']) : $objFWUser->objUser->getId();
-            $arrCategory['deletable_by_owner']                = isset($_POST['downloads_category_deletable_by_owner']) && $_POST['downloads_category_deletable_by_owner'];
-            $arrCategory['modify_access_by_owner']            = isset($_POST['downloads_category_manage_by_owner']) && $_POST['downloads_category_manage_by_owner'];
-            $arrCategory['image']                             = isset($_POST['downloads_category_image']) ? contrexx_stripslashes($_POST['downloads_category_image']) : '';
-            $arrCategory['visibility']                        = (!isset($_POST['downloads_category_read']) || !$_POST['downloads_category_read']) || isset($_POST['downloads_category_visibility']) && $_POST['downloads_category_visibility'];
-            $arrCategory['name']                              = isset($_POST['downloads_category_name']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_category_name'])) : array();
-            $arrCategory['description']                       = isset($_POST['downloads_category_description']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_category_description'])) : array();
+            // check if user is allowed to change that stuff
+            // check if the user is allowed to create a category within the selected parentId
+            $objCategory->setParentId(isset($_POST['downloads_category_parent_id']) ? intval($_POST['downloads_category_parent_id']) : 0);
+            $objCategory->setActiveStatus(isset($_POST['downloads_category_active']) && $_POST['downloads_category_active']);
+            $objCategory->setImage(isset($_POST['downloads_category_image']) ? contrexx_stripslashes($_POST['downloads_category_image']) : '');
+            $objCategory->setVisibility((!isset($_POST['downloads_category_read']) || !$_POST['downloads_category_read']) || isset($_POST['downloads_category_visibility']) && $_POST['downloads_category_visibility']);
+            $objCategory->setNames(isset($_POST['downloads_category_name']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_category_name'])) : array());
+            $objCategory->setDescriptions(isset($_POST['downloads_category_description']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_category_description'])) : array());
 
+            if (Permission::checkAccess(142, 'static', true)) {
+                $objCategory->setOwner(isset($_POST['downloads_category_owner_id']) ? intval($_POST['downloads_category_owner_id']) : $objFWUser->objUser->getId());
+                $objCategory->setDeletableByOwner($objCategory->getOwnerId() == $objFWUser->objUser->getId() || isset($_POST['downloads_category_deletable_by_owner']) && $_POST['downloads_category_deletable_by_owner']);
+                $objCategory->setModifyAccessByOwner($objCategory->getOwnerId() == $objFWUser->objUser->getId() || isset($_POST['downloads_category_manage_by_owner']) && $_POST['downloads_category_manage_by_owner']);
+            }
 
             foreach ($this->arrPermissionTypes as $protectionType) {
                 $arrCategoryPermissions[$protectionType]['protected'] = isset($_POST['downloads_category_'.$protectionType]) && $_POST['downloads_category_'.$protectionType];
                 $arrCategoryPermissions[$protectionType]['groups'] = !empty($_POST['downloads_category_'.$protectionType.'_associated_groups']) ? array_map('intval', $_POST['downloads_category_'.$protectionType.'_associated_groups']) : array();
             }
 
-            $arrCategory['tmp_permissions'] = $this->resolvePermissionDependencies($arrCategoryPermissions, $this->arrPermissionDependencies);
 
-            if (!isset($objLanguage)) {
-                $objLanguage = new FWLanguage();
-                $arrLanguages =$objLanguage->getLanguageArray();
+            $objCategory->setPermissions($arrCategoryPermissions);
+
+            if ($objCategory->store()) {
+                return $this->categories();
+            } else {
+                $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
             }
 
-            $namesSet = true;
-            foreach ($arrLanguages as $langId => $arrLanguage) {
-                if (!empty($arrCategory['name'][$langId])) {
-                    $namesSet = false;
-                    break;
-                }
-            }
-
-            if ($namesSet) {
                 // TODO: add store methode
 
-                foreach ($arrCategory['tmp_permissions'] as $permission => $arrPermission) {
-                    //$this->setProtection($arrPermission['protected'], $arrCategory[$permission.'_access_id'], $arrPermission['groups']);
-                }
-            } else {
-                // TODO: error message name not in every language set
-
-            }
+//                foreach ($arrCategory['tmp_permissions'] as $permission => $arrPermission) {
+//                    //$this->setProtection($arrPermission['protected'], $arrCategory[$permission.'_access_id'], $arrPermission['groups']);
+//                }
 
 
 
 
 
+
+        } else {
+            $objCategory->setParentId(isset($_REQUEST['parent_id']) ? intval($_REQUEST['parent_id']) : 0);
         }
 
-
+        $this->_pageTitle = $objCategory->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'] : $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'];
+        $this->_objTpl->loadTemplateFile('module_downloads_category_modify.html');
 
         /*
 TXT_DOWNLOADS_GENERAL
@@ -382,28 +408,29 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
             'TXT_DOWNLOADS_MANAGE_FILES_SELECTED_ACCESS_DESC'           => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_FILES_SELECTED_ACCESS_DESC']
         ));
 
+
         // parse general attributes
         $this->_objTpl->setVariable(array(
-            'DOWNLOADS_CATEGORY_ID'                         => $arrCategory['id'],
-            'DOWNLOADS_CATEGORY_PARENT_ID'                  => $arrCategory['parent_id'],
-            'DOWNLOADS_CATEGORY_OPERATION_TITLE'            => $arrCategory['id'] ? $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'] : $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'],
-            'DOWNLOADS_CATEGORY_OWNER'                      => Permission::checkAccess(142, 'static', true) ? $this->getUserDropDownMenu($arrCategory['owner_id'], $objFWUser->objUser->getId()) : $this->getParsedUsername($arrCategory['owner_id']),
-            'DOWNLOADS_CATEGORY_OWNER_CONFIG_DISPLAY'       => Permission::checkAccess(142, 'static', true) && $arrCategory['owner_id'] != $objFWUser->objUser->getId() ? '' : 'none',
-            'DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER_CHECKED' => $arrCategory['deletable_by_owner'] ? 'checked="checked"' : '',
-            'DOWNLOADS_CATEGORY_MANAGE_BY_OWNER_CHECKED'    => $arrCategory['modify_access_by_owner'] ? 'checked="checked"' : '',
-            'DOWNLOADS_CATEGORY_ACTIVE_CHECKED'             => $arrCategory['is_active'] ? 'checked="checked"' : '',
-            'DOWNLOADS_CATEGORY_VISIBILITY_CHECKED'         => $arrCategory['visibility'] ? 'checked="checked"' : ''
+            'DOWNLOADS_CATEGORY_ID'                         => $objCategory->getId(),
+            'DOWNLOADS_CATEGORY_PARENT_ID'                  => $objCategory->getParentId(),
+            'DOWNLOADS_CATEGORY_OPERATION_TITLE'            => $objCategory->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'] : $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'],
+            'DOWNLOADS_CATEGORY_OWNER'                      => Permission::checkAccess(142, 'static', true) ? $this->getUserDropDownMenu($objCategory->getOwnerId(), $objFWUser->objUser->getId()) : $this->getParsedUsername($objCategory->getOwnerId()),
+            'DOWNLOADS_CATEGORY_OWNER_CONFIG_DISPLAY'       => Permission::checkAccess(142, 'static', true) && $objCategory->getOwnerId() != $objFWUser->objUser->getId() ? '' : 'none',
+            'DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER_CHECKED' => $objCategory->getDeletableByOwner() ? 'checked="checked"' : '',
+            'DOWNLOADS_CATEGORY_MANAGE_BY_OWNER_CHECKED'    => $objCategory->getModifyAccessByOwner() ? 'checked="checked"' : '',
+            'DOWNLOADS_CATEGORY_ACTIVE_CHECKED'             => $objCategory->getActiveStatus() ? 'checked="checked"' : '',
+            'DOWNLOADS_CATEGORY_VISIBILITY_CHECKED'         => $objCategory->getVisibility() ? 'checked="checked"' : ''
         ));
 
 
         // parse image attribute
-        if (!empty($arrCategory['image']) && file_exists(ASCMS_PATH.$arrCategory['image'])) {
-            if (file_exists(ASCMS_PATH.$arrCategory['image'].'.thumb')) {
-                $imageSrc = $arrCategory['image'].'.thumb';
+        $image = $objCategory->getImage();
+        if (!empty($image) && file_exists(ASCMS_PATH.$image)) {
+            if (file_exists(ASCMS_PATH.$image.'.thumb')) {
+                $imageSrc = $image.'.thumb';
             } else {
-                $imageSrc = $arrCategory['image'];
+                $imageSrc = $image;
             }
-            $image = $arrCategory['image'];
         } else {
             $image = '';
             $imageSrc = $this->defaultCategoryImage['src'];
@@ -420,26 +447,19 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
 
 
         // parse name and description attributres
-        if (!isset($objLanguage)) {
-            $objLanguage = new FWLanguage();
-            $arrLanguages =$objLanguage->getLanguageArray();
+        if (!isset($arrLanguages)) {
+            $arrLanguages = $objLanguage->getLanguageArray();
         }
         foreach ($arrLanguages as $langId => $arrLanguage) {
-            if (!isset($arrCategory['name'][$langId])) {
-                $arrCategory['name'][$langId] = '';
-            }
-            if (!isset($arrCategory['description'][$langId])) {
-                $arrCategory['description'][$langId] = '';
-            }
             $this->_objTpl->setVariable(array(
-                'DOWNLOADS_CATEGORY_NAME'       => htmlentities($arrCategory['name'][$langId], ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_CATEGORY_NAME'       => htmlentities($objCategory->getName($langId), ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_CATEGORY_LANG_ID'    => $langId,
                 'DOWNLOADS_CATEGORY_LANG_NAME'  => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
             ));
             $this->_objTpl->parse('downloads_category_name_list');
 
             $this->_objTpl->setVariable(array(
-                'DOWNLOADS_CATEGORY_DESCRIPTION'        => htmlentities($arrCategory['description'][$langId], ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_CATEGORY_DESCRIPTION'        => htmlentities($objCategory->getDescription($langId), ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_CATEGORY_LANG_ID'            => $langId,
                 'DOWNLOADS_CATEGORY_LANG_DESCRIPTION'   => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
             ));
@@ -447,26 +467,42 @@ TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC
         }
 
         $this->_objTpl->setVariable(array(
-            'DOWNLOADS_CATEGORY_NAME'   => htmlentities($arrCategory['name'][$_LANGID], ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_CATEGORY_NAME'   => htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_DOWNLOADS_EXTENDED'    => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
         ));
         $this->_objTpl->parse('downloads_category_name');
 
         $this->_objTpl->setVariable(array(
-            'DOWNLOADS_CATEGORY_DESCRIPTION'    => htmlentities($arrCategory['description'][$_LANGID], ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_CATEGORY_DESCRIPTION'    => htmlentities($objCategory->getDescription($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_DOWNLOADS_EXTENDED'            => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
         ));
         $this->_objTpl->parse('downloads_category_description');
 
 
         // parse access permissions
-        $arrPermissions = $this->getParsedAccessPermissions($arrCategory);
+        $arrPermissions = $objCategory->getPermissions();
+
+        $objGroup = $objFWUser->objGroup->getGroups();
+        while (!$objGroup->EOF) {
+            $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
+
+            foreach ($this->arrPermissionTypes as $permissionType) {
+                if (in_array($objGroup->getId(), $arrPermissions[$permissionType]['groups'])) {
+                    $arrPermissions[$permissionType]['associated_groups'][] = $option;
+                } else {
+                    $arrPermissions[$permissionType]['not_associated_groups'][] = $option;
+                }
+            }
+
+            $objGroup->next();
+        }
+
         foreach ($arrPermissions as $permissionType => $arrPermissionType) {
             $permissionTypeUC = strtoupper($permissionType);
             $this->_objTpl->setVariable(array(
-                'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_ALL_CHECKED'              => !$arrPermissionType['set'] ? 'checked="checked"' : '',
-                'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_SELECTED_CHECKED'         => $arrPermissionType['set'] ? 'checked="checked"' : '',
-                'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_DISPLAY'                  => $arrPermissionType['set'] ? '' : 'none',
+                'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_ALL_CHECKED'              => !$arrPermissionType['protected'] ? 'checked="checked"' : '',
+                'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_SELECTED_CHECKED'         => $arrPermissionType['protected'] ? 'checked="checked"' : '',
+                'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_DISPLAY'                  => $arrPermissionType['protected'] ? '' : 'none',
                 'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_NOT_ASSOCIATED_GROUPS'    => implode("\n", $arrPermissionType['not_associated_groups']),
                 'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_ASSOCIATED_GROUPS'        => implode("\n", $arrPermissionType['associated_groups'])
             ));
@@ -577,65 +613,50 @@ $this->_objTpl->setVariable(array(
 
     }
 
-    private function setProtection($protection, &$accessId, $associatedGroups)
-    {
-        if ($protection) {
-            // set protection
-            if ($accessId || $accessId = Permission::createNewDynamicAccessId()) {
-                var_dump(Permission::setAccess($accessId, 'dynamic', $associatedGroups));
-            } else {
-                // remove protection due that no new access-ID could have been created
-                $accessId = 0;
-            }
-        } else {
-            // remove protection
-            var_dump(Permission::removeAccess($accessId));
-            $accessId = 0;
-        }
-    }
 
-    private function getParsedAccessPermissions($arrCategory)
-    {
-        $arrPermissions = array();
-        $objFWUser = FWUser::getFWUserObject();
 
-        foreach ($this->arrPermissionTypes as $permissionType) {
-            $arrPermissions[$permissionType] = array(
-                'set'                   => false,
-                'group_ids'             => array(),
-                'not_associated_groups' => array(),
-                'associated_groups'     => array()
-            );
-
-            if (isset($arrCategory['tmp_permissions'])) {
-                if ($arrCategory['tmp_permissions'][$permissionType]['protected']) {
-                    $arrPermissions[$permissionType]['set'] = true;
-                    $arrPermissions[$permissionType]['group_ids'] = $arrCategory['tmp_permissions'][$permissionType]['groups'];
-                }
-            } elseif ($arrCategory[$permissionType.'_access_id']) {
-                $arrPermissions[$permissionType]['set'] = true;
-                $objGroup = $objFWUser->objGroup->getGroups(array('dynamic' => $arrCategory[$permissionType.'_access_id']));
-                $arrPermissions[$permissionType]['group_ids'] = $objGroup->getLoadedGroupIds();
-            }
-        }
-
-        $objGroup = $objFWUser->objGroup->getGroups();
-        while (!$objGroup->EOF) {
-            $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
-
-            foreach ($this->arrPermissionTypes as $permissionType) {
-                if (in_array($objGroup->getId(), $arrPermissions[$permissionType]['group_ids'])) {
-                    $arrPermissions[$permissionType]['associated_groups'][] = $option;
-                } else {
-                    $arrPermissions[$permissionType]['not_associated_groups'][] = $option;
-                }
-            }
-
-            $objGroup->next();
-        }
-
-        return $arrPermissions;
-    }
+//    private function getParsedAccessPermissions($arrCategory)
+//    {
+//        $arrPermissions = array();
+//        $objFWUser = FWUser::getFWUserObject();
+//
+//        foreach ($this->arrPermissionTypes as $permissionType) {
+//            $arrPermissions[$permissionType] = array(
+//                'set'                   => false,
+//                'group_ids'             => array(),
+//                'not_associated_groups' => array(),
+//                'associated_groups'     => array()
+//            );
+//
+//            if (isset($arrCategory['tmp_permissions'])) {
+//                if ($arrCategory['tmp_permissions'][$permissionType]['protected']) {
+//                    $arrPermissions[$permissionType]['set'] = true;
+//                    $arrPermissions[$permissionType]['group_ids'] = $arrCategory['tmp_permissions'][$permissionType]['groups'];
+//                }
+//            } elseif ($arrCategory[$permissionType.'_access_id']) {
+//                $arrPermissions[$permissionType]['set'] = true;
+//                $objGroup = $objFWUser->objGroup->getGroups(array('dynamic' => $arrCategory[$permissionType.'_access_id']));
+//                $arrPermissions[$permissionType]['group_ids'] = $objGroup->getLoadedGroupIds();
+//            }
+//        }
+//
+//        $objGroup = $objFWUser->objGroup->getGroups();
+//        while (!$objGroup->EOF) {
+//            $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
+//
+//            foreach ($this->arrPermissionTypes as $permissionType) {
+//                if (in_array($objGroup->getId(), $arrPermissions[$permissionType]['group_ids'])) {
+//                    $arrPermissions[$permissionType]['associated_groups'][] = $option;
+//                } else {
+//                    $arrPermissions[$permissionType]['not_associated_groups'][] = $option;
+//                }
+//            }
+//
+//            $objGroup->next();
+//        }
+//
+//        return $arrPermissions;
+//    }
 
 
     /**
@@ -820,7 +841,7 @@ $this->_objTpl->setVariable(array(
             'TXT_DOWNLOADS_CATEGORY' => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'],
             'TXT_DOWNLOADS_ADDED_CATEGORIES' => $_ARRAYLANG['TXT_DOWNLOADS_ADDED_CATEGORIES'],
             'TXT_DOWNLOADS_FILES' => $_ARRAYLANG['TXT_DOWNLOADS_FILES'],
-            'TXT_DOWNLOADS_STATE' => $_ARRAYLANG['TXT_DOWNLOADS_STATE'],
+            'TXT_DOWNLOADS_STATUS' => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
             'TXT_DOWNLOADS_TYPE' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE'],
             'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
             'TXT_MARKED' => $_ARRAYLANG['TXT_MARKED'],
@@ -903,9 +924,9 @@ $this->_objTpl->setVariable(array(
                 }
             }
             if ($Deleted) {
-                $this->_strOkMessage = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUCCESSFULL'];
+                $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUCCESSFULL'];
             } else {
-                $this->_strErrMessage = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_FAILED'];
+                $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_FAILED'];
             }
         }
 
@@ -916,9 +937,9 @@ $this->_objTpl->setVariable(array(
             if ($_REQUEST["mode"] == "insert") {
                 $InserFile = $this->InsertFile();
                 if ($InserFile) {
-                    $this->_strOkMessage = $_ARRAYLANG['TXT_DOWNLOADS_ADD_SUCCESSFULL'];
+                    $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_ADD_SUCCESSFULL'];
                 } else {
-                    $this->_strErrMessage = $_ARRAYLANG['TXT_DOWNLOADS_ADD_FAILED'];
+                    $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_ADD_FAILED'];
                 }
             }
 
@@ -927,9 +948,9 @@ $this->_objTpl->setVariable(array(
             if ($_REQUEST["mode"] == "update") {
                 $UpdateDownload = $this->UpdateDownload();
                 if ($UpdateDownload) {
-                    $this->_strOkMessage = $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_SUCCESSFULL'];
+                    $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_SUCCESSFULL'];
                 } else {
-                    $this->_strErrMessage = $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FAILED'];
+                    $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FAILED'];
                 }
             }
 
@@ -938,9 +959,9 @@ $this->_objTpl->setVariable(array(
             if ($_REQUEST["mode"] == "delete") {
                 if (intval($_REQUEST["download"])>0) {
                     if ($this->_DeleteDownload(intval($_REQUEST["download"]))) {
-                        $this->_strOkMessage = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUCCESSFULL'];
+                        $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUCCESSFULL'];
                     } else {
-                        $this->_strErrMessage = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_FAILED'];
+                        $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_DELETE_FAILED'];
                     }
                 }
             }
@@ -1037,9 +1058,9 @@ $this->_objTpl->setVariable(array(
                 }
 
                 if ($fileInfo["file_state"]==1) {
-                    $file_state = '<img src="/cadmin/images/icons/status_green.gif" border="0" alt="'.$_ARRAYLANG['TXT_DOWNLOADS_STATE'].'" />';
+                    $file_state = '<img src="/cadmin/images/icons/status_green.gif" border="0" alt="'.$_ARRAYLANG['TXT_DOWNLOADS_STATUS'].'" />';
                 } else {
-                    $file_state = '<img src="/cadmin/images/icons/status_red.gif" border="0" alt="'.$_ARRAYLANG['TXT_DOWNLOADS_STATE'].'" />';
+                    $file_state = '<img src="/cadmin/images/icons/status_red.gif" border="0" alt="'.$_ARRAYLANG['TXT_DOWNLOADS_STATUS'].'" />';
                 }
 
                 $this->_objTpl->setVariable(array(
@@ -1100,7 +1121,7 @@ $this->_objTpl->setVariable(array(
             'TXT_DOWNLOADS_CATEGORY' => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'],
             'TXT_DOWNLOADS_ADDED_CATEGORIES' => $_ARRAYLANG['TXT_DOWNLOADS_ADDED_CATEGORIES'],
             'TXT_DOWNLOADS_FILES' => $_ARRAYLANG['TXT_DOWNLOADS_FILES'],
-            'TXT_DOWNLOADS_STATE' => $_ARRAYLANG['TXT_DOWNLOADS_STATE'],
+            'TXT_DOWNLOADS_STATUS' => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
             'TXT_DOWNLOADS_TYPE' => $_ARRAYLANG['TXT_DOWNLOADS_TYPE'],
             'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_FUNCTIONS'],
             'TXT_MARKED' => $_ARRAYLANG['TXT_MARKED'],
@@ -1142,7 +1163,7 @@ $this->_objTpl->setVariable(array(
             'TXT_DOWNLOADS_SOURCE' => $_ARRAYLANG['TXT_DOWNLOADS_SOURCE'],
             'TXT_DOWNLOADS_AVAILABLE_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'],
             'TXT_DOWNLOADS_ASSIGNED_DOWNLOADS' => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'],
-            'TXT_DOWNLOADS_STATE' => $_ARRAYLANG['TXT_DOWNLOADS_STATE'],
+            'TXT_DOWNLOADS_STATUS' => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
         ));
     }
 
@@ -1155,12 +1176,13 @@ $this->_objTpl->setVariable(array(
      */
     private function categories()
     {
-        global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $_LANGID;
 
         // TODO: add to lang repository
         $_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'] = 'Inhalt der Kategorie %s zeigen...';
         $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] = 'Klicken Sie hier, um diese Kategorie zu deaktivieren.';
         $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC'] = 'Klicken Sie hier, um diese Kategorie zu aktivieren.';
+        $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'] = 'Übersicht';
         // TXT_DOWNLOADS_ACTIVE
         // TXT_DOWNLOADS_INACTIVE
         // TXT_DOWNLOADS_UNKNOWN
@@ -1168,14 +1190,30 @@ $this->_objTpl->setVariable(array(
 
 
         // TODO: clean up
-        $this->_pageTitle = $_ARRAYLANG['TXT_MANAGE_CATEGORIES'];
+        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'];
         $this->_objTpl->loadTemplateFile('module_downloads_categories.html');
 
 
         $parentCategoryId = isset($_REQUEST["parent_id"]) ? intval($_REQUEST["parent_id"]) : 0;
+        $filter = array();
+
+
+        $objCategory = Category::getCategory($parentCategoryId);
+        $objSubcategory = Category::getCategories(array('parent_id' => $objCategory->getId()));
 
         // TODO: clean up
         $this->_objTpl->setVariable(array(
+            'TXT_DOWNLOADS_ORDER'                   => $_ARRAYLANG['TXT_DOWNLOADS_ORDER'],
+            'TXT_DOWNLOADS_STATUS'                  => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
+            'TXT_DOWNLOADS_ID'                      => $_ARRAYLANG['TXT_DOWNLOADS_ID'],
+            'TXT_DOWNLOADS_NAME'                    => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
+            'TXT_DOWNLOADS_DESCRIPTION'             => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
+            'TXT_DOWNLOADS_AUTHOR'                  => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+            'TXT_DOWNLOADS_FUNCTIONS'               => $_ARRAYLANG['TXT_DOWNLOADS_FUNCTIONS'],
+            'TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'  => $_ARRAYLANG['TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'],
+            'DOWNLOADS_CONFIRM_DELETE_CATEGORY_TXT' => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORY'])),
+
+            // rename
             'TXT_MANAGE_CATEGORIES' => $_ARRAYLANG['TXT_MANAGE_CATEGORIES'],
             'TXT_ADD_CATEGORY' => $_ARRAYLANG['TXT_ADD_CATEGORY'],
         ));
@@ -1188,51 +1226,83 @@ $this->_objTpl->setVariable(array(
             'TXT_DOWNLOADS_DELETE'  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE']
         ));
 
-        $arrCategories = $this->GetCategories(null, $parentCategoryId);
-        if ($arrCategories) {
-            foreach ($arrCategories as $arrCategorie) {
-                $description = htmlentities($arrCategorie['description'], ENT_QUOTES, CONTREXX_CHARSET);
-                if (strlen($description) > 200) {
-                    $description = substr($description, 0, 197).'...';
-                }
+        while (!$objSubcategory->EOF) {
 
+
+
+
+            if (Permission::checkAccess(142, 'static', true)) {
+                // managers are allowed to switch the active status of a category
                 $this->_objTpl->setVariable(array(
-                    'DOWNLOADS_CATEGORY_ROW_CLASS'      => 1,
-                    'DOWNLOADS_CATEGORY_ID'             => $arrCategorie['id'],
-                    'DOWNLOADS_CATEGORY_ORDER'          => $arrCategorie['order'],
-                    'DOWNLOADS_CATEGORY_STATUS_LED'     => $arrCategorie['is_active'] ? 'led_green.gif' : 'led_red.gif',
-                    'DOWNLOADS_OPEN_CATEGORY_DESC'      => sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($arrCategorie['name'], ENT_QUOTES, CONTREXX_CHARSET)),
-                    'DOWNLOADS_CATEGORY_NAME'           => htmlentities($arrCategorie['name'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'DOWNLOADS_CATEGORY_DESCRIPTION'    => $description,
-                    'DOWNLOADS_CATEGORY_AUTHOR'         => $this->getParsedUsername($arrCategorie['owner_id'])
+                    'DOWNLOADS_CATEGORY_ID'                  => $objSubcategory->getId(),
+                    'DOWNLOADS_CATEGORY_PARENT_ID'           => $objCategory->getId(),
+                    //'DOWNLOADS_CATEGORY_STATUS_JS'           => $objSubcategory->getActiveStatus(),
+                    //'DOWNLOADS_CATEGORY_NAME_JS'             => htmlspecialchars($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC'  => $objSubcategory->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC']
                 ));
-
-                if (Permission::checkAccess(142, 'static', true)) {
-                    // managers are allowed to switch the active status of a category
-                    $this->_objTpl->setVariable(array(
-                        'DOWNLOADS_CATEGORY_ID'                  => $arrCategorie['id'],
-                        'DOWNLOADS_CATEGORY_STATUS_JS'           => $arrCategories['is_active'],
-                        'DOWNLOADS_CATEGORY_NAME_JS'             => htmlspecialchars($arrCategorie['name'], ENT_QUOTES, CONTREXX_CHARSET),
-                        'DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC'  => $arrCategorie['is_active'] ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC']
-                    ));
-                    $this->_objTpl->parse('downloads_category_status_link_open');
-                    $this->_objTpl->parse('downloads_category_status_link_close');
+                $this->_objTpl->parse('downloads_category_status_link_open');
+                $this->_objTpl->parse('downloads_category_status_link_close');
 
 
-                    $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_NAME_JS', htmlspecialchars($arrCategorie['name'], ENT_QUOTES, CONTREXX_CHARSET));
-                    $this->_objTpl->parse('downloads_category_function_list');
-                } else {
-                    $this->_objTpl->setVariable(
-                        'DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC',
-                        $arrCategorie['is_active'] ? $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'] : $_ARRAYLANG['TXT_DOWNLOADS_INACTIVE']
-                    );
-                    $this->_objTpl->hideBlock('downloads_category_status_link_open');
-                    $this->_objTpl->hideBlock('downloads_category_status_link_close');
+                $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_NAME_JS', htmlspecialchars($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
+                $this->_objTpl->parse('downloads_category_function_list');
+            } else {
+                $this->_objTpl->setVariable(
+                    'DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC',
+                    $objSubcategory->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'] : $_ARRAYLANG['TXT_DOWNLOADS_INACTIVE']
+                );
+                $this->_objTpl->hideBlock('downloads_category_status_link_open');
+                $this->_objTpl->hideBlock('downloads_category_status_link_close');
 
-                    $this->_objTpl->hideBlock('downloads_category_function_list');
-                }
+                $this->_objTpl->hideBlock('downloads_category_function_list');
             }
+
+            //parse select checkbox
+            // TODO: check manage subcategories access
+            //var_dump($objCategory->getManageSubcategoriesAccessId());
+            if (Permission::checkAccess(142, 'static', true) || Permission::checkAccess($objCategory->getManageSubcategoriesAccessId(), 'dynamic', true)) {
+                $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_ID', $objSubcategory->getId());
+                $this->_objTpl->parse('downloads_category_checkbox');
+            } else {
+                $this->_objTpl->hideBlock('downloads_category_checkbox');
+            }
+
+            // parse detail link
+            if (Permission::checkAccess(142, 'static', true) || Permission::checkAccess($objSubcategory->getReadAccessId(), 'dynamic', true)) {
+                $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_ID', $objSubcategory->getId());
+                $this->_objTpl->parse('downloads_category_name_link_open');
+                $this->_objTpl->touchBlock('downloads_category_name_link_close');
+            } else {
+                $this->_objTpl->hideBlock('downloads_category_name_link_open');
+                $this->_objTpl->hideBlock('downloads_category_name_link_close');
+            }
+
+
+            $description = htmlentities($objSubcategory->getDescription($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
+            if (strlen($description) > 200) {
+                $description = substr($description, 0, 197).'...';
+            }
+
+            $this->_objTpl->setVariable(array(
+                'DOWNLOADS_CATEGORY_ROW_CLASS'      => 1,
+                'DOWNLOADS_CATEGORY_ID'             => $objSubcategory->getId(),
+                'DOWNLOADS_CATEGORY_ORDER'          => $objSubcategory->getOrder(),
+                'DOWNLOADS_CATEGORY_STATUS_LED'     => $objSubcategory->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
+                'DOWNLOADS_OPEN_CATEGORY_DESC'      => sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+                'DOWNLOADS_CATEGORY_NAME'           => htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                'DOWNLOADS_CATEGORY_DESCRIPTION'    => $description,
+                'DOWNLOADS_CATEGORY_AUTHOR'         => $this->getParsedUsername($objSubcategory->getOwnerId())
+            ));
+
+            $this->_objTpl->parse('downloads_category_list');
+
+
+
+            $objSubcategory->next();
         }
+
+        // parse category id (will be used as the parent_id when creating a new directory
+        $this->_objTpl->setVariable('DOWNLOADS_CATEGORY_ID', $objCategory->getId());
 
         // TODO: clean up
         $this->_objTpl->setVariable(array(
@@ -1319,86 +1389,6 @@ $this->_objTpl->setVariable(array(
 
 */
     }
-
-
-    /**
-     * Delete Category
-     *
-     * @var int    $id
-     * @global object $objDatabase
-     */
-    function _DeleteCategory($id)
-    {
-        global $objDatabase;
-        if (intval($id)>0) {
-            $query = "DELETE FROM ".DBPREFIX."module_downloads_categories WHERE category_id=".$id;
-            $objDatabase->Execute($query);
-            $query = "DELETE FROM ".DBPREFIX."module_downloads_cat_lang WHERE category=".$id;
-            $objDatabase->Execute($query);
-            $query = "DELETE FROM ".DBPREFIX."module_downloads_cat_locales WHERE loc_cat=".$id;
-            $objDatabase->Execute($query);
-            $query = "DELETE FROM ".DBPREFIX."module_downloads_rel_files_cat WHERE rel_category=".$id;
-            $objDatabase->Execute($query);
-            return true;
-        } else {
-            return false;
-        }
-
-    }
-
-
-    /**
-     * update category
-     *
-     * @global object $objDatabase
-     */
-    function UpdateCategory($categoryId)
-    {
-        global $objDatabase;
-
-        $query = "
-            UPDATE ".DBPREFIX."module_downloads_categories
-            SET category_img='".addslashes(strip_tags($_POST['category_image']))."',
-                category_author='".addslashes(strip_tags($_POST['category_author']))."',
-                where category_id=".$categoryId;
-        $objDatabase->Execute($query);
-
-        $query = "DELETE FROM ".DBPREFIX."module_downloads_cat_lang WHERE category=".$categoryId;
-        $objDatabase->Execute($query);
-        $query = "DELETE FROM ".DBPREFIX."module_downloads_cat_locales WHERE loc_cat=".$categoryId;
-        $objDatabase->Execute($query);
-
-
-        foreach (array_keys($this->_arrLang) as $langId) {
-            if (intval($langId)>0) {
-
-//        for($i=0; $i<=count($_REQUEST["frmEditEntry_Languages"]); $i++) {
-//
-//            $langId = $_REQUEST["frmEditEntry_Languages"][$i];
-//
-//            if (intval($langId)>0) {
-
-                // insert lang
-                // ------------------------------------------------
-                $query = "INSERT INTO ".DBPREFIX."module_downloads_cat_lang
-                            SET category='".$categoryId."',
-                            language='".$langId."'";
-                $objDatabase->Execute($query);
-
-                // insert loclaes
-                // ------------------------------------------------
-                $query = "INSERT INTO ".DBPREFIX."module_downloads_cat_locales
-                            SET loc_lang='".$langId."',
-                            loc_cat='".$categoryId."',
-                            loc_name='".addslashes(strip_tags($_POST['category_name_'.$langId]))."',
-                            loc_desc='".addslashes(strip_tags($_POST['category_desc_'.$langId]))."'";
-                $objDatabase->Execute($query);
-
-            }
-        }
-        return true;
-    }
-
 
     /**
      * add new file
@@ -1527,56 +1517,6 @@ $this->_objTpl->setVariable(array(
         return true;
     }
 
-
-    /**
-     * add new category
-     *
-     * @global object $objDatabase
-     */
-    function InsertCategory()
-    {
-        global $objDatabase;
-        $query = "
-            INSERT INTO ".DBPREFIX."module_downloads_categories
-            SET category_img='".addslashes(strip_tags($_POST['category_image']))."',
-                category_author='".addslashes(strip_tags($_POST['category_author']))."',
-                category_created=now(),
-                category_state=1,
-                category_order=0";
-
-        $objDatabase->Execute($query);
-        $categoryId = $objDatabase->Insert_Id();
-
-//        for($i=0; $i<=count($_REQUEST["frmEditEntry_Languages"]); $i++) {
-//            $langId = $_REQUEST["frmEditEntry_Languages"][$i];
-
-        foreach (array_keys($this->_arrLang) as $langId) {
-
-            if (intval($langId)>0) {
-
-                // insert lang
-                // ------------------------------------------------
-                $query = "INSERT INTO ".DBPREFIX."module_downloads_cat_lang
-                            SET category='".$categoryId."',
-                            language='".$langId."'";
-                $objDatabase->Execute($query);
-                // insert loclaes
-                // ------------------------------------------------
-                $query = "INSERT INTO ".DBPREFIX."module_downloads_cat_locales
-                            SET loc_lang='".$langId."',
-                            loc_cat='".$categoryId."',
-                            loc_name='".addslashes(strip_tags($_POST['category_name_'.$langId]))."',
-                            loc_desc='".addslashes(strip_tags($_POST['category_desc_'.$langId]))."'";
-                $objDatabase->Execute($query);
-            }
-        }
-
-        //print_r($_REQUEST);
-
-        return true;
-    }
-
-
     /**
      * module settings
      *
@@ -1612,7 +1552,7 @@ $this->_objTpl->setVariable(array(
         }
 
         if ($_REQUEST["msg"]=="1") {
-            $this->_strOkMessage = $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_SUCCESSFULL'];
+            $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_SUCCESSFULL'];
         }
 
         if ($this->_arrConfig["filter"]==1) {
