@@ -180,4 +180,5 @@ $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "Webseite besuchen";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Webseite";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "Zip";
 $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partners";
+$_ARRAYLANG['TXT_U2U_MODULE'] = "U2U messaging";
 ?>
