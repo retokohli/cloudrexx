@@ -144,6 +144,10 @@
                         downloadsMergeGroups(trigger, type, '_not_associated_groups', '_associated_groups');
                     }
                 }
+            } else if (trigger == undefined) {
+                for (var i=0; i<downloadsPermissionChildren[type].length; i++) {
+                    downloadsMergeGroups(downloadsPermissionChildren[type][i], type, '_associated_groups', '_not_associated_groups');
+                }
             }
         }
     }
@@ -211,7 +215,7 @@
     <li><a id="downloadsTab_categoryPermissions" href="javascript:void(0)" onclick="selectTab('categoryPermissions')" title="{TXT_DOWNLOADS_PERMISSIONS}">{TXT_DOWNLOADS_PERMISSIONS}</a></li>
 </ul>
 
-<form name="downloads_category_form" id="downloads_category_form" action="index.php?cmd=downloads&amp;act=category&amp;id={DOWNLOADS_CATEGORY_ID}" onsubmit="downloadsSelectAll()" method="post">
+<form name="downloads_category_form" id="downloads_category_form" action="index.php?cmd=downloads&amp;act=category&amp;id={DOWNLOADS_CATEGORY_ID}&amp;parent_id={DOWNLOADS_CATEGORY_PARENT_ID}" onsubmit="downloadsSelectAll()" method="post">
 <input type="hidden" name="downloads_category_parent_id" value="{DOWNLOADS_CATEGORY_PARENT_ID}" />
 <!-- start div downloadsTab_categoryGeneral -->
     <div id="categoryGeneral" class="downloadsTab">
@@ -309,6 +313,7 @@
                         <input type="radio" name="downloads_category_read" id="downloads_category_read_all" value="0" onchange="downloadsAdjustAccessConfig()" {DOWNLOADS_CATEGORY_READ_ALL_CHECKED} /><label for="downloads_category_read_all">{TXT_DOWNLOADS_READ_ALL_ACCESS_DESC}</label><br />
                         <input type="radio" name="downloads_category_read" id="downloads_category_read_selected" value="1" onchange="downloadsAdjustAccessConfig()" {DOWNLOADS_CATEGORY_READ_SELECTED_CHECKED} /><label for="downloads_category_read_selected">{TXT_DOWNLOADS_READ_SELECTED_ACCESS_DESC}</label><br />
                         <div id="downloads_category_read_config" style="display:{DOWNLOADS_CATEGORY_READ_DISPLAY}">
+                            <br />
                             <table cellspacing="0" cellpadding="3" border="0" summary="user group assignements">
                                 <tbody style="vertical-align:top;">
                                     <tr>
@@ -366,6 +371,7 @@
                         <input type="radio" name="downloads_category_add_subcategories" id="downloads_category_add_subcategories_all" value="0" onchange="downloadsAdjustAccessConfig()" {DOWNLOADS_CATEGORY_ADD_SUBCATEGORIES_ALL_CHECKED} /><label for="downloads_category_add_subcategories_all">{TXT_DOWNLOADS_ADD_SUBCATEGORIES_ALL_ACCESS_DESC}</label><br />
                         <input type="radio" name="downloads_category_add_subcategories" id="downloads_category_add_subcategories_selected" value="1" onchange="downloadsAdjustAccessConfig()" {DOWNLOADS_CATEGORY_ADD_SUBCATEGORIES_SELECTED_CHECKED} /><label for="downloads_category_add_subcategories_selected">{TXT_DOWNLOADS_ADD_SUBCATEGORIES_SELECTED_ACCESS_DESC}</label><br />
                         <div id="downloads_category_add_subcategories_config" style="display:{DOWNLOADS_CATEGORY_ADD_SUBCATEGORIES_DISPLAY}">
+                            <br />
                             <table cellspacing="0" cellpadding="3" border="0" summary="user group assignements">
                                 <tbody style="vertical-align:top;">
                                     <tr>
@@ -417,6 +423,7 @@
                         <input type="radio" name="downloads_category_manage_subcategories" id="downloads_category_manage_subcategories_all" value="0" onchange="downloadsAdjustAccessConfig()" {DOWNLOADS_CATEGORY_MANAGE_SUBCATEGORIES_ALL_CHECKED} /><label for="downloads_category_manage_subcategories_all">{TXT_DOWNLOADS_MANAGE_SUBCATEGORIES_ALL_ACCESS_DESC}</label><br />
                         <input type="radio" name="downloads_category_manage_subcategories" id="downloads_category_manage_subcategories_selected" value="1" onchange="downloadsAdjustAccessConfig()" {DOWNLOADS_CATEGORY_MANAGE_SUBCATEGORIES_SELECTED_CHECKED} /><label for="downloads_category_manage_subcategories_selected">{TXT_DOWNLOADS_MANAGE_SUBCATEGORIES_SELECTED_ACCESS_DESC}</label><br />
                         <div id="downloads_category_manage_subcategories_config" style="display:{DOWNLOADS_CATEGORY_MANAGE_SUBCATEGORIES_DISPLAY}">
+                            <br />
                             <table cellspacing="0" cellpadding="3" border="0" summary="user group assignements">
                                 <tbody style="vertical-align:top;">
                                     <tr>
@@ -474,6 +481,7 @@
                         <input type="radio" name="downloads_category_add_files" id="downloads_category_add_files_all" value="0" onchange="downloadsAdjustAccessConfig()" {DOWNLOADS_CATEGORY_ADD_FILES_ALL_CHECKED} /><label for="downloads_category_add_files_all">{TXT_DOWNLOADS_ADD_FILES_ALL_ACCESS_DESC}</label><br />
                         <input type="radio" name="downloads_category_add_files" id="downloads_category_add_files_selected" value="1" onchange="downloadsAdjustAccessConfig()" {DOWNLOADS_CATEGORY_ADD_FILES_SELECTED_CHECKED} /><label for="downloads_category_add_files_selected">{TXT_DOWNLOADS_ADD_FILES_SELECTED_ACCESS_DESC}</label><br />
                         <div id="downloads_category_add_files_config" style="display:{DOWNLOADS_CATEGORY_ADD_FILES_DISPLAY}">
+                            <br />
                             <table cellspacing="0" cellpadding="3" border="0" summary="user group assignements">
                                 <tbody style="vertical-align:top;">
                                     <tr>
@@ -525,6 +533,7 @@
                         <input type="radio" name="downloads_category_manage_files" id="downloads_category_manage_files_all" value="0" onchange="downloadsAdjustAccessConfig()" {DOWNLOADS_CATEGORY_MANAGE_FILES_ALL_CHECKED} /><label for="downloads_category_manage_files_all">{TXT_DOWNLOADS_MANAGE_FILES_ALL_ACCESS_DESC}</label><br />
                         <input type="radio" name="downloads_category_manage_files" id="downloads_category_manage_files_selected" value="1" onchange="downloadsAdjustAccessConfig()" {DOWNLOADS_CATEGORY_MANAGE_FILES_SELECTED_CHECKED} /><label for="downloads_category_manage_files_selected">{TXT_DOWNLOADS_MANAGE_FILES_SELECTED_ACCESS_DESC}</label><br />
                         <div id="downloads_category_manage_files_config" style="display:{DOWNLOADS_CATEGORY_MANAGE_FILES_DISPLAY}">
+                            <br />
                             <table cellspacing="0" cellpadding="3" border="0" summary="user group assignements">
                                 <tbody style="vertical-align:top;">
                                     <tr>
@@ -576,7 +585,7 @@
     </div>
 <!-- end div downloadsTab_categoryPermissions -->
 <br />
-<input type="button" name="downloads_category_cancel" value="{TXT_DOWNLOADS_CANCEL}" onclick="document.location.href='index.php?cmd=downloads&act=categories&category_id={DOWNLOADS_CATEGORY_PARENT_ID}'" />
+<input type="button" name="downloads_category_cancel" value="{TXT_DOWNLOADS_CANCEL}" onclick="document.location.href='index.php?cmd=downloads&act=categories&amp;parent_id={DOWNLOADS_CATEGORY_PARENT_ID}'" />
 <input type="submit" name="downloads_category_save" value="{TXT_DOWNLOADS_SAVE}" />
 </form>
 <!-- end module_downloads_modify_category.html -->

@@ -2,7 +2,24 @@
 
 
 <script language="javascript">
-	// <![CDATA[
+// <![CDATA[
+
+
+function downloadsDeleteCategory(id,name)
+{
+    strMsg = '{DOWNLOADS_CONFIRM_DELETE_CATEGORY_TXT}';
+    if (confirm(strMsg.replace('%s', name)+'\n{TXT_DOWNLOADS_OPERATION_IRREVERSIBLE}')) {
+        window.location.href = "index.php?cmd=downloads&act=delete_category&parent_id={DOWNLOADS_CATEGORY_ID}&id="+id;
+    }
+}
+            
+            
+            
+            
+	
+	
+	
+	
 	
     function podcast_media_do_action(action)
     {
@@ -139,17 +156,20 @@
 
 <ul id="tabmenu">
 	<li><a id="categories_Overview" class="active" href="javascript:void(0)" title="{TXT_MANAGE_CATEGORIES}">{TXT_MANAGE_CATEGORIES}</a></li>
-	<li><a id="categories_AddCategory" href="index.php?cmd=downloads&amp;act=category" title="{TXT_ADD_CATEGORY}">{TXT_ADD_CATEGORY}</a></li>
+	<li><a id="categories_AddCategory" href="index.php?cmd=downloads&amp;act=category&parent_id={DOWNLOADS_CATEGORY_ID}" title="{TXT_ADD_CATEGORY}">{TXT_ADD_CATEGORY}</a></li>
 </ul>
 
 
 <form name="downloads_form" action="index.php?cmd=downloads&amp;act=categories" method="post">
-<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist"> 
-    <tr class="row3" style="font-size: bold;">
-        <td width="1%">#</td>
-        <td width="1%">{TXT_DOWNLOADS_ORDER}</td>
-        <td width="1%">{TXT_DOWNLOADS_STATUS}</td>
-        <td width="1%">{TXT_DOWNLOADS_ID}</td>
+<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+    <tr>
+        <th colspan="8">Overview</th>
+    </tr> 
+    <tr class="row3" style="font-weight: bold;">
+        <td width="1%" style="text-align: center;">#</td>
+        <td width="1%" style="text-align: center;">{TXT_DOWNLOADS_ORDER}</td>
+        <td width="1%" style="text-align: center;">{TXT_DOWNLOADS_STATUS}</td>
+        <td width="1%" style="text-align: center;">{TXT_DOWNLOADS_ID}</td>
         <td width="15%">{TXT_DOWNLOADS_NAME}</td>
         <td width="65%">{TXT_DOWNLOADS_DESCRIPTION}</td>
         <td width="15%">{TXT_DOWNLOADS_AUTHOR}</td>
@@ -157,29 +177,30 @@
     </tr>
 <!-- BEGIN downloads_category_list -->
     <tr class="{DOWNLOADS_CATEGORY_ROW_CLASS}">
-        <td>
+        <td style="text-align: center;">
             <!-- BEGIN downloads_category_checkbox -->
             <input type="checkbox" name="downloads_category_id[]" value="{DOWNLOADS_CATEGORY_ID}" />
             <!-- END downloads_category_checkbox -->
         </td>
-		<td>
+		<td style="text-align: center;">
             <!-- BEGIN downloads_category_orderbox -->
             <input name="downloads_category_order[{DOWNLOADS_CATEGORY_ID}]" size="5" maxlength="5" value="{DOWNLOADS_CATEGORY_ORDER}" type="text" />
             <!-- END downloads_category_orderbox -->
 		</td>
-		<td>
+		<td style="text-align: center;">
           <!-- BEGIN downloads_category_status_link_open -->
-            <a href="javascript:void(0);" onclick="downloadsChangeCategoryStatus({DOWNLOADS_CATEGORY_ID},{DOWNLOADS_CATEGORY_STATUS_JS},'{DOWNLOADS_CATEGORY_NAME_JS}')" title="{DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC}">
+            <a href="index.php?cmd=downloads&amp;act=switch_category_status&amp;parent_id={DOWNLOADS_CATEGORY_PARENT_ID}&amp;id={DOWNLOADS_CATEGORY_ID}" title="{DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC}">
           <!-- END downloads_category_status_link_open -->
-                <img src=images/icons/{DOWNLOADS_CATEGORY_STATUS_LED}" alt="{DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC}" width="13" height="13" />
-          <!-- BEGIN downloads_category_status_link_end -->
+                <img src="images/icons/{DOWNLOADS_CATEGORY_STATUS_LED}" alt="{DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC}" border="0" width="13" height="13" />
+          <!-- BEGIN downloads_category_status_link_close -->
             </a>
-          <!-- END downloads_category_status_link_end -->
-		<td nowrap="nowrap">{DOWNLOADS_CATEGORY_ID}</td>
+          <!-- END downloads_category_status_link_close -->
+		<td nowrap="nowrap" style="text-align: center;">{DOWNLOADS_CATEGORY_ID}</td>
 		<td nowrap="nowrap">
+            <img src="images/icons/folder_on.gif" width="15" height="13" />
           <!-- BEGIN downloads_category_name_link_open -->
-            <a href="index.php?cmd=download&amp;act=category&amp;category_id={DOWNLOADS_CATEGORY_ID}" title="{DOWNLOADS_OPEN_CATEGORY_DESC}">
-          <!-- end downloads_category_name_link_open -->
+            <a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_CATEGORY_ID}" title="{DOWNLOADS_OPEN_CATEGORY_DESC}">
+          <!-- END downloads_category_name_link_open -->
             {DOWNLOADS_CATEGORY_NAME}
           <!-- BEGIN downloads_category_name_link_close -->
             </a>
@@ -241,7 +262,7 @@
 <a href="javascript:void(0);" onclick="changeCheckboxes('downloads_form','downloads_category_id[]',false); return false;" title="TXT_DOWNLOADS_UNCHECK_ALL">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
 <img src="images/icons/strike.gif" width="34" height="22" alt="design" />
 <select name="podcast_select_action" id="downloads_select_action" onchange="downloadsDoAction(this.value)">
-	<option value="0" selected="selected">{TXT_DOWNLOADS_SELECT_ACTION}:</option>
+	<option value="0" selected="selected">{TXT_DOWNLOADS_SELECT_ACTION}</option>
 	<option value="delete">{TXT_DOWNLOADS_DELETE}</option>
 </select> 
 <form>

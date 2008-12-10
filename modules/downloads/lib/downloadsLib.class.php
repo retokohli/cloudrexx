@@ -1,4 +1,6 @@
     <?php
+
+    require_once dirname(__FILE__).'/Category.class.php';
 /**
  * Downloads library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -13,11 +15,11 @@ class DownloadsLibrary
 
     protected $defaultCategoryImage = array();
     protected $arrPermissionTypes = array(
-        'read',
-        'add_subcategories',
-        'manage_subcategories',
-        'add_files',
-        'manage_files'
+        'getReadAccessId'                   => 'read',
+        'getAddSubcategoriesAccessId'       => 'add_subcategories',
+        'getManageSubcategoriesAccessId'    => 'manage_subcategories',
+        'getAddFilesAccessId'               => 'add_files',
+        'getManageFilesAccessId'            => 'manage_files'
     );
 
     var $_arrConfig = array();
