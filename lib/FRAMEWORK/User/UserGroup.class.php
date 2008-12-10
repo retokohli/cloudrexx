@@ -160,7 +160,7 @@ class UserGroup {
                 case 'static':
                 case 'dynamic':
                     $arrConditions['conditions'][] = 'tbl'.$attribute.'.`access_id` = '.intval($condition);
-                    $arrConditions['joins'][] = ' INNER JOIN `'.DBPREFIX.'access_groups_'.$attribute.'_ids` as tbl'.$attribute.' USING (`group_id`)';
+                    $arrConditions['joins'][] = ' INNER JOIN `'.DBPREFIX.'access_group_'.$attribute.'_ids` as tbl'.$attribute.' USING (`group_id`)';
                     break;
             }
         }
