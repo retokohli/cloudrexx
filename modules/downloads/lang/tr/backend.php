@@ -124,4 +124,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_FUNCTIONS'] = "Fonksiyonlar";
 $_ARRAYLANG['TXT_DOWNLOADS_ID'] = "ID";
 $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORY'] = "Are you sure you want to delete the category %s?\nThe containing files won't be removed.";
 $_ARRAYLANG['TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'] = "This operation cannot be undone!";
+$_ARRAYLANG['TXT_DOWNLOADS_EDIT'] = "Düzenle";
 ?>
