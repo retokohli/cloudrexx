@@ -2244,6 +2244,12 @@ INSERT INTO `contrexx_module_shop_vat` (`id`, `class`, `percent`) VALUES (14,'Gr
 INSERT INTO `contrexx_module_shop_zones` (`zones_id`, `zones_name`, `activation_status`) VALUES (1,'All',1);
 INSERT INTO `contrexx_module_shop_zones` (`zones_id`, `zones_name`, `activation_status`) VALUES (2,'Schweiz',1);
 INSERT INTO `contrexx_module_shop_zones` (`zones_id`, `zones_name`, `activation_status`) VALUES (3,'Deutschland',1);
+INSERT INTO `contrexx_module_u2u_settings` (`id`, `name`, `value`) VALUES (1,'max_posting_size','2000');
+INSERT INTO `contrexx_module_u2u_settings` (`id`, `name`, `value`) VALUES (2,'max_posting_chars','50');
+INSERT INTO `contrexx_module_u2u_settings` (`id`, `name`, `value`) VALUES (3,'wysiwyg_editor','1');
+INSERT INTO `contrexx_module_u2u_settings` (`id`, `name`, `value`) VALUES (4,'subject','[senderName] has sent you a Private Message');
+INSERT INTO `contrexx_module_u2u_settings` (`id`, `name`, `value`) VALUES (5,'from','Contrexx Demos');
+INSERT INTO `contrexx_module_u2u_settings` (`id`, `name`, `value`) VALUES (6,'email_message','Hi <strong>[receiverName]</strong>,<br />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[senderName]</strong> has sent you a private message, if you want to see the message follow this links<br />\r\n<br />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; http://ss4ugroup.comvation.com/index.php?section=u2u&amp;cmd=notification<br />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />\r\n<br type=\"_moz\" />');
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (0,'','','n',0,1);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (1,'core','TXT_CORE_MODULE_DESCRIPTION','n',1,1);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (2,'stats','TXT_STATS_MODULE_DESCRIPTION','n',0,1);
