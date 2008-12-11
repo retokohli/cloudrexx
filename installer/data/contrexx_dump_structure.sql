@@ -123,6 +123,7 @@ CREATE TABLE `contrexx_access_users` (
   `profile_access` enum('everyone','members_only','nobody') NOT NULL default 'members_only',
   `restore_key` varchar(32) NOT NULL default '',
   `restore_key_time` int(14) unsigned NOT NULL default '0',
+  `u2u_active` enum('0','1') NOT NULL default '1',
   PRIMARY KEY  (`id`),
   KEY `username` (`username`)
 ) TYPE=MyISAM ;
