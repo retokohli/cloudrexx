@@ -1,0 +1,48 @@
+<!-- START  module_dataviewer_new_project.html -->
+
+<form action="index.php?cmd=dataviewer&act=new" method="post" enctype="multipart/form-data"> 
+<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+	<tbody>
+		<th valign="top" nowrap="nowrap" width="100%">{TXT_PROJECTNAME}</th>
+		<tr class="row1">
+			<td width="100%"><input type="text" name="projectname" value="{POST_PROJECTNAME}" /></td>
+		</tr>
+		<th valign="top" nowrap="nowrap" width="100%">{TXT_PROJECT_DESCRIPTION}</th>
+		<tr class="row1">
+			<td width="100%"><input type="text" name="projectdescription" value="{POST_PROJECTDESCRIPTION}" /></td>
+		</tr>
+		<tr>
+			<th valign="top" nowrap="nowrap" width="100%">{TXT_SELECTION_FILE}</th>
+		</tr>
+		<tr class="row2">
+			<td width="100%"><input type="file" name="file" /></td>
+		</tr>
+		<tr class="row1">
+			<td width="100%"><input type="submit" name="continue" value="{TXT_CONTINUE}" /></td>
+		</tr>
+	</tbody>
+</table>
+<div id="columnsSelectionDiv" style="display:{CSS_DISPLAY};">
+	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+		<tbody>
+			<th valign="top" nowrap="nowrap" width="100%">Auswahl Felder</th>
+			<tr class="row2">
+				<td width="100%">
+					<select name="columns[]" size="10" multiple="multiple">
+						<!-- BEGIN columnOption -->
+						<option value="{COLUMN_NAME}">{COLUMN_NAME}</option>
+						<!-- END columnOption -->
+					</select>
+				</td>
+			</tr>
+			<tr class="row1">
+				<td width="100%">
+					<input type="submit" name="createProject" value="{TXT_CREATE_PROJECT}" />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+</form>
+
+<!-- END module_dataviewer_new_project.html -->

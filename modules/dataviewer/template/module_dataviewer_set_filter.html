@@ -1,0 +1,22 @@
+<!-- START module_dataviewer_set_filter.html -->
+
+<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+	<tbody>
+		<th valign="top" nowrap="nowrap" width="100%">{TXT_CREATE_FILTER_FOR} {PROJECTNAME}</th>
+		<tr class="row1">
+			<td width="100%">
+				<form action="index.php?cmd=dataviewer&act=setfilter&amp;projectid={PROJECTID}" method="post" enctype="multipart/form-data"> 
+					<select name="columns[]" size="10" multiple="multiple">
+						<!-- BEGIN columnOption -->
+						<option value="{COLUMN_NAME}">{COLUMN_NAME}</option>
+						<!-- END columnOption -->
+					</select><br />
+					<br />
+					<input type="submit" name="saveFilter" value="{TXT_SAVE_FILTER}" />
+				</form>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<!-- END module_dataviewer_set_filter.html -->
