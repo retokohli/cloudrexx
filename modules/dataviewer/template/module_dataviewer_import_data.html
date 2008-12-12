@@ -1,0 +1,56 @@
+<!-- START  module_dataviewer_new_import_data.html -->
+
+<form action="index.php?cmd=dataviewer&amp;act=import" method="post" enctype="multipart/form-data"> 
+<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+	<tbody>
+		<tr>
+			<th valign="top" nowrap="nowrap" width="100%">{TXT_PROJECTNAME}</th>
+		</tr>
+		<tr>
+			<td width="100%">
+				<select name="projectid" onChange="document.getElementById('countrySelectionDiv').style.display = 'block';">
+					<option onclick="document.getElementById('countrySelectionDiv').style.display = 'none';">{TXT_CHOOSE_PROJECT}</option>
+					<!-- BEGIN projectOption -->
+					<option value="{PROJECT_ID}">{PROJECT_NAME}</option>
+					<!-- END projectOption -->
+				</select>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<div id="countrySelectionDiv" style="display:none">
+	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+		<tbody>
+			<tr>
+				<th valign="top" nowrap="nowrap" width="100%">{TXT_SELECTION_COUNTRY}</th>
+			</tr>
+			<tr class="row1">
+				<td width="100%">
+					<select name="country" onChange="document.getElementById('fileSelectionDiv').style.display = 'block';">
+						<!-- BEGIN selectOption -->
+						<option value="{COUNTRY_CODE}">{COUNTRY_NAME}</option>
+						<!-- END selectOption -->
+					</select>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div id="fileSelectionDiv" style="display:none">
+	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+		<tbody>
+			<tr>
+				<th valign="top" nowrap="nowrap" width="100%">{TXT_SELECTION_FILE}</th>
+			</tr>
+			<tr class="row1">
+				<td width="100%"><input type="file" name="file" /></td>
+			</tr>
+		</tbody>
+	</table>
+	<input type="submit" name="startImport" value="{TXT_START_IMPORT}" />
+</div>
+</form>
+
+<!-- END  module_dataviewer_new_import_data -->
