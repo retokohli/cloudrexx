@@ -1,27 +1,66 @@
-<!-- START  module_dataviewer_overview.html -->
 
-<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
-	<tbody>
+<!-- START  module_dataviewer_overview.html -->
+<script type="text/javascript">
+	function showPreview(ID) {
+	    if (document.getElementById('preview_'+ID)) {
+	        if (document.getElementById('preview_'+ID).style.display == 'none') {
+	            document.getElementById('preview_'+ID).style.display = 'block';
+	        } else {
+	            document.getElementById('preview_'+ID).style.display = 'none';
+	        }
+	    }
+	}
+	
+	function deleteConfirm(ID) {
+	    check = confirm("Möchten Sie das Projekt wirklich löschen?")
+		if(check == true) {
+			location.href = "index.php?cmd=dataviewer&delete="+ID;
+		}
+	}
+
+</script>
+
+<form name="project" action="index.php?cmd=dataviewer&act=new" method="post" />
+	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
 		<tr>
-			<th valign="top" nowrap="nowrap" width="5%">{TXT_PROJECTSTATUS}</th>
-			<th valign="top" nowrap="nowrap" width="40%">{TXT_PROJECTNAME}</th>
-			<th valign="top" nowrap="nowrap" width="40%">{TXT_PROJECT_DESCRIPTION}</th>
-			<th valign="top" nowrap="nowrap" width="15%">{TXT_FUNCTIONS}</th>
+			<th valign="top" colspan="8">
+				Projekte verwalten
+			</th>
 		</tr>
-		<tr class="row2">
-			<td width="5%"></td>
-			<td width="40%"></td>
-			<td width="15%"></td>
-			<td width="15%"></td>
-		</tr>		
+		<tr>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">Status</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">Name</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">Beschreibung</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">Sprache</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">Länderbasiert</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">Filter</span></td>
+			<td nowrap="nowrap" width="30%"><span style="font-weight:bold;">Vorschau</span></td>
+			<td nowrap="nowrap" width="30%"><span style="font-weight:bold;">Funktionen</span></td>
+		</tr>
 		<!-- BEGIN projectRow -->
 		<tr class="{ROWCLASS}">
-			<td width="5%"><a href="index.php?cmd=dataviewer&amp;setstatus={PROJECTSTATUSINT}&amp;projectid={PROJECTID}"><img src="images/icons/{PROJECTSTATUS}.gif" alt="{PROJECTSTATUS}" border="0" /></a></td>
-			<td width="40%">{PROJECTNAME}</td>
-			<td width="40%">{PROJECT_DESCRIPTION}</td>
-			<td width="15%"><a href="index.php?cmd=dataviewer&amp;act=setfilter&projectid={PROJECTID}"><img src="images/icons/viewmag.png" alt="viewmag.png" border="0" /></a> <a href="index.php?cmd=dataviewer&amp;delete={PROJECTID}"><img src="images/icons/delete.gif" alt="deleteList" border="0" /></a></td>
+			<td width="10%" valign="top">{STATUS}</td>
+			<td width="10%" valign="top">{NAME}</td>
+			<td width="10%" valign="top">{DESCRIPTION}</td>
+			<td width="10%" valign="top">{LANGUAGE}</td>
+			<td width="10%" valign="top">{COUNTRYBASED}</td>
+			<td width="10%" valign="top">{FILTER}</td>
+			<td width="30%" valign="top">
+				<a href="javascript:showPreview('{ID}');">Vorschau zeigen</a>
+				<div id="preview_{ID}" style="display:none; background:#cfcfcf; padding:5px; margin-right:5px; margin-top:5px; margin-bottom:5px; border:1px solid #000000;">{PREVIEW}</div>
+			</td>
+			<td width="30%" valign="top">
+				<a href="index.php?cmd=dataviewer&act=edit&id={ID}"><img border="0" src="../images/modules/dataviewer/edit.gif" alt="edit" /></a>
+				<a href="index.php?cmd=dataviewer&act=import&id={ID}"><img border="0" src="../images/modules/dataviewer/csv.gif" alt="import" /></a>
+				<a href="index.php?cmd=dataviewer&act=filter&id={ID}"><img border="0" src="../images/modules/dataviewer/question_mark.gif" alt="filter" /></a>
+				<a href="index.php?cmd=dataviewer&act=placeholder&id={ID}"><img border="0" src="../images/modules/dataviewer/placeholder.gif" alt="placeholder" /></a>
+				<a href="#" onclick="deleteConfirm('{ID}');"><img border="0" src="../images/modules/dataviewer/delete.gif" alt="delete" /></a>
+			</td>
 		</tr>
 		<!-- END projectRow -->
-	</tbody>
-</table>
+	</table>
+	<br />
+	<input type="submit" name="save" value="Speichern" />
+</form>
+
 <!-- END module_dataviewer_overview.html -->

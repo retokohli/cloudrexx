@@ -1,22 +1,54 @@
-<!-- START module_dataviewer_set_filter.html -->
 
-<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
-	<tbody>
-		<th valign="top" nowrap="nowrap" width="100%">{TXT_CREATE_FILTER_FOR} {PROJECTNAME}</th>
-		<tr class="row1">
-			<td width="100%">
-				<form action="index.php?cmd=dataviewer&act=setfilter&amp;projectid={PROJECTID}" method="post" enctype="multipart/form-data"> 
-					<select name="columns[]" size="10" multiple="multiple">
-						<!-- BEGIN columnOption -->
-						<option value="{COLUMN_NAME}">{COLUMN_NAME}</option>
-						<!-- END columnOption -->
+<!-- START module_dataviewer_set_filter.html -->
+<script type="text/javascript">
+/* <![CDATA[ */
+	function checkDoubleAssignments() {
+		numberOfElements = document.filter.filters.length;
+		
+		var i = 1;
+		
+		while (i < numberOfElements) {
+			if((document.filter.filters[0].selectedIndex == document.filter.filters[i].selectedIndex) && document.filter.filters[i].selectedIndex !== 0) {
+				var double = true;
+			}
+			i++;
+		}
+		
+		if(double) {
+			alert ("Es können keine zweit Werte gleichzeitig zugewiesen werden!");
+			return false;
+		} else {
+			return true;	
+		}
+	}
+/* ]]> */
+</script>
+
+<form name="filter" action="index.php?cmd=dataviewer&amp;act=filter&amp;id={ID}" method="post" onsubmit="return checkDoubleAssignments()"> 
+	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+		<tbody>
+			<tr>
+				<th valign="top" colspan="2">
+					Filter
+				</th>
+			</tr>
+			<!-- BEGIN filterRow -->
+			<tr class="{ROWCLASS}">
+				<td width="12%" nowrap="nowrap">{FILTER}</td>
+				<td width="88%">
+					<select size="1" name="filters[]" id="filters" style="width: 200px;">
+						<option value="noColumn">Kein Filter</option>
+						<!-- BEGIN columnsRow -->
+						<option value="{COLUMN}" {SELECTED}>{COLUMN}</option>
+						<!-- END columnsRow -->
 					</select><br />
-					<br />
-					<input type="submit" name="saveFilter" value="{TXT_SAVE_FILTER}" />
-				</form>
-			</td>
-		</tr>
-	</tbody>
-</table>
+				</td>
+			</tr>
+			<!-- END filterRow -->
+		</tbody>
+	</table>
+	<br />
+	<input type="submit" name="save" value="Speichern" />
+</form>
 
 <!-- END module_dataviewer_set_filter.html -->
