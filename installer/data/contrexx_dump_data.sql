@@ -1285,6 +1285,9 @@ INSERT INTO `contrexx_module_gallery_settings` (`id`, `name`, `value`) VALUES (1
 INSERT INTO `contrexx_module_gallery_settings` (`id`, `name`, `value`) VALUES (19,'show_random','on');
 INSERT INTO `contrexx_module_gallery_settings` (`id`, `name`, `value`) VALUES (20,'header_type','hierarchy');
 INSERT INTO `contrexx_module_gallery_settings` (`id`, `name`, `value`) VALUES (21,'show_ext','on');
+INSERT INTO `contrexx_module_gallery_settings` (`id`, `name`, `value`) VALUES (22,'show_file_name','off');
+INSERT INTO `contrexx_module_gallery_settings` (`id`, `name`, `value`) VALUES (23,'slide_show','off');
+INSERT INTO `contrexx_module_gallery_settings` (`id`, `name`, `value`) VALUES (24,'slide_show_seconds','3');
 INSERT INTO `contrexx_module_gallery_votes` (`id`, `picid`, `date`, `ip`, `md5`, `mark`) VALUES (1,4,1210154365,'84.72.45.57','09e1e1188001f5d2f51f44621272ccd7',1);
 INSERT INTO `contrexx_module_guestbook` (`id`, `status`, `nickname`, `gender`, `url`, `email`, `comment`, `ip`, `location`, `lang_id`, `datetime`) VALUES (1,1,'Contrexx Development Team','M','http://www.contrexx.com/','nospam@example.com','Dies ist ein Gästebucheintrag für Demonstrationszwecke. \r\nViel Spass und Erfolg mit Contrexx wünscht\r\n\r\nCOMVATION AG','127.0.0.1','Schweiz',1,'2007-04-17 21:58:45');
 INSERT INTO `contrexx_module_guestbook_settings` (`name`, `value`) VALUES ('guestbook_send_notification_email','0');
