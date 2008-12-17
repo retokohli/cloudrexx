@@ -125,4 +125,10 @@ $_ARRAYLANG['TXT_DOWNLOADS_ID'] = "ID";
 $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORY'] = "Are you sure you want to delete the category %s?\nThe containing files won't be removed.";
 $_ARRAYLANG['TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'] = "This operation cannot be undone!";
 $_ARRAYLANG['TXT_DOWNLOADS_EDIT'] = "Редактировать";
+$_ARRAYLANG['TXT_DOWNLOADS_NO_PERM_DEL_CATEGORY'] = "You are not allowed to delete the category %s!";
+$_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'] = "Show the content of the category %s...";
+$_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] = "Click to deactivate this category.";
+$_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC'] = "Click to activate this category.";
+$_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'] = "Overview";
+$_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES'] = "Do you want to delete the subcategories of this category as well?";
 ?>

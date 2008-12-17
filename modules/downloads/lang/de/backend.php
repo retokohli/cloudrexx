@@ -125,4 +125,10 @@ $_ARRAYLANG['TXT_DOWNLOADS_ID'] = "ID";
 $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORY'] = "Möchten Sie die Kategorie %s wirklich löschen?\nDie enthaltenen Dateien gehen dabei nicht verloren.";
 $_ARRAYLANG['TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'] = "Dieser Vorgang kann nicht rückgängig gemacht werden!";
 $_ARRAYLANG['TXT_DOWNLOADS_EDIT'] = "Bearbeiten";
+$_ARRAYLANG['TXT_DOWNLOADS_NO_PERM_DEL_CATEGORY'] = "Sie sind nicht berechtigt die Kategorie %s zu löschen!";
+$_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'] = "Inhalt der Kategorie %s zeigen...";
+$_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] = "Klicken Sie hier, um diese Kategorie zu deaktivieren.";
+$_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC'] = "Klicken Sie hier, um diese Kategorie zu aktivieren.";
+$_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'] = "Übersicht";
+$_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES'] = "Sollen die Unterkategorien dieser Kategorie auch gelöscht werden?";
 ?>
