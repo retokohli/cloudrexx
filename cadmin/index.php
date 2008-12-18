@@ -277,6 +277,7 @@ if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
             $objTemplate->loadTemplateFile('login_index.html',true,true);
             $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login.html');
             $objTemplate->setVariable(array(
+                'REDIRECT_URL'            => (!empty($_POST['redirect'])) ? $_POST['redirect'] : basename(getenv('REQUEST_URI')),
                 'TXT_SECURITY_CODE'       => $_CORELANG['TXT_SECURITY_CODE'],
                 'TXT_ENTER_SECURITY_CODE' => $_CORELANG['TXT_ENTER_SECURITY_CODE'],
                 'TXT_USER_NAME'           => $_CORELANG['TXT_USER_NAME'],
@@ -291,6 +292,10 @@ if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
             $objTemplate->show();
             exit;
     }
+}
+if(isset($_POST['redirect']) && preg_match("/.*\.php.*/",($_POST['redirect']))) {
+    $redirect = $_POST['redirect'];
+    header("Location: $redirect");
 }
 
 //-------------------------------------------------------
