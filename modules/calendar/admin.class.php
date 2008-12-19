@@ -171,6 +171,10 @@ class calendarManager extends calendarLibrary
             case 'placeholder':
                 $this->showPlaceholders();
                 break;
+            case 'toggle_event':
+                $this->_toggleEvent();
+                $this->showOverview();
+                break;
             default:
                 $this->showOverview();
         }
@@ -300,17 +304,10 @@ class calendarManager extends calendarLibrary
         if ($objDatabase->Affected_Rows() > 0) {
             while(!$objResult->EOF) {
                 $today = time();
-                if ($objResult->fields['active'] == "0") {
-                    $status = "red";
-                    $event_led = $_ARRAYLANG['TXT_CALENDAR_LED_INACTIVE'];
-                } elseif ($objResult->fields['startdate'] > $today || $objResult->fields['enddate'] > $today) {
-                    $status = "green";
-                    $event_led = $_ARRAYLANG['TXT_CALENDAR_LED_ACTIVE'];
-                } else {
-                    $status = "red";
-                    $event_led = $_ARRAYLANG['TXT_CALENDAR_LED_OLD'];
-                }
 
+                //
+                // checks if the series would be active in dependency of the time... activestate will be checked below
+                //
 				if ($objResult->fields['series_status'] == 1) {
 					if ($objResult->fields['series_pattern_dourance_type'] == 3 && $objResult->fields['series_pattern_end'] < $today) {
 						$status = "red";
@@ -324,6 +321,17 @@ class calendarManager extends calendarLibrary
 				} else {
 					$series = '';
 				}
+				
+                if ($objResult->fields['active'] == "0") {
+                    $status = "red";
+                    $event_led = $_ARRAYLANG['TXT_CALENDAR_LED_INACTIVE'];
+                } elseif ($objResult->fields['startdate'] > $today || $objResult->fields['enddate'] > $today  || $status == 'green') {
+                    $status = "green";
+                    $event_led = $_ARRAYLANG['TXT_CALENDAR_LED_ACTIVE'];
+                } else {
+                    $status = "red";
+                    $event_led = $_ARRAYLANG['TXT_CALENDAR_LED_OLD'];
+                }
 
 				$reg_signoff = $this->_countRegistrations($objResult->fields['id']);
 
@@ -608,104 +616,6 @@ class calendarManager extends calendarLibrary
         if ($objResultDel !== false) {
             $this->deleteFormular($id);
             $this->strOkMessage = $_ARRAYLANG['TXT_CALENDAR_STAT_DEL']."<br />";
-        }
-    }
-
-
-    // select days
-    function selectDay($day, $handle_name, $var1, $var2)
-    {
-        for ($x = 1; $x <= 31; $x++) {
-            $x = str_pad($x, 2, '0', STR_PAD_LEFT);
-
-            if ($x == $day) {
-                $this->_objTpl->setVariable($var1, ' selected="selected"');
-            }
-            else {
-                $this->_objTpl->setVariable($var1, '');
-            }
-
-            $this->_objTpl->setVariable($var2, $x);
-
-            $this->_objTpl->parse($handle_name);
-        }
-    }
-
-    /**
-     * Select Month
-     *
-     * Generates the selection dropdown for the month
-     */
-    function selectMonth($month, $handle_name, $var1, $var2, $var3)
-    {
-        for ($x = 1; $x <= 12; $x++) {
-            $x = str_pad($x, 2, '0', STR_PAD_LEFT);
-
-            $this->_objTpl->setVariable($var1, $x);
-
-            if ($x == $month) {
-                $this->_objTpl->setVariable($var2, ' selected="selected');
-            } else {
-                $this->_objTpl->setVariable($var2, '');
-            }
-
-            $name = $this->monthName($x);
-            $this->_objTpl->setVariable($var3, $name);
-
-            $this->_objTpl->parse($handle_name);
-        }
-    }
-
-    /**
-     * Select Year
-     *
-     * Makes a select dropdown for the years
-     */
-    function selectYear($year, $handle_name, $var1, $var2)
-    {
-        for ($x = $this->calStartYear; $x <= $this->calEndYear; $x++) {
-            if ($x == $year) {
-                $this->_objTpl->setVariable($var1, ' selected="selected"');
-            } else {
-                $this->_objTpl->setVariable($var1, '');
-            }
-
-            $this->_objTpl->setVariable($var2, $x);
-
-            $this->_objTpl->parse($handle_name);
-        }
-    }
-
-    /**
-     * Select Hour
-     *
-     * Generates a selection dropdown for the hours
-     */
-    function selectHour($hour, $handle_name, $bool_select, $varname)
-    {
-        for ($curhour = 0; $curhour <= 23; $curhour++) {
-            if ($curhour == $hour) {
-                $this->_objTpl->setVariable($bool_select, ' selected="selected"');
-            } else {
-                $this->_objTpl->setVariable($bool_select, '');
-            }
-
-            $this->_objTpl->setVariable($varname, sprintf("%02d", $curhour));
-            $this->_objTpl->parse($handle_name);
-        }
-    }
-
-    function selectMinutes($minutes, $handle_name, $bool_select, $varname)
-    {
-        for ($curmin = 0; $curmin <= 59; $curmin++) {
-            if ($curmin == $minutes) {
-                $this->_objTpl->setVariable($bool_select, ' selected="selected"');
-            } else {
-                $this->_objTpl->setVariable($bool_select, '');
-            }
-
-            $this->_objTpl->setVariable($varname, sprintf("%02d", $curmin));
-            $this->_objTpl->parse($handle_name);
         }
     }
 
@@ -1902,6 +1812,7 @@ class calendarManager extends calendarLibrary
             'CALENDAR_NOT_MAIL_CONTENT'         => $mailNotContent,
             'CALENDAR_CON_MAIL_TITLE'           => $mailConTitle,
             'CALENDAR_CON_MAIL_CONTENT'         => $mailConContent,
+            'FE_ENTRIES_OPTIONS'                => $this->getFeEntriesOptionList($this->settings->get('fe_entries_ability')),
             'TXT_CALENDAR_PLACEHOLDERS'         => $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDERS'],
             'TXT_CALENDAR_EMAIL'                => $_ARRAYLANG['TXT_CALENDAR_MAIL'],
             'TXT_CALENDAR_FIRSTNAME'            => $_ARRAYLANG['TXT_CALENDAR_FIRSTNAME'],
@@ -1919,6 +1830,8 @@ class calendarManager extends calendarLibrary
             'TXT_CALENDAR_MAIL_PUBLICATION'                 => $_ARRAYLANG['TXT_CALENDAR_MAIL_PUBLICATION'],
             'TXT_CALENDAR_MAIL_NOTIFICATION'                => $_ARRAYLANG['TXT_CALENDAR_MAIL_NOTIFICATION'],
             'TXT_CALENDAR_MAIL_CONFIRMATION'                => $_ARRAYLANG['TXT_CALENDAR_MAIL_CONFIRMATION'],
+            'TXT_CALENDAR_FRONTEND_SETTINGS'    => $_ARRAYLANG['TXT_CALENDAR_FRONTEND_SETTINGS'],
+            'TXT_CALENDAR_SETTINGS_FE_ENTRIES_ENABLED' => $_ARRAYLANG['TXT_CALENDAR_SETTINGS_FE_ENTRIES_ENABLED']
         ));
 
         $this->_objTpl->setGlobalVariable('TXT_CALENDAR_STD_CAT_NONE', $_ARRAYLANG['TXT_CALENDAR_STD_CAT_NONE']);
@@ -2030,6 +1943,9 @@ class calendarManager extends calendarLibrary
             $val = "1";
         }
 
+        
+        (isset($_POST['fe_entries_ability'])) ? $this->settings->set('fe_entries_ability', $_POST['fe_entries_ability']) : null;
+        
         $query = "SELECT setvalue
                   FROM ".DBPREFIX."settings
                   WHERE setname = 'calendar".$this->mandateLink."headlines'";
@@ -2376,6 +2292,20 @@ class calendarManager extends calendarLibrary
             $value = '"'.$valueModified.'"';
         }
         return strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_decode($value) : $value;
+    }
+    
+    /**
+     * toggles the active state of an event we got by $_GET
+     * 
+     * @todo take event ID from other than $_GET (or maybe reset the location header
+     *
+     */
+    function _toggleEvent() {
+        $id = intval($_GET['id']);
+        if($this->objEvent->get($id)) {
+            $active = $this->objEvent->getActive();
+            $this->objEvent->setActive(!$active, $id);
+        }
     }
 
 }
