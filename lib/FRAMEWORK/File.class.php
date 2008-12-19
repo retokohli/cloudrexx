@@ -286,9 +286,9 @@ class File
     // replaces some characters
     function replaceCharacters($string){
         // replace $change with ''
-        $change = array('+', '¦', '"', '@', '*', '#', '°', '%', '§', '&', '¬', '/', '|', '(', '¢', ')', '=', '?', '\'', '´', '`', '^', '~', '!', '¨', '[', ']', '{', '}', '£', '$', '-', '<', '>', '\\', ';', ',', ':');
+        $change = array('+', 'Â¦', '"', '@', '*', '#', 'Â°', '%', 'Â§', '&', 'Â¬', '/', '|', '(', 'Â¢', ')', '=', '?', '\'', 'Â´', '`', '^', '~', '!', 'Â¨', '[', ']', '{', '}', 'Â£', '$', '-', '<', '>', '\\', ';', ',', ':');
         // replace $signs1 with $signs
-        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs1 = array(' ', 'Ã¤', 'Ã¶', 'Ã¼', 'Ã§');
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
 
         $string = strtolower($string);
@@ -417,7 +417,39 @@ class File
         return false;
     }
 
+    
+    /**
+     * takes a fileinput name and puts this file to a specified path
+     *
+     * @param string $fileinput HTML File input name
+     * @param string $fileTarget webserver filepath
+     * @param max filesize $maxSize
+     * @param array $types NOT YET IMPLEMENTED OR USED
+     * @return true on success, false otherwise
+     * 
+     * @todo implement filetype parsing and other features
+     */
+    static function uploadFileHttp($fileinput, $fileTarget, $maxSize = 0, $types = 0) {
+        if(!$fileinput or !$fileTarget) {
+            return false;
+        }
 
+        if(!$_FILES[$fileinput]) {
+            return false;
+        }
+        $tmpFilePath = $_FILES[$fileinput]['tmp_name'];
+        if( $maxSize > 0 && filesize($tmpFilePath) > $maxSize){
+            return false;
+        }
+        if(move_uploaded_file($tmpFilePath, $fileTarget)) {
+            return true;
+        } else{
+            return false;
+        }
+
+    }
+    
+    
     function uploadFile($path, $webPath, $fileName, $sourceFile){
         // upload the file
         echo $fileName;
