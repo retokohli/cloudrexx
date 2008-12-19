@@ -171,9 +171,43 @@ class Category {
      *
      * @return boolean
      */
-    public function delete()
+    public function delete($recursive = false)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_LANGID;
+
+        $objFWUser = FWUser::getFWUserObject();
+
+        if (// the category is a main category => only managers are allowed to delete the category
+            !$this->parent_id && !Permission::checkAccess(142, 'static', true)
+            // the category isn't a main category and...
+            || $this->parent_id && (
+                // ...the owner has the permission to delete it by himself
+                (!$this->getDeletableByOwner() || !$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId())
+                // ...or the user has the right the delete subcategories of the current parent category
+                && (!($objParentCategory = Category::getCateogry($this->parent_id)) || !Permission::checkAccess($objParentCategory->getManageSubcategoriesAccessId(), 'dynamic', true))
+            )
+        ) {
+            $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_NO_PERM_DEL_CATEGORY'], htmlentities($this->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
+            return false;
+        }
+
+        if ($this->hasSubcategories()) {
+            $objSubcategory = Category::getCategories(array('parent_id' => $this->getId()));
+            while (!$objSubcategory->EOF) {
+                if ($recursive) {
+                    if (!$objSubcategory->delete(true)) {
+                        return false;
+                    }
+                } else {
+                    $objSubcategory->setParentId($this->parent_id);
+                    if (!$objSubcategory->store()) {
+                        return false;
+                    }
+                }
+
+                $objSubcategory->next();
+            }
+        }
 
         foreach ($this->arrPermissionTypes as $type) {
             Permission::removeAccess($this->{$type.'_access_id'}, 'dynamic');
@@ -255,6 +289,14 @@ class Category {
     }
 
 
+    public function hasSubcategories()
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->SelectLimit('SELECT 1 FROM `'.DBPREFIX.'module_downloads_category` WHERE `parent_id` = '.$this->id, 1);
+
+        return intval(!$objResult || $objResult->RecordCount());
+    }
 
     public function getName($langId)
     {
