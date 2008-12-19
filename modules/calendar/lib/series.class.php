@@ -16,6 +16,7 @@ class seriesManager
 	var $eventList_term;
 	var $eventList_category;
 	var $eventList_callback = true;
+	var $eventList_active;
 
 	/**
 	 * PHP 5 Constructor
@@ -35,14 +36,14 @@ class seriesManager
 
 
 
-    function getEventList($startDate, $endDate=0, $maxSize=null, $auth, $term=null, $category=null) {
+    function getEventList($startDate, $endDate=0, $maxSize=null, $auth, $term=null, $category=null, $onlyActive = false) {
     	$this->eventList_maxsize 	= $maxSize;
     	$this->eventList_startdate 	= $startDate;
     	$this->eventList_enddate 	= $endDate;
     	$this->eventList_auth 		= $auth;
     	$this->eventList_term 		= $term;
     	$this->eventList_category 	= $category;
-
+    	$this->eventList_active     = $onlyActive;
     	/*echo "start: ".date("D d.m.Y H:i:s", $this->eventList_startdate)." - ".$this->eventList_startdate."<br >";
     	echo "ende: ".date("D d.m.Y H:i:s", $this->eventList_enddate)." - ".$endDate."<br >";
     	echo "size: ".$this->eventList_maxsize."<br >";
@@ -97,6 +98,9 @@ class seriesManager
 		} else {
 			$auth_where = " AND access='0' ";
 		}
+		
+		$active_where = ($this->eventList_active == true ? ' AND active=1' : '');
+		
 
 		if (isset($this->eventList_enddate) && $this->eventList_enddate != 0) {
 			$date_where = '((
@@ -164,6 +168,7 @@ class seriesManager
 			  		".$date_where."
 					".$auth_where."
 					".$cat_where."
+					".$active_where."
 
 			  		ORDER BY cal.startdate";
 

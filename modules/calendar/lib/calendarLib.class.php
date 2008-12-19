@@ -13,7 +13,8 @@
  * Includes
  */
 require_once ASCMS_LIBRARY_PATH."/activecalendar/activecalendar.php";
-
+require_once ASCMS_MODULE_PATH."/calendar/lib/settings.class.php";
+require_once ASCMS_MODULE_PATH."/calendar/lib/event.class.php";
 /**
  * Calendar
  *
@@ -60,6 +61,17 @@ class calendarLibrary
 
    	var $eventList = array();
 
+    var $uploadImgPath;
+    var $uploadImgWebPath;
+    var $uploadImgMaxSize = 500000;
+    var $uploadImgTypes = array('png', 'jpeg', 'jpg', 'gif');
+    var $uploadFileTypes = array('doc', 'txt', 'pdf');
+
+
+
+    var $objEvent;
+    var $settings;
+
     /**
      * PHP 5 Constructor
      */
@@ -85,12 +97,16 @@ class calendarLibrary
         } else {
             $this->mandateLink = $this->mandate;
         }
-
+        
+        $this->uploadImgPath = ASCMS_PATH.ASCMS_IMAGE_PATH.'/calendar/';
+        $this->uploadImgWebPath = ASCMS_IMAGE_PATH.'/calendar/';
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/calendar'.$this->mandateLink.'/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setGlobalVariable("CALENDAR_MANDATE", $this->mandateLink);
-
         $this->url = $url.$this->mandateLink;
+        
+        $this->settings = new CalendarSettings($this->mandateLink);
+        $this->objEvent = new CalendarEvent($this->mandateLink);
     }
 
 
@@ -1882,6 +1898,143 @@ class calendarLibrary
 			}
 		}
 	}
+	
+/**
+     * returns an option list for the settings page which will decide who can create new calendar entries in the frontend
+     *
+     * @param integer $selectedIndex
+     * @return string
+     */
+    protected  function getFeEntriesOptionList($selectedIndex) {
+        global $_ARRAYLANG;
+        $arrOptions = array(
+            $_ARRAYLANG['TXT_CALENDAR_FE_DEACTIVATED'],
+            $_ARRAYLANG['TXT_CALENDAR_FE_REGISTEREDONLY'],
+            $_ARRAYLANG['TXT_CALENDAR_FE_ALL'],
+        );
+        $options = "";
+        foreach($arrOptions as $key => $value) {
+            $strSelected = ($key == $selectedIndex) ? "selected='selected'" : '';
+            $options .= "<option value='$key' $strSelected >$value</option>";
+        }
+        return $options;
+    }
+
+    // select days
+    function selectDay($day, $handle_name, $var1, $var2)
+    {
+           for ($x = 1; $x <= 31; $x++) {
+               $x = str_pad($x, 2, '0', STR_PAD_LEFT);
+
+               if ($x == $day) {
+                   $this->_objTpl->setVariable($var1, ' selected="selected"');
+               }
+               else {
+                   $this->_objTpl->setVariable($var1, '');
+               }
+
+            $this->_objTpl->setVariable($var2, $x);
+
+            $this->_objTpl->parse($handle_name);
+           }
+    }
+
+    /**
+     * Select Month
+     *
+     * Generates the selection dropdown for the month
+     */
+    function selectMonth($month, $handle_name, $var1, $var2, $var3)
+    {
+        for ($x = 1; $x <= 12; $x++) {
+            $x = str_pad($x, 2, '0', STR_PAD_LEFT);
+
+            $this->_objTpl->setVariable($var1, $x);
+
+            if ($x == $month) {
+                $this->_objTpl->setVariable($var2, ' selected="selected');
+            } else {
+                $this->_objTpl->setVariable($var2, '');
+            }
+
+            $name = $this->monthName($x);
+            $this->_objTpl->setVariable($var3, $name);
+
+            $this->_objTpl->parse($handle_name);
+        }
+    }
+
+    /**
+     * Select Year
+     *
+     * Makes a select dropdown for the years
+     */
+    function selectYear($year, $handle_name, $var1, $var2)
+    {
+        for ($x = $this->calStartYear; $x <= $this->calEndYear; $x++) {
+            if ($x == $year) {
+                $this->_objTpl->setVariable($var1, ' selected="selected"');
+            } else {
+                   $this->_objTpl->setVariable($var1, '');
+               }
+
+            $this->_objTpl->setVariable($var2, $x);
+
+            $this->_objTpl->parse($handle_name);
+        }
+    }
+
+    /**
+     * Select Hour
+     *
+     * Generates a selection dropdown for the hours
+     */
+    function selectHour($hour, $handle_name, $bool_select, $varname)
+    {
+        for ($curhour = 0; $curhour <= 23; $curhour++) {
+            if ($curhour == $hour) {
+                $this->_objTpl->setVariable($bool_select, ' selected="selected"');
+            } else {
+                $this->_objTpl->setVariable($bool_select, '');
+            }
+
+            $this->_objTpl->setVariable($varname, sprintf("%02d", $curhour));
+            $this->_objTpl->parse($handle_name);
+        }
+    }
+
+
+
+    function selectMinutes($minutes, $handle_name, $bool_select, $varname)
+    {
+        for ($curmin = 0; $curmin <= 59; $curmin++) {
+            if ($curmin == $minutes) {
+                $this->_objTpl->setVariable($bool_select, ' selected="selected"');
+            } else {
+                $this->_objTpl->setVariable($bool_select, '');
+            }
+
+            $this->_objTpl->setVariable($varname, sprintf("%02d", $curmin));
+            $this->_objTpl->parse($handle_name);
+        }
+    }
+
+
+
+    /**
+     * cleans the files from images/calendar/uploads/ that are older than a session lifetime
+     *
+     */
+    function _cleanupFileUploads() {
+        $sessiontime = ini_get( 'session.gc_maxlifetime' );
+        $basePath = $this->uploadImgPath.'uploads/';
+        $handle = opendir($basePath);
+        while($file = readdir($handle)) {
+            if(filemtime ($basePath.$file) < (time() - $sessiontime)) {
+                unlink($basePath.$file);
+            }
+        }
+    }
 }
 }
 ?>
