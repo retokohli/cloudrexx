@@ -129,7 +129,7 @@ function selectMultiAction()
 								<td style="width: 20px">
 									<input type="checkbox" name="selectedEventId[]" id="selectedEventId" value="{CALENDAR_EVENT_ID}" />
 								</td>
-								<td style="width: 40px; text-align: center;"><img src="images/icons/led_{CALENDAR_ACTIVE_ICON}.gif" border="0" alt="{CALENDAR_EVENT_LED}" title="{CALENDAR_EVENT_LED}" /></td>
+								<td style="width: 40px; text-align: center;"><a href="index.php?cmd=calendar{MODULE_INDEX}&amp;act=toggle_event&amp;id={CALENDAR_EVENT_ID}"><img src="images/icons/led_{CALENDAR_ACTIVE_ICON}.gif" border="0" alt="{CALENDAR_EVENT_LED}" title="{CALENDAR_EVENT_LED}" /></a></td>
 								<td style="width: 110px">{CALENDAR_EVENT_STARTDATE}</td>
 								<td style="width: 110px">{CALENDAR_EVENT_ENDDATE}</td>
 								<td><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=event&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_TITLE}</a></td>
