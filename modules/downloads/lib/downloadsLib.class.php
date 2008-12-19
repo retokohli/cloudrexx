@@ -438,7 +438,7 @@ class DownloadsLibrary
      * @param $parentId Only the subcategories of the category spezified by $parentId will be returned.
      * @return mixed    Array on success, FALSE on failure
      */
-    protected function GetCategories($active = null, $parentId = 0)
+    /*protected function GetCategories($active = null, $parentId = 0)
     {
         global $objDatabase, $_LANGID;
 
@@ -485,6 +485,69 @@ class DownloadsLibrary
             }
             return $arrCategories;
         }
+    }*/
+
+    protected function getCategoryMenu($selectedCategory)
+    {
+        global $_LANGID, $_ARRAYLANG;
+
+        $objCategory = Category::getCategories(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
+        $arrCategories = array();
+
+        while (!$objCategory->EOF) {
+            if ($objCategory->getVisibility()) {
+                $arrCategories[$objCategory->getParentId()][] = array(
+                    'id'        => $objCategory->getId(),
+                    'name'      => $objCategory->getName($_LANGID),
+                    'owner_id'  => $objCategory->getOwnerId(),
+                    'access_id' => $objCategory->getReadAccessId()
+                );
+            }
+
+            $objCategory->next();
+        }
+
+        $menu = '<select name="downloads_category_parent_id" onchange="window.location.href=\'index.php?cmd=downloads&act=categories&parent_id=\'+this.value">';
+        $menu .= '<option value="0"'.(!$selectedCategory ? ' selected="selected"' : '').' style="border-bottom:1px solid #000;">'.$_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'].'</option>';
+
+        $menu .= $this->parseCategoryTree($arrCategories, $selectedCategory);
+
+        while (count($arrCategories)) {
+            reset($arrCategories);
+            $menu .= $this->parseCategoryTree($arrCategories, $selectedCategory, key($arrCategories));
+        }
+        $menu .= '</select>';
+
+        return $menu;
+    }
+
+    private function parseCategoryTree(&$arrCategories, $selectedCategory, $parentId = 0, $level = 0)
+    {
+        $options = '';
+
+        $length = count($arrCategories[$parentId]);
+        for ($i = 0; $i < $length; $i++) {
+            $options .= '<option value="'.$arrCategories[$parentId][$i]['id'].'"'
+                    .($arrCategories[$parentId][$i]['id'] == $selectedCategory ? ' selected="selected"' : '')
+                    .(  // managers are allowed to see the content of every category
+                        Permission::checkAccess(142, 'static', true)
+                        // the category isn't protected => everyone is allowed to the it's content
+                        || !$arrCategories[$parentId][$i]['access_id']
+                        // the category is protected => only those who have the sufficent permissions are allowed to see it's content
+                        || Permission::checkAccess($arrCategories[$parentId][$i]['access_id'], 'dynamic', true)
+                        // the owner is allowed to see the content of the category
+                        || ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $arrCategories[$parentId][$i]['owner_id'] == $objFWUser->objUser->getId() ? '' : ' disabled="disabled"')
+                .'>'
+                    .str_repeat('&nbsp;', $level * 4).htmlentities($arrCategories[$parentId][$i]['name'], ENT_QUOTES, CONTREXX_CHARSET)
+                .'</option>';
+            if (isset($arrCategories[$arrCategories[$parentId][$i]['id']])) {
+                $options .= $this->parseCategoryTree($arrCategories, $selectedCategory, $arrCategories[$parentId][$i]['id'], $level + 1);
+            }
+        }
+
+        unset($arrCategories[$parentId]);
+
+        return $options;
     }
 
 
