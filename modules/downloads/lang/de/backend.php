@@ -134,4 +134,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES'] = "Sollen die Unterkategorien 
 $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORIES'] = "Möchten Sie die ausgewählten Kategorien wirklich löschen?\nDie enthaltenen Dateien gehen dabei nicht verloren.";
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_SUCCESS'] = "Die Reihenfolge der Kategorien wurde erfolgreich geändert.";
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_FAILED'] = "Die Reihenfolge der Kategorie(n) <strong>%s</strong> konnte nicht geändert werden!";
+$_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES_MULTI'] = "Sollen die Unterkategorien der ausgewählten Kategorien auch gelöscht werden?";
 ?>
