@@ -134,4 +134,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES'] = "Do you want to delete the s
 $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORIES'] = "Are you sure you want to delete the selected categories?\nThe containing files won't be removed.";
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_SUCCESS'] = "The order of the categories has successfully been updated.";
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_FAILED'] = "The order of the category(-ies) <strong>%s</strong> couldn't be updated!";
+$_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES_MULTI'] = "Do you want to delete the subcategories of the selected categories as well?";
 ?>
