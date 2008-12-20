@@ -131,4 +131,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] = "Klicken Sie hier, um di
 $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC'] = "Klicken Sie hier, um diese Kategorie zu aktivieren.";
 $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'] = "Übersicht";
 $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES'] = "Sollen die Unterkategorien dieser Kategorie auch gelöscht werden?";
+$_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORIES'] = "Möchten Sie die ausgewählten Kategorien wirklich löschen?\nDie enthaltenen Dateien gehen dabei nicht verloren.";
+$_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_SUCCESS'] = "Die Reihenfolge der Kategorien wurde erfolgreich geändert.";
+$_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_FAILED'] = "Die Reihenfolge der Kategorie(n) <strong>%s</strong> konnte nicht geändert werden!";
 ?>
