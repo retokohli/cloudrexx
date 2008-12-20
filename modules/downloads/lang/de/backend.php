@@ -119,7 +119,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER'] = "Der Besitzer darf di
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_MANAGE_BY_OWNER'] = "Der Besitzer dieser Kategorie darf dessen Eigenschaften ändern.";
 $_ARRAYLANG['TXT_DOWNLOADS_CATEG0RY_VISIBILITY_DESC'] = "Diese Kategorie immer auflisten, auch wenn der aktuelle Benutzer keine Zugriffsberechtigung auf den Inhalt hat.";
 $_ARRAYLANG['TXT_DOWNLOADS_EMPTY_NAME_ERROR'] = "Sie müssen zwingend einen Namen für die Kategorie definieren!";
-$_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETE_FAILED'] = "Beim Löschen der Kategorie %s trat ein Fehler auf!";
+$_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETE_FAILED'] = "Beim Löschen der Kategorie <strong>%s</strong> trat ein Fehler auf!";
 $_ARRAYLANG['TXT_DOWNLOADS_FUNCTIONS'] = "Funktionen";
 $_ARRAYLANG['TXT_DOWNLOADS_ID'] = "ID";
 $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORY'] = "Möchten Sie die Kategorie %s wirklich löschen?\nDie enthaltenen Dateien gehen dabei nicht verloren.";
@@ -135,4 +135,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORIES'] = "Möchten Sie die ausge
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_SUCCESS'] = "Die Reihenfolge der Kategorien wurde erfolgreich geändert.";
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_FAILED'] = "Die Reihenfolge der Kategorie(n) <strong>%s</strong> konnte nicht geändert werden!";
 $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES_MULTI'] = "Sollen die Unterkategorien der ausgewählten Kategorien auch gelöscht werden?";
+$_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_DELETE_SUCCESS'] = "Die Kategorien wurden erfolgreich gelöscht.";
+$_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_DELETE_FAILED'] = "Beim Löschen der Kategorien <strong>%s</strong> trat ein Fehler auf!";
+$_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETE_SUCCESS'] = "Die Kategorie <strong>%s</strong> wurde erfolgreich gelöscht.";
 ?>
