@@ -13,24 +13,19 @@ function downloadsDeleteCategory(id,name,hasSubcategories)
         window.location.href = "index.php?cmd=downloads&act=delete_category&parent_id={DOWNLOADS_CATEGORY_ID}&id="+id+"&subcategories="+subcategories;
     }
 }
-            
-            
-            
-            
-	
-	
-	
-	
-	
-    function podcast_media_do_action(action)
-    {
-        if (checkboxIsChecked('downloads_form', 'downloads_category_id[]') || checkboxIsChecked('downloads_form', 'downloads_file_id')) {
-            if (confirm('{TXT_DOWNLOADS_CONFIRM_DELETE_SELECTION}')) {
-                document.getElementById('downloads_form').submit(); return true;
+
+function downloadsCategoryDoAction(action)
+{
+    if (action == 'order' || checkboxIsChecked('downloads_category_form', 'downloads_category_id[]')) {
+        if (action == 'order' || confirm('{DOWNLOADS_CONFIRM_DELETE_CATEGORIES_TXT}\n{TXT_DOWNLOADS_OPERATION_IRREVERSIBLE}')) {
+            if (action == 'delete' && confirm('{TXT_DOWNLOADS_DELETE_SUBCATEGORIES_MULTI}')) {
+                document.getElementById('downloads_category_delete_recursive').value = '1';
             }
+            document.getElementById('downloads_category_form').submit(); return true;
         }
-        document.getElementById('downloads_select_action').value=0;
     }
+    document.getElementById('downloads_category_select_action').value=0;
+}
 	
 	
 		function selectLang(lang){
@@ -161,7 +156,9 @@ function downloadsDeleteCategory(id,name,hasSubcategories)
 </ul>
 
 
-<form name="downloads_form" action="index.php?cmd=downloads&amp;act=categories" method="post">
+<form name="downloads_category_form" id="downloads_category_form" action="index.php?cmd=downloads&amp;act=categories" method="post">
+<input type="hidden" name="parent_id" value="{DOWNLOADS_CATEGORY_ID}" />
+<input type="hidden" name="downloads_category_delete_recursive" id="downloads_category_delete_recursive" value="0" />
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
     <tr>
         <th colspan="{DOWNLOADS_CATEGORY_COLSPAN}" style="padding:3px;">{DOWNLOADS_CATEGORY_MENU}</th>
@@ -170,11 +167,11 @@ function downloadsDeleteCategory(id,name,hasSubcategories)
         <!-- BEGIN downloads_category_select_label -->
         <td width="1%" style="text-align: center;">#</td>
         <!-- END downloads_category_select_label -->
+        <td width="1%" style="text-align: center;">{TXT_DOWNLOADS_ID}</td>
+        <td width="1%" style="text-align: center;">{TXT_DOWNLOADS_STATUS}</td>
         <!-- BEGIN downloads_category_order_label -->
         <td width="1%" style="text-align: center;">{TXT_DOWNLOADS_ORDER}</td>
         <!-- END downloads_category_order_label -->
-        <td width="1%" style="text-align: center;">{TXT_DOWNLOADS_STATUS}</td>
-        <td width="1%" style="text-align: center;">{TXT_DOWNLOADS_ID}</td>
         <td width="15%">{TXT_DOWNLOADS_NAME}</td>
         <td width="65%">{TXT_DOWNLOADS_DESCRIPTION}</td>
         <td width="15%">{TXT_DOWNLOADS_AUTHOR}</td>
@@ -187,12 +184,8 @@ function downloadsDeleteCategory(id,name,hasSubcategories)
             <input type="checkbox" name="downloads_category_id[]" value="{DOWNLOADS_CATEGORY_ID}" />
         </td>
         <!-- END downloads_category_checkbox -->
-        <!-- BEGIN downloads_category_orderbox -->
+        <td nowrap="nowrap" style="text-align: center;">{DOWNLOADS_CATEGORY_ID}</td>
         <td style="text-align: center;">
-            <input name="downloads_category_order[{DOWNLOADS_CATEGORY_ID}]" size="5" maxlength="5" value="{DOWNLOADS_CATEGORY_ORDER}" type="text" />
-        </td>
-        <!-- END downloads_category_orderbox -->
-		<td style="text-align: center;">
           <!-- BEGIN downloads_category_status_link_open -->
             <a href="index.php?cmd=downloads&amp;act=switch_category_status&amp;parent_id={DOWNLOADS_CATEGORY_PARENT_ID}&amp;id={DOWNLOADS_CATEGORY_ID}" title="{DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC}">
           <!-- END downloads_category_status_link_open -->
@@ -200,8 +193,13 @@ function downloadsDeleteCategory(id,name,hasSubcategories)
           <!-- BEGIN downloads_category_status_link_close -->
             </a>
           <!-- END downloads_category_status_link_close -->
-		<td nowrap="nowrap" style="text-align: center;">{DOWNLOADS_CATEGORY_ID}</td>
-		<td nowrap="nowrap">
+        </td>
+        <!-- BEGIN downloads_category_orderbox -->
+        <td style="text-align: center;">
+            <input name="downloads_category_order[{DOWNLOADS_CATEGORY_ID}]" size="5" maxlength="5" value="{DOWNLOADS_CATEGORY_ORDER}" type="text" />
+        </td>
+        <!-- END downloads_category_orderbox -->
+        <td nowrap="nowrap">
             <img src="images/icons/folder_on.gif" width="15" height="13" />
           <!-- BEGIN downloads_category_name_link_open -->
             <a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_CATEGORY_ID}" title="{DOWNLOADS_OPEN_CATEGORY_DESC}">
@@ -232,10 +230,10 @@ function downloadsDeleteCategory(id,name,hasSubcategories)
 </table>
 <!-- BEGIN downloads_category_action_dropdown -->
 <img src="images/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
-<a href="javascript:void(0);" onclick="changeCheckboxes('downloads_form','downloads_category_id[]',true); return false;" title="{TXT_DOWNLOADS_CHECK_ALL}">{TXT_DOWNLOADS_CHECK_ALL}</a> /
-<a href="javascript:void(0);" onclick="changeCheckboxes('downloads_form','downloads_category_id[]',false); return false;" title="{TXT_DOWNLOADS_UNCHECK_ALL}">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
+<a href="javascript:void(0);" onclick="changeCheckboxes('downloads_category_form','downloads_category_id[]',true); return false;" title="{TXT_DOWNLOADS_CHECK_ALL}">{TXT_DOWNLOADS_CHECK_ALL}</a> /
+<a href="javascript:void(0);" onclick="changeCheckboxes('downloads_category_form','downloads_category_id[]',false); return false;" title="{TXT_DOWNLOADS_UNCHECK_ALL}">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
 <img src="images/icons/strike.gif" width="34" height="22" alt="design" />
-<select name="podcast_select_action" id="downloads_select_action" onchange="downloadsDoAction(this.value)">
+<select name="downloads_category_select_action" id="downloads_category_select_action" onchange="downloadsCategoryDoAction(this.value)">
     <option value="0" selected="selected">{TXT_DOWNLOADS_SELECT_ACTION}</option>
     <option value="order">{TXT_DOWNLOADS_ORDER}</option>
     <option value="delete">{TXT_DOWNLOADS_DELETE}</option>

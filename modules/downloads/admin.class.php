@@ -243,17 +243,39 @@ class downloads extends DownloadsLibrary
 
     private function deleteCategory()
     {
-        global $_LANGID;
+        global $_LANGID, $_ARRAYLANG;
 
-        $objCategory = Category::getCategory(isset($_GET['id']) ? intval($_GET['id']) : 0);
+        $objCategory = Category::getCategory(isset($_GET['id']) ? $_GET['id'] : 0);
 
         if (!$objCategory->EOF) {
             $name = '<strong>'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'</strong>';
             if ($objCategory->delete(isset($_GET['subcategories']) && $_GET['subcategories'] == 'true')) {
-                $this->arrStatusMsg['ok'][] = sprintf('Die Kategorie %s wurde erfolgreich gelöscht.', $name);
+                $this->arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETE_SUCCESS'], $name);
             } else {
                 $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
             }
+        }
+    }
+
+    private function deleteCategories($arrCategoryIds, $recursive = false)
+    {
+        global $_LANGID, $_ARRAYLANG;
+
+        $succeded = true;
+
+        foreach ($arrCategoryIds as $categoryId) {
+            $objCategory = Category::getCategory($categoryId);
+
+            if (!$objCategory->EOF) {
+                if (!$objCategory->delete($recursive)) {
+                    $succeded = false;
+                    $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
+                }
+            }
+        }
+
+        if ($succeded) {
+            $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_DELETE_SUCCESS'];
         }
     }
 
@@ -1170,6 +1192,29 @@ $this->_objTpl->setVariable(array(
     }
 
 
+    private function updateCategoryOrder($parentCategoryId, $arrCategoryOrder)
+    {
+        global $_LANGID, $_ARRAYLANG;
+
+        $arrFailedCategories = array();
+
+        foreach ($arrCategoryOrder as $categoryId => $orderNr) {
+            $objCategory = Category::getCategory($categoryId);
+            if (!$objCategory->EOF) {
+                $objCategory->setOrder($orderNr);
+                if (!$objCategory->store()) {
+                    $arrFailedCategories[] = htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
+                }
+            }
+        }
+
+        if (count($arrFailedCategories)) {
+            $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_FAILED'], implode(', ', $arrFailedCategories));
+        } else {
+            $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_SUCCESS'];
+        }
+    }
+
     /**
      * categories list
      *
@@ -1191,6 +1236,19 @@ $this->_objTpl->setVariable(array(
 
         // TODO: check category access
         $objCategory = Category::getCategory($parentCategoryId);
+
+        if (isset($_POST['downloads_category_select_action'])) {
+            switch ($_POST['downloads_category_select_action']) {
+                case 'order':
+                    $this->updateCategoryOrder($parentCategoryId, isset($_POST['downloads_category_order']) && is_array($_POST['downloads_category_order']) ? $_POST['downloads_category_order'] : array());
+                    break;
+
+                case 'delete':
+                    $this->deleteCategories(isset($_POST['downloads_category_id']) && is_array($_POST['downloads_category_id']) ? $_POST['downloads_category_id'] : array(), isset($_POST['downloads_category_delete_recursive']) && $_POST['downloads_category_delete_recursive']);
+                    break;
+            }
+        }
+
         $objSubcategory = Category::getCategories(array('parent_id' => $objCategory->getId()), null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
 
 
@@ -1279,16 +1337,18 @@ $this->_objTpl->setVariable(array(
 
         // TODO: clean up
         $this->_objTpl->setVariable(array(
-            'TXT_DOWNLOADS_STATUS'                  => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
-            'TXT_DOWNLOADS_ID'                      => $_ARRAYLANG['TXT_DOWNLOADS_ID'],
-            'TXT_DOWNLOADS_NAME'                    => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
-            'TXT_DOWNLOADS_DESCRIPTION'             => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
-            'TXT_DOWNLOADS_AUTHOR'                  => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
-            'TXT_DOWNLOADS_FUNCTIONS'               => $_ARRAYLANG['TXT_DOWNLOADS_FUNCTIONS'],
-            'TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'  => $_ARRAYLANG['TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'],
-            'TXT_DOWNLOADS_DELETE_SUBCATEGORIES'    => $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES'],
-            'DOWNLOADS_CONFIRM_DELETE_CATEGORY_TXT' => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORY'])),
-            'DOWNLOADS_CATEGORY_COLSPAN'            => $minColspan + $operateOnSubcategories + $changeSortOrder,
+            'TXT_DOWNLOADS_STATUS'                      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
+            'TXT_DOWNLOADS_ID'                          => $_ARRAYLANG['TXT_DOWNLOADS_ID'],
+            'TXT_DOWNLOADS_NAME'                        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
+            'TXT_DOWNLOADS_DESCRIPTION'                 => $_ARRAYLANG['TXT_DOWNLOADS_DESCRIPTION'],
+            'TXT_DOWNLOADS_AUTHOR'                      => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+            'TXT_DOWNLOADS_FUNCTIONS'                   => $_ARRAYLANG['TXT_DOWNLOADS_FUNCTIONS'],
+            'TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'      => $_ARRAYLANG['TXT_DOWNLOADS_OPERATION_IRREVERSIBLE'],
+            'TXT_DOWNLOADS_DELETE_SUBCATEGORIES'        => $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES'],
+            'TXT_DOWNLOADS_DELETE_SUBCATEGORIES_MULTI'  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES_MULTI'],
+            'DOWNLOADS_CONFIRM_DELETE_CATEGORY_TXT'     => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORY'])),
+            'DOWNLOADS_CONFIRM_DELETE_CATEGORIES_TXT'   => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORIES'])),
+            'DOWNLOADS_CATEGORY_COLSPAN'                => $minColspan + $operateOnSubcategories + $changeSortOrder,
 
             // rename
             'TXT_MANAGE_CATEGORIES' => $_ARRAYLANG['TXT_MANAGE_CATEGORIES'],

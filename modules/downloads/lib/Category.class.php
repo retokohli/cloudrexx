@@ -184,7 +184,7 @@ class Category {
                 // ...the owner has the permission to delete it by himself
                 (!$this->getDeletableByOwner() || !$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId())
                 // ...or the user has the right the delete subcategories of the current parent category
-                && (!($objParentCategory = Category::getCateogry($this->parent_id)) || !Permission::checkAccess($objParentCategory->getManageSubcategoriesAccessId(), 'dynamic', true))
+                && (!($objParentCategory = Category::getCategory($this->parent_id)) || !Permission::checkAccess($objParentCategory->getManageSubcategoriesAccessId(), 'dynamic', true))
             )
         ) {
             $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_NO_PERM_DEL_CATEGORY'], htmlentities($this->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
@@ -964,6 +964,11 @@ class Category {
     public function setOwner($userId)
     {
         $this->owner_id = $userId;
+    }
+
+    public function setOrder($orderNr)
+    {
+        $this->order = $orderNr;
     }
 
     public function setDeletableByOwner($deletable)
