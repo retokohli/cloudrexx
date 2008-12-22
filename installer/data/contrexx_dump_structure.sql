@@ -885,6 +885,31 @@ CREATE TABLE `contrexx_module_downloads_category_locale` (
   `description` text NOT NULL,
   PRIMARY KEY  (`lang_id`,`category_id`)
 ) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_downloads_download` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `type` enum('file','url') NOT NULL default 'file',
+  `mime_type` enum('undefined','image','text','media','archive','application') NOT NULL default 'undefined',
+  `source` varchar(255) NOT NULL,
+  `size` int(10) unsigned NOT NULL default '0',
+  `image` varchar(255) NOT NULL,
+  `author_id` int(5) unsigned NOT NULL default '0',
+  `access_id` int(10) unsigned NOT NULL default '0',
+  `license` varchar(255) NOT NULL,
+  `version` varchar(10) NOT NULL,
+  `ctime` int(14) unsigned NOT NULL default '0',
+  `is_active` tinyint(3) unsigned NOT NULL default '0',
+  `order` int(3) unsigned NOT NULL default '0',
+  `views` int(10) unsigned NOT NULL default '0',
+  `downloads` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_downloads_download_locale` (
+  `lang_id` int(11) unsigned NOT NULL default '0',
+  `download_id` int(11) unsigned NOT NULL default '0',
+  `name` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  PRIMARY KEY  (`lang_id`,`download_id`)
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_downloads_files` (
   `file_id` int(11) unsigned NOT NULL auto_increment,
   `file_name` varchar(255) NOT NULL default '',
