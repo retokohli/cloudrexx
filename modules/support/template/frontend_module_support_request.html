@@ -1,0 +1,320 @@
+<script type="text/javascript">
+<!--
+
+var supportStatus = [[SUPPORT_REQUEST_STATUS]];
+var infoFieldsShown = 0;
+var infoFieldIndexNext = [[SUPPORT_REQUEST_INFOFIELD_INDEX]];
+
+function supportRequestToggle(index, power)
+{
+  element = document.getElementById("supportRequestData"+index);
+  display = element.style.display;
+  switch (display) {
+    case 'none':
+      display = 'inline';
+      break;
+    case 'inline':
+    default:
+      display = 'none';
+  }
+  switch (power) {
+    case 'inline':
+    case 'on':
+    case 'show':
+      display = 'inline';
+      document.getElementById("supportRequestHead"+index).style.backgroundColor = '#AAAAFF'; //setAttribute('class', 'supportStepOk', true);
+      break;
+    case 'none':
+    case 'off':
+    case 'hide':
+      display = 'none';
+      document.getElementById("supportRequestHead"+index).style.backgroundColor = '#AAFFAA'; //setAttribute('class', 'supportStepOk', true);
+      break;
+  }
+  element.style.display = display;
+}
+
+function cloneInfoField(id, index)
+{
+  // The index div, parent of the name and input divs
+  infoFieldIndex  = document.getElementById('infoFieldIndex_'+id+'_'+index);
+//alert("infoFieldIndex: "+infoFieldIndex.nodeName+" - id '"+infoFieldIndex.getAttribute('id')+"'");
+  // Clone the index container, with all its child nodes
+  infoFieldIndexClone = infoFieldIndex.cloneNode(true);
+//alert("infoFieldIndexClone: "+infoFieldIndexClone.nodeName+" - id '"+infoFieldIndexClone.getAttribute('id')+"'");//test - OK // The div separating the containers id = infoFieldIndex.parentNode; id.appendChild(infoFieldIndexClone); return;
+  // The cloned input div
+  inputNodes = infoFieldIndexClone.childNodes[3].childNodes;
+  // The next InfoField index is kept in infoFieldIndexNext.
+  // Update parameters
+  infoFieldIndexClone.id = infoFieldIndexClone.id.replace(/\d+$/, infoFieldIndexNext);
+  inputNodes[1].id = inputNodes[1].id.replace(/\d+$/, infoFieldIndexNext);
+  inputNodes[1].name = inputNodes[1].name.replace(/\]\[\d+]$/, ']['+infoFieldIndexNext+']');
+  inputNodes[1].value = '';
+  inputNodes[3].setAttribute('onclick',
+    inputNodes[3].getAttribute('onclick').replace(/\,\s?\d+\);?/, ', '+infoFieldIndexNext+');'));
+  inputNodes[5].setAttribute('onclick',
+    inputNodes[5].getAttribute('onclick').replace(/\,\s?\d+\);?/, ', '+infoFieldIndexNext+');'));
+  // The div separating the containers
+  id = infoFieldIndex.parentNode;
+  id.appendChild(infoFieldIndexClone);
+  ++infoFieldIndexNext;
+}
+
+function deleteInfoField(id, index)
+{
+  element = document.getElementById("infoFieldIndex_"+id+"_"+index);
+  parent  = element.parentNode;
+  if (parent.childNodes.length > 1) {
+    parent.removeChild(element);
+  }
+}
+
+function supportContinue()
+{
+  if (document.getElementById("supportCategoryId").value <= 0) {
+    supportStatus = 0;
+    supportRequestToggle(0, 'show');
+    document.getElementById("supportCategoryId").focus();
+    return;
+  } else {
+    supportStatus = 1;
+    supportRequestToggle(0, 'hide');
+  }
+  if (document.getElementById("supportSubject").value == '') {
+    supportRequestToggle(1, 'show');
+    document.getElementById("supportSubject").focus();
+    return;
+  } else {
+    supportStatus = 2;
+    supportRequestToggle(1, 'hide');
+  }
+  if (document.getElementById("supportBody").value == '') {
+    supportRequestToggle(2, 'show');
+    document.getElementById("supportBody").focus();
+    return;
+  } else {
+    supportStatus = 3;
+    supportRequestToggle(2, 'hide');
+  }
+  // Test whether mandatory InfoFields have content.
+  // Assume that everything is fine -- we shall prove the contrary
+  mandatoryOkay = 1;
+  infoFields = document.getElementById('infoFields');
+//alert("infoFields: "+infoFields.nodeName);
+  // Loop through the InfoFieldId div tags.
+  for (i = 1; i < infoFields.childNodes.length; i += 2) {
+    infoFieldId = infoFields.childNodes[i];
+//alert("infoFieldId: "+infoFieldId.nodeName);
+    // Loop through the InfoFieldIndex tags. index represents the child index.
+    for (j = 1; j < infoFieldId.childNodes.length; j += 2) {
+      infoFieldIndex = infoFieldId.childNodes[j];
+//alert("infoFieldIndex: "+infoFieldIndex.nodeName+" - id '"+infoFieldIndex.getAttribute('id')+"'");
+      // Kid #1 is the container for the InfoField name and mandatory "flag"
+      infoFieldName = infoFieldIndex.childNodes[1];
+//alert("infoFieldName: "+infoFieldName.nodeName+" - '"+infoFieldName.getAttribute('id')+"'");
+      // If the name div contains only one child, it cannot have the flag
+      if (infoFieldName.childNodes.length == 1) {
+          // The InfoField with this ID is not mandatory, skip it
+//alert("infoFieldName: "+infoFieldName.nodeName+" - ID '"+infoFieldName.getAttribute('id')+"' is not mandatory.");
+          break;
+      }
+//alert("infoFieldName: "+infoFieldName.nodeName+" - '"+infoFieldName.getAttribute('id')+"' is mandatory.");
+      // So this is a mandatory field.  It must contain a value.
+      // Kid #3 is the container for the input elements
+      infoFieldInput = infoFieldIndex.childNodes[3];
+//alert("infoFieldInput: "+infoFieldName.nodeName+" - ID "+infoFieldInput.getAttribute('id'));
+      // Kid #1 is the text/file input box
+      // Note that there *MUST* be either some whitespace *OR* the
+      // MAX_FILE_SIZE hidden input tag between this <div> tag and its parent.
+      infoFieldInput = infoFieldInput.childNodes[1];
+//alert("mandatory infoFieldInput: '"+infoFieldInput.getAttribute('name')+"', value: "+infoFieldInput.value);
+      if (infoFieldInput.value == '') {
+//alert("mandatory infoFieldInput: '"+infoFieldInput.getAttribute('name')+"' is empty!");
+        mandatoryOkay = 0;
+        infoFieldInput.focus();
+      }
+    }
+  }
+  if (mandatoryOkay == 0 || !infoFieldsShown) {
+    infoFieldsShown = 1;
+    supportRequestToggle(3, 'show');
+    return;
+  } else {
+    supportStatus = 4;
+    supportRequestToggle(3, 'hide');
+  }
+  if (document.getElementById("supportName").value == '') {
+    supportRequestToggle(4, 'show');
+    document.getElementById("supportName").focus();
+    return;
+  } else {
+    supportStatus = 5;
+    supportRequestToggle(4, 'hide');
+  }
+  if (document.getElementById("supportEmail").value == '') {
+    supportRequestToggle(5, 'show');
+    document.getElementById("supportEmail").focus();
+    return;
+  } else {
+    supportStatus = 6;
+    supportRequestToggle(5, 'hide');
+  }
+  if (supportStatus == 6) {
+    if (document.getElementById("supportTicketId").value > 0) {
+      supportRequestToggle(6, 'show');
+    document.getElementById("supportNext").focus();
+      return;
+    } else {
+      document.supportForm.submit();
+    }
+  }
+}
+// -->
+</script>
+
+<form name="supportForm" method="post" enctype="multipart/form-data" action="">
+  <!-- BEGIN requestData -->
+  <div>
+    [[TXT_SUPPORT_REQUEST_WELCOME]]
+  </div>
+  <br />
+  <!-- SUPPORT_REQUEST_STATUS_START -->
+  <div id="supportRequestHead0" class="[[SUPPORT_REQUEST_CLASS_0]]" onclick="JavaScript:supportRequestToggle(0, '');">
+    [[TXT_SUPPORT_REQUEST_STATUS_0]]
+  </div>
+  <br />
+  <div id="supportRequestData0" style="display:[[SUPPORT_REQUEST_STYLE_0]];">
+    <div>
+      [[TXT_SUPPORT_REQUEST_CHOOSE_CATEGORY]]
+    </div>
+    <div>
+      [[SUPPORT_REQUEST_CATEGORIES_MENU]]
+    </div>
+  </div>
+  <br />
+  <!-- SUPPORT_REQUEST_STATUS_CATEGORY -->
+  <div id="supportRequestHead1" class="[[SUPPORT_REQUEST_CLASS_1]]" onclick="JavaScript:supportRequestToggle(1, '');">
+    [[TXT_SUPPORT_REQUEST_STATUS_1]]
+  </div>
+  <br />
+  <div id="supportRequestData1" style="display:[[SUPPORT_REQUEST_STYLE_1]];">
+    <div>
+      [[TXT_SUPPORT_REQUEST_ENTER_SUBJECT]]
+    </div>
+    <div>
+      <input type="text" id="supportSubject" name="supportSubject"
+        maxlength="255" value="[[SUPPORT_REQUEST_SUBJECT]]"
+        tabindex="2" onchange="JavaScript:supportContinue();" />
+    </div>
+  </div>
+  <br />
+  <!-- SUPPORT_REQUEST_STATUS_SUBJECT -->
+  <div id="supportRequestHead2" class="[[SUPPORT_REQUEST_CLASS_2]]" onclick="JavaScript:supportRequestToggle(2, '');">
+    [[TXT_SUPPORT_REQUEST_STATUS_2]]
+  </div>
+  <br />
+  <div id="supportRequestData2" style="display:[[SUPPORT_REQUEST_STYLE_2]];">
+    <div>
+      [[TXT_SUPPORT_REQUEST_ENTER_MESSAGE]]<br />
+    </div>
+    <div>
+      <textarea id="supportBody" name="supportBody" style="width:400px;height:200px;"
+      tabindex="3" onchange="JavaScript:supportContinue();">[[SUPPORT_REQUEST_MESSAGE]]</textarea>
+    </div>
+  </div>
+  <br />
+<!-- SUPPORT_REQUEST_STATUS_MESSAGE -->
+  <div id="supportRequestHead3" class="[[SUPPORT_REQUEST_CLASS_3]]" onclick="JavaScript:supportRequestToggle(3, '');">
+    [[TXT_SUPPORT_REQUEST_STATUS_3]]
+  </div>
+  <br />
+  <div id="supportRequestData3" style="display:[[SUPPORT_REQUEST_STYLE_3]];">
+    <div>
+      [[TXT_SUPPORT_REQUEST_PROVIDE_INFO]]
+    </div>
+    <br />
+    <div id="infoFields">
+      <!-- BEGIN infofieldId -->
+      <div id="infoFieldId_[[SUPPORT_REQUEST_INFOFIELD_ID]]">
+        <!-- BEGIN infofieldIndex -->
+        <div id="infoFieldIndex_[[SUPPORT_REQUEST_INFOFIELD_ID]]_[[SUPPORT_REQUEST_INFOFIELD_INDEX]]">
+          [[SUPPORT_REQUEST_INFOFIELD]]
+        </div>
+        <!-- END infofieldIndex -->
+      </div>
+      <!-- END infofieldId -->
+    </div>
+  </div>
+  <br />
+<!-- SUPPORT_REQUEST_STATUS_INFOFIELD -->
+  <div id="supportRequestHead4" class="[[SUPPORT_REQUEST_CLASS_4]]" onclick="JavaScript:supportRequestToggle(4, '');">
+    [[TXT_SUPPORT_REQUEST_STATUS_4]]
+  </div>
+  <br />
+  <div id="supportRequestData4" style="display:[[SUPPORT_REQUEST_STYLE_4]];">
+    <div>
+      [[TXT_SUPPORT_REQUEST_PROVIDE_NAME]]
+    </div>
+    <div>
+      <input type="text" id="supportName" name="supportName"
+        value="[[SUPPORT_REQUEST_USER_NAME]]" tabindex="5"
+        onchange="JavaScript:supportContinue();" />
+    </div>
+  </div>
+  <br />
+<!-- SUPPORT_REQUEST_STATUS_NAME -->
+  <div id="supportRequestHead5" class="[[SUPPORT_REQUEST_CLASS_5]]" onclick="JavaScript:supportRequestToggle(5, '');">
+    [[TXT_SUPPORT_REQUEST_STATUS_5]]
+  </div>
+  <br />
+  <div id="supportRequestData5" style="display:[[SUPPORT_REQUEST_STYLE_5]];">
+    <div>
+      [[TXT_SUPPORT_REQUEST_PROVIDE_EMAIL]]
+    </div>
+    <div>
+      <input type="text" id="supportEmail" name="supportEmail"
+        value="[[SUPPORT_REQUEST_USER_EMAIL]]" tabindex="6"
+        onchange="JavaScript:supportContinue();" />
+    </div>
+  </div>
+  <br />
+  <!-- END requestData -->
+<!-- SUPPORT_REQUEST_STATUS_EMAIL -->
+  <div id="supportRequestHead6" class="[[SUPPORT_REQUEST_CLASS_6]]" onclick="JavaScript:supportRequestToggle(6, '');">
+    [[TXT_SUPPORT_REQUEST_STATUS_6]]
+  </div>
+  <br />
+  <div id="supportRequestData6" style="display:[[SUPPORT_REQUEST_STYLE_6]];">
+    <input type="hidden" id="supportTicketId" name="supportTicketId"
+      value="[[SUPPORT_REQUEST_TICKET_ID]]" />
+    <!-- BEGIN requestComplete -->
+    <div>
+      [[TXT_SUPPORT_REQUEST_COMPLETE]]
+    </div>
+    <br />
+    <div>
+      [[TXT_SUPPORT_REQUEST_YOUR_TICKET]]
+    </div>
+    <br />
+    <div>
+      [[TXT_SUPPORT_REQUEST_THANK_YOU]]
+    </div>
+    <!-- END requestComplete -->
+    <!-- BEGIN requestIncomplete -->
+    <div>
+      [[TXT_SUPPORT_REQUEST_INCOMPLETE]]
+    </div>
+    <br />
+    <div>
+      [[TXT_SUPPORT_REQUEST_COMPLETE_DATA]]
+    </div>
+    <!-- END requestIncomplete -->
+  </div>
+<!-- SUPPORT_REQUEST_STATUS_TICKET -->
+  <br />
+  <div>
+    <input type="button" id="supportNext"
+      value="[[TXT_SUPPORT_REQUEST_CONTINUE]]"
+      onclick="[[SUPPORT_REQUEST_CONTINUE_FUNCTION]]" />
+  </div>
+</form>

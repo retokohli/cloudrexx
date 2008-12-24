@@ -1,0 +1,77 @@
+/*
+   Navigation Style Sheet for the CONTREXX CMS backend console.
+
+   Copyright 2004 COMVATION AG.
+   All Rights Reserved.
+
+*/
+
+
+table.subnavbar_level1 {
+	border-top: 1px solid #ffcc33;
+	WIDTH: 100%;
+}
+
+table.subnavbar_level1 td{
+	color: black;
+	background-color: #fff4c2;
+	vertical-align: middle;
+	height: 25px;
+	padding: 0px 0px 0px 0pc;
+}
+
+table.subnavbar_level1 a{
+	padding-left: 7px;
+	padding-right: 6px;
+	padding-bottom: 1px;
+	padding-top: 1px;
+	color: black;
+	text-decoration: none;
+	background-color: #fff4c2;
+	border: #fff4c2 1px solid;
+}
+
+table.subnavbar_level1 a:hover {
+	background-color: #fff4c2;
+	border: #ffcc33 1px solid;
+	color: black
+}
+
+
+
+
+/* subnavbar_level2 menu top container */
+#subnavbar_level2 {
+	margin:0;
+	padding:0;
+	vertical-align: top;
+	text-align:left;
+	padding-left: 0px
+}
+
+/* subnavbar_level2 menu sub container */
+#subnavbar_level2 ul {
+	background-color:#c8d7ee;
+	margin:0;
+	padding:.3em 1em
+}
+
+/* subnavbar_level2 menu item */
+#subnavbar_level2 li {
+	list-style-type:none;
+	display: inline;
+}
+
+/* subnavbar_level2 menu hyperlink */
+#subnavbar_level2 a {
+	font-size:1em;
+	color:black;
+	text-decoration:none;
+	padding:.3em 1em
+}
+
+/* subnavbar_level2 menu hyperlink hover */
+#subnavbar_level2 a:hover {
+	color:white;
+	background-color:#3366cc
+}

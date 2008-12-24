@@ -1,0 +1,44 @@
+////////////////////////////////////////
+// CHANGELOG 2.0.0-2.0.1 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Neue Funktionen / Änderungen *********
+****************************************
+Modul: Podcast
+- Bei den Vorlagen steht der neue Platzhalter [[MEDIUM_THUMBNAIL]] zur Verfügung.
+  Dieser enthält den Pfad des zugehörigen Thumbnails eines Mediums.
+
+Google Sitemap
+- Die Google Sitemap greift nun auch auf die definierbaren Aliase zurück. Weiter
+  wurden die enthaltenen Werte für "Änderungshäufigkeit" und "Letzte
+  Aktualisierung" optimiert.
+
+Modul: Datenlisten
+- Als PopUp Javascript Bibliothek wird iBox verwendet.
+
+****************************************
+* Behobene Fehler **********************
+****************************************
+Benutzerverwaltung
+- Die Funktion "Kennwort zurücksetzen" funktioniert.
+- Das Speichern eines Benutzerkontos funktioniert auch, wenn die
+  Authentifizierungsdaten im Kennwortmanager des Browser gespeichert wurden.
+- Bei der Auflistung der Benutzer funktioniert das Paging.
+
+News
+- Die Aufarbeitung zur Ausgabe der Teaser Blöcke verschleisst massig weniger
+  Arbeitsspeicher.
+
+FileBrowser
+- Die Auflistung der Websites erfolgt anhand der gewählten Frontend Sprache.
+
+Modul: Forum
+- Dateiupload Pfad angepasst (Upload hat nicht funktioniert)
+- Fehler im Paging auf der Threadansicht-Seite behoben
+
+Modul: Podcast
+- Das Abspielen der Videos funktioniert mit dem Internet Explorer 6.
+
+WYSIWYG Editor
+- Neuste Version 2.6.2 des FCKeditors eingebunden.
