@@ -1,0 +1,99 @@
+////////////////////////////////////////
+// CHANGELOG 2.0.1-2.0.2 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Neue Funktionen / Änderungen *********
+****************************************
+Allgemein
+- Die Google Sitemap Funktion wurde in XML Sitemap umbenannt.
+
+Statistik
+- Google Chrome Browser wurde bei den Browser Statistiken aufgenommen.
+- Umlaute in Suchanfragen in Referer-URLs werden nun korrekt dargestellt
+
+Benutzerverwaltung
+- Die Profileigenschaft E-Mail Adresse wird bei der Suche im Backend auch mit
+  einbezogen.
+- Der Layoutblock "access_logged_in" bietet nun auch die Platzhalter
+  [[ACCESS_USER_ID]] und [[ACCESS_USER_USERNAME]] zur Verfügung.
+
+****************************************
+* Behobene Fehler **********************
+****************************************
+Allgemein
+- Das Installieren eines Modul über den Modul Manager funktioniert in
+  jeder Sprache.
+- Beim Zugriff auf eine Seite ohne hinreichende Autorisierung, wird der
+  Besucher auf die Seite "Kein Zugriff" (section=login&cmd=noaccess)
+  verwiesen.
+- Bei der Verwendung von virtuellen Sprachverzeichnissen wird nun für jedes
+  Verzeichnis ein eigenes XML Sitemap erstellt.
+
+Alias Verwaltung
+- Falls die .htaccess Datei nicht vorhanden ist, wird diese, wenn nötig,
+  mittels FTP erstellt.
+
+Benutzerverwaltung
+- Bei der Inhaltsseite "Mitgliederliste" (section=access&cmd=members) muss die
+  Buchstabenindex-Liste nicht mehr zwingend angezeigt werden.
+- Benutzer welche bereits vor dem Erfassen von zusätzlichen
+  Profileigenschaften im System vorhanden waren, werden bei der Suche auch
+  gefunden.
+- Die Auflistung der Benutzer erfolgt korrekt, egal nach welchem Merkmal
+  sortiert wird.
+- Administratoren müssen Pflichtfelder in der Administrationskonsole eines
+  Benutzerprofils nicht zwingend ausfüllen.
+- Beim Bearbeiten des Benutzerprofils im Frontend werden vor dem Speichern die
+  Pflichtfelder überprüft.
+- Tritt beim Speichern eines Benutzerprofils ein Fehler auf, so wird das zu
+  bearbeitende Formular mit den vorher eingegebenen Daten wieder angezeigt.
+
+Datenlisten
+- Wird bei der Option "Anzahl Zeichen in Einleitungstext" der Wert "0"
+  definiert, so wird jeweils der komplette Einleitungstext ausgegeben.
+- Frontend-Seiten werden korrekt aufgelistet bei der Verwaltung einer
+  Kategorie.
+
+Kontakte Manager
+- Die Liste der Eingabefelder wird bei Verwendung des Safari Browsers korrekt
+  dargestellt.
+
+Layout & Design
+- Die Dateien werden alphabetisch aufgelistet.
+- Der Inhalt der ganzen Verzeichnisstruktur eines Layouts kann bearbeitet
+  werden.
+
+News
+- Bei Newsmeldungen, welche nur eine Weiterleitung beinhalten, wurde auf der
+  Starseite eine falsche URL (Array['redirect']) ausgegeben.
+- Die Einträge im RSS Feed enthalten den Text der Newsmeldung nur, wenn es sich
+  nicht um eine Weiterleitung handelt.
+
+Datenbank Manager
+- Die mySQL Syntax der Sicherungen wurde gefixt, so dass die erzeugten .sql
+  Dateien auch über myPhpAdmin oder mySQL Clients fehlerfrei importiert werden
+  können.
+
+Grundeinstellungen
+- Sonderzeichen in Seitentitel werden nun nicht mehr doppelt codiert
+
+Modul: Shop
+- Einige Fehler bei der Anzeige der Mehrwertsteuer korrigiert
+
+Modul: Forum
+- Die E-Mails werden alle mit dem korrekten Zeichen versendet.
+
+Modul: Immobilienverwaltung
+- Die E-Mails werden alle mit dem korrekten Zeichen versendet.
+
+Modul: Hotelverwaltung
+- Die E-Mails werden alle mit dem korrekten Zeichen versendet.
+
+Modul: Bildergalerie
+- Die Zugriffsrechte können bei bestehenden Kategorien verändert werden.
+- Das Erstellen von Unterkategorien ist nur auf der ersten Ebene möglich.
+
+Update
+- PHP und MySQL Versionscheck verbessert.
+

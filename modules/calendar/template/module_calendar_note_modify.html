@@ -1,0 +1,711 @@
+<!-- START calendar_new_note.html -->
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+
+function checkNote()
+{
+	if(document.modifyCalendarNote.inputCategory.value == 0)
+	{
+		alert("{TXT_CALENDAR_ERROR_CATEGORY}");
+		document.modifyCalendarNote.inputCategory.focus();
+		return false;
+	}
+	if(document.modifyCalendarNote.inputName.value == "")
+	{
+		alert("{TXT_CALENDAR_ERROR_NAME}");
+		document.modifyCalendarNote.inputName.focus();
+		return false;
+	}
+	if(document.modifyCalendarNote.inputPlace.value == "")
+	{
+		alert("{TXT_CALENDAR_ERROR_PLACE}");
+		document.modifyCalendarNote.inputPlace.focus();
+		return false;
+	}
+	if(document.modifyCalendarNote.inputEndYear.value < document.modifyCalendarNote.inputYear.value)
+	{
+		alert("{TXT_CALENDAR_ERROR_DATE}");
+		document.modifyCalendarNote.inputEndYear.focus();
+		return false;
+	}
+	if(document.modifyCalendarNote.inputEndYear.value == document.modifyCalendarNote.inputYear.value && document.modifyCalendarNote.inputEndMonth.value < document.modifyCalendarNote.inputMonth.value)
+	{
+		alert("{TXT_CALENDAR_ERROR_DATE}");
+		document.modifyCalendarNote.inputEndMonth.focus();
+		return false;
+	}
+	if(document.modifyCalendarNote.inputEndYear.value == document.modifyCalendarNote.inputYear.value && document.modifyCalendarNote.inputEndMonth.value == document.modifyCalendarNote.inputMonth.value && document.modifyCalendarNote.inputEndDay.value < document.modifyCalendarNote.inputDay.value)
+	{
+		alert("{TXT_CALENDAR_ERROR_DATE}");
+		document.modifyCalendarNote.inputEndDay.focus();
+		return false;
+	}
+	if(document.modifyCalendarNote.inputEndYear.value == document.modifyCalendarNote.inputYear.value && document.modifyCalendarNote.inputEndMonth.value == document.modifyCalendarNote.inputMonth.value && document.modifyCalendarNote.inputEndDay.value == document.modifyCalendarNote.inputDay.value && document.modifyCalendarNote.inputEndTime.value <= document.modifyCalendarNote.inputTime.value)
+	{
+		alert("{TXT_CALENDAR_ERROR_DATE}");
+		document.modifyCalendarNote.inputEndTime.focus();
+		return false;
+	}
+	if(document.modifyCalendarNote.inputComment.value == "")
+	{
+		alert("{TXT_CALENDAR_ERROR_COMMENT}");
+		document.modifyCalendarNote.inputComment.focus();
+		return false;
+	}
+}
+
+function whole_day()
+{
+	document.getElementById('modifyCalendarNote').inputHour.value = "00";
+	document.getElementById('modifyCalendarNote').inputMinutes.value = "00";
+	document.getElementById('modifyCalendarNote').inputEndHour.value = "23";
+	document.getElementById('modifyCalendarNote').inputEndMinutes.value = "59";
+}
+
+function SetUrl(url, width, height, alt) {
+	switch (fileType) {
+	case 'image':
+	case 'webpages':
+		document.getElementById(insertBox).value = url;
+		break
+	case 'link':
+		if (insertText == '') {
+			insertText = url;
+		}
+		newsInsertLink(document.getElementById(insertBox), '<a href="'+url+'">'+insertText+'</a>');
+		break;
+	}
+}
+
+function getFileBrowser(name, type)
+{
+	insertBox = name;
+	fileType = type;
+
+	if (type == 'link') {
+		insertText = prompt('{TXT_NEWS_DEFINE_LINK_ALT_TEXT}', '');
+		if (insertText == null) {
+			return false;
+		}
+	}
+
+	if (type == 'webpages') {
+		openWindow('?cmd=fileBrowser&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+	} else {
+		openWindow('?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+	}
+}
+
+
+function openWindow(theURL,winName,features){
+	browserPopup = window.open(theURL,"Browser",features);
+	browserPopup.focus();
+}
+
+function addGroup(from,dest,add,remove)
+{
+    if ( from.selectedIndex < 0)
+	{
+		if (from.options[0] != null)
+			from.options[0].selected = true;
+		from.focus();
+		return false;
+	}
+	else
+	{
+		for (var i=0; i<from.options.length; i++)
+		{
+			if (from.options[i].selected)
+			{
+		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
+   			}
+		}
+	    for (var i=from.length-1; i>=0; i--)
+		{
+			if (from.options[i].selected)
+			{
+		       from.options[i] = null;
+   			}
+		}
+	}
+}
+
+
+function removeGroup(from,dest,add,remove)
+{
+	if ( dest.selectedIndex < 0)
+	{
+		if (dest.options[0] != null)
+			dest.options[0].selected = true;
+		dest.focus();
+		return false;
+	}
+	else
+	{
+		for (var i=0; i<dest.options.length; i++)
+		{
+			if (dest.options[i].selected)
+			{
+		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+   			}
+		}
+	    for (var i=dest.options.length-1; i>=0; i--)
+		{
+			if (dest.options[i].selected)
+			{
+		       dest.options[i] = null;
+   			}
+		}
+	}
+}
+
+function disableButtons(from,dest,add,remove)
+{
+	if (from.options.length > 0 )
+	{
+		add.disabled = 0;
+	}
+	else
+		add.disabled = 1;
+
+	if (dest.options.length > 0)
+		remove.disabled = 0;
+	else
+		remove.disabled = 1;
+}
+
+function SelectAllList(CONTROL) {
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = true;
+	}
+}
+
+function showOrHide(strElement)
+{
+	addressorSelect	= document.getElementsByName('inputRegistrationsAddresser')[0].value;
+
+	if(addressorSelect == 2){
+		document.getElementById(strElement).style.display = 'block';
+		document.getElementById('mailTab').style.display = 'block';
+		document.getElementById('mailTab2').style.display = 'none';
+		document.getElementById('mailAgain').style.display = 'block';
+	} else if(addressorSelect == 1) {
+		document.getElementById('mailTab').style.display = 'block';
+		document.getElementById('mailTab2').style.display = 'none';
+		document.getElementById(strElement).style.display = 'none';
+		document.getElementById('mailAgain').style.display = 'block';
+	} else {
+		document.getElementById(strElement).style.display = 'none';
+		document.getElementById('mailTab').style.display = 'none';
+		document.getElementById('mailTab2').style.display = 'block';
+		document.getElementById('mailAgain').style.display = 'none';
+	}
+}
+
+
+// ]]>
+</script>
+
+<script src="../lib/datepickercontrol/datepickercontrol.js" type="text/javascript"></script>
+
+<script language="JavaScript" type="text/javascript">
+<!--
+  DatePickerControl.onSelect = function(inputid)
+  {
+    var startdate = document.getElementById("modifyCalendarNote").inputStartDate.value.replace(/-/g, "");
+    var enddate = document.getElementById("modifyCalendarNote").inputEndDate.value.replace(/-/g, "");
+
+    if (startdate > enddate) {
+    	var date = document.getElementById("modifyCalendarNote").inputStartDate.value;
+    	document.getElementById("modifyCalendarNote").inputEndDate.value = date;
+    }
+  }
+  // -->
+</script>
+
+<script language="javascript" type="text/javascript">
+<!-- //
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
+Text[0]=['','{TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER_INFO}'];
+Text[1]=['','{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_INFO}'];
+Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
+// -->
+</script>
+
+<form action="index.php?cmd=calendar{MODULE_INDEX}&amp;act={CALENDAR_FORM_ACTION}" method="post" id="modifyCalendarNote" name="modifyCalendarNote" onsubmit="SelectAllList(document.modifyCalendarNote.elements['selectedGroups[]']); return checkNote();">
+
+<input type="hidden" name='inputEventId' value="{CALENDAR_ID}" />
+
+
+<ul id="tabmenu">
+	<li><a id="calendarTab_event" class="active" href="javascript:{}" onclick="selectTab('event')" title="{TXT_CALENDAR_EVENT}">{TXT_CALENDAR_EVENT}</a></li>
+	<!-- <li><a id="calendarTab_place" href="javascript:{}" onclick="selectTab('place')" title="{TXT_CALENDAR_PLACE}">{TXT_CALENDAR_PLACE}</a></li>
+	<li><a id="calendarTab_organizer" href="javascript:{}" onclick="selectTab('organizer')" title="{TXT_CALENDAR_ORGANIZER}">{TXT_CALENDAR_ORGANIZER}</a></li> -->
+	<li><a id="calendarTab_registrations" href="javascript:{}" onclick="selectTab('registrations'); showOrHide('selectGroups');" title="{TXT_CALENDAR_REGISTRATIONS}">{TXT_CALENDAR_REGISTRATIONS}</a></li>
+	<li><a id="calendarTab_options" href="javascript:{}" onclick="selectTab('options')" title="{TXT_CALENDAR_OPTIONS}">{TXT_CALENDAR_OPTIONS}</a></li>
+</ul>
+
+
+<div id="event" class="calendarTab" style="display:block">
+  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    <tr>
+      <th colspan="2" nowrap="nowrap">
+        <div align="left">{TXT_CALENDAR_EVENT}</div>
+      </th>
+    </tr>
+	<tr class="row1">
+      <td valign="middle">{TXT_CALENDAR_CAT}</td>
+      <td valign="middle">
+	  <select name="inputCategory" style="width: 302px; ">
+        <option value="0">- {TXT_CALENDAR_CAT}</option>
+        <!-- BEGIN calendar_cat -->
+        <option value="{CALENDAR_CAT_ID}" {CALENDAR_CAT_SELECTED}>[{CALENDAR_CAT_LANG}]&nbsp;&nbsp;{CALENDAR_CAT_NAME}</option>
+        <!-- END calendar_cat -->
+      </select></td>
+    </tr>
+    <tr class="row2">
+      <td valign="middle" width="120">{TXT_CALENDAR_TITLE}</td>
+      <td valign="middle">
+        <input type="text" name='inputTitle' style="width: 300px;" value="{CALENDAR_TITLE}" />
+		<input type="checkbox" value="1" name="inputActive" style="margin-left: 15px;" {CALENDAR_ACTIVE} />{TXT_CALENDAR_ACTIVE}
+      </td>
+    </tr>
+    <tr class="row1">
+    	<td> {TXT_CALENDAR_LINK}</td>
+    	<td>
+    		<input type="text" name='inputEventLink' value="{CALENDAR_LINK_SOURCE}" style="width: 300px;" />
+    	</td>
+	</tr>
+    <tr class="row2">
+      <td valign="middle" width="120">{TXT_CALENDAR_THUMBNAIL}</td>
+      <td valign="middle">
+          <input type="text" name="inputEventImage" value="{CALENDAR_PIC_SOURCE}" id="inputEventImage" style="width: 300px;" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputEventImage', 'image')" />
+      </td>
+    </tr>
+    <tr class="row1">
+      <td valign="middle" width="120">{TXT_CALENDAR_ATTACHMENT}</td>
+      <td valign="middle">
+          <input type="text" name="inputEventAttachment" value="{CALENDAR_SOURCE_ATTACHMENT}" id="inputEventAttachment" style="width: 300px;" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputEventAttachment', 'image')" />
+      </td>
+    </tr>
+    <tr class="row2">
+      <td valign="middle"> {TXT_CALENDAR_START}</td>
+      <td valign="middle">
+		<input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{CALENDAR_START}" style="width: 8em;" />
+		<select name="inputHour" style="margin-left: 10px">
+			<!-- BEGIN hour -->
+			<option value="{CALENDAR_HOUR}" {CALENDAR_HOUR_SELECT}>{CALENDAR_HOUR}</option>
+			<!-- END hour -->
+		</select>
+		:
+		<select name="inputMinutes">
+			<!-- BEGIN minutes -->
+			<option value="{CALENDAR_MINUTES}" {CALENDAR_MINUTES_SELECT}>{CALENDAR_MINUTES}</option>
+			<!-- END minutes -->
+		</select>
+
+		 <a style="margin-left: 15px;" href="#" onclick="whole_day()">{TXT_CALENDAR_WHOLE_DAY}</a>
+	</td>
+    </tr>
+    <tr class="row1">
+      <td valign="middle" > {TXT_CALENDAR_END}</td>
+      <td valign="middle">
+	  	<input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{CALENDAR_END}" style="width:8em;" />
+		<select name="inputEndHour" style="margin-left: 10px">
+			<!-- BEGIN endhour -->
+			<option value="{CALENDAR_END_HOUR}"{CALENDAR_END_HOUR_SELECT}>{CALENDAR_END_HOUR}</option>
+			<!-- END endhour -->
+		</select>
+		:
+		<select name="inputEndMinutes">
+			<!-- BEGIN endminutes -->
+			<option value="{CALENDAR_END_MINUTES}"{CALENDAR_END_MINUTES_SELECT}>{CALENDAR_END_MINUTES}</option>
+			<!-- END endminutes -->
+		</select>
+      </td>
+    </tr>
+	</table>
+	<br />
+	<div id="place" style="display:block">
+	  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+	    <tr>
+	      <th colspan="2" nowrap="nowrap">
+	        <div align="left">{TXT_CALENDAR_PLACE}</div>
+	      </th>
+	    </tr>
+	    <tr class="row1">
+	      <td valign="middle" width="120">{TXT_CALENDAR_ORGANIZER_NAME}</td>
+	      <td valign="middle">
+	        <input type="text" name='inputPlace' style="width: 300px;" value="{CALENDAR_PLACE}"/>
+	      </td>
+	    </tr>
+	    <tr class="row2">
+	      <td valign="middle">{TXT_CALENDAR_STREET_NR}</td>
+	      <td valign="middle">
+	        <input type="text" name='inputPlaceStreetNr' style="width: 300px;" value="{CALENDAR_PLACE_STREET_NR}" />
+	      </td>
+	    </tr>
+	    <tr class="row1">
+	      <td valign="middle">{TXT_CALENDAR_ZIP}</td>
+	      <td valign="middle">
+	        <input type="text" name='inputPlaceZip' style="width: 300px;" value="{CALENDAR_PLACE_ZIP}" />
+	      </td>
+	    </tr>
+	    <tr class="row2">
+	      <td valign="middle" width="120">{TXT_CALENDAR_PLACE}</td>
+	      <td valign="middle">
+	        <input type="text" name='inputPlaceCity' style="width: 300px;" value="{CALENDAR_PLACE_CITY}"/>
+	      </td>
+	    </tr>
+	    <tr class="row1">
+	      <td valign="middle" >{TXT_CALENDAR_LINK}</td>
+	      <td valign="middle">
+	        <input type="text" name='inputPlaceLink' style="width: 300px;" value="{CALENDAR_PLACE_LINK_SOURCE}" />
+	      </td>
+	    </tr>
+	    <tr class="row2">
+	      <td valign="middle">{TXT_CALENDAR_MAP}</td>
+	      <td valign="middle">
+	       	 <input type="text" name="inputPlaceMap" id="inputPlaceMap" style="width: 300px;" value="{CALENDAR_PLACE_MAP_SOURCE}" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputPlaceMap', 'image')" />
+	      </td>
+	    </tr>
+	  </table>
+	</div>
+	<br />
+	<div id="organizer" style="display:block">
+	  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+	    <tr>
+	      <th colspan="2" nowrap="nowrap">
+	        <div align="left">{TXT_CALENDAR_ORGANIZER}</div>
+	      </th>
+	    </tr>
+	    <tr class="row1">
+	      <td valign="middle" width="120">{TXT_CALENDAR_ORGANIZER_NAME}</td>
+	      <td valign="middle">
+	        <input type="text" name='inputOrganizer' style="width: 300px;" value="{CALENDAR_ORGANIZER}" />
+	      </td>
+	    </tr>
+	    <tr class="row2">
+	      <td valign="middle" >{TXT_CALENDAR_STREET_NR}</td>
+	      <td valign="middle">
+	        <input type="text" name='inputOrganizerStreetNr' style="width: 300px;" value="{CALENDAR_ORGANIZER_STREET_NR}" />
+	      </td>
+	    </tr>
+	    <tr class="row1">
+	      <td valign="middle" >{TXT_CALENDAR_ZIP}</td>
+	      <td valign="middle">
+	        <input type="text" name='inputOrganizerZip' style="width: 300px;" value="{CALENDAR_ORGANIZER_ZIP}" />
+	      </td>
+	    </tr>
+	        <tr class="row2">
+	      <td valign="middle" >{TXT_CALENDAR_PLACE}</td>
+	      <td valign="middle">
+	        <input type="text" name='inputOrganizerPlace' style="width: 300px;" value="{CALENDAR_ORGANIZER_PLACE}" />
+	      </td>
+	    </tr>
+	    <tr class="row1">
+	      <td valign="middle">{TXT_CALENDAR_LINK}</td>
+	      <td valign="middle">
+	        <input type="text" name='inputOrganizerLink' style="width: 300px;" value="{CALENDAR_ORGANIZER_LINK_SOURCE}" />
+	      </td>
+	    </tr>
+	    <tr class="row2">
+	      <td valign="middle" >{TXT_CALENDAR_MAIL}</td>
+	      <td valign="middle">
+	        <input type="text" name='inputOrganizerMail' style="width: 300px;" value="{CALENDAR_ORGANIZER_MAIL_SOURCE}" />
+	      </td>
+	    </tr>
+	  </table>
+	</div>
+	<br />
+	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    <tr>
+      <th colspan="2" nowrap="nowrap">
+        <div align="left">{TXT_CALENDAR_COMMENT}</div>
+      </th>
+    </tr>
+    <tr>
+      <td valign="top" colspan="2">
+        {CALENDAR_DESCRIPTION}</td>
+    </tr>
+  </table>
+</div>
+
+<div id="registrations" class="calendarTab" style="display:none">
+  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    <tr>
+      <th colspan="2" nowrap="nowrap">
+        <div align="left">{TXT_CALENDAR_REGISTRATIONS}</div>
+      </th>
+    </tr>
+    <tr class="row1">
+      <td valign="middle" width="120">{TXT_CALENDAR_REGISTRATIONS_ACTIVATED}</td>
+      <td valign="middle">
+        <input type="checkbox" id="inputRegistrations" name='inputRegistrations' value="1" {CALENDAR_REGISTRATIONS_ACTIVATED}/>
+      </td>
+    </tr>
+    <tr class="row2">
+      <td valign="middle" width="120">{TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER}</td>
+      <td valign="middle">
+        <input type="text" style="width: 198px; id="inputRegistrationSubscriber" name='inputRegistrationSubscriber' value="{CALENDAR_REGISTRATIONS_SUBSCRIBER}" />&nbsp;&nbsp;<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+      </td>
+    </tr>
+    <tr class="row1">
+      <td valign="middle" >{TXT_CALENDAR_REGISTRATIONS_ADDRESSER}</td>
+      <td valign="middle">
+        <select onchange="showOrHide('selectGroups')" name="inputRegistrationsAddresser" style="width: 200px; ">
+	        <option value="0" {CALENDAR_REGISTRATIONS_ADDRESSER_ALL}>{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_ALL}</option>
+	        <option value="1" {CALENDAR_REGISTRATIONS_ADDRESSER_ALL_USER}>{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_ALL_USER}</option>
+	        <option value="2" {CALENDAR_REGISTRATIONS_ADDRESSER_SELECT_GROUP}>{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_SELECT_GROUP}</option>
+	    </select>&nbsp;&nbsp;<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
+      </td>
+    </tr>
+    </table>
+    <div id="selectGroups" style="display:none;">
+    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    <tr class="row2">
+      <td valign="top" width="120">{TXT_CALENDAR_REGISTRATIONS_SELECT_GROUP}</td>
+      <td valign="middle">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+		  <tr>
+		    <td width="13%">
+		      <select id="notSelectedGroups" name="notSelectedGroups[]" size="12" style="width:200px;" multiple="multiple">
+		          {CALENDAR_REGISTRATIONS_GROUPS_UNSELECTED}
+		      </select>
+		    </td>
+		    <td width="4%">
+		      <div align="center">
+		        <input type="button" value=" &gt;&gt; " name="addgroups" onclick="addGroup(document.getElementById('notSelectedGroups'),document.getElementById('SelectedGroups'),document.getElementsByName('addgroups')[0],document.getElementsByName('removegroups')[0]);" />
+		        <br />
+		        <input type="button" value=" &lt;&lt; " name="removegroups" onclick="removeGroup(document.getElementById('notSelectedGroups'),document.getElementById('SelectedGroups'),document.getElementsByName('addgroups')[0],document.getElementsByName('removegroups')[0]);" />
+		        <br /><br />
+		      </div>
+		    </td>
+		    <td width="1%">
+		      <div align="left">
+		        <select id="SelectedGroups" name="selectedGroups[]" size="12" style="width:200px;" multiple="multiple">
+		        	{CALENDAR_REGISTRATIONS_GROUPS_SELECTED}
+		        </select>
+		      </div>
+		    </td>
+		    <td width="82%">&nbsp;</td>
+		  </tr>
+		</table>
+      </td>
+  </table>
+  </div>
+  <div id="mailAgain" style="display:block">
+  <!-- BEGIN sendMailAgain -->
+  <br />
+  <div id="alertbox" style="overflow: auto;">
+  <table cellspacing="0" cellpadding="0" width="100%" border="0">
+    <tr>
+      <td valign="middle" width="124">{TXT_CALENDAR_SEND_MAIL_AGAIN}</td>
+      <td valign="middle">
+        <input type="checkbox" id="inputSendMailAgain" name='inputSendMailAgain' value="1" />
+      </td>
+    </tr>
+   </table>
+  </div>
+  <!-- END sendMailAgain -->
+  </div>
+  <br />
+  <div id="mailTab2" style="display:block">
+	<ul id="tabmenu">
+		<li><a id="registrationTab_formular" class="active" href="javascript:{}" onclick="selectTab('formular')" title="{TXT_CALENDAR_FORMULAR}">{TXT_CALENDAR_FORMULAR}</a></li>
+		<li><a id="registrationTab_notification" href="javascript:{}" onclick="selectTab('notification')" title="{TXT_CALENDAR_NOTIFICATION}">{TXT_CALENDAR_NOTIFICATION}</a></li>
+	</ul>
+  </div>
+  <div id="mailTab" style="display:none">
+	<ul id="tabmenu">
+		<li><a id="registrationTab_formular" class="active" href="javascript:{}" onclick="selectTab('formular')" title="{TXT_CALENDAR_FORMULAR}">{TXT_CALENDAR_FORMULAR}</a></li>
+		<li><a id="registrationTab_mail" href="javascript:{}" onclick="selectTab('mail')" title="{TXT_CALENDAR_MAIL_TEMPLATE}">{TXT_CALENDAR_MAIL_TEMPLATE}</a></li>
+		<li><a id="registrationTab_notification" href="javascript:{}" onclick="selectTab('notification')" title="{TXT_CALENDAR_NOTIFICATION}">{TXT_CALENDAR_NOTIFICATION}</a></li>
+	</ul>
+  </div>
+  <div id="formular" class="registrationTab" style="display:block">
+  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    <tr>
+      <th colspan="6" nowrap="nowrap">
+        <div align="left">{TXT_CALENDAR_FORMULAR}</div>
+      </th>
+    </tr>
+    <tr class="row3">
+		<td width="2%" nowrap="nowrap"><span style="font-weight:bold;">#</span></td>
+		<td width="2%" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_FIELD_STATUS}</td>
+		<td width="2%"  nowrap="nowrap"style="text-align: right;">&nbsp;</td>
+		<td width="15%" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_FIELD_NAME}</td>
+		<td width="5%" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_FIELD_TYPE}</td>
+		<td width="74%"  nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_FIELD_REQUIRED}</td>
+	</tr>
+	<!-- BEGIN calendarRegFields -->
+    <tr class="{CALENDAR_FIELD_ROW}">
+      <td valign="middle"><input type="hidden" name="arrFieldIds[{CALENDAR_FIELD_KEY}]" value="{CALENDAR_FIELD_ID}" /><input type="checkbox" name="arrFieldStatus[{CALENDAR_FIELD_KEY}]" value="1" {CALENDAR_FIELD_STATUS}/></td>
+      <td valign="middle" style="text-align: center;"><img src="images/icons/led_{CALENDAR_FIELD_STATUS_IMG}.gif" border="0" alt="{TXT_CALENDAR_FIELD_STATUS}" title="{TXT_CALENDAR_FIELD_STATUS}" /></td>
+      <td valign="middle" style="text-align: right;"><input type="input" size="1" name="arrFieldOrder[{CALENDAR_FIELD_KEY}]" value="{CALENDAR_FIELD_ORDER}" /></td>
+      <td valign="middle"><input {CALENDAR_FIELD_DISABLED} style="width: 250px;" type="input" name="arrFieldName[{CALENDAR_FIELD_KEY}]" value="{CALENDAR_FIELD_NAME}" /></td>
+      <td valign="middle"><select name="arrFieldType[{CALENDAR_FIELD_KEY}]" style="width:150px;">{CALENDAR_FIELD_OPTIONS}</select></td>
+      <td valign="middle"><input type="checkbox" name="arrFieldRequired[{CALENDAR_FIELD_KEY}]" value="1" {CALENDAR_FIELD_REQUIRED}/></tr>
+    <!-- END calendarRegFields -->
+  </table>
+  </div>
+
+  <div id="mail" class="registrationTab" style="display:none">
+  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    <tr>
+      <th colspan="2" nowrap="nowrap">
+        <div align="left">{TXT_CALENDAR_MAIL_TEMPLATE}</div>
+      </th>
+    </tr>
+    <tr class="row3">
+		<td colspan="2" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_PLACEHOLDERS}</span></td>
+	</tr>
+	<tr class="row1">
+		<td width="120" nowrap="nowrap">{TXT_CALENDAR_FIRSTNAME}</td>
+		<td nowrap="nowrap">[[FIRSTNAME]]</td>
+	</tr>
+	<tr class="row2">
+		<td width="120" nowrap="nowrap">{TXT_CALENDAR_LASTNAME}</td>
+		<td nowrap="nowrap">[[LASTNAME]]</td>
+	</tr>
+	<tr class="row1">
+		<td width="120" nowrap="nowrap">{TXT_CALENDAR_REG_LINK}</td>
+		<td nowrap="nowrap">[[REG_LINK]]</td>
+	</tr>
+	<tr class="row2">
+		<td width="120" nowrap="nowrap">{TXT_CALENDAR_TITLE}</td>
+		<td nowrap="nowrap">[[TITLE]]</td>
+	</tr>
+	<tr class="row1">
+		<td width="120" nowrap="nowrap">{TXT_CALENDAR_START_DATE}</td>
+		<td nowrap="nowrap">[[START_DATE]]</td>
+	</tr>
+	<tr class="row2">
+		<td width="120" nowrap="nowrap">{TXT_CALENDAR_END_DATE}</td>
+		<td nowrap="nowrap">[[END_DATE]]</td>
+	</tr>
+	<tr class="row1">
+		<td width="120" nowrap="nowrap">{TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER}</td>
+		<td nowrap="nowrap">[[NUM_SUBSCRIBER]]</td>
+	</tr>
+	<tr class="row2">
+		<td width="120" nowrap="nowrap">{TXT_CALENDAR_HOST_URL}</td>
+		<td nowrap="nowrap">[[URL]]</td>
+	</tr>
+	<tr class="row1">
+		<td width="120" nowrap="nowrap">{TXT_CALENDAR_DATE}</td>
+		<td nowrap="nowrap">[[DATE]]</td>
+	</tr>
+  </table>
+  <br />
+  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    <tr>
+      <th colspan="2" nowrap="nowrap">
+        <div align="left">{TXT_CALENDAR_MAIL_CONTENT}</div>
+      </th>
+    </tr>
+    <tr class="row1">
+		<td width="120" nowrap="nowrap">{TXT_CALENDAR_TITLE}</td>
+		<td nowrap="nowrap"><input type="text" name="registrationMailTitle" value="{CALENDAR_MAIL_TITLE}" style="width:468px;"></td>
+	</tr>
+	<tr class="row2">
+		<td width="120" nowrap="nowrap" valign="top">{TXT_CALENDAR_TEXT}</td>
+		<td nowrap="nowrap"><textarea name="registrationMailContent" style="width:468px; overflow: auto;" rows='15'>{CALENDAR_MAIL_CONTENT}</textarea></td>
+	</tr>
+  </table>
+  </div>
+
+  <div id="notification" class="registrationTab" style="display:none">
+  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    <tr>
+      <th colspan="2" nowrap="nowrap">
+        <div align="left">{TXT_CALENDAR_NOTIFICATION}</div>
+      </th>
+    </tr>
+	<tr class="row1">
+		<td width="120" nowrap="nowrap">{TXT_CALENDAR_NOTIFICATION_ACTIVATE}</td>
+		<td nowrap="nowrap"><input type="checkbox" id="inputNotification" name='inputNotification' value="1" {CALENDAR_NOTIFICATION_ACTIVATED}/></td>
+	</tr>
+	<tr class="row2">
+		<td width="120" nowrap="nowrap">{TXT_CALENDAR_NOTIFICATION_ADDRESS}</td>
+		<td nowrap="nowrap"><input type="text" name='inputNotificationAddress' style="width: 198px;" value="{CALENDAR_NOTIFICATION_ADDRESS}" />&nbsp;&nbsp;<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
+	</tr>
+  </table>
+  </div>
+</div>
+
+<div id="options" class="calendarTab" style="display:none">
+  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    <tr>
+      <th colspan="2" nowrap="nowrap">
+        <div align="left">{TXT_CALENDAR_OPTIONS}</div>
+      </th>
+    </tr>
+    <tr class="row1">
+      <td valign="middle" width="120">{TXT_CALENDAR_ACCESS}</td>
+      <td valign="middle">
+         <select name="inputAccess" style="width: 302px; ">
+	        <option value="0" {CALENDAR_ACCESS_PUBLIC}>{TXT_CALENDAR_ACCESS_PUBLIC}</option>
+	        <option value="1" {CALENDAR_ACCESS_COMMUNITY}>{TXT_CALENDAR_ACCESS_COMMUNITY}</option>
+	     </select>
+      </td>
+    </tr>
+    <tr class="row2">
+      <td valign="middle" >{TXT_CALENDAR_PRIORITY}</td>
+      <td valign="middle" >
+        <select name="inputPriority" style="width: 302px; ">
+	        <option value="1" {CALENDAR_PRIORITY_VERY_HEIGHT}>{TXT_CALENDAR_PRIORITY_VERY_HEIGHT}</option>
+			<option value="2" {CALENDAR_PRIORITY_HEIGHT}>{TXT_CALENDAR_PRIORITY_HEIGHT}</option>
+			<option value="3" {CALENDAR_PRIORITY_NORMAL}>{TXT_CALENDAR_PRIORITY_NORMAL}</option>
+			<option value="4" {CALENDAR_PRIORITY_LOW}>{TXT_CALENDAR_PRIORITY_LOW}</option>
+			<option value="5" {CALENDAR_PRIORITY_VERY_LOW}>{TXT_CALENDAR_PRIORITY_VERY_LOW}</option>
+	     </select>
+      </td>
+    </tr>
+    <!-- <tr class="row2">
+      <td valign="middle" >{TXT_CALENDAR_REPEAT_MASK}</td>
+      <td valign="middle" >
+        <input type="text" name='inputRepeat' style="width: 300px;" />
+      </td>
+    </tr>
+    <tr class="row1">
+      <td valign="top" >{TXT_CALENDAR_REPEAT_DURANCE}</td>
+      <td valign="middle">
+      	<table cellpadding="0" cellspacing="0">
+      		<tr>
+      			<td valign="middle" width="120">
+			        <input type="radio" name='inputRepeatDouranceType' value="0" checked="checked"/>&nbsp;kein Enddatum<br />
+			    </td>
+			    <td>
+			    	<br />
+			    </td>
+      		</tr>
+      		<tr>
+      			<td valign="middle" width="120">
+			        <input type="radio" name='inputRepeatDouranceType' value="1"/>&nbsp;Endet nach:
+			    </td>
+			    <td>
+			    	<input type="text" name='inputRepeatDouranceDays' value="10" style="width: 30px;" />&nbsp;Terminen
+			    </td>
+      		</tr>
+      		<tr>
+      			<td valign="middle" width="120">
+			        <input type="radio" name='inputRepeatDouranceType' value="2"/>&nbsp;Endet am:
+			    </td>
+			    <td>
+			    	<input type="text" name="inputRepeatDouranceDate" value="{CALENDAR_TODAY}" style="width: 8em;" />
+			    </td>
+      		</tr>
+      	</table>
+      </td>
+    </tr> -->
+  </table>
+</div>
+<br />
+  <input type="reset" value="{TXT_CALENDAR_RESET}" name="reset" />
+  <input type="submit" value="{TXT_CALENDAR_SUBMIT}" name="calendar_store_note" />
+  <input type="hidden" name="note" value="1" />
+</form>
+
+<!-- END calendar_new_note.html -->

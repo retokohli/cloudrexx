@@ -1,0 +1,264 @@
+    <!-- START module_data_entries.html -->
+<script language="JavaScript" type="text/javascript">
+// needs prototype.js
+//<![CDATA[
+function deleteEntry(entryId){ 
+    if(confirm('{TXT_ENTRIES_DELETE_ENTRY_JS}')) 
+        window.location.replace("?cmd=data&act=deleteEntry&id="+entryId);
+}
+
+function selectMultiAction() {
+	with (document.frmShowEntries) {
+		switch (frmShowEntries_MultiAction.value) {
+			case 'delete':
+				if (confirm('{TXT_ENTRIES_SUBMIT_DELETE_JS}')) {
+					action='?cmd=data&act=multiactionEntry';
+					submit();
+				}
+			break;
+			default: //do nothing			
+		}
+	}
+}
+
+var switchActive = function(id, obj, action)
+{
+    var img = obj.getElementsByTagName("img")[0];
+    if (action == 0) {
+        img.src = "images/icons/led_red.gif";
+        obj.onclick = function() { switchActive(id, obj, 1); }
+    } else {
+        img.src = "images/icons/led_green.gif";
+        obj.onclick = function() { switchActive(id, obj, 0); }
+    }
+    
+    new Ajax.Request('index.php', {
+        method: 'get',
+        parameters: {cmd : "data", act : "switchEntryState", id : id, switchTo : action},
+        onSuccess: function() {}
+    });
+}
+
+var order = new Array();
+var objects = new Hash();
+var order_changed = false;
+
+
+var init = function()
+{
+    // do this in a function so everything is loaded first
+    <!-- BEGIN push_sort -->
+    last_id = order.push({ENTRY_ID});
+    var hash = new Hash();
+    hash.set('position', last_id-1);
+    hash.set('obj_ref',$('entry_{ENTRY_ID}'))
+
+    objects.set({ENTRY_ID}, hash);
+    <!-- END push_sort -->
+}
+
+var swap_upwards = function(id)
+{
+    /*
+        Swap the positions in the representative array
+    */
+    var cur_pos = objects.get(id).get('position');
+    if (cur_pos == 0) {
+        return;
+    }
+    var upper_pos = cur_pos - 1;
+    var upper_pos_id = order[upper_pos];
+    order[cur_pos] = upper_pos_id;
+    order[upper_pos] = id; 
+    objects.get(id).set('position', upper_pos);
+    objects.get(upper_pos_id).set('position', cur_pos);
+    
+    /*
+        Swap the actual positions in the table
+    */
+    var obj_ref_cur = objects.get(id).get('obj_ref');
+    var obj_ref_upper = objects.get(upper_pos_id).get('obj_ref');
+    var obj_parent = obj_ref_cur.parentNode;
+    obj_parent.removeChild(obj_ref_cur);
+    obj_parent.insertBefore(obj_ref_cur, obj_ref_upper);
+    
+    orderChanged();  
+    setRows(); 
+
+}
+
+var swap_downwards = function(id)
+{
+    /*
+        Swap the positions in the representative array
+    */
+    var cur_pos = objects.get(id).get('position');
+    if (cur_pos == order.length-1) {
+        return;
+    }
+    var lower_pos = cur_pos + 1;
+    var lower_pos_id = order[lower_pos];
+    order[cur_pos] = lower_pos_id;
+    order[lower_pos] = id;
+    objects.get(id).set('position', lower_pos);
+    objects.get(lower_pos_id).set('position', cur_pos);
+    
+    /*
+        Swap the actual positions in the table
+    */
+    var obj_ref_cur = objects.get(id).get('obj_ref');
+    var obj_parent = obj_ref_cur.parentNode;
+    obj_parent.removeChild(obj_ref_cur);
+    if (lower_pos +1 == order.length) {
+        obj_parent.appendChild(obj_ref_cur);
+    } else {
+        var below_lower_id = order[lower_pos+1];
+        var obj_ref_below_lower = objects.get(below_lower_id).get('obj_ref');
+        obj_parent.insertBefore(obj_ref_cur, obj_ref_below_lower);
+    }
+    
+    orderChanged();
+    setRows();
+}
+
+var orderChanged = function()
+{
+    var btn = $('save_order');
+    btn.disabled = false;
+    btn.style.color = "black";
+}
+
+var saveOrder = function()
+{
+    var jsonObj = Object.toJSON(order);
+    new Ajax.Request('index.php?cmd=data&act=saveEntryOrder', {
+        method: 'post',
+        parameters: {order : jsonObj}
+    });
+    
+    var btn = $('save_order');
+    btn.disabled = true;
+    btn.style.color = "gray";
+    
+}
+
+var setRows = function()
+{
+    var row = 1;
+    var tb = $('entry_list').getElementsByTagName("tr");
+    
+    for (var i = 0; i<tb.length; i++) {
+        tb[i].className = "row"+((row % 2) + 1);
+        row++;
+    }
+}
+
+//]]>
+</script>
+
+
+<div style="width: 200px; float: left;">
+<!-- an unordered list would be better -->
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+        <tr>
+            <th>Kategorien</th>
+        </tr>
+        <!-- BEGIN category_row -->
+        <tr class="row{CATEGORY_ROW}">
+            <td style="padding-left: {CATEGORY_INDENT}px; white-space: nowrap;">
+            <!-- BEGIN arrow --><img src="images/icons/sub_arrow.gif" /> <!-- END arrow -->
+            <img src="images/icons/folder_on.gif" />
+            <a href="index.php?cmd=data&amp;catId={CATEGORY_ID}" title="{CATEGORY_FULL_NAME}">{CATEGORY_NAME} ({CATEGORY_AMOUNT_OF_ENTRIES})</a></td>
+        </tr>
+        <!-- END category_row -->
+    </table>
+</div>
+
+<div style="margin-left: 205px;">
+<div style="padding-left: 10px;">
+<form name="frmShowEntries" method="post" action="">
+	<table  cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="9">{TXT_ENTRIES_TITLE} ({TITLE_CATEGORY})</th>
+		</tr>
+		<tr class="row3" style="font-weight: bold;">
+			<td nowrap="nowrap" style="width: 2%; padding-left: 1em;">#</td>
+			<td style="width: 2%;">&nbsp;</td>
+			<td style="width: 6%;">&nbsp;</td>
+			<td nowrap="nowrap" style="width: 27%;">{TXT_ENTRIES_SUBTITLE_SUBJECT}</td>
+            <td nowrap="nowrap" style="width: 15%;">{TXT_ENTRIES_SUBTITLE_PLACEHOLDER}</td>
+            <td nowrap="nowrap" style="width: 13%;">{TXT_ENTRIES_SUBTITLE_CATEGORY}</td>
+            <td nowrape="nowrap" style="width: 10%;">{TXT_ENTRIES_SUBTITLE_MODE}</td>
+			<!--<td nowrap="nowrap" style="width: 15%; font-weight: bold;">{TXT_ENTRIES_SUBTITLE_DATE}</td>-->
+			<td nowrap="nowrap" style="width: 8%;">{TXT_ENTRIES_SUBTITLE_LANGUAGES}</td>
+			<!--<td nowrap="nowrap" style="width: 8%;">{TXT_ENTRIES_SUBTITLE_USER}</td>-->
+			<td nowrap="nowrap" style="width: 3%;">{TXT_ENTRIES_SUBTITLE_ACTIONS}</td>
+		</tr>
+		<tbody id="entry_list">
+		<!-- BEGIN showEntries -->
+    		<tr class="{ENTRY_ROWCLASS}" id="entry_{ENTRY_ID}">
+                <td><input type="checkbox" name="selectedEntriesId[]" value="{ENTRY_ID}" /></td>
+    			<td>
+        			<a href="javascript: void(0);" onclick="switchActive({ENTRY_ID}, this, {ACTIVE_STATE})"><img src="images/icons/led_{ACTIVE_LED}.gif" style="border: none;" alt=""/></a>
+    			</td>
+    			<td>
+        			<!-- BEGIN show_arrows -->
+        			
+        			<a href="javascript: void(0);" onclick="swap_downwards({ENTRY_ID})" ><img src="images/icons/down.gif" style="border: none;" alt="go one up" /></a> 
+        			<a href="javascript: void(0);" onclick="swap_upwards({ENTRY_ID})"><img src="images/icons/up.gif" style="border: none;" alt="go one down"/> </a>
+        			<!-- END show_arrows -->
+    			</td>
+    			<td><a href="?cmd=data&amp;act=editEntry&amp;id={ENTRY_ID}" target="_self" title="{ENTRY_SUBJECT}">{ENTRY_SUBJECT}</a></td>
+    			<td>[[DATA_{ENTRY_PLACEHOLDER}]]</td>
+    			<td>{ENTRY_CATEGORY}</td>
+    			<td>{ENTRY_MODE}</td>
+    			<!--<td>{ENTRY_DATE}</td>-->
+    			<td>{ENTRY_LANGUAGES}</td>
+    			<!--<td>{ENTRY_USER}</td>-->
+    			<td nowrap="nowrap">
+    				<div align="right">
+    					<a href="?cmd=data&amp;act=editEntry&amp;id={ENTRY_ID}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
+    					<a href="javascript:deleteEntry({ENTRY_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a> 
+    				</div>
+    			</td>
+    		</tr>
+    		
+    		<!-- END showEntries -->
+		</tbody>
+		<!-- BEGIN noEntries -->
+		<tr class="row2">
+			<td colspan="10"><div align="center"><br />{TXT_ENTRIES_NO_ENTRIES_FOUND}<br /><br /></div></td>
+		</tr>		
+		<!-- END noEntries -->
+	</table>
+	<input type="button" value="Sortierung abspeichern" disabled="disabled" id="save_order" style="margin-top: 1em; margin-left: 3em; color: grey;" onclick="saveOrder()" />
+	<br />
+	<table cellpadding="2" cellspacing="0" border="0">
+		<tr>
+			<td>
+				<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
+				<a href="#" onclick="changeCheckboxes('frmShowEntries','selectedEntriesId[]',true); return false;">{TXT_ENTRIES_SELECT_ALL}</a> / 
+				<a href="#" onclick="changeCheckboxes('frmShowEntries','selectedEntriesId[]',false); return false;">{TXT_ENTRIES_DESELECT_ALL}</a>
+				<img src="images/icons/strike.gif" alt="" />
+				<select name="frmShowEntries_MultiAction" onchange="selectMultiAction();">
+					<option value="0">{TXT_ENTRIES_SUBMIT_SELECT}</option>
+					<option value="delete">{TXT_ENTRIES_SUBMIT_DELETE}</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+	</form>
+	
+	</div>
+</div>
+
+<br />
+<div align="center">{ENTRIES_PAGING}</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+
+init();
+
+/* ]]> */
+</script>
+<!-- END module_data_entries.html -->

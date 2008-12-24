@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>Contrexx File Browser</title>
+<meta http-equiv="Content-Type" content="text/html; charset={CONTREXX_CHARSET}" />
+<meta name="robots" content="noindex" />
+<meta name="robots" content="nofollow" />
+<meta name="robots" content="noarchive" />
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="cache-control" content="no-cache" />
+<link href="template/ascms/css/base.css" rel="stylesheet" type="text/css" />
+<script language="javascript" type="text/javascript">
+<!--
+function closeWindow(){
+	window.opener.focus();
+	window.top.close();
+}
+
+
+// -->
+</script>
+</head>
+<body onload="document.getElementById('contentList').style.width = document.body.clientWidth-219+'px'" onresize="document.getElementById('contentList').style.width = document.body.clientWidth-219+'px'">
+<!-- BEGIN errormsg -->
+<span style="background-color: #FFCCCC; color: #FF0000; width: 100%">
+        {FILEBROWSER_ERROR_MESSAGE}
+</span>
+<!-- END errormsg -->
+<!-- BEGIN okmsg -->
+<span style="background-color: #B8FD9F; color: #006900; width: 100%">
+        {FILEBROWSER_OK_MESSAGE}
+</span>
+<!-- END okmsg -->
+<table border="0" style="background-color:#DDE4FF; height:100%;" cellpadding="0" cellspacing="1" width="100%" summary="file browser">
+	<tbody>
+		<tr>
+			<td colspan="2" height="20" style="font-weight:bold; background-color:#0A50A1; color:#FFFFFF; padding-left:1px;">Pfad: {FILEBROWSER_WEB_PATH}</td>
+		</tr>
+		<tr>
+			<td width="200" rowspan="2" style="background-color:#FFFFFF; vertical-align:top;">{FILEBROWSER_NAVIGATION}</td>
+			<td style="background-color:#FFFFFF; vertical-align:top;">{FILEBROWSER_CONTENT}</td>
+		</tr>
+		<tr>
+			<td style="background-color:#FFFFFF;">{FILEBROWSER_UPLOAD}</td>
+		</tr>
+	</tbody>
+</table>
+<div style="text-align:right; margin:10px;"><input type="button" onclick="window.close();" value="{TXT_CLOSE}" /></div>
+</body>
+</html>

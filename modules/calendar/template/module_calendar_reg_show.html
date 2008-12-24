@@ -1,0 +1,32 @@
+<!-- START calendar_reg_show.html -->
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+function confirmDeleteReg(regId)
+{
+  if (confirm("{TXT_CALENDAR_DELETE_CONFIRM}")) {
+    document.location.href = "index.php?cmd=calendar{MODULE_INDEX}&act=regdelete&note_id={CALENDAR_NOTE_ID}&id="+regId;
+  }
+}
+// ]]>
+</script>
+<table class="adminlist" style="width: 100%; border-spacing: 0px; margin: 0px;" cellpadding="3" cellspacing="0">
+	<tr>
+		<th colspan="2">
+			{CALENDAR_REG_TYPE_TXT} ({CALENDAR_REG_DATE})
+		</th>
+	</tr>
+	<tr class="row3">
+		<td style="width: 180px"><span style="font-weight:bold;">{TXT_CALENDAR_FIELD}</span></td>
+		<td><span style="font-weight:bold;">{TXT_CALENDAR_VALUE}</span></td>
+	</tr>
+	<!-- BEGIN registration -->
+	<tr class="{CALENDAR_ROW}">
+		<td>{CALENDAR_REG_FIELD_NAME}</td>
+		<td>{CALENDAR_REG_FIELD_VALUE}</td>
+	</tr>
+	<!-- END registration -->
+</table>
+<br />
+<input type="button" value="{TXT_CALENDAR_BACK}" onclick="document.location.href='index.php?cmd=calendar{MODULE_INDEX}&amp;act=reg&amp;id={CALENDAR_REG_NOTE_ID}'" />
+<input type="button" value="{TXT_CALENDAR_DELETE}" onclick="confirmDeleteReg({CALENDAR_REG_ID})" />
+<!-- END calendar_reg_show.html -->
