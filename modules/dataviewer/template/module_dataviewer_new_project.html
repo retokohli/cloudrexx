@@ -3,33 +3,135 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 	function preview() {
-		//preview
 		div = document.getElementById("preview");
-		numberOfElements = document.project.column.length;
+		numberOfElements = document.project.column.length;		
 		
 		var tableStart = '<table id="preview" border="1" cellpadding="0" cellspacing="0"><tr>';
 		var tableEnd = '</tr></table>';
 		var rows = "";
 		var blindText = "";
-		var i = 0;
+		var i = 1;
 		
 		while (i < numberOfElements) {
 			var rows = rows + '<td><b>' + document.project.column[i].value + '</b></td>';
 			var blindText = blindText + '<td>foo doo soo moo kuh</td>';
 			i++;
 		}
-				
 		div.innerHTML = tableStart + rows + '<tr>' + blindText + '</tr>' + tableEnd;
 	}
 	
 	function validateInput(input) {
 		var expression = 	/\W/;
 		input = input.replace(expression, "_");
+		
 		return input;
 	}
 	
+	var projectTable;
+	var rowId = 0;
+	function addColumn() {
+		var foo = document.getElementById("rowTemplate");	
+		var rowTemplate = foo.cloneNode(true);
+		
+		projectTable = document.getElementById("projectTable");
+		rowTemplate.id = "projectRow_"+rowId++;
+		rowTemplate.style.display = "table-row";
+		projectTable.insertBefore(rowTemplate, foo);
+ 	}
+		
+	var deleteRow = function (obj) {
+		var tr = obj.parentNode.parentNode;
+		tr.parentNode.removeChild(tr);
+	}
+	
+	function checkColumns() {
+		numberOfElements = document.project.column.length;
+		
+		if(!numberOfElements) {
+			return "NO_COLUMN";
+		}
+		
+		var i = 1;
+		var error = false;
+		while (i < numberOfElements) {
+			if(document.project.column[i].value == "") {
+				return "EMPTY_COLUMN";
+			}
+			i++;
+		}
+		
+		return "OK";		
+	}
+	
+	
+	function checkInput() {
+		var errorMessage = "";
+		var wrongFieldsArray = new Array();
+		
+		//columns
+		var checkColumnsReturn = checkColumns();
+		if(checkColumnsReturn == "NO_COLUMN") {
+			errorMessage = "Es muss mindestens eine Spalte eingegeben werden!\n"
+		}
 
-	Text[0] = ["", 'Dieser Projektname ist für den User sichtbar.'];
+		if(checkColumnsReturn == "EMPTY_COLUMN") {
+			errorMessage = "Spaltennamen dürfen nicht leer sein!\n"
+		}
+
+		//name
+		if(document.project.name.value == "") {
+			wrongFieldsArray.push("name");
+			errorMessage += "Bitte geben Sie einen Namen ein!\n";
+		}
+		
+		//language
+		if(document.project.language.value == "") {
+			wrongFieldsArray.push("language");
+			errorMessage += "Bitte geben Sie eine Frontendsprache ein!\n";
+		}
+		
+		//description
+		if(document.project.description.value == "") {
+			wrongFieldsArray.push("description");
+			errorMessage += "Bitte geben Sie eine Beschreibung ein!\n";
+		}
+		
+		//country based
+		if(document.getElementsByName('countryBased')[0].checked == false && document.getElementsByName('countryBased')[1].checked == false) {
+			wrongFieldsArray.push("countryBased");
+			errorMessage += "Bitte wählen Sie ob das Projekt länderbasiert sein soll!\n";
+		}
+		
+		//status
+		if(document.getElementsByName('status')[0].checked == false && document.getElementsByName('status')[1].checked == false) {
+			wrongFieldsArray.push("status");
+			errorMessage += "Bitte wählen Sie einen Status!\n";
+		}
+		
+		//language
+		if(document.getElementsByName('status')[0].checked == false && document.getElementsByName('status')[1].checked == false) {
+			wrongFieldsArray.push("status");
+			errorMessage += "Bitte wählen Sie einen Status!\n";
+		}
+		
+
+	
+			
+		
+		//highlight the fields
+		for (var i=0; i < wrongFieldsArray.length; i++) {
+//			alert(wrongFieldsArray[i]);
+		}
+				
+		if(errorMessage !== "") {
+			alert(errorMessage);
+			return false; 
+		} else {
+			return true; 
+		}		
+	}
+
+	Text[0] = ["", 'Dieser Projektname ist für den User sichtbar.<br />Es sind nur Buchstaben und Zahlen erlaubt.'];
 	Text[1] = ["", 'Gibt an, in welchen Sprachen dieses Projekt verfügbar ist.<br />Die Auswahl ist abhängig von den aktivierten Sprachen unter "Spracheinstellungen.'];
 	Text[2] = ["", 'Ist diese Option aktiviert, so können die importieren Daten innerhalb<br />eines Projektes einem Land zugewiesen werden.'];
 	Text[3] = ["", 'Die Beschreibung ist bei den Projektauflistungen für den User ersichtlich.'];
@@ -40,70 +142,68 @@
 /* ]]> */
 </script>
 
-<form name="project" action="index.php?cmd=dataviewer&act=new" method="post" />
-	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-		<tr>
-			<th valign="top" colspan="2">
-				Projekdaten
-			</th>
-		</tr>
-		<tr class="row1">
-			<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">Name</td>
-			<td width="88%"><input type="text" name="name" style="width: 400px;" value="{POST_NAME}" maxlength="250" /></td>
-		</tr>
-		<tr class="row2">
-			<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])">Frontend Sprache</td>
-			<td width="88%"><input type="text" name="language" style="width: 400px;" value="{NEWS_TITLE}" maxlength="250" /></td>
-		</tr>
-		<tr class="row1">
-			<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])">Beschreibung</td>
-			<td width="88%"><input type="text" name="description" style="width: 400px;" value="{POST_DESCRIPTION}" maxlength="250" /></td>
-		</tr>
-		<tr class="row2">
-			<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])">Länderbasiert</td>
-			<td width="88%">
-				<input type="radio" name="countryBased" {POST_DESCRIPTION_COUNTRYBASED_Y} value="y">Ja
-				<input type="radio" name="countryBased" {POST_DESCRIPTION_COUNTRYBASED_N} value="n">Nein
-			</td>
-		</tr>
-		<tr class="row1">
-			<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])">Status</td>
-			<td width="88%">
-				<input type="radio" name="status" {POST_DESCRIPTION_STATUS_Y} value="y">Aktiv
-				<input type="radio" name="status" {POST_DESCRIPTION_STATUS_N} value="n">Inaktiv
-			</td>
-		</tr>
-		<tr>
-			<th valign="top" colspan="2">
-				Projektspalten
-			</th>
-		</tr>
-		<tr class="row1">
-			<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])">Spalte 1</td>
-			<td width="88%"><input type="text" id="column" name="column[]" onchange="preview();" onkeypress="this.value=validateInput(this.value);" style="width: 400px;" value="" maxlength="250" />&nbsp;<img src="../cadmin/images/icons/delete.gif" alt="delete" /></td>
-		</tr>
-		<tr class="row2">
-			<td width="12%" nowrap="nowrap">Spalte 2</td>
-			<td width="88%"><input type="text" id="column" name="column[]" onchange="preview();" onkeypress="this.value=this.value.toLowerCase();" style="width: 400px;" value="" maxlength="250" />&nbsp;<img src="../cadmin/images/icons/delete.gif" alt="delete" /></td>
-		</tr>
-		<tr class="row1">
-			<td width="12%" nowrap="nowrap">Spalte 3</td>
-			<td width="88%"><input type="text" id="column" name="column[]" onchange="preview();" onkeypress="this.value=this.value.toLowerCase();" style="width: 400px;" value="" maxlength="250" />&nbsp;<img src="../cadmin/images/icons/delete.gif" alt="delete" /></td>
-		</tr>
-		<tr class="row2">
-			<td width="12%" nowrap="nowrap">&nbsp;</td>
-			<td width="88%" nowrap="nowrap"><input type="button" onclick="addColumn()" name="addColumn" value="Weitere Spalte hinzufügen" /></td>
-		</tr>
-		<tr>
-			<th valign="top" colspan="2">
-				Vorschau
-			</th>
-		</tr>
-		<tr class="row1">
-			<td colspan="2">
-				<div id="preview"></div>
-			</td>
-		</tr>
+<form name="project" action="index.php?cmd=dataviewer&act=new" method="post" onsubmit="return checkInput();" />
+
+
+<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+		<thead>
+			<tr>
+				<th valign="top" colspan="2">
+					Projektspalten
+				</th>
+			</tr>
+		</thead>
+		<tbody id="projectTable" >
+			<tr class="row1">
+				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">Name</td>
+				<td width="88%"><input type="text" onkeypress="this.value=validateInput(this.value);" name="name" style="width: 400px;" value="{POST_NAME}" maxlength="250" /></td>
+			</tr>
+			<tr class="row2">
+				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])">Frontend Sprache</td>
+				<td width="88%">{LANGUAGE_DROPDOWN}</td>
+			</tr>
+			<tr class="row1">
+				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])">Beschreibung</td>
+				<td width="88%"><input type="text" name="description" style="width: 400px;" value="{POST_DESCRIPTION}" maxlength="250" /></td>
+			</tr>
+			<tr class="row2">
+				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])">Länderbasiert</td>
+				<td width="88%">
+					<input type="radio" name="countryBased" {POST_DESCRIPTION_COUNTRYBASED_Y} value="y">Ja
+					<input type="radio" name="countryBased" {POST_DESCRIPTION_COUNTRYBASED_N} value="n">Nein
+				</td>
+			</tr>
+			<tr class="row1">
+				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])">Status</td>
+				<td width="88%">
+					<input type="radio" name="status" {POST_DESCRIPTION_STATUS_Y} value="y">Aktiv
+					<input type="radio" name="status" {POST_DESCRIPTION_STATUS_N} value="n">Inaktiv
+				</td>
+			</tr>
+			<tr>
+				<th valign="top" colspan="2">
+					Projektspalten
+				</th>
+			</tr>
+			<tr class="row1" id="rowTemplate" style="display: none;">
+				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])">Spalte 1</td>
+				<td width="88%"><input type="text" name="column[]" id="column" onkeypress="this.value=validateInput(this.value);" onchange="preview();" style="width: 400px;" value="" maxlength="250" />&nbsp;<a href="javascript:void;" onclick="deleteRow(this);"><img border="0" src="../cadmin/images/icons/delete.gif" alt="delete" /></a><br></td>
+			</tr>
+			<tr class="row2">
+				<td width="12%" nowrap="nowrap">&nbsp;</td>
+				<td width="88%" nowrap="nowrap"><input type="button" onclick="addColumn();" name="addColumnButton" value="Spalte hinzufügen" /></td>
+			</tr>
+			<tr>
+				<th valign="top" colspan="2">
+					Vorschau
+				</th>
+			</tr>
+			<tr class="row1">
+				<td colspan="2">
+					<div id="preview"></div>
+				</td>
+			</tr>
+		</tbody>
 	</table>
 	<br />
 	<input type="submit" name="save" value="Speichern" />

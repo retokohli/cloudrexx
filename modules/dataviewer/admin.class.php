@@ -37,6 +37,7 @@ class Dataviewer {
     function getPage() {
 		global $objTemplate, $_ARRAYLANG;
 		$_GET['act'] = !empty($_GET['act']) ? $_GET['act'] : "";
+		$_GET['id'] = !empty($_GET['id']) ? $_GET['id'] : "";
 		
 		switch ($_GET['act']) {
 			case "edit":
@@ -100,10 +101,20 @@ class Dataviewer {
         
         
         $queryProjects     = "SELECT * FROM ".DBPREFIX."module_dataviewer_projects";
+        //SELECT A.EineSpalte, B.EineAndereSpalte   
+//FROM Tabelle1 AS A, Tabelle2 AS B WHERE A.EinWert = B.EinAndererWert;
+
 		$objResultProjects = $objDatabase->Execute($queryProjects);
 		
 		$i = 0;	
 		while (!$objResultProjects->EOF) {
+			$filtersString = "";
+			foreach (explode(";", $objResultProjects->fields['filters']) as $filter) {
+				if ($filter !== "") {
+					$filtersString .= $filter . "<br />";	
+				}
+			}
+			
 			$this->_objTpl->setVariable(array(
 				'ID'			=> $objResultProjects->fields['id'],
 				'STATUS'		=> $objResultProjects->fields['status'] == 1 ? '<a href="index.php?cmd=dataviewer&amp;id=' . $objResultProjects->fields['id']. '&amp;setstatus=n"><img border="0" src="../cadmin/images/icons/led_green.gif" /></a>' : '<a href="index.php?cmd=dataviewer&amp;id=' . $objResultProjects->fields['id']. '&amp;setstatus=y"><img border="0" src="../cadmin/images/icons/led_red.gif" /></a>',
@@ -111,8 +122,8 @@ class Dataviewer {
 				'DESCRIPTION' 	=> $objResultProjects->fields['description'],
 				'LANGUAGE' 		=> $objResultProjects->fields['language'],
 				'COUNTRYBASED' 	=> $objResultProjects->fields['countrybased'] == 1 ? '<img src="../images/modules/dataviewer/thumb_up.gif" alt="countrybasedY">' : '<img src="../images/modules/dataviewer/thumb_down.gif" alt="countrybasedN">',
-				'FILTER' 		=> $objResultProjects->fields['filters'],
-				'PREVIEW' 		=> $this->createPreview($objResultProjects->fields['name']),
+				'FILTER' 		=> $filtersString,
+				'PREVIEW' 		=> $this->createPreview($this->makeInputDBvalid($objResultProjects->fields['name'])),
 				'ROWCLASS' 		=> ($i % 2 == 0) ? 'row1' : 'row2'
 			));
 			
@@ -128,8 +139,9 @@ class Dataviewer {
             'TXT_PROJECTSTATUS'        	=> $_ARRAYLANG['TXT_PROJECTSTATUS'],
         ));
 	}
-
 	
+	
+
 	/**
 	 * creates the preview in the overview mask
 	 *
@@ -140,14 +152,20 @@ class Dataviewer {
 		global $objDatabase;
 		$columns = $objDatabase->MetaColumnNames(DBPREFIX."module_dataviewer_".$name);
 		
+		$query = "SELECT * FROM " . DBPREFIX."module_dataviewer_".$name . " LIMIT 1";
+		$objResult = $objDatabase->Execute($query);
+		
 		$xhtml = '<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>';
+		$firstRecord = "";
+		
 		foreach ($columns as $column) {
 			if ($column !== "country") {
 				$xhtml .= '<td><b>' . $column . '</b></td>';	
-				$blindText .= '<td>Lorem ipsum dolor</td>';	
+				$firstRecord .= '<td>' . $objResult->fields[$column] . '</td>';	
 			}
 		}
-		$xhtml .= '<tr>' . $blindText . '</tr>';
+		
+		$xhtml .= '<tr>' . $firstRecord . '</tr>';
 		$xhtml .= '</tr></table>';
 	
 		return $xhtml;
@@ -168,7 +186,10 @@ class Dataviewer {
 		//SAVE
 		if ($_POST['save']) {
 			$name 			= !empty($_POST['name']) ? $_POST['name'] : "";
+			
 			$language 		= !empty($_POST['language']) ? $_POST['language'] : "";
+			$languageString = implode(";", $language);
+			
 			$description 	= !empty($_POST['description']) ? $_POST['description'] : "";
 			
 			$countryBased 	= !empty($_POST['countryBased']) ? $_POST['countryBased'] : "";
@@ -178,6 +199,8 @@ class Dataviewer {
 			$status 		= $status == "y" ? 1 : 0;
 			
 			$columns 		= !empty($_POST['column']) ? $_POST['column'] : "";
+			array_pop($columns); //deletes last element, this one is empty because of the JS used to create dynamics input fields
+			$columnsString = implode(";", $columns);
 						
 			//input check
 			$error = false;
@@ -197,7 +220,6 @@ class Dataviewer {
 				$errorMessage .= "Beschreibung, ";
 				$error = true;
 			}
-			
 						
 			
 			//delete last ","
@@ -216,22 +238,48 @@ class Dataviewer {
 			}
 			
 			if (!$error) {
-				//create projects query
+				
+				//create query for dataviewer_projects
 				$insertProjectQuery = "	INSERT INTO ".DBPREFIX."module_dataviewer_projects 
 											(name, 
 											description, 
 											status, 
 											language,
-											countrybased)
+											countrybased,
+											filters)
 										VALUES
 											('" . $name . "',
 											'" . $description . "',
 											'" . $status . "',
-											'1',
-											'" . $countryBased  . "');";
+											'" . $languageString . "',
+											'" . $countryBased  . "',
+											'" . $columnsString  . "');";
 				
-				//create CREATE query
 				
+				//insert record in dataviewer_projects
+				if($objDatabase->Execute($insertProjectQuery)) {
+					$insertProjectQueryOK = true;
+				}
+				
+				
+				//create query for dataviewer_projects_placeholders
+				$insertPlaceholderQuery = "	INSERT INTO ".DBPREFIX."module_dataviewer_placeholders 
+												(`id`, 
+												`projectid`, 
+												`column`)
+											VALUES ";
+				
+				$valuesString = "";
+				foreach ($columns as $key => $column) {
+					$valuesString .= 	"('$key', '" . ($objDatabase->Insert_ID(DBPREFIX."module_dataviewer_projects", "id")) . "', '$column'), ";
+				}
+				
+				//delete last ","
+				$valuesString       = substr($valuesString, 0, strlen($valuesString)-2);
+				$insertPlaceholderQuery = $insertPlaceholderQuery . $valuesString;
+				
+				
+				//create query for dataviewer_projects_$name
 				$createProjectQuery = "CREATE TABLE ".DBPREFIX."module_dataviewer_".$this->makeInputDBvalid($name) ." (";
 				
 				$columnsString = "";
@@ -247,19 +295,48 @@ class Dataviewer {
 				$columnsString       = substr($columnsString, 0, strlen($columnsString)-2);
 				$createProjectQuery .= $columnsString . ")";
 				
-				if($objDatabase->Execute($insertProjectQuery) && $objDatabase->Execute($createProjectQuery)) {
+				
+				//execute queries
+				if($insertProjectQueryOK && $objDatabase->Execute($insertPlaceholderQuery) && $objDatabase->Execute($createProjectQuery)) {
 					$this->_objTpl->setVariable(array(
 						'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Projekt wurde erfolgreich erstellt."
 					));	
 				} else {
 					$this->_objTpl->setVariable(array(
-						'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Projekt konnte nicht erstellt werden!<br />" . $insertProjectQuery . "<br />" . $createProjectQuery
+						'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Projekt konnte nicht erstellt werden!<br />" . $insertProjectQuery . "<br />" . $createProjectQuery . "<br />" . $insertPlaceholderQuery
 					));	
 				}
 			}
 		}
+		
+		
+		
+		
+		$this->_objTpl->setVariable(array(
+			'LANGUAGE_DROPDOWN' => $this->getFrontentLangCheckboxes()
+		));	
+		
 	}
 	
+	
+	/**
+	 * creates the current activated frontend languages as checkboxes
+	 * 
+	 * @return string $xhtml
+	 */
+	function getFrontentLangCheckboxes() {
+		global $objDatabase;
+		$query = "SELECT * FROM " . DBPREFIX . "languages WHERE frontend = '1'";
+		$objResult = $objDatabase->Execute($query);
+		
+		$xhtml = "";
+		while (!$objResult->EOF) {
+			$xhtml .= '<input type="checkbox" name="language[]" value="' . $objResult->fields['id'] . '" /> ' . $objResult->fields['name'];
+			$objResult->MoveNext();
+		}
+		
+		return $xhtml;
+	}
 	
 	/**
 	 * replaces whitspaces and formats to lowercase
@@ -270,10 +347,11 @@ class Dataviewer {
 	function makeInputDBvalid($input) {
 		$input = str_replace(" ", "_", $input);
 		$input = strtolower($input);
+
 		return $input;
 	}
-
 	
+		
 	/**
 	 * handles the edit view and edit actions
 	 *
@@ -317,6 +395,7 @@ class Dataviewer {
 			$status 		= $status == "y" ? 1 : 0;
 			
 			$columns 		= !empty($_POST['column']) ? $_POST['column'] : "";
+			$columnsString = implode(";", $columns);
 						
 			//input check
 			$error = false;
@@ -365,7 +444,8 @@ class Dataviewer {
 											description = '" . $description . "',
 											status = '" . $status . "',
 											language = '1',
-											countrybased = '" . $countryBased  . "'
+											countrybased = '" . $countryBased  . "',
+											filters = '" . $columnsString  . "'
 										WHERE
 											id = '" . $id . "'";
 								
@@ -600,8 +680,9 @@ class Dataviewer {
 		
 		$deleteProjectTableQuery = "DROP TABLE ".DBPREFIX."module_dataviewer_" . $this->getProjectName($id);
 		$deleteProjectRecordQuery = "DELETE FROM ".DBPREFIX."module_dataviewer_projects WHERE id = '" . $id . "'";
+		$deletePlaceholdersRecordQuery = "DELETE FROM ".DBPREFIX."module_dataviewer_placeholders WHERE projectid = '" . $id . "'";
 		
-		if ($objDatabase->Execute($deleteProjectTableQuery) && $objDatabase->Execute($deleteProjectRecordQuery)) {
+		if ($objDatabase->Execute($deleteProjectTableQuery) && $objDatabase->Execute($deleteProjectRecordQuery) && $objDatabase->Execute($deletePlaceholdersRecordQuery)) {
 			return true;
 		} else {
 			return false;
