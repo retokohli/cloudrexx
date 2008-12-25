@@ -4,22 +4,25 @@
 /* <![CDATA[ */
 	function checkDoubleAssignments() {
 		numberOfElements = document.filter.filters.length;
-		
-		var i = 1;
-		
-		while (i < numberOfElements) {
-			if((document.filter.filters[0].selectedIndex == document.filter.filters[i].selectedIndex) && document.filter.filters[i].selectedIndex !== 0) {
-				var double = true;
+		var z = 0;
+		while (z < numberOfElements){
+			var i = 0;
+			while (i < numberOfElements) {
+				if (z != i) {
+					if((document.filter.filters[z].selectedIndex == document.filter.filters[i].selectedIndex)  && document.filter.filters[i].selectedIndex !== 0) {
+						var double = true;
+					}
+				}
+				i++;
 			}
-			i++;
+			z++;
 		}
 		
 		if(double) {
 			alert ("Es können keine zweit Werte gleichzeitig zugewiesen werden!");
 			return false;
-		} else {
-			return true;	
-		}
+		} 
+		return true;	
 	}
 /* ]]> */
 </script>
