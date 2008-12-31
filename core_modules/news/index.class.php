@@ -54,11 +54,8 @@ class news extends newsLibrary {
      */
     function __construct($pageContent)
     {
-        global $_LANGID;
         $this->getSettings();
         $this->pageContent = $pageContent;
-        $this->langId = $_LANGID;
-
         $this->_objTpl = &new HTML_Template_Sigma();
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
@@ -124,7 +121,7 @@ class news extends newsLibrary {
                                                     FROM    '.DBPREFIX.'module_news AS news
                                                     WHERE   news.status = 1 AND
                                                             news.id = '.$newsid.' AND
-                                                            news.lang ='.$this->langId.' AND
+                                                            news.lang ='.FRONTEND_LANG_ID.' AND
                                                             (news.startdate <= CURDATE() OR news.startdate="0000-00-00") AND
                                                             (news.enddate >= CURDATE() OR news.enddate="0000-00-00")'
                                                     , 1);
@@ -246,7 +243,7 @@ class news extends newsLibrary {
 
         $catMenu    =  '<select onchange="this.form.submit()" name="category">'."\n";
         $catMenu    .= '<option value="" selected="selected">'.$_ARRAYLANG['TXT_CATEGORY'].'</option>'."\n";
-        $catMenu    .= $this->getCategoryMenu($this->langId, $selected)."\n";
+        $catMenu    .= $this->getCategoryMenu(FRONTEND_LANG_ID, $selected)."\n";
         $catMenu    .= '</select>'."\n";
 
         $this->_objTpl->setVariable(array(
@@ -269,7 +266,7 @@ class news extends newsLibrary {
                     INNER JOIN  '.DBPREFIX.'module_news_categories AS nc
                     ON          n.catid=nc.catid
                     WHERE       status = 1
-                                AND n.lang='.$this->langId.'
+                                AND n.lang='.FRONTEND_LANG_ID.'
                                 AND (n.startdate<=CURDATE() OR n.startdate="0000-00-00")
                                 AND (n.enddate>=CURDATE() OR n.enddate="0000-00-00")
                                 '.$newsfilter.'
@@ -568,7 +565,7 @@ class news extends newsLibrary {
                 'TXT_NEWS_REDIRECT'         => $_ARRAYLANG['TXT_NEWS_REDIRECT'],
                 'TXT_NEWS_NEWS_URL'         => $_ARRAYLANG['TXT_NEWS_NEWS_URL'],
                 'NEWS_TEXT'                 => get_wysiwyg_editor('newsText', $newsText, 'news'),
-                'NEWS_CAT_MENU'             => $this->getCategoryMenu($this->langId, $newsCat),
+                'NEWS_CAT_MENU'             => $this->getCategoryMenu(FRONTEND_LANG_ID, $newsCat),
                 'NEWS_TITLE'                => $newsTitle,
                 'NEWS_SOURCE'               => $newsSource,
                 'NEWS_URL1'                 => $newsUrl1,
@@ -578,7 +575,7 @@ class news extends newsLibrary {
             ));
 
             if ($this->_objTpl->blockExists('news_category_menu')) {
-                $objResult = $objDatabase->Execute('SELECT catid, name FROM '.DBPREFIX.'module_news_categories WHERE lang='.$this->langId.' ORDER BY catid asc');
+                $objResult = $objDatabase->Execute('SELECT catid, name FROM '.DBPREFIX.'module_news_categories WHERE lang='.FRONTEND_LANG_ID.' ORDER BY catid asc');
 
                 if ($objResult !== false) {
                     while (!$objResult->EOF) {
@@ -659,7 +656,7 @@ class news extends newsLibrary {
             '$newsurl1',
             '$newsurl2',
             '$newscat',
-            '$this->langId',
+            '".FRONTEND_LANG_ID."',
             '',
             '',
             '".($this->arrSettings['news_activate_submitted_news'] == '1' ? "1" : "0")."',

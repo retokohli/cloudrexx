@@ -29,7 +29,6 @@ require_once ASCMS_MODULE_PATH . '/docsys/lib/Library.class.php';
 class docSys extends docSysLibrary
 {
     var $docSysTitle;
-    var $langId;
     var $dateFormat = 'd.m.Y';
     var $dateLongFormat = 'H:i:s d.m.Y';
     var $_objTpl;
@@ -48,7 +47,6 @@ class docSys extends docSysLibrary
         $this->pageContent = $pageContent;
         $this->_objTpl = &new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-        $this->langId = $_LANGID;
     }
 
 
@@ -102,7 +100,7 @@ class docSys extends docSysLibrary
                           FROM ".DBPREFIX."module_docsys
                          WHERE status = 1
                            AND id = $id
-                           AND lang=".$this->langId."
+                           AND lang=".FRONTEND_LANG_ID."
                            AND (startdate<=CURDATE() OR startdate='0000-00-00')
                            AND (enddate>=CURDATE() OR enddate='0000-00-00')";
             $objResult = $objDatabase->SelectLimit($query, 1);
@@ -207,7 +205,7 @@ class docSys extends docSysLibrary
             $docFilter =" n.catid='$selectedId' AND ";
         }
         $this->_objTpl->setVariable("DOCSYS_NO_CATEGORY", $_ARRAYLANG['TXT_CATEGORY']);
-        $this->_objTpl->setVariable("DOCSYS_CAT_MENU", $this->getCategoryMenu($this->langId, $selectedId));
+        $this->_objTpl->setVariable("DOCSYS_CAT_MENU", $this->getCategoryMenu(FRONTEND_LANG_ID, $selectedId));
         $this->_objTpl->setVariable("TXT_PERFORM", $_ARRAYLANG['TXT_PERFORM']);
 
         $query = "SELECT n.date AS date,
@@ -218,7 +216,7 @@ class docSys extends docSysLibrary
                     FROM ".DBPREFIX."module_docsys AS n,
                          ".DBPREFIX."module_docsys_categories AS nc
                    WHERE status = 1
-                     AND n.lang=".$this->langId."
+                     AND n.lang=".FRONTEND_LANG_ID."
                      AND $docFilter n.catid=nc.catid
                      AND (startdate<=CURDATE() OR startdate='0000-00-00')
                      AND (enddate>=CURDATE() OR enddate='0000-00-00') ";

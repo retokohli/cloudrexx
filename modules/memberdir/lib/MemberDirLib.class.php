@@ -189,7 +189,7 @@ class MemberDirLibrary
             $type = ($i < 12) ? "area" : "text";
             $query = "INSERT INTO ".DBPREFIX."module_memberdir_name
                       (field, dirid, name, active, `lang_id`) VALUES
-                      ('$field', '$dirid', '$name', '0', '{$this->langId}')";
+                      ('$field', '$dirid', '$name', '0', '".FRONTEND_LANG_ID."')";
             $objDatabase->Execute($query);
         }
     }

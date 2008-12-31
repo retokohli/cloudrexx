@@ -32,8 +32,6 @@ class docSysManager extends docSysLibrary
     var $pageContent;
     var $strErrMessage = '';
     var $strOkMessage = '';
-    var $langId;
-
 
     /**
     * Constructor
@@ -47,13 +45,10 @@ class docSysManager extends docSysLibrary
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/docsys/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=docsys'>".$_ARRAYLANG['TXT_DOC_SYS_MENU_OVERVIEW']."</a>
                                                       <a href='?cmd=docsys&amp;act=add'>".$_ARRAYLANG['TXT_CREATE_DOCUMENT']."</a>
                                                       <a href='?cmd=docsys&amp;act=cat'>".$_ARRAYLANG['TXT_CATEGORY_MANAGER']."</a>");
-
         $this->pageTitle = $_ARRAYLANG['TXT_DOC_SYS_MANAGER'];
-        $this->langId=$objInit->userFrontendLangId;
     }
 
 
@@ -179,7 +174,7 @@ class docSysManager extends docSysLibrary
                          ".DBPREFIX."languages AS l,
                          ".DBPREFIX."access_users AS u
                    WHERE n.lang=l.id
-                     AND n.lang=".$this->langId."
+                     AND n.lang=".FRONTEND_LANG_ID."
                      AND nc.catid=n.catid
                      AND u.id=n.userid
                 ORDER BY n.id DESC";
@@ -267,7 +262,7 @@ class docSysManager extends docSysLibrary
             'DOCSYS_STATUS'          => "checked='checked'",
             'DOCSYS_ID'              => "",
             'DOCSYS_TOP_TITLE'       => $_ARRAYLANG['TXT_CREATE_DOCUMENT'],
-            'DOCSYS_CAT_MENU'        => $this->getCategoryMenu($this->langId, $selectedOption=""),
+            'DOCSYS_CAT_MENU'        => $this->getCategoryMenu(FRONTEND_LANG_ID),
             'DOCSYS_STARTDATE'       => "",
             'DOCSYS_ENDDATE' => "",
             'DOCSYS_DATE'  => date(ASCMS_DATE_FORMAT, time()),
@@ -415,7 +410,7 @@ class docSysManager extends docSysLibrary
             ));
         }
 
-        $this->_objTpl->setVariable("DOCSYS_CAT_MENU",$this->getCategoryMenu($this->langId, $catId));
+        $this->_objTpl->setVariable("DOCSYS_CAT_MENU",$this->getCategoryMenu(FRONTEND_LANG_ID, $catId));
         $this->_objTpl->setVariable("DOCSYS_FORM_ACTION","update");
         $this->_objTpl->setVariable("DOCSYS_STORED_FORM_ACTION","update");
         $this->_objTpl->setVariable("DOCSYS_TOP_TITLE",$_ARRAYLANG['TXT_EDIT']);
@@ -466,7 +461,7 @@ class docSysManager extends docSysLibrary
                                url1='$url1',
                                url2='$url2',
                                catid='$catId',
-                               lang='$this->langId',
+                               lang='".FRONTEND_LANG_ID."',
                                userid = '$userId',
                                status = '$status',
                                startdate = '$startDate',
@@ -601,7 +596,7 @@ class docSysManager extends docSysLibrary
                                   '$url1',
                                   '$url2',
                                   '$cat',
-                                  '$this->langId',
+                                  '".FRONTEND_LANG_ID."',
                                   '$startDate',
                                   '$endDate',
                                   '$status',
@@ -654,14 +649,17 @@ class docSysManager extends docSysLibrary
 
         // Add a new category
         if (isset($_POST['addCat']) AND ($_POST['addCat']==true)){
-             $catName = get_magic_quotes_gpc() ? strip_tags($_POST['newCatName']) : addslashes(strip_tags($_POST['newCatName']));
-             if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_docsys_categories (name,lang)
-                                 VALUES ('$catName','$this->langId')")) {
-                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
-             } else {
-                 $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
-             }
-
+            $catName = get_magic_quotes_gpc() ? strip_tags($_POST['newCatName']) : addslashes(strip_tags($_POST['newCatName']));
+            if ($objDatabase->Execute("
+                INSERT INTO ".DBPREFIX."module_docsys_categories (
+                    name,lang
+                ) VALUES (
+                    '$catName', '".FRONTEND_LANG_ID."')
+            ")) {
+                $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
+            } else {
+                $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+            }
         }
 
         // Modify a new category
@@ -674,7 +672,7 @@ class docSysManager extends docSysLibrary
 
                 if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_docsys_categories
                                   SET name='$name',
-                                      lang='$this->langId',
+                                      lang='".FRONTEND_LANG_ID."',
                                       sort_style='$sorting'
                                 WHERE catid=$id"))
                 {
@@ -689,7 +687,7 @@ class docSysManager extends docSysLibrary
                            `name`,
                            `sort_style`
                       FROM `".DBPREFIX."module_docsys_categories`
-                     WHERE `lang`='$this->langId'
+                     WHERE `lang`='".FRONTEND_LANG_ID."'
                   ORDER BY `catid` asc";
         $objResult = $objDatabase->Execute($query);
 

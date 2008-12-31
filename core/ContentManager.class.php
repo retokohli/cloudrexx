@@ -105,10 +105,9 @@ class ContentManager
     * @param  string
     * @access public
     */
-    function __construct() {
+    function __construct()
+    {
         global $objDatabase,$objInit,$_CORELANG,$objTemplate,$_CONFIG;
-
-        $this->langId=$objInit->userFrontendLangId;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION",
                            "<a href='index.php?cmd=content&amp;act=new'>".$_CORELANG['TXT_NEW_PAGE']."</a>
@@ -254,9 +253,9 @@ class ContentManager
             ));
 
             foreach ($objLanguage->getLanguageArray() as $key){
-                if ($key['id'] == $this->langId) {
+                if ($key['id'] == FRONTEND_LANG_ID) {
                     $objTemplate->setVariable(array(
-                        'LANG_OLD_ID' => $this->langId,
+                        'LANG_OLD_ID' => FRONTEND_LANG_ID,
                         'LANG_OLD_NAME' => $key['name']
                     ));
                 } else {
@@ -822,9 +821,9 @@ class ContentManager
 			FROM ".DBPREFIX."settings
 			WHERE setmodule = 41 AND setname = 'aliasStatus'
 		";
-		if ($res = $objDatabase->SelectLimit($query, 1)) {
+		$res = $objDatabase->SelectLimit($query, 1);
+		if ($res)
 			return $res->fields['setvalue'];
-		}
 		return false;
 	}
 
@@ -1387,7 +1386,7 @@ class ContentManager
                                                 username='".$objFWUser->objUser->getUsername()."',
                                                 changelog='".$currentTime."',
                                                     cmd='".$command."',
-                                                lang='".$this->langId."',
+                                                lang='".FRONTEND_LANG_ID."',
                                                 module='".$moduleId."',
                                                 startdate='".$startdate."',
                                                 enddate='".$enddate."',
@@ -1406,7 +1405,7 @@ class ContentManager
                                                   username='".$objFWUser->objUser->getUsername()."',
                                                   changelog='".$currentTime."',
                                                   cmd='".$command."',
-                                                  lang='".$this->langId."',
+                                                  lang='".FRONTEND_LANG_ID."',
                                                   module='".$moduleId."',
                                                   startdate='".$startdate."',
                                                   enddate='".$enddate."',
@@ -1417,7 +1416,8 @@ class ContentManager
         }
 
 
-        if($err = $this->_set_default_alias($pageId, $_POST['alias'])) {
+        $err = $this->_set_default_alias($pageId, $_POST['alias']);
+        if ($err) {
 			$objTemplate->setVariable("ALIAS_STATUS", $err);
 		}
 
@@ -1496,7 +1496,7 @@ class ContentManager
                                             username="'.$objFWUser->objUser->getUsername().'",
                                             changelog="'.$currentTime.'",
                                                 cmd="'.$command.'",
-                                            lang="'.$this->langId.'",
+                                            lang="'.FRONTEND_LANG_ID.'",
                                             module="'.$moduleId.'",
                                             startdate="'.$startdate.'",
                                             enddate="'.$enddate.'",
@@ -1629,7 +1629,7 @@ class ContentManager
                 ".$parcat.", '".$catname."', '".$redirectTarget."', '1',
                 '".$displaystatus."', '".$cachingstatus."',
                 '".$objFWUser->objUser->getUsername()."', '".$currentTime."',
-                '".$command."', '".$this->langId."', '".$modul."',
+                '".$command."', '".FRONTEND_LANG_ID."', '".$modul."',
                 '".$startdate."', '".$enddate."',
                 '".$protected."', '".$themesId."', '".$cssNameNav."'
             )
@@ -1700,8 +1700,8 @@ class ContentManager
                                                    cachingstatus="'.$cachingstatus.'",
                                                    username="'.$objFWUser->objUser->getUsername().'",
                                                    changelog="'.$currentTime.'",
-                                                    cmd="'.$command.'",
-                                                  lang="'.$this->langId.'",
+                                                   cmd="'.$command.'",
+                                                   lang="'.FRONTEND_LANG_ID.'",
                                                    module="'.$modul.'",
                                                    startdate="'.$startdate.'",
                                                    enddate="'.$enddate.'",
@@ -2015,6 +2015,7 @@ class ContentManager
     function _homeModuleCheck($section,$cmd,$pageId)
     {
         global $objDatabase, $_CORELANG;
+
         $lang=$this->langId;
         $section=intval($section);
 
@@ -2075,7 +2076,7 @@ class ContentManager
         $objResult = $objDatabase->Execute("
             SELECT catid, parcat, catname, backend_access_id
                                             FROM ".DBPREFIX."content_navigation
-                                            WHERE lang=".$this->langId."
+                                            WHERE lang=".FRONTEND_LANG_ID."
           ORDER BY parcat ASC, displayorder ASC
         ");
         if ($objResult === false) {

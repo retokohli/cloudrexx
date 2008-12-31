@@ -283,7 +283,7 @@ class Support
      */
     function __construct()
     {
-        global $objTemplate, $_ARRAYLANG, $objInit;
+        global $objTemplate, $_ARRAYLANG;
 
         if (MY_DEBUG && 1) {
             error_reporting(E_ALL); ini_set('display_errors', 1);
@@ -548,7 +548,7 @@ class Support
      */
     function messageCommit()
     {
-        global $objInit, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $objTicket  = false;
         $supportMessageBody = $this->supportMessageBody;
@@ -633,7 +633,7 @@ if (MY_DEBUG) { echo("messageCommit(): INFO: Stored new Ticket: ");var_export($o
      */
     function ticketDelete()
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
 if (MY_DEBUG) { echo("ticketDelete(): \$_GET: ");var_export($_GET);echo("<br />"); }
         $return = true;
@@ -671,7 +671,7 @@ if (MY_DEBUG) echo("ticketDelete(): ERROR: No Ticket ID!<br />");
      */
     function ticketsDelete()
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
 if (MY_DEBUG) { echo("ticketsDelete(): \$_POST: ");var_export($_POST);echo("<br />"); }
         foreach ($_POST['selectedTicketId'] as $supportTicketId) {
@@ -800,7 +800,7 @@ if (MY_DEBUG) echo("ticketClose(): ERROR: could not retrieve the Ticket with ID 
      */
     function categoryDelete()
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
 if (MY_DEBUG) { echo("categoryDelete(): \$_GET: ");var_export($_GET);echo("<br />"); }
         $return = true;
@@ -845,7 +845,7 @@ if (MY_DEBUG) { echo("categoryDelete(): \$_GET: ");var_export($_GET);echo("<br /
      */
     function categoriesDelete()
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
 if (MY_DEBUG) { echo("categoriesDelete(): \$_POST: ");var_export($_POST);echo("<br />"); }
         foreach ($_POST['selectedCategoryArrayId'] as $id) {
@@ -878,7 +878,7 @@ if (MY_DEBUG) { echo("Support::categoriesDelete(): ERROR: Failed to get Suppoprt
      */
     function categoriesEdit()
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_CATEGORIES_EDIT'];
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
@@ -1185,7 +1185,7 @@ if (MY_DEBUG) echo("categoryStore(): ERROR: Failed to create SupportCategory obj
      */
     function categoriesStore()
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 //echo("Support::categoriesStore(): INFO: Entered.<br />");
 
         // If no array with IDs has been posted, then why are we here?
@@ -1264,7 +1264,7 @@ if (MY_DEBUG) echo("Support::categoriesStore(): ERROR: Failed to get Support Cat
      */
     function ticketData($supportTicketId=0, $flagTicketChange=false)
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_TICKET'];
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
@@ -1390,7 +1390,7 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
      */
     function ticketTable()
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
         $baseUri =
             '?cmd=support&amp;act=ticketTable'.
@@ -1548,7 +1548,7 @@ if (MY_DEBUG) echo("ticketTable(): sorting order: ".$objSorting->getOrder()."<br
      */
     function ticketRow($supportTicketId=0)
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -1906,7 +1906,7 @@ if (MY_DEBUG) echo("Support::messageRow(): ERROR: Could not get Message with ID 
      */
     function messageEdit()
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_MESSAGE_EDIT'];
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
@@ -2096,7 +2096,7 @@ if (MY_DEBUG) echo("Support::messageEdit(): INFO: Editing Message for new Ticket
      */
     function infoFieldDelete()
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
 if (MY_DEBUG) { echo("infoFieldDelete(): \$_GET: ");var_export($_GET);echo("<br />"); }
         $return = true;
@@ -2139,7 +2139,7 @@ if (MY_DEBUG) { echo("infoFieldDelete(): \$_GET: ");var_export($_GET);echo("<br 
      */
     function infoFieldsDelete()
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
 if (MY_DEBUG) { echo("infoFields(): \$_POST: ");var_export($_POST);echo("<br />"); }
         foreach ($_POST['selectedInfoFieldArrayId'] as $id) {
@@ -2171,7 +2171,7 @@ if (MY_DEBUG) { echo("infoFields(): ERROR: Failed to get InfoField with ID $id!<
      */
     function infoFieldsEdit()
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_INFO_FIELDS_EDIT'];
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
@@ -2477,7 +2477,7 @@ if (MY_DEBUG) { echo("infoFieldStore(): ");var_export($objInfoField);echo("<br /
      */
     function infoFieldsStore()
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
 if (MY_DEBUG) { echo("infoFieldStore(): INFO: Entered.<br />"); }
 

@@ -77,9 +77,8 @@ class newsLibrary
             $posStartBodyContent = $posBody + strlen($bodyStartTag);
         }
         $posEndTag=strlen($fullContent);
-        $res=preg_match_all("/<\/body>/i",$fullContent, $arrayMatches);
-        if($res==true)
-        {
+        $res = preg_match_all('/<\/body>/i', $fullContent, $arrayMatches);
+        if ($res) {
             $bodyEndTag=$arrayMatches[0][0];
             // Position des End-Tags holen
             $posEndTag = strpos($fullContent, $bodyEndTag, 0);
@@ -89,31 +88,31 @@ class newsLibrary
          return $content;
     }
 
+
     function getCategories()
     {
-        global $objDatabase, $objInit;
+        global $objDatabase;
 
         $arrCatgories = array();
-
         $objResult = $objDatabase->Execute("SELECT catid,
             name,
             lang
             FROM ".DBPREFIX."module_news_categories
-            WHERE lang=".$objInit->userFrontendLangId."
+            WHERE lang=".FRONTEND_LANG_ID."
             ORDER BY catid asc");
-
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $arrCatgories[$objResult->fields['catid']] = array(
-                    'id'    => $objResult->fields['catid'],
-                    'name'    => $objResult->fields['name'],
-                    'lang'    => $objResult->fields['lang']
+                    'id'   => $objResult->fields['catid'],
+                    'name' => $objResult->fields['name'],
+                    'lang' => $objResult->fields['lang']
                 );
                 $objResult->MoveNext();
             }
         }
-
         return $arrCatgories;
     }
+
 }
+
 ?>

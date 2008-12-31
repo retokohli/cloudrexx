@@ -2,7 +2,7 @@
 /**
  * Navigation
 
- * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
+ * Note: modified 27/06/2006 by Sï¿½bastien Perret => sva.perret@bluewin.ch
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>
  * @version        1.0.0
@@ -15,7 +15,7 @@
  * Class Navigation
  *
  * This class creates the navigation tree
- * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
+ * Note: modified 27/06/2006 by Sï¿½bastien Perret => sva.perret@bluewin.ch
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>
  * @access        public
@@ -51,9 +51,6 @@ class Navigation
     */
     function __construct($pageId)
     {
-        global $_LANGID;
-
-        $this->langId = $_LANGID;
         $this->pageId = $pageId;
         $this->_initialize();
         $this->_getParents();
@@ -67,7 +64,7 @@ class Navigation
     /**
     * Initialize the data hash from the database
     *
-    * @global ADONewConnection 
+    * @global ADONewConnection
     * @access private
     */
     function _initialize()
@@ -90,7 +87,7 @@ class Navigation
                     FROM ".DBPREFIX."content_navigation                   AS n
                           INNER JOIN ".DBPREFIX."modules                  AS m        ON n.module=m.id
                           LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t      ON a_t.url = n.catid
-						  LEFT OUTER JOIN ".DBPREFIX."settings            AS settings 
+						  LEFT OUTER JOIN ".DBPREFIX."settings            AS settings
 						      ON settings.setmodule = 41
 						     AND settings.setname   = 'aliasStatus'
                           LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
@@ -98,7 +95,7 @@ class Navigation
                             AND a_s.isdefault = 1
                          WHERE n.module=m.id
                            AND (n.displaystatus = 'on' OR n.catid='".$this->pageId."')
-                           AND n.lang='".$this->langId."'
+                           AND n.lang='".FRONTEND_LANG_ID."'
                            AND (n.startdate<=CURDATE() OR n.startdate='0000-00-00')
                               AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
                               AND n.activestatus='1'

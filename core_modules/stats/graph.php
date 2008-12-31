@@ -95,8 +95,10 @@ class makeGraph
             WHERE `timestamp` >= '".(time()-86400)."' AND `type` = 'hour' AND `count` > 0 limit 24";
         $result = $objDatabase->Execute($query);
         if ($result) {
-            while ($arrResult = $result->FetchRow()) {
+            $arrResult = $result->FetchRow();
+            while ($arrResult) {
                 $arrBarPlot1[$arrResult['hour']][$arrResult['day']] = $arrResult['count'];
+                $arrResult = $result->FetchRow();
             }
         }
         $query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` ,FROM_UNIXTIME(`timestamp`, '%d' ) AS `day`,  `count`
@@ -104,8 +106,10 @@ class makeGraph
             WHERE `timestamp` >= '".(time()-86400)."' AND `type` = 'hour' AND `count` > 0 limit 24";
         $result = $objDatabase->Execute($query);
         if ($result) {
-            while ($arrResult = $result->FetchRow()) {
+            $arrResult = $result->FetchRow();
+            while ($arrResult) {
                 $arrBarPlot2[$arrResult['hour']][$arrResult['day']] = $arrResult['count'];
+                $arrResult = $result->FetchRow();
             }
         }
 
@@ -153,21 +157,23 @@ class makeGraph
             WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".(time()-3456000)."'";
         $result = $objDatabase->Execute($query);
         if ($result) {
-            while ($arrResult = $result->FetchRow()) {
+            $arrResult = $result->FetchRow();
+            while ($arrResult) {
                 $arrBarPlot1[$arrResult['day']][$arrResult['month']] = $arrResult['count'];
+                $arrResult = $result->FetchRow();
             }
         }
-
         $query = "SELECT FROM_UNIXTIME(`timestamp`, '%d' ) AS `day`, FROM_UNIXTIME(`timestamp`, '%m' ) AS `month` , `count`
             FROM `".DBPREFIX."stats_requests_summary`
             WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".(time()-3456000)."'";
         $result = $objDatabase->Execute($query);
         if ($result) {
-            while ($arrResult = $result->FetchRow()) {
+            $arrResult = $result->FetchRow();
+            while ($arrResult) {
                 $arrBarPlot2[$arrResult['day']][$arrResult['month']] = $arrResult['count'];
+                $arrResult = $result->FetchRow();
             }
         }
-
         $arrRange = array();
         if (date('d') < date('t')) {
             $arrRange[$previousMonth = (date('m') == 1 ? 12 : date('m')-1)] = range(
@@ -219,8 +225,10 @@ class makeGraph
             WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-2)."'";
         $result = $objDatabase->Execute($query);
         if ($result) {
-            while ($arrResult = $result->FetchRow()) {
+            $arrResult = $result->FetchRow();
+            while ($arrResult) {
                 $arrBarPlot1[$arrResult['month']][$arrResult['year']] = $arrResult['count'];
+                $arrResult = $result->FetchRow();
             }
         }
 
@@ -229,8 +237,10 @@ class makeGraph
             WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-2)."'";
         $result = $objDatabase->Execute($query);
         if ($result) {
-            while ($arrResult = $result->FetchRow()) {
+            $arrResult = $result->FetchRow();
+            while ($arrResult) {
                 $arrBarPlot2[$arrResult['month']][$arrResult['year']] = $arrResult['count'];
+                $arrResult = $result->FetchRow();
             }
         }
 
@@ -284,8 +294,10 @@ class makeGraph
             ORDER BY `year`";
         $result = $objDatabase->Execute($query);
         if ($result) {
-            while ($arrResult = $result->FetchRow()) {
+            $arrResult = $result->FetchRow();
+            while ($arrResult) {
                 $arrBarPlot1[$arrResult['year']] = $arrResult['count'];
+                $arrResult = $result->FetchRow();
             }
         }
 
@@ -295,8 +307,10 @@ class makeGraph
             ORDER BY `year`";
         $result = $objDatabase->Execute($query);
         if ($result) {
-            while ($arrResult = $result->FetchRow()) {
+            $arrResult = $result->FetchRow();
+            while ($arrResult) {
                 $arrBarPlot2[$arrResult['year']] = $arrResult['count'];
+                $arrResult = $result->FetchRow();
             }
         }
 

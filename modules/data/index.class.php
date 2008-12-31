@@ -285,16 +285,16 @@ class Data extends DataLibrary  {
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_THEMES_PATH);
         $this->_objTpl->setCurrentBlock("thickbox");
 
-        $objResult = $objDatabase->SelectLimit(" SELECT foldername
-                               FROM ".DBPREFIX."skins
-                              WHERE id = '$objInit->currentThemesId'", 1);
+        $objResult = $objDatabase->SelectLimit("
+            SELECT foldername
+              FROM ".DBPREFIX."skins
+             WHERE id=".$objInit->getThemeId(), 1);
         if ($objResult !== false) {
             $themesPath = $objResult->fields['foldername'];
         }
 
-        $template = preg_replace("/\[\[([A-Z_]+)\]\]/", '{$1}', $settings['data_template_thickbox']);
+        $template = preg_replace('/\[\[([A-Z_]+)\]\]/', '{$1}', $settings['data_template_thickbox']);
         $this->_objTpl->setTemplate($template);
-
 
         if ($entry['translation'][$lang]['attachment']) {
             $this->_objTpl->setVariable(array(

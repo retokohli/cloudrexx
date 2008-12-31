@@ -57,8 +57,6 @@ class Gallery {
         global $objDatabase, $_ARRAYLANG, $_LANGID;
 
         $this->pageContent = $pageContent;
-        $this->langId= $_LANGID;
-
         $this->_objTpl = &new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -145,7 +143,7 @@ class Gallery {
 
         // get category description
         $query = "SELECT value FROM ".DBPREFIX."module_gallery_language ".
-            "WHERE gallery_id=$intCatId AND lang_id=$this->langId AND name='desc' ".
+            "WHERE gallery_id=$intCatId AND lang_id=".FRONTEND_LANG_ID." AND name='desc' ".
             "LIMIT 1";
         $objResult = $objDatabase->Execute($query);
         $strCategoryComment = $objResult->fields['value'];
@@ -162,7 +160,7 @@ class Gallery {
             "WHERE id=$intPicId");
 
         $query = "SELECT p.name, p.desc FROM ".DBPREFIX."module_gallery_language_pics p ".
-            "WHERE picture_id=$intPicId AND lang_id=$this->langId LIMIT 1";
+            "WHERE picture_id=$intPicId AND lang_id=".FRONTEND_LANG_ID." LIMIT 1";
         $objSubResult = $objDatabase->Execute($query);
 // while? -> if!
         while (!$objResult->EOF) {
@@ -399,10 +397,11 @@ class Gallery {
         $objTpl->loadTemplateFile('module_gallery_show_picture.html',true,true);
 
         // get category description
-        $objResult = $objDatabase->Execute(
-            "SELECT value FROM ".DBPREFIX."module_gallery_language ".
-            "WHERE gallery_id=$intCatId AND lang_id=$this->langId ".
-            "AND name='desc' LIMIT 1");
+        $objResult = $objDatabase->Execute("
+            SELECT value FROM ".DBPREFIX."module_gallery_language
+             WHERE gallery_id=$intCatId AND lang_id=".FRONTEND_LANG_ID."
+               AND name='desc' LIMIT 1
+        ");
         $strCategoryComment = $objResult->fields['value'];
 
         $objResult = $objDatabase->Execute(
@@ -419,7 +418,7 @@ class Gallery {
             "WHERE id=$intPicId");
         $objSubResult = $objDatabase->Execute(
             "SELECT p.name, p.desc FROM ".DBPREFIX."module_gallery_language_pics p ".
-            "WHERE picture_id=$intPicId AND lang_id=$this->langId LIMIT 1");
+            "WHERE picture_id=$intPicId AND lang_id=".FRONTEND_LANG_ID." LIMIT 1");
         while (!$objResult->EOF) {
             $imageReso = getimagesize($this->strImagePath.$objResult->fields['path']);
             $strImagePath = $this->strImageWebPath.$objResult->fields['path'];
@@ -623,10 +622,11 @@ class Gallery {
         if (isset($_GET['cid'])) {
             $intCatId = intval($_GET['cid']);
 
-            $objResult = $objDatabase->Execute(
-                "SELECT value FROM ".DBPREFIX."module_gallery_language ".
-                "WHERE gallery_id=$intCatId AND lang_id=$this->langId ".
-                "AND name='name' LIMIT 1");
+            $objResult = $objDatabase->Execute("
+                SELECT value FROM ".DBPREFIX."module_gallery_language
+                 WHERE gallery_id=$intCatId AND lang_id=".FRONTEND_LANG_ID."
+                   AND name='name' LIMIT 1
+            ");
             $strCategory1 = $objResult->fields['value'];
 
             $objResult = $objDatabase->Execute(
@@ -634,10 +634,11 @@ class Gallery {
 
             if ($objResult->fields['pid'] != 0) {
                 $intParentId = $objResult->fields['pid'];
-                $objResult = $objDatabase->Execute(
-                    "SELECT value FROM ".DBPREFIX."module_gallery_language ".
-                    "WHERE gallery_id=$intParentId AND lang_id=$this->langId ".
-                    "AND name='name' LIMIT 1");
+                $objResult = $objDatabase->Execute("
+                    SELECT value FROM ".DBPREFIX."module_gallery_language
+                     WHERE gallery_id=$intParentId AND lang_id=".FRONTEND_LANG_ID."
+                       AND name='name' LIMIT 1
+                ");
                 $strCategory2 = $objResult->fields['value'];
             }
 
@@ -666,9 +667,12 @@ class Gallery {
                 "WHERE id=$intCatId");
             if ($objResult) {
                 $intParentId = intval($objResult->fields['pid']);
-                $query = "SELECT id, value FROM ".DBPREFIX."module_gallery_categories ".
-                    "INNER JOIN ".DBPREFIX."module_gallery_language ON id=gallery_id ".
-                    "WHERE lang_id=$this->langId AND name='name' AND pid=$intParentId";
+                $query = "
+                    SELECT id, value FROM ".DBPREFIX."module_gallery_categories
+                     INNER JOIN ".DBPREFIX."module_gallery_language ON id=gallery_id
+                     WHERE lang_id=".FRONTEND_LANG_ID."
+                       AND name='name' AND pid=$intParentId
+                ";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) {
                     $strOutput = '| ';
@@ -711,9 +715,11 @@ class Gallery {
                 }
             }
 
-            $query = "SELECT value FROM ".DBPREFIX."module_gallery_language ".
-                "WHERE gallery_id=$intCatId AND lang_id=$this->langId ".
-                "AND name='name' LIMIT 1";
+            $query = "
+                SELECT value FROM ".DBPREFIX."module_gallery_language
+                 WHERE gallery_id=$intCatId AND lang_id=".FRONTEND_LANG_ID."
+                   AND name='name' LIMIT 1
+            ";
             $objResult = $objDatabase->Execute($query);
             if ($objResult) {
                 $galleryName = $objResult->fields['value'];
@@ -823,10 +829,11 @@ class Gallery {
         } else {
             $i = 1;
             while (!$objResult->EOF) {
-                $objSubResult = $objDatabase->Execute(
-                    "SELECT name, value FROM ".DBPREFIX."module_gallery_language ".
-                    "WHERE gallery_id=".$objResult->fields['id']." AND ".
-                    "lang_id=".intval($this->langId)." ORDER BY name ASC");
+                $objSubResult = $objDatabase->Execute("
+                    SELECT name, value FROM ".DBPREFIX."module_gallery_language
+                     WHERE gallery_id=".$objResult->fields['id']."
+                       AND lang_id=".FRONTEND_LANG_ID." ORDER BY name ASC
+                ");
                 unset($arrCategoryLang);
                 while (!$objSubResult->EOF) {
                     $arrCategoryLang[$objSubResult->fields['name']] = $objSubResult->fields['value'];
@@ -869,9 +876,12 @@ class Gallery {
             'GALLERY_JAVASCRIPT'    =>    $this->getJavascript()
             ));
 
-        $objResult = $objDatabase->Execute(
-            "SELECT value FROM ".DBPREFIX."module_gallery_language ".
-            "WHERE gallery_id=$intParentId AND lang_id=$this->langId AND name='desc'");
+        $objResult = $objDatabase->Execute("
+            SELECT value FROM ".DBPREFIX."module_gallery_language
+             WHERE gallery_id=$intParentId
+               AND lang_id=".FRONTEND_LANG_ID."
+               AND name='desc'
+        ");
         $strCategoryComment = nl2br($objResult->fields['value']);
 
         $objResult = $objDatabase->Execute(
@@ -907,10 +917,13 @@ class Gallery {
             $this->_objTpl->setVariable(array('GALLERY_CATEGORY_COMMENT' =>    $strCategoryComment));
             $intFillLastRow = 1;
             while (!$objResult->EOF) {
-                $objSubResult = $objDatabase->Execute(
-                    "SELECT p.name, p.desc FROM ".DBPREFIX."module_gallery_language_pics p ".
-                    "WHERE picture_id=".$objResult->fields['id']." AND lang_id=$this->langId LIMIT 1");
-
+                $objSubResult = $objDatabase->Execute("
+                    SELECT p.name, p.desc
+                      FROM ".DBPREFIX."module_gallery_language_pics p
+                     WHERE picture_id=".$objResult->fields['id']."
+                       AND lang_id=".FRONTEND_LANG_ID."
+                     LIMIT 1
+                ");
                 $imageFileSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
                 $imageReso = getimagesize($this->strImagePath.$objResult->fields['path']);
                 $strImagePath = $this->strImageWebPath.$objResult->fields['path'];

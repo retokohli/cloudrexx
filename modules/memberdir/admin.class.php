@@ -54,14 +54,9 @@ class MemberDirManager extends MemberDirLibrary
         global  $objDatabase, $_ARRAYLANG, $objTemplate, $objInit;
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/memberdir/template');
-
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
-        $this->langId=$objInit->userFrontendLangId;
-
         parent::__construct();
-
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href=\"?cmd=memberdir\">".$_ARRAYLANG['TXT_OVERVIEW']."</a>
                                                         <a href=\"?cmd=memberdir&amp;act=newDir\">".$_ARRAYLANG['TXT_NEW_DIR']."</a>
                                                         <a href=\"?cmd=memberdir&amp;act=new\">".$_ARRAYLANG['TXT_NEW_MEMBER_SHORT']."</a>
@@ -1175,7 +1170,7 @@ class MemberDirManager extends MemberDirLibrary
                     '".$values[13]."', '".$values[14]."',
                     '".$values[15]."', '".$values[16]."',
                     '".$values[17]."', '".$values[18]."',
-                    '".$this->langId."'
+                    '".FRONTEND_LANG_ID."'
                    )";
 
         if ($objDatabase->Execute($query)) {
@@ -1701,7 +1696,7 @@ class MemberDirManager extends MemberDirLibrary
                      '". $this->getDbInput($row[16]) ."',
                      '". $this->getDbInput($row[17]) ."',
                      '". $this->getDbInput($row[18]) ."',
-                     '". $this->langId ."')
+                     '". FRONTEND_LANG_ID ."')
                 ";
 
 

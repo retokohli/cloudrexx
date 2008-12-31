@@ -212,8 +212,6 @@ class Support
      */
     function __construct($strTemplate)
     {
-        global $objInit;
-
         if (MY_DEBUG & 1) {
             error_reporting(E_ALL); ini_set('display_errors', 1);
         } else {
@@ -284,7 +282,7 @@ if (MY_DEBUG) { echo("Support::__construct(): POST: ");var_export($_POST);echo("
      */
     function supportRequest()
     {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
         // Needs to be initialized for InfoFields::isComplete()
         $this->objInfoFields->getInfoFieldArray(FRONTEND_LANG_ID);
@@ -513,8 +511,6 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
      */
     function requestTicket()
     {
-        global $objInit, $_ARRAYLANG;
-
         if ($this->supportStatus == SUPPORT_REQUEST_STATUS_READY) {
             // A new Ticket must be created.
             // create a new Ticket from the edited Message.

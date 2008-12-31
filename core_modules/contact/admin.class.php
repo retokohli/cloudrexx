@@ -945,28 +945,33 @@ class ContactManager extends ContactLib
                                         ');
         if ($objResult->RecordCount() > 0) {
             //subcategories have been found
-            while ($row = $objResult->FetchRow()) {
-                $objSubResult = $objDatabase->Execute('    SELECT    catid
-                                                        FROM    '.DBPREFIX.'content_navigation
-                                                        WHERE    catid='.$row['parcat'].'
-                                                        LIMIT     1
-                                                    ');
+            $row = $objResult->FetchRow();
+            while ($row) {
+                $objSubResult = $objDatabase->Execute('
+                    SELECT catid
+                      FROM '.DBPREFIX.'content_navigation
+                     WHERE catid='.$row['parcat'].'
+                     LIMIT 1
+                ');
                 if ($objSubResult->RecordCount() != 1) {
                     //this is a "lost" category.. assign it to "lost and found"
-                    $objSubSubResult = $objDatabase->Execute('    SELECT    catid
-                                                                FROM    '.DBPREFIX.'content_navigation
-                                                                WHERE    module=1 AND
-                                                                        cmd="lost_and_found" AND
-                                                                        lang='.$row['lang'].'
-                                                                LIMIT    1
-                                                            ');
+                    $objSubSubResult = $objDatabase->Execute('
+                        SELECT catid
+                          FROM '.DBPREFIX.'content_navigation
+                         WHERE module=1 AND
+                               cmd="lost_and_found" AND
+                               lang='.$row['lang'].'
+                         LIMIT 1
+                    ');
                     $subSubRow = $objSubSubResult->FetchRow();
-                    $objDatabase->Execute('    UPDATE    '.DBPREFIX.'content_navigation
-                                            SET        parcat='.$subSubRow['catid'].'
-                                            WHERE    catid='.$row['catid'].'
-                                            LIMIT    1
-                                        ');
+                    $objDatabase->Execute('
+                        UPDATE '.DBPREFIX.'content_navigation
+                           SET parcat='.$subSubRow['catid'].'
+                         WHERE catid='.$row['catid'].'
+                         LIMIT 1
+                    ');
                 }
+                $row = $objResult->FetchRow();
             }
         }
     }
@@ -1249,13 +1254,10 @@ class ContactManager extends ContactLib
                 $alt = $captcha->getAlt();
                 $url = $captcha->getUrl();
 
-                $frontendLang = $objInit->userFrontendLangId;
-                $themeId = $objInit->arrLang[$frontendLang]['themesid'];
-
+                $themeId = $objInit->getThemeId();
                 if(($objRS = $objDatabase->SelectLimit("SELECT `foldername` FROM `".DBPREFIX."skins` WHERE `id` = ".$themeId, 1)) !== false){
                     $themePath = $objRS->fields['foldername'];
                 }
-
                 $sourcecode[] = '<link href="../themes/'.$themePath.'/buildin_style.css" rel="stylesheet" type="text/css" />';
                 $sourcecode[] = '<p><span>'.$_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION']."</span><br />";
                 $sourcecode[] = '<img class="captcha" src="'.$url.'" alt="'.$alt.'" /></p>';
@@ -1277,20 +1279,16 @@ class ContactManager extends ContactLib
             $sourcecode[] = "</p>";
             $sourcecode[] = "<!-- END contact_form_captcha -->";
         }
-
         $sourcecode[] = "<p>";
         $sourcecode[] = '<input class="contactFormClass_button" type="reset" value="'.$_ARRAYLANG['TXT_CONTACT_DELETE'].'" /> <input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.$_ARRAYLANG['TXT_CONTACT_SUBMIT'].'" />';
         $sourcecode[] = "</p>";
         $sourcecode[] = "</form>";
         $sourcecode[] = "</fieldset>";
         $sourcecode[] = "<!-- END contact_form -->";
-
         $sourcecode[] = $this->_getJsSourceCode($id, $arrFields, $preview, $show);
-
         if ($show) {
             $sourcecode = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $sourcecode);
         }
-
         return implode("\n", $sourcecode);
     }
 

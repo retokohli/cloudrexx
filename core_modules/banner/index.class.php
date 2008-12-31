@@ -27,17 +27,6 @@ class Banner extends bannerLibrary
     var $arrGroups = array();
 
     /**
-     * Constructor
-     *
-     * @param  string
-     * @access public
-     */
-    function Banner()
-    {
-        $this->__construct();
-    }
-
-    /**
      * PHP5 constructor
      * @param  string  $pageContent
      * @global string  $_LANGID
@@ -45,9 +34,7 @@ class Banner extends bannerLibrary
      */
     function __construct()
     {
-        global $_LANGID;
         $this->_getBannerGroupStatus();
-        $this->langId = $_LANGID;
     }
 
 
@@ -59,6 +46,7 @@ class Banner extends bannerLibrary
     function _getBannerGroupStatus()
     {
         global $objDatabase;
+
         $query = "SELECT id, status FROM ".DBPREFIX."module_banner_groups";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {

@@ -42,8 +42,7 @@ class BlogAdmin extends BlogLibrary {
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/blog/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        $this->_intLanguageId = $objInit->userFrontendLangId;
-
+        $this->_intLanguageId = FRONTEND_LANG_ID;
         $objFWUser = FWUser::getFWUserObject();
         $this->_intCurrentUserId = $objFWUser->objUser->getId();
 
@@ -1519,9 +1518,9 @@ class BlogAdmin extends BlogLibrary {
                 }
             } else {
                 $objFWUser = FWUser::getFWUserObject();
-
                 $strUserStatus = $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT_USER_STATUS_REGISTERED'];
-                if ($objUser = $objFWUser->objUser->getUser($objCommentResult->fields['user_id'])) {
+                $objUser = $objFWUser->objUser->getUser($objCommentResult->fields['user_id'])
+                if ($objUser) {
                     $strUserName = '<a href="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id='.$objCommentResult->fields['user_id'].'" title="'.htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET).'</a>';
                     $strUserMail = htmlentities($objUser->getEmail(), ENT_QUOTES, CONTREXX_CHARSET);
                     $strUserWWW = htmlentities($objUser->getProfileAttribute('website'), ENT_QUOTES, CONTREXX_CHARSET);
@@ -1530,12 +1529,10 @@ class BlogAdmin extends BlogLibrary {
                     $strUserMail = '';
                     $strUserWWW = '';
                 }
-
                 $strUserMailIcon = '';
                 if (!empty($strUserMail)) {
                     $strUserMailIcon = '<a href="mailto:'.$strUserMail.'" title="'.$strUserMail.'"><img src="images/icons/email.gif" border="0" alt="'.$strUserMail.'" title="'.$strUserMail.'" style="margin-bottom: -4px;" /></a>';
                 }
-
                 $strUserWWWIcon = '';
                 if (!empty($strUserWWW)) {
                     $strUserWWWIcon = '<a href="'.$strUserWWW.'" target="_blank" title="'.$strUserWWW.'"><img src="images/icons/home.gif" border="0" alt="'.$strUserWWW.'" title="'.$strUserWWW.'" style="margin-bottom: -4px;" /></a>';

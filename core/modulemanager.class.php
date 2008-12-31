@@ -25,7 +25,6 @@ class modulemanager
     var $strOkMessage = '';
     var $arrayInstalledModules = array();
     var $arrayRemovedModules = array();
-    var $langId;
     var $defaultOrderValue = 111;
 
     /**
@@ -33,9 +32,6 @@ class modulemanager
      */
     function __construct()
     {
-        global $objInit;
-
-        $this->langId = $objInit->userFrontendLangId;
     }
 
 
@@ -100,7 +96,7 @@ class modulemanager
             SELECT module
               FROM ".DBPREFIX."content_navigation
              WHERE module!=0
-               AND lang=$this->langId
+               AND lang=".FRONTEND_LANG_ID."
              GROUP BY module
         ");
         if ($objResult) {
@@ -248,9 +244,8 @@ class modulemanager
             while ($check_repo_lang and !$check_repo_lang->EOF) {
                 $repo_lang_id = $check_repo_lang->fields['lang'];
                 // preference in this order: current language id, default id, lowest id
-                if ($this->langId                   == $repo_lang_id) break;
-                if ($objInit->defaultFrontendLangId == $repo_lang_id) break;
-
+                if (FRONTEND_LANG_ID == $repo_lang_id) break;
+                if (defined(DEFAULT_LANG_ID) && DEFAULT_LANG_ID == $repo_lang_id) break;
                 // lowest id is the last, so we just loop till the
                 // end (or until we find something better).
                 $check_repo_lang->MoveNext();
@@ -262,8 +257,6 @@ class modulemanager
                      WHERE moduleid=$id
                      AND lang=$repo_lang_id
                      ORDER BY parid ASC";
-
-
             $objResult = $objDatabase->Execute($query);
             if ($objResult) {
                 while (!$objResult->EOF) {
@@ -275,8 +268,8 @@ class modulemanager
                                 SELECT catid
                                   FROM ".DBPREFIX."content_navigation
                                  WHERE module=$id
-                                   AND lang=$this->langId
-                            ");
+                                   AND lang=".FRONTEND_LANG_ID
+                            );
                             if ($objResult2 && !$objResult2->EOF) {
                                 $objDatabase->Execute("
                                     DELETE FROM ".DBPREFIX."content
@@ -286,8 +279,8 @@ class modulemanager
                             $objDatabase->Execute("
                                 DELETE FROM ".DBPREFIX."content_navigation
                                  WHERE module=$id
-                                   AND lang=$this->langId
-                            ");
+                                   AND lang=".FRONTEND_LANG_ID
+                            );
                         }
                         $alreadyexist = true;
                         $parcat = 0;
@@ -302,7 +295,7 @@ class modulemanager
 
                     // Set displayorder to a high value for the parent module page
                     $displayorder = ($i == 1 ? $this->defaultOrderValue : $objResult->fields['displayorder']);
-                    $langId = $this->langId;
+                    $langId = FRONTEND_LANG_ID;
                     $modulerepid = $objResult->fields['id'];
                     $username = $objResult->fields['username'];
 
@@ -317,8 +310,7 @@ class modulemanager
                                changelog='$currentTime',
                                protected='0',
                                displaystatus='$displaystatus',
-                               lang=$this->langId
-                    ";
+                               lang=".FRONTEND_LANG_ID;
                     if ($objDatabase->Execute($query)) {
                         $catid = $paridarray[$modulerepid] = $objDatabase->Insert_ID();
                         $query = "
@@ -368,8 +360,7 @@ class modulemanager
                            module='$id',
                            username='$username',
                            changelog='$currentTime',
-                           lang=$this->langId
-                ";
+                           lang=".FRONTEND_LANG_ID;
                 if ($objDatabase->Execute($query)) {
                     $catid = $objDatabase->Insert_ID();
                     $query = "
@@ -401,8 +392,7 @@ class modulemanager
                            INNER JOIN ".DBPREFIX."modules
                               ON module=id
                            WHERE module='$moduleId'
-                             AND lang=$this->langId
-                ";
+                             AND lang=".FRONTEND_LANG_ID;
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) {
                     while (!$objResult->EOF) {

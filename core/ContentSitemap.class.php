@@ -58,8 +58,6 @@ class ContentSitemap
     {
         global $objDatabase, $objInit;
 
-        $this->langId=$objInit->userFrontendLangId;
-
         $query = "SELECT id, name FROM ".DBPREFIX."modules";
         $objResult = $objDatabase->Execute($query);
         if ($objResult === false) {
@@ -83,7 +81,7 @@ class ContentSitemap
                          FROM_UNIXTIME(n.changelog,'%d.%m.%Y %T') AS changelog,
                          n.is_validated AS isValidated
                     FROM ".DBPREFIX."content_navigation AS n
-                   WHERE n.lang=".$this->langId."
+                   WHERE n.lang=".FRONTEND_LANG_ID."
                 ORDER BY n.parcat ASC, n.displayorder ASC";
         $objResult = $objDatabase->Execute($query);
         if ($objResult === false) {
@@ -211,8 +209,8 @@ class ContentSitemap
 
         $objTpl->setCurrentBlock('siteRow');
         $objTpl->setVariable(array(
-            'CONTENT_ID'     => $this->langId,
-            'CONTENT_NAME'   => $objLanguage->getLanguageParameter($this->langId, "name"),
+            'CONTENT_ID'     => FRONTEND_LANG_ID,
+            'CONTENT_NAME'   => $objLanguage->getLanguageParameter(FRONTEND_LANG_ID, "name"),
         ));
         $objTpl->parseCurrentBlock();
 
@@ -352,14 +350,14 @@ class ContentSitemap
             }
             $n++;
         }
-        
+
         //New added in 2.0: editmode-selector window
 		$objTpl->setVariable(array(	'TXT_EDITMODE_TITLE'	=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
 									'TXT_EDITMODE_TEXT'		=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'],
 									'TXT_EDITMODE_CODE'		=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'],
 									'TXT_EDITMODE_CONTENT'	=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT']
 						));
-        
+
         return $objTpl->get();
     }
 

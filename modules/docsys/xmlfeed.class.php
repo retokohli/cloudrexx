@@ -27,8 +27,6 @@ class rssFeed
     var $filePath;
     var $fileName = array();
     var $limit;
-    var $langId;
-
     var $channelTitle;
     var $channelLink;
     var $channelDescription;
@@ -48,11 +46,9 @@ class rssFeed
     */
     function __construct()
     {
-        global $_CONFIG, $objInit, $objDatabase;
+        global $_CONFIG, $objDatabase;
 
-        $this->langId=$objInit->userFrontendLangId;
-
-        $query = "SELECT lang FROM ".DBPREFIX."languages WHERE id='$this->langId'";
+        $query = "SELECT lang FROM ".DBPREFIX."languages WHERE id='".FRONTEND_LANG_ID."'";
         $objResult = $objDatabase->Execute($query);
 
         $this->xmlType = "headlines";
@@ -83,7 +79,7 @@ class rssFeed
         if(is_writeable($this->filePath) AND is_dir($this->filePath)){
             return true;
         }
-        else{  
+        else{
             return false;
         }
     }
@@ -126,7 +122,7 @@ class rssFeed
 //                             ".DBPREFIX."access_users AS u
 //                        WHERE n.userid = u.id AND n.lang = ".$_LANGID."
 //                        ORDER BY n.id DESC";
-            
+
             $query = "SELECT n.id AS docId,
                                n.date,
                                n.title,

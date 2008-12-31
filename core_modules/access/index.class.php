@@ -331,8 +331,7 @@ class Access extends AccessLib
         // set a new cookie if the language id had been changed
         if ($currentLangId != $newLangId) {
             // check if the desired language is active at all. otherwise set default language
-    $objInit->arrLang[$newLangId]['frontend'];
-            if ($objInit->arrLang[$newLangId]['frontend'] || ($newLangId = $objInit->defaultFrontendLangId)) {
+            if ($objInit->isFrontendLanguage($newLangId) || $newLangId = DEFAULT_LANG_ID) {
                 setcookie("langId", $newLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
             }
         }
