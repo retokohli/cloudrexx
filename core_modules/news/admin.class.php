@@ -170,9 +170,7 @@ class newsManager extends newsLibrary {
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/news/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
         $this->_saveSettings();
-
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=news'>".$_ARRAYLANG['TXT_NEWS_MANAGER']."</a>
             <a href='index.php?cmd=news&amp;act=add'>".$_ARRAYLANG['TXT_CREATE_NEWS']."</a>
             <a href='index.php?cmd=news&amp;act=newscat'>".$_ARRAYLANG['TXT_CATEGORY_MANAGER']."</a>
@@ -181,11 +179,10 @@ class newsManager extends newsLibrary {
             <a href='index.php?cmd=news&amp;act=placeholders'>".$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY']."</a>
             <a href='index.php?cmd=news&amp;act=settings'>".$_ARRAYLANG['TXT_NEWS_SETTINGS']."</a>"
         );
-
         $this->pageTitle = $_ARRAYLANG['TXT_NEWS_MANAGER'];
-        $this->langId = $objInit->userFrontendLangId;
         $this->getSettings();
     }
+
 
     /**
     * Do the requested newsaction
@@ -293,7 +290,7 @@ class newsManager extends newsLibrary {
             return $this->manageCategories();
         }
 
-        $query = 'SELECT 1 FROM `'.DBPREFIX.'module_news` WHERE `lang` = '.$this->langId;
+        $query = 'SELECT 1 FROM `'.DBPREFIX.'module_news` WHERE `lang` = '.FRONTEND_LANG_ID;
         $objNewsCount = $objDatabase->SelectLimit($query, 1);
         if ($objNewsCount === false || $objNewsCount->RecordCount() == 0) {
             return $this->add();
@@ -352,7 +349,7 @@ class newsManager extends newsLibrary {
                          ".DBPREFIX."languages AS l,
                          ".DBPREFIX."module_news AS n
                    WHERE n.lang=l.id
-                     AND n.lang=".$this->langId."
+                     AND n.lang=".FRONTEND_LANG_ID."
                      AND nc.catid=n.catid
                      AND n.validated='1'
                 ORDER BY date DESC";
@@ -427,7 +424,7 @@ class newsManager extends newsLibrary {
                          ".DBPREFIX."languages AS l,
                          ".DBPREFIX."module_news AS n
                    WHERE n.lang=l.id
-                     AND n.lang=".$this->langId."
+                     AND n.lang=".FRONTEND_LANG_ID."
                      AND nc.catid=n.catid
                      AND n.validated='0'
                 ORDER BY date DESC";
@@ -579,7 +576,7 @@ class newsManager extends newsLibrary {
                                                 url1="'.$newsurl1.'",
                                                 url2="'.$newsurl2.'",
                                                 catid='.$newscat.',
-                                                lang='.$this->langId.',
+                                                lang='.FRONTEND_LANG_ID.',
                                                 startdate="'.$startDate.'",
                                                 enddate="'.$endDate.'",
                                                 status='.$status.',
@@ -654,7 +651,7 @@ class newsManager extends newsLibrary {
             'NEWS_STATUS'                   => $status ? 'checked="checked"' : '',
             'NEWS_ID'                       => "0",
             'NEWS_TOP_TITLE'                => $_ARRAYLANG['TXT_CREATE_NEWS'],
-            'NEWS_CAT_MENU'                 => $this->getCategoryMenu($this->langId, $newscat),
+            'NEWS_CAT_MENU'                 => $this->getCategoryMenu(FRONTEND_LANG_ID, $newscat),
             'NEWS_STARTDATE'                => $startDate,
             'NEWS_ENDDATE'                  => $endDate,
             'NEWS_DATE'                     => date('H:i:s d.m.Y',$objResult->fields['date']),
@@ -912,7 +909,7 @@ class newsManager extends newsLibrary {
             $this->_objTpl->setVariable('NEWS_HEADLINES_TEASERS_TXT', $_ARRAYLANG['TXT_HEADLINES']);
         }
 
-        $this->_objTpl->setVariable("NEWS_CAT_MENU",$this->getCategoryMenu($this->langId, $newsCat));
+        $this->_objTpl->setVariable("NEWS_CAT_MENU",$this->getCategoryMenu(FRONTEND_LANG_ID, $newsCat));
         $this->_objTpl->setVariable("NEWS_FORM_ACTION","update");
         $this->_objTpl->setVariable("NEWS_STORED_FORM_ACTION","update");
         $this->_objTpl->setVariable("NEWS_TOP_TITLE",$_ARRAYLANG['TXT_EDIT_NEWS_CONTENT']);
@@ -988,7 +985,7 @@ class newsManager extends newsLibrary {
                                                         url1='".$url1."',
                                                         url2='".$url2."',
                                                         catid='".$catId."',
-                                                        lang='".$this->langId."',
+                                                        lang='".FRONTEND_LANG_ID."',
                                                         userid = '".$userId."',
                                                         status = '".$status."',
                                                         ".(isset($_POST['validate']) ? "validated='1'," : "")."
@@ -1120,7 +1117,7 @@ class newsManager extends newsLibrary {
              $catName=contrexx_strip_tags($_POST['newCategorieName']);
 
              if($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_categories (name,lang)
-                                 VALUES ('$catName','$this->langId')") !== false) {
+                                 VALUES ('$catName','".FRONTEND_LANG_ID."')") !== false) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
              } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1134,7 +1131,7 @@ class newsManager extends newsLibrary {
                 $name=contrexx_strip_tags($name);
                 $id=intval($id);
 
-                if($objDatabase->Execute("UPDATE ".DBPREFIX."module_news_categories SET name='$name',lang=$this->langId WHERE catid=$id") !== false) {
+                if($objDatabase->Execute("UPDATE ".DBPREFIX."module_news_categories SET name='$name',lang=".FRONTEND_LANG_ID." WHERE catid=$id") !== false) {
                     $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
                 } else {
                     $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1146,7 +1143,7 @@ class newsManager extends newsLibrary {
                            name,
                            lang
                       FROM ".DBPREFIX."module_news_categories
-                     WHERE lang=".$this->langId."
+                     WHERE lang=".FRONTEND_LANG_ID."
                   ORDER BY catid asc");
 
         $this->_objTpl->setCurrentBlock('newsRow');
@@ -1418,7 +1415,7 @@ class newsManager extends newsLibrary {
         $this->_objTpl->loadTemplateFile('module_news_settings.html',true,true);
 
         // Show settings
-        $objResult = $objDatabase->Execute("SELECT lang FROM ".DBPREFIX."languages WHERE id='".$this->langId."'");
+        $objResult = $objDatabase->Execute("SELECT lang FROM ".DBPREFIX."languages WHERE id='".FRONTEND_LANG_ID."'");
         if ($objResult !== false) {
             $newsFeedPath =  "http://".$_SERVER['SERVER_NAME'].ASCMS_FEED_WEB_PATH."/news_headlines_".$objResult->fields['lang'].".xml";
         }
@@ -1589,7 +1586,8 @@ class newsManager extends newsLibrary {
         $id = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
         $pos = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
         $defaultCharset = CONTREXX_CHARSET;
-        if ($arrTicker = $this->_getTicker($id)) {
+        $arrTicker = $this->_getTicker($id);
+        if ($arrTicker) {
             $this->pageTitle = $_ARRAYLANG['TXT_NEWS_MODIFY_TICKER'];
             $name = $arrTicker['name'];
             $charset = $arrTicker['charset'];

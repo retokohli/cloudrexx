@@ -45,14 +45,10 @@ class GuestbookManager extends GuestbookLibrary
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/guestbook/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
-        $this->langId=$objInit->userFrontendLangId;
-
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=guestbook'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>
                                                         <a href='?cmd=guestbook&amp;act=add'>".$_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY']."</a>
                                                         <a href='?cmd=guestbook&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
-
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_guestbook");
         $this->getSettings();
     }
@@ -242,27 +238,16 @@ class GuestbookManager extends GuestbookLibrary
                 $error.= $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']."<br />";
             }
             if (empty($error)) {
-                $query = "INSERT INTO ".DBPREFIX."module_guestbook
-                                       (nickname,
-                                        gender,
-                                        url,
-                                        datetime,
-                                        email,
-                                        comment,
-                                        ip,
-                                        location,
-                                        lang_id)
-                                VALUES ('$nick',
-                                        '$gender',
-                                        '$url',
-                                        NOW(),
-                                        '$mail',
-                                        '$comment',
-                                        '$ip',
-                                        '$location',
-                                        '$this->langId')";
+                $query = "
+                    INSERT INTO ".DBPREFIX."module_guestbook (
+                        nickname, gender, url, datetime,
+                        email, comment, ip, location, lang_id
+                    ) VALUES (
+                        '$nick', '$gender', '$url', NOW(),
+                        '$mail', '$comment', '$ip', '$location',
+                        '".FRONTEND_LANG_ID."'
+                    )";
                 $objDatabase->Execute($query);
-
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'];
             }else{
                 $this->strErrMessage = $error;
@@ -271,10 +256,6 @@ class GuestbookManager extends GuestbookLibrary
             $this->strErrMessage = $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'];
         }
     }
-
-
-
-
 
 
     /**
@@ -408,7 +389,7 @@ class GuestbookManager extends GuestbookLibrary
         /** start paging **/
         $query = "SELECT *
             FROM ".DBPREFIX."module_guestbook "
-            .($this->arrSettings['guestbook_only_lang_entries'] ? "WHERE lang_id='$this->langId' " : '');
+            .($this->arrSettings['guestbook_only_lang_entries'] ? "WHERE lang_id='".FRONTEND_LANG_ID."' " : '');
         $objResult = $objDatabase->Execute($query);
 
         $count = $objResult->RecordCount();
@@ -429,7 +410,7 @@ class GuestbookManager extends GuestbookLibrary
                                 datetime,
                                 UNIX_TIMESTAMP(datetime) AS uTimestamp
                     FROM         ".DBPREFIX."module_guestbook "
-                    .($this->arrSettings['guestbook_only_lang_entries'] ? "WHERE lang_id='$this->langId' " : '')
+                    .($this->arrSettings['guestbook_only_lang_entries'] ? "WHERE lang_id='".FRONTEND_LANG_ID."' " : '')
                     ."ORDER BY     id DESC ";
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
 
@@ -520,7 +501,7 @@ class GuestbookManager extends GuestbookLibrary
                                    location='$location',
                                    ip='$ip',
                                    datetime='$date',
-                                   lang_id='$this->langId'
+                                   lang_id='".FRONTEND_LANG_ID."'
                              WHERE id=$guestbookId";
                 $objResult = $objDatabase->Execute($query);
             }

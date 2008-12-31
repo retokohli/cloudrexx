@@ -48,14 +48,6 @@ class rssFeed
     {
         global $_CONFIG;
 
-        //$db->query("SELECT lang FROM ".DBPREFIX."languages WHERE id='$this->langId'");
-        //$db->next_record();
-/*
-define('ASCMS_FEED_PATH',                    ASCMS_DOCUMENT_ROOT.'/feed');
-define('ASCMS_FEED_WEB_PATH',                ASCMS_PATH_OFFSET.'/feed');
-ASCMS_DIRECTORY_FEED_PATH
-*/
-
         $this->filePath = ASCMS_DIRECTORY_FEED_PATH . '/';
         $this->channelCopyright = "http://".$_CONFIG['domainUrl'];
         $this->channelGenerator = $_CONFIG['coreCmsName'];

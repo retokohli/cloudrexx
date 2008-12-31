@@ -8,6 +8,7 @@
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
+ * @todo        This class should be purely static.
  */
 
 /**
@@ -211,8 +212,8 @@ class InitCMS
      */
     function getUserFrontendLangId()
     {
-        if (!empty($_POST['userFrontendLangId'])) {
-            $frontendLangId = intval($_POST['userFrontendLangId']);
+        if (!empty($_REQUEST['userFrontendLangId'])) {
+            $frontendLangId = intval($_REQUEST['userFrontendLangId']);
         } elseif (!empty($_SESSION['userFrontendLangId'])) {
             $frontendLangId = intval($_SESSION['userFrontendLangId']);
         } else {
@@ -264,6 +265,22 @@ class InitCMS
     {
         $charset = $this->arrLang[BACKEND_LANG_ID]['charset'];
         return (empty($charset) ? CONTREXX_CHARSET : $charset);
+    }
+
+
+    /**
+     * Returns true if the ID given is an active frontend language ID
+     * @param   integer     $lang_id    The language ID
+     * @return  boolean                 True for active frontend language IDs,
+     *                                  false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   2.1
+     */
+    function isFrontendLanguage($lang_id)
+    {
+        return (
+            empty($this->arrLang[$lang_id]['frontend']) ? false : true
+        );
     }
 
 
@@ -328,6 +345,16 @@ class InitCMS
         @$this->templates['blog_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html');
         @$this->templates['immo'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html');
         return $this->templates;
+    }
+
+
+    /**
+     * Returns the theme ID for the current frontend language
+     * @return  integer             The theme ID
+     */
+    function getThemeId()
+    {
+        return $this->arrLang[FRONTEND_LANG_ID]['themesid'];
     }
 
 

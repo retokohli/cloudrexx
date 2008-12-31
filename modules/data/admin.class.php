@@ -55,7 +55,7 @@ class DataAdmin extends DataLibrary {
 		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/data/template');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
- 		$this->_intLanguageId = $objInit->userFrontendLangId;
+ 		$this->_intLanguageId = FRONTEND_LANG_ID;
 
     	$objTemplate->setVariable('CONTENT_NAVIGATION','	<a href="?cmd=data">'.$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'].'</a>
     														<a href="?cmd=data&amp;act=addEntry">'.$_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'].'</a>

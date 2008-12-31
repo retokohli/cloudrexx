@@ -48,7 +48,6 @@ class reservations extends reservationLib
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         parent::__construct();
-        $this->langId = $objInit->userFrontendLangId;
         $this->setOptions();
     }
 
@@ -122,7 +121,7 @@ class reservations extends reservationLib
 
         $query = "SELECT id, confirmed, status, unit, lang_id FROM ".DBPREFIX."module_reservation
                   WHERE day = '".$date."' AND
-                  lang_id = '".$this->langId."'";
+                  lang_id = '".FRONTEND_LANG_ID."'";
         $objResult = $objDatabase->Execute($query);
 
         $data = array();
@@ -251,7 +250,7 @@ class reservations extends reservationLib
                          (`status`, `confirmed`, `day`, `unit`, `name`, `email`, `phone`,
                           `comments`, `lang_id`, `time`, `hash`) VALUES
                          ('".$status."', '".$confirmed."', '".$day."', '".$unit."', '".$name."', '".$email."', '".$phone."',
-                          '".$comments."', '".$this->langId."', '".$time."', '".$hash."')";
+                          '".$comments."', '".FRONTEND_LANG_ID."', '".$time."', '".$hash."')";
                 if ($objDatabase->Execute($query)) {
                 // sucessfull. Send mail now
 

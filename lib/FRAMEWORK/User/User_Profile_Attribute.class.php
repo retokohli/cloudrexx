@@ -14,7 +14,7 @@
  * @version     2.0.0
  * @package     contrexx
  * @subpackage  lib_framework
- */ 
+ */
 
 class User_Profile_Attribute
 {
@@ -444,11 +444,6 @@ class User_Profile_Attribute
 
     function __construct()
     {
-        global $_LANGID;
-
-        // this is a crapy solution! but the problem is, that this class gets initialized before the backend language ID is loaded.
-        $this->langId = $_LANGID ? $_LANGID : (!empty($_COOKIE['backendLangId']) ? intval($_COOKIE['backendLangId']) : 1);
-
         $this->init();
         $this->first();
     }
@@ -475,7 +470,7 @@ class User_Profile_Attribute
             if (!$arrAttribute['parent_id']) {
                 $this->arrCoreAttributeIds[] = $attributeId;
             }
-            $this->arrAttributes[$attributeId]['names'][$this->langId] = $_CORELANG[$arrAttribute['desc']];
+            $this->arrAttributes[$attributeId]['names'][LANG_ID] = $_CORELANG[$arrAttribute['desc']];
         }
 
         $this->loadCoreAttributesCustomizing();
@@ -524,7 +519,7 @@ class User_Profile_Attribute
                     'sort_type' => 'asc',
                     'parent_id' => 'country',
                     'desc'      => $objCountry->fields['name'],
-                    'names'     => array($this->langId => $objCountry->fields['name']),
+                    'names'     => array(LANG_ID => $objCountry->fields['name']),
                     'value'     => $objCountry->fields['id'],
                     'order_id'  => 0
                 );
@@ -548,7 +543,7 @@ class User_Profile_Attribute
                     'sort_type'  => 'asc',
                     'parent_id'  => 'title',
                     'desc'       => $objTitle->fields['title'],
-                    'names'      => array($this->langId => $objTitle->fields['title']),
+                    'names'      => array(LANG_ID => $objTitle->fields['title']),
                     'value'      => $objTitle->fields['id'],
                     'order_id'   => $objTitle->fields['order_id'],
                     'modifiable' => array('names')
@@ -590,10 +585,10 @@ class User_Profile_Attribute
             }
         }
 
-        $objNames = $objDatabase->Execute('SELECT `attribute_id`, `name` FROM `'.DBPREFIX.'access_user_attribute_name` WHERE `lang_id` = '.$this->langId);
+        $objNames = $objDatabase->Execute('SELECT `attribute_id`, `name` FROM `'.DBPREFIX.'access_user_attribute_name` WHERE `lang_id` = '.LANG_ID);
         if ($objNames !== false) {
             while (!$objNames->EOF) {
-                $this->arrAttributes[$objNames->fields['attribute_id']]['names'][$this->langId] = $objNames->fields['name'];
+                $this->arrAttributes[$objNames->fields['attribute_id']]['names'][LANG_ID] = $objNames->fields['name'];
                 $objNames->MoveNext();
             }
         }
@@ -703,7 +698,7 @@ class User_Profile_Attribute
                 asort($arrChildren, SORT_NUMERIC);
             } else {
                 foreach ($arrAttributeIds as $childAttributeId) {
-                    $arrChildren[$childAttributeId] = $this->arrAttributes[$childAttributeId]['names'][$this->langId];
+                    $arrChildren[$childAttributeId] = $this->arrAttributes[$childAttributeId]['names'][LANG_ID];
                 }
 
                 if (isset($this->arrAttributes[$attributeId]['sort_type']) && $this->arrAttributes[$attributeId]['sort_type'] == 'desc') {
@@ -1038,7 +1033,7 @@ class User_Profile_Attribute
         if ($objDatabase->Execute('DELETE FROM `'.$affectedTable.'` WHERE `id` = '.($this->parent_id == 'title' && preg_match('#([0-9]+)#', $attributeId, $pattern) ? $pattern[0] : $attributeId)) !== false) {
             return true;
         }
-        $this->errorMsg = sprintf($_ARRAYLANG['TXT_ACCESS_UNABLE_DEL_ATTRIBUTE'], htmlentities($this->arrAttributes[$attributeId]['names'][$this->langId], ENT_QUOTES, CONTREXX_CHARSET));
+        $this->errorMsg = sprintf($_ARRAYLANG['TXT_ACCESS_UNABLE_DEL_ATTRIBUTE'], htmlentities($this->arrAttributes[$attributeId]['names'][LANG_ID], ENT_QUOTES, CONTREXX_CHARSET));
         return false;
     }
 
@@ -1050,7 +1045,7 @@ class User_Profile_Attribute
         if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."access_user_attribute_value` WHERE `attribute_id` = '".$attributeId."'") !== false) {
             return true;
         }
-        $this->errorMsg = sprintf($_ARRAYLANG['TXT_ACCESS_UNABLE_DEL_ATTRIBUTE_CONTENT'], htmlentities($this->arrAttributes[$attributeId]['names'][$this->langId], ENT_QUOTES, CONTREXX_CHARSET));
+        $this->errorMsg = sprintf($_ARRAYLANG['TXT_ACCESS_UNABLE_DEL_ATTRIBUTE_CONTENT'], htmlentities($this->arrAttributes[$attributeId]['names'][LANG_ID], ENT_QUOTES, CONTREXX_CHARSET));
         return false;
     }
 
@@ -1062,7 +1057,7 @@ class User_Profile_Attribute
         if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."access_user_attribute_name` WHERE `attribute_id` = '".$attributeId."'") !== false) {
             return true;
         }
-        $this->errorMsg = sprintf($_ARRAYLANG['TXT_ACCESS_UNABLE_DEL_ATTRIBUTE_DESCS'], htmlentities($this->arrAttributes[$attributeId]['names'][$this->langId], ENT_QUOTES, CONTREXX_CHARSET));
+        $this->errorMsg = sprintf($_ARRAYLANG['TXT_ACCESS_UNABLE_DEL_ATTRIBUTE_DESCS'], htmlentities($this->arrAttributes[$attributeId]['names'][LANG_ID], ENT_QUOTES, CONTREXX_CHARSET));
         return false;
     }
 
@@ -1494,15 +1489,8 @@ class User_Profile_Attribute
     {
         global $_LANGID;
 
-        if (empty($this->langId)) {
-            $this->langId = $_LANGID;
-        }
-        if (empty($langId)) {
-            $langId = $this->langId;
-        }
-        if (!isset($this->arrName[$langId])) {
-            $this->loadName($langId);
-        }
+        if (empty($langId)) $langId = LANG_ID;
+        if (!isset($this->arrName[$langId])) $this->loadName($langId);
         return $this->arrName[$langId];
     }
 
@@ -1511,7 +1499,7 @@ class User_Profile_Attribute
     {
         global $_ARRAYLANG;
 
-        return htmlentities($this->arrAttributes[$this->parent_id]['names'][$this->langId], ENT_QUOTES, CONTREXX_CHARSET).' ['.(isset($this->arrAttributes[$this->parent_id]['type']) ? $_ARRAYLANG[$this->arrTypes[$this->arrAttributes[$this->parent_id]['type']]['desc']] : '').']';
+        return htmlentities($this->arrAttributes[$this->parent_id]['names'][LANG_ID], ENT_QUOTES, CONTREXX_CHARSET).' ['.(isset($this->arrAttributes[$this->parent_id]['type']) ? $_ARRAYLANG[$this->arrTypes[$this->arrAttributes[$this->parent_id]['type']]['desc']] : '').']';
     }
 
 
@@ -1537,7 +1525,7 @@ class User_Profile_Attribute
                             ? 'value="'.$attributeId.'"'.($this->parent_id == $attributeId ? ' selected="selected"' :    '').' style="color:#000;"'
                             : 'value="-1" style="color:#ccc;"'
                         ).'>';
-                    $menu .= str_pad('', $this->getLevel($attributeId)*2, '..').htmlentities($this->arrAttributes[$attributeId]['names'][$this->langId], ENT_QUOTES, CONTREXX_CHARSET).' ['.$_ARRAYLANG[$this->arrTypes[$this->arrAttributes[$attributeId]['type']]['desc']].']';
+                    $menu .= str_pad('', $this->getLevel($attributeId)*2, '..').htmlentities($this->arrAttributes[$attributeId]['names'][LANG_ID], ENT_QUOTES, CONTREXX_CHARSET).' ['.$_ARRAYLANG[$this->arrTypes[$this->arrAttributes[$attributeId]['type']]['desc']].']';
                     $menu .= '</option>';
                 }
             }

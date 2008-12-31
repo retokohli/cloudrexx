@@ -68,8 +68,6 @@ class rssDirectory extends directoryLibrary
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/directory/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        $this->langId = $objInit->userFrontendLangId;
-
         $this->path = ASCMS_DIR_PATH . '/';
         $this->webPath = ASCMS_DIR_WEB_PATH . '/';
         $this->imagePath = ASCMS_MODULE_IMAGE_PATH . '/';

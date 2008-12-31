@@ -53,13 +53,10 @@ class Banner extends bannerLibrary {
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/banner/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
         $objTemplate->setVariable('CONTENT_NAVIGATION','<a href="?cmd=banner">'.$_ARRAYLANG['TXT_BANNER_MENU_OVERVIEW'].'</a>
                                                         <a href="?cmd=banner&amp;act=banner_add">'.$_ARRAYLANG['TXT_BANNER_MENU_BANNER_NEW'].'</a>
                                                         <a href="?cmd=banner&amp;act=settings">'.$_ARRAYLANG['TXT_BANNER_MENU_SETTINGS'].'</a>');
-
         $this->pageTitle = $_ARRAYLANG['TXT_BANNER_ADMINISTRATION'];
-        $this->langId=$objInit->userFrontendLangId;
         $this->getSettings();
     }
 

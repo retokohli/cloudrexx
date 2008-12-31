@@ -31,7 +31,7 @@ class ForumAdmin extends ForumLibrary {
 
     /**
      * Constructor    -> Create the module-menu and an internal template-object
-     * @global    InitCMS 
+     * @global    InitCMS
      * @global    HTML_Template_Sigma
      * @global    array
      */
@@ -41,7 +41,7 @@ class ForumAdmin extends ForumLibrary {
         ForumLibrary::__construct();
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/forum/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-        $this->_intLangId = $objInit->userFrontendLangId;
+        $this->_intLangId = FRONTEND_LANG_ID;
         $objTemplate->setVariable(
             'CONTENT_NAVIGATION',
             '<a href="?cmd=forum&amp;act=category">'.$_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'].'</a>
@@ -771,7 +771,7 @@ class ForumAdmin extends ForumLibrary {
     /**
      * Show "access rights"-form for a selected category.
      *
-     * @global    ADONewConnection 
+     * @global    ADONewConnection
      * @global     array
      * @param    integer        $intCategoryId: The category / forum with this id should be edited
      */

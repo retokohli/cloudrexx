@@ -49,9 +49,6 @@ class Recommend extends RecommendLibrary
      */
     function __construct($pageContent)
     {
-        global $_LANGID;
-
-        $this->langId=$_LANGID;
         $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);

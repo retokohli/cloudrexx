@@ -59,7 +59,7 @@ class galleryManager extends GalleryLibrary
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        $this->intLangId=$objInit->userFrontendLangId;
+        $this->intLangId = FRONTEND_LANG_ID;
 
         $this->strImagePath = ASCMS_GALLERY_PATH . '/';
         $this->strImageWebPath = ASCMS_GALLERY_WEB_PATH . '/';

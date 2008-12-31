@@ -44,11 +44,8 @@ class Guestbook extends GuestbookLibrary
         global $_LANGID;
 
         $this->pageContent = $pageContent;
-        $this->langId = $_LANGID;
-
         $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
         // get the guestbook settings
         $this->getSettings();
     }
@@ -97,7 +94,7 @@ class Guestbook extends GuestbookLibrary
         /** start paging **/
         $query = "    SELECT         id
                     FROM         ".DBPREFIX."module_guestbook
-                    WHERE         ".($this->arrSettings['guestbook_only_lang_entries'] ? "lang_id='$this->langId' AND " : '')."status = 1";
+                    WHERE         ".($this->arrSettings['guestbook_only_lang_entries'] ? "lang_id='".FRONTEND_LANG_ID."' AND " : '')."status = 1";
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
         $paging = getPaging($count, $pos, "&amp;section=guestbook", "<b>".$_ARRAYLANG['TXT_GUESTBOOK_ENTRIES']."</b>", false);
@@ -117,7 +114,7 @@ class Guestbook extends GuestbookLibrary
                                 datetime,
                                 UNIX_TIMESTAMP(datetime) AS uTimestamp
                     FROM         ".DBPREFIX."module_guestbook
-                    WHERE         ".($this->arrSettings['guestbook_only_lang_entries'] ? "lang_id='$this->langId' AND " : '')."status = 1
+                    WHERE         ".($this->arrSettings['guestbook_only_lang_entries'] ? "lang_id='".FRONTEND_LANG_ID."' AND " : '')."status = 1
                     ORDER BY     id DESC";
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
 
@@ -281,7 +278,7 @@ class Guestbook extends GuestbookLibrary
                         '".addslashes($comment)."',
                         '".addslashes($_SERVER['REMOTE_ADDR'])."',
                         '".addslashes($location)."',
-                        ".$this->langId.")";
+                        ".FRONTEND_LANG_ID.")";
         $objDatabase->Execute($query);
 
         if ($this->arrSettings['guestbook_send_notification_email']== 1) {

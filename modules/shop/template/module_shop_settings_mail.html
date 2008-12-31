@@ -21,7 +21,7 @@ function delTpl(tplId)
 function sendMail()
 {
   if(document.getElementById('shopMailTo').value == ""){
-    alert("{TXT_PLEASE_SET_RECEIPTOR_ADDRESS}");
+    alert("{TXT_PLEASE_SET_RECIPIENT_ADDRESS}");
     return false;
   } else {
     if(document.shopFormSend.elements['shopMailFromAddress'].value == ""){
@@ -35,9 +35,11 @@ function sendMail()
 
 function loadTpl(tplId,langId,strTab)
 {
-  strUri = "index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&tplId="+tplId+"&langId="+langId+"&strTab="+strTab;
+  // URI with target language ID
+  strUri = "index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&tplId="+tplId+"&userFrontendLangId="+langId+"&strTab="+strTab;
   if(document.getElementById('portMail')){
     if(document.shopFormEdit.elements['portMail'].checked == true){
+      // The source language ID, currently displayed  
       strUri += "&portLangId="+document.shopFormEdit.elements['loadedLangId'].value;
     }
   }
@@ -370,7 +372,7 @@ function loadTpl(tplId,langId,strTab)
         </td>
       </tr>
       <tr class="row1">
-        <td>{TXT_RECEIPTOR_ADDRESS}</td>
+        <td>{TXT_RECIPIENT_ADDRESS}</td>
         <td>
           <input type="text" id="shopMailTo" name="shopMailTo" size="50" value="{SHOP_MAIL_TO}" />&nbsp;( {TXT_SEPARATED_WITH_COMMAS} )
         </td>

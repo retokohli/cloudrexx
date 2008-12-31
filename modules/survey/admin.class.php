@@ -42,13 +42,12 @@ class SurveyAdmin extends SurveyLibrary {
      */
     function __construct()
     {
-        global $objInit, $objTemplate, $_ARRAYLANG, $_CORELANG;
+        global $objInit, $objTemplate, $_CORELANG;
 
         SurveyLibrary::__construct();
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/survey/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/survey/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-        $this->_intLangId = $objInit->userFrontendLangId;
-
+        $this->_intLangId = FRONTEND_LANG_ID;
         $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="?cmd=survey">'.$_CORELANG['TXT_SURVEY_MENU_OVERVIEW'].'</a>
                                                             <a href="?cmd=survey&amp;act=add">'.$_CORELANG['TXT_SURVEY_MENU_ADD'].'</a>
                                                             <a href="?cmd=survey&amp;act=settings">'.$_CORELANG['TXT_SURVEY_MENU_SETTINGS'].'</a>
@@ -625,13 +624,10 @@ class SurveyAdmin extends SurveyLibrary {
 
         $intSurveyId = intval($intSurveyId);
         $intIndexId = $this->getSurveyArrayIndex($intSurveyId);
-        if ($intIndexId == -1) {
-            //Error!
-        }
+        //if ($intIndexId == -1) { //Error! }
 
         $this->_strPageTitle = $_CORELANG['TXT_SURVEY_MENU_ADD'];
         $this->_objTpl->loadTemplateFile('module_survey_modify.html',true,true);
-
         $this->_objTpl->setVariable(array(
             'TXT_TITLE_ADD_SURVEY'             =>    $_CORELANG['TXT_SURVEY_MENU_ADD'],
             'TXT_TITLE_TYPE'                =>    $_ARRAYLANG['TXT_SURVEY_TYPESELECTION'],

@@ -91,6 +91,8 @@ class pdfCreator
         $this->pdfFOOTER_RIGHT = strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($objResult->fields['footer_right']) : $objResult->fields['footer_right'];
         $this->pdfCATEGORIES = $objResult->fields['categories'];
 
+// TODO:  This property may not be accessed like so
+// Besides, it doesn't even exist anymore.
         $objInit->backendLangId = $this->pdfLANG_ID;
         $_ARRAYLANG = $objInit->loadLanguageData('shop');
 

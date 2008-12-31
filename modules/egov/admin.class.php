@@ -32,7 +32,7 @@ Changes to the database:
 
 UPDATE `contrexx_module_shop_payment_processors`
 SET `name` = 'yellowpay',
-    `description` = 'Yellowpay vereinfacht das Inkasso im Online-Shop. Ihre Kunden bezahlen die Einkäufe direkt mit dem Gelben Konto oder einer Kreditkarte. Ihr Plus: Mit den Zahlungsarten "PostFinance Debit Direct" und "PostFinance Yellownet" bieten Sie 2,4 Millionen Inhaberinnen und Inhabern eines Gelben Kontos eine kundenfreundliche und sichere Zahlungsmöglichkeit.'
+    `description` = 'Yellowpay vereinfacht das Inkasso im Online-Shop. Ihre Kunden bezahlen die Einkï¿½ufe direkt mit dem Gelben Konto oder einer Kreditkarte. Ihr Plus: Mit den Zahlungsarten "PostFinance Debit Direct" und "PostFinance Yellownet" bieten Sie 2,4 Millionen Inhaberinnen und Inhabern eines Gelben Kontos eine kundenfreundliche und sichere Zahlungsmï¿½glichkeit.'
 WHERE `contrexx_module_shop_payment_processors`.`id`=3;
 
 INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`)
@@ -120,10 +120,7 @@ class eGov extends eGovLibrary
 
         $this->objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/egov/template');
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
-        $this->langId=$objInit->userFrontendLangId;
-
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=egov'>".$_ARRAYLANG['TXT_ORDERS']."</a>
                                                         <a href='index.php?cmd=egov&amp;act=products'>".$_ARRAYLANG['TXT_PRODUCTS']."</a>
                                                         <a href='index.php?cmd=egov&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
@@ -1815,7 +1812,7 @@ class eGov extends eGovLibrary
 
             $FormValue4Mail .= html_entity_decode($name).': '.html_entity_decode($value)."\n";
         }
-        // Bestelleingang-Benachrichtigung || Mail für den Administrator
+        // Bestelleingang-Benachrichtigung || Mail fï¿½r den Administrator
         $recipient = eGovLibrary::GetProduktValue('product_target_email', $product_id);
         if (empty($recipient)) {
             $recipient = eGovLibrary::GetSettings('set_orderentry_recipient');

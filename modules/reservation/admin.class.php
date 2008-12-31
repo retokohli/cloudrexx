@@ -42,21 +42,14 @@ class reservationManager extends reservationLib
     {
         global $_ARRAYLANG, $objTemplate, $_FRONTEND_LANGID;
 
-        $objTemplate->setVariable("CONTENT_TITLE", $_ARRAYLANG['TXT_RESERVATION']);
-
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/reservation/template');
-
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
+        $objTemplate->setVariable("CONTENT_TITLE", $_ARRAYLANG['TXT_RESERVATION']);
         $objTemplate->setVariable("CONTENT_NAVIGATION","
             <a href='?cmd=reservation'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>
             <a href='?cmd=reservation&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
-
-         $this->showOnlyActive = false;
-
-        $this->langId = $_FRONTEND_LANGID;
+        $this->showOnlyActive = false;
         $this->setOptions();
-
         parent::__construct();
     }
 
@@ -127,8 +120,7 @@ class reservationManager extends reservationLib
         $days = array();
 
         $query = "SELECT id, day, unit, name, status, email, confirmed, phone FROM ".DBPREFIX."module_reservation
-                  WHERE status = '1' AND lang_id = '".$this->langId."' ORDER BY unit ASC";
-
+                  WHERE status = '1' AND lang_id = '".FRONTEND_LANG_ID."' ORDER BY unit ASC";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
             while (!$objResult->EOF) {
