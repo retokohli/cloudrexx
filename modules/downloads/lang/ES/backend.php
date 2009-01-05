@@ -136,6 +136,6 @@ $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_SUCCESS'] = "The order of the cate
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_FAILED'] = "The order of the category(-ies) <strong>%s</strong> couldn't be updated!";
 $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES_MULTI'] = "Do you want to delete the subcategories of the selected categories as well?";
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_DELETE_SUCCESS'] = "The categories have successfully been deleted.";
-$_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_DELETE_FAILED'] = "An error occurred while deleting the categories <strong>%s</strong>!";
+$_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_DELETE_FAILED'] = "An error occurred while deleting the category(-ies) <strong>%s</strong>!";
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETE_SUCCESS'] = "The category <strong>%s</strong> has successfully been deleted.";
 ?>
