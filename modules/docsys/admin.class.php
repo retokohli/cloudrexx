@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DocSys
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -27,11 +28,11 @@ require_once ASCMS_MODULE_PATH . '/docsys/lib/Library.class.php';
  */
 class docSysManager extends docSysLibrary
 {
-    var $_objTpl;
-    var $pageTitle;
-    var $pageContent;
-    var $strErrMessage = '';
-    var $strOkMessage = '';
+    public $_objTpl;
+    public $pageTitle;
+    public $pageContent;
+    public $strErrMessage = '';
+    public $strOkMessage = '';
 
     /**
     * Constructor
@@ -41,9 +42,9 @@ class docSysManager extends docSysLibrary
     */
     function __construct()
     {
-        global  $_ARRAYLANG, $objInit, $objTemplate;
+        global  $_ARRAYLANG, $objTemplate;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/docsys/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/docsys/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=docsys'>".$_ARRAYLANG['TXT_DOC_SYS_MENU_OVERVIEW']."</a>
                                                       <a href='?cmd=docsys&amp;act=add'>".$_ARRAYLANG['TXT_CREATE_DOCUMENT']."</a>
@@ -235,7 +236,7 @@ class docSysManager extends docSysLibrary
     */
     function add()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $objFWUser = FWUser::getFWUserObject();
         $this->_objTpl->loadTemplateFile('module_docsys_modify.html',true,true);
@@ -291,12 +292,9 @@ class docSysManager extends docSysLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $newsId = "";
         if (isset($_GET['id'])){
             $docSysId = intval($_GET['id']);
-
             $query = "DELETE FROM ".DBPREFIX."module_docsys WHERE id = $docSysId";
-
             if ($objDatabase->Execute($query)) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                 $this->createRSS();
@@ -304,7 +302,6 @@ class docSysManager extends docSysLibrary
                 $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
             }
         }
-
         if (is_array($_POST['selectedId'])) {
             foreach ($_POST['selectedId'] as $value) {
                 if (!empty($value)) {
@@ -320,11 +317,8 @@ class docSysManager extends docSysLibrary
     }
 
 
-
-
     /**
     * Edit the news
-    *
     * @global    ADONewConnection
     * @global    array
     * @param     string     $pageContent
@@ -336,10 +330,8 @@ class docSysManager extends docSysLibrary
         $status = "";
         $startDate = "";
         $endDate = "";
-
         $this->_objTpl->loadTemplateFile('module_docsys_modify.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_EDIT_DOCUMENTS'];
-
         $this->_objTpl->setVariable(array(
             'TXT_DOCSYS_MESSAGE'  => $_ARRAYLANG['TXT_EDIT_DOCUMENTS'],
             'TXT_TITLE'           => $_ARRAYLANG['TXT_TITLE'],
@@ -357,9 +349,7 @@ class docSysManager extends docSysLibrary
             'TXT_ACTIVE'=> $_ARRAYLANG['TXT_ACTIVE'],
             'TXT_AUTHOR' => $_ARRAYLANG['TXT_AUTHOR'],
         ));
-
         $id = intval($_REQUEST['id']);
-
         $query = "SELECT `catid`,
                            `lang`,
                            `date`,
@@ -377,7 +367,6 @@ class docSysManager extends docSysLibrary
                      WHERE id = '$id'
                      LIMIT 1";
         $objResult = $objDatabase->Execute($query);
-
         if (!$objResult->EOF) {
             $catId=$objResult->fields['catid'];
             $id = $objResult->fields['id'];
@@ -429,15 +418,13 @@ class docSysManager extends docSysLibrary
     */
     function update()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG;
 
         if (isset($_GET['id'])) {
             $objFWUser = FWUser::getFWUserObject();
-
             $id = intval($_GET['id']);
             $userId = $objFWUser->objUser->getId();
             $changelog = mktime();
-            $date = date(ASCMS_DATE_FORMAT);
             $title = get_magic_quotes_gpc() ? strip_tags($_POST['docSysTitle']) : addslashes(strip_tags($_POST['docSysTitle']));
             $text = get_magic_quotes_gpc() ? $_POST['docSysText'] : addslashes($_POST['docSysText']);
             $title= str_replace("ß","ss",$title);
@@ -451,7 +438,6 @@ class docSysManager extends docSysLibrary
             $startDate = get_magic_quotes_gpc() ? strip_tags($_POST['startDate']) : addslashes(strip_tags($_POST['startDate']));
             $endDate = get_magic_quotes_gpc() ? strip_tags($_POST['endDate']) : addslashes(strip_tags($_POST['endDate']));
             $author =  get_magic_quotes_gpc() ? strip_tags($_POST['author']) : addslashes(strip_tags($_POST['author']));
-
             $query = "UPDATE ".DBPREFIX."module_docsys
                            SET title='$title',
                                   date=".$this->_checkDate($_POST['creation_date']).",
@@ -468,23 +454,18 @@ class docSysManager extends docSysLibrary
                                enddate = '$endDate',
                                changelog = '$changelog'
                          WHERE id = '$id'";
-           if (!$objDatabase->Execute($query)) {
-                   $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
-           } else {
+            if (!$objDatabase->Execute($query)) {
+                $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+            } else {
                 $this->createRSS();
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
-           }
+            }
         }
     }
 
 
-
-
-
-
     /**
     * Update news
-    *
     * @global    ADONewConnection
     * @global    array
     * @global    array
@@ -493,7 +474,7 @@ class docSysManager extends docSysLibrary
     */
     function changeStatus()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG;
 
         if (isset($_POST['deactivate']) AND !empty($_POST['deactivate'])){
             $status = 0;
@@ -517,6 +498,7 @@ class docSysManager extends docSysLibrary
         }
     }
 
+
     /**
      * checks if date is valid
      *
@@ -525,17 +507,16 @@ class docSysManager extends docSysLibrary
      */
     function _checkDate($date)
     {
+        $arrDate = array();
         if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $date, $arrDate)) {
             return mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
-        } else {
-            return time();
         }
+        return time();
     }
 
 
     /**
     * Insert news
-    *
     * @global    ADONewConnection
     * @global    array
     * @return    boolean   result
@@ -545,65 +526,37 @@ class docSysManager extends docSysLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $objFWUser = FWUser::getFWUserObject();
-
         $date = $this->_checkDate($_POST['creation_date']);
         $title = get_magic_quotes_gpc() ? strip_tags($_POST['docSysTitle']) : addslashes(strip_tags($_POST['docSysTitle']));
         $author = get_magic_quotes_gpc() ? strip_tags($_POST['author']) : addslashes(strip_tags($_POST['author']));
         $text = get_magic_quotes_gpc() ? $_POST['docSysText'] : addslashes($_POST['docSysText']);
-
         $title = str_replace("ß","ss",$title);
         $text = str_replace("ß","ss",$text);
         $text = $this->filterBodyTag($text);
-
         $source = get_magic_quotes_gpc() ? strip_tags($_POST['docSysSource']) : addslashes(strip_tags($_POST['docSysSource']));
         $url1 = get_magic_quotes_gpc() ? strip_tags($_POST['docSysUrl1']) : addslashes(strip_tags($_POST['docSysUrl1']));
         $url2 = get_magic_quotes_gpc() ? strip_tags($_POST['docSysUrl2']) : addslashes(strip_tags($_POST['docSysUrl2']));
-
         $cat = intval($_POST['docSysCat']);
         $userid = $objFWUser->objUser->getId();
-
         $startDate = get_magic_quotes_gpc() ? strip_tags($_POST['startDate']) : addslashes(strip_tags($_POST['startDate']));
         $endDate = get_magic_quotes_gpc() ? strip_tags($_POST['endDate']) : addslashes(strip_tags($_POST['endDate']));
-
         $status = intval($_POST['status']);
         if ($status == 0) {
             $startDate = "";
             $endDate = "";
         }
-
-        $query = "INSERT INTO `".DBPREFIX."module_docsys`
-                                ( `id`,
-                                  `date`,
-                                  `title`,
-                                  `author`,
-                                  `text`,
-                                  `source`,
-                                  `url1`,
-                                  `url2`,
-                                  `catid`,
-                                  `lang`,
-                                  `startdate`,
-                                  `enddate`,
-                                  `status`,
-                                  `userid`,
-                                  `changelog` )
-                         VALUES ( '',
-                                  '$date',
-                                  '$title',
-                                  '$author',
-                                  '$text',
-                                  '$source',
-                                  '$url1',
-                                  '$url2',
-                                  '$cat',
-                                  '".FRONTEND_LANG_ID."',
-                                  '$startDate',
-                                  '$endDate',
-                                  '$status',
-                                  '$userid',
-                                  '$date')";
-
-
+        $query = "
+            INSERT INTO `".DBPREFIX."module_docsys` (
+                `date`, `title`, `author`,
+                `text`, `source`, `url1`, `url2`,
+                `catid`, `lang`, `startdate`, `enddate`,
+                `status`, `userid`, `changelog`
+            ) VALUES (
+                '$date', '$title', '$author',
+                '$text', '$source', '$url1', '$url2',
+                '$cat', '".FRONTEND_LANG_ID."', '$startDate', '$endDate',
+                '$status', '$userid', '$date'
+            )";
         if ($objDatabase->Execute($query)){
             $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
         } else {
@@ -613,10 +566,8 @@ class docSysManager extends docSysLibrary
     }
 
 
-
     /**
     * Add or edit the news categories
-    *
     * @global    ADONewConnection
     * @global    array
     * @param     string     $pageContent
@@ -627,7 +578,6 @@ class docSysManager extends docSysLibrary
 
         $this->_objTpl->loadTemplateFile('module_docsys_category.html',true,true);
         $this->pageTitle = $_ARRAYLANG['txtCategoryManager'];
-
         $this->_objTpl->setVariable(array(
             'TXT_ADD_NEW_CATEGORY'                       => $_ARRAYLANG['TXT_ADD_NEW_CATEGORY'],
             'TXT_NAME'                                   => $_ARRAYLANG['TXT_NAME'],
@@ -642,11 +592,9 @@ class docSysManager extends docSysLibrary
             'TXT_DOCSYS_SORTING'                          => $_ARRAYLANG['TXT_DOCSYS_SORTING'],
             'TXT_DOCSYS_SORTTYPE'                          => $_ARRAYLANG['TXT_DOCSYS_SORTTYPE'],
         ));
-
         $this->_objTpl->setGlobalVariable(array(
             'TXT_DELETE'    => $_ARRAYLANG['TXT_DELETE']
         ));
-
         // Add a new category
         if (isset($_POST['addCat']) AND ($_POST['addCat']==true)){
             $catName = get_magic_quotes_gpc() ? strip_tags($_POST['newCatName']) : addslashes(strip_tags($_POST['newCatName']));
@@ -661,15 +609,12 @@ class docSysManager extends docSysLibrary
                 $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
             }
         }
-
         // Modify a new category
         if (isset($_POST['modCat']) AND ($_POST['modCat']==true)) {
             foreach ($_POST['catName'] as $id => $name) {
                 $name = get_magic_quotes_gpc() ? strip_tags($name) : addslashes(strip_tags($name));
                 $id=intval($id);
-
                 $sorting = !empty($_REQUEST['sortStyle'][$id]) ? contrexx_addslashes($_REQUEST['sortStyle'][$id]) : 'alpha';
-
                 if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_docsys_categories
                                   SET name='$name',
                                       lang='".FRONTEND_LANG_ID."',
@@ -682,7 +627,6 @@ class docSysManager extends docSysLibrary
                 }
             }
         }
-
         $query = "SELECT `catid`,
                            `name`,
                            `sort_style`
@@ -690,10 +634,8 @@ class docSysManager extends docSysLibrary
                      WHERE `lang`='".FRONTEND_LANG_ID."'
                   ORDER BY `catid` asc";
         $objResult = $objDatabase->Execute($query);
-
         $this->_objTpl->setCurrentBlock('row');
         $i=0;
-
         while (!$objResult->EOF) {
             $class = (($i % 2) == 0) ? "row1" : "row2";
             $sorting = $objResult->fields['sort_style'];
@@ -710,21 +652,19 @@ class docSysManager extends docSysLibrary
     }
 
 
-
     /**
     * Delete the news categories
-    *
     * @global    ADONewConnection
     * @global    array
     * @param     string     $pageContent
     */
-    function deleteCat(){
+    function deleteCat()
+    {
         global $objDatabase,$_ARRAYLANG;
 
         if (isset($_GET['catId'])) {
             $catId=intval($_GET['catId']);
             $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_docsys WHERE catid=$catId");
-
             if (!$objResult->EOF) {
                  $this->strErrMessage = $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'];
             } else {
@@ -740,7 +680,6 @@ class docSysManager extends docSysLibrary
 
     /**
     * Gets only the body content and deleted all the other tags
-    *
     * @param     string     $fullContent      HTML-Content with more than BODY
     * @return    string     $content          HTML-Content between BODY-Tag
     */
@@ -772,7 +711,6 @@ class docSysManager extends docSysLibrary
 
     /**
     * Create the RSS-Feed
-    *
     */
     function createRSS()
     {
@@ -787,4 +725,5 @@ class docSysManager extends docSysLibrary
         $RSS->createXML();
     }
 }
+
 ?>

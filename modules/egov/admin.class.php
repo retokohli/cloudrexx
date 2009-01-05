@@ -1,4 +1,5 @@
 <?php
+
 /**
  * E-Government
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -92,7 +93,7 @@ class eGov extends eGovLibrary
 
     function __construct()
     {
-        global $_ARRAYLANG, $objTemplate, $objInit;
+        global $_ARRAYLANG, $objTemplate;
 
         if (_EGOV_DEBUG) {
             error_reporting(E_ALL);
@@ -232,7 +233,7 @@ class eGov extends eGovLibrary
 
     function _settings()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $this->objTemplate->loadTemplateFile('module_gov_settings.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
@@ -349,7 +350,7 @@ class eGov extends eGovLibrary
 
     function _product_edit()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $this->objTemplate->loadTemplateFile('module_gov_product_edit.html');
         if (intval($_REQUEST['id']) == 0) {
@@ -1121,8 +1122,6 @@ class eGov extends eGovLibrary
 
     function _getFormFieldRequiredCheckBox($name, $id, $type, $selected)
     {
-        global $_ARRAYLANG;
-
         switch ($type) {
             case 'hidden':
             case 'select':
@@ -1177,7 +1176,7 @@ class eGov extends eGovLibrary
      */
     function _saveForm()
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_CONFIG;
 
         if (empty($_REQUEST['saveForm'])) {
             return true;
@@ -1782,7 +1781,7 @@ class eGov extends eGovLibrary
      */
     function updateOrder($order_id)
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG;
 
         $product_id = eGov::getOrderValue('order_product', $order_id);
         if (empty($product_id)) {

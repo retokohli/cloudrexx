@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Navigation
 
@@ -25,23 +26,22 @@
  */
 class Navigation
 {
-    var $langId;
-    var $data = array();
-    var $table = array();
-    var $tree = array();
-    var $parents = array();
-    var $pageId;
-    var $styleNameActive = "active";
-    var $styleNameNormal = "inactive";
-    var $separator = " > ";
-    var $spacer = "&nbsp;";
-    var $levelInfo = "down";
-    var $subNavSign = "&nbsp;&raquo;";
-    var $subNavTag = '<ul id="menubuilder%s" class="menu">{SUB_MENU}</ul>';
-    var $_cssPrefix = "menu_level_";
-    var $_objTpl;
-    var $topLevelPageId;
-    var $_menuIndex = 0;
+    public $data = array();
+    public $table = array();
+    public $tree = array();
+    public $parents = array();
+    public $pageId;
+    public $styleNameActive = "active";
+    public $styleNameNormal = "inactive";
+    public $separator = " > ";
+    public $spacer = "&nbsp;";
+    public $levelInfo = "down";
+    public $subNavSign = "&nbsp;&raquo;";
+    public $subNavTag = '<ul id="menubuilder%s" class="menu">{SUB_MENU}</ul>';
+    public $_cssPrefix = "menu_level_";
+    public $_objTpl;
+    public $topLevelPageId;
+    public $_menuIndex = 0;
 
     /**
     * Constructor
@@ -66,6 +66,7 @@ class Navigation
     *
     * @global ADONewConnection
     * @access private
+    * @todo     See TODO in the code: "$id is not defined"
     */
     function _initialize()
     {
@@ -117,7 +118,7 @@ class Navigation
         $objResult = $objDatabase->Execute($query);
 
         //check for preview and if theme exists in database
-        $currentThemesId='';
+        $currentThemesId = '';
         if (isset($_GET['preview'])) {
             $objRS=$objDatabase->SelectLimit("SELECT id
                                         FROM ".DBPREFIX."skins
@@ -161,9 +162,15 @@ class Navigation
                 }
                 else {
                 $link = (!empty($s)) ? "?section=".$s.$cmd : "?page=".$objResult->fields['catid'].$section.$cmd;
-                    $menu_url = CONTREXX_SCRIPT_PATH
-                        .$link
-                        .(($currentThemesId && !strpos($this->data[$id]['url'],'preview')) ? '&amp;preview='.$currentThemesId : '');
+                    $menu_url =
+                        CONTREXX_SCRIPT_PATH.$link.
+                        (   $currentThemesId
+// TODO:  $id is not defined.  This condition is always false (I hope!)
+                        //&& !strpos($this->data[$id]['url'], 'preview')
+                         && false
+
+                            ? '&amp;preview='.$currentThemesId : ''
+                        );
                 }
 
 
@@ -234,7 +241,7 @@ class Navigation
     function _buildTree($parentId=0,$maxlevel=0,$level=0)
     {
         if (!empty($this->table[$parentId])) {
-            foreach($this->table[$parentId] AS $id => $data ){
+            foreach (array_keys($this->table[$parentId]) as $id) {
                 $this->tree[$id]=$level+1;
                 if ((isset($this->table[$id])) AND (($maxlevel>=$level+1) OR ($maxlevel==0))){
                   $this->_buildTree($id,$maxlevel,$level+1);
@@ -255,7 +262,7 @@ class Navigation
     */
     function getNavigation($templateContent,$boolShop=false)
     {
-        $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($templateContent);
 
@@ -297,9 +304,9 @@ class Navigation
         $htmlOutput = NULL;
         $navigationId[] = 0; // CSS styling ID's
 
-        $array_ids = array_keys( $this->tree );
+        $array_ids = array_keys($this->tree);
         // foreach($this->tree as $id => $level)
-        foreach( $array_ids as $key => $id ) {
+        foreach($array_ids as $key => $id) {
             $level = $this->tree[$id];
 
             if (!isset($navigationId[$level])) {
@@ -309,7 +316,7 @@ class Navigation
             $navigationId[$level]++;
 
             if (isset($array_ids[$key+1])) {
-                $nextlevel = ( isset( $this->tree[$array_ids[$key+1]] ) ) ? $this->tree[$array_ids[$key+1]] : 0;
+                $nextlevel = (isset($this->tree[$array_ids[$key+1]])) ? $this->tree[$array_ids[$key+1]] : 0;
             } else {
                 $nextlevel = 0;
             }
@@ -405,15 +412,16 @@ class Navigation
         $navigationBlock = "";
 
         // Checks which levels to use
+        $match = array();
         if (!preg_match('/levels_([1-9])([1-9\+]*)/', trim($this->_objTpl->_blocks['nested_navigation']), $match)) {
             $match[1] = 1;
             $match[2] = '+';
         }
 
-        $array_ids = array_keys( $this->tree );
+        $array_ids = array_keys($this->tree);
 
         // Make an array with visible items only
-        foreach($array_ids as $key => $id ) {
+        foreach($array_ids as $key => $id) {
             $level = $this->tree[$id];
             // Checks if the menu item is in the current tree
              if(in_array($this->parentId[$id], $this->parents)) {
@@ -427,8 +435,8 @@ class Navigation
         }
 
         // Build nested menu list
-        foreach( $array_visible_ids as $key => $id ) {
-
+        $navigationId = array();
+        foreach($array_visible_ids as $key => $id) {
             $level = $this->tree[$id];
             $nextLevel = $this->tree[$array_visible_ids[$key+1]];
 
@@ -476,6 +484,7 @@ class Navigation
             // Return nested menu
             return "<ul id='".$this->_cssPrefix.$match[1]."'>\n".$navigationBlock."</ul>";
         }
+        return '';
     }
 
 
@@ -494,13 +503,13 @@ class Navigation
         $navigation = "";
         $tmpNavigation = "";
         $mainCat = 1;
+        $navigationId = array();
         foreach ($arrPage as $page) {
             // prevent undefined variable notice
             if (!isset($navigationId[$level])) {
                 $navigationId[$level] = 0;
             }
-            $navigationId[$level]++;
-
+            ++$navigationId[$level];
             // page has childs
             if (is_array($page)) {
                 // get page id
@@ -510,8 +519,8 @@ class Navigation
                 $subNavigation = $this->_buildDropDownNavigation($page[$id], $level + 1);
                 if (!empty($subNavigation)) {
                     $subNavigation = str_replace("{SUB_MENU}", $subNavigation, sprintf($this->subNavTag, $this->_menuIndex++)); //sprintf for js dropdown unique ID
-                    if (($this->_objTpl->blockExists('level_all') || $this->_objTpl->blockExists('level_'.($level+1))) && !$mainPage ) {
-                        if (!empty($subNavigation) && ($id != $this->parentId[$this->pageId] )) { //)$this->data[$id]['status'] == 'on') {
+                    if (($this->_objTpl->blockExists('level_all') || $this->_objTpl->blockExists('level_'.($level+1))) && !$mainPage) {
+                        if (!empty($subNavigation) && ($id != $this->parentId[$this->pageId])) { //)$this->data[$id]['status'] == 'on') {
                             $this->data[$id]['catname'] .= $this->subNavSign;
                         }
                     }
@@ -578,13 +587,11 @@ class Navigation
 
     /**
     * Get trail
-    *
-    * @param     integer  $currentid
-    * @return    integer  $allparents
+    * @return    string
     */
-    function getTrail($catname='')
+    function getTrail()
     {
-        $return ="";
+        $return = '';
         $parentId = $this->parentId[$this->pageId];
         while ($parentId!=0) {
             if (!empty($this->data[$parentId])) {
@@ -595,7 +602,7 @@ class Navigation
                 if ($n == "") $this->separator = "";
                 $u = $this->data[$parentId]['url'];
                 $trail = "<a href=\"".$u."\" title=\"".htmlentities($n, ENT_QUOTES, CONTREXX_CHARSET)."\">".htmlentities($n, ENT_QUOTES, CONTREXX_CHARSET)."</a>".$this->separator;
-                $return=$trail.$return;
+                $return = $trail.$return;
                 $parentId = $this->parentId[$parentId];
             }  else {
                 $parentId = 0;
@@ -605,42 +612,48 @@ class Navigation
     }
 
 
-
     /**
     * getFrontendLangNavigation()
-    *
     * @param string   language navigation
     * @access public
     */
-
     function getFrontendLangNavigation()
     {
-          global $objInit;
-          $this->arrLang = $objInit->getLanguageArray();
+        global $objInit;
+
+        $this->arrLang = $objInit->getLanguageArray();
         $langNavigation = "";
-          if(count($this->arrLang)>1) {
-                foreach($this->arrLang as $id=>$value) {
-                    if($this->arrLang[$id]['frontend']==1) {
+        if(count($this->arrLang)>1) {
+            foreach($this->arrLang as $id=>$value) {
+                if($this->arrLang[$id]['frontend']==1) {
 	  	  		    $langNavigation .= " [ <a href='?setLang=".$id."' title='".$value['name']."' >".$value['name']."</a> ] ";
-                    }
                 }
-          }
+            }
+        }
         return $langNavigation;
     }
 
 
-    static function mkurl($absolute_local_path) {
+    static function mkurl($absolute_local_path)
+    {
         global $_CONFIG;
-        return "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80
-            ? ""
-            : ":".intval($_SERVER['SERVER_PORT'])
-        ).ASCMS_PATH_OFFSET.$absolute_local_path;
+
+        return
+            "http://".$_CONFIG['domainUrl'].
+            ($_SERVER['SERVER_PORT'] == 80
+                ? ""
+                : ":".intval($_SERVER['SERVER_PORT'])).
+            ASCMS_PATH_OFFSET.$absolute_local_path;
     }
 
-    function _debug($obj){
+
+    function _debug($obj)
+    {
           echo "<pre>";
           print_r($obj);
           echo "</pre>";
     }
+
 }
+
 ?>

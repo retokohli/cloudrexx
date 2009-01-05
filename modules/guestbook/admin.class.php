@@ -32,7 +32,6 @@ class GuestbookManager extends GuestbookLibrary
     var $strErrMessage = '';
     var $strOkMessage = '';
     var $imagePath;
-    var $langId;
     var $arrSettings = array();
 
 

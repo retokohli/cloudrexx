@@ -40,16 +40,16 @@ if(ini_get('allow_url_fopen') != 1){
  * @subpackage  module_feed
  */
 class feed extends feedLibrary{
-    var $_objTpl;
-    var $pageTitle;
-    var $statusMessage;
-    var $feedpath;
+    public $_objTpl;
+    public $pageTitle;
+    public $statusMessage;
+    public $feedpath;
 
     // CONSTRUCTOR
-    function __construct($pageContent) {
-        global  $_ARRAYLANG;
+    function __construct($pageContent)
+    {
         $this->pageContent = $pageContent;
-        $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
 
@@ -139,19 +139,19 @@ class feed extends feedLibrary{
 
 
     function showNews() {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         //feed path
         $this->feedpath = ASCMS_FEED_PATH . '/';
 
-        //active (with $_LANGID) categories
+        //active (with FRONTEND_LANG_ID) categories
         $query = "SELECT id,
                            name
                       FROM ".DBPREFIX."module_feed_category
                      WHERE status = '1'
-                       AND lang = '".$_LANGID."'
+                       AND lang = '".FRONTEND_LANG_ID."'
                   ORDER BY pos";
         if(($objResult = $objDatabase->Execute($query)))
 

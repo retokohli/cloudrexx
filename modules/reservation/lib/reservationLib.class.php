@@ -16,7 +16,6 @@
 class reservationLib
 {
     var $options;
-    var $langId;
 
     /**
      * Constructor

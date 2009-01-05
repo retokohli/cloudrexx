@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Teasers
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -28,32 +29,24 @@ require_once ASCMS_CORE_MODULE_PATH . '/news/lib/newsLib.class.php';
  */
 class Teasers extends newsLibrary
 {
-    var $_pageTitle;
-    var $_objTpl;
-    var $administrate;
-    var $arrTeaserTemplates = array();
-    var $arrTeaserFrameTemplates = array();
+    public $_pageTitle;
+    public $_objTpl;
+    public $administrate;
+    public $arrTeaserTemplates = array();
+    public $arrTeaserFrameTemplates = array();
 
-    var $arrTeaserFrames;
-    var $arrTeaserFrameNames;
-    var $arrTeasers;
+    public $arrTeaserFrames;
+    public $arrTeaserFrameNames;
+    public $arrTeasers;
 
-    var $arrFrameTeaserIds;
+    public $arrFrameTeaserIds;
 
-    var $arrNewsTeasers = array();
-    var $arrNewsCategories = array();
+    public $arrNewsTeasers = array();
+    public $arrNewsCategories = array();
 
-    var $_currentXMLElementId;
-    var $_currentXMLElement;
-    var $_currentXMLArrayToFill;
-
-    /**
-    * constructor
-    */
-    function Teasers($administrate = false)
-    {
-        $this->__construct($administrate);
-    }
+    public $_currentXMLElementId;
+    public $_currentXMLElement;
+    public $_currentXMLArrayToFill;
 
     /**
     * PHP5 constructor
@@ -61,35 +54,27 @@ class Teasers extends newsLibrary
     * @global HTML_Template_Sigma
     * @see HTML_Template_Sigma::setErrorHandling, HTML_Template_Sigma::setVariable, initialize()
     */
-    function __construct($administrate = false)
+    function __construct($administrate=false)
     {
-        global $objTemplate;
-
         $this->administrate = $administrate;
-
-        $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
         $this->_initialize();
-
     }
-
 
 
     function _initialize()
     {
         $this->initializeTeasers();
         $this->initializeTeaserFrames();
-
         //$this->_initializeTeaserTemplates();
         $this->initializeTeaserFrameTemplates();
     }
 
 
-
     function initializeTeasers()
     {
-        global $objDatabase, $objInit, $_LANGID, $_CORELANG;
+        global $objDatabase, $_CORELANG;
 
         $this->arrTeasers = array();
         $objResult = $objDatabase->Execute("
@@ -169,7 +154,7 @@ class Teasers extends newsLibrary
 
     function initializeTeaserFrames($id = 0)
     {
-        global $objDatabase, $objInit;
+        global $objDatabase;
 
         $this->arrTeaserFrames = array();
         $this->arrTeaserFrameNames = array();
@@ -239,8 +224,6 @@ class Teasers extends newsLibrary
 
     function setTeaserFrames($arrTeaserFrames, &$code)
     {
-        global $objDatabase;
-
         $arrTeaserFramesNames = array_flip($this->arrTeaserFrameNames);
         foreach ($arrTeaserFrames as $teaserFrameName) {
             $arrMatches = preg_grep('/^'.$teaserFrameName.'$/i', $arrTeaserFramesNames);
@@ -268,6 +251,8 @@ class Teasers extends newsLibrary
 
         if (isset($this->arrTeaserFrameTemplates[$templateId]['html'])) {
             $teaserFrame = $this->arrTeaserFrameTemplates[$templateId]['html'];
+            $arrTeaserBlocks = array();
+            $arrMatch = array();
             if (preg_match_all('/<!-- BEGIN (teaser_[0-9]+) -->/ms', $teaserFrame, $arrTeaserBlocks)) {
 				$funcSort = create_function('$a, $b', '{$aNr = preg_replace("/^[^_]+_/", "", $a);$bNr = preg_replace("/^[^_]+_/", "", $b);if ($aNr == $bNr) {return 0;} return ($aNr < $bNr) ? -1 : 1;}');
 				usort($arrTeaserBlocks[0], $funcSort);
@@ -331,7 +316,7 @@ class Teasers extends newsLibrary
     }
 
 
-    function getTeaserFrameTemplateMenu($selectedId, $attributeStr = '')
+    function getTeaserFrameTemplateMenu($selectedId)
     {
         $menu = "";
         foreach ($this->arrTeaserFrameTemplates as $teaserFrameTemplateId => $teaserFrameTemplate) {
@@ -364,7 +349,7 @@ class Teasers extends newsLibrary
 
     function addTeaserFrame($id, $templateId, $name)
     {
-        global $objDatabase, $objInit;
+        global $objDatabase;
 
         if ($objDatabase->Execute("
             INSERT INTO ".DBPREFIX."module_news_teaser_frame (

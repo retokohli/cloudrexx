@@ -1,4 +1,5 @@
 <?php
+
 /**
  * News manager
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -24,17 +25,17 @@ require_once ASCMS_CORE_MODULE_PATH . '/news/lib/newsLib.class.php';
  * @package     contrexx
  * @subpackage  core_module_news
  */
-class newsManager extends newsLibrary {
-    var $_objTpl;
-    var $pageTitle;
-    var $pageContent;
-    var $strOkMessage;
-    var $strErrMessage;
-    var $_selectedLang;
-    var $langId;
-    var $arrSettings = array();
-    var $_defaultTickerFileName = 'newsticker.txt';
-    var $_arrCharsets = array(
+class newsManager extends newsLibrary
+{
+    public $_objTpl;
+    public $pageTitle;
+    public $pageContent;
+    public $strOkMessage;
+    public $strErrMessage;
+    public $_selectedLang;
+    public $arrSettings = array();
+    public $_defaultTickerFileName = 'newsticker.txt';
+    public $_arrCharsets = array(
         // European languages
         /*'ASCII',*/
         'ISO-8859-1',
@@ -147,17 +148,7 @@ class newsManager extends newsLibrary {
     * @access private
     * @var object
     */
-    var $_objTeaser;
-
-    /**
-    * PHP4 Constructor
-    *
-    * @access public
-    */
-    function newsManager()
-    {
-        $this->__construct();
-    }
+    public $_objTeaser;
 
     /**
     * PHP5 Constructor
@@ -166,9 +157,9 @@ class newsManager extends newsLibrary {
     */
     function __construct()
     {
-        global  $_ARRAYLANG, $objInit, $objTemplate, $_CONFIG;
+        global  $_ARRAYLANG, $objTemplate, $_CONFIG;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/news/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/news/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_saveSettings();
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=news'>".$_ARRAYLANG['TXT_NEWS_MANAGER']."</a>
@@ -505,9 +496,8 @@ class newsManager extends newsLibrary {
                 }
             }
         }
+        return true;
     }
-
-
 
 
     /**
@@ -525,9 +515,10 @@ class newsManager extends newsLibrary {
             return $this->manageCategories();
         }
 
-        $objValidator = &new FWValidator();
+        $objValidator = new FWValidator();
         $objFWUser = FWUser::getFWUserObject();
 
+        $arrDate = array();
         if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['newsDate'], $arrDate)) {
             $date = mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
         } else {
@@ -599,20 +590,19 @@ class newsManager extends newsLibrary {
             }
         }
 
-
         $this->_objTpl->loadTemplateFile('module_news_modify.html');
         $this->pageTitle = $_ARRAYLANG['TXT_CREATE_NEWS'];
 
         require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
-        $objTeaser = &new Teasers(true);
+        $objTeaser = new Teasers(true);
 
         $frameIds = "";
         foreach ($objTeaser->arrTeaserFrameNames as $frameName => $frameId) {
             if (in_array($frameId, $arrNewsTeaserFrames)) {
                 $associatedFrameIds .= "<option value=\"".$frameId."\">".$frameName."</option>\n";
             } else {
-            $frameIds .= "<option value=\"".$frameId."\">".$frameName."</option>\n";
-        }
+                $frameIds .= "<option value=\"".$frameId."\">".$frameName."</option>\n";
+            }
         }
 
         $this->_objTpl->setVariable(array(
@@ -689,7 +679,9 @@ class newsManager extends newsLibrary {
             $this->_objTpl->hideBlock('newsTeaserOptions');
             $this->_objTpl->setVariable('NEWS_HEADLINES_TEASERS_TXT', $_ARRAYLANG['TXT_HEADLINES']);
         }
-        }
+        return '';
+    }
+
 
     /**
     * Deletes a news entry
@@ -698,7 +690,8 @@ class newsManager extends newsLibrary {
     * @global    array
     * @return    -
     */
-    function delete(){
+    function delete()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $newsId = "";
@@ -849,7 +842,7 @@ class newsManager extends newsLibrary {
             }
 
             require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
-            $objTeaser = &new Teasers(true);
+            $objTeaser = new Teasers(true);
 
             $frameIds = "";
             $associatedFrameIds = "";
@@ -913,20 +906,20 @@ class newsManager extends newsLibrary {
         $this->_objTpl->setVariable("NEWS_FORM_ACTION","update");
         $this->_objTpl->setVariable("NEWS_STORED_FORM_ACTION","update");
         $this->_objTpl->setVariable("NEWS_TOP_TITLE",$_ARRAYLANG['TXT_EDIT_NEWS_CONTENT']);
+        return true;
     }
-
 
 
     /**
     * Update news
-    *
     * @global    ADONewConnection
     * @global    array
     * @global    array
     * @param     integer   $newsid
     * @return    boolean   result
     */
-    function update(){
+    function update()
+    {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         if (!count($this->getCategories())) {
@@ -934,13 +927,14 @@ class newsManager extends newsLibrary {
         }
 
         if (isset($_GET['newsId'])) {
-            $objValidator = &new FWValidator();
+            $objValidator = new FWValidator();
             $objFWUser = FWUser::getFWUserObject();
 
             $id = intval($_GET['newsId']);
             $userId = $objFWUser->objUser->getId();
             $changelog = mktime();
 
+            $arrDate = array();
             if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['newsDate'], $arrDate)) {
                 $date = mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
             } else {
@@ -1005,19 +999,21 @@ class newsManager extends newsLibrary {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
            }
         }
+        return true;
     }
+
 
     /**
     * Change status of multiple messages
-    *
     * @global    ADONewConnection
     * @global    array
     * @global    array
     * @param     integer   $newsid
     * @return    boolean   result
     */
-    function changeStatus(){
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+    function changeStatus()
+    {
+        global $objDatabase, $_ARRAYLANG;
 
         if(isset($_POST['deactivate']) AND !empty($_POST['deactivate'])){
             $status = 0;
@@ -1039,28 +1035,26 @@ class newsManager extends newsLibrary {
                 }
             }
         }
-
         if (isset($_POST['validate']) && isset($_POST['selectedUnvalidatedNewsId']) && is_array($_POST['selectedUnvalidatedNewsId'])) {
             foreach ($_POST['selectedUnvalidatedNewsId'] as $value) {
                 $objDatabase->Execute("UPDATE ".DBPREFIX."module_news SET status=1, validated='1' WHERE id=".intval($value));
             }
         }
-
         $this->createRSS();
     }
 
+
     /**
      * Invert status of a single message
-     *
      * @global  ADONewConnection
      * @global  array
      * @param   integer     $intNewsId
      */
-    function invertStatus($intNewsId) {
+    function invertStatus($intNewsId)
+    {
         global $objDatabase,$_ARRAYLANG;
 
         $intNewsId = intval($intNewsId);
-
         if ($intNewsId != 0) {
             $objResult = $objDatabase->Execute('SELECT  status
                                                 FROM    '.DBPREFIX.'module_news
@@ -1075,17 +1069,15 @@ class newsManager extends newsLibrary {
                                         WHERE   id='.$intNewsId.'
                                         LIMIT   1
                                     ');
-
                 $this->createRSS();
-
-                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+                $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             }
         }
     }
 
+
     /**
     * Add or edit the news categories
-    *
     * @global    ADONewConnection
     * @global    array
     * @param     string     $pageContent
@@ -1096,7 +1088,6 @@ class newsManager extends newsLibrary {
 
         $this->_objTpl->loadTemplateFile('module_news_category.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_CATEGORY_MANAGER'];
-
         $this->_objTpl->setVariable(array(
             'TXT_ADD_NEW_CATEGORY'                       => $_ARRAYLANG['TXT_ADD_NEW_CATEGORY'],
             'TXT_NAME'                                   => $_ARRAYLANG['TXT_NAME'],
@@ -1109,13 +1100,10 @@ class newsManager extends newsLibrary {
             'TXT_ACTION_IS_IRREVERSIBLE'                 => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
             'TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK' => $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK']
         ));
-
         $this->_objTpl->setGlobalVariable(array('TXT_DELETE' => $_ARRAYLANG['TXT_DELETE']));
-
         // Add a new category
         if (isset($_POST['addCat']) AND ($_POST['addCat']==true)){
              $catName=contrexx_strip_tags($_POST['newCategorieName']);
-
              if($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_categories (name,lang)
                                  VALUES ('$catName','".FRONTEND_LANG_ID."')") !== false) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
@@ -1124,7 +1112,6 @@ class newsManager extends newsLibrary {
              }
 
         }
-
         // Modify a new category
         if (isset($_POST['modCat']) AND ($_POST['modCat']==true)){
             foreach ($_POST['newsCatName'] as $id => $name) {
@@ -1138,7 +1125,6 @@ class newsManager extends newsLibrary {
                 }
             }
         }
-
         $objResult = $objDatabase->Execute("SELECT catid,
                            name,
                            lang
@@ -1148,7 +1134,6 @@ class newsManager extends newsLibrary {
 
         $this->_objTpl->setCurrentBlock('newsRow');
         $i=0;
-
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $cssStyle = (($i % 2) == 0) ? "row1" : "row2";
@@ -1165,12 +1150,8 @@ class newsManager extends newsLibrary {
     }
 
 
-
-
-
     /**
     * Delete the news categories
-    *
     * @global    ADONewConnection
     * @global    array
     * @param     string     $pageContent
@@ -1198,39 +1179,30 @@ class newsManager extends newsLibrary {
     }
 
 
-
-
-
-
     /**
     * Create the RSS-Feed
-    *
     */
-    function createRSS(){
-        global $_CONFIG, $objDatabase, $_FRONTEND_LANGID, $objLanguage;
+    function createRSS()
+    {
+        global $_CONFIG, $objDatabase, $objLanguage;
 
         require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
-
         if (intval($this->arrSettings['news_feed_status']) == 1) {
             $arrNews = array();
             $objRSSWriter = new RSSWriter();
-
             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
             $objRSSWriter->channelTitle = $this->arrSettings['news_feed_title'];
-            $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news';
+            $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news';
             $objRSSWriter->channelDescription = $this->arrSettings['news_feed_description'];
-            $objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang');
+            $objRSSWriter->channelLanguage = $objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang');
             $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
-
             if (!empty($this->arrSettings['news_feed_image'])) {
                 $objRSSWriter->channelImageUrl = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).$this->arrSettings['news_feed_image'];
                 $objRSSWriter->channelImageTitle = $objRSSWriter->channelTitle;
                 $objRSSWriter->channelImageLink = $objRSSWriter->channelLink;
             }
             $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
-
-            $itemLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;cmd=details&amp;newsid=';
-
+            $itemLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;cmd=details&amp;newsid=';
             $query = "
                 SELECT      tblNews.id,
                             tblNews.date,
@@ -1246,11 +1218,10 @@ class newsManager extends newsLibrary {
                 INNER JOIN  ".DBPREFIX."module_news_categories AS tblCategory
                 USING       (catid)
                 WHERE       tblNews.status=1
-                    AND     tblNews.lang = ".$_FRONTEND_LANGID."
+                    AND     tblNews.lang = ".FRONTEND_LANG_ID."
                     AND     (tblNews.startdate <= CURDATE() OR tblNews.startdate = '0000-00-00')
                     AND     (tblNews.enddate >= CURDATE() OR tblNews.enddate = '0000-00-00')
                             ORDER BY tblNews.date DESC";
-
             if (($objResult = $objDatabase->SelectLimit($query, 20)) !== false && $objResult->RecordCount() > 0) {
                 while (!$objResult->EOF) {
                     if (empty($objRSSWriter->channelLastBuildDate)) {
@@ -1269,16 +1240,15 @@ class newsManager extends newsLibrary {
                     $objResult->MoveNext();
                 }
             }
-
             // create rss feed
-            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml';
+            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang').'.xml';
             foreach ($arrNews as $newsId => $arrNewsItem) {
                 $objRSSWriter->addItem(
                     htmlspecialchars($arrNewsItem['title'], ENT_QUOTES, CONTREXX_CHARSET),
                     (empty($arrNewsItem['redirect'])) ? ($itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : '')) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
                     htmlspecialchars($arrNewsItem['text'], ENT_QUOTES, CONTREXX_CHARSET),
                     '',
-                    array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
+                    array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
                     '',
                     '',
                     '',
@@ -1286,30 +1256,27 @@ class newsManager extends newsLibrary {
                     array('url' => htmlspecialchars($arrNewsItem['source'], ENT_QUOTES, CONTREXX_CHARSET), 'title' => htmlspecialchars($arrNewsItem['title'], ENT_QUOTES, CONTREXX_CHARSET))
                 );
             }
-            $status = $objRSSWriter->write();
-
+            $objRSSWriter->write();
             // create headlines rss feed
             $objRSSWriter->removeItems();
-            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_headlines_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml';
+            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_headlines_'.$objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang').'.xml';
             foreach ($arrNews as $newsId => $arrNewsItem) {
                 $objRSSWriter->addItem(
                     htmlspecialchars($arrNewsItem['title'], ENT_QUOTES, CONTREXX_CHARSET),
                     $itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? "&amp;teaserId=".$arrNewsItem['teaser_frames'][0] : ""),
                     '',
                     '',
-                    array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
+                    array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
                     '',
                     '',
                     '',
                     $arrNewsItem['date']
                 );
             }
-            $statusHeadlines = $objRSSWriter->write();
-
-            $objRSSWriter->feedType = 'js';
-            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.js';
             $objRSSWriter->write();
-
+            $objRSSWriter->feedType = 'js';
+            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang').'.js';
+            $objRSSWriter->write();
             if (count($objRSSWriter->arrErrorMsg) > 0) {
                 $this->strErrMessage .= implode('<br />', $objRSSWriter->arrErrorMsg);
             }
@@ -1317,9 +1284,9 @@ class newsManager extends newsLibrary {
                 $this->strErrMessage .= implode('<br />', $objRSSWriter->arrWarningMsg);
             }
         } else {
-            @unlink(ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml');
-            @unlink(ASCMS_FEED_PATH.'/news_headlines_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml');
-            @unlink(ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'.js');
+            @unlink(ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang').'.xml');
+            @unlink(ASCMS_FEED_PATH.'/news_headlines_'.$objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang').'.xml');
+            @unlink(ASCMS_FEED_PATH.'/news_'.$objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang').'.js');
         }
     }
 
@@ -1328,7 +1295,6 @@ class newsManager extends newsLibrary {
     * Save settings
     *
     * Save the news settings
-    *
     * @access private
     * @global ADONewConnection
     * @global array
@@ -1344,53 +1310,45 @@ class newsManager extends newsLibrary {
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
                               SET value='".contrexx_strip_tags($_POST['newsFeedTitle'])."'
                             WHERE name = 'news_feed_title'");
-
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
                               SET value='".intval($_POST['newsFeedStatus'])."'
                             WHERE name = 'news_feed_status'");
-
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
                               SET value='".contrexx_strip_tags($_POST['newsFeedDescription'])."'
                             WHERE name = 'news_feed_description'");
-
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
                               SET value='".contrexx_addslashes($_POST['newsFeedImage'])."'
                             WHERE name='news_feed_image'");
-
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
                               SET value='".intval($_POST['headlinesLimit'])."'
                             WHERE name = 'news_headlines_limit'");
-
             // Notify-user. 0 = disabled.
             $this->_store_settings_item('news_notify_user', intval($_POST['newsNotifySelectedUser']));
             // Notify-Group. 0 = disabled.
             $this->_store_settings_item('news_notify_group', intval($_POST['newsNotifySelectedGroup']));
-
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='1' WHERE name = 'news_settings_activated'");
-
             $submitNews = isset($_POST['newsSubmitNews']) ? intval($_POST['newsSubmitNews']) : 0;
             $submitNewsCommunity = isset($_POST['newsSubmitOnlyCommunity']) ? intval($_POST['newsSubmitOnlyCommunity']) : 0;
             $activateSubmittedNews = isset($_POST['newsActivateSubmittedNews']) ? intval($_POST['newsActivateSubmittedNews']) : 0;
-
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$submitNews."' WHERE name='news_submit_news'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$submitNewsCommunity."' WHERE name='news_submit_only_community'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$activateSubmittedNews."' WHERE name='news_activate_submitted_news'");
-
             $_CONFIG['newsTeasersStatus'] = isset($_POST['newsUseTeasers']) ? intval($_POST['newsUseTeasers']) : 0;
             $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".$_CONFIG['newsTeasersStatus']."' WHERE setname='newsTeasersStatus'");
-
             $this->strOkMessage = $_ARRAYLANG['TXT_NEWS_SETTINGS_SAVED'];
             $this->getSettings();
             $this->createRSS();
-
             require_once(ASCMS_CORE_PATH.'/settings.class.php');
-            $objSettings = &new settingsManager();
+            $objSettings = new settingsManager();
             $objSettings->writeSettingsFile();
         }
     }
 
-    function _store_settings_item($name_in_db, $value) {
+
+    function _store_settings_item($name_in_db, $value)
+    {
         global $objDatabase;
+
         $objDatabase->Execute("
             UPDATE ".DBPREFIX."module_news_settings
             SET    value = '$value'
@@ -1408,18 +1366,18 @@ class newsManager extends newsLibrary {
         }
     }
 
-    function settings(){
+
+    function settings()
+    {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $this->pageTitle = $_ARRAYLANG['TXT_NEWS_SETTINGS'];
         $this->_objTpl->loadTemplateFile('module_news_settings.html',true,true);
-
         // Show settings
         $objResult = $objDatabase->Execute("SELECT lang FROM ".DBPREFIX."languages WHERE id='".FRONTEND_LANG_ID."'");
         if ($objResult !== false) {
             $newsFeedPath =  "http://".$_SERVER['SERVER_NAME'].ASCMS_FEED_WEB_PATH."/news_headlines_".$objResult->fields['lang'].".xml";
         }
-
         if (intval($this->arrSettings['news_feed_status'])==1) {
             $status = "checked='checked'";
             $icon = "<a href='".$newsFeedPath."' target='_blank' title='".$newsFeedPath."'><img src='".ASCMS_CORE_MODULE_WEB_PATH."/news/images/rss.gif' border='0' alt='".$newsFeedPath."' /></a>";
@@ -1427,7 +1385,6 @@ class newsManager extends newsLibrary {
             $status ="";
             $icon ="";
         }
-
         $this->_objTpl->setVariable(array(
             'NEWS_FEED_TITLE'                       => stripslashes($this->arrSettings['news_feed_title']),
             'NEWS_FEED_STATUS'                      => $status,
@@ -1463,20 +1420,27 @@ class newsManager extends newsLibrary {
             'NEWS_NOTIFY_USER_LIST'                 => $this->_generate_notify_user_list()
         ));
     }
-    function _generate_notify_group_list() {
+
+
+    function _generate_notify_group_list()
+    {
         $active_grp = $this->arrSettings['news_notify_group'];
         if (!empty($_POST['newsNotifySelectedGroup'])) {
             $active_grp = intval($_POST['newsNotifySelectedGroup']);
         }
         return $this->_generate_notify_list('group', $active_grp);
     }
-    function _generate_notify_user_list() {
+
+
+    function _generate_notify_user_list()
+    {
         $active_user= $this->arrSettings['news_notify_user'];
         if (!empty($_POST['newsNotifySelectedUser'])) {
             $active_user = intval($_POST['newsNotifySelectedUser']);
         }
         return $this->_generate_notify_list('user', $active_user);
     }
+
 
     /**
      * Generates a list of <option> lines, including a "disable" entry on top of the list.
@@ -1486,57 +1450,52 @@ class newsManager extends newsLibrary {
      * @param table     The table from where to select data. without pefix!
      * @param active_id The id which should be pre-selected.
      */
-    function _generate_notify_list($type, $active_id) {
-        global $_ARRAYLANG, $objDatabase;
-        $res = array();
+    function _generate_notify_list($type, $active_id)
+    {
+        global $_ARRAYLANG;
 
+        $res = array();
         $none_selected = $active_id == 0 ? 'selected' : '';
         $res[] = "<option value=\"0\" $none_selected>(".$_ARRAYLANG['TXT_DEACTIVATE'].")</option>";
-
         $objFWUser = FWUser::getFWUserObject();
         if ($type == 'user') {
             $objData = $objFWUser->objUser->getUsers(null, null, array('username' => 'desc'), array('id', 'username', 'firstname', 'lastname'));
         } else {
             $objData = $objFWUser->objGroup->getGroups(null, array('group_name' => 'desc'), array('group_id', 'group_name', 'group_description'));
         }
-
         while (!$objData->EOF) {
             $id       = $objData->getId();
             $name     = $type == 'user' ? "{$objData->getUsername()} ({$objData->getProfileAttribute('firstname')} {$objData->getProfileAttribute('lastname')})" : "{$objData->getName()} ({$objData->getDescription()})";
             $selected = $id == $active_id ? 'selected' : '';
-
             $res[] = "<option value=\"$id\" $selected>$name</option>";
             $objData->next();
         }
-
         return join("\n\t", $res);
     }
+
 
     function _ticker()
     {
         global $_ARRAYLANG;
 
         $this->_objTpl->loadTemplatefile('module_news_ticker.html');
-
         $this->_objTpl->setVariable(array(
             'TXT_NEWS_OVERVIEW'         => $_ARRAYLANG['TXT_NEWS_OVERVIEW'],
             'TXT_NEWS_CREATE_TICKER'    => $_ARRAYLANG['TXT_NEWS_CREATE_TICKER']
         ));
-
         $tpl = !empty($_REQUEST['tpl']) ? $_REQUEST['tpl'] : '';
         switch ($tpl) {
             case 'modify':
                 $this->_modifyTicker();
                 break;
-
             case 'delete':
                 $this->_deleteTicker();
-
             default:
                 $this->_tickerOverview();
                 break;
         }
     }
+
 
     function _deleteTicker()
     {
@@ -1544,7 +1503,6 @@ class newsManager extends newsLibrary {
 
         $arrIds = array();
         $status = true;
-
         if (isset($_POST['news_ticker_id']) && is_array($_POST['news_ticker_id'])) {
             foreach ($_POST['news_ticker_id'] as $id) {
                 array_push($arrIds, intval($id));
@@ -1552,7 +1510,6 @@ class newsManager extends newsLibrary {
         } elseif (!empty($_GET['id'])) {
             array_push($arrIds, intval($_GET['id']));
         }
-
         foreach ($arrIds as $id) {
             $arrTicker = $this->_getTicker($id);
             if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_news_ticker` WHERE `id` = ".$id) === false) {
@@ -1561,7 +1518,6 @@ class newsManager extends newsLibrary {
                 @unlink(ASCMS_FEED_PATH.'/'.$arrTicker['name']);
             }
         }
-
         if ($status) {
             if (count($arrIds) > 1) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_NEWS_TICKERS_SCCESSFULLY_DELETED'];
@@ -1575,9 +1531,9 @@ class newsManager extends newsLibrary {
                 $this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_TICKER_FAILED_DELETE'], $arrTicker['name']);
             }
         }
-
         return $status;
     }
+
 
     function _modifyTicker()
     {
@@ -1602,14 +1558,12 @@ class newsManager extends newsLibrary {
             $urlencode = 0;
             $prefix = '';
         }
-
         if (isset($_POST['news_save_ticker'])) {
             $newName = isset($_POST['news_ticker_filename']) ? contrexx_stripslashes(trim($_POST['news_ticker_filename'])) : '';
             $charset = isset($_POST['news_ticker_charset']) ? addslashes($_POST['news_ticker_charset']) : '';
             $content = isset($_POST['news_ticker_content']) ? contrexx_stripslashes($_POST['news_ticker_content']) : '';
             $urlencode = isset($_POST['news_ticker_urlencode']) ? intval($_POST['news_ticker_urlencode']) : 0;
             $prefix = isset($_POST['news_ticker_prefix']) ? contrexx_stripslashes($_POST['news_ticker_prefix']) : '';
-
             if (!empty($newName)) {
                 if ($name != $newName && file_exists(ASCMS_FEED_PATH.'/'.$newName)) {
                     $this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_FILE_DOES_ALREADY_EXIST'], htmlentities($newName, ENT_QUOTES, CONTREXX_CHARSET), ASCMS_FEED_PATH)."<br />";
@@ -1620,10 +1574,8 @@ class newsManager extends newsLibrary {
                 } else {
                     if ($objDatabase->Execute(($id > 0 ? "UPDATE" : "INSERT INTO")." `".DBPREFIX."module_news_ticker` SET `name` = '".addslashes($newName)."', `charset` = '".addslashes($charset)."', `urlencode` = ".$urlencode.", `prefix` = '".addslashes($prefix)."'".($id > 0 ?" WHERE `id` = ".$id : ''))) {
                         require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-
-                        $objFile = &new File();
+                        $objFile = new File();
                         $objFile->setChmod(ASCMS_FEED_PATH, ASCMS_FEED_WEB_PATH, $newName);
-
                         $fpTicker = @fopen(ASCMS_FEED_PATH.'/'.$newName, 'wb');
                         if ($fpTicker) {
                             if ($defaultCharset != $charset) {
@@ -1652,7 +1604,6 @@ class newsManager extends newsLibrary {
             } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_NEWS_YOU_MUST_SET_FILENAME'];
             }
-
             $name = $newName;
         } elseif ($id > 0) {
             if (!file_exists(ASCMS_FEED_PATH.'/'.$name) && !@touch(ASCMS_FEED_PATH.'/'.$name)) {
@@ -1672,9 +1623,7 @@ class newsManager extends newsLibrary {
                 }
             }
         }
-
         $this->_objTpl->addBlockfile('NEWS_TICKER_TEMPLATE', 'module_news_ticker_modify', 'module_news_ticker_modify.html');
-
         $this->_objTpl->setVariable(array(
             'TXT_NEWS_FILENAME'             => $_ARRAYLANG['TXT_NEWS_FILENAME'],
             'TXT_NEWS_MODIFY_FILENAME'      => $_ARRAYLANG['TXT_NEWS_MODIFY_FILENAME'],
@@ -1689,7 +1638,6 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_GENERAL'              => $_ARRAYLANG['TXT_NEWS_GENERAL'],
             'TXT_NEWS_ADVANCED'             => $_ARRAYLANG['TXT_NEWS_ADVANCED']
         ));
-
         $this->_objTpl->setVariable(array(
             'NEWS_MODIFY_TITLE_TXT'     => $id > 0 ? $_ARRAYLANG['TXT_NEWS_MODIFY_TICKER'] : $_ARRAYLANG['TXT_NEWS_CREATE_TICKER'],
             'NEWS_TICKER_ID'            => $id,
@@ -1700,9 +1648,10 @@ class newsManager extends newsLibrary {
             'NEWS_TICKER_POS'           => $pos,
             'NEWS_TICKER_PREFIX'        => $prefix
         ));
-
         $this->_objTpl->parse('module_news_ticker_modify');
+        return '';
     }
+
 
     function _getCharsetMenu($selectedCharset, $attrs = '')
     {
@@ -1711,9 +1660,9 @@ class newsManager extends newsLibrary {
             $menu .= "<option".($charset == $selectedCharset ? ' selected="selected"' : '')." value=\"".$charset."\">".$charset."</option>\n";
         }
         $menu .= "</select>\n";
-
         return $menu;
     }
+
 
     function _tickerOverview()
     {
@@ -1726,7 +1675,6 @@ class newsManager extends newsLibrary {
         $count = $this->_tickerCount();
 
         $this->_objTpl->addBlockfile('NEWS_TICKER_TEMPLATE', 'module_news_ticker_list', 'module_news_ticker_list.html');
-
         $this->_objTpl->setVariable(array(
             'TXT_NEWS_TICKERS'                  => $_ARRAYLANG['TXT_NEWS_TICKERS'],
             'TXT_NEWS_TICKER'                   => $_ARRAYLANG['TXT_NEWS_TICKER'],
@@ -1736,7 +1684,6 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_CONFIRM_DELETE_TICKER'    => $_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKER'],
             'TXT_NEWS_ACTION_IS_IRREVERSIBLE'   => $_ARRAYLANG['TXT_NEWS_ACTION_IS_IRREVERSIBLE']
         ));
-
         $this->_objTpl->setGlobalVariable(array(
             'TXT_NEWS_SHOW_TICKER_FILE' => $_ARRAYLANG['TXT_NEWS_SHOW_TICKER_FILE'],
             'TXT_NEWS_MODIFY_TICKER'    => $_ARRAYLANG['TXT_NEWS_MODIFY_TICKER'],
@@ -1812,6 +1759,7 @@ class newsManager extends newsLibrary {
         $this->_objTpl->parse('module_news_ticker_list');
     }
 
+
     function _getTickers($offSet = 0)
     {
         global $objDatabase, $_CONFIG;
@@ -1834,6 +1782,7 @@ class newsManager extends newsLibrary {
         return $arrTickers;
     }
 
+
     function _getTicker($id)
     {
         global $objDatabase;
@@ -1851,6 +1800,7 @@ class newsManager extends newsLibrary {
         }
     }
 
+
     function _tickerCount()
     {
         global $objDatabase;
@@ -1863,12 +1813,13 @@ class newsManager extends newsLibrary {
         }
     }
 
+
     function _teasers()
     {
         global $_ARRAYLANG;
 
         require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
-        $this->_objTeaser = &new Teasers(true);
+        $this->_objTeaser = new Teasers(true);
 
         $this->_objTpl->loadTemplateFile('module_news_teasers.html');
 
@@ -1926,6 +1877,7 @@ class newsManager extends newsLibrary {
         }
     }
 
+
     /**
     * Delete teaser frame template
     *
@@ -1943,6 +1895,7 @@ class newsManager extends newsLibrary {
             $this->strOkMessage .= $result;
         }
     }
+
 
     function _showTeaserFrameTemplates()
     {
@@ -1983,6 +1936,7 @@ class newsManager extends newsLibrary {
         }
 
     }
+
 
     function _editTeaserFrameTemplate()
     {
@@ -2054,6 +2008,7 @@ class newsManager extends newsLibrary {
         $this->_objTpl->parse('news_teaser_modify_frame_templates');
     }
 
+
     function _updateTeaserFrameTemplate()
     {
         global $_ARRAYLANG;
@@ -2088,6 +2043,7 @@ class newsManager extends newsLibrary {
         }
     }
 
+
     function _deleteTeaserFrame()
     {
         global $_ARRAYLANG;
@@ -2100,6 +2056,7 @@ class newsManager extends newsLibrary {
             $this->strErrMessage .= $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
         }
     }
+
 
     function _showTeaserFrames()
     {
@@ -2151,6 +2108,7 @@ class newsManager extends newsLibrary {
         }
     }
 
+
     function _showTeaserFrame()
     {
         $this->_objTpl->addBlockFile('NEWS_TEASERS_FILE', 'news_teasers_block', 'module_news_teasers_show_frame.html');
@@ -2160,6 +2118,7 @@ class newsManager extends newsLibrary {
 
         $this->_objTpl->parse('news_teasers_block');
     }
+
 
     function _updateTeaserFrame()
     {
@@ -2198,12 +2157,12 @@ class newsManager extends newsLibrary {
         }
     }
 
+
     function _editTeaserFrame()
     {
         global $_ARRAYLANG;
 
         $this->_objTpl->addBlockFile('NEWS_TEASERS_FILE', 'news_teasers_block', 'module_news_teasers_modify_frame.html');
-
         $this->_objTpl->setVariable(array(
             'TXT_BOX_NAME'      => $_ARRAYLANG['TXT_BOX_NAME'],
             'TXT_BOX_TEMPLATE'  => $_ARRAYLANG['TXT_BOX_TEMPLATE'],
@@ -2248,6 +2207,7 @@ class newsManager extends newsLibrary {
         ));
         $this->_objTpl->parse('news_teasers_block');
     }
+
 
     function _placeholders()
     {
@@ -2298,4 +2258,5 @@ class newsManager extends newsLibrary {
         ));
     }
 }
+
 ?>

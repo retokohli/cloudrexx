@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Directory library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -762,7 +763,7 @@ $settings = $this->getSettings();
      */
     function addFeed()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase;
 
 // TODO: Never used
 //        $arrSettings = $this->getSettings();
@@ -959,7 +960,7 @@ $settings = $this->getSettings();
 
     function sendMail($id, $email)
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG, $objInit, $objLanguage;
+        global $_CONFIG, $objDatabase, $objInit, $objLanguage;
 
         $feedId = contrexx_addslashes($id);
         $languageId = null;
@@ -1088,7 +1089,7 @@ $settings = $this->getSettings();
      */
     function getCountryMenuOptions($selected='')
     {
-        global $_CONFIG, $objDatabase;
+        global $objDatabase;
 
         $objResult = $objDatabase->Execute("
             SELECT *
@@ -1155,7 +1156,7 @@ $settings = $this->getSettings();
 
     function getAuthor($id)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase;
 
         $userId = contrexx_addslashes($id);
 
@@ -1177,7 +1178,7 @@ $settings = $this->getSettings();
 
     function getAuthorID($author)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase;
 
         $objResultauthor = $objDatabase->Execute("SELECT id, username FROM ".DBPREFIX."access_users WHERE username = '".contrexx_addslashes($author)."'");
         if ($objResultauthor !== false) {
@@ -1612,7 +1613,7 @@ EOF;
 
     function getSettings()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase;
 
         //get settings
         $objResult = $objDatabase->Execute("SELECT setname, setvalue, settyp FROM ".DBPREFIX."module_directory_settings");
@@ -1658,8 +1659,6 @@ EOF;
      */
     function count($lid, $cid)
     {
-        global $objDatabase;
-
         if (empty($cid)) {
             $this->countLevels($lid, $lid);
             $count = $this->countFeeds($this->numLevels[$lid], 'level', $lid);
@@ -1779,7 +1778,7 @@ EOF;
      */
     function updateFile($addedby)
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         //get post data
         if (isset($_POST['edit_submit'])) {
@@ -2025,7 +2024,7 @@ EOF;
      */
     function getSearchLevels($levelId)
     {
-        global $_CONFIG, $objDatabase;
+        global $objDatabase;
 
         //get all categories
         $objResultLevel = $objDatabase->Execute("SELECT id, name, parentid FROM ".DBPREFIX."module_directory_levels ORDER BY displayorder");
@@ -2107,7 +2106,7 @@ EOF;
      */
     function getLevels($id, $type)
     {
-        global $_CONFIG, $objDatabase;
+        global $objDatabase;
 
         //get selected levels
         $objResultCat = $objDatabase->Execute("SELECT level_id FROM ".DBPREFIX."module_directory_rel_dir_level WHERE dir_id='".$id."'");
@@ -2199,4 +2198,5 @@ EOF;
         return $options;
     }
 }
+
 ?>

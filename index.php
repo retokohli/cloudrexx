@@ -187,13 +187,7 @@ if (   isset($_GET['handler'])
 $objInit = new InitCMS();
 
 /**
- * Language constants
- * See InitCMS::__construct()
-define('FRONTEND_LANG_ID', $objInit->getFrontendLangId());
-define('LANG_ID', FRONTEND_LANG_ID);
- */
-/**
- * OBSOLETE -- Global language variables, maintained for compatibility.
+ * OBSOLETE -- Global language variables.  Maintained for compatibility only.
  *
  * Use the LANG_ID, FRONTEND_LANG_ID, and BACKEND_LANG_ID (backend only!)
  * global constants instead.
@@ -395,7 +389,7 @@ $dataBlocksPath = 'modules/data/dataBlocks.class.php';
 if (file_exists($dataBlocksPath)) {
     $lang = $objInit->loadLanguageData('data');
     require_once('modules/data/dataBlocks.class.php');
-    $dataBlocks = new dataBlocks($lang);
+    $dataBlocks = new dataBlocks();
     $page_content = $dataBlocks->replace($page_content);
     $themesPages = $dataBlocks->replace($themesPages);
 }

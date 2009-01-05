@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Net tools library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -21,9 +22,9 @@
 class NetToolsLib {
 
     // The timeout of the server
-    var $ServerTimeout = 7;
+    public $ServerTimeout = 7;
 
-    var $arrWhoisIps = array(
+    public $arrWhoisIps = array(
         array(
             'server'    => 'whois.ripe.net',
             'port'        => '43',
@@ -55,7 +56,7 @@ class NetToolsLib {
     );
 
 
-    var $arrWhoisDomains = array(
+    public $arrWhoisDomains = array(
         array(
             'server'    => "whois.networksolutions.com",
             'port'        => 43,
@@ -394,13 +395,9 @@ class NetToolsLib {
         )
     );
 
-    function NetToolsLib() {
-        $this->__construct();
-    }
 
     function __construct() {
     }
-
 
 
     function IsIP($host)
@@ -415,10 +412,10 @@ class NetToolsLib {
                 $octets[2] < 256 &&
                 $octets[3] < 256);
         }
-
         // It's not an IP address
         return false;
     }
+
 
     /*
     * LookupIP($ip, &$hostname);
@@ -433,6 +430,7 @@ class NetToolsLib {
         return (($hostname = gethostbyaddr($ip)) != $ip);
     }
 
+
     /*
     * LookupDomain($hostname, &$ip);
     * Gets the IP from hostname and returns whether it succeeded
@@ -446,6 +444,7 @@ class NetToolsLib {
         return (($ip = gethostbyname($hostname)) != $hostname);
     }
 
+
     /*
     * PingHost($targethost, &$err);
     * Pings a host and return the output
@@ -456,9 +455,9 @@ class NetToolsLib {
     * Errors:
     *   #1: Insecure host to ping to
     */
-    function PingHost($targethost, &$err) {
+    function PingHost($targethost, &$err)
+    {
         $err = 0;
-
         // Make sure the host is valid
         if(!(ereg("^[a-zA-Z0-9_\\.-]+$", $targethost) && substr($targethost, 0, 1) != "-")) {
             // Invalid host; it's insecure to run ping on this
@@ -472,9 +471,9 @@ class NetToolsLib {
             }
             $output = implode("\n", $output);
         }
-
         return $output;
     }
+
 
     /*
     * ProbePort($targethost, $destport, &$banner, &$errdesc);
@@ -489,27 +488,23 @@ class NetToolsLib {
     *   #-1: Invalid port passed
     *   Rest: Returned from fsockopen
     */
-    function ProbePort($targethost, $destport, &$errdesc) {
+    function ProbePort($targethost, $destport, &$errdesc)
+    {
         $errdesc = "";
-
         // test whether the port is valid
         if(!is_numeric($destport) || $destport <= 0 || $destport > 65535) {
             // Non existant port number
             return -1;
-        } else {
-            $sock = @fsockopen($targethost, $destport, $errno, $errdesc, 3);
-
-            // Determine whether it was a success
-            if(!$sock) {
-                // Unable to connect to server
-                return $errdesc;
-            } else {
-                // Port is opened!
-                fclose($sock);
-
-                return 0;
-            }
         }
+        $sock = @fsockopen($targethost, $destport, $errno, $errdesc, 3);
+        // Determine whether it was a success
+        if(!$sock) {
+            // Unable to connect to server
+            return $errdesc;
+        }
+        // Port is opened!
+        fclose($sock);
+        return 0;
     }
 
 
@@ -520,13 +515,12 @@ class NetToolsLib {
     *   1. $ip: The IP to whois
     * Returns: The whois information ("" on failure)
     */
-    function WhoisIP($ip) {
+    function WhoisIP($ip)
+    {
         $whoisInfo = "";
-
         if (empty($ip)) {
             return $whoisInfo;
         }
-
         // For every defined server
         $bestresult = "";
         $greatestres = 0;
@@ -597,7 +591,6 @@ class NetToolsLib {
                         } else {    // Perfect!
                             // Succeeded, bail out
                             $whoisInfo = $resp;
-
                             return $whoisInfo;
                         }
                     }
@@ -623,10 +616,10 @@ class NetToolsLib {
                 }
             }
         }
-
         // Tried 'em all, all failed, return the best result
         return $whoisInfo;
     }
+
 
     /*
     * WhoisDomain($domain);
@@ -675,78 +668,78 @@ class NetToolsLib {
                 }
             }
         }
-
         // Tried 'em all, all failed, return ""
         return "";
     }
 }
 
 
-    /* This function requires PHP 5 and can therefore not be used here */
-    //if($action == "getdnsrec")
-    //{
-    //    // If the requested host is an IP address, lookup the address
-    //    $actaddr = $targethost;
-    //    if($isip)
-    //    {
-    //        // Lookup the target host
-    //        $actaddr = getaddrbyaddr($targethost);
-    //        if($actaddr == $targethost)
-    //        {
-    //            // Failed to lookup address
-    //            $actout .= "Could not get domainname of $targethost<br>";
-    //        } else {
-    //            // Notify the user of the usage of the domain name
-    //            $actout .= "$targethost has domain name $actaddr<br>";
-    //            $actout .= "Querying DNS record for $actaddr<br><br>";
-    //        }
-    //    }
-    //
-    //    // Get a DNS record
-    //    if(!$isip || $actaddr != $targethost)
-    //    {
-    //        // Grab the DNS record
-    //        $dnsinfo = dns_get_record($actaddr, DNS_ANY, $authns, $addtl);
-    //
-    //        for($cnt = 0; $cnt < 3; $cnt++)
-    //        {
-    //            switch($cnt)
-    //            {
-    //            case 0:
-    //                $curdata = $dnsinfo;
-    //                $actout .= "<font size=+1><b>DNS records:</b></font><br>";
-    //
-    //                break;
-    //
-    //            case 1:
-    //                $curdata = $authns;
-    //                $actout .= "<font size=+1><b>Authoritative Name Servers:</b></font><br>";
-    //
-    //                break;
-    //
-    //            case 2:
-    //                $curdata = $addtl;
-    //                $actout .= "<font size=+1><v>Additional Records:</b></font><br>";
-    //
-    //                break;
-    //            }
-    //
-    //            // Show the info
-    //            if(count($dnsinfo) == 0)
-    //                $actout .= "None<br>";
-    //            for($i = 0; $i < count($curdata); $i++)
-    //            {
-    //                // Fill in this information
-    //                $actout .= "<b>record $i</b><br>";
-    //                foreach($curdata[$i] as $recname => $recvalue)
-    //                {
-    //                    // Display this one
-    //                    $actout .= "$recname: $recvalue<br>";
-    //                }
-    //                $actout .= "<br>";
-    //            }
-    //            $actout .= "<br>";
-    //        }
-    //    }
-    //}
+/* This function requires PHP 5 and can therefore not be used here */
+//if($action == "getdnsrec")
+//{
+//    // If the requested host is an IP address, lookup the address
+//    $actaddr = $targethost;
+//    if($isip)
+//    {
+//        // Lookup the target host
+//        $actaddr = getaddrbyaddr($targethost);
+//        if($actaddr == $targethost)
+//        {
+//            // Failed to lookup address
+//            $actout .= "Could not get domainname of $targethost<br>";
+//        } else {
+//            // Notify the user of the usage of the domain name
+//            $actout .= "$targethost has domain name $actaddr<br>";
+//            $actout .= "Querying DNS record for $actaddr<br><br>";
+//        }
+//    }
+//
+//    // Get a DNS record
+//    if(!$isip || $actaddr != $targethost)
+//    {
+//        // Grab the DNS record
+//        $dnsinfo = dns_get_record($actaddr, DNS_ANY, $authns, $addtl);
+//
+//        for($cnt = 0; $cnt < 3; $cnt++)
+//        {
+//            switch($cnt)
+//            {
+//            case 0:
+//                $curdata = $dnsinfo;
+//                $actout .= "<font size=+1><b>DNS records:</b></font><br>";
+//
+//                break;
+//
+//            case 1:
+//                $curdata = $authns;
+//                $actout .= "<font size=+1><b>Authoritative Name Servers:</b></font><br>";
+//
+//                break;
+//
+//            case 2:
+//                $curdata = $addtl;
+//                $actout .= "<font size=+1><v>Additional Records:</b></font><br>";
+//
+//                break;
+//            }
+//
+//            // Show the info
+//            if(count($dnsinfo) == 0)
+//                $actout .= "None<br>";
+//            for($i = 0; $i < count($curdata); $i++)
+//            {
+//                // Fill in this information
+//                $actout .= "<b>record $i</b><br>";
+//                foreach($curdata[$i] as $recname => $recvalue)
+//                {
+//                    // Display this one
+//                    $actout .= "$recname: $recvalue<br>";
+//                }
+//                $actout .= "<br>";
+//            }
+//            $actout .= "<br>";
+//        }
+//    }
+//}
+
 ?>

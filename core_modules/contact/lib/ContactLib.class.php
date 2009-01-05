@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Contact library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -20,22 +21,22 @@
  */
 class ContactLib
 {
-    var $arrForms;
-    var $_arrSettings;
+    public $arrForms;
+    public $_arrSettings;
 
     /**
      * Regexpression list
      */
-    var $arrCheckTypes;
+    public $arrCheckTypes;
 
     function initContactForms($allLanguages = false)
     {
-        global $objDatabase, $_FRONTEND_LANGID;
+        global $objDatabase;
 
         if ($allLanguages) {
             $sqlWhere = '';
         } else {
-            $sqlWhere = "WHERE tblForm.langId=".$_FRONTEND_LANGID;
+            $sqlWhere = "WHERE tblForm.langId=".FRONTEND_LANG_ID;
         }
 
         $this->arrForms = array();
@@ -72,8 +73,6 @@ class ContactLib
 
     function initCheckTypes()
     {
-        global $objDatabase;
-
         $this->arrCheckTypes = array(
             1    => array(
                 'regex'    => '.*',
@@ -88,7 +87,7 @@ class ContactLib
                 'name'    => 'TXT_CONTACT_REGEX_URL'
             ),
             4    => array(
-                'regex'    => '^[A-Za-z'.(strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_encode('äàáüâûôñèöéè') : 'äàáüâûôñèöéè').'\ ]*$',
+                'regex'    => '^[A-Za-z'.(strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_encode('ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½') : 'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½').'\ ]*$',
                 'name'    => 'TXT_CONTACT_REGEX_TEXT'
             ),
             5    => array(
@@ -243,15 +242,15 @@ class ContactLib
 
     function addForm($name, $emails, $subject, $text, $feedback, $showForm, $useCaptcha, $useCustomStyle, $arrFields, $sendCopy)
     {
-        global $objDatabase, $_FRONTEND_LANGID;
+        global $objDatabase;
 
         if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form
                                   (`name`,`mails`, `subject`, `text`, `feedback`, `showForm`, `use_captcha`, `use_custom_style`, `send_copy`, `langId`)
                                   VALUES
-                                  ('".$name."', '".addslashes($emails)."', '".$subject."', '".$text."', '".$feedback."', ".$showForm.", ".$useCaptcha.", ".$useCustomStyle.", ".$sendCopy.", ".$_FRONTEND_LANGID.")") !== false) {
+                                  ('".$name."', '".addslashes($emails)."', '".$subject."', '".$text."', '".$feedback."', ".$showForm.", ".$useCaptcha.", ".$useCustomStyle.", ".$sendCopy.", ".FRONTEND_LANG_ID.")") !== false) {
             $formId = $objDatabase->Insert_ID();
 
-            foreach ($arrFields as $fieldId => $arrField) {
+            foreach ($arrFields as $arrField) {
                 $this->_addFormField($formId, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
             }
         }
@@ -330,7 +329,7 @@ class ContactLib
 
         $count = $objEntry->RecordCount();
         if ($limit && $count > intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pagingPos, "&amp;cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId, 'Kontaktformular Einträge');
+            $paging = getPaging($count, $pagingPos, "&amp;cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId, 'Kontaktformular Eintrï¿½ge');
             $objEntry = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pagingPos);
         }
 
@@ -365,7 +364,6 @@ class ContactLib
     {
         global $objDatabase;
 
-        $arrEntry;
         $arrCols = array();
         $objEntry = $objDatabase->SelectLimit("SELECT `time`, `host`, `lang`, `ipaddress`, data FROM ".DBPREFIX."module_contact_form_data WHERE id=".$id, 1);
 
@@ -389,8 +387,8 @@ class ContactLib
                 'data'        => $arrData
             );
         }
-
         return $arrEntry;
     }
 }
+
 ?>

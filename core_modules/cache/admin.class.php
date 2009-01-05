@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Cache 
+ * Cache
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.1
@@ -8,10 +9,11 @@
  * @subpackage  core_module_cache
  * @todo        Edit PHP DocBlocks!
  */
+
 require_once ASCMS_CORE_MODULE_PATH.'/cache/lib/cacheLib.class.php';
 
 /**
- * Cache 
+ * Cache
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.1
@@ -19,28 +21,20 @@ require_once ASCMS_CORE_MODULE_PATH.'/cache/lib/cacheLib.class.php';
  * @subpackage  core_module_cache
  */
 class Cache extends cacheLib {
-    var $objTpl;
-    var $strCacheablePagesFile = 'index.php';
-    var $arrSettings = array();
-
-    /**
-     * Constructor
-     *
-     */
-    function Cache() {
-        $this->__construct();
-    }
+    public $objTpl;
+    public $strCacheablePagesFile = 'index.php';
+    public $arrSettings = array();
 
     /**
     * PHP5 constructor
-    *
     * @global     object    $objTemplate
     * @global    array    $_CORELANG
     */
-    function __construct() {
+    function __construct()
+    {
         global $objTemplate, $_CORELANG;
 
-        $this->objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/cache/template');
+        $this->objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/cache/template');
         $this->objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->arrSettings = $this->getSettings();
@@ -55,6 +49,7 @@ class Cache extends cacheLib {
             $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE',$_CORELANG['TXT_CACHE_ERR_NOTEXIST'].ASCMS_CACHE_PATH);
         }
     }
+
 
     /**
      * Creates an array containing all important cache-settings
@@ -82,11 +77,11 @@ class Cache extends cacheLib {
 
     /**
      * Show settings of the module
-     *
      * @global     object    $objTemplate
      * @global     array    $_CORELANG
      */
-    function showSettings() {
+    function showSettings()
+    {
         global $objTemplate, $_CORELANG;
 
         $this->objTpl->loadTemplateFile('settings.html');
@@ -106,22 +101,20 @@ class Cache extends cacheLib {
             'TXT_STATS_FILES'                =>    $_CORELANG['TXT_CACHE_STATS_FILES'],
             'TXT_STATS_FOLDERSIZE'            =>    $_CORELANG['TXT_CACHE_STATS_FOLDERSIZE']
         ));
-
         $intFoldersize = 0;
         $intFiles = 0;
-
         $handleFolder = opendir($this->strCachePath);
         if ($handleFolder) {
-            while ($strFile = readdir($handleFolder)) {
+            $strFile = readdir($handleFolder);
+            while ($strFile) {
                 if ($strFile != '.' && $strFile != '..' && $strFile != $this->strCacheablePagesFile) {
-
                     $intFoldersize += filesize($this->strCachePath.$strFile);
                     ++$intFiles;
                 }
+                $strFile = readdir($handleFolder);
             }
             closedir($handleFolder);
         }
-
         $this->objTpl->setVariable(array(
             'SETTINGS_STATUS_ON'        =>    ($this->arrSettings['cacheEnabled'] == 'on') ? 'checked' : '',
             'SETTINGS_STATUS_OFF'        =>    ($this->arrSettings['cacheEnabled'] == 'off') ? 'checked' : '',
@@ -129,12 +122,12 @@ class Cache extends cacheLib {
             'STATS_FILES'                =>    $intFiles,
             'STATS_FOLDERSIZE'            =>    number_format($intFoldersize / 1024,2,'.','\''),
         ));
-
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'        =>    $_CORELANG['TXT_SETTINGS_MENU_CACHE'],
             'ADMIN_CONTENT'        => $this->objTpl->get()
         ));
     }
+
 
     /**
      * Update settings and write them to the database
@@ -143,35 +136,33 @@ class Cache extends cacheLib {
      * @global     object    $objTemplate
      * @global     array    $_CORELANG
      */
-    function updateSettings() {
+    function updateSettings()
+    {
         global $objDatabase, $objTemplate, $_CORELANG;
 
         $strStatus         = ($_POST['cachingStatus'] == 'on') ? 'on' : 'off';
         $intExpiration     = intval($_POST['cachingExpiration']);
-
         $objDatabase->Execute('    UPDATE    '.DBPREFIX.'settings
                                 SET        setvalue="'.$strStatus.'"
                                 WHERE    setname="cacheEnabled"
                                 LIMIT    1
                             ');
-
         $objDatabase->Execute('    UPDATE    '.DBPREFIX.'settings
                                 SET        setvalue="'.$intExpiration.'"
                                 WHERE    setname="cacheExpiration"
                                 LIMIT    1
                             ');
-
         $this->arrSettings = $this->getSettings();
-
         $objTemplate->SetVariable('CONTENT_OK_MESSAGE',$_CORELANG['TXT_SETTINGS_UPDATED']);
     }
 
+
     /**
      * Write a file containing an array with all cacheable pages
-     *
      * @global     object    $objDatabase
      */
-    function writeCacheablePagesFile() {
+    function writeCacheablePagesFile()
+    {
         global $objDatabase;
 
         if (is_writable($this->strCachePath) && $this->arrSettings['cacheEnabled'] == 'on') {
@@ -183,10 +174,7 @@ class Cache extends cacheLib {
                 $strHeader .= "* This is a system-generated file. Do not try to edit it manually!\n";
                 $strHeader .= "*\n";
                 $strHeader .= "*/\n\n";
-
                 $strFooter .= "?>";
-
-
                 $objResult = $objDatabase->Execute('SELECT        catid
                                                     FROM        '.DBPREFIX.'content_navigation
                                                     WHERE        cachingstatus="1"
@@ -199,7 +187,6 @@ class Cache extends cacheLib {
                     }
                     $strPages = substr($strPages,0,strlen($strPages)-1);
                 }
-
                 flock($handleFile, LOCK_EX); //semaphore
                 @fwrite($handleFile,$strHeader);
                 @fwrite($handleFile,"\$_CACHEPAGES = array(");
@@ -207,7 +194,6 @@ class Cache extends cacheLib {
                 @fwrite($handleFile,");\n\n");
                 @fwrite($handleFile,$strFooter);
                 flock($handleFile, LOCK_UN);
-
                 fclose($handleFile);
             }
         }
@@ -216,25 +202,24 @@ class Cache extends cacheLib {
 
     /**
     * Delete all files in cache-folder
-    *
     * @global     object    $objTemplate
     * @global     array    $_CORELANG
     */
-    function deleteAllFiles() {
+    function deleteAllFiles()
+    {
         global $_CORELANG,$objTemplate;
 
         $this->_deleteAllFiles();
-
         $objTemplate->SetVariable('CONTENT_OK_MESSAGE',$_CORELANG['TXT_CACHE_FOLDER_EMPTY']);
     }
 
 
     /**
     * Delete all specific file from cache-folder
-    *
     * @global     object    $objDatabase
     */
-    function deleteSingleFile($intPageId) {
+    function deleteSingleFile($intPageId)
+    {
         global $objDatabase;
 
         $intPageId = intval($intPageId);
@@ -243,7 +228,6 @@ class Cache extends cacheLib {
                                         'request'    =>    array(    'page' => strval($intPageId))
                                 );
             $arrFileNames[0] = md5(serialize($arrPageContent));
-
             $objResult = $objDatabase->Execute('SELECT        id
                                                 FROM        '.DBPREFIX.'languages
                                                 ORDER BY    id ASC
@@ -252,25 +236,21 @@ class Cache extends cacheLib {
                 $arrLanguages[$objResult->fields['id']] = $objResult->fields['id'];
                 $objResult->MoveNext();
             }
-
-
             $i = 2;
-            foreach ($arrLanguages as $intKey1 => $intLangId1) {
-                foreach ($arrLanguages as $intKey2 => $intLangId2) {
+            foreach ($arrLanguages as $intLangId1) {
+                foreach ($arrLanguages as $intLangId2) {
                     unset($arrPageContent);
                     $arrPageContent = array('url'        =>    '/index.php?page='.$intPageId,
                                             'request'    =>    array(    'backendLangId'    =>    $intLangId1,
                                                                     'langId'        =>    $intLangId2,
                                                                     'page'             =>     strval($intPageId)
-
                                                                 )
                                         );
                     $arrFileNames[$i] = md5(serialize($arrPageContent));
                     $i++;
                 }
             }
-
-            foreach ($arrFileNames as $intKey => $strFileName) {
+            foreach ($arrFileNames as $strFileName) {
                 if (is_file($this->strCachePath.$strFileName)) {
                     @unlink($this->strCachePath.$strFileName);
                 }
@@ -278,4 +258,5 @@ class Cache extends cacheLib {
         }
     }
 }
+
 ?>

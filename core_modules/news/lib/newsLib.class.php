@@ -21,7 +21,6 @@
  */
 class newsLibrary
 {
-
     /**
     * Gets the categorie option menu string
     *
@@ -42,7 +41,8 @@ class newsLibrary
     }
 
 
-    function getCategoryMenu($langId, $selectedOption=""){
+    function getCategoryMenu($langId, $selectedOption="")
+    {
         global $objDatabase;
 
         $strMenu = "";
@@ -63,28 +63,28 @@ class newsLibrary
     * @param     string     $fullContent      HTML-Content with more than BODY
     * @return    string     $content          HTML-Content between BODY-Tag
     */
-    function filterBodyTag($fullContent){
-        $res=false;
-        $posBody=0;
-        $posStartBodyContent=0;
-        $res=preg_match_all("/<body[^>]*>/i", $fullContent, $arrayMatches);
-        if($res==true)
-        {
+    function filterBodyTag($fullContent)
+    {
+        $posBody = 0;
+        $posStartBodyContent = 0;
+        $arrayMatches = array();
+        $res = preg_match_all('/<body[^>]*>/i', $fullContent, $arrayMatches);
+        if ($res == true) {
             $bodyStartTag = $arrayMatches[0][0];
             // Position des Start-Tags holen
             $posBody = strpos($fullContent, $bodyStartTag, 0);
             // Beginn des Contents ohne Body-Tag berechnen
             $posStartBodyContent = $posBody + strlen($bodyStartTag);
         }
-        $posEndTag=strlen($fullContent);
+        $posEndTag = strlen($fullContent);
         $res = preg_match_all('/<\/body>/i', $fullContent, $arrayMatches);
         if ($res) {
-            $bodyEndTag=$arrayMatches[0][0];
+            $bodyEndTag = $arrayMatches[0][0];
             // Position des End-Tags holen
             $posEndTag = strpos($fullContent, $bodyEndTag, 0);
             // Content innerhalb der Body-Tags auslesen
          }
-         $content = substr($fullContent, $posStartBodyContent, $posEndTag  - $posStartBodyContent);
+         $content = substr($fullContent, $posStartBodyContent, $posEndTag - $posStartBodyContent);
          return $content;
     }
 

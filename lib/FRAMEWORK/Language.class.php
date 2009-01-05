@@ -20,12 +20,7 @@
  */
 class FWLanguage
 {
-    var $arrLanguage = NULL;
-
-    function FWLanguage()
-    {
-        $this->__construct();
-    }
+    public $arrLanguage = NULL;
 
     /**
      * Constructor (PHP5)

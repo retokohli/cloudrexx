@@ -44,14 +44,6 @@ class Immo extends ImmoLib
     var $_objTpl;
 
     /**
-     * frontend CMS language
-     *
-     * @var integer
-     * @access public
-     */
-    var $frontLang;
-
-    /**
      * default currency suffix for price values
      *
      * @var         string
@@ -83,17 +75,14 @@ class Immo extends ImmoLib
     function __construct($pageContent)
     {
         global $objDatabase;
-        $this->frontLang = (isset($_GET['immoLang'])) ? intval($_GET['immoLang']) : 1;
+
         $objRS=$objDatabase->Execute("    SELECT count(1) as cnt FROM ".DBPREFIX."module_immo_fieldname WHERE
                                         lang_id = 1 AND lower(name) LIKE '%aufzählung%'");
         $this->_listingCount = $objRS->fields['cnt'];
         $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
-
         mysql_set_charset("utf8"); //this is important for umlauts
-
-
         parent::__construct();
     }
 
@@ -320,9 +309,9 @@ class Immo extends ImmoLib
                         OR TYPE = 'panorama'
                     )
                     AND content.immo_id = ".$id."
-                    AND content.lang_id = ".$this->frontLang."
+                    AND content.lang_id = ".FRONTEND_LANG_ID."
                     AND content.active  = 1
-                    AND name.lang_id = ".$this->frontLang;
+                    AND name.lang_id = ".FRONTEND_LANG_ID;
         $index = 0;
         $images = array();
         if(($objRS = $objDatabase->Execute($query)) !== false){
@@ -403,7 +392,7 @@ class Immo extends ImmoLib
                                                                     FROM '.DBPREFIX.'module_immo_fieldname
                                                                     WHERE lower( name ) = "ort"
                                                                     AND lang_id = 1 )
-                                                                AND a.lang_id = '.$this->frontLang.'
+                                                                AND a.lang_id = '.FRONTEND_LANG_ID.'
                                                                 GROUP BY location ';
         $objRS = $objDatabase->Execute($query);
         if($objRS){
@@ -435,7 +424,7 @@ class Immo extends ImmoLib
 
             $this->_objTpl->setVariable(array(
                 'IMMO_SPECIAL_OFFER_HEADER'            =>     $specialOffer['header'],
-                'IMMO_SPECIAL_OFFER_PRICE_PREFIX'    =>  htmlentities($this->arrSettings['currency_lang_'.$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
+                'IMMO_SPECIAL_OFFER_PRICE_PREFIX'    =>  htmlentities($this->arrSettings['currency_lang_'.FRONTEND_LANG_ID], ENT_QUOTES, CONTREXX_CHARSET),
                 'IMMO_SPECIAL_OFFER_PRICE'            =>  $specialOffer['price'],
                 'IMMO_SPECIAL_OFFER_PRICE_SUFFIX'    =>  $this->_currencySuffix,
                 'IMMO_SPECIAL_OFFER_LOCATION'        =>    $specialOffer['location'],
@@ -462,21 +451,21 @@ class Immo extends ImmoLib
                                                                     FROM '.DBPREFIX.'module_immo_fieldname
                                                                     WHERE name = "ort"
                                                                     AND lang_id = 1 )
-                                                                AND a.lang_id = '.$this->frontLang.' )
+                                                                AND a.lang_id = '.FRONTEND_LANG_ID.' )
                 LEFT JOIN '.DBPREFIX.'module_immo_content AS b ON ( immo.id = b.immo_id
                                                             AND b.field_id = (
                                                                 SELECT field_id
                                                                 FROM '.DBPREFIX.'module_immo_fieldname
                                                                 WHERE name = "preis"
                                                                 AND lang_id = 1 )
-                                                            AND b.lang_id = '.$this->frontLang.' )
+                                                            AND b.lang_id = '.FRONTEND_LANG_ID.' )
                 LEFT JOIN '.DBPREFIX.'module_immo_content AS c ON ( immo.id = c.immo_id
                                                             AND c.field_id = (
                                                                 SELECT field_id
                                                                 FROM '.DBPREFIX.'module_immo_fieldname
                                                                 WHERE name = "headline"
                                                                 AND lang_id = 1 )
-                                                            AND c.lang_id = '.$this->frontLang.' )
+                                                            AND c.lang_id = '.FRONTEND_LANG_ID.' )
                 LEFT JOIN '.DBPREFIX.'module_immo_image AS img ON ( immo.id = img.immo_id
                                                             AND img.field_id = (
                                                                 SELECT field_id
@@ -547,7 +536,7 @@ class Immo extends ImmoLib
                                                 FROM ".DBPREFIX."module_immo_content
                                                 WHERE immo_id = '$immoID'
                                                 AND field_id = '$fieldID'
-                                                AND lang_id = '".$this->frontLang."'", 1);
+                                                AND lang_id = '".FRONTEND_LANG_ID."'", 1);
                     if($objRS){
                         $link = 'http://'.$_CONFIG['domainUrl'].str_replace(" ", "%20", $objRS->fields['fieldvalue']);
                         $mailer = new PHPMailer();
@@ -655,13 +644,13 @@ class Immo extends ImmoLib
                 die();
             }
         }
-        $this->_getFieldNames($immoID, $this->frontLang);
+        $this->_getFieldNames($immoID, FRONTEND_LANG_ID);
         if(($objRS = $objDatabase->SelectLimit('SELECT reference FROM '.DBPREFIX.'module_immo WHERE id='.$immoID, 1)) !== false){
               $reference = $objRS->fields['reference'];
         }
 
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_IMMO_PRICE_PREFIX'        => $this->arrSettings['currency_lang_'.$this->frontLang],
+            'TXT_IMMO_PRICE_PREFIX'        => $this->arrSettings['currency_lang_'.FRONTEND_LANG_ID],
                'TXT_IMMO_PRICE_SUFFIX'     => $this->_currencySuffix,
                'TXT_IMMO_SHOWMAP'            => $_ARRAYLANG['TXT_IMMO_SHOWMAP'],
                'TXT_IMMO_PRINT_PAGE'        => $_ARRAYLANG['TXT_IMMO_PRINT_PAGE'],
@@ -728,12 +717,12 @@ class Immo extends ImmoLib
                     case 'price':
                         $textcount++;
                         $this->_objTpl->setVariable(array(
-                            'IMMO_FIELD_NAME'            =>    htmlentities($field['names'][$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
-                            'IMMO_FIELD_CONTENT'        =>    htmlentities($field['type'] == 'price' ? number_format($field['content'][$this->frontLang],0,".","'") : $field['content'][$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
-                            'TXT_IMMO_CURRENCY_PREFIX'    =>    $field['type'] == 'price' ? htmlentities($this->arrSettings['currency_lang_'.$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET) : '',
+                            'IMMO_FIELD_NAME'            =>    htmlentities($field['names'][FRONTEND_LANG_ID], ENT_QUOTES, CONTREXX_CHARSET),
+                            'IMMO_FIELD_CONTENT'        =>    htmlentities($field['type'] == 'price' ? number_format($field['content'][FRONTEND_LANG_ID],0,".","'") : $field['content'][FRONTEND_LANG_ID], ENT_QUOTES, CONTREXX_CHARSET),
+                            'TXT_IMMO_CURRENCY_PREFIX'    =>    $field['type'] == 'price' ? htmlentities($this->arrSettings['currency_lang_'.FRONTEND_LANG_ID], ENT_QUOTES, CONTREXX_CHARSET) : '',
                             'TXT_IMMO_CURRENCY_SUFFIX'    =>    $field['type'] == 'price' ? $this->_currencySuffix : '',
                         ));
-                        if(trim($field['content'][$this->frontLang]) != ''){
+                        if(trim($field['content'][FRONTEND_LANG_ID]) != ''){
                             if($textcount < $this->_fieldCount['text']){
                                 $this->_objTpl->touchBlock('textListHR');
                             }
@@ -747,8 +736,8 @@ class Immo extends ImmoLib
                         if(!empty($img)){
                             $imgdim = $this->_getImageDim($img, 160);
                             $this->_objTpl->setVariable(array(
-                                'IMMO_FIELD_NAME'        =>    htmlentities($field['names'][$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
-                                'IMMO_FIELD_CONTENT'    =>    htmlentities($field['content'][$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
+                                'IMMO_FIELD_NAME'        =>    htmlentities($field['names'][FRONTEND_LANG_ID], ENT_QUOTES, CONTREXX_CHARSET),
+                                'IMMO_FIELD_CONTENT'    =>    htmlentities($field['content'][FRONTEND_LANG_ID], ENT_QUOTES, CONTREXX_CHARSET),
                                 'IMMO_IMG_SRC'            =>    $img,
                                 'IMMO_IMG_WIDTH'        =>    $imgdim[1],
                                 'IMMO_IMG_HEIGHT'        =>    $imgdim[2],
@@ -778,8 +767,8 @@ class Immo extends ImmoLib
                         if(!empty($img)){
                             $imgdim = $this->_getImageDim($img, 530);
                             $this->_objTpl->setVariable(array(
-                                'IMMO_FIELD_NAME'        =>    htmlentities($field['names'][$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
-                                'IMMO_FIELD_CONTENT'    =>    htmlentities($field['content'][$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
+                                'IMMO_FIELD_NAME'        =>    htmlentities($field['names'][FRONTEND_LANG_ID], ENT_QUOTES, CONTREXX_CHARSET),
+                                'IMMO_FIELD_CONTENT'    =>    htmlentities($field['content'][FRONTEND_LANG_ID], ENT_QUOTES, CONTREXX_CHARSET),
                                 'IMMO_IMG_SRC'            =>    $img,
                                 'IMMO_IMG_WIDTH'        =>    $imgdim[1],
                                 'IMMO_IMG_HEIGHT'        =>    $imgdim[2],
@@ -793,16 +782,16 @@ class Immo extends ImmoLib
                     case 'link':
                     case 'protected_link':
                         $linkcount++;
-                        $splitName = explode(" - ", $field['names'][$this->frontLang]);
+                        $splitName = explode(" - ", $field['names'][FRONTEND_LANG_ID]);
                         $iconType = strtolower(trim($splitName[count($splitName)-1]));
                         $this->_objTpl->setVariable(array(
                             'IMMO_LINK_ICON_SRC'        =>    $this->_getIcon($iconType),
-                            'IMMO_FIELD_NAME'            =>    htmlentities($field['names'][$this->frontLang], ENT_QUOTES, CONTREXX_CHARSET),
-                            'IMMO_FIELD_CONTENT'        =>    htmlspecialchars($field['type']=='protected_link' ? '?section=immo&amp;cmd=getPDF&amp;id='.$immoID.'_'.$fieldKey : $field['content'][$this->frontLang]),
+                            'IMMO_FIELD_NAME'            =>    htmlentities($field['names'][FRONTEND_LANG_ID], ENT_QUOTES, CONTREXX_CHARSET),
+                            'IMMO_FIELD_CONTENT'        =>    htmlspecialchars($field['type']=='protected_link' ? '?section=immo&amp;cmd=getPDF&amp;id='.$immoID.'_'.$fieldKey : $field['content'][FRONTEND_LANG_ID]),
                         ));
 
 
-                    if(trim($field['content'][$this->frontLang]) != ''){
+                    if(trim($field['content'][FRONTEND_LANG_ID]) != ''){
                         if($lnkRow++ % 2 == 0){
                             $this->_objTpl->parse('linkList');
                             $this->_objTpl->parse('linkListRow');
@@ -844,7 +833,7 @@ class Immo extends ImmoLib
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_IMMO_BACK'               => $_ARRAYLANG['TXT_IMMO_BACK'],
-            'TXT_IMMO_CURRENCY_PREFIX'      => $this->arrSettings['currency_lang_'.$this->frontLang],
+            'TXT_IMMO_CURRENCY_PREFIX'      => $this->arrSettings['currency_lang_'.FRONTEND_LANG_ID],
                'TXT_IMMO_CURRENCY_SUFFIX'       => $this->_currencySuffix,
             'TXT_IMMO_MORE_INFOS'           => $_ARRAYLANG['TXT_IMMO_MORE_INFOS'],
         ));
@@ -879,42 +868,42 @@ class Immo extends ImmoLib
                                                                     FROM '.DBPREFIX.'module_immo_fieldname
                                                                     WHERE name = "ort"
                                                                     AND lang_id = 1 )
-                                                                AND a.lang_id = '.$this->frontLang.' )
+                                                                AND a.lang_id = '.FRONTEND_LANG_ID.' )
                     LEFT JOIN '.DBPREFIX.'module_immo_content AS b ON ( immo.id = b.immo_id
                                                                 AND b.field_id = (
                                                                     SELECT field_id
                                                                     FROM '.DBPREFIX.'module_immo_fieldname
                                                                     WHERE name = "preis"
                                                                     AND lang_id = 1 )
-                                                                AND b.lang_id = '.$this->frontLang.' )
+                                                                AND b.lang_id = '.FRONTEND_LANG_ID.' )
                     LEFT JOIN '.DBPREFIX.'module_immo_content AS c ON ( immo.id = c.immo_id
                                                                 AND c.field_id = (
                                                                     SELECT field_id
                                                                     FROM '.DBPREFIX.'module_immo_fieldname
                                                                     WHERE name = "kopfzeile"
                                                                     AND lang_id = 1 )
-                                                                AND c.lang_id = '.$this->frontLang.' )
+                                                                AND c.lang_id = '.FRONTEND_LANG_ID.' )
                     LEFT JOIN '.DBPREFIX.'module_immo_content AS d ON ( immo.id = d.immo_id
                                                                 AND d.field_id = (
                                                                     SELECT field_id
                                                                     FROM '.DBPREFIX.'module_immo_fieldname
                                                                     WHERE name = "headline"
                                                                     AND lang_id = 1 )
-                                                                AND d.lang_id = '.$this->frontLang.' )
+                                                                AND d.lang_id = '.FRONTEND_LANG_ID.' )
                     LEFT JOIN '.DBPREFIX.'module_immo_content AS e ON ( immo.id = e.immo_id
                                                                 AND e.field_id = (
                                                                     SELECT field_id
                                                                     FROM '.DBPREFIX.'module_immo_fieldname
                                                                     WHERE name = "anzahl zimmer"
                                                                     AND lang_id = 1 )
-                                                                AND e.lang_id = '.$this->frontLang.' )
+                                                                AND e.lang_id = '.FRONTEND_LANG_ID.' )
                     LEFT JOIN '.DBPREFIX.'module_immo_content AS f ON ( immo.id = f.immo_id
                                                                 AND f.field_id = (
                                                                     SELECT field_id
                                                                     FROM '.DBPREFIX.'module_immo_fieldname
                                                                     WHERE name = "adresse"
                                                                     AND lang_id = 1 )
-                                                                AND f.lang_id = '.$this->frontLang.' )
+                                                                AND f.lang_id = '.FRONTEND_LANG_ID.' )
                     LEFT JOIN '.DBPREFIX.'module_immo_image AS img ON ( immo.id = img.immo_id
                                                                 AND img.field_id = (
                                                                     SELECT field_id
@@ -964,49 +953,49 @@ class Immo extends ImmoLib
                                                                     FROM ".DBPREFIX."module_immo_fieldname
                                                                     WHERE name = 'headline'
                                                                     AND lang_id = 1 )
-                                                                AND a.lang_id = ".$this->frontLang." )
+                                                                AND a.lang_id = ".FRONTEND_LANG_ID." )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS b ON ( immo.id = b.immo_id
                                                                 AND b.field_id = (
                                                                     SELECT field_id
                                                                     FROM ".DBPREFIX."module_immo_fieldname
                                                                     WHERE name = 'preis'
                                                                     AND lang_id = 1 )
-                                                                AND b.lang_id = ".$this->frontLang." )
+                                                                AND b.lang_id = ".FRONTEND_LANG_ID." )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS c ON ( immo.id = c.immo_id
                                                                 AND c.field_id = (
                                                                     SELECT field_id
                                                                     FROM ".DBPREFIX."module_immo_fieldname
                                                                     WHERE name = 'kopfzeile'
                                                                     AND lang_id = 1 )
-                                                                AND c.lang_id = ".$this->frontLang." )
+                                                                AND c.lang_id = ".FRONTEND_LANG_ID." )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS d ON ( immo.id = d.immo_id
                                                                 AND d.field_id = (
                                                                     SELECT field_id
                                                                     FROM ".DBPREFIX."module_immo_fieldname
                                                                     WHERE name = 'ort'
                                                                     AND lang_id = 1 )
-                                                                AND d.lang_id = ".$this->frontLang." )
+                                                                AND d.lang_id = ".FRONTEND_LANG_ID." )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS e ON ( immo.id = e.immo_id
                                                                 AND e.field_id = (
                                                                     SELECT field_id
                                                                     FROM ".DBPREFIX."module_immo_fieldname
                                                                     WHERE name = 'anzahl zimmer'
                                                                     AND lang_id = 1 )
-                                                                AND e.lang_id = ".$this->frontLang." )
+                                                                AND e.lang_id = ".FRONTEND_LANG_ID." )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS f ON ( immo.id = f.immo_id
                                                                 AND f.field_id = (
                                                                     SELECT field_id
                                                                     FROM ".DBPREFIX."module_immo_fieldname
                                                                     WHERE name = 'ausl�nder-bewilligung'
                                                                     AND lang_id = 1 )
-                                                                AND f.lang_id = ".$this->frontLang." )
+                                                                AND f.lang_id = ".FRONTEND_LANG_ID." )
                         LEFT JOIN ".DBPREFIX."module_immo_content AS g ON ( immo.id = g.immo_id
                                                                 AND g.field_id = (
                                                                     SELECT field_id
                                                                     FROM ".DBPREFIX."module_immo_fieldname
                                                                     WHERE name = 'adresse'
                                                                     AND lang_id = 1 )
-                                                                AND g.lang_id = ".$this->frontLang." )
+                                                                AND g.lang_id = ".FRONTEND_LANG_ID." )
                         LEFT JOIN ".DBPREFIX."module_immo_image AS img ON ( immo.id = img.immo_id
                                                                 AND img.field_id = (
                                                                     SELECT field_id
@@ -1223,8 +1212,8 @@ class Immo extends ImmoLib
                                 field.type AS `type`
                             FROM ".DBPREFIX."module_immo_content AS `content`
                             INNER JOIN ".DBPREFIX."module_immo_fieldname AS `fieldnames` ON fieldnames.field_id = content.field_id
-                            AND fieldnames.lang_id = '".$this->frontLang."'
-                            AND content.lang_id = '".$this->frontLang."'
+                            AND fieldnames.lang_id = '".FRONTEND_LANG_ID."'
+                            AND content.lang_id = '".FRONTEND_LANG_ID."'
                             AND fieldnames.field_id
                             IN (
                                 SELECT field_id
@@ -1289,7 +1278,7 @@ class Immo extends ImmoLib
             'IMMO_START_X'              => $startX,
             'IMMO_START_Y'              => $startY,
             'IMMO_START_ZOOM'           => $startZoom,
-            'IMMO_LANG'                 => $this->frontLang,
+            'IMMO_LANG'                 => FRONTEND_LANG_ID,
             'IMMO_TXT_LOOK'             => $_ARRAYLANG['TXT_IMMO_LOOK']
         ));
 

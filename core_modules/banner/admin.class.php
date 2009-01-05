@@ -23,14 +23,13 @@ require_once ASCMS_CORE_PATH.'/Tree.class.php';
  * @subpackage  core_module_banner
  */
 class Banner extends bannerLibrary {
-    var $_objTpl;
-    var $pageTitle;
-    var $pageContent;
-    var $strErrMessage = '';
-    var $strOkMessage = '';
-    var $_selectedLang;
-    var $langId;
-    var $arrSettings = array();
+    public $_objTpl;
+    public $pageTitle;
+    public $pageContent;
+    public $strErrMessage = '';
+    public $strOkMessage = '';
+    public $_selectedLang;
+    public $arrSettings = array();
 
     /**
     * Teaser object
@@ -38,7 +37,7 @@ class Banner extends bannerLibrary {
     * @access private
     * @var object
     */
-    var $_objTeaser;
+    public $_objTeaser;
 
 
     /**
@@ -49,9 +48,9 @@ class Banner extends bannerLibrary {
     */
     function __construct()
     {
-        global  $_ARRAYLANG, $objInit, $objTemplate;
+        global  $_ARRAYLANG, $objTemplate;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/banner/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/banner/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->setVariable('CONTENT_NAVIGATION','<a href="?cmd=banner">'.$_ARRAYLANG['TXT_BANNER_MENU_OVERVIEW'].'</a>
                                                         <a href="?cmd=banner&amp;act=banner_add">'.$_ARRAYLANG['TXT_BANNER_MENU_BANNER_NEW'].'</a>
@@ -165,7 +164,7 @@ class Banner extends bannerLibrary {
                                     ');
 
                 require_once(ASCMS_CORE_PATH.'/settings.class.php');
-                $objSettings = &new settingsManager();
+                $objSettings = new settingsManager();
                 $objSettings->writeSettingsFile();
             }
 
@@ -244,7 +243,7 @@ class Banner extends bannerLibrary {
     */
     function showGroups()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG;
 
         switch ($_POST['frmShowOverview_MultiAction']) {
             case 'activate':
@@ -256,7 +255,7 @@ class Banner extends bannerLibrary {
             break;
             case 'deactivate':
                 if (isset($_POST['selectedGroupsId'])) {
-                    foreach($_POST['selectedGroupsId'] as $intKey => $intGroupId) {
+                    foreach($_POST['selectedGroupsId'] as $intGroupId) {
                         $this->changeGroupStatus($intGroupId,0);
                     }
                 }
@@ -328,14 +327,14 @@ class Banner extends bannerLibrary {
     */
     function addBanner()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG;
 
         // initialize variables
         $this->_objTpl->loadTemplateFile('module_banner_add.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_BANNER_ADD_TITLE'];
 
         // create new ContentTree instance
-        $objContentTree = &new ContentTree();
+        $objContentTree = new ContentTree();
         foreach ($objContentTree->getTree() as $arrData) {
             $strSpacer     = '';
             $intLevel    = intval($arrData['level']);
@@ -385,7 +384,8 @@ class Banner extends bannerLibrary {
             'TXT_BANNER_ADD_RELATION_SELECT'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SELECT'],
             'TXT_BANNER_ADD_RELATION_DESELECT'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_DESELECT'],
             'TXT_BANNER_ADD_RELATION_SAVE'            =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SAVE'],
-            'BANNER_ADD_GROUP_MENU'                    =>     $this->getBannerGroupMenu($langId=1, $selectedOption=''),
+// TODO: Fix the method called to use the proper language ID
+            'BANNER_ADD_GROUP_MENU'                    =>     $this->getBannerGroupMenu(),
             'BANNER_ADD_RELATION_PAGES_UNSELECTED'    =>     $strPages,
             'BANNER_ADD_RELATION_NEWS_UNSELECTED'    =>     $strNews,
             'BANNER_ADD_RELATION_TEASER_UNSELECTED'    =>    $strTeaser,
@@ -430,7 +430,7 @@ class Banner extends bannerLibrary {
             }
 
             if (is_array($_POST['selectedNews'])) {
-                foreach ($_POST['selectedNews'] as $intKey    =>    $intPageId) {
+                foreach ($_POST['selectedNews'] as $intKey => $intPageId) {
                     $objDatabase->Execute('    INSERT
                                             INTO    '.DBPREFIX.'module_banner_relations
                                             SET        banner_id='.$intInsertedId.',
@@ -442,7 +442,7 @@ class Banner extends bannerLibrary {
             }
 
             if (is_array($_POST['selectedTeaser'])) {
-                foreach ($_POST['selectedTeaser'] as $intKey    =>    $intPageId) {
+                foreach ($_POST['selectedTeaser'] as $intPageId) {
                     $objDatabase->Execute('    INSERT
                                             INTO    '.DBPREFIX.'module_banner_relations
                                             SET        banner_id='.$intInsertedId.',
@@ -452,27 +452,24 @@ class Banner extends bannerLibrary {
                                         ');
                 }
             }
-
             $this->setDefaultBanner($intGroupId);
-
             $this->strOkMessage = $_ARRAYLANG['TXT_BANNER_INSERT_DONE'];
         }
     }
 
+
     /**
     * Remove a banner from database
-    *
     * @global    object        $objDatabase
     * @global     array        $_ARRAYLANG
     * @param     integer        $intBannerId: The banner with this id will be deleted
-
     * @return     integer        $intReturn: The old group of the deleted banner
     */
-    function deleteBanner($intBannerId) {
-        global $objDatabase,$_ARRAYLANG;
+    function deleteBanner($intBannerId)
+    {
+        global $objDatabase, $_ARRAYLANG;
 
         $intBannerId = intval($intBannerId);
-
         $objResult = $objDatabase->Execute('SELECT    parent_id
                                             FROM    '.DBPREFIX.'module_banner_system
                                             WHERE    id='.$intBannerId.'
@@ -480,39 +477,34 @@ class Banner extends bannerLibrary {
                                         ');
         if ($objResult->RecordCount() == 1) {
             $intReturn = $objResult->fields['parent_id'];
-
             $objDatabase->Execute('    DELETE
                                     FROM    '.DBPREFIX.'module_banner_system
                                     WHERE    id='.$intBannerId.'
                                     LIMIT    1
                                 ');
-
             $objDatabase->Execute('    DELETE
                                     FROM    '.DBPREFIX.'module_banner_relations
                                     WHERE    banner_id='.$intBannerId.'
                                 ');
-
             $this->setDefaultBanner($intReturn);
-
             $this->strOkMessage = $_ARRAYLANG['TXT_BANNER_DELETE_DONE'];
         }
-
         return intval($intReturn);
     }
 
+
     /**
     * Change the status field of a banner (0 -> 1, 1 -> 0)
-    *
     * @global    object        $objDatabase
     * @param     integer        $intBannerId: The banner with this id will be changed
     * @param     integer        $intStatus: If this isn't empty, the status from this value is set.
     * @return     integer        $intReturn: The old group of the changed banner
     */
-    function changeBannerStatus($intBannerId,$intStatus='') {
+    function changeBannerStatus($intBannerId,$intStatus='')
+    {
         global $objDatabase;
 
         $intBannerId = intval($intBannerId);
-
         $objResult = $objDatabase->Execute('SELECT    parent_id,
                                                     status
                                             FROM    '.DBPREFIX.'module_banner_system
@@ -520,13 +512,11 @@ class Banner extends bannerLibrary {
                                             LIMIT    1');
         if ($objResult->RecordCount() == 1) {
             $intReturn = $objResult->fields['parent_id'];
-
             if (!empty($intStatus)) {
                 $intNewStatus = intval($intStatus);
             } else { //just invert status
                 $intNewStatus = ($objResult->fields['status'] == 0) ? 1 : 0;
             }
-
             $objDatabase->Execute('    UPDATE    '.DBPREFIX.'module_banner_system
                                     SET        status='.$intNewStatus.'
                                     WHERE    id='.$intBannerId.'
@@ -539,15 +529,14 @@ class Banner extends bannerLibrary {
 
     /**
     * Edit a banner
-    *
     * @global    object        $objDatabase
     * @param     integer        $intBannerId: The banner with this id will be changed
     */
-    function editBanner($intBannerId) {
+    function editBanner($intBannerId)
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $intBannerId = intval($intBannerId);
-
         // initialize variables
         $this->_objTpl->loadTemplateFile('module_banner_edit.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_BANNER_EDIT_TITLE'];
@@ -566,7 +555,6 @@ class Banner extends bannerLibrary {
             'TXT_BANNER_EDIT_RELATION_DESELECT'    =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_DESELECT'],
             'TXT_BANNER_EDIT_RELATION_SAVE'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SAVE'],
         ));
-
         //relation
         $objResult = $objDatabase->Execute('SELECT    page_id,
                                                     type
@@ -576,16 +564,15 @@ class Banner extends bannerLibrary {
         $arrRelationContent = array();
         $arrRelationNews     = array();
         $arrRelationTeaser    = array();
-
         if ($objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
                 switch($objResult->fields['type']) {
                     case 'news':
                         $arrRelationNews[$objResult->fields['page_id']] = '';
-                    break;
+                        break;
                     case 'teaser':
                         $arrRelationTeaser[$objResult->fields['page_id']] = '';
-                    break;
+                        break;
                     default:
                         $arrRelationContent[$objResult->fields['page_id']] = '';
                 }
@@ -594,21 +581,19 @@ class Banner extends bannerLibrary {
         }
 
         // create new ContentTree instance
-        $objContentTree = &new ContentTree();
+        $objContentTree = new ContentTree();
         foreach ($objContentTree->getTree() as $arrData) {
             $strSpacer     = '';
             $intLevel    = intval($arrData['level']);
             for ($i = 0; $i < $intLevel; $i++) {
                 $strSpacer .= '&nbsp;&nbsp;';
             }
-
             if (array_key_exists($arrData['catid'],$arrRelationContent)) {
                 $strSelectedPages .= '<option value="'.$arrData['catid'].'">'.$strSpacer.htmlentities($arrData['catname'], ENT_QUOTES, CONTREXX_CHARSET).' ('.$arrData['catid'].') </option>'."\n";
             } else {
                 $strUnselectedPages .= '<option value="'.$arrData['catid'].'">'.$strSpacer.htmlentities($arrData['catname'], ENT_QUOTES, CONTREXX_CHARSET).' ('.$arrData['catid'].') </option>'."\n";
             }
-           }
-
+        }
         //get news-categories
         $objResult = $objDatabase->Execute('SELECT         catid,
                                                         name
@@ -625,7 +610,6 @@ class Banner extends bannerLibrary {
                 $objResult->MoveNext();
             }
         }
-
         //get teaser-categories
         $objResult = $objDatabase->Execute('SELECT         id,
                                                         name
@@ -642,8 +626,7 @@ class Banner extends bannerLibrary {
                 $objResult->MoveNext();
             }
         }
-
-           //values
+        //values
         $objResult = $objDatabase->Execute('SELECT    parent_id,
                                                     name,
                                                     banner_code,
@@ -655,7 +638,8 @@ class Banner extends bannerLibrary {
         $this->_objTpl->setVariable(array(
             'BANNER_EDIT_ID'                            =>    $intBannerId,
             'BANNER_EDIT_NAME'                            =>    stripslashes($objResult->fields['name']),
-            'BANNER_EDIT_GROUP_MENU'                    =>    $this->getBannerGroupMenu($langId=1,$objResult->fields['parent_id']),
+// TODO: Fix the method called to use the proper language ID
+            'BANNER_EDIT_GROUP_MENU'                    =>    $this->getBannerGroupMenu(0, $objResult->fields['parent_id']),
             'BANNER_EDIT_STATUS'                        =>    ($objResult->fields['status'] == 1) ? 'checked' : '',
             'BANNER_EDIT_CODE'                            =>    htmlentities($objResult->fields['banner_code'], ENT_QUOTES, CONTREXX_CHARSET),
             'BANNER_EDIT_RELATION_PAGES_UNSELECTED'        =>    $strUnselectedPages,
@@ -665,18 +649,17 @@ class Banner extends bannerLibrary {
             'BANNER_EDIT_RELATION_TEASER_UNSELECTED'    =>    $strUnselectedTeaser,
             'BANNER_EDIT_RELATION_TEASER_SELECTED'        =>    $strSelectedTeaser
         ));
-
     }
 
 
     /**
     * Update values for a banner
-    *
     * @global    object        $objDatabase
     * @global     array        $_ARRAYLANG
     * @return     integer        $intReturn: The old group of the changed banner
     */
-    function updateBanner() {
+    function updateBanner()
+    {
         global $objDatabase,$_ARRAYLANG;
 
         $intBannerId = intval($_POST['bannerId']);
@@ -684,7 +667,6 @@ class Banner extends bannerLibrary {
         $intGroupId = intval($_POST['bannerGroupId']);
         $intStatus    = intval($_POST['bannerStatus']);
         $strCode    = contrexx_addslashes($_POST['bannerCode']);
-
         if (!empty($strName)    &&
             $intGroupId    != 0) {
             $objDatabase->Execute('    UPDATE    '.DBPREFIX.'module_banner_system
@@ -695,12 +677,10 @@ class Banner extends bannerLibrary {
                                     WHERE    id='.$intBannerId.'
                                     LIMIT    1
                                 ');
-
             $objDatabase->Execute('    DELETE
                                     FROM    '.DBPREFIX.'module_banner_relations
                                     WHERE    banner_id='.$intBannerId.'
                                 ');
-
             if (is_array($_POST['selectedPages'])) {
                 foreach ($_POST['selectedPages'] as $intKey    =>    $intPageId) {
                     $objDatabase->Execute('    INSERT
@@ -712,7 +692,6 @@ class Banner extends bannerLibrary {
                                         ');
                 }
             }
-
             if (is_array($_POST['selectedNews'])) {
                 foreach ($_POST['selectedNews'] as $intKey    =>    $intPageId) {
                     $objDatabase->Execute('    INSERT
@@ -724,7 +703,6 @@ class Banner extends bannerLibrary {
                                         ');
                 }
             }
-
             if (is_array($_POST['selectedTeaser'])) {
                 foreach ($_POST['selectedTeaser'] as $intKey    =>    $intPageId) {
                     $objDatabase->Execute('    INSERT
@@ -736,22 +714,20 @@ class Banner extends bannerLibrary {
                                         ');
                 }
             }
-
             $this->strOkMessage = $_ARRAYLANG['TXT_BANNER_UPDATE_DONE'];
         }
-
         return $intGroupId;
     }
 
 
     /**
     * Show all banners of a group
-    *
     * @global    object        $objDatabase
     * @global     array        $_ARRAYLANG
     * @param     integer        $intGid: The group with this id will be shown
     */
-    function showGroupDetails($intGid=0) {
+    function showGroupDetails($intGid=0)
+    {
         global $objDatabase,$_ARRAYLANG;
 
         switch ($_POST['frmShowBanner_MultiAction']) {
@@ -778,18 +754,13 @@ class Banner extends bannerLibrary {
             break;
             default: //do nothing
         }
-
         if (!empty($_POST['saveDefault'])) {
             $this->setDefaultBanner($intGid,$_POST['defaultBanner']);
         }
-
         $intGid = intval($intGid);
-
         $objContentTree = &new ContentTree();
-
         $this->_objTpl->loadTemplateFile('module_banner_group_details.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_TITLE'];
-
         $this->_objTpl->setVariable(array(
             'BANNER_GROUP_ID'                                =>    $intGid,
             'TXT_BANNER_GROUP_DETAILS_STATUS'                =>    $_ARRAYLANG['TXT_BANNER_ADD_STATUS'],
@@ -814,7 +785,6 @@ class Banner extends bannerLibrary {
             'TXT_BANNER_GROUP_DETAILS_SUBMIT_ACTIVATE'        =>    $_ARRAYLANG['TXT_BANNER_SUBMIT_ACTIVATE'],
             'TXT_BANNER_GROUP_DETAILS_SUBMIT_DEACTIVATE'    =>    $_ARRAYLANG['TXT_BANNER_SUBMIT_DEACTIVATE'],
             ));
-
         $objResult = $objDatabase->Execute('SELECT        id,
                                                         name
                                             FROM        '.DBPREFIX.'module_banner_groups
@@ -842,7 +812,6 @@ class Banner extends bannerLibrary {
                 $objResult->MoveNext();
             }
         }
-
         //create teaser-cat-array ($arrTeaserCategories)
         $objResult = $objDatabase->Execute('SELECT         id,
                                                         name
@@ -855,7 +824,6 @@ class Banner extends bannerLibrary {
                 $objResult->MoveNext();
             }
         }
-
         $objResult = $objDatabase->Execute('SELECT        id,
                                                         name,
                                                         banner_code,
@@ -866,7 +834,6 @@ class Banner extends bannerLibrary {
                                             ORDER BY    is_default DESC,
                                                         name ASC
                                         ');
-
         $i = 0;
         if ($objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
@@ -894,7 +861,6 @@ class Banner extends bannerLibrary {
                         $objSubResult->MoveNext();
                     }
                 }
-
                 $strStatusIcon = ($objResult->fields['status'] == 0) ? 'status_red.gif' : 'status_green.gif';
                 $this->_objTpl->setVariable(array(
                     'BANNER_ROWCLASS'             => ($objResult->fields['is_default'] == 0) ? 'row'.(($i % 2)+1) : 'rowWarn',
@@ -908,9 +874,7 @@ class Banner extends bannerLibrary {
                     'BANNER_RELATIONS_NEWS'     => $strRelationsNews,
                     'BANNER_RELATIONS_TEASER'     => $strRelationsTeaser,
                 ));
-
                 $this->_objTpl->parse('showBanner');
-
                 $i++;
                 $objResult->MoveNext();
             }
@@ -922,12 +886,12 @@ class Banner extends bannerLibrary {
 
     /**
     * Change the status field of a group (0 -> 1, 1 -> 0)
-    *
     * @global    object        $objDatabase
     * @param     integer        $intGroupId: The group with this id will be changed
     * @param     integer        $intStatus: If this isn't empty, the status from this value is set.
     */
-    function changeGroupStatus($intGroupId,$intStatus='') {
+    function changeGroupStatus($intGroupId,$intStatus='')
+    {
         global $objDatabase;
 
         $intGroupId = intval($intGroupId);
@@ -941,7 +905,6 @@ class Banner extends bannerLibrary {
             } else { //just invert status
                 $intNewStatus = ($objResult->fields['status'] == 0) ? 1 : 0;
             }
-
             $objDatabase->Execute('    UPDATE    '.DBPREFIX.'module_banner_groups
                                     SET        status='.$intNewStatus.'
                                     WHERE    id='.$intGroupId.'
@@ -953,12 +916,12 @@ class Banner extends bannerLibrary {
 
     /**
     * Delete all banners of a group
-    *
     * @global    object        $objDatabase
     * @global     array        $_ARRAYLANG
     * @param     integer        $intGroupId: The banners of this group will be deleted
     */
-    function emptyGroup($intGroupId) {
+    function emptyGroup($intGroupId)
+    {
         global $objDatabase,$_ARRAYLANG;
 
         $intGroupId = intval($intGroupId);
@@ -970,23 +933,21 @@ class Banner extends bannerLibrary {
                                 FROM    '.DBPREFIX.'module_banner_relations
                                 WHERE    group_id='.$intGroupId.'
                             ');
-
         $this->strOkMessage = $_ARRAYLANG['TXT_BANNER_EMPTY_GROUP_DONE'];
     }
 
 
     /**
     * Show the edit-template for a group
-    *
     * @global    object        $objDatabase
     * @global     array        $_ARRAYLANG
     * @param     integer        $intGroupId: This group will be loaded into the form
     */
-    function editGroup($intGroupId) {
+    function editGroup($intGroupId)
+    {
         global $objDatabase,$_ARRAYLANG;
 
         $intGroupId = intval($intGroupId);
-
         $this->_objTpl->loadTemplateFile('module_banner_group_edit.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_BANNER_GROUP_EDIT'];
         $this->_objTpl->setVariable(array(
@@ -997,7 +958,6 @@ class Banner extends bannerLibrary {
             'TXT_GROUP_EDIT_STATUS'            =>    $_ARRAYLANG['TXT_BANNER_ADD_STATUS'],
             'TXT_GROUP_EDIT_SAVE'            =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SAVE']
             ));
-
         $objResult = $objDatabase->Execute('SELECT    name,
                                                     description,
                                                     placeholder_name,
@@ -1006,7 +966,6 @@ class Banner extends bannerLibrary {
                                             WHERE    id='.$intGroupId.'
                                             LIMIT    1
                                         ');
-
         $this->_objTpl->setVariable(array(
             'GROUP_EDIT_ID'                =>    $intGroupId,
             'GROUP_EDIT_PLACEHOLDER'    =>    $objResult->fields['placeholder_name'],
@@ -1016,20 +975,20 @@ class Banner extends bannerLibrary {
             ));
     }
 
+
     /**
     * Save all values for a group
-    *
     * @global    object        $objDatabase
     * @global     array        $_ARRAYLANG
     */
-    function updateGroup() {
+    function updateGroup()
+    {
         global $objDatabase,$_ARRAYLANG;
 
         $intId         = intval($_POST['groupId']);
         $strName    = htmlspecialchars(addslashes($_POST['groupName']), ENT_QUOTES, CONTREXX_CHARSET);
         $strDesc    = htmlspecialchars(addslashes($_POST['groupDesc']), ENT_QUOTES, CONTREXX_CHARSET);
         $intStatus    = intval($_POST['groupStatus']);
-
         $objDatabase->Execute('    UPDATE    '.DBPREFIX.'module_banner_groups
                                 SET        name="'.$strName.'",
                                         description="'.$strDesc.'",
@@ -1037,24 +996,22 @@ class Banner extends bannerLibrary {
                                 WHERE    id='.$intId.'
                                 LIMIT    1
                             ');
-
         $this->strOkMessage = $_ARRAYLANG['TXT_BANNER_GROUP_UPDATE'];
     }
 
 
     /**
     * Define default banner
-    *
     * @global    object        $objDatabase
     * @param     integer        $intGroupId: for this group the default should be set
     * @param     integer        $intBannerId: the banner with this id will be "defaulted". If it's empty, just take the first
     */
-    function setDefaultBanner($intGroupId,$intBannerId=0) {
+    function setDefaultBanner($intGroupId,$intBannerId=0)
+    {
         global $objDatabase;
 
         $intGroupId     = intval($intGroupId);
         $intBannerId     = intval($intBannerId);
-
         if ($intGroupId != 0) {
             if ($intBannerId == 0) {
                 //check for an existing "default", otherwise select the first alphabetically
@@ -1065,17 +1022,14 @@ class Banner extends bannerLibrary {
                                                                 name ASC
                                                     LIMIT        1
                                                 ');
-
                 $intBannerId = intval($objResult->fields['id']);
             }
-
             if ($intBannerId != 0) {
                 $objDatabase->Execute('    UPDATE    '.DBPREFIX.'module_banner_system
                                         SET        is_default=1
                                         WHERE    id='.$intBannerId.'
                                         LIMIT    1
                                     ');
-
                 $objDatabase->Execute('    UPDATE    '.DBPREFIX.'module_banner_system
                                         SET        is_default=0
                                         WHERE    id!='.$intBannerId.' AND
@@ -1085,4 +1039,5 @@ class Banner extends bannerLibrary {
         }
     }
 }
+
 ?>

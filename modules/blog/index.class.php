@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Blog
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -23,10 +24,10 @@ require_once ASCMS_MODULE_PATH.'/blog/lib/blogLib.class.php';
  */
 class Blog extends BlogLibrary  {
 
-    var $_objTpl;
-    var $_intVotingDaysBeforeExpire = 1;
-    var $_strStatusMessage = '';
-    var $_strErrorMessage = '';
+    public $_objTpl;
+    public $_intVotingDaysBeforeExpire = 1;
+    public $_strStatusMessage = '';
+    public $_strErrorMessage = '';
 
 
     /**
@@ -36,13 +37,8 @@ class Blog extends BlogLibrary  {
     */
     function __construct($strPageContent)
     {
-        global $_LANGID;
-
         BlogLibrary::__construct();
-
-        $this->_intLanguageId = intval($_LANGID);
         $this->_intCurrentUserId = 0;
-
         $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($strPageContent);
@@ -106,7 +102,7 @@ class Blog extends BlogLibrary  {
         $this->_objTpl->setVariable('BLOG_ENTRIES_PAGING', $strPagingSource);
         /* End Paging -------------------------------------- */
 
-        $arrEntries = $this->createEntryArray($this->_intLanguageId, $intPos, $intPerPage);
+        $arrEntries = $this->createEntryArray(FRONTEND_LANG_ID, $intPos, $intPerPage);
 
         foreach ($arrEntries as $intEntryId => $arrEntryValues) {
 
@@ -122,14 +118,14 @@ class Blog extends BlogLibrary  {
                 'BLOG_ENTRIES_ID'           =>  $intEntryId,
                 'BLOG_ENTRIES_TITLE'        =>  $arrEntryValues['subject'],
                 'BLOG_ENTRIES_POSTED'       =>  $this->getPostedByString($arrEntryValues['user_name'],$arrEntryValues['time_created']),
-                'BLOG_ENTRIES_CONTENT'      =>  $arrEntryValues['translation'][$this->_intLanguageId]['content'],
-                'BLOG_ENTRIES_INTRODUCTION' =>  $this->getIntroductionText($arrEntryValues['translation'][$this->_intLanguageId]['content']),
-                'BLOG_ENTRIES_IMAGE'        =>  ($arrEntryValues['translation'][$this->_intLanguageId]['image'] != '') ? '<img src="'.$arrEntryValues['translation'][$this->_intLanguageId]['image'].'" title="'.$arrEntryValues['subject'].'" alt="'.$arrEntryValues['subject'].'" />' : '',
+                'BLOG_ENTRIES_CONTENT'      =>  $arrEntryValues['translation'][FRONTEND_LANG_ID]['content'],
+                'BLOG_ENTRIES_INTRODUCTION' =>  $this->getIntroductionText($arrEntryValues['translation'][FRONTEND_LANG_ID]['content']),
+                'BLOG_ENTRIES_IMAGE'        =>  ($arrEntryValues['translation'][FRONTEND_LANG_ID]['image'] != '') ? '<img src="'.$arrEntryValues['translation'][FRONTEND_LANG_ID]['image'].'" title="'.$arrEntryValues['subject'].'" alt="'.$arrEntryValues['subject'].'" />' : '',
                 'BLOG_ENTRIES_VOTING'       =>  '&#216;&nbsp;'.$arrEntryValues['votes_avg'],
                 'BLOG_ENTRIES_VOTING_STARS' =>  $this->getRatingBar($intEntryId),
                 'BLOG_ENTRIES_COMMENTS'     =>  $arrEntryValues['comments_active'].' '.$_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_COMMENTS'].'&nbsp;',
-                'BLOG_ENTRIES_CATEGORIES'   =>  $this->getCategoryString($arrEntryValues['categories'][$this->_intLanguageId], true),
-                'BLOG_ENTRIES_TAGS'         =>  $this->getLinkedTags($arrEntryValues['translation'][$this->_intLanguageId]['tags']),
+                'BLOG_ENTRIES_CATEGORIES'   =>  $this->getCategoryString($arrEntryValues['categories'][FRONTEND_LANG_ID], true),
+                'BLOG_ENTRIES_TAGS'         =>  $this->getLinkedTags($arrEntryValues['translation'][FRONTEND_LANG_ID]['tags']),
                 'BLOG_ENTRIES_SPACER'       =>  ($this->_arrSettings['blog_voting_activated'] && $this->_arrSettings['blog_comments_activated']) ? '&nbsp;&nbsp;|&nbsp;&nbsp;' : ''
             ));
 
@@ -193,7 +189,7 @@ class Blog extends BlogLibrary  {
         $this->addHit($intMessageId);
 
         //After processing new actions: show page
-        $arrEntries = $this->createEntryArray($this->_intLanguageId);
+        $arrEntries = $this->createEntryArray(FRONTEND_LANG_ID);
 
         //Loop over socializing-networks
         $strNetworks = '';
@@ -203,7 +199,7 @@ class Blog extends BlogLibrary  {
             $strPageUrl = urlencode('http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).CONTREXX_SCRIPT_PATH.'?section=blog&cmd=details&id='.$intMessageId);
 
             foreach ($arrNetworks as $arrNetworkValues) {
-                if (key_exists($this->_intLanguageId, $arrNetworkValues['status'])) {
+                if (key_exists(FRONTEND_LANG_ID, $arrNetworkValues['status'])) {
                     $strUrl = str_replace('[URL]', $strPageUrl, $arrNetworkValues['submit']);
                     $strUrl = str_replace('[SUBJECT]', $arrEntries[$intMessageId]['subject'], $strUrl);
 
@@ -217,8 +213,8 @@ class Blog extends BlogLibrary  {
             'BLOG_DETAILS_ID'           =>  $intMessageId,
             'BLOG_DETAILS_TITLE'        =>  $arrEntries[$intMessageId]['subject'],
             'BLOG_DETAILS_POSTED'       =>  $this->getPostedByString($arrEntries[$intMessageId]['user_name'], $arrEntries[$intMessageId]['time_created']),
-            'BLOG_DETAILS_CONTENT'      =>  $arrEntries[$intMessageId]['translation'][$this->_intLanguageId]['content'],
-            'BLOG_DETAILS_IMAGE'        =>  ($arrEntries[$intMessageId]['translation'][$this->_intLanguageId]['image'] != '') ? '<img src="'.$arrEntries[$intMessageId]['translation'][$this->_intLanguageId]['image'].'" title="'.$arrEntries[$intMessageId]['subject'].'" alt="'.$arrEntries[$intMessageId]['subject'].'" />' : '',
+            'BLOG_DETAILS_CONTENT'      =>  $arrEntries[$intMessageId]['translation'][FRONTEND_LANG_ID]['content'],
+            'BLOG_DETAILS_IMAGE'        =>  ($arrEntries[$intMessageId]['translation'][FRONTEND_LANG_ID]['image'] != '') ? '<img src="'.$arrEntries[$intMessageId]['translation'][FRONTEND_LANG_ID]['image'].'" title="'.$arrEntries[$intMessageId]['subject'].'" alt="'.$arrEntries[$intMessageId]['subject'].'" />' : '',
             'BLOG_DETAILS_NETWORKS'     =>  $strNetworks
         ));
 
@@ -275,7 +271,7 @@ class Blog extends BlogLibrary  {
                                                                     comment
                                                         FROM        '.DBPREFIX.'module_blog_comments
                                                         WHERE       message_id='.$intMessageId.' AND
-                                                                    lang_id='.$this->_intLanguageId.' AND
+                                                                    lang_id='.FRONTEND_LANG_ID.' AND
                                                                     is_active="1"
                                                         ORDER BY    time_created ASC, comment_id ASC
                                                     ');
@@ -498,7 +494,7 @@ class Blog extends BlogLibrary  {
             //No errors, insert entry
             $objDatabase->Execute(' INSERT INTO '.DBPREFIX.'module_blog_comments
                                     SET     message_id = '.$intMessageId.',
-                                            lang_id = '.$this->_intLanguageId.',
+                                            lang_id = '.FRONTEND_LANG_ID.',
                                             is_active = "'.$intIsActive.'",
                                             time_created = UNIX_TIMESTAMP(),
                                             ip_address = "'.$_SERVER['REMOTE_ADDR'].'",
@@ -774,7 +770,7 @@ class Blog extends BlogLibrary  {
                 $this->_objTpl->hideBlock('ResultPart');
             } else {
                 //Do search for date
-                $arrEntries = $this->createEntryArray($this->_intLanguageId);
+                $arrEntries = $this->createEntryArray(FRONTEND_LANG_ID);
 
                 $intTimestampStarting = mktime(0,0,0,$intMonth,$intDay,$intYear);
                 $intTimestampEnding = mktime(23,59,59,$intMonth,$intDay,$intYear);
@@ -789,13 +785,13 @@ class Blog extends BlogLibrary  {
             }
         } else {
             //Do search for keyword
-            $arrEntries = $this->createEntryArray($this->_intLanguageId);
+            $arrEntries = $this->createEntryArray(FRONTEND_LANG_ID);
 
             if (count($arrEntries) > 0) {
                 foreach ($arrEntries as $intEntryId => $arrEntryValues) {
                     //Check for matches of all keywords
-                    if ($this->allKeywordsFound($strKeywordString, $arrEntryValues['subject'], $arrEntryValues['translation'][$this->_intLanguageId]['content'], $arrEntryValues['translation'][$this->_intLanguageId]['tags']) &&
-                        $this->categoryMatches($intKeywordCategory, $arrEntryValues['categories'][$this->_intLanguageId]))
+                    if ($this->allKeywordsFound($strKeywordString, $arrEntryValues['subject'], $arrEntryValues['translation'][FRONTEND_LANG_ID]['content'], $arrEntryValues['translation'][FRONTEND_LANG_ID]['tags']) &&
+                        $this->categoryMatches($intKeywordCategory, $arrEntryValues['categories'][FRONTEND_LANG_ID]))
                     {
                         $arrResults[count($arrResults)] = $intEntryId;
                     }
@@ -819,9 +815,9 @@ class Blog extends BlogLibrary  {
                     'BLOG_SEARCH_RESULTS_MID'           =>  $intEntryId,
                     'BLOG_SEARCH_RESULTS_SUBJECT'       =>  $arrEntries[$intEntryId]['subject'],
                     'BLOG_SEARCH_RESULTS_POSTED'        =>  $arrEntries[$intEntryId]['time_created'],
-                    'BLOG_SEARCH_RESULTS_CATEGORIES'    =>  $this->getCategoryString($arrEntries[$intEntryId]['categories'][$this->_intLanguageId], true),
-                    'BLOG_SEARCH_RESULTS_TAGS'          =>  $this->getLinkedTags($arrEntries[$intEntryId]['translation'][$this->_intLanguageId]['tags']),
-                    'BLOG_SEARCH_RESULTS_INTRODUCTION'  =>  $this->getIntroductionText($arrEntries[$intEntryId]['translation'][$this->_intLanguageId]['content'])
+                    'BLOG_SEARCH_RESULTS_CATEGORIES'    =>  $this->getCategoryString($arrEntries[$intEntryId]['categories'][FRONTEND_LANG_ID], true),
+                    'BLOG_SEARCH_RESULTS_TAGS'          =>  $this->getLinkedTags($arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['tags']),
+                    'BLOG_SEARCH_RESULTS_INTRODUCTION'  =>  $this->getIntroductionText($arrEntries[$intEntryId]['translation'][FRONTEND_LANG_ID]['content'])
                 ));
 
                 $this->_objTpl->parse('showResults');
@@ -927,3 +923,5 @@ class Blog extends BlogLibrary  {
         return $strJavaScript;
     }
 }
+
+?>

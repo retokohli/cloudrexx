@@ -29,7 +29,7 @@ class blockLibrary
     * @access public
     * @var string
     */
-    var $blockNamePrefix = 'BLOCK_';
+    public $blockNamePrefix = 'BLOCK_';
 
     /**
     * Block ids
@@ -37,7 +37,7 @@ class blockLibrary
     * @access private
     * @var array
     */
-    var $_arrBlocks;
+    public $_arrBlocks;
 
 
     /**
@@ -130,9 +130,8 @@ class blockLibrary
                 }
             }
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
 
@@ -164,7 +163,7 @@ class blockLibrary
                             $showOnAllPages            = $_POST['block_show_on_all_pages'][$langId];
 
                             if ($showOnAllPages != 1) {
-                                foreach ($arrSelectedPages as $key => $pageId) {
+                                foreach ($arrSelectedPages as $pageId) {
                                     $objDatabase->Execute('    INSERT
                                                               INTO    '.DBPREFIX.'module_block_rel_pages
                                                                SET    block_id='.$blockId.', page_id='.$pageId.', lang_id='.$langId.'
@@ -186,10 +185,10 @@ class blockLibrary
                 }
             }
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
+
 
     /**
      * Set block lang ids
@@ -212,29 +211,24 @@ class blockLibrary
                 array_push($arrCurrentLangIds, $objLang->fields['lang_id']);
                 $objLang->MoveNext();
             }
-
             $arrAddedLangIds = array_diff($arrLangIds, $arrCurrentLangIds);
             $arrRemovedLangIds = array_diff($arrCurrentLangIds, $arrLangIds);
-
             foreach ($arrAddedLangIds as $langId) {
                 $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_block_rel_lang (`block_id`, `lang_id`) VALUES (".$blockId.", ".$langId.")");
             }
-
             foreach ($arrRemovedLangIds as $langId) {
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_lang WHERE block_id=".$blockId." AND lang_id=".$langId);
             }
-
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
+
 
     /**
     * Get block
     *
     * Return a block
-    *
     * @access private
     * @param integer $id
     * @global ADONewConnection
@@ -254,10 +248,10 @@ class blockLibrary
                 'content'    => $objBlock->fields['content'],
                 'global'    => $objBlock->fields['global']
             );
-        } else {
-            return false;
         }
+        return false;
     }
+
 
     function _getAssociatedLangIds($blockId)
     {
@@ -272,7 +266,6 @@ class blockLibrary
                 $objLanguage->MoveNext();
             }
         }
-
         return $arrLangIds;
     }
 
@@ -289,40 +282,40 @@ class blockLibrary
     */
     function _setBlock($id, &$code)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
 //        $objDatabase->debug = true;
         /*$objBlock = $objDatabase->SelectLimit("    SELECT     tblBlock.content
                                                 FROM     ".DBPREFIX."module_block_blocks AS tblBlock
                                                 WHERE     tblBlock.id=".$id."
                                                 AND     tblBlock.active=1", 1
-                                                );*/    
-                                                
+                                                );*/
+
         $query = "  SELECT tblBlock.content, tblLang.lang_id
                     FROM ".DBPREFIX."module_block_blocks AS tblBlock
-                    INNER JOIN ".DBPREFIX."module_block_rel_lang AS tblLang 
+                    INNER JOIN ".DBPREFIX."module_block_rel_lang AS tblLang
                     ON tblLang.block_id = tblBlock.id
                     WHERE tblBlock.id = ".$id."
                     AND tblBlock.active = 1
-                    AND tblLang.lang_id = ".$_LANGID;
+                    AND tblLang.lang_id = ".FRONTEND_LANG_ID;
         $objRs = $objDatabase->Execute($query);
         if ($objRs !== false) {
             if ($objRs->RecordCount()) {
                 $code = str_replace("{".$this->blockNamePrefix.$id."}", $objRs->fields['content'], $code);
             }
         }
-        
+
         /*
         if ($objBlock !== false) {
             $code = str_replace("{".$this->blockNamePrefix.$id."}", $objBlock->fields['content'], $code);
         }*/
     }
 
+
     /**
     * Set block Global
     *
     * Parse the block with the id $id
-    *
     * @access private
     * @param integer $id
     * @param string &$code
@@ -331,7 +324,7 @@ class blockLibrary
     */
     function _setBlockGlobal(&$code, $pageId)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $objResult = $objDatabase->Execute("SELECT    value
                                             FROM    ".DBPREFIX."module_block_settings
@@ -344,7 +337,6 @@ class blockLibrary
                 $objResult->MoveNext();
             }
         }
-
         $query = "SELECT block_id FROM ".DBPREFIX."module_block_rel_pages WHERE block_id !=''";
         $objCheck = $objDatabase->SelectLimit($query, 1);
 
@@ -356,11 +348,10 @@ class blockLibrary
                     ".DBPREFIX."module_block_rel_pages AS tblPage";
             $where    = "AND     ((tblPage.page_id=".intval($pageId)." AND tblPage.block_id=tblBlock.id) OR tblLang.all_pages='1')";
         }
-
         $objBlock = $objDatabase->Execute("    SELECT     tblBlock.id, tblBlock.content
                                                 FROM     ".DBPREFIX."module_block_blocks AS tblBlock,
                                                         ".$tables."
-                                                WHERE     (tblLang.lang_id=".$_LANGID." AND tblLang.block_id=tblBlock.id)
+                                                WHERE     (tblLang.lang_id=".FRONTEND_LANG_ID." AND tblLang.block_id=tblBlock.id)
                                                         ".$where."
                                                 AND     tblBlock.active=1
                                                 GROUP     BY tblBlock.id
@@ -376,11 +367,11 @@ class blockLibrary
         }
     }
 
+
     /**
     * Set block Random
     *
     * Parse the block with the id $id
-    *
     * @access private
     * @param integer $id
     * @param string &$code
@@ -389,16 +380,14 @@ class blockLibrary
     */
     function _setBlockRandom(&$code, $id)
     {
-        global $objDatabase, $_LANGID;
-        
-        
-        $query = "  SELECT tblBlock.id 
-                    FROM ".DBPREFIX."module_block_blocks AS tblBlock 
+        global $objDatabase;
+
+        $query = "  SELECT tblBlock.id
+                    FROM ".DBPREFIX."module_block_blocks AS tblBlock
                     INNER JOIN ".DBPREFIX."module_block_rel_lang AS tblLang
                     ON tblLang.block_id = tblBlock.id
                     WHERE tblBlock.active= 1
-                    AND tblLang.lang_id = ".$_LANGID." ";
-        
+                    AND tblLang.lang_id = ".FRONTEND_LANG_ID." ";
         //Get Block Name and Status
         switch($id) {
             case '1':
@@ -415,28 +404,24 @@ class blockLibrary
                 break;
         }
 
-
         if ($objBlockName !== false && $objBlockName->RecordCount() > 0) {
             while (!$objBlockName->EOF) {
                 $arrActiveBlocks[] = $objBlockName->fields['id'];
                 $objBlockName->MoveNext();
             }
-
             $ranId = $arrActiveBlocks[@array_rand($arrActiveBlocks, 1)];
-
             $objBlock = $objDatabase->SelectLimit("SELECT content FROM ".DBPREFIX."module_block_blocks WHERE id=".$ranId." AND active =1", 1);
             if ($objBlock !== false) {
                 $code = str_replace("{".$this->blockNamePrefix."RANDOMIZER".$blockNr."}", $objBlock->fields['content'], $code);
                 return true;
             }
         }
-
         return false;
     }
 
+
     /**
     * Save the settings associated to the block system
-    *
     * @access    private
     * @param    array     $arrSettings
     * @global   ADONewConnection
@@ -451,16 +436,15 @@ class blockLibrary
             $query = "UPDATE ".DBPREFIX."settings SET setvalue='".$arrSettings['blockStatus']."' WHERE setname='blockStatus'";
             $objDatabase->Execute($query);
         }
-
         if (isset($arrSettings['blockRandom'])) {
             $_CONFIG['blockRandom'] = (string) $arrSettings['blockRandom'];
             $query = "UPDATE ".DBPREFIX."settings SET setvalue='".$arrSettings['blockRandom']."' WHERE setname='blockRandom'";
             $objDatabase->Execute($query);
         }
-
         require_once(ASCMS_CORE_PATH.'/settings.class.php');
-        $objSettings = &new settingsManager();
+        $objSettings = new settingsManager();
         $objSettings->writeSettingsFile();
     }
 }
+
 ?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File browser
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -28,19 +29,18 @@ require_once(ASCMS_FRAMEWORK_PATH.DIRECTORY_SEPARATOR.'Image.class.php');
  */
 class FileBrowser {
 
-    var $_objTpl;
-    var $_pageTitle;
-    var $_okMessage = array();
-    var $_errMessage = array();
-    var $_arrFiles = array();
-    var $_arrDirectories = array();
-    var $_path = '';
-    var $_iconWebPath = '';
-    var $_frontendLanguageId = null;
-    var $_absoluteURIs = false;
-    var $_mediaType = '';
-    var $_arrWebpages = array();
-    var $_arrMediaTypes = array(
+    public $_objTpl;
+    public $_pageTitle;
+    public $_okMessage = array();
+    public $_errMessage = array();
+    public $_arrFiles = array();
+    public $_arrDirectories = array();
+    public $_path = '';
+    public $_iconWebPath = '';
+    public $_absoluteURIs = false;
+    public $_mediaType = '';
+    public $_arrWebpages = array();
+    public $_arrMediaTypes = array(
         'files'     => 'TXT_FILEBROWSER_FILES',
         'webpages'     => 'TXT_FILEBROWSER_WEBPAGES',
         'media1'    => 'TXT_FILEBROWSER_MEDIA_1',
@@ -51,9 +51,9 @@ class FileBrowser {
         'blog'        => 'TXT_FILEBROWSER_BLOG',
         'podcast'   => 'TXT_FILEBROWSER_PODCAST'
     );
-    var $_shopEnabled;
-    var $_blogEnabled;
-    var $_podcastEnabled;
+    public $_shopEnabled;
+    public $_blogEnabled;
+    public $_podcastEnabled;
 
 
 
@@ -64,9 +64,7 @@ class FileBrowser {
     */
     function __construct()
     {
-        global $_ARRAYLANG;
-
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/fileBrowser/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/fileBrowser/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_iconPath = ASCMS_MODULE_IMAGE_WEB_PATH.'/fileBrowser/';
@@ -136,16 +134,14 @@ class FileBrowser {
         return $path;
     }
 
+
+    /**
+     * @todo    This is obsolete.  Use the constant LANG_ID instead.
+     */
     function _setFrontendLanguageId()
     {
-        global $_FRONTEND_LANGID;
-
-        if (!empty($_GET['langId']) || !empty($_POST['langId'])) {
-            $this->_frontendLanguageId = intval(!empty($_GET['langId']) ? $_GET['langId'] : $_POST['langId']);
-        } else {
-            $this->_frontendLanguageId = $_FRONTEND_LANGID;
-        }
     }
+
 
     function _checkURIReturnType()
     {
@@ -189,6 +185,7 @@ class FileBrowser {
         if (!isset($_FILES['NewFile']) || is_null($_FILES['NewFile']['tmp_name']) || $_FILES['NewFile']['name'] == '') {
             $this->SendResults('202');
         } else {
+            $uploadFileName = '';
             $this->_uploadFile($_FILES['NewFile']['name'], $_FILES['NewFile']['tmp_name'], $uploadFileName);
             $this->SendResults( 0, ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path.$uploadFileName, $uploadFileName);
         }
@@ -258,24 +255,22 @@ class FileBrowser {
      */
     function _showStatus()
     {
-        $okMessage  = '';
-        $errMessage = '';
+        $okMessage  = implode('<br />', $this->_okMessage);
+        $errMessage = implode('<br />', $this->_errMessage);
 
-           $okMessage  = implode('<br />', $this->_okMessage);
-           $errMessage = implode('<br />', $this->_errMessage);
-
-           if(!empty($errMessage)){
-           $this->_objTpl->setVariable('FILEBROWSER_ERROR_MESSAGE', $errMessage);
+        if(!empty($errMessage)){
+            $this->_objTpl->setVariable('FILEBROWSER_ERROR_MESSAGE', $errMessage);
         }else{
-           $this->_objTpl->hideBlock('errormsg');
+            $this->_objTpl->hideBlock('errormsg');
         }
 
         if(!empty($okMessage)){
             $this->_objTpl->setVariable('FILEBROWSER_OK_MESSAGE', $okMessage);
         }else{
-           $this->_objTpl->hideBlock('okmsg');
+            $this->_objTpl->hideBlock('okmsg');
         }
     }
+
 
     /**
      * put $message in the array specified by type
@@ -307,7 +302,8 @@ class FileBrowser {
     function _checkUpload()
     {
         if (isset($_FILES['fileBrowserUploadFile']) && !empty($_FILES['fileBrowserUploadFile'])) {
-            $this->_uploadFile($_FILES['fileBrowserUploadFile']['name'], $_FILES['fileBrowserUploadFile']['tmp_name'],$tmp);
+            $tmp = '';
+            $this->_uploadFile($_FILES['fileBrowserUploadFile']['name'], $_FILES['fileBrowserUploadFile']['tmp_name'], $tmp);
         }
     }
 
@@ -362,7 +358,7 @@ class FileBrowser {
         $nr = 1;
 
         if(!empty($_REQUEST['newDir']) && preg_match('#^[0-9a-zA-Z_\-]+$#', $_REQUEST['newDir'])){
-            $objFile = &new File();
+            $objFile = new File();
             if(!$objFile->mkDir($strPath, $strWebPath, $_REQUEST['newDir'])){
                 $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'], $_REQUEST['newDir']), 'error');
             }else{
@@ -373,6 +369,7 @@ class FileBrowser {
         }
 
         if (@file_exists($strPath.$uploadFileName)) {
+            $arrSubPatterns = array();
             if (preg_match('/.*\.(.*)$/', $uploadFileName, $arrSubPatterns)) {
                 $fileName = substr($uploadFileName, 0, strrpos($uploadFileName, '.'));
                 $fileExtension = $arrSubPatterns[1];
@@ -390,38 +387,35 @@ class FileBrowser {
 
         if (move_uploaded_file($tmpFileName, $strPath.$file)) {
             if (!isset($objFile)) {
-                $objFile = &new File();
+                $objFile = new File();
             }
             $objFile->setChmod($strPath, $strWebPath, $file);
         }
-
         $fileType = pathinfo($strPath.$file);
-
         if($fileType['extension'] == 'jpg' || $fileType['extension'] == 'jpeg' || $fileType['extension'] == 'png' || $fileType['extension'] == 'gif'){
             if ($this->_createThumb($strPath, $strWebPath, $file)) {
               $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_SUCCESSFULLY_CREATED'], $strWebPath.$file));
             }
         }
+        return true;
     }
 
 
     function _createThumb($strPath, $strWebPath, $file, $height = 80, $quality = 90)
     {
-        global $_ARRAYLANG;
-        $objFile = &new File();
-
-        $_objImage = &new ImageManager();
+        $objFile = new File();
+        $_objImage = new ImageManager();
         $tmpSize    = getimagesize($strPath.$file);
         $thumbWidth = $height / $tmpSize[1] * $tmpSize[0];
         $_objImage->loadImage($strPath.$file);
         $_objImage->resizeImage($thumbWidth, $height, $quality);
         $_objImage->saveNewImage($strPath.$file . '.thumb');
-
         if ($objFile->setChmod($strPath, $strWebPath, $file . '.thumb')) {
-           return true;
+            return true;
         }
         return false;
     }
+
 
     /**
     * Set the navigation in the file browser
@@ -438,7 +432,7 @@ class FileBrowser {
         $this->_objTpl->addBlockfile('FILEBROWSER_NAVIGATION', 'fileBrowser_navigation', 'module_fileBrowser_navigation.html');
 
         $this->_objTpl->setVariable(array(
-            'FILEBROWSER_MEDIA_TYPE_MENU'    => $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\'index.php?cmd=fileBrowser&amp;standalone=true&amp;langId='.$this->_frontendLanguageId.'&amp;absoluteURIs='.$this->_absoluteURIs.'&amp;type=\'+this.value)" style="width:180px;"'),
+            'FILEBROWSER_MEDIA_TYPE_MENU'    => $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\'index.php?cmd=fileBrowser&amp;standalone=true&amp;langId='.LANG_ID.'&amp;absoluteURIs='.$this->_absoluteURIs.'&amp;type=\'+this.value)" style="width:180px;"'),
             'TXT_FILEBROWSER_PREVIEW'        => $_ARRAYLANG['TXT_FILEBROWSER_PREVIEW']
         ));
 
@@ -447,7 +441,7 @@ class FileBrowser {
             if (count($this->_arrDirectories) > 0) {
                 foreach ($this->_arrDirectories as $arrDirectory) {
                     $this->_objTpl->setVariable(array(
-                        'FILEBROWSER_FILE_PATH'    => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;absoluteURIs={$this->_absoluteURIs}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}",
+                        'FILEBROWSER_FILE_PATH'    => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId=".LANG_ID."&amp;absoluteURIs={$this->_absoluteURIs}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}",
                         'FILEBROWSER_FILE_NAME'    => $arrDirectory['name'],
                         'FILEBROWSER_FILE_ICON'    => $arrDirectory['icon']
                     ));
@@ -485,13 +479,16 @@ class FileBrowser {
             }
             $getPageId = (isset($_REQUEST['getPageId']) && $_REQUEST['getPageId'] == 'true') ? true : false;
 
-            $objContentTree = &new ContentTree($this->_frontendLanguageId);
+            $objContentTree = new ContentTree(LANG_ID);
 
-            $scriptPath = ($this->_absoluteURIs ?
-                $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.($_CONFIG['useVirtualLanguagePath'] == 'on' ?
-                    $objLanguage->getLanguageParameter($this->_frontendLanguageId, 'lang').'/'
-                :    null)
-            :    null);
+            $scriptPath = ($this->_absoluteURIs
+                ? $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.
+                    ($_CONFIG['useVirtualLanguagePath'] == 'on'
+                        ? $objLanguage->getLanguageParameter(LANG_ID, 'lang').'/'
+                        : null
+                    )
+                : null
+            );
             foreach ($objContentTree->getTree() as $arrPage) {
                 $s = isset($arrModules[$arrPage['moduleid']]) ? $arrModules[$arrPage['moduleid']] : '';
                 $c = $arrPage['cmd'];
@@ -536,7 +533,7 @@ class FileBrowser {
                 foreach ($this->_arrDirectories as $arrDirectory) {
                     $this->_objTpl->setVariable(array(
                         'FILEBROWSER_ROW_CLASS'            => $rowNr%2 == 0 ? "row1" : "row2",
-                        'FILEBROWSER_FILE_PATH_CLICK'    => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;absoluteURIs={$this->_absoluteURIs}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}",
+                        'FILEBROWSER_FILE_PATH_CLICK'    => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId=".LANG_ID."&amp;absoluteURIs={$this->_absoluteURIs}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}",
                         'FILEBROWSER_FILE_NAME'            => $arrDirectory['name'],
                         'FILEBROWSER_FILESIZE'            => '&nbsp;',
                         'FILEBROWSER_FILE_ICON'            => $arrDirectory['icon'],
@@ -600,8 +597,8 @@ class FileBrowser {
     function _setUploadForm()
     {
         global $_ARRAYLANG;
-        $objFWSystem = &new FWSystem();
 
+        $objFWSystem = new FWSystem();
         $this->_objTpl->addBlockfile('FILEBROWSER_UPLOAD', 'fileBrowser_upload', 'module_fileBrowser_upload.html');
         $this->_objTpl->setVariable(array(
             'FILEBROWSER_UPLOAD_TYPE'    => $this->_mediaType,
@@ -621,7 +618,6 @@ class FileBrowser {
     */
     function _initFiles()
     {
-
         switch($this->_mediaType) {
             case 'media1':
                 $strPath = ASCMS_MEDIA1_PATH.$this->_path;
@@ -649,19 +645,18 @@ class FileBrowser {
         }
 
         $objDir = @opendir($strPath);
-
         $arrFiles = array();
-
         if ($objDir) {
+            $path = array();
             if ($this->_path !== "/" && preg_match('#(.*/).+[/]?$#',$this->_path, $path)) {
                 array_push($this->_arrDirectories, array('name' => '..', 'path' => $path[1], 'icon' => $this->_iconPath.'_folder.gif'));
             }
-
-            while ($file = readdir($objDir)) {
-                if ($file == '.' || $file == '..' || preg_match('/\.thumb$/', $file) || $file == 'index.php') {
+            $file = readdir($objDir);
+            while ($file) {
+                if ($file == '.' || $file == '..' || preg_match('/\.thumb$/', $file) || $file == 'index.php')
                     continue;
-                }
                 array_push($arrFiles, $file);
+                $file = readdir($objDir);
             }
             closedir($objDir);
 

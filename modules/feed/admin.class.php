@@ -33,17 +33,17 @@ if (ini_get('allow_url_fopen') != 1){
  */
 class feedManager extends feedLibrary
 {
-    var $_objTpl;
-    var $pageTitle;
-    var $feedpath;
-    var $_objNewsML;
+    public $_objTpl;
+    public $pageTitle;
+    public $feedpath;
+    public $_objNewsML;
 
     // CONSTRUCTOR
     function __construct()
     {
         global  $_ARRAYLANG, $objTemplate, $_CONFIG;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/feed/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/feed/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         if (isset($_GET['act']) && $_GET['act'] == 'settings' && isset($_POST['save'])) {
@@ -89,7 +89,7 @@ class feedManager extends feedLibrary
                 break;
             case 'newsML':
                 require_once ASCMS_MODULE_PATH.'/feed/newsML.class.php';
-                $this->_objNewsML = &new NewsML(true);
+                $this->_objNewsML = new NewsML(true);
                 $this->_showNewsML();
                 break;
             case 'settings':
@@ -135,7 +135,7 @@ class feedManager extends feedLibrary
         $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".$feedNewsMLStatus."' WHERE setname='feedNewsMLStatus'");
         $_CONFIG['feedNewsMLStatus'] = (string) $feedNewsMLStatus;
         require_once(ASCMS_CORE_PATH.'/settings.class.php');
-        $objSettings = &new settingsManager();
+        $objSettings = new settingsManager();
         $objSettings->writeSettingsFile();
 
         $_SESSION['strOkMessage'] = $_CORELANG['TXT_SETTINGS_UPDATED'];
@@ -310,11 +310,9 @@ class feedManager extends feedLibrary
         }
     }
 
+
     /**
-    * Delete NewsML document
-    *
     * Delete a NewsML document
-    *
     * @access private
     * @global $_ARRAYLANG
     */
@@ -326,10 +324,13 @@ class feedManager extends feedLibrary
         if ($this->_objNewsML->deleteDocument($id)) {
             $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_NEWS_MSG_DELETED_SUCCESSFULLY'];
         } else {
-            $arrNewsMLDocuments = $this->_objNewsML->getDocuments($providerId);
+// TODO: $providerId is not defined
+//            $arrNewsMLDocuments = $this->_objNewsML->getDocuments($providerId);
+            $arrNewsMLDocuments = array();
             $_SESSION['strErrMessage'] = str_replace('%NAME%', $arrNewsMLDocuments[$id]['headline'], $_ARRAYLANG['TXT_FEED_COULD_NOT_DELETE_NEWS_MSG']);
         }
     }
+
 
     /**
     * Delete NewsML documents
@@ -344,7 +345,9 @@ class feedManager extends feedLibrary
         global $_ARRAYLANG;
 
         if (isset($_POST['selectedNewsMLDocId']) && is_array($_POST['selectedNewsMLDocId']) && count($_POST['selectedNewsMLDocId'])>0) {
-            $arrNewsMLDocuments = $this->_objNewsML->getDocuments($providerId);
+// TODO: $providerId is not defined
+//            $arrNewsMLDocuments = $this->_objNewsML->getDocuments($providerId);
+            $arrNewsMLDocuments = array();
             $status = true;
             foreach ($_POST['selectedNewsMLDocId'] as $id) {
                 $id = intval($id);
@@ -456,7 +459,7 @@ class feedManager extends feedLibrary
     */
     function _newsMLSaveCategory()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         if (isset($_POST['save'])) {
             $categoryId = isset($_GET['categoryId']) ? intval($_GET['categoryId']) : 0;
@@ -548,7 +551,7 @@ class feedManager extends feedLibrary
 
     function showNews()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         //refresh
         if (isset($_GET['ref']) and $_GET['ref'] == 1 and isset($_GET['id']) and $_GET['id'] != ''){
@@ -699,10 +702,12 @@ class feedManager extends feedLibrary
         //directory
         $filename = array();
         $dir = opendir ($this->feedpath);
-        while ($file = readdir($dir)) {
+        $file = readdir($dir);
+        while ($file) {
             if ($file != '.' and $file != '..' and $file != 'index.html' and substr($file, 0, 5) != 'feed_'){
-                  $filename[] = $file;
+                $filename[] = $file;
             }
+            $file = readdir($dir);
         }
         closedir($dir);
 
@@ -874,33 +879,28 @@ class feedManager extends feedLibrary
                       FROM ".DBPREFIX."module_feed_news
                      WHERE id = '".$id."'";
         $objResult = $objDatabase->Execute($query);
-
         $filename = $this->feedpath.$objResult->fields['filename'];
-
         //rss class
-        $rss =& new XML_RSS($filename);
+        $rss = new XML_RSS($filename);
         $rss->parse();
-
         //channel info
         $info = $rss->getChannelInfo();
         echo "<b>".strip_tags($info['title'])."</b><br />";
         echo $_ARRAYLANG['TXT_FEED_LAST_UPDATE'].": ".$objResult->fields['time']."<br />";
-
         //image
         foreach($rss->getImages() as $img) {
             if ($img['url'] != '') {
                 echo '<img src="'.strip_tags($img['url']).'" /><br />';
             }
         }
-
         echo '<br />';
         echo '<i>'.$_ARRAYLANG['TXT_FEED_MESSAGE_IMPORTANT'].'</i><br />';
-
         //items
         foreach ($rss->getItems() as $value) {
             echo '<li>'.strip_tags($value['title']).'</li>';
         }
     }
+
 
     //FUNC new
     function showNewsNew($category, $name, $link, $filename, $articles, $cache, $time, $image, $status)
@@ -929,7 +929,7 @@ class feedManager extends feedLibrary
                 fclose($fp);*/
 
                 //rss class
-                $rss = & new XML_RSS($this->feedpath.$filename);
+                $rss = new XML_RSS($this->feedpath.$filename);
 				$rss->parse();
 				$content = '';
 
@@ -967,7 +967,7 @@ class feedManager extends feedLibrary
     //FUNC delete
     function showNewsDelete($ids)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase;
 
         foreach($ids as $id){
             $query = "SELECT id,
@@ -1001,7 +1001,7 @@ class feedManager extends feedLibrary
     //FUNC changestatus
     function showNewsChange($ids, $to)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase;
 
         foreach($ids as $id){
             $query = "UPDATE ".DBPREFIX."module_feed_news
@@ -1014,7 +1014,7 @@ class feedManager extends feedLibrary
     //FUNC sort
     function showNewsChangePos($ids, $pos)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase;
 
         for($x = 0; $x < count($ids); $x++){
             $query = "UPDATE ".DBPREFIX."module_feed_news
@@ -1031,7 +1031,7 @@ class feedManager extends feedLibrary
 
     function showEdit()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         // check
         if (!isset($_GET['set'])){
@@ -1130,7 +1130,8 @@ class feedManager extends feedLibrary
 
         $this->_objTpl->setVariable(array(
             'FEED_ID'           => $id,
-            'FEED_POS'          => $pos,
+// TODO: $pos is not defined
+            'FEED_POS'          => 0, //$pos,
             'FEED_NAME'         => $name,
             'FEED_LINK'         => $link,
             'FEED_ARTICLES'     => $articles,
@@ -1167,10 +1168,12 @@ class feedManager extends feedLibrary
         //filename
         $allfiles = array();
         $dir = opendir ($this->feedpath);
-        while($file = readdir($dir)) {
+        $file = readdir($dir);
+        while($file) {
             if ($file != '.' and $file != '..' and $file != 'index.html' and substr($file, 0, 5) != 'feed_') {
-                  $allfiles[] = $file;
+                $allfiles[] = $file;
             }
+            $file = readdir($dir);
         }
         closedir($dir);
 
@@ -1253,7 +1256,7 @@ class feedManager extends feedLibrary
                 }
 
                 //rss class
-                $rss =& new XML_RSS($this->feedpath.$filename);
+                $rss = new XML_RSS($this->feedpath.$filename);
                 $rss->parse();
                 $content = '';
 
@@ -1304,7 +1307,7 @@ class feedManager extends feedLibrary
 
     function showCategory()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         unset($_SESSION['feedCategorySort']);
 
@@ -1374,7 +1377,7 @@ class feedManager extends feedLibrary
 
         while(!$objResult->EOF) {
             $selected = '';
-            if ($_LANGID == $objResult->fields['id']) {
+            if (FRONTEND_LANG_ID == $objResult->fields['id']) {
                 $selected = ' selected';
             }
 
@@ -1514,7 +1517,7 @@ class feedManager extends feedLibrary
     //FUNC new
     function showCategoryNew($name, $lang, $status, $time)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $query = "SELECT id
                       FROM ".DBPREFIX."module_feed_category
@@ -1539,7 +1542,7 @@ class feedManager extends feedLibrary
     //FUNC discharge
     function showCategoryDischarge($ids)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         foreach($ids as $id) {
             $query = "SELECT id,
@@ -1579,7 +1582,7 @@ class feedManager extends feedLibrary
     //FUNC delete
     function showCategoryDelete($ids)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
         $y = 0;
 
         foreach($ids as $id) {
@@ -1615,7 +1618,7 @@ class feedManager extends feedLibrary
     //FUNC changestatus
     function showCategoryChange($ids, $to)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase;
 
         foreach($ids as $id) {
             $query = "UPDATE ".DBPREFIX."module_feed_category
@@ -1628,7 +1631,7 @@ class feedManager extends feedLibrary
     //FUNC sort
     function showCategoryChangePos($ids, $pos)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase;
 
         for($x = 0; $x < count($ids); $x++) {
             $query = "UPDATE ".DBPREFIX."module_feed_category
@@ -1645,7 +1648,7 @@ class feedManager extends feedLibrary
 
     function showCatEdit()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         // check
         if (!isset($_GET['set'])) {
@@ -1701,7 +1704,8 @@ class feedManager extends feedLibrary
         $this->_objTpl->setVariable(array(
             'FEED_ID'           => $id,
             'FEED_NAME'         => $name,
-            'FEED_LINK'         => $link,
+// TODO: $link is not defined
+            'FEED_LINK'         => '', //$link,
             'FEED_STATUS0'      => $status0,
             'FEED_STATUS1'      => $status1
         ));
@@ -1753,7 +1757,7 @@ class feedManager extends feedLibrary
 
     function showCatEditSet($id, $name, $status, $time, $lang)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $query = "SELECT id
                       FROM ".DBPREFIX."module_feed_category

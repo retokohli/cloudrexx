@@ -34,7 +34,6 @@ class MemberDirManager extends MemberDirLibrary
     var $pageTitle='';
     var $statusMessage='';
     var $imagePath;
-    var $langId;
     var $okMessage='';
     //var $arrSettings = array();
 

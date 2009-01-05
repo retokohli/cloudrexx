@@ -23,7 +23,6 @@
  */
 class SurveyLibrary {
 
-    var $_intLangId;
     var $_arrSettings            = array();
     var $_arrLanguages             = array();
     var $_arrSurveyTranslations    = array();

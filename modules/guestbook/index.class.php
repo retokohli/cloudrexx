@@ -27,7 +27,6 @@ require_once ASCMS_MODULE_PATH . '/guestbook/Lib.class.php';
  */
 class Guestbook extends GuestbookLibrary
 {
-    var $langId;
     var $_objTpl;
     var $statusMessage;
     var $arrSettings = array();
@@ -41,8 +40,6 @@ class Guestbook extends GuestbookLibrary
      */
     function __construct($pageContent)
     {
-        global $_LANGID;
-
         $this->pageContent = $pageContent;
         $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);

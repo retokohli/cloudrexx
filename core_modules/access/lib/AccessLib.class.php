@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User Management
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -27,25 +28,25 @@ class AccessLib
     /**
      * @access private
      */
-    var $_objTpl;
+    public $_objTpl;
 
     /**
      * @access private
      * @var array
      */
-    var $arrAttachedJSFunctions = array();
+    public $arrAttachedJSFunctions = array();
 
     /**
      * @access private
      * @var array
      */
-    var $_arrNoAvatar = array(
+    public $_arrNoAvatar = array(
         'src'        => '0_noavatar.gif',
         'width'        => 121,
         'height'    => 160
     );
 
-    var $_arrNoPicture = array(
+    public $_arrNoPicture = array(
         'src'        => '0_no_picture.gif',
         'width'        => 80,
         'height'    => 84
@@ -64,21 +65,21 @@ class AccessLib
      *
      * @var string
      */
-    var $_imageThumbnailSuffix = '.thumb';
+    public $_imageThumbnailSuffix = '.thumb';
 
     /**
      * Sign to mark mandatory fields as required
      *
      * @var string
      */
-    var $_mandatorySign = '<strong style="padding: 0px 2px 0px 2px;color:#f00;">*</strong>';
+    public $_mandatorySign = '<strong style="padding: 0px 2px 0px 2px;color:#f00;">*</strong>';
 
     /**
      * @access private
      */
-    var $attributeNamePrefix = 'access_profile_attribute';
+    public $attributeNamePrefix = 'access_profile_attribute';
 
-    var $arrAttributeTypeTemplates;
+    public $arrAttributeTypeTemplates;
 
     private $arrAccountAttributes;
 
@@ -1622,4 +1623,5 @@ JSconfirmUserNotification
     }*/
 
 }
+
 ?>

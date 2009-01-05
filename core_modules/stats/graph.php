@@ -143,8 +143,8 @@ class makeGraph
     }
 
 
-
-    function _makeRequestsDaysGraph() {
+    function _makeRequestsDaysGraph()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $arrBarPlot1 = array();
@@ -176,10 +176,13 @@ class makeGraph
         }
         $arrRange = array();
         if (date('d') < date('t')) {
-            $arrRange[$previousMonth = (date('m') == 1 ? 12 : date('m')-1)] = range(
-                date('d') + 1 > ($daysOfPreviousMonth = date('t', mktime(0,0,0,$previousMonth,1,$previousYear,$previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))))
-                    ?    $daysOfPreviousMonth
-                    :    date('d') + 1,
+            $previousMonth = (date('m') == 1 ? 12 : date('m')-1);
+            $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y'));
+            $daysOfPreviousMonth = date('t', mktime(0, 0, 0, $previousMonth, 1, $previousYear));
+            $arrRange[$previousMonth] = range(
+                (date('d') + 1 > $daysOfPreviousMonth
+                    ? $daysOfPreviousMonth : date('d') + 1
+                ),
                 $daysOfPreviousMonth
             );
         }
@@ -270,21 +273,16 @@ class makeGraph
         $this->graphChartTitle = date('Y');
         $this->graphTitleAxisX = $_ARRAYLANG['TXT_MONTH'];
         $this->graphArrData = $arrData;
-
         $this->_generateGraph();
     }
 
 
-
-    function _makeRequestsYearsGraph() {
+    function _makeRequestsYearsGraph()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $arrBarPlot1 = array();
         $arrBarPlot2 = array();
-
-        $arrBarPlot1Keys = array();
-        $arrBarPlot2Keys = array();
-
         $arrData = array();
 
         // get statistics
@@ -409,10 +407,6 @@ $objInit = new InitCMS('backend');
 $sessionObj = new cmsSession();
 $sessionObj->cmsSessionStatusUpdate('backend');
 Permission::checkAccess(19, 'static');
-
-// OBSOLETE -- Called by $objInit::__construct()
-//$objInit->_initBackendLanguage();
-//$objInit->getUserFrontendLangId();
 
 $_ARRAYLANG = $objInit->loadLanguageData('stats');
 

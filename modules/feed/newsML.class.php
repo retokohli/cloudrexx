@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NewsML
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -22,43 +23,33 @@
  */
 class NewsML
 {
-    var $_xmlDocument;
-
-    var $_currentXmlElement;
-    var $_arrParentXmlElement = array();
-    var $arrTplPlaceholders = array();
-    var $arrCategories = array();
-    var $_arrProviders = array();
-    var $_arrDocuments = array();
-    var $_arrExcludeFiles = array('.', '..', 'index.php', 'index.html');
-    var $_inNITF = false;
-    var $_xmlContentHTMLTag = '';
-    var $_inParagraph = false;
-    var $_tmpParagraph = array();
-    var $_xmlParserCharacterEncoding;
-    var $standardMessageCount = 10;
-    var $administrate = false;
-    var $_inCDATA = false;
-
-    function NewsML($administrate = false)
-    {
-        $this->__construct($administrate);
-    }
+    public $_xmlDocument;
+    public $_currentXmlElement;
+    public $_arrParentXmlElement = array();
+    public $arrTplPlaceholders = array();
+    public $arrCategories = array();
+    public $_arrProviders = array();
+    public $_arrDocuments = array();
+    public $_arrExcludeFiles = array('.', '..', 'index.php', 'index.html');
+    public $_inNITF = false;
+    public $_xmlContentHTMLTag = '';
+    public $_inParagraph = false;
+    public $_tmpParagraph = array();
+    public $_xmlParserCharacterEncoding;
+    public $standardMessageCount = 10;
+    public $administrate = false;
+    public $_inCDATA = false;
 
     function __construct($administrate = false)
     {
-        global $objDatabase;
-
         $this->administrate = $administrate;
         $this->_xmlParserCharacterEncoding = CONTREXX_CHARSET;
         $this->initCategories();
     }
 
+
     /**
-    * Set news
-    *
     * Set the news message of the newsML category
-    *
     * @access public
     * @param array $arrNewsMLCategories
     * @param string &$code
@@ -66,10 +57,7 @@ class NewsML
     */
     function setNews($arrNewsMLCategories, &$code)
     {
-        global $objDatabase;
-
         $arrTplPlaceholders = $this->arrTplPlaceholders;
-
         if (count($arrTplPlaceholders)>0) {
             foreach ($arrNewsMLCategories as $category) {
                 $arrMatches = preg_grep('/^'.$category.'$/i', $arrTplPlaceholders);
@@ -85,10 +73,7 @@ class NewsML
     }
 
     /**
-    * Parse NewsML documents
-    *
     * Parse the NewsML documents of the category $categoryId and return the parsed html code
-    *
     * @access public
     * @param integer $categoryId
     * @global array $_CORELANG
@@ -376,15 +361,17 @@ class NewsML
         if ($objDir) {
             $arrDocuments = array();
 
-            while ($document = @readdir($objDir)) {
+            $document = @readdir($objDir);
+            while ($document) {
 				if (!in_array($document, $this->_arrExcludeFiles) && strtolower(substr($document, -3)) == 'xml' && (!$matchFilenamePattern || preg_match($matchFilenamePattern, $document))) {
                     array_push($arrDocuments , $document);
                 }
+                $document = @readdir($objDir);
             }
             @closedir($objDir);
 
             require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-            $objFile = &new File();
+            $objFile = new File();
             $objFile->setChmod(ASCMS_DOCUMENT_ROOT.$this->arrCategories[$categoryId]['path'],$this->arrCategories[$categoryId]['path'], '/');
 
             foreach ($arrDocuments as $document) {
@@ -516,18 +503,13 @@ class NewsML
     */
     function _readDocument($categoryId, $document)
     {
-        global $objDatabase;
-
         $xmlFilePath  = ASCMS_DOCUMENT_ROOT.$this->arrCategories[$categoryId]['path'].'/'.$document;
-
         $this->_currentXmlElement = null;
         $this->_xmlDocument = null;
-
         $xml_parser = xml_parser_create($this->_xmlParserCharacterEncoding);
         xml_set_object($xml_parser,$this);
         xml_set_element_handler($xml_parser,"_xmlStartTag","_xmlEndTag");
         xml_set_character_data_handler($xml_parser, "_xmlCharacterDataTag");
-
         $documentContent = @file_get_contents($xmlFilePath);
         if ($documentContent !== false) {
             xml_parse($xml_parser, $documentContent);
@@ -652,6 +634,7 @@ class NewsML
 
         // NewsItem management
         $arrNewsItem['urgency'] = intval($newsItem['NEWSMANAGEMENT']['URGENCY']['attrs']['FORMALNAME']);
+        $arrTime = array();
         if (preg_match('/^([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2})([0-9]{2})([0-9]{2})/', $newsItem['NEWSMANAGEMENT']['THISREVISIONCREATED']['cdata'], $arrTime)) {
             $arrNewsItem['thisRevisionDate'] = mktime($arrTime[4], $arrTime[5], $arrTime[6], $arrTime[2], $arrTime[3], $arrTime[1]);
         } else {
@@ -709,8 +692,8 @@ class NewsML
         }
 
         if (isset($newsComponent['CONTENTITEM'])) {
+            $contentItem = array();
             if (isset($newsComponent['CONTENTITEM'][0])) {
-                $contentItemElement = array();
                 foreach ($newsComponent['CONTENTITEM'] as $contentItemElement) {
                     array_push($contentItem, $this->_getContentItem($contentItemElement));
                 }
@@ -800,26 +783,25 @@ class NewsML
         return $arrContentItem;
     }
 
+
     function _getNITF($nitfContent)
     {
         $content = '';
         foreach ($nitfContent['cdata'] as $arrdata) {
             $content .= "<p>".$arrdata['data']."</p>";
         }
-
         return addslashes($content);
     }
 
-    function _getNewsItemRef($newsItemRef)
+
+    function _getNewsItemRef()
     {
         return '';
     }
 
+
     /**
-    * Delete NewsML document
-    *
     * Delete the NewsML document with the id $documentId
-    *
     * @access public
     * @param integer $documentId
     * @global object $objDatabase
@@ -832,16 +814,13 @@ class NewsML
         $status = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_feed_newsml_documents WHERE id='".$documentId."'");
         if ($status !== false) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
+
     /**
-    * Delete NewsML category
-    *
-    * Deletethe NewsML category specified by the $categoryId
-    *
+    * Delete the NewsML category specified by the $categoryId
     * @access public
     * @param integer $categoryId
     * @global object $objDatabase
@@ -851,12 +830,12 @@ class NewsML
     {
         global $objDatabase;
 
-           if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_feed_newsml_categories WHERE id=".$categoryId) !== false) {
-               return true;
-           } else {
-               return false;
-           }
+        if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_feed_newsml_categories WHERE id=".$categoryId) !== false) {
+            return true;
+        }
+        return false;
     }
+
 
     /**
     * Add category
@@ -980,19 +959,18 @@ class NewsML
         $menu .= "<option value=\"only\"".($subjectCodeMethod == "only" ? " selected=\"selected\"" : "").">".$_ARRAYLANG['TXT_FEED_ONLY_DISPLAY_SELECTED']."</option>\n";
         $menu .= "<option value=\"exclude\"".($subjectCodeMethod == "exclude" ? " selected=\"selected\"" : "").">".$_ARRAYLANG['TXT_FEED_DISPLAY_ONLY_INDICATED_ONES']."</option>\n";
         $menu .= "</select>\n";
-
         return $menu;
     }
 
+
     /**
     * XML parser start tag
-    *
     * @access private
     * @param resource $parser
     * @param string $name
     * @param array $attrs
     */
-    function _xmlStartTag($parser,$name,$attrs)
+    function _xmlStartTag($parser, $name, $attrs)
     {
         $this->_inCDATA = false;
 
@@ -1091,10 +1069,9 @@ class NewsML
     * @param resource $parser
     * @param string $name
     */
-    function _xmlEndTag($parser,$name)
+    function _xmlEndTag($parser, $name)
     {
         $this->_inCDATA = false;
-
         if ($this->_inNITF) {
             if ($name == "BODY.CONTENT") {
                 $this->_inParagraph = false;
@@ -1106,7 +1083,6 @@ class NewsML
                 $this->_currentXmlElement['cdata'] = $this->_tmpParagraph;
                 $this->_tmpParagraph = array();
             }
-
             if ($name == "NITF") {
                 $this->_inNITF = false;
             }
@@ -1115,6 +1091,7 @@ class NewsML
             unset($this->_arrParentXmlElement[$name]);
         }
     }
+
 
     /*
     * These functions are for future usage
@@ -1179,4 +1156,5 @@ class NewsML
     }
     */
 }
+
 ?>

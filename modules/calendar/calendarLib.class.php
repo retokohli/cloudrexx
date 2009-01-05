@@ -31,26 +31,26 @@ if (!class_exists("calendarLibrary")) {
  */
 class calendarLibrary
 {
-    var $_filename = '';
-    var $_objTpl;
-    var $strErrMessage = '';
-    var $strOkMessage = '';
-    var $calDay;
-    var $calMonth;
-    var $calYear;
-    var $calDate;
-    var $calDate2;
-    var $calDate3;
-    var $calendarDay;
-    var $calStartYear;
-    var $calEndYear;
-    var $paging;
-    var $calendarMonth;
-    var $url;
-    var $monthnavur=null;
-    var $showOnlyActive = true;
-    var $_cachedCatNames = array();
-    var $mandate;
+    public $_filename = '';
+    public $_objTpl;
+    public $strErrMessage = '';
+    public $strOkMessage = '';
+    public $calDay;
+    public $calMonth;
+    public $calYear;
+    public $calDate;
+    public $calDate2;
+    public $calDate3;
+    public $calendarDay;
+    public $calStartYear;
+    public $calEndYear;
+    public $paging;
+    public $calendarMonth;
+    public $url;
+    public $monthnavur=null;
+    public $showOnlyActive = true;
+    public $_cachedCatNames = array();
+    public $mandate;
 
     /**
      * Constructor
@@ -383,12 +383,12 @@ class calendarLibrary
      */
     function _getCategoryNameByEventId($eventID)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $query = "  SELECT `c`.`name` FROM `".DBPREFIX."module_calendar".MODULE_INDEX."` AS `e`
                     INNER JOIN `".DBPREFIX."module_calendar".MODULE_INDEX."_categories` AS `c`
                     ON (`e`.`catid` = `c`.`id`)
-                    WHERE `lang` = ".$_LANGID."
+                    WHERE `lang` = ".FRONTEND_LANG_ID."
                     AND `e`.`id` = ".$eventID."";
         if ( ($objRS = $objDatabase->SelectLimit($query, 1)) !== false) {
             if ($objRS->RecordCount() < 1) {
@@ -426,7 +426,7 @@ class calendarLibrary
     // get day note
     function getDayNote($id, $showboxes=true)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $query = "SELECT id,
                            catid,
@@ -678,7 +678,7 @@ class calendarLibrary
      */
     function category_list($selected_var, $name="categories")
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $calendar_categories = "<form action=\"#\" id=\"selectcat\">
             <select name=\"$name\" onchange=\"changecat()\"  id=\"calendarSelectcat\">
@@ -686,8 +686,8 @@ class calendarLibrary
 
         // makes the category list
         $query = "SELECT id,name,lang FROM ".DBPREFIX."module_calendar".MODULE_INDEX."_categories
-              WHERE status = '1'".
-                  (!empty($_LANGID) && intval($_LANGID > 0) ? " AND lang = ".$_LANGID : '')."
+              WHERE status = '1'
+                AND lang = ".FRONTEND_LANG_ID."
               ORDER BY pos";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
@@ -713,7 +713,7 @@ class calendarLibrary
      */
     function getNoteData($id, $type, $numBoxes)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $query = "SELECT    id,
                             active,
@@ -1123,7 +1123,7 @@ class calendarLibrary
      */
     function _countRegistrations($id)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $i = 0;
         $x = 0;
@@ -1155,7 +1155,7 @@ class calendarLibrary
      */
     function _countSubscriber($id)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         //get field key
         $queryFieldId = "SELECT id
@@ -1195,7 +1195,7 @@ class calendarLibrary
      */
     function _getUserGroups($noteId, $type)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         //get selected groups
         $queryGroups        = "SELECT groups
@@ -1243,7 +1243,7 @@ class calendarLibrary
      */
     function _getFormular($noteId, $frmType, $arrUserData=null)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
          $arrSysFieldNames = array(
             '1'     => $_ARRAYLANG['TXT_CALENDAR_REG_FIRSTNAME'],
@@ -1424,7 +1424,7 @@ class calendarLibrary
      */
     function _sendRegistration($noteId)
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG, $objLanguage;
+        global $_CONFIG, $objDatabase, $objLanguage;
 
         //get mail template
         $query          = "SELECT mailTitle, mailContent
@@ -1457,24 +1457,20 @@ class calendarLibrary
         $objFWUser = FWUser::getFWUserObject();
 
         foreach ($arrGoupsNote as $key => $intGroupId) {
-            $objUser = $objFWUser->objUser->getUsers($filter = array('group_id' => $intGroupId, 'is_active' => true));
-
+            $objUser = $objFWUser->objUser->getUsers(array('group_id' => $intGroupId, 'is_active' => true));
             if ($objUser) {
-                // Das Objekt $objUser repräsentiert nun den ersten der angeforderten Benutzer
+                // Das Objekt $objUser reprÃ¤sentiert nun den ersten der angeforderten Benutzer
                 while (!$objUser->EOF) {
-                        $arrUsers[$objUser->getId()]['email']     = $objUser->getEmail();
-                        $arrUsers[$objUser->getId()]['lastname']  = $objUser->getProfileAttribute('lastname');
-                        $arrUsers[$objUser->getId()]['firstname'] = $objUser->getProfileAttribute('firstname');
-
-                        // Nächsten Benutzer im Objekt $objUser laden
-                        $objUser->next();
-                    }
+                    $arrUsers[$objUser->getId()]['email']     = $objUser->getEmail();
+                    $arrUsers[$objUser->getId()]['lastname']  = $objUser->getProfileAttribute('lastname');
+                    $arrUsers[$objUser->getId()]['firstname'] = $objUser->getProfileAttribute('firstname');
+                    // NÃ¤chsten Benutzer im Objekt $objUser laden
+                    $objUser->next();
+                }
             } else {
-                    print "Beim Laden der Benutzer trat ein Fehler auf!";
+                print "Beim Laden der Benutzer trat ein Fehler auf!";
             }
         }
-
-
 
         $objCategory = $objDatabase->SelectLimit('SELECT lang FROM '.DBPREFIX.'module_calendar_categories WHERE id='.$objResultNote->fields['catid']);
         if ($objCategory !== false) {

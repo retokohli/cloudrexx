@@ -1,6 +1,6 @@
 <?php
 /**
- * Immo 
+ * Immo
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>
  * @version        1.0.0
@@ -40,14 +40,14 @@ class ImmoLib{
      * @var object
      */
     var $_objFile;
-    
+
     /**
      * number of languages
      *
      * @var int
      */
     var $langCount = 0;
-    
+
     /**
      * holds the field ID of the last field found by ImmoLib::_getFieldFromText()
      *
@@ -67,30 +67,30 @@ class ImmoLib{
      */
     var $arrSettings;
 
-    
+
     /**
      * standard line break (windows)
      *
      * @var string (escaped)
      */
     var $_lineBreak = "\r\n";
-        
+
     /**
      * Array holding number of field per type
      * $_fieldCount[$type]['count']
      *
-     * @var array 
+     * @var array
      */
     var $_fieldCount;
-    
+
     /**
      * Fields used in basic Data (i.e. which should not be displayed in any text-, img-, or link-rows)
      *
      * @var unknown_type
      */
-    var $_usedFields = array('Kopfzeile', 'Adresse', 'Ort', 'Preis', 'Beschreibung', 'Headline', 
-                            'Aufzählung1',    'Aufzählung2', 'Aufzählung3', 'Übersichtsbild', 'Link auf Homepage', 'Anzahl Zimmer' );
-    
+    var $_usedFields = array('Kopfzeile', 'Adresse', 'Ort', 'Preis', 'Beschreibung', 'Headline',
+                            'Aufzï¿½hlung1',    'Aufzï¿½hlung2', 'Aufzï¿½hlung3', 'ï¿½bersichtsbild', 'Link auf Homepage', 'Anzahl Zimmer' );
+
     /**
     * Constructor
     */
@@ -104,7 +104,7 @@ class ImmoLib{
     */
     function __construct()
     {
-        
+
         define('DS', DIRECTORY_SEPARATOR);
         $this->_getLanguages();
         $this->_getSettings();
@@ -114,9 +114,9 @@ class ImmoLib{
      * Get Field Names
      *
      * Generates an array with field names
-     * 
+     *
      * @param $immoID ID of the object (only fetches rows of that object, all if omitted)
-     * @param $count whether fieldtypes shall be count, if bigger than 0 (also specifies the frontend language) 
+     * @param $count whether fieldtypes shall be count, if bigger than 0 (also specifies the frontend language)
      */
     function _getFieldNames($immoID = 0, $count = 0)
     {
@@ -160,23 +160,23 @@ class ImmoLib{
                         $content[$langID] = $objRSContent->fields['fieldvalue'];
                     }
                 }
-                
+
                 $content['active'] = $objRSContent->fields['active'];
-                
+
                 $img = ($immoID > 0) ? $this->_getImageInfo($objRS->fields['id'], $immoID) : array('uri' => '');
                 if($count > 0 && $content['active'] == 1 && trim($names[$count]) != '' && !in_array($names[$count] ,$this->_usedFields)){
                     switch($objRS->fields['type']){
                            case 'text':
                         case 'textarea':
-                        case 'digits_only':    
+                        case 'digits_only':
                         case 'price':
                             $this->_fieldCount['text']++;
                         break;
-                        
+
                         case 'img':
                             $this->_fieldCount['img']++;
                         break;
-                                         
+
                         default:
                         break;
                     }
@@ -198,7 +198,7 @@ class ImmoLib{
     function _getImageInfo($fieldID, $immoID)
     {
         global $objDatabase;
-        
+
         $query = "    SELECT id, field_id, uri
                     FROM ".DBPREFIX."module_immo_image
                     WHERE field_id = $fieldID
@@ -228,7 +228,7 @@ class ImmoLib{
         if($objRS !== false){
             while(!$objRS->EOF){
                 $this->languages[$objRS->fields['id']] = $objRS->fields['language'];
-                $this->langCount++;
+                ++$this->langCount;
                 $objRS->MoveNext();
             }
             return true;
@@ -243,24 +243,24 @@ class ImmoLib{
      * @param string $type type of return: content, names, img, active, key
      * @return ID on success, false on failure
      */
-    
+
     function _getFieldFromText($str, $type = 'content')
-    {        
+    {
         array_walk($this->fieldNames, array($this, '_searchField'), $str);
         if($type == 'content'){
-            return $this->fieldNames[$this->_currFieldID]['content'][$this->frontLang];
-        }else if ($type == 'names'){    
-            return $this->fieldNames[$this->_currFieldID]['names'][$this->frontLang];
+            return $this->fieldNames[$this->_currFieldID]['content'][FRONTEND_LANG_ID];
+        }else if ($type == 'names'){
+            return $this->fieldNames[$this->_currFieldID]['names'][FRONTEND_LANG_ID];
         }else if ($type == 'img'){
             return $this->fieldNames[$this->_currFieldID]['img'];
         }else if ($type == 'active'){
-            return $this->fieldNames[$this->_currFieldID]['content']['active'];            
+            return $this->fieldNames[$this->_currFieldID]['content']['active'];
         }else if ($type == 'key'){
             return $this->_currFieldID;
         }
         return false;
     }
-    
+
     /**
      * search field and set key on match
      *
@@ -274,8 +274,8 @@ class ImmoLib{
             $this->_currFieldID = $key;
         }
     }
-    
-    function _getSettings() 
+
+    function _getSettings()
     {
         global $objDatabase;
         $this->arrSettings = array();
@@ -320,13 +320,13 @@ class ImmoLib{
             break;
         }
     }
-    
-    function arrStrToLower(&$item, $key) 
+
+    function arrStrToLower(&$item, $key)
     {
        $item = strtolower($item);
     }
 
-    function filterImmoType($var) 
+    function filterImmoType($var)
     {
         if (substr($var, 0, 20) == "TXT_IMMO_OBJECTTYPE_") {
             return true;

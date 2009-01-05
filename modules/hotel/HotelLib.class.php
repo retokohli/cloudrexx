@@ -123,8 +123,10 @@ class HotelLib{
      * @param $count whether fieldtypes shall be count, if bigger than 0 (also specifies the frontend language)
      * @param $frontend if this value is true, then the contents of one language {@see $this->frontLang} will be fetched only
      */
-    function _getFieldNames($hotelID = 0, $count = 0, $frontend = false){
+    function _getFieldNames($hotelID=0, $count=0, $frontend=false)
+    {
         global $objDatabase;
+
         $objRS = $objDatabase->Execute("    SELECT id, field_id, lang_id, name
                                             FROM ".DBPREFIX."module_hotel_fieldname");
         $allNames = array();
@@ -165,11 +167,10 @@ class HotelLib{
                         }
                     }
                 }else{
-                    $langID = $this->frontLang;
                     $query = "    SELECT  id, hotel_id, lang_id, field_id, fieldvalue, active
                                 FROM ".DBPREFIX."module_hotel_content
                                 WHERE field_id = ".$objRS->fields['id']."
-                                AND lang_id = ".$langID;
+                                AND lang_id = ".FRONTEND_LANG_ID;
                     $query .= ($hotelID > 0) ? " AND hotel_id = $hotelID " : '';
                     $objRSContent = $objDatabase->SelectLimit($query, 1);
                     if($objRSContent !== false){
@@ -178,23 +179,20 @@ class HotelLib{
                 }
 
                 $content['active'] = $objRSContent->fields['active'];
-
                 $img = ($hotelID > 0) ? $this->_getImageInfo($objRS->fields['id'], $hotelID) : array('uri' => '') ;
-                if($count > 0 && $content['active'] == 1 && trim($names[$count]) != '' && !in_array($names[$count] ,$this->_usedFields)){
+                if($count > 0 && $content['active'] == 1 && trim($names[$count]) != '' && !in_array($names[$count], $this->_usedFields)){
                     switch($objRS->fields['type']){
-                           case 'text':
+                        case 'text':
                         case 'textarea':
                         case 'digits_only':
                         case 'price':
                             $this->_fieldCount['text']++;
-                        break;
-
+                            break;
                         case 'img':
                             $this->_fieldCount['img']++;
-                        break;
-
+                            break;
                         default:
-                        break;
+                            break;
                     }
                 }
                 $this->fieldNames[$objRS->fields['id']] = array(
@@ -240,7 +238,7 @@ class HotelLib{
         if($objRS !== false){
             while(!$objRS->EOF){
                 $this->languages[$objRS->fields['id']] = $objRS->fields['language'];
-                $this->langCount++;
+                ++$this->langCount;
                 $objRS->MoveNext();
             }
             return true;
@@ -259,9 +257,9 @@ class HotelLib{
     function _getFieldFromText($str, $type = 'content'){
         array_walk($this->fieldNames, array($this, '_searchField'), $str);
         if($type == 'content'){
-            return $this->fieldNames[$this->_currFieldID]['content'][$this->frontLang];
+            return $this->fieldNames[$this->_currFieldID]['content'][FRONTEND_LANG_ID];
         }else if ($type == 'names'){
-            return $this->fieldNames[$this->_currFieldID]['names'][$this->frontLang];
+            return $this->fieldNames[$this->_currFieldID]['names'][FRONTEND_LANG_ID];
         }else if ($type == 'img'){
             return $this->fieldNames[$this->_currFieldID]['img'];
         }else if ($type == 'active'){

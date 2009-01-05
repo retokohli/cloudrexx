@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Contact
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -25,31 +26,23 @@ require_once ASCMS_CORE_MODULE_PATH.'/contact/lib/ContactLib.class.php';
  */
 class ContactManager extends ContactLib
 {
-    var $_objTpl;
+    public $_objTpl;
 
-    var $_statusMessageOk;
-    var $_statusMessageErr;
+    public $_statusMessageOk;
+    public $_statusMessageErr;
 
-    var $_arrFormFieldTypes;
+    public $_arrFormFieldTypes;
 
-    var $boolHistoryEnabled = false;
-    var $boolHistoryActivate = false;
+    public $boolHistoryEnabled = false;
+    public $boolHistoryActivate = false;
 
-    var $_csvSeparator = ';';
+    public $_csvSeparator = ';';
 
-    var $_pageTitle = '';
+    public $_pageTitle = '';
 
-    /**
-    * Constructor
-    */
-    function ContactManager()
-    {
-        $this->__construct();
-    }
 
     /**
     * PHP5 constructor
-    *
     * @global HTML_Template_Sigma
     * @global array
     * @global array
@@ -58,7 +51,7 @@ class ContactManager extends ContactLib
     {
         global $objTemplate, $_ARRAYLANG, $_CONFIG;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/contact/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/contact/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "    <a href='index.php?cmd=contact' title=".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].">".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']."</a>
@@ -330,7 +323,8 @@ class ContactManager extends ContactLib
                 $pos = intval($_GET['pos']);
             }
 
-            $arrEntries = &$this->getFormEntries($formId, $arrCols, $pos, $paging);
+            $arrCols = array();
+            $arrEntries = $this->getFormEntries($formId, $arrCols, $pos, $paging);
             if (count($arrEntries) > 0) {
                 $arrFormFields = &$this->getFormFields($formId);
                 $arrFormFieldNames = &$this->getFormFieldNames($formId);
@@ -471,7 +465,7 @@ class ContactManager extends ContactLib
 
     function _selectFrontendLang()
     {
-        global $_ARRAYLANG, $objLanguage, $_FRONTEND_LANGID;
+        global $_ARRAYLANG, $objLanguage;
 
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
         if ($formId > 0) {
@@ -482,7 +476,7 @@ class ContactManager extends ContactLib
             $menu = "<select name=\"userFrontendLangId\">\n";
             foreach ($objLanguage->arrLanguage as $langId => $arrLanguage) {
                 if (intval($arrLanguage['frontend']) == 1) {
-                    $menu .= "<option value=\"".$langId."\"".($_FRONTEND_LANGID == $langId ? "selected=\"selected\"" : "").">".$arrLanguage['name']."</option>\n";
+                    $menu .= "<option value=\"".$langId."\"".(FRONTEND_LANG_ID == $langId ? "selected=\"selected\"" : "").">".$arrLanguage['name']."</option>\n";
                 }
             }
             $menu .= "</select>\n";
@@ -512,7 +506,7 @@ class ContactManager extends ContactLib
      */
     function _modifyForm($copy = false)
     {
-        global $_ARRAYLANG, $_CONFIG, $objDatabase, $objLanguage, $_FRONTEND_LANGID;
+        global $_ARRAYLANG, $_CONFIG;
 
         if ($copy) {
             $this->initContactForms(true);
@@ -568,6 +562,7 @@ class ContactManager extends ContactLib
         $lastFieldId = 0;
 
         if (isset($_POST['saveForm'])) {
+            $null = false;
             $arrFields = $this->_getFormFieldsFromPost($null);
             $formName = isset($_POST['contactFormName']) ? htmlentities(strip_tags(contrexx_stripslashes($_POST['contactFormName'])), ENT_QUOTES, CONTREXX_CHARSET) : '';
             $formEmails = isset($_POST['contactFormEmail']) ? htmlentities(strip_tags(contrexx_stripslashes(trim($_POST['contactFormEmail']))), ENT_QUOTES, CONTREXX_CHARSET) : '';
@@ -648,7 +643,7 @@ class ContactManager extends ContactLib
             $lang = $this->arrForms[$formId]['lang'];
         } else {
             $actionTitle = $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
-            $lang = $_FRONTEND_LANGID;
+            $lang = FRONTEND_LANG_ID;
         }
 
 
@@ -776,6 +771,7 @@ class ContactManager extends ContactLib
             $formSendCopy = intval($_POST['contactFormSendCopy']);
             if (!empty($formName)) {
                 if ($this->isUniqueFormName($formName, $formId)) {
+                    $uniqueFieldNames = false;
                     $arrFields = $this->_getFormFieldsFromPost($uniqueFieldNames);
                     if ($uniqueFieldNames) {
                         $formEmailsTmp = isset($_POST['contactFormEmail']) ? explode(',', strip_tags(contrexx_stripslashes($_POST['contactFormEmail']))) : '';
@@ -873,7 +869,8 @@ class ContactManager extends ContactLib
         $this->_contactForms();
     }
 
-    function _deleteContentSite($formId)
+
+    function _deleteContentSite()
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -1095,8 +1092,6 @@ class ContactManager extends ContactLib
 
     function _getFormFieldRequiredCheckBox($name, $id, $type, $selected)
     {
-        global $_ARRAYLANG;
-
         switch ($type) {
             case 'hidden':
             case 'select':
@@ -1363,13 +1358,10 @@ class ContactManager extends ContactLib
         header("Content-Type: text/comma-separated-values", true);
         header("Content-Disposition: attachment; filename=\"$filename\"", true);
 
-        $value = '';
         foreach ($arrFormFields as $arrField) {
             print $this->_escapeCsvValue($arrField['name']).$this->_csvSeparator;
         }
-
         $arrSettings = $this->getSettings();
-
         print ($arrSettings['fieldMetaDate'] == '1' ? $_ARRAYLANG['TXT_CONTACT_DATE'].$this->_csvSeparator : '')
                 .($arrSettings['fieldMetaHost'] == '1' ? $_ARRAYLANG['TXT_CONTACT_HOSTNAME'].$this->_csvSeparator : '')
                 .($arrSettings['fieldMetaLang'] == '1' ? $_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'].$this->_csvSeparator : '')
@@ -1479,7 +1471,7 @@ class ContactManager extends ContactLib
      */
     function _createContentPage()
     {
-        global $_ARRAYLANG, $objDatabase, $_FRONTEND_LANGID, $_CONFIG;
+        global $_ARRAYLANG, $objDatabase, $_CONFIG;
 
         Permission::checkAccess(5, 'static');
 
@@ -1510,7 +1502,7 @@ class ContactManager extends ContactLib
                                           '".$objFWUser->objUser->getUsername()."',
                                           '".$currentTime."',
                                           '".$formId."',
-                                          '".$_FRONTEND_LANGID."',
+                                          '".FRONTEND_LANG_ID."',
                                           '6')";
             $objDatabase->Execute($q1);
             $pageId = $objDatabase->Insert_ID();
@@ -1541,7 +1533,7 @@ class ContactManager extends ContactLib
                 }
 
                 if ($this->boolHistoryEnabled) {
-                    $objResult = $objDatabase->Execute('SELECT    protected,
+                    $objDatabase->Execute('SELECT    protected,
                                                                 frontend_access_id,
                                                                 backend_access_id
                                                         FROM    '.DBPREFIX.'content_navigation
@@ -1558,7 +1550,7 @@ class ContactManager extends ContactLib
                                                        username="'.$objFWUser->objUser->getUsername().'",
                                                        changelog="'.$currentTime.'",
                                                         cmd="'.$formId.'",
-                                                      lang="'.$_FRONTEND_LANGID.'",
+                                                      lang="'.FRONTEND_LANG_ID.'",
                                                        module="6"');
                     $intHistoryId = $objDatabase->insert_id();
                     $objDatabase->Execute('    INSERT
@@ -1588,7 +1580,7 @@ class ContactManager extends ContactLib
 
     function _updateContentSite()
     {
-        global $objDatabase, $_FRONTEND_LANGID, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         Permission::checkAccess(35, 'static');
         $formId = intval($_REQUEST['formId']);
@@ -1648,7 +1640,7 @@ class ContactManager extends ContactLib
 
             //create backup for history
             if ($this->boolHistoryEnabled) {
-                $objResult = $objDatabase->Execute('SELECT    displayorder,
+                $objDatabase->Execute('SELECT    displayorder,
                                                             protected,
                                                             frontend_access_id,
                                                             backend_access_id
@@ -1670,7 +1662,7 @@ class ContactManager extends ContactLib
                                                 catname="'.$catname.'",
                                                 username="'.$objFWUser->objUser->getUsername().'",
                                                 changelog="'.$currentTime.'",
-                                                lang="'.$_FRONTEND_LANGID.'",
+                                                lang="'.FRONTEND_LANG_ID.'",
                                                 cmd="'.$formId.'",
                                                 module="6"
                                            ');
@@ -1701,7 +1693,7 @@ class ContactManager extends ContactLib
 
         // Check if the thanks page is already active
         $thxQuery = "SELECT catid FROM ".DBPREFIX."content_navigation
-                     WHERE module=6 AND lang=".$_FRONTEND_LANGID;
+                     WHERE module=6 AND lang=".FRONTEND_LANG_ID;
         $objResult = $objDatabase->SelectLimit($thxQuery, 1);
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 0) {
@@ -1711,7 +1703,7 @@ class ContactManager extends ContactLib
                                     `displaystatus`, `displayorder`, `username`,
                                     `displayorder`
                                   FROM ".DBPREFIX."module_repository
-                             WHERE `moduleid` = 6 AND `lang`=".$_FRONTEND_LANGID;
+                             WHERE `moduleid` = 6 AND `lang`=".FRONTEND_LANG_ID;
                 $objResult = $objDatabase->Execute($thxQuery);
                 if ($objResult !== false) {
                     $content = $objResult->fields['content'];
@@ -1719,7 +1711,8 @@ class ContactManager extends ContactLib
                     $cmd = $objResult->fields['cmd'];
                     $expertmode = $objResult->fields['expertmode'];
                     $displaystatus = $objResult->fields['displaystatus'];
-                    $displayorder = $objResult->fields['displayorder'];
+// TODO:  Never used
+//                    $displayorder = $objResult->fields['displayorder'];
                     $username = $objResult->fields['username'];
                     $changelog = time();
 
@@ -1733,7 +1726,7 @@ class ContactManager extends ContactLib
                                  '".$cmd."',
                                  '".$displaystatus."',
                                  '6',
-                                 '".$_FRONTEND_LANGID."')";
+                                 '".FRONTEND_LANG_ID."')";
                     $objDatabase->Execute($thxQuery);
                     $thxId = $objDatabase->Insert_ID();
 
@@ -1749,13 +1742,14 @@ class ContactManager extends ContactLib
         }
     }
 
+
     /**
      * Get Javascript Source
      *
      * Makes the sourcecode for the javascript based
      * field checking
      */
-    function _getJsSourceCode($id, $formFields, $preview = false, $show = false)
+    function _getJsSourceCode($id, $formFields, $preview=false, $show=false)
     {
         $code = "<script src=\"lib/datepickercontrol/datepickercontrol.js\" type=\"text/javascript\"></script>\n";
         $code .= "<script type=\"text/javascript\">\n";
@@ -1932,4 +1926,5 @@ JS_misc;
         return $code;
     }
 }
+
 ?>

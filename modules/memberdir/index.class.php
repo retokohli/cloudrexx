@@ -27,7 +27,6 @@ require_once ASCMS_MODULE_PATH . '/memberdir/lib/MemberDirLib.class.php';
  */
 class memberDir extends MemberDirLibrary
 {
-    var $langId;
     var $_objTpl;
     var $statusMessage;
     var $error;
@@ -52,7 +51,6 @@ class memberDir extends MemberDirLibrary
      */
     function __construct($pageContent)
     {
-        global $_LANGID;
         $this->pageContent = $pageContent;
         $this->_objTpl = &new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);

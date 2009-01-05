@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Sitemapping
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -22,20 +23,20 @@
  */
 class sitemap
 {
-    var $pageContent;
-    var $_objTpl;
-    var $_sitemapPageName = array();
-    var $_sitemapPageURL = array();
-    var $_sitemapPageLevel = array();
-    var $_sitemapPageTarget = array();
-    var $_arrName = array();
-    var $_arrUrl = array();
-    var $_arrTarget = array();
-    var $_doSitemap = true;
-    var $_sitemapBlock;
-    var $_cssPrefix = "sitemap_level_";
-    var $_subTagStart = "<ul>";
-    var $_subTagEnd = "</ul>";
+    public $pageContent;
+    public $_objTpl;
+    public $_sitemapPageName = array();
+    public $_sitemapPageURL = array();
+    public $_sitemapPageLevel = array();
+    public $_sitemapPageTarget = array();
+    public $_arrName = array();
+    public $_arrUrl = array();
+    public $_arrTarget = array();
+    public $_doSitemap = true;
+    public $_sitemapBlock;
+    public $_cssPrefix = "sitemap_level_";
+    public $_subTagStart = "<ul>";
+    public $_subTagEnd = "</ul>";
 
 
     /**
@@ -47,7 +48,7 @@ class sitemap
     function __construct($pageContent)
     {
         $this->pageContent = $pageContent;
-        $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_objTpl->setTemplate($this->pageContent);
@@ -69,7 +70,7 @@ class sitemap
 
     function _initialize()
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $objFWUser = FWUser::getFWUserObject();
         $query = "SELECT n.cmd AS cmd,
@@ -83,7 +84,7 @@ class sitemap
 						 settings.setvalue AS alias_enable
                     FROM ".DBPREFIX."content_navigation AS n
                         LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
-						LEFT OUTER JOIN ".DBPREFIX."settings            AS settings 
+						LEFT OUTER JOIN ".DBPREFIX."settings            AS settings
 							ON settings.setmodule = 41
 						   AND settings.setname   = 'aliasStatus'
                         LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
@@ -91,7 +92,7 @@ class sitemap
                                 AND a_s.isdefault = 1,
                          ".DBPREFIX."modules AS m
 
-                   WHERE (n.module=m.id AND n.displaystatus = 'on' AND n.activestatus = '1' AND n.lang=".$_LANGID.")
+                   WHERE (n.module=m.id AND n.displaystatus = 'on' AND n.activestatus = '1' AND n.lang=".FRONTEND_LANG_ID.")
                      ".(
                         !$objFWUser->objUser->login() ?
                             // user is not authenticated
@@ -231,4 +232,5 @@ class sitemap
         return $sitemapBlock;
     }
 }
+
 ?>

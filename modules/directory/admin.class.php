@@ -34,7 +34,6 @@ class rssDirectory extends directoryLibrary
     public $strErrMessage = '';
     public $strOkMessage = '';
     public $_selectedLang;
-    public $langId;
     public $getLanguages = array();
     public $users = array();
     public $settings = array();
@@ -53,7 +52,7 @@ class rssDirectory extends directoryLibrary
      */
     function __construct()
     {
-        global  $_ARRAYLANG, $objInit, $objTemplate;
+        global  $_ARRAYLANG, $objTemplate;
 
         if (_DIRECTORY_DEBUG) {
             error_reporting(E_ALL);
@@ -407,10 +406,7 @@ $padding = 0;
      */
     function showSublevels($parentId, $padding, $i)
     {
-        global $objDatabase, $_ARRAYLANG;
-
         $padding = $padding + 20;
-
         //shows all subcategories
         foreach ($this->levels['name'] as $levelKey => $levelName) {
             if ($this->levels['parentid'][$levelKey] == $parentId) {
@@ -877,8 +873,6 @@ $padding = 0;
      */
     function showSubcategories($parentId, $padding, $i)
     {
-        global $objDatabase, $_ARRAYLANG;
-
         $padding = $padding + 20;
         //shows all subcategories
         foreach ($this->categories['name'] as $catKey => $catName) {
@@ -1347,7 +1341,7 @@ $padding = 0;
      */
     function delSublevel($levelId)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase;
 
         //get sublevel ids
         $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_directory_levels WHERE parentid='".$levelId."'");
@@ -1410,7 +1404,7 @@ $padding = 0;
 
     function deleteSubcategorie($id)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase;
 
         //get subcat id
         $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_directory_categories WHERE parentid='".$id."'");
@@ -1458,7 +1452,7 @@ $padding = 0;
      */
     function status()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase;
 
         if (isset($_GET['status'])) {
             if ($_GET['act'] == "levels") {
@@ -1674,7 +1668,7 @@ $padding = 0;
      */
     function newEntry()
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+        global $_CONFIG, $_ARRAYLANG;
 
         //get categories/levels
         $categories = $this->getCategories('', 1);
@@ -1775,7 +1769,7 @@ $padding = 0;
      */
     function showFiles($catId, $levelId)
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         if (isset($catId)) {
             $catIdSort = "&amp;cid=".$catId;
@@ -2281,7 +2275,7 @@ $padding = 0;
      */
     function detailEntry($id)
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         //get categories/levels
         $categories = $this->getCategories($id, 2);
@@ -2497,7 +2491,7 @@ $padding = 0;
 
     function showSettings_google()
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         // initialize variables
         $this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_directory_settings_google.html');
@@ -2554,7 +2548,7 @@ $padding = 0;
 
     function showSettings_inputs()
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         // initialize variables
         $this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_directory_settings_inputs.html');
@@ -2742,7 +2736,7 @@ $padding = 0;
 
     function showSettings_mail()
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         // initialize variables
         $this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_directory_settings_mail.html');
@@ -2808,7 +2802,7 @@ $padding = 0;
 
     function showSettings_headlines()
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         // initialize variables
         $this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_directory_settings_headlines.html');
@@ -2826,7 +2820,7 @@ $padding = 0;
 
     function showSettings_homecontent()
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         // initialize variables
         $this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_directory_settings_homecontent.html');
@@ -2882,7 +2876,7 @@ $padding = 0;
      */
     function updateSettings()
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         if (isset($_POST['set_sys_submit'])) {
             //get post data

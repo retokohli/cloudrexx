@@ -1,4 +1,5 @@
 <?php
+
 /**
  * News
  *
@@ -28,23 +29,12 @@ require_once ASCMS_CORE_MODULE_PATH . '/news/lib/newsLib.class.php';
  * @package     contrexx
  * @subpackage  core_module_news
  */
-class news extends newsLibrary {
-    var $newsTitle;
-    var $langId;
-    var $arrSettings = array();
-    var $_objTpl;
-    var $_submitMessage;
-
-    /**
-    * Constructor
-    *
-    * @param  string
-    * @access public
-    */
-    function news($pageContent)
-    {
-        $this->__construct($pageContent);
-    }
+class news extends newsLibrary
+{
+    public $newsTitle;
+    public $arrSettings = array();
+    public $_objTpl;
+    public $_submitMessage;
 
     /**
      * PHP5 constructor
@@ -56,7 +46,7 @@ class news extends newsLibrary {
     {
         $this->getSettings();
         $this->pageContent = $pageContent;
-        $this->_objTpl = &new HTML_Template_Sigma();
+        $this->_objTpl = new HTML_Template_Sigma();
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
 
@@ -100,7 +90,7 @@ class news extends newsLibrary {
     */
     function getDetails()
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_PATHCONFIG;
 
         $this->_objTpl->setTemplate($this->pageContent);
         $newsid = intval($_GET['newsid']);
@@ -206,8 +196,9 @@ class news extends newsLibrary {
     * @global    array
     * @return    string    parsed content
     */
-    function getHeadlines() {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+    function getHeadlines()
+    {
+        global $_CONFIG, $objDatabase, $_ARRAYLANG, $_PATHCONFIG;
 
         $selected   = '';
         $newsfilter = '';
@@ -349,24 +340,21 @@ class news extends newsLibrary {
         }
     }
 
-    function _notify_by_email($news_id) {
-        global $objDatabase;
+    function _notify_by_email($news_id)
+    {
         $user_id  = intval($this->arrSettings['news_notify_user']);
         $group_id = intval($this->arrSettings['news_notify_group']);
         $users_in_group = array();
-
         if ($group_id > 0) {
             $objFWUser = FWUser::getFWUserObject();
-
-            if ($objGroup = $objFWUser->objGroup->getGroup($group_id)) {
+            $objGroup = $objFWUser->objGroup->getGroup($group_id);
+            if ($objGroup) {
                 $users_in_group = $objGroup->getAssociatedUserIds();
             }
         }
-
         if ($user_id > 0) {
             $users_in_group[] = $user_id;
         }
-
         // Now we have fetched all user IDs that
         // are to be notified. Now send those emails!
         foreach ($users_in_group as $user_id) {
@@ -374,16 +362,16 @@ class news extends newsLibrary {
         }
     }
 
-    function _notify_user_by_email($user_id, $news_id) {
+
+    function _notify_user_by_email($user_id, $news_id)
+    {
         global $_ARRAYLANG, $_CONFIG;
+
         // First, load recipient infos.
         try {
             $objFWUser = FWUser::getFWUserObject();
             $objUser = $objFWUser->objUser->getUser($user_id);
-        }
-        catch (Exception $e) {
-        }
-
+        } catch (Exception $e) {}
         if (!$objUser) {
             return false;
         }
@@ -404,13 +392,13 @@ class news extends newsLibrary {
                 // Line not full yet
                 if ($line) $line .= ' ' . $words[$idx];
                 else       $line =        $words[$idx];
-            }
-            else {
+            } else {
                 // Line is full. add to message and empty.
                 $msg .= "$line\n";
                 $line = $words[$idx];
             }
         }
+        $serverPort = '';
         $msg .= "$line\n";
         $msg .= "  http://".$_SERVER['SERVER_NAME'].  $serverPort.ASCMS_PATH_OFFSET . "/cadmin/index.php?cmd=news"
             . "&act=edit&newsId=$news_id&validate=true";
@@ -462,7 +450,7 @@ class news extends newsLibrary {
         $this->_objTpl->setTemplate($this->pageContent);
 
         require_once ASCMS_CORE_PATH.'/modulemanager.class.php';
-        $objModulManager = &new modulemanager();
+        $objModulManager = new modulemanager();
         $arrInstalledModules = $objModulManager->getModules();
         if (in_array(23, $arrInstalledModules)) {
             $communityModul = true;
@@ -498,7 +486,7 @@ class news extends newsLibrary {
         $insertStatus = false;
 
         if (isset($_POST['submitNews'])) {
-            $objValidator = &new FWValidator();
+            $objValidator = new FWValidator();
 
             $_POST['newsTitle'] = contrexx_strip_tags(html_entity_decode($_POST['newsTitle']));
             $_POST['newsTeaserText'] = contrexx_stripslashes($_POST['newsTeaserText']);
@@ -686,14 +674,13 @@ class news extends newsLibrary {
     */
     function _showFeed()
     {
-        global $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG;
 
-        $objLanguage = &new FWLanguage();
+        $objLanguage = new FWLanguage();
         $this->_objTpl->setTemplate($this->pageContent);
-
         $serverPort = $_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT']);
-        $rssFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_headlines_".$objLanguage->getLanguageParameter($_LANGID, 'lang').".xml";
-        $jsFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_".$objLanguage->getLanguageParameter($_LANGID, 'lang').".js";
+        $rssFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_headlines_".$objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang').".xml";
+        $jsFeedUrl = "http://".$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET."/feed/news_".$objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang').".js";
         $hostname = addslashes(htmlspecialchars($_SERVER['SERVER_NAME'], ENT_QUOTES, CONTREXX_CHARSET));
 
         $rss2jsCode = <<<RSS2JSCODE
@@ -723,4 +710,5 @@ RSS2JSCODE;
         return $this->_objTpl->get();
     }
 }
+
 ?>
