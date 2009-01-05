@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Data
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -26,18 +27,10 @@ require_once ASCMS_MODULE_PATH.'/data/lib/dataLib.class.php';
  */
 class Data extends DataLibrary  {
 
-	var $_objTpl;
-	var $_strStatusMessage = '';
-	var $_strErrorMessage = '';
-	var $curCmd;
-
-	/**
-	* Constructor-Fix for non PHP5-Servers
-    *
-    */
-	function Data($strPageContent) {
-		$this->__construct($strPageContent);
-	}
+	public $_objTpl;
+	public $_strStatusMessage = '';
+	public $_strErrorMessage = '';
+	public $curCmd;
 
 
 	/**
@@ -45,15 +38,10 @@ class Data extends DataLibrary  {
     *
     * @global	integer
     */
-	function __construct($strPageContent) {
-		global $_LANGID;
-
-		DataLibrary::__construct();
-
-		$this->_intLanguageId = intval($_LANGID);
+	function __construct($strPageContent)
+	{
 		$this->_intCurrentUserId = (isset($_SESSION['auth']['userid'])) ? intval($_SESSION['auth']['userid']) : 0;
-
-	    $this->_objTpl = &new HTML_Template_Sigma('.');
+	    $this->_objTpl = new HTML_Template_Sigma('.');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 		$this->_objTpl->setTemplate($strPageContent);
 	}
@@ -118,7 +106,7 @@ class Data extends DataLibrary  {
 	    $catList = str_repeat("\t", $level)."<ul>\n";
 	    foreach ($catTree as $key => $value) {
 	        if ($arrCategories[$key]['active']) {
-	            $catName = $arrCategories[$key][$this->_intLanguageId]['name'];
+	            $catName = $arrCategories[$key][FRONTEND_LANG_ID]['name'];
 	            $indent = $level * 10;
 
     	        $catList .= str_repeat("\t", $level+1)."<li style=\"padding-left: ".$indent."px\">\n";
@@ -147,8 +135,8 @@ class Data extends DataLibrary  {
 	{
 	    global $_ARRAYLANG;
 
-	    $arrEntries = $this->createEntryArray($this->_intLanguageId);
-	    $settings = $this->createSettingsArray();
+	    $arrEntries = $this->createEntryArray(FRONTEND_LANG_ID);
+//	    $settings = $this->createSettingsArray();
 
 	    foreach ($arrEntries as $key => $value) {
 	        if ($value['active']) {
@@ -164,10 +152,10 @@ class Data extends DataLibrary  {
 	                   continue;
 	               }
 	            }
-    	        if ($this->categoryMatches($id, $value['categories'][$this->_intLanguageId])) {
+    	        if ($this->categoryMatches($id, $value['categories'][FRONTEND_LANG_ID])) {
     	            $this->_objTpl->setVariable(array(
-    	               "ENTRY_TITLE"       => $value['translation'][$this->_intLanguageId]['subject'],
-    	               "ENTRY_CONTENT"     => $this->getIntroductionText($value['translation'][$this->_intLanguageId]['content']),
+    	               "ENTRY_TITLE"       => $value['translation'][FRONTEND_LANG_ID]['subject'],
+    	               "ENTRY_CONTENT"     => $this->getIntroductionText($value['translation'][FRONTEND_LANG_ID]['content']),
     	               "ENTRY_ID"          => $key,
     	               "TXT_MORE"          => $_ARRAYLANG['TXT_DATA_MORE'],
     	               "CMD"               => $this->curCmd,
@@ -187,7 +175,7 @@ class Data extends DataLibrary  {
 	function showEntries() {
 		global $_ARRAYLANG;
 
-		$arrEntries = $this->createEntryArray($this->_intLanguageId);
+		$arrEntries = $this->createEntryArray(FRONTEND_LANG_ID);
 
 		foreach ($arrEntries as $intEntryId => $arrEntryValues) {
 
@@ -203,14 +191,14 @@ class Data extends DataLibrary  {
 				'DATA_ENTRIES_ID'			=>	$intEntryId,
 				'DATA_ENTRIES_TITLE'		=>	$arrEntryValues['subject'],
 				//'DATA_ENTRIES_POSTED'		=>	$this->getPostedByString($arrEntryValues['user_name'],$arrEntryValues['time_created']),
-				'DATA_ENTRIES_CONTENT'		=>	$arrEntryValues['translation'][$this->_intLanguageId]['content'],
-				'DATA_ENTRIES_INTRODUCTION'	=>	$this->getIntroductionText($arrEntryValues['translation'][$this->_intLanguageId]['content']),
-				'DATA_ENTRIES_IMAGE'		=>	($arrEntryValues['translation'][$this->_intLanguageId]['image'] != '') ? '<img src="'.$arrEntryValues['translation'][$this->_intLanguageId]['image'].'" title="'.$arrEntryValues['subject'].'" alt="'.$arrEntryValues['subject'].'" />' : '',
+				'DATA_ENTRIES_CONTENT'		=>	$arrEntryValues['translation'][FRONTEND_LANG_ID]['content'],
+				'DATA_ENTRIES_INTRODUCTION'	=>	$this->getIntroductionText($arrEntryValues['translation'][FRONTEND_LANG_ID]['content']),
+				'DATA_ENTRIES_IMAGE'		=>	($arrEntryValues['translation'][FRONTEND_LANG_ID]['image'] != '') ? '<img src="'.$arrEntryValues['translation'][FRONTEND_LANG_ID]['image'].'" title="'.$arrEntryValues['subject'].'" alt="'.$arrEntryValues['subject'].'" />' : '',
 				'DATA_ENTRIES_VOTING'		=>	'&#216;&nbsp;'.$arrEntryValues['votes_avg'],
 //				'DATA_ENTRIES_VOTING_STARS'	=>	$this->getRatingBar($intEntryId),
 				'DATA_ENTRIES_COMMENTS'		=>	$arrEntryValues['comments_active'].' '.$_ARRAYLANG['TXT_DATA_FRONTEND_OVERVIEW_COMMENTS'].'&nbsp;',
-				'DATA_ENTRIES_CATEGORIES'	=>	$this->getCategoryString($arrEntryValues['categories'][$this->_intLanguageId], true),
-				'DATA_ENTRIES_TAGS'			=>	$this->getLinkedTags($arrEntryValues['translation'][$this->_intLanguageId]['tags']),
+				'DATA_ENTRIES_CATEGORIES'	=>	$this->getCategoryString($arrEntryValues['categories'][FRONTEND_LANG_ID], true),
+				'DATA_ENTRIES_TAGS'			=>	$this->getLinkedTags($arrEntryValues['translation'][FRONTEND_LANG_ID]['tags']),
 				'DATA_ENTRIES_SPACER'		=>	($this->_arrSettings['data_voting_activated'] && $this->_arrSettings['data_comments_activated']) ? '&nbsp;&nbsp;|&nbsp;&nbsp;' : ''
 			));
 
@@ -238,23 +226,23 @@ class Data extends DataLibrary  {
 	    $arrEntries = $this->createEntryArray();
 	    $entry = $arrEntries[$intMessageId];
 
-	    if ($entry['translation'][$this->_intLanguageId]['image']) {
-                $image = "<img src=\"".$entry['translation'][$this->_intLanguageId]['image']."\" alt=\"\" style=\"float: left; margin-right: 5px;\"/>";
+	    if ($entry['translation'][FRONTEND_LANG_ID]['image']) {
+                $image = "<img src=\"".$entry['translation'][FRONTEND_LANG_ID]['image']."\" alt=\"\" style=\"float: left; margin-right: 5px;\"/>";
         } else {
             $image = "";
         }
 
-        if ($entry['translation'][$this->_intLanguageId]['attachment']) {
+        if ($entry['translation'][FRONTEND_LANG_ID]['attachment']) {
             $this->_objTpl->setVariable(array(
-                "HREF"          => $entry['translation'][$this->_intLanguageId]['attachment'],
+                "HREF"          => $entry['translation'][FRONTEND_LANG_ID]['attachment'],
                 "TXT_DOWNLOAD"  => $_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT']
             ));
             $this->_objTpl->parse("attachment");
         }
 
 	    $this->_objTpl->setVariable(array(
-	       "ENTRY_SUBJECT"         => $entry['translation'][$this->_intLanguageId]['subject'],
-	       "ENTRY_CONTENT"         => $entry['translation'][$this->_intLanguageId]['content'],
+	       "ENTRY_SUBJECT"         => $entry['translation'][FRONTEND_LANG_ID]['subject'],
+	       "ENTRY_CONTENT"         => $entry['translation'][FRONTEND_LANG_ID]['content'],
 	       "IMAGE"                 => $image
 	    ));
 
@@ -282,7 +270,7 @@ class Data extends DataLibrary  {
         $content = $entry['translation'][$lang]['content'];
         $picture = (!empty($entry['translation'][$lang]['image'])) ? $entry['translation'][$lang]['image'] : "none";
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
         $this->_objTpl->setCurrentBlock("thickbox");
 
         $objResult = $objDatabase->SelectLimit("
@@ -320,3 +308,5 @@ class Data extends DataLibrary  {
 	    die();
 	}
 }
+
+?>

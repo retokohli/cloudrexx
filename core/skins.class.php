@@ -1,4 +1,5 @@
 <?php
+
 /**
 * Skins
 *
@@ -9,10 +10,12 @@
 * @subpackage   core
 * @version        1.1.0
 */
+
 /**
  * @ignore
  */
 require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/File.class.php';
+
 /**
 * Skins class
 *
@@ -31,76 +34,76 @@ class skins
      * @var string
      */
 
-    var $pageTitle;
+    public $pageTitle;
     /**
      * Error message
      * @var string
      */
 
-    var $strErrMessage = '';
+    public $strErrMessage = '';
     /**
      * Success message
      * @var unknown_type
      */
 
-    var $strOkMessage = '';
+    public $strOkMessage = '';
     /**
      * FRAMEWORK File object
      * @var object
      */
 
-    var $_objFile;
+    public $_objFile;
 
     /**
      * Temporary archive location, relative to the document root
      * @var string
      */
-    var $_archiveTempWebPath;
+    public $_archiveTempWebPath;
 
     /**
      * Temporary archive location, absolute path
      * @var string
      */
 
-    var $_archiveTempPath;
+    public $_archiveTempPath;
 
     /**
      * Name of the theme directory
      * @var string
      */
-    var $_themeDir;
+    public $_themeDir;
 
     /**
      * Name of the theme
      * @var string
      */
-    var $_themeName;
+    public $_themeName;
 
     /**
      * Holds archive files, for later purposes (see skins::_validateArchiveStructure())
      * @var array
      */
-    var $_contentFiles = array();
+    public $_contentFiles = array();
 
     /**
      * Holds archive directories
      * @var array
      */
-    var $_contentDirs = array();
+    public $_contentDirs = array();
 
     /**
      * Character encoding used by the XML parser
      * @access private
      * @var string
      */
-    var $_xmlParserCharacterEncoding;
+    public $_xmlParserCharacterEncoding;
 
     /**
      * Defines the current XML element which is being parsed
      * @access private
      * @var array
      */
-    var $_currentXmlElement;
+    public $_currentXmlElement;
 
     /**
      * Contains the referencies to the parent XML elements
@@ -108,14 +111,14 @@ class skins
      * @access private
      * @var array
      */
-    var $_arrParentXmlElement = array();
+    public $_arrParentXmlElement = array();
 
     /**
      * Structure with data of the XML document
      * @access private
      * @var array
      */
-    var $_xmlDocument;
+    public $_xmlDocument;
 
     /**
      * Defines the relevant XML element that
@@ -123,61 +126,51 @@ class skins
      * @access private
      * @var string
      */
-    var $_xmlElementName = '';
+    public $_xmlElementName = '';
 
     /**
      * Required files
      * @var array
      */
-    var $filenames = array("index.html","style.css","content.html","home.html","navbar.html","subnavbar.html","sidebar.html","shopnavbar.html","headlines.html","events.html","javascript.js","buildin_style.css","directory.html","info.xml","forum.html","podcast.html","blog.html","immo.html");
+    public $filenames = array("index.html","style.css","content.html","home.html","navbar.html","subnavbar.html","sidebar.html","shopnavbar.html","headlines.html","events.html","javascript.js","buildin_style.css","directory.html","info.xml","forum.html","podcast.html","blog.html","immo.html");
 
     /**
      * Required directories
      * @var array
      */
-    var $directories = array("images/",);
+    public $directories = array("images/",);
 
     /**
      * File extenstions to display in filelist
      * @var array
      */
-    var $fileextensions = array("htm", "shtml", "html", "txt", "css", "js", "php", "java", "tpl", "xml",);
+    public $fileextensions = array("htm", "shtml", "html", "txt", "css", "js", "php", "java", "tpl", "xml",);
 
     /**
      * Subdirectores and contents of selected theme
      * @var array
      */
-    var $subDirs = array();
+    public $subDirs = array();
 
     /**
      * Path to the parent directory of the theme
      *
      * @var string
      */
-    var $_parentPath = '';
+    public $_parentPath = '';
 
-
-    var $arrWebPaths;                      // array web paths
-    var $getAct;                           // $_GET['act']
-    var $getPath;                          // $_GET['path']
-    var $path;                             // current path
-    var $dirLog;                           // Dir Log
-    var $webPath;                          // current web path
-    var $tableExists;                      // Table exists
-    var $oldTable;                         // old Theme-Table name
+    public $arrWebPaths;                      // array web paths
+    public $getAct;                           // $_GET['act']
+    public $getPath;                          // $_GET['path']
+    public $path;                             // current path
+    public $dirLog;                           // Dir Log
+    public $webPath;                          // current web path
 
     /**
     * Constructor
     * @param  string
     * @access public
     */
-    function skins()
-    {
-        $this->__construct();
-    }
-
-
-
     function __construct()
     {
         global  $_CORELANG, $objTemplate, $objDatabase;
@@ -191,7 +184,7 @@ class skins
         $this->themeZipPath = '/themezips/';
         $this->_archiveTempWebPath = ASCMS_TEMP_WEB_PATH.$this->themeZipPath;
         $this->_archiveTempPath = ASCMS_PATH.$this->_archiveTempWebPath;
-        $this->_objFile = &new File();
+        $this->_objFile = new File();
         //create /tmp/zip path if it doesnt exists
         if(!file_exists($this->_archiveTempPath)){
             if($this->_objFile->mkDir(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, $this->themeZipPath ) == 'error'){
@@ -211,7 +204,7 @@ class skins
                            <a href='index.php?cmd=skins&amp;act=examples'>".$_CORELANG['TXT_DESIGN_REPLACEMENTS_DIR']."</a>
                            <a href='index.php?cmd=skins&amp;act=manage'>".$_CORELANG['TXT_THEME_IMPORT_EXPORT']."</a>");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."skins");
-        $this->oldTable = DBPREFIX."themes";
+//        $this->oldTable = DBPREFIX."themes";
         $this->_objFile->setChmod($this->path, $this->webPath, "");
     }
 
@@ -272,6 +265,7 @@ class skins
         ));
     }
 
+
     /**
     * show the overview page
     *
@@ -307,6 +301,7 @@ class skins
         $this->getDropdownContent();
     }
 
+
     /**
      * set up Import/Export page
      * call specific function depending on $_GET
@@ -315,7 +310,7 @@ class skins
      */
     function _manage()
     {
-        global $_CORELANG, $objTemplate, $objDatabase;
+        global $_CORELANG, $objTemplate;
 
         Permission::checkAccess(102, 'static');
 
@@ -394,13 +389,12 @@ class skins
                                                 'THEME_XML_AUTHOR'      =>  $this->_xmlDocument['THEME']['AUTHORS']['AUTHOR']['USER']['cdata'],
                                                 'THEME_XML_VERSION'     =>  $this->_xmlDocument['THEME']['VERSION']['cdata'],
                                                 'THEME_XML_DESCRIPTION' =>  $this->_xmlDocument['THEME']['DESCRIPTION']['cdata'],
-
-
                 ));
                 $objTemplate->parse('themeRow');
             }
         }
     }
+
 
     /**
      * check if images/preview.gif exists and return webpath
@@ -426,7 +420,8 @@ class skins
     function _cleantmp()
     {
         if (is_dir($this->_archiveTempPath)) {
-            if ($dh = opendir($this->_archiveTempPath)) {
+            $dh = opendir($this->_archiveTempPath);
+            if ($dh) {
                 while (($file = readdir($dh)) !== false) {
                     if($file != '..' && $file != '.' && is_file($this->_archiveTempPath.$file)){
                         unlink($this->_archiveTempPath.$file);
@@ -437,15 +432,16 @@ class skins
         }
     }
 
+
     /**
      * check fileupload and move uploaded file if it's a valid archive
      *
      * @return unknown
      */
-
     function _checkUpload()
     {
         global $_CORELANG;
+
         if(!isset($_FILES['importlocal'])){
             $this->strErrMessage="POST Request Error. 'importlocal' is empty";
             return false;
@@ -465,15 +461,16 @@ class skins
         }
         //move the uploaded file to the themezip location
         if (!move_uploaded_file($_FILES['importlocal']['tmp_name'], $this->_archiveTempPath.basename($_FILES['importlocal']['name']))) {
-                $this->strErrMessage = $this->_archiveTempPath.basename($_FILES['importlocal']['name']).': '.$_CORELANG['TXT_COULD_NOT_UPLOAD_FILE'];
-                return false;
+            $this->strErrMessage = $this->_archiveTempPath.basename($_FILES['importlocal']['name']).': '.$_CORELANG['TXT_COULD_NOT_UPLOAD_FILE'];
+            return false;
         }
+        return true;
     }
+
 
     /**
      * check for valid archive structure, put directories and files into _contentDirs and _contentFiles array
      * set errormessage if structure not valid
-     *
      * @access private
      * @param array $content file and directory list
      * @return boolean
@@ -542,12 +539,11 @@ class skins
         return true;
     }
 
+
     /**
      * Create the directory structure of the archive contents and set permissions
-     *
      * @return boolean
      */
-
     function _createDirStructure(){
         global $_CORELANG;
         //create archive structure and set permissions
@@ -560,7 +556,6 @@ class skins
                         $this->strErrMessage = $this->_themeDir.': '.$_CORELANG['TXT_THEME_FOLDER_ALREADY_EXISTS'].'! '.$_CORELANG['TXT_THEME_FOLDER_DELETE_FIRST'].'.';
                         return false;
                     }
-
                     $this->_objFile->mkDir($this->path, ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR, $directory);
                     $this->_objFile->setChmod($this->path, ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR, $directory);
                     break;
@@ -613,11 +608,12 @@ class skins
                         $this->_objFile->setChmod($this->path.$this->_themeDir.DIRECTORY_SEPARATOR, ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR.$this->_themeDir.DIRECTORY_SEPARATOR, $reqFile);
                 }
             }
-        }else{
-            $this->strErrMessage = $_CORELANG['TXT_THEME_ARCHIVE_ERROR'].': '.$archive->errorInfo(true);
-            return false;
+            return true;
         }
+        $this->strErrMessage = $_CORELANG['TXT_THEME_ARCHIVE_ERROR'].': '.$archive->errorInfo(true);
+        return false;
     }
+
 
     /**
     * import themes from archive
@@ -625,11 +621,11 @@ class skins
     * @access   private
     * @param    string   $themes
     */
-
     function _importFile()
     {
         require_once(ASCMS_LIBRARY_PATH.'/pclzip/pclzip.lib.php');
         global $_CORELANG;
+
         $this->_cleantmp();
         switch($_GET['import']){
             case 'remote':
@@ -667,13 +663,17 @@ class skins
                 $this->strErrMessage="GET Request Error. 'import' should be either 'local' or 'remote'";
                 return false;
         }
-
+        return true;
     }
+
 
     function _fetchRemoteFile($URL)
     {
         global $_CORELANG;
+
         $URL = parse_url($URL);
+        $errno = '';
+        $errstr = '';
         $http = @fsockopen($URL['host'], !empty($URL['port']) ? intval($URL['port']) : 80 , $errno, $errstr, 10);
         if($http){
             $archive = '';
@@ -690,7 +690,7 @@ class skins
                 return false;
             }
             $tmpfilename = basename($URL['path']);
-            if (strlen($tmpfilename) < 3) $tmpfilename = '_unknown_upload_'; 
+            if (strlen($tmpfilename) < 3) $tmpfilename = '_unknown_upload_';
             $tempFile = ASCMS_TEMP_PATH.DIRECTORY_SEPARATOR.$tmpfilename.microtime().'.zip';
             $fh = fopen($tempFile,'w');
             fputs($fh, $archive);
@@ -700,6 +700,7 @@ class skins
             return false;
         }
     }
+
 
     /**
     * export theme as archive
@@ -712,6 +713,7 @@ class skins
     {
         require_once(ASCMS_LIBRARY_PATH.'/pclzip/pclzip.lib.php');
         global $_CORELANG;
+
         //clean up tmp folder
         $this->_cleantmp();
         //path traversal security check
@@ -740,6 +742,7 @@ class skins
         }else{
             $this->strErrMessage = $_CORELANG['TXT_THEME_FOLDER_DOES_NOT_EXISTS'];
         }
+        return false;
     }
 
 
@@ -748,8 +751,10 @@ class skins
      * @access private
      * @return boolean
      */
-    function _activateDefault(){
+    function _activateDefault()
+    {
         global $objDatabase, $_CORELANG;
+
         $themeID = intval($_GET['activate']);
         if($themeID == 0){
             $this->strErrMessage = "GET value error. Must be numeric ID.";
@@ -759,10 +764,10 @@ class skins
             $langID = $objRS->fields['id'];
             $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET themesid='".intval($themeID)."' WHERE id=".intval($langID));
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
-        }else{
-            $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
-            return false;
+            return true;
         }
+        $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+        return false;
     }
 
 
@@ -795,7 +800,6 @@ class skins
             'TXT_THEME_ACTIVATE_INFO_BODY'    => $_CORELANG['TXT_THEME_ACTIVATE_INFO_BODY'],
         ));
         $i=0;
-
         if(isset($_POST['themesId'])) {
             foreach ($_POST['themesId'] as $langid => $themesId) {
                 $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET themesid='".intval($themesId)."' WHERE id=".intval($langid));
@@ -836,6 +840,7 @@ class skins
         }
     }
 
+
     /**
     * Gets the themes example page
     *
@@ -860,6 +865,7 @@ class skins
             'TXT_CONTENTS'                    => $_CORELANG['TXT_CONTENTS']
         ));
     }
+
 
     /**
     * create skin folder page
@@ -895,6 +901,7 @@ class skins
 //      $this->newdir();
     }
 
+
     /**
     * create skin folder
     *
@@ -902,7 +909,7 @@ class skins
     */
     function createdir()
     {
-        global $_CORELANG, $objTemplate;
+        global $_CORELANG;
 
         Permission::checkAccess(47, 'static');
 
@@ -957,7 +964,8 @@ class skins
     {
         $this->_objFile->setChmod($this->path, $this->webPath, $dir);
         $openDir=@opendir($this->path.$dir);
-        while ($file=@readdir($openDir)) {
+        $file = @readdir($openDir);
+        while ($file) {
             if($file!="." && $file!="..") {
                 if(!is_dir($this->path.$dir.DIRECTORY_SEPARATOR.$file)) {
                     $this->_objFile->setChmod($this->path, $this->webPath, $dir.DIRECTORY_SEPARATOR.$file);
@@ -965,13 +973,14 @@ class skins
                     $this->setChmodDir($dir.DIRECTORY_SEPARATOR.$file);
                 }
             }
+            $file = @readdir($openDir);
         }
         closedir($openDir);
     }
 
+
     /**
     * Gets the dropdown menu of filesystem dirs which are not in the DB
-    *
     * @access   public
     * @global   ADONewConnection
     * @return   string   $nadm
@@ -990,21 +999,21 @@ class skins
             }
         }
         $dir = ($this->path);
-        $dh=opendir($dir);
-        while ($file=readdir($dh)) {
+        $dh = opendir($dir);
+        $file = readdir($dh);
+        $nadm = '';
+        while ($file) {
             if($file!="." && $file!=".." && $file != "zip") {
                 if(!in_array($file, $activatedThemes)) {
-                    $selected="";
-                    if (!isset($nadm)) {
-                        $nadm = "";
-                    }
-                    $nadm .="<option value='".$file."' $selected>".$file."</option>\n";
+                    $nadm .="<option value='".$file."'>".$file."</option>\n";
                 }
             }
+            $file = readdir($dh);
         }
         closedir($dh);
         return $nadm;
     }
+
 
     /**
     * update skin file
@@ -1027,6 +1036,7 @@ class skins
         fwrite($fp, $pageContent);
         fclose($fp);
     }
+
 
     /**
     * insert Skin into DB
@@ -1052,7 +1062,6 @@ class skins
 
     /**
     * add new skin file
-    *
     * @access   public
     */
     function newfile()
@@ -1071,9 +1080,9 @@ class skins
         }
     }
 
+
     /**
     * del skin file
-    *
     * @access   public
     */
     function delfile()
@@ -1100,6 +1109,7 @@ class skins
         }
     }
 
+
     /**
     * del skin folder and all files in it
     *
@@ -1118,8 +1128,8 @@ class skins
         if($themes == '' && !empty($_GET['delete'])){
             $themes = addslashes($_GET['delete']);
         }
-        $theme = str_replace(array('..','/'), '', $themes);
-        if($themes!="") {
+        $themes = str_replace(array('..', '/'), '', $themes);
+        if ($themes != '') {
             $_POST['themes'] = (!empty($_POST['themes'])) ? contrexx_addslashes($_POST['themes']) : '';
             if($_POST['themes'] != $themes || $nocheck) {
                 $dir = ($this->path.$themes);
@@ -1160,7 +1170,6 @@ class skins
 
     /**
     * Gets the dropdown menus content
-    *
     * @access public
     */
     function getDropdownContent()
@@ -1177,6 +1186,7 @@ class skins
         ));
     }
 
+
     /**
     * Gets the activated themes dropdown menu
     *
@@ -1188,19 +1198,18 @@ class skins
     {
         global $objDatabase;
         $objResult = $objDatabase->Execute("SELECT id,themesname FROM ".DBPREFIX."skins ORDER BY id");
+        $atdm = '';
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $selected="";
                 if ($objResult->fields['id'] == intval($themesId))  $selected = "selected";
-                if (!isset($atdm)) {
-                    $atdm = "";
-                }
                 $atdm .="<option value='".$objResult->fields['id']."' $selected>".$objResult->fields['themesname']."</option>\n";
                 $objResult->MoveNext();
             }
         }
         return $atdm;
     }
+
 
     /**
     * Gets the themes dropdown menu
@@ -1237,6 +1246,7 @@ class skins
             }
         }
 
+        $tdm = '';
         foreach ($themelist as $item) {
             $selected = "";
             $default = "";
@@ -1252,13 +1262,11 @@ class skins
                 $pdfstyle = "(".$_CORELANG['TXT_THEME_PDF'].")";
             }
             if($themes == $item['foldername']) $selected = "selected";
-            if (!isset($tdm)) {
-                $tdm = "";
-            }
             $tdm .='<option id="'.$item['id']."\" value='".$item['foldername']."' $selected>".contrexx_stripslashes($item['themesname'])." ".$default.$printstyle.$pdfstyle."</option>\n";
         }
         return $tdm;
     }
+
 
     /**
     * Gets the themes dropdown menu
@@ -1284,13 +1292,10 @@ class skins
             }
         }
         $objResult = $objDatabase->Execute("SELECT id,themesname,foldername FROM ".DBPREFIX."skins ORDER BY id");
-        if ($objResult !== false) {
+        $tdm = '';
+        if ($objResult) {
             while (!$objResult->EOF) {
                 if (!in_array($objResult->fields['id'], $activatedThemes)) {
-                    $selected="";
-                    if (!isset($tdm)) {
-                        $tdm = "";
-                    }
                     $tdm .="<option value='".$objResult->fields['foldername']."'>".$objResult->fields['themesname']."</option>\n";
                 }
                 $objResult->MoveNext();
@@ -1299,22 +1304,24 @@ class skins
         return $tdm;
     }
 
+
     /**
      * Get subdirectory contents
-     *
      * @param string $strDir
      * @param bool $boolRecursive
      * @param bool $boolIncludeDirs
      * @return array $this->subDirs
      */
-    function _getDirListing($strDir, $arrAllowedFileExtensions, $level = 0, $boolRecursive = true, $boolIncludeDirs = true) {
-        $strFile = str_replace($this->_parentPath.'/', '', $strDir .'/'. $strFile);
+    function _getDirListing($strDir, $arrAllowedFileExtensions, $level = 0, $boolRecursive = true, $boolIncludeDirs = true)
+    {
+        $strFile = str_replace($this->_parentPath.'/', '', $strDir.'/');
         $this->subDirs[$strDir] = array(
-		    'rel'  => preg_replace("/\/\//si", "/", $strFile),
+		    'rel'  => preg_replace('/\/\//si', '/', $strFile),
 		    'file'  => basename($strFile),
 		    'level' => $level,
 		);
-        if($hDir = opendir($strDir)) {
+        $hDir = opendir($strDir);
+        if ($hDir) {
             $level++;
         	while(false !== ($strFile = readdir($hDir))) {
         		if(!in_array($strFile, array('.', '..', '.svn'))){
@@ -1326,7 +1333,7 @@ class skins
         				    $strPath = $strDir .'/'. $strFile;
             				$strFile = str_replace($this->_parentPath.'/', '', $strDir .'/'. $strFile);
             				$this->subDirs[$strPath] = array(
-            				    'rel'  => preg_replace("/\/\//si", "/", $strFile),
+            				    'rel'  => preg_replace('/\/\//si', '/', $strFile),
             				    'file'  => basename($strFile),
             				    'level' => $level,
             				);
@@ -1335,7 +1342,7 @@ class skins
         				$strPath = $strDir .'/'. $strFile;
             			$strFile = str_replace($this->_parentPath.'/', '', $strDir .'/'. $strFile);
         				$this->subDirs[$strPath] = array(
-        				    'rel'  => preg_replace("/\/\//si", "/", $strFile),
+        				    'rel'  => preg_replace('/\/\//si', '/', $strFile),
         				    'file'  => basename($strFile),
         				    'level' => $level,
         				);
@@ -1346,6 +1353,7 @@ class skins
         }
         return $this->subDirs;
     }
+
 
     /**
     * Gets the themes pages dropdown menu
@@ -1370,6 +1378,7 @@ class skins
             if(file_exists($file)) {
                 $this->_parentPath = $file;
                 $skin_folder_page = opendir ($file);
+                $special = '';
                 while (false !== ($strPage = readdir ($skin_folder_page))) {
                     if(!in_array($strPage, array('.', '..', '.svn')) && is_dir($file.'/'.$strPage)){
                         $this->subDirs = array_merge($this->subDirs, $this->_getDirListing($file.'/'.$strPage, $this->fileextensions));
@@ -1385,9 +1394,6 @@ class skins
                             if($strPage != "." && $strPage != "..") {
                                 $selected="";
                                 if($themesPage==$strPage) $selected = 'selected="selected"';
-                                if (!isset($special)) {
-                                    $special = "";
-                                }
                                 $special .="<option value='".$strPage."' $selected>".$strPage."</option>\n";
                             }
                         }
@@ -1405,12 +1411,10 @@ class skins
                 }
                 //sort files
                 sort($defaultFiles);
-                foreach ($defaultFiles as $id => $strPage){
+                $default = '';
+                foreach ($defaultFiles as $strPage){
                     $selected="";
                     if($themesPage==$strPage) $selected = "selected";
-                    if (!isset($default)) {
-                        $default = "";
-                    }
                     $default .="<option value='".$strPage."' $selected>".$strPage."</option>\n";
                 }
                 //create dropdown
@@ -1431,6 +1435,7 @@ class skins
         return $fdm;
     }
 
+
     /**
     * Gets the themes pages dropdown menu del
     *
@@ -1440,40 +1445,37 @@ class skins
     function getFilesDropdownDel($themes="")
     {
         global $_CORELANG;
-        if(!isset($themes)) {
+
+        if (empty($themes)) {
             $themes = $this->selectTheme();
         }
-
+        $fdmd = '';
         if($themes != "") {
             $file = $this->path.$themes;
             if(file_exists($file)) {
                 $themesPage = opendir ($file);
-                while ($page = readdir ($themesPage)) {
+                $page = readdir ($themesPage);
+                while ($page) {
                     $extension = split("[.]",$page);
                     $x = count($extension)-1;
                     if(in_array($extension[$x], $this->fileextensions)) {
                         if(($page != ".") && ($page != "..") && (!in_array($page, $this->filenames))) {
-                            if (!isset($fdmd)) {
-                                $fdmd = "";
-                            }
                             $fdmd .="<option value='".$page."'>".$page."</option>\n";
                         }
                     }
+                    $page = readdir ($themesPage);
                 }
                 closedir($themesPage);
             }
         } else {
-            if (!isset($fdmd)) {
-                $fdmd = "";
-            }
             $fdmd .="<option value='1'>".$_CORELANG['TXT_CHOOSE_DESIGN']."</option>\n";
         }
         return $fdmd;
     }
 
+
     /**
     * Gets the themes pages file content
-    *
     * @access   public
     * @param    string   $themes
     * @param    string   $themesPage
@@ -1481,7 +1483,8 @@ class skins
     */
     function getFilesContent($themes="", $themesPage="")
     {
-        global $objDatabase, $objTemplate;
+        global $objTemplate;
+
         if(!isset($themes)) {
             $themes = $this->selectTheme();
         }
@@ -1494,13 +1497,13 @@ class skins
                 $contenthtml=file_get_contents($file);
                 $contenthtml = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]' ,$contenthtml);
                 $contenthtml = htmlspecialchars($contenthtml);
-                $objResult = $objDatabase->Execute("SELECT id,expert FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
-                if ($objResult !== false) {
-                    while (!$objResult->EOF) {
-                        $expert = $objResult->fields['expert'];
-                        $objResult->MoveNext();
-                    }
-                }
+//                $objResult = $objDatabase->Execute("SELECT id,expert FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
+//                if ($objResult !== false) {
+//                    while (!$objResult->EOF) {
+// TODO: Never used
+//                        $expert = $objResult->fields['expert'];
+//                    }
+//                }
                 $objTemplate->setVariable(array(
                     'THEMES_SELECTED_THEME'         =>     $themes,
                     'THEMES_SELECTED_PAGENAME'      =>     $themesPage,
@@ -1511,6 +1514,7 @@ class skins
             }
         }
     }
+
 
     /**
     * replaces some characters
@@ -1543,9 +1547,9 @@ class skins
         return $string;
     }
 
+
     /**
     * if not isset themes
-    *
     * @access   public
     * @return   string   $themes
     */
@@ -1557,7 +1561,8 @@ class skins
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $themeId = $objResult->fields['themesid'];
-                $printThemeId = $objResult->fields['print_themes_id'];
+// TODO: Never used
+//                $printThemeId = $objResult->fields['print_themes_id'];
                 $objResult->MoveNext();
             }
         }
@@ -1574,12 +1579,12 @@ class skins
 
     /**
      * return the foldername of the default print_theme
-     *
      * @return string $default_print_theme_foldername
      */
     function getDefaultPrintTheme()
     {
         global $objDatabase, $_CORELANG;
+
         $objResultID = $objDatabase->SelectLimit("SELECT `print_themes_id` FROM ".DBPREFIX."languages WHERE is_default='true'", 1);
         if ($objResultID !== false && $objResultID->RecordCount() > 0) {
             $objResult = $objDatabase->SelectLimit("SELECT `foldername` FROM ".DBPREFIX."skins WHERE id=".$objResultID->fields['print_themes_id']." ORDER BY id", 1);
@@ -1591,6 +1596,7 @@ class skins
         return false;
     }
 
+
     /**
      * return the foldername of the default pdf_theme
      *
@@ -1599,6 +1605,7 @@ class skins
     function getDefaultPDFTheme()
     {
         global $objDatabase, $_CORELANG;
+
         $objResultID = $objDatabase->SelectLimit("SELECT `pdf_themes_id` FROM ".DBPREFIX."languages WHERE is_default='true'", 1);
         if ($objResultID !== false && $objResultID->RecordCount() > 0) {
             $objResult = $objDatabase->SelectLimit("SELECT `foldername` FROM ".DBPREFIX."skins WHERE id=".$objResultID->fields['pdf_themes_id']." ORDER BY id", 1);
@@ -1613,7 +1620,6 @@ class skins
 
     /**
     * selectDefaultTheme
-    *
     * @access   public
     * @return   string   $themes
     */
@@ -1631,15 +1637,16 @@ class skins
         return $themeId;
     }
 
+
     /**
     * create default themepages
-    *
     * @access   public
     * @param    string   $themes
     */
-    function _createDefaultFiles($themes, $filesOnly = false)
+    function _createDefaultFiles($themes, $filesOnly=false)
     {
         global $_CORELANG, $_FTPCONFIG;
+
         $status='';
         foreach ($this->directories as $dir) {
             $this->_objFile->mkDir($this->path.$themes.DIRECTORY_SEPARATOR,ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR.$themes.DIRECTORY_SEPARATOR,$dir);
@@ -1668,12 +1675,12 @@ class skins
         }
     }
 
+
     /**
-    * check iftable exists
-    *
-    * @access   public
-    * @param    string   $table
-    */
+     * obsolete
+     * check if table exists
+     * @access   public
+     * @param    string   $table
     function checkTable($table)
     {
         global $objDatabase;
@@ -1688,12 +1695,13 @@ class skins
             }
         }
     }
+     */
 
     /**
-    * create db themes dropdownmenu
-    *
-    * @access   public
-    */
+     * OBSOLETE
+     * create db themes dropdownmenu
+     *
+     * @access   public
     function getDbDropdown()
     {
         global $objDatabase, $_CORELANG, $objTemplate;
@@ -1717,13 +1725,14 @@ class skins
             $objTemplate->setVariable('TXT_FROM_DB',$tdm);
         }
     }
+     */
 
     /**
+     * OBSOLETE
      * create files from db
      *
      * @param string $themes
      * @param string $fromDB
-     */
     function createFilesFromDB($themes, $fromDB)
     {
         global $objDatabase, $_CORELANG;
@@ -1772,17 +1781,17 @@ class skins
             }
         }
     }
-
+     */
 
 
     /**
      * get all theme rows from the skins table
-     *
      * @return array
      */
     function _getThemes()
     {
-        global $objDatabase, $_CORELANG, $_FRONTEND_LANGID;
+        global $objDatabase, $_CORELANG;
+
         $query = "SELECT id, themesname, foldername from ".DBPREFIX."skins ORDER BY themesname";
         $objRS = $objDatabase->Execute($query);
         if($objRS){
@@ -1797,7 +1806,8 @@ class skins
                             AND `frontend` = 1
                             AND (`themesid` = '.$objRS->fields['id'].'
                             OR `print_themes_id` = '.$objRS->fields['id'].')';
-                if($objRSLang = $objDatabase->Execute($query)){
+                $objRSLang = $objDatabase->Execute($query);
+                if ($objRSLang) {
                     while(!$objRSLang->EOF){
                         $languagesWithThisTheme .= $objRSLang->fields['name'].', ';
                         $objRSLang->MoveNext();
@@ -1829,13 +1839,12 @@ class skins
         }
     }
 
-   /**
-    * if now rows in table -> drop table
-    *
-    * @access   public
-    * @param    string   $table
-    */
-    function dropTable($table)
+
+    /**
+     * OBSOLETE
+     * if no rows in table -> drop table
+     * @access   public
+    function dropTable()
     {
         global $objDatabase;
 
@@ -1847,6 +1856,8 @@ class skins
             }
         }
     }
+     */
+
 
      /**
      * get XML info of specified modulefolder
@@ -1866,6 +1877,7 @@ class skins
         xml_parser_free($xml_parser);
     }
 
+
    /**
     * XML parser start tag
     *
@@ -1874,7 +1886,7 @@ class skins
     * @param string $name
     * @param array $attrs
     */
-    function _xmlStartTag($parser,$name,$attrs)
+    function _xmlStartTag($parser, $name, $attrs)
     {
         if (isset($this->_currentXmlElement)) {
             if (!isset($this->_currentXmlElement[$name])) {
@@ -1905,6 +1917,7 @@ class skins
         }
     }
 
+
     /**
     * XML parser character data tag
     *
@@ -1924,6 +1937,7 @@ class skins
         }
     }
 
+
     /**
     * XML parser end tag
     *
@@ -1938,4 +1952,5 @@ class skins
     }
 
 }
+
 ?>

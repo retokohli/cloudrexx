@@ -18,22 +18,22 @@
  */
 class FWUser extends User_Setting
 {
-    var $arrStatusMsg = array(
+    public $arrStatusMsg = array(
         'ok'    => array(),
         'error' => array(),
     );
 
-    var $backendMode;
+    public $backendMode;
     /**
      * User
      * @var   User
      */
-    var $objUser;
+    public $objUser;
     /**
      * User Group
      * @var   UserGroup
      */
-    var $objGroup;
+    public $objGroup;
 
 
     function __construct($backend = false)
@@ -218,10 +218,11 @@ class FWUser extends User_Setting
      * @global array
      * @global array
      * @global integer
+     * @todo    Use the user's langage ID instead of the LANG_ID constant
      */
     public function restorePassword($email)
     {
-        global $_CORELANG, $_CONFIG, $_LANGID;
+        global $_CORELANG, $_CONFIG;
 
         $objUser = $this->objUser->getUsers(
             array('email' => $email), null, null, null, 1
@@ -231,7 +232,7 @@ class FWUser extends User_Setting
             $objUser->setRestoreKey();
             if ($objUser->store() &&
                 (
-                    $objUserMail->load('reset_pw', $_LANGID) ||
+                    $objUserMail->load('reset_pw', LANG_ID) ||
                     $objUserMail->load('reset_pw')
                 ) &&
                 (include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') &&

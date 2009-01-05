@@ -17,7 +17,7 @@
  * Error reporting level
  * @ignore
  */
-define('_DEBUG', 3);
+define('_DEBUG', 0);
 
 //-------------------------------------------------------
 // Set error reporting

@@ -21,11 +21,11 @@
  */
 class modulemanager
 {
-    var $strErrMessage = '';
-    var $strOkMessage = '';
-    var $arrayInstalledModules = array();
-    var $arrayRemovedModules = array();
-    var $defaultOrderValue = 111;
+    public $strErrMessage = '';
+    public $strOkMessage = '';
+    public $arrayInstalledModules = array();
+    public $arrayRemovedModules = array();
+    public $defaultOrderValue = 111;
 
     /**
      * Constructor
@@ -202,7 +202,7 @@ class modulemanager
 
     function installModules()
     {
-        global $objDatabase, $_CORELANG, $objInit;
+        global $objDatabase;
 
         $i = 1;
         if (empty($_POST['installModule']) || !is_array($_POST['installModule'])) {
@@ -295,7 +295,6 @@ class modulemanager
 
                     // Set displayorder to a high value for the parent module page
                     $displayorder = ($i == 1 ? $this->defaultOrderValue : $objResult->fields['displayorder']);
-                    $langId = FRONTEND_LANG_ID;
                     $modulerepid = $objResult->fields['id'];
                     $username = $objResult->fields['username'];
 

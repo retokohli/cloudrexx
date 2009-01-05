@@ -1,4 +1,5 @@
 <?php
+
 /**
  * WYSIWYG editor interface
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -7,6 +8,7 @@
  * @package     contrexx
  * @subpackage  core
  */
+
 //Security-Check
 if (eregi('wysiwyg.class.php',$_SERVER['PHP_SELF']))
 {
@@ -16,7 +18,6 @@ if (eregi('wysiwyg.class.php',$_SERVER['PHP_SELF']))
 
 // set wysiwyg editor
 $wysiwygEditor = 'FCKeditor';
-
 
 // initialize variables
 switch ($wysiwygEditor) {
@@ -37,11 +38,8 @@ function get_wysiwyg_code()
     global $wysiwygEditor;
 
     $return = '';
-
     switch ($wysiwygEditor) {
         case 'FCKeditor':
-            global $FCKeditorBasePath;
-
             $return = '';
             break;
     }
@@ -105,7 +103,7 @@ function get_wysiwyg_editor($name, $value = '', $mode = '', $languageId = null, 
                     $objFCKeditor->Height = '450';
                     $objFCKeditor->Config['FullPage'] = true;
                     break;
-                    
+
                 case 'frontendEditing':
                 	$objFCKeditor->Width = '100%';
                     $objFCKeditor->Height = '400';
@@ -122,6 +120,9 @@ function get_wysiwyg_editor($name, $value = '', $mode = '', $languageId = null, 
             }
             return $editor;
             break;
+        default:
     }
+    return '';
 }
+
 ?>

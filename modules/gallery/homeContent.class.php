@@ -25,27 +25,19 @@ require_once ASCMS_MODULE_PATH.'/gallery/Lib.class.php';
  * @package     contrexx
  * @subpackage  module_gallery
  */
-class GalleryHomeContent extends GalleryLibrary {
-    var $_intLangId;
+class GalleryHomeContent extends GalleryLibrary
+{
     var $_strWebPath;
 
     /**
     * Constructor php5
     */
-    function __construct() {
-        global $_LANGID;
-
+    function __construct()
+    {
         $this->getSettings();
-        $this->_intLangId     = $_LANGID;
         $this->_strWebPath     = ASCMS_GALLERY_THUMBNAIL_WEB_PATH . '/';
     }
 
-    /**
-     * Constructor php4
-     */
-    function GalleryHomeContent() {
-        $this->__construct();
-    }
 
     /**
      * Check if the random-function is activated
@@ -90,7 +82,7 @@ class GalleryHomeContent extends GalleryLibrary {
                                                     WHERE    categories.status="1" AND
                                                             pics.validated="1" AND
                                                             pics.status="1" AND
-                                                            lang.lang_id = '.$this->_intLangId.'
+                                                            lang.lang_id = '.FRONTEND_LANG_ID.'
                                                     GROUP BY categories.id
                                                     ORDER BY categories.id');
 
@@ -106,7 +98,7 @@ class GalleryHomeContent extends GalleryLibrary {
                                                     WHERE    categories.status="1" AND
                                                             pics.validated="1" AND
                                                             pics.status="1" AND
-                                                            lang.lang_id = '.$this->_intLangId.'
+                                                            lang.lang_id = '.FRONTEND_LANG_ID.'
                                                     GROUP BY categories.id
                                                     ORDER BY categories.id', 1, $catNr);
 
@@ -122,7 +114,7 @@ class GalleryHomeContent extends GalleryLibrary {
                                                 WHERE    pics.validated="1" AND
                                                         pics.status="1" AND
                                                         pics.catid='.$catId.' AND
-                                                        lang.lang_id = '.$this->_intLangId, 1);
+                                                        lang.lang_id = '.FRONTEND_LANG_ID, 1);
 
                 if ($objResult === false || $objResult->RecordCount() == 0) {
                     return '';
@@ -140,7 +132,7 @@ class GalleryHomeContent extends GalleryLibrary {
                                                         WHERE    pics.validated="1" AND
                                                                 pics.status="1" AND
                                                                 pics.catid='.$catId.' AND
-                                                            lang.lang_id = '.$this->_intLangId.'
+                                                            lang.lang_id = '.FRONTEND_LANG_ID.'
                                                             ORDER BY pics.sorting', 1, $picNr);
 
                     if ($objResult !== false) {
@@ -179,7 +171,7 @@ class GalleryHomeContent extends GalleryLibrary {
                                             WHERE        categories.status = "1"        AND
                                                         pics.validated = "1"        AND
                                                         pics.status = "1"            AND
-                                                        lang.lang_id = '.$this->_intLangId.'
+                                                        lang.lang_id = '.FRONTEND_LANG_ID.'
                                             ORDER BY    pics.id DESC
                                             LIMIT        1
                                         ');
@@ -195,7 +187,7 @@ class GalleryHomeContent extends GalleryLibrary {
                                                 WHERE        categories.status = "1"        AND
                                                             pics.validated = "1"        AND
                                                             pics.status = "1"            AND
-                                                            lang.lang_id = '.$this->_intLangId.'
+                                                            lang.lang_id = '.FRONTEND_LANG_ID.'
                                                 ORDER BY    pics.sorting');
             if ($objPos !== false) {
                 while (!$objPos->EOF) {

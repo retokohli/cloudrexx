@@ -66,8 +66,11 @@ class podcast extends podcastLib
         return $this->_objTpl->get();
     }
 
-    function showMedium($blockFirst = false){
-        global $_ARRAYLANG, $_CONFIG, $_LANGID;
+
+    function showMedium($blockFirst = false)
+    {
+        global $_ARRAYLANG, $_CONFIG;
+
         $categoryId = isset($_REQUEST['cid']) ? (intval($_REQUEST['cid']) == 0 ? false : intval($_REQUEST['cid'])) : false;
         $mediumId = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
         if($mediumId > 0){
@@ -155,7 +158,7 @@ EOF;
             $this->_objTpl->setVariable('PODCAST_CATEGORY_MENU', $menu.' <input type="button" onclick="window.location.href=\'index.php?section=podcast&amp;cid=\'+document.getElementById(\'podcast_category_menu\').value" value="'.$_ARRAYLANG['TXT_PODCAST_SHOW'].'" />');
         }
         if(intval($categoryId) == 0){
-            $categories = array_keys($this->_getCategories(true, false, $_LANGID));
+            $categories = array_keys($this->_getCategories(true, false, FRONTEND_LANG_ID));
         }else{
             $categories = $categoryId;
         }

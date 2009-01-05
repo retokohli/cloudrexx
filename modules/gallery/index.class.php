@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Gallery
  *
@@ -22,7 +23,8 @@
  * @subpackage  module_gallery
  * @todo        Edit PHP DocBlocks!
  */
-class Gallery {
+class Gallery
+{
     var $_objTpl;
     var $pageContent;
     var $arrSettings;
@@ -30,7 +32,6 @@ class Gallery {
     var $strImageWebPath;
     var $strThumbnailPath;
     var $strThumbnailWebPath;
-    var $langId;
     var $strCmd = '';
 
 
@@ -54,7 +55,7 @@ class Gallery {
     */
     function __construct($pageContent)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $this->pageContent = $pageContent;
         $this->_objTpl = &new HTML_Template_Sigma('.');
@@ -1252,4 +1253,5 @@ END;
         return $objRs->fields['catid'];
     }
 }
+
 ?>

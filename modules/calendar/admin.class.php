@@ -216,39 +216,30 @@ class calendarManager extends calendarLibrary
             $year = $_GET['yearID'];
             $startdate = mktime(00, 00, 00, $month, $day, $year);
             $enddate = mktime(23, 59, 59, $month, $day, $year);
-
             $calendarbox = $this->getBoxes(3, $year, $month, $day);
-            $titledate = date(ASCMS_DATE_SHORT_FORMAT, mktime(0, 0, 0, $_GET['monthID'], $_GET['dayID'], $_GET['yearID']));
-
+//            $titledate = date(ASCMS_DATE_SHORT_FORMAT, mktime(0, 0, 0, $_GET['monthID'], $_GET['dayID'], $_GET['yearID']));
         } elseif (isset($_GET['yearID']) && isset($_GET['monthID']) && !isset($_GET['dayID'])) {
             $month = $_GET['monthID'];
             $year = $_GET['yearID'];
             $startdate = mktime(00, 00, 00, $month, 01, $year);
             $enddate = mktime(23, 59, 59, $month, 31, $year);
-
             $calendarbox = $this->getBoxes(3, $year, $month);
-            $titledate = date("F", mktime(0, 0, 0, $_GET['monthID'], 1, $_GET['yearID']));
-
+//            $titledate = date("F", mktime(0, 0, 0, $_GET['monthID'], 1, $_GET['yearID']));
         } elseif (isset($_GET['yearID']) && !isset($_GET['monthID']) && !isset($_GET['dayID'])) {
             $month = date("Y");
             $year = $_GET['yearID'];
             $startdate = mktime(00, 00, 00, 1, 01, $year);
             $enddate = mktime(23, 59, 59, 12, 31, $year);
-
             $calendarbox = $this->getBoxes(3, $year);
-            $titledate = sprintf("%4d", $_GET['yearID']);
-
+//            $titledate = sprintf("%4d", $_GET['yearID']);
         } else {
             $day = date("d");
             $month = date("m");
             $year = date("Y");
             $select_next_ten = true;
-
             $startdate = mktime(00, 00, 00, $month, $day, $year);
-
             $calendarbox = $this->getBoxes(3, $year, $month, $day);
         }
-
         if (isset($_POST['search'])) {
             $keyword = htmlentities(contrexx_addslashes($_POST['inputKeyword']), ENT_QUOTES, CONTREXX_CHARSET);
             $query = "SELECT active, id, name, catid, startdate, enddate
@@ -477,7 +468,7 @@ class calendarManager extends calendarLibrary
      */
     function showRegistrationDetail($id)
     {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
+        global $_ARRAYLANG;
 
         $this->pageTitle = $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'];
         $arrFieldsData = $this->getRegData($id);
@@ -707,7 +698,7 @@ class calendarManager extends calendarLibrary
             //load data
             $this->getNoteData($id, "edit", 0);
             //get editor
-            $ed = get_wysiwyg_editor('inputComment');
+//            $ed = get_wysiwyg_editor('inputComment');
             //show send mail again
             $this->_objTpl->parse('sendMailAgain');
             //get formular
@@ -875,29 +866,23 @@ class calendarManager extends calendarLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $_POST['inputInfo'] = str_replace(' ', '', $_POST['inputInfo']);
-        $return = 0;
-
         //options
         $catid            = intval($_POST['inputCategory']);
         $priority         = intval($_POST['inputPriority']);
         $access         = intval($_POST['inputAccess']);
         $id                = intval($_POST['inputEventId']);
         $active           = intval($_POST['inputActive']);
-
         //event
         $title            = contrexx_addslashes(contrexx_strip_tags($_POST['inputTitle']));
         $link            = contrexx_addslashes(contrexx_strip_tags($_POST['inputEventLink']));
         $pic            = contrexx_addslashes(contrexx_strip_tags($_POST['inputEventImage']));
         $attach            = contrexx_addslashes(contrexx_strip_tags($_POST['inputEventAttachment']));
         $comment          = contrexx_addslashes($_POST['inputComment']);
-
         //start 'n' end
         $dateparts         = split("-", $_POST['inputStartDate']);
         $startdate         = mktime(intval($_POST['inputHour']), intval($_POST['inputMinutes']),00, $dateparts[1], $dateparts[2], $dateparts[0]);
-
         $dateparts         = split("-", $_POST['inputEndDate']);
         $enddate         = mktime(intval($_POST['inputEndHour']), intval($_POST['inputEndMinutes']),00, $dateparts[1], $dateparts[2], $dateparts[0]);
-
         //place
         $place            = contrexx_addslashes(contrexx_strip_tags($_POST['inputPlace']));
         $placeStreet    = contrexx_addslashes(contrexx_strip_tags($_POST['inputPlaceStreetNr']));
@@ -905,7 +890,6 @@ class calendarManager extends calendarLibrary
         $placeCity        = contrexx_addslashes(contrexx_strip_tags($_POST['inputPlaceCity']));
         $placeLink        = contrexx_addslashes(contrexx_strip_tags($_POST['inputPlaceLink']));
         $placeMap        = contrexx_addslashes(contrexx_strip_tags($_POST['inputPlaceMap']));
-
         //organizer
         $organizer        = contrexx_addslashes(contrexx_strip_tags($_POST['inputOrganizer']));
         $organizerStreet= contrexx_addslashes(contrexx_strip_tags($_POST['inputOrganizerStreetNr']));
@@ -913,7 +897,6 @@ class calendarManager extends calendarLibrary
         $organizerPlace    = contrexx_addslashes(contrexx_strip_tags($_POST['inputOrganizerPlace']));
         $organizerLink    = contrexx_addslashes(contrexx_strip_tags($_POST['inputOrganizerLink']));
         $organizerMail    = contrexx_addslashes(contrexx_strip_tags($_POST['inputOrganizerMail']));
-
         //registrations
         $registration                    = intval($_POST['inputRegistrations']);
         $registrationAdresser            = intval($_POST['inputRegistrationsAddresser']);
@@ -925,37 +908,30 @@ class calendarManager extends calendarLibrary
         $registrationArrFieldType        = $_POST['arrFieldType'];
         $registrationArrFieldRequired    = $_POST['arrFieldRequired'];
         $registrationSubscriber            = intval($_POST['inputRegistrationSubscriber']);
-
         //mail
         $mailTitle        = contrexx_addslashes(contrexx_strip_tags($_POST['registrationMailTitle']));
         $mailContent    = contrexx_addslashes(contrexx_strip_tags($_POST['registrationMailContent']));
         $mailSendAgain    = intval($_POST['inputSendMailAgain']);
-
         //notification
         $notification    = intval($_POST['inputNotification']);
-
         if ($notification == 1) {
             $notificationAddress = contrexx_addslashes(contrexx_strip_tags($_POST['inputNotificationAddress']));
         }
-
         if (!empty($link)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $link)) {
                 $link = "http://".$link;
             }
         }
-
         if (!empty($placeLink)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeLink)) {
                 $placeLink = "http://".$placeLink;
             }
         }
-
         if (!empty($organizerLink)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $organizerLink)) {
                 $organizerLink = "http://".$organizerLink;
             }
         }
-
         if ($registration == 1) {
             switch($registrationAdresser) {
                 case 0:
@@ -971,12 +947,9 @@ class calendarManager extends calendarLibrary
                 case 2:
                     $all_groups        = 0;
                     $public            = 0;
-
                     foreach ($registrationGroups as $groupId) {
                         $groups .= $groupId.";";
                     }
-
-
                     break;
             }
         } else {
@@ -986,14 +959,11 @@ class calendarManager extends calendarLibrary
             $public                    = 0;
             $registrationSubscriber    = 0;
         }
-
         if (!empty($id)) {
             $query = "SELECT id
                         FROM ".DBPREFIX."module_calendar".MODULE_INDEX."
                        WHERE id = '".addslashes($id)."'";
-
             $objResult = $objDatabase->Execute($query);
-
             if ($objDatabase->Affected_Rows() > 0) {
                 $query = "UPDATE ".DBPREFIX."module_calendar".MODULE_INDEX." SET       active = '".$active."',
                                                                     catid = '".$catid."',
@@ -1134,7 +1104,7 @@ class calendarManager extends calendarLibrary
     // CASE cat
     function showCategories()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         //new categorie
         if (isset($_GET['new']) and $_GET['new'] == 1) {
@@ -1243,7 +1213,7 @@ class calendarManager extends calendarLibrary
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $selected = '';
-                if ($_LANGID == $objResult->fields['id']) {
+                if (FRONTEND_LANG_ID == $objResult->fields['id']) {
                     $selected = ' selected="selected"';
                 }
 
@@ -1329,7 +1299,7 @@ class calendarManager extends calendarLibrary
     // CASE catedit
     function categoriesEdit()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         //set
         if (isset($_GET['set']) and $_GET['set'] == 1) {
@@ -1438,7 +1408,7 @@ class calendarManager extends calendarLibrary
     // do search
     function search()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase;
 
         $this->_objTpl->loadTemplateFile('module_calendar_overview.html');
         $this->_objTpl->setVariable("CONTENT", $this->pageContent);
@@ -1481,7 +1451,7 @@ class calendarManager extends calendarLibrary
      */
     function settings()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         if ($_CONFIG['calendar'.MODULE_INDEX.'headlines']) {
             $headlines_checked = "checked=\"checked\"";
@@ -1695,7 +1665,7 @@ class calendarManager extends calendarLibrary
      */
     function saveSettings()
     {
-        global $objDatabase, $_CORELANG, $objSettings;
+        global $objDatabase, $objSettings;
 
         if (empty($_POST['headlines'])) {
             $val = "0";
@@ -1813,7 +1783,7 @@ class calendarManager extends calendarLibrary
      */
     function showPlaceholders()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG;
 
         $this->_objTpl->loadTemplateFile('module_calendar_placeholder.html');
 
@@ -1843,7 +1813,7 @@ class calendarManager extends calendarLibrary
     */
     function activateNote()
     {
-        global $_ARRAYLANG, $objDatabase;
+        global $objDatabase;
 
         $arrStatusNote = $_POST['selectedEventId'];
         if ($arrStatusNote != null) {
@@ -1865,7 +1835,7 @@ class calendarManager extends calendarLibrary
     */
     function deactivateNote()
     {
-        global $_ARRAYLANG, $objDatabase;
+        global $objDatabase;
 
         $arrStatusNote = $_POST['selectedEventId'];
         if ($arrStatusNote != null) {
@@ -1963,7 +1933,7 @@ class calendarManager extends calendarLibrary
      */
     function _getCsv($id)
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG;
 
         if (empty($id)) {
             header("Location: index.php?cmd=calendar".MODULE_INDEX);

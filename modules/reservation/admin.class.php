@@ -22,7 +22,6 @@ class reservationManager extends reservationLib
     var $_objTpl;
     var $pageTitle='';
     var $statusMessage='';
-    var $langId;
 
     /**
      * php 4 constructor
@@ -40,7 +39,7 @@ class reservationManager extends reservationLib
      */
     function __construct()
     {
-        global $_ARRAYLANG, $objTemplate, $_FRONTEND_LANGID;
+        global $_ARRAYLANG, $objTemplate;
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/reservation/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);

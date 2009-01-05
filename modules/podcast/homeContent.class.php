@@ -29,26 +29,18 @@ class podcastHomeContent extends podcastLib {
 
     var $_pageContent;
     var $_objTpl;
-    var $_langId;
     var $_latestMedia;
 
     /**
      * Constructor php5
      */
-    function __construct($pageContent) {
-        global $_LANGID;
+    function __construct($pageContent)
+    {
         $this->_pageContent = $pageContent;
         $this->_objTpl = &new HTML_Template_Sigma('.');
-        $this->_langId = $_LANGID;
-           parent::__construct();
+        parent::__construct();
     }
 
-    /**
-     * Constructor php4
-     */
-    function PodcastHomeContent($pageContent) {
-        $this->__construct($pageContent);
-    }
 
     /**
      * Fetch latest entries and parse forumtemplate
@@ -136,8 +128,9 @@ EOF;
      *
      * @return array latest entries
      */
-    function _getLastestMedia(){
-        $homeContentCategories = $this->_getHomecontentCategories($this->_langId);
+    function _getLastestMedia()
+    {
+        $homeContentCategories = $this->_getHomecontentCategories(FRONTEND_LANG_ID);
         if(empty($homeContentCategories)){
             $homeContentCategories = array();
         }

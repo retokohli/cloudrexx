@@ -1,4 +1,5 @@
 <?php
+
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
@@ -98,7 +99,7 @@ class HTTP_Download
      * @access  protected
      * @var     string
      */
-    var $file = '';
+    public $file = '';
 
     /**
      * Data for download
@@ -107,7 +108,7 @@ class HTTP_Download
      * @access  protected
      * @var     string
      */
-    var $data = null;
+    public $data = null;
 
     /**
      * Resource handle for download
@@ -116,7 +117,7 @@ class HTTP_Download
      * @access  protected
      * @var     int
      */
-    var $handle = null;
+    public $handle = null;
 
     /**
      * Whether to gzip the download
@@ -124,7 +125,7 @@ class HTTP_Download
      * @access  protected
      * @var     bool
      */
-    var $gzip = false;
+    public $gzip = false;
 
     /**
      * Whether to allow caching of the download on the clients side
@@ -132,7 +133,7 @@ class HTTP_Download
      * @access  protected
      * @var     bool
      */
-    var $cache = true;
+    public $cache = true;
 
     /**
      * Size of download
@@ -140,7 +141,7 @@ class HTTP_Download
      * @access  protected
      * @var     int
      */
-    var $size = 0;
+    public $size = 0;
 
     /**
      * Last modified
@@ -148,7 +149,7 @@ class HTTP_Download
      * @access  protected
      * @var     int
      */
-    var $lastModified = 0;
+    public $lastModified = 0;
 
     /**
      * HTTP headers
@@ -156,7 +157,7 @@ class HTTP_Download
      * @access  protected
      * @var     array
      */
-    var $headers   = array(
+    public $headers   = array(
         'Content-Type'  => 'application/x-octetstream',
         'Pragma'        => 'cache',
         'Cache-Control' => 'public, must-revalidate, max-age=0',
@@ -170,7 +171,7 @@ class HTTP_Download
      * @access  protected
      * @var     object
      */
-    var $HTTP = null;
+    public $HTTP = null;
 
     /**
      * ETag
@@ -178,7 +179,7 @@ class HTTP_Download
      * @access  protected
      * @var     string
      */
-    var $etag = '';
+    public $etag = '';
 
     /**
      * Buffer Size
@@ -186,7 +187,7 @@ class HTTP_Download
      * @access  protected
      * @var     int
      */
-    var $bufferSize = 2097152;
+    public $bufferSize = 2097152;
 
     /**
      * Throttle Delay
@@ -194,7 +195,7 @@ class HTTP_Download
      * @access  protected
      * @var     float
      */
-    var $throttleDelay = 0;
+    public $throttleDelay = 0;
 
     /**
      * Sent Bytes
@@ -202,7 +203,7 @@ class HTTP_Download
      * @access  public
      * @var     int
      */
-    var $sentBytes = 0;
+    public $sentBytes = 0;
     // }}}
 
     // {{{ constructor
@@ -240,7 +241,7 @@ class HTTP_Download
      */
     function HTTP_Download($params = array())
     {
-        $this->HTTP = &new HTTP_Header;
+        $this->HTTP = new HTTP_Header;
         $this->setParams($params);
     }
     // }}}
@@ -612,6 +613,7 @@ class HTTP_Download
         return $this->setContentType($content_type);
     }
 
+
     /**
      * Send
      *
@@ -702,7 +704,7 @@ class HTTP_Download
      */
     function staticSend($params, $guess = false)
     {
-        $d = &new HTTP_Download();
+        $d = new HTTP_Download();
         $e = $d->setParams($params);
         if (PEAR::isError($e)) {
             return $e;
@@ -841,7 +843,7 @@ class HTTP_Download
         if ($this->data) {
             while (($length -= $this->bufferSize) > 0) {
                 $this->flush(substr($this->data, $offset, $this->bufferSize));
-                $this->throttleDelay and $this->sleep();
+                if ($this->throttleDelay) $this->sleep();
                 $offset += $this->bufferSize;
             }
             if ($length) {
@@ -854,7 +856,7 @@ class HTTP_Download
             fseek($this->handle, $offset);
             while (($length -= $this->bufferSize) > 0) {
                 $this->flush(fread($this->handle, $this->bufferSize));
-                $this->throttleDelay and $this->sleep();
+                if ($this->throttleDelay) $this->sleep();
             }
             if ($length) {
                 $this->flush(fread($this->handle, $this->bufferSize + $length));
@@ -900,6 +902,7 @@ class HTTP_Download
         return $this->isValidRange();
     }
 
+
     /**
      * Get range request
      *
@@ -908,13 +911,14 @@ class HTTP_Download
      */
     function getRanges()
     {
+        $matches = array();
         return preg_match('/^bytes=((\d*-\d*,? ?)+)$/',
             @$_SERVER['HTTP_RANGE'], $matches) ? $matches[1] : array();
     }
 
+
     /**
      * Check if entity is cached
-     *
      * @access  protected
      * @return  bool
      */
@@ -922,12 +926,13 @@ class HTTP_Download
     {
         return (
             (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) &&
-            $this->lastModified == strtotime(current($a = explode(
+            $this->lastModified == strtotime(current(explode(
                 ';', $_SERVER['HTTP_IF_MODIFIED_SINCE'])))) ||
             (isset($_SERVER['HTTP_IF_NONE_MATCH']) &&
             $this->compareAsterisk('HTTP_IF_NONE_MATCH', $this->etag))
         );
     }
+
 
     /**
      * Check if entity hasn't changed
@@ -947,13 +952,13 @@ class HTTP_Download
             return false;
         }
         if (isset($_SERVER['HTTP_IF_UNMODIFIED_SINCE'])) {
-            $lm = current($a = explode(';', $_SERVER['HTTP_IF_UNMODIFIED_SINCE']));
+            $lm = current(explode(';', $_SERVER['HTTP_IF_UNMODIFIED_SINCE']));
             if (strtotime($lm) !== $this->lastModified) {
                 return false;
             }
         }
         if (isset($_SERVER['HTTP_UNLESS_MODIFIED_SINCE'])) {
-            $lm = current($a = explode(';', $_SERVER['HTTP_UNLESS_MODIFIED_SINCE']));
+            $lm = current(explode(';', $_SERVER['HTTP_UNLESS_MODIFIED_SINCE']));
             if (strtotime($lm) !== $this->lastModified) {
                 return false;
             }
@@ -961,9 +966,9 @@ class HTTP_Download
         return true;
     }
 
+
     /**
      * Compare against an asterisk or check for equality
-     *
      * @access  protected
      * @return  bool
      * @param   string  key for the $_SERVER array
@@ -979,9 +984,9 @@ class HTTP_Download
         return false;
     }
 
+
     /**
      * Send HTTP headers
-     *
      * @access  protected
      * @return  void
      */
@@ -1000,22 +1005,24 @@ class HTTP_Download
         }
     }
 
+
     /**
      * Flush
-     *
      * @access  protected
      * @return  void
      * @param   string  $data
      */
-    function flush($data = '')
+    function flush($data='')
     {
-        if ($dlen = strlen($data)) {
+        $dlen = strlen($data);
+        if ($dlen) {
             $this->sentBytes += $dlen;
             echo $data;
         }
         ob_flush();
         flush();
     }
+
 
     /**
      * Sleep
@@ -1031,6 +1038,7 @@ class HTTP_Download
             usleep($this->throttleDelay * 1000);
         }
     }
-    // }}}
+
 }
+
 ?>

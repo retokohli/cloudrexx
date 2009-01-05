@@ -52,14 +52,14 @@ function search_getSearchPage($pos, $page_content)
         $objDatabase->debug = 0;
     }
 
-    $objTpl = &new HTML_Template_Sigma('.');
+    $objTpl = new HTML_Template_Sigma('.');
     $objTpl->setErrorHandling(PEAR_ERROR_DIE);
     $objTpl->setTemplate($page_content);
     $objTpl->setVariable("TXT_SEARCH", $_ARRAYLANG['TXT_SEARCH']);
 
     $term = ""; //$_SERVER['HTTP_HOST'];
     if (isset($_REQUEST['term'])&& strlen($_REQUEST['term']) >= 3) {
-        $objModulChecker = &new ModuleChecker();
+        $objModulChecker = new ModuleChecker();
         $arrActiveModules = array_keys($objModulChecker->arrActiveModulesByName);
 
         $term = contrexx_addslashes(trim($_REQUEST['term']));
@@ -181,15 +181,13 @@ function search_getSearchPage($pos, $page_content)
 
         $arraySearchOut=array_slice($arraySearchResults,$pos,$_CONFIG['corePagingLimit']);
 
-        foreach($arraySearchOut as $kk=>$details){
+        foreach ($arraySearchOut as $details){
             $objTpl->setVariable("COUNT_MATCH",$_ARRAYLANG['TXT_RELEVANCE']." $details[Score]%");
             $objTpl->setVariable("LINK", "<b><a href=\"".$details['Link']."\" title=\"".$details['Title']."\">".$details['Title']."</a></b>");
             $objTpl->setVariable("SHORT_CONTENT", $details['Content']." ..<br />");
             $objTpl->parse("searchrow");
         }
-    }
-    else
-    {
+    } else {
         $noresult= ($term <>'') ? sprintf($_ARRAYLANG['TXT_NO_SEARCH_RESULTS'],$term) : sprintf($_ARRAYLANG['TXT_PLEASE_ENTER_SEARCHTERM'],$term);
         $objTpl->setVariable("LINK", $noresult);
         $objTpl->setVariable("SHORT_CONTENT","");
@@ -212,7 +210,7 @@ function search_getSearchPage($pos, $page_content)
  */
 function search_searchQuery($section, $searchTerm)
 {
-    global $_LANGID, $_CONFIG;
+    global $_CONFIG;
 
     $objFWUser = FWUser::getFWUserObject();
     $query="";
@@ -225,12 +223,11 @@ function search_searchQuery($section, $searchTerm)
                             redirect
                       FROM ".DBPREFIX."module_news
                       WHERE (text LIKE ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%') OR title LIKE ('%$searchTerm%') OR teaser_text LIKE ('%$searchTerm%'))
-                        AND lang=".$_LANGID."
+                        AND lang=".LANG_ID."
                         AND status=1
                         AND (startdate<=CURDATE() OR startdate='0000-00-00')
                         AND (enddate>=CURDATE() OR enddate='0000-00-00')";
             break;
-
         case "content":
              $query="SELECT n.catid AS id,
                             m.name AS section,
@@ -264,9 +261,8 @@ function search_searchQuery($section, $searchTerm)
                         AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
                         AND n.module =m.id
                         AND n.catid = c.id
-                        AND n.lang=".$_LANGID;
+                        AND n.lang=".LANG_ID;
             break;
-
         case "docsys":
              $query="SELECT id,
                             text AS content,
@@ -274,12 +270,11 @@ function search_searchQuery($section, $searchTerm)
                       MATCH (text,title) AGAINST ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%') AS score
                        FROM ".DBPREFIX."module_docsys
                       WHERE (text LIKE ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%') OR title LIKE ('%$searchTerm%'))
-                        AND lang=".$_LANGID."
+                        AND lang=".LANG_ID."
                         AND status=1
                         AND (startdate<=CURDATE() OR startdate='0000-00-00')
                         AND (enddate>=CURDATE() OR enddate='0000-00-00')";
             break;
-
         case "podcast":
             $query = "SELECT id,
                             title,
@@ -289,7 +284,6 @@ function search_searchQuery($section, $searchTerm)
                         WHERE (description LIKE ('%$searchTerm%') OR title LIKE ('%$searchTerm%'))
                         AND status=1";
             break;
-
         case "podcastCategory":
             $query = "SELECT tblCat.id, tblCat.title, tblCat.description,
                         MATCH (title,description) AGAINST ('%$searchTerm%') AS score
@@ -298,9 +292,8 @@ function search_searchQuery($section, $searchTerm)
                         WHERE (title LIKE ('%$searchTerm%') OR description LIKE ('%$searchTerm%'))
                         AND tblCat.status=1
                         AND tblLang.category_id=tblCat.id
-                        AND tblLang.lang_id=".$_LANGID;
+                        AND tblLang.lang_id=".LANG_ID;
             break;
-
         case "shop":
              $query = "
                 SELECT id, title, CONCAT_WS(' ', shortdesc, description) AS content,
@@ -312,18 +305,16 @@ function search_searchQuery($section, $searchTerm)
                    AND status=1
             ";
             break;
-
         case "gallery_cats":
             $query = "SELECT tblLang.gallery_id, tblLang.value AS title,
                         MATCH (tblLang.value) AGAINST ('%$searchTerm%') AS score
                         FROM ".DBPREFIX."module_gallery_language AS tblLang,
                         ".DBPREFIX."module_gallery_categories AS tblCat
                         WHERE tblLang.value LIKE ('%$searchTerm%')
-                        AND tblLang.lang_id=".$_LANGID."
+                        AND tblLang.lang_id=".LANG_ID."
                         AND tblLang.gallery_id=tblCat.id
                         AND tblCat.status=1";
             break;
-
         case "gallery_pics":
             $query = "SELECT tblPic.catid AS id, tblLang.name AS title, tblLang.desc AS content,
                         MATCH (tblLang.name,tblLang.desc) AGAINST ('%$searchTerm%') AS score
@@ -331,13 +322,12 @@ function search_searchQuery($section, $searchTerm)
                         ".DBPREFIX."module_gallery_language_pics AS tblLang,
                         ".DBPREFIX."module_gallery_categories AS tblCat
                         WHERE (tblLang.name LIKE ('%$searchTerm%') OR tblLang.desc LIKE ('%$searchTerm%'))
-                        AND tblLang.lang_id=".$_LANGID."
+                        AND tblLang.lang_id=".LANG_ID."
                         AND tblLang.picture_id=tblPic.id
                         AND tblPic.status=1
                         AND tblCat.id=tblPic.catid
                         AND tblCat.status=1";
             break;
-
         case "memberdir":
             $query = "SELECT tblValue.id,
                             tblDir.name AS title,
@@ -345,7 +335,7 @@ function search_searchQuery($section, $searchTerm)
                           FROM ".DBPREFIX."module_memberdir_values AS tblValue,
                           ".DBPREFIX."module_memberdir_directories AS tblDir
                           WHERE tblDir.dirid = tblValue.dirid
-                          AND tblValue.`lang_id` = ".$_LANGID."
+                          AND tblValue.`lang_id` = ".LANG_ID."
                           AND (
                               tblValue.`1` LIKE '%$searchTerm%' OR
                               tblValue.`2` LIKE '%$searchTerm%' OR
@@ -367,15 +357,13 @@ function search_searchQuery($section, $searchTerm)
                             tblValue.`18` LIKE '%$searchTerm%'
                         )";
             break;
-
         case "memberdir_cats":
             $query = "SELECT dirid AS id, name AS title, description AS content,
             MATCH (name, description) AGAINST ('%$searchTerm%') AS score
             FROM ".DBPREFIX."module_memberdir_directories
-            WHERE active = '1' AND lang_id=".$_LANGID."
+            WHERE active = '1' AND lang_id=".LANG_ID."
             AND (name LIKE ('%$searchTerm%') OR description LIKE ('%$searchTerm%'))";
             break;
-
         case "directory":
             $query = "SELECT id AS id,
                              title AS title,
@@ -385,7 +373,6 @@ function search_searchQuery($section, $searchTerm)
             WHERE status = '1'
             AND (title LIKE ('%$searchTerm%') OR description LIKE ('%$searchTerm%') OR searchkeys LIKE ('%$searchTerm%') OR company_name LIKE ('%$searchTerm%'))";
             break;
-
         case "directory_cats":
             $query = "SELECT id AS id,
                              name AS title,
@@ -406,7 +393,7 @@ function search_searchQuery($section, $searchTerm)
                             OR     `comment` LIKE ('%$searchTerm%')
                             OR     `placeName` LIKE ('%$searchTerm%')
                         )";
-                        break;
+            break;
         case "calendar_cats":
             $query = "    SELECT id AS id,
                              name AS title
@@ -414,7 +401,6 @@ function search_searchQuery($section, $searchTerm)
                         WHERE status = '1'
                         AND (name LIKE ('%$searchTerm%'))";
             break;
-
         case "forum":
             $query = "    SELECT thread_id AS id,
                              subject AS title,
@@ -426,10 +412,8 @@ function search_searchQuery($section, $searchTerm)
                             OR  content LIKE ('%$searchTerm%')
                             OR  keywords LIKE ('%$searchTerm%')
                         )";
-        break;
-
-        default:
             break;
+        default:
     }
     return $query;
 }
@@ -450,7 +434,7 @@ function search_searchQuery($section, $searchTerm)
  * @param  string    $term            search term
  * @return array                    search results
  */
-function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
+function search_getResultArray($query, $section_var, $cmd_var, $pagevar)
 {
     global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
@@ -523,6 +507,7 @@ function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
     return $arraySearchResults;
 }
 
+
 /**
  * compare two elements of the result array by matching percentage.
  *
@@ -534,13 +519,9 @@ function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
  */
 function search_comparison($a,$b)
 {
-    if ($a==$b) {
-        return 0;
-    }
-    elseif ($a>$b){
-        return -1;
-    } else {
-        return 1;
-    }
+    if ($a==$b) return 0;
+    if ($a>$b) return -1;
+    return 1;
 }
+
 ?>

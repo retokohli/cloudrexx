@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Net tools
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -24,20 +25,8 @@ require_once ASCMS_FRAMEWORK_PATH . '/NetToolsLib.class.php';
  */
 class NetTools extends NetToolsLib {
 
-    var $statusMessage;
-    var $_objTpl;
-    var $langId;
-
-    /**
-    * Constructor
-    *
-    * @param  string
-    * @access public
-    */
-    function NetTools($pageContent)
-    {
-        $this->__construct($pageContent);
-    }
+    public $statusMessage;
+    public $_objTpl;
 
     /**
      * PHP5 constructor
@@ -48,7 +37,7 @@ class NetTools extends NetToolsLib {
     function __construct($pageContent)
     {
         $this->pageContent = $pageContent;
-        $this->_objTpl = &new HTML_Template_Sigma();
+        $this->_objTpl = new HTML_Template_Sigma();
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
 
@@ -143,48 +132,42 @@ class NetTools extends NetToolsLib {
             }
             return "<pre>".$whoisInfo."</pre>".$address;
         }
+        return '';
     }
 
 
-
-    function _getPing() {
+    function _getPing()
+    {
         global $_ARRAYLANG;
 
-
         $this->pageTitle = $_ARRAYLANG['TXT_PING'];
-
-
-
         if (isset($_POST['term']) && !empty($_POST['term'])) {
             $address = strip_tags($_REQUEST['address']);
-            $pingMsg = $this->PingMsg($address,$err);
+            $err = '';
+            $pingMsg = $this->PingMsg($address, $err);
             if ($err) {
                 $pingResult = $_ARRAYLANG['TXT_INVALID_TARGET'];
             } else {
                 if (strlen($pingMsg) == 0) {
                     $pingResult = $_ARRAYLANG['TXT_NO_RESULT'];
                 } else {
-                    return "<pre>".$pingMsg."</pre>".$address;
+                    $pingResult = "<pre>".$pingMsg."</pre>".$address;
                 }
             }
-
-
         }
+        return $pingResult;
     }
 
 
-
-     function _showPort() {
+     function _showPort()
+     {
         global $_ARRAYLANG;
-
-
 
         if (isset($_POST['term']) && !empty($_POST['term'])) {
             $address = strip_tags($_REQUEST['address']);
             $port = (int) substr($_REQUEST['address'],strpos($_REQUEST['address'],":")+1);
-
-            $result = $this->ProbePort($address, $port, $banner, $err);
-
+            $err = '';
+            $result = $this->ProbePort($address, $port, $err);
             if ($result === 0) {
                 $portResult = $_ARRAYLANG['TXT_PORT_IS_OPEN'];
             } elseif ($result === -1) {
@@ -198,12 +181,10 @@ class NetTools extends NetToolsLib {
                 'NETTOOLS_PORT_RESULT'    => $portResult
             ));
             $this->_objTpl->parse('portinfo');
-        } else {
-
         }
-            return "<pre>".$portResult."</pre>".$address;
-        }
-
+        return "<pre>".$portResult."</pre>".$address;
+    }
 
 }
+
 ?>

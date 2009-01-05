@@ -1,4 +1,5 @@
 <?php
+
 /**
 * User Management
 * @copyright    CONTREXX CMS - COMVATION AG
@@ -378,22 +379,23 @@ class AccessManager extends AccessLib
         $this->_objTpl->addBlockfile('ACCESS_GROUP_TEMPLATE', 'module_access_group_modify', 'module_access_group_modify.html');
         $this->_pageTitle = $objFWUser->objGroup->getId() ? $_ARRAYLANG['TXT_ACCESS_MODIFY_GROUP'] : $_ARRAYLANG['TXT_ACCESS_CREATE_NEW_USER_GROUP'];
 
-        if ($objUser = $objFWUser->objUser->getUsers(null, null, array('username' => 'asc'), array('id', 'username', 'firstname', 'lastname'))) {
+        $objUser = $objFWUser->objUser->getUsers(null, null, array('username' => 'asc'), array('id', 'username', 'firstname', 'lastname'));
+        if ($objUser) {
             $arrGroupUsers = $objFWUser->objGroup->getAssociatedUserIds();
             while (!$objUser->EOF) {
                 $arrUsers[] = $objUser->getId();
                 $objUser->next();
             }
-
             $arrOtherUsers = array_diff($arrUsers, $arrGroupUsers);
-
             foreach ($arrGroupUsers as $uId) {
-                if ($objUser = $objFWUser->objUser->getUser($uId)) {
+                $objUser = $objFWUser->objUser->getUser($uId);
+                if ($objUser) {
                     $associatedUsers .= "<option value=\"".$objUser->getId()."\">".htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET).(($objUser->getProfileAttribute('lastname') != '' || $objUser->getProfileAttribute('firstname') != '')  ? " (".htmlentities($objUser->getProfileAttribute('firstname'), ENT_QUOTES, CONTREXX_CHARSET)." ".htmlentities($objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET).")" : '')."</option>\n";
                 }
             }
             foreach ($arrOtherUsers as $uId) {
-                if ($objUser = $objFWUser->objUser->getUser($uId)) {
+                $objUser = $objFWUser->objUser->getUser($uId);
+                if ($objUser) {
                     $notAssociatedUsers .= "<option value=\"".$objUser->getId()."\">".htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET).(($objUser->getProfileAttribute('lastname') != '' || $objUser->getProfileAttribute('firstname') != '')  ? " (".htmlentities($objUser->getProfileAttribute('firstname'), ENT_QUOTES, CONTREXX_CHARSET)." ".htmlentities($objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET).")" : '')."</option>\n";
                 }
             }
@@ -854,7 +856,8 @@ class AccessManager extends AccessLib
 
         if (count($arrIds) > 0) {
             foreach ($arrIds as $id) {
-                if ($objUser = $objFWUser->objUser->getUser($id)) {
+                $objUser = $objFWUser->objUser->getUser($id);
+                if ($objUser) {
                     if ($objUser->delete()) {
                         $this->arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_USER_SUCCESSFULLY_DELETED'], $objUser->getUsername());
                     } else {
@@ -871,7 +874,7 @@ class AccessManager extends AccessLib
 
     private function modifyUser()
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG;
 
         $associatedGroups = '';
         $notAssociatedGroups = '';
@@ -1060,21 +1063,21 @@ class AccessManager extends AccessLib
         return true;
     }
 
+
+    /**
+     * @todo    Use the user's language ID instead of the LANG_ID constant
+     */
     private function notifyUserAboutAccountStatusChange($objUser)
     {
-        global $_ARRAYLANG, $_CORELANG, $_CONFIG, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
         $objFWUser = FWUser::getFWUserObject();
         $objUserMail = $objFWUser->getMail();
         $mail2load = $objUser->getActiveStatus() ? 'user_activated' : 'user_deactivated';
-
-        if (
-            (
-                $objUserMail->load($mail2load, $_LANGID) ||
-                $objUserMail->load($mail2load)
-            ) &&
-            (include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') &&
-            ($objMail = new PHPMailer()) !== false
+        if (   (   $objUserMail->load($mail2load, LANG_ID)
+                || $objUserMail->load($mail2load))
+            && (include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')
+            && ($objMail = new PHPMailer()) !== false
         ) {
             if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                 if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
@@ -1086,13 +1089,11 @@ class AccessManager extends AccessLib
                     $objMail->Password = $arrSmtp['password'];
                 }
             }
-
             $objMail->CharSet = CONTREXX_CHARSET;
             $objMail->From = $objUserMail->getSenderMail();
             $objMail->FromName = $objUserMail->getSenderName();
             $objMail->AddReplyTo($objUserMail->getSenderMail());
             $objMail->Subject = $objUserMail->getSubject();
-
             if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
                 $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
                 $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
@@ -1125,19 +1126,16 @@ class AccessManager extends AccessLib
                     $objUserMail->getBodyHtml()
                 );
             }
-
             $objMail->AddAddress($objUser->getEmail());
-
-
             if ($objMail->Send()) {
                 return true;
             }
         }
-
         $userEmail = '<a href="mailto:'.$objUser->getEmail().'?subject='.($objUser->getActiveStatus() ? $_CORELANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATED'] : $_CORELANG['TXT_ACCESS_USER_ACCOUNT_DEACTIVATED']).'" title="'.$objUser->getEmail().'">'.$objUser->getEmail().'</a>';
         $this->arrStatusMsg['error'][] = str_replace(array('%USER%', '%EMAIL%'), array(htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET), $userEmail), $_ARRAYLANG['TXT_ACCESS_COULD_NOT_NOTIFY_USER_ABOUT_STATUS_CHANGE']);
         return false;
     }
+
 
     private function getGroupMenu($selectedGroupId, $attrs)
     {
@@ -1222,7 +1220,7 @@ class AccessManager extends AccessLib
             }
 
             $menu = '<select'.(!empty($attrs) ? ' '.$attrs : '').">\n";
-            foreach ($objLanguage->arrLanguage as $langId => $arrLanguage) {
+            foreach ($objLanguage->getLanguageArray() as $langId => $arrLanguage) {
                 if (!in_array($langId, $arrUsedLangIds)) {
                     $menu .= '<option value="'.$langId.'"'.($langId == $lang ? ' selected="selected"' : '').'>'.htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
                 }
@@ -1308,7 +1306,7 @@ class AccessManager extends AccessLib
 
     function _configCommunity()
     {
-        global $_ARRAYLANG, $_CORELANG;
+        global $_ARRAYLANG;
 
         $assignedGroups = '';
         $notAssignedGroups = '';
@@ -1501,9 +1499,9 @@ class AccessManager extends AccessLib
             }
 
             if (!empty($_POST['accessMaxProfilePicSize'])) {
-                if ($this->getBytesOfLiteralSizeFormat($_POST['accessMaxProfilePicSize']) != $arrSettings['max_profile_pic_size']['value']) {
-                    // resize profile pics
-                }
+//                if ($this->getBytesOfLiteralSizeFormat($_POST['accessMaxProfilePicSize']) != $arrSettings['max_profile_pic_size']['value']) {
+//                    // resize profile pics
+//                }
                 $arrSettings['max_profile_pic_size']['value'] = $this->getBytesOfLiteralSizeFormat($_POST['accessMaxProfilePicSize']);
             }
 
@@ -1522,9 +1520,9 @@ class AccessManager extends AccessLib
             }
 
             if (!empty($_POST['accessMaxPicSize'])) {
-                if ($this->getBytesOfLiteralSizeFormat($_POST['accessMaxPicSize']) != $arrSettings['max_pic_size']['value']) {
-                    // resize pics
-                }
+//                if ($this->getBytesOfLiteralSizeFormat($_POST['accessMaxPicSize']) != $arrSettings['max_pic_size']['value']) {
+//                    // resize pics
+//                }
                 $arrSettings['max_pic_size']['value'] = $this->getBytesOfLiteralSizeFormat($_POST['accessMaxPicSize']);
             }
 
@@ -1936,7 +1934,7 @@ class AccessManager extends AccessLib
 
     function _configDeleteAttribute()
     {
-        global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG;
 
         // only administrators are allowed to modify the config
         if (!Permission::hasAllAccess()) {
@@ -2178,4 +2176,5 @@ class AccessManager extends AccessLib
         }
     }
 }
+
 ?>

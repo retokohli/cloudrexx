@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class XMLSitemap
  *
@@ -24,8 +25,8 @@ require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
  * @package     contrexx
  * @subpackage  core
  */
-class XMLSitemap {
-
+class XMLSitemap
+{
     private static $strFilePath = '';
     private static $strFileName = 'sitemap.xml';
     private static $strFileNameWithLang = 'sitemap_%s.xml';
@@ -55,6 +56,7 @@ class XMLSitemap {
         }
     }
 
+
     private static function prepareFileAccess($filename)
     {
 		$objFile = new File();
@@ -69,9 +71,9 @@ class XMLSitemap {
         );
     }
 
+
     /**
-     * Write sitemap-file
-     *
+     * Write sitemap file
      * @global     object
      * @global     array
      * @param   array An array containing the language ID's of which languages should be included in the sitemap.
@@ -198,7 +200,9 @@ class XMLSitemap {
             flock($handleFile, LOCK_UN); //release semaphore
             fclose($handleFile);
         }
+        return true;
     }
+
 
     /**
      * Creates the modification-date of a page as a string which can be processed by google. The method uses
@@ -218,6 +222,7 @@ class XMLSitemap {
     	}
     }
 
+
     /**
      * Returns the changing-frequency of the page depending on the database values. If the page is a module
      * page, the frequency is set to 'hourly', for normal pages to 'weekly'.
@@ -235,5 +240,5 @@ class XMLSitemap {
     	}
     }
 }
-?>
 
+?>

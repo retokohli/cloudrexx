@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Forum home content
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -27,26 +28,19 @@ require_once ASCMS_MODULE_PATH.'/forum/lib/forumLib.class.php';
  */
 class ForumHomeContent extends ForumLibrary {
 
-    var $_pageContent;
-    var $_objTpl;
+    public $_pageContent;
+    public $_objTpl;
 
     /**
      * Constructor php5
      */
-    function __construct($pageContent) {
-        global $_LANGID;
+    function __construct($pageContent)
+    {
         $this->_pageContent = $pageContent;
-        $this->_objTpl = &new HTML_Template_Sigma('.');
-        $this->_intLangId = $_LANGID;
+        $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_arrSettings = $this->createSettingsArray();
     }
 
-    /**
-     * Constructor php4
-     */
-    function ForumHomeContent($pageContent) {
-        $this->__construct($pageContent);
-    }
 
     /**
      * Fetch latest entries and parse forumtemplate
@@ -55,7 +49,6 @@ class ForumHomeContent extends ForumLibrary {
      */
     function getContent()
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
         $this->_objTpl->setTemplate($this->_pageContent,true,true);
         $this->_showLatestEntries($this->_getLatestEntries());
         return $this->_objTpl->get();
@@ -102,3 +95,5 @@ class ForumHomeContent extends ForumLibrary {
         return $strHaystack;
     }
 }
+
+?>

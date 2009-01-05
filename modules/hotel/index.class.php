@@ -37,8 +37,8 @@ class HotelManager extends HotelLib
      * @var array
      */
     var $_usedFields =         array(    'Kopfzeile',     'Adresse',         'Ort',             'Preis',             'Beschreibung',         'Headline',
-                                    'Aufzählung1',    'Aufzählung2',     'Aufzählung3',     'Link auf Homepage','Anzahl Zimmer',        'Destination',
-                                    'Besonderes',     'Lage',         'Aktivitäten',     'hotel_id',         'CityCode',             'Kategorie',
+                                    'Aufzï¿½hlung1',    'Aufzï¿½hlung2',     'Aufzï¿½hlung3',     'Link auf Homepage','Anzahl Zimmer',        'Destination',
+                                    'Besonderes',     'Lage',         'Aktivitï¿½ten',     'hotel_id',         'CityCode',             'Kategorie',
                                     'Hotel',         'Kulinarisches','Sport',         'Schnorcheln',         'Kinderfreundl.',         'Wellness',
                                     'Tauchen',         'Familien',     'Badeferien',     'Highlight');
 
@@ -72,7 +72,7 @@ class HotelManager extends HotelLib
      *
      * @var array
      */
-    var $_activityFields = array('aktivitäten', 'kinder');
+    var $_activityFields = array('aktivitï¿½ten', 'kinder');
 
 
     /**
@@ -90,15 +90,6 @@ class HotelManager extends HotelLib
      */
     var $_specialFields = array('besonderes');
 
-
-
-
-    /**
-     * variable holding the frontend langId for the hotel module
-     *
-     * @var integer frontend language ID
-     */
-    var $frontLang;
     /**
      * Currency Suffix for currency defined under settings in the backend
      *
@@ -107,14 +98,14 @@ class HotelManager extends HotelLib
     var $_currencySuffix = '.-';
 
     /**
-     * Currency prefix for prices in €
+     * Currency prefix for prices in ï¿½
      *
      * @var string currency prefix (euro)
      */
     var $_currencyEuroPrefix = "&euro;";
 
     /**
-     * Currency suffix for prices in €
+     * Currency suffix for prices in ï¿½
      *
      * @var string currency suffix (euro)
      */
@@ -211,13 +202,10 @@ class HotelManager extends HotelLib
     *
     * @global object $objDatabase
     * @global array $_CORELANG
-    * @global integer $_LANGID
     */
     function __construct($pageContent)
     {
-        global $objDatabase, $_CORELANG, $_LANGID;
-
-        $this->frontLang = $_LANGID;
+        global $objDatabase, $_CORELANG;
 
         $objRS=$objDatabase->Execute("    SELECT count(1) as cnt FROM ".DBPREFIX."module_hotel_fieldname WHERE
                                         lang_id = 1 AND lower(name) LIKE '%hlung%'"); // aufzÃ¤hlung
@@ -372,7 +360,7 @@ class HotelManager extends HotelLib
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
         require_once(ASCMS_LIBRARY_PATH.DIRECTORY_SEPARATOR.'phpmailer'.DIRECTORY_SEPARATOR."class.phpmailer.php");
         $hotelid = intval($_REQUEST['id']);
-        $this->_getFieldNames($hotelid, $this->frontLang);
+        $this->_getFieldNames($hotelid, FRONTEND_LANG_ID);
         $hotelID = $this->_getFieldFromText('hotel_id');
 
         if(!empty($hotelid)){
@@ -491,7 +479,7 @@ class HotelManager extends HotelLib
             $mailer->FromName = 'Interessent';
             $mailer->Subject = 'Neue Anfrage auf '.$_CONFIG['domainUrl'];
             $mailer->IsHTML(false);
-            $mailer->Body = 'Neue Anfrage für '.$hotel." - ".$hotellocation.", von: \n \n";
+            $mailer->Body = 'Neue Anfrage fï¿½r '.$hotel." - ".$hotellocation.", von: \n \n";
             $mailer->Body .= $emailBody;
             $mailer->Send();
 
@@ -576,9 +564,9 @@ class HotelManager extends HotelLib
                         OR TYPE = 'panorama'
                     )
                     AND content.hotel_id = ".$id."
-                    AND content.lang_id = ".$this->frontLang."
+                    AND content.lang_id = ".FRONTEND_LANG_ID."
                     AND content.active  = 1
-                    AND name.lang_id = ".$this->frontLang;
+                    AND name.lang_id = ".FRONTEND_LANG_ID;
         $index = 0;
         $images = array();
         if(($objRS = $objDatabase->Execute($query)) !== false){
@@ -641,10 +629,10 @@ class HotelManager extends HotelLib
         $objRS = $objDatabase->Execute($query);
         while(!$objRS->EOF){
             if(empty($objRS->fields['from_day'])){
-                $objRS->fields['from_day'] = $this->_weekdaysShort[$this->frontLang][date('w', $objRS->fields['from'])];
+                $objRS->fields['from_day'] = $this->_weekdaysShort[FRONTEND_LANG_ID][date('w', $objRS->fields['from'])];
             }
             if(empty($objRS->fields['to_day'])){
-                $objRS->fields['to_day'] =  $this->_weekdaysShort[$this->frontLang][date('w', $objRS->fields['to'])];
+                $objRS->fields['to_day'] =  $this->_weekdaysShort[FRONTEND_LANG_ID][date('w', $objRS->fields['to'])];
             }
             if(empty($objRS->fields['from'])){
                 $objRS->MoveNext();
@@ -697,7 +685,7 @@ class HotelManager extends HotelLib
                                                                     FROM '.DBPREFIX.'module_hotel_fieldname
                                                                     WHERE lower( name ) = "ort"
                                                                     AND lang_id = 1 )
-                                                                AND a.lang_id = '.$this->frontLang.'
+                                                                AND a.lang_id = '.FRONTEND_LANG_ID.'
                                                                 GROUP BY location ';
         $objRS = $objDatabase->Execute($query);
         if($objRS){
@@ -769,7 +757,7 @@ class HotelManager extends HotelLib
                                                 FROM ".DBPREFIX."module_hotel_content
                                                 WHERE hotel_id = '$hotelID'
                                                 AND field_id = '$fieldID'
-                                                AND lang_id = '".$this->frontLang."'", 1);
+                                                AND lang_id = '".FRONTEND_LANG_ID."'", 1);
                     if($objRS){
                         $link = 'http://'.$_CONFIG['domainUrl'].str_replace(" ", "%20", $objRS->fields['fieldvalue']);
                         $mailer = &new PHPMailer();
@@ -848,9 +836,9 @@ class HotelManager extends HotelLib
      */
     function _getListing(){
         for($i=1; $i<=$this->_listingCount;$i++){
-            $list = $this->_getFieldFromText('Aufzählung'.$i);
+            $list = $this->_getFieldFromText('Aufzï¿½hlung'.$i);
             if(!empty($list)){
-                $this->_objTpl->setVariable('HOTEL_LISTING', $this->_getFieldFromText('Aufzählung'.$i));
+                $this->_objTpl->setVariable('HOTEL_LISTING', $this->_getFieldFromText('Aufzï¿½hlung'.$i));
                 $this->_objTpl->parse("listing");
             }
         }
@@ -884,7 +872,7 @@ class HotelManager extends HotelLib
                 die();
             }
         }
-        $this->_getFieldNames($hotelID, $this->frontLang);
+        $this->_getFieldNames($hotelID, FRONTEND_LANG_ID);
         if(($objRS = $objDatabase->SelectLimit('SELECT reference FROM '.DBPREFIX.'module_hotel WHERE id='.$hotelID, 1)) !== false){
               $reference = $objRS->fields['reference'];
         }
@@ -908,7 +896,7 @@ class HotelManager extends HotelLib
 
 
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_HOTEL_PRICE_PREFIX'            => $this->arrSettings['currency_lang_'.$this->frontLang],
+            'TXT_HOTEL_PRICE_PREFIX'            => $this->arrSettings['currency_lang_'.FRONTEND_LANG_ID],
             'TXT_HOTEL_PRICE_SUFFIX'             => $this->_currencySuffix,
             'TXT_HOTEL_PRICE_PREFIX_EURO'        => $this->_currencyEuroPrefix,
             'TXT_HOTEL_PRICE_SUFFIX_EURO'        => $this->_currencyEuroSuffix,
@@ -931,7 +919,7 @@ class HotelManager extends HotelLib
                'HOTEL_ID'                             => $hotelID,
         ));
 
-//        $img = $this->_getFieldFromText('übersichtsbild', 'img');
+//        $img = $this->_getFieldFromText('ï¿½bersichtsbild', 'img');
 //        $imgOverviewKey = $this->_currFieldID;
 //        $imgdim = $this->_getImageDim($img, 540);
 //        $homepageLink = trim($this->_getFieldFromText('Link auf Homepage'));
@@ -957,7 +945,7 @@ class HotelManager extends HotelLib
             'HOTEL_HEADLINE'         => $this->_getFieldFromText('Headline'),
             'HOTEL_INFO_SPECIAL'    => $this->_getFieldFromText('besonderes'),
             'HOTEL_INFO_LOCATION'    => $this->_getFieldFromText('lage'),
-            'HOTEL_INFO_ACTIVITIES'    => $this->_getFieldFromText('aktivitäten'),
+            'HOTEL_INFO_ACTIVITIES'    => $this->_getFieldFromText('aktivitï¿½ten'),
             'HOTEL_HIGHLIGHT'        => $this->_getFieldFromText('highlight'),
             'HOTEL_HOMEPAGE_LINK'     => $homepageLink,
             'HOTEL_IMG_DIM'            => $imgdim[0],
@@ -1045,12 +1033,12 @@ class HotelManager extends HotelLib
                     case 'price':
                         $textcount++;
                         $this->_objTpl->setVariable(array(
-                            'HOTEL_FIELD_NAME'            =>    htmlentities($field['names'][$this->frontLang], ENT_QUOTES),
-                            'HOTEL_FIELD_CONTENT'        =>    htmlentities($field['type'] == 'price' ? number_format($field['content'][$this->frontLang],0,".","'") : $field['content'][$this->frontLang], ENT_QUOTES),
-                            'TXT_HOTEL_CURRENCY_PREFIX'    =>    $field['type'] == 'price' ? htmlentities($this->arrSettings['currency_lang_'.$this->frontLang], ENT_QUOTES) : '',
+                            'HOTEL_FIELD_NAME'            =>    htmlentities($field['names'][FRONTEND_LANG_ID], ENT_QUOTES),
+                            'HOTEL_FIELD_CONTENT'        =>    htmlentities($field['type'] == 'price' ? number_format($field['content'][FRONTEND_LANG_ID],0,".","'") : $field['content'][FRONTEND_LANG_ID], ENT_QUOTES),
+                            'TXT_HOTEL_CURRENCY_PREFIX'    =>    $field['type'] == 'price' ? htmlentities($this->arrSettings['currency_lang_'.FRONTEND_LANG_ID], ENT_QUOTES) : '',
                             'TXT_HOTEL_CURRENCY_SUFFIX'    =>    $field['type'] == 'price' ? $this->_currencySuffix : '',
                         ));
-                        if(trim($field['content'][$this->frontLang]) != ''){
+                        if(trim($field['content'][FRONTEND_LANG_ID]) != ''){
                             if($textcount < $this->_fieldCount['text']){
                                 $this->_objTpl->touchBlock('textListHR');
                             }
@@ -1076,8 +1064,8 @@ class HotelManager extends HotelLib
 
                             $imgdim = $this->_getImageDim($img, 78);
                             $this->_objTpl->setVariable(array(
-//                                'HOTEL_FIELD_NAME'        =>    htmlentities($field['names'][$this->frontLang], ENT_QUOTES),
-//                                'HOTEL_FIELD_CONTENT'    =>    htmlentities($field['content'][$this->frontLang], ENT_QUOTES),
+//                                'HOTEL_FIELD_NAME'        =>    htmlentities($field['names'][FRONTEND_LANG_ID], ENT_QUOTES),
+//                                'HOTEL_FIELD_CONTENT'    =>    htmlentities($field['content'][FRONTEND_LANG_ID], ENT_QUOTES),
                                 'HOTEL_IMG_SRC'            =>    $img,
                                 'HOTEL_IMG_WIDTH'        =>    $imgdim[1],
                                 'HOTEL_IMG_HEIGHT'        =>    $imgdim[2],
@@ -1089,7 +1077,7 @@ class HotelManager extends HotelLib
                                 $firstpic = false;
                                 $this->_objTpl->setVariable(array(
                                     'HOTEL_IMG_PB_SRC'    => $img,
-                                    'HOTEL_FIELD_NAME'  => $field['content'][$this->frontLang],
+                                    'HOTEL_FIELD_NAME'  => $field['content'][FRONTEND_LANG_ID],
                                 ));
 //                                $this->_objTpl->parse('pictureBox');
                             }else{
@@ -1107,8 +1095,8 @@ class HotelManager extends HotelLib
                         if(!empty($img)){
                             $imgdim = $this->_getImageDim($img, 530);
                             $this->_objTpl->setVariable(array(
-                                'HOTEL_FIELD_NAME'        =>    htmlentities($field['names'][$this->frontLang], ENT_QUOTES),
-                                'HOTEL_FIELD_CONTENT'    =>    htmlentities($field['content'][$this->frontLang], ENT_QUOTES),
+                                'HOTEL_FIELD_NAME'        =>    htmlentities($field['names'][FRONTEND_LANG_ID], ENT_QUOTES),
+                                'HOTEL_FIELD_CONTENT'    =>    htmlentities($field['content'][FRONTEND_LANG_ID], ENT_QUOTES),
                                 'HOTEL_IMG_SRC'            =>    $img,
                                 'HOTEL_IMG_WIDTH'        =>    $imgdim[1],
                                 'HOTEL_IMG_HEIGHT'        =>    $imgdim[2],
@@ -1122,16 +1110,16 @@ class HotelManager extends HotelLib
                     case 'link':
                     case 'protected_link':
                         $linkcount++;
-                        $splitName = explode(" - ", $field['names'][$this->frontLang]);
+                        $splitName = explode(" - ", $field['names'][FRONTEND_LANG_ID]);
                         $iconType = strtolower(trim($splitName[count($splitName)-1]));
                         $this->_objTpl->setVariable(array(
                             'HOTEL_LINK_ICON_SRC'        =>    $this->_getIcon($iconType),
-                            'HOTEL_FIELD_NAME'            =>    htmlentities($field['names'][$this->frontLang], ENT_QUOTES),
-                            'HOTEL_FIELD_CONTENT'        =>    $field['type']=='protected_link' ? '?section=hotel&amp;cmd=getPDF&amp;id='.$hotelID.'_'.$fieldKey : $field['content'][$this->frontLang],
+                            'HOTEL_FIELD_NAME'            =>    htmlentities($field['names'][FRONTEND_LANG_ID], ENT_QUOTES),
+                            'HOTEL_FIELD_CONTENT'        =>    $field['type']=='protected_link' ? '?section=hotel&amp;cmd=getPDF&amp;id='.$hotelID.'_'.$fieldKey : $field['content'][FRONTEND_LANG_ID],
                         ));
 
 
-                    if(trim($field['content'][$this->frontLang]) != ''){
+                    if(trim($field['content'][FRONTEND_LANG_ID]) != ''){
                         if($lnkRow++ % 2 == 0){
                             $this->_objTpl->parse('linkList');
                             $this->_objTpl->parse('linkListRow');
@@ -1241,10 +1229,10 @@ class HotelManager extends HotelLib
             $row = 0;
             while(!$objRS->EOF){
                 if(empty($objRS->fields['from_day'])){
-                    $objRS->fields['from_day'] = $this->_weekdaysShort[$this->frontLang][date('w', $objRS->fields['from'])];
+                    $objRS->fields['from_day'] = $this->_weekdaysShort[FRONTEND_LANG_ID][date('w', $objRS->fields['from'])];
                 }
                 if(empty($objRS->fields['to_day'])){
-                    $objRS->fields['to_day'] =  $this->_weekdaysShort[$this->frontLang][date('w', $objRS->fields['to'])];
+                    $objRS->fields['to_day'] =  $this->_weekdaysShort[FRONTEND_LANG_ID][date('w', $objRS->fields['to'])];
                 }
                 $this->_objTpl->setVariable(array(
                     'HOTEL_TRAVEL_ROW_CLASS' => $row++ % 2 + 1,
@@ -1585,7 +1573,7 @@ class HotelManager extends HotelLib
             if($hotelListSectionParts[3] != "EMPTY"){
                 $interestField = 'j.fieldvalue AS interest,';
                 $interestJOIN = sprintf(" JOIN %s AS j ON ( hotel.id = j.hotel_id AND j.field_id = (SELECT field_id FROM %s WHERE name = '%s' AND lang_id = 1 AND j.fieldvalue > 0 ) AND j.lang_id = '%d')",
-                                         DBPREFIX.'module_hotel_content', DBPREFIX.'module_hotel_fieldname',  $hotelListSectionParts[3], $this->frontLang);
+                                         DBPREFIX.'module_hotel_content', DBPREFIX.'module_hotel_fieldname',  $hotelListSectionParts[3], FRONTEND_LANG_ID);
             }
 
             /**
@@ -1641,63 +1629,63 @@ class HotelManager extends HotelLib
                                                             FROM '.DBPREFIX.'module_hotel_fieldname
                                                             WHERE name = "ort"
                                                             AND lang_id = 1 )
-                                                        AND a.lang_id = '.$this->frontLang.' )
+                                                        AND a.lang_id = '.FRONTEND_LANG_ID.' )
          /* LEFT JOIN '.DBPREFIX.'module_hotel_content AS b ON ( hotel.id = b.hotel_id
                                                         AND b.field_id = (
                                                             SELECT field_id
                                                             FROM '.DBPREFIX.'module_hotel_fieldname
                                                             WHERE name = "preis"
                                                             AND lang_id = 1 )
-                                                        AND b.lang_id = '.$this->frontLang.' )
+                                                        AND b.lang_id = '.FRONTEND_LANG_ID.' )
             LEFT JOIN '.DBPREFIX.'module_hotel_content AS c ON ( hotel.id = c.hotel_id
                                                         AND c.field_id = (
                                                             SELECT field_id
                                                             FROM '.DBPREFIX.'module_hotel_fieldname
                                                             WHERE name = "kopfzeile"
                                                             AND lang_id = 1 )
-                                                        AND c.lang_id = '.$this->frontLang.' )
+                                                        AND c.lang_id = '.FRONTEND_LANG_ID.' )
             LEFT JOIN '.DBPREFIX.'module_hotel_content AS d ON ( hotel.id = d.hotel_id
                                                         AND d.field_id = (
                                                             SELECT field_id
                                                             FROM '.DBPREFIX.'module_hotel_fieldname
                                                             WHERE name = "headline"
                                                             AND lang_id = 1 )
-                                                        AND d.lang_id = '.$this->frontLang.' )
+                                                        AND d.lang_id = '.FRONTEND_LANG_ID.' )
             LEFT JOIN '.DBPREFIX.'module_hotel_content AS e ON ( hotel.id = e.hotel_id
                                                         AND e.field_id = (
                                                             SELECT field_id
                                                             FROM '.DBPREFIX.'module_hotel_fieldname
                                                             WHERE name = "anzahl zimmer"
                                                             AND lang_id = 1 )
-                                                        AND e.lang_id = '.$this->frontLang.' )
+                                                        AND e.lang_id = '.FRONTEND_LANG_ID.' )
             LEFT JOIN '.DBPREFIX.'module_hotel_content AS f ON ( hotel.id = f.hotel_id
                                                         AND f.field_id = (
                                                             SELECT field_id
                                                             FROM '.DBPREFIX.'module_hotel_fieldname
                                                             WHERE name = "adresse"
                                                             AND lang_id = 1 )
-                                                        AND f.lang_id = '.$this->frontLang.' )
+                                                        AND f.lang_id = '.FRONTEND_LANG_ID.' )
           */    LEFT JOIN '.DBPREFIX.'module_hotel_content AS g ON ( hotel.id = g.hotel_id
                                                         AND g.field_id = (
                                                             SELECT field_id
                                                             FROM '.DBPREFIX.'module_hotel_fieldname
                                                             WHERE name = "citycode"
                                                             AND lang_id = 1 )
-                                                        AND g.lang_id = '.$this->frontLang.' )
+                                                        AND g.lang_id = '.FRONTEND_LANG_ID.' )
             LEFT JOIN '.DBPREFIX.'module_hotel_content AS h ON ( hotel.id = h.hotel_id
                                                         AND h.field_id = (
                                                             SELECT field_id
                                                             FROM '.DBPREFIX.'module_hotel_fieldname
                                                             WHERE name = "kategorie"
                                                             AND lang_id = 1 )
-                                                        AND h.lang_id = '.$this->frontLang.' )
+                                                        AND h.lang_id = '.FRONTEND_LANG_ID.' )
             LEFT JOIN '.DBPREFIX.'module_hotel_content AS i ON ( hotel.id = i.hotel_id
                                                         AND i.field_id = (
                                                             SELECT field_id
                                                             FROM '.DBPREFIX.'module_hotel_fieldname
                                                             WHERE name = "destination"
                                                             AND lang_id = 1 )
-                                                        AND i.lang_id = '.$this->frontLang.' )'
+                                                        AND i.lang_id = '.FRONTEND_LANG_ID.' )'
             // add the generated JOIN statement
             .$interestJOIN.
 
@@ -1707,7 +1695,7 @@ class HotelManager extends HotelLib
                                                             FROM '.DBPREFIX.'module_hotel_fieldname
                                                             WHERE name = "region"
                                                             AND lang_id = 1 )
-                                                        AND k.lang_id = '.$this->frontLang.' )
+                                                        AND k.lang_id = '.FRONTEND_LANG_ID.' )
             LEFT JOIN '.DBPREFIX.'module_hotel_content AS l ON ( hotel.id = l.hotel_id
                                                         AND l.field_id = (
                                                             SELECT field_id
@@ -1773,7 +1761,7 @@ class HotelManager extends HotelLib
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_HOTEL_BACK'                      => $_ARRAYLANG['TXT_HOTEL_BACK'],
-            'TXT_HOTEL_CURRENCY_PREFIX'              => $this->arrSettings['currency_lang_'.$this->frontLang],
+            'TXT_HOTEL_CURRENCY_PREFIX'              => $this->arrSettings['currency_lang_'.FRONTEND_LANG_ID],
                'TXT_HOTEL_CURRENCY_SUFFIX'           => $this->_currencySuffix,
                'TXT_HOTEL_CURRENCY_PREFIX_EURO'    => $this->_currencyEuroPrefix,
                'TXT_HOTEL_CURRENCY_SUFFIX_EURO'    => $this->_currencyEuroSuffix,
@@ -1836,10 +1824,10 @@ class HotelManager extends HotelLib
                 $nextDepartureDate = $this->_getTravelDates($this->_getFieldFromText('hotel_id'), 1);
 
                 if(empty($nextDepartureDate[0]['from_day'])){
-                    $nextDepartureDate[0]['from_day'] = $this->_weekdaysShort[$this->frontLang][date('w', $nextDepartureDate[0]['from'])];
+                    $nextDepartureDate[0]['from_day'] = $this->_weekdaysShort[FRONTEND_LANG_ID][date('w', $nextDepartureDate[0]['from'])];
                 }
                 if(empty($nextDepartureDate[0]['to_day'])){
-                    $nextDepartureDate[0]['to_day'] =  $this->_weekdaysShort[$this->frontLang][date('w', $nextDepartureDate[0]['to'])];
+                    $nextDepartureDate[0]['to_day'] =  $this->_weekdaysShort[FRONTEND_LANG_ID][date('w', $nextDepartureDate[0]['to'])];
                 }
 
 
@@ -1877,7 +1865,7 @@ class HotelManager extends HotelLib
                         $airline = 'belair';
                         break;
                     case 5:
-                        $airline = 'Air_méditerrannée';
+                        $airline = 'Air_mï¿½diterrannï¿½e';
                         break;
                       case 6:
                         $airline = 'Air_Memphis';
@@ -2102,7 +2090,7 @@ class HotelManager extends HotelLib
         // Extract all Placeholders out of the message
         $subQueryPart = "";
         $first = true;
-        //preg_match_all("/%([A-Z0-9ÖÄÜ_]+[^%])%/", $this->arrSettings['message'], $matches);
+        //preg_match_all("/%([A-Z0-9ï¿½ï¿½ï¿½_]+[^%])%/", $this->arrSettings['message'], $matches);
         preg_match_all("/%([^%]+)%/", $this->arrSettings['message'], $matches);
         setlocale(LC_ALL, "de_CH");
         foreach ($matches[1] as $match) {
@@ -2182,8 +2170,8 @@ class HotelManager extends HotelLib
                                 field.type AS `type`
                             FROM ".DBPREFIX."module_hotel_content AS `content`
                             INNER JOIN ".DBPREFIX."module_hotel_fieldname AS `fieldnames` ON fieldnames.field_id = content.field_id
-                            AND fieldnames.lang_id = '".$this->frontLang."'
-                            AND content.lang_id = '".$this->frontLang."'
+                            AND fieldnames.lang_id = '".FRONTEND_LANG_ID."'
+                            AND content.lang_id = '".FRONTEND_LANG_ID."'
                             AND fieldnames.field_id
                             IN (
                                 SELECT field_id
@@ -2274,7 +2262,7 @@ class HotelManager extends HotelLib
             'HOTEL_START_X'              => $startX,
             'HOTEL_START_Y'              => $startY,
             'HOTEL_START_ZOOM'           => $startZoom,
-            'HOTEL_LANG'                 => $this->frontLang,
+            'HOTEL_LANG'                 => FRONTEND_LANG_ID,
             'HOTEL_TXT_LOOK'             => $_ARRAYLANG['TXT_HOTEL_LOOK']
         ));
 
@@ -2323,7 +2311,7 @@ EOF;
 
 
     function setFuncs(){
-        base             = /(http:\/\/[^\/]+\/)/.exec(location);
+        base             = /(http:\\/\\/[^\\/]+\\/)/.exec(location);
         base             = base[0].substring(0,base[0].length-1);
         link             = document.getElementById('mainPicLink');
         imgs             = document.getElementsByName('imgthumb');

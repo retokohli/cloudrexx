@@ -28,7 +28,6 @@ require_once ASCMS_MODULE_PATH . "/reservation/lib/reservationLib.class.php";
  */
 class reservations extends reservationLib
 {
-    var $langId;
     var $_objTpl;
     var $statusMessage;
     var $error;

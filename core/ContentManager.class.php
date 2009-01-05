@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ContentManager
  * @copyright    CONTREXX CMS - COMVATION AG
@@ -31,56 +32,50 @@ class ContentManager
      * Page title
     * @var string
     */
-    var $pagetitle = '';
+    public $pagetitle = '';
 
    /**
      * Error status message
     * @var string
     */
-    var $strErrMessage = '';
+    public $strErrMessage = '';
 
     /**
      * Status message (no error)
      * @var string
      */
-    var $strOkMessage = '';
+    public $strOkMessage = '';
 
    /**
      * Module ID
      * @var integer
     */
-    var $setModule = 0;
+    public $setModule = 0;
 
    /**
      * Command (cmd) parameter
     * @var string
     */
-    var $setCmd = '';
+    public $setCmd = '';
 
    /**
     * @var array
     * @desc Array with the WYSIWYG module ids
     */
-    var $arrNoExpertmodes = array();
+    public $arrNoExpertmodes = array();
 
    /**
-    * @var int
-    * @desc Language id
-    */
-    var $langId;
-
-   /**
-     *
+    *
     * @var array
-     * @desc
+    * @desc
     */
-    var $arrAllFrontendGroups = array();
+    public $arrAllFrontendGroups = array();
 
    /**
-     * Array of all backend groups (name, id)
+    * Array of all backend groups (name, id)
     * @var array
     */
-    var $arrAllBackendGroups = array();
+    public $arrAllBackendGroups = array();
 
    /**
     * @var array
@@ -89,15 +84,11 @@ class ContentManager
     *
     * @access private
     */
-    var $_requiredModules = array(1,13,14,15,18);
-
-
-    var $_navtable = array();
-
-    var $_arrRedirectTargets = array('', '_blank', '_parent', '_self', '_top');
-
-    var $boolHistoryEnabled = false;
-    var $boolHistoryActivate = false;
+    public $_requiredModules = array(1,13,14,15,18);
+    public $_navtable = array();
+    public $_arrRedirectTargets = array('', '_blank', '_parent', '_self', '_top');
+    public $boolHistoryEnabled = false;
+    public $boolHistoryActivate = false;
 
     /**
     * Constructor
@@ -107,7 +98,7 @@ class ContentManager
     */
     function __construct()
     {
-        global $objDatabase,$objInit,$_CORELANG,$objTemplate,$_CONFIG;
+        global $objDatabase, $_CORELANG, $objTemplate, $_CONFIG;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION",
                            "<a href='index.php?cmd=content&amp;act=new'>".$_CORELANG['TXT_NEW_PAGE']."</a>
@@ -141,7 +132,7 @@ class ContentManager
     */
     function getPage()
     {
-        global $_CORELANG, $objTemplate;
+        global $objTemplate;
 
         if(!isset($_GET['act'])){
             $_GET['act']='';
@@ -277,7 +268,7 @@ class ContentManager
      */
     function _copyAll()
     {
-        global $objDatabase, $_CORELANG;
+        global $objDatabase;
 
         if (isset($_POST['langOriginal']) && !empty($_POST['langOriginal'])) {
             $this->_deleteAll(intval($_POST['langNew']));
@@ -1637,9 +1628,9 @@ class ContentManager
         $objDatabase->Execute($q1);
         $pageId = $objDatabase->Insert_ID();
 
-        if($err = $this->_set_default_alias($pageId, $_POST['alias'])) {
+        $err = $this->_set_default_alias($pageId, $_POST['alias']);
+        if ($err)
 			$objTemplate->setVariable("ALIAS_STATUS", $err);
-		}
 
         $q2 = "
             INSERT INTO ".DBPREFIX."content (
@@ -1865,6 +1856,7 @@ class ContentManager
             if ($objModule) {
                 $moduleId = $objModule->fields['module'];
             }
+            $arrSkipPages = array();
             foreach ($catidarray as $value) {
 // TODO: $arrSkipPages is set too late (see below)!
                 $objResult = $objDatabase->Execute("
@@ -1874,9 +1866,9 @@ class ContentManager
                      WHERE id=catid
                        AND catid=$value
                        AND module IN (0,$moduleId)".
-                      (count($arrSkipPages)
-                          ? " AND parcat NOT IN (".implode(',', $arrSkipPages).")"
-                          : ''
+                      (empty($arrSkipPages)
+                          ? ''
+                          : " AND parcat NOT IN (".implode(',', $arrSkipPages).")"
                       )
                 );
                 if ($objResult !== false && $objResult->RecordCount() > 0) {
@@ -2012,13 +2004,11 @@ class ContentManager
     }
 
 
-    function _homeModuleCheck($section,$cmd,$pageId)
+    function _homeModuleCheck($section, $cmd, $pageId)
     {
         global $objDatabase, $_CORELANG;
 
-        $lang=$this->langId;
-        $section=intval($section);
-
+        $section = intval($section);
         $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."modules WHERE name='home'");
         if ($objResult !== false && $objResult->RecordCount()>0) {
             $homeModuleId = intval($objResult->fields['id']);
@@ -2027,12 +2017,12 @@ class ContentManager
             return false;
         }
 
-        $objResult = $objDatabase->Execute("SELECT catid FROM ".DBPREFIX."content_navigation WHERE  lang=".$lang." AND module=".$homeModuleId);
+        $objResult = $objDatabase->Execute("SELECT catid FROM ".DBPREFIX."content_navigation WHERE  lang=".FRONTEND_LANG_ID." AND module=".$homeModuleId);
         if ($objResult !== false && $objResult->RecordCount()>0) {
             $objResult = $objDatabase->Execute("SELECT m.name
                               FROM ".DBPREFIX."content_navigation AS n,
                                    ".DBPREFIX."modules AS m
-                             WHERE n.lang=".$lang."
+                             WHERE n.lang=".FRONTEND_LANG_ID."
                                AND n.module=".$section."
                                AND n.cmd='".$cmd."'
                                AND n.module>0
@@ -2785,7 +2775,7 @@ class ContentManager
 	}
     function modifyBlocks($associatedBlockIds, $pageId)
     {
-        global $objDatabase, $_FRONTEND_LANGID;
+        global $objDatabase;
 
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_block_rel_pages
@@ -2797,7 +2787,7 @@ class ContentManager
                     INSERT INTO '.DBPREFIX.'module_block_rel_pages
                        SET block_id='.$blockId.',
                            page_id='.$pageId.',
-                           lang_id='.$_FRONTEND_LANGID
+                           lang_id='.FRONTEND_LANG_ID
                 );
             }
         }
@@ -2807,13 +2797,13 @@ class ContentManager
                 SELECT all_pages
                                                 FROM    '.DBPREFIX.'module_block_rel_lang
                  WHERE block_id='.$blockId.'
-                   AND lang_id='.$_FRONTEND_LANGID
+                   AND lang_id='.FRONTEND_LANG_ID
             );
             if (!$objResult->RecordCount() > 0) {
                 $objDatabase->Execute('
                     INSERT INTO '.DBPREFIX.'module_block_rel_lang
                        SET block_id='.$blockId.',
-                           lang_id='.$_FRONTEND_LANGID.',
+                           lang_id='.FRONTEND_LANG_ID.',
                            all_pages=0
                                     ');
             } else {
@@ -2821,7 +2811,7 @@ class ContentManager
                     UPDATE ".DBPREFIX."module_block_rel_lang
                        SET all_pages='0'
                      WHERE block_id='".$blockId."'
-                       AND lang_id='".$_FRONTEND_LANGID."'
+                       AND lang_id='".FRONTEND_LANG_ID."'
                        AND all_pages='1'
                 ";
                 $objDatabase->Execute($query);

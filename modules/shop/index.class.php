@@ -189,7 +189,7 @@ class Shop extends ShopLibrary
      */
     function __construct($pageContent)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         if (_SHOP_DEBUG & 1) {
             error_reporting(E_ALL);
@@ -218,7 +218,7 @@ class Shop extends ShopLibrary
 
         Currency::init();
         Shipment::init();
-        Vat::init($_LANGID);
+        Vat::init();
 
         // Check session and user data, log in if present
         if (shopUseSession())
@@ -633,7 +633,7 @@ class Shop extends ShopLibrary
 
     function _sendpass()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $this->objTemplate->setVariable(array(
             'SHOP_PASSWORD_ENTER_EMAIL' => $_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'],
@@ -702,10 +702,10 @@ class Shop extends ShopLibrary
      */
     function showCategories($parentId=0)
     {
-        global $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG;
 
         if ($parentId > 0) {
-            $objShopCategory = ShopCategory::getById($parentId, $_LANGID);
+            $objShopCategory = ShopCategory::getById($parentId, FRONTEND_LANG_ID);
             // If we can't get this ShopCategory, it most probably does
             // not exist.
             if (!$objShopCategory) {
@@ -781,7 +781,7 @@ class Shop extends ShopLibrary
             ));
             // Add flag images for flagged ShopCategories
             $strImage = '';
-            $arrVirtual = ShopCategories::getVirtualCategoryNameArray($_LANGID);
+            $arrVirtual = ShopCategories::getVirtualCategoryNameArray(FRONTEND_LANG_ID);
             foreach ($arrVirtual as $strFlag) {
                 if ($objShopCategory->testFlag($strFlag)) {
                     $strImage .=
@@ -954,7 +954,7 @@ class Shop extends ShopLibrary
      */
     function products()
     {
-        global $_ARRAYLANG, $_CONFIG, $_LANGID;
+        global $_ARRAYLANG, $_CONFIG;
 
         $flagSpecialoffer = intval($this->arrConfig['shop_show_products_default']['value']);
 echo("special: $flagSpecialoffer<br />");
@@ -976,7 +976,7 @@ echo("special: $flagSpecialoffer<br />");
 
         if ($this->objTemplate->blockExists('shopNextCategoryLink')) {
             $nextCat = ShopCategories::getNextShopCategoriesId($catId);
-            $objShopCategory = ShopCategory::getById($nextCat, $_LANGID);
+            $objShopCategory = ShopCategory::getById($nextCat, FRONTEND_LANG_ID);
             $this->objTemplate->setVariable(array(
                 'SHOP_NEXT_CATEGORY_ID'    => $nextCat,
                 'SHOP_NEXT_CATEGORY_TITLE' => str_replace('"', '&quot;', $objShopCategory->getName()),
@@ -1040,7 +1040,7 @@ echo("special: $flagSpecialoffer<br />");
         // paging limit are returned in the array.
         $count = '0';
         $arrProduct = Products::getByShopParams(
-            $count, $pos, $_LANGID, $productId, $catId, $manufacturerId,
+            $count, $pos, FRONTEND_LANG_ID, $productId, $catId, $manufacturerId,
             $term, $flagSpecialoffer, $flagLastFive,
             self::$arrProductOrder[$this->arrConfig['product_sorting']['value']],
             ($this->objCustomer ? $this->objCustomer->isReseller() : false)
@@ -1228,9 +1228,9 @@ echo("Product ID ".$objProduct->getId()."<br />");
             $manufacturerId   = $objProduct->getManufacturerId();
             if ($manufacturerId) {
                 $manufacturerName =
-                    Manufacturer::getNameById($manufacturerId, $_LANGID);
+                    Manufacturer::getNameById($manufacturerId, FRONTEND_LANG_ID);
                 $manufacturerUrl  =
-                    Manufacturer::getUrlById($manufacturerId, $_LANGID);
+                    Manufacturer::getUrlById($manufacturerId, FRONTEND_LANG_ID);
             }
             if (!empty($manufacturerUrl) || !empty($manufacturerName)) {
                 if (empty($manufacturerName)) {
@@ -1333,7 +1333,7 @@ echo("Product ID ".$objProduct->getId()."<br />");
             // Add flag images for flagged Products
             $strImage = '';
             $strFlags = $objProduct->getFlags();
-            $arrVirtual = ShopCategories::getVirtualCategoryNameArray($_LANGID);
+            $arrVirtual = ShopCategories::getVirtualCategoryNameArray(FRONTEND_LANG_ID);
             foreach (split(' ', $strFlags) as $strFlag) {
                 if (in_array($strFlag, $arrVirtual)) {
                     $strImage .=
@@ -2908,7 +2908,7 @@ sendReq('', 1);
 
     function _gotoPaymentPage()
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         foreach($_POST as $key => $value) {
             $value = contrexx_addslashes(strip_tags(trim($value)));
@@ -2925,7 +2925,7 @@ sendReq('', 1);
         $query = "SELECT catid FROM ".DBPREFIX."content_navigation AS nav, ".
             DBPREFIX."modules AS modules ".
             "WHERE modules.name='shop' AND nav.module=modules.id ".
-            "AND nav.cmd='payment' AND activestatus='1' AND lang=".$_LANGID;
+            "AND nav.cmd='payment' AND activestatus='1' AND lang=".FRONTEND_LANG_ID;
         $objResult = $objDatabase->SelectLimit($query, 1);
 
         if ($objResult) {
@@ -3645,7 +3645,7 @@ right after the customer logs in!
      */
     function confirm()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         // if the cart is missing, return to the shop
         if (!isset($_SESSION['shop']['cart'])) {
@@ -3670,7 +3670,7 @@ right after the customer logs in!
             // store the customer, register the order
             $customer_ip      = htmlspecialchars($_SERVER['REMOTE_ADDR'], ENT_QUOTES, CONTREXX_CHARSET);
             $customer_host    = substr(htmlspecialchars(@gethostbyaddr($_SERVER['REMOTE_ADDR']), ENT_QUOTES, CONTREXX_CHARSET), 0, 100);
-            $customer_lang    = $_LANGID;
+            $customer_lang    = FRONTEND_LANG_ID;
             //substr(htmlspecialchars(getenv('HTTP_ACCEPT_LANGUAGE'), ENT_QUOTES, CONTREXX_CHARSET), 0, 255);
             $customer_browser = substr(htmlspecialchars(getenv('HTTP_USER_AGENT'), ENT_QUOTES, CONTREXX_CHARSET), 0, 100);
             if (!$this->objCustomer) {
@@ -3879,7 +3879,7 @@ right after the customer logs in!
             $this->objProcessing->initProcessor(
                 $processorId,
                 Currency::getActiveCurrencyCode(),
-                $objLanguage->getLanguageParameter($_LANGID, 'lang')
+                $objLanguage->getLanguageParameter(FRONTEND_LANG_ID, 'lang')
             );
 
             // if the processor is Internal_LSV, and there is account information,
@@ -4464,7 +4464,7 @@ right after the customer logs in!
      */
     static function _generateEmailBody($body, $orderId, $langId)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $today     = date(ASCMS_DATE_SHORT_FORMAT);
         $orderTime = date(ASCMS_DATE_FORMAT);
@@ -4683,8 +4683,8 @@ right after the customer logs in!
                     $objUser->setActiveStatus(true);
                     $objUser->setGroups($arrUsergroupId);
                     $objUser->setValidityTimePeriod($validity);
-                    $objUser->setFrontendLanguage($_LANGID);
-                    $objUser->setBackendLanguage($_LANGID);
+                    $objUser->setFrontendLanguage(FRONTEND_LANG_ID);
+                    $objUser->setBackendLanguage(FRONTEND_LANG_ID);
                     $objUser->setProfile(array(
                         'firstname'    => $objResultOrder->fields['firstname'],
                         'lastname'     => $lastname,

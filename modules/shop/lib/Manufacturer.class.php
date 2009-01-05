@@ -180,7 +180,6 @@ class Manufacturer
      * @param   integer $selectedId     The optional preselected Manufacturer ID
      * @return  string                  The Manufacturer dropdown menu options
      * @global  ADONewConnection  $objDatabase
-     * @global  array             $_LANGID
      */
     static function getMenuoptions($selected_id=0)
     {

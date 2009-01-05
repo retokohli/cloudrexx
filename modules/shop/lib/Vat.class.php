@@ -93,7 +93,7 @@ class Vat
     {
         global $objDatabase;
 
-        $arrSqlClass = Text::getSqlSnippets('`vat`.`text_class_id`', LANG_ID);
+        $arrSqlClass = Text::getSqlSnippets('`vat`.`text_class_id`', FRONTEND_LANG_ID);
         $query = "
             SELECT `vat`.`id`, `percent`".$arrSqlClass['field']."
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat as `vat`

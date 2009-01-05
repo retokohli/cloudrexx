@@ -47,7 +47,6 @@ class SurveyAdmin extends SurveyLibrary {
         SurveyLibrary::__construct();
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/survey/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-        $this->_intLangId = FRONTEND_LANG_ID;
         $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="?cmd=survey">'.$_CORELANG['TXT_SURVEY_MENU_OVERVIEW'].'</a>
                                                             <a href="?cmd=survey&amp;act=add">'.$_CORELANG['TXT_SURVEY_MENU_ADD'].'</a>
                                                             <a href="?cmd=survey&amp;act=settings">'.$_CORELANG['TXT_SURVEY_MENU_SETTINGS'].'</a>
@@ -168,7 +167,7 @@ class SurveyAdmin extends SurveyLibrary {
                        'SURVEY_TYPE_ICON'            =>    ($arrValues['isExtended'] == 1) ? '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/survey/survey.gif" border="0" alt="'.$_ARRAYLANG['TXT_SURVEY_TYPE_SURVEY'].'" title="'.$_ARRAYLANG['TXT_SURVEY_TYPE_SURVEY'].'" />' : '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/survey/voting.gif" border="0" alt="'.$_ARRAYLANG['TXT_SURVEY_TYPE_VOTING'].'" title="'.$_ARRAYLANG['TXT_SURVEY_TYPE_VOTING'].'" />',
                        'SURVEY_HOME_ICON'            =>    ($arrValues['isHomeBox'] == 1) ? '<img src="images/icons/check.gif" border="0" alt="'.$_ARRAYLANG['TXT_SURVEY_PLACEHOLDER_ACTIVE'].'" title="'.$_ARRAYLANG['TXT_SURVEY_PLACEHOLDER_ACTIVE'].'" />' : '',
                        'SURVEY_DATE'                =>    $arrValues['created'],
-                       'SURVEY_NAME'                =>    $this->_arrSurveyTranslations[$arrValues['id']][$this->_intLangId],
+                       'SURVEY_NAME'                =>    $this->_arrSurveyTranslations[$arrValues['id']][FRONTEND_LANG_ID],
                        'SURVEY_LAST_VOTE'            =>    $arrValues['lastvote'],
                        'SURVEY_VOTE_COUNT'            =>    $arrValues['participant']
                    ));
@@ -522,7 +521,7 @@ class SurveyAdmin extends SurveyLibrary {
             return;
         }
 
-        $strName = $this->_arrSurveyTranslations[$intSurveyId][$this->_intLangId];
+        $strName = $this->_arrSurveyTranslations[$intSurveyId][FRONTEND_LANG_ID];
 
         $objDatabase->Execute('    DELETE
                                 FROM    '.DBPREFIX.'module_survey_groups
@@ -665,7 +664,7 @@ class SurveyAdmin extends SurveyLibrary {
            $this->_objTpl->setVariable(array(
                'GENERAL_JS_ONLOAD'                            =>    '',
                'GENERAL_FORM_ACTION'                        =>    '?cmd=survey&amp;act=update',
-               'GENERAL_NAME'                                =>    $this->_arrSurveyTranslations[$intSurveyId][$this->_intLangId],
+               'GENERAL_NAME'                                =>    $this->_arrSurveyTranslations[$intSurveyId][FRONTEND_LANG_ID],
                'GENERAL_STATUS_ACTIVATED_CHECKED'            =>    ($this->_arrSurveyValues[$intIndexId]['isActive']) ? 'checked="checked"' : '',
                'GENERAL_STATUS_INACTIVATED_CHECKED'        =>    ($this->_arrSurveyValues[$intIndexId]['isActive']) ? '' : 'checked="checked"',
                'GENERAL_REDIRECT'                            =>    $this->_arrSurveyValues[$intIndexId]['redirect'],

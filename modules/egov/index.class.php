@@ -1,4 +1,5 @@
 <?php
+
 /**
  * E-Government
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -177,7 +178,7 @@ class eGov extends eGovLibrary
      */
     static function updateOrder($order_id, $newStatus=1)
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG;
 
         $product_id = eGov::getOrderValue('order_product', $order_id);
         if (empty($product_id)) {
@@ -207,7 +208,7 @@ class eGov extends eGovLibrary
             }
             $FormValue4Mail .= html_entity_decode($name).': '.html_entity_decode($value)."\n";
         }
-        // Bestelleingang-Benachrichtigung || Mail für den Administrator
+        // Bestelleingang-Benachrichtigung || Mail fï¿½r den Administrator
         $recipient = eGovLibrary::GetProduktValue('product_target_email', $product_id);
         if (empty($recipient)) {
             $recipient = eGovLibrary::GetSettings('set_orderentry_recipient');
@@ -417,8 +418,6 @@ class eGov extends eGovLibrary
 
     function paymentPaypalIpn($order_id)
     {
-        global $_ARRAYLANG;
-
         $product_id = eGovLibrary::GetOrderValue('order_product', $order_id);
         if (empty($product_id)) {
             die(); //return 'alert("'.$_ARRAYLANG['TXT_EGOV_ERROR_PROCESSING_ORDER']."\");\n";
@@ -453,7 +452,7 @@ class eGov extends eGovLibrary
 
     function paymentYellowpay($order_id, $amount)
     {
-        global $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG;
 
         $paymentMethods =
             (!empty($_REQUEST['handler'])
@@ -489,7 +488,7 @@ class eGov extends eGovLibrary
             $FormFields .= 'contactFormField_Quantity='.$_REQUEST['contactFormField_Quantity'];
         }
 
-        $languageCode = strtoupper(FWLanguage::getLanguageCodeById($_LANGID));
+        $languageCode = strtoupper(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID));
         $arrShopOrder = array(
             // From registration confirmation form
             'txtShopId'      => eGovLibrary::GetSettings('yellowpay_shopid'),
@@ -637,7 +636,7 @@ class eGov extends eGovLibrary
 
     function _ProductsList()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase;
 
         $result = '';
         if (isset($_REQUEST['result'])) {
@@ -692,7 +691,7 @@ class eGov extends eGovLibrary
 
     function _ProductDetail()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase;
 
         if (empty($_REQUEST['id'])) {
             return;

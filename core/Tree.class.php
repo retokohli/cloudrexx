@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content Tree
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -38,10 +39,10 @@ class ContentTree
 */
 
 
-  var $table   = array();
-  var $node   = array();
-  var $tree   = array();
-  var $index = 0;
+  public $table   = array();
+  public $node   = array();
+  public $tree   = array();
+  public $index = 0;
 
 
 
@@ -51,12 +52,9 @@ class ContentTree
     */
     function __construct($langId=null)
     {
-        global $objDatabase, $_FRONTEND_LANGID;
+        global $objDatabase;
 
-        if (!isset($langId)) {
-            $langId = $_FRONTEND_LANGID;
-        }
-
+        if (empty($langId)) $langId = FRONTEND_LANG_ID;
         $modules = array();
         $objResult = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."modules");
         if ($objResult !== false) {
@@ -65,7 +63,6 @@ class ContentTree
                 $objResult->MoveNext();
             }
         }
-
 
         $sql =  "
             SELECT          n.catid                                  AS catid         ,
@@ -87,10 +84,10 @@ class ContentTree
 						    settings.setvalue                        AS alias_enable
                        FROM ".DBPREFIX."content_navigation AS n
                             LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = n.catid
-                            LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s 
+                            LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
                                 ON  a_t.id        = a_s.target_id
                                 AND a_s.isdefault = 1
-						    LEFT OUTER JOIN ".DBPREFIX."settings            AS settings 
+						    LEFT OUTER JOIN ".DBPREFIX."settings            AS settings
 						        ON settings.setmodule = 41
 						       AND settings.setname   = 'aliasStatus'
 
@@ -115,7 +112,7 @@ class ContentTree
                     'protected' => $objResult->fields['protected'],
                     'frontend_access_id' => $objResult->fields['frontend_access_id'],
                     'backend_access_id' => $objResult->fields['backend_access_id'],
-                    'alias'             => $objResult->fields['alias_enable'] ? $objResult->fields['alias_url'] : '' 
+                    'alias'             => $objResult->fields['alias_enable'] ? $objResult->fields['alias_url'] : ''
                     );
 
                 $this->table[$objResult->fields['parcat']][$objResult->fields['catid']]= array(
@@ -142,21 +139,19 @@ class ContentTree
         }
         // $parcat is the starting parent id
         // optional $maxLevel is the maximum level, set to 0 to show all levels
-        $this->buildTree($parcat=0,$maxlevel=0,$level=0);
+        $this->buildTree(0, 0, 0);
     }
 
 
     function buildTree($parcat=0,$maxlevel=0,$level=0)
     {
-        $list=$this->table[$parcat];
-        foreach( $list AS $key => $data )
-        {
-              $this->tree[$this->index] =$list[$key];
-              $this->tree[$this->index]['level']=$level;
-            $this->index++;
-            if ((isset($this->table[$key])) AND (($maxlevel>=$level+1) OR ($maxlevel==0)))
-            {
-              $this->buildTree($key,$maxlevel,$level+1);
+        $list = $this->table[$parcat];
+        foreach (array_keys($list) as $key) {
+            $this->tree[$this->index] =$list[$key];
+            $this->tree[$this->index]['level']=$level;
+            ++$this->index;
+            if ((isset($this->table[$key])) AND (($maxlevel>=$level+1) OR ($maxlevel==0))) {
+                $this->buildTree($key,$maxlevel,$level+1);
             }
         }
     }
@@ -168,11 +163,10 @@ class ContentTree
     }
 
 
-
     function getThisNode($nodeId)
     {
-        if(!empty($nodeId))
-        return $this->node[$nodeId];
+        if (!empty($nodeId)) return $this->node[$nodeId];
+        return false;
     }
 
 
@@ -180,8 +174,8 @@ class ContentTree
     {
         // $parcat is the starting parent id
         // optional $maxLevel is the maximum level, set to 0 to show all levels
-
         return $this->tree;
     }
 }
+
 ?>

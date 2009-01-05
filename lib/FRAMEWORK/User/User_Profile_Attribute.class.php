@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User Profile Attribute Object
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -36,7 +37,6 @@ class User_Profile_Attribute
     private $modifiable;
     private $arrName;
     private $arrAttributes;
-    private $langId;
 
     private $arrAttributeTree;
     private $arrAttributeRelations;
@@ -1485,10 +1485,8 @@ class User_Profile_Attribute
     }
 
 
-    function getName($langId = null)
+    function getName($langId=0)
     {
-        global $_LANGID;
-
         if (empty($langId)) $langId = LANG_ID;
         if (!isset($this->arrName[$langId])) $this->loadName($langId);
         return $this->arrName[$langId];

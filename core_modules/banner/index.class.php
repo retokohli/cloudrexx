@@ -1,4 +1,5 @@
-<?PHP
+<?php
+
 /**
  * Banner management
  *
@@ -24,12 +25,11 @@ require_once ASCMS_CORE_MODULE_PATH . '/banner/bannerLib.class.php';
  */
 class Banner extends bannerLibrary
 {
-    var $arrGroups = array();
+    public $arrGroups = array();
 
     /**
      * PHP5 constructor
      * @param  string  $pageContent
-     * @global string  $_LANGID
      * @access public
      */
     function __construct()

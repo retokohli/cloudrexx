@@ -28,14 +28,6 @@ require_once ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/calendarLib.class.php'
  */
 class Calendar extends calendarLibrary
 {
-   /**
-     * XML parser handle
-     *
-     * @var  array
-     * @see  xml_parser_create()
-     */
-
-
     /**
      * Construct the Calendar
      * @access  public
@@ -74,7 +66,6 @@ class Calendar extends calendarLibrary
                                 $this->_iCalExport('event', $id);
                             }
                             break;
-
                         case 'category':
                             if ($id > 0) {
                                 $this->_iCalExport('category', $id);
@@ -87,26 +78,21 @@ class Calendar extends calendarLibrary
                             // do nothing
                             break;
                     }
-// TODO: You should return something here!
+                    return '';
                 } else {
                     return $this->showEvent();
                 }
                 break;
             case 'eventlist':
                 return $this->_showEventList();
-                break;
             case 'sign':
                 return $this->_showRegistrationForm();
-                break;
             case 'boxes':
                 if ($_GET['act'] == "list") {
                     return $this->_boxesEvents();
-                } else {
-                    return $this->_showThreeBoxes();
                 }
-                break;
+                return $this->_showThreeBoxes();
             default:
-                return $this->_standardView();
         }
         return $this->_standardView();
     }
@@ -114,23 +100,18 @@ class Calendar extends calendarLibrary
 
     function _standardView()
     {
-        global $_ARRAYLANG, $_CONFIG, $_LANGID;
+        global $_ARRAYLANG, $_CONFIG;
 
         $this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar";
         $this->_objTpl->setTemplate($this->pageContent);
         $monthNames = explode(",", $_ARRAYLANG['TXT_CALENDAR_MONTH_ARRAY']);
-// TODO: Unused
-//        $dayNames = explode(',', $_ARRAYLANG['TXT_CALENDAR_DAY_ARRAY']);
-
         //check access
         $auth = $this->_checkAccess();
-
         if ($auth == true) {
             $where = "";
         } else {
             $where = " AND access='0' ";
         }
-
         $listTitle = '';
         if (   !empty($_GET['act']) && $_GET['act'] == "search"
             && !empty($_POST['startDate']) && !empty($_POST['endDate'])) {
@@ -140,13 +121,12 @@ class Calendar extends calendarLibrary
             $datearr = explode("-", $_POST['endDate']);
             $enddate = mktime(23, 59, 59, $datearr[1], $datearr[2], $datearr[0]);
             $keyword = htmlentities(addslashes($_POST['keyword']), ENT_QUOTES, CONTREXX_CHARSET);
-
             $query = "SELECT cal.id, cal.catid, cal.name, cal.startdate, cal.enddate, cal.placeName,
                 MATCH (cal.name,cal.comment,cal.placeName) AGAINST ('%$keyword%') AS score
                 FROM ".DBPREFIX."module_calendar".MODULE_INDEX." as cal
                 LEFT JOIN ".DBPREFIX."module_calendar".MODULE_INDEX."_categories as cat ON
                     (cat.id = cal.catid)
-                WHERE cat.lang = $_LANGID
+                WHERE cat.lang=".FRONTEND_LANG_ID."
                 AND (cal.`name` LIKE '%$keyword%' OR
                 cal.`comment` LIKE '%$keyword%' OR
                 cal.`placeName` LIKE '%$keyword%') AND
@@ -246,16 +226,14 @@ class Calendar extends calendarLibrary
             "TXT_CALENDAR_SEARCH"       => $_ARRAYLANG['TXT_CALENDAR_SEARCH'],
             "CALENDAR_LIST_TITLE"       => $listTitle,
         ));
-
         $this->_showList($query);
-
         return $this->_objTpl->get();
-
     }
+
 
     function _showList($query)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
@@ -266,7 +244,7 @@ class Calendar extends calendarLibrary
 
             $catQuery = "   SELECT `id`
                             FROM `".DBPREFIX."module_calendar".MODULE_INDEX."_categories`
-                            WHERE `lang` = ".$_LANGID;
+                            WHERE `lang` = ".FRONTEND_LANG_ID;
 
 
             if (($objRSCats = $objDatabase->Execute($catQuery)) !== false) {
@@ -302,12 +280,13 @@ class Calendar extends calendarLibrary
         }
     }
 
+
     /**
      * Shows the list with the next 20 events
      */
     function _showEventList()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG;
 
         $this->_objTpl->setTemplate($this->pageContent);
 
@@ -399,7 +378,7 @@ class Calendar extends calendarLibrary
      */
     function _showThreeBoxes()
     {
-        global $_ARRAYLANG, $_LANGID, $objDatabase;
+        global $_ARRAYLANG, $objDatabase;
 
         $this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes&act=list";
         $this->monthnavurl = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes";
@@ -420,7 +399,7 @@ class Calendar extends calendarLibrary
                 $cats[$array2[0]] = $array2[1];
             }
 
-            $_GET['catid'] = $cats[$_LANGID];
+            $_GET['catid'] = $cats[FRONTEND_LANG_ID];
             if ($_GET['catid'] == '') {
                 $_GET['catid'] = 0;
             }
@@ -430,7 +409,7 @@ class Calendar extends calendarLibrary
             $query = "SELECT id
                           FROM ".DBPREFIX."module_calendar".MODULE_INDEX."_categories
                          WHERE id = '".intval($_GET['catid'])."'
-                           AND lang = '".$_LANGID."'
+                           AND lang = '".FRONTEND_LANG_ID."'
                            AND status = '1'";
             $objResult = $objDatabase->SelectLimit($query, 1);
             if ($objDatabase->Affected_Rows() == 0) {
@@ -449,7 +428,7 @@ class Calendar extends calendarLibrary
         $query = "SELECT id,
                            name
                       FROM ".DBPREFIX."module_calendar".MODULE_INDEX."_categories
-                     WHERE lang = '".$_LANGID."'
+                     WHERE lang = '".FRONTEND_LANG_ID."'
                        AND status = '1'
                   ORDER BY pos";
 
@@ -532,7 +511,7 @@ class Calendar extends calendarLibrary
 
     function _boxesEvents()
     {
-        global $_ARRAYLANG, $_LANGID, $objDatabase;
+        global $_ARRAYLANG;
 
         $this->_objTpl->setTemplate($this->pageContent);
         $this->_objTpl->hideBlock("boxes");
@@ -703,7 +682,7 @@ class Calendar extends calendarLibrary
      */
     function _showRegistrationForm()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->setTemplate($this->pageContent);
         $check = false;

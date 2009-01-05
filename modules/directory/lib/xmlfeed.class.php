@@ -26,7 +26,6 @@ class rssFeed
     private $filePath;
     private $fileName = array();
     public $newsLimit;
-    private $langId;
     private $catId;
 
     public $channelTitle;
@@ -91,7 +90,7 @@ class rssFeed
      */
     function create()
     {
-        global $_CONFIG, $objDatabase;
+        global $objDatabase;
 
         $xmlOutput = "";
 
@@ -137,4 +136,5 @@ class rssFeed
         }
     }
 }
+
 ?>

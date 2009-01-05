@@ -108,7 +108,8 @@ class podcastLib
 
     function _getMedia($ofCategory = false, $isActive = false, $limit = 0, $pos = 0)
     {
-        global $objDatabase, $_CONFIG, $_LANGID;
+        global $objDatabase, $_CONFIG;
+
         $arrMedia = array();
         $cat = false;
         $sqlLimit = ($limit == 0) ? $_CONFIG['corePagingLimit'] : $limit;
@@ -258,7 +259,7 @@ class podcastLib
 
     function _getCategories($isActive = false, $limit = false, $langId = false)
     {
-        global $objDatabase, $_CONFIG, $_LANGID;
+        global $objDatabase, $_CONFIG;
 
         $arrCategory = array();
 
@@ -272,7 +273,7 @@ class podcastLib
             while (!$objCategory->EOF) {
                 if ($langId !== false) {
                     $arrLangIds = &$this->_getLangIdsOfCategory($objCategory->fields['id']);
-                    if (!in_array($_LANGID, $arrLangIds)) {
+                    if (!in_array(FRONTEND_LANG_ID, $arrLangIds)) {
                         $objCategory->MoveNext();
                         continue;
                     }

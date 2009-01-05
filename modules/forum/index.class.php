@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Forum
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -24,8 +25,8 @@ require_once ASCMS_MODULE_PATH.'/forum/lib/forumLib.class.php';
  */
 class Forum extends ForumLibrary {
 
-    var $_objTpl;
-    var $strError = ''; //errormessage for captcha
+    public $_objTpl;
+    public $strError = ''; //errormessage for captcha
 
 
     /**
@@ -36,11 +37,8 @@ class Forum extends ForumLibrary {
      */
     function __construct($strPageContent)
     {
-        global $_LANGID;
-
         ForumLibrary::__construct();
-        $this->_intLangId = intval($_LANGID);
-        $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->_objTpl = new HTML_Template_Sigma('.');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($strPageContent);
 
@@ -138,18 +136,14 @@ class Forum extends ForumLibrary {
         while(!$objRS->EOF){
             $postId = $objRS->fields['id'];
             $threadId = $objRS->fields['thread_id'];
-            $catId = $objRS->fields['category_id'];
             $link = 'index.php?section=forum&amp;cmd=thread&amp;postid='.$postId.'&amp;id='.$threadId.
                                 '&amp;l=1&amp;pos='.$this->_getEditPos($postId, $threadId).'#p'.$postId;
-
             $subject = $objRS->fields['subject'];
             $content = preg_replace('#\[[^\]]+\]#', '', $objRS->fields['content']);
             $keywords = $objRS->fields['keywords'];
-
             if(strlen($content) > 60){
                 $content = substr($content, 0, 60).'[...]';
             }
-
             $this->_objTpl->setVariable(array(
                 'FORUM_THREAD_SUBJECT'     => $subject,
                 'FORUM_THREAD_LINK'         => $link,
@@ -164,39 +158,43 @@ class Forum extends ForumLibrary {
             $paging = getPaging($count, $pos, '&amp;section=forum&amp;cmd=searchTags&amp;term='.$term, $_ARRAYLANG['TXT_FORUM_OVERVIEW_THREADS']);
             $this->_objTpl->setVariable('FORUM_SEARCH_PAGING', $paging);
         }
+        return true;
     }
+
 
     /**
      * parse the tag cloud and hitlist
-     *
      */
-    function showTagCloud(){
-            $this->_objTpl->setVariable(array(
-                'FORUM_TAG_CLOUD'    => $this->getTagCloud(),
-                'FORUM_TAG_HITLIST'    => $this->getTagHitlist()
-            ));
+    function showTagCloud()
+    {
+        $this->_objTpl->setVariable(array(
+            'FORUM_TAG_CLOUD'    => $this->getTagCloud(),
+            'FORUM_TAG_HITLIST'    => $this->getTagHitlist()
+        ));
     }
+
 
     /**
      * parse the top lists (most viewed + top rated)
      *
      */
-    function showTopList(){
+    function showTopList()
+    {
         $this->_parseMostViewed($this->_getMostViewed());
         $this->_parseTopRated($this->_getTopRated());
     }
 
 
-   /**
-    * parse the most viewed entries
-    *
-    * @param adodb_result_set $objRS
-    */
-    function _parseMostViewed($objRS){
+    /**
+     * parse the most viewed entries
+     *
+     * @param adodb_result_set $objRS
+     */
+    function _parseMostViewed($objRS)
+    {
         while(!$objRS->EOF){
             $postId = $objRS->fields['id'];
             $threadId = $objRS->fields['thread_id'];
-            $catId = $objRS->fields['category_id'];
             $link = 'index.php?section=forum&amp;cmd=thread&amp;postid='.$postId.'&amp;id='.$threadId.
                                 '&amp;l=1&amp;pos='.$this->_getEditPos($postId, $threadId).'#p'.$postId;
 
@@ -238,25 +236,20 @@ class Forum extends ForumLibrary {
 
     /**
      * parse the top rated entries
-     *
      * @param adodb_result_set $objRSS
      */
     function _parseTopRated($objRS){
         while(!$objRS->EOF){
             $postId = $objRS->fields['id'];
             $threadId = $objRS->fields['thread_id'];
-            $catId = $objRS->fields['category_id'];
             $link = 'index.php?section=forum&amp;cmd=thread&amp;postid='.$postId.'&amp;id='.$threadId.
                                 '&amp;l=1&amp;pos='.$this->_getEditPos($postId, $threadId).'#p'.$postId;
-
             $subject = $objRS->fields['subject'];
             $content = $objRS->fields['content'];
             $keywords = $objRS->fields['keywords'];
-
             if(strlen($content) > 60){
                 $content = substr($content, 0, 60).'[...]';
             }
-
             $this->_objTpl->setVariable(array(
                 'FORUM_TOP_RATED_SUBJECT'     => $subject,
                 'FORUM_TOP_RATED_LINK'          => $link,
@@ -438,7 +431,7 @@ class Forum extends ForumLibrary {
         }
 
         $this->_objTpl->setGlobalVariable(array(
-            'FORUM_NAME'                =>    $this->_shortenString($this->_arrTranslations[$intForumId][$this->_intLangId]['name'], $this->_maxStringLenght),
+            'FORUM_NAME'                =>    $this->_shortenString($this->_arrTranslations[$intForumId][FRONTEND_LANG_ID]['name'], $this->_maxStringLenght),
             'FORUM_TREE'                =>    $this->_createNavTree($intForumId),
             'FORUM_DROPDOWN'            =>    $this->createForumDD('forum_quickaccess', $intForumId, 'onchange="gotoForum(this);"', ''),
             'FORUM_JAVASCRIPT_GOTO'        =>     $this->getJavascript('goto'),
@@ -497,7 +490,7 @@ class Forum extends ForumLibrary {
                 return false;
             }
             $intCounter = 0;
-            foreach ($arrThreads as $threadId => $arrValues) {
+            foreach ($arrThreads as $arrValues) {
                 $strUserProfileLink = ($arrValues['user_id'] > 0) ? '<a href="?section=access&amp;cmd=user&amp;id='.$arrValues['user_id'].'">'.$arrValues['user_name'].'</a>': $this->_anonymousName;
                 $this->_objTpl->setVariable(array(
                     'FORUM_THREADS_ROWCLASS'        =>    ($intCounter++ % 2) + 1,
@@ -586,12 +579,13 @@ class Forum extends ForumLibrary {
                 $this->_updateNotification($intLastThreadId);
                 $this->_sendNotifications($intLastThreadId, $subject, $content);
                 $this->updateViewsNewItem($intForumId, $lastInsertId);
-                $objCache = &new Cache();
+                $objCache = new Cache();
                 $objCache->deleteAllFiles();
             }
             header('Location: ?section=forum&cmd=board&id='.$intForumId);
             die();
         }
+        return true;
     }
 
 
@@ -741,7 +735,7 @@ class Forum extends ForumLibrary {
             'FORUM_SCROLLPOS'            =>    !empty($_REQUEST['scrollpos']) ? intval($_REQUEST['scrollpos']) : '0',
             'FORUM_JAVASCRIPT_INSERT_TEXT'    =>     $this->getJavascript('insertText'),
             'FORUM_NAME'                =>    $this->_shortenString($firstPost['subject'], $this->_maxStringLenght),
-            'FORUM_TREE'                =>    $this->_createNavTree($intCatId).'<a title="'.$this->_arrTranslations[$intCatId][$this->_intLangId]['name'].'" href="?section=forum&amp;cmd=board&amp;id='.$intCatId.'">'.$this->_shortenString($this->_arrTranslations[$intCatId][$this->_intLangId]['name'], $this->_maxStringLenght).'</a> > ' ,
+            'FORUM_TREE'                =>    $this->_createNavTree($intCatId).'<a title="'.$this->_arrTranslations[$intCatId][FRONTEND_LANG_ID]['name'].'" href="?section=forum&amp;cmd=board&amp;id='.$intCatId.'">'.$this->_shortenString($this->_arrTranslations[$intCatId][FRONTEND_LANG_ID]['name'], $this->_maxStringLenght).'</a> > ' ,
             'FORUM_DROPDOWN'            =>    $this->createForumDD('forum_quickaccess', $intCatId, 'onchange="gotoForum(this);"', ''),
             'TXT_FORUM_COMMA_SEPARATED_KEYWORDS'    =>    $_ARRAYLANG['TXT_FORUM_COMMA_SEPARATED_KEYWORDS'],
             'TXT_FORUM_KEYWORDS'        =>    $_ARRAYLANG['TXT_FORUM_KEYWORDS'],
@@ -931,7 +925,7 @@ class Forum extends ForumLibrary {
                 $this->updateViewsNewItem($intCatId, $lastInsertId, true);
                 $this->_updateNotification($intThreadId);
                 $this->_sendNotifications($intThreadId, $subject, $content);
-                $objCache = &new Cache();
+                $objCache = new Cache();
                 $objCache->deleteAllFiles();
             }
             header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
@@ -1021,7 +1015,7 @@ class Forum extends ForumLibrary {
 
             if($objDatabase->Execute($updateQuery) !== false){
                 $this->updateViews($intThreadId, $intPostId);
-                $objCache = &new Cache();
+                $objCache = new Cache();
                 $objCache->deleteAllFiles();
             }
 
@@ -1123,7 +1117,7 @@ class Forum extends ForumLibrary {
 
         $intCategoryId = $this->_getCategoryIdFromThread($intThreadId);
 
-        $mail =& new PHPMailer();
+        $mail = new PHPMailer();
         $query = '    SELECT `subject`, `user_id` FROM `'.DBPREFIX.'module_forum_postings`
                     WHERE `thread_id` = '.$intThreadId.'
                     AND `prev_post_id` = 0';
@@ -1247,7 +1241,7 @@ class Forum extends ForumLibrary {
      */
     function showCategory($intCatId)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $this->_communityLogin();
 
@@ -1255,7 +1249,7 @@ class Forum extends ForumLibrary {
         $pos = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
 
         $this->_objTpl->setVariable(array(
-            'FORUM_NAME'            =>    $this->_shortenString($this->_arrTranslations[$intCatId][$this->_intLangId]['name'], $this->_maxStringLenght),
+            'FORUM_NAME'            =>    $this->_shortenString($this->_arrTranslations[$intCatId][FRONTEND_LANG_ID]['name'], $this->_maxStringLenght),
             'FORUM_TREE'            =>    $this->_createNavTree($intCatId),
             'FORUM_DROPDOWN'        =>    $this->createForumDD('forum_quickaccess', $intCatId, 'onchange="gotoForum(this);"', ''),
             'FORUM_JAVASCRIPT'        =>    $this->getJavascript(),
@@ -1263,7 +1257,7 @@ class Forum extends ForumLibrary {
         ));
 
         if ($intCatId != 0) {
-            $arrForums = $this->createForumArray($this->_intLangId, $intCatId, 1);
+            $arrForums = $this->createForumArray(FRONTEND_LANG_ID, $intCatId, 1);
             if (count($arrForums) > 0) {
                 $this->_objTpl->setGlobalVariable(array(
                     'TXT_FORUM'                =>    $_ARRAYLANG['TXT_FORUM_OVERVIEW_FORUM'],
@@ -1273,7 +1267,7 @@ class Forum extends ForumLibrary {
                     'TXT_FORUM_QUICKACCESS' =>    $_ARRAYLANG['TXT_FORUM_QUICKACCESS'],
                 ));
                 $intCounter=0;
-                foreach ($arrForums as $intKey    => $arrValues) {
+                foreach ($arrForums as $arrValues) {
                     if ($arrValues['status'] == 1) {
                         $this->_objTpl->setVariable(array(
                             'FORUM_SUBCATEGORY_ROWCLASS'        =>    ($intCounter++ % 2) + 1,
@@ -1311,11 +1305,13 @@ class Forum extends ForumLibrary {
      *
      * @global    array
      */
-    function showForumOverview() {
+    function showForumOverview()
+    {
         global $_ARRAYLANG;
+
         $this->_communityLogin();
         $strJavascriptToggleCode = '<script type="text/javascript" language="javascript">//<![CDATA['."\n";
-        $arrForums = $this->createForumArray($this->_intLangId);
+        $arrForums = $this->createForumArray(FRONTEND_LANG_ID);
 
         foreach ($arrForums as $id => $forum) {
             if($forum['parent_id'] == 0 && $forum['status']){
@@ -1345,7 +1341,7 @@ class Forum extends ForumLibrary {
                 'FORUM_JAVASCRIPT_GOTO'    =>     $this->getJavascript('goto'),
             ));
             $intCounter     = 0;
-            foreach ($arrForums as $intKey    => $arrValues) {
+            foreach ($arrForums as $arrValues) {
                 if ($arrValues['status'] == 1) {
                     if ($arrValues['level'] == 0) {
 
@@ -1420,9 +1416,9 @@ class Forum extends ForumLibrary {
         $this->_objTpl->setVariable("FORUM_REFERER", $_SERVER['HTTP_REFERER']);
     }
 
+
     /**
      * show and update notifications
-     *
      */
     function showNotifications()
     {
@@ -1479,7 +1475,7 @@ class Forum extends ForumLibrary {
             $this->_objTpl->setVariable('TXT_FORUM_SUCCESS', $_ARRAYLANG['TXT_FORUM_NOTIFICATION_UPDATED']);
         }
 
-        $arrUnsubscribedThreads = $arrForums = $this->createForumArray($this->_intLangId);
+        $arrUnsubscribedThreads = $arrForums = $this->createForumArray(FRONTEND_LANG_ID);
 
         $strOptionsUnsubscribed = $strOptionsSubscribed = '';
 
@@ -1489,7 +1485,7 @@ class Forum extends ForumLibrary {
                     LEFT JOIN ".DBPREFIX."module_forum_categories AS `c` ON ( `c`.`id` = `n`.`category_id` )
                     WHERE `n`.`user_id` = ".$objFWUser->objUser->getId()."
                     AND `n`.`thread_id` = 0
-                    AND `l`.`lang_id` = ".$this->_intLangId."
+                    AND `l`.`lang_id` = ".FRONTEND_LANG_ID."
                     AND `c`.`status` = '1'
                     ORDER BY `c`.`id` ASC";
 
@@ -1519,6 +1515,7 @@ class Forum extends ForumLibrary {
             'FORUM_NOTIFICATION_UNSUBSCRIBED'    =>    $strOptionsUnsubscribed,
             'FORUM_NOTIFICATION_SUBSCRIBED'        =>    $strOptionsSubscribed,
         ));
+        return true;
     }
 
 
@@ -1746,4 +1743,5 @@ EOJS;
     }
 
 }
+
 ?>

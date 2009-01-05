@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Docsys RSS XML Feed
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -23,18 +24,18 @@
  */
 class rssFeed
 {
-    var $xmlType;
-    var $filePath;
-    var $fileName = array();
-    var $limit;
-    var $channelTitle;
-    var $channelLink;
-    var $channelDescription;
-    var $channelLanguage;
-    var $channelCopyright;
-    var $channelGenerator;
-    var $channelWebMaster;
-    var $itemLink;
+    public $xmlType;
+    public $filePath;
+    public $fileName = array();
+    public $limit;
+    public $channelTitle;
+    public $channelLink;
+    public $channelDescription;
+    public $channelLanguage;
+    public $channelCopyright;
+    public $channelGenerator;
+    public $channelWebMaster;
+    public $itemLink;
 
 
     /**
@@ -92,7 +93,7 @@ class rssFeed
     */
     function createXML()
     {
-        global $_LANGID, $objDatabase;
+        global $objDatabase;
 
         if ($this->checkPermissions()){
             $xmlOutput = "";
@@ -120,7 +121,7 @@ class rssFeed
 //                               u.id
 //                        FROM ".DBPREFIX."module_docsys AS n,
 //                             ".DBPREFIX."access_users AS u
-//                        WHERE n.userid = u.id AND n.lang = ".$_LANGID."
+//                        WHERE n.userid = u.id AND n.lang = ".FRONTEND_LANG_ID."
 //                        ORDER BY n.id DESC";
 
             $query = "SELECT n.id AS docId,
@@ -133,7 +134,7 @@ class rssFeed
                                u.id
                         FROM ".DBPREFIX."module_docsys AS n,
                              ".DBPREFIX."access_users AS u
-                        WHERE n.userid = u.id AND n.lang = ".$_LANGID."
+                        WHERE n.userid = u.id AND n.lang = ".FRONTEND_LANG_ID."
                         ORDER BY n.id DESC";
             $objResult = $objDatabase->SelectLimit($query, $this->limit);
 
@@ -167,4 +168,5 @@ class rssFeed
         }
     }
 }
+
 ?>

@@ -55,7 +55,7 @@ class RecommendLibrary
      */
     function getMessageSubject($lang)
     {
-        global $objDatabase, $_FRONTEND_LANGID;
+        global $objDatabase;
 
         $query = "SELECT value FROM ".DBPREFIX."module_recommend WHERE name = 'subject' AND lang_id = $lang";
         $objResult = $objDatabase->Execute($query);
@@ -73,7 +73,7 @@ class RecommendLibrary
      */
     function getFemaleSalutation($lang)
     {
-        global $objDatabase, $_FRONTEND_LANGID;
+        global $objDatabase;
 
         $query = "SELECT value FROM ".DBPREFIX."module_recommend WHERE name = 'salutation_female' AND lang_id = $lang";
         $objResult = $objDatabase->Execute($query);
@@ -92,7 +92,7 @@ class RecommendLibrary
      */
     function getMaleSalutation($lang)
     {
-        global $objDatabase, $_FRONTEND_LANGID;
+        global $objDatabase;
 
         $query = "SELECT value FROM ".DBPREFIX."module_recommend WHERE name = 'salutation_male' AND lang_id = $lang";
         $objResult = $objDatabase->Execute($query);

@@ -24,26 +24,25 @@
  */
 class ContentSitemap
 {
-    var $navtable   = array();
-    var $navlinks      = array();
-    var $navparent  = array();
-    var $navparentId = array();
-    var $navdisplayorder  = array();
-    var $currentid;
-    var $treeArray  = array();
-    var $navUsername = array();
-    var $navChangelog = array();
-    var $navName = array();
-    var $navModule = array();
-    var $navCmd = array();
-    var $navDisplaystatus = array();
-    var $navActiveStatus = array();
-    var $navProtection = array();
-    var $navSons = array();
-    var $navIsValidated = array();
-    var $navIsRedirect = array();
-    var $langId;
-    var $requiredModuleNames = array('home','ids','error','login','core');
+    public $navtable   = array();
+    public $navlinks      = array();
+    public $navparent  = array();
+    public $navparentId = array();
+    public $navdisplayorder  = array();
+    public $currentid;
+    public $treeArray  = array();
+    public $navUsername = array();
+    public $navChangelog = array();
+    public $navName = array();
+    public $navModule = array();
+    public $navCmd = array();
+    public $navDisplaystatus = array();
+    public $navActiveStatus = array();
+    public $navProtection = array();
+    public $navSons = array();
+    public $navIsValidated = array();
+    public $navIsRedirect = array();
+    public $requiredModuleNames = array('home','ids','error','login','core');
 
     /**
     * Constructor
@@ -56,7 +55,7 @@ class ContentSitemap
     */
     function __construct($currentid)
     {
-        global $objDatabase, $objInit;
+        global $objDatabase;
 
         $query = "SELECT id, name FROM ".DBPREFIX."modules";
         $objResult = $objDatabase->Execute($query);

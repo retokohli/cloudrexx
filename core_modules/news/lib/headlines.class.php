@@ -22,15 +22,15 @@
  * @subpackage  core_module_news
  */
 class newsHeadlines {
-    var $_pageContent;
-    var $_objTemplate;
-    var $arrSettings = array();
+    public $_pageContent;
+    public $_objTemplate;
+    public $arrSettings = array();
 
     function __construct($pageContent)
     {
         $this->getSettings();
         $this->_pageContent = $pageContent;
-        $this->_objTemplate = &new HTML_Template_Sigma('.');
+        $this->_objTemplate = new HTML_Template_Sigma('.');
     }
 
     function getSettings()
@@ -48,7 +48,7 @@ class newsHeadlines {
 
     function getHomeHeadlines($catId=0)
     {
-        global $_CONFIG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_CORELANG, $objDatabase;
 
         $catId= intval($catId);
         $newsLimit = intval($this->arrSettings['news_headlines_limit']);
@@ -69,7 +69,7 @@ class newsHeadlines {
                                                  WHERE status = 1
                                                         ".($catId > 0 ? "AND catid = ".$catId : '')."
                                                        AND teaser_only='0'
-                                                       AND lang=".$_LANGID."
+                                                       AND lang=".FRONTEND_LANG_ID."
                                                        AND (startdate<=CURDATE() OR startdate='0000-00-00')
                                                        AND (enddate>=CURDATE() OR enddate='0000-00-00')
                                               ORDER BY date DESC", $newsLimit);
@@ -81,8 +81,8 @@ class newsHeadlines {
                 $newsid    = $objResult->fields['id'];
                 $newstitle = htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET);
                 $newsparam = 'section=news&amp;cmd=details';
-                $news_link = (empty($objResult->fields['redirect'])) 
-                    ? '<a class="headlineLink" href="'.$url.'?'.$newsparam.'&amp;newsid='.$newsid.'" title="'.$newstitle.'">'.$newstitle.'</a>' 
+                $news_link = (empty($objResult->fields['redirect']))
+                    ? '<a class="headlineLink" href="'.$url.'?'.$newsparam.'&amp;newsid='.$newsid.'" title="'.$newstitle.'">'.$newstitle.'</a>'
                     : '<a class="headlineLink" href="'.$objResult->fields['redirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>';
 
                 $this->_objTemplate->setVariable("HEADLINE_DATE", date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['date']));

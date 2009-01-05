@@ -23,14 +23,14 @@
  */
 class LanguageManager
 {
-    var $_objTpl;
-    var $pageTitle='';
-    var $strErrMessage = '';
-    var $strOkMessage = '';
-    var $arrLang = array();
-    var $filePath='';
-    var $hideVariables = true;
-    var $langIDs = array();
+    public $_objTpl;
+    public $pageTitle='';
+    public $strErrMessage = '';
+    public $strOkMessage = '';
+    public $arrLang = array();
+    public $filePath='';
+    public $hideVariables = true;
+    public $langIDs = array();
 
     /**
      * Constructor
@@ -84,7 +84,7 @@ class LanguageManager
      */
     function getLanguagePage()
     {
-        global $_CORELANG, $objTemplate;
+        global $objTemplate;
 
         if (!isset($_GET['act'])) {
             $_GET['act'] = "";
@@ -343,7 +343,7 @@ class LanguageManager
                 if (!empty($result[1]) && !empty($result[2])) {
                     $backendVars[$result[1]] = $result[2];
                 } else {
-                    $this->strErrMessage .= 'Ungütliges $_ARRAYLANG Format. (backend)  regex: '.$regex.'<br />';
+                    $this->strErrMessage .= 'Ungï¿½tliges $_ARRAYLANG Format. (backend)  regex: '.$regex.'<br />';
                 }
             }
 
@@ -363,7 +363,7 @@ class LanguageManager
                     }
                     $frontendVars[$result[1]] = $result[2];
                 } else {
-                    $this->strErrMessage .= 'Ungütliges $_ARRAYLANG Format. (frontend )  regex: '.$regex.'<br />';
+                    $this->strErrMessage .= 'Ungï¿½tliges $_ARRAYLANG Format. (frontend )  regex: '.$regex.'<br />';
                 }
             }
 

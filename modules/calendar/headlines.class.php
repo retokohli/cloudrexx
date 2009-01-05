@@ -1,4 +1,5 @@
-<?PHP
+<?php
+
 /**
  * Calendar headline news
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -27,30 +28,24 @@ require_once ASCMS_MODULE_PATH . '/calendar/calendarLib.class.php';
  */
 class calHeadlines extends calendarLibrary
 {
-    var $_pageContent;
-    var $_objTemplate;
+    public $_pageContent;
+    public $_objTemplate;
 
     /**
      * Constructor php5
      */
-    function __construct($pageContent) {
-        $this->calHeadlines($pageContent);
+    function __construct($pageContent)
+    {
+        $this->_pageContent = $pageContent;
+        $this->_objTemplate = new HTML_Template_Sigma('.');
     }
 
-    /**
-     * Constructor php4
-     */
-    function calHeadlines($pageContent) {
-        $this->_pageContent = $pageContent;
-        $this->_objTemplate = &new HTML_Template_Sigma('.');
-    }
 
     function getHeadlines()
     {
-        global $_CONFIG, $objDatabase, $_LANGID;
+        global $_CONFIG, $objDatabase;
 
         $this->_objTemplate->setTemplate($this->_pageContent,true,true);
-
         $category_name = '';
         if ($_CONFIG['calendarheadlinescat'] != 0) {
             $query = "SELECT name FROM ".DBPREFIX."module_calendar_categories
@@ -58,29 +53,21 @@ class calHeadlines extends calendarLibrary
             $objResult = $objDatabase->SelectLimit($query, 1);
             $category_name = $objResult->fields['name'];
         }
-
         $this->_objTemplate->setVariable(array("CALENDAR_EVENT_CATEGORY" => $category_name));
-
         $this->_objTemplate->setCurrentBlock('calendar_headlines_row');
-
-
-
         if ($_CONFIG['calendarheadlines']) {
             $today = time();
-
             //check access
             $auth = $this->_checkAccess();
-
             if ($auth == true) {
                 $access = "";
             } else {
                 $access = " AND access='0' ";
             }
-
             if ($_CONFIG['calendarheadlinescat'] == "0") {
                 $query = '    SELECT     id
                             FROM    '.DBPREFIX.'module_calendar_categories
-                            WHERE    lang='.intval($_LANGID);
+                            WHERE    lang='.FRONTEND_LANG_ID;
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult->RecordCount() > 0) {
                     $strWhere = ' AND ( ';
@@ -140,6 +127,7 @@ class calHeadlines extends calendarLibrary
             }
         }
         $this->_objTemplate->hideBlock('calendar_headlines_row');
+        return '';
     }
 }
 

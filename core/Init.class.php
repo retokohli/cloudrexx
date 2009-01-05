@@ -453,7 +453,6 @@ class InitCMS
             }
             return $_ARRAYLANG;
         }
-        //die("init::loadLanguageData() error (".$objInit->arrModulePath[$module].$objInit->arrLang[$_LANGID]['lang'].'/'.$objInit->mode.'.php'.")");
         return $_CORELANG;
     }
 

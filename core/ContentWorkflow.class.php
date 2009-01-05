@@ -29,9 +29,9 @@ require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
  * @todo        Edit PHP DocBlocks!
  */
 class ContentWorkflow {
-    var $strPageTitle;
-    var $strErrMessage = '';
-    var $strOkMessage = '';
+    public $strPageTitle;
+    public $strErrMessage = '';
+    public $strOkMessage = '';
 
     /**
     * Constructor
@@ -70,7 +70,7 @@ class ContentWorkflow {
     */
     function getPage()
     {
-        global $objTemplate, $_CORELANG;
+        global $objTemplate;
 
         if(!isset($_GET['act'])){
             $_GET['act'] = '';
@@ -426,8 +426,9 @@ class ContentWorkflow {
     * @param     boolean        $boolInsert: This parameter has to set to true, if the page was deleted before
     * @return   integer       $intPageId: The id of the page which was loaded
     */
-    function loadHistory($intHistoryId,$boolInsert=false) {
-        global $objDatabase, $_CORELANG, $_CONFIG;
+    function loadHistory($intHistoryId,$boolInsert=false)
+    {
+        global $objDatabase, $_CORELANG;
 
         $intHistoryId = intval($intHistoryId);
 

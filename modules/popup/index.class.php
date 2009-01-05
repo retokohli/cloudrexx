@@ -40,7 +40,7 @@ class popup extends popupLibrary
     */
     function setPopup(&$code, $pageId)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $this->jsGeneral .= "function closeLayer(e)
                              {
@@ -72,7 +72,7 @@ class popup extends popupLibrary
     */
     function getPopups($pageId)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $arrSettings     = $this->_getSettings();
         $today             = date("Y-m-d");
@@ -110,7 +110,7 @@ class popup extends popupLibrary
                                                         tblPopup.end
                                                 FROM     ".DBPREFIX."module_popup AS tblPopup,
                                                         ".$tables."
-                                                WHERE     (tblLang.lang_id=".$_LANGID." AND tblLang.popup_id=tblPopup.id)
+                                                WHERE     (tblLang.lang_id=".FRONTEND_LANG_ID." AND tblLang.popup_id=tblPopup.id)
                                                         ".$where."
                                                 AND     tblPopup.active=1
                                                 GROUP     BY tblPopup.id
@@ -199,20 +199,17 @@ class popup extends popupLibrary
     */
     function _setJS(&$code)
     {
-        global $objDatabase, $_LANGID;
-
+        global $objDatabase;
         $jsHeader    =    '<script language="JavaScript" type="text/javascript">
                         <!--
                         ';
         $jsFooter    =    '
                         -->
                         </script>';
-
         $JS         =    $jsHeader.$this->jsGeneral.$jsFooter;
-
-
         $code = str_replace("{POPUP_JS_FUNCTION}", $JS, $code);
     }
+
 }
 
 ?>

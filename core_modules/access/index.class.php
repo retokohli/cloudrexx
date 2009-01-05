@@ -483,14 +483,17 @@ class Access extends AccessLib
         $this->_objTpl->parse('access_signup_form');
     }
 
+
+    /**
+     * @todo    Use the user's language ID instead of the LANG_ID constant
+     */
     function handleSignUp($objUser)
     {
-        global $_ARRAYLANG, $_CONFIG, $_LANGID;
+        global $_ARRAYLANG, $_CONFIG;
 
         $objFWUser = FWUser::getFWUserObject();
         $objUserMail = $objFWUser->getMail();
         $arrSettings = User_Setting::getSettings();
-
         if ($arrSettings['user_activation']['status']) {
             $mail2load = 'reg_confirm';
             $mail2addr = $objUser->getEmail();
@@ -501,7 +504,7 @@ class Access extends AccessLib
 
         if (
             (
-                $objUserMail->load($mail2load, $_LANGID) ||
+                $objUserMail->load($mail2load, LANG_ID) ||
                 $objUserMail->load($mail2load)
             ) &&
             (include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') &&

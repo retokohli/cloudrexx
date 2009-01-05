@@ -40,7 +40,6 @@ class Recommend extends RecommendLibrary
      * @var object
      */
     var $_objTpl;
-    var $langId;
     var $_pageMessage;
 
     /**
@@ -80,7 +79,7 @@ class Recommend extends RecommendLibrary
      */
     function _showForm()
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $this->_objTpl->setVariable(array(
             'RECOM_TEXT'                    => $_ARRAYLANG['TXT_INTRODUCTION'],
@@ -100,9 +99,9 @@ class Recommend extends RecommendLibrary
             'RECOM_REFERER'                    => $_SERVER['HTTP_REFERER'],
             'RECOM_FEMALE_CHECKED'          => 'checked',
             'RECOM_SCRIPT'                    => $this->getJs(),
-            'RECOM_PREVIEW'                    => $this->getMessageBody($_LANGID),
-            'RECOM_FEMALE_SALUTATION_TEXT'     => $this->getFemaleSalutation($_LANGID),
-            'RECOM_MALE_SALUTATION_TEXT'     => $this->getMaleSalutation($_LANGID)
+            'RECOM_PREVIEW'                    => $this->getMessageBody(FRONTEND_LANG_ID),
+            'RECOM_FEMALE_SALUTATION_TEXT'     => $this->getFemaleSalutation(FRONTEND_LANG_ID),
+            'RECOM_MALE_SALUTATION_TEXT'     => $this->getMaleSalutation(FRONTEND_LANG_ID)
         ));
 
         //Spam-Protection
@@ -131,7 +130,7 @@ class Recommend extends RecommendLibrary
      */
     function _sendRecomm()
     {
-        global $_ARRAYLANG, $_CONFIG, $_LANGID;
+        global $_ARRAYLANG, $_CONFIG;
 
         if (empty($_POST['receivername'])) {
             $this->_pageMessage .= $_ARRAYLANG['TXT_STATUS_RECEIVER_NAME'].' '.$_ARRAYLANG['TXT_IS_EMPTY'].'<br />';
@@ -180,9 +179,9 @@ class Recommend extends RecommendLibrary
                 'RECOM_SENDER_NAME'                => stripslashes($sendername),
                 'RECOM_SENDER_MAIL'                => stripslashes($sendermail),
                 'RECOM_COMMENT'                    => stripslashes($comment),
-                'RECOM_PREVIEW'                    => $this->getMessageBody($_LANGID),
-                'RECOM_FEMALE_SALUTATION_TEXT'     => $this->getFemaleSalutation($_LANGID),
-                'RECOM_MALE_SALUTATION_TEXT'     => $this->getMaleSalutation($_LANGID)
+                'RECOM_PREVIEW'                    => $this->getMessageBody(FRONTEND_LANG_ID),
+                'RECOM_FEMALE_SALUTATION_TEXT'     => $this->getFemaleSalutation(FRONTEND_LANG_ID),
+                'RECOM_MALE_SALUTATION_TEXT'     => $this->getMaleSalutation(FRONTEND_LANG_ID)
             ));
 
             $this->_objTpl->setVariable(array(
@@ -221,12 +220,12 @@ class Recommend extends RecommendLibrary
             }
 
             if ($_POST['gender'] == 'male') {
-                $salutation = $this->getMaleSalutation($_LANGID);
+                $salutation = $this->getMaleSalutation(FRONTEND_LANG_ID);
             } else {
-                $salutation = $this->getFemaleSalutation($_LANGID);
+                $salutation = $this->getFemaleSalutation(FRONTEND_LANG_ID);
             }
 
-            $body = $this->getMessageBody($_LANGID);
+            $body = $this->getMessageBody(FRONTEND_LANG_ID);
 
             $body = preg_replace('/<SENDER_NAME>/', $sendername, $body);
             $body = preg_replace('/<SENDER_MAIL>/', $sendermail, $body);
@@ -236,7 +235,7 @@ class Recommend extends RecommendLibrary
             $body = preg_replace('/<COMMENT>/', $comment, $body);
             $body = preg_replace('/<SALUTATION>/', $salutation, $body);
 
-            $subject = $this->getMessageSubject($_LANGID);
+            $subject = $this->getMessageSubject(FRONTEND_LANG_ID);
 
             $subject = preg_replace('/<SENDER_NAME>/', $sendername, $subject);
             $subject = preg_replace('/<SENDER_MAIL>/', $sendermail, $subject);
