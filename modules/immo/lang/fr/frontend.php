@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  module_immo
  */
-$_ARRAYLANG['TXT_IMMO_SEARCH'] = "Suchen";
+$_ARRAYLANG['TXT_IMMO_SEARCH'] = "Rechercher";
 $_ARRAYLANG['TXT_IMMO_NAME'] = "Name";
 $_ARRAYLANG['TXT_IMMO_DELETE'] = "Löschen";
 $_ARRAYLANG['TXT_IMMO_OBJECTTYPE_FLAT'] = "Wohnung";

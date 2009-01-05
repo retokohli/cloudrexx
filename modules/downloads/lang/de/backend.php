@@ -136,6 +136,6 @@ $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_SUCCESS'] = "Die Reihenfolge der K
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_ORDER_SET_FAILED'] = "Die Reihenfolge der Kategorie(n) <strong>%s</strong> konnte nicht geändert werden!";
 $_ARRAYLANG['TXT_DOWNLOADS_DELETE_SUBCATEGORIES_MULTI'] = "Sollen die Unterkategorien der ausgewählten Kategorien auch gelöscht werden?";
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_DELETE_SUCCESS'] = "Die Kategorien wurden erfolgreich gelöscht.";
-$_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_DELETE_FAILED'] = "Beim Löschen der Kategorien <strong>%s</strong> trat ein Fehler auf!";
+$_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_DELETE_FAILED'] = "Beim Löschen der Kategorie(n) <strong>%s</strong> trat ein Fehler auf!";
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETE_SUCCESS'] = "Die Kategorie <strong>%s</strong> wurde erfolgreich gelöscht.";
 ?>
