@@ -246,4 +246,5 @@ $_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'] = "Impossible d'enregistrer votr
 $_ARRAYLANG['TXT_SHOP_MAKE_ORDER'] = "Suite de la commande...";
 $_ARRAYLANG['TXT_SHOP_NEW_ORDER'] = "Nouvelle commande...";
 $_ARRAYLANG['TXT_SHOP_LOGIN_INFO'] = "Informations";
+$_ARRAYLANG['TXT_SHOP_CONTINUE_ARROW'] = "Weiter &gt;&gt;";
 ?>
