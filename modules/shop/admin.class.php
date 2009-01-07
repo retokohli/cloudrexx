@@ -4618,7 +4618,7 @@ class shopmanager extends ShopLibrary {
                     'SHOP_PRODUCT_TAX_RATE'   =>
                         ($type == 1
                             ? $productVatRate
-                            : Vat::getShort($productVatRate)
+                            : Vat::format($productVatRate)
                         ),
                     'SHOP_PRODUCT_TAX_AMOUNT' => Currency::formatPrice($rowVatAmount),
                     'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($weight),
