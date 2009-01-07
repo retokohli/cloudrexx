@@ -246,4 +246,5 @@ $_ARRAYLANG['TXT_DIRECTORY_VOTING_FAILED_TEXT'] = "Sie haben bereits abgestimmt 
 $_ARRAYLANG['TXT_SHOP_MAKE_ORDER'] = "Weiter zur Bestellung...";
 $_ARRAYLANG['TXT_SHOP_NEW_ORDER'] = "Neue Bestellung...";
 $_ARRAYLANG['TXT_SHOP_LOGIN_INFO'] = "Informationen";
+$_ARRAYLANG['TXT_SHOP_CONTINUE_ARROW'] = "Weiter &gt;&gt;";
 ?>
