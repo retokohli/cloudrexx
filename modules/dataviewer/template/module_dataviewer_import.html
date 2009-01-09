@@ -1,0 +1,103 @@
+
+<!-- START  module_dataviewer_import.html -->
+<script type="text/javascript">
+/* <![CDATA[ */
+	function checkDoubleAssignments() {
+		numberOfElements = document.import2.csvColumn.length;
+		var z = 0;
+		while (z < numberOfElements){
+			var i = 0;
+			while (i < numberOfElements) {
+				if (z != i) {
+					if((document.import2.csvColumn[z].selectedIndex == document.import2.csvColumn[i].selectedIndex)  && document.import2.csvColumn[i].selectedIndex !== 0) {
+						var double = true;
+					}
+				}
+				i++;
+			}
+			z++;
+		}
+		
+		if(double) {
+			alert ("Jede Spalte kann nur einmal importiert werden!");
+			return false;
+		} 
+		return true;	
+	}
+	
+	
+	Text[0] = ["", 'Dieser Projektname ist für den User sichtbar.<br />Es sind nur Buchstaben und Zahlen erlaubt.'];
+	Text[1] = ["", 'Gibt an, in welchen Sprachen dieses Projekt verfügbar ist.<br />Die Auswahl ist abhängig von den aktivierten Sprachen unter "Spracheinstellungen.'];
+	Text[2] = ["", 'Ist diese Option aktiviert, so können die importieren Daten innerhalb<br />eines Projektes einem Land zugewiesen werden.'];
+	Text[3] = ["", 'Die Beschreibung ist bei den Projektauflistungen für den User ersichtlich.'];
+	Text[4] = ["", 'Ist der Status auf inaktiv, wird das Projekt nicht angezeigt'];
+	Text[5] = ["", 'Der Spaltenname darf keine Sonderzeichen und Umlaute enthalten.'];
+	
+	Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
+/* ]]> */
+</script>
+
+<form name="import2" action="index.php?cmd=dataviewer&act=import&id={ID}" enctype="multipart/form-data" method="post" onsubmit="return checkDoubleAssignments()"/>
+	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+			<thead>
+				<tr>
+					<th valign="top" colspan="2">
+						Daten aus CSV Importieren
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="row1">
+					<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">Land</td>
+					<td width="88%">
+						<select size="1" name="country" style="width: 200px;">
+									<option value="null">{COUNTRY_STATEMENT}</option>
+									<!-- BEGIN countryRow -->
+									<option value="{COUNTRYCODE}" {SELECTED}>{COUNTRY}</option>
+									<!-- END countryRow -->
+						</select>
+					</td>
+				</tr>
+				<tr class="row2">
+					<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])">CSV-Datei</td>
+					<td width="88%"><input type="file" name="csvFile" /></td>
+				</tr>
+			</tbody>
+	</table>
+	<br />
+	<input type="submit" name="continue" value="weiter" />
+	<br />
+	<br />
+	<div class="dataviewerImport2" style="display:block;">
+		<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+			<thead>
+				<tr>
+					<th valign="top" colspan="2">Projektspalten</th>
+				</tr>
+			</thead>
+			<tbody>
+			<tr class="row3">
+				<td nowrap="nowrap" width="12%"><span style="font-weight:bold;">Verfügbar in Datenbank</span></td>
+				<td nowrap="nowrap" width="88%"><span style="font-weight:bold;">Verfügbar in CSV</span></td>
+			</tr>
+			<!-- BEGIN columnRow -->
+			<tr class="{ROWCLASS}">
+				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">
+					<input type="text" name="dbColumn[]" value="{COLUMN_NAME_DB}" />
+				</td>
+				<td width="88%">
+					<select size="1" name="csvColumn[]" id="csvColumn" style="width: 200px;">
+							{COLUMNS_CSV_DROPDOWN}
+					</select>
+				</td>
+			</tr>
+			<!-- END columnRow -->
+			</tbody>
+		</table>
+		<br />
+		<input type="hidden" name="fileName" value="{FILENAME}" />
+		<input type="submit" name="import" value="importieren" />
+	</div>
+</form>
+
+<!-- END  module_dataviewer_import.html -->
