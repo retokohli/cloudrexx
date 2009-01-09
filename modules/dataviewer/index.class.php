@@ -22,158 +22,222 @@ class  Dataviewer
 
     function getPage() {
     	$_GET['cmd'] = !empty($_GET['cmd']) ? $_GET['cmd'] : "";
-    	
-    	switch ($_GET['cmd']) {
-    		case "":
-    			$this->showList();
-    			break;
-    		default:
-    			$this->show();
-    	}
+    	$this->show($_GET['cmd']);
         return $this->_objTpl->get();
     }
     
     
-	function show() {
+	function show($projectname) {
 		global $objDatabase, $_ARRAYLANG;
 		$this->_objTpl->setTemplate($this->pageContent);
 		
-		require 'lib/class.eyemysqladap.inc.php';
-		require 'lib/class.eyedatagrid.inc.php';
-		
-		$projectname    = !empty($_GET['cmd']) ? strtolower($_GET['cmd']) : "";
-		$_GET['filter'] = !empty($_GET['filter']) ? $_GET['filter'] : "";
-		
-		
-		//create output table
-		// Load the database adapter
-		$db = new EyeMySQLAdap('localhost', 'root', '', 'svntrunk');
-		// Load the datagrid class
-		$x = new EyeDataGrid($db);
-		// Set the query
-		
-		//diesplay all fields EXECPT the country field
-		$x->setQuery($this->getColumnsFromProject($this->getProjectID($projectname)), "contrexx_module_dataviewer_" . $projectname);
-		$output = $x->printTable($projectname);
-						
-		//create filters drop down
-		$queryProjects     = "SELECT fields FROM ".DBPREFIX."module_dataviewer_filters WHERE projectid = '" . $this->getProjectID($projectname) . "'";
-		$objResultProjects = $objDatabase->Execute($queryProjects);
-		
-		$fieldExplode = explode(";", $objResultProjects->fields['fields']);
-		
-		
-		$filtersDropDown = '<form method="post" action="">';	
-
-		//standard COUNTRY select option
-		$filtersDropDown .= '
-								<select name="filter[country]" onchange="window.location=\'index.php?section=dataviewer&amp;cmd=' . $projectname . '&amp;pageDV=&amp;order=&amp;filter=country:\' + this.value">									
-								<option value="">Land</option>
-								';
-		$queryCountryValues = "SELECT DISTINCT country, ".DBPREFIX."lib_country.name FROM ".DBPREFIX."module_dataviewer_" . $projectname . " LEFT JOIN " .DBPREFIX."lib_country ON ".DBPREFIX."module_dataviewer_" . $projectname . ".country = ".DBPREFIX."lib_country.iso_code_2";
-		$objResultCountryValues = $objDatabase->Execute($queryCountryValues);	
+		//prepare $GET filter
+		$selectedFilters = !empty($_GET['filter']) ? $_GET['filter'] : "";
+		if ($selectedFilters !== "") {
+			$selectedFiltersEx = explode(",", $selectedFilters);
 			
-		while (!$objResultCountryValues->EOF) {
-			$filtersDropDown .= '<option value="' . $objResultCountryValues->fields['country'] . '">' . $objResultCountryValues->fields['name'] . '</option>
-			';
-			$objResultCountryValues->MoveNext();
-		}
-		
-		$filtersDropDown .= "</select>";
-		
+			foreach ($selectedFiltersEx as $value) {
+				$explode[] = explode("=", $value);
+			}
+			$selectedFilters = "";
+			foreach ($explode as $value) {
+				$selectedFilters[$value[0]] = $value[1];
+			}	
 			
-		foreach ($fieldExplode as $singleField) {
-			$filtersDropDown .= '
-								<select name="filter[' . $singleField . ']" onchange="window.location=\'index.php?section=dataviewer&amp;cmd=' . $projectname . '&amp;pageDV=&amp;order=&amp;filter=' . $singleField . ':\' + this.value + \'\'">
-								<option value="">' . $singleField . '</option>
-								';
-
-			//set filter for select options
-			$arrFilter = explode(':', contrexx_addslashes($_GET['filter']));
-			$where = '';
-			if(!empty($arrFilter[0]) && $arrFilter[0] != $singleField){
-				$where = " WHERE `".$arrFilter[0]."` =  '".$arrFilter[1]."' ";
+			//build WHERE clause for select query
+			$where = " WHERE ";
+			foreach ($selectedFilters as $name => $value) {
+				$where .= $name . " = '" . $value . "' AND "; 
 			}
 			
-			//get select options
-			$queryFieldValues = "SELECT DISTINCT " . $singleField . " FROM ".DBPREFIX."module_dataviewer_" . $projectname . $where . " ORDER BY " . $singleField . " ASC";
-			$objResultFieldValues = $objDatabase->Execute($queryFieldValues);	
-
-			while (!$objResultFieldValues->EOF) {
-				//set selected="selected"
-				$selected = "";
-				if ($objResultFieldValues->fields[$singleField] == $arrFilter[1]) {
-					$selected = 'selected="selected"';	
-				}
-				
-				$filtersDropDown .= '<option value="' . $objResultFieldValues->fields[$singleField] . '"' . $selected . '>' . $objResultFieldValues->fields[$singleField] . '</option>
-				';
-				$objResultFieldValues->MoveNext();
-			}
-				
-			$filtersDropDown .= '</select>';
+			$where = substr($where, 0, strlen($where)-5);
 		}
+
 		
-		$filtersDropDown .= '</form>';
+		//get all placeholders for current project
+		$placeholdersQuery     = "SELECT * FROM ".DBPREFIX."module_dataviewer_placeholders WHERE projectid = '" .  $this->getProjectID($projectname) . "'";
+		$objPlaceholdersResult = $objDatabase->Execute($placeholdersQuery);
 		
-		$this->_objTpl->setVariable(array(
-			'FILTERS_DROPDOWN' 	=> $filtersDropDown,
-			'OUTPUT_VIEW' 		=> $output,
-			'PROJECTNAME' 		=> "name"
-		));
+		//JUST FOR DIAMIR fixed distributor 
+		//later we have to fix this by settings from projecttable
+//		$orderBy = " ORDER BY distributor DESC, name ASC";
+		$orderBy = "";
 		
-	}
-	
-	
-	function showList() {
-		global $objDatabase, $_ARRAYLANG;
-		$this->_objTpl->setTemplate($this->pageContent);
+		$where = "";
 		
-		//create filters drop down
-		$queryAllProjects     = "SELECT * FROM ".DBPREFIX."module_dataviewer_projects WHERE projectstatus = '1'";
-		$objResultAllProjects = $objDatabase->Execute($queryAllProjects);
 		
-		while (!$objResultAllProjects->EOF) {
-			$objResultAllProjects->fields['projectname'];
+		//get all records for current project
+		$selectRecordsQuery = "SELECT * FROM ".DBPREFIX."module_dataviewer_" . $projectname . $where . $orderBy;
+		$objRecordsResult   = $objDatabase->Execute($selectRecordsQuery);
+		
+		//create placeholders array 
+		//=> [placeholder id][column which placeholder displays]
+		while (!$objPlaceholdersResult->EOF) {
+				$placeholders[$objPlaceholdersResult->fields['id']] = $objPlaceholdersResult->fields['column'];
+				$objPlaceholdersResult->MoveNext();	
+		}	
+		
+		
+		//set template variables
+		$firstRun = true; //diamir
+		while (!$objRecordsResult->EOF) {
+			foreach ($placeholders as $id => $placeholder) {
+				$id++;	//because we dont want placeholder_0
+				$this->_objTpl->setVariable(array(
+					'PLACEHOLDER_' . $id => $objRecordsResult->fields[$placeholder]
+//					'PLACEHOLDER_' . $id => $firstRun == true && $objRecordsResult->fields['distributor'] == 1 ? "<b>".$objRecordsResult->fields[$placeholder]."</b>" : $objRecordsResult->fields[$placeholder] //diamir
+				));	
+			}
+			
+			$this->_objTpl->parse('row');		
+			$objRecordsResult->MoveNext();
+			$firstRun = false;//diamir
+		}	
+				
+		
+		//create drop down menue for filtering
+		if ($this->hasFilters($projectname)) {
+			$mainFilter = $this->getFilterDropDown($projectname, "main");
+			$subFilters = $this->getFilterDropDown($projectname, "");
 			$this->_objTpl->setVariable(array(
-				'PROJECT_NAME'			=> $objResultAllProjects->fields['projectname'],
-				'PROJECT_DESCRIPTION'	=> $objResultAllProjects->fields['projectdescription'],
-				'PROJECT_URL' 			=> 'index.php?section=dataviewer&amp;cmd=' . $objResultAllProjects->fields['projectname']
-			));
-			$this->_objTpl->parse('projectRow');
-			$objResultAllProjects->MoveNext();
+				'FILTER' => $mainFilter . $subFilters
+			));		
 		}
 		
-	
 	}
+	
+	
+	function hasFilters($projectname) {
+		global $objDatabase;
+		//get all records for current project
+		$query = "SELECT filters FROM ".DBPREFIX."module_dataviewer_projects WHERE name ='" . $projectname . "'";
+		$objResult   = $objDatabase->Execute($query);
+		if ($objResult->fields['filters'] == "") {
+			return false;	
+		} else {
+			return true;
+		}
+	}
+	
 	
 	/**
-	 * get projectid by projectname
-	 * @param int $projectname
-	 * @return var $projectid
+	 * gets projectid by projectname
+	 * 
+	 * @param  string $projectname
+	 * @return int $id
 	 */
 	function getProjectID($projectname) {
 		global $objDatabase;
-		$query     = "SELECT projectid FROM ".DBPREFIX."module_dataviewer_projects WHERE projectname = '" . $projectname . "';";
+		$query     = "SELECT id FROM ".DBPREFIX."module_dataviewer_projects WHERE name = '" . $projectname . "';";
 		$objResult = $objDatabase->Execute($query);
-		$projectid = $objResult->fields['projectid'];
 		
-		return $projectid;
+		return $objResult->fields['id'];
 	}
 	
 	
 	/**
-	 * returns selected project columns 
-	 * @param int $projectid
-	 * @return var $columns
-	 */	
-	function getColumnsFromProject($projectid) {
+	 * creates filter dropdown
+	 * 
+	 * @param  string $projectname
+	 * @return string $xhtml
+	 */
+	function getFilterDropDown($projectname, $mode) {
 		global $objDatabase;
-		$query     = "SELECT projectfields FROM ".DBPREFIX."module_dataviewer_projects WHERE projectid = '" . $projectid . "';";
-		$objResult = $objDatabase->Execute($query);
-		$columns   = str_replace(";", ", ", $objResult->fields['projectfields']);
 		
-		return $columns;
+		$selectedFilters = !empty($_GET['filter']) ? $_GET['filter'] : "";
+			
+		//prepare $GET filter
+		if ($selectedFilters !== "") {
+			$selectedFiltersEx = explode(",", $selectedFilters);
+			
+			foreach ($selectedFiltersEx as $value) {
+				$explode[] = explode("=", $value);
+			}
+			$selectedFilters = "";
+			foreach ($explode as $value) {
+				$selectedFilters[$value[0]] = $value[1];
+			}	
+		}
+						
+		//get filters string from projecttable
+		$queryFilters = "SELECT filters FROM " . DBPREFIX . "module_dataviewer_projects WHERE name = '" . $projectname . "'";
+		$objResult    = $objDatabase->Execute($queryFilters);
+		$filters      = $objResult->fields['filters'];
+				
+		//explode string to array
+		$filtersArray = explode(";", $filters);
+		$xhtml = "";
+		
+		/******************************
+		* build main filter drop down
+		*******************************/
+		if ($mode == "main") {
+			//create menue for each filter
+			$valuesArray = "";
+			
+			//select all values in column		
+			$query     = "SELECT DISTINCT " . $filtersArray[0] . " FROM " . DBPREFIX . "module_dataviewer_" . $projectname;
+			$objResult = $objDatabase->Execute($query);
+			
+			//create array with values from filters
+			while (!$objResult->EOF) {
+				$valuesArray[] = $objResult->fields[$filtersArray[0]];
+				$objResult->MoveNext();
+			}
+			
+			//create xhtml dropdown
+			$xhtml .= '<select size="1" name="placeholders[]" onchange="location.href=\'index.php?section=dataviewer&cmd=' . $projectname . '&filter=' . $filtersArray[0] . '=\' + this.value + \'\'" style="width: 200px;">
+					<option value="0">Bitte wählen Sie ' . $filtersArray[0] . '</option>';
+			
+			foreach ($valuesArray as $content) {
+				$xhtml .= '<option value="' . $content . '">' . $content . '</option>';	
+			}
+			$xhtml .= "</select><br />";	
+			
+			return $xhtml;
+		} else {
+			//delete main filter from array (this is allways the first one)
+			unset($filtersArray[0]);
+			
+			//build WHERE clause for subquery
+			$where = " WHERE ";
+			$whereForDropDown = "";
+			foreach ($selectedFilters as $name => $value) {
+				$where .= $name . " = '" . $value . "' AND "; 
+				$whereForDropDown .= $name . "=" . $value .",";
+			}
+			
+			$where = substr($where, 0, strlen($where)-5);
+			
+			//create menue for each filter
+			$xhtml = "";
+			foreach ($filtersArray as $filter) {
+				if ($filter !== "") {
+					$valuesArray = "";
+					
+					//select all values in column		
+					$query     = "SELECT DISTINCT " . $filter . " FROM " . DBPREFIX . "module_dataviewer_" . $projectname . $where;
+					$objResult = $objDatabase->Execute($query);
+					
+					//create array with values from filters
+					while (!$objResult->EOF) {
+						$valuesArray[] = $objResult->fields[$filter];
+						$objResult->MoveNext();
+					}
+					
+					//create xhtml dropdown
+					$xhtml .= '<select size="1" name="placeholders[]" onchange="location.href=\'index.php?section=dataviewer&cmd=' . $projectname . '&filter=' . $whereForDropDown . $filter . '=\' + this.value + \'\'" style="width: 200px;">
+							<option value="0">Bitte wählen Sie ' . $filter . '</option>';
+					
+					foreach ($valuesArray as $content) {
+						$xhtml .= '<option value="' . $content . '">' . $content . '</option>';	
+					}
+					$xhtml .= "</select><br />";	
+				}
+			}
+			
+		return $xhtml;
+	}
 	}
 }
 ?>

@@ -1,6 +1,7 @@
 
 <!-- START  module_dataviewer_overview.html -->
 <script type="text/javascript">
+/* <![CDATA[ */
 	function showPreview(ID) {
 	    if (document.getElementById('preview_'+ID)) {
 	        if (document.getElementById('preview_'+ID).style.display == 'none') {
@@ -12,30 +13,30 @@
 	}
 	
 	function deleteConfirm(ID) {
-	    check = confirm("Möchten Sie das Projekt wirklich löschen?")
+	    check = confirm("{TXT_DELETE_CONFIRMATION}")
 		if(check == true) {
 			location.href = "index.php?cmd=dataviewer&delete="+ID;
 		}
 	}
-
+/* ]]> */
 </script>
 
 <form name="project" action="index.php?cmd=dataviewer&act=new" method="post" />
 	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
 		<tr>
 			<th valign="top" colspan="8">
-				Projekte verwalten
+			{TXT_ADMINISTRATE_PROJECTS}
 			</th>
 		</tr>
 		<tr>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">Status</span></td>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">Name</span></td>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">Beschreibung</span></td>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">Sprache</span></td>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">Länderbasiert</span></td>
-			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">Filter</span></td>
-			<td nowrap="nowrap" width="30%"><span style="font-weight:bold;">Vorschau</span></td>
-			<td nowrap="nowrap" width="30%"><span style="font-weight:bold;">Funktionen</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PROJECTSTATUS}</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PROJECTNAME}</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_PROJECTDESCRIPTION}</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_LANGUAGE}</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_COUNTRY_BASED}</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_FILTER}</span></td>
+			<td nowrap="nowrap" width="30%"><span style="font-weight:bold;">{TXT_PREVIEW}</span></td>
+			<td nowrap="nowrap" width="30%"><span style="font-weight:bold;">{TXT_FUNCTIONS}</span></td>
 		</tr>
 		<!-- BEGIN projectRow -->
 		<tr class="{ROWCLASS}">
@@ -46,7 +47,7 @@
 			<td width="10%" valign="top">{COUNTRYBASED}</td>
 			<td width="10%" valign="top">{FILTER}</td>
 			<td width="30%" valign="top">
-				<a href="javascript:showPreview('{ID}');">Vorschau zeigen</a>
+				<a href="javascript:showPreview('{ID}');">{TXT_SHOW_PREVIEW}</a>
 				<div id="preview_{ID}" style="display:none; background:#cfcfcf; padding:5px; margin-right:5px; margin-top:5px; margin-bottom:5px; border:1px solid #000000;">{PREVIEW}</div>
 			</td>
 			<td width="30%" valign="top">
@@ -60,7 +61,7 @@
 		<!-- END projectRow -->
 	</table>
 	<br />
-	<input type="submit" name="save" value="Speichern" />
+	<input type="submit" name="save" value="{TXT_SAVE}" />
 </form>
 
 <!-- END module_dataviewer_overview.html -->

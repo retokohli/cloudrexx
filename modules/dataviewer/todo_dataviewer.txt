@@ -1,0 +1,32 @@
+-----------
+new project
+-----------
+* alles replacen ausser A-Z a-z und umlaute
+* prüfen ob prjekt schon vorhanden
+* bei der spalteneingabe spaltenzahl hochzählen
+* automatisches anlegen von inhaltsseite
+
+
+
+-----------
+import
+-----------
+* komplett
+
+
+
+
+-----------
+edit project
+-----------
+* komplett
+
+
+
+
+
+
+-----------
+show
+-----------
+sortiergeiehnfole angeben (nach welchem feld sortiert werden soll)
