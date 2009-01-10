@@ -900,6 +900,7 @@ CREATE TABLE `contrexx_module_downloads_download` (
   `author` varchar(100) NOT NULL,
   `ctime` int(14) unsigned NOT NULL default '0',
   `is_active` tinyint(3) unsigned NOT NULL default '0',
+  `visibility` tinyint(1) unsigned NOT NULL default '1',
   `order` int(3) unsigned NOT NULL default '0',
   `views` int(10) unsigned NOT NULL default '0',
   `downloads` int(10) unsigned NOT NULL default '0',
