@@ -7,17 +7,17 @@
 		numberOfElements = document.project.column.length;		
 		
 		var tableStart = '<table id="preview" border="0" cellpadding="5" cellspacing="0"><tr>';
-		var tableEnd = '</tr></table>';
+		var tableEnd = '<\/tr><\/table>';
 		var rows = "";
 		var blindText = "";
 		var i = 1;
 		
 		while (i < numberOfElements) {
-			var rows = rows + '<td><b>' + document.project.column[i].value + '</b></td>';
-			var blindText = blindText + '<td>lorem ipsum..</td>';
+			var rows = rows + '<td><b>' + document.project.column[i].value + '<\/b><\/td>';
+			var blindText = blindText + '<td>lorem ipsum..<\/td>';
 			i++;
 		}
-		div.innerHTML = tableStart + rows + '<tr>' + blindText + '</tr>' + tableEnd;
+		div.innerHTML = tableStart + rows + '<tr>' + blindText + '<\/tr>' + tableEnd;
 	}
 	
 	function validateInput(input) {
@@ -146,7 +146,7 @@
 /* ]]> */
 </script>
 
-<form name="project" action="index.php?cmd=dataviewer&act=new" method="post" onsubmit="return checkInput();" />
+<form name="project" action="index.php?cmd=dataviewer&amp;act=new" method="post" onsubmit="return checkInput();">
 <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
 		<thead>
 			<tr>
@@ -171,15 +171,15 @@
 			<tr class="row2">
 				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])">{TXT_COUNTRY_BASED}</td>
 				<td width="88%">
-					<input type="radio" name="countryBased" {POST_DESCRIPTION_COUNTRYBASED_Y} value="y">{TXT_YES}
-					<input type="radio" name="countryBased" {POST_DESCRIPTION_COUNTRYBASED_N} value="n">{TXT_NO}
+					<input type="radio" name="countryBased" {POST_DESCRIPTION_COUNTRYBASED_Y} value="y" />{TXT_YES}
+					<input type="radio" name="countryBased" {POST_DESCRIPTION_COUNTRYBASED_N} value="n" />{TXT_NO}
 				</td>
 			</tr>
 			<tr class="row1">
 				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])">Status</td>
 				<td width="88%">
-					<input type="radio" name="status" {POST_DESCRIPTION_STATUS_Y} value="y">{TXT_ACTIVE}
-					<input type="radio" name="status" {POST_DESCRIPTION_STATUS_N} value="n">{TXT_INACTIVE}
+					<input type="radio" name="status" {POST_DESCRIPTION_STATUS_Y} value="y" />{TXT_ACTIVE}
+					<input type="radio" name="status" {POST_DESCRIPTION_STATUS_N} value="n" />{TXT_INACTIVE}
 				</td>
 			</tr>
 			<tr>
@@ -189,7 +189,7 @@
 			</tr>
 			<tr class="row1" id="rowTemplate" style="display: none;">
 				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])">Spalte 1</td>
-				<td width="88%"><input type="text" name="column[]" id="column" onkeypress="this.value=validateInput(this.value); preview();" onblur="this.value=validateInput(this.value); preview();" style="width: 400px;" value="" maxlength="250" />&nbsp;<a href="javascript:void;" onclick="deleteRow(this); preview();"><img border="0" src="../cadmin/images/icons/delete.gif" alt="delete" /></a><br></td>
+				<td width="88%"><input type="text" name="column[]" id="column" onkeypress="this.value=validateInput(this.value); preview();" onblur="this.value=validateInput(this.value); preview();" style="width: 400px;" value="" maxlength="250" />&nbsp;<a href="javascript:void;" onclick="deleteRow(this); preview();"><img border="0" src="../cadmin/images/icons/delete.gif" alt="delete" /></a><br /></td>
 			</tr>
 			<tr class="row2">
 				<td width="12%" nowrap="nowrap">&nbsp;</td>
