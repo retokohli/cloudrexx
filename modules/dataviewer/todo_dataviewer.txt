@@ -7,12 +7,18 @@ new project
 * automatisches anlegen von inhaltsseite
 
 
-
 -----------
 import
 -----------
 * komplett
 
+
+-----------
+filter
+-----------
+hinweis das reihenfolge angepassat wurde, 
+kontrolleren. wenn das letze element nicht zugewiesen
+ist, erscheint trotzdem "reihenfolge wurde geändert"
 
 
 
@@ -30,3 +36,4 @@ edit project
 show
 -----------
 sortiergeiehnfole angeben (nach welchem feld sortiert werden soll)
+(projetsettings))

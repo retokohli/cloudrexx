@@ -60,14 +60,14 @@
 /**
  * Debug level
  */
-define('_DEBUG', 0);
+define('_DEBUG', 99);
 
 //-------------------------------------------------------
 // Set error reporting
 //-------------------------------------------------------
 if (_DEBUG) {
     error_reporting(E_ALL);
-    ini_set('display_errors', 1);
+    ini_set('display_errors', 0);
 } else {
     error_reporting(0);
     ini_set('display_errors', 0);
@@ -138,7 +138,7 @@ if ($objDatabase === false) {
     );
 }
 if (_DEBUG) {
-    $objDatabase->debug = 1;
+    $objDatabase->debug = 0;
 } else {
     $objDatabase->debug = 0;
 }
@@ -1219,6 +1219,20 @@ switch ($plainSection) {
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objEcard = new Ecard($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objEcard->getPage());
+        break;
+        
+//-------------------------------------------------------
+// Dataviewer
+//-------------------------------------------------------
+    case "dataviewer":
+        $modulespath = "modules/dataviewer/index.class.php";
+        /**
+         * @ignore
+         */
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objDataviewer = new Dataviewer($page_content);
+        $objTemplate->setVariable('CONTENT_TEXT', $objDataviewer->getPage());
         break;
 
 //-------------------------------------------------------

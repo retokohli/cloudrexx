@@ -21,18 +21,30 @@ class  Dataviewer
     
 
     function getPage() {
-    	$_GET['cmd'] = !empty($_GET['cmd']) ? $_GET['cmd'] : "";
-    	$this->show($_GET['cmd']);
+    	$projectname = !empty($_GET['cmd']) ? $_GET['cmd'] : "";
+    	
+    	if ($projectname == "") {
+    		$this->showOverview();
+		} else {
+			$this->show($projectname);
+    	}
         return $this->_objTpl->get();
+    }
+    
+    
+    function showOverview() {
+    	global $objDatabase, $_ARRAYLANG;
+    	$this->_objTpl->setTemplate($this->pageContent);
     }
     
     
 	function show($projectname) {
 		global $objDatabase, $_ARRAYLANG;
 		$this->_objTpl->setTemplate($this->pageContent);
-		
+			
 		//prepare $GET filter
 		$selectedFilters = !empty($_GET['filter']) ? $_GET['filter'] : "";
+		$where           = "";
 		if ($selectedFilters !== "") {
 			$selectedFiltersEx = explode(",", $selectedFilters);
 			
@@ -63,9 +75,6 @@ class  Dataviewer
 //		$orderBy = " ORDER BY distributor DESC, name ASC";
 		$orderBy = "";
 		
-		$where = "";
-		
-		
 		//get all records for current project
 		$selectRecordsQuery = "SELECT * FROM ".DBPREFIX."module_dataviewer_" . $projectname . $where . $orderBy;
 		$objRecordsResult   = $objDatabase->Execute($selectRecordsQuery);
@@ -80,16 +89,16 @@ class  Dataviewer
 		
 		//set template variables
 		$firstRun = true; //diamir
-		while (!$objRecordsResult->EOF) {
+		while (!$objRecordsResult->EOF) {			
 			foreach ($placeholders as $id => $placeholder) {
 				$id++;	//because we dont want placeholder_0
 				$this->_objTpl->setVariable(array(
-					'PLACEHOLDER_' . $id => $objRecordsResult->fields[$placeholder]
-//					'PLACEHOLDER_' . $id => $firstRun == true && $objRecordsResult->fields['distributor'] == 1 ? "<b>".$objRecordsResult->fields[$placeholder]."</b>" : $objRecordsResult->fields[$placeholder] //diamir
+					'DATAVIEWER_PLACEHOLDER_' . $id => $objRecordsResult->fields[$placeholder]
+//					'DATAVIEWER_PLACEHOLDER_' . $id => $firstRun == true && $objRecordsResult->fields['distributor'] == 1 ? "<b>".$objRecordsResult->fields[$placeholder]."</b>" : $objRecordsResult->fields[$placeholder] //diamir
 				));	
 			}
 			
-			$this->_objTpl->parse('row');		
+			$this->_objTpl->parse('dataviewer_row');		
 			$objRecordsResult->MoveNext();
 			$firstRun = false;//diamir
 		}	
@@ -100,7 +109,7 @@ class  Dataviewer
 			$mainFilter = $this->getFilterDropDown($projectname, "main");
 			$subFilters = $this->getFilterDropDown($projectname, "");
 			$this->_objTpl->setVariable(array(
-				'FILTER' => $mainFilter . $subFilters
+				'DATAVIEWER_FILTER' => $mainFilter . $subFilters
 			));		
 		}
 		
@@ -131,7 +140,11 @@ class  Dataviewer
 		$query     = "SELECT id FROM ".DBPREFIX."module_dataviewer_projects WHERE name = '" . $projectname . "';";
 		$objResult = $objDatabase->Execute($query);
 		
-		return $objResult->fields['id'];
+		if($objResult->_numOfRows > 0) {
+			return $objResult->fields['id'];	
+		} else {
+			return 00;
+		}
 	}
 	
 	
@@ -167,6 +180,7 @@ class  Dataviewer
 		//explode string to array
 		$filtersArray = explode(";", $filters);
 		$xhtml = "";
+		
 		
 		/******************************
 		* build main filter drop down

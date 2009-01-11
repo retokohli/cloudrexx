@@ -101,11 +101,11 @@ class Dataviewer {
         if ($_GET['delete']) {
         	if($this->deleteProject($_GET['delete'])) {
         		$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' 	=> $this->strOkMessage = "Projekt wurde erfolgreich gelöscht."
+					'CONTENT_STATUS_MESSAGE' 	=> $this->strOkMessage = $_ARRAYLANG['TXT_PROJECT_DELETED']
 				));	
         	} else {
         		$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' 	=> $this->strErrMessage = "Projekt konnte nicht gelöscht werden!"
+					'CONTENT_STATUS_MESSAGE' 	=> $this->strErrMessage = $_ARRAYLANG['TXT_PROJECT_COULDN_BE_DELETED']
 				));	
         	}
         }
@@ -127,7 +127,7 @@ class Dataviewer {
 						
 			$this->_objTpl->setVariable(array(
 				'ID'				=> $objResultProjects->fields['id'],
-				'STATUS'			=> $objResultProjects->fields['status'] == 1 ? '<a href="index.php?cmd=dataviewer&amp;id=' . $objResultProjects->fields['id']. '&amp;setstatus=n"><img border="0" src="../cadmin/images/icons/led_green.gif" /></a>' : '<a href="index.php?cmd=dataviewer&amp;id=' . $objResultProjects->fields['id']. '&amp;setstatus=y"><img border="0" src="../cadmin/images/icons/led_red.gif" /></a>',
+				'STATUS'			=> $objResultProjects->fields['status'] == 1 ? '<a href="index.php?cmd=dataviewer&amp;id=' . $objResultProjects->fields['id']. '&amp;setstatus=n"><img border="0" src="images/icons/led_green.gif" /></a>' : '<a href="index.php?cmd=dataviewer&amp;id=' . $objResultProjects->fields['id']. '&amp;setstatus=y"><img border="0" src="images/icons/led_red.gif" /></a>',
 				'NAME'				=> $objResultProjects->fields['name'],
 				'DESCRIPTION' 		=> $objResultProjects->fields['description'],
 				'LANGUAGE' 			=> $objResultProjects->fields['language'],
@@ -395,13 +395,13 @@ class Dataviewer {
 			$query     = "SELECT * FROM " . DBPREFIX . "lib_country";
 			$objResult = $objDatabase->Execute($query);
 			
-			$xhtml = '<option value="0">Bitte wählen Sie ein Land</option>';
+			$xhtml = '<option value="0">'.$_ARRAYLANG['TXT_CHOOSE_COUNTRY'].'</option>';
 			while (!$objResult->EOF) {
 				$xhtml .= '<option value="' . $objResult->fields['iso_code_2'] . '">' . $objResult->fields['name'] . '</option>';
 				$objResult->MoveNext();
 			}	
 		} else {
-			$xhtml = '<option value="0">Projekt ist nicht länderbasiert.</option>';
+			$xhtml = '<option value="0">'.$_ARRAYLANG['TXT_PROJECT_IS_NOT_COUNTRYBASED'].'</option>';
 		}
 		
 		return $xhtml;
@@ -474,6 +474,16 @@ class Dataviewer {
 			$filters = !empty($_POST['filters']) ? $_POST['filters'] : "";
 			$id = !empty($_GET['id']) ? $_GET['id'] : "";
 			
+			
+			$orderChanged = false;
+			foreach ($filters as $key => $filter) {
+				if ($filter == "noColumn") {
+					unset($filters[$key]);
+					$orderChanged = true;
+				}
+			}
+			
+			
 			//create filter string
 			$filtersString = implode(";", $filters);
 			$filtersString = str_replace("noColumn", "", $filtersString);
@@ -481,16 +491,16 @@ class Dataviewer {
 			if(strlen($filtersString) <= count($filters)) {
 				$filtersString = "";
 			}
-			
+						
 			$updateFiltersQuery = "UPDATE ".DBPREFIX."module_dataviewer_projects SET filters = '" . $filtersString . "' WHERE id = '" . $id . "'";				
 			
 			if($objDatabase->Execute($updateFiltersQuery)) {
 				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Filter wurden erfolgreich geupdatet."
+					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = $_ARRAYLANG['TXT_FILTER_UPDATED'] . ($orderChanged == true ? $_ARRAYLANG['TXT_ORDER_HAS_BEEN_CHANGED'] = "<br />Die Reihenfolge wurde angepasst." : "")
 				));
 			} else {
 				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Filter konnten nicht geupdatet werden!<br />" . $updateFiltersQuery
+					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_FILTER_COULDNT_BE_UPDATED'] . $updateFiltersQuery
 				));
 			}	
 		}		
@@ -529,7 +539,7 @@ class Dataviewer {
 			'TXT_FILTER'				=> $_ARRAYLANG['TXT_FILTER'],
 			'TXT_SAVE'					=> $_ARRAYLANG['TXT_SAVE'],
 			'TXT_NO_DOUBLE_ASSIGNMENTS'	=> $_ARRAYLANG['TXT_NO_DOUBLE_ASSIGNMENTS'],
-			'TIP_EVERY_FILTER'			=> $_ARRAYLANG['TIP_EVERY_FILTER'],
+			'TIP_EVERY_FILTER'			=> $_ARRAYLANG['TIP_EVERY_FILTER']
 		));		
 	}
 		
@@ -567,11 +577,11 @@ class Dataviewer {
 			
 			if ($error) {
 				$this->_objTpl->setVariable(array(
-						'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Platzhalter konnten nicht geupdatet werden!<br />" . $queryForErrorReport
+						'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_PLACEHOLDER_COULDNT_BE_UPDATED']  . $queryForErrorReport
 					));	
 			} else {
 				$this->_objTpl->setVariable(array(
-						'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Platzhalter wurde erfolgreich geupdatet."
+						'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = $_ARRAYLANG['TXT_PLACEHOLDER_UPDATED']
 					));	
 			}
 		}
@@ -598,7 +608,7 @@ class Dataviewer {
 			$objPlaceholdersResult->MoveNext();
 			
 			$this->_objTpl->setVariable(array(
-				'PLACEHOLDER'		=> "Platzhalter " . ($i == 0 ? "1" : $i+1),
+				'PLACEHOLDER'		=> $_ARRAYLANG['TXT_PLACEHOLDER'] . " " . ($i == 0 ? "1" : $i+1),
 				'ROWCLASS' 			=> ($i % 2 == 0) ? 'row1' : 'row2',
 				'TXT_NO_ASSIGNMENT'	=> $_ARRAYLANG['TXT_NO_ASSIGNMENT']
 			));		
@@ -654,7 +664,7 @@ class Dataviewer {
 	function import($id) {
 		global $_ARRAYLANG, $objDatabase;			
 		$this->_objTpl->loadTemplateFile('module_dataviewer_import.html');
-		require_once("csv/class.CSVHandler.php");
+		require_once("lib/CSVHandler.class.php");
 		
 		$_POST['continue'] = !empty($_POST['continue']) ? $_POST['continue'] : "";
 		$_POST['import']   = !empty($_POST['import']) ? $_POST['import'] : "";
@@ -678,7 +688,7 @@ class Dataviewer {
 
 		$this->_objTpl->setVariable(array(
 			'ID' => $id,
-			'COUNTRY_STATEMENT' => $this->isCountryBased($id) ? "Bitte wählen Sie ein Land aus" : "Diese Projekt ist nicht länderbasiert."
+			'COUNTRY_STATEMENT' => $this->isCountryBased($id) ? $_ARRAYLANG['TXT_CHOOSE_COUNTRY'] : $_ARRAYLANG['TXT_PROJECT_IS_NOT_COUNTRYBASED']
 		));	
 		
 		
@@ -692,7 +702,7 @@ class Dataviewer {
 			
 			if ($selectedCountry == "null" && $this->isCountryBased($id)) {
 				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Bitte wählen Sie ein Land aus, für die die Daten bereit gestellt werden.<br />"
+					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_CHOOSE_COUNTRY_WHICH_DATA_FOR']
 				));	
 			}
 			
@@ -735,7 +745,7 @@ class Dataviewer {
 					}
 					
 					//create drop down menu with columns from csv file
-					$xhtml = '<option value="0">Keine Zuordnung.</option>';
+					$xhtml = '<option value="0">'.$_ARRAYLANG['TXT_NO_ASSIGNMENT'].'</option>';
 					foreach ($columnsCSV as $column) {
 						$xhtml .= '<option value="' . $column . '">' . $column . '</option>';
 					}
@@ -754,12 +764,12 @@ class Dataviewer {
 					}
 				} else {
 					$this->_objTpl->setVariable(array(
-						'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Datei konnte nicht heraufgeladen werden.<br />Bitte versuchen Sie es nocheinmal."
+						'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_FILE_COULDNT_BE_UPLOADED']
 					));	
 				}
 			} else {
 				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Dateiformat konnte nicht erkannt werden.<br />Bitte wählen Sie eine CSV Datei aus."
+					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_WRONG_FILETYPE']
 				));	
 			}
 		}
@@ -824,11 +834,11 @@ class Dataviewer {
 			
 			if ($objDatabase->Execute($insertDataQuery)) {
 				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = "Daten erfolgreich importiert"
+					'CONTENT_STATUS_MESSAGE' => $this->strOkMessage = $_ARRAYLANG['TXT_DATA_IMPORTED']
 				));	
 			} else {
 				$this->_objTpl->setVariable(array(
-					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = "Fehler beim Importvorgang.<br />" . $insertDataQuery
+					'CONTENT_STATUS_MESSAGE' => $this->strErrMessage = $_ARRAYLANG['TXT_ERROR_AT_IMPORT'] . $insertDataQuery
 				));	
 			}
 		}
@@ -880,7 +890,7 @@ class Dataviewer {
 		$i = 1;
 		foreach ($columns as $column) {
 			$tableHeadlines .= '<td><strong>' . $column  . '</strong></td>';
-			$tableContent   .= '<td>[[PLACEHOLDER_' . $i . ']]</td>';
+			$tableContent   .= '<td>[[DATAVIEWER_PLACEHOLDER_' . $i . ']]</td>';
 			$i++;
 		}
 		
