@@ -10,7 +10,8 @@ new project
 -----------
 import
 -----------
-* komplett
+* benachrichtung das inhalte gelöscht werden,
+wenn einträge für land bereits bestehen
 
 
 -----------
@@ -21,15 +22,10 @@ kontrolleren. wenn das letze element nicht zugewiesen
 ist, erscheint trotzdem "reihenfolge wurde geändert"
 
 
-
 -----------
 edit project
 -----------
 * komplett
-
-
-
-
 
 
 -----------

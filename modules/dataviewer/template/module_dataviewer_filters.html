@@ -1,5 +1,5 @@
 
-<!-- START module_dataviewer_set_filter.html -->
+<!-- START module_dataviewer_filters.html -->
 <script type="text/javascript">
 /* <![CDATA[ */
 	function checkDoubleAssignments() {
@@ -19,11 +19,14 @@
 		}
 		
 		if(double) {
-			alert ("Es können keine zweit Werte gleichzeitig zugewiesen werden!");
+			alert ("{TXT_NO_DOUBLE_ASSIGNMENTS}");
 			return false;
 		} 
 		return true;	
 	}
+	
+	Text[0] = ["", '{TIP_EVERY_FILTER}'];
+	Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 /* ]]> */
 </script>
 
@@ -32,15 +35,15 @@
 		<tbody>
 			<tr>
 				<th valign="top" colspan="2">
-					Filter
+					{TXT_FILTER}
 				</th>
 			</tr>
 			<!-- BEGIN filterRow -->
 			<tr class="{ROWCLASS}">
-				<td width="12%" nowrap="nowrap">{FILTER}</td>
+				<td width="12%" nowrap="nowrap" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">{FILTER}</td>
 				<td width="88%">
 					<select size="1" name="filters[]" id="filters" style="width: 200px;">
-						<option value="noColumn">Kein Filter</option>
+						<option value="noColumn">{TXT_NO_FILTER}</option>
 						<!-- BEGIN columnsRow -->
 						<option value="{COLUMN}" {SELECTED}>{COLUMN}</option>
 						<!-- END columnsRow -->
@@ -51,7 +54,7 @@
 		</tbody>
 	</table>
 	<br />
-	<input type="submit" name="save" value="Speichern" />
+	<input type="submit" name="save" value="{TXT_SAVE}" />
 </form>
 
-<!-- END module_dataviewer_set_filter.html -->
+<!-- END module_dataviewer_filters.html -->
